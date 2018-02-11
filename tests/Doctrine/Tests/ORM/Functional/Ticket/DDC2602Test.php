@@ -9,6 +9,8 @@ use Doctrine\ORM\Annotation as ORM;
 use Doctrine\ORM\Event\LifecycleEventArgs;
 use Doctrine\ORM\Events;
 use Doctrine\Tests\OrmFunctionalTestCase;
+use function in_array;
+use function json_decode;
 
 /**
  * @group performance
@@ -75,16 +77,16 @@ class DDC2602Test extends OrmFunctionalTestCase
         $biographyFieldChoice5 = new DDC2602BiographyFieldChoice();
         $biographyFieldChoice6 = new DDC2602BiographyFieldChoice();
 
-        $user1->name = 'Gblanco';
+        $user1->name      = 'Gblanco';
         $user1->biography = $biography1;
 
-        $user2->name = 'Beberlei';
+        $user2->name      = 'Beberlei';
         $user2->biography = $biography2;
 
-        $biography1->user = $user1;
+        $biography1->user    = $user1;
         $biography1->content = '[{"field": 1, "choiceList": [1,3]}, {"field": 2, "choiceList": [5]}]';
 
-        $biography2->user = $user2;
+        $biography2->user    = $user2;
         $biography2->content = '[{"field": 1, "choiceList": [1,2,3,4]}]';
 
         $biographyField1->alias = 'question_1';
@@ -135,7 +137,7 @@ class DDC2602PostLoadListener
     {
         $entity = $event->getEntity();
 
-        if ( ! ($entity instanceof DDC2602Biography)) {
+        if (! ($entity instanceof DDC2602Biography)) {
             return;
         }
 
@@ -151,9 +153,9 @@ class DDC2602PostLoadListener
         $fieldList = new ArrayCollection();
 
         foreach ($content as $selection) {
-            $field      = $result[$selection->field];
-            $choiceList = $selection->choiceList;
-            $fieldSelection     = new DDC2602FieldSelection();
+            $field          = $result[$selection->field];
+            $choiceList     = $selection->choiceList;
+            $fieldSelection = new DDC2602FieldSelection();
 
             $fieldSelection->field      = $field;
             $fieldSelection->choiceList = $field->choiceList->filter(function ($choice) use ($choiceList) {
@@ -177,7 +179,7 @@ class DDC2602User
      * @ORM\Id @ORM\GeneratedValue
      * @ORM\Column(type="integer")
      *
-     * @var integer
+     * @var int
      */
     public $id;
 
@@ -210,7 +212,7 @@ class DDC2602Biography
      * @ORM\Id @ORM\GeneratedValue
      * @ORM\Column(type="integer")
      *
-     * @var integer
+     * @var int
      */
     public $id;
 
@@ -232,9 +234,7 @@ class DDC2602Biography
      */
     public $content;
 
-    /**
-     * @var array
-     */
+    /** @var array */
     public $fieldList = [];
 }
 
@@ -247,18 +247,14 @@ class DDC2602BiographyField
      * @ORM\Id @ORM\GeneratedValue
      * @ORM\Column(type="integer")
      *
-     * @var integer
+     * @var int
      */
     public $id;
 
-    /**
-     * @ORM\Column(type="string", unique=true, length=100)
-     */
+    /** @ORM\Column(type="string", unique=true, length=100) */
     public $alias;
 
-    /**
-     * @ORM\Column(type="string", length=100)
-     */
+    /** @ORM\Column(type="string", length=100) */
     public $label;
 
     /**
@@ -268,13 +264,10 @@ class DDC2602BiographyField
      *     cascade={"persist", "refresh"}
      * )
      *
-     * @var \Doctrine\Common\Collections\ArrayCollection
+     * @var ArrayCollection
      */
     public $choiceList;
 
-    /**
-     * Constructor.
-     */
     public function __construct()
     {
         $this->choiceList = new ArrayCollection();
@@ -290,13 +283,11 @@ class DDC2602BiographyFieldChoice
      * @ORM\Id @ORM\GeneratedValue
      * @ORM\Column(type="integer")
      *
-     * @var integer
+     * @var int
      */
     public $id;
 
-    /**
-     * @ORM\Column(type="string", unique=true, length=100)
-     */
+    /** @ORM\Column(type="string", unique=true, length=100) */
     public $label;
 
     /**
@@ -313,19 +304,12 @@ class DDC2602BiographyFieldChoice
 
 class DDC2602FieldSelection
 {
-    /**
-     * @var DDC2602BiographyField
-     */
+    /** @var DDC2602BiographyField */
     public $field;
 
-    /**
-     * @var \Doctrine\Common\Collections\ArrayCollection
-     */
+    /** @var ArrayCollection */
     public $choiceList;
 
-    /**
-     * Constructor.
-     */
     public function __construct()
     {
         $this->choiceList = new ArrayCollection();

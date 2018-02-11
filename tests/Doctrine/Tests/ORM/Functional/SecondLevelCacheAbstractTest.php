@@ -4,25 +4,22 @@ declare(strict_types=1);
 
 namespace Doctrine\Tests\ORM\Functional;
 
+use Doctrine\ORM\Cache;
 use Doctrine\Tests\Models\Cache\Address;
-use Doctrine\Tests\Models\Cache\Person;
-use Doctrine\Tests\OrmFunctionalTestCase;
-
-use Doctrine\Tests\Models\Cache\Country;
-use Doctrine\Tests\Models\Cache\State;
-use Doctrine\Tests\Models\Cache\City;
-
-use Doctrine\Tests\Models\Cache\TravelerProfileInfo;
-use Doctrine\Tests\Models\Cache\TravelerProfile;
-use Doctrine\Tests\Models\Cache\Traveler;
-use Doctrine\Tests\Models\Cache\Travel;
-
-use Doctrine\Tests\Models\Cache\Restaurant;
-use Doctrine\Tests\Models\Cache\Beach;
-use Doctrine\Tests\Models\Cache\Bar;
-
 use Doctrine\Tests\Models\Cache\AttractionContactInfo;
 use Doctrine\Tests\Models\Cache\AttractionLocationInfo;
+use Doctrine\Tests\Models\Cache\Bar;
+use Doctrine\Tests\Models\Cache\Beach;
+use Doctrine\Tests\Models\Cache\City;
+use Doctrine\Tests\Models\Cache\Country;
+use Doctrine\Tests\Models\Cache\Person;
+use Doctrine\Tests\Models\Cache\Restaurant;
+use Doctrine\Tests\Models\Cache\State;
+use Doctrine\Tests\Models\Cache\Travel;
+use Doctrine\Tests\Models\Cache\Traveler;
+use Doctrine\Tests\Models\Cache\TravelerProfile;
+use Doctrine\Tests\Models\Cache\TravelerProfileInfo;
+use Doctrine\Tests\OrmFunctionalTestCase;
 
 /**
  * @group DDC-2183
@@ -40,9 +37,7 @@ abstract class SecondLevelCacheAbstractTest extends OrmFunctionalTestCase
     protected $attractionsInfo      = [];
     protected $travelersWithProfile = [];
 
-    /**
-     * @var \Doctrine\ORM\Cache
-     */
+    /** @var Cache */
     protected $cache;
 
     protected function setUp()
@@ -58,8 +53,8 @@ abstract class SecondLevelCacheAbstractTest extends OrmFunctionalTestCase
 
     protected function loadFixturesCountries()
     {
-        $brazil  = new Country("Brazil");
-        $germany = new Country("Germany");
+        $brazil  = new Country('Brazil');
+        $germany = new Country('Germany');
 
         $this->countries[] = $brazil;
         $this->countries[] = $germany;
@@ -71,10 +66,10 @@ abstract class SecondLevelCacheAbstractTest extends OrmFunctionalTestCase
 
     protected function loadFixturesStates()
     {
-        $saopaulo   = new State("São Paulo", $this->countries[0]);
-        $rio        = new State("Rio de janeiro", $this->countries[0]);
-        $berlin     = new State("Berlin", $this->countries[1]);
-        $bavaria    = new State("Bavaria", $this->countries[1]);
+        $saopaulo = new State('São Paulo', $this->countries[0]);
+        $rio      = new State('Rio de janeiro', $this->countries[0]);
+        $berlin   = new State('Berlin', $this->countries[1]);
+        $bavaria  = new State('Bavaria', $this->countries[1]);
 
         $this->states[] = $saopaulo;
         $this->states[] = $rio;
@@ -91,10 +86,10 @@ abstract class SecondLevelCacheAbstractTest extends OrmFunctionalTestCase
 
     protected function loadFixturesCities()
     {
-        $saopaulo   = new City("São Paulo", $this->states[0]);
-        $rio        = new City("Rio de janeiro", $this->states[0]);
-        $berlin     = new City("Berlin", $this->states[1]);
-        $munich     = new City("Munich", $this->states[1]);
+        $saopaulo = new City('São Paulo', $this->states[0]);
+        $rio      = new City('Rio de janeiro', $this->states[0]);
+        $berlin   = new City('Berlin', $this->states[1]);
+        $munich   = new City('Munich', $this->states[1]);
 
         $this->states[0]->addCity($saopaulo);
         $this->states[0]->addCity($rio);
@@ -116,8 +111,8 @@ abstract class SecondLevelCacheAbstractTest extends OrmFunctionalTestCase
 
     protected function loadFixturesTraveler()
     {
-        $t1   = new Traveler("Fabio Silva");
-        $t2   = new Traveler("Doctrine Bot");
+        $t1 = new Traveler('Fabio Silva');
+        $t2 = new Traveler('Doctrine Bot');
 
         $this->em->persist($t1);
         $this->em->persist($t2);
@@ -130,10 +125,10 @@ abstract class SecondLevelCacheAbstractTest extends OrmFunctionalTestCase
 
     protected function loadFixturesTravelersWithProfile()
     {
-        $t1   = new Traveler("Test traveler 1");
-        $t2   = new Traveler("Test traveler 2");
-        $p1   = new TravelerProfile("First Traveler Profile");
-        $p2   = new TravelerProfile("Second Traveler Profile");
+        $t1 = new Traveler('Test traveler 1');
+        $t2 = new Traveler('Test traveler 2');
+        $p1 = new TravelerProfile('First Traveler Profile');
+        $p2 = new TravelerProfile('Second Traveler Profile');
 
         $t1->setProfile($p1);
         $t2->setProfile($p2);
@@ -151,10 +146,10 @@ abstract class SecondLevelCacheAbstractTest extends OrmFunctionalTestCase
 
     protected function loadFixturesTravelersProfileInfo()
     {
-        $p1   = $this->travelersWithProfile[0]->getProfile();
-        $p2   = $this->travelersWithProfile[1]->getProfile();
-        $i1   = new TravelerProfileInfo($p1, "First Profile Info ...");
-        $i2   = new TravelerProfileInfo($p2, "Second  Profile Info ...");
+        $p1 = $this->travelersWithProfile[0]->getProfile();
+        $p2 = $this->travelersWithProfile[1]->getProfile();
+        $i1 = new TravelerProfileInfo($p1, 'First Profile Info ...');
+        $i2 = new TravelerProfileInfo($p2, 'Second  Profile Info ...');
 
         $p1->setInfo($i1);
         $p2->setInfo($i2);
@@ -169,9 +164,9 @@ abstract class SecondLevelCacheAbstractTest extends OrmFunctionalTestCase
 
     protected function loadFixturesTravels()
     {
-        $t1   = new Travel($this->travelers[0]);
-        $t2   = new Travel($this->travelers[1]);
-        $t3   = new Travel($this->travelers[1]);
+        $t1 = new Travel($this->travelers[0]);
+        $t2 = new Travel($this->travelers[1]);
+        $t3 = new Travel($this->travelers[1]);
 
         $t1->addVisitedCity($this->cities[0]);
         $t1->addVisitedCity($this->cities[1]);

@@ -22,10 +22,10 @@ use Doctrine\Tests\Models\DDC753\DDC753EntityWithCustomRepository;
 use Doctrine\Tests\Models\DDC753\DDC753EntityWithDefaultCustomRepository;
 use Doctrine\Tests\Models\DDC753\DDC753InvalidRepository;
 use Doctrine\Tests\OrmFunctionalTestCase;
+use function array_pop;
+use function get_class;
+use function reset;
 
-/**
- * @author robo
- */
 class EntityRepositoryTest extends OrmFunctionalTestCase
 {
     protected function setUp()
@@ -36,28 +36,28 @@ class EntityRepositoryTest extends OrmFunctionalTestCase
 
     public function loadFixture()
     {
-        $user = new CmsUser;
-        $user->name = 'Roman';
+        $user           = new CmsUser();
+        $user->name     = 'Roman';
         $user->username = 'romanb';
-        $user->status = 'freak';
+        $user->status   = 'freak';
         $this->em->persist($user);
 
-        $user2 = new CmsUser;
-        $user2->name = 'Guilherme';
+        $user2           = new CmsUser();
+        $user2->name     = 'Guilherme';
         $user2->username = 'gblanco';
-        $user2->status = 'dev';
+        $user2->status   = 'dev';
         $this->em->persist($user2);
 
-        $user3 = new CmsUser;
-        $user3->name = 'Benjamin';
+        $user3           = new CmsUser();
+        $user3->name     = 'Benjamin';
         $user3->username = 'beberlei';
-        $user3->status = null;
+        $user3->status   = null;
         $this->em->persist($user3);
 
-        $user4 = new CmsUser;
-        $user4->name = 'Alexander';
+        $user4           = new CmsUser();
+        $user4->name     = 'Alexander';
         $user4->username = 'asm89';
-        $user4->status = 'dev';
+        $user4->status   = 'dev';
         $this->em->persist($user4);
 
         $this->em->flush();
@@ -73,16 +73,16 @@ class EntityRepositoryTest extends OrmFunctionalTestCase
 
     public function loadAssociatedFixture()
     {
-        $address = new CmsAddress();
-        $address->city = "Berlin";
-        $address->country = "Germany";
-        $address->street = "Foostreet";
-        $address->zip = "12345";
+        $address          = new CmsAddress();
+        $address->city    = 'Berlin';
+        $address->country = 'Germany';
+        $address->street  = 'Foostreet';
+        $address->zip     = '12345';
 
-        $user = new CmsUser();
-        $user->name = 'Roman';
+        $user           = new CmsUser();
+        $user->name     = 'Roman';
         $user->username = 'romanb';
-        $user->status = 'freak';
+        $user->status   = 'freak';
         $user->setAddress($address);
 
         $this->em->persist($user);
@@ -115,9 +115,9 @@ class EntityRepositoryTest extends OrmFunctionalTestCase
         $user3->username = 'test3';
         $user3->status   = 'active';
 
-        $email1->email   = 'test1@test.com';
-        $email2->email   = 'test2@test.com';
-        $email3->email   = 'test3@test.com';
+        $email1->email = 'test1@test.com';
+        $email2->email = 'test2@test.com';
+        $email3->email = 'test3@test.com';
 
         $user1->setEmail($email1);
         $user2->setEmail($email2);
@@ -139,7 +139,7 @@ class EntityRepositoryTest extends OrmFunctionalTestCase
 
     public function buildUser($name, $username, $status, $address)
     {
-        $user = new CmsUser();
+        $user           = new CmsUser();
         $user->name     = $name;
         $user->username = $username;
         $user->status   = $status;
@@ -153,7 +153,7 @@ class EntityRepositoryTest extends OrmFunctionalTestCase
 
     public function buildAddress($country, $city, $street, $zip)
     {
-        $address = new CmsAddress();
+        $address          = new CmsAddress();
         $address->country = $country;
         $address->city    = $city;
         $address->street  = $street;
@@ -168,7 +168,7 @@ class EntityRepositoryTest extends OrmFunctionalTestCase
     public function testBasicFind()
     {
         $user1Id = $this->loadFixture();
-        $repos = $this->em->getRepository(CmsUser::class);
+        $repos   = $this->em->getRepository(CmsUser::class);
 
         $user = $repos->find($user1Id);
         self::assertInstanceOf(CmsUser::class, $user);
@@ -179,7 +179,7 @@ class EntityRepositoryTest extends OrmFunctionalTestCase
     public function testFindByField()
     {
         $user1Id = $this->loadFixture();
-        $repos = $this->em->getRepository(CmsUser::class);
+        $repos   = $this->em->getRepository(CmsUser::class);
 
         $users = $repos->findBy(['status' => 'dev']);
         self::assertCount(2, $users);
@@ -235,7 +235,7 @@ class EntityRepositoryTest extends OrmFunctionalTestCase
     public function testFindFieldByMagicCall()
     {
         $user1Id = $this->loadFixture();
-        $repos = $this->em->getRepository(CmsUser::class);
+        $repos   = $this->em->getRepository(CmsUser::class);
 
         $users = $repos->findByStatus('dev');
         self::assertCount(2, $users);
@@ -247,7 +247,7 @@ class EntityRepositoryTest extends OrmFunctionalTestCase
     public function testFindAll()
     {
         $user1Id = $this->loadFixture();
-        $repos = $this->em->getRepository(CmsUser::class);
+        $repos   = $this->em->getRepository(CmsUser::class);
 
         $users = $repos->findAll();
         self::assertCount(4, $users);
@@ -299,7 +299,7 @@ class EntityRepositoryTest extends OrmFunctionalTestCase
      * @group locking
      * @group DDC-178
      */
-    public function testPessimisticReadLockWithoutTransaction_ThrowsException()
+    public function testPessimisticReadLockWithoutTransactionThrowsException()
     {
         $this->expectException(TransactionRequiredException::class);
 
@@ -311,7 +311,7 @@ class EntityRepositoryTest extends OrmFunctionalTestCase
      * @group locking
      * @group DDC-178
      */
-    public function testPessimisticWriteLockWithoutTransaction_ThrowsException()
+    public function testPessimisticWriteLockWithoutTransactionThrowsException()
     {
         $this->expectException(TransactionRequiredException::class);
 
@@ -323,7 +323,7 @@ class EntityRepositoryTest extends OrmFunctionalTestCase
      * @group locking
      * @group DDC-178
      */
-    public function testOptimisticLockUnversionedEntity_ThrowsException()
+    public function testOptimisticLockUnversionedEntityThrowsException()
     {
         $this->expectException(OptimisticLockException::class);
 
@@ -335,12 +335,12 @@ class EntityRepositoryTest extends OrmFunctionalTestCase
      * @group locking
      * @group DDC-178
      */
-    public function testIdentityMappedOptimisticLockUnversionedEntity_ThrowsException()
+    public function testIdentityMappedOptimisticLockUnversionedEntityThrowsException()
     {
-        $user = new CmsUser;
-        $user->name = 'Roman';
+        $user           = new CmsUser();
+        $user->name     = 'Roman';
         $user->username = 'romanb';
-        $user->status = 'freak';
+        $user->status   = 'freak';
         $this->em->persist($user);
         $this->em->flush();
 
@@ -380,10 +380,10 @@ class EntityRepositoryTest extends OrmFunctionalTestCase
     /**
      * @group DDC-817
      */
-    public function testFindByAssociationKey_ExceptionOnInverseSide()
+    public function testFindByAssociationKeyExceptionOnInverseSide()
     {
         list($userId, $addressId) = $this->loadAssociatedFixture();
-        $repos = $this->em->getRepository(CmsUser::class);
+        $repos                    = $this->em->getRepository(CmsUser::class);
 
         $this->expectException(ORMException::class);
         $this->expectExceptionMessage("You cannot search for the association field 'Doctrine\Tests\Models\CMS\CmsUser#address', because it is the inverse side of an association. Find methods only work on owning side associations.");
@@ -397,8 +397,8 @@ class EntityRepositoryTest extends OrmFunctionalTestCase
     public function testFindOneByAssociationKey()
     {
         list($userId, $addressId) = $this->loadAssociatedFixture();
-        $repos = $this->em->getRepository(CmsAddress::class);
-        $address = $repos->findOneBy(['user' => $userId]);
+        $repos                    = $this->em->getRepository(CmsAddress::class);
+        $address                  = $repos->findOneBy(['user' => $userId]);
 
         self::assertInstanceOf(CmsAddress::class, $address);
         self::assertEquals($addressId, $address->id);
@@ -411,9 +411,9 @@ class EntityRepositoryTest extends OrmFunctionalTestCase
     {
         $this->loadFixture();
 
-        $repos = $this->em->getRepository(CmsUser::class);
-        $userAsc = $repos->findOneBy([], ["username" => "ASC"]);
-        $userDesc = $repos->findOneBy([], ["username" => "DESC"]);
+        $repos    = $this->em->getRepository(CmsUser::class);
+        $userAsc  = $repos->findOneBy([], ['username' => 'ASC']);
+        $userDesc = $repos->findOneBy([], ['username' => 'DESC']);
 
         self::assertNotSame($userAsc, $userDesc);
     }
@@ -424,8 +424,8 @@ class EntityRepositoryTest extends OrmFunctionalTestCase
     public function testFindByAssociationKey()
     {
         list($userId, $addressId) = $this->loadAssociatedFixture();
-        $repos = $this->em->getRepository(CmsAddress::class);
-        $addresses = $repos->findBy(['user' => $userId]);
+        $repos                    = $this->em->getRepository(CmsAddress::class);
+        $addresses                = $repos->findBy(['user' => $userId]);
 
         self::assertContainsOnly(CmsAddress::class, $addresses);
         self::assertCount(1, $addresses);
@@ -438,8 +438,8 @@ class EntityRepositoryTest extends OrmFunctionalTestCase
     public function testFindAssociationByMagicCall()
     {
         list($userId, $addressId) = $this->loadAssociatedFixture();
-        $repos = $this->em->getRepository(CmsAddress::class);
-        $addresses = $repos->findByUser($userId);
+        $repos                    = $this->em->getRepository(CmsAddress::class);
+        $addresses                = $repos->findByUser($userId);
 
         self::assertContainsOnly(CmsAddress::class, $addresses);
         self::assertCount(1, $addresses);
@@ -452,8 +452,8 @@ class EntityRepositoryTest extends OrmFunctionalTestCase
     public function testFindOneAssociationByMagicCall()
     {
         list($userId, $addressId) = $this->loadAssociatedFixture();
-        $repos = $this->em->getRepository(CmsAddress::class);
-        $address = $repos->findOneByUser($userId);
+        $repos                    = $this->em->getRepository(CmsAddress::class);
+        $address                  = $repos->findOneByUser($userId);
 
         self::assertInstanceOf(CmsAddress::class, $address);
         self::assertEquals($addressId, $address->id);
@@ -468,7 +468,7 @@ class EntityRepositoryTest extends OrmFunctionalTestCase
         $users = $repos->findBy(['status' => null, 'username' => 'romanb']);
 
         $params = $this->sqlLoggerStack->queries[$this->sqlLoggerStack->currentQuery]['params'];
-        self::assertCount(1, $params, "Should only execute with one parameter.");
+        self::assertCount(1, $params, 'Should only execute with one parameter.');
         self::assertEquals(['romanb'], $params);
     }
 
@@ -507,12 +507,12 @@ class EntityRepositoryTest extends OrmFunctionalTestCase
     {
         $this->loadFixture();
 
-        $repos = $this->em->getRepository(CmsUser::class);
-        $usersAsc = $repos->findBy([], ["username" => "ASC"]);
-        $usersDesc = $repos->findBy([], ["username" => "DESC"]);
+        $repos     = $this->em->getRepository(CmsUser::class);
+        $usersAsc  = $repos->findBy([], ['username' => 'ASC']);
+        $usersDesc = $repos->findBy([], ['username' => 'DESC']);
 
-        self::assertCount(4, $usersAsc, "Pre-condition: only four users in fixture");
-        self::assertCount(4, $usersDesc, "Pre-condition: only four users in fixture");
+        self::assertCount(4, $usersAsc, 'Pre-condition: only four users in fixture');
+        self::assertCount(4, $usersDesc, 'Pre-condition: only four users in fixture');
         self::assertSame($usersAsc[0], $usersDesc[3]);
         self::assertSame($usersAsc[3], $usersDesc[0]);
     }
@@ -543,8 +543,8 @@ class EntityRepositoryTest extends OrmFunctionalTestCase
         $this->loadFixture();
         $repos = $this->em->getRepository(CmsUser::class);
 
-        $usersAsc = $repos->findByStatus('dev', ['username' => "ASC"]);
-        $usersDesc = $repos->findByStatus('dev', ['username' => "DESC"]);
+        $usersAsc  = $repos->findByStatus('dev', ['username' => 'ASC']);
+        $usersDesc = $repos->findByStatus('dev', ['username' => 'DESC']);
 
         self::assertCount(2, $usersAsc);
         self::assertCount(2, $usersDesc);
@@ -585,7 +585,6 @@ class EntityRepositoryTest extends OrmFunctionalTestCase
         $repos = $this->em->getRepository(DDC753EntityWithDefaultCustomRepository::class);
         self::assertInstanceOf(DDC753DefaultRepository::class, $repos);
         self::assertTrue($repos->isDefaultRepository());
-
 
         $repos = $this->em->getRepository(DDC753EntityWithCustomRepository::class);
         self::assertInstanceOf(DDC753CustomRepository::class, $repos);
@@ -651,7 +650,7 @@ class EntityRepositoryTest extends OrmFunctionalTestCase
         $data = $repo->findBy(['user' => [1, 2, 3]]);
 
         $query = array_pop($this->sqlLoggerStack->queries);
-        self::assertEquals([1,2,3], $query['params'][0]);
+        self::assertEquals([1, 2, 3], $query['params'][0]);
         self::assertEquals(Connection::PARAM_INT_ARRAY, $query['types'][0]);
     }
 
@@ -663,7 +662,7 @@ class EntityRepositoryTest extends OrmFunctionalTestCase
         $this->loadFixture();
 
         $repository = $this->em->getRepository(CmsUser::class);
-        $users = $repository->matching(new Criteria());
+        $users      = $repository->matching(new Criteria());
 
         self::assertCount(4, $users);
     }
@@ -676,7 +675,7 @@ class EntityRepositoryTest extends OrmFunctionalTestCase
         $this->loadFixture();
 
         $repository = $this->em->getRepository(CmsUser::class);
-        $users = $repository->matching(new Criteria(
+        $users      = $repository->matching(new Criteria(
             Criteria::expr()->eq('username', 'beberlei')
         ));
 
@@ -691,7 +690,7 @@ class EntityRepositoryTest extends OrmFunctionalTestCase
         $this->loadFixture();
 
         $repository = $this->em->getRepository(CmsUser::class);
-        $users = $repository->matching(new Criteria(
+        $users      = $repository->matching(new Criteria(
             Criteria::expr()->neq('username', 'beberlei')
         ));
 
@@ -706,7 +705,7 @@ class EntityRepositoryTest extends OrmFunctionalTestCase
         $this->loadFixture();
 
         $repository = $this->em->getRepository(CmsUser::class);
-        $users = $repository->matching(new Criteria(
+        $users      = $repository->matching(new Criteria(
             Criteria::expr()->in('username', ['beberlei', 'gblanco'])
         ));
 
@@ -721,7 +720,7 @@ class EntityRepositoryTest extends OrmFunctionalTestCase
         $this->loadFixture();
 
         $repository = $this->em->getRepository(CmsUser::class);
-        $users = $repository->matching(new Criteria(
+        $users      = $repository->matching(new Criteria(
             Criteria::expr()->notIn('username', ['beberlei', 'gblanco', 'asm89'])
         ));
 
@@ -736,7 +735,7 @@ class EntityRepositoryTest extends OrmFunctionalTestCase
         $firstUserId = $this->loadFixture();
 
         $repository = $this->em->getRepository(CmsUser::class);
-        $users = $repository->matching(new Criteria(
+        $users      = $repository->matching(new Criteria(
             Criteria::expr()->lt('id', $firstUserId + 1)
         ));
 
@@ -751,7 +750,7 @@ class EntityRepositoryTest extends OrmFunctionalTestCase
         $firstUserId = $this->loadFixture();
 
         $repository = $this->em->getRepository(CmsUser::class);
-        $users = $repository->matching(new Criteria(
+        $users      = $repository->matching(new Criteria(
             Criteria::expr()->lte('id', $firstUserId + 1)
         ));
 
@@ -766,7 +765,7 @@ class EntityRepositoryTest extends OrmFunctionalTestCase
         $firstUserId = $this->loadFixture();
 
         $repository = $this->em->getRepository(CmsUser::class);
-        $users = $repository->matching(new Criteria(
+        $users      = $repository->matching(new Criteria(
             Criteria::expr()->gt('id', $firstUserId)
         ));
 
@@ -781,7 +780,7 @@ class EntityRepositoryTest extends OrmFunctionalTestCase
         $firstUserId = $this->loadFixture();
 
         $repository = $this->em->getRepository(CmsUser::class);
-        $users = $repository->matching(new Criteria(
+        $users      = $repository->matching(new Criteria(
             Criteria::expr()->gte('id', $firstUserId)
         ));
 
@@ -802,7 +801,7 @@ class EntityRepositoryTest extends OrmFunctionalTestCase
         );
 
         $repository = $this->em->getRepository(CmsAddress::class);
-        $addresses = $repository->matching($criteria);
+        $addresses  = $repository->matching($criteria);
 
         self::assertCount(1, $addresses);
 
@@ -825,7 +824,7 @@ class EntityRepositoryTest extends OrmFunctionalTestCase
         );
 
         $repository = $this->em->getRepository(CmsAddress::class);
-        $addresses = $repository->matching($criteria);
+        $addresses  = $repository->matching($criteria);
 
         self::assertCount(1, $addresses);
 
@@ -916,7 +915,7 @@ class EntityRepositoryTest extends OrmFunctionalTestCase
     public function testCreateResultSetMappingBuilder()
     {
         $repository = $this->em->getRepository(CmsUser::class);
-        $rsm = $repository->createResultSetMappingBuilder('u');
+        $rsm        = $repository->createResultSetMappingBuilder('u');
 
         self::assertInstanceOf(Query\ResultSetMappingBuilder::class, $rsm);
         self::assertEquals(['u' => CmsUser::class], $rsm->aliasMap);
@@ -984,11 +983,11 @@ class EntityRepositoryTest extends OrmFunctionalTestCase
         $user2 = new CmsUser();
 
         $user1->username = 'ocramius';
-        $user1->name = 'Marco';
-        $user2->status = null;
+        $user1->name     = 'Marco';
+        $user2->status   = null;
         $user2->username = 'deeky666';
-        $user2->name = 'Steve';
-        $user2->status = 'dbal maintainer';
+        $user2->name     = 'Steve';
+        $user2->status   = 'dbal maintainer';
 
         $this->em->persist($user1);
         $this->em->persist($user2);
@@ -1009,11 +1008,11 @@ class EntityRepositoryTest extends OrmFunctionalTestCase
         $user2 = new CmsUser();
 
         $user1->username = 'ocramius';
-        $user1->name = 'Marco';
-        $user2->status = null;
+        $user1->name     = 'Marco';
+        $user2->status   = null;
         $user2->username = 'deeky666';
-        $user2->name = 'Steve';
-        $user2->status = 'dbal maintainer';
+        $user2->name     = 'Steve';
+        $user2->status   = 'dbal maintainer';
 
         $this->em->persist($user1);
         $this->em->persist($user2);
@@ -1037,11 +1036,11 @@ class EntityRepositoryTest extends OrmFunctionalTestCase
         $user2 = new CmsUser();
 
         $user1->username = 'ocramius';
-        $user1->name = 'Marco';
-        $user2->status = null;
+        $user1->name     = 'Marco';
+        $user2->status   = null;
         $user2->username = 'deeky666';
-        $user2->name = 'Steve';
-        $user2->status = 'dbal maintainer';
+        $user2->name     = 'Steve';
+        $user2->status   = 'dbal maintainer';
 
         $this->em->persist($user1);
         $this->em->persist($user2);

@@ -12,8 +12,6 @@ use Doctrine\Tests\OrmFunctionalTestCase;
 
 /**
  * NativeQueryTest
- *
- * @author robo
  */
 class NotifyPolicyTest extends OrmFunctionalTestCase
 {
@@ -24,7 +22,7 @@ class NotifyPolicyTest extends OrmFunctionalTestCase
             $this->schemaTool->createSchema(
                 [
                 $this->em->getClassMetadata(NotifyUser::class),
-                $this->em->getClassMetadata(NotifyGroup::class)
+                $this->em->getClassMetadata(NotifyGroup::class),
                 ]
             );
         } catch (\Exception $e) {
@@ -34,7 +32,7 @@ class NotifyPolicyTest extends OrmFunctionalTestCase
 
     public function testChangeTracking()
     {
-        $user = new NotifyUser();
+        $user  = new NotifyUser();
         $group = new NotifyGroup();
         $user->setName('roman');
         $group->setName('dev');
@@ -54,7 +52,7 @@ class NotifyPolicyTest extends OrmFunctionalTestCase
         self::assertCount(1, $user->listeners);
         self::assertCount(1, $group->listeners);
 
-        $userId = $user->getId();
+        $userId  = $user->getId();
         $groupId = $group->getId();
         unset($user, $group);
 
@@ -126,7 +124,7 @@ class NotifyUser extends NotifyBaseEntity
 
     public function __construct()
     {
-        $this->groups = new ArrayCollection;
+        $this->groups = new ArrayCollection();
     }
 
     public function getId()
@@ -165,7 +163,7 @@ class NotifyGroup extends NotifyBaseEntity
 
     public function __construct()
     {
-        $this->users = new ArrayCollection;
+        $this->users = new ArrayCollection();
     }
 
     public function getId()

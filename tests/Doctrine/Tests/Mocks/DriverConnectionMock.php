@@ -12,13 +12,11 @@ use Doctrine\DBAL\ParameterType;
  */
 class DriverConnectionMock implements Connection
 {
-    /**
-     * @var \Doctrine\DBAL\Driver\Statement
-     */
+    /** @var Statement */
     private $statementMock;
 
     /**
-     * @return \Doctrine\DBAL\Driver\Statement
+     * @return Statement
      */
     public function getStatementMock()
     {
@@ -26,7 +24,7 @@ class DriverConnectionMock implements Connection
     }
 
     /**
-     * @param \Doctrine\DBAL\Driver\Statement $statementMock
+     * @param Statement $statementMock
      */
     public function setStatementMock($statementMock)
     {

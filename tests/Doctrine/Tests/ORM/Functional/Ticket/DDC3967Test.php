@@ -6,6 +6,8 @@ namespace Doctrine\Tests\ORM\Functional\Ticket;
 
 use Doctrine\Tests\Models\Cache\Country;
 use Doctrine\Tests\ORM\Functional\SecondLevelCacheAbstractTest;
+use function array_pop;
+use function sprintf;
 
 class DDC3967Test extends SecondLevelCacheAbstractTest
 {
@@ -21,15 +23,15 @@ class DDC3967Test extends SecondLevelCacheAbstractTest
     public function testIdentifierCachedWithProperType()
     {
         $country = array_pop($this->countries);
-        $id = $country->getId();
+        $id      = $country->getId();
 
         // First time, loaded from database
-        $this->em->find(Country::class, "$id");
+        $this->em->find(Country::class, sprintf('%d', $id));
         $this->em->clear();
 
         // Second time, loaded from cache
         /** @var Country $country */
-        $country = $this->em->find(Country::class, "$id");
+        $country = $this->em->find(Country::class, sprintf('%d', $id));
 
         // Identifier type should be integer
         self::assertSame($country->getId(), $id);

@@ -25,13 +25,9 @@ class InversedOneToOneCompositeIdForeignKeyEntity
      */
     public $foreignEntity;
 
-    /**
-     * @ORM\Column(type="string", name="some_property")
-     */
+    /** @ORM\Column(type="string", name="some_property") */
     public $someProperty;
 
-    /**
-     * @ORM\OneToOne(targetEntity=OwningOneToOneCompositeIdForeignKeyEntity::class, mappedBy="associatedEntity")
-     */
+    /** @ORM\OneToOne(targetEntity=OwningOneToOneCompositeIdForeignKeyEntity::class, mappedBy="associatedEntity") */
     public $associatedEntity;
 }

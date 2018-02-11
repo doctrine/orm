@@ -12,8 +12,6 @@ use Doctrine\Tests\OrmTestCase;
 /**
  * Test case for custom AST walking and adding new joins.
  *
- * @author      Lukasz Cybula <lukasz.cybula@fsi.pl>
- * @license     MIT
  * @link        http://www.doctrine-project.org
  */
 class CustomTreeWalkersJoinTest extends OrmTestCase
@@ -89,7 +87,8 @@ class CustomTreeWalkerJoin extends Query\TreeWalkerAdapter
         $userMetadata    = $entityManager->getClassMetadata(CmsUser::class);
         $addressMetadata = $entityManager->getClassMetadata(CmsAddress::class);
 
-        $this->setQueryComponent($rangeVariableDecl->aliasIdentificationVariable . 'a',
+        $this->setQueryComponent(
+            $rangeVariableDecl->aliasIdentificationVariable . 'a',
             [
                 'metadata'     => $addressMetadata,
                 'parent'       => $rangeVariableDecl->aliasIdentificationVariable,

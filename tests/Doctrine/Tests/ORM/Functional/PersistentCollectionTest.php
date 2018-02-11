@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Doctrine\Tests\ORM\Functional;
 
 use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\Common\Collections\Criteria;
 use Doctrine\ORM\Annotation as ORM;
 use Doctrine\ORM\PersistentObject;
@@ -30,7 +31,7 @@ class PersistentCollectionTest extends OrmFunctionalTestCase
     public function testPersist()
     {
         $collectionHolder = new PersistentCollectionHolder();
-        $content = new PersistentCollectionContent('first element');
+        $content          = new PersistentCollectionContent('first element');
         $collectionHolder->addElement($content);
 
         $this->em->persist($collectionHolder);
@@ -58,7 +59,7 @@ class PersistentCollectionTest extends OrmFunctionalTestCase
         $this->em->clear();
 
         $collectionHolder = $this->em->find(PersistentCollectionHolder::class, $collectionHolder->getId());
-        $collection = $collectionHolder->getRawCollection();
+        $collection       = $collectionHolder->getRawCollection();
 
         self::assertTrue($collection->isEmpty());
         self::assertFalse($collection->isInitialized());
@@ -69,7 +70,7 @@ class PersistentCollectionTest extends OrmFunctionalTestCase
         $this->em->clear();
 
         $collectionHolder = $this->em->find(PersistentCollectionHolder::class, $collectionHolder->getId());
-        $collection = $collectionHolder->getRawCollection();
+        $collection       = $collectionHolder->getRawCollection();
 
         self::assertFalse($collection->isEmpty());
         self::assertFalse($collection->isInitialized());
@@ -111,7 +112,7 @@ class PersistentCollectionHolder extends PersistentObject
     protected $id;
 
     /**
-     * @var \Doctrine\Common\Collections\Collection
+     * @var Collection
      * @ORM\ManyToMany(targetEntity=PersistentCollectionContent::class, cascade={"all"}, fetch="EXTRA_LAZY")
      */
     protected $collection;
@@ -121,16 +122,13 @@ class PersistentCollectionHolder extends PersistentObject
         $this->collection = new ArrayCollection();
     }
 
-    /**
-     * @param PersistentCollectionContent $element
-     */
     public function addElement(PersistentCollectionContent $element)
     {
         $this->collection->add($element);
     }
 
     /**
-     * @return \Doctrine\Common\Collections\Collection
+     * @return Collection
      */
     public function getCollection()
     {
@@ -138,7 +136,7 @@ class PersistentCollectionHolder extends PersistentObject
     }
 
     /**
-     * @return \Doctrine\Common\Collections\Collection
+     * @return Collection
      */
     public function getRawCollection()
     {

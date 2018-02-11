@@ -7,11 +7,12 @@ namespace Doctrine\Tests\ORM\Functional\Ticket;
 use Doctrine\Tests\Models\Issue5989\Issue5989Employee;
 use Doctrine\Tests\Models\Issue5989\Issue5989Manager;
 use Doctrine\Tests\Models\Issue5989\Issue5989Person;
+use Doctrine\Tests\OrmFunctionalTestCase;
 
 /**
  * @group issue-5989
  */
-class Issue5989Test extends \Doctrine\Tests\OrmFunctionalTestCase
+class Issue5989Test extends OrmFunctionalTestCase
 {
     public function setUp()
     {
@@ -23,19 +24,19 @@ class Issue5989Test extends \Doctrine\Tests\OrmFunctionalTestCase
     {
         $manager = new Issue5989Manager();
 
-        $managerTags = ['tag1', 'tag2'];
+        $managerTags   = ['tag1', 'tag2'];
         $manager->tags = $managerTags;
         $this->em->persist($manager);
 
         $employee = new Issue5989Employee();
 
-        $employeeTags =['tag2', 'tag3'];
+        $employeeTags   =['tag2', 'tag3'];
         $employee->tags = $employeeTags;
         $this->em->persist($employee);
 
         $this->em->flush();
 
-        $managerId = $manager->id;
+        $managerId  = $manager->id;
         $employeeId = $employee->id;
 
         // clear entity manager so that $repository->find actually fetches them and uses the hydrator
@@ -44,7 +45,7 @@ class Issue5989Test extends \Doctrine\Tests\OrmFunctionalTestCase
 
         $repository = $this->em->getRepository(Issue5989Person::class);
 
-        $manager = $repository->find($managerId);
+        $manager  = $repository->find($managerId);
         $employee = $repository->find($employeeId);
 
         static::assertEquals($managerTags, $manager->tags);

@@ -16,19 +16,13 @@ use PhpBench\Benchmark\Metadata\Annotations\BeforeMethods;
  */
 final class SimpleQueryScalarHydrationPerformanceBench
 {
-    /**
-     * @var ScalarHydrator
-     */
+    /** @var ScalarHydrator */
     private $hydrator;
 
-    /**
-     * @var ResultSetMapping
-     */
+    /** @var ResultSetMapping */
     private $rsm;
 
-    /**
-     * @var HydratorMockStatement
-     */
+    /** @var HydratorMockStatement */
     private $stmt;
 
     public function init() : void
@@ -51,7 +45,7 @@ final class SimpleQueryScalarHydrationPerformanceBench
                 'u__status'   => 'developer',
                 'u__username' => 'romanb',
                 'u__name'     => 'Roman',
-            ]
+            ],
         ];
 
         for ($i = 4; $i < 10000; ++$i) {
@@ -65,7 +59,7 @@ final class SimpleQueryScalarHydrationPerformanceBench
 
         $this->stmt     = new HydratorMockStatement($resultSet);
         $this->hydrator = new ScalarHydrator(EntityManagerFactory::getEntityManager([]));
-        $this->rsm      = new ResultSetMapping;
+        $this->rsm      = new ResultSetMapping();
 
         $this->rsm->addEntityResult(CmsUser::class, 'u');
         $this->rsm->addFieldResult('u', 'u__id', 'id');

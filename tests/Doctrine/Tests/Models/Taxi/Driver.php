@@ -19,19 +19,13 @@ class Driver
      */
     private $id;
 
-    /**
-     * @ORM\Column(type="string", length=255);
-     */
+    /** @ORM\Column(type="string", length=255); */
     private $name;
 
-    /**
-     * @ORM\OneToMany(targetEntity=Ride::class, mappedBy="driver")
-     */
+    /** @ORM\OneToMany(targetEntity=Ride::class, mappedBy="driver") */
     private $freeDriverRides;
 
-    /**
-     * @ORM\OneToMany(targetEntity=PaidRide::class, mappedBy="driver")
-     */
+    /** @ORM\OneToMany(targetEntity=PaidRide::class, mappedBy="driver") */
     private $driverRides;
 
     public function getId()

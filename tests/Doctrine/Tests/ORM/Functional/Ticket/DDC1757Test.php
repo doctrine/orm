@@ -20,13 +20,15 @@ class DDC1757Test extends OrmFunctionalTestCase
             ->join('_b.c', '_c')
             ->join('_c.d', '_d');
 
-        $q = $qb->getQuery();
+        $q   = $qb->getQuery();
         $dql = $q->getDQL();
 
         // Show difference between expected and actual queries on error
-        self::assertEquals("SELECT _a FROM " . __NAMESPACE__ . "\DDC1757A _a, " . __NAMESPACE__ . "\DDC1757B _b INNER JOIN _b.c _c INNER JOIN _c.d _d",
-                $dql,
-                "Wrong DQL query");
+        self::assertEquals(
+            'SELECT _a FROM ' . __NAMESPACE__ . '\DDC1757A _a, ' . __NAMESPACE__ . '\DDC1757B _b INNER JOIN _b.c _c INNER JOIN _c.d _d',
+            $dql,
+            'Wrong DQL query'
+        );
     }
 }
 
@@ -55,9 +57,7 @@ class DDC1757B
      */
     private $id;
 
-    /**
-     * @ORM\OneToOne(targetEntity=DDC1757C::class)
-     */
+    /** @ORM\OneToOne(targetEntity=DDC1757C::class) */
     private $c;
 }
 
@@ -73,9 +73,7 @@ class DDC1757C
      */
     public $id;
 
-    /**
-     * @ORM\OneToOne(targetEntity=DDC1757D::class)
-     */
+    /** @ORM\OneToOne(targetEntity=DDC1757D::class) */
     private $d;
 }
 

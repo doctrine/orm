@@ -26,9 +26,7 @@ class InversedManyToManyCompositeIdForeignKeyEntity
      */
     public $foreignEntity;
 
-    /**
-     * @ORM\ManyToMany(targetEntity=OwningManyToManyCompositeIdForeignKeyEntity::class, mappedBy="associatedEntities")
-     */
+    /** @ORM\ManyToMany(targetEntity=OwningManyToManyCompositeIdForeignKeyEntity::class, mappedBy="associatedEntities") */
     public $associatedEntities;
 
     public function __construct()

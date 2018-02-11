@@ -21,15 +21,15 @@ class OneToManyOrphanRemovalTest extends OrmFunctionalTestCase
 
         parent::setUp();
 
-        $user = new CmsUser;
-        $user->status = 'dev';
+        $user           = new CmsUser();
+        $user->status   = 'dev';
         $user->username = 'romanb';
-        $user->name = 'Roman B.';
+        $user->name     = 'Roman B.';
 
-        $phone1 = new CmsPhonenumber;
+        $phone1              = new CmsPhonenumber();
         $phone1->phonenumber = '123456';
 
-        $phone2 = new CmsPhonenumber;
+        $phone2              = new CmsPhonenumber();
         $phone2->phonenumber = '234567';
 
         $user->addPhonenumber($phone1);

@@ -7,7 +7,7 @@ namespace Doctrine\Tests\ORM;
 use Doctrine\Common\Cache\ArrayCache;
 use Doctrine\Common\Cache\Cache;
 use Doctrine\Common\Proxy\AbstractProxyFactory;
-use Doctrine\ORM\Annotation as AnnotationNamespace;
+use Doctrine\ORM\Annotation as ORM;
 use Doctrine\ORM\Cache\CacheConfiguration;
 use Doctrine\ORM\Configuration;
 use Doctrine\ORM\EntityRepository;
@@ -18,22 +18,24 @@ use Doctrine\ORM\Mapping\EntityListenerResolver;
 use Doctrine\ORM\Mapping\Factory\NamingStrategy;
 use Doctrine\ORM\ORMException;
 use Doctrine\ORM\Proxy\Factory\StaticProxyFactory;
-use Doctrine\ORM\Query\ResultSetMapping;
 use Doctrine\Tests\DoctrineTestCase;
 use Doctrine\Tests\Models\DDC753\DDC753CustomRepository;
 use ProxyManager\GeneratorStrategy\EvaluatingGeneratorStrategy;
 use ProxyManager\GeneratorStrategy\FileWriterGeneratorStrategy;
 use ReflectionClass;
+use function mkdir;
+use function str_replace;
+use function sys_get_temp_dir;
+use function tempnam;
+use function uniqid;
+use function unlink;
 
 /**
  * Tests for the Configuration object
- * @author Marco Pivetta <ocramius@gmail.com>
  */
 class ConfigurationTest extends DoctrineTestCase
 {
-    /**
-     * @var Configuration
-     */
+    /** @var Configuration */
     private $configuration;
 
     protected function setUp()
@@ -53,17 +55,17 @@ class ConfigurationTest extends DoctrineTestCase
 
     public function testNewDefaultAnnotationDriver()
     {
-        $paths = [__DIR__];
+        $paths           = [__DIR__];
         $reflectionClass = new ReflectionClass(ConfigurationTestAnnotationReaderChecker::class);
 
         $annotationDriver = $this->configuration->newDefaultAnnotationDriver($paths);
-        $reader = $annotationDriver->getReader();
-        $annotation = $reader->getMethodAnnotation(
+        $reader           = $annotationDriver->getReader();
+        $annotation       = $reader->getMethodAnnotation(
             $reflectionClass->getMethod('annotatedMethod'),
-            AnnotationNamespace\PrePersist::class
+            ORM\PrePersist::class
         );
 
-        self::assertInstanceOf(AnnotationNamespace\PrePersist::class, $annotation);
+        self::assertInstanceOf(ORM\PrePersist::class, $annotation);
     }
 
     public function testSetGetQueryCacheImpl()
@@ -101,11 +103,11 @@ class ConfigurationTest extends DoctrineTestCase
 
         $cache = $this->createMock(Cache::class);
 
-        if ('query' !== $skipCache) {
+        if ($skipCache !== 'query') {
             $this->configuration->setQueryCacheImpl($cache);
         }
 
-        if ('metadata' !== $skipCache) {
+        if ($skipCache !== 'metadata') {
             $this->configuration->setMetadataCacheImpl($cache);
         }
     }
@@ -223,9 +225,7 @@ class ConfigurationTest extends DoctrineTestCase
         self::assertSame(__CLASS__, $this->configuration->getCustomHydrationMode('HydrationModeName'));
 
         $this->configuration->setCustomHydrationModes(
-            [
-                'AnotherHydrationModeName' => __CLASS__
-            ]
+            ['AnotherHydrationModeName' => __CLASS__]
         );
 
         self::assertNull($this->configuration->getCustomHydrationMode('HydrationModeName'));
@@ -318,7 +318,7 @@ class ConfigurationTest extends DoctrineTestCase
 
     public function testProxyManagerConfigurationContainsGivenProxyNamespace() : void
     {
-        $namespace = \str_replace('.', '', \uniqid('Namespace', true));
+        $namespace = str_replace('.', '', uniqid('Namespace', true));
 
         $this->configuration->setProxyNamespace($namespace);
         self::assertSame($namespace, $this->configuration->getProxyManagerConfiguration()->getProxiesNamespace());
@@ -373,7 +373,7 @@ class ConfigurationTest extends DoctrineTestCase
 
     private function makeTemporaryValidDirectory() : string
     {
-        $path = \tempnam(\sys_get_temp_dir(), 'ProxyConfigurationTest');
+        $path = tempnam(sys_get_temp_dir(), 'ProxyConfigurationTest');
 
         unlink($path);
         mkdir($path);
@@ -398,7 +398,7 @@ class ConfigurationTest extends DoctrineTestCase
 
 class ConfigurationTestAnnotationReaderChecker
 {
-    /** @AnnotationNamespace\PrePersist */
+    /** @ORM\PrePersist */
     public function annotatedMethod()
     {
     }

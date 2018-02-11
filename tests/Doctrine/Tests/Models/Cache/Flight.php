@@ -29,20 +29,14 @@ class Flight
      */
     protected $goingTo;
 
-    /**
-     * @ORM\Column(type="date")
-     */
+    /** @ORM\Column(type="date") */
     protected $departure;
 
-    /**
-     * @param \Doctrine\Tests\Models\Cache\City $leavingFrom
-     * @param \Doctrine\Tests\Models\Cache\City $goingTo
-     */
     public function __construct(City $leavingFrom, City $goingTo)
     {
-        $this->goingTo      = $goingTo;
-        $this->leavingFrom  = $leavingFrom;
-        $this->departure    = new \DateTime();
+        $this->goingTo     = $goingTo;
+        $this->leavingFrom = $leavingFrom;
+        $this->departure   = new \DateTime();
     }
 
     public function getLeavingFrom()

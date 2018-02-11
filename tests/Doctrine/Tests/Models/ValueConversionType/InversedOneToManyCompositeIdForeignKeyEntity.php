@@ -26,14 +26,10 @@ class InversedOneToManyCompositeIdForeignKeyEntity
      */
     public $foreignEntity;
 
-    /**
-     * @ORM\Column(type="string", name="some_property")
-     */
+    /** @ORM\Column(type="string", name="some_property") */
     public $someProperty;
 
-    /**
-     * @ORM\OneToMany(targetEntity=OwningManyToOneCompositeIdForeignKeyEntity::class, mappedBy="associatedEntity")
-     */
+    /** @ORM\OneToMany(targetEntity=OwningManyToOneCompositeIdForeignKeyEntity::class, mappedBy="associatedEntity") */
     public $associatedEntities;
 
     public function __construct()

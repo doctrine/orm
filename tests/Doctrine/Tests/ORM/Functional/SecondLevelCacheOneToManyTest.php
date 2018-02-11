@@ -11,6 +11,7 @@ use Doctrine\Tests\Models\Cache\State;
 use Doctrine\Tests\Models\Cache\Token;
 use Doctrine\Tests\Models\Cache\Travel;
 use Doctrine\Tests\Models\Cache\Traveler;
+use function sprintf;
 
 /**
  * @group DDC-2183
@@ -175,7 +176,7 @@ class SecondLevelCacheOneToManyTest extends SecondLevelCacheAbstractTest
         $this->loadFixturesCountries();
         $this->evictRegions();
 
-        $state = new State("State Foo", $this->countries[0]);
+        $state = new State('State Foo', $this->countries[0]);
 
         $this->em->persist($state);
         $this->em->flush();
@@ -352,7 +353,7 @@ class SecondLevelCacheOneToManyTest extends SecondLevelCacheAbstractTest
 
         $this->evictRegions();
 
-        $traveler = new Traveler("Doctrine Bot");
+        $traveler = new Traveler('Doctrine Bot');
 
         for ($i = 0; $i < 3; ++$i) {
             $traveler->getTravels()->add(new Travel($traveler));
@@ -382,7 +383,7 @@ class SecondLevelCacheOneToManyTest extends SecondLevelCacheAbstractTest
         $this->em->flush();
         $this->em->clear();
 
-        $query  = "SELECT t, tt FROM Doctrine\Tests\Models\Cache\Traveler t JOIN t.travels tt WHERE t.id = $travelerId";
+        $query  = sprintf('SELECT t, tt FROM Doctrine\Tests\Models\Cache\Traveler t JOIN t.travels tt WHERE t.id = %d', $travelerId);
         $result = $this->em->createQuery($query)->getSingleResult();
 
         self::assertEquals(4, $result->getTravels()->count());
@@ -393,9 +394,9 @@ class SecondLevelCacheOneToManyTest extends SecondLevelCacheAbstractTest
         self::assertNull($this->cache->getEntityCacheRegion(Login::class));
         self::assertInstanceOf(Region::class, $this->cache->getEntityCacheRegion(Token::class));
 
-        $l1 = new Login('session1');
-        $l2 = new Login('session2');
-        $token  = new Token('token-hash');
+        $l1    = new Login('session1');
+        $l2    = new Login('session2');
+        $token = new Token('token-hash');
         $token->addLogin($l1);
         $token->addLogin($l2);
 

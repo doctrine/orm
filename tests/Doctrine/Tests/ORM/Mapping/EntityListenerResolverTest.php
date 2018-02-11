@@ -12,22 +12,19 @@ use Doctrine\Tests\OrmTestCase;
  */
 class EntityListenerResolverTest extends OrmTestCase
 {
-
-    /**
-     * @var \Doctrine\ORM\Mapping\DefaultEntityListenerResolver
-     */
+    /** @var DefaultEntityListenerResolver */
     private $resolver;
 
     protected function setUp()
     {
         parent::setUp();
-        $this->resolver  = new DefaultEntityListenerResolver();
+        $this->resolver = new DefaultEntityListenerResolver();
     }
 
     public function testResolve()
     {
-        $className  = '\Doctrine\Tests\Models\Company\CompanyContractListener';
-        $object     = $this->resolver->resolve($className);
+        $className = '\Doctrine\Tests\Models\Company\CompanyContractListener';
+        $object    = $this->resolver->resolve($className);
 
         self::assertInstanceOf($className, $object);
         self::assertSame($object, $this->resolver->resolve($className));
@@ -35,8 +32,8 @@ class EntityListenerResolverTest extends OrmTestCase
 
     public function testRegisterAndResolve()
     {
-        $className  = '\Doctrine\Tests\Models\Company\CompanyContractListener';
-        $object     = new $className();
+        $className = '\Doctrine\Tests\Models\Company\CompanyContractListener';
+        $object    = new $className();
 
         $this->resolver->register($object);
 
@@ -45,8 +42,8 @@ class EntityListenerResolverTest extends OrmTestCase
 
     public function testClearOne()
     {
-        $className1  = '\Doctrine\Tests\Models\Company\CompanyContractListener';
-        $className2  = '\Doctrine\Tests\Models\Company\CompanyFlexUltraContractListener';
+        $className1 = '\Doctrine\Tests\Models\Company\CompanyContractListener';
+        $className2 = '\Doctrine\Tests\Models\Company\CompanyFlexUltraContractListener';
 
         $obj1 = $this->resolver->resolve($className1);
         $obj2 = $this->resolver->resolve($className2);
@@ -68,8 +65,8 @@ class EntityListenerResolverTest extends OrmTestCase
 
     public function testClearAll()
     {
-        $className1  = '\Doctrine\Tests\Models\Company\CompanyContractListener';
-        $className2  = '\Doctrine\Tests\Models\Company\CompanyFlexUltraContractListener';
+        $className1 = '\Doctrine\Tests\Models\Company\CompanyContractListener';
+        $className2 = '\Doctrine\Tests\Models\Company\CompanyFlexUltraContractListener';
 
         $obj1 = $this->resolver->resolve($className1);
         $obj2 = $this->resolver->resolve($className2);

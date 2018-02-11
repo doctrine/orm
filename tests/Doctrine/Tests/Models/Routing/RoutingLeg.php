@@ -29,13 +29,9 @@ class RoutingLeg
      */
     public $toLocation;
 
-    /**
-     * @ORM\Column(type="datetime")
-     */
+    /** @ORM\Column(type="datetime") */
     public $departureDate;
 
-    /**
-     * @ORM\Column(type="datetime")
-     */
+    /** @ORM\Column(type="datetime") */
     public $arrivalDate;
 }

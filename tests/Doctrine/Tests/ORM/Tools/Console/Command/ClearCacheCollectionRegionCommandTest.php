@@ -17,14 +17,10 @@ use Symfony\Component\Console\Tester\CommandTester;
  */
 class ClearCacheCollectionRegionCommandTest extends OrmFunctionalTestCase
 {
-    /**
-     * @var \Symfony\Component\Console\Application
-     */
+    /** @var Application */
     private $application;
 
-    /**
-     * @var \Doctrine\ORM\Tools\Console\Command\ClearCache\CollectionRegionCommand
-     */
+    /** @var CollectionRegionCommand */
     private $command;
 
     protected function setUp()

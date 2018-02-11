@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\Tests\Models\ManyToManyPersister;
 
 use Doctrine\Common\Collections\ArrayCollection;
@@ -16,7 +18,7 @@ class ChildClass
      * @ORM\Id
      * @ORM\Column(name="id1", type="integer")
      *
-     * @var integer
+     * @var int
      */
     public $id1;
 

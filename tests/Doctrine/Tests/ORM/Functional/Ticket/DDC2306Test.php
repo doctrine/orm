@@ -5,13 +5,15 @@ declare(strict_types=1);
 namespace Doctrine\Tests\ORM\Functional\Ticket;
 
 use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Annotation as ORM;
+use Doctrine\Tests\OrmFunctionalTestCase;
 use ProxyManager\Proxy\GhostObjectInterface;
 
 /**
  * @group DDC-2306
  */
-class DDC2306Test extends \Doctrine\Tests\OrmFunctionalTestCase
+class DDC2306Test extends OrmFunctionalTestCase
 {
     /**
      * {@inheritDoc}
@@ -45,8 +47,8 @@ class DDC2306Test extends \Doctrine\Tests\OrmFunctionalTestCase
     public function testIssue()
     {
         $zone          = new DDC2306Zone();
-        $user          = new DDC2306User;
-        $address       = new DDC2306Address;
+        $user          = new DDC2306User();
+        $address       = new DDC2306Address();
         $userAddress   = new DDC2306UserAddress($user, $address);
         $user->zone    = $zone;
         $address->zone = $zone;
@@ -61,7 +63,7 @@ class DDC2306Test extends \Doctrine\Tests\OrmFunctionalTestCase
         /* @var $address DDC2306Address */
         $address = $this->em->find(DDC2306Address::class, $address->id);
         /* @var $user DDC2306User|GhostObjectInterface */
-        $user    = $address->users->first()->user;
+        $user = $address->users->first()->user;
 
         self::assertInstanceOf(GhostObjectInterface::class, $user);
         self::assertInstanceOf(DDC2306User::class, $user);
@@ -96,7 +98,7 @@ class DDC2306User
     public $id;
 
     /**
-     * @var DDC2306UserAddress[]|\Doctrine\Common\Collections\Collection
+     * @var DDC2306UserAddress[]|Collection
      *
      * @ORM\OneToMany(targetEntity=DDC2306UserAddress::class, mappedBy="user")
      */
@@ -119,7 +121,7 @@ class DDC2306Address
     public $id;
 
     /**
-     * @var DDC2306UserAddress[]|\Doctrine\Common\Collections\Collection
+     * @var DDC2306UserAddress[]|Collection
      *
      * @ORM\OneToMany(targetEntity=DDC2306UserAddress::class, mappedBy="address", orphanRemoval=true)
      */

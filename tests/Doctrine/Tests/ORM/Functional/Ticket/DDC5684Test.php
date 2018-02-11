@@ -7,6 +7,7 @@ namespace Doctrine\Tests\ORM\Functional\Ticket;
 use Doctrine\DBAL\Platforms\AbstractPlatform;
 use Doctrine\DBAL\Types as DBALTypes;
 use Doctrine\ORM\Annotation as ORM;
+use Doctrine\Tests\OrmFunctionalTestCase;
 
 /**
  * This test verifies that custom post-insert identifiers respect type conversion semantics.
@@ -15,7 +16,7 @@ use Doctrine\ORM\Annotation as ORM;
  *
  * @group 5935 5684 6020 6152
  */
-class DDC5684Test extends \Doctrine\Tests\OrmFunctionalTestCase
+class DDC5684Test extends OrmFunctionalTestCase
 {
     protected function setUp()
     {
@@ -53,7 +54,7 @@ class DDC5684Test extends \Doctrine\Tests\OrmFunctionalTestCase
         $this->em->flush();
         $this->em->clear();
 
-        $rawId = $object->id->value;
+        $rawId  = $object->id->value;
         $object = $this->em->find(DDC5684Object::class, new DDC5684ObjectId($rawId));
 
         self::assertInstanceOf(DDC5684ObjectId::class, $object->id);

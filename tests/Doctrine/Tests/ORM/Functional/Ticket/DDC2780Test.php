@@ -6,11 +6,12 @@ namespace Doctrine\Tests\ORM\Functional\Ticket;
 
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\Annotation as ORM;
+use Doctrine\Tests\OrmFunctionalTestCase;
 
 /**
  * @group DDC-2780
  */
-class DDC2780Test extends \Doctrine\Tests\OrmFunctionalTestCase
+class DDC2780Test extends OrmFunctionalTestCase
 {
     /**
      * {@inheritDoc}
@@ -22,7 +23,7 @@ class DDC2780Test extends \Doctrine\Tests\OrmFunctionalTestCase
         $this->schemaTool->createSchema(
             [
                 $this->em->getClassMetadata(DDC2780User::class),
-                $this->em->getClassMetadata(DDC2780Project::class)
+                $this->em->getClassMetadata(DDC2780Project::class),
             ]
         );
     }
@@ -32,8 +33,8 @@ class DDC2780Test extends \Doctrine\Tests\OrmFunctionalTestCase
      */
     public function testIssue()
     {
-        $user    = new DDC2780User;
-        $project = new DDC2780Project;
+        $user    = new DDC2780User();
+        $project = new DDC2780Project();
 
         $user->project = $project;
 

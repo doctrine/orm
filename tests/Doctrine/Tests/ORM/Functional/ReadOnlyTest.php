@@ -6,6 +6,7 @@ namespace Doctrine\Tests\ORM\Functional;
 
 use Doctrine\ORM\Annotation as ORM;
 use Doctrine\Tests\OrmFunctionalTestCase;
+use function get_class;
 
 /**
  * Functional Query tests.
@@ -30,18 +31,18 @@ class ReadOnlyTest extends OrmFunctionalTestCase
 
     public function testReadOnlyEntityNeverChangeTracked()
     {
-        $readOnly = new ReadOnlyEntity("Test1", 1234);
+        $readOnly = new ReadOnlyEntity('Test1', 1234);
         $this->em->persist($readOnly);
         $this->em->flush();
 
-        $readOnly->name = "Test2";
+        $readOnly->name         = 'Test2';
         $readOnly->numericValue = 4321;
 
         $this->em->flush();
         $this->em->clear();
 
         $dbReadOnly = $this->em->find(ReadOnlyEntity::class, $readOnly->id);
-        self::assertEquals("Test1", $dbReadOnly->name);
+        self::assertEquals('Test1', $dbReadOnly->name);
         self::assertEquals(1234, $dbReadOnly->numericValue);
     }
 
@@ -50,7 +51,7 @@ class ReadOnlyTest extends OrmFunctionalTestCase
      */
     public function testClearReadOnly()
     {
-        $readOnly = new ReadOnlyEntity("Test1", 1234);
+        $readOnly = new ReadOnlyEntity('Test1', 1234);
         $this->em->persist($readOnly);
         $this->em->flush();
         $this->em->getUnitOfWork()->markReadOnly($readOnly);
@@ -65,7 +66,7 @@ class ReadOnlyTest extends OrmFunctionalTestCase
      */
     public function testClearEntitiesReadOnly()
     {
-        $readOnly = new ReadOnlyEntity("Test1", 1234);
+        $readOnly = new ReadOnlyEntity('Test1', 1234);
         $this->em->persist($readOnly);
         $this->em->flush();
         $this->em->getUnitOfWork()->markReadOnly($readOnly);
@@ -93,7 +94,7 @@ class ReadOnlyEntity
 
     public function __construct($name, $number)
     {
-        $this->name = $name;
+        $this->name         = $name;
         $this->numericValue = $number;
     }
 }

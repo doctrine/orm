@@ -12,9 +12,7 @@ use Doctrine\ORM\Annotation as ORM;
  */
 class AttractionLocationInfo extends AttractionInfo
 {
-    /**
-     * @ORM\Column(unique=true)
-     */
+    /** @ORM\Column(unique=true) */
     protected $address;
 
     public function __construct($address, Attraction $attraction)

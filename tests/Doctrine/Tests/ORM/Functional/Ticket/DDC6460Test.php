@@ -6,12 +6,13 @@ namespace Doctrine\Tests\ORM\Functional\Ticket;
 
 use Doctrine\DBAL\Schema\SchemaException;
 use Doctrine\ORM\Annotation as ORM;
+use Doctrine\Tests\OrmFunctionalTestCase;
 use ProxyManager\Proxy\GhostObjectInterface;
 
 /**
  * @group embedded
  */
-class DDC6460Test extends \Doctrine\Tests\OrmFunctionalTestCase
+class DDC6460Test extends OrmFunctionalTestCase
 {
     public function setUp()
     {
@@ -45,15 +46,15 @@ class DDC6460Test extends \Doctrine\Tests\OrmFunctionalTestCase
      */
     public function testInlineEmbeddableProxyInitialization()
     {
-        $entity = new DDC6460Entity();
-        $entity->id = 1;
-        $entity->embedded = new DDC6460Embeddable();
+        $entity                  = new DDC6460Entity();
+        $entity->id              = 1;
+        $entity->embedded        = new DDC6460Embeddable();
         $entity->embedded->field = 'test';
 
         $this->em->persist($entity);
 
-        $second = new DDC6460ParentEntity();
-        $second->id = 1;
+        $second             = new DDC6460ParentEntity();
+        $second->id         = 1;
         $second->lazyLoaded = $entity;
 
         $this->em->persist($second);

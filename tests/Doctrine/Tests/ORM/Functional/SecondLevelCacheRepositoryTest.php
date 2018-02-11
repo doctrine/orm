@@ -126,7 +126,7 @@ class SecondLevelCacheRepositoryTest extends SecondLevelCacheAbstractTest
 
         self::assertFalse($this->cache->containsEntity(Country::class, $this->countries[0]->getId()));
 
-        $criteria   = ['name'=>$this->countries[0]->getName()];
+        $criteria   = ['name' => $this->countries[0]->getName()];
         $repository = $this->em->getRepository(Country::class);
         $queryCount = $this->getCurrentQueryCount();
 
@@ -156,7 +156,7 @@ class SecondLevelCacheRepositoryTest extends SecondLevelCacheAbstractTest
 
         self::assertFalse($this->cache->containsEntity(Country::class, $this->countries[0]->getId()));
 
-        $criteria   = ['name'=>$this->countries[0]->getName()];
+        $criteria   = ['name' => $this->countries[0]->getName()];
         $repository = $this->em->getRepository(Country::class);
         $queryCount = $this->getCurrentQueryCount();
 

@@ -4,16 +4,18 @@ declare(strict_types=1);
 
 namespace Doctrine\Tests\ORM\Functional\Ticket;
 
+use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Platforms\AbstractPlatform;
 use Doctrine\DBAL\Types\Type;
 use Doctrine\ORM\Annotation as ORM;
+use Doctrine\Tests\OrmFunctionalTestCase;
 use ProxyManager\Proxy\GhostObjectInterface;
 
 /**
  * @group DDC-2494
  * @group non-cacheable
  */
-class DDC2494Test extends \Doctrine\Tests\OrmFunctionalTestCase
+class DDC2494Test extends OrmFunctionalTestCase
 {
     protected function setUp()
     {
@@ -86,13 +88,11 @@ class DDC2494Currency
      */
     protected $id;
 
-    /**
-     * @ORM\Column(name="temp", type="ddc2494_tinyint", nullable=false)
-     */
+    /** @ORM\Column(name="temp", type="ddc2494_tinyint", nullable=false) */
     protected $temp;
 
     /**
-     * @var \Doctrine\Common\Collections\Collection
+     * @var Collection
      *
      * @ORM\OneToMany(targetEntity=DDC2494Campaign::class, mappedBy="currency")
      */
@@ -193,7 +193,7 @@ class DDC2494TinyIntType extends Type
      */
     public function convertToPHPValue($value, AbstractPlatform $platform)
     {
-        $return = (integer) $value;
+        $return = (int) $value;
 
         self::$calls[__FUNCTION__][] = [
             'value'     => $value,

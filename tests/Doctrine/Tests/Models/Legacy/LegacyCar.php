@@ -19,14 +19,10 @@ class LegacyCar
      */
     public $id;
 
-    /**
-     * @ORM\ManyToMany(targetEntity=LegacyUser::class, mappedBy="cars")
-     */
+    /** @ORM\ManyToMany(targetEntity=LegacyUser::class, mappedBy="cars") */
     public $users;
 
-    /**
-     * @ORM\Column(name="sDescription", type="string", length=255, unique=true)
-     */
+    /** @ORM\Column(name="sDescription", type="string", length=255, unique=true) */
     public $description;
 
     public function getDescription()

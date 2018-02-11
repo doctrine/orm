@@ -13,22 +13,17 @@ use Doctrine\Tests\Mocks\EntityManagerMock;
 use Doctrine\Tests\Models\ECommerce\ECommerceCart;
 use Doctrine\Tests\Models\ECommerce\ECommerceProduct;
 use Doctrine\Tests\OrmTestCase;
+use function array_keys;
 
 /**
  * Tests the lazy-loading capabilities of the PersistentCollection and the initialization of collections.
- * @author Giorgio Sironi <piccoloprincipeazzurro@gmail.com>
- * @author Austin Morris <austin.morris@gmail.com>
  */
 class PersistentCollectionTest extends OrmTestCase
 {
-    /**
-     * @var PersistentCollection
-     */
+    /** @var PersistentCollection */
     protected $collection;
 
-    /**
-     * @var EntityManagerMock
-     */
+    /** @var EntityManagerMock */
     private $emMock;
 
     protected function setUp()
@@ -45,16 +40,16 @@ class PersistentCollectionTest extends OrmTestCase
      */
     public function setUpPersistentCollection()
     {
-        $classMetaData = $this->emMock->getClassMetadata(ECommerceCart::class);
-        $this->collection = new PersistentCollection($this->emMock, $classMetaData, new ArrayCollection);
+        $classMetaData    = $this->emMock->getClassMetadata(ECommerceCart::class);
+        $this->collection = new PersistentCollection($this->emMock, $classMetaData, new ArrayCollection());
         $this->collection->setInitialized(false);
         $this->collection->setOwner(new ECommerceCart(), $classMetaData->getProperty('products'));
     }
 
     public function testCanBePutInLazyLoadingMode()
     {
-        $class = $this->emMock->getClassMetadata(ECommerceProduct::class);
-        $collection = new PersistentCollection($this->emMock, $class, new ArrayCollection);
+        $class      = $this->emMock->getClassMetadata(ECommerceProduct::class);
+        $collection = new PersistentCollection($this->emMock, $class, new ArrayCollection());
         $collection->setInitialized(false);
         self::assertFalse($collection->isInitialized());
     }
@@ -95,18 +90,18 @@ class PersistentCollectionTest extends OrmTestCase
 
         self::assertEmpty($this->collection);
 
-        $this->collection->add("dummy");
+        $this->collection->add('dummy');
 
         self::assertNotEmpty($this->collection);
 
         $product = new ECommerceProduct();
 
         $this->collection->set(1, $product);
-        $this->collection->set(2, "dummy");
+        $this->collection->set(2, 'dummy');
         $this->collection->set(3, null);
 
         self::assertSame($product, $this->collection->get(1));
-        self::assertSame("dummy", $this->collection->get(2));
+        self::assertSame('dummy', $this->collection->get(2));
         self::assertNull($this->collection->get(3));
     }
 

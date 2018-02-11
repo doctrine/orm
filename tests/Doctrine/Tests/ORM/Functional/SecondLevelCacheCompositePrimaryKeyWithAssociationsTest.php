@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Doctrine\Tests\ORM\Functional;
 
+use Doctrine\ORM\Cache;
 use Doctrine\Tests\Models\GeoNames\Admin1;
 use Doctrine\Tests\Models\GeoNames\Admin1AlternateName;
 use Doctrine\Tests\Models\GeoNames\Country;
@@ -11,10 +12,7 @@ use Doctrine\Tests\OrmFunctionalTestCase;
 
 class SecondLevelCacheCompositePrimaryKeyWithAssociationsTest extends OrmFunctionalTestCase
 {
-
-    /**
-     * @var \Doctrine\ORM\Cache
-     */
+    /** @var Cache */
     protected $cache;
 
     public function setUp()
@@ -25,18 +23,18 @@ class SecondLevelCacheCompositePrimaryKeyWithAssociationsTest extends OrmFunctio
 
         $this->cache = $this->em->getCache();
 
-        $it = new Country("IT", "Italy");
+        $it = new Country('IT', 'Italy');
 
         $this->em->persist($it);
         $this->em->flush();
 
-        $admin1 = new Admin1(1, "Rome", $it);
+        $admin1 = new Admin1(1, 'Rome', $it);
 
         $this->em->persist($admin1);
         $this->em->flush();
 
-        $name1 = new Admin1AlternateName(1, "Roma", $admin1);
-        $name2 = new Admin1AlternateName(2, "Rome", $admin1);
+        $name1 = new Admin1AlternateName(1, 'Roma', $admin1);
+        $name2 = new Admin1AlternateName(2, 'Rome', $admin1);
 
         $admin1->names[] = $name1;
         $admin1->names[] = $name2;
@@ -58,7 +56,7 @@ class SecondLevelCacheCompositePrimaryKeyWithAssociationsTest extends OrmFunctio
 
         $admin1Rome = $admin1Repo->findOneBy(['country' => 'IT', 'id' => 1]);
 
-        self::assertEquals("Italy", $admin1Rome->country->name);
+        self::assertEquals('Italy', $admin1Rome->country->name);
         self::assertCount(2, $admin1Rome->names);
         self::assertEquals($queries + 3, $this->getCurrentQueryCount());
 
@@ -68,7 +66,7 @@ class SecondLevelCacheCompositePrimaryKeyWithAssociationsTest extends OrmFunctio
 
         $admin1Rome = $admin1Repo->findOneBy(['country' => 'IT', 'id' => 1]);
 
-        self::assertEquals("Italy", $admin1Rome->country->name);
+        self::assertEquals('Italy', $admin1Rome->country->name);
         self::assertCount(2, $admin1Rome->names);
         self::assertEquals($queries, $this->getCurrentQueryCount());
     }

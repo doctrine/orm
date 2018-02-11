@@ -4,9 +4,13 @@ declare(strict_types=1);
 
 namespace Doctrine\Tests\ORM\Functional\Locking;
 
-use Doctrine\Tests\Models\CMS\CmsArticle;
 use Doctrine\DBAL\LockMode;
+use Doctrine\Tests\Models\CMS\CmsArticle;
 use Doctrine\Tests\OrmFunctionalTestCase;
+use const GEARMAN_SUCCESS;
+use function class_exists;
+use function max;
+use function serialize;
 
 /**
  * @group locking_functional
@@ -19,7 +23,7 @@ class GearmanLockTest extends OrmFunctionalTestCase
 
     protected function setUp()
     {
-        if (!class_exists('GearmanClient', false)) {
+        if (! class_exists('GearmanClient', false)) {
             $this->markTestSkipped('pecl/gearman is required for this test to run.');
         }
 
@@ -32,11 +36,11 @@ class GearmanLockTest extends OrmFunctionalTestCase
             $_SERVER['GEARMAN_HOST'] ?? null,
             $_SERVER['GEARMAN_PORT'] ?? 4730
         );
-        $this->gearman->setCompleteCallback([$this, "gearmanTaskCompleted"]);
+        $this->gearman->setCompleteCallback([$this, 'gearmanTaskCompleted']);
 
-        $article = new CmsArticle();
-        $article->text = "my article";
-        $article->topic = "Hello";
+        $article        = new CmsArticle();
+        $article->text  = 'my article';
+        $article->topic = 'Hello';
 
         $this->em->persist($article);
         $this->em->flush();
@@ -134,12 +138,15 @@ class GearmanLockTest extends OrmFunctionalTestCase
 
         $this->gearman->runTasks();
 
-        self::assertTrue($this->maxRunTime > $forTime,
-            "Because of locking this tests should have run at least " . $forTime . " seconds, ".
-            "but only did for " . $this->maxRunTime . " seconds.");
-        self::assertTrue($this->maxRunTime < $notLongerThan,
-            "The longest task should not run longer than " . $notLongerThan . " seconds, ".
-            "but did for " . $this->maxRunTime . " seconds."
+        self::assertTrue(
+            $this->maxRunTime > $forTime,
+            'Because of locking this tests should have run at least ' . $forTime . ' seconds, ' .
+            'but only did for ' . $this->maxRunTime . ' seconds.'
+        );
+        self::assertTrue(
+            $this->maxRunTime < $notLongerThan,
+            'The longest task should not run longer than ' . $notLongerThan . ' seconds, ' .
+            'but did for ' . $this->maxRunTime . ' seconds.'
         );
     }
 
@@ -149,8 +156,7 @@ class GearmanLockTest extends OrmFunctionalTestCase
             'entityName' => $entityName,
             'entityId' => $entityId,
             'lockMode' => $lockMode,
-        ]
-        );
+        ]);
     }
 
     protected function asyncDqlWithLock($dql, $params, $lockMode)
@@ -159,8 +165,7 @@ class GearmanLockTest extends OrmFunctionalTestCase
             'dql' => $dql,
             'dqlParams' => $params,
             'lockMode' => $lockMode,
-        ]
-        );
+        ]);
     }
 
     protected function asyncLock($entityName, $entityId, $lockMode)
@@ -169,8 +174,7 @@ class GearmanLockTest extends OrmFunctionalTestCase
             'entityName' => $entityName,
             'entityId' => $entityId,
             'lockMode' => $lockMode,
-        ]
-        );
+        ]);
     }
 
     protected function startJob($fn, $fixture)
@@ -178,7 +182,7 @@ class GearmanLockTest extends OrmFunctionalTestCase
         $this->gearman->addTask($fn, serialize(
             [
             'conn' => $this->em->getConnection()->getParams(),
-            'fixture' => $fixture
+            'fixture' => $fixture,
             ]
         ));
 

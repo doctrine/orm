@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Doctrine\Tests\ORM\Functional\Ticket;
 
+use Doctrine\DBAL\Schema\Table;
 use Doctrine\ORM\Mapping\GeneratorType;
 use Doctrine\Tests\ORM\Functional\DatabaseDriverTestCase;
 
@@ -14,11 +15,11 @@ class DDC2387Test extends DatabaseDriverTestCase
      */
     public function testCompositeAssociationKeyDetection()
     {
-        $product = new \Doctrine\DBAL\Schema\Table('ddc2387_product');
+        $product = new Table('ddc2387_product');
         $product->addColumn('id', 'integer');
         $product->setPrimaryKey(['id']);
 
-        $attributes = new \Doctrine\DBAL\Schema\Table('ddc2387_attributes');
+        $attributes = new Table('ddc2387_attributes');
         $attributes->addColumn('product_id', 'integer');
         $attributes->addColumn('attribute_name', 'string');
         $attributes->setPrimaryKey(['product_id', 'attribute_name']);

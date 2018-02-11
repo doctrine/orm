@@ -8,8 +8,6 @@ use Doctrine\DBAL\Driver\Statement;
 
 /**
  * This class is a mock of the Statement interface.
- *
- * @author Alexander <iam.asm89@gmail.com>
  */
 class StatementMock implements \IteratorAggregate, Statement
 {
@@ -37,7 +35,9 @@ class StatementMock implements \IteratorAggregate, Statement
     /**
      * {@inheritdoc}
      */
-    public function errorInfo(){}
+    public function errorInfo()
+    {
+    }
 
     /**
      * {@inheritdoc}
@@ -70,7 +70,7 @@ class StatementMock implements \IteratorAggregate, Statement
     /**
      * {@inheritdoc}
      */
-    public function setFetchMode($fetchMode, ...$args)
+    public function setFetchMode($fetchMode = null, ...$args)
     {
     }
 

@@ -14,14 +14,10 @@ use Doctrine\DBAL\Schema\AbstractSchemaManager;
  */
 class DriverMock implements Driver
 {
-    /**
-     * @var \Doctrine\DBAL\Platforms\AbstractPlatform|null
-     */
+    /** @var AbstractPlatform|null */
     private $platformMock;
 
-    /**
-     * @var \Doctrine\DBAL\Schema\AbstractSchemaManager|null
-     */
+    /** @var AbstractSchemaManager|null */
     private $schemaManagerMock;
 
     /**
@@ -37,8 +33,8 @@ class DriverMock implements Driver
      */
     public function getDatabasePlatform()
     {
-        if ( ! $this->platformMock) {
-            $this->platformMock = new DatabasePlatformMock;
+        if (! $this->platformMock) {
+            $this->platformMock = new DatabasePlatformMock();
         }
         return $this->platformMock;
     }
@@ -48,18 +44,16 @@ class DriverMock implements Driver
      */
     public function getSchemaManager(Connection $conn)
     {
-        if ($this->schemaManagerMock == null) {
+        if ($this->schemaManagerMock === null) {
             return new SchemaManagerMock($conn);
         }
 
         return $this->schemaManagerMock;
     }
 
-    /* MOCK API */
+    // MOCK API
 
     /**
-     * @param \Doctrine\DBAL\Platforms\AbstractPlatform $platform
-     *
      * @return void
      */
     public function setDatabasePlatform(AbstractPlatform $platform)
@@ -68,8 +62,6 @@ class DriverMock implements Driver
     }
 
     /**
-     * @param \Doctrine\DBAL\Schema\AbstractSchemaManager $sm
-     *
      * @return void
      */
     public function setSchemaManager(AbstractSchemaManager $sm)

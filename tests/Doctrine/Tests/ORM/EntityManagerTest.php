@@ -10,7 +10,6 @@ use Doctrine\ORM\Configuration;
 use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\Mapping\ClassMetadataFactory;
 use Doctrine\ORM\Mapping\Driver\MappingDriver;
-use Doctrine\ORM\NativeQuery;
 use Doctrine\ORM\ORMException;
 use Doctrine\ORM\ORMInvalidArgumentException;
 use Doctrine\ORM\Proxy\Factory\ProxyFactory;
@@ -24,13 +23,10 @@ use Doctrine\Tests\Models\IdentityIsAssociation\SimpleId;
 use Doctrine\Tests\Models\IdentityIsAssociation\ToOneAssociationIdToSimpleId;
 use Doctrine\Tests\Models\IdentityIsAssociation\ToOneCompositeAssociationToMultipleSimpleId;
 use Doctrine\Tests\OrmTestCase;
-use ProxyManager\Proxy\GhostObjectInterface;
 
 class EntityManagerTest extends OrmTestCase
 {
-    /**
-     * @var EntityManager
-     */
+    /** @var EntityManager */
     private $em;
 
     public function setUp()
@@ -82,7 +78,7 @@ class EntityManagerTest extends OrmTestCase
 
     public function testCreateNativeQuery()
     {
-        $rsm = new ResultSetMapping();
+        $rsm   = new ResultSetMapping();
         $query = $this->em->createNativeQuery('SELECT foo', $rsm);
 
         self::assertSame('SELECT foo', $query->getSql());
@@ -95,7 +91,7 @@ class EntityManagerTest extends OrmTestCase
 
     public function testCreateQueryBuilderAliasValid()
     {
-        $q = $this->em->createQueryBuilder()
+        $q  = $this->em->createQueryBuilder()
              ->select('u')->from(CmsUser::class, 'u');
         $q2 = clone $q;
 
@@ -107,7 +103,7 @@ class EntityManagerTest extends OrmTestCase
         self::assertEquals('SELECT u FROM Doctrine\Tests\Models\CMS\CmsUser u', $q3->getQuery()->getDql());
     }
 
-    public function testCreateQuery_DqlIsOptional()
+    public function testCreateQueryDqlIsOptional()
     {
         self::assertInstanceOf(Query::class, $this->em->createQuery());
     }
@@ -127,7 +123,7 @@ class EntityManagerTest extends OrmTestCase
         self::assertEquals('SELECT 1', $q->getDql());
     }
 
-    static public function dataMethodsAffectedByNoObjectArguments()
+    public static function dataMethodsAffectedByNoObjectArguments()
     {
         return [
             ['persist'],
@@ -147,7 +143,7 @@ class EntityManagerTest extends OrmTestCase
         $this->em->{$methodName}(null);
     }
 
-    static public function dataAffectedByErrorIfClosedException()
+    public static function dataAffectedByErrorIfClosedException()
     {
         return [
             ['flush'],

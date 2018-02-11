@@ -5,24 +5,25 @@ declare(strict_types=1);
 namespace Doctrine\Tests\ORM\Functional\Ticket;
 
 use Doctrine\ORM\Annotation as ORM;
+use Doctrine\Tests\OrmFunctionalTestCase;
 
 /**
  * @group DDC-1695
  */
-class DDC1695Test extends \Doctrine\Tests\OrmFunctionalTestCase
+class DDC1695Test extends OrmFunctionalTestCase
 {
     public function setUp()
     {
         parent::setUp();
 
-        if ($this->em->getConnection()->getDatabasePlatform()->getName() != "sqlite") {
-            $this->markTestSkipped("Only with sqlite");
+        if ($this->em->getConnection()->getDatabasePlatform()->getName() !== 'sqlite') {
+            $this->markTestSkipped('Only with sqlite');
         }
     }
 
     public function testIssue()
     {
-        $dql = "SELECT n.smallText, n.publishDate FROM " . __NAMESPACE__ . "\\DDC1695News n";
+        $dql = 'SELECT n.smallText, n.publishDate FROM ' . __NAMESPACE__ . '\\DDC1695News n';
         $sql = $this->em->createQuery($dql)->getSQL();
 
         self::assertEquals(

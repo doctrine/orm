@@ -5,11 +5,12 @@ declare(strict_types=1);
 namespace Doctrine\Tests\ORM\Functional\Ticket;
 
 use Doctrine\ORM\Annotation as ORM;
+use Doctrine\Tests\OrmFunctionalTestCase;
 
 /**
  * @group DDC-1548
  */
-class DDC1548Test extends \Doctrine\Tests\OrmFunctionalTestCase
+class DDC1548Test extends OrmFunctionalTestCase
 {
     public function setUp()
     {
@@ -29,7 +30,7 @@ class DDC1548Test extends \Doctrine\Tests\OrmFunctionalTestCase
         $this->em->persist($rel);
         $this->em->flush();
 
-        $e1 = new DDC1548E1();
+        $e1      = new DDC1548E1();
         $e1->rel = $rel;
         $this->em->persist($e1);
         $this->em->flush();
@@ -76,12 +77,8 @@ class DDC1548Rel
      */
     public $id;
 
-    /**
-     * @ORM\OneToOne(targetEntity=DDC1548E1::class, mappedBy="rel")
-     */
+    /** @ORM\OneToOne(targetEntity=DDC1548E1::class, mappedBy="rel") */
     public $e1;
-    /**
-     * @ORM\OneToOne(targetEntity=DDC1548E2::class, mappedBy="rel")
-     */
+    /** @ORM\OneToOne(targetEntity=DDC1548E2::class, mappedBy="rel") */
     public $e2;
 }

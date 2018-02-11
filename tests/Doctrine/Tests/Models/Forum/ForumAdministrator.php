@@ -11,8 +11,6 @@ use Doctrine\ORM\Annotation as ORM;
  */
 class ForumAdministrator extends ForumUser
 {
-    /**
-     * @ORM\Column(type="integer", name="access_level")
-     */
+    /** @ORM\Column(type="integer", name="access_level") */
     public $accessLevel;
 }

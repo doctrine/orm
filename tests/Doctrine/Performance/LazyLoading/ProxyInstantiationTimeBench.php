@@ -16,19 +16,13 @@ use PhpBench\Benchmark\Metadata\Annotations\BeforeMethods;
  */
 final class ProxyInstantiationTimeBench
 {
-    /**
-     * @var ProxyFactory
-     */
+    /** @var ProxyFactory */
     private $proxyFactory;
 
-    /**
-     * @var ClassMetadata
-     */
+    /** @var ClassMetadata */
     private $cmsUserMetadata;
 
-    /**
-     * @var ClassMetadata
-     */
+    /** @var ClassMetadata */
     private $cmsEmployeeMetadata;
 
     public function init() : void

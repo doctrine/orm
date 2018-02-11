@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Doctrine\Tests\Models\Company;
 
 use Doctrine\ORM\Annotation as ORM;
+use function func_get_args;
 
 class CompanyContractListener
 {

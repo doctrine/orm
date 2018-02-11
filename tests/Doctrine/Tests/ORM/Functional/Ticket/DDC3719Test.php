@@ -7,11 +7,9 @@ namespace Doctrine\Tests\ORM\Functional\Ticket;
 use Doctrine\Common\Collections\Criteria;
 use Doctrine\Tests\Models\Company\CompanyFlexContract;
 use Doctrine\Tests\Models\Company\CompanyManager;
+use Doctrine\Tests\OrmFunctionalTestCase;
 
-/**
- * @author Jean Carlo Machado <contato@jeancarlomachado.com.br>
- */
-class DDC3719Test extends \Doctrine\Tests\OrmFunctionalTestCase
+class DDC3719Test extends OrmFunctionalTestCase
 {
     public function setUp()
     {
@@ -47,7 +45,7 @@ class DDC3719Test extends \Doctrine\Tests\OrmFunctionalTestCase
         static::assertCount(2, $contracts);
 
         $criteria = Criteria::create();
-        $criteria->where(Criteria::expr()->eq("completed", true));
+        $criteria->where(Criteria::expr()->eq('completed', true));
 
         $completedContracts = $contracts->matching($criteria);
         static::assertCount(1, $completedContracts);

@@ -8,11 +8,10 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\Annotation as ORM;
 use Doctrine\Tests\OrmFunctionalTestCase;
 use ProxyManager\Proxy\GhostObjectInterface;
+use function get_class;
 
 /**
  * Functional tests for the Class Table Inheritance mapping strategy.
- *
- * @author robo
  */
 class ClassTableInheritanceTest2 extends OrmFunctionalTestCase
 {
@@ -25,7 +24,7 @@ class ClassTableInheritanceTest2 extends OrmFunctionalTestCase
                     $this->em->getClassMetadata(CTIParent::class),
                     $this->em->getClassMetadata(CTIChild::class),
                     $this->em->getClassMetadata(CTIRelated::class),
-                    $this->em->getClassMetadata(CTIRelated2::class)
+                    $this->em->getClassMetadata(CTIRelated2::class),
                 ]
             );
         } catch (\Exception $ignored) {
@@ -35,10 +34,10 @@ class ClassTableInheritanceTest2 extends OrmFunctionalTestCase
 
     public function testOneToOneAssocToBaseTypeBidirectional()
     {
-        $child = new CTIChild;
+        $child = new CTIChild();
         $child->setData('hello');
 
-        $related = new CTIRelated;
+        $related = new CTIRelated();
         $related->setCTIParent($child);
 
         $this->em->persist($related);
@@ -62,8 +61,8 @@ class ClassTableInheritanceTest2 extends OrmFunctionalTestCase
     public function testManyToManyToCTIHierarchy()
     {
         //$this->em->getConnection()->getConfiguration()->setSQLLogger(new \Doctrine\DBAL\Logging\EchoSQLLogger());
-        $mmrel = new CTIRelated2;
-        $child = new CTIChild;
+        $mmrel = new CTIRelated2();
+        $child = new CTIChild();
         $child->setData('child');
         $mmrel->addCTIChild($child);
 
@@ -120,9 +119,7 @@ class CTIParent
  */
 class CTIChild extends CTIParent
 {
-    /**
-     * @ORM\Column(type="string")
-     */
+    /** @ORM\Column(type="string") */
     private $data;
 
     public function getData()

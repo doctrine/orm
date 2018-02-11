@@ -11,7 +11,6 @@ use Doctrine\ORM\Annotation as ORM;
  * ECommerceCategory
  * Represents a tag applied on particular products.
  *
- * @author Giorgio Sironi
  * @ORM\Entity
  * @ORM\Table(name="ecommerce_categories")
  */
@@ -23,14 +22,10 @@ class ECommerceCategory
      */
     private $id;
 
-    /**
-     * @ORM\Column(type="string", length=50)
-     */
+    /** @ORM\Column(type="string", length=50) */
     private $name;
 
-    /**
-     * @ORM\ManyToMany(targetEntity=ECommerceProduct::class, mappedBy="categories")
-     */
+    /** @ORM\ManyToMany(targetEntity=ECommerceProduct::class, mappedBy="categories") */
     private $products;
 
     /**
@@ -71,7 +66,7 @@ class ECommerceCategory
 
     public function addProduct(ECommerceProduct $product)
     {
-        if (!$this->products->contains($product)) {
+        if (! $this->products->contains($product)) {
             $this->products[] = $product;
             $product->addCategory($this);
         }
@@ -90,7 +85,7 @@ class ECommerceCategory
         return $this->products;
     }
 
-    private function setParent(ECommerceCategory $parent)
+    public function setParent(ECommerceCategory $parent)
     {
         $this->parent = $parent;
     }
@@ -126,7 +121,7 @@ class ECommerceCategory
         }
     }
 
-    private function removeParent()
+    public function removeParent()
     {
         $this->parent = null;
     }

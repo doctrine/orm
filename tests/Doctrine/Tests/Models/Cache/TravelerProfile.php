@@ -20,9 +20,7 @@ class TravelerProfile
      */
     protected $id;
 
-    /**
-     * @ORM\Column(unique=true)
-     */
+    /** @ORM\Column(unique=true) */
     private $name;
 
     /**

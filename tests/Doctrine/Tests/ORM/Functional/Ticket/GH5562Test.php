@@ -6,6 +6,7 @@ namespace Doctrine\Tests\ORM\Functional\Ticket;
 
 use Doctrine\ORM\Annotation as ORM;
 use Doctrine\Tests\OrmFunctionalTestCase;
+use function mt_rand;
 
 final class GH5562Test extends OrmFunctionalTestCase
 {
@@ -29,7 +30,7 @@ final class GH5562Test extends OrmFunctionalTestCase
      */
     public function testCacheShouldBeUpdatedWhenAssociationChanges()
     {
-        $manager = new GH5562Manager();
+        $manager  = new GH5562Manager();
         $merchant = new GH5562Merchant();
 
         $manager->username = 'username';
@@ -45,7 +46,7 @@ final class GH5562Test extends OrmFunctionalTestCase
 
         $merchant = $this->em->find(GH5562Merchant::class, $merchant->id);
 
-        $merchant->name = mt_rand();
+        $merchant->name              = mt_rand();
         $merchant->manager->username = 'usernameUPDATE';
 
         $this->em->flush();
@@ -64,7 +65,7 @@ final class GH5562Test extends OrmFunctionalTestCase
 class GH5562Merchant
 {
     /**
-     * @var integer
+     * @var int
      *
      * @ORM\Id
      * @ORM\Column(name="id", type="integer")
@@ -96,7 +97,7 @@ class GH5562Merchant
 abstract class GH5562User
 {
     /**
-     * @var integer
+     * @var int
      *
      * @ORM\Id
      * @ORM\Column(name="id", type="integer")
@@ -111,7 +112,6 @@ abstract class GH5562User
  */
 class GH5562Manager extends GH5562User
 {
-
     /**
      * @var string
      *

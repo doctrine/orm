@@ -12,9 +12,7 @@ use Doctrine\ORM\Sequencing\SequenceGenerator;
  */
 class SequenceMock extends SequenceGenerator
 {
-    /**
-     * @var int
-     */
+    /** @var int */
     private $sequenceNumber = 0;
 
     /**
@@ -25,10 +23,8 @@ class SequenceMock extends SequenceGenerator
         return $this->sequenceNumber++;
     }
 
-    /* Mock API */
-
     /**
-     * @return void
+     * Mock API
      */
     public function reset()
     {

@@ -19,14 +19,10 @@ class LegacyArticle
      */
     public $id;
 
-    /**
-     * @ORM\Column(name="sTopic", type="string", length=255)
-     */
+    /** @ORM\Column(name="sTopic", type="string", length=255) */
     public $topic;
 
-    /**
-     * @ORM\Column(name="sText", type="text")
-     */
+    /** @ORM\Column(name="sText", type="text") */
     public $text;
 
     /**

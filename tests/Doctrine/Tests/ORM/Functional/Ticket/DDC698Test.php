@@ -5,8 +5,9 @@ declare(strict_types=1);
 namespace Doctrine\Tests\ORM\Functional\Ticket;
 
 use Doctrine\ORM\Annotation as ORM;
+use Doctrine\Tests\OrmFunctionalTestCase;
 
-class DDC698Test extends \Doctrine\Tests\OrmFunctionalTestCase
+class DDC698Test extends OrmFunctionalTestCase
 {
     protected function setUp()
     {
@@ -15,7 +16,7 @@ class DDC698Test extends \Doctrine\Tests\OrmFunctionalTestCase
             $this->schemaTool->createSchema(
                 [
                 $this->em->getClassMetadata(DDC698Role::class),
-                $this->em->getClassMetadata(DDC698Privilege::class)
+                $this->em->getClassMetadata(DDC698Privilege::class),
                 ]
             );
         } catch (\Exception $e) {
@@ -26,8 +27,8 @@ class DDC698Test extends \Doctrine\Tests\OrmFunctionalTestCase
     {
         $qb = $this->em->createQueryBuilder();
         $qb->select('p', 'r')
-		   ->from(__NAMESPACE__ .  '\DDC698Privilege', 'p')
-		   ->leftJoin('p.roles', 'r');
+           ->from(__NAMESPACE__ . '\DDC698Privilege', 'p')
+           ->leftJoin('p.roles', 'r');
 
         self::assertSQLEquals(
             'SELECT t0."privilegeID" AS c0, t0."name" AS c1, t1."roleID" AS c2, t1."name" AS c3, t1."shortName" AS c4 FROM "Privileges" t0 LEFT JOIN "RolePrivileges" t2 ON t0."privilegeID" = t2."privilegeID" LEFT JOIN "Roles" t1 ON t1."roleID" = t2."roleID"',
@@ -48,14 +49,10 @@ class DDC698Role
      */
     protected $roleID;
 
-    /**
-     * @ORM\Column(name="name", type="string", length=45)
-     */
+    /** @ORM\Column(name="name", type="string", length=45) */
     protected $name;
 
-    /**
-     * @ORM\Column(name="shortName", type="string", length=45)
-     */
+    /** @ORM\Column(name="shortName", type="string", length=45) */
     protected $shortName;
 
     /**
@@ -81,13 +78,9 @@ class DDC698Privilege
      */
     protected $privilegeID;
 
-    /**
-     * @ORM\Column(name="name", type="string", length=45)
-     */
+    /** @ORM\Column(name="name", type="string", length=45) */
     protected $name;
 
-    /**
-     * @ORM\ManyToMany(targetEntity=DDC698Role::class, mappedBy="privilege")
-     */
+    /** @ORM\ManyToMany(targetEntity=DDC698Role::class, mappedBy="privilege") */
     protected $roles;
 }

@@ -20,14 +20,10 @@ class Person
      */
     public $id;
 
-    /**
-     * @ORM\Column(unique=true)
-     */
+    /** @ORM\Column(unique=true) */
     public $name;
 
-    /**
-     * @ORM\OneToOne(targetEntity=Address::class, mappedBy="person")
-     */
+    /** @ORM\OneToOne(targetEntity=Address::class, mappedBy="person") */
     public $address;
 
     public function __construct($name)

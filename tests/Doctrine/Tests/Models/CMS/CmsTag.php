@@ -20,13 +20,9 @@ class CmsTag
      * @ORM\GeneratedValue
      */
     public $id;
-    /**
-     * @ORM\Column(length=50, name="tag_name", nullable=true)
-     */
+    /** @ORM\Column(length=50, name="tag_name", nullable=true) */
     public $name;
-    /**
-     * @ORM\ManyToMany(targetEntity=CmsUser::class, mappedBy="tags")
-     */
+    /** @ORM\ManyToMany(targetEntity=CmsUser::class, mappedBy="tags") */
     public $users;
 
     public function setName($name)

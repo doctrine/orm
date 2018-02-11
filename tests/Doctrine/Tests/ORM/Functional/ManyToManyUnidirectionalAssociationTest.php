@@ -14,9 +14,9 @@ use Doctrine\Tests\Models\ECommerce\ECommerceProduct;
  */
 class ManyToManyUnidirectionalAssociationTest extends AbstractManyToManyAssociationTestCase
 {
-    protected $firstField = 'cart_id';
+    protected $firstField  = 'cart_id';
     protected $secondField = 'product_id';
-    protected $table = 'ecommerce_carts_products';
+    protected $table       = 'ecommerce_carts_products';
     private $firstProduct;
     private $secondProduct;
     private $firstCart;
@@ -36,7 +36,7 @@ class ManyToManyUnidirectionalAssociationTest extends AbstractManyToManyAssociat
 
         $this->secondProduct->setName('Doctrine 2.x Manual');
 
-        $this->firstCart = new ECommerceCart();
+        $this->firstCart  = new ECommerceCart();
         $this->secondCart = new ECommerceCart();
     }
 
@@ -69,10 +69,10 @@ class ManyToManyUnidirectionalAssociationTest extends AbstractManyToManyAssociat
     {
         $this->createFixture();
 
-        $query = $this->em->createQuery('SELECT c, p FROM Doctrine\Tests\Models\ECommerce\ECommerceCart c LEFT JOIN c.products p ORDER BY c.id, p.id');
-        $result = $query->getResult();
-        $firstCart = $result[0];
-        $products = $firstCart->getProducts();
+        $query      = $this->em->createQuery('SELECT c, p FROM Doctrine\Tests\Models\ECommerce\ECommerceCart c LEFT JOIN c.products p ORDER BY c.id, p.id');
+        $result     = $query->getResult();
+        $firstCart  = $result[0];
+        $products   = $firstCart->getProducts();
         $secondCart = $result[1];
 
         self::assertInstanceOf(ECommerceProduct::class, $products[0]);
@@ -88,10 +88,10 @@ class ManyToManyUnidirectionalAssociationTest extends AbstractManyToManyAssociat
         $metadata = $this->em->getClassMetadata(ECommerceCart::class);
         $metadata->getProperty('products')->setFetchMode(FetchMode::LAZY);
 
-        $query = $this->em->createQuery('SELECT c FROM Doctrine\Tests\Models\ECommerce\ECommerceCart c');
-        $result = $query->getResult();
-        $firstCart = $result[0];
-        $products = $firstCart->getProducts();
+        $query      = $this->em->createQuery('SELECT c FROM Doctrine\Tests\Models\ECommerce\ECommerceCart c');
+        $result     = $query->getResult();
+        $firstCart  = $result[0];
+        $products   = $firstCart->getProducts();
         $secondCart = $result[1];
 
         self::assertInstanceOf(ECommerceProduct::class, $products[0]);

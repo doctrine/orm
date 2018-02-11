@@ -19,8 +19,6 @@ class InverseSide
      */
     public $id;
 
-    /**
-     * @ORM\OneToOne(targetEntity=OwningSide::class, mappedBy="inverse")
-     */
+    /** @ORM\OneToOne(targetEntity=OwningSide::class, mappedBy="inverse") */
     public $owning;
 }

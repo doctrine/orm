@@ -4,12 +4,12 @@ declare(strict_types=1);
 
 namespace Doctrine\Tests\DbalTypes;
 
-use Doctrine\DBAL\Types\Type;
 use Doctrine\DBAL\Platforms\AbstractPlatform;
+use Doctrine\DBAL\Types\Type;
 
 class NegativeToPositiveType extends Type
 {
-    const NAME = 'negative_to_positive';
+    public const NAME = 'negative_to_positive';
 
     /**
      * {@inheritdoc}

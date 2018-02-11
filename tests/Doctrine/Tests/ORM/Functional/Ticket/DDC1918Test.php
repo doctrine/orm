@@ -4,14 +4,17 @@ declare(strict_types=1);
 
 namespace Doctrine\Tests\ORM\Functional\Ticket;
 
-use Doctrine\Tests\Models\CMS\CmsUser;
-use Doctrine\Tests\Models\CMS\CmsGroup;
 use Doctrine\ORM\Tools\Pagination\Paginator;
+use Doctrine\Tests\Models\CMS\CmsGroup;
+use Doctrine\Tests\Models\CMS\CmsUser;
+use Doctrine\Tests\OrmFunctionalTestCase;
+use function iterator_to_array;
+use function sprintf;
 
 /**
  * @group DDC-1918
  */
-class DDC1918Test extends \Doctrine\Tests\OrmFunctionalTestCase
+class DDC1918Test extends OrmFunctionalTestCase
 {
     protected function setUp()
     {
@@ -23,19 +26,19 @@ class DDC1918Test extends \Doctrine\Tests\OrmFunctionalTestCase
     {
         $groups = [];
         for ($i = 0; $i < 3; $i++) {
-            $group = new CmsGroup();
-            $group->name = "test";
+            $group       = new CmsGroup();
+            $group->name = 'test';
             $this->em->persist($group);
 
             $groups[] = $group;
         }
 
         for ($i = 0; $i < 10; $i++) {
-            $user = new CmsUser();
-            $user->username = "user$i";
-            $user->name = "user$i";
-            $user->status = "active";
-            $user->groups = $groups;
+            $user           = new CmsUser();
+            $user->username = sprintf('user%d', $i);
+            $user->name     = sprintf('user%d', $i);
+            $user->status   = 'active';
+            $user->groups   = $groups;
 
             $this->em->persist($user);
         }

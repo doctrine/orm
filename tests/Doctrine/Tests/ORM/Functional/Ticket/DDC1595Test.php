@@ -4,20 +4,23 @@ declare(strict_types=1);
 
 namespace Doctrine\Tests\ORM\Functional\Ticket;
 
+use Doctrine\DBAL\Logging\DebugStack;
 use Doctrine\ORM\Annotation as ORM;
+use Doctrine\Tests\OrmFunctionalTestCase;
+use function count;
 
 /**
  * @group DDC-1595
  * @group DDC-1596
  * @group non-cacheable
  */
-class DDC1595Test extends \Doctrine\Tests\OrmFunctionalTestCase
+class DDC1595Test extends OrmFunctionalTestCase
 {
     public function setUp()
     {
         parent::setUp();
 
-        $this->em->getConnection()->getConfiguration()->setSQLLogger(new \Doctrine\DBAL\Logging\DebugStack);
+        $this->em->getConnection()->getConfiguration()->setSQLLogger(new DebugStack());
 
         $this->schemaTool->createSchema(
             [
@@ -39,7 +42,7 @@ class DDC1595Test extends \Doctrine\Tests\OrmFunctionalTestCase
         $sqlLogger  = $this->em->getConnection()->getConfiguration()->getSQLLogger();
         $repository = $this->em->getRepository(DDC1595InheritedEntity1::class);
 
-        $entity1  = $repository->find($e1->id);
+        $entity1 = $repository->find($e1->id);
 
         // DDC-1596
         self::assertSQLEquals(
@@ -56,7 +59,7 @@ class DDC1595Test extends \Doctrine\Tests\OrmFunctionalTestCase
 
         $this->em->clear();
 
-        $entity1  = $repository->find($e1->id);
+        $entity1 = $repository->find($e1->id);
 
         $entity1->getEntities()->count();
 

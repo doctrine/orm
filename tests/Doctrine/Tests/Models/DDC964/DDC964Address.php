@@ -17,24 +17,16 @@ class DDC964Address
      */
     private $id;
 
-    /**
-     * @ORM\Column
-     */
+    /** @ORM\Column */
     private $country;
 
-    /**
-     * @ORM\Column
-     */
+    /** @ORM\Column */
     private $zip;
 
-    /**
-     * @ORM\Column
-     */
+    /** @ORM\Column */
     private $city;
 
-    /**
-     * @ORM\Column
-     */
+    /** @ORM\Column */
     private $street;
 
     /**
@@ -45,10 +37,10 @@ class DDC964Address
      */
     public function __construct($zip = null, $country = null, $city = null, $street = null)
     {
-        $this->zip      = $zip;
-        $this->country  = $country;
-        $this->city     = $city;
-        $this->street   = $street;
+        $this->zip     = $zip;
+        $this->country = $country;
+        $this->city    = $city;
+        $this->street  = $street;
     }
 
     /**

@@ -11,6 +11,16 @@ use Doctrine\ORM\Mapping\Driver\AnnotationDriver;
 use Doctrine\ORM\Mapping\Driver\XmlDriver;
 use Doctrine\ORM\Tools\Setup;
 use Doctrine\Tests\OrmTestCase;
+use function count;
+use function get_include_path;
+use function md5;
+use function mkdir;
+use function set_include_path;
+use function spl_autoload_functions;
+use function spl_autoload_unregister;
+use function sys_get_temp_dir;
+use function tempnam;
+use function unlink;
 
 class SetupTest extends OrmTestCase
 {
@@ -20,12 +30,12 @@ class SetupTest extends OrmTestCase
     public function setUp()
     {
         $this->originalAutoloaderCount = count(spl_autoload_functions());
-        $this->originalIncludePath = get_include_path();
+        $this->originalIncludePath     = get_include_path();
     }
 
     public function tearDown()
     {
-        if ( ! $this->originalIncludePath) {
+        if (! $this->originalIncludePath) {
             return;
         }
 
@@ -40,7 +50,7 @@ class SetupTest extends OrmTestCase
 
     public function testDirectoryAutoload()
     {
-        Setup::registerAutoloadDirectory(__DIR__ . "/../../../../../vendor/doctrine/common/lib");
+        Setup::registerAutoloadDirectory(__DIR__ . '/../../../../../vendor/doctrine/common/lib');
 
         self::assertCount($this->originalAutoloaderCount + 2, spl_autoload_functions());
     }
@@ -115,7 +125,7 @@ class SetupTest extends OrmTestCase
      */
     public function testConfigureCache()
     {
-        $cache = new ArrayCache();
+        $cache  = new ArrayCache();
         $config = Setup::createAnnotationMetadataConfiguration([], true, null, $cache);
 
         self::assertSame($cache, $config->getResultCacheImpl());
@@ -138,10 +148,10 @@ class SetupTest extends OrmTestCase
 
     private function makeTemporaryDirectory() : string
     {
-        $path = \tempnam(\sys_get_temp_dir(), 'foo');
+        $path = tempnam(sys_get_temp_dir(), 'foo');
 
-        \unlink($path);
-        \mkdir($path);
+        unlink($path);
+        mkdir($path);
 
         return $path;
     }

@@ -26,8 +26,8 @@ class DDC144Test extends OrmFunctionalTestCase
      */
     public function testIssue()
     {
-        $operand = new DDC144Operand;
-        $operand->property = 'flowValue';
+        $operand                  = new DDC144Operand();
+        $operand->property        = 'flowValue';
         $operand->operandProperty = 'operandValue';
 
         $this->em->persist($operand);

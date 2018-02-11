@@ -20,19 +20,13 @@ class User
      */
     public $id;
 
-    /**
-     * @ORM\Column(type="string")
-     */
+    /** @ORM\Column(type="string") */
     public $name;
 
-    /**
-     * @ORM\OneToMany(targetEntity=Tweet::class, mappedBy="author", cascade={"persist"}, fetch="EXTRA_LAZY")
-     */
+    /** @ORM\OneToMany(targetEntity=Tweet::class, mappedBy="author", cascade={"persist"}, fetch="EXTRA_LAZY") */
     public $tweets;
 
-    /**
-     * @ORM\OneToMany(targetEntity=UserList::class, mappedBy="owner", fetch="EXTRA_LAZY", orphanRemoval=true)
-     */
+    /** @ORM\OneToMany(targetEntity=UserList::class, mappedBy="owner", fetch="EXTRA_LAZY", orphanRemoval=true) */
     public $userLists;
 
     public function __construct()

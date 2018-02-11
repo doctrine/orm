@@ -8,30 +8,23 @@ use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\Performance\EntityManagerFactory;
 use Doctrine\Tests\Models\Company;
 use PhpBench\Benchmark\Metadata\Annotations\BeforeMethods;
+use function array_map;
 
 /**
  * @BeforeMethods({"init"})
  */
 final class SingleTableInheritanceInsertPerformanceBench
 {
-    /**
-     * @var EntityManagerInterface
-     */
+    /** @var EntityManagerInterface */
     private $entityManager;
 
-    /**
-     * @var Company\CompanyFixContract[]
-     */
+    /** @var Company\CompanyFixContract[] */
     private $fixContracts = [];
 
-    /**
-     * @var Company\CompanyFlexContract[]
-     */
+    /** @var Company\CompanyFlexContract[] */
     private $flexContracts = [];
 
-    /**
-     * @var Company\CompanyFlexUltraContract[]
-     */
+    /** @var Company\CompanyFlexUltraContract[] */
     private $ultraContracts = [];
 
     public function init() : void

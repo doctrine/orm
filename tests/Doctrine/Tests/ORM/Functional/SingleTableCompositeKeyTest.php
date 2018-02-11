@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Doctrine\Tests\ORM\Functional;
 
+use Doctrine\Tests\Models\CompositeKeyInheritance\JoinedChildClass;
 use Doctrine\Tests\Models\CompositeKeyInheritance\SingleChildClass;
 use Doctrine\Tests\Models\CompositeKeyInheritance\SingleRootClass;
 use Doctrine\Tests\OrmFunctionalTestCase;
@@ -16,9 +17,6 @@ class SingleTableCompositeKeyTest extends OrmFunctionalTestCase
         parent::setUp();
     }
 
-    /**
-     *
-     */
     public function testInsertWithCompositeKey()
     {
         $childEntity = new SingleChildClass();
@@ -42,7 +40,7 @@ class SingleTableCompositeKeyTest extends OrmFunctionalTestCase
 
         $this->em->clear();
 
-        $entity = $this->findEntity();
+        $entity            = $this->findEntity();
         $entity->extension = 'ext-new';
         $this->em->persist($entity);
         $this->em->flush();
@@ -54,7 +52,7 @@ class SingleTableCompositeKeyTest extends OrmFunctionalTestCase
     }
 
     /**
-     * @return \Doctrine\Tests\Models\CompositeKeyInheritance\JoinedChildClass
+     * @return JoinedChildClass
      */
     private function findEntity()
     {

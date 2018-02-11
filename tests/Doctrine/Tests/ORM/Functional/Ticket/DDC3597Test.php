@@ -7,11 +7,12 @@ namespace Doctrine\Tests\ORM\Functional\Ticket;
 use Doctrine\Tests\Models\DDC3597\DDC3597Image;
 use Doctrine\Tests\Models\DDC3597\DDC3597Media;
 use Doctrine\Tests\Models\DDC3597\DDC3597Root;
+use Doctrine\Tests\OrmFunctionalTestCase;
 
 /**
  * @group DDC-117
  */
-class DDC3597Test extends \Doctrine\Tests\OrmFunctionalTestCase
+class DDC3597Test extends OrmFunctionalTestCase
 {
     protected function setUp()
     {
@@ -20,7 +21,7 @@ class DDC3597Test extends \Doctrine\Tests\OrmFunctionalTestCase
             [
             $this->em->getClassMetadata(DDC3597Root::class),
             $this->em->getClassMetadata(DDC3597Media::class),
-            $this->em->getClassMetadata(DDC3597Image::class)
+            $this->em->getClassMetadata(DDC3597Image::class),
             ]
         );
     }

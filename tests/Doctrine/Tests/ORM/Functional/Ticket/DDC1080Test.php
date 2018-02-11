@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Doctrine\Tests\ORM\Functional\Ticket;
 
+use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\Annotation as ORM;
 use Doctrine\Tests\OrmFunctionalTestCase;
 
@@ -66,7 +67,7 @@ class DDC1080Test extends OrmFunctionalTestCase
 
         $fooBars = $foo->getFooBars();
 
-        self::assertCount(3, $fooBars, "Should return three foobars.");
+        self::assertCount(3, $fooBars, 'Should return three foobars.');
     }
 }
 
@@ -83,9 +84,7 @@ class DDC1080Foo
      */
     protected $fooID;
 
-    /**
-     * @ORM\Column(name="fooTitle", type="string")
-     */
+    /** @ORM\Column(name="fooTitle", type="string") */
 
     protected $fooTitle;
     /**
@@ -96,7 +95,7 @@ class DDC1080Foo
 
     public function __construct()
     {
-        $this->fooBars = new \Doctrine\Common\Collections\ArrayCollection();
+        $this->fooBars = new ArrayCollection();
     }
 
     /**
@@ -160,9 +159,7 @@ class DDC1080Bar
      */
     protected $barID;
 
-    /**
-     * @ORM\Column(name="barTitle", type="string")
-     */
+    /** @ORM\Column(name="barTitle", type="string") */
     protected $barTitle;
 
     /**
@@ -173,7 +170,7 @@ class DDC1080Bar
 
     public function __construct()
     {
-        $this->fooBars = new \Doctrine\Common\Collections\ArrayCollection();
+        $this->fooBars = new ArrayCollection();
     }
 
     /**
@@ -308,7 +305,7 @@ class DDC1080FooBar
     /**
      * Set the orderNr property
      *
-     * @param integer|null $orderNr
+     * @param int|null $orderNr
      * @return DDC1080FooBar
      */
     public function setOrderNr($orderNr)

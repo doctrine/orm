@@ -20,14 +20,10 @@ class User
      */
     public $id;
 
-    /**
-     * @ORM\Column(type="string", name="user-name")
-     */
+    /** @ORM\Column(type="string", name="user-name") */
     public $name;
 
-    /**
-     * @ORM\OneToMany(targetEntity=Phone::class, mappedBy="user", cascade={"persist"})
-     */
+    /** @ORM\OneToMany(targetEntity=Phone::class, mappedBy="user", cascade={"persist"}) */
     public $phones;
 
     /**
@@ -66,8 +62,8 @@ class User
 
     public function __construct()
     {
-        $this->phones = new ArrayCollection;
-        $this->groups = new ArrayCollection;
+        $this->phones = new ArrayCollection();
+        $this->groups = new ArrayCollection();
     }
 
 

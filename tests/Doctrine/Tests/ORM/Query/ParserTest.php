@@ -13,7 +13,6 @@ use Doctrine\Tests\OrmTestCase;
 
 class ParserTest extends OrmTestCase
 {
-
     /**
      * @covers \Doctrine\ORM\Query\Parser::AbstractSchemaName
      * @group DDC-3715
@@ -90,7 +89,7 @@ class ParserTest extends OrmTestCase
             [Lexer::T_DOT, '.'], // token that cannot be an identifier
             [Lexer::T_IDENTIFIER, 'someIdentifier'],
             [Lexer::T_IDENTIFIER, 'from'], // also a terminal string (the "FROM" keyword) as in DDC-505
-            [Lexer::T_IDENTIFIER, 'comma']
+            [Lexer::T_IDENTIFIER, 'comma'],
             // not even a terminal string, but the name of a constant in the Lexer (whitebox test)
         ];
     }

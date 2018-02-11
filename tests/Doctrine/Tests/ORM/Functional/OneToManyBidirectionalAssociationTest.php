@@ -76,8 +76,8 @@ class OneToManyBidirectionalAssociationTest extends OrmFunctionalTestCase
     public function testEagerLoadsOneToManyAssociation()
     {
         $this->createFixture();
-        $query = $this->em->createQuery('select p, f from Doctrine\Tests\Models\ECommerce\ECommerceProduct p join p.features f');
-        $result = $query->getResult();
+        $query   = $this->em->createQuery('select p, f from Doctrine\Tests\Models\ECommerce\ECommerceProduct p join p.features f');
+        $result  = $query->getResult();
         $product = $result[0];
 
         $features = $product->getFeatures();
@@ -96,9 +96,9 @@ class OneToManyBidirectionalAssociationTest extends OrmFunctionalTestCase
     {
         $this->createFixture();
 
-        $query = $this->em->createQuery('select p from Doctrine\Tests\Models\ECommerce\ECommerceProduct p');
-        $result = $query->getResult();
-        $product = $result[0];
+        $query    = $this->em->createQuery('select p from Doctrine\Tests\Models\ECommerce\ECommerceProduct p');
+        $result   = $query->getResult();
+        $product  = $result[0];
         $features = $product->getFeatures();
 
         self::assertFalse($features->isInitialized());
@@ -115,7 +115,7 @@ class OneToManyBidirectionalAssociationTest extends OrmFunctionalTestCase
     {
         $this->createFixture();
 
-        $query = $this->em->createQuery('select f from Doctrine\Tests\Models\ECommerce\ECommerceFeature f');
+        $query    = $this->em->createQuery('select f from Doctrine\Tests\Models\ECommerce\ECommerceFeature f');
         $features = $query->getResult();
 
         /* @var $product GhostObjectInterface|ECommerceFeature */
@@ -132,7 +132,7 @@ class OneToManyBidirectionalAssociationTest extends OrmFunctionalTestCase
         //$this->em->getConnection()->getConfiguration()->setSQLLogger(new \Doctrine\DBAL\Logging\EchoSQLLogger);
         $this->createFixture();
 
-        $query = $this->em->createQuery('select f,p from Doctrine\Tests\Models\ECommerce\ECommerceFeature f join f.product p');
+        $query    = $this->em->createQuery('select f,p from Doctrine\Tests\Models\ECommerce\ECommerceFeature f join f.product p');
         $features = $query->getResult();
 
         $product = $features[0]->getProduct();
@@ -152,7 +152,7 @@ class OneToManyBidirectionalAssociationTest extends OrmFunctionalTestCase
 
     public function testJoinFromOwningSide()
     {
-        $query = $this->em->createQuery('select f,p from Doctrine\Tests\Models\ECommerce\ECommerceFeature f join f.product p');
+        $query    = $this->em->createQuery('select f,p from Doctrine\Tests\Models\ECommerce\ECommerceFeature f join f.product p');
         $features = $query->getResult();
         self::assertCount(0, $features);
     }
@@ -187,7 +187,7 @@ class OneToManyBidirectionalAssociationTest extends OrmFunctionalTestCase
     {
         $this->createFixture();
 
-        $product  = $this->em->find(ECommerceProduct::class, $this->product->getId());
+        $product = $this->em->find(ECommerceProduct::class, $this->product->getId());
 
         $thirdFeature = new ECommerceFeature();
         $thirdFeature->setDescription('Model writing tutorial');

@@ -61,8 +61,8 @@ class OneToOneBidirectionalAssociationTest extends OrmFunctionalTestCase
     {
         $this->createFixture();
 
-        $query = $this->em->createQuery('select c, ca from Doctrine\Tests\Models\ECommerce\ECommerceCustomer c join c.cart ca');
-        $result = $query->getResult();
+        $query    = $this->em->createQuery('select c, ca from Doctrine\Tests\Models\ECommerce\ECommerceCustomer c join c.cart ca');
+        $result   = $query->getResult();
         $customer = $result[0];
 
         self::assertInstanceOf(ECommerceCart::class, $customer->getCart());
@@ -75,9 +75,9 @@ class OneToOneBidirectionalAssociationTest extends OrmFunctionalTestCase
         $metadata = $this->em->getClassMetadata(ECommerceCart::class);
         $metadata->getProperty('customer')->setFetchMode(FetchMode::LAZY);
 
-        $query = $this->em->createQuery('select c from Doctrine\Tests\Models\ECommerce\ECommerceCart c');
+        $query  = $this->em->createQuery('select c from Doctrine\Tests\Models\ECommerce\ECommerceCart c');
         $result = $query->getResult();
-        $cart = $result[0];
+        $cart   = $result[0];
 
         self::assertInstanceOf(ECommerceCustomer::class, $cart->getCustomer());
         self::assertEquals('Giorgio', $cart->getCustomer()->getName());
@@ -89,8 +89,8 @@ class OneToOneBidirectionalAssociationTest extends OrmFunctionalTestCase
         $metadata = $this->em->getClassMetadata(ECommerceCustomer::class);
         $metadata->getProperty('mentor')->setFetchMode(FetchMode::EAGER);
 
-        $query = $this->em->createQuery('select c from Doctrine\Tests\Models\ECommerce\ECommerceCustomer c');
-        $result = $query->getResult();
+        $query    = $this->em->createQuery('select c from Doctrine\Tests\Models\ECommerce\ECommerceCustomer c');
+        $result   = $query->getResult();
         $customer = $result[0];
 
         self::assertNull($customer->getMentor());
@@ -101,9 +101,9 @@ class OneToOneBidirectionalAssociationTest extends OrmFunctionalTestCase
 
     public function testUpdateWithProxyObject()
     {
-        $cust = new ECommerceCustomer;
+        $cust = new ECommerceCustomer();
         $cust->setName('Roman');
-        $cart = new ECommerceCart;
+        $cart = new ECommerceCart();
         $cart->setPayment('CARD');
         $cust->setCart($cart);
 
@@ -136,9 +136,9 @@ class OneToOneBidirectionalAssociationTest extends OrmFunctionalTestCase
 
     protected function createFixture()
     {
-        $customer = new ECommerceCustomer;
+        $customer = new ECommerceCustomer();
         $customer->setName('Giorgio');
-        $cart = new ECommerceCart;
+        $cart = new ECommerceCart();
         $cart->setPayment('paypal');
         $customer->setCart($cart);
 

@@ -5,8 +5,9 @@ declare(strict_types=1);
 namespace Doctrine\Tests\ORM\Functional\Ticket;
 
 use Doctrine\ORM\Annotation as ORM;
+use Doctrine\Tests\OrmFunctionalTestCase;
 
-class DDC440Test extends \Doctrine\Tests\OrmFunctionalTestCase
+class DDC440Test extends OrmFunctionalTestCase
 {
     protected function setUp()
     {
@@ -15,7 +16,7 @@ class DDC440Test extends \Doctrine\Tests\OrmFunctionalTestCase
             $this->schemaTool->createSchema(
                 [
                 $this->em->getClassMetadata(DDC440Phone::class),
-                $this->em->getClassMetadata(DDC440Client::class)
+                $this->em->getClassMetadata(DDC440Client::class),
                 ]
             );
         } catch (\Exception $e) {
@@ -38,15 +39,15 @@ class DDC440Test extends \Doctrine\Tests\OrmFunctionalTestCase
          */
 
         //Initialize some data
-        $client = new DDC440Client;
+        $client = new DDC440Client();
         $client->setName('Client1');
 
-        $phone = new DDC440Phone;
+        $phone = new DDC440Phone();
         $phone->setId(1);
         $phone->setNumber('418 111-1111');
         $phone->setClient($client);
 
-        $phone2 = new DDC440Phone;
+        $phone2 = new DDC440Phone();
         $phone->setId(2);
         $phone2->setNumber('418 222-2222');
         $phone2->setClient($client);
@@ -58,8 +59,8 @@ class DDC440Test extends \Doctrine\Tests\OrmFunctionalTestCase
         $id = $client->getId();
         $this->em->clear();
 
-        $uw = $this->em->getUnitOfWork();
-        $client = $this->em->find(DDC440Client::class, $id);
+        $uw           = $this->em->getUnitOfWork();
+        $client       = $this->em->find(DDC440Client::class, $id);
         $clientPhones = $client->getPhones();
 
         $p1 = $clientPhones[1];
@@ -71,7 +72,6 @@ class DDC440Test extends \Doctrine\Tests\OrmFunctionalTestCase
         self::assertInstanceOf(DDC440Phone::class, $p1);
         $originalData = $uw->getOriginalEntityData($p1);
         self::assertEquals($phone->getNumber(), $originalData['number']);
-
 
         //If you comment out previous test, this one should pass
         self::assertInstanceOf(DDC440Phone::class, $p2);
@@ -86,7 +86,6 @@ class DDC440Test extends \Doctrine\Tests\OrmFunctionalTestCase
  */
 class DDC440Phone
 {
-
     /**
      * @ORM\Column(name="id", type="integer")
      * @ORM\Id
@@ -100,9 +99,7 @@ class DDC440Phone
      * })
      */
     protected $client;
-    /**
-     * @ORM\Column(name="phonenumber", type="string")
-     */
+    /** @ORM\Column(name="phonenumber", type="string") */
     protected $number;
 
     public function setNumber($value)
@@ -115,7 +112,7 @@ class DDC440Phone
         return $this->number;
     }
 
-    public function setClient(DDC440Client $value, $update_inverse=true)
+    public function setClient(DDC440Client $value, $update_inverse = true)
     {
         $this->client = $value;
         if ($update_inverse) {
@@ -145,7 +142,6 @@ class DDC440Phone
  */
 class DDC440Client
 {
-
     /**
      * @ORM\Column(name="id", type="integer")
      * @ORM\Id
@@ -164,9 +160,7 @@ class DDC440Client
      * @ORM\OrderBy({"number"="ASC"})
      */
     protected $phones;
-    /**
-     * @ORM\Column(name="name", type="string")
-     */
+    /** @ORM\Column(name="name", type="string") */
     protected $name;
 
     public function __construct()

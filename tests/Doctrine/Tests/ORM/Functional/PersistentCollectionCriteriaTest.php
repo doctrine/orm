@@ -13,9 +13,6 @@ use Doctrine\Tests\Models\Tweet\User;
 use Doctrine\Tests\Models\Tweet\User as TweetUser;
 use Doctrine\Tests\OrmFunctionalTestCase;
 
-/**
- * @author Michaël Gallego <mic.gallego@gmail.com>
- */
 class PersistentCollectionCriteriaTest extends OrmFunctionalTestCase
 {
     protected function setUp()
@@ -28,15 +25,15 @@ class PersistentCollectionCriteriaTest extends OrmFunctionalTestCase
 
     public function loadTweetFixture()
     {
-        $author = new TweetUser();
+        $author       = new TweetUser();
         $author->name = 'ngal';
         $this->em->persist($author);
 
-        $tweet1 = new Tweet();
+        $tweet1          = new Tweet();
         $tweet1->content = 'Foo';
         $author->addTweet($tweet1);
 
-        $tweet2 = new Tweet();
+        $tweet2          = new Tweet();
         $tweet2->content = 'Bar';
         $author->addTweet($tweet2);
 
@@ -49,7 +46,7 @@ class PersistentCollectionCriteriaTest extends OrmFunctionalTestCase
 
     public function loadQuoteFixture()
     {
-        $user = new QuoteUser();
+        $user       = new QuoteUser();
         $user->name = 'mgal';
         $this->em->persist($user);
 

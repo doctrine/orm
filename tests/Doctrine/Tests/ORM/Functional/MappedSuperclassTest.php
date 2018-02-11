@@ -11,8 +11,6 @@ use ProxyManager\Proxy\GhostObjectInterface;
 
 /**
  * MappedSuperclassTest
- *
- * @author robo
  */
 class MappedSuperclassTest extends OrmFunctionalTestCase
 {

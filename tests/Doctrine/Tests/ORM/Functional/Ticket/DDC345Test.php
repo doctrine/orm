@@ -4,9 +4,11 @@ declare(strict_types=1);
 
 namespace Doctrine\Tests\ORM\Functional\Ticket;
 
+use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\Annotation as ORM;
+use Doctrine\Tests\OrmFunctionalTestCase;
 
-class DDC345Test extends \Doctrine\Tests\OrmFunctionalTestCase
+class DDC345Test extends OrmFunctionalTestCase
 {
     protected function setUp()
     {
@@ -24,18 +26,18 @@ class DDC345Test extends \Doctrine\Tests\OrmFunctionalTestCase
     public function testTwoIterateHydrations()
     {
         // Create User
-        $user = new DDC345User;
+        $user       = new DDC345User();
         $user->name = 'Test User';
         $this->em->persist($user); // $em->flush() does not change much here
 
         // Create Group
-        $group = new DDC345Group;
+        $group       = new DDC345Group();
         $group->name = 'Test Group';
         $this->em->persist($group); // $em->flush() does not change much here
 
-        $membership = new DDC345Membership;
+        $membership        = new DDC345Membership();
         $membership->group = $group;
-        $membership->user = $user;
+        $membership->user  = $user;
         $membership->state = 'active';
 
         //$this->em->persist($membership); // COMMENT OUT TO SEE BUG
@@ -76,7 +78,7 @@ class DDC345User
 
     public function __construct()
     {
-        $this->Memberships = new \Doctrine\Common\Collections\ArrayCollection;
+        $this->Memberships = new ArrayCollection();
     }
 }
 
@@ -101,7 +103,7 @@ class DDC345Group
 
     public function __construct()
     {
-        $this->Memberships = new \Doctrine\Common\Collections\ArrayCollection;
+        $this->Memberships = new ArrayCollection();
     }
 }
 
@@ -140,14 +142,14 @@ class DDC345Membership
     public $updated;
 
     public $prePersistCallCount = 0;
-    public $preUpdateCallCount = 0;
+    public $preUpdateCallCount  = 0;
 
     /** @ORM\PrePersist */
     public function doStuffOnPrePersist()
     {
         //echo "***** PrePersist\n";
         ++$this->prePersistCallCount;
-        $this->updated = new \DateTime;
+        $this->updated = new \DateTime();
     }
 
     /** @ORM\PreUpdate */
@@ -155,6 +157,6 @@ class DDC345Membership
     {
         //echo "***** PreUpdate\n";
         ++$this->preUpdateCallCount;
-        $this->updated = new \DateTime;
+        $this->updated = new \DateTime();
     }
 }

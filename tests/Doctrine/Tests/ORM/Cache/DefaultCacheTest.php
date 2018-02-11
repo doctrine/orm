@@ -5,29 +5,27 @@ declare(strict_types=1);
 namespace Doctrine\Tests\ORM\Cache;
 
 use Doctrine\ORM\Cache;
+use Doctrine\ORM\Cache\CollectionCacheEntry;
+use Doctrine\ORM\Cache\CollectionCacheKey;
+use Doctrine\ORM\Cache\DefaultCache;
+use Doctrine\ORM\Cache\EntityCacheEntry;
+use Doctrine\ORM\Cache\EntityCacheKey;
+use Doctrine\ORM\EntityManagerInterface;
+use Doctrine\Tests\Models\Cache\Country;
+use Doctrine\Tests\Models\Cache\State;
 use Doctrine\Tests\Models\CMS\CmsUser;
 use Doctrine\Tests\OrmTestCase;
-use Doctrine\ORM\Cache\DefaultCache;
-use Doctrine\Tests\Models\Cache\State;
-use Doctrine\Tests\Models\Cache\Country;
-use Doctrine\ORM\Cache\EntityCacheKey;
-use Doctrine\ORM\Cache\EntityCacheEntry;
-use Doctrine\ORM\Cache\CollectionCacheKey;
-use Doctrine\ORM\Cache\CollectionCacheEntry;
+use function array_merge;
 
 /**
  * @group DDC-2183
  */
 class DefaultCacheTest extends OrmTestCase
 {
-    /**
-     * @var \Doctrine\ORM\Cache
-     */
+    /** @var Cache */
     private $cache;
 
-    /**
-     * @var \Doctrine\ORM\EntityManagerInterface
-     */
+    /** @var EntityManagerInterface */
     private $em;
 
     protected function setUp()
@@ -42,8 +40,8 @@ class DefaultCacheTest extends OrmTestCase
 
     /**
      * @param string $className
-     * @param array $identifier
-     * @param array $data
+     * @param array  $identifier
+     * @param array  $data
      */
     private function putEntityCacheEntry($className, array $identifier, array $data)
     {
@@ -58,8 +56,8 @@ class DefaultCacheTest extends OrmTestCase
     /**
      * @param string $className
      * @param string $association
-     * @param array $ownerIdentifier
-     * @param array $data
+     * @param array  $ownerIdentifier
+     * @param array  $data
      */
     private function putCollectionCacheEntry($className, $association, array $ownerIdentifier, array $data)
     {
@@ -252,6 +250,6 @@ class DefaultCacheTest extends OrmTestCase
         $method->setAccessible(true);
         $property->setValue($entity, $identifier);
 
-        self::assertEquals(['id'=>$identifier], $method->invoke($this->cache, $metadata, $identifier));
+        self::assertEquals(['id' => $identifier], $method->invoke($this->cache, $metadata, $identifier));
     }
 }

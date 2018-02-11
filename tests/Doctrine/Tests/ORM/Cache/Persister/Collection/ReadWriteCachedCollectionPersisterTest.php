@@ -4,15 +4,15 @@ declare(strict_types=1);
 
 namespace Doctrine\Tests\ORM\Cache\Persister\Collection;
 
+use Doctrine\ORM\Cache\CollectionCacheKey;
 use Doctrine\ORM\Cache\ConcurrentRegion;
 use Doctrine\ORM\Cache\Lock;
+use Doctrine\ORM\Cache\Persister\Collection\ReadWriteCachedCollectionPersister;
 use Doctrine\ORM\Cache\Region;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Mapping\AssociationMetadata;
-use Doctrine\Tests\Models\Cache\State;
-use Doctrine\ORM\Cache\CollectionCacheKey;
 use Doctrine\ORM\Persisters\Collection\CollectionPersister;
-use Doctrine\ORM\Cache\Persister\Collection\ReadWriteCachedCollectionPersister;
+use Doctrine\Tests\Models\Cache\State;
 
 /**
  * @group DDC-2183
@@ -39,13 +39,12 @@ class ReadWriteCachedCollectionPersisterTest extends AbstractCollectionPersister
         CollectionPersister $persister,
         Region $region,
         AssociationMetadata $association
-    )
-    {
+    ) {
         return new ReadWriteCachedCollectionPersister($persister, $region, $em, $association);
     }
 
     /**
-     * @return \Doctrine\ORM\Cache\Region
+     * @return Region
      */
     protected function createRegion()
     {
@@ -56,47 +55,47 @@ class ReadWriteCachedCollectionPersisterTest extends AbstractCollectionPersister
 
     public function testDeleteShouldLockItem()
     {
-        $entity     = new State("Foo");
+        $entity     = new State('Foo');
         $lock       = Lock::createLockRead();
         $persister  = $this->createPersisterDefault();
         $collection = $this->createCollection($entity);
-        $key        = new CollectionCacheKey(State::class, 'cities', ['id'=>1]);
+        $key        = new CollectionCacheKey(State::class, 'cities', ['id' => 1]);
 
         $this->region->expects($this->once())
             ->method('lock')
             ->with($this->equalTo($key))
             ->will($this->returnValue($lock));
 
-        $this->em->getUnitOfWork()->registerManaged($entity, ['id'=>1], ['id'=>1, 'name'=>'Foo']);
+        $this->em->getUnitOfWork()->registerManaged($entity, ['id' => 1], ['id' => 1, 'name' => 'Foo']);
 
         $persister->delete($collection);
     }
 
     public function testUpdateShouldLockItem()
     {
-        $entity     = new State("Foo");
+        $entity     = new State('Foo');
         $lock       = Lock::createLockRead();
         $persister  = $this->createPersisterDefault();
         $collection = $this->createCollection($entity);
-        $key        = new CollectionCacheKey(State::class, 'cities', ['id'=>1]);
+        $key        = new CollectionCacheKey(State::class, 'cities', ['id' => 1]);
 
         $this->region->expects($this->once())
             ->method('lock')
             ->with($this->equalTo($key))
             ->will($this->returnValue($lock));
 
-        $this->em->getUnitOfWork()->registerManaged($entity, ['id'=>1], ['id'=>1, 'name'=>'Foo']);
+        $this->em->getUnitOfWork()->registerManaged($entity, ['id' => 1], ['id' => 1, 'name' => 'Foo']);
 
         $persister->update($collection);
     }
 
     public function testUpdateTransactionRollBackShouldEvictItem()
     {
-        $entity     = new State("Foo");
+        $entity     = new State('Foo');
         $lock       = Lock::createLockRead();
         $persister  = $this->createPersisterDefault();
         $collection = $this->createCollection($entity);
-        $key        = new CollectionCacheKey(State::class, 'cities', ['id'=>1]);
+        $key        = new CollectionCacheKey(State::class, 'cities', ['id' => 1]);
 
         $this->region->expects($this->once())
             ->method('lock')
@@ -108,7 +107,7 @@ class ReadWriteCachedCollectionPersisterTest extends AbstractCollectionPersister
             ->with($this->equalTo($key))
             ->will($this->returnValue($lock));
 
-        $this->em->getUnitOfWork()->registerManaged($entity, ['id'=>1], ['id'=>1, 'name'=>'Foo']);
+        $this->em->getUnitOfWork()->registerManaged($entity, ['id' => 1], ['id' => 1, 'name' => 'Foo']);
 
         $persister->update($collection);
         $persister->afterTransactionRolledBack();
@@ -116,11 +115,11 @@ class ReadWriteCachedCollectionPersisterTest extends AbstractCollectionPersister
 
     public function testDeleteTransactionRollBackShouldEvictItem()
     {
-        $entity     = new State("Foo");
+        $entity     = new State('Foo');
         $lock       = Lock::createLockRead();
         $persister  = $this->createPersisterDefault();
         $collection = $this->createCollection($entity);
-        $key        = new CollectionCacheKey(State::class, 'cities', ['id'=>1]);
+        $key        = new CollectionCacheKey(State::class, 'cities', ['id' => 1]);
 
         $this->region->expects($this->once())
             ->method('lock')
@@ -131,7 +130,7 @@ class ReadWriteCachedCollectionPersisterTest extends AbstractCollectionPersister
             ->method('evict')
             ->with($this->equalTo($key));
 
-        $this->em->getUnitOfWork()->registerManaged($entity, ['id'=>1], ['id'=>1, 'name'=>'Foo']);
+        $this->em->getUnitOfWork()->registerManaged($entity, ['id' => 1], ['id' => 1, 'name' => 'Foo']);
 
         $persister->delete($collection);
         $persister->afterTransactionRolledBack();
@@ -139,11 +138,11 @@ class ReadWriteCachedCollectionPersisterTest extends AbstractCollectionPersister
 
     public function testTransactionRollBackDeleteShouldClearQueue()
     {
-        $entity     = new State("Foo");
+        $entity     = new State('Foo');
         $lock       = Lock::createLockRead();
         $persister  = $this->createPersisterDefault();
         $collection = $this->createCollection($entity);
-        $key        = new CollectionCacheKey(State::class, 'cities', ['id'=>1]);
+        $key        = new CollectionCacheKey(State::class, 'cities', ['id' => 1]);
         $property   = new \ReflectionProperty(ReadWriteCachedCollectionPersister::class, 'queuedCache');
 
         $property->setAccessible(true);
@@ -157,7 +156,7 @@ class ReadWriteCachedCollectionPersisterTest extends AbstractCollectionPersister
             ->method('evict')
             ->with($this->equalTo($key));
 
-        $this->em->getUnitOfWork()->registerManaged($entity, ['id'=>1], ['id'=>1, 'name'=>'Foo']);
+        $this->em->getUnitOfWork()->registerManaged($entity, ['id' => 1], ['id' => 1, 'name' => 'Foo']);
 
         $persister->delete($collection);
 
@@ -170,11 +169,11 @@ class ReadWriteCachedCollectionPersisterTest extends AbstractCollectionPersister
 
     public function testTransactionRollBackUpdateShouldClearQueue()
     {
-        $entity     = new State("Foo");
+        $entity     = new State('Foo');
         $lock       = Lock::createLockRead();
         $persister  = $this->createPersisterDefault();
         $collection = $this->createCollection($entity);
-        $key        = new CollectionCacheKey(State::class, 'cities', ['id'=>1]);
+        $key        = new CollectionCacheKey(State::class, 'cities', ['id' => 1]);
         $property   = new \ReflectionProperty(ReadWriteCachedCollectionPersister::class, 'queuedCache');
 
         $property->setAccessible(true);
@@ -188,7 +187,7 @@ class ReadWriteCachedCollectionPersisterTest extends AbstractCollectionPersister
             ->method('evict')
             ->with($this->equalTo($key));
 
-        $this->em->getUnitOfWork()->registerManaged($entity, ['id'=>1], ['id'=>1, 'name'=>'Foo']);
+        $this->em->getUnitOfWork()->registerManaged($entity, ['id' => 1], ['id' => 1, 'name' => 'Foo']);
 
         $persister->update($collection);
 
@@ -201,11 +200,11 @@ class ReadWriteCachedCollectionPersisterTest extends AbstractCollectionPersister
 
     public function testTransactionRollCommitDeleteShouldClearQueue()
     {
-        $entity     = new State("Foo");
+        $entity     = new State('Foo');
         $lock       = Lock::createLockRead();
         $persister  = $this->createPersisterDefault();
         $collection = $this->createCollection($entity);
-        $key        = new CollectionCacheKey(State::class, 'cities', ['id'=>1]);
+        $key        = new CollectionCacheKey(State::class, 'cities', ['id' => 1]);
         $property   = new \ReflectionProperty(ReadWriteCachedCollectionPersister::class, 'queuedCache');
 
         $property->setAccessible(true);
@@ -219,7 +218,7 @@ class ReadWriteCachedCollectionPersisterTest extends AbstractCollectionPersister
             ->method('evict')
             ->with($this->equalTo($key));
 
-        $this->em->getUnitOfWork()->registerManaged($entity, ['id'=>1], ['id'=>1, 'name'=>'Foo']);
+        $this->em->getUnitOfWork()->registerManaged($entity, ['id' => 1], ['id' => 1, 'name' => 'Foo']);
 
         $persister->delete($collection);
 
@@ -232,11 +231,11 @@ class ReadWriteCachedCollectionPersisterTest extends AbstractCollectionPersister
 
     public function testTransactionRollCommitUpdateShouldClearQueue()
     {
-        $entity     = new State("Foo");
+        $entity     = new State('Foo');
         $lock       = Lock::createLockRead();
         $persister  = $this->createPersisterDefault();
         $collection = $this->createCollection($entity);
-        $key        = new CollectionCacheKey(State::class, 'cities', ['id'=>1]);
+        $key        = new CollectionCacheKey(State::class, 'cities', ['id' => 1]);
         $property   = new \ReflectionProperty(ReadWriteCachedCollectionPersister::class, 'queuedCache');
 
         $property->setAccessible(true);
@@ -250,7 +249,7 @@ class ReadWriteCachedCollectionPersisterTest extends AbstractCollectionPersister
             ->method('evict')
             ->with($this->equalTo($key));
 
-        $this->em->getUnitOfWork()->registerManaged($entity, ['id'=>1], ['id'=>1, 'name'=>'Foo']);
+        $this->em->getUnitOfWork()->registerManaged($entity, ['id' => 1], ['id' => 1, 'name' => 'Foo']);
 
         $persister->update($collection);
 
@@ -263,10 +262,10 @@ class ReadWriteCachedCollectionPersisterTest extends AbstractCollectionPersister
 
     public function testDeleteLockFailureShouldIgnoreQueue()
     {
-        $entity     = new State("Foo");
+        $entity     = new State('Foo');
         $persister  = $this->createPersisterDefault();
         $collection = $this->createCollection($entity);
-        $key        = new CollectionCacheKey(State::class, 'cities', ['id'=>1]);
+        $key        = new CollectionCacheKey(State::class, 'cities', ['id' => 1]);
         $property   = new \ReflectionProperty(ReadWriteCachedCollectionPersister::class, 'queuedCache');
 
         $property->setAccessible(true);
@@ -280,7 +279,7 @@ class ReadWriteCachedCollectionPersisterTest extends AbstractCollectionPersister
             ->method('delete')
             ->with($this->equalTo($collection));
 
-        $this->em->getUnitOfWork()->registerManaged($entity, ['id'=>1], ['id'=>1, 'name'=>'Foo']);
+        $this->em->getUnitOfWork()->registerManaged($entity, ['id' => 1], ['id' => 1, 'name' => 'Foo']);
 
         $persister->delete($collection);
         self::assertCount(0, $property->getValue($persister));
@@ -288,10 +287,10 @@ class ReadWriteCachedCollectionPersisterTest extends AbstractCollectionPersister
 
     public function testUpdateLockFailureShouldIgnoreQueue()
     {
-        $entity     = new State("Foo");
+        $entity     = new State('Foo');
         $persister  = $this->createPersisterDefault();
         $collection = $this->createCollection($entity);
-        $key        = new CollectionCacheKey(State::class, 'cities', ['id'=>1]);
+        $key        = new CollectionCacheKey(State::class, 'cities', ['id' => 1]);
         $property   = new \ReflectionProperty(ReadWriteCachedCollectionPersister::class, 'queuedCache');
 
         $property->setAccessible(true);
@@ -305,7 +304,7 @@ class ReadWriteCachedCollectionPersisterTest extends AbstractCollectionPersister
             ->method('update')
             ->with($this->equalTo($collection));
 
-        $this->em->getUnitOfWork()->registerManaged($entity, ['id'=>1], ['id'=>1, 'name'=>'Foo']);
+        $this->em->getUnitOfWork()->registerManaged($entity, ['id' => 1], ['id' => 1, 'name' => 'Foo']);
 
         $persister->update($collection);
         self::assertCount(0, $property->getValue($persister));

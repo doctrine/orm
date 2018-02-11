@@ -23,15 +23,15 @@ class OneToOneOrphanRemovalTest extends OrmFunctionalTestCase
 
     public function testOrphanRemoval()
     {
-        $user = new CmsUser;
-        $user->status = 'dev';
+        $user           = new CmsUser();
+        $user->status   = 'dev';
         $user->username = 'romanb';
-        $user->name = 'Roman B.';
+        $user->name     = 'Roman B.';
 
-        $address = new CmsAddress;
+        $address          = new CmsAddress();
         $address->country = 'de';
-        $address->zip = 1234;
-        $address->city = 'Berlin';
+        $address->zip     = 1234;
+        $address->city    = 'Berlin';
 
         $user->setAddress($address);
 
@@ -61,12 +61,12 @@ class OneToOneOrphanRemovalTest extends OrmFunctionalTestCase
 
     public function testOrphanRemovalWhenUnlink()
     {
-        $user = new CmsUser;
-        $user->status = 'dev';
+        $user           = new CmsUser();
+        $user->status   = 'dev';
         $user->username = 'beberlei';
-        $user->name = 'Benjamin Eberlei';
+        $user->name     = 'Benjamin Eberlei';
 
-        $email = new CmsEmail;
+        $email        = new CmsEmail();
         $email->email = 'beberlei@domain.com';
 
         $user->setEmail($email);

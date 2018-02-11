@@ -5,8 +5,9 @@ declare(strict_types=1);
 namespace Doctrine\Tests\ORM\Functional\Ticket;
 
 use Doctrine\ORM\Annotation as ORM;
+use Doctrine\Tests\OrmFunctionalTestCase;
 
-class DDC719Test extends \Doctrine\Tests\OrmFunctionalTestCase
+class DDC719Test extends OrmFunctionalTestCase
 {
     protected function setUp()
     {
@@ -64,15 +65,13 @@ class DDC719Group extends Entity
     /**
      * @ORM\ManyToMany(targetEntity=DDC719Group::class, inversedBy="parents")
      * @ORM\JoinTable(name="groups_groups",
-     * 		joinColumns={@ORM\JoinColumn(name="parent_id", referencedColumnName="id")},
-     * 		inverseJoinColumns={@ORM\JoinColumn(name="child_id", referencedColumnName="id")}
+     *      joinColumns={@ORM\JoinColumn(name="parent_id", referencedColumnName="id")},
+     *      inverseJoinColumns={@ORM\JoinColumn(name="child_id", referencedColumnName="id")}
      * )
      */
     protected $children;
 
-    /**
-     * @ORM\ManyToMany(targetEntity=DDC719Group::class, mappedBy="children")
-     */
+    /** @ORM\ManyToMany(targetEntity=DDC719Group::class, mappedBy="children") */
     protected $parents;
 
     /**
@@ -84,17 +83,16 @@ class DDC719Group extends Entity
 
         $this->channels = new ArrayCollection();
         $this->children = new ArrayCollection();
-        $this->parents = new ArrayCollection();
+        $this->parents  = new ArrayCollection();
     }
 
     /**
      * adds group as new child
      *
-     * @param Group $child
      */
     public function addGroup(Group $child)
     {
-        if ( ! $this->children->contains($child)) {
+        if (! $this->children->contains($child)) {
             $this->children->add($child);
             $child->addGroup($this);
         }
@@ -103,11 +101,10 @@ class DDC719Group extends Entity
     /**
      * adds channel as new child
      *
-     * @param Channel $child
      */
     public function addChannel(Channel $child)
     {
-        if ( ! $this->channels->contains($child)) {
+        if (! $this->channels->contains($child)) {
             $this->channels->add($child);
         }
     }

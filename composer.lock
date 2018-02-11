@@ -294,12 +294,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/doctrine/dbal.git",
-                "reference": "83995663c993207ff1b3dd0a02bb565defb982a6"
+                "reference": "3c0bad37f41182de2b49ce5c4f8935ae7d808c81"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/doctrine/dbal/zipball/83995663c993207ff1b3dd0a02bb565defb982a6",
-                "reference": "83995663c993207ff1b3dd0a02bb565defb982a6",
+                "url": "https://api.github.com/repos/doctrine/dbal/zipball/3c0bad37f41182de2b49ce5c4f8935ae7d808c81",
+                "reference": "3c0bad37f41182de2b49ce5c4f8935ae7d808c81",
                 "shasum": ""
             },
             "require": {
@@ -361,7 +361,7 @@
                 "persistence",
                 "queryobject"
             ],
-            "time": "2018-03-02T02:39:07+00:00"
+            "time": "2018-03-08T00:07:32+00:00"
         },
         {
             "name": "doctrine/inflector",
@@ -659,7 +659,7 @@
         },
         {
             "name": "symfony/console",
-            "version": "v4.0.5",
+            "version": "v4.0.6",
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/console.git",
@@ -2368,16 +2368,16 @@
         },
         {
             "name": "slevomat/coding-standard",
-            "version": "4.5.0",
+            "version": "4.5.2",
             "source": {
                 "type": "git",
                 "url": "https://github.com/slevomat/coding-standard.git",
-                "reference": "3957603813d466aa820231a6ac9d4d73d0dcf935"
+                "reference": "1e609159241fa90d5a429f185b2ea9b881340a7c"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/slevomat/coding-standard/zipball/3957603813d466aa820231a6ac9d4d73d0dcf935",
-                "reference": "3957603813d466aa820231a6ac9d4d73d0dcf935",
+                "url": "https://api.github.com/repos/slevomat/coding-standard/zipball/1e609159241fa90d5a429f185b2ea9b881340a7c",
+                "reference": "1e609159241fa90d5a429f185b2ea9b881340a7c",
                 "shasum": ""
             },
             "require": {
@@ -2404,7 +2404,7 @@
                 "MIT"
             ],
             "description": "Slevomat Coding Standard for PHP_CodeSniffer complements Consistence Coding Standard by providing sniffs with additional checks.",
-            "time": "2018-03-02T15:11:15+00:00"
+            "time": "2018-03-08T08:14:33+00:00"
         },
         {
             "name": "squizlabs/php_codesniffer",

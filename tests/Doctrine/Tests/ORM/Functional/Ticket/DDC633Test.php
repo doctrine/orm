@@ -5,9 +5,10 @@ declare(strict_types=1);
 namespace Doctrine\Tests\ORM\Functional\Ticket;
 
 use Doctrine\ORM\Annotation as ORM;
+use Doctrine\Tests\OrmFunctionalTestCase;
 use ProxyManager\Proxy\GhostObjectInterface;
 
-class DDC633Test extends \Doctrine\Tests\OrmFunctionalTestCase
+class DDC633Test extends OrmFunctionalTestCase
 {
     protected function setUp()
     {
@@ -30,9 +31,9 @@ class DDC633Test extends \Doctrine\Tests\OrmFunctionalTestCase
      */
     public function testOneToOneEager()
     {
-        $app = new DDC633Appointment();
-        $pat = new DDC633Patient();
-        $app->patient = $pat;
+        $app              = new DDC633Appointment();
+        $pat              = new DDC633Patient();
+        $app->patient     = $pat;
         $pat->appointment = $app;
 
         $this->em->persist($app);
@@ -54,9 +55,9 @@ class DDC633Test extends \Doctrine\Tests\OrmFunctionalTestCase
     public function testDQLDeferredEagerLoad()
     {
         for ($i = 0; $i < 10; $i++) {
-            $app = new DDC633Appointment();
-            $pat = new DDC633Patient();
-            $app->patient = $pat;
+            $app              = new DDC633Appointment();
+            $pat              = new DDC633Patient();
+            $app->patient     = $pat;
             $pat->appointment = $app;
 
             $this->em->persist($app);
@@ -65,11 +66,11 @@ class DDC633Test extends \Doctrine\Tests\OrmFunctionalTestCase
         $this->em->flush();
         $this->em->clear();
 
-        $appointments = $this->em->createQuery("SELECT a FROM " . __NAMESPACE__ . "\DDC633Appointment a")->getResult();
+        $appointments = $this->em->createQuery('SELECT a FROM ' . __NAMESPACE__ . '\DDC633Appointment a')->getResult();
 
         foreach ($appointments as $eagerAppointment) {
             self::assertInstanceOf(GhostObjectInterface::class, $eagerAppointment->patient);
-            self::assertTrue($eagerAppointment->patient->isProxyInitialized(), "Proxy should already be initialized due to eager loading!");
+            self::assertTrue($eagerAppointment->patient->isProxyInitialized(), 'Proxy should already be initialized due to eager loading!');
         }
     }
 }
@@ -82,9 +83,7 @@ class DDC633Appointment
     /** @ORM\Id @ORM\Column(type="integer") @ORM\GeneratedValue */
     public $id;
 
-    /**
-     * @ORM\OneToOne(targetEntity=DDC633Patient::class, inversedBy="appointment", fetch="EAGER")
-     */
+    /** @ORM\OneToOne(targetEntity=DDC633Patient::class, inversedBy="appointment", fetch="EAGER") */
     public $patient;
 }
 
@@ -96,8 +95,6 @@ class DDC633Patient
     /** @ORM\Id @ORM\Column(type="integer") @ORM\GeneratedValue */
     public $id;
 
-    /**
-     * @ORM\OneToOne(targetEntity=DDC633Appointment::class, mappedBy="patient")
-     */
+    /** @ORM\OneToOne(targetEntity=DDC633Appointment::class, mappedBy="patient") */
     public $appointment;
 }

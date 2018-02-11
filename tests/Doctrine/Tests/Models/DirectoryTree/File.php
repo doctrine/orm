@@ -13,7 +13,7 @@ use Doctrine\ORM\Annotation as ORM;
 class File extends AbstractContentItem
 {
     /** @ORM\Column(type="string") */
-    protected $extension = "html";
+    protected $extension = 'html';
 
     public function getExtension()
     {

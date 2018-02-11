@@ -28,7 +28,7 @@ class OneToOneInverseSideLoadAfterDqlQueryTest extends OrmFunctionalTestCase
     /**
      * @group 6759
      */
-    public function testInverseSideOneToOneLoadedAfterDqlQuery(): void
+    public function testInverseSideOneToOneLoadedAfterDqlQuery() : void
     {
         $owner   = new OwningSide();
         $inverse = new InverseSide();

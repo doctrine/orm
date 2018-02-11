@@ -19,9 +19,7 @@ class Group
      */
     public $id;
 
-    /**
-     * @ORM\Column(name="group-name")
-     */
+    /** @ORM\Column(name="group-name") */
     public $name;
 
     /**
@@ -32,14 +30,12 @@ class Group
      */
     public $parent;
 
-    /**
-     * @ORM\ManyToMany(targetEntity=User::class, mappedBy="groups")
-     */
+    /** @ORM\ManyToMany(targetEntity=User::class, mappedBy="groups") */
     public $users;
 
-    public function __construct($name = null, Group $parent =  null)
+    public function __construct($name = null, ?Group $parent = null)
     {
-        $this->name     = $name;
-        $this->parent   = $parent;
+        $this->name   = $name;
+        $this->parent = $parent;
     }
 }

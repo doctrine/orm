@@ -6,11 +6,12 @@ namespace Doctrine\Tests\ORM\Functional\Ticket;
 
 use Doctrine\ORM\Annotation as ORM;
 use Doctrine\ORM\Query;
+use Doctrine\Tests\OrmFunctionalTestCase;
 
 /**
  * @group DDC-2931
  */
-class DDC2931Test extends \Doctrine\Tests\OrmFunctionalTestCase
+class DDC2931Test extends OrmFunctionalTestCase
 {
     public function setUp()
     {
@@ -92,7 +93,6 @@ class DDC2931Test extends \Doctrine\Tests\OrmFunctionalTestCase
 /** @ORM\Entity */
 class DDC2931User
 {
-
     /** @ORM\Id @ORM\Column(type="integer") @ORM\GeneratedValue(strategy="AUTO") */
     public $id;
 

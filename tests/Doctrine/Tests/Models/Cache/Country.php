@@ -20,9 +20,7 @@ class Country
      */
     protected $id;
 
-    /**
-     * @ORM\Column(unique=true)
-     */
+    /** @ORM\Column(unique=true) */
     protected $name;
 
     public function __construct($name)

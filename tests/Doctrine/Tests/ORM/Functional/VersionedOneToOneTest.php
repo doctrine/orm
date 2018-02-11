@@ -4,15 +4,13 @@ declare(strict_types=1);
 
 namespace Doctrine\Tests\ORM\Functional;
 
+use Doctrine\ORM\ORMException;
 use Doctrine\Tests\Models\VersionedOneToOne\FirstRelatedEntity;
 use Doctrine\Tests\Models\VersionedOneToOne\SecondRelatedEntity;
-use Doctrine\ORM\ORMException;
 use Doctrine\Tests\OrmFunctionalTestCase;
 
 /**
  * Tests that an entity with a OneToOne relationship defined as the id, with a version field can be created.
- *
- * @author Rob Caiger <rob@clocal.co.uk>
  *
  * @group VersionedOneToOne
  */
@@ -26,7 +24,7 @@ class VersionedOneToOneTest extends OrmFunctionalTestCase
             $this->schemaTool->createSchema(
                 [
                     $this->em->getClassMetadata(FirstRelatedEntity::class),
-                    $this->em->getClassMetadata(SecondRelatedEntity::class)
+                    $this->em->getClassMetadata(SecondRelatedEntity::class),
                 ]
             );
         } catch (ORMException $e) {
@@ -39,14 +37,14 @@ class VersionedOneToOneTest extends OrmFunctionalTestCase
      */
     public function testSetVersionOnCreate()
     {
-        $secondRelatedEntity = new SecondRelatedEntity();
+        $secondRelatedEntity       = new SecondRelatedEntity();
         $secondRelatedEntity->name = 'Bob';
 
         $this->em->persist($secondRelatedEntity);
         $this->em->flush();
 
-        $firstRelatedEntity = new FirstRelatedEntity();
-        $firstRelatedEntity->name = 'Fred';
+        $firstRelatedEntity               = new FirstRelatedEntity();
+        $firstRelatedEntity->name         = 'Fred';
         $firstRelatedEntity->secondEntity = $secondRelatedEntity;
 
         $this->em->persist($firstRelatedEntity);

@@ -4,14 +4,15 @@ declare(strict_types=1);
 
 namespace Doctrine\Tests\ORM\Functional\Ticket;
 
-use Doctrine\Tests\Models\DDC117\DDC117ArticleDetails;
-use Doctrine\Tests\Models\DDC117\DDC117Article;
 use Doctrine\ORM\Tools\Pagination\Paginator;
+use Doctrine\Tests\Models\DDC117\DDC117Article;
+use Doctrine\Tests\Models\DDC117\DDC117ArticleDetails;
+use Doctrine\Tests\OrmFunctionalTestCase;
 
 /**
  * @group DDC-1685
  */
-class DDC1685Test extends \Doctrine\Tests\OrmFunctionalTestCase
+class DDC1685Test extends OrmFunctionalTestCase
 {
     private $paginator;
 
@@ -23,15 +24,15 @@ class DDC1685Test extends \Doctrine\Tests\OrmFunctionalTestCase
 
         $this->em->createQuery('DELETE FROM Doctrine\Tests\Models\DDC117\DDC117ArticleDetails ad')->execute();
 
-        $article = new DDC117Article("Foo");
+        $article = new DDC117Article('Foo');
         $this->em->persist($article);
         $this->em->flush();
 
-        $articleDetails = new DDC117ArticleDetails($article, "Very long text");
+        $articleDetails = new DDC117ArticleDetails($article, 'Very long text');
         $this->em->persist($articleDetails);
         $this->em->flush();
 
-        $dql   = "SELECT ad FROM Doctrine\Tests\Models\DDC117\DDC117ArticleDetails ad";
+        $dql   = 'SELECT ad FROM Doctrine\Tests\Models\DDC117\DDC117ArticleDetails ad';
         $query = $this->em->createQuery($dql);
 
         $this->paginator = new Paginator($query);

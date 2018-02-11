@@ -5,11 +5,12 @@ declare(strict_types=1);
 namespace Doctrine\Tests\ORM\Functional\Ticket;
 
 use Doctrine\ORM\Annotation as ORM;
+use Doctrine\Tests\OrmFunctionalTestCase;
 
 /**
  * @group DDC-2759
  */
-class DDC2759Test extends \Doctrine\Tests\OrmFunctionalTestCase
+class DDC2759Test extends OrmFunctionalTestCase
 {
     /**
      * {@inheritDoc}
@@ -31,7 +32,7 @@ class DDC2759Test extends \Doctrine\Tests\OrmFunctionalTestCase
             return;
         }
 
-        $qualification = new DDC2759Qualification();
+        $qualification         = new DDC2759Qualification();
         $qualificationMetadata = new DDC2759QualificationMetadata($qualification);
 
         $category1 = new DDC2759Category();

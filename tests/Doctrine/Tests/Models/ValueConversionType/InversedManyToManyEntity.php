@@ -19,9 +19,7 @@ class InversedManyToManyEntity
      */
     public $id1;
 
-    /**
-     * @ORM\ManyToMany(targetEntity=OwningManyToManyEntity::class, mappedBy="associatedEntities")
-     */
+    /** @ORM\ManyToMany(targetEntity=OwningManyToManyEntity::class, mappedBy="associatedEntities") */
     public $associatedEntities;
 
     public function __construct()

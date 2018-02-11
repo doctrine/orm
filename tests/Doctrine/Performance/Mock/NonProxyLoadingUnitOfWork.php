@@ -12,9 +12,7 @@ use Doctrine\ORM\UnitOfWork;
  */
 class NonProxyLoadingUnitOfWork extends UnitOfWork
 {
-    /**
-     * @var EntityPersister
-     */
+    /** @var EntityPersister */
     private $entityPersister;
 
     public function __construct()

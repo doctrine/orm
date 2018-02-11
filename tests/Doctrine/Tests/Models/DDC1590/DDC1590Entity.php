@@ -19,9 +19,7 @@ abstract class DDC1590Entity
      */
     protected $id;
 
-    /**
-     * @ORM\Column(type="datetime")
-     */
+    /** @ORM\Column(type="datetime") */
     protected $created_at;
 
     /**

@@ -11,9 +11,7 @@ use Doctrine\ORM\Annotation as ORM;
  */
 class DDC117ApproveChanges
 {
-    /**
-     * @ORM\Id @ORM\Column(type="integer") @ORM\GeneratedValue
-     */
+    /** @ORM\Id @ORM\Column(type="integer") @ORM\GeneratedValue */
     private $id;
 
     /**
@@ -43,8 +41,8 @@ class DDC117ApproveChanges
     public function __construct($details, $reference, $translation)
     {
         $this->articleDetails = $details;
-        $this->reference = $reference;
-        $this->translation = $translation;
+        $this->reference      = $reference;
+        $this->translation    = $translation;
     }
 
     public function getId()

@@ -7,9 +7,9 @@ namespace Doctrine\Tests\ORM\Functional;
 use Doctrine\ORM\ORMException;
 use Doctrine\ORM\Query\QueryException;
 use Doctrine\Tests\Models\Navigation\NavCountry;
+use Doctrine\Tests\Models\Navigation\NavPhotos;
 use Doctrine\Tests\Models\Navigation\NavPointOfInterest;
 use Doctrine\Tests\Models\Navigation\NavTour;
-use Doctrine\Tests\Models\Navigation\NavPhotos;
 use Doctrine\Tests\Models\Navigation\NavUser;
 use Doctrine\Tests\OrmFunctionalTestCase;
 
@@ -23,9 +23,9 @@ class CompositePrimaryKeyTest extends OrmFunctionalTestCase
 
     public function putGermanysBrandenburderTor()
     {
-        $country = new NavCountry("Germany");
+        $country = new NavCountry('Germany');
         $this->em->persist($country);
-        $poi = new NavPointOfInterest(100, 200, "Brandenburger Tor", $country);
+        $poi = new NavPointOfInterest(100, 200, 'Brandenburger Tor', $country);
         $this->em->persist($poi);
         $this->em->flush();
         $this->em->clear();
@@ -35,7 +35,7 @@ class CompositePrimaryKeyTest extends OrmFunctionalTestCase
     {
         $poi = $this->em->find(NavPointOfInterest::class, ['lat' => 100, 'long' => 200]);
 
-        $tour = new NavTour("Trip around Europe");
+        $tour = new NavTour('Trip around Europe');
         $tour->addPointOfInterest($poi);
 
         $this->em->persist($tour);
@@ -64,8 +64,8 @@ class CompositePrimaryKeyTest extends OrmFunctionalTestCase
     {
         $this->putGermanysBrandenburderTor();
 
-        $poi = $this->em->find(NavPointOfInterest::class, ['lat' => 100, 'long' => 200]);
-        $photo = new NavPhotos($poi, "asdf");
+        $poi   = $this->em->find(NavPointOfInterest::class, ['lat' => 100, 'long' => 200]);
+        $photo = new NavPhotos($poi, 'asdf');
         $this->em->persist($photo);
         $this->em->flush();
         $this->em->clear();
@@ -82,8 +82,8 @@ class CompositePrimaryKeyTest extends OrmFunctionalTestCase
     {
         $this->putGermanysBrandenburderTor();
 
-        $poi    = $this->em->find(NavPointOfInterest::class, ['lat' => 100, 'long' => 200]);
-        $photo  = new NavPhotos($poi, "asdf");
+        $poi   = $this->em->find(NavPointOfInterest::class, ['lat' => 100, 'long' => 200]);
+        $photo = new NavPhotos($poi, 'asdf');
         $this->em->persist($photo);
         $this->em->flush();
         $this->em->clear();
@@ -158,8 +158,7 @@ class CompositePrimaryKeyTest extends OrmFunctionalTestCase
         $this->expectException(ORMException::class);
         $this->expectExceptionMessage("Unrecognized identifier fields: 'key1'");
 
-        $poi = $this->em->getReference(NavPointOfInterest::class, ['lat' => 10, 'long' => 20, 'key1' => 100]
-        );
+        $poi = $this->em->getReference(NavPointOfInterest::class, ['lat' => 10, 'long' => 20, 'key1' => 100]);
     }
 
     /**
@@ -170,8 +169,8 @@ class CompositePrimaryKeyTest extends OrmFunctionalTestCase
         $this->putGermanysBrandenburderTor();
 
         $poi = $this->em->find(NavPointOfInterest::class, ['lat' => 100, 'long' => 200]);
-        $poi->addVisitor(new NavUser("test1"));
-        $poi->addVisitor(new NavUser("test2"));
+        $poi->addVisitor(new NavUser('test1'));
+        $poi->addVisitor(new NavUser('test2'));
 
         $this->em->flush();
 

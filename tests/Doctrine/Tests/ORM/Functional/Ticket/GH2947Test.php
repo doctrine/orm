@@ -20,9 +20,7 @@ class GH2947Test extends OrmFunctionalTestCase
         parent::setUp();
 
         $this->schemaTool->createSchema(
-            [
-                $this->em->getClassMetadata(GH2947Car::class)
-            ]
+            [$this->em->getClassMetadata(GH2947Car::class)]
         );
     }
 
@@ -95,7 +93,7 @@ class GH2947Car
         $this->brand = $brand;
     }
 
-    public function __toString(): string
+    public function __toString() : string
     {
         return $this->brand;
     }

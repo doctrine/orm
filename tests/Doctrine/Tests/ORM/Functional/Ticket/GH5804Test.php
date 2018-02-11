@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\Tests\ORM\Functional\Ticket;
 
 use Doctrine\DBAL\Platforms\AbstractPlatform;
@@ -27,7 +29,7 @@ final class GH5804Test extends OrmFunctionalTestCase
 
     public function testTextColumnSaveAndRetrieve2()
     {
-        $firstArticle = new GH5804Article;
+        $firstArticle       = new GH5804Article();
         $firstArticle->text = 'Max';
         $this->em->persist($firstArticle);
         $this->em->flush();
@@ -63,7 +65,7 @@ final class GH5804Generator implements Generator
 
 final class GH5804Type extends Type
 {
-    const NAME = 'GH5804Type';
+    public const NAME = 'GH5804Type';
 
     public function getName()
     {
@@ -110,8 +112,6 @@ class GH5804Article
      */
     public $version;
 
-    /**
-     * @ORM\Column(type="text")
-     */
+    /** @ORM\Column(type="text") */
     public $text;
 }

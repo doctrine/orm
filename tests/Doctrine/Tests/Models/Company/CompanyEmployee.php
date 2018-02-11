@@ -12,19 +12,13 @@ use Doctrine\ORM\Annotation as ORM;
  */
 class CompanyEmployee extends CompanyPerson
 {
-    /**
-     * @ORM\Column(type="integer")
-     */
+    /** @ORM\Column(type="integer") */
     private $salary;
 
-    /**
-     * @ORM\Column(type="string", length=255)
-     */
+    /** @ORM\Column(type="string", length=255) */
     private $department;
 
-    /**
-     * @ORM\Column(type="datetime", nullable=true)
-     */
+    /** @ORM\Column(type="datetime", nullable=true) */
     private $startDate;
 
     /**

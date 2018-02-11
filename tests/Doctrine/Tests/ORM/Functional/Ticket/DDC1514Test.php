@@ -6,11 +6,12 @@ namespace Doctrine\Tests\ORM\Functional\Ticket;
 
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\Annotation as ORM;
+use Doctrine\Tests\OrmFunctionalTestCase;
 
 /**
  * @group DDC-1514
  */
-class DDC1514Test extends \Doctrine\Tests\OrmFunctionalTestCase
+class DDC1514Test extends OrmFunctionalTestCase
 {
     protected function setUp()
     {
@@ -30,22 +31,22 @@ class DDC1514Test extends \Doctrine\Tests\OrmFunctionalTestCase
 
     public function testIssue()
     {
-        $a1 = new DDC1514EntityA();
-        $a1->title = "1foo";
+        $a1        = new DDC1514EntityA();
+        $a1->title = '1foo';
 
-        $a2 = new DDC1514EntityA();
-        $a2->title = "2bar";
+        $a2        = new DDC1514EntityA();
+        $a2->title = '2bar';
 
-        $b1 = new DDC1514EntityB();
+        $b1              = new DDC1514EntityB();
         $b1->entityAFrom = $a1;
-        $b1->entityATo = $a2;
+        $b1->entityATo   = $a2;
 
-        $b2 = new DDC1514EntityB();
+        $b2              = new DDC1514EntityB();
         $b2->entityAFrom = $a2;
-        $b2->entityATo = $a1;
+        $b2->entityATo   = $a1;
 
-        $c = new DDC1514EntityC();
-        $c->title = "baz";
+        $c           = new DDC1514EntityC();
+        $c->title    = 'baz';
         $a2->entityC = $c;
 
         $this->em->persist($a1);
@@ -56,7 +57,7 @@ class DDC1514Test extends \Doctrine\Tests\OrmFunctionalTestCase
         $this->em->flush();
         $this->em->clear();
 
-        $dql = "SELECT a, b, ba, c FROM " . __NAMESPACE__ . "\DDC1514EntityA AS a LEFT JOIN a.entitiesB AS b LEFT JOIN b.entityATo AS ba LEFT JOIN a.entityC AS c ORDER BY a.title";
+        $dql     = 'SELECT a, b, ba, c FROM ' . __NAMESPACE__ . '\DDC1514EntityA AS a LEFT JOIN a.entitiesB AS b LEFT JOIN b.entityATo AS ba LEFT JOIN a.entityC AS c ORDER BY a.title';
         $results = $this->em->createQuery($dql)->getResult();
 
         self::assertEquals($a1->id, $results[0]->id);
@@ -95,13 +96,9 @@ class DDC1514EntityB
     /** @ORM\Id @ORM\Column(type="integer") @ORM\GeneratedValue */
     public $id;
 
-    /**
-     * @ORM\ManyToOne(targetEntity=DDC1514EntityA::class, inversedBy="entitiesB")
-     */
+    /** @ORM\ManyToOne(targetEntity=DDC1514EntityA::class, inversedBy="entitiesB") */
     public $entityAFrom;
-    /**
-     * @ORM\ManyToOne(targetEntity=DDC1514EntityA::class)
-     */
+    /** @ORM\ManyToOne(targetEntity=DDC1514EntityA::class) */
     public $entityATo;
 }
 

@@ -4,24 +4,21 @@ declare(strict_types=1);
 
 namespace Doctrine\Tests\ORM\Cache;
 
-use Doctrine\Tests\OrmFunctionalTestCase;
+use Doctrine\Common\Cache\ArrayCache;
+use Doctrine\ORM\Cache\Region;
 use Doctrine\Tests\Mocks\CacheEntryMock;
 use Doctrine\Tests\Mocks\CacheKeyMock;
-use Doctrine\Common\Cache\ArrayCache;
+use Doctrine\Tests\OrmFunctionalTestCase;
 
 /**
  * @group DDC-2183
  */
 abstract class AbstractRegionTest extends OrmFunctionalTestCase
 {
-    /**
-     * @var \Doctrine\ORM\Cache\Region
-     */
+    /** @var Region */
     protected $region;
 
-    /**
-     * @var \Doctrine\Common\Cache\ArrayCache
-     */
+    /** @var ArrayCache */
     protected $cache;
 
     protected function setUp()
@@ -33,15 +30,15 @@ abstract class AbstractRegionTest extends OrmFunctionalTestCase
     }
 
     /**
-     * @return \Doctrine\ORM\Cache\Region
+     * @return Region
      */
-    protected abstract function createRegion();
+    abstract protected function createRegion();
 
-    static public function dataProviderCacheValues()
+    public static function dataProviderCacheValues()
     {
         return [
-            [new CacheKeyMock('key.1'), new CacheEntryMock(['id'=>1, 'name' => 'bar'])],
-            [new CacheKeyMock('key.2'), new CacheEntryMock(['id'=>2, 'name' => 'foo'])],
+            [new CacheKeyMock('key.1'), new CacheEntryMock(['id' => 1, 'name' => 'bar'])],
+            [new CacheKeyMock('key.2'), new CacheEntryMock(['id' => 2, 'name' => 'foo'])],
         ];
     }
 

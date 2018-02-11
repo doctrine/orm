@@ -9,9 +9,6 @@ use Doctrine\ORM\Annotation as ORM;
 /**
  * Department
  *
- * @package Doctrine\Tests\Models\Pagination
- * @author Bill Schaller
- *
  * @ORM\Entity
  * @ORM\Table(name="pagination_department")
  */
@@ -23,9 +20,7 @@ class Department
      */
     public $id;
 
-    /**
-     * @ORM\Column(type="string")
-     */
+    /** @ORM\Column(type="string") */
     public $name;
 
     /**

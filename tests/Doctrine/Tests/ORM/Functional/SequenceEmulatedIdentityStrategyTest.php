@@ -17,7 +17,7 @@ class SequenceEmulatedIdentityStrategyTest extends OrmFunctionalTestCase
     {
         parent::setUp();
 
-        if ( ! $this->em->getConnection()->getDatabasePlatform()->usesSequenceEmulatedIdentityColumns()) {
+        if (! $this->em->getConnection()->getDatabasePlatform()->usesSequenceEmulatedIdentityColumns()) {
             $this->markTestSkipped(
                 'This test is special to platforms emulating IDENTITY key generation strategy through sequences.'
             );

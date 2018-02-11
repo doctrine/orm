@@ -17,13 +17,9 @@ class SerializationModel
      * @ORM\GeneratedValue(strategy="AUTO")
      */
     public $id;
-    /**
-     * @ORM\Column(name="the_array", type="array", nullable=true)
-     */
+    /** @ORM\Column(name="the_array", type="array", nullable=true) */
     public $array;
 
-    /**
-     * @ORM\Column(name="the_obj", type="object", nullable=true)
-     */
+    /** @ORM\Column(name="the_obj", type="object", nullable=true) */
     public $object;
 }

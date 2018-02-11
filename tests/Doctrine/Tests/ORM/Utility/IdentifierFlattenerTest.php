@@ -4,18 +4,17 @@ declare(strict_types=1);
 
 namespace Doctrine\Tests\ORM\Utility;
 
-use Doctrine\Tests\OrmFunctionalTestCase;
-use Doctrine\Tests\Models\VersionedOneToOne\FirstRelatedEntity;
-use Doctrine\Tests\Models\VersionedOneToOne\SecondRelatedEntity;
-use Doctrine\Tests\Models\Cache\City;
-use Doctrine\Tests\Models\Cache\Flight;
 use Doctrine\ORM\ORMException;
 use Doctrine\ORM\Utility\IdentifierFlattener;
+use Doctrine\Tests\Models\Cache\City;
+use Doctrine\Tests\Models\Cache\Flight;
+use Doctrine\Tests\Models\VersionedOneToOne\FirstRelatedEntity;
+use Doctrine\Tests\Models\VersionedOneToOne\SecondRelatedEntity;
+use Doctrine\Tests\OrmFunctionalTestCase;
 
 /**
  * Test the IdentifierFlattener utility class
  *
- * @author Rob Caiger <rob@clocal.co.uk>
  * @covers \Doctrine\ORM\Utility\IdentifierFlattener
  */
 class IdentifierFlattenerTest extends OrmFunctionalTestCase
@@ -23,7 +22,7 @@ class IdentifierFlattenerTest extends OrmFunctionalTestCase
     /**
      * Identifier flattener
      *
-     * @var \Doctrine\ORM\Utility\IdentifierFlattener
+     * @var IdentifierFlattener
      */
     private $identifierFlattener;
 
@@ -42,7 +41,7 @@ class IdentifierFlattenerTest extends OrmFunctionalTestCase
                     $this->em->getClassMetadata(FirstRelatedEntity::class),
                     $this->em->getClassMetadata(SecondRelatedEntity::class),
                     $this->em->getClassMetadata(Flight::class),
-                    $this->em->getClassMetadata(City::class)
+                    $this->em->getClassMetadata(City::class),
                 ]
             );
         } catch (ORMException $e) {
@@ -54,14 +53,14 @@ class IdentifierFlattenerTest extends OrmFunctionalTestCase
      */
     public function testFlattenIdentifierWithOneToOneId()
     {
-        $secondRelatedEntity = new SecondRelatedEntity();
+        $secondRelatedEntity       = new SecondRelatedEntity();
         $secondRelatedEntity->name = 'Bob';
 
         $this->em->persist($secondRelatedEntity);
         $this->em->flush();
 
-        $firstRelatedEntity = new FirstRelatedEntity();
-        $firstRelatedEntity->name = 'Fred';
+        $firstRelatedEntity               = new FirstRelatedEntity();
+        $firstRelatedEntity->name         = 'Fred';
         $firstRelatedEntity->secondEntity = $secondRelatedEntity;
 
         $this->em->persist($firstRelatedEntity);
@@ -99,7 +98,7 @@ class IdentifierFlattenerTest extends OrmFunctionalTestCase
      */
     public function testFlattenIdentifierWithMutlipleIds()
     {
-        $leeds = new City('Leeds');
+        $leeds  = new City('Leeds');
         $london = new City('London');
 
         $this->em->persist($leeds);

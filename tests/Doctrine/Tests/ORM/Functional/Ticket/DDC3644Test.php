@@ -143,19 +143,13 @@ class DDC3644User
      */
     public $id;
 
-    /**
-     * @ORM\Column(type="string")
-     */
+    /** @ORM\Column(type="string") */
     public $name;
 
-    /**
-     * @ORM\OneToMany(targetEntity=DDC3644Address::class, mappedBy="user", orphanRemoval=true)
-     */
+    /** @ORM\OneToMany(targetEntity=DDC3644Address::class, mappedBy="user", orphanRemoval=true) */
     public $addresses = [];
 
-    /**
-     * @ORM\OneToMany(targetEntity=DDC3644Pet::class, mappedBy="owner", orphanRemoval=true)
-     */
+    /** @ORM\OneToMany(targetEntity=DDC3644Pet::class, mappedBy="owner", orphanRemoval=true) */
     public $pets = [];
 
     public function setAddresses(Collection $addresses)
@@ -199,9 +193,7 @@ class DDC3644Address
      */
     public $user;
 
-    /**
-     * @ORM\Column(type="string")
-     */
+    /** @ORM\Column(type="string") */
     public $address;
 
     public function __construct($address)
@@ -225,9 +217,7 @@ abstract class DDC3644Animal
      */
     public $id;
 
-    /**
-     * @ORM\Column(type="string")
-     */
+    /** @ORM\Column(type="string") */
     public $name;
 
     public function __construct($name)

@@ -12,19 +12,13 @@ use Doctrine\Tests\OrmTestCase;
 
 class SequenceGeneratorTest extends OrmTestCase
 {
-    /**
-     * @var EntityManagerInterface
-     */
+    /** @var EntityManagerInterface */
     private $entityManager;
 
-    /**
-     * @var SequenceGenerator
-     */
+    /** @var SequenceGenerator */
     private $sequenceGenerator;
 
-    /**
-     * @var ConnectionMock
-     */
+    /** @var ConnectionMock */
     private $connection;
 
     protected function setUp() : void
@@ -45,13 +39,13 @@ class SequenceGeneratorTest extends OrmTestCase
 
         for ($i = 0; $i < 42; ++$i) {
             if ($i % 10 === 0) {
-                $this->connection->setQueryResult(new StatementArrayMock([[(int)($i / 10) * 10]]));
+                $this->connection->setQueryResult(new StatementArrayMock([[(int) ($i / 10) * 10]]));
             }
 
             $id = $this->sequenceGenerator->generate($this->entityManager, null);
 
             self::assertSame($i, $id);
-            self::assertSame((int)($i / 10) * 10 + 10, $this->sequenceGenerator->getCurrentMaxValue());
+            self::assertSame((int) ($i / 10) * 10 + 10, $this->sequenceGenerator->getCurrentMaxValue());
             self::assertSame($i + 1, $this->sequenceGenerator->getNextValue());
         }
     }

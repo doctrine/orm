@@ -6,11 +6,10 @@ namespace Doctrine\Tests\ORM\Functional;
 
 use Doctrine\ORM\Annotation as ORM;
 use Doctrine\Tests\OrmFunctionalTestCase;
+use function get_class;
 
 /**
  * Tests basic operations on entities with default values.
- *
- * @author robo
  */
 class DefaultValuesTest extends OrmFunctionalTestCase
 {
@@ -21,7 +20,7 @@ class DefaultValuesTest extends OrmFunctionalTestCase
             $this->schemaTool->createSchema(
                 [
                 $this->em->getClassMetadata(DefaultValueUser::class),
-                $this->em->getClassMetadata(DefaultValueAddress::class)
+                $this->em->getClassMetadata(DefaultValueAddress::class),
                 ]
             );
         } catch (\Exception $e) {
@@ -34,23 +33,23 @@ class DefaultValuesTest extends OrmFunctionalTestCase
      */
     public function testSimpleDetachMerge()
     {
-        $user = new DefaultValueUser;
+        $user       = new DefaultValueUser();
         $user->name = 'romanb';
         $this->em->persist($user);
         $this->em->flush();
         $this->em->clear();
 
         $userId = $user->id; // e.g. from $_REQUEST
-        $user2 = $this->em->getReference(get_class($user), $userId);
+        $user2  = $this->em->getReference(get_class($user), $userId);
 
         $this->em->flush();
         self::assertFalse($user2->isProxyInitialized());
 
-        $a = new DefaultValueAddress;
+        $a          = new DefaultValueAddress();
         $a->country = 'de';
-        $a->zip = '12345';
-        $a->city = 'Berlin';
-        $a->street = 'Sesamestreet';
+        $a->zip     = '12345';
+        $a->city    = 'Berlin';
+        $a->street  = 'Sesamestreet';
 
         $a->user = $user2;
         $this->em->persist($a);
@@ -70,7 +69,7 @@ class DefaultValuesTest extends OrmFunctionalTestCase
      */
     public function testGetPartialReferenceWithDefaultValueNotEvaluatedInFlush()
     {
-        $user = new DefaultValueUser;
+        $user       = new DefaultValueUser();
         $user->name = 'romanb';
         $user->type = 'Normaluser';
 
@@ -101,17 +100,11 @@ class DefaultValueUser
      * @ORM\GeneratedValue(strategy="AUTO")
      */
     public $id;
-    /**
-     * @ORM\Column(type="string")
-     */
+    /** @ORM\Column(type="string") */
     public $name = '';
-    /**
-     * @ORM\Column(type="string")
-     */
+    /** @ORM\Column(type="string") */
     public $type = 'Poweruser';
-    /**
-     * @ORM\OneToOne(targetEntity=DefaultValueAddress::class, mappedBy="user", cascade={"persist"})
-     */
+    /** @ORM\OneToOne(targetEntity=DefaultValueAddress::class, mappedBy="user", cascade={"persist"}) */
     public $address;
 
     public function getId()
@@ -133,19 +126,13 @@ class DefaultValueAddress
      */
     public $id;
 
-    /**
-     * @ORM\Column(type="string", length=50)
-     */
+    /** @ORM\Column(type="string", length=50) */
     public $country;
 
-    /**
-     * @ORM\Column(type="string", length=50)
-     */
+    /** @ORM\Column(type="string", length=50) */
     public $zip;
 
-    /**
-     * @ORM\Column(type="string", length=50)
-     */
+    /** @ORM\Column(type="string", length=50) */
     public $city;
 
     /**

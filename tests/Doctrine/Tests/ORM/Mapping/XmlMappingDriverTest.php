@@ -14,6 +14,14 @@ use Doctrine\Tests\Models\DDC889\DDC889Class;
 use Doctrine\Tests\Models\Generic\SerializationModel;
 use Doctrine\Tests\Models\ValueObjects\Name;
 use Doctrine\Tests\Models\ValueObjects\Person;
+use const DIRECTORY_SEPARATOR;
+use const PATHINFO_FILENAME;
+use function array_filter;
+use function array_map;
+use function glob;
+use function in_array;
+use function iterator_to_array;
+use function pathinfo;
 
 class XmlMappingDriverTest extends AbstractMappingDriverTest
 {
@@ -138,7 +146,7 @@ class XmlMappingDriverTest extends AbstractMappingDriverTest
                     'declaredField'  => null,
                     'originalField'  => null,
                     'declaringClass' => $class,
-                ]
+                ],
             ],
             $class->embeddedClasses
         );
@@ -162,26 +170,24 @@ class XmlMappingDriverTest extends AbstractMappingDriverTest
      */
     public function testValidateXmlSchema($xmlMappingFile)
     {
-        $xsdSchemaFile  = __DIR__ . '/../../../../../doctrine-mapping.xsd';
-        $dom            = new \DOMDocument('UTF-8');
+        $xsdSchemaFile = __DIR__ . '/../../../../../doctrine-mapping.xsd';
+        $dom           = new \DOMDocument('UTF-8');
 
         $dom->load($xmlMappingFile);
 
         self::assertTrue($dom->schemaValidate($xsdSchemaFile));
     }
 
-    static public function dataValidSchema()
+    public static function dataValidSchema()
     {
         $list    = glob(__DIR__ . '/xml/*.xml');
-        $invalid = [
-            'Doctrine.Tests.Models.DDC889.DDC889Class.dcm'
-        ];
+        $invalid = ['Doctrine.Tests.Models.DDC889.DDC889Class.dcm'];
 
-        $list = array_filter($list, function($item) use ($invalid) {
+        $list = array_filter($list, function ($item) use ($invalid) {
             return ! in_array(pathinfo($item, PATHINFO_FILENAME), $invalid, true);
         });
 
-        return array_map(function($item) {
+        return array_map(function ($item) {
             return [$item];
         }, $list);
     }
@@ -202,9 +208,15 @@ class CTI
     public $id;
 }
 
-class CTIFoo extends CTI {}
-class CTIBar extends CTI {}
-class CTIBaz extends CTI {}
+class CTIFoo extends CTI
+{
+}
+class CTIBar extends CTI
+{
+}
+class CTIBaz extends CTI
+{
+}
 
 class XMLSLC
 {

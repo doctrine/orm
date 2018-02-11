@@ -8,13 +8,16 @@ use Doctrine\ORM\Annotation as ORM;
 use Doctrine\ORM\Tools\ToolsException;
 use Doctrine\Tests\Models\DDC2825\ExplicitSchemaAndTable;
 use Doctrine\Tests\Models\DDC2825\SchemaAndTableInTableName;
+use Doctrine\Tests\OrmFunctionalTestCase;
+use function sprintf;
+use function str_replace;
 
 /**
  * This class makes tests on the correct use of a database schema when entities are stored
  *
  * @group DDC-2825
  */
-class DDC2825Test extends \Doctrine\Tests\OrmFunctionalTestCase
+class DDC2825Test extends OrmFunctionalTestCase
 {
     /**
      * {@inheritDoc}
@@ -25,8 +28,8 @@ class DDC2825Test extends \Doctrine\Tests\OrmFunctionalTestCase
 
         $platform = $this->em->getConnection()->getDatabasePlatform();
 
-        if ( ! $platform->supportsSchemas() && ! $platform->canEmulateSchemas()) {
-            $this->markTestSkipped("This test is only useful for databases that support schemas or can emulate them.");
+        if (! $platform->supportsSchemas() && ! $platform->canEmulateSchemas()) {
+            $this->markTestSkipped('This test is only useful for databases that support schemas or can emulate them.');
         }
     }
 
@@ -114,7 +117,7 @@ class DDC2825ClassWithImplicitlyDefinedSchemaAndQuotedTableName
      * @ORM\Id @ORM\GeneratedValue
      * @ORM\Column(type="integer")
      *
-     * @var integer
+     * @var int
      */
     public $id;
 }

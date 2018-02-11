@@ -6,9 +6,7 @@ namespace Doctrine\Tests\DbalTypes;
 
 class CustomIdObject
 {
-    /**
-     * @var string
-     */
+    /** @var string */
     public $id;
 
     /**

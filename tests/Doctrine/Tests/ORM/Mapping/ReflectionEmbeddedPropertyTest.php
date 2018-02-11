@@ -79,34 +79,34 @@ class ReflectionEmbeddedPropertyTest extends DoctrineTestCase
             [
                 $this->getReflectionProperty(BooleanModel::class, 'id'),
                 $this->getReflectionProperty(BooleanModel::class, 'id'),
-                BooleanModel::class
+                BooleanModel::class,
             ],
             // reflection on embeddables that have properties defined in abstract ancestors:
             [
                 $this->getReflectionProperty(BooleanModel::class, 'id'),
                 $this->getReflectionProperty(AbstractEmbeddable::class, 'propertyInAbstractClass'),
-                ConcreteEmbeddable::class
+                ConcreteEmbeddable::class,
             ],
             [
                 $this->getReflectionProperty(BooleanModel::class, 'id'),
                 $this->getReflectionProperty(ConcreteEmbeddable::class, 'propertyInConcreteClass'),
-                ConcreteEmbeddable::class
+                ConcreteEmbeddable::class,
             ],
             // reflection on classes extending internal PHP classes:
             [
                 $this->getReflectionProperty(ArrayObjectExtendingClass::class, 'publicProperty'),
                 $this->getReflectionProperty(ArrayObjectExtendingClass::class, 'privateProperty'),
-                ArrayObjectExtendingClass::class
+                ArrayObjectExtendingClass::class,
             ],
             [
                 $this->getReflectionProperty(ArrayObjectExtendingClass::class, 'publicProperty'),
                 $this->getReflectionProperty(ArrayObjectExtendingClass::class, 'protectedProperty'),
-                ArrayObjectExtendingClass::class
+                ArrayObjectExtendingClass::class,
             ],
             [
                 $this->getReflectionProperty(ArrayObjectExtendingClass::class, 'publicProperty'),
                 $this->getReflectionProperty(ArrayObjectExtendingClass::class, 'publicProperty'),
-                ArrayObjectExtendingClass::class
+                ArrayObjectExtendingClass::class,
             ],
         ];
     }

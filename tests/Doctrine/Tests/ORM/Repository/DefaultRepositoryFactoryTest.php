@@ -22,24 +22,16 @@ use Doctrine\Tests\Models\DDC869\DDC869PaymentRepository;
  */
 class DefaultRepositoryFactoryTest extends DoctrineTestCase
 {
-    /**
-     * @var \Doctrine\ORM\EntityManagerInterface|\PHPUnit_Framework_MockObject_MockObject
-     */
+    /** @var EntityManagerInterface|\PHPUnit_Framework_MockObject_MockObject */
     private $entityManager;
 
-    /**
-     * @var \Doctrine\ORM\Configuration|\PHPUnit_Framework_MockObject_MockObject
-     */
+    /** @var Configuration|\PHPUnit_Framework_MockObject_MockObject */
     private $configuration;
 
-    /**
-     * @var DefaultRepositoryFactory
-     */
+    /** @var DefaultRepositoryFactory */
     private $repositoryFactory;
 
-    /**
-     * @var ClassMetadataBuildingContext|\PHPUnit_Framework_MockObject_MockObject
-     */
+    /** @var ClassMetadataBuildingContext|\PHPUnit_Framework_MockObject_MockObject */
     private $metadataBuildingContext;
 
     /**
@@ -144,7 +136,7 @@ class DefaultRepositoryFactoryTest extends DoctrineTestCase
     }
 
     /**
-     * @return \Doctrine\ORM\EntityManagerInterface|\PHPUnit_Framework_MockObject_MockObject
+     * @return EntityManagerInterface|\PHPUnit_Framework_MockObject_MockObject
      */
     private function createEntityManager()
     {

@@ -4,13 +4,16 @@ declare(strict_types=1);
 
 namespace Doctrine\Tests\ORM\Functional\Ticket;
 
-use Doctrine\ORM\UnitOfWork;
 use Doctrine\ORM\Annotation as ORM;
+use Doctrine\ORM\UnitOfWork;
+use Doctrine\Tests\OrmFunctionalTestCase;
+use function getrandmax;
+use function random_int;
 
 /**
  * @group DDC-1454
  */
-class DDC1454Test extends \Doctrine\Tests\OrmFunctionalTestCase
+class DDC1454Test extends OrmFunctionalTestCase
 {
     protected function setUp()
     {

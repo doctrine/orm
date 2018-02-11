@@ -15,11 +15,11 @@ use Doctrine\Tests\Models\Company\CompanyPerson;
 use Doctrine\Tests\Models\Company\CompanyRaffle;
 use Doctrine\Tests\OrmFunctionalTestCase;
 use ProxyManager\Proxy\GhostObjectInterface;
+use function get_class;
+use function sprintf;
 
 /**
  * Functional tests for the Class Table Inheritance mapping strategy.
- *
- * @author robo
  */
 class ClassTableInheritanceTest extends OrmFunctionalTestCase
 {
@@ -32,12 +32,12 @@ class ClassTableInheritanceTest extends OrmFunctionalTestCase
 
     public function testCRUD()
     {
-        $person = new CompanyPerson;
+        $person = new CompanyPerson();
         $person->setName('Roman S. Borschel');
 
         $this->em->persist($person);
 
-        $employee = new CompanyEmployee;
+        $employee = new CompanyEmployee();
         $employee->setName('Roman S. Borschel');
         $employee->setSalary(100000);
         $employee->setDepartment('IT');
@@ -83,7 +83,7 @@ class ClassTableInheritanceTest extends OrmFunctionalTestCase
 
         $this->em->clear();
 
-        $query = $this->em->createQuery("update " . CompanyEmployee::class . " p set p.name = ?1, p.department = ?2 where p.name='Guilherme Blanco' and p.salary = ?3");
+        $query = $this->em->createQuery('update ' . CompanyEmployee::class . " p set p.name = ?1, p.department = ?2 where p.name='Guilherme Blanco' and p.salary = ?3");
 
         $query->setParameter(1, 'NewName', 'string');
         $query->setParameter(2, 'NewDepartment');
@@ -103,7 +103,7 @@ class ClassTableInheritanceTest extends OrmFunctionalTestCase
 
     public function testMultiLevelUpdateAndFind()
     {
-        $manager = new CompanyManager;
+        $manager = new CompanyManager();
         $manager->setName('Roman S. Borschel');
         $manager->setSalary(100000);
         $manager->setDepartment('IT');
@@ -130,7 +130,7 @@ class ClassTableInheritanceTest extends OrmFunctionalTestCase
 
     public function testFindOnBaseClass()
     {
-        $manager = new CompanyManager;
+        $manager = new CompanyManager();
         $manager->setName('Roman S. Borschel');
         $manager->setSalary(100000);
         $manager->setDepartment('IT');
@@ -151,13 +151,13 @@ class ClassTableInheritanceTest extends OrmFunctionalTestCase
 
     public function testSelfReferencingOneToOne()
     {
-        $manager = new CompanyManager;
+        $manager = new CompanyManager();
         $manager->setName('John Smith');
         $manager->setSalary(100000);
         $manager->setDepartment('IT');
         $manager->setTitle('CTO');
 
-        $wife = new CompanyPerson;
+        $wife = new CompanyPerson();
         $wife->setName('Mary Smith');
         $wife->setSpouse($manager);
 
@@ -183,10 +183,10 @@ class ClassTableInheritanceTest extends OrmFunctionalTestCase
 
     public function testSelfReferencingManyToMany()
     {
-        $person1 = new CompanyPerson;
+        $person1 = new CompanyPerson();
         $person1->setName('Roman');
 
-        $person2 = new CompanyPerson;
+        $person2 = new CompanyPerson();
         $person2->setName('Jonathan');
 
         $person1->addFriend($person2);
@@ -218,11 +218,11 @@ class ClassTableInheritanceTest extends OrmFunctionalTestCase
 
     public function testLazyLoading1()
     {
-        $org = new CompanyOrganization;
-        $event1 = new CompanyAuction;
+        $org    = new CompanyOrganization();
+        $event1 = new CompanyAuction();
         $event1->setData('auction');
         $org->addEvent($event1);
-        $event2 = new CompanyRaffle;
+        $event2 = new CompanyRaffle();
         $event2->setData('raffle');
         $org->addEvent($event2);
 
@@ -258,8 +258,8 @@ class ClassTableInheritanceTest extends OrmFunctionalTestCase
 
     public function testLazyLoading2()
     {
-        $org = new CompanyOrganization;
-        $event1 = new CompanyAuction;
+        $org    = new CompanyOrganization();
+        $event1 = new CompanyAuction();
         $event1->setData('auction');
         $org->setMainEvent($event1);
 
@@ -274,7 +274,7 @@ class ClassTableInheritanceTest extends OrmFunctionalTestCase
         $result = $q->getResult();
 
         self::assertCount(1, $result);
-        self::assertInstanceOf(CompanyAuction::class, $result[0], sprintf("Is of class %s", get_class($result[0])));
+        self::assertInstanceOf(CompanyAuction::class, $result[0], sprintf('Is of class %s', get_class($result[0])));
 
         $this->em->clear();
 
@@ -400,12 +400,12 @@ class ClassTableInheritanceTest extends OrmFunctionalTestCase
         $this->em->flush();
         $this->em->clear();
 
-        $repos = $this->em->getRepository(CompanyManager::class);
+        $repos    = $this->em->getRepository(CompanyManager::class);
         $pmanager = $repos->findOneBy(['spouse' => $person->getId()]);
 
         self::assertEquals($manager->getId(), $pmanager->getId());
 
-        $repos = $this->em->getRepository(CompanyPerson::class);
+        $repos    = $this->em->getRepository(CompanyPerson::class);
         $pmanager = $repos->findOneBy(['spouse' => $person->getId()]);
 
         self::assertEquals($manager->getId(), $pmanager->getId());
@@ -427,13 +427,13 @@ class ClassTableInheritanceTest extends OrmFunctionalTestCase
         $this->em->clear();
 
         $ref = $this->em->getReference(CompanyPerson::class, $manager->getId());
-        self::assertNotInstanceOf(GhostObjectInterface::class, $ref, "Cannot Request a proxy from a class that has subclasses.");
+        self::assertNotInstanceOf(GhostObjectInterface::class, $ref, 'Cannot Request a proxy from a class that has subclasses.');
         self::assertInstanceOf(CompanyPerson::class, $ref);
-        self::assertInstanceOf(CompanyEmployee::class, $ref, "Direct fetch of the reference has to load the child class Employee directly.");
+        self::assertInstanceOf(CompanyEmployee::class, $ref, 'Direct fetch of the reference has to load the child class Employee directly.');
         $this->em->clear();
 
         $ref = $this->em->getReference(CompanyManager::class, $manager->getId());
-        self::assertInstanceOf(GhostObjectInterface::class, $ref, "A proxy can be generated only if no subclasses exists for the requested reference.");
+        self::assertInstanceOf(GhostObjectInterface::class, $ref, 'A proxy can be generated only if no subclasses exists for the requested reference.');
     }
 
     /**
@@ -496,14 +496,14 @@ class ClassTableInheritanceTest extends OrmFunctionalTestCase
         $this->em->flush();
 
         $repository = $this->em->getRepository(CompanyEmployee::class);
-        $users = $repository->matching(new Criteria(
+        $users      = $repository->matching(new Criteria(
             Criteria::expr()->eq('department', 'IT')
         ));
 
         self::assertCount(1, $users);
 
         $repository = $this->em->getRepository(CompanyManager::class);
-        $users = $repository->matching(new Criteria(
+        $users      = $repository->matching(new Criteria(
             Criteria::expr()->eq('department', 'IT')
         ));
 

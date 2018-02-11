@@ -4,11 +4,13 @@ declare(strict_types=1);
 
 namespace Doctrine\Tests\ORM\Functional\Ticket;
 
+use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\Annotation as ORM;
 use Doctrine\ORM\PersistentCollection;
+use Doctrine\Tests\OrmFunctionalTestCase;
 use ProxyManager\Proxy\GhostObjectInterface;
 
-class DDC881Test extends \Doctrine\Tests\OrmFunctionalTestCase
+class DDC881Test extends OrmFunctionalTestCase
 {
     protected function setUp()
     {
@@ -33,12 +35,12 @@ class DDC881Test extends \Doctrine\Tests\OrmFunctionalTestCase
     public function testIssue()
     {
         /* Create two test users: albert and alfons */
-        $albert = new DDC881User;
-        $albert->setName("albert");
+        $albert = new DDC881User();
+        $albert->setName('albert');
         $this->em->persist($albert);
 
-        $alfons = new DDC881User;
-        $alfons->setName("alfons");
+        $alfons = new DDC881User();
+        $alfons->setName('alfons');
         $this->em->persist($alfons);
 
         $this->em->flush();
@@ -47,25 +49,25 @@ class DDC881Test extends \Doctrine\Tests\OrmFunctionalTestCase
         $phoneAlbert1 = new DDC881PhoneNumber();
         $phoneAlbert1->setUser($albert);
         $phoneAlbert1->setId(1);
-        $phoneAlbert1->setPhoneNumber("albert home: 012345");
+        $phoneAlbert1->setPhoneNumber('albert home: 012345');
         $this->em->persist($phoneAlbert1);
 
         $phoneAlbert2 = new DDC881PhoneNumber();
         $phoneAlbert2->setUser($albert);
         $phoneAlbert2->setId(2);
-        $phoneAlbert2->setPhoneNumber("albert mobile: 67890");
+        $phoneAlbert2->setPhoneNumber('albert mobile: 67890');
         $this->em->persist($phoneAlbert2);
 
         $phoneAlfons1 = new DDC881PhoneNumber();
         $phoneAlfons1->setId(1);
         $phoneAlfons1->setUser($alfons);
-        $phoneAlfons1->setPhoneNumber("alfons home: 012345");
+        $phoneAlfons1->setPhoneNumber('alfons home: 012345');
         $this->em->persist($phoneAlfons1);
 
         $phoneAlfons2 = new DDC881PhoneNumber();
         $phoneAlfons2->setId(2);
         $phoneAlfons2->setUser($alfons);
-        $phoneAlfons2->setPhoneNumber("alfons mobile: 67890");
+        $phoneAlfons2->setPhoneNumber('alfons mobile: 67890');
         $this->em->persist($phoneAlfons2);
 
         /* We call alfons and albert once on their mobile numbers */
@@ -81,14 +83,14 @@ class DDC881Test extends \Doctrine\Tests\OrmFunctionalTestCase
         $this->em->clear();
 
         // fetch-join that foreign-key/primary-key entity association
-        $dql = "SELECT c, p FROM " . DDC881PhoneCall::class . " c JOIN c.phonenumber p";
+        $dql   = 'SELECT c, p FROM ' . DDC881PhoneCall::class . ' c JOIN c.phonenumber p';
         $calls = $this->em->createQuery($dql)->getResult();
 
         self::assertCount(2, $calls);
         self::assertNotInstanceOf(GhostObjectInterface::class, $calls[0]->getPhoneNumber());
         self::assertNotInstanceOf(GhostObjectInterface::class, $calls[1]->getPhoneNumber());
 
-        $dql = "SELECT p, c FROM " . DDC881PhoneNumber::class . " p JOIN p.calls c";
+        $dql     = 'SELECT p, c FROM ' . DDC881PhoneNumber::class . ' p JOIN p.calls c';
         $numbers = $this->em->createQuery($dql)->getResult();
 
         self::assertCount(2, $numbers);
@@ -109,14 +111,10 @@ class DDC881User
      */
     private $id;
 
-    /**
-     * @ORM\Column(type="string")
-     */
+    /** @ORM\Column(type="string") */
     private $name;
 
-    /**
-     * @ORM\OneToMany(targetEntity=DDC881PhoneNumber::class,mappedBy="id")
-     */
+    /** @ORM\OneToMany(targetEntity=DDC881PhoneNumber::class,mappedBy="id") */
     private $phoneNumbers;
 
     public function getName()
@@ -145,19 +143,15 @@ class DDC881PhoneNumber
      * @ORM\ManyToOne(targetEntity=DDC881User::class,cascade={"all"})
      */
     private $user;
-    /**
-     * @ORM\Column(type="string")
-     */
+    /** @ORM\Column(type="string") */
     private $phonenumber;
 
-    /**
-     * @ORM\OneToMany(targetEntity=DDC881PhoneCall::class, mappedBy="phonenumber")
-     */
+    /** @ORM\OneToMany(targetEntity=DDC881PhoneCall::class, mappedBy="phonenumber") */
     private $calls;
 
     public function __construct()
     {
-        $this->calls = new \Doctrine\Common\Collections\ArrayCollection();
+        $this->calls = new ArrayCollection();
     }
 
     public function setId($id)
@@ -200,9 +194,7 @@ class DDC881PhoneCall
      * })
      */
     private $phonenumber;
-    /**
-     * @ORM\Column(type="string",nullable=true)
-     */
+    /** @ORM\Column(type="string",nullable=true) */
     private $callDate;
 
     public function setPhoneNumber(DDC881PhoneNumber $phoneNumber)

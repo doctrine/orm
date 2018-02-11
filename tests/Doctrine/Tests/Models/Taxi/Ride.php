@@ -31,6 +31,6 @@ class Ride
     public function __construct(Driver $driver, Car $car)
     {
         $this->driver = $driver;
-        $this->car = $car;
+        $this->car    = $car;
     }
 }

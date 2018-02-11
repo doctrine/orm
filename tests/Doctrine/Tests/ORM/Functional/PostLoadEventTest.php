@@ -15,14 +15,10 @@ use Doctrine\Tests\OrmFunctionalTestCase;
 
 /**
  * PostLoadEventTest
- *
- * @author Guilherme Blanco <guilhermeblanco@hotmail.com>
  */
 class PostLoadEventTest extends OrmFunctionalTestCase
 {
-    /**
-     * @var integer
-     */
+    /** @var int */
     private $userId;
 
     /**
@@ -231,7 +227,7 @@ class PostLoadEventTest extends OrmFunctionalTestCase
     public function testEventRaisedCorrectTimesWhenOtherEntityLoadedInEventHandler()
     {
         $eventManager = $this->em->getEventManager();
-        $listener = new PostLoadListenerLoadEntityInEventHandler();
+        $listener     = new PostLoadListenerLoadEntityInEventHandler();
         $eventManager->addEventListener([Events::postLoad], $listener);
 
         $this->em->find(CmsUser::class, $this->userId);
@@ -241,28 +237,28 @@ class PostLoadEventTest extends OrmFunctionalTestCase
 
     private function loadFixture()
     {
-        $user = new CmsUser;
-        $user->name = 'Roman';
+        $user           = new CmsUser();
+        $user->name     = 'Roman';
         $user->username = 'romanb';
-        $user->status = 'developer';
+        $user->status   = 'developer';
 
-        $address = new CmsAddress;
+        $address          = new CmsAddress();
         $address->country = 'Germany';
-        $address->city = 'Berlin';
-        $address->zip = '12345';
+        $address->city    = 'Berlin';
+        $address->zip     = '12345';
 
         $user->setAddress($address);
 
-        $email = new CmsEmail;
+        $email = new CmsEmail();
         $email->setEmail('roman@domain.com');
 
         $user->setEmail($email);
 
-        $ph1 = new CmsPhonenumber;
-        $ph1->phonenumber = "0301234";
+        $ph1              = new CmsPhonenumber();
+        $ph1->phonenumber = '0301234';
 
-        $ph2 = new CmsPhonenumber;
-        $ph2->phonenumber = "987654321";
+        $ph2              = new CmsPhonenumber();
+        $ph2->phonenumber = '987654321';
 
         $user->addPhonenumber($ph1);
         $user->addPhonenumber($ph2);
@@ -298,8 +294,8 @@ class PostLoadListenerCheckAssociationsArePopulated
             if ($this->checked) {
                 throw new \RuntimeException('Expected to be one user!');
             }
-            $this->checked = true;
-            $this->populated = null !== $object->getEmail();
+            $this->checked   = true;
+            $this->populated = $object->getEmail() !== null;
         }
     }
 }
@@ -311,8 +307,8 @@ class PostLoadListenerLoadEntityInEventHandler
     public function postLoad(LifecycleEventArgs $event)
     {
         $object = $event->getObject();
-        $class = StaticClassNameConverter::getClass($object);
-        if (!isset($this->firedByClasses[$class])) {
+        $class  = StaticClassNameConverter::getClass($object);
+        if (! isset($this->firedByClasses[$class])) {
             $this->firedByClasses[$class] = 1;
         } else {
             $this->firedByClasses[$class]++;

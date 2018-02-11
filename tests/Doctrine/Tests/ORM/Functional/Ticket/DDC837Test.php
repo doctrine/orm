@@ -5,8 +5,9 @@ declare(strict_types=1);
 namespace Doctrine\Tests\ORM\Functional\Ticket;
 
 use Doctrine\ORM\Annotation as ORM;
+use Doctrine\Tests\OrmFunctionalTestCase;
 
-class DDC837Test extends \Doctrine\Tests\OrmFunctionalTestCase
+class DDC837Test extends OrmFunctionalTestCase
 {
     protected function setUp()
     {
@@ -29,22 +30,22 @@ class DDC837Test extends \Doctrine\Tests\OrmFunctionalTestCase
     {
         //$this->em->getConnection()->getConfiguration()->setSQLLogger(new \Doctrine\DBAL\Logging\EchoSQLLogger);
 
-        $c1 = new DDC837Class1();
-        $c1->title = "Foo";
-        $c1->description = "Foo";
-        $aggregate1 = new DDC837Aggregate('test1');
-        $c1->aggregate = $aggregate1;
+        $c1              = new DDC837Class1();
+        $c1->title       = 'Foo';
+        $c1->description = 'Foo';
+        $aggregate1      = new DDC837Aggregate('test1');
+        $c1->aggregate   = $aggregate1;
 
-        $c2 = new DDC837Class2();
-        $c2->title = "Bar";
-        $c2->description = "Bar";
-        $c2->text = "Bar";
-        $aggregate2 = new DDC837Aggregate('test2');
-        $c2->aggregate = $aggregate2;
+        $c2              = new DDC837Class2();
+        $c2->title       = 'Bar';
+        $c2->description = 'Bar';
+        $c2->text        = 'Bar';
+        $aggregate2      = new DDC837Aggregate('test2');
+        $c2->aggregate   = $aggregate2;
 
-        $c3 = new DDC837Class3();
-        $c3->apples = "Baz";
-        $c3->bananas = "Baz";
+        $c3          = new DDC837Class3();
+        $c3->apples  = 'Baz';
+        $c3->bananas = 'Baz';
 
         $this->em->persist($c1);
         $this->em->persist($aggregate1);
@@ -115,19 +116,13 @@ abstract class DDC837Super
  */
 class DDC837Class1 extends DDC837Super
 {
-    /**
-     * @ORM\Column(name="title", type="string", length=150)
-     */
+    /** @ORM\Column(name="title", type="string", length=150) */
     public $title;
 
-    /**
-     * @ORM\Column(name="content", type="string", length=500)
-     */
+    /** @ORM\Column(name="content", type="string", length=500) */
     public $description;
 
-    /**
-     * @ORM\OneToOne(targetEntity=DDC837Aggregate::class)
-     */
+    /** @ORM\OneToOne(targetEntity=DDC837Aggregate::class) */
     public $aggregate;
 }
 
@@ -136,24 +131,16 @@ class DDC837Class1 extends DDC837Super
  */
 class DDC837Class2 extends DDC837Super
 {
-    /**
-     * @ORM\Column(name="title", type="string", length=150)
-     */
+    /** @ORM\Column(name="title", type="string", length=150) */
     public $title;
 
-    /**
-     * @ORM\Column(name="content", type="string", length=500)
-     */
+    /** @ORM\Column(name="content", type="string", length=500) */
     public $description;
 
-    /**
-     * @ORM\Column(name="text", type="text")
-     */
+    /** @ORM\Column(name="text", type="text") */
     public $text;
 
-    /**
-     * @ORM\OneToOne(targetEntity=DDC837Aggregate::class)
-     */
+    /** @ORM\OneToOne(targetEntity=DDC837Aggregate::class) */
     public $aggregate;
 }
 
@@ -164,14 +151,10 @@ class DDC837Class2 extends DDC837Super
  */
 class DDC837Class3 extends DDC837Super
 {
-    /**
-     * @ORM\Column(name="title", type="string", length=150)
-     */
+    /** @ORM\Column(name="title", type="string", length=150) */
     public $apples;
 
-    /**
-     * @ORM\Column(name="content", type="string", length=500)
-     */
+    /** @ORM\Column(name="content", type="string", length=500) */
     public $bananas;
 }
 
@@ -186,9 +169,7 @@ class DDC837Aggregate
      */
     public $id;
 
-    /**
-     * @ORM\Column(name="sysname", type="string")
-     */
+    /** @ORM\Column(name="sysname", type="string") */
     protected $sysname;
 
     public function __construct($sysname)

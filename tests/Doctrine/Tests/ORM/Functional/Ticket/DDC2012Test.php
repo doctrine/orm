@@ -4,15 +4,21 @@ declare(strict_types=1);
 
 namespace Doctrine\Tests\ORM\Functional\Ticket;
 
-use Doctrine\DBAL\Types\Type;
 use Doctrine\DBAL\Platforms\AbstractPlatform;
+use Doctrine\DBAL\Types\Type;
 use Doctrine\ORM\Annotation as ORM;
+use Doctrine\Tests\OrmFunctionalTestCase;
+use function explode;
+use function get_class;
+use function implode;
+use function is_array;
+use function strtolower;
 
 /**
  * @group DDC-2012
  * @group non-cacheable
  */
-class DDC2012Test extends \Doctrine\Tests\OrmFunctionalTestCase
+class DDC2012Test extends OrmFunctionalTestCase
 {
     protected function setUp()
     {
@@ -32,8 +38,8 @@ class DDC2012Test extends \Doctrine\Tests\OrmFunctionalTestCase
 
     public function testIssue()
     {
-        $item       = new DDC2012ItemPerson();
-        $item->tsv  = ['word1', 'word2', 'word3'];
+        $item      = new DDC2012ItemPerson();
+        $item->tsv = ['word1', 'word2', 'word3'];
 
         $this->em->persist($item);
         $this->em->flush();
@@ -51,7 +57,6 @@ class DDC2012Test extends \Doctrine\Tests\OrmFunctionalTestCase
 
         self::assertInstanceOf(DDC2012Item::class, $item);
         self::assertEquals(['word1', 'word2', 'word3'], $item->tsv);
-
 
         $item->tsv = ['word1', 'word2'];
 
@@ -89,9 +94,7 @@ class DDC2012Item
      */
     public $id;
 
-    /**
-     * @ORM\Column(name="tsv", type="tsvector", nullable=true)
-     */
+    /** @ORM\Column(name="tsv", type="tsvector", nullable=true) */
     public $tsv;
 }
 
@@ -105,7 +108,7 @@ class DDC2012ItemPerson extends DDC2012Item
 
 class DDC2012TsVectorType extends Type
 {
-    const MYTYPE = 'tsvector';
+    public const MYTYPE = 'tsvector';
 
     public static $calls = [];
 
@@ -123,7 +126,7 @@ class DDC2012TsVectorType extends Type
     public function convertToDatabaseValue($value, AbstractPlatform $platform)
     {
         if (is_array($value)) {
-            $value = implode(" ", $value);
+            $value = implode(' ', $value);
         }
 
         self::$calls[__FUNCTION__][] = [
@@ -144,7 +147,7 @@ class DDC2012TsVectorType extends Type
             'platform'  => $platform,
         ];
 
-        return explode(" ", strtolower($value));
+        return explode(' ', strtolower($value));
     }
 
     /**

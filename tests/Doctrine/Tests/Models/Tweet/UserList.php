@@ -19,13 +19,9 @@ class UserList
      */
     public $id;
 
-    /**
-     * @ORM\Column(type="string")
-     */
+    /** @ORM\Column(type="string") */
     public $listName;
 
-    /**
-     * @ORM\ManyToOne(targetEntity=User::class, inversedBy="userLists")
-     */
+    /** @ORM\ManyToOne(targetEntity=User::class, inversedBy="userLists") */
     public $owner;
 }

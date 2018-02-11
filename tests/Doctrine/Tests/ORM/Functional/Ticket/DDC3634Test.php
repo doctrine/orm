@@ -10,6 +10,9 @@ use Doctrine\ORM\Annotation as ORM;
 use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\Tools\ToolsException;
 use Doctrine\Tests\OrmFunctionalTestCase;
+use const PHP_INT_MAX;
+use function call_user_func_array;
+use function debug_backtrace;
 
 /**
  * @group DDC-3634
@@ -22,7 +25,7 @@ class DDC3634Test extends OrmFunctionalTestCase
 
         $metadata = $this->em->getClassMetadata(DDC3634Entity::class);
 
-        if ( ! $metadata->getValueGenerationPlan()->containsDeferred()) {
+        if (! $metadata->getValueGenerationPlan()->containsDeferred()) {
             $this->markTestSkipped('Need a post-insert ID generator in order to make this test work correctly');
         }
 
@@ -103,19 +106,14 @@ class DDC3634JTIChildEntity extends DDC3634JTIBaseEntity
 
 class DDC3634LastInsertIdMockingConnection extends Connection
 {
-    /**
-     * @var Connection
-     */
+    /** @var Connection */
     private $realConnection;
 
-    /**
-     * @var int
-     */
+    /** @var int */
     private $identifier;
 
     /**
-     * @param int        $identifier
-     * @param Connection $realConnection
+     * @param int $identifier
      */
     public function __construct($identifier, Connection $realConnection)
     {
@@ -280,7 +278,7 @@ class DDC3634LastInsertIdMockingConnection extends Connection
         return $this->forwardCall();
     }
 
-    public function executeQuery($query, array $params = [], $types = [], QueryCacheProfile $qcp = null)
+    public function executeQuery($query, array $params = [], $types = [], ?QueryCacheProfile $qcp = null)
     {
         return $this->forwardCall();
     }

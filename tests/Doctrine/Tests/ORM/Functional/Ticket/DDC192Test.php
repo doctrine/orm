@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace Doctrine\Tests\ORM\Functional\Ticket;
 
-use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\Annotation as ORM;
+use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\Tests\OrmFunctionalTestCase;
 
 /**
@@ -46,9 +46,7 @@ class DDC192User
      */
     public $id;
 
-    /**
-     * @ORM\Column(name="name", type="string")
-     */
+    /** @ORM\Column(name="name", type="string") */
     public $name;
 }
 

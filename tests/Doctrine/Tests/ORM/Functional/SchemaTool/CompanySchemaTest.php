@@ -10,8 +10,6 @@ use Doctrine\Tests\OrmFunctionalTestCase;
 
 /**
  * Functional tests for the Class Table Inheritance mapping strategy.
- *
- * @author robo
  */
 class CompanySchemaTest extends OrmFunctionalTestCase
 {
@@ -58,8 +56,8 @@ class CompanySchemaTest extends OrmFunctionalTestCase
      */
     public function testDropPartSchemaWithForeignKeys()
     {
-        if (!$this->em->getConnection()->getDatabasePlatform()->supportsForeignKeyConstraints()) {
-            $this->markTestSkipped("Foreign Key test");
+        if (! $this->em->getConnection()->getDatabasePlatform()->supportsForeignKeyConstraints()) {
+            $this->markTestSkipped('Foreign Key test');
         }
 
         $sql = $this->schemaTool->getDropSchemaSQL(

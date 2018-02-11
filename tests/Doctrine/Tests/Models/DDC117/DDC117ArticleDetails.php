@@ -18,9 +18,7 @@ class DDC117ArticleDetails
      */
     private $article;
 
-    /**
-     * @ORM\Column(type="text")
-     */
+    /** @ORM\Column(type="text") */
     private $text;
 
     public function __construct($article, $text)

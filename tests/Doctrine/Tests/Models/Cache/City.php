@@ -21,9 +21,7 @@ class City
      */
     protected $id;
 
-    /**
-     * @ORM\Column(unique=true)
-     */
+    /** @ORM\Column(unique=true) */
     protected $name;
 
     /**
@@ -33,9 +31,7 @@ class City
      */
     protected $state;
 
-    /**
-     * @ORM\ManyToMany(targetEntity=Travel::class, mappedBy="visitedCities")
-     */
+    /** @ORM\ManyToMany(targetEntity=Travel::class, mappedBy="visitedCities") */
     public $travels;
 
     /**
@@ -45,12 +41,12 @@ class City
      */
     public $attractions;
 
-    public function __construct($name, State $state = null)
+    public function __construct($name, ?State $state = null)
     {
-        $this->name         = $name;
-        $this->state        = $state;
-        $this->travels      = new ArrayCollection();
-        $this->attractions  = new ArrayCollection();
+        $this->name        = $name;
+        $this->state       = $state;
+        $this->travels     = new ArrayCollection();
+        $this->attractions = new ArrayCollection();
     }
 
     public function getId()

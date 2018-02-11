@@ -11,7 +11,6 @@ use Doctrine\ORM\Annotation as ORM;
  */
 class DDC753EntityWithCustomRepository
 {
-
     /**
      * @ORM\Id
      * @ORM\Column(type="integer")

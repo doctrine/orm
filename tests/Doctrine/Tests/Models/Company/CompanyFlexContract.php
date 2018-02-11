@@ -4,9 +4,7 @@ declare(strict_types=1);
 
 namespace Doctrine\Tests\Models\Company;
 
-use Doctrine\DBAL\Types\Type;
 use Doctrine\ORM\Annotation as ORM;
-use Doctrine\ORM\Mapping;
 
 /**
  * @ORM\Entity

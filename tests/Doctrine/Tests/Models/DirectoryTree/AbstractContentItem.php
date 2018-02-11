@@ -11,14 +11,10 @@ use Doctrine\ORM\Annotation as ORM;
  */
 abstract class AbstractContentItem
 {
-    /**
-     * @ORM\Id @ORM\Column(type="integer") @ORM\GeneratedValue
-     */
+    /** @ORM\Id @ORM\Column(type="integer") @ORM\GeneratedValue */
     private $id;
 
-    /**
-     * @ORM\ManyToOne(targetEntity=Directory::class)
-     */
+    /** @ORM\ManyToOne(targetEntity=Directory::class) */
     protected $parentDirectory;
 
     /** @ORM\Column(type="string") */
@@ -38,7 +34,7 @@ abstract class AbstractContentItem
      */
     public static $fileSystem;
 
-    public function __construct(Directory $parentDir = null)
+    public function __construct(?Directory $parentDir = null)
     {
         $this->parentDirectory = $parentDir;
     }

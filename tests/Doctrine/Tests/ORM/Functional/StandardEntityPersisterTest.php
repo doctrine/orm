@@ -13,7 +13,6 @@ use Doctrine\Tests\OrmFunctionalTestCase;
 
 /**
  * Tests capabilities of the persister.
- * @author Giorgio Sironi <piccoloprincipeazzurro@gmail.com>
  */
 class StandardEntityPersisterTest extends OrmFunctionalTestCase
 {
@@ -39,7 +38,7 @@ class StandardEntityPersisterTest extends OrmFunctionalTestCase
         $class = $this->em->getClassMetadata(ECommerceCart::class);
 
         $persister = $this->em->getUnitOfWork()->getEntityPersister(ECommerceCart::class);
-        $newCart = new ECommerceCart();
+        $newCart   = new ECommerceCart();
         $this->em->getUnitOfWork()->registerManaged($newCart, ['id' => $cardId], []);
         $persister->load(['customer_id' => $customer->getId()], $newCart, $class->getProperty('customer'));
         self::assertEquals('Credit card', $newCart->getPayment());
@@ -50,13 +49,13 @@ class StandardEntityPersisterTest extends OrmFunctionalTestCase
      */
     public function testAddPersistRetrieve()
     {
-        $f1 = new ECommerceFeature;
+        $f1 = new ECommerceFeature();
         $f1->setDescription('AC-3');
 
-        $f2 = new ECommerceFeature;
+        $f2 = new ECommerceFeature();
         $f2->setDescription('DTS');
 
-        $p = new ECommerceProduct;
+        $p = new ECommerceProduct();
         $p->addFeature($f1);
         $p->addFeature($f2);
         $this->em->persist($p);
@@ -79,7 +78,7 @@ class StandardEntityPersisterTest extends OrmFunctionalTestCase
 
         // Check that the features are the same instances still
         foreach ($p->getFeatures() as $feature) {
-            if ($feature->getDescription() == 'AC-3') {
+            if ($feature->getDescription() === 'AC-3') {
                 self::assertSame($feature, $f1);
             } else {
                 self::assertSame($feature, $f2);

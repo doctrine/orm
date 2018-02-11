@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\Tests\Models\ManyToManyPersister;
 
 use Doctrine\ORM\Annotation as ORM;
@@ -14,7 +16,7 @@ class OtherParentClass
      * @ORM\Id
      * @ORM\Column(name="id", type="integer")
      *
-     * @var integer
+     * @var int
      */
     public $id;
 

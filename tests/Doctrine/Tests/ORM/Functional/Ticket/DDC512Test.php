@@ -23,8 +23,8 @@ class DDC512Test extends OrmFunctionalTestCase
 
     public function testIssue()
     {
-        $customer1 = new DDC512Customer();
-        $item = new DDC512OfferItem();
+        $customer1       = new DDC512Customer();
+        $item            = new DDC512OfferItem();
         $customer1->item = $item;
         $this->em->persist($customer1);
 
@@ -34,13 +34,13 @@ class DDC512Test extends OrmFunctionalTestCase
         $this->em->flush();
         $this->em->clear();
 
-        $q = $this->em->createQuery("select u,i from ".__NAMESPACE__."\\DDC512Customer u left join u.item i");
+        $q      = $this->em->createQuery('select u,i from ' . __NAMESPACE__ . '\\DDC512Customer u left join u.item i');
         $result = $q->getResult();
 
         self::assertCount(2, $result);
         self::assertInstanceOf(DDC512Customer::class, $result[0]);
         self::assertInstanceOf(DDC512Customer::class, $result[1]);
-        if ($result[0]->id == $customer1->id) {
+        if ($result[0]->id === $customer1->id) {
             self::assertInstanceOf(DDC512OfferItem::class, $result[0]->item);
             self::assertEquals($item->id, $result[0]->item->id);
             self::assertNull($result[1]->item);

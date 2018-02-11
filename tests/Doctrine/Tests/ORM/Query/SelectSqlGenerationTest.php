@@ -24,6 +24,7 @@ use Doctrine\Tests\Models\CMS\CmsPhonenumber;
 use Doctrine\Tests\Models\Company\CompanyEmployee;
 use Doctrine\Tests\Models\Company\CompanyPerson;
 use Doctrine\Tests\OrmTestCase;
+use function get_class;
 
 class SelectSqlGenerationTest extends OrmTestCase
 {
@@ -39,8 +40,8 @@ class SelectSqlGenerationTest extends OrmTestCase
      *
      * @param string $dqlToBeTested
      * @param string $sqlToBeConfirmed
-     * @param array $queryHints
-     * @param array $queryParams
+     * @param array  $queryHints
+     * @param array  $queryParams
      */
     public function assertSqlGeneration($dqlToBeTested, $sqlToBeConfirmed, array $queryHints = [], array $queryParams = [])
     {
@@ -64,7 +65,7 @@ class SelectSqlGenerationTest extends OrmTestCase
 
             $query->free();
         } catch (\Exception $e) {
-            $this->fail($e->getMessage() ."\n".$e->getTraceAsString());
+            $this->fail($e->getMessage() . "\n" . $e->getTraceAsString());
         }
 
         self::assertEquals($sqlToBeConfirmed, $sqlGenerated);
@@ -75,8 +76,8 @@ class SelectSqlGenerationTest extends OrmTestCase
      *
      * @param string $dqlToBeTested
      * @param string $expectedException
-     * @param array $queryHints
-     * @param array $queryParams
+     * @param array  $queryHints
+     * @param array  $queryParams
      */
     public function assertInvalidSqlGeneration($dqlToBeTested, $expectedException, array $queryHints = [], array $queryParams = [])
     {
@@ -369,7 +370,7 @@ class SelectSqlGenerationTest extends OrmTestCase
         );
     }
 
-    // Ticket #668
+    /** Ticket #668 */
     public function testSupportsASqlKeywordInAStringLiteralParam()
     {
         $this->assertSqlGeneration(
@@ -441,7 +442,7 @@ class SelectSqlGenerationTest extends OrmTestCase
      * @group DDC-135
      * @group DDC-177
      */
-    public function testJoinOnClause_NotYetSupported_ThrowsException()
+    public function testJoinOnClauseNotYetSupportedThrowsException()
     {
         $this->expectException(QueryException::class);
 
@@ -479,7 +480,7 @@ class SelectSqlGenerationTest extends OrmTestCase
         );
     }
 
-    // Ticket 894
+    /** Ticket 894 */
     public function testSupportsBetweenClauseWithPositionalParameters()
     {
         $this->assertSqlGeneration(
@@ -569,11 +570,12 @@ class SelectSqlGenerationTest extends OrmTestCase
         $this->assertSqlGeneration(
             'SELECT u FROM Doctrine\Tests\Models\Company\CompanyPerson u WHERE u INSTANCE OF ?1',
             'SELECT t0."id" AS c0, t0."name" AS c1, t0."discr" AS c2 FROM "company_persons" t0 WHERE t0."discr" IN (?)',
-            [], [1 => $this->em->getClassMetadata(CompanyEmployee::class)]
+            [],
+            [1 => $this->em->getClassMetadata(CompanyEmployee::class)]
         );
     }
 
-    // Ticket #973
+    /** Ticket #973 */
     public function testSupportsSingleValuedInExpressionWithoutSpacesInWherePart()
     {
         $this->assertSqlGeneration(
@@ -682,7 +684,7 @@ class SelectSqlGenerationTest extends OrmTestCase
 
         $q->setHint(ORMQuery::HINT_FORCE_PARTIAL_LOAD, true);
 
-        $phone = new CmsPhonenumber();
+        $phone              = new CmsPhonenumber();
         $phone->phonenumber = 101;
         $q->setParameter('param', $phone);
 
@@ -699,7 +701,7 @@ class SelectSqlGenerationTest extends OrmTestCase
 
         $q->setHint(ORMQuery::HINT_FORCE_PARTIAL_LOAD, true);
 
-        $group = new CmsGroup();
+        $group     = new CmsGroup();
         $group->id = 101;
         $q->setParameter('param', $group);
 
@@ -714,9 +716,9 @@ class SelectSqlGenerationTest extends OrmTestCase
         $q = $this->em->createQuery('SELECT u.id FROM Doctrine\Tests\Models\CMS\CmsUser u WHERE :param MEMBER OF u.groups');
         $q->setHint(ORMQuery::HINT_FORCE_PARTIAL_LOAD, true);
 
-        $group = new CmsGroup();
-        $group->id = 101;
-        $group2 = new CmsGroup();
+        $group      = new CmsGroup();
+        $group->id  = 101;
+        $group2     = new CmsGroup();
         $group2->id = 105;
         $q->setParameter('param', [$group, $group2]);
 
@@ -977,9 +979,11 @@ class SelectSqlGenerationTest extends OrmTestCase
         );
     }
 
-    // Null check on inverse side has to happen through explicit JOIN.
-    // 'SELECT u FROM Doctrine\Tests\Models\CMS\CmsUser u WHERE u.address IS NULL'
-    // where the CmsUser is the inverse side is not supported.
+    /**
+     * Null check on inverse side has to happen through explicit JOIN.
+     * 'SELECT u FROM Doctrine\Tests\Models\CMS\CmsUser u WHERE u.address IS NULL'
+     * where the CmsUser is the inverse side is not supported.
+     */
     public function testSingleValuedAssociationNullCheckOnInverseSide()
     {
         $this->assertSqlGeneration(
@@ -1028,17 +1032,17 @@ class SelectSqlGenerationTest extends OrmTestCase
     public function testStringFunctionNotLikeExpression()
     {
         $this->assertSqlGeneration(
-                'SELECT u.name FROM Doctrine\Tests\Models\CMS\CmsUser u WHERE LOWER(u.name) NOT LIKE \'%foo OR bar%\'',
-                'SELECT t0."name" AS c0 FROM "cms_users" t0 WHERE LOWER(t0."name") NOT LIKE \'%foo OR bar%\''
+            'SELECT u.name FROM Doctrine\Tests\Models\CMS\CmsUser u WHERE LOWER(u.name) NOT LIKE \'%foo OR bar%\'',
+            'SELECT t0."name" AS c0 FROM "cms_users" t0 WHERE LOWER(t0."name") NOT LIKE \'%foo OR bar%\''
         );
 
         $this->assertSqlGeneration(
-                'SELECT u.name FROM Doctrine\Tests\Models\CMS\CmsUser u WHERE UPPER(LOWER(u.name)) NOT LIKE UPPER(LOWER(:str))',
-                'SELECT t0."name" AS c0 FROM "cms_users" t0 WHERE UPPER(LOWER(t0."name")) NOT LIKE UPPER(LOWER(?))'
+            'SELECT u.name FROM Doctrine\Tests\Models\CMS\CmsUser u WHERE UPPER(LOWER(u.name)) NOT LIKE UPPER(LOWER(:str))',
+            'SELECT t0."name" AS c0 FROM "cms_users" t0 WHERE UPPER(LOWER(t0."name")) NOT LIKE UPPER(LOWER(?))'
         );
         $this->assertSqlGeneration(
-                'SELECT u FROM Doctrine\Tests\Models\CMS\CmsUser u LEFT JOIN u.articles a WITH a.topic NOT LIKE u.name',
-                'SELECT t0."id" AS c0, t0."status" AS c1, t0."username" AS c2, t0."name" AS c3 FROM "cms_users" t0 LEFT JOIN "cms_articles" t1 ON t0."id" = t1."user_id" AND (t1."topic" NOT LIKE t0."name")'
+            'SELECT u FROM Doctrine\Tests\Models\CMS\CmsUser u LEFT JOIN u.articles a WITH a.topic NOT LIKE u.name',
+            'SELECT t0."id" AS c0, t0."status" AS c1, t0."username" AS c2, t0."name" AS c3 FROM "cms_users" t0 LEFT JOIN "cms_articles" t1 ON t0."id" = t1."user_id" AND (t1."topic" NOT LIKE t0."name")'
         );
     }
 
@@ -1618,7 +1622,7 @@ class SelectSqlGenerationTest extends OrmTestCase
     public function testAliasDoesNotExceedPlatformDefinedLength()
     {
         $this->assertSqlGeneration(
-            'SELECT m FROM ' . __NAMESPACE__ .  '\\DDC1384Model m',
+            'SELECT m FROM ' . __NAMESPACE__ . '\\DDC1384Model m',
             'SELECT t0."aVeryLongIdentifierThatShouldBeShortenedByTheSQLWalker_fooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooo" AS c0 FROM "DDC1384Model" t0'
         );
     }
@@ -2128,12 +2132,12 @@ class SelectSqlGenerationTest extends OrmTestCase
         $this->assertSqlGeneration(
             'SELECT u.id FROM Doctrine\Tests\Models\CMS\CmsUser u WHERE CONCAT(u.name, u.status, \'s\') = ?1',
             'SELECT t0.[id] AS c0 FROM [cms_users] t0 WHERE (t0.[name] + t0.[status] + \'s\') = ?'
-    	);
+        );
 
         $this->assertSqlGeneration(
             'SELECT CONCAT(u.id, u.name, u.status) FROM Doctrine\Tests\Models\CMS\CmsUser u WHERE u.id = ?1',
             'SELECT (t0.[id] + t0.[name] + t0.[status]) AS c0 FROM [cms_users] t0 WHERE t0.[id] = ?'
-    	);
+        );
     }
 
     /**
@@ -2351,17 +2355,11 @@ class MyAbsFunction extends FunctionNode
 {
     public $simpleArithmeticExpression;
 
-    /**
-     * @override
-     */
     public function getSql(SqlWalker $sqlWalker)
     {
         return 'ABS(' . $sqlWalker->walkSimpleArithmeticExpression($this->simpleArithmeticExpression) . ')';
     }
 
-    /**
-     * @override
-     */
     public function parse(Parser $parser)
     {
         $lexer = $parser->getLexer();
@@ -2393,7 +2391,6 @@ class DDC1384Model
  */
 class DDC1474Entity
 {
-
     /**
      * @ORM\Id
      * @ORM\Column(type="integer")
@@ -2401,9 +2398,7 @@ class DDC1474Entity
      */
     protected $id;
 
-    /**
-     * @ORM\Column(type="float")
-     */
+    /** @ORM\Column(type="float") */
     private $value;
 
     /**

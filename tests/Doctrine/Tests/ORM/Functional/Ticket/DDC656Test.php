@@ -5,23 +5,24 @@ declare(strict_types=1);
 namespace Doctrine\Tests\ORM\Functional\Ticket;
 
 use Doctrine\ORM\Annotation as ORM;
+use Doctrine\Tests\OrmFunctionalTestCase;
+use function array_keys;
+use function get_class;
 
-class DDC656Test extends \Doctrine\Tests\OrmFunctionalTestCase
+class DDC656Test extends OrmFunctionalTestCase
 {
     protected function setUp()
     {
         parent::setUp();
         try {
             $this->schemaTool->createSchema(
-                [
-                $this->em->getClassMetadata(DDC656Entity::class)
-                ]
+                [$this->em->getClassMetadata(DDC656Entity::class)]
             );
         } catch (\Exception $e) {
         }
     }
 
-    public function testRecomputeSingleEntityChangeSet_PreservesFieldOrder()
+    public function testRecomputeSingleEntityChangeSetPreservesFieldOrder()
     {
         $entity = new DDC656Entity();
         $entity->setName('test1');
@@ -50,19 +51,13 @@ class DDC656Test extends \Doctrine\Tests\OrmFunctionalTestCase
  */
 class DDC656Entity
 {
-    /**
-     * @ORM\Column(type="string")
-     */
+    /** @ORM\Column(type="string") */
     public $name;
 
-    /**
-     * @ORM\Column(type="string")
-     */
+    /** @ORM\Column(type="string") */
     public $type;
 
-    /**
-     * @ORM\Id @ORM\Column(type="integer") @ORM\GeneratedValue
-     */
+    /** @ORM\Id @ORM\Column(type="integer") @ORM\GeneratedValue */
     public $specificationId;
 
     public function getName()

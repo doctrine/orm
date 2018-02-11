@@ -18,8 +18,6 @@ class CustomTypeChild
      */
     public $id;
 
-    /**
-     * @ORM\Column(type="upper_case_string")
-     */
+    /** @ORM\Column(type="upper_case_string") */
     public $lowerCaseString = 'foo';
 }

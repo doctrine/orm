@@ -7,9 +7,11 @@ namespace Doctrine\Tests\ORM\Functional\Ticket;
 use Doctrine\Common\NotifyPropertyChanged;
 use Doctrine\Common\PropertyChangedListener;
 use Doctrine\ORM\Annotation as ORM;
+use Doctrine\Tests\OrmFunctionalTestCase;
 use ProxyManager\Proxy\GhostObjectInterface;
+use function in_array;
 
-class DDC1690Test extends \Doctrine\Tests\OrmFunctionalTestCase
+class DDC1690Test extends OrmFunctionalTestCase
 {
     protected function setUp()
     {
@@ -18,7 +20,7 @@ class DDC1690Test extends \Doctrine\Tests\OrmFunctionalTestCase
             $this->schemaTool->createSchema(
                 [
                 $this->em->getClassMetadata(DDC1690Parent::class),
-                $this->em->getClassMetadata(DDC1690Child::class)
+                $this->em->getClassMetadata(DDC1690Child::class),
                 ]
             );
         } catch (\Exception $e) {
@@ -29,7 +31,7 @@ class DDC1690Test extends \Doctrine\Tests\OrmFunctionalTestCase
     public function testChangeTracking()
     {
         $parent = new DDC1690Parent();
-        $child = new DDC1690Child();
+        $child  = new DDC1690Child();
         $parent->setName('parent');
         $child->setName('child');
 
@@ -84,7 +86,7 @@ class NotifyBaseEntity implements NotifyPropertyChanged
 
     public function addPropertyChangedListener(PropertyChangedListener $listener)
     {
-        if (! \in_array($listener, $this->listeners, true)) {
+        if (! in_array($listener, $this->listeners, true)) {
             $this->listeners[] = $listener;
         }
     }

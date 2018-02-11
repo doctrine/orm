@@ -9,6 +9,8 @@ use Doctrine\ORM\Cache\CacheEntry;
 use Doctrine\ORM\Cache\DefaultEntityHydrator;
 use Doctrine\ORM\Cache\EntityCacheEntry;
 use Doctrine\ORM\Cache\EntityCacheKey;
+use Doctrine\ORM\Cache\EntityHydrator;
+use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\UnitOfWork;
 use Doctrine\Tests\Models\Cache\Country;
 use Doctrine\Tests\Models\Cache\State;
@@ -19,14 +21,10 @@ use Doctrine\Tests\OrmTestCase;
  */
 class DefaultEntityHydratorTest extends OrmTestCase
 {
-    /**
-     * @var \Doctrine\ORM\Cache\EntityHydrator
-     */
+    /** @var EntityHydrator */
     private $structure;
 
-    /**
-     * @var \Doctrine\ORM\EntityManagerInterface
-     */
+    /** @var EntityManagerInterface */
     private $em;
 
     protected function setUp()
@@ -45,8 +43,8 @@ class DefaultEntityHydratorTest extends OrmTestCase
     public function testCreateEntity()
     {
         $metadata = $this->em->getClassMetadata(Country::class);
-        $key      = new EntityCacheKey($metadata->getClassName(), ['id'=>1]);
-        $entry    = new EntityCacheEntry($metadata->getClassName(), ['id'=>1, 'name'=>'Foo']);
+        $key      = new EntityCacheKey($metadata->getClassName(), ['id' => 1]);
+        $entry    = new EntityCacheEntry($metadata->getClassName(), ['id' => 1, 'name' => 'Foo']);
         $entity   = $this->structure->loadCacheEntry($metadata, $key, $entry);
 
         self::assertInstanceOf($metadata->getClassName(), $entity);
@@ -59,8 +57,8 @@ class DefaultEntityHydratorTest extends OrmTestCase
     public function testLoadProxy()
     {
         $metadata = $this->em->getClassMetadata(Country::class);
-        $key      = new EntityCacheKey($metadata->getClassName(), ['id'=>1]);
-        $entry    = new EntityCacheEntry($metadata->getClassName(), ['id'=>1, 'name'=>'Foo']);
+        $key      = new EntityCacheKey($metadata->getClassName(), ['id' => 1]);
+        $entry    = new EntityCacheEntry($metadata->getClassName(), ['id' => 1, 'name' => 'Foo']);
         $proxy    = $this->em->getReference($metadata->getClassName(), $key->identifier);
         $entity   = $this->structure->loadCacheEntry($metadata, $key, $entry, $proxy);
 
@@ -76,14 +74,14 @@ class DefaultEntityHydratorTest extends OrmTestCase
     {
         $entity   = new Country('Foo');
         $uow      = $this->em->getUnitOfWork();
-        $data     = ['id'=>1, 'name'=>'Foo'];
+        $data     = ['id' => 1, 'name' => 'Foo'];
         $metadata = $this->em->getClassMetadata(Country::class);
-        $key      = new EntityCacheKey($metadata->getClassName(), ['id'=>1]);
+        $key      = new EntityCacheKey($metadata->getClassName(), ['id' => 1]);
 
         $entity->setId(1);
         $uow->registerManaged($entity, $key->identifier, $data);
 
-        $cache  = $this->structure->buildCacheEntry($metadata, $key, $entity);
+        $cache = $this->structure->buildCacheEntry($metadata, $key, $entity);
 
         self::assertInstanceOf(CacheEntry::class, $cache);
         self::assertInstanceOf(EntityCacheEntry::class, $cache);
@@ -101,19 +99,19 @@ class DefaultEntityHydratorTest extends OrmTestCase
 
     public function testBuildCacheEntryAssociation()
     {
-        $country        = new Country('Foo');
-        $state          = new State('Bat', $country);
-        $uow            = $this->em->getUnitOfWork();
-        $countryData    = ['id'=>11, 'name'=>'Foo'];
-        $stateData      = ['id'=>12, 'name'=>'Bar', 'country' => $country];
-        $metadata       = $this->em->getClassMetadata(State::class);
-        $key            = new EntityCacheKey($metadata->getClassName(), ['id'=>11]);
+        $country     = new Country('Foo');
+        $state       = new State('Bat', $country);
+        $uow         = $this->em->getUnitOfWork();
+        $countryData = ['id' => 11, 'name' => 'Foo'];
+        $stateData   = ['id' => 12, 'name' => 'Bar', 'country' => $country];
+        $metadata    = $this->em->getClassMetadata(State::class);
+        $key         = new EntityCacheKey($metadata->getClassName(), ['id' => 11]);
 
         $country->setId(11);
         $state->setId(12);
 
-        $uow->registerManaged($country, ['id'=>11], $countryData);
-        $uow->registerManaged($state, ['id'=>12], $stateData);
+        $uow->registerManaged($country, ['id' => 11], $countryData);
+        $uow->registerManaged($state, ['id' => 12], $stateData);
 
         $cache = $this->structure->buildCacheEntry($metadata, $key, $state);
 
@@ -135,16 +133,16 @@ class DefaultEntityHydratorTest extends OrmTestCase
 
     public function testBuildCacheEntryNonInitializedAssocProxy()
     {
-        $proxy          = $this->em->getReference(Country::class, 11);
-        $entity         = new State('Bat', $proxy);
-        $uow            = $this->em->getUnitOfWork();
-        $entityData     = ['id'=>12, 'name'=>'Bar', 'country' => $proxy];
-        $metadata       = $this->em->getClassMetadata(State::class);
-        $key            = new EntityCacheKey($metadata->getClassName(), ['id'=>11]);
+        $proxy      = $this->em->getReference(Country::class, 11);
+        $entity     = new State('Bat', $proxy);
+        $uow        = $this->em->getUnitOfWork();
+        $entityData = ['id' => 12, 'name' => 'Bar', 'country' => $proxy];
+        $metadata   = $this->em->getClassMetadata(State::class);
+        $key        = new EntityCacheKey($metadata->getClassName(), ['id' => 11]);
 
         $entity->setId(12);
 
-        $uow->registerManaged($entity, ['id'=>12], $entityData);
+        $uow->registerManaged($entity, ['id' => 12], $entityData);
 
         $cache = $this->structure->buildCacheEntry($metadata, $key, $entity);
 
@@ -166,16 +164,16 @@ class DefaultEntityHydratorTest extends OrmTestCase
 
     public function testCacheEntryWithWrongIdentifierType()
     {
-        $proxy          = $this->em->getReference(Country::class, 11);
-        $entity         = new State('Bat', $proxy);
-        $uow            = $this->em->getUnitOfWork();
-        $entityData     = ['id'=> 12, 'name'=>'Bar', 'country' => $proxy];
-        $metadata       = $this->em->getClassMetadata(State::class);
-        $key            = new EntityCacheKey($metadata->getClassName(), ['id'=>'12']);
+        $proxy      = $this->em->getReference(Country::class, 11);
+        $entity     = new State('Bat', $proxy);
+        $uow        = $this->em->getUnitOfWork();
+        $entityData = ['id' => 12, 'name' => 'Bar', 'country' => $proxy];
+        $metadata   = $this->em->getClassMetadata(State::class);
+        $key        = new EntityCacheKey($metadata->getClassName(), ['id' => '12']);
 
         $entity->setId(12);
 
-        $uow->registerManaged($entity, ['id'=>12], $entityData);
+        $uow->registerManaged($entity, ['id' => 12], $entityData);
 
         $cache = $this->structure->buildCacheEntry($metadata, $key, $entity);
 

@@ -4,21 +4,19 @@ declare(strict_types=1);
 
 namespace Doctrine\Tests\Mocks;
 
+use Doctrine\ORM\Persisters\Entity\BasicEntityPersister;
 use Doctrine\ORM\UnitOfWork;
+use function spl_object_id;
 
 /**
  * Mock class for UnitOfWork.
  */
 class UnitOfWorkMock extends UnitOfWork
 {
-    /**
-     * @var array
-     */
+    /** @var array */
     private $mockDataChangeSets = [];
 
-    /**
-     * @var array|null
-     */
+    /** @var array|null */
     private $persisterMock;
 
     /**
@@ -52,8 +50,8 @@ class UnitOfWorkMock extends UnitOfWork
      * Sets a (mock) persister for an entity class that will be returned when
      * getEntityPersister() is invoked for that class.
      *
-     * @param string                                               $entityName
-     * @param \Doctrine\ORM\Persisters\Entity\BasicEntityPersister $persister
+     * @param string               $entityName
+     * @param BasicEntityPersister $persister
      *
      * @return void
      */

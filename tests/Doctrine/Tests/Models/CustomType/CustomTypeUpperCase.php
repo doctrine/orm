@@ -18,13 +18,9 @@ class CustomTypeUpperCase
      */
     public $id;
 
-    /**
-     * @ORM\Column(type="upper_case_string")
-     */
+    /** @ORM\Column(type="upper_case_string") */
     public $lowerCaseString;
 
-    /**
-     * @ORM\Column(type="upper_case_string", name="named_lower_case_string", nullable = true)
-     */
+    /** @ORM\Column(type="upper_case_string", name="named_lower_case_string", nullable = true) */
     public $namedLowerCaseString;
 }

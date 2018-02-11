@@ -5,11 +5,12 @@ declare(strict_types=1);
 namespace Doctrine\Tests\ORM\Functional\Ticket;
 
 use Doctrine\ORM\Annotation as ORM;
+use Doctrine\Tests\OrmFunctionalTestCase;
 
 /**
  * @group DDC-1515
  */
-class DDC1515Test extends \Doctrine\Tests\OrmFunctionalTestCase
+class DDC1515Test extends OrmFunctionalTestCase
 {
     public function setUp()
     {
@@ -28,7 +29,7 @@ class DDC1515Test extends \Doctrine\Tests\OrmFunctionalTestCase
         $this->em->persist($bar);
         $this->em->flush();
 
-        $foo = new DDC1515Foo();
+        $foo      = new DDC1515Foo();
         $foo->bar = $bar;
         $this->em->persist($foo);
         $this->em->flush();
@@ -44,9 +45,7 @@ class DDC1515Test extends \Doctrine\Tests\OrmFunctionalTestCase
  */
 class DDC1515Foo
 {
-    /**
-     * @ORM\OneToOne(targetEntity=DDC1515Bar::class, inversedBy="foo") @ORM\Id
-     */
+    /** @ORM\OneToOne(targetEntity=DDC1515Bar::class, inversedBy="foo") @ORM\Id */
     public $bar;
 }
 
@@ -55,13 +54,9 @@ class DDC1515Foo
  */
 class DDC1515Bar
 {
-    /**
-     * @ORM\Id @ORM\Column(type="integer") @ORM\GeneratedValue
-     */
+    /** @ORM\Id @ORM\Column(type="integer") @ORM\GeneratedValue */
     public $id;
 
-    /**
-     * @ORM\OneToOne(targetEntity=DDC1515Foo::class, mappedBy="bar")
-     */
+    /** @ORM\OneToOne(targetEntity=DDC1515Foo::class, mappedBy="bar") */
     public $foo;
 }

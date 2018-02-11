@@ -9,7 +9,6 @@ use Doctrine\ORM\Annotation as ORM;
 /**
  * Describes a product feature.
  *
- * @author Giorgio Sironi
  * @ORM\Entity
  * @ORM\Table(name="ecommerce_features")
  */
@@ -22,9 +21,7 @@ class ECommerceFeature
      */
     private $id;
 
-    /**
-     * @ORM\Column(length=50)
-     */
+    /** @ORM\Column(length=50) */
     private $description;
 
     /**
@@ -56,7 +53,7 @@ class ECommerceFeature
     public function removeProduct()
     {
         if ($this->product !== null) {
-            $product = $this->product;
+            $product       = $this->product;
             $this->product = null;
             $product->removeFeature($this);
         }

@@ -4,14 +4,18 @@ declare(strict_types=1);
 
 namespace Doctrine\Tests\ORM\Functional\Ticket;
 
-use Doctrine\Tests\Models\CMS\CmsUser;
 use Doctrine\ORM\Event\OnFlushEventArgs;
 use Doctrine\ORM\Events;
+use Doctrine\Tests\Models\CMS\CmsUser;
+use Doctrine\Tests\OrmFunctionalTestCase;
+use function array_intersect_key;
+use function get_class;
+use function intval;
 
 /**
  * @group DDC-2790
  */
-class DDC2790Test extends \Doctrine\Tests\OrmFunctionalTestCase
+class DDC2790Test extends OrmFunctionalTestCase
 {
     /**
      * {@inheritDoc}
@@ -28,15 +32,15 @@ class DDC2790Test extends \Doctrine\Tests\OrmFunctionalTestCase
      */
     public function testIssue()
     {
-        $this->em->getEventManager()->addEventListener(Events::onFlush, new OnFlushListener);
+        $this->em->getEventManager()->addEventListener(Events::onFlush, new OnFlushListener());
 
-        $entity = new CmsUser;
+        $entity           = new CmsUser();
         $entity->username = 'romanb';
-        $entity->name = 'Roman';
+        $entity->name     = 'Roman';
 
         $qb = $this->em->createQueryBuilder();
         $qb->from(get_class($entity), 'c');
-        $qb->select("count(c)");
+        $qb->select('count(c)');
         $initial = intval($qb->getQuery()->getSingleScalarResult());
 
         $this->em->persist($entity);
@@ -51,7 +55,7 @@ class DDC2790Test extends \Doctrine\Tests\OrmFunctionalTestCase
 
         $qb = $this->em->createQueryBuilder();
         $qb->from(get_class($entity), 'c');
-        $qb->select("count(c)");
+        $qb->select('count(c)');
         $count = intval($qb->getQuery()->getSingleScalarResult());
         self::assertEquals($initial, $count);
     }
@@ -65,10 +69,10 @@ class OnFlushListener
      */
     public function onFlush(OnFlushEventArgs $args)
     {
-        $em = $args->getEntityManager();
-        $uow = $em->getUnitOfWork();
+        $em        = $args->getEntityManager();
+        $uow       = $em->getUnitOfWork();
         $deletions = $uow->getScheduledEntityDeletions();
-        $updates = $uow->getScheduledEntityUpdates();
+        $updates   = $uow->getScheduledEntityUpdates();
 
         $undelete = array_intersect_key($deletions, $updates);
         foreach ($undelete as $d) {

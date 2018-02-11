@@ -14,24 +14,16 @@ use PhpBench\Benchmark\Metadata\Annotations\BeforeMethods;
  */
 final class SingleTableInheritanceHydrationPerformanceBench
 {
-    /**
-     * @var ObjectRepository
-     */
+    /** @var ObjectRepository */
     private $contractsRepository;
 
-    /**
-     * @var ObjectRepository
-     */
+    /** @var ObjectRepository */
     private $fixContractsRepository;
 
-    /**
-     * @var ObjectRepository
-     */
+    /** @var ObjectRepository */
     private $flexContractRepository;
 
-    /**
-     * @var ObjectRepository
-     */
+    /** @var ObjectRepository */
     private $ultraContractRepository;
 
     public function init() : void

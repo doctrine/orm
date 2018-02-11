@@ -9,6 +9,7 @@ use Doctrine\ORM\Mapping\FetchMode;
 use Doctrine\Tests\Models\ECommerce\ECommerceCustomer;
 use Doctrine\Tests\OrmFunctionalTestCase;
 use ProxyManager\Proxy\GhostObjectInterface;
+use function get_class;
 
 /**
  * Tests a self referential one-to-one association mapping (without inheritance).
@@ -64,8 +65,8 @@ class OneToOneSelfReferentialAssociationTest extends OrmFunctionalTestCase
     {
         $this->createFixture();
 
-        $query = $this->em->createQuery('select c, m from Doctrine\Tests\Models\ECommerce\ECommerceCustomer c left join c.mentor m order by c.id asc');
-        $result = $query->getResult();
+        $query    = $this->em->createQuery('select c, m from Doctrine\Tests\Models\ECommerce\ECommerceCustomer c left join c.mentor m order by c.id asc');
+        $result   = $query->getResult();
         $customer = $result[0];
         self::assertLoadingOfAssociation($customer);
     }
@@ -80,8 +81,8 @@ class OneToOneSelfReferentialAssociationTest extends OrmFunctionalTestCase
         $metadata = $this->em->getClassMetadata(ECommerceCustomer::class);
         $metadata->getProperty('mentor')->setFetchMode(FetchMode::LAZY);
 
-        $query = $this->em->createQuery("select c from Doctrine\Tests\Models\ECommerce\ECommerceCustomer c where c.name='Luke Skywalker'");
-        $result = $query->getResult();
+        $query    = $this->em->createQuery("select c from Doctrine\Tests\Models\ECommerce\ECommerceCustomer c where c.name='Luke Skywalker'");
+        $result   = $query->getResult();
         $customer = $result[0];
 
         self::assertLoadingOfAssociation($customer);
@@ -91,9 +92,7 @@ class OneToOneSelfReferentialAssociationTest extends OrmFunctionalTestCase
     {
         try {
             $this->schemaTool->createSchema(
-                [
-                $this->em->getClassMetadata(MultiSelfReference::class)
-                ]
+                [$this->em->getClassMetadata(MultiSelfReference::class)]
             );
         } catch (\Exception $e) {
             // Swallow all exceptions. We do not test the schema tool here.
@@ -101,8 +100,8 @@ class OneToOneSelfReferentialAssociationTest extends OrmFunctionalTestCase
 
         $entity1 = new MultiSelfReference();
         $this->em->persist($entity1);
-        $entity1->setOther1($entity2 = new MultiSelfReference);
-        $entity1->setOther2($entity3 = new MultiSelfReference);
+        $entity1->setOther1($entity2 = new MultiSelfReference());
+        $entity1->setOther2($entity3 = new MultiSelfReference());
         $this->em->flush();
 
         $this->em->clear();
@@ -131,9 +130,9 @@ class OneToOneSelfReferentialAssociationTest extends OrmFunctionalTestCase
 
     private function createFixture()
     {
-        $customer = new ECommerceCustomer;
+        $customer = new ECommerceCustomer();
         $customer->setName('Luke Skywalker');
-        $mentor = new ECommerceCustomer;
+        $mentor = new ECommerceCustomer();
         $mentor->setName('Obi-wan Kenobi');
         $customer->setMentor($mentor);
 

@@ -19,14 +19,10 @@ class Tweet
      */
     public $id;
 
-    /**
-     * @ORM\Column(type="string")
-     */
+    /** @ORM\Column(type="string") */
     public $content;
 
-    /**
-     * @ORM\ManyToOne(targetEntity=User::class, inversedBy="tweets")
-     */
+    /** @ORM\ManyToOne(targetEntity=User::class, inversedBy="tweets") */
     public $author;
 
     public function setAuthor(User $user)

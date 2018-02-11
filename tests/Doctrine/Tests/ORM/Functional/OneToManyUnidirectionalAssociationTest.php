@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace Doctrine\Tests\ORM\Functional;
 
-use Doctrine\Tests\Models\Routing\RoutingRoute;
-use Doctrine\Tests\Models\Routing\RoutingLocation;
 use Doctrine\Tests\Models\Routing\RoutingLeg;
+use Doctrine\Tests\Models\Routing\RoutingLocation;
+use Doctrine\Tests\Models\Routing\RoutingRoute;
 use Doctrine\Tests\OrmFunctionalTestCase;
 
 /**
@@ -21,10 +21,10 @@ class OneToManyUnidirectionalAssociationTest extends OrmFunctionalTestCase
         $this->useModelSet('routing');
         parent::setUp();
 
-        $locations = ["Berlin", "Bonn", "Brasilia", "Atlanta"];
+        $locations = ['Berlin', 'Bonn', 'Brasilia', 'Atlanta'];
 
         foreach ($locations as $locationName) {
-            $location = new RoutingLocation();
+            $location       = new RoutingLocation();
             $location->name = $locationName;
             $this->em->persist($location);
             $this->locations[$locationName] = $location;
@@ -32,15 +32,15 @@ class OneToManyUnidirectionalAssociationTest extends OrmFunctionalTestCase
         $this->em->flush();
     }
 
-    public function testPersistOwning_InverseCascade()
+    public function testPersistOwningInverseCascade()
     {
-        $leg = new RoutingLeg();
-        $leg->fromLocation = $this->locations['Berlin'];
-        $leg->toLocation   = $this->locations['Bonn'];
-        $leg->departureDate = new \DateTime("now");
-        $leg->arrivalDate = new \DateTime("now +5 hours");
+        $leg                = new RoutingLeg();
+        $leg->fromLocation  = $this->locations['Berlin'];
+        $leg->toLocation    = $this->locations['Bonn'];
+        $leg->departureDate = new \DateTime('now');
+        $leg->arrivalDate   = new \DateTime('now +5 hours');
 
-        $route = new RoutingRoute();
+        $route         = new RoutingRoute();
         $route->legs[] = $leg;
 
         $this->em->persist($route);
@@ -48,27 +48,27 @@ class OneToManyUnidirectionalAssociationTest extends OrmFunctionalTestCase
         $this->em->clear();
 
         $routes = $this->em->createQuery(
-            "SELECT r, l, f, t FROM Doctrine\Tests\Models\Routing\RoutingRoute r ".
-            "JOIN r.legs l JOIN l.fromLocation f JOIN l.toLocation t"
+            'SELECT r, l, f, t FROM Doctrine\Tests\Models\Routing\RoutingRoute r ' .
+            'JOIN r.legs l JOIN l.fromLocation f JOIN l.toLocation t'
         )->getSingleResult();
 
         self::assertCount(1, $routes->legs);
-        self::assertEquals("Berlin", $routes->legs[0]->fromLocation->name);
-        self::assertEquals("Bonn", $routes->legs[0]->toLocation->name);
+        self::assertEquals('Berlin', $routes->legs[0]->fromLocation->name);
+        self::assertEquals('Bonn', $routes->legs[0]->toLocation->name);
     }
 
     public function testLegsAreUniqueToRoutes()
     {
-        $leg = new RoutingLeg();
-        $leg->fromLocation = $this->locations['Berlin'];
-        $leg->toLocation   = $this->locations['Bonn'];
-        $leg->departureDate = new \DateTime("now");
-        $leg->arrivalDate = new \DateTime("now +5 hours");
+        $leg                = new RoutingLeg();
+        $leg->fromLocation  = $this->locations['Berlin'];
+        $leg->toLocation    = $this->locations['Bonn'];
+        $leg->departureDate = new \DateTime('now');
+        $leg->arrivalDate   = new \DateTime('now +5 hours');
 
-        $routeA = new RoutingRoute();
+        $routeA         = new RoutingRoute();
         $routeA->legs[] = $leg;
 
-        $routeB = new RoutingRoute();
+        $routeB         = new RoutingRoute();
         $routeB->legs[] = $leg;
 
         $this->em->persist($routeA);
@@ -82,6 +82,6 @@ class OneToManyUnidirectionalAssociationTest extends OrmFunctionalTestCase
             $exceptionThrown = true;
         }
 
-        self::assertTrue($exceptionThrown, "The underlying database driver throws an exception.");
+        self::assertTrue($exceptionThrown, 'The underlying database driver throws an exception.');
     }
 }

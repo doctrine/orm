@@ -16,7 +16,7 @@ class DDC960Test extends OrmFunctionalTestCase
             $this->schemaTool->createSchema(
                 [
                 $this->em->getClassMetadata(DDC960Root::class),
-                $this->em->getClassMetadata(DDC960Child::class)
+                $this->em->getClassMetadata(DDC960Child::class),
                 ]
             );
         } catch (\Exception $e) {
@@ -32,7 +32,7 @@ class DDC960Test extends OrmFunctionalTestCase
         $this->em->persist($child);
         $this->em->flush();
 
-        $child->setName("Test2");
+        $child->setName('Test2');
 
         $this->em->flush();
 
@@ -50,14 +50,10 @@ class DDC960Test extends OrmFunctionalTestCase
  */
 class DDC960Root
 {
-    /**
-     * @ORM\Id @ORM\GeneratedValue @ORM\Column(type="integer")
-     */
+    /** @ORM\Id @ORM\GeneratedValue @ORM\Column(type="integer") */
     private $id;
 
-    /**
-     * @ORM\Column(type="integer") @ORM\Version
-     */
+    /** @ORM\Column(type="integer") @ORM\Version */
     private $version;
 
     public function getId()

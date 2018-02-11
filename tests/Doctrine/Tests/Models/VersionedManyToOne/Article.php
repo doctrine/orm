@@ -19,14 +19,10 @@ class Article
      */
     public $id;
 
-    /**
-     * @ORM\Column(name="name")
-     */
+    /** @ORM\Column(name="name") */
     public $name;
 
-    /**
-     * @ORM\ManyToOne(targetEntity=Category::class, cascade={"persist"})
-     */
+    /** @ORM\ManyToOne(targetEntity=Category::class, cascade={"persist"}) */
     public $category;
 
     /**

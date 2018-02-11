@@ -54,7 +54,7 @@ class LimitSubqueryWalkerTest extends PaginationTestCase
         );
     }
 
-    public function testCountQuery_MixedResultsWithName()
+    public function testCountQueryMixedResultsWithName()
     {
         $dql        = 'SELECT a, sum(a.name) as foo FROM Doctrine\Tests\ORM\Tools\Pagination\Author a';
         $query      = $this->entityManager->createQuery($dql);
@@ -68,7 +68,7 @@ class LimitSubqueryWalkerTest extends PaginationTestCase
         );
     }
 
-    public function testAggQuery_MixedResultsWithNameAndSort() : void
+    public function testAggQueryMixedResultsWithNameAndSort() : void
     {
         $dql   = 'SELECT a, sum(a.name) as foo FROM Doctrine\Tests\ORM\Tools\Pagination\Author a ORDER BY foo DESC';
         $query = $this->entityManager->createQuery($dql);
@@ -82,7 +82,7 @@ class LimitSubqueryWalkerTest extends PaginationTestCase
         );
     }
 
-    public function testAggQuery_MultipleMixedResultsWithSort() : void
+    public function testAggQueryMultipleMixedResultsWithSort() : void
     {
         $dql   = 'SELECT a, sum(a.name) as foo, (SELECT count(subA.id) FROM Doctrine\Tests\ORM\Tools\Pagination\Author subA WHERE subA.id = a.id ) as bar FROM Doctrine\Tests\ORM\Tools\Pagination\Author a ORDER BY foo DESC, bar ASC';
         $query = $this->entityManager->createQuery($dql);

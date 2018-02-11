@@ -5,13 +5,13 @@ declare(strict_types=1);
 namespace Doctrine\Tests\ORM\Functional\Ticket;
 
 use Doctrine\ORM\Annotation as ORM;
+use Doctrine\Tests\OrmFunctionalTestCase;
+use function get_class;
 
 /**
  * Class DDC2895Test
- * @package Doctrine\Tests\ORM\Functional\Ticket
- * @author http://github.com/gwagner
  */
-class DDC2895Test extends \Doctrine\Tests\OrmFunctionalTestCase
+class DDC2895Test extends OrmFunctionalTestCase
 {
     public function setUp()
     {
@@ -32,8 +32,8 @@ class DDC2895Test extends \Doctrine\Tests\OrmFunctionalTestCase
 
         self::assertEquals(
             [
-                "prePersist" => ["setLastModifiedPreUpdate"],
-                "preUpdate" => ["setLastModifiedPreUpdate"],
+                'prePersist' => ['setLastModifiedPreUpdate'],
+                'preUpdate' => ['setLastModifiedPreUpdate'],
             ],
             $cm->lifecycleCallbacks
         );
@@ -75,7 +75,7 @@ abstract class AbstractDDC2895
     /**
      * @param \DateTime $lastModified
      */
-    public function setLastModified( $lastModified )
+    public function setLastModified($lastModified)
     {
         $this->lastModified = $lastModified;
     }
@@ -101,7 +101,7 @@ class DDC2895 extends AbstractDDC2895
     /**
      * @param mixed $id
      */
-    public function setId( $id )
+    public function setId($id)
     {
         $this->id = $id;
     }

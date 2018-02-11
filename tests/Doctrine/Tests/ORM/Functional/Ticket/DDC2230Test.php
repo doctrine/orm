@@ -9,7 +9,6 @@ use Doctrine\Common\PropertyChangedListener;
 use Doctrine\ORM\Annotation as ORM;
 use Doctrine\ORM\Tools\ToolsException;
 use Doctrine\Tests\OrmFunctionalTestCase;
-use ProxyManager\Proxy\GhostObjectInterface;
 
 /**
  * @group DDC-2230
@@ -55,9 +54,7 @@ class DDC2230User
     /** @ORM\Id @ORM\Column(type="integer") @ORM\GeneratedValue(strategy="AUTO") */
     public $id;
 
-    /**
-     * @ORM\OneToOne(targetEntity=DDC2230Address::class)
-     */
+    /** @ORM\OneToOne(targetEntity=DDC2230Address::class) */
     public $address;
 }
 
@@ -70,9 +67,7 @@ class DDC2230Address implements NotifyPropertyChanged
     /** @ORM\Id @ORM\Column(type="integer") @ORM\GeneratedValue(strategy="AUTO") */
     public $id;
 
-    /**
-     * @var \Doctrine\Common\PropertyChangedListener
-     */
+    /** @var PropertyChangedListener */
     public $listener;
 
     /** {@inheritDoc} */

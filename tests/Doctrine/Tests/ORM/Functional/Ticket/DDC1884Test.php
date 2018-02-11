@@ -6,14 +6,14 @@ namespace Doctrine\Tests\ORM\Functional\Ticket;
 
 use Doctrine\Tests\Models\Taxi\Car;
 use Doctrine\Tests\Models\Taxi\Driver;
-use Doctrine\Tests\Models\Taxi\Ride;
 use Doctrine\Tests\Models\Taxi\PaidRide;
+use Doctrine\Tests\Models\Taxi\Ride;
+use Doctrine\Tests\OrmFunctionalTestCase;
 
 /**
  * @group DDC-1884
- * @author Sander Coolen <sander@jibber.nl>
  */
-class DDC1884Test extends \Doctrine\Tests\OrmFunctionalTestCase
+class DDC1884Test extends OrmFunctionalTestCase
 {
     protected function setUp()
     {
@@ -21,7 +21,7 @@ class DDC1884Test extends \Doctrine\Tests\OrmFunctionalTestCase
         parent::setUp();
 
         list($bimmer, $crysler, $merc, $volvo) = $this->createCars(Car::class);
-        list($john, $foo) = $this->createDrivers(Driver::class);
+        list($john, $foo)                      = $this->createDrivers(Driver::class);
         $this->em->flush();
 
         $ride1 = new Ride($john, $bimmer);
@@ -56,19 +56,19 @@ class DDC1884Test extends \Doctrine\Tests\OrmFunctionalTestCase
 
     private function createCars($class)
     {
-        $bimmer = new $class;
+        $bimmer = new $class();
         $bimmer->setBrand('BMW');
         $bimmer->setModel('7-Series');
 
-        $crysler = new $class;
+        $crysler = new $class();
         $crysler->setBrand('Crysler');
         $crysler->setModel('300');
 
-        $merc = new $class;
+        $merc = new $class();
         $merc->setBrand('Mercedes');
         $merc->setModel('C-Class');
 
-        $volvo = new $class;
+        $volvo = new $class();
         $volvo->setBrand('Volvo');
         $volvo->setModel('XC90');
 
@@ -82,10 +82,10 @@ class DDC1884Test extends \Doctrine\Tests\OrmFunctionalTestCase
 
     private function createDrivers($class)
     {
-        $john = new $class;
+        $john = new $class();
         $john->setName('John Doe');
 
-        $foo = new $class;
+        $foo = new $class();
         $foo->setName('Foo Bar');
 
         $this->em->persist($foo);

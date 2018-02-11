@@ -6,11 +6,12 @@ namespace Doctrine\Tests\ORM\Functional\Ticket;
 
 use Doctrine\ORM\Annotation as ORM;
 use Doctrine\ORM\Query\ResultSetMappingBuilder;
+use Doctrine\Tests\OrmFunctionalTestCase;
 
 /**
  * @group DDC-2660
  */
-class DDC2660Test extends \Doctrine\Tests\OrmFunctionalTestCase
+class DDC2660Test extends OrmFunctionalTestCase
 {
     /**
      * {@inheritDoc}
@@ -24,7 +25,7 @@ class DDC2660Test extends \Doctrine\Tests\OrmFunctionalTestCase
                 [
                 $this->em->getClassMetadata(DDC2660Product::class),
                 $this->em->getClassMetadata(DDC2660Customer::class),
-                $this->em->getClassMetadata(DDC2660CustomerOrder::class)
+                $this->em->getClassMetadata(DDC2660CustomerOrder::class),
                 ]
             );
         } catch (\Exception $e) {
@@ -32,9 +33,9 @@ class DDC2660Test extends \Doctrine\Tests\OrmFunctionalTestCase
         }
 
         for ($i = 0; $i < 5; $i++) {
-            $product = new DDC2660Product();
+            $product  = new DDC2660Product();
             $customer = new DDC2660Customer();
-            $order = new DDC2660CustomerOrder($product, $customer, 'name' . $i);
+            $order    = new DDC2660CustomerOrder($product, $customer, 'name' . $i);
 
             $this->em->persist($product);
             $this->em->persist($customer);
@@ -49,7 +50,7 @@ class DDC2660Test extends \Doctrine\Tests\OrmFunctionalTestCase
 
     public function testIssueWithExtraColumn()
     {
-        $sql = "SELECT o.product_id, o.customer_id, o.name FROM ddc_2660_customer_order o";
+        $sql = 'SELECT o.product_id, o.customer_id, o.name FROM ddc_2660_customer_order o';
 
         $rsm = new ResultSetMappingBuilder($this->getEntityManager());
         $rsm->addRootEntityFromClassMetadata(DDC2660CustomerOrder::class, 'c');
@@ -67,7 +68,7 @@ class DDC2660Test extends \Doctrine\Tests\OrmFunctionalTestCase
 
     public function testIssueWithoutExtraColumn()
     {
-        $sql = "SELECT o.product_id, o.customer_id FROM ddc_2660_customer_order o";
+        $sql = 'SELECT o.product_id, o.customer_id FROM ddc_2660_customer_order o';
 
         $rsm = new ResultSetMappingBuilder($this->getEntityManager());
         $rsm->addRootEntityFromClassMetadata(DDC2660CustomerOrder::class, 'c');
@@ -102,25 +103,19 @@ class DDC2660Customer
 /** @ORM\Entity @ORM\Table(name="ddc_2660_customer_order") */
 class DDC2660CustomerOrder
 {
-    /**
-     * @ORM\Id @ORM\ManyToOne(targetEntity=DDC2660Product::class)
-     */
+    /** @ORM\Id @ORM\ManyToOne(targetEntity=DDC2660Product::class) */
     public $product;
 
-    /**
-     * @ORM\Id @ORM\ManyToOne(targetEntity=DDC2660Customer::class)
-     */
+    /** @ORM\Id @ORM\ManyToOne(targetEntity=DDC2660Customer::class) */
     public $customer;
 
-    /**
-     * @ORM\Column(type="string")
-     */
+    /** @ORM\Column(type="string") */
     public $name;
 
     public function __construct(DDC2660Product $product, DDC2660Customer $customer, $name)
     {
         $this->product  = $product;
         $this->customer = $customer;
-        $this->name = $name;
+        $this->name     = $name;
     }
 }

@@ -7,13 +7,12 @@ namespace Doctrine\Tests\ORM\Functional\Ticket;
 use Doctrine\Tests\Models\Taxi\Car;
 use Doctrine\Tests\Models\Taxi\Driver;
 use Doctrine\Tests\Models\Taxi\Ride;
+use Doctrine\Tests\OrmFunctionalTestCase;
 
 /**
  * @group DDC-3068
- *
- * @author Giorgio Premi <giosh94mhz@gmail.com>
  */
-class DDC3068Test extends \Doctrine\Tests\OrmFunctionalTestCase
+class DDC3068Test extends OrmFunctionalTestCase
 {
     private $foo;
     private $merc;
@@ -44,17 +43,15 @@ class DDC3068Test extends \Doctrine\Tests\OrmFunctionalTestCase
     {
         $ride1 = $this->em->find(Ride::class, [
             'driver' => $this->foo->getId(),
-            'car'    => $this->merc->getBrand()
-            ]
-        );
+            'car'    => $this->merc->getBrand(),
+            ]);
 
         self::assertInstanceOf(Ride::class, $ride1);
 
         $ride2 = $this->em->find(Ride::class, [
             'driver' => $this->foo,
-            'car'    => $this->merc
-        ]
-        );
+            'car'    => $this->merc,
+        ]);
 
         self::assertInstanceOf(Ride::class, $ride2);
         self::assertSame($ride1, $ride2);

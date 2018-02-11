@@ -9,8 +9,6 @@ use Doctrine\ORM\Annotation as ORM;
 /**
  * Description of CmsGroup
  *
- * @author robo
- *
  * @ORM\Entity
  * @ORM\Table(name="cms_groups")
  */
@@ -22,13 +20,9 @@ class CmsGroup
      * @ORM\GeneratedValue
      */
     public $id;
-    /**
-     * @ORM\Column(length=50)
-     */
+    /** @ORM\Column(length=50) */
     public $name;
-    /**
-     * @ORM\ManyToMany(targetEntity=CmsUser::class, mappedBy="groups")
-     */
+    /** @ORM\ManyToMany(targetEntity=CmsUser::class, mappedBy="groups") */
     public $users;
 
     public function setName($name)

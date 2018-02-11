@@ -5,8 +5,10 @@ declare(strict_types=1);
 namespace Doctrine\Tests\ORM\Functional\Ticket;
 
 use Doctrine\ORM\Annotation as ORM;
+use Doctrine\Tests\OrmFunctionalTestCase;
+use function sprintf;
 
-class DDC444Test extends \Doctrine\Tests\OrmFunctionalTestCase
+class DDC444Test extends OrmFunctionalTestCase
 {
     public function setUp()
     {
@@ -23,39 +25,37 @@ class DDC444Test extends \Doctrine\Tests\OrmFunctionalTestCase
     {
         $classname = DDC444User::class;
 
-        $u = new $classname;
-        $u->name = "Initial value";
+        $u       = new $classname();
+        $u->name = 'Initial value';
 
         $this->em->persist($u);
         $this->em->flush();
         $this->em->clear();
 
-        $q = $this->em->createQuery("SELECT u FROM $classname u");
+        $q = $this->em->createQuery(sprintf('SELECT u FROM %s u', $classname));
         $u = $q->getSingleResult();
-        self::assertEquals("Initial value", $u->name);
+        self::assertEquals('Initial value', $u->name);
 
-        $u->name = "Modified value";
+        $u->name = 'Modified value';
 
         // This should be NOOP as the change hasn't been persisted
         $this->em->flush();
         $this->em->clear();
 
-
-        $u = $this->em->createQuery("SELECT u FROM $classname u");
+        $u = $this->em->createQuery(sprintf('SELECT u FROM %s u', $classname));
         $u = $q->getSingleResult();
 
-        self::assertEquals("Initial value", $u->name);
+        self::assertEquals('Initial value', $u->name);
 
-
-        $u->name = "Modified value";
+        $u->name = 'Modified value';
         $this->em->persist($u);
         // Now we however persisted it, and this should have updated our friend
         $this->em->flush();
 
-        $q = $this->em->createQuery("SELECT u FROM $classname u");
+        $q = $this->em->createQuery(sprintf('SELECT u FROM %s u', $classname));
         $u = $q->getSingleResult();
 
-        self::assertEquals("Modified value", $u->name);
+        self::assertEquals('Modified value', $u->name);
     }
 }
 
@@ -72,8 +72,6 @@ class DDC444User
      */
     public $id;
 
-    /**
-     * @ORM\Column(name="name", type="string")
-     */
+    /** @ORM\Column(name="name", type="string") */
     public $name;
 }

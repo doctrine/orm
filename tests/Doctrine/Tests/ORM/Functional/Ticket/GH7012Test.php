@@ -7,6 +7,7 @@ namespace Doctrine\Tests\ORM\Functional\Ticket;
 use Doctrine\ORM\Annotation as ORM;
 use Doctrine\Tests\Models\Quote\User as QuotedUser;
 use Doctrine\Tests\OrmFunctionalTestCase;
+use function sprintf;
 
 final class GH7012Test extends OrmFunctionalTestCase
 {
@@ -70,9 +71,7 @@ class GH7012UserData
      */
     public $user;
 
-    /**
-     * @ORM\Column(type="string", name="name")
-     */
+    /** @ORM\Column(type="string", name="name") */
     public $name;
 
     public function __construct(QuotedUser $user, string $name)

@@ -10,7 +10,6 @@ use Doctrine\ORM\Annotation as ORM;
  * ECommerceShipping
  * Represents a shipping method.
  *
- * @author Giorgio Sironi
  * @ORM\Entity
  * @ORM\Table(name="ecommerce_shippings")
  */
@@ -22,9 +21,7 @@ class ECommerceShipping
      */
     private $id;
 
-    /**
-     * @ORM\Column(type="integer")
-     */
+    /** @ORM\Column(type="integer") */
     private $days;
 
     public function getId()

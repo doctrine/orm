@@ -9,8 +9,6 @@ use Doctrine\ORM\Annotation as ORM;
 /**
  * Description of CmsEmployee
  *
- * @author robo
- *
  * @ORM\Entity
  * @ORM\Table(name="cms_employees")
  */
@@ -23,9 +21,7 @@ class CmsEmployee
      */
     private $id;
 
-    /**
-     * @ORM\Column
-     */
+    /** @ORM\Column */
     private $name;
 
     /**

@@ -10,6 +10,8 @@ use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Proxy\Factory\StaticProxyFactory;
 use Doctrine\ORM\Tools\SchemaTool;
+use function array_map;
+use function realpath;
 
 final class EntityManagerFactory
 {
@@ -23,7 +25,7 @@ final class EntityManagerFactory
         $config->setMetadataDriverImpl(
             $config->newDefaultAnnotationDriver([
                 realpath(__DIR__ . '/Models/Cache'),
-                realpath(__DIR__ . '/Models/GeoNames')
+                realpath(__DIR__ . '/Models/GeoNames'),
             ])
         );
 

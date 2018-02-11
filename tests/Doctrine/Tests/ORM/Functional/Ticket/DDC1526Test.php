@@ -5,11 +5,12 @@ declare(strict_types=1);
 namespace Doctrine\Tests\ORM\Functional\Ticket;
 
 use Doctrine\ORM\Annotation as ORM;
+use Doctrine\Tests\OrmFunctionalTestCase;
 
 /**
  * @group DDC-1526
  */
-class DDC1526Test extends \Doctrine\Tests\OrmFunctionalTestCase
+class DDC1526Test extends OrmFunctionalTestCase
 {
     public function setUp()
     {
@@ -25,9 +26,9 @@ class DDC1526Test extends \Doctrine\Tests\OrmFunctionalTestCase
     {
         $parents = [];
         for ($i = 0; $i < 9; $i++) {
-            $entity = new DDC1526Menu;
+            $entity = new DDC1526Menu();
 
-            if (isset ($parents[($i % 3)])) {
+            if (isset($parents[($i % 3)])) {
                 $entity->parent = $parents[($i%3)];
             }
 
@@ -37,10 +38,9 @@ class DDC1526Test extends \Doctrine\Tests\OrmFunctionalTestCase
         $this->em->flush();
         $this->em->clear();
 
-
-        $dql = "SELECT m, c
-            FROM " . __NAMESPACE__ . "\DDC1526Menu m
-            LEFT JOIN m.children c";
+        $dql   = 'SELECT m, c
+            FROM ' . __NAMESPACE__ . '\DDC1526Menu m
+            LEFT JOIN m.children c';
         $menus = $this->em->createQuery($dql)->getResult();
 
         // All Children collection now have to be initialized
@@ -61,13 +61,9 @@ class DDC1526Menu
      * @ORM\GeneratedValue
      */
     public $id;
-    /**
-     * @ORM\ManyToOne(targetEntity=DDC1526Menu::class, inversedBy="children")
-     */
+    /** @ORM\ManyToOne(targetEntity=DDC1526Menu::class, inversedBy="children") */
     public $parent;
 
-    /**
-     * @ORM\OneToMany(targetEntity=DDC1526Menu::class, mappedBy="parent")
-     */
+    /** @ORM\OneToMany(targetEntity=DDC1526Menu::class, mappedBy="parent") */
     public $children;
 }

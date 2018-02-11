@@ -24,7 +24,7 @@ class DDC2504RootClass
     public $id;
 
     /**
-     * @var \Doctrine\Tests\Models\DDC2504\DDC2504OtherClass
+     * @var DDC2504OtherClass
      *
      * @ORM\ManyToOne(targetEntity=DDC2504OtherClass::class, inversedBy="childClasses")
      */

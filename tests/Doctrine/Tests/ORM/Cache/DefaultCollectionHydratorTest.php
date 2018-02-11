@@ -7,6 +7,7 @@ namespace Doctrine\Tests\ORM\Cache;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\Cache\CollectionCacheEntry;
 use Doctrine\ORM\Cache\CollectionCacheKey;
+use Doctrine\ORM\Cache\CollectionHydrator;
 use Doctrine\ORM\Cache\DefaultCollectionHydrator;
 use Doctrine\ORM\Cache\EntityCacheEntry;
 use Doctrine\ORM\Cache\EntityCacheKey;
@@ -21,9 +22,7 @@ use Doctrine\Tests\OrmFunctionalTestCase;
  */
 class DefaultCollectionHydratorTest extends OrmFunctionalTestCase
 {
-    /**
-     * @var \Doctrine\ORM\Cache\CollectionHydrator
-     */
+    /** @var CollectionHydrator */
     private $structure;
 
     protected function setUp()
@@ -42,24 +41,22 @@ class DefaultCollectionHydratorTest extends OrmFunctionalTestCase
 
     public function testLoadCacheCollection()
     {
-        $targetRegion   = $this->em->getCache()->getEntityCacheRegion(City::class);
-        $entry          = new CollectionCacheEntry(
+        $targetRegion = $this->em->getCache()->getEntityCacheRegion(City::class);
+        $entry        = new CollectionCacheEntry(
             [
-            new EntityCacheKey(City::class, ['id'=>31]),
-            new EntityCacheKey(City::class, ['id'=>32]),
+            new EntityCacheKey(City::class, ['id' => 31]),
+            new EntityCacheKey(City::class, ['id' => 32]),
             ]
         );
 
-        $targetRegion->put(new EntityCacheKey(City::class, ['id'=>31]), new EntityCacheEntry(City::class, ['id'=>31, 'name'=>'Foo']
-        ));
-        $targetRegion->put(new EntityCacheKey(City::class, ['id'=>32]), new EntityCacheEntry(City::class, ['id'=>32, 'name'=>'Bar']
-        ));
+        $targetRegion->put(new EntityCacheKey(City::class, ['id' => 31]), new EntityCacheEntry(City::class, ['id' => 31, 'name' => 'Foo']));
+        $targetRegion->put(new EntityCacheKey(City::class, ['id' => 32]), new EntityCacheEntry(City::class, ['id' => 32, 'name' => 'Bar']));
 
-        $sourceClass    = $this->em->getClassMetadata(State::class);
-        $targetClass    = $this->em->getClassMetadata(City::class);
-        $key            = new CollectionCacheKey($sourceClass->getClassName(), 'cities', ['id'=>21]);
-        $collection     = new PersistentCollection($this->em, $targetClass, new ArrayCollection());
-        $list           = $this->structure->loadCacheEntry($sourceClass, $key, $entry, $collection);
+        $sourceClass = $this->em->getClassMetadata(State::class);
+        $targetClass = $this->em->getClassMetadata(City::class);
+        $key         = new CollectionCacheKey($sourceClass->getClassName(), 'cities', ['id' => 21]);
+        $collection  = new PersistentCollection($this->em, $targetClass, new ArrayCollection());
+        $list        = $this->structure->loadCacheEntry($sourceClass, $key, $entry, $collection);
 
         self::assertNotNull($list);
         self::assertCount(2, $list);

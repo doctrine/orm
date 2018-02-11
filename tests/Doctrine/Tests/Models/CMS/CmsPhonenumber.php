@@ -12,9 +12,7 @@ use Doctrine\ORM\Annotation as ORM;
  */
 class CmsPhonenumber
 {
-    /**
-     * @ORM\Id @ORM\Column(length=50)
-     */
+    /** @ORM\Id @ORM\Column(length=50) */
     public $phonenumber;
     /**
      * @ORM\ManyToOne(targetEntity=CmsUser::class, inversedBy="phonenumbers")

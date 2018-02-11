@@ -155,10 +155,10 @@ class CascadeRemoveOrderEntityG
      */
     private $ownerO;
 
-    public function __construct(CascadeRemoveOrderEntityO $eO, $position=1)
+    public function __construct(CascadeRemoveOrderEntityO $eO, $position = 1)
     {
         $this->position = $position;
-        $this->ownerO= $eO;
+        $this->ownerO   = $eO;
         $this->ownerO->addOneToManyG($this);
     }
 

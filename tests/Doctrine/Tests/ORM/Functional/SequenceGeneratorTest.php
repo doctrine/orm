@@ -9,8 +9,6 @@ use Doctrine\Tests\OrmFunctionalTestCase;
 
 /**
  * Description of SequenceGeneratorTest
- *
- * @author robo
  */
 class SequenceGeneratorTest extends OrmFunctionalTestCase
 {

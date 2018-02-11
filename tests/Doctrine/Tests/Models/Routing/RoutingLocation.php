@@ -17,9 +17,7 @@ class RoutingLocation
      */
     public $id;
 
-    /**
-     * @ORM\Column(type="string")
-     */
+    /** @ORM\Column(type="string") */
     public $name;
 
     public function getName()

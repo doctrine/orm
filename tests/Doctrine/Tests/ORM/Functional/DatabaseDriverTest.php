@@ -4,16 +4,15 @@ declare(strict_types=1);
 
 namespace Doctrine\Tests\ORM\Functional;
 
-use Doctrine\DBAL\Platforms\SQLServerPlatform;
-use Doctrine\DBAL\Schema\Table;
 use Doctrine\DBAL\Platforms\PostgreSqlPlatform;
+use Doctrine\DBAL\Platforms\SQLServerPlatform;
+use Doctrine\DBAL\Schema\AbstractSchemaManager;
+use Doctrine\DBAL\Schema\Table;
 use Doctrine\ORM\Mapping\ManyToOneAssociationMetadata;
 
 class DatabaseDriverTest extends DatabaseDriverTestCase
 {
-    /**
-     * @var \Doctrine\DBAL\Schema\AbstractSchemaManager
-     */
+    /** @var AbstractSchemaManager */
     protected $sm;
 
     public function setUp()
@@ -30,14 +29,14 @@ class DatabaseDriverTest extends DatabaseDriverTestCase
      */
     public function testIssue2059()
     {
-        if (!$this->em->getConnection()->getDatabasePlatform()->supportsForeignKeyConstraints()) {
+        if (! $this->em->getConnection()->getDatabasePlatform()->supportsForeignKeyConstraints()) {
             $this->markTestSkipped('Platform does not support foreign keys.');
         }
 
-        $user = new Table("ddc2059_user");
+        $user = new Table('ddc2059_user');
         $user->addColumn('id', 'integer');
         $user->setPrimaryKey(['id']);
-        $project = new Table("ddc2059_project");
+        $project = new Table('ddc2059_project');
         $project->addColumn('id', 'integer');
         $project->addColumn('user_id', 'integer');
         $project->addColumn('user', 'string');
@@ -52,18 +51,18 @@ class DatabaseDriverTest extends DatabaseDriverTestCase
 
     public function testLoadMetadataFromDatabase()
     {
-        if (!$this->em->getConnection()->getDatabasePlatform()->supportsForeignKeyConstraints()) {
+        if (! $this->em->getConnection()->getDatabasePlatform()->supportsForeignKeyConstraints()) {
             $this->markTestSkipped('Platform does not support foreign keys.');
         }
 
-        $table = new Table("dbdriver_foo");
+        $table = new Table('dbdriver_foo');
         $table->addColumn('id', 'integer');
         $table->setPrimaryKey(['id']);
         $table->addColumn('bar', 'string', ['notnull' => false, 'length' => 200]);
 
         $this->sm->dropAndCreateTable($table);
 
-        $metadatas = $this->extractClassMetadata(["DbdriverFoo"]);
+        $metadatas = $this->extractClassMetadata(['DbdriverFoo']);
 
         self::assertArrayHasKey('DbdriverFoo', $metadatas);
 
@@ -90,17 +89,17 @@ class DatabaseDriverTest extends DatabaseDriverTestCase
 
     public function testLoadMetadataWithForeignKeyFromDatabase()
     {
-        if (!$this->em->getConnection()->getDatabasePlatform()->supportsForeignKeyConstraints()) {
+        if (! $this->em->getConnection()->getDatabasePlatform()->supportsForeignKeyConstraints()) {
             $this->markTestSkipped('Platform does not support foreign keys.');
         }
 
-        $tableB = new Table("dbdriver_bar");
+        $tableB = new Table('dbdriver_bar');
         $tableB->addColumn('id', 'integer');
         $tableB->setPrimaryKey(['id']);
 
         $this->sm->dropAndCreateTable($tableB);
 
-        $tableA = new Table("dbdriver_baz");
+        $tableA = new Table('dbdriver_baz');
         $tableA->addColumn('id', 'integer');
         $tableA->setPrimaryKey(['id']);
         $tableA->addColumn('bar_id', 'integer');
@@ -108,7 +107,7 @@ class DatabaseDriverTest extends DatabaseDriverTestCase
 
         $this->sm->dropAndCreateTable($tableA);
 
-        $metadatas = $this->extractClassMetadata(["DbdriverBar", "DbdriverBaz"]);
+        $metadatas = $this->extractClassMetadata(['DbdriverBar', 'DbdriverBaz']);
 
         self::assertArrayHasKey('DbdriverBaz', $metadatas);
 
@@ -123,11 +122,11 @@ class DatabaseDriverTest extends DatabaseDriverTestCase
 
     public function testDetectManyToManyTables()
     {
-        if (!$this->em->getConnection()->getDatabasePlatform()->supportsForeignKeyConstraints()) {
+        if (! $this->em->getConnection()->getDatabasePlatform()->supportsForeignKeyConstraints()) {
             $this->markTestSkipped('Platform does not support foreign keys.');
         }
 
-        $metadatas = $this->extractClassMetadata(["CmsUsers", "CmsGroups", "CmsTags"]);
+        $metadatas = $this->extractClassMetadata(['CmsUsers', 'CmsGroups', 'CmsTags']);
 
         self::assertArrayHasKey('CmsUsers', $metadatas, 'CmsUsers entity was not detected.');
         self::assertArrayHasKey('CmsGroups', $metadatas, 'CmsGroups entity was not detected.');
@@ -143,31 +142,31 @@ class DatabaseDriverTest extends DatabaseDriverTestCase
 
     public function testIgnoreManyToManyTableWithoutFurtherForeignKeyDetails()
     {
-        $tableB = new Table("dbdriver_bar");
+        $tableB = new Table('dbdriver_bar');
         $tableB->addColumn('id', 'integer');
         $tableB->setPrimaryKey(['id']);
 
-        $tableA = new Table("dbdriver_baz");
+        $tableA = new Table('dbdriver_baz');
         $tableA->addColumn('id', 'integer');
         $tableA->setPrimaryKey(['id']);
 
-        $tableMany = new Table("dbdriver_bar_baz");
+        $tableMany = new Table('dbdriver_bar_baz');
         $tableMany->addColumn('bar_id', 'integer');
         $tableMany->addColumn('baz_id', 'integer');
         $tableMany->addForeignKeyConstraint('dbdriver_bar', ['bar_id'], ['id']);
 
         $metadatas = $this->convertToClassMetadata([$tableA, $tableB], [$tableMany]);
 
-        self::assertCount(1, $metadatas['DbdriverBaz']->getDeclaredPropertiesIterator(), "no association mappings should be detected.");
+        self::assertCount(1, $metadatas['DbdriverBaz']->getDeclaredPropertiesIterator(), 'no association mappings should be detected.');
     }
 
     public function testLoadMetadataFromDatabaseDetail()
     {
-        if ( ! $this->em->getConnection()->getDatabasePlatform()->supportsForeignKeyConstraints()) {
+        if (! $this->em->getConnection()->getDatabasePlatform()->supportsForeignKeyConstraints()) {
             $this->markTestSkipped('Platform does not support foreign keys.');
         }
 
-        $table = new Table("dbdriver_foo");
+        $table = new Table('dbdriver_foo');
 
         $table->addColumn('id', 'integer', ['unsigned' => true]);
         $table->setPrimaryKey(['id']);
@@ -178,7 +177,7 @@ class DatabaseDriverTest extends DatabaseDriverTestCase
 
         $table->addColumn('column_index1', 'string');
         $table->addColumn('column_index2', 'string');
-        $table->addIndex(['column_index1','column_index2'], 'index1');
+        $table->addIndex(['column_index1', 'column_index2'], 'index1');
 
         $table->addColumn('column_unique_index1', 'string');
         $table->addColumn('column_unique_index2', 'string');
@@ -186,7 +185,7 @@ class DatabaseDriverTest extends DatabaseDriverTestCase
 
         $this->sm->dropAndCreateTable($table);
 
-        $metadatas = $this->extractClassMetadata(["DbdriverFoo"]);
+        $metadatas = $this->extractClassMetadata(['DbdriverFoo']);
 
         self::assertArrayHasKey('DbdriverFoo', $metadatas);
 
@@ -202,7 +201,7 @@ class DatabaseDriverTest extends DatabaseDriverTestCase
 
         // FIXME: Condition here is fugly.
         // NOTE: PostgreSQL and SQL SERVER do not support UNSIGNED integer
-        if ( ! $this->em->getConnection()->getDatabasePlatform() instanceof PostgreSqlPlatform and
+        if (! $this->em->getConnection()->getDatabasePlatform() instanceof PostgreSqlPlatform &&
              ! $this->em->getConnection()->getDatabasePlatform() instanceof SQLServerPlatform) {
             self::assertNotNull($metadata->getProperty('columnUnsigned'));
 

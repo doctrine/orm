@@ -4,15 +4,16 @@ declare(strict_types=1);
 
 namespace Doctrine\Tests\ORM\Functional\Ticket;
 
+use Doctrine\DBAL\Platforms\AbstractPlatform;
 use Doctrine\DBAL\Types\StringType;
 use Doctrine\DBAL\Types\Type;
-use Doctrine\DBAL\Platforms\AbstractPlatform;
 use Doctrine\ORM\Annotation as ORM;
+use Doctrine\Tests\OrmFunctionalTestCase;
 
 /**
  * @group DDC-1998
  */
-class DDC1998Test extends \Doctrine\Tests\OrmFunctionalTestCase
+class DDC1998Test extends OrmFunctionalTestCase
 {
     public function testSqlConversionAsIdentifier()
     {
@@ -24,8 +25,8 @@ class DDC1998Test extends \Doctrine\Tests\OrmFunctionalTestCase
             ]
         );
 
-        $entity = new DDC1998Entity();
-        $entity->id = new DDC1998Id("foo");
+        $entity     = new DDC1998Entity();
+        $entity->id = new DDC1998Id('foo');
 
         $this->em->persist($entity);
         $this->em->flush();
@@ -38,11 +39,10 @@ class DDC1998Test extends \Doctrine\Tests\OrmFunctionalTestCase
         $this->em->flush();
         $this->em->clear();
 
-
         $found = $this->em->find(DDC1998Entity::class, $entity->id);
         self::assertNull($found);
 
-        $found = $this->em->find(DDC1998Entity::class, "foo");
+        $found = $this->em->find(DDC1998Entity::class, 'foo');
         self::assertNull($found);
 
         self::assertCount(0, $this->em->getRepository(DDC1998Entity::class)->findAll());
@@ -54,27 +54,23 @@ class DDC1998Test extends \Doctrine\Tests\OrmFunctionalTestCase
  */
 class DDC1998Entity
 {
-    /**
-     * @ORM\Id @ORM\Column(type="ddc1998")
-     */
+    /** @ORM\Id @ORM\Column(type="ddc1998") */
     public $id;
 
-    /**
-     * @ORM\Column(type="integer")
-     */
+    /** @ORM\Column(type="integer") */
     public $num = 0;
 }
 
 class DDC1998Type extends StringType
 {
-    const NAME = 'ddc1998';
+    public const NAME = 'ddc1998';
 
     /**
      * {@inheritdoc}
      */
     public function convertToDatabaseValue($value, AbstractPlatform $platform)
     {
-        return (string)$value;
+        return (string) $value;
     }
 
     public function convertToPhpValue($value, AbstractPlatform $platform)

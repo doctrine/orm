@@ -16,24 +16,16 @@ use ProxyManager\Proxy\GhostObjectInterface;
  */
 final class ProxyInitializationTimeBench
 {
-    /**
-     * @var GhostObjectInterface[]
-     */
+    /** @var GhostObjectInterface[] */
     private $cmsUsers;
 
-    /**
-     * @var GhostObjectInterface[]
-     */
+    /** @var GhostObjectInterface[] */
     private $cmsEmployees;
 
-    /**
-     * @var GhostObjectInterface[]
-     */
+    /** @var GhostObjectInterface[] */
     private $initializedUsers;
 
-    /**
-     * @var GhostObjectInterface[]
-     */
+    /** @var GhostObjectInterface[] */
     private $initializedEmployees;
 
     public function init() : void

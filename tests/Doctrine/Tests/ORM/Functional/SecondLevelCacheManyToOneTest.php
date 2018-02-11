@@ -115,7 +115,7 @@ class SecondLevelCacheManyToOneTest extends SecondLevelCacheAbstractTest
         $c3    = $this->em->find(State::class, $this->states[0]->getId());
         $prev  = $c3->getCities();
         $count = $prev->count();
-        $city  = new City("Buenos Aires", $c3);
+        $city  = new City('Buenos Aires', $c3);
 
         $c3->addCity($city);
 
@@ -199,7 +199,7 @@ class SecondLevelCacheManyToOneTest extends SecondLevelCacheAbstractTest
         self::assertFalse($this->cache->containsEntity(Token::class, $action->name));
 
         $queryCount = $this->getCurrentQueryCount();
-        $entity = $this->em->find(Token::class, $token->token);
+        $entity     = $this->em->find(Token::class, $token->token);
 
         self::assertInstanceOf(Token::class, $entity);
         self::assertEquals('token-hash', $entity->token);
@@ -216,7 +216,7 @@ class SecondLevelCacheManyToOneTest extends SecondLevelCacheAbstractTest
         self::assertNull($this->cache->getEntityCacheRegion(ComplexAction::class));
         self::assertInstanceOf(Region::class, $this->cache->getEntityCacheRegion(Token::class));
 
-        $token  = new Token('token-hash');
+        $token = new Token('token-hash');
 
         $action1 = new Action('login');
         $action2 = new Action('logout');

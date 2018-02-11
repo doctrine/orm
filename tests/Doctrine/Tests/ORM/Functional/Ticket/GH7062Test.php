@@ -1,12 +1,13 @@
 <?php
+
 declare(strict_types=1);
 
 namespace Doctrine\Tests\ORM\Functional\Ticket;
 
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
-use Doctrine\Tests\OrmFunctionalTestCase;
 use Doctrine\ORM\Annotation as ORM;
+use Doctrine\Tests\OrmFunctionalTestCase;
 
 class GH7062Test extends OrmFunctionalTestCase
 {
@@ -22,7 +23,7 @@ class GH7062Test extends OrmFunctionalTestCase
                 GH7062Team::class,
                 GH7062Season::class,
                 GH7062Ranking::class,
-                GH7062RankingPosition::class
+                GH7062RankingPosition::class,
             ]
         );
     }
@@ -39,8 +40,8 @@ class GH7062Test extends OrmFunctionalTestCase
 
     private function createInitialRankingWithRelatedEntities() : void
     {
-        $team    = new GH7062Team(self::TEAM_ID);
-        $season  = new GH7062Season(self::SEASON_ID);
+        $team   = new GH7062Team(self::TEAM_ID);
+        $season = new GH7062Season(self::SEASON_ID);
 
         $season->ranking = new GH7062Ranking($season, [$team]);
 

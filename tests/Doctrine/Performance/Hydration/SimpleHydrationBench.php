@@ -15,14 +15,10 @@ use PhpBench\Benchmark\Metadata\Annotations\BeforeMethods;
  */
 final class SimpleHydrationBench
 {
-    /**
-     * @var EntityManagerInterface
-     */
+    /** @var EntityManagerInterface */
     private $entityManager;
 
-    /**
-     * @var ObjectRepository
-     */
+    /** @var ObjectRepository */
     private $repository;
 
     public function init() : void

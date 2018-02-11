@@ -4,10 +4,12 @@ declare(strict_types=1);
 
 namespace Doctrine\Tests\ORM\Functional\Ticket;
 
+use Doctrine\Tests\OrmFunctionalTestCase;
+
 /**
  * @group DDC-2084
  */
-class DDC2084Test extends \Doctrine\Tests\OrmFunctionalTestCase
+class DDC2084Test extends OrmFunctionalTestCase
 {
     public function setUp()
     {
@@ -64,6 +66,7 @@ class DDC2084Test extends \Doctrine\Tests\OrmFunctionalTestCase
 namespace Doctrine\Tests\ORM\Functional\Ticket\DDC2084;
 
 use Doctrine\ORM\Annotation as ORM;
+use Doctrine\Tests\OrmFunctionalTestCase;
 
 /**
  * @ORM\Entity
@@ -107,9 +110,7 @@ class MyEntity2
      */
     private $id;
 
-    /**
-     * @ORM\Column
-     */
+    /** @ORM\Column */
     private $value;
 
     public function __construct($value)

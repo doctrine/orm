@@ -10,8 +10,6 @@ use ProxyManager\Proxy\GhostObjectInterface;
 
 /**
  * Functional tests for get Id after clone child entity
- *
- * @author Lallement Thomas <thomas.lallement@9online.fr>
  */
 class DDC3223Test extends OrmFunctionalTestCase
 {
@@ -39,7 +37,6 @@ class DDC3223Test extends OrmFunctionalTestCase
         $this->em->persist($participant);
         $this->em->flush();
         $this->em->clear();
-
 
         /* @var $fetchedParticipant Participant */
         $fetchedParticipant = $this->em->find(Participant::class, $participant->id);

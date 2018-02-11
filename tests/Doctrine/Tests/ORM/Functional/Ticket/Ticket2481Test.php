@@ -5,8 +5,9 @@ declare(strict_types=1);
 namespace Doctrine\Tests\ORM\Functional\Ticket;
 
 use Doctrine\ORM\Annotation as ORM;
+use Doctrine\Tests\OrmFunctionalTestCase;
 
-class Ticket2481Test extends \Doctrine\Tests\OrmFunctionalTestCase
+class Ticket2481Test extends OrmFunctionalTestCase
 {
     protected function setUp()
     {
@@ -14,9 +15,7 @@ class Ticket2481Test extends \Doctrine\Tests\OrmFunctionalTestCase
 
         try {
             $this->schemaTool->createSchema(
-                [
-                $this->em->getClassMetadata(Ticket2481Product::class)
-                ]
+                [$this->em->getClassMetadata(Ticket2481Product::class)]
             );
         } catch (\Exception $e) {
             // Swallow all exceptions. We do not test the schema tool here.

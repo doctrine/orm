@@ -6,14 +6,13 @@ namespace Doctrine\Tests\ORM\Functional\Ticket;
 
 use Doctrine\ORM\Mapping\FetchMode;
 use Doctrine\Tests\Models;
+use Doctrine\Tests\OrmFunctionalTestCase;
 
 /**
- * @author asm89
- *
  * @group non-cacheable
  * @group DDC-1301
  */
-class DDC1301Test extends \Doctrine\Tests\OrmFunctionalTestCase
+class DDC1301Test extends OrmFunctionalTestCase
 {
     private $userId;
 
@@ -45,7 +44,7 @@ class DDC1301Test extends \Doctrine\Tests\OrmFunctionalTestCase
 
     public function testCountNotInitializesLegacyCollection()
     {
-        $user = $this->em->find(Models\Legacy\LegacyUser::class, $this->userId);
+        $user       = $this->em->find(Models\Legacy\LegacyUser::class, $this->userId);
         $queryCount = $this->getCurrentQueryCount();
 
         self::assertFalse($user->articles->isInitialized());
@@ -55,12 +54,12 @@ class DDC1301Test extends \Doctrine\Tests\OrmFunctionalTestCase
         foreach ($user->articles as $article) {
         }
 
-        self::assertEquals($queryCount + 2, $this->getCurrentQueryCount(), "Expecting two queries to be fired for count, then iteration.");
+        self::assertEquals($queryCount + 2, $this->getCurrentQueryCount(), 'Expecting two queries to be fired for count, then iteration.');
     }
 
     public function testCountNotInitializesLegacyCollectionWithForeignIdentifier()
     {
-        $user = $this->em->find(Models\Legacy\LegacyUser::class, $this->userId);
+        $user       = $this->em->find(Models\Legacy\LegacyUser::class, $this->userId);
         $queryCount = $this->getCurrentQueryCount();
 
         self::assertFalse($user->references->isInitialized());
@@ -70,12 +69,12 @@ class DDC1301Test extends \Doctrine\Tests\OrmFunctionalTestCase
         foreach ($user->references as $reference) {
         }
 
-        self::assertEquals($queryCount + 2, $this->getCurrentQueryCount(), "Expecting two queries to be fired for count, then iteration.");
+        self::assertEquals($queryCount + 2, $this->getCurrentQueryCount(), 'Expecting two queries to be fired for count, then iteration.');
     }
 
     public function testCountNotInitializesLegacyManyToManyCollection()
     {
-        $user = $this->em->find(Models\Legacy\LegacyUser::class, $this->userId);
+        $user       = $this->em->find(Models\Legacy\LegacyUser::class, $this->userId);
         $queryCount = $this->getCurrentQueryCount();
 
         self::assertFalse($user->cars->isInitialized());
@@ -85,51 +84,51 @@ class DDC1301Test extends \Doctrine\Tests\OrmFunctionalTestCase
         foreach ($user->cars as $reference) {
         }
 
-        self::assertEquals($queryCount + 2, $this->getCurrentQueryCount(), "Expecting two queries to be fired for count, then iteration.");
+        self::assertEquals($queryCount + 2, $this->getCurrentQueryCount(), 'Expecting two queries to be fired for count, then iteration.');
     }
 
     public function loadFixture()
     {
-        $user1 = new Models\Legacy\LegacyUser();
-        $user1->username = "beberlei";
-        $user1->name = "Benjamin";
-        $user1->status = "active";
+        $user1           = new Models\Legacy\LegacyUser();
+        $user1->username = 'beberlei';
+        $user1->name     = 'Benjamin';
+        $user1->status   = 'active';
 
-        $user2 = new Models\Legacy\LegacyUser();
-        $user2->username = "jwage";
-        $user2->name = "Jonathan";
-        $user2->status = "active";
+        $user2           = new Models\Legacy\LegacyUser();
+        $user2->username = 'jwage';
+        $user2->name     = 'Jonathan';
+        $user2->status   = 'active';
 
-        $user3 = new Models\Legacy\LegacyUser();
-        $user3->username = "romanb";
-        $user3->name = "Roman";
-        $user3->status = "active";
+        $user3           = new Models\Legacy\LegacyUser();
+        $user3->username = 'romanb';
+        $user3->name     = 'Roman';
+        $user3->status   = 'active';
 
         $this->em->persist($user1);
         $this->em->persist($user2);
         $this->em->persist($user3);
 
-        $article1 = new Models\Legacy\LegacyArticle();
-        $article1->topic = "Test";
-        $article1->text = "Test";
+        $article1        = new Models\Legacy\LegacyArticle();
+        $article1->topic = 'Test';
+        $article1->text  = 'Test';
         $article1->setAuthor($user1);
 
-        $article2 = new Models\Legacy\LegacyArticle();
-        $article2->topic = "Test";
-        $article2->text = "Test";
+        $article2        = new Models\Legacy\LegacyArticle();
+        $article2->topic = 'Test';
+        $article2->text  = 'Test';
         $article2->setAuthor($user1);
 
         $this->em->persist($article1);
         $this->em->persist($article2);
 
-        $car1 = new Models\Legacy\LegacyCar();
-        $car1->description = "Test1";
+        $car1              = new Models\Legacy\LegacyCar();
+        $car1->description = 'Test1';
 
-        $car2 = new Models\Legacy\LegacyCar();
-        $car2->description = "Test2";
+        $car2              = new Models\Legacy\LegacyCar();
+        $car2->description = 'Test2';
 
-        $car3 = new Models\Legacy\LegacyCar();
-        $car3->description = "Test3";
+        $car3              = new Models\Legacy\LegacyCar();
+        $car3->description = 'Test3';
 
         $user1->addCar($car1);
         $user1->addCar($car2);
@@ -144,8 +143,8 @@ class DDC1301Test extends \Doctrine\Tests\OrmFunctionalTestCase
 
         $this->em->flush();
 
-        $detail1 = new Models\Legacy\LegacyUserReference($user1, $user2, "foo");
-        $detail2 = new Models\Legacy\LegacyUserReference($user1, $user3, "bar");
+        $detail1 = new Models\Legacy\LegacyUserReference($user1, $user2, 'foo');
+        $detail2 = new Models\Legacy\LegacyUserReference($user1, $user3, 'bar');
 
         $this->em->persist($detail1);
         $this->em->persist($detail2);

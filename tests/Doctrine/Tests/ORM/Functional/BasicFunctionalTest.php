@@ -17,6 +17,7 @@ use Doctrine\Tests\Models\CMS\CmsPhonenumber;
 use Doctrine\Tests\Models\CMS\CmsUser;
 use Doctrine\Tests\OrmFunctionalTestCase;
 use ProxyManager\Proxy\GhostObjectInterface;
+use function get_class;
 
 class BasicFunctionalTest extends OrmFunctionalTestCase
 {
@@ -29,10 +30,10 @@ class BasicFunctionalTest extends OrmFunctionalTestCase
     public function testBasicUnitsOfWorkWithOneToManyAssociation()
     {
         // Create
-        $user = new CmsUser;
-        $user->name = 'Roman';
+        $user           = new CmsUser();
+        $user->name     = 'Roman';
         $user->username = 'romanb';
-        $user->status = 'developer';
+        $user->status   = 'developer';
         $this->em->persist($user);
 
         $this->em->flush();
@@ -45,8 +46,8 @@ class BasicFunctionalTest extends OrmFunctionalTestCase
         self::assertSame($user, $user2);
 
         // Add a phonenumber
-        $ph = new CmsPhonenumber;
-        $ph->phonenumber = "12345";
+        $ph              = new CmsPhonenumber();
+        $ph->phonenumber = '12345';
         $user->addPhonenumber($ph);
         $this->em->flush();
         self::assertTrue($this->em->contains($ph));
@@ -58,8 +59,8 @@ class BasicFunctionalTest extends OrmFunctionalTestCase
         self::assertEquals('guilherme', $user->name);
 
         // Add another phonenumber
-        $ph2 = new CmsPhonenumber;
-        $ph2->phonenumber = "6789";
+        $ph2              = new CmsPhonenumber();
+        $ph2->phonenumber = '6789';
         $user->addPhonenumber($ph2);
         $this->em->flush();
         self::assertTrue($this->em->contains($ph2));
@@ -73,22 +74,22 @@ class BasicFunctionalTest extends OrmFunctionalTestCase
         self::assertFalse($this->em->getUnitOfWork()->isScheduledForDelete($user));
         self::assertFalse($this->em->getUnitOfWork()->isScheduledForDelete($ph));
         self::assertFalse($this->em->getUnitOfWork()->isScheduledForDelete($ph2));
-        self::assertEquals(\Doctrine\ORM\UnitOfWork::STATE_NEW, $this->em->getUnitOfWork()->getEntityState($user));
-        self::assertEquals(\Doctrine\ORM\UnitOfWork::STATE_NEW, $this->em->getUnitOfWork()->getEntityState($ph));
-        self::assertEquals(\Doctrine\ORM\UnitOfWork::STATE_NEW, $this->em->getUnitOfWork()->getEntityState($ph2));
+        self::assertEquals(UnitOfWork::STATE_NEW, $this->em->getUnitOfWork()->getEntityState($user));
+        self::assertEquals(UnitOfWork::STATE_NEW, $this->em->getUnitOfWork()->getEntityState($ph));
+        self::assertEquals(UnitOfWork::STATE_NEW, $this->em->getUnitOfWork()->getEntityState($ph2));
     }
 
     public function testOneToManyAssociationModification()
     {
-        $user = new CmsUser;
-        $user->name = 'Roman';
+        $user           = new CmsUser();
+        $user->name     = 'Roman';
         $user->username = 'romanb';
-        $user->status = 'developer';
+        $user->status   = 'developer';
 
-        $ph1 = new CmsPhonenumber;
-        $ph1->phonenumber = "0301234";
-        $ph2 = new CmsPhonenumber;
-        $ph2->phonenumber = "987654321";
+        $ph1              = new CmsPhonenumber();
+        $ph1->phonenumber = '0301234';
+        $ph2              = new CmsPhonenumber();
+        $ph2->phonenumber = '987654321';
 
         $user->addPhonenumber($ph1);
         $user->addPhonenumber($ph2);
@@ -109,15 +110,15 @@ class BasicFunctionalTest extends OrmFunctionalTestCase
     public function testBasicOneToOne()
     {
         //$this->em->getConnection()->getConfiguration()->setSQLLogger(new \Doctrine\DBAL\Logging\EchoSQLLogger);
-        $user = new CmsUser;
-        $user->name = 'Roman';
+        $user           = new CmsUser();
+        $user->name     = 'Roman';
         $user->username = 'romanb';
-        $user->status = 'developer';
+        $user->status   = 'developer';
 
-        $address = new CmsAddress;
+        $address          = new CmsAddress();
         $address->country = 'Germany';
-        $address->city = 'Berlin';
-        $address->zip = '12345';
+        $address->city    = 'Berlin';
+        $address->zip     = '12345';
 
         $user->address = $address; // inverse side
         $address->user = $user; // owning side!
@@ -127,7 +128,8 @@ class BasicFunctionalTest extends OrmFunctionalTestCase
 
         // Check that the foreign key has been set
         $userId = $this->em->getConnection()->executeQuery(
-            "SELECT user_id FROM cms_addresses WHERE id=?", [$address->id]
+            'SELECT user_id FROM cms_addresses WHERE id=?',
+            [$address->id]
         )->fetchColumn();
         self::assertInternalType('numeric', $userId);
 
@@ -147,20 +149,20 @@ class BasicFunctionalTest extends OrmFunctionalTestCase
      */
     public function testRemove()
     {
-        $user = new CmsUser;
-        $user->name = 'Guilherme';
+        $user           = new CmsUser();
+        $user->name     = 'Guilherme';
         $user->username = 'gblanco';
-        $user->status = 'developer';
+        $user->status   = 'developer';
 
-        self::assertEquals(UnitOfWork::STATE_NEW, $this->em->getUnitOfWork()->getEntityState($user), "State should be UnitOfWork::STATE_NEW");
+        self::assertEquals(UnitOfWork::STATE_NEW, $this->em->getUnitOfWork()->getEntityState($user), 'State should be UnitOfWork::STATE_NEW');
 
         $this->em->persist($user);
 
-        self::assertEquals(UnitOfWork::STATE_MANAGED, $this->em->getUnitOfWork()->getEntityState($user), "State should be UnitOfWork::STATE_MANAGED");
+        self::assertEquals(UnitOfWork::STATE_MANAGED, $this->em->getUnitOfWork()->getEntityState($user), 'State should be UnitOfWork::STATE_MANAGED');
 
         $this->em->remove($user);
 
-        self::assertEquals(UnitOfWork::STATE_NEW, $this->em->getUnitOfWork()->getEntityState($user), "State should be UnitOfWork::STATE_NEW");
+        self::assertEquals(UnitOfWork::STATE_NEW, $this->em->getUnitOfWork()->getEntityState($user), 'State should be UnitOfWork::STATE_NEW');
 
         $this->em->persist($user);
         $this->em->flush();
@@ -168,23 +170,23 @@ class BasicFunctionalTest extends OrmFunctionalTestCase
 
         $this->em->remove($user);
 
-        self::assertEquals(UnitOfWork::STATE_REMOVED, $this->em->getUnitOfWork()->getEntityState($user), "State should be UnitOfWork::STATE_REMOVED");
+        self::assertEquals(UnitOfWork::STATE_REMOVED, $this->em->getUnitOfWork()->getEntityState($user), 'State should be UnitOfWork::STATE_REMOVED');
         $this->em->flush();
 
-        self::assertEquals(UnitOfWork::STATE_NEW, $this->em->getUnitOfWork()->getEntityState($user), "State should be UnitOfWork::STATE_NEW");
+        self::assertEquals(UnitOfWork::STATE_NEW, $this->em->getUnitOfWork()->getEntityState($user), 'State should be UnitOfWork::STATE_NEW');
 
         self::assertNull($this->em->find(CmsUser::class, $id));
     }
 
     public function testOneToManyOrphanRemoval()
     {
-        $user = new CmsUser;
-        $user->name = 'Guilherme';
+        $user           = new CmsUser();
+        $user->name     = 'Guilherme';
         $user->username = 'gblanco';
-        $user->status = 'developer';
+        $user->status   = 'developer';
 
         for ($i=0; $i<3; ++$i) {
-            $phone = new CmsPhonenumber;
+            $phone              = new CmsPhonenumber();
             $phone->phonenumber = 100 + $i;
             $user->addPhonenumber($phone);
         }
@@ -199,25 +201,25 @@ class BasicFunctionalTest extends OrmFunctionalTestCase
         $this->em->flush();
 
         // Check that there are just 2 phonenumbers left
-        $count = $this->em->getConnection()->fetchColumn("SELECT COUNT(*) FROM cms_phonenumbers");
+        $count = $this->em->getConnection()->fetchColumn('SELECT COUNT(*) FROM cms_phonenumbers');
         self::assertEquals(2, $count); // only 2 remaining
 
         // check that clear() removes the others via orphan removal
         $user->getPhonenumbers()->clear();
         $this->em->flush();
-        self::assertEquals(0, $this->em->getConnection()->fetchColumn("select count(*) from cms_phonenumbers"));
+        self::assertEquals(0, $this->em->getConnection()->fetchColumn('select count(*) from cms_phonenumbers'));
     }
 
     public function testBasicQuery()
     {
-        $user = new CmsUser;
-        $user->name = 'Guilherme';
+        $user           = new CmsUser();
+        $user->name     = 'Guilherme';
         $user->username = 'gblanco';
-        $user->status = 'developer';
+        $user->status   = 'developer';
         $this->em->persist($user);
         $this->em->flush();
 
-        $query = $this->em->createQuery("select u from Doctrine\Tests\Models\CMS\CmsUser u");
+        $query = $this->em->createQuery('select u from Doctrine\Tests\Models\CMS\CmsUser u');
 
         $users = $query->getResult();
 
@@ -247,14 +249,14 @@ class BasicFunctionalTest extends OrmFunctionalTestCase
 
     public function testBasicOneToManyInnerJoin()
     {
-        $user = new CmsUser;
-        $user->name = 'Guilherme';
+        $user           = new CmsUser();
+        $user->name     = 'Guilherme';
         $user->username = 'gblanco';
-        $user->status = 'developer';
+        $user->status   = 'developer';
         $this->em->persist($user);
         $this->em->flush();
 
-        $query = $this->em->createQuery("select u from Doctrine\Tests\Models\CMS\CmsUser u join u.phonenumbers p");
+        $query = $this->em->createQuery('select u from Doctrine\Tests\Models\CMS\CmsUser u join u.phonenumbers p');
 
         $users = $query->getResult();
 
@@ -263,14 +265,14 @@ class BasicFunctionalTest extends OrmFunctionalTestCase
 
     public function testBasicOneToManyLeftJoin()
     {
-        $user = new CmsUser;
-        $user->name = 'Guilherme';
+        $user           = new CmsUser();
+        $user->name     = 'Guilherme';
         $user->username = 'gblanco';
-        $user->status = 'developer';
+        $user->status   = 'developer';
         $this->em->persist($user);
         $this->em->flush();
 
-        $query = $this->em->createQuery("select u,p from Doctrine\Tests\Models\CMS\CmsUser u left join u.phonenumbers p");
+        $query = $this->em->createQuery('select u,p from Doctrine\Tests\Models\CMS\CmsUser u left join u.phonenumbers p');
 
         $users = $query->getResult();
 
@@ -285,10 +287,10 @@ class BasicFunctionalTest extends OrmFunctionalTestCase
 
     public function testBasicRefresh()
     {
-        $user = new CmsUser;
-        $user->name = 'Guilherme';
+        $user           = new CmsUser();
+        $user->name     = 'Guilherme';
         $user->username = 'gblanco';
-        $user->status = 'developer';
+        $user->status   = 'developer';
 
         $this->em->persist($user);
         $this->em->flush();
@@ -305,19 +307,19 @@ class BasicFunctionalTest extends OrmFunctionalTestCase
      */
     public function testRefreshResetsCollection()
     {
-        $user = new CmsUser;
-        $user->name = 'Guilherme';
+        $user           = new CmsUser();
+        $user->name     = 'Guilherme';
         $user->username = 'gblanco';
-        $user->status = 'developer';
+        $user->status   = 'developer';
 
         // Add a phonenumber
-        $ph1 = new CmsPhonenumber;
-        $ph1->phonenumber = "12345";
+        $ph1              = new CmsPhonenumber();
+        $ph1->phonenumber = '12345';
         $user->addPhonenumber($ph1);
 
         // Add a phonenumber
-        $ph2 = new CmsPhonenumber;
-        $ph2->phonenumber = "54321";
+        $ph2              = new CmsPhonenumber();
+        $ph2->phonenumber = '54321';
 
         $this->em->persist($user);
         $this->em->persist($ph1);
@@ -337,19 +339,19 @@ class BasicFunctionalTest extends OrmFunctionalTestCase
      */
     public function testDqlRefreshResetsCollection()
     {
-        $user = new CmsUser;
-        $user->name = 'Guilherme';
+        $user           = new CmsUser();
+        $user->name     = 'Guilherme';
         $user->username = 'gblanco';
-        $user->status = 'developer';
+        $user->status   = 'developer';
 
         // Add a phonenumber
-        $ph1 = new CmsPhonenumber;
-        $ph1->phonenumber = "12345";
+        $ph1              = new CmsPhonenumber();
+        $ph1->phonenumber = '12345';
         $user->addPhonenumber($ph1);
 
         // Add a phonenumber
-        $ph2 = new CmsPhonenumber;
-        $ph2->phonenumber = "54321";
+        $ph2              = new CmsPhonenumber();
+        $ph2->phonenumber = '54321';
 
         $this->em->persist($user);
         $this->em->persist($ph1);
@@ -359,7 +361,7 @@ class BasicFunctionalTest extends OrmFunctionalTestCase
         $user->addPhonenumber($ph2);
 
         self::assertCount(2, $user->phonenumbers);
-        $dql = "SELECT u FROM Doctrine\Tests\Models\CMS\CmsUser u WHERE u.id = ?1";
+        $dql  = 'SELECT u FROM Doctrine\Tests\Models\CMS\CmsUser u WHERE u.id = ?1';
         $user = $this->em->createQuery($dql)
                           ->setParameter(1, $user->id)
                           ->setHint(Query::HINT_REFRESH, true)
@@ -373,19 +375,19 @@ class BasicFunctionalTest extends OrmFunctionalTestCase
      */
     public function testCreateEntityOfProxy()
     {
-        $user = new CmsUser;
-        $user->name = 'Guilherme';
+        $user           = new CmsUser();
+        $user->name     = 'Guilherme';
         $user->username = 'gblanco';
-        $user->status = 'developer';
+        $user->status   = 'developer';
 
         // Add a phonenumber
-        $ph1 = new CmsPhonenumber;
-        $ph1->phonenumber = "12345";
+        $ph1              = new CmsPhonenumber();
+        $ph1->phonenumber = '12345';
         $user->addPhonenumber($ph1);
 
         // Add a phonenumber
-        $ph2 = new CmsPhonenumber;
-        $ph2->phonenumber = "54321";
+        $ph2              = new CmsPhonenumber();
+        $ph2->phonenumber = '54321';
 
         $this->em->persist($user);
         $this->em->persist($ph1);
@@ -394,9 +396,9 @@ class BasicFunctionalTest extends OrmFunctionalTestCase
         $this->em->clear();
 
         $userId = $user->id;
-        $user = $this->em->getReference(CmsUser::class, $user->id);
+        $user   = $this->em->getReference(CmsUser::class, $user->id);
 
-        $dql = "SELECT u FROM Doctrine\Tests\Models\CMS\CmsUser u WHERE u.id = ?1";
+        $dql  = 'SELECT u FROM Doctrine\Tests\Models\CMS\CmsUser u WHERE u.id = ?1';
         $user = $this->em->createQuery($dql)
                           ->setParameter(1, $userId)
                           ->getSingleResult();
@@ -406,13 +408,13 @@ class BasicFunctionalTest extends OrmFunctionalTestCase
 
     public function testAddToCollectionDoesNotInitialize()
     {
-        $user = new CmsUser;
-        $user->name = 'Guilherme';
+        $user           = new CmsUser();
+        $user->name     = 'Guilherme';
         $user->username = 'gblanco';
-        $user->status = 'developer';
+        $user->status   = 'developer';
 
         for ($i=0; $i<3; ++$i) {
-            $phone = new CmsPhonenumber;
+            $phone              = new CmsPhonenumber();
             $phone->phonenumber = 100 + $i;
             $user->addPhonenumber($phone);
         }
@@ -429,7 +431,7 @@ class BasicFunctionalTest extends OrmFunctionalTestCase
 
         self::assertFalse($gblanco->getPhonenumbers()->isInitialized());
 
-        $newPhone = new CmsPhonenumber;
+        $newPhone              = new CmsPhonenumber();
         $newPhone->phonenumber = 555;
         $gblanco->addPhonenumber($newPhone);
 
@@ -439,20 +441,20 @@ class BasicFunctionalTest extends OrmFunctionalTestCase
         $this->em->flush();
         $this->em->clear();
 
-        $query = $this->em->createQuery("select u, p from Doctrine\Tests\Models\CMS\CmsUser u join u.phonenumbers p where u.username='gblanco'");
+        $query    = $this->em->createQuery("select u, p from Doctrine\Tests\Models\CMS\CmsUser u join u.phonenumbers p where u.username='gblanco'");
         $gblanco2 = $query->getSingleResult();
         self::assertEquals(4, $gblanco2->getPhonenumbers()->count());
     }
 
     public function testInitializeCollectionWithNewObjectsRetainsNewObjects()
     {
-        $user = new CmsUser;
-        $user->name = 'Guilherme';
+        $user           = new CmsUser();
+        $user->name     = 'Guilherme';
         $user->username = 'gblanco';
-        $user->status = 'developer';
+        $user->status   = 'developer';
 
         for ($i=0; $i<3; ++$i) {
-            $phone = new CmsPhonenumber;
+            $phone              = new CmsPhonenumber();
             $phone->phonenumber = 100 + $i;
             $user->addPhonenumber($phone);
         }
@@ -469,7 +471,7 @@ class BasicFunctionalTest extends OrmFunctionalTestCase
 
         self::assertFalse($gblanco->getPhonenumbers()->isInitialized());
 
-        $newPhone = new CmsPhonenumber;
+        $newPhone              = new CmsPhonenumber();
         $newPhone->phonenumber = 555;
         $gblanco->addPhonenumber($newPhone);
 
@@ -480,20 +482,20 @@ class BasicFunctionalTest extends OrmFunctionalTestCase
         $this->em->flush();
         $this->em->clear();
 
-        $query = $this->em->createQuery("select u, p from Doctrine\Tests\Models\CMS\CmsUser u join u.phonenumbers p where u.username='gblanco'");
+        $query    = $this->em->createQuery("select u, p from Doctrine\Tests\Models\CMS\CmsUser u join u.phonenumbers p where u.username='gblanco'");
         $gblanco2 = $query->getSingleResult();
         self::assertEquals(4, $gblanco2->getPhonenumbers()->count());
     }
 
     public function testOneToManyCascadeRemove()
     {
-        $user = new CmsUser;
-        $user->name = 'Guilherme';
+        $user           = new CmsUser();
+        $user->name     = 'Guilherme';
         $user->username = 'gblanco';
-        $user->status = 'developer';
+        $user->status   = 'developer';
 
         for ($i=0; $i<3; ++$i) {
-            $phone = new CmsPhonenumber;
+            $phone              = new CmsPhonenumber();
             $phone->phonenumber = 100 + $i;
             $user->addPhonenumber($phone);
         }
@@ -502,7 +504,7 @@ class BasicFunctionalTest extends OrmFunctionalTestCase
         $this->em->flush();
         $this->em->clear();
 
-        $query = $this->em->createQuery("select u from Doctrine\Tests\Models\CMS\CmsUser u where u.username='gblanco'");
+        $query   = $this->em->createQuery("select u from Doctrine\Tests\Models\CMS\CmsUser u where u.username='gblanco'");
         $gblanco = $query->getSingleResult();
 
         $this->em->remove($gblanco);
@@ -511,26 +513,28 @@ class BasicFunctionalTest extends OrmFunctionalTestCase
         $this->em->clear();
 
         self::assertEquals(0, $this->em->createQuery(
-                "select count(p.phonenumber) from Doctrine\Tests\Models\CMS\CmsPhonenumber p")
+            'select count(p.phonenumber) from Doctrine\Tests\Models\CMS\CmsPhonenumber p'
+        )
                 ->getSingleScalarResult());
 
         self::assertEquals(0, $this->em->createQuery(
-                "select count(u.id) from Doctrine\Tests\Models\CMS\CmsUser u")
+            'select count(u.id) from Doctrine\Tests\Models\CMS\CmsUser u'
+        )
                 ->getSingleScalarResult());
     }
 
     public function testTextColumnSaveAndRetrieve()
     {
-        $user = new CmsUser;
-        $user->name = 'Guilherme';
+        $user           = new CmsUser();
+        $user->name     = 'Guilherme';
         $user->username = 'gblanco';
-        $user->status = 'developer';
+        $user->status   = 'developer';
 
         $this->em->persist($user);
 
-        $article = new CmsArticle();
-        $article->text = "Lorem ipsum dolor sunt.";
-        $article->topic = "A Test Article!";
+        $article        = new CmsArticle();
+        $article->text  = 'Lorem ipsum dolor sunt.';
+        $article->topic = 'A Test Article!';
         $article->setAuthor($user);
 
         $this->em->persist($article);
@@ -542,38 +546,38 @@ class BasicFunctionalTest extends OrmFunctionalTestCase
         // test find() with leading backslash at the same time
         $articleNew = $this->em->find('\Doctrine\Tests\Models\CMS\CmsArticle', $articleId);
         self::assertTrue($this->em->contains($articleNew));
-        self::assertEquals("Lorem ipsum dolor sunt.", $articleNew->text);
+        self::assertEquals('Lorem ipsum dolor sunt.', $articleNew->text);
 
         self::assertNotSame($article, $articleNew);
 
-        $articleNew->text = "Lorem ipsum dolor sunt. And stuff!";
+        $articleNew->text = 'Lorem ipsum dolor sunt. And stuff!';
 
         $this->em->flush();
         $this->em->clear();
 
         $articleNew = $this->em->find(CmsArticle::class, $articleId);
-        self::assertEquals("Lorem ipsum dolor sunt. And stuff!", $articleNew->text);
+        self::assertEquals('Lorem ipsum dolor sunt. And stuff!', $articleNew->text);
         self::assertTrue($this->em->contains($articleNew));
     }
 
     public function testFlushDoesNotIssueUnnecessaryUpdates()
     {
-        $user = new CmsUser;
-        $user->name = 'Guilherme';
+        $user           = new CmsUser();
+        $user->name     = 'Guilherme';
         $user->username = 'gblanco';
-        $user->status = 'developer';
+        $user->status   = 'developer';
 
-        $address = new CmsAddress;
+        $address          = new CmsAddress();
         $address->country = 'Germany';
-        $address->city = 'Berlin';
-        $address->zip = '12345';
+        $address->city    = 'Berlin';
+        $address->zip     = '12345';
 
         $address->user = $user;
         $user->address = $address;
 
-        $article = new CmsArticle();
-        $article->text = "Lorem ipsum dolor sunt.";
-        $article->topic = "A Test Article!";
+        $article        = new CmsArticle();
+        $article->text  = 'Lorem ipsum dolor sunt.';
+        $article->topic = 'A Test Article!';
         $article->setAuthor($user);
 
         $this->em->persist($article);
@@ -590,7 +594,7 @@ class BasicFunctionalTest extends OrmFunctionalTestCase
         self::assertCount(1, $user2->articles);
         self::assertInstanceOf(CmsAddress::class, $user2->address);
 
-        $oldLogger = $this->em->getConnection()->getConfiguration()->getSQLLogger();
+        $oldLogger  = $this->em->getConnection()->getConfiguration()->getSQLLogger();
         $debugStack = new DebugStack();
         $this->em->getConnection()->getConfiguration()->setSQLLogger($debugStack);
 
@@ -602,10 +606,10 @@ class BasicFunctionalTest extends OrmFunctionalTestCase
 
     public function testRemoveEntityByReference()
     {
-        $user = new CmsUser;
-        $user->name = 'Guilherme';
+        $user           = new CmsUser();
+        $user->name     = 'Guilherme';
         $user->username = 'gblanco';
-        $user->status = 'developer';
+        $user->status   = 'developer';
 
         //$this->em->getConnection()->getConfiguration()->setSQLLogger(new \Doctrine\DBAL\Logging\EchoSQLLogger);
 
@@ -618,33 +622,33 @@ class BasicFunctionalTest extends OrmFunctionalTestCase
         $this->em->flush();
         $this->em->clear();
 
-        self::assertEquals(0, $this->em->getConnection()->fetchColumn("select count(*) from cms_users"));
+        self::assertEquals(0, $this->em->getConnection()->fetchColumn('select count(*) from cms_users'));
 
         //$this->em->getConnection()->getConfiguration()->setSQLLogger(null);
     }
 
     public function testQueryEntityByReference()
     {
-        $user = new CmsUser;
-        $user->name = 'Guilherme';
+        $user           = new CmsUser();
+        $user->name     = 'Guilherme';
         $user->username = 'gblanco';
-        $user->status = 'developer';
+        $user->status   = 'developer';
 
-        $address = new CmsAddress;
+        $address          = new CmsAddress();
         $address->country = 'Germany';
-        $address->city = 'Berlin';
-        $address->zip = '12345';
+        $address->city    = 'Berlin';
+        $address->zip     = '12345';
 
         $user->setAddress($address);
 
-        $this->em->transactional(function($em) use ($user) {
+        $this->em->transactional(function ($em) use ($user) {
             $em->persist($user);
         });
         $this->em->clear();
 
         //$this->em->getConnection()->getConfiguration()->setSQLLogger(new \Doctrine\DBAL\Logging\EchoSQLLogger);
 
-        $userRef = $this->em->getReference(CmsUser::class, $user->getId());
+        $userRef  = $this->em->getReference(CmsUser::class, $user->getId());
         $address2 = $this->em->createQuery('select a from Doctrine\Tests\Models\CMS\CmsAddress a where a.user = :user')
                 ->setParameter('user', $userRef)
                 ->getSingleResult();
@@ -662,28 +666,28 @@ class BasicFunctionalTest extends OrmFunctionalTestCase
 
     public function testOneToOneNullUpdate()
     {
-        $user = new CmsUser();
-        $user->username = "beberlei";
-        $user->name = "Benjamin E.";
-        $user->status = 'active';
+        $user           = new CmsUser();
+        $user->username = 'beberlei';
+        $user->name     = 'Benjamin E.';
+        $user->status   = 'active';
 
-        $address = new CmsAddress();
-        $address->city = "Bonn";
-        $address->zip = "12354";
-        $address->country = "Germany";
-        $address->street = "somestreet";
-        $address->user = $user;
+        $address          = new CmsAddress();
+        $address->city    = 'Bonn';
+        $address->zip     = '12354';
+        $address->country = 'Germany';
+        $address->street  = 'somestreet';
+        $address->user    = $user;
 
         $this->em->persist($address);
         $this->em->persist($user);
         $this->em->flush();
 
-        self::assertEquals(1, $this->em->getConnection()->fetchColumn("select 1 from cms_addresses where user_id = ".$user->id));
+        self::assertEquals(1, $this->em->getConnection()->fetchColumn('select 1 from cms_addresses where user_id = ' . $user->id));
 
         $address->user = null;
         $this->em->flush();
 
-        self::assertNotEquals(1, $this->em->getConnection()->fetchColumn("select 1 from cms_addresses where user_id = ".$user->id));
+        self::assertNotEquals(1, $this->em->getConnection()->fetchColumn('select 1 from cms_addresses where user_id = ' . $user->id));
     }
 
     /**
@@ -694,17 +698,17 @@ class BasicFunctionalTest extends OrmFunctionalTestCase
     {
         $this->expectException(\InvalidArgumentException::class);
 
-        $user = new CmsUser();
-        $user->username = "beberlei";
-        $user->name = "Benjamin E.";
-        $user->status = 'active';
+        $user           = new CmsUser();
+        $user->username = 'beberlei';
+        $user->name     = 'Benjamin E.';
+        $user->status   = 'active';
 
-        $address = new CmsAddress();
-        $address->city = "Bonn";
-        $address->zip = "12354";
-        $address->country = "Germany";
-        $address->street = "somestreet";
-        $address->user = $user;
+        $address          = new CmsAddress();
+        $address->city    = 'Bonn';
+        $address->zip     = '12354';
+        $address->country = 'Germany';
+        $address->street  = 'somestreet';
+        $address->user    = $user;
 
         $this->em->persist($address);
 
@@ -720,26 +724,26 @@ class BasicFunctionalTest extends OrmFunctionalTestCase
     {
         $this->expectException(\InvalidArgumentException::class);
 
-        $user = new CmsUser();
-        $user->username = "beberlei";
-        $user->name = "Benjamin E.";
-        $user->status = 'active';
+        $user           = new CmsUser();
+        $user->username = 'beberlei';
+        $user->name     = 'Benjamin E.';
+        $user->status   = 'active';
 
-        $address = new CmsAddress();
-        $address->city = "Bonn";
-        $address->zip = "12354";
-        $address->country = "Germany";
-        $address->street = "somestreet";
-        $address->user = $user;
+        $address          = new CmsAddress();
+        $address->city    = 'Bonn';
+        $address->zip     = '12354';
+        $address->country = 'Germany';
+        $address->street  = 'somestreet';
+        $address->user    = $user;
 
         $this->em->persist($address);
         $this->em->persist($user);
         $this->em->flush();
 
-        $u2 = new CmsUser;
-        $u2->username = "beberlei";
-        $u2->name = "Benjamin E.";
-        $u2->status = 'inactive';
+        $u2            = new CmsUser();
+        $u2->username  = 'beberlei';
+        $u2->name      = 'Benjamin E.';
+        $u2->status    = 'inactive';
         $address->user = $u2;
 
         // flushing without persisting $u2 should raise an exception
@@ -754,13 +758,13 @@ class BasicFunctionalTest extends OrmFunctionalTestCase
     {
         $this->expectException(\InvalidArgumentException::class);
 
-        $art = new CmsArticle();
+        $art        = new CmsArticle();
         $art->topic = 'topic';
-        $art->text = 'the text';
+        $art->text  = 'the text';
 
-        $com = new CmsComment();
+        $com        = new CmsComment();
         $com->topic = 'Good';
-        $com->text = 'Really good!';
+        $com->text  = 'Really good!';
         $art->addComment($com);
 
         $this->em->persist($art);
@@ -771,18 +775,18 @@ class BasicFunctionalTest extends OrmFunctionalTestCase
 
     public function testOneToOneOrphanRemoval()
     {
-        $user = new CmsUser();
-        $user->username = "beberlei";
-        $user->name = "Benjamin E.";
-        $user->status = 'active';
+        $user           = new CmsUser();
+        $user->username = 'beberlei';
+        $user->name     = 'Benjamin E.';
+        $user->status   = 'active';
 
-        $address = new CmsAddress();
-        $address->city = "Bonn";
-        $address->zip = "12354";
-        $address->country = "Germany";
-        $address->street = "somestreet";
-        $address->user = $user;
-        $user->address = $address;
+        $address          = new CmsAddress();
+        $address->city    = 'Bonn';
+        $address->zip     = '12354';
+        $address->country = 'Germany';
+        $address->street  = 'somestreet';
+        $address->user    = $user;
+        $user->address    = $address;
 
         $this->em->persist($address);
         $this->em->persist($user);
@@ -793,7 +797,7 @@ class BasicFunctionalTest extends OrmFunctionalTestCase
 
         $this->em->flush();
 
-        self::assertEquals(0, $this->em->getConnection()->fetchColumn("select count(*) from cms_addresses"));
+        self::assertEquals(0, $this->em->getConnection()->fetchColumn('select count(*) from cms_addresses'));
 
         // check orphan removal through replacement
         $user->address = $address;
@@ -801,31 +805,31 @@ class BasicFunctionalTest extends OrmFunctionalTestCase
 
         $this->em->flush();
 
-        self::assertEquals(1, $this->em->getConnection()->fetchColumn("select count(*) from cms_addresses"));
+        self::assertEquals(1, $this->em->getConnection()->fetchColumn('select count(*) from cms_addresses'));
 
         // remove $address to free up unique key id
         $this->em->remove($address);
         $this->em->flush();
 
-        $newAddress = new CmsAddress();
-        $newAddress->city = "NewBonn";
-        $newAddress->zip = "12354";
-        $newAddress->country = "NewGermany";
-        $newAddress->street = "somenewstreet";
-        $newAddress->user = $user;
-        $user->address = $newAddress;
+        $newAddress          = new CmsAddress();
+        $newAddress->city    = 'NewBonn';
+        $newAddress->zip     = '12354';
+        $newAddress->country = 'NewGermany';
+        $newAddress->street  = 'somenewstreet';
+        $newAddress->user    = $user;
+        $user->address       = $newAddress;
 
         $this->em->flush();
 
-        self::assertEquals(1, $this->em->getConnection()->fetchColumn("select count(*) from cms_addresses"));
+        self::assertEquals(1, $this->em->getConnection()->fetchColumn('select count(*) from cms_addresses'));
     }
 
     public function testGetPartialReferenceToUpdateObjectWithoutLoadingIt()
     {
-        $user = new CmsUser();
-        $user->username = "beberlei";
-        $user->name = "Benjamin E.";
-        $user->status = 'active';
+        $user           = new CmsUser();
+        $user->username = 'beberlei';
+        $user->name     = 'Benjamin E.';
+        $user->status   = 'active';
         $this->em->persist($user);
         $this->em->flush();
         $userId = $user->id;
@@ -848,23 +852,23 @@ class BasicFunctionalTest extends OrmFunctionalTestCase
      */
     public function testManyToOneFetchModeQuery()
     {
-        $user = new CmsUser();
-        $user->username = "beberlei";
-        $user->name = "Benjamin E.";
-        $user->status = 'active';
+        $user           = new CmsUser();
+        $user->username = 'beberlei';
+        $user->name     = 'Benjamin E.';
+        $user->status   = 'active';
 
-        $article = new CmsArticle();
-        $article->topic = "foo";
-        $article->text = "bar";
-        $article->user = $user;
+        $article        = new CmsArticle();
+        $article->topic = 'foo';
+        $article->text  = 'bar';
+        $article->user  = $user;
 
         $this->em->persist($article);
         $this->em->persist($user);
         $this->em->flush();
         $this->em->clear();
 
-        $qc = $this->getCurrentQueryCount();
-        $dql = "SELECT a FROM Doctrine\Tests\Models\CMS\CmsArticle a WHERE a.id = ?1";
+        $qc  = $this->getCurrentQueryCount();
+        $dql = 'SELECT a FROM Doctrine\Tests\Models\CMS\CmsArticle a WHERE a.id = ?1';
         /* @var $article CmsArticle */
         $article = $this->em
             ->createQuery($dql)
@@ -875,8 +879,8 @@ class BasicFunctionalTest extends OrmFunctionalTestCase
         /* @var $fetchedUser CmsUser|GhostObjectInterface */
         $fetchedUser = $article->user;
 
-        self::assertInstanceOf(GhostObjectInterface::class, $fetchedUser, "It IS a proxy, ...");
-        self::assertTrue($fetchedUser->isProxyInitialized(), "...but its initialized!");
+        self::assertInstanceOf(GhostObjectInterface::class, $fetchedUser, 'It IS a proxy, ...');
+        self::assertTrue($fetchedUser->isProxyInitialized(), '...but its initialized!');
         self::assertEquals($qc+2, $this->getCurrentQueryCount());
     }
 
@@ -885,26 +889,26 @@ class BasicFunctionalTest extends OrmFunctionalTestCase
      */
     public function testClear()
     {
-        $user = new CmsUser;
-        $user->name = 'Dominik';
+        $user           = new CmsUser();
+        $user->name     = 'Dominik';
         $user->username = 'domnikl';
-        $user->status = 'developer';
+        $user->status   = 'developer';
 
-        $address = new CmsAddress();
-        $address->city = "Springfield";
-        $address->zip = "12354";
-        $address->country = "Germany";
-        $address->street = "Foo Street";
-        $address->user = $user;
-        $user->address = $address;
+        $address          = new CmsAddress();
+        $address->city    = 'Springfield';
+        $address->zip     = '12354';
+        $address->country = 'Germany';
+        $address->street  = 'Foo Street';
+        $address->user    = $user;
+        $user->address    = $address;
 
-        $article1 = new CmsArticle();
+        $article1        = new CmsArticle();
         $article1->topic = 'Foo';
-        $article1->text = 'Foo Text';
+        $article1->text  = 'Foo Text';
 
-        $article2 = new CmsArticle();
+        $article2        = new CmsArticle();
         $article2->topic = 'Bar';
-        $article2->text = 'Bar Text';
+        $article2->text  = 'Bar Text';
 
         $user->addArticle($article1);
         $user->addArticle($article2);
@@ -930,11 +934,11 @@ class BasicFunctionalTest extends OrmFunctionalTestCase
      */
     public function testWrongAssociationInstance()
     {
-        $user = new CmsUser;
-        $user->name = 'Dominik';
+        $user           = new CmsUser();
+        $user->name     = 'Dominik';
         $user->username = 'domnikl';
-        $user->status = 'developer';
-        $user->address = $user;
+        $user->status   = 'developer';
+        $user->address  = $user;
 
         $this->expectException(ORMInvalidArgumentException::class);
         $this->expectExceptionMessage(

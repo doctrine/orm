@@ -4,16 +4,13 @@ declare(strict_types=1);
 
 namespace Doctrine\Tests\ORM\Functional;
 
+use Doctrine\Common\Collections\Criteria;
 use Doctrine\ORM\LazyCriteriaCollection;
 use Doctrine\Tests\Models\Generic\DateTimeModel;
-use Doctrine\Common\Collections\Criteria;
 use Doctrine\Tests\Models\Tweet\Tweet;
 use Doctrine\Tests\Models\Tweet\User;
 use Doctrine\Tests\OrmFunctionalTestCase;
 
-/**
- * @author Josiah <josiah@jjs.id.au>
- */
 class EntityRepositoryCriteriaTest extends OrmFunctionalTestCase
 {
     protected function setUp()
@@ -25,24 +22,24 @@ class EntityRepositoryCriteriaTest extends OrmFunctionalTestCase
 
     public function loadFixture()
     {
-        $today = new DateTimeModel();
+        $today           = new DateTimeModel();
         $today->datetime =
-        $today->date =
-        $today->time =
+        $today->date     =
+        $today->time     =
             new \DateTime('today');
         $this->em->persist($today);
 
-        $tomorrow = new DateTimeModel();
+        $tomorrow           = new DateTimeModel();
         $tomorrow->datetime =
-        $tomorrow->date =
-        $tomorrow->time =
+        $tomorrow->date     =
+        $tomorrow->time     =
             new \DateTime('tomorrow');
         $this->em->persist($tomorrow);
 
-        $yesterday = new DateTimeModel();
+        $yesterday           = new DateTimeModel();
         $yesterday->datetime =
-        $yesterday->date =
-        $yesterday->time =
+        $yesterday->date     =
+        $yesterday->time     =
             new \DateTime('yesterday');
         $this->em->persist($yesterday);
 
@@ -58,7 +55,7 @@ class EntityRepositoryCriteriaTest extends OrmFunctionalTestCase
         $this->loadFixture();
 
         $repository = $this->em->getRepository(DateTimeModel::class);
-        $dates = $repository->matching(new Criteria(
+        $dates      = $repository->matching(new Criteria(
             Criteria::expr()->lte('datetime', new \DateTime('today'))
         ));
 
@@ -67,17 +64,17 @@ class EntityRepositoryCriteriaTest extends OrmFunctionalTestCase
 
     private function loadNullFieldFixtures()
     {
-        $today = new DateTimeModel();
+        $today           = new DateTimeModel();
         $today->datetime =
-        $today->date =
+        $today->date     =
             new \DateTime('today');
 
         $this->em->persist($today);
 
-        $tomorrow = new DateTimeModel();
+        $tomorrow           = new DateTimeModel();
         $tomorrow->datetime =
-        $tomorrow->date =
-        $tomorrow->time =
+        $tomorrow->date     =
+        $tomorrow->time     =
             new \DateTime('tomorrow');
         $this->em->persist($tomorrow);
 
@@ -148,13 +145,13 @@ class EntityRepositoryCriteriaTest extends OrmFunctionalTestCase
 
     public function testCanContainsWithoutLoadingCollection()
     {
-        $user = new User();
+        $user       = new User();
         $user->name = 'Marco';
         $this->em->persist($user);
         $this->em->flush();
 
-        $tweet = new Tweet();
-        $tweet->author = $user;
+        $tweet          = new Tweet();
+        $tweet->author  = $user;
         $tweet->content = 'Criteria is awesome';
         $this->em->persist($tweet);
         $this->em->flush();

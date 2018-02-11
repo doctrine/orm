@@ -25,9 +25,7 @@ class Address
      */
     public $person;
 
-    /**
-     * @ORM\Column
-     */
+    /** @ORM\Column */
     public $location;
 
     public function __construct($location)

@@ -66,7 +66,7 @@ class GH6402Test extends OrmFunctionalTestCase
 
     private function createAddress()
     {
-        $address = new Address();
+        $address      = new Address();
         $address->zip = 'bar';
 
         $this->persistAddress($address);
@@ -76,8 +76,8 @@ class GH6402Test extends OrmFunctionalTestCase
 
     private function createFullAddress()
     {
-        $address = new FullAddress();
-        $address->zip = 'bar';
+        $address       = new FullAddress();
+        $address->zip  = 'bar';
         $address->city = new City('London');
 
         $this->persistAddress($address);
@@ -87,8 +87,8 @@ class GH6402Test extends OrmFunctionalTestCase
 
     private function persistAddress(Address $address)
     {
-        $user = new User();
-        $user->name = "foo";
+        $user       = new User();
+        $user->name = 'foo';
         $user->setAddress($address);
 
         $this->em->persist($user);

@@ -5,8 +5,9 @@ declare(strict_types=1);
 namespace Doctrine\Tests\ORM\Functional\Ticket;
 
 use Doctrine\ORM\Annotation as ORM;
+use Doctrine\Tests\OrmFunctionalTestCase;
 
-class DDC513Test extends \Doctrine\Tests\OrmFunctionalTestCase
+class DDC513Test extends OrmFunctionalTestCase
 {
     protected function setUp()
     {
@@ -22,7 +23,7 @@ class DDC513Test extends \Doctrine\Tests\OrmFunctionalTestCase
 
     public function testIssue()
     {
-        $q = $this->em->createQuery("select u from ".__NAMESPACE__."\\DDC513OfferItem u left join u.price p");
+        $q = $this->em->createQuery('select u from ' . __NAMESPACE__ . '\\DDC513OfferItem u left join u.price p');
 
         self::assertSQLEquals(
             'SELECT t0."id" AS c0, t0."discr" AS c1, t0."price" AS c2 FROM "DDC513OfferItem" t1 INNER JOIN "DDC513Item" t0 ON t1."id" = t0."id" LEFT JOIN "DDC513Price" t2 ON t0."price" = t2."id"',

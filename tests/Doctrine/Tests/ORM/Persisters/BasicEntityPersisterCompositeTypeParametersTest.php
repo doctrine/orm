@@ -6,6 +6,7 @@ namespace Doctrine\Tests\ORM\Persisters;
 
 use Doctrine\Common\Collections\Criteria;
 use Doctrine\DBAL\Types\Type;
+use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Persisters\Entity\BasicEntityPersister;
 use Doctrine\Tests\Models\GeoNames\Admin1;
 use Doctrine\Tests\Models\GeoNames\Admin1AlternateName;
@@ -14,14 +15,10 @@ use Doctrine\Tests\OrmTestCase;
 
 class BasicEntityPersisterCompositeTypeParametersTest extends OrmTestCase
 {
-    /**
-     * @var BasicEntityPersister
-     */
+    /** @var BasicEntityPersister */
     protected $persister;
 
-    /**
-     * @var \Doctrine\ORM\EntityManagerInterface
-     */
+    /** @var EntityManagerInterface */
     protected $em;
 
     /**
@@ -42,8 +39,8 @@ class BasicEntityPersisterCompositeTypeParametersTest extends OrmTestCase
 
     public function testExpandParametersWillExpandCompositeEntityKeys()
     {
-        $country = new Country("IT", "Italy");
-        $admin1  = new Admin1(10, "Rome", $country);
+        $country = new Country('IT', 'Italy');
+        $admin1  = new Admin1(10, 'Rome', $country);
 
         list ($values, $types) = $this->persister->expandParameters(['admin1' => $admin1]);
 
@@ -53,11 +50,11 @@ class BasicEntityPersisterCompositeTypeParametersTest extends OrmTestCase
 
     public function testExpandCriteriaParametersWillExpandCompositeEntityKeys()
     {
-        $country = new Country("IT", "Italy");
-        $admin1  = new Admin1(10, "Rome", $country);
+        $country = new Country('IT', 'Italy');
+        $admin1  = new Admin1(10, 'Rome', $country);
 
         $criteria = Criteria::create();
-        $criteria->andWhere(Criteria::expr()->eq("admin1", $admin1));
+        $criteria->andWhere(Criteria::expr()->eq('admin1', $admin1));
 
         list ($values, $types) = $this->persister->expandCriteriaParameters($criteria);
 
