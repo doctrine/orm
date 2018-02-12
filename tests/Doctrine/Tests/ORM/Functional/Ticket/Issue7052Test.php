@@ -6,7 +6,7 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Tests\Models\CMS\CmsEmployee;
 
 /**
- * @group issue-7052
+ * @group 7052
  */
 class Issue7052Test extends \Doctrine\Tests\OrmFunctionalTestCase
 {
@@ -22,15 +22,13 @@ class Issue7052Test extends \Doctrine\Tests\OrmFunctionalTestCase
 
     public function testIssue()
     {
-        $parent = new Issue7052Parent();
+        $parent       = new Issue7052Parent();
         $parent->name = "parent test";
 
-        $childA = new Issue7052Child();
-        $childA->name = "child A";
+        $childA         = new Issue7052Child();
         $childA->parent = $parent;
 
-        $childB = new Issue7052Child();
-        $childB->name = "child B";
+        $childB         = new Issue7052Child();
         $childB->parent = $parent;
 
         $this->_em->persist($parent);
@@ -39,55 +37,51 @@ class Issue7052Test extends \Doctrine\Tests\OrmFunctionalTestCase
         $this->_em->flush();
         $this->_em->clear();
 
-        $childA = $this->_em->find('Doctrine\Tests\ORM\Functional\Ticket\Issue7052Child', $childA->id);
+        $childAFromDb = $this->_em->find('Doctrine\Tests\ORM\Functional\Ticket\Issue7052Child', $childA->id);
 
         $this->_em->clear();
 
-        $childB = $this->_em->find('Doctrine\Tests\ORM\Functional\Ticket\Issue7052Child', $childB->id);
+        $childBFromDb = $this->_em->find('Doctrine\Tests\ORM\Functional\Ticket\Issue7052Child', $childB->id);
 
-        $parentFromChildB = $childB->parent;
+        $parentFromChildB = $childBFromDb->parent;
 
-        $this->assertNotNull($childA->parent->name, "Unable to get parent name after EM cleared.");
+        self::assertNotSame($childA, $childAFromDb);
+        self::assertNotNull($childAFromDb->parent->name, "Unable to get parent name on second loaded child after EM cleared.");
     }
 }
 
 /**
  * @Entity
- * @Table(name="issuebitonexxx_child")
  */
 class Issue7052Child
 {
-    /** @Id @GeneratedValue @Column(type="integer") */
+    /**
+     * @Id
+     * @GeneratedValue
+     * @Column(type="integer")
+    */
     public $id;
 
     /**
-     * @Column
-     * @var string
-     */
-    public $name;
-
-    /**
-     * @ManyToOne(targetEntity="Issue7052Parent", fetch="LAZY")
-     * @JoinTable(
-     *   name="issuebtonexxx_parent",
-     *   inverseJoinColumns={@JoinColumn(name="parent_id", referencedColumnName="id")}
-     * )
+     * @ManyToOne(targetEntity=Issue7052Parent::class, fetch="LAZY")
      */
     public $parent;
 }
 
 /**
  * @Entity
- * @Table(name="issuebitonexxx_parent")
  */
 class Issue7052Parent
 {
-    /** @Id @GeneratedValue @Column(type="integer") */
+    /**
+     * @Id
+     * @GeneratedValue
+     * @Column(type="integer")
+     */
     public $id;
 
     /**
      * @Column
-     * @var string
      */
     public $name;
 }
