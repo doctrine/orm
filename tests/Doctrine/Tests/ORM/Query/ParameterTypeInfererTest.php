@@ -4,11 +4,11 @@ declare(strict_types=1);
 
 namespace Doctrine\Tests\ORM\Query;
 
+use Doctrine\DBAL\ParameterType;
 use Doctrine\ORM\Query\ParameterTypeInferer;
 use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\Types\Type;
 use Doctrine\Tests\OrmTestCase;
-use PDO;
 
 class ParameterTypeInfererTest extends OrmTestCase
 {
@@ -16,8 +16,8 @@ class ParameterTypeInfererTest extends OrmTestCase
     {
         $data = [
             [1,                 Type::INTEGER],
-            ["bar",             PDO::PARAM_STR],
-            ["1",               PDO::PARAM_STR],
+            ["bar",             ParameterType::STRING],
+            ["1",               ParameterType::STRING],
             [new \DateTime,     Type::DATETIME],
             [new \DateInterval('P1D'), Type::DATEINTERVAL],
             [[2],          Connection::PARAM_INT_ARRAY],

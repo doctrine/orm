@@ -6,6 +6,7 @@ namespace Doctrine\Tests\ORM\Query;
 
 use Doctrine\Common\Cache\ArrayCache;
 use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\DBAL\ParameterType;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Internal\Hydration\IterableResult;
 use Doctrine\ORM\Query\Parameter;
@@ -62,7 +63,7 @@ class QueryTest extends OrmTestCase
     public function testFree()
     {
         $query = $this->em->createQuery("select u from Doctrine\Tests\Models\CMS\CmsUser u where u.username = ?1");
-        $query->setParameter(2, 84, \PDO::PARAM_INT);
+        $query->setParameter(2, 84, ParameterType::INTEGER);
 
         $query->free();
 
@@ -74,7 +75,7 @@ class QueryTest extends OrmTestCase
         $dql = "select u from Doctrine\Tests\Models\CMS\CmsUser u where u.username = ?1";
 
         $query = $this->em->createQuery($dql);
-        $query->setParameter(2, 84, \PDO::PARAM_INT);
+        $query->setParameter(2, 84, ParameterType::INTEGER);
         $query->setHint('foo', 'bar');
 
         $cloned = clone $query;

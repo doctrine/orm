@@ -4,10 +4,10 @@ declare(strict_types=1);
 
 namespace Doctrine\ORM\Internal\Hydration;
 
+use Doctrine\DBAL\FetchMode;
 use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\Mapping\InheritanceType;
 use Doctrine\ORM\Query;
-use PDO;
 use function array_keys;
 use function array_search;
 use function count;
@@ -56,7 +56,7 @@ class SimpleObjectHydrator extends AbstractHydrator
     {
         $result = [];
 
-        while ($row = $this->stmt->fetch(PDO::FETCH_ASSOC)) {
+        while ($row = $this->stmt->fetch(FetchMode::ASSOCIATIVE)) {
             $this->hydrateRowData($row, $result);
         }
 

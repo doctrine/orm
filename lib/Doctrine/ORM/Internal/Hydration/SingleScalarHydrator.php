@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Doctrine\ORM\Internal\Hydration;
 
+use Doctrine\DBAL\FetchMode;
 use Doctrine\ORM\NonUniqueResultException;
 use Doctrine\ORM\NoResultException;
 use function array_shift;
@@ -20,7 +21,7 @@ class SingleScalarHydrator extends AbstractHydrator
      */
     protected function hydrateAllData()
     {
-        $data    = $this->stmt->fetchAll(\PDO::FETCH_ASSOC);
+        $data    = $this->stmt->fetchAll(FetchMode::ASSOCIATIVE);
         $numRows = count($data);
 
         if ($numRows === 0) {

@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace Doctrine\ORM\Internal\Hydration;
 
+use Doctrine\DBAL\FetchMode;
 use Doctrine\ORM\Mapping\ToOneAssociationMetadata;
-use PDO;
 use function count;
 use function end;
 use function is_array;
@@ -72,7 +72,7 @@ class ArrayHydrator extends AbstractHydrator
     {
         $result = [];
 
-        while ($data = $this->stmt->fetch(PDO::FETCH_ASSOC)) {
+        while ($data = $this->stmt->fetch(FetchMode::ASSOCIATIVE)) {
             $this->hydrateRowData($data, $result);
         }
 

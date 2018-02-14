@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Doctrine\Tests\ORM\Functional\Ticket;
 
+use Doctrine\DBAL\DBALException;
 use Doctrine\ORM\Annotation as ORM;
 
 /**
@@ -14,15 +15,12 @@ class DDC1225Test extends \Doctrine\Tests\OrmFunctionalTestCase
     public function setUp()
     {
         parent::setUp();
-        try {
-            $this->schemaTool->createSchema(
-                [
+        $this->schemaTool->createSchema(
+            [
                 $this->em->getClassMetadata(DDC1225_TestEntity1::class),
                 $this->em->getClassMetadata(DDC1225_TestEntity2::class),
-                ]
-            );
-        } catch (\PDOException $e) {
-        }
+            ]
+        );
     }
 
     public function testIssue()
