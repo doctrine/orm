@@ -19,7 +19,7 @@ installed:
 
 - PHP (latest stable version)
 - Composer Package Manager (`Install Composer
-  <http://getcomposer.org/doc/00-intro.md>`_)
+  <https://getcomposer.org/doc/00-intro.md>`_)
 
 The code of this tutorial is `available on Github <https://github.com/doctrine/doctrine2-orm-tutorial>`_.
 
@@ -32,7 +32,7 @@ What is Doctrine?
 -----------------
 
 Doctrine 2 is an `object-relational mapper (ORM)
-<http://en.wikipedia.org/wiki/Object-relational_mapping>`_ for PHP 5.4+ that
+<https://en.wikipedia.org/wiki/Object-relational_mapping>`_ for PHP 5.4+ that
 provides transparent persistence for PHP objects. It uses the Data Mapper
 pattern at the heart, aiming for a complete separation of your domain/business
 logic from the persistence in a relational database management system.
@@ -62,7 +62,7 @@ An Example Model: Bug Tracker
 
 For this Getting Started Guide for Doctrine we will implement the
 Bug Tracker domain model from the
-`Zend\_Db\_Table <http://framework.zend.com/manual/1.12/en/zend.db.adapter.html>`_
+`Zend\_Db\_Table <https://framework.zend.com/manual/1.12/en/zend.db.adapter.html>`_
 documentation. Reading their documentation we can extract the
 requirements:
 
@@ -1082,9 +1082,9 @@ The console output of this script is then:
     use-case. Don't we use an ORM to get rid of all the endless
     hand-writing of SQL? Doctrine introduces DQL which is best
     described as **object-query-language** and is a dialect of
-    `OQL <http://en.wikipedia.org/wiki/Object_Query_Language>`_ and
+    `OQL <https://en.wikipedia.org/wiki/Object_Query_Language>`_ and
     similar to `HQL <http://www.hibernate.org>`_ or
-    `JPQL <http://en.wikipedia.org/wiki/Java_Persistence_Query_Language>`_.
+    `JPQL <https://en.wikipedia.org/wiki/Java_Persistence_Query_Language>`_.
     It does not know the concept of columns and tables, but only those
     of Entity-Class and property. Using the Metadata we defined before
     it allows for very short distinctive and powerful queries.

@@ -7,7 +7,7 @@ The NOTIFY change-tracking policy is the most effective
 change-tracking policy provided by Doctrine but it requires some
 boilerplate code. This recipe will show you how this boilerplate
 code should look like. We will implement it on a
-`Layer Supertype <http://martinfowler.com/eaaCatalog/layerSupertype.html>`_
+`Layer Supertype <https://martinfowler.com/eaaCatalog/layerSupertype.html>`_
 for all our domain objects.
 
 Implementing NotifyPropertyChanged

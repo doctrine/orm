@@ -52,7 +52,7 @@ or adding entities to a collection twice. You have to check for both conditions 
 in the code before calling ``$em->flush()`` if you know that unique constraint failures
 can occur.
 
-In `Symfony2 <http://www.symfony.com>`_ for example there is a Unique Entity Validator
+In `Symfony2 <https://www.symfony.com>`_ for example there is a Unique Entity Validator
 to achieve this task.
 
 For collections you can check with ``$collection->contains($entity)`` if an entity is already
@@ -111,8 +111,8 @@ over this collection using a LIMIT statement (or vendor equivalent).
 Doctrine does not offer a solution for this out of the box but there are several extensions
 that do:
 
-* `DoctrineExtensions <http://github.com/beberlei/DoctrineExtensions>`_
-* `Pagerfanta <http://github.com/whiteoctober/pagerfanta>`_
+* `DoctrineExtensions <https://github.com/beberlei/DoctrineExtensions>`_
+* `Pagerfanta <https://github.com/whiteoctober/pagerfanta>`_
 
 Why does pagination not work correctly with fetch joins?
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~

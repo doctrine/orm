@@ -26,7 +26,7 @@ use function is_array;
  * The joined subclass persister maps a single entity instance to several tables in the
  * database as it is defined by the <tt>Class Table Inheritance</tt> strategy.
  *
- * @see http://martinfowler.com/eaaCatalog/classTableInheritance.html
+ * @see https://martinfowler.com/eaaCatalog/classTableInheritance.html
  */
 class JoinedSubclassPersister extends AbstractEntityInheritancePersister
 {

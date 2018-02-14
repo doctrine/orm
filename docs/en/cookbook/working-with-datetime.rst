@@ -64,7 +64,7 @@ to manage this mess,
 however let me crush your expectations fast. There is not a single database out there (supported by Doctrine 2)
 that supports timezones correctly. Correctly here means that you can cover all the use-cases that
 can come up with timezones. If you don't believe me you should read up on `Storing DateTime
-in Databases <http://derickrethans.nl/storing-date-time-in-database.html>`_.
+in Databases <https://derickrethans.nl/storing-date-time-in-database.html>`_.
 
 The problem is simple. Not a single database vendor saves the timezone, only the differences to UTC.
 However with frequent daylight saving and political timezone changes you can have a UTC offset that moves

@@ -1,4 +1,4 @@
-The Doctrine2 documentation is licensed under [CC BY-NC-SA 3.0](http://creativecommons.org/licenses/by-nc-sa/3.0/deed.en_US)
+The Doctrine2 documentation is licensed under [CC BY-NC-SA 3.0](https://creativecommons.org/licenses/by-nc-sa/3.0/deed.en_US)
 
 Creative Commons Legal Code
 
@@ -358,5 +358,4 @@ Creative Commons Notice
     available upon request from time to time. For the avoidance of doubt,
     this trademark restriction does not form part of this License.
 
-    Creative Commons may be contacted at http://creativecommons.org/.
-
+    Creative Commons may be contacted at https://creativecommons.org/.

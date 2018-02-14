@@ -2,7 +2,7 @@ Integrating with CodeIgniter
 ============================
 
 This is recipe for using Doctrine 2 in your
-`CodeIgniter <http://www.codeigniter.com>`_ framework.
+`CodeIgniter <https://www.codeigniter.com>`_ framework.
 
 .. note::
 

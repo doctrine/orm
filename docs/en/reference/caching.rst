@@ -48,7 +48,7 @@ APC
 
 In order to use the APC cache driver you must have it compiled and
 enabled in your php.ini. You can read about APC
-`in the PHP Documentation <http://us2.php.net/apc>`_. It will give
+`in the PHP Documentation <https://php.net/apc>`_. It will give
 you a little background information about what it is and how you
 can use it as well as how to install it.
 
@@ -66,7 +66,7 @@ APCu
 
 In order to use the APCu cache driver you must have it compiled and
 enabled in your php.ini. You can read about APCu
-`in the PHP Documentation <http://us2.php.net/apcu>`_. It will give
+`in the PHP Documentation <https://php.net/apcu>`_. It will give
 you a little background information about what it is and how you
 can use it as well as how to install it.
 
@@ -84,7 +84,7 @@ Memcache
 
 In order to use the Memcache cache driver you must have it compiled
 and enabled in your php.ini. You can read about Memcache
-`on the PHP website <http://php.net/memcache>`_. It will
+`on the PHP website <https://php.net/memcache>`_. It will
 give you a little background information about what it is and how
 you can use it as well as how to install it.
 
@@ -109,7 +109,7 @@ Memcache.
 
 In order to use the Memcached cache driver you must have it compiled
 and enabled in your php.ini. You can read about Memcached
-`on the PHP website <http://php.net/memcached>`_. It will
+`on the PHP website <https://php.net/memcached>`_. It will
 give you a little background information about what it is and how
 you can use it as well as how to install it.
 
@@ -131,7 +131,7 @@ Xcache
 
 In order to use the Xcache cache driver you must have it compiled
 and enabled in your php.ini. You can read about Xcache
-`here <http://xcache.lighttpd.net/>`_. It will give you a little
+`here <https://xcache.lighttpd.net/>`_. It will give you a little
 background information about what it is and how you can use it as
 well as how to install it.
 
@@ -149,7 +149,7 @@ Redis
 
 In order to use the Redis cache driver you must have it compiled
 and enabled in your php.ini. You can read about what Redis is
-`from here <http://redis.io/>`_. Also check
+`from here <https://redis.io/>`_. Also check
 `A PHP extension for Redis <https://github.com/nicolasff/phpredis/>`_ for how you can use
 and install the Redis PHP extension.
 

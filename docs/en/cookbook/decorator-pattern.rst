@@ -5,7 +5,7 @@ Persisting the Decorator Pattern
 
 This recipe will show you a simple example of how you can use
 Doctrine 2 to persist an implementation of the
-`Decorator Pattern <http://en.wikipedia.org/wiki/Decorator_pattern>`_
+`Decorator Pattern <https://en.wikipedia.org/wiki/Decorator_pattern>`_
 
 Component
 ---------

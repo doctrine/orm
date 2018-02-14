@@ -71,7 +71,7 @@ Tips for creating unit tests:
 
 ## Travis
 
-We automatically run your pull request through [Travis CI](http://www.travis-ci.org)
+We automatically run your pull request through [Travis CI](https://www.travis-ci.org)
 against SQLite, MySQL and PostgreSQL. If you break the tests, we cannot merge your code,
 so please make sure that your code is working before opening up a Pull-Request.
 

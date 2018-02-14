@@ -14,7 +14,7 @@ In Doctrine 1 the DQL language was not implemented using a real
 parser. This made modifications of the DQL by the user impossible.
 Doctrine 2 in contrast has a real parser for the DQL language,
 which transforms the DQL statement into an
-`Abstract Syntax Tree <http://en.wikipedia.org/wiki/Abstract_syntax_tree>`_
+`Abstract Syntax Tree <https://en.wikipedia.org/wiki/Abstract_syntax_tree>`_
 and generates the appropriate SQL statement for it. Since this
 process is deterministic Doctrine heavily caches the SQL that is
 generated from any given DQL query, which reduces the performance

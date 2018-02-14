@@ -122,8 +122,8 @@ included in the core of Doctrine 2. However there are already two
 extensions out there that offer support for Nested Set with
 Doctrine 2:
 
--  `Doctrine2 Hierarchical-Structural Behavior <http://github.com/guilhermeblanco/Doctrine2-Hierarchical-Structural-Behavior>`_
--  `Doctrine2 NestedSet <http://github.com/blt04/doctrine2-nestedset>`_
+-  `Doctrine2 Hierarchical-Structural Behavior <https://github.com/guilhermeblanco/Doctrine2-Hierarchical-Structural-Behavior>`_
+-  `Doctrine2 NestedSet <https://github.com/blt04/doctrine2-nestedset>`_
 
 Known Issues
 ------------

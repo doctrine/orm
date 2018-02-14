@@ -50,7 +50,7 @@ steps of configuration.
     conversions with the query cache. These 2 caches require only an
     absolute minimum of memory yet they heavily improve the runtime
     performance of Doctrine. The recommended cache driver to use with
-    Doctrine is `APC <http://www.php.net/apc>`_. APC provides you with
+    Doctrine is `APC <https://php.net/apc>`_. APC provides you with
     an opcode-cache (which is highly recommended anyway) and a very
     fast in-memory cache storage that you can use for the metadata and
     query caches as seen in the previous code snippet.
