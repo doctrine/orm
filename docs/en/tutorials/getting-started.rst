@@ -311,9 +311,9 @@ but you only need to choose one.
     .. code-block:: xml
 
         <!-- config/xml/Product.dcm.xml -->
-        <doctrine-mapping xmlns="http://doctrine-project.org/schemas/orm/doctrine-mapping"
-              xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-              xsi:schemaLocation="http://doctrine-project.org/schemas/orm/doctrine-mapping
+        <doctrine-mapping xmlns="https://doctrine-project.org/schemas/orm/doctrine-mapping"
+              xmlns:xsi="https://www.w3.org/2001/XMLSchema-instance"
+              xsi:schemaLocation="https://doctrine-project.org/schemas/orm/doctrine-mapping
                                   https://www.doctrine-project.org/schemas/orm/doctrine-mapping.xsd">
 
               <entity name="Product" table="products">
@@ -876,9 +876,9 @@ the ``Product`` before:
     .. code-block:: xml
 
         <!-- config/xml/Bug.dcm.xml -->
-        <doctrine-mapping xmlns="http://doctrine-project.org/schemas/orm/doctrine-mapping"
-              xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-              xsi:schemaLocation="http://doctrine-project.org/schemas/orm/doctrine-mapping
+        <doctrine-mapping xmlns="https://doctrine-project.org/schemas/orm/doctrine-mapping"
+              xmlns:xsi="https://www.w3.org/2001/XMLSchema-instance"
+              xsi:schemaLocation="https://doctrine-project.org/schemas/orm/doctrine-mapping
                                   https://www.doctrine-project.org/schemas/orm/doctrine-mapping.xsd">
 
             <entity name="Bug" table="bugs">
@@ -1002,9 +1002,9 @@ Finally, we'll add metadata mappings for the ``User`` entity.
     .. code-block:: xml
 
         <!-- config/xml/User.dcm.xml -->
-        <doctrine-mapping xmlns="http://doctrine-project.org/schemas/orm/doctrine-mapping"
-              xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-              xsi:schemaLocation="http://doctrine-project.org/schemas/orm/doctrine-mapping
+        <doctrine-mapping xmlns="https://doctrine-project.org/schemas/orm/doctrine-mapping"
+              xmlns:xsi="https://www.w3.org/2001/XMLSchema-instance"
+              xsi:schemaLocation="https://doctrine-project.org/schemas/orm/doctrine-mapping
                                   https://www.doctrine-project.org/schemas/orm/doctrine-mapping.xsd">
 
              <entity name="User" table="users">
@@ -1188,9 +1188,9 @@ The console output of this script is then:
     use-case. Don't we use an ORM to get rid of all the endless
     hand-writing of SQL? Doctrine introduces DQL which is best
     described as **object-query-language** and is a dialect of
-    `OQL <http://en.wikipedia.org/wiki/Object_Query_Language>`_ and
+    `OQL <https://en.wikipedia.org/wiki/Object_Query_Language>`_ and
     similar to `HQL <http://www.hibernate.org>`_ or
-    `JPQL <http://en.wikipedia.org/wiki/Java_Persistence_Query_Language>`_.
+    `JPQL <https://en.wikipedia.org/wiki/Java_Persistence_Query_Language>`_.
     It does not know the concept of columns and tables, but only those
     of Entity-Class and property. Using the Metadata we defined before
     it allows for very short distinctive and powerful queries.
@@ -1444,7 +1444,7 @@ Entity Repositories
 For now we have not discussed how to separate the Doctrine query logic from your model.
 In Doctrine 1 there was the concept of ``Doctrine_Table`` instances for this
 separation. The similar concept in Doctrine2 is called Entity Repositories, integrating
-the `repository pattern <http://martinfowler.com/eaaCatalog/repository.html>`_ at the heart of Doctrine.
+the `repository pattern <https://martinfowler.com/eaaCatalog/repository.html>`_ at the heart of Doctrine.
 
 Every Entity uses a default repository by default and offers a bunch of convenience
 methods that you can use to query for instances of that Entity. Take for example
@@ -1545,9 +1545,9 @@ we have to adjust the metadata slightly.
 
     .. code-block:: xml
 
-        <doctrine-mapping xmlns="http://doctrine-project.org/schemas/orm/doctrine-mapping"
-              xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-              xsi:schemaLocation="http://doctrine-project.org/schemas/orm/doctrine-mapping
+        <doctrine-mapping xmlns="https://doctrine-project.org/schemas/orm/doctrine-mapping"
+              xmlns:xsi="https://www.w3.org/2001/XMLSchema-instance"
+              xsi:schemaLocation="https://doctrine-project.org/schemas/orm/doctrine-mapping
                                   https://www.doctrine-project.org/schemas/orm/doctrine-mapping.xsd">
 
               <entity name="Bug" table="bugs" repository-class="BugRepository">
