@@ -24,15 +24,12 @@ class DDC1225Test extends OrmFunctionalTestCase
     protected function setUp(): void
     {
         parent::setUp();
-        try {
-            $this->_schemaTool->createSchema(
-                [
-                    $this->_em->getClassMetadata(DDC1225TestEntity1::class),
-                    $this->_em->getClassMetadata(DDC1225TestEntity2::class),
-                ]
-            );
-        } catch (PDOException $e) {
-        }
+        $this->_schemaTool->createSchema(
+            [
+                $this->_em->getClassMetadata(DDC1225TestEntity1::class),
+                $this->_em->getClassMetadata(DDC1225TestEntity2::class),
+            ]
+        );
     }
 
     public function testIssue(): void

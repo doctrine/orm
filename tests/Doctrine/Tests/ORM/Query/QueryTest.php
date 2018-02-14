@@ -8,6 +8,7 @@ use DateTime;
 use DateTimeImmutable;
 use Doctrine\Common\Cache\Psr6\DoctrineProvider;
 use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\DBAL\ParameterType;
 use Doctrine\DBAL\Types\Type;
 use Doctrine\ORM\Internal\Hydration\IterableResult;
 use Doctrine\ORM\Query\Parameter;
@@ -23,7 +24,6 @@ use Doctrine\Tests\Models\CMS\CmsUser;
 use Doctrine\Tests\Models\Generic\DateTimeModel;
 use Doctrine\Tests\OrmTestCase;
 use Generator;
-use PDO;
 use Symfony\Component\Cache\Adapter\ArrayAdapter;
 
 use function assert;
@@ -75,7 +75,7 @@ class QueryTest extends OrmTestCase
     public function testFree(): void
     {
         $query = $this->entityManager->createQuery('select u from Doctrine\Tests\Models\CMS\CmsUser u where u.username = ?1');
-        $query->setParameter(2, 84, PDO::PARAM_INT);
+        $query->setParameter(2, 84, ParameterType::INTEGER);
 
         $query->free();
 
@@ -87,7 +87,7 @@ class QueryTest extends OrmTestCase
         $dql = 'select u from Doctrine\Tests\Models\CMS\CmsUser u where u.username = ?1';
 
         $query = $this->entityManager->createQuery($dql);
-        $query->setParameter(2, 84, PDO::PARAM_INT);
+        $query->setParameter(2, 84, ParameterType::INTEGER);
         $query->setHint('foo', 'bar');
 
         $cloned = clone $query;
