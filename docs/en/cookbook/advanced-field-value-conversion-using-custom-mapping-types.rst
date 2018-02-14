@@ -195,7 +195,7 @@ object into a string representation before saving to the database (in the
 value from the database (in the ``convertToPHPValue`` method).
 
 The format of the string representation format is called `Well-known text (WKT)
-<http://en.wikipedia.org/wiki/Well-known_text>`_. The advantage of this format
+<https://en.wikipedia.org/wiki/Well-known_text>`_. The advantage of this format
 is, that it is both human readable and parsable by MySQL.
 
 Internally, MySQL stores geometry values in a binary format that is not

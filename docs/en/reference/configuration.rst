@@ -1,7 +1,7 @@
 Installation and Configuration
 ==============================
 
-Doctrine can be installed with `Composer <http://www.getcomposer.org>`_.  For
+Doctrine can be installed with `Composer <https://www.getcomposer.org>`_.  For
 older versions we still have `PEAR packages
 <http://pear.doctrine-project.org>`_.
 
@@ -17,7 +17,7 @@ Define the following requirement in your ``composer.json`` file:
 
 Then call ``composer install`` from your command line. If you don't know
 how Composer works, check out their `Getting Started
-<http://getcomposer.org/doc/00-intro.md>`_ to set up.
+<https://getcomposer.org/doc/00-intro.md>`_ to set up.
 
 Class loading
 -------------

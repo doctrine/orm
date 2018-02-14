@@ -794,7 +794,7 @@ what type of results to expect.
 Single Table
 ~~~~~~~~~~~~
 
-`Single Table Inheritance <http://martinfowler.com/eaaCatalog/singleTableInheritance.html>`_
+`Single Table Inheritance <https://martinfowler.com/eaaCatalog/singleTableInheritance.html>`_
 is an inheritance mapping strategy where all classes of a hierarchy
 are mapped to a single database table. In order to distinguish
 which row represents which type in the hierarchy a so-called
@@ -887,7 +887,7 @@ entities:
 Class Table Inheritance
 ~~~~~~~~~~~~~~~~~~~~~~~
 
-`Class Table Inheritance <http://martinfowler.com/eaaCatalog/classTableInheritance.html>`_
+`Class Table Inheritance <https://martinfowler.com/eaaCatalog/classTableInheritance.html>`_
 is an inheritance mapping strategy where each class in a hierarchy
 is mapped to several tables: its own table and the tables of all
 parent classes. The table of a child class is linked to the table
