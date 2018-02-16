@@ -55,6 +55,10 @@ class DefaultEntityHydrator implements EntityHydrator
         $data = $this->uow->getOriginalEntityData($entity);
         $data = array_merge($data, $persister->getIdentifier($entity)); // why update has no identifier values ?
 
+        if ($metadata->isVersioned()) {
+            $data[$metadata->versionProperty->getName()] = $metadata->versionProperty->getValue($entity);
+        }
+
         foreach ($metadata->getDeclaredPropertiesIterator() as $name => $association) {
             if (! isset($data[$name]) || $association instanceof FieldMetadata) {
                 continue;
