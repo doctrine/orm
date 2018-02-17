@@ -3,6 +3,9 @@ declare(strict_types=1);
 
 namespace Doctrine\Tests\ORM\Functional\Ticket;
 
+use function sleep;
+use function usleep;
+
 final class GH7067Test extends \Doctrine\Tests\OrmFunctionalTestCase
 {
     public function setUp() : void
@@ -30,7 +33,7 @@ final class GH7067Test extends \Doctrine\Tests\OrmFunctionalTestCase
 
         self::assertNotNull($notCached->version, 'Version already cached by persister above, it must be not null');
 
-        $notCached->lastUpdate = new \DateTime();
+        $notCached->lastUpdate = new \DateTime('+1 seconds');
 
         $this->_em->flush();
         $this->_em->clear();
