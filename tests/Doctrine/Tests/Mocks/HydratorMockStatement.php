@@ -37,7 +37,7 @@ class HydratorMockStatement implements \IteratorAggregate, Statement
      * @param array|null $ctorArgs
      * @return array
      */
-    public function fetchAll($fetchMode = null, $fetchArgument = null, $ctorArgs = null)
+    public function fetchAll($fetchMode = null, ...$args)
     {
         return $this->resultSet;
     }
@@ -58,7 +58,7 @@ class HydratorMockStatement implements \IteratorAggregate, Statement
     /**
      * {@inheritdoc}
      */
-    public function fetch($fetchStyle = null, $cursorOrientation = \PDO::FETCH_ORI_NEXT, $cursorOffset = 0)
+    public function fetch($fetchMode = null, ...$args)
     {
         $current = current($this->resultSet);
         next($this->resultSet);
@@ -133,7 +133,7 @@ class HydratorMockStatement implements \IteratorAggregate, Statement
     /**
      * {@inheritdoc}
      */
-    public function setFetchMode($fetchStyle, $arg2 = null, $arg3 = null)
+    public function setFetchMode($fetchMode, ...$args)
     {
     }
 }
