@@ -3,9 +3,6 @@ declare(strict_types=1);
 
 namespace Doctrine\Tests\ORM\Functional\Ticket;
 
-use function sleep;
-use function usleep;
-
 final class GH7067Test extends \Doctrine\Tests\OrmFunctionalTestCase
 {
     public function setUp() : void
