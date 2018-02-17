@@ -23,6 +23,7 @@ use Doctrine\Common\EventManager;
 use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\DriverManager;
 use Doctrine\DBAL\LockMode;
+use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\Query\ResultSetMapping;
 use Doctrine\ORM\Proxy\ProxyFactory;
 use Doctrine\ORM\Query\FilterCollection;
@@ -380,6 +381,10 @@ use Throwable;
     {
         $class = $this->metadataFactory->getMetadataFor(ltrim($entityName, '\\'));
 
+        if ($lockMode !== null) {
+            $this->checkLockRequirements($lockMode, $class);
+        }
+
         if ( ! is_array($id)) {
             if ($class->isIdentifierComposite) {
                 throw ORMInvalidArgumentException::invalidCompositeIdentifier();
@@ -441,10 +446,6 @@ use Throwable;
 
         switch (true) {
             case LockMode::OPTIMISTIC === $lockMode:
-                if ( ! $class->isVersioned) {
-                    throw OptimisticLockException::notVersioned($class->name);
-                }
-
                 $entity = $persister->load($sortedId);
 
                 $unitOfWork->lock($entity, $lockMode, $lockVersion);
@@ -453,10 +454,6 @@ use Throwable;
 
             case LockMode::PESSIMISTIC_READ === $lockMode:
             case LockMode::PESSIMISTIC_WRITE === $lockMode:
-                if ( ! $this->getConnection()->isTransactionActive()) {
-                    throw TransactionRequiredException::transactionRequired();
-                }
-
                 return $persister->load($sortedId, null, null, [], $lockMode);
 
             default:
@@ -914,5 +911,27 @@ use Throwable;
     public function hasFilters()
     {
         return null !== $this->filterCollection;
+    }
+
+    /**
+     * @param int $lockMode
+     * @param ClassMetadata $class
+     * @throws OptimisticLockException
+     * @throws TransactionRequiredException
+     */
+    private function checkLockRequirements(int $lockMode, ClassMetadata $class): void
+    {
+        switch ($lockMode) {
+            case LockMode::OPTIMISTIC:
+                if (!$class->isVersioned) {
+                    throw OptimisticLockException::notVersioned($class->name);
+                }
+            // Intentional fallthrough
+            case LockMode::PESSIMISTIC_READ:
+            case LockMode::PESSIMISTIC_WRITE:
+                if (!$this->getConnection()->isTransactionActive()) {
+                    throw TransactionRequiredException::transactionRequired();
+                }
+        }
     }
 }
