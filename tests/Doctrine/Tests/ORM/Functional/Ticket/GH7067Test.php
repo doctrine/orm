@@ -32,7 +32,7 @@ final class GH7067Test extends \Doctrine\Tests\OrmFunctionalTestCase
 
         self::assertNotNull($notCached->version, 'Version already cached by persister above, it must be not null');
 
-        $notCached->lastUpdate = new \DateTime();
+        $notCached->lastUpdate = new \DateTime('+1 second');
 
         $this->em->flush();
         $this->em->clear();
