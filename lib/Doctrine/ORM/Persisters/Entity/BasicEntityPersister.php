@@ -37,7 +37,6 @@ use Doctrine\ORM\Persisters\SqlValueVisitor;
 use Doctrine\ORM\Persisters\UnrecognizedField;
 use Doctrine\ORM\Query;
 use Doctrine\ORM\Query\QueryException;
-use Doctrine\ORM\Repository\InvalidFindByInverseAssociation;
 use Doctrine\ORM\Repository\InvalidFindByCall;
 use Doctrine\ORM\UnitOfWork;
 use Doctrine\ORM\Utility\PersisterHelper;
