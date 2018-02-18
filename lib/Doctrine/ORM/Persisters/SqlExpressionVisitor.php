@@ -11,6 +11,7 @@ use Doctrine\Common\Collections\Expr\Value;
 use Doctrine\ORM\Mapping\AssociationMetadata;
 use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\Persisters\Entity\BasicEntityPersister;
+use Doctrine\ORM\Persisters\MatchingAssociationFieldRequiresObject;
 use function implode;
 use function in_array;
 use function is_object;
@@ -47,7 +48,10 @@ class SqlExpressionVisitor extends ExpressionVisitor
             $value !== null &&
             ! is_object($value) &&
             ! in_array($comparison->getOperator(), [Comparison::IN, Comparison::NIN], true)) {
-            throw PersisterException::matchingAssocationFieldRequiresObject($this->classMetadata->getClassName(), $field);
+            throw MatchingAssociationFieldRequiresObject::fromClassAndAssociation(
+                $this->classMetadata->getClassName(),
+                $field
+            );
         }
 
         return $this->persister->getSelectConditionStatementSQL($field, $value, null, $comparison->getOperator());

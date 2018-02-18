@@ -4,18 +4,12 @@ declare(strict_types=1);
 
 namespace Doctrine\ORM\Persisters;
 
-use Doctrine\ORM\ORMException;
+use Doctrine\ORM\PersisterException;
 use function sprintf;
 
-class PersisterException extends \Exception implements ORMException
+final class MatchingAssociationFieldRequiresObject extends \Exception implements PersisterException
 {
-    /**
-     * @param string $class
-     * @param string $associationName
-     *
-     * @return PersisterException
-     */
-    public static function matchingAssocationFieldRequiresObject($class, $associationName)
+    public static function fromClassAndAssociation(string $class, string $associationName) : self
     {
         return new self(sprintf(
             'Cannot match on %s::%s with a non-object value. Matching objects by id is ' .
