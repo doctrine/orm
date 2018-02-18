@@ -25,6 +25,7 @@ use Doctrine\ORM\Mapping\OneToManyAssociationMetadata;
 use Doctrine\ORM\Mapping\ToOneAssociationMetadata;
 use Doctrine\ORM\Tools\Event\GenerateSchemaEventArgs;
 use Doctrine\ORM\Tools\Event\GenerateSchemaTableEventArgs;
+use Doctrine\ORM\Tools\MissingColumnException;
 use Doctrine\ORM\Tools\NotSupported;
 use function array_diff;
 use function array_key_exists;
@@ -677,12 +678,11 @@ class SchemaTool
             );
 
             if (! $definingClass) {
-                throw new ORMException(sprintf(
-                    'Column name "%s" referenced for relation from %s towards %s does not exist.',
+                throw new MissingColumnException(
                     $joinColumn->getReferencedColumnName(),
                     $mapping->getSourceEntity(),
                     $mapping->getTargetEntity()
-                ));
+                );
             }
 
             $quotedColumnName           = $this->platform->quoteIdentifier($joinColumn->getColumnName());
