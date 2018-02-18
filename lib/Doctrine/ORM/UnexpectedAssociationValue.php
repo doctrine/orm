@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Doctrine\ORM;
 
+use Doctrine\ORM\Cache\CacheException;
+
 final class UnexpectedAssociationValue extends \Exception implements CacheException
 {
     public static function create(

@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Doctrine\ORM\Mapping;
 
+use Doctrine\ORM\ORMException;
+
 final class UnknownGeneratorType extends \Exception implements ORMException
 {
     public static function create(string $generatorType) : self

@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Doctrine\ORM\Mapping;
 
+use Doctrine\ORM\ORMException;
+
 final class InvalidCustomGenerator extends \Exception implements ORMException
 {
     public static function onClassNotConfigured() : self
