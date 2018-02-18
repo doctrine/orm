@@ -315,7 +315,7 @@ class Parser
             }
 
             // If parameter is T_IDENTIFIER, then matches T_IDENTIFIER (100) and keywords (200+)
-            if ($token === Lexer::T_IDENTIFIER && $lookaheadType < Lexer::T_IDENTIFIER) {
+            if ($token === Lexer::T_IDENTIFIER && $lookaheadType >= Lexer::T_IDENTIFIER) {
                 $this->syntaxError($this->lexer->getLiteral($token));
             }
         }
