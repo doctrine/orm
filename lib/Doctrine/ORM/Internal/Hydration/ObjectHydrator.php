@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Doctrine\ORM\Internal\Hydration;
 
 use Doctrine\Common\Collections\Collection;
+use Doctrine\DBAL\FetchMode;
 use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\Mapping\ManyToManyAssociationMetadata;
 use Doctrine\ORM\Mapping\ToManyAssociationMetadata;
@@ -12,7 +13,6 @@ use Doctrine\ORM\Mapping\ToOneAssociationMetadata;
 use Doctrine\ORM\PersistentCollection;
 use Doctrine\ORM\Query;
 use Doctrine\ORM\UnitOfWork;
-use PDO;
 use ProxyManager\Proxy\GhostObjectInterface;
 use function array_fill_keys;
 use function array_keys;
@@ -146,7 +146,7 @@ class ObjectHydrator extends AbstractHydrator
     {
         $result = [];
 
-        while ($row = $this->stmt->fetch(PDO::FETCH_ASSOC)) {
+        while ($row = $this->stmt->fetch(FetchMode::ASSOCIATIVE)) {
             $this->hydrateRowData($row, $result);
         }
 

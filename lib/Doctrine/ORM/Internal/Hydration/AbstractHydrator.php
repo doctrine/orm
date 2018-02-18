@@ -5,13 +5,13 @@ declare(strict_types=1);
 namespace Doctrine\ORM\Internal\Hydration;
 
 use Doctrine\DBAL\Driver\Statement;
+use Doctrine\DBAL\FetchMode;
 use Doctrine\DBAL\Platforms\AbstractPlatform;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Events;
 use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\Query\ResultSetMapping;
 use Doctrine\ORM\UnitOfWork;
-use PDO;
 use function array_merge;
 
 /**
@@ -146,7 +146,7 @@ abstract class AbstractHydrator
      */
     public function hydrateRow()
     {
-        $row = $this->stmt->fetch(PDO::FETCH_ASSOC);
+        $row = $this->stmt->fetch(FetchMode::ASSOCIATIVE);
 
         if (! $row) {
             $this->cleanup();

@@ -1228,13 +1228,14 @@ creating a class which extends ``AbstractHydrator``:
     <?php
     namespace MyProject\Hydrators;
 
+    use Doctrine\DBAL\FetchMode;
     use Doctrine\ORM\Internal\Hydration\AbstractHydrator;
 
     class CustomHydrator extends AbstractHydrator
     {
         protected function _hydrateAll()
         {
-            return $this->stmt->fetchAll(PDO::FETCH_ASSOC);
+            return $this->stmt->fetchAll(FetchMode::Associative);
         }
     }
 
