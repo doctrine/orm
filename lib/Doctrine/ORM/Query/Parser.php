@@ -22,6 +22,7 @@ namespace Doctrine\ORM\Query;
 use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\Query;
 use Doctrine\ORM\Query\AST\Functions;
+use function strpos;
 
 /**
  * An LL(*) recursive-descent parser for the context-free grammar of the Doctrine Query Language.
@@ -1280,7 +1281,9 @@ class Parser
             $this->match(Lexer::T_AS);
         }
 
-        $aliasIdentificationVariable = $this->AliasIdentificationVariable();
+        $aliasIdentificationVariable = $this->lexer->isNextToken(Lexer::T_IDENTIFIER)
+            ? $this->AliasIdentificationVariable()
+            : 'alias_should_have_been_set';
 
         $deleteClause->aliasIdentificationVariable = $aliasIdentificationVariable;
         $class = $this->em->getClassMetadata($deleteClause->abstractSchemaName);
