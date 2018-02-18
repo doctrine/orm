@@ -12,7 +12,9 @@ use Doctrine\ORM\Events;
 use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\Query\ResultSetMapping;
 use Doctrine\ORM\UnitOfWork;
+use function array_map;
 use function array_merge;
+use function in_array;
 
 /**
  * Base class for all hydrators. A hydrator is a class that provides some form
@@ -272,9 +274,9 @@ abstract class AbstractHydrator
 
                     // If there are field name collisions in the child class, then we need
                     // to only hydrate if we are looking at the correct discriminator value
-                    if (isset($cacheKeyInfo['discriminatorColumn'], $data[$cacheKeyInfo['discriminatorColumn']]) &&
+                    if (isset($cacheKeyInfo['discriminatorColumn'], $data[$cacheKeyInfo['discriminatorColumn']])
                         // Note: loose comparison required. See https://github.com/doctrine/doctrine2/pull/6304#issuecomment-323294442
-                        $data[$cacheKeyInfo['discriminatorColumn']] != $cacheKeyInfo['discriminatorValue'] // TODO get rid of loose comparison
+                        && ! in_array($data[$cacheKeyInfo['discriminatorColumn']], $cacheKeyInfo['discriminatorValues'])
                     ) {
                         break;
                     }
@@ -373,11 +375,21 @@ abstract class AbstractHydrator
                 // the current discriminator value must be saved in order to disambiguate fields hydration,
                 // should there be field name collisions
                 if ($classMetadata->getParent() && isset($this->rsm->discriminatorColumns[$ownerMap])) {
+                    $discriminatorValues = array_map(
+                        function (string $subClass) {
+                            return $this->getClassMetadata($subClass)->discriminatorValue;
+                        },
+                        $classMetadata->getSubClasses()
+                    );
+
+                    $discriminatorValues[] = $classMetadata->discriminatorValue;
+
                     return $this->cache[$key] = array_merge(
                         $columnInfo,
                         [
                             'discriminatorColumn' => $this->rsm->discriminatorColumns[$ownerMap],
                             'discriminatorValue'  => $classMetadata->discriminatorValue,
+                            'discriminatorValues' => $discriminatorValues,
                         ]
                     );
                 }
