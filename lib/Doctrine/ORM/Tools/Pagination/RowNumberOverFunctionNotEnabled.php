@@ -10,6 +10,6 @@ final class RowNumberOverFunctionNotEnabled extends \Exception implements ORMExc
 {
     public static function create()
     {
-        throw new ORMException('The RowNumberOverFunction is not intended for, nor is it enabled for use in DQL.');
+        return new self('The RowNumberOverFunction is not intended for, nor is it enabled for use in DQL.');
     }
 }
