@@ -17,6 +17,7 @@ use function array_search;
 use function call_user_func;
 use function class_exists;
 use function count;
+use function explode;
 use function implode;
 use function in_array;
 use function interface_exists;
