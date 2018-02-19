@@ -4,6 +4,7 @@ namespace Doctrine\Tests\ORM\Functional\Ticket;
 
 use Doctrine\ORM\AbstractQuery;
 use Doctrine\Tests\OrmFunctionalTestCase;
+use Doctrine\ORM\Annotation as ORM;
 
 /**
  * @group 6937
@@ -27,11 +28,11 @@ final class GH6937Test extends OrmFunctionalTestCase
         $manager->phoneNumber = '555-5555';
         $manager->department  = 'Accounting';
 
-        $this->_em->persist($manager);
-        $this->_em->flush();
-        $this->_em->clear();
+        $this->em->persist($manager);
+        $this->em->flush();
+        $this->em->clear();
 
-        $persistedManager = $this->_em->find(GH6937Person::class, $manager->id);
+        $persistedManager = $this->em->find(GH6937Person::class, $manager->id);
 
         self::assertSame('Kevin', $persistedManager->name);
         self::assertSame('555-5555', $persistedManager->phoneNumber);
@@ -45,16 +46,19 @@ final class GH6937Test extends OrmFunctionalTestCase
         $manager->phoneNumber = '555-5555';
         $manager->department  = 'Accounting';
 
-        $this->_em->persist($manager);
-        $this->_em->flush();
-        $this->_em->clear();
+        $this->em->persist($manager);
+        $this->em->flush();
+        $this->em->clear();
 
-        $persistedManager = $this->_em->getRepository(GH6937Person::class)
-                                      ->createQueryBuilder('e')
-                                      ->where('e.id = :id')
-                                      ->setParameter('id', $manager->id)
-                                      ->getQuery()
-                                      ->getOneOrNullResult(AbstractQuery::HYDRATE_SIMPLEOBJECT);
+        $persistedManager = $this
+            ->em
+            ->createQueryBuilder()
+            ->select('e')
+            ->from(GH6937Person::class, 'e')
+            ->where('e.id = :id')
+            ->setParameter('id', $manager->id)
+            ->getQuery()
+            ->getOneOrNullResult(AbstractQuery::HYDRATE_SIMPLEOBJECT);
 
         self::assertSame('Kevin', $persistedManager->name);
         self::assertSame('555-5555', $persistedManager->phoneNumber);
@@ -68,16 +72,19 @@ final class GH6937Test extends OrmFunctionalTestCase
         $manager->phoneNumber = '555-5555';
         $manager->department  = 'Accounting';
 
-        $this->_em->persist($manager);
-        $this->_em->flush();
-        $this->_em->clear();
+        $this->em->persist($manager);
+        $this->em->flush();
+        $this->em->clear();
 
-        $persistedManager = $this->_em->getRepository(GH6937Person::class)
-                                      ->createQueryBuilder('e')
-                                      ->where('e.id = :id')
-                                      ->setParameter('id', $manager->id)
-                                      ->getQuery()
-                                      ->getOneOrNullResult();
+        $persistedManager = $this
+            ->em
+            ->createQueryBuilder()
+            ->select('e')
+            ->from(GH6937Person::class, 'e')
+            ->where('e.id = :id')
+            ->setParameter('id', $manager->id)
+            ->getQuery()
+            ->getOneOrNullResult();
 
         self::assertSame('Kevin', $persistedManager->name);
         self::assertSame('555-5555', $persistedManager->phoneNumber);
@@ -86,34 +93,34 @@ final class GH6937Test extends OrmFunctionalTestCase
 }
 
 /**
- * @Entity
- * @InheritanceType("JOINED")
- * @DiscriminatorColumn(name="discr", type="string")
- * @DiscriminatorMap({"employee"=GH6937Employee::class, "manager"=GH6937Manager::class})
+ * @ORM\Entity
+ * @ORM\InheritanceType("JOINED")
+ * @ORM\DiscriminatorColumn(name="discr", type="string")
+ * @ORM\DiscriminatorMap({"employee"=GH6937Employee::class, "manager"=GH6937Manager::class})
  */
 abstract class GH6937Person
 {
-    /** @Id @Column(type="integer") @GeneratedValue */
+    /** @ORM\Id @ORM\Column(type="integer") @ORM\GeneratedValue */
     public $id;
 
-    /** @Column(type="string") */
+    /** @ORM\Column(type="string") */
     public $name;
 }
 
 /**
- * @Entity
+ * @ORM\Entity
  */
 abstract class GH6937Employee extends GH6937Person
 {
-    /** @Column(type="string") */
+    /** @ORM\Column(type="string") */
     public $phoneNumber;
 }
 
 /**
- * @Entity
+ * @ORM\Entity
  */
 class GH6937Manager extends GH6937Employee
 {
-    /** @Column(type="string") */
+    /** @ORM\Column(type="string") */
     public $department;
 }
