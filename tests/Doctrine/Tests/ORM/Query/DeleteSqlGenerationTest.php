@@ -48,7 +48,7 @@ class DeleteSqlGenerationTest extends OrmTestCase
     {
         $this->assertSqlGeneration(
             'DELETE FROM Doctrine\Tests\Models\CMS\CmsUser',
-            'DELETE FROM cms_users'
+            'DELETE FROM "cms_users"'
         );
     }
 
