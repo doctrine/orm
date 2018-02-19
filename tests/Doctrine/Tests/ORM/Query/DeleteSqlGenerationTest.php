@@ -36,6 +36,9 @@ class DeleteSqlGenerationTest extends OrmTestCase
         }
     }
 
+    /**
+     * @group 6939
+     */
     public function testSupportsDeleteWithoutWhereAndAlias() : void
     {
         $this->assertSqlGeneration(
