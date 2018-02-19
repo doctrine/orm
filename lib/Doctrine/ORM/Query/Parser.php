@@ -293,21 +293,24 @@ class Parser
         $lookaheadType = $this->lexer->lookahead['type'];
 
         // Short-circuit on first condition, usually types match
-        if ($lookaheadType !== $token) {
-            // If parameter is not identifier (1-99) must be exact match
-            if ($token < Lexer::T_IDENTIFIER) {
-                $this->syntaxError($this->lexer->getLiteral($token));
-            }
+        if ($lookaheadType === $token) {
+            $this->lexer->moveNext();
+            return;
+        }
 
-            // If parameter is keyword (200+) must be exact match
-            if ($token > Lexer::T_IDENTIFIER) {
-                $this->syntaxError($this->lexer->getLiteral($token));
-            }
+        // If parameter is not identifier (1-99) must be exact match
+        if ($token < Lexer::T_IDENTIFIER) {
+            $this->syntaxError($this->lexer->getLiteral($token));
+        }
 
-            // If parameter is T_IDENTIFIER, then matches T_IDENTIFIER (100) and keywords (200+)
-            if ($token === Lexer::T_IDENTIFIER && $lookaheadType < Lexer::T_IDENTIFIER) {
-                $this->syntaxError($this->lexer->getLiteral($token));
-            }
+        // If parameter is keyword (200+) must be exact match
+        if ($token > Lexer::T_IDENTIFIER) {
+            $this->syntaxError($this->lexer->getLiteral($token));
+        }
+
+        // If parameter is T_IDENTIFIER, then matches T_IDENTIFIER (100) and keywords (200+)
+        if ($token === Lexer::T_IDENTIFIER && $lookaheadType < Lexer::T_IDENTIFIER) {
+            $this->syntaxError($this->lexer->getLiteral($token));
         }
 
         $this->lexer->moveNext();
@@ -938,9 +941,17 @@ class Parser
             return $this->lexer->token['value'];
         }
 
-        $this->match(Lexer::T_IDENTIFIER);
+        if ($this->lexer->isNextToken(Lexer::T_IDENTIFIER)) {
+            $this->match(Lexer::T_IDENTIFIER);
 
-        return $this->lexer->token['value'];
+            return $this->lexer->token['value'];
+        }
+
+        $this->match(Lexer::T_ALIASED_NAME);
+
+        [$namespaceAlias, $simpleClassName] = explode(':', $this->lexer->token['value']);
+
+        return $this->em->getConfiguration()->getEntityNamespace($namespaceAlias) . '\\' . $simpleClassName;
     }
 
     /**
@@ -1263,7 +1274,9 @@ class Parser
             $this->match(Lexer::T_AS);
         }
 
-        $aliasIdentificationVariable = $this->AliasIdentificationVariable();
+        $aliasIdentificationVariable = $this->lexer->isNextToken(Lexer::T_IDENTIFIER)
+            ? $this->AliasIdentificationVariable()
+            : 'alias_should_have_been_set';
 
         $deleteClause->aliasIdentificationVariable = $aliasIdentificationVariable;
         $class                                     = $this->em->getClassMetadata($deleteClause->abstractSchemaName);
