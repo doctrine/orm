@@ -396,21 +396,12 @@ abstract class AbstractHydrator
                 // the current discriminator value must be saved in order to disambiguate fields hydration,
                 // should there be field name collisions
                 if ($classMetadata->parentClasses && isset($this->_rsm->discriminatorColumns[$ownerMap])) {
-                    $discriminatorValues = array_map(
-                        function (string $subClass) : string {
-                            return (string) $this->getClassMetadata($subClass)->discriminatorValue;
-                        },
-                        $classMetadata->subClasses
-                    );
-
-                    $discriminatorValues[] = (string) $classMetadata->discriminatorValue;
-
                     return $this->_cache[$key] = \array_merge(
                         $columnInfo,
                         [
                             'discriminatorColumn' => $this->_rsm->discriminatorColumns[$ownerMap],
                             'discriminatorValue'  => $classMetadata->discriminatorValue,
-                            'discriminatorValues' => $discriminatorValues,
+                            'discriminatorValues' => $this->getDiscriminatorValues($classMetadata),
                         ]
                     );
                 }
@@ -461,6 +452,23 @@ abstract class AbstractHydrator
         // this column is a left over, maybe from a LIMIT query hack for example in Oracle or DB2
         // maybe from an additional column that has not been defined in a NativeQuery ResultSetMapping.
         return null;
+    }
+
+    /**
+     * @return string[]
+     */
+    private function getDiscriminatorValues(ClassMetadata $classMetadata) : array
+    {
+        $values = array_map(
+            function (string $subClass) : string {
+                return (string) $this->getClassMetadata($subClass)->discriminatorValue;
+            },
+            $classMetadata->subClasses
+        );
+
+        $values[] = (string) $classMetadata->discriminatorValue;
+
+        return $values;
     }
 
     /**
