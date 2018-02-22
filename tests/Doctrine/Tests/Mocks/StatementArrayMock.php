@@ -4,6 +4,11 @@ declare(strict_types=1);
 
 namespace Doctrine\Tests\Mocks;
 
+use function count;
+use function current;
+use function next;
+use function reset;
+
 /**
  * Simple statement mock that returns result based on array.
  * Doesn't support fetch modes
@@ -35,12 +40,12 @@ class StatementArrayMock extends StatementMock
         return 0;
     }
 
-    public function fetchAll($fetchMode = null, ...$args)
+    public function fetchAll($fetchMode = null, $fetchArgument = null, $ctorArgs = null)
     {
         return $this->result;
     }
 
-    public function fetch($fetchMode = null, ...$args)
+    public function fetch($fetchMode = null, $cursorOrientation = \PDO::FETCH_ORI_NEXT, $cursorOffset = 0)
     {
         $current = current($this->result);
         next($this->result);
