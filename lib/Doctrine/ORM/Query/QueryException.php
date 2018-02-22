@@ -96,24 +96,17 @@ class QueryException extends ORMException
     }
     
     /**
-     * @param int $expected
-     * @param int $received
+     * @param array $expected
+     * @param array $received
      *
      * @return QueryException
      */
     public static function missingParameter($expected, $received)
     {
         foreach (array_keys($expected) as $token) {
-            $tokenMissing = TRUE;
-            foreach ($received as $parameter) {
-                if ($parameter->getName() === $token) {
-                    $tokenMissing = FALSE;
-                }
-            }
-            
-            if ($tokenMissing) {
+            if (!in_array($token, $received)) {
                 return new self('Missing parameter: no parameter set for token ' . $token . '.');
-            } 
+            }
         }
         
         return new self('Too few parameters: the query defines ' . count($expected)

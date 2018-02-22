@@ -307,7 +307,10 @@ final class Query extends AbstractQuery
         $mappingCount  = count($paramMappings);
 
         if ($paramCount < $mappingCount) {
-            throw QueryException::missingParameter($paramMappings, $this->parameters);
+            $paramNames = array_map(function($parameter) {
+                return $parameter->getName();
+            }, $this->parameters->toArray());
+            throw QueryException::missingParameter($paramMappings, $paramNames);
         }
 
         // evict all cache for the entity region
