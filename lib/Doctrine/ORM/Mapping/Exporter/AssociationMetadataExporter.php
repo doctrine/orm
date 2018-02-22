@@ -38,6 +38,7 @@ abstract class AssociationMetadataExporter implements Exporter
 
         if (! empty($value->getMappedBy())) {
             $lines[] = $objectReference . '->setMappedBy("' . $value->getMappedBy() . '");';
+            $lines[] = $objectReference . '->setOwningSide(false);';
         }
 
         if (! empty($value->getInversedBy())) {
@@ -48,7 +49,6 @@ abstract class AssociationMetadataExporter implements Exporter
         $lines[] = $objectReference . '->setTargetEntity("' . $value->getTargetEntity() . '");';
         $lines[] = $objectReference . '->setFetchMode(Mapping\FetchMode::' . strtoupper($value->getFetchMode()) . '");';
         $lines[] = $objectReference . '->setCascade(' . $variableExporter->export($cascade, $indentationLevel + 1) . ');';
-        $lines[] = $objectReference . '->setOwningSide(' . $variableExporter->export($value->isOwningSide(), $indentationLevel + 1) . ');';
         $lines[] = $objectReference . '->setOrphanRemoval(' . $variableExporter->export($value->isOrphanRemoval(), $indentationLevel + 1) . ');';
         $lines[] = $objectReference . '->setPrimaryKey(' . $variableExporter->export($value->isPrimaryKey(), $indentationLevel + 1) . ');';
 

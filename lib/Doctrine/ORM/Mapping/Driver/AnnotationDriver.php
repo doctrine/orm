@@ -8,6 +8,7 @@ use Doctrine\Common\Annotations\AnnotationReader;
 use Doctrine\Common\Annotations\Reader;
 use Doctrine\DBAL\Types\Type;
 use Doctrine\ORM\Annotation;
+use Doctrine\ORM\Cache\CacheException;
 use Doctrine\ORM\Events;
 use Doctrine\ORM\Mapping;
 use function array_diff;
@@ -260,6 +261,11 @@ class AnnotationDriver implements MappingDriver
 
     /**
      * {@inheritDoc}
+     *
+     * @throws CacheException
+     * @throws Mapping\MappingException
+     * @throws \ReflectionException
+     * @throws \RuntimeException
      */
     public function loadMetadataForClass(
         string $className,
@@ -303,6 +309,15 @@ class AnnotationDriver implements MappingDriver
                 $reflectionProperty,
                 $classMetadata
             );
+
+            if ($classMetadata->isMappedSuperclass &&
+                $property instanceof Mapping\ToManyAssociationMetadata &&
+                ! $property->isOwningSide()) {
+                throw Mapping\MappingException::illegalToManyAssociationOnMappedSuperclass(
+                    $classMetadata->getClassName(),
+                    $property->getName()
+                );
+            }
 
             if (! $property) {
                 continue;
@@ -601,6 +616,7 @@ class AnnotationDriver implements MappingDriver
 
         if (! empty($oneToOneAnnot->mappedBy)) {
             $assocMetadata->setMappedBy($oneToOneAnnot->mappedBy);
+            $assocMetadata->setOwningSide(false);
         }
 
         if (! empty($oneToOneAnnot->inversedBy)) {
@@ -717,10 +733,8 @@ class AnnotationDriver implements MappingDriver
         $assocMetadata->setCascade($this->getCascade($className, $fieldName, $oneToManyAnnot->cascade));
         $assocMetadata->setOrphanRemoval($oneToManyAnnot->orphanRemoval);
         $assocMetadata->setFetchMode($this->getFetchMode($className, $oneToManyAnnot->fetch));
-
-        if (! empty($oneToManyAnnot->mappedBy)) {
-            $assocMetadata->setMappedBy($oneToManyAnnot->mappedBy);
-        }
+        $assocMetadata->setOwningSide(false);
+        $assocMetadata->setMappedBy($oneToManyAnnot->mappedBy);
 
         if (! empty($oneToManyAnnot->indexBy)) {
             $assocMetadata->setIndexedBy($oneToManyAnnot->indexBy);
@@ -766,6 +780,7 @@ class AnnotationDriver implements MappingDriver
 
         if (! empty($manyToManyAnnot->mappedBy)) {
             $assocMetadata->setMappedBy($manyToManyAnnot->mappedBy);
+            $assocMetadata->setOwningSide(false);
         }
 
         if (! empty($manyToManyAnnot->inversedBy)) {

@@ -355,6 +355,7 @@ class XmlDriver extends FileDriver
 
                 if (isset($oneToOneElement['mapped-by'])) {
                     $association->setMappedBy((string) $oneToOneElement['mapped-by']);
+                    $association->setOwningSide(false);
                 } else {
                     if (isset($oneToOneElement['inversed-by'])) {
                         $association->setInversedBy((string) $oneToOneElement['inversed-by']);
@@ -403,6 +404,7 @@ class XmlDriver extends FileDriver
                 $targetEntity = (string) $oneToManyElement['target-entity'];
 
                 $association->setTargetEntity($targetEntity);
+                $association->setOwningSide(false);
                 $association->setMappedBy((string) $oneToManyElement['mapped-by']);
 
                 if (isset($associationIds[$association->getName()])) {
@@ -531,6 +533,7 @@ class XmlDriver extends FileDriver
 
                 if (isset($manyToManyElement['mapped-by'])) {
                     $association->setMappedBy((string) $manyToManyElement['mapped-by']);
+                    $association->setOwningSide(false);
                 } elseif (isset($manyToManyElement->{'join-table'})) {
                     if (isset($manyToManyElement['inversed-by'])) {
                         $association->setInversedBy((string) $manyToManyElement['inversed-by']);
