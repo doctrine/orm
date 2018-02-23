@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<doctrine-mapping xmlns="http://doctrine-project.org/schemas/orm/doctrine-mapping"
+                  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                  xsi:schemaLocation="http://doctrine-project.org/schemas/orm/doctrine-mapping
+                          http://www.doctrine-project.org/schemas/orm/doctrine-mapping.xsd">
+
+    <entity name="Doctrine\Tests\Models\Quote\Address" table="quote-address" inheritance-type="SINGLE_TABLE">
+        <discriminator-column name="type" type="string" />
+
+        <discriminator-map>
+            <discriminator-mapping value="simple" class="Doctrine\Tests\Models\Quote\Address" />
+            <discriminator-mapping value="full" class="Doctrine\Tests\Models\Quote\FullAddress" />
+        </discriminator-map>
+
+        <id name="id" type="integer" column="address-id">
+            <generator />
+        </id>
+
+        <field name="zip" column="address-zip" />
+
+        <one-to-one field="user" target-entity="Doctrine\Tests\Models\Quote\User" inversed-by="address">
+            <join-column name="user-id" referenced-column-name="user-id" />
+        </one-to-one>
+    </entity>
+
+</doctrine-mapping>

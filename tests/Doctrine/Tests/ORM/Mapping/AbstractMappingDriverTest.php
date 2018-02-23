@@ -26,6 +26,7 @@ use Doctrine\Tests\Models\Company\CompanyFlexContract;
 use Doctrine\Tests\Models\Company\CompanyFlexUltraContract;
 use Doctrine\Tests\Models\Company\CompanyFlexUltraContractListener;
 use Doctrine\Tests\Models\Company\CompanyPerson;
+use Doctrine\Tests\Models\Quote;
 use Doctrine\Tests\Models\DDC1476\DDC1476EntityWithDefaultFieldType;
 use Doctrine\Tests\Models\DDC2825\ExplicitSchemaAndTable;
 use Doctrine\Tests\Models\DDC2825\SchemaAndTableInTableName;
@@ -357,6 +358,62 @@ abstract class AbstractMappingDriverTest extends OrmTestCase
         self::assertFalse($nameOptions['fixed']);
 
         return $class;
+    }
+
+    public function testOwningSideResolution() : void
+    {
+        // One to One owning
+        $fullAddressClass = $this->createClassMetadata(Quote\FullAddress::class);
+        $cityAssociation  = $fullAddressClass->getProperty('city');
+
+        self::assertInstanceOf(Mapping\OneToOneAssociationMetadata::class, $cityAssociation);
+        self::assertTrue($cityAssociation->isOwningSide());
+
+        // One to One owning / One To One inverse
+        $addressClass    = $this->createClassMetadata(Quote\Address::class);
+        $userAssociation = $addressClass->getProperty('user');
+
+        self::assertInstanceOf(Mapping\OneToOneAssociationMetadata::class, $userAssociation);
+        self::assertTrue($userAssociation->isOwningSide());
+
+        $userClass          = $this->createClassMetadata(Quote\User::class);
+        $addressAssociation = $userClass->getProperty('address');
+
+        self::assertInstanceOf(Mapping\OneToOneAssociationMetadata::class, $addressAssociation);
+        self::assertFalse($addressAssociation->isOwningSide());
+
+        // Many to One owning
+        $groupClass       = $this->createClassMetadata(Quote\Group::class);
+        $groupAssociation = $groupClass->getProperty('parent');
+
+        self::assertInstanceOf(Mapping\ManyToOneAssociationMetadata::class, $groupAssociation);
+        self::assertTrue($groupAssociation->isOwningSide());
+
+        // Many To One owning / One To Many inverse
+        $phoneClass      = $this->createClassMetadata(Quote\Phone::class);
+        $userAssociation = $phoneClass->getProperty('user');
+
+        self::assertInstanceOf(Mapping\ManyToOneAssociationMetadata::class, $userAssociation);
+        self::assertTrue($userAssociation->isOwningSide());
+
+        $userClass        = $this->createClassMetadata(Quote\User::class);
+        $phoneAssociation = $userClass->getProperty('phones');
+
+        self::assertInstanceOf(Mapping\OneToManyAssociationMetadata::class, $phoneAssociation);
+        self::assertFalse($phoneAssociation->isOwningSide());
+
+        // Many to Many owning / Many to Many inverse
+        $userClass        = $this->createClassMetadata(Quote\User::class);
+        $groupAssociation = $userClass->getProperty('groups');
+
+        self::assertInstanceOf(Mapping\ManyToManyAssociationMetadata::class, $groupAssociation);
+        self::assertTrue($groupAssociation->isOwningSide());
+
+        $groupClass      = $this->createClassMetadata(Quote\Group::class);
+        $userAssociation = $groupClass->getProperty('users');
+
+        self::assertInstanceOf(Mapping\ManyToManyAssociationMetadata::class, $userAssociation);
+        self::assertFalse($userAssociation->isOwningSide());
     }
 
     /**

@@ -120,7 +120,9 @@ class ClassMetadataFactory extends AbstractClassMetadataFactory
         if ($parent) {
             $classMetadata->setParent($parent);
 
-            $this->addInheritedProperties($classMetadata, $parent);
+            foreach ($parent->getDeclaredPropertiesIterator() as $fieldName => $property) {
+                $classMetadata->addInheritedProperty($property);
+            }
 
             $classMetadata->setInheritanceType($parent->inheritanceType);
             $classMetadata->setIdentifier($parent->identifier);
@@ -348,18 +350,6 @@ class ClassMetadataFactory extends AbstractClassMetadataFactory
         $parts = explode('\\', $className);
 
         return strtolower(end($parts));
-    }
-
-    /**
-     * Adds inherited fields to the subclass mapping.
-     *
-     * @throws MappingException
-     */
-    private function addInheritedProperties(ClassMetadata $subClass, ClassMetadata $parentClass) : void
-    {
-        foreach ($parentClass->getDeclaredPropertiesIterator() as $fieldName => $property) {
-            $subClass->addInheritedProperty($property);
-        }
     }
 
     /**

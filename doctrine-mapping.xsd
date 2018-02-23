@@ -169,7 +169,7 @@
 
   <xs:simpleType name="tablename" id="tablename">
     <xs:restriction base="xs:token">
-      <xs:pattern value="[a-zA-Z_u01-uff.]+" id="tablename.pattern">
+      <xs:pattern value="[a-zA-Z\-_u01-uff.]+" id="tablename.pattern">
       </xs:pattern>
     </xs:restriction>
   </xs:simpleType>
