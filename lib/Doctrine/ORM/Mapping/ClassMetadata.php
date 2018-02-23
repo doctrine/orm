@@ -654,7 +654,6 @@ class ClassMetadata extends ComponentMetadata implements TableOwner
         }
 
         $property->setSourceEntity($this->className);
-        $property->setOwningSide($property->getMappedBy() === null);
         $property->setTargetEntity($targetEntity);
 
         // Complete id mapping
@@ -712,10 +711,6 @@ class ClassMetadata extends ComponentMetadata implements TableOwner
     protected function validateAndCompleteToOneAssociationMetadata(ToOneAssociationMetadata $property)
     {
         $fieldName = $property->getName();
-
-        if ($property->getJoinColumns()) {
-            $property->setOwningSide(true);
-        }
 
         if ($property->isOwningSide()) {
             if (empty($property->getJoinColumns())) {
@@ -833,9 +828,6 @@ class ClassMetadata extends ComponentMetadata implements TableOwner
      */
     protected function validateAndCompleteOneToManyMapping(OneToManyAssociationMetadata $property)
     {
-        // OneToMany MUST be inverse side
-        $property->setOwningSide(false);
-
         // OneToMany MUST have mappedBy
         if (! $property->getMappedBy()) {
             throw MappingException::oneToManyRequiresMappedBy($property->getName());

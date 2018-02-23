@@ -772,6 +772,7 @@ class ClassMetadataTest extends OrmTestCase
         $association->setTargetEntity(DDC117Article::class);
         $association->setPrimaryKey(true);
         $association->setMappedBy('details');
+        $association->setOwningSide(false);
 
         $cm->addProperty($association);
     }

@@ -31,7 +31,6 @@ class User
     public $phones;
 
     /**
-     * @ORM\JoinColumn(name="address-id", referencedColumnName="address-id")
      * @ORM\OneToOne(
      *     targetEntity=Address::class,
      *     mappedBy="user",
