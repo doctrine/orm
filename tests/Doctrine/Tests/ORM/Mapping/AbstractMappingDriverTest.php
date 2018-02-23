@@ -360,7 +360,7 @@ abstract class AbstractMappingDriverTest extends OrmTestCase
         return $class;
     }
 
-    public function testOwningSideResolution() : void
+    public function testOneToOneUnidirectional() : void
     {
         // One to One owning
         $fullAddressClass = $this->createClassMetadata(Quote\FullAddress::class);
@@ -368,7 +368,10 @@ abstract class AbstractMappingDriverTest extends OrmTestCase
 
         self::assertInstanceOf(Mapping\OneToOneAssociationMetadata::class, $cityAssociation);
         self::assertTrue($cityAssociation->isOwningSide());
+    }
 
+    public function testOneToOneBidirectional() : void
+    {
         // One to One owning / One To One inverse
         $addressClass    = $this->createClassMetadata(Quote\Address::class);
         $userAssociation = $addressClass->getProperty('user');
@@ -381,14 +384,20 @@ abstract class AbstractMappingDriverTest extends OrmTestCase
 
         self::assertInstanceOf(Mapping\OneToOneAssociationMetadata::class, $addressAssociation);
         self::assertFalse($addressAssociation->isOwningSide());
+    }
 
+    public function testManyToOneUnidirectional() : void
+    {
         // Many to One owning
         $groupClass       = $this->createClassMetadata(Quote\Group::class);
         $groupAssociation = $groupClass->getProperty('parent');
 
         self::assertInstanceOf(Mapping\ManyToOneAssociationMetadata::class, $groupAssociation);
         self::assertTrue($groupAssociation->isOwningSide());
+    }
 
+    public function testManyToOneBidirectional() : void
+    {
         // Many To One owning / One To Many inverse
         $phoneClass      = $this->createClassMetadata(Quote\Phone::class);
         $userAssociation = $phoneClass->getProperty('user');
@@ -401,7 +410,10 @@ abstract class AbstractMappingDriverTest extends OrmTestCase
 
         self::assertInstanceOf(Mapping\OneToManyAssociationMetadata::class, $phoneAssociation);
         self::assertFalse($phoneAssociation->isOwningSide());
+    }
 
+    public function testManyToManyBidirectional() : void
+    {
         // Many to Many owning / Many to Many inverse
         $userClass        = $this->createClassMetadata(Quote\User::class);
         $groupAssociation = $userClass->getProperty('groups');
