@@ -251,7 +251,7 @@ All Annotations classes got moved from ``Doctrine\ORM\Mapping`` into a more
 pertinent namespace ``Doctrine\ORM\Annotation``. This change was done to add
 room for Metadata namespace refactoring.
 
-## Minor BC break: Mappings now stores ``DBAL\Type`` instances instead of strings
+## Minor BC break: Mappings now store ``DBAL\Type`` instances instead of strings
 
 This leads to manual ``ResultSetMapping`` building instances to also hold Types in meta results.
 Example:
