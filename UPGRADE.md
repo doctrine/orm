@@ -1,6 +1,6 @@
 # Upgrade to 3.0
 
-## BC Break: Removed possibility to extends the doctrine mapping xml schema with anything
+## BC Break: Removed possibility to extend the doctrine mapping xml schema with anything
 
 If you want to extend it now you have to provide your own validation schema.
 
@@ -10,7 +10,7 @@ This constant has been removed
 
  * `Doctrine\ORM\Mapping\Exporter\VariableExporter::INDENTATION`
 
-## BC Break: Removed support named queries
+## BC Break: Removed support for named queries
 
 These classes have been removed:
 
@@ -67,7 +67,7 @@ These classes have been removed:
  * `Doctrine\ORM\Tools\EntityGenerator`
  * `Doctrine\ORM\Tools\EntityRepositoryGenerator`
 
-Whole Doctrine\ORM\Tools\Export namespace with all its members has been removed as well.
+The whole Doctrine\ORM\Tools\Export namespace with all its members has been removed as well.
 
 ## BC Break: proxies no longer implement `Doctrine\ORM\Proxy\Proxy`
 
@@ -96,7 +96,7 @@ naming.
 Proxies are also always generated if not found: fatal errors due to missing
 proxy classes should no longer occur with ORM default settings.
 
-In addition to that, following changes affect entity lazy-loading semantics:
+In addition to that, the following changes affect entity lazy-loading semantics:
 
  * `final` methods are now allowed
  * `__clone` is no longer called by the ORM
@@ -251,16 +251,16 @@ All Annotations classes got moved from ``Doctrine\ORM\Mapping`` into a more
 pertinent namespace ``Doctrine\ORM\Annotation``. This change was done to add
 room for Metadata namespace refactoring.
 
-## Minor BC break: Mappings now store DBAL\Type instances instead of strings
+## Minor BC break: Mappings now stores ``DBAL\Type`` instances instead of strings
 
-This lead to manual ``ResultSetMapping`` building instances to also hold Types in meta results.
+This leads to manual ``ResultSetMapping`` building instances to also hold Types in meta results.
 Example:
 
     $rsm->addMetaResult('e ', 'e_discr', 'discr', false, Type::getType('string'));
 
-## Enhancement: Mappings now store their declaring ClassMetadata
+## Enhancement: Mappings now store their declaring ``ClassMetadata``
 
-Every field, association or embedded now contains a pointer to its declaring ClassMetadata.
+Every field, association or embedded now contains a pointer to its declaring ``ClassMetadata``.
 
 ## Enhancement: Mappings now store their corresponding table name
 
