@@ -11,12 +11,13 @@ namespace Sandbox;
 
 use Entities\Address;
 use Entities\User;
+use const PHP_EOL;
 
 $em = require_once __DIR__ . '/bootstrap.php';
 
-## PUT YOUR TEST CODE BELOW
+// PUT YOUR TEST CODE BELOW
 
-$user = new User;
-$address = new Address;
+$user    = new User();
+$address = new Address();
 
 echo 'Hello World!' . PHP_EOL;
