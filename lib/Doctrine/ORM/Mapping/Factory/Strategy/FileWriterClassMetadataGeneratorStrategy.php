@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Doctrine\ORM\Mapping\Factory\Strategy;
 
+use Doctrine\ORM\Mapping\Factory\ClassMetadataBuildingContext;
 use Doctrine\ORM\Mapping\Factory\ClassMetadataDefinition;
 use Doctrine\ORM\Mapping\Factory\ClassMetadataGenerator;
 use function chmod;
@@ -29,9 +30,13 @@ class FileWriterClassMetadataGeneratorStrategy implements ClassMetadataGenerator
     /**
      * {@inheritdoc}
      */
-    public function generate(string $filePath, ClassMetadataDefinition $definition) : void
+    public function generate(
+        string $filePath,
+        ClassMetadataDefinition $definition,
+        ClassMetadataBuildingContext $metadataBuildingContext
+    ) : void
     {
-        $sourceCode = $this->generator->generate($definition);
+        $sourceCode = $this->generator->generate($definition, $metadataBuildingContext);
 
         $this->ensureDirectoryIsReady(dirname($filePath));
 

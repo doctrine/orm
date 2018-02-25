@@ -66,6 +66,8 @@ abstract class AbstractClassMetadataFactory implements ClassMetadataFactory
 
     /**
      * {@inheritdoc}
+     *
+     * @throws \InvalidArgumentException
      */
     public function getAllMetadata()
     {
@@ -80,6 +82,8 @@ abstract class AbstractClassMetadataFactory implements ClassMetadataFactory
 
     /**
      * {@inheritdoc}
+     *
+     * @throws \InvalidArgumentException
      */
     public function getMetadataFor($className)
     {
@@ -89,7 +93,7 @@ abstract class AbstractClassMetadataFactory implements ClassMetadataFactory
             return $this->loaded[$entityClassName];
         }
 
-        $metadataBuildingContext = new ClassMetadataBuildingContext($this);
+        $metadataBuildContext    = new ClassMetadataBuildingContext($this);
         $parentClassNameList     = $this->getParentClassNameList($entityClassName);
         $parentClassNameList[]   = $entityClassName;
         $parent                  = null;
@@ -101,12 +105,12 @@ abstract class AbstractClassMetadataFactory implements ClassMetadataFactory
                 continue;
             }
 
-            $definition = $this->getOrCreateClassMetadataDefinition($parentClassName, $parent);
+            $definition = $this->getOrCreateClassMetadataDefinition($parentClassName, $parent, $metadataBuildContext);
 
             $parent = $this->loaded[$parentClassName] = $this->createClassMetadata($definition);
         }
 
-        $metadataBuildingContext->validate();
+        $metadataBuildContext->validate();
 
         return $this->loaded[$entityClassName];
     }
@@ -130,11 +134,18 @@ abstract class AbstractClassMetadataFactory implements ClassMetadataFactory
     /**
      * {@inheritdoc}
      */
-    public function isTransient($className)
+    public function isTransient($className) : bool
     {
-        return $this->mappingDriver->isTransient($className);
+        $entityClassName = StaticClassNameConverter::getRealClass($className);
+
+        return $this->mappingDriver->isTransient($entityClassName);
     }
 
+    /**
+     * @param ClassMetadataDefinition $definition
+     *
+     * @return ClassMetadata
+     */
     protected function createClassMetadata(ClassMetadataDefinition $definition) : ClassMetadata
     {
         /** @var ClassMetadata $classMetadata */
@@ -148,18 +159,32 @@ abstract class AbstractClassMetadataFactory implements ClassMetadataFactory
 
     /**
      * Create a class metadata definition for the given class name.
+     *
+     * @param string $className
+     * @param ClassMetadata|null $parent
+     * @param ClassMetadataBuildingContext $metadataBuildingContext
+     *
+     * @return ClassMetadataDefinition
      */
-    private function getOrCreateClassMetadataDefinition(string $className, ?ClassMetadata $parent) : ClassMetadataDefinition
+    private function getOrCreateClassMetadataDefinition(
+        string $className,
+        ?ClassMetadata $parent,
+        ClassMetadataBuildingContext $metadataBuildingContext
+    ) : ClassMetadataDefinition
     {
         if (! isset($this->definitions[$className])) {
-            $this->definitions[$className] = $this->definitionFactory->build($className, $parent);
+            $this->definitions[$className] = $this->definitionFactory->build($className, $parent, $metadataBuildingContext);
         }
 
         return $this->definitions[$className];
     }
 
     /**
+     * @param string $className
+     *
      * @return string[]
+     *
+     * @throws \InvalidArgumentException
      */
     private function getParentClassNameList(string $className) : array
     {
@@ -180,5 +205,5 @@ abstract class AbstractClassMetadataFactory implements ClassMetadataFactory
     /**
      * @return ReflectionService
      */
-    abstract protected function getReflectionService();
+    abstract protected function getReflectionService() : ReflectionService;
 }

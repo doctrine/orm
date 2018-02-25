@@ -22,19 +22,36 @@ class ClassMetadataDefinitionFactory
         $this->generatorStrategy = $generatorStrategy;
     }
 
-    public function build(string $className, ?ClassMetadata $parentMetadata) : ClassMetadataDefinition
+    /**
+     * @param string $className
+     * @param ClassMetadata|null $parentMetadata
+     * @param ClassMetadataBuildingContext $metadataBuildingContext
+     *
+     * @return ClassMetadataDefinition
+     */
+    public function build(
+        string $className,
+        ?ClassMetadata $parentMetadata,
+        ClassMetadataBuildingContext $metadataBuildingContext
+    ) : ClassMetadataDefinition
     {
         $definition = $this->createDefinition($className, $parentMetadata);
 
         if (! class_exists($definition->metadataClassName, false)) {
             $metadataClassPath = $this->resolver->resolveMetadataClassPath($className);
 
-            $this->generatorStrategy->generate($metadataClassPath, $definition);
+            $this->generatorStrategy->generate($metadataClassPath, $definition, $metadataBuildingContext);
         }
 
         return $definition;
     }
 
+    /**
+     * @param string $className
+     * @param ClassMetadata|null $parentMetadata
+     *
+     * @return ClassMetadataDefinition
+     */
     private function createDefinition(string $className, ?ClassMetadata $parentMetadata) : ClassMetadataDefinition
     {
         $metadataClassName = $this->resolver->resolveMetadataClassName($className);

@@ -28,12 +28,21 @@ class ClassMetadataGenerator
 
     /**
      * Generates class metadata code.
+     *
+     * @param ClassMetadataDefinition $definition
+     * @param ClassMetadataBuildingContext $metadataBuildingContext
+     *
+     * @return string
      */
-    public function generate(ClassMetadataDefinition $definition) : string
+    public function generate(
+        ClassMetadataDefinition $definition,
+        ClassMetadataBuildingContext $metadataBuildingContext
+    ) : string
     {
         $metadata = $this->mappingDriver->loadMetadataForClass(
             $definition->entityClassName,
-            $definition->parentClassMetadata
+            $definition->parentClassMetadata,
+            $metadataBuildingContext
         );
 
         return $this->metadataExporter->export($metadata);
