@@ -25,7 +25,7 @@ class ColumnValueGeneratorExecutor implements ValueGenerationExecutor
     /**
      * @return mixed[]
      */
-    public function execute(EntityManagerInterface $entityManager, /*object*/ $entity) : array
+    public function execute(EntityManagerInterface $entityManager, object $entity) : array
     {
         $value = $this->generator->generate($entityManager, $entity);
 
