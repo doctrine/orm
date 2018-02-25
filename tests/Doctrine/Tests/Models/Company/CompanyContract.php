@@ -19,48 +19,6 @@ use Doctrine\ORM\Mapping;
  *     "flexible"  = CompanyFlexContract::class,
  *     "flexultra" = CompanyFlexUltraContract::class
  * })
- *
- * @ORM\NamedNativeQueries({
- *      @ORM\NamedNativeQuery(
- *          name           = "all-contracts",
- *          resultClass    = "__CLASS__",
- *          query          = "SELECT id, completed, discr FROM company_contracts"
- *      ),
- *      @ORM\NamedNativeQuery(
- *          name           = "all",
- *          resultClass    = "__CLASS__",
- *          query          = "SELECT id, completed, discr FROM company_contracts"
- *      ),
- * })
- *
- * @ORM\SqlResultSetMappings({
- *      @ORM\SqlResultSetMapping(
- *          name    = "mapping-all-contracts",
- *          entities= {
- *              @ORM\EntityResult(
- *                  entityClass         = "__CLASS__",
- *                  discriminatorColumn = "discr",
- *                  fields              = {
- *                      @ORM\FieldResult("id"),
- *                      @ORM\FieldResult("completed"),
- *                  }
- *              )
- *          }
- *      ),
- *      @ORM\SqlResultSetMapping(
- *          name    = "mapping-all",
- *          entities= {
- *              @ORM\EntityResult(
- *                  entityClass         = "__CLASS__",
- *                  discriminatorColumn = "discr",
- *                  fields              = {
- *                      @ORM\FieldResult("id"),
- *                      @ORM\FieldResult("completed"),
- *                  }
- *              )
- *          }
- *      ),
- * })
  */
 abstract class CompanyContract
 {

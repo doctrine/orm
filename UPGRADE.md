@@ -10,25 +10,42 @@ This constant has been removed
 
  * `Doctrine\ORM\Mapping\Exporter\VariableExporter::INDENTATION`
 
-## BC Break: Removed support for named queries
+## BC Break: Removed support for named queries and named native queries
 
 These classes have been removed:
 
  * `Doctrine/ORM/Annotation/NamedQueries`
  * `Doctrine/ORM/Annotation/NamedQuery`
+ * `Doctrine/ORM/Annotation/NamedNativeQueries`
+ * `Doctrine/ORM/Annotation/NamedNativeQuery`
+ * `Doctrine/ORM/Annotation/ColumnResult`
+ * `Doctrine/ORM/Annotation/FieldResult`
+ * `Doctrine/ORM/Annotation/EntityResult`
+ * `Doctrine/ORM/Annotation/SqlResultSetMapping`
+ * `Doctrine/ORM/Annotation/SqlResultSetMappings`
 
 These methods have been removed:
 
  * `Doctrine/ORM/Configuration::addNamedQuery()`
  * `Doctrine/ORM/Configuration::getNamedQuery()`
+ * `Doctrine/ORM/Configuration::addNamedNativeQuery()`
+ * `Doctrine/ORM/Configuration::getNamedNativeQuery()`
  * `Doctrine/ORM/Decorator/EntityManagerDecorator::createNamedQuery()`
+ * `Doctrine/ORM/Decorator/EntityManagerDecorator::createNamedNativeQuery()`
  * `Doctrine/ORM/EntityManager::createNamedQuery()`
+ * `Doctrine/ORM/EntityManager::createNamedNativeQuery()`
  * `Doctrine/ORM/EntityManagerInterface::createNamedQuery()`
- * `Doctrine/ORM/EntityRepository::createNamedQuery()` 
+ * `Doctrine/ORM/EntityManagerInterface::createNamedNativeQuery()`
+ * `Doctrine/ORM/EntityRepository::createNamedQuery()`
+ * `Doctrine/ORM/EntityRepository::createNamedNativeQuery()`
  * `Doctrine/ORM/Mapping/ClassMetadata::getNamedQuery()`
- * `Doctrine/ORM/Mapping/ClassMetadata::getNamedQueries()` 
- * `Doctrine/ORM/Mapping/ClassMetadata::addNamedQuery()` 
- * `Doctrine/ORM/Mapping/ClassMetadata::hasNamedQuery()`  
+ * `Doctrine/ORM/Mapping/ClassMetadata::getNamedQueries()`
+ * `Doctrine/ORM/Mapping/ClassMetadata::addNamedQuery()`
+ * `Doctrine/ORM/Mapping/ClassMetadata::hasNamedQuery()`
+ * `Doctrine/ORM/Mapping/ClassMetadata::getNamedNativeQuery()`
+ * `Doctrine/ORM/Mapping/ClassMetadata::getNamedNativeQueries()`
+ * `Doctrine/ORM/Mapping/ClassMetadata::addNamedNativeQuery()`
+ * `Doctrine/ORM/Mapping/ClassMetadata::hasNamedNativeQuery()`
 
 ## BC Break: Removed support for entity namespace aliases
 
@@ -55,7 +72,7 @@ These methods have been removed:
  * Doctrine\ORM\Mapping\ClassMetadata::fullyQualifiedClassName()
 
 ## BC Break: Removed code generators and related console commands
- 
+
 These console commands have been removed:
 
  * `orm:convert-mapping`
@@ -82,7 +99,7 @@ These related classes have been removed:
  * `Doctrine\ORM\Proxy\Proxy`
  * `Doctrine\ORM\Proxy\Autoloader` - we suggest using the composer autoloader instead
  * `Doctrine\ORM\Reflection\RuntimePublicReflectionProperty`
- 
+
 These methods have been removed:
 
  * `Doctrine\ORM\Configuration#getProxyDir()`
@@ -155,9 +172,9 @@ If your code relies on single entity flushing optimisations via
 `EntityManager#flush($entity)`, the signature has been changed to
 `EntityManager#flush()`.
 
-Said API was affected by multiple data integrity bugs due to the fact      
-that change tracking was being restricted upon a subset of the managed          
-entities. The ORM cannot support committing subsets of the managed 
+Said API was affected by multiple data integrity bugs due to the fact
+that change tracking was being restricted upon a subset of the managed
+entities. The ORM cannot support committing subsets of the managed
 entities while also guaranteeing data integrity, therefore this
 utility was removed.
 
@@ -231,8 +248,8 @@ Provides a more meaningful name to method.
 
 ## BC Break: Removed ``ClassMetadata::$namespace``
 
-The namespace property in ClassMetadata was only used when using association 
-classes in the same namespace and it was used to speedup ClassMetadata 
+The namespace property in ClassMetadata was only used when using association
+classes in the same namespace and it was used to speedup ClassMetadata
 creation purposes. Namespace could be easily inferred by asking ``\ReflectionClass``
 which was already stored internally.
 
@@ -243,11 +260,11 @@ Switched to a method alternative: ``ClassMetadata::isVersioned()``
 ## BC Break: Removed ``Doctrine\ORM\Mapping\ClassMetadataInfo``
 
 There was no reason to keep a blank class. All references are now pointing
-to ``Doctrine\ORM\Mapping\ClassMetadata``. 
+to ``Doctrine\ORM\Mapping\ClassMetadata``.
 
 ## BC Break: Annotations classes namespace change
 
-All Annotations classes got moved from ``Doctrine\ORM\Mapping`` into a more 
+All Annotations classes got moved from ``Doctrine\ORM\Mapping`` into a more
 pertinent namespace ``Doctrine\ORM\Annotation``. This change was done to add
 room for Metadata namespace refactoring.
 
@@ -333,8 +350,8 @@ either:
  - map those classes as `MappedSuperclass`
 
 ## Minor BC BREAK: ``EntityManagerInterface`` instead of ``EntityManager`` in type-hints
- 
-As of 2.5, classes requiring the ``EntityManager`` in any method signature will now require 
+
+As of 2.5, classes requiring the ``EntityManager`` in any method signature will now require
 an ``EntityManagerInterface`` instead.
 If you are extending any of the following classes, then you need to check following
 signatures:
@@ -427,7 +444,7 @@ the `Doctrine\ORM\Repository\DefaultRepositoryFactory`.
 When executing DQL queries with new object expressions, instead of returning DTOs numerically indexes, it will now respect user provided aliases. Consider the following query:
 
     SELECT new UserDTO(u.id,u.name) as user,new AddressDTO(a.street,a.postalCode) as address, a.id as addressId FROM User u INNER JOIN u.addresses a WITH a.isPrimary = true
-    
+
 Previously, your result would be similar to this:
 
     array(

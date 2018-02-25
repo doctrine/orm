@@ -118,15 +118,6 @@ interface EntityManagerInterface extends ObjectManager
     public function createNativeQuery($sql, ResultSetMapping $rsm);
 
     /**
-     * Creates a NativeQuery from a named native query.
-     *
-     * @param string $name
-     *
-     * @return NativeQuery
-     */
-    public function createNamedNativeQuery($name);
-
-    /**
      * Create a QueryBuilder instance
      *
      * @return QueryBuilder

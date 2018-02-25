@@ -142,63 +142,6 @@ class XmlDriver extends FileDriver
             $metadata->setCache($cache);
         }
 
-        // Evaluate native named queries
-        if (isset($xmlRoot->{'named-native-queries'})) {
-            foreach ($xmlRoot->{'named-native-queries'}->{'named-native-query'} as $nativeQueryElement) {
-                $metadata->addNamedNativeQuery(
-                    isset($nativeQueryElement['name']) ? (string) $nativeQueryElement['name'] : null,
-                    isset($nativeQueryElement->query) ? (string) $nativeQueryElement->query : null,
-                    [
-                        'resultClass'      => isset($nativeQueryElement['result-class']) ? (string) $nativeQueryElement['result-class'] : null,
-                        'resultSetMapping' => isset($nativeQueryElement['result-set-mapping']) ? (string) $nativeQueryElement['result-set-mapping'] : null,
-                    ]
-                );
-            }
-        }
-
-        // Evaluate sql result set mapping
-        if (isset($xmlRoot->{'sql-result-set-mappings'})) {
-            foreach ($xmlRoot->{'sql-result-set-mappings'}->{'sql-result-set-mapping'} as $rsmElement) {
-                $entities = [];
-                $columns  = [];
-
-                foreach ($rsmElement as $entityElement) {
-                    //<entity-result/>
-                    if (isset($entityElement['entity-class'])) {
-                        $entityResult = [
-                            'fields'                => [],
-                            'entityClass'           => (string) $entityElement['entity-class'],
-                            'discriminatorColumn'   => isset($entityElement['discriminator-column']) ? (string) $entityElement['discriminator-column'] : null,
-                        ];
-
-                        foreach ($entityElement as $fieldElement) {
-                            $entityResult['fields'][] = [
-                                'name'      => isset($fieldElement['name']) ? (string) $fieldElement['name'] : null,
-                                'column'    => isset($fieldElement['column']) ? (string) $fieldElement['column'] : null,
-                            ];
-                        }
-
-                        $entities[] = $entityResult;
-                    }
-
-                    //<column-result/>
-                    if (isset($entityElement['name'])) {
-                        $columns[] = [
-                            'name' => (string) $entityElement['name'],
-                        ];
-                    }
-                }
-
-                $metadata->addSqlResultSetMapping(
-                    [
-                        'name'          => (string) $rsmElement['name'],
-                        'entities'      => $entities,
-                        'columns'       => $columns,
-                    ]
-                );
-            }
-        }
-
         if (isset($xmlRoot['inheritance-type'])) {
             $inheritanceType = strtoupper((string) $xmlRoot['inheritance-type']);
 

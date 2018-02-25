@@ -20,35 +20,6 @@ use Doctrine\ORM\Annotation as ORM;
  *      "manager"   = CompanyManager::class,
  *      "employee"  = CompanyEmployee::class
  * })
- *
- * @ORM\NamedNativeQueries({
- *      @ORM\NamedNativeQuery(
- *          name           = "fetchAllWithResultClass",
- *          resultClass    = "__CLASS__",
- *          query          = "SELECT id, name, discr FROM company_persons ORDER BY name"
- *      ),
- *      @ORM\NamedNativeQuery(
- *          name            = "fetchAllWithSqlResultSetMapping",
- *          resultSetMapping= "mappingFetchAll",
- *          query           = "SELECT id, name, discr AS discriminator FROM company_persons ORDER BY name"
- *      )
- * })
- *
- * @ORM\SqlResultSetMappings({
- *      @ORM\SqlResultSetMapping(
- *          name    = "mappingFetchAll",
- *          entities= {
- *              @ORM\EntityResult(
- *                  entityClass         = "__CLASS__",
- *                  discriminatorColumn = "discriminator",
- *                  fields              = {
- *                      @ORM\FieldResult("id"),
- *                      @ORM\FieldResult("name"),
- *                  }
- *              )
- *          }
- *      )
- * })
  */
 class CompanyPerson
 {

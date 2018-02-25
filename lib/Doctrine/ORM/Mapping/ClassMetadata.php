@@ -82,39 +82,6 @@ class ClassMetadata extends ComponentMetadata implements TableOwner
     //public $embeddedClasses = [];
 
     /**
-     * READ-ONLY: The named native queries allowed to be called directly from Repository.
-     *
-     * A native SQL named query definition has the following structure:
-     * <pre>
-     * array(
-     *     'name'               => <query name>,
-     *     'query'              => <sql query>,
-     *     'resultClass'        => <class of the result>,
-     *     'resultSetMapping'   => <name of a SqlResultSetMapping>
-     * )
-     * </pre>
-     *
-     * @var string[][]
-     */
-    public $namedNativeQueries = [];
-
-    /**
-     * READ-ONLY: The mappings of the results of native SQL queries.
-     *
-     * A native result mapping definition has the following structure:
-     * <pre>
-     * array(
-     *     'name'               => <result name>,
-     *     'entities'           => array(<entity result mapping>),
-     *     'columns'            => array(<column result mapping>)
-     * )
-     * </pre>
-     *
-     * @var mixed[][]
-     */
-    public $sqlResultSetMappings = [];
-
-    /**
      * READ-ONLY: The registered lifecycle callbacks for entities of this class.
      *
      * @var string[][]
@@ -364,14 +331,6 @@ class ClassMetadata extends ComponentMetadata implements TableOwner
             $serialized[] = 'entityListeners';
         }
 
-        if ($this->namedNativeQueries) {
-            $serialized[] = 'namedNativeQueries';
-        }
-
-        if ($this->sqlResultSetMappings) {
-            $serialized[] = 'sqlResultSetMappings';
-        }
-
         if ($this->cache) {
             $serialized[] = 'cache';
         }
@@ -501,36 +460,6 @@ class ClassMetadata extends ComponentMetadata implements TableOwner
     public function isIdentifierComposite() : bool
     {
         return isset($this->identifier[1]);
-    }
-
-    /**
-     * Gets the named native query.
-     *
-     * @see ClassMetadata::$namedNativeQueries
-     *
-     * @param string $queryName The query name.
-     *
-     * @return string[]
-     *
-     * @throws MappingException
-     */
-    public function getNamedNativeQuery($queryName) : array
-    {
-        if (! isset($this->namedNativeQueries[$queryName])) {
-            throw MappingException::queryNotFound($this->className, $queryName);
-        }
-
-        return $this->namedNativeQueries[$queryName];
-    }
-
-    /**
-     * Gets all named native queries of the class.
-     *
-     * @return string[]
-     */
-    public function getNamedNativeQueries() : array
-    {
-        return $this->namedNativeQueries;
     }
 
     /**
@@ -1350,27 +1279,6 @@ class ClassMetadata extends ComponentMetadata implements TableOwner
 
     /**
      * INTERNAL:
-     * Adds a named native query to this class.
-     *
-     * @param mixed[] $queryMapping
-     *
-     * @throws MappingException
-     */
-    public function addNamedNativeQuery(string $name, string $query, array $queryMapping)
-    {
-        if (isset($this->namedNativeQueries[$name])) {
-            throw MappingException::duplicateQueryMapping($this->className, $name);
-        }
-
-        if (! isset($queryMapping['resultClass']) && ! isset($queryMapping['resultSetMapping'])) {
-            throw MappingException::missingQueryMapping($this->className, $name);
-        }
-
-        $this->namedNativeQueries[$name] = array_merge(['query' => $query], $queryMapping);
-    }
-
-    /**
-     * INTERNAL:
      * Adds a sql result set mapping to this class.
      *
      * @param mixed[] $resultMapping
@@ -1588,16 +1496,6 @@ class ClassMetadata extends ComponentMetadata implements TableOwner
     public function setValueGenerationPlan(ValueGenerationPlan $valueGenerationPlan) : void
     {
         $this->valueGenerationPlan = $valueGenerationPlan;
-    }
-
-    /**
-     * Checks whether the class has a named native query with the given query name.
-     *
-     * @param string $queryName
-     */
-    public function hasNamedNativeQuery($queryName) : bool
-    {
-        return isset($this->namedNativeQueries[$queryName]);
     }
 
     /**

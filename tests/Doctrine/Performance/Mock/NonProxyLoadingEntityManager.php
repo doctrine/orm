@@ -131,14 +131,6 @@ class NonProxyLoadingEntityManager implements EntityManagerInterface
     /**
      * {@inheritDoc}
      */
-    public function createNamedNativeQuery($name) : \Doctrine\ORM\NativeQuery
-    {
-        return $this->realEntityManager->createNamedNativeQuery($name);
-    }
-
-    /**
-     * {@inheritDoc}
-     */
     public function createQueryBuilder() : \Doctrine\ORM\QueryBuilder
     {
         return $this->realEntityManager->createQueryBuilder();
