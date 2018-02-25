@@ -20,7 +20,7 @@ class SequenceMock extends SequenceGenerator
     /**
      * {@inheritdoc}
      */
-    public function generate(EntityManagerInterface $em, $entity)
+    public function generate(EntityManagerInterface $em, ?object $entity)
     {
         return $this->sequenceNumber++;
     }

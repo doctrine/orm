@@ -47,7 +47,7 @@ final class GH5804Generator implements Generator
     /**
      * {@inheritdoc}
      */
-    public function generate(EntityManagerInterface $em, $entity)
+    public function generate(EntityManagerInterface $em, ?object $entity)
     {
         return 'test5804';
     }
@@ -55,7 +55,7 @@ final class GH5804Generator implements Generator
     /**
      * {@inheritdoc}
      */
-    public function isPostInsertGenerator()
+    public function isPostInsertGenerator() : bool
     {
         return false;
     }
@@ -100,7 +100,7 @@ class GH5804Article
      * @ORM\Id
      * @ORM\Column(type="GH5804Type")
      * @ORM\GeneratedValue(strategy="CUSTOM")
-     * @ORM\CustomIdGenerator(class=\Doctrine\Tests\ORM\Functional\Ticket\GH5804Generator::class)
+     * @ORM\CustomIdGenerator(class=GH5804Generator::class)
      */
     public $id;
 

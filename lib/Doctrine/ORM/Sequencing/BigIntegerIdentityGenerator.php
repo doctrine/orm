@@ -25,7 +25,7 @@ class BigIntegerIdentityGenerator implements Generator
      *                                  to obtain the last generated identifier within the current
      *                                  database session/connection, if any.
      */
-    public function __construct($sequenceName = null)
+    public function __construct(?string $sequenceName = null)
     {
         $this->sequenceName = $sequenceName;
     }
@@ -33,7 +33,7 @@ class BigIntegerIdentityGenerator implements Generator
     /**
      * {@inheritdoc}
      */
-    public function generate(EntityManagerInterface $em, $entity)
+    public function generate(EntityManagerInterface $em, ?object $entity)
     {
         return (string) $em->getConnection()->lastInsertId($this->sequenceName);
     }
@@ -41,7 +41,7 @@ class BigIntegerIdentityGenerator implements Generator
     /**
      * {@inheritdoc}
      */
-    public function isPostInsertGenerator()
+    public function isPostInsertGenerator() : bool
     {
         return true;
     }

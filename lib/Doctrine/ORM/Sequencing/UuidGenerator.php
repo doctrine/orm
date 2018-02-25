@@ -14,7 +14,7 @@ class UuidGenerator implements Generator
     /**
      * {@inheritdoc}
      */
-    public function generate(EntityManagerInterface $em, $entity)
+    public function generate(EntityManagerInterface $em, ?object $entity)
     {
         $conn = $em->getConnection();
         $sql  = 'SELECT ' . $conn->getDatabasePlatform()->getGuidExpression();
@@ -25,7 +25,7 @@ class UuidGenerator implements Generator
     /**
      * {@inheritdoc}
      */
-    public function isPostInsertGenerator()
+    public function isPostInsertGenerator() : bool
     {
         return false;
     }

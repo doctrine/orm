@@ -36,12 +36,7 @@ class TableGenerator implements Generator
      */
     private $maxValue;
 
-    /**
-     * @param string $tableName
-     * @param string $sequenceName
-     * @param int    $allocationSize
-     */
-    public function __construct($tableName, $sequenceName = 'default', $allocationSize = 10)
+    public function __construct(string $tableName, string $sequenceName = 'default', int $allocationSize = 10)
     {
         $this->tableName      = $tableName;
         $this->sequenceName   = $sequenceName;
@@ -51,7 +46,7 @@ class TableGenerator implements Generator
     /**
      * {@inheritdoc}
      */
-    public function generate(EntityManagerInterface $em, $entity)
+    public function generate(EntityManagerInterface $em, ?object $entity)
     {
         if ($this->maxValue === null || $this->nextValue === $this->maxValue) {
             // Allocate new values
@@ -91,7 +86,7 @@ class TableGenerator implements Generator
     /**
      * {@inheritdoc}
      */
-    public function isPostInsertGenerator()
+    public function isPostInsertGenerator() : bool
     {
         return false;
     }
