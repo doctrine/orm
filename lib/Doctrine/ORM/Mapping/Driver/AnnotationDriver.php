@@ -619,7 +619,9 @@ class AnnotationDriver implements MappingDriver
                         throw Mapping\MappingException::tableIdGeneratorNotImplemented($className);
                 }
 
-                $fieldMetadata->setValueGenerator(new Mapping\ValueGeneratorMetadata($idGeneratorType, $idGeneratorDefinition));
+                $fieldMetadata->setValueGenerator(
+                    new Mapping\ValueGeneratorMetadata($idGeneratorType, $idGeneratorDefinition)
+                );
             }
         }
 
