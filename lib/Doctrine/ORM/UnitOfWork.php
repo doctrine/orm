@@ -962,9 +962,9 @@ class UnitOfWork implements PropertyChangedListener
             if ($generationPlan->containsDeferred()) {
                 // Entity has post-insert IDs
                 $oid = spl_object_id($entity);
-                $id  = $this->em->getIdentifierFlattener()->flattenIdentifier($class, $persister->getIdentifier($entity));
+                $id  = $persister->getIdentifier($entity);
 
-                $this->entityIdentifiers[$oid]  = $id;
+                $this->entityIdentifiers[$oid]  = $this->em->getIdentifierFlattener()->flattenIdentifier($class, $id);
                 $this->entityStates[$oid]       = self::STATE_MANAGED;
                 $this->originalEntityData[$oid] = $id + $this->originalEntityData[$oid];
 
