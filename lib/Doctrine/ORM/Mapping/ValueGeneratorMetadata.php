@@ -12,6 +12,9 @@ use Doctrine\ORM\Sequencing;
  */
 class ValueGeneratorMetadata
 {
+    /** @var Property */
+    protected $declaringProperty;
+
     /** @var string */
     protected $type;
 
@@ -25,6 +28,22 @@ class ValueGeneratorMetadata
     {
         $this->type       = $type;
         $this->definition = $definition;
+    }
+
+    /**
+     * @return Property
+     */
+    public function getDeclaringProperty() : Property
+    {
+        return $this->declaringProperty;
+    }
+
+    /**
+     * @param Property $declaringProperty
+     */
+    public function setDeclaringProperty(Property $declaringProperty) : void
+    {
+        $this->declaringProperty = $declaringProperty;
     }
 
     public function getType() : string
@@ -41,14 +60,15 @@ class ValueGeneratorMetadata
     }
 
     /**
-     * @param Property $property
      * @param AbstractPlatform $platform
+     *
      * @return Sequencing\Generator
+     *
      * @throws \Doctrine\DBAL\DBALException
      */
-    public function getSequencingGenerator(Property $property, AbstractPlatform $platform) : Sequencing\Generator
+    public function getSequencingGenerator(AbstractPlatform $platform) : Sequencing\Generator
     {
-        $class = $property->getDeclaringClass();
+        $class = $this->declaringProperty->getDeclaringClass();
 
         switch ($this->type) {
             case GeneratorType::IDENTITY:
@@ -57,11 +77,11 @@ class ValueGeneratorMetadata
                 // Platforms that do not have native IDENTITY support need a sequence to emulate this behaviour.
                 if ($platform->usesSequenceEmulatedIdentityColumns()) {
                     $sequencePrefix = $platform->getSequencePrefix($class->getTableName(), $class->getSchemaName());
-                    $idSequenceName = $platform->getIdentitySequenceName($sequencePrefix, $property->getColumnName());
+                    $idSequenceName = $platform->getIdentitySequenceName($sequencePrefix, $this->declaringProperty->getColumnName());
                     $sequenceName   = $platform->quoteIdentifier($platform->fixSchemaElementName($idSequenceName));
                 }
 
-                return $property->getTypeName() === 'bigint'
+                return $this->declaringProperty->getTypeName() === 'bigint'
                     ? new Sequencing\BigIntegerIdentityGenerator($sequenceName)
                     : new Sequencing\IdentityGenerator($sequenceName);
 
