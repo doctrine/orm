@@ -177,8 +177,10 @@ class AnnotationDriver implements MappingDriver
      * @param string $className
      *
      * @return bool
+     *
+     * @throws \ReflectionException
      */
-    public function isTransient($className)
+    public function isTransient($className) : bool
     {
         $classAnnotations = $this->reader->getClassAnnotations(new \ReflectionClass($className));
 
@@ -193,7 +195,7 @@ class AnnotationDriver implements MappingDriver
     /**
      * {@inheritDoc}
      */
-    public function getAllClassNames()
+    public function getAllClassNames() : array
     {
         if ($this->classNames !== null) {
             return $this->classNames;
@@ -267,17 +269,11 @@ class AnnotationDriver implements MappingDriver
      */
     public function loadMetadataForClass(
         string $className,
-        Mapping\ClassMetadata $metadata,
+        ?Mapping\ComponentMetadata $parent,
         Mapping\ClassMetadataBuildingContext $metadataBuildingContext
-    ) : Mapping\ClassMetadata {
-        $reflectionClass = $metadata->getReflectionClass();
-
-        if (! $reflectionClass) {
-            // this happens when running annotation driver in combination with
-            // static reflection services. This is not the nicest fix
-            $reflectionClass = new \ReflectionClass($metadata->getClassName());
-        }
-
+    ) : Mapping\ComponentMetadata {
+        $reflectionClass  = new \ReflectionClass($className);
+        $metadata         = new Mapping\ClassMetadata($className, $parent, $metadataBuildingContext);
         $classAnnotations = $this->getClassAnnotations($reflectionClass);
         $classMetadata    = $this->convertClassAnnotationsToClassMetadata(
             $classAnnotations,
@@ -332,6 +328,9 @@ class AnnotationDriver implements MappingDriver
     /**
      * @param Annotation\Annotation[] $classAnnotations
      *
+     * @return Mapping\ClassMetadata
+     *
+     * @throws \UnexpectedValueException
      * @throws Mapping\MappingException
      */
     private function convertClassAnnotationsToClassMetadata(
@@ -377,6 +376,7 @@ class AnnotationDriver implements MappingDriver
      *
      * @throws Mapping\MappingException
      * @throws \UnexpectedValueException
+     * @throws \ReflectionException
      */
     private function convertClassAnnotationsToEntityClassMetadata(
         array $classAnnotations,
@@ -430,6 +430,13 @@ class AnnotationDriver implements MappingDriver
 
     /**
      * @param Annotation\Annotation[] $classAnnotations
+     * @param \ReflectionClass $reflectionClass
+     * @param Mapping\ClassMetadata $metadata
+     *
+     * @return Mapping\ClassMetadata
+     *
+     * @throws Mapping\MappingException
+     * @throws \ReflectionException
      */
     private function convertClassAnnotationsToMappedSuperClassMetadata(
         array $classAnnotations,
@@ -454,6 +461,10 @@ class AnnotationDriver implements MappingDriver
 
     /**
      * @param Annotation\Annotation[] $classAnnotations
+     * @param \ReflectionClass $reflectionClass
+     * @param Mapping\ClassMetadata $metadata
+     *
+     * @return Mapping\ClassMetadata
      */
     private function convertClassAnnotationsToEmbeddableClassMetadata(
         array $classAnnotations,
@@ -467,9 +478,13 @@ class AnnotationDriver implements MappingDriver
     }
 
     /**
+     * @todo guilhermeblanco Remove nullable typehint once embeddables are back
+     *
      * @param Annotation\Annotation[] $propertyAnnotations
      *
-     * @todo guilhermeblanco Remove nullable typehint once embeddables are back
+     * @return Mapping\Property|null
+     *
+     * @throws Mapping\MappingException
      */
     private function convertPropertyAnnotationsToProperty(
         array $propertyAnnotations,
@@ -521,17 +536,20 @@ class AnnotationDriver implements MappingDriver
     }
 
     /**
+     * @param \ReflectionProperty $reflectionProperty
      * @param Annotation\Annotation[] $propertyAnnotations
+     *
+     * @return Mapping\FieldMetadata
      *
      * @throws Mapping\MappingException
      */
     private function convertReflectionPropertyToFieldMetadata(
-        \ReflectionProperty $reflProperty,
+        \ReflectionProperty $reflectionProperty,
         array $propertyAnnotations,
         Mapping\ClassMetadata $metadata
     ) : Mapping\FieldMetadata {
         $className   = $metadata->getClassName();
-        $fieldName   = $reflProperty->getName();
+        $fieldName   = $reflectionProperty->getName();
         $isVersioned = isset($propertyAnnotations[Annotation\Version::class]);
         $columnAnnot = $propertyAnnotations[Annotation\Column::class];
 
@@ -590,9 +608,13 @@ class AnnotationDriver implements MappingDriver
     }
 
     /**
+     * @param \ReflectionProperty $reflectionProperty
      * @param Annotation\Annotation[] $propertyAnnotations
+     * @param Mapping\ClassMetadata $metadata
      *
      * @return Mapping\OneToOneAssociationMetadata
+     *
+     * @throws Mapping\MappingException
      */
     private function convertReflectionPropertyToOneToOneAssociationMetadata(
         \ReflectionProperty $reflectionProperty,

@@ -35,9 +35,7 @@ abstract class DatabaseDriverTestCase extends OrmFunctionalTestCase
         $metadatas = [];
 
         foreach ($driver->getAllClassNames() as $className) {
-            $class = new ClassMetadata($className, $metadataBuildingContext);
-
-            $driver->loadMetadataForClass($className, $class, $metadataBuildingContext);
+            $class = $driver->loadMetadataForClass($className, null, $metadataBuildingContext);
 
             $metadatas[$className] = $class;
         }
@@ -66,7 +64,7 @@ abstract class DatabaseDriverTestCase extends OrmFunctionalTestCase
                 continue;
             }
 
-            $class = new ClassMetadata($className, $metadataBuildingContext);
+            $class = new ClassMetadata($className, null, $metadataBuildingContext);
 
             $driver->loadMetadataForClass($className, $class);
 
@@ -76,6 +74,7 @@ abstract class DatabaseDriverTestCase extends OrmFunctionalTestCase
         if (count($metadatas) !== count($classNames)) {
             $this->fail("Have not found all classes matching the names '" . implode(', ', $classNames) . "' only tables " . implode(', ', array_keys($metadatas)));
         }
+
         return $metadatas;
     }
 }

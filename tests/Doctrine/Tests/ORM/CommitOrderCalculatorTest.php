@@ -37,11 +37,11 @@ class CommitOrderCalculatorTest extends OrmTestCase
 
     public function testCommitOrdering1() : void
     {
-        $class1 = new ClassMetadata(NodeClass1::class, $this->metadataBuildingContext);
-        $class2 = new ClassMetadata(NodeClass2::class, $this->metadataBuildingContext);
-        $class3 = new ClassMetadata(NodeClass3::class, $this->metadataBuildingContext);
-        $class4 = new ClassMetadata(NodeClass4::class, $this->metadataBuildingContext);
-        $class5 = new ClassMetadata(NodeClass5::class, $this->metadataBuildingContext);
+        $class1 = new ClassMetadata(NodeClass1::class, null, $this->metadataBuildingContext);
+        $class2 = new ClassMetadata(NodeClass2::class, null, $this->metadataBuildingContext);
+        $class3 = new ClassMetadata(NodeClass3::class, null, $this->metadataBuildingContext);
+        $class4 = new ClassMetadata(NodeClass4::class, null, $this->metadataBuildingContext);
+        $class5 = new ClassMetadata(NodeClass5::class, null, $this->metadataBuildingContext);
 
         $this->calc->addNode($class1->getClassName(), $class1);
         $this->calc->addNode($class2->getClassName(), $class2);
@@ -64,8 +64,8 @@ class CommitOrderCalculatorTest extends OrmTestCase
 
     public function testCommitOrdering2() : void
     {
-        $class1 = new ClassMetadata(NodeClass1::class, $this->metadataBuildingContext);
-        $class2 = new ClassMetadata(NodeClass2::class, $this->metadataBuildingContext);
+        $class1 = new ClassMetadata(NodeClass1::class, null, $this->metadataBuildingContext);
+        $class2 = new ClassMetadata(NodeClass2::class, null, $this->metadataBuildingContext);
 
         $this->calc->addNode($class1->getClassName(), $class1);
         $this->calc->addNode($class2->getClassName(), $class2);

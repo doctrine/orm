@@ -110,37 +110,8 @@ class ClassMetadataFactory extends AbstractClassMetadataFactory
         ?ClassMetadata $parent,
         ClassMetadataBuildingContext $metadataBuildingContext
     ) : ClassMetadata {
-        $classMetadata = new ClassMetadata($className, $metadataBuildingContext);
-
-        if ($parent) {
-            $classMetadata->setParent($parent);
-
-            foreach ($parent->getDeclaredPropertiesIterator() as $fieldName => $property) {
-                $classMetadata->addInheritedProperty($property);
-            }
-
-            $classMetadata->setInheritanceType($parent->inheritanceType);
-            $classMetadata->setIdentifier($parent->identifier);
-
-            if ($parent->discriminatorColumn) {
-                $classMetadata->setDiscriminatorColumn($parent->discriminatorColumn);
-                $classMetadata->setDiscriminatorMap($parent->discriminatorMap);
-            }
-
-            $classMetadata->setLifecycleCallbacks($parent->lifecycleCallbacks);
-            $classMetadata->setChangeTrackingPolicy($parent->changeTrackingPolicy);
-
-            if ($parent->isMappedSuperclass) {
-                $classMetadata->setCustomRepositoryClassName($parent->getCustomRepositoryClassName());
-            }
-        }
-
         // Invoke driver
-        try {
-            $this->driver->loadMetadataForClass($classMetadata->getClassName(), $classMetadata, $metadataBuildingContext);
-        } catch (ReflectionException $e) {
-            throw MappingException::reflectionFailure($classMetadata->getClassName(), $e);
-        }
+        $classMetadata = $this->driver->loadMetadataForClass($className, $parent, $metadataBuildingContext);
 
         $this->completeIdentifierGeneratorMappings($classMetadata);
 

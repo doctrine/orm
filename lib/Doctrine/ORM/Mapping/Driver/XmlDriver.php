@@ -38,13 +38,18 @@ class XmlDriver extends FileDriver
 
     /**
      * {@inheritDoc}
+     *
+     * @throws \Doctrine\ORM\Mapping\MappingException
      */
     public function loadMetadataForClass(
         string $className,
-        Mapping\ClassMetadata $metadata,
+        ?Mapping\ComponentMetadata $parent,
         Mapping\ClassMetadataBuildingContext $metadataBuildingContext
-    ) {
-        /** @var SimpleXMLElement $xmlRoot */
+    ) : Mapping\ComponentMetadata
+    {
+        $metadata = new Mapping\ClassMetadata($className, $parent, $metadataBuildingContext);
+
+        /* @var \SimpleXMLElement $xmlRoot */
         $xmlRoot = $this->getElement($className);
 
         if ($xmlRoot->getName() === 'entity') {
@@ -676,6 +681,8 @@ class XmlDriver extends FileDriver
                 }
             }
         }
+
+        return $metadata;
     }
 
     /**

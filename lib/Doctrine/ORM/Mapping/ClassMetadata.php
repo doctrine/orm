@@ -188,15 +188,53 @@ class ClassMetadata extends ComponentMetadata implements TableOwner
      * Initializes a new ClassMetadata instance that will hold the object-relational mapping
      * metadata of the class with the given name.
      *
-     * @param string $entityName The name of the entity class.
+     * @param string                       $entityName              The name of the entity class.
+     * @param ClassMetadata|null           $parent                  Optional parent class metadata.
+     * @param ClassMetadataBuildingContext $metadataBuildingContext Metadata building context
+     *
+     * @throws MappingException
      */
     public function __construct(
         string $entityName,
+        ?ClassMetadata $parent,
         ClassMetadataBuildingContext $metadataBuildingContext
     ) {
         parent::__construct($entityName, $metadataBuildingContext);
 
         $this->namingStrategy = $metadataBuildingContext->getNamingStrategy();
+
+        if ($parent) {
+            $this->setParent($parent);
+        }
+    }
+
+    /**
+     * {@inheritdoc}
+     *
+     * @throws MappingException
+     */
+    public function setParent(ComponentMetadata $parent): void
+    {
+        parent::setParent($parent);
+
+        foreach ($parent->getDeclaredPropertiesIterator() as $fieldName => $property) {
+            $this->addInheritedProperty($property);
+        }
+
+        $this->setInheritanceType($parent->inheritanceType);
+        $this->setIdentifier($parent->identifier);
+
+        if ($parent->discriminatorColumn) {
+            $this->setDiscriminatorColumn($parent->discriminatorColumn);
+            $this->setDiscriminatorMap($parent->discriminatorMap);
+        }
+
+        $this->setLifecycleCallbacks($parent->lifecycleCallbacks);
+        $this->setChangeTrackingPolicy($parent->changeTrackingPolicy);
+
+        if ($parent->isMappedSuperclass) {
+            $this->setCustomRepositoryClassName($parent->getCustomRepositoryClassName());
+        }
     }
 
     public function setClassName(string $className)
