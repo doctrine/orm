@@ -11,24 +11,24 @@ use Doctrine\Tests\OrmFunctionalTestCase;
 
 /**
  * @group DDC-117
+ * @group DDC-3597
+ * @group embedded
  */
 class DDC3597Test extends OrmFunctionalTestCase
 {
     protected function setUp() : void
     {
         parent::setUp();
+
         $this->schemaTool->createSchema(
             [
-            $this->em->getClassMetadata(DDC3597Root::class),
-            $this->em->getClassMetadata(DDC3597Media::class),
-            $this->em->getClassMetadata(DDC3597Image::class),
+                $this->em->getClassMetadata(DDC3597Root::class),
+                $this->em->getClassMetadata(DDC3597Media::class),
+                $this->em->getClassMetadata(DDC3597Image::class),
             ]
         );
     }
 
-    /**
-     * @group DDC-3597
-     */
     public function testSaveImageEntity() : void
     {
         $imageEntity = new DDC3597Image('foobar');
