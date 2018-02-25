@@ -25,26 +25,6 @@ class ORMException extends Exception
     }
 
     /**
-     * @param string $queryName
-     *
-     * @return ORMException
-     */
-    public static function namedQueryNotFound($queryName)
-    {
-        return new self('Could not find a named query by the name "' . $queryName . '"');
-    }
-
-    /**
-     * @param string $nativeQueryName
-     *
-     * @return ORMException
-     */
-    public static function namedNativeQueryNotFound($nativeQueryName)
-    {
-        return new self('Could not find a named native query by the name "' . $nativeQueryName . '"');
-    }
-
-    /**
      * @param string $field
      *
      * @return ORMException

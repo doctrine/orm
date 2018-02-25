@@ -44,39 +44,6 @@ abstract class EntityClassMetadata extends ComponentMetadata
     protected $subClasses = [];
 
     /**
-     * READ-ONLY: The named native queries allowed to be called directly from Repository.
-     *
-     * A native SQL named query definition has the following structure:
-     * <pre>
-     * array(
-     *     'name'               => <query name>,
-     *     'query'              => <sql query>,
-     *     'resultClass'        => <class of the result>,
-     *     'resultSetMapping'   => <name of a SqlResultSetMapping>
-     * )
-     * </pre>
-     *
-     * @var string[][]
-     */
-    protected $namedNativeQueries = [];
-
-    /**
-     * READ-ONLY: The mappings of the results of native SQL queries.
-     *
-     * A native result mapping definition has the following structure:
-     * <pre>
-     * array(
-     *     'name'               => <result name>,
-     *     'entities'           => array(<entity result mapping>),
-     *     'columns'            => array(<column result mapping>)
-     * )
-     * </pre>
-     *
-     * @var mixed[][]
-     */
-    protected $sqlResultSetMappings = [];
-
-    /**
      * READ-ONLY: The registered lifecycle callbacks for entities of this class.
      *
      * @var string[][]
@@ -213,66 +180,6 @@ abstract class EntityClassMetadata extends ComponentMetadata
         $iterator->append(new \ArrayIterator($this->subClasses));
 
         return $iterator;
-    }
-
-    /**
-     * Gets a named native query.
-     *
-     * @param string $queryName The native query name.
-     *
-     * @return string[]
-     *
-     * @throws MappingException
-     *
-     * @todo guilhermeblanco This should return an object instead
-     */
-    public function getNamedNativeQuery($queryName) : array
-    {
-        if (! isset($this->namedNativeQueries[$queryName])) {
-            throw MappingException::queryNotFound($this->entityName, $queryName);
-        }
-
-        return $this->namedNativeQueries[$queryName];
-    }
-
-    /**
-     * Gets all named native queries of the class.
-     *
-     * @return string[][]
-     */
-    public function getNamedNativeQueries() : array
-    {
-        return $this->namedNativeQueries;
-    }
-
-    /**
-     * Gets the result set mapping.
-     *
-     * @param string $name The result set mapping name.
-     *
-     * @return mixed[]
-     *
-     * @throws MappingException
-     *
-     * @todo guilhermeblanco This should return an object instead
-     */
-    public function getSqlResultSetMapping($name) : array
-    {
-        if (! isset($this->sqlResultSetMappings[$name])) {
-            throw MappingException::resultMappingNotFound($this->entityName, $name);
-        }
-
-        return $this->sqlResultSetMappings[$name];
-    }
-
-    /**
-     * Gets all sql result set mappings of the class.
-     *
-     * @return mixed[][]
-     */
-    public function getSqlResultSetMappings() : array
-    {
-        return $this->sqlResultSetMappings;
     }
 
     /**

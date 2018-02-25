@@ -155,14 +155,6 @@ class ClassMetadataFactory extends AbstractClassMetadataFactory
                 $classMetadata->setCache(clone $parent->getCache());
             }
 
-            if (! empty($parent->namedNativeQueries)) {
-                $this->addInheritedNamedNativeQueries($classMetadata, $parent);
-            }
-
-            if (! empty($parent->sqlResultSetMappings)) {
-                $this->addInheritedSqlResultSetMappings($classMetadata, $parent);
-            }
-
             if (! empty($parent->entityListeners) && empty($classMetadata->entityListeners)) {
                 $classMetadata->entityListeners = $parent->entityListeners;
             }
@@ -351,61 +343,6 @@ class ClassMetadataFactory extends AbstractClassMetadataFactory
         $parts = explode('\\', $className);
 
         return strtolower(end($parts));
-    }
-
-    /**
-     * Adds inherited named native queries to the subclass mapping.
-     *
-     * @throws MappingException
-     */
-    private function addInheritedNamedNativeQueries(ClassMetadata $subClass, ClassMetadata $parentClass) : void
-    {
-        foreach ($parentClass->namedNativeQueries as $name => $query) {
-            if (isset($subClass->namedNativeQueries[$name])) {
-                continue;
-            }
-
-            $subClass->addNamedNativeQuery(
-                $name,
-                $query['query'],
-                [
-                    'resultSetMapping' => $query['resultSetMapping'],
-                    'resultClass'      => $query['resultClass'],
-                ]
-            );
-        }
-    }
-
-    /**
-     * Adds inherited sql result set mappings to the subclass mapping.
-     *
-     * @throws MappingException
-     */
-    private function addInheritedSqlResultSetMappings(ClassMetadata $subClass, ClassMetadata $parentClass) : void
-    {
-        foreach ($parentClass->sqlResultSetMappings as $name => $mapping) {
-            if (isset($subClass->sqlResultSetMappings[$name])) {
-                continue;
-            }
-
-            $entities = [];
-
-            foreach ($mapping['entities'] as $entity) {
-                $entities[] = [
-                    'fields'              => $entity['fields'],
-                    'discriminatorColumn' => $entity['discriminatorColumn'],
-                    'entityClass'         => $entity['entityClass'],
-                ];
-            }
-
-            $subClass->addSqlResultSetMapping(
-                [
-                    'name'     => $mapping['name'],
-                    'columns'  => $mapping['columns'],
-                    'entities' => $entities,
-                ]
-            );
-        }
     }
 
     /**

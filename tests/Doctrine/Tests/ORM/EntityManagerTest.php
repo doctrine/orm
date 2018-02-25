@@ -88,19 +88,6 @@ class EntityManagerTest extends OrmTestCase
         self::assertSame('SELECT foo', $query->getSql());
     }
 
-    /**
-     * @covers \Doctrine\ORM\EntityManager::createNamedNativeQuery
-     */
-    public function testCreateNamedNativeQuery()
-    {
-        $rsm = new ResultSetMapping();
-        $this->em->getConfiguration()->addNamedNativeQuery('foo', 'SELECT foo', $rsm);
-
-        $query = $this->em->createNamedNativeQuery('foo');
-
-        self::assertInstanceOf(NativeQuery::class, $query);
-    }
-
     public function testCreateQueryBuilder()
     {
         self::assertInstanceOf(QueryBuilder::class, $this->em->createQueryBuilder());

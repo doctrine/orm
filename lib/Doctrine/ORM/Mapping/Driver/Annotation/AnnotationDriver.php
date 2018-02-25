@@ -420,7 +420,6 @@ class AnnotationDriver implements Mapping\Driver\MappingDriver
             }
         }
 
-        $this->attachNamedNativeQueries($classAnnotations, $reflectionClass, $metadata);
         $this->attachLifecycleCallbacks($classAnnotations, $reflectionClass, $metadata);
         $this->attachEntityListeners($classAnnotations, $reflectionClass, $metadata);
 
@@ -446,7 +445,6 @@ class AnnotationDriver implements Mapping\Driver\MappingDriver
         $metadata->isMappedSuperclass = true;
         $metadata->isEmbeddedClass    = false;
 
-        $this->attachNamedNativeQueries($classAnnotations, $reflectionClass, $metadata);
         $this->attachLifecycleCallbacks($classAnnotations, $reflectionClass, $metadata);
         $this->attachEntityListeners($classAnnotations, $reflectionClass, $metadata);
 
@@ -1094,42 +1092,6 @@ class AnnotationDriver implements Mapping\Driver\MappingDriver
             $discriminatorMap           = $discriminatorMapAnnotation->value;
 
             $metadata->setDiscriminatorMap($discriminatorMap);
-        }
-    }
-
-    /**
-     * @param Annotation\Annotation[] $classAnnotations
-     */
-    private function attachNamedNativeQueries(
-        array $classAnnotations,
-        \ReflectionClass $reflectionClass,
-        Mapping\ClassMetadata $metadata
-    ) : void {
-        // Evaluate @NamedNativeQueries annotation
-        if (isset($classAnnotations[Annotation\NamedNativeQueries::class])) {
-            $namedNativeQueriesAnnot = $classAnnotations[Annotation\NamedNativeQueries::class];
-
-            foreach ($namedNativeQueriesAnnot->value as $namedNativeQuery) {
-                $metadata->addNamedNativeQuery(
-                    $namedNativeQuery->name,
-                    $namedNativeQuery->query,
-                    [
-                        'resultClass'      => $namedNativeQuery->resultClass,
-                        'resultSetMapping' => $namedNativeQuery->resultSetMapping,
-                    ]
-                );
-            }
-        }
-
-        // Evaluate @SqlResultSetMappings annotation
-        if (isset($classAnnotations[Annotation\SqlResultSetMappings::class])) {
-            $sqlResultSetMappingsAnnot = $classAnnotations[Annotation\SqlResultSetMappings::class];
-
-            foreach ($sqlResultSetMappingsAnnot->value as $resultSetMapping) {
-                $sqlResultSetMapping = $this->convertSqlResultSetMapping($resultSetMapping);
-
-                $metadata->addSqlResultSetMapping($sqlResultSetMapping);
-            }
         }
     }
 

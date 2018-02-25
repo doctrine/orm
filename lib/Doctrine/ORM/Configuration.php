@@ -66,11 +66,6 @@ class Configuration extends DBALConfiguration
     /**
      * @var string[][]|ResultSetMapping[][] tuples of [$sqlString, $resultSetMapping] indexed by query name
      */
-    private $namedNativeQueries = [];
-
-    /**
-     * @var string[][]|ResultSetMapping[][] tuples of [$sqlString, $resultSetMapping] indexed by query name
-     */
     private $customStringFunctions = [];
 
     /**
@@ -256,30 +251,6 @@ class Configuration extends DBALConfiguration
     public function setMetadataCacheImpl(CacheDriver $metadataCache) : void
     {
         $this->metadataCache = $metadataCache;
-    }
-
-    /**
-     * Adds a named native query to the configuration.
-     */
-    public function addNamedNativeQuery(string $queryName, string $sql, ResultSetMapping $resultSetMapping) : void
-    {
-        $this->namedNativeQueries[$queryName] = [$sql, $resultSetMapping];
-    }
-
-    /**
-     * Gets the components of a previously registered named native query.
-     *
-     * @return string[]|ResultSetMapping[] tuple of [$sqlString, $resultSetMaping]
-     *
-     * @throws ORMException
-     */
-    public function getNamedNativeQuery(string $queryName) : array
-    {
-        if (! isset($this->namedNativeQueries[$queryName])) {
-            throw ORMException::namedNativeQueryNotFound($queryName);
-        }
-
-        return $this->namedNativeQueries[$queryName];
     }
 
     /**

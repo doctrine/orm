@@ -10,48 +10,6 @@ use Doctrine\ORM\Mapping;
 
 /**
  * @ORM\Entity
- *
- * @ORM\NamedNativeQueries({
- *      @ORM\NamedNativeQuery(
- *          name           = "all",
- *          resultClass    = "__CLASS__",
- *          query          = "SELECT id, hoursWorked, discr FROM company_contracts"
- *      ),
- *      @ORM\NamedNativeQuery(
- *          name           = "all-flex",
- *          resultClass    = CompanyFlexContract::class,
- *          query          = "SELECT id, hoursWorked, discr FROM company_contracts"
- *      ),
- * })
- *
- * @ORM\SqlResultSetMappings({
- *      @ORM\SqlResultSetMapping(
- *          name    = "mapping-all-flex",
- *          entities= {
- *              @ORM\EntityResult(
- *                  entityClass         = "__CLASS__",
- *                  discriminatorColumn = "discr",
- *                  fields              = {
- *                      @ORM\FieldResult("id"),
- *                      @ORM\FieldResult("hoursWorked"),
- *                  }
- *              )
- *          }
- *      ),
- *      @ORM\SqlResultSetMapping(
- *          name    = "mapping-all",
- *          entities= {
- *              @ORM\EntityResult(
- *                  entityClass         = "__CLASS__",
- *                  discriminatorColumn = "discr",
- *                  fields              = {
- *                      @ORM\FieldResult("id"),
- *                      @ORM\FieldResult("hoursWorked"),
- *                  }
- *              )
- *          }
- *      ),
- * })
  */
 class CompanyFlexContract extends CompanyContract
 {

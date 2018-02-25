@@ -90,19 +90,6 @@ class ConfigurationTest extends DoctrineTestCase
         self::assertSame($queryCacheImpl, $this->configuration->getMetadataCacheImpl());
     }
 
-    public function testAddGetNamedNativeQuery()
-    {
-        $sql = 'SELECT * FROM user';
-        $rsm = $this->createMock(ResultSetMapping::class);
-        $this->configuration->addNamedNativeQuery('QueryName', $sql, $rsm);
-        $fetched = $this->configuration->getNamedNativeQuery('QueryName');
-        self::assertSame($sql, $fetched[0]);
-        self::assertSame($rsm, $fetched[1]);
-        $this->expectException(ORMException::class);
-        $this->expectExceptionMessage('a named native query');
-        $this->configuration->getNamedNativeQuery('NonExistingQuery');
-    }
-
     /**
      * Configures $this->configuration to use production settings.
      *

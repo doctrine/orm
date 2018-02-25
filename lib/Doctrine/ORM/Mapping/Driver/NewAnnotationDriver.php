@@ -250,35 +250,6 @@ class NewAnnotationDriver implements MappingDriver
             );
         }
 
-        // Evaluate @NamedNativeQueries annotation
-        if (isset($classAnnotations[Annotation\NamedNativeQueries::class])) {
-            /** @var Annotation\NamedNativeQueries $namedNativeQueriesAnnot */
-            $namedNativeQueriesAnnot = $classAnnotations[Annotation\NamedNativeQueries::class];
-
-            foreach ($namedNativeQueriesAnnot->value as $namedNativeQuery) {
-                $classMetadata->addNamedNativeQuery(
-                    $namedNativeQuery->name,
-                    $namedNativeQuery->query,
-                    [
-                        'resultClass'       => $namedNativeQuery->resultClass,
-                        'resultSetMapping'  => $namedNativeQuery->resultSetMapping,
-                    ]
-                );
-            }
-        }
-
-        // Evaluate @SqlResultSetMappings annotation
-        if (isset($classAnnotations[Annotation\SqlResultSetMappings::class])) {
-            /** @var Annotation\SqlResultSetMappings $sqlResultSetMappingsAnnot */
-            $sqlResultSetMappingsAnnot = $classAnnotations[Annotation\SqlResultSetMappings::class];
-
-            foreach ($sqlResultSetMappingsAnnot->value as $resultSetMapping) {
-                $sqlResultSetMapping = $this->convertSqlResultSetMapping($resultSetMapping);
-
-                $classMetadata->addSqlResultSetMapping($sqlResultSetMapping);
-            }
-        }
-
         // Evaluate @EntityListeners annotation
         if (isset($classAnnotations[Annotation\EntityListeners::class])) {
             /** @var Annotation\EntityListeners $entityListenersAnnot */

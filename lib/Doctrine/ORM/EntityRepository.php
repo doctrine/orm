@@ -87,23 +87,6 @@ class EntityRepository implements ObjectRepository, Selectable
     }
 
     /**
-     * Creates a native SQL query.
-     *
-     * @param string $queryName
-     *
-     * @return NativeQuery
-     */
-    public function createNativeNamedQuery($queryName)
-    {
-        $queryMapping = $this->class->getNamedNativeQuery($queryName);
-        $rsm          = new Query\ResultSetMappingBuilder($this->em);
-
-        $rsm->addNamedNativeQueryMapping($this->class, $queryMapping);
-
-        return $this->em->createNativeQuery($queryMapping['query'], $rsm);
-    }
-
-    /**
      * Clears the repository, causing all managed entities to become detached.
      */
     public function clear()

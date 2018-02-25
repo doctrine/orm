@@ -98,14 +98,6 @@ abstract class EntityManagerDecorator extends ObjectManagerDecorator implements 
     /**
      * {@inheritdoc}
      */
-    public function createNamedNativeQuery($name)
-    {
-        return $this->wrapped->createNamedNativeQuery($name);
-    }
-
-    /**
-     * {@inheritdoc}
-     */
     public function createQueryBuilder()
     {
         return $this->wrapped->createQueryBuilder();

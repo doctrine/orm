@@ -16,56 +16,6 @@ use Doctrine\ORM\Mapping;
  * @ORM\Entity
  * @ORM\Table(name="cms_addresses")
  *
- * @ORM\NamedNativeQueries({
- *      @ORM\NamedNativeQuery(
- *          name                = "find-all",
- *          resultSetMapping    = "mapping-find-all",
- *          query               = "SELECT id, country, city FROM cms_addresses"
- *      ),
- *      @ORM\NamedNativeQuery(
- *          name           = "find-by-id",
- *          resultClass    = CmsAddress::class,
- *          query          = "SELECT * FROM cms_addresses WHERE id = ?"
- *      ),
- *      @ORM\NamedNativeQuery(
- *          name            = "count",
- *          resultSetMapping= "mapping-count",
- *          query           = "SELECT COUNT(*) AS count FROM cms_addresses"
- *      )
- * })
- *
- * @ORM\SqlResultSetMappings({
- *      @ORM\SqlResultSetMapping(
- *          name    = "mapping-find-all",
- *          entities= {
- *              @ORM\EntityResult(
- *                  entityClass = CmsAddress::class,
- *                  fields      = {
- *                      @ORM\FieldResult(name = "id",       column="id"),
- *                      @ORM\FieldResult(name = "city",     column="city"),
- *                      @ORM\FieldResult(name = "country",  column="country")
- *                  }
- *              )
- *          }
- *      ),
- *      @ORM\SqlResultSetMapping(
- *          name    = "mapping-without-fields",
- *          entities= {
- *              @ORM\EntityResult(
- *                  entityClass = "__CLASS__"
- *              )
- *          }
- *      ),
- *      @ORM\SqlResultSetMapping(
- *          name    = "mapping-count",
- *          columns = {
- *              @ORM\ColumnResult(
- *                  name = "count"
- *              )
- *          }
- *      )
- * })
- *
  * @ORM\EntityListeners({CmsAddressListener::class})
  */
 class CmsAddress

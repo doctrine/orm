@@ -104,8 +104,6 @@ EOT
                 [
                     $this->formatField('Sub classes', $metadata->getSubClasses()),
                     $this->formatField('Embedded classes', $metadata->getSubClasses()),
-                    $this->formatField('Named native queries', $metadata->getNamedNativeQueries()),
-                    $this->formatField('SQL result set mappings', $metadata->getSqlResultSetMappings()),
                     $this->formatField('Identifier', $metadata->getIdentifier()),
                     $this->formatField('Inheritance type', $metadata->inheritanceType),
                     $this->formatField('Discriminator column', ''),
