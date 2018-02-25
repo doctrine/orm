@@ -38,13 +38,7 @@ class SequenceGenerator implements Generator, Serializable
      */
     private $maxValue;
 
-    /**
-     * Initializes a new sequence generator.
-     *
-     * @param string $sequenceName   The name of the sequence.
-     * @param int    $allocationSize The allocation size of the sequence.
-     */
-    public function __construct($sequenceName, $allocationSize)
+    public function __construct(string $sequenceName, int $allocationSize)
     {
         $this->sequenceName   = $sequenceName;
         $this->allocationSize = $allocationSize;
@@ -53,7 +47,7 @@ class SequenceGenerator implements Generator, Serializable
     /**
      * {@inheritdoc}
      */
-    public function generate(EntityManagerInterface $em, $entity)
+    public function generate(EntityManagerInterface $em, ?object $entity)
     {
         if ($this->maxValue === null || $this->nextValue === $this->maxValue) {
             // Allocate new values
@@ -70,33 +64,26 @@ class SequenceGenerator implements Generator, Serializable
 
     /**
      * Gets the maximum value of the currently allocated bag of values.
-     *
-     * @return int|null
      */
-    public function getCurrentMaxValue()
+    public function getCurrentMaxValue() : ?int
     {
         return $this->maxValue;
     }
 
     /**
      * Gets the next value that will be returned by generate().
-     *
-     * @return int
      */
-    public function getNextValue()
+    public function getNextValue() : int
     {
         return $this->nextValue;
     }
 
-    /**
-     * @return string
-     */
-    public function serialize()
+    public function serialize() : string
     {
         return serialize(
             [
-            'allocationSize' => $this->allocationSize,
-            'sequenceName'   => $this->sequenceName,
+                'allocationSize' => $this->allocationSize,
+                'sequenceName'   => $this->sequenceName,
             ]
         );
     }
@@ -104,7 +91,7 @@ class SequenceGenerator implements Generator, Serializable
     /**
      * @param string $serialized
      */
-    public function unserialize($serialized)
+    public function unserialize($serialized) : void
     {
         $array = unserialize($serialized);
 
@@ -115,7 +102,7 @@ class SequenceGenerator implements Generator, Serializable
     /**
      * {@inheritdoc}
      */
-    public function isPostInsertGenerator()
+    public function isPostInsertGenerator() : bool
     {
         return false;
     }

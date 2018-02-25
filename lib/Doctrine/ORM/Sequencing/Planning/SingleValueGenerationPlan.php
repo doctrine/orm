@@ -22,20 +22,21 @@ class SingleValueGenerationPlan implements ValueGenerationPlan
         $this->executor = $executor;
     }
 
-    public function executeImmediate(EntityManagerInterface $entityManager, /*object*/ $entity) : void
+    public function executeImmediate(EntityManagerInterface $entityManager, object $entity) : void
     {
         if (! $this->executor->isDeferred()) {
             $this->dispatchExecutor($entity, $entityManager);
         }
     }
 
-    public function executeDeferred(EntityManagerInterface $entityManager, /*object*/ $entity) : void
+    public function executeDeferred(EntityManagerInterface $entityManager, object $entity) : void
     {
         if ($this->executor->isDeferred()) {
             $this->dispatchExecutor($entity, $entityManager);
         }
     }
-    private function dispatchExecutor($entity, EntityManagerInterface $entityManager) : void
+
+    private function dispatchExecutor(object $entity, EntityManagerInterface $entityManager) : void
     {
         foreach ($this->executor->execute($entityManager, $entity) as $columnName => $value) {
             // TODO LocalColumnMetadata are currently shadowed and only exposed as FieldMetadata

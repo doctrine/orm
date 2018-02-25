@@ -8,12 +8,12 @@ use Doctrine\ORM\EntityManagerInterface;
 
 class NoopValueGenerationPlan implements ValueGenerationPlan
 {
-    public function executeImmediate(EntityManagerInterface $entityManager, /*object*/ $entity) : void
+    public function executeImmediate(EntityManagerInterface $entityManager, object $entity) : void
     {
         // no-op
     }
 
-    public function executeDeferred(EntityManagerInterface $entityManager, /*object*/ $entity) : void
+    public function executeDeferred(EntityManagerInterface $entityManager, object $entity) : void
     {
         // no-op
     }

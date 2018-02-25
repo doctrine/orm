@@ -510,14 +510,14 @@ class CustomIdGenerator implements Generator
     /**
      * {@inheritdoc}
      */
-    public function generate(EntityManagerInterface $em, $entity): \Generator
+    public function generate(EntityManagerInterface $em, ?object $entity)
     {
     }
 
     /**
      * {@inheritdoc}
      */
-    public function isPostInsertGenerator()
+    public function isPostInsertGenerator() : bool
     {
         return false;
     }
