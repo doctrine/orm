@@ -327,6 +327,10 @@ class ClassMetadataFactory extends AbstractClassMetadataFactory
         }
     }
 
+    /**
+     * @param FieldMetadata $field
+     * @throws ORMException
+     */
     private function completeFieldIdentifierGeneratorMapping(FieldMetadata $field)
     {
         if (! $field->hasValueGenerator()) {
@@ -334,19 +338,15 @@ class ClassMetadataFactory extends AbstractClassMetadataFactory
         }
 
         $platform  = $this->getTargetPlatform();
-        $class     = $field->getDeclaringClass();
         $generator = $field->getValueGenerator();
 
-        if ($generator->getType() === GeneratorType::AUTO) {
-            $generator = new ValueGeneratorMetadata(
-                $platform->prefersSequences()
-                    ? GeneratorType::SEQUENCE
-                    : ($platform->prefersIdentityColumns()
-                        ? GeneratorType::IDENTITY
-                        : GeneratorType::TABLE
-                ),
-                $field->getValueGenerator()->getDefinition()
-            );
+        if (\in_array($generator->getType(), [GeneratorType::AUTO, GeneratorType::IDENTITY], true)) {
+            $generatorType = $platform->prefersSequences() || $platform->usesSequenceEmulatedIdentityColumns()
+                ? GeneratorType::SEQUENCE
+                : ($platform->prefersIdentityColumns() ? GeneratorType::IDENTITY : GeneratorType::TABLE);
+
+            $generator = new ValueGeneratorMetadata($generatorType, $field->getValueGenerator()->getDefinition());
+
             $field->setValueGenerator($generator);
         }
 
@@ -381,9 +381,11 @@ class ClassMetadataFactory extends AbstractClassMetadataFactory
 
             case GeneratorType::CUSTOM:
                 $definition = $generator->getDefinition();
+
                 if (! isset($definition['class'])) {
                     throw InvalidCustomGenerator::onClassNotConfigured();
                 }
+
                 if (! class_exists($definition['class'])) {
                     throw InvalidCustomGenerator::onMissingClass($definition);
                 }
@@ -470,11 +472,8 @@ class ClassMetadataFactory extends AbstractClassMetadataFactory
         Property $property
     ) : ?ValueGenerationExecutor
     {
-        if ($property instanceof LocalColumnMetadata && $property->hasValueGenerator()) {
-            return new ColumnValueGeneratorExecutor(
-                $property,
-                $property->getValueGenerator()->getSequencingGenerator($this->getTargetPlatform())
-            );
+        if ($property instanceof LocalColumnMetadata) {
+            return $property->getValueGenerationExecutor($this->getTargetPlatform());
         }
 
         if ($property instanceof ToOneAssociationMetadata && $property->isPrimaryKey()) {
