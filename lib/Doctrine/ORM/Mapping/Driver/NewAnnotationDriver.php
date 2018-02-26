@@ -507,12 +507,10 @@ class NewAnnotationDriver implements MappingDriver
             : $columnAnnot->name
         ;
 
-        $fieldMetadata = $isVersioned
-            ? new Mapping\VersionFieldMetadata($fieldName)
-            : new Mapping\FieldMetadata($fieldName)
-        ;
+        $fieldMetadata = new Mapping\FieldMetadata($fieldName);
 
         $fieldMetadata->setType(Type::getType($columnAnnot->type));
+        $fieldMetadata->setVersioned($isVersioned);
         $fieldMetadata->setColumnName($columnName);
         $fieldMetadata->setScale($columnAnnot->scale);
         $fieldMetadata->setPrecision($columnAnnot->precision);

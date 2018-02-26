@@ -15,19 +15,17 @@ use Doctrine\ORM\Exception\ORMException;
 use Doctrine\ORM\Mapping\Exception\InvalidCustomGenerator;
 use Doctrine\ORM\Mapping\Exception\TableGeneratorNotImplementedYet;
 use Doctrine\ORM\Mapping\Exception\UnknownGeneratorType;
-use Doctrine\ORM\Sequencing;
 use Doctrine\ORM\Sequencing\Planning\AssociationValueGeneratorExecutor;
-use Doctrine\ORM\Sequencing\Planning\ColumnValueGeneratorExecutor;
 use Doctrine\ORM\Sequencing\Planning\CompositeValueGenerationPlan;
 use Doctrine\ORM\Sequencing\Planning\NoopValueGenerationPlan;
 use Doctrine\ORM\Sequencing\Planning\SingleValueGenerationPlan;
 use Doctrine\ORM\Sequencing\Planning\ValueGenerationExecutor;
-use ReflectionException;
 use function array_map;
 use function class_exists;
 use function count;
 use function end;
 use function explode;
+use function in_array;
 use function is_subclass_of;
 use function sprintf;
 use function strpos;
@@ -340,7 +338,7 @@ class ClassMetadataFactory extends AbstractClassMetadataFactory
         $platform  = $this->getTargetPlatform();
         $generator = $field->getValueGenerator();
 
-        if (\in_array($generator->getType(), [GeneratorType::AUTO, GeneratorType::IDENTITY], true)) {
+        if (in_array($generator->getType(), [GeneratorType::AUTO, GeneratorType::IDENTITY], true)) {
             $generatorType = $platform->prefersSequences() || $platform->usesSequenceEmulatedIdentityColumns()
                 ? GeneratorType::SEQUENCE
                 : ($platform->prefersIdentityColumns() ? GeneratorType::IDENTITY : GeneratorType::TABLE);
@@ -359,7 +357,8 @@ class ClassMetadataFactory extends AbstractClassMetadataFactory
                 }
 
                 // @todo guilhermeblanco Move sequence generation to DBAL
-                $sequencePrefix = $platform->getSequencePrefix($field->getTableName(), $field->getSchemaName());
+                // @todo guilhermeblanco Bring back the sequence prefix generation with table schema name
+                $sequencePrefix = $platform->getSequencePrefix($field->getTableName()); //, $field->getSchemaName());
                 $idSequenceName = sprintf('%s_%s_seq', $sequencePrefix, $field->getColumnName());
                 $sequenceName   = $platform->fixSchemaElementName($idSequenceName);
 
@@ -448,8 +447,6 @@ class ClassMetadataFactory extends AbstractClassMetadataFactory
     }
 
     /**
-     * @param ClassMetadata $class
-     *
      * @return ValueGenerationExecutor[]
      */
     private function buildValueGenerationExecutorList(ClassMetadata $class) : array
@@ -470,8 +467,7 @@ class ClassMetadataFactory extends AbstractClassMetadataFactory
     private function buildValueGenerationExecutorForProperty(
         ClassMetadata $class,
         Property $property
-    ) : ?ValueGenerationExecutor
-    {
+    ) : ?ValueGenerationExecutor {
         if ($property instanceof LocalColumnMetadata) {
             return $property->getValueGenerationExecutor($this->getTargetPlatform());
         }

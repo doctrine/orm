@@ -57,7 +57,7 @@ class MappedSuperClassMetadata extends ComponentMetadata
     {
         parent::addDeclaredProperty($property);
 
-        if ($property instanceof VersionFieldMetadata) {
+        if ($property->isVersioned()) {
             $this->setDeclaredVersion($property);
         }
     }

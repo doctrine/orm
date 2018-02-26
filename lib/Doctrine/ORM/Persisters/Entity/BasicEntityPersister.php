@@ -27,7 +27,6 @@ use Doctrine\ORM\Mapping\MappingException;
 use Doctrine\ORM\Mapping\OneToManyAssociationMetadata;
 use Doctrine\ORM\Mapping\ToManyAssociationMetadata;
 use Doctrine\ORM\Mapping\ToOneAssociationMetadata;
-use Doctrine\ORM\Mapping\VersionFieldMetadata;
 use Doctrine\ORM\OptimisticLockException;
 use Doctrine\ORM\PersistentCollection;
 use Doctrine\ORM\Persisters\Exception\CantUseInOperatorOnCompositeKeys;
@@ -292,7 +291,7 @@ class BasicEntityPersister implements EntityPersister
      *
      * @return mixed
      */
-    protected function fetchVersionValue(VersionFieldMetadata $versionProperty, array $id)
+    protected function fetchVersionValue(FieldMetadata $versionProperty, array $id)
     {
         $versionedClass = $versionProperty->getDeclaringClass();
         $tableName      = $versionedClass->table->getQuotedQualifiedName($this->platform);
@@ -1531,7 +1530,7 @@ class BasicEntityPersister implements EntityPersister
             }*/
 
             switch (true) {
-                case ($property instanceof VersionFieldMetadata):
+                case ($property instanceof FieldMetadata && $property->isVersioned()):
                     // Do nothing
                     break;
 

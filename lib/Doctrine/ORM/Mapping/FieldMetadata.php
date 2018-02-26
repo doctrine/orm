@@ -17,6 +17,9 @@ class FieldMetadata extends LocalColumnMetadata implements Property
     /** @var string */
     protected $name;
 
+    /** @var bool */
+    protected $versioned = false;
+
     public function __construct(string $name/*, string $columnName, Type $type*/)
     {
 //        @todo Leverage this implementation instead of default, simple constructor
@@ -43,6 +46,22 @@ class FieldMetadata extends LocalColumnMetadata implements Property
     public function getName() : string
     {
         return $this->name;
+    }
+
+    /**
+     * @return bool
+     */
+    public function isVersioned() : bool
+    {
+        return $this->versioned;
+    }
+
+    /**
+     * @param bool $versioned
+     */
+    public function setVersioned(bool $versioned) : void
+    {
+        $this->versioned = $versioned;
     }
 
     /**

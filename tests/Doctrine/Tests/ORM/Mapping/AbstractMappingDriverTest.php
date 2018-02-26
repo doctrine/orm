@@ -1260,9 +1260,10 @@ class User
 
         $metadata->addProperty($fieldMetadata);
 
-        $fieldMetadata = new Mapping\VersionFieldMetadata('version');
+        $fieldMetadata = new Mapping\FieldMetadata('version');
 
         $fieldMetadata->setType(Type::getType('integer'));
+        $fieldMetadata->setVersioned(true);
 
         $metadata->addProperty($fieldMetadata);
         $metadata->setIdGeneratorType(Mapping\GeneratorType::AUTO);

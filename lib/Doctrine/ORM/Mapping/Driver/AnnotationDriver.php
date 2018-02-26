@@ -576,11 +576,53 @@ class AnnotationDriver implements MappingDriver
             throw Mapping\MappingException::propertyTypeIsRequired($className, $fieldName);
         }
 
-        $fieldMetadata = $this->convertColumnAnnotationToFieldMetadata($columnAnnot, $fieldName, $isVersioned);
+        $fieldMetadata = new Mapping\FieldMetadata($fieldName);
+        $columnName    = ! empty($columnAnnot->name)
+            ? $columnAnnot->name
+            : $metadataBuildingContext->getNamingStrategy()->propertyToColumnName($fieldName, $className);
+
+        $fieldMetadata->setType(Type::getType($columnAnnot->type));
+        $fieldMetadata->setVersioned($isVersioned);
+        $fieldMetadata->setColumnName($columnName);
+
+        if (! $metadata->isMappedSuperclass) {
+            $fieldMetadata->setTableName($metadata->getTableName());
+        }
+
+        if (! empty($columnAnnot->columnDefinition)) {
+            $fieldMetadata->setColumnDefinition($columnAnnot->columnDefinition);
+        }
+
+        if (! empty($columnAnnot->length)) {
+            $fieldMetadata->setLength($columnAnnot->length);
+        }
+
+        if ($columnAnnot->options) {
+            $fieldMetadata->setOptions($columnAnnot->options);
+        }
+
+        $fieldMetadata->setScale($columnAnnot->scale);
+        $fieldMetadata->setPrecision($columnAnnot->precision);
+        $fieldMetadata->setNullable($columnAnnot->nullable);
+        $fieldMetadata->setUnique($columnAnnot->unique);
 
         // Check for Id
         if (isset($propertyAnnotations[Annotation\Id::class])) {
             $fieldMetadata->setPrimaryKey(true);
+
+            if ($fieldMetadata->getType()->canRequireSQLConversion()) {
+                throw Mapping\MappingException::sqlConversionNotAllowedForPrimaryKeyProperties($className, $fieldMetadata);
+            }
+        }
+
+        // Prevent PK and version on same field
+        if ($fieldMetadata->isPrimaryKey() && $fieldMetadata->isVersioned()) {
+            throw Mapping\MappingException::cannotVersionIdField($className, $fieldName);
+        }
+
+        // Prevent column duplication
+        if ($metadata->checkPropertyDuplication($columnName)) {
+            throw Mapping\MappingException::duplicateColumnName($className, $columnName);
         }
 
         // Check for GeneratedValue strategy
@@ -868,12 +910,10 @@ class AnnotationDriver implements MappingDriver
         string $fieldName,
         bool $isVersioned
     ) : Mapping\FieldMetadata {
-        $fieldMetadata = $isVersioned
-            ? new Mapping\VersionFieldMetadata($fieldName)
-            : new Mapping\FieldMetadata($fieldName)
-        ;
+        $fieldMetadata = new Mapping\FieldMetadata($fieldName);
 
         $fieldMetadata->setType(Type::getType($columnAnnot->type));
+        $fieldMetadata->setVersioned($isVersioned);
 
         if (! empty($columnAnnot->name)) {
             $fieldMetadata->setColumnName($columnAnnot->name);
