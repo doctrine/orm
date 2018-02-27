@@ -654,6 +654,18 @@ class AnnotationDriver implements MappingDriver
                             'arguments' => $customGeneratorAnnot->arguments,
                         ];
 
+                        if (! isset($idGeneratorDefinition['class'])) {
+                            throw new Mapping\MappingException(
+                                sprintf('Cannot instantiate custom generator, no class has been defined')
+                            );
+                        }
+
+                        if (! class_exists($idGeneratorDefinition['class'])) {
+                            throw new Mapping\MappingException(
+                                sprintf('Cannot instantiate custom generator : %s', var_export($idGeneratorDefinition, true))
+                            );
+                        }
+
                         break;
 
                     /** @todo If it is not supported, why does this exist? */

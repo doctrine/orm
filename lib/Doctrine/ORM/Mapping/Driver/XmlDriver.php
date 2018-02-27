@@ -276,6 +276,18 @@ class XmlDriver extends FileDriver
                             'class' => (string) $customGenerator['class'],
                             'arguments' => [],
                         ];
+
+                        if (! isset($idGeneratorDefinition['class'])) {
+                            throw new Mapping\MappingException(
+                                sprintf('Cannot instantiate custom generator, no class has been defined')
+                            );
+                        }
+
+                        if (! class_exists($idGeneratorDefinition['class'])) {
+                            throw new Mapping\MappingException(
+                                sprintf('Cannot instantiate custom generator : %s', var_export($idGeneratorDefinition, true))
+                            );
+                        }
                     } elseif (isset($idElement->{'table-generator'})) {
                         throw Mapping\MappingException::tableIdGeneratorNotImplemented($className);
                     }
