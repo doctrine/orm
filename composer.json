@@ -41,7 +41,7 @@
             "Doctrine\\Performance\\": "tests/Doctrine/Performance"
         }
     },
-    "bin": ["bin/doctrine"],
+    "bin": ["bin/doctrine", "bin/doctrine.php"],
     "extra": {
         "branch-alias": {
             "dev-master": "3.0.x-dev"
