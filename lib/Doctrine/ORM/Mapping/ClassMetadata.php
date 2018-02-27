@@ -235,6 +235,14 @@ class ClassMetadata extends ComponentMetadata implements TableOwner
         if ($parent->isMappedSuperclass) {
             $this->setCustomRepositoryClassName($parent->getCustomRepositoryClassName());
         }
+
+        if ($parent->cache) {
+            $this->setCache(clone $parent->cache);
+        }
+
+        if (! empty($parent->entityListeners)) {
+            $this->entityListeners = $parent->entityListeners;
+        }
     }
 
     public function setClassName(string $className)
@@ -1330,8 +1338,9 @@ class ClassMetadata extends ComponentMetadata implements TableOwner
             throw MappingException::entityListenerMethodNotFound($class, $method, $this->className);
         }
 
-        if (isset($this->entityListeners[$eventName]) && in_array($listener, $this->entityListeners[$eventName], true)) {
-            throw MappingException::duplicateEntityListener($class, $method, $this->className);
+        // Check if entity listener already got registered and ignore it if positive
+        if (in_array($listener, $this->entityListeners[$eventName] ?? [], true)) {
+            return;
         }
 
         $this->entityListeners[$eventName][] = $listener;

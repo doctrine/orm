@@ -113,16 +113,6 @@ class ClassMetadataFactory extends AbstractClassMetadataFactory
 
         $this->completeIdentifierGeneratorMappings($classMetadata);
 
-        if ($parent) {
-            if ($parent->getCache()) {
-                $classMetadata->setCache(clone $parent->getCache());
-            }
-
-            if (! empty($parent->entityListeners) && empty($classMetadata->entityListeners)) {
-                $classMetadata->entityListeners = $parent->entityListeners;
-            }
-        }
-
         if (! $classMetadata->discriminatorMap && $classMetadata->inheritanceType !== InheritanceType::NONE && $classMetadata->isRootEntity()) {
             $this->addDefaultDiscriminatorMap($classMetadata);
         }
