@@ -419,7 +419,7 @@ class ManyToManyPersister extends AbstractCollectionPersister
         foreach ($mapping['relationToSourceKeyColumns'] as $columnName => $refColumnName) {
             $params[] = isset($sourceClass->fieldNames[$refColumnName])
                 ? $identifier[$sourceClass->fieldNames[$refColumnName]]
-                : $identifier[$sourceClass->getFieldForColumn($columnName)];
+                : $identifier[$sourceClass->getFieldForColumn($refColumnName)];
         }
 
         return $params;

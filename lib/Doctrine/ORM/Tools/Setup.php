@@ -171,11 +171,11 @@ class Setup
 
 
         if (extension_loaded('memcached')) {
-            $memcache = new \Memcached();
-            $memcache->addServer('127.0.0.1', 11211);
+            $memcached = new \Memcached();
+            $memcached->addServer('127.0.0.1', 11211);
 
             $cache = new \Doctrine\Common\Cache\MemcachedCache();
-            $cache->setMemcache($memcache);
+            $cache->setMemcached($memcached);
 
             return $cache;
         }

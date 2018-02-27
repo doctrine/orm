@@ -36,6 +36,17 @@ class DeleteSqlGenerationTest extends OrmTestCase
         }
     }
 
+    /**
+     * @group 6939
+     */
+    public function testSupportsDeleteWithoutWhereAndAlias() : void
+    {
+        $this->assertSqlGeneration(
+            'DELETE FROM Doctrine\Tests\Models\CMS\CmsUser',
+            'DELETE FROM cms_users'
+        );
+    }
+
     public function testSupportsDeleteWithoutWhereAndFrom()
     {
         $this->assertSqlGeneration(

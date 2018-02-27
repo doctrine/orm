@@ -181,9 +181,9 @@ class SchemaValidator
 
                     $identifierColumns = $targetMetadata->getIdentifierColumnNames();
                     foreach ($assoc['joinTable']['inverseJoinColumns'] as $inverseJoinColumn) {
-                        if (!in_array($inverseJoinColumn['referencedColumnName'], $identifierColumns)) {
-                            $ce[] = "The referenced column name '" . $joinColumn['referencedColumnName'] . "' " .
-                                "has to be a primary key column on the target entity class '".$targetMetadata->name."'.";
+                        if (! in_array($inverseJoinColumn['referencedColumnName'], $identifierColumns)) {
+                            $ce[] = "The referenced column name '" . $inverseJoinColumn['referencedColumnName'] . "' " .
+                                "has to be a primary key column on the target entity class '" .$targetMetadata->name . "'.";
                             break;
                         }
                     }
