@@ -37,6 +37,8 @@ use Doctrine\ORM\Query;
 use Doctrine\ORM\UnitOfWork;
 use Doctrine\ORM\Utility\IdentifierFlattener;
 use Doctrine\ORM\Utility\PersisterHelper;
+use function array_merge;
+use function reset;
 
 /**
  * A BasicEntityPersister maps an entity to a single table in a relational database.
@@ -459,20 +461,13 @@ class BasicEntityPersister implements EntityPersister
             );
 
             $targetMapping = $this->em->getClassMetadata($this->class->associationMappings[$idField]['targetEntity']);
+            $targetType    = PersisterHelper::getTypeOfField($targetMapping->identifier[0], $targetMapping, $this->em);
 
-            switch (true) {
-                case (isset($targetMapping->fieldMappings[$targetMapping->identifier[0]])):
-                    $types[] = $targetMapping->fieldMappings[$targetMapping->identifier[0]]['type'];
-                    break;
-
-                case (isset($targetMapping->associationMappings[$targetMapping->identifier[0]])):
-                    $types[] = $targetMapping->associationMappings[$targetMapping->identifier[0]]['type'];
-                    break;
-
-                default:
-                    throw ORMException::unrecognizedField($targetMapping->identifier[0]);
+            if ($targetType === []) {
+                throw ORMException::unrecognizedField($targetMapping->identifier[0]);
             }
 
+            $types[] = reset($targetType);
         }
 
         if ($versioned) {
