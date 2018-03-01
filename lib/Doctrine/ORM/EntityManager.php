@@ -831,7 +831,7 @@ final class EntityManager implements EntityManagerInterface
 
         $connection = static::createConnection($connection, $config, $eventManager);
 
-        return new EntityManager($connection, $config, $connection->getEventManager());
+        return new static($connection, $config, $connection->getEventManager());
     }
 
     /**
