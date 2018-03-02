@@ -434,6 +434,16 @@ class Expr
             }
         }
 
+        if (!count((array) $y)) {
+            throw QueryException::syntaxError(
+                'The provided array for the IN (values) must contain at least one element. 
+        Zero were provided. 
+        When the count of IN(values) is zero, add an *unreachable value for your data-set* to prevent this error.
+        e.g.: if you have values ranging from /[a-f]+/ in the column(s) being matched, add a fake IN([\'G\']) value.  
+        '
+            );
+        }
+
         return new Expr\Func($x . ' IN', (array) $y);
     }
 
