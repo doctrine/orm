@@ -45,8 +45,6 @@ class QueryExpressionVisitor extends ExpressionVisitor
     private $parameters = [];
 
     /**
-     * Constructor
-     *
      * @param string[] $queryAliases
      */
     public function __construct($queryAliases)

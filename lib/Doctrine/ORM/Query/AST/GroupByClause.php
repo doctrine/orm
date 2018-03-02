@@ -6,9 +6,6 @@ namespace Doctrine\ORM\Query\AST;
 
 use Doctrine\ORM\Query\Expr\GroupBy;
 
-/**
- * Description of GroupByClause.
- */
 class GroupByClause extends Node
 {
     /**

@@ -11,7 +11,6 @@ use Doctrine\ORM\UnitOfWork;
 
 /**
  * Base class for all collection persisters.
- *
  */
 abstract class AbstractCollectionPersister implements CollectionPersister
 {
@@ -39,7 +38,6 @@ abstract class AbstractCollectionPersister implements CollectionPersister
 
     /**
      * Initializes a new instance of a class derived from AbstractCollectionPersister.
-     *
      */
     public function __construct(EntityManagerInterface $em)
     {

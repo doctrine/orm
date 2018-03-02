@@ -9,9 +9,6 @@ use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\PersistentCollection;
 
-/**
- * Class ToManyAssociationMetadata
- */
 class ToManyAssociationMetadata extends AssociationMetadata
 {
     /** @var string[] */

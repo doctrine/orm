@@ -7,9 +7,6 @@ namespace Doctrine\ORM\Cache;
 use function time;
 use function uniqid;
 
-/**
- * Cache Lock
- */
 class Lock
 {
     /**
@@ -22,11 +19,7 @@ class Lock
      */
     public $time;
 
-    /**
-     * @param string $value
-     * @param int    $time
-     */
-    public function __construct($value, $time = null)
+    public function __construct(string $value, int $time = null)
     {
         $this->value = $value;
         $this->time  = $time ?: time();

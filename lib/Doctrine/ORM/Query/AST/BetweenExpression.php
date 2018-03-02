@@ -4,9 +4,6 @@ declare(strict_types=1);
 
 namespace Doctrine\ORM\Query\AST;
 
-/**
- * Description of BetweenExpression.
- */
 class BetweenExpression extends Node
 {
     /**

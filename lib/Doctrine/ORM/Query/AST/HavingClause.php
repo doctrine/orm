@@ -4,9 +4,6 @@ declare(strict_types=1);
 
 namespace Doctrine\ORM\Query\AST;
 
-/**
- * Description of HavingClause.
- */
 class HavingClause extends Node
 {
     /**

@@ -7,8 +7,6 @@ namespace Doctrine\ORM\Mapping;
 use Doctrine\ORM\Reflection\ReflectionService;
 
 /**
- * Class EmbeddedClassMetadata
- *
  * @property MappedSuperClassMetadata $parent
  */
 class EmbeddedClassMetadata extends ComponentMetadata implements Property

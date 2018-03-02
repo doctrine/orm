@@ -6,9 +6,6 @@ namespace Doctrine\ORM\Mapping;
 
 use Doctrine\DBAL\Types\Type;
 
-/**
- * Class ColumnMetadata
- */
 abstract class ColumnMetadata
 {
     /**

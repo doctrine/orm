@@ -7,9 +7,6 @@ namespace Doctrine\ORM\Mapping\Driver\Annotation\Binder;
 use Doctrine\ORM\Annotation;
 use Doctrine\ORM\Mapping;
 
-/**
- * Class MappedSuperClassMetadataBinder
- */
 class MappedSuperClassMetadataBinder
 {
     /**

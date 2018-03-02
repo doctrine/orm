@@ -11,7 +11,6 @@ use function array_sum;
 
 /**
  * Provide basic second level cache statistics.
- *
  */
 class StatisticsCacheLogger implements CacheLogger
 {

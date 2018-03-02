@@ -6,10 +6,6 @@ namespace Doctrine\ORM\Mapping;
 
 use function sprintf;
 
-/**
- * Class EntityClassMetadata
- *
- */
 abstract class EntityClassMetadata extends ComponentMetadata
 {
     /** @var string The name of the Entity */

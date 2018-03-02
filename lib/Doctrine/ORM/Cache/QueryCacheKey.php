@@ -32,18 +32,13 @@ class QueryCacheKey extends CacheKey
      */
     public $timestampKey;
 
-    /**
-     * @param string $hash      Result cache id
-     * @param int    $lifetime  Query lifetime
-     * @param int    $cacheMode Query cache mode
-     */
     public function __construct(
-        $hash,
-        $lifetime = 0,
-        $cacheMode = Cache::MODE_NORMAL,
+        string $cacheId,
+        int $lifetime = 0,
+        int $cacheMode = Cache::MODE_NORMAL,
         ?TimestampCacheKey $timestampKey = null
     ) {
-        $this->hash         = $hash;
+        $this->hash         = $cacheId;
         $this->lifetime     = $lifetime;
         $this->cacheMode    = $cacheMode;
         $this->timestampKey = $timestampKey;

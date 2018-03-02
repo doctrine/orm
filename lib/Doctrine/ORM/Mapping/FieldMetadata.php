@@ -7,9 +7,6 @@ namespace Doctrine\ORM\Mapping;
 use Doctrine\DBAL\Types\Type;
 use Doctrine\ORM\Reflection\ReflectionService;
 
-/**
- * Class FieldMetadata
- */
 class FieldMetadata extends LocalColumnMetadata implements Property
 {
     /** @var ComponentMetadata */
@@ -34,9 +31,6 @@ class FieldMetadata extends LocalColumnMetadata implements Property
         $this->name = $name;
     }*/
 
-    /**
-     * Constructor
-     */
     public function __construct(string $name)
     {
         $this->name = $name;

@@ -8,8 +8,6 @@ use Doctrine\DBAL\Platforms\AbstractPlatform;
 use function sprintf;
 
 /**
- * Class TableMetadata
- *
  * @todo guilhermeblanco Add constructor requiring tableName and optional schemaName
  */
 class TableMetadata

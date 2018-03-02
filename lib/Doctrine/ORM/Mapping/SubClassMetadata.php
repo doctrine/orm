@@ -5,8 +5,6 @@ declare(strict_types=1);
 namespace Doctrine\ORM\Mapping;
 
 /**
- * Class SubClassMetadata
- *
  * @property EntityClassMetadata $parent
  */
 class SubClassMetadata extends EntityClassMetadata
