@@ -25,7 +25,7 @@ curl -sS https://getcomposer.org/installer | php
 
  * I am submitting a bugfix for a stable release
    * Your PR should target the [lowest active stable branch (2.6)][2.6].
- * I am submitting new feature
+ * I am submitting a new feature
    * Your PR should target the [master branch (3.0)][Master].
  * I am submitting a BC-breaking change
    * Your PR must target the [master branch (3.0)][Master].
