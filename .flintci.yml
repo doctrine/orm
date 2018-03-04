@@ -1,0 +1,5 @@
+services:
+  phpcs:
+    config_path: phpcs.xml.dist
+  phpcbf:
+    config_path: phpcs.xml.dist
