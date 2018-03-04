@@ -17,7 +17,6 @@ use function array_map;
 use function array_merge;
 use function class_exists;
 use function count;
-use function explode;
 use function get_class;
 use function in_array;
 use function interface_exists;
@@ -25,7 +24,6 @@ use function is_subclass_of;
 use function method_exists;
 use function spl_object_id;
 use function sprintf;
-use function strpos;
 
 /**
  * A <tt>ClassMetadata</tt> instance holds all the object-relational mapping metadata
