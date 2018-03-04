@@ -978,45 +978,6 @@ class AnnotationDriver implements MappingDriver
     }
 
     /**
-     * @return mixed[]
-     */
-    private function convertSqlResultSetMapping(Annotation\SqlResultSetMapping $resultSetMapping)
-    {
-        $entities = [];
-
-        foreach ($resultSetMapping->entities as $entityResultAnnot) {
-            $entityResult = [
-                'fields'                => [],
-                'entityClass'           => $entityResultAnnot->entityClass,
-                'discriminatorColumn'   => $entityResultAnnot->discriminatorColumn,
-            ];
-
-            foreach ($entityResultAnnot->fields as $fieldResultAnnot) {
-                $entityResult['fields'][] = [
-                    'name'      => $fieldResultAnnot->name,
-                    'column'    => $fieldResultAnnot->column,
-                ];
-            }
-
-            $entities[] = $entityResult;
-        }
-
-        $columns = [];
-
-        foreach ($resultSetMapping->columns as $columnResultAnnot) {
-            $columns[] = [
-                'name' => $columnResultAnnot->name,
-            ];
-        }
-
-        return [
-            'name'     => $resultSetMapping->name,
-            'entities' => $entities,
-            'columns'  => $columns,
-        ];
-    }
-
-    /**
      * @param Annotation\Annotation[] $classAnnotations
      */
     private function attachTable(
