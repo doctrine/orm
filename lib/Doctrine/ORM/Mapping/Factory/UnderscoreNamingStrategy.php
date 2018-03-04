@@ -19,9 +19,7 @@ use function substr;
  */
 class UnderscoreNamingStrategy implements NamingStrategy
 {
-    /**
-     * @var int
-     */
+    /** @var int */
     private $case;
 
     /**

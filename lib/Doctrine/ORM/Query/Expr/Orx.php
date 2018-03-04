@@ -9,14 +9,10 @@ namespace Doctrine\ORM\Query\Expr;
  */
 class Orx extends Composite
 {
-    /**
-     * @var string
-     */
+    /** @var string */
     protected $separator = ' OR ';
 
-    /**
-     * @var string[]
-     */
+    /** @var string[] */
     protected $allowedClasses = [
         Comparison::class,
         Func::class,

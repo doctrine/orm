@@ -46,14 +46,10 @@ use function substr;
  */
 abstract class PersistentObject implements EntityManagerAware
 {
-    /**
-     * @var EntityManagerInterface|null
-     */
+    /** @var EntityManagerInterface|null */
     private static $entityManager = null;
 
-    /**
-     * @var ClassMetadata|null
-     */
+    /** @var ClassMetadata|null */
     private $cm;
 
     /**

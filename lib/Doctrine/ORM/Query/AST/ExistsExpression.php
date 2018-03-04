@@ -9,14 +9,10 @@ namespace Doctrine\ORM\Query\AST;
  */
 class ExistsExpression extends Node
 {
-    /**
-     * @var bool
-     */
+    /** @var bool */
     public $not;
 
-    /**
-     * @var Subselect
-     */
+    /** @var Subselect */
     public $subselect;
 
     /**

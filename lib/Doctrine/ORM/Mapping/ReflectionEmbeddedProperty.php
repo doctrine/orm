@@ -18,24 +18,16 @@ use ReflectionProperty;
  */
 class ReflectionEmbeddedProperty extends ReflectionProperty
 {
-    /**
-     * @var ReflectionProperty reflection property of the class where the embedded object has to be put
-     */
+    /** @var ReflectionProperty reflection property of the class where the embedded object has to be put */
     private $parentProperty;
 
-    /**
-     * @var ReflectionProperty reflection property of the embedded object
-     */
+    /** @var ReflectionProperty reflection property of the embedded object */
     private $childProperty;
 
-    /**
-     * @var string name of the embedded class to be eventually instantiated
-     */
+    /** @var string name of the embedded class to be eventually instantiated */
     private $embeddedClass;
 
-    /**
-     * @var Instantiator|null
-     */
+    /** @var Instantiator|null */
     private $instantiator;
 
     /**

@@ -9,19 +9,13 @@ namespace Doctrine\ORM\Query\AST;
  */
 class UpdateClause extends Node
 {
-    /**
-     * @var string
-     */
+    /** @var string */
     public $abstractSchemaName;
 
-    /**
-     * @var string
-     */
+    /** @var string */
     public $aliasIdentificationVariable;
 
-    /**
-     * @var UpdateItem[]
-     */
+    /** @var UpdateItem[] */
     public $updateItems = [];
 
     /**

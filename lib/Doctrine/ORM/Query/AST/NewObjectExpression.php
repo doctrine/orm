@@ -9,14 +9,10 @@ namespace Doctrine\ORM\Query\AST;
  */
 class NewObjectExpression extends Node
 {
-    /**
-     * @var string
-     */
+    /** @var string */
     public $className;
 
-    /**
-     * @var mixed[]
-     */
+    /** @var mixed[] */
     public $args;
 
     /**

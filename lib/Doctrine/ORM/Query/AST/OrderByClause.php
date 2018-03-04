@@ -9,9 +9,7 @@ namespace Doctrine\ORM\Query\AST;
  */
 class OrderByClause extends Node
 {
-    /**
-     * @var OrderByItem[]
-     */
+    /** @var OrderByItem[] */
     public $orderByItems = [];
 
     /**

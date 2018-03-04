@@ -13,9 +13,7 @@ use Doctrine\ORM\Query\ResultSetMapping;
  */
 abstract class EntityManagerDecorator extends ObjectManagerDecorator implements EntityManagerInterface
 {
-    /**
-     * @var EntityManagerInterface
-     */
+    /** @var EntityManagerInterface */
     protected $wrapped;
 
     public function __construct(EntityManagerInterface $wrapped)

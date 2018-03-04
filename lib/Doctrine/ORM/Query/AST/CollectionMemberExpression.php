@@ -12,14 +12,10 @@ class CollectionMemberExpression extends Node
     /** @var mixed */
     public $entityExpression;
 
-    /**
-     * @var PathExpression
-     */
+    /** @var PathExpression */
     public $collectionValuedPathExpression;
 
-    /**
-     * @var bool
-     */
+    /** @var bool */
     public $not;
 
     /**

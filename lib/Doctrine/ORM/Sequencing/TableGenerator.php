@@ -11,29 +11,19 @@ use Doctrine\ORM\EntityManagerInterface;
  */
 class TableGenerator implements Generator
 {
-    /**
-     * @var string
-     */
+    /** @var string */
     private $tableName;
 
-    /**
-     * @var string
-     */
+    /** @var string */
     private $sequenceName;
 
-    /**
-     * @var int
-     */
+    /** @var int */
     private $allocationSize;
 
-    /**
-     * @var int|null
-     */
+    /** @var int|null */
     private $nextValue;
 
-    /**
-     * @var int|null
-     */
+    /** @var int|null */
     private $maxValue;
 
     public function __construct(string $tableName, string $sequenceName = 'default', int $allocationSize = 10)

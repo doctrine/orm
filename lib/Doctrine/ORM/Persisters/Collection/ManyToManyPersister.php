@@ -163,7 +163,6 @@ class ManyToManyPersister extends AbstractCollectionPersister
 
         // If there is a provided criteria, make part of conditions
         // @todo Fix this. Current SQL returns something like:
-        //
         /*if ($criteria && ($expression = $criteria->getWhereExpression()) !== null) {
             // A join is needed on the target entity
             $targetTableName = $targetClass->table->getQuotedQualifiedName($this->platform);

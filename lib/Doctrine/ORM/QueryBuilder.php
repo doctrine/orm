@@ -135,9 +135,7 @@ class QueryBuilder
      */
     protected $cacheMode;
 
-    /**
-     * @var int
-     */
+    /** @var int */
     protected $lifetime = 0;
 
     /**

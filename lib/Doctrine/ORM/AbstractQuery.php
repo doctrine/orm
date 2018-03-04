@@ -94,9 +94,7 @@ abstract class AbstractQuery
      */
     protected $hydrationMode = self::HYDRATE_OBJECT;
 
-    /**
-     * @var QueryCacheProfile
-     */
+    /** @var QueryCacheProfile */
     protected $queryCacheProfile;
 
     /**
@@ -106,9 +104,7 @@ abstract class AbstractQuery
      */
     protected $expireResultCache = false;
 
-    /**
-     * @var QueryCacheProfile
-     */
+    /** @var QueryCacheProfile */
     protected $hydrationCacheProfile;
 
     /**
@@ -118,9 +114,7 @@ abstract class AbstractQuery
      */
     protected $cacheable = false;
 
-    /**
-     * @var bool
-     */
+    /** @var bool */
     protected $hasCache = false;
 
     /**
@@ -137,14 +131,10 @@ abstract class AbstractQuery
      */
     protected $cacheMode;
 
-    /**
-     * @var CacheLogger|null
-     */
+    /** @var CacheLogger|null */
     protected $cacheLogger;
 
-    /**
-     * @var int
-     */
+    /** @var int */
     protected $lifetime = 0;
 
     /**
@@ -233,7 +223,7 @@ abstract class AbstractQuery
      */
     public function setLifetime($lifetime)
     {
-        $this->lifetime = (integer) $lifetime;
+        $this->lifetime = (int) $lifetime;
 
         return $this;
     }
@@ -253,7 +243,7 @@ abstract class AbstractQuery
      */
     public function setCacheMode($cacheMode)
     {
-        $this->cacheMode = (integer) $cacheMode;
+        $this->cacheMode = (int) $cacheMode;
 
         return $this;
     }

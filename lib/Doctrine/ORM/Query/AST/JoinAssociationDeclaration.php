@@ -9,19 +9,13 @@ namespace Doctrine\ORM\Query\AST;
  */
 class JoinAssociationDeclaration extends Node
 {
-    /**
-     * @var JoinAssociationPathExpression
-     */
+    /** @var JoinAssociationPathExpression */
     public $joinAssociationPathExpression;
 
-    /**
-     * @var string
-     */
+    /** @var string */
     public $aliasIdentificationVariable;
 
-    /**
-     * @var IndexBy|null
-     */
+    /** @var IndexBy|null */
     public $indexBy;
 
     /**

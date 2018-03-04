@@ -9,19 +9,13 @@ namespace Doctrine\ORM\Query\AST;
  */
 class RangeVariableDeclaration extends Node
 {
-    /**
-     * @var string
-     */
+    /** @var string */
     public $abstractSchemaName;
 
-    /**
-     * @var string
-     */
+    /** @var string */
     public $aliasIdentificationVariable;
 
-    /**
-     * @var bool
-     */
+    /** @var bool */
     public $isRoot;
 
     /**

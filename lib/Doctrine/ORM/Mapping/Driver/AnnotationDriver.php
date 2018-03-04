@@ -40,9 +40,7 @@ use function strtoupper;
  */
 class AnnotationDriver implements MappingDriver
 {
-    /**
-     * @var int[]
-     */
+    /** @var int[] */
     protected $entityAnnotationClasses = [
         Annotation\Entity::class           => 1,
         Annotation\MappedSuperclass::class => 2,

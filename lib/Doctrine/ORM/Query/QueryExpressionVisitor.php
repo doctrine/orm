@@ -19,9 +19,7 @@ use function strpos;
  */
 class QueryExpressionVisitor extends ExpressionVisitor
 {
-    /**
-     * @var string[]
-     */
+    /** @var string[] */
     private static $operatorMap = [
         Comparison::GT => Expr\Comparison::GT,
         Comparison::GTE => Expr\Comparison::GTE,
@@ -29,19 +27,13 @@ class QueryExpressionVisitor extends ExpressionVisitor
         Comparison::LTE => Expr\Comparison::LTE,
     ];
 
-    /**
-     * @var string[]
-     */
+    /** @var string[] */
     private $queryAliases;
 
-    /**
-     * @var Expr
-     */
+    /** @var Expr */
     private $expr;
 
-    /**
-     * @var mixed[]
-     */
+    /** @var mixed[] */
     private $parameters = [];
 
     /**

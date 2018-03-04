@@ -9,19 +9,13 @@ namespace Doctrine\ORM\Query\Expr;
  */
 class Select extends Base
 {
-    /**
-     * @var string
-     */
+    /** @var string */
     protected $preSeparator = '';
 
-    /**
-     * @var string
-     */
+    /** @var string */
     protected $postSeparator = '';
 
-    /**
-     * @var string[]
-     */
+    /** @var string[] */
     protected $allowedClasses = [Func::class];
 
     /**

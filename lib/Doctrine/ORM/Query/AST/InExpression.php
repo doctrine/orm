@@ -9,24 +9,16 @@ namespace Doctrine\ORM\Query\AST;
  */
 class InExpression extends Node
 {
-    /**
-     * @var bool
-     */
+    /** @var bool */
     public $not;
 
-    /**
-     * @var ArithmeticExpression
-     */
+    /** @var ArithmeticExpression */
     public $expression;
 
-    /**
-     * @var Literal[]
-     */
+    /** @var Literal[] */
     public $literals = [];
 
-    /**
-     * @var Subselect|null
-     */
+    /** @var Subselect|null */
     public $subselect;
 
     /**

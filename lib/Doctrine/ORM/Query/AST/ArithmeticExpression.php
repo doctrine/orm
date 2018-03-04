@@ -9,14 +9,10 @@ namespace Doctrine\ORM\Query\AST;
  */
 class ArithmeticExpression extends Node
 {
-    /**
-     * @var SimpleArithmeticExpression|null
-     */
+    /** @var SimpleArithmeticExpression|null */
     public $simpleArithmeticExpression;
 
-    /**
-     * @var Subselect|null
-     */
+    /** @var Subselect|null */
     public $subselect;
 
     /**

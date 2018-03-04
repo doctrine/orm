@@ -15,9 +15,7 @@ use function trim;
  */
 class DefaultEntityListenerResolver implements EntityListenerResolver
 {
-    /**
-     * @var object[] Map to store entity listener instances.
-     */
+    /** @var object[] Map to store entity listener instances. */
     private $instances = [];
 
     /**

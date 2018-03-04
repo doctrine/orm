@@ -9,14 +9,10 @@ namespace Doctrine\ORM\Query\Expr;
  */
 class Andx extends Composite
 {
-    /**
-     * @var string
-     */
+    /** @var string */
     protected $separator = ' AND ';
 
-    /**
-     * @var string[]
-     */
+    /** @var string[] */
     protected $allowedClasses = [
         Comparison::class,
         Func::class,

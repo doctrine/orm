@@ -11,14 +11,10 @@ use function strtoupper;
  */
 class QuantifiedExpression extends Node
 {
-    /**
-     * @var string
-     */
+    /** @var string */
     public $type;
 
-    /**
-     * @var Subselect
-     */
+    /** @var Subselect */
     public $subselect;
 
     /**

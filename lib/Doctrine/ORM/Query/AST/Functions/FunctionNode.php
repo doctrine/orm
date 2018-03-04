@@ -13,9 +13,7 @@ use Doctrine\ORM\Query\SqlWalker;
  */
 abstract class FunctionNode extends Node
 {
-    /**
-     * @var string
-     */
+    /** @var string */
     public $name;
 
     /**

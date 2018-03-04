@@ -10,14 +10,10 @@ use function class_exists;
 
 class ClassMetadataDefinitionFactory
 {
-    /**
-     * @var ClassMetadataResolver
-     */
+    /** @var ClassMetadataResolver */
     private $resolver;
 
-    /**
-     * @var ClassMetadataGeneratorStrategy
-     */
+    /** @var ClassMetadataGeneratorStrategy */
     private $generatorStrategy;
 
     public function __construct(ClassMetadataResolver $resolver, ClassMetadataGeneratorStrategy $generatorStrategy)

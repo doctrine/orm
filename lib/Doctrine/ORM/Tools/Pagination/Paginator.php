@@ -20,24 +20,16 @@ use function count;
  */
 class Paginator implements \Countable, \IteratorAggregate
 {
-    /**
-     * @var Query
-     */
+    /** @var Query */
     private $query;
 
-    /**
-     * @var bool
-     */
+    /** @var bool */
     private $fetchJoinCollection;
 
-    /**
-     * @var bool|null
-     */
+    /** @var bool|null */
     private $useOutputWalkers;
 
-    /**
-     * @var int
-     */
+    /** @var int */
     private $count;
 
     /**

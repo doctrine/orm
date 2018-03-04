@@ -9,14 +9,10 @@ namespace Doctrine\ORM\Mapping;
  */
 abstract class ComponentMetadata
 {
-    /**
-     * @var string
-     */
+    /** @var string */
     protected $className;
 
-    /**
-     * @var ComponentMetadata|null
-     */
+    /** @var ComponentMetadata|null */
     protected $parent;
 
     /**
@@ -26,14 +22,10 @@ abstract class ComponentMetadata
      */
     protected $reflectionClass;
 
-    /**
-     * @var CacheMetadata|null
-     */
+    /** @var CacheMetadata|null */
     protected $cache;
 
-    /**
-     * @var Property[]
-     */
+    /** @var Property[] */
     protected $declaredProperties = [];
 
     public function __construct(string $className, ClassMetadataBuildingContext $metadataBuildingContext)

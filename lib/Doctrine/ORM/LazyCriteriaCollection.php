@@ -19,19 +19,13 @@ use Doctrine\ORM\Persisters\Entity\EntityPersister;
  */
 class LazyCriteriaCollection extends AbstractLazyCollection implements Selectable
 {
-    /**
-     * @var BasicEntityPersister
-     */
+    /** @var BasicEntityPersister */
     protected $entityPersister;
 
-    /**
-     * @var Criteria
-     */
+    /** @var Criteria */
     protected $criteria;
 
-    /**
-     * @var int|null
-     */
+    /** @var int|null */
     private $count;
 
     public function __construct(EntityPersister $entityPersister, Criteria $criteria)

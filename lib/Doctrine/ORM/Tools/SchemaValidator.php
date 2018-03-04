@@ -32,9 +32,7 @@ use function sprintf;
  */
 class SchemaValidator
 {
-    /**
-     * @var EntityManagerInterface
-     */
+    /** @var EntityManagerInterface */
     private $em;
 
     public function __construct(EntityManagerInterface $em)

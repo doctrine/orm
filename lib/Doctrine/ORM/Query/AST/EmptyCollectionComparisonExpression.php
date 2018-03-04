@@ -9,14 +9,10 @@ namespace Doctrine\ORM\Query\AST;
  */
 class EmptyCollectionComparisonExpression extends Node
 {
-    /**
-     * @var PathExpression
-     */
+    /** @var PathExpression */
     public $expression;
 
-    /**
-     * @var bool
-     */
+    /** @var bool */
     public $not;
 
     /**

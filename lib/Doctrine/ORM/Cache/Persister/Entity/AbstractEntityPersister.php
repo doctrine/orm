@@ -31,64 +31,40 @@ use function sha1;
 
 abstract class AbstractEntityPersister implements CachedEntityPersister
 {
-    /**
-     * @var EntityManagerInterface
-     */
+    /** @var EntityManagerInterface */
     protected $em;
 
-    /**
-     * @var ClassMetadataFactory
-     */
+    /** @var ClassMetadataFactory */
     protected $metadataFactory;
 
-    /**
-     * @var EntityPersister
-     */
+    /** @var EntityPersister */
     protected $persister;
 
-    /**
-     * @var ClassMetadata
-     */
+    /** @var ClassMetadata */
     protected $class;
 
-    /**
-     * @var mixed[][]
-     */
+    /** @var mixed[][] */
     protected $queuedCache = [];
 
-    /**
-     * @var Region
-     */
+    /** @var Region */
     protected $region;
 
-    /**
-     * @var TimestampRegion
-     */
+    /** @var TimestampRegion */
     protected $timestampRegion;
 
-    /**
-     * @var TimestampCacheKey
-     */
+    /** @var TimestampCacheKey */
     protected $timestampKey;
 
-    /**
-     * @var EntityHydrator
-     */
+    /** @var EntityHydrator */
     protected $hydrator;
 
-    /**
-     * @var Cache
-     */
+    /** @var Cache */
     protected $cache;
 
-    /**
-     * @var CacheLogger
-     */
+    /** @var CacheLogger */
     protected $cacheLogger;
 
-    /**
-     * @var string
-     */
+    /** @var string */
     protected $regionName;
 
     /**

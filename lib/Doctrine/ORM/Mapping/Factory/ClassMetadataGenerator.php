@@ -12,14 +12,10 @@ use Doctrine\ORM\Mapping\Exporter\ClassMetadataExporter;
  */
 class ClassMetadataGenerator
 {
-    /**
-     * @var MappingDriver
-     */
+    /** @var MappingDriver */
     protected $mappingDriver;
 
-    /**
-     * @var ClassMetadataExporter
-     */
+    /** @var ClassMetadataExporter */
     private $metadataExporter;
 
     public function __construct(

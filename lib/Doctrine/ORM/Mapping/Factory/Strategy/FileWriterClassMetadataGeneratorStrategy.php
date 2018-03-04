@@ -18,9 +18,7 @@ use function uniqid;
 
 class FileWriterClassMetadataGeneratorStrategy implements ClassMetadataGeneratorStrategy
 {
-    /**
-     * @var ClassMetadataGenerator
-     */
+    /** @var ClassMetadataGenerator */
     private $generator;
 
     public function __construct(ClassMetadataGenerator $generator)

@@ -15,19 +15,13 @@ use Doctrine\ORM\UnitOfWork;
  */
 class DefaultCollectionHydrator implements CollectionHydrator
 {
-    /**
-     * @var EntityManagerInterface
-     */
+    /** @var EntityManagerInterface */
     private $em;
 
-    /**
-     * @var UnitOfWork
-     */
+    /** @var UnitOfWork */
     private $uow;
 
-    /**
-     * @var mixed[]
-     */
+    /** @var mixed[] */
     private static $hints = [Query::HINT_CACHE_ENABLED => true];
 
     /**

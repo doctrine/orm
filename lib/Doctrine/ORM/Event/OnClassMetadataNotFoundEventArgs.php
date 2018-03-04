@@ -17,19 +17,13 @@ use Doctrine\ORM\Mapping\ClassMetadataBuildingContext;
  */
 class OnClassMetadataNotFoundEventArgs extends ManagerEventArgs
 {
-    /**
-     * @var string
-     */
+    /** @var string */
     private $className;
 
-    /**
-     * @var ClassMetadataBuildingContext
-     */
+    /** @var ClassMetadataBuildingContext */
     private $metadataBuildingContext;
 
-    /**
-     * @var ClassMetadata|null
-     */
+    /** @var ClassMetadata|null */
     private $foundMetadata;
 
     public function __construct(

@@ -131,9 +131,7 @@ final class EntityManager implements EntityManagerInterface
      */
     private $filterCollection;
 
-    /**
-     * @var Cache The second level cache regions API.
-     */
+    /** @var Cache The second level cache regions API. */
     private $cache;
 
     /**

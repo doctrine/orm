@@ -10,28 +10,18 @@ namespace Doctrine\ORM\Annotation;
  */
 final class Table implements Annotation
 {
-    /**
-     * @var string
-     */
+    /** @var string */
     public $name;
 
-    /**
-     * @var string
-     */
+    /** @var string */
     public $schema;
 
-    /**
-     * @var array<\Doctrine\ORM\Annotation\Index>
-     */
+    /** @var array<\Doctrine\ORM\Annotation\Index> */
     public $indexes = [];
 
-    /**
-     * @var array<\Doctrine\ORM\Annotation\UniqueConstraint>
-     */
+    /** @var array<\Doctrine\ORM\Annotation\UniqueConstraint> */
     public $uniqueConstraints = [];
 
-    /**
-     * @var array
-     */
+    /** @var array */
     public $options = [];
 }

@@ -8,19 +8,13 @@ use Doctrine\ORM\Mapping\ClassMetadata;
 
 class ClassMetadataDefinition
 {
-    /**
-     * @var string
-     */
+    /** @var string */
     public $entityClassName;
 
-    /**
-     * @var string
-     */
+    /** @var string */
     public $metadataClassName;
 
-    /**
-     * @var ClassMetadata|null
-     */
+    /** @var ClassMetadata|null */
     public $parentClassMetadata;
 
     public function __construct(

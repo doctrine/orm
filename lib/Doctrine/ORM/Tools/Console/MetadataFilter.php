@@ -15,9 +15,7 @@ use function sprintf;
  */
 class MetadataFilter extends \FilterIterator implements \Countable
 {
-    /**
-     * @var string[]
-     */
+    /** @var string[] */
     private $filter = [];
 
     /**

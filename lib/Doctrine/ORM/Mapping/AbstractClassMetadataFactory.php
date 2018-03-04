@@ -29,24 +29,16 @@ abstract class AbstractClassMetadataFactory implements ClassMetadataFactory
      */
     protected $cacheSalt = '$CLASSMETADATA';
 
-    /**
-     * @var Cache|null
-     */
+    /** @var Cache|null */
     private $cacheDriver;
 
-    /**
-     * @var ClassMetadata[]
-     */
+    /** @var ClassMetadata[] */
     private $loadedMetadata = [];
 
-    /**
-     * @var bool
-     */
+    /** @var bool */
     protected $initialized = false;
 
-    /**
-     * @var ReflectionService|null
-     */
+    /** @var ReflectionService|null */
     protected $reflectionService;
 
     /**

@@ -20,9 +20,7 @@ use function ltrim;
  */
 class ResolveTargetEntityListener implements EventSubscriber
 {
-    /**
-     * @var string[] indexed by original entity name
-     */
+    /** @var string[] indexed by original entity name */
     private $resolveTargetEntities = [];
 
     /**

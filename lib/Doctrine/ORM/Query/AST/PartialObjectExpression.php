@@ -6,14 +6,10 @@ namespace Doctrine\ORM\Query\AST;
 
 class PartialObjectExpression extends Node
 {
-    /**
-     * @var string
-     */
+    /** @var string */
     public $identificationVariable;
 
-    /**
-     * @var mixed[]
-     */
+    /** @var mixed[] */
     public $partialFieldSet;
 
     /**

@@ -9,24 +9,16 @@ namespace Doctrine\ORM\Query\AST;
  */
 class LikeExpression extends Node
 {
-    /**
-     * @var bool
-     */
+    /** @var bool */
     public $not;
 
-    /**
-     * @var Node
-     */
+    /** @var Node */
     public $stringExpression;
 
-    /**
-     * @var InputParameter
-     */
+    /** @var InputParameter */
     public $stringPattern;
 
-    /**
-     * @var Literal|null
-     */
+    /** @var Literal|null */
     public $escapeChar;
 
     /**

@@ -34,19 +34,13 @@ class FileLockRegion implements ConcurrentRegion
 {
     public const LOCK_EXTENSION = 'lock';
 
-    /**
-     * @var Region
-     */
+    /** @var Region */
     private $region;
 
-    /**
-     * @var string
-     */
+    /** @var string */
     private $directory;
 
-    /**
-     * @var int
-     */
+    /** @var int */
     private $lockLifetime;
 
     /**

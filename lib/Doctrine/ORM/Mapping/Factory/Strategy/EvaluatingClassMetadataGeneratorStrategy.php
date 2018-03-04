@@ -9,9 +9,7 @@ use Doctrine\ORM\Mapping\Factory\ClassMetadataGenerator;
 
 class EvaluatingClassMetadataGeneratorStrategy implements ClassMetadataGeneratorStrategy
 {
-    /**
-     * @var ClassMetadataGenerator
-     */
+    /** @var ClassMetadataGenerator */
     private $generator;
 
     public function __construct(ClassMetadataGenerator $generator)

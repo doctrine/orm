@@ -9,14 +9,10 @@ namespace Doctrine\ORM\Query\AST;
  */
 class JoinVariableDeclaration extends Node
 {
-    /**
-     * @var Join
-     */
+    /** @var Join */
     public $join;
 
-    /**
-     * @var IndexBy|null
-     */
+    /** @var IndexBy|null */
     public $indexBy;
 
     /**

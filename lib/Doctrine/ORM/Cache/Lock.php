@@ -9,17 +9,13 @@ use function uniqid;
 
 class Lock
 {
-    /**
-     * @var string
-     */
+    /** @var string */
     public $value;
 
-    /**
-     * @var int
-     */
+    /** @var int */
     public $time;
 
-    public function __construct(string $value, int $time = null)
+    public function __construct(string $value, ?int $time = null)
     {
         $this->value = $value;
         $this->time  = $time ?: time();

@@ -16,29 +16,19 @@ use function strcasecmp;
  */
 class TrimFunction extends FunctionNode
 {
-    /**
-     * @var bool
-     */
+    /** @var bool */
     public $leading;
 
-    /**
-     * @var bool
-     */
+    /** @var bool */
     public $trailing;
 
-    /**
-     * @var bool
-     */
+    /** @var bool */
     public $both;
 
-    /**
-     * @var bool
-     */
+    /** @var bool */
     public $trimChar = false;
 
-    /**
-     * @var Node
-     */
+    /** @var Node */
     public $stringPrimary;
 
     /**

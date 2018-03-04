@@ -18,9 +18,7 @@ use function trim;
  */
 class RowNumberOverFunction extends FunctionNode
 {
-    /**
-     * @var OrderByClause
-     */
+    /** @var OrderByClause */
     public $orderByClause;
 
     /**

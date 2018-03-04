@@ -14,14 +14,10 @@ use function substr;
  */
 class InputParameter extends Node
 {
-    /**
-     * @var bool
-     */
+    /** @var bool */
     public $isNamed;
 
-    /**
-     * @var string
-     */
+    /** @var string */
     public $name;
 
     /**

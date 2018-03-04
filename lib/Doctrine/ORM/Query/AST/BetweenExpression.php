@@ -6,24 +6,16 @@ namespace Doctrine\ORM\Query\AST;
 
 class BetweenExpression extends Node
 {
-    /**
-     * @var ArithmeticExpression
-     */
+    /** @var ArithmeticExpression */
     public $expression;
 
-    /**
-     * @var ArithmeticExpression
-     */
+    /** @var ArithmeticExpression */
     public $leftBetweenExpression;
 
-    /**
-     * @var ArithmeticExpression
-     */
+    /** @var ArithmeticExpression */
     public $rightBetweenExpression;
 
-    /**
-     * @var bool
-     */
+    /** @var bool */
     public $not;
 
     /**

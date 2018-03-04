@@ -6,14 +6,10 @@ namespace Doctrine\ORM\Mapping;
 
 class MappedSuperClassMetadata extends ComponentMetadata
 {
-    /**
-     * @var string|null
-     */
+    /** @var string|null */
     protected $customRepositoryClassName;
 
-    /**
-     * @var Property|null
-     */
+    /** @var Property|null */
     protected $declaredVersion;
 
     public function getCustomRepositoryClassName() : ?string

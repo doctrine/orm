@@ -10,13 +10,9 @@ namespace Doctrine\ORM\Annotation;
  */
 final class Entity implements Annotation
 {
-    /**
-     * @var string
-     */
+    /** @var string */
     public $repositoryClass;
 
-    /**
-     * @var bool
-     */
+    /** @var bool */
     public $readOnly = false;
 }

@@ -9,9 +9,7 @@ namespace Doctrine\ORM\Query\AST;
  */
 class ConditionalTerm extends Node
 {
-    /**
-     * @var ConditionalFactor[]
-     */
+    /** @var ConditionalFactor[] */
     public $conditionalFactors = [];
 
     /**

@@ -30,19 +30,13 @@ use function sprintf;
  */
 class CountOutputWalker extends SqlWalker
 {
-    /**
-     * @var AbstractPlatform
-     */
+    /** @var AbstractPlatform */
     private $platform;
 
-    /**
-     * @var ResultSetMapping
-     */
+    /** @var ResultSetMapping */
     private $rsm;
 
-    /**
-     * @var mixed[][]
-     */
+    /** @var mixed[][] */
     private $queryComponents;
 
     /**

@@ -10,19 +10,13 @@ namespace Doctrine\ORM\Annotation;
  */
 final class DiscriminatorColumn implements Annotation
 {
-    /**
-     * @var string
-     */
+    /** @var string */
     public $name;
 
-    /**
-     * @var string
-     */
+    /** @var string */
     public $type;
 
-    /**
-     * @var int
-     */
+    /** @var int */
     public $length;
 
     /**
@@ -32,8 +26,6 @@ final class DiscriminatorColumn implements Annotation
      */
     public $fieldName;
 
-    /**
-     * @var string
-     */
+    /** @var string */
     public $columnDefinition;
 }

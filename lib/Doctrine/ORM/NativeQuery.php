@@ -14,9 +14,7 @@ use function ksort;
  */
 final class NativeQuery extends AbstractQuery
 {
-    /**
-     * @var string
-     */
+    /** @var string */
     private $sql;
 
     /**

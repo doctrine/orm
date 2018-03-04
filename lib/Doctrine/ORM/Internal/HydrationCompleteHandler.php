@@ -16,19 +16,13 @@ use Doctrine\ORM\Mapping\ClassMetadata;
  */
 final class HydrationCompleteHandler
 {
-    /**
-     * @var ListenersInvoker
-     */
+    /** @var ListenersInvoker */
     private $listenersInvoker;
 
-    /**
-     * @var EntityManagerInterface
-     */
+    /** @var EntityManagerInterface */
     private $em;
 
-    /**
-     * @var mixed[][]
-     */
+    /** @var mixed[][] */
     private $deferredPostLoadInvocations = [];
 
     /**

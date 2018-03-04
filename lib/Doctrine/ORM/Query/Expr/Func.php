@@ -11,14 +11,10 @@ use function implode;
  */
 class Func
 {
-    /**
-     * @var string
-     */
+    /** @var string */
     protected $name;
 
-    /**
-     * @var mixed[]
-     */
+    /** @var mixed[] */
     protected $arguments;
 
     /**

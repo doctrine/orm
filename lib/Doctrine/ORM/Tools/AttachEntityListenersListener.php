@@ -13,9 +13,7 @@ use function ltrim;
  */
 class AttachEntityListenersListener
 {
-    /**
-     * @var mixed[][]
-     */
+    /** @var mixed[][] */
     private $entityListeners = [];
 
     /**

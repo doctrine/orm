@@ -18,34 +18,22 @@ use function rtrim;
  */
 class MetadataConfiguration
 {
-    /**
-     * @var string
-     */
+    /** @var string */
     private $namespace;
 
-    /**
-     * @var string
-     */
+    /** @var string */
     private $directory;
 
-    /**
-     * @var ClassMetadataResolver
-     */
+    /** @var ClassMetadataResolver */
     private $resolver;
 
-    /**
-     * @var MappingDriver
-     */
+    /** @var MappingDriver */
     private $mappingDriver;
 
-    /**
-     * @var NamingStrategy
-     */
+    /** @var NamingStrategy */
     private $namingStrategy;
 
-    /**
-     * @var int
-     */
+    /** @var int */
     private $autoGenerate = AbstractClassMetadataFactory::AUTOGENERATE_ALWAYS;
 
     public function getNamespace() : string

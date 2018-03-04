@@ -9,9 +9,7 @@ namespace Doctrine\ORM\Query\AST;
  */
 class FromClause extends Node
 {
-    /**
-     * @var IdentificationVariableDeclaration[]
-     */
+    /** @var IdentificationVariableDeclaration[] */
     public $identificationVariableDeclarations = [];
 
     /**

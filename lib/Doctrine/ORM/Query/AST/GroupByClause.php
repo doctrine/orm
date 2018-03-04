@@ -8,9 +8,7 @@ use Doctrine\ORM\Query\Expr\GroupBy;
 
 class GroupByClause extends Node
 {
-    /**
-     * @var GroupBy[]
-     */
+    /** @var GroupBy[] */
     public $groupByItems = [];
 
     /**

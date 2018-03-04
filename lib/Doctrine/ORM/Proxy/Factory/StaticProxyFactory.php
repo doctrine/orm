@@ -24,29 +24,19 @@ final class StaticProxyFactory implements ProxyFactory
 {
     private const SKIPPED_PROPERTIES = 'skippedProperties';
 
-    /**
-     * @var EntityManagerInterface
-     */
+    /** @var EntityManagerInterface */
     private $entityManager;
 
-    /**
-     * @var LazyLoadingGhostFactory
-     */
+    /** @var LazyLoadingGhostFactory */
     private $proxyFactory;
 
-    /**
-     * @var \Closure[] indexed by metadata class name
-     */
+    /** @var \Closure[] indexed by metadata class name */
     private $cachedInitializers = [];
 
-    /**
-     * @var EntityPersister[] indexed by metadata class name
-     */
+    /** @var EntityPersister[] indexed by metadata class name */
     private $cachedPersisters = [];
 
-    /**
-     * @var string[][][] indexed by metadata class name
-     */
+    /** @var string[][][] indexed by metadata class name */
     private $cachedSkippedProperties = [];
 
     public function __construct(

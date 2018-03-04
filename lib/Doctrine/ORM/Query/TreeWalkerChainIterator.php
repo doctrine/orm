@@ -11,21 +11,13 @@ use function reset;
 
 class TreeWalkerChainIterator implements \Iterator, \ArrayAccess
 {
-    /**
-     * @var TreeWalker[]
-     */
+    /** @var TreeWalker[] */
     private $walkers = [];
-    /**
-     * @var TreeWalkerChain
-     */
+    /** @var TreeWalkerChain */
     private $treeWalkerChain;
-    /**
-     * @var Query
-     */
+    /** @var Query */
     private $query;
-    /**
-     * @var ParserResult
-     */
+    /** @var ParserResult */
     private $parserResult;
 
     public function __construct(TreeWalkerChain $treeWalkerChain, $query, $parserResult)

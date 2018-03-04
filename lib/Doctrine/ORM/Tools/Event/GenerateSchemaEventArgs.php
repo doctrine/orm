@@ -13,14 +13,10 @@ use Doctrine\ORM\EntityManagerInterface;
  */
 class GenerateSchemaEventArgs extends EventArgs
 {
-    /**
-     * @var EntityManagerInterface
-     */
+    /** @var EntityManagerInterface */
     private $em;
 
-    /**
-     * @var Schema
-     */
+    /** @var Schema */
     private $schema;
 
     public function __construct(EntityManagerInterface $em, Schema $schema)

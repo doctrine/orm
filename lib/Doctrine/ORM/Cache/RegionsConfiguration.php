@@ -14,19 +14,13 @@ class RegionsConfiguration
      */
     private $lifetimes = [];
 
-    /**
-     * @var int[]
-     */
+    /** @var int[] */
     private $lockLifetimes = [];
 
-    /**
-     * @var int
-     */
+    /** @var int */
     private $defaultLifetime;
 
-    /**
-     * @var int
-     */
+    /** @var int */
     private $defaultLockLifetime;
 
     /**
@@ -35,8 +29,8 @@ class RegionsConfiguration
      */
     public function __construct($defaultLifetime = 3600, $defaultLockLifetime = 60)
     {
-        $this->defaultLifetime     = (integer) $defaultLifetime;
-        $this->defaultLockLifetime = (integer) $defaultLockLifetime;
+        $this->defaultLifetime     = (int) $defaultLifetime;
+        $this->defaultLockLifetime = (int) $defaultLockLifetime;
     }
 
     /**
@@ -52,7 +46,7 @@ class RegionsConfiguration
      */
     public function setDefaultLifetime($defaultLifetime)
     {
-        $this->defaultLifetime = (integer) $defaultLifetime;
+        $this->defaultLifetime = (int) $defaultLifetime;
     }
 
     /**
@@ -68,7 +62,7 @@ class RegionsConfiguration
      */
     public function setDefaultLockLifetime($defaultLockLifetime)
     {
-        $this->defaultLockLifetime = (integer) $defaultLockLifetime;
+        $this->defaultLockLifetime = (int) $defaultLockLifetime;
     }
 
     /**
@@ -87,7 +81,7 @@ class RegionsConfiguration
      */
     public function setLifetime($name, $lifetime)
     {
-        $this->lifetimes[$name] = (integer) $lifetime;
+        $this->lifetimes[$name] = (int) $lifetime;
     }
 
     /**
@@ -106,6 +100,6 @@ class RegionsConfiguration
      */
     public function setLockLifetime($name, $lifetime)
     {
-        $this->lockLifetimes[$name] = (integer) $lifetime;
+        $this->lockLifetimes[$name] = (int) $lifetime;
     }
 }

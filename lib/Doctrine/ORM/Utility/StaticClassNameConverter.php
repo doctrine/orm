@@ -16,9 +16,7 @@ use function get_class;
  */
 abstract class StaticClassNameConverter
 {
-    /**
-     * @var ClassNameInflectorInterface|null
-     */
+    /** @var ClassNameInflectorInterface|null */
     private static $classNameInflector;
 
     final private function __construct()

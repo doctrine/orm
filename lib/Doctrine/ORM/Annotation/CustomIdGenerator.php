@@ -10,13 +10,9 @@ namespace Doctrine\ORM\Annotation;
  */
 final class CustomIdGenerator implements Annotation
 {
-    /**
-     * @var string
-     */
+    /** @var string */
     public $class;
 
-    /**
-     * @var array
-     */
+    /** @var array */
     public $arguments = [];
 }

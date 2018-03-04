@@ -28,14 +28,10 @@ class SequenceGenerator implements Generator, Serializable
      */
     private $sequenceName;
 
-    /**
-     * @var int
-     */
+    /** @var int */
     private $nextValue = 0;
 
-    /**
-     * @var int|null
-     */
+    /** @var int|null */
     private $maxValue;
 
     public function __construct(string $sequenceName, int $allocationSize)

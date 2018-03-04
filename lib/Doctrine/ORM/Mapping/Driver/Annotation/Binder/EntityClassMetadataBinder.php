@@ -12,14 +12,10 @@ use Doctrine\ORM\Mapping;
  */
 class EntityClassMetadataBinder
 {
-    /**
-     * @var Mapping\ClassMetadataBuildingContext
-     */
+    /** @var Mapping\ClassMetadataBuildingContext */
     private $metadataBuildingContext;
 
-    /**
-     * @var \ReflectionClass
-     */
+    /** @var \ReflectionClass */
     private $reflectionClass;
 
     /**

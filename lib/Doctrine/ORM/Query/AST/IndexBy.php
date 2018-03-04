@@ -9,9 +9,7 @@ namespace Doctrine\ORM\Query\AST;
  */
 class IndexBy extends Node
 {
-    /**
-     * @var PathExpression
-     */
+    /** @var PathExpression */
     public $simpleStateFieldPathExpression;
 
     /**

@@ -51,9 +51,7 @@ class SqlWalker implements TreeWalker
      */
     public const HINT_DISTINCT = 'doctrine.distinct';
 
-    /**
-     * @var ResultSetMapping
-     */
+    /** @var ResultSetMapping */
     private $rsm;
 
     /**
@@ -91,29 +89,19 @@ class SqlWalker implements TreeWalker
      */
     private $newObjectCounter = 0;
 
-    /**
-     * @var ParserResult
-     */
+    /** @var ParserResult */
     private $parserResult;
 
-    /**
-     * @var EntityManagerInterface
-     */
+    /** @var EntityManagerInterface */
     private $em;
 
-    /**
-     * @var Connection
-     */
+    /** @var Connection */
     private $conn;
 
-    /**
-     * @var AbstractQuery
-     */
+    /** @var AbstractQuery */
     private $query;
 
-    /**
-     * @var string[]
-     */
+    /** @var string[] */
     private $tableAliasMap = [];
 
     /**

@@ -9,19 +9,13 @@ namespace Doctrine\ORM\Query\AST;
  */
 class IdentificationVariableDeclaration extends Node
 {
-    /**
-     * @var RangeVariableDeclaration|null
-     */
+    /** @var RangeVariableDeclaration|null */
     public $rangeVariableDeclaration;
 
-    /**
-     * @var IndexBy|null
-     */
+    /** @var IndexBy|null */
     public $indexBy;
 
-    /**
-     * @var Join[]
-     */
+    /** @var Join[] */
     public $joins = [];
 
     /**

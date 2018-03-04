@@ -9,19 +9,13 @@ namespace Doctrine\ORM\Query\Expr;
  */
 class From
 {
-    /**
-     * @var string
-     */
+    /** @var string */
     protected $from;
 
-    /**
-     * @var string
-     */
+    /** @var string */
     protected $alias;
 
-    /**
-     * @var string
-     */
+    /** @var string */
     protected $indexBy;
 
     /**

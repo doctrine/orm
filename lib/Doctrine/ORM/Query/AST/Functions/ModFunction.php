@@ -14,14 +14,10 @@ use Doctrine\ORM\Query\SqlWalker;
  */
 class ModFunction extends FunctionNode
 {
-    /**
-     * @var SimpleArithmeticExpression
-     */
+    /** @var SimpleArithmeticExpression */
     public $firstSimpleArithmeticExpression;
 
-    /**
-     * @var SimpleArithmeticExpression
-     */
+    /** @var SimpleArithmeticExpression */
     public $secondSimpleArithmeticExpression;
 
     /**

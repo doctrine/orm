@@ -17,14 +17,10 @@ use function sprintf;
  */
 class IdentityFunction extends FunctionNode
 {
-    /**
-     * @var PathExpression
-     */
+    /** @var PathExpression */
     public $pathExpression;
 
-    /**
-     * @var string
-     */
+    /** @var string */
     public $fieldMapping;
 
     /**

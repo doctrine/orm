@@ -26,19 +26,13 @@ use function substr;
  */
 class EntityRepository implements ObjectRepository, Selectable
 {
-    /**
-     * @var string
-     */
+    /** @var string */
     protected $entityName;
 
-    /**
-     * @var EntityManagerInterface
-     */
+    /** @var EntityManagerInterface */
     protected $em;
 
-    /**
-     * @var ClassMetadata
-     */
+    /** @var ClassMetadata */
     protected $class;
 
     /**

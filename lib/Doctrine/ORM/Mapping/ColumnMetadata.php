@@ -8,44 +8,28 @@ use Doctrine\DBAL\Types\Type;
 
 abstract class ColumnMetadata
 {
-    /**
-     * @var string|null
-     */
+    /** @var string|null */
     protected $tableName;
 
-    /**
-     * @var string|null
-     */
+    /** @var string|null */
     protected $columnName;
 
-    /**
-     * @var Type|null
-     */
+    /** @var Type|null */
     protected $type;
 
-    /**
-     * @var string|null
-     */
+    /** @var string|null */
     protected $columnDefinition;
 
-    /**
-     * @var mixed[]
-     */
+    /** @var mixed[] */
     protected $options = [];
 
-    /**
-     * @var bool
-     */
+    /** @var bool */
     protected $primaryKey = false;
 
-    /**
-     * @var bool
-     */
+    /** @var bool */
     protected $nullable = false;
 
-    /**
-     * @var bool
-     */
+    /** @var bool */
     protected $unique = false;
 
     /**

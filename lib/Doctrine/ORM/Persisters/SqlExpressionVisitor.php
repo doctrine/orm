@@ -20,14 +20,10 @@ use function is_object;
  */
 class SqlExpressionVisitor extends ExpressionVisitor
 {
-    /**
-     * @var BasicEntityPersister
-     */
+    /** @var BasicEntityPersister */
     private $persister;
 
-    /**
-     * @var ClassMetadata
-     */
+    /** @var ClassMetadata */
     private $classMetadata;
 
     public function __construct(BasicEntityPersister $persister, ClassMetadata $classMetadata)

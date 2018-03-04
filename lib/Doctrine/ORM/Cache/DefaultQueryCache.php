@@ -26,29 +26,19 @@ use function reset;
  */
 class DefaultQueryCache implements QueryCache
 {
-    /**
-     * @var EntityManagerInterface
-     */
+    /** @var EntityManagerInterface */
     private $em;
 
-    /**
-     * @var Region
-     */
+    /** @var Region */
     private $region;
 
-    /**
-     * @var QueryCacheValidator
-     */
+    /** @var QueryCacheValidator */
     private $validator;
 
-    /**
-     * @var CacheLogger
-     */
+    /** @var CacheLogger */
     protected $cacheLogger;
 
-    /**
-     * @var mixed[]
-     */
+    /** @var mixed[] */
     private static $hints = [Query::HINT_CACHE_ENABLED => true];
 
     /**

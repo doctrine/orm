@@ -10,24 +10,16 @@ namespace Doctrine\ORM\Internal\Hydration;
  */
 class IterableResult implements \Iterator
 {
-    /**
-     * @var AbstractHydrator
-     */
+    /** @var AbstractHydrator */
     private $hydrator;
 
-    /**
-     * @var bool
-     */
+    /** @var bool */
     private $rewinded = false;
 
-    /**
-     * @var int
-     */
+    /** @var int */
     private $key = -1;
 
-    /**
-     * @var object|null
-     */
+    /** @var object|null */
     private $current;
 
     /**

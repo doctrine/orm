@@ -10,19 +10,13 @@ namespace Doctrine\ORM\Query\AST;
  */
 class InstanceOfExpression extends Node
 {
-    /**
-     * @var bool
-     */
+    /** @var bool */
     public $not;
 
-    /**
-     * @var string
-     */
+    /** @var string */
     public $identificationVariable;
 
-    /**
-     * @var mixed[]
-     */
+    /** @var mixed[] */
     public $value;
 
     /**

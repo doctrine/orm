@@ -22,19 +22,13 @@ use function sprintf;
  */
 class MultiTableDeleteExecutor extends AbstractSqlExecutor
 {
-    /**
-     * @var string
-     */
+    /** @var string */
     private $createTempTableSql;
 
-    /**
-     * @var string
-     */
+    /** @var string */
     private $dropTempTableSql;
 
-    /**
-     * @var string
-     */
+    /** @var string */
     private $insertSql;
 
     /**
