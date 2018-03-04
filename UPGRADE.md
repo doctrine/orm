@@ -46,7 +46,11 @@ These methods have been removed:
  * `Doctrine/ORM/Mapping/ClassMetadata::getNamedNativeQueries()`
  * `Doctrine/ORM/Mapping/ClassMetadata::addNamedNativeQuery()`
  * `Doctrine/ORM/Mapping/ClassMetadata::hasNamedNativeQuery()`
-
+ * `Doctrine\ORM\Mapping\ClassMetadata::addSqlResultSetMapping()`
+ * `Doctrine\ORM\Mapping\ClassMetadata::getSqlResultSetMapping()`
+ * `Doctrine\ORM\Mapping\ClassMetadata::getSqlResultSetMappings()`
+ * `Doctrine\ORM\Mapping\ClassMetadata::hasSqlResultSetMapping()`
+ 
 ## BC Break: Removed support for entity namespace aliases
 
 The support for namespace aliases has been removed.
