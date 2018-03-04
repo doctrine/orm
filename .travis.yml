@@ -88,7 +88,7 @@ jobs:
       php: 7.2
       script:
         - ./vendor/bin/phpcs lib
-        - ./vendor/bin/phpcs tests tools || true # disabled on CI until ported to new CS
+        - ./vendor/bin/phpcs tests || true # disabled on CI until ported to new CS
 
   allow_failures:
     - php: nightly
