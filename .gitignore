@@ -12,7 +12,6 @@ lib/Doctrine/DBAL
 .project
 .idea
 vendor/
-composer.lock
 composer.phar
 /tests/Doctrine/Performance/history.db
 /.phpcs-cache

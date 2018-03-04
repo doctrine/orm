@@ -15,7 +15,9 @@ before_install:
   - mv ~/.phpenv/versions/$(phpenv version-name)/etc/conf.d/xdebug.ini{,.disabled} || echo "xdebug not available"
   - composer self-update
 
-install: travis_retry composer update --prefer-dist
+install:
+  - rm composer.lock
+  - travis_retry composer update --prefer-dist
 
 script:
   - if [[ "$DB" == "mysql" || "$DB" == "mariadb" ]]; then mysql -e "CREATE SCHEMA doctrine_tests; GRANT ALL PRIVILEGES ON doctrine_tests.* to travis@'%'"; fi
@@ -52,6 +54,7 @@ jobs:
       if: type = cron
       env: DB=sqlite DEV_DEPENDENCIES
       install:
+        - rm composer.lock
         - composer config minimum-stability dev
         - travis_retry composer update --prefer-dist
 
@@ -68,11 +71,10 @@ jobs:
 
     - stage: Code Quality
       env: DB=none STATIC_ANALYSIS
-      install: travis_retry composer update --prefer-dist --prefer-stable
+      install: travis_retry composer install --prefer-dist
       before_script:
         - echo "extension=memcached.so" >> ~/.phpenv/versions/$(phpenv version-name)/etc/php.ini
         - echo "extension=redis.so" >> ~/.phpenv/versions/$(phpenv version-name)/etc/php.ini
-        - travis_retry composer require --dev --prefer-dist --prefer-stable phpstan/phpstan:^0.9
       script: vendor/bin/phpstan analyse -l 1 -c phpstan.neon lib
 
     - stage: Code Quality
@@ -82,6 +84,7 @@ jobs:
 
     - stage: Code Quality
       env: DB=none CODING_STANDARDS
+      install: travis_retry composer install --prefer-dist
       php: 7.2
       script:
         - ./vendor/bin/phpcs lib
