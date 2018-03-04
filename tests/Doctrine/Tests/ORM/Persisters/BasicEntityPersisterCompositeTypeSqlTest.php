@@ -7,7 +7,7 @@ namespace Doctrine\Tests\ORM\Persisters;
 use Doctrine\Common\Collections\Expr\Comparison;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Mapping\OneToOneAssociationMetadata;
-use Doctrine\ORM\Persisters\CantUseInOperatorOnCompositeKeys;
+use Doctrine\ORM\Persisters\Exception\CantUseInOperatorOnCompositeKeys;
 use Doctrine\ORM\Persisters\Entity\BasicEntityPersister;
 use Doctrine\Tests\Models\GeoNames\Admin1AlternateName;
 use Doctrine\Tests\OrmTestCase;

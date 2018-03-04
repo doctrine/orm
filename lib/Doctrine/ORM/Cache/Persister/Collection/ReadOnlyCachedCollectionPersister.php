@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Doctrine\ORM\Cache\Persister\Collection;
 
-use Doctrine\ORM\Cache\CannotUpdateReadOnlyCollection;
+use Doctrine\ORM\Cache\Exception\CannotUpdateReadOnlyCollection;
 use Doctrine\ORM\PersistentCollection;
 use Doctrine\ORM\Utility\StaticClassNameConverter;
 

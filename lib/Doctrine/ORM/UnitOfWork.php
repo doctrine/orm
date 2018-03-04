@@ -62,6 +62,7 @@ use function is_object;
 use function method_exists;
 use function spl_object_id;
 use function sprintf;
+use Doctrine\ORM\Exception\UnexpectedAssociationValue;
 
 /**
  * The UnitOfWork is responsible for tracking changes to objects during an

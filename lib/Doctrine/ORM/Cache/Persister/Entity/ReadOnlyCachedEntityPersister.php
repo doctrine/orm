@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Doctrine\ORM\Cache\Persister\Entity;
 
-use Doctrine\ORM\Cache\CannotUpdateReadOnlyEntity;
+use Doctrine\ORM\Cache\Exception\CannotUpdateReadOnlyEntity;
 use Doctrine\ORM\Utility\StaticClassNameConverter;
 
 /**

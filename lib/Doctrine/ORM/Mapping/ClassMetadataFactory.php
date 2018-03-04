@@ -30,6 +30,9 @@ use function sprintf;
 use function strpos;
 use function strtolower;
 use function var_export;
+use Doctrine\ORM\Mapping\Exception\InvalidCustomGenerator;
+use Doctrine\ORM\Mapping\Exception\TableGeneratorNotImplementedYet;
+use Doctrine\ORM\Mapping\Exception\UnknownGeneratorType;
 
 /**
  * The ClassMetadataFactory is used to create ClassMetadata objects that contain all the

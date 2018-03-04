@@ -8,14 +8,14 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Criteria;
 use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\LockMode;
-use Doctrine\ORM\EntityManager\UnrecognizedIdentifierFields;
+use Doctrine\ORM\Exception\UnrecognizedIdentifierFields;
 use Doctrine\ORM\EntityRepository;
 use Doctrine\ORM\OptimisticLockException;
 use Doctrine\ORM\ORMException;
-use Doctrine\ORM\Persisters\InvalidOrientation;
-use Doctrine\ORM\Persisters\UnrecognizedField;
+use Doctrine\ORM\Persisters\Exception\InvalidOrientation;
+use Doctrine\ORM\Persisters\Exception\UnrecognizedField;
 use Doctrine\ORM\Query;
-use Doctrine\ORM\Repository\InvalidFindByCall;
+use Doctrine\ORM\Repository\Exception\InvalidFindByCall;
 use Doctrine\ORM\TransactionRequiredException;
 use Doctrine\Tests\Models\CMS\CmsAddress;
 use Doctrine\Tests\Models\CMS\CmsEmail;
@@ -282,7 +282,7 @@ class EntityRepositoryTest extends OrmFunctionalTestCase
     }
 
     /**
-     * @expectedException Doctrine\ORM\Repository\InvalidMagicMethodCall
+     * @expectedException Doctrine\ORM\Repository\Exception\InvalidMagicMethodCall
      */
     public function testExceptionIsThrownWhenCallingFindByWithoutParameter() : void
     {
@@ -291,7 +291,7 @@ class EntityRepositoryTest extends OrmFunctionalTestCase
     }
 
     /**
-     * @expectedException Doctrine\ORM\Repository\InvalidMagicMethodCall
+     * @expectedException Doctrine\ORM\Repository\Exception\InvalidMagicMethodCall
      */
     public function testExceptionIsThrownWhenUsingInvalidFieldName() : void
     {
@@ -601,7 +601,7 @@ class EntityRepositoryTest extends OrmFunctionalTestCase
 
     /**
      * @group DDC-753
-     * @expectedException Doctrine\ORM\Configuration\InvalidEntityRepository
+     * @expectedException Doctrine\ORM\Exception\InvalidEntityRepository
      * @expectedExceptionMessage Invalid repository class 'Doctrine\Tests\Models\DDC753\DDC753InvalidRepository'. It must be a Doctrine\Common\Persistence\ObjectRepository.
      */
     public function testSetDefaultRepositoryInvalidClassError() : void
@@ -624,7 +624,7 @@ class EntityRepositoryTest extends OrmFunctionalTestCase
     /**
      * @group DDC-1376
      *
-     * @expectedException Doctrine\ORM\Repository\InvalidFindByCall
+     * @expectedException Doctrine\ORM\Repository\Exception\InvalidFindByCall
      * @expectedExceptionMessage You cannot search for the association field 'Doctrine\Tests\Models\CMS\CmsUser#address', because it is the inverse side of an association.
      */
     public function testInvalidOrderByAssociation() : void

@@ -5,8 +5,8 @@ declare(strict_types=1);
 namespace Doctrine\Tests\ORM\Functional;
 
 use Doctrine\Common\Util\Debug;
-use Doctrine\ORM\EntityManager\MissingIdentifierField;
-use Doctrine\ORM\EntityManager\UnrecognizedIdentifierFields;
+use Doctrine\ORM\Exception\MissingIdentifierField;
+use Doctrine\ORM\Exception\UnrecognizedIdentifierFields;
 use Doctrine\ORM\ORMException;
 use Doctrine\ORM\Query\QueryException;
 use Doctrine\Tests\Models\Navigation\NavCountry;

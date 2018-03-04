@@ -10,6 +10,7 @@ use Doctrine\ORM\Query\AST\OrderByClause;
 use Doctrine\ORM\Query\Parser;
 use Doctrine\ORM\Query\SqlWalker;
 use function trim;
+use Doctrine\ORM\Tools\Pagination\Exception\RowNumberOverFunctionNotEnabled;
 
 /**
  * RowNumberOverFunction
