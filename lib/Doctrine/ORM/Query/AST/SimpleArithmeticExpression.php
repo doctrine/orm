@@ -9,9 +9,7 @@ namespace Doctrine\ORM\Query\AST;
  */
 class SimpleArithmeticExpression extends Node
 {
-    /**
-     * @var ArithmeticTerm[]
-     */
+    /** @var ArithmeticTerm[] */
     public $arithmeticTerms = [];
 
     /**

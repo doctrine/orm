@@ -9,14 +9,10 @@ namespace Doctrine\ORM\Query\AST;
  */
 class NullIfExpression extends Node
 {
-    /**
-     * @var mixed
-     */
+    /** @var mixed */
     public $firstExpression;
 
-    /**
-     * @var mixed
-     */
+    /** @var mixed */
     public $secondExpression;
 
     /**

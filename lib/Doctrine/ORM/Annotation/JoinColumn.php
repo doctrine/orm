@@ -10,34 +10,22 @@ namespace Doctrine\ORM\Annotation;
  */
 final class JoinColumn implements Annotation
 {
-    /**
-     * @var string
-     */
+    /** @var string */
     public $name;
 
-    /**
-     * @var string
-     */
+    /** @var string */
     public $referencedColumnName = 'id';
 
-    /**
-     * @var bool
-     */
+    /** @var bool */
     public $unique = false;
 
-    /**
-     * @var bool
-     */
+    /** @var bool */
     public $nullable = true;
 
-    /**
-     * @var mixed
-     */
+    /** @var mixed */
     public $onDelete;
 
-    /**
-     * @var string
-     */
+    /** @var string */
     public $columnDefinition;
 
     /**

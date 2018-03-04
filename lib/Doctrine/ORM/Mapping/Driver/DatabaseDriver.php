@@ -29,34 +29,22 @@ use function strtolower;
  */
 class DatabaseDriver implements MappingDriver
 {
-    /**
-     * @var AbstractSchemaManager
-     */
+    /** @var AbstractSchemaManager */
     private $sm;
 
-    /**
-     * @var Table[]|null
-     */
+    /** @var Table[]|null */
     private $tables;
 
-    /**
-     * @var string[]
-     */
+    /** @var string[] */
     private $classToTableNames = [];
 
-    /**
-     * @var Table[]
-     */
+    /** @var Table[] */
     private $manyToManyTables = [];
 
-    /**
-     * @var Table[]
-     */
+    /** @var Table[] */
     private $classNamesForTables = [];
 
-    /**
-     * @var Table[][]
-     */
+    /** @var Table[][] */
     private $fieldNamesForColumns = [];
 
     /**

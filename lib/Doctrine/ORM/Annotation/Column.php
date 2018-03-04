@@ -10,14 +10,10 @@ namespace Doctrine\ORM\Annotation;
  */
 final class Column implements Annotation
 {
-    /**
-     * @var string
-     */
+    /** @var string */
     public $name;
 
-    /**
-     * @var mixed
-     */
+    /** @var mixed */
     public $type = 'string';
 
     /**
@@ -41,23 +37,15 @@ final class Column implements Annotation
      */
     public $scale = 0;
 
-    /**
-     * @var bool
-     */
+    /** @var bool */
     public $unique = false;
 
-    /**
-     * @var bool
-     */
+    /** @var bool */
     public $nullable = false;
 
-    /**
-     * @var array
-     */
+    /** @var array */
     public $options = [];
 
-    /**
-     * @var string
-     */
+    /** @var string */
     public $columnDefinition;
 }

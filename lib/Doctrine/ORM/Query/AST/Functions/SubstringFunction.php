@@ -18,14 +18,10 @@ class SubstringFunction extends FunctionNode
     /** @var Node */
     public $stringPrimary;
 
-    /**
-     * @var SimpleArithmeticExpression
-     */
+    /** @var SimpleArithmeticExpression */
     public $firstSimpleArithmeticExpression;
 
-    /**
-     * @var SimpleArithmeticExpression|null
-     */
+    /** @var SimpleArithmeticExpression|null */
     public $secondSimpleArithmeticExpression;
 
     /**

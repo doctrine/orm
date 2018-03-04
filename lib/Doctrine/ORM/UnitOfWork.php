@@ -260,9 +260,7 @@ class UnitOfWork implements PropertyChangedListener
      */
     private $listenersInvoker;
 
-    /**
-     * @var Instantiator
-     */
+    /** @var Instantiator */
     private $instantiator;
 
     /**
@@ -286,9 +284,7 @@ class UnitOfWork implements PropertyChangedListener
      */
     private $eagerLoadingEntities = [];
 
-    /**
-     * @var bool
-     */
+    /** @var bool */
     protected $hasCache = false;
 
     /**
@@ -298,9 +294,7 @@ class UnitOfWork implements PropertyChangedListener
      */
     private $hydrationCompleteHandler;
 
-    /**
-     * @var NormalizeIdentifier
-     */
+    /** @var NormalizeIdentifier */
     private $normalizeIdentifier;
 
     /**

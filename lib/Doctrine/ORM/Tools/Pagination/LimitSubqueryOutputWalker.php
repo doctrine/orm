@@ -52,39 +52,25 @@ class LimitSubqueryOutputWalker extends SqlWalker
 {
     private const ORDER_BY_PATH_EXPRESSION = '/(?<![a-z0-9_])%s\.%s(?![a-z0-9_])/i';
 
-    /**
-     * @var AbstractPlatform
-     */
+    /** @var AbstractPlatform */
     private $platform;
 
-    /**
-     * @var ResultSetMapping
-     */
+    /** @var ResultSetMapping */
     private $rsm;
 
-    /**
-     * @var mixed[][]
-     */
+    /** @var mixed[][] */
     private $queryComponents;
 
-    /**
-     * @var int
-     */
+    /** @var int */
     private $firstResult;
 
-    /**
-     * @var int
-     */
+    /** @var int */
     private $maxResults;
 
-    /**
-     * @var EntityManagerInterface
-     */
+    /** @var EntityManagerInterface */
     private $em;
 
-    /**
-     * @var PathExpression[]
-     */
+    /** @var PathExpression[] */
     private $orderByPathExpressions = [];
 
     /**

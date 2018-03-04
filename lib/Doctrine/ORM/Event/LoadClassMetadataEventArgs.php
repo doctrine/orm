@@ -14,14 +14,10 @@ use Doctrine\ORM\Mapping\ClassMetadata;
  */
 class LoadClassMetadataEventArgs extends EventArgs
 {
-    /**
-     * @var ClassMetadata
-     */
+    /** @var ClassMetadata */
     private $classMetadata;
 
-    /**
-     * @var EntityManagerInterface
-     */
+    /** @var EntityManagerInterface */
     private $entityManager;
 
     public function __construct(ClassMetadata $classMetadata, EntityManagerInterface $entityManager)

@@ -30,29 +30,19 @@ use function sprintf;
 
 class DefaultCacheFactory implements CacheFactory
 {
-    /**
-     * @var CacheAdapter
-     */
+    /** @var CacheAdapter */
     private $cache;
 
-    /**
-     * @var RegionsConfiguration
-     */
+    /** @var RegionsConfiguration */
     private $regionsConfig;
 
-    /**
-     * @var TimestampRegion|null
-     */
+    /** @var TimestampRegion|null */
     private $timestampRegion;
 
-    /**
-     * @var Region[]
-     */
+    /** @var Region[] */
     private $regions = [];
 
-    /**
-     * @var string|null
-     */
+    /** @var string|null */
     private $fileLockRegionDirectory;
 
     public function __construct(RegionsConfiguration $cacheConfig, CacheAdapter $cache)

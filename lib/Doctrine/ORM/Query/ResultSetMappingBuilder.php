@@ -4,20 +4,15 @@ declare(strict_types=1);
 
 namespace Doctrine\ORM\Query;
 
-use Doctrine\DBAL\Types\Type;
 use Doctrine\ORM\EntityManagerInterface;
-use Doctrine\ORM\Mapping\AssociationMetadata;
 use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\Mapping\FieldMetadata;
 use Doctrine\ORM\Mapping\InheritanceType;
 use Doctrine\ORM\Mapping\JoinColumnMetadata;
-use Doctrine\ORM\Mapping\MappingException;
 use Doctrine\ORM\Mapping\ToOneAssociationMetadata;
 use Doctrine\ORM\Utility\PersisterHelper;
-use function explode;
 use function in_array;
 use function sprintf;
-use function strpos;
 
 /**
  * A ResultSetMappingBuilder uses the EntityManager to automatically populate entity fields.
@@ -46,14 +41,10 @@ class ResultSetMappingBuilder extends ResultSetMapping
      */
     public const COLUMN_RENAMING_INCREMENT = 3;
 
-    /**
-     * @var int
-     */
+    /** @var int */
     private $sqlCounter = 0;
 
-    /**
-     * @var EntityManagerInterface
-     */
+    /** @var EntityManagerInterface */
     private $em;
 
     /**

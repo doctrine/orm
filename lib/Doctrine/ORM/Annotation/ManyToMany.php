@@ -10,24 +10,16 @@ namespace Doctrine\ORM\Annotation;
  */
 final class ManyToMany implements Annotation
 {
-    /**
-     * @var string
-     */
+    /** @var string */
     public $targetEntity;
 
-    /**
-     * @var string
-     */
+    /** @var string */
     public $mappedBy;
 
-    /**
-     * @var string
-     */
+    /** @var string */
     public $inversedBy;
 
-    /**
-     * @var array<string>
-     */
+    /** @var array<string> */
     public $cascade = [];
 
     /**
@@ -39,13 +31,9 @@ final class ManyToMany implements Annotation
      */
     public $fetch = 'LAZY';
 
-    /**
-     * @var bool
-     */
+    /** @var bool */
     public $orphanRemoval = false;
 
-    /**
-     * @var string
-     */
+    /** @var string */
     public $indexBy;
 }

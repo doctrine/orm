@@ -10,23 +10,15 @@ namespace Doctrine\ORM\Annotation;
  */
 final class JoinTable implements Annotation
 {
-    /**
-     * @var string
-     */
+    /** @var string */
     public $name;
 
-    /**
-     * @var string
-     */
+    /** @var string */
     public $schema;
 
-    /**
-     * @var array<\Doctrine\ORM\Annotation\JoinColumn>
-     */
+    /** @var array<\Doctrine\ORM\Annotation\JoinColumn> */
     public $joinColumns = [];
 
-    /**
-     * @var array<\Doctrine\ORM\Annotation\JoinColumn>
-     */
+    /** @var array<\Doctrine\ORM\Annotation\JoinColumn> */
     public $inverseJoinColumns = [];
 }

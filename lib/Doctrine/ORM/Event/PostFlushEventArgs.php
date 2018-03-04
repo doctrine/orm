@@ -12,9 +12,7 @@ use Doctrine\ORM\EntityManagerInterface;
  */
 class PostFlushEventArgs extends EventArgs
 {
-    /**
-     * @var EntityManagerInterface
-     */
+    /** @var EntityManagerInterface */
     private $em;
 
     public function __construct(EntityManagerInterface $em)

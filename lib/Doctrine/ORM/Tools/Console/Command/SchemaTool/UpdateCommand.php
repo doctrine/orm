@@ -18,9 +18,7 @@ use function sprintf;
  */
 class UpdateCommand extends AbstractCommand
 {
-    /**
-     * @var string
-     */
+    /** @var string */
     protected $name = 'orm:schema-tool:update';
 
     /**

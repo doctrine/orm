@@ -9,14 +9,10 @@ namespace Doctrine\ORM\Query\AST;
  */
 class JoinAssociationPathExpression extends Node
 {
-    /**
-     * @var string
-     */
+    /** @var string */
     public $identificationVariable;
 
-    /**
-     * @var string
-     */
+    /** @var string */
     public $associationField;
 
     /**

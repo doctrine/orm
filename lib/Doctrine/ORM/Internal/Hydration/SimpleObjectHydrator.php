@@ -17,9 +17,7 @@ use function sprintf;
 
 class SimpleObjectHydrator extends AbstractHydrator
 {
-    /**
-     * @var ClassMetadata
-     */
+    /** @var ClassMetadata */
     private $class;
 
     /**

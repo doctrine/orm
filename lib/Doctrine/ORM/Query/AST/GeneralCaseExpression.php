@@ -9,14 +9,10 @@ namespace Doctrine\ORM\Query\AST;
  */
 class GeneralCaseExpression extends Node
 {
-    /**
-     * @var WhenClause[]
-     */
+    /** @var WhenClause[] */
     public $whenClauses = [];
 
-    /**
-     * @var mixed
-     */
+    /** @var mixed */
     public $elseScalarExpression;
 
     /**

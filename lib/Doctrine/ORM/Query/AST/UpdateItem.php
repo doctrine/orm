@@ -11,14 +11,10 @@ namespace Doctrine\ORM\Query\AST;
  */
 class UpdateItem extends Node
 {
-    /**
-     * @var PathExpression
-     */
+    /** @var PathExpression */
     public $pathExpression;
 
-    /**
-     * @var InputParameter|ArithmeticExpression|null
-     */
+    /** @var InputParameter|ArithmeticExpression|null */
     public $newValue;
 
     /**

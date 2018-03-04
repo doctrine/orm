@@ -10,9 +10,7 @@ namespace Doctrine\ORM;
  */
 class OptimisticLockException extends ORMException
 {
-    /**
-     * @var object|null
-     */
+    /** @var object|null */
     private $entity;
 
     /**

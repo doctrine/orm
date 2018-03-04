@@ -11,14 +11,10 @@ use function strtoupper;
  */
 class OrderByItem extends Node
 {
-    /**
-     * @var mixed
-     */
+    /** @var mixed */
     public $expression;
 
-    /**
-     * @var string
-     */
+    /** @var string */
     public $type;
 
     /**

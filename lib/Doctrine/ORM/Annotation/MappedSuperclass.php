@@ -10,8 +10,6 @@ namespace Doctrine\ORM\Annotation;
  */
 final class MappedSuperclass implements Annotation
 {
-    /**
-     * @var string
-     */
+    /** @var string */
     public $repositoryClass;
 }

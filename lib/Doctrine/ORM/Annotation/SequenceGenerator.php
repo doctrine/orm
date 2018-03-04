@@ -10,13 +10,9 @@ namespace Doctrine\ORM\Annotation;
  */
 final class SequenceGenerator implements Annotation
 {
-    /**
-     * @var string
-     */
+    /** @var string */
     public $sequenceName;
 
-    /**
-     * @var int
-     */
+    /** @var int */
     public $allocationSize = 1;
 }

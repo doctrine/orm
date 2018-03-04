@@ -16,9 +16,7 @@ use function sprintf;
  */
 class SizeFunction extends FunctionNode
 {
-    /**
-     * @var PathExpression
-     */
+    /** @var PathExpression */
     public $collectionPathExpression;
 
     /**

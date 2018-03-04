@@ -14,19 +14,13 @@ use function array_sum;
  */
 class StatisticsCacheLogger implements CacheLogger
 {
-    /**
-     * @var int[]
-     */
+    /** @var int[] */
     private $cacheMissCountMap = [];
 
-    /**
-     * @var int[]
-     */
+    /** @var int[] */
     private $cacheHitCountMap = [];
 
-    /**
-     * @var int[]
-     */
+    /** @var int[] */
     private $cachePutCountMap = [];
 
     /**

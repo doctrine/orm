@@ -14,9 +14,7 @@ use Doctrine\ORM\Query\SqlWalker;
  */
 class SqrtFunction extends FunctionNode
 {
-    /**
-     * @var SimpleArithmeticExpression
-     */
+    /** @var SimpleArithmeticExpression */
     public $simpleArithmeticExpression;
 
     /**

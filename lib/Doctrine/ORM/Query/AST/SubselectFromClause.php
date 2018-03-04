@@ -9,9 +9,7 @@ namespace Doctrine\ORM\Query\AST;
  */
 class SubselectFromClause extends Node
 {
-    /**
-     * @var IdentificationVariableDeclaration[]
-     */
+    /** @var IdentificationVariableDeclaration[] */
     public $identificationVariableDeclarations = [];
 
     /**

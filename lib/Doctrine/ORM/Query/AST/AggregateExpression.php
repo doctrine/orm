@@ -9,14 +9,10 @@ namespace Doctrine\ORM\Query\AST;
  */
 class AggregateExpression extends Node
 {
-    /**
-     * @var string
-     */
+    /** @var string */
     public $functionName;
 
-    /**
-     * @var PathExpression|SimpleArithmeticExpression
-     */
+    /** @var PathExpression|SimpleArithmeticExpression */
     public $pathExpression;
 
     /**

@@ -9,19 +9,13 @@ namespace Doctrine\ORM\Query\AST;
  */
 class SimpleCaseExpression extends Node
 {
-    /**
-     * @var PathExpression
-     */
+    /** @var PathExpression */
     public $caseOperand;
 
-    /**
-     * @var SimpleWhenClause[]
-     */
+    /** @var SimpleWhenClause[] */
     public $simpleWhenClauses = [];
 
-    /**
-     * @var mixed
-     */
+    /** @var mixed */
     public $elseScalarExpression;
 
     /**

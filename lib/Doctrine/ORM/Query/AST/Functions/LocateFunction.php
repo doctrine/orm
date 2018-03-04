@@ -21,9 +21,7 @@ class LocateFunction extends FunctionNode
     /** @var Node */
     public $secondStringPrimary;
 
-    /**
-     * @var SimpleArithmeticExpression|bool
-     */
+    /** @var SimpleArithmeticExpression|bool */
     public $simpleArithmeticExpression = false;
 
     /**

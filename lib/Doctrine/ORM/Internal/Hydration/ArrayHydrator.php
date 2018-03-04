@@ -18,34 +18,22 @@ use function reset;
  */
 class ArrayHydrator extends AbstractHydrator
 {
-    /**
-     * @var bool[]
-     */
+    /** @var bool[] */
     private $rootAliases = [];
 
-    /**
-     * @var bool
-     */
+    /** @var bool */
     private $isSimpleQuery = false;
 
-    /**
-     * @var mixed[][]
-     */
+    /** @var mixed[][] */
     private $identifierMap = [];
 
-    /**
-     * @var mixed[]
-     */
+    /** @var mixed[] */
     private $resultPointers = [];
 
-    /**
-     * @var string[]
-     */
+    /** @var string[] */
     private $idTemplate = [];
 
-    /**
-     * @var int
-     */
+    /** @var int */
     private $resultCounter = 0;
 
     /**

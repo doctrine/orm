@@ -50,9 +50,7 @@ class NewAnnotationDriver implements MappingDriver
      */
     protected $locator;
 
-    /**
-     * @var Factory\NamingStrategy
-     */
+    /** @var Factory\NamingStrategy */
     protected $namingStrategy;
 
     /**

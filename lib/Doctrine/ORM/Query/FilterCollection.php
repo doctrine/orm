@@ -47,14 +47,10 @@ class FilterCollection
      */
     private $enabledFilters = [];
 
-    /**
-     * @var string The filter hash from the last time the query was parsed.
-     */
+    /** @var string The filter hash from the last time the query was parsed. */
     private $filterHash;
 
-    /**
-     * @var int The current state of this filter.
-     */
+    /** @var int The current state of this filter. */
     private $filtersState = self::FILTERS_STATE_CLEAN;
 
     public function __construct(EntityManagerInterface $em)

@@ -19,24 +19,16 @@ class PathExpression extends Node
     public const TYPE_SINGLE_VALUED_ASSOCIATION     = 4;
     public const TYPE_STATE_FIELD                   = 8;
 
-    /**
-     * @var int
-     */
+    /** @var int */
     public $type;
 
-    /**
-     * @var int
-     */
+    /** @var int */
     public $expectedType;
 
-    /**
-     * @var string
-     */
+    /** @var string */
     public $identificationVariable;
 
-    /**
-     * @var string|null
-     */
+    /** @var string|null */
     public $field;
 
     /**

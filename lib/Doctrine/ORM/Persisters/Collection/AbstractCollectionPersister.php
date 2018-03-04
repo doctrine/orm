@@ -14,19 +14,13 @@ use Doctrine\ORM\UnitOfWork;
  */
 abstract class AbstractCollectionPersister implements CollectionPersister
 {
-    /**
-     * @var EntityManagerInterface
-     */
+    /** @var EntityManagerInterface */
     protected $em;
 
-    /**
-     * @var Connection
-     */
+    /** @var Connection */
     protected $conn;
 
-    /**
-     * @var UnitOfWork
-     */
+    /** @var UnitOfWork */
     protected $uow;
 
     /**

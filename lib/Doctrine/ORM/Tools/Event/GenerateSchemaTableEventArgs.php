@@ -14,19 +14,13 @@ use Doctrine\ORM\Mapping\ClassMetadata;
  */
 class GenerateSchemaTableEventArgs extends EventArgs
 {
-    /**
-     * @var ClassMetadata
-     */
+    /** @var ClassMetadata */
     private $classMetadata;
 
-    /**
-     * @var Schema
-     */
+    /** @var Schema */
     private $schema;
 
-    /**
-     * @var Table
-     */
+    /** @var Table */
     private $classTable;
 
     public function __construct(ClassMetadata $classMetadata, Schema $schema, Table $classTable)

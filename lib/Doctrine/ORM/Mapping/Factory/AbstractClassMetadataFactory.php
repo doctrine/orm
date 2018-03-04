@@ -39,24 +39,16 @@ abstract class AbstractClassMetadataFactory implements ClassMetadataFactory
      */
     public const AUTOGENERATE_FILE_NOT_EXISTS = 2;
 
-    /**
-     * @var ClassMetadataDefinitionFactory
-     */
+    /** @var ClassMetadataDefinitionFactory */
     protected $definitionFactory;
 
-    /**
-     * @var MappingDriver
-     */
+    /** @var MappingDriver */
     protected $mappingDriver;
 
-    /**
-     * @var ClassMetadataDefinition[]
-     */
+    /** @var ClassMetadataDefinition[] */
     private $definitions = [];
 
-    /**
-     * @var ClassMetadata[]
-     */
+    /** @var ClassMetadata[] */
     private $loaded = [];
 
     public function __construct(MetadataConfiguration $configuration)

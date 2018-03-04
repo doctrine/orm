@@ -9,14 +9,10 @@ namespace Doctrine\ORM\Query\AST;
  */
 class SelectClause extends Node
 {
-    /**
-     * @var bool
-     */
+    /** @var bool */
     public $isDistinct;
 
-    /**
-     * @var SelectExpression[]
-     */
+    /** @var SelectExpression[] */
     public $selectExpressions = [];
 
     /**

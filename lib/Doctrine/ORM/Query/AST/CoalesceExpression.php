@@ -9,9 +9,7 @@ namespace Doctrine\ORM\Query\AST;
  */
 class CoalesceExpression extends Node
 {
-    /**
-     * @var Node[]
-     */
+    /** @var Node[] */
     public $scalarExpressions = [];
 
     /**

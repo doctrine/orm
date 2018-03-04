@@ -9,14 +9,10 @@ namespace Doctrine\ORM\Query\AST;
  */
 class JoinClassPathExpression extends Node
 {
-    /**
-     * @var mixed
-     */
+    /** @var mixed */
     public $abstractSchemaName;
 
-    /**
-     * @var mixed
-     */
+    /** @var mixed */
     public $aliasIdentificationVariable;
 
     /**

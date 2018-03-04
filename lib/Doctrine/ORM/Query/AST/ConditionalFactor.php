@@ -9,14 +9,10 @@ namespace Doctrine\ORM\Query\AST;
  */
 class ConditionalFactor extends Node
 {
-    /**
-     * @var bool
-     */
+    /** @var bool */
     public $not = false;
 
-    /**
-     * @var ConditionalPrimary
-     */
+    /** @var ConditionalPrimary */
     public $conditionalPrimary;
 
     /**

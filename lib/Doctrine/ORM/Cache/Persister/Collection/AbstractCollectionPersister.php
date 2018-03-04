@@ -25,59 +25,37 @@ use function count;
 
 abstract class AbstractCollectionPersister implements CachedCollectionPersister
 {
-    /**
-     * @var UnitOfWork
-     */
+    /** @var UnitOfWork */
     protected $uow;
 
-    /**
-     * @var ClassMetadataFactory
-     */
+    /** @var ClassMetadataFactory */
     protected $metadataFactory;
 
-    /**
-     * @var CollectionPersister
-     */
+    /** @var CollectionPersister */
     protected $persister;
 
-    /**
-     * @var ClassMetadata
-     */
+    /** @var ClassMetadata */
     protected $sourceEntity;
 
-    /**
-     * @var ClassMetadata
-     */
+    /** @var ClassMetadata */
     protected $targetEntity;
 
-    /**
-     * @var AssociationMetadata
-     */
+    /** @var AssociationMetadata */
     protected $association;
 
-    /**
-     * @var mixed[][]
-     */
+    /** @var mixed[][] */
     protected $queuedCache = [];
 
-    /**
-     * @var Region
-     */
+    /** @var Region */
     protected $region;
 
-    /**
-     * @var string
-     */
+    /** @var string */
     protected $regionName;
 
-    /**
-     * @var CollectionHydrator
-     */
+    /** @var CollectionHydrator */
     protected $hydrator;
 
-    /**
-     * @var CacheLogger
-     */
+    /** @var CacheLogger */
     protected $cacheLogger;
 
     /**

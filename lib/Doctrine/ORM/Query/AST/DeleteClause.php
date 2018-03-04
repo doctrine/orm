@@ -9,14 +9,10 @@ namespace Doctrine\ORM\Query\AST;
  */
 class DeleteClause extends Node
 {
-    /**
-     * @var string
-     */
+    /** @var string */
     public $abstractSchemaName;
 
-    /**
-     * @var string
-     */
+    /** @var string */
     public $aliasIdentificationVariable;
 
     /**

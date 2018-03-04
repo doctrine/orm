@@ -10,8 +10,6 @@ namespace Doctrine\ORM\Annotation;
  */
 final class JoinColumns implements Annotation
 {
-    /**
-     * @var array<\Doctrine\ORM\Annotation\JoinColumn>
-     */
+    /** @var array<\Doctrine\ORM\Annotation\JoinColumn> */
     public $value;
 }

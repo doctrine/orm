@@ -6,24 +6,16 @@ namespace Doctrine\ORM\Mapping;
 
 abstract class LocalColumnMetadata extends ColumnMetadata
 {
-    /**
-     * @var int|null
-     */
+    /** @var int|null */
     protected $length;
 
-    /**
-     * @var int|null
-     */
+    /** @var int|null */
     protected $scale;
 
-    /**
-     * @var int|null
-     */
+    /** @var int|null */
     protected $precision;
 
-    /**
-     * @var ValueGeneratorMetadata|null
-     */
+    /** @var ValueGeneratorMetadata|null */
     protected $valueGenerator;
 
     public function getLength() : ?int

@@ -14,14 +14,10 @@ use Doctrine\Common\Collections\Expr\Value;
  */
 class SqlValueVisitor extends ExpressionVisitor
 {
-    /**
-     * @var mixed[]
-     */
+    /** @var mixed[] */
     private $values = [];
 
-    /**
-     * @var mixed[][]
-     */
+    /** @var mixed[][] */
     private $types = [];
 
     /**

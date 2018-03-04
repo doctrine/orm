@@ -9,34 +9,22 @@ namespace Doctrine\ORM\Query\AST;
  */
 class Subselect extends Node
 {
-    /**
-     * @var SimpleSelectClause
-     */
+    /** @var SimpleSelectClause */
     public $simpleSelectClause;
 
-    /**
-     * @var SubselectFromClause
-     */
+    /** @var SubselectFromClause */
     public $subselectFromClause;
 
-    /**
-     * @var WhereClause|null
-     */
+    /** @var WhereClause|null */
     public $whereClause;
 
-    /**
-     * @var GroupByClause|null
-     */
+    /** @var GroupByClause|null */
     public $groupByClause;
 
-    /**
-     * @var HavingClause|null
-     */
+    /** @var HavingClause|null */
     public $havingClause;
 
-    /**
-     * @var OrderByClause|null
-     */
+    /** @var OrderByClause|null */
     public $orderByClause;
 
     /**

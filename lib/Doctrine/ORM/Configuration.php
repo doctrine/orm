@@ -38,94 +38,58 @@ use function strtolower;
  */
 class Configuration extends DBALConfiguration
 {
-    /**
-     * @var ProxyManagerConfiguration|null
-     */
+    /** @var ProxyManagerConfiguration|null */
     private $proxyManagerConfiguration;
 
-    /**
-     * @var MappingDriver|null
-     */
+    /** @var MappingDriver|null */
     private $metadataDriver;
 
-    /**
-     * @var CacheDriver|null
-     */
+    /** @var CacheDriver|null */
     private $queryCache;
 
-    /**
-     * @var CacheDriver|null
-     */
+    /** @var CacheDriver|null */
     private $hydrationCache;
 
-    /**
-     * @var CacheDriver|null
-     */
+    /** @var CacheDriver|null */
     private $metadataCache;
 
-    /**
-     * @var string[][]|ResultSetMapping[][] tuples of [$sqlString, $resultSetMapping] indexed by query name
-     */
+    /** @var string[][]|ResultSetMapping[][] tuples of [$sqlString, $resultSetMapping] indexed by query name */
     private $customStringFunctions = [];
 
-    /**
-     * @var string[][]|ResultSetMapping[][] tuples of [$sqlString, $resultSetMapping] indexed by query name
-     */
+    /** @var string[][]|ResultSetMapping[][] tuples of [$sqlString, $resultSetMapping] indexed by query name */
     private $customNumericFunctions = [];
 
-    /**
-     * @var string[][]|ResultSetMapping[][] tuples of [$sqlString, $resultSetMapping] indexed by query name
-     */
+    /** @var string[][]|ResultSetMapping[][] tuples of [$sqlString, $resultSetMapping] indexed by query name */
     private $customDatetimeFunctions = [];
 
-    /**
-     * @var string[] of hydrator class names, indexed by mode name
-     */
+    /** @var string[] of hydrator class names, indexed by mode name */
     private $customHydrationModes = [];
 
-    /**
-     * @var string
-     */
+    /** @var string */
     private $classMetadataFactoryClassName = ClassMetadataFactory::class;
 
-    /**
-     * @var string[] of filter class names, indexed by filter name
-     */
+    /** @var string[] of filter class names, indexed by filter name */
     private $filters;
 
-    /**
-     * @var string
-     */
+    /** @var string */
     private $defaultRepositoryClassName = EntityRepository::class;
 
-    /**
-     * @var NamingStrategy|null
-     */
+    /** @var NamingStrategy|null */
     private $namingStrategy;
 
-    /**
-     * @var EntityListenerResolver|null
-     */
+    /** @var EntityListenerResolver|null */
     private $entityListenerResolver;
 
-    /**
-     * @var RepositoryFactory|null
-     */
+    /** @var RepositoryFactory|null */
     private $repositoryFactory;
 
-    /**
-     * @var bool
-     */
+    /** @var bool */
     private $isSecondLevelCacheEnabled = false;
 
-    /**
-     * @var CacheConfiguration|null
-     */
+    /** @var CacheConfiguration|null */
     private $secondLevelCacheConfiguration;
 
-    /**
-     * @var mixed[] indexed by hint name
-     */
+    /** @var mixed[] indexed by hint name */
     private $defaultQueryHints = [];
 
     /**

@@ -6,9 +6,7 @@ namespace Doctrine\ORM\Mapping;
 
 class ToOneAssociationMetadata extends AssociationMetadata
 {
-    /**
-     * @var JoinColumnMetadata[]
-     */
+    /** @var JoinColumnMetadata[] */
     private $joinColumns = [];
 
     /**

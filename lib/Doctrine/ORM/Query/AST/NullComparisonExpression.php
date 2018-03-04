@@ -9,14 +9,10 @@ namespace Doctrine\ORM\Query\AST;
  */
 class NullComparisonExpression extends Node
 {
-    /**
-     * @var bool
-     */
+    /** @var bool */
     public $not;
 
-    /**
-     * @var Node
-     */
+    /** @var Node */
     public $expression;
 
     /**

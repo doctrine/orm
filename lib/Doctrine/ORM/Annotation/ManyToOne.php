@@ -10,14 +10,10 @@ namespace Doctrine\ORM\Annotation;
  */
 final class ManyToOne implements Annotation
 {
-    /**
-     * @var string
-     */
+    /** @var string */
     public $targetEntity;
 
-    /**
-     * @var array<string>
-     */
+    /** @var array<string> */
     public $cascade = [];
 
     /**
@@ -29,8 +25,6 @@ final class ManyToOne implements Annotation
      */
     public $fetch = 'LAZY';
 
-    /**
-     * @var string
-     */
+    /** @var string */
     public $inversedBy;
 }

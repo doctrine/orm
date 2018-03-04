@@ -44,14 +44,10 @@ use function strtolower;
  */
 class SchemaTool
 {
-    /**
-     * @var EntityManagerInterface
-     */
+    /** @var EntityManagerInterface */
     private $em;
 
-    /**
-     * @var AbstractPlatform
-     */
+    /** @var AbstractPlatform */
     private $platform;
 
     /**

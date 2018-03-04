@@ -90,9 +90,7 @@ use function trim;
  */
 class BasicEntityPersister implements EntityPersister
 {
-    /**
-     * @var string[]
-     */
+    /** @var string[] */
     private static $comparisonMap = [
         Comparison::EQ          => '= %s',
         Comparison::IS          => '= %s',
@@ -154,19 +152,13 @@ class BasicEntityPersister implements EntityPersister
      */
     private $insertSql;
 
-    /**
-     * @var CachedPersisterContext
-     */
+    /** @var CachedPersisterContext */
     protected $currentPersisterContext;
 
-    /**
-     * @var CachedPersisterContext
-     */
+    /** @var CachedPersisterContext */
     private $limitsHandlingContext;
 
-    /**
-     * @var CachedPersisterContext
-     */
+    /** @var CachedPersisterContext */
     private $noLimitsContext;
 
     /**

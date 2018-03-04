@@ -8,7 +8,6 @@ use Doctrine\ORM\Query\AST\Node;
 use Doctrine\ORM\Query\Lexer;
 use Doctrine\ORM\Query\Parser;
 use Doctrine\ORM\Query\SqlWalker;
-use function call_user_func_array;
 
 /**
  * "CONCAT" "(" StringPrimary "," StringPrimary {"," StringPrimary }* ")"

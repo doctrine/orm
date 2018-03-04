@@ -14,19 +14,13 @@ class Join extends Node
     public const JOIN_TYPE_LEFTOUTER = 2;
     public const JOIN_TYPE_INNER     = 3;
 
-    /**
-     * @var int
-     */
+    /** @var int */
     public $joinType = self::JOIN_TYPE_INNER;
 
-    /**
-     * @var Node|null
-     */
+    /** @var Node|null */
     public $joinAssociationDeclaration;
 
-    /**
-     * @var ConditionalExpression|null
-     */
+    /** @var ConditionalExpression|null */
     public $conditionalExpression;
 
     /**

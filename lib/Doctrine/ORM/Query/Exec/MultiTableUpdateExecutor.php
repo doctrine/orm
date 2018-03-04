@@ -24,29 +24,19 @@ use function sprintf;
  */
 class MultiTableUpdateExecutor extends AbstractSqlExecutor
 {
-    /**
-     * @var string
-     */
+    /** @var string */
     private $createTempTableSql;
 
-    /**
-     * @var string
-     */
+    /** @var string */
     private $dropTempTableSql;
 
-    /**
-     * @var string
-     */
+    /** @var string */
     private $insertSql;
 
-    /**
-     * @var mixed[]
-     */
+    /** @var mixed[] */
     private $sqlParameters = [];
 
-    /**
-     * @var int
-     */
+    /** @var int */
     private $numParametersInUpdateClause = 0;
 
     /**

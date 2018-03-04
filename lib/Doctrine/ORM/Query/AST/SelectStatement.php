@@ -9,34 +9,22 @@ namespace Doctrine\ORM\Query\AST;
  */
 class SelectStatement extends Node
 {
-    /**
-     * @var SelectClause
-     */
+    /** @var SelectClause */
     public $selectClause;
 
-    /**
-     * @var FromClause
-     */
+    /** @var FromClause */
     public $fromClause;
 
-    /**
-     * @var WhereClause|null
-     */
+    /** @var WhereClause|null */
     public $whereClause;
 
-    /**
-     * @var GroupByClause|null
-     */
+    /** @var GroupByClause|null */
     public $groupByClause;
 
-    /**
-     * @var HavingClause|null
-     */
+    /** @var HavingClause|null */
     public $havingClause;
 
-    /**
-     * @var OrderByClause|null
-     */
+    /** @var OrderByClause|null */
     public $orderByClause;
 
     /**

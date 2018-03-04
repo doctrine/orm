@@ -11,14 +11,10 @@ abstract class EntityClassMetadata extends ComponentMetadata
     /** @var string The name of the Entity */
     protected $entityName;
 
-    /**
-     * @var string|null The name of the custom repository class used for the entity class.
-     */
+    /** @var string|null The name of the custom repository class used for the entity class. */
     protected $customRepositoryClassName;
 
-    /**
-     * @var Property|null The field which is used for versioning in optimistic locking (if any).
-     */
+    /** @var Property|null The field which is used for versioning in optimistic locking (if any). */
     protected $declaredVersion;
 
     /**

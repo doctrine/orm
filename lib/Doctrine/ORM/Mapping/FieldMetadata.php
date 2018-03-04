@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Doctrine\ORM\Mapping;
 
-use Doctrine\DBAL\Types\Type;
 use Doctrine\ORM\Reflection\ReflectionService;
 
 class FieldMetadata extends LocalColumnMetadata implements Property
@@ -18,21 +17,10 @@ class FieldMetadata extends LocalColumnMetadata implements Property
     /** @var string */
     protected $name;
 
-    /**
-     * @param string $columnName
-     * @param Type   $type
-     *
-     * @todo Leverage this implementation instead of default, simple constructor
-     */
-    /*public function __construct(string $name, string $columnName, Type $type)
+    public function __construct(string $name/*, string $columnName, Type $type*/)
     {
-        parent::__construct($columnName, $type);
-
-        $this->name = $name;
-    }*/
-
-    public function __construct(string $name)
-    {
+//        @todo Leverage this implementation instead of default, simple constructor
+//        parent::__construct($columnName, $type);
         $this->name = $name;
     }
 

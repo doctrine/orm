@@ -9,19 +9,13 @@ namespace Doctrine\ORM\Mapping\Factory;
  */
 class ClassMetadataBuildingContext
 {
-    /**
-     * @var AbstractClassMetadataFactory
-     */
+    /** @var AbstractClassMetadataFactory */
     private $classMetadataFactory;
 
-    /**
-     * @var SecondPass[]
-     */
+    /** @var SecondPass[] */
     protected $secondPassList = [];
 
-    /**
-     * @var bool
-     */
+    /** @var bool */
     private $inSecondPass = false;
 
     public function __construct(AbstractClassMetadataFactory $classMetadataFactory)

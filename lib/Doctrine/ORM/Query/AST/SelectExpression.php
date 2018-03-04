@@ -10,19 +10,13 @@ namespace Doctrine\ORM\Query\AST;
  */
 class SelectExpression extends Node
 {
-    /**
-     * @var mixed
-     */
+    /** @var mixed */
     public $expression;
 
-    /**
-     * @var string|null
-     */
+    /** @var string|null */
     public $fieldIdentificationVariable;
 
-    /**
-     * @var bool
-     */
+    /** @var bool */
     public $hiddenAliasResultVariable;
 
     /**

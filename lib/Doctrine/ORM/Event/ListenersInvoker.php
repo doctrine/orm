@@ -20,9 +20,7 @@ class ListenersInvoker
     public const INVOKE_CALLBACKS = 2;
     public const INVOKE_MANAGER   = 4;
 
-    /**
-     * @var EntityListenerResolver The Entity listener resolver.
-     */
+    /** @var EntityListenerResolver The Entity listener resolver. */
     private $resolver;
 
     /**

@@ -20,29 +20,19 @@ use function is_object;
  */
 class DefaultCache implements Cache
 {
-    /**
-     * @var EntityManagerInterface
-     */
+    /** @var EntityManagerInterface */
     private $em;
 
-    /**
-     * @var UnitOfWork
-     */
+    /** @var UnitOfWork */
     private $uow;
 
-    /**
-     * @var CacheFactory
-     */
+    /** @var CacheFactory */
     private $cacheFactory;
 
-    /**
-     * @var QueryCache[]
-     */
+    /** @var QueryCache[] */
     private $queryCaches = [];
 
-    /**
-     * @var QueryCache
-     */
+    /** @var QueryCache */
     private $defaultQueryCache;
 
     /**

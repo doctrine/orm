@@ -10,28 +10,18 @@ namespace Doctrine\ORM\Annotation;
  */
 final class Index implements Annotation
 {
-    /**
-     * @var string
-     */
+    /** @var string */
     public $name;
 
-    /**
-     * @var array<string>
-     */
+    /** @var array<string> */
     public $columns;
 
-    /**
-     * @var bool
-     */
+    /** @var bool */
     public $unique = false;
 
-    /**
-     * @var array<string>
-     */
+    /** @var array<string> */
     public $flags = [];
 
-    /**
-     * @var array
-     */
+    /** @var array */
     public $options = [];
 }

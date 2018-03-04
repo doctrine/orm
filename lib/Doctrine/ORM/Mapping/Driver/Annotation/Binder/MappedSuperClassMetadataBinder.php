@@ -9,14 +9,10 @@ use Doctrine\ORM\Mapping;
 
 class MappedSuperClassMetadataBinder
 {
-    /**
-     * @var Mapping\ClassMetadataBuildingContext
-     */
+    /** @var Mapping\ClassMetadataBuildingContext */
     private $metadataBuildingContext;
 
-    /**
-     * @var \ReflectionClass
-     */
+    /** @var \ReflectionClass */
     private $reflectionClass;
 
     /**

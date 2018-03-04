@@ -38,24 +38,16 @@ use function var_export;
  */
 class ClassMetadataFactory extends AbstractClassMetadataFactory
 {
-    /**
-     * @var EntityManagerInterface|null
-     */
+    /** @var EntityManagerInterface|null */
     private $em;
 
-    /**
-     * @var AbstractPlatform
-     */
+    /** @var AbstractPlatform */
     private $targetPlatform;
 
-    /**
-     * @var Driver\MappingDriver
-     */
+    /** @var Driver\MappingDriver */
     private $driver;
 
-    /**
-     * @var EventManager
-     */
+    /** @var EventManager */
     private $evm;
 
     /**

@@ -10,14 +10,10 @@ class Literal extends Node
     public const BOOLEAN = 2;
     public const NUMERIC = 3;
 
-    /**
-     * @var int
-     */
+    /** @var int */
     public $type;
 
-    /**
-     * @var mixed
-     */
+    /** @var mixed */
     public $value;
 
     /**

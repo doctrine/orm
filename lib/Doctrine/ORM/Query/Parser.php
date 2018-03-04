@@ -91,29 +91,19 @@ class Parser
      * and still need to be validated.
      */
 
-    /**
-     * @var mixed[][]
-     */
+    /** @var mixed[][] */
     private $deferredIdentificationVariables = [];
 
-    /**
-     * @var mixed[][]
-     */
+    /** @var mixed[][] */
     private $deferredPartialObjectExpressions = [];
 
-    /**
-     * @var mixed[][]
-     */
+    /** @var mixed[][] */
     private $deferredPathExpressions = [];
 
-    /**
-     * @var mixed[][]
-     */
+    /** @var mixed[][] */
     private $deferredResultVariables = [];
 
-    /**
-     * @var mixed[][]
-     */
+    /** @var mixed[][] */
     private $deferredNewObjectExpressions = [];
 
     /**
@@ -172,9 +162,7 @@ class Parser
      */
     private $customOutputWalker;
 
-    /**
-     * @var Node[]
-     */
+    /** @var Node[] */
     private $identVariableExpressions = [];
 
     /**

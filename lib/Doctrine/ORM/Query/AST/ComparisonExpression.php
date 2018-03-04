@@ -14,19 +14,13 @@ namespace Doctrine\ORM\Query\AST;
  */
 class ComparisonExpression extends Node
 {
-    /**
-     * @var Node
-     */
+    /** @var Node */
     public $leftExpression;
 
-    /**
-     * @var Node
-     */
+    /** @var Node */
     public $rightExpression;
 
-    /**
-     * @var string
-     */
+    /** @var string */
     public $operator;
 
     /**

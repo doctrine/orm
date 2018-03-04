@@ -14,14 +14,10 @@ use Doctrine\DBAL\Driver\Statement;
  */
 abstract class AbstractSqlExecutor
 {
-    /**
-     * @var string[]
-     */
+    /** @var string[] */
     protected $sqlStatements;
 
-    /**
-     * @var QueryCacheProfile
-     */
+    /** @var QueryCacheProfile */
     protected $queryCacheProfile;
 
     /**

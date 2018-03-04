@@ -19,14 +19,10 @@ class DefaultClassMetadataResolver implements ClassMetadataResolver
      */
     public const MARKER = '__CG__';
 
-    /**
-     * @var string
-     */
+    /** @var string */
     private $namespace;
 
-    /**
-     * @var string
-     */
+    /** @var string */
     private $directory;
 
     public function __construct(string $namespace, string $directory)

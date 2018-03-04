@@ -9,14 +9,10 @@ namespace Doctrine\ORM\Query\AST;
  */
 class UpdateStatement extends Node
 {
-    /**
-     * @var UpdateClause
-     */
+    /** @var UpdateClause */
     public $updateClause;
 
-    /**
-     * @var WhereClause|null
-     */
+    /** @var WhereClause|null */
     public $whereClause;
 
     /**

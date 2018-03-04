@@ -11,24 +11,16 @@ use Doctrine\ORM\Cache\Logging\CacheLogger;
  */
 class CacheConfiguration
 {
-    /**
-     * @var CacheFactory|null
-     */
+    /** @var CacheFactory|null */
     private $cacheFactory;
 
-    /**
-     * @var RegionsConfiguration|null
-     */
+    /** @var RegionsConfiguration|null */
     private $regionsConfig;
 
-    /**
-     * @var CacheLogger|null
-     */
+    /** @var CacheLogger|null */
     private $cacheLogger;
 
-    /**
-     * @var QueryCacheValidator|null
-     */
+    /** @var QueryCacheValidator|null */
     private $queryValidator;
 
     /**

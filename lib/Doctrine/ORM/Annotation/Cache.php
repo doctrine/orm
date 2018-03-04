@@ -19,8 +19,6 @@ final class Cache implements Annotation
      */
     public $usage = 'READ_ONLY';
 
-    /**
-     * @var string Cache region name.
-     */
+    /** @var string Cache region name. */
     public $region;
 }

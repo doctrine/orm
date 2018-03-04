@@ -6,9 +6,7 @@ namespace Doctrine\ORM\Query\AST;
 
 class HavingClause extends Node
 {
-    /**
-     * @var ConditionalExpression
-     */
+    /** @var ConditionalExpression */
     public $conditionalExpression;
 
     /**

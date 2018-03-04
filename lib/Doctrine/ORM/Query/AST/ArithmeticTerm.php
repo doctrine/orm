@@ -9,9 +9,7 @@ namespace Doctrine\ORM\Query\AST;
  */
 class ArithmeticTerm extends Node
 {
-    /**
-     * @var ArithmeticFactor[]
-     */
+    /** @var ArithmeticFactor[] */
     public $arithmeticFactors;
 
     /**

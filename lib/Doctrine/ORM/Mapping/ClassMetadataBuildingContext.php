@@ -37,14 +37,10 @@ class ClassMetadataBuildingContext
     /** @var NamingStrategy */
     private $namingStrategy;
 
-    /**
-     * @var SecondPass[]
-     */
+    /** @var SecondPass[] */
     protected $secondPassList = [];
 
-    /**
-     * @var bool
-     */
+    /** @var bool */
     private $inSecondPass = false;
 
     public function __construct(

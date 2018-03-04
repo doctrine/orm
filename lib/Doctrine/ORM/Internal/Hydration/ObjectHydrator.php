@@ -27,39 +27,25 @@ use function spl_object_id;
  */
 class ObjectHydrator extends AbstractHydrator
 {
-    /**
-     * @var mixed[][]
-     */
+    /** @var mixed[][] */
     private $identifierMap = [];
 
-    /**
-     * @var mixed[]
-     */
+    /** @var mixed[] */
     private $resultPointers = [];
 
-    /**
-     * @var string[]
-     */
+    /** @var string[] */
     private $idTemplate = [];
 
-    /**
-     * @var int
-     */
+    /** @var int */
     private $resultCounter = 0;
 
-    /**
-     * @var bool
-     */
+    /** @var bool */
     private $rootAliases = [];
 
-    /**
-     * @var Collection[]|object[][]
-     */
+    /** @var Collection[]|object[][] */
     private $initializedCollections = [];
 
-    /**
-     * @var Collection[]|object[][]
-     */
+    /** @var Collection[]|object[][] */
     private $existingCollections = [];
 
     /**

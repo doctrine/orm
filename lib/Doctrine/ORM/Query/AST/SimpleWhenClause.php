@@ -9,14 +9,10 @@ namespace Doctrine\ORM\Query\AST;
  */
 class SimpleWhenClause extends Node
 {
-    /**
-     * @var mixed
-     */
+    /** @var mixed */
     public $caseScalarExpression;
 
-    /**
-     * @var mixed
-     */
+    /** @var mixed */
     public $thenScalarExpression;
 
     /**

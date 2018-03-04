@@ -25,14 +25,10 @@ use function spl_object_id;
  */
 class DebugUnitOfWorkListener
 {
-    /**
-     * @var string
-     */
+    /** @var string */
     private $file;
 
-    /**
-     * @var string
-     */
+    /** @var string */
     private $context;
 
     /**

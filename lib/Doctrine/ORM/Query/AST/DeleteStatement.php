@@ -9,14 +9,10 @@ namespace Doctrine\ORM\Query\AST;
  */
 class DeleteStatement extends Node
 {
-    /**
-     * @var DeleteClause
-     */
+    /** @var DeleteClause */
     public $deleteClause;
 
-    /**
-     * @var WhereClause|null
-     */
+    /** @var WhereClause|null */
     public $whereClause;
 
     /**

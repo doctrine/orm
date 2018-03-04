@@ -29,7 +29,7 @@
     },
     "require-dev": {
         "ext-pdo": "*",
-        "doctrine/coding-standard": "^3.0",
+        "doctrine/coding-standard": "^4.0",
         "phpunit/phpunit": "^7.0"
     },
     "autoload": {

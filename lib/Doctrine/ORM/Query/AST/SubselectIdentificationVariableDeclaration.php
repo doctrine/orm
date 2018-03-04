@@ -9,14 +9,10 @@ namespace Doctrine\ORM\Query\AST;
  */
 class SubselectIdentificationVariableDeclaration
 {
-    /**
-     * @var PathExpression
-     */
+    /** @var PathExpression */
     public $associationPathExpression;
 
-    /**
-     * @var string
-     */
+    /** @var string */
     public $aliasIdentificationVariable;
 
     /**

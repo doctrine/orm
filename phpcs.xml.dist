@@ -20,6 +20,8 @@
         <exclude name="SlevomatCodingStandard.TypeHints.TypeHintDeclaration.MissingReturnTypeHint"/>
         <exclude name="SlevomatCodingStandard.Exceptions.ReferenceThrowableOnly.ReferencedGeneralException"/>
         <exclude name="SlevomatCodingStandard.ControlStructures.EarlyExit"/>
+        <exclude name="SlevomatCodingStandard.Classes.SuperfluousAbstractClassNaming"/>
+        <exclude name="SlevomatCodingStandard.Classes.SuperfluousExceptionNaming"/>
     </rule>
 
     <rule ref="PSR1.Classes.ClassDeclaration.MultipleClasses">
@@ -61,5 +63,13 @@
 
     <rule ref="SlevomatCodingStandard.Namespaces.ReferenceUsedNamesOnly.ReferenceViaFullyQualifiedName">
         <exclude-pattern>lib/Doctrine/ORM/Annotation/*</exclude-pattern>
+    </rule>
+
+    <rule ref="SlevomatCodingStandard.Commenting.EmptyComment">
+        <exclude-pattern>lib/Doctrine/ORM/Cache/DefaultQueryCache.php</exclude-pattern>
+    </rule>
+
+    <rule ref="SlevomatCodingStandard.Classes.SuperfluousInterfaceNaming">
+        <exclude-pattern>lib/Doctrine/ORM/EntityManagerInterface.php</exclude-pattern>
     </rule>
 </ruleset>

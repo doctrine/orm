@@ -10,14 +10,10 @@ namespace Doctrine\ORM\Query\AST;
  */
 class SimpleSelectExpression extends Node
 {
-    /**
-     * @var Node
-     */
+    /** @var Node */
     public $expression;
 
-    /**
-     * @var string
-     */
+    /** @var string */
     public $fieldIdentificationVariable;
 
     /**

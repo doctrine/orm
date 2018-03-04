@@ -9,14 +9,10 @@ namespace Doctrine\ORM\Query\AST;
  */
 class ConditionalPrimary extends Node
 {
-    /**
-     * @var Node|null
-     */
+    /** @var Node|null */
     public $simpleConditionalExpression;
 
-    /**
-     * @var ConditionalExpression|null
-     */
+    /** @var ConditionalExpression|null */
     public $conditionalExpression;
 
     /**

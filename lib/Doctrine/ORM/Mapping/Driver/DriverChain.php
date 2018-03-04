@@ -22,9 +22,7 @@ class DriverChain implements MappingDriver
      */
     private $defaultDriver;
 
-    /**
-     * @var MappingDriver[]
-     */
+    /** @var MappingDriver[] */
     private $drivers = [];
 
     /**

@@ -12,29 +12,19 @@ use function implode;
  */
 class OrderBy
 {
-    /**
-     * @var string
-     */
+    /** @var string */
     protected $preSeparator = '';
 
-    /**
-     * @var string
-     */
+    /** @var string */
     protected $separator = ', ';
 
-    /**
-     * @var string
-     */
+    /** @var string */
     protected $postSeparator = '';
 
-    /**
-     * @var string[]
-     */
+    /** @var string[] */
     protected $allowedClasses = [];
 
-    /**
-     * @var mixed[]
-     */
+    /** @var mixed[] */
     protected $parts = [];
 
     /**

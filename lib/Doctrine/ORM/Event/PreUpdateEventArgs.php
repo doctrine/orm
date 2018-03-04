@@ -13,9 +13,7 @@ use function sprintf;
  */
 class PreUpdateEventArgs extends LifecycleEventArgs
 {
-    /**
-     * @var mixed[]
-     */
+    /** @var mixed[] */
     private $entityChangeSet;
 
     /**

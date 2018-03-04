@@ -16,19 +16,13 @@ class Comparison
     public const GT  = '>';
     public const GTE = '>=';
 
-    /**
-     * @var mixed
-     */
+    /** @var mixed */
     protected $leftExpr;
 
-    /**
-     * @var string
-     */
+    /** @var string */
     protected $operator;
 
-    /**
-     * @var mixed
-     */
+    /** @var mixed */
     protected $rightExpr;
 
     /**

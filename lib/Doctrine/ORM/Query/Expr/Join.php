@@ -17,34 +17,22 @@ class Join
     public const ON   = 'ON';
     public const WITH = 'WITH';
 
-    /**
-     * @var string
-     */
+    /** @var string */
     protected $joinType;
 
-    /**
-     * @var string
-     */
+    /** @var string */
     protected $join;
 
-    /**
-     * @var string
-     */
+    /** @var string */
     protected $alias;
 
-    /**
-     * @var string
-     */
+    /** @var string */
     protected $conditionType;
 
-    /**
-     * @var string
-     */
+    /** @var string */
     protected $condition;
 
-    /**
-     * @var string
-     */
+    /** @var string */
     protected $indexBy;
 
     /**

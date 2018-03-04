@@ -22,19 +22,13 @@ class DefaultRegion implements Region
 {
     public const REGION_KEY_SEPARATOR = '_';
 
-    /**
-     * @var CacheAdapter
-     */
+    /** @var CacheAdapter */
     protected $cache;
 
-    /**
-     * @var string
-     */
+    /** @var string */
     protected $name;
 
-    /**
-     * @var int
-     */
+    /** @var int */
     protected $lifetime = 0;
 
     /**
@@ -45,7 +39,7 @@ class DefaultRegion implements Region
     {
         $this->cache    = $cache;
         $this->name     = (string) $name;
-        $this->lifetime = (integer) $lifetime;
+        $this->lifetime = (int) $lifetime;
     }
 
     /**

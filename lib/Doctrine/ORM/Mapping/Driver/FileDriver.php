@@ -22,19 +22,13 @@ use function str_replace;
  */
 abstract class FileDriver implements MappingDriver
 {
-    /**
-     * @var FileLocator
-     */
+    /** @var FileLocator */
     protected $locator;
 
-    /**
-     * @var mixed[]|null
-     */
+    /** @var mixed[]|null */
     protected $classCache;
 
-    /**
-     * @var string|null
-     */
+    /** @var string|null */
     protected $globalBasename;
 
     /**
