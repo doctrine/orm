@@ -463,36 +463,6 @@ class ClassMetadata extends ComponentMetadata implements TableOwner
     }
 
     /**
-     * Gets the result set mapping.
-     *
-     * @see ClassMetadata::$sqlResultSetMappings
-     *
-     * @param string $name The result set mapping name.
-     *
-     * @return mixed[]
-     *
-     * @throws MappingException
-     */
-    public function getSqlResultSetMapping($name)
-    {
-        if (! isset($this->sqlResultSetMappings[$name])) {
-            throw MappingException::resultMappingNotFound($this->className, $name);
-        }
-
-        return $this->sqlResultSetMappings[$name];
-    }
-
-    /**
-     * Gets all sql result set mappings of the class.
-     *
-     * @return mixed[][]
-     */
-    public function getSqlResultSetMappings()
-    {
-        return $this->sqlResultSetMappings;
-    }
-
-    /**
      * Validates & completes the basic mapping information for field mapping.
      *
      * @throws MappingException If something is wrong with the mapping.
@@ -1278,56 +1248,6 @@ class ClassMetadata extends ComponentMetadata implements TableOwner
     }
 
     /**
-     * INTERNAL:
-     * Adds a sql result set mapping to this class.
-     *
-     * @param mixed[] $resultMapping
-     *
-     * @throws MappingException
-     */
-    public function addSqlResultSetMapping(array $resultMapping)
-    {
-        if (! isset($resultMapping['name'])) {
-            throw MappingException::nameIsMandatoryForSqlResultSetMapping($this->className);
-        }
-
-        if (isset($this->sqlResultSetMappings[$resultMapping['name']])) {
-            throw MappingException::duplicateResultSetMapping($this->className, $resultMapping['name']);
-        }
-
-        if (isset($resultMapping['entities'])) {
-            foreach ($resultMapping['entities'] as $key => $entityResult) {
-                if (! isset($entityResult['entityClass'])) {
-                    throw MappingException::missingResultSetMappingEntity($this->className, $resultMapping['name']);
-                }
-
-                $entityClassName                                = $entityResult['entityClass'];
-                $resultMapping['entities'][$key]['entityClass'] = $entityClassName;
-
-                if (isset($entityResult['fields'])) {
-                    foreach ($entityResult['fields'] as $k => $field) {
-                        if (! isset($field['name'])) {
-                            throw MappingException::missingResultSetMappingFieldName($this->className, $resultMapping['name']);
-                        }
-
-                        if (! isset($field['column'])) {
-                            $fieldName = $field['name'];
-
-                            if (strpos($fieldName, '.')) {
-                                list(, $fieldName) = explode('.', $fieldName);
-                            }
-
-                            $resultMapping['entities'][$key]['fields'][$k]['column'] = $fieldName;
-                        }
-                    }
-                }
-            }
-        }
-
-        $this->sqlResultSetMappings[$resultMapping['name']] = $resultMapping;
-    }
-
-    /**
      * Registers a custom repository class for the entity class.
      *
      * @param string|null $repositoryClassName The class name of the custom mapper.
@@ -1496,16 +1416,6 @@ class ClassMetadata extends ComponentMetadata implements TableOwner
     public function setValueGenerationPlan(ValueGenerationPlan $valueGenerationPlan) : void
     {
         $this->valueGenerationPlan = $valueGenerationPlan;
-    }
-
-    /**
-     * Checks whether the class has a named native query with the given query name.
-     *
-     * @param string $name
-     */
-    public function hasSqlResultSetMapping($name) : bool
-    {
-        return isset($this->sqlResultSetMappings[$name]);
     }
 
     /**
