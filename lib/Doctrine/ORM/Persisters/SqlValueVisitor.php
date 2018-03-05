@@ -81,6 +81,9 @@ class SqlValueVisitor extends ExpressionVisitor
             case Comparison::CONTAINS:
                 return '%' . $value . '%';
 
+            case Comparison::ICONTAINS:
+                return '%' . mb_strtolower($value) . '%';
+
             case Comparison::STARTS_WITH:
                 return $value . '%';
 

@@ -175,4 +175,34 @@ class EntityRepositoryCriteriaTest extends OrmFunctionalTestCase
 
         self::assertFalse($tweets->isInitialized());
     }
+
+    public function testCanIContainsWithoutLoadingCollection()
+    {
+        $user = new User();
+        $user->name = 'Marco';
+        $this->_em->persist($user);
+        $this->_em->flush();
+
+        $tweet = new Tweet();
+        $tweet->author = $user;
+        $tweet->content = 'Criteria is awesome';
+        $this->_em->persist($tweet);
+        $this->_em->flush();
+
+        $this->_em->clear();
+
+        $criteria = new Criteria();
+        $criteria->andWhere($criteria->expr()->iContains('content', 'criteria'));
+
+        $user   = $this->_em->find(User::class, $user->id);
+        $tweets = $user->tweets->matching($criteria);
+
+        $this->assertInstanceOf(LazyCriteriaCollection::class, $tweets);
+        $this->assertFalse($tweets->isInitialized());
+
+        $tweets->contains($tweet);
+        $this->assertTrue($tweets->contains($tweet));
+
+        $this->assertFalse($tweets->isInitialized());
+    }
 }
