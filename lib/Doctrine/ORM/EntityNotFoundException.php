@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Doctrine\ORM;
 
 use function implode;
+use Doctrine\ORM\Exception\ORMException;
 
 /**
  * Exception thrown when a Proxy fails to retrieve an Entity result.

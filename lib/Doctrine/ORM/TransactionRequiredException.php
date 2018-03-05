@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Doctrine\ORM;
 
+use Doctrine\ORM\Exception\ORMException;
+
 /**
  * Is thrown when a transaction is required for the current operation, but there is none open.
  */

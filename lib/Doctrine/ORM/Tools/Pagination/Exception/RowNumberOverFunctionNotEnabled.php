@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Doctrine\ORM\Tools\Pagination\Exception;
 
-use Doctrine\ORM\ORMException;
+use Doctrine\ORM\Exception\ORMException;
 
 final class RowNumberOverFunctionNotEnabled extends \Exception implements ORMException
 {
