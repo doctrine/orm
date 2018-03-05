@@ -13,16 +13,16 @@ class FeatureNotImplemented extends \Exception implements CacheException
 
     public static function multipleRootEntities() : self
     {
-        throw new self('Second level cache does not support multiple root entities.');
+        return new self('Second level cache does not support multiple root entities.');
     }
 
     public static function nonSelectStatements() : self
     {
-        throw new self('Second-level cache query supports only select statements.');
+        return new self('Second-level cache query supports only select statements.');
     }
 
     public static function partialEntities() : self
     {
-        throw new self('Second level cache does not support partial entities.');
+        return new self('Second level cache does not support partial entities.');
     }
 }
