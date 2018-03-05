@@ -159,7 +159,7 @@ class CompositePrimaryKeyTest extends OrmFunctionalTestCase
     public function testUnrecognizedIdentifierFieldsOnGetReference() : void
     {
         $this->expectException(UnrecognizedIdentifierFields::class);
-        $this->expectExceptionMessage("Unrecognized identifier fields: 'key1'");
+        $this->expectExceptionMessage('Unrecognized identifier fields: "key1"');
 
         $poi = $this->em->getReference(NavPointOfInterest::class, ['lat' => 10, 'long' => 20, 'key1' => 100]);
     }

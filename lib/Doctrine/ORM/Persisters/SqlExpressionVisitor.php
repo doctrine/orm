@@ -11,7 +11,6 @@ use Doctrine\Common\Collections\Expr\Value;
 use Doctrine\ORM\Mapping\AssociationMetadata;
 use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\Persisters\Entity\BasicEntityPersister;
-use Doctrine\ORM\Persisters\MatchingAssociationFieldRequiresObject;
 use function implode;
 use function in_array;
 use function is_object;

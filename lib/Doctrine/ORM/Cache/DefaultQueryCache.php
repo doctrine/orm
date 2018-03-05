@@ -6,8 +6,8 @@ namespace Doctrine\ORM\Cache;
 
 use Doctrine\ORM\Cache;
 use Doctrine\ORM\Cache\Exception\FeatureNotImplemented;
-use Doctrine\ORM\Cache\Logging\CacheLogger;
 use Doctrine\ORM\Cache\Exception\NonCacheableEntity;
+use Doctrine\ORM\Cache\Logging\CacheLogger;
 use Doctrine\ORM\Cache\Persister\CachedPersister;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Mapping\AssociationMetadata;

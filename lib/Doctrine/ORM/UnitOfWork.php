@@ -17,6 +17,7 @@ use Doctrine\ORM\Event\OnFlushEventArgs;
 use Doctrine\ORM\Event\PostFlushEventArgs;
 use Doctrine\ORM\Event\PreFlushEventArgs;
 use Doctrine\ORM\Event\PreUpdateEventArgs;
+use Doctrine\ORM\Exception\UnexpectedAssociationValue;
 use Doctrine\ORM\Internal\HydrationCompleteHandler;
 use Doctrine\ORM\Mapping\AssociationMetadata;
 use Doctrine\ORM\Mapping\ChangeTrackingPolicy;
@@ -62,7 +63,6 @@ use function is_object;
 use function method_exists;
 use function spl_object_id;
 use function sprintf;
-use Doctrine\ORM\Exception\UnexpectedAssociationValue;
 
 /**
  * The UnitOfWork is responsible for tracking changes to objects during an

@@ -36,7 +36,6 @@ use function in_array;
 use function is_int;
 use function is_numeric;
 use function reset;
-use function sprintf;
 use function strtolower;
 
 /**

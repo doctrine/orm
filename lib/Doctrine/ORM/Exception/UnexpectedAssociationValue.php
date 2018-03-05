@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Doctrine\ORM\Exception;
 
 use Doctrine\ORM\Cache\Exception\CacheException;
+use function sprintf;
 
 final class UnexpectedAssociationValue extends \Exception implements CacheException
 {

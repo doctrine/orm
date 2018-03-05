@@ -11,6 +11,9 @@ use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Event\LoadClassMetadataEventArgs;
 use Doctrine\ORM\Event\OnClassMetadataNotFoundEventArgs;
 use Doctrine\ORM\Events;
+use Doctrine\ORM\Mapping\Exception\InvalidCustomGenerator;
+use Doctrine\ORM\Mapping\Exception\TableGeneratorNotImplementedYet;
+use Doctrine\ORM\Mapping\Exception\UnknownGeneratorType;
 use Doctrine\ORM\ORMException;
 use Doctrine\ORM\Sequencing;
 use Doctrine\ORM\Sequencing\Planning\AssociationValueGeneratorExecutor;
@@ -29,10 +32,6 @@ use function is_subclass_of;
 use function sprintf;
 use function strpos;
 use function strtolower;
-use function var_export;
-use Doctrine\ORM\Mapping\Exception\InvalidCustomGenerator;
-use Doctrine\ORM\Mapping\Exception\TableGeneratorNotImplementedYet;
-use Doctrine\ORM\Mapping\Exception\UnknownGeneratorType;
 
 /**
  * The ClassMetadataFactory is used to create ClassMetadata objects that contain all the

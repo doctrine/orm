@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Doctrine\ORM\Cache\Exception;
 
+use function sprintf;
+
 class CannotUpdateReadOnlyCollection extends \Exception implements CacheException
 {
     public static function fromEntityAndField(string $sourceEntity, string $fieldName) : self

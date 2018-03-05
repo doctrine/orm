@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace Doctrine\ORM\Exception;
 
 use Doctrine\Common\Persistence\ObjectRepository;
-use Doctrine\ORM\Exception\ConfigurationException;
 
 final class InvalidEntityRepository extends \Exception implements ConfigurationException
 {

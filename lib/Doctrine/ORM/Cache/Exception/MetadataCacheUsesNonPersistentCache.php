@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Doctrine\ORM\Cache\Exception;
 
 use Doctrine\Common\Cache\Cache;
+use function get_class;
 
 final class MetadataCacheUsesNonPersistentCache extends \Exception implements CacheException
 {
