@@ -7,7 +7,7 @@ namespace Doctrine\ORM\Persisters;
 use Doctrine\ORM\Exception\PersisterException;
 use function sprintf;
 
-final class MatchingAssociationFieldRequiresObject extends \Exception implements PersisterException
+final class MatchingAssociationFieldRequiresObject extends \LogicException implements PersisterException
 {
     public static function fromClassAndAssociation(string $class, string $associationName) : self
     {

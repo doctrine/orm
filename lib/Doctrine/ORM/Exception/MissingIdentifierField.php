@@ -6,7 +6,7 @@ namespace Doctrine\ORM\Exception;
 
 use function sprintf;
 
-final class MissingIdentifierField extends \Exception implements ManagerException
+final class MissingIdentifierField extends \LogicException implements ManagerException
 {
     public static function fromFieldAndClass($fieldName, $className) : self
     {

@@ -7,7 +7,7 @@ namespace Doctrine\ORM\Persisters\Exception;
 use Doctrine\ORM\Exception\PersisterException;
 use function sprintf;
 
-final class UnrecognizedField extends \Exception implements PersisterException
+final class UnrecognizedField extends \LogicException implements PersisterException
 {
     public static function byName(string $field) : self
     {

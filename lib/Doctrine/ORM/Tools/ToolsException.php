@@ -10,7 +10,7 @@ use Throwable;
 /**
  * Tools related Exceptions.
  */
-class ToolsException extends \Exception implements ORMException
+class ToolsException extends \RuntimeException implements ORMException
 {
     public static function schemaToolFailure(string $sql, Throwable $e) : self
     {

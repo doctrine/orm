@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Doctrine\ORM\Exception;
 
-final class MissingMappingDriverImplementation extends \Exception implements ManagerException
+final class MissingMappingDriverImplementation extends \LogicException implements ManagerException
 {
     public static function create() : self
     {

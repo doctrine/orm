@@ -6,7 +6,7 @@ namespace Doctrine\ORM\Tools\Exception;
 
 use Doctrine\ORM\Exception\SchemaToolException;
 
-final class NotSupported extends \Exception implements SchemaToolException
+final class NotSupported extends \LogicException implements SchemaToolException
 {
     public static function create() : self
     {

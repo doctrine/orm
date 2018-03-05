@@ -6,7 +6,7 @@ namespace Doctrine\ORM\Exception;
 
 use Doctrine\ORM\Exception\ORMException;
 
-final class NotSupported extends \Exception implements ORMException
+final class NotSupported extends \LogicException implements ORMException
 {
     public static function create() : self
     {

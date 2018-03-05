@@ -6,7 +6,7 @@ namespace Doctrine\ORM\Mapping\Exception;
 
 use Doctrine\ORM\Exception\ORMException;
 
-final class TableGeneratorNotImplementedYet extends \Exception implements ORMException
+final class TableGeneratorNotImplementedYet extends \LogicException implements ORMException
 {
     public static function create() : self
     {

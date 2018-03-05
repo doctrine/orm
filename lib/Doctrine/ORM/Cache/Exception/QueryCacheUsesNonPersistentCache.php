@@ -7,7 +7,7 @@ namespace Doctrine\ORM\Cache\Exception;
 use Doctrine\Common\Cache\Cache;
 use function get_class;
 
-final class QueryCacheUsesNonPersistentCache extends \Exception implements CacheException
+final class QueryCacheUsesNonPersistentCache extends \LogicException implements CacheException
 {
     public static function fromDriver(Cache $cache) : self
     {

@@ -8,7 +8,7 @@ use Doctrine\ORM\Exception\ORMException;
 use function sprintf;
 use function var_export;
 
-final class InvalidCustomGenerator extends \Exception implements ORMException
+final class InvalidCustomGenerator extends \LogicException implements ORMException
 {
     public static function onClassNotConfigured() : self
     {

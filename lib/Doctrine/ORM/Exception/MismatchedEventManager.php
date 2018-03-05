@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Doctrine\ORM\Exception;
 
-final class MismatchedEventManager extends \Exception implements ManagerException
+final class MismatchedEventManager extends \LogicException implements ManagerException
 {
     public static function create() : self
     {

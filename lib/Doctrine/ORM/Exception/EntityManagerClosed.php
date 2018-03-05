@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Doctrine\ORM\Exception;
 
-final class EntityManagerClosed extends \Exception implements ManagerException
+final class EntityManagerClosed extends \RuntimeException implements ManagerException
 {
     public static function create() : self
     {

@@ -6,7 +6,7 @@ namespace Doctrine\ORM\Persisters\Exception;
 
 use Doctrine\ORM\Exception\PersisterException;
 
-class InvalidOrientation extends \Exception implements PersisterException
+class InvalidOrientation extends \LogicException implements PersisterException
 {
     public static function fromClassNameAndField(string $className, string $field) : self
     {

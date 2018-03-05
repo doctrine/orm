@@ -7,7 +7,7 @@ namespace Doctrine\ORM\Exception;
 use function implode;
 use function sprintf;
 
-final class UnrecognizedIdentifierFields extends \Exception implements ManagerException
+final class UnrecognizedIdentifierFields extends \LogicException implements ManagerException
 {
     /**
      * @param string[] $fieldNames

@@ -7,7 +7,7 @@ namespace Doctrine\ORM\Tools\Exception;
 use Doctrine\ORM\Exception\ORMException;
 use function sprintf;
 
-final class MissingColumnException extends \Exception implements ORMException
+final class MissingColumnException extends \LogicException implements ORMException
 {
     public static function fromColumnSourceAndTarget(string $column, string $source, string $target) : self
     {

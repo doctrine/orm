@@ -9,6 +9,6 @@ use Doctrine\ORM\Exception\ORMException;
 /**
  * Exception for a unexpected query result.
  */
-class UnexpectedResultException extends \Exception implements ORMException
+class UnexpectedResultException extends \RuntimeException implements ORMException
 {
 }

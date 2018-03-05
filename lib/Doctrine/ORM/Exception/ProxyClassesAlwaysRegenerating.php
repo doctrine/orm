@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Doctrine\ORM\Exception;
 
-final class ProxyClassesAlwaysRegenerating extends \Exception implements ConfigurationException
+final class ProxyClassesAlwaysRegenerating extends \LogicException implements ConfigurationException
 {
     public static function create() : self
     {

@@ -6,7 +6,7 @@ namespace Doctrine\ORM\Exception;
 
 use function sprintf;
 
-final class InvalidHydrationMode extends \Exception implements ManagerException
+final class InvalidHydrationMode extends \LogicException implements ManagerException
 {
     public static function fromMode(string $mode) : self
     {
