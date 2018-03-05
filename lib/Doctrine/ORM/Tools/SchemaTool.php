@@ -677,7 +677,7 @@ class SchemaTool
             );
 
             if (! $definingClass) {
-                throw new MissingColumnException(
+                throw MissingColumnException::fromColumnSourceAndTarget(
                     $joinColumn->getReferencedColumnName(),
                     $mapping->getSourceEntity(),
                     $mapping->getTargetEntity()
