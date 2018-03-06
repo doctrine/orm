@@ -71,6 +71,15 @@ class DDC2842Test extends \Doctrine\Tests\OrmFunctionalTestCase
             $sqlLogger->queries[count($sqlLogger->queries)]['sql']
         );
     }
+
+    public function testSelectQuerySQL()
+    {
+        $query = $this->_em->createQuery('SELECT u FROM Doctrine\Tests\Models\Pagination\User u');
+        $this->assertSQLEquals(
+            $query->getSQL(),
+            'select p0_.id as id_0, p0_.name as name_1, p0_.email as email_2, p0_.type as type_3 from pagination_user p0_'
+        );
+    }
 }
 
 /**

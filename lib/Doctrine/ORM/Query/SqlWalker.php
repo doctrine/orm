@@ -451,6 +451,8 @@ class SqlWalker implements TreeWalker
 
             if ($class->discriminatorValue !== null) { // discriminators can be 0
                 $values[] = $conn->quote($class->discriminatorValue);
+            } else {
+                continue;
             }
 
             foreach ($class->subClasses as $subclassName) {
