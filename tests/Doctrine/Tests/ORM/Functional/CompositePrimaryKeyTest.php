@@ -4,10 +4,8 @@ declare(strict_types=1);
 
 namespace Doctrine\Tests\ORM\Functional;
 
-use Doctrine\Common\Util\Debug;
 use Doctrine\ORM\Exception\MissingIdentifierField;
 use Doctrine\ORM\Exception\UnrecognizedIdentifierFields;
-use Doctrine\ORM\Exception\ORMException;
 use Doctrine\ORM\Query\QueryException;
 use Doctrine\Tests\Models\Navigation\NavCountry;
 use Doctrine\Tests\Models\Navigation\NavPhotos;
