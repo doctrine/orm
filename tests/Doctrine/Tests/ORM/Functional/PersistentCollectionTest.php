@@ -95,6 +95,28 @@ class PersistentCollectionTest extends OrmFunctionalTestCase
         $this->assertEmpty($criteria->getMaxResults());
         $this->assertEmpty($criteria->getOrderings());
     }
+
+    public function testPersistClearCollection()
+    {
+        $collectionHolder = new PersistentCollectionHolder();
+        $content = new PersistentCollectionContent('first element');
+        $collectionHolder->addElement($content);
+
+        $this->_em->persist($collectionHolder);
+        $this->_em->flush();
+        $this->_em->clear();
+
+        $collectionHolder = $this->_em->find(PersistentCollectionHolder::class, $collectionHolder->getId());
+        $this->assertCount(1, $collectionHolder->getCollection());
+        $collectionHolder->getRawCollection()->clear();
+
+        $this->_em->persist($collectionHolder);
+        $this->_em->flush();
+        $this->_em->clear();
+
+        $collectionHolder = $this->_em->find(PersistentCollectionHolder::class, $collectionHolder->getId());
+        $this->assertCount(0, $collectionHolder->getCollection());
+    }
 }
 
 /**

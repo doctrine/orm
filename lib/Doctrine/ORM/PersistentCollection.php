@@ -568,6 +568,10 @@ final class PersistentCollection extends AbstractLazyCollection implements Selec
             $uow->scheduleCollectionDeletion($this);
 
             $this->takeSnapshot();
+
+            // keep the collection as dirty after taking a snapshot
+            // to make preUpdate events work for related objects
+            $this->isDirty = true;
         }
     }
 

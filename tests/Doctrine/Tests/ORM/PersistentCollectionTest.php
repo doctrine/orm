@@ -144,6 +144,16 @@ class PersistentCollectionTest extends OrmTestCase
         $this->assertEquals([0], array_keys($this->collection->toArray()));
     }
 
+    public function testClearWillMakeCollectionDirty()
+    {
+        $dummy = new \stdClass();
+
+        $this->collection->add($dummy);
+        $this->collection->clear();
+
+        self::assertTrue($this->collection->isDirty());
+    }
+
     /**
      * @group 6613
      * @group 6614
