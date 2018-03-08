@@ -12,7 +12,7 @@ use Doctrine\Tests\Models\Cache\Flight;
  */
 class SecondLevelCacheCompositePrimaryKeyTest extends SecondLevelCacheAbstractTest
 {
-    public function testPutAndLoadCompositPrimaryKeyEntities()
+    public function testPutAndLoadCompositPrimaryKeyEntities() : void
     {
         $this->loadFixturesCountries();
         $this->loadFixturesStates();
@@ -58,7 +58,7 @@ class SecondLevelCacheCompositePrimaryKeyTest extends SecondLevelCacheAbstractTe
         self::assertEquals($queryCount, $this->getCurrentQueryCount());
     }
 
-    public function testRemoveCompositPrimaryKeyEntities()
+    public function testRemoveCompositPrimaryKeyEntities() : void
     {
         $this->loadFixturesCountries();
         $this->loadFixturesStates();
@@ -100,7 +100,7 @@ class SecondLevelCacheCompositePrimaryKeyTest extends SecondLevelCacheAbstractTe
         self::assertNull($this->em->find(Flight::class, $id));
     }
 
-    public function testUpdateCompositPrimaryKeyEntities()
+    public function testUpdateCompositPrimaryKeyEntities() : void
     {
         $this->loadFixturesCountries();
         $this->loadFixturesStates();

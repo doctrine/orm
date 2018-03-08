@@ -17,7 +17,7 @@ use Doctrine\Tests\OrmFunctionalTestCase;
  */
 class OneToManyCompositeIdTest extends OrmFunctionalTestCase
 {
-    public function setUp()
+    public function setUp() : void
     {
         $this->useModelSet('vct_onetomany_compositeid');
 
@@ -41,7 +41,7 @@ class OneToManyCompositeIdTest extends OrmFunctionalTestCase
         $this->em->clear();
     }
 
-    public function testThatTheValueOfIdentifiersAreConvertedInTheDatabase()
+    public function testThatTheValueOfIdentifiersAreConvertedInTheDatabase() : void
     {
         $conn = $this->em->getConnection();
 
@@ -53,7 +53,7 @@ class OneToManyCompositeIdTest extends OrmFunctionalTestCase
         self::assertEquals('qrs', $conn->fetchColumn('SELECT associated_id2 FROM vct_owning_manytoone_compositeid LIMIT 1'));
     }
 
-    public function testThatEntitiesAreFetchedFromTheDatabase()
+    public function testThatEntitiesAreFetchedFromTheDatabase() : void
     {
         $inversed = $this->em->find(
             Entity\InversedOneToManyCompositeIdEntity::class,
@@ -66,7 +66,7 @@ class OneToManyCompositeIdTest extends OrmFunctionalTestCase
         self::assertInstanceOf(Entity\OwningManyToOneCompositeIdEntity::class, $owning);
     }
 
-    public function testThatTheValueOfIdentifiersAreConvertedBackAfterBeingFetchedFromTheDatabase()
+    public function testThatTheValueOfIdentifiersAreConvertedBackAfterBeingFetchedFromTheDatabase() : void
     {
         $inversed = $this->em->find(
             Entity\InversedOneToManyCompositeIdEntity::class,
@@ -80,7 +80,7 @@ class OneToManyCompositeIdTest extends OrmFunctionalTestCase
         self::assertEquals('ghi', $owning->id3);
     }
 
-    public function testThatTheProxyFromOwningToInversedIsLoaded()
+    public function testThatTheProxyFromOwningToInversedIsLoaded() : void
     {
         $owning = $this->em->find(Entity\OwningManyToOneCompositeIdEntity::class, 'ghi');
 
@@ -89,7 +89,7 @@ class OneToManyCompositeIdTest extends OrmFunctionalTestCase
         self::assertEquals('some value to be loaded', $inversedProxy->someProperty);
     }
 
-    public function testThatTheCollectionFromInversedToOwningIsLoaded()
+    public function testThatTheCollectionFromInversedToOwningIsLoaded() : void
     {
         $inversed = $this->em->find(
             Entity\InversedOneToManyCompositeIdEntity::class,

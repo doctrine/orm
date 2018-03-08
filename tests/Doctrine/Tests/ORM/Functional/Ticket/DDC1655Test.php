@@ -16,7 +16,7 @@ use function get_class;
  */
 class DDC1655Test extends OrmFunctionalTestCase
 {
-    public function setUp()
+    public function setUp() : void
     {
         parent::setUp();
 
@@ -33,7 +33,7 @@ class DDC1655Test extends OrmFunctionalTestCase
         }
     }
 
-    protected function tearDown()
+    protected function tearDown() : void
     {
         $conn = static::$sharedConn;
 
@@ -58,7 +58,7 @@ class DDC1655Test extends OrmFunctionalTestCase
         $this->em->clear();
     }
 
-    public function testPostLoadOneToManyInheritance()
+    public function testPostLoadOneToManyInheritance() : void
     {
         $cm = $this->em->getClassMetadata(DDC1655Foo::class);
         self::assertEquals(['postLoad' => ['postLoad']], $cm->lifecycleCallbacks);
@@ -88,7 +88,7 @@ class DDC1655Test extends OrmFunctionalTestCase
      * Check that post load is not executed several times when the entity
      * is rehydrated again although its already known.
      */
-    public function testPostLoadInheritanceChild()
+    public function testPostLoadInheritanceChild() : void
     {
         $bar = new DDC1655Bar();
 

@@ -13,7 +13,7 @@ use Doctrine\Tests\OrmFunctionalTestCase;
 
 class CustomIdObjectTypeTest extends OrmFunctionalTestCase
 {
-    protected function setUp()
+    protected function setUp() : void
     {
         if (DBALType::hasType(CustomIdObjectType::NAME)) {
             DBALType::overrideType(CustomIdObjectType::NAME, CustomIdObjectType::class);
@@ -26,7 +26,7 @@ class CustomIdObjectTypeTest extends OrmFunctionalTestCase
         parent::setUp();
     }
 
-    public function testFindByCustomIdObject()
+    public function testFindByCustomIdObject() : void
     {
         $parent = new CustomIdObjectTypeParent(new CustomIdObject('foo'));
 
@@ -42,7 +42,7 @@ class CustomIdObjectTypeTest extends OrmFunctionalTestCase
      * @group DDC-3622
      * @group 1336
      */
-    public function testFetchJoinCustomIdObject()
+    public function testFetchJoinCustomIdObject() : void
     {
         $parent = new CustomIdObjectTypeParent(new CustomIdObject('foo'));
 
@@ -68,7 +68,7 @@ class CustomIdObjectTypeTest extends OrmFunctionalTestCase
      * @group DDC-3622
      * @group 1336
      */
-    public function testFetchJoinWhereCustomIdObject()
+    public function testFetchJoinWhereCustomIdObject() : void
     {
         $parent = new CustomIdObjectTypeParent(new CustomIdObject('foo'));
 

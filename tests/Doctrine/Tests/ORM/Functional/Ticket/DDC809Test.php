@@ -9,7 +9,7 @@ use Doctrine\Tests\OrmFunctionalTestCase;
 
 class DDC809Test extends OrmFunctionalTestCase
 {
-    public function setUp()
+    public function setUp() : void
     {
         parent::setUp();
         $this->schemaTool->createSchema(
@@ -44,7 +44,7 @@ class DDC809Test extends OrmFunctionalTestCase
     /**
      * @group DDC-809
      */
-    public function testIssue()
+    public function testIssue() : void
     {
         $result = $this->em->createQueryBuilder()
                         ->select('Variant, SpecificationValue')

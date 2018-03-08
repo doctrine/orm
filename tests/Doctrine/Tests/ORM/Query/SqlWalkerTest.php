@@ -22,7 +22,7 @@ class SqlWalkerTest extends OrmTestCase
     /**
      * {@inheritDoc}
      */
-    protected function setUp()
+    protected function setUp() : void
     {
         $this->sqlWalker = new SqlWalker(new Query($this->getTestEntityManager()), new ParserResult(), []);
     }
@@ -30,7 +30,7 @@ class SqlWalkerTest extends OrmTestCase
     /**
      * @dataProvider getColumnNamesAndSqlAliases
      */
-    public function testGetSQLTableAlias($tableName, $expectedAlias)
+    public function testGetSQLTableAlias($tableName, $expectedAlias) : void
     {
         self::assertSame($expectedAlias, $this->sqlWalker->getSQLTableAlias($tableName));
     }
@@ -38,7 +38,7 @@ class SqlWalkerTest extends OrmTestCase
     /**
      * @dataProvider getColumnNamesAndSqlAliases
      */
-    public function testGetSQLTableAliasIsSameForMultipleCalls($tableName)
+    public function testGetSQLTableAliasIsSameForMultipleCalls($tableName) : void
     {
         self::assertSame(
             $this->sqlWalker->getSQLTableAlias($tableName),

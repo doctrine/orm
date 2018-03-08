@@ -22,7 +22,7 @@ class DDC2224Test extends OrmFunctionalTestCase
         Type::addType('DDC2224Type', DDC2224Type::class);
     }
 
-    public function testIssue()
+    public function testIssue() : Query
     {
         $dql   = 'SELECT e FROM ' . __NAMESPACE__ . '\DDC2224Entity e WHERE e.field = :field';
         $query = $this->em->createQuery($dql);
@@ -38,7 +38,7 @@ class DDC2224Test extends OrmFunctionalTestCase
     /**
      * @depends testIssue
      */
-    public function testCacheMissWhenTypeChanges(Query $query)
+    public function testCacheMissWhenTypeChanges(Query $query) : void
     {
         $query->setParameter('field', 'test', 'string');
 

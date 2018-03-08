@@ -21,7 +21,7 @@ class ManyToManyBidirectionalAssociationTest extends AbstractManyToManyAssociati
     private $firstCategory;
     private $secondCategory;
 
-    protected function setUp()
+    protected function setUp() : void
     {
         $this->useModelSet('ecommerce');
 
@@ -40,7 +40,7 @@ class ManyToManyBidirectionalAssociationTest extends AbstractManyToManyAssociati
         $this->secondCategory->setName('Home');
     }
 
-    public function testSavesAManyToManyAssociationWithCascadeSaveSet()
+    public function testSavesAManyToManyAssociationWithCascadeSaveSet() : void
     {
         $this->firstProduct->addCategory($this->firstCategory);
         $this->firstProduct->addCategory($this->secondCategory);
@@ -52,7 +52,7 @@ class ManyToManyBidirectionalAssociationTest extends AbstractManyToManyAssociati
         self::assertForeignKeysContain($this->firstProduct->getId(), $this->secondCategory->getId());
     }
 
-    public function testRemovesAManyToManyAssociation()
+    public function testRemovesAManyToManyAssociation() : void
     {
         $this->firstProduct->addCategory($this->firstCategory);
         $this->firstProduct->addCategory($this->secondCategory);
@@ -73,7 +73,7 @@ class ManyToManyBidirectionalAssociationTest extends AbstractManyToManyAssociati
         self::assertForeignKeysNotContain($this->firstProduct->getId(), $this->secondCategory->getId());
     }
 
-    public function testEagerLoadFromInverseSideAndLazyLoadFromOwningSide()
+    public function testEagerLoadFromInverseSideAndLazyLoadFromOwningSide() : void
     {
         //$this->em->getConnection()->getConfiguration()->setSQLLogger(new \Doctrine\DBAL\Logging\EchoSQLLogger);
         $this->createLoadingFixture();
@@ -83,7 +83,7 @@ class ManyToManyBidirectionalAssociationTest extends AbstractManyToManyAssociati
         self::assertLazyLoadFromOwningSide($categories);
     }
 
-    public function testEagerLoadFromOwningSideAndLazyLoadFromInverseSide()
+    public function testEagerLoadFromOwningSideAndLazyLoadFromInverseSide() : void
     {
         //$this->em->getConnection()->getConfiguration()->setSQLLogger(new \Doctrine\DBAL\Logging\EchoSQLLogger);
         $this->createLoadingFixture();

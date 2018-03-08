@@ -14,7 +14,7 @@ use Doctrine\Tests\OrmFunctionalTestCase;
  */
 class AdvancedAssociationTest extends OrmFunctionalTestCase
 {
-    protected function setUp()
+    protected function setUp() : void
     {
         parent::setUp();
 
@@ -34,7 +34,7 @@ class AdvancedAssociationTest extends OrmFunctionalTestCase
         }
     }
 
-    protected function tearDown()
+    protected function tearDown() : void
     {
         parent::tearDown();
 
@@ -54,7 +54,7 @@ class AdvancedAssociationTest extends OrmFunctionalTestCase
         }
     }
 
-    public function testIssue()
+    public function testIssue() : void
     {
         //setup
         $phrase = new Phrase();
@@ -125,7 +125,7 @@ class AdvancedAssociationTest extends OrmFunctionalTestCase
         self::assertEquals(2, $definitions->count());
     }
 
-    public function testManyToMany()
+    public function testManyToMany() : void
     {
         $lemma = new Lemma();
         $lemma->setLemma('abu');

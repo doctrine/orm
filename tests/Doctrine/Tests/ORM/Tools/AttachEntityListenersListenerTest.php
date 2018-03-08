@@ -23,7 +23,7 @@ class AttachEntityListenersListenerTest extends OrmTestCase
     /** @var ClassMetadataFactory */
     private $factory;
 
-    public function setUp()
+    public function setUp() : void
     {
         $this->listener = new AttachEntityListenersListener();
         $driver         = $this->createAnnotationDriver();
@@ -36,7 +36,7 @@ class AttachEntityListenersListenerTest extends OrmTestCase
         $this->factory->setEntityManager($this->em);
     }
 
-    public function testAttachEntityListeners()
+    public function testAttachEntityListeners() : void
     {
         $this->listener->addEntityListener(
             AttachEntityListenersListenerTestFooEntity::class,
@@ -53,7 +53,7 @@ class AttachEntityListenersListenerTest extends OrmTestCase
         self::assertEquals(AttachEntityListenersListenerTestListener::class, $metadata->entityListeners['postLoad'][0]['class']);
     }
 
-    public function testAttachToExistingEntityListeners()
+    public function testAttachToExistingEntityListeners() : void
     {
         $this->listener->addEntityListener(
             AttachEntityListenersListenerTestBarEntity::class,
@@ -93,7 +93,7 @@ class AttachEntityListenersListenerTest extends OrmTestCase
      * @expectedException \Doctrine\ORM\Mapping\MappingException
      * @expectedExceptionMessage  Entity Listener "Doctrine\Tests\ORM\Tools\AttachEntityListenersListenerTestListener#postPersist()" in "Doctrine\Tests\ORM\Tools\AttachEntityListenersListenerTestFooEntity" was already declared, but it must be declared only once.
      */
-    public function testDuplicateEntityListenerException()
+    public function testDuplicateEntityListenerException() : void
     {
         $this->listener->addEntityListener(
             AttachEntityListenersListenerTestFooEntity::class,

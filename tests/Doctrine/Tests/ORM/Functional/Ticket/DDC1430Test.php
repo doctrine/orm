@@ -13,7 +13,7 @@ use Doctrine\Tests\OrmFunctionalTestCase;
  */
 class DDC1430Test extends OrmFunctionalTestCase
 {
-    protected function setUp()
+    protected function setUp() : void
     {
         parent::setUp();
 
@@ -29,7 +29,7 @@ class DDC1430Test extends OrmFunctionalTestCase
         }
     }
 
-    public function testOrderByFields()
+    public function testOrderByFields() : void
     {
         $repository = $this->em->getRepository(DDC1430Order::class);
         $builder    = $repository->createQueryBuilder('o');
@@ -66,7 +66,7 @@ class DDC1430Test extends OrmFunctionalTestCase
         self::assertEquals(3, $result[1]['p_count']);
     }
 
-    public function testOrderByAllObjectFields()
+    public function testOrderByAllObjectFields() : void
     {
         $repository = $this->em->getRepository(DDC1430Order::class);
         $builder    = $repository->createQueryBuilder('o');
@@ -100,7 +100,7 @@ class DDC1430Test extends OrmFunctionalTestCase
         self::assertEquals($result[1]['p_count'], 3);
     }
 
-    public function testTicket()
+    public function testTicket() : void
     {
         $repository = $this->em->getRepository(DDC1430Order::class);
         $builder    = $repository->createQueryBuilder('o');

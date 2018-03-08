@@ -13,7 +13,7 @@ use Doctrine\Tests\OrmFunctionalTestCase;
  */
 class DDC3346Test extends OrmFunctionalTestCase
 {
-    public function setUp()
+    public function setUp() : void
     {
         $this->useModelSet('ddc3346');
 
@@ -22,7 +22,7 @@ class DDC3346Test extends OrmFunctionalTestCase
         $this->loadAuthorFixture();
     }
 
-    public function testFindOneWithEagerFetchWillNotHydrateLimitedCollection()
+    public function testFindOneWithEagerFetchWillNotHydrateLimitedCollection() : void
     {
         /* @var DDC3346Author $author */
         $author = $this->em->getRepository(DDC3346Author::class)->findOneBy(
@@ -32,7 +32,7 @@ class DDC3346Test extends OrmFunctionalTestCase
         self::assertCount(2, $author->articles);
     }
 
-    public function testFindLimitedWithEagerFetchWillNotHydrateLimitedCollection()
+    public function testFindLimitedWithEagerFetchWillNotHydrateLimitedCollection() : void
     {
         /* @var DDC3346Author[] $authors */
         $authors = $this->em->getRepository(DDC3346Author::class)->findBy(
@@ -45,7 +45,7 @@ class DDC3346Test extends OrmFunctionalTestCase
         self::assertCount(2, $authors[0]->articles);
     }
 
-    public function testFindWithEagerFetchAndOffsetWillNotHydrateLimitedCollection()
+    public function testFindWithEagerFetchAndOffsetWillNotHydrateLimitedCollection() : void
     {
         /* @var DDC3346Author[] $authors */
         $authors = $this->em->getRepository(DDC3346Author::class)->findBy(

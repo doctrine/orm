@@ -13,7 +13,7 @@ use Doctrine\Tests\OrmFunctionalTestCase;
  */
 class DDC1514Test extends OrmFunctionalTestCase
 {
-    protected function setUp()
+    protected function setUp() : void
     {
         parent::setUp();
 
@@ -29,7 +29,7 @@ class DDC1514Test extends OrmFunctionalTestCase
         }
     }
 
-    public function testIssue()
+    public function testIssue() : void
     {
         $a1        = new DDC1514EntityA();
         $a1->title = '1foo';

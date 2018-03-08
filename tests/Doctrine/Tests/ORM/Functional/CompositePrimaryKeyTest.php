@@ -15,7 +15,7 @@ use Doctrine\Tests\OrmFunctionalTestCase;
 
 class CompositePrimaryKeyTest extends OrmFunctionalTestCase
 {
-    public function setUp()
+    public function setUp() : void
     {
         $this->useModelSet('navigation');
         parent::setUp();
@@ -45,7 +45,7 @@ class CompositePrimaryKeyTest extends OrmFunctionalTestCase
         return $tour;
     }
 
-    public function testPersistCompositePkEntity()
+    public function testPersistCompositePkEntity() : void
     {
         $this->putGermanysBrandenburderTor();
 
@@ -60,7 +60,7 @@ class CompositePrimaryKeyTest extends OrmFunctionalTestCase
     /**
      * @group DDC-1651
      */
-    public function testSetParameterCompositeKeyObject()
+    public function testSetParameterCompositeKeyObject() : void
     {
         $this->putGermanysBrandenburderTor();
 
@@ -78,7 +78,7 @@ class CompositePrimaryKeyTest extends OrmFunctionalTestCase
         $sql = $this->em->createQuery($dql)->getSQL();
     }
 
-    public function testIdentityFunctionWithCompositePrimaryKey()
+    public function testIdentityFunctionWithCompositePrimaryKey() : void
     {
         $this->putGermanysBrandenburderTor();
 
@@ -96,7 +96,7 @@ class CompositePrimaryKeyTest extends OrmFunctionalTestCase
         self::assertEquals(100, $result[0]['lat']);
     }
 
-    public function testManyToManyCompositeRelation()
+    public function testManyToManyCompositeRelation() : void
     {
         $this->putGermanysBrandenburderTor();
         $tour = $this->putTripAroundEurope();
@@ -106,7 +106,7 @@ class CompositePrimaryKeyTest extends OrmFunctionalTestCase
         self::assertCount(1, $tour->getPointOfInterests());
     }
 
-    public function testCompositeDqlEagerFetching()
+    public function testCompositeDqlEagerFetching() : void
     {
         $this->putGermanysBrandenburderTor();
         $this->putTripAroundEurope();
@@ -127,7 +127,7 @@ class CompositePrimaryKeyTest extends OrmFunctionalTestCase
         self::assertEquals('Brandenburger Tor', $pois[0]->getName());
     }
 
-    public function testCompositeCollectionMemberExpression()
+    public function testCompositeCollectionMemberExpression() : void
     {
         // Test should not throw any kind of exception
         $this->putGermanysBrandenburderTor();
@@ -145,7 +145,7 @@ class CompositePrimaryKeyTest extends OrmFunctionalTestCase
         self::assertCount(0, $tours);
     }
 
-    public function testSpecifyUnknownIdentifierPrimaryKeyFails()
+    public function testSpecifyUnknownIdentifierPrimaryKeyFails() : void
     {
         $this->expectException(ORMException::class);
         $this->expectExceptionMessage('The identifier long is missing for a query of Doctrine\Tests\Models\Navigation\NavPointOfInterest');
@@ -153,7 +153,7 @@ class CompositePrimaryKeyTest extends OrmFunctionalTestCase
         $poi = $this->em->find(NavPointOfInterest::class, ['key1' => 100]);
     }
 
-    public function testUnrecognizedIdentifierFieldsOnGetReference()
+    public function testUnrecognizedIdentifierFieldsOnGetReference() : void
     {
         $this->expectException(ORMException::class);
         $this->expectExceptionMessage("Unrecognized identifier fields: 'key1'");
@@ -164,7 +164,7 @@ class CompositePrimaryKeyTest extends OrmFunctionalTestCase
     /**
      * @group DDC-1939
      */
-    public function testDeleteCompositePersistentCollection()
+    public function testDeleteCompositePersistentCollection() : void
     {
         $this->putGermanysBrandenburderTor();
 

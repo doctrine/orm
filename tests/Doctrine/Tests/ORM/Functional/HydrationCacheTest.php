@@ -14,7 +14,7 @@ use Doctrine\Tests\OrmFunctionalTestCase;
  */
 class HydrationCacheTest extends OrmFunctionalTestCase
 {
-    public function setUp()
+    public function setUp() : void
     {
         $this->useModelSet('cms');
 
@@ -30,7 +30,7 @@ class HydrationCacheTest extends OrmFunctionalTestCase
         $this->em->clear();
     }
 
-    public function testHydrationCache()
+    public function testHydrationCache() : void
     {
         $cache = new ArrayCache();
         $dql   = 'SELECT u FROM Doctrine\Tests\Models\Cms\CmsUser u';
@@ -70,7 +70,7 @@ class HydrationCacheTest extends OrmFunctionalTestCase
         self::assertEquals($c + 2, $this->getCurrentQueryCount(), 'Hydration now cached');
     }
 
-    public function testHydrationParametersSerialization()
+    public function testHydrationParametersSerialization() : void
     {
         $cache = new ArrayCache();
 

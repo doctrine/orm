@@ -10,7 +10,7 @@ use function sprintf;
 
 class DDC444Test extends OrmFunctionalTestCase
 {
-    public function setUp()
+    public function setUp() : void
     {
         parent::setUp();
         //$this->em->getConnection()->getConfiguration()->setSQLLogger(new \Doctrine\DBAL\Logging\EchoSQLLogger);
@@ -21,7 +21,7 @@ class DDC444Test extends OrmFunctionalTestCase
         );
     }
 
-    public function testExplicitPolicy()
+    public function testExplicitPolicy() : void
     {
         $classname = DDC444User::class;
 

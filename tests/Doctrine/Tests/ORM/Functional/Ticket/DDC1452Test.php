@@ -17,7 +17,7 @@ use ProxyManager\Proxy\GhostObjectInterface;
  */
 class DDC1452Test extends OrmFunctionalTestCase
 {
-    protected function setUp()
+    protected function setUp() : void
     {
         $this->useModelSet('cms');
         parent::setUp();
@@ -33,7 +33,7 @@ class DDC1452Test extends OrmFunctionalTestCase
         }
     }
 
-    public function testIssue()
+    public function testIssue() : void
     {
         $a1        = new DDC1452EntityA();
         $a1->title = 'foo';
@@ -59,7 +59,7 @@ class DDC1452Test extends OrmFunctionalTestCase
         self::assertInstanceOf(Collection::class, $results[0]->entitiesB[0]->entityATo->getEntitiesB());
     }
 
-    public function testFetchJoinOneToOneFromInverse()
+    public function testFetchJoinOneToOneFromInverse() : void
     {
         $address          = new CmsAddress();
         $address->city    = 'Bonn';

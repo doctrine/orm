@@ -18,7 +18,7 @@ use Doctrine\Tests\OrmFunctionalTestCase;
  */
 class OneToOneCompositeIdForeignKeyTest extends OrmFunctionalTestCase
 {
-    public function setUp()
+    public function setUp() : void
     {
         $this->useModelSet('vct_onetoone_compositeid_foreignkey');
 
@@ -46,7 +46,7 @@ class OneToOneCompositeIdForeignKeyTest extends OrmFunctionalTestCase
         $this->em->clear();
     }
 
-    public function testThatTheValueOfIdentifiersAreConvertedInTheDatabase()
+    public function testThatTheValueOfIdentifiersAreConvertedInTheDatabase() : void
     {
         $conn = $this->em->getConnection();
 
@@ -60,7 +60,7 @@ class OneToOneCompositeIdForeignKeyTest extends OrmFunctionalTestCase
         self::assertEquals('nop', $conn->fetchColumn('SELECT associated_foreign_id FROM vct_owning_onetoone_compositeid_foreignkey LIMIT 1'));
     }
 
-    public function testThatEntitiesAreFetchedFromTheDatabase()
+    public function testThatEntitiesAreFetchedFromTheDatabase() : void
     {
         $auxiliary = $this->em->find(Entity\AuxiliaryEntity::class, 'abc');
 
@@ -76,7 +76,7 @@ class OneToOneCompositeIdForeignKeyTest extends OrmFunctionalTestCase
         self::assertInstanceOf(Entity\OwningOneToOneCompositeIdForeignKeyEntity::class, $owning);
     }
 
-    public function testThatTheValueOfIdentifiersAreConvertedBackAfterBeingFetchedFromTheDatabase()
+    public function testThatTheValueOfIdentifiersAreConvertedBackAfterBeingFetchedFromTheDatabase() : void
     {
         $auxiliary = $this->em->find(Entity\AuxiliaryEntity::class, 'abc');
 
@@ -93,7 +93,7 @@ class OneToOneCompositeIdForeignKeyTest extends OrmFunctionalTestCase
         self::assertEquals('ghi', $owning->id2);
     }
 
-    public function testThatInversedEntityIsFetchedFromTheDatabaseUsingAuxiliaryEntityAsId()
+    public function testThatInversedEntityIsFetchedFromTheDatabaseUsingAuxiliaryEntityAsId() : void
     {
         $auxiliary = $this->em->find(Entity\AuxiliaryEntity::class, 'abc');
 
@@ -105,7 +105,7 @@ class OneToOneCompositeIdForeignKeyTest extends OrmFunctionalTestCase
         self::assertInstanceOf(Entity\InversedOneToOneCompositeIdForeignKeyEntity::class, $inversed);
     }
 
-    public function testThatTheProxyFromOwningToInversedIsLoaded()
+    public function testThatTheProxyFromOwningToInversedIsLoaded() : void
     {
         $owning = $this->em->find(Entity\OwningOneToOneCompositeIdForeignKeyEntity::class, 'ghi');
 
@@ -114,7 +114,7 @@ class OneToOneCompositeIdForeignKeyTest extends OrmFunctionalTestCase
         self::assertEquals('some value to be loaded', $inversedProxy->someProperty);
     }
 
-    public function testThatTheEntityFromInversedToOwningIsEagerLoaded()
+    public function testThatTheEntityFromInversedToOwningIsEagerLoaded() : void
     {
         $inversed = $this->em->find(
             Entity\InversedOneToOneCompositeIdForeignKeyEntity::class,

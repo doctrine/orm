@@ -9,7 +9,7 @@ use Doctrine\Tests\OrmFunctionalTestCase;
 
 class DDC949Test extends OrmFunctionalTestCase
 {
-    public function setUp()
+    public function setUp() : void
     {
         $this->useModelSet('generic');
         parent::setUp();
@@ -18,7 +18,7 @@ class DDC949Test extends OrmFunctionalTestCase
     /**
      * @group DDC-949
      */
-    public function testBooleanThroughRepository()
+    public function testBooleanThroughRepository() : void
     {
         $true               = new BooleanModel();
         $true->booleanField = true;

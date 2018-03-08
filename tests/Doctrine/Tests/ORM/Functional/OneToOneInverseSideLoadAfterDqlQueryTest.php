@@ -11,7 +11,7 @@ use Doctrine\Tests\OrmFunctionalTestCase;
 
 class OneToOneInverseSideLoadAfterDqlQueryTest extends OrmFunctionalTestCase
 {
-    protected function setUp()
+    protected function setUp() : void
     {
         parent::setUp();
 

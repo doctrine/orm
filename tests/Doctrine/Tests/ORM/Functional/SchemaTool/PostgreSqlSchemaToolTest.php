@@ -15,7 +15,7 @@ use function strpos;
 
 class PostgreSqlSchemaToolTest extends OrmFunctionalTestCase
 {
-    protected function setUp()
+    protected function setUp() : void
     {
         parent::setUp();
 
@@ -24,14 +24,14 @@ class PostgreSqlSchemaToolTest extends OrmFunctionalTestCase
         }
     }
 
-    public function testPostgresMetadataSequenceIncrementedBy10()
+    public function testPostgresMetadataSequenceIncrementedBy10() : void
     {
         $address = $this->em->getClassMetadata(Models\CMS\CmsAddress::class);
 
         self::assertEquals(1, $address->getProperty('id')->getValueGenerator()->getDefinition()['allocationSize']);
     }
 
-    public function testGetCreateSchemaSql()
+    public function testGetCreateSchemaSql() : void
     {
         $classes = [
             $this->em->getClassMetadata(Models\CMS\CmsAddress::class),
@@ -69,7 +69,7 @@ class PostgreSqlSchemaToolTest extends OrmFunctionalTestCase
         self::assertCount(22, $sql, 'Total of 22 queries should be executed');
     }
 
-    public function testGetCreateSchemaSql2()
+    public function testGetCreateSchemaSql2() : void
     {
         $classes = [$this->em->getClassMetadata(Models\Generic\DecimalModel::class)];
 
@@ -82,7 +82,7 @@ class PostgreSqlSchemaToolTest extends OrmFunctionalTestCase
         self::assertEquals('CREATE SEQUENCE decimal_model_id_seq INCREMENT BY 1 MINVALUE 1 START 1', $sql[1]);
     }
 
-    public function testGetCreateSchemaSql3()
+    public function testGetCreateSchemaSql3() : void
     {
         $classes = [$this->em->getClassMetadata(Models\Generic\BooleanModel::class)];
 
@@ -94,7 +94,7 @@ class PostgreSqlSchemaToolTest extends OrmFunctionalTestCase
         self::assertEquals('CREATE SEQUENCE boolean_model_id_seq INCREMENT BY 1 MINVALUE 1 START 1', $sql[1]);
     }
 
-    public function testGetDropSchemaSql()
+    public function testGetDropSchemaSql() : void
     {
         $classes = [
             $this->em->getClassMetadata(Models\CMS\CmsAddress::class),
@@ -120,7 +120,7 @@ class PostgreSqlSchemaToolTest extends OrmFunctionalTestCase
     /**
      * @group DDC-1657
      */
-    public function testUpdateSchemaWithPostgreSQLSchema()
+    public function testUpdateSchemaWithPostgreSQLSchema() : void
     {
         $classes = [
             $this->em->getClassMetadata(DDC1657Screen::class),

@@ -14,7 +14,7 @@ use ProxyManager\Proxy\GhostObjectInterface;
  */
 class DDC6460Test extends OrmFunctionalTestCase
 {
-    public function setUp()
+    public function setUp() : void
     {
         parent::setUp();
 
@@ -32,7 +32,7 @@ class DDC6460Test extends OrmFunctionalTestCase
     /**
      * @group DDC-6460
      */
-    public function testInlineEmbeddable()
+    public function testInlineEmbeddable() : void
     {
         $isFieldMapped = $this->em
             ->getClassMetadata(DDC6460Entity::class)
@@ -44,7 +44,7 @@ class DDC6460Test extends OrmFunctionalTestCase
     /**
      * @group DDC-6460
      */
-    public function testInlineEmbeddableProxyInitialization()
+    public function testInlineEmbeddableProxyInitialization() : void
     {
         $entity                  = new DDC6460Entity();
         $entity->id              = 1;

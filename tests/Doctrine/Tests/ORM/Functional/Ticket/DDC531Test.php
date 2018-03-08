@@ -11,7 +11,7 @@ use ProxyManager\Proxy\GhostObjectInterface;
 
 class DDC531Test extends OrmFunctionalTestCase
 {
-    protected function setUp()
+    protected function setUp() : void
     {
         parent::setUp();
         $this->schemaTool->createSchema(
@@ -22,7 +22,7 @@ class DDC531Test extends OrmFunctionalTestCase
         );
     }
 
-    public function testIssue()
+    public function testIssue() : void
     {
         $item1         = new DDC531Item();
         $item2         = new DDC531Item();

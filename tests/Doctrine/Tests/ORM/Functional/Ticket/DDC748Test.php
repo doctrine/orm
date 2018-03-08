@@ -12,13 +12,13 @@ use Doctrine\Tests\OrmFunctionalTestCase;
 
 class DDC748Test extends OrmFunctionalTestCase
 {
-    protected function setUp()
+    protected function setUp() : void
     {
         $this->useModelSet('cms');
         parent::setUp();
     }
 
-    public function testRefreshWithManyToOne()
+    public function testRefreshWithManyToOne() : void
     {
         $user           = new CmsUser();
         $user->name     = 'beberlei';
@@ -40,7 +40,7 @@ class DDC748Test extends OrmFunctionalTestCase
         self::assertInstanceOf(Collection::class, $user->articles);
     }
 
-    public function testRefreshOneToOne()
+    public function testRefreshOneToOne() : void
     {
         $user           = new CmsUser();
         $user->name     = 'beberlei';

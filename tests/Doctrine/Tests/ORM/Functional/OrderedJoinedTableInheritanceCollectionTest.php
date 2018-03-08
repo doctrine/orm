@@ -12,7 +12,7 @@ use Doctrine\Tests\OrmFunctionalTestCase;
  */
 class OrderedJoinedTableInheritanceCollectionTest extends OrmFunctionalTestCase
 {
-    protected function setUp()
+    protected function setUp() : void
     {
         parent::setUp();
         try {
@@ -48,7 +48,7 @@ class OrderedJoinedTableInheritanceCollectionTest extends OrmFunctionalTestCase
         $this->em->clear();
     }
 
-    public function testOrderdOneToManyCollection()
+    public function testOrderdOneToManyCollection() : void
     {
         $poofy = $this->em->createQuery("SELECT p FROM Doctrine\Tests\ORM\Functional\OJTICPet p WHERE p.name = 'Poofy'")->getSingleResult();
 

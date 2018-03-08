@@ -7,6 +7,7 @@ namespace Doctrine\Tests\ORM\Functional;
 use Doctrine\Common\Cache\ArrayCache;
 use Doctrine\Common\Cache\Cache;
 use Doctrine\Common\Cache\CacheProvider;
+use Doctrine\ORM\Query;
 use Doctrine\ORM\Query\Exec\AbstractSqlExecutor;
 use Doctrine\ORM\Query\ParserResult;
 use Doctrine\Tests\OrmFunctionalTestCase;
@@ -20,7 +21,7 @@ class QueryCacheTest extends OrmFunctionalTestCase
     /** @var \ReflectionProperty */
     private $cacheDataReflection;
 
-    protected function setUp()
+    protected function setUp() : void
     {
         $this->cacheDataReflection = new \ReflectionProperty(ArrayCache::class, 'data');
         $this->cacheDataReflection->setAccessible(true);
@@ -39,7 +40,7 @@ class QueryCacheTest extends OrmFunctionalTestCase
     }
 
 
-    public function testQueryCacheDependsOnHints()
+    public function testQueryCacheDependsOnHints() : Query
     {
         $query = $this->em->createQuery('select ux from Doctrine\Tests\Models\CMS\CmsUser ux');
 
@@ -61,7 +62,7 @@ class QueryCacheTest extends OrmFunctionalTestCase
      * @param <type> $query
      * @depends testQueryCache_DependsOnHints
      */
-    public function testQueryCacheDependsOnFirstResult($query)
+    public function testQueryCacheDependsOnFirstResult($query) : void
     {
         $cache      = $query->getQueryCacheDriver();
         $cacheCount = $this->getCacheSize($cache);
@@ -77,7 +78,7 @@ class QueryCacheTest extends OrmFunctionalTestCase
      * @param <type> $query
      * @depends testQueryCache_DependsOnHints
      */
-    public function testQueryCacheDependsOnMaxResults($query)
+    public function testQueryCacheDependsOnMaxResults($query) : void
     {
         $cache      = $query->getQueryCacheDriver();
         $cacheCount = $this->getCacheSize($cache);
@@ -92,7 +93,7 @@ class QueryCacheTest extends OrmFunctionalTestCase
      * @param <type> $query
      * @depends testQueryCache_DependsOnHints
      */
-    public function testQueryCacheDependsOnHydrationMode($query)
+    public function testQueryCacheDependsOnHydrationMode($query) : void
     {
         $cache      = $query->getQueryCacheDriver();
         $cacheCount = $this->getCacheSize($cache);
@@ -101,7 +102,7 @@ class QueryCacheTest extends OrmFunctionalTestCase
         self::assertEquals($cacheCount + 1, $this->getCacheSize($cache));
     }
 
-    public function testQueryCacheNoHitSaveParserResult()
+    public function testQueryCacheNoHitSaveParserResult() : void
     {
         $this->em->getConfiguration()->setQueryCacheImpl(new ArrayCache());
 
@@ -119,7 +120,7 @@ class QueryCacheTest extends OrmFunctionalTestCase
         $query->getResult();
     }
 
-    public function testQueryCacheHitDoesNotSaveParserResult()
+    public function testQueryCacheHitDoesNotSaveParserResult() : void
     {
         $this->em->getConfiguration()->setQueryCacheImpl(new ArrayCache());
 

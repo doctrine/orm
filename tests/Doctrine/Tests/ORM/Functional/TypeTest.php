@@ -13,14 +13,14 @@ use Doctrine\Tests\OrmFunctionalTestCase;
 
 class TypeTest extends OrmFunctionalTestCase
 {
-    protected function setUp()
+    protected function setUp() : void
     {
         $this->useModelSet('generic');
 
         parent::setUp();
     }
 
-    public function testDecimal()
+    public function testDecimal() : void
     {
         $decimal            = new DecimalModel();
         $decimal->decimal   = 0.15;
@@ -40,7 +40,7 @@ class TypeTest extends OrmFunctionalTestCase
     /**
      * @group DDC-1394
      */
-    public function testBoolean()
+    public function testBoolean() : void
     {
         $bool               = new BooleanModel();
         $bool->booleanField = true;
@@ -65,7 +65,7 @@ class TypeTest extends OrmFunctionalTestCase
         self::assertFalse($bool->booleanField);
     }
 
-    public function testArray()
+    public function testArray() : void
     {
         $serialize               = new SerializationModel();
         $serialize->array['foo'] = 'bar';
@@ -81,7 +81,7 @@ class TypeTest extends OrmFunctionalTestCase
         self::assertSame(['foo' => 'bar', 'bar' => 'baz'], $serialize->array);
     }
 
-    public function testObject()
+    public function testObject() : void
     {
         $serialize         = new SerializationModel();
         $serialize->object = new \stdClass();
@@ -96,7 +96,7 @@ class TypeTest extends OrmFunctionalTestCase
         self::assertInstanceOf('stdClass', $serialize->object);
     }
 
-    public function testDate()
+    public function testDate() : void
     {
         $dateTime       = new DateTimeModel();
         $dateTime->date = new \DateTime('2009-10-01', new \DateTimeZone('Europe/Berlin'));
@@ -111,7 +111,7 @@ class TypeTest extends OrmFunctionalTestCase
         self::assertEquals('2009-10-01', $dateTimeDb->date->format('Y-m-d'));
     }
 
-    public function testDateTime()
+    public function testDateTime() : void
     {
         $dateTime           = new DateTimeModel();
         $dateTime->datetime = new \DateTime('2009-10-02 20:10:52', new \DateTimeZone('Europe/Berlin'));
@@ -133,7 +133,7 @@ class TypeTest extends OrmFunctionalTestCase
         self::assertEmpty($articles);
     }
 
-    public function testDqlQueryBindDateTimeInstance()
+    public function testDqlQueryBindDateTimeInstance() : void
     {
         $date = new \DateTime('2009-10-02 20:10:52', new \DateTimeZone('Europe/Berlin'));
 
@@ -153,7 +153,7 @@ class TypeTest extends OrmFunctionalTestCase
         self::assertSame('2009-10-02 20:10:52', $dateTimeDb->datetime->format('Y-m-d H:i:s'));
     }
 
-    public function testDqlQueryBuilderBindDateTimeInstance()
+    public function testDqlQueryBuilderBindDateTimeInstance() : void
     {
         $date = new \DateTime('2009-10-02 20:10:52', new \DateTimeZone('Europe/Berlin'));
 
@@ -176,7 +176,7 @@ class TypeTest extends OrmFunctionalTestCase
         self::assertSame('2009-10-02 20:10:52', $dateTimeDb->datetime->format('Y-m-d H:i:s'));
     }
 
-    public function testTime()
+    public function testTime() : void
     {
         $dateTime       = new DateTimeModel();
         $dateTime->time = new \DateTime('2010-01-01 19:27:20');

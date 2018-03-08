@@ -11,7 +11,7 @@ use function sprintf;
 
 class DDC3967Test extends SecondLevelCacheAbstractTest
 {
-    protected function setUp()
+    protected function setUp() : void
     {
         parent::setUp();
 
@@ -20,7 +20,7 @@ class DDC3967Test extends SecondLevelCacheAbstractTest
         $this->em->clear();
     }
 
-    public function testIdentifierCachedWithProperType()
+    public function testIdentifierCachedWithProperType() : void
     {
         $country = array_pop($this->countries);
         $id      = $country->getId();

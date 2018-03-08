@@ -15,7 +15,7 @@ use Entities\User;
  */
 class DDC2862Test extends OrmFunctionalTestCase
 {
-    public function setUp()
+    public function setUp() : void
     {
         $this->enableSecondLevelCache();
         parent::setUp();
@@ -31,7 +31,7 @@ class DDC2862Test extends OrmFunctionalTestCase
         }
     }
 
-    public function testIssue()
+    public function testIssue() : void
     {
         $user1   = new DDC2862User('Foo');
         $driver1 = new DDC2862Driver('Bar', $user1);
@@ -69,7 +69,7 @@ class DDC2862Test extends OrmFunctionalTestCase
         self::assertEquals('Foo', $driver3->getUserProfile()->getName());
     }
 
-    public function testIssueReopened()
+    public function testIssueReopened() : void
     {
         $user1   = new DDC2862User('Foo');
         $driver1 = new DDC2862Driver('Bar', $user1);

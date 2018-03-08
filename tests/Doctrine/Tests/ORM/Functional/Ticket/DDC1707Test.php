@@ -15,7 +15,7 @@ use Doctrine\Tests\OrmFunctionalTestCase;
  */
 class DDC1707Test extends OrmFunctionalTestCase
 {
-    public function setUp()
+    public function setUp() : void
     {
         parent::setUp();
 
@@ -30,7 +30,7 @@ class DDC1707Test extends OrmFunctionalTestCase
         }
     }
 
-    public function testPostLoadOnChild()
+    public function testPostLoadOnChild() : void
     {
         $class   = $this->em->getClassMetadata(DDC1707Child::class);
         $entity  = new DDC1707Child();

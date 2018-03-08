@@ -10,7 +10,7 @@ use Doctrine\Tests\OrmFunctionalTestCase;
 
 class DDC345Test extends OrmFunctionalTestCase
 {
-    protected function setUp()
+    protected function setUp() : void
     {
         parent::setUp();
         //$this->em->getConnection()->getConfiguration()->setSQLLogger(new \Doctrine\DBAL\Logging\EchoSQLLogger);
@@ -23,7 +23,7 @@ class DDC345Test extends OrmFunctionalTestCase
         );
     }
 
-    public function testTwoIterateHydrations()
+    public function testTwoIterateHydrations() : void
     {
         // Create User
         $user       = new DDC345User();

@@ -10,7 +10,7 @@ use ProxyManager\Proxy\GhostObjectInterface;
 
 class DDC633Test extends OrmFunctionalTestCase
 {
-    protected function setUp()
+    protected function setUp() : void
     {
         parent::setUp();
         try {
@@ -29,7 +29,7 @@ class DDC633Test extends OrmFunctionalTestCase
      * @group DDC-952
      * @group DDC-914
      */
-    public function testOneToOneEager()
+    public function testOneToOneEager() : void
     {
         $app              = new DDC633Appointment();
         $pat              = new DDC633Patient();
@@ -52,7 +52,7 @@ class DDC633Test extends OrmFunctionalTestCase
      * @group DDC-633
      * @group DDC-952
      */
-    public function testDQLDeferredEagerLoad()
+    public function testDQLDeferredEagerLoad() : void
     {
         for ($i = 0; $i < 10; $i++) {
             $app              = new DDC633Appointment();

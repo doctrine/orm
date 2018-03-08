@@ -18,7 +18,7 @@ class SchemaValidatorTest extends OrmTestCase
     /** @var SchemaValidator */
     private $validator;
 
-    public function setUp()
+    public function setUp() : void
     {
         $this->em        = $this->getTestEntityManager();
         $this->validator = new SchemaValidator($this->em);
@@ -27,7 +27,7 @@ class SchemaValidatorTest extends OrmTestCase
     /**
      * @dataProvider modelSetProvider
      */
-    public function testCmsModelSet(string $path)
+    public function testCmsModelSet(string $path) : void
     {
         $this->em->getConfiguration()
                  ->getMetadataDriverImpl()
@@ -51,7 +51,7 @@ class SchemaValidatorTest extends OrmTestCase
     /**
      * @group DDC-1439
      */
-    public function testInvalidManyToManyJoinColumnSchema()
+    public function testInvalidManyToManyJoinColumnSchema() : void
     {
         $class1 = $this->em->getClassMetadata(InvalidEntity1::class);
         $class2 = $this->em->getClassMetadata(InvalidEntity2::class);
@@ -73,7 +73,7 @@ class SchemaValidatorTest extends OrmTestCase
     /**
      * @group DDC-1439
      */
-    public function testInvalidToOneJoinColumnSchema()
+    public function testInvalidToOneJoinColumnSchema() : void
     {
         $class1 = $this->em->getClassMetadata(InvalidEntity1::class);
         $class2 = $this->em->getClassMetadata(InvalidEntity2::class);
@@ -95,7 +95,7 @@ class SchemaValidatorTest extends OrmTestCase
     /**
      * @group DDC-1587
      */
-    public function testValidOneToOneAsIdentifierSchema()
+    public function testValidOneToOneAsIdentifierSchema() : void
     {
         $class1 = $this->em->getClassMetadata(DDC1587ValidEntity2::class);
         $class2 = $this->em->getClassMetadata(DDC1587ValidEntity1::class);
@@ -108,7 +108,7 @@ class SchemaValidatorTest extends OrmTestCase
     /**
      * @group DDC-1649
      */
-    public function testInvalidTripleAssociationAsKeyMapping()
+    public function testInvalidTripleAssociationAsKeyMapping() : void
     {
         $classThree = $this->em->getClassMetadata(DDC1649Three::class);
         $errors     = $this->validator->validateClass($classThree);
@@ -128,7 +128,7 @@ class SchemaValidatorTest extends OrmTestCase
     /**
      * @group DDC-3274
      */
-    public function testInvalidBiDirectionalRelationMappingMissingInversedByAttribute()
+    public function testInvalidBiDirectionalRelationMappingMissingInversedByAttribute() : void
     {
         $class  = $this->em->getClassMetadata(DDC3274One::class);
         $errors = $this->validator->validateClass($class);
@@ -145,7 +145,7 @@ class SchemaValidatorTest extends OrmTestCase
     /**
      * @group DDC-3322
      */
-    public function testInvalidOrderByInvalidField()
+    public function testInvalidOrderByInvalidField() : void
     {
         $class  = $this->em->getClassMetadata(DDC3322One::class);
         $errors = $this->validator->validateClass($class);
@@ -161,7 +161,7 @@ class SchemaValidatorTest extends OrmTestCase
     /**
      * @group DDC-3322
      */
-    public function testInvalidOrderByCollectionValuedAssociation()
+    public function testInvalidOrderByCollectionValuedAssociation() : void
     {
         $class  = $this->em->getClassMetadata(DDC3322Two::class);
         $errors = $this->validator->validateClass($class);
@@ -177,7 +177,7 @@ class SchemaValidatorTest extends OrmTestCase
     /**
      * @group DDC-3322
      */
-    public function testInvalidOrderByAssociationInverseSide()
+    public function testInvalidOrderByAssociationInverseSide() : void
     {
         $class  = $this->em->getClassMetadata(DDC3322Three::class);
         $errors = $this->validator->validateClass($class);

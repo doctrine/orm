@@ -15,7 +15,7 @@ class SecondLevelCacheCompositePrimaryKeyWithAssociationsTest extends OrmFunctio
     /** @var Cache */
     protected $cache;
 
-    public function setUp()
+    public function setUp() : void
     {
         $this->enableSecondLevelCache();
         $this->useModelSet('geonames');
@@ -48,7 +48,7 @@ class SecondLevelCacheCompositePrimaryKeyWithAssociationsTest extends OrmFunctio
         $this->evictRegions();
     }
 
-    public function testFindByReturnsCachedEntity()
+    public function testFindByReturnsCachedEntity() : void
     {
         $admin1Repo = $this->em->getRepository(Admin1::class);
 

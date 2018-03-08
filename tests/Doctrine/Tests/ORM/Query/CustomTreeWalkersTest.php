@@ -21,7 +21,7 @@ class CustomTreeWalkersTest extends OrmTestCase
 {
     private $em;
 
-    protected function setUp()
+    protected function setUp() : void
     {
         $this->em = $this->getTestEntityManager();
     }
@@ -50,7 +50,7 @@ class CustomTreeWalkersTest extends OrmTestCase
         self::assertEquals($sqlToBeConfirmed, $sqlGenerated);
     }
 
-    public function testSupportsQueriesWithoutWhere()
+    public function testSupportsQueriesWithoutWhere() : void
     {
         $this->assertSqlGeneration(
             'select u from Doctrine\Tests\Models\CMS\CmsUser u',
@@ -59,7 +59,7 @@ class CustomTreeWalkersTest extends OrmTestCase
         );
     }
 
-    public function testSupportsQueriesWithMultipleConditionalExpressions()
+    public function testSupportsQueriesWithMultipleConditionalExpressions() : void
     {
         $this->assertSqlGeneration(
             'select u from Doctrine\Tests\Models\CMS\CmsUser u where u.name = :name or u.name = :otherName',
@@ -68,7 +68,7 @@ class CustomTreeWalkersTest extends OrmTestCase
         );
     }
 
-    public function testSupportsQueriesWithSimpleConditionalExpression()
+    public function testSupportsQueriesWithSimpleConditionalExpression() : void
     {
         $this->assertSqlGeneration(
             'select u from Doctrine\Tests\Models\CMS\CmsUser u where u.name = :name',
@@ -77,7 +77,7 @@ class CustomTreeWalkersTest extends OrmTestCase
         );
     }
 
-    public function testSetUnknownQueryComponentThrowsException()
+    public function testSetUnknownQueryComponentThrowsException() : void
     {
         $this->expectException(QueryException::class);
         $this->expectExceptionMessage("Invalid query component given for DQL alias 'x', requires 'metadata', 'parent', 'relation', 'map', 'nestingLevel' and 'token' keys.");
@@ -89,7 +89,7 @@ class CustomTreeWalkersTest extends OrmTestCase
         );
     }
 
-    public function testSupportsSeveralHintsQueries()
+    public function testSupportsSeveralHintsQueries() : void
     {
         $this->assertSqlGeneration(
             'select u from Doctrine\Tests\Models\CMS\CmsUser u',

@@ -23,7 +23,7 @@ class ResultCacheTest extends OrmFunctionalTestCase
     /** @var \ReflectionProperty */
     private $cacheDataReflection;
 
-    protected function setUp()
+    protected function setUp() : void
     {
         $this->cacheDataReflection = new \ReflectionProperty(ArrayCache::class, 'data');
         $this->cacheDataReflection->setAccessible(true);
@@ -41,7 +41,7 @@ class ResultCacheTest extends OrmFunctionalTestCase
         return count($this->cacheDataReflection->getValue($cache));
     }
 
-    public function testResultCache()
+    public function testResultCache() : void
     {
         $user = new CmsUser();
 
@@ -77,7 +77,7 @@ class ResultCacheTest extends OrmFunctionalTestCase
         self::assertEquals('Roman', $users[0]->name);
     }
 
-    public function testSetResultCacheId()
+    public function testSetResultCacheId() : void
     {
         $cache = new ArrayCache();
         $query = $this->em->createQuery('select ux from Doctrine\Tests\Models\CMS\CmsUser ux');
@@ -92,7 +92,7 @@ class ResultCacheTest extends OrmFunctionalTestCase
         self::assertTrue($cache->contains('testing_result_cache_id'));
     }
 
-    public function testUseResultCache()
+    public function testUseResultCache() : void
     {
         $cache = new ArrayCache();
         $query = $this->em->createQuery('select ux from Doctrine\Tests\Models\CMS\CmsUser ux');
@@ -111,7 +111,7 @@ class ResultCacheTest extends OrmFunctionalTestCase
     /**
      * @group DDC-1026
      */
-    public function testUseResultCacheParams()
+    public function testUseResultCacheParams() : void
     {
         $cache    = new ArrayCache();
         $sqlCount = count($this->sqlLoggerStack->queries);
@@ -138,11 +138,9 @@ class ResultCacheTest extends OrmFunctionalTestCase
     }
 
     /**
-     * @return NativeQuery
-     *
      * @throws ORMException
      */
-    public function testNativeQueryResultCaching()
+    public function testNativeQueryResultCaching() : NativeQuery
     {
         $cache = new ArrayCache();
         $rsm   = new ResultSetMapping();
@@ -167,7 +165,7 @@ class ResultCacheTest extends OrmFunctionalTestCase
      * @param string $query
      * @depends testNativeQueryResultCaching
      */
-    public function testResultCacheNotDependsOnQueryHints($query)
+    public function testResultCacheNotDependsOnQueryHints($query) : void
     {
         $cache      = $query->getResultCacheDriver();
         $cacheCount = $this->getCacheSize($cache);
@@ -182,7 +180,7 @@ class ResultCacheTest extends OrmFunctionalTestCase
      * @param <type> $query
      * @depends testNativeQueryResultCaching
      */
-    public function testResultCacheDependsOnParameters($query)
+    public function testResultCacheDependsOnParameters($query) : void
     {
         $cache      = $query->getResultCacheDriver();
         $cacheCount = $this->getCacheSize($cache);
@@ -197,7 +195,7 @@ class ResultCacheTest extends OrmFunctionalTestCase
      * @param <type> $query
      * @depends testNativeQueryResultCaching
      */
-    public function testResultCacheNotDependsOnHydrationMode($query)
+    public function testResultCacheNotDependsOnHydrationMode($query) : void
     {
         $cache      = $query->getResultCacheDriver();
         $cacheCount = $this->getCacheSize($cache);
@@ -211,7 +209,7 @@ class ResultCacheTest extends OrmFunctionalTestCase
     /**
      * @group DDC-909
      */
-    public function testResultCacheWithObjectParameter()
+    public function testResultCacheWithObjectParameter() : void
     {
         $user1           = new CmsUser();
         $user1->name     = 'Roman';

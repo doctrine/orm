@@ -26,7 +26,7 @@ class NonStrictReadWriteCachedEntityPersisterTest extends AbstractEntityPersiste
         return new NonStrictReadWriteCachedEntityPersister($persister, $region, $em, $metadata);
     }
 
-    public function testTransactionRollBackShouldClearQueue()
+    public function testTransactionRollBackShouldClearQueue() : void
     {
         $entity    = new Country('Foo');
         $persister = $this->createPersisterDefault();
@@ -46,7 +46,7 @@ class NonStrictReadWriteCachedEntityPersisterTest extends AbstractEntityPersiste
         self::assertCount(0, $property->getValue($persister));
     }
 
-    public function testInsertTransactionCommitShouldPutCache()
+    public function testInsertTransactionCommitShouldPutCache() : void
     {
         $entity    = new Country('Foo');
         $persister = $this->createPersisterDefault();
@@ -75,7 +75,7 @@ class NonStrictReadWriteCachedEntityPersisterTest extends AbstractEntityPersiste
         self::assertCount(0, $property->getValue($persister));
     }
 
-    public function testUpdateTransactionCommitShouldPutCache()
+    public function testUpdateTransactionCommitShouldPutCache() : void
     {
         $entity    = new Country('Foo');
         $persister = $this->createPersisterDefault();
@@ -104,7 +104,7 @@ class NonStrictReadWriteCachedEntityPersisterTest extends AbstractEntityPersiste
         self::assertCount(0, $property->getValue($persister));
     }
 
-    public function testDeleteTransactionCommitShouldEvictCache()
+    public function testDeleteTransactionCommitShouldEvictCache() : void
     {
         $entity    = new Country('Foo');
         $persister = $this->createPersisterDefault();

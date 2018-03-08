@@ -24,7 +24,7 @@ class ReferenceProxyTest extends OrmFunctionalTestCase
     /** @var ProxyFactory */
     private $factory;
 
-    protected function setUp()
+    protected function setUp() : void
     {
         $this->useModelSet('ecommerce');
         $this->useModelSet('company');
@@ -64,7 +64,7 @@ class ReferenceProxyTest extends OrmFunctionalTestCase
         return $event->getId();
     }
 
-    public function testLazyLoadsFieldValuesFromDatabase()
+    public function testLazyLoadsFieldValuesFromDatabase() : void
     {
         $id = $this->createProduct();
 
@@ -76,7 +76,7 @@ class ReferenceProxyTest extends OrmFunctionalTestCase
     /**
      * @group DDC-727
      */
-    public function testAccessMetatadaForProxy()
+    public function testAccessMetatadaForProxy() : void
     {
         $id = $this->createProduct();
 
@@ -89,7 +89,7 @@ class ReferenceProxyTest extends OrmFunctionalTestCase
     /**
      * @group DDC-1033
      */
-    public function testReferenceFind()
+    public function testReferenceFind() : void
     {
         $id = $this->createProduct();
 
@@ -103,7 +103,7 @@ class ReferenceProxyTest extends OrmFunctionalTestCase
     /**
      * @group DDC-1033
      */
-    public function testCloneProxy()
+    public function testCloneProxy() : void
     {
         $id = $this->createProduct();
 
@@ -130,7 +130,7 @@ class ReferenceProxyTest extends OrmFunctionalTestCase
     /**
      * @group DDC-733
      */
-    public function testInitializeProxy()
+    public function testInitializeProxy() : void
     {
         $id = $this->createProduct();
 
@@ -147,7 +147,7 @@ class ReferenceProxyTest extends OrmFunctionalTestCase
     /**
      * @group DDC-1163
      */
-    public function testInitializeChangeAndFlushProxy()
+    public function testInitializeChangeAndFlushProxy() : void
     {
         $id = $this->createProduct();
 
@@ -165,7 +165,7 @@ class ReferenceProxyTest extends OrmFunctionalTestCase
         self::assertEquals('Doctrine 2 Cookbook', $entity->getName());
     }
 
-    public function testDoNotInitializeProxyOnGettingTheIdentifier()
+    public function testDoNotInitializeProxyOnGettingTheIdentifier() : void
     {
         $id = $this->createProduct();
 
@@ -180,7 +180,7 @@ class ReferenceProxyTest extends OrmFunctionalTestCase
     /**
      * @group DDC-1625
      */
-    public function testDoNotInitializeProxyOnGettingTheIdentifierDDC1625()
+    public function testDoNotInitializeProxyOnGettingTheIdentifierDDC1625() : void
     {
         $id = $this->createAuction();
 
@@ -192,7 +192,7 @@ class ReferenceProxyTest extends OrmFunctionalTestCase
         self::assertFalse($entity->isProxyInitialized(), "Getting the identifier doesn't initialize the proxy when extending.");
     }
 
-    public function testDoNotInitializeProxyOnGettingTheIdentifierAndReturnTheRightType()
+    public function testDoNotInitializeProxyOnGettingTheIdentifierAndReturnTheRightType() : void
     {
         $product = new ECommerceProduct();
         $product->setName('Doctrine Cookbook');
@@ -218,7 +218,7 @@ class ReferenceProxyTest extends OrmFunctionalTestCase
         self::assertFalse($entity->isProxyInitialized(), "Getting the identifier doesn't initialize the proxy.");
     }
 
-    public function testInitializeProxyOnGettingSomethingOtherThanTheIdentifier()
+    public function testInitializeProxyOnGettingSomethingOtherThanTheIdentifier() : void
     {
         $id = $this->createProduct();
 
@@ -233,7 +233,7 @@ class ReferenceProxyTest extends OrmFunctionalTestCase
     /**
      * @group DDC-1604
      */
-    public function testCommonPersistenceProxy()
+    public function testCommonPersistenceProxy() : void
     {
         $id = $this->createProduct();
 

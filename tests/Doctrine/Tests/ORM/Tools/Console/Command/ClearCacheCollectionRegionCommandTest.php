@@ -23,7 +23,7 @@ class ClearCacheCollectionRegionCommandTest extends OrmFunctionalTestCase
     /** @var CollectionRegionCommand */
     private $command;
 
-    protected function setUp()
+    protected function setUp() : void
     {
         $this->enableSecondLevelCache();
         parent::setUp();
@@ -35,7 +35,7 @@ class ClearCacheCollectionRegionCommandTest extends OrmFunctionalTestCase
         $this->application->add($this->command);
     }
 
-    public function testClearAllRegion()
+    public function testClearAllRegion() : void
     {
         $command = $this->application->find('orm:clear-cache:region:collection');
         $tester  = new CommandTester($command);
@@ -51,7 +51,7 @@ class ClearCacheCollectionRegionCommandTest extends OrmFunctionalTestCase
         self::assertContains(' // Clearing all second-level cache collection regions', $tester->getDisplay());
     }
 
-    public function testClearByOwnerEntityClassName()
+    public function testClearByOwnerEntityClassName() : void
     {
         $command = $this->application->find('orm:clear-cache:region:collection');
         $tester  = new CommandTester($command);
@@ -71,7 +71,7 @@ class ClearCacheCollectionRegionCommandTest extends OrmFunctionalTestCase
         );
     }
 
-    public function testClearCacheEntryName()
+    public function testClearCacheEntryName() : void
     {
         $command = $this->application->find('orm:clear-cache:region:collection');
         $tester  = new CommandTester($command);
@@ -94,7 +94,7 @@ class ClearCacheCollectionRegionCommandTest extends OrmFunctionalTestCase
         self::assertContains(' // entity identified by "1"', $tester->getDisplay());
     }
 
-    public function testFlushRegionName()
+    public function testFlushRegionName() : void
     {
         $command = $this->application->find('orm:clear-cache:region:collection');
         $tester  = new CommandTester($command);

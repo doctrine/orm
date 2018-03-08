@@ -14,7 +14,7 @@ use function get_class;
  */
 class DDC1163Test extends OrmFunctionalTestCase
 {
-    protected function setUp()
+    protected function setUp() : void
     {
         parent::setUp();
         //$this->em->getConnection()->getConfiguration()->setSQLLogger(new \Doctrine\DBAL\Logging\EchoSQLLogger);
@@ -28,7 +28,7 @@ class DDC1163Test extends OrmFunctionalTestCase
         );
     }
 
-    public function testIssue()
+    public function testIssue() : void
     {
         $this->createSpecialProductAndProxyHolderReferencingIt();
         $this->em->clear();

@@ -9,7 +9,7 @@ use Doctrine\Tests\OrmFunctionalTestCase;
 
 class DDC2182Test extends OrmFunctionalTestCase
 {
-    public function testPassColumnOptionsToJoinColumns()
+    public function testPassColumnOptionsToJoinColumns() : void
     {
         if ($this->em->getConnection()->getDatabasePlatform()->getName() !== 'mysql') {
             $this->markTestSkipped('This test is useful for all databases, but designed only for mysql.');

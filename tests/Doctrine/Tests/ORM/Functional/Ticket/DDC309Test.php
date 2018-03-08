@@ -9,7 +9,7 @@ use Doctrine\Tests\OrmFunctionalTestCase;
 
 class DDC309Test extends OrmFunctionalTestCase
 {
-    protected function setUp()
+    protected function setUp() : void
     {
         parent::setUp();
         $this->schemaTool->createSchema(
@@ -20,7 +20,7 @@ class DDC309Test extends OrmFunctionalTestCase
         );
     }
 
-    public function testTwoIterateHydrations()
+    public function testTwoIterateHydrations() : void
     {
         $c1 = new DDC309Country();
         $c2 = new DDC309Country();

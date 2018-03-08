@@ -11,7 +11,7 @@ use function get_class;
 
 class DDC237Test extends OrmFunctionalTestCase
 {
-    protected function setUp()
+    protected function setUp() : void
     {
         parent::setUp();
         $this->schemaTool->createSchema(
@@ -23,7 +23,7 @@ class DDC237Test extends OrmFunctionalTestCase
         );
     }
 
-    public function testUninitializedProxyIsInitializedOnFetchJoin()
+    public function testUninitializedProxyIsInitializedOnFetchJoin() : void
     {
         $x = new DDC237EntityX();
         $y = new DDC237EntityY();

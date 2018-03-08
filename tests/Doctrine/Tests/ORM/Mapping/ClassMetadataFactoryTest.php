@@ -38,7 +38,7 @@ use function sprintf;
 
 class ClassMetadataFactoryTest extends OrmTestCase
 {
-    public function testGetMetadataForSingleClass()
+    public function testGetMetadataForSingleClass() : void
     {
         $mockDriver    = new MetadataDriverMock();
         $entityManager = $this->createEntityManager($mockDriver);
@@ -72,7 +72,7 @@ class ClassMetadataFactoryTest extends OrmTestCase
         self::assertTrue($cmMap1->hasField('name'));
     }
 
-    public function testGetMetadataForThrowsExceptionOnUnknownCustomGeneratorClass()
+    public function testGetMetadataForThrowsExceptionOnUnknownCustomGeneratorClass() : void
     {
         $cm1 = $this->createValidClassMetadata();
 
@@ -95,7 +95,7 @@ class ClassMetadataFactoryTest extends OrmTestCase
         $actual = $cmf->getMetadataFor($cm1->getClassName());
     }
 
-    public function testGetMetadataForThrowsExceptionOnMissingCustomGeneratorDefinition()
+    public function testGetMetadataForThrowsExceptionOnMissingCustomGeneratorDefinition() : void
     {
         $cm1 = $this->createValidClassMetadata();
 
@@ -112,7 +112,7 @@ class ClassMetadataFactoryTest extends OrmTestCase
         $actual = $cmf->getMetadataFor($cm1->getClassName());
     }
 
-    public function testHasGetMetadataNamespaceSeparatorIsNotNormalized()
+    public function testHasGetMetadataNamespaceSeparatorIsNotNormalized() : void
     {
         require_once __DIR__ . '/../../Models/Global/GlobalNamespaceModel.php';
 
@@ -133,7 +133,7 @@ class ClassMetadataFactoryTest extends OrmTestCase
     /**
      * @group DDC-1512
      */
-    public function testIsTransient()
+    public function testIsTransient() : void
     {
         $cmf    = new ClassMetadataFactory();
         $driver = $this->createMock(MappingDriver::class);
@@ -152,7 +152,7 @@ class ClassMetadataFactoryTest extends OrmTestCase
         self::assertFalse($em->getMetadataFactory()->isTransient(CmsArticle::class));
     }
 
-    public function testAddDefaultDiscriminatorMap()
+    public function testAddDefaultDiscriminatorMap() : void
     {
         $cmf    = new ClassMetadataFactory();
         $driver = $this->createAnnotationDriver([__DIR__ . '/../../Models/JoinedInheritanceType/']);
@@ -191,7 +191,7 @@ class ClassMetadataFactoryTest extends OrmTestCase
         $rootMetadata = $cmf->getMetadataFor(RootClass::class);
     }
 
-    public function testGetAllMetadataWorksWithBadConnection()
+    public function testGetAllMetadataWorksWithBadConnection() : void
     {
         // DDC-3551
         $conn       = $this->createMock(Connection::class);
@@ -309,7 +309,7 @@ class ClassMetadataFactoryTest extends OrmTestCase
     /**
      * @group DDC-1845
      */
-    public function testQuoteMetadata()
+    public function testQuoteMetadata() : void
     {
         $cmf    = new ClassMetadataFactory();
         $driver = $this->createAnnotationDriver([__DIR__ . '/../../Models/Quote/']);
@@ -377,7 +377,7 @@ class ClassMetadataFactoryTest extends OrmTestCase
      * @group 1181
      * @group 385
      */
-    public function testFallbackLoadingCausesEventTriggeringThatCanModifyFetchedMetadata()
+    public function testFallbackLoadingCausesEventTriggeringThatCanModifyFetchedMetadata() : void
     {
         $test = $this;
 
@@ -410,7 +410,7 @@ class ClassMetadataFactoryTest extends OrmTestCase
     /**
      * @group DDC-3427
      */
-    public function testAcceptsEntityManagerInterfaceInstances()
+    public function testAcceptsEntityManagerInterfaceInstances() : void
     {
         $classMetadataFactory = new ClassMetadataFactory();
 
@@ -427,7 +427,7 @@ class ClassMetadataFactoryTest extends OrmTestCase
      * @group embedded
      * @group DDC-3305
      */
-    public function testRejectsEmbeddableWithoutValidClassName()
+    public function testRejectsEmbeddableWithoutValidClassName() : void
     {
         $metadata = $this->createValidClassMetadata();
 
@@ -453,7 +453,7 @@ class ClassMetadataFactoryTest extends OrmTestCase
      * @group embedded
      * @group DDC-4006
      */
-    public function testInheritsIdGeneratorMappingFromEmbeddable()
+    public function testInheritsIdGeneratorMappingFromEmbeddable() : void
     {
         $cmf    = new ClassMetadataFactory();
         $driver = $this->createAnnotationDriver([__DIR__ . '/../../Models/DDC4006/']);

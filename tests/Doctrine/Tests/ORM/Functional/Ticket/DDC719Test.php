@@ -9,7 +9,7 @@ use Doctrine\Tests\OrmFunctionalTestCase;
 
 class DDC719Test extends OrmFunctionalTestCase
 {
-    protected function setUp()
+    protected function setUp() : void
     {
         parent::setUp();
         //$this->em->getConnection()->getConfiguration()->setSQLLogger(new \Doctrine\DBAL\Logging\EchoSQLLogger);
@@ -20,7 +20,7 @@ class DDC719Test extends OrmFunctionalTestCase
         );
     }
 
-    public function testIsEmptySqlGeneration()
+    public function testIsEmptySqlGeneration() : void
     {
         $q = $this->em->createQuery(
             'SELECT g, c FROM Doctrine\Tests\ORM\Functional\Ticket\DDC719Group g LEFT JOIN g.children c  WHERE g.parents IS EMPTY'

@@ -18,7 +18,7 @@ use function sprintf;
  */
 class SecondLevelCacheOneToManyTest extends SecondLevelCacheAbstractTest
 {
-    public function testShouldPutCollectionInverseSideOnPersist()
+    public function testShouldPutCollectionInverseSideOnPersist() : void
     {
         $this->loadFixturesCountries();
         $this->loadFixturesStates();
@@ -32,7 +32,7 @@ class SecondLevelCacheOneToManyTest extends SecondLevelCacheAbstractTest
         self::assertTrue($this->cache->containsCollection(State::class, 'cities', $this->states[1]->getId()));
     }
 
-    public function testPutAndLoadOneToManyRelation()
+    public function testPutAndLoadOneToManyRelation() : void
     {
         $this->loadFixturesCountries();
         $this->loadFixturesStates();
@@ -130,7 +130,7 @@ class SecondLevelCacheOneToManyTest extends SecondLevelCacheAbstractTest
         self::assertEquals($queryCount, $this->getCurrentQueryCount());
     }
 
-    public function testLoadOneToManyCollectionFromDatabaseWhenEntityMissing()
+    public function testLoadOneToManyCollectionFromDatabaseWhenEntityMissing() : void
     {
         $this->loadFixturesCountries();
         $this->loadFixturesStates();
@@ -171,7 +171,7 @@ class SecondLevelCacheOneToManyTest extends SecondLevelCacheAbstractTest
     }
 
 
-    public function testShoudNotPutOneToManyRelationOnPersist()
+    public function testShoudNotPutOneToManyRelationOnPersist() : void
     {
         $this->loadFixturesCountries();
         $this->evictRegions();
@@ -186,7 +186,7 @@ class SecondLevelCacheOneToManyTest extends SecondLevelCacheAbstractTest
         self::assertFalse($this->cache->containsCollection(State::class, 'cities', $state->getId()));
     }
 
-    public function testOneToManyRemove()
+    public function testOneToManyRemove() : void
     {
         $this->loadFixturesCountries();
         $this->loadFixturesStates();
@@ -291,7 +291,7 @@ class SecondLevelCacheOneToManyTest extends SecondLevelCacheAbstractTest
         self::assertEquals(1, $this->secondLevelCacheLogger->getRegionHitCount($this->getCollectionRegion(State::class, 'cities')));
     }
 
-    public function testOneToManyWithEmptyRelation()
+    public function testOneToManyWithEmptyRelation() : void
     {
         $this->loadFixturesCountries();
         $this->loadFixturesStates();
@@ -319,7 +319,7 @@ class SecondLevelCacheOneToManyTest extends SecondLevelCacheAbstractTest
         self::assertEquals($queryCount, $this->getCurrentQueryCount());
     }
 
-    public function testOneToManyCount()
+    public function testOneToManyCount() : void
     {
         $this->loadFixturesCountries();
         $this->loadFixturesStates();
@@ -347,7 +347,7 @@ class SecondLevelCacheOneToManyTest extends SecondLevelCacheAbstractTest
         self::assertEquals($queryCount, $this->getCurrentQueryCount());
     }
 
-    public function testCacheInitializeCollectionWithNewObjects()
+    public function testCacheInitializeCollectionWithNewObjects() : void
     {
         $this->em->clear();
 
@@ -389,7 +389,7 @@ class SecondLevelCacheOneToManyTest extends SecondLevelCacheAbstractTest
         self::assertEquals(4, $result->getTravels()->count());
     }
 
-    public function testPutAndLoadNonCacheableOneToMany()
+    public function testPutAndLoadNonCacheableOneToMany() : void
     {
         self::assertNull($this->cache->getEntityCacheRegion(Login::class));
         self::assertInstanceOf(Region::class, $this->cache->getEntityCacheRegion(Token::class));

@@ -23,7 +23,7 @@ class DDC2359Test extends DoctrineTestCase
      * Verifies that {@see \Doctrine\ORM\Mapping\ClassMetadataFactory::wakeupReflection} is
      * not called when loading metadata from a driver
      */
-    public function testIssue()
+    public function testIssue() : void
     {
         $mockDriver    = $this->createMock(MappingDriver::class);
         $mockMetadata  = $this->createMock(ClassMetadata::class);

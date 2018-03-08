@@ -16,7 +16,7 @@ class DDC2780Test extends OrmFunctionalTestCase
     /**
      * {@inheritDoc}
      */
-    protected function setup()
+    protected function setup() : void
     {
         parent::setup();
 
@@ -31,7 +31,7 @@ class DDC2780Test extends OrmFunctionalTestCase
     /**
      * Verifies that IS [NOT] NULL can be used on join aliases
      */
-    public function testIssue()
+    public function testIssue() : void
     {
         $user    = new DDC2780User();
         $project = new DDC2780Project();

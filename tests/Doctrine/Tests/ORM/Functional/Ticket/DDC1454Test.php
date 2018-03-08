@@ -15,7 +15,7 @@ use function random_int;
  */
 class DDC1454Test extends OrmFunctionalTestCase
 {
-    protected function setUp()
+    protected function setUp() : void
     {
         parent::setUp();
 
@@ -30,7 +30,7 @@ class DDC1454Test extends OrmFunctionalTestCase
         }
     }
 
-    public function testFailingCase()
+    public function testFailingCase() : void
     {
         $pic = new DDC1454Picture();
 

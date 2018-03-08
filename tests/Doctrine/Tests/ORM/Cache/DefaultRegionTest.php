@@ -22,13 +22,13 @@ class DefaultRegionTest extends AbstractRegionTest
         return new DefaultRegion('default.region.test', $this->cache);
     }
 
-    public function testGetters()
+    public function testGetters() : void
     {
         self::assertEquals('default.region.test', $this->region->getName());
         self::assertSame($this->cache, $this->region->getCache());
     }
 
-    public function testSharedRegion()
+    public function testSharedRegion() : void
     {
         $cache   = new SharedArrayCache();
         $key     = new CacheKeyMock('key');
@@ -51,7 +51,7 @@ class DefaultRegionTest extends AbstractRegionTest
         self::assertTrue($region2->contains($key));
     }
 
-    public function testDoesNotModifyCacheNamespace()
+    public function testDoesNotModifyCacheNamespace() : void
     {
         $cache = new ArrayCache();
 
@@ -63,7 +63,7 @@ class DefaultRegionTest extends AbstractRegionTest
         self::assertSame('foo', $cache->getNamespace());
     }
 
-    public function testEvictAllWithGenericCacheThrowsUnsupportedException()
+    public function testEvictAllWithGenericCacheThrowsUnsupportedException() : void
     {
         /* @var $cache \Doctrine\Common\Cache\Cache */
         $cache = $this->createMock(Cache::class);
@@ -75,7 +75,7 @@ class DefaultRegionTest extends AbstractRegionTest
         $region->evictAll();
     }
 
-    public function testGetMulti()
+    public function testGetMulti() : void
     {
         $key1   = new CacheKeyMock('key.1');
         $value1 = new CacheEntryMock(['id' => 1, 'name' => 'bar']);

@@ -21,7 +21,7 @@ class DDC3103Test extends OrmFunctionalTestCase
     /**
      * @covers \Doctrine\ORM\Mapping\ClassMetadata::__sleep
      */
-    public function testIssue()
+    public function testIssue() : void
     {
         $this->markTestSkipped('Embeddables are ommitted for now');
 

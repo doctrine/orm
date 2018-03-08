@@ -38,7 +38,7 @@ class FileLockRegionTest extends AbstractRegionTest
     /**
      * {@inheritDoc}
      */
-    public function tearDown()
+    public function tearDown() : void
     {
         $this->cleanTestDirectory($this->directory);
     }
@@ -65,12 +65,12 @@ class FileLockRegionTest extends AbstractRegionTest
         return new FileLockRegion($region, $this->directory, 60);
     }
 
-    public function testGetRegionName()
+    public function testGetRegionName() : void
     {
         self::assertEquals('concurren_region_test', $this->region->getName());
     }
 
-    public function testLockAndUnlock()
+    public function testLockAndUnlock() : void
     {
         $key   = new CacheKeyMock('key');
         $entry = new CacheEntryMock(['foo' => 'bar']);
@@ -94,7 +94,7 @@ class FileLockRegionTest extends AbstractRegionTest
         self::assertFileNotExists($file);
     }
 
-    public function testLockWithExistingLock()
+    public function testLockWithExistingLock() : void
     {
         $key   = new CacheKeyMock('key');
         $entry = new CacheEntryMock(['foo' => 'bar']);
@@ -117,7 +117,7 @@ class FileLockRegionTest extends AbstractRegionTest
         self::assertNull($this->region->get($key));
     }
 
-    public function testUnlockWithExistingLock()
+    public function testUnlockWithExistingLock() : void
     {
         $key   = new CacheKeyMock('key');
         $entry = new CacheEntryMock(['foo' => 'bar']);
@@ -146,7 +146,7 @@ class FileLockRegionTest extends AbstractRegionTest
         self::assertNull($this->region->get($key));
     }
 
-    public function testPutWithExistingLock()
+    public function testPutWithExistingLock() : void
     {
         $key   = new CacheKeyMock('key');
         $entry = new CacheEntryMock(['foo' => 'bar']);
@@ -169,7 +169,7 @@ class FileLockRegionTest extends AbstractRegionTest
         self::assertStringEqualsFile($file, 'foo');
     }
 
-    public function testLockedEvict()
+    public function testLockedEvict() : void
     {
         $key   = new CacheKeyMock('key');
         $entry = new CacheEntryMock(['foo' => 'bar']);
@@ -189,7 +189,7 @@ class FileLockRegionTest extends AbstractRegionTest
         self::assertFileNotExists($file);
     }
 
-    public function testLockedEvictAll()
+    public function testLockedEvictAll() : void
     {
         $key1   = new CacheKeyMock('key1');
         $entry1 = new CacheEntryMock(['foo1' => 'bar1']);
@@ -225,7 +225,7 @@ class FileLockRegionTest extends AbstractRegionTest
         self::assertFalse($this->region->contains($key2));
     }
 
-    public function testLockLifetime()
+    public function testLockLifetime() : void
     {
         $key      = new CacheKeyMock('key');
         $entry    = new CacheEntryMock(['foo' => 'bar']);
@@ -253,7 +253,7 @@ class FileLockRegionTest extends AbstractRegionTest
      * @group 1072
      * @group DDC-3191
      */
-    public function testHandlesScanErrorsGracefullyOnEvictAll()
+    public function testHandlesScanErrorsGracefullyOnEvictAll() : void
     {
         $region              = $this->createRegion();
         $reflectionDirectory = new \ReflectionProperty($region, 'directory');

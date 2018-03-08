@@ -18,7 +18,7 @@ use function sprintf;
 
 class LifecycleCallbackTest extends OrmFunctionalTestCase
 {
-    protected function setUp()
+    protected function setUp() : void
     {
         parent::setUp();
         try {
@@ -35,7 +35,7 @@ class LifecycleCallbackTest extends OrmFunctionalTestCase
         }
     }
 
-    public function testPreSavePostSaveCallbacksAreInvoked()
+    public function testPreSavePostSaveCallbacksAreInvoked() : void
     {
         $entity        = new LifecycleCallbackTestEntity();
         $entity->value = 'hello';
@@ -58,7 +58,7 @@ class LifecycleCallbackTest extends OrmFunctionalTestCase
         self::assertEquals('changed from preUpdate callback!', $result[0]->value);
     }
 
-    public function testPreFlushCallbacksAreInvoked()
+    public function testPreFlushCallbacksAreInvoked() : void
     {
         $entity        = new LifecycleCallbackTestEntity();
         $entity->value = 'hello';
@@ -81,7 +81,7 @@ class LifecycleCallbackTest extends OrmFunctionalTestCase
         self::assertTrue($entity->preFlushCallbackInvoked);
     }
 
-    public function testChangesDontGetLost()
+    public function testChangesDontGetLost() : void
     {
         $user = new LifecycleCallbackTestUser();
         $user->setName('Bob');
@@ -103,7 +103,7 @@ class LifecycleCallbackTest extends OrmFunctionalTestCase
     /**
      * @group DDC-194
      */
-    public function testGetReferenceWithPostLoadEventIsDelayedUntilProxyTrigger()
+    public function testGetReferenceWithPostLoadEventIsDelayedUntilProxyTrigger() : void
     {
         $entity        = new LifecycleCallbackTestEntity();
         $entity->value = 'hello';
@@ -123,7 +123,7 @@ class LifecycleCallbackTest extends OrmFunctionalTestCase
     /**
      * @group DDC-958
      */
-    public function testPostLoadTriggeredOnRefresh()
+    public function testPostLoadTriggeredOnRefresh() : void
     {
         $entity        = new LifecycleCallbackTestEntity();
         $entity->value = 'hello';
@@ -144,7 +144,7 @@ class LifecycleCallbackTest extends OrmFunctionalTestCase
     /**
      * @group DDC-113
      */
-    public function testCascadedEntitiesCallsPrePersist()
+    public function testCascadedEntitiesCallsPrePersist() : void
     {
         //$this->em->getConnection()->getConfiguration()->setSQLLogger(new \Doctrine\DBAL\Logging\EchoSQLLogger);
 
@@ -170,7 +170,7 @@ class LifecycleCallbackTest extends OrmFunctionalTestCase
      * @group DDC-54
      * @group DDC-3005
      */
-    public function testCascadedEntitiesLoadedInPostLoad()
+    public function testCascadedEntitiesLoadedInPostLoad() : void
     {
         $e1 = new LifecycleCallbackTestEntity();
         $e2 = new LifecycleCallbackTestEntity();
@@ -212,7 +212,7 @@ DQL;
      * @group DDC-54
      * @group DDC-3005
      */
-    public function testCascadedEntitiesNotLoadedInPostLoadDuringIteration()
+    public function testCascadedEntitiesNotLoadedInPostLoadDuringIteration() : void
     {
         $e1 = new LifecycleCallbackTestEntity();
         $e2 = new LifecycleCallbackTestEntity();
@@ -255,7 +255,7 @@ DQL;
      * @group DDC-54
      * @group DDC-3005
      */
-    public function testCascadedEntitiesNotLoadedInPostLoadDuringIterationWithSimpleObjectHydrator()
+    public function testCascadedEntitiesNotLoadedInPostLoadDuringIterationWithSimpleObjectHydrator() : void
     {
         $this->em->persist(new LifecycleCallbackTestEntity());
         $this->em->persist(new LifecycleCallbackTestEntity());
@@ -279,7 +279,7 @@ DQL;
     /**
      * https://github.com/doctrine/doctrine2/issues/6568
      */
-    public function testPostLoadIsInvokedOnFetchJoinedEntities()
+    public function testPostLoadIsInvokedOnFetchJoinedEntities() : void
     {
         $entA = new LifecycleCallbackCascader();
         $this->em->persist($entA);
@@ -317,13 +317,13 @@ DQL;
         }
     }
 
-    public function testLifecycleCallbacksGetInherited()
+    public function testLifecycleCallbacksGetInherited() : void
     {
         $childMeta = $this->em->getClassMetadata(LifecycleCallbackChildEntity::class);
         self::assertEquals(['prePersist' => [0 => 'doStuff']], $childMeta->lifecycleCallbacks);
     }
 
-    public function testLifecycleListenerChangeUpdateChangeSet()
+    public function testLifecycleListenerChangeUpdateChangeSet() : void
     {
         $listener = new LifecycleListenerPreUpdate();
         $this->em->getEventManager()->addEventListener(['preUpdate'], $listener);
@@ -352,7 +352,7 @@ DQL;
     /**
      * @group DDC-1955
      */
-    public function testLifecycleCallbackEventArgs()
+    public function testLifecycleCallbackEventArgs() : void
     {
         $e = new LifecycleCallbackEventArgEntity();
 
@@ -419,7 +419,7 @@ class LifecycleCallbackTestUser
         $this->name = $name;
     }
     /** @ORM\PreUpdate */
-    public function testCallback()
+    public function testCallback() : void
     {
         $this->value = 'Hello World';
     }

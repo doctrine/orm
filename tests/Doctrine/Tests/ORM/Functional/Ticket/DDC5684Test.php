@@ -18,7 +18,7 @@ use Doctrine\Tests\OrmFunctionalTestCase;
  */
 class DDC5684Test extends OrmFunctionalTestCase
 {
-    protected function setUp()
+    protected function setUp() : void
     {
         parent::setUp();
 
@@ -31,14 +31,14 @@ class DDC5684Test extends OrmFunctionalTestCase
         $this->schemaTool->createSchema([$this->em->getClassMetadata(DDC5684Object::class)]);
     }
 
-    protected function tearDown()
+    protected function tearDown() : void
     {
         $this->schemaTool->dropSchema([$this->em->getClassMetadata(DDC5684Object::class)]);
 
         parent::tearDown();
     }
 
-    public function testAutoIncrementIdWithCustomType()
+    public function testAutoIncrementIdWithCustomType() : void
     {
         $object = new DDC5684Object();
         $this->em->persist($object);
@@ -47,7 +47,7 @@ class DDC5684Test extends OrmFunctionalTestCase
         self::assertInstanceOf(DDC5684ObjectId::class, $object->id);
     }
 
-    public function testFetchObjectWithAutoIncrementedCustomType()
+    public function testFetchObjectWithAutoIncrementedCustomType() : void
     {
         $object = new DDC5684Object();
         $this->em->persist($object);

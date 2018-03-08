@@ -15,7 +15,7 @@ use function get_class;
  */
 class DDC522Test extends OrmFunctionalTestCase
 {
-    protected function setUp()
+    protected function setUp() : void
     {
         parent::setUp();
 
@@ -34,7 +34,7 @@ class DDC522Test extends OrmFunctionalTestCase
     /**
      * @group DDC-522
      */
-    public function testJoinColumnWithSameNameAsAssociationField()
+    public function testJoinColumnWithSameNameAsAssociationField() : void
     {
         $cust       = new DDC522Customer();
         $cust->name = 'name';
@@ -79,7 +79,7 @@ class DDC522Test extends OrmFunctionalTestCase
      * @group DDC-522
      * @group DDC-762
      */
-    public function testJoinColumnWithNullSameNameAssociationField()
+    public function testJoinColumnWithNullSameNameAssociationField() : void
     {
         $fkCust       = new DDC522ForeignKeyTest();
         $fkCust->name = 'name';

@@ -12,13 +12,13 @@ use Doctrine\Tests\OrmFunctionalTestCase;
  */
 class DDC1041Test extends OrmFunctionalTestCase
 {
-    public function setUp()
+    public function setUp() : void
     {
         $this->useModelSet('company');
         parent::setUp();
     }
 
-    public function testGrabWrongSubtypeReturnsNull()
+    public function testGrabWrongSubtypeReturnsNull() : void
     {
         $fix = new Models\Company\CompanyFixContract();
         $fix->setFixPrice(2000);

@@ -16,7 +16,7 @@ class DDC2575Test extends OrmFunctionalTestCase
     private $aEntities     = [];
     private $bEntities     = [];
 
-    protected function setUp()
+    protected function setUp() : void
     {
         parent::setUp();
 
@@ -58,7 +58,7 @@ class DDC2575Test extends OrmFunctionalTestCase
         $this->em->clear();
     }
 
-    public function testHydrationIssue()
+    public function testHydrationIssue() : void
     {
         $repository = $this->em->getRepository(DDC2575Root::class);
         $qb         = $repository->createQueryBuilder('r')

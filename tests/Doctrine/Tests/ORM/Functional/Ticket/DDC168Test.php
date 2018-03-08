@@ -11,7 +11,7 @@ class DDC168Test extends OrmFunctionalTestCase
 {
     protected $oldMetadata;
 
-    protected function setUp()
+    protected function setUp() : void
     {
         $this->useModelSet('company');
 
@@ -24,7 +24,7 @@ class DDC168Test extends OrmFunctionalTestCase
         $this->em->getMetadataFactory()->setMetadataFor(CompanyEmployee::class, $metadata);
     }
 
-    public function tearDown()
+    public function tearDown() : void
     {
         $this->em->getMetadataFactory()->setMetadataFor(CompanyEmployee::class, $this->oldMetadata);
 
@@ -34,7 +34,7 @@ class DDC168Test extends OrmFunctionalTestCase
     /**
      * @group DDC-168
      */
-    public function testJoinedSubclassPersisterRequiresSpecificOrderOfMetadataReflFieldsArray()
+    public function testJoinedSubclassPersisterRequiresSpecificOrderOfMetadataReflFieldsArray() : void
     {
         //$this->em->getConnection()->getConfiguration()->setSQLLogger(new \Doctrine\DBAL\Logging\EchoSQLLogger);
 

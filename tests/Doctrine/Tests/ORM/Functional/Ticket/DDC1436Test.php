@@ -12,7 +12,7 @@ use Doctrine\Tests\OrmFunctionalTestCase;
  */
 class DDC1436Test extends OrmFunctionalTestCase
 {
-    protected function setUp()
+    protected function setUp() : void
     {
         parent::setUp();
 
@@ -26,7 +26,7 @@ class DDC1436Test extends OrmFunctionalTestCase
         }
     }
 
-    public function testIdentityMap()
+    public function testIdentityMap() : void
     {
         // fixtures
         $parent = null;

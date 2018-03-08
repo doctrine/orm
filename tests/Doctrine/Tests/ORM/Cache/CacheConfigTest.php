@@ -25,14 +25,14 @@ class CacheConfigTest extends DoctrineTestCase
     /**
      * {@inheritDoc}
      */
-    protected function setUp()
+    protected function setUp() : void
     {
         parent::setUp();
 
         $this->config = new CacheConfiguration();
     }
 
-    public function testSetGetRegionLifetime()
+    public function testSetGetRegionLifetime() : void
     {
         $config = $this->config->getRegionsConfiguration();
 
@@ -45,7 +45,7 @@ class CacheConfigTest extends DoctrineTestCase
         self::assertEquals(222, $config->getLifetime('foo_region'));
     }
 
-    public function testSetGetCacheLogger()
+    public function testSetGetCacheLogger() : void
     {
         $logger = $this->createMock(CacheLogger::class);
 
@@ -56,7 +56,7 @@ class CacheConfigTest extends DoctrineTestCase
         self::assertEquals($logger, $this->config->getCacheLogger());
     }
 
-    public function testSetGetCacheFactory()
+    public function testSetGetCacheFactory() : void
     {
         $factory = $this->createMock(CacheFactory::class);
 
@@ -67,7 +67,7 @@ class CacheConfigTest extends DoctrineTestCase
         self::assertEquals($factory, $this->config->getCacheFactory());
     }
 
-    public function testSetGetQueryValidator()
+    public function testSetGetQueryValidator() : void
     {
         $factory = $this->createMock(CacheFactory::class);
         $factory->method('getTimestampRegion')->willReturn($this->createMock(TimestampRegion::class));

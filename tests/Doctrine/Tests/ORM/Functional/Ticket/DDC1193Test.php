@@ -11,7 +11,7 @@ use function get_class;
 
 class DDC1193Test extends OrmFunctionalTestCase
 {
-    protected function setUp()
+    protected function setUp() : void
     {
         parent::setUp();
         //$this->em->getConnection()->getConfiguration()->setSQLLogger(new \Doctrine\DBAL\Logging\EchoSQLLogger);
@@ -27,7 +27,7 @@ class DDC1193Test extends OrmFunctionalTestCase
     /**
      * @group DDC-1193
      */
-    public function testIssue()
+    public function testIssue() : void
     {
         $company = new DDC1193Company();
         $person  = new DDC1193Person();

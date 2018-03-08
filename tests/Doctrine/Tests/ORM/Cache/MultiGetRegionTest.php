@@ -16,7 +16,7 @@ class MultiGetRegionTest extends AbstractRegionTest
         return new DefaultMultiGetRegion('default.region.test', $this->cache);
     }
 
-    public function testGetMulti()
+    public function testGetMulti() : void
     {
         $key1   = new CacheKeyMock('key.1');
         $value1 = new CacheEntryMock(['id' => 1, 'name' => 'bar']);

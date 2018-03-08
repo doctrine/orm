@@ -13,7 +13,7 @@ use Doctrine\Tests\OrmFunctionalTestCase;
 
 class EntityRepositoryCriteriaTest extends OrmFunctionalTestCase
 {
-    protected function setUp()
+    protected function setUp() : void
     {
         $this->useModelSet('generic');
         $this->useModelSet('tweet');
@@ -50,7 +50,7 @@ class EntityRepositoryCriteriaTest extends OrmFunctionalTestCase
         $this->em->clear();
     }
 
-    public function testLteDateComparison()
+    public function testLteDateComparison() : void
     {
         $this->loadFixture();
 
@@ -82,7 +82,7 @@ class EntityRepositoryCriteriaTest extends OrmFunctionalTestCase
         $this->em->clear();
     }
 
-    public function testIsNullComparison()
+    public function testIsNullComparison() : void
     {
         $this->loadNullFieldFixtures();
         $repository = $this->em->getRepository(DateTimeModel::class);
@@ -94,7 +94,7 @@ class EntityRepositoryCriteriaTest extends OrmFunctionalTestCase
         self::assertCount(1, $dates);
     }
 
-    public function testEqNullComparison()
+    public function testEqNullComparison() : void
     {
         $this->loadNullFieldFixtures();
         $repository = $this->em->getRepository(DateTimeModel::class);
@@ -106,7 +106,7 @@ class EntityRepositoryCriteriaTest extends OrmFunctionalTestCase
         self::assertCount(1, $dates);
     }
 
-    public function testNotEqNullComparison()
+    public function testNotEqNullComparison() : void
     {
         $this->loadNullFieldFixtures();
         $repository = $this->em->getRepository(DateTimeModel::class);
@@ -118,7 +118,7 @@ class EntityRepositoryCriteriaTest extends OrmFunctionalTestCase
         self::assertCount(1, $dates);
     }
 
-    public function testCanCountWithoutLoadingCollection()
+    public function testCanCountWithoutLoadingCollection() : void
     {
         $this->loadFixture();
         $repository = $this->em->getRepository(DateTimeModel::class);
@@ -143,7 +143,7 @@ class EntityRepositoryCriteriaTest extends OrmFunctionalTestCase
         self::assertTrue($dates->isInitialized());
     }
 
-    public function testCanContainsWithoutLoadingCollection()
+    public function testCanContainsWithoutLoadingCollection() : void
     {
         $user       = new User();
         $user->name = 'Marco';

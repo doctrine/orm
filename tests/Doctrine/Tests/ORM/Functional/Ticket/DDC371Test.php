@@ -15,7 +15,7 @@ use ProxyManager\Proxy\GhostObjectInterface;
  */
 class DDC371Test extends OrmFunctionalTestCase
 {
-    protected function setUp()
+    protected function setUp() : void
     {
         parent::setUp();
         //$this->em->getConnection()->getConfiguration()->setSQLLogger(new \Doctrine\DBAL\Logging\EchoSQLLogger);
@@ -27,7 +27,7 @@ class DDC371Test extends OrmFunctionalTestCase
         );
     }
 
-    public function testIssue()
+    public function testIssue() : void
     {
         $parent           = new DDC371Parent();
         $parent->data     = 'parent';

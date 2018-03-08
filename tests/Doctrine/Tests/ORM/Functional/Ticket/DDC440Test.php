@@ -9,7 +9,7 @@ use Doctrine\Tests\OrmFunctionalTestCase;
 
 class DDC440Test extends OrmFunctionalTestCase
 {
-    protected function setUp()
+    protected function setUp() : void
     {
         parent::setUp();
         try {
@@ -27,7 +27,7 @@ class DDC440Test extends OrmFunctionalTestCase
     /**
      * @group DDC-440
      */
-    public function testOriginalEntityDataEmptyWhenProxyLoadedFromTwoAssociations()
+    public function testOriginalEntityDataEmptyWhenProxyLoadedFromTwoAssociations() : void
     {
         /* The key of the problem is that the first phone is fetched via two association, main_phone and phones.
          *

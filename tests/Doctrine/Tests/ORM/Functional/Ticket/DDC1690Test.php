@@ -13,7 +13,7 @@ use function in_array;
 
 class DDC1690Test extends OrmFunctionalTestCase
 {
-    protected function setUp()
+    protected function setUp() : void
     {
         parent::setUp();
         try {
@@ -28,7 +28,7 @@ class DDC1690Test extends OrmFunctionalTestCase
         }
     }
 
-    public function testChangeTracking()
+    public function testChangeTracking() : void
     {
         $parent = new DDC1690Parent();
         $child  = new DDC1690Child();

@@ -13,7 +13,7 @@ use Doctrine\Tests\OrmFunctionalTestCase;
  */
 class DDC1335Test extends OrmFunctionalTestCase
 {
-    protected function setUp()
+    protected function setUp() : void
     {
         parent::setUp();
         try {
@@ -29,7 +29,7 @@ class DDC1335Test extends OrmFunctionalTestCase
     }
 
 
-    public function testDql()
+    public function testDql() : void
     {
         $dql    = 'SELECT u FROM ' . __NAMESPACE__ . '\DDC1335User u INDEX BY u.id';
         $query  = $this->em->createQuery($dql);
@@ -70,7 +70,7 @@ class DDC1335Test extends OrmFunctionalTestCase
         self::assertArrayHasKey(9, $foobar);
     }
 
-    public function testTicket()
+    public function testTicket() : void
     {
         $builder = $this->em->createQueryBuilder();
         $builder->select('u')->from(DDC1335User::class, 'u', 'u.id');
@@ -85,7 +85,7 @@ class DDC1335Test extends OrmFunctionalTestCase
         self::assertEquals('SELECT u FROM ' . __NAMESPACE__ . '\DDC1335User u INDEX BY u.id', $dql);
     }
 
-    public function testIndexByUnique()
+    public function testIndexByUnique() : void
     {
         $builder = $this->em->createQueryBuilder();
         $builder->select('u')->from(DDC1335User::class, 'u', 'u.email');
@@ -100,7 +100,7 @@ class DDC1335Test extends OrmFunctionalTestCase
         self::assertEquals('SELECT u FROM ' . __NAMESPACE__ . '\DDC1335User u INDEX BY u.email', $dql);
     }
 
-    public function testIndexWithJoin()
+    public function testIndexWithJoin() : void
     {
         $builder = $this->em->createQueryBuilder();
         $builder->select('u', 'p')

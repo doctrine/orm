@@ -14,7 +14,7 @@ class OrderedCollectionTest extends OrmFunctionalTestCase
 {
     protected $locations = [];
 
-    public function setUp()
+    public function setUp() : void
     {
         $this->useModelSet('routing');
         parent::setUp();
@@ -57,7 +57,7 @@ class OrderedCollectionTest extends OrmFunctionalTestCase
         return $routeId;
     }
 
-    public function testLazyManyToManyCollectionIsRetrievedWithOrderByClause()
+    public function testLazyManyToManyCollectionIsRetrievedWithOrderByClause() : void
     {
         $routeId = $this->createPersistedRouteWithLegs();
 
@@ -68,7 +68,7 @@ class OrderedCollectionTest extends OrmFunctionalTestCase
         self::assertEquals('Bonn', $route->legs[1]->fromLocation->getName());
     }
 
-    public function testLazyOneToManyCollectionIsRetrievedWithOrderByClause()
+    public function testLazyOneToManyCollectionIsRetrievedWithOrderByClause() : void
     {
         $route = new RoutingRoute();
 
@@ -99,7 +99,7 @@ class OrderedCollectionTest extends OrmFunctionalTestCase
         self::assertEquals('Guilherme', $route->bookings[1]->getPassengerName());
     }
 
-    public function testOrderedResultFromDqlQuery()
+    public function testOrderedResultFromDqlQuery() : void
     {
         $routeId = $this->createPersistedRouteWithLegs();
 

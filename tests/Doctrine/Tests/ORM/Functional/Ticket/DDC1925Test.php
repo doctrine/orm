@@ -14,7 +14,7 @@ use Doctrine\Tests\OrmFunctionalTestCase;
  */
 class DDC1925Test extends OrmFunctionalTestCase
 {
-    public function testIssue()
+    public function testIssue() : void
     {
         $this->schemaTool->createSchema(
             [

@@ -27,7 +27,7 @@ class DefaultEntityHydratorTest extends OrmTestCase
     /** @var EntityManagerInterface */
     private $em;
 
-    protected function setUp()
+    protected function setUp() : void
     {
         parent::setUp();
 
@@ -35,12 +35,12 @@ class DefaultEntityHydratorTest extends OrmTestCase
         $this->structure = new DefaultEntityHydrator($this->em);
     }
 
-    public function testImplementsEntityEntryStructure()
+    public function testImplementsEntityEntryStructure() : void
     {
         self::assertInstanceOf('Doctrine\ORM\Cache\EntityHydrator', $this->structure);
     }
 
-    public function testCreateEntity()
+    public function testCreateEntity() : void
     {
         $metadata = $this->em->getClassMetadata(Country::class);
         $key      = new EntityCacheKey($metadata->getClassName(), ['id' => 1]);
@@ -54,7 +54,7 @@ class DefaultEntityHydratorTest extends OrmTestCase
         self::assertEquals(UnitOfWork::STATE_MANAGED, $this->em->getUnitOfWork()->getEntityState($entity));
     }
 
-    public function testLoadProxy()
+    public function testLoadProxy() : void
     {
         $metadata = $this->em->getClassMetadata(Country::class);
         $key      = new EntityCacheKey($metadata->getClassName(), ['id' => 1]);
@@ -70,7 +70,7 @@ class DefaultEntityHydratorTest extends OrmTestCase
         self::assertEquals(UnitOfWork::STATE_MANAGED, $this->em->getUnitOfWork()->getEntityState($proxy));
     }
 
-    public function testBuildCacheEntry()
+    public function testBuildCacheEntry() : void
     {
         $entity   = new Country('Foo');
         $uow      = $this->em->getUnitOfWork();
@@ -97,7 +97,7 @@ class DefaultEntityHydratorTest extends OrmTestCase
         );
     }
 
-    public function testBuildCacheEntryAssociation()
+    public function testBuildCacheEntryAssociation() : void
     {
         $country     = new Country('Foo');
         $state       = new State('Bat', $country);
@@ -131,7 +131,7 @@ class DefaultEntityHydratorTest extends OrmTestCase
         );
     }
 
-    public function testBuildCacheEntryNonInitializedAssocProxy()
+    public function testBuildCacheEntryNonInitializedAssocProxy() : void
     {
         $proxy      = $this->em->getReference(Country::class, 11);
         $entity     = new State('Bat', $proxy);
@@ -162,7 +162,7 @@ class DefaultEntityHydratorTest extends OrmTestCase
         );
     }
 
-    public function testCacheEntryWithWrongIdentifierType()
+    public function testCacheEntryWithWrongIdentifierType() : void
     {
         $proxy      = $this->em->getReference(Country::class, 11);
         $entity     = new State('Bat', $proxy);

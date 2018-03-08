@@ -11,7 +11,7 @@ use function get_class;
 
 class DDC656Test extends OrmFunctionalTestCase
 {
-    protected function setUp()
+    protected function setUp() : void
     {
         parent::setUp();
         try {
@@ -22,7 +22,7 @@ class DDC656Test extends OrmFunctionalTestCase
         }
     }
 
-    public function testRecomputeSingleEntityChangeSetPreservesFieldOrder()
+    public function testRecomputeSingleEntityChangeSetPreservesFieldOrder() : void
     {
         $entity = new DDC656Entity();
         $entity->setName('test1');

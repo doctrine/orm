@@ -12,7 +12,7 @@ use function strpos;
 
 class DBAL483Test extends OrmFunctionalTestCase
 {
-    public function setUp()
+    public function setUp() : void
     {
         parent::setUp();
 
@@ -24,7 +24,7 @@ class DBAL483Test extends OrmFunctionalTestCase
     /**
      * @group DBAL-483
      */
-    public function testDefaultValueIsComparedCorrectly()
+    public function testDefaultValueIsComparedCorrectly() : void
     {
         $class = $this->em->getClassMetadata(DBAL483Default::class);
 

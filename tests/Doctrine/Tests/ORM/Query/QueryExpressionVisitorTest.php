@@ -24,7 +24,7 @@ class QueryExpressionVisitorTest extends DoctrineTestCase
     /**
      * {@inheritDoc}
      */
-    protected function setUp()
+    protected function setUp() : void
     {
         $this->visitor = new QueryExpressionVisitor(['o', 'p']);
     }
@@ -34,7 +34,7 @@ class QueryExpressionVisitorTest extends DoctrineTestCase
      *
      * @dataProvider comparisonData
      */
-    public function testWalkComparison(CriteriaComparison $criteriaExpr, $queryExpr, ?Parameter $parameter = null)
+    public function testWalkComparison(CriteriaComparison $criteriaExpr, $queryExpr, ?Parameter $parameter = null) : void
     {
         self::assertEquals($queryExpr, $this->visitor->walkComparison($criteriaExpr));
         if ($parameter) {
@@ -76,7 +76,7 @@ class QueryExpressionVisitorTest extends DoctrineTestCase
         ];
     }
 
-    public function testWalkAndCompositeExpression()
+    public function testWalkAndCompositeExpression() : void
     {
         $cb   = new CriteriaBuilder();
         $expr = $this->visitor->walkCompositeExpression(
@@ -90,7 +90,7 @@ class QueryExpressionVisitorTest extends DoctrineTestCase
         self::assertCount(2, $expr->getParts());
     }
 
-    public function testWalkOrCompositeExpression()
+    public function testWalkOrCompositeExpression() : void
     {
         $cb   = new CriteriaBuilder();
         $expr = $this->visitor->walkCompositeExpression(
@@ -104,12 +104,12 @@ class QueryExpressionVisitorTest extends DoctrineTestCase
         self::assertCount(2, $expr->getParts());
     }
 
-    public function testWalkValue()
+    public function testWalkValue() : void
     {
         self::assertEquals('value', $this->visitor->walkValue(new Value('value')));
     }
 
-    public function testClearParameters()
+    public function testClearParameters() : void
     {
         $this->visitor->getParameters()->add(new Parameter('field', 'value'));
 

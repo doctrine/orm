@@ -10,7 +10,7 @@ use Doctrine\Tests\OrmFunctionalTestCase;
 
 class DDC735Test extends OrmFunctionalTestCase
 {
-    protected function setUp()
+    protected function setUp() : void
     {
         parent::setUp();
         try {
@@ -24,7 +24,7 @@ class DDC735Test extends OrmFunctionalTestCase
         }
     }
 
-    public function testRemoveElementAppliesOrphanRemoval()
+    public function testRemoveElementAppliesOrphanRemoval() : void
     {
         // Create a product and its first review
         $product = new DDC735Product();

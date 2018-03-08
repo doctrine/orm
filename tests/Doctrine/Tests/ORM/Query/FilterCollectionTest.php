@@ -17,13 +17,13 @@ class FilterCollectionTest extends OrmTestCase
     /** @var EntityManagerInterface */
     private $em;
 
-    protected function setUp()
+    protected function setUp() : void
     {
         $this->em = $this->getTestEntityManager();
         $this->em->getConfiguration()->addFilter('testFilter', MyFilter::class);
     }
 
-    public function testEnable()
+    public function testEnable() : void
     {
         $filterCollection = $this->em->getFilters();
 
@@ -40,7 +40,7 @@ class FilterCollectionTest extends OrmTestCase
         self::assertCount(0, $filterCollection->getEnabledFilters());
     }
 
-    public function testHasFilter()
+    public function testHasFilter() : void
     {
         $filterCollection = $this->em->getFilters();
 
@@ -51,7 +51,7 @@ class FilterCollectionTest extends OrmTestCase
     /**
      * @depends testEnable
      */
-    public function testIsEnabled()
+    public function testIsEnabled() : void
     {
         $filterCollection = $this->em->getFilters();
 
@@ -65,13 +65,13 @@ class FilterCollectionTest extends OrmTestCase
     /**
      * @expectedException InvalidArgumentException
      */
-    public function testGetFilterInvalidArgument()
+    public function testGetFilterInvalidArgument() : void
     {
         $filterCollection = $this->em->getFilters();
         $filterCollection->getFilter('testFilter');
     }
 
-    public function testGetFilter()
+    public function testGetFilter() : void
     {
         $filterCollection = $this->em->getFilters();
         $filterCollection->enable('testFilter');

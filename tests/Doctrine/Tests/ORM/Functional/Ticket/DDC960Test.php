@@ -9,7 +9,7 @@ use Doctrine\Tests\OrmFunctionalTestCase;
 
 class DDC960Test extends OrmFunctionalTestCase
 {
-    protected function setUp()
+    protected function setUp() : void
     {
         parent::setUp();
         try {
@@ -26,7 +26,7 @@ class DDC960Test extends OrmFunctionalTestCase
     /**
      * @group DDC-960
      */
-    public function testUpdateRootVersion()
+    public function testUpdateRootVersion() : void
     {
         $child = new DDC960Child('Test');
         $this->em->persist($child);

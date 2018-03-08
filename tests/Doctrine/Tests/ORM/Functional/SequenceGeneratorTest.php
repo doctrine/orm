@@ -12,7 +12,7 @@ use Doctrine\Tests\OrmFunctionalTestCase;
  */
 class SequenceGeneratorTest extends OrmFunctionalTestCase
 {
-    public function setUp()
+    public function setUp() : void
     {
         parent::setUp();
 
@@ -30,7 +30,7 @@ class SequenceGeneratorTest extends OrmFunctionalTestCase
         }
     }
 
-    public function testHighAllocationSizeSequence()
+    public function testHighAllocationSizeSequence() : void
     {
         for ($i = 0; $i < 11; ++$i) {
             $this->em->persist(new SequenceEntity());

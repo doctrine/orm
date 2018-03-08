@@ -15,7 +15,7 @@ use function get_class;
  */
 class DDC3160Test extends OrmFunctionalTestCase
 {
-    protected function setUp()
+    protected function setUp() : void
     {
         $this->useModelSet('cms');
         parent::setUp();
@@ -24,7 +24,7 @@ class DDC3160Test extends OrmFunctionalTestCase
     /**
      * @group DDC-3160
      */
-    public function testNoUpdateOnInsert()
+    public function testNoUpdateOnInsert() : void
     {
         $listener = new DDC3160OnFlushListener();
         $this->em->getEventManager()->addEventListener(Events::onFlush, $listener);

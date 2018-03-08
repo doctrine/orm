@@ -16,7 +16,7 @@ class DDC1685Test extends OrmFunctionalTestCase
 {
     private $paginator;
 
-    protected function setUp()
+    protected function setUp() : void
     {
         $this->useModelSet('ddc117');
 
@@ -38,26 +38,26 @@ class DDC1685Test extends OrmFunctionalTestCase
         $this->paginator = new Paginator($query);
     }
 
-    public function testPaginateCount()
+    public function testPaginateCount() : void
     {
         self::assertCount(1, $this->paginator);
     }
 
-    public function testPaginateIterate()
+    public function testPaginateIterate() : void
     {
         foreach ($this->paginator as $ad) {
             self::assertInstanceOf(DDC117ArticleDetails::class, $ad);
         }
     }
 
-    public function testPaginateCountNoOutputWalkers()
+    public function testPaginateCountNoOutputWalkers() : void
     {
         $this->paginator->setUseOutputWalkers(false);
 
         self::assertCount(1, $this->paginator);
     }
 
-    public function testPaginateIterateNoOutputWalkers()
+    public function testPaginateIterateNoOutputWalkers() : void
     {
         $this->paginator->setUseOutputWalkers(false);
 

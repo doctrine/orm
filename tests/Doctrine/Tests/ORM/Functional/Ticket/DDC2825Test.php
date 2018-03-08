@@ -22,7 +22,7 @@ class DDC2825Test extends OrmFunctionalTestCase
     /**
      * {@inheritDoc}
      */
-    protected function setUp()
+    protected function setUp() : void
     {
         parent::setUp();
 
@@ -40,7 +40,7 @@ class DDC2825Test extends OrmFunctionalTestCase
      * @param string $expectedSchemaName
      * @param string $expectedTableName
      */
-    public function testClassSchemaMappingsValidity($className, $expectedSchemaName, $expectedTableName)
+    public function testClassSchemaMappingsValidity($className, $expectedSchemaName, $expectedTableName) : void
     {
         $classMetadata   = $this->em->getClassMetadata($className);
         $platform        = $this->em->getConnection()->getDatabasePlatform();
@@ -74,7 +74,7 @@ class DDC2825Test extends OrmFunctionalTestCase
      *
      * @param string $className
      */
-    public function testPersistenceOfEntityWithSchemaMapping($className)
+    public function testPersistenceOfEntityWithSchemaMapping($className) : void
     {
         $classMetadata = $this->em->getClassMetadata($className);
         $repository    = $this->em->getRepository($className);

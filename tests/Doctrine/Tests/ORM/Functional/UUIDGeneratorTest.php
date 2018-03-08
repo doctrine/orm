@@ -13,7 +13,7 @@ use function strlen;
  */
 class UUIDGeneratorTest extends OrmFunctionalTestCase
 {
-    public function setUp()
+    public function setUp() : void
     {
         parent::setUp();
 
@@ -26,7 +26,7 @@ class UUIDGeneratorTest extends OrmFunctionalTestCase
         );
     }
 
-    public function testGenerateUUID()
+    public function testGenerateUUID() : void
     {
         $entity = new UUIDEntity();
 

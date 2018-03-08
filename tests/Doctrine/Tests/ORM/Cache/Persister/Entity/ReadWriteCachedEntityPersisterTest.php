@@ -49,7 +49,7 @@ class ReadWriteCachedEntityPersisterTest extends AbstractEntityPersisterTest
                     ->getMock();
     }
 
-    public function testDeleteShouldLockItem()
+    public function testDeleteShouldLockItem() : void
     {
         $entity    = new Country('Foo');
         $lock      = Lock::createLockRead();
@@ -66,7 +66,7 @@ class ReadWriteCachedEntityPersisterTest extends AbstractEntityPersisterTest
         $persister->delete($entity);
     }
 
-    public function testUpdateShouldLockItem()
+    public function testUpdateShouldLockItem() : void
     {
         $entity    = new Country('Foo');
         $lock      = Lock::createLockRead();
@@ -83,7 +83,7 @@ class ReadWriteCachedEntityPersisterTest extends AbstractEntityPersisterTest
         $persister->update($entity);
     }
 
-    public function testUpdateTransactionRollBackShouldEvictItem()
+    public function testUpdateTransactionRollBackShouldEvictItem() : void
     {
         $entity    = new Country('Foo');
         $lock      = Lock::createLockRead();
@@ -106,7 +106,7 @@ class ReadWriteCachedEntityPersisterTest extends AbstractEntityPersisterTest
         $persister->afterTransactionRolledBack();
     }
 
-    public function testDeleteTransactionRollBackShouldEvictItem()
+    public function testDeleteTransactionRollBackShouldEvictItem() : void
     {
         $entity    = new Country('Foo');
         $lock      = Lock::createLockRead();
@@ -128,7 +128,7 @@ class ReadWriteCachedEntityPersisterTest extends AbstractEntityPersisterTest
         $persister->afterTransactionRolledBack();
     }
 
-    public function testTransactionRollBackShouldClearQueue()
+    public function testTransactionRollBackShouldClearQueue() : void
     {
         $entity    = new Country('Foo');
         $lock      = Lock::createLockRead();
@@ -159,7 +159,7 @@ class ReadWriteCachedEntityPersisterTest extends AbstractEntityPersisterTest
         self::assertCount(0, $property->getValue($persister));
     }
 
-    public function testTransactionCommitShouldClearQueue()
+    public function testTransactionCommitShouldClearQueue() : void
     {
         $entity    = new Country('Foo');
         $lock      = Lock::createLockRead();
@@ -190,7 +190,7 @@ class ReadWriteCachedEntityPersisterTest extends AbstractEntityPersisterTest
         self::assertCount(0, $property->getValue($persister));
     }
 
-    public function testDeleteLockFailureShouldIgnoreQueue()
+    public function testDeleteLockFailureShouldIgnoreQueue() : void
     {
         $entity    = new Country('Foo');
         $persister = $this->createPersisterDefault();
@@ -214,7 +214,7 @@ class ReadWriteCachedEntityPersisterTest extends AbstractEntityPersisterTest
         self::assertCount(0, $property->getValue($persister));
     }
 
-    public function testUpdateLockFailureShouldIgnoreQueue()
+    public function testUpdateLockFailureShouldIgnoreQueue() : void
     {
         $entity    = new Country('Foo');
         $persister = $this->createPersisterDefault();

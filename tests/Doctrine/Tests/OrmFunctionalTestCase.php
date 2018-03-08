@@ -340,7 +340,7 @@ abstract class OrmFunctionalTestCase extends OrmTestCase
      * Sweeps the database tables and clears the EntityManager.
      *
      */
-    protected function tearDown()
+    protected function tearDown() : void
     {
         $conn = static::$sharedConn;
 
@@ -646,7 +646,7 @@ abstract class OrmFunctionalTestCase extends OrmTestCase
      * creates the necessary tables.
      *
      */
-    protected function setUp()
+    protected function setUp() : void
     {
         $this->setUpDBALTypes();
 

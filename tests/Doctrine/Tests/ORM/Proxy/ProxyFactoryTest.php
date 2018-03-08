@@ -46,7 +46,7 @@ class ProxyFactoryTest extends OrmTestCase
     /**
      * {@inheritDoc}
      */
-    protected function setUp()
+    protected function setUp() : void
     {
         parent::setUp();
 
@@ -66,7 +66,7 @@ class ProxyFactoryTest extends OrmTestCase
         );
     }
 
-    public function testReferenceProxyDelegatesLoadingToThePersister()
+    public function testReferenceProxyDelegatesLoadingToThePersister() : void
     {
         $identifier    = ['id' => 42];
         $classMetaData = $this->emMock->getClassMetadata(ECommerceFeature::class);
@@ -128,7 +128,7 @@ class ProxyFactoryTest extends OrmTestCase
     /**
      * @group DDC-1771
      */
-    public function testSkipAbstractClassesOnGeneration()
+    public function testSkipAbstractClassesOnGeneration() : void
     {
         $cm = new ClassMetadata(AbstractClass::class, $this->metadataBuildingContext);
 
@@ -142,7 +142,7 @@ class ProxyFactoryTest extends OrmTestCase
     /**
      * @group DDC-2432
      */
-    public function testFailedProxyLoadingDoesNotMarkTheProxyAsInitialized()
+    public function testFailedProxyLoadingDoesNotMarkTheProxyAsInitialized() : void
     {
         $classMetaData = $this->emMock->getClassMetadata(ECommerceFeature::class);
 
@@ -174,7 +174,7 @@ class ProxyFactoryTest extends OrmTestCase
     /**
      * @group DDC-2432
      */
-    public function testFailedProxyCloningDoesNotMarkTheProxyAsInitialized()
+    public function testFailedProxyCloningDoesNotMarkTheProxyAsInitialized() : void
     {
         $classMetaData = $this->emMock->getClassMetadata(ECommerceFeature::class);
 
@@ -203,7 +203,7 @@ class ProxyFactoryTest extends OrmTestCase
         self::assertFalse($proxy->isProxyInitialized());
     }
 
-    public function testProxyClonesParentFields()
+    public function testProxyClonesParentFields() : void
     {
         $identifier    = ['id' => 42];
         $classMetaData = $this->emMock->getClassMetadata(CompanyEmployee::class);
@@ -243,7 +243,7 @@ class ProxyFactoryTest extends OrmTestCase
         self::assertSame('Bob', $cloned->getName(), 'Expect properties on the CompanyPerson class to be cloned');
     }
 
-    public function testFriendObjectsDoNotLazyLoadIfNotAccessingLazyState()
+    public function testFriendObjectsDoNotLazyLoadIfNotAccessingLazyState() : void
     {
         /* @var $persister BasicEntityPersister|\PHPUnit_Framework_MockObject_MockObject */
         $persister = $this->createMock(BasicEntityPersister::class);
@@ -267,7 +267,7 @@ class ProxyFactoryTest extends OrmTestCase
         self::assertFalse($comparable->isProxyInitialized());
     }
 
-    public function testFriendObjectsLazyLoadWhenAccessingLazyState()
+    public function testFriendObjectsLazyLoadWhenAccessingLazyState() : void
     {
         /* @var $persister BasicEntityPersister|\PHPUnit_Framework_MockObject_MockObject */
         $persister = $this
@@ -318,7 +318,7 @@ class ProxyFactoryTest extends OrmTestCase
         self::assertTrue($comparable2->isProxyInitialized());
     }
 
-    public function testProxyMethodsSupportFuncGetArgsLogic()
+    public function testProxyMethodsSupportFuncGetArgsLogic() : void
     {
         /* @var $persister BasicEntityPersister|\PHPUnit_Framework_MockObject_MockObject */
         $persister = $this->createMock(BasicEntityPersister::class);

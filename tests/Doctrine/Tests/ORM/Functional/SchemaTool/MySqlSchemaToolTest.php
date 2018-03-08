@@ -11,7 +11,7 @@ use Doctrine\Tests\OrmFunctionalTestCase;
 
 class MySqlSchemaToolTest extends OrmFunctionalTestCase
 {
-    protected function setUp()
+    protected function setUp() : void
     {
         parent::setUp();
         if ($this->em->getConnection()->getDatabasePlatform()->getName() !== 'mysql') {
@@ -19,7 +19,7 @@ class MySqlSchemaToolTest extends OrmFunctionalTestCase
         }
     }
 
-    public function testGetCreateSchemaSql()
+    public function testGetCreateSchemaSql() : void
     {
         $classes = [
             $this->em->getClassMetadata(Models\CMS\CmsGroup::class),
@@ -52,7 +52,7 @@ class MySqlSchemaToolTest extends OrmFunctionalTestCase
         self::assertCount(15, $sql);
     }
 
-    public function testGetCreateSchemaSql2()
+    public function testGetCreateSchemaSql2() : void
     {
         $classes = [$this->em->getClassMetadata(Models\Generic\DecimalModel::class)];
 
@@ -63,7 +63,7 @@ class MySqlSchemaToolTest extends OrmFunctionalTestCase
         self::assertEquals('CREATE TABLE decimal_model (id INT AUTO_INCREMENT NOT NULL, `decimal` NUMERIC(5, 2) NOT NULL, `high_scale` NUMERIC(14, 4) NOT NULL, PRIMARY KEY(id)) DEFAULT CHARACTER SET utf8 COLLATE utf8_unicode_ci ENGINE = InnoDB', $sql[0]);
     }
 
-    public function testGetCreateSchemaSql3()
+    public function testGetCreateSchemaSql3() : void
     {
         $classes = [$this->em->getClassMetadata(Models\Generic\BooleanModel::class)];
 
@@ -77,7 +77,7 @@ class MySqlSchemaToolTest extends OrmFunctionalTestCase
     /**
      * @group DBAL-204
      */
-    public function testGetCreateSchemaSql4()
+    public function testGetCreateSchemaSql4() : void
     {
         $classes = [$this->em->getClassMetadata(MysqlSchemaNamespacedEntity::class)];
 

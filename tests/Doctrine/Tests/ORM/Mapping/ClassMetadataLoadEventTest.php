@@ -16,7 +16,7 @@ class ClassMetadataLoadEventTest extends OrmTestCase
     /**
      * @group DDC-1610
      */
-    public function testEvent()
+    public function testEvent() : void
     {
         $entityManager   = $this->getTestEntityManager();
         $metadataFactory = $entityManager->getMetadataFactory();

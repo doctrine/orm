@@ -13,13 +13,13 @@ use Doctrine\Tests\OrmFunctionalTestCase;
  */
 class DDC1040Test extends OrmFunctionalTestCase
 {
-    public function setUp()
+    public function setUp() : void
     {
         $this->useModelSet('cms');
         parent::setUp();
     }
 
-    public function testReuseNamedEntityParameter()
+    public function testReuseNamedEntityParameter() : void
     {
         $user           = new CmsUser();
         $user->name     = 'John Galt';
@@ -54,7 +54,7 @@ class DDC1040Test extends OrmFunctionalTestCase
         self::assertSame($article, $farticle);
     }
 
-    public function testUseMultiplePositionalParameters()
+    public function testUseMultiplePositionalParameters() : void
     {
         $user           = new CmsUser();
         $user->name     = 'John Galt';

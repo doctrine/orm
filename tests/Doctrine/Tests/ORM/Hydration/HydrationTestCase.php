@@ -13,7 +13,7 @@ class HydrationTestCase extends OrmTestCase
     /** @var EntityManagerInterface */
     protected $em;
 
-    protected function setUp()
+    protected function setUp() : void
     {
         parent::setUp();
         $this->em = $this->getTestEntityManager();

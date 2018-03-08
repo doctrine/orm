@@ -15,7 +15,7 @@ use Doctrine\Tests\OrmFunctionalTestCase;
  */
 class GH5887Test extends OrmFunctionalTestCase
 {
-    public function setUp()
+    public function setUp() : void
     {
         parent::setUp();
 
@@ -31,7 +31,7 @@ class GH5887Test extends OrmFunctionalTestCase
         $this->markTestIncomplete('Requires updates to SqlWalker');
     }
 
-    public function testLazyLoadsForeignEntitiesInOneToOneRelationWhileHavingCustomIdObject()
+    public function testLazyLoadsForeignEntitiesInOneToOneRelationWhileHavingCustomIdObject() : void
     {
         $customerId = new GH5887CustomIdObject(1);
         $customer   = new GH5887Customer();

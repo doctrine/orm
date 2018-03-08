@@ -28,7 +28,7 @@ class InfoCommandTest extends OrmFunctionalTestCase
     /** @var CommandTester */
     private $tester;
 
-    protected function setUp()
+    protected function setUp() : void
     {
         parent::setUp();
 
@@ -41,7 +41,7 @@ class InfoCommandTest extends OrmFunctionalTestCase
         $this->tester  = new CommandTester($this->command);
     }
 
-    public function testListAllClasses()
+    public function testListAllClasses() : void
     {
         $this->tester->execute(['command' => $this->command->getName()]);
 

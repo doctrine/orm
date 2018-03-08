@@ -12,7 +12,7 @@ use Doctrine\Tests\OrmFunctionalTestCase;
 
 class DDC3785Test extends OrmFunctionalTestCase
 {
-    protected function setUp()
+    protected function setUp() : void
     {
         parent::setUp();
 
@@ -34,7 +34,7 @@ class DDC3785Test extends OrmFunctionalTestCase
      * @group embedded
      * @group DDC-3785
      */
-    public function testOwningValueObjectIdIsCorrectlyTransformedWhenRemovingOrphanedChildEntities()
+    public function testOwningValueObjectIdIsCorrectlyTransformedWhenRemovingOrphanedChildEntities() : void
     {
         $id = new DDC3785AssetId('919609ba-57d9-4a13-be1d-d202521e858a');
 

@@ -22,7 +22,7 @@ class ManyToManyUnidirectionalAssociationTest extends AbstractManyToManyAssociat
     private $firstCart;
     private $secondCart;
 
-    protected function setUp()
+    protected function setUp() : void
     {
         $this->useModelSet('ecommerce');
 
@@ -40,7 +40,7 @@ class ManyToManyUnidirectionalAssociationTest extends AbstractManyToManyAssociat
         $this->secondCart = new ECommerceCart();
     }
 
-    public function testSavesAManyToManyAssociationWithCascadeSaveSet()
+    public function testSavesAManyToManyAssociationWithCascadeSaveSet() : void
     {
         $this->firstCart->addProduct($this->firstProduct);
         $this->firstCart->addProduct($this->secondProduct);
@@ -52,7 +52,7 @@ class ManyToManyUnidirectionalAssociationTest extends AbstractManyToManyAssociat
         self::assertForeignKeysContain($this->firstCart->getId(), $this->secondProduct->getId());
     }
 
-    public function testRemovesAManyToManyAssociation()
+    public function testRemovesAManyToManyAssociation() : void
     {
         $this->firstCart->addProduct($this->firstProduct);
         $this->firstCart->addProduct($this->secondProduct);
@@ -65,7 +65,7 @@ class ManyToManyUnidirectionalAssociationTest extends AbstractManyToManyAssociat
         self::assertForeignKeysContain($this->firstCart->getId(), $this->secondProduct->getId());
     }
 
-    public function testEagerLoad()
+    public function testEagerLoad() : void
     {
         $this->createFixture();
 
@@ -82,7 +82,7 @@ class ManyToManyUnidirectionalAssociationTest extends AbstractManyToManyAssociat
         //self::assertEquals("Doctrine 2.x Manual", $products[1]->getName());
     }
 
-    public function testLazyLoadsCollection()
+    public function testLazyLoadsCollection() : void
     {
         $this->createFixture();
         $metadata = $this->em->getClassMetadata(ECommerceCart::class);

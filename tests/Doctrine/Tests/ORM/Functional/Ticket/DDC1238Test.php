@@ -12,7 +12,7 @@ use Doctrine\Tests\OrmFunctionalTestCase;
  */
 class DDC1238Test extends OrmFunctionalTestCase
 {
-    public function setUp()
+    public function setUp() : void
     {
         parent::setUp();
         try {
@@ -25,7 +25,7 @@ class DDC1238Test extends OrmFunctionalTestCase
         }
     }
 
-    public function testIssue()
+    public function testIssue() : void
     {
         $user = new DDC1238User();
         $user->setName('test');
@@ -44,7 +44,7 @@ class DDC1238Test extends OrmFunctionalTestCase
         self::assertEquals($userId, $userId2, 'This proxy can still be initialized.');
     }
 
-    public function testIssueProxyClear()
+    public function testIssueProxyClear() : void
     {
         $user = new DDC1238User();
         $user->setName('test');

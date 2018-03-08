@@ -16,7 +16,7 @@ use Doctrine\Tests\OrmFunctionalTestCase;
  */
 class VersionedOneToOneTest extends OrmFunctionalTestCase
 {
-    protected function setUp()
+    protected function setUp() : void
     {
         parent::setUp();
 
@@ -35,7 +35,7 @@ class VersionedOneToOneTest extends OrmFunctionalTestCase
      * This test case tests that a versionable entity, that has a oneToOne relationship as it's id can be created
      *  without this bug fix (DDC-3318), you could not do this
      */
-    public function testSetVersionOnCreate()
+    public function testSetVersionOnCreate() : void
     {
         $secondRelatedEntity       = new SecondRelatedEntity();
         $secondRelatedEntity->name = 'Bob';

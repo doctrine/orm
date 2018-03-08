@@ -12,7 +12,7 @@ use Doctrine\Tests\OrmFunctionalTestCase;
  */
 class DDC2775Test extends OrmFunctionalTestCase
 {
-    protected function setUp()
+    protected function setUp() : void
     {
         parent::setUp();
 
@@ -29,7 +29,7 @@ class DDC2775Test extends OrmFunctionalTestCase
     /**
      * @group DDC-2775
      */
-    public function testIssueCascadeRemove()
+    public function testIssueCascadeRemove() : void
     {
         $role = new AdminRole();
         $user = new User();

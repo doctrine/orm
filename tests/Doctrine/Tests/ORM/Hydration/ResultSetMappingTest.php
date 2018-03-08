@@ -30,7 +30,7 @@ class ResultSetMappingTest extends OrmTestCase
     /** @var ClassMetadataBuildingContext */
     private $metadataBuildingContext;
 
-    protected function setUp()
+    protected function setUp() : void
     {
         parent::setUp();
 
@@ -46,7 +46,7 @@ class ResultSetMappingTest extends OrmTestCase
     /**
      * For SQL: SELECT id, status, username, name FROM cms_users
      */
-    public function testBasicResultSetMapping()
+    public function testBasicResultSetMapping() : void
     {
         $this->rsm->addEntityResult(
             CmsUser::class,
@@ -82,7 +82,7 @@ class ResultSetMappingTest extends OrmTestCase
      *
      * Fluent interface test, not a real result set mapping
      */
-    public function testFluentInterface()
+    public function testFluentInterface() : void
     {
         $rms = $this->rsm;
 
@@ -109,7 +109,7 @@ class ResultSetMappingTest extends OrmTestCase
     /**
      * @group DDC-117
      */
-    public function testIndexByMetadataColumn()
+    public function testIndexByMetadataColumn() : void
     {
         $this->rsm->addEntityResult(LegacyUser::class, 'u');
         $this->rsm->addJoinedEntityResult(LegacyUserReference::class, 'lu', 'u', '_references');

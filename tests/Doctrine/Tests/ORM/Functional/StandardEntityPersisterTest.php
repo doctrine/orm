@@ -16,13 +16,13 @@ use Doctrine\Tests\OrmFunctionalTestCase;
  */
 class StandardEntityPersisterTest extends OrmFunctionalTestCase
 {
-    protected function setUp()
+    protected function setUp() : void
     {
         $this->useModelSet('ecommerce');
         parent::setUp();
     }
 
-    public function testAcceptsForeignKeysAsCriteria()
+    public function testAcceptsForeignKeysAsCriteria() : void
     {
         $customer = new ECommerceCustomer();
         $customer->setName('John Doe');
@@ -47,7 +47,7 @@ class StandardEntityPersisterTest extends OrmFunctionalTestCase
     /**
      * Ticket #2478 from Damon Jones (dljones)
      */
-    public function testAddPersistRetrieve()
+    public function testAddPersistRetrieve() : void
     {
         $f1 = new ECommerceFeature();
         $f1->setDescription('AC-3');

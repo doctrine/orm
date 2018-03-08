@@ -17,7 +17,7 @@ use function unlink;
  */
 abstract class AbstractDriverTest extends DoctrineTestCase
 {
-    public function testFindMappingFile()
+    public function testFindMappingFile() : void
     {
         $driver = $this->getDriver(
             [
@@ -30,7 +30,7 @@ abstract class AbstractDriverTest extends DoctrineTestCase
         self::assertEquals($filename, $driver->getLocator()->findMappingFile('MyNamespace\MySubnamespace\Entity\Foo'));
     }
 
-    public function testFindMappingFileInSubnamespace()
+    public function testFindMappingFileInSubnamespace() : void
     {
         $driver = $this->getDriver(
             [
@@ -42,7 +42,7 @@ abstract class AbstractDriverTest extends DoctrineTestCase
         self::assertEquals($filename, $driver->getLocator()->findMappingFile('MyNamespace\MySubnamespace\Entity\Foo\Bar'));
     }
 
-    public function testFindMappingFileNamespacedFoundFileNotFound()
+    public function testFindMappingFileNamespacedFoundFileNotFound() : void
     {
         $this->expectException(MappingException::class);
         $this->expectExceptionMessage('No mapping file found named');
@@ -56,7 +56,7 @@ abstract class AbstractDriverTest extends DoctrineTestCase
         $driver->getLocator()->findMappingFile('MyNamespace\MySubnamespace\Entity\Foo');
     }
 
-    public function testFindMappingNamespaceNotFound()
+    public function testFindMappingNamespaceNotFound() : void
     {
         $this->expectException(MappingException::class);
         $this->expectExceptionMessage("No mapping file found named 'Foo" . $this->getFileExtension() . "' for class 'MyOtherNamespace\MySubnamespace\Entity\Foo'.");
@@ -70,13 +70,13 @@ abstract class AbstractDriverTest extends DoctrineTestCase
         $driver->getLocator()->findMappingFile('MyOtherNamespace\MySubnamespace\Entity\Foo');
     }
 
-    protected function setUp()
+    protected function setUp() : void
     {
         $this->dir = sys_get_temp_dir() . '/abstract_driver_test';
         @mkdir($this->dir, 0777, true);
     }
 
-    protected function tearDown()
+    protected function tearDown() : void
     {
         $iterator = new \RecursiveIteratorIterator(new \RecursiveDirectoryIterator($this->dir), \RecursiveIteratorIterator::CHILD_FIRST);
 

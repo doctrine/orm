@@ -17,7 +17,7 @@ use Doctrine\Tests\OrmFunctionalTestCase;
  */
 class OneToOneCompositeIdTest extends OrmFunctionalTestCase
 {
-    public function setUp()
+    public function setUp() : void
     {
         $this->useModelSet('vct_onetoone_compositeid');
 
@@ -41,7 +41,7 @@ class OneToOneCompositeIdTest extends OrmFunctionalTestCase
         $this->em->clear();
     }
 
-    public function testThatTheValueOfIdentifiersAreConvertedInTheDatabase()
+    public function testThatTheValueOfIdentifiersAreConvertedInTheDatabase() : void
     {
         $conn = $this->em->getConnection();
 
@@ -56,7 +56,7 @@ class OneToOneCompositeIdTest extends OrmFunctionalTestCase
     /**
      * @depends testThatTheValueOfIdentifiersAreConvertedInTheDatabase
      */
-    public function testThatEntitiesAreFetchedFromTheDatabase()
+    public function testThatEntitiesAreFetchedFromTheDatabase() : void
     {
         $inversed = $this->em->find(
             Entity\InversedOneToOneCompositeIdEntity::class,
@@ -72,7 +72,7 @@ class OneToOneCompositeIdTest extends OrmFunctionalTestCase
     /**
      * @depends testThatEntitiesAreFetchedFromTheDatabase
      */
-    public function testThatTheValueOfIdentifiersAreConvertedBackAfterBeingFetchedFromTheDatabase()
+    public function testThatTheValueOfIdentifiersAreConvertedBackAfterBeingFetchedFromTheDatabase() : void
     {
         $inversed = $this->em->find(
             Entity\InversedOneToOneCompositeIdEntity::class,
@@ -86,7 +86,7 @@ class OneToOneCompositeIdTest extends OrmFunctionalTestCase
         self::assertEquals('ghi', $owning->id3);
     }
 
-    public function testThatTheProxyFromOwningToInversedIsLoaded()
+    public function testThatTheProxyFromOwningToInversedIsLoaded() : void
     {
         $owning = $this->em->find(Entity\OwningOneToOneCompositeIdEntity::class, 'ghi');
 
@@ -95,7 +95,7 @@ class OneToOneCompositeIdTest extends OrmFunctionalTestCase
         self::assertEquals('some value to be loaded', $inversedProxy->someProperty);
     }
 
-    public function testThatTheEntityFromInversedToOwningIsEagerLoaded()
+    public function testThatTheEntityFromInversedToOwningIsEagerLoaded() : void
     {
         $inversed = $this->em->find(
             Entity\InversedOneToOneCompositeIdEntity::class,

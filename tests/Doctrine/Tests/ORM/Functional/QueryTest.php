@@ -24,14 +24,14 @@ use function count;
  */
 class QueryTest extends OrmFunctionalTestCase
 {
-    protected function setUp()
+    protected function setUp() : void
     {
         $this->useModelSet('cms');
 
         parent::setUp();
     }
 
-    public function testSimpleQueries()
+    public function testSimpleQueries() : void
     {
         $user           = new CmsUser();
         $user->name     = 'Guilherme';
@@ -71,7 +71,7 @@ class QueryTest extends OrmFunctionalTestCase
         self::assertEquals('GUILHERME', $query->getSingleScalarResult());
     }
 
-    public function testJoinQueries()
+    public function testJoinQueries() : void
     {
         $user           = new CmsUser();
         $user->name     = 'Guilherme';
@@ -105,7 +105,7 @@ class QueryTest extends OrmFunctionalTestCase
         self::assertEquals('Symfony 2', $users[0]->articles[1]->topic);
     }
 
-    public function testUsingZeroBasedQueryParameterShouldWork()
+    public function testUsingZeroBasedQueryParameterShouldWork() : void
     {
         $user           = new CmsUser();
         $user->name     = 'Jonathan';
@@ -122,7 +122,7 @@ class QueryTest extends OrmFunctionalTestCase
         self::assertNotNull($user);
     }
 
-    public function testUsingUnknownQueryParameterShouldThrowException()
+    public function testUsingUnknownQueryParameterShouldThrowException() : void
     {
         $this->expectException(QueryException::class);
         $this->expectExceptionMessage('Invalid parameter: token 2 is not defined in the query.');
@@ -132,7 +132,7 @@ class QueryTest extends OrmFunctionalTestCase
         $user = $q->getSingleResult();
     }
 
-    public function testTooManyParametersShouldThrowException()
+    public function testTooManyParametersShouldThrowException() : void
     {
         $this->expectException(QueryException::class);
         $this->expectExceptionMessage('Too many parameters: the query defines 1 parameters and you bound 2');
@@ -144,7 +144,7 @@ class QueryTest extends OrmFunctionalTestCase
         $user = $q->getSingleResult();
     }
 
-    public function testTooFewParametersShouldThrowException()
+    public function testTooFewParametersShouldThrowException() : void
     {
         $this->expectException(QueryException::class);
         $this->expectExceptionMessage('Too few parameters: the query defines 1 parameters but you only bound 0');
@@ -153,7 +153,7 @@ class QueryTest extends OrmFunctionalTestCase
                   ->getSingleResult();
     }
 
-    public function testInvalidInputParameterThrowsException()
+    public function testInvalidInputParameterThrowsException() : void
     {
         $this->expectException(QueryException::class);
 
@@ -162,7 +162,7 @@ class QueryTest extends OrmFunctionalTestCase
                   ->getSingleResult();
     }
 
-    public function testSetParameters()
+    public function testSetParameters() : void
     {
         $parameters = new ArrayCollection();
         $parameters->add(new Parameter(1, 'jwage'));
@@ -182,7 +182,7 @@ class QueryTest extends OrmFunctionalTestCase
         );
     }
 
-    public function testSetParametersBackwardsCompatible()
+    public function testSetParametersBackwardsCompatible() : void
     {
         $parameters = [1 => 'jwage', 2 => 'active'];
 
@@ -199,7 +199,7 @@ class QueryTest extends OrmFunctionalTestCase
     /**
      * @group DDC-1070
      */
-    public function testIterateResultAsArrayAndParams()
+    public function testIterateResultAsArrayAndParams() : void
     {
         $article1        = new CmsArticle();
         $article1->topic = 'Doctrine 2';
@@ -241,7 +241,7 @@ class QueryTest extends OrmFunctionalTestCase
         );
     }
 
-    public function testIterateResultIterativelyBuildUpUnitOfWork()
+    public function testIterateResultIterativelyBuildUpUnitOfWork() : void
     {
         $article1        = new CmsArticle();
         $article1->topic = 'Doctrine 2';
@@ -281,7 +281,7 @@ class QueryTest extends OrmFunctionalTestCase
         $this->em->clear();
     }
 
-    public function testIterateResultClearEveryCycle()
+    public function testIterateResultClearEveryCycle() : void
     {
         $article1        = new CmsArticle();
         $article1->topic = 'Doctrine 2';
@@ -320,7 +320,7 @@ class QueryTest extends OrmFunctionalTestCase
     /**
      * @expectedException \Doctrine\ORM\Query\QueryException
      */
-    public function testIterateResultFetchJoinedCollectionThrowsException()
+    public function testIterateResultFetchJoinedCollectionThrowsException() : void
     {
         $query    = $this->em->createQuery("SELECT u, a FROM ' . CmsUser::class . ' u JOIN u.articles a");
         $articles = $query->iterate();
@@ -329,7 +329,7 @@ class QueryTest extends OrmFunctionalTestCase
     /**
      * @expectedException Doctrine\ORM\NoResultException
      */
-    public function testGetSingleResultThrowsExceptionOnNoResult()
+    public function testGetSingleResultThrowsExceptionOnNoResult() : void
     {
         $this->em->createQuery('select a from Doctrine\Tests\Models\CMS\CmsArticle a')
              ->getSingleResult();
@@ -338,7 +338,7 @@ class QueryTest extends OrmFunctionalTestCase
     /**
      * @expectedException Doctrine\ORM\NoResultException
      */
-    public function testGetSingleScalarResultThrowsExceptionOnNoResult()
+    public function testGetSingleScalarResultThrowsExceptionOnNoResult() : void
     {
         $this->em->createQuery('select a from Doctrine\Tests\Models\CMS\CmsArticle a')
              ->getSingleScalarResult();
@@ -347,7 +347,7 @@ class QueryTest extends OrmFunctionalTestCase
     /**
      * @expectedException Doctrine\ORM\NonUniqueResultException
      */
-    public function testGetSingleScalarResultThrowsExceptionOnNonUniqueResult()
+    public function testGetSingleScalarResultThrowsExceptionOnNonUniqueResult() : void
     {
         $user           = new CmsUser();
         $user->name     = 'Guilherme';
@@ -375,7 +375,7 @@ class QueryTest extends OrmFunctionalTestCase
              ->getSingleScalarResult();
     }
 
-    public function testModifiedLimitQuery()
+    public function testModifiedLimitQuery() : void
     {
         for ($i = 0; $i < 5; $i++) {
             $user           = new CmsUser();
@@ -415,7 +415,7 @@ class QueryTest extends OrmFunctionalTestCase
     /**
      * @group DDC-604
      */
-    public function testEntityParameters()
+    public function testEntityParameters() : void
     {
         $article          = new CmsArticle();
         $article->topic   = 'dr. dolittle';
@@ -451,7 +451,7 @@ class QueryTest extends OrmFunctionalTestCase
     /**
      * @group DDC-952
      */
-    public function testEnableFetchEagerMode()
+    public function testEnableFetchEagerMode() : void
     {
         for ($i = 0; $i < 10; $i++) {
             $article = new CmsArticle();
@@ -488,7 +488,7 @@ class QueryTest extends OrmFunctionalTestCase
     /**
      * @group DDC-991
      */
-    public function testgetOneOrNullResult()
+    public function testgetOneOrNullResult() : void
     {
         $user           = new CmsUser();
         $user->name     = 'Guilherme';
@@ -513,7 +513,7 @@ class QueryTest extends OrmFunctionalTestCase
     /**
      * @group DDC-991
      */
-    public function testgetOneOrNullResultSeveralRows()
+    public function testgetOneOrNullResultSeveralRows() : void
     {
         $user           = new CmsUser();
         $user->name     = 'Guilherme';
@@ -538,7 +538,7 @@ class QueryTest extends OrmFunctionalTestCase
     /**
      * @group DDC-991
      */
-    public function testgetOneOrNullResultNoRows()
+    public function testgetOneOrNullResultNoRows() : void
     {
         $query = $this->em->createQuery('select u from Doctrine\Tests\Models\CMS\CmsUser u');
         self::assertNull($query->getOneOrNullResult());
@@ -550,7 +550,7 @@ class QueryTest extends OrmFunctionalTestCase
     /**
      * @group DBAL-171
      */
-    public function testParameterOrder()
+    public function testParameterOrder() : void
     {
         $user1           = new CmsUser();
         $user1->name     = 'Benjamin';
@@ -585,7 +585,7 @@ class QueryTest extends OrmFunctionalTestCase
         self::assertCount(3, $result);
     }
 
-    public function testDqlWithAutoInferOfParameters()
+    public function testDqlWithAutoInferOfParameters() : void
     {
         $user           = new CmsUser();
         $user->name     = 'Benjamin';
@@ -616,7 +616,7 @@ class QueryTest extends OrmFunctionalTestCase
         self::assertCount(2, $users);
     }
 
-    public function testQueryBuilderWithStringWhereClauseContainingOrAndConditionalPrimary()
+    public function testQueryBuilderWithStringWhereClauseContainingOrAndConditionalPrimary() : void
     {
         $qb = $this->em->createQueryBuilder();
         $qb->select('u')
@@ -630,7 +630,7 @@ class QueryTest extends OrmFunctionalTestCase
         self::assertCount(0, $users);
     }
 
-    public function testQueryWithArrayOfEntitiesAsParameter()
+    public function testQueryWithArrayOfEntitiesAsParameter() : void
     {
         $userA           = new CmsUser();
         $userA->name     = 'Benjamin';
@@ -662,7 +662,7 @@ class QueryTest extends OrmFunctionalTestCase
         self::assertCount(2, $users);
     }
 
-    public function testQueryWithHiddenAsSelectExpression()
+    public function testQueryWithHiddenAsSelectExpression() : void
     {
         $userA           = new CmsUser();
         $userA->name     = 'Benjamin';
@@ -695,7 +695,7 @@ class QueryTest extends OrmFunctionalTestCase
     /**
      * @group DDC-1651
      */
-    public function testSetParameterBindingSingleIdentifierObject()
+    public function testSetParameterBindingSingleIdentifierObject() : void
     {
         $userC           = new CmsUser();
         $userC->name     = 'Jonathan';
@@ -718,7 +718,7 @@ class QueryTest extends OrmFunctionalTestCase
     /**
      * @group DDC-2319
      */
-    public function testSetCollectionParameterBindingSingleIdentifierObject()
+    public function testSetCollectionParameterBindingSingleIdentifierObject() : void
     {
         $u1           = new CmsUser();
         $u1->name     = 'Name1';
@@ -768,7 +768,7 @@ class QueryTest extends OrmFunctionalTestCase
     /**
      * @group DDC-1822
      */
-    public function testUnexpectedResultException()
+    public function testUnexpectedResultException() : void
     {
         $dql          = 'SELECT u FROM Doctrine\Tests\Models\CMS\CmsUser u';
         $u1           = new CmsUser();
@@ -800,7 +800,7 @@ class QueryTest extends OrmFunctionalTestCase
         }
     }
 
-    public function testMultipleJoinComponentsUsingInnerJoin()
+    public function testMultipleJoinComponentsUsingInnerJoin() : void
     {
         $userA           = new CmsUser();
         $userA->name     = 'Benjamin';
@@ -833,7 +833,7 @@ class QueryTest extends OrmFunctionalTestCase
         self::assertInstanceOf(CmsPhonenumber::class, $users[1]);
     }
 
-    public function testMultipleJoinComponentsUsingLeftJoin()
+    public function testMultipleJoinComponentsUsingLeftJoin() : void
     {
         $userA           = new CmsUser();
         $userA->name     = 'Benjamin';

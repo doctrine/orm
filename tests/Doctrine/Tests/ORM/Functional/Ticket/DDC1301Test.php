@@ -16,7 +16,7 @@ class DDC1301Test extends OrmFunctionalTestCase
 {
     private $userId;
 
-    public function setUp()
+    public function setUp() : void
     {
         $this->useModelSet('legacy');
 
@@ -31,7 +31,7 @@ class DDC1301Test extends OrmFunctionalTestCase
         $this->loadFixture();
     }
 
-    public function tearDown()
+    public function tearDown() : void
     {
         parent::tearDown();
 
@@ -42,7 +42,7 @@ class DDC1301Test extends OrmFunctionalTestCase
         $class->getProperty('cars')->setFetchMode(FetchMode::LAZY);
     }
 
-    public function testCountNotInitializesLegacyCollection()
+    public function testCountNotInitializesLegacyCollection() : void
     {
         $user       = $this->em->find(Models\Legacy\LegacyUser::class, $this->userId);
         $queryCount = $this->getCurrentQueryCount();
@@ -57,7 +57,7 @@ class DDC1301Test extends OrmFunctionalTestCase
         self::assertEquals($queryCount + 2, $this->getCurrentQueryCount(), 'Expecting two queries to be fired for count, then iteration.');
     }
 
-    public function testCountNotInitializesLegacyCollectionWithForeignIdentifier()
+    public function testCountNotInitializesLegacyCollectionWithForeignIdentifier() : void
     {
         $user       = $this->em->find(Models\Legacy\LegacyUser::class, $this->userId);
         $queryCount = $this->getCurrentQueryCount();
@@ -72,7 +72,7 @@ class DDC1301Test extends OrmFunctionalTestCase
         self::assertEquals($queryCount + 2, $this->getCurrentQueryCount(), 'Expecting two queries to be fired for count, then iteration.');
     }
 
-    public function testCountNotInitializesLegacyManyToManyCollection()
+    public function testCountNotInitializesLegacyManyToManyCollection() : void
     {
         $user       = $this->em->find(Models\Legacy\LegacyUser::class, $this->userId);
         $queryCount = $this->getCurrentQueryCount();

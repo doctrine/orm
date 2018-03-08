@@ -17,7 +17,7 @@ use function is_string;
  */
 class DDC2984Test extends OrmFunctionalTestCase
 {
-    public function setUp()
+    public function setUp() : void
     {
         parent::setUp();
 
@@ -39,7 +39,7 @@ class DDC2984Test extends OrmFunctionalTestCase
         }
     }
 
-    public function testIssue()
+    public function testIssue() : void
     {
         $user = new DDC2984User(new DDC2984DomainUserId('unique_id_within_a_vo'));
         $user->applyName('Alex');

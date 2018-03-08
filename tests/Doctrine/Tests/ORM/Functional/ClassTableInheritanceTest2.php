@@ -15,7 +15,7 @@ use function get_class;
  */
 class ClassTableInheritanceTest2 extends OrmFunctionalTestCase
 {
-    protected function setUp()
+    protected function setUp() : void
     {
         parent::setUp();
         try {
@@ -32,7 +32,7 @@ class ClassTableInheritanceTest2 extends OrmFunctionalTestCase
         }
     }
 
-    public function testOneToOneAssocToBaseTypeBidirectional()
+    public function testOneToOneAssocToBaseTypeBidirectional() : void
     {
         $child = new CTIChild();
         $child->setData('hello');
@@ -58,7 +58,7 @@ class ClassTableInheritanceTest2 extends OrmFunctionalTestCase
         self::assertSame($related2, $related2->getCTIParent()->getRelated());
     }
 
-    public function testManyToManyToCTIHierarchy()
+    public function testManyToManyToCTIHierarchy() : void
     {
         //$this->em->getConnection()->getConfiguration()->setSQLLogger(new \Doctrine\DBAL\Logging\EchoSQLLogger());
         $mmrel = new CTIRelated2();

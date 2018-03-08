@@ -9,7 +9,7 @@ use Doctrine\Tests\OrmFunctionalTestCase;
 
 class DDC1209Test extends OrmFunctionalTestCase
 {
-    protected function setUp()
+    protected function setUp() : void
     {
         parent::setUp();
         try {
@@ -27,7 +27,7 @@ class DDC1209Test extends OrmFunctionalTestCase
     /**
      * @group DDC-1209
      */
-    public function testIdentifierCanHaveCustomType()
+    public function testIdentifierCanHaveCustomType() : void
     {
         $entity = new DDC1209Entity3();
 
@@ -40,7 +40,7 @@ class DDC1209Test extends OrmFunctionalTestCase
     /**
      * @group DDC-1209
      */
-    public function testCompositeIdentifierCanHaveCustomType()
+    public function testCompositeIdentifierCanHaveCustomType() : void
     {
         $future1 = new DDC1209Entity1();
 

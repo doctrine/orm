@@ -13,13 +13,13 @@ use Doctrine\Tests\OrmFunctionalTestCase;
  */
 class DDC3123Test extends OrmFunctionalTestCase
 {
-    protected function setUp()
+    protected function setUp() : void
     {
         $this->useModelSet('cms');
         parent::setUp();
     }
 
-    public function testIssue()
+    public function testIssue() : void
     {
         $test = $this;
         $user = new CmsUser();

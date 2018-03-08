@@ -57,7 +57,7 @@ class SingleScalarHydratorTest extends HydrationTestCase
      *
      * @dataProvider singleScalarResultSetProvider
      */
-    public function testHydrateSingleScalar($name, $resultSet)
+    public function testHydrateSingleScalar($name, $resultSet) : void
     {
         $rsm = new ResultSetMapping();
         $rsm->addEntityResult(CmsUser::class, 'u');

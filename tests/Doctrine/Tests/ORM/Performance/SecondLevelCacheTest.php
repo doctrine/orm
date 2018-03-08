@@ -25,7 +25,7 @@ use function str_repeat;
  */
 class SecondLevelCacheTest extends OrmFunctionalTestCase
 {
-    protected function setUp()
+    protected function setUp() : void
     {
         parent::useModelSet('cache');
         parent::setUp();
@@ -53,7 +53,7 @@ class SecondLevelCacheTest extends OrmFunctionalTestCase
         return count($em->getConfiguration()->getSQLLogger()->queries);
     }
 
-    public function testFindEntityWithoutCache()
+    public function testFindEntityWithoutCache() : void
     {
         $em = $this->createEntityManager();
 
@@ -62,7 +62,7 @@ class SecondLevelCacheTest extends OrmFunctionalTestCase
         self::assertEquals(6002, $this->countQuery($em));
     }
 
-    public function testFindEntityWithCache()
+    public function testFindEntityWithCache() : void
     {
         parent::enableSecondLevelCache(false);
 
@@ -73,7 +73,7 @@ class SecondLevelCacheTest extends OrmFunctionalTestCase
         self::assertEquals(502, $this->countQuery($em));
     }
 
-    public function testFindAllEntityWithoutCache()
+    public function testFindAllEntityWithoutCache() : void
     {
         $em = $this->createEntityManager();
 
@@ -82,7 +82,7 @@ class SecondLevelCacheTest extends OrmFunctionalTestCase
         self::assertEquals(153, $this->countQuery($em));
     }
 
-    public function testFindAllEntityWithCache()
+    public function testFindAllEntityWithCache() : void
     {
         parent::enableSecondLevelCache(false);
 
@@ -93,7 +93,7 @@ class SecondLevelCacheTest extends OrmFunctionalTestCase
         self::assertEquals(53, $this->countQuery($em));
     }
 
-    public function testFindEntityOneToManyWithoutCache()
+    public function testFindEntityOneToManyWithoutCache() : void
     {
         $em = $this->createEntityManager();
 
@@ -102,7 +102,7 @@ class SecondLevelCacheTest extends OrmFunctionalTestCase
         self::assertEquals(502, $this->countQuery($em));
     }
 
-    public function testFindEntityOneToManyWithCache()
+    public function testFindEntityOneToManyWithCache() : void
     {
         parent::enableSecondLevelCache(false);
 
@@ -113,7 +113,7 @@ class SecondLevelCacheTest extends OrmFunctionalTestCase
         self::assertEquals(472, $this->countQuery($em));
     }
 
-    public function testQueryEntityWithoutCache()
+    public function testQueryEntityWithoutCache() : void
     {
         $em = $this->createEntityManager();
 
@@ -122,7 +122,7 @@ class SecondLevelCacheTest extends OrmFunctionalTestCase
         self::assertEquals(602, $this->countQuery($em));
     }
 
-    public function testQueryEntityWithCache()
+    public function testQueryEntityWithCache() : void
     {
         parent::enableSecondLevelCache(false);
 

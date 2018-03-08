@@ -15,7 +15,7 @@ use ProxyManager\Proxy\GhostObjectInterface;
 
 class DDC736Test extends OrmFunctionalTestCase
 {
-    protected function setUp()
+    protected function setUp() : void
     {
         $this->useModelSet('ecommerce');
         parent::setUp();
@@ -24,7 +24,7 @@ class DDC736Test extends OrmFunctionalTestCase
     /**
      * @group DDC-736
      */
-    public function testReorderEntityFetchJoinForHydration()
+    public function testReorderEntityFetchJoinForHydration() : void
     {
         $cust = new ECommerceCustomer();
         $cust->setName('roman');
@@ -55,7 +55,7 @@ class DDC736Test extends OrmFunctionalTestCase
      * @group DDC-925
      * @group DDC-915
      */
-    public function testDqlTreeWalkerReordering()
+    public function testDqlTreeWalkerReordering() : void
     {
         $cust = new ECommerceCustomer();
         $cust->setName('roman');

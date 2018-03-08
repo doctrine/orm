@@ -93,7 +93,7 @@ class NamingStrategyTest extends OrmTestCase
     /**
      * @dataProvider dataClassToTableName
      */
-    public function testClassToTableName(NamingStrategy $strategy, $expected, $className)
+    public function testClassToTableName(NamingStrategy $strategy, $expected, $className) : void
     {
         self::assertEquals($expected, $strategy->classToTableName($className));
     }
@@ -153,7 +153,7 @@ class NamingStrategyTest extends OrmTestCase
      * @param string $expected
      * @param string $propertyName
      */
-    public function testPropertyToColumnName(NamingStrategy $strategy, $expected, $propertyName)
+    public function testPropertyToColumnName(NamingStrategy $strategy, $expected, $propertyName) : void
     {
         self::assertEquals($expected, $strategy->propertyToColumnName($propertyName));
     }
@@ -180,7 +180,7 @@ class NamingStrategyTest extends OrmTestCase
      *
      * @param string $expected
      */
-    public function testReferenceColumnName(NamingStrategy $strategy, $expected)
+    public function testReferenceColumnName(NamingStrategy $strategy, $expected) : void
     {
         self::assertEquals($expected, $strategy->referenceColumnName());
     }
@@ -212,7 +212,7 @@ class NamingStrategyTest extends OrmTestCase
      * @param string $expected
      * @param string $propertyName
      */
-    public function testJoinColumnName(NamingStrategy $strategy, $expected, $propertyName, $className = null)
+    public function testJoinColumnName(NamingStrategy $strategy, $expected, $propertyName, $className = null) : void
     {
         self::assertEquals($expected, $strategy->joinColumnName($propertyName, $className));
     }
@@ -303,7 +303,7 @@ class NamingStrategyTest extends OrmTestCase
      * @param string $associatedEntity
      * @param string $propertyName
      */
-    public function testJoinTableName(NamingStrategy $strategy, $expected, $ownerEntity, $associatedEntity, $propertyName = null)
+    public function testJoinTableName(NamingStrategy $strategy, $expected, $ownerEntity, $associatedEntity, $propertyName = null) : void
     {
         self::assertEquals($expected, $strategy->joinTableName($ownerEntity, $associatedEntity, $propertyName));
     }
@@ -373,7 +373,7 @@ class NamingStrategyTest extends OrmTestCase
      * @param string $referencedColumnName
      * @param string $propertyName
      */
-    public function testJoinKeyColumnName(NamingStrategy $strategy, $expected, $propertyEntityName, $referencedColumnName = null, $propertyName = null)
+    public function testJoinKeyColumnName(NamingStrategy $strategy, $expected, $propertyEntityName, $referencedColumnName = null, $propertyName = null) : void
     {
         self::assertEquals($expected, $strategy->joinKeyColumnName($propertyEntityName, $referencedColumnName, $propertyName));
     }

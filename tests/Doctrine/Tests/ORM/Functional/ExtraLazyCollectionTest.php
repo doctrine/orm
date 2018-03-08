@@ -34,7 +34,7 @@ class ExtraLazyCollectionTest extends OrmFunctionalTestCase
     private $topic;
     private $phonenumber;
 
-    public function setUp()
+    public function setUp() : void
     {
         $this->useModelSet('tweet');
         $this->useModelSet('cms');
@@ -64,7 +64,7 @@ class ExtraLazyCollectionTest extends OrmFunctionalTestCase
         $this->loadFixture();
     }
 
-    public function tearDown()
+    public function tearDown() : void
     {
         parent::tearDown();
 
@@ -89,7 +89,7 @@ class ExtraLazyCollectionTest extends OrmFunctionalTestCase
      * @group DDC-546
      * @group non-cacheable
      */
-    public function testCountNotInitializesCollection()
+    public function testCountNotInitializesCollection() : void
     {
         $user       = $this->em->find(CmsUser::class, $this->userId);
         $queryCount = $this->getCurrentQueryCount();
@@ -107,7 +107,7 @@ class ExtraLazyCollectionTest extends OrmFunctionalTestCase
     /**
      * @group DDC-546
      */
-    public function testCountWhenNewEntityPresent()
+    public function testCountWhenNewEntityPresent() : void
     {
         $user = $this->em->find(CmsUser::class, $this->userId);
 
@@ -126,7 +126,7 @@ class ExtraLazyCollectionTest extends OrmFunctionalTestCase
      * @group DDC-546
      * @group non-cacheable
      */
-    public function testCountWhenInitialized()
+    public function testCountWhenInitialized() : void
     {
         $user       = $this->em->find(CmsUser::class, $this->userId);
         $queryCount = $this->getCurrentQueryCount();
@@ -142,7 +142,7 @@ class ExtraLazyCollectionTest extends OrmFunctionalTestCase
     /**
      * @group DDC-546
      */
-    public function testCountInverseCollection()
+    public function testCountInverseCollection() : void
     {
         $group = $this->em->find(CmsGroup::class, $this->groupId);
         self::assertFalse($group->users->isInitialized(), 'Pre-Condition');
@@ -154,7 +154,7 @@ class ExtraLazyCollectionTest extends OrmFunctionalTestCase
     /**
      * @group DDC-546
      */
-    public function testCountOneToMany()
+    public function testCountOneToMany() : void
     {
         $user = $this->em->find(CmsUser::class, $this->userId);
         self::assertFalse($user->groups->isInitialized(), 'Pre-Condition');
@@ -165,7 +165,7 @@ class ExtraLazyCollectionTest extends OrmFunctionalTestCase
     /**
      * @group DDC-2504
      */
-    public function testCountOneToManyJoinedInheritance()
+    public function testCountOneToManyJoinedInheritance() : void
     {
         $otherClass = $this->em->find(DDC2504OtherClass::class, $this->ddc2504OtherClassId);
 
@@ -176,7 +176,7 @@ class ExtraLazyCollectionTest extends OrmFunctionalTestCase
     /**
      * @group DDC-546
      */
-    public function testFullSlice()
+    public function testFullSlice() : void
     {
         $user = $this->em->find(CmsUser::class, $this->userId);
         self::assertFalse($user->groups->isInitialized(), 'Pre-Condition: Collection is not initialized.');
@@ -189,7 +189,7 @@ class ExtraLazyCollectionTest extends OrmFunctionalTestCase
      * @group DDC-546
      * @group non-cacheable
      */
-    public function testSlice()
+    public function testSlice() : void
     {
         $user = $this->em->find(CmsUser::class, $this->userId);
         self::assertFalse($user->groups->isInitialized(), 'Pre-Condition: Collection is not initialized.');
@@ -221,7 +221,7 @@ class ExtraLazyCollectionTest extends OrmFunctionalTestCase
      * @group DDC-546
      * @group non-cacheable
      */
-    public function testSliceInitializedCollection()
+    public function testSliceInitializedCollection() : void
     {
         $user       = $this->em->find(CmsUser::class, $this->userId);
         $queryCount = $this->getCurrentQueryCount();
@@ -241,7 +241,7 @@ class ExtraLazyCollectionTest extends OrmFunctionalTestCase
     /**
      * @group DDC-546
      */
-    public function testSliceInverseCollection()
+    public function testSliceInverseCollection() : void
     {
         $group = $this->em->find(CmsGroup::class, $this->groupId);
         self::assertFalse($group->users->isInitialized(), 'Pre-Condition');
@@ -262,7 +262,7 @@ class ExtraLazyCollectionTest extends OrmFunctionalTestCase
     /**
      * @group DDC-546
      */
-    public function testSliceOneToMany()
+    public function testSliceOneToMany() : void
     {
         $user = $this->em->find(CmsUser::class, $this->userId);
         self::assertFalse($user->articles->isInitialized(), 'Pre-Condition: Collection is not initialized.');
@@ -278,7 +278,7 @@ class ExtraLazyCollectionTest extends OrmFunctionalTestCase
     /**
      * @group DDC-546
      */
-    public function testContainsOneToMany()
+    public function testContainsOneToMany() : void
     {
         $user = $this->em->find(CmsUser::class, $this->userId);
         self::assertFalse($user->articles->isInitialized(), 'Pre-Condition: Collection is not initialized.');
@@ -326,7 +326,7 @@ class ExtraLazyCollectionTest extends OrmFunctionalTestCase
     /**
      * @group DDC-2504
      */
-    public function testLazyOneToManyJoinedInheritanceIsLazilyInitialized()
+    public function testLazyOneToManyJoinedInheritanceIsLazilyInitialized() : void
     {
         $otherClass = $this->em->find(DDC2504OtherClass::class, $this->ddc2504OtherClassId);
 
@@ -336,7 +336,7 @@ class ExtraLazyCollectionTest extends OrmFunctionalTestCase
     /**
      * @group DDC-2504
      */
-    public function testContainsOnOneToManyJoinedInheritanceWillNotInitializeCollectionWhenMatchingItemIsFound()
+    public function testContainsOnOneToManyJoinedInheritanceWillNotInitializeCollectionWhenMatchingItemIsFound() : void
     {
         $otherClass = $this->em->find(DDC2504OtherClass::class, $this->ddc2504OtherClassId);
 
@@ -352,7 +352,7 @@ class ExtraLazyCollectionTest extends OrmFunctionalTestCase
     /**
      * @group DDC-2504
      */
-    public function testContainsOnOneToManyJoinedInheritanceWillNotCauseQueriesWhenNonPersistentItemIsMatched()
+    public function testContainsOnOneToManyJoinedInheritanceWillNotCauseQueriesWhenNonPersistentItemIsMatched() : void
     {
         $otherClass = $this->em->find(DDC2504OtherClass::class, $this->ddc2504OtherClassId);
         $queryCount = $this->getCurrentQueryCount();
@@ -368,7 +368,7 @@ class ExtraLazyCollectionTest extends OrmFunctionalTestCase
     /**
      * @group DDC-2504
      */
-    public function testContainsOnOneToManyJoinedInheritanceWillNotInitializeCollectionWithClearStateMatchingItem()
+    public function testContainsOnOneToManyJoinedInheritanceWillNotInitializeCollectionWithClearStateMatchingItem() : void
     {
         $otherClass = $this->em->find(DDC2504OtherClass::class, $this->ddc2504OtherClassId);
         $childClass = new DDC2504ChildClass();
@@ -386,7 +386,7 @@ class ExtraLazyCollectionTest extends OrmFunctionalTestCase
     /**
      * @group DDC-2504
      */
-    public function testContainsOnOneToManyJoinedInheritanceWillNotInitializeCollectionWithNewStateNotMatchingItem()
+    public function testContainsOnOneToManyJoinedInheritanceWillNotInitializeCollectionWithNewStateNotMatchingItem() : void
     {
         $otherClass = $this->em->find(DDC2504OtherClass::class, $this->ddc2504OtherClassId);
         $childClass = new DDC2504ChildClass();
@@ -403,7 +403,7 @@ class ExtraLazyCollectionTest extends OrmFunctionalTestCase
     /**
      * @group DDC-2504
      */
-    public function testCountingOnOneToManyJoinedInheritanceWillNotInitializeCollection()
+    public function testCountingOnOneToManyJoinedInheritanceWillNotInitializeCollection() : void
     {
         $otherClass = $this->em->find(DDC2504OtherClass::class, $this->ddc2504OtherClassId);
 
@@ -415,7 +415,7 @@ class ExtraLazyCollectionTest extends OrmFunctionalTestCase
     /**
      * @group DDC-546
      */
-    public function testContainsManyToMany()
+    public function testContainsManyToMany() : void
     {
         $user = $this->em->find(CmsUser::class, $this->userId);
         self::assertFalse($user->groups->isInitialized(), 'Pre-Condition: Collection is not initialized.');
@@ -464,7 +464,7 @@ class ExtraLazyCollectionTest extends OrmFunctionalTestCase
     /**
      * @group DDC-546
      */
-    public function testContainsManyToManyInverse()
+    public function testContainsManyToManyInverse() : void
     {
         $group = $this->em->find(CmsGroup::class, $this->groupId);
         self::assertFalse($group->users->isInitialized(), 'Pre-Condition: Collection is not initialized.');
@@ -485,7 +485,7 @@ class ExtraLazyCollectionTest extends OrmFunctionalTestCase
         self::assertFalse($user->groups->isInitialized(), 'Post-Condition: Collection is not initialized.');
     }
 
-    public function testRemoveElementOneToMany()
+    public function testRemoveElementOneToMany() : void
     {
         $user = $this->em->find(CmsUser::class, $this->userId);
         self::assertFalse($user->articles->isInitialized(), 'Pre-Condition: Collection is not initialized.');
@@ -538,7 +538,7 @@ class ExtraLazyCollectionTest extends OrmFunctionalTestCase
     /**
      * @group DDC-2504
      */
-    public function testRemovalOfManagedElementFromOneToManyJoinedInheritanceCollectionDoesNotInitializeIt()
+    public function testRemovalOfManagedElementFromOneToManyJoinedInheritanceCollectionDoesNotInitializeIt() : void
     {
         /* @var $otherClass DDC2504OtherClass */
         $otherClass = $this->em->find(DDC2504OtherClass::class, $this->ddc2504OtherClassId);
@@ -576,7 +576,7 @@ class ExtraLazyCollectionTest extends OrmFunctionalTestCase
     /**
      * @group DDC-2504
      */
-    public function testRemovalOfNonManagedElementFromOneToManyJoinedInheritanceCollectionDoesNotInitializeIt()
+    public function testRemovalOfNonManagedElementFromOneToManyJoinedInheritanceCollectionDoesNotInitializeIt() : void
     {
         /* @var $otherClass DDC2504OtherClass */
         $otherClass = $this->em->find(DDC2504OtherClass::class, $this->ddc2504OtherClassId);
@@ -594,7 +594,7 @@ class ExtraLazyCollectionTest extends OrmFunctionalTestCase
     /**
      * @group DDC-2504
      */
-    public function testRemovalOfNewElementFromOneToManyJoinedInheritanceCollectionDoesNotInitializeIt()
+    public function testRemovalOfNewElementFromOneToManyJoinedInheritanceCollectionDoesNotInitializeIt() : void
     {
         /* @var $otherClass DDC2504OtherClass */
         $otherClass = $this->em->find(DDC2504OtherClass::class, $this->ddc2504OtherClassId);
@@ -616,7 +616,7 @@ class ExtraLazyCollectionTest extends OrmFunctionalTestCase
     /**
      * @group DDC-2504
      */
-    public function testRemovalOfNewManagedElementFromOneToManyJoinedInheritanceCollectionDoesNotInitializeIt()
+    public function testRemovalOfNewManagedElementFromOneToManyJoinedInheritanceCollectionDoesNotInitializeIt() : void
     {
         $otherClass = $this->em->find(DDC2504OtherClass::class, $this->ddc2504OtherClassId);
         $childClass = new DDC2504ChildClass();
@@ -636,7 +636,7 @@ class ExtraLazyCollectionTest extends OrmFunctionalTestCase
         self::assertFalse($otherClass->childClasses->isInitialized(), 'Collection is not initialized.');
     }
 
-    public function testRemoveElementManyToMany()
+    public function testRemoveElementManyToMany() : void
     {
         $user = $this->em->find(CmsUser::class, $this->userId);
         self::assertFalse($user->groups->isInitialized(), 'Pre-Condition: Collection is not initialized.');
@@ -688,7 +688,7 @@ class ExtraLazyCollectionTest extends OrmFunctionalTestCase
         self::assertFalse($user->groups->isInitialized(), 'Post-Condition: Collection is not initialized.');
     }
 
-    public function testRemoveElementManyToManyInverse()
+    public function testRemoveElementManyToManyInverse() : void
     {
         $group = $this->em->find(CmsGroup::class, $this->groupId);
         self::assertFalse($group->users->isInitialized(), 'Pre-Condition: Collection is not initialized.');
@@ -715,7 +715,7 @@ class ExtraLazyCollectionTest extends OrmFunctionalTestCase
     /**
      * @group DDC-1399
      */
-    public function testCountAfterAddThenFlush()
+    public function testCountAfterAddThenFlush() : void
     {
         $user = $this->em->find(CmsUser::class, $this->userId);
 
@@ -738,7 +738,7 @@ class ExtraLazyCollectionTest extends OrmFunctionalTestCase
      * @group DDC-1462
      * @group non-cacheable
      */
-    public function testSliceOnDirtyCollection()
+    public function testSliceOnDirtyCollection() : void
     {
         $user = $this->em->find(CmsUser::class, $this->userId);
         /* @var $user CmsUser */
@@ -760,7 +760,7 @@ class ExtraLazyCollectionTest extends OrmFunctionalTestCase
      * @group DDC-1398
      * @group non-cacheable
      */
-    public function testGetIndexByIdentifier()
+    public function testGetIndexByIdentifier() : void
     {
         $user = $this->em->find(CmsUser::class, $this->userId);
         /* @var $user CmsUser */
@@ -779,7 +779,7 @@ class ExtraLazyCollectionTest extends OrmFunctionalTestCase
     /**
      * @group DDC-1398
      */
-    public function testGetIndexByOneToMany()
+    public function testGetIndexByOneToMany() : void
     {
         $user = $this->em->find(CmsUser::class, $this->userId);
         /* @var $user CmsUser */
@@ -796,7 +796,7 @@ class ExtraLazyCollectionTest extends OrmFunctionalTestCase
     /**
      * @group DDC-1398
      */
-    public function testGetIndexByManyToManyInverseSide()
+    public function testGetIndexByManyToManyInverseSide() : void
     {
         $group = $this->em->find(CmsGroup::class, $this->groupId);
         /* @var $group CmsGroup */
@@ -813,7 +813,7 @@ class ExtraLazyCollectionTest extends OrmFunctionalTestCase
     /**
      * @group DDC-1398
      */
-    public function testGetIndexByManyToManyOwningSide()
+    public function testGetIndexByManyToManyOwningSide() : void
     {
         $user = $this->em->find(CmsUser::class, $this->userId);
         /* @var $user CmsUser */
@@ -830,14 +830,14 @@ class ExtraLazyCollectionTest extends OrmFunctionalTestCase
     /**
      * @group DDC-1398
      */
-    public function testGetNonExistentIndexBy()
+    public function testGetNonExistentIndexBy() : void
     {
         $user = $this->em->find(CmsUser::class, $this->userId);
         self::assertNull($user->articles->get(-1));
         self::assertNull($user->groups->get(-1));
     }
 
-    public function testContainsKeyIndexByOneToMany()
+    public function testContainsKeyIndexByOneToMany() : void
     {
         $user = $this->em->find(CmsUser::class, $this->userId);
         /* @var $user CmsUser */
@@ -851,7 +851,7 @@ class ExtraLazyCollectionTest extends OrmFunctionalTestCase
         self::assertEquals($queryCount + 1, $this->getCurrentQueryCount());
     }
 
-    public function testContainsKeyIndexByOneToManyJoinedInheritance()
+    public function testContainsKeyIndexByOneToManyJoinedInheritance() : void
     {
         $class = $this->em->getClassMetadata(DDC2504OtherClass::class);
         $class->getProperty('childClasses')->setIndexedBy('id');
@@ -867,7 +867,7 @@ class ExtraLazyCollectionTest extends OrmFunctionalTestCase
         self::assertEquals($queryCount + 1, $this->getCurrentQueryCount());
     }
 
-    public function testContainsKeyIndexByManyToMany()
+    public function testContainsKeyIndexByManyToMany() : void
     {
         $user = $this->em->find(CmsUser::class, $this->userId2);
 
@@ -881,7 +881,7 @@ class ExtraLazyCollectionTest extends OrmFunctionalTestCase
         self::assertFalse($user->groups->isInitialized(), 'The collection must not be initialized');
         self::assertEquals($queryCount + 1, $this->getCurrentQueryCount());
     }
-    public function testContainsKeyIndexByManyToManyNonOwning()
+    public function testContainsKeyIndexByManyToManyNonOwning() : void
     {
         $user  = $this->em->find(CmsUser::class, $this->userId2);
         $group = $this->em->find(CmsGroup::class, $this->groupId);
@@ -895,7 +895,7 @@ class ExtraLazyCollectionTest extends OrmFunctionalTestCase
         self::assertEquals($queryCount + 1, $this->getCurrentQueryCount());
     }
 
-    public function testContainsKeyIndexByWithPkManyToMany()
+    public function testContainsKeyIndexByWithPkManyToMany() : void
     {
         $class = $this->em->getClassMetadata(CmsUser::class);
         $class->getProperty('groups')->setIndexedBy('id');
@@ -910,7 +910,7 @@ class ExtraLazyCollectionTest extends OrmFunctionalTestCase
         self::assertFalse($user->groups->isInitialized(), 'The collection must not be initialized');
         self::assertEquals($queryCount + 1, $this->getCurrentQueryCount());
     }
-    public function testContainsKeyIndexByWithPkManyToManyNonOwning()
+    public function testContainsKeyIndexByWithPkManyToManyNonOwning() : void
     {
         $class = $this->em->getClassMetadata(CmsGroup::class);
         $class->getProperty('users')->setIndexedBy('id');
@@ -926,7 +926,7 @@ class ExtraLazyCollectionTest extends OrmFunctionalTestCase
         self::assertEquals($queryCount + 1, $this->getCurrentQueryCount());
     }
 
-    public function testContainsKeyNonExistentIndexByOneToMany()
+    public function testContainsKeyNonExistentIndexByOneToMany() : void
     {
         $user = $this->em->find(CmsUser::class, $this->userId2);
 
@@ -939,7 +939,7 @@ class ExtraLazyCollectionTest extends OrmFunctionalTestCase
         self::assertEquals($queryCount + 1, $this->getCurrentQueryCount());
     }
 
-    public function testContainsKeyNonExistentIndexByManyToMany()
+    public function testContainsKeyNonExistentIndexByManyToMany() : void
     {
         $user = $this->em->find(CmsUser::class, $this->userId2);
 
@@ -1058,7 +1058,7 @@ class ExtraLazyCollectionTest extends OrmFunctionalTestCase
     /**
      * @group DDC-3343
      */
-    public function testRemoveManagedElementFromOneToManyExtraLazyCollectionIsNoOp()
+    public function testRemoveManagedElementFromOneToManyExtraLazyCollectionIsNoOp() : void
     {
         list($userId, $tweetId) = $this->loadTweetFixture();
 
@@ -1078,7 +1078,7 @@ class ExtraLazyCollectionTest extends OrmFunctionalTestCase
     /**
      * @group DDC-3343
      */
-    public function testRemoveManagedElementFromOneToManyExtraLazyCollectionWithoutDeletingTheTargetEntityEntryIsNoOp()
+    public function testRemoveManagedElementFromOneToManyExtraLazyCollectionWithoutDeletingTheTargetEntityEntryIsNoOp() : void
     {
         list($userId, $tweetId) = $this->loadTweetFixture();
 
@@ -1108,7 +1108,7 @@ class ExtraLazyCollectionTest extends OrmFunctionalTestCase
     /**
      * @group DDC-3343
      */
-    public function testRemovingManagedLazyProxyFromExtraLazyOneToManyDoesRemoveTheAssociationButNotTheEntity()
+    public function testRemovingManagedLazyProxyFromExtraLazyOneToManyDoesRemoveTheAssociationButNotTheEntity() : void
     {
         list($userId, $tweetId) = $this->loadTweetFixture();
 
@@ -1139,7 +1139,7 @@ class ExtraLazyCollectionTest extends OrmFunctionalTestCase
     /**
      * @group DDC-3343
      */
-    public function testRemoveOrphanedManagedElementFromOneToManyExtraLazyCollection()
+    public function testRemoveOrphanedManagedElementFromOneToManyExtraLazyCollection() : void
     {
         list($userId, $userListId) = $this->loadUserListFixture();
 
@@ -1163,7 +1163,7 @@ class ExtraLazyCollectionTest extends OrmFunctionalTestCase
     /**
      * @group DDC-3343
      */
-    public function testRemoveOrphanedUnManagedElementFromOneToManyExtraLazyCollection()
+    public function testRemoveOrphanedUnManagedElementFromOneToManyExtraLazyCollection() : void
     {
         list($userId, $userListId) = $this->loadUserListFixture();
 
@@ -1192,7 +1192,7 @@ class ExtraLazyCollectionTest extends OrmFunctionalTestCase
     /**
      * @group DDC-3343
      */
-    public function testRemoveOrphanedManagedLazyProxyFromExtraLazyOneToMany()
+    public function testRemoveOrphanedManagedLazyProxyFromExtraLazyOneToMany() : void
     {
         list($userId, $userListId) = $this->loadUserListFixture();
 

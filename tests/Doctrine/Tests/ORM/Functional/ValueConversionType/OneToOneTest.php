@@ -17,7 +17,7 @@ use Doctrine\Tests\OrmFunctionalTestCase;
  */
 class OneToOneTest extends OrmFunctionalTestCase
 {
-    public function setUp()
+    public function setUp() : void
     {
         $this->useModelSet('vct_onetoone');
 
@@ -40,7 +40,7 @@ class OneToOneTest extends OrmFunctionalTestCase
         $this->em->clear();
     }
 
-    public function testThatTheValueOfIdentifiersAreConvertedInTheDatabase()
+    public function testThatTheValueOfIdentifiersAreConvertedInTheDatabase() : void
     {
         $conn = $this->em->getConnection();
 
@@ -50,7 +50,7 @@ class OneToOneTest extends OrmFunctionalTestCase
         self::assertEquals('nop', $conn->fetchColumn('SELECT associated_id FROM vct_owning_onetoone LIMIT 1'));
     }
 
-    public function testThatEntitiesAreFetchedFromTheDatabase()
+    public function testThatEntitiesAreFetchedFromTheDatabase() : void
     {
         $inversed = $this->em->find(Entity\InversedOneToOneEntity::class, 'abc');
         $owning   = $this->em->find(Entity\OwningOneToOneEntity::class, 'def');
@@ -59,7 +59,7 @@ class OneToOneTest extends OrmFunctionalTestCase
         self::assertInstanceOf(Entity\OwningOneToOneEntity::class, $owning);
     }
 
-    public function testThatTheValueOfIdentifiersAreConvertedBackAfterBeingFetchedFromTheDatabase()
+    public function testThatTheValueOfIdentifiersAreConvertedBackAfterBeingFetchedFromTheDatabase() : void
     {
         $inversed = $this->em->find(Entity\InversedOneToOneEntity::class, 'abc');
         $owning   = $this->em->find(Entity\OwningOneToOneEntity::class, 'def');
@@ -68,7 +68,7 @@ class OneToOneTest extends OrmFunctionalTestCase
         self::assertEquals('def', $owning->id2);
     }
 
-    public function testThatTheProxyFromOwningToInversedIsLoaded()
+    public function testThatTheProxyFromOwningToInversedIsLoaded() : void
     {
         $owning = $this->em->find(Entity\OwningOneToOneEntity::class, 'def');
 
@@ -77,7 +77,7 @@ class OneToOneTest extends OrmFunctionalTestCase
         self::assertEquals('some value to be loaded', $inversedProxy->someProperty);
     }
 
-    public function testThatTheEntityFromInversedToOwningIsEagerLoaded()
+    public function testThatTheEntityFromInversedToOwningIsEagerLoaded() : void
     {
         $inversed = $this->em->find(Entity\InversedOneToOneEntity::class, 'abc');
 

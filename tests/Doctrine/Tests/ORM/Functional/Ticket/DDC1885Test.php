@@ -36,7 +36,7 @@ class DDC1885Test extends OrmFunctionalTestCase
         $this->em->clear();
     }
 
-    public function testCreateRetrieveUpdateDelete()
+    public function testCreateRetrieveUpdateDelete() : void
     {
         $user = $this->user;
         $g1   = $user->getGroups()->get(0);
@@ -86,7 +86,7 @@ class DDC1885Test extends OrmFunctionalTestCase
         self::assertNull($this->em->find(GroupQuote::class, $g2Id));
     }
 
-    public function testRemoveItem()
+    public function testRemoveItem() : void
     {
         $user = $this->user;
         $u1Id = $user->id;
@@ -116,7 +116,7 @@ class DDC1885Test extends OrmFunctionalTestCase
         self::assertCount(1, $user->getGroups());
     }
 
-    public function testClearAll()
+    public function testClearAll() : void
     {
         $user = $this->user;
         $u1Id = $user->id;
@@ -146,7 +146,7 @@ class DDC1885Test extends OrmFunctionalTestCase
         self::assertCount(0, $user->getGroups());
     }
 
-    public function testCountExtraLazy()
+    public function testCountExtraLazy() : void
     {
         $user = $this->user;
         $u1Id = $user->id;

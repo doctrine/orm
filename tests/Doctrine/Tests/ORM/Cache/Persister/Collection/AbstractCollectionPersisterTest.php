@@ -67,7 +67,7 @@ abstract class AbstractCollectionPersisterTest extends OrmTestCase
         AssociationMetadata $association
     );
 
-    protected function setUp()
+    protected function setUp() : void
     {
         $this->getSharedSecondLevelCacheDriverImpl()->flushAll();
         $this->enableSecondLevelCache();
@@ -113,7 +113,7 @@ abstract class AbstractCollectionPersisterTest extends OrmTestCase
         return $this->createPersister($this->em, $this->collectionPersister, $this->region, $assoc);
     }
 
-    public function testImplementsEntityPersister()
+    public function testImplementsEntityPersister() : void
     {
         $persister = $this->createPersisterDefault();
 
@@ -122,7 +122,7 @@ abstract class AbstractCollectionPersisterTest extends OrmTestCase
         self::assertInstanceOf(CachedCollectionPersister::class, $persister);
     }
 
-    public function testInvokeDelete()
+    public function testInvokeDelete() : void
     {
         $entity     = new State('Foo');
         $persister  = $this->createPersisterDefault();
@@ -137,7 +137,7 @@ abstract class AbstractCollectionPersisterTest extends OrmTestCase
         self::assertNull($persister->delete($collection));
     }
 
-    public function testInvokeUpdate()
+    public function testInvokeUpdate() : void
     {
         $entity     = new State('Foo');
         $persister  = $this->createPersisterDefault();
@@ -154,7 +154,7 @@ abstract class AbstractCollectionPersisterTest extends OrmTestCase
         self::assertNull($persister->update($collection));
     }
 
-    public function testInvokeCount()
+    public function testInvokeCount() : void
     {
         $entity     = new State('Foo');
         $persister  = $this->createPersisterDefault();
@@ -170,7 +170,7 @@ abstract class AbstractCollectionPersisterTest extends OrmTestCase
         self::assertEquals(0, $persister->count($collection));
     }
 
-    public function testInvokeSlice()
+    public function testInvokeSlice() : void
     {
         $entity     = new State('Foo');
         $persister  = $this->createPersisterDefault();
@@ -187,7 +187,7 @@ abstract class AbstractCollectionPersisterTest extends OrmTestCase
         self::assertEquals($slice, $persister->slice($collection, 1, 2));
     }
 
-    public function testInvokeContains()
+    public function testInvokeContains() : void
     {
         $entity     = new State('Foo');
         $element    = new State('Bar');
@@ -204,7 +204,7 @@ abstract class AbstractCollectionPersisterTest extends OrmTestCase
         self::assertFalse($persister->contains($collection, $element));
     }
 
-    public function testInvokeContainsKey()
+    public function testInvokeContainsKey() : void
     {
         $entity     = new State('Foo');
         $persister  = $this->createPersisterDefault();
@@ -220,7 +220,7 @@ abstract class AbstractCollectionPersisterTest extends OrmTestCase
         self::assertFalse($persister->containsKey($collection, 0));
     }
 
-    public function testInvokeRemoveElement()
+    public function testInvokeRemoveElement() : void
     {
         $entity     = new State('Foo');
         $element    = new State('Bar');
@@ -237,7 +237,7 @@ abstract class AbstractCollectionPersisterTest extends OrmTestCase
         self::assertFalse($persister->removeElement($collection, $element));
     }
 
-    public function testInvokeGet()
+    public function testInvokeGet() : void
     {
         $entity     = new State('Foo');
         $element    = new State('Bar');

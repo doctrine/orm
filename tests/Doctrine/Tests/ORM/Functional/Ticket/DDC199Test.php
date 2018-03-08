@@ -9,7 +9,7 @@ use Doctrine\Tests\OrmFunctionalTestCase;
 
 class DDC199Test extends OrmFunctionalTestCase
 {
-    protected function setUp()
+    protected function setUp() : void
     {
         parent::setUp();
         $this->schemaTool->createSchema(
@@ -21,7 +21,7 @@ class DDC199Test extends OrmFunctionalTestCase
         );
     }
 
-    public function testPolymorphicLoading()
+    public function testPolymorphicLoading() : void
     {
         $child             = new DDC199ChildClass();
         $child->parentData = 'parentData';

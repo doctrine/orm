@@ -13,7 +13,7 @@ use function get_class;
  */
 class DDC2895Test extends OrmFunctionalTestCase
 {
-    public function setUp()
+    public function setUp() : void
     {
         parent::setUp();
         try {
@@ -26,7 +26,7 @@ class DDC2895Test extends OrmFunctionalTestCase
         }
     }
 
-    public function testPostLoadOneToManyInheritance()
+    public function testPostLoadOneToManyInheritance() : void
     {
         $cm = $this->em->getClassMetadata(DDC2895::class);
 

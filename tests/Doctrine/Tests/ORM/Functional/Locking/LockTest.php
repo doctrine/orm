@@ -18,7 +18,7 @@ use function array_pop;
  */
 class LockTest extends OrmFunctionalTestCase
 {
-    protected function setUp()
+    protected function setUp() : void
     {
         $this->useModelSet('cms');
         parent::setUp();
@@ -30,7 +30,7 @@ class LockTest extends OrmFunctionalTestCase
      * @group DDC-178
      * @group locking
      */
-    public function testLockVersionedEntity()
+    public function testLockVersionedEntity() : void
     {
         $article        = new CmsArticle();
         $article->text  = 'my article';
@@ -48,7 +48,7 @@ class LockTest extends OrmFunctionalTestCase
      * @group DDC-178
      * @group locking
      */
-    public function testLockVersionedEntityMismatchThrowsException()
+    public function testLockVersionedEntityMismatchThrowsException() : void
     {
         $article        = new CmsArticle();
         $article->text  = 'my article';
@@ -66,7 +66,7 @@ class LockTest extends OrmFunctionalTestCase
      * @group DDC-178
      * @group locking
      */
-    public function testLockUnversionedEntityThrowsException()
+    public function testLockUnversionedEntityThrowsException() : void
     {
         $user           = new CmsUser();
         $user->name     = 'foo';
@@ -85,7 +85,7 @@ class LockTest extends OrmFunctionalTestCase
      * @group DDC-178
      * @group locking
      */
-    public function testLockUnmanagedEntityThrowsException()
+    public function testLockUnmanagedEntityThrowsException() : void
     {
         $article = new CmsArticle();
 
@@ -99,7 +99,7 @@ class LockTest extends OrmFunctionalTestCase
      * @group DDC-178
      * @group locking
      */
-    public function testLockPessimisticReadNoTransactionThrowsException()
+    public function testLockPessimisticReadNoTransactionThrowsException() : void
     {
         $article        = new CmsArticle();
         $article->text  = 'my article';
@@ -117,7 +117,7 @@ class LockTest extends OrmFunctionalTestCase
      * @group DDC-178
      * @group locking
      */
-    public function testLockPessimisticWriteNoTransactionThrowsException()
+    public function testLockPessimisticWriteNoTransactionThrowsException() : void
     {
         $article        = new CmsArticle();
         $article->text  = 'my article';
@@ -135,7 +135,7 @@ class LockTest extends OrmFunctionalTestCase
      * @group DDC-178
      * @group locking
      */
-    public function testLockPessimisticWrite()
+    public function testLockPessimisticWrite() : void
     {
         $writeLockSql = $this->em->getConnection()->getDatabasePlatform()->getWriteLockSQL();
 
@@ -170,7 +170,7 @@ class LockTest extends OrmFunctionalTestCase
     /**
      * @group DDC-178
      */
-    public function testLockPessimisticRead()
+    public function testLockPessimisticRead() : void
     {
         $readLockSql = $this->em->getConnection()->getDatabasePlatform()->getReadLockSQL();
 
@@ -205,7 +205,7 @@ class LockTest extends OrmFunctionalTestCase
     /**
      * @group DDC-1693
      */
-    public function testLockOptimisticNonVersionedThrowsExceptionInDQL()
+    public function testLockOptimisticNonVersionedThrowsExceptionInDQL() : void
     {
         $dql = 'SELECT u FROM ' . CmsUser::class . " u WHERE u.username = 'gblanco'";
 

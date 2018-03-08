@@ -23,7 +23,7 @@ class CacheLoggerChainTest extends DoctrineTestCase
     /** @var \PHPUnit_Framework_MockObject_MockObject|CacheLogger */
     private $mock;
 
-    protected function setUp()
+    protected function setUp() : void
     {
         parent::setUp();
 
@@ -31,7 +31,7 @@ class CacheLoggerChainTest extends DoctrineTestCase
         $this->mock   = $this->createMock(CacheLogger::class);
     }
 
-    public function testGetAndSetLogger()
+    public function testGetAndSetLogger() : void
     {
         self::assertEmpty($this->logger->getLoggers());
 
@@ -43,7 +43,7 @@ class CacheLoggerChainTest extends DoctrineTestCase
         self::assertEquals(['mock' => $this->mock], $this->logger->getLoggers());
     }
 
-    public function testEntityCacheChain()
+    public function testEntityCacheChain() : void
     {
         $name = 'my_entity_region';
         $key  = new EntityCacheKey(State::class, ['id' => 1]);
@@ -67,7 +67,7 @@ class CacheLoggerChainTest extends DoctrineTestCase
         $this->logger->entityCacheMiss($name, $key);
     }
 
-    public function testCollectionCacheChain()
+    public function testCollectionCacheChain() : void
     {
         $name = 'my_collection_region';
         $key  = new CollectionCacheKey(State::class, 'cities', ['id' => 1]);
@@ -91,7 +91,7 @@ class CacheLoggerChainTest extends DoctrineTestCase
         $this->logger->collectionCacheMiss($name, $key);
     }
 
-    public function testQueryCacheChain()
+    public function testQueryCacheChain() : void
     {
         $name = 'my_query_region';
         $key  = new QueryCacheKey('my_query_hash');

@@ -12,13 +12,13 @@ use Doctrine\Tests\OrmFunctionalTestCase;
  */
 class DDC1043Test extends OrmFunctionalTestCase
 {
-    public function setUp()
+    public function setUp() : void
     {
         $this->useModelSet('cms');
         parent::setUp();
     }
 
-    public function testChangeSetPlusWeirdPHPCastingIntCastingRule()
+    public function testChangeSetPlusWeirdPHPCastingIntCastingRule() : void
     {
         $user           = new CmsUser();
         $user->name     = 'John Galt';

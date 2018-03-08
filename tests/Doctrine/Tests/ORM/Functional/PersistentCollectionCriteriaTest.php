@@ -15,7 +15,7 @@ use Doctrine\Tests\OrmFunctionalTestCase;
 
 class PersistentCollectionCriteriaTest extends OrmFunctionalTestCase
 {
-    protected function setUp()
+    protected function setUp() : void
     {
         $this->useModelSet('tweet');
         $this->useModelSet('quote');
@@ -61,7 +61,7 @@ class PersistentCollectionCriteriaTest extends OrmFunctionalTestCase
         $this->em->clear();
     }
 
-    public function testCanCountWithoutLoadingPersistentCollection()
+    public function testCanCountWithoutLoadingPersistentCollection() : void
     {
         $this->loadTweetFixture();
 

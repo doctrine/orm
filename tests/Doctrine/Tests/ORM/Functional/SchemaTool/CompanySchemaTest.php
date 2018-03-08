@@ -13,7 +13,7 @@ use Doctrine\Tests\OrmFunctionalTestCase;
  */
 class CompanySchemaTest extends OrmFunctionalTestCase
 {
-    protected function setUp()
+    protected function setUp() : void
     {
         $this->useModelSet('company');
         parent::setUp();
@@ -21,9 +21,8 @@ class CompanySchemaTest extends OrmFunctionalTestCase
 
     /**
      * @group DDC-966
-     * @return Schema
      */
-    public function testGeneratedSchema()
+    public function testGeneratedSchema() : Schema
     {
         $schema = $this->em->getConnection()->getSchemaManager()->createSchema();
 
@@ -36,7 +35,7 @@ class CompanySchemaTest extends OrmFunctionalTestCase
      * @group DDC-966
      * @depends testGeneratedSchema
      */
-    public function testSingleTableInheritance(Schema $schema)
+    public function testSingleTableInheritance(Schema $schema) : void
     {
         $table = $schema->getTable('company_contracts');
 
@@ -54,7 +53,7 @@ class CompanySchemaTest extends OrmFunctionalTestCase
     /**
      * @group DBAL-115
      */
-    public function testDropPartSchemaWithForeignKeys()
+    public function testDropPartSchemaWithForeignKeys() : void
     {
         if (! $this->em->getConnection()->getDatabasePlatform()->supportsForeignKeyConstraints()) {
             $this->markTestSkipped('Foreign Key test');

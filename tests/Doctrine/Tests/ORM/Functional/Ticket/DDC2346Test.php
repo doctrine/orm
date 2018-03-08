@@ -21,7 +21,7 @@ class DDC2346Test extends OrmFunctionalTestCase
     /**
      * {@inheritDoc}
      */
-    protected function setUp()
+    protected function setUp() : void
     {
         parent::setUp();
 
@@ -39,7 +39,7 @@ class DDC2346Test extends OrmFunctionalTestCase
     /**
      * Verifies that fetching a OneToMany association with fetch="EAGER" does not cause N+1 queries
      */
-    public function testIssue()
+    public function testIssue() : void
     {
         $foo1 = new DDC2346Foo();
         $foo2 = new DDC2346Foo();

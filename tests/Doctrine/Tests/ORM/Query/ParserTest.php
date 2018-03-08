@@ -17,7 +17,7 @@ class ParserTest extends OrmTestCase
      * @covers \Doctrine\ORM\Query\Parser::AbstractSchemaName
      * @group DDC-3715
      */
-    public function testAbstractSchemaNameSupportsFQCN()
+    public function testAbstractSchemaNameSupportsFQCN() : void
     {
         $parser = $this->createParser(CmsUser::class);
 
@@ -28,7 +28,7 @@ class ParserTest extends OrmTestCase
      * @covers Doctrine\ORM\Query\Parser::AbstractSchemaName
      * @group DDC-3715
      */
-    public function testAbstractSchemaNameSupportsClassnamesWithLeadingBackslash()
+    public function testAbstractSchemaNameSupportsClassnamesWithLeadingBackslash() : void
     {
         $parser = $this->createParser('\\' . CmsUser::class);
 
@@ -39,7 +39,7 @@ class ParserTest extends OrmTestCase
      * @covers \Doctrine\ORM\Query\Parser::AbstractSchemaName
      * @group DDC-3715
      */
-    public function testAbstractSchemaNameSupportsIdentifier()
+    public function testAbstractSchemaNameSupportsIdentifier() : void
     {
         $parser = $this->createParser(\stdClass::class);
 
@@ -51,7 +51,7 @@ class ParserTest extends OrmTestCase
      * @covers Doctrine\ORM\Query\Parser::match
      * @group DDC-3701
      */
-    public function testMatch($expectedToken, $inputString)
+    public function testMatch($expectedToken, $inputString) : void
     {
         $parser = $this->createParser($inputString);
 
@@ -65,7 +65,7 @@ class ParserTest extends OrmTestCase
      * @covers Doctrine\ORM\Query\Parser::match
      * @group DDC-3701
      */
-    public function testMatchFailure($expectedToken, $inputString)
+    public function testMatchFailure($expectedToken, $inputString) : void
     {
         $this->expectException(QueryException::class);
 

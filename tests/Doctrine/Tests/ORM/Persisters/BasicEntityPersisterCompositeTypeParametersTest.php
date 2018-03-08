@@ -24,7 +24,7 @@ class BasicEntityPersisterCompositeTypeParametersTest extends OrmTestCase
     /**
      * {@inheritDoc}
      */
-    protected function setUp()
+    protected function setUp() : void
     {
         parent::setUp();
 
@@ -37,7 +37,7 @@ class BasicEntityPersisterCompositeTypeParametersTest extends OrmTestCase
         $this->persister = new BasicEntityPersister($this->em, $this->em->getClassMetadata(Admin1AlternateName::class));
     }
 
-    public function testExpandParametersWillExpandCompositeEntityKeys()
+    public function testExpandParametersWillExpandCompositeEntityKeys() : void
     {
         $country = new Country('IT', 'Italy');
         $admin1  = new Admin1(10, 'Rome', $country);
@@ -48,7 +48,7 @@ class BasicEntityPersisterCompositeTypeParametersTest extends OrmTestCase
         self::assertEquals([10, 'IT'], $values);
     }
 
-    public function testExpandCriteriaParametersWillExpandCompositeEntityKeys()
+    public function testExpandCriteriaParametersWillExpandCompositeEntityKeys() : void
     {
         $country = new Country('IT', 'Italy');
         $admin1  = new Admin1(10, 'Rome', $country);

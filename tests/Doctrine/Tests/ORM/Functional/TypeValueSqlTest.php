@@ -14,7 +14,7 @@ use Doctrine\Tests\OrmFunctionalTestCase;
 
 class TypeValueSqlTest extends OrmFunctionalTestCase
 {
-    protected function setUp()
+    protected function setUp() : void
     {
         if (DBALType::hasType(UpperCaseStringType::NAME)) {
             DBALType::overrideType(UpperCaseStringType::NAME, UpperCaseStringType::class);
@@ -32,7 +32,7 @@ class TypeValueSqlTest extends OrmFunctionalTestCase
         parent::setUp();
     }
 
-    public function testUpperCaseStringType()
+    public function testUpperCaseStringType() : void
     {
         $entity                  = new CustomTypeUpperCase();
         $entity->lowerCaseString = 'foo';
@@ -53,7 +53,7 @@ class TypeValueSqlTest extends OrmFunctionalTestCase
     /**
      * @group DDC-1642
      */
-    public function testUpperCaseStringTypeWhenColumnNameIsDefined()
+    public function testUpperCaseStringTypeWhenColumnNameIsDefined() : void
     {
         $entity                       = new CustomTypeUpperCase();
         $entity->lowerCaseString      = 'Some Value';
@@ -84,7 +84,7 @@ class TypeValueSqlTest extends OrmFunctionalTestCase
         self::assertEquals('BAR', $this->em->getConnection()->fetchColumn('select named_lower_case_string from customtype_uppercases where id=' . $entity->id . ''), 'Database holds uppercase string');
     }
 
-    public function testTypeValueSqlWithAssociations()
+    public function testTypeValueSqlWithAssociations() : void
     {
         $parent                = new CustomTypeParent();
         $parent->customInteger = -1;
@@ -114,7 +114,7 @@ class TypeValueSqlTest extends OrmFunctionalTestCase
         self::assertCount(2, $entity->getMyFriends(), '2 friends attached');
     }
 
-    public function testSelectDQL()
+    public function testSelectDQL() : void
     {
         $parent                = new CustomTypeParent();
         $parent->customInteger = -1;

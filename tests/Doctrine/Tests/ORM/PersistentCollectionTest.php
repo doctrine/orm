@@ -26,7 +26,7 @@ class PersistentCollectionTest extends OrmTestCase
     /** @var EntityManagerMock */
     private $emMock;
 
-    protected function setUp()
+    protected function setUp() : void
     {
         parent::setUp();
 
@@ -46,7 +46,7 @@ class PersistentCollectionTest extends OrmTestCase
         $this->collection->setOwner(new ECommerceCart(), $classMetaData->getProperty('products'));
     }
 
-    public function testCanBePutInLazyLoadingMode()
+    public function testCanBePutInLazyLoadingMode() : void
     {
         $class      = $this->emMock->getClassMetadata(ECommerceProduct::class);
         $collection = new PersistentCollection($this->emMock, $class, new ArrayCollection());
@@ -57,7 +57,7 @@ class PersistentCollectionTest extends OrmTestCase
     /**
      * Test that PersistentCollection::current() initializes the collection.
      */
-    public function testCurrentInitializesCollection()
+    public function testCurrentInitializesCollection() : void
     {
         $this->collection->current();
         self::assertTrue($this->collection->isInitialized());
@@ -66,7 +66,7 @@ class PersistentCollectionTest extends OrmTestCase
     /**
      * Test that PersistentCollection::key() initializes the collection.
      */
-    public function testKeyInitializesCollection()
+    public function testKeyInitializesCollection() : void
     {
         $this->collection->key();
         self::assertTrue($this->collection->isInitialized());
@@ -75,7 +75,7 @@ class PersistentCollectionTest extends OrmTestCase
     /**
      * Test that PersistentCollection::next() initializes the collection.
      */
-    public function testNextInitializesCollection()
+    public function testNextInitializesCollection() : void
     {
         $this->collection->next();
         self::assertTrue($this->collection->isInitialized());
@@ -84,7 +84,7 @@ class PersistentCollectionTest extends OrmTestCase
     /**
      * @group DDC-3382
      */
-    public function testNonObjects()
+    public function testNonObjects() : void
     {
         $this->setUpPersistentCollection();
 
@@ -108,7 +108,7 @@ class PersistentCollectionTest extends OrmTestCase
     /**
      * @group 6110
      */
-    public function testRemovingElementsAlsoRemovesKeys()
+    public function testRemovingElementsAlsoRemovesKeys() : void
     {
         $dummy = new \stdClass();
 
@@ -124,7 +124,7 @@ class PersistentCollectionTest extends OrmTestCase
     /**
      * @group 6110
      */
-    public function testClearWillAlsoClearKeys()
+    public function testClearWillAlsoClearKeys() : void
     {
         $this->collection->add(new \stdClass());
         $this->collection->clear();
@@ -134,7 +134,7 @@ class PersistentCollectionTest extends OrmTestCase
     /**
      * @group 6110
      */
-    public function testClearWillAlsoResetKeyPositions()
+    public function testClearWillAlsoResetKeyPositions() : void
     {
         $dummy = new \stdClass();
 

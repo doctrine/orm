@@ -17,7 +17,7 @@ use ProxyManager\Proxy\GhostObjectInterface;
  */
 class DDC2494Test extends OrmFunctionalTestCase
 {
-    protected function setUp()
+    protected function setUp() : void
     {
         parent::setUp();
 
@@ -33,7 +33,7 @@ class DDC2494Test extends OrmFunctionalTestCase
         );
     }
 
-    public function testIssue()
+    public function testIssue() : void
     {
         $currency = new DDC2494Currency(1, 2);
 

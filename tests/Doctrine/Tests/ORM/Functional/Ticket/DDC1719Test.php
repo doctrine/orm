@@ -12,7 +12,7 @@ use Doctrine\Tests\OrmFunctionalTestCase;
  */
 class DDC1719Test extends OrmFunctionalTestCase
 {
-    protected function setUp()
+    protected function setUp() : void
     {
         parent::setUp();
 
@@ -23,7 +23,7 @@ class DDC1719Test extends OrmFunctionalTestCase
         );
     }
 
-    protected function tearDown()
+    protected function tearDown() : void
     {
         parent::tearDown();
 
@@ -34,7 +34,7 @@ class DDC1719Test extends OrmFunctionalTestCase
         );
     }
 
-    public function testCreateRetrieveUpdateDelete()
+    public function testCreateRetrieveUpdateDelete() : void
     {
         $e1 = new DDC1719SimpleEntity('Bar 1');
         $e2 = new DDC1719SimpleEntity('Foo 1');

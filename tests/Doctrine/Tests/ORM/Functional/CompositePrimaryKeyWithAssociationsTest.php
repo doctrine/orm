@@ -11,7 +11,7 @@ use Doctrine\Tests\OrmFunctionalTestCase;
 
 class CompositePrimaryKeyWithAssociationsTest extends OrmFunctionalTestCase
 {
-    public function setUp()
+    public function setUp() : void
     {
         $this->useModelSet('geonames');
         parent::setUp();
@@ -41,7 +41,7 @@ class CompositePrimaryKeyWithAssociationsTest extends OrmFunctionalTestCase
         $this->em->clear();
     }
 
-    public function testFindByAbleToGetCompositeEntitiesWithMixedTypeIdentifiers()
+    public function testFindByAbleToGetCompositeEntitiesWithMixedTypeIdentifiers() : void
     {
         $admin1Repo      = $this->em->getRepository(Admin1::class);
         $admin1NamesRepo = $this->em->getRepository(Admin1AlternateName::class);

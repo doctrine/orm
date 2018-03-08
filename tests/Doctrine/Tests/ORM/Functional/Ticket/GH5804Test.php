@@ -16,7 +16,7 @@ use Doctrine\Tests\OrmFunctionalTestCase;
  */
 final class GH5804Test extends OrmFunctionalTestCase
 {
-    protected function setUp()
+    protected function setUp() : void
     {
         parent::setUp();
 
@@ -27,7 +27,7 @@ final class GH5804Test extends OrmFunctionalTestCase
         );
     }
 
-    public function testTextColumnSaveAndRetrieve2()
+    public function testTextColumnSaveAndRetrieve2() : void
     {
         $firstArticle       = new GH5804Article();
         $firstArticle->text = 'Max';

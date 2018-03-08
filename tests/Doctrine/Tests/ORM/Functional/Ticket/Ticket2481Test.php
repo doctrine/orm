@@ -9,7 +9,7 @@ use Doctrine\Tests\OrmFunctionalTestCase;
 
 class Ticket2481Test extends OrmFunctionalTestCase
 {
-    protected function setUp()
+    protected function setUp() : void
     {
         parent::setUp();
 
@@ -23,7 +23,7 @@ class Ticket2481Test extends OrmFunctionalTestCase
         $this->conn = $this->em->getConnection();
     }
 
-    public function testEmptyInsert()
+    public function testEmptyInsert() : void
     {
         $test = new Ticket2481Product();
         $this->em->persist($test);

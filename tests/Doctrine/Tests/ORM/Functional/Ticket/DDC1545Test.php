@@ -19,7 +19,7 @@ class DDC1545Test extends OrmFunctionalTestCase
 
     private $user2Id;
 
-    public function setUp()
+    public function setUp() : void
     {
         $this->useModelSet('cms');
         parent::setUp();
@@ -56,7 +56,7 @@ class DDC1545Test extends OrmFunctionalTestCase
         $this->user2Id   = $user2->id;
     }
 
-    public function testLinkObjects()
+    public function testLinkObjects() : void
     {
         $this->initDb(false);
 
@@ -79,7 +79,7 @@ class DDC1545Test extends OrmFunctionalTestCase
         self::assertEquals($user->id, $article->user->id);
     }
 
-    public function testLinkObjectsWithAssociationLoaded()
+    public function testLinkObjectsWithAssociationLoaded() : void
     {
         $this->initDb(false);
 
@@ -105,7 +105,7 @@ class DDC1545Test extends OrmFunctionalTestCase
         self::assertEquals($user->id, $article->user->id);
     }
 
-    public function testUnlinkObjects()
+    public function testUnlinkObjects() : void
     {
         $this->initDb(true);
 
@@ -125,7 +125,7 @@ class DDC1545Test extends OrmFunctionalTestCase
         self::assertNull($article->user);
     }
 
-    public function testUnlinkObjectsWithAssociationLoaded()
+    public function testUnlinkObjectsWithAssociationLoaded() : void
     {
         $this->initDb(true);
 
@@ -148,7 +148,7 @@ class DDC1545Test extends OrmFunctionalTestCase
         self::assertNull($article->user);
     }
 
-    public function testChangeLink()
+    public function testChangeLink() : void
     {
         $this->initDb(false);
 
@@ -171,7 +171,7 @@ class DDC1545Test extends OrmFunctionalTestCase
         self::assertEquals($user2->id, $article->user->id);
     }
 
-    public function testChangeLinkWithAssociationLoaded()
+    public function testChangeLinkWithAssociationLoaded() : void
     {
         $this->initDb(false);
 

@@ -11,7 +11,7 @@ use Doctrine\Tests\OrmFunctionalTestCase;
  */
 class DDC2084Test extends OrmFunctionalTestCase
 {
-    public function setUp()
+    public function setUp() : void
     {
         parent::setUp();
 
@@ -42,7 +42,7 @@ class DDC2084Test extends OrmFunctionalTestCase
         return $e1;
     }
 
-    public function testIssue()
+    public function testIssue() : void
     {
         $e1 = $this->loadFixture();
         $e2 = $e1->getMyEntity2();
@@ -57,7 +57,7 @@ class DDC2084Test extends OrmFunctionalTestCase
      * @expectedException \Doctrine\ORM\ORMInvalidArgumentException
      * @expectedExceptionMessage  Binding entities to query parameters only allowed for entities that have an identifier.
      */
-    public function testinvalidIdentifierBindingEntityException()
+    public function testinvalidIdentifierBindingEntityException() : void
     {
         $this->em->find(__NAMESPACE__ . '\DDC2084\MyEntity1', new DDC2084\MyEntity2('Foo'));
     }

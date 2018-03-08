@@ -17,7 +17,7 @@ use function get_class;
  */
 class SecondLevelCacheJoinTableInheritanceTest extends SecondLevelCacheAbstractTest
 {
-    public function testUseSameRegion()
+    public function testUseSameRegion() : void
     {
         $infoRegion     = $this->cache->getEntityCacheRegion(AttractionInfo::class);
         $contactRegion  = $this->cache->getEntityCacheRegion(AttractionContactInfo::class);
@@ -27,7 +27,7 @@ class SecondLevelCacheJoinTableInheritanceTest extends SecondLevelCacheAbstractT
         self::assertEquals($infoRegion->getName(), $locationRegion->getName());
     }
 
-    public function testPutOnPersistJoinTableInheritance()
+    public function testPutOnPersistJoinTableInheritance() : void
     {
         $this->loadFixturesCountries();
         $this->loadFixturesStates();
@@ -43,7 +43,7 @@ class SecondLevelCacheJoinTableInheritanceTest extends SecondLevelCacheAbstractT
         self::assertTrue($this->cache->containsEntity(AttractionInfo::class, $this->attractionsInfo[3]->getId()));
     }
 
-    public function testJoinTableCountaisRootClass()
+    public function testJoinTableCountaisRootClass() : void
     {
         $this->loadFixturesCountries();
         $this->loadFixturesStates();
@@ -59,7 +59,7 @@ class SecondLevelCacheJoinTableInheritanceTest extends SecondLevelCacheAbstractT
         }
     }
 
-    public function testPutAndLoadJoinTableEntities()
+    public function testPutAndLoadJoinTableEntities() : void
     {
         $this->loadFixturesCountries();
         $this->loadFixturesStates();
@@ -124,7 +124,7 @@ class SecondLevelCacheJoinTableInheritanceTest extends SecondLevelCacheAbstractT
         self::assertEquals($entity2->getFone(), $entity4->getFone());
     }
 
-    public function testQueryCacheFindAllJoinTableEntities()
+    public function testQueryCacheFindAllJoinTableEntities() : void
     {
         $this->loadFixturesCountries();
         $this->loadFixturesStates();
@@ -157,7 +157,7 @@ class SecondLevelCacheJoinTableInheritanceTest extends SecondLevelCacheAbstractT
         }
     }
 
-    public function testOneToManyRelationJoinTable()
+    public function testOneToManyRelationJoinTable() : void
     {
         $this->loadFixturesCountries();
         $this->loadFixturesStates();
@@ -194,7 +194,7 @@ class SecondLevelCacheJoinTableInheritanceTest extends SecondLevelCacheAbstractT
         self::assertEquals($this->attractionsInfo[0]->getFone(), $entity->getInfos()->get(0)->getFone());
     }
 
-    public function testQueryCacheShouldBeEvictedOnTimestampUpdate()
+    public function testQueryCacheShouldBeEvictedOnTimestampUpdate() : void
     {
         $this->loadFixturesCountries();
         $this->loadFixturesStates();

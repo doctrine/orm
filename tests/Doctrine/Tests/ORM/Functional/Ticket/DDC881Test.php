@@ -12,7 +12,7 @@ use ProxyManager\Proxy\GhostObjectInterface;
 
 class DDC881Test extends OrmFunctionalTestCase
 {
-    protected function setUp()
+    protected function setUp() : void
     {
         parent::setUp();
 
@@ -32,7 +32,7 @@ class DDC881Test extends OrmFunctionalTestCase
      * @group DDC-117
      * @group DDC-881
      */
-    public function testIssue()
+    public function testIssue() : void
     {
         /* Create two test users: albert and alfons */
         $albert = new DDC881User();

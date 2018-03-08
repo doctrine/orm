@@ -20,7 +20,7 @@ use function strtolower;
  */
 class DDC2012Test extends OrmFunctionalTestCase
 {
-    protected function setUp()
+    protected function setUp() : void
     {
         parent::setUp();
 
@@ -36,7 +36,7 @@ class DDC2012Test extends OrmFunctionalTestCase
         );
     }
 
-    public function testIssue()
+    public function testIssue() : void
     {
         $item      = new DDC2012ItemPerson();
         $item->tsv = ['word1', 'word2', 'word3'];

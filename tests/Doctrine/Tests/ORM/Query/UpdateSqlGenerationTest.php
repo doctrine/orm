@@ -16,7 +16,7 @@ class UpdateSqlGenerationTest extends OrmTestCase
 {
     private $em;
 
-    protected function setUp()
+    protected function setUp() : void
     {
         if (DBALType::hasType('negative_to_positive')) {
             DBALType::overrideType('negative_to_positive', NegativeToPositiveType::class);
@@ -41,7 +41,7 @@ class UpdateSqlGenerationTest extends OrmTestCase
         self::assertEquals($sqlToBeConfirmed, $sqlGenerated);
     }
 
-    public function testSupportsQueriesWithoutWhere()
+    public function testSupportsQueriesWithoutWhere() : void
     {
         self::assertSqlGeneration(
             'UPDATE Doctrine\Tests\Models\CMS\CmsUser u SET u.name = ?1',
@@ -49,7 +49,7 @@ class UpdateSqlGenerationTest extends OrmTestCase
         );
     }
 
-    public function testSupportsMultipleFieldsWithoutWhere()
+    public function testSupportsMultipleFieldsWithoutWhere() : void
     {
         self::assertSqlGeneration(
             'UPDATE Doctrine\Tests\Models\CMS\CmsUser u SET u.name = ?1, u.username = ?2',
@@ -57,7 +57,7 @@ class UpdateSqlGenerationTest extends OrmTestCase
         );
     }
 
-    public function testSupportsWhereClauses()
+    public function testSupportsWhereClauses() : void
     {
         self::assertSqlGeneration(
             'UPDATE Doctrine\Tests\Models\CMS\CmsUser u SET u.name = ?1 WHERE u.id = ?2',
@@ -65,7 +65,7 @@ class UpdateSqlGenerationTest extends OrmTestCase
         );
     }
 
-    public function testSupportsWhereClausesOnTheUpdatedField()
+    public function testSupportsWhereClausesOnTheUpdatedField() : void
     {
         self::assertSqlGeneration(
             'UPDATE Doctrine\Tests\Models\CMS\CmsUser u SET u.name = ?1 WHERE u.name = ?2',
@@ -73,7 +73,7 @@ class UpdateSqlGenerationTest extends OrmTestCase
         );
     }
 
-    public function testSupportsMultipleWhereClause()
+    public function testSupportsMultipleWhereClause() : void
     {
         self::assertSqlGeneration(
             'UPDATE Doctrine\Tests\Models\CMS\CmsUser u SET u.name = ?1 WHERE u.name = ?2 AND u.status = ?3',
@@ -81,7 +81,7 @@ class UpdateSqlGenerationTest extends OrmTestCase
         );
     }
 
-    public function testSupportsInClause()
+    public function testSupportsInClause() : void
     {
         self::assertSqlGeneration(
             'UPDATE Doctrine\Tests\Models\CMS\CmsUser u SET u.name = ?1 WHERE u.id IN (1, 3, 4)',
@@ -89,7 +89,7 @@ class UpdateSqlGenerationTest extends OrmTestCase
         );
     }
 
-    public function testSupportsParametrizedInClause()
+    public function testSupportsParametrizedInClause() : void
     {
         self::assertSqlGeneration(
             'UPDATE Doctrine\Tests\Models\CMS\CmsUser u SET u.name = ?1 WHERE u.id IN (?2, ?3, ?4)',
@@ -97,7 +97,7 @@ class UpdateSqlGenerationTest extends OrmTestCase
         );
     }
 
-    public function testSupportsNotInClause()
+    public function testSupportsNotInClause() : void
     {
         self::assertSqlGeneration(
             'UPDATE Doctrine\Tests\Models\CMS\CmsUser u SET u.name = ?1 WHERE u.id NOT IN (1, 3, 4)',
@@ -105,7 +105,7 @@ class UpdateSqlGenerationTest extends OrmTestCase
         );
     }
 
-    public function testSupportsGreaterThanClause()
+    public function testSupportsGreaterThanClause() : void
     {
         self::assertSqlGeneration(
             'UPDATE Doctrine\Tests\Models\CMS\CmsUser u SET u.status = ?1 WHERE u.id > ?2',
@@ -113,7 +113,7 @@ class UpdateSqlGenerationTest extends OrmTestCase
         );
     }
 
-    public function testSupportsGreaterThanOrEqualToClause()
+    public function testSupportsGreaterThanOrEqualToClause() : void
     {
         self::assertSqlGeneration(
             'UPDATE Doctrine\Tests\Models\CMS\CmsUser u SET u.status = ?1 WHERE u.id >= ?2',
@@ -121,7 +121,7 @@ class UpdateSqlGenerationTest extends OrmTestCase
         );
     }
 
-    public function testSupportsLessThanClause()
+    public function testSupportsLessThanClause() : void
     {
         self::assertSqlGeneration(
             'UPDATE Doctrine\Tests\Models\CMS\CmsUser u SET u.status = ?1 WHERE u.id < ?2',
@@ -129,7 +129,7 @@ class UpdateSqlGenerationTest extends OrmTestCase
         );
     }
 
-    public function testSupportsLessThanOrEqualToClause()
+    public function testSupportsLessThanOrEqualToClause() : void
     {
         self::assertSqlGeneration(
             'UPDATE Doctrine\Tests\Models\CMS\CmsUser u SET u.status = ?1 WHERE u.id <= ?2',
@@ -137,7 +137,7 @@ class UpdateSqlGenerationTest extends OrmTestCase
         );
     }
 
-    public function testSupportsBetweenClause()
+    public function testSupportsBetweenClause() : void
     {
         self::assertSqlGeneration(
             'UPDATE Doctrine\Tests\Models\CMS\CmsUser u SET u.status = ?1 WHERE u.id BETWEEN :from AND :to',
@@ -145,7 +145,7 @@ class UpdateSqlGenerationTest extends OrmTestCase
         );
     }
 
-    public function testSingleValuedAssociationFieldInWhere()
+    public function testSingleValuedAssociationFieldInWhere() : void
     {
         self::assertSqlGeneration(
             'UPDATE Doctrine\Tests\Models\CMS\CmsPhonenumber p SET p.phonenumber = 1234 WHERE p.user = ?1',
@@ -153,7 +153,7 @@ class UpdateSqlGenerationTest extends OrmTestCase
         );
     }
 
-    public function testSingleValuedAssociationFieldInSetClause()
+    public function testSingleValuedAssociationFieldInSetClause() : void
     {
         self::assertSqlGeneration(
             'UPDATE Doctrine\Tests\Models\CMS\CmsComment c SET c.article = null WHERE c.article = ?1',
@@ -164,7 +164,7 @@ class UpdateSqlGenerationTest extends OrmTestCase
     /**
      * @group DDC-980
      */
-    public function testSubselectTableAliasReferencing()
+    public function testSubselectTableAliasReferencing() : void
     {
         self::assertSqlGeneration(
             'UPDATE Doctrine\Tests\Models\CMS\CmsUser u SET u.status = \'inactive\' WHERE SIZE(u.groups) = 10',
@@ -172,7 +172,7 @@ class UpdateSqlGenerationTest extends OrmTestCase
         );
     }
 
-    public function testCustomTypeValueSqlCompletelyIgnoredInUpdateStatements()
+    public function testCustomTypeValueSqlCompletelyIgnoredInUpdateStatements() : void
     {
         self::assertSqlGeneration(
             'UPDATE Doctrine\Tests\Models\CustomType\CustomTypeParent p SET p.customInteger = 1 WHERE p.id = 1',
@@ -180,7 +180,7 @@ class UpdateSqlGenerationTest extends OrmTestCase
         );
     }
 
-    public function testUpdateWithSubselectAsNewValue()
+    public function testUpdateWithSubselectAsNewValue() : void
     {
         self::assertSqlGeneration(
             'UPDATE Doctrine\Tests\Models\Company\CompanyFixContract fc SET fc.fixPrice = (SELECT ce2.salary FROM Doctrine\Tests\Models\Company\CompanyEmployee ce2 WHERE ce2.id = 2) WHERE fc.id = 1',

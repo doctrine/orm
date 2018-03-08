@@ -84,7 +84,7 @@ abstract class AbstractEntityPersisterTest extends OrmTestCase
      */
     abstract protected function createPersister(EntityManagerInterface $em, EntityPersister $persister, Region $region, ClassMetadata $metadata);
 
-    protected function setUp()
+    protected function setUp() : void
     {
         $this->getSharedSecondLevelCacheDriverImpl()->flushAll();
         $this->enableSecondLevelCache();
@@ -116,7 +116,7 @@ abstract class AbstractEntityPersisterTest extends OrmTestCase
         return $this->createPersister($this->em, $this->entityPersister, $this->region, $this->em->getClassMetadata(Country::class));
     }
 
-    public function testImplementsEntityPersister()
+    public function testImplementsEntityPersister() : void
     {
         $persister = $this->createPersisterDefault();
 
@@ -125,7 +125,7 @@ abstract class AbstractEntityPersisterTest extends OrmTestCase
         self::assertInstanceOf(CachedEntityPersister::class, $persister);
     }
 
-    public function testInvokeGetSelectSQL()
+    public function testInvokeGetSelectSQL() : void
     {
         $persister = $this->createPersisterDefault();
         $assoc     = new OneToManyAssociationMetadata('name');
@@ -140,7 +140,7 @@ abstract class AbstractEntityPersisterTest extends OrmTestCase
         self::assertEquals('SELECT * FROM foo WERE name = ?', $persister->getSelectSQL(['name' => 'Foo'], $assoc, 1, 2, 3, [4]));
     }
 
-    public function testInvokeGetInsertSQL()
+    public function testInvokeGetInsertSQL() : void
     {
         $persister = $this->createPersisterDefault();
 
@@ -151,7 +151,7 @@ abstract class AbstractEntityPersisterTest extends OrmTestCase
         self::assertEquals('INSERT INTO foo (?)', $persister->getInsertSQL());
     }
 
-    public function testInvokeExpandParameters()
+    public function testInvokeExpandParameters() : void
     {
         $persister = $this->createPersisterDefault();
 
@@ -163,7 +163,7 @@ abstract class AbstractEntityPersisterTest extends OrmTestCase
         self::assertEquals(['name' => 'Foo'], $persister->expandParameters(['name' => 'Foo']));
     }
 
-    public function testInvokeExpandCriteriaParameters()
+    public function testInvokeExpandCriteriaParameters() : void
     {
         $persister = $this->createPersisterDefault();
         $criteria  = new Criteria();
@@ -176,7 +176,7 @@ abstract class AbstractEntityPersisterTest extends OrmTestCase
         self::assertEquals(['name' => 'Foo'], $persister->expandCriteriaParameters($criteria));
     }
 
-    public function testInvokeSelectConditionStatementSQL()
+    public function testInvokeSelectConditionStatementSQL() : void
     {
         $persister = $this->createPersisterDefault();
         $assoc     = new OneToOneAssociationMetadata('id');
@@ -189,7 +189,7 @@ abstract class AbstractEntityPersisterTest extends OrmTestCase
         self::assertEquals('name = 1', $persister->getSelectConditionStatementSQL('id', 1, $assoc, '='));
     }
 
-    public function testInvokeInsert()
+    public function testInvokeInsert() : void
     {
         $persister = $this->createPersisterDefault();
         $entity    = new Country('Foo');
@@ -201,7 +201,7 @@ abstract class AbstractEntityPersisterTest extends OrmTestCase
         self::assertNull($persister->insert($entity));
     }
 
-    public function testInvokeUpdate()
+    public function testInvokeUpdate() : void
     {
         $persister = $this->createPersisterDefault();
         $entity    = new Country('Foo');
@@ -215,7 +215,7 @@ abstract class AbstractEntityPersisterTest extends OrmTestCase
         self::assertNull($persister->update($entity));
     }
 
-    public function testInvokeDelete()
+    public function testInvokeDelete() : void
     {
         $persister = $this->createPersisterDefault();
         $entity    = new Country('Foo');
@@ -229,7 +229,7 @@ abstract class AbstractEntityPersisterTest extends OrmTestCase
         self::assertNull($persister->delete($entity));
     }
 
-    public function testInvokeGetOwningTable()
+    public function testInvokeGetOwningTable() : void
     {
         $persister = $this->createPersisterDefault();
 
@@ -241,7 +241,7 @@ abstract class AbstractEntityPersisterTest extends OrmTestCase
         self::assertEquals('t', $persister->getOwningTable('name'));
     }
 
-    public function testInvokeLoad()
+    public function testInvokeLoad() : void
     {
         $persister = $this->createPersisterDefault();
         $assoc     = new OneToOneAssociationMetadata('id');
@@ -263,7 +263,7 @@ abstract class AbstractEntityPersisterTest extends OrmTestCase
         self::assertEquals($entity, $persister->load(['id' => 1], $entity, $assoc, [1], 2, 3, [4]));
     }
 
-    public function testInvokeLoadAll()
+    public function testInvokeLoadAll() : void
     {
         $rsm       = new ResultSetMappingBuilder($this->em);
         $persister = $this->createPersisterDefault();
@@ -285,7 +285,7 @@ abstract class AbstractEntityPersisterTest extends OrmTestCase
         self::assertEquals([$entity], $persister->loadAll(['id' => 1], [0], 1, 2));
     }
 
-    public function testInvokeLoadById()
+    public function testInvokeLoadById() : void
     {
         $persister = $this->createPersisterDefault();
         $entity    = new Country('Foo');
@@ -298,7 +298,7 @@ abstract class AbstractEntityPersisterTest extends OrmTestCase
         self::assertEquals($entity, $persister->loadById(['id' => 1], $entity));
     }
 
-    public function testInvokeLoadToOneEntity()
+    public function testInvokeLoadToOneEntity() : void
     {
         $persister = $this->createPersisterDefault();
         $assoc     = new OneToOneAssociationMetadata('name');
@@ -312,7 +312,7 @@ abstract class AbstractEntityPersisterTest extends OrmTestCase
         self::assertEquals($entity, $persister->loadToOneEntity($assoc, 'foo', ['id' => 11]));
     }
 
-    public function testInvokeRefresh()
+    public function testInvokeRefresh() : void
     {
         $persister = $this->createPersisterDefault();
         $entity    = new Country('Foo');
@@ -325,7 +325,7 @@ abstract class AbstractEntityPersisterTest extends OrmTestCase
         self::assertNull($persister->refresh(['id' => 1], $entity));
     }
 
-    public function testInvokeLoadCriteria()
+    public function testInvokeLoadCriteria() : void
     {
         $rsm       = new ResultSetMappingBuilder($this->em);
         $persister = $this->createPersisterDefault();
@@ -347,7 +347,7 @@ abstract class AbstractEntityPersisterTest extends OrmTestCase
         self::assertEquals([$entity], $persister->loadCriteria($criteria));
     }
 
-    public function testInvokeGetManyToManyCollection()
+    public function testInvokeGetManyToManyCollection() : void
     {
         $persister = $this->createPersisterDefault();
         $assoc     = new ManyToManyAssociationMetadata('name');
@@ -361,7 +361,7 @@ abstract class AbstractEntityPersisterTest extends OrmTestCase
         self::assertEquals([$entity], $persister->getManyToManyCollection($assoc, 'Foo', 1, 2));
     }
 
-    public function testInvokeGetOneToManyCollection()
+    public function testInvokeGetOneToManyCollection() : void
     {
         $persister = $this->createPersisterDefault();
         $assoc     = new OneToManyAssociationMetadata('name');
@@ -375,7 +375,7 @@ abstract class AbstractEntityPersisterTest extends OrmTestCase
         self::assertEquals([$entity], $persister->getOneToManyCollection($assoc, 'Foo', 1, 2));
     }
 
-    public function testInvokeLoadManyToManyCollection()
+    public function testInvokeLoadManyToManyCollection() : void
     {
         $mapping   = $this->em->getClassMetadata(Country::class);
         $assoc     = new ManyToManyAssociationMetadata('name');
@@ -391,7 +391,7 @@ abstract class AbstractEntityPersisterTest extends OrmTestCase
         self::assertEquals([$entity], $persister->loadManyToManyCollection($assoc, 'Foo', $coll));
     }
 
-    public function testInvokeLoadOneToManyCollection()
+    public function testInvokeLoadOneToManyCollection() : void
     {
         $mapping   = $this->em->getClassMetadata(Country::class);
         $assoc     = new OneToManyAssociationMetadata('name');
@@ -407,7 +407,7 @@ abstract class AbstractEntityPersisterTest extends OrmTestCase
         self::assertEquals([$entity], $persister->loadOneToManyCollection($assoc, 'Foo', $coll));
     }
 
-    public function testInvokeLock()
+    public function testInvokeLock() : void
     {
         $identifier = ['id' => 1];
         $persister  = $this->createPersisterDefault();
@@ -419,7 +419,7 @@ abstract class AbstractEntityPersisterTest extends OrmTestCase
         self::assertNull($persister->lock($identifier, 1));
     }
 
-    public function testInvokeExists()
+    public function testInvokeExists() : void
     {
         $entity    = new Country('Foo');
         $persister = $this->createPersisterDefault();

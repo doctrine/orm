@@ -15,14 +15,14 @@ use Doctrine\Tests\OrmFunctionalTestCase;
  */
 class GH6402Test extends OrmFunctionalTestCase
 {
-    protected function setUp()
+    protected function setUp() : void
     {
         $this->useModelSet('quote');
 
         parent::setUp();
     }
 
-    public function testFind()
+    public function testFind() : void
     {
         $id = $this->createAddress();
 
@@ -31,7 +31,7 @@ class GH6402Test extends OrmFunctionalTestCase
         self::assertNotNull($address->user);
     }
 
-    public function testQuery()
+    public function testQuery() : void
     {
         $id = $this->createAddress();
 
@@ -43,7 +43,7 @@ class GH6402Test extends OrmFunctionalTestCase
         self::assertNotNull($addresses[0]->user);
     }
 
-    public function testFindWithSubClass()
+    public function testFindWithSubClass() : void
     {
         $id = $this->createFullAddress();
 
@@ -52,7 +52,7 @@ class GH6402Test extends OrmFunctionalTestCase
         self::assertNotNull($address->user);
     }
 
-    public function testQueryWithSubClass()
+    public function testQueryWithSubClass() : void
     {
         $id = $this->createFullAddress();
 

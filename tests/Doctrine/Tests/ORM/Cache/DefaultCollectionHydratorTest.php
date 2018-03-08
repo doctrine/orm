@@ -25,7 +25,7 @@ class DefaultCollectionHydratorTest extends OrmFunctionalTestCase
     /** @var CollectionHydrator */
     private $structure;
 
-    protected function setUp()
+    protected function setUp() : void
     {
         $this->enableSecondLevelCache();
         parent::setUp();
@@ -34,12 +34,12 @@ class DefaultCollectionHydratorTest extends OrmFunctionalTestCase
         $this->structure = new DefaultCollectionHydrator($this->em, $targetPersister);
     }
 
-    public function testImplementsCollectionEntryStructure()
+    public function testImplementsCollectionEntryStructure() : void
     {
         self::assertInstanceOf(DefaultCollectionHydrator::class, $this->structure);
     }
 
-    public function testLoadCacheCollection()
+    public function testLoadCacheCollection() : void
     {
         $targetRegion = $this->em->getCache()->getEntityCacheRegion(City::class);
         $entry        = new CollectionCacheEntry(

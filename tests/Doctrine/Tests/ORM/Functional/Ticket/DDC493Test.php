@@ -9,7 +9,7 @@ use Doctrine\Tests\OrmFunctionalTestCase;
 
 class DDC493Test extends OrmFunctionalTestCase
 {
-    protected function setUp()
+    protected function setUp() : void
     {
         parent::setUp();
         $this->schemaTool->createSchema(
@@ -21,7 +21,7 @@ class DDC493Test extends OrmFunctionalTestCase
         );
     }
 
-    public function testIssue()
+    public function testIssue() : void
     {
         $q = $this->em->createQuery('select u, c.data from ' . __NAMESPACE__ . '\\DDC493Distributor u JOIN u.contact c');
 

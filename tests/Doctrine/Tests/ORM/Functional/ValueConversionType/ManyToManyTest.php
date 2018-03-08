@@ -17,7 +17,7 @@ use Doctrine\Tests\OrmFunctionalTestCase;
  */
 class ManyToManyTest extends OrmFunctionalTestCase
 {
-    public function setUp()
+    public function setUp() : void
     {
         $this->useModelSet('vct_manytomany');
 
@@ -39,7 +39,7 @@ class ManyToManyTest extends OrmFunctionalTestCase
         $this->em->clear();
     }
 
-    public function testThatTheValueOfIdentifiersAreConvertedInTheDatabase()
+    public function testThatTheValueOfIdentifiersAreConvertedInTheDatabase() : void
     {
         $conn = $this->em->getConnection();
 
@@ -51,7 +51,7 @@ class ManyToManyTest extends OrmFunctionalTestCase
         self::assertEquals('qrs', $conn->fetchColumn('SELECT owning_id FROM vct_xref_manytomany LIMIT 1'));
     }
 
-    public function testThatEntitiesAreFetchedFromTheDatabase()
+    public function testThatEntitiesAreFetchedFromTheDatabase() : void
     {
         $inversed = $this->em->find(Entity\InversedManyToManyEntity::class, 'abc');
         $owning   = $this->em->find(Entity\OwningManyToManyEntity::class, 'def');
@@ -60,7 +60,7 @@ class ManyToManyTest extends OrmFunctionalTestCase
         self::assertInstanceOf(Entity\OwningManyToManyEntity::class, $owning);
     }
 
-    public function testThatTheValueOfIdentifiersAreConvertedBackAfterBeingFetchedFromTheDatabase()
+    public function testThatTheValueOfIdentifiersAreConvertedBackAfterBeingFetchedFromTheDatabase() : void
     {
         $inversed = $this->em->find(Entity\InversedManyToManyEntity::class, 'abc');
         $owning   = $this->em->find(Entity\OwningManyToManyEntity::class, 'def');
@@ -69,21 +69,21 @@ class ManyToManyTest extends OrmFunctionalTestCase
         self::assertEquals('def', $owning->id2);
     }
 
-    public function testThatTheCollectionFromOwningToInversedIsLoaded()
+    public function testThatTheCollectionFromOwningToInversedIsLoaded() : void
     {
         $owning = $this->em->find(Entity\OwningManyToManyEntity::class, 'def');
 
         self::assertCount(1, $owning->associatedEntities);
     }
 
-    public function testThatTheCollectionFromInversedToOwningIsLoaded()
+    public function testThatTheCollectionFromInversedToOwningIsLoaded() : void
     {
         $inversed = $this->em->find(Entity\InversedManyToManyEntity::class, 'abc');
 
         self::assertCount(1, $inversed->associatedEntities);
     }
 
-    public function testThatTheJoinTableRowsAreRemovedWhenRemovingTheAssociation()
+    public function testThatTheJoinTableRowsAreRemovedWhenRemovingTheAssociation() : void
     {
         $conn = $this->em->getConnection();
 

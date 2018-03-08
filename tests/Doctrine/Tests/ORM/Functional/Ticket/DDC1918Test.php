@@ -16,13 +16,13 @@ use function sprintf;
  */
 class DDC1918Test extends OrmFunctionalTestCase
 {
-    protected function setUp()
+    protected function setUp() : void
     {
         $this->useModelSet('cms');
         parent::setUp();
     }
 
-    public function testLastPageCorrect()
+    public function testLastPageCorrect() : void
     {
         $groups = [];
         for ($i = 0; $i < 3; $i++) {

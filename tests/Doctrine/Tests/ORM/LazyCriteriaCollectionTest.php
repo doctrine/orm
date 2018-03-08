@@ -28,14 +28,14 @@ class LazyCriteriaCollectionTest extends DoctrineTestCase
     /**
      * {@inheritDoc}
      */
-    protected function setUp()
+    protected function setUp() : void
     {
         $this->persister              = $this->createMock(EntityPersister::class);
         $this->criteria               = new Criteria();
         $this->lazyCriteriaCollection = new LazyCriteriaCollection($this->persister, $this->criteria);
     }
 
-    public function testCountIsCached()
+    public function testCountIsCached() : void
     {
         $this->persister->expects(self::once())->method('count')->with($this->criteria)->will($this->returnValue(10));
 
@@ -44,7 +44,7 @@ class LazyCriteriaCollectionTest extends DoctrineTestCase
         self::assertSame(10, $this->lazyCriteriaCollection->count());
     }
 
-    public function testCountIsCachedEvenWithZeroResult()
+    public function testCountIsCachedEvenWithZeroResult() : void
     {
         $this->persister->expects(self::once())->method('count')->with($this->criteria)->will($this->returnValue(0));
 
@@ -53,7 +53,7 @@ class LazyCriteriaCollectionTest extends DoctrineTestCase
         self::assertSame(0, $this->lazyCriteriaCollection->count());
     }
 
-    public function testCountUsesWrappedCollectionWhenInitialized()
+    public function testCountUsesWrappedCollectionWhenInitialized() : void
     {
         $this
             ->persister
@@ -70,7 +70,7 @@ class LazyCriteriaCollectionTest extends DoctrineTestCase
         self::assertSame(3, $this->lazyCriteriaCollection->count());
     }
 
-    public function testMatchingUsesThePersisterOnlyOnce()
+    public function testMatchingUsesThePersisterOnlyOnce() : void
     {
         $foo = new stdClass();
         $bar = new stdClass();
@@ -99,21 +99,21 @@ class LazyCriteriaCollectionTest extends DoctrineTestCase
         self::assertEquals([$foo], $this->lazyCriteriaCollection->matching($criteria)->toArray());
     }
 
-    public function testIsEmptyUsesCountWhenNotInitialized()
+    public function testIsEmptyUsesCountWhenNotInitialized() : void
     {
         $this->persister->expects(self::once())->method('count')->with($this->criteria)->will($this->returnValue(0));
 
         self::assertTrue($this->lazyCriteriaCollection->isEmpty());
     }
 
-    public function testIsEmptyIsFalseIfCountIsNotZero()
+    public function testIsEmptyIsFalseIfCountIsNotZero() : void
     {
         $this->persister->expects(self::once())->method('count')->with($this->criteria)->will($this->returnValue(1));
 
         self::assertFalse($this->lazyCriteriaCollection->isEmpty());
     }
 
-    public function testIsEmptyUsesWrappedCollectionWhenInitialized()
+    public function testIsEmptyUsesWrappedCollectionWhenInitialized() : void
     {
         $this
             ->persister

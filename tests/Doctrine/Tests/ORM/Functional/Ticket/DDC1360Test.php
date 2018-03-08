@@ -12,7 +12,7 @@ use Doctrine\Tests\OrmFunctionalTestCase;
  */
 class DDC1360Test extends OrmFunctionalTestCase
 {
-    public function testSchemaDoubleQuotedCreate()
+    public function testSchemaDoubleQuotedCreate() : void
     {
         if ($this->em->getConnection()->getDatabasePlatform()->getName() !== 'postgresql') {
             $this->markTestSkipped('PostgreSQL only test.');

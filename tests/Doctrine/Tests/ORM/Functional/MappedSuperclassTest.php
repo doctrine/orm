@@ -14,14 +14,14 @@ use ProxyManager\Proxy\GhostObjectInterface;
  */
 class MappedSuperclassTest extends OrmFunctionalTestCase
 {
-    protected function setUp()
+    protected function setUp() : void
     {
         $this->useModelSet('directorytree');
 
         parent::setUp();
     }
 
-    public function testCRUD()
+    public function testCRUD() : void
     {
         $root = new Directory();
         $root->setName('Root');

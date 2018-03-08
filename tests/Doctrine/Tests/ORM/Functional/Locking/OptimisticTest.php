@@ -14,7 +14,7 @@ use function strtotime;
 
 class OptimisticTest extends OrmFunctionalTestCase
 {
-    protected function setUp()
+    protected function setUp() : void
     {
         parent::setUp();
 
@@ -34,7 +34,7 @@ class OptimisticTest extends OrmFunctionalTestCase
         $this->conn = $this->em->getConnection();
     }
 
-    public function testJoinedChildInsertSetsInitialVersionValue()
+    public function testJoinedChildInsertSetsInitialVersionValue() : OptimisticJoinedChild
     {
         $test = new OptimisticJoinedChild();
 
@@ -52,7 +52,7 @@ class OptimisticTest extends OrmFunctionalTestCase
     /**
      * @depends testJoinedChildInsertSetsInitialVersionValue
      */
-    public function testJoinedChildFailureThrowsException(OptimisticJoinedChild $child)
+    public function testJoinedChildFailureThrowsException(OptimisticJoinedChild $child) : void
     {
         $q = $this->em->createQuery('SELECT t FROM Doctrine\Tests\ORM\Functional\Locking\OptimisticJoinedChild t WHERE t.id = :id');
 
@@ -75,7 +75,7 @@ class OptimisticTest extends OrmFunctionalTestCase
         }
     }
 
-    public function testJoinedParentInsertSetsInitialVersionValue()
+    public function testJoinedParentInsertSetsInitialVersionValue() : OptimisticJoinedParent
     {
         $test = new OptimisticJoinedParent();
 
@@ -92,7 +92,7 @@ class OptimisticTest extends OrmFunctionalTestCase
     /**
      * @depends testJoinedParentInsertSetsInitialVersionValue
      */
-    public function testJoinedParentFailureThrowsException(OptimisticJoinedParent $parent)
+    public function testJoinedParentFailureThrowsException(OptimisticJoinedParent $parent) : void
     {
         $q = $this->em->createQuery('SELECT t FROM Doctrine\Tests\ORM\Functional\Locking\OptimisticJoinedParent t WHERE t.id = :id');
 
@@ -115,7 +115,7 @@ class OptimisticTest extends OrmFunctionalTestCase
         }
     }
 
-    public function testMultipleFlushesDoIncrementalUpdates()
+    public function testMultipleFlushesDoIncrementalUpdates() : void
     {
         $test = new OptimisticStandard();
 
@@ -130,7 +130,7 @@ class OptimisticTest extends OrmFunctionalTestCase
         }
     }
 
-    public function testStandardInsertSetsInitialVersionValue()
+    public function testStandardInsertSetsInitialVersionValue() : OptimisticStandard
     {
         $test = new OptimisticStandard();
 
@@ -148,7 +148,7 @@ class OptimisticTest extends OrmFunctionalTestCase
     /**
      * @depends testStandardInsertSetsInitialVersionValue
      */
-    public function testStandardFailureThrowsException(OptimisticStandard $entity)
+    public function testStandardFailureThrowsException(OptimisticStandard $entity) : void
     {
         $q = $this->em->createQuery('SELECT t FROM Doctrine\Tests\ORM\Functional\Locking\OptimisticStandard t WHERE t.id = :id');
 
@@ -171,7 +171,7 @@ class OptimisticTest extends OrmFunctionalTestCase
         }
     }
 
-    public function testLockWorksWithProxy()
+    public function testLockWorksWithProxy() : void
     {
         $test       = new OptimisticStandard();
         $test->name = 'test';
@@ -187,7 +187,7 @@ class OptimisticTest extends OrmFunctionalTestCase
         self::addToAssertionCount(1);
     }
 
-    public function testOptimisticTimestampSetsDefaultValue()
+    public function testOptimisticTimestampSetsDefaultValue() : OptimisticTimestamp
     {
         $test = new OptimisticTimestamp();
 
@@ -206,7 +206,7 @@ class OptimisticTest extends OrmFunctionalTestCase
     /**
      * @depends testOptimisticTimestampSetsDefaultValue
      */
-    public function testOptimisticTimestampFailureThrowsException(OptimisticTimestamp $entity)
+    public function testOptimisticTimestampFailureThrowsException(OptimisticTimestamp $entity) : void
     {
         $q = $this->em->createQuery('SELECT t FROM Doctrine\Tests\ORM\Functional\Locking\OptimisticTimestamp t WHERE t.id = :id');
 
@@ -238,7 +238,7 @@ class OptimisticTest extends OrmFunctionalTestCase
     /**
      * @depends testOptimisticTimestampSetsDefaultValue
      */
-    public function testOptimisticTimestampLockFailureThrowsException(OptimisticTimestamp $entity)
+    public function testOptimisticTimestampLockFailureThrowsException(OptimisticTimestamp $entity) : void
     {
         $q = $this->em->createQuery('SELECT t FROM Doctrine\Tests\ORM\Functional\Locking\OptimisticTimestamp t WHERE t.id = :id');
 

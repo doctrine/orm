@@ -17,7 +17,7 @@ use Doctrine\Tests\Models\Cache\Token;
  */
 class SecondLevelCacheManyToOneTest extends SecondLevelCacheAbstractTest
 {
-    public function testPutOnPersist()
+    public function testPutOnPersist() : void
     {
         $this->loadFixturesCountries();
         $this->loadFixturesStates();
@@ -29,7 +29,7 @@ class SecondLevelCacheManyToOneTest extends SecondLevelCacheAbstractTest
         self::assertTrue($this->cache->containsEntity(State::class, $this->states[1]->getId()));
     }
 
-    public function testPutAndLoadManyToOneRelation()
+    public function testPutAndLoadManyToOneRelation() : void
     {
         $this->loadFixturesCountries();
         $this->loadFixturesStates();
@@ -101,7 +101,7 @@ class SecondLevelCacheManyToOneTest extends SecondLevelCacheAbstractTest
         self::assertEquals($this->states[1]->getCountry()->getName(), $c4->getCountry()->getName());
     }
 
-    public function testInverseSidePutShouldEvictCollection()
+    public function testInverseSidePutShouldEvictCollection() : void
     {
         $this->loadFixturesCountries();
         $this->loadFixturesStates();
@@ -135,7 +135,7 @@ class SecondLevelCacheManyToOneTest extends SecondLevelCacheAbstractTest
         self::assertEquals($queryCount, $this->getCurrentQueryCount());
     }
 
-    public function testShouldNotReloadWhenAssociationIsMissing()
+    public function testShouldNotReloadWhenAssociationIsMissing() : void
     {
         $this->loadFixturesCountries();
         $this->loadFixturesStates();
@@ -181,7 +181,7 @@ class SecondLevelCacheManyToOneTest extends SecondLevelCacheAbstractTest
         self::assertEquals($queryCount + 2, $this->getCurrentQueryCount());
     }
 
-    public function testPutAndLoadNonCacheableManyToOne()
+    public function testPutAndLoadNonCacheableManyToOne() : void
     {
         self::assertNull($this->cache->getEntityCacheRegion(Action::class));
         self::assertInstanceOf(Region::class, $this->cache->getEntityCacheRegion(Token::class));
@@ -210,7 +210,7 @@ class SecondLevelCacheManyToOneTest extends SecondLevelCacheAbstractTest
         self::assertEquals($queryCount, $this->getCurrentQueryCount());
     }
 
-    public function testPutAndLoadNonCacheableCompositeManyToOne()
+    public function testPutAndLoadNonCacheableCompositeManyToOne() : void
     {
         self::assertNull($this->cache->getEntityCacheRegion(Action::class));
         self::assertNull($this->cache->getEntityCacheRegion(ComplexAction::class));

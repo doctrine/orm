@@ -10,7 +10,7 @@ use function mt_rand;
 
 final class GH5562Test extends OrmFunctionalTestCase
 {
-    protected function setUp()
+    protected function setUp() : void
     {
         $this->enableSecondLevelCache();
 
@@ -28,7 +28,7 @@ final class GH5562Test extends OrmFunctionalTestCase
     /**
      * @group 5562
      */
-    public function testCacheShouldBeUpdatedWhenAssociationChanges()
+    public function testCacheShouldBeUpdatedWhenAssociationChanges() : void
     {
         $manager  = new GH5562Manager();
         $merchant = new GH5562Merchant();

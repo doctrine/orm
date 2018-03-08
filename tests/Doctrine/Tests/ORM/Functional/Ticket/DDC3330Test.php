@@ -14,7 +14,7 @@ use function iterator_to_array;
  */
 class DDC3330Test extends OrmFunctionalTestCase
 {
-    protected function setUp()
+    protected function setUp() : void
     {
         parent::setUp();
 
@@ -26,7 +26,7 @@ class DDC3330Test extends OrmFunctionalTestCase
         );
     }
 
-    public function testIssueCollectionOrderWithPaginator()
+    public function testIssueCollectionOrderWithPaginator() : void
     {
         $this->createBuildingAndHalls();
         $this->createBuildingAndHalls();

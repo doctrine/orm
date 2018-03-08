@@ -21,7 +21,7 @@ class GearmanLockTest extends OrmFunctionalTestCase
     private $maxRunTime = 0;
     private $articleId;
 
-    protected function setUp()
+    protected function setUp() : void
     {
         if (! class_exists('GearmanClient', false)) {
             $this->markTestSkipped('pecl/gearman is required for this test to run.');
@@ -53,7 +53,7 @@ class GearmanLockTest extends OrmFunctionalTestCase
         $this->maxRunTime = max($this->maxRunTime, $task->data());
     }
 
-    public function testFindWithLock()
+    public function testFindWithLock() : void
     {
         $this->asyncFindWithLock(CmsArticle::class, $this->articleId, LockMode::PESSIMISTIC_WRITE);
         $this->asyncFindWithLock(CmsArticle::class, $this->articleId, LockMode::PESSIMISTIC_WRITE);
@@ -61,7 +61,7 @@ class GearmanLockTest extends OrmFunctionalTestCase
         self::assertLockWorked();
     }
 
-    public function testFindWithWriteThenReadLock()
+    public function testFindWithWriteThenReadLock() : void
     {
         $this->asyncFindWithLock(CmsArticle::class, $this->articleId, LockMode::PESSIMISTIC_WRITE);
         $this->asyncFindWithLock(CmsArticle::class, $this->articleId, LockMode::PESSIMISTIC_READ);
@@ -69,7 +69,7 @@ class GearmanLockTest extends OrmFunctionalTestCase
         self::assertLockWorked();
     }
 
-    public function testFindWithReadThenWriteLock()
+    public function testFindWithReadThenWriteLock() : void
     {
         $this->asyncFindWithLock(CmsArticle::class, $this->articleId, LockMode::PESSIMISTIC_READ);
         $this->asyncFindWithLock(CmsArticle::class, $this->articleId, LockMode::PESSIMISTIC_WRITE);
@@ -77,7 +77,7 @@ class GearmanLockTest extends OrmFunctionalTestCase
         self::assertLockWorked();
     }
 
-    public function testFindWithOneLock()
+    public function testFindWithOneLock() : void
     {
         $this->asyncFindWithLock(CmsArticle::class, $this->articleId, LockMode::PESSIMISTIC_WRITE);
         $this->asyncFindWithLock(CmsArticle::class, $this->articleId, LockMode::NONE);
@@ -85,7 +85,7 @@ class GearmanLockTest extends OrmFunctionalTestCase
         self::assertLockDoesNotBlock();
     }
 
-    public function testDqlWithLock()
+    public function testDqlWithLock() : void
     {
         $this->asyncDqlWithLock('SELECT a FROM Doctrine\Tests\Models\CMS\CmsArticle a', [], LockMode::PESSIMISTIC_WRITE);
         $this->asyncFindWithLock(CmsArticle::class, $this->articleId, LockMode::PESSIMISTIC_WRITE);
@@ -93,7 +93,7 @@ class GearmanLockTest extends OrmFunctionalTestCase
         self::assertLockWorked();
     }
 
-    public function testLock()
+    public function testLock() : void
     {
         $this->asyncFindWithLock(CmsArticle::class, $this->articleId, LockMode::PESSIMISTIC_WRITE);
         $this->asyncLock(CmsArticle::class, $this->articleId, LockMode::PESSIMISTIC_WRITE);
@@ -101,7 +101,7 @@ class GearmanLockTest extends OrmFunctionalTestCase
         self::assertLockWorked();
     }
 
-    public function testLock2()
+    public function testLock2() : void
     {
         $this->asyncFindWithLock(CmsArticle::class, $this->articleId, LockMode::PESSIMISTIC_WRITE);
         $this->asyncLock(CmsArticle::class, $this->articleId, LockMode::PESSIMISTIC_READ);
@@ -109,7 +109,7 @@ class GearmanLockTest extends OrmFunctionalTestCase
         self::assertLockWorked();
     }
 
-    public function testLock3()
+    public function testLock3() : void
     {
         $this->asyncFindWithLock(CmsArticle::class, $this->articleId, LockMode::PESSIMISTIC_READ);
         $this->asyncLock(CmsArticle::class, $this->articleId, LockMode::PESSIMISTIC_WRITE);
@@ -117,7 +117,7 @@ class GearmanLockTest extends OrmFunctionalTestCase
         self::assertLockWorked();
     }
 
-    public function testLock4()
+    public function testLock4() : void
     {
         $this->asyncFindWithLock(CmsArticle::class, $this->articleId, LockMode::NONE);
         $this->asyncLock(CmsArticle::class, $this->articleId, LockMode::PESSIMISTIC_WRITE);

@@ -11,7 +11,7 @@ use Doctrine\Tests\OrmFunctionalTestCase;
 
 class OneToOneSingleTableInheritanceTest extends OrmFunctionalTestCase
 {
-    protected function setUp()
+    protected function setUp() : void
     {
         parent::setUp();
 
@@ -28,7 +28,7 @@ class OneToOneSingleTableInheritanceTest extends OrmFunctionalTestCase
      * @group DDC-3517
      * @group #1265
      */
-    public function testFindFromOneToOneOwningSideJoinedTableInheritance()
+    public function testFindFromOneToOneOwningSideJoinedTableInheritance() : void
     {
         $cat            = new Cat();
         $cat->litterBox = new LitterBox();

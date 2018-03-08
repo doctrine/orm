@@ -18,7 +18,7 @@ class DeleteSqlGenerationTest extends OrmTestCase
 {
     private $em;
 
-    protected function setUp()
+    protected function setUp() : void
     {
         $this->em = $this->getTestEntityManager();
     }
@@ -49,7 +49,7 @@ class DeleteSqlGenerationTest extends OrmTestCase
         );
     }
 
-    public function testSupportsDeleteWithoutWhereAndFrom()
+    public function testSupportsDeleteWithoutWhereAndFrom() : void
     {
         $this->assertSqlGeneration(
             'DELETE Doctrine\Tests\Models\CMS\CmsUser u',
@@ -57,7 +57,7 @@ class DeleteSqlGenerationTest extends OrmTestCase
         );
     }
 
-    public function testSupportsDeleteWithoutWhere()
+    public function testSupportsDeleteWithoutWhere() : void
     {
         $this->assertSqlGeneration(
             'DELETE FROM Doctrine\Tests\Models\CMS\CmsUser u',
@@ -65,7 +65,7 @@ class DeleteSqlGenerationTest extends OrmTestCase
         );
     }
 
-    public function testSupportsWhereClause()
+    public function testSupportsWhereClause() : void
     {
         $this->assertSqlGeneration(
             'DELETE Doctrine\Tests\Models\CMS\CmsUser u WHERE u.id = ?1',
@@ -73,7 +73,7 @@ class DeleteSqlGenerationTest extends OrmTestCase
         );
     }
 
-    public function testSupportsWhereOrExpressions()
+    public function testSupportsWhereOrExpressions() : void
     {
         $this->assertSqlGeneration(
             'DELETE Doctrine\Tests\Models\CMS\CmsUser u WHERE u.username = ?1 OR u.name = ?2',
@@ -81,7 +81,7 @@ class DeleteSqlGenerationTest extends OrmTestCase
         );
     }
 
-    public function testSupportsWhereNestedConditionalExpressions()
+    public function testSupportsWhereNestedConditionalExpressions() : void
     {
         $this->assertSqlGeneration(
             'DELETE Doctrine\Tests\Models\CMS\CmsUser u WHERE u.id = ?1 OR ( u.username = ?2 OR u.name = ?3)',
@@ -89,7 +89,7 @@ class DeleteSqlGenerationTest extends OrmTestCase
         );
     }
 
-    public function testIsCaseAgnostic()
+    public function testIsCaseAgnostic() : void
     {
         $this->assertSqlGeneration(
             'delete from Doctrine\Tests\Models\CMS\CmsUser u where u.username = ?1',
@@ -97,7 +97,7 @@ class DeleteSqlGenerationTest extends OrmTestCase
         );
     }
 
-    public function testSupportsAndCondition()
+    public function testSupportsAndCondition() : void
     {
         $this->assertSqlGeneration(
             'DELETE Doctrine\Tests\Models\CMS\CmsUser u WHERE u.username = ?1 AND u.name = ?2',
@@ -105,7 +105,7 @@ class DeleteSqlGenerationTest extends OrmTestCase
         );
     }
 
-    public function testSupportsWhereNot()
+    public function testSupportsWhereNot() : void
     {
         $this->assertSqlGeneration(
             'DELETE Doctrine\Tests\Models\CMS\CmsUser u WHERE NOT u.id != ?1',
@@ -113,7 +113,7 @@ class DeleteSqlGenerationTest extends OrmTestCase
         );
     }
 
-    public function testSupportsWhereNotWithParentheses()
+    public function testSupportsWhereNotWithParentheses() : void
     {
         $this->assertSqlGeneration(
             'DELETE Doctrine\Tests\Models\CMS\CmsUser u WHERE NOT ( u.id != ?1 )',
@@ -121,7 +121,7 @@ class DeleteSqlGenerationTest extends OrmTestCase
         );
     }
 
-    public function testSupportsWhereNotWithAndExpression()
+    public function testSupportsWhereNotWithAndExpression() : void
     {
         $this->assertSqlGeneration(
             'DELETE Doctrine\Tests\Models\CMS\CmsUser u WHERE NOT ( u.id != ?1 AND u.username = ?2 )',
@@ -132,7 +132,7 @@ class DeleteSqlGenerationTest extends OrmTestCase
     /**
      * ConditionalPrimary was already tested (see testSupportsWhereClause() and testSupportsWhereNot())
      */
-    public function testSupportsGreaterThanComparisonClause()
+    public function testSupportsGreaterThanComparisonClause() : void
     {
         // "id" = ? was already tested (see testDeleteWithWhere())
         $this->assertSqlGeneration(
@@ -141,7 +141,7 @@ class DeleteSqlGenerationTest extends OrmTestCase
         );
     }
 
-    public function testSupportsGreaterThanOrEqualToComparisonClause()
+    public function testSupportsGreaterThanOrEqualToComparisonClause() : void
     {
         $this->assertSqlGeneration(
             'DELETE Doctrine\Tests\Models\CMS\CmsUser u WHERE u.id >= ?1',
@@ -149,7 +149,7 @@ class DeleteSqlGenerationTest extends OrmTestCase
         );
     }
 
-    public function testSupportsLessThanComparisonClause()
+    public function testSupportsLessThanComparisonClause() : void
     {
         $this->assertSqlGeneration(
             'DELETE Doctrine\Tests\Models\CMS\CmsUser u WHERE u.id < ?1',
@@ -157,7 +157,7 @@ class DeleteSqlGenerationTest extends OrmTestCase
         );
     }
 
-    public function testSupportsLessThanOrEqualToComparisonClause()
+    public function testSupportsLessThanOrEqualToComparisonClause() : void
     {
         $this->assertSqlGeneration(
             'DELETE Doctrine\Tests\Models\CMS\CmsUser u WHERE u.id <= ?1',
@@ -165,7 +165,7 @@ class DeleteSqlGenerationTest extends OrmTestCase
         );
     }
 
-    public function testSupportsNotEqualToComparisonClause()
+    public function testSupportsNotEqualToComparisonClause() : void
     {
         $this->assertSqlGeneration(
             'DELETE Doctrine\Tests\Models\CMS\CmsUser u WHERE u.id <> ?1',
@@ -173,7 +173,7 @@ class DeleteSqlGenerationTest extends OrmTestCase
         );
     }
 
-    public function testSupportsNotEqualToComparisonClauseExpressedWithExclamationMark()
+    public function testSupportsNotEqualToComparisonClauseExpressedWithExclamationMark() : void
     {
         $this->assertSqlGeneration(
             'DELETE Doctrine\Tests\Models\CMS\CmsUser u WHERE u.id != ?1',
@@ -181,7 +181,7 @@ class DeleteSqlGenerationTest extends OrmTestCase
         );
     }
 
-    public function testSupportsNotBetweenClause()
+    public function testSupportsNotBetweenClause() : void
     {
         $this->assertSqlGeneration(
             'DELETE Doctrine\Tests\Models\CMS\CmsUser u WHERE u.id NOT BETWEEN ?1 AND ?2',
@@ -189,7 +189,7 @@ class DeleteSqlGenerationTest extends OrmTestCase
         );
     }
 
-    public function testSupportsBetweenClauseUsedWithAndClause()
+    public function testSupportsBetweenClauseUsedWithAndClause() : void
     {
         $this->assertSqlGeneration(
             'DELETE Doctrine\Tests\Models\CMS\CmsUser u WHERE u.id BETWEEN ?1 AND ?2 AND u.username != ?3',
@@ -197,7 +197,7 @@ class DeleteSqlGenerationTest extends OrmTestCase
         );
     }
 
-    public function testSupportsNotLikeClause()
+    public function testSupportsNotLikeClause() : void
     {
         // "WHERE" Expression LikeExpression
         $this->assertSqlGeneration(
@@ -206,7 +206,7 @@ class DeleteSqlGenerationTest extends OrmTestCase
         );
     }
 
-    public function testSupportsLikeClauseWithEscapeExpression()
+    public function testSupportsLikeClauseWithEscapeExpression() : void
     {
         $this->assertSqlGeneration(
             'DELETE Doctrine\Tests\Models\CMS\CmsUser u WHERE u.username LIKE ?1 ESCAPE \'\\\'',
@@ -214,7 +214,7 @@ class DeleteSqlGenerationTest extends OrmTestCase
         );
     }
 
-    public function testSupportsIsNullClause()
+    public function testSupportsIsNullClause() : void
     {
         // "WHERE" Expression NullComparisonExpression
         $this->assertSqlGeneration(
@@ -223,7 +223,7 @@ class DeleteSqlGenerationTest extends OrmTestCase
         );
     }
 
-    public function testSupportsIsNotNullClause()
+    public function testSupportsIsNotNullClause() : void
     {
         $this->assertSqlGeneration(
             'DELETE Doctrine\Tests\Models\CMS\CmsUser u WHERE u.name IS NOT NULL',
@@ -231,7 +231,7 @@ class DeleteSqlGenerationTest extends OrmTestCase
         );
     }
 
-    public function testSupportsAtomExpressionAsClause()
+    public function testSupportsAtomExpressionAsClause() : void
     {
         $this->assertSqlGeneration(
             'DELETE Doctrine\Tests\Models\CMS\CmsUser u WHERE 1 = 1',
@@ -239,7 +239,7 @@ class DeleteSqlGenerationTest extends OrmTestCase
         );
     }
 
-    public function testSupportsParameterizedAtomExpression()
+    public function testSupportsParameterizedAtomExpression() : void
     {
         $this->assertSqlGeneration(
             'DELETE Doctrine\Tests\Models\CMS\CmsUser u WHERE ?1 = 1',
@@ -247,7 +247,7 @@ class DeleteSqlGenerationTest extends OrmTestCase
         );
     }
 
-    public function testSupportsInClause()
+    public function testSupportsInClause() : void
     {
         $this->assertSqlGeneration(
             'DELETE Doctrine\Tests\Models\CMS\CmsUser u WHERE u.id IN ( ?1, ?2, ?3, ?4 )',
@@ -255,7 +255,7 @@ class DeleteSqlGenerationTest extends OrmTestCase
         );
     }
 
-    public function testSupportsNotInClause()
+    public function testSupportsNotInClause() : void
     {
         $this->assertSqlGeneration(
             'DELETE Doctrine\Tests\Models\CMS\CmsUser u WHERE u.id NOT IN ( ?1, ?2 )',
@@ -266,7 +266,7 @@ class DeleteSqlGenerationTest extends OrmTestCase
     /**
      * @group DDC-980
      */
-    public function testSubselectTableAliasReferencing()
+    public function testSubselectTableAliasReferencing() : void
     {
         $this->assertSqlGeneration(
             'DELETE Doctrine\Tests\Models\CMS\CmsUser u WHERE SIZE(u.groups) = 10',

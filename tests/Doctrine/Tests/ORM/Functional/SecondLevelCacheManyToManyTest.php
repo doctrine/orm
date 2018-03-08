@@ -14,7 +14,7 @@ use Doctrine\Tests\Models\Cache\Traveler;
  */
 class SecondLevelCacheManyToManyTest extends SecondLevelCacheAbstractTest
 {
-    public function testShouldPutManyToManyCollectionOwningSideOnPersist()
+    public function testShouldPutManyToManyCollectionOwningSideOnPersist() : void
     {
         $this->evictRegions();
 
@@ -37,7 +37,7 @@ class SecondLevelCacheManyToManyTest extends SecondLevelCacheAbstractTest
         self::assertTrue($this->cache->containsEntity(City::class, $this->cities[3]->getId()));
     }
 
-    public function testPutAndLoadManyToManyRelation()
+    public function testPutAndLoadManyToManyRelation() : void
     {
         $this->evictRegions();
 
@@ -147,7 +147,7 @@ class SecondLevelCacheManyToManyTest extends SecondLevelCacheAbstractTest
         self::assertEquals($queryCount, $this->getCurrentQueryCount());
     }
 
-    public function testStoreManyToManyAssociationWhitCascade()
+    public function testStoreManyToManyAssociationWhitCascade() : void
     {
         $this->evictRegions();
 
@@ -192,7 +192,7 @@ class SecondLevelCacheManyToManyTest extends SecondLevelCacheAbstractTest
      * @expectedException \Doctrine\ORM\Cache\CacheException
      * @expectedExceptionMessage Cannot update a readonly collection "Doctrine\Tests\Models\Cache\Travel#visitedCities
      */
-    public function testReadOnlyCollection()
+    public function testReadOnlyCollection() : void
     {
         $this->evictRegions();
 
@@ -217,7 +217,7 @@ class SecondLevelCacheManyToManyTest extends SecondLevelCacheAbstractTest
         $this->em->flush();
     }
 
-    public function testManyToManyWithEmptyRelation()
+    public function testManyToManyWithEmptyRelation() : void
     {
         $this->loadFixturesCountries();
         $this->loadFixturesStates();
