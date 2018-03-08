@@ -12,7 +12,8 @@
     <file>lib</file>
     <file>tests</file>
 
-    <exclude-pattern>*/tests/Doctrine/Tests/Proxies/__CG__/*</exclude-pattern>
+    <exclude-pattern>*/tests/Doctrine/Tests/ORM/Proxy/generated/*</exclude-pattern>
+    <exclude-pattern>*/tests/Doctrine/Tests/Proxies/*</exclude-pattern>
 
     <rule ref="Doctrine">
         <exclude name="SlevomatCodingStandard.TypeHints.TypeHintDeclaration.MissingParameterTypeHint"/>
