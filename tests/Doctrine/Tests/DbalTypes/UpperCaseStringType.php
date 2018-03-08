@@ -4,12 +4,12 @@ declare(strict_types=1);
 
 namespace Doctrine\Tests\DbalTypes;
 
-use Doctrine\DBAL\Types\StringType;
 use Doctrine\DBAL\Platforms\AbstractPlatform;
+use Doctrine\DBAL\Types\StringType;
 
 class UpperCaseStringType extends StringType
 {
-    const NAME = 'upper_case_string';
+    public const NAME = 'upper_case_string';
 
     /**
      * {@inheritdoc}

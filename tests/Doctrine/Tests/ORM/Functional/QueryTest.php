@@ -16,11 +16,11 @@ use Doctrine\Tests\Models\CMS\CmsPhonenumber;
 use Doctrine\Tests\Models\CMS\CmsUser;
 use Doctrine\Tests\OrmFunctionalTestCase;
 use ProxyManager\Proxy\GhostObjectInterface;
+use function array_values;
+use function count;
 
 /**
  * Functional Query tests.
- *
- * @author robo
  */
 class QueryTest extends OrmFunctionalTestCase
 {
@@ -33,10 +33,10 @@ class QueryTest extends OrmFunctionalTestCase
 
     public function testSimpleQueries()
     {
-        $user = new CmsUser;
-        $user->name = 'Guilherme';
+        $user           = new CmsUser();
+        $user->name     = 'Guilherme';
         $user->username = 'gblanco';
-        $user->status = 'developer';
+        $user->status   = 'developer';
         $this->em->persist($user);
         $this->em->flush();
         $this->em->clear();
@@ -73,19 +73,19 @@ class QueryTest extends OrmFunctionalTestCase
 
     public function testJoinQueries()
     {
-        $user = new CmsUser;
-        $user->name = 'Guilherme';
+        $user           = new CmsUser();
+        $user->name     = 'Guilherme';
         $user->username = 'gblanco';
-        $user->status = 'developer';
+        $user->status   = 'developer';
 
-        $article1 = new CmsArticle;
-        $article1->topic = "Doctrine 2";
-        $article1->text = "This is an introduction to Doctrine 2.";
+        $article1        = new CmsArticle();
+        $article1->topic = 'Doctrine 2';
+        $article1->text  = 'This is an introduction to Doctrine 2.';
         $user->addArticle($article1);
 
-        $article2 = new CmsArticle;
-        $article2->topic = "Symfony 2";
-        $article2->text = "This is an introduction to Symfony 2.";
+        $article2        = new CmsArticle();
+        $article2->topic = 'Symfony 2';
+        $article2->text  = 'This is an introduction to Symfony 2.';
         $user->addArticle($article2);
 
         $this->em->persist($user);
@@ -107,10 +107,10 @@ class QueryTest extends OrmFunctionalTestCase
 
     public function testUsingZeroBasedQueryParameterShouldWork()
     {
-        $user = new CmsUser;
-        $user->name = 'Jonathan';
+        $user           = new CmsUser();
+        $user->name     = 'Jonathan';
         $user->username = 'jwage';
-        $user->status = 'developer';
+        $user->status   = 'developer';
         $this->em->persist($user);
         $this->em->flush();
         $this->em->clear();
@@ -201,13 +201,13 @@ class QueryTest extends OrmFunctionalTestCase
      */
     public function testIterateResultAsArrayAndParams()
     {
-        $article1 = new CmsArticle;
-        $article1->topic = "Doctrine 2";
-        $article1->text = "This is an introduction to Doctrine 2.";
+        $article1        = new CmsArticle();
+        $article1->topic = 'Doctrine 2';
+        $article1->text  = 'This is an introduction to Doctrine 2.';
 
-        $article2 = new CmsArticle;
-        $article2->topic = "Symfony 2";
-        $article2->text = "This is an introduction to Symfony 2.";
+        $article2        = new CmsArticle();
+        $article2->topic = 'Symfony 2';
+        $article2->text  = 'This is an introduction to Symfony 2.';
 
         $this->em->persist($article1);
         $this->em->persist($article2);
@@ -216,7 +216,7 @@ class QueryTest extends OrmFunctionalTestCase
         $this->em->clear();
         $articleId = $article1->id;
 
-        $query = $this->em->createQuery('select a from ' . CmsArticle::class . ' a WHERE a.topic = ?1');
+        $query    = $this->em->createQuery('select a from ' . CmsArticle::class . ' a WHERE a.topic = ?1');
         $articles = $query->iterate(new ArrayCollection([new Parameter(1, 'Doctrine 2')]), Query::HYDRATE_ARRAY);
 
         $found = [];
@@ -233,23 +233,23 @@ class QueryTest extends OrmFunctionalTestCase
                         'id'      => $articleId,
                         'topic'   => 'Doctrine 2',
                         'text'    => 'This is an introduction to Doctrine 2.',
-                        'version' => 1
-                    ]
-                ]
+                        'version' => 1,
+                    ],
+                ],
             ],
             $found
         );
     }
 
-    public function testIterateResult_IterativelyBuildUpUnitOfWork()
+    public function testIterateResultIterativelyBuildUpUnitOfWork()
     {
-        $article1 = new CmsArticle;
-        $article1->topic = "Doctrine 2";
-        $article1->text = "This is an introduction to Doctrine 2.";
+        $article1        = new CmsArticle();
+        $article1->topic = 'Doctrine 2';
+        $article1->text  = 'This is an introduction to Doctrine 2.';
 
-        $article2 = new CmsArticle;
-        $article2->topic = "Symfony 2";
-        $article2->text = "This is an introduction to Symfony 2.";
+        $article2        = new CmsArticle();
+        $article2->topic = 'Symfony 2';
+        $article2->text  = 'This is an introduction to Symfony 2.';
 
         $this->em->persist($article1);
         $this->em->persist($article2);
@@ -257,24 +257,24 @@ class QueryTest extends OrmFunctionalTestCase
         $this->em->flush();
         $this->em->clear();
 
-        $query = $this->em->createQuery('select a from ' . CmsArticle::class . ' a');
+        $query    = $this->em->createQuery('select a from ' . CmsArticle::class . ' a');
         $articles = $query->iterate();
 
         $iteratedCount = 0;
-        $topics = [];
+        $topics        = [];
 
         foreach ($articles as $row) {
-            $article = $row[0];
+            $article  = $row[0];
             $topics[] = $article->topic;
 
-            $identityMap = $this->em->getUnitOfWork()->getIdentityMap();
+            $identityMap      = $this->em->getUnitOfWork()->getIdentityMap();
             $identityMapCount = count($identityMap[CmsArticle::class]);
             self::assertGreaterThan($iteratedCount, $identityMapCount);
 
             $iteratedCount++;
         }
 
-        self::assertSame(["Doctrine 2", "Symfony 2"], $topics);
+        self::assertSame(['Doctrine 2', 'Symfony 2'], $topics);
         self::assertSame(2, $iteratedCount);
 
         $this->em->flush();
@@ -283,13 +283,13 @@ class QueryTest extends OrmFunctionalTestCase
 
     public function testIterateResultClearEveryCycle()
     {
-        $article1 = new CmsArticle;
-        $article1->topic = "Doctrine 2";
-        $article1->text = "This is an introduction to Doctrine 2.";
+        $article1        = new CmsArticle();
+        $article1->topic = 'Doctrine 2';
+        $article1->text  = 'This is an introduction to Doctrine 2.';
 
-        $article2 = new CmsArticle;
-        $article2->topic = "Symfony 2";
-        $article2->text = "This is an introduction to Symfony 2.";
+        $article2        = new CmsArticle();
+        $article2->topic = 'Symfony 2';
+        $article2->text  = 'This is an introduction to Symfony 2.';
 
         $this->em->persist($article1);
         $this->em->persist($article2);
@@ -297,11 +297,11 @@ class QueryTest extends OrmFunctionalTestCase
         $this->em->flush();
         $this->em->clear();
 
-        $query    = $this->em->createQuery("select a from Doctrine\Tests\Models\CMS\CmsArticle a");
+        $query    = $this->em->createQuery('select a from Doctrine\Tests\Models\CMS\CmsArticle a');
         $articles = $query->iterate();
 
         $iteratedCount = 0;
-        $topics = [];
+        $topics        = [];
         foreach ($articles as $row) {
             $article  = $row[0];
             $topics[] = $article->topic;
@@ -311,7 +311,7 @@ class QueryTest extends OrmFunctionalTestCase
             $iteratedCount++;
         }
 
-        self::assertSame(["Doctrine 2", "Symfony 2"], $topics);
+        self::assertSame(['Doctrine 2', 'Symfony 2'], $topics);
         self::assertSame(2, $iteratedCount);
 
         $this->em->flush();
@@ -320,9 +320,9 @@ class QueryTest extends OrmFunctionalTestCase
     /**
      * @expectedException \Doctrine\ORM\Query\QueryException
      */
-    public function testIterateResult_FetchJoinedCollection_ThrowsException()
+    public function testIterateResultFetchJoinedCollectionThrowsException()
     {
-        $query = $this->em->createQuery("SELECT u, a FROM ' . CmsUser::class . ' u JOIN u.articles a");
+        $query    = $this->em->createQuery("SELECT u, a FROM ' . CmsUser::class . ' u JOIN u.articles a");
         $articles = $query->iterate();
     }
 
@@ -331,7 +331,7 @@ class QueryTest extends OrmFunctionalTestCase
      */
     public function testGetSingleResultThrowsExceptionOnNoResult()
     {
-        $this->em->createQuery("select a from Doctrine\Tests\Models\CMS\CmsArticle a")
+        $this->em->createQuery('select a from Doctrine\Tests\Models\CMS\CmsArticle a')
              ->getSingleResult();
     }
 
@@ -340,7 +340,7 @@ class QueryTest extends OrmFunctionalTestCase
      */
     public function testGetSingleScalarResultThrowsExceptionOnNoResult()
     {
-        $this->em->createQuery("select a from Doctrine\Tests\Models\CMS\CmsArticle a")
+        $this->em->createQuery('select a from Doctrine\Tests\Models\CMS\CmsArticle a')
              ->getSingleScalarResult();
     }
 
@@ -349,19 +349,19 @@ class QueryTest extends OrmFunctionalTestCase
      */
     public function testGetSingleScalarResultThrowsExceptionOnNonUniqueResult()
     {
-        $user = new CmsUser;
-        $user->name = 'Guilherme';
+        $user           = new CmsUser();
+        $user->name     = 'Guilherme';
         $user->username = 'gblanco';
-        $user->status = 'developer';
+        $user->status   = 'developer';
 
-        $article1 = new CmsArticle;
-        $article1->topic = "Doctrine 2";
-        $article1->text = "This is an introduction to Doctrine 2.";
+        $article1        = new CmsArticle();
+        $article1->topic = 'Doctrine 2';
+        $article1->text  = 'This is an introduction to Doctrine 2.';
         $user->addArticle($article1);
 
-        $article2 = new CmsArticle;
-        $article2->topic = "Symfony 2";
-        $article2->text = "This is an introduction to Symfony 2.";
+        $article2        = new CmsArticle();
+        $article2->topic = 'Symfony 2';
+        $article2->text  = 'This is an introduction to Symfony 2.';
         $user->addArticle($article2);
 
         $this->em->persist($user);
@@ -371,17 +371,17 @@ class QueryTest extends OrmFunctionalTestCase
         $this->em->flush();
         $this->em->clear();
 
-        $this->em->createQuery("select a from Doctrine\Tests\Models\CMS\CmsArticle a")
+        $this->em->createQuery('select a from Doctrine\Tests\Models\CMS\CmsArticle a')
              ->getSingleScalarResult();
     }
 
     public function testModifiedLimitQuery()
     {
         for ($i = 0; $i < 5; $i++) {
-            $user = new CmsUser;
-            $user->name = 'Guilherme' . $i;
+            $user           = new CmsUser();
+            $user->name     = 'Guilherme' . $i;
             $user->username = 'gblanco' . $i;
-            $user->status = 'developer';
+            $user->status   = 'developer';
             $this->em->persist($user);
         }
 
@@ -417,28 +417,28 @@ class QueryTest extends OrmFunctionalTestCase
      */
     public function testEntityParameters()
     {
-        $article = new CmsArticle;
-        $article->topic = "dr. dolittle";
-        $article->text = "Once upon a time ...";
-        $author = new CmsUser;
-        $author->name = "anonymous";
-        $author->username = "anon";
-        $author->status = "here";
-        $article->user = $author;
+        $article          = new CmsArticle();
+        $article->topic   = 'dr. dolittle';
+        $article->text    = 'Once upon a time ...';
+        $author           = new CmsUser();
+        $author->name     = 'anonymous';
+        $author->username = 'anon';
+        $author->status   = 'here';
+        $article->user    = $author;
         $this->em->persist($author);
         $this->em->persist($article);
         $this->em->flush();
         $this->em->clear();
 
         /* @var $result CmsArticle[] */
-        $result = $this->em->createQuery("select a from Doctrine\Tests\Models\CMS\CmsArticle a where a.topic = :topic and a.user = :user")
-                ->setParameter("user", $this->em->getReference(CmsUser::class, $author->id))
-                ->setParameter("topic", "dr. dolittle")
+        $result = $this->em->createQuery('select a from Doctrine\Tests\Models\CMS\CmsArticle a where a.topic = :topic and a.user = :user')
+                ->setParameter('user', $this->em->getReference(CmsUser::class, $author->id))
+                ->setParameter('topic', 'dr. dolittle')
                 ->getResult();
 
         self::assertCount(1, $result);
         self::assertInstanceOf(CmsArticle::class, $result[0]);
-        self::assertEquals("dr. dolittle", $result[0]->topic);
+        self::assertEquals('dr. dolittle', $result[0]->topic);
 
         /* @var $user CmsUser|GhostObjectInterface */
         $user = $result[0]->user;
@@ -454,17 +454,17 @@ class QueryTest extends OrmFunctionalTestCase
     public function testEnableFetchEagerMode()
     {
         for ($i = 0; $i < 10; $i++) {
-            $article = new CmsArticle;
+            $article = new CmsArticle();
 
-            $article->topic = "dr. dolittle";
-            $article->text = "Once upon a time ...";
+            $article->topic = 'dr. dolittle';
+            $article->text  = 'Once upon a time ...';
 
-            $author = new CmsUser;
+            $author = new CmsUser();
 
-            $author->name = "anonymous";
-            $author->username = "anon".$i;
-            $author->status = "here";
-            $article->user = $author;
+            $author->name     = 'anonymous';
+            $author->username = 'anon' . $i;
+            $author->status   = 'here';
+            $article->user    = $author;
 
             $this->em->persist($author);
             $this->em->persist($article);
@@ -490,21 +490,21 @@ class QueryTest extends OrmFunctionalTestCase
      */
     public function testgetOneOrNullResult()
     {
-        $user = new CmsUser;
-        $user->name = 'Guilherme';
+        $user           = new CmsUser();
+        $user->name     = 'Guilherme';
         $user->username = 'gblanco';
-        $user->status = 'developer';
+        $user->status   = 'developer';
         $this->em->persist($user);
         $this->em->flush();
         $this->em->clear();
 
-        $query = $this->em->createQuery("select u from " . CmsUser::class . " u where u.username = 'gblanco'");
+        $query       = $this->em->createQuery('select u from ' . CmsUser::class . " u where u.username = 'gblanco'");
         $fetchedUser = $query->getOneOrNullResult();
 
         self::assertInstanceOf(CmsUser::class, $fetchedUser);
         self::assertEquals('gblanco', $fetchedUser->username);
 
-        $query = $this->em->createQuery("select u.username from " . CmsUser::class . " u where u.username = 'gblanco'");
+        $query           = $this->em->createQuery('select u.username from ' . CmsUser::class . " u where u.username = 'gblanco'");
         $fetchedUsername = $query->getOneOrNullResult(Query::HYDRATE_SINGLE_SCALAR);
 
         self::assertEquals('gblanco', $fetchedUsername);
@@ -515,20 +515,20 @@ class QueryTest extends OrmFunctionalTestCase
      */
     public function testgetOneOrNullResultSeveralRows()
     {
-        $user = new CmsUser;
-        $user->name = 'Guilherme';
+        $user           = new CmsUser();
+        $user->name     = 'Guilherme';
         $user->username = 'gblanco';
-        $user->status = 'developer';
+        $user->status   = 'developer';
         $this->em->persist($user);
-        $user = new CmsUser;
-        $user->name = 'Roman';
+        $user           = new CmsUser();
+        $user->name     = 'Roman';
         $user->username = 'romanb';
-        $user->status = 'developer';
+        $user->status   = 'developer';
         $this->em->persist($user);
         $this->em->flush();
         $this->em->clear();
 
-        $query = $this->em->createQuery("select u from Doctrine\Tests\Models\CMS\CmsUser u");
+        $query = $this->em->createQuery('select u from Doctrine\Tests\Models\CMS\CmsUser u');
 
         $this->expectException(NonUniqueResultException::class);
 
@@ -540,7 +540,7 @@ class QueryTest extends OrmFunctionalTestCase
      */
     public function testgetOneOrNullResultNoRows()
     {
-        $query = $this->em->createQuery("select u from Doctrine\Tests\Models\CMS\CmsUser u");
+        $query = $this->em->createQuery('select u from Doctrine\Tests\Models\CMS\CmsUser u');
         self::assertNull($query->getOneOrNullResult());
 
         $query = $this->em->createQuery("select u.username from Doctrine\Tests\Models\CMS\CmsUser u where u.username = 'gblanco'");
@@ -552,32 +552,32 @@ class QueryTest extends OrmFunctionalTestCase
      */
     public function testParameterOrder()
     {
-        $user1 = new CmsUser;
-        $user1->name = 'Benjamin';
+        $user1           = new CmsUser();
+        $user1->name     = 'Benjamin';
         $user1->username = 'beberlei';
-        $user1->status = 'developer';
+        $user1->status   = 'developer';
         $this->em->persist($user1);
 
-        $user2 = new CmsUser;
-        $user2->name = 'Roman';
+        $user2           = new CmsUser();
+        $user2->name     = 'Roman';
         $user2->username = 'romanb';
-        $user2->status = 'developer';
+        $user2->status   = 'developer';
         $this->em->persist($user2);
 
-        $user3 = new CmsUser;
-        $user3->name = 'Jonathan';
+        $user3           = new CmsUser();
+        $user3->name     = 'Jonathan';
         $user3->username = 'jwage';
-        $user3->status = 'developer';
+        $user3->status   = 'developer';
         $this->em->persist($user3);
 
         $this->em->flush();
         $this->em->clear();
 
-        $query = $this->em->createQuery("SELECT u FROM Doctrine\Tests\Models\CMS\CmsUser u WHERE u.status = :a AND u.id IN (:b)");
+        $query = $this->em->createQuery('SELECT u FROM Doctrine\Tests\Models\CMS\CmsUser u WHERE u.status = :a AND u.id IN (:b)');
         $query->setParameters(new ArrayCollection(
             [
             new Parameter('b', [$user1->id, $user2->id, $user3->id]),
-            new Parameter('a', 'developer')
+            new Parameter('a', 'developer'),
             ]
         ));
         $result = $query->getResult();
@@ -587,28 +587,28 @@ class QueryTest extends OrmFunctionalTestCase
 
     public function testDqlWithAutoInferOfParameters()
     {
-        $user = new CmsUser;
-        $user->name = 'Benjamin';
+        $user           = new CmsUser();
+        $user->name     = 'Benjamin';
         $user->username = 'beberlei';
-        $user->status = 'developer';
+        $user->status   = 'developer';
         $this->em->persist($user);
 
-        $user = new CmsUser;
-        $user->name = 'Roman';
+        $user           = new CmsUser();
+        $user->name     = 'Roman';
         $user->username = 'romanb';
-        $user->status = 'developer';
+        $user->status   = 'developer';
         $this->em->persist($user);
 
-        $user = new CmsUser;
-        $user->name = 'Jonathan';
+        $user           = new CmsUser();
+        $user->name     = 'Jonathan';
         $user->username = 'jwage';
-        $user->status = 'developer';
+        $user->status   = 'developer';
         $this->em->persist($user);
 
         $this->em->flush();
         $this->em->clear();
 
-        $query = $this->em->createQuery("SELECT u FROM Doctrine\Tests\Models\CMS\CmsUser u WHERE u.username IN (?0)");
+        $query = $this->em->createQuery('SELECT u FROM Doctrine\Tests\Models\CMS\CmsUser u WHERE u.username IN (?0)');
         $query->setParameter(0, ['beberlei', 'jwage']);
 
         $users = $query->execute();
@@ -632,28 +632,28 @@ class QueryTest extends OrmFunctionalTestCase
 
     public function testQueryWithArrayOfEntitiesAsParameter()
     {
-        $userA = new CmsUser;
-        $userA->name = 'Benjamin';
+        $userA           = new CmsUser();
+        $userA->name     = 'Benjamin';
         $userA->username = 'beberlei';
-        $userA->status = 'developer';
+        $userA->status   = 'developer';
         $this->em->persist($userA);
 
-        $userB = new CmsUser;
-        $userB->name = 'Roman';
+        $userB           = new CmsUser();
+        $userB->name     = 'Roman';
         $userB->username = 'romanb';
-        $userB->status = 'developer';
+        $userB->status   = 'developer';
         $this->em->persist($userB);
 
-        $userC = new CmsUser;
-        $userC->name = 'Jonathan';
+        $userC           = new CmsUser();
+        $userC->name     = 'Jonathan';
         $userC->username = 'jwage';
-        $userC->status = 'developer';
+        $userC->status   = 'developer';
         $this->em->persist($userC);
 
         $this->em->flush();
         $this->em->clear();
 
-        $query = $this->em->createQuery("SELECT u FROM Doctrine\Tests\Models\CMS\CmsUser u WHERE u IN (?0) OR u.username = ?1");
+        $query = $this->em->createQuery('SELECT u FROM Doctrine\Tests\Models\CMS\CmsUser u WHERE u IN (?0) OR u.username = ?1');
         $query->setParameter(0, [$userA, $userC]);
         $query->setParameter(1, 'beberlei');
 
@@ -664,28 +664,28 @@ class QueryTest extends OrmFunctionalTestCase
 
     public function testQueryWithHiddenAsSelectExpression()
     {
-        $userA = new CmsUser;
-        $userA->name = 'Benjamin';
+        $userA           = new CmsUser();
+        $userA->name     = 'Benjamin';
         $userA->username = 'beberlei';
-        $userA->status = 'developer';
+        $userA->status   = 'developer';
         $this->em->persist($userA);
 
-        $userB = new CmsUser;
-        $userB->name = 'Roman';
+        $userB           = new CmsUser();
+        $userB->name     = 'Roman';
         $userB->username = 'romanb';
-        $userB->status = 'developer';
+        $userB->status   = 'developer';
         $this->em->persist($userB);
 
-        $userC = new CmsUser;
-        $userC->name = 'Jonathan';
+        $userC           = new CmsUser();
+        $userC->name     = 'Jonathan';
         $userC->username = 'jwage';
-        $userC->status = 'developer';
+        $userC->status   = 'developer';
         $this->em->persist($userC);
 
         $this->em->flush();
         $this->em->clear();
 
-        $query = $this->em->createQuery("SELECT u, (SELECT COUNT(u2.id) FROM Doctrine\Tests\Models\CMS\CmsUser u2) AS HIDDEN total FROM Doctrine\Tests\Models\CMS\CmsUser u");
+        $query = $this->em->createQuery('SELECT u, (SELECT COUNT(u2.id) FROM Doctrine\Tests\Models\CMS\CmsUser u2) AS HIDDEN total FROM Doctrine\Tests\Models\CMS\CmsUser u');
         $users = $query->execute();
 
         self::assertCount(3, $users);
@@ -697,16 +697,16 @@ class QueryTest extends OrmFunctionalTestCase
      */
     public function testSetParameterBindingSingleIdentifierObject()
     {
-        $userC = new CmsUser;
-        $userC->name = 'Jonathan';
+        $userC           = new CmsUser();
+        $userC->name     = 'Jonathan';
         $userC->username = 'jwage';
-        $userC->status = 'developer';
+        $userC->status   = 'developer';
         $this->em->persist($userC);
 
         $this->em->flush();
         $this->em->clear();
 
-        $q = $this->em->createQuery("SELECT DISTINCT u from Doctrine\Tests\Models\CMS\CmsUser u WHERE u.id = ?1");
+        $q = $this->em->createQuery('SELECT DISTINCT u from Doctrine\Tests\Models\CMS\CmsUser u WHERE u.id = ?1');
         $q->setParameter(1, $userC);
 
         self::assertEquals($userC, $q->getParameter(1)->getValue());
@@ -720,22 +720,22 @@ class QueryTest extends OrmFunctionalTestCase
      */
     public function testSetCollectionParameterBindingSingleIdentifierObject()
     {
-        $u1 = new CmsUser;
-        $u1->name = 'Name1';
+        $u1           = new CmsUser();
+        $u1->name     = 'Name1';
         $u1->username = 'username1';
-        $u1->status = 'developer';
+        $u1->status   = 'developer';
         $this->em->persist($u1);
 
-        $u2 = new CmsUser;
-        $u2->name = 'Name2';
+        $u2           = new CmsUser();
+        $u2->name     = 'Name2';
         $u2->username = 'username2';
-        $u2->status = 'tester';
+        $u2->status   = 'tester';
         $this->em->persist($u2);
 
-        $u3 = new CmsUser;
-        $u3->name = 'Name3';
+        $u3           = new CmsUser();
+        $u3->name     = 'Name3';
         $u3->username = 'username3';
-        $u3->status = 'tester';
+        $u3->status   = 'tester';
         $this->em->persist($u3);
 
         $this->em->flush();
@@ -747,7 +747,7 @@ class QueryTest extends OrmFunctionalTestCase
         $userCollection->add($u2);
         $userCollection->add($u3->getId());
 
-        $q = $this->em->createQuery("SELECT u FROM Doctrine\Tests\Models\CMS\CmsUser u WHERE u IN (:users) ORDER BY u.id");
+        $q = $this->em->createQuery('SELECT u FROM Doctrine\Tests\Models\CMS\CmsUser u WHERE u IN (:users) ORDER BY u.id');
         $q->setParameter('users', $userCollection);
         $users = $q->execute();
 
@@ -770,15 +770,15 @@ class QueryTest extends OrmFunctionalTestCase
      */
     public function testUnexpectedResultException()
     {
-        $dql            = "SELECT u FROM Doctrine\Tests\Models\CMS\CmsUser u";
-        $u1             = new CmsUser;
-        $u2             = new CmsUser;
-        $u1->name       = 'Fabio B. Silva';
-        $u1->username   = 'FabioBatSilva';
-        $u1->status     = 'developer';
-        $u2->name       = 'Test';
-        $u2->username   = 'test';
-        $u2->status     = 'tester';
+        $dql          = 'SELECT u FROM Doctrine\Tests\Models\CMS\CmsUser u';
+        $u1           = new CmsUser();
+        $u2           = new CmsUser();
+        $u1->name     = 'Fabio B. Silva';
+        $u1->username = 'FabioBatSilva';
+        $u1->status   = 'developer';
+        $u2->name     = 'Test';
+        $u2->username = 'test';
+        $u2->status   = 'tester';
 
         try {
             $this->em->createQuery($dql)->getSingleResult();
@@ -786,7 +786,6 @@ class QueryTest extends OrmFunctionalTestCase
         } catch (UnexpectedResultException $exc) {
             self::assertInstanceOf('\Doctrine\ORM\NoResultException', $exc);
         }
-
 
         $this->em->persist($u1);
         $this->em->persist($u2);
@@ -803,30 +802,30 @@ class QueryTest extends OrmFunctionalTestCase
 
     public function testMultipleJoinComponentsUsingInnerJoin()
     {
-        $userA = new CmsUser;
-        $userA->name = 'Benjamin';
+        $userA           = new CmsUser();
+        $userA->name     = 'Benjamin';
         $userA->username = 'beberlei';
-        $userA->status = 'developer';
+        $userA->status   = 'developer';
 
-        $phonenumberA = new CmsPhonenumber;
+        $phonenumberA              = new CmsPhonenumber();
         $phonenumberA->phonenumber = '111111';
         $userA->addPhonenumber($phonenumberA);
 
-        $userB = new CmsUser;
-        $userB->name = 'Alexander';
+        $userB           = new CmsUser();
+        $userB->name     = 'Alexander';
         $userB->username = 'asm89';
-        $userB->status = 'developer';
+        $userB->status   = 'developer';
 
         $this->em->persist($userA);
         $this->em->persist($userB);
         $this->em->flush();
         $this->em->clear();
 
-        $query = $this->em->createQuery("
+        $query = $this->em->createQuery('
             SELECT u, p
               FROM Doctrine\Tests\Models\CMS\CmsUser u
              INNER JOIN Doctrine\Tests\Models\CMS\CmsPhonenumber p WITH u = p.user
-        ");
+        ');
         $users = $query->execute();
 
         self::assertCount(2, $users);
@@ -836,30 +835,30 @@ class QueryTest extends OrmFunctionalTestCase
 
     public function testMultipleJoinComponentsUsingLeftJoin()
     {
-        $userA = new CmsUser;
-        $userA->name = 'Benjamin';
+        $userA           = new CmsUser();
+        $userA->name     = 'Benjamin';
         $userA->username = 'beberlei';
-        $userA->status = 'developer';
+        $userA->status   = 'developer';
 
-        $phonenumberA = new CmsPhonenumber;
+        $phonenumberA              = new CmsPhonenumber();
         $phonenumberA->phonenumber = '111111';
         $userA->addPhonenumber($phonenumberA);
 
-        $userB = new CmsUser;
-        $userB->name = 'Alexander';
+        $userB           = new CmsUser();
+        $userB->name     = 'Alexander';
         $userB->username = 'asm89';
-        $userB->status = 'developer';
+        $userB->status   = 'developer';
 
         $this->em->persist($userA);
         $this->em->persist($userB);
         $this->em->flush();
         $this->em->clear();
 
-        $query = $this->em->createQuery("
+        $query = $this->em->createQuery('
             SELECT u, p
               FROM Doctrine\Tests\Models\CMS\CmsUser u
               LEFT JOIN Doctrine\Tests\Models\CMS\CmsPhonenumber p WITH u = p.user
-        ");
+        ');
         $users = $query->execute();
 
         self::assertCount(4, $users);

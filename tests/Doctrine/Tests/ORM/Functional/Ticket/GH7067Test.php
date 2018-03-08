@@ -1,11 +1,13 @@
 <?php
+
 declare(strict_types=1);
 
 namespace Doctrine\Tests\ORM\Functional\Ticket;
 
 use Doctrine\ORM\Annotation as ORM;
+use Doctrine\Tests\OrmFunctionalTestCase;
 
-final class GH7067Test extends \Doctrine\Tests\OrmFunctionalTestCase
+final class GH7067Test extends OrmFunctionalTestCase
 {
     public function setUp() : void
     {

@@ -26,12 +26,14 @@ use Doctrine\Tests\Models\Forum\ForumAvatar;
 use Doctrine\Tests\Models\Forum\ForumUser;
 use Doctrine\Tests\Models\NullDefault\NullDefaultColumn;
 use Doctrine\Tests\OrmTestCase;
+use function count;
+use function current;
 
 class SchemaToolTest extends OrmTestCase
 {
     public function testAddUniqueIndexForUniqueFieldAnnotation()
     {
-        $em = $this->getTestEntityManager();
+        $em         = $this->getTestEntityManager();
         $schemaTool = new SchemaTool($em);
 
         $classes = [
@@ -46,13 +48,13 @@ class SchemaToolTest extends OrmTestCase
 
         $schema = $schemaTool->getSchemaFromMetadata($classes);
 
-        self::assertTrue($schema->hasTable('cms_users'), "Table cms_users should exist.");
-        self::assertTrue($schema->getTable('cms_users')->columnsAreIndexed(['username']), "username column should be indexed.");
+        self::assertTrue($schema->hasTable('cms_users'), 'Table cms_users should exist.');
+        self::assertTrue($schema->getTable('cms_users')->columnsAreIndexed(['username']), 'username column should be indexed.');
     }
 
     public function testAnnotationOptionsAttribute()
     {
-        $em = $this->getTestEntityManager();
+        $em         = $this->getTestEntityManager();
         $schemaTool = new SchemaTool($em);
 
         $classes = [
@@ -63,8 +65,8 @@ class SchemaToolTest extends OrmTestCase
 
         $expected = ['foo' => 'bar', 'baz' => ['key' => 'val']];
 
-        self::assertEquals($expected, $schema->getTable('TestEntityWithAnnotationOptionsAttribute')->getOptions(), "options annotation are passed to the tables options");
-        self::assertEquals($expected, $schema->getTable('TestEntityWithAnnotationOptionsAttribute')->getColumn('test')->getCustomSchemaOptions(), "options annotation are passed to the columns customSchemaOptions");
+        self::assertEquals($expected, $schema->getTable('TestEntityWithAnnotationOptionsAttribute')->getOptions(), 'options annotation are passed to the tables options');
+        self::assertEquals($expected, $schema->getTable('TestEntityWithAnnotationOptionsAttribute')->getColumn('test')->getCustomSchemaOptions(), 'options annotation are passed to the columns customSchemaOptions');
     }
 
     /**
@@ -72,9 +74,9 @@ class SchemaToolTest extends OrmTestCase
      */
     public function testPassColumnDefinitionToJoinColumn()
     {
-        $customColumnDef = "MEDIUMINT(6) UNSIGNED NOT NULL";
+        $customColumnDef = 'MEDIUMINT(6) UNSIGNED NOT NULL';
 
-        $em = $this->getTestEntityManager();
+        $em         = $this->getTestEntityManager();
         $schemaTool = new SchemaTool($em);
 
         $avatar     = $em->getClassMetadata(ForumAvatar::class);
@@ -88,7 +90,7 @@ class SchemaToolTest extends OrmTestCase
 
         self::assertTrue($schema->hasTable('forum_users'));
 
-        $table = $schema->getTable("forum_users");
+        $table = $schema->getTable('forum_users');
 
         self::assertTrue($table->hasColumn('avatar_id'));
         self::assertEquals($customColumnDef, $table->getColumn('avatar_id')->getColumnDefinition());
@@ -103,7 +105,8 @@ class SchemaToolTest extends OrmTestCase
 
         $em = $this->getTestEntityManager();
         $em->getEventManager()->addEventListener(
-            [ToolEvents::postGenerateSchemaTable, ToolEvents::postGenerateSchema], $listener
+            [ToolEvents::postGenerateSchemaTable, ToolEvents::postGenerateSchema],
+            $listener
         );
         $schemaTool = new SchemaTool($em);
 
@@ -125,7 +128,7 @@ class SchemaToolTest extends OrmTestCase
 
     public function testNullDefaultNotAddedToCustomSchemaOptions()
     {
-        $em = $this->getTestEntityManager();
+        $em         = $this->getTestEntityManager();
         $schemaTool = new SchemaTool($em);
 
         $customSchemaOptions = $schemaTool->getSchemaFromMetadata([$em->getClassMetadata(NullDefaultColumn::class)])
@@ -164,17 +167,17 @@ class SchemaToolTest extends OrmTestCase
         $schemaTool = new SchemaTool($em);
         $classes    = [
             $em->getClassMetadata(FirstEntity::class),
-            $em->getClassMetadata(SecondEntity::class)
+            $em->getClassMetadata(SecondEntity::class),
         ];
 
         $schema = $schemaTool->getSchemaFromMetadata($classes);
 
-        self::assertTrue($schema->hasTable('first_entity'), "Table first_entity should exist.");
+        self::assertTrue($schema->hasTable('first_entity'), 'Table first_entity should exist.');
 
         $indexes = $schema->getTable('first_entity')->getIndexes();
 
-        self::assertCount(1, $indexes, "there should be only one index");
-        self::assertTrue(current($indexes)->isPrimary(), "index should be primary");
+        self::assertCount(1, $indexes, 'there should be only one index');
+        self::assertTrue(current($indexes)->isPrimary(), 'index should be primary');
     }
 
     public function testSetDiscriminatorColumnWithoutLength() : void
@@ -262,15 +265,13 @@ class TestEntityWithAnnotationOptionsAttribute
     /** @ORM\Id @ORM\Column */
     private $id;
 
-    /**
-     * @ORM\Column(type="string", options={"foo": "bar", "baz": {"key": "val"}})
-     */
+    /** @ORM\Column(type="string", options={"foo": "bar", "baz": {"key": "val"}}) */
     private $test;
 }
 
 class GenerateSchemaEventListener
 {
-    public $tableCalls = 0;
+    public $tableCalls   = 0;
     public $schemaCalled = false;
 
     public function postGenerateSchemaTable(GenerateSchemaTableEventArgs $eventArgs)
@@ -298,9 +299,7 @@ class UniqueConstraintAnnotationModel
     /** @ORM\Id @ORM\Column */
     private $id;
 
-    /**
-     * @ORM\Column(name="hash", type="string", length=8, nullable=false, unique=true)
-     */
+    /** @ORM\Column(name="hash", type="string", length=8, nullable=false, unique=true) */
     private $hash;
 }
 
@@ -322,9 +321,7 @@ class FirstEntity
      */
     public $secondEntity;
 
-    /**
-     * @ORM\Column(name="name")
-     */
+    /** @ORM\Column(name="name") */
     public $name;
 }
 
@@ -340,8 +337,6 @@ class SecondEntity
      */
     public $fist_entity_id;
 
-    /**
-     * @ORM\Column(name="name")
-     */
+    /** @ORM\Column(name="name") */
     public $name;
 }

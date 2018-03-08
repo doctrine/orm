@@ -24,7 +24,7 @@ class SimpleObjectHydratorTest extends HydrationTestCase
      */
     public function testMissingDiscriminatorColumnException()
     {
-        $rsm = new ResultSetMapping;
+        $rsm = new ResultSetMapping();
 
         $rsm->addEntityResult(CompanyPerson::class, 'p');
         $rsm->addFieldResult('p', 'p__id', 'id');
@@ -35,7 +35,7 @@ class SimpleObjectHydratorTest extends HydrationTestCase
         $resultSet = [
               [
                   'u__id'   => '1',
-                  'u__name' => 'Fabio B. Silva'
+                  'u__name' => 'Fabio B. Silva',
               ],
         ];
 
@@ -47,7 +47,7 @@ class SimpleObjectHydratorTest extends HydrationTestCase
 
     public function testExtraFieldInResultSetShouldBeIgnore()
     {
-        $rsm = new ResultSetMapping;
+        $rsm = new ResultSetMapping();
 
         $rsm->addEntityResult(CmsAddress::class, 'a');
         $rsm->addFieldResult('a', 'a__id', 'id');
@@ -56,13 +56,13 @@ class SimpleObjectHydratorTest extends HydrationTestCase
             [
                 'a__id'   => '1',
                 'a__city' => 'Cracow',
-                'doctrine_rownum' => '1'
+                'doctrine_rownum' => '1',
             ],
         ];
 
-        $expectedEntity = new \Doctrine\Tests\Models\CMS\CmsAddress();
+        $expectedEntity = new CmsAddress();
 
-        $expectedEntity->id = 1;
+        $expectedEntity->id   = 1;
         $expectedEntity->city = 'Cracow';
 
         $stmt     = new HydratorMockStatement($resultSet);
@@ -80,7 +80,7 @@ class SimpleObjectHydratorTest extends HydrationTestCase
      */
     public function testInvalidDiscriminatorValueException()
     {
-        $rsm = new ResultSetMapping;
+        $rsm = new ResultSetMapping();
 
         $rsm->addEntityResult(CompanyPerson::class, 'p');
         $rsm->addFieldResult('p', 'p__id', 'id');
@@ -92,7 +92,7 @@ class SimpleObjectHydratorTest extends HydrationTestCase
               [
                   'p__id'   => '1',
                   'p__name' => 'Fabio B. Silva',
-                  'discr'   => 'subworker'
+                  'discr'   => 'subworker',
               ],
         ];
 
@@ -107,7 +107,7 @@ class SimpleObjectHydratorTest extends HydrationTestCase
      */
     public function testNullValueShouldNotOverwriteFieldWithSameNameInJoinedInheritance()
     {
-        $rsm = new ResultSetMapping;
+        $rsm = new ResultSetMapping();
         $rsm->addEntityResult(Issue5989Person::class, 'p');
         $rsm->addFieldResult('p', 'p__id', 'id');
         $rsm->addFieldResult('p', 'm__tags', 'tags', Issue5989Manager::class);
@@ -118,17 +118,17 @@ class SimpleObjectHydratorTest extends HydrationTestCase
                 'p__id'   => '1',
                 'm__tags' => 'tag1,tag2',
                 'e__tags' => null,
-                'discr'   => 'manager'
+                'discr'   => 'manager',
             ],
         ];
 
-        $expectedEntity = new Issue5989Manager();
-        $expectedEntity->id = 1;
+        $expectedEntity       = new Issue5989Manager();
+        $expectedEntity->id   = 1;
         $expectedEntity->tags = ['tag1', 'tag2'];
 
-        $stmt       = new HydratorMockStatement($resultSet);
-        $hydrator   = new \Doctrine\ORM\Internal\Hydration\SimpleObjectHydrator($this->em);
-        $result = $hydrator->hydrateAll($stmt, $rsm);
+        $stmt     = new HydratorMockStatement($resultSet);
+        $hydrator = new SimpleObjectHydrator($this->em);
+        $result   = $hydrator->hydrateAll($stmt, $rsm);
 
         self::assertEquals($result[0], $expectedEntity);
     }

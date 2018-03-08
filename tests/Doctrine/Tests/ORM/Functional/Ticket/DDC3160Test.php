@@ -4,15 +4,14 @@ declare(strict_types=1);
 
 namespace Doctrine\Tests\ORM\Functional\Ticket;
 
-use Doctrine\Tests\Models\CMS\CmsUser;
 use Doctrine\ORM\Event\OnFlushEventArgs;
 use Doctrine\ORM\Events;
+use Doctrine\Tests\Models\CMS\CmsUser;
 use Doctrine\Tests\OrmFunctionalTestCase;
+use function get_class;
 
 /**
  * FlushEventTest
- *
- * @author robo
  */
 class DDC3160Test extends OrmFunctionalTestCase
 {
@@ -30,10 +29,10 @@ class DDC3160Test extends OrmFunctionalTestCase
         $listener = new DDC3160OnFlushListener();
         $this->em->getEventManager()->addEventListener(Events::onFlush, $listener);
 
-        $user = new CmsUser;
+        $user           = new CmsUser();
         $user->username = 'romanb';
-        $user->name = 'Roman';
-        $user->status = 'Dev';
+        $user->name     = 'Roman';
+        $user->status   = 'Dev';
 
         $this->em->persist($user);
         $this->em->flush();
@@ -53,14 +52,14 @@ class DDC3160OnFlushListener
 
     public function onFlush(OnFlushEventArgs $args)
     {
-        $em = $args->getEntityManager();
+        $em  = $args->getEntityManager();
         $uow = $em->getUnitOfWork();
 
         foreach ($uow->getScheduledEntityInsertions() as $entity) {
             $this->inserts++;
             if ($entity instanceof CmsUser) {
                 $entity->username = 'romanc';
-                $cm = $em->getClassMetadata(get_class($entity));
+                $cm               = $em->getClassMetadata(get_class($entity));
                 $uow->recomputeSingleEntityChangeSet($cm, $entity);
             }
         }

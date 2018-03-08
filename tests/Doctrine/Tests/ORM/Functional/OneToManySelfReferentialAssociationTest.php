@@ -7,6 +7,7 @@ namespace Doctrine\Tests\ORM\Functional;
 use Doctrine\ORM\Mapping\FetchMode;
 use Doctrine\Tests\Models\ECommerce\ECommerceCategory;
 use Doctrine\Tests\OrmFunctionalTestCase;
+use function strstr;
 
 /**
  * Tests a bidirectional one-to-one association mapping (without inheritance).
@@ -75,10 +76,10 @@ class OneToManySelfReferentialAssociationTest extends OrmFunctionalTestCase
     {
         $this->createFixture();
 
-        $query = $this->em->createQuery('select c1, c2 from Doctrine\Tests\Models\ECommerce\ECommerceCategory c1 join c1.children c2');
+        $query  = $this->em->createQuery('select c1, c2 from Doctrine\Tests\Models\ECommerce\ECommerceCategory c1 join c1.children c2');
         $result = $query->getResult();
         self::assertCount(1, $result);
-        $parent = $result[0];
+        $parent   = $result[0];
         $children = $parent->getChildren();
 
         self::assertInstanceOf(ECommerceCategory::class, $children[0]);
@@ -95,9 +96,9 @@ class OneToManySelfReferentialAssociationTest extends OrmFunctionalTestCase
         $metadata = $this->em->getClassMetadata(ECommerceCategory::class);
         $metadata->getProperty('children')->setFetchMode(FetchMode::LAZY);
 
-        $query = $this->em->createQuery('select c from Doctrine\Tests\Models\ECommerce\ECommerceCategory c order by c.id asc');
-        $result = $query->getResult();
-        $parent = $result[0];
+        $query    = $this->em->createQuery('select c from Doctrine\Tests\Models\ECommerce\ECommerceCategory c order by c.id asc');
+        $result   = $query->getResult();
+        $parent   = $result[0];
         $children = $parent->getChildren();
 
         self::assertInstanceOf(ECommerceCategory::class, $children[0]);

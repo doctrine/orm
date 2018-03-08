@@ -1,11 +1,14 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\Tests\ORM\Functional\Ticket;
 
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\Annotation as ORM;
 use Doctrine\ORM\ORMInvalidArgumentException;
 use Doctrine\Tests\OrmFunctionalTestCase;
+use function sprintf;
 
 final class GH6029Test extends OrmFunctionalTestCase
 {
@@ -113,9 +116,7 @@ class GH6029Product
     /** @ORM\Id @ORM\Column(type="integer") @ORM\GeneratedValue */
     public $id;
 
-    /**
-     * @ORM\OneToMany(targetEntity=GH6029Feature::class, mappedBy="product", cascade={"all"})
-     */
+    /** @ORM\OneToMany(targetEntity=GH6029Feature::class, mappedBy="product", cascade={"all"}) */
     public $features;
 
     public function __construct()

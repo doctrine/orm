@@ -12,25 +12,17 @@ use Doctrine\Tests\DoctrineTestCase;
 use stdClass;
 
 /**
- * @author Marco Pivetta <ocramius@gmail.com>
- *
  * @covers \Doctrine\ORM\LazyCriteriaCollection
  */
 class LazyCriteriaCollectionTest extends DoctrineTestCase
 {
-    /**
-     * @var \Doctrine\ORM\Persisters\Entity\EntityPersister|\PHPUnit_Framework_MockObject_MockObject
-     */
+    /** @var EntityPersister|\PHPUnit_Framework_MockObject_MockObject */
     private $persister;
 
-    /**
-     * @var Criteria
-     */
+    /** @var Criteria */
     private $criteria;
 
-    /**
-     * @var LazyCriteriaCollection
-     */
+    /** @var LazyCriteriaCollection */
     private $lazyCriteriaCollection;
 
     /**

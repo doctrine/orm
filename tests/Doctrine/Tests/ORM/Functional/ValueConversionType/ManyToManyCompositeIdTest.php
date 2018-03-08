@@ -23,11 +23,11 @@ class ManyToManyCompositeIdTest extends OrmFunctionalTestCase
 
         parent::setUp();
 
-        $inversed = new Entity\InversedManyToManyCompositeIdEntity();
+        $inversed      = new Entity\InversedManyToManyCompositeIdEntity();
         $inversed->id1 = 'abc';
         $inversed->id2 = 'def';
 
-        $owning = new Entity\OwningManyToManyCompositeIdEntity();
+        $owning      = new Entity\OwningManyToManyCompositeIdEntity();
         $owning->id3 = 'ghi';
 
         $inversed->associatedEntities->add($owning);

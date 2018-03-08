@@ -14,19 +14,13 @@ use PhpBench\Benchmark\Metadata\Annotations\BeforeMethods;
  */
 final class SimpleInsertPerformanceBench
 {
-    /**
-     * @var EntityManagerInterface
-     */
+    /** @var EntityManagerInterface */
     private $entityManager;
 
-    /**
-     * @var CMS\CmsUser[]
-     */
+    /** @var CMS\CmsUser[] */
     private $users;
 
-    /**
-     * @var string
-     */
+    /** @var string */
     private $tableName;
 
     public function init() : void
@@ -43,7 +37,7 @@ final class SimpleInsertPerformanceBench
         ]);
 
         for ($i = 1; $i <= 10000; ++$i) {
-            $user           = new CMS\CmsUser;
+            $user           = new CMS\CmsUser();
             $user->status   = 'user';
             $user->username = 'user' . $i;
             $user->name     = 'Mr.Smith-' . $i;

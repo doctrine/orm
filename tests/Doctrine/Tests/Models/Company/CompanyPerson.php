@@ -4,12 +4,11 @@ declare(strict_types=1);
 
 namespace Doctrine\Tests\Models\Company;
 
+use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\Annotation as ORM;
 
 /**
  * Description of CompanyPerson
- *
- * @author robo
  *
  * @ORM\Entity
  * @ORM\Table(name="company_persons")
@@ -30,9 +29,7 @@ class CompanyPerson
      */
     private $id;
 
-    /**
-     * @ORM\Column
-     */
+    /** @ORM\Column */
     private $name;
 
     /**
@@ -57,12 +54,12 @@ class CompanyPerson
 
     public function __construct()
     {
-        $this->friends = new \Doctrine\Common\Collections\ArrayCollection;
+        $this->friends = new ArrayCollection();
     }
 
     public function getId()
     {
-        return  $this->id;
+        return $this->id;
     }
 
     public function getName()
@@ -87,7 +84,7 @@ class CompanyPerson
 
     public function addFriend(CompanyPerson $friend)
     {
-        if ( ! $this->friends->contains($friend)) {
+        if (! $this->friends->contains($friend)) {
             $this->friends->add($friend);
             $friend->addFriend($this);
         }

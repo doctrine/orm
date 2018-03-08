@@ -12,29 +12,19 @@ use Doctrine\ORM\Persisters\Entity\BasicEntityPersister;
  */
 class EntityPersisterMock extends BasicEntityPersister
 {
-    /**
-     * @var array
-     */
+    /** @var array */
     private $inserts = [];
 
-    /**
-     * @var array
-     */
+    /** @var array */
     private $updates = [];
 
-    /**
-     * @var array
-     */
+    /** @var array */
     private $deletes = [];
 
-    /**
-     * @var string|null
-     */
+    /** @var string|null */
     private $mockIdGeneratorType;
 
-    /**
-     * @var bool
-     */
+    /** @var bool */
     private $existsCalled = false;
 
     /**
@@ -70,7 +60,7 @@ class EntityPersisterMock extends BasicEntityPersister
     /**
      * {@inheritdoc}
      */
-    public function exists($entity, Criteria $extraConditions = null)
+    public function exists($entity, ?Criteria $extraConditions = null)
     {
         $this->existsCalled = true;
     }
@@ -113,9 +103,9 @@ class EntityPersisterMock extends BasicEntityPersister
     public function reset()
     {
         $this->existsCalled = false;
-        $this->inserts = [];
-        $this->updates = [];
-        $this->deletes = [];
+        $this->inserts      = [];
+        $this->updates      = [];
+        $this->deletes      = [];
     }
 
     /**

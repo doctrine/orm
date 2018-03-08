@@ -5,11 +5,12 @@ declare(strict_types=1);
 namespace Doctrine\Tests\ORM\Functional\Ticket;
 
 use Doctrine\ORM\Annotation as ORM;
+use Doctrine\Tests\OrmFunctionalTestCase;
 
 /**
  * @group DDC-2175
  */
-class DDC2175Test extends \Doctrine\Tests\OrmFunctionalTestCase
+class DDC2175Test extends OrmFunctionalTestCase
 {
     protected function setUp()
     {
@@ -31,20 +32,20 @@ class DDC2175Test extends \Doctrine\Tests\OrmFunctionalTestCase
 
     public function testIssue()
     {
-        $entity = new DDC2175Entity();
-        $entity->field = "foo";
+        $entity        = new DDC2175Entity();
+        $entity->field = 'foo';
 
         $this->em->persist($entity);
         $this->em->flush();
 
         self::assertEquals(1, $entity->version);
 
-        $entity->field = "bar";
+        $entity->field = 'bar';
         $this->em->flush();
 
         self::assertEquals(2, $entity->version);
 
-        $entity->field = "baz";
+        $entity->field = 'baz';
         $this->em->flush();
 
         self::assertEquals(3, $entity->version);
@@ -58,14 +59,10 @@ class DDC2175Test extends \Doctrine\Tests\OrmFunctionalTestCase
  */
 class DDC2175Entity
 {
-    /**
-     * @ORM\Id @ORM\GeneratedValue @ORM\Column(type="integer")
-     */
+    /** @ORM\Id @ORM\GeneratedValue @ORM\Column(type="integer") */
     public $id;
 
-    /**
-     * @ORM\Column(type="string")
-     */
+    /** @ORM\Column(type="string") */
     public $field;
 
     /**

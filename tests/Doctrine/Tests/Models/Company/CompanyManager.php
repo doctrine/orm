@@ -12,9 +12,7 @@ use Doctrine\ORM\Annotation as ORM;
  */
 class CompanyManager extends CompanyEmployee
 {
-    /**
-     * @ORM\Column(type="string", length=250)
-     */
+    /** @ORM\Column(type="string", length=250) */
     private $title;
 
     /**

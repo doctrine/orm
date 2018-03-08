@@ -19,14 +19,10 @@ class InversedOneToManyEntity
      */
     public $id1;
 
-    /**
-     * @ORM\OneToMany(targetEntity=OwningManyToOneEntity::class, mappedBy="associatedEntity")
-     */
+    /** @ORM\OneToMany(targetEntity=OwningManyToOneEntity::class, mappedBy="associatedEntity") */
     public $associatedEntities;
 
-    /**
-     * @ORM\Column(type="string", name="some_property")
-     */
+    /** @ORM\Column(type="string", name="some_property") */
     public $someProperty;
 
     public function __construct()

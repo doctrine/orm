@@ -23,15 +23,15 @@ class OneToOneTest extends OrmFunctionalTestCase
 
         parent::setUp();
 
-        $inversed = new Entity\InversedOneToOneEntity();
-        $inversed->id1 = 'abc';
+        $inversed               = new Entity\InversedOneToOneEntity();
+        $inversed->id1          = 'abc';
         $inversed->someProperty = 'some value to be loaded';
 
-        $owning = new Entity\OwningOneToOneEntity();
+        $owning      = new Entity\OwningOneToOneEntity();
         $owning->id2 = 'def';
 
         $inversed->associatedEntity = $owning;
-        $owning->associatedEntity = $inversed;
+        $owning->associatedEntity   = $inversed;
 
         $this->em->persist($inversed);
         $this->em->persist($owning);

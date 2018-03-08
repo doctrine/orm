@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace Doctrine\Tests\Mocks;
 
+use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\Mapping\ClassMetadataBuildingContext;
 use Doctrine\ORM\Mapping\Driver\MappingDriver;
-use Doctrine\ORM\Mapping\ClassMetadata;
 
 /**
  * Mock class for MappingDriver.
@@ -20,8 +20,7 @@ class MetadataDriverMock implements MappingDriver
         string $className,
         ClassMetadata $metadata,
         ClassMetadataBuildingContext $metadataBuildingContext
-    )
-    {
+    ) {
     }
 
     /**

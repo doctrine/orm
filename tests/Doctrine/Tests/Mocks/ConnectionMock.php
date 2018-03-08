@@ -4,54 +4,45 @@ declare(strict_types=1);
 
 namespace Doctrine\Tests\Mocks;
 
+use Doctrine\Common\EventManager;
+use Doctrine\DBAL\Configuration;
 use Doctrine\DBAL\Connection;
+use Doctrine\DBAL\Driver;
 use Doctrine\DBAL\Driver\Statement;
+use Doctrine\DBAL\Platforms\AbstractPlatform;
+use function is_string;
 
 /**
  * Mock class for Connection.
  */
 class ConnectionMock extends Connection
 {
-    /**
-     * @var mixed
-     */
+    /** @var mixed */
     private $fetchOneResult;
 
-    /**
-     * @var \Exception|null
-     */
+    /** @var \Exception|null */
     private $fetchOneException;
 
-    /**
-     * @var Statement|null
-     */
+    /** @var Statement|null */
     private $queryResult;
 
-    /**
-     * @var DatabasePlatformMock
-     */
+    /** @var DatabasePlatformMock */
     private $platformMock;
 
-    /**
-     * @var int
-     */
+    /** @var int */
     private $lastInsertId = 0;
 
-    /**
-     * @var array
-     */
+    /** @var array */
     private $inserts = [];
 
-    /**
-     * @var array
-     */
+    /** @var array */
     private $executeUpdates = [];
 
     /**
-     * @param array                              $params
-     * @param \Doctrine\DBAL\Driver              $driver
-     * @param \Doctrine\DBAL\Configuration|null  $config
-     * @param \Doctrine\Common\EventManager|null $eventManager
+     * @param array              $params
+     * @param Driver             $driver
+     * @param Configuration|null $config
+     * @param EventManager|null  $eventManager
      */
     public function __construct(array $params, $driver, $config = null, $eventManager = null)
     {
@@ -100,7 +91,7 @@ class ConnectionMock extends Connection
      */
     public function fetchColumn($statement, array $params = [], $colnum = 0, array $types = [])
     {
-        if (null !== $this->fetchOneException) {
+        if ($this->fetchOneException !== null) {
             throw $this->fetchOneException;
         }
 
@@ -139,17 +130,15 @@ class ConnectionMock extends Connection
     }
 
     /**
-     * @param \Exception|null $exception
-     *
      * @return void
      */
-    public function setFetchOneException(\Exception $exception = null)
+    public function setFetchOneException(?\Exception $exception = null)
     {
         $this->fetchOneException = $exception;
     }
 
     /**
-     * @param \Doctrine\DBAL\Platforms\AbstractPlatform $platform
+     * @param AbstractPlatform $platform
      *
      * @return void
      */
@@ -169,7 +158,7 @@ class ConnectionMock extends Connection
     }
 
     /**
-     * @param Statement $result
+     * @return void
      */
     public function setQueryResult(Statement $result)
     {
@@ -197,7 +186,7 @@ class ConnectionMock extends Connection
      */
     public function reset()
     {
-        $this->inserts = [];
+        $this->inserts      = [];
         $this->lastInsertId = 0;
     }
 }

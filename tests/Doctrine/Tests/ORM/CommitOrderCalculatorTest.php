@@ -20,14 +20,10 @@ use Doctrine\Tests\OrmTestCase;
  */
 class CommitOrderCalculatorTest extends OrmTestCase
 {
-    /**
-     * @var CommitOrderCalculator
-     */
+    /** @var CommitOrderCalculator */
     private $calc;
 
-    /**
-     * @var ClassMetadataBuildingContext|\PHPUnit_Framework_MockObject_MockObject
-     */
+    /** @var ClassMetadataBuildingContext|\PHPUnit_Framework_MockObject_MockObject */
     private $metadataBuildingContext;
 
     protected function setUp()
@@ -86,8 +82,18 @@ class CommitOrderCalculatorTest extends OrmTestCase
     }
 }
 
-class NodeClass1 {}
-class NodeClass2 {}
-class NodeClass3 {}
-class NodeClass4 {}
-class NodeClass5 {}
+class NodeClass1
+{
+}
+class NodeClass2
+{
+}
+class NodeClass3
+{
+}
+class NodeClass4
+{
+}
+class NodeClass5
+{
+}

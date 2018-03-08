@@ -4,13 +4,14 @@ declare(strict_types=1);
 
 namespace Doctrine\Tests\ORM\Functional\Ticket;
 
-use Doctrine\ORM\Annotation as ORM;
 use Doctrine\ORM\AbstractQuery;
+use Doctrine\ORM\Annotation as ORM;
+use Doctrine\Tests\OrmFunctionalTestCase;
 
 /**
  * @group DDC-2306
  */
-class DDC3170Test extends \Doctrine\Tests\OrmFunctionalTestCase
+class DDC3170Test extends OrmFunctionalTestCase
 {
     /**
      * {@inheritDoc}
@@ -40,7 +41,7 @@ class DDC3170Test extends \Doctrine\Tests\OrmFunctionalTestCase
      */
     public function testIssue()
     {
-        $productJoined = new DDC3170ProductJoined();
+        $productJoined      = new DDC3170ProductJoined();
         $productSingleTable = new DDC3170ProductSingleTable();
 
         $this->em->persist($productJoined);

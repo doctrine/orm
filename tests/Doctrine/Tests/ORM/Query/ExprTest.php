@@ -12,25 +12,19 @@ use Doctrine\Tests\OrmTestCase;
  * Test case for the DQL Expr class used for generating DQL snippets through
  * a programmatic interface
  *
- * @author      Jonathan H. Wage <jonwage@gmail.com>
- * @license     http://www.opensource.org/licenses/lgpl-license.php LGPL
  * @link        http://www.phpdoctrine.org
- * @since       2.0
- * @version     $Revision$
  */
 class ExprTest extends OrmTestCase
 {
     private $em;
 
-    /**
-     * @var Expr
-     */
+    /** @var Expr */
     private $expr;
 
     protected function setUp()
     {
-        $this->em = $this->getTestEntityManager();
-        $this->expr = new Expr;
+        $this->em   = $this->getTestEntityManager();
+        $this->expr = new Expr();
     }
 
     public function testAvgExpr()
@@ -362,7 +356,6 @@ class ExprTest extends OrmTestCase
      */
     public function testExpressionGetter()
     {
-
         // Andx
         $andx = new Expr\Andx(['1 = 1', '2 = 2']);
         self::assertEquals(['1 = 1', '2 = 2'], $andx->getParts());

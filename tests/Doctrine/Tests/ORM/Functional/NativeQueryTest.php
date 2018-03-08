@@ -13,22 +13,16 @@ use Doctrine\ORM\Query\Parameter;
 use Doctrine\ORM\Query\ResultSetMapping;
 use Doctrine\ORM\Query\ResultSetMappingBuilder;
 use Doctrine\Tests\Models\CMS\CmsAddress;
-use Doctrine\Tests\Models\CMS\CmsEmail;
 use Doctrine\Tests\Models\CMS\CmsPhonenumber;
 use Doctrine\Tests\Models\CMS\CmsUser;
 use Doctrine\Tests\Models\Company\CompanyContract;
-use Doctrine\Tests\Models\Company\CompanyEmployee;
 use Doctrine\Tests\Models\Company\CompanyFixContract;
-use Doctrine\Tests\Models\Company\CompanyFlexContract;
-use Doctrine\Tests\Models\Company\CompanyPerson;
 use Doctrine\Tests\Models\DDC3899\DDC3899FixContract;
 use Doctrine\Tests\Models\DDC3899\DDC3899User;
 use Doctrine\Tests\OrmFunctionalTestCase;
 
 /**
  * NativeQueryTest
- *
- * @author robo
  */
 class NativeQueryTest extends OrmFunctionalTestCase
 {
@@ -46,17 +40,17 @@ class NativeQueryTest extends OrmFunctionalTestCase
 
     public function testBasicNativeQuery()
     {
-        $user = new CmsUser;
+        $user = new CmsUser();
 
-        $user->name = 'Roman';
+        $user->name     = 'Roman';
         $user->username = 'romanb';
-        $user->status = 'dev';
+        $user->status   = 'dev';
 
         $this->em->persist($user);
         $this->em->flush();
         $this->em->clear();
 
-        $rsm = new ResultSetMapping;
+        $rsm = new ResultSetMapping();
 
         $rsm->addEntityResult(CmsUser::class, 'u');
         $rsm->addFieldResult('u', $this->platform->getSQLResultCasing('id'), 'id');
@@ -75,17 +69,17 @@ class NativeQueryTest extends OrmFunctionalTestCase
 
     public function testBasicNativeQueryWithMetaResult()
     {
-        $user = new CmsUser;
+        $user = new CmsUser();
 
-        $user->name = 'Roman';
+        $user->name     = 'Roman';
         $user->username = 'romanb';
-        $user->status = 'dev';
+        $user->status   = 'dev';
 
-        $addr = new CmsAddress;
+        $addr = new CmsAddress();
 
         $addr->country = 'germany';
-        $addr->zip = 10827;
-        $addr->city = 'Berlin';
+        $addr->zip     = 10827;
+        $addr->city    = 'Berlin';
 
         $user->setAddress($addr);
 
@@ -93,7 +87,7 @@ class NativeQueryTest extends OrmFunctionalTestCase
         $this->em->flush();
         $this->em->clear();
 
-        $rsm = new ResultSetMapping;
+        $rsm = new ResultSetMapping();
 
         $rsm->addEntityResult(CmsAddress::class, 'a');
         $rsm->addFieldResult('a', $this->platform->getSQLResultCasing('id'), 'id');
@@ -119,13 +113,13 @@ class NativeQueryTest extends OrmFunctionalTestCase
 
     public function testJoinedOneToManyNativeQuery()
     {
-        $user = new CmsUser;
+        $user = new CmsUser();
 
-        $user->name = 'Roman';
+        $user->name     = 'Roman';
         $user->username = 'romanb';
-        $user->status = 'dev';
+        $user->status   = 'dev';
 
-        $phone = new CmsPhonenumber;
+        $phone = new CmsPhonenumber();
 
         $phone->phonenumber = 424242;
 
@@ -135,7 +129,7 @@ class NativeQueryTest extends OrmFunctionalTestCase
         $this->em->flush();
         $this->em->clear();
 
-        $rsm = new ResultSetMapping;
+        $rsm = new ResultSetMapping();
 
         $rsm->addEntityResult(CmsUser::class, 'u');
         $rsm->addFieldResult('u', $this->platform->getSQLResultCasing('id'), 'id');
@@ -165,17 +159,17 @@ class NativeQueryTest extends OrmFunctionalTestCase
 
     public function testJoinedOneToOneNativeQuery()
     {
-        $user = new CmsUser;
+        $user = new CmsUser();
 
-        $user->name = 'Roman';
+        $user->name     = 'Roman';
         $user->username = 'romanb';
-        $user->status = 'dev';
+        $user->status   = 'dev';
 
-        $addr = new CmsAddress;
+        $addr = new CmsAddress();
 
         $addr->country = 'germany';
-        $addr->zip = 10827;
-        $addr->city = 'Berlin';
+        $addr->zip     = 10827;
+        $addr->city    = 'Berlin';
 
         $user->setAddress($addr);
 
@@ -183,7 +177,7 @@ class NativeQueryTest extends OrmFunctionalTestCase
         $this->em->flush();
         $this->em->clear();
 
-        $rsm = new ResultSetMapping;
+        $rsm = new ResultSetMapping();
 
         $rsm->addEntityResult(CmsUser::class, 'u');
         $rsm->addFieldResult('u', $this->platform->getSQLResultCasing('id'), 'id');
@@ -215,14 +209,14 @@ class NativeQueryTest extends OrmFunctionalTestCase
 
     public function testFluentInterface()
     {
-        $parameters = new ArrayCollection;
+        $parameters = new ArrayCollection();
 
         $parameters->add(new Parameter(1, 'foo'));
         $parameters->add(new Parameter(2, 'bar'));
 
-        $rsm = new ResultSetMapping;
+        $rsm = new ResultSetMapping();
 
-        $q = $this->em->createNativeQuery('SELECT id, name, status, phonenumber FROM cms_users INNER JOIN cms_phonenumbers ON id = user_id WHERE username = ?', $rsm);
+        $q  = $this->em->createNativeQuery('SELECT id, name, status, phonenumber FROM cms_users INNER JOIN cms_phonenumbers ON id = user_id WHERE username = ?', $rsm);
         $q2 = $q->setSQL('foo')
           ->setResultSetMapping($rsm)
           ->expireResultCache(true)
@@ -237,13 +231,13 @@ class NativeQueryTest extends OrmFunctionalTestCase
 
     public function testJoinedOneToManyNativeQueryWithRSMBuilder()
     {
-        $user = new CmsUser;
+        $user = new CmsUser();
 
-        $user->name = 'Roman';
+        $user->name     = 'Roman';
         $user->username = 'romanb';
-        $user->status = 'dev';
+        $user->status   = 'dev';
 
-        $phone = new CmsPhonenumber;
+        $phone = new CmsPhonenumber();
 
         $phone->phonenumber = 424242;
 
@@ -293,17 +287,17 @@ class NativeQueryTest extends OrmFunctionalTestCase
 
     public function testJoinedOneToOneNativeQueryWithRSMBuilder()
     {
-        $user = new CmsUser;
+        $user = new CmsUser();
 
-        $user->name = 'Roman';
+        $user->name     = 'Roman';
         $user->username = 'romanb';
-        $user->status = 'dev';
+        $user->status   = 'dev';
 
-        $addr = new CmsAddress;
+        $addr = new CmsAddress();
 
         $addr->country = 'germany';
-        $addr->zip = 10827;
-        $addr->city = 'Berlin';
+        $addr->zip     = 10827;
+        $addr->city    = 'Berlin';
 
         $user->setAddress($addr);
 
@@ -431,7 +425,7 @@ class NativeQueryTest extends OrmFunctionalTestCase
             'u',
             [
                 'id' => 'id1',
-                'username' => 'username2'
+                'username' => 'username2',
             ]
         );
 
@@ -477,7 +471,7 @@ class NativeQueryTest extends OrmFunctionalTestCase
 
         $rsm->addRootEntityFromClassMetadata(CmsUser::class, 'u');
 
-        self::assertSQLEquals('u.id AS id0, u.status AS status1, u.username AS username2, u.name AS name3, u.email_id AS email_id4', (string)$rsm);
+        self::assertSQLEquals('u.id AS id0, u.status AS status1, u.username AS username2, u.name AS name3, u.email_id AS email_id4', (string) $rsm);
     }
 
     /**

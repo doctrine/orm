@@ -7,6 +7,10 @@ namespace Doctrine\Tests\ORM\Functional\SchemaTool;
 use Doctrine\DBAL\Schema\Comparator;
 use Doctrine\Tests\Models;
 use Doctrine\Tests\OrmFunctionalTestCase;
+use const PHP_EOL;
+use function array_filter;
+use function implode;
+use function strpos;
 
 /**
  * WARNING: This test should be run as last test! It can affect others very easily!
@@ -21,7 +25,7 @@ class DDC214Test extends OrmFunctionalTestCase
 
         $conn = $this->em->getConnection();
 
-        if (strpos($conn->getDriver()->getName(), "sqlite") !== false) {
+        if (strpos($conn->getDriver()->getName(), 'sqlite') !== false) {
             $this->markTestSkipped('SQLite does not support ALTER TABLE statements.');
         }
     }
@@ -56,7 +60,7 @@ class DDC214Test extends OrmFunctionalTestCase
             Models\Company\CompanyEvent::class,
             Models\Company\CompanyAuction::class,
             Models\Company\CompanyRaffle::class,
-            Models\Company\CompanyCar::class
+            Models\Company\CompanyCar::class,
         ];
 
         self::assertCreatedSchemaNeedsNoUpdates($this->classes);
@@ -78,14 +82,16 @@ class DDC214Test extends OrmFunctionalTestCase
         $sm = $this->em->getConnection()->getSchemaManager();
 
         $fromSchema = $sm->createSchema();
-        $toSchema = $this->schemaTool->getSchemaFromMetadata($classMetadata);
+        $toSchema   = $this->schemaTool->getSchemaFromMetadata($classMetadata);
 
         $comparator = new Comparator();
         $schemaDiff = $comparator->compare($fromSchema, $toSchema);
 
         $sql = $schemaDiff->toSql($this->em->getConnection()->getDatabasePlatform());
-        $sql = array_filter($sql, function($sql) { return strpos($sql, 'DROP') === false; });
+        $sql = array_filter($sql, function ($sql) {
+            return strpos($sql, 'DROP') === false;
+        });
 
-        self::assertCount(0, $sql, "SQL: " . implode(PHP_EOL, $sql));
+        self::assertCount(0, $sql, 'SQL: ' . implode(PHP_EOL, $sql));
     }
 }

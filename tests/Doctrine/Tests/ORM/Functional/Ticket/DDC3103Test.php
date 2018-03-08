@@ -9,11 +9,14 @@ use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\Mapping\ClassMetadataBuildingContext;
 use Doctrine\ORM\Mapping\ClassMetadataFactory;
 use Doctrine\ORM\Reflection\ReflectionService;
+use Doctrine\Tests\OrmFunctionalTestCase;
+use function serialize;
+use function unserialize;
 
 /**
  * @group DDC-3103
  */
-class DDC3103Test extends \Doctrine\Tests\OrmFunctionalTestCase
+class DDC3103Test extends OrmFunctionalTestCase
 {
     /**
      * @covers \Doctrine\ORM\Mapping\ClassMetadata::__sleep

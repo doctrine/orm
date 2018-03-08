@@ -21,36 +21,26 @@ use Doctrine\Tests\Models\FriendObject\ComparableObject;
 use Doctrine\Tests\Models\ProxySpecifics\FuncGetArgs;
 use Doctrine\Tests\OrmTestCase;
 use ProxyManager\Proxy\GhostObjectInterface;
+use function json_encode;
 
 /**
  * Test the proxy generator. Its work is generating on-the-fly subclasses of a given model, which implement the Proxy pattern.
- * @author Giorgio Sironi <piccoloprincipeazzurro@gmail.com>
  */
 class ProxyFactoryTest extends OrmTestCase
 {
-    /**
-     * @var ConnectionMock
-     */
+    /** @var ConnectionMock */
     private $connectionMock;
 
-    /**
-     * @var UnitOfWorkMock
-     */
+    /** @var UnitOfWorkMock */
     private $uowMock;
 
-    /**
-     * @var EntityManagerMock
-     */
+    /** @var EntityManagerMock */
     private $emMock;
 
-    /**
-     * @var StaticProxyFactory
-     */
+    /** @var StaticProxyFactory */
     private $proxyFactory;
 
-    /**
-     * @var ClassMetadataBuildingContext
-     */
+    /** @var ClassMetadataBuildingContext */
     private $metadataBuildingContext;
 
     /**
@@ -107,9 +97,9 @@ class ProxyFactoryTest extends OrmTestCase
         $proxy->getDescription();
     }
 
-    public function testSkipMappedSuperClassesOnGeneration(): void
+    public function testSkipMappedSuperClassesOnGeneration() : void
     {
-        $cm = new ClassMetadata(\stdClass::class, $this->metadataBuildingContext);
+        $cm                     = new ClassMetadata(\stdClass::class, $this->metadataBuildingContext);
         $cm->isMappedSuperclass = true;
 
         self::assertSame(
@@ -123,9 +113,9 @@ class ProxyFactoryTest extends OrmTestCase
      * @group 6625
      * @group embedded
      */
-    public function testSkipEmbeddableClassesOnGeneration(): void
+    public function testSkipEmbeddableClassesOnGeneration() : void
     {
-        $cm = new ClassMetadata(\stdClass::class, $this->metadataBuildingContext);
+        $cm                  = new ClassMetadata(\stdClass::class, $this->metadataBuildingContext);
         $cm->isEmbeddedClass = true;
 
         self::assertSame(
@@ -146,7 +136,7 @@ class ProxyFactoryTest extends OrmTestCase
 
         $num = $this->proxyFactory->generateProxyClasses([$cm]);
 
-        self::assertEquals(0, $num, "No proxies generated.");
+        self::assertEquals(0, $num, 'No proxies generated.');
     }
 
     /**
@@ -297,7 +287,7 @@ class ProxyFactoryTest extends OrmTestCase
                 )
             )
             ->willReturnCallback(function (array $id, ComparableObject $comparableObject) {
-                $comparableObject->setComparedFieldValue(\json_encode($id));
+                $comparableObject->setComparedFieldValue(json_encode($id));
 
                 return $comparableObject;
             });

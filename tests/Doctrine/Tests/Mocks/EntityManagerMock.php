@@ -9,25 +9,20 @@ use Doctrine\ORM\Configuration;
 use Doctrine\ORM\Decorator\EntityManagerDecorator;
 use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\EntityManagerInterface;
+use Doctrine\ORM\Proxy\Factory\ProxyFactory;
+use Doctrine\ORM\UnitOfWork;
 
 /**
  * Special EntityManager mock used for testing purposes.
  */
 class EntityManagerMock extends EntityManagerDecorator
 {
-    /**
-     * @var \Doctrine\ORM\UnitOfWork|null
-     */
+    /** @var UnitOfWork|null */
     private $uowMock;
 
-    /**
-     * @var \Doctrine\ORM\Proxy\Factory\ProxyFactory|null
-     */
+    /** @var ProxyFactory|null */
     private $proxyFactoryMock;
 
-    /**
-     * @return EntityManagerInterface
-     */
     public function getWrappedEntityManager() : EntityManagerInterface
     {
         return $this->wrapped;
@@ -44,7 +39,7 @@ class EntityManagerMock extends EntityManagerDecorator
     /**
      * Sets a (mock) UnitOfWork that will be returned when getUnitOfWork() is called.
      *
-     * @param \Doctrine\ORM\UnitOfWork $uow
+     * @param UnitOfWork $uow
      *
      * @return void
      */
@@ -54,7 +49,7 @@ class EntityManagerMock extends EntityManagerDecorator
     }
 
     /**
-     * @param \Doctrine\ORM\Proxy\Factory\ProxyFactory $proxyFactory
+     * @param ProxyFactory $proxyFactory
      *
      * @return void
      */
@@ -64,7 +59,7 @@ class EntityManagerMock extends EntityManagerDecorator
     }
 
     /**
-     * @return \Doctrine\ORM\Proxy\Factory\ProxyFactory
+     * @return ProxyFactory
      */
     public function getProxyFactory()
     {
@@ -76,9 +71,9 @@ class EntityManagerMock extends EntityManagerDecorator
      *
      * {@inheritdoc}
      */
-    public static function create($conn, Configuration $config = null, EventManager $eventManager = null)
+    public static function create($conn, ?Configuration $config = null, ?EventManager $eventManager = null)
     {
-        if (null === $config) {
+        if ($config === null) {
             $config = new Configuration();
 
             $config->setProxyDir(__DIR__ . '/../Proxies');
@@ -86,7 +81,7 @@ class EntityManagerMock extends EntityManagerDecorator
             $config->setMetadataDriverImpl($config->newDefaultAnnotationDriver());
         }
 
-        if (null === $eventManager) {
+        if ($eventManager === null) {
             $eventManager = $conn->getEventManager();
         }
 

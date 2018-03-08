@@ -8,22 +8,19 @@ use Doctrine\ORM\Annotation as ORM;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Tools\SchemaValidator;
 use Doctrine\Tests\OrmTestCase;
+use function sprintf;
 
 class SchemaValidatorTest extends OrmTestCase
 {
-    /**
-     * @var EntityManagerInterface
-     */
+    /** @var EntityManagerInterface */
     private $em;
 
-    /**
-     * @var SchemaValidator
-     */
+    /** @var SchemaValidator */
     private $validator;
 
     public function setUp()
     {
-        $this->em = $this->getTestEntityManager();
+        $this->em        = $this->getTestEntityManager();
         $this->validator = new SchemaValidator($this->em);
     }
 
@@ -39,7 +36,7 @@ class SchemaValidatorTest extends OrmTestCase
         self::assertEmpty($this->validator->validateMapping());
     }
 
-    public function modelSetProvider(): array
+    public function modelSetProvider() : array
     {
         return [
             'cms'        => [__DIR__ . '/../../Models/CMS'],
@@ -114,7 +111,7 @@ class SchemaValidatorTest extends OrmTestCase
     public function testInvalidTripleAssociationAsKeyMapping()
     {
         $classThree = $this->em->getClassMetadata(DDC1649Three::class);
-        $errors = $this->validator->validateClass($classThree);
+        $errors     = $this->validator->validateClass($classThree);
 
         $message1 = "Cannot map association %s#%s as identifier, because the target entity '%s' also maps an association as identifier.";
         $message2 = "The referenced column name '%s' has to be a primary key column on the target entity class '%s'.";
@@ -133,16 +130,14 @@ class SchemaValidatorTest extends OrmTestCase
      */
     public function testInvalidBiDirectionalRelationMappingMissingInversedByAttribute()
     {
-        $class = $this->em->getClassMetadata(DDC3274One::class);
+        $class  = $this->em->getClassMetadata(DDC3274One::class);
         $errors = $this->validator->validateClass($class);
 
-        $message = "The property %s#%s is on the inverse side of a bi-directional relationship, but the "
+        $message = 'The property %s#%s is on the inverse side of a bi-directional relationship, but the '
             . "specified mappedBy association on the target-entity %s#%s does not contain the required 'inversedBy=\"%s\"' attribute.";
 
         self::assertEquals(
-            [
-                sprintf($message, DDC3274One::class, 'two', DDC3274Two::class, 'one', 'two')
-            ],
+            [sprintf($message, DDC3274One::class, 'two', DDC3274Two::class, 'one', 'two')],
             $errors
         );
     }
@@ -152,15 +147,13 @@ class SchemaValidatorTest extends OrmTestCase
      */
     public function testInvalidOrderByInvalidField()
     {
-        $class = $this->em->getClassMetadata(DDC3322One::class);
+        $class  = $this->em->getClassMetadata(DDC3322One::class);
         $errors = $this->validator->validateClass($class);
 
         $message = "The association %s#%s is ordered by a property '%s' that is non-existing field on the target entity '%s'.";
 
         self::assertEquals(
-            [
-                sprintf($message, DDC3322One::class, 'invalidAssoc', 'invalidField', DDC3322ValidEntity1::class)
-            ],
+            [sprintf($message, DDC3322One::class, 'invalidAssoc', 'invalidField', DDC3322ValidEntity1::class)],
             $errors
         );
     }
@@ -170,15 +163,13 @@ class SchemaValidatorTest extends OrmTestCase
      */
     public function testInvalidOrderByCollectionValuedAssociation()
     {
-        $class = $this->em->getClassMetadata(DDC3322Two::class);
+        $class  = $this->em->getClassMetadata(DDC3322Two::class);
         $errors = $this->validator->validateClass($class);
 
         $message = "The association %s#%s is ordered by a property '%s' on '%s' that is a collection-valued association.";
 
         self::assertEquals(
-            [
-                sprintf($message, DDC3322Two::class, 'invalidAssoc', 'oneToMany', DDC3322ValidEntity1::class)
-            ],
+            [sprintf($message, DDC3322Two::class, 'invalidAssoc', 'oneToMany', DDC3322ValidEntity1::class)],
             $errors
         );
     }
@@ -188,30 +179,26 @@ class SchemaValidatorTest extends OrmTestCase
      */
     public function testInvalidOrderByAssociationInverseSide()
     {
-        $class = $this->em->getClassMetadata(DDC3322Three::class);
+        $class  = $this->em->getClassMetadata(DDC3322Three::class);
         $errors = $this->validator->validateClass($class);
 
         $message = "The association %s#%s is ordered by a property '%s' on '%s' that is the inverse side of an association.";
 
         self::assertEquals(
-            [
-                sprintf($message, DDC3322Three::class, 'invalidAssoc', 'oneToOneInverse', DDC3322ValidEntity1::class)
-            ],
+            [sprintf($message, DDC3322Three::class, 'invalidAssoc', 'oneToOneInverse', DDC3322ValidEntity1::class)],
             $errors
         );
     }
 
     public function testInvalidReferencedJoinTableColumnIsNotPrimary() : void
     {
-        $class = $this->em->getClassMetadata(InvalidEntity3::class);
+        $class  = $this->em->getClassMetadata(InvalidEntity3::class);
         $errors = $this->validator->validateClass($class);
 
         $message = "The referenced column name '%s' has to be a primary key column on the target entity class '%s'.";
 
         self::assertEquals(
-            [
-                sprintf($message, 'nonId4', InvalidEntity4::class)
-            ],
+            [sprintf($message, 'nonId4', InvalidEntity4::class)],
             $errors
         );
     }
@@ -222,13 +209,9 @@ class SchemaValidatorTest extends OrmTestCase
  */
 class InvalidEntity1
 {
-    /**
-     * @ORM\Id @ORM\Column
-     */
+    /** @ORM\Id @ORM\Column */
     protected $key1;
-    /**
-     * @ORM\Id @ORM\Column
-     */
+    /** @ORM\Id @ORM\Column */
     protected $key2;
     /**
      * @ORM\ManyToMany (targetEntity=InvalidEntity2::class)
@@ -245,19 +228,13 @@ class InvalidEntity1
  */
 class InvalidEntity2
 {
-    /**
-     * @ORM\Id @ORM\Column
-     */
+    /** @ORM\Id @ORM\Column */
     protected $key3;
 
-    /**
-     * @ORM\Id @ORM\Column
-     */
+    /** @ORM\Id @ORM\Column */
     protected $key4;
 
-    /**
-     * @ORM\ManyToOne(targetEntity=InvalidEntity1::class)
-     */
+    /** @ORM\ManyToOne(targetEntity=InvalidEntity1::class) */
     protected $assoc;
 }
 
@@ -266,9 +243,7 @@ class InvalidEntity2
  */
 class InvalidEntity3
 {
-    /**
-     * @ORM\Id @ORM\Column
-     */
+    /** @ORM\Id @ORM\Column */
     protected $id3;
 
     /**
@@ -287,13 +262,9 @@ class InvalidEntity3
  */
 class InvalidEntity4
 {
-    /**
-     * @ORM\Id @ORM\Column
-     */
+    /** @ORM\Id @ORM\Column */
     protected $id4;
-    /**
-     * @ORM\Column
-     */
+    /** @ORM\Column */
     protected $nonId4;
 }
 
@@ -355,9 +326,7 @@ class DDC1587ValidEntity2
  */
 class DDC1649One
 {
-    /**
-     * @ORM\Id @ORM\Column @ORM\GeneratedValue
-     */
+    /** @ORM\Id @ORM\Column @ORM\GeneratedValue */
     public $id;
 }
 
@@ -375,8 +344,7 @@ class DDC1649Two
  */
 class DDC1649Three
 {
-    /** @ORM\Id @ORM\ManyToOne(targetEntity=DDC1649Two::class) @ORM\JoinColumn(name="id",
-     * referencedColumnName="id") */
+    /** @ORM\Id @ORM\ManyToOne(targetEntity=DDC1649Two::class) @ORM\JoinColumn(name="id",  referencedColumnName="id") */
     private $two;
 }
 
@@ -385,14 +353,10 @@ class DDC1649Three
  */
 class DDC3274One
 {
-    /**
-     * @ORM\Id @ORM\Column @ORM\GeneratedValue
-     */
+    /** @ORM\Id @ORM\Column @ORM\GeneratedValue */
     private $id;
 
-    /**
-     * @ORM\OneToMany(targetEntity=DDC3274Two::class, mappedBy="one")
-     */
+    /** @ORM\OneToMany(targetEntity=DDC3274Two::class, mappedBy="one") */
     private $two;
 }
 
@@ -413,59 +377,37 @@ class DDC3274Two
  */
 class DDC3322ValidEntity1
 {
-    /**
-     * @ORM\Id @ORM\Column @ORM\GeneratedValue
-     */
+    /** @ORM\Id @ORM\Column @ORM\GeneratedValue */
     private $id;
 
-    /**
-     * @ORM\ManyToOne(targetEntity=DDC3322One::class, inversedBy="validAssoc")
-     */
+    /** @ORM\ManyToOne(targetEntity=DDC3322One::class, inversedBy="validAssoc") */
     private $oneValid;
 
-    /**
-     * @ORM\ManyToOne(targetEntity=DDC3322One::class, inversedBy="invalidAssoc")
-     */
+    /** @ORM\ManyToOne(targetEntity=DDC3322One::class, inversedBy="invalidAssoc") */
     private $oneInvalid;
 
-    /**
-     * @ORM\ManyToOne(targetEntity=DDC3322Two::class, inversedBy="validAssoc")
-     */
+    /** @ORM\ManyToOne(targetEntity=DDC3322Two::class, inversedBy="validAssoc") */
     private $twoValid;
 
-    /**
-     * @ORM\ManyToOne(targetEntity=DDC3322Two::class, inversedBy="invalidAssoc")
-     */
+    /** @ORM\ManyToOne(targetEntity=DDC3322Two::class, inversedBy="invalidAssoc") */
     private $twoInvalid;
 
-    /**
-     * @ORM\ManyToOne(targetEntity=DDC3322Three::class, inversedBy="validAssoc")
-     */
+    /** @ORM\ManyToOne(targetEntity=DDC3322Three::class, inversedBy="validAssoc") */
     private $threeValid;
 
-    /**
-     * @ORM\ManyToOne(targetEntity=DDC3322Three::class, inversedBy="invalidAssoc")
-     */
+    /** @ORM\ManyToOne(targetEntity=DDC3322Three::class, inversedBy="invalidAssoc") */
     private $threeInvalid;
 
-    /**
-     * @ORM\OneToMany(targetEntity=DDC3322ValidEntity2::class, mappedBy="manyToOne")
-     */
+    /** @ORM\OneToMany(targetEntity=DDC3322ValidEntity2::class, mappedBy="manyToOne") */
     private $oneToMany;
 
-    /**
-     * @ORM\ManyToOne(targetEntity=DDC3322ValidEntity2::class, inversedBy="oneToMany")
-     */
+    /** @ORM\ManyToOne(targetEntity=DDC3322ValidEntity2::class, inversedBy="oneToMany") */
     private $manyToOne;
 
-    /**
-     * @ORM\OneToOne(targetEntity=DDC3322ValidEntity2::class, mappedBy="oneToOneOwning")
-     */
+    /** @ORM\OneToOne(targetEntity=DDC3322ValidEntity2::class, mappedBy="oneToOneOwning") */
     private $oneToOneInverse;
 
-    /**
-     * @ORM\OneToOne(targetEntity=DDC3322ValidEntity2::class, inversedBy="oneToOneInverse")
-     */
+    /** @ORM\OneToOne(targetEntity=DDC3322ValidEntity2::class, inversedBy="oneToOneInverse") */
     private $oneToOneOwning;
 }
 
@@ -474,29 +416,19 @@ class DDC3322ValidEntity1
  */
 class DDC3322ValidEntity2
 {
-    /**
-     * @ORM\Id @ORM\Column @ORM\GeneratedValue
-     */
+    /** @ORM\Id @ORM\Column @ORM\GeneratedValue */
     private $id;
 
-    /**
-     * @ORM\ManyToOne(targetEntity=DDC3322ValidEntity1::class, inversedBy="oneToMany")
-     */
+    /** @ORM\ManyToOne(targetEntity=DDC3322ValidEntity1::class, inversedBy="oneToMany") */
     private $manyToOne;
 
-    /**
-     * @ORM\OneToMany(targetEntity=DDC3322ValidEntity1::class, mappedBy="manyToOne")
-     */
+    /** @ORM\OneToMany(targetEntity=DDC3322ValidEntity1::class, mappedBy="manyToOne") */
     private $oneToMany;
 
-    /**
-     * @ORM\OneToOne(targetEntity=DDC3322ValidEntity1::class, inversedBy="oneToOneInverse")
-     */
+    /** @ORM\OneToOne(targetEntity=DDC3322ValidEntity1::class, inversedBy="oneToOneInverse") */
     private $oneToOneOwning;
 
-    /**
-     * @ORM\OneToOne(targetEntity=DDC3322ValidEntity1::class, mappedBy="oneToOneOwning")
-     */
+    /** @ORM\OneToOne(targetEntity=DDC3322ValidEntity1::class, mappedBy="oneToOneOwning") */
     private $oneToOneInverse;
 }
 
@@ -505,9 +437,7 @@ class DDC3322ValidEntity2
  */
 class DDC3322One
 {
-    /**
-     * @ORM\Id @ORM\Column @ORM\GeneratedValue
-     */
+    /** @ORM\Id @ORM\Column @ORM\GeneratedValue */
     private $id;
 
     /**
@@ -528,9 +458,7 @@ class DDC3322One
  */
 class DDC3322Two
 {
-    /**
-     * @ORM\Id @ORM\Column @ORM\GeneratedValue
-     */
+    /** @ORM\Id @ORM\Column @ORM\GeneratedValue */
     private $id;
 
     /**
@@ -551,9 +479,7 @@ class DDC3322Two
  */
 class DDC3322Three
 {
-    /**
-     * @ORM\Id @ORM\Column @ORM\GeneratedValue
-     */
+    /** @ORM\Id @ORM\Column @ORM\GeneratedValue */
     private $id;
 
     /**

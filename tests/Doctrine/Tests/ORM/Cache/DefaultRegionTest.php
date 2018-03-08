@@ -77,10 +77,10 @@ class DefaultRegionTest extends AbstractRegionTest
 
     public function testGetMulti()
     {
-        $key1 = new CacheKeyMock('key.1');
+        $key1   = new CacheKeyMock('key.1');
         $value1 = new CacheEntryMock(['id' => 1, 'name' => 'bar']);
 
-        $key2 = new CacheKeyMock('key.2');
+        $key2   = new CacheKeyMock('key.2');
         $value2 = new CacheEntryMock(['id' => 2, 'name' => 'bar']);
 
         self::assertFalse($this->region->contains($key1));
@@ -109,12 +109,10 @@ class DefaultRegionTest extends AbstractRegionTest
  */
 final class SharedArrayCache extends ArrayCache
 {
-    public function createChild(): Cache
+    public function createChild() : Cache
     {
         return new class ($this) extends CacheProvider {
-            /**
-             * @var ArrayCache
-             */
+            /** @var ArrayCache */
             private $parent;
 
             public function __construct(ArrayCache $parent)

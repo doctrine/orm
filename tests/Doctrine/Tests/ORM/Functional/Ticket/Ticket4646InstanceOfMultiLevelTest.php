@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\Tests\ORM\Functional\Ticket;
 
 use Doctrine\ORM\Annotation as ORM;
@@ -7,7 +9,7 @@ use Doctrine\Tests\OrmFunctionalTestCase;
 
 class Ticket4646InstanceOfMultiLevelTest extends OrmFunctionalTestCase
 {
-    protected function setUp(): void
+    protected function setUp() : void
     {
         parent::setUp();
 
@@ -18,16 +20,16 @@ class Ticket4646InstanceOfMultiLevelTest extends OrmFunctionalTestCase
         ]);
     }
 
-    public function testInstanceOf(): void
+    public function testInstanceOf() : void
     {
         $this->em->persist(new PersonTicket4646MultiLevel());
         $this->em->persist(new EmployeeTicket4646MultiLevel());
         $this->em->persist(new EngineerTicket4646MultiLevel());
         $this->em->flush();
 
-        $dql = 'SELECT p FROM Doctrine\Tests\ORM\Functional\Ticket\PersonTicket4646MultiLevel p
+        $dql    = 'SELECT p FROM Doctrine\Tests\ORM\Functional\Ticket\PersonTicket4646MultiLevel p
                 WHERE p INSTANCE OF Doctrine\Tests\ORM\Functional\Ticket\PersonTicket4646MultiLevel';
-        $query = $this->em->createQuery($dql);
+        $query  = $this->em->createQuery($dql);
         $result = $query->getResult();
 
         self::assertCount(3, $result);
@@ -55,7 +57,7 @@ class PersonTicket4646MultiLevel
      */
     private $id;
 
-    public function getId(): ?int
+    public function getId() : ?int
     {
         return $this->id;
     }

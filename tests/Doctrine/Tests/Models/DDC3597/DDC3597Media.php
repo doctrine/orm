@@ -9,7 +9,6 @@ use Doctrine\ORM\Annotation as ORM;
 /**
  * Description of Media
  *
- * @author Volker von Hoesslin <volker.von.hoesslin@empora.com>
  * @ORM\Entity
  */
 abstract class DDC3597Media extends DDC3597Root
@@ -22,7 +21,7 @@ abstract class DDC3597Media extends DDC3597Root
     private $distributionHash;
 
     /**
-     * @var integer
+     * @var int
      *
      * @ORM\Column
      */

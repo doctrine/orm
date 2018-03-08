@@ -15,7 +15,7 @@ class DDC1258Test extends OrmFunctionalTestCase
         $this->schemaTool->createSchema(
             [
             $this->em->getClassMetadata(TestEntity::class),
-            $this->em->getClassMetadata(TestAdditionalEntity::class)
+            $this->em->getClassMetadata(TestAdditionalEntity::class),
             ]
         );
     }
@@ -66,13 +66,9 @@ class TestEntity
      * @ORM\GeneratedValue(strategy="AUTO")
      */
     protected $id;
-    /**
-     * @ORM\Column(type="integer")
-     */
+    /** @ORM\Column(type="integer") */
     protected $value;
-    /**
-     * @ORM\OneToOne(targetEntity=TestAdditionalEntity::class, inversedBy="entity", orphanRemoval=true, cascade={"persist", "remove"})
-     */
+    /** @ORM\OneToOne(targetEntity=TestAdditionalEntity::class, inversedBy="entity", orphanRemoval=true, cascade={"persist", "remove"}) */
     protected $additional;
 
     public function getValue()
@@ -106,13 +102,9 @@ class TestAdditionalEntity
      * @ORM\GeneratedValue(strategy="AUTO")
      */
     protected $id;
-    /**
-     * @ORM\OneToOne(targetEntity=TestEntity::class, mappedBy="additional")
-     */
+    /** @ORM\OneToOne(targetEntity=TestEntity::class, mappedBy="additional") */
     protected $entity;
-    /**
-     * @ORM\Column(type="boolean")
-     */
+    /** @ORM\Column(type="boolean") */
     protected $bool;
 
     public function __construct()

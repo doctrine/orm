@@ -9,6 +9,10 @@ use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Mapping\CacheMetadata;
 use Doctrine\ORM\Mapping\CacheUsage;
 use Doctrine\ORM\Mapping\ClassMetadata;
+use function sprintf;
+use function str_replace;
+use function strstr;
+use function strtolower;
 
 class CacheMetadataListener
 {
@@ -22,13 +26,10 @@ class CacheMetadataListener
      */
     protected $enabledItems = [];
 
-    /**
-     * @param \Doctrine\Common\Persistence\Event\LoadClassMetadataEventArgs $event
-     */
     public function loadClassMetadata(LoadClassMetadataEventArgs $event)
     {
         $metadata = $event->getClassMetadata();
-        $em = $event->getObjectManager();
+        $em       = $event->getObjectManager();
 
         /** @var $metadata \Doctrine\ORM\Mapping\ClassMetadata */
         if (strstr($metadata->getClassName(), 'Doctrine\Tests\Models\Cache')) {
@@ -39,7 +40,6 @@ class CacheMetadataListener
     }
 
     /**
-     * @param ClassMetadata $metadata
      *
      * @return bool
      */
@@ -48,18 +48,11 @@ class CacheMetadataListener
         return isset($this->enabledItems[$metadata->getClassName()]);
     }
 
-    /**
-     * @param ClassMetadata $metadata
-     */
     private function recordVisit(ClassMetadata $metadata)
     {
         $this->enabledItems[$metadata->getClassName()] = true;
     }
 
-    /**
-     * @param ClassMetadata          $metadata
-     * @param EntityManagerInterface $em
-     */
     protected function enableCaching(ClassMetadata $metadata, EntityManagerInterface $em)
     {
         if ($this->isVisited($metadata)) {

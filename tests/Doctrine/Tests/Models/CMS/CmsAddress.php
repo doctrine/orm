@@ -4,14 +4,10 @@ declare(strict_types=1);
 
 namespace Doctrine\Tests\Models\CMS;
 
-use Doctrine\DBAL\Types\Type;
 use Doctrine\ORM\Annotation as ORM;
-use Doctrine\ORM\Mapping;
 
 /**
  * CmsAddress
- *
- * @author Roman S. Borschel
  *
  * @ORM\Entity
  * @ORM\Table(name="cms_addresses")
@@ -26,19 +22,13 @@ class CmsAddress
      */
     public $id;
 
-    /**
-     * @ORM\Column(length=50)
-     */
+    /** @ORM\Column(length=50) */
     public $country;
 
-    /**
-     * @ORM\Column(length=50)
-     */
+    /** @ORM\Column(length=50) */
     public $zip;
 
-    /**
-     * @ORM\Column(length=50)
-     */
+    /** @ORM\Column(length=50) */
     public $city;
 
     /**

@@ -5,11 +5,12 @@ declare(strict_types=1);
 namespace Doctrine\Tests\ORM\Functional\Ticket;
 
 use Doctrine\ORM\Annotation as ORM;
+use Doctrine\Tests\OrmFunctionalTestCase;
 
 /**
  * @group DDC-1250
  */
-class DDC1250Test extends \Doctrine\Tests\OrmFunctionalTestCase
+class DDC1250Test extends OrmFunctionalTestCase
 {
     public function setUp()
     {
@@ -23,12 +24,12 @@ class DDC1250Test extends \Doctrine\Tests\OrmFunctionalTestCase
 
     public function testIssue()
     {
-        $c1 = new DDC1250ClientHistory;
-        $c2 = new DDC1250ClientHistory;
+        $c1                         = new DDC1250ClientHistory();
+        $c2                         = new DDC1250ClientHistory();
         $c1->declinedClientsHistory = $c2;
-        $c1->declinedBy = $c2;
-        $c2->declinedBy = $c1;
-        $c2->declinedClientsHistory= $c1;
+        $c1->declinedBy             = $c2;
+        $c2->declinedBy             = $c1;
+        $c2->declinedClientsHistory = $c1;
 
         $this->em->persist($c1);
         $this->em->persist($c2);
@@ -50,7 +51,8 @@ class DDC1250ClientHistory
     /** @ORM\Id @ORM\GeneratedValue @ORM\Column(type="integer") */
     public $id;
 
-    /** @ORM\OneToOne(targetEntity=DDC1250ClientHistory::class, inversedBy="declinedBy")
+    /**
+     * @ORM\OneToOne(targetEntity=DDC1250ClientHistory::class, inversedBy="declinedBy")
      * @ORM\JoinColumn(name="declined_clients_history_id", referencedColumnName="id")
      */
     public $declinedClientsHistory;

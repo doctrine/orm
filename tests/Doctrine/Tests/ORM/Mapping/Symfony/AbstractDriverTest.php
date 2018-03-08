@@ -6,6 +6,11 @@ namespace Doctrine\Tests\ORM\Mapping\Symfony;
 
 use Doctrine\Common\Persistence\Mapping\MappingException;
 use Doctrine\Tests\DoctrineTestCase;
+use function mkdir;
+use function rmdir;
+use function sys_get_temp_dir;
+use function touch;
+use function unlink;
 
 /**
  * @group DDC-1418
@@ -21,7 +26,7 @@ abstract class AbstractDriverTest extends DoctrineTestCase
             ]
         );
 
-        touch($filename = $this->dir.'/Foo'.$this->getFileExtension());
+        touch($filename = $this->dir . '/Foo' . $this->getFileExtension());
         self::assertEquals($filename, $driver->getLocator()->findMappingFile('MyNamespace\MySubnamespace\Entity\Foo'));
     }
 
@@ -33,7 +38,7 @@ abstract class AbstractDriverTest extends DoctrineTestCase
             ]
         );
 
-        touch($filename = $this->dir.'/Foo.Bar'.$this->getFileExtension());
+        touch($filename = $this->dir . '/Foo.Bar' . $this->getFileExtension());
         self::assertEquals($filename, $driver->getLocator()->findMappingFile('MyNamespace\MySubnamespace\Entity\Foo\Bar'));
     }
 
@@ -67,7 +72,7 @@ abstract class AbstractDriverTest extends DoctrineTestCase
 
     protected function setUp()
     {
-        $this->dir = sys_get_temp_dir().'/abstract_driver_test';
+        $this->dir = sys_get_temp_dir() . '/abstract_driver_test';
         @mkdir($this->dir, 0777, true);
     }
 

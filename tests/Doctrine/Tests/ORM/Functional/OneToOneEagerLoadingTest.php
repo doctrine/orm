@@ -9,6 +9,8 @@ use Doctrine\ORM\Annotation as ORM;
 use Doctrine\ORM\Tools\SchemaTool;
 use Doctrine\Tests\OrmFunctionalTestCase;
 use ProxyManager\Proxy\GhostObjectInterface;
+use function count;
+use function get_class;
 
 /**
  * @group DDC-952
@@ -38,8 +40,8 @@ class OneToOneEagerLoadingTest extends OrmFunctionalTestCase
      */
     public function testEagerLoadOneToOneOwningSide()
     {
-        $train = new Train(new TrainOwner("Alexander"));
-        $driver = new TrainDriver("Benjamin");
+        $train  = new Train(new TrainOwner('Alexander'));
+        $driver = new TrainDriver('Benjamin');
         $waggon = new Waggon();
 
         $train->setDriver($driver);
@@ -63,7 +65,7 @@ class OneToOneEagerLoadingTest extends OrmFunctionalTestCase
      */
     public function testEagerLoadOneToOneNullOwningSide()
     {
-        $train = new Train(new TrainOwner("Alexander"));
+        $train = new Train(new TrainOwner('Alexander'));
 
         $this->em->persist($train); // cascades
         $this->em->flush();
@@ -83,7 +85,7 @@ class OneToOneEagerLoadingTest extends OrmFunctionalTestCase
      */
     public function testEagerLoadOneToOneInverseSide()
     {
-        $owner = new TrainOwner("Alexander");
+        $owner = new TrainOwner('Alexander');
         $train = new Train($owner);
 
         $this->em->persist($train); // cascades
@@ -104,7 +106,7 @@ class OneToOneEagerLoadingTest extends OrmFunctionalTestCase
      */
     public function testEagerLoadOneToOneNullInverseSide()
     {
-        $driver = new TrainDriver("Dagny Taggert");
+        $driver = new TrainDriver('Dagny Taggert');
 
         $this->em->persist($driver);
         $this->em->flush();
@@ -123,7 +125,7 @@ class OneToOneEagerLoadingTest extends OrmFunctionalTestCase
 
     public function testEagerLoadManyToOne()
     {
-        $train = new Train(new TrainOwner("Alexander"));
+        $train  = new Train(new TrainOwner('Alexander'));
         $waggon = new Waggon();
         $train->addWaggon($waggon);
 
@@ -141,8 +143,8 @@ class OneToOneEagerLoadingTest extends OrmFunctionalTestCase
      */
     public function testEagerLoadWithNullableColumnsGeneratesLeftJoinOnBothSides()
     {
-        $train = new Train(new TrainOwner("Alexander"));
-        $driver = new TrainDriver("Benjamin");
+        $train  = new Train(new TrainOwner('Alexander'));
+        $driver = new TrainDriver('Benjamin');
         $train->setDriver($driver);
 
         $this->em->persist($train);
@@ -174,7 +176,7 @@ class OneToOneEagerLoadingTest extends OrmFunctionalTestCase
         $waggon = new Waggon();
 
         // It should have a train
-        $train = new Train(new TrainOwner("Alexander"));
+        $train = new Train(new TrainOwner('Alexander'));
         $train->addWaggon($waggon);
 
         $this->em->persist($train);
@@ -228,13 +230,13 @@ class OneToOneEagerLoadingTest extends OrmFunctionalTestCase
         $this->em->persist($order);
         $this->em->flush();
 
-        $this->em->getConnection()->exec("UPDATE TrainOrder SET train_id = NULL");
+        $this->em->getConnection()->exec('UPDATE TrainOrder SET train_id = NULL');
 
         self::assertSame($train, $order->train);
 
         $this->em->refresh($order);
 
-        self::assertNull($order->train, "Train reference was not refreshed to NULL.");
+        self::assertNull($order->train, 'Train reference was not refreshed to NULL.');
     }
 }
 
@@ -260,9 +262,7 @@ class Train
      * @ORM\JoinColumn(nullable=false)
      */
     public $owner;
-    /**
-     * @ORM\OneToMany(targetEntity=Waggon::class, mappedBy="train", cascade={"persist"})
-     */
+    /** @ORM\OneToMany(targetEntity=Waggon::class, mappedBy="train", cascade={"persist"}) */
     public $waggons;
 
     public function __construct(TrainOwner $owner)

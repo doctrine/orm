@@ -9,6 +9,8 @@ use Doctrine\Tests\Models\Cache\Attraction;
 use Doctrine\Tests\Models\Cache\AttractionContactInfo;
 use Doctrine\Tests\Models\Cache\AttractionInfo;
 use Doctrine\Tests\Models\Cache\AttractionLocationInfo;
+use function count;
+use function get_class;
 
 /**
  * @group DDC-2183
@@ -205,7 +207,7 @@ class SecondLevelCacheJoinTableInheritanceTest extends SecondLevelCacheAbstractT
         $queryCount = $this->getCurrentQueryCount();
         $dql        = 'SELECT attractionInfo FROM Doctrine\Tests\Models\Cache\AttractionInfo attractionInfo';
 
-        $result1    = $this->em->createQuery($dql)
+        $result1 = $this->em->createQuery($dql)
             ->setCacheable(true)
             ->getResult();
 

@@ -7,6 +7,7 @@ namespace Doctrine\Tests\ORM\Functional\Ticket;
 use Doctrine\ORM\Annotation as ORM;
 use Doctrine\Tests\OrmFunctionalTestCase;
 use ProxyManager\Proxy\GhostObjectInterface;
+use function get_class;
 
 class DDC1193Test extends OrmFunctionalTestCase
 {
@@ -18,7 +19,7 @@ class DDC1193Test extends OrmFunctionalTestCase
             [
             $this->em->getClassMetadata(DDC1193Company::class),
             $this->em->getClassMetadata(DDC1193Person::class),
-            $this->em->getClassMetadata(DDC1193Account::class)
+            $this->em->getClassMetadata(DDC1193Account::class),
             ]
         );
     }
@@ -29,7 +30,7 @@ class DDC1193Test extends OrmFunctionalTestCase
     public function testIssue()
     {
         $company = new DDC1193Company();
-        $person = new DDC1193Person();
+        $person  = new DDC1193Person();
         $account = new DDC1193Account();
 
         $person->account = $account;
@@ -48,15 +49,15 @@ class DDC1193Test extends OrmFunctionalTestCase
         /* @var $company DDC1193Company */
         $company = $this->em->find(DDC1193Company::class, $companyId);
 
-        self::assertTrue($this->em->getUnitOfWork()->isInIdentityMap($company), "Company is in identity map.");
+        self::assertTrue($this->em->getUnitOfWork()->isInIdentityMap($company), 'Company is in identity map.');
 
         /* @var $member GhostObjectInterface|DDC1193Person */
         $member = $company->member;
 
         self::assertInstanceOf(GhostObjectInterface::class, $member);
         self::assertInstanceOf(DDC1193Person::class, $member);
-        self::assertFalse($member->isProxyInitialized(), "Pre-Condition");
-        self::assertTrue($this->em->getUnitOfWork()->isInIdentityMap($company->member), "Member is in identity map.");
+        self::assertFalse($member->isProxyInitialized(), 'Pre-Condition');
+        self::assertTrue($this->em->getUnitOfWork()->isInIdentityMap($company->member), 'Member is in identity map.');
 
         $this->em->remove($company);
         $this->em->flush();
@@ -87,9 +88,7 @@ class DDC1193Person
      */
     public $id;
 
-    /**
-     * @ORM\OneToOne(targetEntity=DDC1193Account::class, cascade={"persist", "remove"})
-     */
+    /** @ORM\OneToOne(targetEntity=DDC1193Account::class, cascade={"persist", "remove"}) */
     public $account;
 }
 

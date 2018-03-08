@@ -17,16 +17,10 @@ class DateTimeModel
      * @ORM\GeneratedValue
      */
     public $id;
-    /**
-     * @ORM\Column(name="col_datetime", type="datetime", nullable=true)
-     */
+    /** @ORM\Column(name="col_datetime", type="datetime", nullable=true) */
     public $datetime;
-    /**
-     * @ORM\Column(name="col_date", type="date", nullable=true)
-     */
+    /** @ORM\Column(name="col_date", type="date", nullable=true) */
     public $date;
-    /**
-     * @ORM\Column(name="col_time", type="time", nullable=true)
-     */
+    /** @ORM\Column(name="col_time", type="time", nullable=true) */
     public $time;
 }

@@ -27,9 +27,7 @@ abstract class Attraction
      */
     protected $id;
 
-    /**
-     * @ORM\Column(unique=true)
-     */
+    /** @ORM\Column(unique=true) */
     protected $name;
 
     /**
@@ -89,7 +87,7 @@ abstract class Attraction
 
     public function addInfo(AttractionInfo $info)
     {
-        if ( ! $this->infos->contains($info)) {
+        if (! $this->infos->contains($info)) {
             $this->infos->add($info);
         }
     }

@@ -5,13 +5,16 @@ declare(strict_types=1);
 namespace Doctrine\Tests\ORM\Functional\Ticket;
 
 use Doctrine\ORM\Annotation as ORM;
+use Doctrine\Tests\OrmFunctionalTestCase;
+use const PHP_EOL;
+use function get_class;
 
 /**
  * @group DDC-1655
  * @group DDC-1640
  * @group DDC-1556
  */
-class DDC1655Test extends \Doctrine\Tests\OrmFunctionalTestCase
+class DDC1655Test extends OrmFunctionalTestCase
 {
     public function setUp()
     {
@@ -35,7 +38,7 @@ class DDC1655Test extends \Doctrine\Tests\OrmFunctionalTestCase
         $conn = static::$sharedConn;
 
         // In case test is skipped, tearDown is called, but no setup may have run
-        if (!$conn) {
+        if (! $conn) {
             return;
         }
 
@@ -58,15 +61,15 @@ class DDC1655Test extends \Doctrine\Tests\OrmFunctionalTestCase
     public function testPostLoadOneToManyInheritance()
     {
         $cm = $this->em->getClassMetadata(DDC1655Foo::class);
-        self::assertEquals(["postLoad" => ["postLoad"]], $cm->lifecycleCallbacks);
+        self::assertEquals(['postLoad' => ['postLoad']], $cm->lifecycleCallbacks);
 
         $cm = $this->em->getClassMetadata(DDC1655Bar::class);
-        self::assertEquals(["postLoad" => ["postLoad", "postSubLoaded"]], $cm->lifecycleCallbacks);
+        self::assertEquals(['postLoad' => ['postLoad', 'postSubLoaded']], $cm->lifecycleCallbacks);
 
-        $baz = new DDC1655Baz();
-        $foo = new DDC1655Foo();
+        $baz      = new DDC1655Baz();
+        $foo      = new DDC1655Foo();
         $foo->baz = $baz;
-        $bar = new DDC1655Bar();
+        $bar      = new DDC1655Bar();
         $bar->baz = $baz;
 
         $this->em->persist($foo);
@@ -77,7 +80,7 @@ class DDC1655Test extends \Doctrine\Tests\OrmFunctionalTestCase
 
         $baz = $this->em->find(get_class($baz), $baz->id);
         foreach ($baz->foos as $foo) {
-            self::assertEquals(1, $foo->loaded, "should have loaded callback counter incremented for " . get_class($foo));
+            self::assertEquals(1, $foo->loaded, 'should have loaded callback counter incremented for ' . get_class($foo));
         }
     }
 
@@ -101,7 +104,7 @@ class DDC1655Test extends \Doctrine\Tests\OrmFunctionalTestCase
         self::assertEquals(1, $bar->loaded);
         self::assertEquals(1, $bar->subLoaded);
 
-        $dql = "SELECT b FROM " . __NAMESPACE__ . "\DDC1655Bar b WHERE b.id = ?1";
+        $dql = 'SELECT b FROM ' . __NAMESPACE__ . '\DDC1655Bar b WHERE b.id = ?1';
         $bar = $this->em->createQuery($dql)->setParameter(1, $bar->id)->getSingleResult();
 
         self::assertEquals(1, $bar->loaded);
@@ -130,9 +133,7 @@ class DDC1655Foo
 
     public $loaded = 0;
 
-    /**
-     * @ORM\ManyToOne(targetEntity=DDC1655Baz::class, inversedBy="foos")
-     */
+    /** @ORM\ManyToOne(targetEntity=DDC1655Baz::class, inversedBy="foos") */
     public $baz;
 
     /**
@@ -169,8 +170,6 @@ class DDC1655Baz
     /** @ORM\Id @ORM\GeneratedValue @ORM\Column(type="integer") */
     public $id;
 
-    /**
-     * @ORM\OneToMany(targetEntity=DDC1655Foo::class, mappedBy="baz")
-     */
+    /** @ORM\OneToMany(targetEntity=DDC1655Foo::class, mappedBy="baz") */
     public $foos = [];
 }

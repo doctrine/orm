@@ -11,7 +11,6 @@ use Doctrine\ORM\Annotation as ORM;
  * ECommerceProduct
  * Represents a type of product of a shopping application.
  *
- * @author Giorgio Sironi
  * @ORM\Entity
  * @ORM\Table(name="ecommerce_products",indexes={@ORM\Index(name="name_idx", columns={"name"})})
  */
@@ -24,9 +23,7 @@ class ECommerceProduct
      */
     private $id;
 
-    /**
-     * @ORM\Column(type="string", length=50, nullable=true)
-     */
+    /** @ORM\Column(type="string", length=50, nullable=true) */
     private $name;
 
     /**
@@ -67,13 +64,13 @@ class ECommerceProduct
     private $related;
 
     public $isCloned = false;
-    public $wakeUp = false;
+    public $wakeUp   = false;
 
     public function __construct()
     {
-        $this->features = new ArrayCollection;
-        $this->categories = new ArrayCollection;
-        $this->related = new ArrayCollection;
+        $this->features   = new ArrayCollection();
+        $this->categories = new ArrayCollection();
+        $this->related    = new ArrayCollection();
     }
 
     public function getId()
@@ -134,7 +131,7 @@ class ECommerceProduct
 
     public function addCategory(ECommerceCategory $category)
     {
-        if (!$this->categories->contains($category)) {
+        if (! $this->categories->contains($category)) {
             $this->categories[] = $category;
             $category->addProduct($this);
         }
@@ -165,7 +162,7 @@ class ECommerceProduct
 
     public function addRelated(ECommerceProduct $related)
     {
-        if (!$this->related->contains($related)) {
+        if (! $this->related->contains($related)) {
             $this->related[] = $related;
             $related->addRelated($this);
         }

@@ -12,9 +12,7 @@ use Doctrine\ORM\Annotation as ORM;
  */
 class CompanyAuction extends CompanyEvent
 {
-    /**
-     * @ORM\Column(type="string")
-     */
+    /** @ORM\Column(type="string") */
     private $data;
 
     public function setData($data)

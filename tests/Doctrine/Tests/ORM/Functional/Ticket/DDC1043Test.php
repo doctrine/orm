@@ -20,19 +20,19 @@ class DDC1043Test extends OrmFunctionalTestCase
 
     public function testChangeSetPlusWeirdPHPCastingIntCastingRule()
     {
-        $user = new CmsUser();
-        $user->name = "John Galt";
-        $user->username = "jgalt";
-        $user->status = "+44";
+        $user           = new CmsUser();
+        $user->name     = 'John Galt';
+        $user->username = 'jgalt';
+        $user->status   = '+44';
 
         $this->em->persist($user);
         $this->em->flush();
 
-        $user->status = "44";
+        $user->status = '44';
         $this->em->flush();
         $this->em->clear();
 
         $user = $this->em->find(CmsUser::class, $user->id);
-        self::assertSame("44", $user->status);
+        self::assertSame('44', $user->status);
     }
 }

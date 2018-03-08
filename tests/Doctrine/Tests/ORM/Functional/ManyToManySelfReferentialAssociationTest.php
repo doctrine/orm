@@ -14,9 +14,9 @@ use Doctrine\Tests\Models\ECommerce\ECommerceProduct;
  */
 class ManyToManySelfReferentialAssociationTest extends AbstractManyToManyAssociationTestCase
 {
-    protected $firstField = 'product_id';
+    protected $firstField  = 'product_id';
     protected $secondField = 'related_id';
-    protected $table = 'ecommerce_products_related';
+    protected $table       = 'ecommerce_products_related';
     private $firstProduct;
     private $secondProduct;
     private $firstRelated;
@@ -28,15 +28,15 @@ class ManyToManySelfReferentialAssociationTest extends AbstractManyToManyAssocia
 
         parent::setUp();
 
-        $this->firstProduct = new ECommerceProduct();
+        $this->firstProduct  = new ECommerceProduct();
         $this->secondProduct = new ECommerceProduct();
-        $this->firstRelated = new ECommerceProduct();
+        $this->firstRelated  = new ECommerceProduct();
 
-        $this->firstRelated->setName("Business");
+        $this->firstRelated->setName('Business');
 
         $this->secondRelated = new ECommerceProduct();
 
-        $this->secondRelated->setName("Home");
+        $this->secondRelated->setName('Home');
     }
 
     public function testSavesAManyToManyAssociationWithCascadeSaveSet()
@@ -82,7 +82,7 @@ class ManyToManySelfReferentialAssociationTest extends AbstractManyToManyAssocia
         $metadata = $this->em->getClassMetadata(ECommerceProduct::class);
         $metadata->getProperty('related')->setFetchMode(FetchMode::LAZY);
 
-        $query = $this->em->createQuery('SELECT p FROM Doctrine\Tests\Models\ECommerce\ECommerceProduct p');
+        $query    = $this->em->createQuery('SELECT p FROM Doctrine\Tests\Models\ECommerce\ECommerceProduct p');
         $products = $query->getResult();
 
         self::assertLoadingOfOwningSide($products);
@@ -94,8 +94,8 @@ class ManyToManySelfReferentialAssociationTest extends AbstractManyToManyAssocia
         self::assertCount(2, $firstProduct->getRelated());
         self::assertCount(2, $secondProduct->getRelated());
 
-        $categories = $firstProduct->getRelated();
-        $firstRelatedBy = $categories[0]->getRelated();
+        $categories      = $firstProduct->getRelated();
+        $firstRelatedBy  = $categories[0]->getRelated();
         $secondRelatedBy = $categories[1]->getRelated();
 
         self::assertCount(2, $firstRelatedBy);

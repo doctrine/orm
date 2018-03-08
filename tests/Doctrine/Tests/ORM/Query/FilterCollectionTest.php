@@ -4,20 +4,17 @@ declare(strict_types=1);
 
 namespace Doctrine\Tests\ORM\Query;
 
+use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\Query\Filter\SQLFilter;
 use Doctrine\Tests\OrmTestCase;
 
 /**
  * Test case for FilterCollection
- *
- * @author Guilherme Blanco <guilhermeblanco@hotmail.com>
  */
 class FilterCollectionTest extends OrmTestCase
 {
-    /**
-     * @var \Doctrine\ORM\EntityManagerInterface
-     */
+    /** @var EntityManagerInterface */
     private $em;
 
     protected function setUp()

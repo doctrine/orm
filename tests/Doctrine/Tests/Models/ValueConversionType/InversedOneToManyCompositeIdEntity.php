@@ -25,14 +25,10 @@ class InversedOneToManyCompositeIdEntity
      */
     public $id2;
 
-    /**
-     * @ORM\Column(type="string", name="some_property")
-     */
+    /** @ORM\Column(type="string", name="some_property") */
     public $someProperty;
 
-    /**
-     * @ORM\OneToMany(targetEntity=OwningManyToOneCompositeIdEntity::class, mappedBy="associatedEntity")
-     */
+    /** @ORM\OneToMany(targetEntity=OwningManyToOneCompositeIdEntity::class, mappedBy="associatedEntity") */
     public $associatedEntities;
 
     public function __construct()

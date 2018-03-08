@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Doctrine\Tests\Models\DDC117;
 
+use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\Annotation as ORM;
 
 /**
@@ -17,31 +18,23 @@ class DDC117Article
     /** @ORM\Column */
     private $title;
 
-    /**
-     * @ORM\OneToMany(targetEntity=DDC117Reference::class, mappedBy="source", cascade={"remove"})
-     */
+    /** @ORM\OneToMany(targetEntity=DDC117Reference::class, mappedBy="source", cascade={"remove"}) */
     private $references;
 
-    /**
-     * @ORM\OneToOne(targetEntity=DDC117ArticleDetails::class, mappedBy="article", cascade={"persist", "remove"})
-     */
+    /** @ORM\OneToOne(targetEntity=DDC117ArticleDetails::class, mappedBy="article", cascade={"persist", "remove"}) */
     private $details;
 
-    /**
-     * @ORM\OneToMany(targetEntity=DDC117Translation::class, mappedBy="article", cascade={"persist", "remove"})
-     */
+    /** @ORM\OneToMany(targetEntity=DDC117Translation::class, mappedBy="article", cascade={"persist", "remove"}) */
     private $translations;
 
-    /**
-     * @ORM\OneToMany(targetEntity=DDC117Link::class, mappedBy="source", indexBy="target_id", cascade={"persist", "remove"})
-     */
+    /** @ORM\OneToMany(targetEntity=DDC117Link::class, mappedBy="source", indexBy="target_id", cascade={"persist", "remove"}) */
     private $links;
 
     public function __construct($title)
     {
-        $this->title = $title;
-        $this->references = new \Doctrine\Common\Collections\ArrayCollection();
-        $this->translations = new \Doctrine\Common\Collections\ArrayCollection();
+        $this->title        = $title;
+        $this->references   = new ArrayCollection();
+        $this->translations = new ArrayCollection();
     }
 
     public function setDetails($details)

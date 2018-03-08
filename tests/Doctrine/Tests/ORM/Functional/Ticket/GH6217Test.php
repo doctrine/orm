@@ -1,9 +1,12 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\Tests\Functional\Ticket;
 
 use Doctrine\ORM\Annotation as ORM;
 use Doctrine\Tests\OrmFunctionalTestCase;
+use function uniqid;
 
 /**
  * @group #6217
@@ -24,8 +27,8 @@ final class GH6217Test extends OrmFunctionalTestCase
 
     public function testLoadingOfSecondLevelCacheOnEagerAssociations() : void
     {
-        $lazy = new GH6217AssociatedEntity();
-        $eager = new GH6217AssociatedEntity();
+        $lazy    = new GH6217AssociatedEntity();
+        $eager   = new GH6217AssociatedEntity();
         $fetched = new GH6217FetchedEntity($lazy, $eager);
 
         $this->em->persist($eager);

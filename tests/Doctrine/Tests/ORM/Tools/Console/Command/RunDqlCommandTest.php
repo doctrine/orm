@@ -11,6 +11,7 @@ use Doctrine\Tests\OrmFunctionalTestCase;
 use Symfony\Component\Console\Application;
 use Symfony\Component\Console\Helper\HelperSet;
 use Symfony\Component\Console\Tester\CommandTester;
+use function trim;
 
 /**
  * Tests for {@see \Doctrine\ORM\Tools\Console\Command\RunDqlCommand}
@@ -19,19 +20,13 @@ use Symfony\Component\Console\Tester\CommandTester;
  */
 class RunDqlCommandTest extends OrmFunctionalTestCase
 {
-    /**
-     * @var Application
-     */
+    /** @var Application */
     private $application;
 
-    /**
-     * @var RunDqlCommand
-     */
+    /** @var RunDqlCommand */
     private $command;
 
-    /**
-     * @var CommandTester
-     */
+    /** @var CommandTester */
     private $tester;
 
     protected function setUp()

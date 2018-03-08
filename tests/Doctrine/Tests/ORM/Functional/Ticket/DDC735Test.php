@@ -6,8 +6,9 @@ namespace Doctrine\Tests\ORM\Functional\Ticket;
 
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\Annotation as ORM;
+use Doctrine\Tests\OrmFunctionalTestCase;
 
-class DDC735Test extends \Doctrine\Tests\OrmFunctionalTestCase
+class DDC735Test extends OrmFunctionalTestCase
 {
     protected function setUp()
     {
@@ -16,17 +17,17 @@ class DDC735Test extends \Doctrine\Tests\OrmFunctionalTestCase
             $this->schemaTool->createSchema(
                 [
                 $this->em->getClassMetadata(DDC735Product::class),
-                $this->em->getClassMetadata(DDC735Review::class)
+                $this->em->getClassMetadata(DDC735Review::class),
                 ]
             );
         } catch (\Exception $e) {
         }
     }
 
-    public function testRemoveElement_AppliesOrphanRemoval()
+    public function testRemoveElementAppliesOrphanRemoval()
     {
         // Create a product and its first review
-        $product = new DDC735Product;
+        $product = new DDC735Product();
         $review  = new DDC735Review($product);
 
         // Persist and flush
@@ -60,9 +61,7 @@ class DDC735Test extends \Doctrine\Tests\OrmFunctionalTestCase
  */
 class DDC735Product
 {
-    /**
-     * @ORM\Id @ORM\Column(type="integer") @ORM\GeneratedValue
-     */
+    /** @ORM\Id @ORM\Column(type="integer") @ORM\GeneratedValue */
     protected $id;
 
     /**
@@ -77,7 +76,7 @@ class DDC735Product
 
     public function __construct()
     {
-        $this->reviews = new ArrayCollection;
+        $this->reviews = new ArrayCollection();
     }
 
     public function getReviews()
@@ -101,14 +100,10 @@ class DDC735Product
  */
 class DDC735Review
 {
-    /**
-     * @ORM\Id @ORM\Column(type="integer") @ORM\GeneratedValue
-     */
+    /** @ORM\Id @ORM\Column(type="integer") @ORM\GeneratedValue */
     protected $id;
 
-    /**
-     * @ORM\ManyToOne(targetEntity=DDC735Product::class, inversedBy="reviews")
-     */
+    /** @ORM\ManyToOne(targetEntity=DDC735Product::class, inversedBy="reviews") */
     protected $product;
 
     public function __construct(DDC735Product $product)

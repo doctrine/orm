@@ -15,14 +15,10 @@ use Doctrine\Tests\DoctrineTestCase;
 
 /**
  * Test for QueryExpressionVisitor
- *
- * @author Kirill chEbba Chebunin <iam@chebba.org>
  */
 class QueryExpressionVisitorTest extends DoctrineTestCase
 {
-    /**
-     * @var QueryExpressionVisitor
-     */
+    /** @var QueryExpressionVisitor */
     private $visitor;
 
     /**
@@ -30,17 +26,15 @@ class QueryExpressionVisitorTest extends DoctrineTestCase
      */
     protected function setUp()
     {
-        $this->visitor = new QueryExpressionVisitor(['o','p']);
+        $this->visitor = new QueryExpressionVisitor(['o', 'p']);
     }
 
     /**
-     * @param CriteriaComparison     $criteriaExpr
      * @param QueryBuilder\Comparison|string $queryExpr
-     * @param Parameter              $parameter
      *
      * @dataProvider comparisonData
      */
-    public function testWalkComparison(CriteriaComparison $criteriaExpr, $queryExpr, Parameter $parameter = null)
+    public function testWalkComparison(CriteriaComparison $criteriaExpr, $queryExpr, ?Parameter $parameter = null)
     {
         self::assertEquals($queryExpr, $this->visitor->walkComparison($criteriaExpr));
         if ($parameter) {
@@ -84,11 +78,11 @@ class QueryExpressionVisitorTest extends DoctrineTestCase
 
     public function testWalkAndCompositeExpression()
     {
-        $cb = new CriteriaBuilder();
+        $cb   = new CriteriaBuilder();
         $expr = $this->visitor->walkCompositeExpression(
             $cb->andX(
-                $cb->eq("foo", 1),
-                $cb->eq("bar", 1)
+                $cb->eq('foo', 1),
+                $cb->eq('bar', 1)
             )
         );
 
@@ -98,11 +92,11 @@ class QueryExpressionVisitorTest extends DoctrineTestCase
 
     public function testWalkOrCompositeExpression()
     {
-        $cb = new CriteriaBuilder();
+        $cb   = new CriteriaBuilder();
         $expr = $this->visitor->walkCompositeExpression(
             $cb->orX(
-                $cb->eq("foo", 1),
-                $cb->eq("bar", 1)
+                $cb->eq('foo', 1),
+                $cb->eq('bar', 1)
             )
         );
 

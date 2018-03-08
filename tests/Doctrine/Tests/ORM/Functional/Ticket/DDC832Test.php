@@ -4,9 +4,11 @@ declare(strict_types=1);
 
 namespace Doctrine\Tests\ORM\Functional\Ticket;
 
+use Doctrine\DBAL\Logging\EchoSQLLogger;
 use Doctrine\ORM\Annotation as ORM;
+use Doctrine\Tests\OrmFunctionalTestCase;
 
-class DDC832Test extends \Doctrine\Tests\OrmFunctionalTestCase
+class DDC832Test extends OrmFunctionalTestCase
 {
     public function setUp()
     {
@@ -18,7 +20,7 @@ class DDC832Test extends \Doctrine\Tests\OrmFunctionalTestCase
             $this->markTestSkipped('Doesnt run on Oracle.');
         }
 
-        $this->em->getConfiguration()->setSQLLogger(new \Doctrine\DBAL\Logging\EchoSQLLogger());
+        $this->em->getConfiguration()->setSQLLogger(new EchoSQLLogger());
 
         try {
             $this->schemaTool->createSchema(
@@ -49,11 +51,11 @@ class DDC832Test extends \Doctrine\Tests\OrmFunctionalTestCase
      */
     public function testQuotedTableBasicUpdate()
     {
-        $like = new DDC832Like("test");
+        $like = new DDC832Like('test');
         $this->em->persist($like);
         $this->em->flush();
 
-        $like->word = "test2";
+        $like->word = 'test2';
         $this->em->flush();
         $this->em->clear();
 
@@ -65,7 +67,7 @@ class DDC832Test extends \Doctrine\Tests\OrmFunctionalTestCase
      */
     public function testQuotedTableBasicRemove()
     {
-        $like = new DDC832Like("test");
+        $like = new DDC832Like('test');
         $this->em->persist($like);
         $this->em->flush();
 
@@ -83,11 +85,11 @@ class DDC832Test extends \Doctrine\Tests\OrmFunctionalTestCase
      */
     public function testQuotedTableJoinedUpdate()
     {
-        $index = new DDC832JoinedIndex("test");
+        $index = new DDC832JoinedIndex('test');
         $this->em->persist($index);
         $this->em->flush();
 
-        $index->name = "asdf";
+        $index->name = 'asdf';
         $this->em->flush();
         $this->em->clear();
 
@@ -99,7 +101,7 @@ class DDC832Test extends \Doctrine\Tests\OrmFunctionalTestCase
      */
     public function testQuotedTableJoinedRemove()
     {
-        $index = new DDC832JoinedIndex("test");
+        $index = new DDC832JoinedIndex('test');
         $this->em->persist($index);
         $this->em->flush();
 
@@ -117,11 +119,11 @@ class DDC832Test extends \Doctrine\Tests\OrmFunctionalTestCase
      */
     public function testQuotedTableJoinedChildUpdate()
     {
-        $index = new DDC832JoinedTreeIndex("test", 1, 2);
+        $index = new DDC832JoinedTreeIndex('test', 1, 2);
         $this->em->persist($index);
         $this->em->flush();
 
-        $index->name = "asdf";
+        $index->name = 'asdf';
         $this->em->flush();
         $this->em->clear();
 
@@ -133,7 +135,7 @@ class DDC832Test extends \Doctrine\Tests\OrmFunctionalTestCase
      */
     public function testQuotedTableJoinedChildRemove()
     {
-        $index = new DDC832JoinedTreeIndex("test", 1, 2);
+        $index = new DDC832JoinedTreeIndex('test', 1, 2);
         $this->em->persist($index);
         $this->em->flush();
 
@@ -153,9 +155,7 @@ class DDC832Test extends \Doctrine\Tests\OrmFunctionalTestCase
  */
 class DDC832Like
 {
-    /**
-     * @ORM\Id @ORM\Column(type="integer") @ORM\GeneratedValue
-     */
+    /** @ORM\Id @ORM\Column(type="integer") @ORM\GeneratedValue */
     public $id;
 
     /** @ORM\Column(type="string") */
@@ -182,9 +182,7 @@ class DDC832Like
  */
 class DDC832JoinedIndex
 {
-    /**
-     * @ORM\Id @ORM\Column(type="integer") @ORM\GeneratedValue
-     */
+    /** @ORM\Id @ORM\Column(type="integer") @ORM\GeneratedValue */
     public $id;
 
     /** @ORM\Column(type="string") */
@@ -217,7 +215,7 @@ class DDC832JoinedTreeIndex extends DDC832JoinedIndex
     public function __construct($name, $lft, $rgt)
     {
         $this->name = $name;
-        $this->lft = $lft;
-        $this->rgt = $rgt;
+        $this->lft  = $lft;
+        $this->rgt  = $rgt;
     }
 }

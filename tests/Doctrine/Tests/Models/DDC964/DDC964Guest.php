@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Doctrine\Tests\Models\DDC964;
 
-use Doctrine\DBAL\Types\Type;
 use Doctrine\ORM\Annotation as ORM;
 
 /**

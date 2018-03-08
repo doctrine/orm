@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Doctrine\Tests\Models\Navigation;
 
+use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\Annotation as ORM;
 
 /**
@@ -19,9 +20,7 @@ class NavTour
      */
     private $id;
 
-    /**
-     * @ORM\Column(type="string")
-     */
+    /** @ORM\Column(type="string") */
     private $name;
 
     /**
@@ -39,7 +38,7 @@ class NavTour
     public function __construct($name)
     {
         $this->name = $name;
-        $this->pois = new \Doctrine\Common\Collections\ArrayCollection;
+        $this->pois = new ArrayCollection();
     }
 
     public function addPointOfInterest(NavPointOfInterest $poi)

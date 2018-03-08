@@ -5,8 +5,9 @@ declare(strict_types=1);
 namespace Doctrine\Tests\ORM\Functional\Ticket;
 
 use Doctrine\ORM\Annotation as ORM;
+use Doctrine\Tests\OrmFunctionalTestCase;
 
-class DDC588Test extends \Doctrine\Tests\OrmFunctionalTestCase
+class DDC588Test extends OrmFunctionalTestCase
 {
     protected function setUp()
     {
@@ -45,9 +46,7 @@ class DDC588Site
      */
     public $id;
 
-    /**
-     * @ORM\Column(type="string", length=45)
-     */
+    /** @ORM\Column(type="string", length=45) */
     protected $name;
 
     public function __construct($name = '')

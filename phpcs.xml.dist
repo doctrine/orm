@@ -12,7 +12,8 @@
     <file>lib</file>
     <file>tests</file>
 
-    <exclude-pattern>*/tests/Doctrine/Tests/Proxies/__CG__/*</exclude-pattern>
+    <exclude-pattern>*/tests/Doctrine/Tests/ORM/Proxy/generated/*</exclude-pattern>
+    <exclude-pattern>*/tests/Doctrine/Tests/Proxies/*</exclude-pattern>
 
     <rule ref="Doctrine">
         <exclude name="SlevomatCodingStandard.TypeHints.TypeHintDeclaration.MissingParameterTypeHint"/>
@@ -70,5 +71,52 @@
 
     <rule ref="SlevomatCodingStandard.Classes.SuperfluousInterfaceNaming">
         <exclude-pattern>lib/Doctrine/ORM/EntityManagerInterface.php</exclude-pattern>
+    </rule>
+
+    <rule ref="SlevomatCodingStandard.TypeHints.TypeHintDeclaration.MissingPropertyTypeHint">
+        <exclude-pattern>*/tests/*</exclude-pattern>
+    </rule>
+
+    <rule ref="SlevomatCodingStandard.Classes.UnusedPrivateElements.UnusedProperty">
+        <exclude-pattern>*/tests/*</exclude-pattern>
+    </rule>
+
+    <rule ref="SlevomatCodingStandard.TypeHints.TypeHintDeclaration.MissingTraversableParameterTypeHintSpecification">
+        <exclude-pattern>*/tests/*</exclude-pattern>
+    </rule>
+
+    <rule ref="SlevomatCodingStandard.Classes.UnusedPrivateElements.WriteOnlyProperty">
+        <exclude-pattern>*/tests/*</exclude-pattern>
+    </rule>
+
+    <rule ref="SlevomatCodingStandard.TypeHints.TypeHintDeclaration.MissingTraversablePropertyTypeHintSpecification">
+        <exclude-pattern>*/tests/*</exclude-pattern>
+    </rule>
+
+    <rule ref="SlevomatCodingStandard.TypeHints.TypeHintDeclaration.MissingTraversableReturnTypeHintSpecification">
+        <exclude-pattern>*/tests/*</exclude-pattern>
+    </rule>
+
+    <!-- intentionally without namespace -->
+    <rule ref="PSR1.Classes.ClassDeclaration.MissingNamespace">
+        <exclude-pattern>tests/Doctrine/Tests/Models/Global/GlobalNamespaceModel.php</exclude-pattern>
+        <exclude-pattern>tests/Doctrine/Tests/Models/DDC3231/DDC3231User1NoNamespace.php</exclude-pattern>
+        <exclude-pattern>tests/Doctrine/Tests/Models/DDC3231/DDC3231User2NoNamespace.php</exclude-pattern>
+    </rule>
+
+    <!-- file with multiple namespaces confuses the sniff -->
+    <rule ref="PSR2.Namespaces.UseDeclaration.UseAfterNamespace">
+        <exclude-pattern>tests/Doctrine/Tests/ORM/Functional/Ticket/DDC2084Test.php</exclude-pattern>
+    </rule>
+
+    <!-- file with multiple namespaces confuses the sniff -->
+    <rule ref="SlevomatCodingStandard.Namespaces.AlphabeticallySortedUses.IncorrectlyOrderedUses">
+        <exclude-pattern>tests/Doctrine/Tests/ORM/Functional/Ticket/DDC2084Test.php</exclude-pattern>
+    </rule>
+
+    <!-- intentionally empty blocks -->
+    <rule ref="Generic.CodeAnalysis.EmptyStatement.DetectedForeach">
+        <exclude-pattern>tests/Doctrine/Tests/ORM/Functional/Ticket/DDC1301Test.php</exclude-pattern>
+        <exclude-pattern>tests/Doctrine/Tests/ORM/Functional/ExtraLazyCollectionTest.php</exclude-pattern>
     </rule>
 </ruleset>

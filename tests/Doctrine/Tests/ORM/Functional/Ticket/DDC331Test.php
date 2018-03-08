@@ -4,12 +4,12 @@ declare(strict_types=1);
 
 namespace Doctrine\Tests\ORM\Functional\Ticket;
 
+use Doctrine\Tests\OrmFunctionalTestCase;
+
 /**
  * Functional tests for the Class Table Inheritance mapping strategy.
- *
- * @author Benjamin Eberlei <kontakt@beberlei.de>
  */
-class DDC331Test extends \Doctrine\Tests\OrmFunctionalTestCase
+class DDC331Test extends OrmFunctionalTestCase
 {
     protected function setUp()
     {

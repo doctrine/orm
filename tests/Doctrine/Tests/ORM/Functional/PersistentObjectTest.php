@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace Doctrine\Tests\ORM\Functional;
 
-use Doctrine\ORM\PersistentObject;
 use Doctrine\ORM\Annotation as ORM;
+use Doctrine\ORM\PersistentObject;
 use Doctrine\Tests\OrmFunctionalTestCase;
 
 /**
@@ -35,7 +35,7 @@ class PersistentObjectTest extends OrmFunctionalTestCase
     public function testPersist()
     {
         $entity = new PersistentEntity();
-        $entity->setName("test");
+        $entity->setName('test');
 
         $this->em->persist($entity);
         $this->em->flush();
@@ -46,7 +46,7 @@ class PersistentObjectTest extends OrmFunctionalTestCase
     public function testFind()
     {
         $entity = new PersistentEntity();
-        $entity->setName("test");
+        $entity->setName('test');
 
         $this->em->persist($entity);
         $this->em->flush();
@@ -63,7 +63,7 @@ class PersistentObjectTest extends OrmFunctionalTestCase
     public function testGetReference()
     {
         $entity = new PersistentEntity();
-        $entity->setName("test");
+        $entity->setName('test');
 
         $this->em->persist($entity);
         $this->em->flush();
@@ -77,7 +77,7 @@ class PersistentObjectTest extends OrmFunctionalTestCase
     public function testSetAssociation()
     {
         $entity = new PersistentEntity();
-        $entity->setName("test");
+        $entity->setName('test');
         $entity->setParent($entity);
 
         $this->em->persist($entity);

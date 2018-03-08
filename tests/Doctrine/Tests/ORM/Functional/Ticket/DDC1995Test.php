@@ -4,13 +4,14 @@ declare(strict_types=1);
 
 namespace Doctrine\Tests\ORM\Functional\Ticket;
 
-use Doctrine\Tests\Models\Company\CompanyPerson;
 use Doctrine\Tests\Models\Company\CompanyEmployee;
+use Doctrine\Tests\Models\Company\CompanyPerson;
+use Doctrine\Tests\OrmFunctionalTestCase;
 
 /**
  * @group DDC-1995
  */
-class DDC1995Test extends \Doctrine\Tests\OrmFunctionalTestCase
+class DDC1995Test extends OrmFunctionalTestCase
 {
     public function setUp()
     {
@@ -20,10 +21,10 @@ class DDC1995Test extends \Doctrine\Tests\OrmFunctionalTestCase
 
     public function testIssue()
     {
-        $person = new CompanyPerson;
+        $person = new CompanyPerson();
         $person->setName('p1');
 
-        $employee = new CompanyEmployee;
+        $employee = new CompanyEmployee();
         $employee->setName('Foo');
         $employee->setDepartment('bar');
         $employee->setSalary(1000);
@@ -33,8 +34,8 @@ class DDC1995Test extends \Doctrine\Tests\OrmFunctionalTestCase
         $this->em->flush();
         $this->em->clear();
 
-        $dql    = 'SELECT u FROM Doctrine\Tests\Models\Company\CompanyPerson u WHERE u INSTANCE OF ?1';
-        $class  = $this->em->getClassMetadata(CompanyEmployee::class);
+        $dql   = 'SELECT u FROM Doctrine\Tests\Models\Company\CompanyPerson u WHERE u INSTANCE OF ?1';
+        $class = $this->em->getClassMetadata(CompanyEmployee::class);
 
         $result = $this->em->createQuery($dql)
                 ->setParameter(1, $class)
@@ -46,10 +47,10 @@ class DDC1995Test extends \Doctrine\Tests\OrmFunctionalTestCase
 
     public function testQueryCache()
     {
-        $person = new CompanyPerson;
+        $person = new CompanyPerson();
         $person->setName('p1');
 
-        $employee = new CompanyEmployee;
+        $employee = new CompanyEmployee();
         $employee->setName('Foo');
         $employee->setDepartment('bar');
         $employee->setSalary(1000);
@@ -59,9 +60,9 @@ class DDC1995Test extends \Doctrine\Tests\OrmFunctionalTestCase
         $this->em->flush();
         $this->em->clear();
 
-        $dql     = 'SELECT u FROM Doctrine\Tests\Models\Company\CompanyPerson u WHERE u INSTANCE OF :type';
-        $class1  = $this->em->getClassMetadata(CompanyEmployee::class);
-        $class2  = $this->em->getClassMetadata(CompanyPerson::class);
+        $dql    = 'SELECT u FROM Doctrine\Tests\Models\Company\CompanyPerson u WHERE u INSTANCE OF :type';
+        $class1 = $this->em->getClassMetadata(CompanyEmployee::class);
+        $class2 = $this->em->getClassMetadata(CompanyPerson::class);
 
         $result1 = $this->em->createQuery($dql)
                 ->setParameter('type', $class1)

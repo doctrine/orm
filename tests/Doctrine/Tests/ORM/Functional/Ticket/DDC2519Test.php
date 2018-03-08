@@ -6,12 +6,13 @@ namespace Doctrine\Tests\ORM\Functional\Ticket;
 
 use Doctrine\Tests\Models\Legacy\LegacyUser;
 use Doctrine\Tests\Models\Legacy\LegacyUserReference;
+use Doctrine\Tests\OrmFunctionalTestCase;
 use ProxyManager\Proxy\GhostObjectInterface;
 
 /**
  * @group DDC-2519
  */
-class DDC2519Test extends \Doctrine\Tests\OrmFunctionalTestCase
+class DDC2519Test extends OrmFunctionalTestCase
 {
     private $userId;
 
@@ -58,20 +59,20 @@ class DDC2519Test extends \Doctrine\Tests\OrmFunctionalTestCase
 
     public function loadFixture()
     {
-        $user1              = new LegacyUser();
-        $user1->username   = 'FabioBatSilva';
-        $user1->name       = 'Fabio B. Silva';
-        $user1->status     = 'active';
+        $user1           = new LegacyUser();
+        $user1->username = 'FabioBatSilva';
+        $user1->name     = 'Fabio B. Silva';
+        $user1->status   = 'active';
 
-        $user2              = new LegacyUser();
-        $user2->username   = 'doctrinebot';
-        $user2->name       = 'Doctrine Bot';
-        $user2->status     = 'active';
+        $user2           = new LegacyUser();
+        $user2->username = 'doctrinebot';
+        $user2->name     = 'Doctrine Bot';
+        $user2->status   = 'active';
 
-        $user3              = new LegacyUser();
-        $user3->username   = 'test';
-        $user3->name       = 'Tester';
-        $user3->status     = 'active';
+        $user3           = new LegacyUser();
+        $user3->username = 'test';
+        $user3->name     = 'Tester';
+        $user3->status   = 'active';
 
         $this->em->persist($user1);
         $this->em->persist($user2);

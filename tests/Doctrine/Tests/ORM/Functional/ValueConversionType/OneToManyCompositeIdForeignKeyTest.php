@@ -24,15 +24,15 @@ class OneToManyCompositeIdForeignKeyTest extends OrmFunctionalTestCase
 
         parent::setUp();
 
-        $auxiliary = new Entity\AuxiliaryEntity();
+        $auxiliary      = new Entity\AuxiliaryEntity();
         $auxiliary->id4 = 'abc';
 
-        $inversed = new Entity\InversedOneToManyCompositeIdForeignKeyEntity();
-        $inversed->id1 = 'def';
+        $inversed                = new Entity\InversedOneToManyCompositeIdForeignKeyEntity();
+        $inversed->id1           = 'def';
         $inversed->foreignEntity = $auxiliary;
-        $inversed->someProperty = 'some value to be loaded';
+        $inversed->someProperty  = 'some value to be loaded';
 
-        $owning = new Entity\OwningManyToOneCompositeIdForeignKeyEntity();
+        $owning      = new Entity\OwningManyToOneCompositeIdForeignKeyEntity();
         $owning->id2 = 'ghi';
 
         $inversed->associatedEntities->add($owning);

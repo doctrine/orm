@@ -17,13 +17,9 @@ class DecimalModel
      * @ORM\GeneratedValue(strategy="AUTO")
      */
     public $id;
-    /**
-     * @ORM\Column(name="decimal", type="decimal", scale=2, precision=5)
-     */
+    /** @ORM\Column(name="decimal", type="decimal", scale=2, precision=5) */
     public $decimal;
 
-    /**
-     * @ORM\Column(name="high_scale", type="decimal", scale=4, precision=14)
-     */
+    /** @ORM\Column(name="high_scale", type="decimal", scale=4, precision=14) */
     public $highScale;
 }

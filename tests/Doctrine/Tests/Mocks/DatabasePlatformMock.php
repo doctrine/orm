@@ -11,19 +11,13 @@ use Doctrine\DBAL\Platforms\AbstractPlatform;
  */
 class DatabasePlatformMock extends AbstractPlatform
 {
-    /**
-     * @var string
-     */
-    private $sequenceNextValSql = "";
+    /** @var string */
+    private $sequenceNextValSql = '';
 
-    /**
-     * @var bool
-     */
+    /** @var bool */
     private $prefersIdentityColumns = true;
 
-    /**
-     * @var bool
-     */
+    /** @var bool */
     private $prefersSequences = false;
 
     /**

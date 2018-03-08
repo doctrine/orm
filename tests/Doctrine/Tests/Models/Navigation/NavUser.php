@@ -19,9 +19,7 @@ class NavUser
      */
     private $id;
 
-    /**
-     * @ORM\Column(type="string")
-     */
+    /** @ORM\Column(type="string") */
     private $name;
 
     public function __construct($name)

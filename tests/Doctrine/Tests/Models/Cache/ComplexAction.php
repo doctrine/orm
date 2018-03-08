@@ -13,9 +13,7 @@ use Doctrine\ORM\Annotation as ORM;
  */
 class ComplexAction
 {
-    /**
-     * @ORM\Column
-     */
+    /** @ORM\Column */
     public $name;
 
     /**
@@ -32,22 +30,20 @@ class ComplexAction
      */
     public $action2;
 
-    /**
-     * @ORM\OneToMany(targetEntity=Token::class, cascade={"persist", "remove"}, mappedBy="complexAction")
-     */
+    /** @ORM\OneToMany(targetEntity=Token::class, cascade={"persist", "remove"}, mappedBy="complexAction") */
     public $tokens;
 
     public function __construct(Action $action1, Action $action2, $name)
     {
-        $this->name = $name;
+        $this->name    = $name;
         $this->action1 = $action1;
         $this->action2 = $action2;
-        $this->tokens = new ArrayCollection();
+        $this->tokens  = new ArrayCollection();
     }
 
     public function addToken(Token $token)
     {
-        $this->tokens[] = $token;
+        $this->tokens[]       = $token;
         $token->complexAction = $this;
     }
 

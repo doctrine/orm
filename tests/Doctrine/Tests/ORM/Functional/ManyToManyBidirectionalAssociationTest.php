@@ -4,9 +4,8 @@ declare(strict_types=1);
 
 namespace Doctrine\Tests\ORM\Functional;
 
-use Doctrine\Tests\Models\ECommerce\ECommerceProduct;
 use Doctrine\Tests\Models\ECommerce\ECommerceCategory;
-use Doctrine\ORM\Query;
+use Doctrine\Tests\Models\ECommerce\ECommerceProduct;
 
 /**
  * Tests a bidirectional many-to-many association mapping (without inheritance).
@@ -14,9 +13,9 @@ use Doctrine\ORM\Query;
  */
 class ManyToManyBidirectionalAssociationTest extends AbstractManyToManyAssociationTestCase
 {
-    protected $firstField = 'product_id';
+    protected $firstField  = 'product_id';
     protected $secondField = 'category_id';
-    protected $table = 'ecommerce_products_categories';
+    protected $table       = 'ecommerce_products_categories';
     private $firstProduct;
     private $secondProduct;
     private $firstCategory;
@@ -29,16 +28,16 @@ class ManyToManyBidirectionalAssociationTest extends AbstractManyToManyAssociati
         parent::setUp();
 
         $this->firstProduct = new ECommerceProduct();
-        $this->firstProduct->setName("First Product");
+        $this->firstProduct->setName('First Product');
 
         $this->secondProduct = new ECommerceProduct();
-        $this->secondProduct->setName("Second Product");
+        $this->secondProduct->setName('Second Product');
 
         $this->firstCategory = new ECommerceCategory();
-        $this->firstCategory->setName("Business");
+        $this->firstCategory->setName('Business');
 
         $this->secondCategory = new ECommerceCategory();
-        $this->secondCategory->setName("Home");
+        $this->secondCategory->setName('Home');
     }
 
     public function testSavesAManyToManyAssociationWithCascadeSaveSet()
@@ -157,7 +156,7 @@ class ManyToManyBidirectionalAssociationTest extends AbstractManyToManyAssociati
     {
         list ($firstProduct, $secondProduct) = $products;
 
-        $firstProductCategories = $firstProduct->getCategories();
+        $firstProductCategories  = $firstProduct->getCategories();
         $secondProductCategories = $secondProduct->getCategories();
 
         self::assertCount(2, $firstProductCategories);
@@ -166,7 +165,7 @@ class ManyToManyBidirectionalAssociationTest extends AbstractManyToManyAssociati
         self::assertSame($firstProductCategories[0], $secondProductCategories[0]);
         self::assertSame($firstProductCategories[1], $secondProductCategories[1]);
 
-        $firstCategoryProducts = $firstProductCategories[0]->getProducts();
+        $firstCategoryProducts  = $firstProductCategories[0]->getProducts();
         $secondCategoryProducts = $firstProductCategories[1]->getProducts();
 
         self::assertFalse($firstCategoryProducts->isInitialized());
@@ -192,7 +191,7 @@ class ManyToManyBidirectionalAssociationTest extends AbstractManyToManyAssociati
     {
         list ($firstCategory, $secondCategory) = $categories;
 
-        $firstCategoryProducts = $firstCategory->getProducts();
+        $firstCategoryProducts  = $firstCategory->getProducts();
         $secondCategoryProducts = $secondCategory->getProducts();
 
         self::assertCount(2, $firstCategoryProducts);
@@ -201,7 +200,7 @@ class ManyToManyBidirectionalAssociationTest extends AbstractManyToManyAssociati
         self::assertSame($firstCategoryProducts[0], $secondCategoryProducts[0]);
         self::assertSame($firstCategoryProducts[1], $secondCategoryProducts[1]);
 
-        $firstProductCategories = $firstCategoryProducts[0]->getCategories();
+        $firstProductCategories  = $firstCategoryProducts[0]->getCategories();
         $secondProductCategories = $firstCategoryProducts[1]->getCategories();
 
         self::assertFalse($firstProductCategories->isInitialized());

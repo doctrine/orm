@@ -19,16 +19,15 @@ use Doctrine\Tests\DoctrineTestCase;
  */
 class DDC2359Test extends DoctrineTestCase
 {
-
     /**
      * Verifies that {@see \Doctrine\ORM\Mapping\ClassMetadataFactory::wakeupReflection} is
      * not called when loading metadata from a driver
      */
     public function testIssue()
     {
-        $mockDriver      = $this->createMock(MappingDriver::class);
-        $mockMetadata    = $this->createMock(ClassMetadata::class);
-        $entityManager   = $this->createMock(EntityManagerInterface::class);
+        $mockDriver    = $this->createMock(MappingDriver::class);
+        $mockMetadata  = $this->createMock(ClassMetadata::class);
+        $entityManager = $this->createMock(EntityManagerInterface::class);
 
         /* @var $metadataFactory \Doctrine\ORM\Mapping\ClassMetadataFactory|\PHPUnit_Framework_MockObject_MockObject */
         $metadataFactory = $this->getMockBuilder(ClassMetadataFactory::class)

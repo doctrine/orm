@@ -6,11 +6,14 @@ namespace Doctrine\Tests\ORM\Functional\Ticket;
 
 use Doctrine\ORM\Query;
 use Doctrine\ORM\Query\AST;
+use Doctrine\ORM\Query\AST\SelectClause;
+use Doctrine\ORM\Query\TreeWalkerAdapter;
 use Doctrine\Tests\Models\ECommerce\ECommerceCart;
 use Doctrine\Tests\Models\ECommerce\ECommerceCustomer;
+use Doctrine\Tests\OrmFunctionalTestCase;
 use ProxyManager\Proxy\GhostObjectInterface;
 
-class DDC736Test extends \Doctrine\Tests\OrmFunctionalTestCase
+class DDC736Test extends OrmFunctionalTestCase
 {
     protected function setUp()
     {
@@ -23,10 +26,10 @@ class DDC736Test extends \Doctrine\Tests\OrmFunctionalTestCase
      */
     public function testReorderEntityFetchJoinForHydration()
     {
-        $cust = new ECommerceCustomer;
+        $cust = new ECommerceCustomer();
         $cust->setName('roman');
 
-        $cart = new ECommerceCart;
+        $cart = new ECommerceCart();
         $cart->setPayment('cash');
         $cart->setCustomer($cust);
 
@@ -35,7 +38,7 @@ class DDC736Test extends \Doctrine\Tests\OrmFunctionalTestCase
         $this->em->flush();
         $this->em->clear();
 
-        $result = $this->em->createQuery("select c, c.name, ca, ca.payment from Doctrine\Tests\Models\ECommerce\ECommerceCart ca join ca.customer c")
+        $result = $this->em->createQuery('select c, c.name, ca, ca.payment from Doctrine\Tests\Models\ECommerce\ECommerceCart ca join ca.customer c')
             ->getSingleResult(/*\Doctrine\ORM\Query::HYDRATE_ARRAY*/);
 
         $cart2 = $result[0];
@@ -54,10 +57,10 @@ class DDC736Test extends \Doctrine\Tests\OrmFunctionalTestCase
      */
     public function testDqlTreeWalkerReordering()
     {
-        $cust = new ECommerceCustomer;
+        $cust = new ECommerceCustomer();
         $cust->setName('roman');
 
-        $cart = new ECommerceCart;
+        $cart = new ECommerceCart();
         $cart->setPayment('cash');
         $cart->setCustomer($cust);
 
@@ -66,7 +69,7 @@ class DDC736Test extends \Doctrine\Tests\OrmFunctionalTestCase
         $this->em->flush();
         $this->em->clear();
 
-        $dql = "select c, c.name, ca, ca.payment from Doctrine\Tests\Models\ECommerce\ECommerceCart ca join ca.customer c";
+        $dql    = 'select c, c.name, ca, ca.payment from Doctrine\Tests\Models\ECommerce\ECommerceCart ca join ca.customer c';
         $result = $this->em->createQuery($dql)
                             ->setHint(Query::HINT_CUSTOM_TREE_WALKERS, [DisableFetchJoinTreeWalker::class])
                             ->getResult();
@@ -77,7 +80,7 @@ class DDC736Test extends \Doctrine\Tests\OrmFunctionalTestCase
     }
 }
 
-class DisableFetchJoinTreeWalker extends \Doctrine\ORM\Query\TreeWalkerAdapter
+class DisableFetchJoinTreeWalker extends TreeWalkerAdapter
 {
     public function walkSelectStatement(AST\SelectStatement $AST)
     {
@@ -85,13 +88,13 @@ class DisableFetchJoinTreeWalker extends \Doctrine\ORM\Query\TreeWalkerAdapter
     }
 
     /**
-     * @param \Doctrine\ORM\Query\AST\SelectClause $selectClause
+     * @param SelectClause $selectClause
      */
     public function walkSelectClause($selectClause)
     {
         foreach ($selectClause->selectExpressions as $key => $selectExpr) {
             /* @var $selectExpr \Doctrine\ORM\Query\AST\SelectExpression */
-            if ($selectExpr->expression == "c") {
+            if ($selectExpr->expression === 'c') {
                 unset($selectClause->selectExpressions[$key]);
                 break;
             }

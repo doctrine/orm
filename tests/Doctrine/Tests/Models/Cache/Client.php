@@ -19,9 +19,7 @@ class Client
      */
     public $id;
 
-    /**
-     * @ORM\Column(unique=true)
-     */
+    /** @ORM\Column(unique=true) */
     public $name;
 
     public function __construct($name)

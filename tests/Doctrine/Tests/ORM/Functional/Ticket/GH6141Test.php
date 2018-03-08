@@ -7,9 +7,10 @@ namespace Doctrine\Tests\ORM\Functional\Ticket;
 use Doctrine\DBAL\Platforms\AbstractPlatform;
 use Doctrine\DBAL\Types\StringType;
 use Doctrine\DBAL\Types\Type;
-use Doctrine\ORM\Annotation as ORM;
 use Doctrine\ORM\AbstractQuery;
+use Doctrine\ORM\Annotation as ORM;
 use Doctrine\Tests\OrmFunctionalTestCase;
+use function in_array;
 
 class GH6141Test extends OrmFunctionalTestCase
 {
@@ -37,7 +38,7 @@ class GH6141Test extends OrmFunctionalTestCase
      */
     public function testEnumDiscriminatorsShouldBeConvertedToString()
     {
-        $boss = new GH6141Boss('John');
+        $boss     = new GH6141Boss('John');
         $employee = new GH6141Employee('Bob');
 
         $this->em->persist($boss);
@@ -71,14 +72,14 @@ class GH6141Test extends OrmFunctionalTestCase
 
 class GH6141PeopleType extends StringType
 {
-    const NAME = 'gh6141people';
+    public const NAME = 'gh6141people';
 
     /**
      * {@inheritdoc}
      */
     public function convertToDatabaseValue($value, AbstractPlatform $platform)
     {
-        if (!$value instanceof GH6141People) {
+        if (! $value instanceof GH6141People) {
             $value = GH6141People::get($value);
         }
 
@@ -104,12 +105,10 @@ class GH6141PeopleType extends StringType
 
 class GH6141People
 {
-    const BOSS = 'boss';
-    const EMPLOYEE = 'employee';
+    public const BOSS     = 'boss';
+    public const EMPLOYEE = 'employee';
 
-    /**
-     * @var string
-     */
+    /** @var string */
     private $value;
 
     /**
@@ -121,7 +120,7 @@ class GH6141People
      */
     public static function get($value)
     {
-        if (!self::isValid($value)) {
+        if (! self::isValid($value)) {
             throw new \InvalidArgumentException();
         }
 
@@ -181,9 +180,7 @@ abstract class GH6141Person
      */
     public $id;
 
-    /**
-     * @ORM\Column(type="string")
-     */
+    /** @ORM\Column(type="string") */
     public $name;
 
     /**

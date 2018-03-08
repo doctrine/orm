@@ -10,6 +10,8 @@ use Doctrine\Tests\Models\Cache\Bar;
 use Doctrine\Tests\Models\Cache\Beach;
 use Doctrine\Tests\Models\Cache\City;
 use Doctrine\Tests\Models\Cache\Restaurant;
+use function count;
+use function get_class;
 
 /**
  * @group DDC-2183
@@ -18,10 +20,10 @@ class SecondLevelCacheSingleTableInheritanceTest extends SecondLevelCacheAbstrac
 {
     public function testUseSameRegion()
     {
-        $attractionRegion   = $this->cache->getEntityCacheRegion(Attraction::class);
-        $restaurantRegion   = $this->cache->getEntityCacheRegion(Restaurant::class);
-        $beachRegion        = $this->cache->getEntityCacheRegion(Beach::class);
-        $barRegion          = $this->cache->getEntityCacheRegion(Bar::class);
+        $attractionRegion = $this->cache->getEntityCacheRegion(Attraction::class);
+        $restaurantRegion = $this->cache->getEntityCacheRegion(Restaurant::class);
+        $beachRegion      = $this->cache->getEntityCacheRegion(Beach::class);
+        $barRegion        = $this->cache->getEntityCacheRegion(Bar::class);
 
         self::assertEquals($attractionRegion->getName(), $restaurantRegion->getName());
         self::assertEquals($attractionRegion->getName(), $beachRegion->getName());
@@ -225,7 +227,7 @@ class SecondLevelCacheSingleTableInheritanceTest extends SecondLevelCacheAbstrac
         $queryCount = $this->getCurrentQueryCount();
         $dql        = 'SELECT attraction FROM Doctrine\Tests\Models\Cache\Attraction attraction';
 
-        $result1    = $this->em->createQuery($dql)
+        $result1 = $this->em->createQuery($dql)
             ->setCacheable(true)
             ->getResult();
 

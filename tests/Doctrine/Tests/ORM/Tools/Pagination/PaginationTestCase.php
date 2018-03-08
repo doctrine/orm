@@ -5,13 +5,12 @@ declare(strict_types=1);
 namespace Doctrine\Tests\ORM\Tools\Pagination;
 
 use Doctrine\ORM\Annotation as ORM;
+use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\Tests\OrmTestCase;
 
 abstract class PaginationTestCase extends OrmTestCase
 {
-    /**
-     * @var \Doctrine\ORM\EntityManagerInterface
-     */
+    /** @var EntityManagerInterface */
     public $entityManager;
 
     public function setUp()
@@ -32,13 +31,9 @@ class MyBlogPost
 {
     /** @ORM\Id @ORM\Column(type="integer") @ORM\GeneratedValue */
     public $id;
-    /**
-     * @ORM\ManyToOne(targetEntity=Author::class)
-     */
+    /** @ORM\ManyToOne(targetEntity=Author::class) */
     public $author;
-    /**
-     * @ORM\ManyToOne(targetEntity=Category::class)
-     */
+    /** @ORM\ManyToOne(targetEntity=Category::class) */
     public $category;
     /** @ORM\Column(type="string") */
     public $title;
@@ -69,13 +64,9 @@ class BlogPost
 {
     /** @ORM\Id @ORM\Column(type="integer") @ORM\GeneratedValue */
     public $id;
-    /**
-     * @ORM\ManyToOne(targetEntity=Author::class)
-     */
+    /** @ORM\ManyToOne(targetEntity=Author::class) */
     public $author;
-    /**
-     * @ORM\ManyToOne(targetEntity=Category::class)
-     */
+    /** @ORM\ManyToOne(targetEntity=Category::class) */
     public $category;
 }
 
@@ -135,9 +126,7 @@ class User
      * )
      */
     public $groups;
-    /**
-     * @ORM\OneToOne(targetEntity=Avatar::class, mappedBy="user")
-     */
+    /** @ORM\OneToOne(targetEntity=Avatar::class, mappedBy="user") */
     public $avatar;
 }
 

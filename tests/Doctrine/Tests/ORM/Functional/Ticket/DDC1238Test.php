@@ -5,12 +5,12 @@ declare(strict_types=1);
 namespace Doctrine\Tests\ORM\Functional\Ticket;
 
 use Doctrine\ORM\Annotation as ORM;
-use ProxyManager\Proxy\GhostObjectInterface;
+use Doctrine\Tests\OrmFunctionalTestCase;
 
 /**
  * @group DDC-1238
  */
-class DDC1238Test extends \Doctrine\Tests\OrmFunctionalTestCase
+class DDC1238Test extends OrmFunctionalTestCase
 {
     public function setUp()
     {
@@ -27,8 +27,8 @@ class DDC1238Test extends \Doctrine\Tests\OrmFunctionalTestCase
 
     public function testIssue()
     {
-        $user = new DDC1238User;
-        $user->setName("test");
+        $user = new DDC1238User();
+        $user->setName('test');
 
         $this->em->persist($user);
         $this->em->flush();
@@ -41,13 +41,13 @@ class DDC1238Test extends \Doctrine\Tests\OrmFunctionalTestCase
         $this->em->clear();
 
         $userId2 = $user->getId();
-        self::assertEquals($userId, $userId2, "This proxy can still be initialized.");
+        self::assertEquals($userId, $userId2, 'This proxy can still be initialized.');
     }
 
     public function testIssueProxyClear()
     {
-        $user = new DDC1238User;
-        $user->setName("test");
+        $user = new DDC1238User();
+        $user->setName('test');
 
         $this->em->persist($user);
         $this->em->flush();

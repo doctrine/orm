@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Doctrine\Tests\Models\CustomType;
 
+use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\Annotation as ORM;
 
 /**
@@ -18,19 +19,13 @@ class CustomTypeParent
      */
     public $id;
 
-    /**
-     * @ORM\Column(type="negative_to_positive", nullable=true)
-     */
+    /** @ORM\Column(type="negative_to_positive", nullable=true) */
     public $customInteger;
 
-    /**
-     * @ORM\OneToOne(targetEntity=CustomTypeChild::class, cascade={"persist", "remove"})
-     */
+    /** @ORM\OneToOne(targetEntity=CustomTypeChild::class, cascade={"persist", "remove"}) */
     public $child;
 
-    /**
-     * @ORM\ManyToMany(targetEntity=CustomTypeParent::class, mappedBy="myFriends")
-     */
+    /** @ORM\ManyToMany(targetEntity=CustomTypeParent::class, mappedBy="myFriends") */
     private $friendsWithMe;
 
     /**
@@ -45,8 +40,8 @@ class CustomTypeParent
 
     public function __construct()
     {
-        $this->friendsWithMe = new \Doctrine\Common\Collections\ArrayCollection();
-        $this->myFriends = new \Doctrine\Common\Collections\ArrayCollection();
+        $this->friendsWithMe = new ArrayCollection();
+        $this->myFriends     = new ArrayCollection();
     }
 
     public function addMyFriend(CustomTypeParent $friend)

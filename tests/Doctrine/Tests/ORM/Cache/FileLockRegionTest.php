@@ -13,20 +13,26 @@ use Doctrine\Tests\Mocks\CacheEntryMock;
 use Doctrine\Tests\Mocks\CacheKeyMock;
 use RecursiveDirectoryIterator;
 use RecursiveIteratorIterator;
+use const E_WARNING;
+use function file_put_contents;
+use function is_dir;
+use function restore_error_handler;
+use function rmdir;
+use function set_error_handler;
+use function str_repeat;
+use function sys_get_temp_dir;
+use function uniqid;
+use function unlink;
 
 /**
  * @group DDC-2183
  */
 class FileLockRegionTest extends AbstractRegionTest
 {
-    /**
-     * @var \Doctrine\ORM\Cache\ConcurrentRegion
-     */
+    /** @var ConcurrentRegion */
     protected $region;
 
-    /**
-     * @var string
-     */
+    /** @var string */
     protected $directory;
 
     /**
@@ -38,8 +44,6 @@ class FileLockRegionTest extends AbstractRegionTest
     }
 
     /**
-     * @param \Doctrine\ORM\Cache\ConcurrentRegion $region
-     * @param \Doctrine\ORM\Cache\CacheKey $key
      *
      * @return string
      */
@@ -54,7 +58,7 @@ class FileLockRegionTest extends AbstractRegionTest
 
     protected function createRegion()
     {
-        $this->directory = sys_get_temp_dir() . '/doctrine_lock_'. uniqid();
+        $this->directory = sys_get_temp_dir() . '/doctrine_lock_' . uniqid();
 
         $region = new DefaultRegion('concurren_region_test', $this->cache);
 
@@ -68,9 +72,9 @@ class FileLockRegionTest extends AbstractRegionTest
 
     public function testLockAndUnlock()
     {
-        $key    = new CacheKeyMock('key');
-        $entry  = new CacheEntryMock(['foo' => 'bar']);
-        $file   = $this->getFileName($this->region, $key);
+        $key   = new CacheKeyMock('key');
+        $entry = new CacheEntryMock(['foo' => 'bar']);
+        $file  = $this->getFileName($this->region, $key);
 
         self::assertFalse($this->region->contains($key));
         self::assertTrue($this->region->put($key, $entry));
@@ -92,9 +96,9 @@ class FileLockRegionTest extends AbstractRegionTest
 
     public function testLockWithExistingLock()
     {
-        $key    = new CacheKeyMock('key');
-        $entry  = new CacheEntryMock(['foo' => 'bar']);
-        $file   = $this->getFileName($this->region, $key);
+        $key   = new CacheKeyMock('key');
+        $entry = new CacheEntryMock(['foo' => 'bar']);
+        $file  = $this->getFileName($this->region, $key);
 
         self::assertFalse($this->region->contains($key));
         self::assertTrue($this->region->put($key, $entry));
@@ -115,9 +119,9 @@ class FileLockRegionTest extends AbstractRegionTest
 
     public function testUnlockWithExistingLock()
     {
-        $key    = new CacheKeyMock('key');
-        $entry  = new CacheEntryMock(['foo' => 'bar']);
-        $file   = $this->getFileName($this->region, $key);
+        $key   = new CacheKeyMock('key');
+        $entry = new CacheEntryMock(['foo' => 'bar']);
+        $file  = $this->getFileName($this->region, $key);
 
         self::assertFalse($this->region->contains($key));
         self::assertTrue($this->region->put($key, $entry));
@@ -144,9 +148,9 @@ class FileLockRegionTest extends AbstractRegionTest
 
     public function testPutWithExistingLock()
     {
-        $key    = new CacheKeyMock('key');
-        $entry  = new CacheEntryMock(['foo' => 'bar']);
-        $file   = $this->getFileName($this->region, $key);
+        $key   = new CacheKeyMock('key');
+        $entry = new CacheEntryMock(['foo' => 'bar']);
+        $file  = $this->getFileName($this->region, $key);
 
         self::assertFalse($this->region->contains($key));
         self::assertTrue($this->region->put($key, $entry));
@@ -167,9 +171,9 @@ class FileLockRegionTest extends AbstractRegionTest
 
     public function testLockedEvict()
     {
-        $key    = new CacheKeyMock('key');
-        $entry  = new CacheEntryMock(['foo' => 'bar']);
-        $file   = $this->getFileName($this->region, $key);
+        $key   = new CacheKeyMock('key');
+        $entry = new CacheEntryMock(['foo' => 'bar']);
+        $file  = $this->getFileName($this->region, $key);
 
         self::assertFalse($this->region->contains($key));
         self::assertTrue($this->region->put($key, $entry));
@@ -187,13 +191,13 @@ class FileLockRegionTest extends AbstractRegionTest
 
     public function testLockedEvictAll()
     {
-        $key1    = new CacheKeyMock('key1');
-        $entry1  = new CacheEntryMock(['foo1' => 'bar1']);
-        $file1   = $this->getFileName($this->region, $key1);
+        $key1   = new CacheKeyMock('key1');
+        $entry1 = new CacheEntryMock(['foo1' => 'bar1']);
+        $file1  = $this->getFileName($this->region, $key1);
 
-        $key2    = new CacheKeyMock('key2');
-        $entry2  = new CacheEntryMock(['foo2' => 'bar2']);
-        $file2   = $this->getFileName($this->region, $key2);
+        $key2   = new CacheKeyMock('key2');
+        $entry2 = new CacheEntryMock(['foo2' => 'bar2']);
+        $file2  = $this->getFileName($this->region, $key2);
 
         self::assertFalse($this->region->contains($key1));
         self::assertTrue($this->region->put($key1, $entry1));
@@ -223,9 +227,9 @@ class FileLockRegionTest extends AbstractRegionTest
 
     public function testLockLifetime()
     {
-        $key    = new CacheKeyMock('key');
-        $entry  = new CacheEntryMock(['foo' => 'bar']);
-        $file   = $this->getFileName($this->region, $key);
+        $key      = new CacheKeyMock('key');
+        $entry    = new CacheEntryMock(['foo' => 'bar']);
+        $file     = $this->getFileName($this->region, $key);
         $property = new \ReflectionProperty($this->region, 'lockLifetime');
 
         $property->setAccessible(true);
@@ -257,7 +261,8 @@ class FileLockRegionTest extends AbstractRegionTest
         $reflectionDirectory->setAccessible(true);
         $reflectionDirectory->setValue($region, str_repeat('a', 10000));
 
-        set_error_handler(function () {}, E_WARNING);
+        set_error_handler(function () {
+        }, E_WARNING);
         self::assertTrue($region->evictAll());
         restore_error_handler();
     }
@@ -269,7 +274,7 @@ class FileLockRegionTest extends AbstractRegionTest
     {
         $path = $path ?: $this->directory;
 
-        if ( ! is_dir($path)) {
+        if (! is_dir($path)) {
             return;
         }
 

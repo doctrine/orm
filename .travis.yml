@@ -87,8 +87,7 @@ jobs:
       install: travis_retry composer install --prefer-dist
       php: 7.2
       script:
-        - ./vendor/bin/phpcs lib
-        - ./vendor/bin/phpcs tests || true # disabled on CI until ported to new CS
+        - ./vendor/bin/phpcs
 
   allow_failures:
     - php: nightly

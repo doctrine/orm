@@ -19,19 +19,13 @@ class Car
      */
     private $brand;
 
-    /**
-     * @ORM\Column(type="string", length=255);
-     */
+    /** @ORM\Column(type="string", length=255); */
     private $model;
 
-    /**
-     * @ORM\OneToMany(targetEntity=Ride::class, mappedBy="car")
-     */
+    /** @ORM\OneToMany(targetEntity=Ride::class, mappedBy="car") */
     private $freeCarRides;
 
-    /**
-     * @ORM\OneToMany(targetEntity=PaidRide::class, mappedBy="car")
-     */
+    /** @ORM\OneToMany(targetEntity=PaidRide::class, mappedBy="car") */
     private $carRides;
 
     public function getBrand()

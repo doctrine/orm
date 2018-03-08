@@ -4,12 +4,16 @@ declare(strict_types=1);
 
 namespace Doctrine\Tests\ORM\Functional;
 
+use Doctrine\DBAL\DBALException;
+use Doctrine\DBAL\Types\Type as DBALType;
 use Doctrine\ORM\Tools\SchemaValidator;
 use Doctrine\Tests\DbalTypes\CustomIdObjectType;
 use Doctrine\Tests\DbalTypes\NegativeToPositiveType;
 use Doctrine\Tests\DbalTypes\UpperCaseStringType;
 use Doctrine\Tests\OrmFunctionalTestCase;
-use Doctrine\DBAL\Types\Type as DBALType;
+use function array_keys;
+use function constant;
+use function implode;
 
 /**
  * Test the validity of all modelsets
@@ -28,11 +32,9 @@ class SchemaValidatorTest extends OrmFunctionalTestCase
     }
 
     /**
-     * @param string $className
      *
-     * @throws \Doctrine\DBAL\DBALException
+     * @throws DBALException
      *
-     * @return void
      */
     private function registerType(string $className)
     {
@@ -46,7 +48,7 @@ class SchemaValidatorTest extends OrmFunctionalTestCase
         DBALType::addType($type, $className);
     }
 
-    public static function dataValidateModelSets(): array
+    public static function dataValidateModelSets() : array
     {
         $modelSets = [];
 
@@ -63,7 +65,7 @@ class SchemaValidatorTest extends OrmFunctionalTestCase
     public function testValidateModelSets(string $modelSet)
     {
         $validator = new SchemaValidator($this->em);
-        $classes = [];
+        $classes   = [];
 
         foreach (self::$modelSets[$modelSet] as $className) {
             $classes[] = $this->em->getClassMetadata($className);
@@ -72,7 +74,7 @@ class SchemaValidatorTest extends OrmFunctionalTestCase
         foreach ($classes as $class) {
             $ce = $validator->validateClass($class);
 
-            self::assertEmpty($ce, "Invalid Modelset: " . $modelSet . " class " . $class->getClassName() . ": ". implode("\n", $ce));
+            self::assertEmpty($ce, 'Invalid Modelset: ' . $modelSet . ' class ' . $class->getClassName() . ': ' . implode("\n", $ce));
         }
     }
 }

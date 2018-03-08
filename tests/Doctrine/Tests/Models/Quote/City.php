@@ -19,9 +19,7 @@ class City
      */
     public $id;
 
-    /**
-     * @ORM\Column(name="city-name")
-     */
+    /** @ORM\Column(name="city-name") */
     public $name;
 
     public function __construct(string $name)

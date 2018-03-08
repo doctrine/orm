@@ -6,12 +6,13 @@ namespace Doctrine\Tests\ORM\Functional\Ticket;
 
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\Annotation as ORM;
+use Doctrine\Tests\OrmFunctionalTestCase;
 
 /**
  * @group DDC-1925
  * @group DDC-1210
  */
-class DDC1925Test extends \Doctrine\Tests\OrmFunctionalTestCase
+class DDC1925Test extends OrmFunctionalTestCase
 {
     public function testIssue()
     {
@@ -23,10 +24,10 @@ class DDC1925Test extends \Doctrine\Tests\OrmFunctionalTestCase
         );
 
         $user = new DDC1925User();
-        $user->setTitle("Test User");
+        $user->setTitle('Test User');
 
         $product = new DDC1925Product();
-        $product->setTitle("Test product");
+        $product->setTitle('Test product');
 
         $this->em->persist($user);
         $this->em->persist($product);
@@ -122,9 +123,6 @@ class DDC1925Product
         return $this->buyers;
     }
 
-    /**
-     * @param DDC1925User $buyer
-     */
     public function addBuyer(DDC1925User $buyer)
     {
         $this->buyers[] = $buyer;

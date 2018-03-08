@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace Doctrine\Tests\ORM\Functional\Ticket;
 
+use Doctrine\DBAL\Platforms\AbstractPlatform;
 use Doctrine\DBAL\Types\StringType;
 use Doctrine\DBAL\Types\Type;
-use Doctrine\DBAL\Platforms\AbstractPlatform;
 use Doctrine\ORM\Annotation as ORM;
 use Doctrine\Tests\OrmFunctionalTestCase;
 
@@ -34,11 +34,11 @@ class GH5887Test extends OrmFunctionalTestCase
     public function testLazyLoadsForeignEntitiesInOneToOneRelationWhileHavingCustomIdObject()
     {
         $customerId = new GH5887CustomIdObject(1);
-        $customer = new GH5887Customer();
+        $customer   = new GH5887Customer();
         $customer->setId($customerId);
 
         $cartId = 2;
-        $cart = new GH5887Cart();
+        $cart   = new GH5887Cart();
         $cart->setId($cartId);
         $cart->setCustomer($customer);
 
@@ -107,9 +107,6 @@ class GH5887Cart
         return $this->customer;
     }
 
-    /**
-     * @param GH5887Customer $customer
-     */
     public function setCustomer(GH5887Customer $customer)
     {
         if ($this->customer !== $customer) {
@@ -150,25 +147,16 @@ class GH5887Customer
         return $this->id;
     }
 
-    /**
-     * @param GH5887CustomIdObject $id
-     */
     public function setId(GH5887CustomIdObject $id)
     {
         $this->id = $id;
     }
 
-    /**
-     * @return GH5887Cart
-     */
-    public function getCart(): GH5887Cart
+    public function getCart() : GH5887Cart
     {
         return $this->cart;
     }
 
-    /**
-     * @param GH5887Cart $cart
-     */
     public function setCart(GH5887Cart $cart)
     {
         if ($this->cart !== $cart) {
@@ -180,9 +168,7 @@ class GH5887Customer
 
 class GH5887CustomIdObject
 {
-    /**
-     * @var int
-     */
+    /** @var int */
     private $id;
 
     /**
@@ -193,10 +179,7 @@ class GH5887CustomIdObject
         $this->id = $id;
     }
 
-    /**
-     * @return int
-     */
-    public function getId(): int
+    public function getId() : int
     {
         return $this->id;
     }
@@ -209,7 +192,7 @@ class GH5887CustomIdObject
 
 class GH5887CustomIdObjectType extends StringType
 {
-    const NAME = 'GH5887CustomIdObject';
+    public const NAME = 'GH5887CustomIdObject';
 
     /**
      * {@inheritdoc}

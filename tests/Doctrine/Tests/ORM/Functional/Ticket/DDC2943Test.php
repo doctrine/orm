@@ -4,10 +4,10 @@ declare(strict_types=1);
 
 namespace Doctrine\Tests\ORM\Functional\Ticket;
 
-use Doctrine\Tests\OrmFunctionalTestCase;
-use Doctrine\Tests\Models\Cache\Country;
-use Doctrine\ORM\Tools\Pagination\Paginator;
 use Doctrine\ORM\Cache;
+use Doctrine\ORM\Tools\Pagination\Paginator;
+use Doctrine\Tests\Models\Cache\Country;
+use Doctrine\Tests\OrmFunctionalTestCase;
 
 /**
  * @group DDC-2943
@@ -23,10 +23,10 @@ class DDC2943Test extends OrmFunctionalTestCase
 
     private function loadFixtures()
     {
-        $this->em->persist(new Country("Brazil"));
-        $this->em->persist(new Country("Canada"));
-        $this->em->persist(new Country("Germany"));
-        $this->em->persist(new Country("France"));
+        $this->em->persist(new Country('Brazil'));
+        $this->em->persist(new Country('Canada'));
+        $this->em->persist(new Country('Germany'));
+        $this->em->persist(new Country('France'));
         $this->em->flush();
         $this->em->clear();
     }

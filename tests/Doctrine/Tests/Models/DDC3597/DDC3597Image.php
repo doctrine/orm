@@ -4,13 +4,12 @@ declare(strict_types=1);
 
 namespace Doctrine\Tests\Models\DDC3597;
 
-use Doctrine\Tests\Models\DDC3597\Embeddable\DDC3597Dimension;
 use Doctrine\ORM\Annotation as ORM;
+use Doctrine\Tests\Models\DDC3597\Embeddable\DDC3597Dimension;
 
 /**
  * Description of Image
  *
- * @author Volker von Hoesslin <volker.von.hoesslin@empora.com>
  * @ORM\Entity
  */
 class DDC3597Image extends DDC3597Media

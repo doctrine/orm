@@ -4,12 +4,14 @@ declare(strict_types=1);
 
 namespace Doctrine\Tests\ORM\Functional\Ticket;
 
+use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\Annotation as ORM;
+use Doctrine\Tests\OrmFunctionalTestCase;
 
 /**
  * @group DDC-1300
  */
-class DDC1300Test extends \Doctrine\Tests\OrmFunctionalTestCase
+class DDC1300Test extends OrmFunctionalTestCase
 {
     public function setUp()
     {
@@ -25,21 +27,21 @@ class DDC1300Test extends \Doctrine\Tests\OrmFunctionalTestCase
 
     public function testIssue()
     {
-        $foo = new DDC1300Foo();
-        $foo->fooReference = "foo";
+        $foo               = new DDC1300Foo();
+        $foo->fooReference = 'foo';
 
         $this->em->persist($foo);
         $this->em->flush();
 
-        $locale = new DDC1300FooLocale();
-        $locale->foo = $foo;
-        $locale->locale = "en";
-        $locale->title = "blub";
+        $locale         = new DDC1300FooLocale();
+        $locale->foo    = $foo;
+        $locale->locale = 'en';
+        $locale->title  = 'blub';
 
         $this->em->persist($locale);
         $this->em->flush();
 
-        $query = $this->em->createQuery('SELECT f, fl FROM Doctrine\Tests\ORM\Functional\Ticket\DDC1300Foo f JOIN f.fooLocaleRefFoo fl');
+        $query  = $this->em->createQuery('SELECT f, fl FROM Doctrine\Tests\ORM\Functional\Ticket\DDC1300Foo f JOIN f.fooLocaleRefFoo fl');
         $result =  $query->getResult();
 
         self::assertCount(1, $result);
@@ -75,11 +77,10 @@ class DDC1300Foo
      * Constructor
      *
      * @param array|Zend_Config|null $options
-     * @return Bug_Model_Foo
      */
     public function __construct($options = null)
     {
-        $this->fooLocaleRefFoo = new \Doctrine\Common\Collections\ArrayCollection();
+        $this->fooLocaleRefFoo = new ArrayCollection();
     }
 }
 
@@ -88,7 +89,6 @@ class DDC1300Foo
  */
 class DDC1300FooLocale
 {
-
     /**
      * @ORM\ManyToOne(targetEntity=DDC1300Foo::class)
      * @ORM\JoinColumn(name="fooID", referencedColumnName="fooID")

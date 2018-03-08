@@ -4,21 +4,17 @@ declare(strict_types=1);
 
 namespace Doctrine\Tests\ORM\Functional;
 
-use Doctrine\Tests\Models\CMS\CmsUser;
 use Doctrine\ORM\Event\PostFlushEventArgs;
 use Doctrine\ORM\Events;
+use Doctrine\Tests\Models\CMS\CmsUser;
 use Doctrine\Tests\OrmFunctionalTestCase;
 
 /**
  * PostFlushEventTest
- *
- * @author Daniel Freudenberger <df@rebuy.de>
  */
 class PostFlushEventTest extends OrmFunctionalTestCase
 {
-    /**
-     * @var PostFlushListener
-     */
+    /** @var PostFlushListener */
     private $listener;
 
     protected function setUp()
@@ -26,7 +22,7 @@ class PostFlushEventTest extends OrmFunctionalTestCase
         $this->useModelSet('cms');
         parent::setUp();
         $this->listener = new PostFlushListener();
-        $evm = $this->em->getEventManager();
+        $evm            = $this->em->getEventManager();
         $evm->addEventListener(Events::postFlush, $this->listener);
     }
 
@@ -39,7 +35,7 @@ class PostFlushEventTest extends OrmFunctionalTestCase
 
     public function testListenerShouldNotBeNotifiedWhenFlushThrowsException()
     {
-        $user = new CmsUser();
+        $user           = new CmsUser();
         $user->username = 'dfreudenberger';
         $this->em->persist($user);
         $exceptionRaised = false;
@@ -67,31 +63,24 @@ class PostFlushEventTest extends OrmFunctionalTestCase
      */
     private function createNewValidUser()
     {
-        $user = new CmsUser();
+        $user           = new CmsUser();
         $user->username = 'dfreudenberger';
-        $user->name = 'Daniel Freudenberger';
+        $user->name     = 'Daniel Freudenberger';
         return $user;
     }
 }
 
 class PostFlushListener
 {
-    /**
-     * @var bool
-     */
+    /** @var bool */
     public $wasNotified = false;
 
-    /**
-     * @var PostFlushEventArgs
-     */
+    /** @var PostFlushEventArgs */
     public $receivedArgs;
 
-    /**
-     * @param PostFlushEventArgs $args
-     */
     public function postFlush(PostFlushEventArgs $args)
     {
-        $this->wasNotified = true;
+        $this->wasNotified  = true;
         $this->receivedArgs = $args;
     }
 }

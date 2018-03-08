@@ -19,9 +19,7 @@ class Login
      */
     public $id;
 
-    /**
-     * @ORM\Column
-     */
+    /** @ORM\Column */
     public $name;
 
     /**

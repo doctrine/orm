@@ -12,9 +12,7 @@ use Doctrine\ORM\Annotation as ORM;
  */
 class AttractionContactInfo extends AttractionInfo
 {
-    /**
-     * @ORM\Column(unique=true)
-     */
+    /** @ORM\Column(unique=true) */
     protected $fone;
 
     public function __construct($fone, Attraction $attraction)

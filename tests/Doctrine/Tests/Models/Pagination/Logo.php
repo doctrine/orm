@@ -9,9 +9,6 @@ use Doctrine\ORM\Annotation as ORM;
 /**
  * Logo
  *
- * @package Doctrine\Tests\Models\Pagination
- * @author Bill Schaller
- *
  * @ORM\Entity
  * @ORM\Table(name="pagination_logo")
  */
@@ -23,19 +20,13 @@ class Logo
      */
     public $id;
 
-    /**
-     * @ORM\Column(type="string")
-     */
+    /** @ORM\Column(type="string") */
     public $image;
 
-    /**
-     * @ORM\Column(type="integer")
-     */
+    /** @ORM\Column(type="integer") */
     public $image_height;
 
-    /**
-     * @ORM\Column(type="integer")
-     */
+    /** @ORM\Column(type="integer") */
     public $image_width;
 
     /**

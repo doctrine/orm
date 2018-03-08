@@ -20,10 +20,10 @@ class DDC949Test extends OrmFunctionalTestCase
      */
     public function testBooleanThroughRepository()
     {
-        $true = new BooleanModel();
+        $true               = new BooleanModel();
         $true->booleanField = true;
 
-        $false = new BooleanModel();
+        $false               = new BooleanModel();
         $false->booleanField = false;
 
         $this->em->persist($true);
@@ -31,13 +31,13 @@ class DDC949Test extends OrmFunctionalTestCase
         $this->em->flush();
         $this->em->clear();
 
-        $true = $this->em->getRepository(BooleanModel::class)->findOneBy(['booleanField' => true]);
+        $true  = $this->em->getRepository(BooleanModel::class)->findOneBy(['booleanField' => true]);
         $false = $this->em->getRepository(BooleanModel::class)->findOneBy(['booleanField' => false]);
 
-        self::assertInstanceOf(BooleanModel::class, $true, "True model not found");
-        self::assertTrue($true->booleanField, "True Boolean Model should be true.");
+        self::assertInstanceOf(BooleanModel::class, $true, 'True model not found');
+        self::assertTrue($true->booleanField, 'True Boolean Model should be true.');
 
-        self::assertInstanceOf(BooleanModel::class, $false, "False model not found");
-        self::assertFalse($false->booleanField, "False Boolean Model should be false.");
+        self::assertInstanceOf(BooleanModel::class, $false, 'False model not found');
+        self::assertFalse($false->booleanField, 'False Boolean Model should be false.');
     }
 }

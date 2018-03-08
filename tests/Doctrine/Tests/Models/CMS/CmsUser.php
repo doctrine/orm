@@ -18,17 +18,11 @@ class CmsUser
      * @ORM\GeneratedValue
      */
     public $id;
-    /**
-     * @ORM\Column(type="string", length=50, nullable=true)
-     */
+    /** @ORM\Column(type="string", length=50, nullable=true) */
     public $status;
-    /**
-     * @ORM\Column(type="string", length=255, unique=true)
-     */
+    /** @ORM\Column(type="string", length=255, unique=true) */
     public $username;
-    /**
-     * @ORM\Column(type="string", length=255)
-     */
+    /** @ORM\Column(type="string", length=255) */
     public $name;
     /**
      * @ORM\OneToMany(
@@ -88,10 +82,10 @@ class CmsUser
 
     public function __construct()
     {
-        $this->phonenumbers = new ArrayCollection;
-        $this->articles = new ArrayCollection;
-        $this->groups = new ArrayCollection;
-        $this->tags = new ArrayCollection;
+        $this->phonenumbers = new ArrayCollection();
+        $this->articles     = new ArrayCollection();
+        $this->groups       = new ArrayCollection();
+        $this->tags         = new ArrayCollection();
     }
 
     public function getId()
@@ -117,7 +111,6 @@ class CmsUser
     /**
      * Adds a phonenumber to the user.
      *
-     * @param CmsPhonenumber $phone
      */
     public function addPhonenumber(CmsPhonenumber $phone)
     {
@@ -190,7 +183,7 @@ class CmsUser
         return $this->email;
     }
 
-    public function setEmail(CmsEmail $email = null)
+    public function setEmail(?CmsEmail $email = null)
     {
         if ($this->email !== $email) {
             $this->email = $email;

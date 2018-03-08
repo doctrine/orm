@@ -18,10 +18,10 @@ class UnitOfWorkLifecycleTest extends OrmFunctionalTestCase
 
     public function testScheduleInsertManaged()
     {
-        $user = new CmsUser();
-        $user->username = "beberlei";
-        $user->name = "Benjamin";
-        $user->status = "active";
+        $user           = new CmsUser();
+        $user->username = 'beberlei';
+        $user->name     = 'Benjamin';
+        $user->status   = 'active';
         $this->em->persist($user);
         $this->em->flush();
 
@@ -33,10 +33,10 @@ class UnitOfWorkLifecycleTest extends OrmFunctionalTestCase
 
     public function testScheduleInsertDeleted()
     {
-        $user = new CmsUser();
-        $user->username = "beberlei";
-        $user->name = "Benjamin";
-        $user->status = "active";
+        $user           = new CmsUser();
+        $user->username = 'beberlei';
+        $user->name     = 'Benjamin';
+        $user->status   = 'active';
         $this->em->persist($user);
         $this->em->flush();
 
@@ -50,10 +50,10 @@ class UnitOfWorkLifecycleTest extends OrmFunctionalTestCase
 
     public function testScheduleInsertTwice()
     {
-        $user = new CmsUser();
-        $user->username = "beberlei";
-        $user->name = "Benjamin";
-        $user->status = "active";
+        $user           = new CmsUser();
+        $user->username = 'beberlei';
+        $user->name     = 'Benjamin';
+        $user->status   = 'active';
 
         $this->em->getUnitOfWork()->scheduleForInsert($user);
 

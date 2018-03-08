@@ -5,11 +5,12 @@ declare(strict_types=1);
 namespace Doctrine\Tests\ORM\Functional\Ticket;
 
 use Doctrine\ORM\Annotation as ORM;
+use Doctrine\Tests\OrmFunctionalTestCase;
 
 /**
  * @group DDC-1719
  */
-class DDC1719Test extends \Doctrine\Tests\OrmFunctionalTestCase
+class DDC1719Test extends OrmFunctionalTestCase
 {
     protected function setUp()
     {
@@ -44,12 +45,12 @@ class DDC1719Test extends \Doctrine\Tests\OrmFunctionalTestCase
         $this->em->flush();
         $this->em->clear();
 
-        $e1Id   = $e1->id;
-        $e2Id   = $e2->id;
+        $e1Id = $e1->id;
+        $e2Id = $e2->id;
 
         // Retrieve
-        $e1     = $this->em->find(DDC1719SimpleEntity::class, $e1Id);
-        $e2     = $this->em->find(DDC1719SimpleEntity::class, $e2Id);
+        $e1 = $this->em->find(DDC1719SimpleEntity::class, $e1Id);
+        $e2 = $this->em->find(DDC1719SimpleEntity::class, $e2Id);
 
         self::assertInstanceOf(DDC1719SimpleEntity::class, $e1);
         self::assertInstanceOf(DDC1719SimpleEntity::class, $e2);
@@ -85,7 +86,6 @@ class DDC1719Test extends \Doctrine\Tests\OrmFunctionalTestCase
         $this->em->remove($e2);
         $this->em->flush();
 
-
         $e1 = $this->em->find(DDC1719SimpleEntity::class, $e1Id);
         $e2 = $this->em->find(DDC1719SimpleEntity::class, $e2Id);
 
@@ -100,7 +100,6 @@ class DDC1719Test extends \Doctrine\Tests\OrmFunctionalTestCase
  */
 class DDC1719SimpleEntity
 {
-
     /**
      * @ORM\Id
      * @ORM\Column(type="integer", name="simple-entity-id")
@@ -108,9 +107,7 @@ class DDC1719SimpleEntity
      */
     public $id;
 
-    /**
-     * @ORM\Column(type="string", name="simple-entity-value")
-     */
+    /** @ORM\Column(type="string", name="simple-entity-value") */
     public $value;
 
     /**

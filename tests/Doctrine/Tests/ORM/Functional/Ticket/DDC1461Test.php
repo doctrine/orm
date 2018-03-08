@@ -5,11 +5,14 @@ declare(strict_types=1);
 namespace Doctrine\Tests\ORM\Functional\Ticket;
 
 use Doctrine\ORM\Annotation as ORM;
+use Doctrine\ORM\UnitOfWork;
+use Doctrine\Tests\OrmFunctionalTestCase;
+use function get_class;
 
 /**
  * @group DDC-1461
  */
-class DDC1461Test extends \Doctrine\Tests\OrmFunctionalTestCase
+class DDC1461Test extends OrmFunctionalTestCase
 {
     public function setUp()
     {
@@ -19,7 +22,7 @@ class DDC1461Test extends \Doctrine\Tests\OrmFunctionalTestCase
             $this->schemaTool->createSchema(
                 [
                 $this->em->getClassMetadata(DDC1461TwitterAccount::class),
-                $this->em->getClassMetadata(DDC1461User::class)
+                $this->em->getClassMetadata(DDC1461User::class),
                 ]
             );
         } catch (\Exception $e) {
@@ -28,14 +31,14 @@ class DDC1461Test extends \Doctrine\Tests\OrmFunctionalTestCase
 
     public function testChangeDetectionDeferredExplicit()
     {
-        $user = new DDC1461User;
+        $user = new DDC1461User();
         $this->em->persist($user);
         $this->em->flush();
 
-        self::assertEquals(\Doctrine\ORM\UnitOfWork::STATE_MANAGED, $this->em->getUnitOfWork()->getEntityState($user, \Doctrine\ORM\UnitOfWork::STATE_NEW), "Entity should be managed.");
-        self::assertEquals(\Doctrine\ORM\UnitOfWork::STATE_MANAGED, $this->em->getUnitOfWork()->getEntityState($user), "Entity should be managed.");
+        self::assertEquals(UnitOfWork::STATE_MANAGED, $this->em->getUnitOfWork()->getEntityState($user, UnitOfWork::STATE_NEW), 'Entity should be managed.');
+        self::assertEquals(UnitOfWork::STATE_MANAGED, $this->em->getUnitOfWork()->getEntityState($user), 'Entity should be managed.');
 
-        $acc = new DDC1461TwitterAccount;
+        $acc                  = new DDC1461TwitterAccount();
         $user->twitterAccount = $acc;
 
         $this->em->persist($user);
@@ -79,8 +82,6 @@ class DDC1461TwitterAccount
      */
     public $id;
 
-    /**
-     * @ORM\OneToOne(targetEntity=DDC1461User::class, fetch="EAGER")
-     */
+    /** @ORM\OneToOne(targetEntity=DDC1461User::class, fetch="EAGER") */
     public $user;
 }

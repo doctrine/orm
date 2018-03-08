@@ -5,11 +5,12 @@ declare(strict_types=1);
 namespace Doctrine\Tests\ORM\Functional\Ticket;
 
 use Doctrine\ORM\Annotation as ORM;
+use Doctrine\Tests\OrmFunctionalTestCase;
 
 /**
  * @group DDC-1436
  */
-class DDC1436Test extends \Doctrine\Tests\OrmFunctionalTestCase
+class DDC1436Test extends OrmFunctionalTestCase
 {
     protected function setUp()
     {

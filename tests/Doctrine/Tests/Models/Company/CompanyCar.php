@@ -18,9 +18,7 @@ class CompanyCar
      */
     private $id;
 
-    /**
-     * @ORM\Column(type="string", length=50)
-     */
+    /** @ORM\Column(type="string", length=50) */
     private $brand;
 
     public function __construct($brand = null)

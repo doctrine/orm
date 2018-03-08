@@ -4,22 +4,19 @@ declare(strict_types=1);
 
 namespace Doctrine\Tests\ORM\Persisters;
 
+use Doctrine\Common\Collections\Expr\Comparison;
+use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Mapping\OneToOneAssociationMetadata;
 use Doctrine\ORM\Persisters\Entity\BasicEntityPersister;
-use Doctrine\Common\Collections\Expr\Comparison;
 use Doctrine\Tests\Models\GeoNames\Admin1AlternateName;
 use Doctrine\Tests\OrmTestCase;
 
 class BasicEntityPersisterCompositeTypeSqlTest extends OrmTestCase
 {
-    /**
-     * @var BasicEntityPersister
-     */
+    /** @var BasicEntityPersister */
     protected $persister;
 
-    /**
-     * @var \Doctrine\ORM\EntityManagerInterface
-     */
+    /** @var EntityManagerInterface */
     protected $em;
 
     /**
@@ -29,7 +26,7 @@ class BasicEntityPersisterCompositeTypeSqlTest extends OrmTestCase
     {
         parent::setUp();
 
-        $this->em = $this->getTestEntityManager();
+        $this->em        = $this->getTestEntityManager();
         $this->persister = new BasicEntityPersister($this->em, $this->em->getClassMetadata(Admin1AlternateName::class));
     }
 

@@ -5,18 +5,18 @@ declare(strict_types=1);
 namespace Doctrine\Tests\Mocks;
 
 use Doctrine\DBAL\Driver\Statement;
+use function array_shift;
+use function current;
+use function is_array;
+use function next;
 
 /**
  * This class is a mock of the Statement interface that can be passed in to the Hydrator
  * to test the hydration standalone with faked result sets.
- *
- * @author  Roman Borschel <roman@code-factory.org>
  */
 class HydratorMockStatement implements \IteratorAggregate, Statement
 {
-    /**
-     * @var array
-     */
+    /** @var array */
     private $resultSet;
 
     /**
@@ -30,12 +30,7 @@ class HydratorMockStatement implements \IteratorAggregate, Statement
     }
 
     /**
-     * Fetches all rows from the result set.
-     *
-     * @param int|null   $fetchMode
-     * @param int|null   $fetchArgument
-     * @param array|null $ctorArgs
-     * @return array
+     * {@inheritdoc}
      */
     public function fetchAll($fetchMode = null, ...$args)
     {
@@ -48,7 +43,7 @@ class HydratorMockStatement implements \IteratorAggregate, Statement
     public function fetchColumn($columnNumber = 0)
     {
         $row = current($this->resultSet);
-        if ( ! is_array($row)) {
+        if (! is_array($row)) {
             return false;
         }
         $val = array_shift($row);

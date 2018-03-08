@@ -4,15 +4,13 @@ declare(strict_types=1);
 
 namespace Doctrine\Tests\ORM\Functional;
 
+use Doctrine\Tests\Models\Company\CompanyCar;
 use Doctrine\Tests\Models\Company\CompanyEmployee;
 use Doctrine\Tests\Models\Company\CompanyManager;
-use Doctrine\Tests\Models\Company\CompanyCar;
 use Doctrine\Tests\OrmFunctionalTestCase;
 
 /**
  * Functional Query tests.
- *
- * @author Benjamin <kontakt@beberlei.de>
  */
 class AdvancedDqlQueryTest extends OrmFunctionalTestCase
 {
@@ -27,8 +25,8 @@ class AdvancedDqlQueryTest extends OrmFunctionalTestCase
 
     public function testAggregateWithHavingClause()
     {
-        $dql = 'SELECT p.department, AVG(p.salary) AS avgSalary '.
-               'FROM Doctrine\Tests\Models\Company\CompanyEmployee p '.
+        $dql = 'SELECT p.department, AVG(p.salary) AS avgSalary ' .
+               'FROM Doctrine\Tests\Models\Company\CompanyEmployee p ' .
                'GROUP BY p.department HAVING SUM(p.salary) > 200000 ORDER BY p.department';
 
         $result = $this->em->createQuery($dql)->getScalarResult();
@@ -42,8 +40,8 @@ class AdvancedDqlQueryTest extends OrmFunctionalTestCase
 
     public function testUnnamedScalarResultsAreOneBased()
     {
-        $dql = 'SELECT p.department, AVG(p.salary) '.
-               'FROM Doctrine\Tests\Models\Company\CompanyEmployee p '.
+        $dql = 'SELECT p.department, AVG(p.salary) ' .
+               'FROM Doctrine\Tests\Models\Company\CompanyEmployee p ' .
                'GROUP BY p.department HAVING SUM(p.salary) > 200000 ORDER BY p.department';
 
         $result = $this->em->createQuery($dql)->getScalarResult();
@@ -64,7 +62,7 @@ class AdvancedDqlQueryTest extends OrmFunctionalTestCase
 
         self::assertCount(4, $result);
 
-        self::assertEquals("Jonathan W.", $result[0]['name']);
+        self::assertEquals('Jonathan W.', $result[0]['name']);
         self::assertEquals(3, $result[0]['friends']);
 
         self::assertEquals('Guilherme B.', $result[1]['name']);
@@ -79,7 +77,7 @@ class AdvancedDqlQueryTest extends OrmFunctionalTestCase
 
     public function testIsNullAssociation()
     {
-        $dql = 'SELECT p FROM Doctrine\Tests\Models\Company\CompanyPerson p '.
+        $dql    = 'SELECT p FROM Doctrine\Tests\Models\Company\CompanyPerson p ' .
                'WHERE p.spouse IS NULL';
         $result = $this->em->createQuery($dql)->getResult();
 
@@ -93,17 +91,17 @@ class AdvancedDqlQueryTest extends OrmFunctionalTestCase
 
     public function testSelectSubselect()
     {
-        $dql = 'SELECT p, (SELECT c.brand FROM Doctrine\Tests\Models\Company\CompanyCar c WHERE p.car = c) brandName '.
+        $dql    = 'SELECT p, (SELECT c.brand FROM Doctrine\Tests\Models\Company\CompanyCar c WHERE p.car = c) brandName ' .
                'FROM Doctrine\Tests\Models\Company\CompanyManager p';
         $result = $this->em->createQuery($dql)->getArrayResult();
 
         self::assertCount(1, $result);
-        self::assertEquals("Caramba", $result[0]['brandName']);
+        self::assertEquals('Caramba', $result[0]['brandName']);
     }
 
     public function testInSubselect()
     {
-        $dql = "SELECT p.name FROM Doctrine\Tests\Models\Company\CompanyPerson p ".
+        $dql    = 'SELECT p.name FROM Doctrine\Tests\Models\Company\CompanyPerson p ' .
                "WHERE p.name IN (SELECT n.name FROM Doctrine\Tests\Models\Company\CompanyPerson n WHERE n.name = 'Roman B.')";
         $result = $this->em->createQuery($dql)->getScalarResult();
 
@@ -113,7 +111,7 @@ class AdvancedDqlQueryTest extends OrmFunctionalTestCase
 
     public function testGroupByMultipleFields()
     {
-        $dql = 'SELECT p.department, p.name, count(p.id) FROM Doctrine\Tests\Models\Company\CompanyEmployee p '.
+        $dql    = 'SELECT p.department, p.name, count(p.id) FROM Doctrine\Tests\Models\Company\CompanyEmployee p ' .
                'GROUP BY p.department, p.name';
         $result = $this->em->createQuery($dql)->getResult();
 
@@ -126,7 +124,8 @@ class AdvancedDqlQueryTest extends OrmFunctionalTestCase
         $this->em->createQuery($dql)->execute();
 
         self::assertGreaterThan(0, $this->em->createQuery(
-            'SELECT count(p.id) FROM Doctrine\Tests\Models\Company\CompanyEmployee p WHERE p.salary = 1')->getResult());
+            'SELECT count(p.id) FROM Doctrine\Tests\Models\Company\CompanyEmployee p WHERE p.salary = 1'
+        )->getResult());
     }
 
     public function testDeleteAs()
@@ -134,7 +133,7 @@ class AdvancedDqlQueryTest extends OrmFunctionalTestCase
         $dql = 'DELETE Doctrine\Tests\Models\Company\CompanyEmployee AS p';
         $this->em->createQuery($dql)->getResult();
 
-        $dql = 'SELECT count(p) FROM Doctrine\Tests\Models\Company\CompanyEmployee p';
+        $dql    = 'SELECT count(p) FROM Doctrine\Tests\Models\Company\CompanyEmployee p';
         $result = $this->em->createQuery($dql)->getSingleScalarResult();
 
         self::assertEquals(0, $result);

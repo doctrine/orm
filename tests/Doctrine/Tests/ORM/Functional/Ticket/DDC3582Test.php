@@ -5,11 +5,12 @@ declare(strict_types=1);
 namespace Doctrine\Tests\ORM\Functional\Ticket;
 
 use Doctrine\ORM\Annotation as ORM;
+use Doctrine\Tests\OrmFunctionalTestCase;
 
 /**
  * @group embedded
  */
-class DDC3582Test extends \Doctrine\Tests\OrmFunctionalTestCase
+class DDC3582Test extends OrmFunctionalTestCase
 {
     public function testNestedEmbeddablesAreHydratedWithProperClass()
     {
@@ -38,7 +39,7 @@ class DDC3582Entity
 
     public function __construct($id)
     {
-        $this->id = $id;
+        $this->id          = $id;
         $this->embeddable1 = new DDC3582Embeddable1();
     }
 }

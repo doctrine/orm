@@ -6,6 +6,7 @@ namespace Doctrine\Tests\Models\DDC2504;
 
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\Annotation as ORM;
+use Doctrine\ORM\PersistentCollection;
 
 /**
  * @ORM\Entity
@@ -21,7 +22,7 @@ class DDC2504OtherClass
     /**
      * @ORM\OneToMany(targetEntity=DDC2504ChildClass::class, mappedBy="other", fetch="EXTRA_LAZY")
      *
-     * @var ArrayCollection|\Doctrine\ORM\PersistentCollection
+     * @var ArrayCollection|PersistentCollection
      */
     public $childClasses;
 

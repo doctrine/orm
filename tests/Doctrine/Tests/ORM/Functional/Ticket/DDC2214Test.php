@@ -4,18 +4,19 @@ declare(strict_types=1);
 
 namespace Doctrine\Tests\ORM\Functional\Ticket;
 
+use Doctrine\DBAL\Connection;
 use Doctrine\ORM\Annotation as ORM;
+use Doctrine\Tests\OrmFunctionalTestCase;
+use function end;
 
 /**
  * Verifies that the type of parameters being bound to an SQL query is the same
  * of the identifier of the entities used as parameters in the DQL query, even
  * if the bound objects are proxies.
  *
- * @author Marco Pivetta <ocramius@gmail.com>
- *
  * @group DDC-2214
  */
-class DDC2214Test extends \Doctrine\Tests\OrmFunctionalTestCase
+class DDC2214Test extends OrmFunctionalTestCase
 {
     protected function setUp()
     {
@@ -45,17 +46,17 @@ class DDC2214Test extends \Doctrine\Tests\OrmFunctionalTestCase
         $foo = $this->em->find(DDC2214Foo::class, $foo->id);
         $bar = $foo->bar;
 
-        $logger  = $this->em->getConnection()->getConfiguration()->getSQLLogger();
+        $logger = $this->em->getConnection()->getConfiguration()->getSQLLogger();
 
         $related = $this
             ->em
-            ->createQuery('SELECT b FROM '.__NAMESPACE__ . '\DDC2214Bar b WHERE b.id IN(:ids)')
+            ->createQuery('SELECT b FROM ' . __NAMESPACE__ . '\DDC2214Bar b WHERE b.id IN(:ids)')
             ->setParameter('ids', [$bar])
             ->getResult();
 
         $query = end($logger->queries);
 
-        self::assertEquals(\Doctrine\DBAL\Connection::PARAM_INT_ARRAY, $query['types'][0]);
+        self::assertEquals(Connection::PARAM_INT_ARRAY, $query['types'][0]);
     }
 }
 

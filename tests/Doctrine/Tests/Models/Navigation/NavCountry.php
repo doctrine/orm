@@ -19,14 +19,10 @@ class NavCountry
      */
     private $id;
 
-    /**
-     * @ORM\Column(type="string")
-     */
+    /** @ORM\Column(type="string") */
     private $name;
 
-    /**
-     * @ORM\OneToMany(targetEntity=NavPointOfInterest::class, mappedBy="country")
-     */
+    /** @ORM\OneToMany(targetEntity=NavPointOfInterest::class, mappedBy="country") */
     private $pois;
 
     public function __construct($name)

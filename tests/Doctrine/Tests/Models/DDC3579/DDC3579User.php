@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace Doctrine\Tests\Models\DDC3579;
 
 use Doctrine\Common\Collections\ArrayCollection;
-use Doctrine\DBAL\Types\Type;
 use Doctrine\ORM\Annotation as ORM;
 
 /**
@@ -20,9 +19,7 @@ class DDC3579User
      */
     protected $id;
 
-    /**
-     * @ORM\Column(name="user_name", nullable=true, unique=false, length=250)
-     */
+    /** @ORM\Column(name="user_name", nullable=true, unique=false, length=250) */
     protected $name;
 
     /**
@@ -37,12 +34,12 @@ class DDC3579User
      */
     public function __construct($name = null)
     {
-        $this->name     = $name;
-        $this->groups   = new ArrayCollection;
+        $this->name   = $name;
+        $this->groups = new ArrayCollection();
     }
 
     /**
-     * @return integer
+     * @return int
      */
     public function getId()
     {
@@ -65,9 +62,6 @@ class DDC3579User
         $this->name = $name;
     }
 
-    /**
-     * @param DDC3579Group $group
-     */
     public function addGroup(DDC3579Group $group)
     {
         $this->groups->add($group);

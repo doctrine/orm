@@ -9,8 +9,6 @@ use Doctrine\Tests\OrmFunctionalTestCase;
 
 /**
  * Functional tests for cascade remove with class table inheritance.
- *
- * @author Matthieu Napoli <matthieu@mnapoli.fr>
  */
 class DDC2775Test extends OrmFunctionalTestCase
 {
@@ -75,20 +73,16 @@ abstract class Role
      */
     public $id;
 
-    /**
-     * @ORM\ManyToOne(targetEntity=User::class, inversedBy="roles")
-     */
+    /** @ORM\ManyToOne(targetEntity=User::class, inversedBy="roles") */
     public $user;
 
-    /**
-     * @ORM\OneToMany(targetEntity=Authorization::class, mappedBy="role", cascade={"all"}, orphanRemoval=true)
-     */
+    /** @ORM\OneToMany(targetEntity=Authorization::class, mappedBy="role", cascade={"all"}, orphanRemoval=true) */
     public $authorizations;
 
     public function addAuthorization(Authorization $authorization)
     {
         $this->authorizations[] = $authorization;
-        $authorization->role = $this;
+        $authorization->role    = $this;
     }
 }
 
@@ -108,14 +102,10 @@ class Authorization
      */
     public $id;
 
-    /**
-     * @ORM\ManyToOne(targetEntity=User::class, inversedBy="authorizations")
-     */
+    /** @ORM\ManyToOne(targetEntity=User::class, inversedBy="authorizations") */
     public $user;
 
-    /**
-     * @ORM\ManyToOne(targetEntity=Role::class, inversedBy="authorizations")
-     */
+    /** @ORM\ManyToOne(targetEntity=Role::class, inversedBy="authorizations") */
     public $role;
 }
 
@@ -130,25 +120,21 @@ class User
      */
     public $id;
 
-    /**
-     * @ORM\OneToMany(targetEntity=Role::class, mappedBy="user", cascade={"all"}, orphanRemoval=true)
-     */
+    /** @ORM\OneToMany(targetEntity=Role::class, mappedBy="user", cascade={"all"}, orphanRemoval=true) */
     public $roles;
 
-    /**
-     * @ORM\OneToMany(targetEntity=Authorization::class, mappedBy="user", cascade={"all"}, orphanRemoval=true)
-     */
+    /** @ORM\OneToMany(targetEntity=Authorization::class, mappedBy="user", cascade={"all"}, orphanRemoval=true) */
     public $authorizations;
 
     public function addRole(Role $role)
     {
         $this->roles[] = $role;
-        $role->user = $this;
+        $role->user    = $this;
     }
 
     public function addAuthorization(Authorization $authorization)
     {
         $this->authorizations[] = $authorization;
-        $authorization->user = $this;
+        $authorization->user    = $this;
     }
 }

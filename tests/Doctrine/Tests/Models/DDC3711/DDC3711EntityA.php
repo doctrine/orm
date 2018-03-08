@@ -1,30 +1,20 @@
 <?php
 
-
 declare(strict_types=1);
 
 namespace Doctrine\Tests\Models\DDC3711;
 
 use Doctrine\Common\Collections\ArrayCollection;
 
-/**
- * @author Marc Pantel <pantel.m@gmail.com>
- */
 class DDC3711EntityA
 {
-    /**
-     * @var int
-     */
+    /** @var int */
     private $id1;
 
-    /**
-     * @var int
-     */
+    /** @var int */
     private $id2;
 
-    /**
-     * @var ArrayCollection
-     */
+    /** @var ArrayCollection */
     private $entityB;
 
     /**

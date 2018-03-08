@@ -5,17 +5,17 @@ declare(strict_types=1);
 namespace Doctrine\Tests\ORM\Functional\Ticket;
 
 use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Logging\DebugStack;
 use Doctrine\ORM\Annotation as ORM;
+use Doctrine\Tests\OrmFunctionalTestCase;
 
 /**
  * @group DDC-2346
  */
-class DDC2346Test extends \Doctrine\Tests\OrmFunctionalTestCase
+class DDC2346Test extends OrmFunctionalTestCase
 {
-    /**
-     * @var \Doctrine\DBAL\Logging\DebugStack
-     */
+    /** @var DebugStack */
     protected $logger;
 
     /**
@@ -41,14 +41,14 @@ class DDC2346Test extends \Doctrine\Tests\OrmFunctionalTestCase
      */
     public function testIssue()
     {
-        $foo1        = new DDC2346Foo();
-        $foo2        = new DDC2346Foo();
+        $foo1 = new DDC2346Foo();
+        $foo2 = new DDC2346Foo();
 
-        $baz1        = new DDC2346Baz();
-        $baz2        = new DDC2346Baz();
+        $baz1 = new DDC2346Baz();
+        $baz2 = new DDC2346Baz();
 
-        $baz1->foo   = $foo1;
-        $baz2->foo   = $foo2;
+        $baz1->foo = $foo1;
+        $baz2->foo = $foo2;
 
         $foo1->bars[] = $baz1;
         $foo1->bars[] = $baz2;
@@ -77,7 +77,7 @@ class DDC2346Foo
     public $id;
 
     /**
-     * @var DDC2346Bar[]|\Doctrine\Common\Collections\Collection
+     * @var DDC2346Bar[]|Collection
      *
      * @ORM\OneToMany(targetEntity=DDC2346Bar::class, mappedBy="foo")
      */

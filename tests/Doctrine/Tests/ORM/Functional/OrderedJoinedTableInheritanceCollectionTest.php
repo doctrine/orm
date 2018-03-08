@@ -9,8 +9,6 @@ use Doctrine\Tests\OrmFunctionalTestCase;
 
 /**
  * Functional tests for the Single Table Inheritance mapping strategy.
- *
- * @author Benjamin Eberlei <kontakt@beberlei.de>
  */
 class OrderedJoinedTableInheritanceCollectionTest extends OrmFunctionalTestCase
 {
@@ -20,22 +18,22 @@ class OrderedJoinedTableInheritanceCollectionTest extends OrmFunctionalTestCase
         try {
             $this->schemaTool->createSchema(
                 [
-                $this->em->getClassMetadata(OJTIC_Pet::class),
-                $this->em->getClassMetadata(OJTIC_Cat::class),
-                $this->em->getClassMetadata(OJTIC_Dog::class),
+                $this->em->getClassMetadata(OJTICPet::class),
+                $this->em->getClassMetadata(OJTICCat::class),
+                $this->em->getClassMetadata(OJTICDog::class),
                 ]
             );
         } catch (\Exception $e) {
             // Swallow all exceptions. We do not test the schema tool here.
         }
 
-        $dog = new OJTIC_Dog();
-        $dog->name = "Poofy";
+        $dog       = new OJTICDog();
+        $dog->name = 'Poofy';
 
-        $dog1 = new OJTIC_Dog();
-        $dog1->name = "Zampa";
-        $dog2 = new OJTIC_Dog();
-        $dog2->name = "Aari";
+        $dog1       = new OJTICDog();
+        $dog1->name = 'Zampa';
+        $dog2       = new OJTICDog();
+        $dog2->name = 'Aari';
 
         $dog1->mother = $dog;
         $dog2->mother = $dog;
@@ -52,7 +50,7 @@ class OrderedJoinedTableInheritanceCollectionTest extends OrmFunctionalTestCase
 
     public function testOrderdOneToManyCollection()
     {
-        $poofy = $this->em->createQuery("SELECT p FROM Doctrine\Tests\ORM\Functional\OJTIC_Pet p WHERE p.name = 'Poofy'")->getSingleResult();
+        $poofy = $this->em->createQuery("SELECT p FROM Doctrine\Tests\ORM\Functional\OJTICPet p WHERE p.name = 'Poofy'")->getSingleResult();
 
         self::assertEquals('Aari', $poofy->children[0]->getName());
         self::assertEquals('Zampa', $poofy->children[1]->getName());
@@ -60,7 +58,8 @@ class OrderedJoinedTableInheritanceCollectionTest extends OrmFunctionalTestCase
         $this->em->clear();
 
         $result = $this->em->createQuery(
-            "SELECT p, c FROM Doctrine\Tests\ORM\Functional\OJTIC_Pet p JOIN p.children c WHERE p.name = 'Poofy'")
+            "SELECT p, c FROM Doctrine\Tests\ORM\Functional\OJTICPet p JOIN p.children c WHERE p.name = 'Poofy'"
+        )
                 ->getResult();
 
         self::assertCount(1, $result);
@@ -76,11 +75,11 @@ class OrderedJoinedTableInheritanceCollectionTest extends OrmFunctionalTestCase
  * @ORM\InheritanceType("JOINED")
  * @ORM\DiscriminatorColumn(name="discr", type="string")
  * @ORM\DiscriminatorMap({
- *      "cat" = OJTIC_Cat::class,
- *      "dog" = OJTIC_Dog::class
+ *      "cat" = OJTICCat::class,
+ *      "dog" = OJTICDog::class
  * })
  */
-abstract class OJTIC_Pet
+abstract class OJTICPet
 {
     /**
      * @ORM\Id
@@ -89,25 +88,21 @@ abstract class OJTIC_Pet
      */
     public $id;
 
-    /**
-     * @ORM\Column
-     */
+    /** @ORM\Column */
     public $name;
 
-    /**
-     * @ORM\ManyToOne(targetEntity=OJTIC_PET::class)
-     */
+    /** @ORM\ManyToOne(targetEntity=OJTICPET::class) */
     public $mother;
 
     /**
-     * @ORM\OneToMany(targetEntity=OJTIC_Pet::class, mappedBy="mother")
+     * @ORM\OneToMany(targetEntity=OJTICPet::class, mappedBy="mother")
      * @ORM\OrderBy({"name" = "ASC"})
      */
     public $children;
 
     /**
-     * @ORM\ManyToMany(targetEntity=OJTIC_Pet::class)
-     * @ORM\JoinTable(name="OTJIC_Pet_Friends",
+     * @ORM\ManyToMany(targetEntity=OJTICPet::class)
+     * @ORM\JoinTable(name="OTJICPet_Friends",
      *     joinColumns={@ORM\JoinColumn(name="pet_id", referencedColumnName="id")},
      *     inverseJoinColumns={@ORM\JoinColumn(name="friend_id", referencedColumnName="id")})
      * @ORM\OrderBy({"name" = "ASC"})
@@ -123,13 +118,13 @@ abstract class OJTIC_Pet
 /**
  * @ORM\Entity
  */
-class OJTIC_Cat extends OJTIC_Pet
+class OJTICCat extends OJTICPet
 {
 }
 
 /**
  * @ORM\Entity
  */
-class OJTIC_Dog extends OJTIC_Pet
+class OJTICDog extends OJTICPet
 {
 }

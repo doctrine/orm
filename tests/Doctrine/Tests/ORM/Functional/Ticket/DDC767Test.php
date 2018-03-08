@@ -4,10 +4,12 @@ declare(strict_types=1);
 
 namespace Doctrine\Tests\ORM\Functional\Ticket;
 
-use Doctrine\Tests\Models\CMS\CmsUser;
 use Doctrine\Tests\Models\CMS\CmsGroup;
+use Doctrine\Tests\Models\CMS\CmsUser;
+use Doctrine\Tests\OrmFunctionalTestCase;
+use function get_class;
 
-class DDC767Test extends \Doctrine\Tests\OrmFunctionalTestCase
+class DDC767Test extends OrmFunctionalTestCase
 {
     protected function setUp()
     {
@@ -20,19 +22,19 @@ class DDC767Test extends \Doctrine\Tests\OrmFunctionalTestCase
      */
     public function testCollectionChangesInsideTransaction()
     {
-        $user = new CmsUser();
-        $user->name = "beberlei";
-        $user->status = "active";
-        $user->username = "beberlei";
+        $user           = new CmsUser();
+        $user->name     = 'beberlei';
+        $user->status   = 'active';
+        $user->username = 'beberlei';
 
-        $group1 = new CmsGroup();
-        $group1->name = "foo";
+        $group1       = new CmsGroup();
+        $group1->name = 'foo';
 
-        $group2 = new CmsGroup();
-        $group2->name = "bar";
+        $group2       = new CmsGroup();
+        $group2->name = 'bar';
 
-        $group3 = new CmsGroup();
-        $group3->name = "baz";
+        $group3       = new CmsGroup();
+        $group3->name = 'baz';
 
         $user->addGroup($group1);
         $user->addGroup($group2);
@@ -48,7 +50,7 @@ class DDC767Test extends \Doctrine\Tests\OrmFunctionalTestCase
         /* @var $pUser CmsUser */
         $pUser = $this->em->find(get_class($user), $user->id);
 
-        self::assertNotNull($pUser, "User not retrieved from database.");
+        self::assertNotNull($pUser, 'User not retrieved from database.');
 
         $groups = [$group2->id, $group3->id];
 

@@ -4,13 +4,14 @@ declare(strict_types=1);
 
 namespace Doctrine\Tests\Mocks;
 
-use Doctrine\ORM\Cache\CollectionCacheEntry;
-use Doctrine\ORM\Cache\ConcurrentRegion;
-use Doctrine\ORM\Cache\LockException;
 use Doctrine\ORM\Cache\CacheEntry;
 use Doctrine\ORM\Cache\CacheKey;
-use Doctrine\ORM\Cache\Region;
+use Doctrine\ORM\Cache\CollectionCacheEntry;
+use Doctrine\ORM\Cache\ConcurrentRegion;
 use Doctrine\ORM\Cache\Lock;
+use Doctrine\ORM\Cache\LockException;
+use Doctrine\ORM\Cache\Region;
+use function array_shift;
 
 /**
  * Concurrent region mock
@@ -19,18 +20,13 @@ use Doctrine\ORM\Cache\Lock;
  */
 class ConcurrentRegionMock implements ConcurrentRegion
 {
-    public $calls       = [];
-    public $exceptions  = [];
-    public $locks       = [];
+    public $calls      = [];
+    public $exceptions = [];
+    public $locks      = [];
 
-    /**
-     * @var \Doctrine\ORM\Cache\Region
-     */
+    /** @var Region */
     private $region;
 
-    /**
-     * @param \Doctrine\ORM\Cache\Region $region
-     */
     public function __construct(Region $region)
     {
         $this->region = $region;
@@ -40,16 +36,13 @@ class ConcurrentRegionMock implements ConcurrentRegion
      * Dequeue an exception for a specific method invocation
      *
      * @param string $method
-     * @param mixed $default
-     *
-     * @return mixed
      */
     private function throwException($method)
     {
         if (isset($this->exceptions[$method]) && ! empty($this->exceptions[$method])) {
             $exception = array_shift($this->exceptions[$method]);
 
-            if ($exception != null) {
+            if ($exception !== null) {
                 throw $exception;
             }
         }
@@ -59,7 +52,6 @@ class ConcurrentRegionMock implements ConcurrentRegion
      * Queue an exception for the next method invocation
      *
      * @param string $method
-     * @param \Exception $e
      */
     public function addException($method, \Exception $e)
     {
@@ -69,8 +61,6 @@ class ConcurrentRegionMock implements ConcurrentRegion
     /**
      * Locks a specific cache entry
      *
-     * @param \Doctrine\ORM\Cache\CacheKey $key
-     * @param \Doctrine\ORM\Cache\Lock $lock
      */
     public function setLock(CacheKey $key, Lock $lock)
     {
@@ -160,7 +150,7 @@ class ConcurrentRegionMock implements ConcurrentRegion
     /**
      * {@inheritdoc}
      */
-    public function put(CacheKey $key, CacheEntry $entry, Lock $lock = null)
+    public function put(CacheKey $key, CacheEntry $entry, ?Lock $lock = null)
     {
         $this->calls[__FUNCTION__][] = ['key' => $key, 'entry' => $entry];
 
@@ -202,7 +192,7 @@ class ConcurrentRegionMock implements ConcurrentRegion
 
         $this->throwException(__FUNCTION__);
 
-        if ( ! isset($this->locks[$key->hash])) {
+        if (! isset($this->locks[$key->hash])) {
             return;
         }
 

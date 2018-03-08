@@ -5,13 +5,15 @@ declare(strict_types=1);
 namespace Doctrine\Tests\ORM\Functional\Ticket;
 
 use Doctrine\ORM\Annotation as ORM;
+use Doctrine\Tests\OrmFunctionalTestCase;
 use ProxyManager\Proxy\GhostObjectInterface;
+use function get_class;
 
 /**
  * Tests that join columns (foreign keys) can be named the same as the association
  * fields they're used on without causing issues.
  */
-class DDC522Test extends \Doctrine\Tests\OrmFunctionalTestCase
+class DDC522Test extends OrmFunctionalTestCase
 {
     protected function setUp()
     {
@@ -22,7 +24,7 @@ class DDC522Test extends \Doctrine\Tests\OrmFunctionalTestCase
                 [
                     $this->em->getClassMetadata(DDC522Customer::class),
                     $this->em->getClassMetadata(DDC522Cart::class),
-                    $this->em->getClassMetadata(DDC522ForeignKeyTest::class)
+                    $this->em->getClassMetadata(DDC522ForeignKeyTest::class),
                 ]
             );
         } catch (\Exception $e) {
@@ -34,12 +36,12 @@ class DDC522Test extends \Doctrine\Tests\OrmFunctionalTestCase
      */
     public function testJoinColumnWithSameNameAsAssociationField()
     {
-        $cust = new DDC522Customer;
-        $cust->name = "name";
+        $cust       = new DDC522Customer();
+        $cust->name = 'name';
 
-        $cart = new DDC522Cart;
-        $cart->total = 0;
-        $cust->cart = $cart;
+        $cart           = new DDC522Cart();
+        $cart->total    = 0;
+        $cust->cart     = $cart;
         $cart->customer = $cust;
 
         $this->em->persist($cust);
@@ -59,7 +61,7 @@ class DDC522Test extends \Doctrine\Tests\OrmFunctionalTestCase
 
         $cartId = $cart->id;
 
-        $fkt = new DDC522ForeignKeyTest();
+        $fkt       = new DDC522ForeignKeyTest();
         $fkt->cart = $cart; // must be set properly
 
         $this->em->persist($fkt);
@@ -79,7 +81,7 @@ class DDC522Test extends \Doctrine\Tests\OrmFunctionalTestCase
      */
     public function testJoinColumnWithNullSameNameAssociationField()
     {
-        $fkCust = new DDC522ForeignKeyTest;
+        $fkCust       = new DDC522ForeignKeyTest();
         $fkCust->name = 'name';
         $fkCust->cart = null;
 

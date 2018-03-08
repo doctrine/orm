@@ -4,9 +4,11 @@ declare(strict_types=1);
 
 namespace Doctrine\Tests\ORM\Functional;
 
+use Doctrine\ORM\Events;
 use Doctrine\Tests\Models\Cache\Country;
 use Doctrine\Tests\Models\Cache\State;
-use Doctrine\ORM\Events;
+use function call_user_func;
+use function uniqid;
 
 /**
  * @group DDC-2183
@@ -154,8 +156,8 @@ class SecondLevelCacheTest extends SecondLevelCacheAbstractTest
         self::assertEquals($this->states[1]->getId(), $s2->getId());
         self::assertEquals($this->states[1]->getName(), $s2->getName());
 
-        $s1->setName("NEW NAME 1");
-        $s2->setName("NEW NAME 2");
+        $s1->setName('NEW NAME 1');
+        $s2->setName('NEW NAME 2');
 
         $this->em->persist($s1);
         $this->em->persist($s2);
@@ -186,10 +188,10 @@ class SecondLevelCacheTest extends SecondLevelCacheAbstractTest
         self::assertInstanceOf(State::class, $c4);
 
         self::assertEquals($s1->getId(), $c3->getId());
-        self::assertEquals("NEW NAME 1", $c3->getName());
+        self::assertEquals('NEW NAME 1', $c3->getName());
 
         self::assertEquals($s2->getId(), $c4->getId());
-        self::assertEquals("NEW NAME 2", $c4->getName());
+        self::assertEquals('NEW NAME 2', $c4->getName());
 
         self::assertEquals(2, $this->secondLevelCacheLogger->getHitCount());
         self::assertEquals(2, $this->secondLevelCacheLogger->getRegionHitCount($this->getEntityRegion(State::class)));
@@ -199,25 +201,23 @@ class SecondLevelCacheTest extends SecondLevelCacheAbstractTest
     {
         $listener = new ListenerSecondLevelCacheTest(
             [
-                Events::postFlush => function() {
+                Events::postFlush => function () {
                     throw new \RuntimeException('post flush failure');
-                }
+                },
             ]
         );
 
         $this->em->getEventManager()
             ->addEventListener(Events::postFlush, $listener);
 
-        $country = new Country("Brazil");
+        $country = new Country('Brazil');
 
         $this->cache->evictEntityRegion(Country::class);
 
         try {
-
             $this->em->persist($country);
             $this->em->flush();
             $this->fail('Should throw exception');
-
         } catch (\RuntimeException $exc) {
             self::assertNotNull($country->getId());
             self::assertEquals('post flush failure', $exc->getMessage());
@@ -233,9 +233,9 @@ class SecondLevelCacheTest extends SecondLevelCacheAbstractTest
 
         $listener = new ListenerSecondLevelCacheTest(
             [
-                Events::postUpdate => function() {
+                Events::postUpdate => function () {
                     throw new \RuntimeException('post update failure');
-                }
+                },
             ]
         );
 
@@ -244,9 +244,9 @@ class SecondLevelCacheTest extends SecondLevelCacheAbstractTest
 
         $this->cache->evictEntityRegion(State::class);
 
-        $stateId    = $this->states[0]->getId();
-        $stateName  = $this->states[0]->getName();
-        $state      = $this->em->find(State::class, $stateId);
+        $stateId   = $this->states[0]->getId();
+        $stateName = $this->states[0]->getName();
+        $state     = $this->em->find(State::class, $stateId);
 
         self::assertTrue($this->cache->containsEntity(State::class, $stateId));
         self::assertInstanceOf(State::class, $state);
@@ -259,7 +259,6 @@ class SecondLevelCacheTest extends SecondLevelCacheAbstractTest
         try {
             $this->em->flush();
             $this->fail('Should throw exception');
-
         } catch (\Exception $exc) {
             self::assertEquals('post update failure', $exc->getMessage());
         }
@@ -280,9 +279,9 @@ class SecondLevelCacheTest extends SecondLevelCacheAbstractTest
         $this->em->clear();
 
         $listener = new ListenerSecondLevelCacheTest([
-            Events::postRemove => function() {
+            Events::postRemove => function () {
                 throw new \RuntimeException('post remove failure');
-            }
+            },
         ]);
 
         $this->em
@@ -291,8 +290,8 @@ class SecondLevelCacheTest extends SecondLevelCacheAbstractTest
 
         $this->cache->evictEntityRegion(Country::class);
 
-        $countryId  = $this->countries[0]->getId();
-        $country    = $this->em->find(Country::class, $countryId);
+        $countryId = $this->countries[0]->getId();
+        $country   = $this->em->find(Country::class, $countryId);
 
         self::assertTrue($this->cache->containsEntity(Country::class, $countryId));
         self::assertInstanceOf(Country::class, $country);

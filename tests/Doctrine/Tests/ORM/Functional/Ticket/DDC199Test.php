@@ -16,32 +16,32 @@ class DDC199Test extends OrmFunctionalTestCase
             [
             $this->em->getClassMetadata(DDC199ParentClass::class),
             $this->em->getClassMetadata(DDC199ChildClass::class),
-            $this->em->getClassMetadata(DDC199RelatedClass::class)
+            $this->em->getClassMetadata(DDC199RelatedClass::class),
             ]
         );
     }
 
     public function testPolymorphicLoading()
     {
-        $child = new DDC199ChildClass;
+        $child             = new DDC199ChildClass();
         $child->parentData = 'parentData';
-        $child->childData = 'childData';
+        $child->childData  = 'childData';
         $this->em->persist($child);
 
-        $related1 = new DDC199RelatedClass;
+        $related1              = new DDC199RelatedClass();
         $related1->relatedData = 'related1';
-        $related1->parent = $child;
+        $related1->parent      = $child;
         $this->em->persist($related1);
 
-        $related2 = new DDC199RelatedClass;
+        $related2              = new DDC199RelatedClass();
         $related2->relatedData = 'related2';
-        $related2->parent = $child;
+        $related2->parent      = $child;
         $this->em->persist($related2);
 
         $this->em->flush();
         $this->em->clear();
 
-        $query = $this->em->createQuery('select e,r from Doctrine\Tests\ORM\Functional\Ticket\DDC199ParentClass e join e.relatedEntities r');
+        $query  = $this->em->createQuery('select e,r from Doctrine\Tests\ORM\Functional\Ticket\DDC199ParentClass e join e.relatedEntities r');
         $result = $query->getResult();
 
         self::assertCount(1, $result);
@@ -68,14 +68,10 @@ class DDC199ParentClass
      */
     public $id;
 
-    /**
-     * @ORM\Column(type="string")
-     */
+    /** @ORM\Column(type="string") */
     public $parentData;
 
-    /**
-     * @ORM\OneToMany(targetEntity=DDC199RelatedClass::class, mappedBy="parent")
-     */
+    /** @ORM\OneToMany(targetEntity=DDC199RelatedClass::class, mappedBy="parent") */
     public $relatedEntities;
 }
 
@@ -83,9 +79,7 @@ class DDC199ParentClass
 /** @ORM\Entity */
 class DDC199ChildClass extends DDC199ParentClass
 {
-    /**
-     * @ORM\Column
-     */
+    /** @ORM\Column */
     public $childData;
 }
 

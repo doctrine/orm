@@ -64,7 +64,7 @@ abstract class DDC3597Root
      */
     public function getId()
     {
-        return (int)$this->id;
+        return (int) $this->id;
     }
 
 

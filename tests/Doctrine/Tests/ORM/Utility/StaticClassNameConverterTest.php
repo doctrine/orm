@@ -6,6 +6,9 @@ namespace Doctrine\Tests\ORM\Utility;
 
 use Doctrine\ORM\Utility\StaticClassNameConverter;
 use PHPUnit\Framework\TestCase;
+use function array_pop;
+use function explode;
+use function implode;
 
 /**
  * @covers \Doctrine\ORM\Utility\StaticClassNameConverter
@@ -44,6 +47,6 @@ class StaticClassNameConverterTest extends TestCase
 
         eval('namespace ' . $namespace . ' { class ' . $className . ' {} }');
 
-        self::assertSame($expectedClassName, StaticClassNameConverter::getClass(new $givenClassName));
+        self::assertSame($expectedClassName, StaticClassNameConverter::getClass(new $givenClassName()));
     }
 }

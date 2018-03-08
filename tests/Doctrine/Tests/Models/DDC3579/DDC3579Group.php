@@ -18,19 +18,15 @@ class DDC3579Group
      */
     private $id;
 
-    /**
-     * @ORM\Column
-     */
+    /** @ORM\Column */
     private $name;
 
-    /**
-     * @ORM\ManyToMany(targetEntity=DDC3579Admin::class, mappedBy="groups")
-     */
+    /** @ORM\ManyToMany(targetEntity=DDC3579Admin::class, mappedBy="groups") */
     private $admins;
 
     public function __construct($name = null)
     {
-        $this->name = $name;
+        $this->name  = $name;
         $this->users = new ArrayCollection();
     }
 
@@ -50,9 +46,6 @@ class DDC3579Group
         return $this->name;
     }
 
-    /**
-     * @param DDC3579Admin $admin
-     */
     public function addAdmin(DDC3579Admin $admin)
     {
         $this->admins[] = $admin;

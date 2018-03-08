@@ -5,15 +5,16 @@ declare(strict_types=1);
 namespace Doctrine\Tests\ORM\Functional\Ticket;
 
 use Doctrine\ORM\Annotation as ORM;
+use Doctrine\Tests\OrmFunctionalTestCase;
 
 /**
  * @group DDC-2575
  */
-class DDC2575Test extends \Doctrine\Tests\OrmFunctionalTestCase
+class DDC2575Test extends OrmFunctionalTestCase
 {
     private $rootsEntities = [];
-    private $aEntities = [];
-    private $bEntities = [];
+    private $aEntities     = [];
+    private $bEntities     = [];
 
     protected function setUp()
     {
@@ -28,16 +29,16 @@ class DDC2575Test extends \Doctrine\Tests\OrmFunctionalTestCase
         );
 
         $entityRoot1 = new DDC2575Root(1);
-        $entityB1 = new DDC2575B(2);
-        $entityA1 = new DDC2575A($entityRoot1, $entityB1);
+        $entityB1    = new DDC2575B(2);
+        $entityA1    = new DDC2575A($entityRoot1, $entityB1);
 
         $this->em->persist($entityRoot1);
         $this->em->persist($entityA1);
         $this->em->persist($entityB1);
 
         $entityRoot2 = new DDC2575Root(3);
-        $entityB2 = new DDC2575B(4);
-        $entityA2 = new DDC2575A($entityRoot2, $entityB2);
+        $entityB2    = new DDC2575B(4);
+        $entityA2    = new DDC2575A($entityRoot2, $entityB2);
 
         $this->em->persist($entityRoot2);
         $this->em->persist($entityA2);
@@ -60,12 +61,12 @@ class DDC2575Test extends \Doctrine\Tests\OrmFunctionalTestCase
     public function testHydrationIssue()
     {
         $repository = $this->em->getRepository(DDC2575Root::class);
-        $qb = $repository->createQueryBuilder('r')
+        $qb         = $repository->createQueryBuilder('r')
             ->select('r, a, b')
             ->leftJoin('r.aRelation', 'a')
             ->leftJoin('a.bRelation', 'b');
 
-        $query = $qb->getQuery();
+        $query  = $qb->getQuery();
         $result = $query->getResult();
 
         self::assertCount(2, $result);
@@ -99,19 +100,15 @@ class DDC2575Root
      */
     public $id;
 
-    /**
-     * @ORM\Column(type="integer")
-     */
+    /** @ORM\Column(type="integer") */
     public $sampleField;
 
-    /**
-     * @ORM\OneToOne(targetEntity=DDC2575A::class, mappedBy="rootRelation")
-     */
+    /** @ORM\OneToOne(targetEntity=DDC2575A::class, mappedBy="rootRelation") */
     public $aRelation;
 
     public function __construct($id, $value = 0)
     {
-        $this->id = $id;
+        $this->id          = $id;
         $this->sampleField = $value;
     }
 }
@@ -137,7 +134,7 @@ class DDC2575A
     public function __construct(DDC2575Root $rootRelation, DDC2575B $bRelation)
     {
         $this->rootRelation = $rootRelation;
-        $this->bRelation = $bRelation;
+        $this->bRelation    = $bRelation;
     }
 }
 
@@ -152,14 +149,12 @@ class DDC2575B
      */
     public $id;
 
-    /**
-     * @ORM\Column(type="integer")
-     */
+    /** @ORM\Column(type="integer") */
     public $sampleField;
 
     public function __construct($id, $value = 0)
     {
-        $this->id = $id;
+        $this->id          = $id;
         $this->sampleField = $value;
     }
 }

@@ -22,9 +22,7 @@ class Address
      */
     public $id;
 
-    /**
-     * @ORM\Column(name="address-zip")
-     */
+    /** @ORM\Column(name="address-zip") */
     public $zip;
 
     /**

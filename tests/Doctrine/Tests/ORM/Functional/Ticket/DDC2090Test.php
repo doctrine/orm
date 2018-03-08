@@ -5,12 +5,13 @@ declare(strict_types=1);
 namespace Doctrine\Tests\ORM\Functional\Ticket;
 
 use Doctrine\Tests\Models\Company\CompanyEmployee;
+use Doctrine\Tests\OrmFunctionalTestCase;
 
 /**
  * @group DDC-2090
  * @group non-cacheable
  */
-class DDC2090Test extends \Doctrine\Tests\OrmFunctionalTestCase
+class DDC2090Test extends OrmFunctionalTestCase
 {
     public function setUp()
     {
@@ -22,17 +23,17 @@ class DDC2090Test extends \Doctrine\Tests\OrmFunctionalTestCase
     {
         $date1     = new \DateTime('2011-11-11 11:11:11');
         $date2     = new \DateTime('2012-12-12 12:12:12');
-        $employee1 = new CompanyEmployee;
-        $employee2 = new CompanyEmployee;
+        $employee1 = new CompanyEmployee();
+        $employee2 = new CompanyEmployee();
 
-        $employee1->setName("Fabio B. Silva");
+        $employee1->setName('Fabio B. Silva');
         $employee1->setStartDate(new \DateTime('yesterday'));
-        $employee1->setDepartment("R&D");
+        $employee1->setDepartment('R&D');
         $employee1->setSalary(100);
 
-        $employee2->setName("Doctrine Bot");
+        $employee2->setName('Doctrine Bot');
         $employee1->setStartDate(new \DateTime('yesterday'));
-        $employee2->setDepartment("QA");
+        $employee2->setDepartment('QA');
         $employee2->setSalary(100);
 
         $this->em->persist($employee1);
@@ -101,7 +102,6 @@ class DDC2090Test extends \Doctrine\Tests\OrmFunctionalTestCase
             ->getQuery()
             ->useQueryCache(true)
             ->execute();
-
 
         $this->em->clear();
 

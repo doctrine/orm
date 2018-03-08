@@ -25,9 +25,7 @@ class Stock
      */
     private $symbol;
 
-    /**
-     * @ORM\Column(type="decimal")
-     */
+    /** @ORM\Column(type="decimal") */
     private $price;
 
     /**
@@ -39,7 +37,7 @@ class Stock
     public function __construct($symbol, $initialOfferingPrice, Market $market)
     {
         $this->symbol = $symbol;
-        $this->price = $initialOfferingPrice;
+        $this->price  = $initialOfferingPrice;
         $this->market = $market;
         $market->addStock($this);
     }

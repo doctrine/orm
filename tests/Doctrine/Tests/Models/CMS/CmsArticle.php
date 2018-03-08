@@ -18,22 +18,16 @@ class CmsArticle
      * @ORM\GeneratedValue(strategy="AUTO")
      */
     public $id;
-    /**
-     * @ORM\Column(type="string", length=255)
-     */
+    /** @ORM\Column(type="string", length=255) */
     public $topic;
-    /**
-     * @ORM\Column(type="text")
-     */
+    /** @ORM\Column(type="text") */
     public $text;
     /**
      * @ORM\ManyToOne(targetEntity=CmsUser::class, inversedBy="articles")
      * @ORM\JoinColumn(name="user_id", referencedColumnName="id")
      */
     public $user;
-    /**
-     * @ORM\OneToMany(targetEntity=CmsComment::class, mappedBy="article")
-     */
+    /** @ORM\OneToMany(targetEntity=CmsComment::class, mappedBy="article") */
     public $comments;
 
     /**

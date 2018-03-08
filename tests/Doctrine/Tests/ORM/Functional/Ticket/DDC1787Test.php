@@ -5,11 +5,12 @@ declare(strict_types=1);
 namespace Doctrine\Tests\ORM\Functional\Ticket;
 
 use Doctrine\ORM\Annotation as ORM;
+use Doctrine\Tests\OrmFunctionalTestCase;
 
 /**
  * @group DDC-1787
  */
-class DDC1787Test extends \Doctrine\Tests\OrmFunctionalTestCase
+class DDC1787Test extends OrmFunctionalTestCase
 {
     public function setUp()
     {
@@ -24,8 +25,8 @@ class DDC1787Test extends \Doctrine\Tests\OrmFunctionalTestCase
 
     public function testIssue()
     {
-        $bar = new DDC1787Bar;
-        $bar2 = new DDC1787Bar;
+        $bar  = new DDC1787Bar();
+        $bar2 = new DDC1787Bar();
 
         $this->em->persist($bar);
         $this->em->persist($bar2);
@@ -43,14 +44,10 @@ class DDC1787Test extends \Doctrine\Tests\OrmFunctionalTestCase
  */
 class DDC1787Foo
 {
-    /**
-     * @ORM\Id @ORM\Column(type="integer") @ORM\GeneratedValue(strategy="AUTO")
-     */
+    /** @ORM\Id @ORM\Column(type="integer") @ORM\GeneratedValue(strategy="AUTO") */
     private $id;
 
-    /**
-     * @ORM\Version @ORM\Column(type="integer")
-     */
+    /** @ORM\Version @ORM\Column(type="integer") */
     private $version;
 
     public function getVersion()

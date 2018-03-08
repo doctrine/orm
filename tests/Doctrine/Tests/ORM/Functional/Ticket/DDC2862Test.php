@@ -6,12 +6,14 @@ namespace Doctrine\Tests\ORM\Functional\Ticket;
 
 use Doctrine\ORM\Annotation as ORM;
 use Doctrine\ORM\Tools\ToolsException;
+use Doctrine\Tests\OrmFunctionalTestCase;
+use Entities\User;
 
 /**
  * @group DDC-2862
  * @group DDC-2183
  */
-class DDC2862Test extends \Doctrine\Tests\OrmFunctionalTestCase
+class DDC2862Test extends OrmFunctionalTestCase
 {
     public function setUp()
     {
@@ -31,8 +33,8 @@ class DDC2862Test extends \Doctrine\Tests\OrmFunctionalTestCase
 
     public function testIssue()
     {
-        $user1    = new DDC2862User('Foo');
-        $driver1  = new DDC2862Driver('Bar', $user1);
+        $user1   = new DDC2862User('Foo');
+        $driver1 = new DDC2862Driver('Bar', $user1);
 
         $this->em->persist($user1);
         $this->em->persist($driver1);
@@ -69,8 +71,8 @@ class DDC2862Test extends \Doctrine\Tests\OrmFunctionalTestCase
 
     public function testIssueReopened()
     {
-        $user1    = new DDC2862User('Foo');
-        $driver1  = new DDC2862Driver('Bar', $user1);
+        $user1   = new DDC2862User('Foo');
+        $driver1 = new DDC2862Driver('Bar', $user1);
 
         $this->em->persist($user1);
         $this->em->persist($driver1);
@@ -149,7 +151,7 @@ class DDC2862Driver
     }
 
     /**
-     * @return integer
+     * @return int
      */
     public function getId()
     {
@@ -173,7 +175,7 @@ class DDC2862Driver
     }
 
     /**
-     * @param \Entities\User $userProfile
+     * @param User $userProfile
      */
     public function setUserProfile($userProfile)
     {
@@ -181,7 +183,7 @@ class DDC2862Driver
     }
 
     /**
-     * @return \Entities\User
+     * @return User
      */
     public function getUserProfile()
     {
@@ -215,7 +217,7 @@ class DDC2862User
     }
 
     /**
-     * @return integer
+     * @return int
      */
     public function getId()
     {

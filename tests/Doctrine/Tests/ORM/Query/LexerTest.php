@@ -9,8 +9,6 @@ use Doctrine\Tests\OrmTestCase;
 
 class LexerTest extends OrmTestCase
 {
-    //private $lexer;
-
     protected function setUp()
     {
     }
@@ -120,7 +118,7 @@ class LexerTest extends OrmTestCase
         $lexer->moveNext();
         $token = $lexer->lookahead;
         self::assertEquals(Lexer::T_STRING, $token['type']);
-        self::assertEquals("This is a string.", $token['value']);
+        self::assertEquals('This is a string.', $token['value']);
     }
 
     public function testScannerRecognizesStringContainingSingleQuotes()
@@ -161,65 +159,65 @@ class LexerTest extends OrmTestCase
 
     public function testScannerTokenizesASimpleQueryCorrectly()
     {
-        $dql = "SELECT u FROM My\Namespace\User u WHERE u.name = 'Jack O''Neil'";
+        $dql   = "SELECT u FROM My\Namespace\User u WHERE u.name = 'Jack O''Neil'";
         $lexer = new Lexer($dql);
 
         $tokens = [
             [
                 'value' => 'SELECT',
                 'type'  => Lexer::T_SELECT,
-                'position' => 0
+                'position' => 0,
             ],
             [
                 'value' => 'u',
                 'type'  => Lexer::T_IDENTIFIER,
-                'position' => 7
+                'position' => 7,
             ],
             [
                 'value' => 'FROM',
                 'type'  => Lexer::T_FROM,
-                'position' => 9
+                'position' => 9,
             ],
             [
                 'value' => 'My\Namespace\User',
                 'type'  => Lexer::T_FULLY_QUALIFIED_NAME,
-                'position' => 14
+                'position' => 14,
             ],
             [
                 'value' => 'u',
                 'type'  => Lexer::T_IDENTIFIER,
-                'position' => 32
+                'position' => 32,
             ],
             [
                 'value' => 'WHERE',
                 'type'  => Lexer::T_WHERE,
-                'position' => 34
+                'position' => 34,
             ],
             [
                 'value' => 'u',
                 'type'  => Lexer::T_IDENTIFIER,
-                'position' => 40
+                'position' => 40,
             ],
             [
                 'value' => '.',
                 'type'  => Lexer::T_DOT,
-                'position' => 41
+                'position' => 41,
             ],
             [
                 'value' => 'name',
                 'type'  => Lexer::T_IDENTIFIER,
-                'position' => 42
+                'position' => 42,
             ],
             [
                 'value' => '=',
                 'type'  => Lexer::T_EQUALS,
-                'position' => 47
+                'position' => 47,
             ],
             [
                 'value' => "Jack O'Neil",
                 'type'  => Lexer::T_STRING,
-                'position' => 49
-            ]
+                'position' => 49,
+            ],
         ];
 
         foreach ($tokens as $expected) {
@@ -244,7 +242,7 @@ class LexerTest extends OrmTestCase
             [Lexer::T_IDENTIFIER, 'comma'], // name of a token class with value < 100 (whitebox test)
             [Lexer::T_FULLY_QUALIFIED_NAME, 'Some\Class'], // DQL class reference
             [Lexer::T_ALIASED_NAME, 'Some:Name'],
-            [Lexer::T_ALIASED_NAME, 'Some:Subclassed\Name']
+            [Lexer::T_ALIASED_NAME, 'Some:Subclassed\Name'],
         ];
     }
 }

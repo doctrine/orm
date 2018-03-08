@@ -5,8 +5,9 @@ declare(strict_types=1);
 namespace Doctrine\Tests\ORM\Functional\Ticket;
 
 use Doctrine\ORM\Annotation as ORM;
+use Doctrine\Tests\OrmFunctionalTestCase;
 
-class DDC809Test extends \Doctrine\Tests\OrmFunctionalTestCase
+class DDC809Test extends OrmFunctionalTestCase
 {
     public function setUp()
     {
@@ -14,7 +15,7 @@ class DDC809Test extends \Doctrine\Tests\OrmFunctionalTestCase
         $this->schemaTool->createSchema(
             [
             $this->em->getClassMetadata(DDC809Variant::class),
-            $this->em->getClassMetadata(DDC809SpecificationValue::class)
+            $this->em->getClassMetadata(DDC809SpecificationValue::class),
             ]
         );
 
@@ -52,8 +53,8 @@ class DDC809Test extends \Doctrine\Tests\OrmFunctionalTestCase
                         ->getQuery()
                         ->getResult();
 
-        self::assertCount(4, $result[0]->getSpecificationValues(), "Works in test-setup.");
-        self::assertCount(4, $result[1]->getSpecificationValues(), "Only returns 2 in the case of the hydration bug.");
+        self::assertCount(4, $result[0]->getSpecificationValues(), 'Works in test-setup.');
+        self::assertCount(4, $result[1]->getSpecificationValues(), 'Only returns 2 in the case of the hydration bug.');
     }
 }
 

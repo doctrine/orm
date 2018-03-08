@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Doctrine\Tests\Models\DDC117;
 
+use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\Annotation as ORM;
 
 /**
@@ -18,33 +19,25 @@ class DDC117Translation
      */
     private $article;
 
-    /**
-     * @ORM\Id @ORM\Column(type="string")
-     */
+    /** @ORM\Id @ORM\Column(type="string") */
     private $language;
 
-    /**
-     * @ORM\Column(type="string")
-     */
+    /** @ORM\Column(type="string") */
     private $title;
 
-    /**
-     * @ORM\ManyToMany(targetEntity=DDC117Editor::class, mappedBy="reviewingTranslations")
-     */
+    /** @ORM\ManyToMany(targetEntity=DDC117Editor::class, mappedBy="reviewingTranslations") */
     public $reviewedByEditors;
 
-    /**
-     * @ORM\OneToMany(targetEntity=DDC117Editor::class, mappedBy="lastTranslation")
-     */
+    /** @ORM\OneToMany(targetEntity=DDC117Editor::class, mappedBy="lastTranslation") */
     public $lastTranslatedBy;
 
     public function __construct($article, $language, $title)
     {
-        $this->article = $article;
-        $this->language = $language;
-        $this->title = $title;
-        $this->reviewedByEditors = new \Doctrine\Common\Collections\ArrayCollection();
-        $this->lastTranslatedBy = new \Doctrine\Common\Collections\ArrayCollection();
+        $this->article           = $article;
+        $this->language          = $language;
+        $this->title             = $title;
+        $this->reviewedByEditors = new ArrayCollection();
+        $this->lastTranslatedBy  = new ArrayCollection();
     }
 
     public function getArticleId()

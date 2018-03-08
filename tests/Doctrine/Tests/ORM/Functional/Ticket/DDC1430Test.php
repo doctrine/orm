@@ -4,12 +4,14 @@ declare(strict_types=1);
 
 namespace Doctrine\Tests\ORM\Functional\Ticket;
 
+use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\Annotation as ORM;
+use Doctrine\Tests\OrmFunctionalTestCase;
 
 /**
  * @group DDC-1430
  */
-class DDC1430Test extends \Doctrine\Tests\OrmFunctionalTestCase
+class DDC1430Test extends OrmFunctionalTestCase
 {
     protected function setUp()
     {
@@ -74,7 +76,6 @@ class DDC1430Test extends \Doctrine\Tests\OrmFunctionalTestCase
                         ->orderBy('o.id')
                         ->getQuery();
 
-
         self::assertSQLEquals(
             'SELECT o, COUNT(p.id) AS p_count FROM Doctrine\Tests\ORM\Functional\Ticket\DDC1430Order o LEFT JOIN o.products p GROUP BY o.id, o.date, o.status ORDER BY o.id ASC',
             $query->getDQL()
@@ -108,7 +109,6 @@ class DDC1430Test extends \Doctrine\Tests\OrmFunctionalTestCase
                         ->groupBy('o')
                         ->orderBy('o.id')
                         ->getQuery();
-
 
         self::assertSQLEquals(
             'SELECT o, COUNT(p.id) AS p_count FROM Doctrine\Tests\ORM\Functional\Ticket\DDC1430Order o LEFT JOIN o.products p GROUP BY o ORDER BY o.id ASC',
@@ -165,20 +165,16 @@ class DDC1430Order
      */
     protected $id;
 
-    /**
-     * @ORM\Column(name="created_at", type="datetime")
-     */
+    /** @ORM\Column(name="created_at", type="datetime") */
     private $date;
 
-    /**
-     * @ORM\Column(name="order_status", type="string")
-     */
+    /** @ORM\Column(name="order_status", type="string") */
     private $status;
 
     /**
      * @ORM\OneToMany(targetEntity=DDC1430OrderProduct::class, mappedBy="order", cascade={"persist", "remove"})
      *
-     * @var \Doctrine\Common\Collections\ArrayCollection $products
+     * @var ArrayCollection $products
      */
     private $products;
 
@@ -186,7 +182,7 @@ class DDC1430Order
     {
         $this->status   = $status;
         $this->date     = new \DateTime();
-        $this->products = new \Doctrine\Common\Collections\ArrayCollection();
+        $this->products = new ArrayCollection();
     }
 
     /**
@@ -222,16 +218,13 @@ class DDC1430Order
     }
 
     /**
-     * @return \Doctrine\Common\Collections\ArrayCollection
+     * @return ArrayCollection
      */
     public function getProducts()
     {
         return $this->products;
     }
 
-    /**
-     * @param DDC1430OrderProduct $product
-     */
     public function addProduct(DDC1430OrderProduct $product)
     {
         $product->setOrder($this);
@@ -259,9 +252,7 @@ class DDC1430OrderProduct
      */
     private $order;
 
-    /**
-     * @ORM\Column(type="float")
-     */
+    /** @ORM\Column(type="float") */
     private $value;
 
     /**
@@ -288,9 +279,6 @@ class DDC1430OrderProduct
         return $this->order;
     }
 
-    /**
-     * @param DDC1430Order $order
-     */
     public function setOrder(DDC1430Order $order)
     {
         $this->order = $order;

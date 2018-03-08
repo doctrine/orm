@@ -19,9 +19,7 @@ class NumericEntity
      */
     public $id;
 
-    /**
-     * @ORM\Column(type="string", name="2:2")
-     */
+    /** @ORM\Column(type="string", name="2:2") */
     public $value;
 
     /**

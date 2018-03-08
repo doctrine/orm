@@ -28,13 +28,13 @@ class NonStrictReadWriteCachedEntityPersisterTest extends AbstractEntityPersiste
 
     public function testTransactionRollBackShouldClearQueue()
     {
-        $entity    = new Country("Foo");
+        $entity    = new Country('Foo');
         $persister = $this->createPersisterDefault();
         $property  = new \ReflectionProperty($persister, 'queuedCache');
 
         $property->setAccessible(true);
 
-        $this->em->getUnitOfWork()->registerManaged($entity, ['id'=>1], ['id'=>1, 'name'=>'Foo']);
+        $this->em->getUnitOfWork()->registerManaged($entity, ['id' => 1], ['id' => 1, 'name' => 'Foo']);
 
         $persister->update($entity);
         $persister->delete($entity);
@@ -48,10 +48,10 @@ class NonStrictReadWriteCachedEntityPersisterTest extends AbstractEntityPersiste
 
     public function testInsertTransactionCommitShouldPutCache()
     {
-        $entity    = new Country("Foo");
+        $entity    = new Country('Foo');
         $persister = $this->createPersisterDefault();
-        $key       = new EntityCacheKey(Country::class, ['id'=>1]);
-        $entry     = new EntityCacheEntry(Country::class, ['id'=>1, 'name'=>'Foo']);
+        $key       = new EntityCacheKey(Country::class, ['id' => 1]);
+        $entry     = new EntityCacheEntry(Country::class, ['id' => 1, 'name' => 'Foo']);
         $property  = new \ReflectionProperty($persister, 'queuedCache');
 
         $property->setAccessible(true);
@@ -64,7 +64,7 @@ class NonStrictReadWriteCachedEntityPersisterTest extends AbstractEntityPersiste
             ->method('insert')
             ->with($this->equalTo($entity));
 
-        $this->em->getUnitOfWork()->registerManaged($entity, ['id'=>1], ['id'=>1, 'name'=>'Foo']);
+        $this->em->getUnitOfWork()->registerManaged($entity, ['id' => 1], ['id' => 1, 'name' => 'Foo']);
 
         $persister->insert($entity);
 
@@ -77,10 +77,10 @@ class NonStrictReadWriteCachedEntityPersisterTest extends AbstractEntityPersiste
 
     public function testUpdateTransactionCommitShouldPutCache()
     {
-        $entity    = new Country("Foo");
+        $entity    = new Country('Foo');
         $persister = $this->createPersisterDefault();
-        $key       = new EntityCacheKey(Country::class, ['id'=>1]);
-        $entry     = new EntityCacheEntry(Country::class, ['id'=>1, 'name'=>'Foo']);
+        $key       = new EntityCacheKey(Country::class, ['id' => 1]);
+        $entry     = new EntityCacheEntry(Country::class, ['id' => 1, 'name' => 'Foo']);
         $property  = new \ReflectionProperty($persister, 'queuedCache');
 
         $property->setAccessible(true);
@@ -93,7 +93,7 @@ class NonStrictReadWriteCachedEntityPersisterTest extends AbstractEntityPersiste
             ->method('update')
             ->with($this->equalTo($entity));
 
-        $this->em->getUnitOfWork()->registerManaged($entity, ['id'=>1], ['id'=>1, 'name'=>'Foo']);
+        $this->em->getUnitOfWork()->registerManaged($entity, ['id' => 1], ['id' => 1, 'name' => 'Foo']);
 
         $persister->update($entity);
 
@@ -106,9 +106,9 @@ class NonStrictReadWriteCachedEntityPersisterTest extends AbstractEntityPersiste
 
     public function testDeleteTransactionCommitShouldEvictCache()
     {
-        $entity    = new Country("Foo");
+        $entity    = new Country('Foo');
         $persister = $this->createPersisterDefault();
-        $key       = new EntityCacheKey(Country::class, ['id'=>1]);
+        $key       = new EntityCacheKey(Country::class, ['id' => 1]);
         $property  = new \ReflectionProperty($persister, 'queuedCache');
 
         $property->setAccessible(true);
@@ -121,7 +121,7 @@ class NonStrictReadWriteCachedEntityPersisterTest extends AbstractEntityPersiste
             ->method('delete')
             ->with($this->equalTo($entity));
 
-        $this->em->getUnitOfWork()->registerManaged($entity, ['id'=>1], ['id'=>1, 'name'=>'Foo']);
+        $this->em->getUnitOfWork()->registerManaged($entity, ['id' => 1], ['id' => 1, 'name' => 'Foo']);
 
         $persister->delete($entity);
 

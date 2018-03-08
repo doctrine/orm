@@ -8,7 +8,7 @@ use Doctrine\ORM\Annotation as ORM;
  * @ORM\Entity
  * @ORM\Table(name="articles")
  */
-class DoctrineGlobal_Article
+class DoctrineGlobalArticle
 {
     /**
      * @ORM\Id
@@ -16,18 +16,14 @@ class DoctrineGlobal_Article
      */
     protected $id;
 
-    /**
-     * @ORM\Column(type="string")
-     */
+    /** @ORM\Column(type="string") */
     protected $headline;
 
-    /**
-     * @ORM\Column(type="text")
-     */
+    /** @ORM\Column(type="text") */
     protected $text;
 
     /**
-     * @ORM\ManyToMany(targetEntity=DoctrineGlobal_User::class)
+     * @ORM\ManyToMany(targetEntity=DoctrineGlobalUser::class)
      * @ORM\JoinTable(name="author_articles",
      *      joinColumns={@ORM\JoinColumn(name="article_id", referencedColumnName="id")},
      *      inverseJoinColumns={@ORM\JoinColumn(name="author_id", referencedColumnName="id", unique=true)}
@@ -36,7 +32,7 @@ class DoctrineGlobal_Article
     protected $author;
 
     /**
-     * @ORM\ManyToMany(targetEntity=DoctrineGlobal_User::class)
+     * @ORM\ManyToMany(targetEntity=DoctrineGlobalUser::class)
      * @ORM\JoinTable(name="editor_articles",
      *      joinColumns={@ORM\JoinColumn(name="article_id", referencedColumnName="id")},
      *      inverseJoinColumns={@ORM\JoinColumn(name="editor_id", referencedColumnName="id", unique=true)}
@@ -49,7 +45,7 @@ class DoctrineGlobal_Article
  * @ORM\Entity
  * @ORM\Table(name="users")
  */
-class DoctrineGlobal_User
+class DoctrineGlobalUser
 {
     /**
      * @ORM\Id

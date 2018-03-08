@@ -5,11 +5,12 @@ declare(strict_types=1);
 namespace Doctrine\Tests\ORM\Functional\Ticket;
 
 use Doctrine\Tests\Models\Generic\DateTimeModel;
+use Doctrine\Tests\OrmFunctionalTestCase;
 
 /**
  * @group DDC-657
  */
-class DDC657Test extends \Doctrine\Tests\OrmFunctionalTestCase
+class DDC657Test extends OrmFunctionalTestCase
 {
     protected function setUp()
     {
@@ -21,8 +22,8 @@ class DDC657Test extends \Doctrine\Tests\OrmFunctionalTestCase
 
     public function testEntitySingleResult()
     {
-        $query      = $this->em->createQuery('SELECT d FROM ' . DateTimeModel::class . ' d');
-        $datetime   = $query->setMaxResults(1)->getSingleResult();
+        $query    = $this->em->createQuery('SELECT d FROM ' . DateTimeModel::class . ' d');
+        $datetime = $query->setMaxResults(1)->getSingleResult();
 
         self::assertInstanceOf(DateTimeModel::class, $datetime);
 
@@ -33,8 +34,8 @@ class DDC657Test extends \Doctrine\Tests\OrmFunctionalTestCase
 
     public function testScalarResult()
     {
-        $query      = $this->em->createQuery('SELECT d.id, d.time, d.date, d.datetime FROM ' . DateTimeModel::class . ' d ORDER BY d.date ASC');
-        $result     = $query->getScalarResult();
+        $query  = $this->em->createQuery('SELECT d.id, d.time, d.date, d.datetime FROM ' . DateTimeModel::class . ' d ORDER BY d.date ASC');
+        $result = $query->getScalarResult();
 
         self::assertCount(2, $result);
 
@@ -49,8 +50,8 @@ class DDC657Test extends \Doctrine\Tests\OrmFunctionalTestCase
 
     public function testaTicketEntityArrayResult()
     {
-        $query      = $this->em->createQuery('SELECT d FROM ' . DateTimeModel::class . ' d ORDER BY d.date ASC');
-        $result     = $query->getArrayResult();
+        $query  = $this->em->createQuery('SELECT d FROM ' . DateTimeModel::class . ' d ORDER BY d.date ASC');
+        $result = $query->getArrayResult();
 
         self::assertCount(2, $result);
 
@@ -65,8 +66,8 @@ class DDC657Test extends \Doctrine\Tests\OrmFunctionalTestCase
 
     public function testTicketSingleResult()
     {
-        $query      = $this->em->createQuery('SELECT d.id, d.time, d.date, d.datetime FROM ' . DateTimeModel::class . ' d ORDER BY d.date ASC');
-        $datetime   = $query->setMaxResults(1)->getSingleResult();
+        $query    = $this->em->createQuery('SELECT d.id, d.time, d.date, d.datetime FROM ' . DateTimeModel::class . ' d ORDER BY d.date ASC');
+        $datetime = $query->setMaxResults(1)->getSingleResult();
 
         self::assertInternalType('array', $datetime);
 
@@ -77,8 +78,8 @@ class DDC657Test extends \Doctrine\Tests\OrmFunctionalTestCase
 
     public function testTicketResult()
     {
-        $query      = $this->em->createQuery('SELECT d.id, d.time, d.date, d.datetime FROM ' . DateTimeModel::class . ' d ORDER BY d.date ASC');
-        $result     = $query->getResult();
+        $query  = $this->em->createQuery('SELECT d.id, d.time, d.date, d.datetime FROM ' . DateTimeModel::class . ' d ORDER BY d.date ASC');
+        $result = $query->getResult();
 
         self::assertCount(2, $result);
 
@@ -97,18 +98,18 @@ class DDC657Test extends \Doctrine\Tests\OrmFunctionalTestCase
 
     public function loadFixtures()
     {
-        $timezone           = new \DateTimeZone('America/Sao_Paulo');
+        $timezone = new \DateTimeZone('America/Sao_Paulo');
 
-        $dateTime1          = new DateTimeModel();
-        $dateTime2          = new DateTimeModel();
+        $dateTime1 = new DateTimeModel();
+        $dateTime2 = new DateTimeModel();
 
-        $dateTime1->date    = new \DateTime('2010-01-01', $timezone);
-        $dateTime1->time    = new \DateTime('2010-01-01 11:11:11', $timezone);
-        $dateTime1->datetime= new \DateTime('2010-01-01 11:11:11', $timezone);
+        $dateTime1->date     = new \DateTime('2010-01-01', $timezone);
+        $dateTime1->time     = new \DateTime('2010-01-01 11:11:11', $timezone);
+        $dateTime1->datetime = new \DateTime('2010-01-01 11:11:11', $timezone);
 
-        $dateTime2->date    = new \DateTime('2010-02-02', $timezone);
-        $dateTime2->time    = new \DateTime('2010-02-02 12:12:12', $timezone);
-        $dateTime2->datetime= new \DateTime('2010-02-02 12:12:12', $timezone);
+        $dateTime2->date     = new \DateTime('2010-02-02', $timezone);
+        $dateTime2->time     = new \DateTime('2010-02-02 12:12:12', $timezone);
+        $dateTime2->datetime = new \DateTime('2010-02-02 12:12:12', $timezone);
 
         $this->em->persist($dateTime1);
         $this->em->persist($dateTime2);

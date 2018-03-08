@@ -21,9 +21,7 @@ class State
      */
     protected $id;
 
-    /**
-     * @ORM\Column(unique=true)
-     */
+    /** @ORM\Column(unique=true) */
     protected $name;
 
     /**
@@ -39,11 +37,11 @@ class State
      */
     protected $cities;
 
-    public function __construct($name, Country $country = null)
+    public function __construct($name, ?Country $country = null)
     {
-        $this->name     = $name;
-        $this->country  = $country;
-        $this->cities   = new ArrayCollection();
+        $this->name    = $name;
+        $this->country = $country;
+        $this->cities  = new ArrayCollection();
     }
 
     public function getId()

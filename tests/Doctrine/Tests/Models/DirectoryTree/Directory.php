@@ -11,9 +11,7 @@ use Doctrine\ORM\Annotation as ORM;
  */
 class Directory extends AbstractContentItem
 {
-    /**
-     * @ORM\Column(type="string")
-     */
+    /** @ORM\Column(type="string") */
     protected $path;
 
     public function setPath($path)

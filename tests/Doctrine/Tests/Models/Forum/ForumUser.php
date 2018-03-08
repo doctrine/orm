@@ -18,9 +18,7 @@ class ForumUser
      */
     public $id;
 
-    /**
-     * @ORM\Column(type="string", length=50)
-     */
+    /** @ORM\Column(type="string", length=50) */
     public $username;
 
     /**

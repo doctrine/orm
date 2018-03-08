@@ -5,11 +5,12 @@ declare(strict_types=1);
 namespace Doctrine\Tests\ORM\Functional\Ticket;
 
 use Doctrine\ORM\Annotation as ORM;
+use Doctrine\Tests\OrmFunctionalTestCase;
 
 /**
  * @group DDC-1654
  */
-class DDC1654Test extends \Doctrine\Tests\OrmFunctionalTestCase
+class DDC1654Test extends OrmFunctionalTestCase
 {
     public function setUp()
     {
@@ -32,7 +33,7 @@ class DDC1654Test extends \Doctrine\Tests\OrmFunctionalTestCase
 
     public function testManyToManyRemoveFromCollectionOrphanRemoval()
     {
-        $post = new DDC1654Post();
+        $post             = new DDC1654Post();
         $post->comments[] = new DDC1654Comment();
         $post->comments[] = new DDC1654Comment();
 
@@ -51,7 +52,7 @@ class DDC1654Test extends \Doctrine\Tests\OrmFunctionalTestCase
 
     public function testManyToManyRemoveElementFromCollectionOrphanRemoval()
     {
-        $post = new DDC1654Post();
+        $post             = new DDC1654Post();
         $post->comments[] = new DDC1654Comment();
         $post->comments[] = new DDC1654Comment();
 
@@ -73,7 +74,7 @@ class DDC1654Test extends \Doctrine\Tests\OrmFunctionalTestCase
      */
     public function testManyToManyRemoveElementFromReAddToCollectionOrphanRemoval()
     {
-        $post = new DDC1654Post();
+        $post             = new DDC1654Post();
         $post->comments[] = new DDC1654Comment();
         $post->comments[] = new DDC1654Comment();
 
@@ -93,7 +94,7 @@ class DDC1654Test extends \Doctrine\Tests\OrmFunctionalTestCase
 
     public function testManyToManyClearCollectionOrphanRemoval()
     {
-        $post = new DDC1654Post();
+        $post             = new DDC1654Post();
         $post->comments[] = new DDC1654Comment();
         $post->comments[] = new DDC1654Comment();
 
@@ -114,7 +115,7 @@ class DDC1654Test extends \Doctrine\Tests\OrmFunctionalTestCase
      */
     public function testManyToManyClearCollectionReAddOrphanRemoval()
     {
-        $post = new DDC1654Post();
+        $post             = new DDC1654Post();
         $post->comments[] = new DDC1654Comment();
         $post->comments[] = new DDC1654Comment();
 
@@ -138,9 +139,7 @@ class DDC1654Test extends \Doctrine\Tests\OrmFunctionalTestCase
  */
 class DDC1654Post
 {
-    /**
-     * @ORM\Id @ORM\Column(type="integer") @ORM\GeneratedValue
-     */
+    /** @ORM\Id @ORM\Column(type="integer") @ORM\GeneratedValue */
     public $id;
 
     /**
@@ -155,8 +154,6 @@ class DDC1654Post
  */
 class DDC1654Comment
 {
-    /**
-     * @ORM\Id @ORM\Column(type="integer") @ORM\GeneratedValue
-     */
+    /** @ORM\Id @ORM\Column(type="integer") @ORM\GeneratedValue */
     public $id;
 }

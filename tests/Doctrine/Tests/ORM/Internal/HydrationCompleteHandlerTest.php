@@ -12,6 +12,7 @@ use Doctrine\ORM\Internal\HydrationCompleteHandler;
 use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\Tests\DoctrineTestCase;
 use stdClass;
+use function in_array;
 
 /**
  * Tests for {@see \Doctrine\ORM\Internal\HydrationCompleteHandler}
@@ -20,19 +21,13 @@ use stdClass;
  */
 class HydrationCompleteHandlerTest extends DoctrineTestCase
 {
-    /**
-     * @var \Doctrine\ORM\Event\ListenersInvoker|\PHPUnit_Framework_MockObject_MockObject
-     */
+    /** @var ListenersInvoker|\PHPUnit_Framework_MockObject_MockObject */
     private $listenersInvoker;
 
-    /**
-     * @var \Doctrine\ORM\EntityManagerInterface|\PHPUnit_Framework_MockObject_MockObject
-     */
+    /** @var EntityManagerInterface|\PHPUnit_Framework_MockObject_MockObject */
     private $entityManager;
 
-    /**
-     * @var HydrationCompleteHandler
-     */
+    /** @var HydrationCompleteHandler */
     private $handler;
 
     /**
@@ -118,11 +113,11 @@ class HydrationCompleteHandlerTest extends DoctrineTestCase
     {
         /* @var $metadata1 \Doctrine\ORM\Mapping\ClassMetadata */
         /* @var $metadata2 \Doctrine\ORM\Mapping\ClassMetadata */
-        $metadata1      = $this->createMock(ClassMetadata::class);
-        $metadata2      = $this->createMock(ClassMetadata::class);
-        $entity1        = new stdClass();
-        $entity2        = new stdClass();
-        $entityManager  = $this->entityManager;
+        $metadata1     = $this->createMock(ClassMetadata::class);
+        $metadata2     = $this->createMock(ClassMetadata::class);
+        $entity1       = new stdClass();
+        $entity2       = new stdClass();
+        $entityManager = $this->entityManager;
 
         $this
             ->listenersInvoker

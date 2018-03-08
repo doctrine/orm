@@ -4,10 +4,12 @@ declare(strict_types=1);
 
 namespace Doctrine\Tests\ORM\Functional\Ticket;
 
+use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\Annotation as ORM;
+use Doctrine\Tests\OrmFunctionalTestCase;
 use ProxyManager\Proxy\GhostObjectInterface;
 
-class DDC531Test extends \Doctrine\Tests\OrmFunctionalTestCase
+class DDC531Test extends OrmFunctionalTestCase
 {
     protected function setUp()
     {
@@ -22,8 +24,8 @@ class DDC531Test extends \Doctrine\Tests\OrmFunctionalTestCase
 
     public function testIssue()
     {
-        $item1 = new DDC531Item;
-        $item2 = new DDC531Item;
+        $item1         = new DDC531Item();
+        $item2         = new DDC531Item();
         $item2->parent = $item1;
         $item1->getChildren()->add($item2);
         $this->em->persist($item1);
@@ -58,9 +60,7 @@ class DDC531Item
      */
     public $id;
 
-    /**
-     * @ORM\OneToMany(targetEntity=DDC531Item::class, mappedBy="parent")
-     */
+    /** @ORM\OneToMany(targetEntity=DDC531Item::class, mappedBy="parent") */
     protected $children;
 
     /**
@@ -71,7 +71,7 @@ class DDC531Item
 
     public function __construct()
     {
-        $this->children = new \Doctrine\Common\Collections\ArrayCollection;
+        $this->children = new ArrayCollection();
     }
 
     public function getParent()

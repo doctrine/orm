@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\Tests\ORM\Utility;
 
 use Doctrine\ORM\EntityManagerInterface;
@@ -11,9 +13,7 @@ use PHPUnit\Framework\TestCase;
 
 class HierarchyDiscriminatorResolverTest extends TestCase
 {
-    /**
-     * @var Mapping\ClassMetadataBuildingContext
-     */
+    /** @var Mapping\ClassMetadataBuildingContext */
     private $staticMetadataBuildingContext;
 
     public function setUp()
@@ -26,13 +26,13 @@ class HierarchyDiscriminatorResolverTest extends TestCase
 
     public function testResolveDiscriminatorsForClass()
     {
-        $childClassMetadata = new ClassMetadata('ChildEntity', $this->staticMetadataBuildingContext);
-        $childClassMetadata->name = 'Some\Class\Child\Name';
+        $childClassMetadata                     = new ClassMetadata('ChildEntity', $this->staticMetadataBuildingContext);
+        $childClassMetadata->name               = 'Some\Class\Child\Name';
         $childClassMetadata->discriminatorValue = 'child-discriminator';
 
         $classMetadata = new ClassMetadata('Entity', $this->staticMetadataBuildingContext);
         $classMetadata->setSubclasses([$childClassMetadata->getClassName()]);
-        $classMetadata->name = 'Some\Class\Name';
+        $classMetadata->name               = 'Some\Class\Name';
         $classMetadata->discriminatorValue = 'discriminator';
 
         $em = $this->prophesize(EntityManagerInterface::class);
@@ -54,7 +54,7 @@ class HierarchyDiscriminatorResolverTest extends TestCase
     {
         $classMetadata = new ClassMetadata('Entity', $this->staticMetadataBuildingContext);
         $classMetadata->setSubclasses([]);
-        $classMetadata->name = 'Some\Class\Name';
+        $classMetadata->name               = 'Some\Class\Name';
         $classMetadata->discriminatorValue = 'discriminator';
 
         $em = $this->prophesize(EntityManagerInterface::class);

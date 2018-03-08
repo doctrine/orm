@@ -6,13 +6,9 @@ namespace Doctrine\Tests\Models\DDC3293;
 
 class DDC3293UserPrefixed
 {
-    /**
-     * @var string
-     */
+    /** @var string */
     protected $id;
 
-    /**
-     * @var \Doctrine\Tests\Models\DDC3293\DDC3293Address
-     */
+    /** @var DDC3293Address */
     protected $address;
 }

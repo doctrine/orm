@@ -44,7 +44,7 @@ class DDC3597Dimension
      */
     public function setWidth($width)
     {
-        $this->width = (int)$width;
+        $this->width = (int) $width;
     }
 
     /**
@@ -60,6 +60,6 @@ class DDC3597Dimension
      */
     public function setHeight($height)
     {
-        $this->height = (int)$height;
+        $this->height = (int) $height;
     }
 }

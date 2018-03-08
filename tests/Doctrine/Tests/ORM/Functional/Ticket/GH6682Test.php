@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\Test\ORM\Functional\Ticket;
 
 use Doctrine\ORM\Mapping\ClassMetadataInfo;

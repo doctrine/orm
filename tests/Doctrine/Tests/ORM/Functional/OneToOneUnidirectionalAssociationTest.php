@@ -9,6 +9,7 @@ use Doctrine\ORM\Query;
 use Doctrine\Tests\Models\ECommerce\ECommerceProduct;
 use Doctrine\Tests\Models\ECommerce\ECommerceShipping;
 use Doctrine\Tests\OrmFunctionalTestCase;
+use function get_class;
 
 /**
  * Tests a unidirectional one-to-one association mapping (without inheritance).
@@ -53,8 +54,8 @@ class OneToOneUnidirectionalAssociationTest extends OrmFunctionalTestCase
     {
         $this->createFixture();
 
-        $query = $this->em->createQuery('select p, s from Doctrine\Tests\Models\ECommerce\ECommerceProduct p left join p.shipping s');
-        $result = $query->getResult();
+        $query   = $this->em->createQuery('select p, s from Doctrine\Tests\Models\ECommerce\ECommerceProduct p left join p.shipping s');
+        $result  = $query->getResult();
         $product = $result[0];
 
         self::assertInstanceOf(ECommerceShipping::class, $product->getShipping());
@@ -67,8 +68,8 @@ class OneToOneUnidirectionalAssociationTest extends OrmFunctionalTestCase
         $metadata = $this->em->getClassMetadata(ECommerceProduct::class);
         $metadata->getProperty('shipping')->setFetchMode(FetchMode::LAZY);
 
-        $query = $this->em->createQuery('select p from Doctrine\Tests\Models\ECommerce\ECommerceProduct p');
-        $result = $query->getResult();
+        $query   = $this->em->createQuery('select p from Doctrine\Tests\Models\ECommerce\ECommerceProduct p');
+        $result  = $query->getResult();
         $product = $result[0];
 
         self::assertInstanceOf(ECommerceShipping::class, $product->getShipping());
@@ -82,7 +83,7 @@ class OneToOneUnidirectionalAssociationTest extends OrmFunctionalTestCase
         $query = $this->em->createQuery('select p from Doctrine\Tests\Models\ECommerce\ECommerceProduct p');
         $query->setHint(Query::HINT_FORCE_PARTIAL_LOAD, true);
 
-        $result = $query->getResult();
+        $result  = $query->getResult();
         $product = $result[0];
 
         self::assertNull($product->getShipping());
@@ -90,9 +91,9 @@ class OneToOneUnidirectionalAssociationTest extends OrmFunctionalTestCase
 
     protected function createFixture()
     {
-        $product = new ECommerceProduct;
+        $product = new ECommerceProduct();
         $product->setName('Php manual');
-        $shipping = new ECommerceShipping;
+        $shipping = new ECommerceShipping();
         $shipping->setDays('1');
         $product->setShipping($shipping);
 

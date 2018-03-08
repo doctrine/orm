@@ -18,13 +18,9 @@ class DDC3346Author
      */
     public $id;
 
-    /**
-     * @ORM\Column(type="string", length=255, unique=true)
-     */
+    /** @ORM\Column(type="string", length=255, unique=true) */
     public $username;
 
-    /**
-     * @ORM\OneToMany(targetEntity=DDC3346Article::class, mappedBy="user", fetch="EAGER")
-     */
+    /** @ORM\OneToMany(targetEntity=DDC3346Article::class, mappedBy="user", fetch="EAGER") */
     public $articles = [];
 }

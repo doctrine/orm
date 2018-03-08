@@ -19,19 +19,13 @@ use PhpBench\Benchmark\Metadata\Annotations\BeforeMethods;
  */
 final class MixedQueryFetchJoinFullObjectHydrationPerformanceBench
 {
-    /**
-     * @var ObjectHydrator
-     */
+    /** @var ObjectHydrator */
     private $hydrator;
 
-    /**
-     * @var ResultSetMapping
-     */
+    /** @var ResultSetMapping */
     private $rsm;
 
-    /**
-     * @var HydratorMockStatement
-     */
+    /** @var HydratorMockStatement */
     private $stmt;
 
     public function init() : void
@@ -44,8 +38,8 @@ final class MixedQueryFetchJoinFullObjectHydrationPerformanceBench
                 'u__name'        => 'Roman',
                 'sclr0'          => 'ROMANB',
                 'p__phonenumber' => '42',
-                'a__id'          => '1'
-            ]
+                'a__id'          => '1',
+            ],
         ];
 
         for ($i = 2; $i < 2000; ++$i) {
@@ -56,13 +50,13 @@ final class MixedQueryFetchJoinFullObjectHydrationPerformanceBench
                 'u__name'        => 'Jonathan',
                 'sclr0'          => 'JWAGE' . $i,
                 'p__phonenumber' => '91',
-                'a__id'          => $i
+                'a__id'          => $i,
             ];
         }
 
         $this->stmt     = new HydratorMockStatement($resultSet);
         $this->hydrator = new ObjectHydrator(EntityManagerFactory::getEntityManager([]));
-        $this->rsm      = new ResultSetMapping;
+        $this->rsm      = new ResultSetMapping();
 
         $this->rsm->addEntityResult(CmsUser::class, 'u');
         $this->rsm->addJoinedEntityResult(CmsPhonenumber::class, 'p', 'u', 'phonenumbers');

@@ -21,12 +21,12 @@ class SecondLevelCacheCompositePrimaryKeyTest extends SecondLevelCacheAbstractTe
         $this->em->clear();
         $this->evictRegions();
 
-        $leavingFromId  = $this->cities[0]->getId();
-        $goingToId      = $this->cities[1]->getId();
-        $leavingFrom    = $this->em->find(City::class, $leavingFromId);
-        $goingTo        = $this->em->find(City::class, $goingToId);
-        $flight         = new Flight($leavingFrom, $goingTo);
-        $id             = [
+        $leavingFromId = $this->cities[0]->getId();
+        $goingToId     = $this->cities[1]->getId();
+        $leavingFrom   = $this->em->find(City::class, $leavingFromId);
+        $goingTo       = $this->em->find(City::class, $goingToId);
+        $flight        = new Flight($leavingFrom, $goingTo);
+        $id            = [
             'leavingFrom'   => $leavingFromId,
             'goingTo'       => $goingToId,
         ];
@@ -67,12 +67,12 @@ class SecondLevelCacheCompositePrimaryKeyTest extends SecondLevelCacheAbstractTe
         $this->em->clear();
         $this->evictRegions();
 
-        $leavingFromId  = $this->cities[0]->getId();
-        $goingToId      = $this->cities[1]->getId();
-        $leavingFrom    = $this->em->find(City::class, $leavingFromId);
-        $goingTo        = $this->em->find(City::class, $goingToId);
-        $flight         = new Flight($leavingFrom, $goingTo);
-        $id             = [
+        $leavingFromId = $this->cities[0]->getId();
+        $goingToId     = $this->cities[1]->getId();
+        $leavingFrom   = $this->em->find(City::class, $leavingFromId);
+        $goingTo       = $this->em->find(City::class, $goingToId);
+        $flight        = new Flight($leavingFrom, $goingTo);
+        $id            = [
             'leavingFrom'   => $leavingFromId,
             'goingTo'       => $goingToId,
         ];
@@ -109,14 +109,14 @@ class SecondLevelCacheCompositePrimaryKeyTest extends SecondLevelCacheAbstractTe
         $this->em->clear();
         $this->evictRegions();
 
-        $now            = new \DateTime('now');
-        $tomorrow       = new \DateTime('tomorrow');
-        $leavingFromId  = $this->cities[0]->getId();
-        $goingToId      = $this->cities[1]->getId();
-        $leavingFrom    = $this->em->find(City::class, $leavingFromId);
-        $goingTo        = $this->em->find(City::class, $goingToId);
-        $flight         = new Flight($leavingFrom, $goingTo);
-        $id             = [
+        $now           = new \DateTime('now');
+        $tomorrow      = new \DateTime('tomorrow');
+        $leavingFromId = $this->cities[0]->getId();
+        $goingToId     = $this->cities[1]->getId();
+        $leavingFrom   = $this->em->find(City::class, $leavingFromId);
+        $goingTo       = $this->em->find(City::class, $goingToId);
+        $flight        = new Flight($leavingFrom, $goingTo);
+        $id            = [
             'leavingFrom'   => $leavingFromId,
             'goingTo'       => $goingToId,
         ];

@@ -9,17 +9,19 @@ use Doctrine\DBAL\Types\ConversionException;
 use Doctrine\DBAL\Types\StringType;
 use Doctrine\DBAL\Types\Type;
 use Doctrine\ORM\Annotation as ORM;
+use Doctrine\Tests\OrmFunctionalTestCase;
+use function is_string;
 
 /**
  * @group DDC-2984
  */
-class DDC2984Test extends \Doctrine\Tests\OrmFunctionalTestCase
+class DDC2984Test extends OrmFunctionalTestCase
 {
     public function setUp()
     {
         parent::setUp();
 
-        if ( ! Type::hasType('ddc2984_domain_user_id')) {
+        if (! Type::hasType('ddc2984_domain_user_id')) {
             Type::addType(
                 'ddc2984_domain_user_id',
                 DDC2984UserIdCustomDbalType::class
@@ -45,7 +47,7 @@ class DDC2984Test extends \Doctrine\Tests\OrmFunctionalTestCase
         $this->em->persist($user);
         $this->em->flush();
 
-        $repository = $this->em->getRepository(__NAMESPACE__ . "\DDC2984User");
+        $repository = $this->em->getRepository(__NAMESPACE__ . '\DDC2984User');
 
         $sameUser = $repository->find(new DDC2984DomainUserId('unique_id_within_a_vo'));
 
@@ -106,7 +108,6 @@ class DDC2984User
     }
 
     /**
-     * @param DDC2984User $other
      * @return bool
      */
     public function sameIdentityAs(DDC2984User $other)
@@ -117,14 +118,10 @@ class DDC2984User
 
 /**
  * DDC2984DomainUserId ValueObject
- *
- * @author Alexander Miertsch <kontakt@codeliner.ws>
  */
 class DDC2984DomainUserId
 {
-    /**
-     * @var string
-     */
+    /** @var string */
     private $userIdString;
 
     /**
@@ -152,7 +149,6 @@ class DDC2984DomainUserId
     }
 
     /**
-     * @param DDC2984DomainUserId $other
      * @return bool
      */
     public function sameValueAs(DDC2984DomainUserId $other)
@@ -163,8 +159,6 @@ class DDC2984DomainUserId
 
 /**
  * Class DDC2984UserIdCustomDbalType
- *
- * @author Alexander Miertsch <kontakt@codeliner.ws>
  */
 class DDC2984UserIdCustomDbalType extends StringType
 {
@@ -195,7 +189,7 @@ class DDC2984UserIdCustomDbalType extends StringType
             return $value;
         }
 
-        if ( ! $value instanceof DDC2984DomainUserId) {
+        if (! $value instanceof DDC2984DomainUserId) {
             throw ConversionException::conversionFailed($value, $this->getName());
         }
 

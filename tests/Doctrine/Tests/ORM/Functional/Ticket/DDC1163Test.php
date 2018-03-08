@@ -5,12 +5,14 @@ declare(strict_types=1);
 namespace Doctrine\Tests\ORM\Functional\Ticket;
 
 use Doctrine\ORM\Annotation as ORM;
+use Doctrine\Tests\OrmFunctionalTestCase;
 use ProxyManager\Proxy\GhostObjectInterface;
+use function get_class;
 
 /**
  * @group DDC-1163
  */
-class DDC1163Test extends \Doctrine\Tests\OrmFunctionalTestCase
+class DDC1163Test extends OrmFunctionalTestCase
 {
     protected function setUp()
     {
@@ -51,7 +53,7 @@ class DDC1163Test extends \Doctrine\Tests\OrmFunctionalTestCase
 
         $this->em->flush();
 
-        $this->productId = $specialProduct->getId();
+        $this->productId     = $specialProduct->getId();
         $this->proxyHolderId = $proxyHolder->getId();
     }
 
@@ -97,7 +99,6 @@ class DDC1163Test extends \Doctrine\Tests\OrmFunctionalTestCase
  */
 class DDC1163ProxyHolder
 {
-
     /**
      * @var int
      * @ORM\Column(name="id", type="integer")
@@ -135,7 +136,6 @@ class DDC1163ProxyHolder
  */
 abstract class DDC1163Product
 {
-
     /**
      * @var int
      * @ORM\Column(name="id", type="integer")
@@ -155,7 +155,6 @@ abstract class DDC1163Product
  */
 class DDC1163SpecialProduct extends DDC1163Product
 {
-
     /**
      * @var string
      * @ORM\Column(name="subclass_property", type="string", nullable=true)
@@ -176,7 +175,6 @@ class DDC1163SpecialProduct extends DDC1163Product
  */
 class DDC1163Tag
 {
-
     /**
      * @var int
      * @ORM\Column(name="id", type="integer")

@@ -11,6 +11,9 @@ use Doctrine\Tests\Models\IdentityIsAssociation\SimpleId;
 use Doctrine\Tests\Models\IdentityIsAssociation\ToOneAssociationIdToSimpleId;
 use Doctrine\Tests\Models\IdentityIsAssociation\ToOneCompositeAssociationToMultipleSimpleId;
 use Doctrine\Tests\OrmFunctionalTestCase;
+use function array_keys;
+use function get_class;
+use function is_object;
 
 /**
  * @covers \Doctrine\ORM\Utility\NormalizeIdentifier
@@ -20,7 +23,7 @@ class NormalizeIdentifierTest extends OrmFunctionalTestCase
     /**
      * Identifier flattener
      *
-     * @var \Doctrine\ORM\Utility\NormalizeIdentifier
+     * @var NormalizeIdentifier
      */
     private $normalizeIdentifier;
 
@@ -55,16 +58,16 @@ class NormalizeIdentifierTest extends OrmFunctionalTestCase
      */
     private function assertSameIdentifierStructure(array $expectedId, array $id) : void
     {
-        self::assertSame(\array_keys($expectedId), \array_keys($id));
+        self::assertSame(array_keys($expectedId), array_keys($id));
 
         foreach ($expectedId as $field => $value) {
-            if (! \is_object($value)) {
+            if (! is_object($value)) {
                 self::assertSame($id[$field], $value);
 
                 continue;
             }
 
-            self::assertInstanceOf(\get_class($value), $id[$field]);
+            self::assertInstanceOf(get_class($value), $id[$field]);
 
             $nestedIdProperties       = [];
             $nestedExpectedProperties = [];

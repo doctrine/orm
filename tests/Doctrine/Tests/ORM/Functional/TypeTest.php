@@ -22,15 +22,15 @@ class TypeTest extends OrmFunctionalTestCase
 
     public function testDecimal()
     {
-        $decimal = new DecimalModel();
-        $decimal->decimal = 0.15;
+        $decimal            = new DecimalModel();
+        $decimal->decimal   = 0.15;
         $decimal->highScale = 0.1515;
 
         $this->em->persist($decimal);
         $this->em->flush();
         $this->em->clear();
 
-        $dql = 'SELECT d FROM ' . DecimalModel::class . ' d';
+        $dql     = 'SELECT d FROM ' . DecimalModel::class . ' d';
         $decimal = $this->em->createQuery($dql)->getSingleResult();
 
         self::assertSame('0.15', $decimal->decimal);
@@ -39,18 +39,17 @@ class TypeTest extends OrmFunctionalTestCase
 
     /**
      * @group DDC-1394
-     * @return void
      */
     public function testBoolean()
     {
-        $bool = new BooleanModel();
+        $bool               = new BooleanModel();
         $bool->booleanField = true;
 
         $this->em->persist($bool);
         $this->em->flush();
         $this->em->clear();
 
-        $dql = 'SELECT b FROM ' . BooleanModel::class . ' b WHERE b.booleanField = true';
+        $dql  = 'SELECT b FROM ' . BooleanModel::class . ' b WHERE b.booleanField = true';
         $bool = $this->em->createQuery($dql)->getSingleResult();
 
         self::assertTrue($bool->booleanField);
@@ -60,7 +59,7 @@ class TypeTest extends OrmFunctionalTestCase
         $this->em->flush();
         $this->em->clear();
 
-        $dql = 'SELECT b FROM ' . BooleanModel::class . ' b WHERE b.booleanField = false';
+        $dql  = 'SELECT b FROM ' . BooleanModel::class . ' b WHERE b.booleanField = false';
         $bool = $this->em->createQuery($dql)->getSingleResult();
 
         self::assertFalse($bool->booleanField);
@@ -68,30 +67,30 @@ class TypeTest extends OrmFunctionalTestCase
 
     public function testArray()
     {
-        $serialize = new SerializationModel();
-        $serialize->array["foo"] = "bar";
-        $serialize->array["bar"] = "baz";
+        $serialize               = new SerializationModel();
+        $serialize->array['foo'] = 'bar';
+        $serialize->array['bar'] = 'baz';
 
         $this->em->persist($serialize);
         $this->em->flush();
         $this->em->clear();
 
-        $dql = 'SELECT s FROM ' . SerializationModel::class . ' s';
+        $dql       = 'SELECT s FROM ' . SerializationModel::class . ' s';
         $serialize = $this->em->createQuery($dql)->getSingleResult();
 
-        self::assertSame(["foo" => "bar", "bar" => "baz"], $serialize->array);
+        self::assertSame(['foo' => 'bar', 'bar' => 'baz'], $serialize->array);
     }
 
     public function testObject()
     {
-        $serialize = new SerializationModel();
+        $serialize         = new SerializationModel();
         $serialize->object = new \stdClass();
 
         $this->em->persist($serialize);
         $this->em->flush();
         $this->em->clear();
 
-        $dql = 'SELECT s FROM ' . SerializationModel::class . ' s';
+        $dql       = 'SELECT s FROM ' . SerializationModel::class . ' s';
         $serialize = $this->em->createQuery($dql)->getSingleResult();
 
         self::assertInstanceOf('stdClass', $serialize->object);
@@ -99,7 +98,7 @@ class TypeTest extends OrmFunctionalTestCase
 
     public function testDate()
     {
-        $dateTime = new DateTimeModel();
+        $dateTime       = new DateTimeModel();
         $dateTime->date = new \DateTime('2009-10-01', new \DateTimeZone('Europe/Berlin'));
 
         $this->em->persist($dateTime);
@@ -114,7 +113,7 @@ class TypeTest extends OrmFunctionalTestCase
 
     public function testDateTime()
     {
-        $dateTime = new DateTimeModel();
+        $dateTime           = new DateTimeModel();
         $dateTime->datetime = new \DateTime('2009-10-02 20:10:52', new \DateTimeZone('Europe/Berlin'));
 
         $this->em->persist($dateTime);
@@ -128,7 +127,7 @@ class TypeTest extends OrmFunctionalTestCase
 
         $articles = $this->em
             ->getRepository(DateTimeModel::class)
-            ->findBy(['datetime' => new \DateTime("now")])
+            ->findBy(['datetime' => new \DateTime('now')])
         ;
 
         self::assertEmpty($articles);
@@ -138,7 +137,7 @@ class TypeTest extends OrmFunctionalTestCase
     {
         $date = new \DateTime('2009-10-02 20:10:52', new \DateTimeZone('Europe/Berlin'));
 
-        $dateTime = new DateTimeModel();
+        $dateTime           = new DateTimeModel();
         $dateTime->datetime = $date;
 
         $this->em->persist($dateTime);
@@ -158,7 +157,7 @@ class TypeTest extends OrmFunctionalTestCase
     {
         $date = new \DateTime('2009-10-02 20:10:52', new \DateTimeZone('Europe/Berlin'));
 
-        $dateTime = new DateTimeModel();
+        $dateTime           = new DateTimeModel();
         $dateTime->datetime = $date;
 
         $this->em->persist($dateTime);
@@ -179,7 +178,7 @@ class TypeTest extends OrmFunctionalTestCase
 
     public function testTime()
     {
-        $dateTime = new DateTimeModel();
+        $dateTime       = new DateTimeModel();
         $dateTime->time = new \DateTime('2010-01-01 19:27:20');
 
         $this->em->persist($dateTime);

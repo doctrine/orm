@@ -6,8 +6,9 @@ namespace Doctrine\Tests\ORM\Functional\Ticket;
 
 use Doctrine\ORM\Annotation as ORM;
 use Doctrine\ORM\UnitOfWork;
+use Doctrine\Tests\OrmFunctionalTestCase;
 
-class DDC353Test extends \Doctrine\Tests\OrmFunctionalTestCase
+class DDC353Test extends OrmFunctionalTestCase
 {
     protected function setUp()
     {
@@ -25,9 +26,9 @@ class DDC353Test extends \Doctrine\Tests\OrmFunctionalTestCase
 
     public function testWorkingCase()
     {
-        $file = new DDC353File;
+        $file = new DDC353File();
 
-        $picture = new DDC353Picture;
+        $picture = new DDC353Picture();
         $picture->setFile($file);
 
         $em = $this->em;
@@ -39,10 +40,10 @@ class DDC353Test extends \Doctrine\Tests\OrmFunctionalTestCase
         self::assertGreaterThan(0, $fileId);
 
         $file = $em->getReference(DDC353File::class, $fileId);
-        self::assertEquals(UnitOfWork::STATE_MANAGED, $em->getUnitOfWork()->getEntityState($file), "Reference Proxy should be marked MANAGED.");
+        self::assertEquals(UnitOfWork::STATE_MANAGED, $em->getUnitOfWork()->getEntityState($file), 'Reference Proxy should be marked MANAGED.');
 
         $picture = $em->find(DDC353Picture::class, $picture->getPictureId());
-        self::assertEquals(UnitOfWork::STATE_MANAGED, $em->getUnitOfWork()->getEntityState($picture->getFile()), "Lazy Proxy should be marked MANAGED.");
+        self::assertEquals(UnitOfWork::STATE_MANAGED, $em->getUnitOfWork()->getEntityState($picture->getFile()), 'Lazy Proxy should be marked MANAGED.');
 
         $em->remove($picture);
         $em->flush();
@@ -50,9 +51,9 @@ class DDC353Test extends \Doctrine\Tests\OrmFunctionalTestCase
 
     public function testFailingCase()
     {
-        $file = new DDC353File;
+        $file = new DDC353File();
 
-        $picture = new DDC353Picture;
+        $picture = new DDC353Picture();
         $picture->setFile($file);
 
         $em = $this->em;
@@ -60,13 +61,13 @@ class DDC353Test extends \Doctrine\Tests\OrmFunctionalTestCase
         $em->flush();
         $em->clear();
 
-        $fileId = $file->getFileId();
+        $fileId    = $file->getFileId();
         $pictureId = $picture->getPictureId();
 
         self::assertGreaterThan(0, $fileId);
 
         $picture = $em->find(DDC353Picture::class, $pictureId);
-        self::assertEquals(UnitOfWork::STATE_MANAGED, $em->getUnitOfWork()->getEntityState($picture->getFile()), "Lazy Proxy should be marked MANAGED.");
+        self::assertEquals(UnitOfWork::STATE_MANAGED, $em->getUnitOfWork()->getEntityState($picture->getFile()), 'Lazy Proxy should be marked MANAGED.');
 
         $em->remove($picture);
         $em->flush();

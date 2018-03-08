@@ -20,14 +20,10 @@ class CmsEmail
      */
     public $id;
 
-    /**
-     * @ORM\Column(length=250)
-     */
+    /** @ORM\Column(length=250) */
     public $email;
 
-    /**
-     * @ORM\OneToOne(targetEntity=CmsUser::class, mappedBy="email")
-     */
+    /** @ORM\OneToOne(targetEntity=CmsUser::class, mappedBy="email") */
     public $user;
 
     public function getId()

@@ -6,22 +6,20 @@ namespace Doctrine\Tests\ORM\Mapping;
 
 use Doctrine\ORM\Annotation as ORM;
 use Doctrine\ORM\EntityRepository;
-use Doctrine\ORM\Mapping\GeneratorType;
-use Doctrine\ORM\Mapping\TransientMetadata;
 use Doctrine\ORM\Mapping\ClassMetadataFactory;
-use Doctrine\ORM\Mapping\ClassMetadata;
+use Doctrine\ORM\Mapping\GeneratorType;
 use Doctrine\ORM\Mapping\MappingException;
+use Doctrine\ORM\Mapping\TransientMetadata;
 use Doctrine\Tests\Models\DDC869\DDC869ChequePayment;
 use Doctrine\Tests\Models\DDC869\DDC869CreditCardPayment;
 use Doctrine\Tests\Models\DDC869\DDC869Payment;
 use Doctrine\Tests\Models\DDC869\DDC869PaymentRepository;
 use Doctrine\Tests\OrmTestCase;
+use function iterator_to_array;
 
 class BasicInheritanceMappingTest extends OrmTestCase
 {
-    /**
-     * @var ClassMetadataFactory
-     */
+    /** @var ClassMetadataFactory */
     private $cmf;
 
     /**
@@ -36,7 +34,7 @@ class BasicInheritanceMappingTest extends OrmTestCase
 
     public function testGetMetadataForTransientClassThrowsException()
     {
-        $this->expectException(\Doctrine\ORM\Mapping\MappingException::class);
+        $this->expectException(MappingException::class);
 
         $this->cmf->getMetadataFor(TransientBaseClass::class);
     }
@@ -86,7 +84,6 @@ class BasicInheritanceMappingTest extends OrmTestCase
         self::assertNotNull($class->getProperty('value'));
         self::assertNotNull($class->getProperty('creditCardNumber'));
 
-
         $class = $this->cmf->getMetadataFor(DDC869ChequePayment::class);
 
         self::assertEquals($class->getCustomRepositoryClassName(), DDC869PaymentRepository::class);
@@ -123,7 +120,7 @@ class BasicInheritanceMappingTest extends OrmTestCase
     {
         $this->expectException(MappingException::class);
         $this->expectExceptionMessage(
-              'Entity \'Doctrine\Tests\ORM\Mapping\HierarchyBEntity\' has to be part of the discriminator map'
+            'Entity \'Doctrine\Tests\ORM\Mapping\HierarchyBEntity\' has to be part of the discriminator map'
             . ' of \'Doctrine\Tests\ORM\Mapping\HierarchyBase\' to be properly mapped in the inheritance hierarchy.'
             . ' Alternatively you can make \'Doctrine\Tests\ORM\Mapping\HierarchyBEntity\' an abstract class to'
             . ' avoid this exception from occurring.'

@@ -4,9 +4,15 @@ declare(strict_types=1);
 
 namespace Doctrine\Tests\ORM\Functional\Ticket;
 
+use Doctrine\Common\Persistence\Mapping\MappingException;
 use Doctrine\ORM\Annotation as ORM;
+use Doctrine\ORM\OptimisticLockException;
+use Doctrine\ORM\ORMException;
 use Doctrine\ORM\Tools\ToolsException;
 use Doctrine\Tests\OrmFunctionalTestCase;
+use function array_keys;
+use function array_walk;
+use function count;
 
 /**
  * @group #6303
@@ -50,9 +56,9 @@ class DDC6303Test extends OrmFunctionalTestCase
     /**
      * @param DDC6303BaseClass[] $persistedEntities indexed by identifier
      *
-     * @throws \Doctrine\Common\Persistence\Mapping\MappingException
-     * @throws \Doctrine\ORM\ORMException
-     * @throws \Doctrine\ORM\OptimisticLockException
+     * @throws MappingException
+     * @throws ORMException
+     * @throws OptimisticLockException
      */
     private function assertHydratedEntitiesSameToPersistedOnes(array $persistedEntities) : void
     {

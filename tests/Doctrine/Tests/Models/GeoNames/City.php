@@ -37,9 +37,7 @@ class City
      */
     public $admin1;
 
-    /**
-     * @ORM\Column(type="string", length=255)
-     */
+    /** @ORM\Column(type="string", length=255) */
     public $name;
 
     public function __construct($id, $name)

@@ -11,10 +11,6 @@ use Doctrine\Tests\OrmTestCase;
 /**
  * Test case for testing the saving and referencing of query identifiers.
  *
- * @author Guilherme Blanco <guilhermeblanco@hotmail.com>
- * @author Janne Vanhala <jpvanhal@cc.hut.fi>
- * @author Konsta Vesterinen <kvesteri@cc.hut.fi>
- * @since 2.0
  */
 class UpdateSqlGenerationTest extends OrmTestCase
 {

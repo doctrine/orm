@@ -6,6 +6,7 @@ namespace Doctrine\Tests\Models\Company;
 
 use Doctrine\ORM\Annotation as ORM;
 use Doctrine\ORM\Event\LifecycleEventArgs;
+use function func_get_args;
 
 class CompanyFlexUltraContractListener
 {

@@ -7,17 +7,17 @@ namespace Doctrine\Tests\ORM\Tools\Console;
 use Doctrine\ORM\Annotation as ORM;
 use Doctrine\ORM\Tools\Console\MetadataFilter;
 use Doctrine\ORM\Tools\DisconnectedClassMetadataFactory;
+use Doctrine\Tests\OrmTestCase;
+use function count;
 
 /**
  * Tests for {@see \Doctrine\ORM\Tools\Console\MetadataFilter}
  *
  * @covers \Doctrine\ORM\Tools\Console\MetadataFilter
  */
-class MetadataFilterTest extends \Doctrine\Tests\OrmTestCase
+class MetadataFilterTest extends OrmTestCase
 {
-    /**
-     * @var DisconnectedClassMetadataFactory
-     */
+    /** @var DisconnectedClassMetadataFactory */
     private $cmf;
 
     protected function setUp() : void

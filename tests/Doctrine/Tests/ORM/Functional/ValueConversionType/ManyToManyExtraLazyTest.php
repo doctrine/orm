@@ -24,16 +24,16 @@ class ManyToManyExtraLazyTest extends OrmFunctionalTestCase
 
         parent::setUp();
 
-        $inversed1 = new Entity\InversedManyToManyExtraLazyEntity();
+        $inversed1      = new Entity\InversedManyToManyExtraLazyEntity();
         $inversed1->id1 = 'abc';
 
-        $inversed2 = new Entity\InversedManyToManyExtraLazyEntity();
+        $inversed2      = new Entity\InversedManyToManyExtraLazyEntity();
         $inversed2->id1 = 'def';
 
-        $owning1 = new Entity\OwningManyToManyExtraLazyEntity();
+        $owning1      = new Entity\OwningManyToManyExtraLazyEntity();
         $owning1->id2 = 'ghi';
 
-        $owning2 = new Entity\OwningManyToManyExtraLazyEntity();
+        $owning2      = new Entity\OwningManyToManyExtraLazyEntity();
         $owning2->id2 = 'jkl';
 
         $inversed1->associatedEntities->add($owning1);

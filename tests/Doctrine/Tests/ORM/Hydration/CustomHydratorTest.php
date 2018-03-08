@@ -11,7 +11,7 @@ class CustomHydratorTest extends HydrationTestCase
 {
     public function testCustomHydrator()
     {
-        $em = $this->getTestEntityManager();
+        $em     = $this->getTestEntityManager();
         $config = $em->getConfiguration();
         $config->addCustomHydrationMode('CustomHydrator', CustomHydrator::class);
 

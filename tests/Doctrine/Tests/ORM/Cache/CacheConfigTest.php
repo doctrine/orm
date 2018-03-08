@@ -6,8 +6,8 @@ namespace Doctrine\Tests\ORM\Cache;
 
 use Doctrine\ORM\Cache\CacheConfiguration;
 use Doctrine\ORM\Cache\CacheFactory;
-use Doctrine\ORM\Cache\QueryCacheValidator;
 use Doctrine\ORM\Cache\Logging\CacheLogger;
+use Doctrine\ORM\Cache\QueryCacheValidator;
 use Doctrine\ORM\Cache\TimestampQueryCacheValidator;
 use Doctrine\ORM\Cache\TimestampRegion;
 use Doctrine\Tests\DoctrineTestCase;
@@ -19,9 +19,7 @@ use Doctrine\Tests\DoctrineTestCase;
  */
 class CacheConfigTest extends DoctrineTestCase
 {
-    /**
-     * @var \Doctrine\ORM\Cache\CacheConfiguration
-     */
+    /** @var CacheConfiguration */
     private $config;
 
     /**

@@ -6,11 +6,13 @@ namespace Doctrine\Tests\ORM\Functional\Ticket;
 
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\Annotation as ORM;
+use Doctrine\Tests\OrmFunctionalTestCase;
+use function get_class;
 
 /**
  * @group DDC-992
  */
-class DDC992Test extends \Doctrine\Tests\OrmFunctionalTestCase
+class DDC992Test extends OrmFunctionalTestCase
 {
     public function setUp()
     {
@@ -29,13 +31,13 @@ class DDC992Test extends \Doctrine\Tests\OrmFunctionalTestCase
 
     public function testIssue()
     {
-        $role = new DDC992Role();
-        $role->name = "Parent";
-        $child = new DDC992Role();
-        $child->name = "child";
+        $role        = new DDC992Role();
+        $role->name  = 'Parent';
+        $child       = new DDC992Role();
+        $child->name = 'child';
 
         $role->extendedBy[] = $child;
-        $child->extends[] = $role;
+        $child->extends[]   = $role;
 
         $this->em->persist($role);
         $this->em->persist($child);
@@ -51,9 +53,9 @@ class DDC992Test extends \Doctrine\Tests\OrmFunctionalTestCase
 
     public function testOneToManyChild()
     {
-        $parent = new DDC992Parent();
-        $child = new DDC992Child();
-        $child->parent = $parent;
+        $parent           = new DDC992Parent();
+        $child            = new DDC992Child();
+        $child->parent    = $parent;
         $parent->childs[] = $child;
 
         $this->em->persist($parent);
@@ -62,13 +64,13 @@ class DDC992Test extends \Doctrine\Tests\OrmFunctionalTestCase
         $this->em->clear();
 
         $parentRepository = $this->em->getRepository(get_class($parent));
-        $childRepository = $this->em->getRepository(get_class($child));
+        $childRepository  = $this->em->getRepository(get_class($child));
 
         $parent = $parentRepository->find($parent->id);
         self::assertCount(1, $parent->childs);
         self::assertCount(0, $parent->childs[0]->childs());
 
-        $child = $parentRepository->findOneBy(["id" => $child->id]);
+        $child = $parentRepository->findOneBy(['id' => $child->id]);
         self::assertSame($parent->childs[0], $child);
 
         $this->em->clear();
@@ -124,13 +126,9 @@ class DDC992Role
      *  @ORM\GeneratedValue(strategy="AUTO")
      */
     public $roleID;
-    /**
-     * @ORM\Column (name="name", type="string", length=45)
-     */
+    /** @ORM\Column (name="name", type="string", length=45) */
     public $name;
-    /**
-     * @ORM\ManyToMany (targetEntity=DDC992Role::class, mappedBy="extends")
-     */
+    /** @ORM\ManyToMany (targetEntity=DDC992Role::class, mappedBy="extends") */
     public $extendedBy;
     /**
      * @ORM\ManyToMany (targetEntity=DDC992Role::class, inversedBy="extendedBy")
@@ -143,7 +141,7 @@ class DDC992Role
 
     public function __construct()
     {
-        $this->extends = new ArrayCollection;
-        $this->extendedBy = new ArrayCollection;
+        $this->extends    = new ArrayCollection();
+        $this->extendedBy = new ArrayCollection();
     }
 }

@@ -4,10 +4,10 @@ declare(strict_types=1);
 
 namespace Doctrine\Tests\ORM\Query;
 
-use Doctrine\ORM\Query\SqlWalker;
 use Doctrine\ORM\Query;
-use Doctrine\Tests\OrmTestCase;
 use Doctrine\ORM\Query\ParserResult;
+use Doctrine\ORM\Query\SqlWalker;
+use Doctrine\Tests\OrmTestCase;
 
 /**
  * Tests for {@see \Doctrine\ORM\Query\SqlWalker}
@@ -16,9 +16,7 @@ use Doctrine\ORM\Query\ParserResult;
  */
 class SqlWalkerTest extends OrmTestCase
 {
-    /**
-     * @var SqlWalker
-     */
+    /** @var SqlWalker */
     private $sqlWalker;
 
     /**

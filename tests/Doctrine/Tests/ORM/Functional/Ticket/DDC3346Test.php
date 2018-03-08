@@ -6,11 +6,12 @@ namespace Doctrine\Tests\ORM\Functional\Ticket;
 
 use Doctrine\Tests\Models\DDC3346\DDC3346Article;
 use Doctrine\Tests\Models\DDC3346\DDC3346Author;
+use Doctrine\Tests\OrmFunctionalTestCase;
 
 /**
  * @group DDC-3346
  */
-class DDC3346Test extends \Doctrine\Tests\OrmFunctionalTestCase
+class DDC3346Test extends OrmFunctionalTestCase
 {
     public function setUp()
     {

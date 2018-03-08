@@ -23,10 +23,10 @@ class ManyToManyTest extends OrmFunctionalTestCase
 
         parent::setUp();
 
-        $inversed = new Entity\InversedManyToManyEntity();
+        $inversed      = new Entity\InversedManyToManyEntity();
         $inversed->id1 = 'abc';
 
-        $owning = new Entity\OwningManyToManyEntity();
+        $owning      = new Entity\OwningManyToManyEntity();
         $owning->id2 = 'def';
 
         $inversed->associatedEntities->add($owning);

@@ -10,7 +10,6 @@ use Doctrine\ORM\Annotation as ORM;
  * ECommerceCustomer
  * Represents a registered user of a shopping application.
  *
- * @author Giorgio Sironi
  * @ORM\Entity
  * @ORM\Table(name="ecommerce_customers")
  */
@@ -23,9 +22,7 @@ class ECommerceCustomer
      */
     private $id;
 
-    /**
-     * @ORM\Column(type="string", length=50)
-     */
+    /** @ORM\Column(type="string", length=50) */
     private $name;
 
     /**
@@ -74,7 +71,7 @@ class ECommerceCustomer
         }
     }
 
-    /* Does not properly maintain the bidirectional association! */
+    /** Does not properly maintain the bidirectional association! */
     public function brokenSetCart(ECommerceCart $cart)
     {
         $this->cart = $cart;
@@ -88,7 +85,7 @@ class ECommerceCustomer
     public function removeCart()
     {
         if ($this->cart !== null) {
-            $cart = $this->cart;
+            $cart       = $this->cart;
             $this->cart = null;
             $cart->removeCustomer();
         }

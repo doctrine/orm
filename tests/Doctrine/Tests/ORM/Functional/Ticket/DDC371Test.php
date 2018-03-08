@@ -4,14 +4,16 @@ declare(strict_types=1);
 
 namespace Doctrine\Tests\ORM\Functional\Ticket;
 
+use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\Annotation as ORM;
 use Doctrine\ORM\Query;
+use Doctrine\Tests\OrmFunctionalTestCase;
 use ProxyManager\Proxy\GhostObjectInterface;
 
 /**
  * @group DDC-371
  */
-class DDC371Test extends \Doctrine\Tests\OrmFunctionalTestCase
+class DDC371Test extends OrmFunctionalTestCase
 {
     protected function setUp()
     {
@@ -20,18 +22,18 @@ class DDC371Test extends \Doctrine\Tests\OrmFunctionalTestCase
         $this->schemaTool->createSchema(
             [
             $this->em->getClassMetadata(DDC371Parent::class),
-            $this->em->getClassMetadata(DDC371Child::class)
+            $this->em->getClassMetadata(DDC371Child::class),
             ]
         );
     }
 
     public function testIssue()
     {
-        $parent = new DDC371Parent;
-        $parent->data = 'parent';
-        $parent->children = new \Doctrine\Common\Collections\ArrayCollection;
+        $parent           = new DDC371Parent();
+        $parent->data     = 'parent';
+        $parent->children = new ArrayCollection();
 
-        $child = new DDC371Child;
+        $child       = new DDC371Child();
         $child->data = 'child';
 
         $child->parent = $parent;
@@ -43,7 +45,7 @@ class DDC371Test extends \Doctrine\Tests\OrmFunctionalTestCase
         $this->em->flush();
         $this->em->clear();
 
-        $children = $this->em->createQuery('select c,p from '.__NAMESPACE__.'\DDC371Child c '
+        $children = $this->em->createQuery('select c,p from ' . __NAMESPACE__ . '\DDC371Child c '
                 . 'left join c.parent p where c.id = 1 and p.id = 1')
                 ->setHint(Query::HINT_REFRESH, true)
                 ->getResult();

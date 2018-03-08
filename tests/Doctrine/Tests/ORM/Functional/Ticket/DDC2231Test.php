@@ -17,9 +17,7 @@ use ProxyManager\Proxy\GhostObjectInterface;
  */
 final class DDC2231Test extends OrmFunctionalTestCase
 {
-    /**
-     * @var DDC2231EntityManagerAwareEntity
-     */
+    /** @var DDC2231EntityManagerAwareEntity */
     private $persistedEntityManagerAwareEntity;
 
     protected function setUp() : void

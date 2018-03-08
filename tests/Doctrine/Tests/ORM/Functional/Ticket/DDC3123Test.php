@@ -6,11 +6,12 @@ namespace Doctrine\Tests\ORM\Functional\Ticket;
 
 use Doctrine\ORM\Events;
 use Doctrine\Tests\Models\CMS\CmsUser;
+use Doctrine\Tests\OrmFunctionalTestCase;
 
 /**
  * @group DDC-3123
  */
-class DDC3123Test extends \Doctrine\Tests\OrmFunctionalTestCase
+class DDC3123Test extends OrmFunctionalTestCase
 {
     protected function setUp()
     {

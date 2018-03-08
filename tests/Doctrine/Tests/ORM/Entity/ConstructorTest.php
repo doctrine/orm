@@ -10,8 +10,8 @@ class ConstructorTest extends OrmTestCase
 {
     public function testFieldInitializationInConstructor()
     {
-        $entity = new ConstructorTestEntity1("romanb");
-        self::assertEquals("romanb", $entity->username);
+        $entity = new ConstructorTestEntity1('romanb');
+        self::assertEquals('romanb', $entity->username);
     }
 }
 

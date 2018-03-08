@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace Doctrine\Tests;
 
 use Doctrine\Common\Cache\ArrayCache;
-use Doctrine\ORM\Mapping\Driver\MappingDriver;
+use Doctrine\Common\Cache\Cache;
 use Doctrine\DBAL\Driver\Connection;
 use Doctrine\DBAL\Logging\DebugStack;
 use Doctrine\DBAL\Types\Type;
@@ -15,31 +15,47 @@ use Doctrine\ORM\Cache\Logging\StatisticsCacheLogger;
 use Doctrine\ORM\Configuration;
 use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\EntityManagerInterface;
+use Doctrine\ORM\Mapping\Driver\MappingDriver;
+use Doctrine\ORM\ORMException;
 use Doctrine\ORM\Proxy\Factory\ProxyFactory;
 use Doctrine\ORM\Tools\DebugUnitOfWorkListener;
 use Doctrine\ORM\Tools\SchemaTool;
 use Doctrine\Tests\DbalTypes\Rot13Type;
 use Doctrine\Tests\EventListener\CacheMetadataListener;
 use PHPUnit\Framework\AssertionFailedError;
+use const PHP_EOL;
+use function array_map;
+use function array_reverse;
+use function array_slice;
+use function count;
+use function explode;
+use function get_class;
+use function getenv;
+use function implode;
+use function in_array;
+use function is_object;
+use function realpath;
+use function sprintf;
+use function strpos;
+use function strtolower;
+use function var_export;
 
 /**
  * Base testcase class for all functional ORM testcases.
- *
- * @since 2.0
  */
 abstract class OrmFunctionalTestCase extends OrmTestCase
 {
     /**
      * The metadata cache shared between all functional tests.
      *
-     * @var \Doctrine\Common\Cache\Cache|null
+     * @var Cache|null
      */
     private static $metadataCacheImpl = null;
 
     /**
      * The query cache shared between all functional tests.
      *
-     * @var \Doctrine\Common\Cache\Cache|null
+     * @var Cache|null
      */
     private static $queryCacheImpl = null;
 
@@ -50,19 +66,13 @@ abstract class OrmFunctionalTestCase extends OrmTestCase
      */
     protected static $sharedConn;
 
-    /**
-     * @var \Doctrine\ORM\EntityManagerInterface
-     */
+    /** @var EntityManagerInterface */
     protected $em;
 
-    /**
-     * @var \Doctrine\ORM\Tools\SchemaTool
-     */
+    /** @var SchemaTool */
     protected $schemaTool;
 
-    /**
-     * @var \Doctrine\DBAL\Logging\DebugStack
-     */
+    /** @var DebugStack */
     protected $sqlLoggerStack;
 
     /**
@@ -75,7 +85,7 @@ abstract class OrmFunctionalTestCase extends OrmTestCase
     /**
      * To be configured by the test that uses result set cache
      *
-     * @var \Doctrine\Common\Cache\Cache|null
+     * @var Cache|null
      */
     protected $resultCacheImpl;
 
@@ -126,7 +136,7 @@ abstract class OrmFunctionalTestCase extends OrmTestCase
             Models\ECommerce\ECommerceProduct::class,
             Models\ECommerce\ECommerceShipping::class,
             Models\ECommerce\ECommerceFeature::class,
-            Models\ECommerce\ECommerceCategory::class
+            Models\ECommerce\ECommerceCategory::class,
         ],
         'generic' => [
             Models\Generic\BooleanModel::class,
@@ -217,7 +227,7 @@ abstract class OrmFunctionalTestCase extends OrmTestCase
             Models\Cache\ComplexAction::class,
             Models\Cache\AttractionInfo::class,
             Models\Cache\AttractionContactInfo::class,
-            Models\Cache\AttractionLocationInfo::class
+            Models\Cache\AttractionLocationInfo::class,
         ],
         'tweet' => [
             Models\Tweet\User::class,
@@ -240,60 +250,60 @@ abstract class OrmFunctionalTestCase extends OrmTestCase
             Models\Quote\Group::class,
             Models\Quote\NumericEntity::class,
             Models\Quote\Phone::class,
-            Models\Quote\User::class
+            Models\Quote\User::class,
         ],
         'vct_onetoone' => [
             Models\ValueConversionType\InversedOneToOneEntity::class,
-            Models\ValueConversionType\OwningOneToOneEntity::class
+            Models\ValueConversionType\OwningOneToOneEntity::class,
         ],
         'vct_onetoone_compositeid' => [
             Models\ValueConversionType\InversedOneToOneCompositeIdEntity::class,
-            Models\ValueConversionType\OwningOneToOneCompositeIdEntity::class
+            Models\ValueConversionType\OwningOneToOneCompositeIdEntity::class,
         ],
         'vct_onetoone_compositeid_foreignkey' => [
             Models\ValueConversionType\AuxiliaryEntity::class,
             Models\ValueConversionType\InversedOneToOneCompositeIdForeignKeyEntity::class,
-            Models\ValueConversionType\OwningOneToOneCompositeIdForeignKeyEntity::class
+            Models\ValueConversionType\OwningOneToOneCompositeIdForeignKeyEntity::class,
         ],
         'vct_onetomany' => [
             Models\ValueConversionType\InversedOneToManyEntity::class,
-            Models\ValueConversionType\OwningManyToOneEntity::class
+            Models\ValueConversionType\OwningManyToOneEntity::class,
         ],
         'vct_onetomany_compositeid' => [
             Models\ValueConversionType\InversedOneToManyCompositeIdEntity::class,
-            Models\ValueConversionType\OwningManyToOneCompositeIdEntity::class
+            Models\ValueConversionType\OwningManyToOneCompositeIdEntity::class,
         ],
         'vct_onetomany_compositeid_foreignkey' => [
             Models\ValueConversionType\AuxiliaryEntity::class,
             Models\ValueConversionType\InversedOneToManyCompositeIdForeignKeyEntity::class,
-            Models\ValueConversionType\OwningManyToOneCompositeIdForeignKeyEntity::class
+            Models\ValueConversionType\OwningManyToOneCompositeIdForeignKeyEntity::class,
         ],
         'vct_onetomany_extralazy' => [
             Models\ValueConversionType\InversedOneToManyExtraLazyEntity::class,
-            Models\ValueConversionType\OwningManyToOneExtraLazyEntity::class
+            Models\ValueConversionType\OwningManyToOneExtraLazyEntity::class,
         ],
         'vct_manytomany' => [
             Models\ValueConversionType\InversedManyToManyEntity::class,
-            Models\ValueConversionType\OwningManyToManyEntity::class
+            Models\ValueConversionType\OwningManyToManyEntity::class,
         ],
         'vct_manytomany_compositeid' => [
             Models\ValueConversionType\InversedManyToManyCompositeIdEntity::class,
-            Models\ValueConversionType\OwningManyToManyCompositeIdEntity::class
+            Models\ValueConversionType\OwningManyToManyCompositeIdEntity::class,
         ],
         'vct_manytomany_compositeid_foreignkey' => [
             Models\ValueConversionType\AuxiliaryEntity::class,
             Models\ValueConversionType\InversedManyToManyCompositeIdForeignKeyEntity::class,
-            Models\ValueConversionType\OwningManyToManyCompositeIdForeignKeyEntity::class
+            Models\ValueConversionType\OwningManyToManyCompositeIdForeignKeyEntity::class,
         ],
         'vct_manytomany_extralazy' => [
             Models\ValueConversionType\InversedManyToManyExtraLazyEntity::class,
-            Models\ValueConversionType\OwningManyToManyExtraLazyEntity::class
+            Models\ValueConversionType\OwningManyToManyExtraLazyEntity::class,
         ],
         'geonames' => [
             Models\GeoNames\Country::class,
             Models\GeoNames\Admin1::class,
             Models\GeoNames\Admin1AlternateName::class,
-            Models\GeoNames\City::class
+            Models\GeoNames\City::class,
         ],
         'custom_id_object_type' => [
             Models\CustomType\CustomIdObjectTypeParent::class,
@@ -320,7 +330,6 @@ abstract class OrmFunctionalTestCase extends OrmTestCase
     /**
      * @param string $setName
      *
-     * @return void
      */
     protected function useModelSet($setName)
     {
@@ -330,14 +339,13 @@ abstract class OrmFunctionalTestCase extends OrmTestCase
     /**
      * Sweeps the database tables and clears the EntityManager.
      *
-     * @return void
      */
     protected function tearDown()
     {
         $conn = static::$sharedConn;
 
         // In case test is skipped, tearDown is called, but no setup may have run
-        if ( ! $conn) {
+        if (! $conn) {
             return;
         }
 
@@ -411,7 +419,7 @@ abstract class OrmFunctionalTestCase extends OrmTestCase
         }
 
         if (isset($this->usedModelSets['directorytree'])) {
-            $conn->executeUpdate('DELETE FROM ' . $platform->quoteIdentifier("file"));
+            $conn->executeUpdate('DELETE FROM ' . $platform->quoteIdentifier('file'));
             // MySQL doesn't know deferred deletions therefore only executing the second query gives errors.
             $conn->executeUpdate('DELETE FROM Directory WHERE parentDirectory_id IS NOT NULL');
             $conn->executeUpdate('DELETE FROM Directory');
@@ -499,16 +507,16 @@ abstract class OrmFunctionalTestCase extends OrmTestCase
             $conn->executeUpdate(
                 sprintf(
                     'UPDATE %s SET %s = NULL',
-                    $platform->quoteIdentifier("quote-address"),
+                    $platform->quoteIdentifier('quote-address'),
                     $platform->quoteIdentifier('user-id')
                 )
             );
 
             $conn->executeUpdate('DELETE FROM ' . $platform->quoteIdentifier('quote-users-groups'));
-            $conn->executeUpdate('DELETE FROM ' . $platform->quoteIdentifier("quote-group"));
-            $conn->executeUpdate('DELETE FROM ' . $platform->quoteIdentifier("quote-phone"));
-            $conn->executeUpdate('DELETE FROM ' . $platform->quoteIdentifier("quote-user"));
-            $conn->executeUpdate('DELETE FROM ' . $platform->quoteIdentifier("quote-address"));
+            $conn->executeUpdate('DELETE FROM ' . $platform->quoteIdentifier('quote-group'));
+            $conn->executeUpdate('DELETE FROM ' . $platform->quoteIdentifier('quote-phone'));
+            $conn->executeUpdate('DELETE FROM ' . $platform->quoteIdentifier('quote-user'));
+            $conn->executeUpdate('DELETE FROM ' . $platform->quoteIdentifier('quote-address'));
             $conn->executeUpdate('DELETE FROM ' . $platform->quoteIdentifier('quote-city'));
         }
 
@@ -610,22 +618,21 @@ abstract class OrmFunctionalTestCase extends OrmTestCase
     /**
      * @param array $classNames
      *
-     * @return void
      *
      * @throws \RuntimeException
      */
     protected function setUpEntitySchema(array $classNames)
     {
         if ($this->em === null) {
-            throw new \RuntimeException("EntityManager not set, you have to call parent::setUp() before invoking this method.");
+            throw new \RuntimeException('EntityManager not set, you have to call parent::setUp() before invoking this method.');
         }
 
         $classes = [];
 
         foreach ($classNames as $className) {
-            if ( ! isset(static::$entityTablesCreated[$className])) {
+            if (! isset(static::$entityTablesCreated[$className])) {
                 static::$entityTablesCreated[$className] = true;
-                $classes[] = $this->em->getClassMetadata($className);
+                $classes[]                               = $this->em->getClassMetadata($className);
             }
         }
 
@@ -638,7 +645,6 @@ abstract class OrmFunctionalTestCase extends OrmTestCase
      * Creates a connection to the test database, if there is none yet, and
      * creates the necessary tables.
      *
-     * @return void
      */
     protected function setUp()
     {
@@ -649,15 +655,15 @@ abstract class OrmFunctionalTestCase extends OrmTestCase
         }
 
         if (isset($GLOBALS['DOCTRINE_MARK_SQL_LOGS'])) {
-            if (in_array(static::$sharedConn->getDatabasePlatform()->getName(), ["mysql", "postgresql"], true)) {
+            if (in_array(static::$sharedConn->getDatabasePlatform()->getName(), ['mysql', 'postgresql'], true)) {
                 static::$sharedConn->executeQuery('SELECT 1 /*' . get_class($this) . '*/');
-            } elseif (static::$sharedConn->getDatabasePlatform()->getName() === "oracle") {
+            } elseif (static::$sharedConn->getDatabasePlatform()->getName() === 'oracle') {
                 static::$sharedConn->executeQuery('SELECT 1 /*' . get_class($this) . '*/ FROM dual');
             }
         }
 
-        if ( ! $this->em) {
-            $this->em = $this->getEntityManager();
+        if (! $this->em) {
+            $this->em         = $this->getEntityManager();
             $this->schemaTool = new SchemaTool($this->em);
         }
 
@@ -677,26 +683,26 @@ abstract class OrmFunctionalTestCase extends OrmTestCase
      *
      * @return EntityManagerInterface
      *
-     * @throws \Doctrine\ORM\ORMException
+     * @throws ORMException
      */
-    protected function getEntityManager(Connection $connection = null, MappingDriver $mappingDriver = null)
+    protected function getEntityManager(?Connection $connection = null, ?MappingDriver $mappingDriver = null)
     {
         // NOTE: Functional tests use their own shared metadata cache, because
         // the actual database platform used during execution has effect on some
         // metadata mapping behaviors (like the choice of the ID generation).
-        if (null === self::$metadataCacheImpl) {
+        if (self::$metadataCacheImpl === null) {
             if (isset($GLOBALS['DOCTRINE_CACHE_IMPL'])) {
-                self::$metadataCacheImpl = new $GLOBALS['DOCTRINE_CACHE_IMPL'];
+                self::$metadataCacheImpl = new $GLOBALS['DOCTRINE_CACHE_IMPL']();
             } else {
                 self::$metadataCacheImpl = new ArrayCache();
             }
         }
 
-        if (null === self::$queryCacheImpl) {
+        if (self::$queryCacheImpl === null) {
             self::$queryCacheImpl = new ArrayCache();
         }
 
-        $this->sqlLoggerStack = new DebugStack();
+        $this->sqlLoggerStack          = new DebugStack();
         $this->sqlLoggerStack->enabled = false;
 
         //FIXME: two different configs! $conn and the created entity manager have
@@ -708,16 +714,16 @@ abstract class OrmFunctionalTestCase extends OrmTestCase
         $config->setAutoGenerateProxyClasses(ProxyFactory::AUTOGENERATE_EVAL);
         $config->setProxyNamespace('Doctrine\Tests\Proxies');
 
-        if (null !== $this->resultCacheImpl) {
+        if ($this->resultCacheImpl !== null) {
             $config->setResultCacheImpl($this->resultCacheImpl);
         }
 
         $enableSecondLevelCache = getenv('ENABLE_SECOND_LEVEL_CACHE');
 
         if ($this->isSecondLevelCacheEnabled || $enableSecondLevelCache) {
-            $cacheConfig    = new CacheConfiguration();
-            $cache          = $this->getSharedSecondLevelCacheDriverImpl();
-            $factory        = new DefaultCacheFactory($cacheConfig->getRegionsConfiguration(), $cache);
+            $cacheConfig = new CacheConfiguration();
+            $cache       = $this->getSharedSecondLevelCacheDriverImpl();
+            $factory     = new DefaultCacheFactory($cacheConfig->getRegionsConfiguration(), $cache);
 
             $this->secondLevelCacheFactory = $factory;
 
@@ -738,7 +744,7 @@ abstract class OrmFunctionalTestCase extends OrmTestCase
         $config->setMetadataDriverImpl(
             $mappingDriver ?? $config->newDefaultAnnotationDriver([
                 realpath(__DIR__ . '/Models/Cache'),
-                realpath(__DIR__ . '/Models/GeoNames')
+                realpath(__DIR__ . '/Models/GeoNames'),
             ])
         );
 
@@ -758,7 +764,7 @@ abstract class OrmFunctionalTestCase extends OrmTestCase
         }
 
         if (isset($GLOBALS['db_event_subscribers'])) {
-            foreach (explode(",", $GLOBALS['db_event_subscribers']) as $subscriberClass) {
+            foreach (explode(',', $GLOBALS['db_event_subscribers']) as $subscriberClass) {
                 $subscriberInstance = new $subscriberClass();
                 $evm->addEventSubscriber($subscriberInstance);
             }
@@ -772,9 +778,7 @@ abstract class OrmFunctionalTestCase extends OrmTestCase
     }
 
     /**
-     * @param \Throwable $e
      *
-     * @return void
      *
      * @throws \Throwable
      */
@@ -785,37 +789,37 @@ abstract class OrmFunctionalTestCase extends OrmTestCase
         }
 
         if (isset($this->sqlLoggerStack->queries) && count($this->sqlLoggerStack->queries)) {
-            $queries = "";
+            $queries       = '';
             $last25queries = array_slice(array_reverse($this->sqlLoggerStack->queries, true), 0, 25, true);
 
             foreach ($last25queries as $i => $query) {
                 $params = array_map(
-                    function($p) {
+                    function ($p) {
                         return is_object($p) ? get_class($p) : var_export($p, true);
                     },
                     $query['params'] ?: []
                 );
 
-                $queries .= $i.". SQL: '".$query['sql']."' Params: ".implode(", ", $params).PHP_EOL;
+                $queries .= $i . ". SQL: '" . $query['sql'] . "' Params: " . implode(', ', $params) . PHP_EOL;
             }
 
-            $trace = $e->getTrace();
-            $traceMsg = "";
+            $trace    = $e->getTrace();
+            $traceMsg = '';
 
             foreach ($trace as $part) {
                 if (isset($part['file'])) {
-                    if (strpos($part['file'], "PHPUnit/") !== false) {
+                    if (strpos($part['file'], 'PHPUnit/') !== false) {
                         // Beginning with PHPUnit files we don't print the trace anymore.
                         break;
                     }
 
-                    $traceMsg .= $part['file'].":".$part['line'].PHP_EOL;
+                    $traceMsg .= $part['file'] . ':' . $part['line'] . PHP_EOL;
                 }
             }
 
-            $message = "[".get_class($e)."] ".$e->getMessage().PHP_EOL.PHP_EOL."With queries:".PHP_EOL.$queries.PHP_EOL."Trace:".PHP_EOL.$traceMsg;
+            $message = '[' . get_class($e) . '] ' . $e->getMessage() . PHP_EOL . PHP_EOL . 'With queries:' . PHP_EOL . $queries . PHP_EOL . 'Trace:' . PHP_EOL . $traceMsg;
 
-            throw new \Exception($message, (int)$e->getCode(), $e);
+            throw new \Exception($message, (int) $e->getCode(), $e);
         }
 
         throw $e;
@@ -826,7 +830,7 @@ abstract class OrmFunctionalTestCase extends OrmTestCase
         self::assertEquals(
             strtolower((string) $expectedSql),
             strtolower((string) $actualSql),
-            "Lowercase comparison of SQL statements failed."
+            'Lowercase comparison of SQL statements failed.'
         );
     }
 

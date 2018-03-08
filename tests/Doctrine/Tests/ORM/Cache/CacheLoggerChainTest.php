@@ -4,27 +4,23 @@ declare(strict_types=1);
 
 namespace Doctrine\Tests\ORM\Cache;
 
-use Doctrine\ORM\Cache\Logging\CacheLogger;
-use Doctrine\ORM\Cache\Logging\CacheLoggerChain;
 use Doctrine\ORM\Cache\CollectionCacheKey;
 use Doctrine\ORM\Cache\EntityCacheKey;
+use Doctrine\ORM\Cache\Logging\CacheLogger;
+use Doctrine\ORM\Cache\Logging\CacheLoggerChain;
 use Doctrine\ORM\Cache\QueryCacheKey;
-use Doctrine\Tests\Models\Cache\State;
 use Doctrine\Tests\DoctrineTestCase;
+use Doctrine\Tests\Models\Cache\State;
 
 /**
  * @group DDC-2183
  */
 class CacheLoggerChainTest extends DoctrineTestCase
 {
-    /**
-     * @var \Doctrine\ORM\Cache\Logging\CacheLoggerChain
-     */
+    /** @var CacheLoggerChain */
     private $logger;
 
-    /**
-     * @var \PHPUnit_Framework_MockObject_MockObject|\Doctrine\ORM\Cache\Logging\CacheLogger
-     */
+    /** @var \PHPUnit_Framework_MockObject_MockObject|CacheLogger */
     private $mock;
 
     protected function setUp()

@@ -4,15 +4,18 @@ declare(strict_types=1);
 
 namespace Doctrine\Tests\ORM\Functional\Ticket;
 
-use Doctrine\DBAL\Types\Type;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Platforms\AbstractPlatform;
+use Doctrine\DBAL\Types\Type;
 use Doctrine\ORM\Annotation as ORM;
+use Doctrine\Tests\OrmFunctionalTestCase;
+use function array_search;
 
 /**
  * @group DDC-2494
  * @group non-cacheable
  */
-class DDC3192Test extends \Doctrine\Tests\OrmFunctionalTestCase
+class DDC3192Test extends OrmFunctionalTestCase
 {
     protected function setUp()
     {
@@ -42,7 +45,7 @@ class DDC3192Test extends \Doctrine\Tests\OrmFunctionalTestCase
         $this->em->persist($currency);
         $this->em->flush();
 
-        $amount = 50;
+        $amount      = 50;
         $transaction = new DDC3192Transaction($amount, $currency);
 
         $this->em->persist($transaction);
@@ -81,7 +84,7 @@ class DDC3192Currency
     public $code;
 
     /**
-     * @var \Doctrine\Common\Collections\Collection
+     * @var Collection
      *
      * @ORM\OneToMany(targetEntity=DDC3192Transaction::class, mappedBy="currency")
      */
@@ -123,16 +126,14 @@ class DDC3192Transaction
 
     public function __construct($amount, DDC3192Currency $currency)
     {
-        $this->amount = $amount;
+        $this->amount   = $amount;
         $this->currency = $currency;
     }
 }
 
 class DDC3192CurrencyCode extends Type
 {
-    private static $map = [
-        'BYR' => 974,
-    ];
+    private static $map = ['BYR' => 974];
 
     /**
      * {@inheritdoc}

@@ -18,9 +18,7 @@ class ForumEntry
      * @ORM\GeneratedValue(strategy="AUTO")
      */
     public $id;
-    /**
-     * @ORM\Column(type="string", length=50)
-     */
+    /** @ORM\Column(type="string", length=50) */
     public $topic;
 
     public function &getTopicByReference()

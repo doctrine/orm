@@ -6,11 +6,12 @@ namespace Doctrine\Tests\ORM\Functional\Ticket;
 
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\Annotation as ORM;
+use Doctrine\Tests\OrmFunctionalTestCase;
 
 /**
  * @group DDC-2252
  */
-class DDC2252Test extends \Doctrine\Tests\OrmFunctionalTestCase
+class DDC2252Test extends OrmFunctionalTestCase
 {
     private $user;
     private $merchant;
@@ -35,13 +36,13 @@ class DDC2252Test extends \Doctrine\Tests\OrmFunctionalTestCase
 
     public function loadFixtures()
     {
-        $this->user         = new DDC2252User;
-        $this->merchant     = new DDC2252MerchantAccount;
-        $this->membership   = new DDC2252Membership($this->user, $this->merchant);
+        $this->user       = new DDC2252User();
+        $this->merchant   = new DDC2252MerchantAccount();
+        $this->membership = new DDC2252Membership($this->user, $this->merchant);
 
-        $this->privileges[] = new DDC2252Privilege;
-        $this->privileges[] = new DDC2252Privilege;
-        $this->privileges[] = new DDC2252Privilege;
+        $this->privileges[] = new DDC2252Privilege();
+        $this->privileges[] = new DDC2252Privilege();
+        $this->privileges[] = new DDC2252Privilege();
 
         $this->membership->addPrivilege($this->privileges[0]);
         $this->membership->addPrivilege($this->privileges[1]);
@@ -91,7 +92,7 @@ class DDC2252Test extends \Doctrine\Tests\OrmFunctionalTestCase
         self::assertInstanceOf(DDC2252Membership::class, $membership);
         self::assertCount(0, $membership->getPrivileges());
 
-        $membership->addPrivilege($privilege3 = new DDC2252Privilege);
+        $membership->addPrivilege($privilege3 = new DDC2252Privilege());
         $this->em->persist($privilege3);
         $this->em->persist($membership);
         $this->em->flush();
@@ -161,7 +162,7 @@ class DDC2252User
 
     public function __construct()
     {
-        $this->memberships = new ArrayCollection;
+        $this->memberships = new ArrayCollection();
     }
 
     public function getUid()
@@ -217,9 +218,9 @@ class DDC2252Membership
 
     public function __construct(DDC2252User $user, DDC2252MerchantAccount $merchantAccount)
     {
-        $this->userAccount      = $user;
-        $this->merchantAccount  = $merchantAccount;
-        $this->privileges       = new ArrayCollection();
+        $this->userAccount     = $user;
+        $this->merchantAccount = $merchantAccount;
+        $this->privileges      = new ArrayCollection();
     }
 
     public function addPrivilege($privilege)

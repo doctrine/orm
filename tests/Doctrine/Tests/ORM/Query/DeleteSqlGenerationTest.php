@@ -9,13 +9,7 @@ use Doctrine\Tests\OrmTestCase;
 /**
  * Test case for testing the saving and referencing of query identifiers.
  *
- * @author      Guilherme Blanco <guilhermeblanco@hotmail.com>
- * @author      Janne Vanhala <jpvanhal@cc.hut.fi>
- * @author      Konsta Vesterinen <kvesteri@cc.hut.fi>
- * @license     http://www.opensource.org/licenses/lgpl-license.php LGPL
  * @link        http://www.phpdoctrine.org
- * @since       2.0
- * @version     $Revision$
  * @todo        1) [romanb] We  might want to split the SQL generation tests into multiple
  *              testcases later since we'll have a lot of them and we might want to have special SQL
  *              generation tests for some dbms specific SQL syntaxes.
@@ -135,8 +129,9 @@ class DeleteSqlGenerationTest extends OrmTestCase
         );
     }
 
-    // ConditionalPrimary was already tested (see testSupportsWhereClause() and testSupportsWhereNot())
-
+    /**
+     * ConditionalPrimary was already tested (see testSupportsWhereClause() and testSupportsWhereNot())
+     */
     public function testSupportsGreaterThanComparisonClause()
     {
         // "id" = ? was already tested (see testDeleteWithWhere())

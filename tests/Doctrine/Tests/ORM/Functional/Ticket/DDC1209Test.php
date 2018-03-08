@@ -15,9 +15,9 @@ class DDC1209Test extends OrmFunctionalTestCase
         try {
             $this->schemaTool->createSchema(
                 [
-                    $this->em->getClassMetadata(DDC1209_1::class),
-                    $this->em->getClassMetadata(DDC1209_2::class),
-                    $this->em->getClassMetadata(DDC1209_3::class)
+                    $this->em->getClassMetadata(DDC1209Entity1::class),
+                    $this->em->getClassMetadata(DDC1209Entity2::class),
+                    $this->em->getClassMetadata(DDC1209Entity3::class),
                 ]
             );
         } catch (\Exception $e) {
@@ -29,12 +29,12 @@ class DDC1209Test extends OrmFunctionalTestCase
      */
     public function testIdentifierCanHaveCustomType()
     {
-        $entity = new DDC1209_3();
+        $entity = new DDC1209Entity3();
 
         $this->em->persist($entity);
         $this->em->flush();
 
-        self::assertSame($entity, $this->em->find(DDC1209_3::class, $entity->date));
+        self::assertSame($entity, $this->em->find(DDC1209Entity3::class, $entity->date));
     }
 
     /**
@@ -42,12 +42,12 @@ class DDC1209Test extends OrmFunctionalTestCase
      */
     public function testCompositeIdentifierCanHaveCustomType()
     {
-        $future1 = new DDC1209_1();
+        $future1 = new DDC1209Entity1();
 
         $this->em->persist($future1);
         $this->em->flush();
 
-        $future2 = new DDC1209_2($future1);
+        $future2 = new DDC1209Entity2($future1);
 
         $this->em->persist($future2);
         $this->em->flush();
@@ -55,7 +55,7 @@ class DDC1209Test extends OrmFunctionalTestCase
         self::assertSame(
             $future2,
             $this->em->find(
-                DDC1209_2::class,
+                DDC1209Entity2::class,
                 [
                     'future1'           => $future1,
                     'starting_datetime' => $future2->starting_datetime,
@@ -70,11 +70,9 @@ class DDC1209Test extends OrmFunctionalTestCase
 /**
  * @ORM\Entity
  */
-class DDC1209_1
+class DDC1209Entity1
 {
-    /**
-     * @ORM\Id @ORM\GeneratedValue @ORM\Column(type="integer")
-     */
+    /** @ORM\Id @ORM\GeneratedValue @ORM\Column(type="integer") */
     private $id;
 
     public function getId()
@@ -86,11 +84,11 @@ class DDC1209_1
 /**
  * @ORM\Entity
  */
-class DDC1209_2
+class DDC1209Entity2
 {
     /**
      *  @ORM\Id
-     *  @ORM\ManyToOne(targetEntity=DDC1209_1::class)
+     *  @ORM\ManyToOne(targetEntity=DDC1209Entity1::class)
      *  @ORM\JoinColumn(referencedColumnName="id", nullable=false)
      */
     private $future1;
@@ -112,19 +110,19 @@ class DDC1209_2
      */
     public $ending_datetime;
 
-    public function __construct(DDC1209_1 $future1)
+    public function __construct(DDC1209Entity1 $future1)
     {
-        $this->future1 = $future1;
+        $this->future1           = $future1;
         $this->starting_datetime = new DateTime2();
-        $this->during_datetime = new DateTime2();
-        $this->ending_datetime = new DateTime2();
+        $this->during_datetime   = new DateTime2();
+        $this->ending_datetime   = new DateTime2();
     }
 }
 
 /**
  * @ORM\Entity
  */
-class DDC1209_3
+class DDC1209Entity3
 {
     /**
      * @ORM\Id

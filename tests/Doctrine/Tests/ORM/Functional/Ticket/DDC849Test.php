@@ -4,10 +4,11 @@ declare(strict_types=1);
 
 namespace Doctrine\Tests\ORM\Functional\Ticket;
 
-use Doctrine\Tests\Models\CMS\CmsUser;
 use Doctrine\Tests\Models\CMS\CmsGroup;
+use Doctrine\Tests\Models\CMS\CmsUser;
+use Doctrine\Tests\OrmFunctionalTestCase;
 
-class DDC849Test extends \Doctrine\Tests\OrmFunctionalTestCase
+class DDC849Test extends OrmFunctionalTestCase
 {
     private $user;
     private $group1;
@@ -18,15 +19,15 @@ class DDC849Test extends \Doctrine\Tests\OrmFunctionalTestCase
         $this->useModelSet('cms');
         parent::setUp();
 
-        $this->user = new CmsUser();
-        $this->user->username = "beberlei";
-        $this->user->name = "Benjamin";
-        $this->user->status = "active";
+        $this->user           = new CmsUser();
+        $this->user->username = 'beberlei';
+        $this->user->name     = 'Benjamin';
+        $this->user->status   = 'active';
 
-        $this->group1 = new CmsGroup();
-        $this->group1->name = "Group 1";
-        $this->group2 = new CmsGroup();
-        $this->group2->name = "Group 2";
+        $this->group1       = new CmsGroup();
+        $this->group1->name = 'Group 1';
+        $this->group2       = new CmsGroup();
+        $this->group2->name = 'Group 2';
 
         $this->user->addGroup($this->group1);
         $this->user->addGroup($this->group2);
@@ -58,7 +59,7 @@ class DDC849Test extends \Doctrine\Tests\OrmFunctionalTestCase
 
     public function testClearCount()
     {
-        $this->user->addGroup(new CmsGroup);
+        $this->user->addGroup(new CmsGroup());
         self::assertCount(3, $this->user->groups);
 
         $this->user->groups->clear();

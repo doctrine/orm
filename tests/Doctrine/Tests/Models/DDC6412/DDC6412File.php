@@ -17,8 +17,6 @@ class DDC6412File
      */
     public $id;
 
-    /**
-     * @ORM\Column(length=50, name="file_name")
-     */
+    /** @ORM\Column(length=50, name="file_name") */
     public $name;
 }

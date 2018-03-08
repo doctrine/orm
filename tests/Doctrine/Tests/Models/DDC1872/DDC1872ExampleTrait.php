@@ -14,9 +14,7 @@ trait DDC1872ExampleTrait
     /** @ORM\Id @ORM\Column(type="string") */
     private $id;
 
-    /**
-     * @ORM\Column(name="trait_foo", type="integer", length=100, nullable=true, unique=true)
-     */
+    /** @ORM\Column(name="trait_foo", type="integer", length=100, nullable=true, unique=true) */
     protected $foo;
 
     /**

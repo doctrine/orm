@@ -25,14 +25,10 @@ class DDC117Reference
      */
     private $target;
 
-    /**
-     * @ORM\Column(type="string")
-     */
+    /** @ORM\Column(type="string") */
     private $description;
 
-    /**
-     * @ORM\Column(type="datetime")
-     */
+    /** @ORM\Column(type="datetime") */
     private $created;
 
     public function __construct($source, $target, $description)
@@ -40,10 +36,10 @@ class DDC117Reference
         $source->addReference($this);
         $target->addReference($this);
 
-        $this->source = $source;
-        $this->target = $target;
+        $this->source      = $source;
+        $this->target      = $target;
         $this->description = $description;
-        $this->created = new \DateTime("now");
+        $this->created     = new \DateTime('now');
     }
 
     public function source()

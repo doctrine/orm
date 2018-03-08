@@ -14,14 +14,12 @@ class DDC1360Test extends OrmFunctionalTestCase
 {
     public function testSchemaDoubleQuotedCreate()
     {
-        if ($this->em->getConnection()->getDatabasePlatform()->getName() != "postgresql") {
-            $this->markTestSkipped("PostgreSQL only test.");
+        if ($this->em->getConnection()->getDatabasePlatform()->getName() !== 'postgresql') {
+            $this->markTestSkipped('PostgreSQL only test.');
         }
 
         $sql = $this->schemaTool->getCreateSchemaSql(
-            [
-            $this->em->getClassMetadata(DDC1360DoubleQuote::class)
-            ]
+            [$this->em->getClassMetadata(DDC1360DoubleQuote::class)]
         );
 
         self::assertEquals(

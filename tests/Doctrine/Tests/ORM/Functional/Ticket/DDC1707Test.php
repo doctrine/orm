@@ -4,10 +4,11 @@ declare(strict_types=1);
 
 namespace Doctrine\Tests\ORM\Functional\Ticket;
 
-use Doctrine\Tests\OrmFunctionalTestCase;
 use Doctrine\ORM\Annotation as ORM;
 use Doctrine\ORM\Event\LifecycleEventArgs;
 use Doctrine\ORM\Event\ListenersInvoker;
+use Doctrine\ORM\Events;
+use Doctrine\Tests\OrmFunctionalTestCase;
 
 /**
  * @group DDC-1707
@@ -35,9 +36,9 @@ class DDC1707Test extends OrmFunctionalTestCase
         $entity  = new DDC1707Child();
         $event   = new LifecycleEventArgs($entity, $this->em);
         $invoker = new ListenersInvoker($this->em);
-        $invoke  = $invoker->getSubscribedSystems($class, \Doctrine\ORM\Events::postLoad);
+        $invoke  = $invoker->getSubscribedSystems($class, Events::postLoad);
 
-        $invoker->invoke($class, \Doctrine\ORM\Events::postLoad, $entity, $event, $invoke);
+        $invoker->invoke($class, Events::postLoad, $entity, $event, $invoke);
 
         self::assertTrue($entity->postLoad);
     }
@@ -51,9 +52,7 @@ class DDC1707Test extends OrmFunctionalTestCase
  */
 abstract class DDC1707Base
 {
-    /**
-     * @ORM\Id @ORM\Column(type="integer") @ORM\GeneratedValue
-     */
+    /** @ORM\Id @ORM\Column(type="integer") @ORM\GeneratedValue */
     protected $id;
 
     public $postLoad = false;

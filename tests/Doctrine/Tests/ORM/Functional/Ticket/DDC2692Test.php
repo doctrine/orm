@@ -7,11 +7,13 @@ namespace Doctrine\Tests\ORM\Functional\Ticket;
 use Doctrine\Common\EventSubscriber;
 use Doctrine\ORM\Annotation as ORM;
 use Doctrine\ORM\Event\PreFlushEventArgs;
+use Doctrine\ORM\Events;
+use Doctrine\Tests\OrmFunctionalTestCase;
 
 /**
  * @group DDC-2692
  */
-class DDC2692Test extends \Doctrine\Tests\OrmFunctionalTestCase
+class DDC2692Test extends OrmFunctionalTestCase
 {
     /**
      * {@inheritDoc}
@@ -42,8 +44,8 @@ class DDC2692Test extends \Doctrine\Tests\OrmFunctionalTestCase
 
         $this->em->getEventManager()->addEventSubscriber($listener);
 
-        $this->em->persist(new DDC2692Foo);
-        $this->em->persist(new DDC2692Foo);
+        $this->em->persist(new DDC2692Foo());
+        $this->em->persist(new DDC2692Foo());
 
         $this->em->flush();
         $this->em->clear();
@@ -62,7 +64,7 @@ class DDC2692Listener implements EventSubscriber
 {
     public function getSubscribedEvents()
     {
-        return [\Doctrine\ORM\Events::preFlush];
+        return [Events::preFlush];
     }
 
     public function preFlush(PreFlushEventArgs $args)

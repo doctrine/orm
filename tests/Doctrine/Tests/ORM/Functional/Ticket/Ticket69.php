@@ -4,14 +4,14 @@ declare(strict_types=1);
 
 namespace Doctrine\Tests\ORM\Functional\Ticket;
 
+use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\Annotation as ORM;
+use Doctrine\Tests\OrmFunctionalTestCase;
 
 /**
  * Functional tests for the Single Table Inheritance mapping strategy.
- *
- * @author robo
  */
-class AdvancedAssociationTest extends \Doctrine\Tests\OrmFunctionalTestCase
+class AdvancedAssociationTest extends OrmFunctionalTestCase
 {
     protected function setUp()
     {
@@ -21,7 +21,7 @@ class AdvancedAssociationTest extends \Doctrine\Tests\OrmFunctionalTestCase
                 [
                     $this->em->getClassMetadata(Lemma::class),
                     $this->em->getClassMetadata(Relation::class),
-                    $this->em->getClassMetadata(RelationType::class)
+                    $this->em->getClassMetadata(RelationType::class),
                 ]
             );
         } catch (\Exception $e) {
@@ -32,37 +32,37 @@ class AdvancedAssociationTest extends \Doctrine\Tests\OrmFunctionalTestCase
     public function testIssue()
     {
         //setup
-        $lemma1 = new Lemma;
+        $lemma1 = new Lemma();
         $lemma1->setLemma('foo');
 
-        $lemma2 = new Lemma;
+        $lemma2 = new Lemma();
         $lemma2->setLemma('bar');
 
-        $lemma3 = new Lemma;
+        $lemma3 = new Lemma();
         $lemma3->setLemma('batz');
 
-        $lemma4 = new Lemma;
+        $lemma4 = new Lemma();
         $lemma4->setLemma('bla');
 
-        $type1 = new RelationType;
+        $type1 = new RelationType();
         $type1->setType('nonsense');
         $type1->setAbbreviation('non');
 
-        $type2 = new RelationType;
+        $type2 = new RelationType();
         $type2->setType('quatsch');
         $type2->setAbbreviation('qu');
 
-        $relation1 = new Relation;
+        $relation1 = new Relation();
         $relation1->setParent($lemma1);
         $relation1->setChild($lemma2);
         $relation1->setType($type1);
 
-        $relation2 = new Relation;
+        $relation2 = new Relation();
         $relation2->setParent($lemma1);
         $relation2->setChild($lemma3);
         $relation2->setType($type1);
 
-        $relation3 = new Relation;
+        $relation3 = new Relation();
         $relation3->setParent($lemma1);
         $relation3->setChild($lemma4);
         $relation3->setType($type2);
@@ -84,7 +84,7 @@ class AdvancedAssociationTest extends \Doctrine\Tests\OrmFunctionalTestCase
 
         // test One To Many
         $query = $this->em->createQuery("SELECT l FROM Doctrine\Tests\ORM\Functional\Ticket\Lemma l Where l.lemma = 'foo'");
-        $res = $query->getResult();
+        $res   = $query->getResult();
         $lemma = $res[0];
 
         self::assertEquals('foo', $lemma->getLemma());
@@ -93,7 +93,7 @@ class AdvancedAssociationTest extends \Doctrine\Tests\OrmFunctionalTestCase
 
         foreach ($relations as $relation) {
             self::assertInstanceOf(Relation::class, $relation);
-            self::assertTrue($relation->getType()->getType() != '');
+            self::assertTrue($relation->getType()->getType() !== '');
         }
 
         $this->em->clear();
@@ -106,7 +106,7 @@ class AdvancedAssociationTest extends \Doctrine\Tests\OrmFunctionalTestCase
  */
 class Lemma
 {
-    const CLASS_NAME = __CLASS__;
+    public const CLASS_NAME = __CLASS__;
 
     /**
      * @var int
@@ -131,8 +131,8 @@ class Lemma
 
     public function __construct()
     {
-        $this->types = new \Doctrine\Common\Collections\ArrayCollection();
-        $this->relations = new \Doctrine\Common\Collections\ArrayCollection();
+        $this->types     = new ArrayCollection();
+        $this->relations = new ArrayCollection();
     }
 
 
@@ -146,7 +146,6 @@ class Lemma
 
     /**
      * @param string $lemma
-     * @return void
      */
     public function setLemma($lemma)
     {
@@ -162,20 +161,12 @@ class Lemma
     }
 
 
-    /**
-     * @param Relation $relation
-     * @return void
-     */
     public function addRelation(Relation $relation)
     {
         $this->relations[] = $relation;
         $relation->setParent($this);
     }
 
-    /**
-     * @param Relation $relation
-     * @return void
-     */
     public function removeRelation(Relation $relation)
     {
         /*@var $removed Relation */
@@ -200,7 +191,7 @@ class Lemma
  */
 class Relation
 {
-    const CLASS_NAME = __CLASS__;
+    public const CLASS_NAME = __CLASS__;
 
     /**
      * @var int
@@ -231,10 +222,6 @@ class Relation
      */
     private $type;
 
-    /**
-     * @param Lemma $parent
-     * @return void
-     */
     public function setParent(Lemma $parent)
     {
         $this->parent = $parent;
@@ -248,23 +235,16 @@ class Relation
         return $this->parent;
     }
 
-    /**
-     * @return void
-     */
     public function removeParent()
     {
         if ($this->lemma !== null) {
             /*@var $phrase Lemma */
-            $lemma = $this->parent;
+            $lemma        = $this->parent;
             $this->parent = null;
             $lemma->removeRelation($this);
         }
     }
 
-    /**
-     * @param Lemma $child
-     * @return void
-     */
     public function setChild(Lemma $child)
     {
         $this->child = $child;
@@ -278,10 +258,6 @@ class Relation
         return $this->child;
     }
 
-    /**
-     * @param RelationType $type
-     * @return void
-     */
     public function setType(RelationType $type)
     {
         $this->type = $type;
@@ -295,14 +271,11 @@ class Relation
         return $this->type;
     }
 
-    /**
-     * @return void
-     */
     public function removeType()
     {
         if ($this->type !== null) {
             /*@var $phrase RelationType */
-            $type = $this->type;
+            $type       = $this->type;
             $this->type = null;
             $type->removeRelation($this);
         }
@@ -315,7 +288,7 @@ class Relation
  */
 class RelationType
 {
-    const CLASS_NAME = __CLASS__;
+    public const CLASS_NAME = __CLASS__;
 
     /**
      * @var int
@@ -345,7 +318,7 @@ class RelationType
 
     public function __construct()
     {
-        $relations = new \Doctrine\Common\Collections\ArrayCollection();
+        $relations = new ArrayCollection();
     }
 
     /**
@@ -358,7 +331,6 @@ class RelationType
 
     /**
      * @param string $type
-     * @return void
      */
     public function setType($type)
     {
@@ -375,7 +347,6 @@ class RelationType
 
     /**
      * @param string $abbreviation
-     * @return void
      */
     public function setAbbreviation($abbreviation)
     {
@@ -390,20 +361,12 @@ class RelationType
         return $this->abbreviation;
     }
 
-    /**
-     * @param Relation $relation
-     * @return void
-     */
     public function addRelation(Relation $relation)
     {
         $this->relations[] = $relation;
         $relation->setType($this);
     }
 
-    /**
-     * @param Relation $relation
-     * @return void
-     */
     public function removeRelation(Relation $relation)
     {
         /*@var $removed Relation */

@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\Tests\ORM\Functional\Ticket;
 
 use Doctrine\ORM\Annotation as ORM;
@@ -7,7 +9,7 @@ use Doctrine\Tests\OrmFunctionalTestCase;
 
 class Ticket4646InstanceOfParametricTest extends OrmFunctionalTestCase
 {
-    protected function setUp(): void
+    protected function setUp() : void
     {
         parent::setUp();
 
@@ -17,13 +19,13 @@ class Ticket4646InstanceOfParametricTest extends OrmFunctionalTestCase
         ]);
     }
 
-    public function testInstanceOf(): void
+    public function testInstanceOf() : void
     {
         $this->em->persist(new PersonTicket4646Parametric());
         $this->em->persist(new EmployeeTicket4646Parametric());
         $this->em->flush();
 
-        $dql = 'SELECT p FROM Doctrine\Tests\ORM\Functional\Ticket\PersonTicket4646Parametric p
+        $dql   = 'SELECT p FROM Doctrine\Tests\ORM\Functional\Ticket\PersonTicket4646Parametric p
                 WHERE p INSTANCE OF :parameter';
         $query = $this->em->createQuery($dql);
 
@@ -58,7 +60,7 @@ class PersonTicket4646Parametric
      */
     private $id;
 
-    public function getId(): ?int
+    public function getId() : ?int
     {
         return $this->id;
     }

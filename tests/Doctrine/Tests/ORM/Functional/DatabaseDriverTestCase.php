@@ -4,12 +4,18 @@ declare(strict_types=1);
 
 namespace Doctrine\Tests\ORM\Functional;
 
+use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\Mapping\ClassMetadataBuildingContext;
 use Doctrine\ORM\Mapping\ClassMetadataFactory;
 use Doctrine\ORM\Mapping\Driver\DatabaseDriver;
 use Doctrine\ORM\Reflection\ReflectionService;
 use Doctrine\Tests\OrmFunctionalTestCase;
-use Doctrine\ORM\Mapping\ClassMetadata;
+use function array_keys;
+use function array_map;
+use function count;
+use function implode;
+use function in_array;
+use function strtolower;
 
 /**
  * Common BaseClass for DatabaseDriver Tests
@@ -22,8 +28,8 @@ abstract class DatabaseDriverTestCase extends OrmFunctionalTestCase
             $this->createMock(ClassMetadataFactory::class),
             $this->createMock(ReflectionService::class)
         );
-        $sm = $this->em->getConnection()->getSchemaManager();
-        $driver = new DatabaseDriver($sm);
+        $sm                      = $this->em->getConnection()->getSchemaManager();
+        $driver                  = new DatabaseDriver($sm);
         $driver->setTables($entityTables, $manyTables);
 
         $metadatas = [];
@@ -49,14 +55,14 @@ abstract class DatabaseDriverTestCase extends OrmFunctionalTestCase
             $this->createMock(ClassMetadataFactory::class),
             $this->createMock(ReflectionService::class)
         );
-        $classNames = array_map('strtolower', $classNames);
-        $metadatas = [];
+        $classNames              = array_map('strtolower', $classNames);
+        $metadatas               = [];
 
-        $sm = $this->em->getConnection()->getSchemaManager();
+        $sm     = $this->em->getConnection()->getSchemaManager();
         $driver = new DatabaseDriver($sm);
 
         foreach ($driver->getAllClassNames() as $className) {
-            if (!in_array(strtolower($className), $classNames, true)) {
+            if (! in_array(strtolower($className), $classNames, true)) {
                 continue;
             }
 
@@ -67,8 +73,8 @@ abstract class DatabaseDriverTestCase extends OrmFunctionalTestCase
             $metadatas[$className] = $class;
         }
 
-        if (count($metadatas) != count($classNames)) {
-            $this->fail("Have not found all classes matching the names '" . implode(", ", $classNames) . "' only tables " . implode(", ", array_keys($metadatas)));
+        if (count($metadatas) !== count($classNames)) {
+            $this->fail("Have not found all classes matching the names '" . implode(', ', $classNames) . "' only tables " . implode(', ', array_keys($metadatas)));
         }
         return $metadatas;
     }

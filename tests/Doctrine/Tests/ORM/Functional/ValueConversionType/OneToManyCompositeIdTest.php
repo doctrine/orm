@@ -23,12 +23,12 @@ class OneToManyCompositeIdTest extends OrmFunctionalTestCase
 
         parent::setUp();
 
-        $inversed = new Entity\InversedOneToManyCompositeIdEntity();
-        $inversed->id1 = 'abc';
-        $inversed->id2 = 'def';
+        $inversed               = new Entity\InversedOneToManyCompositeIdEntity();
+        $inversed->id1          = 'abc';
+        $inversed->id2          = 'def';
         $inversed->someProperty = 'some value to be loaded';
 
-        $owning = new Entity\OwningManyToOneCompositeIdEntity();
+        $owning      = new Entity\OwningManyToOneCompositeIdEntity();
         $owning->id3 = 'ghi';
 
         $inversed->associatedEntities->add($owning);
