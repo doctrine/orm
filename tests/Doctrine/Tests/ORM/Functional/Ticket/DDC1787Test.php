@@ -12,7 +12,7 @@ use Doctrine\Tests\OrmFunctionalTestCase;
  */
 class DDC1787Test extends OrmFunctionalTestCase
 {
-    public function setUp()
+    public function setUp() : void
     {
         parent::setUp();
         $this->schemaTool->createSchema(
@@ -23,7 +23,7 @@ class DDC1787Test extends OrmFunctionalTestCase
         );
     }
 
-    public function testIssue()
+    public function testIssue() : void
     {
         $bar  = new DDC1787Bar();
         $bar2 = new DDC1787Bar();

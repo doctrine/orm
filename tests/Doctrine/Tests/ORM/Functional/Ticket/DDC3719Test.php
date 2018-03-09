@@ -11,7 +11,7 @@ use Doctrine\Tests\OrmFunctionalTestCase;
 
 class DDC3719Test extends OrmFunctionalTestCase
 {
-    public function setUp()
+    public function setUp() : void
     {
         $this->useModelSet('company');
         parent::setUp();
@@ -20,7 +20,7 @@ class DDC3719Test extends OrmFunctionalTestCase
     /**
      * @group DDC-3719
      */
-    public function testCriteriaOnNotOwningSide()
+    public function testCriteriaOnNotOwningSide() : void
     {
         $manager = new CompanyManager();
         $manager->setName('Gandalf');

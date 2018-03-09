@@ -14,7 +14,7 @@ class DDC849Test extends OrmFunctionalTestCase
     private $group1;
     private $group2;
 
-    public function setUp()
+    public function setUp() : void
     {
         $this->useModelSet('cms');
         parent::setUp();
@@ -42,7 +42,7 @@ class DDC849Test extends OrmFunctionalTestCase
         $this->user = $this->em->find(CmsUser::class, $this->user->getId());
     }
 
-    public function testRemoveContains()
+    public function testRemoveContains() : void
     {
         $group1 = $this->user->groups[0];
         $group2 = $this->user->groups[1];
@@ -57,7 +57,7 @@ class DDC849Test extends OrmFunctionalTestCase
         self::assertFalse($this->user->groups->contains($group2));
     }
 
-    public function testClearCount()
+    public function testClearCount() : void
     {
         $this->user->addGroup(new CmsGroup());
         self::assertCount(3, $this->user->groups);
@@ -68,7 +68,7 @@ class DDC849Test extends OrmFunctionalTestCase
         self::assertCount(0, $this->user->groups);
     }
 
-    public function testClearContains()
+    public function testClearContains() : void
     {
         $group1 = $this->user->groups[0];
         $group2 = $this->user->groups[1];

@@ -18,7 +18,7 @@ use function get_class;
  */
 class SecondLevelCacheSingleTableInheritanceTest extends SecondLevelCacheAbstractTest
 {
-    public function testUseSameRegion()
+    public function testUseSameRegion() : void
     {
         $attractionRegion = $this->cache->getEntityCacheRegion(Attraction::class);
         $restaurantRegion = $this->cache->getEntityCacheRegion(Restaurant::class);
@@ -30,7 +30,7 @@ class SecondLevelCacheSingleTableInheritanceTest extends SecondLevelCacheAbstrac
         self::assertEquals($attractionRegion->getName(), $barRegion->getName());
     }
 
-    public function testPutOnPersistSingleTableInheritance()
+    public function testPutOnPersistSingleTableInheritance() : void
     {
         $this->loadFixturesCountries();
         $this->loadFixturesStates();
@@ -43,7 +43,7 @@ class SecondLevelCacheSingleTableInheritanceTest extends SecondLevelCacheAbstrac
         self::assertTrue($this->cache->containsEntity(Bar::class, $this->attractions[1]->getId()));
     }
 
-    public function testCountaisRootClass()
+    public function testCountaisRootClass() : void
     {
         $this->loadFixturesCountries();
         $this->loadFixturesStates();
@@ -58,7 +58,7 @@ class SecondLevelCacheSingleTableInheritanceTest extends SecondLevelCacheAbstrac
         }
     }
 
-    public function testPutAndLoadEntities()
+    public function testPutAndLoadEntities() : void
     {
         $this->loadFixturesCountries();
         $this->loadFixturesStates();
@@ -119,7 +119,7 @@ class SecondLevelCacheSingleTableInheritanceTest extends SecondLevelCacheAbstrac
         self::assertEquals($entity2->getName(), $entity4->getName());
     }
 
-    public function testQueryCacheFindAll()
+    public function testQueryCacheFindAll() : void
     {
         $this->loadFixturesCountries();
         $this->loadFixturesStates();
@@ -151,7 +151,7 @@ class SecondLevelCacheSingleTableInheritanceTest extends SecondLevelCacheAbstrac
         }
     }
 
-    public function testShouldNotPutOneToManyRelationOnPersist()
+    public function testShouldNotPutOneToManyRelationOnPersist() : void
     {
         $this->loadFixturesCountries();
         $this->loadFixturesStates();
@@ -170,7 +170,7 @@ class SecondLevelCacheSingleTableInheritanceTest extends SecondLevelCacheAbstrac
         }
     }
 
-    public function testOneToManyRelationSingleTable()
+    public function testOneToManyRelationSingleTable() : void
     {
         $this->loadFixturesCountries();
         $this->loadFixturesStates();
@@ -216,7 +216,7 @@ class SecondLevelCacheSingleTableInheritanceTest extends SecondLevelCacheAbstrac
         self::assertEquals($this->attractions[1]->getName(), $entity->getAttractions()->get(1)->getName());
     }
 
-    public function testQueryCacheShouldBeEvictedOnTimestampUpdate()
+    public function testQueryCacheShouldBeEvictedOnTimestampUpdate() : void
     {
         $this->loadFixturesCountries();
         $this->loadFixturesStates();

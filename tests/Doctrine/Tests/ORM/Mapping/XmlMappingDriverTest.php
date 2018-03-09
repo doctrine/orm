@@ -30,7 +30,7 @@ class XmlMappingDriverTest extends AbstractMappingDriverTest
         return new XmlDriver(__DIR__ . DIRECTORY_SEPARATOR . 'xml');
     }
 
-    public function testClassTableInheritanceDiscriminatorMap()
+    public function testClassTableInheritanceDiscriminatorMap() : void
     {
         $mappingDriver = $this->loadDriver();
 
@@ -52,7 +52,7 @@ class XmlMappingDriverTest extends AbstractMappingDriverTest
      * @expectedException \Doctrine\ORM\Cache\CacheException
      * @expectedExceptionMessage Entity association field "Doctrine\Tests\ORM\Mapping\XMLSLC#foo" not configured as part of the second-level cache.
      */
-    public function testFailingSecondLevelCacheAssociation()
+    public function testFailingSecondLevelCacheAssociation() : void
     {
         $mappingDriver = $this->loadDriver();
 
@@ -61,7 +61,7 @@ class XmlMappingDriverTest extends AbstractMappingDriverTest
         $mappingDriver->loadMetadataForClass(XMLSLC::class, $class, $this->metadataBuildingContext);
     }
 
-    public function testIdentifierWithAssociationKey()
+    public function testIdentifierWithAssociationKey() : void
     {
         $driver  = $this->loadDriver();
         $em      = $this->getTestEntityManager();
@@ -83,7 +83,7 @@ class XmlMappingDriverTest extends AbstractMappingDriverTest
     /**
      * @group embedded
      */
-    public function testEmbeddableMapping()
+    public function testEmbeddableMapping() : void
     {
         $class = $this->createClassMetadata(Name::class);
 
@@ -96,7 +96,7 @@ class XmlMappingDriverTest extends AbstractMappingDriverTest
      * @group DDC-3477
      * @group DDC-1238
      */
-    public function testEmbeddedMappingsWithUseColumnPrefix()
+    public function testEmbeddedMappingsWithUseColumnPrefix() : void
     {
         $factory = new ClassMetadataFactory();
         $em      = $this->getTestEntityManager();
@@ -117,7 +117,7 @@ class XmlMappingDriverTest extends AbstractMappingDriverTest
      * @group DDC-3477
      * @group DDC-1238
      */
-    public function testEmbeddedMappingsWithFalseUseColumnPrefix()
+    public function testEmbeddedMappingsWithFalseUseColumnPrefix() : void
     {
         $factory = new ClassMetadataFactory();
         $em      = $this->getTestEntityManager();
@@ -134,7 +134,7 @@ class XmlMappingDriverTest extends AbstractMappingDriverTest
     /**
      * @group embedded
      */
-    public function testEmbeddedMapping()
+    public function testEmbeddedMapping() : void
     {
         $class = $this->createClassMetadata(Person::class);
 
@@ -158,7 +158,7 @@ class XmlMappingDriverTest extends AbstractMappingDriverTest
      * @expectedException \Doctrine\Common\Persistence\Mapping\MappingException
      * @expectedExceptionMessage Invalid mapping file 'Doctrine.Tests.Models.Generic.SerializationModel.dcm.xml' for class 'Doctrine\Tests\Models\Generic\SerializationModel'.
      */
-    public function testInvalidMappingFileException()
+    public function testInvalidMappingFileException() : void
     {
         $this->createClassMetadata(SerializationModel::class);
     }
@@ -168,7 +168,7 @@ class XmlMappingDriverTest extends AbstractMappingDriverTest
      * @dataProvider dataValidSchema
      * @group DDC-2429
      */
-    public function testValidateXmlSchema($xmlMappingFile)
+    public function testValidateXmlSchema($xmlMappingFile) : void
     {
         $xsdSchemaFile = __DIR__ . '/../../../../../doctrine-mapping.xsd';
         $dom           = new \DOMDocument('UTF-8');
@@ -197,7 +197,7 @@ class XmlMappingDriverTest extends AbstractMappingDriverTest
      * @expectedException \Doctrine\Common\Persistence\Mapping\MappingException
      * @expectedExceptionMessage Invalid mapping file 'Doctrine.Tests.Models.DDC889.DDC889Class.dcm.xml' for class 'Doctrine\Tests\Models\DDC889\DDC889Class'.
      */
-    public function testinvalidEntityOrMappedSuperClassShouldMentionParentClasses()
+    public function testinvalidEntityOrMappedSuperClassShouldMentionParentClasses() : void
     {
         $this->createClassMetadata(DDC889Class::class);
     }

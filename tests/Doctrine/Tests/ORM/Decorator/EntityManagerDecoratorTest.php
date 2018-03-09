@@ -19,7 +19,7 @@ class EntityManagerDecoratorTest extends DoctrineTestCase
     /** @var EntityManagerDecorator|\PHPUnit_Framework_MockObject_MockObject */
     private $decorator;
 
-    public function setUp()
+    public function setUp() : void
     {
         $this->wrapped   = $this->createMock(EntityManagerInterface::class);
         $this->decorator = new class($this->wrapped) extends EntityManagerDecorator {
@@ -78,7 +78,7 @@ class EntityManagerDecoratorTest extends DoctrineTestCase
     /**
      * @dataProvider getMethodParameters
      */
-    public function testAllMethodCallsAreDelegatedToTheWrappedInstance($method, array $parameters)
+    public function testAllMethodCallsAreDelegatedToTheWrappedInstance($method, array $parameters) : void
     {
         $stub = $this->wrapped
             ->expects(self::once())

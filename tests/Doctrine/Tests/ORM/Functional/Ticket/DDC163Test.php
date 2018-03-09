@@ -9,7 +9,7 @@ use Doctrine\Tests\OrmFunctionalTestCase;
 
 class DDC163Test extends OrmFunctionalTestCase
 {
-    protected function setUp()
+    protected function setUp() : void
     {
         $this->useModelSet('company');
         parent::setUp();
@@ -18,7 +18,7 @@ class DDC163Test extends OrmFunctionalTestCase
     /**
      * @group DDC-163
      */
-    public function testQueryWithOrConditionUsingTwoRelationOnSameEntity()
+    public function testQueryWithOrConditionUsingTwoRelationOnSameEntity() : void
     {
         $p1 = new CompanyPerson();
         $p1->setName('p1');

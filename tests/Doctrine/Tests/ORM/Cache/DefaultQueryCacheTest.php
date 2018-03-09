@@ -44,7 +44,7 @@ class DefaultQueryCacheTest extends OrmTestCase
     /** @var CacheFactoryDefaultQueryCacheTest */
     private $cacheFactory;
 
-    protected function setUp()
+    protected function setUp() : void
     {
         parent::setUp();
 
@@ -60,17 +60,17 @@ class DefaultQueryCacheTest extends OrmTestCase
             ->setCacheFactory($this->cacheFactory);
     }
 
-    public function testImplementQueryCache()
+    public function testImplementQueryCache() : void
     {
         self::assertInstanceOf(QueryCache::class, $this->queryCache);
     }
 
-    public function testGetRegion()
+    public function testGetRegion() : void
     {
         self::assertSame($this->region, $this->queryCache->getRegion());
     }
 
-    public function testClearShouldEvictRegion()
+    public function testClearShouldEvictRegion() : void
     {
         $this->queryCache->clear();
 
@@ -78,7 +78,7 @@ class DefaultQueryCacheTest extends OrmTestCase
         self::assertCount(1, $this->region->calls['evictAll']);
     }
 
-    public function testPutBasicQueryResult()
+    public function testPutBasicQueryResult() : void
     {
         $result = [];
         $uow    = $this->em->getUnitOfWork();
@@ -115,7 +115,7 @@ class DefaultQueryCacheTest extends OrmTestCase
         self::assertInstanceOf(QueryCacheEntry::class, $this->region->calls['put'][4]['entry']);
     }
 
-    public function testPutToOneAssociationQueryResult()
+    public function testPutToOneAssociationQueryResult() : void
     {
         $result = [];
         $uow    = $this->em->getUnitOfWork();
@@ -153,7 +153,7 @@ class DefaultQueryCacheTest extends OrmTestCase
         self::assertInstanceOf(QueryCacheKey::class, $this->region->calls['put'][8]['key']);
     }
 
-    public function testPutToOneAssociation2LevelsQueryResult()
+    public function testPutToOneAssociation2LevelsQueryResult() : void
     {
         $result = [];
         $uow    = $this->em->getUnitOfWork();
@@ -199,7 +199,7 @@ class DefaultQueryCacheTest extends OrmTestCase
         self::assertInstanceOf(QueryCacheKey::class, $this->region->calls['put'][12]['key']);
     }
 
-    public function testPutToOneAssociationNullQueryResult()
+    public function testPutToOneAssociationNullQueryResult() : void
     {
         $result = [];
         $uow    = $this->em->getUnitOfWork();
@@ -230,7 +230,7 @@ class DefaultQueryCacheTest extends OrmTestCase
         self::assertInstanceOf(QueryCacheKey::class, $this->region->calls['put'][4]['key']);
     }
 
-    public function testPutToManyAssociationQueryResult()
+    public function testPutToManyAssociationQueryResult() : void
     {
         $result = [];
         $uow    = $this->em->getUnitOfWork();
@@ -264,7 +264,7 @@ class DefaultQueryCacheTest extends OrmTestCase
         self::assertCount(13, $this->region->calls['put']);
     }
 
-    public function testGetBasicQueryResult()
+    public function testGetBasicQueryResult() : void
     {
         $rsm   = new ResultSetMappingBuilder($this->em);
         $key   = new QueryCacheKey('query.key1', 0);
@@ -303,7 +303,7 @@ class DefaultQueryCacheTest extends OrmTestCase
         self::assertEquals('Bar', $result[1]->getName());
     }
 
-    public function testGetWithAssociation()
+    public function testGetWithAssociation() : void
     {
         $rsm   = new ResultSetMappingBuilder($this->em);
         $key   = new QueryCacheKey('query.key1', 0);
@@ -342,7 +342,7 @@ class DefaultQueryCacheTest extends OrmTestCase
         self::assertEquals('Bar', $result[1]->getName());
     }
 
-    public function testCancelPutResultIfEntityPutFails()
+    public function testCancelPutResultIfEntityPutFails() : void
     {
         $result = [];
         $uow    = $this->em->getUnitOfWork();
@@ -369,7 +369,7 @@ class DefaultQueryCacheTest extends OrmTestCase
         self::assertCount(1, $this->region->calls['put']);
     }
 
-    public function testCancelPutResultIfAssociationEntityPutFails()
+    public function testCancelPutResultIfAssociationEntityPutFails() : void
     {
         $result = [];
         $uow    = $this->em->getUnitOfWork();
@@ -396,7 +396,7 @@ class DefaultQueryCacheTest extends OrmTestCase
         self::assertFalse($this->queryCache->put($key, $rsm, $result));
     }
 
-    public function testCancelPutToManyAssociationQueryResult()
+    public function testCancelPutToManyAssociationQueryResult() : void
     {
         $result = [];
         $uow    = $this->em->getUnitOfWork();
@@ -431,7 +431,7 @@ class DefaultQueryCacheTest extends OrmTestCase
         self::assertCount(2, $this->region->calls['put']);
     }
 
-    public function testIgnoreCacheNonGetMode()
+    public function testIgnoreCacheNonGetMode() : void
     {
         $rsm   = new ResultSetMappingBuilder($this->em);
         $key   = new QueryCacheKey('query.key1', 0, Cache::MODE_PUT);
@@ -449,7 +449,7 @@ class DefaultQueryCacheTest extends OrmTestCase
         self::assertNull($this->queryCache->get($key, $rsm));
     }
 
-    public function testIgnoreCacheNonPutMode()
+    public function testIgnoreCacheNonPutMode() : void
     {
         $result = [];
         $uow    = $this->em->getUnitOfWork();
@@ -472,7 +472,7 @@ class DefaultQueryCacheTest extends OrmTestCase
         self::assertFalse($this->queryCache->put($key, $rsm, $result));
     }
 
-    public function testGetShouldIgnoreOldQueryCacheEntryResult()
+    public function testGetShouldIgnoreOldQueryCacheEntryResult() : void
     {
         $rsm   = new ResultSetMappingBuilder($this->em);
         $key   = new QueryCacheKey('query.key1', 50);
@@ -505,7 +505,7 @@ class DefaultQueryCacheTest extends OrmTestCase
         self::assertNull($this->queryCache->get($key, $rsm));
     }
 
-    public function testGetShouldIgnoreNonQueryCacheEntryResult()
+    public function testGetShouldIgnoreNonQueryCacheEntryResult() : void
     {
         $rsm   = new ResultSetMappingBuilder($this->em);
         $key   = new QueryCacheKey('query.key1', 0);
@@ -536,7 +536,7 @@ class DefaultQueryCacheTest extends OrmTestCase
         self::assertNull($this->queryCache->get($key, $rsm));
     }
 
-    public function testGetShouldIgnoreMissingEntityQueryCacheEntry()
+    public function testGetShouldIgnoreMissingEntityQueryCacheEntry() : void
     {
         $rsm   = new ResultSetMappingBuilder($this->em);
         $key   = new QueryCacheKey('query.key1', 0);
@@ -555,7 +555,7 @@ class DefaultQueryCacheTest extends OrmTestCase
         self::assertNull($this->queryCache->get($key, $rsm));
     }
 
-    public function testGetAssociationValue()
+    public function testGetAssociationValue() : void
     {
         $reflection = new \ReflectionMethod($this->queryCache, 'getAssociationValue');
         $rsm        = new ResultSetMappingBuilder($this->em);
@@ -603,7 +603,7 @@ class DefaultQueryCacheTest extends OrmTestCase
      * @expectedException Doctrine\ORM\Cache\CacheException
      * @expectedExceptionMessage Second level cache does not support scalar results.
      */
-    public function testScalarResultException()
+    public function testScalarResultException() : void
     {
         $result = [];
         $key    = new QueryCacheKey('query.key1', 0);
@@ -618,7 +618,7 @@ class DefaultQueryCacheTest extends OrmTestCase
      * @expectedException Doctrine\ORM\Cache\CacheException
      * @expectedExceptionMessage Second level cache does not support multiple root entities.
      */
-    public function testSupportMultipleRootEntitiesException()
+    public function testSupportMultipleRootEntitiesException() : void
     {
         $result = [];
         $key    = new QueryCacheKey('query.key1', 0);
@@ -634,7 +634,7 @@ class DefaultQueryCacheTest extends OrmTestCase
      * @expectedException Doctrine\ORM\Cache\CacheException
      * @expectedExceptionMessage Entity "Doctrine\Tests\Models\Generic\BooleanModel" not configured as part of the second-level cache.
      */
-    public function testNotCacheableEntityException()
+    public function testNotCacheableEntityException() : void
     {
         $result = [];
         $key    = new QueryCacheKey('query.key1', 0);

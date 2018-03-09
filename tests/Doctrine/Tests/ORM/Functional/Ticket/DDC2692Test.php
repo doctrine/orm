@@ -18,7 +18,7 @@ class DDC2692Test extends OrmFunctionalTestCase
     /**
      * {@inheritDoc}
      */
-    protected function setUp()
+    protected function setUp() : void
     {
         parent::setUp();
 
@@ -34,7 +34,7 @@ class DDC2692Test extends OrmFunctionalTestCase
         $this->em->clear();
     }
 
-    public function testIsListenerCalledOnlyOnceOnPreFlush()
+    public function testIsListenerCalledOnlyOnceOnPreFlush() : void
     {
         $listener = $this->getMockBuilder(DDC2692Listener::class)
                          ->setMethods(['preFlush'])

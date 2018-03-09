@@ -9,7 +9,7 @@ use Doctrine\Tests\OrmFunctionalTestCase;
 
 class DDC513Test extends OrmFunctionalTestCase
 {
-    protected function setUp()
+    protected function setUp() : void
     {
         parent::setUp();
         $this->schemaTool->createSchema(
@@ -21,7 +21,7 @@ class DDC513Test extends OrmFunctionalTestCase
         );
     }
 
-    public function testIssue()
+    public function testIssue() : void
     {
         $q = $this->em->createQuery('select u from ' . __NAMESPACE__ . '\\DDC513OfferItem u left join u.price p');
 

@@ -28,7 +28,7 @@ class NativeQueryTest extends OrmFunctionalTestCase
 {
     private $platform;
 
-    protected function setUp()
+    protected function setUp() : void
     {
         $this->useModelSet('cms');
         $this->useModelSet('company');
@@ -38,7 +38,7 @@ class NativeQueryTest extends OrmFunctionalTestCase
         $this->platform = $this->em->getConnection()->getDatabasePlatform();
     }
 
-    public function testBasicNativeQuery()
+    public function testBasicNativeQuery() : void
     {
         $user = new CmsUser();
 
@@ -67,7 +67,7 @@ class NativeQueryTest extends OrmFunctionalTestCase
         self::assertEquals('Roman', $users[0]->name);
     }
 
-    public function testBasicNativeQueryWithMetaResult()
+    public function testBasicNativeQueryWithMetaResult() : void
     {
         $user = new CmsUser();
 
@@ -111,7 +111,7 @@ class NativeQueryTest extends OrmFunctionalTestCase
         self::assertInstanceOf(CmsUser::class, $addresses[0]->user);
     }
 
-    public function testJoinedOneToManyNativeQuery()
+    public function testJoinedOneToManyNativeQuery() : void
     {
         $user = new CmsUser();
 
@@ -157,7 +157,7 @@ class NativeQueryTest extends OrmFunctionalTestCase
         self::assertSame($phones[0]->getUser(), $users[0]);
     }
 
-    public function testJoinedOneToOneNativeQuery()
+    public function testJoinedOneToOneNativeQuery() : void
     {
         $user = new CmsUser();
 
@@ -207,7 +207,7 @@ class NativeQueryTest extends OrmFunctionalTestCase
         self::assertEquals('Berlin', $users[0]->getAddress()->getCity());
     }
 
-    public function testFluentInterface()
+    public function testFluentInterface() : void
     {
         $parameters = new ArrayCollection();
 
@@ -229,7 +229,7 @@ class NativeQueryTest extends OrmFunctionalTestCase
         self::assertSame($q, $q2);
     }
 
-    public function testJoinedOneToManyNativeQueryWithRSMBuilder()
+    public function testJoinedOneToManyNativeQueryWithRSMBuilder() : void
     {
         $user = new CmsUser();
 
@@ -285,7 +285,7 @@ class NativeQueryTest extends OrmFunctionalTestCase
         self::assertEquals($user->name, $phone->getUser()->getName());
     }
 
-    public function testJoinedOneToOneNativeQueryWithRSMBuilder()
+    public function testJoinedOneToOneNativeQueryWithRSMBuilder() : void
     {
         $user = new CmsUser();
 
@@ -346,7 +346,7 @@ class NativeQueryTest extends OrmFunctionalTestCase
     /**
      * @group rsm-sti
      */
-    public function testConcreteClassInSingleTableInheritanceSchemaWithRSMBuilderIsFine()
+    public function testConcreteClassInSingleTableInheritanceSchemaWithRSMBuilderIsFine() : void
     {
         $rsm = new ResultSetMappingBuilder($this->em);
 
@@ -358,7 +358,7 @@ class NativeQueryTest extends OrmFunctionalTestCase
     /**
      * @group rsm-sti
      */
-    public function testAbstractClassInSingleTableInheritanceSchemaWithRSMBuilderThrowsException()
+    public function testAbstractClassInSingleTableInheritanceSchemaWithRSMBuilderThrowsException() : void
     {
         $this->expectException(\InvalidArgumentException::class);
         $this->expectExceptionMessage('ResultSetMapping builder does not currently support your inheritance scheme.');
@@ -371,7 +371,7 @@ class NativeQueryTest extends OrmFunctionalTestCase
     /**
      * @expectedException \InvalidArgumentException
      */
-    public function testRSMBuilderThrowsExceptionOnColumnConflict()
+    public function testRSMBuilderThrowsExceptionOnColumnConflict() : void
     {
         $rsm = new ResultSetMappingBuilder($this->em);
 
@@ -382,7 +382,7 @@ class NativeQueryTest extends OrmFunctionalTestCase
     /**
      * @group PR-39
      */
-    public function testUnknownParentAliasThrowsException()
+    public function testUnknownParentAliasThrowsException() : void
     {
         $rsm = new ResultSetMappingBuilder($this->em);
 
@@ -402,7 +402,7 @@ class NativeQueryTest extends OrmFunctionalTestCase
     /**
      * @group DDC-2055
      */
-    public function testGenerateSelectClauseNoRenameSingleEntity()
+    public function testGenerateSelectClauseNoRenameSingleEntity() : void
     {
         $rsm = new ResultSetMappingBuilder($this->em);
 
@@ -416,7 +416,7 @@ class NativeQueryTest extends OrmFunctionalTestCase
     /**
      * @group DDC-2055
      */
-    public function testGenerateSelectClauseCustomRenames()
+    public function testGenerateSelectClauseCustomRenames() : void
     {
         $rsm = new ResultSetMappingBuilder($this->em);
 
@@ -437,7 +437,7 @@ class NativeQueryTest extends OrmFunctionalTestCase
     /**
      * @group DDC-2055
      */
-    public function testGenerateSelectClauseRenameTableAlias()
+    public function testGenerateSelectClauseRenameTableAlias() : void
     {
         $rsm = new ResultSetMappingBuilder($this->em);
 
@@ -451,7 +451,7 @@ class NativeQueryTest extends OrmFunctionalTestCase
     /**
      * @group DDC-2055
      */
-    public function testGenerateSelectClauseIncrement()
+    public function testGenerateSelectClauseIncrement() : void
     {
         $rsm = new ResultSetMappingBuilder($this->em, ResultSetMappingBuilder::COLUMN_RENAMING_INCREMENT);
 
@@ -465,7 +465,7 @@ class NativeQueryTest extends OrmFunctionalTestCase
     /**
      * @group DDC-2055
      */
-    public function testGenerateSelectClauseToString()
+    public function testGenerateSelectClauseToString() : void
     {
         $rsm = new ResultSetMappingBuilder($this->em, ResultSetMappingBuilder::COLUMN_RENAMING_INCREMENT);
 
@@ -477,7 +477,7 @@ class NativeQueryTest extends OrmFunctionalTestCase
     /**
      * @group DDC-3899
      */
-    public function testGenerateSelectClauseWithDiscriminatorColumn()
+    public function testGenerateSelectClauseWithDiscriminatorColumn() : void
     {
         $rsm = new ResultSetMappingBuilder($this->em, ResultSetMappingBuilder::COLUMN_RENAMING_INCREMENT);
 

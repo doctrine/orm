@@ -18,7 +18,7 @@ use function end;
  */
 class DDC2214Test extends OrmFunctionalTestCase
 {
-    protected function setUp()
+    protected function setUp() : void
     {
         parent::setUp();
 
@@ -30,7 +30,7 @@ class DDC2214Test extends OrmFunctionalTestCase
         );
     }
 
-    public function testIssue()
+    public function testIssue() : void
     {
         $foo = new DDC2214Foo();
         $bar = new DDC2214Bar();

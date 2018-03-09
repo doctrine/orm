@@ -32,7 +32,7 @@ class ProxiesLikeEntitiesTest extends OrmFunctionalTestCase
     /** @var string */
     private $proxyClassName;
 
-    protected function setUp()
+    protected function setUp() : void
     {
         parent::setUp();
         try {
@@ -62,7 +62,7 @@ class ProxiesLikeEntitiesTest extends OrmFunctionalTestCase
     /**
      * Verifies that a proxy can be successfully persisted and updated
      */
-    public function testPersistUpdate()
+    public function testPersistUpdate() : void
     {
         // Considering case (a)
         $metadata = $this->em->getClassMetadata(CmsUser::class);
@@ -88,7 +88,7 @@ class ProxiesLikeEntitiesTest extends OrmFunctionalTestCase
         $this->em->flush();
     }
 
-    public function testEntityWithIdentifier()
+    public function testEntityWithIdentifier() : void
     {
         $userId = $this->user->getId();
         /* @var $uninitializedProxy CmsUser|GhostObjectInterface */
@@ -108,7 +108,7 @@ class ProxiesLikeEntitiesTest extends OrmFunctionalTestCase
     /**
      * Verifying that proxies can be used without problems as query parameters
      */
-    public function testProxyAsDqlParameterPersist()
+    public function testProxyAsDqlParameterPersist() : void
     {
         $proxy = $this->em->getProxyFactory()->getProxy(
             $this->em->getClassMetadata(CmsUser::class),
@@ -132,7 +132,7 @@ class ProxiesLikeEntitiesTest extends OrmFunctionalTestCase
     /**
      * Verifying that proxies can be used without problems as query parameters
      */
-    public function testFindWithProxyName()
+    public function testFindWithProxyName() : void
     {
         self::assertNotEquals(CmsUser::class, $this->proxyClassName);
 
@@ -166,7 +166,7 @@ class ProxiesLikeEntitiesTest extends OrmFunctionalTestCase
         $this->em->clear();
     }
 
-    protected function tearDown()
+    protected function tearDown() : void
     {
         $this->em->createQuery('DELETE FROM Doctrine\Tests\Models\CMS\CmsUser u')->execute();
     }

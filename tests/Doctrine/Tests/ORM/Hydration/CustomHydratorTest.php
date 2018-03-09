@@ -9,7 +9,7 @@ use Doctrine\ORM\Internal\Hydration\AbstractHydrator;
 
 class CustomHydratorTest extends HydrationTestCase
 {
-    public function testCustomHydrator()
+    public function testCustomHydrator() : void
     {
         $em     = $this->getTestEntityManager();
         $config = $em->getConfiguration();

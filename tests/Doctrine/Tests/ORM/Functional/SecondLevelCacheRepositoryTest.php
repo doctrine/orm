@@ -13,7 +13,7 @@ use ProxyManager\Proxy\GhostObjectInterface;
  */
 class SecondLevelCacheRepositoryTest extends SecondLevelCacheAbstractTest
 {
-    public function testRepositoryCacheFind()
+    public function testRepositoryCacheFind() : void
     {
         $this->evictRegions();
         $this->loadFixturesCountries();
@@ -39,7 +39,7 @@ class SecondLevelCacheRepositoryTest extends SecondLevelCacheAbstractTest
         self::assertEquals(2, $this->secondLevelCacheLogger->getRegionHitCount($this->getEntityRegion(Country::class)));
     }
 
-    public function testRepositoryCacheFindAll()
+    public function testRepositoryCacheFindAll() : void
     {
         $this->loadFixturesCountries();
         $this->evictRegions();
@@ -70,7 +70,7 @@ class SecondLevelCacheRepositoryTest extends SecondLevelCacheAbstractTest
         self::assertTrue($this->cache->containsEntity(Country::class, $this->countries[1]->getId()));
     }
 
-    public function testRepositoryCacheFindAllInvalidation()
+    public function testRepositoryCacheFindAllInvalidation() : void
     {
         $this->loadFixturesCountries();
         $this->evictRegions();
@@ -117,7 +117,7 @@ class SecondLevelCacheRepositoryTest extends SecondLevelCacheAbstractTest
         self::assertEquals($queryCount + 1, $this->getCurrentQueryCount());
     }
 
-    public function testRepositoryCacheFindBy()
+    public function testRepositoryCacheFindBy() : void
     {
         $this->loadFixturesCountries();
         $this->evictRegions();
@@ -147,7 +147,7 @@ class SecondLevelCacheRepositoryTest extends SecondLevelCacheAbstractTest
         self::assertTrue($this->cache->containsEntity(Country::class, $this->countries[0]->getId()));
     }
 
-    public function testRepositoryCacheFindOneBy()
+    public function testRepositoryCacheFindOneBy() : void
     {
         $this->loadFixturesCountries();
         $this->evictRegions();
@@ -176,7 +176,7 @@ class SecondLevelCacheRepositoryTest extends SecondLevelCacheAbstractTest
         self::assertTrue($this->cache->containsEntity(Country::class, $this->countries[0]->getId()));
     }
 
-    public function testRepositoryCacheFindAllToOneAssociation()
+    public function testRepositoryCacheFindAllToOneAssociation() : void
     {
         $this->loadFixturesCountries();
         $this->loadFixturesStates();

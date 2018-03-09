@@ -15,7 +15,7 @@ use Doctrine\Tests\OrmFunctionalTestCase;
  */
 class DDC1884Test extends OrmFunctionalTestCase
 {
-    protected function setUp()
+    protected function setUp() : void
     {
         $this->useModelSet('taxi');
         parent::setUp();
@@ -98,7 +98,7 @@ class DDC1884Test extends OrmFunctionalTestCase
      * 1) Ride contains only columns that are part of its composite primary key
      * 2) We use fetch joins here
      */
-    public function testSelectFromInverseSideWithCompositePkAndSolelyIdentifierColumnsUsingFetchJoins()
+    public function testSelectFromInverseSideWithCompositePkAndSolelyIdentifierColumnsUsingFetchJoins() : void
     {
         $qb = $this->em->createQueryBuilder();
 
@@ -120,7 +120,7 @@ class DDC1884Test extends OrmFunctionalTestCase
      * 1) PaidRide contains an extra column that is not part of the composite primary key
      * 2) Again we will use fetch joins
      */
-    public function testSelectFromInverseSideWithCompositePkUsingFetchJoins()
+    public function testSelectFromInverseSideWithCompositePkUsingFetchJoins() : void
     {
         $qb = $this->em->createQueryBuilder();
 
@@ -140,7 +140,7 @@ class DDC1884Test extends OrmFunctionalTestCase
     /**
      * The other way around will fail too
      */
-    public function testSelectFromOwningSideUsingFetchJoins()
+    public function testSelectFromOwningSideUsingFetchJoins() : void
     {
         $qb = $this->em->createQueryBuilder();
 

@@ -15,7 +15,7 @@ use Doctrine\Tests\OrmFunctionalTestCase;
  */
 class DDC2230Test extends OrmFunctionalTestCase
 {
-    protected function setUp()
+    protected function setUp() : void
     {
         parent::setUp();
 
@@ -28,7 +28,7 @@ class DDC2230Test extends OrmFunctionalTestCase
         }
     }
 
-    public function testNotifyTrackingCalledOnProxyInitialization()
+    public function testNotifyTrackingCalledOnProxyInitialization() : void
     {
         $insertedAddress = new DDC2230Address();
 

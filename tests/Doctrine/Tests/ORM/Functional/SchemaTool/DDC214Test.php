@@ -19,7 +19,7 @@ class DDC214Test extends OrmFunctionalTestCase
 {
     private $classes = [];
 
-    public function setUp()
+    public function setUp() : void
     {
         parent::setUp();
 
@@ -33,7 +33,7 @@ class DDC214Test extends OrmFunctionalTestCase
     /**
      * @group DDC-214
      */
-    public function testCmsAddressModel()
+    public function testCmsAddressModel() : void
     {
         $this->classes = [
             Models\CMS\CmsUser::class,
@@ -50,7 +50,7 @@ class DDC214Test extends OrmFunctionalTestCase
     /**
      * @group DDC-214
      */
-    public function testCompanyModel()
+    public function testCompanyModel() : void
     {
         $this->classes = [
             Models\Company\CompanyPerson::class,

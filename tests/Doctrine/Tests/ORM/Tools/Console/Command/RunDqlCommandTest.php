@@ -29,7 +29,7 @@ class RunDqlCommandTest extends OrmFunctionalTestCase
     /** @var CommandTester */
     private $tester;
 
-    protected function setUp()
+    protected function setUp() : void
     {
         $this->useModelSet('generic');
 
@@ -44,12 +44,12 @@ class RunDqlCommandTest extends OrmFunctionalTestCase
         $this->tester = new CommandTester($this->command);
     }
 
-    public function testCommandName()
+    public function testCommandName() : void
     {
         self::assertSame($this->command, $this->application->get('orm:run-dql'));
     }
 
-    public function testWillRunQuery()
+    public function testWillRunQuery() : void
     {
         $this->em->persist(new DateTimeModel());
         $this->em->flush();
@@ -67,7 +67,7 @@ class RunDqlCommandTest extends OrmFunctionalTestCase
         self::assertContains(DateTimeModel::class, $this->tester->getDisplay());
     }
 
-    public function testWillShowQuery()
+    public function testWillShowQuery() : void
     {
         $this->em->persist(new DateTimeModel());
         $this->em->flush();

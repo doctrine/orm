@@ -14,14 +14,14 @@ use Doctrine\Tests\OrmFunctionalTestCase;
  */
 class OneToOneOrphanRemovalTest extends OrmFunctionalTestCase
 {
-    protected function setUp()
+    protected function setUp() : void
     {
         $this->useModelSet('cms');
 
         parent::setUp();
     }
 
-    public function testOrphanRemoval()
+    public function testOrphanRemoval() : void
     {
         $user           = new CmsUser();
         $user->status   = 'dev';
@@ -59,7 +59,7 @@ class OneToOneOrphanRemovalTest extends OrmFunctionalTestCase
         self::assertCount(0, $result, 'CmsAddress should be removed by orphanRemoval');
     }
 
-    public function testOrphanRemovalWhenUnlink()
+    public function testOrphanRemovalWhenUnlink() : void
     {
         $user           = new CmsUser();
         $user->status   = 'dev';

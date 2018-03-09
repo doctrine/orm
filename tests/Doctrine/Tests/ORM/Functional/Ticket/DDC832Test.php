@@ -10,7 +10,7 @@ use Doctrine\Tests\OrmFunctionalTestCase;
 
 class DDC832Test extends OrmFunctionalTestCase
 {
-    public function setUp()
+    public function setUp() : void
     {
         parent::setUp();
 
@@ -34,7 +34,7 @@ class DDC832Test extends OrmFunctionalTestCase
         }
     }
 
-    public function tearDown()
+    public function tearDown() : void
     {
         /* @var $sm \Doctrine\DBAL\Schema\AbstractSchemaManager */
         $platform = $this->em->getConnection()->getDatabasePlatform();
@@ -49,7 +49,7 @@ class DDC832Test extends OrmFunctionalTestCase
     /**
      * @group DDC-832
      */
-    public function testQuotedTableBasicUpdate()
+    public function testQuotedTableBasicUpdate() : void
     {
         $like = new DDC832Like('test');
         $this->em->persist($like);
@@ -65,7 +65,7 @@ class DDC832Test extends OrmFunctionalTestCase
     /**
      * @group DDC-832
      */
-    public function testQuotedTableBasicRemove()
+    public function testQuotedTableBasicRemove() : void
     {
         $like = new DDC832Like('test');
         $this->em->persist($like);
@@ -83,7 +83,7 @@ class DDC832Test extends OrmFunctionalTestCase
     /**
      * @group DDC-832
      */
-    public function testQuotedTableJoinedUpdate()
+    public function testQuotedTableJoinedUpdate() : void
     {
         $index = new DDC832JoinedIndex('test');
         $this->em->persist($index);
@@ -99,7 +99,7 @@ class DDC832Test extends OrmFunctionalTestCase
     /**
      * @group DDC-832
      */
-    public function testQuotedTableJoinedRemove()
+    public function testQuotedTableJoinedRemove() : void
     {
         $index = new DDC832JoinedIndex('test');
         $this->em->persist($index);
@@ -117,7 +117,7 @@ class DDC832Test extends OrmFunctionalTestCase
     /**
      * @group DDC-832
      */
-    public function testQuotedTableJoinedChildUpdate()
+    public function testQuotedTableJoinedChildUpdate() : void
     {
         $index = new DDC832JoinedTreeIndex('test', 1, 2);
         $this->em->persist($index);
@@ -133,7 +133,7 @@ class DDC832Test extends OrmFunctionalTestCase
     /**
      * @group DDC-832
      */
-    public function testQuotedTableJoinedChildRemove()
+    public function testQuotedTableJoinedChildRemove() : void
     {
         $index = new DDC832JoinedTreeIndex('test', 1, 2);
         $this->em->persist($index);

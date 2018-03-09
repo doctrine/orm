@@ -15,7 +15,7 @@ use function uniqid;
  */
 class SecondLevelCacheTest extends SecondLevelCacheAbstractTest
 {
-    public function testPutOnPersist()
+    public function testPutOnPersist() : void
     {
         $this->loadFixturesCountries();
         $this->em->clear();
@@ -26,7 +26,7 @@ class SecondLevelCacheTest extends SecondLevelCacheAbstractTest
         self::assertEquals(2, $this->secondLevelCacheLogger->getRegionPutCount($this->getEntityRegion(Country::class)));
     }
 
-    public function testPutAndLoadEntities()
+    public function testPutAndLoadEntities() : void
     {
         $this->loadFixturesCountries();
         $this->em->clear();
@@ -75,7 +75,7 @@ class SecondLevelCacheTest extends SecondLevelCacheAbstractTest
         self::assertEquals($c2->getName(), $c4->getName());
     }
 
-    public function testRemoveEntities()
+    public function testRemoveEntities() : void
     {
         $this->loadFixturesCountries();
         $this->em->clear();
@@ -121,7 +121,7 @@ class SecondLevelCacheTest extends SecondLevelCacheAbstractTest
         self::assertEquals(2, $this->secondLevelCacheLogger->getMissCount());
     }
 
-    public function testUpdateEntities()
+    public function testUpdateEntities() : void
     {
         $this->loadFixturesCountries();
         $this->loadFixturesStates();
@@ -197,7 +197,7 @@ class SecondLevelCacheTest extends SecondLevelCacheAbstractTest
         self::assertEquals(2, $this->secondLevelCacheLogger->getRegionHitCount($this->getEntityRegion(State::class)));
     }
 
-    public function testPostFlushFailure()
+    public function testPostFlushFailure() : void
     {
         $listener = new ListenerSecondLevelCacheTest(
             [
@@ -225,7 +225,7 @@ class SecondLevelCacheTest extends SecondLevelCacheAbstractTest
         }
     }
 
-    public function testPostUpdateFailure()
+    public function testPostUpdateFailure() : void
     {
         $this->loadFixturesCountries();
         $this->loadFixturesStates();
@@ -273,7 +273,7 @@ class SecondLevelCacheTest extends SecondLevelCacheAbstractTest
         self::assertEquals($stateName, $state->getName());
     }
 
-    public function testPostRemoveFailure()
+    public function testPostRemoveFailure() : void
     {
         $this->loadFixturesCountries();
         $this->em->clear();
@@ -315,7 +315,7 @@ class SecondLevelCacheTest extends SecondLevelCacheAbstractTest
         self::assertInstanceOf(Country::class, $this->em->find(Country::class, $countryId));
     }
 
-    public function testCachedNewEntityExists()
+    public function testCachedNewEntityExists() : void
     {
         $this->loadFixturesCountries();
 

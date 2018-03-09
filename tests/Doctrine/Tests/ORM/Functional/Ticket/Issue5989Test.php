@@ -14,13 +14,13 @@ use Doctrine\Tests\OrmFunctionalTestCase;
  */
 class Issue5989Test extends OrmFunctionalTestCase
 {
-    public function setUp()
+    public function setUp() : void
     {
         $this->useModelSet('issue5989');
         parent::setUp();
     }
 
-    public function testSimpleArrayTypeHydratedCorrectlyInJoinedInheritance()
+    public function testSimpleArrayTypeHydratedCorrectlyInJoinedInheritance() : void
     {
         $manager = new Issue5989Manager();
 

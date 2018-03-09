@@ -9,14 +9,14 @@ use Doctrine\Tests\OrmTestCase;
 
 class LexerTest extends OrmTestCase
 {
-    protected function setUp()
+    protected function setUp() : void
     {
     }
 
     /**
      * @dataProvider provideTokens
      */
-    public function testScannerRecognizesTokens($type, $value)
+    public function testScannerRecognizesTokens($type, $value) : void
     {
         $lexer = new Lexer($value);
 
@@ -27,7 +27,7 @@ class LexerTest extends OrmTestCase
         self::assertEquals($value, $token['value']);
     }
 
-    public function testScannerRecognizesTerminalString()
+    public function testScannerRecognizesTerminalString() : void
     {
         /*
          * "all" looks like an identifier, but in fact it's a reserved word
@@ -43,7 +43,7 @@ class LexerTest extends OrmTestCase
         self::assertEquals(Lexer::T_ALL, $token['type']);
     }
 
-    public function testScannerRecognizesDecimalInteger()
+    public function testScannerRecognizesDecimalInteger() : void
     {
         $lexer = new Lexer('1234');
         $lexer->moveNext();
@@ -52,7 +52,7 @@ class LexerTest extends OrmTestCase
         self::assertEquals(1234, $token['value']);
     }
 
-    public function testScannerRecognizesFloat()
+    public function testScannerRecognizesFloat() : void
     {
         $lexer = new Lexer('1.234');
         $lexer->moveNext();
@@ -61,7 +61,7 @@ class LexerTest extends OrmTestCase
         self::assertEquals(1.234, $token['value']);
     }
 
-    public function testScannerRecognizesFloatWithExponent()
+    public function testScannerRecognizesFloatWithExponent() : void
     {
         $lexer = new Lexer('1.2e3');
         $lexer->moveNext();
@@ -70,7 +70,7 @@ class LexerTest extends OrmTestCase
         self::assertEquals(1.2e3, $token['value']);
     }
 
-    public function testScannerRecognizesFloatWithExponent2()
+    public function testScannerRecognizesFloatWithExponent2() : void
     {
         $lexer = new Lexer('0.2e3');
         $lexer->moveNext();
@@ -79,7 +79,7 @@ class LexerTest extends OrmTestCase
         self::assertEquals(.2e3, $token['value']);
     }
 
-    public function testScannerRecognizesFloatWithNegativeExponent()
+    public function testScannerRecognizesFloatWithNegativeExponent() : void
     {
         $lexer = new Lexer('7E-10');
         $lexer->moveNext();
@@ -88,7 +88,7 @@ class LexerTest extends OrmTestCase
         self::assertEquals(7E-10, $token['value']);
     }
 
-    public function testScannerRecognizesFloatBig()
+    public function testScannerRecognizesFloatBig() : void
     {
         $lexer = new Lexer('123456789.01');
         $lexer->moveNext();
@@ -97,7 +97,7 @@ class LexerTest extends OrmTestCase
         self::assertEquals(1.2345678901e8, $token['value']);
     }
 
-    public function testScannerRecognizesFloatContainingWhitespace()
+    public function testScannerRecognizesFloatContainingWhitespace() : void
     {
         $lexer = new Lexer('-   1.234e2');
         $lexer->moveNext();
@@ -112,7 +112,7 @@ class LexerTest extends OrmTestCase
         self::assertEquals(1.234e2, $token['value']);
     }
 
-    public function testScannerRecognizesStringContainingWhitespace()
+    public function testScannerRecognizesStringContainingWhitespace() : void
     {
         $lexer = new Lexer("'This is a string.'");
         $lexer->moveNext();
@@ -121,7 +121,7 @@ class LexerTest extends OrmTestCase
         self::assertEquals('This is a string.', $token['value']);
     }
 
-    public function testScannerRecognizesStringContainingSingleQuotes()
+    public function testScannerRecognizesStringContainingSingleQuotes() : void
     {
         $lexer = new Lexer("'abc''defg'''");
         $lexer->moveNext();
@@ -130,7 +130,7 @@ class LexerTest extends OrmTestCase
         self::assertEquals("abc'defg'", $token['value']);
     }
 
-    public function testScannerRecognizesInputParameter()
+    public function testScannerRecognizesInputParameter() : void
     {
         $lexer = new Lexer('?1');
         $lexer->moveNext();
@@ -139,7 +139,7 @@ class LexerTest extends OrmTestCase
         self::assertEquals('?1', $token['value']);
     }
 
-    public function testScannerRecognizesNamedInputParameter()
+    public function testScannerRecognizesNamedInputParameter() : void
     {
         $lexer = new Lexer(':name');
         $lexer->moveNext();
@@ -148,7 +148,7 @@ class LexerTest extends OrmTestCase
         self::assertEquals(':name', $token['value']);
     }
 
-    public function testScannerRecognizesNamedInputParameterStartingWithUnderscore()
+    public function testScannerRecognizesNamedInputParameterStartingWithUnderscore() : void
     {
         $lexer = new Lexer(':_name');
         $lexer->moveNext();
@@ -157,7 +157,7 @@ class LexerTest extends OrmTestCase
         self::assertEquals(':_name', $token['value']);
     }
 
-    public function testScannerTokenizesASimpleQueryCorrectly()
+    public function testScannerTokenizesASimpleQueryCorrectly() : void
     {
         $dql   = "SELECT u FROM My\Namespace\User u WHERE u.name = 'Jack O''Neil'";
         $lexer = new Lexer($dql);

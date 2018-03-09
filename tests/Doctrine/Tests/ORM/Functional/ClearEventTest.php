@@ -13,7 +13,7 @@ use Doctrine\Tests\OrmFunctionalTestCase;
  */
 class ClearEventTest extends OrmFunctionalTestCase
 {
-    public function testEventIsCalledOnClear()
+    public function testEventIsCalledOnClear() : void
     {
         $listener = new OnClearListener();
         $this->em->getEventManager()->addEventListener(Events::onClear, $listener);

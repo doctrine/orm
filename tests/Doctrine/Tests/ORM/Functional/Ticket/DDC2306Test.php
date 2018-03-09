@@ -18,7 +18,7 @@ class DDC2306Test extends OrmFunctionalTestCase
     /**
      * {@inheritDoc}
      */
-    protected function setUp()
+    protected function setUp() : void
     {
         parent::setUp();
 
@@ -44,7 +44,7 @@ class DDC2306Test extends OrmFunctionalTestCase
      * As a result, a refresh requested for an entity `Foo` with identifier `123` may cause a proxy
      * of type `Bar` with identifier `123` to be marked as un-managed.
      */
-    public function testIssue()
+    public function testIssue() : void
     {
         $zone          = new DDC2306Zone();
         $user          = new DDC2306User();

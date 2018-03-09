@@ -20,7 +20,7 @@ class DDC2790Test extends OrmFunctionalTestCase
     /**
      * {@inheritDoc}
      */
-    protected function setUp()
+    protected function setUp() : void
     {
         $this->useModelSet('cms');
         parent::setUp();
@@ -30,7 +30,7 @@ class DDC2790Test extends OrmFunctionalTestCase
      * Verifies that entities scheduled for deletion are not treated as updated by UoW,
      * even if their properties are changed after the remove() call
      */
-    public function testIssue()
+    public function testIssue() : void
     {
         $this->em->getEventManager()->addEventListener(Events::onFlush, new OnFlushListener());
 

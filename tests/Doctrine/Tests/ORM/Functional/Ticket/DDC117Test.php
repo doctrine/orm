@@ -27,7 +27,7 @@ class DDC117Test extends OrmFunctionalTestCase
     private $translation;
     private $articleDetails;
 
-    protected function setUp()
+    protected function setUp() : void
     {
         $this->useModelSet('ddc117');
         parent::setUp();
@@ -58,7 +58,7 @@ class DDC117Test extends OrmFunctionalTestCase
     /**
      * @group DDC-117
      */
-    public function testAssociationOnlyCompositeKey()
+    public function testAssociationOnlyCompositeKey() : void
     {
         $idCriteria = ['source' => $this->article1->id(), 'target' => $this->article2->id()];
 
@@ -97,7 +97,7 @@ class DDC117Test extends OrmFunctionalTestCase
     /**
      * @group DDC-117
      */
-    public function testUpdateAssociationEntity()
+    public function testUpdateAssociationEntity() : void
     {
         $idCriteria = ['source' => $this->article1->id(), 'target' => $this->article2->id()];
 
@@ -115,7 +115,7 @@ class DDC117Test extends OrmFunctionalTestCase
     /**
      * @group DDC-117
      */
-    public function testFetchDql()
+    public function testFetchDql() : void
     {
         $dql  = 'SELECT r, s FROM Doctrine\Tests\Models\DDC117\DDC117Reference r JOIN r.source s WHERE s.title = ?1';
         $refs = $this->em->createQuery($dql)->setParameter(1, 'Foo')->getResult();
@@ -131,7 +131,7 @@ class DDC117Test extends OrmFunctionalTestCase
     /**
      * @group DDC-117
      */
-    public function testRemoveCompositeElement()
+    public function testRemoveCompositeElement() : void
     {
         $idCriteria = ['source' => $this->article1->id(), 'target' => $this->article2->id()];
 
@@ -148,7 +148,7 @@ class DDC117Test extends OrmFunctionalTestCase
      * @group DDC-117
      * @group non-cacheable
      */
-    public function testDqlRemoveCompositeElement()
+    public function testDqlRemoveCompositeElement() : void
     {
         $idCriteria = ['source' => $this->article1->id(), 'target' => $this->article2->id()];
 
@@ -164,7 +164,7 @@ class DDC117Test extends OrmFunctionalTestCase
     /**
      * @group DDC-117
      */
-    public function testInverseSideAccess()
+    public function testInverseSideAccess() : void
     {
         $this->article1 = $this->em->find(DDC117Article::class, $this->article1->id());
 
@@ -193,7 +193,7 @@ class DDC117Test extends OrmFunctionalTestCase
     /**
      * @group DDC-117
      */
-    public function testMixedCompositeKey()
+    public function testMixedCompositeKey() : void
     {
         $idCriteria = ['article' => $this->article1->id(), 'language' => 'en'];
 
@@ -216,7 +216,7 @@ class DDC117Test extends OrmFunctionalTestCase
     /**
      * @group DDC-117
      */
-    public function testMixedCompositeKeyViolateUniqueness()
+    public function testMixedCompositeKeyViolateUniqueness() : void
     {
         $this->article1 = $this->em->find(DDC117Article::class, $this->article1->id());
         $this->article1->addTranslation('en', 'Bar');
@@ -236,7 +236,7 @@ class DDC117Test extends OrmFunctionalTestCase
     /**
      * @group DDC-117
      */
-    public function testOneToOneForeignObjectId()
+    public function testOneToOneForeignObjectId() : void
     {
         $this->article1 = new DDC117Article('Foo');
         $this->em->persist($this->article1);
@@ -258,7 +258,7 @@ class DDC117Test extends OrmFunctionalTestCase
     /**
      * @group DDC-117
      */
-    public function testOneToOneCascadeRemove()
+    public function testOneToOneCascadeRemove() : void
     {
         $article = $this->em->find(get_class($this->article1), $this->article1->id());
         $this->em->remove($article);
@@ -270,7 +270,7 @@ class DDC117Test extends OrmFunctionalTestCase
     /**
      * @group DDC-117
      */
-    public function testOneToOneCascadePersist()
+    public function testOneToOneCascadePersist() : void
     {
         if (! $this->em->getConnection()->getDatabasePlatform()->prefersSequences()) {
             $this->markTestSkipped('Test only works with databases that prefer sequences as ID strategy.');
@@ -288,7 +288,7 @@ class DDC117Test extends OrmFunctionalTestCase
     /**
      * @group DDC-117
      */
-    public function testReferencesToForeignKeyEntities()
+    public function testReferencesToForeignKeyEntities() : void
     {
         $idCriteria = ['source' => $this->article1->id(), 'target' => $this->article2->id()];
         $reference  = $this->em->find(DDC117Reference::class, $idCriteria);
@@ -311,7 +311,7 @@ class DDC117Test extends OrmFunctionalTestCase
     /**
      * @group DDC-117
      */
-    public function testLoadOneToManyCollectionOfForeignKeyEntities()
+    public function testLoadOneToManyCollectionOfForeignKeyEntities() : void
     {
         /* @var $article DDC117Article */
         $article = $this->em->find(get_class($this->article1), $this->article1->id());
@@ -325,7 +325,7 @@ class DDC117Test extends OrmFunctionalTestCase
     /**
      * @group DDC-117
      */
-    public function testLoadManyToManyCollectionOfForeignKeyEntities()
+    public function testLoadManyToManyCollectionOfForeignKeyEntities() : void
     {
         $editor = $this->loadEditorFixture();
 
@@ -344,7 +344,7 @@ class DDC117Test extends OrmFunctionalTestCase
     /**
      * @group DDC-117
      */
-    public function testClearManyToManyCollectionOfForeignKeyEntities()
+    public function testClearManyToManyCollectionOfForeignKeyEntities() : void
     {
         $editor = $this->loadEditorFixture();
         self::assertCount(3, $editor->reviewingTranslations);
@@ -360,7 +360,7 @@ class DDC117Test extends OrmFunctionalTestCase
     /**
      * @group DDC-117
      */
-    public function testLoadInverseManyToManyCollection()
+    public function testLoadInverseManyToManyCollection() : void
     {
         $editor = $this->loadEditorFixture();
 
@@ -387,7 +387,7 @@ class DDC117Test extends OrmFunctionalTestCase
     /**
      * @group DDC-117
      */
-    public function testLoadOneToManyOfSourceEntityWithAssociationIdentifier()
+    public function testLoadOneToManyOfSourceEntityWithAssociationIdentifier() : void
     {
         $editor = $this->loadEditorFixture();
 
@@ -435,7 +435,7 @@ class DDC117Test extends OrmFunctionalTestCase
     /**
      * @group DDC-1652
      */
-    public function testArrayHydrationWithCompositeKey()
+    public function testArrayHydrationWithCompositeKey() : void
     {
         $dql    = 'SELECT r,s,t FROM Doctrine\Tests\Models\DDC117\DDC117Reference r INNER JOIN r.source s INNER JOIN r.target t';
         $before = count($this->em->createQuery($dql)->getResult());
@@ -463,7 +463,7 @@ class DDC117Test extends OrmFunctionalTestCase
     /**
      * @group DDC-2246
      */
-    public function testGetEntityState()
+    public function testGetEntityState() : void
     {
         if ($this->isSecondLevelCacheEnabled) {
             $this->markTestIncomplete('Second level cache - not supported yet');
@@ -484,7 +484,7 @@ class DDC117Test extends OrmFunctionalTestCase
     /**
      * @group DDC-117
      */
-    public function testIndexByOnCompositeKeyField()
+    public function testIndexByOnCompositeKeyField() : void
     {
         $article = $this->em->find(DDC117Article::class, $this->article1->id());
 

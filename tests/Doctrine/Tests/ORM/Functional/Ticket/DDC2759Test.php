@@ -15,7 +15,7 @@ class DDC2759Test extends OrmFunctionalTestCase
     /**
      * {@inheritDoc}
      */
-    protected function setUp()
+    protected function setUp() : void
     {
         parent::setUp();
 
@@ -54,7 +54,7 @@ class DDC2759Test extends OrmFunctionalTestCase
         $this->em->clear();
     }
 
-    public function testCorrectNumberOfAssociationsIsReturned()
+    public function testCorrectNumberOfAssociationsIsReturned() : void
     {
         $repository = $this->em->getRepository(DDC2759Qualification::class);
 

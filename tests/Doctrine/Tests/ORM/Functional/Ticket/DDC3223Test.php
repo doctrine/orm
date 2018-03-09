@@ -13,7 +13,7 @@ use ProxyManager\Proxy\GhostObjectInterface;
  */
 class DDC3223Test extends OrmFunctionalTestCase
 {
-    protected function setUp()
+    protected function setUp() : void
     {
         parent::setUp();
 
@@ -27,7 +27,7 @@ class DDC3223Test extends OrmFunctionalTestCase
         );
     }
 
-    public function testIssueGetId()
+    public function testIssueGetId() : void
     {
         $profileStatus              = new ProfileStatus();
         $participant                = new Journalist();

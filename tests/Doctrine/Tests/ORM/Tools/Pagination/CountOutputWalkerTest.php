@@ -12,7 +12,7 @@ class CountOutputWalkerTest extends PaginationTestCase
     /**
      * @dataProvider provideDataForCountQuery
      */
-    public function testCountQuery($dql, $sql)
+    public function testCountQuery($dql, $sql) : void
     {
         $query = $this->entityManager->createQuery($dql);
 
@@ -48,7 +48,7 @@ class CountOutputWalkerTest extends PaginationTestCase
         ];
     }
 
-    public function testCountQueryOrderBySqlServer()
+    public function testCountQueryOrderBySqlServer() : void
     {
         if ($this->entityManager->getConnection()->getDatabasePlatform()->getName() !== 'mssql') {
             $this->markTestSkipped('SQLServer only test.');

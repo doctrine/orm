@@ -16,13 +16,13 @@ use function get_class;
  */
 class FlushEventTest extends OrmFunctionalTestCase
 {
-    protected function setUp()
+    protected function setUp() : void
     {
         $this->useModelSet('cms');
         parent::setUp();
     }
 
-    public function testPersistNewEntitiesOnPreFlush()
+    public function testPersistNewEntitiesOnPreFlush() : void
     {
         //$this->em->getConnection()->getConfiguration()->setSQLLogger(new \Doctrine\DBAL\Logging\EchoSQLLogger);
         $this->em->getEventManager()->addEventListener(Events::onFlush, new OnFlushListener());
@@ -53,7 +53,7 @@ class FlushEventTest extends OrmFunctionalTestCase
     /**
      * @group DDC-2173
      */
-    public function testPreAndOnFlushCalledAlways()
+    public function testPreAndOnFlushCalledAlways() : void
     {
         $listener = new OnFlushCalledListener();
         $this->em->getEventManager()->addEventListener(Events::onFlush, $listener);

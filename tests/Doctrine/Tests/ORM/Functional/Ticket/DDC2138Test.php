@@ -14,7 +14,7 @@ class DDC2138Test extends OrmFunctionalTestCase
     /**
      * @group DDC-2138
      */
-    public function testForeignKeyOnSTIWithMultipleMapping()
+    public function testForeignKeyOnSTIWithMultipleMapping() : void
     {
         $schema = $this->schemaTool->getSchemaFromMetadata(
             [

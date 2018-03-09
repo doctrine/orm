@@ -13,13 +13,13 @@ use Doctrine\Tests\OrmFunctionalTestCase;
  */
 class DDC1995Test extends OrmFunctionalTestCase
 {
-    public function setUp()
+    public function setUp() : void
     {
         $this->useModelSet('company');
         parent::setUp();
     }
 
-    public function testIssue()
+    public function testIssue() : void
     {
         $person = new CompanyPerson();
         $person->setName('p1');
@@ -45,7 +45,7 @@ class DDC1995Test extends OrmFunctionalTestCase
         self::assertInstanceOf(CompanyEmployee::class, $result[0]);
     }
 
-    public function testQueryCache()
+    public function testQueryCache() : void
     {
         $person = new CompanyPerson();
         $person->setName('p1');

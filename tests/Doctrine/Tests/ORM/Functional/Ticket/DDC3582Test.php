@@ -12,7 +12,7 @@ use Doctrine\Tests\OrmFunctionalTestCase;
  */
 class DDC3582Test extends OrmFunctionalTestCase
 {
-    public function testNestedEmbeddablesAreHydratedWithProperClass()
+    public function testNestedEmbeddablesAreHydratedWithProperClass() : void
     {
         $this->schemaTool->createSchema([$this->em->getClassMetadata(DDC3582Entity::class)]);
         $this->em->persist(new DDC3582Entity('foo'));

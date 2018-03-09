@@ -53,7 +53,7 @@ class ReadWriteCachedCollectionPersisterTest extends AbstractCollectionPersister
                     ->getMock();
     }
 
-    public function testDeleteShouldLockItem()
+    public function testDeleteShouldLockItem() : void
     {
         $entity     = new State('Foo');
         $lock       = Lock::createLockRead();
@@ -71,7 +71,7 @@ class ReadWriteCachedCollectionPersisterTest extends AbstractCollectionPersister
         $persister->delete($collection);
     }
 
-    public function testUpdateShouldLockItem()
+    public function testUpdateShouldLockItem() : void
     {
         $entity     = new State('Foo');
         $lock       = Lock::createLockRead();
@@ -89,7 +89,7 @@ class ReadWriteCachedCollectionPersisterTest extends AbstractCollectionPersister
         $persister->update($collection);
     }
 
-    public function testUpdateTransactionRollBackShouldEvictItem()
+    public function testUpdateTransactionRollBackShouldEvictItem() : void
     {
         $entity     = new State('Foo');
         $lock       = Lock::createLockRead();
@@ -113,7 +113,7 @@ class ReadWriteCachedCollectionPersisterTest extends AbstractCollectionPersister
         $persister->afterTransactionRolledBack();
     }
 
-    public function testDeleteTransactionRollBackShouldEvictItem()
+    public function testDeleteTransactionRollBackShouldEvictItem() : void
     {
         $entity     = new State('Foo');
         $lock       = Lock::createLockRead();
@@ -136,7 +136,7 @@ class ReadWriteCachedCollectionPersisterTest extends AbstractCollectionPersister
         $persister->afterTransactionRolledBack();
     }
 
-    public function testTransactionRollBackDeleteShouldClearQueue()
+    public function testTransactionRollBackDeleteShouldClearQueue() : void
     {
         $entity     = new State('Foo');
         $lock       = Lock::createLockRead();
@@ -167,7 +167,7 @@ class ReadWriteCachedCollectionPersisterTest extends AbstractCollectionPersister
         self::assertCount(0, $property->getValue($persister));
     }
 
-    public function testTransactionRollBackUpdateShouldClearQueue()
+    public function testTransactionRollBackUpdateShouldClearQueue() : void
     {
         $entity     = new State('Foo');
         $lock       = Lock::createLockRead();
@@ -198,7 +198,7 @@ class ReadWriteCachedCollectionPersisterTest extends AbstractCollectionPersister
         self::assertCount(0, $property->getValue($persister));
     }
 
-    public function testTransactionRollCommitDeleteShouldClearQueue()
+    public function testTransactionRollCommitDeleteShouldClearQueue() : void
     {
         $entity     = new State('Foo');
         $lock       = Lock::createLockRead();
@@ -229,7 +229,7 @@ class ReadWriteCachedCollectionPersisterTest extends AbstractCollectionPersister
         self::assertCount(0, $property->getValue($persister));
     }
 
-    public function testTransactionRollCommitUpdateShouldClearQueue()
+    public function testTransactionRollCommitUpdateShouldClearQueue() : void
     {
         $entity     = new State('Foo');
         $lock       = Lock::createLockRead();
@@ -260,7 +260,7 @@ class ReadWriteCachedCollectionPersisterTest extends AbstractCollectionPersister
         self::assertCount(0, $property->getValue($persister));
     }
 
-    public function testDeleteLockFailureShouldIgnoreQueue()
+    public function testDeleteLockFailureShouldIgnoreQueue() : void
     {
         $entity     = new State('Foo');
         $persister  = $this->createPersisterDefault();
@@ -285,7 +285,7 @@ class ReadWriteCachedCollectionPersisterTest extends AbstractCollectionPersister
         self::assertCount(0, $property->getValue($persister));
     }
 
-    public function testUpdateLockFailureShouldIgnoreQueue()
+    public function testUpdateLockFailureShouldIgnoreQueue() : void
     {
         $entity     = new State('Foo');
         $persister  = $this->createPersisterDefault();

@@ -22,7 +22,7 @@ class ManyToManySelfReferentialAssociationTest extends AbstractManyToManyAssocia
     private $firstRelated;
     private $secondRelated;
 
-    protected function setUp()
+    protected function setUp() : void
     {
         $this->useModelSet('ecommerce');
 
@@ -39,7 +39,7 @@ class ManyToManySelfReferentialAssociationTest extends AbstractManyToManyAssocia
         $this->secondRelated->setName('Home');
     }
 
-    public function testSavesAManyToManyAssociationWithCascadeSaveSet()
+    public function testSavesAManyToManyAssociationWithCascadeSaveSet() : void
     {
         $this->firstProduct->addRelated($this->firstRelated);
         $this->firstProduct->addRelated($this->secondRelated);
@@ -51,7 +51,7 @@ class ManyToManySelfReferentialAssociationTest extends AbstractManyToManyAssocia
         self::assertForeignKeysContain($this->firstProduct->getId(), $this->secondRelated->getId());
     }
 
-    public function testRemovesAManyToManyAssociation()
+    public function testRemovesAManyToManyAssociation() : void
     {
         $this->firstProduct->addRelated($this->firstRelated);
         $this->firstProduct->addRelated($this->secondRelated);
@@ -66,7 +66,7 @@ class ManyToManySelfReferentialAssociationTest extends AbstractManyToManyAssocia
         self::assertForeignKeysContain($this->firstProduct->getId(), $this->secondRelated->getId());
     }
 
-    public function testEagerLoadsOwningSide()
+    public function testEagerLoadsOwningSide() : void
     {
         $this->createLoadingFixture();
 
@@ -75,7 +75,7 @@ class ManyToManySelfReferentialAssociationTest extends AbstractManyToManyAssocia
         self::assertLoadingOfOwningSide($products);
     }
 
-    public function testLazyLoadsOwningSide()
+    public function testLazyLoadsOwningSide() : void
     {
         $this->createLoadingFixture();
 

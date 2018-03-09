@@ -11,7 +11,7 @@ use function get_class;
 
 class DDC767Test extends OrmFunctionalTestCase
 {
-    protected function setUp()
+    protected function setUp() : void
     {
         $this->useModelSet('cms');
         parent::setUp();
@@ -20,7 +20,7 @@ class DDC767Test extends OrmFunctionalTestCase
     /**
      * @group DDC-767
      */
-    public function testCollectionChangesInsideTransaction()
+    public function testCollectionChangesInsideTransaction() : void
     {
         $user           = new CmsUser();
         $user->name     = 'beberlei';

@@ -15,7 +15,7 @@ use function get_class;
  */
 class DDC3033Test extends OrmFunctionalTestCase
 {
-    public function testIssue()
+    public function testIssue() : void
     {
         $this->schemaTool->createSchema(
             [

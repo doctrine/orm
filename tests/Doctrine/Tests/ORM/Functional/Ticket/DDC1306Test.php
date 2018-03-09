@@ -14,14 +14,14 @@ use Doctrine\Tests\OrmFunctionalTestCase;
  */
 class DDC1306Test extends OrmFunctionalTestCase
 {
-    public function setUp()
+    public function setUp() : void
     {
         $this->useModelSet('cms');
 
         parent::setUp();
     }
 
-    public function testIssue()
+    public function testIssue() : void
     {
         $phone              = new CmsPhonenumber();
         $phone->phonenumber = '1234';

@@ -12,7 +12,7 @@ use Doctrine\Tests\OrmFunctionalTestCase;
  */
 class DDC1400Test extends OrmFunctionalTestCase
 {
-    protected function setUp()
+    protected function setUp() : void
     {
         parent::setUp();
 
@@ -28,7 +28,7 @@ class DDC1400Test extends OrmFunctionalTestCase
         }
     }
 
-    public function testFailingCase()
+    public function testFailingCase() : void
     {
         $article = new DDC1400Article();
         $user1   = new DDC1400User();

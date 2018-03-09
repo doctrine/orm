@@ -15,7 +15,7 @@ class DatabaseDriverTest extends DatabaseDriverTestCase
     /** @var AbstractSchemaManager */
     protected $sm;
 
-    public function setUp()
+    public function setUp() : void
     {
         $this->useModelSet('cms');
 
@@ -27,7 +27,7 @@ class DatabaseDriverTest extends DatabaseDriverTestCase
     /**
      * @group DDC-2059
      */
-    public function testIssue2059()
+    public function testIssue2059() : void
     {
         if (! $this->em->getConnection()->getDatabasePlatform()->supportsForeignKeyConstraints()) {
             $this->markTestSkipped('Platform does not support foreign keys.');
@@ -49,7 +49,7 @@ class DatabaseDriverTest extends DatabaseDriverTestCase
         self::assertNotNull($metadata['Ddc2059Project']->getProperty('user2'));
     }
 
-    public function testLoadMetadataFromDatabase()
+    public function testLoadMetadataFromDatabase() : void
     {
         if (! $this->em->getConnection()->getDatabasePlatform()->supportsForeignKeyConstraints()) {
             $this->markTestSkipped('Platform does not support foreign keys.');
@@ -87,7 +87,7 @@ class DatabaseDriverTest extends DatabaseDriverTestCase
         self::assertTrue($barProperty->isNullable());
     }
 
-    public function testLoadMetadataWithForeignKeyFromDatabase()
+    public function testLoadMetadataWithForeignKeyFromDatabase() : void
     {
         if (! $this->em->getConnection()->getDatabasePlatform()->supportsForeignKeyConstraints()) {
             $this->markTestSkipped('Platform does not support foreign keys.');
@@ -120,7 +120,7 @@ class DatabaseDriverTest extends DatabaseDriverTestCase
         self::assertInstanceOf(ManyToOneAssociationMetadata::class, $bazMetadata->getProperty('bar'));
     }
 
-    public function testDetectManyToManyTables()
+    public function testDetectManyToManyTables() : void
     {
         if (! $this->em->getConnection()->getDatabasePlatform()->supportsForeignKeyConstraints()) {
             $this->markTestSkipped('Platform does not support foreign keys.');
@@ -140,7 +140,7 @@ class DatabaseDriverTest extends DatabaseDriverTestCase
         self::assertArrayHasKey('user', $metadatas['CmsGroups']->getProperties());
     }
 
-    public function testIgnoreManyToManyTableWithoutFurtherForeignKeyDetails()
+    public function testIgnoreManyToManyTableWithoutFurtherForeignKeyDetails() : void
     {
         $tableB = new Table('dbdriver_bar');
         $tableB->addColumn('id', 'integer');
@@ -160,7 +160,7 @@ class DatabaseDriverTest extends DatabaseDriverTestCase
         self::assertCount(1, $metadatas['DbdriverBaz']->getDeclaredPropertiesIterator(), 'no association mappings should be detected.');
     }
 
-    public function testLoadMetadataFromDatabaseDetail()
+    public function testLoadMetadataFromDatabaseDetail() : void
     {
         if (! $this->em->getConnection()->getDatabasePlatform()->supportsForeignKeyConstraints()) {
             $this->markTestSkipped('Platform does not support foreign keys.');

@@ -15,7 +15,7 @@ use Doctrine\Tests\OrmFunctionalTestCase;
  */
 class DDC2579Test extends OrmFunctionalTestCase
 {
-    protected function setUp()
+    protected function setUp() : void
     {
         parent::setUp();
 
@@ -30,7 +30,7 @@ class DDC2579Test extends OrmFunctionalTestCase
         );
     }
 
-    public function testIssue()
+    public function testIssue() : void
     {
         $id         = new DDC2579Id('foo');
         $assoc      = new DDC2579AssocAssoc($id);

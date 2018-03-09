@@ -30,7 +30,7 @@ class SelectSqlGenerationTest extends OrmTestCase
 {
     private $em;
 
-    protected function setUp()
+    protected function setUp() : void
     {
         $this->em = $this->getTestEntityManager();
     }
@@ -108,7 +108,7 @@ class SelectSqlGenerationTest extends OrmTestCase
     /**
      * @group DDC-3697
      */
-    public function testJoinWithRangeVariablePutsConditionIntoSqlWhereClause()
+    public function testJoinWithRangeVariablePutsConditionIntoSqlWhereClause() : void
     {
         $this->assertSqlGeneration(
             'SELECT c.id FROM Doctrine\Tests\Models\Company\CompanyPerson c JOIN Doctrine\Tests\Models\Company\CompanyPerson r WHERE c.spouse = r AND r.id = 42',
@@ -120,7 +120,7 @@ class SelectSqlGenerationTest extends OrmTestCase
     /**
      * @group DDC-3697
      */
-    public function testJoinWithRangeVariableAndInheritancePutsConditionIntoSqlWhereClause()
+    public function testJoinWithRangeVariableAndInheritancePutsConditionIntoSqlWhereClause() : void
     {
         /*
          * Basically like the previous test, but this time load data for the inherited objects as well.
@@ -134,7 +134,7 @@ class SelectSqlGenerationTest extends OrmTestCase
         );
     }
 
-    public function testSupportsSelectForAllFields()
+    public function testSupportsSelectForAllFields() : void
     {
         $this->assertSqlGeneration(
             'SELECT u FROM Doctrine\Tests\Models\CMS\CmsUser u',
@@ -142,7 +142,7 @@ class SelectSqlGenerationTest extends OrmTestCase
         );
     }
 
-    public function testSupportsSelectForOneField()
+    public function testSupportsSelectForOneField() : void
     {
         $this->assertSqlGeneration(
             'SELECT u.id FROM Doctrine\Tests\Models\CMS\CmsUser u',
@@ -150,7 +150,7 @@ class SelectSqlGenerationTest extends OrmTestCase
         );
     }
 
-    public function testSupportsSelectForOneNestedField()
+    public function testSupportsSelectForOneNestedField() : void
     {
         $this->assertSqlGeneration(
             'SELECT u.id FROM Doctrine\Tests\Models\CMS\CmsArticle a JOIN a.user u',
@@ -158,7 +158,7 @@ class SelectSqlGenerationTest extends OrmTestCase
         );
     }
 
-    public function testSupportsSelectForAllNestedField()
+    public function testSupportsSelectForAllNestedField() : void
     {
         $this->assertSqlGeneration(
             'SELECT a FROM Doctrine\Tests\Models\CMS\CmsArticle a JOIN a.user u ORDER BY u.name ASC',
@@ -166,7 +166,7 @@ class SelectSqlGenerationTest extends OrmTestCase
         );
     }
 
-    public function testNotExistsExpression()
+    public function testNotExistsExpression() : void
     {
         $this->assertSqlGeneration(
             'SELECT u FROM Doctrine\Tests\Models\CMS\CmsUser u WHERE NOT EXISTS (SELECT p.phonenumber FROM Doctrine\Tests\Models\CMS\CmsPhonenumber p WHERE p.phonenumber = 1234)',
@@ -174,7 +174,7 @@ class SelectSqlGenerationTest extends OrmTestCase
         );
     }
 
-    public function testSupportsSelectForMultipleColumnsOfASingleComponent()
+    public function testSupportsSelectForMultipleColumnsOfASingleComponent() : void
     {
         $this->assertSqlGeneration(
             'SELECT u.username, u.name FROM Doctrine\Tests\Models\CMS\CmsUser u',
@@ -182,7 +182,7 @@ class SelectSqlGenerationTest extends OrmTestCase
         );
     }
 
-    public function testSupportsSelectUsingMultipleFromComponents()
+    public function testSupportsSelectUsingMultipleFromComponents() : void
     {
         $this->assertSqlGeneration(
             'SELECT u, p FROM Doctrine\Tests\Models\CMS\CmsUser u, Doctrine\Tests\Models\CMS\CmsPhonenumber p WHERE u = p.user',
@@ -190,7 +190,7 @@ class SelectSqlGenerationTest extends OrmTestCase
         );
     }
 
-    public function testSupportsJoinOnMultipleComponents()
+    public function testSupportsJoinOnMultipleComponents() : void
     {
         $this->assertSqlGeneration(
             'SELECT u, p FROM Doctrine\Tests\Models\CMS\CmsUser u JOIN Doctrine\Tests\Models\CMS\CmsPhonenumber p WITH u = p.user',
@@ -198,7 +198,7 @@ class SelectSqlGenerationTest extends OrmTestCase
         );
     }
 
-    public function testSupportsJoinOnMultipleComponentsWithJoinedInheritanceType()
+    public function testSupportsJoinOnMultipleComponentsWithJoinedInheritanceType() : void
     {
         $this->assertSqlGeneration(
             'SELECT e FROM Doctrine\Tests\Models\Company\CompanyEmployee e JOIN Doctrine\Tests\Models\Company\CompanyManager m WITH e.id = m.id',
@@ -216,7 +216,7 @@ class SelectSqlGenerationTest extends OrmTestCase
         );
     }
 
-    public function testSupportsSelectWithCollectionAssociationJoin()
+    public function testSupportsSelectWithCollectionAssociationJoin() : void
     {
         $this->assertSqlGeneration(
             'SELECT u, p FROM Doctrine\Tests\Models\CMS\CmsUser u JOIN u.phonenumbers p',
@@ -224,7 +224,7 @@ class SelectSqlGenerationTest extends OrmTestCase
         );
     }
 
-    public function testSupportsSelectWithSingleValuedAssociationJoin()
+    public function testSupportsSelectWithSingleValuedAssociationJoin() : void
     {
         $this->assertSqlGeneration(
             'SELECT u, a FROM Doctrine\Tests\Models\Forum\ForumUser u JOIN u.avatar a',
@@ -232,7 +232,7 @@ class SelectSqlGenerationTest extends OrmTestCase
         );
     }
 
-    public function testSelectCorrelatedSubqueryComplexMathematicalExpression()
+    public function testSelectCorrelatedSubqueryComplexMathematicalExpression() : void
     {
         $this->assertSqlGeneration(
             'SELECT (SELECT (count(p.phonenumber)+5)*10 FROM Doctrine\Tests\Models\CMS\CmsPhonenumber p JOIN p.user ui WHERE ui.id = u.id) AS c FROM Doctrine\Tests\Models\CMS\CmsUser u',
@@ -240,7 +240,7 @@ class SelectSqlGenerationTest extends OrmTestCase
         );
     }
 
-    public function testSelectComplexMathematicalExpression()
+    public function testSelectComplexMathematicalExpression() : void
     {
         $this->assertSqlGeneration(
             'SELECT (count(p.phonenumber)+5)*10 FROM Doctrine\Tests\Models\CMS\CmsPhonenumber p JOIN p.user ui WHERE ui.id = ?1',
@@ -251,7 +251,7 @@ class SelectSqlGenerationTest extends OrmTestCase
     /* NOT (YET?) SUPPORTED.
        Can be supported if SimpleSelectExpression supports SingleValuedPathExpression instead of StateFieldPathExpression.
 
-    public function testSingleAssociationPathExpressionInSubselect()
+    public function testSingleAssociationPathExpressionInSubselect() : void
     {
         $this->assertSqlGeneration(
             'SELECT (SELECT p.user FROM Doctrine\Tests\Models\CMS\CmsPhonenumber p WHERE p.user = u) user_id FROM Doctrine\Tests\Models\CMS\CmsUser u WHERE u.id = ?1',
@@ -262,7 +262,7 @@ class SelectSqlGenerationTest extends OrmTestCase
     /**
      * @group DDC-1077
      */
-    public function testConstantValueInSelect()
+    public function testConstantValueInSelect() : void
     {
         $this->assertSqlGeneration(
             'SELECT u.name, \'foo\' AS bar FROM Doctrine\Tests\Models\CMS\CmsUser u',
@@ -270,7 +270,7 @@ class SelectSqlGenerationTest extends OrmTestCase
         );
     }
 
-    public function testSupportsOrderByWithAscAsDefault()
+    public function testSupportsOrderByWithAscAsDefault() : void
     {
         $this->assertSqlGeneration(
             'SELECT u FROM Doctrine\Tests\Models\Forum\ForumUser u ORDER BY u.id',
@@ -278,14 +278,14 @@ class SelectSqlGenerationTest extends OrmTestCase
         );
     }
 
-    public function testSupportsOrderByAsc()
+    public function testSupportsOrderByAsc() : void
     {
         $this->assertSqlGeneration(
             'SELECT u FROM Doctrine\Tests\Models\Forum\ForumUser u ORDER BY u.id asc',
             'SELECT t0."id" AS c0, t0."username" AS c1 FROM "forum_users" t0 ORDER BY t0."id" ASC'
         );
     }
-    public function testSupportsOrderByDesc()
+    public function testSupportsOrderByDesc() : void
     {
         $this->assertSqlGeneration(
             'SELECT u FROM Doctrine\Tests\Models\Forum\ForumUser u ORDER BY u.id desc',
@@ -293,7 +293,7 @@ class SelectSqlGenerationTest extends OrmTestCase
         );
     }
 
-    public function testSupportsSelectDistinct()
+    public function testSupportsSelectDistinct() : void
     {
         $this->assertSqlGeneration(
             'SELECT DISTINCT u.name FROM Doctrine\Tests\Models\CMS\CmsUser u',
@@ -301,7 +301,7 @@ class SelectSqlGenerationTest extends OrmTestCase
         );
     }
 
-    public function testSupportsAggregateFunctionInSelectedFields()
+    public function testSupportsAggregateFunctionInSelectedFields() : void
     {
         $this->assertSqlGeneration(
             'SELECT COUNT(u.id) FROM Doctrine\Tests\Models\CMS\CmsUser u GROUP BY u.id',
@@ -309,7 +309,7 @@ class SelectSqlGenerationTest extends OrmTestCase
         );
     }
 
-    public function testSupportsAggregateFunctionWithSimpleArithmetic()
+    public function testSupportsAggregateFunctionWithSimpleArithmetic() : void
     {
         $this->assertSqlGeneration(
             'SELECT MAX(u.id + 4) * 2 FROM Doctrine\Tests\Models\CMS\CmsUser u',
@@ -320,7 +320,7 @@ class SelectSqlGenerationTest extends OrmTestCase
     /**
      * @group DDC-3276
      */
-    public function testSupportsAggregateCountFunctionWithSimpleArithmeticMySql()
+    public function testSupportsAggregateCountFunctionWithSimpleArithmeticMySql() : void
     {
         $this->em->getConnection()->setDatabasePlatform(new MySqlPlatform());
 
@@ -330,7 +330,7 @@ class SelectSqlGenerationTest extends OrmTestCase
         );
     }
 
-    public function testSupportsWhereClauseWithPositionalParameter()
+    public function testSupportsWhereClauseWithPositionalParameter() : void
     {
         $this->assertSqlGeneration(
             'select u from Doctrine\Tests\Models\Forum\ForumUser u where u.id = ?1',
@@ -338,7 +338,7 @@ class SelectSqlGenerationTest extends OrmTestCase
         );
     }
 
-    public function testSupportsWhereClauseWithNamedParameter()
+    public function testSupportsWhereClauseWithNamedParameter() : void
     {
         $this->assertSqlGeneration(
             'select u from Doctrine\Tests\Models\Forum\ForumUser u where u.username = :name',
@@ -346,7 +346,7 @@ class SelectSqlGenerationTest extends OrmTestCase
         );
     }
 
-    public function testSupportsWhereAndClauseWithNamedParameters()
+    public function testSupportsWhereAndClauseWithNamedParameters() : void
     {
         $this->assertSqlGeneration(
             'select u from Doctrine\Tests\Models\Forum\ForumUser u where u.username = :name and u.username = :name2',
@@ -354,7 +354,7 @@ class SelectSqlGenerationTest extends OrmTestCase
         );
     }
 
-    public function testSupportsCombinedWhereClauseWithNamedParameter()
+    public function testSupportsCombinedWhereClauseWithNamedParameter() : void
     {
         $this->assertSqlGeneration(
             'select u from Doctrine\Tests\Models\Forum\ForumUser u where (u.username = :name OR u.username = :name2) AND u.id = :id',
@@ -362,7 +362,7 @@ class SelectSqlGenerationTest extends OrmTestCase
         );
     }
 
-    public function testSupportsAggregateFunctionInASelectDistinct()
+    public function testSupportsAggregateFunctionInASelectDistinct() : void
     {
         $this->assertSqlGeneration(
             'SELECT COUNT(DISTINCT u.name) FROM Doctrine\Tests\Models\CMS\CmsUser u',
@@ -371,7 +371,7 @@ class SelectSqlGenerationTest extends OrmTestCase
     }
 
     /** Ticket #668 */
-    public function testSupportsASqlKeywordInAStringLiteralParam()
+    public function testSupportsASqlKeywordInAStringLiteralParam() : void
     {
         $this->assertSqlGeneration(
             'SELECT u.name FROM Doctrine\Tests\Models\CMS\CmsUser u WHERE u.name LIKE \'%foo OR bar%\'',
@@ -379,7 +379,7 @@ class SelectSqlGenerationTest extends OrmTestCase
         );
     }
 
-    public function testSupportsArithmeticExpressionsInWherePart()
+    public function testSupportsArithmeticExpressionsInWherePart() : void
     {
         $this->assertSqlGeneration(
             'SELECT u FROM Doctrine\Tests\Models\CMS\CmsUser u WHERE ((u.id + 5000) * u.id + 3) < 10000000',
@@ -387,7 +387,7 @@ class SelectSqlGenerationTest extends OrmTestCase
         );
     }
 
-    public function testSupportsMultipleEntitiesInFromClause()
+    public function testSupportsMultipleEntitiesInFromClause() : void
     {
         $this->assertSqlGeneration(
             'SELECT u, a FROM Doctrine\Tests\Models\CMS\CmsUser u, Doctrine\Tests\Models\CMS\CmsArticle a JOIN a.user u2 WHERE u.id = u2.id',
@@ -395,7 +395,7 @@ class SelectSqlGenerationTest extends OrmTestCase
         );
     }
 
-    public function testSupportsMultipleEntitiesInFromClauseUsingPathExpression()
+    public function testSupportsMultipleEntitiesInFromClauseUsingPathExpression() : void
     {
         $this->assertSqlGeneration(
             'SELECT u, a FROM Doctrine\Tests\Models\CMS\CmsUser u, Doctrine\Tests\Models\CMS\CmsArticle a WHERE u.id = a.user',
@@ -403,7 +403,7 @@ class SelectSqlGenerationTest extends OrmTestCase
         );
     }
 
-    public function testSupportsPlainJoinWithoutClause()
+    public function testSupportsPlainJoinWithoutClause() : void
     {
         $this->assertSqlGeneration(
             'SELECT u.id, a.id from Doctrine\Tests\Models\CMS\CmsUser u LEFT JOIN u.articles a',
@@ -419,7 +419,7 @@ class SelectSqlGenerationTest extends OrmTestCase
     /**
      * @group DDC-135
      */
-    public function testSupportsLeftJoinAndWithClauseRestriction()
+    public function testSupportsLeftJoinAndWithClauseRestriction() : void
     {
         $this->assertSqlGeneration(
             'SELECT u FROM Doctrine\Tests\Models\CMS\CmsUser u LEFT JOIN u.articles a WITH a.topic LIKE \'%foo%\'',
@@ -430,7 +430,7 @@ class SelectSqlGenerationTest extends OrmTestCase
     /**
      * @group DDC-135
      */
-    public function testSupportsInnerJoinAndWithClauseRestriction()
+    public function testSupportsInnerJoinAndWithClauseRestriction() : void
     {
         $this->assertSqlGeneration(
             'SELECT u FROM Doctrine\Tests\Models\CMS\CmsUser u INNER JOIN u.articles a WITH a.topic LIKE \'%foo%\'',
@@ -442,7 +442,7 @@ class SelectSqlGenerationTest extends OrmTestCase
      * @group DDC-135
      * @group DDC-177
      */
-    public function testJoinOnClauseNotYetSupportedThrowsException()
+    public function testJoinOnClauseNotYetSupportedThrowsException() : void
     {
         $this->expectException(QueryException::class);
 
@@ -453,7 +453,7 @@ class SelectSqlGenerationTest extends OrmTestCase
         $query->getSql();
     }
 
-    public function testSupportsMultipleJoins()
+    public function testSupportsMultipleJoins() : void
     {
         $this->assertSqlGeneration(
             'SELECT u.id, a.id, p.phonenumber, c.id from Doctrine\Tests\Models\CMS\CmsUser u JOIN u.articles a JOIN u.phonenumbers p JOIN a.comments c',
@@ -461,7 +461,7 @@ class SelectSqlGenerationTest extends OrmTestCase
         );
     }
 
-    public function testSupportsTrimFunction()
+    public function testSupportsTrimFunction() : void
     {
         $this->assertSqlGeneration(
             'SELECT u.name FROM Doctrine\Tests\Models\CMS\CmsUser u WHERE TRIM(TRAILING \' \' FROM u.name) = \'someone\'',
@@ -472,7 +472,7 @@ class SelectSqlGenerationTest extends OrmTestCase
     /**
      * @group DDC-2668
      */
-    public function testSupportsTrimLeadingZeroString()
+    public function testSupportsTrimLeadingZeroString() : void
     {
         $this->assertSqlGeneration(
             'SELECT u.name FROM Doctrine\Tests\Models\CMS\CmsUser u WHERE TRIM(TRAILING \'0\' FROM u.name) != \'\'',
@@ -481,7 +481,7 @@ class SelectSqlGenerationTest extends OrmTestCase
     }
 
     /** Ticket 894 */
-    public function testSupportsBetweenClauseWithPositionalParameters()
+    public function testSupportsBetweenClauseWithPositionalParameters() : void
     {
         $this->assertSqlGeneration(
             'SELECT u.name FROM Doctrine\Tests\Models\CMS\CmsUser u WHERE u.id BETWEEN ?1 AND ?2',
@@ -492,7 +492,7 @@ class SelectSqlGenerationTest extends OrmTestCase
     /**
      * @group DDC-1802
      */
-    public function testSupportsNotBetweenForSizeFunction()
+    public function testSupportsNotBetweenForSizeFunction() : void
     {
         $this->assertSqlGeneration(
             'SELECT m.name FROM Doctrine\Tests\Models\StockExchange\Market m WHERE SIZE(m.stocks) NOT BETWEEN ?1 AND ?2',
@@ -500,7 +500,7 @@ class SelectSqlGenerationTest extends OrmTestCase
         );
     }
 
-    public function testSupportsFunctionalExpressionsInWherePart()
+    public function testSupportsFunctionalExpressionsInWherePart() : void
     {
         $this->assertSqlGeneration(
             'SELECT u.name FROM Doctrine\Tests\Models\CMS\CmsUser u WHERE TRIM(u.name) = \'someone\'',
@@ -510,7 +510,7 @@ class SelectSqlGenerationTest extends OrmTestCase
         );
     }
 
-    public function testSupportsInstanceOfExpressionsInWherePart()
+    public function testSupportsInstanceOfExpressionsInWherePart() : void
     {
         $this->assertSqlGeneration(
             'SELECT u FROM Doctrine\Tests\Models\Company\CompanyPerson u WHERE u INSTANCE OF Doctrine\Tests\Models\Company\CompanyEmployee',
@@ -518,7 +518,7 @@ class SelectSqlGenerationTest extends OrmTestCase
         );
     }
 
-    public function testSupportsInstanceOfExpressionInWherePartWithMultipleValues()
+    public function testSupportsInstanceOfExpressionInWherePartWithMultipleValues() : void
     {
         // This also uses FQCNs starting with or without a backslash in the INSTANCE OF parameter
         $this->assertSqlGeneration(
@@ -530,7 +530,7 @@ class SelectSqlGenerationTest extends OrmTestCase
     /**
      * @group DDC-1194
      */
-    public function testSupportsInstanceOfExpressionsInWherePartPrefixedSlash()
+    public function testSupportsInstanceOfExpressionsInWherePartPrefixedSlash() : void
     {
         $this->assertSqlGeneration(
             'SELECT u FROM Doctrine\Tests\Models\Company\CompanyPerson u WHERE u INSTANCE OF \Doctrine\Tests\Models\Company\CompanyEmployee',
@@ -541,7 +541,7 @@ class SelectSqlGenerationTest extends OrmTestCase
     /**
      * @group DDC-1194
      */
-    public function testSupportsInstanceOfExpressionsInWherePartWithUnrelatedClass()
+    public function testSupportsInstanceOfExpressionsInWherePartWithUnrelatedClass() : void
     {
         $this->assertInvalidSqlGeneration(
             'SELECT u FROM Doctrine\Tests\Models\Company\CompanyPerson u WHERE u INSTANCE OF \Doctrine\Tests\Models\CMS\CmsUser',
@@ -549,7 +549,7 @@ class SelectSqlGenerationTest extends OrmTestCase
         );
     }
 
-    public function testSupportsInstanceOfExpressionsInWherePartInDeeperLevel()
+    public function testSupportsInstanceOfExpressionsInWherePartInDeeperLevel() : void
     {
         $this->assertSqlGeneration(
             'SELECT u FROM Doctrine\Tests\Models\Company\CompanyEmployee u WHERE u INSTANCE OF Doctrine\Tests\Models\Company\CompanyManager',
@@ -557,7 +557,7 @@ class SelectSqlGenerationTest extends OrmTestCase
         );
     }
 
-    public function testSupportsInstanceOfExpressionsInWherePartInDeepestLevel()
+    public function testSupportsInstanceOfExpressionsInWherePartInDeepestLevel() : void
     {
         $this->assertSqlGeneration(
             'SELECT u FROM Doctrine\Tests\Models\Company\CompanyManager u WHERE u INSTANCE OF Doctrine\Tests\Models\Company\CompanyManager',
@@ -565,7 +565,7 @@ class SelectSqlGenerationTest extends OrmTestCase
         );
     }
 
-    public function testSupportsInstanceOfExpressionsUsingInputParameterInWherePart()
+    public function testSupportsInstanceOfExpressionsUsingInputParameterInWherePart() : void
     {
         $this->assertSqlGeneration(
             'SELECT u FROM Doctrine\Tests\Models\Company\CompanyPerson u WHERE u INSTANCE OF ?1',
@@ -576,7 +576,7 @@ class SelectSqlGenerationTest extends OrmTestCase
     }
 
     /** Ticket #973 */
-    public function testSupportsSingleValuedInExpressionWithoutSpacesInWherePart()
+    public function testSupportsSingleValuedInExpressionWithoutSpacesInWherePart() : void
     {
         $this->assertSqlGeneration(
             'SELECT u.name FROM Doctrine\Tests\Models\CMS\CmsUser u WHERE IDENTITY(u.email) IN(46)',
@@ -584,7 +584,7 @@ class SelectSqlGenerationTest extends OrmTestCase
         );
     }
 
-    public function testSupportsMultipleValuedInExpressionInWherePart()
+    public function testSupportsMultipleValuedInExpressionInWherePart() : void
     {
         $this->assertSqlGeneration(
             'SELECT u FROM Doctrine\Tests\Models\CMS\CmsUser u WHERE u.id IN (1, 2)',
@@ -592,7 +592,7 @@ class SelectSqlGenerationTest extends OrmTestCase
         );
     }
 
-    public function testSupportsNotInExpressionInWherePart()
+    public function testSupportsNotInExpressionInWherePart() : void
     {
         $this->assertSqlGeneration(
             'SELECT u FROM Doctrine\Tests\Models\CMS\CmsUser u WHERE :id NOT IN (1)',
@@ -603,7 +603,7 @@ class SelectSqlGenerationTest extends OrmTestCase
     /**
      * @group DDC-1802
      */
-    public function testSupportsNotInExpressionForModFunction()
+    public function testSupportsNotInExpressionForModFunction() : void
     {
         $this->assertSqlGeneration(
             'SELECT u.name FROM Doctrine\Tests\Models\CMS\CmsUser u WHERE MOD(u.id, 5) NOT IN(1,3,4)',
@@ -611,7 +611,7 @@ class SelectSqlGenerationTest extends OrmTestCase
         );
     }
 
-    public function testInExpressionWithSingleValuedAssociationPathExpressionInWherePart()
+    public function testInExpressionWithSingleValuedAssociationPathExpressionInWherePart() : void
     {
         $this->assertSqlGeneration(
             'SELECT u FROM Doctrine\Tests\Models\Forum\ForumUser u WHERE u.avatar IN (?1, ?2)',
@@ -619,7 +619,7 @@ class SelectSqlGenerationTest extends OrmTestCase
         );
     }
 
-    public function testInvalidInExpressionWithSingleValuedAssociationPathExpressionOnInverseSide()
+    public function testInvalidInExpressionWithSingleValuedAssociationPathExpressionOnInverseSide() : void
     {
         // We do not support SingleValuedAssociationPathExpression on inverse side
         $this->assertInvalidSqlGeneration(
@@ -628,7 +628,7 @@ class SelectSqlGenerationTest extends OrmTestCase
         );
     }
 
-    public function testSupportsConcatFunctionMysql()
+    public function testSupportsConcatFunctionMysql() : void
     {
         $this->em->getConnection()->setDatabasePlatform(new MySqlPlatform());
 
@@ -643,7 +643,7 @@ class SelectSqlGenerationTest extends OrmTestCase
         );
     }
 
-    public function testSupportsConcatFunctionPgSql()
+    public function testSupportsConcatFunctionPgSql() : void
     {
         $this->em->getConnection()->setDatabasePlatform(new PostgreSqlPlatform());
 
@@ -658,7 +658,7 @@ class SelectSqlGenerationTest extends OrmTestCase
         );
     }
 
-    public function testSupportsExistsExpressionInWherePartWithCorrelatedSubquery()
+    public function testSupportsExistsExpressionInWherePartWithCorrelatedSubquery() : void
     {
         $this->assertSqlGeneration(
             'SELECT u.id FROM Doctrine\Tests\Models\CMS\CmsUser u WHERE EXISTS (SELECT p.phonenumber FROM Doctrine\Tests\Models\CMS\CmsPhonenumber p WHERE p.phonenumber = u.id)',
@@ -669,7 +669,7 @@ class SelectSqlGenerationTest extends OrmTestCase
     /**
      * @group DDC-593
      */
-    public function testSubqueriesInComparisonExpression()
+    public function testSubqueriesInComparisonExpression() : void
     {
         $this->assertSqlGeneration(
             'SELECT u FROM Doctrine\Tests\Models\CMS\CmsUser u WHERE (u.id >= (SELECT u2.id FROM Doctrine\Tests\Models\CMS\CmsUser u2 WHERE u2.name = :name)) AND (u.id <= (SELECT u3.id FROM Doctrine\Tests\Models\CMS\CmsUser u3 WHERE u3.name = :name))',
@@ -677,7 +677,7 @@ class SelectSqlGenerationTest extends OrmTestCase
         );
     }
 
-    public function testSupportsMemberOfExpressionOneToMany()
+    public function testSupportsMemberOfExpressionOneToMany() : void
     {
         // "Get all users who have $phone as a phonenumber." (*cough* doesnt really make sense...)
         $q = $this->em->createQuery('SELECT u.id FROM Doctrine\Tests\Models\CMS\CmsUser u WHERE :param MEMBER OF u.phonenumbers');
@@ -694,7 +694,7 @@ class SelectSqlGenerationTest extends OrmTestCase
         );
     }
 
-    public function testSupportsMemberOfExpressionManyToMany()
+    public function testSupportsMemberOfExpressionManyToMany() : void
     {
         // "Get all users who are members of $group."
         $q = $this->em->createQuery('SELECT u.id FROM Doctrine\Tests\Models\CMS\CmsUser u WHERE :param MEMBER OF u.groups');
@@ -711,7 +711,7 @@ class SelectSqlGenerationTest extends OrmTestCase
         );
     }
 
-    public function testSupportsMemberOfExpressionManyToManyParameterArray()
+    public function testSupportsMemberOfExpressionManyToManyParameterArray() : void
     {
         $q = $this->em->createQuery('SELECT u.id FROM Doctrine\Tests\Models\CMS\CmsUser u WHERE :param MEMBER OF u.groups');
         $q->setHint(ORMQuery::HINT_FORCE_PARTIAL_LOAD, true);
@@ -728,7 +728,7 @@ class SelectSqlGenerationTest extends OrmTestCase
         );
     }
 
-    public function testSupportsMemberOfExpressionSelfReferencing()
+    public function testSupportsMemberOfExpressionSelfReferencing() : void
     {
         // "Get all persons who have $person as a friend."
         // Tough one: Many-many self-referencing ("friends") with class table inheritance
@@ -749,7 +749,7 @@ class SelectSqlGenerationTest extends OrmTestCase
         );
     }
 
-    public function testSupportsMemberOfWithSingleValuedAssociation()
+    public function testSupportsMemberOfWithSingleValuedAssociation() : void
     {
         // Impossible example, but it illustrates the purpose
         $this->assertSqlGeneration(
@@ -758,7 +758,7 @@ class SelectSqlGenerationTest extends OrmTestCase
         );
     }
 
-    public function testSupportsMemberOfWithIdentificationVariable()
+    public function testSupportsMemberOfWithIdentificationVariable() : void
     {
         // Impossible example, but it illustrates the purpose
         $this->assertSqlGeneration(
@@ -767,7 +767,7 @@ class SelectSqlGenerationTest extends OrmTestCase
         );
     }
 
-    public function testSupportsCurrentDateFunction()
+    public function testSupportsCurrentDateFunction() : void
     {
         $this->assertSqlGeneration(
             'SELECT d.id FROM Doctrine\Tests\Models\Generic\DateTimeModel d WHERE d.datetime > current_date()',
@@ -776,7 +776,7 @@ class SelectSqlGenerationTest extends OrmTestCase
         );
     }
 
-    public function testSupportsCurrentTimeFunction()
+    public function testSupportsCurrentTimeFunction() : void
     {
         $this->assertSqlGeneration(
             'SELECT d.id FROM Doctrine\Tests\Models\Generic\DateTimeModel d WHERE d.time > current_time()',
@@ -785,7 +785,7 @@ class SelectSqlGenerationTest extends OrmTestCase
         );
     }
 
-    public function testSupportsCurrentTimestampFunction()
+    public function testSupportsCurrentTimestampFunction() : void
     {
         $this->assertSqlGeneration(
             'SELECT d.id FROM Doctrine\Tests\Models\Generic\DateTimeModel d WHERE d.datetime > current_timestamp()',
@@ -794,7 +794,7 @@ class SelectSqlGenerationTest extends OrmTestCase
         );
     }
 
-    public function testExistsExpressionInWhereCorrelatedSubqueryAssocCondition()
+    public function testExistsExpressionInWhereCorrelatedSubqueryAssocCondition() : void
     {
         $this->assertSqlGeneration(
             // DQL
@@ -812,7 +812,7 @@ class SelectSqlGenerationTest extends OrmTestCase
         );
     }
 
-    public function testExistsExpressionWithSimpleSelectReturningScalar()
+    public function testExistsExpressionWithSimpleSelectReturningScalar() : void
     {
         $this->assertSqlGeneration(
             // DQL
@@ -830,7 +830,7 @@ class SelectSqlGenerationTest extends OrmTestCase
         );
     }
 
-    public function testLimitFromQueryClass()
+    public function testLimitFromQueryClass() : void
     {
         $q = $this->em
             ->createQuery('SELECT u FROM Doctrine\Tests\Models\CMS\CmsUser u')
@@ -842,7 +842,7 @@ class SelectSqlGenerationTest extends OrmTestCase
         );
     }
 
-    public function testLimitAndOffsetFromQueryClass()
+    public function testLimitAndOffsetFromQueryClass() : void
     {
         $q = $this->em
             ->createQuery('SELECT u FROM Doctrine\Tests\Models\CMS\CmsUser u')
@@ -855,7 +855,7 @@ class SelectSqlGenerationTest extends OrmTestCase
         );
     }
 
-    public function testSizeFunction()
+    public function testSizeFunction() : void
     {
         $this->assertSqlGeneration(
             'SELECT u FROM Doctrine\Tests\Models\CMS\CmsUser u WHERE SIZE(u.phonenumbers) > 1',
@@ -863,7 +863,7 @@ class SelectSqlGenerationTest extends OrmTestCase
         );
     }
 
-    public function testSizeFunctionSupportsManyToMany()
+    public function testSizeFunctionSupportsManyToMany() : void
     {
         $this->assertSqlGeneration(
             'SELECT u FROM Doctrine\Tests\Models\CMS\CmsUser u WHERE SIZE(u.groups) > 1',
@@ -871,7 +871,7 @@ class SelectSqlGenerationTest extends OrmTestCase
         );
     }
 
-    public function testEmptyCollectionComparisonExpression()
+    public function testEmptyCollectionComparisonExpression() : void
     {
         $this->assertSqlGeneration(
             'SELECT u FROM Doctrine\Tests\Models\CMS\CmsUser u WHERE u.phonenumbers IS EMPTY',
@@ -883,7 +883,7 @@ class SelectSqlGenerationTest extends OrmTestCase
         );
     }
 
-    public function testNestedExpressions()
+    public function testNestedExpressions() : void
     {
         $this->assertSqlGeneration(
             'select u from Doctrine\Tests\Models\CMS\CmsUser u where u.id > 10 and u.id < 42 and ((u.id * 2) > 5)',
@@ -891,7 +891,7 @@ class SelectSqlGenerationTest extends OrmTestCase
         );
     }
 
-    public function testNestedExpressions2()
+    public function testNestedExpressions2() : void
     {
         $this->assertSqlGeneration(
             'select u from Doctrine\Tests\Models\CMS\CmsUser u where (u.id > 10) and (u.id < 42 and ((u.id * 2) > 5)) or u.id <> 42',
@@ -899,7 +899,7 @@ class SelectSqlGenerationTest extends OrmTestCase
         );
     }
 
-    public function testNestedExpressions3()
+    public function testNestedExpressions3() : void
     {
         $this->assertSqlGeneration(
             'select u from Doctrine\Tests\Models\CMS\CmsUser u where (u.id > 10) and (u.id between 1 and 10 or u.id in (1, 2, 3, 4, 5))',
@@ -907,7 +907,7 @@ class SelectSqlGenerationTest extends OrmTestCase
         );
     }
 
-    public function testOrderByCollectionAssociationSize()
+    public function testOrderByCollectionAssociationSize() : void
     {
         $this->assertSqlGeneration(
             'select u, size(u.articles) as numArticles from Doctrine\Tests\Models\CMS\CmsUser u order by numArticles',
@@ -915,7 +915,7 @@ class SelectSqlGenerationTest extends OrmTestCase
         );
     }
 
-    public function testOrderBySupportsSingleValuedPathExpressionOwningSide()
+    public function testOrderBySupportsSingleValuedPathExpressionOwningSide() : void
     {
         $this->assertSqlGeneration(
             'select a from Doctrine\Tests\Models\CMS\CmsArticle a order by a.user',
@@ -926,14 +926,14 @@ class SelectSqlGenerationTest extends OrmTestCase
     /**
      * @expectedException \Doctrine\ORM\Query\QueryException
      */
-    public function testOrderBySupportsSingleValuedPathExpressionInverseSide()
+    public function testOrderBySupportsSingleValuedPathExpressionInverseSide() : void
     {
         $q = $this->em->createQuery('select u from Doctrine\Tests\Models\CMS\CmsUser u order by u.address');
 
         $q->getSQL();
     }
 
-    public function testBooleanLiteralInWhereOnSqlite()
+    public function testBooleanLiteralInWhereOnSqlite() : void
     {
         $this->em->getConnection()->setDatabasePlatform(new SqlitePlatform());
 
@@ -948,7 +948,7 @@ class SelectSqlGenerationTest extends OrmTestCase
         );
     }
 
-    public function testBooleanLiteralInWhereOnPostgres()
+    public function testBooleanLiteralInWhereOnPostgres() : void
     {
         $this->em->getConnection()->setDatabasePlatform(new PostgreSqlPlatform());
 
@@ -963,7 +963,7 @@ class SelectSqlGenerationTest extends OrmTestCase
         );
     }
 
-    public function testSingleValuedAssociationFieldInWhere()
+    public function testSingleValuedAssociationFieldInWhere() : void
     {
         $this->assertSqlGeneration(
             'SELECT p FROM Doctrine\Tests\Models\CMS\CmsPhonenumber p WHERE p.user = ?1',
@@ -971,7 +971,7 @@ class SelectSqlGenerationTest extends OrmTestCase
         );
     }
 
-    public function testSingleValuedAssociationNullCheckOnOwningSide()
+    public function testSingleValuedAssociationNullCheckOnOwningSide() : void
     {
         $this->assertSqlGeneration(
             'SELECT a FROM Doctrine\Tests\Models\CMS\CmsAddress a WHERE a.user IS NULL',
@@ -984,7 +984,7 @@ class SelectSqlGenerationTest extends OrmTestCase
      * 'SELECT u FROM Doctrine\Tests\Models\CMS\CmsUser u WHERE u.address IS NULL'
      * where the CmsUser is the inverse side is not supported.
      */
-    public function testSingleValuedAssociationNullCheckOnInverseSide()
+    public function testSingleValuedAssociationNullCheckOnInverseSide() : void
     {
         $this->assertSqlGeneration(
             'SELECT u FROM Doctrine\Tests\Models\CMS\CmsUser u LEFT JOIN u.address a WHERE a.id IS NULL',
@@ -996,7 +996,7 @@ class SelectSqlGenerationTest extends OrmTestCase
      * @group DDC-339
      * @group DDC-1572
      */
-    public function testStringFunctionLikeExpression()
+    public function testStringFunctionLikeExpression() : void
     {
         $this->assertSqlGeneration(
             'SELECT u.name FROM Doctrine\Tests\Models\CMS\CmsUser u WHERE LOWER(u.name) LIKE \'%foo OR bar%\'',
@@ -1029,7 +1029,7 @@ class SelectSqlGenerationTest extends OrmTestCase
     /**
      * @group DDC-1802
      */
-    public function testStringFunctionNotLikeExpression()
+    public function testStringFunctionNotLikeExpression() : void
     {
         $this->assertSqlGeneration(
             'SELECT u.name FROM Doctrine\Tests\Models\CMS\CmsUser u WHERE LOWER(u.name) NOT LIKE \'%foo OR bar%\'',
@@ -1049,7 +1049,7 @@ class SelectSqlGenerationTest extends OrmTestCase
     /**
      * @group DDC-338
      */
-    public function testOrderedCollectionFetchJoined()
+    public function testOrderedCollectionFetchJoined() : void
     {
         $this->assertSqlGeneration(
             'SELECT r, l FROM Doctrine\Tests\Models\Routing\RoutingRoute r JOIN r.legs l',
@@ -1057,7 +1057,7 @@ class SelectSqlGenerationTest extends OrmTestCase
         );
     }
 
-    public function testSubselectInSelect()
+    public function testSubselectInSelect() : void
     {
         $this->assertSqlGeneration(
             'SELECT u.name, (SELECT COUNT(p.phonenumber) FROM Doctrine\Tests\Models\CMS\CmsPhonenumber p WHERE p.phonenumber = 1234) pcount FROM Doctrine\Tests\Models\CMS\CmsUser u WHERE u.name = \'jon\'',
@@ -1069,7 +1069,7 @@ class SelectSqlGenerationTest extends OrmTestCase
      * @group locking
      * @group DDC-178
      */
-    public function testPessimisticWriteLockQueryHint()
+    public function testPessimisticWriteLockQueryHint() : void
     {
         if ($this->em->getConnection()->getDatabasePlatform() instanceof SqlitePlatform) {
             $this->markTestSkipped('SqLite does not support Row locking at all.');
@@ -1086,7 +1086,7 @@ class SelectSqlGenerationTest extends OrmTestCase
      * @group locking
      * @group DDC-178
      */
-    public function testPessimisticReadLockQueryHintPostgreSql()
+    public function testPessimisticReadLockQueryHintPostgreSql() : void
     {
         $this->em->getConnection()->setDatabasePlatform(new PostgreSqlPlatform());
 
@@ -1101,7 +1101,7 @@ class SelectSqlGenerationTest extends OrmTestCase
      * @group DDC-1693
      * @group locking
      */
-    public function testLockModeNoneQueryHint()
+    public function testLockModeNoneQueryHint() : void
     {
         $this->assertSqlGeneration(
             'SELECT u FROM Doctrine\Tests\Models\CMS\CmsUser u WHERE u.username = \'gblanco\'',
@@ -1113,7 +1113,7 @@ class SelectSqlGenerationTest extends OrmTestCase
     /**
      * @group DDC-430
      */
-    public function testSupportSelectWithMoreThan10InputParameters()
+    public function testSupportSelectWithMoreThan10InputParameters() : void
     {
         $this->assertSqlGeneration(
             'SELECT u FROM Doctrine\Tests\Models\CMS\CmsUser u WHERE u.id = ?1 OR u.id = ?2 OR u.id = ?3 OR u.id = ?4 OR u.id = ?5 OR u.id = ?6 OR u.id = ?7 OR u.id = ?8 OR u.id = ?9 OR u.id = ?10 OR u.id = ?11',
@@ -1125,7 +1125,7 @@ class SelectSqlGenerationTest extends OrmTestCase
      * @group locking
      * @group DDC-178
      */
-    public function testPessimisticReadLockQueryHintMySql()
+    public function testPessimisticReadLockQueryHintMySql() : void
     {
         $this->em->getConnection()->setDatabasePlatform(new MySqlPlatform());
 
@@ -1140,7 +1140,7 @@ class SelectSqlGenerationTest extends OrmTestCase
      * @group locking
      * @group DDC-178
      */
-    public function testPessimisticReadLockQueryHintOracle()
+    public function testPessimisticReadLockQueryHintOracle() : void
     {
         $this->em->getConnection()->setDatabasePlatform(new OraclePlatform());
 
@@ -1154,7 +1154,7 @@ class SelectSqlGenerationTest extends OrmTestCase
     /**
      * @group DDC-431
      */
-    public function testSupportToCustomDQLFunctions()
+    public function testSupportToCustomDQLFunctions() : void
     {
         $config = $this->em->getConfiguration();
         $config->addCustomNumericFunction('MYABS', MyAbsFunction::class);
@@ -1170,7 +1170,7 @@ class SelectSqlGenerationTest extends OrmTestCase
     /**
      * @group DDC-826
      */
-    public function testMappedSuperclassAssociationJoin()
+    public function testMappedSuperclassAssociationJoin() : void
     {
         $this->assertSqlGeneration(
             'SELECT f FROM Doctrine\Tests\Models\DirectoryTree\File f JOIN f.parentDirectory d WHERE f.id = ?1',
@@ -1181,7 +1181,7 @@ class SelectSqlGenerationTest extends OrmTestCase
     /**
      * @group DDC-1053
      */
-    public function testGroupBy()
+    public function testGroupBy() : void
     {
         $this->assertSqlGeneration(
             'SELECT g.id, count(u.id) FROM Doctrine\Tests\Models\CMS\CmsGroup g JOIN g.users u GROUP BY g.id',
@@ -1192,7 +1192,7 @@ class SelectSqlGenerationTest extends OrmTestCase
     /**
      * @group DDC-1053
      */
-    public function testGroupByIdentificationVariable()
+    public function testGroupByIdentificationVariable() : void
     {
         $this->assertSqlGeneration(
             'SELECT g, count(u.id) FROM Doctrine\Tests\Models\CMS\CmsGroup g JOIN g.users u GROUP BY g',
@@ -1200,7 +1200,7 @@ class SelectSqlGenerationTest extends OrmTestCase
         );
     }
 
-    public function testCaseContainingNullIf()
+    public function testCaseContainingNullIf() : void
     {
         $this->assertSqlGeneration(
             'SELECT NULLIF(g.id, g.name) AS NullIfEqual FROM Doctrine\Tests\Models\CMS\CmsGroup g',
@@ -1208,7 +1208,7 @@ class SelectSqlGenerationTest extends OrmTestCase
         );
     }
 
-    public function testCaseContainingCoalesce()
+    public function testCaseContainingCoalesce() : void
     {
         $this->assertSqlGeneration(
             'SELECT COALESCE(NULLIF(u.name, \'\'), u.username) as Display FROM Doctrine\Tests\Models\CMS\CmsUser u',
@@ -1219,7 +1219,7 @@ class SelectSqlGenerationTest extends OrmTestCase
     /**
      * Test that the right discriminator data is inserted in a subquery.
      */
-    public function testSubSelectDiscriminator()
+    public function testSubSelectDiscriminator() : void
     {
         $this->assertSqlGeneration(
             'SELECT u.name, (SELECT COUNT(cfc.id) total FROM Doctrine\Tests\Models\Company\CompanyFixContract cfc) as cfc_count FROM Doctrine\Tests\Models\CMS\CmsUser u',
@@ -1227,7 +1227,7 @@ class SelectSqlGenerationTest extends OrmTestCase
         );
     }
 
-    public function testIdVariableResultVariableReuse()
+    public function testIdVariableResultVariableReuse() : void
     {
         $exceptionThrown = false;
 
@@ -1243,7 +1243,7 @@ class SelectSqlGenerationTest extends OrmTestCase
         self::assertTrue($exceptionThrown);
     }
 
-    public function testSubSelectAliasesFromOuterQuery()
+    public function testSubSelectAliasesFromOuterQuery() : void
     {
         $this->assertSqlGeneration(
             'SELECT uo, (SELECT ui.name FROM Doctrine\Tests\Models\CMS\CmsUser ui WHERE ui.id = uo.id) AS bar FROM Doctrine\Tests\Models\CMS\CmsUser uo',
@@ -1251,7 +1251,7 @@ class SelectSqlGenerationTest extends OrmTestCase
         );
     }
 
-    public function testSubSelectAliasesFromOuterQueryWithSubquery()
+    public function testSubSelectAliasesFromOuterQueryWithSubquery() : void
     {
         $this->assertSqlGeneration(
             'SELECT uo, (SELECT ui.name FROM Doctrine\Tests\Models\CMS\CmsUser ui WHERE ui.id = uo.id AND ui.name IN (SELECT uii.name FROM Doctrine\Tests\Models\CMS\CmsUser uii)) AS bar FROM Doctrine\Tests\Models\CMS\CmsUser uo',
@@ -1259,7 +1259,7 @@ class SelectSqlGenerationTest extends OrmTestCase
         );
     }
 
-    public function testSubSelectAliasesFromOuterQueryReuseInWhereClause()
+    public function testSubSelectAliasesFromOuterQueryReuseInWhereClause() : void
     {
         $this->assertSqlGeneration(
             'SELECT uo, (SELECT ui.name FROM Doctrine\Tests\Models\CMS\CmsUser ui WHERE ui.id = uo.id) AS bar FROM Doctrine\Tests\Models\CMS\CmsUser uo WHERE bar = ?0',
@@ -1270,7 +1270,7 @@ class SelectSqlGenerationTest extends OrmTestCase
     /**
      * @group DDC-1298
      */
-    public function testSelectForeignKeyPKWithoutFields()
+    public function testSelectForeignKeyPKWithoutFields() : void
     {
         $this->assertSqlGeneration(
             'SELECT t, s, l FROM Doctrine\Tests\Models\DDC117\DDC117Link l INNER JOIN l.target t INNER JOIN l.source s',
@@ -1278,7 +1278,7 @@ class SelectSqlGenerationTest extends OrmTestCase
         );
     }
 
-    public function testGeneralCaseWithSingleWhenClause()
+    public function testGeneralCaseWithSingleWhenClause() : void
     {
         $this->assertSqlGeneration(
             'SELECT g.id, CASE WHEN ((g.id / 2) > 18) THEN 1 ELSE 0 END AS test FROM Doctrine\Tests\Models\CMS\CmsGroup g',
@@ -1286,7 +1286,7 @@ class SelectSqlGenerationTest extends OrmTestCase
         );
     }
 
-    public function testGeneralCaseWithMultipleWhenClause()
+    public function testGeneralCaseWithMultipleWhenClause() : void
     {
         $this->assertSqlGeneration(
             'SELECT g.id, CASE WHEN (g.id / 2 < 10) THEN 2 WHEN ((g.id / 2) > 20) THEN 1 ELSE 0 END AS test FROM Doctrine\Tests\Models\CMS\CmsGroup g',
@@ -1294,7 +1294,7 @@ class SelectSqlGenerationTest extends OrmTestCase
         );
     }
 
-    public function testSimpleCaseWithSingleWhenClause()
+    public function testSimpleCaseWithSingleWhenClause() : void
     {
         $this->assertSqlGeneration(
             'SELECT g FROM Doctrine\Tests\Models\CMS\CmsGroup g WHERE g.id = CASE g.name WHEN \'admin\' THEN 1 ELSE 2 END',
@@ -1302,7 +1302,7 @@ class SelectSqlGenerationTest extends OrmTestCase
         );
     }
 
-    public function testSimpleCaseWithMultipleWhenClause()
+    public function testSimpleCaseWithMultipleWhenClause() : void
     {
         $this->assertSqlGeneration(
             'SELECT g FROM Doctrine\Tests\Models\CMS\CmsGroup g WHERE g.id = (CASE g.name WHEN \'admin\' THEN 1 WHEN \'moderator\' THEN 2 ELSE 3 END)',
@@ -1310,7 +1310,7 @@ class SelectSqlGenerationTest extends OrmTestCase
         );
     }
 
-    public function testGeneralCaseWithSingleWhenClauseInSubselect()
+    public function testGeneralCaseWithSingleWhenClauseInSubselect() : void
     {
         $this->assertSqlGeneration(
             'SELECT g FROM Doctrine\Tests\Models\CMS\CmsGroup g WHERE g.id IN (SELECT CASE WHEN ((g2.id / 2) > 18) THEN 2 ELSE 1 END FROM Doctrine\Tests\Models\CMS\CmsGroup g2)',
@@ -1318,7 +1318,7 @@ class SelectSqlGenerationTest extends OrmTestCase
         );
     }
 
-    public function testGeneralCaseWithMultipleWhenClauseInSubselect()
+    public function testGeneralCaseWithMultipleWhenClauseInSubselect() : void
     {
         $this->assertSqlGeneration(
             'SELECT g FROM Doctrine\Tests\Models\CMS\CmsGroup g WHERE g.id IN (SELECT CASE WHEN (g.id / 2 < 10) THEN 3 WHEN ((g.id / 2) > 20) THEN 2 ELSE 1 END FROM Doctrine\Tests\Models\CMS\CmsGroup g2)',
@@ -1326,7 +1326,7 @@ class SelectSqlGenerationTest extends OrmTestCase
         );
     }
 
-    public function testSimpleCaseWithSingleWhenClauseInSubselect()
+    public function testSimpleCaseWithSingleWhenClauseInSubselect() : void
     {
         $this->assertSqlGeneration(
             'SELECT g FROM Doctrine\Tests\Models\CMS\CmsGroup g WHERE g.id IN (SELECT CASE g2.name WHEN \'admin\' THEN 1 ELSE 2 END FROM Doctrine\Tests\Models\CMS\CmsGroup g2)',
@@ -1334,7 +1334,7 @@ class SelectSqlGenerationTest extends OrmTestCase
         );
     }
 
-    public function testSimpleCaseWithMultipleWhenClauseInSubselect()
+    public function testSimpleCaseWithMultipleWhenClauseInSubselect() : void
     {
         $this->assertSqlGeneration(
             'SELECT g FROM Doctrine\Tests\Models\CMS\CmsGroup g WHERE g.id IN (SELECT CASE g2.name WHEN \'admin\' THEN 1 WHEN \'moderator\' THEN 2 ELSE 3 END FROM Doctrine\Tests\Models\CMS\CmsGroup g2)',
@@ -1345,7 +1345,7 @@ class SelectSqlGenerationTest extends OrmTestCase
     /**
      * @group DDC-1696
      */
-    public function testSimpleCaseWithStringPrimary()
+    public function testSimpleCaseWithStringPrimary() : void
     {
         $this->assertSqlGeneration(
             'SELECT g.id, CASE WHEN ((g.id / 2) > 18) THEN \'Foo\' ELSE \'Bar\' END AS test FROM Doctrine\Tests\Models\CMS\CmsGroup g',
@@ -1356,7 +1356,7 @@ class SelectSqlGenerationTest extends OrmTestCase
     /**
      * @group DDC-2205
      */
-    public function testCaseNegativeValuesInThenExpression()
+    public function testCaseNegativeValuesInThenExpression() : void
     {
         $this->assertSqlGeneration(
             'SELECT CASE g.name WHEN \'admin\' THEN - 1 ELSE - 2 END FROM Doctrine\Tests\Models\CMS\CmsGroup g',
@@ -1384,7 +1384,7 @@ class SelectSqlGenerationTest extends OrmTestCase
         );
     }
 
-    public function testIdentityFunctionWithCompositePrimaryKey()
+    public function testIdentityFunctionWithCompositePrimaryKey() : void
     {
         $this->assertSqlGeneration(
             'SELECT IDENTITY(p.poi, \'long\') AS long FROM Doctrine\Tests\Models\Navigation\NavPhotos p',
@@ -1410,7 +1410,7 @@ class SelectSqlGenerationTest extends OrmTestCase
     /**
      * @group DDC-2519
      */
-    public function testPartialWithAssociationIdentifier()
+    public function testPartialWithAssociationIdentifier() : void
     {
         $this->assertSqlGeneration(
             'SELECT PARTIAL l.{source, target} FROM Doctrine\Tests\Models\Legacy\LegacyUserReference l',
@@ -1426,7 +1426,7 @@ class SelectSqlGenerationTest extends OrmTestCase
     /**
      * @group DDC-1339
      */
-    public function testIdentityFunctionInSelectClause()
+    public function testIdentityFunctionInSelectClause() : void
     {
         $this->assertSqlGeneration(
             'SELECT IDENTITY(u.email) as email_id FROM Doctrine\Tests\Models\CMS\CmsUser u',
@@ -1434,7 +1434,7 @@ class SelectSqlGenerationTest extends OrmTestCase
         );
     }
 
-    public function testIdentityFunctionInJoinedSubclass()
+    public function testIdentityFunctionInJoinedSubclass() : void
     {
         //relation is in the subclass (CompanyManager) we are querying
         $this->assertSqlGeneration(
@@ -1452,7 +1452,7 @@ class SelectSqlGenerationTest extends OrmTestCase
     /**
      * @group DDC-1339
      */
-    public function testIdentityFunctionDoesNotAcceptStateField()
+    public function testIdentityFunctionDoesNotAcceptStateField() : void
     {
         $this->assertInvalidSqlGeneration(
             'SELECT IDENTITY(u.name) as name FROM Doctrine\Tests\Models\CMS\CmsUser u',
@@ -1463,7 +1463,7 @@ class SelectSqlGenerationTest extends OrmTestCase
     /**
      * @group DDC-1389
      */
-    public function testInheritanceTypeJoinInRootClassWithDisabledForcePartialLoad()
+    public function testInheritanceTypeJoinInRootClassWithDisabledForcePartialLoad() : void
     {
         $this->assertSqlGeneration(
             'SELECT p FROM Doctrine\Tests\Models\Company\CompanyPerson p',
@@ -1475,7 +1475,7 @@ class SelectSqlGenerationTest extends OrmTestCase
     /**
      * @group DDC-1389
      */
-    public function testInheritanceTypeJoinInRootClassWithEnabledForcePartialLoad()
+    public function testInheritanceTypeJoinInRootClassWithEnabledForcePartialLoad() : void
     {
         $this->assertSqlGeneration(
             'SELECT p FROM Doctrine\Tests\Models\Company\CompanyPerson p',
@@ -1487,7 +1487,7 @@ class SelectSqlGenerationTest extends OrmTestCase
     /**
      * @group DDC-1389
      */
-    public function testInheritanceTypeJoinInChildClassWithDisabledForcePartialLoad()
+    public function testInheritanceTypeJoinInChildClassWithDisabledForcePartialLoad() : void
     {
         $this->assertSqlGeneration(
             'SELECT e FROM Doctrine\Tests\Models\Company\CompanyEmployee e',
@@ -1499,7 +1499,7 @@ class SelectSqlGenerationTest extends OrmTestCase
     /**
      * @group DDC-1389
      */
-    public function testInheritanceTypeJoinInChildClassWithEnabledForcePartialLoad()
+    public function testInheritanceTypeJoinInChildClassWithEnabledForcePartialLoad() : void
     {
         $this->assertSqlGeneration(
             'SELECT e FROM Doctrine\Tests\Models\Company\CompanyEmployee e',
@@ -1511,7 +1511,7 @@ class SelectSqlGenerationTest extends OrmTestCase
     /**
      * @group DDC-1389
      */
-    public function testInheritanceTypeJoinInLeafClassWithDisabledForcePartialLoad()
+    public function testInheritanceTypeJoinInLeafClassWithDisabledForcePartialLoad() : void
     {
         $this->assertSqlGeneration(
             'SELECT m FROM Doctrine\Tests\Models\Company\CompanyManager m',
@@ -1523,7 +1523,7 @@ class SelectSqlGenerationTest extends OrmTestCase
     /**
      * @group DDC-1389
      */
-    public function testInheritanceTypeJoinInLeafClassWithEnabledForcePartialLoad()
+    public function testInheritanceTypeJoinInLeafClassWithEnabledForcePartialLoad() : void
     {
         $this->assertSqlGeneration(
             'SELECT m FROM Doctrine\Tests\Models\Company\CompanyManager m',
@@ -1535,7 +1535,7 @@ class SelectSqlGenerationTest extends OrmTestCase
     /**
      * @group DDC-1389
      */
-    public function testInheritanceTypeSingleTableInRootClassWithDisabledForcePartialLoad()
+    public function testInheritanceTypeSingleTableInRootClassWithDisabledForcePartialLoad() : void
     {
         $this->assertSqlGeneration(
             'SELECT c FROM Doctrine\Tests\Models\Company\CompanyContract c',
@@ -1547,7 +1547,7 @@ class SelectSqlGenerationTest extends OrmTestCase
     /**
      * @group DDC-1389
      */
-    public function testInheritanceTypeSingleTableInRootClassWithEnabledForcePartialLoad()
+    public function testInheritanceTypeSingleTableInRootClassWithEnabledForcePartialLoad() : void
     {
         $this->assertSqlGeneration(
             'SELECT c FROM Doctrine\Tests\Models\Company\CompanyContract c',
@@ -1559,7 +1559,7 @@ class SelectSqlGenerationTest extends OrmTestCase
     /**
      * @group DDC-1389
      */
-    public function testInheritanceTypeSingleTableInChildClassWithDisabledForcePartialLoad()
+    public function testInheritanceTypeSingleTableInChildClassWithDisabledForcePartialLoad() : void
     {
         $this->assertSqlGeneration(
             'SELECT fc FROM Doctrine\Tests\Models\Company\CompanyFlexContract fc',
@@ -1571,7 +1571,7 @@ class SelectSqlGenerationTest extends OrmTestCase
     /**
      * @group DDC-1389
      */
-    public function testInheritanceTypeSingleTableInChildClassWithEnabledForcePartialLoad()
+    public function testInheritanceTypeSingleTableInChildClassWithEnabledForcePartialLoad() : void
     {
         $this->assertSqlGeneration(
             'SELECT fc FROM Doctrine\Tests\Models\Company\CompanyFlexContract fc',
@@ -1583,7 +1583,7 @@ class SelectSqlGenerationTest extends OrmTestCase
     /**
      * @group DDC-1389
      */
-    public function testInheritanceTypeSingleTableInLeafClassWithDisabledForcePartialLoad()
+    public function testInheritanceTypeSingleTableInLeafClassWithDisabledForcePartialLoad() : void
     {
         $this->assertSqlGeneration(
             'SELECT fuc FROM Doctrine\Tests\Models\Company\CompanyFlexUltraContract fuc',
@@ -1595,7 +1595,7 @@ class SelectSqlGenerationTest extends OrmTestCase
     /**
      * @group DDC-1389
      */
-    public function testInheritanceTypeSingleTableInLeafClassWithEnabledForcePartialLoad()
+    public function testInheritanceTypeSingleTableInLeafClassWithEnabledForcePartialLoad() : void
     {
         $this->assertSqlGeneration(
             'SELECT fuc FROM Doctrine\Tests\Models\Company\CompanyFlexUltraContract fuc',
@@ -1607,7 +1607,7 @@ class SelectSqlGenerationTest extends OrmTestCase
     /**
      * @group DDC-1161
      */
-    public function testSelfReferenceWithOneToOneDoesNotDuplicateAlias()
+    public function testSelfReferenceWithOneToOneDoesNotDuplicateAlias() : void
     {
         $this->assertSqlGeneration(
             'SELECT p, pp FROM Doctrine\Tests\Models\Company\CompanyPerson p JOIN p.spouse pp',
@@ -1619,7 +1619,7 @@ class SelectSqlGenerationTest extends OrmTestCase
     /**
      * @group DDC-1384
      */
-    public function testAliasDoesNotExceedPlatformDefinedLength()
+    public function testAliasDoesNotExceedPlatformDefinedLength() : void
     {
         $this->assertSqlGeneration(
             'SELECT m FROM ' . __NAMESPACE__ . '\\DDC1384Model m',
@@ -1631,7 +1631,7 @@ class SelectSqlGenerationTest extends OrmTestCase
      * @group DDC-331
      * @group DDC-1384
      */
-    public function testIssue331()
+    public function testIssue331() : void
     {
         $this->assertSqlGeneration(
             'SELECT e.name FROM Doctrine\Tests\Models\Company\CompanyEmployee e',
@@ -1641,7 +1641,7 @@ class SelectSqlGenerationTest extends OrmTestCase
     /**
      * @group DDC-1435
      */
-    public function testForeignKeyAsPrimaryKeySubselect()
+    public function testForeignKeyAsPrimaryKeySubselect() : void
     {
         $this->assertSqlGeneration(
             'SELECT s FROM Doctrine\Tests\Models\DDC117\DDC117Article s WHERE EXISTS (SELECT r FROM Doctrine\Tests\Models\DDC117\DDC117Reference r WHERE r.source = s)',
@@ -1652,7 +1652,7 @@ class SelectSqlGenerationTest extends OrmTestCase
     /**
      * @group DDC-1474
      */
-    public function testSelectWithArithmeticExpressionBeforeField()
+    public function testSelectWithArithmeticExpressionBeforeField() : void
     {
         $this->assertSqlGeneration(
             'SELECT - e.value AS value, e.id FROM ' . __NAMESPACE__ . '\DDC1474Entity e',
@@ -1668,7 +1668,7 @@ class SelectSqlGenerationTest extends OrmTestCase
     /**
      * @group DDC-1430
      */
-    public function testGroupByAllFieldsWhenObjectHasForeignKeys()
+    public function testGroupByAllFieldsWhenObjectHasForeignKeys() : void
     {
         $this->assertSqlGeneration(
             'SELECT u FROM Doctrine\Tests\Models\CMS\CmsUser u GROUP BY u',
@@ -1684,7 +1684,7 @@ class SelectSqlGenerationTest extends OrmTestCase
     /**
      * @group DDC-1236
      */
-    public function testGroupBySupportsResultVariable()
+    public function testGroupBySupportsResultVariable() : void
     {
         $this->assertSqlGeneration(
             'SELECT u, u.status AS st FROM Doctrine\Tests\Models\CMS\CmsUser u GROUP BY st',
@@ -1695,7 +1695,7 @@ class SelectSqlGenerationTest extends OrmTestCase
     /**
      * @group DDC-1236
      */
-    public function testGroupBySupportsIdentificationVariable()
+    public function testGroupBySupportsIdentificationVariable() : void
     {
         $this->assertSqlGeneration(
             'SELECT u AS user FROM Doctrine\Tests\Models\CMS\CmsUser u GROUP BY user',
@@ -1706,7 +1706,7 @@ class SelectSqlGenerationTest extends OrmTestCase
     /**
      * @group DDC-1213
      */
-    public function testSupportsBitComparison()
+    public function testSupportsBitComparison() : void
     {
         $this->assertSqlGeneration(
             'SELECT BIT_OR(4,2), BIT_AND(4,2), u FROM Doctrine\Tests\Models\CMS\CmsUser u',
@@ -1729,7 +1729,7 @@ class SelectSqlGenerationTest extends OrmTestCase
     /**
      * @group DDC-1539
      */
-    public function testParenthesesOnTheLeftHandOfComparison()
+    public function testParenthesesOnTheLeftHandOfComparison() : void
     {
         $this->assertSqlGeneration(
             'SELECT u FROM Doctrine\Tests\Models\CMS\CmsUser u where ( (u.id + u.id) * u.id ) > 100',
@@ -1745,7 +1745,7 @@ class SelectSqlGenerationTest extends OrmTestCase
         );
     }
 
-    public function testSupportsParenthesisExpressionInSubSelect()
+    public function testSupportsParenthesisExpressionInSubSelect() : void
     {
         $this->assertSqlGeneration(
             'SELECT u.id, (SELECT (1000*SUM(subU.id)/SUM(subU.id)) FROM Doctrine\Tests\Models\CMS\CmsUser subU where subU.id = u.id) AS subSelect FROM Doctrine\Tests\Models\CMS\CmsUser u',
@@ -1756,7 +1756,7 @@ class SelectSqlGenerationTest extends OrmTestCase
     /**
      * @group DDC-1557
      */
-    public function testSupportsSubSqlFunction()
+    public function testSupportsSubSqlFunction() : void
     {
         $this->assertSqlGeneration(
             'SELECT u1 FROM Doctrine\Tests\Models\CMS\CmsUser u1 WHERE u1.name IN ( SELECT TRIM(u2.name) FROM Doctrine\Tests\Models\CMS\CmsUser u2 )',
@@ -1787,7 +1787,7 @@ class SelectSqlGenerationTest extends OrmTestCase
     /**
      * @group DDC-1574
      */
-    public function testSupportsNewOperator()
+    public function testSupportsNewOperator() : void
     {
         $this->assertSqlGeneration(
             'SELECT new Doctrine\Tests\Models\CMS\CmsUserDTO(u.name, e.email, a.city) FROM Doctrine\Tests\Models\CMS\CmsUser u JOIN u.email e JOIN u.address a',
@@ -1823,7 +1823,7 @@ class SelectSqlGenerationTest extends OrmTestCase
     /**
      * @group DDC-2234
      */
-    public function testWhereFunctionIsNullComparisonExpression()
+    public function testWhereFunctionIsNullComparisonExpression() : void
     {
         $this->assertSqlGeneration(
             'SELECT u FROM Doctrine\Tests\Models\CMS\CmsUser u WHERE IDENTITY(u.email) IS NULL',
@@ -1861,7 +1861,7 @@ class SelectSqlGenerationTest extends OrmTestCase
         );
     }
 
-    public function testCustomTypeValueSql()
+    public function testCustomTypeValueSql() : void
     {
         if (DBALType::hasType('negative_to_positive')) {
             DBALType::overrideType('negative_to_positive', NegativeToPositiveType::class);
@@ -1875,7 +1875,7 @@ class SelectSqlGenerationTest extends OrmTestCase
         );
     }
 
-    public function testCustomTypeValueSqlIgnoresIdentifierColumn()
+    public function testCustomTypeValueSqlIgnoresIdentifierColumn() : void
     {
         if (DBALType::hasType('negative_to_positive')) {
             DBALType::overrideType('negative_to_positive', NegativeToPositiveType::class);
@@ -1889,7 +1889,7 @@ class SelectSqlGenerationTest extends OrmTestCase
         );
     }
 
-    public function testCustomTypeValueSqlForAllFields()
+    public function testCustomTypeValueSqlForAllFields() : void
     {
         if (DBALType::hasType('negative_to_positive')) {
             DBALType::overrideType('negative_to_positive', NegativeToPositiveType::class);
@@ -1903,7 +1903,7 @@ class SelectSqlGenerationTest extends OrmTestCase
         );
     }
 
-    public function testCustomTypeValueSqlForPartialObject()
+    public function testCustomTypeValueSqlForPartialObject() : void
     {
         if (DBALType::hasType('negative_to_positive')) {
             DBALType::overrideType('negative_to_positive', NegativeToPositiveType::class);
@@ -1920,7 +1920,7 @@ class SelectSqlGenerationTest extends OrmTestCase
     /**
      * @group DDC-1529
      */
-    public function testMultipleFromAndInheritanceCondition()
+    public function testMultipleFromAndInheritanceCondition() : void
     {
         $this->assertSqlGeneration(
             'SELECT fix, flex FROM Doctrine\Tests\Models\Company\CompanyFixContract fix, Doctrine\Tests\Models\Company\CompanyFlexContract flex',
@@ -1931,7 +1931,7 @@ class SelectSqlGenerationTest extends OrmTestCase
     /**
      * @group DDC-775
      */
-    public function testOrderByClauseSupportsSimpleArithmeticExpression()
+    public function testOrderByClauseSupportsSimpleArithmeticExpression() : void
     {
         $this->assertSqlGeneration(
             'SELECT u FROM Doctrine\Tests\Models\CMS\CmsUser u ORDER BY u.id + 1 ',
@@ -1947,7 +1947,7 @@ class SelectSqlGenerationTest extends OrmTestCase
         );
     }
 
-    public function testOrderByClauseSupportsFunction()
+    public function testOrderByClauseSupportsFunction() : void
     {
         $this->assertSqlGeneration(
             'SELECT u FROM Doctrine\Tests\Models\CMS\CmsUser u ORDER BY CONCAT(u.username, u.name) ',
@@ -1958,7 +1958,7 @@ class SelectSqlGenerationTest extends OrmTestCase
     /**
      * @group DDC-1719
      */
-    public function testStripNonAlphanumericCharactersFromAlias()
+    public function testStripNonAlphanumericCharactersFromAlias() : void
     {
         $this->assertSqlGeneration(
             'SELECT e FROM Doctrine\Tests\Models\Generic\NonAlphaColumnsEntity e',
@@ -1979,7 +1979,7 @@ class SelectSqlGenerationTest extends OrmTestCase
     /**
      * @group DDC-2435
      */
-    public function testColumnNameWithNumbersAndNonAlphanumericCharacters()
+    public function testColumnNameWithNumbersAndNonAlphanumericCharacters() : void
     {
         $this->assertSqlGeneration(
             'SELECT e FROM Doctrine\Tests\Models\Quote\NumericEntity e',
@@ -2000,7 +2000,7 @@ class SelectSqlGenerationTest extends OrmTestCase
     /**
      * @group DDC-1845
      */
-    public function testQuotedTableDeclaration()
+    public function testQuotedTableDeclaration() : void
     {
         $this->assertSqlGeneration(
             'SELECT u FROM Doctrine\Tests\Models\Quote\User u',
@@ -2011,7 +2011,7 @@ class SelectSqlGenerationTest extends OrmTestCase
     /**
      * @group DDC-1845
      */
-    public function testQuotedWalkJoinVariableDeclaration()
+    public function testQuotedWalkJoinVariableDeclaration() : void
     {
         $this->assertSqlGeneration(
             'SELECT u, a FROM Doctrine\Tests\Models\Quote\User u JOIN u.address a',
@@ -2047,7 +2047,7 @@ class SelectSqlGenerationTest extends OrmTestCase
     /**
      * @group DDC-2208
      */
-    public function testCaseThenParameterArithmeticExpression()
+    public function testCaseThenParameterArithmeticExpression() : void
     {
         $this->assertSqlGeneration(
             'SELECT SUM(CASE WHEN e.salary <= :value THEN e.salary - :value WHEN e.salary >= :value THEN :value - e.salary ELSE 0 END) FROM Doctrine\Tests\Models\Company\CompanyEmployee e',
@@ -2068,7 +2068,7 @@ class SelectSqlGenerationTest extends OrmTestCase
     /**
      * @group DDC-2268
      */
-    public function testCaseThenFunction()
+    public function testCaseThenFunction() : void
     {
         $this->assertSqlGeneration(
             'SELECT CASE WHEN LENGTH(u.name) <> 0 THEN CONCAT(u.id, u.name) ELSE u.id END AS name  FROM Doctrine\Tests\Models\CMS\CmsUser u',
@@ -2089,7 +2089,7 @@ class SelectSqlGenerationTest extends OrmTestCase
     /**
      * @group DDC-2268
      */
-    public function testSupportsMoreThanTwoParametersInConcatFunctionMySql()
+    public function testSupportsMoreThanTwoParametersInConcatFunctionMySql() : void
     {
         $this->em->getConnection()->setDatabasePlatform(new MySqlPlatform());
 
@@ -2107,7 +2107,7 @@ class SelectSqlGenerationTest extends OrmTestCase
     /**
      * @group DDC-2268
      */
-    public function testSupportsMoreThanTwoParametersInConcatFunctionPgSql()
+    public function testSupportsMoreThanTwoParametersInConcatFunctionPgSql() : void
     {
         $this->em->getConnection()->setDatabasePlatform(new PostgreSqlPlatform());
 
@@ -2125,7 +2125,7 @@ class SelectSqlGenerationTest extends OrmTestCase
     /**
      * @group DDC-2268
      */
-    public function testSupportsMoreThanTwoParametersInConcatFunctionSqlServer()
+    public function testSupportsMoreThanTwoParametersInConcatFunctionSqlServer() : void
     {
         $this->em->getConnection()->setDatabasePlatform(new SQLServerPlatform());
 
@@ -2143,7 +2143,7 @@ class SelectSqlGenerationTest extends OrmTestCase
     /**
      * @group DDC-2188
      */
-    public function testArithmeticPriority()
+    public function testArithmeticPriority() : void
     {
         $this->assertSqlGeneration(
             'SELECT 100/(2*2) FROM Doctrine\Tests\Models\CMS\CmsUser u',
@@ -2164,7 +2164,7 @@ class SelectSqlGenerationTest extends OrmTestCase
     /**
      * @group DDC-2475
      */
-    public function testOrderByClauseShouldReplaceOrderByRelationMapping()
+    public function testOrderByClauseShouldReplaceOrderByRelationMapping() : void
     {
         $this->assertSqlGeneration(
             'SELECT r, b FROM Doctrine\Tests\Models\Routing\RoutingRoute r JOIN r.bookings b',
@@ -2180,7 +2180,7 @@ class SelectSqlGenerationTest extends OrmTestCase
     /**
      * @group DDC-1858
      */
-    public function testHavingSupportIsNullExpression()
+    public function testHavingSupportIsNullExpression() : void
     {
         $this->assertSqlGeneration(
             'SELECT u.name FROM Doctrine\Tests\Models\CMS\CmsUser u HAVING u.username IS NULL',
@@ -2196,7 +2196,7 @@ class SelectSqlGenerationTest extends OrmTestCase
     /**
      * @group DDC-2506
      */
-    public function testClassTableInheritanceJoinWithConditionAppliesToBaseTable()
+    public function testClassTableInheritanceJoinWithConditionAppliesToBaseTable() : void
     {
         $this->assertSqlGeneration(
             'SELECT e.id FROM Doctrine\Tests\Models\Company\CompanyOrganization o JOIN o.events e WITH e.id = ?1',
@@ -2208,7 +2208,7 @@ class SelectSqlGenerationTest extends OrmTestCase
     /**
      * @group DDC-2235
      */
-    public function testSingleTableInheritanceLeftJoinWithCondition()
+    public function testSingleTableInheritanceLeftJoinWithCondition() : void
     {
         // Regression test for the bug
         $this->assertSqlGeneration(
@@ -2220,7 +2220,7 @@ class SelectSqlGenerationTest extends OrmTestCase
     /**
      * @group DDC-2235
      */
-    public function testSingleTableInheritanceLeftJoinWithConditionAndWhere()
+    public function testSingleTableInheritanceLeftJoinWithConditionAndWhere() : void
     {
         // Ensure other WHERE predicates are passed through to the main WHERE clause
         $this->assertSqlGeneration(
@@ -2232,7 +2232,7 @@ class SelectSqlGenerationTest extends OrmTestCase
     /**
      * @group DDC-2235
      */
-    public function testSingleTableInheritanceInnerJoinWithCondition()
+    public function testSingleTableInheritanceInnerJoinWithCondition() : void
     {
         // Test inner joins too
         $this->assertSqlGeneration(
@@ -2244,7 +2244,7 @@ class SelectSqlGenerationTest extends OrmTestCase
     /**
      * @group DDC-2235
      */
-    public function testSingleTableInheritanceLeftJoinNonAssociationWithConditionAndWhere()
+    public function testSingleTableInheritanceLeftJoinNonAssociationWithConditionAndWhere() : void
     {
         // Test that the discriminator IN() predicate is still added into
         // the where clause when not joining onto that table
@@ -2257,7 +2257,7 @@ class SelectSqlGenerationTest extends OrmTestCase
     /**
      * @group DDC-2235
      */
-    public function testSingleTableInheritanceJoinCreatesOnCondition()
+    public function testSingleTableInheritanceJoinCreatesOnCondition() : void
     {
         // Test that the discriminator IN() predicate is still added
         // into the where clause when not joining onto a single table inheritance entity
@@ -2271,7 +2271,7 @@ class SelectSqlGenerationTest extends OrmTestCase
     /**
      * @group DDC-2235
      */
-    public function testSingleTableInheritanceCreatesOnConditionAndWhere()
+    public function testSingleTableInheritanceCreatesOnConditionAndWhere() : void
     {
         // Test that when joining onto an entity using single table inheritance via
         // a join association that the discriminator IN() predicate is placed
@@ -2287,7 +2287,7 @@ class SelectSqlGenerationTest extends OrmTestCase
     /**
      * @group DDC-1858
      */
-    public function testHavingSupportResultVariableInExpression()
+    public function testHavingSupportResultVariableInExpression() : void
     {
         $this->assertSqlGeneration(
             'SELECT u.name AS foo FROM Doctrine\Tests\Models\CMS\CmsUser u HAVING foo IN (?1)',
@@ -2298,7 +2298,7 @@ class SelectSqlGenerationTest extends OrmTestCase
     /**
      * @group DDC-1858
      */
-    public function testHavingSupportResultVariableLikeExpression()
+    public function testHavingSupportResultVariableLikeExpression() : void
     {
         $this->assertSqlGeneration(
             'SELECT u.name AS foo FROM Doctrine\Tests\Models\CMS\CmsUser u HAVING foo LIKE \'3\'',
@@ -2309,7 +2309,7 @@ class SelectSqlGenerationTest extends OrmTestCase
     /**
      * @group DDC-3085
      */
-    public function testHavingSupportResultVariableNullComparisonExpression()
+    public function testHavingSupportResultVariableNullComparisonExpression() : void
     {
         $this->assertSqlGeneration(
             'SELECT u AS user, SUM(a.id) AS score FROM Doctrine\Tests\Models\CMS\CmsUser u LEFT JOIN Doctrine\Tests\Models\CMS\CmsAddress a WITH a.user = u GROUP BY u HAVING score IS NOT NULL AND score >= 5',
@@ -2320,7 +2320,7 @@ class SelectSqlGenerationTest extends OrmTestCase
     /**
      * @group DDC-1858
      */
-    public function testHavingSupportResultVariableInAggregateFunction()
+    public function testHavingSupportResultVariableInAggregateFunction() : void
     {
         $this->assertSqlGeneration(
             'SELECT COUNT(u.name) AS countName FROM Doctrine\Tests\Models\CMS\CmsUser u HAVING countName IS NULL',
@@ -2334,7 +2334,7 @@ class SelectSqlGenerationTest extends OrmTestCase
      * @group DDC-3907
      * @dataProvider mathematicOperatorsProvider
      */
-    public function testHavingRegressionUsingVariableWithMathOperatorsExpression($operator)
+    public function testHavingRegressionUsingVariableWithMathOperatorsExpression($operator) : void
     {
         $this->assertSqlGeneration(
             'SELECT COUNT(u.name) AS countName FROM Doctrine\Tests\Models\CMS\CmsUser u HAVING 1 ' . $operator . ' countName > 0',

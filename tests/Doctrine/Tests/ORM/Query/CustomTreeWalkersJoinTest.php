@@ -18,7 +18,7 @@ class CustomTreeWalkersJoinTest extends OrmTestCase
 {
     private $em;
 
-    protected function setUp()
+    protected function setUp() : void
     {
         $this->em = $this->getTestEntityManager();
     }
@@ -40,7 +40,7 @@ class CustomTreeWalkersJoinTest extends OrmTestCase
         self::assertEquals($sqlToBeConfirmed, $sqlGenerated);
     }
 
-    public function testAddsJoin()
+    public function testAddsJoin() : void
     {
         self::assertSqlGeneration(
             'select u from Doctrine\Tests\Models\CMS\CmsUser u',
@@ -48,7 +48,7 @@ class CustomTreeWalkersJoinTest extends OrmTestCase
         );
     }
 
-    public function testDoesNotAddJoin()
+    public function testDoesNotAddJoin() : void
     {
         self::assertSqlGeneration(
             'select a from Doctrine\Tests\Models\CMS\CmsAddress a',

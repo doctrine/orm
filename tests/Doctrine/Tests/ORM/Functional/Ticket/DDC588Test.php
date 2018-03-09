@@ -9,7 +9,7 @@ use Doctrine\Tests\OrmFunctionalTestCase;
 
 class DDC588Test extends OrmFunctionalTestCase
 {
-    protected function setUp()
+    protected function setUp() : void
     {
         parent::setUp();
 
@@ -20,7 +20,7 @@ class DDC588Test extends OrmFunctionalTestCase
         );
     }
 
-    public function testIssue()
+    public function testIssue() : void
     {
         $site = new DDC588Site('Foo');
 

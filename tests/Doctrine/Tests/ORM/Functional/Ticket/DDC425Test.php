@@ -11,7 +11,7 @@ use Doctrine\Tests\OrmFunctionalTestCase;
 
 class DDC425Test extends OrmFunctionalTestCase
 {
-    protected function setUp()
+    protected function setUp() : void
     {
         parent::setUp();
         $this->schemaTool->createSchema(
@@ -24,7 +24,7 @@ class DDC425Test extends OrmFunctionalTestCase
     /**
      * @group DDC-425
      */
-    public function testIssue()
+    public function testIssue() : void
     {
         //$this->em->getConnection()->getConfiguration()->setSQLLogger(new \Doctrine\DBAL\Logging\EchoSQLLogger);
 

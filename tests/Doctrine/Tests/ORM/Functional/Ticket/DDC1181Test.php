@@ -9,7 +9,7 @@ use Doctrine\Tests\OrmFunctionalTestCase;
 
 class DDC1181Test extends OrmFunctionalTestCase
 {
-    public function setUp()
+    public function setUp() : void
     {
         parent::setUp();
         $this->schemaTool->createSchema(
@@ -24,7 +24,7 @@ class DDC1181Test extends OrmFunctionalTestCase
     /**
      * @group DDC-1181
      */
-    public function testIssue()
+    public function testIssue() : void
     {
         $hotel = new DDC1181Hotel();
         $room1 = new DDC1181Room();

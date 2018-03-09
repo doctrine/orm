@@ -12,7 +12,7 @@ use function get_class;
 
 class DDC422Test extends OrmFunctionalTestCase
 {
-    protected function setUp()
+    protected function setUp() : void
     {
         parent::setUp();
         //$this->em->getConnection()->getConfiguration()->setSQLLogger(new \Doctrine\DBAL\Logging\EchoSQLLogger);
@@ -28,7 +28,7 @@ class DDC422Test extends OrmFunctionalTestCase
     /**
      * @group DDC-422
      */
-    public function testIssue()
+    public function testIssue() : void
     {
         $customer = new DDC422Customer();
         $this->em->persist($customer);

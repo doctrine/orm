@@ -13,13 +13,13 @@ use Doctrine\Tests\OrmFunctionalTestCase;
  */
 class DDC2090Test extends OrmFunctionalTestCase
 {
-    public function setUp()
+    public function setUp() : void
     {
         $this->useModelSet('company');
         parent::setUp();
     }
 
-    public function testIssue()
+    public function testIssue() : void
     {
         $date1     = new \DateTime('2011-11-11 11:11:11');
         $date2     = new \DateTime('2012-12-12 12:12:12');

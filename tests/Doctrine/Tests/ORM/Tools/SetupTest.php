@@ -27,13 +27,13 @@ class SetupTest extends OrmTestCase
     private $originalAutoloaderCount;
     private $originalIncludePath;
 
-    public function setUp()
+    public function setUp() : void
     {
         $this->originalAutoloaderCount = count(spl_autoload_functions());
         $this->originalIncludePath     = get_include_path();
     }
 
-    public function tearDown()
+    public function tearDown() : void
     {
         if (! $this->originalIncludePath) {
             return;
@@ -48,14 +48,14 @@ class SetupTest extends OrmTestCase
         }
     }
 
-    public function testDirectoryAutoload()
+    public function testDirectoryAutoload() : void
     {
         Setup::registerAutoloadDirectory(__DIR__ . '/../../../../../vendor/doctrine/common/lib');
 
         self::assertCount($this->originalAutoloaderCount + 2, spl_autoload_functions());
     }
 
-    public function testAnnotationConfiguration()
+    public function testAnnotationConfiguration() : void
     {
         $config = Setup::createAnnotationMetadataConfiguration([], true);
 
@@ -65,7 +65,7 @@ class SetupTest extends OrmTestCase
         self::assertInstanceOf(AnnotationDriver::class, $config->getMetadataDriverImpl());
     }
 
-    public function testXMLConfiguration()
+    public function testXMLConfiguration() : void
     {
         $config = Setup::createXMLMetadataConfiguration([], true);
 
@@ -113,7 +113,7 @@ class SetupTest extends OrmTestCase
     /**
      * @group DDC-1350
      */
-    public function testConfigureProxyDir()
+    public function testConfigureProxyDir() : void
     {
         $path   = $this->makeTemporaryDirectory();
         $config = Setup::createAnnotationMetadataConfiguration([], true, $path);
@@ -123,7 +123,7 @@ class SetupTest extends OrmTestCase
     /**
      * @group DDC-1350
      */
-    public function testConfigureCache()
+    public function testConfigureCache() : void
     {
         $cache  = new ArrayCache();
         $config = Setup::createAnnotationMetadataConfiguration([], true, null, $cache);
@@ -136,7 +136,7 @@ class SetupTest extends OrmTestCase
     /**
      * @group DDC-3190
      */
-    public function testConfigureCacheCustomInstance()
+    public function testConfigureCacheCustomInstance() : void
     {
         $cache  = $this->createMock(Cache::class);
         $config = Setup::createConfiguration(true, null, $cache);

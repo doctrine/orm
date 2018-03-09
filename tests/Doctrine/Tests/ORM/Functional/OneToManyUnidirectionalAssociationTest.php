@@ -16,7 +16,7 @@ class OneToManyUnidirectionalAssociationTest extends OrmFunctionalTestCase
 {
     protected $locations = [];
 
-    public function setUp()
+    public function setUp() : void
     {
         $this->useModelSet('routing');
         parent::setUp();
@@ -32,7 +32,7 @@ class OneToManyUnidirectionalAssociationTest extends OrmFunctionalTestCase
         $this->em->flush();
     }
 
-    public function testPersistOwningInverseCascade()
+    public function testPersistOwningInverseCascade() : void
     {
         $leg                = new RoutingLeg();
         $leg->fromLocation  = $this->locations['Berlin'];
@@ -57,7 +57,7 @@ class OneToManyUnidirectionalAssociationTest extends OrmFunctionalTestCase
         self::assertEquals('Bonn', $routes->legs[0]->toLocation->name);
     }
 
-    public function testLegsAreUniqueToRoutes()
+    public function testLegsAreUniqueToRoutes() : void
     {
         $leg                = new RoutingLeg();
         $leg->fromLocation  = $this->locations['Berlin'];

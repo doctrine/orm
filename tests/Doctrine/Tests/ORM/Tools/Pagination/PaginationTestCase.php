@@ -13,12 +13,12 @@ abstract class PaginationTestCase extends OrmTestCase
     /** @var EntityManagerInterface */
     public $entityManager;
 
-    public function setUp()
+    public function setUp() : void
     {
         $this->entityManager = $this->getTestEntityManager();
     }
 
-    public function tearDown()
+    public function tearDown() : void
     {
         $this->entityManager = null;
     }

@@ -13,7 +13,7 @@ use Doctrine\Tests\OrmFunctionalTestCase;
  */
 class DDC3300Test extends OrmFunctionalTestCase
 {
-    public function testResolveTargetEntitiesChangesDiscriminatorMapValues()
+    public function testResolveTargetEntitiesChangesDiscriminatorMapValues() : void
     {
         $resolveTargetEntity = new ResolveTargetEntityListener();
 

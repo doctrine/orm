@@ -16,14 +16,14 @@ require_once __DIR__ . '/../../TestInit.php';
 
 class CustomFunctionsTest extends OrmFunctionalTestCase
 {
-    protected function setUp()
+    protected function setUp() : void
     {
         $this->useModelSet('cms');
 
         parent::setUp();
     }
 
-    public function testCustomFunctionDefinedWithCallback()
+    public function testCustomFunctionDefinedWithCallback() : void
     {
         $user           = new CmsUser();
         $user->name     = 'Bob';
@@ -49,7 +49,7 @@ class CustomFunctionsTest extends OrmFunctionalTestCase
         self::assertSame($user, $users[0]);
     }
 
-    public function testCustomFunctionOverride()
+    public function testCustomFunctionOverride() : void
     {
         $user           = new CmsUser();
         $user->name     = 'Bob';

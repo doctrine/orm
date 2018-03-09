@@ -15,13 +15,13 @@ class EntityListenerResolverTest extends OrmTestCase
     /** @var DefaultEntityListenerResolver */
     private $resolver;
 
-    protected function setUp()
+    protected function setUp() : void
     {
         parent::setUp();
         $this->resolver = new DefaultEntityListenerResolver();
     }
 
-    public function testResolve()
+    public function testResolve() : void
     {
         $className = '\Doctrine\Tests\Models\Company\CompanyContractListener';
         $object    = $this->resolver->resolve($className);
@@ -30,7 +30,7 @@ class EntityListenerResolverTest extends OrmTestCase
         self::assertSame($object, $this->resolver->resolve($className));
     }
 
-    public function testRegisterAndResolve()
+    public function testRegisterAndResolve() : void
     {
         $className = '\Doctrine\Tests\Models\Company\CompanyContractListener';
         $object    = new $className();
@@ -40,7 +40,7 @@ class EntityListenerResolverTest extends OrmTestCase
         self::assertSame($object, $this->resolver->resolve($className));
     }
 
-    public function testClearOne()
+    public function testClearOne() : void
     {
         $className1 = '\Doctrine\Tests\Models\Company\CompanyContractListener';
         $className2 = '\Doctrine\Tests\Models\Company\CompanyFlexUltraContractListener';
@@ -63,7 +63,7 @@ class EntityListenerResolverTest extends OrmTestCase
         self::assertSame($obj2, $this->resolver->resolve($className2));
     }
 
-    public function testClearAll()
+    public function testClearAll() : void
     {
         $className1 = '\Doctrine\Tests\Models\Company\CompanyContractListener';
         $className2 = '\Doctrine\Tests\Models\Company\CompanyFlexUltraContractListener';
@@ -90,7 +90,7 @@ class EntityListenerResolverTest extends OrmTestCase
      * @expectedException InvalidArgumentException
      * @expectedExceptionMessage An object was expected, but got "string".
      */
-    public function testRegisterStringException()
+    public function testRegisterStringException() : void
     {
         $this->resolver->register('CompanyContractListener');
     }

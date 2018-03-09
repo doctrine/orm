@@ -13,7 +13,7 @@ class DDC2387Test extends DatabaseDriverTestCase
     /**
      * @group DDC-2387
      */
-    public function testCompositeAssociationKeyDetection()
+    public function testCompositeAssociationKeyDetection() : void
     {
         $product = new Table('ddc2387_product');
         $product->addColumn('id', 'integer');

@@ -14,7 +14,7 @@ use Doctrine\Tests\Models\Cache\State;
  */
 class SecondLevelCacheCriteriaTest extends SecondLevelCacheAbstractTest
 {
-    public function testMatchingPut()
+    public function testMatchingPut() : void
     {
         $this->evictRegions();
 
@@ -55,7 +55,7 @@ class SecondLevelCacheCriteriaTest extends SecondLevelCacheAbstractTest
         self::assertEquals($result1[0]->getName(), $result2[0]->getName());
     }
 
-    public function testRepositoryMatching()
+    public function testRepositoryMatching() : void
     {
         $this->evictRegions();
 
@@ -123,7 +123,7 @@ class SecondLevelCacheCriteriaTest extends SecondLevelCacheAbstractTest
         self::assertEquals($this->countries[1]->getName(), $result4[0]->getName());
     }
 
-    public function testCollectionMatching()
+    public function testCollectionMatching() : void
     {
         $this->loadFixturesCountries();
         $this->loadFixturesStates();

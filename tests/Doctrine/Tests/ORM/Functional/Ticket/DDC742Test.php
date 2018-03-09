@@ -21,7 +21,7 @@ class DDC742Test extends OrmFunctionalTestCase
     /**
      * {@inheritDoc}
      */
-    protected function setUp()
+    protected function setUp() : void
     {
         parent::setUp();
 
@@ -47,7 +47,7 @@ class DDC742Test extends OrmFunctionalTestCase
         $this->em->getMetadataFactory()->setMetadataFor(DDC742Comment::class, null);
     }
 
-    public function testIssue()
+    public function testIssue() : void
     {
         $user                   = new DDC742User();
         $user->title            = 'Foo';

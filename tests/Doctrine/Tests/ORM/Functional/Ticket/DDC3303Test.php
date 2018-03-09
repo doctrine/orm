@@ -9,7 +9,7 @@ use Doctrine\Tests\OrmFunctionalTestCase;
 
 class DDC3303Test extends OrmFunctionalTestCase
 {
-    protected function setUp()
+    protected function setUp() : void
     {
         parent::setUp();
 
@@ -24,7 +24,7 @@ class DDC3303Test extends OrmFunctionalTestCase
      *
      * When using an embedded field in an inheritance, private properties should also be inherited.
      */
-    public function testEmbeddedObjectsAreAlsoInherited()
+    public function testEmbeddedObjectsAreAlsoInherited() : void
     {
         $employee = new DDC3303Employee(
             'John Doe',

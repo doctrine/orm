@@ -9,7 +9,7 @@ use Doctrine\Tests\OrmFunctionalTestCase;
 
 class DDC1757Test extends OrmFunctionalTestCase
 {
-    public function testFailingCase()
+    public function testFailingCase() : void
     {
         $qb = $this->em->createQueryBuilder();
         /* @var $qb \Doctrine\ORM\QueryBuilder */

@@ -12,7 +12,7 @@ use Doctrine\Tests\OrmFunctionalTestCase;
  */
 class DDC1654Test extends OrmFunctionalTestCase
 {
-    public function setUp()
+    public function setUp() : void
     {
         parent::setUp();
         $this->setUpEntitySchema(
@@ -23,7 +23,7 @@ class DDC1654Test extends OrmFunctionalTestCase
         );
     }
 
-    public function tearDown()
+    public function tearDown() : void
     {
         $conn = static::$sharedConn;
         $conn->executeUpdate('DELETE FROM ddc1654post_ddc1654comment');
@@ -31,7 +31,7 @@ class DDC1654Test extends OrmFunctionalTestCase
         $conn->executeUpdate('DELETE FROM DDC1654Post');
     }
 
-    public function testManyToManyRemoveFromCollectionOrphanRemoval()
+    public function testManyToManyRemoveFromCollectionOrphanRemoval() : void
     {
         $post             = new DDC1654Post();
         $post->comments[] = new DDC1654Comment();
@@ -50,7 +50,7 @@ class DDC1654Test extends OrmFunctionalTestCase
         self::assertCount(0, $comments);
     }
 
-    public function testManyToManyRemoveElementFromCollectionOrphanRemoval()
+    public function testManyToManyRemoveElementFromCollectionOrphanRemoval() : void
     {
         $post             = new DDC1654Post();
         $post->comments[] = new DDC1654Comment();
@@ -72,7 +72,7 @@ class DDC1654Test extends OrmFunctionalTestCase
     /**
      * @group DDC-3382
      */
-    public function testManyToManyRemoveElementFromReAddToCollectionOrphanRemoval()
+    public function testManyToManyRemoveElementFromReAddToCollectionOrphanRemoval() : void
     {
         $post             = new DDC1654Post();
         $post->comments[] = new DDC1654Comment();
@@ -92,7 +92,7 @@ class DDC1654Test extends OrmFunctionalTestCase
         self::assertCount(2, $comments);
     }
 
-    public function testManyToManyClearCollectionOrphanRemoval()
+    public function testManyToManyClearCollectionOrphanRemoval() : void
     {
         $post             = new DDC1654Post();
         $post->comments[] = new DDC1654Comment();
@@ -113,7 +113,7 @@ class DDC1654Test extends OrmFunctionalTestCase
     /**
      * @group DDC-3382
      */
-    public function testManyToManyClearCollectionReAddOrphanRemoval()
+    public function testManyToManyClearCollectionReAddOrphanRemoval() : void
     {
         $post             = new DDC1654Post();
         $post->comments[] = new DDC1654Comment();

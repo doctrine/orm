@@ -16,7 +16,7 @@ use function count;
  */
 class DDC1595Test extends OrmFunctionalTestCase
 {
-    public function setUp()
+    public function setUp() : void
     {
         parent::setUp();
 
@@ -31,7 +31,7 @@ class DDC1595Test extends OrmFunctionalTestCase
         );
     }
 
-    public function testIssue()
+    public function testIssue() : void
     {
         $e1 = new DDC1595InheritedEntity1();
 

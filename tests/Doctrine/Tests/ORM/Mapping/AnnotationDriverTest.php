@@ -22,7 +22,7 @@ class AnnotationDriverTest extends AbstractMappingDriverTest
     /**
      * @group DDC-268
      */
-    public function testLoadMetadataForNonEntityThrowsException()
+    public function testLoadMetadataForNonEntityThrowsException() : void
     {
         $cm = new ClassMetadata('stdClass', $this->metadataBuildingContext);
 
@@ -37,7 +37,7 @@ class AnnotationDriverTest extends AbstractMappingDriverTest
      * @expectedException \Doctrine\ORM\Cache\CacheException
      * @expectedExceptionMessage Entity association field "Doctrine\Tests\ORM\Mapping\AnnotationSLC#foo" not configured as part of the second-level cache.
      */
-    public function testFailingSecondLevelCacheAssociation()
+    public function testFailingSecondLevelCacheAssociation() : void
     {
         $mappingDriver = $this->loadDriver();
 
@@ -48,7 +48,7 @@ class AnnotationDriverTest extends AbstractMappingDriverTest
     /**
      * @group DDC-268
      */
-    public function testColumnWithMissingTypeDefaultsToString()
+    public function testColumnWithMissingTypeDefaultsToString() : void
     {
         $cm = new ClassMetadata(ColumnWithoutType::class, $this->metadataBuildingContext);
 
@@ -66,7 +66,7 @@ class AnnotationDriverTest extends AbstractMappingDriverTest
     /**
      * @group DDC-318
      */
-    public function testGetAllClassNamesIsIdempotent()
+    public function testGetAllClassNamesIsIdempotent() : void
     {
         $annotationDriver = $this->loadDriverForCMSModels();
         $original         = $annotationDriver->getAllClassNames();
@@ -80,7 +80,7 @@ class AnnotationDriverTest extends AbstractMappingDriverTest
     /**
      * @group DDC-318
      */
-    public function testGetAllClassNamesIsIdempotentEvenWithDifferentDriverInstances()
+    public function testGetAllClassNamesIsIdempotentEvenWithDifferentDriverInstances() : void
     {
         $annotationDriver = $this->loadDriverForCMSModels();
         $original         = $annotationDriver->getAllClassNames();
@@ -94,7 +94,7 @@ class AnnotationDriverTest extends AbstractMappingDriverTest
     /**
      * @group DDC-318
      */
-    public function testGetAllClassNamesReturnsAlreadyLoadedClassesIfAppropriate()
+    public function testGetAllClassNamesReturnsAlreadyLoadedClassesIfAppropriate() : void
     {
         $this->ensureIsLoaded(CmsUser::class);
 
@@ -107,7 +107,7 @@ class AnnotationDriverTest extends AbstractMappingDriverTest
     /**
      * @group DDC-318
      */
-    public function testGetClassNamesReturnsOnlyTheAppropriateClasses()
+    public function testGetClassNamesReturnsOnlyTheAppropriateClasses() : void
     {
         $this->ensureIsLoaded(ECommerceCart::class);
 
@@ -139,7 +139,7 @@ class AnnotationDriverTest extends AbstractMappingDriverTest
      *
      * Entities for this test are in AbstractMappingDriverTest
      */
-    public function testJoinTablesWithMappedSuperclassForAnnotationDriver()
+    public function testJoinTablesWithMappedSuperclassForAnnotationDriver() : void
     {
         $annotationDriver = $this->loadDriver();
         $annotationDriver->addPaths([__DIR__ . '/../../Models/DirectoryTree/']);
@@ -161,7 +161,7 @@ class AnnotationDriverTest extends AbstractMappingDriverTest
     /**
      * @group DDC-945
      */
-    public function testInvalidMappedSuperClassWithManyToManyAssociation()
+    public function testInvalidMappedSuperClassWithManyToManyAssociation() : void
     {
         $annotationDriver = $this->loadDriver();
 
@@ -182,7 +182,7 @@ class AnnotationDriverTest extends AbstractMappingDriverTest
     /**
      * @group DDC-1034
      */
-    public function testInheritanceSkipsParentLifecycleCallbacks()
+    public function testInheritanceSkipsParentLifecycleCallbacks() : void
     {
         $annotationDriver = $this->loadDriver();
 
@@ -201,7 +201,7 @@ class AnnotationDriverTest extends AbstractMappingDriverTest
     /**
      * @group DDC-1156
      */
-    public function testMappedSuperclassInMiddleOfInheritanceHierarchy()
+    public function testMappedSuperclassInMiddleOfInheritanceHierarchy() : void
     {
         $annotationDriver = $this->loadDriver();
 
@@ -214,7 +214,7 @@ class AnnotationDriverTest extends AbstractMappingDriverTest
         self::assertInstanceOf(ClassMetadata::class, $factory->getMetadataFor(ChildEntity::class));
     }
 
-    public function testInvalidFetchOptionThrowsException()
+    public function testInvalidFetchOptionThrowsException() : void
     {
         $annotationDriver = $this->loadDriver();
 
@@ -229,7 +229,7 @@ class AnnotationDriverTest extends AbstractMappingDriverTest
         $factory->getMetadataFor(InvalidFetchOption::class);
     }
 
-    public function testAttributeOverridesMappingWithTrait()
+    public function testAttributeOverridesMappingWithTrait() : void
     {
         $factory = $this->createClassMetadataFactory();
 

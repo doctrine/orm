@@ -13,7 +13,7 @@ use Doctrine\Tests\OrmFunctionalTestCase;
  */
 class DDC192Test extends OrmFunctionalTestCase
 {
-    public function testSchemaCreation()
+    public function testSchemaCreation() : void
     {
         $classes = [
             $this->em->getClassMetadata(DDC192User::class),

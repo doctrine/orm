@@ -17,7 +17,7 @@ class DDC1643Test extends OrmFunctionalTestCase
     private $user1;
     private $user2;
 
-    public function setUp()
+    public function setUp() : void
     {
         $this->useModelSet('cms');
 
@@ -49,7 +49,7 @@ class DDC1643Test extends OrmFunctionalTestCase
         $this->user2 = $this->em->find(get_class($user1), $user2->id);
     }
 
-    public function testClonePersistentCollectionAndReuse()
+    public function testClonePersistentCollectionAndReuse() : void
     {
         $user1 = $this->user1;
 
@@ -63,7 +63,7 @@ class DDC1643Test extends OrmFunctionalTestCase
         self::assertCount(2, $user1->groups);
     }
 
-    public function testClonePersistentCollectionAndShare()
+    public function testClonePersistentCollectionAndShare() : void
     {
         $user1 = $this->user1;
         $user2 = $this->user2;
@@ -80,7 +80,7 @@ class DDC1643Test extends OrmFunctionalTestCase
         self::assertCount(2, $user2->groups);
     }
 
-    public function testCloneThenDirtyPersistentCollection()
+    public function testCloneThenDirtyPersistentCollection() : void
     {
         $user1 = $this->user1;
         $user2 = $this->user2;
@@ -101,7 +101,7 @@ class DDC1643Test extends OrmFunctionalTestCase
         self::assertCount(2, $user1->groups);
     }
 
-    public function testNotCloneAndPassAroundFlush()
+    public function testNotCloneAndPassAroundFlush() : void
     {
         $user1 = $this->user1;
         $user2 = $this->user2;

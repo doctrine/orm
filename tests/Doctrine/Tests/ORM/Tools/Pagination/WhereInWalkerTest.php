@@ -12,7 +12,7 @@ use Doctrine\ORM\Tools\Pagination\WhereInWalker;
  */
 class WhereInWalkerTest extends PaginationTestCase
 {
-    public function testWhereInQueryNoWhere()
+    public function testWhereInQueryNoWhere() : void
     {
         $query        = $this->entityManager->createQuery(
             'SELECT u, g FROM Doctrine\Tests\ORM\Tools\Pagination\User u JOIN u.groups g'
@@ -27,7 +27,7 @@ class WhereInWalkerTest extends PaginationTestCase
         );
     }
 
-    public function testCountQueryMixedResultsWithName()
+    public function testCountQueryMixedResultsWithName() : void
     {
         $query        = $this->entityManager->createQuery(
             'SELECT a, sum(a.name) as foo FROM Doctrine\Tests\ORM\Tools\Pagination\Author a'
@@ -42,7 +42,7 @@ class WhereInWalkerTest extends PaginationTestCase
         );
     }
 
-    public function testWhereInQuerySingleWhere()
+    public function testWhereInQuerySingleWhere() : void
     {
         $query        = $this->entityManager->createQuery(
             'SELECT u, g FROM Doctrine\Tests\ORM\Tools\Pagination\User u JOIN u.groups g WHERE 1 = 1'
@@ -57,7 +57,7 @@ class WhereInWalkerTest extends PaginationTestCase
         );
     }
 
-    public function testWhereInQueryMultipleWhereWithAnd()
+    public function testWhereInQueryMultipleWhereWithAnd() : void
     {
         $query        = $this->entityManager->createQuery(
             'SELECT u, g FROM Doctrine\Tests\ORM\Tools\Pagination\User u JOIN u.groups g WHERE 1 = 1 AND 2 = 2'
@@ -72,7 +72,7 @@ class WhereInWalkerTest extends PaginationTestCase
         );
     }
 
-    public function testWhereInQueryMultipleWhereWithOr()
+    public function testWhereInQueryMultipleWhereWithOr() : void
     {
         $query        = $this->entityManager->createQuery(
             'SELECT u, g FROM Doctrine\Tests\ORM\Tools\Pagination\User u JOIN u.groups g WHERE 1 = 1 OR 2 = 2'
@@ -87,7 +87,7 @@ class WhereInWalkerTest extends PaginationTestCase
         );
     }
 
-    public function testWhereInQueryMultipleWhereWithMixed1()
+    public function testWhereInQueryMultipleWhereWithMixed1() : void
     {
         $query        = $this->entityManager->createQuery(
             'SELECT u, g FROM Doctrine\Tests\ORM\Tools\Pagination\User u JOIN u.groups g WHERE (1 = 1 OR 2 = 2) AND 3 = 3'
@@ -102,7 +102,7 @@ class WhereInWalkerTest extends PaginationTestCase
         );
     }
 
-    public function testWhereInQueryMultipleWhereWithMixed2()
+    public function testWhereInQueryMultipleWhereWithMixed2() : void
     {
         $query        = $this->entityManager->createQuery(
             'SELECT u, g FROM Doctrine\Tests\ORM\Tools\Pagination\User u JOIN u.groups g WHERE 1 = 1 AND 2 = 2 OR 3 = 3'
@@ -117,7 +117,7 @@ class WhereInWalkerTest extends PaginationTestCase
         );
     }
 
-    public function testWhereInQueryWhereNot()
+    public function testWhereInQueryWhereNot() : void
     {
         $query        = $this->entityManager->createQuery(
             'SELECT u, g FROM Doctrine\Tests\ORM\Tools\Pagination\User u JOIN u.groups g WHERE NOT 1 = 2'
@@ -135,7 +135,7 @@ class WhereInWalkerTest extends PaginationTestCase
     /**
      * Arbitrary Join
      */
-    public function testWhereInQueryWithArbitraryJoinNoWhere()
+    public function testWhereInQueryWithArbitraryJoinNoWhere() : void
     {
         $whereInQuery = $this->entityManager->createQuery(
             'SELECT p FROM Doctrine\Tests\ORM\Tools\Pagination\BlogPost p JOIN Doctrine\Tests\ORM\Tools\Pagination\Category c WITH p.category = c'
@@ -149,7 +149,7 @@ class WhereInWalkerTest extends PaginationTestCase
         );
     }
 
-    public function testWhereInQueryWithArbitraryJoinSingleWhere()
+    public function testWhereInQueryWithArbitraryJoinSingleWhere() : void
     {
         $whereInQuery = $this->entityManager->createQuery(
             'SELECT p FROM Doctrine\Tests\ORM\Tools\Pagination\BlogPost p JOIN Doctrine\Tests\ORM\Tools\Pagination\Category c WITH p.category = c WHERE 1 = 1'

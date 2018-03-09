@@ -14,7 +14,7 @@ use ProxyManager\Proxy\GhostObjectInterface;
  */
 class DDC1228Test extends OrmFunctionalTestCase
 {
-    public function setUp()
+    public function setUp() : void
     {
         parent::setUp();
         try {
@@ -28,7 +28,7 @@ class DDC1228Test extends OrmFunctionalTestCase
         }
     }
 
-    public function testOneToOnePersist()
+    public function testOneToOnePersist() : void
     {
         $user          = new DDC1228User();
         $profile       = new DDC1228Profile();
@@ -66,7 +66,7 @@ class DDC1228Test extends OrmFunctionalTestCase
         self::assertEquals('Bar', $otherFetchedUser->getProfile()->getName());
     }
 
-    public function testRefresh()
+    public function testRefresh() : void
     {
         $user          = new DDC1228User();
         $profile       = new DDC1228Profile();

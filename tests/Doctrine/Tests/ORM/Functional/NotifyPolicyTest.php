@@ -15,7 +15,7 @@ use Doctrine\Tests\OrmFunctionalTestCase;
  */
 class NotifyPolicyTest extends OrmFunctionalTestCase
 {
-    protected function setUp()
+    protected function setUp() : void
     {
         parent::setUp();
         try {
@@ -30,7 +30,7 @@ class NotifyPolicyTest extends OrmFunctionalTestCase
         }
     }
 
-    public function testChangeTracking()
+    public function testChangeTracking() : void
     {
         $user  = new NotifyUser();
         $group = new NotifyGroup();

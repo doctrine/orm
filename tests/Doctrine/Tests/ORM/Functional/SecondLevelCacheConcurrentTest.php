@@ -27,7 +27,7 @@ class SecondLevelCacheConcurrentTest extends SecondLevelCacheAbstractTest
 
     private $countryMetadata;
 
-    protected function setUp()
+    protected function setUp() : void
     {
         $this->enableSecondLevelCache();
 
@@ -49,7 +49,7 @@ class SecondLevelCacheConcurrentTest extends SecondLevelCacheAbstractTest
         );
     }
 
-    public function testBasicConcurrentEntityReadLock()
+    public function testBasicConcurrentEntityReadLock() : void
     {
         $this->loadFixturesCountries();
         $this->em->clear();
@@ -72,7 +72,7 @@ class SecondLevelCacheConcurrentTest extends SecondLevelCacheAbstractTest
         self::assertFalse($this->cache->containsEntity(Country::class, $countryId));
     }
 
-    public function testBasicConcurrentCollectionReadLock()
+    public function testBasicConcurrentCollectionReadLock() : void
     {
         $this->loadFixturesCountries();
         $this->loadFixturesStates();

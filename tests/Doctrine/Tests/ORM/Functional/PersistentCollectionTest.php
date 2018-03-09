@@ -13,7 +13,7 @@ use Doctrine\Tests\OrmFunctionalTestCase;
 
 class PersistentCollectionTest extends OrmFunctionalTestCase
 {
-    protected function setUp()
+    protected function setUp() : void
     {
         parent::setUp();
 
@@ -28,7 +28,7 @@ class PersistentCollectionTest extends OrmFunctionalTestCase
         PersistentObject::setEntityManager($this->em);
     }
 
-    public function testPersist()
+    public function testPersist() : void
     {
         $collectionHolder = new PersistentCollectionHolder();
         $content          = new PersistentCollectionContent('first element');
@@ -50,7 +50,7 @@ class PersistentCollectionTest extends OrmFunctionalTestCase
     /**
      * Tests that PersistentCollection::isEmpty() does not initialize the collection when FetchMode::EXTRA_LAZY is used.
      */
-    public function testExtraLazyIsEmptyDoesNotInitializeCollection()
+    public function testExtraLazyIsEmptyDoesNotInitializeCollection() : void
     {
         $collectionHolder = new PersistentCollectionHolder();
 
@@ -80,7 +80,7 @@ class PersistentCollectionTest extends OrmFunctionalTestCase
      * @group #1206
      * @group DDC-3430
      */
-    public function testMatchingDoesNotModifyTheGivenCriteria()
+    public function testMatchingDoesNotModifyTheGivenCriteria() : void
     {
         $collectionHolder = new PersistentCollectionHolder();
 

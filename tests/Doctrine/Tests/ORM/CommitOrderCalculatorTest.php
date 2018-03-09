@@ -26,7 +26,7 @@ class CommitOrderCalculatorTest extends OrmTestCase
     /** @var ClassMetadataBuildingContext|\PHPUnit_Framework_MockObject_MockObject */
     private $metadataBuildingContext;
 
-    protected function setUp()
+    protected function setUp() : void
     {
         $this->calc                    = new CommitOrderCalculator();
         $this->metadataBuildingContext = new ClassMetadataBuildingContext(
@@ -35,7 +35,7 @@ class CommitOrderCalculatorTest extends OrmTestCase
         );
     }
 
-    public function testCommitOrdering1()
+    public function testCommitOrdering1() : void
     {
         $class1 = new ClassMetadata(NodeClass1::class, $this->metadataBuildingContext);
         $class2 = new ClassMetadata(NodeClass2::class, $this->metadataBuildingContext);
@@ -62,7 +62,7 @@ class CommitOrderCalculatorTest extends OrmTestCase
         self::assertSame($correctOrder, $sorted);
     }
 
-    public function testCommitOrdering2()
+    public function testCommitOrdering2() : void
     {
         $class1 = new ClassMetadata(NodeClass1::class, $this->metadataBuildingContext);
         $class2 = new ClassMetadata(NodeClass2::class, $this->metadataBuildingContext);

@@ -12,13 +12,13 @@ use Doctrine\Tests\OrmFunctionalTestCase;
  */
 class DDC1129Test extends OrmFunctionalTestCase
 {
-    public function setUp()
+    public function setUp() : void
     {
         $this->useModelSet('cms');
         parent::setUp();
     }
 
-    public function testVersionFieldIgnoredInChangesetComputation()
+    public function testVersionFieldIgnoredInChangesetComputation() : void
     {
         $article        = new CmsArticle();
         $article->text  = "I don't know.";

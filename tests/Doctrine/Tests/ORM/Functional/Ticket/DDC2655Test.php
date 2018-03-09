@@ -12,13 +12,13 @@ use Doctrine\Tests\OrmFunctionalTestCase;
  */
 class DDC2655Test extends OrmFunctionalTestCase
 {
-    public function setUp()
+    public function setUp() : void
     {
         $this->useModelSet('cms');
         parent::setUp();
     }
 
-    public function testSingleScalarOneOrNullResult()
+    public function testSingleScalarOneOrNullResult() : void
     {
         $query = $this->em->createQuery("SELECT u.name FROM Doctrine\Tests\Models\CMS\CmsUser u WHERE u.username = 'happy_doctrine_user'");
         self::assertNull($query->getOneOrNullResult(Query::HYDRATE_SINGLE_SCALAR));

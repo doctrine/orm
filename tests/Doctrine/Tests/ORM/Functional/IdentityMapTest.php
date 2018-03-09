@@ -19,13 +19,13 @@ use function get_class;
  */
 class IdentityMapTest extends OrmFunctionalTestCase
 {
-    protected function setUp()
+    protected function setUp() : void
     {
         $this->useModelSet('cms');
         parent::setUp();
     }
 
-    public function testBasicIdentityManagement()
+    public function testBasicIdentityManagement() : void
     {
         $user           = new CmsUser();
         $user->status   = 'dev';
@@ -56,7 +56,7 @@ class IdentityMapTest extends OrmFunctionalTestCase
         self::assertSame($user2->getAddress(), $address2); // !!!
     }
 
-    public function testSingleValuedAssociationIdentityMapBehaviorWithRefresh()
+    public function testSingleValuedAssociationIdentityMapBehaviorWithRefresh() : void
     {
         $address          = new CmsAddress();
         $address->country = 'de';
@@ -98,7 +98,7 @@ class IdentityMapTest extends OrmFunctionalTestCase
         self::assertSame($user1->address, $address);
     }
 
-    public function testSingleValuedAssociationIdentityMapBehaviorWithRefreshQuery()
+    public function testSingleValuedAssociationIdentityMapBehaviorWithRefreshQuery() : void
     {
         $address          = new CmsAddress();
         $address->country = 'de';
@@ -154,7 +154,7 @@ class IdentityMapTest extends OrmFunctionalTestCase
         self::assertSame($user1->address, $address2);
     }
 
-    public function testCollectionValuedAssociationIdentityMapBehaviorWithRefreshQuery()
+    public function testCollectionValuedAssociationIdentityMapBehaviorWithRefreshQuery() : void
     {
         $user           = new CmsUser();
         $user->status   = 'dev';
@@ -206,7 +206,7 @@ class IdentityMapTest extends OrmFunctionalTestCase
         self::assertCount(4, $user3->getPhonenumbers());
     }
 
-    public function testCollectionValuedAssociationIdentityMapBehaviorWithRefresh()
+    public function testCollectionValuedAssociationIdentityMapBehaviorWithRefresh() : void
     {
         $user           = new CmsUser();
         $user->status   = 'dev';

@@ -23,7 +23,7 @@ class OneToOneSelfReferentialAssociationTest extends OrmFunctionalTestCase
     private $customer;
     private $mentor;
 
-    protected function setUp()
+    protected function setUp() : void
     {
         $this->useModelSet('ecommerce');
         parent::setUp();
@@ -33,7 +33,7 @@ class OneToOneSelfReferentialAssociationTest extends OrmFunctionalTestCase
         $this->mentor->setName('Obi-wan Kenobi');
     }
 
-    public function testSavesAOneToOneAssociationWithCascadeSaveSet()
+    public function testSavesAOneToOneAssociationWithCascadeSaveSet() : void
     {
         $this->customer->setMentor($this->mentor);
         $this->em->persist($this->customer);
@@ -42,7 +42,7 @@ class OneToOneSelfReferentialAssociationTest extends OrmFunctionalTestCase
         self::assertForeignKeyIs($this->mentor->getId());
     }
 
-    public function testRemovesOneToOneAssociation()
+    public function testRemovesOneToOneAssociation() : void
     {
         $this->customer->setMentor($this->mentor);
         $this->em->persist($this->customer);
@@ -53,7 +53,7 @@ class OneToOneSelfReferentialAssociationTest extends OrmFunctionalTestCase
         self::assertForeignKeyIs(null);
     }
 
-    public function testFind()
+    public function testFind() : void
     {
         $id = $this->createFixture();
 
@@ -61,7 +61,7 @@ class OneToOneSelfReferentialAssociationTest extends OrmFunctionalTestCase
         self::assertNotInstanceOf(GhostObjectInterface::class, $customer->getMentor());
     }
 
-    public function testEagerLoadsAssociation()
+    public function testEagerLoadsAssociation() : void
     {
         $this->createFixture();
 
@@ -74,7 +74,7 @@ class OneToOneSelfReferentialAssociationTest extends OrmFunctionalTestCase
     /**
      * @group mine
      */
-    public function testLazyLoadsAssociation()
+    public function testLazyLoadsAssociation() : void
     {
         $this->createFixture();
 
@@ -88,7 +88,7 @@ class OneToOneSelfReferentialAssociationTest extends OrmFunctionalTestCase
         self::assertLoadingOfAssociation($customer);
     }
 
-    public function testMultiSelfReference()
+    public function testMultiSelfReference() : void
     {
         try {
             $this->schemaTool->createSchema(

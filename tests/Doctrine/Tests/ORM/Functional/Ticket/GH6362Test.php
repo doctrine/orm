@@ -14,7 +14,7 @@ use Doctrine\Tests\OrmFunctionalTestCase;
 
 final class GH6362Test extends OrmFunctionalTestCase
 {
-    protected function setUp()
+    protected function setUp() : void
     {
         parent::setUp();
 
@@ -37,7 +37,7 @@ final class GH6362Test extends OrmFunctionalTestCase
      * LEFT JOIN Child c WITH b.id = c.id
      * LEFT JOIN c.joins d
      */
-    public function testInheritanceJoinAlias()
+    public function testInheritanceJoinAlias() : void
     {
         $rsm = new ResultSetMapping();
         $rsm->addEntityResult(GH6362Start::class, 'a', 'base');

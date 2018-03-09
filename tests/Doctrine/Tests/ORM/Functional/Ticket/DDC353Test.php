@@ -10,7 +10,7 @@ use Doctrine\Tests\OrmFunctionalTestCase;
 
 class DDC353Test extends OrmFunctionalTestCase
 {
-    protected function setUp()
+    protected function setUp() : void
     {
         parent::setUp();
         try {
@@ -24,7 +24,7 @@ class DDC353Test extends OrmFunctionalTestCase
         }
     }
 
-    public function testWorkingCase()
+    public function testWorkingCase() : void
     {
         $file = new DDC353File();
 
@@ -49,7 +49,7 @@ class DDC353Test extends OrmFunctionalTestCase
         $em->flush();
     }
 
-    public function testFailingCase()
+    public function testFailingCase() : void
     {
         $file = new DDC353File();
 

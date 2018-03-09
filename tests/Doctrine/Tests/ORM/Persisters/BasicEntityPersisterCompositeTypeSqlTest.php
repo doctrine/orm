@@ -22,7 +22,7 @@ class BasicEntityPersisterCompositeTypeSqlTest extends OrmTestCase
     /**
      * {@inheritDoc}
      */
-    protected function setUp()
+    protected function setUp() : void
     {
         parent::setUp();
 
@@ -30,19 +30,19 @@ class BasicEntityPersisterCompositeTypeSqlTest extends OrmTestCase
         $this->persister = new BasicEntityPersister($this->em, $this->em->getClassMetadata(Admin1AlternateName::class));
     }
 
-    public function testSelectConditionStatementEq()
+    public function testSelectConditionStatementEq() : void
     {
         $statement = $this->persister->getSelectConditionStatementSQL('admin1', 1, new OneToOneAssociationMetadata('admin1'), Comparison::EQ);
         self::assertEquals('t0."admin1" = ? AND t0."country" = ?', $statement);
     }
 
-    public function testSelectConditionStatementEqNull()
+    public function testSelectConditionStatementEqNull() : void
     {
         $statement = $this->persister->getSelectConditionStatementSQL('admin1', null, new OneToOneAssociationMetadata('admin1'), Comparison::IS);
         self::assertEquals('t0."admin1" IS NULL AND t0."country" IS NULL', $statement);
     }
 
-    public function testSelectConditionStatementNeqNull()
+    public function testSelectConditionStatementNeqNull() : void
     {
         $statement = $this->persister->getSelectConditionStatementSQL('admin1', null, new OneToOneAssociationMetadata('admin1'), Comparison::NEQ);
         self::assertEquals('t0."admin1" IS NOT NULL AND t0."country" IS NOT NULL', $statement);
@@ -51,7 +51,7 @@ class BasicEntityPersisterCompositeTypeSqlTest extends OrmTestCase
     /**
      * @expectedException Doctrine\ORM\ORMException
      */
-    public function testSelectConditionStatementIn()
+    public function testSelectConditionStatementIn() : void
     {
         $this->persister->getSelectConditionStatementSQL('admin1', [], new OneToOneAssociationMetadata('admin1'), Comparison::IN);
     }

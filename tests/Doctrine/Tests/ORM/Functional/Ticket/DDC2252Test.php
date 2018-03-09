@@ -18,7 +18,7 @@ class DDC2252Test extends OrmFunctionalTestCase
     private $membership;
     private $privileges = [];
 
-    protected function setUp()
+    protected function setUp() : void
     {
         parent::setUp();
 
@@ -60,7 +60,7 @@ class DDC2252Test extends OrmFunctionalTestCase
         $this->em->clear();
     }
 
-    public function testIssue()
+    public function testIssue() : void
     {
         $identifier = [
             'merchantAccount' => $this->merchant->getAccountid(),

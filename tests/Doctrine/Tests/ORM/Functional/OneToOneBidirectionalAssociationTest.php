@@ -18,7 +18,7 @@ class OneToOneBidirectionalAssociationTest extends OrmFunctionalTestCase
     private $customer;
     private $cart;
 
-    protected function setUp()
+    protected function setUp() : void
     {
         $this->useModelSet('ecommerce');
         parent::setUp();
@@ -28,7 +28,7 @@ class OneToOneBidirectionalAssociationTest extends OrmFunctionalTestCase
         $this->cart->setPayment('Credit card');
     }
 
-    public function testSavesAOneToOneAssociationWithCascadeSaveSet()
+    public function testSavesAOneToOneAssociationWithCascadeSaveSet() : void
     {
         $this->customer->setCart($this->cart);
         $this->em->persist($this->customer);
@@ -37,7 +37,7 @@ class OneToOneBidirectionalAssociationTest extends OrmFunctionalTestCase
         self::assertCartForeignKeyIs($this->customer->getId());
     }
 
-    public function testDoesNotSaveAnInverseSideSet()
+    public function testDoesNotSaveAnInverseSideSet() : void
     {
         $this->customer->brokenSetCart($this->cart);
         $this->em->persist($this->customer);
@@ -46,7 +46,7 @@ class OneToOneBidirectionalAssociationTest extends OrmFunctionalTestCase
         self::assertCartForeignKeyIs(null);
     }
 
-    public function testRemovesOneToOneAssociation()
+    public function testRemovesOneToOneAssociation() : void
     {
         $this->customer->setCart($this->cart);
         $this->em->persist($this->customer);
@@ -57,7 +57,7 @@ class OneToOneBidirectionalAssociationTest extends OrmFunctionalTestCase
         self::assertCartForeignKeyIs(null);
     }
 
-    public function testEagerLoad()
+    public function testEagerLoad() : void
     {
         $this->createFixture();
 
@@ -69,7 +69,7 @@ class OneToOneBidirectionalAssociationTest extends OrmFunctionalTestCase
         self::assertEquals('paypal', $customer->getCart()->getPayment());
     }
 
-    public function testLazyLoadsObjectsOnTheOwningSide()
+    public function testLazyLoadsObjectsOnTheOwningSide() : void
     {
         $this->createFixture();
         $metadata = $this->em->getClassMetadata(ECommerceCart::class);
@@ -83,7 +83,7 @@ class OneToOneBidirectionalAssociationTest extends OrmFunctionalTestCase
         self::assertEquals('Giorgio', $cart->getCustomer()->getName());
     }
 
-    public function testInverseSideIsNeverLazy()
+    public function testInverseSideIsNeverLazy() : void
     {
         $this->createFixture();
         $metadata = $this->em->getClassMetadata(ECommerceCustomer::class);
@@ -99,7 +99,7 @@ class OneToOneBidirectionalAssociationTest extends OrmFunctionalTestCase
         self::assertEquals('paypal', $customer->getCart()->getPayment());
     }
 
-    public function testUpdateWithProxyObject()
+    public function testUpdateWithProxyObject() : void
     {
         $cust = new ECommerceCustomer();
         $cust->setName('Roman');

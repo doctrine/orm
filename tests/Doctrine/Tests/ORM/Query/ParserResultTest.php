@@ -13,17 +13,17 @@ class ParserResultTest extends DoctrineTestCase
 {
     public $parserResult;
 
-    public function setUp()
+    public function setUp() : void
     {
         $this->parserResult = new ParserResult();
     }
 
-    public function testGetRsm()
+    public function testGetRsm() : void
     {
         self::assertInstanceOf(ResultSetMapping::class, $this->parserResult->getResultSetMapping());
     }
 
-    public function testSetGetSqlExecutor()
+    public function testSetGetSqlExecutor() : void
     {
         self::assertNull($this->parserResult->getSqlExecutor());
 
@@ -32,14 +32,14 @@ class ParserResultTest extends DoctrineTestCase
         self::assertSame($executor, $this->parserResult->getSqlExecutor());
     }
 
-    public function testGetSqlParameterPosition()
+    public function testGetSqlParameterPosition() : void
     {
         $this->parserResult->addParameterMapping(1, 1);
         $this->parserResult->addParameterMapping(1, 2);
         self::assertEquals([1, 2], $this->parserResult->getSqlParameterPositions(1));
     }
 
-    public function testGetParameterMappings()
+    public function testGetParameterMappings() : void
     {
         self::assertInternalType('array', $this->parserResult->getParameterMappings());
 

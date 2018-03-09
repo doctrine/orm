@@ -16,7 +16,7 @@ use Doctrine\Tests\OrmFunctionalTestCase;
  */
 class PersistentObjectTest extends OrmFunctionalTestCase
 {
-    protected function setUp()
+    protected function setUp() : void
     {
         parent::setUp();
 
@@ -32,7 +32,7 @@ class PersistentObjectTest extends OrmFunctionalTestCase
         PersistentObject::setEntityManager($this->em);
     }
 
-    public function testPersist()
+    public function testPersist() : void
     {
         $entity = new PersistentEntity();
         $entity->setName('test');
@@ -43,7 +43,7 @@ class PersistentObjectTest extends OrmFunctionalTestCase
         $this->addToAssertionCount(1);
     }
 
-    public function testFind()
+    public function testFind() : void
     {
         $entity = new PersistentEntity();
         $entity->setName('test');
@@ -60,7 +60,7 @@ class PersistentObjectTest extends OrmFunctionalTestCase
         $this->em->flush();
     }
 
-    public function testGetReference()
+    public function testGetReference() : void
     {
         $entity = new PersistentEntity();
         $entity->setName('test');
@@ -74,7 +74,7 @@ class PersistentObjectTest extends OrmFunctionalTestCase
         self::assertEquals('test', $entity->getName());
     }
 
-    public function testSetAssociation()
+    public function testSetAssociation() : void
     {
         $entity = new PersistentEntity();
         $entity->setName('test');

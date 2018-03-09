@@ -19,14 +19,14 @@ class StatisticsCacheLoggerTest extends DoctrineTestCase
     /** @var StatisticsCacheLogger */
     private $logger;
 
-    protected function setUp()
+    protected function setUp() : void
     {
         parent::setUp();
 
         $this->logger = new StatisticsCacheLogger();
     }
 
-    public function testEntityCache()
+    public function testEntityCache() : void
     {
         $name = 'my_entity_region';
         $key  = new EntityCacheKey(State::class, ['id' => 1]);
@@ -43,7 +43,7 @@ class StatisticsCacheLoggerTest extends DoctrineTestCase
         self::assertEquals(1, $this->logger->getRegionMissCount($name));
     }
 
-    public function testCollectionCache()
+    public function testCollectionCache() : void
     {
         $name = 'my_collection_region';
         $key  = new CollectionCacheKey(State::class, 'cities', ['id' => 1]);
@@ -60,7 +60,7 @@ class StatisticsCacheLoggerTest extends DoctrineTestCase
         self::assertEquals(1, $this->logger->getRegionMissCount($name));
     }
 
-    public function testQueryCache()
+    public function testQueryCache() : void
     {
         $name = 'my_query_region';
         $key  = new QueryCacheKey('my_query_hash');
@@ -77,7 +77,7 @@ class StatisticsCacheLoggerTest extends DoctrineTestCase
         self::assertEquals(1, $this->logger->getRegionMissCount($name));
     }
 
-    public function testMultipleCaches()
+    public function testMultipleCaches() : void
     {
         $coolRegion   = 'my_collection_region';
         $entityRegion = 'my_entity_region';

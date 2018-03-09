@@ -26,7 +26,7 @@ class BasicEntityPersisterTypeValueSqlTest extends OrmTestCase
     /**
      * {@inheritDoc}
      */
-    protected function setUp()
+    protected function setUp() : void
     {
         parent::setUp();
 
@@ -50,7 +50,7 @@ class BasicEntityPersisterTypeValueSqlTest extends OrmTestCase
         );
     }
 
-    public function testGetInsertSQLUsesTypeValuesSQL()
+    public function testGetInsertSQLUsesTypeValuesSQL() : void
     {
         $method = new \ReflectionMethod($this->persister, 'getInsertSQL');
         $method->setAccessible(true);
@@ -60,7 +60,7 @@ class BasicEntityPersisterTypeValueSqlTest extends OrmTestCase
         self::assertEquals('INSERT INTO "customtype_parents" ("customInteger", "child_id") VALUES (ABS(?), ?)', $sql);
     }
 
-    public function testUpdateUsesTypeValuesSQL()
+    public function testUpdateUsesTypeValuesSQL() : void
     {
         $child     = new CustomTypeChild();
         $child->id = 1;
@@ -86,7 +86,7 @@ class BasicEntityPersisterTypeValueSqlTest extends OrmTestCase
         );
     }
 
-    public function testGetSelectConditionSQLUsesTypeValuesSQL()
+    public function testGetSelectConditionSQLUsesTypeValuesSQL() : void
     {
         $method = new \ReflectionMethod($this->persister, 'getSelectConditionSQL');
         $method->setAccessible(true);
@@ -99,7 +99,7 @@ class BasicEntityPersisterTypeValueSqlTest extends OrmTestCase
     /**
      * @group DDC-1719
      */
-    public function testStripNonAlphanumericCharactersFromSelectColumnListSQL()
+    public function testStripNonAlphanumericCharactersFromSelectColumnListSQL() : void
     {
         $persister = new BasicEntityPersister($this->em, $this->em->getClassMetadata(NonAlphaColumnsEntity::class));
         $method    = new \ReflectionMethod($persister, 'getSelectColumnsSQL');
@@ -111,19 +111,19 @@ class BasicEntityPersisterTypeValueSqlTest extends OrmTestCase
     /**
      * @group DDC-2073
      */
-    public function testSelectConditionStatementIsNull()
+    public function testSelectConditionStatementIsNull() : void
     {
         $statement = $this->persister->getSelectConditionStatementSQL('test', null, new OneToOneAssociationMetadata('test'), Comparison::IS);
         self::assertEquals('test IS NULL', $statement);
     }
 
-    public function testSelectConditionStatementEqNull()
+    public function testSelectConditionStatementEqNull() : void
     {
         $statement = $this->persister->getSelectConditionStatementSQL('test', null, new OneToOneAssociationMetadata('test'), Comparison::EQ);
         self::assertEquals('test IS NULL', $statement);
     }
 
-    public function testSelectConditionStatementNeqNull()
+    public function testSelectConditionStatementNeqNull() : void
     {
         $statement = $this->persister->getSelectConditionStatementSQL('test', null, new OneToOneAssociationMetadata('test'), Comparison::NEQ);
         self::assertEquals('test IS NOT NULL', $statement);
@@ -132,7 +132,7 @@ class BasicEntityPersisterTypeValueSqlTest extends OrmTestCase
     /**
      * @group DDC-3056
      */
-    public function testSelectConditionStatementWithMultipleValuesContainingNull()
+    public function testSelectConditionStatementWithMultipleValuesContainingNull() : void
     {
         self::assertEquals(
             '(t0."id" IN (?) OR t0."id" IS NULL)',
@@ -150,7 +150,7 @@ class BasicEntityPersisterTypeValueSqlTest extends OrmTestCase
         );
     }
 
-    public function testCountCondition()
+    public function testCountCondition() : void
     {
         $persister = new BasicEntityPersister($this->em, $this->em->getClassMetadata(NonAlphaColumnsEntity::class));
 
@@ -165,7 +165,7 @@ class BasicEntityPersisterTypeValueSqlTest extends OrmTestCase
         self::assertEquals('SELECT COUNT(*) FROM "not-a-simple-entity" t0 WHERE t0."simple-entity-value" = ?', $statement);
     }
 
-    public function testCountEntities()
+    public function testCountEntities() : void
     {
         self::assertEquals(0, $this->persister->count());
     }

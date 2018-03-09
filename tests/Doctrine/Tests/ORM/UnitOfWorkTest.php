@@ -67,7 +67,7 @@ class UnitOfWorkTest extends OrmTestCase
     /** @var ClassMetadataBuildingContext|\PHPUnit_Framework_MockObject_MockObject */
     private $metadataBuildingContext;
 
-    protected function setUp()
+    protected function setUp() : void
     {
         parent::setUp();
 
@@ -84,7 +84,7 @@ class UnitOfWorkTest extends OrmTestCase
         $this->emMock->setUnitOfWork($this->unitOfWork);
     }
 
-    public function testRegisterRemovedOnNewEntityIsIgnored()
+    public function testRegisterRemovedOnNewEntityIsIgnored() : void
     {
         $user           = new ForumUser();
         $user->username = 'romanb';
@@ -95,7 +95,7 @@ class UnitOfWorkTest extends OrmTestCase
 
 
     /** Operational tests */
-    public function testSavingSingleEntityWithIdentityColumnForcesInsert()
+    public function testSavingSingleEntityWithIdentityColumnForcesInsert() : void
     {
         // Setup fake persister and id generator for identity generation
         $userPersister = new EntityPersisterMock($this->emMock, $this->emMock->getClassMetadata(ForumUser::class));
@@ -134,7 +134,7 @@ class UnitOfWorkTest extends OrmTestCase
      * Tests a scenario where a save() operation is cascaded from a ForumUser
      * to its associated ForumAvatar, both entities using IDENTITY id generation.
      */
-    public function testCascadedIdentityColumnInsert()
+    public function testCascadedIdentityColumnInsert() : void
     {
         // Setup fake persister and id generator for identity generation
         //ForumUser
@@ -167,7 +167,7 @@ class UnitOfWorkTest extends OrmTestCase
         self::assertCount(0, $avatarPersister->getDeletes());
     }
 
-    public function testChangeTrackingNotify()
+    public function testChangeTrackingNotify() : void
     {
         $persister = new EntityPersisterMock($this->emMock, $this->emMock->getClassMetadata(NotifyChangedEntity::class));
         $this->unitOfWork->setEntityPersister(NotifyChangedEntity::class, $persister);
@@ -216,7 +216,7 @@ class UnitOfWorkTest extends OrmTestCase
         self::assertSame($updates[0], $item);
     }
 
-    public function testChangeTrackingNotifyIndividualCommit()
+    public function testChangeTrackingNotifyIndividualCommit() : void
     {
         self::markTestIncomplete(
             '@guilhermeblanco, this test was added directly on master#a16dc65cd206aed67a01a19f01f6318192b826af and'
@@ -256,7 +256,7 @@ class UnitOfWorkTest extends OrmTestCase
         self::assertEquals([], $this->unitOfWork->getEntityChangeSet($entity));
     }
 
-    public function testGetEntityStateOnVersionedEntityWithAssignedIdentifier()
+    public function testGetEntityStateOnVersionedEntityWithAssignedIdentifier() : void
     {
         $persister = new EntityPersisterMock($this->emMock, $this->emMock->getClassMetadata(VersionedAssignedIdentifierEntity::class));
         $this->unitOfWork->setEntityPersister(VersionedAssignedIdentifierEntity::class, $persister);
@@ -267,7 +267,7 @@ class UnitOfWorkTest extends OrmTestCase
         self::assertFalse($persister->isExistsCalled());
     }
 
-    public function testGetEntityStateWithAssignedIdentity()
+    public function testGetEntityStateWithAssignedIdentity() : void
     {
         $persister = new EntityPersisterMock($this->emMock, $this->emMock->getClassMetadata(CmsPhonenumber::class));
         $this->unitOfWork->setEntityPersister(CmsPhonenumber::class, $persister);
@@ -293,7 +293,7 @@ class UnitOfWorkTest extends OrmTestCase
     /**
      * DDC-2086 [GH-484] Prevented 'Undefined index' notice when updating.
      */
-    public function testNoUndefinedIndexNoticeOnScheduleForUpdateWithoutChanges()
+    public function testNoUndefinedIndexNoticeOnScheduleForUpdateWithoutChanges() : void
     {
         // Setup fake persister and id generator
         $userPersister = new EntityPersisterMock($this->emMock, $this->emMock->getClassMetadata(ForumUser::class));
@@ -320,7 +320,7 @@ class UnitOfWorkTest extends OrmTestCase
     /**
      * @group DDC-1984
      */
-    public function testLockWithoutEntityThrowsException()
+    public function testLockWithoutEntityThrowsException() : void
     {
         $this->expectException(\InvalidArgumentException::class);
         $this->unitOfWork->lock(null, null, null);
@@ -333,7 +333,7 @@ class UnitOfWorkTest extends OrmTestCase
      *
      * @param mixed $invalidValue
      */
-    public function testRejectsPersistenceOfObjectsWithInvalidAssociationValue($invalidValue)
+    public function testRejectsPersistenceOfObjectsWithInvalidAssociationValue($invalidValue) : void
     {
         $this->unitOfWork->setEntityPersister(
             ForumUser::class,
@@ -359,7 +359,7 @@ class UnitOfWorkTest extends OrmTestCase
      *
      * @param mixed $invalidValue
      */
-    public function testRejectsChangeSetComputationForObjectsWithInvalidAssociationValue($invalidValue)
+    public function testRejectsChangeSetComputationForObjectsWithInvalidAssociationValue($invalidValue) : void
     {
         $metadata = $this->emMock->getClassMetadata(ForumUser::class);
 
@@ -384,7 +384,7 @@ class UnitOfWorkTest extends OrmTestCase
      * @group DDC-3619
      * @group 1338
      */
-    public function testRemovedAndRePersistedEntitiesAreInTheIdentityMapAndAreNotGarbageCollected()
+    public function testRemovedAndRePersistedEntitiesAreInTheIdentityMapAndAreNotGarbageCollected() : void
     {
         $entity     = new ForumUser();
         $entity->id = 123;
@@ -403,7 +403,7 @@ class UnitOfWorkTest extends OrmTestCase
      * @group 5849
      * @group 5850
      */
-    public function testPersistedEntityAndClearManager()
+    public function testPersistedEntityAndClearManager() : void
     {
         $entity1 = new City(123, 'London');
         $entity2 = new Country(456, 'United Kingdom');
@@ -466,7 +466,7 @@ class UnitOfWorkTest extends OrmTestCase
      * @param string $idHash
      *
      */
-    public function testAddToIdentityMapValidIdentifiers($entity, $idHash)
+    public function testAddToIdentityMapValidIdentifiers($entity, $idHash) : void
     {
         $this->unitOfWork->persist($entity);
         $this->unitOfWork->addToIdentityMap($entity);
@@ -512,7 +512,7 @@ class UnitOfWorkTest extends OrmTestCase
         ];
     }
 
-    public function testRegisteringAManagedInstanceRequiresANonEmptyIdentifier()
+    public function testRegisteringAManagedInstanceRequiresANonEmptyIdentifier() : void
     {
         $this->expectException(ORMInvalidArgumentException::class);
 
@@ -526,7 +526,7 @@ class UnitOfWorkTest extends OrmTestCase
      * @param array  $identifier
      *
      */
-    public function testAddToIdentityMapInvalidIdentifiers($entity, array $identifier)
+    public function testAddToIdentityMapInvalidIdentifiers($entity, array $identifier) : void
     {
         $this->expectException(ORMInvalidArgumentException::class);
 
@@ -559,7 +559,7 @@ class UnitOfWorkTest extends OrmTestCase
      * @group DDC-2922
      * @group #1521
      */
-    public function testNewAssociatedEntityPersistenceOfNewEntitiesThroughCascadedAssociationsFirst()
+    public function testNewAssociatedEntityPersistenceOfNewEntitiesThroughCascadedAssociationsFirst() : void
     {
         $persister1 = new EntityPersisterMock($this->emMock, $this->emMock->getClassMetadata(CascadePersistedEntity::class));
         $persister2 = new EntityPersisterMock($this->emMock, $this->emMock->getClassMetadata(EntityWithCascadingAssociation::class));
@@ -596,7 +596,7 @@ class UnitOfWorkTest extends OrmTestCase
      * @group DDC-2922
      * @group #1521
      */
-    public function testNewAssociatedEntityPersistenceOfNewEntitiesThroughNonCascadedAssociationsFirst()
+    public function testNewAssociatedEntityPersistenceOfNewEntitiesThroughNonCascadedAssociationsFirst() : void
     {
         $persister1 = new EntityPersisterMock($this->emMock, $this->emMock->getClassMetadata(CascadePersistedEntity::class));
         $persister2 = new EntityPersisterMock($this->emMock, $this->emMock->getClassMetadata(EntityWithCascadingAssociation::class));
@@ -648,7 +648,7 @@ class UnitOfWorkTest extends OrmTestCase
      * @group DDC-2922
      * @group #1521
      */
-    public function testPreviousDetectedIllegalNewNonCascadedEntitiesAreCleanedUpOnSubsequentCommits()
+    public function testPreviousDetectedIllegalNewNonCascadedEntitiesAreCleanedUpOnSubsequentCommits() : void
     {
         $persister1 = new EntityPersisterMock($this->emMock, $this->emMock->getClassMetadata(CascadePersistedEntity::class));
         $persister2 = new EntityPersisterMock($this->emMock, $this->emMock->getClassMetadata(EntityWithNonCascadingAssociation::class));
@@ -685,7 +685,7 @@ class UnitOfWorkTest extends OrmTestCase
     /**
      * @group DDC-3120
      */
-    public function testCanInstantiateInternalPhpClassSubclass()
+    public function testCanInstantiateInternalPhpClassSubclass() : void
     {
         $classMetadata = new ClassMetadata(MyArrayObjectEntity::class, $this->metadataBuildingContext);
 
@@ -695,7 +695,7 @@ class UnitOfWorkTest extends OrmTestCase
     /**
      * @group DDC-3120
      */
-    public function testCanInstantiateInternalPhpClassSubclassFromUnserializedMetadata()
+    public function testCanInstantiateInternalPhpClassSubclassFromUnserializedMetadata() : void
     {
         /* @var $classMetadata ClassMetadata */
         $classMetadata = unserialize(

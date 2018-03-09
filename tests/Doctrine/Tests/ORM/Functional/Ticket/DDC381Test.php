@@ -11,7 +11,7 @@ use function unserialize;
 
 class DDC381Test extends OrmFunctionalTestCase
 {
-    protected function setUp()
+    protected function setUp() : void
     {
         parent::setUp();
 
@@ -25,7 +25,7 @@ class DDC381Test extends OrmFunctionalTestCase
         }
     }
 
-    public function testCallUnserializedProxyMethods()
+    public function testCallUnserializedProxyMethods() : void
     {
         $entity = new DDC381Entity();
 

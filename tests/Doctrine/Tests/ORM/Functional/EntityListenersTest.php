@@ -19,7 +19,7 @@ class EntityListenersTest extends OrmFunctionalTestCase
     /** @var CompanyContractListener */
     private $listener;
 
-    protected function setUp()
+    protected function setUp() : void
     {
         $this->useModelSet('company');
         parent::setUp();
@@ -29,7 +29,7 @@ class EntityListenersTest extends OrmFunctionalTestCase
             ->resolve(CompanyContractListener::class);
     }
 
-    public function testPreFlushListeners()
+    public function testPreFlushListeners() : void
     {
         $fix = new CompanyFixContract();
         $fix->setFixPrice(2000);
@@ -45,7 +45,7 @@ class EntityListenersTest extends OrmFunctionalTestCase
         self::assertInstanceOf(PreFlushEventArgs::class, $this->listener->preFlushCalls[0][1]);
     }
 
-    public function testPostLoadListeners()
+    public function testPostLoadListeners() : void
     {
         $fix = new CompanyFixContract();
         $fix->setFixPrice(2000);
@@ -65,7 +65,7 @@ class EntityListenersTest extends OrmFunctionalTestCase
         self::assertInstanceOf(LifecycleEventArgs::class, $this->listener->postLoadCalls[0][1]);
     }
 
-    public function testPrePersistListeners()
+    public function testPrePersistListeners() : void
     {
         $fix = new CompanyFixContract();
         $fix->setFixPrice(2000);
@@ -81,7 +81,7 @@ class EntityListenersTest extends OrmFunctionalTestCase
         self::assertInstanceOf(LifecycleEventArgs::class, $this->listener->prePersistCalls[0][1]);
     }
 
-    public function testPostPersistListeners()
+    public function testPostPersistListeners() : void
     {
         $fix = new CompanyFixContract();
         $fix->setFixPrice(2000);
@@ -97,7 +97,7 @@ class EntityListenersTest extends OrmFunctionalTestCase
         self::assertInstanceOf(LifecycleEventArgs::class, $this->listener->postPersistCalls[0][1]);
     }
 
-    public function testPreUpdateListeners()
+    public function testPreUpdateListeners() : void
     {
         $fix = new CompanyFixContract();
         $fix->setFixPrice(1000);
@@ -118,7 +118,7 @@ class EntityListenersTest extends OrmFunctionalTestCase
         self::assertInstanceOf(PreUpdateEventArgs::class, $this->listener->preUpdateCalls[0][1]);
     }
 
-    public function testPostUpdateListeners()
+    public function testPostUpdateListeners() : void
     {
         $fix = new CompanyFixContract();
         $fix->setFixPrice(1000);
@@ -139,7 +139,7 @@ class EntityListenersTest extends OrmFunctionalTestCase
         self::assertInstanceOf(LifecycleEventArgs::class, $this->listener->postUpdateCalls[0][1]);
     }
 
-    public function testPreRemoveListeners()
+    public function testPreRemoveListeners() : void
     {
         $fix = new CompanyFixContract();
         $fix->setFixPrice(1000);
@@ -158,7 +158,7 @@ class EntityListenersTest extends OrmFunctionalTestCase
         self::assertInstanceOf(LifecycleEventArgs::class, $this->listener->preRemoveCalls[0][1]);
     }
 
-    public function testPostRemoveListeners()
+    public function testPostRemoveListeners() : void
     {
         $fix = new CompanyFixContract();
         $fix->setFixPrice(1000);

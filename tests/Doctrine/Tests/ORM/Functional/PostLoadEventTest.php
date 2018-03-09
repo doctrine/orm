@@ -24,7 +24,7 @@ class PostLoadEventTest extends OrmFunctionalTestCase
     /**
      * {@inheritdoc}
      */
-    protected function setUp()
+    protected function setUp() : void
     {
         $this->useModelSet('cms');
 
@@ -33,7 +33,7 @@ class PostLoadEventTest extends OrmFunctionalTestCase
         $this->loadFixture();
     }
 
-    public function testLoadedEntityUsingFindShouldTriggerEvent()
+    public function testLoadedEntityUsingFindShouldTriggerEvent() : void
     {
         $mockListener = $this->createMock(PostLoadListener::class);
 
@@ -50,7 +50,7 @@ class PostLoadEventTest extends OrmFunctionalTestCase
         $this->em->find(CmsUser::class, $this->userId);
     }
 
-    public function testLoadedEntityUsingQueryShouldTriggerEvent()
+    public function testLoadedEntityUsingQueryShouldTriggerEvent() : void
     {
         $mockListener = $this->createMock(PostLoadListener::class);
 
@@ -70,7 +70,7 @@ class PostLoadEventTest extends OrmFunctionalTestCase
         $query->getResult();
     }
 
-    public function testLoadedAssociationToOneShouldTriggerEvent()
+    public function testLoadedAssociationToOneShouldTriggerEvent() : void
     {
         $mockListener = $this->createMock(PostLoadListener::class);
 
@@ -90,7 +90,7 @@ class PostLoadEventTest extends OrmFunctionalTestCase
         $query->getResult();
     }
 
-    public function testLoadedAssociationToManyShouldTriggerEvent()
+    public function testLoadedAssociationToManyShouldTriggerEvent() : void
     {
         $mockListener = $this->createMock(PostLoadListener::class);
 
@@ -110,7 +110,7 @@ class PostLoadEventTest extends OrmFunctionalTestCase
         $query->getResult();
     }
 
-    public function testLoadedProxyEntityShouldTriggerEvent()
+    public function testLoadedProxyEntityShouldTriggerEvent() : void
     {
         $eventManager = $this->em->getEventManager();
 
@@ -141,7 +141,7 @@ class PostLoadEventTest extends OrmFunctionalTestCase
         $userProxy->getName();
     }
 
-    public function testLoadedProxyPartialShouldTriggerEvent()
+    public function testLoadedProxyPartialShouldTriggerEvent() : void
     {
         $eventManager = $this->em->getEventManager();
 
@@ -162,7 +162,7 @@ class PostLoadEventTest extends OrmFunctionalTestCase
         $query->getResult();
     }
 
-    public function testLoadedProxyAssociationToOneShouldTriggerEvent()
+    public function testLoadedProxyAssociationToOneShouldTriggerEvent() : void
     {
         $user = $this->em->find(CmsUser::class, $this->userId);
 
@@ -183,7 +183,7 @@ class PostLoadEventTest extends OrmFunctionalTestCase
         $emailProxy->getEmail();
     }
 
-    public function testLoadedProxyAssociationToManyShouldTriggerEvent()
+    public function testLoadedProxyAssociationToManyShouldTriggerEvent() : void
     {
         $user = $this->em->find(CmsUser::class, $this->userId);
 
@@ -207,7 +207,7 @@ class PostLoadEventTest extends OrmFunctionalTestCase
     /**
      * @group DDC-3005
      */
-    public function testAssociationsArePopulatedWhenEventIsFired()
+    public function testAssociationsArePopulatedWhenEventIsFired() : void
     {
         $checkerListener = new PostLoadListenerCheckAssociationsArePopulated();
         $this->em->getEventManager()->addEventListener([Events::postLoad], $checkerListener);
@@ -224,7 +224,7 @@ class PostLoadEventTest extends OrmFunctionalTestCase
     /**
      * @group DDC-3005
      */
-    public function testEventRaisedCorrectTimesWhenOtherEntityLoadedInEventHandler()
+    public function testEventRaisedCorrectTimesWhenOtherEntityLoadedInEventHandler() : void
     {
         $eventManager = $this->em->getEventManager();
         $listener     = new PostLoadListenerLoadEntityInEventHandler();

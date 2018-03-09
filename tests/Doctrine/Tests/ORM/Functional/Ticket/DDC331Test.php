@@ -11,7 +11,7 @@ use Doctrine\Tests\OrmFunctionalTestCase;
  */
 class DDC331Test extends OrmFunctionalTestCase
 {
-    protected function setUp()
+    protected function setUp() : void
     {
         $this->useModelSet('company');
         parent::setUp();
@@ -20,7 +20,7 @@ class DDC331Test extends OrmFunctionalTestCase
     /**
      * @group DDC-331
      */
-    public function testSelectFieldOnRootEntity()
+    public function testSelectFieldOnRootEntity() : void
     {
         $q = $this->em->createQuery('SELECT e.name FROM Doctrine\Tests\Models\Company\CompanyEmployee e');
 

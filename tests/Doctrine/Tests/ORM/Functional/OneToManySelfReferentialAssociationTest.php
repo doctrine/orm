@@ -18,7 +18,7 @@ class OneToManySelfReferentialAssociationTest extends OrmFunctionalTestCase
     private $firstChild;
     private $secondChild;
 
-    protected function setUp()
+    protected function setUp() : void
     {
         $this->useModelSet('ecommerce');
         parent::setUp();
@@ -30,7 +30,7 @@ class OneToManySelfReferentialAssociationTest extends OrmFunctionalTestCase
         $this->secondChild->setName('Php books');
     }
 
-    public function testSavesAOneToManyAssociationWithCascadeSaveSet()
+    public function testSavesAOneToManyAssociationWithCascadeSaveSet() : void
     {
         $this->parent->addChild($this->firstChild);
         $this->parent->addChild($this->secondChild);
@@ -42,7 +42,7 @@ class OneToManySelfReferentialAssociationTest extends OrmFunctionalTestCase
         self::assertForeignKeyIs($this->parent->getId(), $this->secondChild);
     }
 
-    public function testSavesAnEmptyCollection()
+    public function testSavesAnEmptyCollection() : void
     {
         $this->em->persist($this->parent);
         $this->em->flush();
@@ -50,7 +50,7 @@ class OneToManySelfReferentialAssociationTest extends OrmFunctionalTestCase
         self::assertCount(0, $this->parent->getChildren());
     }
 
-    public function testDoesNotSaveAnInverseSideSet()
+    public function testDoesNotSaveAnInverseSideSet() : void
     {
         $this->parent->brokenAddChild($this->firstChild);
         $this->em->persist($this->parent);
@@ -59,7 +59,7 @@ class OneToManySelfReferentialAssociationTest extends OrmFunctionalTestCase
         self::assertForeignKeyIs(null, $this->firstChild);
     }
 
-    public function testRemovesOneToManyAssociation()
+    public function testRemovesOneToManyAssociation() : void
     {
         $this->parent->addChild($this->firstChild);
         $this->parent->addChild($this->secondChild);
@@ -72,7 +72,7 @@ class OneToManySelfReferentialAssociationTest extends OrmFunctionalTestCase
         self::assertForeignKeyIs($this->parent->getId(), $this->secondChild);
     }
 
-    public function testEagerLoadsOneToManyAssociation()
+    public function testEagerLoadsOneToManyAssociation() : void
     {
         $this->createFixture();
 
@@ -90,7 +90,7 @@ class OneToManySelfReferentialAssociationTest extends OrmFunctionalTestCase
         self::assertEquals(' books', strstr($children[1]->getName(), ' books'));
     }
 
-    public function testLazyLoadsOneToManyAssociation()
+    public function testLazyLoadsOneToManyAssociation() : void
     {
         $this->createFixture();
         $metadata = $this->em->getClassMetadata(ECommerceCategory::class);

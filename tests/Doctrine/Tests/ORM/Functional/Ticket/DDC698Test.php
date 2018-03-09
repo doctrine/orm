@@ -9,7 +9,7 @@ use Doctrine\Tests\OrmFunctionalTestCase;
 
 class DDC698Test extends OrmFunctionalTestCase
 {
-    protected function setUp()
+    protected function setUp() : void
     {
         parent::setUp();
         try {
@@ -23,7 +23,7 @@ class DDC698Test extends OrmFunctionalTestCase
         }
     }
 
-    public function testTicket()
+    public function testTicket() : void
     {
         $qb = $this->em->createQueryBuilder();
         $qb->select('p', 'r')

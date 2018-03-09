@@ -25,21 +25,21 @@ class BasicInheritanceMappingTest extends OrmTestCase
     /**
      * {@inheritDoc}
      */
-    protected function setUp()
+    protected function setUp() : void
     {
         $this->cmf = new ClassMetadataFactory();
 
         $this->cmf->setEntityManager($this->getTestEntityManager());
     }
 
-    public function testGetMetadataForTransientClassThrowsException()
+    public function testGetMetadataForTransientClassThrowsException() : void
     {
         $this->expectException(MappingException::class);
 
         $this->cmf->getMetadataFor(TransientBaseClass::class);
     }
 
-    public function testGetMetadataForSubclassWithTransientBaseClass()
+    public function testGetMetadataForSubclassWithTransientBaseClass() : void
     {
         $class = $this->cmf->getMetadataFor(EntitySubClass::class);
 
@@ -50,7 +50,7 @@ class BasicInheritanceMappingTest extends OrmTestCase
         self::assertNotNull($class->getProperty('name'));
     }
 
-    public function testGetMetadataForSubclassWithMappedSuperclass()
+    public function testGetMetadataForSubclassWithMappedSuperclass() : void
     {
         $class = $this->cmf->getMetadataFor(EntitySubClass2::class);
 
@@ -74,7 +74,7 @@ class BasicInheritanceMappingTest extends OrmTestCase
     /**
      * @group DDC-869
      */
-    public function testGetMetadataForSubclassWithMappedSuperclassWithRepository()
+    public function testGetMetadataForSubclassWithMappedSuperclassWithRepository() : void
     {
         $class = $this->cmf->getMetadataFor(DDC869CreditCardPayment::class);
 
@@ -104,7 +104,7 @@ class BasicInheritanceMappingTest extends OrmTestCase
     /**
      * @group DDC-1203
      */
-    public function testUnmappedSuperclassInHierarchy()
+    public function testUnmappedSuperclassInHierarchy() : void
     {
         $class = $this->cmf->getMetadataFor(HierarchyD::class);
 
@@ -116,7 +116,7 @@ class BasicInheritanceMappingTest extends OrmTestCase
     /**
      * @group DDC-1204
      */
-    public function testUnmappedEntityInHierarchy()
+    public function testUnmappedEntityInHierarchy() : void
     {
         $this->expectException(MappingException::class);
         $this->expectExceptionMessage(
@@ -133,7 +133,7 @@ class BasicInheritanceMappingTest extends OrmTestCase
      * @group DDC-1204
      * @group DDC-1203
      */
-    public function testMappedSuperclassWithId()
+    public function testMappedSuperclassWithId() : void
     {
         $class = $this->cmf->getMetadataFor(SuperclassEntity::class);
 
@@ -144,7 +144,7 @@ class BasicInheritanceMappingTest extends OrmTestCase
      * @group DDC-1156
      * @group DDC-1218
      */
-    public function testGeneratedValueFromMappedSuperclass()
+    public function testGeneratedValueFromMappedSuperclass() : void
     {
         /* @var ClassMetadata $class */
         $class = $this->cmf->getMetadataFor(SuperclassEntity::class);
@@ -160,7 +160,7 @@ class BasicInheritanceMappingTest extends OrmTestCase
      * @group DDC-1156
      * @group DDC-1218
      */
-    public function testSequenceDefinitionInHierarchyWithSandwichMappedSuperclass()
+    public function testSequenceDefinitionInHierarchyWithSandwichMappedSuperclass() : void
     {
         /* @var ClassMetadata $class */
         $class = $this->cmf->getMetadataFor(HierarchyD::class);
@@ -176,7 +176,7 @@ class BasicInheritanceMappingTest extends OrmTestCase
      * @group DDC-1156
      * @group DDC-1218
      */
-    public function testMultipleMappedSuperclasses()
+    public function testMultipleMappedSuperclasses() : void
     {
         /* @var ClassMetadata $class */
         $class = $this->cmf->getMetadataFor(MediumSuperclassEntity::class);

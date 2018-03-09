@@ -26,7 +26,7 @@ class IdentifierFlattenerTest extends OrmFunctionalTestCase
      */
     private $identifierFlattener;
 
-    protected function setUp()
+    protected function setUp() : void
     {
         parent::setUp();
 
@@ -51,7 +51,7 @@ class IdentifierFlattenerTest extends OrmFunctionalTestCase
     /**
      * @group utilities
      */
-    public function testFlattenIdentifierWithOneToOneId()
+    public function testFlattenIdentifierWithOneToOneId() : void
     {
         $secondRelatedEntity       = new SecondRelatedEntity();
         $secondRelatedEntity->name = 'Bob';
@@ -96,7 +96,7 @@ class IdentifierFlattenerTest extends OrmFunctionalTestCase
     /**
      * @group utilities
      */
-    public function testFlattenIdentifierWithMutlipleIds()
+    public function testFlattenIdentifierWithMutlipleIds() : void
     {
         $leeds  = new City('Leeds');
         $london = new City('London');

@@ -16,7 +16,7 @@ class DDC1778Test extends OrmFunctionalTestCase
     private $user;
     private $phone;
 
-    public function setUp()
+    public function setUp() : void
     {
         $this->useModelSet('cms');
         parent::setUp();
@@ -39,7 +39,7 @@ class DDC1778Test extends OrmFunctionalTestCase
         $this->phone = $this->em->find(CmsPhonenumber::class, $this->phone->phonenumber);
     }
 
-    public function testClear()
+    public function testClear() : void
     {
         $clonedNumbers = clone $this->user->getPhonenumbers();
         $clonedNumbers->clear();
@@ -51,7 +51,7 @@ class DDC1778Test extends OrmFunctionalTestCase
         self::assertCount(1, $this->user->getPhonenumbers());
     }
 
-    public function testRemove()
+    public function testRemove() : void
     {
         $clonedNumbers = clone $this->user->getPhonenumbers();
         $clonedNumbers->remove(0);
@@ -63,7 +63,7 @@ class DDC1778Test extends OrmFunctionalTestCase
         self::assertCount(1, $this->user->getPhonenumbers());
     }
 
-    public function testRemoveElement()
+    public function testRemoveElement() : void
     {
         $clonedNumbers = clone $this->user->getPhonenumbers();
         $clonedNumbers->removeElement($this->phone);

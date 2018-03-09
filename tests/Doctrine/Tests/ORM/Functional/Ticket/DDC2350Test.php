@@ -13,7 +13,7 @@ use Doctrine\Tests\OrmFunctionalTestCase;
  */
 class DDC2350Test extends OrmFunctionalTestCase
 {
-    protected function setUp()
+    protected function setUp() : void
     {
         parent::setUp();
 
@@ -25,7 +25,7 @@ class DDC2350Test extends OrmFunctionalTestCase
         );
     }
 
-    public function testEagerCollectionsAreOnlyRetrievedOnce()
+    public function testEagerCollectionsAreOnlyRetrievedOnce() : void
     {
         $user       = new DDC2350User();
         $bug1       = new DDC2350Bug();

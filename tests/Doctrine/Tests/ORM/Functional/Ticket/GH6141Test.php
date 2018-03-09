@@ -14,7 +14,7 @@ use function in_array;
 
 class GH6141Test extends OrmFunctionalTestCase
 {
-    protected function setUp()
+    protected function setUp() : void
     {
         parent::setUp();
 
@@ -36,7 +36,7 @@ class GH6141Test extends OrmFunctionalTestCase
      *
      * @group 6141
      */
-    public function testEnumDiscriminatorsShouldBeConvertedToString()
+    public function testEnumDiscriminatorsShouldBeConvertedToString() : void
     {
         $boss     = new GH6141Boss('John');
         $employee = new GH6141Employee('Bob');

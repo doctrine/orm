@@ -22,7 +22,7 @@ class NewOperatorTest extends OrmFunctionalTestCase
     /** @var array */
     private $fixtures;
 
-    protected function setUp()
+    protected function setUp() : void
     {
         $this->useModelSet('cms');
         parent::setUp();
@@ -102,7 +102,7 @@ class NewOperatorTest extends OrmFunctionalTestCase
     /**
      * @dataProvider provideDataForHydrationMode
      */
-    public function testShouldSupportsBasicUsage($hydrationMode)
+    public function testShouldSupportsBasicUsage($hydrationMode) : void
     {
         $dql = '
             SELECT
@@ -145,7 +145,7 @@ class NewOperatorTest extends OrmFunctionalTestCase
     /**
      * @dataProvider provideDataForHydrationMode
      */
-    public function testShouldIgnoreAliasesForSingleObject($hydrationMode)
+    public function testShouldIgnoreAliasesForSingleObject($hydrationMode) : void
     {
         $dql = '
             SELECT
@@ -185,7 +185,7 @@ class NewOperatorTest extends OrmFunctionalTestCase
         self::assertEquals($this->fixtures[2]->address->city, $result[2]->address);
     }
 
-    public function testShouldAssumeFromEntityNamespaceWhenNotGiven()
+    public function testShouldAssumeFromEntityNamespaceWhenNotGiven() : void
     {
         $dql = '
             SELECT
@@ -209,7 +209,7 @@ class NewOperatorTest extends OrmFunctionalTestCase
         self::assertInstanceOf(CmsUserDTO::class, $result[2]);
     }
 
-    public function testShouldSupportLiteralExpression()
+    public function testShouldSupportLiteralExpression() : void
     {
         $dql = "
             SELECT
@@ -258,7 +258,7 @@ class NewOperatorTest extends OrmFunctionalTestCase
         self::assertEquals(123, $result[2]->phonenumbers);
     }
 
-    public function testShouldSupportCaseExpression()
+    public function testShouldSupportCaseExpression() : void
     {
         $dql = "
             SELECT
@@ -297,7 +297,7 @@ class NewOperatorTest extends OrmFunctionalTestCase
         self::assertEquals('OTHER_TEST', $result[2]->email);
     }
 
-    public function testShouldSupportSimpleArithmeticExpression()
+    public function testShouldSupportSimpleArithmeticExpression() : void
     {
         $dql = '
             SELECT
@@ -357,7 +357,7 @@ class NewOperatorTest extends OrmFunctionalTestCase
         );
     }
 
-    public function testShouldSupportAggregateFunctions()
+    public function testShouldSupportAggregateFunctions() : void
     {
         $dql = '
             SELECT
@@ -417,7 +417,7 @@ class NewOperatorTest extends OrmFunctionalTestCase
         );
     }
 
-    public function testShouldSupportArithmeticExpression()
+    public function testShouldSupportArithmeticExpression() : void
     {
         $dql = '
             SELECT
@@ -477,7 +477,7 @@ class NewOperatorTest extends OrmFunctionalTestCase
         );
     }
 
-    public function testShouldSupportMultipleNewOperators()
+    public function testShouldSupportMultipleNewOperators() : void
     {
         $dql = '
             SELECT
@@ -528,7 +528,7 @@ class NewOperatorTest extends OrmFunctionalTestCase
         self::assertEquals($this->fixtures[2]->address->country, $result[2][1]->country);
     }
 
-    public function testShouldSupportMultipleNewOperatorsWithAliases()
+    public function testShouldSupportMultipleNewOperatorsWithAliases() : void
     {
         $dql = '
             SELECT
@@ -579,7 +579,7 @@ class NewOperatorTest extends OrmFunctionalTestCase
         self::assertEquals($this->fixtures[2]->address->country, $result[2]['cmsAddress']->country);
     }
 
-    public function testShouldSupportMultipleNewOperatorsWithAndWithoutAliases()
+    public function testShouldSupportMultipleNewOperatorsWithAndWithoutAliases() : void
     {
         $dql = '
             SELECT
@@ -630,7 +630,7 @@ class NewOperatorTest extends OrmFunctionalTestCase
         self::assertEquals($this->fixtures[2]->address->country, $result[2][0]->country);
     }
 
-    public function testShouldSupportMultipleNewOperatorsAndSingleScalar()
+    public function testShouldSupportMultipleNewOperatorsAndSingleScalar() : void
     {
         $dql = '
             SELECT
@@ -686,7 +686,7 @@ class NewOperatorTest extends OrmFunctionalTestCase
         self::assertEquals($this->fixtures[2]->status, $result[2]['status']);
     }
 
-    public function testShouldSupportMultipleNewOperatorsAndSingleScalarWithAliases()
+    public function testShouldSupportMultipleNewOperatorsAndSingleScalarWithAliases() : void
     {
         $dql = '
             SELECT
@@ -742,7 +742,7 @@ class NewOperatorTest extends OrmFunctionalTestCase
         self::assertEquals($this->fixtures[2]->status, $result[2]['cmsUserStatus']);
     }
 
-    public function testShouldSupportMultipleNewOperatorsAndSingleScalarWithAndWithoutAliases()
+    public function testShouldSupportMultipleNewOperatorsAndSingleScalarWithAndWithoutAliases() : void
     {
         $dql = '
             SELECT
@@ -798,7 +798,7 @@ class NewOperatorTest extends OrmFunctionalTestCase
         self::assertEquals($this->fixtures[2]->status, $result[2]['status']);
     }
 
-    public function testShouldSupportMultipleNewOperatorsAndMultipleScalars()
+    public function testShouldSupportMultipleNewOperatorsAndMultipleScalars() : void
     {
         $dql = '
             SELECT
@@ -859,7 +859,7 @@ class NewOperatorTest extends OrmFunctionalTestCase
         self::assertEquals($this->fixtures[2]->username, $result[2]['username']);
     }
 
-    public function testShouldSupportMultipleNewOperatorsAndMultipleScalarsWithAliases()
+    public function testShouldSupportMultipleNewOperatorsAndMultipleScalarsWithAliases() : void
     {
         $dql = '
             SELECT
@@ -920,7 +920,7 @@ class NewOperatorTest extends OrmFunctionalTestCase
         self::assertEquals($this->fixtures[2]->username, $result[2]['cmsUserUsername']);
     }
 
-    public function testShouldSupportMultipleNewOperatorsAndMultipleScalarsWithAndWithoutAliases()
+    public function testShouldSupportMultipleNewOperatorsAndMultipleScalarsWithAndWithoutAliases() : void
     {
         $dql = '
             SELECT
@@ -985,7 +985,7 @@ class NewOperatorTest extends OrmFunctionalTestCase
      * @expectedException Doctrine\ORM\Query\QueryException
      * @expectedExceptionMessage [Semantical Error] line 0, col 11 near '\InvalidClass(u.name)': Error: Class "\InvalidClass" is not defined.
      */
-    public function testInvalidClassException()
+    public function testInvalidClassException() : void
     {
         $dql = 'SELECT new \InvalidClass(u.name) FROM Doctrine\Tests\Models\CMS\CmsUser u';
         $this->em->createQuery($dql)->getResult();
@@ -995,7 +995,7 @@ class NewOperatorTest extends OrmFunctionalTestCase
      * @expectedException Doctrine\ORM\Query\QueryException
      * @expectedExceptionMessage [Semantical Error] line 0, col 11 near '\stdClass(u.name)': Error: Class "\stdClass" has not a valid constructor.
      */
-    public function testInvalidClassConstructorException()
+    public function testInvalidClassConstructorException() : void
     {
         $dql = 'SELECT new \stdClass(u.name) FROM Doctrine\Tests\Models\CMS\CmsUser u';
         $this->em->createQuery($dql)->getResult();
@@ -1005,7 +1005,7 @@ class NewOperatorTest extends OrmFunctionalTestCase
      * @expectedException Doctrine\ORM\Query\QueryException
      * @expectedExceptionMessage [Semantical Error] line 0, col 11 near 'Doctrine\Tests\ORM\Functional\ClassWithTooMuchArgs(u.name)': Error: Number of arguments does not match with "Doctrine\Tests\ORM\Functional\ClassWithTooMuchArgs" constructor declaration.
      */
-    public function testInvalidClassWithoutConstructorException()
+    public function testInvalidClassWithoutConstructorException() : void
     {
         $dql = 'SELECT new Doctrine\Tests\ORM\Functional\ClassWithTooMuchArgs(u.name) FROM Doctrine\Tests\Models\CMS\CmsUser u';
         $this->em->createQuery($dql)->getResult();
@@ -1015,7 +1015,7 @@ class NewOperatorTest extends OrmFunctionalTestCase
      * @expectedException Doctrine\ORM\Query\QueryException
      * @expectedExceptionMessage [Semantical Error] line 0, col 11 near 'Doctrine\Tests\ORM\Functional\ClassWithPrivateConstructor(u.name)': Error: Class "Doctrine\Tests\ORM\Functional\ClassWithPrivateConstructor" can not be instantiated.
      */
-    public function testClassCantBeInstantiatedException()
+    public function testClassCantBeInstantiatedException() : void
     {
         $dql = 'SELECT new Doctrine\Tests\ORM\Functional\ClassWithPrivateConstructor(u.name) FROM Doctrine\Tests\Models\CMS\CmsUser u';
         $this->em->createQuery($dql)->getResult();

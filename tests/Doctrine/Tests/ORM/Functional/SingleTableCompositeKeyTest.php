@@ -11,13 +11,13 @@ use Doctrine\Tests\OrmFunctionalTestCase;
 
 class SingleTableCompositeKeyTest extends OrmFunctionalTestCase
 {
-    public function setUp()
+    public function setUp() : void
     {
         $this->useModelSet('compositekeyinheritance');
         parent::setUp();
     }
 
-    public function testInsertWithCompositeKey()
+    public function testInsertWithCompositeKey() : void
     {
         $childEntity = new SingleChildClass();
         $this->em->persist($childEntity);
@@ -32,7 +32,7 @@ class SingleTableCompositeKeyTest extends OrmFunctionalTestCase
     /**
      * @group non-cacheable
      */
-    public function testUpdateWithCompositeKey()
+    public function testUpdateWithCompositeKey() : void
     {
         $childEntity = new SingleChildClass();
         $this->em->persist($childEntity);

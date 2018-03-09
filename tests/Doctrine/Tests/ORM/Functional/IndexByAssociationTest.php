@@ -19,7 +19,7 @@ class IndexByAssociationTest extends OrmFunctionalTestCase
 
     private $bond;
 
-    public function setUp()
+    public function setUp() : void
     {
         $this->useModelSet('stockexchange');
         parent::setUp();
@@ -44,7 +44,7 @@ class IndexByAssociationTest extends OrmFunctionalTestCase
         $this->em->clear();
     }
 
-    public function testManyToOneFinder()
+    public function testManyToOneFinder() : void
     {
         /* @var $market Market */
         $market = $this->em->find(Market::class, $this->market->getId());
@@ -56,7 +56,7 @@ class IndexByAssociationTest extends OrmFunctionalTestCase
         self::assertEquals('GOOG', $market->stocks['GOOG']->getSymbol());
     }
 
-    public function testManyToOneDQL()
+    public function testManyToOneDQL() : void
     {
         $dql    = 'SELECT m, s FROM Doctrine\Tests\Models\StockExchange\Market m JOIN m.stocks s WHERE m.id = ?1';
         $market = $this->em->createQuery($dql)->setParameter(1, $this->market->getId())->getSingleResult();
@@ -68,7 +68,7 @@ class IndexByAssociationTest extends OrmFunctionalTestCase
         self::assertEquals('GOOG', $market->stocks['GOOG']->getSymbol());
     }
 
-    public function testManyToMany()
+    public function testManyToMany() : void
     {
         $bond = $this->em->find(Bond::class, $this->bond->getId());
 
@@ -79,7 +79,7 @@ class IndexByAssociationTest extends OrmFunctionalTestCase
         self::assertEquals('GOOG', $bond->stocks['GOOG']->getSymbol());
     }
 
-    public function testManytoManyDQL()
+    public function testManytoManyDQL() : void
     {
         $dql  = 'SELECT b, s FROM Doctrine\Tests\Models\StockExchange\Bond b JOIN b.stocks s WHERE b.id = ?1';
         $bond = $this->em->createQuery($dql)->setParameter(1, $this->bond->getId())->getSingleResult();
@@ -91,7 +91,7 @@ class IndexByAssociationTest extends OrmFunctionalTestCase
         self::assertEquals('GOOG', $bond->stocks['GOOG']->getSymbol());
     }
 
-    public function testDqlOverrideIndexBy()
+    public function testDqlOverrideIndexBy() : void
     {
         $dql  = 'SELECT b, s FROM Doctrine\Tests\Models\StockExchange\Bond b JOIN b.stocks s INDEX BY s.id WHERE b.id = ?1';
         $bond = $this->em->createQuery($dql)->setParameter(1, $this->bond->getId())->getSingleResult();

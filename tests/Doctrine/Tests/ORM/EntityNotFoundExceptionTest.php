@@ -14,7 +14,7 @@ use Doctrine\Tests\DoctrineTestCase;
  */
 class EntityNotFoundExceptionTest extends DoctrineTestCase
 {
-    public function testFromClassNameAndIdentifier()
+    public function testFromClassNameAndIdentifier() : void
     {
         $exception = EntityNotFoundException::fromClassNameAndIdentifier(
             'foo',

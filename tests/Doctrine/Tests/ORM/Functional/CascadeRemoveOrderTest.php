@@ -13,7 +13,7 @@ use Doctrine\Tests\OrmFunctionalTestCase;
  */
 class CascadeRemoveOrderTest extends OrmFunctionalTestCase
 {
-    protected function setUp()
+    protected function setUp() : void
     {
         parent::setUp();
 
@@ -25,7 +25,7 @@ class CascadeRemoveOrderTest extends OrmFunctionalTestCase
         );
     }
 
-    protected function tearDown()
+    protected function tearDown() : void
     {
         parent::tearDown();
 
@@ -37,7 +37,7 @@ class CascadeRemoveOrderTest extends OrmFunctionalTestCase
         );
     }
 
-    public function testSingle()
+    public function testSingle() : void
     {
         $eO = new CascadeRemoveOrderEntityO();
         $eG = new CascadeRemoveOrderEntityG($eO);
@@ -54,7 +54,7 @@ class CascadeRemoveOrderTest extends OrmFunctionalTestCase
         self::assertNull($this->em->find(CascadeRemoveOrderEntityG::class, $eG->getId()));
     }
 
-    public function testMany()
+    public function testMany() : void
     {
         $eO  = new CascadeRemoveOrderEntityO();
         $eG1 = new CascadeRemoveOrderEntityG($eO);

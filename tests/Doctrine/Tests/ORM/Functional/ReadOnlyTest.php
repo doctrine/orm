@@ -15,7 +15,7 @@ use function get_class;
  */
 class ReadOnlyTest extends OrmFunctionalTestCase
 {
-    protected function setUp()
+    protected function setUp() : void
     {
         parent::setUp();
 
@@ -29,7 +29,7 @@ class ReadOnlyTest extends OrmFunctionalTestCase
         }
     }
 
-    public function testReadOnlyEntityNeverChangeTracked()
+    public function testReadOnlyEntityNeverChangeTracked() : void
     {
         $readOnly = new ReadOnlyEntity('Test1', 1234);
         $this->em->persist($readOnly);
@@ -49,7 +49,7 @@ class ReadOnlyTest extends OrmFunctionalTestCase
     /**
      * @group DDC-1659
      */
-    public function testClearReadOnly()
+    public function testClearReadOnly() : void
     {
         $readOnly = new ReadOnlyEntity('Test1', 1234);
         $this->em->persist($readOnly);
@@ -64,7 +64,7 @@ class ReadOnlyTest extends OrmFunctionalTestCase
     /**
      * @group DDC-1659
      */
-    public function testClearEntitiesReadOnly()
+    public function testClearEntitiesReadOnly() : void
     {
         $readOnly = new ReadOnlyEntity('Test1', 1234);
         $this->em->persist($readOnly);

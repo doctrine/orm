@@ -13,7 +13,7 @@ use Doctrine\Tests\OrmFunctionalTestCase;
  */
 class GH2947Test extends OrmFunctionalTestCase
 {
-    protected function setUp()
+    protected function setUp() : void
     {
         $this->resultCacheImpl = new ArrayCache();
 
@@ -24,7 +24,7 @@ class GH2947Test extends OrmFunctionalTestCase
         );
     }
 
-    public function testIssue()
+    public function testIssue() : void
     {
         $this->createData();
         $initialQueryCount = $this->getCurrentQueryCount();

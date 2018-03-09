@@ -13,7 +13,7 @@ use Doctrine\Tests\OrmFunctionalTestCase;
  */
 class DDC1080Test extends OrmFunctionalTestCase
 {
-    public function testHydration()
+    public function testHydration() : void
     {
         $this->schemaTool->createSchema(
             [

@@ -22,7 +22,7 @@ class SimpleObjectHydratorTest extends HydrationTestCase
      * @expectedException \Doctrine\ORM\Internal\Hydration\HydrationException
      * @expectedExceptionMessage The discriminator column "discr" is missing for "Doctrine\Tests\Models\Company\CompanyPerson" using the DQL alias "p".
      */
-    public function testMissingDiscriminatorColumnException()
+    public function testMissingDiscriminatorColumnException() : void
     {
         $rsm = new ResultSetMapping();
 
@@ -45,7 +45,7 @@ class SimpleObjectHydratorTest extends HydrationTestCase
         $hydrator->hydrateAll($stmt, $rsm);
     }
 
-    public function testExtraFieldInResultSetShouldBeIgnore()
+    public function testExtraFieldInResultSetShouldBeIgnore() : void
     {
         $rsm = new ResultSetMapping();
 
@@ -78,7 +78,7 @@ class SimpleObjectHydratorTest extends HydrationTestCase
      * @expectedException \Doctrine\ORM\Internal\Hydration\HydrationException
      * @expectedExceptionMessage The discriminator value "subworker" is invalid. It must be one of "person", "manager", "employee".
      */
-    public function testInvalidDiscriminatorValueException()
+    public function testInvalidDiscriminatorValueException() : void
     {
         $rsm = new ResultSetMapping();
 
@@ -105,7 +105,7 @@ class SimpleObjectHydratorTest extends HydrationTestCase
     /**
      * @group issue-5989
      */
-    public function testNullValueShouldNotOverwriteFieldWithSameNameInJoinedInheritance()
+    public function testNullValueShouldNotOverwriteFieldWithSameNameInJoinedInheritance() : void
     {
         $rsm = new ResultSetMapping();
         $rsm->addEntityResult(Issue5989Person::class, 'p');

@@ -21,7 +21,7 @@ abstract class AbstractRegionTest extends OrmFunctionalTestCase
     /** @var ArrayCache */
     protected $cache;
 
-    protected function setUp()
+    protected function setUp() : void
     {
         parent::setUp();
 
@@ -45,7 +45,7 @@ abstract class AbstractRegionTest extends OrmFunctionalTestCase
     /**
      * @dataProvider dataProviderCacheValues
      */
-    public function testPutGetContainsEvict($key, $value)
+    public function testPutGetContainsEvict($key, $value) : void
     {
         self::assertFalse($this->region->contains($key));
 
@@ -62,7 +62,7 @@ abstract class AbstractRegionTest extends OrmFunctionalTestCase
         self::assertFalse($this->region->contains($key));
     }
 
-    public function testEvictAll()
+    public function testEvictAll() : void
     {
         $key1 = new CacheKeyMock('key.1');
         $key2 = new CacheKeyMock('key.2');

@@ -31,7 +31,7 @@ use function current;
 
 class SchemaToolTest extends OrmTestCase
 {
-    public function testAddUniqueIndexForUniqueFieldAnnotation()
+    public function testAddUniqueIndexForUniqueFieldAnnotation() : void
     {
         $em         = $this->getTestEntityManager();
         $schemaTool = new SchemaTool($em);
@@ -52,7 +52,7 @@ class SchemaToolTest extends OrmTestCase
         self::assertTrue($schema->getTable('cms_users')->columnsAreIndexed(['username']), 'username column should be indexed.');
     }
 
-    public function testAnnotationOptionsAttribute()
+    public function testAnnotationOptionsAttribute() : void
     {
         $em         = $this->getTestEntityManager();
         $schemaTool = new SchemaTool($em);
@@ -72,7 +72,7 @@ class SchemaToolTest extends OrmTestCase
     /**
      * @group DDC-200
      */
-    public function testPassColumnDefinitionToJoinColumn()
+    public function testPassColumnDefinitionToJoinColumn() : void
     {
         $customColumnDef = 'MEDIUMINT(6) UNSIGNED NOT NULL';
 
@@ -99,7 +99,7 @@ class SchemaToolTest extends OrmTestCase
     /**
      * @group DDC-283
      */
-    public function testPostGenerateEvents()
+    public function testPostGenerateEvents() : void
     {
         $listener = new GenerateSchemaEventListener();
 
@@ -126,7 +126,7 @@ class SchemaToolTest extends OrmTestCase
         self::assertTrue($listener->schemaCalled);
     }
 
-    public function testNullDefaultNotAddedToCustomSchemaOptions()
+    public function testNullDefaultNotAddedToCustomSchemaOptions() : void
     {
         $em         = $this->getTestEntityManager();
         $schemaTool = new SchemaTool($em);
@@ -142,7 +142,7 @@ class SchemaToolTest extends OrmTestCase
     /**
      * @group DDC-3671
      */
-    public function testSchemaHasProperIndexesFromUniqueConstraintAnnotation()
+    public function testSchemaHasProperIndexesFromUniqueConstraintAnnotation() : void
     {
         $em         = $this->getTestEntityManager();
         $schemaTool = new SchemaTool($em);
@@ -161,7 +161,7 @@ class SchemaToolTest extends OrmTestCase
         self::assertTrue($table->hasUniqueConstraint('uniq_hash'));
     }
 
-    public function testRemoveUniqueIndexOverruledByPrimaryKey()
+    public function testRemoveUniqueIndexOverruledByPrimaryKey() : void
     {
         $em         = $this->getTestEntityManager();
         $schemaTool = new SchemaTool($em);

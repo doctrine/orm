@@ -15,7 +15,7 @@ use Doctrine\Tests\OrmFunctionalTestCase;
  */
 class DDC1998Test extends OrmFunctionalTestCase
 {
-    public function testSqlConversionAsIdentifier()
+    public function testSqlConversionAsIdentifier() : void
     {
         Type::addType('ddc1998', DDC1998Type::class);
 

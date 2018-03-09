@@ -26,7 +26,7 @@ class SingleTableInheritanceTest extends OrmFunctionalTestCase
     private $flex;
     private $ultra;
 
-    public function setUp()
+    public function setUp() : void
     {
         $this->useModelSet('company');
         parent::setUp();
@@ -105,7 +105,7 @@ class SingleTableInheritanceTest extends OrmFunctionalTestCase
         $this->em->clear();
     }
 
-    public function testPersistChildOfBaseClass()
+    public function testPersistChildOfBaseClass() : void
     {
         $this->persistRelatedEmployees();
 
@@ -124,7 +124,7 @@ class SingleTableInheritanceTest extends OrmFunctionalTestCase
         self::assertEquals($this->salesPerson->getId(), $contract->getSalesPerson()->getId());
     }
 
-    public function testPersistDeepChildOfBaseClass()
+    public function testPersistDeepChildOfBaseClass() : void
     {
         $this->persistRelatedEmployees();
 
@@ -146,7 +146,7 @@ class SingleTableInheritanceTest extends OrmFunctionalTestCase
         self::assertEquals(50, $contract->getPricePerHour());
     }
 
-    public function testChildClassLifecycleUpdate()
+    public function testChildClassLifecycleUpdate() : void
     {
         $this->loadFullFixture();
 
@@ -160,7 +160,7 @@ class SingleTableInheritanceTest extends OrmFunctionalTestCase
         self::assertEquals(2500, $newFix->getFixPrice());
     }
 
-    public function testChildClassLifecycleRemove()
+    public function testChildClassLifecycleRemove() : void
     {
         $this->loadFullFixture();
 
@@ -171,7 +171,7 @@ class SingleTableInheritanceTest extends OrmFunctionalTestCase
         self::assertNull($this->em->find(CompanyContract::class, $this->fix->getId()));
     }
 
-    public function testFindAllForAbstractBaseClass()
+    public function testFindAllForAbstractBaseClass() : void
     {
         $this->loadFullFixture();
         $contracts = $this->em->getRepository(CompanyContract::class)->findAll();
@@ -180,7 +180,7 @@ class SingleTableInheritanceTest extends OrmFunctionalTestCase
         self::assertContainsOnly(CompanyContract::class, $contracts);
     }
 
-    public function testFindAllForChildClass()
+    public function testFindAllForChildClass() : void
     {
         $this->loadFullFixture();
 
@@ -189,7 +189,7 @@ class SingleTableInheritanceTest extends OrmFunctionalTestCase
         self::assertCount(1, $this->em->getRepository(CompanyFlexUltraContract::class)->findAll());
     }
 
-    public function testFindForAbstractBaseClass()
+    public function testFindForAbstractBaseClass() : void
     {
         $this->loadFullFixture();
 
@@ -199,7 +199,7 @@ class SingleTableInheritanceTest extends OrmFunctionalTestCase
         self::assertEquals(1000, $contract->getFixPrice());
     }
 
-    public function testQueryForAbstractBaseClass()
+    public function testQueryForAbstractBaseClass() : void
     {
         $this->loadFullFixture();
 
@@ -209,7 +209,7 @@ class SingleTableInheritanceTest extends OrmFunctionalTestCase
         self::assertContainsOnly(CompanyContract::class, $contracts);
     }
 
-    public function testQueryForChildClass()
+    public function testQueryForChildClass() : void
     {
         $this->loadFullFixture();
 
@@ -218,7 +218,7 @@ class SingleTableInheritanceTest extends OrmFunctionalTestCase
         self::assertCount(1, $this->em->createQuery('SELECT c FROM Doctrine\Tests\Models\Company\CompanyFlexUltraContract c')->getResult());
     }
 
-    public function testQueryBaseClassWithJoin()
+    public function testQueryBaseClassWithJoin() : void
     {
         $this->loadFullFixture();
 
@@ -227,7 +227,7 @@ class SingleTableInheritanceTest extends OrmFunctionalTestCase
         self::assertContainsOnly(CompanyContract::class, $contracts);
     }
 
-    public function testQueryScalarWithDiscriminatorValue()
+    public function testQueryScalarWithDiscriminatorValue() : void
     {
         $this->loadFullFixture();
 
@@ -242,7 +242,7 @@ class SingleTableInheritanceTest extends OrmFunctionalTestCase
         self::assertEquals(['fix', 'flexible', 'flexultra'], $discrValues);
     }
 
-    public function testQueryChildClassWithCondition()
+    public function testQueryChildClassWithCondition() : void
     {
         $this->loadFullFixture();
 
@@ -256,7 +256,7 @@ class SingleTableInheritanceTest extends OrmFunctionalTestCase
     /**
      * @group non-cacheable
      */
-    public function testUpdateChildClassWithCondition()
+    public function testUpdateChildClassWithCondition() : void
     {
         $this->loadFullFixture();
 
@@ -272,7 +272,7 @@ class SingleTableInheritanceTest extends OrmFunctionalTestCase
         self::assertEquals(100, $flexContract->getHoursWorked());
     }
 
-    public function testUpdateBaseClassWithCondition()
+    public function testUpdateBaseClassWithCondition() : void
     {
         $this->loadFullFixture();
 
@@ -287,7 +287,7 @@ class SingleTableInheritanceTest extends OrmFunctionalTestCase
         self::assertEquals(3, $affected);
     }
 
-    public function testDeleteByChildClassCondition()
+    public function testDeleteByChildClassCondition() : void
     {
         $this->loadFullFixture();
 
@@ -297,7 +297,7 @@ class SingleTableInheritanceTest extends OrmFunctionalTestCase
         self::assertEquals(2, $affected);
     }
 
-    public function testDeleteByBaseClassCondition()
+    public function testDeleteByBaseClassCondition() : void
     {
         $this->loadFullFixture();
 
@@ -315,7 +315,7 @@ class SingleTableInheritanceTest extends OrmFunctionalTestCase
     /**
      * @group DDC-130
      */
-    public function testDeleteJoinTableRecords()
+    public function testDeleteJoinTableRecords() : void
     {
         $this->loadFullFixture();
 
@@ -329,7 +329,7 @@ class SingleTableInheritanceTest extends OrmFunctionalTestCase
     /**
      * @group DDC-817
      */
-    public function testFindByAssociation()
+    public function testFindByAssociation() : void
     {
         $this->loadFullFixture();
 
@@ -353,7 +353,7 @@ class SingleTableInheritanceTest extends OrmFunctionalTestCase
     /**
      * @group DDC-1637
      */
-    public function testInheritanceMatching()
+    public function testInheritanceMatching() : void
     {
         $this->loadFullFixture();
 
@@ -373,7 +373,7 @@ class SingleTableInheritanceTest extends OrmFunctionalTestCase
     /**
      * @group DDC-2430
      */
-    public function testMatchingNonObjectOnAssocationThrowsException()
+    public function testMatchingNonObjectOnAssocationThrowsException() : void
     {
         $this->loadFullFixture();
 
@@ -393,7 +393,7 @@ class SingleTableInheritanceTest extends OrmFunctionalTestCase
     /**
      * @group DDC-834
      */
-    public function testGetReferenceEntityWithSubclasses()
+    public function testGetReferenceEntityWithSubclasses() : void
     {
         $this->loadFullFixture();
 
@@ -410,7 +410,7 @@ class SingleTableInheritanceTest extends OrmFunctionalTestCase
     /**
      * @group DDC-952
      */
-    public function testEagerLoadInheritanceHierarchy()
+    public function testEagerLoadInheritanceHierarchy() : void
     {
         $this->loadFullFixture();
 

@@ -9,7 +9,7 @@ use Doctrine\Tests\OrmFunctionalTestCase;
 
 class DDC144Test extends OrmFunctionalTestCase
 {
-    protected function setUp()
+    protected function setUp() : void
     {
         parent::setUp();
 
@@ -24,7 +24,7 @@ class DDC144Test extends OrmFunctionalTestCase
     /**
      * @group DDC-144
      */
-    public function testIssue()
+    public function testIssue() : void
     {
         $operand                  = new DDC144Operand();
         $operand->property        = 'flowValue';

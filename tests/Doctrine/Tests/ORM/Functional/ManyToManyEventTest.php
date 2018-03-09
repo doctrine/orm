@@ -17,7 +17,7 @@ class ManyToManyEventTest extends OrmFunctionalTestCase
     /** @var PostUpdateListener */
     private $listener;
 
-    protected function setUp()
+    protected function setUp() : void
     {
         $this->useModelSet('cms');
         parent::setUp();
@@ -26,7 +26,7 @@ class ManyToManyEventTest extends OrmFunctionalTestCase
         $evm->addEventListener(Events::postUpdate, $this->listener);
     }
 
-    public function testListenerShouldBeNotifiedOnlyWhenUpdating()
+    public function testListenerShouldBeNotifiedOnlyWhenUpdating() : void
     {
         $user = $this->createNewValidUser();
         $this->em->persist($user);

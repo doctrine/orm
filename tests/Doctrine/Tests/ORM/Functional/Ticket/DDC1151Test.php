@@ -12,7 +12,7 @@ use Doctrine\Tests\OrmFunctionalTestCase;
  */
 class DDC1151Test extends OrmFunctionalTestCase
 {
-    public function testQuoteForeignKey()
+    public function testQuoteForeignKey() : void
     {
         if ($this->em->getConnection()->getDatabasePlatform()->getName() !== 'postgresql') {
             $this->markTestSkipped('This test is useful for all databases, but designed only for postgresql.');

@@ -17,7 +17,7 @@ class PostFlushEventTest extends OrmFunctionalTestCase
     /** @var PostFlushListener */
     private $listener;
 
-    protected function setUp()
+    protected function setUp() : void
     {
         $this->useModelSet('cms');
         parent::setUp();
@@ -26,14 +26,14 @@ class PostFlushEventTest extends OrmFunctionalTestCase
         $evm->addEventListener(Events::postFlush, $this->listener);
     }
 
-    public function testListenerShouldBeNotified()
+    public function testListenerShouldBeNotified() : void
     {
         $this->em->persist($this->createNewValidUser());
         $this->em->flush();
         self::assertTrue($this->listener->wasNotified);
     }
 
-    public function testListenerShouldNotBeNotifiedWhenFlushThrowsException()
+    public function testListenerShouldNotBeNotifiedWhenFlushThrowsException() : void
     {
         $user           = new CmsUser();
         $user->username = 'dfreudenberger';
@@ -50,7 +50,7 @@ class PostFlushEventTest extends OrmFunctionalTestCase
         self::assertFalse($this->listener->wasNotified);
     }
 
-    public function testListenerShouldReceiveEntityManagerThroughArgs()
+    public function testListenerShouldReceiveEntityManagerThroughArgs() : void
     {
         $this->em->persist($this->createNewValidUser());
         $this->em->flush();

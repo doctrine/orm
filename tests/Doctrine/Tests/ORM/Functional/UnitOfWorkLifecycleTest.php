@@ -10,13 +10,13 @@ use Doctrine\Tests\OrmFunctionalTestCase;
 
 class UnitOfWorkLifecycleTest extends OrmFunctionalTestCase
 {
-    protected function setUp()
+    protected function setUp() : void
     {
         $this->useModelSet('cms');
         parent::setUp();
     }
 
-    public function testScheduleInsertManaged()
+    public function testScheduleInsertManaged() : void
     {
         $user           = new CmsUser();
         $user->username = 'beberlei';
@@ -31,7 +31,7 @@ class UnitOfWorkLifecycleTest extends OrmFunctionalTestCase
         $this->em->getUnitOfWork()->scheduleForInsert($user);
     }
 
-    public function testScheduleInsertDeleted()
+    public function testScheduleInsertDeleted() : void
     {
         $user           = new CmsUser();
         $user->username = 'beberlei';
@@ -48,7 +48,7 @@ class UnitOfWorkLifecycleTest extends OrmFunctionalTestCase
         $this->em->getUnitOfWork()->scheduleForInsert($user);
     }
 
-    public function testScheduleInsertTwice()
+    public function testScheduleInsertTwice() : void
     {
         $user           = new CmsUser();
         $user->username = 'beberlei';
@@ -63,7 +63,7 @@ class UnitOfWorkLifecycleTest extends OrmFunctionalTestCase
         $this->em->getUnitOfWork()->scheduleForInsert($user);
     }
 
-    public function testAddToIdentityMapWithoutIdentity()
+    public function testAddToIdentityMapWithoutIdentity() : void
     {
         $user = new CmsUser();
 
@@ -73,7 +73,7 @@ class UnitOfWorkLifecycleTest extends OrmFunctionalTestCase
         $this->em->getUnitOfWork()->registerManaged($user, [], []);
     }
 
-    public function testMarkReadOnlyNonManaged()
+    public function testMarkReadOnlyNonManaged() : void
     {
         $user = new CmsUser();
 

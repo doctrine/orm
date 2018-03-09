@@ -14,7 +14,7 @@ use Doctrine\Tests\OrmFunctionalTestCase;
  */
 class DDC618Test extends OrmFunctionalTestCase
 {
-    protected function setUp()
+    protected function setUp() : void
     {
         parent::setUp();
         try {
@@ -47,7 +47,7 @@ class DDC618Test extends OrmFunctionalTestCase
         }
     }
 
-    public function testIndexByHydrateObject()
+    public function testIndexByHydrateObject() : void
     {
         $dql    = 'SELECT A FROM Doctrine\Tests\ORM\Functional\Ticket\DDC618Author A INDEX BY A.name ORDER BY A.name ASC';
         $result = $this->em->createQuery($dql)->getResult(Query::HYDRATE_OBJECT);
@@ -59,7 +59,7 @@ class DDC618Test extends OrmFunctionalTestCase
         self::assertArrayHasKey('Alice', $result, "INDEX BY A.name should return an index by the name of 'Alice'.");
     }
 
-    public function testIndexByHydrateArray()
+    public function testIndexByHydrateArray() : void
     {
         $dql    = 'SELECT A FROM Doctrine\Tests\ORM\Functional\Ticket\DDC618Author A INDEX BY A.name ORDER BY A.name ASC';
         $result = $this->em->createQuery($dql)->getResult(Query::HYDRATE_ARRAY);
@@ -74,7 +74,7 @@ class DDC618Test extends OrmFunctionalTestCase
     /**
      * @group DDC-1018
      */
-    public function testIndexByJoin()
+    public function testIndexByJoin() : void
     {
         $dql    = 'SELECT A, B FROM Doctrine\Tests\ORM\Functional\Ticket\DDC618Author A ' .
                'INNER JOIN A.books B INDEX BY B.title ORDER BY A.name ASC';
@@ -98,7 +98,7 @@ class DDC618Test extends OrmFunctionalTestCase
     /**
      * @group DDC-1018
      */
-    public function testIndexByToOneJoinSilentlyIgnored()
+    public function testIndexByToOneJoinSilentlyIgnored() : void
     {
         $dql    = 'SELECT B, A FROM Doctrine\Tests\ORM\Functional\Ticket\DDC618Book B ' .
                'INNER JOIN B.author A INDEX BY A.name ORDER BY A.name ASC';
@@ -117,7 +117,7 @@ class DDC618Test extends OrmFunctionalTestCase
     /**
      * @group DDC-1018
      */
-    public function testCombineIndexBy()
+    public function testCombineIndexBy() : void
     {
         $dql    = 'SELECT A, B FROM Doctrine\Tests\ORM\Functional\Ticket\DDC618Author A INDEX BY A.id ' .
                'INNER JOIN A.books B INDEX BY B.title ORDER BY A.name ASC';

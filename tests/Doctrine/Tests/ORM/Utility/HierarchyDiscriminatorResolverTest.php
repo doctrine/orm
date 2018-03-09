@@ -16,7 +16,7 @@ class HierarchyDiscriminatorResolverTest extends TestCase
     /** @var Mapping\ClassMetadataBuildingContext */
     private $staticMetadataBuildingContext;
 
-    public function setUp()
+    public function setUp() : void
     {
         $this->staticMetadataBuildingContext = new Mapping\ClassMetadataBuildingContext(
             $this->createMock(Mapping\ClassMetadataFactory::class),
@@ -24,7 +24,7 @@ class HierarchyDiscriminatorResolverTest extends TestCase
         );
     }
 
-    public function testResolveDiscriminatorsForClass()
+    public function testResolveDiscriminatorsForClass() : void
     {
         $childClassMetadata                     = new ClassMetadata('ChildEntity', $this->staticMetadataBuildingContext);
         $childClassMetadata->name               = 'Some\Class\Child\Name';
@@ -50,7 +50,7 @@ class HierarchyDiscriminatorResolverTest extends TestCase
         self::assertArrayHasKey($childClassMetadata->discriminatorValue, $discriminators);
     }
 
-    public function testResolveDiscriminatorsForClassWithNoSubclasses()
+    public function testResolveDiscriminatorsForClassWithNoSubclasses() : void
     {
         $classMetadata = new ClassMetadata('Entity', $this->staticMetadataBuildingContext);
         $classMetadata->setSubclasses([]);

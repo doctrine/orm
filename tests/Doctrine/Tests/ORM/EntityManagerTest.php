@@ -29,7 +29,7 @@ class EntityManagerTest extends OrmTestCase
     /** @var EntityManager */
     private $em;
 
-    public function setUp()
+    public function setUp() : void
     {
         parent::setUp();
 
@@ -39,44 +39,44 @@ class EntityManagerTest extends OrmTestCase
     /**
      * @group DDC-899
      */
-    public function testIsOpen()
+    public function testIsOpen() : void
     {
         self::assertTrue($this->em->isOpen());
         $this->em->close();
         self::assertFalse($this->em->isOpen());
     }
 
-    public function testGetConnection()
+    public function testGetConnection() : void
     {
         self::assertInstanceOf(Connection::class, $this->em->getConnection());
     }
 
-    public function testGetMetadataFactory()
+    public function testGetMetadataFactory() : void
     {
         self::assertInstanceOf(ClassMetadataFactory::class, $this->em->getMetadataFactory());
     }
 
-    public function testGetConfiguration()
+    public function testGetConfiguration() : void
     {
         self::assertInstanceOf(Configuration::class, $this->em->getConfiguration());
     }
 
-    public function testGetUnitOfWork()
+    public function testGetUnitOfWork() : void
     {
         self::assertInstanceOf(UnitOfWork::class, $this->em->getUnitOfWork());
     }
 
-    public function testGetProxyFactory()
+    public function testGetProxyFactory() : void
     {
         self::assertInstanceOf(ProxyFactory::class, $this->em->getProxyFactory());
     }
 
-    public function testGetEventManager()
+    public function testGetEventManager() : void
     {
         self::assertInstanceOf(EventManager::class, $this->em->getEventManager());
     }
 
-    public function testCreateNativeQuery()
+    public function testCreateNativeQuery() : void
     {
         $rsm   = new ResultSetMapping();
         $query = $this->em->createNativeQuery('SELECT foo', $rsm);
@@ -84,12 +84,12 @@ class EntityManagerTest extends OrmTestCase
         self::assertSame('SELECT foo', $query->getSql());
     }
 
-    public function testCreateQueryBuilder()
+    public function testCreateQueryBuilder() : void
     {
         self::assertInstanceOf(QueryBuilder::class, $this->em->createQueryBuilder());
     }
 
-    public function testCreateQueryBuilderAliasValid()
+    public function testCreateQueryBuilderAliasValid() : void
     {
         $q  = $this->em->createQueryBuilder()
              ->select('u')->from(CmsUser::class, 'u');
@@ -103,12 +103,12 @@ class EntityManagerTest extends OrmTestCase
         self::assertEquals('SELECT u FROM Doctrine\Tests\Models\CMS\CmsUser u', $q3->getQuery()->getDql());
     }
 
-    public function testCreateQueryDqlIsOptional()
+    public function testCreateQueryDqlIsOptional() : void
     {
         self::assertInstanceOf(Query::class, $this->em->createQuery());
     }
 
-    public function testGetPartialReference()
+    public function testGetPartialReference() : void
     {
         $user = $this->em->getPartialReference(CmsUser::class, 42);
         self::assertTrue($this->em->contains($user));
@@ -116,7 +116,7 @@ class EntityManagerTest extends OrmTestCase
         self::assertNull($user->getName());
     }
 
-    public function testCreateQuery()
+    public function testCreateQuery() : void
     {
         $q = $this->em->createQuery('SELECT 1');
         self::assertInstanceOf(Query::class, $q);
@@ -135,7 +135,7 @@ class EntityManagerTest extends OrmTestCase
     /**
      * @dataProvider dataMethodsAffectedByNoObjectArguments
      */
-    public function testThrowsExceptionOnNonObjectValues($methodName)
+    public function testThrowsExceptionOnNonObjectValues($methodName) : void
     {
         $this->expectException(ORMInvalidArgumentException::class);
         $this->expectExceptionMessage('EntityManager#' . $methodName . '() expects parameter 1 to be an entity object, NULL given.');
@@ -157,7 +157,7 @@ class EntityManagerTest extends OrmTestCase
      * @dataProvider dataAffectedByErrorIfClosedException
      * @param string $methodName
      */
-    public function testAffectedByErrorIfClosedException($methodName)
+    public function testAffectedByErrorIfClosedException($methodName) : void
     {
         $this->expectException(ORMException::class);
         $this->expectExceptionMessage('closed');
@@ -178,7 +178,7 @@ class EntityManagerTest extends OrmTestCase
     /**
      * @dataProvider dataToBeReturnedByTransactional
      */
-    public function testTransactionalAcceptsReturn($value)
+    public function testTransactionalAcceptsReturn($value) : void
     {
         self::assertSame(
             $value,
@@ -188,7 +188,7 @@ class EntityManagerTest extends OrmTestCase
         );
     }
 
-    public function testTransactionalAcceptsVariousCallables()
+    public function testTransactionalAcceptsVariousCallables() : void
     {
         self::assertSame('callback', $this->em->transactional([$this, 'transactionalCallback']));
     }
@@ -199,7 +199,7 @@ class EntityManagerTest extends OrmTestCase
         return 'callback';
     }
 
-    public function testCreateInvalidConnection()
+    public function testCreateInvalidConnection() : void
     {
         $this->expectException(\InvalidArgumentException::class);
         $this->expectExceptionMessage('Invalid $connection argument of type integer given: "1".');
@@ -212,7 +212,7 @@ class EntityManagerTest extends OrmTestCase
     /**
      * @group #5796
      */
-    public function testTransactionalReThrowsThrowables()
+    public function testTransactionalReThrowsThrowables() : void
     {
         try {
             $this->em->transactional(function () {
@@ -230,7 +230,7 @@ class EntityManagerTest extends OrmTestCase
     /**
      * @group 6017
      */
-    public function testClearManager()
+    public function testClearManager() : void
     {
         $entity = new Country(456, 'United Kingdom');
 

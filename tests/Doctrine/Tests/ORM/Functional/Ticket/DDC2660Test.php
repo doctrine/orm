@@ -16,7 +16,7 @@ class DDC2660Test extends OrmFunctionalTestCase
     /**
      * {@inheritDoc}
      */
-    protected function setUp()
+    protected function setUp() : void
     {
         parent::setUp();
 
@@ -48,7 +48,7 @@ class DDC2660Test extends OrmFunctionalTestCase
         $this->em->clear();
     }
 
-    public function testIssueWithExtraColumn()
+    public function testIssueWithExtraColumn() : void
     {
         $sql = 'SELECT o.product_id, o.customer_id, o.name FROM ddc_2660_customer_order o';
 
@@ -66,7 +66,7 @@ class DDC2660Test extends OrmFunctionalTestCase
         }
     }
 
-    public function testIssueWithoutExtraColumn()
+    public function testIssueWithoutExtraColumn() : void
     {
         $sql = 'SELECT o.product_id, o.customer_id FROM ddc_2660_customer_order o';
 

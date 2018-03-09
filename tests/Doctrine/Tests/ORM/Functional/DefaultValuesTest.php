@@ -13,7 +13,7 @@ use function get_class;
  */
 class DefaultValuesTest extends OrmFunctionalTestCase
 {
-    protected function setUp()
+    protected function setUp() : void
     {
         parent::setUp();
         try {
@@ -31,7 +31,7 @@ class DefaultValuesTest extends OrmFunctionalTestCase
     /**
      * @group non-cacheable
      */
-    public function testSimpleDetachMerge()
+    public function testSimpleDetachMerge() : void
     {
         $user       = new DefaultValueUser();
         $user->name = 'romanb';
@@ -67,7 +67,7 @@ class DefaultValuesTest extends OrmFunctionalTestCase
     /**
      * @group DDC-1386
      */
-    public function testGetPartialReferenceWithDefaultValueNotEvaluatedInFlush()
+    public function testGetPartialReferenceWithDefaultValueNotEvaluatedInFlush() : void
     {
         $user       = new DefaultValueUser();
         $user->name = 'romanb';

@@ -9,7 +9,7 @@ use Doctrine\Tests\OrmFunctionalTestCase;
 
 class DDC512Test extends OrmFunctionalTestCase
 {
-    protected function setUp()
+    protected function setUp() : void
     {
         parent::setUp();
         $this->schemaTool->createSchema(
@@ -21,7 +21,7 @@ class DDC512Test extends OrmFunctionalTestCase
         );
     }
 
-    public function testIssue()
+    public function testIssue() : void
     {
         $customer1       = new DDC512Customer();
         $item            = new DDC512OfferItem();

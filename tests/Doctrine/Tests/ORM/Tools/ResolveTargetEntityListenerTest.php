@@ -23,7 +23,7 @@ class ResolveTargetEntityListenerTest extends OrmTestCase
     /** @var ClassMetadataFactory */
     private $factory;
 
-    public function setUp()
+    public function setUp() : void
     {
         $annotationDriver = $this->createAnnotationDriver();
 
@@ -36,7 +36,7 @@ class ResolveTargetEntityListenerTest extends OrmTestCase
     /**
      * @group DDC-1544
      */
-    public function testResolveTargetEntityListenerCanResolveTargetEntity()
+    public function testResolveTargetEntityListenerCanResolveTargetEntity() : void
     {
         $evm = $this->em->getEventManager();
 
@@ -61,7 +61,7 @@ class ResolveTargetEntityListenerTest extends OrmTestCase
      * @group 1181
      * @group 385
      */
-    public function testResolveTargetEntityListenerCanRetrieveTargetEntityByInterfaceName()
+    public function testResolveTargetEntityListenerCanRetrieveTargetEntityByInterfaceName() : void
     {
         $this->listener->addResolveTargetEntity(ResolveTarget::class, ResolveTargetEntity::class);
 
@@ -75,7 +75,7 @@ class ResolveTargetEntityListenerTest extends OrmTestCase
     /**
      * @group DDC-2109
      */
-    public function testAssertTableColumnsAreNotAddedInManyToMany()
+    public function testAssertTableColumnsAreNotAddedInManyToMany() : void
     {
         $evm = $this->em->getEventManager();
         $this->listener->addResolveTargetEntity(ResolveTarget::class, ResolveTargetEntity::class);
@@ -94,7 +94,7 @@ class ResolveTargetEntityListenerTest extends OrmTestCase
      *
      * @coversNothing
      */
-    public function testDoesResolveTargetEntitiesInDQLAlsoWithInterfaces()
+    public function testDoesResolveTargetEntitiesInDQLAlsoWithInterfaces() : void
     {
         $evm = $this->em->getEventManager();
         $this->listener->addResolveTargetEntity(ResolveTarget::class, ResolveTargetEntity::class);

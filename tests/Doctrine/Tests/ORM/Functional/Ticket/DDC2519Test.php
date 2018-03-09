@@ -16,7 +16,7 @@ class DDC2519Test extends OrmFunctionalTestCase
 {
     private $userId;
 
-    public function setUp()
+    public function setUp() : void
     {
         $this->useModelSet('legacy');
         parent::setUp();
@@ -27,7 +27,7 @@ class DDC2519Test extends OrmFunctionalTestCase
     /**
      * @group DDC-2519
      */
-    public function testIssue()
+    public function testIssue() : void
     {
         $dql    = 'SELECT PARTIAL l.{source, target} FROM Doctrine\Tests\Models\Legacy\LegacyUserReference l';
         $result = $this->em->createQuery($dql)->getResult();

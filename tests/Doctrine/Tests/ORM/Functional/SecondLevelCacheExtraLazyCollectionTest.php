@@ -14,7 +14,7 @@ use Doctrine\Tests\Models\Cache\Travel;
  */
 class SecondLevelCacheExtraLazyCollectionTest extends SecondLevelCacheAbstractTest
 {
-    public function setUp()
+    public function setUp() : void
     {
         parent::setUp();
 
@@ -25,7 +25,7 @@ class SecondLevelCacheExtraLazyCollectionTest extends SecondLevelCacheAbstractTe
         $targetEntity->getProperty('travels')->setFetchMode(FetchMode::EXTRA_LAZY);
     }
 
-    public function tearDown()
+    public function tearDown() : void
     {
         parent::tearDown();
 
@@ -36,7 +36,7 @@ class SecondLevelCacheExtraLazyCollectionTest extends SecondLevelCacheAbstractTe
         $targetEntity->getProperty('travels')->setFetchMode(FetchMode::LAZY);
     }
 
-    public function testCacheCountAfterAddThenFlush()
+    public function testCacheCountAfterAddThenFlush() : void
     {
         $this->loadFixturesCountries();
         $this->loadFixturesStates();

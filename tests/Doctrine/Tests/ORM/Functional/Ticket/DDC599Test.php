@@ -11,7 +11,7 @@ use function iterator_to_array;
 
 class DDC599Test extends OrmFunctionalTestCase
 {
-    protected function setUp()
+    protected function setUp() : void
     {
         parent::setUp();
         //$this->em->getConnection()->getConfiguration()->setSQLLogger(new \Doctrine\DBAL\Logging\EchoSQLLogger);
@@ -25,7 +25,7 @@ class DDC599Test extends OrmFunctionalTestCase
         }
     }
 
-    public function testCascadeRemoveOnInheritanceHierarchy()
+    public function testCascadeRemoveOnInheritanceHierarchy() : void
     {
         $item          = new DDC599Subitem();
         $item->elem    = 'foo';
@@ -67,7 +67,7 @@ class DDC599Test extends OrmFunctionalTestCase
         self::assertFalse($this->em->contains($children[0]));
     }
 
-    public function testCascadeRemoveOnChildren()
+    public function testCascadeRemoveOnChildren() : void
     {
         $class = $this->em->getClassMetadata(DDC599Subitem::class);
 

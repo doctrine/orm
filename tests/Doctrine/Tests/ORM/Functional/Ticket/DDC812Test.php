@@ -11,7 +11,7 @@ use function get_class;
 
 class DDC812Test extends OrmFunctionalTestCase
 {
-    protected function setUp()
+    protected function setUp() : void
     {
         $this->useModelSet('cms');
         parent::setUp();
@@ -20,7 +20,7 @@ class DDC812Test extends OrmFunctionalTestCase
     /**
      * @group DDC-812
      */
-    public function testFetchJoinInitializesPreviouslyUninitializedCollectionOfManagedEntity()
+    public function testFetchJoinInitializesPreviouslyUninitializedCollectionOfManagedEntity() : void
     {
         //$this->em->getConnection()->getConfiguration()->setSQLLogger(new \Doctrine\DBAL\Logging\EchoSQLLogger);
         $article        = new CmsArticle();

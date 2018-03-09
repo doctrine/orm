@@ -18,7 +18,7 @@ use Doctrine\Tests\OrmFunctionalTestCase;
  */
 class ManyToManyCompositeIdForeignKeyTest extends OrmFunctionalTestCase
 {
-    public function setUp()
+    public function setUp() : void
     {
         $this->useModelSet('vct_manytomany_compositeid_foreignkey');
 
@@ -45,7 +45,7 @@ class ManyToManyCompositeIdForeignKeyTest extends OrmFunctionalTestCase
         $this->em->clear();
     }
 
-    public function testThatTheValueOfIdentifiersAreConvertedInTheDatabase()
+    public function testThatTheValueOfIdentifiersAreConvertedInTheDatabase() : void
     {
         $conn = $this->em->getConnection();
 
@@ -61,7 +61,7 @@ class ManyToManyCompositeIdForeignKeyTest extends OrmFunctionalTestCase
         self::assertEquals('tuv', $conn->fetchColumn('SELECT owning_id FROM vct_xref_manytomany_compositeid_foreignkey LIMIT 1'));
     }
 
-    public function testThatEntitiesAreFetchedFromTheDatabase()
+    public function testThatEntitiesAreFetchedFromTheDatabase() : void
     {
         $auxiliary = $this->em->find(Entity\AuxiliaryEntity::class, 'abc');
 
@@ -77,7 +77,7 @@ class ManyToManyCompositeIdForeignKeyTest extends OrmFunctionalTestCase
         self::assertInstanceOf(Entity\OwningManyToManyCompositeIdForeignKeyEntity::class, $owning);
     }
 
-    public function testThatTheValueOfIdentifiersAreConvertedBackAfterBeingFetchedFromTheDatabase()
+    public function testThatTheValueOfIdentifiersAreConvertedBackAfterBeingFetchedFromTheDatabase() : void
     {
         $auxiliary = $this->em->find(Entity\AuxiliaryEntity::class, 'abc');
 
@@ -94,7 +94,7 @@ class ManyToManyCompositeIdForeignKeyTest extends OrmFunctionalTestCase
         self::assertEquals('ghi', $owning->id2);
     }
 
-    public function testThatInversedEntityIsFetchedFromTheDatabaseUsingAuxiliaryEntityAsId()
+    public function testThatInversedEntityIsFetchedFromTheDatabaseUsingAuxiliaryEntityAsId() : void
     {
         $auxiliary = $this->em->find(Entity\AuxiliaryEntity::class, 'abc');
 
@@ -106,14 +106,14 @@ class ManyToManyCompositeIdForeignKeyTest extends OrmFunctionalTestCase
         self::assertInstanceOf(Entity\InversedManyToManyCompositeIdForeignKeyEntity::class, $inversed);
     }
 
-    public function testThatTheCollectionFromOwningToInversedIsLoaded()
+    public function testThatTheCollectionFromOwningToInversedIsLoaded() : void
     {
         $owning = $this->em->find(Entity\OwningManyToManyCompositeIdForeignKeyEntity::class, 'ghi');
 
         self::assertCount(1, $owning->associatedEntities);
     }
 
-    public function testThatTheCollectionFromInversedToOwningIsLoaded()
+    public function testThatTheCollectionFromInversedToOwningIsLoaded() : void
     {
         $inversed = $this->em->find(
             Entity\InversedManyToManyCompositeIdForeignKeyEntity::class,
@@ -123,7 +123,7 @@ class ManyToManyCompositeIdForeignKeyTest extends OrmFunctionalTestCase
         self::assertCount(1, $inversed->associatedEntities);
     }
 
-    public function testThatTheJoinTableRowsAreRemovedWhenRemovingTheAssociation()
+    public function testThatTheJoinTableRowsAreRemovedWhenRemovingTheAssociation() : void
     {
         $conn = $this->em->getConnection();
 

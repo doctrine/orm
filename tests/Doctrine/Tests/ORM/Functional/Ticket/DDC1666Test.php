@@ -13,13 +13,13 @@ use Doctrine\Tests\OrmFunctionalTestCase;
  */
 class DDC1666Test extends OrmFunctionalTestCase
 {
-    public function setUp()
+    public function setUp() : void
     {
         $this->useModelSet('cms');
         parent::setUp();
     }
 
-    public function testGivenOrphanRemovalOneToOneWhenReplacingThenNoUniqueConstraintError()
+    public function testGivenOrphanRemovalOneToOneWhenReplacingThenNoUniqueConstraintError() : void
     {
         $user                  = new CmsUser();
         $user->name            = 'Benjamin';

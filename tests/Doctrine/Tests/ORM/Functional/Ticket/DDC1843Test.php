@@ -20,7 +20,7 @@ class DDC1843Test extends OrmFunctionalTestCase
         parent::setUp();
     }
 
-    public function testCreateRetrieveUpdateDelete()
+    public function testCreateRetrieveUpdateDelete() : void
     {
         $e1 = new GroupQuote('Parent Bar 1');
         $e2 = new GroupQuote('Parent Foo 2');

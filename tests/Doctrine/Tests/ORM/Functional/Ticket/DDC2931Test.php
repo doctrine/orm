@@ -13,7 +13,7 @@ use Doctrine\Tests\OrmFunctionalTestCase;
  */
 class DDC2931Test extends OrmFunctionalTestCase
 {
-    public function setUp()
+    public function setUp() : void
     {
         parent::setUp();
 
@@ -28,7 +28,7 @@ class DDC2931Test extends OrmFunctionalTestCase
         }
     }
 
-    public function testIssue()
+    public function testIssue() : void
     {
         $first  = new DDC2931User();
         $second = new DDC2931User();
@@ -49,7 +49,7 @@ class DDC2931Test extends OrmFunctionalTestCase
         self::assertSame(2, $second->getRank());
     }
 
-    public function testFetchJoinedEntitiesCanBeRefreshed()
+    public function testFetchJoinedEntitiesCanBeRefreshed() : void
     {
         $first  = new DDC2931User();
         $second = new DDC2931User();

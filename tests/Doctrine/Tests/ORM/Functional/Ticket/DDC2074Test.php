@@ -15,13 +15,13 @@ use Doctrine\Tests\OrmFunctionalTestCase;
  */
 class DDC2074Test extends OrmFunctionalTestCase
 {
-    public function setUp()
+    public function setUp() : void
     {
         $this->useModelSet('ecommerce');
         parent::setUp();
     }
 
-    public function testShouldNotScheduleDeletionOnClonedInstances()
+    public function testShouldNotScheduleDeletionOnClonedInstances() : void
     {
         $class      = $this->em->getClassMetadata(ECommerceProduct::class);
         $product    = new ECommerceProduct();
@@ -36,7 +36,7 @@ class DDC2074Test extends OrmFunctionalTestCase
         self::assertCount(0, $uow->getScheduledCollectionDeletions());
     }
 
-    public function testSavingClonedPersistentCollection()
+    public function testSavingClonedPersistentCollection() : void
     {
         $product  = new ECommerceProduct();
         $category = new ECommerceCategory();

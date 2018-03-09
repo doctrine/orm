@@ -12,7 +12,7 @@ use Doctrine\Tests\OrmFunctionalTestCase;
  */
 class DDC657Test extends OrmFunctionalTestCase
 {
-    protected function setUp()
+    protected function setUp() : void
     {
         $this->useModelSet('generic');
         parent::setUp();
@@ -20,7 +20,7 @@ class DDC657Test extends OrmFunctionalTestCase
         $this->loadFixtures();
     }
 
-    public function testEntitySingleResult()
+    public function testEntitySingleResult() : void
     {
         $query    = $this->em->createQuery('SELECT d FROM ' . DateTimeModel::class . ' d');
         $datetime = $query->setMaxResults(1)->getSingleResult();
@@ -32,7 +32,7 @@ class DDC657Test extends OrmFunctionalTestCase
         self::assertInstanceOf('DateTime', $datetime->date);
     }
 
-    public function testScalarResult()
+    public function testScalarResult() : void
     {
         $query  = $this->em->createQuery('SELECT d.id, d.time, d.date, d.datetime FROM ' . DateTimeModel::class . ' d ORDER BY d.date ASC');
         $result = $query->getScalarResult();
@@ -48,7 +48,7 @@ class DDC657Test extends OrmFunctionalTestCase
         self::assertContains('2010-02-02 12:12:12', $result[1]['datetime']);
     }
 
-    public function testaTicketEntityArrayResult()
+    public function testaTicketEntityArrayResult() : void
     {
         $query  = $this->em->createQuery('SELECT d FROM ' . DateTimeModel::class . ' d ORDER BY d.date ASC');
         $result = $query->getArrayResult();
@@ -64,7 +64,7 @@ class DDC657Test extends OrmFunctionalTestCase
         self::assertInstanceOf('DateTime', $result[1]['date']);
     }
 
-    public function testTicketSingleResult()
+    public function testTicketSingleResult() : void
     {
         $query    = $this->em->createQuery('SELECT d.id, d.time, d.date, d.datetime FROM ' . DateTimeModel::class . ' d ORDER BY d.date ASC');
         $datetime = $query->setMaxResults(1)->getSingleResult();
@@ -76,7 +76,7 @@ class DDC657Test extends OrmFunctionalTestCase
         self::assertInstanceOf('DateTime', $datetime['date']);
     }
 
-    public function testTicketResult()
+    public function testTicketResult() : void
     {
         $query  = $this->em->createQuery('SELECT d.id, d.time, d.date, d.datetime FROM ' . DateTimeModel::class . ' d ORDER BY d.date ASC');
         $result = $query->getResult();

@@ -18,7 +18,7 @@ use Doctrine\Tests\Models\Cache\TravelerProfileInfo;
  */
 class SecondLevelCacheOneToOneTest extends SecondLevelCacheAbstractTest
 {
-    public function testPutOneToOneOnUnidirectionalPersist()
+    public function testPutOneToOneOnUnidirectionalPersist() : void
     {
         $this->loadFixturesCountries();
         $this->loadFixturesStates();
@@ -36,7 +36,7 @@ class SecondLevelCacheOneToOneTest extends SecondLevelCacheAbstractTest
         self::assertTrue($this->cache->containsEntity(TravelerProfile::class, $entity2->getProfile()->getId()));
     }
 
-    public function testPutOneToOneOnBidirectionalPersist()
+    public function testPutOneToOneOnBidirectionalPersist() : void
     {
         $this->loadFixturesCountries();
         $this->loadFixturesStates();
@@ -57,7 +57,7 @@ class SecondLevelCacheOneToOneTest extends SecondLevelCacheAbstractTest
         self::assertTrue($this->cache->containsEntity(TravelerProfileInfo::class, $entity2->getProfile()->getInfo()->getId()));
     }
 
-    public function testPutAndLoadOneToOneUnidirectionalRelation()
+    public function testPutAndLoadOneToOneUnidirectionalRelation() : void
     {
         $this->loadFixturesCountries();
         $this->loadFixturesStates();
@@ -129,7 +129,7 @@ class SecondLevelCacheOneToOneTest extends SecondLevelCacheAbstractTest
         self::assertEquals($queryCount, $this->getCurrentQueryCount());
     }
 
-    public function testPutAndLoadOneToOneBidirectionalRelation()
+    public function testPutAndLoadOneToOneBidirectionalRelation() : void
     {
         $this->loadFixturesCountries();
         $this->loadFixturesStates();
@@ -194,7 +194,7 @@ class SecondLevelCacheOneToOneTest extends SecondLevelCacheAbstractTest
         self::assertEquals($queryCount, $this->getCurrentQueryCount());
     }
 
-    public function testInverseSidePutAndLoadOneToOneBidirectionalRelation()
+    public function testInverseSidePutAndLoadOneToOneBidirectionalRelation() : void
     {
         $this->loadFixturesPersonWithAddress();
 
@@ -255,7 +255,7 @@ class SecondLevelCacheOneToOneTest extends SecondLevelCacheAbstractTest
         self::assertEquals($queryCount + 2, $this->getCurrentQueryCount());
     }
 
-    public function testPutAndLoadNonCacheableOneToOne()
+    public function testPutAndLoadNonCacheableOneToOne() : void
     {
         self::assertNull($this->cache->getEntityCacheRegion(Client::class));
         self::assertInstanceOf(Region::class, $this->cache->getEntityCacheRegion(Token::class));

@@ -21,13 +21,13 @@ use function get_class;
  */
 class ManyToManyBasicAssociationTest extends OrmFunctionalTestCase
 {
-    protected function setUp()
+    protected function setUp() : void
     {
         $this->useModelSet('cms');
         parent::setUp();
     }
 
-    public function testUnsetManyToMany()
+    public function testUnsetManyToMany() : void
     {
         $user = $this->addCmsUserGblancoWithGroups(1);
 
@@ -41,7 +41,7 @@ class ManyToManyBasicAssociationTest extends OrmFunctionalTestCase
         self::assertGblancoGroupCountIs(0);
     }
 
-    public function testBasicManyToManyJoin()
+    public function testBasicManyToManyJoin() : void
     {
         $user = $this->addCmsUserGblancoWithGroups(1);
         $this->em->clear();
@@ -75,7 +75,7 @@ class ManyToManyBasicAssociationTest extends OrmFunctionalTestCase
         self::assertCount(0, $query->getResult());
     }
 
-    public function testManyToManyAddRemove()
+    public function testManyToManyAddRemove() : void
     {
         $user = $this->addCmsUserGblancoWithGroups(2);
         $this->em->clear();
@@ -108,7 +108,7 @@ class ManyToManyBasicAssociationTest extends OrmFunctionalTestCase
         self::assertEquals(1, $user2->getGroups()->count());
     }
 
-    public function testManyToManyInverseSideIgnored()
+    public function testManyToManyInverseSideIgnored() : void
     {
         $user = $this->addCmsUserGblancoWithGroups(0);
 
@@ -130,7 +130,7 @@ class ManyToManyBasicAssociationTest extends OrmFunctionalTestCase
         self::assertEquals(0, $user2->getGroups()->count());
     }
 
-    public function testManyToManyCollectionClearing()
+    public function testManyToManyCollectionClearing() : void
     {
         $user = $this->addCmsUserGblancoWithGroups($groupCount = 10);
 
@@ -145,7 +145,7 @@ class ManyToManyBasicAssociationTest extends OrmFunctionalTestCase
         self::assertGblancoGroupCountIs(0);
     }
 
-    public function testManyToManyCollectionClearAndAdd()
+    public function testManyToManyCollectionClearAndAdd() : void
     {
         $user = $this->addCmsUserGblancoWithGroups($groupCount = 10);
 
@@ -179,7 +179,7 @@ class ManyToManyBasicAssociationTest extends OrmFunctionalTestCase
         );
     }
 
-    public function testRetrieveManyToManyAndAddMore()
+    public function testRetrieveManyToManyAndAddMore() : void
     {
         $user = $this->addCmsUserGblancoWithGroups(2);
 
@@ -213,7 +213,7 @@ class ManyToManyBasicAssociationTest extends OrmFunctionalTestCase
     /**
      * @group DDC-130
      */
-    public function testRemoveUserWithManyGroups()
+    public function testRemoveUserWithManyGroups() : void
     {
         $user   = $this->addCmsUserGblancoWithGroups(2);
         $userId = $user->getId();
@@ -228,7 +228,7 @@ class ManyToManyBasicAssociationTest extends OrmFunctionalTestCase
     /**
      * @group DDC-130
      */
-    public function testRemoveGroupWithUser()
+    public function testRemoveGroupWithUser() : void
     {
         $user = $this->addCmsUserGblancoWithGroups(2);
 
@@ -242,7 +242,7 @@ class ManyToManyBasicAssociationTest extends OrmFunctionalTestCase
         self::assertCount(0, $newUser->getGroups());
     }
 
-    public function testDereferenceCollectionDelete()
+    public function testDereferenceCollectionDelete() : void
     {
         $user         = $this->addCmsUserGblancoWithGroups(2);
         $user->groups = null;
@@ -257,7 +257,7 @@ class ManyToManyBasicAssociationTest extends OrmFunctionalTestCase
     /**
      * @group DDC-839
      */
-    public function testWorkWithDqlHydratedEmptyCollection()
+    public function testWorkWithDqlHydratedEmptyCollection() : void
     {
         $user        = $this->addCmsUserGblancoWithGroups(0);
         $group       = new CmsGroup();
@@ -310,7 +310,7 @@ class ManyToManyBasicAssociationTest extends OrmFunctionalTestCase
     /**
      * @group DDC-980
      */
-    public function testUpdateDeleteSizeSubselectQueries()
+    public function testUpdateDeleteSizeSubselectQueries() : void
     {
         $this->em->createQuery('DELETE Doctrine\Tests\Models\CMS\CmsUser u WHERE SIZE(u.groups) = 10')->execute();
         $this->em->createQuery("UPDATE Doctrine\Tests\Models\CMS\CmsUser u SET u.status = 'inactive' WHERE SIZE(u.groups) = 10")->execute();
@@ -325,7 +325,7 @@ class ManyToManyBasicAssociationTest extends OrmFunctionalTestCase
     /**
      * @group DDC-978
      */
-    public function testClearAndResetCollection()
+    public function testClearAndResetCollection() : void
     {
         $user         = $this->addCmsUserGblancoWithGroups(2);
         $group1       = new CmsGroup();
@@ -361,7 +361,7 @@ class ManyToManyBasicAssociationTest extends OrmFunctionalTestCase
     /**
      * @group DDC-733
      */
-    public function testInitializePersistentCollection()
+    public function testInitializePersistentCollection() : void
     {
         $user = $this->addCmsUserGblancoWithGroups(2);
         $this->em->clear();
@@ -377,7 +377,7 @@ class ManyToManyBasicAssociationTest extends OrmFunctionalTestCase
      * @group DDC-1189
      * @group DDC-956
      */
-    public function testClearBeforeLazyLoad()
+    public function testClearBeforeLazyLoad() : void
     {
         $user = $this->addCmsUserGblancoWithGroups(4);
 
@@ -396,7 +396,7 @@ class ManyToManyBasicAssociationTest extends OrmFunctionalTestCase
     /**
      * @group DDC-3952
      */
-    public function testManyToManyOrderByIsNotIgnored()
+    public function testManyToManyOrderByIsNotIgnored() : void
     {
         $user = $this->addCmsUserGblancoWithGroups(1);
 
@@ -437,7 +437,7 @@ class ManyToManyBasicAssociationTest extends OrmFunctionalTestCase
     /**
      * @group DDC-3952
      */
-    public function testManyToManyOrderByHonorsFieldNameColumnNameAliases()
+    public function testManyToManyOrderByHonorsFieldNameColumnNameAliases() : void
     {
         $user           = new CmsUser();
         $user->name     = 'Guilherme';
@@ -478,7 +478,7 @@ class ManyToManyBasicAssociationTest extends OrmFunctionalTestCase
         );
     }
 
-    public function testMatchingWithLimit()
+    public function testMatchingWithLimit() : void
     {
         $user = $this->addCmsUserGblancoWithGroups(2);
         $this->em->clear();
@@ -496,7 +496,7 @@ class ManyToManyBasicAssociationTest extends OrmFunctionalTestCase
         self::assertFalse($user->groups->isInitialized(), 'Post-condition: matching does not initialize collection');
     }
 
-    public function testMatchingWithOffset()
+    public function testMatchingWithOffset() : void
     {
         $user = $this->addCmsUserGblancoWithGroups(2);
         $this->em->clear();
@@ -517,7 +517,7 @@ class ManyToManyBasicAssociationTest extends OrmFunctionalTestCase
         self::assertFalse($user->groups->isInitialized(), 'Post-condition: matching does not initialize collection');
     }
 
-    public function testMatchingWithLimitAndOffset()
+    public function testMatchingWithLimitAndOffset() : void
     {
         $user = $this->addCmsUserGblancoWithGroups(5);
         $this->em->clear();
@@ -546,7 +546,7 @@ class ManyToManyBasicAssociationTest extends OrmFunctionalTestCase
         self::assertFalse($user->groups->isInitialized(), 'Post-condition: matching does not initialize collection');
     }
 
-    public function testMatching()
+    public function testMatching() : void
     {
         $user = $this->addCmsUserGblancoWithGroups(2);
         $this->em->clear();

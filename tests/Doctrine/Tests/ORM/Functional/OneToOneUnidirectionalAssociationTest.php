@@ -20,7 +20,7 @@ class OneToOneUnidirectionalAssociationTest extends OrmFunctionalTestCase
     private $product;
     private $shipping;
 
-    protected function setUp()
+    protected function setUp() : void
     {
         $this->useModelSet('ecommerce');
         parent::setUp();
@@ -30,7 +30,7 @@ class OneToOneUnidirectionalAssociationTest extends OrmFunctionalTestCase
         $this->shipping->setDays('5');
     }
 
-    public function testSavesAOneToOneAssociationWithCascadeSaveSet()
+    public function testSavesAOneToOneAssociationWithCascadeSaveSet() : void
     {
         $this->product->setShipping($this->shipping);
         $this->em->persist($this->product);
@@ -39,7 +39,7 @@ class OneToOneUnidirectionalAssociationTest extends OrmFunctionalTestCase
         self::assertForeignKeyIs($this->shipping->getId());
     }
 
-    public function testRemovesOneToOneAssociation()
+    public function testRemovesOneToOneAssociation() : void
     {
         $this->product->setShipping($this->shipping);
         $this->em->persist($this->product);
@@ -62,7 +62,7 @@ class OneToOneUnidirectionalAssociationTest extends OrmFunctionalTestCase
         self::assertEquals(1, $product->getShipping()->getDays());
     }
 
-    public function testLazyLoadsObjects()
+    public function testLazyLoadsObjects() : void
     {
         $this->createFixture();
         $metadata = $this->em->getClassMetadata(ECommerceProduct::class);
@@ -76,7 +76,7 @@ class OneToOneUnidirectionalAssociationTest extends OrmFunctionalTestCase
         self::assertEquals(1, $product->getShipping()->getDays());
     }
 
-    public function testDoesNotLazyLoadObjectsIfConfigurationDoesNotAllowIt()
+    public function testDoesNotLazyLoadObjectsIfConfigurationDoesNotAllowIt() : void
     {
         $this->createFixture();
 
@@ -115,7 +115,7 @@ class OneToOneUnidirectionalAssociationTest extends OrmFunctionalTestCase
     /**
      * @group DDC-762
      */
-    public function testNullForeignKey()
+    public function testNullForeignKey() : void
     {
         $product = new ECommerceProduct();
         $product->setName('Doctrine 2 Manual');

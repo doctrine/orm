@@ -22,7 +22,7 @@ use function implode;
  */
 class SchemaValidatorTest extends OrmFunctionalTestCase
 {
-    protected function setUp()
+    protected function setUp() : void
     {
         $this->registerType(CustomIdObjectType::class);
         $this->registerType(UpperCaseStringType::class);
@@ -62,7 +62,7 @@ class SchemaValidatorTest extends OrmFunctionalTestCase
     /**
      * @dataProvider dataValidateModelSets
      */
-    public function testValidateModelSets(string $modelSet)
+    public function testValidateModelSets(string $modelSet) : void
     {
         $validator = new SchemaValidator($this->em);
         $classes   = [];

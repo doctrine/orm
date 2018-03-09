@@ -16,7 +16,7 @@ class DDC3170Test extends OrmFunctionalTestCase
     /**
      * {@inheritDoc}
      */
-    protected function setUp()
+    protected function setUp() : void
     {
         parent::setUp();
 
@@ -39,7 +39,7 @@ class DDC3170Test extends OrmFunctionalTestCase
      *
      * {@see \Doctrine\ORM\Internal\Hydration\SimpleObjectHydrator::hydrateRowData()}
      */
-    public function testIssue()
+    public function testIssue() : void
     {
         $productJoined      = new DDC3170ProductJoined();
         $productSingleTable = new DDC3170ProductSingleTable();

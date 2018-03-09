@@ -14,7 +14,7 @@ use Doctrine\Tests\OrmFunctionalTestCase;
  */
 class DDC3644Test extends OrmFunctionalTestCase
 {
-    protected function setUp()
+    protected function setUp() : void
     {
         parent::setUp();
 
@@ -31,7 +31,7 @@ class DDC3644Test extends OrmFunctionalTestCase
     /**
      * @group DDC-3644
      */
-    public function testIssueWithRegularEntity()
+    public function testIssueWithRegularEntity() : void
     {
         // Define initial dataset
         $current   = new DDC3644Address('Sao Paulo, SP, Brazil');
@@ -83,7 +83,7 @@ class DDC3644Test extends OrmFunctionalTestCase
     /**
      * @group DDC-3644
      */
-    public function testIssueWithJoinedEntity()
+    public function testIssueWithJoinedEntity() : void
     {
         // Define initial dataset
         $actual = new DDC3644Pet('Catharina');

@@ -13,7 +13,7 @@ use Doctrine\Tests\OrmFunctionalTestCase;
  */
 class DDC1113Test extends OrmFunctionalTestCase
 {
-    public function setUp()
+    public function setUp() : void
     {
         parent::setUp();
 
@@ -30,7 +30,7 @@ class DDC1113Test extends OrmFunctionalTestCase
         }
     }
 
-    public function testIssue()
+    public function testIssue() : void
     {
         $car         = new DDC1113Car();
         $car->engine = new DDC1113Engine();

@@ -9,7 +9,7 @@ use Doctrine\Tests\OrmFunctionalTestCase;
 
 class DDC448Test extends OrmFunctionalTestCase
 {
-    protected function setUp()
+    protected function setUp() : void
     {
         parent::setUp();
         $this->schemaTool->createSchema(
@@ -21,7 +21,7 @@ class DDC448Test extends OrmFunctionalTestCase
         );
     }
 
-    public function testIssue()
+    public function testIssue() : void
     {
         $q = $this->em->createQuery('select b from ' . __NAMESPACE__ . '\\DDC448SubTable b where b.connectedClassId = ?1');
 

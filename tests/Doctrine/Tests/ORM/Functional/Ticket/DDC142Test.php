@@ -21,7 +21,7 @@ class DDC142Test extends OrmFunctionalTestCase
         parent::setUp();
     }
 
-    public function testCreateRetrieveUpdateDelete()
+    public function testCreateRetrieveUpdateDelete() : void
     {
         $user       = new User();
         $user->name = 'FabioBatSilva';

@@ -49,7 +49,7 @@ abstract class AbstractMappingDriverTest extends OrmTestCase
     /** @var Mapping\ClassMetadataBuildingContext */
     protected $metadataBuildingContext;
 
-    protected function setUp()
+    protected function setUp() : void
     {
         parent::setUp();
 
@@ -84,7 +84,7 @@ abstract class AbstractMappingDriverTest extends OrmTestCase
         return $factory;
     }
 
-    public function testEntityTableNameAndInheritance()
+    public function testEntityTableNameAndInheritance() : ClassMetadata
     {
         $class = $this->createClassMetadata(User::class);
 
@@ -94,7 +94,7 @@ abstract class AbstractMappingDriverTest extends OrmTestCase
         return $class;
     }
 
-    public function testEntityIndexes()
+    public function testEntityIndexes() : ClassMetadata
     {
         $class = $this->createClassMetadata('Doctrine\Tests\ORM\Mapping\User');
 
@@ -122,7 +122,7 @@ abstract class AbstractMappingDriverTest extends OrmTestCase
         return $class;
     }
 
-    public function testEntityIndexFlagsAndPartialIndexes()
+    public function testEntityIndexFlagsAndPartialIndexes() : void
     {
         $class = $this->createClassMetadata(Comment::class);
 
@@ -144,7 +144,7 @@ abstract class AbstractMappingDriverTest extends OrmTestCase
      * @depends testEntityTableNameAndInheritance
      * @param ClassMetadata $class
      */
-    public function testEntityUniqueConstraints($class)
+    public function testEntityUniqueConstraints($class) : ClassMetadata
     {
         self::assertCount(1, $class->table->getUniqueConstraints());
         self::assertEquals(
@@ -166,7 +166,7 @@ abstract class AbstractMappingDriverTest extends OrmTestCase
      * @depends testEntityTableNameAndInheritance
      * @param ClassMetadata $class
      */
-    public function testEntityOptions($class)
+    public function testEntityOptions($class) : ClassMetadata
     {
         self::assertCount(2, $class->table->getOptions());
         self::assertEquals(
@@ -184,7 +184,7 @@ abstract class AbstractMappingDriverTest extends OrmTestCase
      * @depends testEntityOptions
      * @param ClassMetadata $class
      */
-    public function testEntitySequence($class)
+    public function testEntitySequence($class) : void
     {
         self::assertInternalType(
             'array',
@@ -200,7 +200,7 @@ abstract class AbstractMappingDriverTest extends OrmTestCase
         );
     }
 
-    public function testEntityCustomGenerator()
+    public function testEntityCustomGenerator() : void
     {
         $class = $this->createClassMetadata(Animal::class);
 
@@ -220,7 +220,7 @@ abstract class AbstractMappingDriverTest extends OrmTestCase
      * @depends testEntityTableNameAndInheritance
      * @param ClassMetadata $class
      */
-    public function testProperties($class)
+    public function testProperties($class) : ClassMetadata
     {
         self::assertCount(7, $class->getDeclaredPropertiesIterator());
 
@@ -237,7 +237,7 @@ abstract class AbstractMappingDriverTest extends OrmTestCase
      * @depends testProperties
      * @param ClassMetadata $class
      */
-    public function testVersionProperty($class)
+    public function testVersionProperty($class) : void
     {
         self::assertTrue($class->isVersioned());
         self::assertNotNull($class->versionProperty);
@@ -252,7 +252,7 @@ abstract class AbstractMappingDriverTest extends OrmTestCase
      * @depends testEntityTableNameAndInheritance
      * @param ClassMetadata $class
      */
-    public function testFieldMappingsColumnNames($class)
+    public function testFieldMappingsColumnNames($class) : ClassMetadata
     {
         self::assertNotNull($class->getProperty('id'));
         self::assertNotNull($class->getProperty('name'));
@@ -269,7 +269,7 @@ abstract class AbstractMappingDriverTest extends OrmTestCase
      * @depends testEntityTableNameAndInheritance
      * @param ClassMetadata $class
      */
-    public function testStringFieldMappings($class)
+    public function testStringFieldMappings($class) : ClassMetadata
     {
         self::assertNotNull($class->getProperty('name'));
 
@@ -285,11 +285,8 @@ abstract class AbstractMappingDriverTest extends OrmTestCase
 
     /**
      * @depends testEntityTableNameAndInheritance
-     *
-     *
-     * @return ClassMetadata
      */
-    public function testFieldOptions(ClassMetadata $class)
+    public function testFieldOptions(ClassMetadata $class) : ClassMetadata
     {
         self::assertNotNull($class->getProperty('name'));
 
@@ -305,7 +302,7 @@ abstract class AbstractMappingDriverTest extends OrmTestCase
      * @depends testEntityTableNameAndInheritance
      * @param ClassMetadata $class
      */
-    public function testIdFieldOptions($class)
+    public function testIdFieldOptions($class) : ClassMetadata
     {
         self::assertNotNull($class->getProperty('id'));
 
@@ -321,7 +318,7 @@ abstract class AbstractMappingDriverTest extends OrmTestCase
      * @depends testProperties
      * @param ClassMetadata $class
      */
-    public function testIdentifier($class)
+    public function testIdentifier($class) : ClassMetadata
     {
         self::assertNotNull($class->getProperty('id'));
 
@@ -336,10 +333,8 @@ abstract class AbstractMappingDriverTest extends OrmTestCase
 
     /**
      * @group #6129
-     *
-     * @return ClassMetadata
      */
-    public function testBooleanValuesForOptionIsSetCorrectly()
+    public function testBooleanValuesForOptionIsSetCorrectly() : ClassMetadata
     {
         $class = $this->createClassMetadata(User::class);
 
@@ -426,7 +421,7 @@ abstract class AbstractMappingDriverTest extends OrmTestCase
      * @depends testProperties
      * @param ClassMetadata $class
      */
-    public function testOwningOneToOneAssociation($class)
+    public function testOwningOneToOneAssociation($class) : ClassMetadata
     {
         self::assertArrayHasKey('address', iterator_to_array($class->getDeclaredPropertiesIterator()));
 
@@ -444,7 +439,7 @@ abstract class AbstractMappingDriverTest extends OrmTestCase
      * @depends testOwningOneToOneAssociation
      * @param ClassMetadata $class
      */
-    public function testInverseOneToManyAssociation($class)
+    public function testInverseOneToManyAssociation($class) : ClassMetadata
     {
         self::assertArrayHasKey('phonenumbers', iterator_to_array($class->getDeclaredPropertiesIterator()));
 
@@ -466,7 +461,7 @@ abstract class AbstractMappingDriverTest extends OrmTestCase
      * @depends testInverseOneToManyAssociation
      * @param ClassMetadata $class
      */
-    public function testManyToManyAssociationWithCascadeAll($class)
+    public function testManyToManyAssociationWithCascadeAll($class) : ClassMetadata
     {
         self::assertArrayHasKey('groups', iterator_to_array($class->getDeclaredPropertiesIterator()));
 
@@ -487,7 +482,7 @@ abstract class AbstractMappingDriverTest extends OrmTestCase
      * @depends testManyToManyAssociationWithCascadeAll
      * @param ClassMetadata $class
      */
-    public function testLifecycleCallbacks($class)
+    public function testLifecycleCallbacks($class) : ClassMetadata
     {
         self::assertCount(2, $class->lifecycleCallbacks);
         self::assertEquals($class->lifecycleCallbacks['prePersist'][0], 'doStuffOnPrePersist');
@@ -500,7 +495,7 @@ abstract class AbstractMappingDriverTest extends OrmTestCase
      * @depends testManyToManyAssociationWithCascadeAll
      * @param ClassMetadata $class
      */
-    public function testLifecycleCallbacksSupportMultipleMethodNames($class)
+    public function testLifecycleCallbacksSupportMultipleMethodNames($class) : ClassMetadata
     {
         self::assertCount(2, $class->lifecycleCallbacks['prePersist']);
         self::assertEquals($class->lifecycleCallbacks['prePersist'][1], 'doOtherStuffOnPrePersistToo');
@@ -512,7 +507,7 @@ abstract class AbstractMappingDriverTest extends OrmTestCase
      * @depends testLifecycleCallbacksSupportMultipleMethodNames
      * @param ClassMetadata $class
      */
-    public function testJoinColumnUniqueAndNullable($class)
+    public function testJoinColumnUniqueAndNullable($class) : ClassMetadata
     {
         // Non-Nullability of Join Column
         $association = $class->getProperty('groups');
@@ -530,7 +525,7 @@ abstract class AbstractMappingDriverTest extends OrmTestCase
      * @depends testJoinColumnUniqueAndNullable
      * @param ClassMetadata $class
      */
-    public function testColumnDefinition($class)
+    public function testColumnDefinition($class) : ClassMetadata
     {
         self::assertNotNull($class->getProperty('email'));
 
@@ -550,7 +545,7 @@ abstract class AbstractMappingDriverTest extends OrmTestCase
      * @depends testColumnDefinition
      * @param ClassMetadata $class
      */
-    public function testJoinColumnOnDelete($class)
+    public function testJoinColumnOnDelete($class) : ClassMetadata
     {
         $association = $class->getProperty('address');
         $joinColumns = $association->getJoinColumns();
@@ -564,7 +559,7 @@ abstract class AbstractMappingDriverTest extends OrmTestCase
     /**
      * @group DDC-514
      */
-    public function testDiscriminatorColumnDefaults()
+    public function testDiscriminatorColumnDefaults() : void
     {
         if (strpos(get_class($this), 'PHPMappingDriver') !== false) {
             $this->markTestSkipped('PHP Mapping Drivers have no defaults.');
@@ -586,7 +581,7 @@ abstract class AbstractMappingDriverTest extends OrmTestCase
     /**
      * @group DDC-869
      */
-    public function testMappedSuperclassWithRepository()
+    public function testMappedSuperclassWithRepository() : void
     {
         $em      = $this->getTestEntityManager();
         $factory = $this->createClassMetadataFactory($em);
@@ -612,7 +607,7 @@ abstract class AbstractMappingDriverTest extends OrmTestCase
     /**
      * @group DDC-1476
      */
-    public function testDefaultFieldType()
+    public function testDefaultFieldType() : void
     {
         $factory = $this->createClassMetadataFactory();
         $class   = $factory->getMetadataFor(DDC1476EntityWithDefaultFieldType::class);
@@ -641,7 +636,7 @@ abstract class AbstractMappingDriverTest extends OrmTestCase
     /**
      * @group DDC-1170
      */
-    public function testIdentifierColumnDefinition()
+    public function testIdentifierColumnDefinition() : void
     {
         $class = $this->createClassMetadata(DDC1170Entity::class);
 
@@ -655,7 +650,7 @@ abstract class AbstractMappingDriverTest extends OrmTestCase
     /**
      * @group DDC-559
      */
-    public function testNamingStrategy()
+    public function testNamingStrategy() : void
     {
         $em      = $this->getTestEntityManager();
         $factory = $this->createClassMetadataFactory($em);
@@ -677,7 +672,7 @@ abstract class AbstractMappingDriverTest extends OrmTestCase
      * @group DDC-807
      * @group DDC-553
      */
-    public function testDiscriminatorColumnDefinition()
+    public function testDiscriminatorColumnDefinition() : void
     {
         $class = $this->createClassMetadata(DDC807Entity::class);
 
@@ -692,7 +687,7 @@ abstract class AbstractMappingDriverTest extends OrmTestCase
     /**
      * @group DDC-889
      */
-    public function testInvalidEntityOrMappedSuperClassShouldMentionParentClasses()
+    public function testInvalidEntityOrMappedSuperClassShouldMentionParentClasses() : void
     {
         $this->expectException(MappingException::class);
         $this->expectExceptionMessage('Class "Doctrine\Tests\Models\DDC889\DDC889Class" sub class of "Doctrine\Tests\Models\DDC889\DDC889SuperClass" is not a valid entity or mapped super class.');
@@ -703,7 +698,7 @@ abstract class AbstractMappingDriverTest extends OrmTestCase
     /**
      * @group DDC-889
      */
-    public function testIdentifierRequiredShouldMentionParentClasses()
+    public function testIdentifierRequiredShouldMentionParentClasses() : void
     {
         $factory = $this->createClassMetadataFactory();
 
@@ -716,7 +711,7 @@ abstract class AbstractMappingDriverTest extends OrmTestCase
     /**
      * @group DDC-964
      */
-    public function testAssociationOverridesMapping()
+    public function testAssociationOverridesMapping() : void
     {
         $factory       = $this->createClassMetadataFactory();
         $adminMetadata = $factory->getMetadataFor(DDC964Admin::class);
@@ -790,7 +785,7 @@ abstract class AbstractMappingDriverTest extends OrmTestCase
     /**
      * @group DDC-3579
      */
-    public function testInversedByOverrideMapping()
+    public function testInversedByOverrideMapping() : void
     {
         $factory       = $this->createClassMetadataFactory();
         $adminMetadata = $factory->getMetadataFor(DDC3579Admin::class);
@@ -807,7 +802,7 @@ abstract class AbstractMappingDriverTest extends OrmTestCase
     /**
      * @group DDC-5934
      */
-    public function testFetchOverrideMapping()
+    public function testFetchOverrideMapping() : void
     {
         // check override metadata
         $contractMetadata = $this->createClassMetadataFactory()->getMetadataFor(DDC5934Contract::class);
@@ -822,7 +817,7 @@ abstract class AbstractMappingDriverTest extends OrmTestCase
     /**
      * @group DDC-964
      */
-    public function testAttributeOverridesMapping()
+    public function testAttributeOverridesMapping() : void
     {
         $factory       = $this->createClassMetadataFactory();
         $adminMetadata = $factory->getMetadataFor(DDC964Admin::class);
@@ -887,7 +882,7 @@ abstract class AbstractMappingDriverTest extends OrmTestCase
     /**
      * @group DDC-1955
      */
-    public function testEntityListeners()
+    public function testEntityListeners() : void
     {
         $factory    = $this->createClassMetadataFactory();
         $superClass = $factory->getMetadataFor(CompanyContract::class);
@@ -916,7 +911,7 @@ abstract class AbstractMappingDriverTest extends OrmTestCase
     /**
      * @group DDC-1955
      */
-    public function testEntityListenersOverride()
+    public function testEntityListenersOverride() : void
     {
         $factory    = $this->createClassMetadataFactory();
         $ultraClass = $factory->getMetadataFor(CompanyFlexUltraContract::class);
@@ -949,7 +944,7 @@ abstract class AbstractMappingDriverTest extends OrmTestCase
     /**
      * @group DDC-1955
      */
-    public function testEntityListenersNamingConvention()
+    public function testEntityListenersNamingConvention() : void
     {
         $factory  = $this->createClassMetadataFactory();
         $metadata = $factory->getMetadataFor(CmsAddress::class);
@@ -1003,7 +998,7 @@ abstract class AbstractMappingDriverTest extends OrmTestCase
     /**
      * @group DDC-2183
      */
-    public function testSecondLevelCacheMapping()
+    public function testSecondLevelCacheMapping() : void
     {
         $factory = $this->createClassMetadataFactory();
         $class   = $factory->getMetadataFor(City::class);
@@ -1033,7 +1028,7 @@ abstract class AbstractMappingDriverTest extends OrmTestCase
      * @group DDC-2825
      * @group 881
      */
-    public function testSchemaDefinitionViaExplicitTableSchemaAnnotationProperty()
+    public function testSchemaDefinitionViaExplicitTableSchemaAnnotationProperty() : void
     {
         $factory  = $this->createClassMetadataFactory();
         $metadata = $factory->getMetadataFor(ExplicitSchemaAndTable::class);
@@ -1046,7 +1041,7 @@ abstract class AbstractMappingDriverTest extends OrmTestCase
      * @group DDC-2825
      * @group 881
      */
-    public function testSchemaDefinitionViaSchemaDefinedInTableNameInTableAnnotationProperty()
+    public function testSchemaDefinitionViaSchemaDefinedInTableNameInTableAnnotationProperty() : void
     {
         $factory  = $this->createClassMetadataFactory();
         $metadata = $factory->getMetadataFor(SchemaAndTableInTableName::class);
@@ -1059,7 +1054,7 @@ abstract class AbstractMappingDriverTest extends OrmTestCase
      * @group DDC-514
      * @group DDC-1015
      */
-    public function testDiscriminatorColumnDefaultLength()
+    public function testDiscriminatorColumnDefaultLength() : void
     {
         if (strpos(get_class($this), 'PHPMappingDriver') !== false) {
             $this->markTestSkipped('PHP Mapping Drivers have no defaults.');
@@ -1078,7 +1073,7 @@ abstract class AbstractMappingDriverTest extends OrmTestCase
      * @group DDC-514
      * @group DDC-1015
      */
-    public function testDiscriminatorColumnDefaultType()
+    public function testDiscriminatorColumnDefaultType() : void
     {
         if (strpos(get_class($this), 'PHPMappingDriver') !== false) {
             $this->markTestSkipped('PHP Mapping Drivers have no defaults.');
@@ -1097,7 +1092,7 @@ abstract class AbstractMappingDriverTest extends OrmTestCase
      * @group DDC-514
      * @group DDC-1015
      */
-    public function testDiscriminatorColumnDefaultName()
+    public function testDiscriminatorColumnDefaultName() : void
     {
         if (strpos(get_class($this), 'PHPMappingDriver') !== false) {
             $this->markTestSkipped('PHP Mapping Drivers have no defaults.');

@@ -19,7 +19,7 @@ use Doctrine\Tests\DoctrineTestCase;
  */
 class OnClassMetadataNotFoundEventArgsTest extends DoctrineTestCase
 {
-    public function testEventArgsMutability()
+    public function testEventArgsMutability() : void
     {
         $entityManager           = $this->createMock(EntityManagerInterface::class);
         $metadataBuildingContext = new ClassMetadataBuildingContext(

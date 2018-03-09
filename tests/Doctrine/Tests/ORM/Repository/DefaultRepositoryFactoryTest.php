@@ -37,7 +37,7 @@ class DefaultRepositoryFactoryTest extends DoctrineTestCase
     /**
      * {@inheritDoc}
      */
-    protected function setUp()
+    protected function setUp() : void
     {
         $this->metadataBuildingContext = new ClassMetadataBuildingContext(
             $this->createMock(ClassMetadataFactory::class),
@@ -53,7 +53,7 @@ class DefaultRepositoryFactoryTest extends DoctrineTestCase
             ->will($this->returnValue(DDC869PaymentRepository::class));
     }
 
-    public function testCreatesRepositoryFromDefaultRepositoryClass()
+    public function testCreatesRepositoryFromDefaultRepositoryClass() : void
     {
         $this->entityManager
             ->expects($this->any())
@@ -66,7 +66,7 @@ class DefaultRepositoryFactoryTest extends DoctrineTestCase
         );
     }
 
-    public function testCreatedRepositoriesAreCached()
+    public function testCreatedRepositoriesAreCached() : void
     {
         $this->entityManager
             ->expects($this->any())
@@ -79,7 +79,7 @@ class DefaultRepositoryFactoryTest extends DoctrineTestCase
         );
     }
 
-    public function testCreatesRepositoryFromCustomClassMetadata()
+    public function testCreatesRepositoryFromCustomClassMetadata() : void
     {
         $customMetadata = $this->buildClassMetadata(__DIR__);
 
@@ -97,7 +97,7 @@ class DefaultRepositoryFactoryTest extends DoctrineTestCase
         );
     }
 
-    public function testCachesDistinctRepositoriesPerDistinctEntityManager()
+    public function testCachesDistinctRepositoriesPerDistinctEntityManager() : void
     {
         $em1 = $this->createEntityManager();
         $em2 = $this->createEntityManager();

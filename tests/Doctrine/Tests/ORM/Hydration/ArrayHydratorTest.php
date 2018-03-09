@@ -31,7 +31,7 @@ class ArrayHydratorTest extends HydrationTestCase
      * SELECT PARTIAL u.{id, name}
      *   FROM Doctrine\Tests\Models\CMS\CmsUser u
      */
-    public function testSimpleEntityQuery()
+    public function testSimpleEntityQuery() : void
     {
         $rsm = new ResultSetMapping();
 
@@ -71,7 +71,7 @@ class ArrayHydratorTest extends HydrationTestCase
      *
      * @dataProvider provideDataForUserEntityResult
      */
-    public function testSimpleEntityWithScalarQuery($userEntityKey)
+    public function testSimpleEntityWithScalarQuery($userEntityKey) : void
     {
         $alias = $userEntityKey ?: 'u';
         $rsm   = new ResultSetMapping();
@@ -123,7 +123,7 @@ class ArrayHydratorTest extends HydrationTestCase
      * SELECT PARTIAL u.{id, name} AS user
      *   FROM Doctrine\Tests\Models\CMS\CmsUser u
      */
-    public function testSimpleEntityQueryWithAliasedUserEntity()
+    public function testSimpleEntityQueryWithAliasedUserEntity() : void
     {
         $rsm = new ResultSetMapping();
 
@@ -163,7 +163,7 @@ class ArrayHydratorTest extends HydrationTestCase
      * SELECT PARTIAL u.{id, name}, PARTIAL a.{id, topic}
      *   FROM Doctrine\Tests\Models\CMS\CmsUser u, Doctrine\Tests\Models\CMS\CmsArticle a
      */
-    public function testSimpleMultipleRootEntityQuery()
+    public function testSimpleMultipleRootEntityQuery() : void
     {
         $rsm = new ResultSetMapping();
 
@@ -213,7 +213,7 @@ class ArrayHydratorTest extends HydrationTestCase
      * SELECT PARTIAL u.{id, name} AS user, PARTIAL a.{id, topic}
      *   FROM Doctrine\Tests\Models\CMS\CmsUser u, Doctrine\Tests\Models\CMS\CmsArticle a
      */
-    public function testSimpleMultipleRootEntityQueryWithAliasedUserEntity()
+    public function testSimpleMultipleRootEntityQueryWithAliasedUserEntity() : void
     {
         $rsm = new ResultSetMapping();
 
@@ -267,7 +267,7 @@ class ArrayHydratorTest extends HydrationTestCase
      * SELECT PARTIAL u.{id, name}, PARTIAL a.{id, topic} AS article
      *   FROM Doctrine\Tests\Models\CMS\CmsUser u, Doctrine\Tests\Models\CMS\CmsArticle a
      */
-    public function testSimpleMultipleRootEntityQueryWithAliasedArticleEntity()
+    public function testSimpleMultipleRootEntityQueryWithAliasedArticleEntity() : void
     {
         $rsm = new ResultSetMapping();
 
@@ -321,7 +321,7 @@ class ArrayHydratorTest extends HydrationTestCase
      * SELECT PARTIAL u.{id, name} AS user, PARTIAL a.{id, topic} AS article
      *   FROM Doctrine\Tests\Models\CMS\CmsUser u, Doctrine\Tests\Models\CMS\CmsArticle a
      */
-    public function testSimpleMultipleRootEntityQueryWithAliasedEntities()
+    public function testSimpleMultipleRootEntityQueryWithAliasedEntities() : void
     {
         $rsm = new ResultSetMapping();
 
@@ -379,7 +379,7 @@ class ArrayHydratorTest extends HydrationTestCase
      *
      * @dataProvider provideDataForUserEntityResult
      */
-    public function testMixedQueryNormalJoin($userEntityKey)
+    public function testMixedQueryNormalJoin($userEntityKey) : void
     {
         $rsm = new ResultSetMapping();
 
@@ -428,7 +428,7 @@ class ArrayHydratorTest extends HydrationTestCase
      *
      * @dataProvider provideDataForUserEntityResult
      */
-    public function testMixedQueryFetchJoin($userEntityKey)
+    public function testMixedQueryFetchJoin($userEntityKey) : void
     {
         $rsm = new ResultSetMapping();
 
@@ -499,7 +499,7 @@ class ArrayHydratorTest extends HydrationTestCase
      *
      * @dataProvider provideDataForUserEntityResult
      */
-    public function testMixedQueryFetchJoinCustomIndex($userEntityKey)
+    public function testMixedQueryFetchJoinCustomIndex($userEntityKey) : void
     {
         $rsm = new ResultSetMapping();
 
@@ -577,7 +577,7 @@ class ArrayHydratorTest extends HydrationTestCase
      * inner join PHONENUMBERS p ON u.id = p.user_id
      * inner join ARTICLES a ON u.id = a.user_id
      */
-    public function testMixedQueryMultipleFetchJoin()
+    public function testMixedQueryMultipleFetchJoin() : void
     {
         $rsm = new ResultSetMapping();
 
@@ -696,7 +696,7 @@ class ArrayHydratorTest extends HydrationTestCase
      * inner join ARTICLES a ON u.id = a.user_id
      * left outer join COMMENTS c ON a.id = c.article_id
      */
-    public function testMixedQueryMultipleDeepMixedFetchJoin()
+    public function testMixedQueryMultipleDeepMixedFetchJoin() : void
     {
         $rsm = new ResultSetMapping();
 
@@ -853,7 +853,7 @@ class ArrayHydratorTest extends HydrationTestCase
      *  1    | 0          | First    | 1        |   3  | 1
      *  1    | 0          | First    | 2        |   4  | 1
      */
-    public function testEntityQueryCustomResultSetOrder()
+    public function testEntityQueryCustomResultSetOrder() : void
     {
         $rsm = new ResultSetMapping();
 
@@ -929,7 +929,7 @@ class ArrayHydratorTest extends HydrationTestCase
      *
      * @dataProvider provideDataForUserEntityResult
      */
-    public function testChainedJoinWithScalars($entityKey)
+    public function testChainedJoinWithScalars($entityKey) : void
     {
         $rsm = new ResultSetMapping();
 
@@ -999,7 +999,7 @@ class ArrayHydratorTest extends HydrationTestCase
      * SELECT PARTIAL u.{id, status}
      *   FROM Doctrine\Tests\Models\CMS\CmsUser u
      */
-    public function testResultIteration()
+    public function testResultIteration() : void
     {
         $rsm = new ResultSetMapping();
 
@@ -1044,7 +1044,7 @@ class ArrayHydratorTest extends HydrationTestCase
      * SELECT PARTIAL u.{id, status}
      *   FROM Doctrine\Tests\Models\CMS\CmsUser u
      */
-    public function testResultIterationWithAliasedUserEntity()
+    public function testResultIterationWithAliasedUserEntity() : void
     {
         $rsm = new ResultSetMapping();
 
@@ -1092,7 +1092,7 @@ class ArrayHydratorTest extends HydrationTestCase
      *
      * @group DDC-644
      */
-    public function testSkipUnknownColumns()
+    public function testSkipUnknownColumns() : void
     {
         $rsm = new ResultSetMapping();
 
@@ -1126,7 +1126,7 @@ class ArrayHydratorTest extends HydrationTestCase
      * @group DDC-1358
      * @dataProvider provideDataForUserEntityResult
      */
-    public function testMissingIdForRootEntity($userEntityKey)
+    public function testMissingIdForRootEntity($userEntityKey) : void
     {
         $rsm = new ResultSetMapping();
 
@@ -1185,7 +1185,7 @@ class ArrayHydratorTest extends HydrationTestCase
      * @group DDC-1385
      * @dataProvider provideDataForUserEntityResult
      */
-    public function testIndexByAndMixedResult($userEntityKey)
+    public function testIndexByAndMixedResult($userEntityKey) : void
     {
         $rsm = new ResultSetMapping();
 

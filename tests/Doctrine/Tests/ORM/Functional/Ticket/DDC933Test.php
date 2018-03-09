@@ -15,7 +15,7 @@ use Doctrine\Tests\TestUtil;
 
 class DDC933Test extends OrmFunctionalTestCase
 {
-    public function setUp()
+    public function setUp() : void
     {
         $this->useModelSet('company');
 
@@ -25,7 +25,7 @@ class DDC933Test extends OrmFunctionalTestCase
     /**
      * @group DDC-933
      */
-    public function testLockCTIClass()
+    public function testLockCTIClass() : void
     {
         if ($this->em->getConnection()->getDatabasePlatform()->getName() === 'sqlite') {
             self::markTestSkipped('It should not run on in-memory databases');

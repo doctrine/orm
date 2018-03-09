@@ -15,7 +15,7 @@ class ScalarHydratorTest extends HydrationTestCase
     /**
      * Select u.id, u.name from CmsUser u
      */
-    public function testNewHydrationSimpleEntityQuery()
+    public function testNewHydrationSimpleEntityQuery() : void
     {
         $rsm = new ResultSetMapping();
         $rsm->addEntityResult(CmsUser::class, 'u');
@@ -50,7 +50,7 @@ class ScalarHydratorTest extends HydrationTestCase
     /**
      * @group DDC-407
      */
-    public function testHydrateScalarResults()
+    public function testHydrateScalarResults() : void
     {
         $rsm = new ResultSetMapping();
         $rsm->addScalarResult('foo1', 'foo', Type::getType('string'));
@@ -74,7 +74,7 @@ class ScalarHydratorTest extends HydrationTestCase
     /**
      * @group DDC-644
      */
-    public function testSkipUnknownColumns()
+    public function testSkipUnknownColumns() : void
     {
         $rsm = new ResultSetMapping();
         $rsm->addEntityResult(CmsUser::class, 'u');

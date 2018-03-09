@@ -38,13 +38,13 @@ class ConfigurationTest extends DoctrineTestCase
     /** @var Configuration */
     private $configuration;
 
-    protected function setUp()
+    protected function setUp() : void
     {
         parent::setUp();
         $this->configuration = new Configuration();
     }
 
-    public function testSetGetMetadataDriverImpl()
+    public function testSetGetMetadataDriverImpl() : void
     {
         self::assertNull($this->configuration->getMetadataDriverImpl()); // defaults
 
@@ -53,7 +53,7 @@ class ConfigurationTest extends DoctrineTestCase
         self::assertSame($metadataDriver, $this->configuration->getMetadataDriverImpl());
     }
 
-    public function testNewDefaultAnnotationDriver()
+    public function testNewDefaultAnnotationDriver() : void
     {
         $paths           = [__DIR__];
         $reflectionClass = new ReflectionClass(ConfigurationTestAnnotationReaderChecker::class);
@@ -68,7 +68,7 @@ class ConfigurationTest extends DoctrineTestCase
         self::assertInstanceOf(ORM\PrePersist::class, $annotation);
     }
 
-    public function testSetGetQueryCacheImpl()
+    public function testSetGetQueryCacheImpl() : void
     {
         self::assertNull($this->configuration->getQueryCacheImpl()); // defaults
         $queryCacheImpl = $this->createMock(Cache::class);
@@ -76,7 +76,7 @@ class ConfigurationTest extends DoctrineTestCase
         self::assertSame($queryCacheImpl, $this->configuration->getQueryCacheImpl());
     }
 
-    public function testSetGetHydrationCacheImpl()
+    public function testSetGetHydrationCacheImpl() : void
     {
         self::assertNull($this->configuration->getHydrationCacheImpl()); // defaults
         $queryCacheImpl = $this->createMock(Cache::class);
@@ -84,7 +84,7 @@ class ConfigurationTest extends DoctrineTestCase
         self::assertSame($queryCacheImpl, $this->configuration->getHydrationCacheImpl());
     }
 
-    public function testSetGetMetadataCacheImpl()
+    public function testSetGetMetadataCacheImpl() : void
     {
         self::assertNull($this->configuration->getMetadataCacheImpl()); // defaults
         $queryCacheImpl = $this->createMock(Cache::class);
@@ -112,7 +112,7 @@ class ConfigurationTest extends DoctrineTestCase
         }
     }
 
-    public function testEnsureProductionSettings()
+    public function testEnsureProductionSettings() : void
     {
         $this->setProductionSettings();
         $this->configuration->ensureProductionSettings();
@@ -120,7 +120,7 @@ class ConfigurationTest extends DoctrineTestCase
         self::addToAssertionCount(1);
     }
 
-    public function testEnsureProductionSettingsQueryCache()
+    public function testEnsureProductionSettingsQueryCache() : void
     {
         $this->setProductionSettings('query');
 
@@ -130,7 +130,7 @@ class ConfigurationTest extends DoctrineTestCase
         $this->configuration->ensureProductionSettings();
     }
 
-    public function testEnsureProductionSettingsMetadataCache()
+    public function testEnsureProductionSettingsMetadataCache() : void
     {
         $this->setProductionSettings('metadata');
 
@@ -140,7 +140,7 @@ class ConfigurationTest extends DoctrineTestCase
         $this->configuration->ensureProductionSettings();
     }
 
-    public function testEnsureProductionSettingsQueryArrayCache()
+    public function testEnsureProductionSettingsQueryArrayCache() : void
     {
         $this->setProductionSettings();
         $this->configuration->setQueryCacheImpl(new ArrayCache());
@@ -151,7 +151,7 @@ class ConfigurationTest extends DoctrineTestCase
         $this->configuration->ensureProductionSettings();
     }
 
-    public function testEnsureProductionSettingsMetadataArrayCache()
+    public function testEnsureProductionSettingsMetadataArrayCache() : void
     {
         $this->setProductionSettings();
         $this->configuration->setMetadataCacheImpl(new ArrayCache());
@@ -162,7 +162,7 @@ class ConfigurationTest extends DoctrineTestCase
         $this->configuration->ensureProductionSettings();
     }
 
-    public function testEnsureProductionSettingsAutoGenerateProxyClassesEval()
+    public function testEnsureProductionSettingsAutoGenerateProxyClassesEval() : void
     {
         $this->setProductionSettings();
         $this->configuration->setAutoGenerateProxyClasses(AbstractProxyFactory::AUTOGENERATE_EVAL);
@@ -173,7 +173,7 @@ class ConfigurationTest extends DoctrineTestCase
         $this->configuration->ensureProductionSettings();
     }
 
-    public function testAddGetCustomStringFunction()
+    public function testAddGetCustomStringFunction() : void
     {
         $this->configuration->addCustomStringFunction('FunctionName', __CLASS__);
 
@@ -185,7 +185,7 @@ class ConfigurationTest extends DoctrineTestCase
         self::assertSame(__CLASS__, $this->configuration->getCustomStringFunction('OtherFunctionName'));
     }
 
-    public function testAddGetCustomNumericFunction()
+    public function testAddGetCustomNumericFunction() : void
     {
         $this->configuration->addCustomNumericFunction('FunctionName', __CLASS__);
 
@@ -197,7 +197,7 @@ class ConfigurationTest extends DoctrineTestCase
         self::assertSame(__CLASS__, $this->configuration->getCustomNumericFunction('OtherFunctionName'));
     }
 
-    public function testAddGetCustomDatetimeFunction()
+    public function testAddGetCustomDatetimeFunction() : void
     {
         $this->configuration->addCustomDatetimeFunction('FunctionName', __CLASS__);
 
@@ -209,7 +209,7 @@ class ConfigurationTest extends DoctrineTestCase
         self::assertSame(__CLASS__, $this->configuration->getCustomDatetimeFunction('OtherFunctionName'));
     }
 
-    public function testAddGetCustomHydrationMode()
+    public function testAddGetCustomHydrationMode() : void
     {
         self::assertNull($this->configuration->getCustomHydrationMode('NonExisting'));
 
@@ -218,7 +218,7 @@ class ConfigurationTest extends DoctrineTestCase
         self::assertSame(__CLASS__, $this->configuration->getCustomHydrationMode('HydrationModeName'));
     }
 
-    public function testSetCustomHydrationModes()
+    public function testSetCustomHydrationModes() : void
     {
         $this->configuration->addCustomHydrationMode('HydrationModeName', __CLASS__);
 
@@ -232,7 +232,7 @@ class ConfigurationTest extends DoctrineTestCase
         self::assertSame(__CLASS__, $this->configuration->getCustomHydrationMode('AnotherHydrationModeName'));
     }
 
-    public function testSetGetClassMetadataFactoryName()
+    public function testSetGetClassMetadataFactoryName() : void
     {
         self::assertSame(ClassMetadataFactory::class, $this->configuration->getClassMetadataFactoryName());
 
@@ -241,7 +241,7 @@ class ConfigurationTest extends DoctrineTestCase
         self::assertSame(__CLASS__, $this->configuration->getClassMetadataFactoryName());
     }
 
-    public function testAddGetFilters()
+    public function testAddGetFilters() : void
     {
         self::assertNull($this->configuration->getFilterClassName('NonExistingFilter'));
 
@@ -262,7 +262,7 @@ class ConfigurationTest extends DoctrineTestCase
         $this->configuration->setDefaultRepositoryClassName(__CLASS__);
     }
 
-    public function testSetGetNamingStrategy()
+    public function testSetGetNamingStrategy() : void
     {
         self::assertInstanceOf(NamingStrategy::class, $this->configuration->getNamingStrategy());
 
@@ -276,7 +276,7 @@ class ConfigurationTest extends DoctrineTestCase
     /**
      * @group DDC-1955
      */
-    public function testSetGetEntityListenerResolver()
+    public function testSetGetEntityListenerResolver() : void
     {
         self::assertInstanceOf(EntityListenerResolver::class, $this->configuration->getEntityListenerResolver());
         self::assertInstanceOf(DefaultEntityListenerResolver::class, $this->configuration->getEntityListenerResolver());
@@ -291,7 +291,7 @@ class ConfigurationTest extends DoctrineTestCase
     /**
      * @group DDC-2183
      */
-    public function testSetGetSecondLevelCacheConfig()
+    public function testSetGetSecondLevelCacheConfig() : void
     {
         $mockClass = $this->createMock(CacheConfiguration::class);
 

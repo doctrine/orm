@@ -14,7 +14,7 @@ use function get_class;
  */
 class DDC1461Test extends OrmFunctionalTestCase
 {
-    public function setUp()
+    public function setUp() : void
     {
         parent::setUp();
 
@@ -29,7 +29,7 @@ class DDC1461Test extends OrmFunctionalTestCase
         }
     }
 
-    public function testChangeDetectionDeferredExplicit()
+    public function testChangeDetectionDeferredExplicit() : void
     {
         $user = new DDC1461User();
         $this->em->persist($user);

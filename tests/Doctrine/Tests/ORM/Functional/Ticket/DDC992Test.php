@@ -14,7 +14,7 @@ use function get_class;
  */
 class DDC992Test extends OrmFunctionalTestCase
 {
-    public function setUp()
+    public function setUp() : void
     {
         parent::setUp();
         try {
@@ -29,7 +29,7 @@ class DDC992Test extends OrmFunctionalTestCase
         }
     }
 
-    public function testIssue()
+    public function testIssue() : void
     {
         $role        = new DDC992Role();
         $role->name  = 'Parent';
@@ -51,7 +51,7 @@ class DDC992Test extends OrmFunctionalTestCase
         }
     }
 
-    public function testOneToManyChild()
+    public function testOneToManyChild() : void
     {
         $parent           = new DDC992Parent();
         $child            = new DDC992Child();

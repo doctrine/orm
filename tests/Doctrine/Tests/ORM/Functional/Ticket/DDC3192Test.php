@@ -17,7 +17,7 @@ use function array_search;
  */
 class DDC3192Test extends OrmFunctionalTestCase
 {
-    protected function setUp()
+    protected function setUp() : void
     {
         parent::setUp();
 
@@ -38,7 +38,7 @@ class DDC3192Test extends OrmFunctionalTestCase
         );
     }
 
-    public function testIssue()
+    public function testIssue() : void
     {
         $currency = new DDC3192Currency('BYR');
 

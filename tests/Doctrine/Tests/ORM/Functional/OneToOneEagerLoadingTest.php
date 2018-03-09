@@ -17,7 +17,7 @@ use function get_class;
  */
 class OneToOneEagerLoadingTest extends OrmFunctionalTestCase
 {
-    protected function setUp()
+    protected function setUp() : void
     {
         parent::setUp();
         $schemaTool = new SchemaTool($this->em);
@@ -38,7 +38,7 @@ class OneToOneEagerLoadingTest extends OrmFunctionalTestCase
     /**
      * @group non-cacheable
      */
-    public function testEagerLoadOneToOneOwningSide()
+    public function testEagerLoadOneToOneOwningSide() : void
     {
         $train  = new Train(new TrainOwner('Alexander'));
         $driver = new TrainDriver('Benjamin');
@@ -63,7 +63,7 @@ class OneToOneEagerLoadingTest extends OrmFunctionalTestCase
     /**
      * @group non-cacheable
      */
-    public function testEagerLoadOneToOneNullOwningSide()
+    public function testEagerLoadOneToOneNullOwningSide() : void
     {
         $train = new Train(new TrainOwner('Alexander'));
 
@@ -83,7 +83,7 @@ class OneToOneEagerLoadingTest extends OrmFunctionalTestCase
     /**
      * @group non-cacheable
      */
-    public function testEagerLoadOneToOneInverseSide()
+    public function testEagerLoadOneToOneInverseSide() : void
     {
         $owner = new TrainOwner('Alexander');
         $train = new Train($owner);
@@ -104,7 +104,7 @@ class OneToOneEagerLoadingTest extends OrmFunctionalTestCase
     /**
      * @group non-cacheable
      */
-    public function testEagerLoadOneToOneNullInverseSide()
+    public function testEagerLoadOneToOneNullInverseSide() : void
     {
         $driver = new TrainDriver('Dagny Taggert');
 
@@ -123,7 +123,7 @@ class OneToOneEagerLoadingTest extends OrmFunctionalTestCase
         self::assertCount($sqlCount + 1, $this->sqlLoggerStack->queries);
     }
 
-    public function testEagerLoadManyToOne()
+    public function testEagerLoadManyToOne() : void
     {
         $train  = new Train(new TrainOwner('Alexander'));
         $waggon = new Waggon();
@@ -141,7 +141,7 @@ class OneToOneEagerLoadingTest extends OrmFunctionalTestCase
     /**
      * @group non-cacheable
      */
-    public function testEagerLoadWithNullableColumnsGeneratesLeftJoinOnBothSides()
+    public function testEagerLoadWithNullableColumnsGeneratesLeftJoinOnBothSides() : void
     {
         $train  = new Train(new TrainOwner('Alexander'));
         $driver = new TrainDriver('Benjamin');
@@ -171,7 +171,7 @@ class OneToOneEagerLoadingTest extends OrmFunctionalTestCase
     /**
      * @group non-cacheable
      */
-    public function testEagerLoadWithNonNullableColumnsGeneratesInnerJoinOnOwningSide()
+    public function testEagerLoadWithNonNullableColumnsGeneratesInnerJoinOnOwningSide() : void
     {
         $waggon = new Waggon();
 
@@ -201,7 +201,7 @@ class OneToOneEagerLoadingTest extends OrmFunctionalTestCase
     /**
      * @group non-cacheable
      */
-    public function testEagerLoadWithNonNullableColumnsGeneratesLeftJoinOnNonOwningSide()
+    public function testEagerLoadWithNonNullableColumnsGeneratesLeftJoinOnNonOwningSide() : void
     {
         $owner = new TrainOwner('Alexander');
         $train = new Train($owner);
@@ -221,7 +221,7 @@ class OneToOneEagerLoadingTest extends OrmFunctionalTestCase
     /**
      * @group DDC-1946
      */
-    public function testEagerLoadingDoesNotBreakRefresh()
+    public function testEagerLoadingDoesNotBreakRefresh() : void
     {
         $train = new Train(new TrainOwner('Johannes'));
         $order = new TrainOrder($train);

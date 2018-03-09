@@ -14,7 +14,7 @@ use Doctrine\Tests\OrmFunctionalTestCase;
  */
 class DDC2943Test extends OrmFunctionalTestCase
 {
-    public function setUp()
+    public function setUp() : void
     {
         $this->enableSecondLevelCache();
         $this->useModelSet('cache');
@@ -31,7 +31,7 @@ class DDC2943Test extends OrmFunctionalTestCase
         $this->em->clear();
     }
 
-    public function testIssue()
+    public function testIssue() : void
     {
         $this->loadFixtures();
 
@@ -50,7 +50,7 @@ class DDC2943Test extends OrmFunctionalTestCase
         self::assertPaginatorQueryHit(new Paginator(clone $query), $region->getName(), 4, 2);
     }
 
-    public function testIssueNonFetchJoin()
+    public function testIssueNonFetchJoin() : void
     {
         $this->loadFixtures();
 

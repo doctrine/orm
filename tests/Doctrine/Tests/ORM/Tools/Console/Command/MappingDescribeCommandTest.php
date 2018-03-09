@@ -29,7 +29,7 @@ class MappingDescribeCommandTest extends OrmFunctionalTestCase
     /** @var CommandTester */
     private $tester;
 
-    protected function setUp()
+    protected function setUp() : void
     {
         parent::setUp();
 
@@ -41,7 +41,7 @@ class MappingDescribeCommandTest extends OrmFunctionalTestCase
         $this->tester  = new CommandTester($this->command);
     }
 
-    public function testShowSpecificFuzzySingle()
+    public function testShowSpecificFuzzySingle() : void
     {
         $this->tester->execute(
             [
@@ -60,7 +60,7 @@ class MappingDescribeCommandTest extends OrmFunctionalTestCase
      * @expectedException \InvalidArgumentException
      * @expectedExceptionMessage possible matches
      */
-    public function testShowSpecificFuzzyAmbiguous()
+    public function testShowSpecificFuzzyAmbiguous() : void
     {
         $this->tester->execute(
             [
@@ -74,7 +74,7 @@ class MappingDescribeCommandTest extends OrmFunctionalTestCase
      * @expectedException \InvalidArgumentException
      * @expectedExceptionMessage Could not find any mapped Entity classes matching "AttractionFooBar"
      */
-    public function testShowSpecificNotFound()
+    public function testShowSpecificNotFound() : void
     {
         $this->tester->execute(
             [

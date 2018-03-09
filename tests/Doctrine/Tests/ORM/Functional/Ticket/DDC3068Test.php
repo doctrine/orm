@@ -17,7 +17,7 @@ class DDC3068Test extends OrmFunctionalTestCase
     private $foo;
     private $merc;
 
-    protected function setUp()
+    protected function setUp() : void
     {
         $this->useModelSet('taxi');
         parent::setUp();
@@ -39,7 +39,7 @@ class DDC3068Test extends OrmFunctionalTestCase
         $this->em->flush();
     }
 
-    public function testFindUsingAnArrayOfObjectAsPrimaryKey()
+    public function testFindUsingAnArrayOfObjectAsPrimaryKey() : void
     {
         $ride1 = $this->em->find(Ride::class, [
             'driver' => $this->foo->getId(),
