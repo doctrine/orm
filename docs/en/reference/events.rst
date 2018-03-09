@@ -457,7 +457,7 @@ EventManager that is passed to the EntityManager factory:
     $eventManager->addEventListener(array(Events::preUpdate), new MyEventListener());
     $eventManager->addEventSubscriber(new MyEventSubscriber());
 
-    $entityManager = EntityManager::create($dbOpts, $config, $eventManager);
+    $entityManager = EntityManager::create($connection, $config, $eventManager);
 
 You can also retrieve the event manager instance after the
 EntityManager was created:

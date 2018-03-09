@@ -43,6 +43,7 @@ Customize it to your needs.
 
     <?php
     use Doctrine\Common\ClassLoader,
+        Doctrine\DBAL\DriverManager,
         Doctrine\ORM\Configuration,
         Doctrine\ORM\EntityManager,
         Doctrine\Common\Cache\ArrayCache,
@@ -91,8 +92,11 @@ Customize it to your needs.
             'dbname' =>   $db['default']['database']
         );
 
+        // Create Connection
+        $connection = DriverManager::getConnection($connectionOptions);
+
         // Create EntityManager
-        $this->em = EntityManager::create($connectionOptions, $config);
+        $this->em = EntityManager::create($connection, $config);
       }
     }
 

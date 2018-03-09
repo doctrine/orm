@@ -129,7 +129,7 @@ the targetEntity resolution will occur reliably:
     // Add the ResolveTargetEntityListener
     $evm->addEventListener(Doctrine\ORM\Events::loadClassMetadata, $rtel);
 
-    $em = \Doctrine\ORM\EntityManager::create($connectionOptions, $config, $evm);
+    $em = \Doctrine\ORM\EntityManager::create($connection, $config, $evm);
 
 Final Thoughts
 --------------

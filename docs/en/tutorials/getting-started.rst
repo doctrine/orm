@@ -125,6 +125,7 @@ step:
 
     <?php
     // bootstrap.php
+    use Doctrine\DBAL\DriverManager;
     use Doctrine\ORM\Tools\Setup;
     use Doctrine\ORM\EntityManager;
 
@@ -136,13 +137,14 @@ step:
     // or if you prefer XML
     //$config = Setup::createXMLMetadataConfiguration(array(__DIR__."/config"), $isDevMode);
     // database configuration parameters
-    $conn = array(
+    $dbParams = array(
         'driver' => 'pdo_sqlite',
         'path' => __DIR__ . '/db.sqlite',
     );
 
+    $connection = DriverManager::getConnection($dbParams);
     // obtaining the entity manager
-    $entityManager = EntityManager::create($conn, $config);
+    $entityManager = EntityManager::create($connection, $config);
 
 The require_once statement sets up the class autoloading for Doctrine and
 its dependencies using Composer's autoloader.
