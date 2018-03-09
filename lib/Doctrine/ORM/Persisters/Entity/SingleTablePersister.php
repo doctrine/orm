@@ -133,7 +133,7 @@ class SingleTablePersister extends AbstractEntityInheritancePersister
     {
         $conditionSql = parent::getSelectConditionSQL($criteria, $assoc);
 
-        if ($this->class->discriminatorValue === null) {
+        if ($this->class->discriminatorValue === null && $this->class->isRootEntity()) {
             return $conditionSql;
         }
 
@@ -151,7 +151,7 @@ class SingleTablePersister extends AbstractEntityInheritancePersister
     {
         $conditionSql = parent::getSelectConditionCriteriaSQL($criteria);
 
-        if ($this->class->discriminatorValue === null) {
+        if ($this->class->discriminatorValue === null && $this->class->isRootEntity()) {
             return $conditionSql;
         }
 
