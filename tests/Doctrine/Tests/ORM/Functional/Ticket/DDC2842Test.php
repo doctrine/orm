@@ -13,26 +13,22 @@ class DDC2842Test extends \Doctrine\Tests\OrmFunctionalTestCase
     {
         $this->useModelSet('pagination');
         parent::setUp();
-
-        $this->_em->getConnection()->getConfiguration()->setSQLLogger(new \Doctrine\DBAL\Logging\DebugStack);
     }
 
     public function testSelectConditionSQL()
     {
-        $sqlLogger  = $this->_em->getConnection()->getConfiguration()->getSQLLogger();
-
-        $entity1  = $this->_em->getRepository(User::class)->find(1);
+        $this->_em->getRepository(User::class)->find(1);
 
         $this->assertSQLEquals(
             "SELECT t0.id AS id_1, t0.name AS name_2, t0.type, t0.email AS email_3 FROM pagination_user t0 WHERE t0.id = ?",
-            $sqlLogger->queries[count($sqlLogger->queries)]['sql']
+            $this->_sqlLoggerStack->queries[$this->_sqlLoggerStack->currentQuery]['sql']
         );
 
-        $entity1  = $this->_em->getRepository(User1::class)->find(1);
+        $this->_em->getRepository(User1::class)->find(1);
 
         $this->assertSQLEquals(
             "SELECT t0.id AS id_1, t0.name AS name_2, t0.email AS email_3, t0.type FROM pagination_user t0 WHERE t0.id = ? AND t0.type IN ('user1')",
-            $sqlLogger->queries[count($sqlLogger->queries)]['sql']
+            $this->_sqlLoggerStack->queries[$this->_sqlLoggerStack->currentQuery]['sql']
         );
     }
 
@@ -60,16 +56,19 @@ class DDC2842Test extends \Doctrine\Tests\OrmFunctionalTestCase
 
         $this->_em->clear();
 
-        $sqlLogger  = $this->_em->getConnection()->getConfiguration()->getSQLLogger();
-
         $entity1 = $this->_em->getRepository(DC2842UserEntity::class)->find($entity1->getId());
 
-        $user = $entity1->getUser();
+        $user1 = $entity1->getUser();
 
         $this->assertSQLEquals(
             "SELECT t0.id AS id_1, t0.name AS name_2, t0.type, t0.email AS email_3 FROM pagination_user t0 WHERE t0.id = ?",
-            $sqlLogger->queries[count($sqlLogger->queries)]['sql']
+            $this->_sqlLoggerStack->queries[$this->_sqlLoggerStack->currentQuery]['sql']
         );
+
+        $this->_em->remove($entity1);
+        $this->_em->remove($user1);
+
+        $this->_em->flush();
     }
 
     public function testSelectQuerySQL()
