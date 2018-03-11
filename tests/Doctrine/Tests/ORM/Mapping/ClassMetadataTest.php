@@ -181,7 +181,7 @@ class ClassMetadataTest extends OrmTestCase
     {
         require_once __DIR__ . '/../../Models/Global/GlobalNamespaceModel.php';
 
-        $cm = new ClassMetadata(DoctrineGlobalArticle::class, $this->metadataBuildingContext);
+        $cm = new ClassMetadata(DoctrineGlobalArticle::class, null, $this->metadataBuildingContext);
 
         $cm->setTable(new Mapping\TableMetadata('doctrine_global_article'));
 
@@ -295,7 +295,7 @@ class ClassMetadataTest extends OrmTestCase
     {
         require_once __DIR__ . '/../../Models/Global/GlobalNamespaceModel.php';
 
-        $cm = new ClassMetadata('v', null, $this->metadataBuildingContext);
+        $cm = new ClassMetadata('DoctrineGlobalUser', null, $this->metadataBuildingContext);
 
         $cm->setTable(new Mapping\TableMetadata('doctrine_global_user'));
         $cm->setSubclasses(['DoctrineGlobalArticle']);
