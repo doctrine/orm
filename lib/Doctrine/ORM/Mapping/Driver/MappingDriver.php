@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Doctrine\ORM\Mapping\Driver;
 
-use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\Mapping\ClassMetadataBuildingContext;
 use Doctrine\ORM\Mapping\ComponentMetadata;
 
@@ -15,12 +14,6 @@ interface MappingDriver
 {
     /**
      * Loads the metadata for the specified class into the provided container.
-     *
-     * @param string                       $className
-     * @param ComponentMetadata|null       $parent
-     * @param ClassMetadataBuildingContext $metadataBuildingContext
-     *
-     * @return ComponentMetadata
      */
     public function loadMetadataForClass(
         string $className,
@@ -37,11 +30,7 @@ interface MappingDriver
 
     /**
      * Returns whether the class with the specified name should have its metadata loaded.
-     * This is only the case if it is either mapped as an Entity or a MappedSuperclass.
-     *
-     * @param string $className
-     *
-     * @return bool
+     * This is only the case if it is either mapped as an Entity or a MappedSuperclass
      */
-    public function isTransient($className) : bool;
+    public function isTransient(string $className) : bool;
 }

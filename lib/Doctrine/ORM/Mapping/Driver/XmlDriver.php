@@ -39,7 +39,7 @@ class XmlDriver extends FileDriver
     /**
      * {@inheritDoc}
      *
-     * @throws \Doctrine\ORM\Mapping\MappingException
+     * @throws Mapping\MappingException
      */
     public function loadMetadataForClass(
         string $className,

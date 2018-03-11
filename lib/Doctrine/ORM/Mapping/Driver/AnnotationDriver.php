@@ -6,6 +6,7 @@ namespace Doctrine\ORM\Mapping\Driver;
 
 use Doctrine\Common\Annotations\AnnotationReader;
 use Doctrine\Common\Annotations\Reader;
+use Doctrine\DBAL\DBALException;
 use Doctrine\DBAL\Types\Type;
 use Doctrine\ORM\Annotation;
 use Doctrine\ORM\Cache\Exception\CacheException;
@@ -33,6 +34,7 @@ use function str_replace;
 use function strpos;
 use function strtolower;
 use function strtoupper;
+use function var_export;
 
 /**
  * The AnnotationDriver reads the mapping metadata from docblock annotations.
@@ -177,8 +179,6 @@ class AnnotationDriver implements MappingDriver
      *
      * @param string $className
      *
-     * @return bool
-     *
      * @throws \ReflectionException
      */
     public function isTransient($className) : bool
@@ -195,7 +195,10 @@ class AnnotationDriver implements MappingDriver
     }
 
     /**
-     * {@inheritDoc}
+     * {@inheritdoc}
+     *
+     * @throws \ReflectionException
+     * @throws Mapping\MappingException
      */
     public function getAllClassNames() : array
     {
@@ -262,7 +265,7 @@ class AnnotationDriver implements MappingDriver
     }
 
     /**
-     * {@inheritDoc}
+     * {@inheritdoc}
      *
      * @throws CacheException
      * @throws Mapping\MappingException
@@ -327,15 +330,10 @@ class AnnotationDriver implements MappingDriver
 
     /**
      * @param Annotation\Annotation[] $classAnnotations
-     * @param \ReflectionClass $reflectionClass
-     * @param Mapping\ClassMetadata $metadata
-     * @param Mapping\ClassMetadataBuildingContext $metadataBuildingContext
      *
-     * @return Mapping\ClassMetadata
-     *
-     * @throws Mapping\MappingException
      * @throws \ReflectionException
      * @throws \UnexpectedValueException
+     * @throws Mapping\MappingException
      */
     private function convertClassAnnotationsToClassMetadata(
         array $classAnnotations,
@@ -375,15 +373,11 @@ class AnnotationDriver implements MappingDriver
 
     /**
      * @param Annotation\Annotation[] $classAnnotations
-     * @param \ReflectionClass $reflectionClass
-     * @param Mapping\ClassMetadata $metadata
-     * @param Mapping\ClassMetadataBuildingContext $metadataBuildingContext
      *
-     * @return Mapping\ClassMetadata
-     *
-     * @throws Mapping\MappingException
      * @throws \UnexpectedValueException
      * @throws \ReflectionException
+     * @throws Mapping\MappingException
+     * @throws DBALException
      */
     private function convertClassAnnotationsToEntityClassMetadata(
         array $classAnnotations,
@@ -437,10 +431,6 @@ class AnnotationDriver implements MappingDriver
 
     /**
      * @param Annotation\Annotation[] $classAnnotations
-     * @param \ReflectionClass $reflectionClass
-     * @param Mapping\ClassMetadata $metadata
-     *
-     * @return Mapping\ClassMetadata
      *
      * @throws Mapping\MappingException
      * @throws \ReflectionException
@@ -468,10 +458,6 @@ class AnnotationDriver implements MappingDriver
 
     /**
      * @param Annotation\Annotation[] $classAnnotations
-     * @param \ReflectionClass $reflectionClass
-     * @param Mapping\ClassMetadata $metadata
-     *
-     * @return Mapping\ClassMetadata
      */
     private function convertClassAnnotationsToEmbeddableClassMetadata(
         array $classAnnotations,
@@ -488,13 +474,9 @@ class AnnotationDriver implements MappingDriver
      * @todo guilhermeblanco Remove nullable typehint once embeddables are back
      *
      * @param Annotation\Annotation[] $propertyAnnotations
-     * @param \ReflectionProperty $reflectionProperty
-     * @param Mapping\ClassMetadata $metadata
-     * @param Mapping\ClassMetadataBuildingContext $metadataBuildingContext
-     *
-     * @return Mapping\Property|null
      *
      * @throws Mapping\MappingException
+     * @throws DBALException
      */
     private function convertPropertyAnnotationsToProperty(
         array $propertyAnnotations,
@@ -552,14 +534,10 @@ class AnnotationDriver implements MappingDriver
     }
 
     /**
-     * @param \ReflectionProperty $reflectionProperty
      * @param Annotation\Annotation[] $propertyAnnotations
-     * @param Mapping\ClassMetadata $metadata
-     * @param Mapping\ClassMetadataBuildingContext $metadataBuildingContext
-     *
-     * @return Mapping\FieldMetadata
      *
      * @throws Mapping\MappingException
+     * @throws DBALException
      */
     private function convertReflectionPropertyToFieldMetadata(
         \ReflectionProperty $reflectionProperty,
@@ -683,12 +661,7 @@ class AnnotationDriver implements MappingDriver
     }
 
     /**
-     * @param \ReflectionProperty $reflectionProperty
      * @param Annotation\Annotation[] $propertyAnnotations
-     * @param Mapping\ClassMetadata $metadata
-     * @param Mapping\ClassMetadataBuildingContext $metadataBuildingContext
-     *
-     * @return Mapping\OneToOneAssociationMetadata
      *
      * @throws Mapping\MappingException
      */
@@ -697,7 +670,7 @@ class AnnotationDriver implements MappingDriver
         array $propertyAnnotations,
         Mapping\ClassMetadata $metadata,
         Mapping\ClassMetadataBuildingContext $metadataBuildingContext
-    ) {
+    ) : Mapping\OneToOneAssociationMetadata {
         $className     = $metadata->getClassName();
         $fieldName     = $reflectionProperty->getName();
         $oneToOneAnnot = $propertyAnnotations[Annotation\OneToOne::class];
@@ -754,14 +727,14 @@ class AnnotationDriver implements MappingDriver
     /**
      * @param Annotation\Annotation[] $propertyAnnotations
      *
-     * @return Mapping\ManyToOneAssociationMetadata
+     * @throws Mapping\MappingException
      */
     private function convertReflectionPropertyToManyToOneAssociationMetadata(
         \ReflectionProperty $reflectionProperty,
         array $propertyAnnotations,
         Mapping\ClassMetadata $metadata,
         Mapping\ClassMetadataBuildingContext $metadataBuildingContext
-    ) {
+    ) : Mapping\ManyToOneAssociationMetadata{
         $className      = $metadata->getClassName();
         $fieldName      = $reflectionProperty->getName();
         $manyToOneAnnot = $propertyAnnotations[Annotation\ManyToOne::class];
@@ -1122,6 +1095,7 @@ class AnnotationDriver implements MappingDriver
      * @param Annotation\Annotation[] $classAnnotations
      *
      * @throws Mapping\MappingException
+     * @throws DBALException
      */
     private function attachDiscriminatorColumn(
         array $classAnnotations,
@@ -1226,6 +1200,7 @@ class AnnotationDriver implements MappingDriver
      * @param Annotation\Annotation[] $classAnnotations
      *
      * @throws Mapping\MappingException
+     * @throws CacheException
      */
     private function attachPropertyOverrides(
         array $classAnnotations,
@@ -1324,9 +1299,7 @@ class AnnotationDriver implements MappingDriver
     /**
      * Attempts to resolve the cascade modes.
      *
-     * @param string   $className        The class name.
-     * @param string   $fieldName        The field name.
-     * @param string[] $originalCascades The original unprocessed field cascades.
+     * @param string[] $originalCascades
      *
      * @return string[] The processed field cascades.
      *
@@ -1353,14 +1326,9 @@ class AnnotationDriver implements MappingDriver
     /**
      * Attempts to resolve the fetch mode.
      *
-     * @param string $className The class name.
-     * @param string $fetchMode The fetch mode.
-     *
-     * @return string The fetch mode as defined in ClassMetadata.
-     *
      * @throws Mapping\MappingException If the fetch mode is not valid.
      */
-    private function getFetchMode($className, $fetchMode) : string
+    private function getFetchMode(string $className, string $fetchMode) : string
     {
         $fetchModeConstant = sprintf('%s::%s', Mapping\FetchMode::class, $fetchMode);
 
@@ -1454,21 +1422,5 @@ class AnnotationDriver implements MappingDriver
         }
 
         return $methodAnnotations;
-    }
-
-    /**
-     * Factory method for the Annotation Driver.
-     *
-     * @param string|string[] $paths
-     *
-     * @return AnnotationDriver
-     */
-    public static function create($paths = [], ?AnnotationReader $reader = null)
-    {
-        if ($reader === null) {
-            $reader = new AnnotationReader();
-        }
-
-        return new self($reader, $paths);
     }
 }
