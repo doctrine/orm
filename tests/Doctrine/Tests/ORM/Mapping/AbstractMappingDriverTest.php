@@ -426,7 +426,7 @@ abstract class AbstractMappingDriverTest extends OrmTestCase
         $class = $this->createClassMetadata(Animal::class);
 
         $this->assertEquals(
-            ['name' => 'discr', 'type' => 'string', 'length' => '32', 'fieldName' => 'discr', 'columnDefinition' => null],
+            ['name' => 'discr', 'type' => 'string', 'length' => '32', 'fieldName' => 'discr', 'columnDefinition' => null, 'strict' => false],
             $class->discriminatorColumn
         );
     }

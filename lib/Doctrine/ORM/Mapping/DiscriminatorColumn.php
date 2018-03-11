@@ -51,4 +51,9 @@ final class DiscriminatorColumn implements Annotation
      * @var string
      */
     public $columnDefinition;
+
+    /**
+     * @var bool
+     */
+    public $strict;
 }

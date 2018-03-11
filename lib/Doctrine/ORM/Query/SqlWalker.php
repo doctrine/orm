@@ -451,7 +451,7 @@ class SqlWalker implements TreeWalker
 
             if ($class->discriminatorValue !== null) { // discriminators can be 0
                 $values[] = $conn->quote($class->discriminatorValue);
-            } elseif ($class->isRootEntity()) {
+            } elseif ($class->isRootEntity() && $class->discriminatorColumn['strict']) {
                 continue;
             }
 

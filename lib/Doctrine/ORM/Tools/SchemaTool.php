@@ -394,7 +394,15 @@ class SchemaTool
             $options['columnDefinition'] = $discrColumn['columnDefinition'];
         }
 
-        $table->addColumn($discrColumn['name'], $discrColumn['type'], $options);
+        $column = $table->addColumn($discrColumn['name'], $discrColumn['type'], $options);
+
+        if (isset($discrColumn['strict']) && $discrColumn['strict']) {
+            $values = [];
+            foreach ($class->discriminatorMap as $value => $className) {
+                $values[] = $this->platform->quoteStringLiteral($value);
+            }
+            $column->setCustomSchemaOption('check', 'CHECK (' . $discrColumn['name'] . ' IN (' . implode(',', $values) . '))');
+        }
     }
 
     /**
