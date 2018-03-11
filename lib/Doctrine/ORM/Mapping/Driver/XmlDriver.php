@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Doctrine\ORM\Mapping\Driver;
 
 use Doctrine\DBAL\Types\Type;
+use Doctrine\ORM\Annotation\Cache;
 use Doctrine\ORM\Events;
 use Doctrine\ORM\Mapping;
 use SimpleXMLElement;
@@ -142,9 +143,11 @@ class XmlDriver extends FileDriver
 
         // Evaluate second level cache
         if (isset($xmlRoot->cache)) {
-            $cache = $this->convertCacheElementToCacheMetadata($xmlRoot->cache, $metadata);
+            $cacheBinder = new Mapping\Binder\CacheBinder($metadata, $metadataBuildingContext);
 
-            $metadata->setCache($cache);
+            $metadata->setCache(
+                $cacheBinder->bind($this->convertCacheElementToCacheAnnotation($xmlRoot->cache))
+            );
         }
 
         if (isset($xmlRoot['inheritance-type'])) {
@@ -350,10 +353,11 @@ class XmlDriver extends FileDriver
 
                 // Evaluate second level cache
                 if (isset($oneToOneElement->cache)) {
+                    $cacheBinder = new Mapping\Binder\CacheBinder($metadata, $metadataBuildingContext);
+
                     $association->setCache(
-                        $this->convertCacheElementToCacheMetadata(
-                            $oneToOneElement->cache,
-                            $metadata,
+                        $cacheBinder->bind(
+                            $this->convertCacheElementToCacheAnnotation($oneToOneElement->cache),
                             $association->getName()
                         )
                     );
@@ -409,10 +413,11 @@ class XmlDriver extends FileDriver
 
                 // Evaluate second level cache
                 if (isset($oneToManyElement->cache)) {
+                    $cacheBinder = new Mapping\Binder\CacheBinder($metadata, $metadataBuildingContext);
+
                     $association->setCache(
-                        $this->convertCacheElementToCacheMetadata(
-                            $oneToManyElement->cache,
-                            $metadata,
+                        $cacheBinder->bind(
+                            $this->convertCacheElementToCacheAnnotation($oneToManyElement->cache),
                             $association->getName()
                         )
                     );
@@ -462,10 +467,11 @@ class XmlDriver extends FileDriver
 
                 // Evaluate second level cache
                 if (isset($manyToOneElement->cache)) {
+                    $cacheBinder = new Mapping\Binder\CacheBinder($metadata, $metadataBuildingContext);
+
                     $association->setCache(
-                        $this->convertCacheElementToCacheMetadata(
-                            $manyToOneElement->cache,
-                            $metadata,
+                        $cacheBinder->bind(
+                            $this->convertCacheElementToCacheAnnotation($manyToOneElement->cache),
                             $association->getName()
                         )
                     );
@@ -557,10 +563,11 @@ class XmlDriver extends FileDriver
 
                 // Evaluate second level cache
                 if (isset($manyToManyElement->cache)) {
+                    $cacheBinder = new Mapping\Binder\CacheBinder($metadata, $metadataBuildingContext);
+
                     $association->setCache(
-                        $this->convertCacheElementToCacheMetadata(
-                            $manyToManyElement->cache,
-                            $metadata,
+                        $cacheBinder->bind(
+                            $this->convertCacheElementToCacheAnnotation($manyToManyElement->cache),
                             $association->getName()
                         )
                     );
@@ -836,27 +843,21 @@ class XmlDriver extends FileDriver
     }
 
     /**
-     * Parse the given Cache as CacheMetadata
-     *
-     * @param string|null $fieldName
-     *
-     * @return Mapping\CacheMetadata
+     * Convert the given XML Cache Element to Cache Annotation
      */
-    private function convertCacheElementToCacheMetadata(
-        SimpleXMLElement $cacheMapping,
-        Mapping\ClassMetadata $metadata,
-        $fieldName = null
-    ) {
-        $baseRegion    = strtolower(str_replace('\\', '_', $metadata->getRootClassName()));
-        $defaultRegion = $baseRegion . ($fieldName ? '__' . $fieldName : '');
+    private function convertCacheElementToCacheAnnotation(SimpleXMLElement $cacheMapping) : Cache
+    {
+        $cacheAnnotation = new Cache();
 
-        $region = (string) ($cacheMapping['region'] ?? $defaultRegion);
-        $usage  = isset($cacheMapping['usage'])
-            ? constant(sprintf('%s::%s', Mapping\CacheUsage::class, strtoupper((string) $cacheMapping['usage'])))
-            : Mapping\CacheUsage::READ_ONLY
-        ;
+        if (isset($cacheMapping['region'])) {
+            $cacheAnnotation->region = (string) $cacheMapping['region'];
+        }
 
-        return new Mapping\CacheMetadata($usage, $region);
+        if (isset($cacheMapping['usage'])) {
+            $cacheAnnotation->usage = strtoupper((string) $cacheMapping['usage']);
+        }
+
+        return $cacheAnnotation;
     }
 
     /**

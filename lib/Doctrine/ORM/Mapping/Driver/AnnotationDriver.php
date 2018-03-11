@@ -290,10 +290,9 @@ class AnnotationDriver implements MappingDriver
 
         // Evaluate @Cache annotation
         if (isset($classAnnotations[Annotation\Cache::class])) {
-            $cacheAnnot = $classAnnotations[Annotation\Cache::class];
-            $cache      = $this->convertCacheAnnotationToCacheMetadata($cacheAnnot, $metadata);
+            $cacheBinder = new Mapping\Binder\CacheBinder($metadata, $metadataBuildingContext);
 
-            $classMetadata->setCache($cache);
+            $classMetadata->setCache($cacheBinder->bind($classAnnotations[Annotation\Cache::class]));
         }
 
         // Evaluate annotations on properties/fields
@@ -696,7 +695,14 @@ class AnnotationDriver implements MappingDriver
             $assocMetadata->setPrimaryKey(true);
         }
 
-        $this->attachAssociationPropertyCache($propertyAnnotations, $reflectionProperty, $assocMetadata, $metadata);
+        // Check for Cache
+        if (isset($propertyAnnotations[Annotation\Cache::class])) {
+            $cacheBinder = new Mapping\Binder\CacheBinder($metadata, $metadataBuildingContext);
+
+            $assocMetadata->setCache(
+                $cacheBinder->bind($propertyAnnotations[Annotation\Cache::class], $reflectionProperty->getName())
+            );
+        }
 
         // Check for JoinColumn/JoinColumns annotations
         switch (true) {
@@ -754,7 +760,14 @@ class AnnotationDriver implements MappingDriver
             $assocMetadata->setPrimaryKey(true);
         }
 
-        $this->attachAssociationPropertyCache($propertyAnnotations, $reflectionProperty, $assocMetadata, $metadata);
+        // Check for Cache
+        if (isset($propertyAnnotations[Annotation\Cache::class])) {
+            $cacheBinder = new Mapping\Binder\CacheBinder($metadata, $metadataBuildingContext);
+
+            $assocMetadata->setCache(
+                $cacheBinder->bind($propertyAnnotations[Annotation\Cache::class], $reflectionProperty->getName())
+            );
+        }
 
         // Check for JoinColumn/JoinColumns annotations
         switch (true) {
@@ -822,7 +835,14 @@ class AnnotationDriver implements MappingDriver
             throw Mapping\MappingException::illegalToManyIdentifierAssociation($className, $fieldName);
         }
 
-        $this->attachAssociationPropertyCache($propertyAnnotations, $reflectionProperty, $assocMetadata, $metadata);
+        // Check for Cache
+        if (isset($propertyAnnotations[Annotation\Cache::class])) {
+            $cacheBinder = new Mapping\Binder\CacheBinder($metadata, $metadataBuildingContext);
+
+            $assocMetadata->setCache(
+                $cacheBinder->bind($propertyAnnotations[Annotation\Cache::class], $reflectionProperty->getName())
+            );
+        }
 
         return $assocMetadata;
     }
@@ -882,7 +902,14 @@ class AnnotationDriver implements MappingDriver
             throw Mapping\MappingException::illegalToManyIdentifierAssociation($className, $fieldName);
         }
 
-        $this->attachAssociationPropertyCache($propertyAnnotations, $reflectionProperty, $assocMetadata, $metadata);
+        // Check for Cache
+        if (isset($propertyAnnotations[Annotation\Cache::class])) {
+            $cacheBinder = new Mapping\Binder\CacheBinder($metadata, $metadataBuildingContext);
+
+            $assocMetadata->setCache(
+                $cacheBinder->bind($propertyAnnotations[Annotation\Cache::class], $reflectionProperty->getName())
+            );
+        }
 
         return $assocMetadata;
     }
@@ -1029,25 +1056,6 @@ class AnnotationDriver implements MappingDriver
         }
 
         return $joinColumn;
-    }
-
-    /**
-     * Parse the given Cache as CacheMetadata
-     *
-     * @param string|null $fieldName
-     */
-    private function convertCacheAnnotationToCacheMetadata(
-        Annotation\Cache $cacheAnnot,
-        Mapping\ClassMetadata $metadata,
-        $fieldName = null
-    ) : Mapping\CacheMetadata {
-        $baseRegion    = strtolower(str_replace('\\', '_', $metadata->getRootClassName()));
-        $defaultRegion = $baseRegion . ($fieldName ? '__' . $fieldName : '');
-
-        $usage  = constant(sprintf('%s::%s', Mapping\CacheUsage::class, $cacheAnnot->usage));
-        $region = $cacheAnnot->region ?: $defaultRegion;
-
-        return new Mapping\CacheMetadata($usage, $region);
     }
 
     /**
@@ -1271,28 +1279,6 @@ class AnnotationDriver implements MappingDriver
 
                 $metadata->setPropertyOverride($fieldMetadata);
             }
-        }
-    }
-
-    /**
-     * @param Annotation\Annotation[] $propertyAnnotations
-     */
-    private function attachAssociationPropertyCache(
-        array $propertyAnnotations,
-        \ReflectionProperty $reflectionProperty,
-        Mapping\AssociationMetadata $assocMetadata,
-        Mapping\ClassMetadata $metadata
-    ) : void {
-        // Check for Cache
-        if (isset($propertyAnnotations[Annotation\Cache::class])) {
-            $cacheAnnot    = $propertyAnnotations[Annotation\Cache::class];
-            $cacheMetadata = $this->convertCacheAnnotationToCacheMetadata(
-                $cacheAnnot,
-                $metadata,
-                $reflectionProperty->getName()
-            );
-
-            $assocMetadata->setCache($cacheMetadata);
         }
     }
 
