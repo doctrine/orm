@@ -1,8 +1,8 @@
 <?php
 
 namespace Doctrine\Tests\ORM\Functional\Ticket;
-use Doctrine\Tests\Models\Pagination\User;
-use Doctrine\Tests\Models\Pagination\User1;
+use Doctrine\ORM\Mapping\DiscriminatorColumn;
+use Doctrine\ORM\Mapping\DiscriminatorMap;
 
 /**
  * @group DDC-2842
@@ -11,44 +11,48 @@ class DDC2842Test extends \Doctrine\Tests\OrmFunctionalTestCase
 {
     public function setUp()
     {
-        $this->useModelSet('pagination');
         parent::setUp();
+
+        try {
+            $this->_schemaTool->createSchema(
+                [
+                    $this->_em->getClassMetadata(DC2842Root::class),
+                    $this->_em->getClassMetadata(DC2842Child1::class),
+                    $this->_em->getClassMetadata(DC2842Child2::class),
+                    $this->_em->getClassMetadata(DC2842Owner::class)
+                ]
+            );
+        } catch(\Exception $ignore) {
+
+        }
     }
 
     public function testSelectConditionSQL()
     {
-        $this->_em->getRepository(User::class)->find(1);
+        $this->_em->getRepository(DC2842Root::class)->find(1);
 
         $this->assertSQLEquals(
-            "SELECT t0.id AS id_1, t0.name AS name_2, t0.type, t0.email AS email_3 FROM pagination_user t0 WHERE t0.id = ?",
+            'SELECT t0.id AS id_1, t0.discr FROM ddc2842_entities t0 WHERE t0.id = ?',
             $this->_sqlLoggerStack->queries[$this->_sqlLoggerStack->currentQuery]['sql']
         );
 
-        $this->_em->getRepository(User1::class)->find(1);
+        $this->_em->getRepository(DC2842Child1::class)->find(1);
 
         $this->assertSQLEquals(
-            "SELECT t0.id AS id_1, t0.name AS name_2, t0.email AS email_3, t0.type FROM pagination_user t0 WHERE t0.id = ? AND t0.type IN ('user1')",
+            "SELECT t0.id AS id_1, t0.discr FROM ddc2842_entities t0 WHERE t0.id = ? AND t0.discr IN ('1')",
             $this->_sqlLoggerStack->queries[$this->_sqlLoggerStack->currentQuery]['sql']
         );
     }
 
     public function testSelectConditionCriteriaSQL()
     {
-        $this->_schemaTool->createSchema(
-            [
-                $this->_em->getClassMetadata(DC2842UserEntity::class)
-            ]
-        );
+        $relation1 = new DC2842Child1();
 
-        $user1 = new User1();
-        $user1->name = 'user';
-        $user1->email = 'user@email.com';
+        $this->_em->persist($relation1);
 
-        $this->_em->persist($user1);
+        $entity1 = new DC2842Owner();
 
-        $entity1 = new DC2842UserEntity();
-
-        $entity1->setUser($user1);
+        $entity1->setRelation($relation1);
 
         $this->_em->persist($entity1);
 
@@ -56,36 +60,39 @@ class DDC2842Test extends \Doctrine\Tests\OrmFunctionalTestCase
 
         $this->_em->clear();
 
-        $entity1 = $this->_em->getRepository(DC2842UserEntity::class)->find($entity1->getId());
+        $entity1 = $this->_em->getRepository(DC2842Owner::class)->find($entity1->getId());
 
-        $user1 = $entity1->getUser();
+        $relation1 = $entity1->getRelation();
 
         $this->assertSQLEquals(
-            "SELECT t0.id AS id_1, t0.name AS name_2, t0.type, t0.email AS email_3 FROM pagination_user t0 WHERE t0.id = ?",
+            'SELECT t0.id AS id_1, t0.discr FROM ddc2842_entities t0 WHERE t0.id = ?',
             $this->_sqlLoggerStack->queries[$this->_sqlLoggerStack->currentQuery]['sql']
         );
 
         $this->_em->remove($entity1);
-        $this->_em->remove($user1);
+        $this->_em->remove($relation1);
 
         $this->_em->flush();
     }
 
     public function testSelectQuerySQL()
     {
-        $query = $this->_em->createQuery('SELECT u FROM Doctrine\Tests\Models\Pagination\User u');
+        $query = $this->_em->createQuery('SELECT e FROM Doctrine\Tests\ORM\Functional\Ticket\DC2842Root e');
         $this->assertSQLEquals(
             $query->getSQL(),
-            'select p0_.id as id_0, p0_.name as name_1, p0_.email as email_2, p0_.type as type_3 from pagination_user p0_'
+            'SELECT d0_.id as id_0, d0_.discr as discr_1 FROM ddc2842_entities d0_'
         );
     }
 }
 
 /**
  * @Entity
- * @Table(name="user_entities")
+ * @Table(name="ddc2842_entities")
+ * @InheritanceType("SINGLE_TABLE")
+ * @DiscriminatorColumn(name = "discr", type = "integer", strict = true)
+ * @DiscriminatorMap({1 = "DC2842Child1", 2 = "DC2842Child2"})
  */
-class DC2842UserEntity
+abstract class DC2842Root
 {
     /**
      * @Id @Column(type="integer")
@@ -94,9 +101,42 @@ class DC2842UserEntity
     private $id;
 
     /**
-     * @ManyToOne(targetEntity="Doctrine\Tests\Models\Pagination\User")
+     * @return mixed
      */
-    private $user;
+    public function getId()
+    {
+        return $this->id;
+    }
+}
+
+/**
+ * @Entity
+ */
+class DC2842Child1 extends DC2842Root
+{
+}
+/**
+ * @Entity
+ */
+class DC2842Child2 extends DC2842Root
+{
+}
+
+/**
+ * @Entity
+ */
+class DC2842Owner
+{
+    /**
+     * @Id @Column(type="integer")
+     * @GeneratedValue
+     */
+    private $id;
+
+    /**
+     * @ManyToOne(targetEntity="Doctrine\Tests\ORM\Functional\Ticket\DC2842Root")
+     */
+    private $relation;
 
     /**
      * @return mixed
@@ -106,16 +146,19 @@ class DC2842UserEntity
         return $this->id;
     }
 
-    public function getUser()
+    /**
+     * @return mixed
+     */
+    public function getRelation()
     {
-        return $this->user;
+        return $this->relation;
     }
 
     /**
-     * @param mixed $user
+     * @param mixed $relation
      */
-    public function setUser($user)
+    public function setRelation($relation)
     {
-        $this->user = $user;
+        $this->relation = $relation;
     }
 }
