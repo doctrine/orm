@@ -936,61 +936,6 @@ abstract class AbstractMappingDriverTest extends OrmTestCase
         self::assertEquals('prePersistHandler2', $prePersist['method']);
     }
 
-
-    /**
-     * @group DDC-1955
-     */
-    public function testEntityListenersNamingConvention() : void
-    {
-        $factory  = $this->createClassMetadataFactory();
-        $metadata = $factory->getMetadataFor(CmsAddress::class);
-
-        self::assertArrayHasKey(Events::postPersist, $metadata->entityListeners);
-        self::assertArrayHasKey(Events::prePersist, $metadata->entityListeners);
-        self::assertArrayHasKey(Events::postUpdate, $metadata->entityListeners);
-        self::assertArrayHasKey(Events::preUpdate, $metadata->entityListeners);
-        self::assertArrayHasKey(Events::postRemove, $metadata->entityListeners);
-        self::assertArrayHasKey(Events::preRemove, $metadata->entityListeners);
-        self::assertArrayHasKey(Events::postLoad, $metadata->entityListeners);
-        self::assertArrayHasKey(Events::preFlush, $metadata->entityListeners);
-
-        self::assertCount(1, $metadata->entityListeners[Events::postPersist]);
-        self::assertCount(1, $metadata->entityListeners[Events::prePersist]);
-        self::assertCount(1, $metadata->entityListeners[Events::postUpdate]);
-        self::assertCount(1, $metadata->entityListeners[Events::preUpdate]);
-        self::assertCount(1, $metadata->entityListeners[Events::postRemove]);
-        self::assertCount(1, $metadata->entityListeners[Events::preRemove]);
-        self::assertCount(1, $metadata->entityListeners[Events::postLoad]);
-        self::assertCount(1, $metadata->entityListeners[Events::preFlush]);
-
-        $postPersist = $metadata->entityListeners[Events::postPersist][0];
-        $prePersist  = $metadata->entityListeners[Events::prePersist][0];
-        $postUpdate  = $metadata->entityListeners[Events::postUpdate][0];
-        $preUpdate   = $metadata->entityListeners[Events::preUpdate][0];
-        $postRemove  = $metadata->entityListeners[Events::postRemove][0];
-        $preRemove   = $metadata->entityListeners[Events::preRemove][0];
-        $postLoad    = $metadata->entityListeners[Events::postLoad][0];
-        $preFlush    = $metadata->entityListeners[Events::preFlush][0];
-
-        self::assertEquals(CmsAddressListener::class, $postPersist['class']);
-        self::assertEquals(CmsAddressListener::class, $prePersist['class']);
-        self::assertEquals(CmsAddressListener::class, $postUpdate['class']);
-        self::assertEquals(CmsAddressListener::class, $preUpdate['class']);
-        self::assertEquals(CmsAddressListener::class, $postRemove['class']);
-        self::assertEquals(CmsAddressListener::class, $preRemove['class']);
-        self::assertEquals(CmsAddressListener::class, $postLoad['class']);
-        self::assertEquals(CmsAddressListener::class, $preFlush['class']);
-
-        self::assertEquals(Events::postPersist, $postPersist['method']);
-        self::assertEquals(Events::prePersist, $prePersist['method']);
-        self::assertEquals(Events::postUpdate, $postUpdate['method']);
-        self::assertEquals(Events::preUpdate, $preUpdate['method']);
-        self::assertEquals(Events::postRemove, $postRemove['method']);
-        self::assertEquals(Events::preRemove, $preRemove['method']);
-        self::assertEquals(Events::postLoad, $postLoad['method']);
-        self::assertEquals(Events::preFlush, $preFlush['method']);
-    }
-
     /**
      * @group DDC-2183
      */

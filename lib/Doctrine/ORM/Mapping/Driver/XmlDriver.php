@@ -46,8 +46,7 @@ class XmlDriver extends FileDriver
         string $className,
         ?Mapping\ComponentMetadata $parent,
         Mapping\ClassMetadataBuildingContext $metadataBuildingContext
-    ) : Mapping\ComponentMetadata
-    {
+    ) : Mapping\ComponentMetadata {
         $metadata = new Mapping\ClassMetadata($className, $parent, $metadataBuildingContext);
 
         /* @var \SimpleXMLElement $xmlRoot */
@@ -684,20 +683,6 @@ class XmlDriver extends FileDriver
                     );
                 }
 
-                $listenerClass = new \ReflectionClass($listenerClassName);
-
-                // Evaluate the listener using naming convention.
-                if ($listenerElement->count() === 0) {
-                    /** @var \ReflectionMethod $method */
-                    foreach ($listenerClass->getMethods(\ReflectionMethod::IS_PUBLIC) as $method) {
-                        foreach ($this->getMethodCallbacks($method) as $callback) {
-                            $metadata->addEntityListener($callback, $listenerClassName, $method->getName());
-                        }
-                    }
-
-                    continue;
-                }
-
                 foreach ($listenerElement as $callbackElement) {
                     $eventName  = (string) $callbackElement['type'];
                     $methodName = (string) $callbackElement['method'];
@@ -858,29 +843,6 @@ class XmlDriver extends FileDriver
         }
 
         return $cacheAnnotation;
-    }
-
-    /**
-     * Parses the given method.
-     *
-     * @return string[]
-     */
-    private function getMethodCallbacks(\ReflectionMethod $method)
-    {
-        $events = [
-            Events::prePersist,
-            Events::postPersist,
-            Events::preUpdate,
-            Events::postUpdate,
-            Events::preRemove,
-            Events::postRemove,
-            Events::postLoad,
-            Events::preFlush,
-        ];
-
-        return array_filter($events, function ($eventName) use ($method) {
-            return $eventName === $method->getName();
-        });
     }
 
     /**

@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace Doctrine\ORM\Tools;
 
 use Doctrine\ORM\Event\LoadClassMetadataEventArgs;
-use Doctrine\ORM\Mapping\ClassMetadata;
+use Doctrine\ORM\Mapping;
 use function ltrim;
 
 /**
@@ -19,27 +19,32 @@ class AttachEntityListenersListener
     /**
      * Adds a entity listener for a specific entity.
      *
-     * @param string      $entityClass      The entity to attach the listener.
-     * @param string      $listenerClass    The listener class.
-     * @param string      $eventName        The entity lifecycle event.
-     * @param string|null $listenerCallback The listener callback method or NULL to use $eventName.
-     *
+     * @param string $entityClass      The entity to attach the listener.
+     * @param string $listenerClass    The listener class.
+     * @param string $eventName        The entity lifecycle event.
+     * @param string $listenerCallback The listener callback method.
      */
-    public function addEntityListener($entityClass, $listenerClass, $eventName, $listenerCallback = null)
-    {
+    public function addEntityListener(
+        string $entityClass,
+        string $listenerClass,
+        string $eventName,
+        string $listenerCallback
+    ) : void {
         $this->entityListeners[ltrim($entityClass, '\\')][] = [
             'event'  => $eventName,
             'class'  => $listenerClass,
-            'method' => $listenerCallback ?: $eventName,
+            'method' => $listenerCallback,
         ];
     }
 
     /**
      * Processes event and attach the entity listener.
+     *
+     * @throws Mapping\MappingException
      */
-    public function loadClassMetadata(LoadClassMetadataEventArgs $event)
+    public function loadClassMetadata(LoadClassMetadataEventArgs $event) : void
     {
-        /** @var ClassMetadata $metadata */
+        /** @var Mapping\ClassMetadata $metadata */
         $metadata = $event->getClassMetadata();
 
         if (! isset($this->entityListeners[$metadata->getClassName()])) {

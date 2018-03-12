@@ -6,6 +6,11 @@ The interfaces `Doctrine\ORM\Sequencing\Generator` and
 `Doctrine\ORM\Sequencing\Planning\ValueGenerationPlan` now uses explicit type
 declaration for parameters and return (as much as possible).
 
+## BC Break: Entity Listeners no long support naming convention methods
+
+If you want their behavior to be kept, please add the necessary Annotation methods (in case XML driver is used,
+no changes are necessary).
+
 ## BC Break: Removed possibility to extend the doctrine mapping xml schema with anything
 
 If you want to extend it now you have to provide your own validation schema.

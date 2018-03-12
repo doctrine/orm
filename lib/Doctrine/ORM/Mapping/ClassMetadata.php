@@ -229,7 +229,6 @@ class ClassMetadata extends ComponentMetadata implements TableOwner
             $this->setDiscriminatorMap($parent->discriminatorMap);
         }
 
-        $this->setLifecycleCallbacks($parent->lifecycleCallbacks);
         $this->setChangeTrackingPolicy($parent->changeTrackingPolicy);
 
         if ($parent->isMappedSuperclass) {
@@ -238,6 +237,10 @@ class ClassMetadata extends ComponentMetadata implements TableOwner
 
         if ($parent->cache) {
             $this->setCache(clone $parent->cache);
+        }
+
+        if (! empty($parent->lifecycleCallbacks)) {
+            $this->lifecycleCallbacks = $parent->lifecycleCallbacks;
         }
 
         if (! empty($parent->entityListeners)) {
@@ -1283,59 +1286,41 @@ class ClassMetadata extends ComponentMetadata implements TableOwner
      *
      * @return string[]
      */
-    public function getLifecycleCallbacks($event)
+    public function getLifecycleCallbacks($event) : array
     {
         return $this->lifecycleCallbacks[$event] ?? [];
     }
 
     /**
      * Adds a lifecycle callback for entities of this class.
-     *
-     * @param string $callback
-     * @param string $event
      */
-    public function addLifecycleCallback($callback, $event)
+    public function addLifecycleCallback(string $eventName, string $methodName) : void
     {
-        if (isset($this->lifecycleCallbacks[$event]) && in_array($callback, $this->lifecycleCallbacks[$event], true)) {
+        if (in_array($methodName, $this->lifecycleCallbacks[$eventName] ?? [], true)) {
             return;
         }
 
-        $this->lifecycleCallbacks[$event][] = $callback;
-    }
-
-    /**
-     * Sets the lifecycle callbacks for entities of this class.
-     * Any previously registered callbacks are overwritten.
-     *
-     * @param string[][] $callbacks
-     */
-    public function setLifecycleCallbacks(array $callbacks) : void
-    {
-        $this->lifecycleCallbacks = $callbacks;
+        $this->lifecycleCallbacks[$eventName][] = $methodName;
     }
 
     /**
      * Adds a entity listener for entities of this class.
      *
-     * @param string $eventName The entity lifecycle event.
-     * @param string $class     The listener class.
-     * @param string $method    The listener callback method.
-     *
      * @throws MappingException
      */
-    public function addEntityListener(string $eventName, string $class, string $method) : void
+    public function addEntityListener(string $eventName, string $class, string $methodName) : void
     {
         $listener = [
             'class'  => $class,
-            'method' => $method,
+            'method' => $methodName,
         ];
 
         if (! class_exists($class)) {
             throw MappingException::entityListenerClassNotFound($class, $this->className);
         }
 
-        if (! method_exists($class, $method)) {
-            throw MappingException::entityListenerMethodNotFound($class, $method, $this->className);
+        if (! method_exists($class, $methodName)) {
+            throw MappingException::entityListenerMethodNotFound($class, $methodName, $this->className);
         }
 
         // Check if entity listener already got registered and ignore it if positive

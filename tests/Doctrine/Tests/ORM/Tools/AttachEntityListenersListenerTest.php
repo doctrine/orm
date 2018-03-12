@@ -140,6 +140,7 @@ class AttachEntityListenersListenerTestListener
 {
     public $calls;
 
+    /** @ORM\PrePersist */
     public function prePersist()
     {
         $this->calls[__FUNCTION__][] = func_get_args();
@@ -150,6 +151,7 @@ class AttachEntityListenersListenerTestListener
         $this->calls[__FUNCTION__][] = func_get_args();
     }
 
+    /** @ORM\PostPersist */
     public function postPersist()
     {
         $this->calls[__FUNCTION__][] = func_get_args();
