@@ -6,6 +6,7 @@ namespace Doctrine\ORM;
 
 use Doctrine\Common\Collections\AbstractLazyCollection;
 use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\Common\Collections\Criteria;
 use Doctrine\Common\Collections\Selectable;
 use Doctrine\ORM\Persisters\Entity\BasicEntityPersister;
@@ -36,10 +37,8 @@ class LazyCriteriaCollection extends AbstractLazyCollection implements Selectabl
 
     /**
      * Do an efficient count on the collection
-     *
-     * @return int
      */
-    public function count()
+    public function count() : int
     {
         if ($this->isInitialized()) {
             return $this->collection->count();
@@ -58,7 +57,7 @@ class LazyCriteriaCollection extends AbstractLazyCollection implements Selectabl
      *
      * @return bool TRUE if the collection is empty, FALSE otherwise.
      */
-    public function isEmpty()
+    public function isEmpty() : bool
     {
         if ($this->isInitialized()) {
             return $this->collection->isEmpty();
@@ -72,9 +71,9 @@ class LazyCriteriaCollection extends AbstractLazyCollection implements Selectabl
      *
      * @param object $element
      *
-     * @return bool
+     * @phpcsSuppress SlevomatCodingStandard.TypeHints.TypeHintDeclaration.MissingParameterTypeHint
      */
-    public function contains($element)
+    public function contains($element) : bool
     {
         if ($this->isInitialized()) {
             return $this->collection->contains($element);
@@ -86,7 +85,7 @@ class LazyCriteriaCollection extends AbstractLazyCollection implements Selectabl
     /**
      * {@inheritDoc}
      */
-    public function matching(Criteria $criteria)
+    public function matching(Criteria $criteria) : Collection
     {
         $this->initialize();
 
@@ -96,7 +95,7 @@ class LazyCriteriaCollection extends AbstractLazyCollection implements Selectabl
     /**
      * {@inheritDoc}
      */
-    protected function doInitialize()
+    protected function doInitialize() : void
     {
         $elements         = $this->entityPersister->loadCriteria($this->criteria);
         $this->collection = new ArrayCollection($elements);

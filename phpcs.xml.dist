@@ -137,13 +137,11 @@
         <exclude-pattern>lib/Doctrine/ORM/Configuration.php</exclude-pattern>
         <exclude-pattern>lib/Doctrine/ORM/EntityNotFoundException.php</exclude-pattern>
         <exclude-pattern>lib/Doctrine/ORM/Events.php</exclude-pattern>
-        <exclude-pattern>lib/Doctrine/ORM/LazyCriteriaCollection.php</exclude-pattern>
         <exclude-pattern>lib/Doctrine/ORM/NonUniqueResultException.php</exclude-pattern>
         <exclude-pattern>lib/Doctrine/ORM/NoResultException.php</exclude-pattern>
         <exclude-pattern>lib/Doctrine/ORM/OptimisticLockException.php</exclude-pattern>
         <exclude-pattern>lib/Doctrine/ORM/ORMException.php</exclude-pattern>
         <exclude-pattern>lib/Doctrine/ORM/ORMInvalidArgumentException.php</exclude-pattern>
-        <exclude-pattern>lib/Doctrine/ORM/PersistentCollection.php</exclude-pattern>
         <exclude-pattern>lib/Doctrine/ORM/PersistentObject.php</exclude-pattern>
         <exclude-pattern>lib/Doctrine/ORM/PessimisticLockException.php</exclude-pattern>
         <exclude-pattern>lib/Doctrine/ORM/TransactionRequiredException.php</exclude-pattern>
@@ -170,13 +168,11 @@
         <exclude-pattern>lib/Doctrine/ORM/Configuration.php</exclude-pattern>
         <exclude-pattern>lib/Doctrine/ORM/EntityNotFoundException.php</exclude-pattern>
         <exclude-pattern>lib/Doctrine/ORM/Events.php</exclude-pattern>
-        <exclude-pattern>lib/Doctrine/ORM/LazyCriteriaCollection.php</exclude-pattern>
         <exclude-pattern>lib/Doctrine/ORM/NonUniqueResultException.php</exclude-pattern>
         <exclude-pattern>lib/Doctrine/ORM/NoResultException.php</exclude-pattern>
         <exclude-pattern>lib/Doctrine/ORM/OptimisticLockException.php</exclude-pattern>
         <exclude-pattern>lib/Doctrine/ORM/ORMException.php</exclude-pattern>
         <exclude-pattern>lib/Doctrine/ORM/ORMInvalidArgumentException.php</exclude-pattern>
-        <exclude-pattern>lib/Doctrine/ORM/PersistentCollection.php</exclude-pattern>
         <exclude-pattern>lib/Doctrine/ORM/PersistentObject.php</exclude-pattern>
         <exclude-pattern>lib/Doctrine/ORM/PessimisticLockException.php</exclude-pattern>
         <exclude-pattern>lib/Doctrine/ORM/TransactionRequiredException.php</exclude-pattern>
