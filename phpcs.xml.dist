@@ -16,8 +16,6 @@
     <exclude-pattern>*/tests/Doctrine/Tests/Proxies/*</exclude-pattern>
 
     <rule ref="Doctrine">
-        <exclude name="SlevomatCodingStandard.TypeHints.TypeHintDeclaration.MissingParameterTypeHint"/>
-        <exclude name="SlevomatCodingStandard.TypeHints.TypeHintDeclaration.MissingReturnTypeHint"/>
         <exclude name="SlevomatCodingStandard.Exceptions.ReferenceThrowableOnly.ReferencedGeneralException"/>
         <exclude name="SlevomatCodingStandard.ControlStructures.EarlyExit"/>
         <exclude name="SlevomatCodingStandard.Classes.SuperfluousAbstractClassNaming"/>
@@ -118,5 +116,93 @@
     <rule ref="Generic.CodeAnalysis.EmptyStatement.DetectedForeach">
         <exclude-pattern>tests/Doctrine/Tests/ORM/Functional/Ticket/DDC1301Test.php</exclude-pattern>
         <exclude-pattern>tests/Doctrine/Tests/ORM/Functional/ExtraLazyCollectionTest.php</exclude-pattern>
+    </rule>
+
+    <!-- incrementally migrating to strict typing -->
+    <rule ref="SlevomatCodingStandard.TypeHints.TypeHintDeclaration.MissingParameterTypeHint">
+        <exclude-pattern>lib/Doctrine/ORM/Annotation/*</exclude-pattern>
+        <exclude-pattern>lib/Doctrine/ORM/Cache/*</exclude-pattern>
+        <exclude-pattern>lib/Doctrine/ORM/Configuration/*</exclude-pattern>
+        <exclude-pattern>lib/Doctrine/ORM/Decorator/*</exclude-pattern>
+        <exclude-pattern>lib/Doctrine/ORM/Event/*</exclude-pattern>
+        <exclude-pattern>lib/Doctrine/ORM/Internal/*</exclude-pattern>
+        <exclude-pattern>lib/Doctrine/ORM/Mapping/*</exclude-pattern>
+        <exclude-pattern>lib/Doctrine/ORM/Persisters/*</exclude-pattern>
+        <exclude-pattern>lib/Doctrine/ORM/Proxy/*</exclude-pattern>
+        <exclude-pattern>lib/Doctrine/ORM/Query/*</exclude-pattern>
+        <exclude-pattern>lib/Doctrine/ORM/Reflection/*</exclude-pattern>
+        <exclude-pattern>lib/Doctrine/ORM/Repository/*</exclude-pattern>
+        <exclude-pattern>lib/Doctrine/ORM/Sequencing/*</exclude-pattern>
+        <exclude-pattern>lib/Doctrine/ORM/Tools/*</exclude-pattern>
+        <exclude-pattern>lib/Doctrine/ORM/Utility/*</exclude-pattern>
+        <exclude-pattern>lib/Doctrine/ORM/AbstractQuery.php</exclude-pattern>
+        <exclude-pattern>lib/Doctrine/ORM/Cache.php</exclude-pattern>
+        <exclude-pattern>lib/Doctrine/ORM/Configuration.php</exclude-pattern>
+        <exclude-pattern>lib/Doctrine/ORM/EntityManagerAware.php</exclude-pattern>
+        <exclude-pattern>lib/Doctrine/ORM/EntityManagerInterface.php</exclude-pattern>
+        <exclude-pattern>lib/Doctrine/ORM/EntityManager.php</exclude-pattern>
+        <exclude-pattern>lib/Doctrine/ORM/EntityNotFoundException.php</exclude-pattern>
+        <exclude-pattern>lib/Doctrine/ORM/EntityRepository.php</exclude-pattern>
+        <exclude-pattern>lib/Doctrine/ORM/Events.php</exclude-pattern>
+        <exclude-pattern>lib/Doctrine/ORM/LazyCriteriaCollection.php</exclude-pattern>
+        <exclude-pattern>lib/Doctrine/ORM/NativeQuery.php</exclude-pattern>
+        <exclude-pattern>lib/Doctrine/ORM/NonUniqueResultException.php</exclude-pattern>
+        <exclude-pattern>lib/Doctrine/ORM/NoResultException.php</exclude-pattern>
+        <exclude-pattern>lib/Doctrine/ORM/OptimisticLockException.php</exclude-pattern>
+        <exclude-pattern>lib/Doctrine/ORM/ORMException.php</exclude-pattern>
+        <exclude-pattern>lib/Doctrine/ORM/ORMInvalidArgumentException.php</exclude-pattern>
+        <exclude-pattern>lib/Doctrine/ORM/PersistentCollection.php</exclude-pattern>
+        <exclude-pattern>lib/Doctrine/ORM/PersistentObject.php</exclude-pattern>
+        <exclude-pattern>lib/Doctrine/ORM/PessimisticLockException.php</exclude-pattern>
+        <exclude-pattern>lib/Doctrine/ORM/QueryBuilder.php</exclude-pattern>
+        <exclude-pattern>lib/Doctrine/ORM/Query.php</exclude-pattern>
+        <exclude-pattern>lib/Doctrine/ORM/TransactionRequiredException.php</exclude-pattern>
+        <exclude-pattern>lib/Doctrine/ORM/UnexpectedResultException.php</exclude-pattern>
+        <exclude-pattern>lib/Doctrine/ORM/UnitOfWork.php</exclude-pattern>
+        <exclude-pattern>tests/*</exclude-pattern>
+    </rule>
+
+    <!-- incrementally migrating to strict typing -->
+    <rule ref="SlevomatCodingStandard.TypeHints.TypeHintDeclaration.MissingReturnTypeHint">
+        <exclude-pattern>lib/Doctrine/ORM/Annotation/*</exclude-pattern>
+        <exclude-pattern>lib/Doctrine/ORM/Cache/*</exclude-pattern>
+        <exclude-pattern>lib/Doctrine/ORM/Configuration/*</exclude-pattern>
+        <exclude-pattern>lib/Doctrine/ORM/Decorator/*</exclude-pattern>
+        <exclude-pattern>lib/Doctrine/ORM/Event/*</exclude-pattern>
+        <exclude-pattern>lib/Doctrine/ORM/Internal/*</exclude-pattern>
+        <exclude-pattern>lib/Doctrine/ORM/Mapping/*</exclude-pattern>
+        <exclude-pattern>lib/Doctrine/ORM/Persisters/*</exclude-pattern>
+        <exclude-pattern>lib/Doctrine/ORM/Proxy/*</exclude-pattern>
+        <exclude-pattern>lib/Doctrine/ORM/Query/*</exclude-pattern>
+        <exclude-pattern>lib/Doctrine/ORM/Reflection/*</exclude-pattern>
+        <exclude-pattern>lib/Doctrine/ORM/Repository/*</exclude-pattern>
+        <exclude-pattern>lib/Doctrine/ORM/Sequencing/*</exclude-pattern>
+        <exclude-pattern>lib/Doctrine/ORM/Tools/*</exclude-pattern>
+        <exclude-pattern>lib/Doctrine/ORM/Utility/*</exclude-pattern>
+        <exclude-pattern>lib/Doctrine/ORM/AbstractQuery.php</exclude-pattern>
+        <exclude-pattern>lib/Doctrine/ORM/Cache.php</exclude-pattern>
+        <exclude-pattern>lib/Doctrine/ORM/Configuration.php</exclude-pattern>
+        <exclude-pattern>lib/Doctrine/ORM/EntityManagerAware.php</exclude-pattern>
+        <exclude-pattern>lib/Doctrine/ORM/EntityManagerInterface.php</exclude-pattern>
+        <exclude-pattern>lib/Doctrine/ORM/EntityManager.php</exclude-pattern>
+        <exclude-pattern>lib/Doctrine/ORM/EntityNotFoundException.php</exclude-pattern>
+        <exclude-pattern>lib/Doctrine/ORM/EntityRepository.php</exclude-pattern>
+        <exclude-pattern>lib/Doctrine/ORM/Events.php</exclude-pattern>
+        <exclude-pattern>lib/Doctrine/ORM/LazyCriteriaCollection.php</exclude-pattern>
+        <exclude-pattern>lib/Doctrine/ORM/NativeQuery.php</exclude-pattern>
+        <exclude-pattern>lib/Doctrine/ORM/NonUniqueResultException.php</exclude-pattern>
+        <exclude-pattern>lib/Doctrine/ORM/NoResultException.php</exclude-pattern>
+        <exclude-pattern>lib/Doctrine/ORM/OptimisticLockException.php</exclude-pattern>
+        <exclude-pattern>lib/Doctrine/ORM/ORMException.php</exclude-pattern>
+        <exclude-pattern>lib/Doctrine/ORM/ORMInvalidArgumentException.php</exclude-pattern>
+        <exclude-pattern>lib/Doctrine/ORM/PersistentCollection.php</exclude-pattern>
+        <exclude-pattern>lib/Doctrine/ORM/PersistentObject.php</exclude-pattern>
+        <exclude-pattern>lib/Doctrine/ORM/PessimisticLockException.php</exclude-pattern>
+        <exclude-pattern>lib/Doctrine/ORM/QueryBuilder.php</exclude-pattern>
+        <exclude-pattern>lib/Doctrine/ORM/Query.php</exclude-pattern>
+        <exclude-pattern>lib/Doctrine/ORM/TransactionRequiredException.php</exclude-pattern>
+        <exclude-pattern>lib/Doctrine/ORM/UnexpectedResultException.php</exclude-pattern>
+        <exclude-pattern>lib/Doctrine/ORM/UnitOfWork.php</exclude-pattern>
+        <exclude-pattern>tests/*</exclude-pattern>
     </rule>
 </ruleset>
