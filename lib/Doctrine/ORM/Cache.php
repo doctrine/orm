@@ -40,18 +40,14 @@ interface Cache
 
     /**
      * @param string $className The entity class.
-     *
-     * @return Region|null
      */
-    public function getEntityCacheRegion($className);
+    public function getEntityCacheRegion(string $className) : ?Region;
 
     /**
      * @param string $className   The entity class.
      * @param string $association The field name that represents the association.
-     *
-     * @return Region|null
      */
-    public function getCollectionCacheRegion($className, $association);
+    public function getCollectionCacheRegion(string $className, string $association) : ?Region;
 
     /**
      * Determine whether the cache contains data for the given entity "instance".
@@ -61,33 +57,27 @@ interface Cache
      *
      * @return bool true if the underlying cache contains corresponding data; false otherwise.
      */
-    public function containsEntity($className, $identifier);
+    public function containsEntity(string $className, $identifier) : bool;
 
     /**
      * Evicts the entity data for a particular entity "instance".
      *
      * @param string $className  The entity class.
      * @param mixed  $identifier The entity identifier.
-     *
-     * @return void
      */
-    public function evictEntity($className, $identifier);
+    public function evictEntity(string $className, $identifier) : void;
 
     /**
      * Evicts all entity data from the given region.
      *
      * @param string $className The entity metadata.
-     *
-     * @return void
      */
-    public function evictEntityRegion($className);
+    public function evictEntityRegion(string $className) : void;
 
     /**
      * Evict data from all entity regions.
-     *
-     * @return void
      */
-    public function evictEntityRegions();
+    public function evictEntityRegions() : void;
 
     /**
      * Determine whether the cache contains data for the given collection.
@@ -98,7 +88,7 @@ interface Cache
      *
      * @return bool true if the underlying cache contains corresponding data; false otherwise.
      */
-    public function containsCollection($className, $association, $ownerIdentifier);
+    public function containsCollection(string $className, string $association, $ownerIdentifier) : bool;
 
     /**
      * Evicts the cache data for the given identified collection instance.
@@ -106,27 +96,21 @@ interface Cache
      * @param string $className       The entity class.
      * @param string $association     The field name that represents the association.
      * @param mixed  $ownerIdentifier The identifier of the owning entity.
-     *
-     * @return void
      */
-    public function evictCollection($className, $association, $ownerIdentifier);
+    public function evictCollection(string $className, string $association, $ownerIdentifier) : void;
 
     /**
      * Evicts all entity data from the given region.
      *
      * @param string $className   The entity class.
      * @param string $association The field name that represents the association.
-     *
-     * @return void
      */
-    public function evictCollectionRegion($className, $association);
+    public function evictCollectionRegion(string $className, string $association) : void;
 
     /**
      * Evict data from all collection regions.
-     *
-     * @return void
      */
-    public function evictCollectionRegions();
+    public function evictCollectionRegions() : void;
 
     /**
      * Determine whether the cache contains data for the given query.
@@ -135,21 +119,19 @@ interface Cache
      *
      * @return bool true if the underlying cache contains corresponding data; false otherwise.
      */
-    public function containsQuery($regionName);
+    public function containsQuery(string $regionName) : bool;
 
     /**
      * Evicts all cached query results under the given name, or default query cache if the region name is NULL.
      *
      * @param string|null $regionName The cache name associated to the queries being cached.
      */
-    public function evictQueryRegion($regionName = null);
+    public function evictQueryRegion(?string $regionName = null) : void;
 
     /**
      * Evict data from all query regions.
-     *
-     * @return void
      */
-    public function evictQueryRegions();
+    public function evictQueryRegions() : void;
 
     /**
      * Get query cache by region name or create a new one if none exist.
@@ -158,5 +140,5 @@ interface Cache
      *
      * @return QueryCache The Query Cache associated with the region name.
      */
-    public function getQueryCache($regionName = null);
+    public function getQueryCache(?string $regionName = null) : QueryCache;
 }

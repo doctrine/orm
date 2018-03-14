@@ -50,7 +50,7 @@ class DefaultCache implements Cache
     /**
      * {@inheritdoc}
      */
-    public function getEntityCacheRegion($className)
+    public function getEntityCacheRegion(string $className) : ?Region
     {
         $metadata  = $this->em->getClassMetadata($className);
         $persister = $this->uow->getEntityPersister($metadata->getRootClassName());
@@ -65,7 +65,7 @@ class DefaultCache implements Cache
     /**
      * {@inheritdoc}
      */
-    public function getCollectionCacheRegion($className, $association)
+    public function getCollectionCacheRegion(string $className, string $association) : ?Region
     {
         $metadata  = $this->em->getClassMetadata($className);
         $persister = $this->uow->getCollectionPersister($metadata->getProperty($association));
@@ -80,7 +80,7 @@ class DefaultCache implements Cache
     /**
      * {@inheritdoc}
      */
-    public function containsEntity($className, $identifier)
+    public function containsEntity(string $className, $identifier) : bool
     {
         $metadata  = $this->em->getClassMetadata($className);
         $persister = $this->uow->getEntityPersister($metadata->getRootClassName());
@@ -95,7 +95,7 @@ class DefaultCache implements Cache
     /**
      * {@inheritdoc}
      */
-    public function evictEntity($className, $identifier)
+    public function evictEntity(string $className, $identifier) : void
     {
         $metadata  = $this->em->getClassMetadata($className);
         $persister = $this->uow->getEntityPersister($metadata->getRootClassName());
@@ -110,7 +110,7 @@ class DefaultCache implements Cache
     /**
      * {@inheritdoc}
      */
-    public function evictEntityRegion($className)
+    public function evictEntityRegion(string $className) : void
     {
         $metadata  = $this->em->getClassMetadata($className);
         $persister = $this->uow->getEntityPersister($metadata->getRootClassName());
@@ -125,7 +125,7 @@ class DefaultCache implements Cache
     /**
      * {@inheritdoc}
      */
-    public function evictEntityRegions()
+    public function evictEntityRegions() : void
     {
         $metadatas = $this->em->getMetadataFactory()->getAllMetadata();
 
@@ -143,7 +143,7 @@ class DefaultCache implements Cache
     /**
      * {@inheritdoc}
      */
-    public function containsCollection($className, $association, $ownerIdentifier)
+    public function containsCollection(string $className, string $association, $ownerIdentifier) : bool
     {
         $metadata  = $this->em->getClassMetadata($className);
         $persister = $this->uow->getCollectionPersister($metadata->getProperty($association));
@@ -158,7 +158,7 @@ class DefaultCache implements Cache
     /**
      * {@inheritdoc}
      */
-    public function evictCollection($className, $association, $ownerIdentifier)
+    public function evictCollection(string $className, string $association, $ownerIdentifier) : void
     {
         $metadata  = $this->em->getClassMetadata($className);
         $persister = $this->uow->getCollectionPersister($metadata->getProperty($association));
@@ -173,7 +173,7 @@ class DefaultCache implements Cache
     /**
      * {@inheritdoc}
      */
-    public function evictCollectionRegion($className, $association)
+    public function evictCollectionRegion(string $className, string $association) : void
     {
         $metadata  = $this->em->getClassMetadata($className);
         $persister = $this->uow->getCollectionPersister($metadata->getProperty($association));
@@ -188,7 +188,7 @@ class DefaultCache implements Cache
     /**
      * {@inheritdoc}
      */
-    public function evictCollectionRegions()
+    public function evictCollectionRegions() : void
     {
         $metadatas = $this->em->getMetadataFactory()->getAllMetadata();
 
@@ -212,7 +212,7 @@ class DefaultCache implements Cache
     /**
      * {@inheritdoc}
      */
-    public function containsQuery($regionName)
+    public function containsQuery(string $regionName) : bool
     {
         return isset($this->queryCaches[$regionName]);
     }
@@ -220,7 +220,7 @@ class DefaultCache implements Cache
     /**
      * {@inheritdoc}
      */
-    public function evictQueryRegion($regionName = null)
+    public function evictQueryRegion(?string $regionName = null) : void
     {
         if ($regionName === null && $this->defaultQueryCache !== null) {
             $this->defaultQueryCache->clear();
@@ -236,7 +236,7 @@ class DefaultCache implements Cache
     /**
      * {@inheritdoc}
      */
-    public function evictQueryRegions()
+    public function evictQueryRegions() : void
     {
         $this->getQueryCache()->clear();
 
@@ -248,7 +248,7 @@ class DefaultCache implements Cache
     /**
      * {@inheritdoc}
      */
-    public function getQueryCache($regionName = null)
+    public function getQueryCache(?string $regionName = null) : QueryCache
     {
         if ($regionName === null) {
             return $this->defaultQueryCache ?:
@@ -265,10 +265,8 @@ class DefaultCache implements Cache
     /**
      * @param ClassMetadata $metadata   The entity metadata.
      * @param mixed         $identifier The entity identifier.
-     *
-     * @return EntityCacheKey
      */
-    private function buildEntityCacheKey(ClassMetadata $metadata, $identifier)
+    private function buildEntityCacheKey(ClassMetadata $metadata, $identifier) : EntityCacheKey
     {
         if (! is_array($identifier)) {
             $identifier = $this->toIdentifierArray($metadata, $identifier);
@@ -281,10 +279,8 @@ class DefaultCache implements Cache
      * @param ClassMetadata $metadata        The entity metadata.
      * @param string        $association     The field name that represents the association.
      * @param mixed         $ownerIdentifier The identifier of the owning entity.
-     *
-     * @return CollectionCacheKey
      */
-    private function buildCollectionCacheKey(ClassMetadata $metadata, $association, $ownerIdentifier)
+    private function buildCollectionCacheKey(ClassMetadata $metadata, string $association, $ownerIdentifier) : CollectionCacheKey
     {
         if (! is_array($ownerIdentifier)) {
             $ownerIdentifier = $this->toIdentifierArray($metadata, $ownerIdentifier);
@@ -299,7 +295,7 @@ class DefaultCache implements Cache
      *
      * @return mixed[]
      */
-    private function toIdentifierArray(ClassMetadata $metadata, $identifier)
+    private function toIdentifierArray(ClassMetadata $metadata, $identifier) : array
     {
         if (is_object($identifier) && $this->em->getMetadataFactory()->hasMetadataFor(StaticClassNameConverter::getClass($identifier))) {
             $identifier = $this->uow->getSingleIdentifierValue($identifier);
