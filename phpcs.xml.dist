@@ -134,13 +134,11 @@
         <exclude-pattern>lib/Doctrine/ORM/Sequencing/*</exclude-pattern>
         <exclude-pattern>lib/Doctrine/ORM/Tools/*</exclude-pattern>
         <exclude-pattern>lib/Doctrine/ORM/Utility/*</exclude-pattern>
-        <exclude-pattern>lib/Doctrine/ORM/AbstractQuery.php</exclude-pattern>
         <exclude-pattern>lib/Doctrine/ORM/Cache.php</exclude-pattern>
         <exclude-pattern>lib/Doctrine/ORM/Configuration.php</exclude-pattern>
         <exclude-pattern>lib/Doctrine/ORM/EntityNotFoundException.php</exclude-pattern>
         <exclude-pattern>lib/Doctrine/ORM/Events.php</exclude-pattern>
         <exclude-pattern>lib/Doctrine/ORM/LazyCriteriaCollection.php</exclude-pattern>
-        <exclude-pattern>lib/Doctrine/ORM/NativeQuery.php</exclude-pattern>
         <exclude-pattern>lib/Doctrine/ORM/NonUniqueResultException.php</exclude-pattern>
         <exclude-pattern>lib/Doctrine/ORM/NoResultException.php</exclude-pattern>
         <exclude-pattern>lib/Doctrine/ORM/OptimisticLockException.php</exclude-pattern>
@@ -150,7 +148,6 @@
         <exclude-pattern>lib/Doctrine/ORM/PersistentObject.php</exclude-pattern>
         <exclude-pattern>lib/Doctrine/ORM/PessimisticLockException.php</exclude-pattern>
         <exclude-pattern>lib/Doctrine/ORM/QueryBuilder.php</exclude-pattern>
-        <exclude-pattern>lib/Doctrine/ORM/Query.php</exclude-pattern>
         <exclude-pattern>lib/Doctrine/ORM/TransactionRequiredException.php</exclude-pattern>
         <exclude-pattern>lib/Doctrine/ORM/UnexpectedResultException.php</exclude-pattern>
         <exclude-pattern>tests/*</exclude-pattern>
@@ -172,13 +169,11 @@
         <exclude-pattern>lib/Doctrine/ORM/Sequencing/*</exclude-pattern>
         <exclude-pattern>lib/Doctrine/ORM/Tools/*</exclude-pattern>
         <exclude-pattern>lib/Doctrine/ORM/Utility/*</exclude-pattern>
-        <exclude-pattern>lib/Doctrine/ORM/AbstractQuery.php</exclude-pattern>
         <exclude-pattern>lib/Doctrine/ORM/Cache.php</exclude-pattern>
         <exclude-pattern>lib/Doctrine/ORM/Configuration.php</exclude-pattern>
         <exclude-pattern>lib/Doctrine/ORM/EntityNotFoundException.php</exclude-pattern>
         <exclude-pattern>lib/Doctrine/ORM/Events.php</exclude-pattern>
         <exclude-pattern>lib/Doctrine/ORM/LazyCriteriaCollection.php</exclude-pattern>
-        <exclude-pattern>lib/Doctrine/ORM/NativeQuery.php</exclude-pattern>
         <exclude-pattern>lib/Doctrine/ORM/NonUniqueResultException.php</exclude-pattern>
         <exclude-pattern>lib/Doctrine/ORM/NoResultException.php</exclude-pattern>
         <exclude-pattern>lib/Doctrine/ORM/OptimisticLockException.php</exclude-pattern>
@@ -188,7 +183,6 @@
         <exclude-pattern>lib/Doctrine/ORM/PersistentObject.php</exclude-pattern>
         <exclude-pattern>lib/Doctrine/ORM/PessimisticLockException.php</exclude-pattern>
         <exclude-pattern>lib/Doctrine/ORM/QueryBuilder.php</exclude-pattern>
-        <exclude-pattern>lib/Doctrine/ORM/Query.php</exclude-pattern>
         <exclude-pattern>lib/Doctrine/ORM/TransactionRequiredException.php</exclude-pattern>
         <exclude-pattern>lib/Doctrine/ORM/UnexpectedResultException.php</exclude-pattern>
         <exclude-pattern>tests/*</exclude-pattern>
