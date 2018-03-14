@@ -318,15 +318,6 @@ class UnitOfWorkTest extends OrmTestCase
     }
 
     /**
-     * @group DDC-1984
-     */
-    public function testLockWithoutEntityThrowsException() : void
-    {
-        $this->expectException(\InvalidArgumentException::class);
-        $this->unitOfWork->lock(null, null, null);
-    }
-
-    /**
      * @group DDC-3490
      *
      * @dataProvider invalidAssociationValuesDataProvider

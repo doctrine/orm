@@ -23,7 +23,7 @@ class NonProxyLoadingUnitOfWork extends UnitOfWork
     /**
      * {@inheritDoc}
      */
-    public function getEntityPersister($entityName)
+    public function getEntityPersister(string $entityName) : EntityPersister
     {
         return $this->entityPersister;
     }

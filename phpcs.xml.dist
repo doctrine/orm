@@ -154,7 +154,6 @@
         <exclude-pattern>lib/Doctrine/ORM/Query.php</exclude-pattern>
         <exclude-pattern>lib/Doctrine/ORM/TransactionRequiredException.php</exclude-pattern>
         <exclude-pattern>lib/Doctrine/ORM/UnexpectedResultException.php</exclude-pattern>
-        <exclude-pattern>lib/Doctrine/ORM/UnitOfWork.php</exclude-pattern>
         <exclude-pattern>tests/*</exclude-pattern>
     </rule>
 
@@ -194,7 +193,6 @@
         <exclude-pattern>lib/Doctrine/ORM/Query.php</exclude-pattern>
         <exclude-pattern>lib/Doctrine/ORM/TransactionRequiredException.php</exclude-pattern>
         <exclude-pattern>lib/Doctrine/ORM/UnexpectedResultException.php</exclude-pattern>
-        <exclude-pattern>lib/Doctrine/ORM/UnitOfWork.php</exclude-pattern>
         <exclude-pattern>tests/*</exclude-pattern>
     </rule>
 </ruleset>
