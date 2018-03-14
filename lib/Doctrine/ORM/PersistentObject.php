@@ -55,15 +55,12 @@ abstract class PersistentObject implements EntityManagerAware
     /**
      * Sets the entity manager responsible for all persistent object base classes.
      */
-    public static function setEntityManager(?EntityManagerInterface $entityManager = null)
+    public static function setEntityManager(?EntityManagerInterface $entityManager = null) : void
     {
         self::$entityManager = $entityManager;
     }
 
-    /**
-     * @return EntityManagerInterface|null
-     */
-    public static function getEntityManager()
+    public static function getEntityManager() : ?EntityManagerInterface
     {
         return self::$entityManager;
     }
@@ -88,15 +85,12 @@ abstract class PersistentObject implements EntityManagerAware
     /**
      * Sets a persistent fields value.
      *
-     * @param string  $field
      * @param mixed[] $args
-     *
-     * @return object
      *
      * @throws \BadMethodCallException   When no persistent field exists by that name.
      * @throws \InvalidArgumentException When the wrong target object type is passed to an association.
      */
-    private function set($field, $args)
+    private function set(string $field, array $args) : object
     {
         $this->initializeDoctrine();
 
@@ -129,13 +123,11 @@ abstract class PersistentObject implements EntityManagerAware
     /**
      * Gets a persistent field value.
      *
-     * @param string $field
-     *
      * @return mixed
      *
      * @throws \BadMethodCallException When no persistent field exists by that name.
      */
-    private function get($field)
+    private function get(string $field)
     {
         $this->initializeDoctrine();
 
@@ -150,10 +142,8 @@ abstract class PersistentObject implements EntityManagerAware
 
     /**
      * If this is an inverse side association, completes the owning side.
-     *
-     * @param object $targetObject
      */
-    private function completeOwningSide(AssociationMetadata $property, $targetObject)
+    private function completeOwningSide(AssociationMetadata $property, object $targetObject) : void
     {
         // add this object on the owning side as well, for obvious infinite recursion
         // reasons this is only done when called on the inverse side.
@@ -172,15 +162,12 @@ abstract class PersistentObject implements EntityManagerAware
     /**
      * Adds an object to a collection.
      *
-     * @param string  $field
      * @param mixed[] $args
-     *
-     * @return object
      *
      * @throws \BadMethodCallException
      * @throws \InvalidArgumentException
      */
-    private function add($field, $args)
+    private function add(string $field, array $args) : object
     {
         $this->initializeDoctrine();
 
@@ -216,7 +203,7 @@ abstract class PersistentObject implements EntityManagerAware
      *
      * @throws \RuntimeException
      */
-    private function initializeDoctrine()
+    private function initializeDoctrine() : void
     {
         if ($this->cm !== null) {
             return;
@@ -232,14 +219,13 @@ abstract class PersistentObject implements EntityManagerAware
     /**
      * Magic methods.
      *
-     * @param string  $method
      * @param mixed[] $args
      *
      * @return mixed
      *
      * @throws \BadMethodCallException
      */
-    public function __call($method, $args)
+    public function __call(string $method, array $args)
     {
         $command = substr($method, 0, 3);
         $field   = lcfirst(substr($method, 3));

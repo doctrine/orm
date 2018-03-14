@@ -142,7 +142,6 @@
         <exclude-pattern>lib/Doctrine/ORM/OptimisticLockException.php</exclude-pattern>
         <exclude-pattern>lib/Doctrine/ORM/ORMException.php</exclude-pattern>
         <exclude-pattern>lib/Doctrine/ORM/ORMInvalidArgumentException.php</exclude-pattern>
-        <exclude-pattern>lib/Doctrine/ORM/PersistentObject.php</exclude-pattern>
         <exclude-pattern>lib/Doctrine/ORM/PessimisticLockException.php</exclude-pattern>
         <exclude-pattern>lib/Doctrine/ORM/TransactionRequiredException.php</exclude-pattern>
         <exclude-pattern>lib/Doctrine/ORM/UnexpectedResultException.php</exclude-pattern>
@@ -173,7 +172,6 @@
         <exclude-pattern>lib/Doctrine/ORM/OptimisticLockException.php</exclude-pattern>
         <exclude-pattern>lib/Doctrine/ORM/ORMException.php</exclude-pattern>
         <exclude-pattern>lib/Doctrine/ORM/ORMInvalidArgumentException.php</exclude-pattern>
-        <exclude-pattern>lib/Doctrine/ORM/PersistentObject.php</exclude-pattern>
         <exclude-pattern>lib/Doctrine/ORM/PessimisticLockException.php</exclude-pattern>
         <exclude-pattern>lib/Doctrine/ORM/TransactionRequiredException.php</exclude-pattern>
         <exclude-pattern>lib/Doctrine/ORM/UnexpectedResultException.php</exclude-pattern>
