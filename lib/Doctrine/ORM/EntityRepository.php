@@ -39,7 +39,7 @@ class EntityRepository
      * @param EntityManagerInterface $em    The EntityManager to use.
      * @param Mapping\ClassMetadata  $class The class descriptor.
      */
-    public function __construct(EntityManagerInterface $em, Mapping\ClassMetadata $class)
+    public function __construct(EntityManagerInterface $em, ClassMetadata $class)
     {
         $this->entityName = $class->getClassName();
         $this->em         = $em;
@@ -49,12 +49,9 @@ class EntityRepository
     /**
      * Creates a new QueryBuilder instance that is prepopulated for this entity name.
      *
-     * @param string $alias
      * @param string $indexBy The index for the from.
-     *
-     * @return QueryBuilder
      */
-    public function createQueryBuilder($alias, $indexBy = null)
+    public function createQueryBuilder(string $alias, ?string $indexBy = null) : QueryBuilder
     {
         return $this->em->createQueryBuilder()
             ->select($alias)
@@ -65,12 +62,8 @@ class EntityRepository
      * Creates a new result set mapping builder for this entity.
      *
      * The column naming strategy is "INCREMENT".
-     *
-     * @param string $alias
-     *
-     * @return ResultSetMappingBuilder
      */
-    public function createResultSetMappingBuilder($alias)
+    public function createResultSetMappingBuilder(string $alias) : ResultSetMappingBuilder
     {
         $rsm = new ResultSetMappingBuilder($this->em, ResultSetMappingBuilder::COLUMN_RENAMING_INCREMENT);
         $rsm->addRootEntityFromClassMetadata($this->entityName, $alias);
@@ -81,7 +74,7 @@ class EntityRepository
     /**
      * Clears the repository, causing all managed entities to become detached.
      */
-    public function clear()
+    public function clear() : void
     {
         $this->em->clear($this->class->getRootClassName());
     }
@@ -97,7 +90,7 @@ class EntityRepository
      *
      * @return object|null The entity instance or NULL if the entity can not be found.
      */
-    public function find($id, $lockMode = null, $lockVersion = null)
+    public function find($id, ?int $lockMode = null, ?int $lockVersion = null) : ?object
     {
         return $this->em->find($this->entityName, $id, $lockMode, $lockVersion);
     }
@@ -107,7 +100,7 @@ class EntityRepository
      *
      * @return object[] The entities.
      */
-    public function findAll()
+    public function findAll() : array
     {
         return $this->findBy([]);
     }
@@ -115,16 +108,14 @@ class EntityRepository
     /**
      * Finds entities by a set of criteria.
      *
-     * @param mixed[]  $criteria
-     * @param mixed[]  $orderBy
-     * @param int|null $limit
-     * @param int|null $offset
+     * @param mixed[] $criteria
+     * @param mixed[] $orderBy
      *
      * @return object[] The objects.
      *
      * @todo guilhermeblanco Change orderBy to use a blank array by default (requires Common\Persistence change).
      */
-    public function findBy(array $criteria, ?array $orderBy = null, $limit = null, $offset = null)
+    public function findBy(array $criteria, ?array $orderBy = null, ?int $limit = null, ?int $offset = null) : array
     {
         $persister = $this->em->getUnitOfWork()->getEntityPersister($this->entityName);
 
@@ -139,7 +130,7 @@ class EntityRepository
      *
      * @return object|null The entity instance or NULL if the entity can not be found.
      */
-    public function findOneBy(array $criteria, array $orderBy = [])
+    public function findOneBy(array $criteria, array $orderBy = []) : ?object
     {
         $persister = $this->em->getUnitOfWork()->getEntityPersister($this->entityName);
 
@@ -155,7 +146,7 @@ class EntityRepository
      *
      * @return int The cardinality of the objects that match the given criteria.
      */
-    public function count(array $criteria)
+    public function count(array $criteria) : int
     {
         return $this->em->getUnitOfWork()->getEntityPersister($this->entityName)->count($criteria);
     }
@@ -163,7 +154,6 @@ class EntityRepository
     /**
      * Adds support for magic method calls.
      *
-     * @param string  $method
      * @param mixed[] $arguments
      *
      * @return mixed The returned value from the resolved method.
@@ -171,7 +161,7 @@ class EntityRepository
      * @throws ORMException
      * @throws \BadMethodCallException If the method called is invalid.
      */
-    public function __call($method, $arguments)
+    public function __call(string $method, array $arguments)
     {
         if (strpos($method, 'findBy') === 0) {
             return $this->resolveMagicCall('findBy', substr($method, 6), $arguments);
@@ -193,34 +183,22 @@ class EntityRepository
         );
     }
 
-    /**
-     * @return string
-     */
-    protected function getEntityName()
+    protected function getEntityName() : string
     {
         return $this->entityName;
     }
 
-    /**
-     * @return string
-     */
-    public function getClassName()
+    public function getClassName() : string
     {
         return $this->getEntityName();
     }
 
-    /**
-     * @return EntityManagerInterface
-     */
-    protected function getEntityManager()
+    protected function getEntityManager() : EntityManagerInterface
     {
         return $this->em;
     }
 
-    /**
-     * @return Mapping\ClassMetadata
-     */
-    protected function getClassMetadata()
+    protected function getClassMetadata() : ClassMetadata
     {
         return $this->class;
     }
@@ -231,7 +209,7 @@ class EntityRepository
      *
      * @return Collection|object[]
      */
-    public function matching(Criteria $criteria)
+    public function matching(Criteria $criteria) : Collection
     {
         $persister = $this->em->getUnitOfWork()->getEntityPersister($this->entityName);
 
@@ -249,7 +227,7 @@ class EntityRepository
      *
      * @return mixed
      */
-    private function resolveMagicCall($method, $by, array $arguments)
+    private function resolveMagicCall(string $method, string $by, array $arguments)
     {
         if (! $arguments) {
             throw ORMException::findByRequiresParameter($method . $by);
