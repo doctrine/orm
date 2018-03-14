@@ -134,7 +134,6 @@
         <exclude-pattern>lib/Doctrine/ORM/Sequencing/*</exclude-pattern>
         <exclude-pattern>lib/Doctrine/ORM/Tools/*</exclude-pattern>
         <exclude-pattern>lib/Doctrine/ORM/Utility/*</exclude-pattern>
-        <exclude-pattern>lib/Doctrine/ORM/Configuration.php</exclude-pattern>
         <exclude-pattern>lib/Doctrine/ORM/EntityNotFoundException.php</exclude-pattern>
         <exclude-pattern>lib/Doctrine/ORM/Events.php</exclude-pattern>
         <exclude-pattern>lib/Doctrine/ORM/NonUniqueResultException.php</exclude-pattern>
@@ -164,7 +163,6 @@
         <exclude-pattern>lib/Doctrine/ORM/Sequencing/*</exclude-pattern>
         <exclude-pattern>lib/Doctrine/ORM/Tools/*</exclude-pattern>
         <exclude-pattern>lib/Doctrine/ORM/Utility/*</exclude-pattern>
-        <exclude-pattern>lib/Doctrine/ORM/Configuration.php</exclude-pattern>
         <exclude-pattern>lib/Doctrine/ORM/EntityNotFoundException.php</exclude-pattern>
         <exclude-pattern>lib/Doctrine/ORM/Events.php</exclude-pattern>
         <exclude-pattern>lib/Doctrine/ORM/NonUniqueResultException.php</exclude-pattern>

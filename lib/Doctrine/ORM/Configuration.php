@@ -342,7 +342,7 @@ class Configuration extends DBALConfiguration
      *
      * @param string|callable $classNameOrFactory Class name or a callable that returns the function.
      */
-    public function addCustomDatetimeFunction(string $functionName, $classNameOrFactory)
+    public function addCustomDatetimeFunction(string $functionName, $classNameOrFactory) : void
     {
         $this->customDatetimeFunctions[strtolower($functionName)] = $classNameOrFactory;
     }
