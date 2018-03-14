@@ -123,7 +123,6 @@
         <exclude-pattern>lib/Doctrine/ORM/Annotation/*</exclude-pattern>
         <exclude-pattern>lib/Doctrine/ORM/Cache/*</exclude-pattern>
         <exclude-pattern>lib/Doctrine/ORM/Configuration/*</exclude-pattern>
-        <exclude-pattern>lib/Doctrine/ORM/Decorator/*</exclude-pattern>
         <exclude-pattern>lib/Doctrine/ORM/Event/*</exclude-pattern>
         <exclude-pattern>lib/Doctrine/ORM/Internal/*</exclude-pattern>
         <exclude-pattern>lib/Doctrine/ORM/Mapping/*</exclude-pattern>
@@ -138,9 +137,6 @@
         <exclude-pattern>lib/Doctrine/ORM/AbstractQuery.php</exclude-pattern>
         <exclude-pattern>lib/Doctrine/ORM/Cache.php</exclude-pattern>
         <exclude-pattern>lib/Doctrine/ORM/Configuration.php</exclude-pattern>
-        <exclude-pattern>lib/Doctrine/ORM/EntityManagerAware.php</exclude-pattern>
-        <exclude-pattern>lib/Doctrine/ORM/EntityManagerInterface.php</exclude-pattern>
-        <exclude-pattern>lib/Doctrine/ORM/EntityManager.php</exclude-pattern>
         <exclude-pattern>lib/Doctrine/ORM/EntityNotFoundException.php</exclude-pattern>
         <exclude-pattern>lib/Doctrine/ORM/EntityRepository.php</exclude-pattern>
         <exclude-pattern>lib/Doctrine/ORM/Events.php</exclude-pattern>
@@ -167,7 +163,6 @@
         <exclude-pattern>lib/Doctrine/ORM/Annotation/*</exclude-pattern>
         <exclude-pattern>lib/Doctrine/ORM/Cache/*</exclude-pattern>
         <exclude-pattern>lib/Doctrine/ORM/Configuration/*</exclude-pattern>
-        <exclude-pattern>lib/Doctrine/ORM/Decorator/*</exclude-pattern>
         <exclude-pattern>lib/Doctrine/ORM/Event/*</exclude-pattern>
         <exclude-pattern>lib/Doctrine/ORM/Internal/*</exclude-pattern>
         <exclude-pattern>lib/Doctrine/ORM/Mapping/*</exclude-pattern>
@@ -182,9 +177,6 @@
         <exclude-pattern>lib/Doctrine/ORM/AbstractQuery.php</exclude-pattern>
         <exclude-pattern>lib/Doctrine/ORM/Cache.php</exclude-pattern>
         <exclude-pattern>lib/Doctrine/ORM/Configuration.php</exclude-pattern>
-        <exclude-pattern>lib/Doctrine/ORM/EntityManagerAware.php</exclude-pattern>
-        <exclude-pattern>lib/Doctrine/ORM/EntityManagerInterface.php</exclude-pattern>
-        <exclude-pattern>lib/Doctrine/ORM/EntityManager.php</exclude-pattern>
         <exclude-pattern>lib/Doctrine/ORM/EntityNotFoundException.php</exclude-pattern>
         <exclude-pattern>lib/Doctrine/ORM/EntityRepository.php</exclude-pattern>
         <exclude-pattern>lib/Doctrine/ORM/Events.php</exclude-pattern>

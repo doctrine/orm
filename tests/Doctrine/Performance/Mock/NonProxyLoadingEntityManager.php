@@ -6,20 +6,22 @@ namespace Doctrine\Performance\Mock;
 
 use Doctrine\Common\EventManager;
 use Doctrine\Common\Persistence\Mapping\ClassMetadataFactory;
-use Doctrine\Common\Persistence\ObjectRepository;
 use Doctrine\DBAL\Connection;
 use Doctrine\ORM\Cache;
 use Doctrine\ORM\Configuration;
 use Doctrine\ORM\EntityManagerInterface;
+use Doctrine\ORM\EntityRepository;
 use Doctrine\ORM\Internal\Hydration\AbstractHydrator;
 use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\NativeQuery;
+use Doctrine\ORM\Proxy\Factory\ProxyFactory;
 use Doctrine\ORM\Proxy\Factory\StaticProxyFactory;
 use Doctrine\ORM\Query;
 use Doctrine\ORM\Query\Expr;
 use Doctrine\ORM\Query\FilterCollection;
 use Doctrine\ORM\Query\ResultSetMapping;
 use Doctrine\ORM\QueryBuilder;
+use Doctrine\ORM\UnitOfWork;
 use Doctrine\ORM\Utility\IdentifierFlattener;
 
 /**
@@ -38,7 +40,7 @@ class NonProxyLoadingEntityManager implements EntityManagerInterface
     /**
      * {@inheritDoc}
      */
-    public function getProxyFactory()
+    public function getProxyFactory() : ProxyFactory
     {
         return new StaticProxyFactory($this, $this->realEntityManager->getConfiguration()->buildGhostObjectFactory());
     }
@@ -54,7 +56,7 @@ class NonProxyLoadingEntityManager implements EntityManagerInterface
     /**
      * {@inheritDoc}
      */
-    public function getClassMetadata($className) : ClassMetadata
+    public function getClassMetadata(string $className) : ClassMetadata
     {
         return $this->realEntityManager->getClassMetadata($className);
     }
@@ -62,7 +64,7 @@ class NonProxyLoadingEntityManager implements EntityManagerInterface
     /**
      * {@inheritDoc}
      */
-    public function getUnitOfWork()
+    public function getUnitOfWork() : UnitOfWork
     {
         return new NonProxyLoadingUnitOfWork();
     }
@@ -126,7 +128,7 @@ class NonProxyLoadingEntityManager implements EntityManagerInterface
     /**
      * {@inheritDoc}
      */
-    public function createQuery($dql = '') : Query
+    public function createQuery(string $dql = '') : Query
     {
         return $this->realEntityManager->createQuery($dql);
     }
@@ -134,7 +136,7 @@ class NonProxyLoadingEntityManager implements EntityManagerInterface
     /**
      * {@inheritDoc}
      */
-    public function createNativeQuery($sql, ResultSetMapping $rsm) : NativeQuery
+    public function createNativeQuery(string $sql, ResultSetMapping $rsm) : NativeQuery
     {
         return $this->realEntityManager->createNativeQuery($sql, $rsm);
     }
@@ -150,7 +152,7 @@ class NonProxyLoadingEntityManager implements EntityManagerInterface
     /**
      * {@inheritDoc}
      */
-    public function getReference($entityName, $id)
+    public function getReference(string $entityName, $id) : ?object
     {
         return $this->realEntityManager->getReference($entityName, $id);
     }
@@ -158,7 +160,7 @@ class NonProxyLoadingEntityManager implements EntityManagerInterface
     /**
      * {@inheritDoc}
      */
-    public function getPartialReference($entityName, $identifier)
+    public function getPartialReference(string $entityName, $identifier) : ?object
     {
         return $this->realEntityManager->getPartialReference($entityName, $identifier);
     }
@@ -174,7 +176,7 @@ class NonProxyLoadingEntityManager implements EntityManagerInterface
     /**
      * {@inheritDoc}
      */
-    public function lock($entity, $lockMode, $lockVersion = null) : void
+    public function lock(object $entity, int $lockMode, $lockVersion = null) : void
     {
         $this->realEntityManager->lock($entity, $lockMode, $lockVersion);
     }
@@ -246,7 +248,7 @@ class NonProxyLoadingEntityManager implements EntityManagerInterface
     /**
      * {@inheritDoc}
      */
-    public function find($className, $id)
+    public function find(string $className, $id) : ?object
     {
         return $this->realEntityManager->find($className, $id);
     }
@@ -254,7 +256,7 @@ class NonProxyLoadingEntityManager implements EntityManagerInterface
     /**
      * {@inheritDoc}
      */
-    public function persist($object) : void
+    public function persist(object $object) : void
     {
         $this->realEntityManager->persist($object);
     }
@@ -262,7 +264,7 @@ class NonProxyLoadingEntityManager implements EntityManagerInterface
     /**
      * {@inheritDoc}
      */
-    public function remove($object) : void
+    public function remove(object $object) : void
     {
         $this->realEntityManager->remove($object);
     }
@@ -270,7 +272,7 @@ class NonProxyLoadingEntityManager implements EntityManagerInterface
     /**
      * {@inheritDoc}
      */
-    public function clear($objectName = null) : void
+    public function clear(?string $objectName = null) : void
     {
         $this->realEntityManager->clear($objectName);
     }
@@ -280,7 +282,7 @@ class NonProxyLoadingEntityManager implements EntityManagerInterface
      *
      * @deprecated
      */
-    public function merge($object)
+    public function merge(object $object) : object
     {
         throw new \BadMethodCallException('@TODO method disabled - will be removed in 3.0 with a release of doctrine/common');
     }
@@ -290,7 +292,7 @@ class NonProxyLoadingEntityManager implements EntityManagerInterface
      *
      * @deprecated
      */
-    public function detach($object) : void
+    public function detach(object $object) : void
     {
         throw new \BadMethodCallException('@TODO method disabled - will be removed in 3.0 with a release of doctrine/common');
     }
@@ -298,7 +300,7 @@ class NonProxyLoadingEntityManager implements EntityManagerInterface
     /**
      * {@inheritDoc}
      */
-    public function refresh($object) : void
+    public function refresh(object $object) : void
     {
         $this->realEntityManager->refresh($object);
     }
@@ -314,7 +316,7 @@ class NonProxyLoadingEntityManager implements EntityManagerInterface
     /**
      * {@inheritDoc}
      */
-    public function getRepository($className) : ObjectRepository
+    public function getRepository(string $className) : EntityRepository
     {
         return $this->realEntityManager->getRepository($className);
     }
@@ -322,7 +324,7 @@ class NonProxyLoadingEntityManager implements EntityManagerInterface
     /**
      * {@inheritDoc}
      */
-    public function initializeObject($obj) : void
+    public function initializeObject(object $obj) : void
     {
         $this->realEntityManager->initializeObject($obj);
     }
@@ -330,7 +332,7 @@ class NonProxyLoadingEntityManager implements EntityManagerInterface
     /**
      * {@inheritDoc}
      */
-    public function contains($object) : bool
+    public function contains(object $object) : bool
     {
         return $this->realEntityManager->contains($object);
     }

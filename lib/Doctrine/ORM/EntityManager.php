@@ -5,11 +5,14 @@ declare(strict_types=1);
 namespace Doctrine\ORM;
 
 use Doctrine\Common\EventManager;
+use Doctrine\Common\Persistence\Mapping\ClassMetadataFactory as CommonClassMetadataFactory;
 use Doctrine\Common\Persistence\Mapping\MappingException;
 use Doctrine\Common\Persistence\ObjectRepository;
 use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\DriverManager;
 use Doctrine\DBAL\LockMode;
+use Doctrine\ORM\Internal\Hydration\AbstractHydrator;
+use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\Mapping\ClassMetadataFactory;
 use Doctrine\ORM\Proxy\Factory\ProxyFactory;
 use Doctrine\ORM\Proxy\Factory\StaticProxyFactory;
@@ -167,17 +170,15 @@ final class EntityManager implements EntityManagerInterface
     /**
      * {@inheritDoc}
      */
-    public function getConnection()
+    public function getConnection() : Connection
     {
         return $this->conn;
     }
 
     /**
      * Gets the metadata factory used to gather the metadata of classes.
-     *
-     * @return ClassMetadataFactory
      */
-    public function getMetadataFactory()
+    public function getMetadataFactory() : CommonClassMetadataFactory
     {
         return $this->metadataFactory;
     }
@@ -185,7 +186,7 @@ final class EntityManager implements EntityManagerInterface
     /**
      * {@inheritDoc}
      */
-    public function getExpressionBuilder()
+    public function getExpressionBuilder() : Expr
     {
         if ($this->expressionBuilder === null) {
             $this->expressionBuilder = new Query\Expr();
@@ -202,7 +203,7 @@ final class EntityManager implements EntityManagerInterface
     /**
      * {@inheritDoc}
      */
-    public function beginTransaction()
+    public function beginTransaction() : void
     {
         $this->conn->beginTransaction();
     }
@@ -210,7 +211,7 @@ final class EntityManager implements EntityManagerInterface
     /**
      * {@inheritDoc}
      */
-    public function getCache()
+    public function getCache() : ?Cache
     {
         return $this->cache;
     }
@@ -240,7 +241,7 @@ final class EntityManager implements EntityManagerInterface
     /**
      * {@inheritDoc}
      */
-    public function commit()
+    public function commit() : void
     {
         $this->conn->commit();
     }
@@ -248,7 +249,7 @@ final class EntityManager implements EntityManagerInterface
     /**
      * {@inheritDoc}
      */
-    public function rollback()
+    public function rollback() : void
     {
         $this->conn->rollBack();
     }
@@ -265,13 +266,10 @@ final class EntityManager implements EntityManagerInterface
      *
      * {@internal Performance-sensitive method. }}
      *
-     * @param string $className
-     *
-     * @throws \ReflectionException
-     * @throws \InvalidArgumentException
      * @throws MappingException
+     * @throws \ReflectionException
      */
-    public function getClassMetadata($className) : Mapping\ClassMetadata
+    public function getClassMetadata(string $className) : ClassMetadata
     {
         return $this->metadataFactory->getMetadataFor($className);
     }
@@ -279,7 +277,7 @@ final class EntityManager implements EntityManagerInterface
     /**
      * {@inheritDoc}
      */
-    public function createQuery($dql = '')
+    public function createQuery(string $dql = '') : Query
     {
         $query = new Query($this);
 
@@ -293,7 +291,7 @@ final class EntityManager implements EntityManagerInterface
     /**
      * {@inheritDoc}
      */
-    public function createNativeQuery($sql, ResultSetMapping $rsm)
+    public function createNativeQuery(string $sql, ResultSetMapping $rsm) : NativeQuery
     {
         $query = new NativeQuery($this);
 
@@ -306,7 +304,7 @@ final class EntityManager implements EntityManagerInterface
     /**
      * {@inheritDoc}
      */
-    public function createQueryBuilder()
+    public function createQueryBuilder() : QueryBuilder
     {
         return new QueryBuilder($this);
     }
@@ -316,7 +314,7 @@ final class EntityManager implements EntityManagerInterface
      *
      * @deprecated
      */
-    public function merge($object)
+    public function merge(object $object) : object
     {
         throw new \BadMethodCallException('@TODO method disabled - will be removed in 3.0 with a release of doctrine/common');
     }
@@ -326,7 +324,7 @@ final class EntityManager implements EntityManagerInterface
      *
      * @deprecated
      */
-    public function detach($object)
+    public function detach(object $object) : void
     {
         throw new \BadMethodCallException('@TODO method disabled - will be removed in 3.0 with a release of doctrine/common');
     }
@@ -342,8 +340,9 @@ final class EntityManager implements EntityManagerInterface
      * @throws OptimisticLockException If a version check on an entity that
      *         makes use of optimistic locking fails.
      * @throws ORMException
+     * @throws \Exception
      */
-    public function flush()
+    public function flush() : void
     {
         $this->errorIfClosed();
 
@@ -368,9 +367,9 @@ final class EntityManager implements EntityManagerInterface
      * @throws TransactionRequiredException
      * @throws ORMException
      */
-    public function find($entityName, $id, $lockMode = null, $lockVersion = null)
+    public function find(string $className, $id, ?int $lockMode = null, ?int $lockVersion = null) : ?object
     {
-        $class     = $this->metadataFactory->getMetadataFor(ltrim($entityName, '\\'));
+        $class     = $this->metadataFactory->getMetadataFor(ltrim($className, '\\'));
         $className = $class->getClassName();
 
         if (! is_array($id)) {
@@ -461,7 +460,7 @@ final class EntityManager implements EntityManagerInterface
     /**
      * {@inheritDoc}
      */
-    public function getReference($entityName, $id)
+    public function getReference(string $entityName, $id) : ?object
     {
         $class     = $this->metadataFactory->getMetadataFor(ltrim($entityName, '\\'));
         $className = $class->getClassName();
@@ -527,7 +526,7 @@ final class EntityManager implements EntityManagerInterface
     /**
      * {@inheritDoc}
      */
-    public function getPartialReference($entityName, $id)
+    public function getPartialReference(string $entityName, $id) : ?object
     {
         $class     = $this->metadataFactory->getMetadataFor(ltrim($entityName, '\\'));
         $className = $class->getClassName();
@@ -586,10 +585,9 @@ final class EntityManager implements EntityManagerInterface
      * Clears the EntityManager. All entities that are currently managed
      * by this EntityManager become detached.
      *
-     * @param null $entityName Unused. @todo Remove from ObjectManager.
-     *
+     * @param object|null $objectName Unused. @todo Remove from ObjectManager.
      */
-    public function clear($entityName = null)
+    public function clear(?string $objectName = null) : void
     {
         $this->unitOfWork->clear();
 
@@ -603,7 +601,7 @@ final class EntityManager implements EntityManagerInterface
     /**
      * {@inheritDoc}
      */
-    public function close()
+    public function close() : void
     {
         $this->clear();
 
@@ -624,15 +622,15 @@ final class EntityManager implements EntityManagerInterface
      * @throws ORMInvalidArgumentException
      * @throws ORMException
      */
-    public function persist($entity)
+    public function persist(object $object) : void
     {
-        if (! is_object($entity)) {
-            throw ORMInvalidArgumentException::invalidObject('EntityManager#persist()', $entity);
+        if (! is_object($object)) {
+            throw ORMInvalidArgumentException::invalidObject('EntityManager#persist()', $object);
         }
 
         $this->errorIfClosed();
 
-        $this->unitOfWork->persist($entity);
+        $this->unitOfWork->persist($object);
     }
 
     /**
@@ -646,7 +644,7 @@ final class EntityManager implements EntityManagerInterface
      * @throws ORMInvalidArgumentException
      * @throws ORMException
      */
-    public function remove($entity)
+    public function remove(object $entity) : void
     {
         if (! is_object($entity)) {
             throw ORMInvalidArgumentException::invalidObject('EntityManager#remove()', $entity);
@@ -666,7 +664,7 @@ final class EntityManager implements EntityManagerInterface
      * @throws ORMInvalidArgumentException
      * @throws ORMException
      */
-    public function refresh($entity)
+    public function refresh(object $entity) : void
     {
         if (! is_object($entity)) {
             throw ORMInvalidArgumentException::invalidObject('EntityManager#refresh()', $entity);
@@ -680,7 +678,7 @@ final class EntityManager implements EntityManagerInterface
     /**
      * {@inheritDoc}
      */
-    public function lock($entity, $lockMode, $lockVersion = null)
+    public function lock(object $entity, int $lockMode, $lockVersion = null) : void
     {
         $this->unitOfWork->lock($entity, $lockMode, $lockVersion);
     }
@@ -692,7 +690,7 @@ final class EntityManager implements EntityManagerInterface
      *
      * @return ObjectRepository|EntityRepository The repository class.
      */
-    public function getRepository($entityName)
+    public function getRepository(string $entityName) : EntityRepository
     {
         return $this->repositoryFactory->getRepository($this, $entityName);
     }
@@ -700,11 +698,9 @@ final class EntityManager implements EntityManagerInterface
     /**
      * Determines whether an entity instance is managed in this EntityManager.
      *
-     * @param object $entity
-     *
      * @return bool TRUE if this EntityManager currently manages the given entity, FALSE otherwise.
      */
-    public function contains($entity)
+    public function contains(object $entity) : bool
     {
         return $this->unitOfWork->isScheduledForInsert($entity)
             || ($this->unitOfWork->isInIdentityMap($entity) && ! $this->unitOfWork->isScheduledForDelete($entity));
@@ -713,7 +709,7 @@ final class EntityManager implements EntityManagerInterface
     /**
      * {@inheritDoc}
      */
-    public function getEventManager()
+    public function getEventManager() : EventManager
     {
         return $this->eventManager;
     }
@@ -721,7 +717,7 @@ final class EntityManager implements EntityManagerInterface
     /**
      * {@inheritDoc}
      */
-    public function getConfiguration()
+    public function getConfiguration() : Configuration
     {
         return $this->config;
     }
@@ -731,7 +727,7 @@ final class EntityManager implements EntityManagerInterface
      *
      * @throws ORMException If the EntityManager is closed.
      */
-    private function errorIfClosed()
+    private function errorIfClosed() : void
     {
         if ($this->closed) {
             throw ORMException::entityManagerClosed();
@@ -741,7 +737,7 @@ final class EntityManager implements EntityManagerInterface
     /**
      * {@inheritDoc}
      */
-    public function isOpen()
+    public function isOpen() : bool
     {
         return ! $this->closed;
     }
@@ -749,7 +745,7 @@ final class EntityManager implements EntityManagerInterface
     /**
      * {@inheritDoc}
      */
-    public function getUnitOfWork()
+    public function getUnitOfWork() : UnitOfWork
     {
         return $this->unitOfWork;
     }
@@ -757,7 +753,7 @@ final class EntityManager implements EntityManagerInterface
     /**
      * {@inheritDoc}
      */
-    public function getHydrator($hydrationMode)
+    public function getHydrator($hydrationMode) : AbstractHydrator
     {
         return $this->newHydrator($hydrationMode);
     }
@@ -765,7 +761,7 @@ final class EntityManager implements EntityManagerInterface
     /**
      * {@inheritDoc}
      */
-    public function newHydrator($hydrationMode)
+    public function newHydrator($hydrationMode) : AbstractHydrator
     {
         switch ($hydrationMode) {
             case Query::HYDRATE_OBJECT:
@@ -796,7 +792,7 @@ final class EntityManager implements EntityManagerInterface
     /**
      * {@inheritDoc}
      */
-    public function getProxyFactory()
+    public function getProxyFactory() : ProxyFactory
     {
         return $this->proxyFactory;
     }
@@ -804,7 +800,7 @@ final class EntityManager implements EntityManagerInterface
     /**
      * {@inheritDoc}
      */
-    public function initializeObject($obj)
+    public function initializeObject(object $obj) : void
     {
         $this->unitOfWork->initializeObject($obj);
     }
@@ -821,7 +817,7 @@ final class EntityManager implements EntityManagerInterface
      * @throws \InvalidArgumentException
      * @throws ORMException
      */
-    public static function create($connection, Configuration $config, ?EventManager $eventManager = null)
+    public static function create($connection, Configuration $config, ?EventManager $eventManager = null) : self
     {
         if (! $config->getMetadataDriverImpl()) {
             throw ORMException::missingMappingDriverImpl();
@@ -839,12 +835,10 @@ final class EntityManager implements EntityManagerInterface
      * @param Configuration      $config       The Configuration instance to use.
      * @param EventManager       $eventManager The EventManager instance to use.
      *
-     * @return Connection
-     *
      * @throws \InvalidArgumentException
      * @throws ORMException
      */
-    protected static function createConnection($connection, Configuration $config, ?EventManager $eventManager = null)
+    protected static function createConnection($connection, Configuration $config, ?EventManager $eventManager = null) : Connection
     {
         if (is_array($connection)) {
             return DriverManager::getConnection($connection, $config, $eventManager ?: new EventManager());
@@ -870,7 +864,7 @@ final class EntityManager implements EntityManagerInterface
     /**
      * {@inheritDoc}
      */
-    public function getFilters()
+    public function getFilters() : FilterCollection
     {
         if ($this->filterCollection === null) {
             $this->filterCollection = new FilterCollection($this);
@@ -882,7 +876,7 @@ final class EntityManager implements EntityManagerInterface
     /**
      * {@inheritDoc}
      */
-    public function isFiltersStateClean()
+    public function isFiltersStateClean() : bool
     {
         return $this->filterCollection === null || $this->filterCollection->isClean();
     }
@@ -890,7 +884,7 @@ final class EntityManager implements EntityManagerInterface
     /**
      * {@inheritDoc}
      */
-    public function hasFilters()
+    public function hasFilters() : bool
     {
         return $this->filterCollection !== null;
     }

@@ -4,8 +4,24 @@ declare(strict_types=1);
 
 namespace Doctrine\ORM\Decorator;
 
+use Doctrine\Common\EventManager;
+use Doctrine\Common\Persistence\Mapping\ClassMetadataFactory;
+use Doctrine\DBAL\Connection;
+use Doctrine\ORM\Cache;
+use Doctrine\ORM\Configuration;
 use Doctrine\ORM\EntityManagerInterface;
+use Doctrine\ORM\EntityRepository;
+use Doctrine\ORM\Internal\Hydration\AbstractHydrator;
+use Doctrine\ORM\Mapping\ClassMetadata;
+use Doctrine\ORM\NativeQuery;
+use Doctrine\ORM\Proxy\Factory\ProxyFactory;
+use Doctrine\ORM\Query;
+use Doctrine\ORM\Query\Expr;
+use Doctrine\ORM\Query\FilterCollection;
 use Doctrine\ORM\Query\ResultSetMapping;
+use Doctrine\ORM\QueryBuilder;
+use Doctrine\ORM\UnitOfWork;
+use Doctrine\ORM\Utility\IdentifierFlattener;
 
 /**
  * Base class for EntityManager decorators
@@ -23,7 +39,7 @@ abstract class EntityManagerDecorator implements EntityManagerInterface
     /**
      * {@inheritdoc}
      */
-    public function getConnection()
+    public function getConnection() : Connection
     {
         return $this->wrapped->getConnection();
     }
@@ -31,7 +47,7 @@ abstract class EntityManagerDecorator implements EntityManagerInterface
     /**
      * {@inheritdoc}
      */
-    public function getExpressionBuilder()
+    public function getExpressionBuilder() : Expr
     {
         return $this->wrapped->getExpressionBuilder();
     }
@@ -39,7 +55,7 @@ abstract class EntityManagerDecorator implements EntityManagerInterface
     /**
      * {@inheritdoc}
      */
-    public function getIdentifierFlattener()
+    public function getIdentifierFlattener() : IdentifierFlattener
     {
         return $this->wrapped->getIdentifierFlattener();
     }
@@ -47,7 +63,7 @@ abstract class EntityManagerDecorator implements EntityManagerInterface
     /**
      * {@inheritdoc}
      */
-    public function beginTransaction()
+    public function beginTransaction() : void
     {
         $this->wrapped->beginTransaction();
     }
@@ -63,7 +79,7 @@ abstract class EntityManagerDecorator implements EntityManagerInterface
     /**
      * {@inheritdoc}
      */
-    public function commit()
+    public function commit() : void
     {
         $this->wrapped->commit();
     }
@@ -71,7 +87,7 @@ abstract class EntityManagerDecorator implements EntityManagerInterface
     /**
      * {@inheritdoc}
      */
-    public function rollback()
+    public function rollback() : void
     {
         $this->wrapped->rollback();
     }
@@ -79,7 +95,7 @@ abstract class EntityManagerDecorator implements EntityManagerInterface
     /**
      * {@inheritdoc}
      */
-    public function createQuery($dql = '')
+    public function createQuery(string $dql = '') : Query
     {
         return $this->wrapped->createQuery($dql);
     }
@@ -87,7 +103,7 @@ abstract class EntityManagerDecorator implements EntityManagerInterface
     /**
      * {@inheritdoc}
      */
-    public function createNativeQuery($sql, ResultSetMapping $rsm)
+    public function createNativeQuery(string $sql, ResultSetMapping $rsm) : NativeQuery
     {
         return $this->wrapped->createNativeQuery($sql, $rsm);
     }
@@ -95,7 +111,7 @@ abstract class EntityManagerDecorator implements EntityManagerInterface
     /**
      * {@inheritdoc}
      */
-    public function createQueryBuilder()
+    public function createQueryBuilder() : QueryBuilder
     {
         return $this->wrapped->createQueryBuilder();
     }
@@ -103,7 +119,7 @@ abstract class EntityManagerDecorator implements EntityManagerInterface
     /**
      * {@inheritdoc}
      */
-    public function getReference($entityName, $id)
+    public function getReference(string $entityName, $id) : ?object
     {
         return $this->wrapped->getReference($entityName, $id);
     }
@@ -111,7 +127,7 @@ abstract class EntityManagerDecorator implements EntityManagerInterface
     /**
      * {@inheritdoc}
      */
-    public function getPartialReference($entityName, $identifier)
+    public function getPartialReference(string $entityName, $identifier) : ?object
     {
         return $this->wrapped->getPartialReference($entityName, $identifier);
     }
@@ -119,7 +135,7 @@ abstract class EntityManagerDecorator implements EntityManagerInterface
     /**
      * {@inheritdoc}
      */
-    public function close()
+    public function close() : void
     {
         $this->wrapped->close();
     }
@@ -127,7 +143,7 @@ abstract class EntityManagerDecorator implements EntityManagerInterface
     /**
      * {@inheritdoc}
      */
-    public function lock($entity, $lockMode, $lockVersion = null)
+    public function lock(object $entity, int $lockMode, $lockVersion = null) : void
     {
         $this->wrapped->lock($entity, $lockMode, $lockVersion);
     }
@@ -135,7 +151,7 @@ abstract class EntityManagerDecorator implements EntityManagerInterface
     /**
      * {@inheritdoc}
      */
-    public function find($entityName, $id, $lockMode = null, $lockVersion = null)
+    public function find($entityName, $id, $lockMode = null, $lockVersion = null) : ?object
     {
         return $this->wrapped->find($entityName, $id, $lockMode, $lockVersion);
     }
@@ -143,7 +159,7 @@ abstract class EntityManagerDecorator implements EntityManagerInterface
     /**
      * {@inheritdoc}
      */
-    public function flush()
+    public function flush() : void
     {
         $this->wrapped->flush();
     }
@@ -151,7 +167,7 @@ abstract class EntityManagerDecorator implements EntityManagerInterface
     /**
      * {@inheritdoc}
      */
-    public function getEventManager()
+    public function getEventManager() : EventManager
     {
         return $this->wrapped->getEventManager();
     }
@@ -159,7 +175,7 @@ abstract class EntityManagerDecorator implements EntityManagerInterface
     /**
      * {@inheritdoc}
      */
-    public function getConfiguration()
+    public function getConfiguration() : Configuration
     {
         return $this->wrapped->getConfiguration();
     }
@@ -167,7 +183,7 @@ abstract class EntityManagerDecorator implements EntityManagerInterface
     /**
      * {@inheritdoc}
      */
-    public function isOpen()
+    public function isOpen() : bool
     {
         return $this->wrapped->isOpen();
     }
@@ -175,7 +191,7 @@ abstract class EntityManagerDecorator implements EntityManagerInterface
     /**
      * {@inheritdoc}
      */
-    public function getUnitOfWork()
+    public function getUnitOfWork() : UnitOfWork
     {
         return $this->wrapped->getUnitOfWork();
     }
@@ -183,7 +199,7 @@ abstract class EntityManagerDecorator implements EntityManagerInterface
     /**
      * {@inheritdoc}
      */
-    public function getHydrator($hydrationMode)
+    public function getHydrator($hydrationMode) : AbstractHydrator
     {
         return $this->wrapped->getHydrator($hydrationMode);
     }
@@ -191,7 +207,7 @@ abstract class EntityManagerDecorator implements EntityManagerInterface
     /**
      * {@inheritdoc}
      */
-    public function newHydrator($hydrationMode)
+    public function newHydrator($hydrationMode) : AbstractHydrator
     {
         return $this->wrapped->newHydrator($hydrationMode);
     }
@@ -199,7 +215,7 @@ abstract class EntityManagerDecorator implements EntityManagerInterface
     /**
      * {@inheritdoc}
      */
-    public function getProxyFactory()
+    public function getProxyFactory() : ProxyFactory
     {
         return $this->wrapped->getProxyFactory();
     }
@@ -207,7 +223,7 @@ abstract class EntityManagerDecorator implements EntityManagerInterface
     /**
      * {@inheritdoc}
      */
-    public function getFilters()
+    public function getFilters() : FilterCollection
     {
         return $this->wrapped->getFilters();
     }
@@ -215,7 +231,7 @@ abstract class EntityManagerDecorator implements EntityManagerInterface
     /**
      * {@inheritdoc}
      */
-    public function isFiltersStateClean()
+    public function isFiltersStateClean() : bool
     {
         return $this->wrapped->isFiltersStateClean();
     }
@@ -223,7 +239,7 @@ abstract class EntityManagerDecorator implements EntityManagerInterface
     /**
      * {@inheritdoc}
      */
-    public function hasFilters()
+    public function hasFilters() : bool
     {
         return $this->wrapped->hasFilters();
     }
@@ -231,7 +247,7 @@ abstract class EntityManagerDecorator implements EntityManagerInterface
     /**
      * {@inheritdoc}
      */
-    public function getCache()
+    public function getCache() : ?Cache
     {
         return $this->wrapped->getCache();
     }
@@ -239,7 +255,7 @@ abstract class EntityManagerDecorator implements EntityManagerInterface
     /**
      * {@inheritdoc}
      */
-    public function persist($object)
+    public function persist(object $object) : void
     {
         $this->wrapped->persist($object);
     }
@@ -247,7 +263,7 @@ abstract class EntityManagerDecorator implements EntityManagerInterface
     /**
      * {@inheritdoc}
      */
-    public function remove($object)
+    public function remove(object $object) : void
     {
         $this->wrapped->remove($object);
     }
@@ -255,7 +271,7 @@ abstract class EntityManagerDecorator implements EntityManagerInterface
     /**
      * {@inheritdoc}
      */
-    public function merge($object)
+    public function merge(object $object) : object
     {
         return $this->wrapped->merge($object);
     }
@@ -263,7 +279,7 @@ abstract class EntityManagerDecorator implements EntityManagerInterface
     /**
      * {@inheritdoc}
      */
-    public function clear($objectName = null)
+    public function clear(?string $objectName = null) : void
     {
         $this->wrapped->clear($objectName);
     }
@@ -271,7 +287,7 @@ abstract class EntityManagerDecorator implements EntityManagerInterface
     /**
      * {@inheritdoc}
      */
-    public function detach($object)
+    public function detach(object $object) : void
     {
         $this->wrapped->detach($object);
     }
@@ -279,7 +295,7 @@ abstract class EntityManagerDecorator implements EntityManagerInterface
     /**
      * {@inheritdoc}
      */
-    public function refresh($object)
+    public function refresh(object $object) : void
     {
         $this->wrapped->refresh($object);
     }
@@ -287,7 +303,7 @@ abstract class EntityManagerDecorator implements EntityManagerInterface
     /**
      * {@inheritdoc}
      */
-    public function getRepository($className)
+    public function getRepository(string $className) : EntityRepository
     {
         return $this->wrapped->getRepository($className);
     }
@@ -295,7 +311,7 @@ abstract class EntityManagerDecorator implements EntityManagerInterface
     /**
      * {@inheritdoc}
      */
-    public function getClassMetadata($className)
+    public function getClassMetadata(string $className) : ClassMetadata
     {
         return $this->wrapped->getClassMetadata($className);
     }
@@ -303,7 +319,7 @@ abstract class EntityManagerDecorator implements EntityManagerInterface
     /**
      * {@inheritdoc}
      */
-    public function getMetadataFactory()
+    public function getMetadataFactory() : ClassMetadataFactory
     {
         return $this->wrapped->getMetadataFactory();
     }
@@ -311,7 +327,7 @@ abstract class EntityManagerDecorator implements EntityManagerInterface
     /**
      * {@inheritdoc}
      */
-    public function initializeObject($obj)
+    public function initializeObject(object $obj) : void
     {
         $this->wrapped->initializeObject($obj);
     }
@@ -319,7 +335,7 @@ abstract class EntityManagerDecorator implements EntityManagerInterface
     /**
      * {@inheritdoc}
      */
-    public function contains($object)
+    public function contains(object $object) : bool
     {
         return $this->wrapped->contains($object);
     }

@@ -11,7 +11,6 @@ use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\Mapping\ClassMetadataFactory;
 use Doctrine\ORM\Mapping\Driver\MappingDriver;
 use Doctrine\ORM\ORMException;
-use Doctrine\ORM\ORMInvalidArgumentException;
 use Doctrine\ORM\Proxy\Factory\ProxyFactory;
 use Doctrine\ORM\Query;
 use Doctrine\ORM\Query\ResultSetMapping;
@@ -121,26 +120,6 @@ class EntityManagerTest extends OrmTestCase
         $q = $this->em->createQuery('SELECT 1');
         self::assertInstanceOf(Query::class, $q);
         self::assertEquals('SELECT 1', $q->getDql());
-    }
-
-    public static function dataMethodsAffectedByNoObjectArguments()
-    {
-        return [
-            ['persist'],
-            ['remove'],
-            ['refresh'],
-        ];
-    }
-
-    /**
-     * @dataProvider dataMethodsAffectedByNoObjectArguments
-     */
-    public function testThrowsExceptionOnNonObjectValues($methodName) : void
-    {
-        $this->expectException(ORMInvalidArgumentException::class);
-        $this->expectExceptionMessage('EntityManager#' . $methodName . '() expects parameter 1 to be an entity object, NULL given.');
-
-        $this->em->{$methodName}(null);
     }
 
     public static function dataAffectedByErrorIfClosedException()

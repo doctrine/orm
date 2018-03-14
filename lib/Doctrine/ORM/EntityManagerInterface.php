@@ -5,8 +5,10 @@ declare(strict_types=1);
 namespace Doctrine\ORM;
 
 use Doctrine\Common\EventManager;
+use Doctrine\Common\Persistence\Mapping\ClassMetadataFactory;
 use Doctrine\DBAL\Connection;
 use Doctrine\ORM\Internal\Hydration\AbstractHydrator;
+use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\Proxy\Factory\ProxyFactory;
 use Doctrine\ORM\Query\Expr;
 use Doctrine\ORM\Query\FilterCollection;
@@ -16,68 +18,57 @@ use ProxyManager\Proxy\GhostObjectInterface;
 
 /**
  * EntityManager interface
- *
- * @method Mapping\ClassMetadata getClassMetadata($className)
  */
 interface EntityManagerInterface
 {
-    public function find($className, $id);
-    public function persist($object);
-    public function remove($object);
-    public function merge($object);
-    public function clear($objectName = null);
-    public function detach($object);
-    public function refresh($object);
-    public function flush();
-    public function getRepository($className);
-    public function getClassMetadata($className);
-    public function getMetadataFactory();
-    public function initializeObject($obj);
-    public function contains($object);
+    /**
+     * @param mixed $id
+     */
+    public function find(string $className, $id) : ?object;
+    public function persist(object $object) : void;
+    public function remove(object $object) : void;
+    public function merge(object $object) : object;
+    public function clear(?string $objectName = null) : void;
+    public function detach(object $object) : void;
+    public function refresh(object $object) : void;
+    public function flush() : void;
+    public function getRepository(string $className) : EntityRepository;
+    public function getClassMetadata(string $className) : ClassMetadata;
+    public function getMetadataFactory() : ClassMetadataFactory;
+    public function initializeObject(object $obj) : void;
+    public function contains(object $object) : bool;
 
     /**
      * Returns the cache API for managing the second level cache regions or NULL if the cache is not enabled.
-     *
-     * @return Cache|null
      */
-    public function getCache();
+    public function getCache() : ?Cache;
 
     /**
      * Gets the database connection object used by the EntityManager.
-     *
-     * @return Connection
      */
-    public function getConnection();
+    public function getConnection() : Connection;
 
     /**
      * Gets an ExpressionBuilder used for object-oriented construction of query expressions.
-     *
      * Example:
-     *
      * <code>
      *     $qb = $em->createQueryBuilder();
      *     $expr = $em->getExpressionBuilder();
      *     $qb->select('u')->from('User', 'u')
      *         ->where($expr->orX($expr->eq('u.id', 1), $expr->eq('u.id', 2)));
      * </code>
-     *
-     * @return Expr
      */
-    public function getExpressionBuilder();
+    public function getExpressionBuilder() : Expr;
 
     /**
      * Gets an IdentifierFlattener used for converting Entities into an array of identifier values.
-     *
-     * @return IdentifierFlattener
      */
-    public function getIdentifierFlattener();
+    public function getIdentifierFlattener() : IdentifierFlattener;
 
     /**
      * Starts a transaction on the underlying database connection.
-     *
-     * @return void
      */
-    public function beginTransaction();
+    public function beginTransaction() : void;
 
     /**
      * Executes a function in a transaction.
@@ -99,43 +90,32 @@ interface EntityManagerInterface
 
     /**
      * Commits a transaction on the underlying database connection.
-     *
-     * @return void
      */
-    public function commit();
+    public function commit() : void;
 
     /**
      * Performs a rollback on the underlying database connection.
-     *
-     * @return void
      */
-    public function rollback();
+    public function rollback() : void;
 
     /**
      * Creates a new Query object.
      *
      * @param string $dql The DQL string.
-     *
-     * @return Query
      */
-    public function createQuery($dql = '');
+    public function createQuery(string $dql = '') : Query;
 
     /**
      * Creates a native SQL query.
      *
-     * @param string           $sql
      * @param ResultSetMapping $rsm The ResultSetMapping to use.
-     *
-     * @return NativeQuery
      */
-    public function createNativeQuery($sql, ResultSetMapping $rsm);
+    public function createNativeQuery(string $sql, ResultSetMapping $rsm) : NativeQuery;
 
     /**
      * Create a QueryBuilder instance
-     *
-     * @return QueryBuilder
      */
-    public function createQueryBuilder();
+    public function createQueryBuilder() : QueryBuilder;
 
     /**
      * Gets a reference to the entity identified by the given type and identifier
@@ -148,7 +128,7 @@ interface EntityManagerInterface
      *
      * @throws ORMException
      */
-    public function getReference($entityName, $id);
+    public function getReference(string $entityName, $id) : ?object;
 
     /**
      * Gets a partial reference to the entity identified by the given type and identifier
@@ -170,58 +150,41 @@ interface EntityManagerInterface
      *
      * @return object The (partial) entity reference.
      */
-    public function getPartialReference($entityName, $identifier);
+    public function getPartialReference(string $entityName, $identifier) : ?object;
 
     /**
      * Closes the EntityManager. All entities that are currently managed
      * by this EntityManager become detached. The EntityManager may no longer
      * be used after it is closed.
-     *
-     * @return void
      */
-    public function close();
+    public function close() : void;
 
     /**
      * Acquire a lock on the given entity.
      *
-     * @param object   $entity
-     * @param int      $lockMode
-     * @param int|null $lockVersion
-     *
-     * @return void
-     *
-     * @throws OptimisticLockException
-     * @throws PessimisticLockException
+     * @param mixed $lockVersion
      */
-    public function lock($entity, $lockMode, $lockVersion = null);
+    public function lock(object $entity, int $lockMode, $lockVersion = null) : void;
 
     /**
      * Gets the EventManager used by the EntityManager.
-     *
-     * @return EventManager
      */
-    public function getEventManager();
+    public function getEventManager() : EventManager;
 
     /**
      * Gets the Configuration used by the EntityManager.
-     *
-     * @return Configuration
      */
-    public function getConfiguration();
+    public function getConfiguration() : Configuration;
 
     /**
      * Check if the Entity manager is open or closed.
-     *
-     * @return bool
      */
-    public function isOpen();
+    public function isOpen() : bool;
 
     /**
      * Gets the UnitOfWork used by the EntityManager to coordinate operations.
-     *
-     * @return UnitOfWork
      */
-    public function getUnitOfWork();
+    public function getUnitOfWork() : UnitOfWork;
 
     /**
      * Gets a hydrator for the given hydration mode.
@@ -229,50 +192,42 @@ interface EntityManagerInterface
      * This method caches the hydrator instances which is used for all queries that don't
      * selectively iterate over the result.
      *
+     * @param int|string $hydrationMode
+     *
      * @deprecated
-     *
-     * @param int $hydrationMode
-     *
-     * @return AbstractHydrator
      */
-    public function getHydrator($hydrationMode);
+    public function getHydrator($hydrationMode) : AbstractHydrator;
 
     /**
      * Create a new instance for the given hydration mode.
      *
-     * @param int $hydrationMode
-     *
-     * @return AbstractHydrator
-     *
-     * @throws ORMException
+     * @param int|string $hydrationMode
      */
-    public function newHydrator($hydrationMode);
+    public function newHydrator($hydrationMode) : AbstractHydrator;
 
     /**
      * Gets the proxy factory used by the EntityManager to create entity proxies.
-     *
-     * @return ProxyFactory
      */
-    public function getProxyFactory();
+    public function getProxyFactory() : ProxyFactory;
 
     /**
      * Gets the enabled filters.
      *
      * @return FilterCollection The active filter collection.
      */
-    public function getFilters();
+    public function getFilters() : FilterCollection;
 
     /**
      * Checks whether the state of the filter collection is clean.
      *
      * @return bool True, if the filter collection is clean.
      */
-    public function isFiltersStateClean();
+    public function isFiltersStateClean() : bool;
 
     /**
      * Checks whether the Entity Manager has filters.
      *
      * @return bool True, if the EM has a filter collection.
      */
-    public function hasFilters();
+    public function hasFilters() : bool;
 }

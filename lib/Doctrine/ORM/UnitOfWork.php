@@ -1892,7 +1892,7 @@ class UnitOfWork implements PropertyChangedListener
      *
      * @param object $entity
      * @param int    $lockMode
-     * @param int    $lockVersion
+     * @param mixed  $lockVersion
      *
      * @throws ORMInvalidArgumentException
      * @throws TransactionRequiredException

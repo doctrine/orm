@@ -31,37 +31,25 @@ class EntityManagerMock extends EntityManagerDecorator
     /**
      * {@inheritdoc}
      */
-    public function getUnitOfWork()
+    public function getUnitOfWork() : UnitOfWork
     {
         return $this->uowMock ?? $this->wrapped->getUnitOfWork();
     }
 
     /**
      * Sets a (mock) UnitOfWork that will be returned when getUnitOfWork() is called.
-     *
-     * @param UnitOfWork $uow
-     *
-     * @return void
      */
-    public function setUnitOfWork($uow)
+    public function setUnitOfWork(UnitOfWork $uow) : void
     {
         $this->uowMock = $uow;
     }
 
-    /**
-     * @param ProxyFactory $proxyFactory
-     *
-     * @return void
-     */
-    public function setProxyFactory($proxyFactory)
+    public function setProxyFactory(ProxyFactory $proxyFactory) : void
     {
         $this->proxyFactoryMock = $proxyFactory;
     }
 
-    /**
-     * @return ProxyFactory
-     */
-    public function getProxyFactory()
+    public function getProxyFactory() : ProxyFactory
     {
         return $this->proxyFactoryMock ?? $this->wrapped->getProxyFactory();
     }
@@ -71,7 +59,7 @@ class EntityManagerMock extends EntityManagerDecorator
      *
      * {@inheritdoc}
      */
-    public static function create($conn, ?Configuration $config = null, ?EventManager $eventManager = null)
+    public static function create($conn, ?Configuration $config = null, ?EventManager $eventManager = null) : EntityManagerInterface
     {
         if ($config === null) {
             $config = new Configuration();
