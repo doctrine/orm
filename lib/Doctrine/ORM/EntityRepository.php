@@ -6,8 +6,6 @@ namespace Doctrine\ORM;
 
 use Doctrine\Common\Collections\Collection;
 use Doctrine\Common\Collections\Criteria;
-use Doctrine\Common\Collections\Selectable;
-use Doctrine\Common\Persistence\ObjectRepository;
 use Doctrine\Common\Util\Inflector;
 use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\Query\ResultSetMappingBuilder;
@@ -24,7 +22,7 @@ use function substr;
  * This class is designed for inheritance and users can subclass this class to
  * write their own repositories with business-specific methods to locate entities.
  */
-class EntityRepository implements ObjectRepository, Selectable
+class EntityRepository
 {
     /** @var string */
     protected $entityName;
