@@ -4,14 +4,13 @@ declare(strict_types=1);
 
 namespace Doctrine\ORM\Decorator;
 
-use Doctrine\Common\Persistence\ObjectManagerDecorator;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Query\ResultSetMapping;
 
 /**
  * Base class for EntityManager decorators
  */
-abstract class EntityManagerDecorator extends ObjectManagerDecorator implements EntityManagerInterface
+abstract class EntityManagerDecorator implements EntityManagerInterface
 {
     /** @var EntityManagerInterface */
     protected $wrapped;
@@ -235,5 +234,93 @@ abstract class EntityManagerDecorator extends ObjectManagerDecorator implements 
     public function getCache()
     {
         return $this->wrapped->getCache();
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function persist($object)
+    {
+        $this->wrapped->persist($object);
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function remove($object)
+    {
+        $this->wrapped->remove($object);
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function merge($object)
+    {
+        return $this->wrapped->merge($object);
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function clear($objectName = null)
+    {
+        $this->wrapped->clear($objectName);
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function detach($object)
+    {
+        $this->wrapped->detach($object);
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function refresh($object)
+    {
+        $this->wrapped->refresh($object);
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getRepository($className)
+    {
+        return $this->wrapped->getRepository($className);
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getClassMetadata($className)
+    {
+        return $this->wrapped->getClassMetadata($className);
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getMetadataFactory()
+    {
+        return $this->wrapped->getMetadataFactory();
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function initializeObject($obj)
+    {
+        $this->wrapped->initializeObject($obj);
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function contains($object)
+    {
+        return $this->wrapped->contains($object);
     }
 }

@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace Doctrine\ORM;
 
 use Doctrine\Common\EventManager;
-use Doctrine\Common\Persistence\ObjectManager;
 use Doctrine\DBAL\Connection;
 use Doctrine\ORM\Internal\Hydration\AbstractHydrator;
 use Doctrine\ORM\Proxy\Factory\ProxyFactory;
@@ -20,8 +19,22 @@ use ProxyManager\Proxy\GhostObjectInterface;
  *
  * @method Mapping\ClassMetadata getClassMetadata($className)
  */
-interface EntityManagerInterface extends ObjectManager
+interface EntityManagerInterface
 {
+    public function find($className, $id);
+    public function persist($object);
+    public function remove($object);
+    public function merge($object);
+    public function clear($objectName = null);
+    public function detach($object);
+    public function refresh($object);
+    public function flush();
+    public function getRepository($className);
+    public function getClassMetadata($className);
+    public function getMetadataFactory();
+    public function initializeObject($obj);
+    public function contains($object);
+
     /**
      * Returns the cache API for managing the second level cache regions or NULL if the cache is not enabled.
      *

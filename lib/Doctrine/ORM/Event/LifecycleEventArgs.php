@@ -15,23 +15,41 @@ use Doctrine\ORM\EntityManagerInterface;
  */
 class LifecycleEventArgs extends BaseLifecycleEventArgs
 {
+    /** @var object */
+    private $entity;
+
+    /** @var EntityManagerInterface */
+    private $entityManager;
+
+    public function __construct(object $entity, EntityManagerInterface $entityManager)
+    {
+        $this->entity        = $entity;
+        $this->entityManager = $entityManager;
+    }
+
+    public function getObject() : object
+    {
+        return $this->entity;
+    }
+
     /**
      * Retrieves associated Entity.
-     *
-     * @return object
      */
     public function getEntity()
     {
-        return $this->getObject();
+        return $this->entity;
+    }
+
+    public function getObjectManager()
+    {
+        return $this->entityManager;
     }
 
     /**
      * Retrieves associated EntityManager.
-     *
-     * @return EntityManagerInterface
      */
     public function getEntityManager()
     {
-        return $this->getObjectManager();
+        return $this->entityManager;
     }
 }

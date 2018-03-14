@@ -1,4 +1,6 @@
 parameters:
+    ignoreErrors:
+        - '~Doctrine\\ORM\\Event\\\w+::__construct\(\) does not call parent constructor~'
     earlyTerminatingMethodCalls:
         Doctrine\ORM\Query\Parser:
             - syntaxError

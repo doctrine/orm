@@ -26,15 +26,17 @@ class OnClassMetadataNotFoundEventArgs extends ManagerEventArgs
     /** @var ClassMetadata|null */
     private $foundMetadata;
 
+    /**  @var EntityManagerInterface */
+    private $entityManager;
+
     public function __construct(
         string $className,
         ClassMetadataBuildingContext $metadataBuildingContext,
         EntityManagerInterface $entityManager
     ) {
-        parent::__construct($entityManager);
-
         $this->className               = $className;
         $this->metadataBuildingContext = $metadataBuildingContext;
+        $this->entityManager           = $entityManager;
     }
 
     public function setFoundMetadata(?ClassMetadata $classMetadata) : void
@@ -58,5 +60,10 @@ class OnClassMetadataNotFoundEventArgs extends ManagerEventArgs
     public function getClassMetadataBuildingContext() : ClassMetadataBuildingContext
     {
         return $this->metadataBuildingContext;
+    }
+
+    public function getObjectManager()
+    {
+        return $this->entityManager;
     }
 }
