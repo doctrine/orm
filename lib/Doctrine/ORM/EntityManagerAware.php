@@ -7,7 +7,7 @@ namespace Doctrine\ORM;
 use Doctrine\ORM\Mapping\ClassMetadata;
 
 /**
- * Makes a Persistent Objects aware of its own object-manager.
+ * Makes a Persistent Object aware of its own object-manager.
  *
  * Using this interface the managing object manager and class metadata instances
  * are injected into the persistent object after construction. This allows
