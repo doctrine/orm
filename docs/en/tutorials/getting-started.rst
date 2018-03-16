@@ -132,7 +132,7 @@ step:
 
     // Create a simple "default" Doctrine ORM configuration for Annotations
     $isDevMode = true;
-    $config = Setup::createAnnotationMetadataConfiguration(array(__DIR__."/src"), $isDevMode);
+    $config = Setup::createAnnotationMetadataConfiguration(array(__DIR__."/src"), $isDevMode, null, null, false);
     // or if you prefer XML
     //$config = Setup::createXMLMetadataConfiguration(array(__DIR__."/config"), $isDevMode);
 
@@ -274,7 +274,7 @@ but you only need to choose one.
         <?php
         // src/Product.php
 
-        use Doctrine\ORM\Annotation as ORM;
+        use Doctrine\ORM\Mapping as ORM;
 
         /**
          * @ORM\Entity @ORM\Table(name="products")
