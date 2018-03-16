@@ -234,30 +234,97 @@ When creating entity classes, all of the fields should be protected or private (
 Adding the Entity behaviors
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-You have two options to define the accessors mutators that will
-update the state of your objects.
+You have two options to define to define methods in your entity:
+**getters/setters**, or **mutators and DTOs**,
+respectively for **anemic models** or **rich models**.
 
-**Getters and setters**
+**Anemic models: Getters and setters**
 
-The most popular method is to create getter and setter methods for each property (except ``$id``).
-The use of mutators allows Doctrine to hook into calls which
-manipulate the entities in ways that it could not if you just
-directly set the values with ``entity#field = foo;``.
+The most popular method is to create two kinds of methods to
+**read** (getter) and **update** (setter) the object's properties.
 
-The id field has no setter since, generally speaking, your code
-should not set this value since it represents a database id value.
-(Note that Doctrine itself can still set the value using the
-Reflection API instead of a defined setter function)
+Some fields such as ``$id`` are unlikely to be changed, so it's ok to
+not provide any setter for thme.
 
 .. note::
 
-    This method, although very common, is **not** the best approach if
-    you want a perfect domain design. It can lead to unexpected behavior
-    when dealing with different steps of logic in between different
-    calls to ``EntityManager::flush()``, for example when you change
-    the state of an object via event listeners or lifecycle callbacks.
+    Setters are unrelated to Doctrine itself, because the ORM does not
+    use them to change the values of the fields. It instead relies on
+    the Reflection API and do not run neither the constructor nor other
+    methods.
 
-**Mutators and DTOs**
+This method is mostly used when you want to focus on behavior-less
+entities, and when you need to move all your business logic in your
+services rather than in the objects themselves.
+
+It is a common convention which makes it possible to expose each field
+of your entity to external services, while allowing you to keep type
+safety in place.
+
+Such approach is good choice for RAD (rapid application development),
+but may bring problems later down the road, because providing such
+easy way to modify any field in your entity means the entity itself cannot
+ensure it's in valid state. Having entity in invalid state is dangerous,
+because it's one step away from being implicitly saved in database, thereby
+leading to corrupted or inconsistent data in your storage.
+
+.. note::
+
+    This method, although very common, is inappropriate for Domain Driven
+    Design (DDD), because in such design, methods should be named according
+    to actual business operation and entity should be valid anytime.
+
+Here is an example of a simple **anemic model**:
+
+.. configuration-block::
+
+    .. code-block:: php
+
+        <?php
+        class User
+        {
+            private $username;
+            private $passwordHash;
+            private $bans;
+
+            public function getUsername(): string
+            {
+                return $this->username;
+            }
+
+            public function setUsername(string $username): void
+            {
+                $this->username = $username;
+            }
+
+            public function getPasswordHash(): string
+            {
+                return $this->passwordHash;
+            }
+
+            public function setPasswordHash(string $passwordHash): void
+            {
+                $this->passwordHash = $passwordHash;
+            }
+
+            public function getBans(): array
+            {
+                return $this->bans;
+            }
+
+            public function addBan(Ban $ban): void
+            {
+                $this->bans[] = $ban;
+            }
+        }
+
+Here, we avoid all possible logic from the model and only care about injecting
+data into it without validation nor consideration about the object's state.
+
+And as Doctrine ORM is a persistence tool for your domain, the state of an
+object is really important. This is why we recommend using rich models.
+
+**Rich models: Mutators and DTOs**
 
 We recommend using a rich model design and rely on more complex
 mutators, ideally based on DTOs.
@@ -267,40 +334,7 @@ implement methods that represent the **behavior** of your domain.
 For example, when having a ``User`` entity, we could foresee
 the following kind of optimization.
 
-Before, an anemic model with getters and setters:
-
-.. configuration-block::
-
-    .. code-block:: php
-
-        <?php
-        class User {
-            private $username;
-            private $passwordHash;
-            private $bans;
-
-            public function getUsername() :string {
-                return $this->username;
-            }
-
-            public function setUsername(string $username) {
-                $this->username = $username;
-            }
-
-            public function getPasswordHash() : string {
-                return $this->passwordHash;
-            }
-
-            public function setPasswordHash(string $passwordHash) {
-                $this->passwordHash = $passwordHash;
-            }
-
-            public function addBan(Ban $ban) {
-                $this->bans[] = $ban;
-            }
-        }
-
-After, a rich model with proper accessors and mutators:
+Example of a rich model with proper accessors and mutators:
 
 .. configuration-block::
 
@@ -313,38 +347,39 @@ After, a rich model with proper accessors and mutators:
             private $passwordHash;
             private $bans;
 
-            public function toNickname() : string
+            public function toNickname(): string
             {
                 return $this->username;
             }
 
-            public function authenticate(string $password, callable $checkHash) : bool
+            public function authenticate(string $password, callable $checkHash): bool
             {
                 return $checkHash($password, $this->passwordHash) && ! $this->hasActiveBans();
             }
 
-            public function changePass(string $password, callable $hash)
+            public function changePass(string $password, callable $hash): void
             {
                 $this->passwordHash = $hash($password);
             }
 
-            public function ban()
+            public function ban(\DateInterval $duration): void
             {
+                assert($duration->invert !== 1);
+
                 $this->bans[] = new Ban($this);
             }
         }
 
-Additionnally, our entities should never see their state change
+Additionally, our entities should never see their state change
 partially without validation. For example, creating a ``new Product()``
 object without any data makes it an **invalid object**.
-Entities should represent **behavior**, not **data**, therefore
+Rich models should represent **behavior**, not **data**, therefore
 they should be valid even after a ``__construct()``.
 
 To help creating such objects, we can rely on ``DTO``s, and/or make
-our entities Value Objects.
-
-You can know more about Value Objects by reading the `following article
-<https://webmozart.io/blog/2015/09/09/value-objects-in-symfony-forms/>`_.
+our entities always up-to-date. This can be performed with static constructors,
+or rich mutators that accept the ``DTO`` as argument. And DTOs can be
+validated before being sent to the object for update.
 
 By using DTOs, if we take our previous ``User`` example, we could create
 a ``ProfileFormUser`` DTO object that will be a plain model, totally
@@ -357,7 +392,12 @@ Then we can add a new mutator to our ``User``:
         <?php
         class User
         {
-            public function updateFromProfile(ProfileFormUser $profileForm) : void
+            public function updateFromProfile(ProfileFormUser $profileForm): void
+            {
+                // ...
+            }
+
+            public static function createFromRegistration(RegistrationFormUser $registrationForm): self
             {
                 // ...
             }
@@ -372,9 +412,11 @@ update portions of the entity that should already be valid.
 logic in the domain.
 * DTOs can be reused in other components, like when deserializing
 mixed content, using forms...
-* Anemic model tends to isolate the entity from the logic, and a
-rich model fixes that because entity's logic can be put in the
-entity itself.
+* Classic and static constructors can be used to manage different
+ways to create our objects, and they can also use DTOs.
+* Anemic models tend to isolate the entity from logic, whereas
+rich models fix that because logic related to the entity can be
+put in the entity itself, including data validation.
 
 The next step for persistence with Doctrine is to describe the
 structure of the ``Product`` entity to Doctrine using a metadata
