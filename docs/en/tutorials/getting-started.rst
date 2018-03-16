@@ -250,7 +250,7 @@ not provide any setter for thme.
 
     Setters are unrelated to Doctrine itself, because the ORM does not
     use them to change the values of the fields. It instead relies on
-    the Reflection API and do not run neither the constructor nor other
+    the Reflection API and does not run either the constructor or other
     methods.
 
 This method is mostly used when you want to focus on behavior-less
