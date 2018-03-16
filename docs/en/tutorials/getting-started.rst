@@ -244,7 +244,7 @@ The most popular method is to create two kinds of methods to
 **read** (getter) and **update** (setter) the object's properties.
 
 Some fields such as ``$id`` are unlikely to be changed, so it's ok to
-not provide any setter for thme.
+omit them.
 
 .. note::
 
@@ -261,8 +261,8 @@ It is a common convention which makes it possible to expose each field
 of your entity to external services, while allowing you to keep type
 safety in place.
 
-Such approach is good choice for RAD (rapid application development),
-but may bring problems later down the road, because providing such
+Such approach is a good choice for RAD (rapid application development),
+but may bring problems later down the road, because providing such an
 easy way to modify any field in your entity means the entity itself cannot
 ensure it's in valid state. Having entity in invalid state is dangerous,
 because it's one step away from being implicitly saved in database, thereby
@@ -272,7 +272,7 @@ leading to corrupted or inconsistent data in your storage.
 
     This method, although very common, is inappropriate for Domain Driven
     Design (DDD), because in such design, methods should be named according
-    to actual business operation and entity should be valid anytime.
+    to actual business operations, and entities should be valid anytime.
 
 Here is an example of a simple **anemic model**:
 
