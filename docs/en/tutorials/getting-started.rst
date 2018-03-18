@@ -277,9 +277,6 @@ invalid state is dangerous:
   become much harder, and you might be aware of the bug too late to fix it in a
   proper manner.
 
-implicitly saved in database, thereby leading to corrupted or inconsistent
-data in your storage, and later in your application when the data is loaded again.
-
 .. note::
 
     This method, although very common, is inappropriate for Domain Driven
