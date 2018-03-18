@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Doctrine\ORM\Cache;
 
+use Doctrine\ORM\Cache\Persister\CachedPersister;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\PersistentCollection;
@@ -56,7 +57,7 @@ class DefaultCollectionHydrator implements CollectionHydrator
         CollectionCacheEntry $entry,
         PersistentCollection $collection
     ) {
-        /* @var $targetPersister \Doctrine\ORM\Cache\Persister\CachedPersister */
+        /** @var CachedPersister $targetPersister */
         $association     = $metadata->getProperty($key->association);
         $targetPersister = $this->uow->getEntityPersister($association->getTargetEntity());
         $targetRegion    = $targetPersister->getCacheRegion();
@@ -68,7 +69,7 @@ class DefaultCollectionHydrator implements CollectionHydrator
             return null;
         }
 
-        /* @var $entityEntries \Doctrine\ORM\Cache\EntityCacheEntry[] */
+        /** @var EntityCacheEntry[] $entityEntries */
         foreach ($entityEntries as $index => $entityEntry) {
             $data = $entityEntry->resolveAssociationEntries($this->em);
 

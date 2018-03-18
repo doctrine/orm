@@ -430,7 +430,7 @@ class QueryTest extends OrmFunctionalTestCase
         $this->em->flush();
         $this->em->clear();
 
-        /* @var $result CmsArticle[] */
+        /** @var CmsArticle[] $result */
         $result = $this->em->createQuery('select a from Doctrine\Tests\Models\CMS\CmsArticle a where a.topic = :topic and a.user = :user')
                 ->setParameter('user', $this->em->getReference(CmsUser::class, $author->id))
                 ->setParameter('topic', 'dr. dolittle')
@@ -440,7 +440,7 @@ class QueryTest extends OrmFunctionalTestCase
         self::assertInstanceOf(CmsArticle::class, $result[0]);
         self::assertEquals('dr. dolittle', $result[0]->topic);
 
-        /* @var $user CmsUser|GhostObjectInterface */
+        /** @var CmsUser|GhostObjectInterface $user */
         $user = $result[0]->user;
 
         self::assertInstanceOf(CmsUser::class, $user);

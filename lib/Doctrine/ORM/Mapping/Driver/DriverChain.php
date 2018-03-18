@@ -71,7 +71,7 @@ class DriverChain implements MappingDriver
         Mapping\ClassMetadata $metadata,
         Mapping\ClassMetadataBuildingContext $metadataBuildingContext
     ) {
-        /* @var $driver MappingDriver */
+        /** @var MappingDriver $driver */
         foreach ($this->drivers as $namespace => $driver) {
             if (strpos($className, $namespace) === 0) {
                 $driver->loadMetadataForClass($className, $metadata, $metadataBuildingContext);
@@ -95,7 +95,7 @@ class DriverChain implements MappingDriver
         $classNames    = [];
         $driverClasses = [];
 
-        /* @var $driver MappingDriver */
+        /** @var MappingDriver $driver */
         foreach ($this->drivers as $namespace => $driver) {
             $oid = spl_object_id($driver);
 
@@ -124,7 +124,7 @@ class DriverChain implements MappingDriver
      */
     public function isTransient($className)
     {
-        /* @var $driver MappingDriver */
+        /** @var MappingDriver $driver */
         foreach ($this->drivers as $namespace => $driver) {
             if (strpos($className, $namespace) === 0) {
                 return $driver->isTransient($className);

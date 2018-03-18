@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Doctrine\Tests\ORM\Functional\Ticket;
 
 use Doctrine\ORM\Annotation as ORM;
+use Doctrine\ORM\QueryBuilder;
 use Doctrine\Tests\OrmFunctionalTestCase;
 
 class DDC1757Test extends OrmFunctionalTestCase
@@ -12,7 +13,7 @@ class DDC1757Test extends OrmFunctionalTestCase
     public function testFailingCase() : void
     {
         $qb = $this->em->createQueryBuilder();
-        /* @var $qb \Doctrine\ORM\QueryBuilder */
+        /** @var QueryBuilder $qb */
 
         $qb->select('_a')
             ->from(DDC1757A::class, '_a')

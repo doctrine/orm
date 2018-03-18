@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Doctrine\Tests\ORM\Functional\Ticket;
 
 use Doctrine\DBAL\Logging\EchoSQLLogger;
+use Doctrine\DBAL\Schema\AbstractSchemaManager;
 use Doctrine\ORM\Annotation as ORM;
 use Doctrine\Tests\OrmFunctionalTestCase;
 
@@ -36,7 +37,7 @@ class DDC832Test extends OrmFunctionalTestCase
 
     public function tearDown() : void
     {
-        /* @var $sm \Doctrine\DBAL\Schema\AbstractSchemaManager */
+        /** @var AbstractSchemaManager $sm */
         $platform = $this->em->getConnection()->getDatabasePlatform();
 
         $sm = $this->em->getConnection()->getSchemaManager();

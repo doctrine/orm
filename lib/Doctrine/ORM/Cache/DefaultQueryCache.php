@@ -323,8 +323,7 @@ class DefaultQueryCache implements QueryCache
     }
 
     /**
-     * @param AssociationMetadata $assoc
-     * @param mixed[]             $assocValue
+     * @param mixed[] $assocValue
      *
      * @return mixed[]|null
      */

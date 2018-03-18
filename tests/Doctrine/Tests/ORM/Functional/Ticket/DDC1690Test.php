@@ -54,7 +54,7 @@ class DDC1690Test extends OrmFunctionalTestCase
         $childId  = $child->getId();
 
         $fetchedParent = $this->em->find(DDC1690Parent::class, $parentId);
-        /* @var $fetchedChild DDC1690Child|GhostObjectInterface */
+        /** @var DDC1690Child|GhostObjectInterface $fetchedChild */
         $fetchedChild = $this->em->find(DDC1690Child::class, $childId);
 
         self::assertCount(1, $fetchedParent->listeners);

@@ -47,7 +47,7 @@ class DDC767Test extends OrmFunctionalTestCase
         $this->em->flush();
         $this->em->clear();
 
-        /* @var $pUser CmsUser */
+        /** @var CmsUser $pUser */
         $pUser = $this->em->find(get_class($user), $user->id);
 
         self::assertNotNull($pUser, 'User not retrieved from database.');

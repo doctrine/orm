@@ -106,7 +106,7 @@ class NewAnnotationDriver implements MappingDriver
         }
 
         // Evaluate annotations on properties/fields
-        /* @var \ReflectionProperty $reflectionProperty */
+        /** @var \ReflectionProperty $reflectionProperty */
         foreach ($reflectionClass->getProperties() as $reflectionProperty) {
             if ($reflectionProperty->getDeclaringClass()->getClassName() !== $reflectionClass->getName()) {
                 continue;
@@ -263,7 +263,7 @@ class NewAnnotationDriver implements MappingDriver
 
                 $listenerClass = new \ReflectionClass($listenerClassName);
 
-                /* @var $method \ReflectionMethod */
+                /** @var \ReflectionMethod $method */
                 foreach ($listenerClass->getMethods(\ReflectionMethod::IS_PUBLIC) as $method) {
                     foreach ($this->getMethodCallbacks($method) as $callback) {
                         $classMetadata->addEntityListener($callback, $listenerClassName, $method->getName());
@@ -274,7 +274,7 @@ class NewAnnotationDriver implements MappingDriver
 
         // Evaluate @HasLifecycleCallbacks annotation
         if (isset($classAnnotations[Annotation\HasLifecycleCallbacks::class])) {
-            /* @var $method \ReflectionMethod */
+            /** @var \ReflectionMethod $method */
             foreach ($reflectionClass->getMethods(\ReflectionMethod::IS_PUBLIC) as $method) {
                 foreach ($this->getMethodCallbacks($method) as $callback) {
                     $classMetadata->addLifecycleCallback($method->getName(), $callback);

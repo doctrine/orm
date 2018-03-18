@@ -903,7 +903,7 @@ class QueryBuilder
         }
 
         foreach ($this->dqlParts['from'] as &$fromClause) {
-            /* @var Expr\From $fromClause */
+            /** @var Expr\From $fromClause */
             if ($fromClause->getAlias() !== $alias) {
                 continue;
             }

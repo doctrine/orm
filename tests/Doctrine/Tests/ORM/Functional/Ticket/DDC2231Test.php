@@ -41,7 +41,7 @@ final class DDC2231Test extends OrmFunctionalTestCase
 
     public function testInjectEntityManagerInProxyIfInitializedInUow() : void
     {
-        /* @var $emAware DDC2231EntityManagerAwareEntity|GhostObjectInterface */
+        /** @var DDC2231EntityManagerAwareEntity|GhostObjectInterface $emAware */
         $emAware = $this->em->getReference(
             DDC2231EntityManagerAwareEntity::class,
             $this->persistedEntityManagerAwareEntity->id
@@ -60,7 +60,7 @@ final class DDC2231Test extends OrmFunctionalTestCase
 
     public function testInjectEntityManagerInFetchedInstance() : void
     {
-        /* @var $emAware DDC2231EntityManagerAwareEntity */
+        /** @var DDC2231EntityManagerAwareEntity $emAware */
         $emAware = $this->em->find(
             DDC2231EntityManagerAwareEntity::class,
             $this->persistedEntityManagerAwareEntity->id

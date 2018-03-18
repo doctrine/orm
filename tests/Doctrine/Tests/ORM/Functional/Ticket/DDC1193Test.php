@@ -46,12 +46,12 @@ class DDC1193Test extends OrmFunctionalTestCase
 
         $this->em->clear();
 
-        /* @var $company DDC1193Company */
+        /** @var DDC1193Company $company */
         $company = $this->em->find(DDC1193Company::class, $companyId);
 
         self::assertTrue($this->em->getUnitOfWork()->isInIdentityMap($company), 'Company is in identity map.');
 
-        /* @var $member GhostObjectInterface|DDC1193Person */
+        /** @var GhostObjectInterface|DDC1193Person $member */
         $member = $company->member;
 
         self::assertInstanceOf(GhostObjectInterface::class, $member);

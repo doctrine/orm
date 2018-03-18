@@ -91,7 +91,7 @@ class ProxyFactoryTest extends OrmTestCase
 
         $this->uowMock->setEntityPersister(ECommerceFeature::class, $persister);
 
-        /* @var $proxy GhostObjectInterface|ECommerceFeature */
+        /** @var GhostObjectInterface|ECommerceFeature $proxy */
         $proxy = $this->proxyFactory->getProxy($classMetaData, $identifier);
 
         $proxy->getDescription();
@@ -159,7 +159,7 @@ class ProxyFactoryTest extends OrmTestCase
 
         $this->uowMock->setEntityPersister(ECommerceFeature::class, $persister);
 
-        /* @var $proxy GhostObjectInterface|ECommerceFeature */
+        /** @var GhostObjectInterface|ECommerceFeature $proxy */
         $proxy = $this->proxyFactory->getProxy($classMetaData, ['id' => 42]);
 
         try {
@@ -191,7 +191,7 @@ class ProxyFactoryTest extends OrmTestCase
 
         $this->uowMock->setEntityPersister(ECommerceFeature::class, $persister);
 
-        /* @var $proxy GhostObjectInterface|ECommerceFeature */
+        /** @var GhostObjectInterface|ECommerceFeature $proxy */
         $proxy = $this->proxyFactory->getProxy($classMetaData, ['id' => 42]);
 
         try {
@@ -233,7 +233,7 @@ class ProxyFactoryTest extends OrmTestCase
 
         $this->uowMock->setEntityPersister(CompanyEmployee::class, $persister);
 
-        /* @var $proxy GhostObjectInterface|CompanyEmployee */
+        /** @var GhostObjectInterface|CompanyEmployee $proxy */
         $proxy = $this->proxyFactory->getProxy($classMetaData, $identifier);
 
         $cloned = clone $proxy;
@@ -245,13 +245,13 @@ class ProxyFactoryTest extends OrmTestCase
 
     public function testFriendObjectsDoNotLazyLoadIfNotAccessingLazyState() : void
     {
-        /* @var $persister BasicEntityPersister|\PHPUnit_Framework_MockObject_MockObject */
+        /** @var BasicEntityPersister|\PHPUnit_Framework_MockObject_MockObject $persister */
         $persister = $this->createMock(BasicEntityPersister::class);
         $persister->expects(self::never())->method('loadById');
 
         $this->uowMock->setEntityPersister(ComparableObject::class, $persister);
 
-        /* @var $comparable ComparableObject|GhostObjectInterface */
+        /** @var ComparableObject|GhostObjectInterface $comparable */
         $comparable = $this->proxyFactory->getProxy(
             $this->emMock->getClassMetadata(ComparableObject::class),
             ['id' => 123]
@@ -269,7 +269,7 @@ class ProxyFactoryTest extends OrmTestCase
 
     public function testFriendObjectsLazyLoadWhenAccessingLazyState() : void
     {
-        /* @var $persister BasicEntityPersister|\PHPUnit_Framework_MockObject_MockObject */
+        /** @var BasicEntityPersister|\PHPUnit_Framework_MockObject_MockObject $persister */
         $persister = $this
             ->getMockBuilder(BasicEntityPersister::class)
             ->setConstructorArgs([$this->emMock, $this->emMock->getClassMetadata(ComparableObject::class)])
@@ -296,9 +296,9 @@ class ProxyFactoryTest extends OrmTestCase
 
         $metadata = $this->emMock->getClassMetadata(ComparableObject::class);
 
-        /* @var $comparable1 ComparableObject|GhostObjectInterface */
+        /** @var ComparableObject|GhostObjectInterface $comparable1 */
         $comparable1 = $this->proxyFactory->getProxy($metadata, ['id' => 123]);
-        /* @var $comparable2 ComparableObject|GhostObjectInterface */
+        /** @var ComparableObject|GhostObjectInterface $comparable2 */
         $comparable2 = $this->proxyFactory->getProxy($metadata, ['id' => 456]);
 
         self::assertInstanceOf(ComparableObject::class, $comparable1);
@@ -320,13 +320,13 @@ class ProxyFactoryTest extends OrmTestCase
 
     public function testProxyMethodsSupportFuncGetArgsLogic() : void
     {
-        /* @var $persister BasicEntityPersister|\PHPUnit_Framework_MockObject_MockObject */
+        /** @var BasicEntityPersister|\PHPUnit_Framework_MockObject_MockObject $persister */
         $persister = $this->createMock(BasicEntityPersister::class);
         $persister->expects(self::never())->method('loadById');
 
         $this->uowMock->setEntityPersister(FuncGetArgs::class, $persister);
 
-        /* @var $funcGetArgs FuncGetArgs|GhostObjectInterface */
+        /** @var FuncGetArgs|GhostObjectInterface $funcGetArgs */
         $funcGetArgs = $this->proxyFactory->getProxy(
             $this->emMock->getClassMetadata(FuncGetArgs::class),
             ['id' => 123]

@@ -35,7 +35,7 @@ class OnClassMetadataNotFoundEventArgsTest extends DoctrineTestCase
 
         self::assertNull($args->getFoundMetadata());
 
-        /* @var $metadata \Doctrine\ORM\Mapping\ClassMetadata */
+        /** @var ClassMetadata $metadata */
         $metadata = $this->createMock(ClassMetadata::class);
 
         $args->setFoundMetadata($metadata);

@@ -146,7 +146,7 @@ class BasicInheritanceMappingTest extends OrmTestCase
      */
     public function testGeneratedValueFromMappedSuperclass() : void
     {
-        /* @var ClassMetadata $class */
+        /** @var ClassMetadata $class */
         $class = $this->cmf->getMetadataFor(SuperclassEntity::class);
 
         self::assertSame(GeneratorType::SEQUENCE, $class->getProperty('id')->getValueGenerator()->getType());
@@ -162,7 +162,7 @@ class BasicInheritanceMappingTest extends OrmTestCase
      */
     public function testSequenceDefinitionInHierarchyWithSandwichMappedSuperclass() : void
     {
-        /* @var ClassMetadata $class */
+        /** @var ClassMetadata $class */
         $class = $this->cmf->getMetadataFor(HierarchyD::class);
 
         self::assertSame(GeneratorType::SEQUENCE, $class->getProperty('id')->getValueGenerator()->getType());
@@ -178,7 +178,7 @@ class BasicInheritanceMappingTest extends OrmTestCase
      */
     public function testMultipleMappedSuperclasses() : void
     {
-        /* @var ClassMetadata $class */
+        /** @var ClassMetadata $class */
         $class = $this->cmf->getMetadataFor(MediumSuperclassEntity::class);
 
         self::assertSame(GeneratorType::SEQUENCE, $class->getProperty('id')->getValueGenerator()->getType());

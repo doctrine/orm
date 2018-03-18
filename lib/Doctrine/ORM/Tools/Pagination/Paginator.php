@@ -4,9 +4,11 @@ declare(strict_types=1);
 
 namespace Doctrine\ORM\Tools\Pagination;
 
+use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Type;
 use Doctrine\ORM\NoResultException;
 use Doctrine\ORM\Query;
+use Doctrine\ORM\Query\Parameter;
 use Doctrine\ORM\Query\Parser;
 use Doctrine\ORM\Query\ResultSetMapping;
 use Doctrine\ORM\QueryBuilder;
@@ -163,7 +165,7 @@ class Paginator implements \Countable, \IteratorAggregate
      */
     private function cloneQuery(Query $query)
     {
-        /* @var $cloneQuery Query */
+        /** @var Query $cloneQuery */
         $cloneQuery = clone $query;
 
         $cloneQuery->setParameters(clone $query->getParameters());
@@ -216,7 +218,7 @@ class Paginator implements \Countable, \IteratorAggregate
      */
     private function getCountQuery()
     {
-        /* @var $countQuery Query */
+        /** @var Query $countQuery */
         $countQuery = $this->cloneQuery($this->query);
 
         if (! $countQuery->hasHint(CountWalker::HINT_DISTINCT)) {
@@ -240,7 +242,7 @@ class Paginator implements \Countable, \IteratorAggregate
 
         $parser            = new Parser($countQuery);
         $parameterMappings = $parser->parse()->getParameterMappings();
-        /* @var $parameters \Doctrine\Common\Collections\Collection|\Doctrine\ORM\Query\Parameter[] */
+        /** @var Collection|Parameter[] $parameters */
         $parameters = $countQuery->getParameters();
 
         foreach ($parameters as $key => $parameter) {

@@ -29,7 +29,7 @@ class DefaultMultiGetRegion extends DefaultRegion
      */
     public function __construct($name, MultiGetCache $cache, $lifetime = 0)
     {
-        /* @var $cache \Doctrine\Common\Cache\Cache */
+        /** @var Cache $cache */
         parent::__construct($name, $cache, $lifetime);
     }
 

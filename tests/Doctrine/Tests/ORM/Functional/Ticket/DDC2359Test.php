@@ -29,7 +29,7 @@ class DDC2359Test extends DoctrineTestCase
         $mockMetadata  = $this->createMock(ClassMetadata::class);
         $entityManager = $this->createMock(EntityManagerInterface::class);
 
-        /* @var $metadataFactory \Doctrine\ORM\Mapping\ClassMetadataFactory|\PHPUnit_Framework_MockObject_MockObject */
+        /** @var ClassMetadataFactory|\PHPUnit_Framework_MockObject_MockObject $metadataFactory */
         $metadataFactory = $this->getMockBuilder(ClassMetadataFactory::class)
                                 ->setMethods(['doLoadMetadata', 'wakeupReflection'])
                                 ->getMock();

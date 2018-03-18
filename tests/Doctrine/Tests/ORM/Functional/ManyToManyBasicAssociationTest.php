@@ -190,7 +190,7 @@ class ManyToManyBasicAssociationTest extends OrmFunctionalTestCase
 
         $this->em->clear();
 
-        /* @var $freshUser CmsUser */
+        /** @var CmsUser $freshUser */
         $freshUser = $this->em->find(CmsUser::class, $user->getId());
         $newGroup  = new CmsGroup();
         $newGroup->setName('12Monkeys');

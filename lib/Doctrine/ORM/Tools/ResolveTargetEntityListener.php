@@ -9,6 +9,7 @@ use Doctrine\ORM\Event\LoadClassMetadataEventArgs;
 use Doctrine\ORM\Event\OnClassMetadataNotFoundEventArgs;
 use Doctrine\ORM\Events;
 use Doctrine\ORM\Mapping\AssociationMetadata;
+use Doctrine\ORM\Mapping\ClassMetadata;
 use function array_key_exists;
 use function ltrim;
 
@@ -66,7 +67,7 @@ class ResolveTargetEntityListener implements EventSubscriber
      */
     public function loadClassMetadata(LoadClassMetadataEventArgs $args)
     {
-        /* @var $cm \Doctrine\ORM\Mapping\ClassMetadata */
+        /** @var ClassMetadata $cm */
         $class = $args->getClassMetadata();
 
         foreach ($class->discriminatorMap as $key => $className) {

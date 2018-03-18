@@ -11,6 +11,7 @@ use Doctrine\ORM\Internal\Hydration\IterableResult;
 use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\Query\AST\DeleteStatement;
 use Doctrine\ORM\Query\AST\SelectStatement;
+use Doctrine\ORM\Query\AST\UpdateStatement;
 use Doctrine\ORM\Query\Exec\AbstractSqlExecutor;
 use Doctrine\ORM\Query\Parameter;
 use Doctrine\ORM\Query\ParameterTypeInferer;
@@ -199,15 +200,13 @@ final class Query extends AbstractQuery
      */
     public function getSQL()
     {
-        return $this->parse()->getSQLExecutor()->getSQLStatements();
+        return $this->parse()->getSqlExecutor()->getSqlStatements();
     }
 
     /**
      * Returns the corresponding AST for this DQL query.
      *
-     * @return SelectStatement |
-     *         \Doctrine\ORM\Query\AST\UpdateStatement |
-     *         \Doctrine\ORM\Query\AST\DeleteStatement
+     * @return SelectStatement|UpdateStatement|DeleteStatement
      */
     public function getAST()
     {

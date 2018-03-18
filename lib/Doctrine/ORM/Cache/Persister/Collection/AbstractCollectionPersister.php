@@ -10,6 +10,7 @@ use Doctrine\ORM\Cache\CollectionCacheKey;
 use Doctrine\ORM\Cache\CollectionHydrator;
 use Doctrine\ORM\Cache\EntityCacheKey;
 use Doctrine\ORM\Cache\Logging\CacheLogger;
+use Doctrine\ORM\Cache\Persister\Entity\CachedEntityPersister;
 use Doctrine\ORM\Cache\Region;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Mapping\AssociationMetadata;
@@ -135,7 +136,7 @@ abstract class AbstractCollectionPersister implements CachedCollectionPersister
      */
     public function storeCollectionCache(CollectionCacheKey $key, $elements)
     {
-        /* @var $targetPersister CachedEntityPersister */
+        /** @var CachedEntityPersister $targetPersister */
         $association     = $this->sourceEntity->getProperty($key->association);
         $targetPersister = $this->uow->getEntityPersister($this->targetEntity->getRootClassName());
         $targetRegion    = $targetPersister->getCacheRegion();
@@ -271,7 +272,7 @@ abstract class AbstractCollectionPersister implements CachedCollectionPersister
      */
     protected function evictElementCache($targetEntity, $element)
     {
-        /* @var $targetPersister CachedEntityPersister */
+        /** @var CachedEntityPersister $targetPersister */
         $targetPersister = $this->uow->getEntityPersister($targetEntity);
         $targetRegion    = $targetPersister->getCacheRegion();
         $key             = new EntityCacheKey($targetEntity, $this->uow->getEntityIdentifier($element));

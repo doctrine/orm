@@ -58,12 +58,12 @@ class DDC1238Test extends OrmFunctionalTestCase
         $userId = $user->getId();
         $this->em->clear();
 
-        /* @var $user DDC1238User|GhostObjectInterface */
+        /** @var DDC1238User|GhostObjectInterface $user */
         $user = $this->em->getReference(DDC1238User::class, $userId);
 
         $this->em->clear();
 
-        /* @var $user2 DDC1238User|GhostObjectInterface */
+        /** @var DDC1238User|GhostObjectInterface $user2 */
         $user2 = $this->em->getReference(DDC1238User::class, $userId);
 
         $user->initializeProxy();

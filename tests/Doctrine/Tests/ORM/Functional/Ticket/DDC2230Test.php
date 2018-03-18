@@ -38,7 +38,7 @@ class DDC2230Test extends OrmFunctionalTestCase
 
         $addressProxy = $this->em->getReference(DDC2230Address::class, $insertedAddress->id);
 
-        /* @var $addressProxy GhostObjectInterface|\Doctrine\Tests\ORM\Functional\Ticket\DDC2230Address */
+        /** @var $addressProxy GhostObjectInterface|\Doctrine\Tests\ORM\Functional\Ticket\DDC2230Address */
         self::assertFalse($addressProxy->isProxyInitialized());
         self::assertNull($addressProxy->listener);
 

@@ -381,7 +381,7 @@ class ClassMetadataFactoryTest extends OrmTestCase
     {
         $test = $this;
 
-        /* @var $metadata \Doctrine\ORM\Mapping\ClassMetadata */
+        /** @var ClassMetadata $metadata */
         $metadata     = $this->createMock(ClassMetadata::class);
         $cmf          = new ClassMetadataFactory();
         $mockDriver   = new MetadataDriverMock();
@@ -414,7 +414,7 @@ class ClassMetadataFactoryTest extends OrmTestCase
     {
         $classMetadataFactory = new ClassMetadataFactory();
 
-        /* @var EntityManagerInterface EntityManager */
+        /** @var EntityManagerInterface $entityManager */
         $entityManager = $this->createMock(EntityManagerInterface::class);
 
         $classMetadataFactory->setEntityManager($entityManager);

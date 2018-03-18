@@ -697,7 +697,7 @@ class UnitOfWorkTest extends OrmTestCase
      */
     public function testCanInstantiateInternalPhpClassSubclassFromUnserializedMetadata() : void
     {
-        /* @var $classMetadata ClassMetadata */
+        /** @var ClassMetadata $classMetadata */
         $classMetadata = unserialize(
             serialize(
                 new ClassMetadata(MyArrayObjectEntity::class, $this->metadataBuildingContext)
