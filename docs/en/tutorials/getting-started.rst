@@ -229,52 +229,67 @@ entity definition:
         protected $name;
     }
 
-When creating entity classes, all of the fields should be protected or private (not public).
+When creating entity classes, all of the fields should be ``private``.
 
-Adding the Entity behaviors
+Use ``protected`` when strictly needed and very rarely if not ever ``public``.
+
+Adding behavior to Entities
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-You have two options to define to define methods in your entity:
+There are two options to define methods in entities:
 **getters/setters**, or **mutators and DTOs**,
-respectively for **anemic models** or **rich models**.
+respectively for **anemic entities** or **rich entities**.
 
-**Anemic models: Getters and setters**
+**Anemic entities: Getters and setters**
 
 The most popular method is to create two kinds of methods to
 **read** (getter) and **update** (setter) the object's properties.
 
-Some fields such as ``$id`` are unlikely to be changed, so it's ok to
+Some fields such as ``$id`` are unlikely to be changed, so it is ok to
 omit them.
 
 .. note::
 
-    Setters are unrelated to Doctrine itself, because the ORM does not
-    use them to change the values of the fields. It instead relies on
-    the Reflection API and does not run either the constructor or other
-    methods.
+    Doctrine ORM does not use any of the methods you defined: it uses
+    reflection to read and write values to your objects, and will never
+    call methods, not even ``__construct``.
 
-This method is mostly used when you want to focus on behavior-less
-entities, and when you need to move all your business logic in your
+This approach is mostly used when you want to focus on behavior-less
+entities, and when you want to have all your business logic in your
 services rather than in the objects themselves.
 
-It is a common convention which makes it possible to expose each field
-of your entity to external services, while allowing you to keep type
-safety in place.
+Getters and setters are a common convention which makes it possible to
+expose each field of your entity to the external world, while allowing
+you to keep some type safety in place.
 
-Such approach is a good choice for RAD (rapid application development),
-but may bring problems later down the road, because providing such an
-easy way to modify any field in your entity means the entity itself cannot
-ensure it's in valid state. Having entity in invalid state is dangerous,
-because it's one step away from being implicitly saved in database, thereby
-leading to corrupted or inconsistent data in your storage.
+Such an approach is a good choice for RAD (rapid application development),
+but may lead to problems later down the road, because providing such an
+easy way to modify any field in your entity means that the entity itself
+cannot guarantee validity of its internal state. Having any object in
+invalid state is dangerous:
+
+- An invalid state can bring bugs in your business logic.
+- The state can be implicitly saved in the database: any forgotten ``flush``
+  can persist the broken state.
+- If persisted, the corrupted data will be retrieved later in your application
+  when the data is loaded again, thereby leading to bugs in your business logic.
+- When bugs occur after corrupted data is persisted, troubleshooting will
+  become much harder, and you might be aware of the bug too late to fix it in a
+  proper manner.
+
+implicitly saved in database, thereby leading to corrupted or inconsistent
+data in your storage, and later in your application when the data is loaded again.
 
 .. note::
 
     This method, although very common, is inappropriate for Domain Driven
-    Design (DDD), because in such design, methods should be named according
-    to actual business operations, and entities should be valid anytime.
+    Design (`DDD <https://en.wikipedia.org/wiki/Domain-driven_design>`)
+    where methods should represent real business operations and not simple
+    property change, And business invariants should be maintained both in the
+    application state (entities in this case) and in the database, with no
+    space for data corruption.
 
-Here is an example of a simple **anemic model**:
+Here is an example of a simple **anemic entity**:
 
 .. configuration-block::
 
@@ -318,23 +333,24 @@ Here is an example of a simple **anemic model**:
             }
         }
 
-Here, we avoid all possible logic from the model and only care about injecting
-data into it without validation nor consideration about the object's state.
+In the example above, we avoid all possible logic in the entity and only care
+about putting and retrieving data into it without validation (except the one
+provided by type-hints) nor consideration about the object's state.
 
-And as Doctrine ORM is a persistence tool for your domain, the state of an
-object is really important. This is why we recommend using rich models.
+As Doctrine ORM is a persistence tool for your domain, the state of an object is
+really important. This is why we strongly recommend using rich entities.
 
-**Rich models: Mutators and DTOs**
+**Rich entities: Mutators and DTOs**
 
-We recommend using a rich model design and rely on more complex
-mutators, ideally based on DTOs.
-This way, you should **not** use getters nor setters, and instead,
+We recommend using a rich entity design and rely on more complex mutators,
+and if needed based on DTOs.
+In this design, you should **not** use getters nor setters, and instead,
 implement methods that represent the **behavior** of your domain.
 
 For example, when having a ``User`` entity, we could foresee
 the following kind of optimization.
 
-Example of a rich model with proper accessors and mutators:
+Example of a rich entity with proper accessors and mutators:
 
 .. configuration-block::
 
@@ -357,7 +373,7 @@ Example of a rich model with proper accessors and mutators:
                 return $checkHash($password, $this->passwordHash) && ! $this->hasActiveBans();
             }
 
-            public function changePass(string $password, callable $hash): void
+            public function changePassword(string $password, callable $hash): void
             {
                 $this->passwordHash = $hash($password);
             }
@@ -370,20 +386,39 @@ Example of a rich model with proper accessors and mutators:
             }
         }
 
-Additionally, our entities should never see their state change
-partially without validation. For example, creating a ``new Product()``
-object without any data makes it an **invalid object**.
-Rich models should represent **behavior**, not **data**, therefore
-they should be valid even after a ``__construct()``.
+.. note::
+
+    Please note that this example is only a stub. When going further in the
+    documentation, we will update this object with more behavior and maybe
+    update some methods.
+
+The entities should only mutate state after checking that all business logic
+invariants are being respected.
+Additionally, our entities should never see their state change without
+validation. For example, creating a ``new Product()`` object without any data
+makes it an **invalid object**.
+Rich entities should represent **behavior**, not **data**, therefore
+they should be valid even after a ``__construct()`` call.
 
 To help creating such objects, we can rely on ``DTO``s, and/or make
 our entities always up-to-date. This can be performed with static constructors,
-or rich mutators that accept the ``DTO`` as argument. And DTOs can be
-validated before being sent to the object for update.
+or rich mutators that accept ``DTOs`` as parameters.
 
-By using DTOs, if we take our previous ``User`` example, we could create
-a ``ProfileFormUser`` DTO object that will be a plain model, totally
-unrelated to our database, that will be populated via a form and validated.
+The role of the ``DTO`` is to maintain the entity's state and to help us rely
+upon objects that correctly represent the data that is used to mutate the
+entity.
+
+.. note::
+
+    A `DTO <https://en.wikipedia.org/wiki/Data_transfer_object>` is an object
+    that only carries data without any logic. Its only goal is to be transferred
+    from one service to another.
+    A ``DTO`` often represents data sent by a client and that has to be validated,
+    but can also be used as simple data carrier for other cases.
+
+By using ``DTOs``, if we take our previous ``User`` example, we could create
+a ``ProfileEditingForm`` DTO that will be a plain model, totally unrelated to
+our database, that will be populated via a form and validated.
 Then we can add a new mutator to our ``User``:
 
 .. configuration-block::
@@ -392,37 +427,35 @@ Then we can add a new mutator to our ``User``:
         <?php
         class User
         {
-            public function updateFromProfile(ProfileFormUser $profileForm): void
+            public function updateFromProfile(ProfileEditingForm $profileForm): void
             {
                 // ...
             }
 
-            public static function createFromRegistration(RegistrationFormUser $registrationForm): self
+            public static function createFromRegistration(UserRegistrationForm $registrationForm): self
             {
                 // ...
             }
         }
 
-There are several advantages to using such model:
+There are several advantages to using such a model:
 
-* Entity **state is always valid**. No setters means that we only
-update portions of the entity that should already be valid.
+* **Entity state is always valid**. Since no setters exist, this means that we
+only update portions of the entity that should already be valid.
 * Instead of having plain getters and setters, our entity now has
-**real behaviors**, meaning it is much easier to determine the
-logic in the domain.
-* DTOs can be reused in other components, like when deserializing
-mixed content, using forms...
-* Classic and static constructors can be used to manage different
-ways to create our objects, and they can also use DTOs.
-* Anemic models tend to isolate the entity from logic, whereas
-rich models fix that because logic related to the entity can be
-put in the entity itself, including data validation.
+**real behavior**: it is much easier to determine the logic in the domain.
+* DTOs can be reused in other components, for example deserializing mixed
+content, using forms...
+* Classic and static constructors can be used to manage different ways to
+create our objects, and they can also use DTOs.
+* Anemic entities tend to isolate the entity from logic, whereas rich
+entities allow putting the logic in the object itself, including data
+validation.
 
-The next step for persistence with Doctrine is to describe the
-structure of the ``Product`` entity to Doctrine using a metadata
-language. The metadata language describes how entities, their
-properties and references should be persisted and what constraints
-should be applied to them.
+The next step for persistence with Doctrine is to describe the structure of
+the ``Product`` entity to Doctrine using a metadata language. The metadata
+language describes how entities, their properties and references should be
+persisted and what constraints should be applied to them.
 
 Metadata for an Entity can be configured using DocBlock annotations directly
 in the Entity class itself, or in an external XML file. This Getting
