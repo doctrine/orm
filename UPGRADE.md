@@ -98,7 +98,7 @@ Proxy objects no longer implement `Doctrine\ORM\Proxy\Proxy` nor
 
 These related classes have been removed:
 
- * `Doctrine\ORM\Proxy\ProxyFactory` - replaced by `Doctrine\ORM\Proxy\Factory\StaticProxyFacory`
+ * `Doctrine\ORM\Proxy\ProxyFactory` - replaced by `Doctrine\ORM\Proxy\Factory\StaticProxyFactory`
    and `Doctrine\ORM\Proxy\Factory\ProxyFactory`
  * `Doctrine\ORM\Proxy\Proxy`
  * `Doctrine\ORM\Proxy\Autoloader` - we suggest using the composer autoloader instead
