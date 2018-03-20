@@ -139,15 +139,12 @@ final class EntityManager implements EntityManagerInterface
      * and uses the given Configuration and EventManager implementations.
      *
      */
-    protected function __construct(Connection $conn, Configuration $config, EventManager $eventManager)
+    protected function __construct(Connection $conn, Configuration $config, EventManager $eventManager, ClassMetadataFactory $classMetadataFactory)
     {
-        $this->conn         = $conn;
-        $this->config       = $config;
-        $this->eventManager = $eventManager;
-
-        $metadataFactoryClassName = $config->getClassMetadataFactoryName();
-
-        $this->metadataFactory = new $metadataFactoryClassName();
+        $this->conn            = $conn;
+        $this->config          = $config;
+        $this->eventManager    = $eventManager;
+        $this->metadataFactory = $classMetadataFactory;
 
         $this->metadataFactory->setEntityManager($this);
         $this->metadataFactory->setCacheDriver($this->config->getMetadataCacheImpl());
@@ -163,6 +160,8 @@ final class EntityManager implements EntityManagerInterface
             $this->cache  = $cacheFactory->createCache($this);
         }
     }
+
+
 
     /**
      * {@inheritDoc}
@@ -829,7 +828,15 @@ final class EntityManager implements EntityManagerInterface
 
         $connection = static::createConnection($connection, $config, $eventManager);
 
-        return new EntityManager($connection, $config, $connection->getEventManager());
+        $metadataFactoryClassName = $config->getClassMetadataFactoryName();
+        $metadataFactory          = new $metadataFactoryClassName();
+
+        return new EntityManager($connection, $config, $connection->getEventManager(), $metadataFactory);
+    }
+
+    public static function createWithClassMetadataFactory(Connection $conn, Configuration $config, EventManager $eventManager, ClassMetadataFactory $classMetadataFactory)
+    {
+        return new self($conn, $config, $eventManager, $classMetadataFactory);
     }
 
     /**
