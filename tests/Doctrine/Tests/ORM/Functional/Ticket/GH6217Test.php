@@ -43,7 +43,7 @@ final class GH6217Test extends OrmFunctionalTestCase
         self::assertCount(1, $repository->findBy($filters));
         $queryCount = $this->getCurrentQueryCount();
 
-        /* @var $found GH6217FetchedEntity[] */
+        /** @var GH6217FetchedEntity[] $found */
         $found = $repository->findBy($filters);
 
         self::assertCount(1, $found);

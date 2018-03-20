@@ -222,7 +222,6 @@ class ORMInvalidArgumentException extends \InvalidArgumentException
     }
 
     /**
-     * @param array $assoc
      * @param mixed $actualValue
      *
      * @return self

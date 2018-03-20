@@ -43,7 +43,7 @@ class OneToOneInverseSideLoadAfterDqlQueryTest extends OrmFunctionalTestCase
         $this->em->flush();
         $this->em->clear();
 
-        /* @var $fetchedInverse InverseSide */
+        /** @var InverseSide $fetchedInverse */
         $fetchedInverse = $this->em->createQueryBuilder()
                                    ->select('inverse')
                                    ->from(InverseSide::class, 'inverse')

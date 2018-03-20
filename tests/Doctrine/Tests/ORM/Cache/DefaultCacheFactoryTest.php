@@ -354,7 +354,7 @@ class DefaultCacheFactoryTest extends OrmTestCase
 
     public function testBuildsDefaultCacheRegionFromGenericCacheRegion() : void
     {
-        /* @var $cache \Doctrine\Common\Cache\Cache */
+        /** @var Cache $cache */
         $cache   = $this->createMock(Cache::class);
         $factory = new DefaultCacheFactory($this->regionsConfig, $cache);
 
@@ -366,7 +366,7 @@ class DefaultCacheFactoryTest extends OrmTestCase
 
     public function testBuildsMultiGetCacheRegionFromGenericCacheRegion() : void
     {
-        /* @var $cache \Doctrine\Common\Cache\CacheProvider */
+        /** @var CacheProvider $cache */
         $cache   = $this->getMockForAbstractClass(CacheProvider::class);
         $factory = new DefaultCacheFactory($this->regionsConfig, $cache);
 

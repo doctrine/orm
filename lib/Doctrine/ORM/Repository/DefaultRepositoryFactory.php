@@ -6,6 +6,7 @@ namespace Doctrine\ORM\Repository;
 
 use Doctrine\Common\Persistence\ObjectRepository;
 use Doctrine\ORM\EntityManagerInterface;
+use Doctrine\ORM\Mapping\ClassMetadata;
 use function spl_object_id;
 
 /**
@@ -41,7 +42,7 @@ final class DefaultRepositoryFactory implements RepositoryFactory
      */
     private function createRepository(EntityManagerInterface $entityManager, $entityName)
     {
-        /* @var $metadata \Doctrine\ORM\Mapping\ClassMetadata */
+        /** @var ClassMetadata $metadata */
         $metadata            = $entityManager->getClassMetadata($entityName);
         $repositoryClassName = $metadata->getCustomRepositoryClassName()
             ?: $entityManager->getConfiguration()->getDefaultRepositoryClassName();

@@ -65,7 +65,7 @@ class DefaultRegionTest extends AbstractRegionTest
 
     public function testEvictAllWithGenericCacheThrowsUnsupportedException() : void
     {
-        /* @var $cache \Doctrine\Common\Cache\Cache */
+        /** @var Cache $cache */
         $cache = $this->createMock(Cache::class);
 
         $region = new DefaultRegion('foo', $cache);

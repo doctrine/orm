@@ -47,7 +47,7 @@ class HydrationCompleteHandlerTest extends DoctrineTestCase
      */
     public function testDefersPostLoadOfEntity($listenersFlag) : void
     {
-        /* @var $metadata \Doctrine\ORM\Mapping\ClassMetadata */
+        /** @var ClassMetadata $metadata */
         $metadata      = $this->createMock(ClassMetadata::class);
         $entity        = new stdClass();
         $entityManager = $this->entityManager;
@@ -85,7 +85,7 @@ class HydrationCompleteHandlerTest extends DoctrineTestCase
      */
     public function testDefersPostLoadOfEntityOnlyOnce($listenersFlag) : void
     {
-        /* @var $metadata \Doctrine\ORM\Mapping\ClassMetadata */
+        /** @var ClassMetadata $metadata */
         $metadata = $this->createMock(ClassMetadata::class);
         $entity   = new stdClass();
 
@@ -111,8 +111,8 @@ class HydrationCompleteHandlerTest extends DoctrineTestCase
      */
     public function testDefersMultiplePostLoadOfEntity($listenersFlag) : void
     {
-        /* @var $metadata1 \Doctrine\ORM\Mapping\ClassMetadata */
-        /* @var $metadata2 \Doctrine\ORM\Mapping\ClassMetadata */
+        /** @var $metadata1 \Doctrine\ORM\Mapping\ClassMetadata */
+        /** @var ClassMetadata $metadata2 */
         $metadata1     = $this->createMock(ClassMetadata::class);
         $metadata2     = $this->createMock(ClassMetadata::class);
         $entity1       = new stdClass();
@@ -149,7 +149,7 @@ class HydrationCompleteHandlerTest extends DoctrineTestCase
 
     public function testSkipsDeferredPostLoadOfMetadataWithNoInvokedListeners() : void
     {
-        /* @var $metadata \Doctrine\ORM\Mapping\ClassMetadata */
+        /** @var ClassMetadata $metadata */
         $metadata = $this->createMock(ClassMetadata::class);
         $entity   = new stdClass();
 

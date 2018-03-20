@@ -249,7 +249,7 @@ class EntityManagerTest extends OrmTestCase
             SimpleId::class,
             ['id' => 123]
         );
-        /* @var $nestedReference GhostObjectInterface|ToOneAssociationIdToSimpleId */
+        /** @var GhostObjectInterface|ToOneAssociationIdToSimpleId $nestedReference */
         $nestedIdReference = $this->em->getReference(
             ToOneAssociationIdToSimpleId::class,
             ['simpleId' => $simpleIdReference]
@@ -271,7 +271,7 @@ class EntityManagerTest extends OrmTestCase
             SimpleId::class,
             ['id' => 456]
         );
-        /* @var $nestedIdReference GhostObjectInterface|ToOneCompositeAssociationToMultipleSimpleId */
+        /** @var GhostObjectInterface|ToOneCompositeAssociationToMultipleSimpleId $nestedIdReference */
         $nestedIdReference = $this->em->getReference(
             ToOneCompositeAssociationToMultipleSimpleId::class,
             ['simpleIdB' => $simpleIdReferenceB, 'simpleIdA' => $simpleIdReferenceA]

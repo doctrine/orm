@@ -66,7 +66,7 @@ class LockAgentWorker
     public function dqlWithLock($job)
     {
         return $this->process($job, function ($fixture, $em) {
-            /* @var $query Doctrine\ORM\Query */
+            /** @var Doctrine\ORM\Query $query */
             $query = $em->createQuery($fixture['dql']);
             $query->setLockMode($fixture['lockMode']);
             $query->setParameters($fixture['dqlParams']);

@@ -5,6 +5,8 @@ declare(strict_types=1);
 namespace Doctrine\Tests\ORM\Functional\Ticket;
 
 use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\DBAL\Schema\ForeignKeyConstraint;
+use Doctrine\DBAL\Schema\Table;
 use Doctrine\ORM\Annotation as ORM;
 use Doctrine\Tests\OrmFunctionalTestCase;
 use function reset;
@@ -28,7 +30,7 @@ class DDC2138Test extends OrmFunctionalTestCase
 
         self::assertTrue($schema->hasTable('users_followed_objects'), 'Table users_followed_objects should exist.');
 
-        /* @var $table \Doctrine\DBAL\Schema\Table */
+        /** @var Table $table */
         $table = ($schema->getTable('users_followed_objects'));
 
         self::assertTrue($table->columnsAreIndexed(['object_id']));
@@ -38,7 +40,7 @@ class DDC2138Test extends OrmFunctionalTestCase
 
         self::assertCount(1, $foreignKeys, 'user_id column has to have FK, but not object_id');
 
-        /* @var $fk \Doctrine\DBAL\Schema\ForeignKeyConstraint */
+        /** @var ForeignKeyConstraint $fk */
         $fk = reset($foreignKeys);
 
         self::assertEquals('users', $fk->getForeignTableName());

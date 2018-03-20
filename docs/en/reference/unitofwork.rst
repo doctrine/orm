@@ -36,7 +36,7 @@ will still end up with the same reference:
 
     public function testIdentityMapReference()
     {
-        /* @var $objectA EntityName|\ProxyManager\Proxy\GhostObjectInterface */
+        /** @var EntityName|\ProxyManager\Proxy\GhostObjectInterface $objectA */
         $objectA = $this->entityManager->getReference(EntityName::class, 1);
 
         self::assertInstanceOf(\ProxyManager\Proxy\GhostObjectInterface::class, $objectA);
@@ -198,4 +198,3 @@ ClassMetadataFactory
 ~~~~~~~~~~~~~~~~~~~~
 
 tbr
-

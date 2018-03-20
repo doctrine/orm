@@ -40,10 +40,10 @@ class DDC1228Test extends OrmFunctionalTestCase
         $this->em->flush();
         $this->em->clear();
 
-        /* @var $fetchedUser DDC1228User */
+        /** @var DDC1228User $fetchedUser */
         $fetchedUser = $this->em->find(DDC1228User::class, $user->id);
 
-        /* @var $fetchedProfile DDC1228Profile|GhostObjectInterface */
+        /** @var DDC1228Profile|GhostObjectInterface $fetchedProfile */
         $fetchedProfile = $fetchedUser->getProfile();
 
         self::assertInstanceOf(GhostObjectInterface::class, $fetchedProfile);
@@ -60,7 +60,7 @@ class DDC1228Test extends OrmFunctionalTestCase
         $this->em->flush();
         $this->em->clear();
 
-        /* @var $otherFetchedUser DDC1228User */
+        /** @var DDC1228User $otherFetchedUser */
         $otherFetchedUser = $this->em->find(DDC1228User::class, $fetchedUser->id);
 
         self::assertEquals('Bar', $otherFetchedUser->getProfile()->getName());

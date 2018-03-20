@@ -250,7 +250,7 @@ class DDC117Test extends OrmFunctionalTestCase
         $this->em->flush();
         $this->em->clear();
 
-        /* @var $article DDC117Article */
+        /** @var DDC117Article $article */
         $article = $this->em->find(get_class($this->article1), $this->article1->id());
         self::assertEquals('not so very long text!', $article->getText());
     }
@@ -313,7 +313,7 @@ class DDC117Test extends OrmFunctionalTestCase
      */
     public function testLoadOneToManyCollectionOfForeignKeyEntities() : void
     {
-        /* @var $article DDC117Article */
+        /** @var DDC117Article $article */
         $article = $this->em->find(get_class($this->article1), $this->article1->id());
 
         $translations = $article->getTranslations();
@@ -409,13 +409,13 @@ class DDC117Test extends OrmFunctionalTestCase
     {
         $editor = new DDC117Editor('beberlei');
 
-        /* @var $article1 DDC117Article */
+        /** @var DDC117Article $article1 */
         $article1 = $this->em->find(get_class($this->article1), $this->article1->id());
         foreach ($article1->getTranslations() as $translation) {
             $editor->reviewingTranslations[] = $translation;
         }
 
-        /* @var $article2 DDC117Article */
+        /** @var DDC117Article $article2 */
         $article2 = $this->em->find(get_class($this->article2), $this->article2->id());
         $article2->addTranslation('de', 'Vanille-Krapferl'); // omnomnom
         $article2->addTranslation('fr', "Sorry can't speak french!");

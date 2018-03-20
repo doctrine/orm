@@ -845,7 +845,7 @@ class SchemaTool
         foreach ($fullSchema->getTables() as $table) {
             if (! $schema->hasTable($table->getName())) {
                 foreach ($table->getForeignKeys() as $foreignKey) {
-                    /* @var $foreignKey \Doctrine\DBAL\Schema\ForeignKeyConstraint */
+                    /** @var $foreignKey \Doctrine\DBAL\Schema\ForeignKeyConstraint */
                     if ($schema->hasTable($foreignKey->getForeignTableName())) {
                         $visitor->acceptForeignKey($table, $foreignKey);
                     }
@@ -864,7 +864,7 @@ class SchemaTool
             }
 
             foreach ($schema->getTables() as $table) {
-                /* @var $sequence Table */
+                /** @var $sequence Table */
                 if ($table->hasPrimaryKey()) {
                     $columns = $table->getPrimaryKey()->getColumns();
                     if (count($columns) === 1) {

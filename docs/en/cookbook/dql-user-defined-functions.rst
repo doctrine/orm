@@ -194,7 +194,7 @@ I'll skip the blah and show the code for this function:
 
             $parser->match(Lexer::T_IDENTIFIER);
 
-            /* @var $lexer Lexer */
+            /** @var Lexer $lexer */
             $lexer = $parser->getLexer();
             $this->unit = $lexer->token['value'];
 

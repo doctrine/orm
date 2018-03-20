@@ -67,7 +67,7 @@ class DDC6303Test extends OrmFunctionalTestCase
         $this->em->flush();
         $this->em->clear();
 
-        /* @var $entities DDC6303BaseClass[] */
+        /** @var DDC6303BaseClass[] $entities */
         $entities = $this
             ->em
             ->getRepository(DDC6303BaseClass::class)

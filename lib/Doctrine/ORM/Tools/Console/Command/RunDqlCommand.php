@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Doctrine\ORM\Tools\Console\Command;
 
 use Doctrine\Common\Util\Debug;
+use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
@@ -46,7 +47,7 @@ class RunDqlCommand extends Command
     {
         $ui = new SymfonyStyle($input, $output);
 
-        /* @var $em \Doctrine\ORM\EntityManagerInterface */
+        /** @var EntityManagerInterface $em */
         $em  = $this->getHelper('em')->getEntityManager();
         $dql = $input->getArgument('dql');
 

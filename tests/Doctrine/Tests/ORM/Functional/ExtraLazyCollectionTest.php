@@ -540,9 +540,9 @@ class ExtraLazyCollectionTest extends OrmFunctionalTestCase
      */
     public function testRemovalOfManagedElementFromOneToManyJoinedInheritanceCollectionDoesNotInitializeIt() : void
     {
-        /* @var $otherClass DDC2504OtherClass */
+        /** @var DDC2504OtherClass $otherClass */
         $otherClass = $this->em->find(DDC2504OtherClass::class, $this->ddc2504OtherClassId);
-        /* @var $childClass DDC2504ChildClass */
+        /** @var DDC2504ChildClass $childClass */
         $childClass = $this->em->find(DDC2504ChildClass::class, $this->ddc2504ChildClassId);
 
         $queryCount = $this->getCurrentQueryCount();
@@ -578,7 +578,7 @@ class ExtraLazyCollectionTest extends OrmFunctionalTestCase
      */
     public function testRemovalOfNonManagedElementFromOneToManyJoinedInheritanceCollectionDoesNotInitializeIt() : void
     {
-        /* @var $otherClass DDC2504OtherClass */
+        /** @var DDC2504OtherClass $otherClass */
         $otherClass = $this->em->find(DDC2504OtherClass::class, $this->ddc2504OtherClassId);
         $queryCount = $this->getCurrentQueryCount();
 
@@ -596,7 +596,7 @@ class ExtraLazyCollectionTest extends OrmFunctionalTestCase
      */
     public function testRemovalOfNewElementFromOneToManyJoinedInheritanceCollectionDoesNotInitializeIt() : void
     {
-        /* @var $otherClass DDC2504OtherClass */
+        /** @var DDC2504OtherClass $otherClass */
         $otherClass = $this->em->find(DDC2504OtherClass::class, $this->ddc2504OtherClassId);
         $childClass = new DDC2504ChildClass();
 
@@ -741,7 +741,7 @@ class ExtraLazyCollectionTest extends OrmFunctionalTestCase
     public function testSliceOnDirtyCollection() : void
     {
         $user = $this->em->find(CmsUser::class, $this->userId);
-        /* @var $user CmsUser */
+        /** @var CmsUser $user */
 
         $newGroup       = new CmsGroup();
         $newGroup->name = 'Test4';
@@ -763,7 +763,7 @@ class ExtraLazyCollectionTest extends OrmFunctionalTestCase
     public function testGetIndexByIdentifier() : void
     {
         $user = $this->em->find(CmsUser::class, $this->userId);
-        /* @var $user CmsUser */
+        /** @var CmsUser $user */
 
         $queryCount  = $this->getCurrentQueryCount();
         $phonenumber = $user->phonenumbers->get($this->phonenumber);
@@ -782,7 +782,7 @@ class ExtraLazyCollectionTest extends OrmFunctionalTestCase
     public function testGetIndexByOneToMany() : void
     {
         $user = $this->em->find(CmsUser::class, $this->userId);
-        /* @var $user CmsUser */
+        /** @var CmsUser $user */
 
         $queryCount = $this->getCurrentQueryCount();
 
@@ -799,7 +799,7 @@ class ExtraLazyCollectionTest extends OrmFunctionalTestCase
     public function testGetIndexByManyToManyInverseSide() : void
     {
         $group = $this->em->find(CmsGroup::class, $this->groupId);
-        /* @var $group CmsGroup */
+        /** @var CmsGroup $group */
 
         $queryCount = $this->getCurrentQueryCount();
 
@@ -816,7 +816,7 @@ class ExtraLazyCollectionTest extends OrmFunctionalTestCase
     public function testGetIndexByManyToManyOwningSide() : void
     {
         $user = $this->em->find(CmsUser::class, $this->userId);
-        /* @var $user CmsUser */
+        /** @var CmsUser $user */
 
         $queryCount = $this->getCurrentQueryCount();
 
@@ -840,7 +840,7 @@ class ExtraLazyCollectionTest extends OrmFunctionalTestCase
     public function testContainsKeyIndexByOneToMany() : void
     {
         $user = $this->em->find(CmsUser::class, $this->userId);
-        /* @var $user CmsUser */
+        /** @var CmsUser $user */
 
         $queryCount = $this->getCurrentQueryCount();
 
@@ -1062,14 +1062,14 @@ class ExtraLazyCollectionTest extends OrmFunctionalTestCase
     {
         list($userId, $tweetId) = $this->loadTweetFixture();
 
-        /* @var $user User */
+        /** @var User $user */
         $user = $this->em->find(User::class, $userId);
 
         $user->tweets->removeElement($this->em->find(Tweet::class, $tweetId));
 
         $this->em->clear();
 
-        /* @var $user User */
+        /** @var User $user */
         $user = $this->em->find(User::class, $userId);
 
         self::assertCount(1, $user->tweets, 'Element was not removed - need to update the owning side first');
@@ -1082,7 +1082,7 @@ class ExtraLazyCollectionTest extends OrmFunctionalTestCase
     {
         list($userId, $tweetId) = $this->loadTweetFixture();
 
-        /* @var $user User */
+        /** @var User $user */
         $user  = $this->em->find(User::class, $userId);
         $tweet = $this->em->find(Tweet::class, $tweetId);
 
@@ -1090,7 +1090,7 @@ class ExtraLazyCollectionTest extends OrmFunctionalTestCase
 
         $this->em->clear();
 
-        /* @var $tweet Tweet */
+        /** @var Tweet $tweet */
         $tweet = $this->em->find(Tweet::class, $tweetId);
         self::assertInstanceOf(
             Tweet::class,
@@ -1112,7 +1112,7 @@ class ExtraLazyCollectionTest extends OrmFunctionalTestCase
     {
         list($userId, $tweetId) = $this->loadTweetFixture();
 
-        /* @var $user User */
+        /** @var User $user */
         $user  = $this->em->find(User::class, $userId);
         $tweet = $this->em->getReference(Tweet::class, $tweetId);
 
@@ -1120,7 +1120,7 @@ class ExtraLazyCollectionTest extends OrmFunctionalTestCase
 
         $this->em->clear();
 
-        /* @var $tweet Tweet */
+        /** @var Tweet $tweet */
         $tweet = $this->em->find(Tweet::class, $tweet->id);
         self::assertInstanceOf(
             Tweet::class,
@@ -1130,7 +1130,7 @@ class ExtraLazyCollectionTest extends OrmFunctionalTestCase
 
         self::assertInstanceOf(User::class, $tweet->author);
 
-        /* @var $user User */
+        /** @var User $user */
         $user = $this->em->find(User::class, $userId);
 
         self::assertCount(1, $user->tweets, 'Element was not removed - need to update the owning side first');
@@ -1143,14 +1143,14 @@ class ExtraLazyCollectionTest extends OrmFunctionalTestCase
     {
         list($userId, $userListId) = $this->loadUserListFixture();
 
-        /* @var $user User */
+        /** @var User $user */
         $user = $this->em->find(User::class, $userId);
 
         $user->userLists->removeElement($this->em->find(UserList::class, $userListId));
 
         $this->em->clear();
 
-        /* @var $user User */
+        /** @var User $user */
         $user = $this->em->find(User::class, $userId);
 
         self::assertCount(0, $user->userLists, 'Element was removed from association due to orphan removal');
@@ -1167,14 +1167,14 @@ class ExtraLazyCollectionTest extends OrmFunctionalTestCase
     {
         list($userId, $userListId) = $this->loadUserListFixture();
 
-        /* @var $user User */
+        /** @var User $user */
         $user = $this->em->find(User::class, $userId);
 
         $user->userLists->removeElement(new UserList());
 
         $this->em->clear();
 
-        /* @var $userList UserList */
+        /** @var UserList $userList */
         $userList = $this->em->find(UserList::class, $userListId);
         self::assertInstanceOf(
             UserList::class,
@@ -1196,14 +1196,14 @@ class ExtraLazyCollectionTest extends OrmFunctionalTestCase
     {
         list($userId, $userListId) = $this->loadUserListFixture();
 
-        /* @var $user User */
+        /** @var User $user */
         $user = $this->em->find(User::class, $userId);
 
         $user->userLists->removeElement($this->em->getReference(UserList::class, $userListId));
 
         $this->em->clear();
 
-        /* @var $user User */
+        /** @var User $user */
         $user = $this->em->find(User::class, $userId);
 
         self::assertCount(0, $user->userLists, 'Element was removed from association due to orphan removal');

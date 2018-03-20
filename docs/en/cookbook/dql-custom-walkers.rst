@@ -99,7 +99,7 @@ The ``Paginate::count(Query $query)`` looks like:
     {
         static public function count(Query $query)
         {
-            /* @var $countQuery Query */
+            /** @var Query $countQuery */
             $countQuery = clone $query;
 
             $countQuery->setHint(Query::HINT_CUSTOM_TREE_WALKERS, array('DoctrineExtensions\Paginate\CountSqlWalker'));
@@ -212,4 +212,3 @@ understanding of the DQL Parser and Walkers, but may offer your
 huge benefits with using vendor specific features. This would still
 allow you write DQL queries instead of NativeQueries to make use of
 vendor specific features.
-

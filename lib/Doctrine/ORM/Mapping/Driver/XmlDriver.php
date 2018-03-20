@@ -44,7 +44,7 @@ class XmlDriver extends FileDriver
         Mapping\ClassMetadata $metadata,
         Mapping\ClassMetadataBuildingContext $metadataBuildingContext
     ) {
-        /* @var \SimpleXMLElement $xmlRoot */
+        /** @var SimpleXMLElement $xmlRoot */
         $xmlRoot = $this->getElement($className);
 
         if ($xmlRoot->getName() === 'entity') {
@@ -658,7 +658,7 @@ class XmlDriver extends FileDriver
 
                 // Evaluate the listener using naming convention.
                 if ($listenerElement->count() === 0) {
-                    /* @var $method \ReflectionMethod */
+                    /** @var \ReflectionMethod $method */
                     foreach ($listenerClass->getMethods(\ReflectionMethod::IS_PUBLIC) as $method) {
                         foreach ($this->getMethodCallbacks($method) as $callback) {
                             $metadata->addEntityListener($callback, $listenerClassName, $method->getName());
@@ -689,7 +689,7 @@ class XmlDriver extends FileDriver
     {
         $array = [];
 
-        /* @var $option SimpleXMLElement */
+        /** @var SimpleXMLElement $option */
         foreach ($options as $option) {
             if ($option->count()) {
                 $value = $this->parseOptions($option->children());
@@ -859,7 +859,7 @@ class XmlDriver extends FileDriver
     {
         $cascades = [];
 
-        /* @var $action SimpleXmlElement */
+        /** @var SimpleXMLElement $action */
         foreach ($cascadeElement->children() as $action) {
             // According to the JPA specifications, XML uses "cascade-persist"
             // instead of "persist". Here, both variations are supported

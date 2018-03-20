@@ -719,7 +719,7 @@ class BasicEntityPersister implements EntityPersister
             return $propertyValue;
         }
 
-        /* @var ToOneAssociationMetadata $property */
+        /** @var ToOneAssociationMetadata $property */
         $unitOfWork      = $this->em->getUnitOfWork();
         $targetClass     = $this->em->getClassMetadata($property->getTargetEntity());
         $targetPersister = $unitOfWork->getEntityPersister($property->getTargetEntity());
@@ -1244,7 +1244,7 @@ class BasicEntityPersister implements EntityPersister
                 $tableAlias = $this->getSQLTableAlias($class->getTableName());
 
                 foreach ($property->getJoinColumns() as $joinColumn) {
-                    /* @var JoinColumnMetadata $joinColumn */
+                    /** @var JoinColumnMetadata $joinColumn */
                     $quotedColumnName = $this->platform->quoteIdentifier($joinColumn->getColumnName());
 
                     $orderByList[] = $tableAlias . '.' . $quotedColumnName . ' ' . $orientation;
@@ -1430,8 +1430,6 @@ class BasicEntityPersister implements EntityPersister
     /**
      * Gets the SQL join fragment used when selecting entities from a
      * many-to-many association.
-     *
-     * @param ManyToManyAssociationMetadata $manyToMany
      *
      * @return string
      */

@@ -248,7 +248,7 @@ class ObjectHydrator extends AbstractHydrator
      */
     private function getEntityFromIdentityMap($className, array $data)
     {
-        /* @var ClassMetadata $class */
+        /** @var ClassMetadata $class */
         $class = $this->metadataCache[$className];
         $id    = $this->em->getIdentifierFlattener()->flattenIdentifier($class, $data);
 

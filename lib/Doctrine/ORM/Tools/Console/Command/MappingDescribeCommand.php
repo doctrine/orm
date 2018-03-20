@@ -71,7 +71,7 @@ EOT
     {
         $ui = new SymfonyStyle($input, $output);
 
-        /* @var $entityManager \Doctrine\ORM\EntityManagerInterface */
+        /** @var EntityManagerInterface $entityManager */
         $entityManager = $this->getHelper('em')->getEntityManager();
 
         $this->displayEntity($input->getArgument('entityName'), $entityManager, $ui);

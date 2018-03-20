@@ -74,7 +74,7 @@ class DDC736Test extends OrmFunctionalTestCase
                             ->setHint(Query::HINT_CUSTOM_TREE_WALKERS, [DisableFetchJoinTreeWalker::class])
                             ->getResult();
 
-        /* @var $cart2 ECommerceCart */
+        /** @var ECommerceCart $cart2 */
         $cart2 = $result[0][0];
         self::assertInstanceOf(GhostObjectInterface::class, $cart2->getCustomer());
     }
@@ -93,7 +93,7 @@ class DisableFetchJoinTreeWalker extends TreeWalkerAdapter
     public function walkSelectClause($selectClause)
     {
         foreach ($selectClause->selectExpressions as $key => $selectExpr) {
-            /* @var $selectExpr \Doctrine\ORM\Query\AST\SelectExpression */
+            /** @var $selectExpr \Doctrine\ORM\Query\AST\SelectExpression */
             if ($selectExpr->expression === 'c') {
                 unset($selectClause->selectExpressions[$key]);
                 break;

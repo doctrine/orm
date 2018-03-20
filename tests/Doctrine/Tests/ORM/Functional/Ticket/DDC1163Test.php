@@ -66,7 +66,7 @@ class DDC1163Test extends OrmFunctionalTestCase
      */
     private function createProxyForSpecialProduct()
     {
-        /* @var $proxyHolder DDC1163ProxyHolder */
+        /** @var DDC1163ProxyHolder $proxyHolder */
         $proxyHolder = $this->em->find(DDC1163ProxyHolder::class, $this->proxyHolderId);
 
         self::assertInstanceOf(DDC1163SpecialProduct::class, $proxyHolder->getSpecialProduct());
@@ -74,7 +74,7 @@ class DDC1163Test extends OrmFunctionalTestCase
 
     private function setPropertyAndAssignTagToSpecialProduct()
     {
-        /* @var $specialProduct DDC1163SpecialProduct */
+        /** @var DDC1163SpecialProduct $specialProduct */
         $specialProduct = $this->em->find(DDC1163SpecialProduct::class, $this->productId);
 
         self::assertInstanceOf(DDC1163SpecialProduct::class, $specialProduct);

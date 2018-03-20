@@ -42,7 +42,7 @@ class DDC2214Test extends OrmFunctionalTestCase
         $this->em->flush();
         $this->em->clear();
 
-        /* @var $foo \Doctrine\Tests\ORM\Functional\Ticket\DDC2214Foo */
+        /** @var \Doctrine\Tests\ORM\Functional\Ticket\DDC2214Foo $foo */
         $foo = $this->em->find(DDC2214Foo::class, $foo->id);
         $bar = $foo->bar;
 

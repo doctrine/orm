@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Doctrine\ORM\Tools\Console\Command\SchemaTool;
 
+use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\Tools\SchemaTool;
 use Symfony\Component\Console\Command\Command;
@@ -32,7 +33,7 @@ abstract class AbstractCommand extends Command
 
         $emHelper = $this->getHelper('em');
 
-        /* @var $em \Doctrine\ORM\EntityManagerInterface */
+        /** @var EntityManagerInterface $em */
         $em = $emHelper->getEntityManager();
 
         $metadatas = $em->getMetadataFactory()->getAllMetadata();

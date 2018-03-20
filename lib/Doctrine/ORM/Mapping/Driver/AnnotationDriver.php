@@ -295,7 +295,7 @@ class AnnotationDriver implements MappingDriver
         }
 
         // Evaluate annotations on properties/fields
-        /* @var $reflProperty \ReflectionProperty */
+        /** @var \ReflectionProperty $reflProperty */
         foreach ($reflectionClass->getProperties() as $reflectionProperty) {
             if ($reflectionProperty->getDeclaringClass()->getName() !== $reflectionClass->getName()) {
                 continue;
@@ -577,7 +577,7 @@ class AnnotationDriver implements MappingDriver
 
                         break;
 
-                    /* @todo If it is not supported, why does this exist? */
+                    /** @todo If it is not supported, why does this exist? */
                     case isset($propertyAnnotations['Doctrine\ORM\Mapping\TableGenerator']):
                         throw Mapping\MappingException::tableIdGeneratorNotImplemented($className);
                 }
@@ -1074,7 +1074,7 @@ class AnnotationDriver implements MappingDriver
     ) : void {
         // Evaluate @HasLifecycleCallbacks annotation
         if (isset($classAnnotations[Annotation\HasLifecycleCallbacks::class])) {
-            /* @var $method \ReflectionMethod */
+            /** @var \ReflectionMethod $method */
             foreach ($reflectionClass->getMethods(\ReflectionMethod::IS_PUBLIC) as $method) {
                 foreach ($this->getMethodCallbacks($method) as $callback) {
                     $metadata->addLifecycleCallback($method->getName(), $callback);
@@ -1109,7 +1109,7 @@ class AnnotationDriver implements MappingDriver
 
                 $listenerClass = new \ReflectionClass($listenerClassName);
 
-                /* @var $method \ReflectionMethod */
+                /** @var \ReflectionMethod $method */
                 foreach ($listenerClass->getMethods(\ReflectionMethod::IS_PUBLIC) as $method) {
                     foreach ($this->getMethodCallbacks($method) as $callback) {
                         $metadata->addEntityListener($callback, $listenerClassName, $method->getName());

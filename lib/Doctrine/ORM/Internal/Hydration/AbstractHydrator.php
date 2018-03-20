@@ -230,9 +230,9 @@ abstract class AbstractHydrator
      * field names during this procedure as well as any necessary conversions on
      * the values applied. Scalar values are kept in a specific key 'scalars'.
      *
-     * @param mixed[] $data                SQL Result Row.
-     * @param mixed[] &$id                 Dql-Alias => ID-Hash.
-     * @param mixed[] &$nonemptyComponents Does this DQL-Alias has at least one non NULL value?
+     * @param mixed[] $data               SQL Result Row.
+     * @param mixed[] $id                 Dql-Alias => ID-Hash.
+     * @param mixed[] $nonemptyComponents Does this DQL-Alias has at least one non NULL value?
      *
      * @return mixed[] An array with all the fields (name => value) of the data row,
      *                grouped by their component alias.

@@ -653,7 +653,7 @@ class BasicFunctionalTest extends OrmFunctionalTestCase
                 ->setParameter('user', $userRef)
                 ->getSingleResult();
 
-        /* @var $fetchedUser CmsUser|GhostObjectInterface */
+        /** @var CmsUser|GhostObjectInterface $fetchedUser */
         $fetchedUser = $address2->getUser();
 
         self::assertInstanceOf(GhostObjectInterface::class, $fetchedUser);
@@ -869,14 +869,14 @@ class BasicFunctionalTest extends OrmFunctionalTestCase
 
         $qc  = $this->getCurrentQueryCount();
         $dql = 'SELECT a FROM Doctrine\Tests\Models\CMS\CmsArticle a WHERE a.id = ?1';
-        /* @var $article CmsArticle */
+        /** @var CmsArticle $article */
         $article = $this->em
             ->createQuery($dql)
             ->setParameter(1, $article->id)
             ->setFetchMode(CmsArticle::class, 'user', FetchMode::EAGER)
             ->getSingleResult();
 
-        /* @var $fetchedUser CmsUser|GhostObjectInterface */
+        /** @var CmsUser|GhostObjectInterface $fetchedUser */
         $fetchedUser = $article->user;
 
         self::assertInstanceOf(GhostObjectInterface::class, $fetchedUser, 'It IS a proxy, ...');

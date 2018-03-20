@@ -63,7 +63,7 @@ final class IdentifierFlattener
             }
 
             if (isset($id[$field]) && is_object($id[$field])) {
-                /* @var $targetClassMetadata ClassMetadata */
+                /** @var ClassMetadata $targetClassMetadata */
                 $targetClassMetadata  = $this->metadataFactory->getMetadataFor($property->getTargetEntity());
                 $targetClassPersister = $this->unitOfWork->getEntityPersister($property->getTargetEntity());
                 // @todo guilhermeblanco Bring this back:

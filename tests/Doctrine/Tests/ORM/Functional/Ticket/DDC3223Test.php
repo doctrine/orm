@@ -38,10 +38,10 @@ class DDC3223Test extends OrmFunctionalTestCase
         $this->em->flush();
         $this->em->clear();
 
-        /* @var $fetchedParticipant Participant */
+        /** @var Participant $fetchedParticipant */
         $fetchedParticipant = $this->em->find(Participant::class, $participant->id);
 
-        /* @var $clonedProfileStatus GhostObjectInterface|ProfileStatus */
+        /** @var GhostObjectInterface|ProfileStatus $clonedProfileStatus */
         $clonedProfileStatus = clone $fetchedParticipant->profileStatus;
 
         self::assertInstanceOf(GhostObjectInterface::class, $clonedProfileStatus);

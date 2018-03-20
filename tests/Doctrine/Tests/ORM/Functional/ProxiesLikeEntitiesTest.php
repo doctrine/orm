@@ -91,7 +91,7 @@ class ProxiesLikeEntitiesTest extends OrmFunctionalTestCase
     public function testEntityWithIdentifier() : void
     {
         $userId = $this->user->getId();
-        /* @var $uninitializedProxy CmsUser|GhostObjectInterface */
+        /** @var CmsUser|GhostObjectInterface $uninitializedProxy */
         $uninitializedProxy = $this->em->getReference(CmsUser::class, $userId);
         self::assertInstanceOf(GhostObjectInterface::class, $uninitializedProxy);
         self::assertInstanceOf(CmsUser::class, $uninitializedProxy);

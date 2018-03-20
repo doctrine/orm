@@ -46,7 +46,7 @@ class IndexByAssociationTest extends OrmFunctionalTestCase
 
     public function testManyToOneFinder() : void
     {
-        /* @var $market Market */
+        /** @var Market $market */
         $market = $this->em->find(Market::class, $this->market->getId());
 
         self::assertCount(2, $market->stocks);

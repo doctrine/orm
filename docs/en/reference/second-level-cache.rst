@@ -175,8 +175,8 @@ To enable the second-level-cache, you should provide a cache factory
 .. code-block:: php
 
     <?php
-    /* @var $config \Doctrine\ORM\Cache\RegionsConfiguration */
-    /* @var $cache \Doctrine\Common\Cache\Cache */
+    /** @var \Doctrine\ORM\Cache\RegionsConfiguration $config */
+    /** @var \Doctrine\Common\Cache\Cache $cache */
 
     $factory = new \Doctrine\ORM\Cache\DefaultCacheFactory($config, $cache);
 
@@ -210,8 +210,8 @@ To specify a default lifetime for all regions or specify a different lifetime fo
 .. code-block:: php
 
     <?php
-    /* @var $config \Doctrine\ORM\Configuration */
-    /* @var $cacheConfig \Doctrine\ORM\Cache\CacheConfiguration */
+    /** @var \Doctrine\ORM\Configuration $config */
+    /** @var \Doctrine\ORM\Cache\CacheConfiguration $cacheConfig */
     $cacheConfig  =  $config->getSecondLevelCacheConfiguration();
     $regionConfig =  $cacheConfig->getRegionsConfiguration();
 
@@ -228,7 +228,7 @@ By providing a cache logger you should be able to get information about all cach
  .. code-block:: php
 
     <?php
-    /* @var $config \Doctrine\ORM\Configuration */
+    /** @var \Doctrine\ORM\Configuration $config */
     $logger = new \Doctrine\ORM\Cache\Logging\StatisticsCacheLogger();
 
     // Cache logger
@@ -472,7 +472,7 @@ The query cache stores the results of the query but as identifiers, entity value
 .. code-block:: php
 
     <?php
-    /* @var $em \Doctrine\ORM\EntityManager */
+    /** @var \Doctrine\ORM\EntityManager $em */
 
     // Execute database query, store query cache and entity cache
     $result1 = $em->createQuery('SELECT c FROM Country c ORDER BY c.name')
@@ -499,7 +499,7 @@ The Cache Mode controls how a particular query interacts with the second-level c
 .. code-block:: php
 
     <?php
-    /* @var $em \Doctrine\ORM\EntityManager */
+    /** @var \Doctrine\ORM\EntityManager $em */
     // Will refresh the query cache and all entities the cache as it reads from the database.
     $result1 = $em->createQuery('SELECT c FROM Country c ORDER BY c.name')
         ->setCacheMode(Cache::MODE_GET)
@@ -584,7 +584,7 @@ However, you can use the cache API to check / invalidate cache entries.
 .. code-block:: php
 
     <?php
-    /* @var $cache \Doctrine\ORM\Cache */
+    /** @var \Doctrine\ORM\Cache $cache */
     $cache = $em->getCache();
 
     $cache->containsEntity('Entity\State', 1)      // Check if the cache exists
@@ -629,11 +629,11 @@ For performance reasons the cache API does not extract from composite primary ke
     }
 
     // Supported
-    /* @var $article Article */
+    /** @var Article $article */
     $article = $em->find('Article', 1);
 
     // Supported
-    /* @var $article Article */
+    /** @var Article $article */
     $article = $em->find('Article', $article);
 
     // Supported

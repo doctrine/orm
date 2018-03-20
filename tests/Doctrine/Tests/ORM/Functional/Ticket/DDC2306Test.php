@@ -60,9 +60,9 @@ class DDC2306Test extends OrmFunctionalTestCase
         $this->em->flush();
         $this->em->clear();
 
-        /* @var $address DDC2306Address */
+        /** @var DDC2306Address $address */
         $address = $this->em->find(DDC2306Address::class, $address->id);
-        /* @var $user DDC2306User|GhostObjectInterface */
+        /** @var DDC2306User|GhostObjectInterface $user */
         $user = $address->users->first()->user;
 
         self::assertInstanceOf(GhostObjectInterface::class, $user);

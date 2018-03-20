@@ -98,7 +98,7 @@ class SecondLevelCacheConcurrentTest extends SecondLevelCacheAbstractTest
 
         self::assertTrue($this->cache->containsCollection(State::class, 'cities', $stateId));
 
-        /* @var $region \Doctrine\Tests\Mocks\ConcurrentRegionMock */
+        /** @var ConcurrentRegionMock $region */
         $region->setLock($cacheId, Lock::createLockRead()); // another proc lock the entity cache
 
         self::assertFalse($this->cache->containsCollection(State::class, 'cities', $stateId));

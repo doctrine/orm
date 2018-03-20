@@ -118,7 +118,7 @@ class OneToManyBidirectionalAssociationTest extends OrmFunctionalTestCase
         $query    = $this->em->createQuery('select f from Doctrine\Tests\Models\ECommerce\ECommerceFeature f');
         $features = $query->getResult();
 
-        /* @var $product GhostObjectInterface|ECommerceFeature */
+        /** @var GhostObjectInterface|ECommerceFeature $product */
         $product = $features[0]->getProduct();
         self::assertInstanceOf(GhostObjectInterface::class, $product);
         self::assertInstanceOf(ECommerceProduct::class, $product);

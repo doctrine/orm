@@ -910,7 +910,7 @@ class ObjectHydratorTest extends HydrationTestCase
 
         $stmt     = new HydratorMockStatement($resultSet);
         $hydrator = new ObjectHydrator($this->em);
-        /* @var $result ForumCategory[] */
+        /** @var ForumCategory[] $result */
         $result = $hydrator->hydrateAll($stmt, $rsm, [Query::HINT_FORCE_PARTIAL_LOAD => true]);
 
         self::assertCount(2, $result);

@@ -254,5 +254,5 @@ Example usage
     $query = $em->createQuery("SELECT l FROM Geo\Entity\Location WHERE l.address = '1600 Amphitheatre Parkway, Mountain View, CA'");
     $location = $query->getSingleResult();
 
-    /* @var Geo\ValueObject\Point */
+    /** @var Geo\ValueObject\Point $point */
     $point = $location->getPoint();
