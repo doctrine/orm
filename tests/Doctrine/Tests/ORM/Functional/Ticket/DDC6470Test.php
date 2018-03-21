@@ -58,7 +58,7 @@ class DDC6470Test extends \Doctrine\Tests\OrmFunctionalTestCase
 		$result = $qb->getQuery()->getResult();
 
 		$newQueryCount = $this->getCurrentQueryCount();
-		$this->assertEquals($queryCount + 1, $newQueryCount, "One for query only. One more appears here @see UnitOfWork:2654");
+		$this->assertEquals($queryCount + 1, $newQueryCount, "One for query only. One more appears here @see UnitOfWork:2654.");
 
 		$this->_em->clear();
 
