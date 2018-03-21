@@ -58,7 +58,9 @@ class DDC6470Test extends \Doctrine\Tests\OrmFunctionalTestCase
 		$result = $qb->getQuery()->getResult();
 
 		$newQueryCount = $this->getCurrentQueryCount();
-		$this->assertEquals($queryCount + 2, $newQueryCount, "Assert everything get from cache + 1 request for query");
+		$this->assertEquals($queryCount + 1, $newQueryCount, "One for query only. One more appears here @see UnitOfWork:2654");
+
+		$this->_em->clear();
 
 		/** @var EntityRepository $er */
 		$er = $this->_em->getRepository(DDC6470Source::class);
