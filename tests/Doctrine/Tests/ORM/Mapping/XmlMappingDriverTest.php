@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Doctrine\Tests\ORM\Mapping;
 
+use Doctrine\Common\Collections\Criteria;
 use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\Mapping\ClassMetadataFactory;
 use Doctrine\ORM\Mapping\Driver\XmlDriver;
@@ -12,6 +13,7 @@ use Doctrine\Tests\Models\DDC3293\DDC3293User;
 use Doctrine\Tests\Models\DDC3293\DDC3293UserPrefixed;
 use Doctrine\Tests\Models\DDC889\DDC889Class;
 use Doctrine\Tests\Models\Generic\SerializationModel;
+use Doctrine\Tests\Models\GH7141\GH7141Article;
 use Doctrine\Tests\Models\ValueObjects\Name;
 use Doctrine\Tests\Models\ValueObjects\Person;
 use DOMDocument;
@@ -191,6 +193,19 @@ class XmlMappingDriverTest extends AbstractMappingDriverTest
         return array_map(static function ($item) {
             return [$item];
         }, $list);
+    }
+
+    /**
+     * @group GH-7141
+     */
+    public function testOneToManyDefaultOrderByAsc()
+    {
+        $class = $this->createClassMetadata(GH7141Article::class);
+
+        $this->assertEquals(
+            Criteria::ASC,
+            $class->getProperty('tags')->getOrderBy()['position']
+        );
     }
 
     /**
