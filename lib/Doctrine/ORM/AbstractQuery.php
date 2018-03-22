@@ -859,11 +859,9 @@ abstract class AbstractQuery
      */
     public function execute($parameters = null, $hydrationMode = null)
     {
-        if ($this->cacheable && $this->isCacheEnabled()) {
-            return $this->executeUsingQueryCache($parameters, $hydrationMode);
-        }
-
-        return $this->executeIgnoreQueryCache($parameters, $hydrationMode);
+        return $this->isCacheEnabled()
+            ? $this->executeUsingQueryCache($parameters, $hydrationMode)
+            : $this->executeIgnoreQueryCache($parameters, $hydrationMode);
     }
 
     /**
