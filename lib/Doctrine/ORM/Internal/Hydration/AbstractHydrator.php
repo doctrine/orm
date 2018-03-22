@@ -24,6 +24,8 @@ use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Events;
 use Doctrine\ORM\Mapping\ClassMetadata;
 use PDO;
+use function array_map;
+use function in_array;
 
 /**
  * Base class for all hydrators. A hydrator is a class that provides some form
@@ -296,11 +298,8 @@ abstract class AbstractHydrator
 
                     // If there are field name collisions in the child class, then we need
                     // to only hydrate if we are looking at the correct discriminator value
-                    if(
-                        isset($cacheKeyInfo['discriminatorColumn']) && 
-                        isset($data[$cacheKeyInfo['discriminatorColumn']]) &&
-                        // Note: loose comparison required. See https://github.com/doctrine/doctrine2/pull/6304#issuecomment-323294442
-                        $data[$cacheKeyInfo['discriminatorColumn']] != $cacheKeyInfo['discriminatorValue']
+                    if (isset($cacheKeyInfo['discriminatorColumn'], $data[$cacheKeyInfo['discriminatorColumn']])
+                        && ! in_array((string) $data[$cacheKeyInfo['discriminatorColumn']], $cacheKeyInfo['discriminatorValues'], true)
                     ) {
                         break;
                     }
@@ -401,7 +400,8 @@ abstract class AbstractHydrator
                         $columnInfo,
                         [
                             'discriminatorColumn' => $this->_rsm->discriminatorColumns[$ownerMap],
-                            'discriminatorValue'  => $classMetadata->discriminatorValue
+                            'discriminatorValue'  => $classMetadata->discriminatorValue,
+                            'discriminatorValues' => $this->getDiscriminatorValues($classMetadata),
                         ]
                     );
                 }
@@ -452,6 +452,23 @@ abstract class AbstractHydrator
         // this column is a left over, maybe from a LIMIT query hack for example in Oracle or DB2
         // maybe from an additional column that has not been defined in a NativeQuery ResultSetMapping.
         return null;
+    }
+
+    /**
+     * @return string[]
+     */
+    private function getDiscriminatorValues(ClassMetadata $classMetadata) : array
+    {
+        $values = array_map(
+            function (string $subClass) : string {
+                return (string) $this->getClassMetadata($subClass)->discriminatorValue;
+            },
+            $classMetadata->subClasses
+        );
+
+        $values[] = (string) $classMetadata->discriminatorValue;
+
+        return $values;
     }
 
     /**
