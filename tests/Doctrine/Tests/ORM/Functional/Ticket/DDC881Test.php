@@ -20,8 +20,8 @@ class DDC881Test extends OrmFunctionalTestCase
             $this->schemaTool->createSchema(
                 [
                 $this->em->getClassMetadata(DDC881User::class),
-                $this->em->getClassMetadata(DDC881Phonenumber::class),
-                $this->em->getClassMetadata(DDC881Phonecall::class),
+                $this->em->getClassMetadata(DDC881PhoneNumber::class),
+                $this->em->getClassMetadata(DDC881PhoneCall::class),
                 ]
             );
         } catch (\Exception $e) {

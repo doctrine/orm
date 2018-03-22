@@ -31,7 +31,7 @@ class PersistentCollectionTest extends OrmFunctionalTestCase
     public function testPersist() : void
     {
         $collectionHolder = new PersistentCollectionHolder();
-        $content          = new PersistentCollectionContent('first element');
+        $content          = new PersistentCollectionContent();
         $collectionHolder->addElement($content);
 
         $this->em->persist($collectionHolder);
@@ -41,7 +41,7 @@ class PersistentCollectionTest extends OrmFunctionalTestCase
         $collectionHolder = $this->em->find(PersistentCollectionHolder::class, $collectionHolder->getId());
         $collectionHolder->getCollection();
 
-        $content = new PersistentCollectionContent('second element');
+        $content = new PersistentCollectionContent();
         $collectionHolder->addElement($content);
 
         self::assertEquals(2, $collectionHolder->getCollection()->count());

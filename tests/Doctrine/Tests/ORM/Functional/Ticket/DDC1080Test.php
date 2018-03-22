@@ -99,7 +99,7 @@ class DDC1080Foo
     }
 
     /**
-     * @return the $fooID
+     * @return int
      */
     public function getFooID()
     {
@@ -107,7 +107,7 @@ class DDC1080Foo
     }
 
     /**
-     * @return the $fooTitle
+     * @return string
      */
     public function getFooTitle()
     {
@@ -115,7 +115,7 @@ class DDC1080Foo
     }
 
     /**
-     * @return the $fooBars
+     * @return array
      */
     public function getFooBars()
     {
@@ -123,7 +123,7 @@ class DDC1080Foo
     }
 
     /**
-     * @param field_type $fooID
+     * @param int $fooID
      */
     public function setFooID($fooID)
     {
@@ -131,7 +131,7 @@ class DDC1080Foo
     }
 
     /**
-     * @param field_type $fooTitle
+     * @param string $fooTitle
      */
     public function setFooTitle($fooTitle)
     {
@@ -139,7 +139,7 @@ class DDC1080Foo
     }
 
     /**
-     * @param field_type $fooBars
+     * @param array $fooBars
      */
     public function setFooBars($fooBars)
     {
@@ -174,7 +174,7 @@ class DDC1080Bar
     }
 
     /**
-     * @return the $barID
+     * @return int
      */
     public function getBarID()
     {
@@ -182,7 +182,7 @@ class DDC1080Bar
     }
 
     /**
-     * @return the $barTitle
+     * @return string
      */
     public function getBarTitle()
     {
@@ -190,7 +190,7 @@ class DDC1080Bar
     }
 
     /**
-     * @return the $fooBars
+     * @return array $fooBars
      */
     public function getFooBars()
     {
@@ -198,7 +198,7 @@ class DDC1080Bar
     }
 
     /**
-     * @param field_type $barID
+     * @param int $barID
      */
     public function setBarID($barID)
     {
@@ -206,7 +206,7 @@ class DDC1080Bar
     }
 
     /**
-     * @param field_type $barTitle
+     * @param string $barTitle
      */
     public function setBarTitle($barTitle)
     {
@@ -214,7 +214,7 @@ class DDC1080Bar
     }
 
     /**
-     * @param field_type $fooBars
+     * @param array $fooBars
      */
     public function setFooBars($fooBars)
     {

@@ -14,6 +14,9 @@ use function get_class;
  */
 class DDC1163Test extends OrmFunctionalTestCase
 {
+    private $productId;
+    private $proxyHolderId;
+
     protected function setUp() : void
     {
         parent::setUp();

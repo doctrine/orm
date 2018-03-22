@@ -12,7 +12,7 @@ final class GH6531Test extends OrmFunctionalTestCase
 {
     protected function setUp() : void
     {
-        parent::setup();
+        parent::setUp();
 
         $this->setUpEntitySchema(
             [

@@ -14,6 +14,8 @@ use function strtotime;
 
 class OptimisticTest extends OrmFunctionalTestCase
 {
+    private $conn;
+
     protected function setUp() : void
     {
         parent::setUp();

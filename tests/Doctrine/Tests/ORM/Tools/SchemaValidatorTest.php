@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Doctrine\Tests\ORM\Tools;
 
+use Doctrine\DBAL\Schema\Identifier;
 use Doctrine\ORM\Annotation as ORM;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Tools\SchemaValidator;

@@ -9,6 +9,8 @@ use Doctrine\Tests\OrmFunctionalTestCase;
 
 class Ticket2481Test extends OrmFunctionalTestCase
 {
+    private $conn;
+
     protected function setUp() : void
     {
         parent::setUp();

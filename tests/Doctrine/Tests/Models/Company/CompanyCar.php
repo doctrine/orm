@@ -33,6 +33,6 @@ class CompanyCar
 
     public function getBrand()
     {
-        return $this->title;
+        return $this->brand;
     }
 }

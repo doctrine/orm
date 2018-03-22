@@ -64,11 +64,11 @@ class SelectSqlGenerationTest extends OrmTestCase
             $sqlGenerated = $query->getSQL();
 
             $query->free();
+
+            self::assertEquals($sqlToBeConfirmed, $sqlGenerated);
         } catch (\Exception $e) {
             $this->fail($e->getMessage() . "\n" . $e->getTraceAsString());
         }
-
-        self::assertEquals($sqlToBeConfirmed, $sqlGenerated);
     }
 
     /**

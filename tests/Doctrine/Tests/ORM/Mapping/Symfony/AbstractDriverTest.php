@@ -17,6 +17,8 @@ use function unlink;
  */
 abstract class AbstractDriverTest extends DoctrineTestCase
 {
+    private $dir;
+
     public function testFindMappingFile() : void
     {
         $driver = $this->getDriver(

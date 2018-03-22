@@ -34,11 +34,11 @@ class UpdateSqlGenerationTest extends OrmTestCase
             $sqlGenerated = $query->getSql();
 
             $query->free();
+
+            self::assertEquals($sqlToBeConfirmed, $sqlGenerated);
         } catch (\Exception $e) {
             $this->fail($e->getMessage());
         }
-
-        self::assertEquals($sqlToBeConfirmed, $sqlGenerated);
     }
 
     public function testSupportsQueriesWithoutWhere() : void

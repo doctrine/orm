@@ -11,7 +11,7 @@ use Doctrine\Tests\OrmFunctionalTestCase;
 /**
  * Functional tests for the Single Table Inheritance mapping strategy.
  */
-class AdvancedAssociationTest extends OrmFunctionalTestCase
+class Ticket69Test extends OrmFunctionalTestCase
 {
     protected function setUp() : void
     {
@@ -124,7 +124,7 @@ class Lemma
 
 
     /**
-     * @var kateglo\application\utilities\collections\ArrayCollection
+     * @var ArrayCollection
      * @ORM\OneToMany(targetEntity=Relation::class, mappedBy="parent", cascade={"persist"})
      */
     private $relations;
@@ -177,7 +177,7 @@ class Lemma
     }
 
     /**
-     * @return kateglo\application\utilities\collections\ArrayCollection
+     * @return ArrayCollection
      */
     public function getRelations()
     {
@@ -311,7 +311,7 @@ class RelationType
     private $abbreviation;
 
     /**
-     * @var kateglo\application\utilities\collections\ArrayCollection
+     * @var ArrayCollection
      * @ORM\OneToMany(targetEntity=Relation::class, mappedBy="type", cascade={"persist"})
      */
     private $relations;
@@ -377,7 +377,7 @@ class RelationType
     }
 
     /**
-     * @return kateglo\application\utilities\collections\ArrayCollection
+     * @return ArrayCollection
      */
     public function getRelations()
     {
