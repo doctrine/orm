@@ -36,8 +36,49 @@ class DDC6470Test extends \Doctrine\Tests\OrmFunctionalTestCase
 	 * @throws \Doctrine\ORM\ORMException
 	 * @throws \Doctrine\ORM\OptimisticLockException
 	 */
-	public function testOneToOne()
+	public function testOneEntity()
 	{
+		$source = new DDC6470Source();
+		$target = new DDC6470Target1();
+		$source->setTarget1($target);
+
+		$this->_em->persist($source);
+		$this->_em->flush();
+		$this->_em->clear();
+
+		$this->assertTrue($this->_em->getCache()->containsEntity(DDC6470Source::class, ['id' => $source->getId()]));
+		$this->assertTrue($this->_em->getCache()->containsEntity(DDC6470Target1::class, ['id' => $target->getId()]));
+
+		$queryCount = $this->getCurrentQueryCount();
+
+		/** @var EntityRepository $er */
+		$er = $this->_em->getRepository(DDC6470Source::class);
+		$qb = $er->createQueryBuilder("n");
+		$qb->setCacheable(true)->setLifetime(3 * 60)->setCacheRegion($region = time());
+
+		$qb->getQuery()->getResult();
+
+		$newQueryCount = $this->getCurrentQueryCount();
+		$this->assertEquals($queryCount + 1, $newQueryCount, "+1 for query only. One more appears here @see UnitOfWork:2654. Acutally, it's not valid behaviour.");
+
+		$this->_em->clear();
+
+		/** @var EntityRepository $er */
+		$er = $this->_em->getRepository(DDC6470Source::class);
+		$qb = $er->createQueryBuilder("n");
+		$qb->setCacheable(true)->setLifetime(3 * 60)->setCacheRegion($region);
+		$qb->getQuery()->getResult();
+		$this->assertEquals($newQueryCount, $this->getCurrentQueryCount(), "Assert everything get from cache. Because of prev assertion, check for sure");
+	}
+
+	/**
+	 * @throws \Doctrine\Common\Persistence\Mapping\MappingException
+	 * @throws \Doctrine\ORM\ORMException
+	 * @throws \Doctrine\ORM\OptimisticLockException
+	 */
+	public function testMultipleEntities()
+	{
+
 		$source1 = new DDC6470Source();
 		$target1 = new DDC6470Target1();
 		$source1->setTarget1($target1);
@@ -51,13 +92,10 @@ class DDC6470Test extends \Doctrine\Tests\OrmFunctionalTestCase
 		$this->_em->flush();
 		$this->_em->clear();
 
-
-
 		$this->assertTrue($this->_em->getCache()->containsEntity(DDC6470Source::class, ['id' => $source1->getId()]));
 		$this->assertTrue($this->_em->getCache()->containsEntity(DDC6470Source::class, ['id' => $source2->getId()]));
 		$this->assertTrue($this->_em->getCache()->containsEntity(DDC6470Target1::class, ['id' => $target1->getId()]));
-		$this->assertTrue($this->_em->getCache()->containsEntity(DDC6470Target1::class, ['id' => $target2->getId()]));
-
+		$this->assertTrue($this->_em->getCache()->containsEntity(DDC6470Target2::class, ['id' => $target2->getId()]));
 
 		$queryCount = $this->getCurrentQueryCount();
 
@@ -69,7 +107,7 @@ class DDC6470Test extends \Doctrine\Tests\OrmFunctionalTestCase
 		$qb->getQuery()->getResult();
 
 		$newQueryCount = $this->getCurrentQueryCount();
-		$this->assertEquals($queryCount + 1, $newQueryCount, "One for query only. One more appears here @see UnitOfWork:2654.");
+		$this->assertEquals($queryCount + 1, $newQueryCount, "+1 for query only. One more appears here @see UnitOfWork:2654.");
 
 		$this->_em->clear();
 
@@ -78,7 +116,9 @@ class DDC6470Test extends \Doctrine\Tests\OrmFunctionalTestCase
 		$qb = $er->createQueryBuilder("n");
 		$qb->setCacheable(true)->setLifetime(3 * 60)->setCacheRegion($region);
 		$qb->getQuery()->getResult();
-		$this->assertEquals($newQueryCount, $this->getCurrentQueryCount(), "Assert everything get from cache.");
+		$this->assertEquals($newQueryCount, $this->getCurrentQueryCount(), "Assert everything get from cache. 
+		This is the main problem. 
+		The data hydrated in DefaultQueryCache::get() is not put into cache properly, some oneToOne relations are missed");
 	}
 }
 
