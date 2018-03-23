@@ -155,7 +155,13 @@ final class EntityManager implements EntityManagerInterface
         }
     }
 
-
+    /**
+     * @return MetadataCollection
+     */
+    public function getMetadatas(): MetadataCollection
+    {
+        return $this->metadatas;
+    }
 
     /**
      * {@inheritDoc}
@@ -256,6 +262,7 @@ final class EntityManager implements EntityManagerInterface
      */
     public function getClassMetadata($className) : Mapping\ClassMetadata
     {
+        $className = StaticClassNameConverter::getRealClass($className);
         return $this->metadatas->get($className);
     }
 

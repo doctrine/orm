@@ -16,7 +16,9 @@ use Doctrine\ORM\Cache\DefaultCacheFactory;
 use Doctrine\ORM\Cache\Logging\StatisticsCacheLogger;
 use Doctrine\ORM\Configuration;
 use Doctrine\ORM\EntityManagerInterface;
+use Doctrine\ORM\Mapping\ClassMetadataFactory;
 use Doctrine\ORM\Mapping\Driver\AnnotationDriver;
+use Doctrine\ORM\Mapping\MetadataCollection;
 use Doctrine\ORM\Proxy\Factory\ProxyFactory;
 use function is_array;
 use function realpath;
@@ -87,7 +89,8 @@ abstract class OrmTestCase extends DoctrineTestCase
         $conn = null,
         $conf = null,
         $eventManager = null,
-        $withSharedMetadata = true
+        $withSharedMetadata = true,
+        MetadataCollection $metadatas = null
     ) {
         $metadataCache = $withSharedMetadata
             ? self::getSharedMetadataCacheImpl()
@@ -101,7 +104,12 @@ abstract class OrmTestCase extends DoctrineTestCase
         $config->setProxyNamespace('Doctrine\Tests\Proxies');
         $config->setAutoGenerateProxyClasses(ProxyFactory::AUTOGENERATE_EVAL);
         $config->setMetadataDriverImpl(
-            $config->newDefaultAnnotationDriver([realpath(__DIR__ . '/Models/Cache')])
+            $config->newDefaultAnnotationDriver([
+                realpath(__DIR__ . '/Models/Cache'),
+                realpath(__DIR__ . '/Models/GeoNames'),
+                realpath(__DIR__ . '/Models/CMS'),
+                realpath(__DIR__ . '/Models/IdentityIsAssociation'),
+            ])
         );
 
         if ($this->isSecondLevelCacheEnabled) {
@@ -129,7 +137,13 @@ abstract class OrmTestCase extends DoctrineTestCase
             $conn = DriverManager::getConnection($conn, $config, $eventManager);
         }
 
-        return Mocks\EntityManagerMock::create($conn, $config, $eventManager)->getWrappedEntityManager();
+        if (! ($metadatas instanceof MetadataCollection)){
+            $eventManager = new EventManager();
+            $metadataFactory = new ClassMetadataFactory($config, $conn, $eventManager);
+            $metadatas = MetadataCollection::fromClassMetadatas($metadataFactory->getAllMetadata());
+        }
+
+        return Mocks\EntityManagerMock::create($conn, $config, $eventManager, $metadatas)->getWrappedEntityManager();
     }
 
     protected function enableSecondLevelCache($log = true)
