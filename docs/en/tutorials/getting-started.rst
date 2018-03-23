@@ -397,7 +397,7 @@ makes it an **invalid object**.
 Rich entities should represent **behavior**, not **data**, therefore
 they should be valid even after a ``__construct()`` call.
 
-To help creating such objects, we can rely on ``DTO``s, and/or make
+To help creating such objects, we can rely on ``DTOs``, and/or make
 our entities always up-to-date. This can be performed with static constructors,
 or rich mutators that accept ``DTOs`` as parameters.
 
