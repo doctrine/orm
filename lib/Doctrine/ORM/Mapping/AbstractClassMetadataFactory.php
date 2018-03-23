@@ -132,7 +132,7 @@ abstract class AbstractClassMetadataFactory implements ClassMetadataFactory
         $metadata = [];
 
         foreach ($driver->getAllClassNames() as $className) {
-            $metadata[] = $this->getMetadataFor($className);
+            $metadata[$className] = $this->getMetadataFor($className);
         }
 
         return $metadata;
