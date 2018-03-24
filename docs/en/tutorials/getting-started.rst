@@ -222,11 +222,11 @@ entity definition:
         /**
          * @var int
          */
-        protected $id;
+        private $id;
         /**
          * @var string
          */
-        protected $name;
+        private $name;
     }
 
 When creating entity classes, all of the fields should be ``private``.
@@ -424,12 +424,12 @@ Then we can add a new mutator to our ``User``:
         <?php
         class User
         {
-            public function updateFromProfile(ProfileEditingForm $profileForm): void
+            public function updateFromProfile(ProfileEditingDTO $profileFormDTO): void
             {
                 // ...
             }
 
-            public static function createFromRegistration(UserRegistrationForm $registrationForm): self
+            public static function createFromRegistration(UserRegistrationDTO $registrationDTO): self
             {
                 // ...
             }
@@ -437,7 +437,7 @@ Then we can add a new mutator to our ``User``:
 
 There are several advantages to using such a model:
 
-* **Entity state is always valid**. Since no setters exist, this means that we
+* **Entity state is always valid.** Since no setters exist, this means that we
 only update portions of the entity that should already be valid.
 * Instead of having plain getters and setters, our entity now has
 **real behavior**: it is much easier to determine the logic in the domain.
@@ -474,10 +474,10 @@ but you only need to choose one.
         class Product
         {
             /** @ORM\Id @ORM\Column(type="integer") @ORM\GeneratedValue **/
-            protected $id;
+            private $id;
 
             /** @ORM\Column(type="string") **/
-            protected $name;
+            private $name;
 
             // .. (other code)
         }
@@ -647,25 +647,25 @@ classes. We'll store them in ``src/Bug.php`` and ``src/User.php``, respectively.
          * @ORM\Id @ORM\Column(type="integer") @ORM\GeneratedValue
          * @var int
          */
-        protected $id;
+        private $id;
 
         /**
          * @ORM\Column(type="string")
          * @var string
          */
-        protected $description;
+        private $description;
 
         /**
          * @ORM\Column(type="datetime")
          * @var DateTime
          */
-        protected $created;
+        private $created;
 
         /**
          * @ORM\Column(type="string")
          * @var string
          */
-        protected $status;
+        private $status;
 
         public function getId()
         {
@@ -720,13 +720,13 @@ classes. We'll store them in ``src/Bug.php`` and ``src/User.php``, respectively.
          * @ORM\Id @ORM\GeneratedValue @ORM\Column(type="integer")
          * @var int
          */
-        protected $id;
+        private $id;
 
         /**
          * @ORM\Column(type="string")
          * @var string
          */
-        protected $name;
+        private $name;
 
         public function getId()
         {
@@ -773,7 +773,7 @@ domain model to match the requirements:
     {
         // ... (previous code)
 
-        protected $products;
+        private $products;
 
         public function __construct()
         {
@@ -791,8 +791,8 @@ domain model to match the requirements:
     {
         // ... (previous code)
 
-        protected $reportedBugs;
-        protected $assignedBugs;
+        private $reportedBugs;
+        private $assignedBugs;
 
         public function __construct()
         {
@@ -866,8 +866,8 @@ the bi-directional reference:
     {
         // ... (previous code)
 
-        protected $engineer;
-        protected $reporter;
+        private $engineer;
+        private $reporter;
 
         public function setEngineer(User $engineer)
         {
@@ -900,8 +900,8 @@ the bi-directional reference:
     {
         // ... (previous code)
 
-        protected $reportedBugs;
-        protected $assignedBugs;
+        private $reportedBugs;
+        private $assignedBugs;
 
         public function addReportedBug(Bug $bug)
         {
@@ -952,7 +952,7 @@ the database that points from Bugs to Products.
     {
         // ... (previous code)
 
-        protected $products = null;
+        private $products = null;
 
         public function assignToProduct(Product $product)
         {
@@ -987,37 +987,37 @@ the ``Product`` before:
             /**
              * @ORM\Id @ORM\Column(type="integer") @ORM\GeneratedValue
              **/
-            protected $id;
+            private $id;
 
             /**
              * @ORM\Column(type="string")
              **/
-            protected $description;
+            private $description;
 
             /**
              * @ORM\Column(type="datetime")
              **/
-            protected $created;
+            private $created;
 
             /**
              * @ORM\Column(type="string")
              **/
-            protected $status;
+            private $status;
 
             /**
              * @ORM\ManyToOne(targetEntity="User", inversedBy="assignedBugs")
              **/
-            protected $engineer;
+            private $engineer;
 
             /**
              * @ORM\ManyToOne(targetEntity="User", inversedBy="reportedBugs")
              **/
-            protected $reporter;
+            private $reporter;
 
             /**
              * @ORM\ManyToMany(targetEntity="Product")
              **/
-            protected $products;
+            private $products;
 
             // ... (other code)
         }
@@ -1089,25 +1089,25 @@ Finally, we'll add metadata mappings for the ``User`` entity.
              * @ORM\Id @ORM\GeneratedValue @ORM\Column(type="integer")
              * @var int
              **/
-            protected $id;
+            private $id;
 
             /**
              * @ORM\Column(type="string")
              * @var string
              **/
-            protected $name;
+            private $name;
 
             /**
              * @ORM\OneToMany(targetEntity="Bug", mappedBy="reporter")
              * @var Bug[] An ArrayCollection of Bug objects.
              **/
-            protected $reportedBugs = null;
+            private $reportedBugs = null;
 
             /**
              * @ORM\OneToMany(targetEntity="Bug", mappedBy="engineer")
              * @var Bug[] An ArrayCollection of Bug objects.
              **/
-            protected $assignedBugs = null;
+            private $assignedBugs = null;
 
             // .. (other code)
         }
