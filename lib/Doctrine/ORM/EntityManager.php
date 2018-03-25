@@ -147,12 +147,6 @@ final class EntityManager implements EntityManagerInterface
         $this->unitOfWork          = new UnitOfWork($this);
         $this->proxyFactory        = new StaticProxyFactory($this, $this->config->buildGhostObjectFactory());
         $this->identifierFlattener = new IdentifierFlattener($this->unitOfWork, $this->metadatas);
-
-        if ($config->isSecondLevelCacheEnabled()) {
-            $cacheConfig  = $config->getSecondLevelCacheConfiguration();
-            //$cacheFactory = $cacheConfig->getCacheFactory();
-            //$this->cache  = $cacheFactory->createCache($this);
-        }
     }
 
     /**
