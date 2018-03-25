@@ -358,7 +358,7 @@ final class EntityManager implements EntityManagerInterface
         foreach ($id as $i => $value) {
             if (is_object($value)) {
                 try{
-                    $this->mappings->get(StaticClassNameConverter::getClass($value));
+                    $this->mappings->get($value);
                     $id[$i] = $this->unitOfWork->getSingleIdentifierValue($value);
                 } catch (\Exception $e) {
                     $id[$i] = null;
@@ -460,7 +460,7 @@ final class EntityManager implements EntityManagerInterface
 
             if (is_object($value)) {
                 try{
-                    $this->mappings->get(StaticClassNameConverter::getClass($value));
+                    $this->mappings->get($value);
                     $scalarId[$i] = $this->unitOfWork->getSingleIdentifierValue($value);
                 } catch (\Exception $e) {
                     $scalarId[$i] = null;
@@ -527,7 +527,7 @@ final class EntityManager implements EntityManagerInterface
         foreach ($id as $i => $value) {
             if (is_object($value)) {
                 try{
-                    $this->mappings->get(StaticClassNameConverter::getClass($value));
+                    $this->mappings->get($value);
                     $id[$i] = $this->unitOfWork->getSingleIdentifierValue($value);
                 } catch (\Exception $e) {
                     $id[$i] = null;
