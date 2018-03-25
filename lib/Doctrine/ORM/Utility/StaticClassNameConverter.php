@@ -25,12 +25,8 @@ abstract class StaticClassNameConverter
 
     /**
      * Gets the real class name of a class name that could be a proxy.
-     *
-     * @param string $class
-     *
-     * @return string
      */
-    public static function getRealClass($class)
+    public static function getRealClass(string $class) : string
     {
         $inflector                       = self::$classNameInflector
             ?? self::$classNameInflector = (new Configuration())->getClassNameInflector();
@@ -40,12 +36,8 @@ abstract class StaticClassNameConverter
 
     /**
      * Gets the real class name of an object (even if its a proxy).
-     *
-     * @param object $object
-     *
-     * @return string
      */
-    public static function getClass($object)
+    public static function getClass(object $object) : string
     {
         $inflector                       = self::$classNameInflector
             ?? self::$classNameInflector = (new Configuration())->getClassNameInflector();
