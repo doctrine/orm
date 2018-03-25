@@ -269,7 +269,7 @@ of products purchased and maybe even the current price.
         private $items;
 
         /** @ORM\Column(type="boolean") */
-        private $payed = false;
+        private $paid = false;
 
         /** @ORM\Column(type="boolean") */
         private $shipped = false;
