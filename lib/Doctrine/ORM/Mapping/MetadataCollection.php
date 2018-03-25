@@ -5,6 +5,8 @@ declare(strict_types=1);
 namespace Doctrine\ORM\Mapping;
 
 
+use Doctrine\ORM\Utility\StaticClassNameConverter;
+
 class MetadataCollection
 {
 
@@ -31,6 +33,7 @@ class MetadataCollection
     public function get($name)
     {
         if(!isset($this->classMetadatas[$name])){
+        $name = StaticClassNameConverter::getRealClass($name);
             throw new \Exception('No metadata found for ' . $name);
         }
         return $this->classMetadatas[$name];

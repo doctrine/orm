@@ -248,7 +248,6 @@ final class EntityManager implements EntityManagerInterface
      */
     public function getClassMetadata($className) : Mapping\ClassMetadata
     {
-        $className = StaticClassNameConverter::getRealClass($className);
         return $this->metadatas->get($className);
     }
 
