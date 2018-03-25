@@ -129,7 +129,7 @@ final class EntityManager implements EntityManagerInterface
     private $cache;
 
     /** @var MetadataCollection */
-    private $metadatas;
+    private $mappings;
 
     /**
      * Creates a new EntityManager that operates on the given database connection
@@ -141,12 +141,12 @@ final class EntityManager implements EntityManagerInterface
         $this->conn            = $conn;
         $this->config          = $config;
         $this->eventManager    = $eventManager;
-        $this->metadatas       = $metadataCollection;
+        $this->mappings       = $metadataCollection;
 
         $this->repositoryFactory   = $config->getRepositoryFactory();
         $this->unitOfWork          = new UnitOfWork($this);
         $this->proxyFactory        = new StaticProxyFactory($this, $this->config->buildGhostObjectFactory());
-        $this->identifierFlattener = new IdentifierFlattener($this->unitOfWork, $this->metadatas);
+        $this->identifierFlattener = new IdentifierFlattener($this->unitOfWork, $this->mappings);
     }
 
     /**
@@ -248,7 +248,7 @@ final class EntityManager implements EntityManagerInterface
      */
     public function getClassMetadata($className) : Mapping\ClassMetadata
     {
-        return $this->metadatas->get($className);
+        return $this->mappings->get($className);
     }
 
     /**
@@ -345,7 +345,7 @@ final class EntityManager implements EntityManagerInterface
      */
     public function find($entityName, $id, $lockMode = null, $lockVersion = null)
     {
-        $class     = $this->metadatas->get(ltrim($entityName, '\\'));
+        $class     = $this->mappings->get(ltrim($entityName, '\\'));
         $className = $class->getClassName();
 
         if (! is_array($id)) {
@@ -359,7 +359,7 @@ final class EntityManager implements EntityManagerInterface
         foreach ($id as $i => $value) {
             if (is_object($value)) {
                 try{
-                    $this->metadatas->get(StaticClassNameConverter::getClass($value));
+                    $this->mappings->get(StaticClassNameConverter::getClass($value));
                     $id[$i] = $this->unitOfWork->getSingleIdentifierValue($value);
                 } catch (\Exception $e) {
                     $id[$i] = null;
@@ -443,7 +443,7 @@ final class EntityManager implements EntityManagerInterface
      */
     public function getReference($entityName, $id)
     {
-        $class     = $this->metadatas->get(ltrim($entityName, '\\'));
+        $class     = $this->mappings->get(ltrim($entityName, '\\'));
         $className = $class->getClassName();
 
         if (! is_array($id)) {
@@ -461,7 +461,7 @@ final class EntityManager implements EntityManagerInterface
 
             if (is_object($value)) {
                 try{
-                    $this->metadatas->get(StaticClassNameConverter::getClass($value));
+                    $this->mappings->get(StaticClassNameConverter::getClass($value));
                     $scalarId[$i] = $this->unitOfWork->getSingleIdentifierValue($value);
                 } catch (\Exception $e) {
                     $scalarId[$i] = null;
@@ -514,7 +514,7 @@ final class EntityManager implements EntityManagerInterface
      */
     public function getPartialReference($entityName, $id)
     {
-        $class     = $this->metadatas->get(ltrim($entityName, '\\'));
+        $class     = $this->mappings->get(ltrim($entityName, '\\'));
         $className = $class->getClassName();
 
         if (! is_array($id)) {
@@ -528,7 +528,7 @@ final class EntityManager implements EntityManagerInterface
         foreach ($id as $i => $value) {
             if (is_object($value)) {
                 try{
-                    $this->metadatas->get(StaticClassNameConverter::getClass($value));
+                    $this->mappings->get(StaticClassNameConverter::getClass($value));
                     $id[$i] = $this->unitOfWork->getSingleIdentifierValue($value);
                 } catch (\Exception $e) {
                     $id[$i] = null;
