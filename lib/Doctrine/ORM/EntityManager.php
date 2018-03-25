@@ -828,7 +828,7 @@ final class EntityManager implements EntityManagerInterface
 
     public static function createWithClassMetadataFactory(Connection $connection, Configuration $config, EventManager $eventManager, ClassMetadataFactory $metadataFactory)
     {
-        $metadatas = MetadataCollection::fromClassMetadatas($metadataFactory->getAllMetadata());
+        $metadatas = MetadataCollection::fromClassMetadatas(...$metadataFactory->getAllMetadata());
 
         return new self($connection, $config, $eventManager, $metadatas);
     }

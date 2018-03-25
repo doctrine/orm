@@ -140,7 +140,7 @@ abstract class OrmTestCase extends DoctrineTestCase
         if (! ($metadatas instanceof MetadataCollection)){
             $eventManager = new EventManager();
             $metadataFactory = new ClassMetadataFactory($config, $conn, $eventManager);
-            $metadatas = MetadataCollection::fromClassMetadatas($metadataFactory->getAllMetadata());
+            $metadatas = MetadataCollection::fromClassMetadatas(...$metadataFactory->getAllMetadata());
         }
 
         return Mocks\EntityManagerMock::create($conn, $config, $eventManager, $metadatas)->getWrappedEntityManager();

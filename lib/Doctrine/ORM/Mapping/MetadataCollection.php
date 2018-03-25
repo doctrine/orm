@@ -13,34 +13,29 @@ class MetadataCollection
     /**
      * @var ClassMetadata[]
      */
-    private $classMetadatas;
+    private $metadata;
 
-    private function __construct(array $classMetadatas)
+    private function __construct(array $metadata)
     {
-        $metadataByClassName = array_reduce (
-            $classMetadatas,
-            function ( $carry, ClassMetadata $classMetadata )
-            {
-                $className = $classMetadata->getClassName();
-                $carry[$className] = $classMetadata;
-                return $carry;
-            } ,
-            []
-        ) ;
-        $this->classMetadatas = $metadataByClassName;
+        $metadataByClassName = array_combine(
+            array_map(function (ClassMetadata $metadata) { return $metadata->getClassName(); }, $metadata),
+            $metadata
+        );
+        $this->metadata = $metadataByClassName;
     }
 
     public function get($name)
     {
-        if(!isset($this->classMetadatas[$name])){
         $name = StaticClassNameConverter::getRealClass($name);
+        if(!isset($this->metadata[$name])){
             throw new \Exception('No metadata found for ' . $name);
         }
-        return $this->classMetadatas[$name];
+        return $this->metadata[$name];
     }
 
-    public static function fromClassMetadatas(array $classMetadatas)
+    public static function fromClassMetadatas(ClassMetadata $firstClass, ClassMetadata ...$otherClasses)
     {
-        return new self($classMetadatas);
+        $otherClasses[] = $firstClass;
+        return new self($otherClasses);
     }
 }
