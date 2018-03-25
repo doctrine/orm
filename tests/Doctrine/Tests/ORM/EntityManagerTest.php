@@ -52,11 +52,6 @@ class EntityManagerTest extends OrmTestCase
         self::assertInstanceOf(Connection::class, $this->em->getConnection());
     }
 
-    public function testGetMetadatas() : void
-    {
-        self::assertInstanceOf(MetadataCollection::class, $this->em->getMetadatas());
-    }
-
     public function testGetConfiguration() : void
     {
         self::assertInstanceOf(Configuration::class, $this->em->getConfiguration());

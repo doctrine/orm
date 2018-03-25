@@ -156,14 +156,6 @@ final class EntityManager implements EntityManagerInterface
     }
 
     /**
-     * @return MetadataCollection
-     */
-    public function getMetadatas(): MetadataCollection
-    {
-        return $this->metadatas;
-    }
-
-    /**
      * {@inheritDoc}
      */
     public function getConnection()
