@@ -85,24 +85,6 @@ class ClassMetadataFactory extends AbstractClassMetadataFactory
 
     /**
      * {@inheritdoc}
-     */
-    protected function onNotFoundMetadata(
-        string $className,
-        ClassMetadataBuildingContext $metadataBuildingContext
-    ) : ?ClassMetadata {
-        if (! $this->eventManager->hasListeners(Events::onClassMetadataNotFound)) {
-            return null;
-        }
-
-        $eventArgs = new OnClassMetadataNotFoundEventArgs($className, $metadataBuildingContext, $this->em);
-
-        $this->eventManager->dispatchEvent(Events::onClassMetadataNotFound, $eventArgs);
-
-        return $eventArgs->getFoundMetadata();
-    }
-
-    /**
-     * {@inheritdoc}
      *
      * @throws MappingException
      * @throws ORMException
@@ -161,12 +143,6 @@ class ClassMetadataFactory extends AbstractClassMetadataFactory
         }
 
         $this->completeRuntimeMetadata($classMetadata, $parent);
-
-        if ($this->eventManager->hasListeners(Events::loadClassMetadata)) {
-            $eventArgs = new LoadClassMetadataEventArgs($classMetadata, $this->em);
-
-            $this->eventManager->dispatchEvent(Events::loadClassMetadata, $eventArgs);
-        }
 
         $this->buildValueGenerationPlan($classMetadata);
         $this->validateRuntimeMetadata($classMetadata, $parent);
