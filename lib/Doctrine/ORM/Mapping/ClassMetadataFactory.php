@@ -63,7 +63,6 @@ class ClassMetadataFactory extends AbstractClassMetadataFactory
         $this->connection = $connection;
         $this->eventManager = $eventManager;
         $this->driver      = $this->configuration->getMetadataDriverImpl();
-        $this->initialize = true;
     }
 
     /**
@@ -76,11 +75,6 @@ class ClassMetadataFactory extends AbstractClassMetadataFactory
         array_map([$this, 'resolveDiscriminatorValue'], $loaded);
 
         return $loaded;
-    }
-
-    protected function initialize() : void
-    {
-        $this->initialized = true;
     }
 
     /**
