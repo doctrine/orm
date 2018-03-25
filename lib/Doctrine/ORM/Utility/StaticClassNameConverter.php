@@ -7,6 +7,7 @@ namespace Doctrine\ORM\Utility;
 use ProxyManager\Configuration;
 use ProxyManager\Inflector\ClassNameInflectorInterface;
 use function get_class;
+use function ltrim;
 
 /**
  * This class provides utility method to retrieve class names, and to convert
@@ -28,6 +29,7 @@ abstract class StaticClassNameConverter
      */
     public static function getRealClass(string $class) : string
     {
+        $class = ltrim($class, '\\');
         $inflector                       = self::$classNameInflector
             ?? self::$classNameInflector = (new Configuration())->getClassNameInflector();
 

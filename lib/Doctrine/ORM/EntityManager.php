@@ -25,7 +25,6 @@ use function get_class;
 use function gettype;
 use function is_array;
 use function is_object;
-use function ltrim;
 use function sprintf;
 
 /**
@@ -345,7 +344,7 @@ final class EntityManager implements EntityManagerInterface
      */
     public function find($entityName, $id, $lockMode = null, $lockVersion = null)
     {
-        $class     = $this->mappings->get(ltrim($entityName, '\\'));
+        $class     = $this->mappings->get($entityName);
         $className = $class->getClassName();
 
         if (! is_array($id)) {
@@ -443,7 +442,7 @@ final class EntityManager implements EntityManagerInterface
      */
     public function getReference($entityName, $id)
     {
-        $class     = $this->mappings->get(ltrim($entityName, '\\'));
+        $class     = $this->mappings->get($entityName);
         $className = $class->getClassName();
 
         if (! is_array($id)) {
@@ -514,7 +513,7 @@ final class EntityManager implements EntityManagerInterface
      */
     public function getPartialReference($entityName, $id)
     {
-        $class     = $this->mappings->get(ltrim($entityName, '\\'));
+        $class     = $this->mappings->get($entityName);
         $className = $class->getClassName();
 
         if (! is_array($id)) {
