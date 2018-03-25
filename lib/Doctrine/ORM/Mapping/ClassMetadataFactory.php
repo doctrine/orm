@@ -13,6 +13,7 @@ use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Event\LoadClassMetadataEventArgs;
 use Doctrine\ORM\Event\OnClassMetadataNotFoundEventArgs;
 use Doctrine\ORM\Events;
+use Doctrine\ORM\Mapping\Driver\MappingDriver;
 use Doctrine\ORM\ORMException;
 use Doctrine\ORM\Sequencing;
 use Doctrine\ORM\Sequencing\Planning\AssociationValueGeneratorExecutor;
@@ -56,6 +57,11 @@ class ClassMetadataFactory extends AbstractClassMetadataFactory
      * @var EventManager
      */
     private $eventManager;
+
+    /**
+     * @var MappingDriver
+     */
+    private $driver;
 
     public function __construct(Configuration $configuration, Connection $connection, EventManager $eventManager)
     {
