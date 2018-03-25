@@ -811,7 +811,7 @@ final class EntityManager implements EntityManagerInterface
      * @throws \InvalidArgumentException
      * @throws ORMException
      */
-    public static function create($connection, Configuration $config, ?EventManager $eventManager = null)
+    public static function create($connection, Configuration $config, EventManager $eventManager)
     {
         if (! $config->getMetadataDriverImpl()) {
             throw ORMException::missingMappingDriverImpl();

@@ -6,6 +6,7 @@ namespace Doctrine\Tests;
 
 use Doctrine\Common\Cache\ArrayCache;
 use Doctrine\Common\Cache\Cache;
+use Doctrine\Common\EventManager;
 use Doctrine\DBAL\Driver\Connection;
 use Doctrine\DBAL\Logging\DebugStack;
 use Doctrine\DBAL\Types\Type;
@@ -774,7 +775,7 @@ abstract class OrmFunctionalTestCase extends OrmTestCase
             $evm->addEventListener(['onFlush'], new DebugUnitOfWorkListener());
         }
 
-        return EntityManager::create($conn, $config);
+        return EntityManager::create($conn, $config, $conn->getEventManager());
     }
 
     /**

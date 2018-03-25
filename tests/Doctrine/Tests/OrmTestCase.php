@@ -137,8 +137,11 @@ abstract class OrmTestCase extends DoctrineTestCase
             $conn = DriverManager::getConnection($conn, $config, $eventManager);
         }
 
-        if (! ($metadatas instanceof MetadataCollection)){
+        if ($eventManager === null) {
             $eventManager = new EventManager();
+        }
+
+        if (! ($metadatas instanceof MetadataCollection)){
             $metadataFactory = new ClassMetadataFactory($config, $conn, $eventManager);
             $metadatas = MetadataCollection::fromClassMetadatas(...$metadataFactory->getAllMetadata());
         }
