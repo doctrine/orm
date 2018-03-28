@@ -132,7 +132,7 @@ class GH7162Child
 
     /**
      * @ORM\ManyToOne(targetEntity=GH7162Parent::class, inversedBy="children")
-     * @ORM\JoinColumn(referencedColumnName="parent_id")
+     * @ORM\JoinColumn(referencedColumnName="id")
      *
      * @var GH7162Parent
      */
