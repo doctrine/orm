@@ -1991,7 +1991,13 @@ class UnitOfWork implements PropertyChangedListener
      */
     public function scheduleOrphanRemoval($entity)
     {
-        $this->orphanRemovals[spl_object_id($entity)] = $entity;
+        // Detached entities should not be scheduled for orphan removal,
+        // because they have not yet been persisted.
+        if ($this->getEntityState($entity) === self::STATE_DETACHED) {
+            return;
+        }
+
+        $this->orphanRemovals[spl_object_hash($entity)] = $entity;
     }
 
     /**
