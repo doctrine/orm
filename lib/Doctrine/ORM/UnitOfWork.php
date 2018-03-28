@@ -1991,12 +1991,6 @@ class UnitOfWork implements PropertyChangedListener
      */
     public function scheduleOrphanRemoval($entity)
     {
-        // Entities should not be scheduled for orphan removal,
-        // if they do not exist in the identity map or if they are not about to be inserted.
-        if (!$this->isInIdentityMap($entity) && !$this->isScheduledForInsert($entity)) {
-            return;
-        }
-
         $this->orphanRemovals[spl_object_hash($entity)] = $entity;
     }
 
