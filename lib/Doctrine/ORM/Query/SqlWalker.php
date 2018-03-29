@@ -164,7 +164,7 @@ class SqlWalker implements TreeWalker
     /**
      * {@inheritDoc}
      */
-    public function __construct($query, $parserResult, array $queryComponents)
+    public function __construct(AbstractQuery $query, ParserResult $parserResult, array $queryComponents)
     {
         $this->query           = $query;
         $this->parserResult    = $parserResult;
