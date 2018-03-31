@@ -738,7 +738,7 @@ You can register custom DQL functions in your ORM Configuration:
     $config->addCustomNumericFunction($name, $class);
     $config->addCustomDatetimeFunction($name, $class);
 
-    $em = EntityManager::create($dbParams, $config);
+    $em = EntityManager::create($connection, $config);
 
 The functions have to return either a string, numeric or datetime
 value depending on the registered function type. As an example we

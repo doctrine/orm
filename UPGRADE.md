@@ -1,5 +1,26 @@
 # Upgrade to 3.0
 
+## BC Break: Removed DBAL Connection factory from EntityManager
+
+EntityManager no longer provides a factory for DBAL Connection from an array.
+You must now pass an existing Connection instance directly.
+You can use `Doctrine\DBAL\DriverManager::getConnection()` factory to create new Connection.
+
+Before:
+
+```
+$dbParams = ['driver' => 'pdo_sqlite', 'memory' => true];
+$entityManager = EntityManager::create($dbParams, $configuration);
+```
+
+After:
+
+```
+$dbParams = ['driver' => 'pdo_sqlite', 'memory' => true];
+$connection = DriverManager::getConnection($dbParams);
+$entityManager = EntityManager::create($connection, $configuration);
+```
+
 ## BC Break: Removed possibility to extend the doctrine mapping xml schema with anything
 
 If you want to extend it now you have to provide your own validation schema.

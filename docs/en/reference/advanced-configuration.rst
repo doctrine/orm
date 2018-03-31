@@ -9,6 +9,8 @@ steps of configuration.
 .. code-block:: php
 
     <?php
+
+    use Doctrine\DBAL\DriverManager;
     use Doctrine\ORM\EntityManager;
     use Doctrine\ORM\Configuration;
     use Doctrine\Common\Proxy\ProxyFactory;
@@ -39,7 +41,8 @@ steps of configuration.
         'path' => 'database.sqlite'
     ];
 
-    $em = EntityManager::create($connectionOptions, $config);
+    $connection = DriverManager::getConnection($connectionOptions);
+    $em = EntityManager::create($connection, $config);
 
 .. note::
 

@@ -45,7 +45,7 @@ configuration:
     $config->addCustomNumericFunction($name, $class);
     $config->addCustomDatetimeFunction($name, $class);
 
-    $em = EntityManager::create($dbParams, $config);
+    $em = EntityManager::create($connection, $config);
 
 The ``$name`` is the name the function will be referred to in the
 DQL query. ``$class`` is a string of a class-name which has to

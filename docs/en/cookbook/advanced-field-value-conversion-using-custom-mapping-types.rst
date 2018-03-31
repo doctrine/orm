@@ -229,7 +229,7 @@ Example usage
     <?php
 
     // Bootstrapping stuff...
-    // $em = \Doctrine\ORM\EntityManager::create($connectionOptions, $config);
+    // $em = \Doctrine\ORM\EntityManager::create($connection, $config);
 
     // Setup custom mapping type
     use Doctrine\DBAL\Types\Type;

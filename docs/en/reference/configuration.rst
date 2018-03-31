@@ -42,33 +42,36 @@ access point to ORM functionality provided by Doctrine.
 
     <?php
     // bootstrap.php
-    require_once "vendor/autoload.php";
+    require_once 'vendor/autoload.php';
 
-    use Doctrine\ORM\Tools\Setup;
+    use Doctrine\DBAL\DriverManager;
     use Doctrine\ORM\EntityManager;
+    use Doctrine\ORM\Tools\Setup;
 
-    $paths = array("/path/to/entity-files");
+    $paths = ['/path/to/entity-files'];
     $isDevMode = false;
 
     // the connection configuration
-    $dbParams = array(
+    $dbParams = [
         'driver'   => 'pdo_mysql',
         'user'     => 'root',
         'password' => '',
         'dbname'   => 'foo',
-    );
+    ];
 
     $config = Setup::createAnnotationMetadataConfiguration($paths, $isDevMode);
-    $entityManager = EntityManager::create($dbParams, $config);
+    $connection = DriverManager::getConnection($dbParams);
+    $entityManager = EntityManager::create($connection, $config);
 
 Or if you prefer XML:
 
 .. code-block:: php
 
     <?php
-    $paths = array("/path/to/xml-mappings");
+    $paths = ['/path/to/xml-mappings'];
     $config = Setup::createXMLMetadataConfiguration($paths, $isDevMode);
-    $entityManager = EntityManager::create($dbParams, $config);
+    $connection = DriverManager::getConnection($dbParams);
+    $entityManager = EntityManager::create($connection, $config);
 
 Inside the ``Setup`` methods several assumptions are made:
 

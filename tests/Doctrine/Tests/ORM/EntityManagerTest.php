@@ -9,7 +9,6 @@ use Doctrine\DBAL\Connection;
 use Doctrine\ORM\Configuration;
 use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\Mapping\ClassMetadataFactory;
-use Doctrine\ORM\Mapping\Driver\MappingDriver;
 use Doctrine\ORM\ORMException;
 use Doctrine\ORM\ORMInvalidArgumentException;
 use Doctrine\ORM\Proxy\Factory\ProxyFactory;
@@ -197,16 +196,6 @@ class EntityManagerTest extends OrmTestCase
     {
         self::assertSame($this->em, $em);
         return 'callback';
-    }
-
-    public function testCreateInvalidConnection() : void
-    {
-        $this->expectException(\InvalidArgumentException::class);
-        $this->expectExceptionMessage('Invalid $connection argument of type integer given: "1".');
-
-        $config = new Configuration();
-        $config->setMetadataDriverImpl($this->createMock(MappingDriver::class));
-        EntityManager::create(1, $config);
     }
 
     /**

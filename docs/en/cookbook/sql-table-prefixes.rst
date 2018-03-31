@@ -81,5 +81,5 @@ before the prefix has been set.
     $tablePrefix = new \DoctrineExtensions\TablePrefix('prefix_');
     $evm->addEventListener(\Doctrine\ORM\Events::loadClassMetadata, $tablePrefix);
 
-    $em = \Doctrine\ORM\EntityManager::create($connectionOptions, $config, $evm);
+    $em = \Doctrine\ORM\EntityManager::create($connection, $config, $evm);
 

@@ -8,7 +8,6 @@ use Doctrine\Common\EventManager;
 use Doctrine\Common\Persistence\Mapping\MappingException;
 use Doctrine\Common\Persistence\ObjectRepository;
 use Doctrine\DBAL\Connection;
-use Doctrine\DBAL\DriverManager;
 use Doctrine\DBAL\LockMode;
 use Doctrine\ORM\Mapping\ClassMetadataFactory;
 use Doctrine\ORM\Proxy\Factory\ProxyFactory;
@@ -20,12 +19,9 @@ use Doctrine\ORM\Repository\RepositoryFactory;
 use Doctrine\ORM\Utility\IdentifierFlattener;
 use Doctrine\ORM\Utility\StaticClassNameConverter;
 use function array_keys;
-use function get_class;
-use function gettype;
 use function is_array;
 use function is_object;
 use function ltrim;
-use function sprintf;
 
 /**
  * The EntityManager is the central access point to ORM functionality.
@@ -35,14 +31,15 @@ use function sprintf;
  * the static create() method. The quickest way to obtain a fully
  * configured EntityManager is:
  *
- *     use Doctrine\ORM\Tools\Setup;
+ *     use Doctrine\DBAL\DriverManager;
  *     use Doctrine\ORM\EntityManager;
+ *     use Doctrine\ORM\Tools\Setup;
  *
- *     $paths = array('/path/to/entity/mapping/files');
+ *     $paths = ['/path/to/entity/mapping/files'];
  *
- *     $config = Setup::createAnnotationMetadataConfiguration($paths);
- *     $dbParams = array('driver' => 'pdo_sqlite', 'memory' => true);
- *     $entityManager = EntityManager::create($dbParams, $config);
+ *     $configuration = Setup::createAnnotationMetadataConfiguration($paths);
+ *     $connection = DriverManager::getConnection(['driver' => 'pdo_sqlite', 'memory' => true]);
+ *     $entityManager = EntityManager::create($connection, $configuration);
  *
  * For more information see
  * {@link http://docs.doctrine-project.org/projects/doctrine-orm/en/latest/reference/configuration.html}
@@ -812,59 +809,26 @@ final class EntityManager implements EntityManagerInterface
     /**
      * Factory method to create EntityManager instances.
      *
-     * @param Connection|mixed[] $connection   An array with the connection parameters or an existing Connection instance.
-     * @param Configuration      $config       The Configuration instance to use.
-     * @param EventManager       $eventManager The EventManager instance to use.
+     * @param Connection    $connection   The Connection instance to use.
+     * @param Configuration $config       The Configuration instance to use.
+     * @param EventManager  $eventManager The EventManager instance to use.
      *
      * @return EntityManager The created EntityManager.
      *
      * @throws \InvalidArgumentException
      * @throws ORMException
      */
-    public static function create($connection, Configuration $config, ?EventManager $eventManager = null)
+    public static function create(Connection $connection, Configuration $config, ?EventManager $eventManager = null)
     {
         if (! $config->getMetadataDriverImpl()) {
             throw ORMException::missingMappingDriverImpl();
-        }
-
-        $connection = static::createConnection($connection, $config, $eventManager);
-
-        return new EntityManager($connection, $config, $connection->getEventManager());
-    }
-
-    /**
-     * Factory method to create Connection instances.
-     *
-     * @param Connection|mixed[] $connection   An array with the connection parameters or an existing Connection instance.
-     * @param Configuration      $config       The Configuration instance to use.
-     * @param EventManager       $eventManager The EventManager instance to use.
-     *
-     * @return Connection
-     *
-     * @throws \InvalidArgumentException
-     * @throws ORMException
-     */
-    protected static function createConnection($connection, Configuration $config, ?EventManager $eventManager = null)
-    {
-        if (is_array($connection)) {
-            return DriverManager::getConnection($connection, $config, $eventManager ?: new EventManager());
-        }
-
-        if (! $connection instanceof Connection) {
-            throw new \InvalidArgumentException(
-                sprintf(
-                    'Invalid $connection argument of type %s given%s.',
-                    is_object($connection) ? get_class($connection) : gettype($connection),
-                    is_object($connection) ? '' : ': "' . $connection . '"'
-                )
-            );
         }
 
         if ($eventManager !== null && $connection->getEventManager() !== $eventManager) {
             throw ORMException::mismatchedEventManager();
         }
 
-        return $connection;
+        return new EntityManager($connection, $config, $eventManager ?? $connection->getEventManager());
     }
 
     /**

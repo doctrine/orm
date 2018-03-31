@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Doctrine\Performance;
 
 use Doctrine\DBAL\Driver\PDOSqlite\Driver;
+use Doctrine\DBAL\DriverManager;
 use Doctrine\ORM\Configuration;
 use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\EntityManagerInterface;
@@ -29,13 +30,13 @@ final class EntityManagerFactory
             ])
         );
 
-        $entityManager = EntityManager::create(
+        $connection    = DriverManager::getConnection(
             [
                 'driverClass' => Driver::class,
                 'memory'      => true,
-            ],
-            $config
+            ]
         );
+        $entityManager = EntityManager::create($connection, $config);
 
         (new SchemaTool($entityManager))
             ->createSchema(array_map([$entityManager, 'getClassMetadata'], $schemaClassNames));
