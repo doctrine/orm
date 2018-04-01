@@ -116,7 +116,7 @@ class Paginator implements \Countable, \IteratorAggregate
         $offset = $this->query->getFirstResult();
         $length = $this->query->getMaxResults();
 
-        if ($this->fetchJoinCollection) {
+        if ($this->fetchJoinCollection && strpos($this->query->getDQL(), 'HAVING') === false) {
             $subQuery = $this->cloneQuery($this->query);
 
             if ($this->useOutputWalker($subQuery)) {
