@@ -590,7 +590,7 @@ class UnitOfWork implements PropertyChangedListener
 
             foreach ($actualData as $propName => $actualValue) {
                 // skip field, its a partially omitted one!
-                if (! (isset($originalData[$propName]) || array_key_exists($propName, $originalData))) {
+                if (! array_key_exists($propName, $originalData)) {
                     continue;
                 }
 
