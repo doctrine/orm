@@ -109,7 +109,7 @@ You can select scalars from any entity in the query.
 
 .. code-block:: sql
 
-    ``SELECT u, p.quantity FROM Users u...``
+    SELECT u, p.quantity FROM Users u...
 
 Here, the result will again be an array of arrays, with each element
 being an array made up of a User object and the scalar value
