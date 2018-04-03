@@ -1,5 +1,11 @@
 # Upgrade to 3.0
 
+## BC Break: Missing type declaration added for identifier generators
+
+The interfaces `Doctrine\ORM\Sequencing\Generator` and
+`Doctrine\ORM\Sequencing\Planning\ValueGenerationPlan` now uses explicit type
+declaration for parameters and return (as much as possible).
+
 ## BC Break: Removed possibility to extend the doctrine mapping xml schema with anything
 
 If you want to extend it now you have to provide your own validation schema.
