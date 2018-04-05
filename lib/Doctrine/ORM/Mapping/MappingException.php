@@ -15,7 +15,7 @@ use function sprintf;
 /**
  * A MappingException indicates that something is wrong with the mapping setup.
  */
-class MappingException extends \Exception implements ORMException
+class MappingException extends \LogicException implements ORMException
 {
     /**
      * @return MappingException

@@ -8,7 +8,7 @@ use Doctrine\ORM\Exception\ORMException;
 use function implode;
 use function sprintf;
 
-class HydrationException extends \Exception implements ORMException
+class HydrationException extends \LogicException implements ORMException
 {
     /**
      * @return HydrationException
