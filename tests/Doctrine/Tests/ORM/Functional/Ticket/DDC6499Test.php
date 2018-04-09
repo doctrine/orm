@@ -6,7 +6,7 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Tests\OrmFunctionalTestCase;
 
 /**
- * @group #6499
+ * @group 6499
  *
  *
  * Specifically, DDC6499B has a dependency on DDC6499A, and DDC6499A
@@ -91,6 +91,6 @@ class DDC6499B
     /** @Id @Column(type="integer") @GeneratedValue */
     public $id;
 
-    /** @ManyToOne(targetEntity="DDC6499A") */
+    /** @ManyToOne(targetEntity=DDC6499A::class) */
     private $a;
 }
