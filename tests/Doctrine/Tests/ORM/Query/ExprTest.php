@@ -259,6 +259,11 @@ class ExprTest extends \Doctrine\Tests\OrmTestCase
         $this->assertEquals('u.id BETWEEN 3 AND 6', (string) $this->_expr->between('u.id', 3, 6));
     }
 
+    public function testNotBetweenExpr()
+    {
+        $this->assertEquals('u.id NOT BETWEEN 3 AND 6', (string) $this->_expr->notBetween('u.id', 3, 6));
+    }
+
     public function testTrimExpr()
     {
         $this->assertEquals('TRIM(u.id)', (string) $this->_expr->trim('u.id'));

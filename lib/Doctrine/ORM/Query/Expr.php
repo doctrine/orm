@@ -622,15 +622,29 @@ class Expr
     /**
      * Creates an instance of BETWEEN() function, with the given argument.
      *
-     * @param mixed   $val Valued to be inspected by range values.
-     * @param integer $x   Starting range value to be used in BETWEEN() function.
-     * @param integer $y   End point value to be used in BETWEEN() function.
+     * @param mixed      $val Valued to be inspected by range values.
+     * @param int|string $x   Starting range value to be used in BETWEEN() function.
+     * @param int|string $y   End point value to be used in BETWEEN() function.
      *
-     * @return Expr\Func A BETWEEN expression.
+     * @return Expr\Between A BETWEEN expression.
      */
     public function between($val, $x, $y)
     {
-        return $val . ' BETWEEN ' . $x . ' AND ' . $y;
+        return new Expr\Between(Expr\Between::BETWEEN, $val, $x, $y);
+    }
+
+    /**
+     * Creates an instance of BETWEEN() function, with the given argument.
+     *
+     * @param mixed      $val Valued to be inspected by range values.
+     * @param int|string $x   Starting range value to be used in BETWEEN() function.
+     * @param int|string $y   End point value to be used in BETWEEN() function.
+     *
+     * @return Expr\Between A BETWEEN expression.
+     */
+    public function notBetween($val, $x, $y)
+    {
+        return new Expr\Between(Expr\Between::NOT_BETWEEN, $val, $x, $y);
     }
 
     /**
