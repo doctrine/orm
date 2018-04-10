@@ -1,10 +1,8 @@
 ORM Documentation
 =================
 
-The Doctrine documentation is comprised of tutorials, a reference section and
-cookbook articles that explain different parts of the Object Relational mapper.
-
-Doctrine DBAL and Doctrine Common both have their own documentation.
+The Doctrine ORM documentation is comprised of tutorials, a reference section and
+cookbook articles that explain different parts of the Object Relational Mapper.
 
 Getting Help
 ------------
@@ -19,38 +17,8 @@ Doctrine ORM don't panic. You can get help from different sources:
 -  On `Twitter <https://twitter.com/search/%23doctrine2>`_ with ``#doctrine2``
 -  On `StackOverflow <https://stackoverflow.com/questions/tagged/doctrine2>`_
 
-Tutorials
----------
-
-.. toctree::
-   :depth: 1
-   :glob:
-
-   tutorials/*
-
-Reference Guide
+Getting Started
 ---------------
 
-.. toctree::
-   :depth: 1
-   :glob:
-
-   reference/*
-
-Cookbook
---------
-
-.. toctree::
-   :depth: 1
-   :glob:
-
-   cookbook/*
-
-Changelog
----------
-
-.. toctree::
-   :depth: 1
-   :glob:
-
-   changelog/*
+The best way to get started is with the :doc:`Getting Started with Doctrine <tutorials/getting-started>` tutorial.
+Use the sidebar to browse other tutorials and documentation for the Doctrine PHP ORM.
