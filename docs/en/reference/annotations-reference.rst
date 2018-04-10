@@ -446,7 +446,8 @@ used as default.
 Optional attributes:
 
 -  **strategy**: Set the name of the identifier generation strategy.
-   Valid values are AUTO, SEQUENCE, TABLE, IDENTITY, UUID, CUSTOM and NONE.
+   Valid values are ``AUTO``, ``SEQUENCE``, ``TABLE``, ``IDENTITY``, ``UUID``, ``CUSTOM`` and ``NONE``, explained
+   in the :ref:`Identifier Generation Strategies <identifier-generation-strategies>` section.
    If not specified, default value is AUTO.
 
 Example:
