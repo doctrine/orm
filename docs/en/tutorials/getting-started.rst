@@ -175,7 +175,9 @@ cli-config.php file must exist in the project root directory:
     // cli-config.php
     require_once "bootstrap.php";
 
-    return \Doctrine\ORM\Tools\Console\ConsoleRunner::createHelperSet($entityManager);
+    return \Doctrine\ORM\Tools\Console\ConsoleRunner::createHelperSet(array(
+      'em' => new \Doctrine\ORM\Tools\Console\Helper\EntityManagerHelper($entityManager)
+    ));
 
 Change into your project directory and call the Doctrine command-line tool:
 
