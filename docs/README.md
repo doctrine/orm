@@ -1,12 +1,23 @@
 # Doctrine ORM Documentation
 
 ## How to Generate:
-Using Ubuntu 14.04 LTS:
+
+The following will generate the documentation into the `build` directory of the checkout.
+
+### Using Ubuntu 14.04 LTS:
 
 1. Run ./bin/install-dependencies.sh
 2. Run ./bin/generate-docs.sh
 
-It will generate the documentation into the build directory of the checkout.
+### Using macOS:
+
+Sphinx Installation instructions can be found at the
+[Sphinx installation guide](http://www.sphinx-doc.org/en/master/usage/installation.html#macos).
+
+After install, make sure `squinx-build` is globally available by e.g. executing
+`export PATH="/usr/local/opt/sphinx-doc/bin:$PATH"`.
+
+Then run `./bin/install-dependencies.sh` from this `docs` directory.
 
 ## Theme issues
 
