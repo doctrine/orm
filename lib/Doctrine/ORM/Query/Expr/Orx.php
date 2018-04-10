@@ -17,6 +17,7 @@ class Orx extends Composite
         Comparison::class,
         Func::class,
         Andx::class,
+        Between::class,
         self::class,
     ];
 

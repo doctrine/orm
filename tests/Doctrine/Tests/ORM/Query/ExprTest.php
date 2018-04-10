@@ -242,7 +242,12 @@ class ExprTest extends OrmTestCase
 
     public function testBetweenExpr() : void
     {
-        self::assertEquals('u.id BETWEEN 3 AND 6', (string) $this->expr->between('u.id', 3, 6));
+        self::assertSame('u.id BETWEEN 3 AND 6', (string) $this->expr->between('u.id', 3, 6));
+    }
+
+    public function testNotBetweenExpr() : void
+    {
+        self::assertSame('u.id NOT BETWEEN 3 AND 6', (string) $this->expr->notBetween('u.id', 3, 6));
     }
 
     public function testTrimExpr() : void

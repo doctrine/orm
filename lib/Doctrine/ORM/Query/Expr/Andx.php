@@ -17,6 +17,7 @@ class Andx extends Composite
         Comparison::class,
         Func::class,
         Orx::class,
+        Between::class,
         self::class,
     ];
 
