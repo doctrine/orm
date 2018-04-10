@@ -350,6 +350,8 @@ what you want. It defaults to the identifier generation mechanism your current
 database vendor prefers: AUTO_INCREMENT with MySQL, sequences with PostgreSQL
 and Oracle and so on.
 
+.. _identifier-generation-strategies:
+
 Identifier Generation Strategies
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
