@@ -10,24 +10,16 @@ final class Between
 
     public const BETWEEN = 'BETWEEN';
 
-    /**
-     * @var string
-     */
+    /** @var string */
     private $operator;
 
-    /**
-     * @var int|string
-     */
+    /** @var int|string */
     private $key;
 
-    /**
-     * @var int|string
-     */
+    /** @var int|string */
     private $min;
 
-    /**
-     * @var int|string
-     */
+    /** @var int|string */
     private $max;
 
     /**
@@ -36,16 +28,16 @@ final class Between
      * @param int|string $min
      * @param int|string $max
      */
-    public function __construct(string $operator, $key, $min, $max)
+    public function __construct($operator, $key, $min, $max)
     {
         $this->operator = $operator;
-        $this->key = $key;
-        $this->min = $min;
-        $this->max = $max;
+        $this->key      = $key;
+        $this->min      = $min;
+        $this->max      = $max;
     }
 
     public function __toString() : string
     {
-        return sprintf('%s %s %s AND %s', $this->key, $this->operator, $this->min, $this->max);
+        return $this->key . ' ' . $this->operator . ' ' . $this->min . ' AND ' . $this->max;
     }
 }
