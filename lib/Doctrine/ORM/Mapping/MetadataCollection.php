@@ -33,6 +33,12 @@ class MetadataCollection
         return $this->metadata[$name];
     }
 
+    public function has(string $name) : bool
+    {
+        $name = StaticClassNameConverter::getRealClass($name);
+        return isset($this->metadata[$name]);
+    }
+
     public static function fromClassMetadatas(ClassMetadata $firstClass, ClassMetadata ...$otherClasses)
     {
         $otherClasses[] = $firstClass;
