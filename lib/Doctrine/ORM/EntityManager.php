@@ -137,13 +137,13 @@ final class EntityManager implements EntityManagerInterface
      */
     protected function __construct(Connection $conn, Configuration $config, EventManager $eventManager, MetadataCollection $metadataCollection)
     {
-        $this->conn            = $conn;
-        $this->config          = $config;
-        $this->eventManager    = $eventManager;
-        $this->mappings       = $metadataCollection;
+        $this->conn                = $conn;
+        $this->config              = $config;
+        $this->eventManager        = $eventManager;
+        $this->mappings            = $metadataCollection;
 
         $this->repositoryFactory   = $config->getRepositoryFactory();
-        $this->unitOfWork          = new UnitOfWork($this);
+        $this->unitOfWork          = new UnitOfWork($this, $metadataCollection);
         $this->proxyFactory        = new StaticProxyFactory($this, $this->config->buildGhostObjectFactory());
         $this->identifierFlattener = new IdentifierFlattener($this->unitOfWork, $this->mappings);
     }
@@ -582,7 +582,7 @@ final class EntityManager implements EntityManagerInterface
     {
         $this->unitOfWork->clear();
 
-        $this->unitOfWork = new UnitOfWork($this);
+        $this->unitOfWork = new UnitOfWork($this, $this->mappings);
 
         if ($this->eventManager->hasListeners(Events::onClear)) {
             $this->eventManager->dispatchEvent(Events::onClear, new Event\OnClearEventArgs($this));
