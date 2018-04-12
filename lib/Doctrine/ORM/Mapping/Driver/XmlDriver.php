@@ -19,6 +19,7 @@
 
 namespace Doctrine\ORM\Mapping\Driver;
 
+use Doctrine\Common\Collections\Criteria;
 use SimpleXMLElement;
 use Doctrine\Common\Persistence\Mapping\Driver\FileDriver;
 use Doctrine\ORM\Mapping\Builder\EntityListenerBuilder;
@@ -429,7 +430,10 @@ class XmlDriver extends FileDriver
                 if (isset($oneToManyElement->{'order-by'})) {
                     $orderBy = [];
                     foreach ($oneToManyElement->{'order-by'}->{'order-by-field'} as $orderByField) {
-                        $orderBy[(string) $orderByField['name']] = (string) $orderByField['direction'];
+                        $orderBy[(string) $orderByField['name']] = isset($orderByField['direction'])
+                            ? (string) $orderByField['direction']
+                            : Criteria::ASC
+                        ;
                     }
                     $mapping['orderBy'] = $orderBy;
                 }
