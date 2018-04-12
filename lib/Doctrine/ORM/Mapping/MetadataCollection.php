@@ -24,7 +24,7 @@ class MetadataCollection
         $this->metadata = $metadataByClassName;
     }
 
-    public function get($name)
+    public function get(string $name) : ClassMetadata
     {
         $name = StaticClassNameConverter::getRealClass($name);
         if(!isset($this->metadata[$name])){
