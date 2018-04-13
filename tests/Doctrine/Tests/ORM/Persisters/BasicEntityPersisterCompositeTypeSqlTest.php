@@ -8,6 +8,7 @@ use Doctrine\Common\Collections\Expr\Comparison;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Mapping\OneToOneAssociationMetadata;
 use Doctrine\ORM\Persisters\Entity\BasicEntityPersister;
+use Doctrine\ORM\Persisters\Exception\CantUseInOperatorOnCompositeKeys;
 use Doctrine\Tests\Models\GeoNames\Admin1AlternateName;
 use Doctrine\Tests\OrmTestCase;
 
@@ -48,11 +49,9 @@ class BasicEntityPersisterCompositeTypeSqlTest extends OrmTestCase
         self::assertEquals('t0."admin1" IS NOT NULL AND t0."country" IS NOT NULL', $statement);
     }
 
-    /**
-     * @expectedException Doctrine\ORM\ORMException
-     */
     public function testSelectConditionStatementIn() : void
     {
+        $this->expectException(CantUseInOperatorOnCompositeKeys::class);
         $this->persister->getSelectConditionStatementSQL('admin1', [], new OneToOneAssociationMetadata('admin1'), Comparison::IN);
     }
 }

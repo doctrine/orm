@@ -4,7 +4,8 @@ declare(strict_types=1);
 
 namespace Doctrine\Tests\ORM\Functional;
 
-use Doctrine\ORM\ORMException;
+use Doctrine\ORM\Exception\MissingIdentifierField;
+use Doctrine\ORM\Exception\UnrecognizedIdentifierFields;
 use Doctrine\ORM\Query\QueryException;
 use Doctrine\Tests\Models\Navigation\NavCountry;
 use Doctrine\Tests\Models\Navigation\NavPhotos;
@@ -147,7 +148,7 @@ class CompositePrimaryKeyTest extends OrmFunctionalTestCase
 
     public function testSpecifyUnknownIdentifierPrimaryKeyFails() : void
     {
-        $this->expectException(ORMException::class);
+        $this->expectException(MissingIdentifierField::class);
         $this->expectExceptionMessage('The identifier long is missing for a query of Doctrine\Tests\Models\Navigation\NavPointOfInterest');
 
         $poi = $this->em->find(NavPointOfInterest::class, ['key1' => 100]);
@@ -155,8 +156,8 @@ class CompositePrimaryKeyTest extends OrmFunctionalTestCase
 
     public function testUnrecognizedIdentifierFieldsOnGetReference() : void
     {
-        $this->expectException(ORMException::class);
-        $this->expectExceptionMessage("Unrecognized identifier fields: 'key1'");
+        $this->expectException(UnrecognizedIdentifierFields::class);
+        $this->expectExceptionMessage('Unrecognized identifier fields: "key1"');
 
         $poi = $this->em->getReference(NavPointOfInterest::class, ['lat' => 10, 'long' => 20, 'key1' => 100]);
     }

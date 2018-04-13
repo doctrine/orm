@@ -4,13 +4,13 @@ declare(strict_types=1);
 
 namespace Doctrine\ORM\Tools;
 
-use Doctrine\ORM\ORMException;
+use Doctrine\ORM\Exception\ORMException;
 use Throwable;
 
 /**
  * Tools related Exceptions.
  */
-class ToolsException extends ORMException
+class ToolsException extends \RuntimeException implements ORMException
 {
     public static function schemaToolFailure(string $sql, Throwable $e) : self
     {

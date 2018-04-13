@@ -12,6 +12,12 @@ use Doctrine\Common\Cache\Cache as CacheDriver;
 use Doctrine\Common\Persistence\ObjectRepository;
 use Doctrine\DBAL\Configuration as DBALConfiguration;
 use Doctrine\ORM\Cache\CacheConfiguration;
+use Doctrine\ORM\Cache\Exception\MetadataCacheNotConfigured;
+use Doctrine\ORM\Cache\Exception\MetadataCacheUsesNonPersistentCache;
+use Doctrine\ORM\Cache\Exception\QueryCacheNotConfigured;
+use Doctrine\ORM\Cache\Exception\QueryCacheUsesNonPersistentCache;
+use Doctrine\ORM\Exception\InvalidEntityRepository;
+use Doctrine\ORM\Exception\ProxyClassesAlwaysRegenerating;
 use Doctrine\ORM\Mapping\ClassMetadataFactory;
 use Doctrine\ORM\Mapping\DefaultEntityListenerResolver;
 use Doctrine\ORM\Mapping\Driver\AnnotationDriver;
@@ -229,25 +235,25 @@ class Configuration extends DBALConfiguration
         $queryCacheImpl = $this->getQueryCacheImpl();
 
         if (! $queryCacheImpl) {
-            throw ORMException::queryCacheNotConfigured();
+            throw QueryCacheNotConfigured::create();
         }
 
         if ($queryCacheImpl instanceof ArrayCache) {
-            throw ORMException::queryCacheUsesNonPersistentCache($queryCacheImpl);
+            throw QueryCacheUsesNonPersistentCache::fromDriver($queryCacheImpl);
         }
 
         $metadataCacheImpl = $this->getMetadataCacheImpl();
 
         if (! $metadataCacheImpl) {
-            throw ORMException::metadataCacheNotConfigured();
+            throw MetadataCacheNotConfigured::create();
         }
 
         if ($metadataCacheImpl instanceof ArrayCache) {
-            throw ORMException::metadataCacheUsesNonPersistentCache($metadataCacheImpl);
+            throw MetadataCacheUsesNonPersistentCache::fromDriver($metadataCacheImpl);
         }
 
         if ($this->getProxyManagerConfiguration()->getGeneratorStrategy() instanceof EvaluatingGeneratorStrategy) {
-            throw ORMException::proxyClassesAlwaysRegenerating();
+            throw ProxyClassesAlwaysRegenerating::create();
         }
     }
 
@@ -447,7 +453,7 @@ class Configuration extends DBALConfiguration
         $reflectionClass = new \ReflectionClass($repositoryClassName);
 
         if (! $reflectionClass->implementsInterface(ObjectRepository::class)) {
-            throw ORMException::invalidEntityRepository($repositoryClassName);
+            throw InvalidEntityRepository::fromClassName($repositoryClassName);
         }
 
         $this->defaultRepositoryClassName = $repositoryClassName;

@@ -4,11 +4,12 @@ declare(strict_types=1);
 
 namespace Doctrine\ORM\Tools\Pagination;
 
-use Doctrine\ORM\ORMException;
+use Doctrine\ORM\Exception\ORMException;
 use Doctrine\ORM\Query\AST\Functions\FunctionNode;
 use Doctrine\ORM\Query\AST\OrderByClause;
 use Doctrine\ORM\Query\Parser;
 use Doctrine\ORM\Query\SqlWalker;
+use Doctrine\ORM\Tools\Pagination\Exception\RowNumberOverFunctionNotEnabled;
 use function trim;
 
 /**
@@ -40,6 +41,6 @@ class RowNumberOverFunction extends FunctionNode
      */
     public function parse(Parser $parser)
     {
-        throw new ORMException('The RowNumberOverFunction is not intended for, nor is it enabled for use in DQL.');
+        throw RowNumberOverFunctionNotEnabled::create();
     }
 }

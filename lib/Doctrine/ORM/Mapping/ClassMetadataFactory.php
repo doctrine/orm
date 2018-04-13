@@ -11,7 +11,10 @@ use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Event\LoadClassMetadataEventArgs;
 use Doctrine\ORM\Event\OnClassMetadataNotFoundEventArgs;
 use Doctrine\ORM\Events;
-use Doctrine\ORM\ORMException;
+use Doctrine\ORM\Exception\ORMException;
+use Doctrine\ORM\Mapping\Exception\InvalidCustomGenerator;
+use Doctrine\ORM\Mapping\Exception\TableGeneratorNotImplementedYet;
+use Doctrine\ORM\Mapping\Exception\UnknownGeneratorType;
 use Doctrine\ORM\Sequencing;
 use Doctrine\ORM\Sequencing\Planning\AssociationValueGeneratorExecutor;
 use Doctrine\ORM\Sequencing\Planning\ColumnValueGeneratorExecutor;
@@ -29,7 +32,6 @@ use function is_subclass_of;
 use function sprintf;
 use function strpos;
 use function strtolower;
-use function var_export;
 
 /**
  * The ClassMetadataFactory is used to create ClassMetadata objects that contain all the
@@ -403,16 +405,16 @@ class ClassMetadataFactory extends AbstractClassMetadataFactory
                 break;
 
             case GeneratorType::TABLE:
-                throw new ORMException('TableGenerator not yet implemented.');
+                throw TableGeneratorNotImplementedYet::create();
                 break;
 
             case GeneratorType::CUSTOM:
                 $definition = $generator->getDefinition();
                 if (! isset($definition['class'])) {
-                    throw new ORMException(sprintf('Cannot instantiate custom generator, no class has been defined'));
+                    throw InvalidCustomGenerator::onClassNotConfigured();
                 }
                 if (! class_exists($definition['class'])) {
-                    throw new ORMException(sprintf('Cannot instantiate custom generator : %s', var_export($definition, true))); //$definition['class']));
+                    throw InvalidCustomGenerator::onMissingClass($definition);
                 }
 
                 break;
@@ -423,7 +425,7 @@ class ClassMetadataFactory extends AbstractClassMetadataFactory
                 break;
 
             default:
-                throw new ORMException('Unknown generator type: ' . $generator->getType());
+                throw UnknownGeneratorType::create($generator->getType());
         }
     }
 

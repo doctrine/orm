@@ -6,7 +6,7 @@ namespace Doctrine\Tests\ORM\Functional;
 
 use Doctrine\Common\Collections\Criteria;
 use Doctrine\ORM\Mapping\FetchMode;
-use Doctrine\ORM\Persisters\PersisterException;
+use Doctrine\ORM\Persisters\MatchingAssociationFieldRequiresObject;
 use Doctrine\Tests\Models\Company\CompanyContract;
 use Doctrine\Tests\Models\Company\CompanyEmployee;
 use Doctrine\Tests\Models\Company\CompanyFixContract;
@@ -379,7 +379,7 @@ class SingleTableInheritanceTest extends OrmFunctionalTestCase
 
         $repository = $this->em->getRepository(CompanyContract::class);
 
-        $this->expectException(PersisterException::class);
+        $this->expectException(MatchingAssociationFieldRequiresObject::class);
         $this->expectExceptionMessage('annot match on Doctrine\Tests\Models\Company\CompanyContract::salesPerson with a non-object value.');
 
         $contracts = $repository->matching(new Criteria(

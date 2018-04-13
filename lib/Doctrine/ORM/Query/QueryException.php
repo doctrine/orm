@@ -4,15 +4,15 @@ declare(strict_types=1);
 
 namespace Doctrine\ORM\Query;
 
+use Doctrine\ORM\Exception\ORMException;
 use Doctrine\ORM\Mapping\AssociationMetadata;
-use Doctrine\ORM\ORMException;
 use Doctrine\ORM\Query\AST\PathExpression;
 use function sprintf;
 
 /**
  * Description of QueryException.
  */
-class QueryException extends ORMException
+class QueryException extends \LogicException implements ORMException
 {
     /**
      * @param string $dql

@@ -29,12 +29,15 @@ use Doctrine\ORM\Mapping\ToManyAssociationMetadata;
 use Doctrine\ORM\Mapping\ToOneAssociationMetadata;
 use Doctrine\ORM\Mapping\VersionFieldMetadata;
 use Doctrine\ORM\OptimisticLockException;
-use Doctrine\ORM\ORMException;
 use Doctrine\ORM\PersistentCollection;
+use Doctrine\ORM\Persisters\Exception\CantUseInOperatorOnCompositeKeys;
+use Doctrine\ORM\Persisters\Exception\InvalidOrientation;
+use Doctrine\ORM\Persisters\Exception\UnrecognizedField;
 use Doctrine\ORM\Persisters\SqlExpressionVisitor;
 use Doctrine\ORM\Persisters\SqlValueVisitor;
 use Doctrine\ORM\Query;
 use Doctrine\ORM\Query\QueryException;
+use Doctrine\ORM\Repository\Exception\InvalidFindByCall;
 use Doctrine\ORM\UnitOfWork;
 use Doctrine\ORM\Utility\PersisterHelper;
 use Doctrine\ORM\Utility\StaticClassNameConverter;
@@ -1221,7 +1224,7 @@ class BasicEntityPersister implements EntityPersister
             $orientation = strtoupper(trim($orientation));
 
             if (! in_array($orientation, ['ASC', 'DESC'], true)) {
-                throw ORMException::invalidOrientation($this->class->getClassName(), $fieldName);
+                throw InvalidOrientation::fromClassNameAndField($this->class->getClassName(), $fieldName);
             }
 
             $property = $this->class->getProperty($fieldName);
@@ -1235,7 +1238,10 @@ class BasicEntityPersister implements EntityPersister
                 continue;
             } elseif ($property instanceof AssociationMetadata) {
                 if (! $property->isOwningSide()) {
-                    throw ORMException::invalidFindByInverseAssociation($this->class->getClassName(), $fieldName);
+                    throw InvalidFindByCall::fromInverseSideUsage(
+                        $this->class->getClassName(),
+                        $fieldName
+                    );
                 }
 
                 $class      = $this->class->isInheritedProperty($fieldName)
@@ -1253,7 +1259,7 @@ class BasicEntityPersister implements EntityPersister
                 continue;
             }
 
-            throw ORMException::unrecognizedField($fieldName);
+            throw UnrecognizedField::byName($fieldName);
         }
 
         return ' ORDER BY ' . implode(', ', $orderByList);
@@ -1702,7 +1708,7 @@ class BasicEntityPersister implements EntityPersister
 
         if (in_array($comparison, [Comparison::IN, Comparison::NIN], true) && isset($columns[1])) {
             // @todo try to support multi-column IN expressions. Example: (col1, col2) IN (('val1A', 'val2A'), ...)
-            throw ORMException::cantUseInOperatorOnCompositeKeys();
+            throw CantUseInOperatorOnCompositeKeys::create();
         }
 
         foreach ($columns as $column) {
@@ -1802,7 +1808,10 @@ class BasicEntityPersister implements EntityPersister
                 }
             } else {
                 if (! $owningAssociation->isOwningSide()) {
-                    throw ORMException::invalidFindByInverseAssociation($this->class->getClassName(), $field);
+                    throw InvalidFindByCall::fromInverseSideUsage(
+                        $this->class->getClassName(),
+                        $field
+                    );
                 }
 
                 $class      = $this->class->isInheritedProperty($field)
@@ -1829,7 +1838,7 @@ class BasicEntityPersister implements EntityPersister
             return [$field];
         }
 
-        throw ORMException::unrecognizedField($field);
+        throw UnrecognizedField::byName($field);
     }
 
     /**

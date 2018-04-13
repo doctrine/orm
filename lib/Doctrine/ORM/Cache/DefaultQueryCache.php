@@ -5,6 +5,8 @@ declare(strict_types=1);
 namespace Doctrine\ORM\Cache;
 
 use Doctrine\ORM\Cache;
+use Doctrine\ORM\Cache\Exception\FeatureNotImplemented;
+use Doctrine\ORM\Cache\Exception\NonCacheableEntity;
 use Doctrine\ORM\Cache\Logging\CacheLogger;
 use Doctrine\ORM\Cache\Persister\CachedPersister;
 use Doctrine\ORM\EntityManagerInterface;
@@ -229,19 +231,19 @@ class DefaultQueryCache implements QueryCache
     public function put(QueryCacheKey $key, ResultSetMapping $rsm, $result, array $hints = [])
     {
         if ($rsm->scalarMappings) {
-            throw new CacheException('Second level cache does not support scalar results.');
+            throw FeatureNotImplemented::scalarResults();
         }
 
         if (count($rsm->entityMappings) > 1) {
-            throw new CacheException('Second level cache does not support multiple root entities.');
+            throw FeatureNotImplemented::multipleRootEntities();
         }
 
         if (! $rsm->isSelect) {
-            throw new CacheException('Second-level cache query supports only select statements.');
+            throw FeatureNotImplemented::nonSelectStatements();
         }
 
         if (isset($hints[Query::HINT_FORCE_PARTIAL_LOAD]) && $hints[Query::HINT_FORCE_PARTIAL_LOAD]) {
-            throw new CacheException('Second level cache does not support partial entities.');
+            throw FeatureNotImplemented::partialEntities();
         }
 
         if (! ($key->cacheMode & Cache::MODE_PUT)) {
@@ -255,7 +257,7 @@ class DefaultQueryCache implements QueryCache
         $persister  = $unitOfWork->getEntityPersister($entityName);
 
         if (! ($persister instanceof CachedPersister)) {
-            throw CacheException::nonCacheableEntity($entityName);
+            throw NonCacheableEntity::fromEntity($entityName);
         }
 
         $region = $persister->getCacheRegion();

@@ -23,9 +23,10 @@ use Doctrine\ORM\Mapping\ManyToManyAssociationMetadata;
 use Doctrine\ORM\Mapping\MappingException;
 use Doctrine\ORM\Mapping\OneToManyAssociationMetadata;
 use Doctrine\ORM\Mapping\ToOneAssociationMetadata;
-use Doctrine\ORM\ORMException;
 use Doctrine\ORM\Tools\Event\GenerateSchemaEventArgs;
 use Doctrine\ORM\Tools\Event\GenerateSchemaTableEventArgs;
+use Doctrine\ORM\Tools\Exception\MissingColumnException;
+use Doctrine\ORM\Tools\Exception\NotSupported;
 use function array_diff;
 use function array_key_exists;
 use function array_keys;
@@ -35,7 +36,6 @@ use function in_array;
 use function is_int;
 use function is_numeric;
 use function reset;
-use function sprintf;
 use function strtolower;
 
 /**
@@ -233,7 +233,7 @@ class SchemaTool
                     break;
 
                 case InheritanceType::TABLE_PER_CLASS:
-                    throw ORMException::notSupported();
+                    throw NotSupported::create();
 
                 default:
                     $this->gatherColumns($class, $table);
@@ -546,7 +546,7 @@ class SchemaTool
 
                 case ($property instanceof OneToManyAssociationMetadata):
                     //... create join table, one-many through join table supported later
-                    throw ORMException::notSupported();
+                    throw NotSupported::create();
 
                 case ($property instanceof ManyToManyAssociationMetadata):
                     // create join table
@@ -677,12 +677,11 @@ class SchemaTool
             );
 
             if (! $definingClass) {
-                throw new ORMException(sprintf(
-                    'Column name "%s" referenced for relation from %s towards %s does not exist.',
+                throw MissingColumnException::fromColumnSourceAndTarget(
                     $joinColumn->getReferencedColumnName(),
                     $mapping->getSourceEntity(),
                     $mapping->getTargetEntity()
-                ));
+                );
             }
 
             $quotedColumnName           = $this->platform->quoteIdentifier($joinColumn->getColumnName());

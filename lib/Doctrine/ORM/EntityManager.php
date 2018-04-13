@@ -10,6 +10,12 @@ use Doctrine\Common\Persistence\ObjectRepository;
 use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\DriverManager;
 use Doctrine\DBAL\LockMode;
+use Doctrine\ORM\Exception\EntityManagerClosed;
+use Doctrine\ORM\Exception\InvalidHydrationMode;
+use Doctrine\ORM\Exception\MismatchedEventManager;
+use Doctrine\ORM\Exception\MissingIdentifierField;
+use Doctrine\ORM\Exception\MissingMappingDriverImplementation;
+use Doctrine\ORM\Exception\UnrecognizedIdentifierFields;
 use Doctrine\ORM\Mapping\ClassMetadataFactory;
 use Doctrine\ORM\Proxy\Factory\ProxyFactory;
 use Doctrine\ORM\Proxy\Factory\StaticProxyFactory;
@@ -395,7 +401,7 @@ final class EntityManager implements EntityManagerInterface
 
         foreach ($class->identifier as $identifier) {
             if (! isset($id[$identifier])) {
-                throw ORMException::missingIdentifierField($className, $identifier);
+                throw MissingIdentifierField::fromFieldAndClass($identifier, $className);
             }
 
             $sortedId[$identifier] = $id[$identifier];
@@ -403,7 +409,7 @@ final class EntityManager implements EntityManagerInterface
         }
 
         if ($id) {
-            throw ORMException::unrecognizedIdentifierFields($className, array_keys($id));
+            throw UnrecognizedIdentifierFields::fromClassAndFieldNames($className, array_keys($id));
         }
 
         $unitOfWork = $this->getUnitOfWork();
@@ -492,7 +498,7 @@ final class EntityManager implements EntityManagerInterface
 
         foreach ($class->identifier as $identifier) {
             if (! isset($scalarId[$identifier])) {
-                throw ORMException::missingIdentifierField($className, $identifier);
+                throw MissingIdentifierField::fromFieldAndClass($identifier, $className);
             }
 
             $sortedId[$identifier] = $scalarId[$identifier];
@@ -500,7 +506,7 @@ final class EntityManager implements EntityManagerInterface
         }
 
         if ($scalarId) {
-            throw ORMException::unrecognizedIdentifierFields($className, array_keys($scalarId));
+            throw UnrecognizedIdentifierFields::fromClassAndFieldNames($className, array_keys($scalarId));
         }
 
         // Check identity map first, if its already in there just return it.
@@ -554,7 +560,7 @@ final class EntityManager implements EntityManagerInterface
 
         foreach ($class->identifier as $identifier) {
             if (! isset($id[$identifier])) {
-                throw ORMException::missingIdentifierField($className, $identifier);
+                throw MissingIdentifierField::fromFieldAndClass($identifier, $className);
             }
 
             $sortedId[$identifier] = $id[$identifier];
@@ -562,7 +568,7 @@ final class EntityManager implements EntityManagerInterface
         }
 
         if ($id) {
-            throw ORMException::unrecognizedIdentifierFields($className, array_keys($id));
+            throw UnrecognizedIdentifierFields::fromClassAndFieldNames($className, array_keys($id));
         }
 
         // Check identity map first, if its already in there just return it.
@@ -734,7 +740,7 @@ final class EntityManager implements EntityManagerInterface
     private function errorIfClosed()
     {
         if ($this->closed) {
-            throw ORMException::entityManagerClosed();
+            throw EntityManagerClosed::create();
         }
     }
 
@@ -790,7 +796,7 @@ final class EntityManager implements EntityManagerInterface
                 }
         }
 
-        throw ORMException::invalidHydrationMode($hydrationMode);
+        throw InvalidHydrationMode::fromMode($hydrationMode);
     }
 
     /**
@@ -824,7 +830,7 @@ final class EntityManager implements EntityManagerInterface
     public static function create($connection, Configuration $config, ?EventManager $eventManager = null)
     {
         if (! $config->getMetadataDriverImpl()) {
-            throw ORMException::missingMappingDriverImpl();
+            throw MissingMappingDriverImplementation::create();
         }
 
         $connection = static::createConnection($connection, $config, $eventManager);
@@ -861,7 +867,7 @@ final class EntityManager implements EntityManagerInterface
         }
 
         if ($eventManager !== null && $connection->getEventManager() !== $eventManager) {
-            throw ORMException::mismatchedEventManager();
+            throw MismatchedEventManager::create();
         }
 
         return $connection;

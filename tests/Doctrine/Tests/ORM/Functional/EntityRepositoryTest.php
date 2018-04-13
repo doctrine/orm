@@ -9,9 +9,13 @@ use Doctrine\Common\Collections\Criteria;
 use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\LockMode;
 use Doctrine\ORM\EntityRepository;
+use Doctrine\ORM\Exception\ORMException;
+use Doctrine\ORM\Exception\UnrecognizedIdentifierFields;
 use Doctrine\ORM\OptimisticLockException;
-use Doctrine\ORM\ORMException;
+use Doctrine\ORM\Persisters\Exception\InvalidOrientation;
+use Doctrine\ORM\Persisters\Exception\UnrecognizedField;
 use Doctrine\ORM\Query;
+use Doctrine\ORM\Repository\Exception\InvalidFindByCall;
 use Doctrine\ORM\TransactionRequiredException;
 use Doctrine\Tests\Models\CMS\CmsAddress;
 use Doctrine\Tests\Models\CMS\CmsEmail;
@@ -278,7 +282,7 @@ class EntityRepositoryTest extends OrmFunctionalTestCase
     }
 
     /**
-     * @expectedException \Doctrine\ORM\ORMException
+     * @expectedException Doctrine\ORM\Repository\Exception\InvalidMagicMethodCall
      */
     public function testExceptionIsThrownWhenCallingFindByWithoutParameter() : void
     {
@@ -287,7 +291,7 @@ class EntityRepositoryTest extends OrmFunctionalTestCase
     }
 
     /**
-     * @expectedException \Doctrine\ORM\ORMException
+     * @expectedException Doctrine\ORM\Repository\Exception\InvalidMagicMethodCall
      */
     public function testExceptionIsThrownWhenUsingInvalidFieldName() : void
     {
@@ -385,7 +389,7 @@ class EntityRepositoryTest extends OrmFunctionalTestCase
         list($userId, $addressId) = $this->loadAssociatedFixture();
         $repos                    = $this->em->getRepository(CmsUser::class);
 
-        $this->expectException(ORMException::class);
+        $this->expectException(InvalidFindByCall::class);
         $this->expectExceptionMessage("You cannot search for the association field 'Doctrine\Tests\Models\CMS\CmsUser#address', because it is the inverse side of an association. Find methods only work on owning side associations.");
 
         $user = $repos->findBy(['address' => $addressId]);
@@ -597,7 +601,7 @@ class EntityRepositoryTest extends OrmFunctionalTestCase
 
     /**
      * @group DDC-753
-     * @expectedException Doctrine\ORM\ORMException
+     * @expectedException Doctrine\ORM\Exception\InvalidEntityRepository
      * @expectedExceptionMessage Invalid repository class 'Doctrine\Tests\Models\DDC753\DDC753InvalidRepository'. It must be a Doctrine\Common\Persistence\ObjectRepository.
      */
     public function testSetDefaultRepositoryInvalidClassError() : void
@@ -620,7 +624,7 @@ class EntityRepositoryTest extends OrmFunctionalTestCase
     /**
      * @group DDC-1376
      *
-     * @expectedException Doctrine\ORM\ORMException
+     * @expectedException Doctrine\ORM\Repository\Exception\InvalidFindByCall
      * @expectedExceptionMessage You cannot search for the association field 'Doctrine\Tests\Models\CMS\CmsUser#address', because it is the inverse side of an association.
      */
     public function testInvalidOrderByAssociation() : void
@@ -634,7 +638,7 @@ class EntityRepositoryTest extends OrmFunctionalTestCase
      */
     public function testInvalidOrientation() : void
     {
-        $this->expectException(ORMException::class);
+        $this->expectException(InvalidOrientation::class);
         $this->expectExceptionMessage('Invalid order by orientation specified for Doctrine\Tests\Models\CMS\CmsUser#username');
 
         $repo = $this->em->getRepository(CmsUser::class);
@@ -926,7 +930,7 @@ class EntityRepositoryTest extends OrmFunctionalTestCase
      */
     public function testFindByFieldInjectionPrevented() : void
     {
-        $this->expectException(ORMException::class);
+        $this->expectException(UnrecognizedField::class);
         $this->expectExceptionMessage('Unrecognized field: ');
 
         $repository = $this->em->getRepository(CmsUser::class);
@@ -950,7 +954,7 @@ class EntityRepositoryTest extends OrmFunctionalTestCase
      */
     public function testMatchingInjectionPrevented() : void
     {
-        $this->expectException(ORMException::class);
+        $this->expectException(UnrecognizedField::class);
         $this->expectExceptionMessage('Unrecognized field: ');
 
         $repository = $this->em->getRepository(CmsUser::class);
@@ -967,7 +971,7 @@ class EntityRepositoryTest extends OrmFunctionalTestCase
      */
     public function testFindInjectionPrevented() : void
     {
-        $this->expectException(ORMException::class);
+        $this->expectException(UnrecognizedIdentifierFields::class);
         $this->expectExceptionMessage('Unrecognized identifier fields: ');
 
         $repository = $this->em->getRepository(CmsUser::class);
