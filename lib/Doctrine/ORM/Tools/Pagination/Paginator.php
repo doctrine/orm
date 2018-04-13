@@ -248,7 +248,7 @@ class Paginator implements \Countable, \IteratorAggregate
         foreach ($parameters as $key => $parameter) {
             $parameterName = $parameter->getName();
 
-            if (! (isset($parameterMappings[$parameterName]) || array_key_exists($parameterName, $parameterMappings))) {
+            if (! array_key_exists($parameterName, $parameterMappings)) {
                 unset($parameters[$key]);
             }
         }
