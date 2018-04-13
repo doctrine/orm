@@ -46,7 +46,7 @@ class UUIDEntity
     /**
      * Get id.
      *
-     * @return id.
+     * @return string.
      */
     public function getId()
     {

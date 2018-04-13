@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Doctrine\Tests\ORM\Functional\Ticket;
 
+use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\Annotation as ORM;
 use Doctrine\Tests\OrmFunctionalTestCase;
 
@@ -74,13 +75,13 @@ class DDC719Group extends Entity
     /** @ORM\ManyToMany(targetEntity=DDC719Group::class, mappedBy="children") */
     protected $parents;
 
+    private $channels;
+
     /**
      * construct
      */
     public function __construct()
     {
-        parent::__construct();
-
         $this->channels = new ArrayCollection();
         $this->children = new ArrayCollection();
         $this->parents  = new ArrayCollection();

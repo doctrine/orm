@@ -93,6 +93,8 @@ class DDC353Picture
      */
     private $file;
 
+    private $product;
+
     /**
      * Get pictureId
      */

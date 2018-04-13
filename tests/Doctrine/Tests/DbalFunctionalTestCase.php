@@ -18,6 +18,8 @@ class DbalFunctionalTestCase extends DbalTestCase
     /** @var Connection */
     protected $conn;
 
+    private $sharedFixture;
+
     /**
      * @return void
      */

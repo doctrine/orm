@@ -73,12 +73,7 @@ class DDC1300Foo
      */
     public $fooLocaleRefFoo;
 
-    /**
-     * Constructor
-     *
-     * @param array|Zend_Config|null $options
-     */
-    public function __construct($options = null)
+    public function __construct()
     {
         $this->fooLocaleRefFoo = new ArrayCollection();
     }

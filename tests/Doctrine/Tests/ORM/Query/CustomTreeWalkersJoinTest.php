@@ -33,11 +33,11 @@ class CustomTreeWalkersJoinTest extends OrmTestCase
             $sqlGenerated = $query->getSql();
 
             $query->free();
+
+            self::assertEquals($sqlToBeConfirmed, $sqlGenerated);
         } catch (\Exception $e) {
             $this->fail($e->getMessage() . ' at "' . $e->getFile() . '" on line ' . $e->getLine());
         }
-
-        self::assertEquals($sqlToBeConfirmed, $sqlGenerated);
     }
 
     public function testAddsJoin() : void

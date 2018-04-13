@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Doctrine\Tests\ORM\Functional\Ticket;
 
 use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\DBAL\Driver\Structure;
 use Doctrine\DBAL\Schema\ForeignKeyConstraint;
 use Doctrine\DBAL\Schema\Table;
 use Doctrine\ORM\Annotation as ORM;
@@ -233,7 +234,6 @@ class DDC2138User
 
     /**
      * Remove followers
-     *
      */
     public function removeFollower(UserFollowedUser $followers)
     {

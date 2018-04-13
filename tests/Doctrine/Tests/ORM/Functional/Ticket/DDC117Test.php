@@ -39,7 +39,7 @@ class DDC117Test extends OrmFunctionalTestCase
         $this->em->persist($this->article2);
         $this->em->flush();
 
-        $link = new DDC117Link($this->article1, $this->article2, 'Link-Description');
+        $link = new DDC117Link($this->article1, $this->article2);
         $this->em->persist($link);
 
         $this->reference = new DDC117Reference($this->article1, $this->article2, 'Test-Description');

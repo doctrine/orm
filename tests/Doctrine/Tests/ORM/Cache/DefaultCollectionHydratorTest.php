@@ -30,8 +30,7 @@ class DefaultCollectionHydratorTest extends OrmFunctionalTestCase
         $this->enableSecondLevelCache();
         parent::setUp();
 
-        $targetPersister = $this->em->getUnitOfWork()->getEntityPersister(City::class);
-        $this->structure = new DefaultCollectionHydrator($this->em, $targetPersister);
+        $this->structure = new DefaultCollectionHydrator($this->em);
     }
 
     public function testImplementsCollectionEntryStructure() : void

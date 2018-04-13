@@ -18,6 +18,8 @@ use function array_pop;
  */
 class LockTest extends OrmFunctionalTestCase
 {
+    private $handles;
+
     protected function setUp() : void
     {
         $this->useModelSet('cms');

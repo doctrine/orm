@@ -155,6 +155,8 @@ class CascadeRemoveOrderEntityG
      */
     private $ownerO;
 
+    private $position;
+
     public function __construct(CascadeRemoveOrderEntityO $eO, $position = 1)
     {
         $this->position = $position;

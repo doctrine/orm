@@ -2,3 +2,24 @@ parameters:
     earlyTerminatingMethodCalls:
         Doctrine\ORM\Query\Parser:
             - syntaxError
+
+    ignoreErrors:
+        # Intentionally without namespace
+        - '#Class DoctrineGlobalArticle not found.#'
+
+        - '#Constructor of class Doctrine\\Tests\\ORM\\Query\\DummyStruct has an unused parameter \$(\w).#'
+
+        # Intentionally don't calling parent's construct
+        - '#Doctrine\\Performance\\Mock\\NonProxyLoadingUnitOfWork::__construct\(\) does not call parent constructor from Doctrine\\ORM\\UnitOfWork.#'
+        - '#Doctrine\\Performance\\Mock\\NonLoadingPersister::__construct\(\) does not call parent constructor from Doctrine\\ORM\\Persisters\\Entity\\BasicEntityPersister.#'
+        - '#Doctrine\\Tests\\ORM\\Cache\\CacheFactoryDefaultQueryCacheTest::__construct\(\) does not call parent constructor from Doctrine\\ORM\\Cache\\DefaultCacheFactory.#'
+        - '#Doctrine\\Tests\\ORM\\Functional\\CacheFactorySecondLevelCacheConcurrentTest::__construct\(\) does not call parent constructor from Doctrine\\ORM\\Cache\\DefaultCacheFactory.#'
+        - '#Doctrine\\Tests\\ORM\\Functional\\Ticket\\DDC832JoinedTreeIndex::__construct\(\) does not call parent constructor from Doctrine\\Tests\\ORM\\Functional\\Ticket\\DDC832JoinedIndex.#'
+
+    excludes_analyse:
+        - '*tests/Doctrine/Tests/Proxies/*'
+
+        # Intentionally without namespace
+        - '*tests/Doctrine/Tests/Models/DDC3231/DDC3231User1NoNamespace.php*'
+        - '*tests/Doctrine/Tests/Models/DDC3231/DDC3231User2NoNamespace.php*'
+        - '*tests/Doctrine/Tests/Models/Global/GlobalNamespaceModel.php*'

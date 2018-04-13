@@ -27,7 +27,7 @@ class DDC117Link
      */
     public $target;
 
-    public function __construct($source, $target, $description)
+    public function __construct($source, $target)
     {
         $this->source = $source;
         $this->target = $target;

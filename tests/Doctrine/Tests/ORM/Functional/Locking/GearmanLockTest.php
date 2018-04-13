@@ -20,6 +20,7 @@ class GearmanLockTest extends OrmFunctionalTestCase
     private $gearman;
     private $maxRunTime = 0;
     private $articleId;
+    private $tasks;
 
     protected function setUp() : void
     {

@@ -24,6 +24,8 @@ class DDC3579Group
     /** @ORM\ManyToMany(targetEntity=DDC3579Admin::class, mappedBy="groups") */
     private $admins;
 
+    private $users;
+
     public function __construct($name = null)
     {
         $this->name  = $name;

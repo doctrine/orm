@@ -119,7 +119,7 @@ class DDC1695News
     private $longText;
 
     /**
-     * @var DateTimeZone
+     * @var \DateTimeZone
      *
      * @ORM\Column(name="PublishDate", type="datetimetz", nullable=true)
      */

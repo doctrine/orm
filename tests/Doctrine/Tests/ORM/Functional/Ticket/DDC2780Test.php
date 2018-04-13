@@ -16,9 +16,9 @@ class DDC2780Test extends OrmFunctionalTestCase
     /**
      * {@inheritDoc}
      */
-    protected function setup() : void
+    protected function setUp() : void
     {
-        parent::setup();
+        parent::setUp();
 
         $this->schemaTool->createSchema(
             [

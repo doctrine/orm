@@ -174,6 +174,8 @@ class Lemma
     /** @ORM\ManyToMany(targetEntity=Type::class, mappedBy="lemmas", cascade={"persist"}) */
     private $types;
 
+    private $sources;
+
     public function __construct()
     {
         $this->types = new ArrayCollection();
@@ -228,7 +230,7 @@ class Lemma
     }
 
     /**
-     * @return kateglo\application\helpers\collections\ArrayCollection
+     * @return ArrayCollection
      */
     public function getTypes()
     {
@@ -265,7 +267,7 @@ class Type
     private $abbreviation;
 
     /**
-     * @var kateglo\application\helpers\collections\ArrayCollection
+     * @var ArrayCollection
      * @ORM\ManyToMany(targetEntity=Lemma::class)
      * @ORM\JoinTable(name="lemma_type",
      *     joinColumns={@ORM\JoinColumn(name="type_id", referencedColumnName="type_id")},
@@ -273,6 +275,8 @@ class Type
      * )
      */
     private $lemmas;
+
+    private $categories;
 
     public function __construct()
     {
@@ -351,7 +355,7 @@ class Type
     }
 
     /**
-     * @return kateglo\application\helpers\collections\ArrayCollection
+     * @return ArrayCollection
      */
     public function getCategories()
     {
