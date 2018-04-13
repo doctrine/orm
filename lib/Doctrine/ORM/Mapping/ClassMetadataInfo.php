@@ -2767,6 +2767,10 @@ class ClassMetadataInfo implements ClassMetadata
                 throw MappingException::invalidDiscriminatorColumnType($this->name, $columnDef['type']);
             }
 
+            if ( ! isset($columnDef['strict'])) {
+                $columnDef['strict'] = false;
+            }
+
             $this->discriminatorColumn = $columnDef;
         }
     }
