@@ -10,6 +10,8 @@ use Doctrine\Tests\OrmFunctionalTestCase;
  */
 class DDC7180Test extends OrmFunctionalTestCase
 {
+    private static $createdSchema = false;
+
     /**
      * {@inheritDoc}
      */
@@ -17,11 +19,21 @@ class DDC7180Test extends OrmFunctionalTestCase
     {
         parent::setUp();
 
+        if (self::$createdSchema) {
+            return;
+        }
+
         $this->_schemaTool->createSchema([
             $this->_em->getClassMetadata(DDC7180A::class),
             $this->_em->getClassMetadata(DDC7180B::class),
             $this->_em->getClassMetadata(DDC7180C::class),
+            $this->_em->getClassMetadata(DDC7180D::class),
+            $this->_em->getClassMetadata(DDC7180E::class),
+            $this->_em->getClassMetadata(DDC7180F::class),
+            $this->_em->getClassMetadata(DDC7180G::class),
         ]);
+
+        self::$createdSchema = true;
     }
 
     /**
@@ -57,6 +69,31 @@ class DDC7180Test extends OrmFunctionalTestCase
         self::assertInternalType('integer', $a->id);
         self::assertInternalType('integer', $b->id);
         self::assertInternalType('integer', $c->id);
+    }
+
+    public function testIssue3NodeCycle() : void
+    {
+        $d = new DDC7180D();
+        $e = new DDC7180E();
+        $f = new DDC7180F();
+        $g = new DDC7180G();
+
+        $d->e = $e;
+        $e->f = $f;
+        $f->d = $d;
+        $g->d = $d;
+
+        $this->_em->persist($d);
+        $this->_em->persist($e);
+        $this->_em->persist($f);
+        $this->_em->persist($g);
+
+        $this->_em->flush();
+
+        self::assertInternalType('integer', $d->id);
+        self::assertInternalType('integer', $e->id);
+        self::assertInternalType('integer', $f->id);
+        self::assertInternalType('integer', $g->id);
     }
 }
 
@@ -107,4 +144,72 @@ class DDC7180C
      * @JoinColumn(nullable=false)
      */
     public $a;
+}
+
+/**
+ * @Entity
+ */
+class DDC7180D
+{
+    /**
+     * @GeneratedValue()
+     * @Id @Column(type="integer")
+     */
+    public $id;
+    /**
+     * @OneToOne(targetEntity=DDC7180E::class)
+     * @JoinColumn(nullable=false)
+     */
+    public $e;
+}
+
+/**
+ * @Entity
+ */
+class DDC7180E
+{
+    /**
+     * @GeneratedValue()
+     * @Id @Column(type="integer")
+     */
+    public $id;
+    /**
+     * @OneToOne(targetEntity=DDC7180F::class)
+     * @JoinColumn(nullable=false)
+     */
+    public $f;
+}
+
+/**
+ * @Entity
+ */
+class DDC7180F
+{
+    /**
+     * @GeneratedValue()
+     * @Id @Column(type="integer")
+     */
+    public $id;
+    /**
+     * @ManyToOne(targetEntity=DDC7180D::class)
+     * @JoinColumn(nullable=true)
+     */
+    public $d;
+}
+
+/**
+ * @Entity
+ */
+class DDC7180G
+{
+    /**
+     * @GeneratedValue()
+     * @Id @Column(type="integer")
+     */
+    public $id;
+    /**
+     * @ManyToOne(targetEntity=DDC7180D::class)
+     * @JoinColumn(nullable=false)
+     */
+    public $d;
 }
