@@ -55,6 +55,11 @@ use Doctrine\ORM\Repository\RepositoryFactory;
 class Configuration extends \Doctrine\DBAL\Configuration
 {
     /**
+     * @var array
+     */
+    private $customBooleanFunctions;
+
+    /**
      * Sets the directory where Doctrine generates any necessary proxy class files.
      *
      * @param string $dir
