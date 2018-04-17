@@ -621,20 +621,6 @@ class Expr
     }
 
     /**
-     * Creates an instance of BETWEEN() function, with the given arguments.
-     *
-     * @param mixed      $val Valued to be inspected by range values.
-     * @param int|string $x   Starting range value to be used in BETWEEN() function.
-     * @param int|string $y   End point value to be used in BETWEEN() function.
-     *
-     * @return Expr\Between A BETWEEN expression.
-     */
-    public function notBetween($val, $x, $y) : Expr\Between
-    {
-        return new Expr\Between(Expr\Between::NOT_BETWEEN, $val, $x, $y);
-    }
-
-    /**
      * Creates an instance of TRIM() function, with the given argument.
      *
      * @param mixed $x Argument to be used as argument of TRIM() function.
