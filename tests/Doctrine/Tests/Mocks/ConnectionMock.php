@@ -8,6 +8,7 @@ use Doctrine\Common\EventManager;
 use Doctrine\DBAL\Configuration;
 use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\Driver;
+use Doctrine\DBAL\Driver\ResultStatement;
 use Doctrine\DBAL\Driver\Statement;
 use Doctrine\DBAL\Platforms\AbstractPlatform;
 use function is_string;
@@ -73,9 +74,11 @@ class ConnectionMock extends Connection
     /**
      * {@inheritdoc}
      */
-    public function executeUpdate($query, array $params = [], array $types = [])
+    public function executeUpdate(string $query, array $params = [], array $types = []) : int
     {
         $this->executeUpdates[] = ['query' => $query, 'params' => $params, 'types' => $types];
+
+        return 42;
     }
 
     /**
@@ -101,7 +104,7 @@ class ConnectionMock extends Connection
     /**
      * {@inheritdoc}
      */
-    public function query() : Statement
+    public function query(string $sql) : ResultStatement
     {
         return $this->queryResult;
     }

@@ -5,6 +5,8 @@ declare(strict_types=1);
 namespace Doctrine\Tests\Mocks;
 
 use Doctrine\DBAL\Driver\Connection;
+use Doctrine\DBAL\Driver\ResultStatement;
+use Doctrine\DBAL\Driver\Statement;
 use Doctrine\DBAL\ParameterType;
 
 /**
@@ -34,7 +36,7 @@ class DriverConnectionMock implements Connection
     /**
      * {@inheritdoc}
      */
-    public function prepare($prepareString)
+    public function prepare(string $prepareString) : Statement
     {
         return $this->statementMock ?: new StatementMock();
     }
@@ -42,7 +44,7 @@ class DriverConnectionMock implements Connection
     /**
      * {@inheritdoc}
      */
-    public function query()
+    public function query(string $sql) : ResultStatement
     {
         return $this->statementMock ?: new StatementMock();
     }
@@ -57,7 +59,7 @@ class DriverConnectionMock implements Connection
     /**
      * {@inheritdoc}
      */
-    public function exec($statement)
+    public function exec(string $statement) : int
     {
     }
 

@@ -62,7 +62,7 @@ class StatementArrayMock extends StatementMock
         return false;
     }
 
-    public function rowCount()
+    public function rowCount() : int
     {
         return count($this->result);
     }

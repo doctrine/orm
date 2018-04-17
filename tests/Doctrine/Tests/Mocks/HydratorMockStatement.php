@@ -113,7 +113,7 @@ class HydratorMockStatement implements \IteratorAggregate, Statement
     /**
      * {@inheritdoc}
      */
-    public function rowCount()
+    public function rowCount() : int
     {
     }
 
