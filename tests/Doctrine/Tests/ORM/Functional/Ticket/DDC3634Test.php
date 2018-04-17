@@ -6,6 +6,8 @@ namespace Doctrine\Tests\ORM\Functional\Ticket;
 
 use Doctrine\DBAL\Cache\QueryCacheProfile;
 use Doctrine\DBAL\Connection;
+use Doctrine\DBAL\Driver\ResultStatement;
+use Doctrine\DBAL\Driver\Statement;
 use Doctrine\ORM\Annotation as ORM;
 use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\Tools\ToolsException;
@@ -273,17 +275,17 @@ class DDC3634LastInsertIdMockingConnection extends Connection
         return $this->forwardCall();
     }
 
-    public function prepare($statement)
+    public function prepare(string $statement) : Statement
     {
         return $this->forwardCall();
     }
 
-    public function executeQuery($query, array $params = [], $types = [], ?QueryCacheProfile $qcp = null)
+    public function executeQuery(string $query, array $params = [], $types = [], ?QueryCacheProfile $qcp = null) : ResultStatement
     {
         return $this->forwardCall();
     }
 
-    public function executeCacheQuery($query, $params, $types, QueryCacheProfile $qcp)
+    public function executeCacheQuery($query, $params, $types, QueryCacheProfile $qcp) : ResultStatement
     {
         return $this->forwardCall();
     }
@@ -293,17 +295,17 @@ class DDC3634LastInsertIdMockingConnection extends Connection
         return $this->forwardCall();
     }
 
-    public function query()
+    public function query(string $sql) : ResultStatement
     {
         return $this->forwardCall();
     }
 
-    public function executeUpdate($query, array $params = [], array $types = [])
+    public function executeUpdate(string $query, array $params = [], array $types = []) : int
     {
         return $this->forwardCall();
     }
 
-    public function exec($statement)
+    public function exec(string $statement) : int
     {
         return $this->forwardCall();
     }
