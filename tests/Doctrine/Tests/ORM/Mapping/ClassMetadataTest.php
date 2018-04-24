@@ -823,10 +823,10 @@ class ClassMetadataTest extends OrmTestCase
         $cm = new ClassMetadata(CMS\CmsUser::class, null, $this->metadataBuildingContext);
         $cm->setTable(new Mapping\TableMetadata('cms_users'));
 
-        $cm->addLifecycleCallback('notfound', 'postLoad');
+        $cm->addLifecycleCallback('postLoad', 'notfound');
 
         $this->expectException(MappingException::class);
-        $this->expectExceptionMessage("Entity '" . CMS\CmsUser::class . "' has no method 'notfound' to be registered as lifecycle callback.");
+        $this->expectExceptionMessage("Entity '" . CMS\CmsUser::class . "' has no public method 'notfound' to be registered as lifecycle callback.");
 
         $cm->validateLifecycleCallbacks(new RuntimeReflectionService());
     }

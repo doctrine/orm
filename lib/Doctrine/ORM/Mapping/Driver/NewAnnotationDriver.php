@@ -277,7 +277,7 @@ class NewAnnotationDriver implements MappingDriver
             /** @var \ReflectionMethod $method */
             foreach ($reflectionClass->getMethods(\ReflectionMethod::IS_PUBLIC) as $method) {
                 foreach ($this->getMethodCallbacks($method) as $callback) {
-                    $classMetadata->addLifecycleCallback($method->getName(), $callback);
+                    $classMetadata->addLifecycleCallback($callback, $method->getName());
                 }
             }
         }

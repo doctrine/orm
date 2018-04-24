@@ -154,7 +154,7 @@ class ClassMetadataExporter implements Exporter
 
             foreach ($metadata->lifecycleCallbacks as $event => $callbacks) {
                 foreach ($callbacks as $callback) {
-                    $lines[] = $objectReference . '->addLifecycleCallback("' . $callback . '", "' . $event . '");';
+                    $lines[] = $objectReference . '->addLifecycleCallback("' . $event . '", "' . $callback . '");';
                 }
             }
         }

@@ -667,7 +667,7 @@ class XmlDriver extends FileDriver
                 $eventName  = constant(Events::class . '::' . (string) $lifecycleCallback['type']);
                 $methodName = (string) $lifecycleCallback['method'];
 
-                $metadata->addLifecycleCallback($methodName, $eventName);
+                $metadata->addLifecycleCallback($eventName, $methodName);
             }
         }
 

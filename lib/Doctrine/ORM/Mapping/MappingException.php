@@ -727,7 +727,7 @@ class MappingException extends \LogicException implements ORMException
      */
     public static function lifecycleCallbackMethodNotFound($className, $methodName)
     {
-        return new self("Entity '" . $className . "' has no method '" . $methodName . "' to be registered as lifecycle callback.");
+        return new self("Entity '" . $className . "' has no public method '" . $methodName . "' to be registered as lifecycle callback.");
     }
 
     /**

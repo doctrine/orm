@@ -369,18 +369,6 @@ class ClassMetadataFactory extends AbstractClassMetadataFactory
                 break;
 
             case GeneratorType::CUSTOM:
-                $definition = $generator->getDefinition();
-
-                if (! isset($definition['class'])) {
-                    throw InvalidCustomGenerator::onClassNotConfigured();
-                }
-
-                if (! class_exists($definition['class'])) {
-                    throw InvalidCustomGenerator::onMissingClass($definition);
-                }
-
-                break;
-
             case GeneratorType::IDENTITY:
             case GeneratorType::NONE:
                 break;

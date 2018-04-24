@@ -58,6 +58,7 @@ class AttachEntityListenersListenerTest extends OrmTestCase
         $this->listener->addEntityListener(
             AttachEntityListenersListenerTestBarEntity::class,
             AttachEntityListenersListenerTestListener2::class,
+            Events::prePersist,
             Events::prePersist
         );
 
@@ -94,12 +95,14 @@ class AttachEntityListenersListenerTest extends OrmTestCase
         $this->listener->addEntityListener(
             AttachEntityListenersListenerTestFooEntity::class,
             AttachEntityListenersListenerTestListener::class,
+            Events::postPersist,
             Events::postPersist
         );
 
         $this->listener->addEntityListener(
             AttachEntityListenersListenerTestFooEntity::class,
             AttachEntityListenersListenerTestListener::class,
+            Events::postPersist,
             Events::postPersist
         );
 

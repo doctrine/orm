@@ -1164,9 +1164,9 @@ class User
         $metadata->setInheritanceType(Mapping\InheritanceType::NONE);
         $metadata->setChangeTrackingPolicy(Mapping\ChangeTrackingPolicy::DEFERRED_IMPLICIT);
 
-        $metadata->addLifecycleCallback('doStuffOnPrePersist', 'prePersist');
-        $metadata->addLifecycleCallback('doOtherStuffOnPrePersistToo', 'prePersist');
-        $metadata->addLifecycleCallback('doStuffOnPostPersist', 'postPersist');
+        $metadata->addLifecycleCallback('prePersist', 'doStuffOnPrePersist');
+        $metadata->addLifecycleCallback('prePersist', 'doOtherStuffOnPrePersistToo');
+        $metadata->addLifecycleCallback('postPersist', 'doStuffOnPostPersist');
 
         $metadata->setGeneratorDefinition(
             [

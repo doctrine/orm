@@ -421,7 +421,7 @@ class AnnotationDriver implements MappingDriver
         }
 
         $this->attachLifecycleCallbacks($classAnnotations, $reflectionClass, $metadata);
-        $this->attachEntityListeners($classAnnotations, $reflectionClass, $metadata);
+        $this->attachEntityListeners($classAnnotations, $metadata);
 
         return $metadata;
     }
@@ -1174,7 +1174,7 @@ class AnnotationDriver implements MappingDriver
 
                 foreach ($eventMap as $eventName => $annotationClassName) {
                     if (isset($annotations[$annotationClassName])) {
-                        $metadata->addLifecycleCallback($reflectionMethod->getName(), $eventName);
+                        $metadata->addLifecycleCallback($eventName, $reflectionMethod->getName());
                     }
                 }
             }

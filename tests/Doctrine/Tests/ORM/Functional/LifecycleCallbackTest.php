@@ -389,7 +389,10 @@ DQL;
     }
 }
 
-/** @ORM\Entity @ORM\HasLifecycleCallbacks */
+/**
+ * @ORM\Entity
+ * @ORM\HasLifecycleCallbacks
+ */
 class LifecycleCallbackTestUser
 {
     /** @ORM\Id @ORM\Column(type="integer") @ORM\GeneratedValue */
@@ -398,6 +401,7 @@ class LifecycleCallbackTestUser
     private $value;
     /** @ORM\Column(type="string") */
     private $name;
+
     public function getId()
     {
         return $this->id;
@@ -418,6 +422,7 @@ class LifecycleCallbackTestUser
     {
         $this->name = $name;
     }
+
     /** @ORM\PreUpdate */
     public function testCallback() : void
     {
@@ -496,7 +501,8 @@ class LifecycleCallbackTestEntity
 }
 
 /**
- * @ORM\Entity @ORM\HasLifecycleCallbacks
+ * @ORM\Entity
+ * @ORM\HasLifecycleCallbacks
  * @ORM\Table(name="lc_cb_test_cascade")
  */
 class LifecycleCallbackCascader
@@ -532,7 +538,10 @@ class LifecycleCallbackCascader
     }
 }
 
-/** @ORM\MappedSuperclass @ORM\HasLifecycleCallbacks */
+/**
+ * @ORM\MappedSuperclass
+ * @ORM\HasLifecycleCallbacks
+ */
 class LifecycleCallbackParentEntity
 {
     /** @ORM\PrePersist */
@@ -541,7 +550,10 @@ class LifecycleCallbackParentEntity
     }
 }
 
-/** @ORM\Entity @ORM\Table(name="lc_cb_childentity") */
+/**
+ * @ORM\Entity
+ * @ORM\Table(name="lc_cb_childentity")
+ */
 class LifecycleCallbackChildEntity extends LifecycleCallbackParentEntity
 {
     /** @ORM\Id @ORM\Column(type="integer") @ORM\GeneratedValue */
@@ -556,7 +568,10 @@ class LifecycleListenerPreUpdate
     }
 }
 
-/** @ORM\Entity @ORM\HasLifecycleCallbacks */
+/**
+ * @ORM\Entity
+ * @ORM\HasLifecycleCallbacks
+ */
 class LifecycleCallbackEventArgEntity
 {
     /** @ORM\Id @ORM\Column(type="integer") @ORM\GeneratedValue */
