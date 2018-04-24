@@ -12,7 +12,6 @@ use Doctrine\ORM\Event\LoadClassMetadataEventArgs;
 use Doctrine\ORM\Event\OnClassMetadataNotFoundEventArgs;
 use Doctrine\ORM\Events;
 use Doctrine\ORM\Exception\ORMException;
-use Doctrine\ORM\Mapping\Exception\InvalidCustomGenerator;
 use Doctrine\ORM\Mapping\Exception\TableGeneratorNotImplementedYet;
 use Doctrine\ORM\Mapping\Exception\UnknownGeneratorType;
 use Doctrine\ORM\Sequencing\Planning\AssociationValueGeneratorExecutor;
@@ -21,7 +20,6 @@ use Doctrine\ORM\Sequencing\Planning\NoopValueGenerationPlan;
 use Doctrine\ORM\Sequencing\Planning\SingleValueGenerationPlan;
 use Doctrine\ORM\Sequencing\Planning\ValueGenerationExecutor;
 use function array_map;
-use function class_exists;
 use function count;
 use function end;
 use function explode;
@@ -307,7 +305,7 @@ class ClassMetadataFactory extends AbstractClassMetadataFactory
     private function completeIdentifierGeneratorMappings(ClassMetadata $class) : void
     {
         foreach ($class->getDeclaredPropertiesIterator() as $property) {
-            if (! $property instanceof FieldMetadata /*&& ! $property instanceof AssocationMetadata*/) {
+            if (! $property instanceof FieldMetadata /*&& ! $property instanceof AssociationMetadata*/) {
                 continue;
             }
 
@@ -315,10 +313,6 @@ class ClassMetadataFactory extends AbstractClassMetadataFactory
         }
     }
 
-    /**
-     * @param FieldMetadata $field
-     * @throws ORMException
-     */
     private function completeFieldIdentifierGeneratorMapping(FieldMetadata $field)
     {
         if (! $field->hasValueGenerator()) {

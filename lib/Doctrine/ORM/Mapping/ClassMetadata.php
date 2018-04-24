@@ -213,7 +213,7 @@ class ClassMetadata extends ComponentMetadata implements TableOwner
      *
      * @throws MappingException
      */
-    public function setParent(ComponentMetadata $parent): void
+    public function setParent(ComponentMetadata $parent) : void
     {
         parent::setParent($parent);
 

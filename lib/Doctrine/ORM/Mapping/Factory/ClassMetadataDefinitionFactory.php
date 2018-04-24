@@ -22,19 +22,11 @@ class ClassMetadataDefinitionFactory
         $this->generatorStrategy = $generatorStrategy;
     }
 
-    /**
-     * @param string $className
-     * @param ClassMetadata|null $parentMetadata
-     * @param ClassMetadataBuildingContext $metadataBuildingContext
-     *
-     * @return ClassMetadataDefinition
-     */
     public function build(
         string $className,
         ?ClassMetadata $parentMetadata,
         ClassMetadataBuildingContext $metadataBuildingContext
-    ) : ClassMetadataDefinition
-    {
+    ) : ClassMetadataDefinition {
         $definition = $this->createDefinition($className, $parentMetadata);
 
         if (! class_exists($definition->metadataClassName, false)) {
@@ -46,12 +38,6 @@ class ClassMetadataDefinitionFactory
         return $definition;
     }
 
-    /**
-     * @param string $className
-     * @param ClassMetadata|null $parentMetadata
-     *
-     * @return ClassMetadataDefinition
-     */
     private function createDefinition(string $className, ?ClassMetadata $parentMetadata) : ClassMetadataDefinition
     {
         $metadataClassName = $this->resolver->resolveMetadataClassName($className);

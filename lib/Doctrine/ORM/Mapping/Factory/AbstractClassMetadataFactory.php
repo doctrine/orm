@@ -93,10 +93,10 @@ abstract class AbstractClassMetadataFactory implements ClassMetadataFactory
             return $this->loaded[$entityClassName];
         }
 
-        $metadataBuildContext    = new ClassMetadataBuildingContext($this);
-        $parentClassNameList     = $this->getParentClassNameList($entityClassName);
-        $parentClassNameList[]   = $entityClassName;
-        $parent                  = null;
+        $metadataBuildContext  = new ClassMetadataBuildingContext($this);
+        $parentClassNameList   = $this->getParentClassNameList($entityClassName);
+        $parent                = null;
+        $parentClassNameList[] = $entityClassName;
 
         foreach ($parentClassNameList as $parentClassName) {
             if (isset($this->loaded[$parentClassName])) {
@@ -141,11 +141,6 @@ abstract class AbstractClassMetadataFactory implements ClassMetadataFactory
         return $this->mappingDriver->isTransient($entityClassName);
     }
 
-    /**
-     * @param ClassMetadataDefinition $definition
-     *
-     * @return ClassMetadata
-     */
     protected function createClassMetadata(ClassMetadataDefinition $definition) : ClassMetadata
     {
         /** @var ClassMetadata $classMetadata */
@@ -160,18 +155,12 @@ abstract class AbstractClassMetadataFactory implements ClassMetadataFactory
     /**
      * Create a class metadata definition for the given class name.
      *
-     * @param string $className
-     * @param ClassMetadata|null $parent
-     * @param ClassMetadataBuildingContext $metadataBuildingContext
-     *
-     * @return ClassMetadataDefinition
      */
     private function getOrCreateClassMetadataDefinition(
         string $className,
         ?ClassMetadata $parent,
         ClassMetadataBuildingContext $metadataBuildingContext
-    ) : ClassMetadataDefinition
-    {
+    ) : ClassMetadataDefinition {
         if (! isset($this->definitions[$className])) {
             $this->definitions[$className] = $this->definitionFactory->build($className, $parent, $metadataBuildingContext);
         }
@@ -180,8 +169,6 @@ abstract class AbstractClassMetadataFactory implements ClassMetadataFactory
     }
 
     /**
-     * @param string $className
-     *
      * @return string[]
      *
      * @throws \InvalidArgumentException
@@ -202,8 +189,5 @@ abstract class AbstractClassMetadataFactory implements ClassMetadataFactory
         return $parentClassNameList;
     }
 
-    /**
-     * @return ReflectionService
-     */
     abstract protected function getReflectionService() : ReflectionService;
 }

@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Doctrine\ORM\Mapping\Binder;
 
+use Doctrine\DBAL\DBALException;
+use Doctrine\DBAL\Types\Type;
 use Doctrine\ORM\Annotation;
 use Doctrine\ORM\Mapping;
 
@@ -62,48 +64,72 @@ class PropertyBinder
         }
     }
 
+    /**
+     * @throws DBALException
+     */
     private function bindFieldMetadata(
         \ReflectionProperty $reflectionProperty,
         array $propertyAnnotations
-    ) : Mapping\FieldMetadata
-    {
-        $className   = $this->metadata->getClassName();
-        $fieldName   = $reflectionProperty->getName();
-        $isVersioned = isset($propertyAnnotations[Annotation\Version::class]);
-        $columnAnnot = $propertyAnnotations[Annotation\Column::class];
-
-        if ($columnAnnot->type === null) {
-            throw Mapping\MappingException::propertyTypeIsRequired($className, $fieldName);
-        }
+    ) : Mapping\FieldMetadata {
+        $className        = $this->metadata->getClassName();
+        $fieldName        = $reflectionProperty->getName();
+        $isVersioned      = isset($propertyAnnotations[Annotation\Version::class]);
+        $columnAnnotation = $propertyAnnotations[Annotation\Column::class];
 
         $fieldMetadata = new Mapping\FieldMetadata($fieldName);
 
-        $fieldMetadata->setType(Type::getType($columnAnnot->type));
+        if ($columnAnnotation->type === null) {
+            throw Mapping\MappingException::propertyTypeIsRequired($className, $fieldName);
+        }
+
+        $this->attachLocalColumnMetadata($fieldMetadata, $columnAnnotation);
+
         $fieldMetadata->setVersioned($isVersioned);
 
         if (isset($propertyAnnotations[Annotation\Id::class])) {
             $fieldMetadata->setPrimaryKey(true);
         }
+    }
 
-        if (! empty($columnAnnot->name)) {
-            $fieldMetadata->setColumnName($columnAnnot->name);
+
+    /**
+     * @throws DBALException
+     */
+    private function attachLocalColumnMetadata(
+        Mapping\LocalColumnMetadata $localColumnMetadata,
+        Annotation\Column $columnAnnotation
+    ) : void {
+        $this->attachColumnMetadata($localColumnMetadata, $columnAnnotation);
+
+        $localColumnMetadata->setScale($columnAnnotation->scale);
+        $localColumnMetadata->setPrecision($columnAnnotation->precision);
+
+        if (! empty($columnAnnotation->length)) {
+            $localColumnMetadata->setLength($columnAnnotation->length);
+        }
+    }
+
+    /**
+     * @throws DBALException
+     */
+    private function attachColumnMetadata(
+        Mapping\ColumnMetadata $columnMetadata,
+        Annotation\Column $columnAnnotation
+    ) : void {
+        $columnMetadata->setType(Type::getType($columnAnnotation->type));
+        $columnMetadata->setNullable($columnAnnotation->nullable);
+        $columnMetadata->setUnique($columnAnnotation->unique);
+
+        if (! empty($columnAnnotation->name)) {
+            $columnMetadata->setColumnName($columnAnnotation->name);
         }
 
-        if (! empty($columnAnnot->columnDefinition)) {
-            $fieldMetadata->setColumnDefinition($columnAnnot->columnDefinition);
+        if (! empty($columnAnnotation->columnDefinition)) {
+            $columnMetadata->setColumnDefinition($columnAnnotation->columnDefinition);
         }
 
-        if (! empty($columnAnnot->length)) {
-            $fieldMetadata->setLength($columnAnnot->length);
+        if ($columnAnnotation->options) {
+            $columnMetadata->setOptions($columnAnnotation->options);
         }
-
-        if ($columnAnnot->options) {
-            $fieldMetadata->setOptions($columnAnnot->options);
-        }
-
-        $fieldMetadata->setScale($columnAnnot->scale);
-        $fieldMetadata->setPrecision($columnAnnot->precision);
-        $fieldMetadata->setNullable($columnAnnot->nullable);
-        $fieldMetadata->setUnique($columnAnnot->unique);
     }
 }

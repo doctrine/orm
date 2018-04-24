@@ -183,8 +183,8 @@ class AnnotationDriver implements MappingDriver
     {
         $classAnnotations = $this->reader->getClassAnnotations(new \ReflectionClass($className));
 
-        foreach ($classAnnotations as $annot) {
-            if (isset($this->entityAnnotationClasses[get_class($annot)])) {
+        foreach ($classAnnotations as $annotation) {
+            if (isset($this->entityAnnotationClasses[get_class($annotation)])) {
                 return false;
             }
         }
@@ -250,8 +250,9 @@ class AnnotationDriver implements MappingDriver
         $declared = get_declared_classes();
 
         foreach ($declared as $className) {
-            $rc         = new \ReflectionClass($className);
-            $sourceFile = $rc->getFileName();
+            $reflectionClass = new \ReflectionClass($className);
+            $sourceFile      = $reflectionClass->getFileName();
+
             if (in_array($sourceFile, $includedFiles, true) && ! $this->isTransient($className)) {
                 $classes[] = $className;
             }
