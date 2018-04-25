@@ -35,6 +35,12 @@ abstract class AbstractCommand extends Command
 
         /** @var EntityManagerInterface $em */
         $em = $emHelper->getEntityManager();
+        $connection = $em->getConnection();
+
+        if ($connection instanceof MasterSlaveConnection) {
+        	$output->writeln('<info>switch to master</info>', OutputInterface::VERBOSITY_VERBOSE);
+			$connection->connect('master');
+		}
 
         $metadatas = $em->getMetadataFactory()->getAllMetadata();
 
