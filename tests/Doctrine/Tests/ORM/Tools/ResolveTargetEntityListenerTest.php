@@ -28,7 +28,9 @@ class ResolveTargetEntityListenerTest extends OrmTestCase
         $annotationDriver = $this->createAnnotationDriver();
 
         $this->em = $this->getTestEntityManager();
+
         $this->em->getConfiguration()->setMetadataDriverImpl($annotationDriver);
+
         $this->factory  = $this->em->getMetadataFactory();
         $this->listener = new ResolveTargetEntityListener();
     }
@@ -63,9 +65,12 @@ class ResolveTargetEntityListenerTest extends OrmTestCase
      */
     public function testResolveTargetEntityListenerCanRetrieveTargetEntityByInterfaceName() : void
     {
-        $this->listener->addResolveTargetEntity(ResolveTarget::class, ResolveTargetEntity::class);
+        $evm = $this->em->getEventManager();
 
-        $this->em->getEventManager()->addEventSubscriber($this->listener);
+        $this->listener->addResolveTargetEntity(ResolveTarget::class, ResolveTargetEntity::class);
+        $this->listener->addResolveTargetEntity(Target::class, TargetEntity::class);
+
+        $evm->addEventSubscriber($this->listener);
 
         $cm = $this->factory->getMetadataFor(ResolveTarget::class);
 
@@ -78,10 +83,12 @@ class ResolveTargetEntityListenerTest extends OrmTestCase
     public function testAssertTableColumnsAreNotAddedInManyToMany() : void
     {
         $evm = $this->em->getEventManager();
+
         $this->listener->addResolveTargetEntity(ResolveTarget::class, ResolveTargetEntity::class);
         $this->listener->addResolveTargetEntity(Target::class, TargetEntity::class);
 
         $evm->addEventListener(Events::loadClassMetadata, $this->listener);
+
         $cm   = $this->factory->getMetadataFor(ResolveTargetEntity::class);
         $meta = $cm->getProperty('manyToMany');
 
@@ -97,7 +104,9 @@ class ResolveTargetEntityListenerTest extends OrmTestCase
     public function testDoesResolveTargetEntitiesInDQLAlsoWithInterfaces() : void
     {
         $evm = $this->em->getEventManager();
+
         $this->listener->addResolveTargetEntity(ResolveTarget::class, ResolveTargetEntity::class);
+        $this->listener->addResolveTargetEntity(Target::class, TargetEntity::class);
 
         $evm->addEventSubscriber($this->listener);
 

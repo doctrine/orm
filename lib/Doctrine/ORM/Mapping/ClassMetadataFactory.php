@@ -207,23 +207,7 @@ class ClassMetadataFactory implements PersistenceClassMetadataFactory
         $loadingException        = null;
 
         try {
-            if ($this->cacheDriver) {
-                $cached = $this->cacheDriver->fetch($entityClassName . $this->cacheSalt);
-
-                if ($cached instanceof ClassMetadata) {
-                    $this->loadedMetadata[$entityClassName] = $cached;
-
-                    $cached->wakeupReflection($metadataBuildingContext->getReflectionService());
-                } else {
-                    foreach ($this->loadMetadata($entityClassName, $metadataBuildingContext) as $loadedClass) {
-                        $loadedClassName = $loadedClass->getClassName();
-
-                        $this->cacheDriver->save($loadedClassName . $this->cacheSalt, $loadedClass, null);
-                    }
-                }
-            } else {
-                $this->loadMetadata($entityClassName, $metadataBuildingContext);
-            }
+            $this->loadMetadata($entityClassName, $metadataBuildingContext);
         } catch (PersistenceMappingException $loadingException) {
             $fallbackMetadataResponse = $this->onNotFoundMetadata($entityClassName, $metadataBuildingContext);
 
