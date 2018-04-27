@@ -528,8 +528,8 @@ abstract class AbstractQuery
      * Set whether or not to cache the results of this query and if so, for
      * how long and which ID to use for the cache entry.
      *
-     * @param bool   $useCache Whether or not to cache the results of this query.
-     * @param int    $lifetime How long the cache entry is valid, in seconds.
+     * @param bool   $useCache      Whether or not to cache the results of this query.
+     * @param int    $lifetime      How long the cache entry is valid, in seconds.
      * @param string $resultCacheId ID to use for the cache entry.
      *
      * @return static This query instance.
