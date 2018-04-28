@@ -528,15 +528,15 @@ abstract class AbstractQuery
      * Set whether or not to cache the results of this query and if so, for
      * how long and which ID to use for the cache entry.
      *
-     * @param bool   $bool
-     * @param int    $lifetime
-     * @param string $resultCacheId
+     * @param bool   $useCache      Whether or not to cache the results of this query.
+     * @param int    $lifetime      How long the cache entry is valid, in seconds.
+     * @param string $resultCacheId ID to use for the cache entry.
      *
      * @return static This query instance.
      */
-    public function useResultCache($bool, $lifetime = null, $resultCacheId = null)
+    public function useResultCache($useCache, $lifetime = null, $resultCacheId = null)
     {
-        if ($bool) {
+        if ($useCache) {
             $this->setResultCacheLifetime($lifetime);
             $this->setResultCacheId($resultCacheId);
 
@@ -551,7 +551,7 @@ abstract class AbstractQuery
     /**
      * Defines how long the result cache will be active before expire.
      *
-     * @param int $lifetime How long the cache entry is valid.
+     * @param int $lifetime How long the cache entry is valid, in seconds.
      *
      * @return static This query instance.
      */
