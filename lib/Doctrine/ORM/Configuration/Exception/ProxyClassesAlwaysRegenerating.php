@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Doctrine\ORM\Exception;
+namespace Doctrine\ORM\Configuration\Exception;
 
 final class ProxyClassesAlwaysRegenerating extends \LogicException implements ConfigurationException
 {

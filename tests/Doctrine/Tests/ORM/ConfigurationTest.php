@@ -16,7 +16,7 @@ use Doctrine\ORM\Cache\Exception\QueryCacheUsesNonPersistentCache;
 use Doctrine\ORM\Configuration;
 use Doctrine\ORM\EntityRepository;
 use Doctrine\ORM\Exception\ORMException;
-use Doctrine\ORM\Exception\ProxyClassesAlwaysRegenerating;
+use Doctrine\ORM\Configuration\Exception\ProxyClassesAlwaysRegenerating;
 use Doctrine\ORM\Mapping\ClassMetadataFactory;
 use Doctrine\ORM\Mapping\DefaultEntityListenerResolver;
 use Doctrine\ORM\Mapping\Driver\MappingDriver;

@@ -6,7 +6,7 @@ namespace Doctrine\Tests\ORM\Functional;
 
 use Doctrine\Common\Collections\Criteria;
 use Doctrine\ORM\Mapping\FetchMode;
-use Doctrine\ORM\Persisters\MatchingAssociationFieldRequiresObject;
+use Doctrine\ORM\Persisters\Exception\MatchingAssociationFieldRequiresObject;
 use Doctrine\Tests\Models\Company\CompanyContract;
 use Doctrine\Tests\Models\Company\CompanyEmployee;
 use Doctrine\Tests\Models\Company\CompanyFixContract;

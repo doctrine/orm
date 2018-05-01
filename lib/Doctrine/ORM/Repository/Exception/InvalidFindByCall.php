@@ -4,8 +4,6 @@ declare(strict_types=1);
 
 namespace Doctrine\ORM\Repository\Exception;
 
-use Doctrine\ORM\Exception\RepositoryException;
-
 final class InvalidFindByCall extends \BadMethodCallException implements RepositoryException
 {
     public static function fromInverseSideUsage(

@@ -4,8 +4,6 @@ declare(strict_types=1);
 
 namespace Doctrine\ORM\Persisters\Exception;
 
-use Doctrine\ORM\Exception\PersisterException;
-
 final class CantUseInOperatorOnCompositeKeys extends \LogicException implements PersisterException
 {
     public static function new() : self
