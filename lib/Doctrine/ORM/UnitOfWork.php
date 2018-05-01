@@ -785,7 +785,7 @@ class UnitOfWork implements PropertyChangedListener
             $state = $this->getEntityState($entry, self::STATE_NEW);
 
             if (! ($entry instanceof $targetEntity)) {
-                throw UnexpectedAssociationValue::create(
+                throw UnexpectedAssociationValue::new(
                     $association->getSourceEntity(),
                     $association->getName(),
                     get_class($entry),

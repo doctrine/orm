@@ -8,7 +8,7 @@ use Doctrine\ORM\Exception\ORMException;
 
 final class TableGeneratorNotImplementedYet extends \LogicException implements ORMException
 {
-    public static function create() : self
+    public static function new() : self
     {
         return new self('TableGenerator not yet implemented.');
     }

@@ -235,7 +235,7 @@ class Configuration extends DBALConfiguration
         $queryCacheImpl = $this->getQueryCacheImpl();
 
         if (! $queryCacheImpl) {
-            throw QueryCacheNotConfigured::create();
+            throw QueryCacheNotConfigured::new();
         }
 
         if ($queryCacheImpl instanceof ArrayCache) {
@@ -245,7 +245,7 @@ class Configuration extends DBALConfiguration
         $metadataCacheImpl = $this->getMetadataCacheImpl();
 
         if (! $metadataCacheImpl) {
-            throw MetadataCacheNotConfigured::create();
+            throw MetadataCacheNotConfigured::new();
         }
 
         if ($metadataCacheImpl instanceof ArrayCache) {
@@ -253,7 +253,7 @@ class Configuration extends DBALConfiguration
         }
 
         if ($this->getProxyManagerConfiguration()->getGeneratorStrategy() instanceof EvaluatingGeneratorStrategy) {
-            throw ProxyClassesAlwaysRegenerating::create();
+            throw ProxyClassesAlwaysRegenerating::new();
         }
     }
 

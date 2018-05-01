@@ -8,7 +8,7 @@ use Doctrine\ORM\Exception\PersisterException;
 
 class CantUseInOperatorOnCompositeKeys extends \LogicException implements PersisterException
 {
-    public static function create() : self
+    public static function new() : self
     {
         return new self("Can't use IN operator on entities that have composite keys.");
     }

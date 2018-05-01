@@ -405,7 +405,7 @@ class ClassMetadataFactory extends AbstractClassMetadataFactory
                 break;
 
             case GeneratorType::TABLE:
-                throw TableGeneratorNotImplementedYet::create();
+                throw TableGeneratorNotImplementedYet::new();
                 break;
 
             case GeneratorType::CUSTOM:
@@ -425,7 +425,7 @@ class ClassMetadataFactory extends AbstractClassMetadataFactory
                 break;
 
             default:
-                throw UnknownGeneratorType::create($generator->getType());
+                throw UnknownGeneratorType::new($generator->getType());
         }
     }
 

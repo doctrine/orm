@@ -8,7 +8,7 @@ use Doctrine\ORM\Exception\ORMException;
 
 final class UnknownGeneratorType extends \LogicException implements ORMException
 {
-    public static function create(string $generatorType) : self
+    public static function new(string $generatorType) : self
     {
         return new self('Unknown generator type: ' . $generatorType);
     }

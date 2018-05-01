@@ -41,6 +41,6 @@ class RowNumberOverFunction extends FunctionNode
      */
     public function parse(Parser $parser)
     {
-        throw RowNumberOverFunctionNotEnabled::create();
+        throw RowNumberOverFunctionNotEnabled::new();
     }
 }

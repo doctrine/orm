@@ -740,7 +740,7 @@ final class EntityManager implements EntityManagerInterface
     private function errorIfClosed()
     {
         if ($this->closed) {
-            throw EntityManagerClosed::create();
+            throw EntityManagerClosed::new();
         }
     }
 
@@ -830,7 +830,7 @@ final class EntityManager implements EntityManagerInterface
     public static function create($connection, Configuration $config, ?EventManager $eventManager = null)
     {
         if (! $config->getMetadataDriverImpl()) {
-            throw MissingMappingDriverImplementation::create();
+            throw MissingMappingDriverImplementation::new();
         }
 
         $connection = static::createConnection($connection, $config, $eventManager);
@@ -867,7 +867,7 @@ final class EntityManager implements EntityManagerInterface
         }
 
         if ($eventManager !== null && $connection->getEventManager() !== $eventManager) {
-            throw MismatchedEventManager::create();
+            throw MismatchedEventManager::new();
         }
 
         return $connection;

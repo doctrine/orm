@@ -498,7 +498,7 @@ abstract class AbstractQuery
     public function setResultCacheDriver($resultCacheDriver = null)
     {
         if ($resultCacheDriver !== null && ! ($resultCacheDriver instanceof \Doctrine\Common\Cache\Cache)) {
-            throw InvalidResultCacheDriver::create();
+            throw InvalidResultCacheDriver::new();
         }
 
         $this->queryCacheProfile = $this->queryCacheProfile

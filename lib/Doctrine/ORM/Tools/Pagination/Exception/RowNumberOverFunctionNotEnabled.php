@@ -8,7 +8,7 @@ use Doctrine\ORM\Exception\ORMException;
 
 final class RowNumberOverFunctionNotEnabled extends \LogicException implements ORMException
 {
-    public static function create()
+    public static function new() : self
     {
         return new self('The RowNumberOverFunction is not intended for, nor is it enabled for use in DQL.');
     }

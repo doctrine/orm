@@ -9,7 +9,7 @@ use function sprintf;
 
 final class UnexpectedAssociationValue extends \LogicException implements CacheException
 {
-    public static function create(
+    public static function new(
         string $class,
         string $association,
         string $given,

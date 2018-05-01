@@ -233,7 +233,7 @@ class SchemaTool
                     break;
 
                 case InheritanceType::TABLE_PER_CLASS:
-                    throw NotSupported::create();
+                    throw NotSupported::new();
 
                 default:
                     $this->gatherColumns($class, $table);
@@ -546,7 +546,7 @@ class SchemaTool
 
                 case ($property instanceof OneToManyAssociationMetadata):
                     //... create join table, one-many through join table supported later
-                    throw NotSupported::create();
+                    throw NotSupported::new();
 
                 case ($property instanceof ManyToManyAssociationMetadata):
                     // create join table
