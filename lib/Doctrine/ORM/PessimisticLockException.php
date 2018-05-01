@@ -6,7 +6,7 @@ namespace Doctrine\ORM;
 
 use Doctrine\ORM\Exception\ORMException;
 
-class PessimisticLockException extends \RuntimeException implements ORMException
+final class PessimisticLockException extends \RuntimeException implements ORMException
 {
     /**
      * @return PessimisticLockException

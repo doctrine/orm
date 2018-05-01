@@ -11,6 +11,8 @@ use function sprintf;
 
 /**
  * Description of QueryException.
+ *
+ * @todo Split and make final.
  */
 class QueryException extends \LogicException implements ORMException
 {

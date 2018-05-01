@@ -20,7 +20,7 @@ use function sprintf;
 /**
  * Contains exception messages for all invalid lifecycle state exceptions inside UnitOfWork
  */
-class ORMInvalidArgumentException extends \InvalidArgumentException
+final class ORMInvalidArgumentException extends \InvalidArgumentException
 {
     /**
      * @param object $entity

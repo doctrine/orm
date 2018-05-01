@@ -9,6 +9,6 @@ use Doctrine\ORM\Cache\Exception\CacheException;
 /**
  * Lock exception for cache.
  */
-class LockException extends \RuntimeException implements CacheException
+final class LockException extends \RuntimeException implements CacheException
 {
 }

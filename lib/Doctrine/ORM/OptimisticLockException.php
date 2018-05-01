@@ -10,7 +10,7 @@ use Doctrine\ORM\Exception\ORMException;
  * An OptimisticLockException is thrown when a version check on an object
  * that uses optimistic locking through a version field fails.
  */
-class OptimisticLockException extends \RuntimeException implements ORMException
+final class OptimisticLockException extends \RuntimeException implements ORMException
 {
     /** @var object|null */
     private $entity;

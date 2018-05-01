@@ -7,7 +7,7 @@ namespace Doctrine\ORM;
 /**
  * Exception thrown when an ORM query unexpectedly does not return any results.
  */
-class NoResultException extends UnexpectedResultException
+final class NoResultException extends UnexpectedResultException
 {
     public function __construct()
     {

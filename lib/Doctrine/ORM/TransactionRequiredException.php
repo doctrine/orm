@@ -9,7 +9,7 @@ use Doctrine\ORM\Exception\ORMException;
 /**
  * Is thrown when a transaction is required for the current operation, but there is none open.
  */
-class TransactionRequiredException extends \LogicException implements ORMException
+final class TransactionRequiredException extends \LogicException implements ORMException
 {
     /**
      * @return TransactionRequiredException

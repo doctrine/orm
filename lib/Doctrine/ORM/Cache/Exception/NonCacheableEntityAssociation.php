@@ -6,7 +6,7 @@ namespace Doctrine\ORM\Cache\Exception;
 
 use function sprintf;
 
-class NonCacheableEntityAssociation extends \LogicException implements CacheException
+final class NonCacheableEntityAssociation extends \LogicException implements CacheException
 {
     public static function fromEntityAndField(string $entityName, string $field) : self
     {

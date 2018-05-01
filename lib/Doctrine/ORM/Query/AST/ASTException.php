@@ -10,7 +10,7 @@ use function get_class;
 /**
  * Base exception class for AST exceptions.
  */
-class ASTException extends QueryException
+final class ASTException extends QueryException
 {
     /**
      * @param Node $node

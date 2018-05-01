@@ -6,7 +6,7 @@ namespace Doctrine\ORM\Persisters\Exception;
 
 use Doctrine\ORM\Exception\PersisterException;
 
-class CantUseInOperatorOnCompositeKeys extends \LogicException implements PersisterException
+final class CantUseInOperatorOnCompositeKeys extends \LogicException implements PersisterException
 {
     public static function new() : self
     {
