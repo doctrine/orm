@@ -14,6 +14,8 @@ use function sprintf;
 
 /**
  * A MappingException indicates that something is wrong with the mapping setup.
+ *
+ * @todo Split into specific exceptions and change to interface.
  */
 final class MappingException extends \LogicException implements ORMException
 {
