@@ -2,12 +2,12 @@
 
 declare(strict_types=1);
 
-namespace Doctrine\ORM;
+namespace Doctrine\ORM\Exception;
 
 /**
  * Exception thrown when an ORM query unexpectedly does not return any results.
  */
-final class NoResultException extends UnexpectedResultException
+final class NoResult extends UnexpectedResult
 {
     public function __construct()
     {

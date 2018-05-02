@@ -12,6 +12,9 @@ use Doctrine\ORM\Cache\Exception\InvalidResultCacheDriver;
 use Doctrine\ORM\Cache\Logging\CacheLogger;
 use Doctrine\ORM\Cache\QueryCacheKey;
 use Doctrine\ORM\Cache\TimestampCacheKey;
+use Doctrine\ORM\Exception\InvalidArgument;
+use Doctrine\ORM\Exception\NonUniqueResult;
+use Doctrine\ORM\Exception\NoResult;
 use Doctrine\ORM\Internal\Hydration\IterableResult;
 use Doctrine\ORM\Query\Parameter;
 use Doctrine\ORM\Query\ResultSetMapping;
@@ -368,7 +371,7 @@ abstract class AbstractQuery
      *
      * @return string|mixed[]
      *
-     * @throws ORMInvalidArgumentException
+     * @throws InvalidArgument
      */
     public function processParameterValue($value)
     {
@@ -397,7 +400,7 @@ abstract class AbstractQuery
             $value = $this->em->getUnitOfWork()->getSingleIdentifierValue($value);
 
             if ($value === null) {
-                throw ORMInvalidArgumentException::invalidIdentifierBindingEntity();
+                throw InvalidArgument::invalidIdentifierBindingEntity();
             }
         }
 
@@ -702,13 +705,13 @@ abstract class AbstractQuery
      *
      * @return mixed
      *
-     * @throws NonUniqueResultException
+     * @throws NonUniqueResult
      */
     public function getOneOrNullResult($hydrationMode = null)
     {
         try {
             $result = $this->execute(null, $hydrationMode);
-        } catch (NoResultException $e) {
+        } catch (NoResult $e) {
             return null;
         }
 
@@ -721,7 +724,7 @@ abstract class AbstractQuery
         }
 
         if (count($result) > 1) {
-            throw new NonUniqueResultException();
+            throw new NonUniqueResult();
         }
 
         return array_shift($result);
@@ -739,15 +742,15 @@ abstract class AbstractQuery
      *
      * @return mixed
      *
-     * @throws NonUniqueResultException If the query result is not unique.
-     * @throws NoResultException        If the query returned no result.
+     * @throws NonUniqueResult If the query result is not unique.
+     * @throws NoResult        If the query returned no result.
      */
     public function getSingleResult($hydrationMode = null)
     {
         $result = $this->execute(null, $hydrationMode);
 
         if ($this->hydrationMode !== self::HYDRATE_SINGLE_SCALAR && ! $result) {
-            throw new NoResultException();
+            throw new NoResult();
         }
 
         if (! is_array($result)) {
@@ -755,7 +758,7 @@ abstract class AbstractQuery
         }
 
         if (count($result) > 1) {
-            throw new NonUniqueResultException();
+            throw new NonUniqueResult();
         }
 
         return array_shift($result);
@@ -768,8 +771,8 @@ abstract class AbstractQuery
      *
      * @return mixed The scalar result, or NULL if the query returned no result.
      *
-     * @throws NonUniqueResultException If the query result is not unique.
-     * @throws NoResultException        If the query returned no result.
+     * @throws NonUniqueResult If the query result is not unique.
+     * @throws NoResult        If the query returned no result.
      */
     public function getSingleScalarResult()
     {

@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace Doctrine\ORM\Proxy\Factory;
 
 use Doctrine\ORM\EntityManagerInterface;
-use Doctrine\ORM\EntityNotFoundException;
+use Doctrine\ORM\Exception\EntityNotFound;
 use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\Mapping\TransientMetadata;
 use Doctrine\ORM\Persisters\Entity\EntityPersister;
@@ -76,7 +76,7 @@ final class StaticProxyFactory implements ProxyFactory
     /**
      * {@inheritdoc}
      *
-     * @throws EntityNotFoundException
+     * @throws EntityNotFound
      */
     public function getProxy(ClassMetadata $metadata, array $identifier) : GhostObjectInterface
     {
@@ -127,7 +127,7 @@ final class StaticProxyFactory implements ProxyFactory
             if (! $persister->loadById($identifier, $ghostObject)) {
                 $initializer = $originalInitializer;
 
-                throw EntityNotFoundException::fromClassNameAndIdentifier(
+                throw EntityNotFound::fromClassNameAndIdentifier(
                     $metadata->getClassName(),
                     $identifier
                 );

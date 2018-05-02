@@ -83,7 +83,7 @@ Explicit transaction demarcation is required when you want to
 include custom DBAL operations in a unit of work or when you want
 to make use of some methods of the ``EntityManager`` API that
 require an active transaction. Such methods will throw a
-``TransactionRequiredException`` to inform you of that
+``TransactionRequired`` exception to inform you of that
 requirement.
 
 A more convenient alternative for explicit transaction demarcation is the use
@@ -173,7 +173,7 @@ number (mapping type: integer) or a timestamp (mapping type:
 datetime). When changes to such an entity are persisted at the end
 of a long-running conversation the version of the entity is
 compared to the version in the database and if they don't match, an
-``OptimisticLockException`` is thrown, indicating that the entity
+``OptimisticLockFailed`` exception is thrown, indicating that the entity
 has been modified by someone else already.
 
 You designate a version field in an entity as follows. In this
@@ -231,10 +231,10 @@ depending on the resolution of the timestamp on the particular
 database platform.
 
 When a version conflict is encountered during
-``EntityManager#flush()``, an ``OptimisticLockException`` is thrown
-and the active transaction rolled back (or marked for rollback).
+``EntityManager#flush()``, an ``OptimisticLockFailed`` exception is
+thrown and the active transaction rolled back (or marked for rollback).
 This exception can be caught and handled. Potential responses to an
-OptimisticLockException are to present the conflict to the user or
+OptimisticLockFailed exception are to present the conflict to the user or
 to refresh or reload objects in a new transaction and then retrying
 the transaction.
 
@@ -252,7 +252,7 @@ either when calling ``EntityManager#find()``:
 
     <?php
     use Doctrine\DBAL\LockMode;
-    use Doctrine\ORM\OptimisticLockException;
+    use Doctrine\ORM\Exception\OptimisticLockFailed;
 
     $theEntityId = 1;
     $expectedVersion = 184;
@@ -263,7 +263,7 @@ either when calling ``EntityManager#find()``:
         // do the work
 
         $em->flush();
-    } catch(OptimisticLockException $e) {
+    } catch(OptimisticLockFailed $e) {
         echo "Sorry, but someone else has already changed this entity. Please apply the changes again!";
     }
 
@@ -273,7 +273,7 @@ Or you can use ``EntityManager#lock()`` to find out:
 
     <?php
     use Doctrine\DBAL\LockMode;
-    use Doctrine\ORM\OptimisticLockException;
+    use Doctrine\ORM\Exception\OptimisticLockFailed;
 
     $theEntityId = 1;
     $expectedVersion = 184;
@@ -284,7 +284,7 @@ Or you can use ``EntityManager#lock()`` to find out:
         // assert version
         $em->lock($entity, LockMode::OPTIMISTIC, $expectedVersion);
 
-    } catch(OptimisticLockException $e) {
+    } catch(OptimisticLockFailed $e) {
         echo "Sorry, but someone else has already changed this entity. Please apply the changes again!";
     }
 

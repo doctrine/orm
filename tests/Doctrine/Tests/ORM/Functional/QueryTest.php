@@ -5,12 +5,12 @@ declare(strict_types=1);
 namespace Doctrine\Tests\ORM\Functional;
 
 use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\ORM\Exception\NonUniqueResult;
+use Doctrine\ORM\Exception\UnexpectedResult;
 use Doctrine\ORM\Mapping\FetchMode;
-use Doctrine\ORM\NonUniqueResultException;
 use Doctrine\ORM\Query;
 use Doctrine\ORM\Query\Parameter;
 use Doctrine\ORM\Query\QueryException;
-use Doctrine\ORM\UnexpectedResultException;
 use Doctrine\Tests\Models\CMS\CmsArticle;
 use Doctrine\Tests\Models\CMS\CmsPhonenumber;
 use Doctrine\Tests\Models\CMS\CmsUser;
@@ -327,7 +327,7 @@ class QueryTest extends OrmFunctionalTestCase
     }
 
     /**
-     * @expectedException Doctrine\ORM\NoResultException
+     * @expectedException Doctrine\ORM\Exception\NoResult
      */
     public function testGetSingleResultThrowsExceptionOnNoResult() : void
     {
@@ -336,7 +336,7 @@ class QueryTest extends OrmFunctionalTestCase
     }
 
     /**
-     * @expectedException Doctrine\ORM\NoResultException
+     * @expectedException Doctrine\ORM\Exception\NoResult
      */
     public function testGetSingleScalarResultThrowsExceptionOnNoResult() : void
     {
@@ -345,7 +345,7 @@ class QueryTest extends OrmFunctionalTestCase
     }
 
     /**
-     * @expectedException Doctrine\ORM\NonUniqueResultException
+     * @expectedException Doctrine\ORM\Exception\NonUniqueResult
      */
     public function testGetSingleScalarResultThrowsExceptionOnNonUniqueResult() : void
     {
@@ -530,7 +530,7 @@ class QueryTest extends OrmFunctionalTestCase
 
         $query = $this->em->createQuery('select u from Doctrine\Tests\Models\CMS\CmsUser u');
 
-        $this->expectException(NonUniqueResultException::class);
+        $this->expectException(NonUniqueResult::class);
 
         $fetchedUser = $query->getOneOrNullResult();
     }
@@ -783,8 +783,8 @@ class QueryTest extends OrmFunctionalTestCase
         try {
             $this->em->createQuery($dql)->getSingleResult();
             $this->fail('Expected exception "\Doctrine\ORM\NoResultException".');
-        } catch (UnexpectedResultException $exc) {
-            self::assertInstanceOf('\Doctrine\ORM\NoResultException', $exc);
+        } catch (UnexpectedResult $exc) {
+            self::assertInstanceOf('\Doctrine\ORM\Exception\NoResult', $exc);
         }
 
         $this->em->persist($u1);
@@ -795,8 +795,8 @@ class QueryTest extends OrmFunctionalTestCase
         try {
             $this->em->createQuery($dql)->getSingleResult();
             $this->fail('Expected exception "\Doctrine\ORM\NonUniqueResultException".');
-        } catch (UnexpectedResultException $exc) {
-            self::assertInstanceOf('\Doctrine\ORM\NonUniqueResultException', $exc);
+        } catch (UnexpectedResult $exc) {
+            self::assertInstanceOf('\Doctrine\ORM\Exception\NonUniqueResult', $exc);
         }
     }
 

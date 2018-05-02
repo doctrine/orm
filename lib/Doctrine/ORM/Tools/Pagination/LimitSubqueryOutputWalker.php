@@ -12,9 +12,9 @@ use Doctrine\DBAL\Platforms\SQLAnywherePlatform;
 use Doctrine\DBAL\Platforms\SQLServerPlatform;
 use Doctrine\DBAL\Types\Type;
 use Doctrine\ORM\EntityManagerInterface;
+use Doctrine\ORM\Exception\OptimisticLockFailed;
 use Doctrine\ORM\Mapping\AssociationMetadata;
 use Doctrine\ORM\Mapping\FieldMetadata;
-use Doctrine\ORM\OptimisticLockException;
 use Doctrine\ORM\Query;
 use Doctrine\ORM\Query\AST\OrderByClause;
 use Doctrine\ORM\Query\AST\PartialObjectExpression;
@@ -455,7 +455,7 @@ class LimitSubqueryOutputWalker extends SqlWalker
     /**
      * @return string
      *
-     * @throws OptimisticLockException
+     * @throws OptimisticLockFailed
      * @throws QueryException
      */
     private function getInnerSQL(SelectStatement $AST)

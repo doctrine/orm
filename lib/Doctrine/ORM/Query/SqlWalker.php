@@ -10,6 +10,7 @@ use Doctrine\DBAL\Platforms\AbstractPlatform;
 use Doctrine\DBAL\Types\Type;
 use Doctrine\ORM\AbstractQuery;
 use Doctrine\ORM\EntityManagerInterface;
+use Doctrine\ORM\Exception\OptimisticLockFailed;
 use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\Mapping\FieldMetadata;
 use Doctrine\ORM\Mapping\InheritanceType;
@@ -18,7 +19,6 @@ use Doctrine\ORM\Mapping\ManyToManyAssociationMetadata;
 use Doctrine\ORM\Mapping\OneToManyAssociationMetadata;
 use Doctrine\ORM\Mapping\ToManyAssociationMetadata;
 use Doctrine\ORM\Mapping\ToOneAssociationMetadata;
-use Doctrine\ORM\OptimisticLockException;
 use Doctrine\ORM\Query;
 use Doctrine\ORM\Utility\HierarchyDiscriminatorResolver;
 use Doctrine\ORM\Utility\PersisterHelper;
@@ -570,7 +570,7 @@ class SqlWalker implements TreeWalker
 
         foreach ($this->selectedClasses as $selectedClass) {
             if (! $selectedClass['class']->isVersioned()) {
-                throw OptimisticLockException::lockFailed($selectedClass['class']->getClassName());
+                throw OptimisticLockFailed::lockFailed($selectedClass['class']->getClassName());
             }
         }
 

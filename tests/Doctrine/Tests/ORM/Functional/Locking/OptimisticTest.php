@@ -7,7 +7,7 @@ namespace Doctrine\Tests\ORM\Functional\Locking;
 use DateTime;
 use Doctrine\DBAL\LockMode;
 use Doctrine\ORM\Annotation as ORM;
-use Doctrine\ORM\OptimisticLockException;
+use Doctrine\ORM\Exception\OptimisticLockFailed;
 use Doctrine\Tests\OrmFunctionalTestCase;
 use function date;
 use function strtotime;
@@ -70,7 +70,7 @@ class OptimisticTest extends OrmFunctionalTestCase
 
         try {
             $this->em->flush();
-        } catch (OptimisticLockException $e) {
+        } catch (OptimisticLockFailed $e) {
             self::assertSame($test, $e->getEntity());
         }
     }
@@ -110,7 +110,7 @@ class OptimisticTest extends OrmFunctionalTestCase
 
         try {
             $this->em->flush();
-        } catch (OptimisticLockException $e) {
+        } catch (OptimisticLockFailed $e) {
             self::assertSame($test, $e->getEntity());
         }
     }
@@ -166,7 +166,7 @@ class OptimisticTest extends OrmFunctionalTestCase
 
         try {
             $this->em->flush();
-        } catch (OptimisticLockException $e) {
+        } catch (OptimisticLockFailed $e) {
             self::assertSame($test, $e->getEntity());
         }
     }
@@ -227,7 +227,7 @@ class OptimisticTest extends OrmFunctionalTestCase
 
         try {
             $this->em->flush();
-        } catch (OptimisticLockException $e) {
+        } catch (OptimisticLockFailed $e) {
             $caughtException = $e;
         }
 
@@ -255,7 +255,7 @@ class OptimisticTest extends OrmFunctionalTestCase
             $expectedVersionExpired = DateTime::createFromFormat('U', (string) ($test->version->getTimestamp()-3600));
 
             $this->em->lock($test, LockMode::OPTIMISTIC, $expectedVersionExpired);
-        } catch (OptimisticLockException $e) {
+        } catch (OptimisticLockFailed $e) {
             $caughtException = $e;
         }
 

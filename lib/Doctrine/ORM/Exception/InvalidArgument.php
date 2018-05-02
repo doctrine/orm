@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Doctrine\ORM;
+namespace Doctrine\ORM\Exception;
 
 use Doctrine\ORM\Mapping\AssociationMetadata;
 use Doctrine\ORM\Mapping\ClassMetadata;
@@ -19,13 +19,15 @@ use function sprintf;
 
 /**
  * Contains exception messages for all invalid lifecycle state exceptions inside UnitOfWork
+ *
+ * @todo Split into smaller exceptions.
  */
-final class ORMInvalidArgumentException extends \InvalidArgumentException
+final class InvalidArgument extends \InvalidArgumentException
 {
     /**
      * @param object $entity
      *
-     * @return ORMInvalidArgumentException
+     * @return InvalidArgument
      */
     public static function scheduleInsertForManagedEntity($entity)
     {
@@ -35,7 +37,7 @@ final class ORMInvalidArgumentException extends \InvalidArgumentException
     /**
      * @param object $entity
      *
-     * @return ORMInvalidArgumentException
+     * @return InvalidArgument
      */
     public static function scheduleInsertForRemovedEntity($entity)
     {
@@ -45,7 +47,7 @@ final class ORMInvalidArgumentException extends \InvalidArgumentException
     /**
      * @param object $entity
      *
-     * @return ORMInvalidArgumentException
+     * @return InvalidArgument
      */
     public static function scheduleInsertTwice($entity)
     {
@@ -56,7 +58,7 @@ final class ORMInvalidArgumentException extends \InvalidArgumentException
      * @param string $className
      * @param object $entity
      *
-     * @return ORMInvalidArgumentException
+     * @return InvalidArgument
      */
     public static function entityWithoutIdentity($className, $entity)
     {
@@ -69,7 +71,7 @@ final class ORMInvalidArgumentException extends \InvalidArgumentException
     /**
      * @param object $entity
      *
-     * @return ORMInvalidArgumentException
+     * @return InvalidArgument
      */
     public static function readOnlyRequiresManagedEntity($entity)
     {
@@ -79,7 +81,7 @@ final class ORMInvalidArgumentException extends \InvalidArgumentException
     /**
      * @param array[][]|object[][] $newEntitiesWithAssociations non-empty an array of [$associationMetadata, $entity] pairs
      *
-     * @return ORMInvalidArgumentException
+     * @return InvalidArgument
      */
     public static function newEntitiesFoundThroughRelationships($newEntitiesWithAssociations)
     {
@@ -106,7 +108,7 @@ final class ORMInvalidArgumentException extends \InvalidArgumentException
     /**
      * @param object $entry
      *
-     * @return ORMInvalidArgumentException
+     * @return InvalidArgument
      */
     public static function newEntityFoundThroughRelationship(AssociationMetadata $association, $entry)
     {
@@ -132,7 +134,7 @@ final class ORMInvalidArgumentException extends \InvalidArgumentException
     /**
      * @param object $entry
      *
-     * @return ORMInvalidArgumentException
+     * @return InvalidArgument
      */
     public static function detachedEntityFoundThroughRelationship(AssociationMetadata $association, $entry)
     {
@@ -150,7 +152,7 @@ final class ORMInvalidArgumentException extends \InvalidArgumentException
     /**
      * @param object $entity
      *
-     * @return ORMInvalidArgumentException
+     * @return InvalidArgument
      */
     public static function entityNotManaged($entity)
     {
@@ -162,7 +164,7 @@ final class ORMInvalidArgumentException extends \InvalidArgumentException
      * @param object $entity
      * @param string $operation
      *
-     * @return ORMInvalidArgumentException
+     * @return InvalidArgument
      */
     public static function entityHasNoIdentity($entity, $operation)
     {
@@ -173,7 +175,7 @@ final class ORMInvalidArgumentException extends \InvalidArgumentException
      * @param object $entity
      * @param string $operation
      *
-     * @return ORMInvalidArgumentException
+     * @return InvalidArgument
      */
     public static function entityIsRemoved($entity, $operation)
     {
@@ -184,7 +186,7 @@ final class ORMInvalidArgumentException extends \InvalidArgumentException
      * @param object $entity
      * @param string $operation
      *
-     * @return ORMInvalidArgumentException
+     * @return InvalidArgument
      */
     public static function detachedEntityCannot($entity, $operation)
     {
@@ -196,7 +198,7 @@ final class ORMInvalidArgumentException extends \InvalidArgumentException
      * @param mixed  $given
      * @param int    $parameterIndex
      *
-     * @return ORMInvalidArgumentException
+     * @return InvalidArgument
      */
     public static function invalidObject($context, $given, $parameterIndex = 1)
     {
@@ -205,7 +207,7 @@ final class ORMInvalidArgumentException extends \InvalidArgumentException
     }
 
     /**
-     * @return ORMInvalidArgumentException
+     * @return InvalidArgument
      */
     public static function invalidCompositeIdentifier()
     {
@@ -214,7 +216,7 @@ final class ORMInvalidArgumentException extends \InvalidArgumentException
     }
 
     /**
-     * @return ORMInvalidArgumentException
+     * @return InvalidArgument
      */
     public static function invalidIdentifierBindingEntity()
     {

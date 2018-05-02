@@ -54,7 +54,7 @@ class DDC2084Test extends OrmFunctionalTestCase
     }
 
     /**
-     * @expectedException \Doctrine\ORM\ORMInvalidArgumentException
+     * @expectedException \Doctrine\ORM\Exception\InvalidArgument
      * @expectedExceptionMessage  Binding entities to query parameters only allowed for entities that have an identifier.
      */
     public function testinvalidIdentifierBindingEntityException() : void

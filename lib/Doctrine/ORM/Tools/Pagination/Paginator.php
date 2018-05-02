@@ -6,7 +6,7 @@ namespace Doctrine\ORM\Tools\Pagination;
 
 use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Type;
-use Doctrine\ORM\NoResultException;
+use Doctrine\ORM\Exception\NoResult;
 use Doctrine\ORM\Query;
 use Doctrine\ORM\Query\Parameter;
 use Doctrine\ORM\Query\Parser;
@@ -100,7 +100,7 @@ class Paginator implements \Countable, \IteratorAggregate
         if ($this->count === null) {
             try {
                 $this->count = array_sum(array_map('current', $this->getCountQuery()->getScalarResult()));
-            } catch (NoResultException $e) {
+            } catch (NoResult $e) {
                 $this->count = 0;
             }
         }

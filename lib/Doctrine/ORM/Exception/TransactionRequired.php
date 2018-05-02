@@ -2,19 +2,17 @@
 
 declare(strict_types=1);
 
-namespace Doctrine\ORM;
-
-use Doctrine\ORM\Exception\ORMException;
+namespace Doctrine\ORM\Exception;
 
 /**
  * Is thrown when a transaction is required for the current operation, but there is none open.
  */
-final class TransactionRequiredException extends \LogicException implements ORMException
+final class TransactionRequired extends \LogicException implements ORMException
 {
     /**
-     * @return TransactionRequiredException
+     * @return TransactionRequired
      */
-    public static function transactionRequired()
+    public static function new()
     {
         return new self('An open transaction is required for this operation.');
     }

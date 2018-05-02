@@ -7,6 +7,8 @@ namespace Doctrine\ORM;
 use Doctrine\Common\EventManager;
 use Doctrine\Common\Persistence\ObjectManager;
 use Doctrine\DBAL\Connection;
+use Doctrine\ORM\Exception\OptimisticLockFailed;
+use Doctrine\ORM\Exception\PessimisticLockFailed;
 use Doctrine\ORM\Internal\Hydration\AbstractHydrator;
 use Doctrine\ORM\Proxy\Factory\ProxyFactory;
 use Doctrine\ORM\Query\Expr;
@@ -177,8 +179,8 @@ interface EntityManagerInterface extends ObjectManager
      *
      * @return void
      *
-     * @throws OptimisticLockException
-     * @throws PessimisticLockException
+     * @throws OptimisticLockFailed
+     * @throws PessimisticLockFailed
      */
     public function lock($entity, $lockMode, $lockVersion = null);
 

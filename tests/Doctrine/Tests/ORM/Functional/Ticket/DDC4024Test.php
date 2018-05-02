@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Doctrine\Tests\ORM\Functional\Ticket;
 
-use Doctrine\ORM\NonUniqueResultException;
+use Doctrine\ORM\Exception\NonUniqueResult;
 use Doctrine\Tests\DoctrineTestCase;
 
 /**
@@ -14,15 +14,15 @@ final class DDC4024Test extends DoctrineTestCase
 {
     public function testConstructorShouldUseProvidedMessage() : void
     {
-        $exception = new NonUniqueResultException('Testing');
+        $exception = new NonUniqueResult('Testing');
 
         self::assertSame('Testing', $exception->getMessage());
     }
 
     public function testADefaultMessageShouldBeUsedWhenNothingWasProvided() : void
     {
-        $exception = new NonUniqueResultException();
+        $exception = new NonUniqueResult();
 
-        self::assertSame(NonUniqueResultException::DEFAULT_MESSAGE, $exception->getMessage());
+        self::assertSame(NonUniqueResult::DEFAULT_MESSAGE, $exception->getMessage());
     }
 }

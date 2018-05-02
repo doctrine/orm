@@ -5,8 +5,8 @@ declare(strict_types=1);
 namespace Doctrine\Tests\ORM\Functional;
 
 use Doctrine\DBAL\Logging\DebugStack;
+use Doctrine\ORM\Exception\InvalidArgument;
 use Doctrine\ORM\Mapping\FetchMode;
-use Doctrine\ORM\ORMInvalidArgumentException;
 use Doctrine\ORM\PersistentCollection;
 use Doctrine\ORM\Query;
 use Doctrine\ORM\UnitOfWork;
@@ -940,7 +940,7 @@ class BasicFunctionalTest extends OrmFunctionalTestCase
         $user->status   = 'developer';
         $user->address  = $user;
 
-        $this->expectException(ORMInvalidArgumentException::class);
+        $this->expectException(InvalidArgument::class);
         $this->expectExceptionMessage(
             'Expected value of type "Doctrine\Tests\Models\CMS\CmsAddress" for association field ' .
             '"Doctrine\Tests\Models\CMS\CmsUser#$address", got "Doctrine\Tests\Models\CMS\CmsUser" instead.'

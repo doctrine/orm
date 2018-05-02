@@ -5,9 +5,9 @@ declare(strict_types=1);
 namespace Doctrine\Tests\ORM\Functional\Locking;
 
 use Doctrine\DBAL\LockMode;
-use Doctrine\ORM\OptimisticLockException;
+use Doctrine\ORM\Exception\OptimisticLockFailed;
+use Doctrine\ORM\Exception\TransactionRequired;
 use Doctrine\ORM\Query;
-use Doctrine\ORM\TransactionRequiredException;
 use Doctrine\Tests\Models\CMS\CmsArticle;
 use Doctrine\Tests\Models\CMS\CmsUser;
 use Doctrine\Tests\OrmFunctionalTestCase;
@@ -57,7 +57,7 @@ class LockTest extends OrmFunctionalTestCase
         $this->em->persist($article);
         $this->em->flush();
 
-        $this->expectException(OptimisticLockException::class);
+        $this->expectException(OptimisticLockFailed::class);
 
         $this->em->lock($article, LockMode::OPTIMISTIC, $article->version + 1);
     }
@@ -76,7 +76,7 @@ class LockTest extends OrmFunctionalTestCase
         $this->em->persist($user);
         $this->em->flush();
 
-        $this->expectException(OptimisticLockException::class);
+        $this->expectException(OptimisticLockFailed::class);
 
         $this->em->lock($user, LockMode::OPTIMISTIC);
     }
@@ -108,7 +108,7 @@ class LockTest extends OrmFunctionalTestCase
         $this->em->persist($article);
         $this->em->flush();
 
-        $this->expectException(TransactionRequiredException::class);
+        $this->expectException(TransactionRequired::class);
 
         $this->em->lock($article, LockMode::PESSIMISTIC_READ);
     }
@@ -126,7 +126,7 @@ class LockTest extends OrmFunctionalTestCase
         $this->em->persist($article);
         $this->em->flush();
 
-        $this->expectException(TransactionRequiredException::class);
+        $this->expectException(TransactionRequired::class);
 
         $this->em->lock($article, LockMode::PESSIMISTIC_WRITE);
     }
@@ -209,7 +209,7 @@ class LockTest extends OrmFunctionalTestCase
     {
         $dql = 'SELECT u FROM ' . CmsUser::class . " u WHERE u.username = 'gblanco'";
 
-        $this->expectException(OptimisticLockException::class);
+        $this->expectException(OptimisticLockFailed::class);
         $this->expectExceptionMessage('The optimistic lock on an entity failed.');
 
         $this->em->createQuery($dql)

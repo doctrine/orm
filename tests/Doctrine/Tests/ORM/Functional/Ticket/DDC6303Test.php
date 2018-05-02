@@ -6,8 +6,8 @@ namespace Doctrine\Tests\ORM\Functional\Ticket;
 
 use Doctrine\Common\Persistence\Mapping\MappingException;
 use Doctrine\ORM\Annotation as ORM;
+use Doctrine\ORM\Exception\OptimisticLockFailed;
 use Doctrine\ORM\Exception\ORMException;
-use Doctrine\ORM\OptimisticLockException;
 use Doctrine\ORM\Tools\ToolsException;
 use Doctrine\Tests\OrmFunctionalTestCase;
 use function array_keys;
@@ -55,10 +55,9 @@ class DDC6303Test extends OrmFunctionalTestCase
 
     /**
      * @param DDC6303BaseClass[] $persistedEntities indexed by identifier
-     *
      * @throws MappingException
      * @throws ORMException
-     * @throws OptimisticLockException
+     * @throws OptimisticLockFailed
      */
     private function assertHydratedEntitiesSameToPersistedOnes(array $persistedEntities) : void
     {

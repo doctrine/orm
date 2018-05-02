@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Doctrine\Tests\ORM\Proxy;
 
-use Doctrine\ORM\EntityNotFoundException;
+use Doctrine\ORM\Exception\EntityNotFound;
 use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\Mapping\ClassMetadataBuildingContext;
 use Doctrine\ORM\Mapping\ClassMetadataFactory;
@@ -165,7 +165,7 @@ class ProxyFactoryTest extends OrmTestCase
         try {
             $proxy->getDescription();
             $this->fail('An exception was expected to be raised');
-        } catch (EntityNotFoundException $exception) {
+        } catch (EntityNotFound $exception) {
         }
 
         self::assertFalse($proxy->isProxyInitialized());
@@ -197,7 +197,7 @@ class ProxyFactoryTest extends OrmTestCase
         try {
             $cloned = clone $proxy;
             $this->fail('An exception was expected to be raised');
-        } catch (EntityNotFoundException $exception) {
+        } catch (EntityNotFound $exception) {
         }
 
         self::assertFalse($proxy->isProxyInitialized());

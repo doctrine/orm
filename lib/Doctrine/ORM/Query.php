@@ -7,6 +7,7 @@ namespace Doctrine\ORM;
 use Doctrine\Common\Cache\Cache;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\DBAL\LockMode;
+use Doctrine\ORM\Exception\TransactionRequired;
 use Doctrine\ORM\Internal\Hydration\IterableResult;
 use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\Query\AST\DeleteStatement;
@@ -694,13 +695,13 @@ final class Query extends AbstractQuery
      *
      * @return Query
      *
-     * @throws TransactionRequiredException
+     * @throws TransactionRequired
      */
     public function setLockMode($lockMode)
     {
         if (in_array($lockMode, [LockMode::NONE, LockMode::PESSIMISTIC_READ, LockMode::PESSIMISTIC_WRITE], true)) {
             if (! $this->em->getConnection()->isTransactionActive()) {
-                throw TransactionRequiredException::transactionRequired();
+                throw TransactionRequired::new();
             }
         }
 

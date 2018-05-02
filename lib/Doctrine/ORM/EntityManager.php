@@ -11,10 +11,14 @@ use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\DriverManager;
 use Doctrine\DBAL\LockMode;
 use Doctrine\ORM\Exception\EntityManagerClosed;
+use Doctrine\ORM\Exception\InvalidArgument;
 use Doctrine\ORM\Exception\InvalidHydrationMode;
 use Doctrine\ORM\Exception\MismatchedEventManager;
 use Doctrine\ORM\Exception\MissingIdentifierField;
 use Doctrine\ORM\Exception\MissingMappingDriverImplementation;
+use Doctrine\ORM\Exception\OptimisticLockFailed;
+use Doctrine\ORM\Exception\ORMException;
+use Doctrine\ORM\Exception\TransactionRequired;
 use Doctrine\ORM\Exception\UnrecognizedIdentifierFields;
 use Doctrine\ORM\Mapping\ClassMetadataFactory;
 use Doctrine\ORM\Proxy\Factory\ProxyFactory;
@@ -345,7 +349,7 @@ final class EntityManager implements EntityManagerInterface
      * If an entity is explicitly passed to this method only this entity and
      * the cascade-persist semantics + scheduled inserts/removals are synchronized.
      *
-     * @throws OptimisticLockException If a version check on an entity that
+     * @throws OptimisticLockFailed If a version check on an entity that
      *         makes use of optimistic locking fails.
      * @throws ORMException
      */
@@ -369,9 +373,9 @@ final class EntityManager implements EntityManagerInterface
      *
      * @return object|null The entity instance or NULL if the entity can not be found.
      *
-     * @throws OptimisticLockException
-     * @throws ORMInvalidArgumentException
-     * @throws TransactionRequiredException
+     * @throws OptimisticLockFailed
+     * @throws InvalidArgument
+     * @throws TransactionRequired
      * @throws ORMException
      */
     public function find($entityName, $id, $lockMode = null, $lockVersion = null)
@@ -381,7 +385,7 @@ final class EntityManager implements EntityManagerInterface
 
         if (! is_array($id)) {
             if ($class->isIdentifierComposite()) {
-                throw ORMInvalidArgumentException::invalidCompositeIdentifier();
+                throw InvalidArgument::invalidCompositeIdentifier();
             }
 
             $id = [$class->identifier[0] => $id];
@@ -392,7 +396,7 @@ final class EntityManager implements EntityManagerInterface
                 $id[$i] = $this->unitOfWork->getSingleIdentifierValue($value);
 
                 if ($id[$i] === null) {
-                    throw ORMInvalidArgumentException::invalidIdentifierBindingEntity();
+                    throw InvalidArgument::invalidIdentifierBindingEntity();
                 }
             }
         }
@@ -442,7 +446,7 @@ final class EntityManager implements EntityManagerInterface
         switch (true) {
             case $lockMode === LockMode::OPTIMISTIC:
                 if (! $class->isVersioned()) {
-                    throw OptimisticLockException::notVersioned($className);
+                    throw OptimisticLockFailed::notVersioned($className);
                 }
 
                 $entity = $persister->load($sortedId);
@@ -454,7 +458,7 @@ final class EntityManager implements EntityManagerInterface
             case $lockMode === LockMode::PESSIMISTIC_READ:
             case $lockMode === LockMode::PESSIMISTIC_WRITE:
                 if (! $this->getConnection()->isTransactionActive()) {
-                    throw TransactionRequiredException::transactionRequired();
+                    throw TransactionRequired::new();
                 }
 
                 return $persister->load($sortedId, null, null, [], $lockMode);
@@ -474,7 +478,7 @@ final class EntityManager implements EntityManagerInterface
 
         if (! is_array($id)) {
             if ($class->isIdentifierComposite()) {
-                throw ORMInvalidArgumentException::invalidCompositeIdentifier();
+                throw InvalidArgument::invalidCompositeIdentifier();
             }
 
             $id = [$class->identifier[0] => $id];
@@ -489,7 +493,7 @@ final class EntityManager implements EntityManagerInterface
                 $scalarId[$i] = $this->unitOfWork->getSingleIdentifierValue($value);
 
                 if ($scalarId[$i] === null) {
-                    throw ORMInvalidArgumentException::invalidIdentifierBindingEntity();
+                    throw InvalidArgument::invalidIdentifierBindingEntity();
                 }
             }
         }
@@ -540,7 +544,7 @@ final class EntityManager implements EntityManagerInterface
 
         if (! is_array($id)) {
             if ($class->isIdentifierComposite()) {
-                throw ORMInvalidArgumentException::invalidCompositeIdentifier();
+                throw InvalidArgument::invalidCompositeIdentifier();
             }
 
             $id = [$class->identifier[0] => $id];
@@ -551,7 +555,7 @@ final class EntityManager implements EntityManagerInterface
                 $id[$i] = $this->unitOfWork->getSingleIdentifierValue($value);
 
                 if ($id[$i] === null) {
-                    throw ORMInvalidArgumentException::invalidIdentifierBindingEntity();
+                    throw InvalidArgument::invalidIdentifierBindingEntity();
                 }
             }
         }
@@ -627,13 +631,13 @@ final class EntityManager implements EntityManagerInterface
      *
      * @param object $entity The instance to make managed and persistent.
      *
-     * @throws ORMInvalidArgumentException
+     * @throws InvalidArgument
      * @throws ORMException
      */
     public function persist($entity)
     {
         if (! is_object($entity)) {
-            throw ORMInvalidArgumentException::invalidObject('EntityManager#persist()', $entity);
+            throw InvalidArgument::invalidObject('EntityManager#persist()', $entity);
         }
 
         $this->errorIfClosed();
@@ -649,13 +653,13 @@ final class EntityManager implements EntityManagerInterface
      *
      * @param object $entity The entity instance to remove.
      *
-     * @throws ORMInvalidArgumentException
+     * @throws InvalidArgument
      * @throws ORMException
      */
     public function remove($entity)
     {
         if (! is_object($entity)) {
-            throw ORMInvalidArgumentException::invalidObject('EntityManager#remove()', $entity);
+            throw InvalidArgument::invalidObject('EntityManager#remove()', $entity);
         }
 
         $this->errorIfClosed();
@@ -669,13 +673,13 @@ final class EntityManager implements EntityManagerInterface
      *
      * @param object $entity The entity to refresh.
      *
-     * @throws ORMInvalidArgumentException
+     * @throws InvalidArgument
      * @throws ORMException
      */
     public function refresh($entity)
     {
         if (! is_object($entity)) {
-            throw ORMInvalidArgumentException::invalidObject('EntityManager#refresh()', $entity);
+            throw InvalidArgument::invalidObject('EntityManager#refresh()', $entity);
         }
 
         $this->errorIfClosed();

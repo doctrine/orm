@@ -7,9 +7,9 @@ namespace Doctrine\ORM\Cache;
 use Doctrine\ORM\Cache;
 use Doctrine\ORM\Cache\Persister\CachedPersister;
 use Doctrine\ORM\EntityManagerInterface;
+use Doctrine\ORM\Exception\InvalidArgument;
 use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\Mapping\ToManyAssociationMetadata;
-use Doctrine\ORM\ORMInvalidArgumentException;
 use Doctrine\ORM\UnitOfWork;
 use Doctrine\ORM\Utility\StaticClassNameConverter;
 use function is_array;
@@ -305,7 +305,7 @@ class DefaultCache implements Cache
             $identifier = $this->uow->getSingleIdentifierValue($identifier);
 
             if ($identifier === null) {
-                throw ORMInvalidArgumentException::invalidIdentifierBindingEntity();
+                throw InvalidArgument::invalidIdentifierBindingEntity();
             }
         }
 

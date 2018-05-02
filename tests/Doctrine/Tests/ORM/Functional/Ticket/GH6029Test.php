@@ -6,7 +6,7 @@ namespace Doctrine\Tests\ORM\Functional\Ticket;
 
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\Annotation as ORM;
-use Doctrine\ORM\ORMInvalidArgumentException;
+use Doctrine\ORM\Exception\InvalidArgument;
 use Doctrine\Tests\OrmFunctionalTestCase;
 use function sprintf;
 
@@ -41,7 +41,7 @@ final class GH6029Test extends OrmFunctionalTestCase
         $user = new GH6029User();
         $user->groups->add(new GH6029Group2());
 
-        $this->expectException(ORMInvalidArgumentException::class);
+        $this->expectException(InvalidArgument::class);
         $this->expectExceptionMessage(
             sprintf(
                 'Expected value of type "%s" for association field "%s#$groups", got "%s" instead.',
@@ -66,7 +66,7 @@ final class GH6029Test extends OrmFunctionalTestCase
         $product = new GH6029Product();
         $product->features->add(new GH6029Group2());
 
-        $this->expectException(ORMInvalidArgumentException::class);
+        $this->expectException(InvalidArgument::class);
         $this->expectExceptionMessage(
             sprintf(
                 'Expected value of type "%s" for association field "%s#$features", got "%s" instead.',

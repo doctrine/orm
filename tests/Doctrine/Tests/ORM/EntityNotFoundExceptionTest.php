@@ -4,32 +4,31 @@ declare(strict_types=1);
 
 namespace Doctrine\Tests\ORM;
 
-use Doctrine\ORM\EntityNotFoundException;
+use Doctrine\ORM\Exception\EntityNotFound;
 use Doctrine\Tests\DoctrineTestCase;
 
 /**
- * Tests for {@see \Doctrine\ORM\EntityNotFoundException}
- *
- * @covers \Doctrine\ORM\EntityNotFoundException
+ * Tests for {@see \Doctrine\ORM\Exception\EntityNotFoundException}
+ * @covers \Doctrine\ORM\Exception\EntityNotFound
  */
 class EntityNotFoundExceptionTest extends DoctrineTestCase
 {
     public function testFromClassNameAndIdentifier() : void
     {
-        $exception = EntityNotFoundException::fromClassNameAndIdentifier(
+        $exception = EntityNotFound::fromClassNameAndIdentifier(
             'foo',
             ['foo' => 'bar']
         );
 
-        self::assertInstanceOf(EntityNotFoundException::class, $exception);
+        self::assertInstanceOf(EntityNotFound::class, $exception);
         self::assertSame('Entity of type \'foo\' for IDs foo(bar) was not found', $exception->getMessage());
 
-        $exception = EntityNotFoundException::fromClassNameAndIdentifier(
+        $exception = EntityNotFound::fromClassNameAndIdentifier(
             'foo',
             []
         );
 
-        self::assertInstanceOf(EntityNotFoundException::class, $exception);
+        self::assertInstanceOf(EntityNotFound::class, $exception);
         self::assertSame('Entity of type \'foo\' was not found', $exception->getMessage());
     }
 }

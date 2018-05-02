@@ -9,14 +9,14 @@ use Doctrine\Common\Collections\Criteria;
 use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\LockMode;
 use Doctrine\ORM\EntityRepository;
+use Doctrine\ORM\Exception\OptimisticLockFailed;
 use Doctrine\ORM\Exception\ORMException;
+use Doctrine\ORM\Exception\TransactionRequired;
 use Doctrine\ORM\Exception\UnrecognizedIdentifierFields;
-use Doctrine\ORM\OptimisticLockException;
 use Doctrine\ORM\Persisters\Exception\InvalidOrientation;
 use Doctrine\ORM\Persisters\Exception\UnrecognizedField;
 use Doctrine\ORM\Query;
 use Doctrine\ORM\Repository\Exception\InvalidFindByCall;
-use Doctrine\ORM\TransactionRequiredException;
 use Doctrine\Tests\Models\CMS\CmsAddress;
 use Doctrine\Tests\Models\CMS\CmsEmail;
 use Doctrine\Tests\Models\CMS\CmsUser;
@@ -305,7 +305,7 @@ class EntityRepositoryTest extends OrmFunctionalTestCase
      */
     public function testPessimisticReadLockWithoutTransactionThrowsException() : void
     {
-        $this->expectException(TransactionRequiredException::class);
+        $this->expectException(TransactionRequired::class);
 
         $this->em->getRepository(CmsUser::class)
                   ->find(1, LockMode::PESSIMISTIC_READ);
@@ -317,7 +317,7 @@ class EntityRepositoryTest extends OrmFunctionalTestCase
      */
     public function testPessimisticWriteLockWithoutTransactionThrowsException() : void
     {
-        $this->expectException(TransactionRequiredException::class);
+        $this->expectException(TransactionRequired::class);
 
         $this->em->getRepository(CmsUser::class)
                   ->find(1, LockMode::PESSIMISTIC_WRITE);
@@ -329,7 +329,7 @@ class EntityRepositoryTest extends OrmFunctionalTestCase
      */
     public function testOptimisticLockUnversionedEntityThrowsException() : void
     {
-        $this->expectException(OptimisticLockException::class);
+        $this->expectException(OptimisticLockFailed::class);
 
         $this->em->getRepository(CmsUser::class)
                   ->find(1, LockMode::OPTIMISTIC);
@@ -352,7 +352,7 @@ class EntityRepositoryTest extends OrmFunctionalTestCase
 
         $this->em->find(CmsUser::class, $userId);
 
-        $this->expectException(OptimisticLockException::class);
+        $this->expectException(OptimisticLockFailed::class);
 
         $this->em->find(CmsUser::class, $userId, LockMode::OPTIMISTIC);
     }
@@ -601,7 +601,7 @@ class EntityRepositoryTest extends OrmFunctionalTestCase
 
     /**
      * @group DDC-753
-     * @expectedException Doctrine\ORM\Exception\InvalidEntityRepository
+     * @expectedException Doctrine\ORM\Configuration\Exception\InvalidEntityRepository
      * @expectedExceptionMessage Invalid repository class 'Doctrine\Tests\Models\DDC753\DDC753InvalidRepository'. It must be a Doctrine\Common\Persistence\ObjectRepository.
      */
     public function testSetDefaultRepositoryInvalidClassError() : void

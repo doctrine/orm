@@ -13,6 +13,7 @@ use Doctrine\DBAL\Platforms\AbstractPlatform;
 use Doctrine\DBAL\Statement;
 use Doctrine\DBAL\Types\Type;
 use Doctrine\ORM\EntityManagerInterface;
+use Doctrine\ORM\Exception\OptimisticLockFailed;
 use Doctrine\ORM\Mapping\AssociationMetadata;
 use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\Mapping\ColumnMetadata;
@@ -28,7 +29,6 @@ use Doctrine\ORM\Mapping\OneToManyAssociationMetadata;
 use Doctrine\ORM\Mapping\ToManyAssociationMetadata;
 use Doctrine\ORM\Mapping\ToOneAssociationMetadata;
 use Doctrine\ORM\Mapping\VersionFieldMetadata;
-use Doctrine\ORM\OptimisticLockException;
 use Doctrine\ORM\PersistentCollection;
 use Doctrine\ORM\Persisters\Exception\CantUseInOperatorOnCompositeKeys;
 use Doctrine\ORM\Persisters\Exception\InvalidOrientation;
@@ -442,7 +442,7 @@ class BasicEntityPersister implements EntityPersister
      * @param bool    $versioned       Whether the UPDATE should be versioned.
      *
      * @throws ORMException
-     * @throws OptimisticLockException
+     * @throws OptimisticLockFailed
      */
     final protected function updateTable($entity, $quotedTableName, array $updateData, $versioned = false)
     {
@@ -527,7 +527,7 @@ class BasicEntityPersister implements EntityPersister
         $result = $this->conn->executeUpdate($sql, $params, $types);
 
         if ($versioned && ! $result) {
-            throw OptimisticLockException::lockFailed($entity);
+            throw OptimisticLockFailed::lockFailed($entity);
         }
     }
 

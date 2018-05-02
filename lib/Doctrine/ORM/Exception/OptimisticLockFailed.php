@@ -2,15 +2,13 @@
 
 declare(strict_types=1);
 
-namespace Doctrine\ORM;
-
-use Doctrine\ORM\Exception\ORMException;
+namespace Doctrine\ORM\Exception;
 
 /**
- * An OptimisticLockException is thrown when a version check on an object
+ * An OptimisticLockFailed is thrown when a version check on an object
  * that uses optimistic locking through a version field fails.
  */
-final class OptimisticLockException extends \RuntimeException implements ORMException
+final class OptimisticLockFailed extends \RuntimeException implements ORMException
 {
     /** @var object|null */
     private $entity;
@@ -37,8 +35,7 @@ final class OptimisticLockException extends \RuntimeException implements ORMExce
 
     /**
      * @param object $entity
-     *
-     * @return OptimisticLockException
+     * @return OptimisticLockFailed
      */
     public static function lockFailed($entity)
     {
@@ -49,8 +46,7 @@ final class OptimisticLockException extends \RuntimeException implements ORMExce
      * @param object $entity
      * @param int    $expectedLockVersion
      * @param int    $actualLockVersion
-     *
-     * @return OptimisticLockException
+     * @return OptimisticLockFailed
      */
     public static function lockFailedVersionMismatch($entity, $expectedLockVersion, $actualLockVersion)
     {
@@ -63,7 +59,7 @@ final class OptimisticLockException extends \RuntimeException implements ORMExce
     /**
      * @param string $entityName
      *
-     * @return OptimisticLockException
+     * @return OptimisticLockFailed
      */
     public static function notVersioned($entityName)
     {

@@ -6,9 +6,9 @@ namespace Doctrine\Tests\ORM\Functional\Ticket;
 
 use Doctrine\Common\Persistence\Mapping\MappingException;
 use Doctrine\DBAL\LockMode;
+use Doctrine\ORM\Exception\OptimisticLockFailed;
 use Doctrine\ORM\Exception\ORMException;
-use Doctrine\ORM\OptimisticLockException;
-use Doctrine\ORM\TransactionRequiredException;
+use Doctrine\ORM\Exception\TransactionRequired;
 use Doctrine\Tests\Models\Company\CompanyManager;
 use Doctrine\Tests\OrmFunctionalTestCase;
 use Doctrine\Tests\TestUtil;
@@ -49,12 +49,10 @@ class DDC933Test extends OrmFunctionalTestCase
     }
 
     /**
-     *
-     *
      * @throws MappingException
      * @throws ORMException
-     * @throws OptimisticLockException
-     * @throws TransactionRequiredException
+     * @throws OptimisticLockFailed
+     * @throws TransactionRequired
      */
     private function assertManagerCanBeUpdatedOnAnotherConnection(int $id, string $newName)
     {

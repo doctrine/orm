@@ -9,11 +9,11 @@ use Doctrine\Common\EventManager;
 use Doctrine\Common\NotifyPropertyChanged;
 use Doctrine\Common\PropertyChangedListener;
 use Doctrine\ORM\Annotation as ORM;
+use Doctrine\ORM\Exception\InvalidArgument;
 use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\Mapping\ClassMetadataBuildingContext;
 use Doctrine\ORM\Mapping\ClassMetadataFactory;
 use Doctrine\ORM\Mapping\GeneratorType;
-use Doctrine\ORM\ORMInvalidArgumentException;
 use Doctrine\ORM\Reflection\RuntimeReflectionService;
 use Doctrine\ORM\UnitOfWork;
 use Doctrine\Tests\Mocks\ConnectionMock;
@@ -347,7 +347,7 @@ class UnitOfWorkTest extends OrmTestCase
         $user->username = 'John';
         $user->avatar   = $invalidValue;
 
-        $this->expectException(ORMInvalidArgumentException::class);
+        $this->expectException(InvalidArgument::class);
 
         $this->unitOfWork->persist($user);
     }
@@ -375,7 +375,7 @@ class UnitOfWorkTest extends OrmTestCase
         $user->username = 'John';
         $user->avatar   = $invalidValue;
 
-        $this->expectException(ORMInvalidArgumentException::class);
+        $this->expectException(InvalidArgument::class);
 
         $this->unitOfWork->computeChangeSet($metadata, $user);
     }
@@ -514,7 +514,7 @@ class UnitOfWorkTest extends OrmTestCase
 
     public function testRegisteringAManagedInstanceRequiresANonEmptyIdentifier() : void
     {
-        $this->expectException(ORMInvalidArgumentException::class);
+        $this->expectException(InvalidArgument::class);
 
         $this->unitOfWork->registerManaged(new EntityWithBooleanIdentifier(), [], []);
     }
@@ -528,7 +528,7 @@ class UnitOfWorkTest extends OrmTestCase
      */
     public function testAddToIdentityMapInvalidIdentifiers($entity, array $identifier) : void
     {
-        $this->expectException(ORMInvalidArgumentException::class);
+        $this->expectException(InvalidArgument::class);
 
         $this->unitOfWork->registerManaged($entity, $identifier, []);
     }
@@ -668,7 +668,7 @@ class UnitOfWorkTest extends OrmTestCase
             $this->unitOfWork->commit();
 
             self::fail('An exception was supposed to be raised');
-        } catch (ORMInvalidArgumentException $ignored) {
+        } catch (InvalidArgument $ignored) {
             self::assertEmpty($persister1->getInserts());
             self::assertEmpty($persister2->getInserts());
         }

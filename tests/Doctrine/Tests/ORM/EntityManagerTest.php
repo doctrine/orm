@@ -9,9 +9,9 @@ use Doctrine\DBAL\Connection;
 use Doctrine\ORM\Configuration;
 use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\Exception\EntityManagerClosed;
+use Doctrine\ORM\Exception\InvalidArgument;
 use Doctrine\ORM\Mapping\ClassMetadataFactory;
 use Doctrine\ORM\Mapping\Driver\MappingDriver;
-use Doctrine\ORM\ORMInvalidArgumentException;
 use Doctrine\ORM\Proxy\Factory\ProxyFactory;
 use Doctrine\ORM\Query;
 use Doctrine\ORM\Query\ResultSetMapping;
@@ -137,7 +137,7 @@ class EntityManagerTest extends OrmTestCase
      */
     public function testThrowsExceptionOnNonObjectValues($methodName) : void
     {
-        $this->expectException(ORMInvalidArgumentException::class);
+        $this->expectException(InvalidArgument::class);
         $this->expectExceptionMessage('EntityManager#' . $methodName . '() expects parameter 1 to be an entity object, NULL given.');
 
         $this->em->{$methodName}(null);

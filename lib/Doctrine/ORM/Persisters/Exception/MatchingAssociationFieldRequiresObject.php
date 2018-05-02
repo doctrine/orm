@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Doctrine\ORM\Persisters\Exception;
 
-use Doctrine\ORM\Persisters\Exception\PersisterException;
 use function sprintf;
 
 final class MatchingAssociationFieldRequiresObject extends \LogicException implements PersisterException

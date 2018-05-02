@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace Doctrine\Tests\ORM\Hydration;
 
+use Doctrine\ORM\Exception\NonUniqueResult;
 use Doctrine\ORM\Internal\Hydration\SingleScalarHydrator;
-use Doctrine\ORM\NonUniqueResultException;
 use Doctrine\ORM\Query\ResultSetMapping;
 use Doctrine\Tests\Mocks\HydratorMockStatement;
 use Doctrine\Tests\Models\CMS\CmsUser;
@@ -84,7 +84,7 @@ class SingleScalarHydratorTest extends HydrationTestCase
         }
 
         if (in_array($name, ['result3', 'result4'], true)) {
-            $this->expectException(NonUniqueResultException::class);
+            $this->expectException(NonUniqueResult::class);
 
             $hydrator->hydrateAll($stmt, $rsm);
         }
