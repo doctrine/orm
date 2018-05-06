@@ -1,9 +1,19 @@
 # Upgrade to 2.7
 
+## Added `Doctrine\ORM\AbstractQuery#enableResultCache()` and `Doctrine\ORM\AbstractQuery#disableResultCache()` methods	
+
+Method `Doctrine\ORM\AbstractQuery#useResultCache()` which could be used for both enabling and disabling the cache
+(depending on passed flag) was split into two.	
+
 ## Minor BC BREAK: paginator output walkers aren't be called anymore on sub-queries for queries without max results  
 
 To optimize DB interaction, `Doctrine\ORM\Tools\Pagination\Paginator` no longer fetches identifiers to be able to
 perform the pagination with join collections when max results isn't set in the query.
+
+## Deprecated: `Doctrine\ORM\AbstractQuery#useResultCache()`	
+
+Method `Doctrine\ORM\AbstractQuery#useResultCache()` is deprecated because it is split into `enableResultCache()`
+and `disableResultCache()`. It will be removed in 3.0.
 
 ## Deprecated code generators and related console commands
  
