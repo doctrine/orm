@@ -100,6 +100,7 @@ class ResultCacheTest extends OrmFunctionalTestCase
         $query->enableResultCache(); // FIXME: This line does not affect anything. The test should be rethought.
         $query->setResultCacheDriver($cache);
         $query->setResultCacheId('testing_result_cache_id');
+
         $users = $query->getResult();
 
         self::assertTrue($cache->contains('testing_result_cache_id'));
