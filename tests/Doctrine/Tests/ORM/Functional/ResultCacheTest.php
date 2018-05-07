@@ -92,67 +92,6 @@ class ResultCacheTest extends OrmFunctionalTestCase
         self::assertTrue($cache->contains('testing_result_cache_id'));
     }
 
-    public function testUseResultCacheTrue() : void
-    {
-        $cache = new ArrayCache();
-        $query = $this->em->createQuery('select ux from Doctrine\Tests\Models\CMS\CmsUser ux');
-
-        $query->useResultCache(true); // FIXME: This line does not affect anything. The test should be rethought.
-        $query->setResultCacheDriver($cache);
-        $query->setResultCacheId('testing_result_cache_id');
-
-        $users = $query->getResult();
-
-        self::assertTrue($cache->contains('testing_result_cache_id'));
-
-        $this->em->getConfiguration()->setResultCacheImpl(new ArrayCache());
-    }
-
-    public function testUseResultCacheFalse() : void
-    {
-        $cache = new ArrayCache();
-        $query = $this->em->createQuery('select ux from Doctrine\Tests\Models\CMS\CmsUser ux');
-
-        $query->setResultCacheDriver($cache);
-        $query->setResultCacheId('testing_result_cache_id');
-        $query->useResultCache(false);
-        $users = $query->getResult();
-
-        $this->assertFalse($cache->contains('testing_result_cache_id'));
-
-        $this->em->getConfiguration()->setResultCacheImpl(new ArrayCache());
-    }
-
-
-    /**
-     * @group DDC-1026
-     */
-    public function testUseResultCacheParams() : void
-    {
-        $cache    = new ArrayCache();
-        $sqlCount = count($this->sqlLoggerStack->queries);
-        $query    = $this->em->createQuery('select ux from Doctrine\Tests\Models\CMS\CmsUser ux WHERE ux.id = ?1');
-
-        $query->setParameter(1, 1);
-        $query->setResultCacheDriver($cache);
-        $query->useResultCache(true);
-        $query->getResult();
-
-        $query->setParameter(1, 2);
-        $query->getResult();
-
-        self::assertCount($sqlCount + 2, $this->sqlLoggerStack->queries, 'Two non-cached queries.');
-
-        $query->setParameter(1, 1);
-        $query->useResultCache(true);
-        $query->getResult();
-
-        $query->setParameter(1, 2);
-        $query->getResult();
-
-        self::assertCount($sqlCount + 2, $this->sqlLoggerStack->queries, 'The next two sql should have been cached, but were not.');
-    }
-
     public function testEnableResultCache() : void
     {
         $cache = new ArrayCache();
