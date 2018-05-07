@@ -257,7 +257,7 @@ class QueryTest extends OrmTestCase
         $this->em->getConfiguration()->setResultCacheImpl(new ArrayCache());
 
         $query = $this->em->createQuery('SELECT u FROM Doctrine\Tests\Models\CMS\CmsUser u')
-                           ->enableResultCache();
+                          ->enableResultCache();
 
         /** @var DriverConnectionMock $driverConnectionMock */
         $driverConnectionMock = $this->em->getConnection()
