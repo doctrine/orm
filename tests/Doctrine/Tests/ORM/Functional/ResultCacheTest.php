@@ -102,7 +102,7 @@ class ResultCacheTest extends OrmFunctionalTestCase
         $query->setResultCacheId('testing_result_cache_id');
         $users = $query->getResult();
 
-        $this->assertTrue($cache->contains('testing_result_cache_id'));
+        self::assertTrue($cache->contains('testing_result_cache_id'));
 
         $this->em->getConfiguration()->setResultCacheImpl(new ArrayCache());
     }
@@ -124,7 +124,7 @@ class ResultCacheTest extends OrmFunctionalTestCase
         $query->setParameter(1, 2);
         $query->getResult();
 
-        $this->assertCount($sqlCount + 2, $this->sqlLoggerStack->queries, 'Two non-cached queries.');
+        self::assertCount($sqlCount + 2, $this->sqlLoggerStack->queries, 'Two non-cached queries.');
 
         $query->setParameter(1, 1);
         $query->enableResultCache();
@@ -133,7 +133,7 @@ class ResultCacheTest extends OrmFunctionalTestCase
         $query->setParameter(1, 2);
         $query->getResult();
 
-        $this->assertCount($sqlCount + 2, $this->sqlLoggerStack->queries, 'The next two sql should have been cached, but were not.');
+        self::assertCount($sqlCount + 2, $this->sqlLoggerStack->queries, 'The next two sql should have been cached, but were not.');
     }
 
     public function testDisableResultCache() : void
@@ -146,7 +146,7 @@ class ResultCacheTest extends OrmFunctionalTestCase
         $query->disableResultCache();
         $users = $query->getResult();
 
-        $this->assertFalse($cache->contains('testing_result_cache_id'));
+        self::assertFalse($cache->contains('testing_result_cache_id'));
 
         $this->em->getConfiguration()->setResultCacheImpl(new ArrayCache());
     }
