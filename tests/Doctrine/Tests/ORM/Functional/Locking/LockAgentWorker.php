@@ -104,21 +104,17 @@ class LockAgentWorker
     protected function createEntityManager($conn)
     {
         $config = new Configuration();
+        $cache  = new ArrayCache();
+        $driver = $config->newDefaultAnnotationDriver([__DIR__ . '/../../../Models/']);
+
         $config->setProxyDir(__DIR__ . '/../../../Proxies');
         $config->setProxyNamespace('MyProject\Proxies');
         $config->setAutoGenerateProxyClasses(true);
-
-        $annotDriver = $config->newDefaultAnnotationDriver([__DIR__ . '/../../../Models/']);
-        $config->setMetadataDriverImpl($annotDriver);
-
-        $cache = new ArrayCache();
-        $config->setMetadataCacheImpl($cache);
+        $config->setMetadataDriverImpl($driver);
         $config->setQueryCacheImpl($cache);
         $config->setSQLLogger(new EchoSQLLogger());
 
-        $em = EntityManager::create($conn, $config);
-
-        return $em;
+        return EntityManager::create($conn, $config);
     }
 }
 

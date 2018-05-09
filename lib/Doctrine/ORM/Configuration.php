@@ -56,9 +56,6 @@ class Configuration extends DBALConfiguration
     /** @var CacheDriver|null */
     private $hydrationCache;
 
-    /** @var CacheDriver|null */
-    private $metadataCache;
-
     /** @var string[][]|ResultSetMapping[][] tuples of [$sqlString, $resultSetMapping] indexed by query name */
     private $customStringFunctions = [];
 
@@ -208,22 +205,6 @@ class Configuration extends DBALConfiguration
     }
 
     /**
-     * Gets the cache driver implementation that is used for metadata caching.
-     */
-    public function getMetadataCacheImpl() : ?CacheDriver
-    {
-        return $this->metadataCache;
-    }
-
-    /**
-     * Sets the cache driver implementation that is used for metadata caching.
-     */
-    public function setMetadataCacheImpl(CacheDriver $metadataCache) : void
-    {
-        $this->metadataCache = $metadataCache;
-    }
-
-    /**
      * Ensures that this Configuration instance contains settings that are
      * suitable for a production environment.
      *
@@ -240,16 +221,6 @@ class Configuration extends DBALConfiguration
 
         if ($queryCacheImpl instanceof ArrayCache) {
             throw QueryCacheUsesNonPersistentCache::fromDriver($queryCacheImpl);
-        }
-
-        $metadataCacheImpl = $this->getMetadataCacheImpl();
-
-        if (! $metadataCacheImpl) {
-            throw MetadataCacheNotConfigured::create();
-        }
-
-        if ($metadataCacheImpl instanceof ArrayCache) {
-            throw MetadataCacheUsesNonPersistentCache::fromDriver($metadataCacheImpl);
         }
 
         if ($this->getProxyManagerConfiguration()->getGeneratorStrategy() instanceof EvaluatingGeneratorStrategy) {

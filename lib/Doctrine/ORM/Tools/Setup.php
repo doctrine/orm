@@ -87,11 +87,9 @@ class Setup
     public static function createConfiguration($isDevMode = false, $proxyDir = null, ?Cache $cache = null)
     {
         $proxyDir = $proxyDir ?: sys_get_temp_dir();
+        $cache    = self::createCacheConfiguration($isDevMode, $proxyDir, $cache);
+        $config   = new Configuration();
 
-        $cache = self::createCacheConfiguration($isDevMode, $proxyDir, $cache);
-
-        $config = new Configuration();
-        $config->setMetadataCacheImpl($cache);
         $config->setQueryCacheImpl($cache);
         $config->setResultCacheImpl($cache);
         $config->setProxyDir($proxyDir);

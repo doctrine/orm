@@ -315,82 +315,6 @@ class ClassMetadata extends ComponentMetadata implements TableOwner
     }
 
     /**
-     * Determines which fields get serialized.
-     *
-     * It is only serialized what is necessary for best unserialization performance.
-     * That means any metadata properties that are not set or empty or simply have
-     * their default value are NOT serialized.
-     *
-     * Parts that are also NOT serialized because they can not be properly unserialized:
-     * - reflectionClass
-     *
-     * @return string[] The names of all the fields that should be serialized.
-     */
-    public function __sleep()
-    {
-        $serialized = [];
-
-        // This metadata is always serialized/cached.
-        $serialized = array_merge($serialized, [
-            'declaredProperties',
-            'fieldNames',
-            //'embeddedClasses',
-            'identifier',
-            'className',
-            'parent',
-            'table',
-            'valueGenerationPlan',
-        ]);
-
-        // The rest of the metadata is only serialized if necessary.
-        if ($this->changeTrackingPolicy !== ChangeTrackingPolicy::DEFERRED_IMPLICIT) {
-            $serialized[] = 'changeTrackingPolicy';
-        }
-
-        if ($this->customRepositoryClassName) {
-            $serialized[] = 'customRepositoryClassName';
-        }
-
-        if ($this->inheritanceType !== InheritanceType::NONE) {
-            $serialized[] = 'inheritanceType';
-            $serialized[] = 'discriminatorColumn';
-            $serialized[] = 'discriminatorValue';
-            $serialized[] = 'discriminatorMap';
-            $serialized[] = 'subClasses';
-        }
-
-        if ($this->isMappedSuperclass) {
-            $serialized[] = 'isMappedSuperclass';
-        }
-
-        if ($this->isEmbeddedClass) {
-            $serialized[] = 'isEmbeddedClass';
-        }
-
-        if ($this->isVersioned()) {
-            $serialized[] = 'versionProperty';
-        }
-
-        if ($this->lifecycleCallbacks) {
-            $serialized[] = 'lifecycleCallbacks';
-        }
-
-        if ($this->entityListeners) {
-            $serialized[] = 'entityListeners';
-        }
-
-        if ($this->cache) {
-            $serialized[] = 'cache';
-        }
-
-        if ($this->readOnly) {
-            $serialized[] = 'readOnly';
-        }
-
-        return $serialized;
-    }
-
-    /**
      * Restores some state that can not be serialized/unserialized.
      */
     public function wakeupReflection(ReflectionService $reflectionService) : void
@@ -1089,7 +1013,7 @@ class ClassMetadata extends ComponentMetadata implements TableOwner
      *
      * @return bool
      */
-    public function isRootEntity()
+    public function isRootEntity() : bool
     {
         return $this->className === $this->getRootClassName();
     }
@@ -1101,7 +1025,7 @@ class ClassMetadata extends ComponentMetadata implements TableOwner
      *
      * @return bool TRUE if the field is inherited, FALSE otherwise.
      */
-    public function isInheritedProperty($fieldName)
+    public function isInheritedProperty($fieldName) : bool
     {
         $declaringClass = $this->declaredProperties[$fieldName]->getDeclaringClass();
 
@@ -1167,6 +1091,8 @@ class ClassMetadata extends ComponentMetadata implements TableOwner
 
         switch (true) {
             case ($property instanceof FieldMetadata):
+                $property->setColumnName($property->getColumnName() ?? $property->getName());
+
                 $this->fieldNames[$property->getColumnName()] = $property->getName();
 
                 if ($property->isVersioned()) {
@@ -1406,12 +1332,7 @@ class ClassMetadata extends ComponentMetadata implements TableOwner
         $this->valueGenerationPlan = $valueGenerationPlan;
     }
 
-    /**
-     * @param $columnName
-     *
-     * @return bool
-     */
-    public function checkPropertyDuplication($columnName) : bool
+    public function checkPropertyDuplication(string $columnName) : bool
     {
         return isset($this->fieldNames[$columnName])
             || ($this->discriminatorColumn !== null && $this->discriminatorColumn->getColumnName() === $columnName);

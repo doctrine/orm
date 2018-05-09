@@ -89,14 +89,6 @@ class ConfigurationTest extends DoctrineTestCase
         self::assertSame($queryCacheImpl, $this->configuration->getHydrationCacheImpl());
     }
 
-    public function testSetGetMetadataCacheImpl() : void
-    {
-        self::assertNull($this->configuration->getMetadataCacheImpl()); // defaults
-        $queryCacheImpl = $this->createMock(Cache::class);
-        $this->configuration->setMetadataCacheImpl($queryCacheImpl);
-        self::assertSame($queryCacheImpl, $this->configuration->getMetadataCacheImpl());
-    }
-
     /**
      * Configures $this->configuration to use production settings.
      *
@@ -110,10 +102,6 @@ class ConfigurationTest extends DoctrineTestCase
 
         if ($skipCache !== 'query') {
             $this->configuration->setQueryCacheImpl($cache);
-        }
-
-        if ($skipCache !== 'metadata') {
-            $this->configuration->setMetadataCacheImpl($cache);
         }
     }
 
@@ -135,16 +123,6 @@ class ConfigurationTest extends DoctrineTestCase
         $this->configuration->ensureProductionSettings();
     }
 
-    public function testEnsureProductionSettingsMetadataCache() : void
-    {
-        $this->setProductionSettings('metadata');
-
-        $this->expectException(MetadataCacheNotConfigured::class);
-        $this->expectExceptionMessage('Metadata Cache is not configured.');
-
-        $this->configuration->ensureProductionSettings();
-    }
-
     public function testEnsureProductionSettingsQueryArrayCache() : void
     {
         $this->setProductionSettings();
@@ -152,17 +130,6 @@ class ConfigurationTest extends DoctrineTestCase
 
         $this->expectException(QueryCacheUsesNonPersistentCache::class);
         $this->expectExceptionMessage('Query Cache uses a non-persistent cache driver, Doctrine\Common\Cache\ArrayCache.');
-
-        $this->configuration->ensureProductionSettings();
-    }
-
-    public function testEnsureProductionSettingsMetadataArrayCache() : void
-    {
-        $this->setProductionSettings();
-        $this->configuration->setMetadataCacheImpl(new ArrayCache());
-
-        $this->expectException(MetadataCacheUsesNonPersistentCache::class);
-        $this->expectExceptionMessage('Metadata Cache uses a non-persistent cache driver, Doctrine\Common\Cache\ArrayCache.');
 
         $this->configuration->ensureProductionSettings();
     }

@@ -46,13 +46,6 @@ use function var_export;
 abstract class OrmFunctionalTestCase extends OrmTestCase
 {
     /**
-     * The metadata cache shared between all functional tests.
-     *
-     * @var Cache|null
-     */
-    private static $metadataCacheImpl = null;
-
-    /**
      * The query cache shared between all functional tests.
      *
      * @var Cache|null
@@ -687,17 +680,6 @@ abstract class OrmFunctionalTestCase extends OrmTestCase
      */
     protected function getEntityManager(?Connection $connection = null, ?MappingDriver $mappingDriver = null)
     {
-        // NOTE: Functional tests use their own shared metadata cache, because
-        // the actual database platform used during execution has effect on some
-        // metadata mapping behaviors (like the choice of the ID generation).
-        if (self::$metadataCacheImpl === null) {
-            if (isset($GLOBALS['DOCTRINE_CACHE_IMPL'])) {
-                self::$metadataCacheImpl = new $GLOBALS['DOCTRINE_CACHE_IMPL']();
-            } else {
-                self::$metadataCacheImpl = new ArrayCache();
-            }
-        }
-
         if (self::$queryCacheImpl === null) {
             self::$queryCacheImpl = new ArrayCache();
         }
@@ -709,7 +691,6 @@ abstract class OrmFunctionalTestCase extends OrmTestCase
         // different configs.
         $config = new Configuration();
 
-        $config->setMetadataCacheImpl(self::$metadataCacheImpl);
         $config->setQueryCacheImpl(self::$queryCacheImpl);
         $config->setAutoGenerateProxyClasses(ProxyFactory::AUTOGENERATE_EVAL);
         $config->setProxyNamespace('Doctrine\Tests\Proxies');

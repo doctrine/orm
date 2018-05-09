@@ -27,13 +27,6 @@ use function realpath;
 abstract class OrmTestCase extends DoctrineTestCase
 {
     /**
-     * The metadata cache that is shared between all ORM tests (except functional tests).
-     *
-     * @var Cache|null
-     */
-    private static $metadataCacheImpl = null;
-
-    /**
      * The query cache that is shared between all ORM tests (except functional tests).
      *
      * @var Cache|null
@@ -89,20 +82,12 @@ abstract class OrmTestCase extends DoctrineTestCase
         $eventManager = null,
         $withSharedMetadata = true
     ) {
-        $metadataCache = $withSharedMetadata
-            ? self::getSharedMetadataCacheImpl()
-            : new ArrayCache();
-
         $config = new Configuration();
 
-        $config->setMetadataCacheImpl($metadataCache);
-        $config->setMetadataDriverImpl($config->newDefaultAnnotationDriver([]));
         $config->setQueryCacheImpl(self::getSharedQueryCacheImpl());
         $config->setProxyNamespace('Doctrine\Tests\Proxies');
         $config->setAutoGenerateProxyClasses(ProxyFactory::AUTOGENERATE_EVAL);
-        $config->setMetadataDriverImpl(
-            $config->newDefaultAnnotationDriver([realpath(__DIR__ . '/Models/Cache')])
-        );
+        $config->setMetadataDriverImpl($config->newDefaultAnnotationDriver([realpath(__DIR__ . '/Models/Cache')]));
 
         if ($this->isSecondLevelCacheEnabled) {
             $cacheConfig = new CacheConfiguration();
@@ -136,18 +121,6 @@ abstract class OrmTestCase extends DoctrineTestCase
     {
         $this->isSecondLevelCacheEnabled    = true;
         $this->isSecondLevelCacheLogEnabled = $log;
-    }
-
-    /**
-     * @return Cache
-     */
-    private static function getSharedMetadataCacheImpl()
-    {
-        if (self::$metadataCacheImpl === null) {
-            self::$metadataCacheImpl = new ArrayCache();
-        }
-
-        return self::$metadataCacheImpl;
     }
 
     /**

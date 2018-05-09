@@ -69,9 +69,6 @@ class ClassMetadataFactory implements PersistenceClassMetadataFactory
     /** @var EventManager */
     private $evm;
 
-    /** @var Cache|null */
-    private $cacheDriver;
-
     /** @var ClassMetadata[] */
     private $loadedMetadata = [];
 
@@ -81,22 +78,6 @@ class ClassMetadataFactory implements PersistenceClassMetadataFactory
     public function setEntityManager(EntityManagerInterface $em) : void
     {
         $this->em = $em;
-    }
-
-    /**
-     * Sets the cache driver used by the factory to cache ClassMetadata instances.
-     */
-    public function setCacheDriver(?Cache $cacheDriver = null) : void
-    {
-        $this->cacheDriver = $cacheDriver;
-    }
-
-    /**
-     * Gets the cache driver used by the factory to cache ClassMetadata instances.
-     */
-    public function getCacheDriver() : ?Cache
-    {
-        return $this->cacheDriver;
     }
 
     /**

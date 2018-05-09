@@ -74,49 +74,13 @@ class SetupTest extends OrmTestCase
     }
 
     /**
-     * @group 5904
-     */
-    public function testCacheNamespaceShouldBeGeneratedWhenCacheIsNotGiven() : void
-    {
-        $config = Setup::createConfiguration(false, __DIR__);
-        $cache  = $config->getMetadataCacheImpl();
-
-        self::assertSame('dc2_' . md5(__DIR__) . '_', $cache->getNamespace());
-    }
-
-    /**
-     * @group 5904
-     */
-    public function testCacheNamespaceShouldBeGeneratedWhenCacheIsGivenButHasNoNamespace() : void
-    {
-        $config = Setup::createConfiguration(false, __DIR__, new ArrayCache());
-        $cache  = $config->getMetadataCacheImpl();
-
-        self::assertSame('dc2_' . md5(__DIR__) . '_', $cache->getNamespace());
-    }
-
-    /**
-     * @group 5904
-     */
-    public function testConfiguredCacheNamespaceShouldBeUsedAsPrefixOfGeneratedNamespace() : void
-    {
-        $originalCache = new ArrayCache();
-        $originalCache->setNamespace('foo');
-
-        $config = Setup::createConfiguration(false, __DIR__, $originalCache);
-        $cache  = $config->getMetadataCacheImpl();
-
-        self::assertSame($originalCache, $cache);
-        self::assertSame('foo:dc2_' . md5(__DIR__) . '_', $cache->getNamespace());
-    }
-
-    /**
      * @group DDC-1350
      */
     public function testConfigureProxyDir() : void
     {
         $path   = $this->makeTemporaryDirectory();
         $config = Setup::createAnnotationMetadataConfiguration([], true, $path);
+
         self::assertSame($path, $config->getProxyManagerConfiguration()->getProxiesTargetDir());
     }
 
@@ -129,7 +93,6 @@ class SetupTest extends OrmTestCase
         $config = Setup::createAnnotationMetadataConfiguration([], true, null, $cache);
 
         self::assertSame($cache, $config->getResultCacheImpl());
-        self::assertSame($cache, $config->getMetadataCacheImpl());
         self::assertSame($cache, $config->getQueryCacheImpl());
     }
 
@@ -142,7 +105,6 @@ class SetupTest extends OrmTestCase
         $config = Setup::createConfiguration(true, null, $cache);
 
         self::assertSame($cache, $config->getResultCacheImpl());
-        self::assertSame($cache, $config->getMetadataCacheImpl());
         self::assertSame($cache, $config->getQueryCacheImpl());
     }
 
