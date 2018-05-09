@@ -18,7 +18,7 @@ Before reporting a BC break, please consult the upgrading document to make sure 
 
 #### Summary
 
-<!-- Provide a summary desciribing the problem you are experiencing. -->
+<!-- Provide a summary describing the problem you are experiencing. -->
 
 #### Previous behavior
 
