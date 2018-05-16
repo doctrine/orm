@@ -15,8 +15,8 @@ class EntityNotFoundException extends \RuntimeException implements ORMException
     /**
      * Static constructor.
      *
-     * @param string   $className
-     * @param string[] $id
+     * @param string $className
+     * @param array  $id
      *
      * @return self
      */
