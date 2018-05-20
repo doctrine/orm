@@ -15,6 +15,7 @@ use Doctrine\ORM\QueryBuilder;
 use function array_key_exists;
 use function array_map;
 use function array_sum;
+use function ceil;
 use function count;
 
 /**
@@ -107,7 +108,7 @@ class Paginator implements \Countable, \IteratorAggregate
 
         return $this->count;
     }
-    
+
     /**
      * Returns number of pages
      *
