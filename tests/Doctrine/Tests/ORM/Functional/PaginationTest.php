@@ -98,6 +98,43 @@ class PaginationTest extends OrmFunctionalTestCase
         self::assertCount(9, $paginator);
     }
 
+    public function testPagesCount() : void
+    {
+        $dql   = 'SELECT u FROM Doctrine\Tests\Models\CMS\CmsUser u';
+        $query = $this->em->createQuery($dql);
+
+        // Test without setMaxResults
+        $paginator = new Paginator($query);
+        self::assertNull($paginator->getPagesCount());
+
+        // Test with setMaxResults
+        $query->setMaxResults(4);
+        $paginator = new Paginator($query);
+        self::assertEquals(3, $paginator->getPagesCount());
+
+        // Test with same total items and max results
+        $query->setMaxResults(9);
+        $paginator = new Paginator($query);
+        self::assertEquals(1, $paginator->getPagesCount());
+    }
+
+    public function testPagesCountNoResult() : void
+    {
+        $dql   = 'SELECT u FROM Doctrine\Tests\Models\CMS\CmsUser u WHERE u.name = :name';
+        $query = $this->em->createQuery($dql);
+        $query->setParameter('name', 'unexistent');
+
+        // Test without setMaxResults
+        $paginator = new Paginator($query);
+        self::assertNull($paginator->getPagesCount());
+
+        // Test with setMaxResults
+        $query->setMaxResults(4);
+        $paginator = new Paginator($query);
+        self::assertInternalType('int', $paginator->getPagesCount());
+        self::assertEquals(0, $paginator->getPagesCount());
+    }
+
     /**
      * @dataProvider useOutputWalkersAndFetchJoinCollection
      */

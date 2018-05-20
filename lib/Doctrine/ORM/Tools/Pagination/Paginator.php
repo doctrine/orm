@@ -109,13 +109,15 @@ class Paginator implements \Countable, \IteratorAggregate
     }
     
     /**
-     * Returns last page number
+     * Returns number of pages
      *
-     * @return int
+     * @return int|null
      */
-    public function lastPage()
+    public function getPagesCount()
     {
-        return ceil($this->count() / $this->query->getMaxResults());
+        $maxResults = $this->query->getMaxResults();
+
+        return $maxResults !== null ? (int) ceil($this->count() / $maxResults) : null;
     }
 
     /**
