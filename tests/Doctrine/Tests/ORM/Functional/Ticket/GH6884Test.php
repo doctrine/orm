@@ -2,6 +2,7 @@
 
 namespace Doctrine\Tests\ORM\Functional\Ticket;
 
+use Doctrine\ORM\Annotation as ORM;
 use Doctrine\ORM\Event\LifecycleEventArgs;
 use Doctrine\ORM\Events;
 use Doctrine\Tests\OrmFunctionalTestCase;
@@ -48,14 +49,18 @@ final class GH6884Test extends OrmFunctionalTestCase
 }
 
 /**
- * @Entity()
+ * @ORM\Entity()
  */
 class GH6884Person
 {
-    /** @Id() @Column(type="integer") @GeneratedValue() */
+    /**
+     * @ORM\Id()
+     * @ORM\Column(type="integer")
+     * @ORM\GeneratedValue()
+     */
     public $id;
 
-    /** @Column(type="boolean", nullable=false) */
+    /** @ORM\Column(type="boolean", nullable=false) */
     public $isAlive = false;
 
     /** @var bool */
