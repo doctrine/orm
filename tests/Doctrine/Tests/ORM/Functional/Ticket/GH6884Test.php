@@ -18,7 +18,7 @@ final class GH6884Test extends OrmFunctionalTestCase
     /**
      * {@inheritdoc}
      */
-    protected function setUp(): void
+    protected function setUp() : void
     {
         parent::setUp();
 
@@ -34,7 +34,7 @@ final class GH6884Test extends OrmFunctionalTestCase
                   ->addEntityListener(Events::postUpdate, GH6884Person::class, 'onPostUpdate');
     }
 
-    public function testIssue(): void
+    public function testIssue() : void
     {
         $person  = new GH6884Person();
         $person2 = new GH6884Person();
@@ -68,7 +68,7 @@ class GH6884Person
     /** @var bool */
     public $nonOrmProperty = false;
 
-    public function onPostUpdate(GH6884Person $person, LifecycleEventArgs $eventArgs): void
+    public function onPostUpdate(GH6884Person $person, LifecycleEventArgs $eventArgs) : void
     {
         $person->nonOrmProperty = true;
 
