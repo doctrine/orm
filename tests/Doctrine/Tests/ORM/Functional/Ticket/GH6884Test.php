@@ -19,7 +19,7 @@ final class GH6884Test extends OrmFunctionalTestCase
     {
         parent::setUp();
 
-        $this->schemaTool->createSchema([$this->_em->getClassMetadata(GH6884Person::class)]);
+        $this->schemaTool->createSchema([$this->em->getClassMetadata(GH6884Person::class)]);
 
         $listener = $this->createPartialMock(stdClass::class, ['preUpdate']);
 
