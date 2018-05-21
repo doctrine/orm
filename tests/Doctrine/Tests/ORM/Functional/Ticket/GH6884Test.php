@@ -19,19 +19,15 @@ final class GH6884Test extends OrmFunctionalTestCase
     {
         parent::setUp();
 
-        $this->_schemaTool->createSchema(
-            [
-                $this->_em->getClassMetadata(GH6884Person::class)
-            ]
-        );
+        $this->schemaTool->createSchema([$this->_em->getClassMetadata(GH6884Person::class)]);
 
         $listener = $this->createPartialMock(stdClass::class, ['preUpdate']);
 
         $listener->expects($this->exactly(3))->method('preUpdate');
 
-        $this->_em->getEventManager()->addEventListener([Events::preUpdate], $listener);
+        $this->em->getEventManager()->addEventListener([Events::preUpdate], $listener);
 
-        $this->_em->getClassMetadata(GH6884Person::class)
+        $this->em->getClassMetadata(GH6884Person::class)
                   ->addEntityListener(Events::postUpdate, GH6884Person::class, 'onPostUpdate');
     }
 
@@ -40,14 +36,14 @@ final class GH6884Test extends OrmFunctionalTestCase
         $person  = new GH6884Person();
         $person2 = new GH6884Person();
 
-        $this->_em->persist($person);
-        $this->_em->persist($person2);
-        $this->_em->flush();
+        $this->em->persist($person);
+        $this->em->persist($person2);
+        $this->em->flush();
 
         $person->isAlive  = true;
         $person2->isAlive = true;
 
-        $this->_em->flush();
+        $this->em->flush();
     }
 }
 
