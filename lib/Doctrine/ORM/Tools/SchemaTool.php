@@ -149,7 +149,7 @@ class SchemaTool
         $metadataSchemaConfig   = $schemaManager->createSchemaConfig();
 
         $metadataSchemaConfig->setExplicitForeignKeyIndexes(false);
-        $schema = new Schema([], [], $metadataSchemaConfig);
+        $schema = new Schema([], [], $metadataSchemaConfig, $this->getNamespaces());
 
         $addedFks = [];
         $blacklistedFks = [];
@@ -898,5 +898,20 @@ class SchemaTool
         }
 
         return $schemaDiff->toSql($this->platform);
+    }
+
+    /**
+     * Gets namespaces for the current platform
+     *
+     * @return string[]
+     */
+    private function getNamespaces() {
+        if (! $this->platform->supportsSchemas()) {
+            return [];
+        }
+
+        $namespaces = $this->em->getConnection()->getSchemaManager()->listNamespaceNames();
+
+        return $namespaces;
     }
 }
