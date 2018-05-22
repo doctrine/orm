@@ -140,7 +140,7 @@ class SchemaTool
      *
      * @throws \Doctrine\ORM\ORMException
      */
-    public function getSchemaFromMetadata(array $classes)
+    public function getSchemaFromMetadata(array $classes, bool $withNamespaces = false)
     {
         // Reminder for processed classes, used for hierarchies
         $processedClasses       = [];
@@ -149,7 +149,8 @@ class SchemaTool
         $metadataSchemaConfig   = $schemaManager->createSchemaConfig();
 
         $metadataSchemaConfig->setExplicitForeignKeyIndexes(false);
-        $schema = new Schema([], [], $metadataSchemaConfig, $this->getPlatformNamespaces());
+        $namespaces = ! $withNamespaces ? [] : $this->getPlatformNamespaces();
+        $schema = new Schema([], [], $metadataSchemaConfig, $namespaces);
 
         $addedFks = [];
         $blacklistedFks = [];
