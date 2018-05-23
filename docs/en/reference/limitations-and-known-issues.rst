@@ -169,3 +169,24 @@ MySQL with MyISAM tables
 Doctrine cannot provide atomic operations when calling ``EntityManager#flush()`` if one
 of the tables involved uses the storage engine MyISAM. You must use InnoDB or
 other storage engines that support transactions if you need integrity.
+
+Querying Sqlite date fields
+~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+The Doctrine ``date`` type is represented in PHP as a ``\DateTime`` object with
+the time set to ``00:00:00``. During serialization Doctrine converts this object
+to a string in the appropriate date format, with no time specified. Unlike other
+databases Sqlite stores this string literally as described in
+`the DBAL documentation <https://www.doctrine-project.org/projects/doctrine-dbal/en/2.7/reference/known-vendor-issues.html#datetime>`_
+
+Meanwhile the QueryBuilder is not aware of mapped types and by default will
+assume any ``\DateTime`` object is a ``datetime`` and serialize it accordingly.
+Sqlite will attempt to compare this to the plain date string it has stored, causing
+any queries against ``date`` fields to fail.
+
+A workaround is to explicitly specify the ``date`` type when binding a query
+parameter:
+
+.. code-block:: php
+
+    $qb->setParameter('dateField', $dateValue, \Doctrine\DBAL\Types\Type::DATE);
