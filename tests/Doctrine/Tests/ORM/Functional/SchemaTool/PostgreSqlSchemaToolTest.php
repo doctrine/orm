@@ -133,6 +133,21 @@ class PostgreSqlSchemaToolTest extends OrmFunctionalTestCase
 
         $this->assertCount(0, $sql, implode("\n", $sql));
     }
+
+    public function testSchemaFromMetadataNamespaces() : void
+    {
+        $schemaTool = new SchemaTool($this->_em);
+        $platform   = $this->_em->getConnection()->getDatabasePlatform();
+        $classes    = [
+            $this->_em->getClassMetadata(Models\CMS\CmsUser::class),
+        ];
+
+        $schemaWithoutNamespaces = $schemaTool->getSchemaFromMetadata($classes);
+        self::assertNotContains('CREATE SCHEMA public', $schemaWithoutNamespaces->toSql($platform));
+
+        $schemaWithNamespaces = $schemaTool->getSchemaFromMetadata($classes, true);
+        self::assertContains('CREATE SCHEMA public', $schemaWithNamespaces->toSql($platform));
+    }
 }
 
 /**
