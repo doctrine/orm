@@ -9,11 +9,12 @@ class ParameterTest extends TestCase
 {
     /**
      * @dataProvider getParameterNamesStartingOrEndingWithAColon
-     * @expectedException \InvalidArgumentException
-     * @expectedExceptionMessage A parameter name cannot start or end with ":".
      */
     public function testParameterNameStartingOrEndingWithAColon(string $name): void
     {
+        $this->expectException(\InvalidArgumentException::class);
+        $this->expectExceptionMessage('A parameter name cannot start or end with ":".');
+
         new Parameter($name, 'value');
     }
 
