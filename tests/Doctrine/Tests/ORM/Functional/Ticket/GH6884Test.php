@@ -31,7 +31,7 @@ final class GH6884Test extends OrmFunctionalTestCase
         $this->em->getEventManager()->addEventListener([Events::preUpdate], $listener);
 
         $this->em->getClassMetadata(GH6884Person::class)
-                  ->addEntityListener(Events::postUpdate, GH6884Person::class, 'onPostUpdate');
+                 ->addEntityListener(Events::postUpdate, GH6884Person::class, 'onPostUpdate');
     }
 
     public function testIssue() : void
