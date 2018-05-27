@@ -92,10 +92,12 @@ class DDC719Group extends Entity
      */
     public function addGroup(Group $child)
     {
-        if (! $this->children->contains($child)) {
-            $this->children->add($child);
-            $child->addGroup($this);
+        if ($this->children->contains($child)) {
+            return;
         }
+
+        $this->children->add($child);
+        $child->addGroup($this);
     }
 
     /**
@@ -104,9 +106,11 @@ class DDC719Group extends Entity
      */
     public function addChannel(Channel $child)
     {
-        if (! $this->channels->contains($child)) {
-            $this->channels->add($child);
+        if ($this->channels->contains($child)) {
+            return;
         }
+
+        $this->channels->add($child);
     }
 
     /**

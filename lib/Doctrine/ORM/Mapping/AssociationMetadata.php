@@ -243,8 +243,10 @@ class AssociationMetadata implements Property
 
     public function __clone()
     {
-        if ($this->cache) {
-            $this->cache = clone $this->cache;
+        if (! $this->cache) {
+            return;
         }
+
+        $this->cache = clone $this->cache;
     }
 }

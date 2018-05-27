@@ -52,11 +52,13 @@ class ECommerceFeature
 
     public function removeProduct()
     {
-        if ($this->product !== null) {
-            $product       = $this->product;
-            $this->product = null;
-            $product->removeFeature($this);
+        if ($this->product === null) {
+            return;
         }
+
+        $product       = $this->product;
+        $this->product = null;
+        $product->removeFeature($this);
     }
 
     public function getProduct()

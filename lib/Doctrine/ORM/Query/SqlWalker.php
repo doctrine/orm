@@ -508,9 +508,11 @@ class SqlWalker implements TreeWalker
         foreach ($this->em->getFilters()->getEnabledFilters() as $filter) {
             $filterExpr = $filter->addFilterConstraint($targetEntity, $targetTableAlias);
 
-            if ($filterExpr !== '') {
-                $filterClauses[] = '(' . $filterExpr . ')';
+            if ($filterExpr === '') {
+                continue;
             }
+
+            $filterClauses[] = '(' . $filterExpr . ')';
         }
 
         return implode(' AND ', $filterClauses);
@@ -1849,9 +1851,11 @@ class SqlWalker implements TreeWalker
                 $tableAlias = $this->getSQLTableAlias($class->getTableName(), $dqlAlias);
                 $filterExpr = $this->generateFilterConditionSQL($class, $tableAlias);
 
-                if ($filterExpr) {
-                    $filterClauses[] = $filterExpr;
+                if (! $filterExpr) {
+                    continue;
                 }
+
+                $filterClauses[] = $filterExpr;
             }
 
             if ($filterClauses) {

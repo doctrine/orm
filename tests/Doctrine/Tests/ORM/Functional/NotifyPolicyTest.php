@@ -102,10 +102,12 @@ class NotifyBaseEntity implements NotifyPropertyChanged
 
     protected function onPropertyChanged($propName, $oldValue, $newValue)
     {
-        if ($this->listeners) {
-            foreach ($this->listeners as $listener) {
-                $listener->propertyChanged($this, $propName, $oldValue, $newValue);
-            }
+        if (! $this->listeners) {
+            return;
+        }
+
+        foreach ($this->listeners as $listener) {
+            $listener->propertyChanged($this, $propName, $oldValue, $newValue);
         }
     }
 }

@@ -109,10 +109,12 @@ class GH5887Cart
 
     public function setCustomer(GH5887Customer $customer)
     {
-        if ($this->customer !== $customer) {
-            $this->customer = $customer;
-            $customer->setCart($this);
+        if ($this->customer === $customer) {
+            return;
         }
+
+        $this->customer = $customer;
+        $customer->setCart($this);
     }
 }
 
@@ -159,10 +161,12 @@ class GH5887Customer
 
     public function setCart(GH5887Cart $cart)
     {
-        if ($this->cart !== $cart) {
-            $this->cart = $cart;
-            $cart->setCustomer($this);
+        if ($this->cart === $cart) {
+            return;
         }
+
+        $this->cart = $cart;
+        $cart->setCustomer($this);
     }
 }
 

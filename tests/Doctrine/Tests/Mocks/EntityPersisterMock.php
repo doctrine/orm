@@ -44,9 +44,11 @@ class EntityPersisterMock extends BasicEntityPersister
     {
         $this->inserts[] = $entity;
 
-        if ($this->class->getValueGenerationPlan()->containsDeferred()) {
-            $this->class->getValueGenerationPlan()->executeDeferred($this->em, $entity);
+        if (! $this->class->getValueGenerationPlan()->containsDeferred()) {
+            return;
         }
+
+        $this->class->getValueGenerationPlan()->executeDeferred($this->em, $entity);
     }
 
     /**

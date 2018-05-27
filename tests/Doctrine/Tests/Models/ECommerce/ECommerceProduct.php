@@ -131,18 +131,22 @@ class ECommerceProduct
 
     public function addCategory(ECommerceCategory $category)
     {
-        if (! $this->categories->contains($category)) {
-            $this->categories[] = $category;
-            $category->addProduct($this);
+        if ($this->categories->contains($category)) {
+            return;
         }
+
+        $this->categories[] = $category;
+        $category->addProduct($this);
     }
 
     public function removeCategory(ECommerceCategory $category)
     {
         $removed = $this->categories->removeElement($category);
-        if ($removed) {
-            $category->removeProduct($this);
+        if (! $removed) {
+            return;
         }
+
+        $category->removeProduct($this);
     }
 
     public function setCategories($categories)
@@ -162,26 +166,32 @@ class ECommerceProduct
 
     public function addRelated(ECommerceProduct $related)
     {
-        if (! $this->related->contains($related)) {
-            $this->related[] = $related;
-            $related->addRelated($this);
+        if ($this->related->contains($related)) {
+            return;
         }
+
+        $this->related[] = $related;
+        $related->addRelated($this);
     }
 
     public function removeRelated(ECommerceProduct $related)
     {
         $removed = $this->related->removeElement($related);
-        if ($removed) {
-            $related->removeRelated($this);
+        if (! $removed) {
+            return;
         }
+
+        $related->removeRelated($this);
     }
 
     public function __clone()
     {
         $this->isCloned = true;
-        if ($this->categories) {
-            $this->categories = clone $this->categories;
+        if (! $this->categories) {
+            return;
         }
+
+        $this->categories = clone $this->categories;
     }
 
     /**

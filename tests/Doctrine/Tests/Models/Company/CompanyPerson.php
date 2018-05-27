@@ -84,17 +84,21 @@ class CompanyPerson
 
     public function addFriend(CompanyPerson $friend)
     {
-        if (! $this->friends->contains($friend)) {
-            $this->friends->add($friend);
-            $friend->addFriend($this);
+        if ($this->friends->contains($friend)) {
+            return;
         }
+
+        $this->friends->add($friend);
+        $friend->addFriend($this);
     }
 
     public function setSpouse(CompanyPerson $spouse)
     {
-        if ($spouse !== $this->spouse) {
-            $this->spouse = $spouse;
-            $this->spouse->setSpouse($this);
+        if ($spouse === $this->spouse) {
+            return;
         }
+
+        $this->spouse = $spouse;
+        $this->spouse->setSpouse($this);
     }
 }

@@ -150,18 +150,20 @@ final class PersistentCollection extends AbstractLazyCollection implements Selec
 
         // If _backRefFieldName is set and its a one-to-many association,
         // we need to set the back reference.
-        if ($this->backRefFieldName && $this->association instanceof OneToManyAssociationMetadata) {
-            $inversedAssociation = $this->typeClass->getProperty($this->backRefFieldName);
-
-            // Set back reference to owner
-            $inversedAssociation->setValue($element, $this->owner);
-
-            $this->em->getUnitOfWork()->setOriginalEntityProperty(
-                spl_object_id($element),
-                $this->backRefFieldName,
-                $this->owner
-            );
+        if (! $this->backRefFieldName || ! ($this->association instanceof OneToManyAssociationMetadata)) {
+            return;
         }
+
+        $inversedAssociation = $this->typeClass->getProperty($this->backRefFieldName);
+
+        // Set back reference to owner
+        $inversedAssociation->setValue($element, $this->owner);
+
+        $this->em->getUnitOfWork()->setOriginalEntityProperty(
+            spl_object_id($element),
+            $this->backRefFieldName,
+            $this->owner
+        );
     }
 
     /**
@@ -177,18 +179,20 @@ final class PersistentCollection extends AbstractLazyCollection implements Selec
 
         // If _backRefFieldName is set, then the association is bidirectional
         // and we need to set the back reference.
-        if ($this->backRefFieldName && $this->association instanceof OneToManyAssociationMetadata) {
-            $inversedAssociation = $this->typeClass->getProperty($this->backRefFieldName);
-
-            // Set back reference to owner
-            $inversedAssociation->setValue($element, $this->owner);
-
-            $this->em->getUnitOfWork()->setOriginalEntityProperty(
-                spl_object_id($element),
-                $this->backRefFieldName,
-                $this->owner
-            );
+        if (! $this->backRefFieldName || ! ($this->association instanceof OneToManyAssociationMetadata)) {
+            return;
         }
+
+        $inversedAssociation = $this->typeClass->getProperty($this->backRefFieldName);
+
+        // Set back reference to owner
+        $inversedAssociation->setValue($element, $this->owner);
+
+        $this->em->getUnitOfWork()->setOriginalEntityProperty(
+            spl_object_id($element),
+            $this->backRefFieldName,
+            $this->owner
+        );
     }
 
     /**
@@ -280,12 +284,14 @@ final class PersistentCollection extends AbstractLazyCollection implements Selec
 
         $this->isDirty = true;
 
-        if ($this->association instanceof ManyToManyAssociationMetadata &&
-            $this->owner &&
-            $this->association->isOwningSide() &&
-            $this->em->getClassMetadata(get_class($this->owner))->changeTrackingPolicy === ChangeTrackingPolicy::NOTIFY) {
-            $this->em->getUnitOfWork()->scheduleForSynchronization($this->owner);
+        if (! ($this->association instanceof ManyToManyAssociationMetadata) ||
+            ! $this->owner ||
+            ! $this->association->isOwningSide() ||
+            $this->em->getClassMetadata(get_class($this->owner))->changeTrackingPolicy !== ChangeTrackingPolicy::NOTIFY) {
+            return;
         }
+
+        $this->em->getUnitOfWork()->scheduleForSynchronization($this->owner);
     }
 
     /**
@@ -458,9 +464,11 @@ final class PersistentCollection extends AbstractLazyCollection implements Selec
 
         $this->changed();
 
-        if (is_object($value) && $this->em) {
-            $this->em->getUnitOfWork()->cancelOrphanRemoval($value);
+        if (! is_object($value) || ! $this->em) {
+            return;
         }
+
+        $this->em->getUnitOfWork()->cancelOrphanRemoval($value);
     }
 
     /**
@@ -559,13 +567,15 @@ final class PersistentCollection extends AbstractLazyCollection implements Selec
 
         $this->initialized = true; // direct call, {@link initialize()} is too expensive
 
-        if ($this->association->isOwningSide() && $this->owner) {
-            $this->changed();
-
-            $uow->scheduleCollectionDeletion($this);
-
-            $this->takeSnapshot();
+        if (! $this->association->isOwningSide() || ! $this->owner) {
+            return;
         }
+
+        $this->changed();
+
+        $uow->scheduleCollectionDeletion($this);
+
+        $this->takeSnapshot();
     }
 
     /**
@@ -698,9 +708,11 @@ final class PersistentCollection extends AbstractLazyCollection implements Selec
         $this->em->getUnitOfWork()->loadCollection($this);
         $this->takeSnapshot();
 
-        if ($newlyAddedDirtyObjects) {
-            $this->restoreNewObjectsInDirtyCollection($newlyAddedDirtyObjects);
+        if (! $newlyAddedDirtyObjects) {
+            return;
         }
+
+        $this->restoreNewObjectsInDirtyCollection($newlyAddedDirtyObjects);
     }
 
     /**
@@ -718,11 +730,13 @@ final class PersistentCollection extends AbstractLazyCollection implements Selec
         $loadedObjectsByOid          = array_combine(array_map('spl_object_id', $loadedObjects), $loadedObjects);
         $newObjectsThatWereNotLoaded = array_diff_key($newObjectsByOid, $loadedObjectsByOid);
 
-        if ($newObjectsThatWereNotLoaded) {
-            // Reattach NEW objects added through add(), if any.
-            array_walk($newObjectsThatWereNotLoaded, [$this->collection, 'add']);
-
-            $this->isDirty = true;
+        if (! $newObjectsThatWereNotLoaded) {
+            return;
         }
+
+        // Reattach NEW objects added through add(), if any.
+        array_walk($newObjectsThatWereNotLoaded, [$this->collection, 'add']);
+
+        $this->isDirty = true;
     }
 }

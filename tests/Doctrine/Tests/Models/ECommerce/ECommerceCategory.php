@@ -66,18 +66,22 @@ class ECommerceCategory
 
     public function addProduct(ECommerceProduct $product)
     {
-        if (! $this->products->contains($product)) {
-            $this->products[] = $product;
-            $product->addCategory($this);
+        if ($this->products->contains($product)) {
+            return;
         }
+
+        $this->products[] = $product;
+        $product->addCategory($this);
     }
 
     public function removeProduct(ECommerceProduct $product)
     {
         $removed = $this->products->removeElement($product);
-        if ($removed) {
-            $product->removeCategory($this);
+        if (! $removed) {
+            return;
         }
+
+        $product->removeCategory($this);
     }
 
     public function getProducts()
@@ -116,9 +120,11 @@ class ECommerceCategory
     public function removeChild(ECommerceCategory $child)
     {
         $removed = $this->children->removeElement($child);
-        if ($removed) {
-            $child->removeParent();
+        if (! $removed) {
+            return;
         }
+
+        $child->removeParent();
     }
 
     public function removeParent()

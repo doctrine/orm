@@ -21,9 +21,11 @@ trait DDC2372AddressTrait
 
     public function setAddress(Address $address)
     {
-        if ($this->address !== $address) {
-            $this->address = $address;
-            $address->setUser($this);
+        if ($this->address === $address) {
+            return;
         }
+
+        $this->address = $address;
+        $address->setUser($this);
     }
 }

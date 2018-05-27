@@ -210,10 +210,12 @@ class Lemma
      */
     public function addType(Type $type)
     {
-        if (! $this->types->contains($type)) {
-            $this->types[] = $type;
-            $type->addLemma($this);
+        if ($this->types->contains($type)) {
+            return;
         }
+
+        $this->types[] = $type;
+        $type->addLemma($this);
     }
 
     /**
@@ -222,9 +224,11 @@ class Lemma
     public function removeType(Type $type)
     {
         $removed = $this->sources->removeElement($type);
-        if ($removed !== null) {
-            $removed->removeLemma($this);
+        if ($removed === null) {
+            return;
         }
+
+        $removed->removeLemma($this);
     }
 
     /**
@@ -330,10 +334,12 @@ class Type
      */
     public function addLemma(Lemma $lemma)
     {
-        if (! $this->lemmas->contains($lemma)) {
-            $this->lemmas[] = $lemma;
-            $lemma->addType($this);
+        if ($this->lemmas->contains($lemma)) {
+            return;
         }
+
+        $this->lemmas[] = $lemma;
+        $lemma->addType($this);
     }
 
     /**
@@ -345,9 +351,11 @@ class Type
     {
         $removed = $this->lemmas->removeElement($lemma);
 
-        if ($removed !== null) {
-            $removed->removeType($this);
+        if ($removed === null) {
+            return;
         }
+
+        $removed->removeType($this);
     }
 
     /**
@@ -593,12 +601,14 @@ class Definition
 
     public function removePhrase()
     {
-        if ($this->phrase !== null) {
-            /*@var $phrase kateglo\application\models\Phrase */
-            $phrase       = $this->phrase;
-            $this->phrase = null;
-            $phrase->removeDefinition($this);
+        if ($this->phrase === null) {
+            return;
         }
+
+        /*@var $phrase kateglo\application\models\Phrase */
+        $phrase       = $this->phrase;
+        $this->phrase = null;
+        $phrase->removeDefinition($this);
     }
 
     /**

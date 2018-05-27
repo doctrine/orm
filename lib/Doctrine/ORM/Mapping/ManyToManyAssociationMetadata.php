@@ -23,8 +23,10 @@ class ManyToManyAssociationMetadata extends ToManyAssociationMetadata
     {
         parent::__clone();
 
-        if ($this->joinTable) {
-            $this->joinTable = clone $this->joinTable;
+        if (! $this->joinTable) {
+            return;
         }
+
+        $this->joinTable = clone $this->joinTable;
     }
 }

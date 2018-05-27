@@ -643,37 +643,39 @@ class XmlDriver extends FileDriver
         }
 
         // Evaluate entity listener
-        if (isset($xmlRoot->{'entity-listeners'})) {
-            foreach ($xmlRoot->{'entity-listeners'}->{'entity-listener'} as $listenerElement) {
-                $listenerClassName = (string) $listenerElement['class'];
+        if (! isset($xmlRoot->{'entity-listeners'})) {
+            return;
+        }
 
-                if (! class_exists($listenerClassName)) {
-                    throw Mapping\MappingException::entityListenerClassNotFound(
-                        $listenerClassName,
-                        $metadata->getClassName()
-                    );
-                }
+        foreach ($xmlRoot->{'entity-listeners'}->{'entity-listener'} as $listenerElement) {
+            $listenerClassName = (string) $listenerElement['class'];
 
-                $listenerClass = new \ReflectionClass($listenerClassName);
+            if (! class_exists($listenerClassName)) {
+                throw Mapping\MappingException::entityListenerClassNotFound(
+                    $listenerClassName,
+                    $metadata->getClassName()
+                );
+            }
 
-                // Evaluate the listener using naming convention.
-                if ($listenerElement->count() === 0) {
-                    /** @var \ReflectionMethod $method */
-                    foreach ($listenerClass->getMethods(\ReflectionMethod::IS_PUBLIC) as $method) {
-                        foreach ($this->getMethodCallbacks($method) as $callback) {
-                            $metadata->addEntityListener($callback, $listenerClassName, $method->getName());
-                        }
+            $listenerClass = new \ReflectionClass($listenerClassName);
+
+            // Evaluate the listener using naming convention.
+            if ($listenerElement->count() === 0) {
+                /** @var \ReflectionMethod $method */
+                foreach ($listenerClass->getMethods(\ReflectionMethod::IS_PUBLIC) as $method) {
+                    foreach ($this->getMethodCallbacks($method) as $callback) {
+                        $metadata->addEntityListener($callback, $listenerClassName, $method->getName());
                     }
-
-                    continue;
                 }
 
-                foreach ($listenerElement as $callbackElement) {
-                    $eventName  = (string) $callbackElement['type'];
-                    $methodName = (string) $callbackElement['method'];
+                continue;
+            }
 
-                    $metadata->addEntityListener($eventName, $listenerClassName, $methodName);
-                }
+            foreach ($listenerElement as $callbackElement) {
+                $eventName  = (string) $callbackElement['type'];
+                $methodName = (string) $callbackElement['method'];
+
+                $metadata->addEntityListener($eventName, $listenerClassName, $methodName);
             }
         }
     }

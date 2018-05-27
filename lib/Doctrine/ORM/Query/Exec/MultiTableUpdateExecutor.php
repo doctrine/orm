@@ -104,27 +104,33 @@ class MultiTableUpdateExecutor extends AbstractSqlExecutor
                 $field    = $updateItem->pathExpression->field;
                 $property = $class->getProperty($field);
 
-                if ($property && ! $class->isInheritedProperty($field)) {
-                    $updateSQLParts[] = $sqlWalker->walkUpdateItem($updateItem);
-                    $newValue         = $updateItem->newValue;
-
-                    if ($newValue instanceof AST\InputParameter) {
-                        $this->sqlParameters[$i][] = $newValue->name;
-
-                        ++$this->numParametersInUpdateClause;
-                    }
+                if (! $property || $class->isInheritedProperty($field)) {
+                    continue;
                 }
+
+                $updateSQLParts[] = $sqlWalker->walkUpdateItem($updateItem);
+                $newValue         = $updateItem->newValue;
+
+                if (! ($newValue instanceof AST\InputParameter)) {
+                    continue;
+                }
+
+                $this->sqlParameters[$i][] = $newValue->name;
+
+                ++$this->numParametersInUpdateClause;
             }
 
-            if ($updateSQLParts) {
-                $this->sqlStatements[$i] = sprintf(
-                    $updateSQLTemplate,
-                    $class->table->getQuotedQualifiedName($platform),
-                    implode(', ', $updateSQLParts)
-                );
-
-                $i++;
+            if (! $updateSQLParts) {
+                continue;
             }
+
+            $this->sqlStatements[$i] = sprintf(
+                $updateSQLTemplate,
+                $class->table->getQuotedQualifiedName($platform),
+                implode(', ', $updateSQLParts)
+            );
+
+            $i++;
         }
 
         // Append WHERE clause to insertSql, if there is one.

@@ -213,9 +213,11 @@ class BasicEntityPersister implements EntityPersister
             $property = $this->class->getProperty($fieldName);
             $value    = $property->getValue($entity);
 
-            if ($value !== null) {
-                $id[$fieldName] = $value;
+            if ($value === null) {
+                continue;
             }
+
+            $id[$fieldName] = $value;
         }
 
         return $id;
@@ -361,11 +363,13 @@ class BasicEntityPersister implements EntityPersister
 
         $this->updateTable($entity, $quotedTableName, $data, $isVersioned);
 
-        if ($isVersioned) {
-            $id = $this->em->getUnitOfWork()->getEntityIdentifier($entity);
-
-            $this->assignDefaultVersionValue($entity, $id);
+        if (! $isVersioned) {
+            return;
         }
+
+        $id = $this->em->getUnitOfWork()->getEntityIdentifier($entity);
+
+        $this->assignDefaultVersionValue($entity, $id);
     }
 
     /**
@@ -575,17 +579,21 @@ class BasicEntityPersister implements EntityPersister
             foreach ($joinColumns as $joinColumn) {
                 $keys[] = $this->platform->quoteIdentifier($joinColumn->getColumnName());
 
-                if ($joinColumn->isOnDeleteCascade()) {
-                    $isOnDeleteCascade = true;
+                if (! $joinColumn->isOnDeleteCascade()) {
+                    continue;
                 }
+
+                $isOnDeleteCascade = true;
             }
 
             foreach ($otherColumns as $joinColumn) {
                 $otherKeys[] = $this->platform->quoteIdentifier($joinColumn->getColumnName());
 
-                if ($joinColumn->isOnDeleteCascade()) {
-                    $isOnDeleteCascade = true;
+                if (! $joinColumn->isOnDeleteCascade()) {
+                    continue;
                 }
+
+                $isOnDeleteCascade = true;
             }
 
             if ($isOnDeleteCascade) {
@@ -594,9 +602,11 @@ class BasicEntityPersister implements EntityPersister
 
             $this->conn->delete($joinTableName, array_combine($keys, $identifier));
 
-            if ($selfReferential) {
-                $this->conn->delete($joinTableName, array_combine($otherKeys, $identifier));
+            if (! $selfReferential) {
+                continue;
             }
+
+            $this->conn->delete($joinTableName, array_combine($otherKeys, $identifier));
         }
     }
 
@@ -2194,9 +2204,11 @@ class BasicEntityPersister implements EntityPersister
         foreach ($this->em->getFilters()->getEnabledFilters() as $filter) {
             $filterExpr = $filter->addFilterConstraint($targetEntity, $targetTableAlias);
 
-            if ($filterExpr !== '') {
-                $filterClauses[] = '(' . $filterExpr . ')';
+            if ($filterExpr === '') {
+                continue;
             }
+
+            $filterClauses[] = '(' . $filterExpr . ')';
         }
 
         $sql = implode(' AND ', $filterClauses);

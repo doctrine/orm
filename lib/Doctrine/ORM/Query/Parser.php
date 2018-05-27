@@ -580,12 +580,14 @@ class Parser
             }
 
             // Validate if identification variable nesting level is lower or equal than the current one
-            if ($qComp['nestingLevel'] > $deferredItem['nestingLevel']) {
-                $this->semanticalError(
-                    sprintf("'%s' is used outside the scope of its declaration.", $identVariable),
-                    $deferredItem['token']
-                );
+            if ($qComp['nestingLevel'] <= $deferredItem['nestingLevel']) {
+                continue;
             }
+
+            $this->semanticalError(
+                sprintf("'%s' is used outside the scope of its declaration.", $identVariable),
+                $deferredItem['token']
+            );
         }
     }
 
@@ -628,9 +630,11 @@ class Parser
                 $this->semanticalError(sprintf('Class "%s" has not a valid constructor.', $className), $token);
             }
 
-            if ($class->getConstructor()->getNumberOfRequiredParameters() > count($args)) {
-                $this->semanticalError(sprintf('Number of arguments does not match with "%s" constructor declaration.', $className), $token);
+            if ($class->getConstructor()->getNumberOfRequiredParameters() <= count($args)) {
+                continue;
             }
+
+            $this->semanticalError(sprintf('Number of arguments does not match with "%s" constructor declaration.', $className), $token);
         }
     }
 
@@ -658,12 +662,14 @@ class Parser
                 );
             }
 
-            if (array_intersect($class->identifier, $expr->partialFieldSet) !== $class->identifier) {
-                $this->semanticalError(
-                    sprintf('The partial field selection of class %s must contain the identifier.', $class->getClassName()),
-                    $deferredItem['token']
-                );
+            if (array_intersect($class->identifier, $expr->partialFieldSet) === $class->identifier) {
+                continue;
             }
+
+            $this->semanticalError(
+                sprintf('The partial field selection of class %s must contain the identifier.', $class->getClassName()),
+                $deferredItem['token']
+            );
         }
     }
 
@@ -695,12 +701,14 @@ class Parser
             }
 
             // Validate if identification variable nesting level is lower or equal than the current one
-            if ($qComp['nestingLevel'] > $deferredItem['nestingLevel']) {
-                $this->semanticalError(
-                    sprintf("'%s' is used outside the scope of its declaration.", $resultVariable),
-                    $deferredItem['token']
-                );
+            if ($qComp['nestingLevel'] <= $deferredItem['nestingLevel']) {
+                continue;
             }
+
+            $this->semanticalError(
+                sprintf("'%s' is used outside the scope of its declaration.", $resultVariable),
+                $deferredItem['token']
+            );
         }
     }
 

@@ -28,9 +28,11 @@ class DDC2825Test extends OrmFunctionalTestCase
 
         $platform = $this->em->getConnection()->getDatabasePlatform();
 
-        if (! $platform->supportsSchemas() && ! $platform->canEmulateSchemas()) {
-            $this->markTestSkipped('This test is only useful for databases that support schemas or can emulate them.');
+        if ($platform->supportsSchemas() || $platform->canEmulateSchemas()) {
+            return;
         }
+
+        $this->markTestSkipped('This test is only useful for databases that support schemas or can emulate them.');
     }
 
     /**

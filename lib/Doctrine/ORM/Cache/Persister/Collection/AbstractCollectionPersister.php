@@ -170,9 +170,11 @@ abstract class AbstractCollectionPersister implements CachedCollectionPersister
 
         $cached = $this->region->put($key, $entry);
 
-        if ($this->cacheLogger && $cached) {
-            $this->cacheLogger->collectionCachePut($this->regionName, $key);
+        if (! $this->cacheLogger || ! $cached) {
+            return;
         }
+
+        $this->cacheLogger->collectionCachePut($this->regionName, $key);
     }
 
     /**
@@ -261,9 +263,11 @@ abstract class AbstractCollectionPersister implements CachedCollectionPersister
 
         $this->region->evict($key);
 
-        if ($this->cacheLogger) {
-            $this->cacheLogger->collectionCachePut($this->regionName, $key);
+        if (! $this->cacheLogger) {
+            return;
         }
+
+        $this->cacheLogger->collectionCachePut($this->regionName, $key);
     }
 
     /**
@@ -279,8 +283,10 @@ abstract class AbstractCollectionPersister implements CachedCollectionPersister
 
         $targetRegion->evict($key);
 
-        if ($this->cacheLogger) {
-            $this->cacheLogger->entityCachePut($targetRegion->getName(), $key);
+        if (! $this->cacheLogger) {
+            return;
         }
+
+        $this->cacheLogger->entityCachePut($targetRegion->getName(), $key);
     }
 }

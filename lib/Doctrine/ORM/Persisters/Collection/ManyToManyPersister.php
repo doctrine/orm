@@ -358,9 +358,11 @@ class ManyToManyPersister extends AbstractCollectionPersister
         foreach ($this->em->getFilters()->getEnabledFilters() as $filter) {
             $filterExpr = $filter->addFilterConstraint($targetEntity, $targetTableAlias);
 
-            if ($filterExpr) {
-                $filterClauses[] = '(' . $filterExpr . ')';
+            if (! $filterExpr) {
+                continue;
             }
+
+            $filterClauses[] = '(' . $filterExpr . ')';
         }
 
         if (! $filterClauses) {

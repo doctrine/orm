@@ -139,9 +139,11 @@ class LimitSubqueryOutputWalker extends SqlWalker
 
         // Rebuild string orderby expressions to use the select expression they're referencing
         foreach ($orderByClause->orderByItems as $orderByItem) {
-            if (is_string($orderByItem->expression) && isset($selectAliasToExpressionMap[$orderByItem->expression])) {
-                $orderByItem->expression = $selectAliasToExpressionMap[$orderByItem->expression];
+            if (! is_string($orderByItem->expression) || ! isset($selectAliasToExpressionMap[$orderByItem->expression])) {
+                continue;
             }
+
+            $orderByItem->expression = $selectAliasToExpressionMap[$orderByItem->expression];
         }
 
         $func = new RowNumberOverFunction('dctrn_rownum');
@@ -322,21 +324,23 @@ class LimitSubqueryOutputWalker extends SqlWalker
         // Loop the select clause of the AST and exclude items from $select
         // that are already being selected in the query.
         foreach ($AST->selectClause->selectExpressions as $selectExpression) {
-            if ($selectExpression instanceof SelectExpression) {
-                $idVar = $selectExpression->expression;
+            if (! ($selectExpression instanceof SelectExpression)) {
+                continue;
+            }
 
-                if (! is_string($idVar)) {
-                    continue;
-                }
+            $idVar = $selectExpression->expression;
 
-                $field = $selectExpression->fieldIdentificationVariable;
+            if (! is_string($idVar)) {
+                continue;
+            }
 
-                if ($field === null) {
-                    // No need to add this select, as we're already fetching the whole object.
-                    unset($selects[$idVar]);
-                } else {
-                    unset($selects[$idVar][$field]);
-                }
+            $field = $selectExpression->fieldIdentificationVariable;
+
+            if ($field === null) {
+                // No need to add this select, as we're already fetching the whole object.
+                unset($selects[$idVar]);
+            } else {
+                unset($selects[$idVar][$field]);
             }
         }
 
@@ -398,9 +402,11 @@ class LimitSubqueryOutputWalker extends SqlWalker
             $orderByItems[] = $orderByItemString;
             $identifier     = substr($orderByItemString, 0, strrpos($orderByItemString, ' '));
 
-            if (! in_array($identifier, $identifiers, true)) {
-                $identifiers[] = $identifier;
+            if (in_array($identifier, $identifiers, true)) {
+                continue;
             }
+
+            $identifiers[] = $identifier;
         }
 
         return $sql = sprintf(
@@ -510,24 +516,28 @@ class LimitSubqueryOutputWalker extends SqlWalker
 
             if ($property instanceof FieldMetadata) {
                 foreach (array_keys($this->rsm->fieldMappings, $identifier, true) as $alias) {
-                    if ($this->rsm->columnOwnerMap[$alias] === $rootAlias) {
-                        $sqlIdentifier[$identifier] = [
-                            'type'  => $property->getType(),
-                            'alias' => $alias,
-                        ];
+                    if ($this->rsm->columnOwnerMap[$alias] !== $rootAlias) {
+                        continue;
                     }
+
+                    $sqlIdentifier[$identifier] = [
+                        'type'  => $property->getType(),
+                        'alias' => $alias,
+                    ];
                 }
             } elseif ($property instanceof AssociationMetadata) {
                 $joinColumns = $property->getJoinColumns();
                 $joinColumn  = reset($joinColumns);
 
                 foreach (array_keys($this->rsm->metaMappings, $joinColumn->getColumnName(), true) as $alias) {
-                    if ($this->rsm->columnOwnerMap[$alias] === $rootAlias) {
-                        $sqlIdentifier[$identifier] = [
-                            'type'  => $this->rsm->typeMappings[$alias],
-                            'alias' => $alias,
-                        ];
+                    if ($this->rsm->columnOwnerMap[$alias] !== $rootAlias) {
+                        continue;
                     }
+
+                    $sqlIdentifier[$identifier] = [
+                        'type'  => $this->rsm->typeMappings[$alias],
+                        'alias' => $alias,
+                    ];
                 }
             }
         }

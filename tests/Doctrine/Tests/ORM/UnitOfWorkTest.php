@@ -747,10 +747,12 @@ class NotifyChangedEntity implements NotifyPropertyChanged
 
     public function setTransient($value)
     {
-        if ($value !== $this->transient) {
-            $this->onPropertyChanged('transient', $this->transient, $value);
-            $this->transient = $value;
+        if ($value === $this->transient) {
+            return;
         }
+
+        $this->onPropertyChanged('transient', $this->transient, $value);
+        $this->transient = $value;
     }
 
     public function getData()
@@ -760,10 +762,12 @@ class NotifyChangedEntity implements NotifyPropertyChanged
 
     public function setData($data)
     {
-        if ($data !== $this->data) {
-            $this->onPropertyChanged('data', $this->data, $data);
-            $this->data = $data;
+        if ($data === $this->data) {
+            return;
         }
+
+        $this->onPropertyChanged('data', $this->data, $data);
+        $this->data = $data;
     }
 
     public function addPropertyChangedListener(PropertyChangedListener $listener)
@@ -773,10 +777,12 @@ class NotifyChangedEntity implements NotifyPropertyChanged
 
     protected function onPropertyChanged($propName, $oldValue, $newValue)
     {
-        if ($this->listeners) {
-            foreach ($this->listeners as $listener) {
-                $listener->propertyChanged($this, $propName, $oldValue, $newValue);
-            }
+        if (! $this->listeners) {
+            return;
+        }
+
+        foreach ($this->listeners as $listener) {
+            $listener->propertyChanged($this, $propName, $oldValue, $newValue);
         }
     }
 }

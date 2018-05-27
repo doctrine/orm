@@ -112,9 +112,11 @@ class ConfigurationTest extends DoctrineTestCase
             $this->configuration->setQueryCacheImpl($cache);
         }
 
-        if ($skipCache !== 'metadata') {
-            $this->configuration->setMetadataCacheImpl($cache);
+        if ($skipCache === 'metadata') {
+            return;
         }
+
+        $this->configuration->setMetadataCacheImpl($cache);
     }
 
     public function testEnsureProductionSettings() : void

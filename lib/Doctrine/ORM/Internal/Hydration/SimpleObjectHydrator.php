@@ -126,9 +126,11 @@ class SimpleObjectHydrator extends AbstractHydrator
             $fieldName = $cacheKeyInfo['fieldName'];
 
             // Prevent overwrite in case of inherit classes using same property name (See AbstractHydrator)
-            if (! isset($data[$fieldName]) || ! $valueIsNull) {
-                $data[$fieldName] = $value;
+            if (isset($data[$fieldName]) && $valueIsNull) {
+                continue;
             }
+
+            $data[$fieldName] = $value;
         }
 
         $uow    = $this->em->getUnitOfWork();
@@ -136,8 +138,10 @@ class SimpleObjectHydrator extends AbstractHydrator
 
         $result[] = $entity;
 
-        if (isset($this->hints[Query::HINT_INTERNAL_ITERATION]) && $this->hints[Query::HINT_INTERNAL_ITERATION]) {
-            $this->uow->hydrationComplete();
+        if (! isset($this->hints[Query::HINT_INTERNAL_ITERATION]) || ! $this->hints[Query::HINT_INTERNAL_ITERATION]) {
+            return;
         }
+
+        $this->uow->hydrationComplete();
     }
 }

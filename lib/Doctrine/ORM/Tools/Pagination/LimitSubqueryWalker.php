@@ -85,16 +85,20 @@ class LimitSubqueryWalker extends TreeWalkerAdapter
                 continue;
             }
 
-            if (is_string($item->expression) && isset($queryComponents[$item->expression])) {
-                $qComp = $queryComponents[$item->expression];
-
-                if (isset($qComp['resultVariable'])) {
-                    $AST->selectClause->selectExpressions[] = new SelectExpression(
-                        $qComp['resultVariable'],
-                        $item->expression
-                    );
-                }
+            if (! is_string($item->expression) || ! isset($queryComponents[$item->expression])) {
+                continue;
             }
+
+            $qComp = $queryComponents[$item->expression];
+
+            if (! isset($qComp['resultVariable'])) {
+                continue;
+            }
+
+            $AST->selectClause->selectExpressions[] = new SelectExpression(
+                $qComp['resultVariable'],
+                $item->expression
+            );
         }
     }
 
@@ -111,22 +115,26 @@ class LimitSubqueryWalker extends TreeWalkerAdapter
         $from            = $AST->fromClause->identificationVariableDeclarations;
         $fromRoot        = reset($from);
 
-        if ($query instanceof Query && $query->getMaxResults() && $AST->orderByClause && count($fromRoot->joins)) {
-            // Check each orderby item.
-            // TODO: check complex orderby items too...
-            foreach ($AST->orderByClause->orderByItems as $orderByItem) {
-                $expression = $orderByItem->expression;
+        if (! ($query instanceof Query) || ! $query->getMaxResults() || ! $AST->orderByClause || ! count($fromRoot->joins)) {
+            return;
+        }
 
-                if ($expression instanceof PathExpression && isset($queryComponents[$expression->identificationVariable])) {
-                    $queryComponent = $queryComponents[$expression->identificationVariable];
+        // Check each orderby item.
+        // TODO: check complex orderby items too...
+        foreach ($AST->orderByClause->orderByItems as $orderByItem) {
+            $expression = $orderByItem->expression;
 
-                    if (isset($queryComponent['parent']) && $queryComponent['relation'] instanceof ToManyAssociationMetadata) {
-                        throw new \RuntimeException(
-                            'Cannot select distinct identifiers from query with LIMIT and ORDER BY on a column from a '
-                            . 'fetch joined to-many association. Use output walkers.'
-                        );
-                    }
-                }
+            if (! ($expression instanceof PathExpression) || ! isset($queryComponents[$expression->identificationVariable])) {
+                continue;
+            }
+
+            $queryComponent = $queryComponents[$expression->identificationVariable];
+
+            if (isset($queryComponent['parent']) && $queryComponent['relation'] instanceof ToManyAssociationMetadata) {
+                throw new \RuntimeException(
+                    'Cannot select distinct identifiers from query with LIMIT and ORDER BY on a column from a '
+                    . 'fetch joined to-many association. Use output walkers.'
+                );
             }
         }
     }

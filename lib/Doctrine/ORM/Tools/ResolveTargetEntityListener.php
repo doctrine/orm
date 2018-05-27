@@ -52,12 +52,14 @@ class ResolveTargetEntityListener implements EventSubscriber
      */
     public function onClassMetadataNotFound(OnClassMetadataNotFoundEventArgs $args)
     {
-        if (array_key_exists($args->getClassName(), $this->resolveTargetEntities)) {
-            $resolvedClassName = $this->resolveTargetEntities[$args->getClassName()];
-            $resolvedMetadata  = $args->getObjectManager()->getClassMetadata($resolvedClassName);
-
-            $args->setFoundMetadata($resolvedMetadata);
+        if (! array_key_exists($args->getClassName(), $this->resolveTargetEntities)) {
+            return;
         }
+
+        $resolvedClassName = $this->resolveTargetEntities[$args->getClassName()];
+        $resolvedMetadata  = $args->getObjectManager()->getClassMetadata($resolvedClassName);
+
+        $args->setFoundMetadata($resolvedMetadata);
     }
 
     /**
@@ -71,26 +73,32 @@ class ResolveTargetEntityListener implements EventSubscriber
         $class = $args->getClassMetadata();
 
         foreach ($class->discriminatorMap as $key => $className) {
-            if (isset($this->resolveTargetEntities[$className])) {
-                $targetEntity = $this->resolveTargetEntities[$className];
-
-                $class->discriminatorMap[$key] = $targetEntity;
+            if (! isset($this->resolveTargetEntities[$className])) {
+                continue;
             }
+
+            $targetEntity = $this->resolveTargetEntities[$className];
+
+            $class->discriminatorMap[$key] = $targetEntity;
         }
 
         foreach ($class->getDeclaredPropertiesIterator() as $association) {
-            if ($association instanceof AssociationMetadata &&
-                isset($this->resolveTargetEntities[$association->getTargetEntity()])) {
-                $targetEntity = $this->resolveTargetEntities[$association->getTargetEntity()];
-
-                $association->setTargetEntity($targetEntity);
+            if (! ($association instanceof AssociationMetadata) ||
+                ! isset($this->resolveTargetEntities[$association->getTargetEntity()])) {
+                continue;
             }
+
+            $targetEntity = $this->resolveTargetEntities[$association->getTargetEntity()];
+
+            $association->setTargetEntity($targetEntity);
         }
 
         foreach ($this->resolveTargetEntities as $interface => $targetEntity) {
-            if ($targetEntity === $class->getClassName()) {
-                $args->getEntityManager()->getMetadataFactory()->setMetadataFor($interface, $class);
+            if ($targetEntity !== $class->getClassName()) {
+                continue;
             }
+
+            $args->getEntityManager()->getMetadataFactory()->setMetadataFor($interface, $class);
         }
     }
 }

@@ -24,16 +24,20 @@ class SingleValueGenerationPlan implements ValueGenerationPlan
 
     public function executeImmediate(EntityManagerInterface $entityManager, object $entity) : void
     {
-        if (! $this->executor->isDeferred()) {
-            $this->dispatchExecutor($entity, $entityManager);
+        if ($this->executor->isDeferred()) {
+            return;
         }
+
+        $this->dispatchExecutor($entity, $entityManager);
     }
 
     public function executeDeferred(EntityManagerInterface $entityManager, object $entity) : void
     {
-        if ($this->executor->isDeferred()) {
-            $this->dispatchExecutor($entity, $entityManager);
+        if (! $this->executor->isDeferred()) {
+            return;
         }
+
+        $this->dispatchExecutor($entity, $entityManager);
     }
 
     private function dispatchExecutor(object $entity, EntityManagerInterface $entityManager) : void

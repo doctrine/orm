@@ -960,9 +960,11 @@ class NewAnnotationDriver implements MappingDriver
         $callbacks = [];
 
         foreach ($events as $eventName => $annotationClassName) {
-            if (isset($annotations[$annotationClassName]) || $method->getName() === $eventName) {
-                $callbacks[] = $eventName;
+            if (! isset($annotations[$annotationClassName]) && $method->getName() !== $eventName) {
+                continue;
             }
+
+            $callbacks[] = $eventName;
         }
 
         return $callbacks;

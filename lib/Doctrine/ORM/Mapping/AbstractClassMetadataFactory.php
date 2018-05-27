@@ -278,9 +278,11 @@ abstract class AbstractClassMetadataFactory implements ClassMetadataFactory
         $parentClasses = [];
 
         foreach (array_reverse($this->getReflectionService()->getParentClasses($name)) as $parentClass) {
-            if (! $this->getDriver()->isTransient($parentClass)) {
-                $parentClasses[] = $parentClass;
+            if ($this->getDriver()->isTransient($parentClass)) {
+                continue;
             }
+
+            $parentClasses[] = $parentClass;
         }
 
         return $parentClasses;
