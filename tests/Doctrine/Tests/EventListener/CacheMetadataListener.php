@@ -76,14 +76,16 @@ class CacheMetadataListener
 
             $this->enableCaching($targetMeta, $em);
 
-            if ($this->isVisited($targetMeta)) {
-                $association->setCache(
-                    new CacheMetadata(
-                        CacheUsage::NONSTRICT_READ_WRITE,
-                        sprintf('%s__%s', $region, $association->getName())
-                    )
-                );
+            if (! $this->isVisited($targetMeta)) {
+                continue;
             }
+
+            $association->setCache(
+                new CacheMetadata(
+                    CacheUsage::NONSTRICT_READ_WRITE,
+                    sprintf('%s__%s', $region, $association->getName())
+                )
+            );
         }
     }
 }

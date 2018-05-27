@@ -37,9 +37,11 @@ class QueryExpressionVisitorTest extends DoctrineTestCase
     public function testWalkComparison(CriteriaComparison $criteriaExpr, $queryExpr, ?Parameter $parameter = null) : void
     {
         self::assertEquals($queryExpr, $this->visitor->walkComparison($criteriaExpr));
-        if ($parameter) {
-            self::assertEquals(new ArrayCollection([$parameter]), $this->visitor->getParameters());
+        if (! $parameter) {
+            return;
         }
+
+        self::assertEquals(new ArrayCollection([$parameter]), $this->visitor->getParameters());
     }
 
     public function comparisonData()

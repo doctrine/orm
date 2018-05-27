@@ -33,9 +33,11 @@ class OrderBy
      */
     public function __construct($sort = null, $order = null)
     {
-        if ($sort) {
-            $this->add($sort, $order);
+        if (! $sort) {
+            return;
         }
+
+        $this->add($sort, $order);
     }
 
     /**

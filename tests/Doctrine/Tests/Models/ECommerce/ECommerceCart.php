@@ -62,19 +62,23 @@ class ECommerceCart
 
     public function setCustomer(ECommerceCustomer $customer)
     {
-        if ($this->customer !== $customer) {
-            $this->customer = $customer;
-            $customer->setCart($this);
+        if ($this->customer === $customer) {
+            return;
         }
+
+        $this->customer = $customer;
+        $customer->setCart($this);
     }
 
     public function removeCustomer()
     {
-        if ($this->customer !== null) {
-            $customer       = $this->customer;
-            $this->customer = null;
-            $customer->removeCart();
+        if ($this->customer === null) {
+            return;
         }
+
+        $customer       = $this->customer;
+        $this->customer = null;
+        $customer->removeCart();
     }
 
     public function getCustomer()

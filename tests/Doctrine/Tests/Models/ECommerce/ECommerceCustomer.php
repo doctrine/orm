@@ -65,10 +65,12 @@ class ECommerceCustomer
 
     public function setCart(ECommerceCart $cart)
     {
-        if ($this->cart !== $cart) {
-            $this->cart = $cart;
-            $cart->setCustomer($this);
+        if ($this->cart === $cart) {
+            return;
         }
+
+        $this->cart = $cart;
+        $cart->setCustomer($this);
     }
 
     /** Does not properly maintain the bidirectional association! */
@@ -84,11 +86,13 @@ class ECommerceCustomer
 
     public function removeCart()
     {
-        if ($this->cart !== null) {
-            $cart       = $this->cart;
-            $this->cart = null;
-            $cart->removeCustomer();
+        if ($this->cart === null) {
+            return;
         }
+
+        $cart       = $this->cart;
+        $this->cart = null;
+        $cart->removeCustomer();
     }
 
     public function setMentor(ECommerceCustomer $mentor)

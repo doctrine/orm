@@ -38,11 +38,13 @@ class DDC211Test extends OrmFunctionalTestCase
             $this->em->persist($group);
             $this->em->flush();
 
-            if (! $user->getGroups()->contains($group)) {
-                $user->getGroups()->add($group);
-                $group->getUsers()->add($user);
-                $this->em->flush();
+            if ($user->getGroups()->contains($group)) {
+                continue;
             }
+
+            $user->getGroups()->add($group);
+            $group->getUsers()->add($user);
+            $this->em->flush();
         }
 
         self::assertEquals(4, $user->getGroups()->count());

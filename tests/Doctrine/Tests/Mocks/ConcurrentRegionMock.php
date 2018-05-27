@@ -39,12 +39,14 @@ class ConcurrentRegionMock implements ConcurrentRegion
      */
     private function throwException($method)
     {
-        if (isset($this->exceptions[$method]) && ! empty($this->exceptions[$method])) {
-            $exception = array_shift($this->exceptions[$method]);
+        if (! isset($this->exceptions[$method]) || empty($this->exceptions[$method])) {
+            return;
+        }
 
-            if ($exception !== null) {
-                throw $exception;
-            }
+        $exception = array_shift($this->exceptions[$method]);
+
+        if ($exception !== null) {
+            throw $exception;
         }
     }
 

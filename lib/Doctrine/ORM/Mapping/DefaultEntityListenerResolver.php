@@ -31,9 +31,11 @@ class DefaultEntityListenerResolver implements EntityListenerResolver
 
         $className = trim($className, '\\');
 
-        if (isset($this->instances[$className])) {
-            unset($this->instances[$className]);
+        if (! isset($this->instances[$className])) {
+            return;
         }
+
+        unset($this->instances[$className]);
     }
 
     /**

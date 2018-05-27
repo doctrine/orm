@@ -171,9 +171,11 @@ class Lemma
     {
         /*@var $removed Relation */
         $removed = $this->relations->removeElement($relation);
-        if ($removed !== null) {
-            $removed->removeParent();
+        if ($removed === null) {
+            return;
         }
+
+        $removed->removeParent();
     }
 
     /**
@@ -237,12 +239,14 @@ class Relation
 
     public function removeParent()
     {
-        if ($this->lemma !== null) {
-            /*@var $phrase Lemma */
-            $lemma        = $this->parent;
-            $this->parent = null;
-            $lemma->removeRelation($this);
+        if ($this->lemma === null) {
+            return;
         }
+
+        /*@var $phrase Lemma */
+        $lemma        = $this->parent;
+        $this->parent = null;
+        $lemma->removeRelation($this);
     }
 
     public function setChild(Lemma $child)
@@ -273,12 +277,14 @@ class Relation
 
     public function removeType()
     {
-        if ($this->type !== null) {
-            /*@var $phrase RelationType */
-            $type       = $this->type;
-            $this->type = null;
-            $type->removeRelation($this);
+        if ($this->type === null) {
+            return;
         }
+
+        /*@var $phrase RelationType */
+        $type       = $this->type;
+        $this->type = null;
+        $type->removeRelation($this);
     }
 }
 
@@ -371,9 +377,11 @@ class RelationType
     {
         /*@var $removed Relation */
         $removed = $this->relations->removeElement($relation);
-        if ($removed !== null) {
-            $removed->removeLemma();
+        if ($removed === null) {
+            return;
         }
+
+        $removed->removeLemma();
     }
 
     /**

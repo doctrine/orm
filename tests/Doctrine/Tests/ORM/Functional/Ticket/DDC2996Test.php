@@ -74,12 +74,14 @@ class DDC2996UserPreference
         $em  = $event->getEntityManager();
         $uow = $em->getUnitOfWork();
 
-        if ($uow->getOriginalEntityData($this->user)) {
-            $this->user->counter++;
-            $uow->recomputeSingleEntityChangeSet(
-                $em->getClassMetadata(get_class($this->user)),
-                $this->user
-            );
+        if (! $uow->getOriginalEntityData($this->user)) {
+            return;
         }
+
+        $this->user->counter++;
+        $uow->recomputeSingleEntityChangeSet(
+            $em->getClassMetadata(get_class($this->user)),
+            $this->user
+        );
     }
 }

@@ -61,9 +61,11 @@ class SchemaValidator
         foreach ($classes as $class) {
             $ce = $this->validateClass($class);
 
-            if ($ce) {
-                $errors[$class->getClassName()] = $ce;
+            if (! $ce) {
+                continue;
             }
+
+            $errors[$class->getClassName()] = $ce;
         }
 
         return $errors;
@@ -87,11 +89,13 @@ class SchemaValidator
         }
 
         foreach ($class->getSubClasses() as $subClass) {
-            if (! in_array($class->getClassName(), class_parents($subClass), true)) {
-                $message = "According to the discriminator map class, '%s' has to be a child of '%s', but these entities are not related through inheritance.";
-
-                $ce[] = sprintf($message, $subClass, $class->getClassName());
+            if (in_array($class->getClassName(), class_parents($subClass), true)) {
+                continue;
             }
+
+            $message = "According to the discriminator map class, '%s' has to be a child of '%s', but these entities are not related through inheritance.";
+
+            $ce[] = sprintf($message, $subClass, $class->getClassName());
         }
 
         return $ce;
@@ -260,11 +264,13 @@ class SchemaValidator
                 $joinColumns       = $association->getJoinColumns();
 
                 foreach ($joinColumns as $joinColumn) {
-                    if (! in_array($joinColumn->getReferencedColumnName(), $identifierColumns, true)) {
-                        $message = "The referenced column name '%s' has to be a primary key column on the target entity class '%s'.";
-
-                        $ce[] = sprintf($message, $joinColumn->getReferencedColumnName(), $targetMetadata->getClassName());
+                    if (in_array($joinColumn->getReferencedColumnName(), $identifierColumns, true)) {
+                        continue;
                     }
+
+                    $message = "The referenced column name '%s' has to be a primary key column on the target entity class '%s'.";
+
+                    $ce[] = sprintf($message, $joinColumn->getReferencedColumnName(), $targetMetadata->getClassName());
                 }
 
                 if (count($identifierColumns) !== count($joinColumns)) {

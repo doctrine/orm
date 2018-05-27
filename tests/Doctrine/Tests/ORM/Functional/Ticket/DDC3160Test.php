@@ -57,11 +57,13 @@ class DDC3160OnFlushListener
 
         foreach ($uow->getScheduledEntityInsertions() as $entity) {
             $this->inserts++;
-            if ($entity instanceof CmsUser) {
-                $entity->username = 'romanc';
-                $cm               = $em->getClassMetadata(get_class($entity));
-                $uow->recomputeSingleEntityChangeSet($cm, $entity);
+            if (! ($entity instanceof CmsUser)) {
+                continue;
             }
+
+            $entity->username = 'romanc';
+            $cm               = $em->getClassMetadata(get_class($entity));
+            $uow->recomputeSingleEntityChangeSet($cm, $entity);
         }
 
         foreach ($uow->getScheduledEntityUpdates() as $entity) {

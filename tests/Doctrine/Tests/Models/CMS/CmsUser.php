@@ -169,10 +169,12 @@ class CmsUser
 
     public function setAddress(CmsAddress $address)
     {
-        if ($this->address !== $address) {
-            $this->address = $address;
-            $address->setUser($this);
+        if ($this->address === $address) {
+            return;
         }
+
+        $this->address = $address;
+        $address->setUser($this);
     }
 
     /**
@@ -185,12 +187,16 @@ class CmsUser
 
     public function setEmail(?CmsEmail $email = null)
     {
-        if ($this->email !== $email) {
-            $this->email = $email;
-
-            if ($email) {
-                $email->setUser($this);
-            }
+        if ($this->email === $email) {
+            return;
         }
+
+        $this->email = $email;
+
+        if (! $email) {
+            return;
+        }
+
+        $email->setUser($this);
     }
 }

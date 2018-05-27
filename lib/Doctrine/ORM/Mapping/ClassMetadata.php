@@ -731,15 +731,19 @@ class ClassMetadata extends ComponentMetadata implements TableOwner
             throw MappingException::oneToManyRequiresMappedBy($property->getName());
         }
 
-        if ($property->isOrphanRemoval()) {
-            $cascades = $property->getCascade();
-
-            if (! in_array('remove', $cascades, true)) {
-                $cascades[] = 'remove';
-
-                $property->setCascade($cascades);
-            }
+        if (! $property->isOrphanRemoval()) {
+            return;
         }
+
+        $cascades = $property->getCascade();
+
+        if (in_array('remove', $cascades, true)) {
+            return;
+        }
+
+        $cascades[] = 'remove';
+
+        $property->setCascade($cascades);
     }
 
     /**
@@ -751,85 +755,91 @@ class ClassMetadata extends ComponentMetadata implements TableOwner
      */
     protected function validateAndCompleteManyToManyMapping(ManyToManyAssociationMetadata $property)
     {
-        if ($property->isOwningSide()) {
-            // owning side MUST have a join table
-            $joinTable = $property->getJoinTable() ?: new JoinTableMetadata();
+        if (! $property->isOwningSide()) {
+            return;
+        }
 
-            $property->setJoinTable($joinTable);
+        // owning side MUST have a join table
+        $joinTable = $property->getJoinTable() ?: new JoinTableMetadata();
 
-            if (! $joinTable->getName()) {
-                $joinTableName = $this->namingStrategy->joinTableName(
-                    $property->getSourceEntity(),
-                    $property->getTargetEntity(),
-                    $property->getName()
-                );
+        $property->setJoinTable($joinTable);
 
-                $joinTable->setName($joinTableName);
+        if (! $joinTable->getName()) {
+            $joinTableName = $this->namingStrategy->joinTableName(
+                $property->getSourceEntity(),
+                $property->getTargetEntity(),
+                $property->getName()
+            );
+
+            $joinTable->setName($joinTableName);
+        }
+
+        $selfReferencingEntityWithoutJoinColumns = $property->getSourceEntity() === $property->getTargetEntity() && ! $joinTable->hasColumns();
+
+        if (! $joinTable->getJoinColumns()) {
+            $referencedColumnName = $this->namingStrategy->referenceColumnName();
+            $sourceReferenceName  = $selfReferencingEntityWithoutJoinColumns ? 'source' : $referencedColumnName;
+            $columnName           = $this->namingStrategy->joinKeyColumnName($property->getSourceEntity(), $sourceReferenceName);
+            $joinColumn           = new JoinColumnMetadata();
+
+            $joinColumn->setColumnName($columnName);
+            $joinColumn->setReferencedColumnName($referencedColumnName);
+            $joinColumn->setOnDelete('CASCADE');
+
+            $joinTable->addJoinColumn($joinColumn);
+        }
+
+        if (! $joinTable->getInverseJoinColumns()) {
+            $referencedColumnName = $this->namingStrategy->referenceColumnName();
+            $targetReferenceName  = $selfReferencingEntityWithoutJoinColumns ? 'target' : $referencedColumnName;
+            $columnName           = $this->namingStrategy->joinKeyColumnName($property->getTargetEntity(), $targetReferenceName);
+            $joinColumn           = new JoinColumnMetadata();
+
+            $joinColumn->setColumnName($columnName);
+            $joinColumn->setReferencedColumnName($referencedColumnName);
+            $joinColumn->setOnDelete('CASCADE');
+
+            $joinTable->addInverseJoinColumn($joinColumn);
+        }
+
+        foreach ($joinTable->getJoinColumns() as $joinColumn) {
+            /** @var JoinColumnMetadata $joinColumn */
+            if (! $joinColumn->getReferencedColumnName()) {
+                $joinColumn->setReferencedColumnName($this->namingStrategy->referenceColumnName());
             }
 
-            $selfReferencingEntityWithoutJoinColumns = $property->getSourceEntity() === $property->getTargetEntity() && ! $joinTable->hasColumns();
+            $referencedColumnName = $joinColumn->getReferencedColumnName();
 
-            if (! $joinTable->getJoinColumns()) {
-                $referencedColumnName = $this->namingStrategy->referenceColumnName();
-                $sourceReferenceName  = $selfReferencingEntityWithoutJoinColumns ? 'source' : $referencedColumnName;
-                $columnName           = $this->namingStrategy->joinKeyColumnName($property->getSourceEntity(), $sourceReferenceName);
-                $joinColumn           = new JoinColumnMetadata();
-
-                $joinColumn->setColumnName($columnName);
-                $joinColumn->setReferencedColumnName($referencedColumnName);
-                $joinColumn->setOnDelete('CASCADE');
-
-                $joinTable->addJoinColumn($joinColumn);
+            if ($joinColumn->getColumnName()) {
+                continue;
             }
 
-            if (! $joinTable->getInverseJoinColumns()) {
-                $referencedColumnName = $this->namingStrategy->referenceColumnName();
-                $targetReferenceName  = $selfReferencingEntityWithoutJoinColumns ? 'target' : $referencedColumnName;
-                $columnName           = $this->namingStrategy->joinKeyColumnName($property->getTargetEntity(), $targetReferenceName);
-                $joinColumn           = new JoinColumnMetadata();
+            $columnName = $this->namingStrategy->joinKeyColumnName(
+                $property->getSourceEntity(),
+                $referencedColumnName
+            );
 
-                $joinColumn->setColumnName($columnName);
-                $joinColumn->setReferencedColumnName($referencedColumnName);
-                $joinColumn->setOnDelete('CASCADE');
+            $joinColumn->setColumnName($columnName);
+        }
 
-                $joinTable->addInverseJoinColumn($joinColumn);
+        foreach ($joinTable->getInverseJoinColumns() as $inverseJoinColumn) {
+            /** @var JoinColumnMetadata $inverseJoinColumn */
+            if (! $inverseJoinColumn->getReferencedColumnName()) {
+                $inverseJoinColumn->setReferencedColumnName($this->namingStrategy->referenceColumnName());
             }
 
-            foreach ($joinTable->getJoinColumns() as $joinColumn) {
-                /** @var JoinColumnMetadata $joinColumn */
-                if (! $joinColumn->getReferencedColumnName()) {
-                    $joinColumn->setReferencedColumnName($this->namingStrategy->referenceColumnName());
-                }
+            $referencedColumnName = $inverseJoinColumn->getReferencedColumnName();
 
-                $referencedColumnName = $joinColumn->getReferencedColumnName();
-
-                if (! $joinColumn->getColumnName()) {
-                    $columnName = $this->namingStrategy->joinKeyColumnName(
-                        $property->getSourceEntity(),
-                        $referencedColumnName
-                    );
-
-                    $joinColumn->setColumnName($columnName);
-                }
+            if ($inverseJoinColumn->getColumnName()) {
+                continue;
             }
 
-            foreach ($joinTable->getInverseJoinColumns() as $inverseJoinColumn) {
-                /** @var JoinColumnMetadata $inverseJoinColumn */
-                if (! $inverseJoinColumn->getReferencedColumnName()) {
-                    $inverseJoinColumn->setReferencedColumnName($this->namingStrategy->referenceColumnName());
-                }
+            $columnName = $this->namingStrategy->joinKeyColumnName(
+                $property->getTargetEntity(),
+                $referencedColumnName
+            );
 
-                $referencedColumnName = $inverseJoinColumn->getReferencedColumnName();
-
-                if (! $inverseJoinColumn->getColumnName()) {
-                    $columnName = $this->namingStrategy->joinKeyColumnName(
-                        $property->getTargetEntity(),
-                        $referencedColumnName
-                    );
-
-                    $inverseJoinColumn->setColumnName($columnName);
-                }
-            }
+            $inverseJoinColumn->setColumnName($columnName);
         }
     }
 
@@ -1114,9 +1124,11 @@ class ClassMetadata extends ComponentMetadata implements TableOwner
     {
         $this->table = $table;
 
-        if (empty($table->getName())) {
-            $table->setName($this->namingStrategy->classToTableName($this->className));
+        if (! empty($table->getName())) {
+            return;
         }
+
+        $table->setName($this->namingStrategy->classToTableName($this->className));
     }
 
     /**
@@ -1241,9 +1253,11 @@ class ClassMetadata extends ComponentMetadata implements TableOwner
 
         $this->declaredProperties[$property->getName()] = $inheritedProperty;
 
-        if ($inheritedProperty instanceof VersionFieldMetadata) {
-            $this->versionProperty = $inheritedProperty;
+        if (! ($inheritedProperty instanceof VersionFieldMetadata)) {
+            return;
         }
+
+        $this->versionProperty = $inheritedProperty;
     }
 
     /**
@@ -1402,9 +1416,11 @@ class ClassMetadata extends ComponentMetadata implements TableOwner
             throw MappingException::invalidClassInDiscriminatorMap($className, $this->className);
         }
 
-        if (is_subclass_of($className, $this->className) && ! in_array($className, $this->subClasses, true)) {
-            $this->subClasses[] = $className;
+        if (! is_subclass_of($className, $this->className) || in_array($className, $this->subClasses, true)) {
+            return;
         }
+
+        $this->subClasses[] = $className;
     }
 
     public function getValueGenerationPlan() : ValueGenerationPlan

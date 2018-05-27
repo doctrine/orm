@@ -290,13 +290,15 @@ class PostLoadListenerCheckAssociationsArePopulated
     public function postLoad(LifecycleEventArgs $event)
     {
         $object = $event->getObject();
-        if ($object instanceof CmsUser) {
-            if ($this->checked) {
-                throw new \RuntimeException('Expected to be one user!');
-            }
-            $this->checked   = true;
-            $this->populated = $object->getEmail() !== null;
+        if (! ($object instanceof CmsUser)) {
+            return;
         }
+
+        if ($this->checked) {
+            throw new \RuntimeException('Expected to be one user!');
+        }
+        $this->checked   = true;
+        $this->populated = $object->getEmail() !== null;
     }
 }
 
@@ -313,9 +315,11 @@ class PostLoadListenerLoadEntityInEventHandler
         } else {
             $this->firedByClasses[$class]++;
         }
-        if ($object instanceof CmsUser) {
-            $object->getEmail()->getEmail();
+        if (! ($object instanceof CmsUser)) {
+            return;
         }
+
+        $object->getEmail()->getEmail();
     }
 
     public function countHandledEvents($className)

@@ -180,15 +180,19 @@ class SchemaTool
                             continue;
                         }
 
-                        if (! $class->isInheritedProperty($fieldName)) {
-                            $columnName = $this->platform->quoteIdentifier($property->getColumnName());
-
-                            $this->gatherColumn($class, $property, $table);
-
-                            if ($class->isIdentifier($fieldName)) {
-                                $pkColumns[] = $columnName;
-                            }
+                        if ($class->isInheritedProperty($fieldName)) {
+                            continue;
                         }
+
+                        $columnName = $this->platform->quoteIdentifier($property->getColumnName());
+
+                        $this->gatherColumn($class, $property, $table);
+
+                        if (! $class->isIdentifier($fieldName)) {
+                            continue;
+                        }
+
+                        $pkColumns[] = $columnName;
                     }
 
                     $this->gatherRelationsSql($class, $table, $schema, $addedFks, $blacklistedFks);
@@ -203,16 +207,18 @@ class SchemaTool
                         foreach ($class->identifier as $identifierField) {
                             $idProperty = $class->getProperty($identifierField);
 
-                            if ($class->isInheritedProperty($identifierField)) {
-                                $column     = $this->gatherColumn($class, $idProperty, $table);
-                                $columnName = $column->getQuotedName($this->platform);
-
-                                // TODO: This seems rather hackish, can we optimize it?
-                                $column->setAutoincrement(false);
-
-                                $pkColumns[]           = $columnName;
-                                $inheritedKeyColumns[] = $columnName;
+                            if (! $class->isInheritedProperty($identifierField)) {
+                                continue;
                             }
+
+                            $column     = $this->gatherColumn($class, $idProperty, $table);
+                            $columnName = $column->getQuotedName($this->platform);
+
+                            // TODO: This seems rather hackish, can we optimize it?
+                            $column->setAutoincrement(false);
+
+                            $pkColumns[]           = $columnName;
+                            $inheritedKeyColumns[] = $columnName;
                         }
 
                         if (! empty($inheritedKeyColumns)) {
@@ -253,10 +259,12 @@ class SchemaTool
                     continue;
                 }
 
-                if ($property instanceof ToOneAssociationMetadata) {
-                    foreach ($property->getJoinColumns() as $joinColumn) {
-                        $pkColumns[] = $this->platform->quoteIdentifier($joinColumn->getColumnName());
-                    }
+                if (! ($property instanceof ToOneAssociationMetadata)) {
+                    continue;
+                }
+
+                foreach ($property->getJoinColumns() as $joinColumn) {
+                    $pkColumns[] = $this->platform->quoteIdentifier($joinColumn->getColumnName());
                 }
             }
 
@@ -270,9 +278,11 @@ class SchemaTool
             $primaryKey = $table->getIndex('primary');
 
             foreach ($table->getIndexes() as $idxKey => $existingIndex) {
-                if ($primaryKey->overrules($existingIndex)) {
-                    $table->dropIndex($idxKey);
+                if (! $primaryKey->overrules($existingIndex)) {
+                    continue;
                 }
+
+                $table->dropIndex($idxKey);
             }
 
             if ($class->table->getIndexes()) {
@@ -329,17 +339,21 @@ class SchemaTool
 
                 $quotedName = $this->platform->quoteIdentifier($property->getValueGenerator()->getDefinition()['sequenceName']);
 
-                if (! $schema->hasSequence($quotedName)) {
-                    $schema->createSequence($quotedName, $property->getValueGenerator()->getDefinition()['allocationSize']);
+                if ($schema->hasSequence($quotedName)) {
+                    continue;
                 }
+
+                $schema->createSequence($quotedName, $property->getValueGenerator()->getDefinition()['allocationSize']);
             }
 
-            if ($eventManager->hasListeners(ToolEvents::postGenerateSchemaTable)) {
-                $eventManager->dispatchEvent(
-                    ToolEvents::postGenerateSchemaTable,
-                    new GenerateSchemaTableEventArgs($class, $schema, $table)
-                );
+            if (! $eventManager->hasListeners(ToolEvents::postGenerateSchemaTable)) {
+                continue;
             }
+
+            $eventManager->dispatchEvent(
+                ToolEvents::postGenerateSchemaTable,
+                new GenerateSchemaTableEventArgs($class, $schema, $table)
+            );
         }
 
         if (! $this->platform->supportsSchemas() && ! $this->platform->canEmulateSchemas()) {
@@ -409,9 +423,11 @@ class SchemaTool
 
             $this->gatherColumn($class, $property, $table);
 
-            if ($property->isPrimaryKey()) {
-                $pkColumns[] = $this->platform->quoteIdentifier($property->getColumnName());
+            if (! $property->isPrimaryKey()) {
+                continue;
             }
+
+            $pkColumns[] = $this->platform->quoteIdentifier($property->getColumnName());
         }
     }
 
@@ -463,11 +479,13 @@ class SchemaTool
             $knownOptions = ['comment', 'unsigned', 'fixed', 'default'];
 
             foreach ($knownOptions as $knownOption) {
-                if (array_key_exists($knownOption, $fieldOptions)) {
-                    $options[$knownOption] = $fieldOptions[$knownOption];
-
-                    unset($fieldOptions[$knownOption]);
+                if (! array_key_exists($knownOption, $fieldOptions)) {
+                    continue;
                 }
+
+                $options[$knownOption] = $fieldOptions[$knownOption];
+
+                unset($fieldOptions[$knownOption]);
             }
 
             $options['customSchemaOptions'] = $fieldOptions;
@@ -732,9 +750,11 @@ class SchemaTool
                 $uniqueConstraints[] = ['columns' => [$quotedColumnName]];
             }
 
-            if (! empty($joinColumn->getOnDelete())) {
-                $fkOptions['onDelete'] = $joinColumn->getOnDelete();
+            if (empty($joinColumn->getOnDelete())) {
+                continue;
             }
+
+            $fkOptions['onDelete'] = $joinColumn->getOnDelete();
         }
 
         // Prefer unique constraints over implicit simple indexes created for foreign keys.
@@ -845,9 +865,11 @@ class SchemaTool
             if (! $schema->hasTable($table->getName())) {
                 foreach ($table->getForeignKeys() as $foreignKey) {
                     /** @var $foreignKey \Doctrine\DBAL\Schema\ForeignKeyConstraint */
-                    if ($schema->hasTable($foreignKey->getForeignTableName())) {
-                        $visitor->acceptForeignKey($table, $foreignKey);
+                    if (! $schema->hasTable($foreignKey->getForeignTableName())) {
+                        continue;
                     }
+
+                    $visitor->acceptForeignKey($table, $foreignKey);
                 }
             } else {
                 $visitor->acceptTable($table);
@@ -864,15 +886,21 @@ class SchemaTool
 
             foreach ($schema->getTables() as $table) {
                 /** @var $sequence Table */
-                if ($table->hasPrimaryKey()) {
-                    $columns = $table->getPrimaryKey()->getColumns();
-                    if (count($columns) === 1) {
-                        $checkSequence = $table->getName() . '_' . $columns[0] . '_seq';
-                        if ($fullSchema->hasSequence($checkSequence)) {
-                            $visitor->acceptSequence($fullSchema->getSequence($checkSequence));
-                        }
-                    }
+                if (! $table->hasPrimaryKey()) {
+                    continue;
                 }
+
+                $columns = $table->getPrimaryKey()->getColumns();
+                if (count($columns) !== 1) {
+                    continue;
+                }
+
+                $checkSequence = $table->getName() . '_' . $columns[0] . '_seq';
+                if (! $fullSchema->hasSequence($checkSequence)) {
+                    continue;
+                }
+
+                $visitor->acceptSequence($fullSchema->getSequence($checkSequence));
             }
         }
 

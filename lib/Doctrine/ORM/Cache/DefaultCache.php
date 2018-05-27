@@ -228,9 +228,11 @@ class DefaultCache implements Cache
             return;
         }
 
-        if (isset($this->queryCaches[$regionName])) {
-            $this->queryCaches[$regionName]->clear();
+        if (! isset($this->queryCaches[$regionName])) {
+            return;
         }
+
+        $this->queryCaches[$regionName]->clear();
     }
 
     /**

@@ -163,11 +163,13 @@ final class EntityManager implements EntityManagerInterface
         $this->proxyFactory        = new StaticProxyFactory($this, $this->config->buildGhostObjectFactory());
         $this->identifierFlattener = new IdentifierFlattener($this->unitOfWork, $this->metadataFactory);
 
-        if ($config->isSecondLevelCacheEnabled()) {
-            $cacheConfig  = $config->getSecondLevelCacheConfiguration();
-            $cacheFactory = $cacheConfig->getCacheFactory();
-            $this->cache  = $cacheFactory->createCache($this);
+        if (! $config->isSecondLevelCacheEnabled()) {
+            return;
         }
+
+        $cacheConfig  = $config->getSecondLevelCacheConfiguration();
+        $cacheFactory = $cacheConfig->getCacheFactory();
+        $this->cache  = $cacheFactory->createCache($this);
     }
 
     /**
@@ -388,12 +390,14 @@ final class EntityManager implements EntityManagerInterface
         }
 
         foreach ($id as $i => $value) {
-            if (is_object($value) && $this->metadataFactory->hasMetadataFor(StaticClassNameConverter::getClass($value))) {
-                $id[$i] = $this->unitOfWork->getSingleIdentifierValue($value);
+            if (! is_object($value) || ! $this->metadataFactory->hasMetadataFor(StaticClassNameConverter::getClass($value))) {
+                continue;
+            }
 
-                if ($id[$i] === null) {
-                    throw ORMInvalidArgumentException::invalidIdentifierBindingEntity();
-                }
+            $id[$i] = $this->unitOfWork->getSingleIdentifierValue($value);
+
+            if ($id[$i] === null) {
+                throw ORMInvalidArgumentException::invalidIdentifierBindingEntity();
             }
         }
 
@@ -485,12 +489,14 @@ final class EntityManager implements EntityManagerInterface
         foreach ($id as $i => $value) {
             $scalarId[$i] = $value;
 
-            if (is_object($value) && $this->metadataFactory->hasMetadataFor(StaticClassNameConverter::getClass($value))) {
-                $scalarId[$i] = $this->unitOfWork->getSingleIdentifierValue($value);
+            if (! is_object($value) || ! $this->metadataFactory->hasMetadataFor(StaticClassNameConverter::getClass($value))) {
+                continue;
+            }
 
-                if ($scalarId[$i] === null) {
-                    throw ORMInvalidArgumentException::invalidIdentifierBindingEntity();
-                }
+            $scalarId[$i] = $this->unitOfWork->getSingleIdentifierValue($value);
+
+            if ($scalarId[$i] === null) {
+                throw ORMInvalidArgumentException::invalidIdentifierBindingEntity();
             }
         }
 
@@ -547,12 +553,14 @@ final class EntityManager implements EntityManagerInterface
         }
 
         foreach ($id as $i => $value) {
-            if (is_object($value) && $this->metadataFactory->hasMetadataFor(StaticClassNameConverter::getClass($value))) {
-                $id[$i] = $this->unitOfWork->getSingleIdentifierValue($value);
+            if (! is_object($value) || ! $this->metadataFactory->hasMetadataFor(StaticClassNameConverter::getClass($value))) {
+                continue;
+            }
 
-                if ($id[$i] === null) {
-                    throw ORMInvalidArgumentException::invalidIdentifierBindingEntity();
-                }
+            $id[$i] = $this->unitOfWork->getSingleIdentifierValue($value);
+
+            if ($id[$i] === null) {
+                throw ORMInvalidArgumentException::invalidIdentifierBindingEntity();
             }
         }
 
@@ -601,9 +609,11 @@ final class EntityManager implements EntityManagerInterface
 
         $this->unitOfWork = new UnitOfWork($this);
 
-        if ($this->eventManager->hasListeners(Events::onClear)) {
-            $this->eventManager->dispatchEvent(Events::onClear, new Event\OnClearEventArgs($this));
+        if (! $this->eventManager->hasListeners(Events::onClear)) {
+            return;
         }
+
+        $this->eventManager->dispatchEvent(Events::onClear, new Event\OnClearEventArgs($this));
     }
 
     /**

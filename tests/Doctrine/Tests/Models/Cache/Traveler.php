@@ -92,9 +92,11 @@ class Traveler
             $this->travels->add($item);
         }
 
-        if ($item->getTraveler() !== $this) {
-            $item->setTraveler($this);
+        if ($item->getTraveler() === $this) {
+            return;
         }
+
+        $item->setTraveler($this);
     }
 
     public function removeTravel(Travel $item)

@@ -189,9 +189,11 @@ class DefaultQueryCache implements QueryCache
                         self::$hints
                     );
 
-                    if ($this->cacheLogger !== null) {
-                        $this->cacheLogger->entityCacheHit($assocRegion->getName(), $assocKeys->identifiers[$assocIndex]);
+                    if ($this->cacheLogger === null) {
+                        continue;
                     }
+
+                    $this->cacheLogger->entityCacheHit($assocRegion->getName(), $assocKeys->identifiers[$assocIndex]);
                 }
 
                 $data[$name] = $collection;
@@ -208,12 +210,14 @@ class DefaultQueryCache implements QueryCache
                 //
                 // We need to unwrap those associations into proxy references,
                 // since we don't have actual data for them except for identifiers.
-                if ($unCachedAssociationData instanceof AssociationCacheEntry) {
-                    $data[$fieldName] = $this->em->getReference(
-                        $unCachedAssociationData->class,
-                        $unCachedAssociationData->identifier
-                    );
+                if (! ($unCachedAssociationData instanceof AssociationCacheEntry)) {
+                    continue;
                 }
+
+                $data[$fieldName] = $this->em->getReference(
+                    $unCachedAssociationData->class,
+                    $unCachedAssociationData->identifier
+                );
             }
 
             $result[$index] = $unitOfWork->createEntity($entityEntry->class, $data, self::$hints);

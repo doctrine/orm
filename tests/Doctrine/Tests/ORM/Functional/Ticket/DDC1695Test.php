@@ -16,9 +16,11 @@ class DDC1695Test extends OrmFunctionalTestCase
     {
         parent::setUp();
 
-        if ($this->em->getConnection()->getDatabasePlatform()->getName() !== 'sqlite') {
-            $this->markTestSkipped('Only with sqlite');
+        if ($this->em->getConnection()->getDatabasePlatform()->getName() === 'sqlite') {
+            return;
         }
+
+        $this->markTestSkipped('Only with sqlite');
     }
 
     public function testIssue() : void

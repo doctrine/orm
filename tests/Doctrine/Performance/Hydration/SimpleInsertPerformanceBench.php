@@ -58,10 +58,12 @@ final class SimpleInsertPerformanceBench
         foreach ($this->users as $key => $user) {
             $this->entityManager->persist($user);
 
-            if (! ($key % 20)) {
-                $this->entityManager->flush();
-                $this->entityManager->clear();
+            if ($key % 20) {
+                continue;
             }
+
+            $this->entityManager->flush();
+            $this->entityManager->clear();
         }
     }
 }

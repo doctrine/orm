@@ -217,27 +217,29 @@ class ArrayHydrator extends AbstractHydrator
         }
 
         // Append new object to mixed result sets
-        if (isset($rowData['newObjects'])) {
-            if (! isset($resultKey)) {
-                $resultKey = $this->resultCounter - 1;
+        if (! isset($rowData['newObjects'])) {
+            return;
+        }
+
+        if (! isset($resultKey)) {
+            $resultKey = $this->resultCounter - 1;
+        }
+
+        $scalarCount      = (isset($rowData['scalars']) ? count($rowData['scalars']) : 0);
+        $onlyOneRootAlias = $scalarCount === 0 && count($rowData['newObjects']) === 1;
+
+        foreach ($rowData['newObjects'] as $objIndex => $newObject) {
+            $class = $newObject['class'];
+            $args  = $newObject['args'];
+            $obj   = $class->newInstanceArgs($args);
+
+            if ($onlyOneRootAlias || count($args) === $scalarCount) {
+                $result[$resultKey] = $obj;
+
+                continue;
             }
 
-            $scalarCount      = (isset($rowData['scalars']) ? count($rowData['scalars']) : 0);
-            $onlyOneRootAlias = $scalarCount === 0 && count($rowData['newObjects']) === 1;
-
-            foreach ($rowData['newObjects'] as $objIndex => $newObject) {
-                $class = $newObject['class'];
-                $args  = $newObject['args'];
-                $obj   = $class->newInstanceArgs($args);
-
-                if ($onlyOneRootAlias || count($args) === $scalarCount) {
-                    $result[$resultKey] = $obj;
-
-                    continue;
-                }
-
-                $result[$resultKey][$objIndex] = $obj;
-            }
+            $result[$resultKey][$objIndex] = $obj;
         }
     }
 

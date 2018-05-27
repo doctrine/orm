@@ -342,9 +342,11 @@ class ListenerSecondLevelCacheTest
 
     private function dispatch($eventName, $args)
     {
-        if (isset($this->callbacks[$eventName])) {
-            call_user_func($this->callbacks[$eventName], $args);
+        if (! isset($this->callbacks[$eventName])) {
+            return;
         }
+
+        call_user_func($this->callbacks[$eventName], $args);
     }
 
     public function postFlush($args)

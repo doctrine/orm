@@ -57,11 +57,13 @@ class JoinedSubclassPersister extends AbstractEntityInheritancePersister
         while (($parentClass = $parentClass->getParent()) !== null) {
             $parentTableName = $parentClass->getTableName();
 
-            if ($parentClass !== $rootClass) {
-                $parentPersister = $this->em->getUnitOfWork()->getEntityPersister($parentClass->getClassName());
-
-                $subTableStmts[$parentTableName] = $this->conn->prepare($parentPersister->getInsertSQL());
+            if ($parentClass === $rootClass) {
+                continue;
             }
+
+            $parentPersister = $this->em->getUnitOfWork()->getEntityPersister($parentClass->getClassName());
+
+            $subTableStmts[$parentTableName] = $this->conn->prepare($parentPersister->getInsertSQL());
         }
 
         // Execute all inserts. For each entity:
@@ -109,11 +111,13 @@ class JoinedSubclassPersister extends AbstractEntityInheritancePersister
             }
 
             foreach ($data as $columnName => $value) {
-                if (! is_array($id) || ! isset($id[$columnName])) {
-                    $type = $this->columns[$columnName]->getType();
-
-                    $stmt->bindValue($paramIndex++, $value, $type);
+                if (is_array($id) && isset($id[$columnName])) {
+                    continue;
                 }
+
+                $type = $this->columns[$columnName]->getType();
+
+                $stmt->bindValue($paramIndex++, $value, $type);
             }
 
             $stmt->execute();
@@ -147,20 +151,22 @@ class JoinedSubclassPersister extends AbstractEntityInheritancePersister
 
         // Make sure the table with the version column is updated even if no columns on that
         // table were affected.
-        if ($isVersioned) {
-            $versionedClass = $this->class->versionProperty->getDeclaringClass();
-            $versionedTable = $versionedClass->getTableName();
-
-            if (! isset($updateData[$versionedTable])) {
-                $tableName = $versionedClass->table->getQuotedQualifiedName($this->platform);
-
-                $this->updateTable($entity, $tableName, [], true);
-            }
-
-            $identifiers = $this->em->getUnitOfWork()->getEntityIdentifier($entity);
-
-            $this->assignDefaultVersionValue($entity, $identifiers);
+        if (! $isVersioned) {
+            return;
         }
+
+        $versionedClass = $this->class->versionProperty->getDeclaringClass();
+        $versionedTable = $versionedClass->getTableName();
+
+        if (! isset($updateData[$versionedTable])) {
+            $tableName = $versionedClass->table->getQuotedQualifiedName($this->platform);
+
+            $this->updateTable($entity, $tableName, [], true);
+        }
+
+        $identifiers = $this->em->getUnitOfWork()->getEntityIdentifier($entity);
+
+        $this->assignDefaultVersionValue($entity, $identifiers);
     }
 
     /**
@@ -463,17 +469,19 @@ class JoinedSubclassPersister extends AbstractEntityInheritancePersister
                 continue;
             }
 
-            if ($this->class->getClassName() !== $this->class->getRootClassName()
-                || ! $this->class->getProperty($name)->hasValueGenerator()
-                || $this->class->getProperty($name)->getValueGenerator()->getType() !== GeneratorType::IDENTITY
-                || $this->class->identifier[0] !== $name
+            if ($this->class->getClassName() === $this->class->getRootClassName()
+                && $this->class->getProperty($name)->hasValueGenerator()
+                && $this->class->getProperty($name)->getValueGenerator()->getType() === GeneratorType::IDENTITY
+                && $this->class->identifier[0] === $name
             ) {
-                $columnName = $property->getColumnName();
-
-                $columns[] = $columnName;
-
-                $this->columns[$columnName] = $property;
+                continue;
             }
+
+            $columnName = $property->getColumnName();
+
+            $columns[] = $columnName;
+
+            $this->columns[$columnName] = $property;
         }
 
         // Add discriminator column if it is the topmost class.

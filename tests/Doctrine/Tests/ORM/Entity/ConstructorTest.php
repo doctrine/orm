@@ -22,8 +22,10 @@ class ConstructorTestEntity1
 
     public function __construct($username = null)
     {
-        if ($username !== null) {
-            $this->username = $username;
+        if ($username === null) {
+            return;
         }
+
+        $this->username = $username;
     }
 }

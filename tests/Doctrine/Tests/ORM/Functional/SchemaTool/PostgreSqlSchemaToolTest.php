@@ -19,9 +19,11 @@ class PostgreSqlSchemaToolTest extends OrmFunctionalTestCase
     {
         parent::setUp();
 
-        if ($this->em->getConnection()->getDatabasePlatform()->getName() !== 'postgresql') {
-            $this->markTestSkipped('The ' . __CLASS__ . ' requires the use of postgresql.');
+        if ($this->em->getConnection()->getDatabasePlatform()->getName() === 'postgresql') {
+            return;
         }
+
+        $this->markTestSkipped('The ' . __CLASS__ . ' requires the use of postgresql.');
     }
 
     public function testPostgresMetadataSequenceIncrementedBy10() : void
@@ -110,9 +112,11 @@ class PostgreSqlSchemaToolTest extends OrmFunctionalTestCase
         $dropSequenceSQLs = 0;
 
         foreach ($sql as $stmt) {
-            if (strpos($stmt, 'DROP SEQUENCE') === 0) {
-                $dropSequenceSQLs++;
+            if (strpos($stmt, 'DROP SEQUENCE') !== 0) {
+                continue;
             }
+
+            $dropSequenceSQLs++;
         }
         self::assertEquals(4, $dropSequenceSQLs, 'Expect 4 sequences to be dropped.');
     }

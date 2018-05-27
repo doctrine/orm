@@ -86,9 +86,11 @@ class NotifyBaseEntity implements NotifyPropertyChanged
 
     public function addPropertyChangedListener(PropertyChangedListener $listener)
     {
-        if (! in_array($listener, $this->listeners, true)) {
-            $this->listeners[] = $listener;
+        if (in_array($listener, $this->listeners, true)) {
+            return;
         }
+
+        $this->listeners[] = $listener;
     }
 
     protected function onPropertyChanged($propName, $oldValue, $newValue)

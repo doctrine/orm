@@ -93,8 +93,10 @@ class ListenersInvoker
             }
         }
 
-        if ($invoke & self::INVOKE_MANAGER) {
-            $this->eventManager->dispatchEvent($eventName, $event);
+        if (! ($invoke & self::INVOKE_MANAGER)) {
+            return;
         }
+
+        $this->eventManager->dispatchEvent($eventName, $event);
     }
 }

@@ -305,15 +305,17 @@ class ClassMetadataFactory extends AbstractClassMetadataFactory
         $duplicates = [];
 
         foreach ($allClasses as $subClassCandidate) {
-            if (is_subclass_of($subClassCandidate, $fqcn)) {
-                $shortName = $this->getShortName($subClassCandidate);
-
-                if (isset($map[$shortName])) {
-                    $duplicates[] = $shortName;
-                }
-
-                $map[$shortName] = $subClassCandidate;
+            if (! is_subclass_of($subClassCandidate, $fqcn)) {
+                continue;
             }
+
+            $shortName = $this->getShortName($subClassCandidate);
+
+            if (isset($map[$shortName])) {
+                $duplicates[] = $shortName;
+            }
+
+            $map[$shortName] = $subClassCandidate;
         }
 
         if ($duplicates) {
@@ -483,9 +485,11 @@ class ClassMetadataFactory extends AbstractClassMetadataFactory
         foreach ($class->getDeclaredPropertiesIterator() as $property) {
             $executor = $this->buildValueGenerationExecutorForProperty($class, $property);
 
-            if ($executor instanceof ValueGenerationExecutor) {
-                $executors[] = $executor;
+            if (! ($executor instanceof ValueGenerationExecutor)) {
+                continue;
             }
+
+            $executors[] = $executor;
         }
 
         return $executors;

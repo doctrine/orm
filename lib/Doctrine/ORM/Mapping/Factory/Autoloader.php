@@ -71,15 +71,17 @@ class Autoloader
         }
 
         $autoloader = function ($className) use ($metadataDir, $metadataNamespace, $notFoundCallback) {
-            if (strpos($className, $metadataNamespace) === 0) {
-                $file = Autoloader::resolveFile($metadataDir, $metadataNamespace, $className);
-
-                if ($notFoundCallback && ! file_exists($file)) {
-                    call_user_func($notFoundCallback, $metadataDir, $metadataNamespace, $className);
-                }
-
-                require $file;
+            if (strpos($className, $metadataNamespace) !== 0) {
+                return;
             }
+
+            $file = Autoloader::resolveFile($metadataDir, $metadataNamespace, $className);
+
+            if ($notFoundCallback && ! file_exists($file)) {
+                call_user_func($notFoundCallback, $metadataDir, $metadataNamespace, $className);
+            }
+
+            require $file;
         };
 
         spl_autoload_register($autoloader);

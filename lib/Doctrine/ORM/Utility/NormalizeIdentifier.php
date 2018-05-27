@@ -45,20 +45,22 @@ final class NormalizeIdentifier
                 continue;
             }
 
-            if ($declaredProperty instanceof ToOneAssociationMetadata) {
-                $targetIdMetadata = $entityManager->getClassMetadata($declaredProperty->getTargetEntity());
-
-                // Note: the ORM prevents using an entity with a composite identifier as an identifier association
-                //       therefore, reset($targetIdMetadata->identifier) is always correct
-                $normalizedAssociatedId[$name] = $entityManager->getReference(
-                    $targetIdMetadata->getClassName(),
-                    $this->__invoke(
-                        $entityManager,
-                        $targetIdMetadata,
-                        [reset($targetIdMetadata->identifier) => $flatIdentifier[$name]]
-                    )
-                );
+            if (! ($declaredProperty instanceof ToOneAssociationMetadata)) {
+                continue;
             }
+
+            $targetIdMetadata = $entityManager->getClassMetadata($declaredProperty->getTargetEntity());
+
+            // Note: the ORM prevents using an entity with a composite identifier as an identifier association
+            //       therefore, reset($targetIdMetadata->identifier) is always correct
+            $normalizedAssociatedId[$name] = $entityManager->getReference(
+                $targetIdMetadata->getClassName(),
+                $this->__invoke(
+                    $entityManager,
+                    $targetIdMetadata,
+                    [reset($targetIdMetadata->identifier) => $flatIdentifier[$name]]
+                )
+            );
         }
 
         return $normalizedAssociatedId;

@@ -428,9 +428,11 @@ class Expr
     {
         if (is_array($y)) {
             foreach ($y as &$literal) {
-                if (! ($literal instanceof Expr\Literal)) {
-                    $literal = $this->quoteLiteral($literal);
+                if ($literal instanceof Expr\Literal) {
+                    continue;
                 }
+
+                $literal = $this->quoteLiteral($literal);
             }
         }
 
@@ -449,9 +451,11 @@ class Expr
     {
         if (is_array($y)) {
             foreach ($y as &$literal) {
-                if (! ($literal instanceof Expr\Literal)) {
-                    $literal = $this->quoteLiteral($literal);
+                if ($literal instanceof Expr\Literal) {
+                    continue;
                 }
+
+                $literal = $this->quoteLiteral($literal);
             }
         }
 

@@ -91,16 +91,18 @@ class ObjectHydrator extends AbstractHydrator
             }
 
             // handle fetch-joined owning side bi-directional one-to-one associations
-            if ($association->getInversedBy()) {
-                $class        = $this->getClassMetadata($className);
-                $inverseAssoc = $class->getProperty($association->getInversedBy());
-
-                if (! ($inverseAssoc instanceof ToOneAssociationMetadata)) {
-                    continue;
-                }
-
-                $this->hints['fetched'][$dqlAlias][$inverseAssoc->getName()] = true;
+            if (! $association->getInversedBy()) {
+                continue;
             }
+
+            $class        = $this->getClassMetadata($className);
+            $inverseAssoc = $class->getProperty($association->getInversedBy());
+
+            if (! ($inverseAssoc instanceof ToOneAssociationMetadata)) {
+                continue;
+            }
+
+            $this->hints['fetched'][$dqlAlias][$inverseAssoc->getName()] = true;
         }
     }
 
@@ -495,9 +497,11 @@ class ObjectHydrator extends AbstractHydrator
                 }
             }
 
-            if (isset($this->hints[Query::HINT_INTERNAL_ITERATION]) && $this->hints[Query::HINT_INTERNAL_ITERATION]) {
-                $this->uow->hydrationComplete();
+            if (! isset($this->hints[Query::HINT_INTERNAL_ITERATION]) || ! $this->hints[Query::HINT_INTERNAL_ITERATION]) {
+                continue;
             }
+
+            $this->uow->hydrationComplete();
         }
 
         if (! isset($resultKey)) {
@@ -518,26 +522,28 @@ class ObjectHydrator extends AbstractHydrator
         }
 
         // Append new object to mixed result sets
-        if (isset($rowData['newObjects'])) {
-            if (! isset($resultKey)) {
-                $resultKey = $this->resultCounter - 1;
+        if (! isset($rowData['newObjects'])) {
+            return;
+        }
+
+        if (! isset($resultKey)) {
+            $resultKey = $this->resultCounter - 1;
+        }
+
+        $hasNoScalars = ! (isset($rowData['scalars']) && $rowData['scalars']);
+
+        foreach ($rowData['newObjects'] as $objIndex => $newObject) {
+            $class = $newObject['class'];
+            $args  = $newObject['args'];
+            $obj   = $class->newInstanceArgs($args);
+
+            if ($hasNoScalars && count($rowData['newObjects']) === 1) {
+                $result[$resultKey] = $obj;
+
+                continue;
             }
 
-            $hasNoScalars = ! (isset($rowData['scalars']) && $rowData['scalars']);
-
-            foreach ($rowData['newObjects'] as $objIndex => $newObject) {
-                $class = $newObject['class'];
-                $args  = $newObject['args'];
-                $obj   = $class->newInstanceArgs($args);
-
-                if ($hasNoScalars && count($rowData['newObjects']) === 1) {
-                    $result[$resultKey] = $obj;
-
-                    continue;
-                }
-
-                $result[$resultKey][$objIndex] = $obj;
-            }
+            $result[$resultKey][$objIndex] = $obj;
         }
     }
 

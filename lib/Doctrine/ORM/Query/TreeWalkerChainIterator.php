@@ -110,8 +110,10 @@ class TreeWalkerChainIterator implements \Iterator, \ArrayAccess
      */
     public function offsetUnset($offset)
     {
-        if ($this->offsetExists($offset)) {
-            unset($this->walkers[$offset]);
+        if (! $this->offsetExists($offset)) {
+            return;
         }
+
+        unset($this->walkers[$offset]);
     }
 }

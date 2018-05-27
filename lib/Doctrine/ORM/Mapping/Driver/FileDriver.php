@@ -173,16 +173,20 @@ abstract class FileDriver implements MappingDriver
     protected function initialize()
     {
         $this->classCache = [];
-        if ($this->globalBasename !== null) {
-            foreach ($this->locator->getPaths() as $path) {
-                $file = $path . '/' . $this->globalBasename . $this->locator->getFileExtension();
-                if (is_file($file)) {
-                    $this->classCache = array_merge(
-                        $this->classCache,
-                        $this->loadMappingFile($file)
-                    );
-                }
+        if ($this->globalBasename === null) {
+            return;
+        }
+
+        foreach ($this->locator->getPaths() as $path) {
+            $file = $path . '/' . $this->globalBasename . $this->locator->getFileExtension();
+            if (! is_file($file)) {
+                continue;
             }
+
+            $this->classCache = array_merge(
+                $this->classCache,
+                $this->loadMappingFile($file)
+            );
         }
     }
 }

@@ -104,9 +104,11 @@ class DriverChain implements MappingDriver
             }
 
             foreach ($driverClasses[$oid] as $className) {
-                if (strpos($className, $namespace) === 0) {
-                    $classNames[$className] = true;
+                if (strpos($className, $namespace) !== 0) {
+                    continue;
                 }
+
+                $classNames[$className] = true;
             }
         }
 

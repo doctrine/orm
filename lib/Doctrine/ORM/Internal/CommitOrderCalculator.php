@@ -153,10 +153,12 @@ class CommitOrderCalculator
             }
         }
 
-        if ($vertex->state !== self::VISITED) {
-            $vertex->state = self::VISITED;
-
-            $this->sortedNodeList[] = $vertex->value;
+        if ($vertex->state === self::VISITED) {
+            return;
         }
+
+        $vertex->state = self::VISITED;
+
+        $this->sortedNodeList[] = $vertex->value;
     }
 }

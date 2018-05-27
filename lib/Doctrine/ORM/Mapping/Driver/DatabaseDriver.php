@@ -343,9 +343,11 @@ class DatabaseDriver implements MappingDriver
         }
 
         // We need to check for the columns here, because we might have associations as id as well.
-        if ($ids && count($primaryKeys) === 1) {
-            $ids[0]->setValueGenerator(new Mapping\ValueGeneratorMetadata(Mapping\GeneratorType::AUTO));
+        if (! $ids || count($primaryKeys) !== 1) {
+            return;
         }
+
+        $ids[0]->setValueGenerator(new Mapping\ValueGeneratorMetadata(Mapping\GeneratorType::AUTO));
     }
 
     /**

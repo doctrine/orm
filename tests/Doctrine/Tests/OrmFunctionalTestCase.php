@@ -630,15 +630,19 @@ abstract class OrmFunctionalTestCase extends OrmTestCase
         $classes = [];
 
         foreach ($classNames as $className) {
-            if (! isset(static::$entityTablesCreated[$className])) {
-                static::$entityTablesCreated[$className] = true;
-                $classes[]                               = $this->em->getClassMetadata($className);
+            if (isset(static::$entityTablesCreated[$className])) {
+                continue;
             }
+
+            static::$entityTablesCreated[$className] = true;
+            $classes[]                               = $this->em->getClassMetadata($className);
         }
 
-        if ($classes) {
-            $this->schemaTool->createSchema($classes);
+        if (! $classes) {
+            return;
         }
+
+        $this->schemaTool->createSchema($classes);
     }
 
     /**
@@ -668,11 +672,13 @@ abstract class OrmFunctionalTestCase extends OrmTestCase
         }
 
         foreach ($this->usedModelSets as $setName => $bool) {
-            if (! isset(static::$tablesCreated[$setName])) {
-                $this->setUpEntitySchema(static::$modelSets[$setName]);
-
-                static::$tablesCreated[$setName] = true;
+            if (isset(static::$tablesCreated[$setName])) {
+                continue;
             }
+
+            $this->setUpEntitySchema(static::$modelSets[$setName]);
+
+            static::$tablesCreated[$setName] = true;
         }
 
         $this->sqlLoggerStack->enabled = true;
@@ -807,14 +813,16 @@ abstract class OrmFunctionalTestCase extends OrmTestCase
             $traceMsg = '';
 
             foreach ($trace as $part) {
-                if (isset($part['file'])) {
-                    if (strpos($part['file'], 'PHPUnit/') !== false) {
-                        // Beginning with PHPUnit files we don't print the trace anymore.
-                        break;
-                    }
-
-                    $traceMsg .= $part['file'] . ':' . $part['line'] . PHP_EOL;
+                if (! isset($part['file'])) {
+                    continue;
                 }
+
+                if (strpos($part['file'], 'PHPUnit/') !== false) {
+                    // Beginning with PHPUnit files we don't print the trace anymore.
+                    break;
+                }
+
+                $traceMsg .= $part['file'] . ':' . $part['line'] . PHP_EOL;
             }
 
             $message = '[' . get_class($e) . '] ' . $e->getMessage() . PHP_EOL . PHP_EOL . 'With queries:' . PHP_EOL . $queries . PHP_EOL . 'Trace:' . PHP_EOL . $traceMsg;

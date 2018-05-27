@@ -148,11 +148,13 @@ abstract class AbstractQuery
         $this->hints      = $em->getConfiguration()->getDefaultQueryHints();
         $this->hasCache   = $this->em->getConfiguration()->isSecondLevelCacheEnabled();
 
-        if ($this->hasCache) {
-            $this->cacheLogger = $em->getConfiguration()
-                ->getSecondLevelCacheConfiguration()
-                ->getCacheLogger();
+        if (! $this->hasCache) {
+            return;
         }
+
+        $this->cacheLogger = $em->getConfiguration()
+            ->getSecondLevelCacheConfiguration()
+            ->getCacheLogger();
     }
 
     /**

@@ -115,9 +115,11 @@ class DDC440Phone
     public function setClient(DDC440Client $value, $update_inverse = true)
     {
         $this->client = $value;
-        if ($update_inverse) {
-            $value->addPhone($this);
+        if (! $update_inverse) {
+            return;
         }
+
+        $value->addPhone($this);
     }
 
     public function getClient()

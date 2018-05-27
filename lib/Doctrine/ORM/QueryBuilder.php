@@ -1478,9 +1478,11 @@ class QueryBuilder
         foreach ($this->dqlParts as $part => $elements) {
             if (is_array($this->dqlParts[$part])) {
                 foreach ($this->dqlParts[$part] as $idx => $element) {
-                    if (is_object($element)) {
-                        $this->dqlParts[$part][$idx] = clone $element;
+                    if (! is_object($element)) {
+                        continue;
                     }
+
+                    $this->dqlParts[$part][$idx] = clone $element;
                 }
             } elseif (is_object($elements)) {
                 $this->dqlParts[$part] = clone $elements;

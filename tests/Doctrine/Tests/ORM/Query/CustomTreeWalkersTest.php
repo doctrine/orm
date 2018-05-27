@@ -119,9 +119,11 @@ class CustomTreeWalker extends Query\TreeWalkerAdapter
         foreach ($this->getQueryComponents() as $dqlAlias => $comp) {
             // Hard-coded check just for demonstration: We want to modify the query if
             // it involves the CmsUser class.
-            if ($comp['metadata']->getClassName() === CmsUser::class) {
-                $dqlAliases[] = $dqlAlias;
+            if ($comp['metadata']->getClassName() !== CmsUser::class) {
+                continue;
             }
+
+            $dqlAliases[] = $dqlAlias;
         }
 
         // Create our conditions for all involved classes
