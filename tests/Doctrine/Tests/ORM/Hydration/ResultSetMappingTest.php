@@ -132,6 +132,6 @@ class ResultSetMappingTest extends OrmTestCase
         $rsm->addEntityResult(LegacyUser::class, 'u')
             ->addFieldResult('u', 'id', 'id')
             ->addFieldResult('u', 'name', 'name')
-            ->addFieldResult('p','store_id', 'store');
+            ->addFieldResult('p', 'store_id', 'store');
     }
 }
