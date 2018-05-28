@@ -329,7 +329,13 @@ class ResultSetMapping
         // column name => alias of owner
         $this->columnOwnerMap[$columnName] = $alias;
         // field name => class name of declaring class
-        $this->declaringClasses[$columnName] = $declaringClass ?: $this->aliasMap[$alias];
+        if ($declaringClass) {
+            $this->declaringClasses[$columnName] = $declaringClass;
+        } elseif (\array_key_exists($alias, $this->aliasMap)) {
+            $this->declaringClasses[$columnName] = $this->aliasMap[$alias];
+        } else {
+            throw new \LogicException(\sprintf('Alias %s does not exist in alias map', $alias));
+        }
 
         if (! $this->isMixed && $this->scalarMappings) {
             $this->isMixed = true;
