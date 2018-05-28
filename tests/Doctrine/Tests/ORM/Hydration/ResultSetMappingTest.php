@@ -119,4 +119,19 @@ class ResultSetMappingTest extends OrmTestCase
 
         self::assertTrue($this->rsm->hasIndexBy('lu'));
     }
+
+    /**
+     * @group 7243
+     */
+    public function testUndefinedAliasThrowsException() : void
+    {
+        $rsm = new ResultSetMapping();
+
+        $this->expectException(\LogicException::class);
+
+        $rsm->addEntityResult(LegacyUser::class, 'u')
+            ->addFieldResult('u', 'id', 'id')
+            ->addFieldResult('u', 'name', 'name')
+            ->addFieldResult('p','store_id', 'store');
+    }
 }
