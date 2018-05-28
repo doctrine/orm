@@ -6,8 +6,10 @@ namespace Doctrine\ORM\Query;
 
 use Doctrine\DBAL\Types\Type;
 use Doctrine\ORM\Mapping\AssociationMetadata;
+use function array_key_exists;
 use function array_merge;
 use function count;
+use function sprintf;
 
 /**
  * A ResultSetMapping describes how a result set of an SQL query maps to a Doctrine result.
@@ -331,10 +333,10 @@ class ResultSetMapping
         // field name => class name of declaring class
         if ($declaringClass) {
             $this->declaringClasses[$columnName] = $declaringClass;
-        } elseif (\array_key_exists($alias, $this->aliasMap)) {
+        } elseif (array_key_exists($alias, $this->aliasMap)) {
             $this->declaringClasses[$columnName] = $this->aliasMap[$alias];
         } else {
-            throw new \LogicException(\sprintf('Alias %s does not exist in alias map', $alias));
+            throw new \LogicException(sprintf('Alias %s does not exist in alias map', $alias));
         }
 
         if (! $this->isMixed && $this->scalarMappings) {
