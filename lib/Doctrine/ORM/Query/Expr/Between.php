@@ -28,7 +28,7 @@ final class Between
      * @param int|string $min
      * @param int|string $max
      */
-    public function __construct($operator, $key, $min, $max)
+    public function __construct(string $operator, $key, $min, $max)
     {
         $this->operator = $operator;
         $this->key      = $key;
