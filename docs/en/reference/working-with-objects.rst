@@ -28,7 +28,7 @@ Work that have not yet been persisted are lost.
 .. note::
 
     Doctrine does NEVER touch the public API of methods in your entity 
-    classes (getters and setters). 
+    classes (like getters and setters) nor the constructor method.
     Instead, it uses reflection to set/get data from your objects.
     When Doctrine fetches data from DB and saves it back,
     any code put in your get/set methods won't be implicitly taken into account.
