@@ -25,6 +25,14 @@ Work that have not yet been persisted are lost.
     Not calling ``EntityManager#flush()`` will lead to all changes
     during that request being lost.
 
+.. note::
+
+    Doctrine does NEVER touch the public API of methods in your entity 
+    classes (getters and setters). 
+    Instead, it uses reflection to set/get data from your objects.
+    When Doctrine fetches data from DB and saves it back,
+    any code put in your get/set methods won't be implicitly taken into account.
+
 
 Entities and the Identity Map
 -----------------------------
