@@ -1,5 +1,5 @@
 Doctrine Query Language
-===========================
+=======================
 
 DQL stands for Doctrine Query Language and is an Object
 Query Language derivative that is very similar to the Hibernate
@@ -488,6 +488,26 @@ Joins between entities without associations were not possible until version
 
     <?php
     $query = $em->createQuery('SELECT u FROM User u JOIN Blacklist b WITH u.email = b.email');
+
+With an arbitrary join the result differs from the joins using a mapped property.
+The result of an arbitrary join is an one dimensional array with a mix of the entity from the ``SELECT``
+and the joined entity fitting to the filtering of the query. In case of the example with ``User``
+and ``Blacklist``, it can look like this:
+
+- User
+- Blacklist
+- Blacklist
+- User
+- Blacklist
+- User
+- Blacklist
+- Blacklist
+- Blacklist
+
+In this form of join, the ``Blacklist`` entities found by the filtering in the ``WITH`` part are not fetched by an accessor
+method on ``User``, but are already part of the result. In case the accessor method for Blacklists is invoked on a User instance,
+it loads all the related ``Blacklist`` objects corresponding to this ``User``. This change of behaviour needs to be considered
+when the DQL is switched to an arbitrary join.
 
 .. note::
     The differences between WHERE, WITH and HAVING clauses may be
