@@ -115,13 +115,6 @@ class SimpleObjectHydrator extends AbstractHydrator
                 throw new \Exception(sprintf('Unable to retrieve association information for column "%s"', $column));
             }
 
-            // Generate quoted column alias for column info hydrating.
-            if (preg_match(',(.+)_(\d+)$,', $column, $matches)) {
-              $column = $this->_em->getConfiguration()
-                ->getQuoteStrategy()
-                ->getColumnAlias($matches[1], $matches[2], $this->_platform, $this->getClassMetadata($entityName));
-            }
-
             $cacheKeyInfo = $this->hydrateColumnInfo($column);
 
             if ( ! $cacheKeyInfo) {
