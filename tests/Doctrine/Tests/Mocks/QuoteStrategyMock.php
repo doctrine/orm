@@ -61,6 +61,8 @@ final class QuoteStrategyMock extends AnsiQuoteStrategy
       case 'sqlite':
       case 'mysql':
         return "`{$string}`";
+      case 'pgsql':
+          return "'{$string}'";
       case 'mssql':
         return "[{$string}]";
     }
