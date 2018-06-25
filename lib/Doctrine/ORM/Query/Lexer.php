@@ -19,6 +19,8 @@
 
 namespace Doctrine\ORM\Query;
 
+use Doctrine\Common\Lexer\AbstractLexer;
+
 /**
  * Scans a DQL query for tokens.
  *
@@ -27,7 +29,7 @@ namespace Doctrine\ORM\Query;
  * @author Roman Borschel <roman@code-factory.org>
  * @since 2.0
  */
-class Lexer extends \Doctrine\Common\Lexer
+class Lexer extends AbstractLexer
 {
     // All tokens that are not valid identifiers must be < 100
     const T_NONE                 = 1;
