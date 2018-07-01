@@ -26,7 +26,7 @@
         "ocramius/package-versions": "^1.1.2",
         "ocramius/proxy-manager": "^2.1.1",
         "symfony/console": "~3.2|~4.0",
-        "symfony/polyfill-ctype": "~1.8"
+        "ext-ctype": "*"
     },
     "require-dev": {
         "ext-pdo": "*",
