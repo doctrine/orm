@@ -177,10 +177,11 @@ To enable the second-level-cache, you should provide a cache factory.
 .. code-block:: php
 
     <?php
-    /* @var $config \Doctrine\ORM\Cache\RegionsConfiguration */
-    /* @var $cache \Doctrine\Common\Cache\Cache */
+    /** @var \Doctrine\ORM\Cache\RegionsConfiguration $cacheConfig */
+    /** @var \Doctrine\Common\Cache\Cache $cache */
+    /** @var \Doctrine\ORM\Configuration $config */
 
-    $factory = new \Doctrine\ORM\Cache\DefaultCacheFactory($config, $cache);
+    $factory = new \Doctrine\ORM\Cache\DefaultCacheFactory($cacheConfig, $cache);
 
     // Enable second-level-cache
     $config->setSecondLevelCacheEnabled();
@@ -218,8 +219,9 @@ To specify a default lifetime for all regions or specify a different lifetime fo
 .. code-block:: php
 
     <?php
-    /* @var $config \Doctrine\ORM\Configuration */
-    /* @var $cacheConfig \Doctrine\ORM\Cache\CacheConfiguration */
+    /** @var \Doctrine\ORM\Configuration $config */
+    /** @var \Doctrine\ORM\Cache\CacheConfiguration $cacheConfig */
+    /** @var \Doctrine\ORM\Cache\RegionsConfiguration $regionConfig */
     $cacheConfig  =  $config->getSecondLevelCacheConfiguration();
     $regionConfig =  $cacheConfig->getRegionsConfiguration();
 
