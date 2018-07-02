@@ -823,7 +823,14 @@ class SelectSqlGenerationTest extends OrmTestCase
             ->setMaxResults(10)
             ->setFirstResult(0);
 
-        $this->assertEquals('SELECT c0_.id AS id_0, c0_.status AS status_1, c0_.username AS username_2, c0_.name AS name_3, c0_.email_id AS email_id_4 FROM cms_users c0_ LIMIT 10 OFFSET 0', $q->getSql());
+        // DBAL 2.8+ doesn't add OFFSET part when offset is 0
+        self::assertThat(
+            $q->getSql(),
+            self::logicalOr(
+                self::identicalTo('SELECT c0_.id AS id_0, c0_.status AS status_1, c0_.username AS username_2, c0_.name AS name_3, c0_.email_id AS email_id_4 FROM cms_users c0_ LIMIT 10'),
+                self::identicalTo('SELECT c0_.id AS id_0, c0_.status AS status_1, c0_.username AS username_2, c0_.name AS name_3, c0_.email_id AS email_id_4 FROM cms_users c0_ LIMIT 10 OFFSET 0')
+            )
+        );
     }
 
     public function testSizeFunction()
