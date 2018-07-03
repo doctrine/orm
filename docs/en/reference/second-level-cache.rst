@@ -398,8 +398,8 @@ Basic entity cache
 
     $country1  = $em->find('Country', 1); // Retrieve item from cache
 
-    $country->setName("New Name");
-    $em->persist($country);
+    $country1->setName("New Name");
+    
     $em->flush();                         // Hit database to update the row and update cache
 
     $em->clear();                         // Clear entity manager
