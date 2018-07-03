@@ -169,16 +169,17 @@ Doctrine allows you to specify configurations and some points of extension for t
 Enable Second Level Cache
 ~~~~~~~~~~~~~~~~~~~~~~~~~
 
-To enable the second-level-cache, you should provide a cache factory
+To enable the second-level-cache, you should provide a cache factory.
 ``\Doctrine\ORM\Cache\DefaultCacheFactory`` is the default implementation.
 
 .. code-block:: php
 
     <?php
-    /** @var \Doctrine\ORM\Cache\RegionsConfiguration $config */
+    /** @var \Doctrine\ORM\Cache\RegionsConfiguration $cacheConfig */
     /** @var \Doctrine\Common\Cache\Cache $cache */
+    /** @var \Doctrine\ORM\Configuration $config */
 
-    $factory = new \Doctrine\ORM\Cache\DefaultCacheFactory($config, $cache);
+    $factory = new \Doctrine\ORM\Cache\DefaultCacheFactory($cacheConfig, $cache);
 
     // Enable second-level-cache
     $config->setSecondLevelCacheEnabled();
@@ -212,6 +213,7 @@ To specify a default lifetime for all regions or specify a different lifetime fo
     <?php
     /** @var \Doctrine\ORM\Configuration $config */
     /** @var \Doctrine\ORM\Cache\CacheConfiguration $cacheConfig */
+    /** @var \Doctrine\ORM\Cache\RegionsConfiguration $regionConfig */
     $cacheConfig  =  $config->getSecondLevelCacheConfiguration();
     $regionConfig =  $cacheConfig->getRegionsConfiguration();
 
