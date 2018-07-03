@@ -1,5 +1,12 @@
 # Upgrade to 2.6
 
+## Added `Doctrine\ORM\EntityRepository::count()` method
+
+`Doctrine\ORM\EntityRepository::count()` has been added. This new method has different
+signature than `Countable::count()` (required parameter) and therefore are not compatible.
+If your repository implemented the `Countable` interface, you will have to use
+`$repository->count([])` instead and not implement `Countable` interface anymore.
+
 ## Minor BC BREAK: `Doctrine\ORM\Tools\Console\ConsoleRunner` is now final
 
 Since it's just an utilitarian class and should not be inherited.
