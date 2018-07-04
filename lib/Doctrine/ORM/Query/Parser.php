@@ -2907,6 +2907,10 @@ class Parser
             case Lexer::T_COALESCE:
             case Lexer::T_NULLIF:
                 return $this->CaseExpression();
+            default:
+                if ($this->isAggregateFunction($lookaheadType)) {
+                    return $this->AggregateExpression();
+                }
         }
 
         $this->syntaxError(
