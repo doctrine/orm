@@ -71,8 +71,6 @@ class ClassMetadataFactory extends AbstractClassMetadataFactory
 
     /**
      * {@inheritdoc}
-     *
-     * @throws ORMException
      */
     protected function initialize() : void
     {
@@ -363,7 +361,6 @@ class ClassMetadataFactory extends AbstractClassMetadataFactory
         }
 
         $platform  = $this->getTargetPlatform();
-        $class     = $field->getDeclaringClass();
         $generator = $field->getValueGenerator();
 
         if ($generator->getType() === GeneratorType::AUTO) {

@@ -709,7 +709,7 @@ class QueryBuilder
                 $this->dqlParts[$dqlPartName][] = $dqlPart;
             }
         } else {
-            $this->dqlParts[$dqlPartName] = ($isMultiple) ? [$dqlPart] : $dqlPart;
+            $this->dqlParts[$dqlPartName] = $isMultiple ? [$dqlPart] : $dqlPart;
         }
 
         $this->state = self::STATE_DIRTY;

@@ -421,7 +421,7 @@ final class Query extends AbstractQuery
             $countValue = count($value);
 
             for ($i = 0, $l = $sqlPositionsCount; $i < $l; $i++) {
-                $sqlParams[$sqlPositions[$i]] = $value[($i % $countValue)];
+                $sqlParams[$sqlPositions[$i]] = $value[$i % $countValue];
             }
         }
 

@@ -10,7 +10,6 @@ use Doctrine\Common\Persistence\Mapping\MappingException as CommonMappingExcepti
 use Doctrine\ORM\Reflection\ReflectionService;
 use Doctrine\ORM\Reflection\RuntimeReflectionService;
 use Doctrine\ORM\Utility\StaticClassNameConverter;
-use ReflectionException;
 use function array_reverse;
 
 /**
@@ -144,7 +143,6 @@ abstract class AbstractClassMetadataFactory implements ClassMetadataFactory
      * @param string $className The name of the class.
      *
      * @throws \InvalidArgumentException
-     * @throws ReflectionException
      * @throws CommonMappingException
      */
     public function getMetadataFor($className) : ClassMetadata

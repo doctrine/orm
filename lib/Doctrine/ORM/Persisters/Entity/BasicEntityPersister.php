@@ -45,7 +45,6 @@ use function array_combine;
 use function array_keys;
 use function array_map;
 use function array_merge;
-use function array_search;
 use function array_values;
 use function get_class;
 use function implode;
@@ -830,7 +829,6 @@ class BasicEntityPersister implements EntityPersister
 
         $sourceClass       = $association->getDeclaringClass();
         $owningAssociation = $targetClass->getProperty($association->getMappedBy());
-        $targetTableAlias  = $this->getSQLTableAlias($targetClass->getTableName());
 
         foreach ($owningAssociation->getJoinColumns() as $joinColumn) {
             $sourceKeyColumn = $joinColumn->getReferencedColumnName();
@@ -934,9 +932,8 @@ class BasicEntityPersister implements EntityPersister
             $sqlParams = array_merge($sqlParams, $this->getValues($param));
         }
 
-        foreach ($types as $type) {
-            list ($field, $value) = $type;
-            $sqlTypes             = array_merge($sqlTypes, $this->getTypes($field, $value, $this->class));
+        foreach ($types as [$field, $value]) {
+            $sqlTypes = array_merge($sqlTypes, $this->getTypes($field, $value, $this->class));
         }
 
         return [$sqlParams, $sqlTypes];
@@ -1003,7 +1000,7 @@ class BasicEntityPersister implements EntityPersister
         $rsm = $this->currentPersisterContext->rsm;
 
         if ($association->getIndexedBy()) {
-            $rsm = clone ($this->currentPersisterContext->rsm); // this is necessary because the "default rsm" should be changed.
+            $rsm = clone $this->currentPersisterContext->rsm; // this is necessary because the "default rsm" should be changed.
             $rsm->addIndexBy('r', $association->getIndexedBy());
         }
 
@@ -1026,7 +1023,7 @@ class BasicEntityPersister implements EntityPersister
         $rsm = $this->currentPersisterContext->rsm;
 
         if ($association->getIndexedBy()) {
-            $rsm = clone ($this->currentPersisterContext->rsm); // this is necessary because the "default rsm" should be changed.
+            $rsm = clone $this->currentPersisterContext->rsm; // this is necessary because the "default rsm" should be changed.
             $rsm->addIndexBy('r', $association->getIndexedBy());
         }
 
@@ -1519,11 +1516,7 @@ class BasicEntityPersister implements EntityPersister
      */
     protected function getInsertColumnList()
     {
-        $columns             = [];
-        $versionPropertyName = $this->class->isVersioned()
-            ? $this->class->versionProperty->getName()
-            : null
-        ;
+        $columns = [];
 
         foreach ($this->class->getDeclaredPropertiesIterator() as $name => $property) {
             /*if (isset($this->class->embeddedClasses[$name])) {
@@ -1741,7 +1734,7 @@ class BasicEntityPersister implements EntityPersister
             if (is_array($value)) {
                 $in = sprintf('%s IN (%s)', $column, $placeholder);
 
-                if (array_search(null, $value, true) !== false) {
+                if (in_array(null, $value, true)) {
                     $selectedColumns[] = sprintf('(%s OR %s IS NULL)', $in, $column);
 
                     continue;

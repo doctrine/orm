@@ -128,7 +128,7 @@ class EntityRepository implements ObjectRepository, Selectable
     {
         $persister = $this->em->getUnitOfWork()->getEntityPersister($this->entityName);
 
-        return $persister->loadAll($criteria, $orderBy !== null ? $orderBy : [], $limit, $offset);
+        return $persister->loadAll($criteria, $orderBy ?? [], $limit, $offset);
     }
 
     /**
