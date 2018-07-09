@@ -159,7 +159,7 @@ Here is a one-to-one relationship between a ``Customer`` and a
 ``Cart``. The ``Cart`` has a reference back to the ``Customer`` so
 it is bidirectional.
 
-Here we see the ``mappedBy`` and ``inversedBy`` annotations for the first time.
+Here we see the ``mappedBy`` and ``inversedBy`` attributes for the first time.
 They are used to tell Doctrine which property on the other side refers to the
 object.
 
