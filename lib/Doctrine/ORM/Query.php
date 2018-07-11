@@ -658,7 +658,7 @@ final class Query extends AbstractQuery
      *
      * @return IterableResult
      */
-    public function iterate($parameters = null, $hydrationMode = self::HYDRATE_OBJECT)
+    public function iterate($parameters = null, $hydrationMode = null)
     {
         $this->setHint(self::HINT_INTERNAL_ITERATION, true);
 
