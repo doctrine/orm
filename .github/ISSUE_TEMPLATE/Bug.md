@@ -14,7 +14,7 @@ about: Something is broken? 🔨
 
 #### Summary
 
-<!-- Provide a summary desciribing the problem you are experiencing. -->
+<!-- Provide a summary describing the problem you are experiencing. -->
 
 #### Current behavior
 
