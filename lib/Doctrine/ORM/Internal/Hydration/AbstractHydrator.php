@@ -149,9 +149,11 @@ abstract class AbstractHydrator
 
         $this->prepare();
 
-        $result = $this->hydrateAllData();
-
-        $this->cleanup();
+        try {
+            $result = $this->hydrateAllData();
+        } finally {
+            $this->cleanup();
+        }
 
         return $result;
     }
