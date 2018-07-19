@@ -14,6 +14,7 @@ use Doctrine\Tests\Models\DDC3293\DDC3293UserPrefixed;
 use Doctrine\Tests\Models\DDC889\DDC889Class;
 use Doctrine\Tests\Models\Generic\SerializationModel;
 use Doctrine\Tests\Models\GH7141\GH7141Article;
+use Doctrine\Tests\Models\GH7316\GH7316Article;
 use Doctrine\Tests\Models\ValueObjects\Name;
 use Doctrine\Tests\Models\ValueObjects\Person;
 use DOMDocument;
@@ -203,6 +204,16 @@ class XmlMappingDriverTest extends AbstractMappingDriverTest
         $class = $this->createClassMetadata(GH7141Article::class);
 
         $this->assertEquals(
+            Criteria::ASC,
+            $class->getProperty('tags')->getOrderBy()['position']
+        );
+    }
+
+    public function testManyToManyDefaultOrderByAsc() : void
+    {
+        $class = $this->createClassMetadata(GH7316Article::class);
+
+        self::assertEquals(
             Criteria::ASC,
             $class->getProperty('tags')->getOrderBy()['position']
         );

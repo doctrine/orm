@@ -526,7 +526,9 @@ class XmlDriver extends FileDriver
                     $orderBy = [];
 
                     foreach ($manyToManyElement->{'order-by'}->{'order-by-field'} as $orderByField) {
-                        $orderBy[(string) $orderByField['name']] = (string) $orderByField['direction'];
+                        $orderBy[(string) $orderByField['name']] = isset($orderByField['direction'])
+                            ? (string) $orderByField['direction']
+                            : Criteria::ASC;
                     }
 
                     $association->setOrderBy($orderBy);
