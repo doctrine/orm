@@ -28,7 +28,6 @@ use Doctrine\DBAL\Platforms\AbstractPlatform;
 use ReflectionClass;
 use Doctrine\Common\Persistence\Mapping\ClassMetadata;
 use Doctrine\ORM\Cache\CacheException;
-use function in_array;
 
 /**
  * A <tt>ClassMetadata</tt> instance holds all the object-relational mapping metadata

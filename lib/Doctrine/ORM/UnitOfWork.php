@@ -770,7 +770,7 @@ class UnitOfWork implements PropertyChangedListener
 
             if ( ! isset($this->entityChangeSets[$oid]) &&
                 $assoc['isOwningSide'] &&
-                $assoc['type'] === ClassMetadata::MANY_TO_MANY &&
+                $assoc['type'] == ClassMetadata::MANY_TO_MANY &&
                 $val instanceof PersistentCollection &&
                 $val->isDirty()
             ) {
@@ -2344,7 +2344,7 @@ class UnitOfWork implements PropertyChangedListener
                     // break; is commented intentionally!
 
                 case ($relatedEntities instanceof Collection):
-                case (\is_array($relatedEntities)):
+                case (is_array($relatedEntities)):
                     if (($assoc['type'] & ClassMetadata::TO_MANY) <= 0) {
                         throw ORMInvalidArgumentException::invalidAssociation(
                             $this->em->getClassMetadata($assoc['targetEntity']),
