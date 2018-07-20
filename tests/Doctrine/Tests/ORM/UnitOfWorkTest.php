@@ -789,6 +789,78 @@ class UnitOfWorkTest extends OrmTestCase
         self::assertCount(1, $persister1->getInserts());
         self::assertCount(0, $persister2->getInserts());
     }
+
+    /**
+     * This test covers the bug where computing entity change set of an already managed object with an auto-generated id
+     * stored incorrect original entity data, which was missing that id.
+     */
+    public function testComputeEntityChangesetPreservesOriginalIdOnSubsequentCalls()
+    {
+        // Setup fake persister and id generator for identity generation
+        $userPersister = new EntityPersisterMock($this->_emMock, $this->_emMock->getClassMetadata(ForumUser::class));
+        $this->_unitOfWork->setEntityPersister(ForumUser::class, $userPersister);
+        $userPersister->setMockIdGeneratorType(ClassMetadata::GENERATOR_TYPE_IDENTITY);
+
+        // Create and persist new object
+        $user = new ForumUser();
+        $user->username = 'alex';
+        $this->_unitOfWork->persist($user);
+        // this will call UnitOfWork::computeChangeSet() internally
+        $this->_unitOfWork->commit();
+        // should have an id
+        $this->assertInternalType('numeric', $user->id);
+
+        // preserve original entity data
+        $originalEntityData = $this->_unitOfWork->getOriginalEntityData($user);
+
+        // make identical change to the object and preserved original data
+        $user->username = 'new_username';
+        $originalEntityData['username'] = 'new_username';
+
+        // Persist object again
+        $this->_unitOfWork->persist($user);
+        // this will call UnitOfWork::computeChangeSet() internally
+        $this->_unitOfWork->commit();
+
+        $newOriginalEntityData = $this->_unitOfWork->getOriginalEntityData($user);
+
+        // $newOriginalEntityData after second persisting should match the original one
+        $this->assertSame($originalEntityData, $newOriginalEntityData, 'Original entity data of a managed entity doesn\'t match expected value.');
+    }
+
+    /**
+     * This test covers the bug where re-computing entity change set of an already managed object
+     * with an auto-generated id stored incorrect original entity data, which was missing that id.
+     * In practice it caused issues when calling `recomputeSingleEntityChangeSet` in an onFlush event listener.
+     */
+    public function testRecomputeEntityChangesetPreservesOriginalIdOnSubsequentCalls()
+    {
+        // Setup fake persister and id generator for identity generation
+        $userPersister = new EntityPersisterMock($this->_emMock, $this->_emMock->getClassMetadata(ForumUser::class));
+        $this->_unitOfWork->setEntityPersister(ForumUser::class, $userPersister);
+        $userPersister->setMockIdGeneratorType(ClassMetadata::GENERATOR_TYPE_IDENTITY);
+
+        // Create and persist new object
+        $user = new ForumUser();
+        $user->username = 'alex';
+        $this->_unitOfWork->persist($user);
+        $this->_unitOfWork->commit();
+        // should have an id
+        $this->assertInternalType('numeric', $user->id);
+
+        // preserve original entity data
+        $originalEntityData = $this->_unitOfWork->getOriginalEntityData($user);
+
+        // make identical change to the object and preserved original data
+        $originalEntityData['username'] = 'new_username';
+        $user->username = 'new_username';
+
+        $this->_unitOfWork->recomputeSingleEntityChangeSet($this->_emMock->getClassMetadata(ForumUser::class), $user);
+        $newOriginalEntityData = $this->_unitOfWork->getOriginalEntityData($user);
+
+        // $newOriginalEntityData after re-computing the change set should match the original one
+        $this->assertSame($originalEntityData, $newOriginalEntityData, 'Original entity data of a managed entity doesn\'t match expected value.');
+    }
 }
 
 /**
