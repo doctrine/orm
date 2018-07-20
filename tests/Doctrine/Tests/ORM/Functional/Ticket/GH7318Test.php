@@ -115,9 +115,9 @@ final class GH7318Test extends OrmTestCase
     }
 
     /**
-     * This test covers the bug where re-computing entity change set of an already managed object
-     * with an auto-generated id stored incorrect original entity data, which was missing that id.
-     * In practice it caused issues when calling `recomputeSingleEntityChangeSet` in an onFlush event listener.
+     * This test covers the bug where after computing change sets for a managed object having *-to-many relation,
+     * (since the object is persisted, collection is instance of PersistentCollection)
+     * original entity data stored in UnitOfWork was missing that collection.
      */
     public function testComputeChangesetPreservesPersistentCollectionsInOriginalEntityData()
     {
