@@ -2077,18 +2077,16 @@ class BasicEntityPersister implements EntityPersister
      * Retrieves class identifiers types
      *
      * @param ClassMetadata $class
-     * @return array
+     * @return string[]
      */
-    protected function getClassIdentifiersTypes(ClassMetadata $class)
+    protected function getClassIdentifiersTypes(ClassMetadata $class): array
     {
-        $self = $this;
-
-        return array_map(function ($identifier) use ($class, $self) {
+        return array_map(function ($identifier) use ($class) {
             if (isset($class->fieldMappings[$identifier])) {
                 return $class->fieldMappings[$identifier]['type'];
             }
 
-            $targetMapping = $self->em->getClassMetadata($class->associationMappings[$identifier]['targetEntity']);
+            $targetMapping = $this->em->getClassMetadata($class->associationMappings[$identifier]['targetEntity']);
 
             if (isset($targetMapping->fieldMappings[$targetMapping->identifier[0]])) {
                 return $targetMapping->fieldMappings[$targetMapping->identifier[0]]['type'];

@@ -4,9 +4,8 @@ namespace Doctrine\Tests\ORM\Functional;
 
 use Doctrine\DBAL\Types\Type as DBALType;
 use Doctrine\Tests\DbalTypes\CustomIdObject;
-use Doctrine\Tests\DbalTypes\CustomIdObjectType;
+use Doctrine\Tests\DbalTypes\CustomIdObjectHashType;
 use Doctrine\Tests\Models\ClassTableInheritanceCustomType\CustomIdObjectTypeChild;
-use Doctrine\Tests\Models\ClassTableInheritanceCustomType\CustomIdObjectTypeParent;
 use Doctrine\Tests\OrmFunctionalTestCase;
 
 /**
@@ -16,10 +15,10 @@ class ClassTableInheritanceCustomIdObjectTypeTest extends OrmFunctionalTestCase
 {
     protected function setUp()
     {
-        if (DBALType::hasType(CustomIdObjectType::NAME)) {
-            DBALType::overrideType(CustomIdObjectType::NAME, CustomIdObjectType::class);
+        if (DBALType::hasType(CustomIdObjectHashType::NAME)) {
+            DBALType::overrideType(CustomIdObjectHashType::NAME, CustomIdObjectHashType::class);
         } else {
-            DBALType::addType(CustomIdObjectType::NAME, CustomIdObjectType::class);
+            DBALType::addType(CustomIdObjectHashType::NAME, CustomIdObjectHashType::class);
         }
 
         $this->useModelSet('class_table_inheritance_custom_id_object_type');

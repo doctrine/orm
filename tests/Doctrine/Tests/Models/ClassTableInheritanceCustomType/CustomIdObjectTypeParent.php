@@ -15,7 +15,7 @@ abstract class CustomIdObjectTypeParent
 {
     /**
      * @Id
-     * @Column(type="CustomIdObject")
+     * @Column(type="CustomIdObjectHash")
      *
      * @var CustomIdObject
      */
