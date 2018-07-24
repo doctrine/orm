@@ -97,6 +97,10 @@ abstract class OrmFunctionalTestCase extends OrmTestCase
      * @var array
      */
     protected static $_modelSets = [
+        'class_table_inheritance_custom_id_object_type' => [
+            Models\ClassTableInheritanceCustomType\CustomIdObjectTypeParent::class,
+            Models\ClassTableInheritanceCustomType\CustomIdObjectTypeChild::class,
+        ],
         'cms' => [
             Models\CMS\CmsUser::class,
             Models\CMS\CmsPhonenumber::class,
@@ -342,6 +346,11 @@ abstract class OrmFunctionalTestCase extends OrmTestCase
         $platform = $conn->getDatabasePlatform();
 
         $this->_sqlLoggerStack->enabled = false;
+
+        if (isset($this->_usedModelSets['class_table_inheritance_custom_id_object_type'])) {
+            $conn->executeUpdate('DELETE FROM class_table_inheritance_custom_id_type_child');
+            $conn->executeUpdate('DELETE FROM class_table_inheritance_custom_id_type_parent');
+        }
 
         if (isset($this->_usedModelSets['cms'])) {
             $conn->executeUpdate('DELETE FROM cms_users_groups');

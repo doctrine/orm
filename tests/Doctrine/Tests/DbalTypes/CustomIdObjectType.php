@@ -14,7 +14,7 @@ class CustomIdObjectType extends Type
      */
     public function convertToDatabaseValue($value, AbstractPlatform $platform)
     {
-        return $value->id;
+        return $value->id . '_test';
     }
 
     /**
@@ -22,7 +22,7 @@ class CustomIdObjectType extends Type
      */
     public function convertToPHPValue($value, AbstractPlatform $platform)
     {
-        $idObject = new CustomIdObject($value);
+        $idObject = new CustomIdObject(str_replace('_test', '', $value));
 
         return $idObject;
     }
