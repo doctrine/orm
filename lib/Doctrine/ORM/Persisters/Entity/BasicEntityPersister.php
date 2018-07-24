@@ -569,29 +569,12 @@ class BasicEntityPersister implements EntityPersister
      */
     public function delete($entity)
     {
-        $self       = $this;
         $class      = $this->class;
         $identifier = $this->em->getUnitOfWork()->getEntityIdentifier($entity);
         $tableName  = $this->quoteStrategy->getTableName($class, $this->platform);
         $idColumns  = $this->quoteStrategy->getIdentifierColumnNames($class, $this->platform);
         $id         = array_combine($idColumns, $identifier);
-        $types      = array_map(function ($identifier) use ($class, $self) {
-            if (isset($class->fieldMappings[$identifier])) {
-                return $class->fieldMappings[$identifier]['type'];
-            }
-
-            $targetMapping = $self->em->getClassMetadata($class->associationMappings[$identifier]['targetEntity']);
-
-            if (isset($targetMapping->fieldMappings[$targetMapping->identifier[0]])) {
-                return $targetMapping->fieldMappings[$targetMapping->identifier[0]]['type'];
-            }
-
-            if (isset($targetMapping->associationMappings[$targetMapping->identifier[0]])) {
-                return $targetMapping->associationMappings[$targetMapping->identifier[0]]['type'];
-            }
-
-            throw ORMException::unrecognizedField($targetMapping->identifier[0]);
-        }, $class->identifier);
+        $types      = $this->getClassIdentifiersTypes($class);
 
         $this->deleteJoinTableRecords($identifier);
 
@@ -2088,5 +2071,34 @@ class BasicEntityPersister implements EntityPersister
         }
 
         $this->currentPersisterContext = $this->limitsHandlingContext;
+    }
+
+    /**
+     * Retrieves class identifiers types
+     *
+     * @param ClassMetadata $class
+     * @return array
+     */
+    protected function getClassIdentifiersTypes(ClassMetadata $class)
+    {
+        $self = $this;
+
+        return array_map(function ($identifier) use ($class, $self) {
+            if (isset($class->fieldMappings[$identifier])) {
+                return $class->fieldMappings[$identifier]['type'];
+            }
+
+            $targetMapping = $self->em->getClassMetadata($class->associationMappings[$identifier]['targetEntity']);
+
+            if (isset($targetMapping->fieldMappings[$targetMapping->identifier[0]])) {
+                return $targetMapping->fieldMappings[$targetMapping->identifier[0]]['type'];
+            }
+
+            if (isset($targetMapping->associationMappings[$targetMapping->identifier[0]])) {
+                return $targetMapping->associationMappings[$targetMapping->identifier[0]]['type'];
+            }
+
+            throw ORMException::unrecognizedField($targetMapping->identifier[0]);
+        }, $class->identifier);
     }
 }
