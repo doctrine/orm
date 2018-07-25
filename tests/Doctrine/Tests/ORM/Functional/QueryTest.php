@@ -867,4 +867,33 @@ class QueryTest extends OrmFunctionalTestCase
         self::assertInstanceOf(CmsUser::class, $users[2]);
         self::assertNull($users[3]);
     }
+    
+    public function testIterateWithCustomHydrationMode() : void
+    {
+        $user           = new CmsUser();
+        $user->name     = 'Edouard COLE';
+        $user->username = 'sandvige';
+        $user->status   = 'happy <3';
+
+        $this->_em->persist($user);
+        $this->_em->flush();
+        $this->_em->clear();
+
+        $iterable = $this
+            ->_em
+            ->createQuery("SELECT u FROM Doctrine\Tests\Models\CMS\CmsUser u")
+            ->setHydrationMode(Query::HYDRATE_ARRAY)
+            ->iterate()
+        ;
+
+        $element = null;
+        foreach ($iterable as $element)
+            break;
+
+        // Assert that we have at least one element found through the foreach
+        $this->assertNotNull($element);
+
+        // Assert the fetched element is NOT an entity as an Query::HYDRATE_ARRAY have been requested
+        $this->assertNotInstanceOf('Doctrine\Tests\Models\CMS\CmsUser', $element[0]);
+    }
 }
