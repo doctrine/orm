@@ -867,7 +867,7 @@ class QueryTest extends OrmFunctionalTestCase
         self::assertInstanceOf(CmsUser::class, $users[2]);
         self::assertNull($users[3]);
     }
-    
+
     public function testIterateWithCustomHydrationMode() : void
     {
         $user           = new CmsUser();
@@ -881,14 +881,15 @@ class QueryTest extends OrmFunctionalTestCase
 
         $iterable = $this
             ->em
-            ->createQuery("SELECT u FROM Doctrine\Tests\Models\CMS\CmsUser u")
+            ->createQuery('SELECT u FROM Doctrine\Tests\Models\CMS\CmsUser u')
             ->setHydrationMode(Query::HYDRATE_ARRAY)
             ->iterate()
         ;
 
         $element = null;
-        foreach ($iterable as $element)
+        foreach ($iterable as $element) {
             break;
+        }
 
         // Assert that we have at least one element found through the foreach
         $this->assertNotNull($element);
