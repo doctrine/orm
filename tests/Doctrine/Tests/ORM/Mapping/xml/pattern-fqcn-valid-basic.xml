@@ -4,6 +4,20 @@
       xsi:schemaLocation="http://doctrine-project.org/schemas/orm/doctrine-mapping
                           http://doctrine-project.org/schemas/orm/doctrine-mapping.xsd">
 
+    <entity name="PatternFqcnValidBasicNamespaced">
+        <id name="id">
+            <generator strategy="CUSTOM" />
+            <custom-id-generator class="Foo\Bar\Qux" />
+        </id>
+    </entity>
+
+    <entity name="PatternFqcnValidBasicWord">
+        <id name="id">
+            <generator strategy="CUSTOM" />
+            <custom-id-generator class="abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ_0123456789" />
+        </id>
+    </entity>
+
     <entity name="PatternFqcnValidBasicSingleLetter">
         <id name="id">
             <generator strategy="CUSTOM" />
