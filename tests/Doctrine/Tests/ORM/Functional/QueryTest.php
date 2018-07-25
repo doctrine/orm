@@ -875,12 +875,12 @@ class QueryTest extends OrmFunctionalTestCase
         $user->username = 'sandvige';
         $user->status   = 'happy <3';
 
-        $this->_em->persist($user);
-        $this->_em->flush();
-        $this->_em->clear();
+        $this->em->persist($user);
+        $this->em->flush();
+        $this->em->clear();
 
         $iterable = $this
-            ->_em
+            ->em
             ->createQuery("SELECT u FROM Doctrine\Tests\Models\CMS\CmsUser u")
             ->setHydrationMode(Query::HYDRATE_ARRAY)
             ->iterate()
