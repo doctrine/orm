@@ -275,6 +275,7 @@ class XmlMappingDriverTest extends AbstractMappingDriverTest
 
         foreach ([
             'fqcn' => ['custom-id-generator', 'class'],
+            'tablename' => ['entity', 'table'],
         ] as $type => [$element, $attribute]) {
             $errorMessagePrefix = sprintf("Element '%s', attribute '%s': ", $namespaced($element), $attribute);
 
