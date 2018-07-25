@@ -4,20 +4,16 @@
       xsi:schemaLocation="http://doctrine-project.org/schemas/orm/doctrine-mapping
                           http://doctrine-project.org/schemas/orm/doctrine-mapping.xsd">
 
-    <entity name="PatternTablenameValidQuotedContainsHyphen"
-            table="`foo-bar`">
+    <entity name="PatternTablenameValidPlainBasicWord"
+            table="abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ_0123456789">
     </entity>
 
-    <entity name="PatternTablenameValidQuotedContainsSemicolon"
-            table="`foo;bar`">
+    <entity name="PatternTablenameValidPlainBasicCapitalized"
+            table="Foo">
     </entity>
 
-    <entity name="PatternTablenameValidQuotedContainsSpace"
-            table="`foo bar`">
-    </entity>
-
-    <entity name="PatternTablenameValidQuotedContainsPuncts"
-            table="`a/b^c~d`">
+    <entity name="PatternTablenameValidPlainBasicSingleLetter"
+            table="t">
     </entity>
 
 </doctrine-mapping>
