@@ -149,31 +149,126 @@ class XmlMappingDriverTest extends AbstractMappingDriverTest
      * @param string $xmlMappingFile
      * @dataProvider dataValidSchema
      * @group DDC-2429
+     * @group 6389
      */
     public function testValidateXmlSchema($xmlMappingFile)
+    {
+        $this->assertTrue($this->doValidateXmlSchema($xmlMappingFile));
+    }
+
+    /**
+     * @param string   $xmlMappingFile
+     * @param string[] $errorMessageRegexes
+     * @dataProvider dataValidSchemaInvalidMappings
+     * @group 6389
+     */
+    public function testValidateXmlSchemaWithInvalidMapping($xmlMappingFile, $errorMessageRegexes)
+    {
+        $savedUseErrors = libxml_use_internal_errors(true);
+        libxml_clear_errors();
+
+        try {
+            $validationResult = $this->doValidateXmlSchema($xmlMappingFile);
+
+            $this->assertFalse($validationResult, 'Invalid XML mapping should not pass XSD validation.');
+
+            /** @var \LibXMLError[] $errors */
+            $errors = libxml_get_errors();
+
+            $this->assertCount(count($errorMessageRegexes), $errors);
+            foreach ($errorMessageRegexes as $i => $errorMessageRegex) {
+                $this->assertRegExp($errorMessageRegex, trim($errors[$i]->message));
+            }
+        } finally {
+            // Restore previous setting
+            libxml_clear_errors();
+            libxml_use_internal_errors($savedUseErrors);
+        }
+    }
+
+    /**
+     * @param string $xmlMappingFile
+     * @return bool
+     */
+    private function doValidateXmlSchema($xmlMappingFile)
     {
         $xsdSchemaFile  = __DIR__ . '/../../../../../doctrine-mapping.xsd';
         $dom            = new \DOMDocument('1.0', 'UTF-8');
 
         $dom->load($xmlMappingFile);
 
-        $this->assertTrue($dom->schemaValidate($xsdSchemaFile));
+        return $dom->schemaValidate($xsdSchemaFile);
     }
 
     static public function dataValidSchema()
     {
-        $list    = glob(__DIR__ . '/xml/*.xml');
-        $invalid = [
-            'Doctrine.Tests.Models.DDC889.DDC889Class.dcm'
-        ];
+        $list    = self::getAllXmlMappingPaths();
+        $invalid = self::getInvalidXmlMappingMap();
 
         $list = array_filter($list, function($item) use ($invalid){
-            return ! in_array(pathinfo($item, PATHINFO_FILENAME), $invalid);
+            return ! array_key_exists(pathinfo($item, PATHINFO_FILENAME), $invalid);
         });
 
         return array_map(function($item){
             return [$item];
         }, $list);
+    }
+
+    static public function dataValidSchemaInvalidMappings()
+    {
+        $list    = self::getAllXmlMappingPaths();
+        $invalid = self::getInvalidXmlMappingMap();
+
+        $map = [];
+        foreach ($invalid as $filename => $errorMessageRegexes) {
+            $foundItem = null;
+            foreach ($list as $item) {
+                if (pathinfo($item, PATHINFO_FILENAME) === $filename) {
+                    $foundItem = $item;
+                    break;
+                }
+            }
+
+            if ($foundItem !== null) {
+                $map[$foundItem] = $errorMessageRegexes;
+            } else {
+                throw new \RuntimeException(sprintf('Found no XML mapping with filename "%s".', $filename));
+            }
+        }
+
+        return array_map(function($item, $errorMessageRegexes){
+            return [$item, $errorMessageRegexes];
+        }, array_keys($map), $map);
+    }
+
+    /**
+     * @return string[]
+     */
+    static private function getAllXmlMappingPaths()
+    {
+        return glob(__DIR__ . '/xml/*.xml');
+    }
+
+    /**
+     * @return array<string, string[]> ($filename => $errorMessageRegexes)
+     */
+    static private function getInvalidXmlMappingMap()
+    {
+        $invalid = [
+            'Doctrine.Tests.Models.DDC889.DDC889Class.dcm' => [
+                "Element '{http://doctrine-project.org/schemas/orm/doctrine-mapping}class': This element is not expected. Expected is %s.",
+            ],
+        ];
+
+        // Convert basic sprintf-style formats to PCRE patterns
+        return array_map(function ($errorMessageFormats) {
+            return array_map(function ($errorMessageFormat) {
+                return '/^' . strtr(preg_quote($errorMessageFormat, '/'), [
+                        '%%' => '%',
+                        '%s' => '.*',
+                    ]) . '$/s';
+            }, $errorMessageFormats);
+        }, $invalid);
     }
 
     /**
