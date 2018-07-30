@@ -192,20 +192,20 @@ class XmlMappingDriverTest extends AbstractMappingDriverTest
      */
     private function doValidateXmlSchema($xmlMappingFile)
     {
-        $xsdSchemaFile  = __DIR__ . '/../../../../../doctrine-mapping.xsd';
-        $dom            = new \DOMDocument('1.0', 'UTF-8');
+        $xsdSchemaFile = __DIR__ . '/../../../../../doctrine-mapping.xsd';
+        $dom           = new \DOMDocument('1.0', 'UTF-8');
 
         $dom->load($xmlMappingFile);
 
         return $dom->schemaValidate($xsdSchemaFile);
     }
 
-    static public function dataValidSchema()
+    public static function dataValidSchema()
     {
         $list    = self::getAllXmlMappingPaths();
         $invalid = self::getInvalidXmlMappingMap();
 
-        $list = array_filter($list, function($filename) use ($invalid){
+        $list = array_filter($list, function ($filename) use ($invalid) {
             $matchesInvalid = false;
             foreach ($invalid as $filenamePattern => $unused) {
                 if (fnmatch($filenamePattern, $filename)) {
@@ -217,19 +217,19 @@ class XmlMappingDriverTest extends AbstractMappingDriverTest
             return ! $matchesInvalid;
         }, ARRAY_FILTER_USE_KEY);
 
-        return array_map(function($item){
+        return array_map(function ($item) {
             return [$item];
         }, $list);
     }
 
-    static public function dataValidSchemaInvalidMappings()
+    public static function dataValidSchemaInvalidMappings()
     {
         $list    = self::getAllXmlMappingPaths();
         $invalid = self::getInvalidXmlMappingMap();
 
         $map = [];
         foreach ($invalid as $filenamePattern => $errorMessageRegexes) {
-            $foundItems = array_filter($list, function($filename) use ($filenamePattern){
+            $foundItems = array_filter($list, function ($filename) use ($filenamePattern) {
                 return fnmatch($filenamePattern, $filename);
             }, ARRAY_FILTER_USE_KEY);
 
@@ -248,7 +248,7 @@ class XmlMappingDriverTest extends AbstractMappingDriverTest
     /**
      * @return array<string, string> ($filename => $path)
      */
-    static private function getAllXmlMappingPaths()
+    private static function getAllXmlMappingPaths()
     {
         $list = [];
         foreach (glob(__DIR__ . '/xml/*.xml') as $path) {
@@ -261,7 +261,7 @@ class XmlMappingDriverTest extends AbstractMappingDriverTest
     /**
      * @return array<string, string[]> ($filenamePattern => $errorMessageRegexes)
      */
-    static private function getInvalidXmlMappingMap()
+    private static function getInvalidXmlMappingMap()
     {
         $namespaced = function ($name) {
             return sprintf('{%s}%s', 'http://doctrine-project.org/schemas/orm/doctrine-mapping', $name);
