@@ -27,7 +27,6 @@ use Doctrine\DBAL\Types\Type;
 use Doctrine\DBAL\Platforms\AbstractPlatform;
 use ReflectionClass;
 use Doctrine\Common\Persistence\Mapping\ClassMetadata;
-use Doctrine\Common\ClassLoader;
 use Doctrine\ORM\Cache\CacheException;
 
 /**
@@ -1025,7 +1024,11 @@ class ClassMetadataInfo implements ClassMetadata
     public function validateAssociations()
     {
         foreach ($this->associationMappings as $mapping) {
-            if ( ! ClassLoader::classExists($mapping['targetEntity']) ) {
+            if (
+                ! class_exists($mapping['targetEntity'])
+                && ! interface_exists($mapping['targetEntity'])
+                && ! trait_exists($mapping['targetEntity'])
+            ) {
                 throw MappingException::invalidTargetEntityClass($mapping['targetEntity'], $this->name, $mapping['fieldName']);
             }
         }
