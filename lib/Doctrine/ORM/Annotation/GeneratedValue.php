@@ -15,7 +15,7 @@ final class GeneratedValue implements Annotation
      *
      * @var string
      *
-     * @Enum({"AUTO", "SEQUENCE", "TABLE", "IDENTITY", "NONE", "UUID", "CUSTOM"})
+     * @Enum({"AUTO", "SEQUENCE", "TABLE", "IDENTITY", "NONE", "CUSTOM"})
      */
     public $strategy = 'AUTO';
 }
