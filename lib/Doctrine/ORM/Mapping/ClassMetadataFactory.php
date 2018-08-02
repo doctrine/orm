@@ -421,7 +421,6 @@ class ClassMetadataFactory extends AbstractClassMetadataFactory
 
             case GeneratorType::IDENTITY:
             case GeneratorType::NONE:
-            case GeneratorType::UUID:
                 break;
 
             default:
@@ -533,10 +532,6 @@ class ClassMetadataFactory extends AbstractClassMetadataFactory
                     $platform->quoteIdentifier($definition['sequenceName']),
                     $definition['allocationSize']
                 );
-                break;
-
-            case GeneratorType::UUID:
-                return new Sequencing\UuidGenerator();
                 break;
 
             case GeneratorType::CUSTOM:
