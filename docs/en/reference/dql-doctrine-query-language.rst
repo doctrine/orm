@@ -1722,7 +1722,7 @@ QUANTIFIED/BETWEEN/COMPARISON/LIKE/NULL/EXISTS
     QuantifiedExpression     ::= ("ALL" | "ANY" | "SOME") "(" Subselect ")"
     BetweenExpression        ::= ArithmeticExpression ["NOT"] "BETWEEN" ArithmeticExpression "AND" ArithmeticExpression
     ComparisonExpression     ::= ArithmeticExpression ComparisonOperator ( QuantifiedExpression | ArithmeticExpression )
-    InExpression             ::= SingleValuedPathExpression ["NOT"] "IN" "(" (InParameter {"," InParameter}* | Subselect) ")"
+    InExpression             ::= ArithmeticExpression ["NOT"] "IN" "(" (InParameter {"," InParameter}* | Subselect) ")"
     InstanceOfExpression     ::= IdentificationVariable ["NOT"] "INSTANCE" ["OF"] (InstanceOfParameter | "(" InstanceOfParameter {"," InstanceOfParameter}* ")")
     InstanceOfParameter      ::= AbstractSchemaName | InputParameter
     LikeExpression           ::= StringExpression ["NOT"] "LIKE" StringPrimary ["ESCAPE" char]
