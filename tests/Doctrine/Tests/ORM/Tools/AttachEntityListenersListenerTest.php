@@ -69,13 +69,29 @@ class AttachEntityListenersListenerTest extends OrmTestCase
             'postPersistHandler'
         );
 
+        $this->listener->addEntityListener(
+            AttachEntityListenersListenerTestBarEntity::class,
+            AttachEntityListenersListenerTestListener2::class,
+            Events::onFlush
+        );
+
+        $this->listener->addEntityListener(
+            AttachEntityListenersListenerTestBarEntity::class,
+            AttachEntityListenersListenerTestListener2::class,
+            Events::postFlush
+        );
+
         $metadata = $this->factory->getMetadataFor(AttachEntityListenersListenerTestBarEntity::class);
 
         $this->assertArrayHasKey('postPersist', $metadata->entityListeners);
         $this->assertArrayHasKey('prePersist', $metadata->entityListeners);
+        $this->assertArrayHasKey('onFlush', $metadata->entityListeners);
+        $this->assertArrayHasKey('postFlush', $metadata->entityListeners);
 
         $this->assertCount(2, $metadata->entityListeners['prePersist']);
         $this->assertCount(2, $metadata->entityListeners['postPersist']);
+        $this->assertCount(2, $metadata->entityListeners['onFlush']);
+        $this->assertCount(2, $metadata->entityListeners['postFlush']);
 
         $this->assertEquals('prePersist', $metadata->entityListeners['prePersist'][0]['method']);
         $this->assertEquals(AttachEntityListenersListenerTestListener::class, $metadata->entityListeners['prePersist'][0]['class']);
@@ -88,6 +104,18 @@ class AttachEntityListenersListenerTest extends OrmTestCase
 
         $this->assertEquals('postPersistHandler', $metadata->entityListeners['postPersist'][1]['method']);
         $this->assertEquals(AttachEntityListenersListenerTestListener2::class, $metadata->entityListeners['postPersist'][1]['class']);
+
+        $this->assertEquals('onFlush', $metadata->entityListeners['onFlush'][0]['method']);
+        $this->assertEquals(AttachEntityListenersListenerTestListener::class, $metadata->entityListeners['onFlush'][0]['class']);
+
+        $this->assertEquals('onFlush', $metadata->entityListeners['onFlush'][1]['method']);
+        $this->assertEquals(AttachEntityListenersListenerTestListener2::class, $metadata->entityListeners['onFlush'][1]['class']);
+
+        $this->assertEquals('postFlush', $metadata->entityListeners['postFlush'][0]['method']);
+        $this->assertEquals(AttachEntityListenersListenerTestListener::class, $metadata->entityListeners['postFlush'][0]['class']);
+
+        $this->assertEquals('postFlush', $metadata->entityListeners['postFlush'][1]['method']);
+        $this->assertEquals(AttachEntityListenersListenerTestListener2::class, $metadata->entityListeners['postFlush'][1]['class']);
     }
 
     /**
@@ -106,6 +134,18 @@ class AttachEntityListenersListenerTest extends OrmTestCase
             AttachEntityListenersListenerTestFooEntity::class,
             AttachEntityListenersListenerTestListener::class,
             Events::postPersist
+        );
+
+        $this->listener->addEntityListener(
+            AttachEntityListenersListenerTestFooEntity::class,
+            AttachEntityListenersListenerTestListener::class,
+            Events::onFlush
+        );
+
+        $this->listener->addEntityListener(
+            AttachEntityListenersListenerTestFooEntity::class,
+            AttachEntityListenersListenerTestListener::class,
+            Events::postFlush
         );
 
         $this->factory->getMetadataFor(AttachEntityListenersListenerTestFooEntity::class);
@@ -157,6 +197,16 @@ class AttachEntityListenersListenerTestListener
     {
         $this->calls[__FUNCTION__][] = func_get_args();
     }
+
+    public function onFlush()
+    {
+        $this->calls[__FUNCTION__][] = func_get_args();
+    }
+
+    public function postFlush()
+    {
+        $this->calls[__FUNCTION__][] = func_get_args();
+    }
 }
 
 class AttachEntityListenersListenerTestListener2
@@ -169,6 +219,16 @@ class AttachEntityListenersListenerTestListener2
     }
 
     public function postPersistHandler()
+    {
+        $this->calls[__FUNCTION__][] = func_get_args();
+    }
+
+    public function onFlush()
+    {
+        $this->calls[__FUNCTION__][] = func_get_args();
+    }
+
+    public function postFlush()
     {
         $this->calls[__FUNCTION__][] = func_get_args();
     }
