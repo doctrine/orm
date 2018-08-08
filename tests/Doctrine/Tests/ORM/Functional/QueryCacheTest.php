@@ -60,7 +60,7 @@ class QueryCacheTest extends OrmFunctionalTestCase
 
     /**
      * @param <type> $query
-     * @depends testQueryCache_DependsOnHints
+     * @depends testQueryCacheDependsOnHints
      */
     public function testQueryCacheDependsOnFirstResult($query) : void
     {
@@ -76,7 +76,7 @@ class QueryCacheTest extends OrmFunctionalTestCase
 
     /**
      * @param <type> $query
-     * @depends testQueryCache_DependsOnHints
+     * @depends testQueryCacheDependsOnHints
      */
     public function testQueryCacheDependsOnMaxResults($query) : void
     {
@@ -91,7 +91,7 @@ class QueryCacheTest extends OrmFunctionalTestCase
 
     /**
      * @param <type> $query
-     * @depends testQueryCache_DependsOnHints
+     * @depends testQueryCacheDependsOnHints
      */
     public function testQueryCacheDependsOnHydrationMode($query) : void
     {
