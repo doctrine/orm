@@ -6,7 +6,7 @@
                             https://raw.github.com/doctrine/doctrine2/master/doctrine-mapping.xsd">
     <entity name="Doctrine\Tests\Models\DDC3293\DDC3293UserPrefixed" table="user">
         <id name="id" column="id">
-            <generator strategy="UUID" />
+            <generator strategy="AUTO" />
         </id>
         <embedded
             name="address"

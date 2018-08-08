@@ -40,12 +40,6 @@ final class GeneratorType
     public const IDENTITY = 'IDENTITY';
 
     /**
-     * UUID means that a UUID/GUID expression is used for id generation. Full
-     * portability is currently not guaranteed.
-     */
-    public const UUID = 'UUID';
-
-    /**
      * CUSTOM means that customer will use own ID generator that supposedly work
      */
     public const CUSTOM = 'CUSTOM';

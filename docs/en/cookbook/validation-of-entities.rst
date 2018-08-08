@@ -79,8 +79,8 @@ In XML Mappings:
     <doctrine-mapping>
         <entity name="Order">
             <lifecycle-callbacks>
-                <lifecycle-callback type="prePersist" method="assertCustomerallowedBuying" />
-                <lifecycle-callback type="preUpdate" method="assertCustomerallowedBuying" />
+                <lifecycle-callback type="prePersist" method="assertCustomerAllowedBuying" />
+                <lifecycle-callback type="preUpdate" method="assertCustomerAllowedBuying" />
             </lifecycle-callbacks>
         </entity>
     </doctrine-mapping>

@@ -16,6 +16,7 @@ use Doctrine\ORM\Exception\MismatchedEventManager;
 use Doctrine\ORM\Exception\MissingIdentifierField;
 use Doctrine\ORM\Exception\MissingMappingDriverImplementation;
 use Doctrine\ORM\Exception\UnrecognizedIdentifierFields;
+use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\Mapping\ClassMetadataFactory;
 use Doctrine\ORM\Proxy\Factory\ProxyFactory;
 use Doctrine\ORM\Proxy\Factory\StaticProxyFactory;
@@ -342,9 +343,6 @@ final class EntityManager implements EntityManagerInterface
      * This effectively synchronizes the in-memory state of managed objects with the
      * database.
      *
-     * If an entity is explicitly passed to this method only this entity and
-     * the cascade-persist semantics + scheduled inserts/removals are synchronized.
-     *
      * @throws OptimisticLockException If a version check on an entity that
      *         makes use of optimistic locking fails.
      * @throws ORMException
@@ -378,6 +376,10 @@ final class EntityManager implements EntityManagerInterface
     {
         $class     = $this->metadataFactory->getMetadataFor(ltrim($entityName, '\\'));
         $className = $class->getClassName();
+
+        if ($lockMode !== null) {
+            $this->checkLockRequirements($lockMode, $class);
+        }
 
         if (! is_array($id)) {
             if ($class->isIdentifierComposite()) {
@@ -441,24 +443,14 @@ final class EntityManager implements EntityManagerInterface
 
         switch (true) {
             case $lockMode === LockMode::OPTIMISTIC:
-                if (! $class->isVersioned()) {
-                    throw OptimisticLockException::notVersioned($className);
-                }
-
                 $entity = $persister->load($sortedId);
 
                 $unitOfWork->lock($entity, $lockMode, $lockVersion);
 
                 return $entity;
-
             case $lockMode === LockMode::PESSIMISTIC_READ:
             case $lockMode === LockMode::PESSIMISTIC_WRITE:
-                if (! $this->getConnection()->isTransactionActive()) {
-                    throw TransactionRequiredException::transactionRequired();
-                }
-
                 return $persister->load($sortedId, null, null, [], $lockMode);
-
             default:
                 return $persister->loadById($sortedId);
         }
@@ -899,5 +891,25 @@ final class EntityManager implements EntityManagerInterface
     public function hasFilters()
     {
         return $this->filterCollection !== null;
+    }
+
+    /**
+     * @throws OptimisticLockException
+     * @throws TransactionRequiredException
+     */
+    private function checkLockRequirements(int $lockMode, ClassMetadata $class) : void
+    {
+        switch ($lockMode) {
+            case LockMode::OPTIMISTIC:
+                if (! $class->isVersioned()) {
+                    throw OptimisticLockException::notVersioned($class->getClassName());
+                }
+            // Intentional fallthrough
+            case LockMode::PESSIMISTIC_READ:
+            case LockMode::PESSIMISTIC_WRITE:
+                if (! $this->getConnection()->isTransactionActive()) {
+                    throw TransactionRequiredException::transactionRequired();
+                }
+        }
     }
 }

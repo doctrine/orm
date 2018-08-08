@@ -41,3 +41,7 @@ collection. You can disable this behavior by setting the
 ``$fetchJoinCollection`` flag to ``false``; in that case only 2 instead of the 3 queries
 described are executed. We hope to automate the detection for this in
 the future.
+
+.. note::
+
+    ``$fetchJoinCollection`` flag set to ``true`` might affect results if you use aggregations in your query.

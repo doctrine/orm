@@ -31,28 +31,37 @@ Example:
 
     <?php
     /** @MappedSuperclass */
-    class MappedSuperclassBase
+    class Person
     {
         /** @Column(type="integer") */
         protected $mapped1;
         /** @Column(type="string") */
         protected $mapped2;
         /**
-         * @OneToOne(targetEntity="MappedSuperclassRelated1")
-         * @JoinColumn(name="related1_id", referencedColumnName="id")
+         * @OneToOne(targetEntity="Toothbrush")
+         * @JoinColumn(name="toothbrush_id", referencedColumnName="id")
          */
-        protected $mappedRelated1;
+        protected $toothbrush;
 
         // ... more fields and methods
     }
 
     /** @Entity */
-    class EntitySubClass extends MappedSuperclassBase
+    class Employee extends Person
     {
         /** @Id @Column(type="integer") */
         private $id;
         /** @Column(type="string") */
         private $name;
+
+        // ... more fields and methods
+    }
+
+    /** @Entity */
+    class Toothbrush
+    {
+        /** @Id @Column(type="integer") */
+        private $id;
 
         // ... more fields and methods
     }
@@ -388,7 +397,7 @@ Things to note:
 -  This feature is available for all kind of associations. (OneToOne, OneToMany, ManyToOne, ManyToMany)
 -  The association type *CANNOT* be changed.
 -  The override could redefine the joinTables or joinColumns depending on the association type.
--  The override could redefine inversedBy to reference more than one extended entity.
+-  The override could redefine ``inversedBy`` to reference more than one extended entity.
 -  The override could redefine fetch to modify the fetch strategy of the extended entity.
 
 Attribute Override

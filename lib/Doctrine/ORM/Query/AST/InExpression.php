@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace Doctrine\ORM\Query\AST;
 
 /**
- * InExpression ::= StateFieldPathExpression ["NOT"] "IN" "(" (Literal {"," Literal}* | Subselect) ")"
+ * InExpression ::= ArithmeticExpression ["NOT"] "IN" "(" (Literal {"," Literal}* | Subselect) ")"
  */
 class InExpression extends Node
 {

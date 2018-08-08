@@ -92,7 +92,7 @@ Defines a contract for accessing a particular region.
 
 Defines a contract for accessing a particular cache region.
 
-`See API Doc <http://www.doctrine-project.org/api/orm/2.5/class-Doctrine.ORM.Cache.Region.html>`_.
+`See API Doc <https://www.doctrine-project.org/api/orm/latest/Doctrine/ORM/Cache/Region.html>`_.
 
 Concurrent cache region
 ~~~~~~~~~~~~~~~~~~~~~~~
@@ -106,7 +106,7 @@ If you want to use an ``READ_WRITE`` cache, you should consider providing your o
 
 Defines contract for concurrently managed data region.
 
-`See API Doc <http://www.doctrine-project.org/api/orm/2.5/class-Doctrine.ORM.Cache.ConcurrentRegion.html>`_.
+`See API Doc <https://www.doctrine-project.org/api/orm/latest/Doctrine/ORM/Cache/ConcurrentRegion.html>`_.
 
 Timestamp region
 ~~~~~~~~~~~~~~~~
@@ -115,7 +115,7 @@ Timestamp region
 
 Tracks the timestamps of the most recent updates to particular entity.
 
-`See API Doc <http://www.doctrine-project.org/api/orm/2.5/class-Doctrine.ORM.Cache.TimestampRegion.html>`_.
+`See API Doc <https://www.doctrine-project.org/api/orm/latest/Doctrine/ORM/Cache/TimestampRegion.html>`_.
 
 .. _reference-second-level-cache-mode:
 
@@ -169,16 +169,17 @@ Doctrine allows you to specify configurations and some points of extension for t
 Enable Second Level Cache
 ~~~~~~~~~~~~~~~~~~~~~~~~~
 
-To enable the second-level-cache, you should provide a cache factory
+To enable the second-level-cache, you should provide a cache factory.
 ``\Doctrine\ORM\Cache\DefaultCacheFactory`` is the default implementation.
 
 .. code-block:: php
 
     <?php
-    /** @var \Doctrine\ORM\Cache\RegionsConfiguration $config */
+    /** @var \Doctrine\ORM\Cache\RegionsConfiguration $cacheConfig */
     /** @var \Doctrine\Common\Cache\Cache $cache */
+    /** @var \Doctrine\ORM\Configuration $config */
 
-    $factory = new \Doctrine\ORM\Cache\DefaultCacheFactory($config, $cache);
+    $factory = new \Doctrine\ORM\Cache\DefaultCacheFactory($cacheConfig, $cache);
 
     // Enable second-level-cache
     $config->setSecondLevelCacheEnabled();
@@ -200,7 +201,7 @@ It allows you to provide a specific implementation of the following components :
 * ``EntityHydrator``  Transform an entity into a cache entry and cache entry into entities
 * ``CollectionHydrator`` Transform a collection into a cache entry and cache entry into collection
 
-`See API Doc <http://www.doctrine-project.org/api/orm/2.5/class-Doctrine.ORM.Cache.DefaultCacheFactory.html>`_.
+`See API Doc <https://www.doctrine-project.org/api/orm/latest/Doctrine/ORM/Cache/DefaultCacheFactory.html>`_.
 
 Region Lifetime
 ~~~~~~~~~~~~~~~
@@ -212,6 +213,7 @@ To specify a default lifetime for all regions or specify a different lifetime fo
     <?php
     /** @var \Doctrine\ORM\Configuration $config */
     /** @var \Doctrine\ORM\Cache\CacheConfiguration $cacheConfig */
+    /** @var \Doctrine\ORM\Cache\RegionsConfiguration $regionConfig */
     $cacheConfig  =  $config->getSecondLevelCacheConfiguration();
     $regionConfig =  $cacheConfig->getRegionsConfiguration();
 
@@ -259,7 +261,7 @@ By providing a cache logger you should be able to get information about all cach
 If you want to get more information you should implement ``\Doctrine\ORM\Cache\Logging\CacheLogger``.
 and collect all information you want.
 
-`See API Doc <http://www.doctrine-project.org/api/orm/2.5/class-Doctrine.ORM.Cache.CacheLogger.html>`_.
+`See API Doc <https://www.doctrine-project.org/api/orm/latest/Doctrine/ORM/Cache/Logging/CacheLogger.html>`_.
 
 Entity cache definition
 -----------------------
@@ -396,8 +398,8 @@ Basic entity cache
 
     $country1  = $em->find('Country', 1); // Retrieve item from cache
 
-    $country->setName("New Name");
-    $em->persist($country);
+    $country1->setName("New Name");
+    
     $em->flush();                         // Hit database to update the row and update cache
 
     $em->clear();                         // Clear entity manager
