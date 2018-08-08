@@ -708,6 +708,13 @@ class LanguageRecognitionTest extends OrmTestCase
     {
         $this->assertValidDQL("SELECT new " . __NAMESPACE__ . "\\DummyStruct(u.id, 'foo', (SELECT 1 FROM Doctrine\Tests\Models\CMS\CmsUser su), true) FROM Doctrine\Tests\Models\CMS\CmsUser u");
     }
+
+    public function testStringPrimaryAcceptsAggregateExpression() : void
+    {
+        $this->assertValidDQL(
+            'SELECT CONCAT(a.topic, MAX(a.version)) last FROM Doctrine\Tests\Models\CMS\CmsArticle a GROUP BY a'
+        );
+    }
 }
 
 /** @Entity */
