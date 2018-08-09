@@ -25,7 +25,7 @@ class SingleScalarHydrator extends AbstractHydrator
         $numRows = count($data);
 
         if ($numRows === 0) {
-            throw new NoResultException();
+            return null;
         }
 
         if ($numRows > 1) {
