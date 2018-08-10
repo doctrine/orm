@@ -180,7 +180,11 @@ class XmlMappingDriverTest extends AbstractMappingDriverTest
 
     public static function dataValidSchema()
     {
-        $list    = glob(__DIR__ . '/xml/*.xml');
+        $list = [];
+        foreach (glob(__DIR__ . '/xml/*.xml') as $item) {
+            $list[pathinfo($item, PATHINFO_FILENAME)] = $item;
+        }
+
         $invalid = ['Doctrine.Tests.Models.DDC889.DDC889Class.dcm'];
 
         $list = array_filter($list, function ($item) use ($invalid) {
