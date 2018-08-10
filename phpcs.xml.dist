@@ -4,10 +4,10 @@
     <arg name="extensions" value="php"/>
     <arg name="parallel" value="80"/>
     <arg name="cache" value=".phpcs-cache"/>
-    <arg name="colors" />
+    <arg name="colors"/>
 
-    <!-- Ignore warnings and show progress of the run -->
-    <arg value="np"/>
+    <!-- Ignore warnings, show progress of the run and show sniff names -->
+    <arg value="nps"/>
 
     <file>lib</file>
     <file>tests</file>
@@ -15,10 +15,144 @@
 
     <exclude-pattern>*/tests/Doctrine/Tests/Proxies/__CG__/*</exclude-pattern>
 
-    <rule ref="Doctrine" />
+    <rule ref="Doctrine">
+        <exclude name="SlevomatCodingStandard.TypeHints.TypeHintDeclaration.MissingParameterTypeHint"/>
+        <exclude name="SlevomatCodingStandard.TypeHints.TypeHintDeclaration.MissingReturnTypeHint"/>
+        <exclude name="SlevomatCodingStandard.Exceptions.ReferenceThrowableOnly.ReferencedGeneralException"/>
+        <exclude name="SlevomatCodingStandard.ControlStructures.EarlyExit"/>
+        <exclude name="SlevomatCodingStandard.Classes.SuperfluousAbstractClassNaming"/>
+        <exclude name="SlevomatCodingStandard.Classes.SuperfluousExceptionNaming"/>
+    </rule>
 
     <rule ref="PSR1.Classes.ClassDeclaration.MultipleClasses">
         <exclude-pattern>*/tests/*</exclude-pattern>
     </rule>
-</ruleset>
 
+    <rule ref="Squiz.Classes.ClassFileName.NoMatch">
+        <exclude-pattern>*/tests/*</exclude-pattern>
+    </rule>
+
+    <rule ref="Generic.NamingConventions.UpperCaseConstantName.ClassConstantNotUpperCase">
+        <exclude-pattern>lib/Doctrine/ORM/Events.php</exclude-pattern>
+        <exclude-pattern>lib/Doctrine/ORM/Tools/ToolEvents.php</exclude-pattern>
+    </rule>
+
+    <rule ref="SlevomatCodingStandard.TypeHints.TypeHintDeclaration.MissingTraversablePropertyTypeHintSpecification">
+        <exclude-pattern>lib/Doctrine/ORM/Annotation/*</exclude-pattern>
+    </rule>
+
+    <rule ref="SlevomatCodingStandard.ControlStructures.DisallowEqualOperators.DisallowedNotEqualOperator">
+        <exclude-pattern>lib/Doctrine/ORM/Internal/Hydration/AbstractHydrator.php</exclude-pattern>
+    </rule>
+
+    <rule ref="PSR1.Methods.CamelCapsMethodName.NotCamelCaps">
+        <exclude-pattern>lib/Doctrine/ORM/Query/Parser.php</exclude-pattern>
+    </rule>
+
+    <rule ref="SlevomatCodingStandard.Namespaces.ReferenceUsedNamesOnly.ReferenceViaFullyQualifiedName">
+        <exclude-pattern>lib/Doctrine/ORM/Mapping/AssociationOverride.php</exclude-pattern>
+        <exclude-pattern>lib/Doctrine/ORM/Mapping/AssociationOverrides.php</exclude-pattern>
+        <exclude-pattern>lib/Doctrine/ORM/Mapping/AttributeOverride.php</exclude-pattern>
+        <exclude-pattern>lib/Doctrine/ORM/Mapping/AttributeOverrides.php</exclude-pattern>
+        <exclude-pattern>lib/Doctrine/ORM/Mapping/Cache.php</exclude-pattern>
+        <exclude-pattern>lib/Doctrine/ORM/Mapping/ChangeTrackingPolicy.php</exclude-pattern>
+        <exclude-pattern>lib/Doctrine/ORM/Mapping/Column.php</exclude-pattern>
+        <exclude-pattern>lib/Doctrine/ORM/Mapping/ColumnResult.php</exclude-pattern>
+        <exclude-pattern>lib/Doctrine/ORM/Mapping/CustomIdGenerator.php</exclude-pattern>
+        <exclude-pattern>lib/Doctrine/ORM/Mapping/DiscriminatorColumn.php</exclude-pattern>
+        <exclude-pattern>lib/Doctrine/ORM/Mapping/DiscriminatorMap.php</exclude-pattern>
+        <exclude-pattern>lib/Doctrine/ORM/Mapping/Embeddable.php</exclude-pattern>
+        <exclude-pattern>lib/Doctrine/ORM/Mapping/Embedded.php</exclude-pattern>
+        <exclude-pattern>lib/Doctrine/ORM/Mapping/Entity.php</exclude-pattern>
+        <exclude-pattern>lib/Doctrine/ORM/Mapping/EntityListeners.php</exclude-pattern>
+        <exclude-pattern>lib/Doctrine/ORM/Mapping/EntityResult.php</exclude-pattern>
+        <exclude-pattern>lib/Doctrine/ORM/Mapping/FieldResult.php</exclude-pattern>
+        <exclude-pattern>lib/Doctrine/ORM/Mapping/GeneratedValue.php</exclude-pattern>
+        <exclude-pattern>lib/Doctrine/ORM/Mapping/HasLifecycleCallbacks.php</exclude-pattern>
+        <exclude-pattern>lib/Doctrine/ORM/Mapping/Id.php</exclude-pattern>
+        <exclude-pattern>lib/Doctrine/ORM/Mapping/Index.php</exclude-pattern>
+        <exclude-pattern>lib/Doctrine/ORM/Mapping/InheritanceType.php</exclude-pattern>
+        <exclude-pattern>lib/Doctrine/ORM/Mapping/JoinColumn.php</exclude-pattern>
+        <exclude-pattern>lib/Doctrine/ORM/Mapping/JoinColumns.php</exclude-pattern>
+        <exclude-pattern>lib/Doctrine/ORM/Mapping/JoinTable.php</exclude-pattern>
+        <exclude-pattern>lib/Doctrine/ORM/Mapping/ManyToMany.php</exclude-pattern>
+        <exclude-pattern>lib/Doctrine/ORM/Mapping/ManyToOne.php</exclude-pattern>
+        <exclude-pattern>lib/Doctrine/ORM/Mapping/MappedSuperclass.php</exclude-pattern>
+        <exclude-pattern>lib/Doctrine/ORM/Mapping/NamedNativeQueries.php</exclude-pattern>
+        <exclude-pattern>lib/Doctrine/ORM/Mapping/NamedNativeQuery.php</exclude-pattern>
+        <exclude-pattern>lib/Doctrine/ORM/Mapping/NamedQueries.php</exclude-pattern>
+        <exclude-pattern>lib/Doctrine/ORM/Mapping/NamedQuery.php</exclude-pattern>
+        <exclude-pattern>lib/Doctrine/ORM/Mapping/OneToMany.php</exclude-pattern>
+        <exclude-pattern>lib/Doctrine/ORM/Mapping/OneToOne.php</exclude-pattern>
+        <exclude-pattern>lib/Doctrine/ORM/Mapping/OrderBy.php</exclude-pattern>
+        <exclude-pattern>lib/Doctrine/ORM/Mapping/PostLoad.php</exclude-pattern>
+        <exclude-pattern>lib/Doctrine/ORM/Mapping/PostPersist.php</exclude-pattern>
+        <exclude-pattern>lib/Doctrine/ORM/Mapping/PostRemove.php</exclude-pattern>
+        <exclude-pattern>lib/Doctrine/ORM/Mapping/PostUpdate.php</exclude-pattern>
+        <exclude-pattern>lib/Doctrine/ORM/Mapping/PreFlush.php</exclude-pattern>
+        <exclude-pattern>lib/Doctrine/ORM/Mapping/PrePersist.php</exclude-pattern>
+        <exclude-pattern>lib/Doctrine/ORM/Mapping/PreRemove.php</exclude-pattern>
+        <exclude-pattern>lib/Doctrine/ORM/Mapping/PreUpdate.php</exclude-pattern>
+        <exclude-pattern>lib/Doctrine/ORM/Mapping/SequenceGenerator.php</exclude-pattern>
+        <exclude-pattern>lib/Doctrine/ORM/Mapping/SqlResultSetMapping.php</exclude-pattern>
+        <exclude-pattern>lib/Doctrine/ORM/Mapping/SqlResultSetMappings.php</exclude-pattern>
+        <exclude-pattern>lib/Doctrine/ORM/Mapping/Table.php</exclude-pattern>
+        <exclude-pattern>lib/Doctrine/ORM/Mapping/UniqueConstraint.php</exclude-pattern>
+        <exclude-pattern>lib/Doctrine/ORM/Mapping/Version.php</exclude-pattern>
+    </rule>
+
+    <rule ref="SlevomatCodingStandard.Commenting.EmptyComment">
+        <exclude-pattern>lib/Doctrine/ORM/Cache/DefaultQueryCache.php</exclude-pattern>
+    </rule>
+
+    <rule ref="SlevomatCodingStandard.Classes.SuperfluousInterfaceNaming">
+        <exclude-pattern>lib/Doctrine/ORM/EntityManagerInterface.php</exclude-pattern>
+    </rule>
+
+    <rule ref="SlevomatCodingStandard.TypeHints.TypeHintDeclaration.MissingPropertyTypeHint">
+        <exclude-pattern>*/tests/*</exclude-pattern>
+    </rule>
+
+    <rule ref="SlevomatCodingStandard.Classes.UnusedPrivateElements.UnusedProperty">
+        <exclude-pattern>*/tests/*</exclude-pattern>
+    </rule>
+
+    <rule ref="SlevomatCodingStandard.TypeHints.TypeHintDeclaration.MissingTraversableParameterTypeHintSpecification">
+        <exclude-pattern>*/tests/*</exclude-pattern>
+    </rule>
+
+    <rule ref="SlevomatCodingStandard.Classes.UnusedPrivateElements.WriteOnlyProperty">
+        <exclude-pattern>*/tests/*</exclude-pattern>
+    </rule>
+
+    <rule ref="SlevomatCodingStandard.TypeHints.TypeHintDeclaration.MissingTraversablePropertyTypeHintSpecification">
+        <exclude-pattern>*/tests/*</exclude-pattern>
+    </rule>
+
+    <rule ref="SlevomatCodingStandard.TypeHints.TypeHintDeclaration.MissingTraversableReturnTypeHintSpecification">
+        <exclude-pattern>*/tests/*</exclude-pattern>
+    </rule>
+
+    <!-- intentionally without namespace -->
+    <rule ref="PSR1.Classes.ClassDeclaration.MissingNamespace">
+        <exclude-pattern>tests/Doctrine/Tests/Models/Global/GlobalNamespaceModel.php</exclude-pattern>
+        <exclude-pattern>tests/Doctrine/Tests/Models/DDC3231/DDC3231User1NoNamespace.php</exclude-pattern>
+        <exclude-pattern>tests/Doctrine/Tests/Models/DDC3231/DDC3231User2NoNamespace.php</exclude-pattern>
+    </rule>
+
+    <!-- file with multiple namespaces confuses the sniff -->
+    <rule ref="PSR2.Namespaces.UseDeclaration.UseAfterNamespace">
+        <exclude-pattern>tests/Doctrine/Tests/ORM/Functional/Ticket/DDC2084Test.php</exclude-pattern>
+    </rule>
+
+    <!-- file with multiple namespaces confuses the sniff -->
+    <rule ref="SlevomatCodingStandard.Namespaces.AlphabeticallySortedUses.IncorrectlyOrderedUses">
+        <exclude-pattern>tests/Doctrine/Tests/ORM/Functional/Ticket/DDC2084Test.php</exclude-pattern>
+    </rule>
+
+    <!-- intentionally empty blocks -->
+    <rule ref="Generic.CodeAnalysis.EmptyStatement.DetectedForeach">
+        <exclude-pattern>tests/Doctrine/Tests/ORM/Functional/Ticket/DDC1301Test.php</exclude-pattern>
+        <exclude-pattern>tests/Doctrine/Tests/ORM/Functional/ExtraLazyCollectionTest.php</exclude-pattern>
+    </rule>
+</ruleset>
