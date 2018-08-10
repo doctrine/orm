@@ -80,7 +80,7 @@ class DefaultQueryCache implements QueryCache
 
         $result      = [];
         $entityName  = reset($rsm->aliasMap);
-        $hasRelation = ( ! empty($rsm->relationMap));
+        $hasRelation = ! empty($rsm->relationMap);
         $unitOfWork  = $this->em->getUnitOfWork();
         $persister   = $unitOfWork->getEntityPersister($entityName);
         $region      = $persister->getCacheRegion();

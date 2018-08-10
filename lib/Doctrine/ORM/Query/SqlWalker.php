@@ -274,7 +274,7 @@ class SqlWalker implements TreeWalker
      */
     public function getSQLTableAlias($tableName, $dqlAlias = '')
     {
-        $tableName .= ($dqlAlias) ? '@[' . $dqlAlias . ']' : '';
+        $tableName .= $dqlAlias ? '@[' . $dqlAlias . ']' : '';
 
         if (! isset($this->tableAliasMap[$tableName])) {
             $this->tableAliasMap[$tableName] = 't' . $this->tableAliasCounter++;
@@ -295,7 +295,7 @@ class SqlWalker implements TreeWalker
      */
     public function setSQLTableAlias($tableName, $alias, $dqlAlias = '')
     {
-        $tableName .= ($dqlAlias) ? '@[' . $dqlAlias . ']' : '';
+        $tableName .= $dqlAlias ? '@[' . $dqlAlias . ']' : '';
 
         $this->tableAliasMap[$tableName] = $alias;
 
@@ -450,7 +450,7 @@ class SqlWalker implements TreeWalker
             $discrColumn      = $class->discriminatorColumn;
             $discrColumnType  = $discrColumn->getType();
             $quotedColumnName = $this->platform->quoteIdentifier($discrColumn->getColumnName());
-            $sqlTableAlias    = ($this->useSqlTableAliases)
+            $sqlTableAlias    = $this->useSqlTableAliases
                 ? $this->getSQLTableAlias($discrColumn->getTableName(), $dqlAlias) . '.'
                 : '';
 
@@ -711,7 +711,7 @@ class SqlWalker implements TreeWalker
      */
     public function walkSelectClause($selectClause)
     {
-        $sql                  = 'SELECT ' . (($selectClause->isDistinct) ? 'DISTINCT ' : '');
+        $sql                  = 'SELECT ' . ($selectClause->isDistinct ? 'DISTINCT ' : '');
         $sqlSelectExpressions = array_filter(array_map([$this, 'walkSelectExpression'], $selectClause->selectExpressions));
 
         if ($this->query->getHint(Query::HINT_INTERNAL_ITERATION) === true && $selectClause->isDistinct) {
@@ -1935,7 +1935,7 @@ class SqlWalker implements TreeWalker
      */
     public function walkExistsExpression($existsExpr)
     {
-        $sql = ($existsExpr->not) ? 'NOT ' : '';
+        $sql = $existsExpr->not ? 'NOT ' : '';
 
         $sql .= 'EXISTS (' . $this->walkSubselect($existsExpr->subselect) . ')';
 
@@ -2120,7 +2120,7 @@ class SqlWalker implements TreeWalker
     {
         $sql = $this->walkArithmeticExpression($inExpr->expression) . ($inExpr->not ? ' NOT' : '') . ' IN (';
 
-        $sql .= ($inExpr->subselect)
+        $sql .= $inExpr->subselect
             ? $this->walkSubselect($inExpr->subselect)
             : implode(', ', array_map([$this, 'walkInParameter'], $inExpr->literals));
 
@@ -2284,7 +2284,7 @@ class SqlWalker implements TreeWalker
      */
     public function walkArithmeticExpression($arithmeticExpr)
     {
-        return ($arithmeticExpr->isSimpleArithmeticExpression())
+        return $arithmeticExpr->isSimpleArithmeticExpression()
             ? $this->walkSimpleArithmeticExpression($arithmeticExpr->simpleArithmeticExpression)
             : '(' . $this->walkSubselect($arithmeticExpr->subselect) . ')';
     }
@@ -2307,7 +2307,7 @@ class SqlWalker implements TreeWalker
     public function walkArithmeticTerm($term)
     {
         if (is_string($term)) {
-            return (isset($this->queryComponents[$term]))
+            return isset($this->queryComponents[$term])
                 ? $this->walkResultVariable($this->queryComponents[$term]['token']['value'])
                 : $term;
         }
@@ -2327,7 +2327,7 @@ class SqlWalker implements TreeWalker
     public function walkArithmeticFactor($factor)
     {
         if (is_string($factor)) {
-            return (isset($this->queryComponents[$factor]))
+            return isset($this->queryComponents[$factor])
                 ? $this->walkResultVariable($this->queryComponents[$factor]['token']['value'])
                 : $factor;
         }
@@ -2368,7 +2368,7 @@ class SqlWalker implements TreeWalker
      */
     public function walkStringPrimary($stringPrimary)
     {
-        return (is_string($stringPrimary))
+        return is_string($stringPrimary)
             ? $this->conn->quote($stringPrimary)
             : $stringPrimary->dispatch($this);
     }

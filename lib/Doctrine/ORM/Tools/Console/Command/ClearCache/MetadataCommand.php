@@ -70,11 +70,11 @@ EOT
         $ui->comment('Clearing <info>all</info> Metadata cache entries');
 
         $result  = $cacheDriver->deleteAll();
-        $message = ($result) ? 'Successfully deleted cache entries.' : 'No cache entries were deleted.';
+        $message = $result ? 'Successfully deleted cache entries.' : 'No cache entries were deleted.';
 
         if ($input->getOption('flush') === true) {
             $result  = $cacheDriver->flushAll();
-            $message = ($result) ? 'Successfully flushed cache entries.' : $message;
+            $message = $result ? 'Successfully flushed cache entries.' : $message;
         }
 
         if (! $result) {

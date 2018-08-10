@@ -244,7 +244,7 @@ class DatabaseDriver implements MappingDriver
         $this->tables = $this->manyToManyTables = $this->classToTableNames = [];
 
         foreach ($tables as $tableName => $table) {
-            $foreignKeys = ($this->sm->getDatabasePlatform()->supportsForeignKeyConstraints())
+            $foreignKeys = $this->sm->getDatabasePlatform()->supportsForeignKeyConstraints()
                 ? $table->getForeignKeys()
                 : [];
 
@@ -461,7 +461,7 @@ class DatabaseDriver implements MappingDriver
      */
     private function getTableForeignKeys(Table $table)
     {
-        return ($this->sm->getDatabasePlatform()->supportsForeignKeyConstraints())
+        return $this->sm->getDatabasePlatform()->supportsForeignKeyConstraints()
             ? $table->getForeignKeys()
             : [];
     }
@@ -508,7 +508,7 @@ class DatabaseDriver implements MappingDriver
      */
     private function getFieldNameForColumn($tableName, $columnName, $fk = false)
     {
-        if (isset($this->fieldNamesForColumns[$tableName], $this->fieldNamesForColumns[$tableName][$columnName])) {
+        if (isset($this->fieldNamesForColumns[$tableName][$columnName])) {
             return $this->fieldNamesForColumns[$tableName][$columnName];
         }
 

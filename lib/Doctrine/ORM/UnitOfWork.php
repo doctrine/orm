@@ -452,9 +452,7 @@ class UnitOfWork implements PropertyChangedListener
      */
     private function executeExtraUpdates()
     {
-        foreach ($this->extraUpdates as $oid => $update) {
-            list ($entity, $changeset) = $update;
-
+        foreach ($this->extraUpdates as $oid => [$entity, $changeset]) {
             $this->entityChangeSets[$oid] = $changeset;
 
 //            echo 'Extra update: ';

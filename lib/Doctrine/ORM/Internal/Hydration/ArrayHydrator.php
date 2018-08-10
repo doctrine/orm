@@ -140,8 +140,8 @@ class ArrayHydrator extends AbstractHydrator
                 } else {
                     $oneToOne = true;
 
-                    if (( ! isset($nonemptyComponents[$dqlAlias])) &&
-                        ( ! isset($baseElement[$relationAlias]))
+                    if (! isset($nonemptyComponents[$dqlAlias]) &&
+                        ! isset($baseElement[$relationAlias])
                     ) {
                         $baseElement[$relationAlias] = null;
                     } elseif (! isset($baseElement[$relationAlias])) {

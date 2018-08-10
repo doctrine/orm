@@ -60,9 +60,7 @@ final class HydrationCompleteHandler
         $toInvoke                          = $this->deferredPostLoadInvocations;
         $this->deferredPostLoadInvocations = [];
 
-        foreach ($toInvoke as $classAndEntity) {
-            list($class, $invoke, $entity) = $classAndEntity;
-
+        foreach ($toInvoke as [$class, $invoke, $entity]) {
             $this->listenersInvoker->invoke(
                 $class,
                 Events::postLoad,

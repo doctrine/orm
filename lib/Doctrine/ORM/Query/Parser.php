@@ -1428,9 +1428,7 @@ class Parser
 
         $this->match(Lexer::T_EQUALS);
 
-        $updateItem = new AST\UpdateItem($pathExpr, $this->NewValue());
-
-        return $updateItem;
+        return new AST\UpdateItem($pathExpr, $this->NewValue());
     }
 
     /**
@@ -1454,7 +1452,7 @@ class Parser
             $this->semanticalError('Cannot group by undefined identification or result variable.');
         }
 
-        return (isset($this->queryComponents[$lookaheadValue]['metadata']))
+        return isset($this->queryComponents[$lookaheadValue]['metadata'])
             ? $this->IdentificationVariable()
             : $this->ResultVariable();
     }
@@ -2723,7 +2721,7 @@ class Parser
         $terms[] = $this->ArithmeticTerm();
 
         while (($isPlus = $this->lexer->isNextToken(Lexer::T_PLUS)) || $this->lexer->isNextToken(Lexer::T_MINUS)) {
-            $this->match(($isPlus) ? Lexer::T_PLUS : Lexer::T_MINUS);
+            $this->match($isPlus ? Lexer::T_PLUS : Lexer::T_MINUS);
 
             $terms[] = $this->lexer->token['value'];
             $terms[] = $this->ArithmeticTerm();
@@ -2749,7 +2747,7 @@ class Parser
         $factors[] = $this->ArithmeticFactor();
 
         while (($isMult = $this->lexer->isNextToken(Lexer::T_MULTIPLY)) || $this->lexer->isNextToken(Lexer::T_DIVIDE)) {
-            $this->match(($isMult) ? Lexer::T_MULTIPLY : Lexer::T_DIVIDE);
+            $this->match($isMult ? Lexer::T_MULTIPLY : Lexer::T_DIVIDE);
 
             $factors[] = $this->lexer->token['value'];
             $factors[] = $this->ArithmeticFactor();
@@ -2775,7 +2773,7 @@ class Parser
         $isPlus = $this->lexer->isNextToken(Lexer::T_PLUS);
 
         if ($isPlus || $this->lexer->isNextToken(Lexer::T_MINUS)) {
-            $this->match(($isPlus) ? Lexer::T_PLUS : Lexer::T_MINUS);
+            $this->match($isPlus ? Lexer::T_PLUS : Lexer::T_MINUS);
             $sign = $isPlus;
         }
 
@@ -3037,7 +3035,7 @@ class Parser
 
         $leftExpr  = $this->ArithmeticExpression();
         $operator  = $this->ComparisonOperator();
-        $rightExpr = ($this->isNextAllAnySome())
+        $rightExpr = $this->isNextAllAnySome()
             ? $this->QuantifiedExpression()
             : $this->ArithmeticExpression();
 
