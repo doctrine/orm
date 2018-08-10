@@ -14,6 +14,7 @@ use Doctrine\Tests\Models\DDC889\DDC889Class;
 use Doctrine\Tests\Models\Generic\SerializationModel;
 use Doctrine\Tests\Models\ValueObjects\Name;
 use Doctrine\Tests\Models\ValueObjects\Person;
+use const ARRAY_FILTER_USE_KEY;
 use const DIRECTORY_SEPARATOR;
 use const PATHINFO_FILENAME;
 use function array_filter;
@@ -187,9 +188,9 @@ class XmlMappingDriverTest extends AbstractMappingDriverTest
 
         $invalid = ['Doctrine.Tests.Models.DDC889.DDC889Class.dcm'];
 
-        $list = array_filter($list, function ($item) use ($invalid) {
-            return ! in_array(pathinfo($item, PATHINFO_FILENAME), $invalid, true);
-        });
+        $list = array_filter($list, function ($filename) use ($invalid) {
+            return ! in_array($filename, $invalid, true);
+        }, ARRAY_FILTER_USE_KEY);
 
         return array_map(function ($item) {
             return [$item];
