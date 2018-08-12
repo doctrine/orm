@@ -24,7 +24,7 @@ use Doctrine\ORM\Query\SqlWalker;
 use Doctrine\ORM\Query\AST\Functions\FunctionNode;
 
 /**
- * "ABS" "(" SimpleArithmeticExpression ")"
+ * "ISNULL" "(" ArithmeticPrimary ")"
  *
  * 
  * @link    www.doctrine-project.org
@@ -34,7 +34,7 @@ use Doctrine\ORM\Query\AST\Functions\FunctionNode;
 class IsNullFunction extends FunctionNode
 {
     /**
-     * @var Doctrine\ORM\Query\AST\Literal
+     * @var \Doctrine\ORM\Query\AST\Literal
      */
     private $isnull;
 
@@ -45,7 +45,7 @@ class IsNullFunction extends FunctionNode
     public function parse(Parser $parser) {
         $parser->match(Lexer::T_IDENTIFIER);
         $parser->match(Lexer::T_OPEN_PARENTHESIS);
-        $this->isnull = $parser->ArithmeticPrimary();
+        $this->isnull = $parser->Literal();
         $parser->match(Lexer::T_CLOSE_PARENTHESIS);
     }
 
