@@ -33,20 +33,28 @@ use Doctrine\ORM\Query\AST\Functions\FunctionNode;
  */
 class IsnullFunction extends FunctionNode
 {
-	/**
-  * @var Doctrine\ORM\Query\AST\Literal
-  */
-	private $isnull;
+    /**
+     * @var Doctrine\ORM\Query\AST\Literal
+     */
+    private $isnull;
 
-	public function parse(Parser $parser) {
-		$parser->match(Lexer::T_IDENTIFIER);
-		$parser->match(Lexer::T_OPEN_PARENTHESIS);
-		$this->isnull = $parser->ArithmeticPrimary();
-		$parser->match(Lexer::T_CLOSE_PARENTHESIS);
-	}
+    /**
+     * @override
+     * @inheritdoc
+     */
+    public function parse(Parser $parser) {
+        $parser->match(Lexer::T_IDENTIFIER);
+        $parser->match(Lexer::T_OPEN_PARENTHESIS);
+        $this->isnull = $parser->ArithmeticPrimary();
+        $parser->match(Lexer::T_CLOSE_PARENTHESIS);
+    }
 
-	public function getSql(SqlWalker $sqlWalker) {
-		return 'ISNULL(' . $this->isnull->dispatch($sqlWalker) . ')';
-	}
-
+    /**
+     * @override
+     * @inheritdoc
+     */
+    public function getSql(SqlWalker $sqlWalker) {
+        return 'ISNULL(' . $this->isnull->dispatch($sqlWalker) . ')';
+    }
 }
+
