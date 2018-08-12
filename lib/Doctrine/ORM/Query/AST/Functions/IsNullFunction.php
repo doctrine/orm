@@ -24,7 +24,7 @@ use Doctrine\ORM\Query\SqlWalker;
 use Doctrine\ORM\Query\AST\Functions\FunctionNode;
 
 /**
- * "ISNULL" "(" ArithmeticPrimary ")"
+ * "ISNULL" "(" Literal ")"
  *
  * 
  * @link    www.doctrine-project.org
