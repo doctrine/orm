@@ -31,7 +31,7 @@ use Doctrine\ORM\Query\AST\Functions\FunctionNode;
  * @since   2.7
  * @author  Mihail Kurshin <userator@ya.ru>
  */
-class IsnullFunction extends FunctionNode
+class IsNullFunction extends FunctionNode
 {
     /**
      * @var Doctrine\ORM\Query\AST\Literal
