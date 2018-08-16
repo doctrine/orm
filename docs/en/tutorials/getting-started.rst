@@ -370,7 +370,7 @@ Example of a rich entity with proper accessors and mutators:
                 return $checkHash($password, $this->passwordHash) && ! $this->hasActiveBans();
             }
 
-            public function changePassword(string $password, callable $hash): void
+            public function changePassword(string $password, callable $hash): void
             {
                 $this->passwordHash = $hash($password);
             }
