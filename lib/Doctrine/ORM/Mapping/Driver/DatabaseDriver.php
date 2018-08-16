@@ -285,10 +285,11 @@ class DatabaseDriver implements MappingDriver
             }
 
             if ( ! $table->hasPrimaryKey()) {
-                throw new MappingException(
-                    "Table " . $table->getName() . " has no primary key. Doctrine does not ".
-                    "support reverse engineering from tables that don't have a primary key."
-                );
+                continue;
+//                throw new MappingException(
+//                    "Table " . $table->getName() . " has no primary key. Doctrine does not ".
+//                    "support reverse engineering from tables that don't have a primary key."
+//                );
             }
 
             $pkColumns = $table->getPrimaryKey()->getColumns();
