@@ -615,7 +615,7 @@ then phonenumber-id:
             object(stdClass)[299]
               public '__CLASS__' => string 'Doctrine\Tests\Models\CMS\CmsUser' (length=33)
               public 'id' => int 1
-              ..
+              ...
           'nameUpper' => string 'ROMANB' (length=6)
       1 =>
         array
