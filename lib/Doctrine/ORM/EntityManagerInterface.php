@@ -155,7 +155,9 @@ interface EntityManagerInterface extends ObjectManager
      * @param string $entityName The name of the entity type.
      * @param mixed  $identifier The entity identifier.
      *
-     * @return object The (partial) entity reference.
+     * @return object|null The (partial) entity reference.
+     *
+     * @throws ORMInvalidArgumentException
      */
     public function getPartialReference($entityName, $identifier);
 
