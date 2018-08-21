@@ -220,6 +220,7 @@ Generated MySQL Schema:
     CREATE TABLE Cart (
         id INT AUTO_INCREMENT NOT NULL,
         customer_id INT DEFAULT NULL,
+        UNIQUE INDEX UNIQ_BA388B79395C3F3 (customer_id),
         PRIMARY KEY(id)
     ) ENGINE = InnoDB;
     CREATE TABLE Customer (
