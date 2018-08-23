@@ -17,13 +17,13 @@ class FilterCollectionTest extends OrmTestCase
     /** @var EntityManagerInterface */
     private $em;
 
-    protected function setUp() : void
+    protected function setUp(): void
     {
         $this->em = $this->getTestEntityManager();
         $this->em->getConfiguration()->addFilter('testFilter', MyFilter::class);
     }
 
-    public function testEnable() : void
+    public function testEnable(): void
     {
         $filterCollection = $this->em->getFilters();
 
@@ -40,7 +40,7 @@ class FilterCollectionTest extends OrmTestCase
         self::assertCount(0, $filterCollection->getEnabledFilters());
     }
 
-    public function testHasFilter() : void
+    public function testHasFilter(): void
     {
         $filterCollection = $this->em->getFilters();
 
@@ -51,7 +51,7 @@ class FilterCollectionTest extends OrmTestCase
     /**
      * @depends testEnable
      */
-    public function testIsEnabled() : void
+    public function testIsEnabled(): void
     {
         $filterCollection = $this->em->getFilters();
 
@@ -65,18 +65,25 @@ class FilterCollectionTest extends OrmTestCase
     /**
      * @expectedException InvalidArgumentException
      */
-    public function testGetFilterInvalidArgument() : void
+    public function testGetFilterInvalidArgument(): void
     {
         $filterCollection = $this->em->getFilters();
         $filterCollection->getFilter('testFilter');
     }
 
-    public function testGetFilter() : void
+    public function testGetFilter(): void
     {
         $filterCollection = $this->em->getFilters();
         $filterCollection->enable('testFilter');
 
         self::assertInstanceOf(MyFilter::class, $filterCollection->getFilter('testFilter'));
+    }
+
+    public function testErrorInFilterDisable()
+    {
+        self::expectExceptionMessage("Filter 'testFilter' is not enabled.");
+        $filterCollection = $this->em->getFilters();
+        $filterCollection->disable('testFilter');
     }
 }
 
