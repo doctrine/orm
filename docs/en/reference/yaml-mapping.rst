@@ -1,6 +1,10 @@
 YAML Mapping
 ============
 
+.. note::
+    The YAML driver is deprecated and will be removed in version 3.0.
+    It is strongly recommended to switch to one of the other mappings.
+
 The YAML mapping driver enables you to provide the ORM metadata in
 form of YAML documents.
 
