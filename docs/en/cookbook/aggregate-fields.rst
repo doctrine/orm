@@ -322,7 +322,7 @@ The aggregate field ``Account::$balance`` is now -200, however the
 SUM over all entries amounts yields -400. A violation of our max
 credit rule.
 
-You can use both optimistic or pessimistic locking to save-guard
+You can use both optimistic or pessimistic locking to safe-guard
 your aggregate fields against this kind of race-conditions. Reading
 Eric Evans DDD carefully he mentions that the "Aggregate Root"
 (Account in our example) needs a locking mechanism.
