@@ -42,7 +42,6 @@
       reference/change-tracking-policies
       reference/partial-objects
       reference/xml-mapping
-      reference/yaml-mapping
       reference/annotations-reference
       reference/php-mapping
       reference/caching
