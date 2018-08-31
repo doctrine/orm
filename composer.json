@@ -1,8 +1,18 @@
 {
     "name": "doctrine/orm",
     "type": "library",
-    "description": "Object-Relational-Mapper for PHP",
-    "keywords": ["orm", "database"],
+    "description": "PHP object relational mapper (ORM) that sits on top of a powerful database abstraction layer (DBAL). One of its key features is the option to write database queries in a proprietary object oriented SQL dialect called Doctrine Query Language (DQL). This provides developers with a powerful alternative to SQL that maintains flexibility without requiring unnecessary code duplication.",
+    "keywords": [
+        "php",
+        "orm",
+        "mysql",
+        "object",
+        "data",
+        "mapper",
+        "mapping",
+        "query",
+        "dql"
+    ],
     "homepage": "http://www.doctrine-project.org",
     "license": "MIT",
     "authors": [
