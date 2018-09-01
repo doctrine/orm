@@ -70,7 +70,7 @@ methods, which are quite handy in my opinion:
 Date Diff
 ---------
 
-`Mysql's DateDiff function <http://dev.mysql.com/doc/refman/5.1/en/date-and-time-functions.html#function_datediff>`_
+`Mysql's DateDiff function <https://dev.mysql.com/doc/refman/8.0/en/date-and-time-functions.html#function_datediff>`_
 takes two dates as argument and calculates the difference in days
 with ``date1-date2``.
 
@@ -164,7 +164,7 @@ Date Add
 
 Often useful it the ability to do some simple date calculations in
 your DQL query using
-`MySql's DATE\_ADD function <http://dev.mysql.com/doc/refman/5.1/en/date-and-time-functions.html#function_date-add>`_.
+`MySql's DATE\_ADD function <https://dev.mysql.com/doc/refman/8.0/en/date-and-time-functions.html#function_date-add>`_.
 
 I'll skip the blah and show the code for this function:
 
