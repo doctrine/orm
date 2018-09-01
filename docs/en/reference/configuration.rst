@@ -2,8 +2,7 @@ Installation and Configuration
 ==============================
 
 Doctrine can be installed with `Composer <http://www.getcomposer.org>`_.  For
-older versions we still have `PEAR packages
-<http://pear.doctrine-project.org>`_.
+older versions we still have `PEAR packages <http://pear.doctrine-project.org>`_.
 
 Define the following requirement in your ``composer.json`` file:
 
@@ -16,8 +15,7 @@ Define the following requirement in your ``composer.json`` file:
     }
 
 Then call ``composer install`` from your command line. If you don't know
-how Composer works, check out their `Getting Started
-<http://getcomposer.org/doc/00-intro.md>`_ to set up.
+how Composer works, check out their `Getting Started <http://getcomposer.org/doc/00-intro.md>`_ to set up.
 
 Class loading
 -------------
@@ -93,8 +91,7 @@ Inside the ``Setup`` methods several assumptions are made:
 -  If `$isDevMode` is false, set then proxy classes have to be explicitly created through the command line.
 -  If third argument `$proxyDir` is not set, use the systems temporary directory.
 
-If you want to configure Doctrine in more detail, take a look at the :doc:`Advanced
-Configuration <reference/advanced-configuration>` section.
+If you want to configure Doctrine in more detail, take a look at the :doc:`Advanced Configuration <reference/advanced-configuration>` section.
 
 .. note::
 

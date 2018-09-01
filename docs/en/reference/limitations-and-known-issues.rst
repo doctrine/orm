@@ -116,7 +116,6 @@ blog posts we have written on this topics:
 -  `A re-usable Versionable behavior for Doctrine2 <http://www.doctrine-project.org/2010/02/24/doctrine2-versionable.html>`_
 -  `Write your own ORM on top of Doctrine2 <http://www.doctrine-project.org/2010/07/19/your-own-orm-doctrine2.html>`_
 -  `Doctrine 2 Behavioral Extensions <http://www.doctrine-project.org/2010/11/18/doctrine2-behavioral-extensions.html>`_
--  `Doctrator <https://github.com/pablodip/doctrator`>_
 
 Doctrine 2 has enough hooks and extension points so that **you** can
 add whatever you want on top of it. None of this will ever become
@@ -144,8 +143,7 @@ backwards compatibility issues or where no simple fix exists (yet).
 We don't plan to add every bug in the tracker there, just those
 issues that can potentially cause nightmares or pain of any sort.
 
-See bugs, improvement and feature requests on `Github issues
-<https://github.com/doctrine/orm/issues>`_.
+See bugs, improvement and feature requests on `Github issues <https://github.com/doctrine/orm/issues>`_.
 
 Identifier Quoting and Legacy Databases
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~

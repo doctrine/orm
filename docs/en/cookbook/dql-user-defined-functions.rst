@@ -164,7 +164,7 @@ Date Add
 
 Often useful it the ability to do some simple date calculations in
 your DQL query using
-`MySql's DATE\_ADD function <https://dev.mysql.com/doc/refman/8.0/en/date-and-time-functions.html#function_date-add>`_.
+`MySql's DATE_ADD function <https://dev.mysql.com/doc/refman/8.0/en/date-and-time-functions.html#function_date-add>`_.
 
 I'll skip the blah and show the code for this function:
 
@@ -246,6 +246,6 @@ vendor sql functions and extend the DQL languages scope.
 
 Code for this Extension to DQL and other Doctrine Extensions can be
 found
-`in my Github DoctrineExtensions repository <http://github.com/beberlei/DoctrineExtensions>`_.
+`in the Github DoctrineExtensions repository <http://github.com/beberlei/DoctrineExtensions>`_.
 
 
