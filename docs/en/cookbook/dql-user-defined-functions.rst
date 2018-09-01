@@ -247,4 +247,3 @@ Code for this Extension to DQL and other Doctrine Extensions can be
 found
 `in the GitHub DoctrineExtensions repository <https://github.com/beberlei/DoctrineExtensions>`_.
 
-
