@@ -95,7 +95,7 @@ Tutorials
 Changelogs
 ----------
 
-* :doc:`Migration to 2.5 <changelog/migration_2_5>`
+* `Upgrade <https://github.com/doctrine/doctrine2/blob/master/UPGRADE.md>`_
 
 Cookbook
 --------
