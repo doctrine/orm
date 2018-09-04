@@ -79,7 +79,7 @@ Customize it to your needs.
         $config->setMetadataDriverImpl($driverImpl);
         $config->setQueryCacheImpl($cache);
 
-        $config->setQueryCacheImpl($cache);
+        $config->setResultCacheImpl($cache);
     
         // Proxy configuration
         $config->setProxyDir(APPPATH.'/models/proxies');
