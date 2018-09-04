@@ -14,13 +14,15 @@ use Doctrine\Tests\OrmTestCase;
  */
 class FilterCollectionTest extends OrmTestCase
 {
+    private const TEST_FILTER = 'testFilter';
+
     /** @var EntityManagerInterface */
     private $em;
 
     protected function setUp() : void
     {
         $this->em = $this->getTestEntityManager();
-        $this->em->getConfiguration()->addFilter('testFilter', MyFilter::class);
+        $this->em->getConfiguration()->addFilter(self::TEST_FILTER, MyFilter::class);
     }
 
     public function testEnable() : void
@@ -29,14 +31,14 @@ class FilterCollectionTest extends OrmTestCase
 
         self::assertCount(0, $filterCollection->getEnabledFilters());
 
-        $filterCollection->enable('testFilter');
+        $filterCollection->enable(self::TEST_FILTER);
 
         $enabledFilters = $filterCollection->getEnabledFilters();
 
         self::assertCount(1, $enabledFilters);
         self::assertContainsOnly(MyFilter::class, $enabledFilters);
 
-        $filterCollection->disable('testFilter');
+        $filterCollection->disable(self::TEST_FILTER);
         self::assertCount(0, $filterCollection->getEnabledFilters());
     }
 
@@ -44,8 +46,23 @@ class FilterCollectionTest extends OrmTestCase
     {
         $filterCollection = $this->em->getFilters();
 
-        self::assertTrue($filterCollection->has('testFilter'));
+        self::assertTrue($filterCollection->has(self::TEST_FILTER));
         self::assertFalse($filterCollection->has('fakeFilter'));
+    }
+
+    /**
+     * Should allow to disable filter.
+     */
+    public function testShouldAllowToDisableFilter()
+    {
+        $filterCollection = $this->em->getFilters();
+        self::assertFalse($filterCollection->isEnabled(self::TEST_FILTER));
+
+        $filterCollection->enable(self::TEST_FILTER);
+
+        self::assertTrue($filterCollection->isEnabled(self::TEST_FILTER));
+        $filterCollection->disable(self::TEST_FILTER);
+        self::assertFalse($filterCollection->isEnabled(self::TEST_FILTER));
     }
 
     /**
@@ -55,11 +72,11 @@ class FilterCollectionTest extends OrmTestCase
     {
         $filterCollection = $this->em->getFilters();
 
-        self::assertFalse($filterCollection->isEnabled('testFilter'));
+        self::assertFalse($filterCollection->isEnabled(self::TEST_FILTER));
 
-        $filterCollection->enable('testFilter');
+        $filterCollection->enable(self::TEST_FILTER);
 
-        self::assertTrue($filterCollection->isEnabled('testFilter'));
+        self::assertTrue($filterCollection->isEnabled(self::TEST_FILTER));
     }
 
     /**
@@ -68,15 +85,15 @@ class FilterCollectionTest extends OrmTestCase
     public function testGetFilterInvalidArgument() : void
     {
         $filterCollection = $this->em->getFilters();
-        $filterCollection->getFilter('testFilter');
+        $filterCollection->getFilter(self::TEST_FILTER);
     }
 
     public function testGetFilter() : void
     {
         $filterCollection = $this->em->getFilters();
-        $filterCollection->enable('testFilter');
+        $filterCollection->enable(self::TEST_FILTER);
 
-        self::assertInstanceOf(MyFilter::class, $filterCollection->getFilter('testFilter'));
+        self::assertInstanceOf(MyFilter::class, $filterCollection->getFilter(self::TEST_FILTER));
     }
 }
 
