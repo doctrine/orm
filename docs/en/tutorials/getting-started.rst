@@ -103,17 +103,20 @@ Install Doctrine using the Composer Dependency Management tool, by calling:
     $ composer install
 
 This will install the packages Doctrine Common, Doctrine DBAL, Doctrine ORM,
-Symfony YAML and Symfony Console into the `vendor` directory. The Symfony 
-dependencies are not required by Doctrine but will be used in this tutorial.
+into the `vendor` directory.
 
 Add the following directories:
 ::
 
     doctrine2-tutorial
     |-- config
-    |   |-- xml
+    |   `-- xml
     |   `-- yaml
     `-- src
+
+.. note::
+    The YAML driver is deprecated and will be removed in version 3.0.
+    It is strongly recommended to switch to one of the other mappings.
 
 Obtaining the EntityManager
 ---------------------------
@@ -149,6 +152,10 @@ step:
     
     // obtaining the entity manager
     $entityManager = EntityManager::create($conn, $config);
+
+.. note::
+    The YAML driver is deprecated and will be removed in version 3.0.
+    It is strongly recommended to switch to one of the other mappings.
 
 The require_once statement sets up the class autoloading for Doctrine and
 its dependencies using Composer's autoloader.
@@ -307,6 +314,10 @@ but you only need to choose one.
                   <field name="name" type="string" />
               </entity>
         </doctrine-mapping>
+
+.. note::
+    The YAML driver is deprecated and will be removed in version 3.0.
+    It is strongly recommended to switch to one of the other mappings.
 
     .. code-block:: yaml
 
@@ -851,6 +862,10 @@ the ``Product`` before:
             </entity>
         </doctrine-mapping>
 
+.. note::
+    The YAML driver is deprecated and will be removed in version 3.0.
+    It is strongly recommended to switch to one of the other mappings.
+
     .. code-block:: yaml
 
         # config/yaml/Bug.dcm.yml
@@ -962,6 +977,10 @@ Finally, we'll add metadata mappings for the ``User`` entity.
                  <one-to-many target-entity="Bug" field="assignedBugs" mapped-by="engineer" />
              </entity>
         </doctrine-mapping>
+
+.. note::
+    The YAML driver is deprecated and will be removed in version 3.0.
+    It is strongly recommended to switch to one of the other mappings.
 
     .. code-block:: yaml
 
@@ -1492,6 +1511,10 @@ we have to adjust the metadata slightly.
 
               </entity>
         </doctrine-mapping>
+
+.. note::
+    The YAML driver is deprecated and will be removed in version 3.0.
+    It is strongly recommended to switch to one of the other mappings.
 
     .. code-block:: yaml
 
