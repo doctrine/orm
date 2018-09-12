@@ -253,13 +253,14 @@ class DatabaseDriver implements MappingDriver
             foreach ($foreignKeys as $foreignKey) {
                 $allForeignKeyColumns = array_merge($allForeignKeyColumns, $foreignKey->getLocalColumns());
             }
+            if ( ! $table->hasPrimaryKey()) {
+                if(! $table->hasColumn('id')){
+                    $table->addColumn('id', 'integer', array('autoincrement' => true));
+                }
+                $table->setPrimaryKey(array('id'));
 
-            if (! $table->hasPrimaryKey()) {
-                throw new Mapping\MappingException(
-                    'Table ' . $table->getName() . ' has no primary key. Doctrine does not ' .
-                    "support reverse engineering from tables that don't have a primary key."
-                );
             }
+            
 
             $pkColumns = $table->getPrimaryKey()->getColumns();
 
