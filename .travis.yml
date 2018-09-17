@@ -5,6 +5,7 @@ language: php
 php:
   - 7.1
   - 7.2
+  - 7.3
   - nightly
 
 env:
@@ -40,6 +41,13 @@ jobs:
     - stage: Test
       env: DB=mysql MYSQL_VERSION=5.7
       php: 7.2
+      before_script:
+        - ./tests/travis/install-mysql-$MYSQL_VERSION.sh
+      sudo: required
+
+    - stage: Test
+      env: DB=mysql MYSQL_VERSION=5.7
+      php: 7.3
       before_script:
         - ./tests/travis/install-mysql-$MYSQL_VERSION.sh
       sudo: required
