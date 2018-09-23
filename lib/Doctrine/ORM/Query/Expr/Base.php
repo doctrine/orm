@@ -56,7 +56,7 @@ abstract class Base
     protected $parts = [];
 
     /**
-     * @param array $args
+     * @param mixed $args
      */
     public function __construct($args = [])
     {

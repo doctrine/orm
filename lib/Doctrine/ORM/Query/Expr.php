@@ -41,10 +41,8 @@ class Expr
      *     // (u.type = ?1) AND (u.role = ?2)
      *     $expr->andX($expr->eq('u.type', ':1'), $expr->eq('u.role', ':2'));
      *
-     * @param \Doctrine\ORM\Query\Expr\Comparison |
-     *        \Doctrine\ORM\Query\Expr\Func |
-     *        \Doctrine\ORM\Query\Expr\Orx
-     *        $x Optional clause. Defaults to null, but requires at least one defined when converting to string.
+     * @param Expr\Comparison|Expr\Func|Expr\Orx $x Optional clause. Defaults to null, but requires at least one
+     *                                              defined when converting to string.
      *
      * @return Expr\Andx
      */
