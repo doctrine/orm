@@ -152,8 +152,8 @@ class XmlMappingDriverTest extends AbstractMappingDriverTest
      */
     public function testValidateXmlSchema($xmlMappingFile)
     {
-        $xsdSchemaFile  = __DIR__ . '/../../../../../doctrine-mapping.xsd';
-        $dom            = new \DOMDocument('UTF-8');
+        $xsdSchemaFile = __DIR__ . '/../../../../../doctrine-mapping.xsd';
+        $dom           = new \DOMDocument();
 
         $dom->load($xmlMappingFile);
 
