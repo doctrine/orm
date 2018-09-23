@@ -164,6 +164,17 @@ class CommitOrderCalculator
                 case self::IN_PROGRESS:
                     if (isset($adjacentVertex->dependencyList[$vertex->hash]) &&
                         $adjacentVertex->dependencyList[$vertex->hash]->weight < $edge->weight) {
+
+                        // If we have some non-visited dependencies in the in-progress dependency, we
+                        // need to visit them before adding the node.
+                        foreach ($adjacentVertex->dependencyList as $adjacentEdge) {
+                            $adjacentEdgeVertex = $this->nodeList[$adjacentEdge->to];
+
+                            if ($adjacentEdgeVertex->state === self::NOT_VISITED) {
+                                $this->visit($adjacentEdgeVertex);
+                            }
+                        }
+
                         $adjacentVertex->state = self::VISITED;
 
                         $this->sortedNodeList[] = $adjacentVertex->value;
