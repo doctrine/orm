@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Doctrine\ORM\Query;
 
+use Doctrine\Common\Lexer\AbstractLexer;
 use function constant;
 use function ctype_alpha;
 use function defined;
@@ -18,7 +19,7 @@ use function substr;
 /**
  * Scans a DQL query for tokens.
  */
-class Lexer extends \Doctrine\Common\Lexer
+class Lexer extends AbstractLexer
 {
     // All tokens that are not valid identifiers must be < 100
     public const T_NONE              = 1;

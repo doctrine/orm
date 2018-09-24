@@ -436,7 +436,7 @@ Could be used by an entity that extends a mapped superclass to override a field 
          *          column=@Column(
          *              name     = "guest_id",
          *              type     = "integer",
-                        length   = 140
+         *              length   = 140
          *          )
          *      ),
          *      @AttributeOverride(name="name",
@@ -444,7 +444,7 @@ Could be used by an entity that extends a mapped superclass to override a field 
          *              name     = "guest_name",
          *              nullable = false,
          *              unique   = true,
-                        length   = 240
+         *              length   = 240
          *          )
          *      )
          * })
