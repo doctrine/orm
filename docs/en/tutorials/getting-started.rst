@@ -25,7 +25,7 @@ The code of this tutorial is `available on Github <https://github.com/doctrine/d
 
 .. note::
 
-    This tutorial assumes you work with **Doctrine 2.4** and above.
+    This tutorial assumes you work with **Doctrine 2.6** and above.
     Some of the code will not work with lower versions.
 
 What is Doctrine?
@@ -80,14 +80,14 @@ Project Setup
 -------------
 
 Create a new empty folder for this tutorial project, for example
-``doctrine2-tutorial`` and create a new file ``composer.json`` with
-the following contents:
+``doctrine2-tutorial`` and create a new file ``composer.json`` inside
+that directory with the following contents:
 
 ::
 
     {
         "require": {
-            "doctrine/orm": "2.4.*",
+            "doctrine/orm": "^2.6.2",
             "symfony/yaml": "2.*"
         },
         "autoload": {
@@ -103,7 +103,7 @@ Install Doctrine using the Composer Dependency Management tool, by calling:
     $ composer install
 
 This will install the packages Doctrine Common, Doctrine DBAL, Doctrine ORM,
-into the `vendor` directory.
+into the ``vendor`` directory.
 
 Add the following directories:
 ::
@@ -157,7 +157,7 @@ step:
     The YAML driver is deprecated and will be removed in version 3.0.
     It is strongly recommended to switch to one of the other mappings.
 
-The require_once statement sets up the class autoloading for Doctrine and
+The ``require_once`` statement sets up the class autoloading for Doctrine and
 its dependencies using Composer's autoloader.
 
 The second block consists of the instantiation of the ORM
@@ -180,7 +180,7 @@ Generating the Database Schema
 Doctrine has a command-line interface that allows you to access the SchemaTool,
 a component that can generate a relational database schema based entirely on the
 defined entity classes and their metadata. For this tool to work, a
-cli-config.php file must exist in the project root directory:
+``cli-config.php`` file must exist in the project root directory:
 
 .. code-block:: php
 
@@ -190,14 +190,13 @@ cli-config.php file must exist in the project root directory:
     
     return \Doctrine\ORM\Tools\Console\ConsoleRunner::createHelperSet($entityManager);
 
-Change into your project directory and call the Doctrine command-line tool:
+Now call the Doctrine command-line tool:
 
 ::
 
-    $ cd project/
     $ vendor/bin/doctrine orm:schema-tool:create
 
-Since we haven't added any entity metadata in `src` yet, you'll see a message
+Since we haven't added any entity metadata in ``src`` yet, you'll see a message
 stating "No Metadata Classes to process." In the next section, we'll create a
 Product entity along with the corresponding metadata, and run this command again.
 
@@ -216,8 +215,8 @@ Or you can use the update functionality:
 
     $ vendor/bin/doctrine orm:schema-tool:update --force
 
-The updating of databases uses a Diff Algorithm for a given
-Database Schema. This is a cornerstone of the ``Doctrine\DBAL`` package,
+The updating of databases uses a diff algorithm for a given
+database schema. This is a cornerstone of the ``Doctrine\DBAL`` package,
 which can even be used without the Doctrine ORM package.
 
 Starting with the Product Entity
@@ -257,16 +256,16 @@ entity definition:
         }
     }
 
-When creating entity classes, all of the fields should be protected or private
-(not public), with getter and setter methods for each one (except $id).
+When creating entity classes, all of the fields should be ``protected`` or ``private``
+(not ``public``), with getter and setter methods for each one (except ``$id``).
 The use of mutators allows Doctrine to hook into calls which
-manipulate the entities in ways that it could not if you just 
+manipulate the entities in ways that it could not if you just
 directly set the values with ``entity#field = foo;``
 
-The id field has no setter since, generally speaking, your code 
-should not set this value since it represents a database id value. 
-(Note that Doctrine itself can still set the value using the 
-Reflection API instead of a defined setter function)
+The id field has no setter since, generally speaking, your code
+should not set this value since it represents a database id value.
+(Note that Doctrine itself can still set the value using the
+Reflection API instead of a defined setter function.)
 
 The next step for persistence with Doctrine is to describe the
 structure of the ``Product`` entity to Doctrine using a metadata
@@ -334,8 +333,8 @@ but you only need to choose one.
             name:
               type: string
 
-The top-level ``entity`` definition tag specifies information about
-the class and table-name. The primitive type ``Product#name`` is
+The top-level ``entity`` definition specifies information about
+the class and table name. The primitive type ``Product#name`` is
 defined as a ``field`` attribute. The ``id`` property is defined with
 the ``id`` tag.  It has a ``generator`` tag nested inside, which
 specifies that the primary key generation mechanism should automatically
