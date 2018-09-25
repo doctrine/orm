@@ -1,3 +1,7 @@
+[![Tidelift](https://tidelift.com/badges/github/doctrine/doctrine2)](https://tidelift.com/subscription/pkg/packagist-doctrine-orm?utm_source=packagist-doctrine-orm&utm_medium=referral&utm_campaign=readme)
+
+[Professionally supported Doctrine is now available](https://tidelift.com/subscription/pkg/packagist-doctrine-orm?utm_source=packagist-doctrine-orm&utm_medium=referral&utm_campaign=readme)
+
 | [Master][Master] | [2.7][2.7] | [2.6][2.6] | [2.5][2.5] |
 |:----------------:|:----------:|:----------:|:----------:|
 | [![Build status][Master image]][Master] | [![Build status][2.7 image]][2.7] | [![Build status][2.6 image]][2.6] | [![Build status][2.5 image]][2.5] |
