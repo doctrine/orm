@@ -475,6 +475,39 @@ class QueryBuilder
     }
 
     /**
+     * Gives the alias of a join.
+     *
+     * <code>
+     *     $qb = $em->createQueryBuilder()
+     *         ->select('u')
+     *         ->from('User', 'u')
+     *         ->join('u.articles','a');
+     *
+     *     $qb->getAliasByJoin('u.articles'); // a
+     * </code>
+     *
+     * @param string $join
+     *
+     * @return bool|string
+     */
+    public function getAliasByJoin(QueryBuilder $qb, string $join)
+    {
+        foreach ($this->getDQLPart('join') as $joinParts) {
+            /** @var Join $joinPart */
+            foreach ($joinParts as $rootAlias => $joinPart) {
+                // Maybe skip if the root alias doesn't fit the join,
+                // but probably this is not worth the effort
+                if ($joinPart->getJoin() === $join) {
+                    // Join found, return the alias
+                    return $joinPart->getAlias();
+                }
+            }
+        }
+        // No join found, return false
+        return false;
+    }
+
+    /**
      * Gets the root entities of the query. This is the entity aliases involved
      * in the construction of the query.
      *
@@ -1009,6 +1042,39 @@ class QueryBuilder
         $join           = new Expr\Join(Expr\Join::LEFT_JOIN, $join, $alias, $conditionType, $condition, $indexBy);
 
         return $this->add('join', [$rootAlias => $join], true);
+    }
+
+    /**
+     * leftJoins a property only if the join does not exists already.
+     * returns either the generated alias if the join did not exists
+     * if the alias of the already existing join
+     *
+     * <code>
+     *     $qb = $em->createQueryBuilder()
+     *         ->select('u')
+     *         ->from('User', 'u')
+     *         ->leftJoin('u.Phonenumbers', 'p');
+     *
+     *     $qb->leftJoinIfNotExists('u', 'Phonenumbers'); // p
+     *
+     *     $qb->leftJoinIfNotExists('u', 'Emailaddresses'); // u_Emailaddresses_4b3403665fea6
+     * </code>
+     * 
+     * @param string       $rootAlias
+     * @param string       $property
+     * 
+     * @return string
+     */
+    protected function leftJoinIfNotExists(string $rootAlias, string $property)
+    {
+        $alias = $this->getAliasByJoin($rootAlias . '.' . $property);
+        if (false === $alias) {
+            // Generate an alias
+            $alias = $rootAlias . '_' . $property . '_' . uniqid();
+            $this->leftJoin($rootAlias . '.' . $property, $alias);
+        }
+        // it's either generated or found, but we want to know the alias
+        return $alias;
     }
 
     /**
