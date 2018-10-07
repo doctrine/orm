@@ -87,7 +87,7 @@ the following contents:
 
     {
         "require": {
-            "doctrine/orm": "2.4.*",
+            "doctrine/orm": "*",
             "symfony/yaml": "2.*"
         },
         "autoload": {
