@@ -2,55 +2,21 @@
 
 namespace Doctrine\Tests\Functional\Ticket;
 
-use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Tests\OrmFunctionalTestCase;
 
 /**
  * @group 7180
  */
-class DDC7180Test extends OrmFunctionalTestCase
+final class DDC7180Test extends OrmFunctionalTestCase
 {
-    private static $createdSchema = false;
-
-    /**
-     * {@inheritDoc}
-     */
-    protected function setUp() : void
+    protected function setUp(): void
     {
         parent::setUp();
 
-        if (self::$createdSchema) {
-            return;
-        }
-
-        $this->_schemaTool->createSchema([
-            $this->_em->getClassMetadata(DDC7180A::class),
-            $this->_em->getClassMetadata(DDC7180B::class),
-            $this->_em->getClassMetadata(DDC7180C::class),
-            $this->_em->getClassMetadata(DDC7180D::class),
-            $this->_em->getClassMetadata(DDC7180E::class),
-            $this->_em->getClassMetadata(DDC7180F::class),
-            $this->_em->getClassMetadata(DDC7180G::class),
-        ]);
-
-        self::$createdSchema = true;
+        $this->setUpEntitySchema([DDC7180A::class, DDC7180B::class, DDC7180C::class, DDC7180D::class, DDC7180E::class, DDC7180F::class, DDC7180G::class]);
     }
 
-    /**
-     * {@inheritDoc}
-     */
-    protected function tearDown() : void
-    {
-        parent::tearDown();
-
-        $this->_schemaTool->dropSchema([
-            $this->_em->getClassMetadata(DDC7180A::class),
-            $this->_em->getClassMetadata(DDC7180B::class),
-            $this->_em->getClassMetadata(DDC7180C::class),
-        ]);
-    }
-
-    public function testIssue() : void
+    public function testIssue(): void
     {
         $a = new DDC7180A();
         $b = new DDC7180B();
@@ -71,7 +37,7 @@ class DDC7180Test extends OrmFunctionalTestCase
         self::assertInternalType('integer', $c->id);
     }
 
-    public function testIssue3NodeCycle() : void
+    public function testIssue3NodeCycle(): void
     {
         $d = new DDC7180D();
         $e = new DDC7180E();
@@ -113,6 +79,7 @@ class DDC7180A
      */
     public $b;
 }
+
 /**
  * @Entity
  */
@@ -129,6 +96,7 @@ class DDC7180B
      */
     public $a;
 }
+
 /**
  * @Entity
  */
