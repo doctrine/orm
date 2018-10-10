@@ -301,9 +301,9 @@ Deleting an object with all its associated objects can be achieved
 in multiple ways with very different performance impacts.
 
 1. If an association is marked as ``CASCADE=REMOVE`` Doctrine 2
-   will fetch this association. If its a Single association it will
+   will fetch this association. If it is a Single association it will
    pass this entity to
-   ´EntityManager#remove()``. If the association is a collection, Doctrine will loop over all    its elements and pass them to``EntityManager#remove()\`.
+   ´EntityManager#remove()``. If the association is a collection, Doctrine will loop over all    its elements and pass them to ``EntityManager#remove()\`.
    In both cases the cascade remove semantics are applied recursively.
    For large object graphs this removal strategy can be very costly.
 2. Using a DQL ``DELETE`` statement allows you to delete multiple
@@ -352,7 +352,7 @@ There are several situations in which an entity is detached
 automatically:
 
 -  When serializing an entity. The entity retrieved upon subsequent
-   unserialization will be detached (This is the case for all entities
+   unserialization will be detached (this is the case for all entities
    that are serialized and stored in some cache).
 
 Synchronization with the Database
@@ -521,7 +521,7 @@ An entity is in DETACHED state if it has persistent state and
 identity but is currently not associated with an
 ``EntityManager``.
 
-An entity is in NEW state if has no persistent state and identity
+An entity is in NEW state if it has no persistent state and identity
 and is not associated with an ``EntityManager`` (for example those
 just created via the "new" operator).
 
@@ -634,8 +634,8 @@ By Criteria
 
 .. versionadded:: 2.3
 
-The Repository implement the ``Doctrine\Common\Collections\Selectable``
-interface. That means you can build ``Doctrine\Common\Collections\Criteria``
+The Repository implements the ``Doctrine\Common\Collections\Selectable``
+interface. It means you can build ``Doctrine\Common\Collections\Criteria``
 and pass them to the ``matching($criteria)`` method.
 
 See section `Filtering collections` of chapter :doc:`Working with Associations <working-with-associations>`
@@ -645,7 +645,7 @@ By Eager Loading
 
 Whenever you query for an entity that has persistent associations
 and these associations are mapped as EAGER, they will automatically
-be loaded together with the entity being queried and is thus
+be loaded together with the entity being queried and are thus
 immediately available to your application.
 
 By Lazy Loading
