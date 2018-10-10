@@ -22,7 +22,9 @@ use Doctrine\ORM\Utility\HierarchyDiscriminatorResolver;
 use function array_keys;
 use function array_values;
 use function count;
+use function get_class;
 use function in_array;
+use function is_object;
 use function ksort;
 use function md5;
 use function reset;
@@ -367,6 +369,7 @@ final class Query extends AbstractQuery
             $key   = $parameter->getName();
             $value = $parameter->getValue();
             $rsm   = $this->getResultSetMapping();
+            $type  = null;
 
             if (! isset($paramMappings[$key])) {
                 throw QueryException::unknownParameter($key);
@@ -380,10 +383,17 @@ final class Query extends AbstractQuery
                 $value = array_keys(HierarchyDiscriminatorResolver::resolveDiscriminatorsForClass($value, $this->em));
             }
 
+            if (is_object($value) && $this->em->getMetadataFactory()->hasMetadataFor(get_class($value))) {
+                $metadata = $this->em->getClassMetadata(get_class($value));
+                $type     = $metadata->getColumn($metadata->getIdentifier()[0])->getType();
+            }
+
             $value = $this->processParameterValue($value);
-            $type  = $parameter->getValue() === $value
-                ? $parameter->getType()
-                : ParameterTypeInferer::inferType($value);
+            if ($type === null) {
+                $type  = $parameter->getValue() === $value
+                    ? $parameter->getType()
+                    : ParameterTypeInferer::inferType($value);
+            }
 
             foreach ($paramMappings[$key] as $position) {
                 $types[$position] = $type;
