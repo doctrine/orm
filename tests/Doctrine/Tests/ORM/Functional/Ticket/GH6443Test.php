@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Doctrine\Tests\ORM\Functional\Ticket;
 
 use Doctrine\DBAL\Logging\DebugStack;
+use Doctrine\ORM\Annotation as ORM;
 use Doctrine\DBAL\Types\Type;
 use Doctrine\Tests\DbalTypes\Rot13Type;
 use Doctrine\Tests\OrmFunctionalTestCase;
@@ -73,9 +74,14 @@ class GH6443Test extends OrmFunctionalTestCase
 
 }
 
-/** @Entity */
+/**
+ * @ORM\Entity
+ */
 class GH6443Post
 {
-    /** @Id @Column(type="rot13") */
+    /**
+     * @ORM\Id
+     * @ORM\Column(type="rot13")
+     */
     public $id;
 }
