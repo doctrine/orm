@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\Tests\ORM\Functional\Ticket;
 
 use Doctrine\DBAL\Logging\DebugStack;
@@ -33,7 +35,7 @@ class GH6443Test extends OrmFunctionalTestCase
         $entity->id = 'Foo';
 
         $dql = 'SELECT p FROM ' . GH6443Post::class . ' p WHERE p = ?1';
-        $query = $this->_em->createQuery($dql);
+        $query = $this->em->createQuery($dql);
 
         // we do not know that the internal type is a rot13, so we can not add the type parameter here
         $query->setParameter(1, $entity);
@@ -59,11 +61,11 @@ class GH6443Test extends OrmFunctionalTestCase
         parent::setUp();
 
         $this->sqlLogger = new DebugStack();
-        $this->_em->getConnection()->getConfiguration()->setSQLLogger($this->sqlLogger);
+        $this->em->getConnection()->getConfiguration()->setSQLLogger($this->sqlLogger);
 
 
-        $this->_schemaTool->createSchema([
-            $this->_em->getClassMetadata(GH6443Post::class),
+        $this->schemaTool->createSchema([
+            $this->em->getClassMetadata(GH6443Post::class),
         ]);
 
         $this->rot13Type = Type::getType('rot13');
