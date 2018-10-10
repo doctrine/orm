@@ -385,7 +385,7 @@ final class Query extends AbstractQuery
 
             if (is_object($value) && $this->em->getMetadataFactory()->hasMetadataFor(get_class($value))) {
                 $metadata = $this->em->getClassMetadata(get_class($value));
-                $type     = $metadata->getColumn($metadata->getIdentifier()[0])->getType();
+                $type     = $metadata->getColumn($metadata->getIdentifier()[0])->getTypeName();
             }
 
             $value = $this->processParameterValue($value);
