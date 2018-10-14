@@ -1104,7 +1104,7 @@ class ClassMetadata extends ComponentMetadata implements TableOwner
     {
         $declaringClass = $this->declaredProperties[$fieldName]->getDeclaringClass();
 
-        return ! ($declaringClass->className === $this->className);
+        return $declaringClass->className !== $this->className;
     }
 
     /**

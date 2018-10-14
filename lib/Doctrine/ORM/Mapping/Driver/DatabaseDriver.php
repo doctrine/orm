@@ -158,7 +158,7 @@ class DatabaseDriver implements MappingDriver
         foreach ($this->manyToManyTables as $manyTable) {
             foreach ($manyTable->getForeignKeys() as $foreignKey) {
                 // foreign key maps to the table of the current entity, many to many association probably exists
-                if (! ($loweredTableName === strtolower($foreignKey->getForeignTableName()))) {
+                if ($loweredTableName !== strtolower($foreignKey->getForeignTableName())) {
                     continue;
                 }
 
