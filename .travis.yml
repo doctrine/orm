@@ -5,6 +5,7 @@ language: php
 php:
   - 7.1
   - 7.2
+  - 7.3
   - nightly
 
 env:
@@ -57,6 +58,7 @@ jobs:
 
     - stage: Test
       if: type = cron
+      php: 7.3
       env: DB=sqlite DEV_DEPENDENCIES
       install:
         - composer config minimum-stability dev
