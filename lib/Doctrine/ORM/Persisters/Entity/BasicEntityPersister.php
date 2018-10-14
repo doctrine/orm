@@ -1741,7 +1741,7 @@ class BasicEntityPersister implements EntityPersister
             if (is_array($value)) {
                 $in = sprintf('%s IN (%s)', $column, $placeholder);
 
-                if (array_search(null, $value, true) !== false) {
+                if (in_array(null, $value, true)) {
                     $selectedColumns[] = sprintf('(%s OR %s IS NULL)', $in, $column);
 
                     continue;
