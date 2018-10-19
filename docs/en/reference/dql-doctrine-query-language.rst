@@ -332,7 +332,7 @@ With COUNT DISTINCT:
 
     <?php
     $query = $em->createQuery('SELECT COUNT(DISTINCT u.name) FROM CmsUser');
-    $users = $query->getResult(); // array of ForumUser objects
+    $countUsers = $query->getSingleResult(); // array of ForumUser count
 
 With Arithmetic Expression in WHERE clause:
 
