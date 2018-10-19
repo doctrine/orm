@@ -7,6 +7,7 @@ namespace Doctrine\Tests\ORM\Functional\Ticket;
 use Doctrine\DBAL\Logging\DebugStack;
 use Doctrine\DBAL\Types\Type;
 use Doctrine\ORM\Annotation as ORM;
+use Doctrine\ORM\ORMInvalidArgumentException;
 use Doctrine\Tests\DbalTypes\Rot13Type;
 use Doctrine\Tests\OrmFunctionalTestCase;
 use function count;
@@ -76,6 +77,27 @@ class GH6443Test extends OrmFunctionalTestCase
         );
     }
 
+    /**
+     * when having an entity, that has a composite identifier, we throw an exception because this is not supported
+     */
+    public function testIssueWithCompositeIdentifier()
+    {
+        self::expectException(ORMInvalidArgumentException::class);
+
+        $entity           = new GH6443CombinedIdentityEntity();
+        $entity->id       = 'Foo';
+        $entity->secondId = 'Bar';
+
+        $dql = 'SELECT entity FROM ' . GH6443CombinedIdentityEntity::class . ' entity WHERE entity = ?1';
+        $query = $this->em->createQuery($dql);
+
+        // we set the entity as arameter
+        $query->setParameter(1, $entity);
+
+        // this is when the exception should be thrown
+        $query->getResult();
+
+    }
 
     /**
      * {@inheritDoc}
@@ -89,6 +111,7 @@ class GH6443Test extends OrmFunctionalTestCase
 
         $this->schemaTool->createSchema([
             $this->em->getClassMetadata(GH6443Post::class),
+            $this->em->getClassMetadata(GH6443CombinedIdentityEntity::class),
         ]);
 
         $this->rot13Type = Type::getType('rot13');
@@ -100,6 +123,7 @@ class GH6443Test extends OrmFunctionalTestCase
 
         $this->schemaTool->dropSchema([
                 $this->em->getClassMetadata(GH6443Post::class),
+                $this->em->getClassMetadata(GH6443CombinedIdentityEntity::class),
         ]);
     }
 }
@@ -114,4 +138,23 @@ class GH6443Post
      * @ORM\Column(type="rot13")
      */
     public $id;
+}
+
+
+/**
+ * @ORM\Entity
+ */
+class GH6443CombinedIdentityEntity
+{
+    /**
+     * @ORM\Id
+     * @ORM\Column(type="rot13")
+     */
+    public $id;
+
+    /**
+     * @ORM\Id
+     * @ORM\Column(type="string")
+     */
+    public $secondId;
 }
