@@ -760,7 +760,7 @@ class SchemaTool
             }
 
             $blacklistedFks[$compositeName] = true;
-        } elseif (! isset($blacklistedFks[$compositeName])) {
+        } elseif (! isset($blacklistedFks[$compositeName]) && $this->platform->supportsForeignKeyConstraints()) {
             $addedFks[$compositeName] = [
                 'foreignTableName' => $foreignTableName,
                 'foreignColumns'   => $foreignColumns,
