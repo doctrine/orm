@@ -15,7 +15,7 @@ with associations in Doctrine:
    removed, not the entity itself. A collection of entities always
    only represents the association to the containing entities, not the
    entity itself.
--  When a bidirectional assocation is updated, Doctrine only checks
+-  When a bidirectional association is updated, Doctrine only checks
    on one of both sides for these changes. This is called the :doc:`owning side <unitofwork-associations>`
    of the association.
 -  A property with a reference to many entities has to be instances of the
