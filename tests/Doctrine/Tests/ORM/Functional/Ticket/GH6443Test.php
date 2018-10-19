@@ -55,6 +55,35 @@ class GH6443Test extends OrmFunctionalTestCase
     }
 
     /**
+     * when having an entity, that has a non scalar identifier, the type will not be guessed / converted correctly
+     */
+    public function testIssueWithProxyClass()
+    {
+
+        $metadata = $this->em->getClassMetadata(GH6443Post::class);
+        $entityProxy = $this->em->getProxyFactory()->getProxy($metadata, ['id' => 'Foo']);
+
+        $dql = 'SELECT p FROM ' . GH6443Post::class . ' p WHERE p = ?1';
+        $query = $this->em->createQuery($dql);
+
+        // we do not know that the internal type is a rot13, so we can not add the type parameter here
+        $query->setParameter(1, $entityProxy);
+
+        // we do not need the result, but we need to execute it to log the SQL-Statement
+        $query->getResult();
+
+        $lastSql = $this->sqlLogger->queries[count($this->sqlLogger->queries)];
+
+        // the entity's identifier is of type "rot13" so the query parameter needs to be this type too
+        $this->assertSame(
+            $this->rot13Type->getName(),
+            $lastSql['types'][0],
+            "asserting that the entity's identifier type is correctly inferred"
+        );
+    }
+
+
+    /**
      * {@inheritDoc}
      */
     protected function setUp(): void
@@ -70,6 +99,15 @@ class GH6443Test extends OrmFunctionalTestCase
         ]);
 
         $this->rot13Type = Type::getType('rot13');
+    }
+
+    protected function tearDown(): void
+    {
+        parent::tearDown();
+
+        $this->schemaTool->dropSchema([
+                $this->em->getClassMetadata(GH6443Post::class),
+        ]);
     }
 
 }
