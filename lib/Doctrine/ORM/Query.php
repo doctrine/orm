@@ -19,11 +19,10 @@ use Doctrine\ORM\Query\Parser;
 use Doctrine\ORM\Query\ParserResult;
 use Doctrine\ORM\Query\QueryException;
 use Doctrine\ORM\Utility\HierarchyDiscriminatorResolver;
-use ProxyManager\Proxy\GhostObjectInterface;
+use Doctrine\ORM\Utility\StaticClassNameConverter;
 use function array_keys;
 use function array_values;
 use function count;
-use function get_class;
 use function in_array;
 use function is_object;
 use function ksort;
@@ -384,11 +383,8 @@ final class Query extends AbstractQuery
                 $value = array_keys(HierarchyDiscriminatorResolver::resolveDiscriminatorsForClass($value, $this->em));
             }
 
-            if (is_object($value) && (
-                    $this->em->getMetadataFactory()->hasMetadataFor(get_class($value))
-                    || $value instanceof GhostObjectInterface
-                )) {
-                $metadata = $this->em->getClassMetadata(get_class($value));
+            if (is_object($value) && $this->em->getMetadataFactory()->hasMetadataFor(StaticClassNameConverter::getClass($value))) {
+                $metadata = $this->em->getClassMetadata(StaticClassNameConverter::getClass($value));
                 $type = $metadata->getColumn($metadata->getIdentifier()[0])->getTypeName();
             }
 
