@@ -5,34 +5,29 @@ declare(strict_types=1);
 namespace Doctrine\Tests\ORM\Functional\Ticket;
 
 use Doctrine\DBAL\Logging\DebugStack;
-use Doctrine\ORM\Annotation as ORM;
 use Doctrine\DBAL\Types\Type;
+use Doctrine\ORM\Annotation as ORM;
 use Doctrine\Tests\DbalTypes\Rot13Type;
 use Doctrine\Tests\OrmFunctionalTestCase;
+use function count;
 
 /**
  * @group 6443
  */
 class GH6443Test extends OrmFunctionalTestCase
 {
-
-    /**
-     * @var Rot13Type
-     */
+    /** @var Rot13Type */
     private $rot13Type;
 
-    /**
-     * @var DebugStack
-     */
+    /** @var DebugStack */
     private $sqlLogger;
 
     /**
      * when having an entity, that has a non scalar identifier, the type will not be guessed / converted correctly
      */
-    public function testIssue()
+    public function testIssue() : void
     {
-
-        $entity = new GH6443Post();
+        $entity     = new GH6443Post();
         $entity->id = 'Foo';
 
         $dql = 'SELECT p FROM ' . GH6443Post::class . ' p WHERE p = ?1';
@@ -59,8 +54,7 @@ class GH6443Test extends OrmFunctionalTestCase
      */
     public function testIssueWithProxyClass()
     {
-
-        $metadata = $this->em->getClassMetadata(GH6443Post::class);
+        $metadata    = $this->em->getClassMetadata(GH6443Post::class);
         $entityProxy = $this->em->getProxyFactory()->getProxy($metadata, ['id' => 'Foo']);
 
         $dql = 'SELECT p FROM ' . GH6443Post::class . ' p WHERE p = ?1';
@@ -86,13 +80,12 @@ class GH6443Test extends OrmFunctionalTestCase
     /**
      * {@inheritDoc}
      */
-    protected function setUp(): void
+    protected function setUp() : void
     {
         parent::setUp();
 
         $this->sqlLogger = new DebugStack();
         $this->em->getConnection()->getConfiguration()->setSQLLogger($this->sqlLogger);
-
 
         $this->schemaTool->createSchema([
             $this->em->getClassMetadata(GH6443Post::class),
@@ -101,7 +94,7 @@ class GH6443Test extends OrmFunctionalTestCase
         $this->rot13Type = Type::getType('rot13');
     }
 
-    protected function tearDown(): void
+    protected function tearDown() : void
     {
         parent::tearDown();
 
@@ -109,7 +102,6 @@ class GH6443Test extends OrmFunctionalTestCase
                 $this->em->getClassMetadata(GH6443Post::class),
         ]);
     }
-
 }
 
 /**
