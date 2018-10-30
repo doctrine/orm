@@ -17,6 +17,7 @@ use Doctrine\ORM\Event\OnFlushEventArgs;
 use Doctrine\ORM\Event\PostFlushEventArgs;
 use Doctrine\ORM\Event\PreFlushEventArgs;
 use Doctrine\ORM\Event\PreUpdateEventArgs;
+use Doctrine\ORM\Exception\CommitInsideCommit;
 use Doctrine\ORM\Exception\UnexpectedAssociationValue;
 use Doctrine\ORM\Internal\HydrationCompleteHandler;
 use Doctrine\ORM\Mapping\AssociationMetadata;
@@ -302,6 +303,9 @@ class UnitOfWork implements PropertyChangedListener
     /** @var NormalizeIdentifier */
     private $normalizeIdentifier;
 
+    /** @var bool */
+    private $commitInProgress = false;
+
     /**
      * Initializes a new UnitOfWork instance, bound to the given EntityManager.
      */
@@ -330,8 +334,24 @@ class UnitOfWork implements PropertyChangedListener
      * 5) All entity deletions
      *
      * @throws Exception
+     * @throws CommitInsideCommit
      */
     public function commit()
+    {
+        if ($this->commitInProgress) {
+            throw CommitInsideCommit::create();
+        }
+
+        $this->commitInProgress = true;
+
+        try {
+            $this->doCommit();
+        } finally {
+            $this->commitInProgress = false;
+        }
+    }
+
+    private function doCommit()
     {
         // Raise preFlush
         if ($this->eventManager->hasListeners(Events::preFlush)) {
