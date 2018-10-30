@@ -1151,9 +1151,6 @@ class SecondLevelCacheQueryCacheTest extends SecondLevelCacheAbstractTest
 
         self::assertCount(3, $result2);
         self::assertEquals($queryCount + 1, $this->getCurrentQueryCount());
-
-        foreach ($result2 as $entity) {
-            self::assertInstanceOf(Country::class, $entity);
-        }
+        self::assertContainsOnlyInstancesOf(Country::class, $result2);
     }
 }
