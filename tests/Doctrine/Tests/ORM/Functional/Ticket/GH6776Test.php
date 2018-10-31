@@ -87,7 +87,7 @@ class GH6776Vehicle
     /** @Column(type="string") */
     public $name;
 
-    /** @oneToMany(targetEntity="GH6776WheelDimension", mappedBy="vehicle") */
+    /** @OneToMany(targetEntity="GH6776WheelDimension", mappedBy="vehicle") */
     public $compatibleDimensions;
 }
 
