@@ -180,15 +180,6 @@ class ClassMetadataFactoryTest extends OrmTestCase
 
         self::assertEquals($childDiscriminatorMap, $rootDiscriminatorMap);
         self::assertEquals($anotherChildDiscriminatorMap, $rootDiscriminatorMap);
-
-        // ClassMetadataFactory::addDefaultDiscriminatorMap shouldn't be called again, because the
-        // discriminator map is already cached
-        $cmf = $this->getMockBuilder(ClassMetadataFactory::class)->setMethods(['addDefaultDiscriminatorMap'])->getMock();
-        $cmf->setEntityManager($em);
-        $cmf->expects($this->never())
-            ->method('addDefaultDiscriminatorMap');
-
-        $rootMetadata = $cmf->getMetadataFor(RootClass::class);
     }
 
     public function testGetAllMetadataWorksWithBadConnection() : void
