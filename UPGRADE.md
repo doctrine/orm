@@ -1,5 +1,20 @@
 # Upgrade to 3.0
 
+## BC Break: Dropped automatic discriminator map discovery
+
+Automatic discriminator map discovery exhibited multiple flaws
+that can't be reliably addressed and supported:
+
+ * discovered entries are not namespaced which leads to collisions,
+ * the class name is part of the discriminator map, therefore the class
+   must never be renamed.
+
+As a consequence this feature has been dropped.
+
+If your code relied on this feature, please build the discriminator map for
+your inheritance tree manually where each entry is an unqualified lowercase
+name of the member entities.
+
 ## BC Break: Missing type declaration added for identifier generators
 
 The interfaces `Doctrine\ORM\Sequencing\Generator` and

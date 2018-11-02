@@ -5,9 +5,7 @@ declare(strict_types=1);
 namespace Doctrine\ORM\Mapping;
 
 use Doctrine\ORM\Exception\ORMException;
-use function array_keys;
 use function array_map;
-use function array_values;
 use function get_parent_class;
 use function implode;
 use function sprintf;
@@ -471,28 +469,6 @@ class MappingException extends \LogicException implements ORMException
             $className,
             $owningClass
         ));
-    }
-
-    /**
-     * @param string   $className
-     * @param string[] $entries
-     * @param string[] $map
-     *
-     * @return MappingException
-     */
-    public static function duplicateDiscriminatorEntry($className, array $entries, array $map)
-    {
-        return new self(
-            'The entries ' . implode(', ', $entries) . " in discriminator map of class '" . $className . "' is duplicated. " .
-            'If the discriminator map is automatically generated you have to convert it to an explicit discriminator map now. ' .
-            'The entries of the current map are: @DiscriminatorMap({' . implode(', ', array_map(
-                function ($a, $b) {
-                    return sprintf("'%s': '%s'", $a, $b);
-                },
-                array_keys($map),
-                array_values($map)
-            )) . '})'
-        );
     }
 
     /**

@@ -26,12 +26,7 @@ use ReflectionException;
 use function array_map;
 use function class_exists;
 use function count;
-use function end;
-use function explode;
-use function is_subclass_of;
 use function sprintf;
-use function strpos;
-use function strtolower;
 
 /**
  * The ClassMetadataFactory is used to create ClassMetadata objects that contain all the
@@ -152,10 +147,6 @@ class ClassMetadataFactory extends AbstractClassMetadataFactory
             if (! empty($parent->entityListeners) && empty($classMetadata->entityListeners)) {
                 $classMetadata->entityListeners = $parent->entityListeners;
             }
-        }
-
-        if (! $classMetadata->discriminatorMap && $classMetadata->inheritanceType !== InheritanceType::NONE && $classMetadata->isRootEntity()) {
-            $this->addDefaultDiscriminatorMap($classMetadata);
         }
 
         $this->completeRuntimeMetadata($classMetadata, $parent);
@@ -283,60 +274,6 @@ class ClassMetadataFactory extends AbstractClassMetadataFactory
         }
 
         throw MappingException::mappedClassNotPartOfDiscriminatorMap($metadata->getClassName(), $metadata->getRootClassName());
-    }
-
-    /**
-     * Adds a default discriminator map if no one is given
-     *
-     * If an entity is of any inheritance type and does not contain a
-     * discriminator map, then the map is generated automatically. This process
-     * is expensive computation wise.
-     *
-     * The automatically generated discriminator map contains the lowercase short name of
-     * each class as key.
-     *
-     * @throws MappingException
-     */
-    private function addDefaultDiscriminatorMap(ClassMetadata $class) : void
-    {
-        $allClasses = $this->driver->getAllClassNames();
-        $fqcn       = $class->getClassName();
-        $map        = [$this->getShortName($fqcn) => $fqcn];
-        $duplicates = [];
-
-        foreach ($allClasses as $subClassCandidate) {
-            if (is_subclass_of($subClassCandidate, $fqcn)) {
-                $shortName = $this->getShortName($subClassCandidate);
-
-                if (isset($map[$shortName])) {
-                    $duplicates[] = $shortName;
-                }
-
-                $map[$shortName] = $subClassCandidate;
-            }
-        }
-
-        if ($duplicates) {
-            throw MappingException::duplicateDiscriminatorEntry($class->getClassName(), $duplicates, $map);
-        }
-
-        $class->setDiscriminatorMap($map);
-    }
-
-    /**
-     * Gets the lower-case short name of a class.
-     *
-     * @param string $className
-     */
-    private function getShortName($className) : string
-    {
-        if (strpos($className, '\\') === false) {
-            return strtolower($className);
-        }
-
-        $parts = explode('\\', $className);
-
-        return strtolower(end($parts));
     }
 
     /**
