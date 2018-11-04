@@ -57,7 +57,6 @@ abstract class AbstractCollectionPersisterTest extends OrmTestCase
     ];
 
     /**
-     *
      * @return AbstractCollectionPersister
      */
     abstract protected function createPersister(

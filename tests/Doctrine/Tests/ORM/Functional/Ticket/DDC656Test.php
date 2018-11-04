@@ -6,6 +6,7 @@ namespace Doctrine\Tests\ORM\Functional\Ticket;
 
 use Doctrine\ORM\Annotation as ORM;
 use Doctrine\Tests\OrmFunctionalTestCase;
+use Exception;
 use function array_keys;
 use function get_class;
 
@@ -18,7 +19,7 @@ class DDC656Test extends OrmFunctionalTestCase
             $this->schemaTool->createSchema(
                 [$this->em->getClassMetadata(DDC656Entity::class)]
             );
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
         }
     }
 

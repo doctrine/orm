@@ -7,6 +7,7 @@ namespace Doctrine\Tests\ORM\Functional\Ticket;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\Annotation as ORM;
 use Doctrine\Tests\OrmFunctionalTestCase;
+use Exception;
 
 /**
  * Functional tests for the Single Table Inheritance mapping strategy.
@@ -24,7 +25,7 @@ class AdvancedAssociationTest extends OrmFunctionalTestCase
                     $this->em->getClassMetadata(RelationType::class),
                 ]
             );
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             // Swallow all exceptions. We do not test the schema tool here.
         }
     }
@@ -106,26 +107,29 @@ class AdvancedAssociationTest extends OrmFunctionalTestCase
  */
 class Lemma
 {
-    public const CLASS_NAME = __CLASS__;
+    public const CLASS_NAME = self::class;
 
     /**
-     * @var int
      * @ORM\Id
      * @ORM\Column(type="integer", name="lemma_id")
      * @ORM\GeneratedValue(strategy="AUTO")
+     *
+     * @var int
      */
     private $id;
 
     /**
-     * @var string
      * @ORM\Column(type="string", name="lemma_name", unique=true, length=255)
+     *
+     * @var string
      */
     private $lemma;
 
 
     /**
-     * @var kateglo\application\utilities\collections\ArrayCollection
      * @ORM\OneToMany(targetEntity=Relation::class, mappedBy="parent", cascade={"persist"})
+     *
+     * @var kateglo\application\utilities\collections\ArrayCollection
      */
     private $relations;
 
@@ -169,7 +173,7 @@ class Lemma
 
     public function removeRelation(Relation $relation)
     {
-        /*@var $removed Relation */
+        /** @var Relation $removed */
         $removed = $this->relations->removeElement($relation);
         if ($removed !== null) {
             $removed->removeParent();
@@ -191,34 +195,38 @@ class Lemma
  */
 class Relation
 {
-    public const CLASS_NAME = __CLASS__;
+    public const CLASS_NAME = self::class;
 
     /**
-     * @var int
      * @ORM\Id
      * @ORM\Column(type="integer", name="relation_id")
      * @ORM\GeneratedValue(strategy="AUTO")
+     *
+     * @var int
      */
     private $id;
 
     /**
-     * @var Lemma
      * @ORM\ManyToOne(targetEntity=Lemma::class, inversedBy="relations")
      * @ORM\JoinColumn(name="relation_parent_id", referencedColumnName="lemma_id")
+     *
+     * @var Lemma
      */
     private $parent;
 
     /**
-     * @var Lemma
      * @ORM\OneToOne(targetEntity=Lemma::class)
      * @ORM\JoinColumn(name="relation_child_id", referencedColumnName="lemma_id")
+     *
+     * @var Lemma
      */
     private $child;
 
     /**
-     * @var RelationType
      * @ORM\ManyToOne(targetEntity=RelationType::class, inversedBy="relations")
      * @ORM\JoinColumn(name="relation_type_id", referencedColumnName="relation_type_id")
+     *
+     * @var RelationType
      */
     private $type;
 
@@ -238,7 +246,7 @@ class Relation
     public function removeParent()
     {
         if ($this->lemma !== null) {
-            /*@var $phrase Lemma */
+            /** @var Lemma $phrase */
             $lemma        = $this->parent;
             $this->parent = null;
             $lemma->removeRelation($this);
@@ -274,7 +282,7 @@ class Relation
     public function removeType()
     {
         if ($this->type !== null) {
-            /*@var $phrase RelationType */
+            /** @var RelationType $phrase */
             $type       = $this->type;
             $this->type = null;
             $type->removeRelation($this);
@@ -288,31 +296,35 @@ class Relation
  */
 class RelationType
 {
-    public const CLASS_NAME = __CLASS__;
+    public const CLASS_NAME = self::class;
 
     /**
-     * @var int
      * @ORM\Id
      * @ORM\Column(type="integer", name="relation_type_id")
      * @ORM\GeneratedValue(strategy="AUTO")
+     *
+     * @var int
      */
     private $id;
 
     /**
-     * @var string
      * @ORM\Column(type="string", name="relation_type_name", unique=true, length=255)
+     *
+     * @var string
      */
     private $type;
 
     /**
-     * @var string
      * @ORM\Column(type="string", name="relation_type_abbreviation", unique=true, length=255)
+     *
+     * @var string
      */
     private $abbreviation;
 
     /**
-     * @var kateglo\application\utilities\collections\ArrayCollection
      * @ORM\OneToMany(targetEntity=Relation::class, mappedBy="type", cascade={"persist"})
+     *
+     * @var kateglo\application\utilities\collections\ArrayCollection
      */
     private $relations;
 
@@ -369,7 +381,7 @@ class RelationType
 
     public function removeRelation(Relation $relation)
     {
-        /*@var $removed Relation */
+        /** @var Relation $removed */
         $removed = $this->relations->removeElement($relation);
         if ($removed !== null) {
             $removed->removeLemma();

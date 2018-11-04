@@ -7,6 +7,7 @@ namespace Doctrine\Tests\ORM\Functional\Ticket;
 use Doctrine\Tests\Models\CMS\CmsGroup;
 use Doctrine\Tests\Models\CMS\CmsUser;
 use Doctrine\Tests\OrmFunctionalTestCase;
+use Exception;
 use function get_class;
 
 class DDC767Test extends OrmFunctionalTestCase
@@ -68,7 +69,7 @@ class DDC767Test extends OrmFunctionalTestCase
 
             $this->em->flush();
             $this->em->commit();
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             $this->em->rollback();
         }
     }

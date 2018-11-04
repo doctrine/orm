@@ -15,7 +15,7 @@ class MySqlSchemaToolTest extends OrmFunctionalTestCase
     {
         parent::setUp();
         if ($this->em->getConnection()->getDatabasePlatform()->getName() !== 'mysql') {
-            $this->markTestSkipped('The ' . __CLASS__ . ' requires the use of mysql.');
+            $this->markTestSkipped('The ' . self::class . ' requires the use of mysql.');
         }
     }
 

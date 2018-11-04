@@ -20,9 +20,9 @@ class DDC5934BaseContract
     public $id;
 
     /**
-     * @var ArrayCollection
-     *
      * @ORM\ManyToMany(targetEntity=DDC5934Member::class, fetch="LAZY", inversedBy="contracts")
+     *
+     * @var ArrayCollection
      */
     public $members;
 

@@ -4,10 +4,13 @@ declare(strict_types=1);
 
 namespace Doctrine\Tests\ORM\Functional\Locking;
 
+use Closure;
 use Doctrine\Common\Cache\ArrayCache;
 use Doctrine\DBAL\Logging\EchoSQLLogger;
 use Doctrine\ORM\Configuration;
 use Doctrine\ORM\EntityManager;
+use GearmanWorker;
+use InvalidArgumentException;
 use const GEARMAN_SUCCESS;
 use function is_array;
 use function microtime;
@@ -22,7 +25,7 @@ class LockAgentWorker
     {
         $lockAgent = new LockAgentWorker();
 
-        $worker = new \GearmanWorker();
+        $worker = new GearmanWorker();
         $worker->addServer(
             $_SERVER['GEARMAN_HOST'] ?? null,
             $_SERVER['GEARMAN_PORT'] ?? 4730
@@ -39,7 +42,7 @@ class LockAgentWorker
         }
     }
 
-    protected function process($job, \Closure $do)
+    protected function process($job, Closure $do)
     {
         $fixture = $this->processWorkload($job);
 
@@ -58,14 +61,14 @@ class LockAgentWorker
 
     public function findWithLock($job)
     {
-        return $this->process($job, function ($fixture, $em) {
+        return $this->process($job, static function ($fixture, $em) {
             $entity = $em->find($fixture['entityName'], $fixture['entityId'], $fixture['lockMode']);
         });
     }
 
     public function dqlWithLock($job)
     {
-        return $this->process($job, function ($fixture, $em) {
+        return $this->process($job, static function ($fixture, $em) {
             /** @var Doctrine\ORM\Query $query */
             $query = $em->createQuery($fixture['dql']);
             $query->setLockMode($fixture['lockMode']);
@@ -76,7 +79,7 @@ class LockAgentWorker
 
     public function lock($job)
     {
-        return $this->process($job, function ($fixture, $em) {
+        return $this->process($job, static function ($fixture, $em) {
             $entity = $em->find($fixture['entityName'], $fixture['entityId']);
             $em->lock($entity, $fixture['lockMode']);
         });
@@ -90,13 +93,13 @@ class LockAgentWorker
         $workload = unserialize($workload);
 
         if (! isset($workload['conn']) || ! is_array($workload['conn'])) {
-            throw new \InvalidArgumentException('Missing Database parameters');
+            throw new InvalidArgumentException('Missing Database parameters');
         }
 
         $this->em = $this->createEntityManager($workload['conn']);
 
         if (! isset($workload['fixture'])) {
-            throw new \InvalidArgumentException('Missing Fixture parameters');
+            throw new InvalidArgumentException('Missing Fixture parameters');
         }
         return $workload['fixture'];
     }
@@ -116,9 +119,7 @@ class LockAgentWorker
         $config->setQueryCacheImpl($cache);
         $config->setSQLLogger(new EchoSQLLogger());
 
-        $em = EntityManager::create($conn, $config);
-
-        return $em;
+        return EntityManager::create($conn, $config);
     }
 }
 

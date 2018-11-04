@@ -6,6 +6,7 @@ namespace Doctrine\Tests\ORM\Functional\Ticket;
 
 use Doctrine\ORM\Annotation as ORM;
 use Doctrine\Tests\OrmFunctionalTestCase;
+use Exception;
 
 class DDC960Test extends OrmFunctionalTestCase
 {
@@ -15,11 +16,11 @@ class DDC960Test extends OrmFunctionalTestCase
         try {
             $this->schemaTool->createSchema(
                 [
-                $this->em->getClassMetadata(DDC960Root::class),
-                $this->em->getClassMetadata(DDC960Child::class),
+                    $this->em->getClassMetadata(DDC960Root::class),
+                    $this->em->getClassMetadata(DDC960Child::class),
                 ]
             );
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
         }
     }
 
@@ -74,6 +75,7 @@ class DDC960Child extends DDC960Root
 {
     /**
      * @ORM\Column(type="string")
+     *
      * @var string
      */
     private $name;

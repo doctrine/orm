@@ -13,6 +13,7 @@ class CompanyFixContract extends CompanyContract
 {
     /**
      * @ORM\Column(type="integer")
+     *
      * @var int
      */
     private $fixPrice = 0;

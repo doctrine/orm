@@ -5,12 +5,13 @@ declare(strict_types=1);
 namespace Doctrine\ORM;
 
 use Doctrine\ORM\Exception\ORMException;
+use RuntimeException;
 use function implode;
 
 /**
  * Exception thrown when a Proxy fails to retrieve an Entity result.
  */
-class EntityNotFoundException extends \RuntimeException implements ORMException
+class EntityNotFoundException extends RuntimeException implements ORMException
 {
     /**
      * Static constructor.

@@ -5,17 +5,17 @@ declare(strict_types=1);
 namespace Doctrine\ORM\Mapping;
 
 use Doctrine\ORM\Reflection\ReflectionService;
+use ReflectionProperty;
 
 /**
  * Class AssociationMetadata
- *
  */
 class AssociationMetadata implements Property
 {
     /** @var ClassMetadata */
     private $declaringClass;
 
-    /** @var \ReflectionProperty */
+    /** @var ReflectionProperty */
     private $reflection;
 
     /** @var string */
@@ -226,7 +226,7 @@ class AssociationMetadata implements Property
     /**
      * {@inheritdoc}
      */
-    public function setReflectionProperty(\ReflectionProperty $reflectionProperty) : void
+    public function setReflectionProperty(ReflectionProperty $reflectionProperty) : void
     {
         $this->reflection = $reflectionProperty;
     }

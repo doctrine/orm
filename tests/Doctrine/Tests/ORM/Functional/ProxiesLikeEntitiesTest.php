@@ -12,6 +12,7 @@ use Doctrine\Tests\Models\CMS\CmsPhonenumber;
 use Doctrine\Tests\Models\CMS\CmsTag;
 use Doctrine\Tests\Models\CMS\CmsUser;
 use Doctrine\Tests\OrmFunctionalTestCase;
+use Exception;
 use ProxyManager\Configuration;
 use ProxyManager\Proxy\GhostObjectInterface;
 use function sprintf;
@@ -22,6 +23,7 @@ use function sprintf;
  * The test considers two possible cases:
  *  a) __initialized__ = true and no identifier set in proxy
  *  b) __initialized__ = false and identifier set in proxy and in property
+ *
  * @todo All other cases would cause lazy loading
  */
 class ProxiesLikeEntitiesTest extends OrmFunctionalTestCase
@@ -47,7 +49,7 @@ class ProxiesLikeEntitiesTest extends OrmFunctionalTestCase
                     $this->em->getClassMetadata(CmsGroup::class),
                 ]
             );
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
         }
         $this->user           = new CmsUser();
         $this->user->username = 'ocramius';

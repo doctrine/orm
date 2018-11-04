@@ -4,6 +4,11 @@ declare(strict_types=1);
 
 namespace Doctrine\ORM\Mapping;
 
+use ArrayIterator;
+use ReflectionClass;
+use ReflectionException;
+use ReflectionProperty;
+
 /**
  * A <tt>ComponentMetadata</tt> instance holds object-relational property mapping.
  */
@@ -18,7 +23,7 @@ abstract class ComponentMetadata
     /**
      * The ReflectionClass instance of the component class.
      *
-     * @var \ReflectionClass|null
+     * @var ReflectionClass|null
      */
     protected $reflectionClass;
 
@@ -51,7 +56,7 @@ abstract class ComponentMetadata
         return $this->parent;
     }
 
-    public function getReflectionClass() : ?\ReflectionClass
+    public function getReflectionClass() : ?ReflectionClass
     {
         return $this->reflectionClass;
     }
@@ -77,7 +82,7 @@ abstract class ComponentMetadata
     }
 
     /**
-     * @throws \ReflectionException
+     * @throws ReflectionException
      * @throws MappingException
      */
     public function addDeclaredProperty(Property $property) : void
@@ -93,7 +98,7 @@ abstract class ComponentMetadata
         $property->setDeclaringClass($this);
 
         if ($this->reflectionClass) {
-            $reflectionProperty = new \ReflectionProperty($className, $propertyName);
+            $reflectionProperty = new ReflectionProperty($className, $propertyName);
 
             $reflectionProperty->setAccessible(true);
 
@@ -143,20 +148,20 @@ abstract class ComponentMetadata
     }
 
     /**
-     * @return \ArrayIterator|ColumnMetadata[]
+     * @return ArrayIterator|ColumnMetadata[]
      */
-    public function getColumnsIterator() : \ArrayIterator
+    public function getColumnsIterator() : ArrayIterator
     {
-        $iterator = new \ArrayIterator();
+        $iterator = new ArrayIterator();
 
         // @todo guilhermeblanco Must be switched to getPropertiesIterator once class only has its declared properties
         foreach ($this->getDeclaredPropertiesIterator() as $property) {
             switch (true) {
-                case ($property instanceof FieldMetadata):
+                case $property instanceof FieldMetadata:
                     $iterator->offsetSet($property->getColumnName(), $property);
                     break;
 
-                case ($property instanceof ToOneAssociationMetadata && $property->isOwningSide()):
+                case $property instanceof ToOneAssociationMetadata && $property->isOwningSide():
                     foreach ($property->getJoinColumns() as $joinColumn) {
                         /** @var JoinColumnMetadata $joinColumn */
                         $iterator->offsetSet($joinColumn->getColumnName(), $joinColumn);

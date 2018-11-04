@@ -7,26 +7,29 @@ namespace Doctrine\ORM\Query;
 use Doctrine\ORM\Exception\ORMException;
 use Doctrine\ORM\Mapping\AssociationMetadata;
 use Doctrine\ORM\Query\AST\PathExpression;
+use Exception;
+use LogicException;
+use Throwable;
 use function sprintf;
 
 /**
  * Description of QueryException.
  */
-class QueryException extends \LogicException implements ORMException
+class QueryException extends LogicException implements ORMException
 {
     /**
      * @param string $dql
      *
      * @return QueryException
      */
-    public static function dqlError($dql, ?\Throwable $previous = null)
+    public static function dqlError($dql, ?Throwable $previous = null)
     {
         return new self($dql, 0, $previous);
     }
 
     /**
-     * @param string          $message
-     * @param \Exception|null $previous
+     * @param string         $message
+     * @param Exception|null $previous
      *
      * @return QueryException
      */
@@ -36,8 +39,8 @@ class QueryException extends \LogicException implements ORMException
     }
 
     /**
-     * @param string          $message
-     * @param \Exception|null $previous
+     * @param string         $message
+     * @param Exception|null $previous
      *
      * @return QueryException
      */

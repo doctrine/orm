@@ -20,8 +20,8 @@ class DDC1884Test extends OrmFunctionalTestCase
         $this->useModelSet('taxi');
         parent::setUp();
 
-        list($bimmer, $crysler, $merc, $volvo) = $this->createCars(Car::class);
-        list($john, $foo)                      = $this->createDrivers(Driver::class);
+        [$bimmer, $crysler, $merc, $volvo] = $this->createCars(Car::class);
+        [$john, $foo]                      = $this->createDrivers(Driver::class);
         $this->em->flush();
 
         $ride1 = new Ride($john, $bimmer);

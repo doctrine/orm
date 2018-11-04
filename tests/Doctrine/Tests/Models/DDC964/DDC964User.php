@@ -25,21 +25,21 @@ class DDC964User
     protected $name;
 
     /**
-     * @var ArrayCollection
-     *
      * @ORM\ManyToMany(targetEntity=DDC964Group::class, inversedBy="users", cascade={"persist"})
      * @ORM\JoinTable(name="ddc964_users_groups",
      *  joinColumns={@ORM\JoinColumn(name="user_id", referencedColumnName="id")},
      *  inverseJoinColumns={@ORM\JoinColumn(name="group_id", referencedColumnName="id")}
      * )
+     *
+     * @var ArrayCollection
      */
     protected $groups;
 
     /**
-     * @var DDC964Address
-     *
      * @ORM\ManyToOne(targetEntity=DDC964Address::class, cascade={"persist"})
      * @ORM\JoinColumn(name="address_id", referencedColumnName="id")
+     *
+     * @var DDC964Address
      */
     protected $address;
 

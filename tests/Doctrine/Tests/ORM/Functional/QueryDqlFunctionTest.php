@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Doctrine\Tests\ORM\Functional;
 
+use DateTimeImmutable;
 use Doctrine\ORM\AbstractQuery;
 use Doctrine\Tests\Models\Company\CompanyManager;
 use Doctrine\Tests\OrmFunctionalTestCase;
@@ -291,7 +292,6 @@ class QueryDqlFunctionTest extends OrmFunctionalTestCase
     /**
      * @group DDC-1014
      * @group DDC-2938
-     *
      * @dataProvider dateAddSubProvider
      */
     public function testDateAdd(string $unit, int $amount, int $delta = 0) : void
@@ -311,8 +311,8 @@ class QueryDqlFunctionTest extends OrmFunctionalTestCase
         self::assertArrayHasKey('add', $result);
 
         self::assertEquals(
-            (new \DateTimeImmutable($result['now']))->modify(sprintf('+%d %s', $amount, $unit)),
-            new \DateTimeImmutable($result['add']),
+            (new DateTimeImmutable($result['now']))->modify(sprintf('+%d %s', $amount, $unit)),
+            new DateTimeImmutable($result['add']),
             '',
             $delta
         );
@@ -321,7 +321,6 @@ class QueryDqlFunctionTest extends OrmFunctionalTestCase
     /**
      * @group DDC-1014
      * @group DDC-2938
-     *
      * @dataProvider dateAddSubProvider
      */
     public function testDateSub(string $unit, int $amount, int $delta = 0) : void
@@ -341,8 +340,8 @@ class QueryDqlFunctionTest extends OrmFunctionalTestCase
         self::assertArrayHasKey('sub', $result);
 
         self::assertEquals(
-            (new \DateTimeImmutable($result['now']))->modify(sprintf('-%d %s', $amount, $unit)),
-            new \DateTimeImmutable($result['sub']),
+            (new DateTimeImmutable($result['now']))->modify(sprintf('-%d %s', $amount, $unit)),
+            new DateTimeImmutable($result['sub']),
             '',
             $delta
         );
@@ -373,7 +372,7 @@ class QueryDqlFunctionTest extends OrmFunctionalTestCase
                     'BIT_OR( (m.salary/100000) , 2 ) AS salary_bit_or ' .
                     'FROM Doctrine\Tests\Models\Company\CompanyManager m ' .
                 'ORDER BY ' .
-                    'm.id ' ;
+                    'm.id ';
         $result = $this->em->createQuery($dql)->getArrayResult();
 
         self::assertEquals(4 | 2, $result[0]['bit_or']);
@@ -397,7 +396,7 @@ class QueryDqlFunctionTest extends OrmFunctionalTestCase
                     'BIT_AND( (m.salary/100000) , 2 ) AS salary_bit_and ' .
                     'FROM Doctrine\Tests\Models\Company\CompanyManager m ' .
                 'ORDER BY ' .
-                    'm.id ' ;
+                    'm.id ';
         $result = $this->em->createQuery($dql)->getArrayResult();
 
         self::assertEquals(4 & 2, $result[0]['bit_and']);

@@ -12,7 +12,6 @@ use Symfony\Component\Console\Helper\HelperSet;
 
 /**
  * @group DDC-3186
- *
  * @covers \Doctrine\ORM\Tools\Console\ConsoleRunner
  */
 final class ConsoleRunnerTest extends DoctrineTestCase

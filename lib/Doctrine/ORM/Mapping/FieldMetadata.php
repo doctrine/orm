@@ -5,13 +5,14 @@ declare(strict_types=1);
 namespace Doctrine\ORM\Mapping;
 
 use Doctrine\ORM\Reflection\ReflectionService;
+use ReflectionProperty;
 
 class FieldMetadata extends LocalColumnMetadata implements Property
 {
     /** @var ComponentMetadata */
     protected $declaringClass;
 
-    /** @var \ReflectionProperty */
+    /** @var ReflectionProperty */
     protected $reflection;
 
     /** @var string */
@@ -80,7 +81,7 @@ class FieldMetadata extends LocalColumnMetadata implements Property
     /**
      * {@inheritdoc}
      */
-    public function setReflectionProperty(\ReflectionProperty $reflectionProperty) : void
+    public function setReflectionProperty(ReflectionProperty $reflectionProperty) : void
     {
         $this->reflection = $reflectionProperty;
     }

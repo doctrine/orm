@@ -54,7 +54,7 @@ final class NativeQuery extends AbstractQuery
         foreach ($this->getParameters() as $parameter) {
             $name  = $parameter->getName();
             $value = $this->processParameterValue($parameter->getValue());
-            $type  = ($parameter->getValue() === $value)
+            $type  = $parameter->getValue() === $value
                 ? $parameter->getType()
                 : Query\ParameterTypeInferer::inferType($value);
 

@@ -31,7 +31,7 @@ class DDC2138Test extends OrmFunctionalTestCase
         self::assertTrue($schema->hasTable('users_followed_objects'), 'Table users_followed_objects should exist.');
 
         /** @var Table $table */
-        $table = ($schema->getTable('users_followed_objects'));
+        $table = $schema->getTable('users_followed_objects');
 
         self::assertTrue($table->columnsAreIndexed(['object_id']));
         self::assertTrue($table->columnsAreIndexed(['user_id']));
@@ -81,11 +81,11 @@ class DDC2138Structure
 abstract class DDC2138UserFollowedObject
 {
     /**
-     * @var int $id
-     *
      * @ORM\Column(name="id", type="integer")
      * @ORM\Id
      * @ORM\GeneratedValue(strategy="AUTO")
+     *
+     * @var int $id
      */
     protected $id;
 
@@ -108,6 +108,7 @@ class DDC2138UserFollowedStructure extends DDC2138UserFollowedObject
     /**
      * @ORM\ManyToOne(targetEntity=DDC2138User::class, inversedBy="followedStructures")
      * @ORM\JoinColumn(name="user_id", referencedColumnName="id", nullable=false)
+     *
      * @var User $user
      */
     protected $user;
@@ -115,13 +116,13 @@ class DDC2138UserFollowedStructure extends DDC2138UserFollowedObject
     /**
      * @ORM\ManyToOne(targetEntity=DDC2138Structure::class)
      * @ORM\JoinColumn(name="object_id", referencedColumnName="id", nullable=false)
+     *
      * @var Structure $followedStructure
      */
     private $followedStructure;
 
     /**
      * Construct a UserFollowedStructure entity
-     *
      */
     public function __construct(User $user, Structure $followedStructure)
     {
@@ -156,6 +157,7 @@ class DDC2138UserFollowedUser extends DDC2138UserFollowedObject
     /**
      * @ORM\ManyToOne(targetEntity=DDC2138User::class, inversedBy="followedUsers")
      * @ORM\JoinColumn(name="user_id", referencedColumnName="id", nullable=false)
+     *
      * @var User $user
      */
     protected $user;
@@ -163,6 +165,7 @@ class DDC2138UserFollowedUser extends DDC2138UserFollowedObject
     /**
      * @ORM\ManyToOne(targetEntity=DDC2138User::class)
      * @ORM\JoinColumn(name="object_id", referencedColumnName="id", nullable=false)
+     *
      * @var User $user
      */
     private $followedUser;
@@ -214,14 +217,16 @@ class DDC2138User
     protected $name;
 
     /**
-     * @var ArrayCollection $followedUsers
      * @ORM\OneToMany(targetEntity=DDC2138UserFollowedUser::class, mappedBy="user", cascade={"persist"}, orphanRemoval=true)
+     *
+     * @var ArrayCollection $followedUsers
      */
     protected $followedUsers;
 
     /**
-     * @var ArrayCollection $followedStructures
      * @ORM\OneToMany(targetEntity=DDC2138UserFollowedStructure::class, mappedBy="user", cascade={"persist"}, orphanRemoval=true)
+     *
+     * @var ArrayCollection $followedStructures
      */
     protected $followedStructures;
 
@@ -233,7 +238,6 @@ class DDC2138User
 
     /**
      * Remove followers
-     *
      */
     public function removeFollower(UserFollowedUser $followers)
     {

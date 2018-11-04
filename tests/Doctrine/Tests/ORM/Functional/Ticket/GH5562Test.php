@@ -65,26 +65,26 @@ final class GH5562Test extends OrmFunctionalTestCase
 class GH5562Merchant
 {
     /**
-     * @var int
-     *
      * @ORM\Id
      * @ORM\Column(name="id", type="integer")
      * @ORM\GeneratedValue(strategy="IDENTITY")
+     *
+     * @var int
      */
     public $id;
 
     /**
-     * @var GH5562Manager
-     *
      * @ORM\OneToOne(targetEntity=GH5562Manager::class, mappedBy="merchant")
      * @ORM\Cache(usage="NONSTRICT_READ_WRITE")
+     *
+     * @var GH5562Manager
      */
     public $manager;
 
     /**
-     * @var string
-     *
      * @ORM\Column(name="name", type="string", length=255, nullable=false)
+     *
+     * @var string
      */
     public $name;
 }
@@ -97,11 +97,11 @@ class GH5562Merchant
 abstract class GH5562User
 {
     /**
-     * @var int
-     *
      * @ORM\Id
      * @ORM\Column(name="id", type="integer")
      * @ORM\GeneratedValue(strategy="IDENTITY")
+     *
+     * @var int
      */
     public $id;
 }
@@ -113,16 +113,16 @@ abstract class GH5562User
 class GH5562Manager extends GH5562User
 {
     /**
-     * @var string
-     *
      * @ORM\Column
+     *
+     * @var string
      */
     public $username;
 
     /**
-     * @var GH5562Merchant
-     *
      * @ORM\OneToOne(targetEntity=GH5562Merchant::class, inversedBy="manager")
+     *
+     * @var GH5562Merchant
      */
     public $merchant;
 }

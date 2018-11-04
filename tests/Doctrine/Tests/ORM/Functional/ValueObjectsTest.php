@@ -4,12 +4,14 @@ declare(strict_types=1);
 
 namespace Doctrine\Tests\ORM\Functional;
 
+use DateTime;
 use Doctrine\Common\Reflection\RuntimePublicReflectionProperty;
 use Doctrine\ORM\Annotation as ORM;
 use Doctrine\ORM\Mapping\MappingException;
 use Doctrine\ORM\Mapping\ReflectionEmbeddedProperty;
 use Doctrine\ORM\Query\QueryException;
 use Doctrine\Tests\OrmFunctionalTestCase;
+use Exception;
 use function sprintf;
 
 /**
@@ -25,15 +27,15 @@ class ValueObjectsTest extends OrmFunctionalTestCase
         try {
             $this->schemaTool->createSchema(
                 [
-                $this->em->getClassMetadata(DDC93Person::class),
-                $this->em->getClassMetadata(DDC93Address::class),
-                $this->em->getClassMetadata(DDC93Vehicle::class),
-                $this->em->getClassMetadata(DDC93Car::class),
-                $this->em->getClassMetadata(DDC3027Animal::class),
-                $this->em->getClassMetadata(DDC3027Dog::class),
+                    $this->em->getClassMetadata(DDC93Person::class),
+                    $this->em->getClassMetadata(DDC93Address::class),
+                    $this->em->getClassMetadata(DDC93Vehicle::class),
+                    $this->em->getClassMetadata(DDC93Car::class),
+                    $this->em->getClassMetadata(DDC3027Animal::class),
+                    $this->em->getClassMetadata(DDC3027Dog::class),
                 ]
             );
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
         }
     }
 
@@ -322,7 +324,7 @@ class ValueObjectsTest extends OrmFunctionalTestCase
 
         $this->schemaTool->createSchema(
             [
-            $this->em->getClassMetadata(__NAMESPACE__ . '\\' . $embeddableClassName),
+                $this->em->getClassMetadata(__NAMESPACE__ . '\\' . $embeddableClassName),
             ]
         );
     }
@@ -358,7 +360,7 @@ class DDC93Person
     {
         $this->name       = $name;
         $this->address    = $address;
-        $this->timestamps = new DDC93Timestamps(new \DateTime());
+        $this->timestamps = new DDC93Timestamps(new DateTime());
     }
 }
 
@@ -370,7 +372,7 @@ class DDC93Timestamps
     /** @ORM\Column(type = "datetime") */
     public $createdAt;
 
-    public function __construct(\DateTime $createdAt)
+    public function __construct(DateTime $createdAt)
     {
         $this->createdAt = $createdAt;
     }
@@ -378,7 +380,6 @@ class DDC93Timestamps
 
 /**
  * @ORM\Entity
- *
  * @ORM\InheritanceType("SINGLE_TABLE")
  * @ORM\DiscriminatorColumn(name = "t", type = "string", length = 10)
  * @ORM\DiscriminatorMap({

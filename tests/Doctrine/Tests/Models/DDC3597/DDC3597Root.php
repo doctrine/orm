@@ -4,13 +4,13 @@ declare(strict_types=1);
 
 namespace Doctrine\Tests\Models\DDC3597;
 
+use DateTime;
 use Doctrine\ORM\Annotation as ORM;
 
 /**
  * Description of Root
  *
  * @ORM\Entity
- *
  * @ORM\InheritanceType("JOINED")
  * @ORM\DiscriminatorColumn(name="discriminator", type="string")
  * @ORM\DiscriminatorMap({ "image" = DDC3597Image::class})
@@ -19,23 +19,25 @@ use Doctrine\ORM\Annotation as ORM;
 abstract class DDC3597Root
 {
     /**
-     * @var int
-     *
      * @ORM\Column(name="id", type="integer", nullable=false)
      * @ORM\Id
      * @ORM\GeneratedValue(strategy="IDENTITY")
+     *
+     * @var int
      */
     protected $id;
 
     /**
-     * @var \DateTime
      * @ORM\Column(name="created_at", type="datetime", nullable=false)
+     *
+     * @var DateTime
      */
     protected $createdAt;
 
     /**
-     * @var \DateTime
      * @ORM\Column(name="updated_at", type="datetime", nullable=false)
+     *
+     * @var DateTime
      */
     protected $updatedAt;
 
@@ -46,7 +48,7 @@ abstract class DDC3597Root
      */
     public function prePersist()
     {
-        $this->updatedAt = $this->createdAt = new \DateTime();
+        $this->updatedAt = $this->createdAt = new DateTime();
     }
 
     /**
@@ -56,7 +58,7 @@ abstract class DDC3597Root
      */
     public function preUpdate()
     {
-        $this->updatedAt = new \DateTime();
+        $this->updatedAt = new DateTime();
     }
 
     /**
@@ -69,7 +71,7 @@ abstract class DDC3597Root
 
 
     /**
-     * @return \DateTime
+     * @return DateTime
      */
     public function getCreatedAt()
     {
@@ -77,7 +79,7 @@ abstract class DDC3597Root
     }
 
     /**
-     * @return \DateTime
+     * @return DateTime
      */
     public function getUpdatedAt()
     {

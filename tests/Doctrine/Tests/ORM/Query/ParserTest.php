@@ -10,6 +10,7 @@ use Doctrine\ORM\Query\Parser;
 use Doctrine\ORM\Query\QueryException;
 use Doctrine\Tests\Models\CMS\CmsUser;
 use Doctrine\Tests\OrmTestCase;
+use stdClass;
 
 class ParserTest extends OrmTestCase
 {
@@ -41,9 +42,9 @@ class ParserTest extends OrmTestCase
      */
     public function testAbstractSchemaNameSupportsIdentifier() : void
     {
-        $parser = $this->createParser(\stdClass::class);
+        $parser = $this->createParser(stdClass::class);
 
-        self::assertEquals(\stdClass::class, $parser->AbstractSchemaName());
+        self::assertEquals(stdClass::class, $parser->AbstractSchemaName());
     }
 
     /**

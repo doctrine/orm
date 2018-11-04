@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Doctrine\ORM\Cache\Region;
 
+use BadMethodCallException;
 use Doctrine\Common\Cache\Cache as CacheAdapter;
 use Doctrine\Common\Cache\CacheProvider;
 use Doctrine\Common\Cache\ClearableCache;
@@ -125,7 +126,7 @@ class DefaultRegion implements Region
     public function evictAll()
     {
         if (! $this->cache instanceof ClearableCache) {
-            throw new \BadMethodCallException(sprintf(
+            throw new BadMethodCallException(sprintf(
                 'Clearing all cache entries is not supported by the supplied cache adapter of type %s',
                 get_class($this->cache)
             ));

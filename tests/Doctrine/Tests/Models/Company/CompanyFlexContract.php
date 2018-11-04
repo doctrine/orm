@@ -13,12 +13,14 @@ class CompanyFlexContract extends CompanyContract
 {
     /**
      * @ORM\Column(type="integer")
+     *
      * @var int
      */
     private $hoursWorked = 0;
 
     /**
      * @ORM\Column(type="integer")
+     *
      * @var int
      */
     private $pricePerHour = 0;

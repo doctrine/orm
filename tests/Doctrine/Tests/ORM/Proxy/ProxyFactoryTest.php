@@ -20,7 +20,9 @@ use Doctrine\Tests\Models\ECommerce\ECommerceFeature;
 use Doctrine\Tests\Models\FriendObject\ComparableObject;
 use Doctrine\Tests\Models\ProxySpecifics\FuncGetArgs;
 use Doctrine\Tests\OrmTestCase;
+use PHPUnit_Framework_MockObject_MockObject;
 use ProxyManager\Proxy\GhostObjectInterface;
+use stdClass;
 use function json_encode;
 
 /**
@@ -87,7 +89,7 @@ class ProxyFactoryTest extends OrmTestCase
                     self::isInstanceOf(ECommerceFeature::class)
                 )
             )
-            ->will($this->returnValue(new \stdClass()));
+            ->will($this->returnValue(new stdClass()));
 
         $this->uowMock->setEntityPersister(ECommerceFeature::class, $persister);
 
@@ -99,7 +101,7 @@ class ProxyFactoryTest extends OrmTestCase
 
     public function testSkipMappedSuperClassesOnGeneration() : void
     {
-        $cm                     = new ClassMetadata(\stdClass::class, $this->metadataBuildingContext);
+        $cm                     = new ClassMetadata(stdClass::class, $this->metadataBuildingContext);
         $cm->isMappedSuperclass = true;
 
         self::assertSame(
@@ -115,7 +117,7 @@ class ProxyFactoryTest extends OrmTestCase
      */
     public function testSkipEmbeddableClassesOnGeneration() : void
     {
-        $cm                  = new ClassMetadata(\stdClass::class, $this->metadataBuildingContext);
+        $cm                  = new ClassMetadata(stdClass::class, $this->metadataBuildingContext);
         $cm->isEmbeddedClass = true;
 
         self::assertSame(
@@ -224,7 +226,7 @@ class ProxyFactoryTest extends OrmTestCase
                     self::isInstanceOf(CompanyEmployee::class)
                 )
             )
-            ->willReturnCallback(function (array $id, CompanyEmployee $companyEmployee) {
+            ->willReturnCallback(static function (array $id, CompanyEmployee $companyEmployee) {
                 $companyEmployee->setSalary(1000); // A property on the CompanyEmployee
                 $companyEmployee->setName('Bob'); // A property on the parent class, CompanyPerson
 
@@ -245,7 +247,7 @@ class ProxyFactoryTest extends OrmTestCase
 
     public function testFriendObjectsDoNotLazyLoadIfNotAccessingLazyState() : void
     {
-        /** @var BasicEntityPersister|\PHPUnit_Framework_MockObject_MockObject $persister */
+        /** @var BasicEntityPersister|PHPUnit_Framework_MockObject_MockObject $persister */
         $persister = $this->createMock(BasicEntityPersister::class);
         $persister->expects(self::never())->method('loadById');
 
@@ -269,7 +271,7 @@ class ProxyFactoryTest extends OrmTestCase
 
     public function testFriendObjectsLazyLoadWhenAccessingLazyState() : void
     {
-        /** @var BasicEntityPersister|\PHPUnit_Framework_MockObject_MockObject $persister */
+        /** @var BasicEntityPersister|PHPUnit_Framework_MockObject_MockObject $persister */
         $persister = $this
             ->getMockBuilder(BasicEntityPersister::class)
             ->setConstructorArgs([$this->emMock, $this->emMock->getClassMetadata(ComparableObject::class)])
@@ -286,7 +288,7 @@ class ProxyFactoryTest extends OrmTestCase
                     self::isInstanceOf(ComparableObject::class)
                 )
             )
-            ->willReturnCallback(function (array $id, ComparableObject $comparableObject) {
+            ->willReturnCallback(static function (array $id, ComparableObject $comparableObject) {
                 $comparableObject->setComparedFieldValue(json_encode($id));
 
                 return $comparableObject;
@@ -320,7 +322,7 @@ class ProxyFactoryTest extends OrmTestCase
 
     public function testProxyMethodsSupportFuncGetArgsLogic() : void
     {
-        /** @var BasicEntityPersister|\PHPUnit_Framework_MockObject_MockObject $persister */
+        /** @var BasicEntityPersister|PHPUnit_Framework_MockObject_MockObject $persister */
         $persister = $this->createMock(BasicEntityPersister::class);
         $persister->expects(self::never())->method('loadById');
 

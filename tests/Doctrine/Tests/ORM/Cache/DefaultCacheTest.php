@@ -15,6 +15,8 @@ use Doctrine\Tests\Models\Cache\Country;
 use Doctrine\Tests\Models\Cache\State;
 use Doctrine\Tests\Models\CMS\CmsUser;
 use Doctrine\Tests\OrmTestCase;
+use ReflectionMethod;
+use ReflectionProperty;
 use function array_merge;
 
 /**
@@ -243,8 +245,8 @@ class DefaultCacheTest extends OrmTestCase
         $identifier = 123;
         $entity     = new Country('Foo');
         $metadata   = $this->em->getClassMetadata(Country::class);
-        $method     = new \ReflectionMethod($this->cache, 'toIdentifierArray');
-        $property   = new \ReflectionProperty($entity, 'id');
+        $method     = new ReflectionMethod($this->cache, 'toIdentifierArray');
+        $property   = new ReflectionProperty($entity, 'id');
 
         $property->setAccessible(true);
         $method->setAccessible(true);

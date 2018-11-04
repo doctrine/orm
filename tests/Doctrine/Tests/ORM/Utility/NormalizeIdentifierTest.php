@@ -11,6 +11,7 @@ use Doctrine\Tests\Models\IdentityIsAssociation\SimpleId;
 use Doctrine\Tests\Models\IdentityIsAssociation\ToOneAssociationIdToSimpleId;
 use Doctrine\Tests\Models\IdentityIsAssociation\ToOneCompositeAssociationToMultipleSimpleId;
 use Doctrine\Tests\OrmFunctionalTestCase;
+use ReflectionClass;
 use function array_keys;
 use function get_class;
 use function is_object;
@@ -72,7 +73,7 @@ class NormalizeIdentifierTest extends OrmFunctionalTestCase
             $nestedIdProperties       = [];
             $nestedExpectedProperties = [];
 
-            foreach ((new \ReflectionClass($value))->getProperties() as $property) {
+            foreach ((new ReflectionClass($value))->getProperties() as $property) {
                 $propertyName = $property->getName();
 
                 $nestedExpectedProperties[$propertyName] = $property->getValue($value);

@@ -101,7 +101,7 @@ EOT
 
             $schemaTool->updateSchema($metadatas, $saveMode);
 
-            $pluralization = (count($sqls) === 1) ? 'query was' : 'queries were';
+            $pluralization = count($sqls) === 1 ? 'query was' : 'queries were';
 
             $ui->text(sprintf('    <info>%s</info> %s executed', count($sqls), $pluralization));
             $ui->success('Database schema updated successfully!');

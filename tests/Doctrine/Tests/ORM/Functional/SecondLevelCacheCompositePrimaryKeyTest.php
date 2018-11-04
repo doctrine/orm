@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Doctrine\Tests\ORM\Functional;
 
+use DateTime;
 use Doctrine\Tests\Models\Cache\City;
 use Doctrine\Tests\Models\Cache\Flight;
 
@@ -31,7 +32,7 @@ class SecondLevelCacheCompositePrimaryKeyTest extends SecondLevelCacheAbstractTe
             'goingTo'       => $goingToId,
         ];
 
-        $flight->setDeparture(new \DateTime('tomorrow'));
+        $flight->setDeparture(new DateTime('tomorrow'));
 
         self::assertTrue($this->cache->containsEntity(City::class, $this->cities[0]->getId()));
         self::assertTrue($this->cache->containsEntity(City::class, $this->cities[1]->getId()));
@@ -77,7 +78,7 @@ class SecondLevelCacheCompositePrimaryKeyTest extends SecondLevelCacheAbstractTe
             'goingTo'       => $goingToId,
         ];
 
-        $flight->setDeparture(new \DateTime('tomorrow'));
+        $flight->setDeparture(new DateTime('tomorrow'));
 
         self::assertTrue($this->cache->containsEntity(City::class, $this->cities[0]->getId()));
         self::assertTrue($this->cache->containsEntity(City::class, $this->cities[1]->getId()));
@@ -109,8 +110,8 @@ class SecondLevelCacheCompositePrimaryKeyTest extends SecondLevelCacheAbstractTe
         $this->em->clear();
         $this->evictRegions();
 
-        $now           = new \DateTime('now');
-        $tomorrow      = new \DateTime('tomorrow');
+        $now           = new DateTime('now');
+        $tomorrow      = new DateTime('tomorrow');
         $leavingFromId = $this->cities[0]->getId();
         $goingToId     = $this->cities[1]->getId();
         $leavingFrom   = $this->em->find(City::class, $leavingFromId);

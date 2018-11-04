@@ -11,6 +11,7 @@ use Doctrine\ORM\Mapping\ToOneAssociationMetadata;
 use Doctrine\ORM\PersistentCollection;
 use Doctrine\ORM\UnitOfWork;
 use ProxyManager\Proxy\GhostObjectInterface;
+use ReflectionObject;
 use function count;
 use function fclose;
 use function fopen;
@@ -130,7 +131,7 @@ class DebugUnitOfWorkListener
     private function getType($var)
     {
         if (is_object($var)) {
-            $refl = new \ReflectionObject($var);
+            $refl = new ReflectionObject($var);
 
             return $refl->getShortName();
         }

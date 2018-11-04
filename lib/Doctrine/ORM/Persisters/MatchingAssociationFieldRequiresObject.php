@@ -5,9 +5,10 @@ declare(strict_types=1);
 namespace Doctrine\ORM\Persisters;
 
 use Doctrine\ORM\Exception\PersisterException;
+use LogicException;
 use function sprintf;
 
-final class MatchingAssociationFieldRequiresObject extends \LogicException implements PersisterException
+final class MatchingAssociationFieldRequiresObject extends LogicException implements PersisterException
 {
     public static function fromClassAndAssociation(string $class, string $associationName) : self
     {

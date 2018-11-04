@@ -14,7 +14,6 @@ final class ChangeTrackingPolicy implements Annotation
      * The change tracking policy.
      *
      * @var string
-     *
      * @Enum({"DEFERRED_IMPLICIT", "DEFERRED_EXPLICIT", "NOTIFY"})
      */
     public $value;

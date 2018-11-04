@@ -56,6 +56,7 @@ class ECommerceProduct
     /**
      * This relation is saved with two records in the association table for
      * simplicity.
+     *
      * @ORM\ManyToMany(targetEntity=ECommerceProduct::class, cascade={"persist"})
      * @ORM\JoinTable(name="ecommerce_products_related",
      *      joinColumns={@ORM\JoinColumn(name="product_id", referencedColumnName="id")},

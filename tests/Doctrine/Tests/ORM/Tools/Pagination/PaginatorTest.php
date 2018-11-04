@@ -28,14 +28,12 @@ class PaginatorTest extends OrmTestCase
         $this->connection = $this->getMockBuilder(ConnectionMock::class)
             ->setConstructorArgs([[], new DriverMock()])
             ->setMethods(['executeQuery'])
-            ->getMock()
-        ;
+            ->getMock();
 
         $this->em = $this->getMockBuilder(EntityManagerDecorator::class)
             ->setConstructorArgs([$this->getTestEntityManager($this->connection)])
             ->setMethods(['newHydrator'])
-            ->getMock()
-        ;
+            ->getMock();
 
         $this->hydrator = $this->createMock(AbstractHydrator::class);
         $this->em->method('newHydrator')->willReturn($this->hydrator);
@@ -67,18 +65,15 @@ class PaginatorTest extends OrmTestCase
 
         $this->connection->expects($this->at(0))
             ->method('executeQuery')
-            ->with($this->anything(), [$paramInWhere])
-        ;
+            ->with($this->anything(), [$paramInWhere]);
 
         $this->connection->expects($this->at(1))
             ->method('executeQuery')
-            ->with($this->anything(), [$paramInWhere])
-        ;
+            ->with($this->anything(), [$paramInWhere]);
 
         $this->connection->expects($this->at(2))
             ->method('executeQuery')
-            ->with($this->anything(), [$paramInSubSelect, $paramInWhere, $returnedIds])
-        ;
+            ->with($this->anything(), [$paramInSubSelect, $paramInWhere, $returnedIds]);
 
         $paginator->count();
         $paginator->getIterator();

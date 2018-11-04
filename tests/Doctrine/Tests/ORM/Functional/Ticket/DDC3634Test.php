@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Doctrine\Tests\ORM\Functional\Ticket;
 
+use Closure;
 use Doctrine\DBAL\Cache\QueryCacheProfile;
 use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\Driver\ResultStatement;
@@ -290,7 +291,7 @@ class DDC3634LastInsertIdMockingConnection extends Connection
         return $this->forwardCall();
     }
 
-    public function project($query, array $params, \Closure $function)
+    public function project($query, array $params, Closure $function)
     {
         return $this->forwardCall();
     }
@@ -330,7 +331,7 @@ class DDC3634LastInsertIdMockingConnection extends Connection
         return $this->identifier;
     }
 
-    public function transactional(\Closure $func)
+    public function transactional(Closure $func)
     {
         return $this->forwardCall();
     }

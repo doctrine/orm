@@ -147,7 +147,7 @@ class Lexer extends AbstractLexer
 
         switch (true) {
             // Recognize numeric values
-            case (is_numeric($value)):
+            case is_numeric($value):
                 if (strpos($value, '.') !== false || stripos($value, 'e') !== false) {
                     return self::T_FLOAT;
                 }
@@ -155,13 +155,13 @@ class Lexer extends AbstractLexer
                 return self::T_INTEGER;
 
             // Recognize quoted strings
-            case ($value[0] === "'"):
+            case $value[0] === "'":
                 $value = str_replace("''", "'", substr($value, 1, strlen($value) - 2));
 
                 return self::T_STRING;
 
             // Recognize identifiers, aliased or qualified names
-            case (ctype_alpha($value[0]) || $value[0] === '_' || $value[0] === '\\'):
+            case ctype_alpha($value[0]) || $value[0] === '_' || $value[0] === '\\':
                 $name = 'Doctrine\ORM\Query\Lexer::T_' . strtoupper($value);
 
                 if (defined($name)) {
@@ -183,37 +183,37 @@ class Lexer extends AbstractLexer
                 return self::T_IDENTIFIER;
 
             // Recognize input parameters
-            case ($value[0] === '?' || $value[0] === ':'):
+            case $value[0] === '?' || $value[0] === ':':
                 return self::T_INPUT_PARAMETER;
 
             // Recognize symbols
-            case ($value === '.'):
+            case $value === '.':
                 return self::T_DOT;
-            case ($value === ','):
+            case $value === ',':
                 return self::T_COMMA;
-            case ($value === '('):
+            case $value === '(':
                 return self::T_OPEN_PARENTHESIS;
-            case ($value === ')'):
+            case $value === ')':
                 return self::T_CLOSE_PARENTHESIS;
-            case ($value === '='):
+            case $value === '=':
                 return self::T_EQUALS;
-            case ($value === '>'):
+            case $value === '>':
                 return self::T_GREATER_THAN;
-            case ($value === '<'):
+            case $value === '<':
                 return self::T_LOWER_THAN;
-            case ($value === '+'):
+            case $value === '+':
                 return self::T_PLUS;
-            case ($value === '-'):
+            case $value === '-':
                 return self::T_MINUS;
-            case ($value === '*'):
+            case $value === '*':
                 return self::T_MULTIPLY;
-            case ($value === '/'):
+            case $value === '/':
                 return self::T_DIVIDE;
-            case ($value === '!'):
+            case $value === '!':
                 return self::T_NEGATE;
-            case ($value === '{'):
+            case $value === '{':
                 return self::T_OPEN_CURLY_BRACE;
-            case ($value === '}'):
+            case $value === '}':
                 return self::T_CLOSE_CURLY_BRACE;
 
             // Default

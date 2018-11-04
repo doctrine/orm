@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Doctrine\Tests\ORM\Cache;
 
+use BadMethodCallException;
 use Doctrine\Common\Cache\ArrayCache;
 use Doctrine\Common\Cache\Cache;
 use Doctrine\Common\Cache\CacheProvider;
@@ -70,7 +71,7 @@ class DefaultRegionTest extends AbstractRegionTest
 
         $region = new DefaultRegion('foo', $cache);
 
-        $this->expectException(\BadMethodCallException::class);
+        $this->expectException(BadMethodCallException::class);
 
         $region->evictAll();
     }

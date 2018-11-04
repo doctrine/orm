@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Doctrine\Performance\Mock;
 
+use BadMethodCallException;
 use Doctrine\Common\EventManager;
 use Doctrine\Common\Persistence\Mapping\ClassMetadataFactory;
 use Doctrine\Common\Persistence\ObjectRepository;
@@ -282,7 +283,7 @@ class NonProxyLoadingEntityManager implements EntityManagerInterface
      */
     public function merge($object)
     {
-        throw new \BadMethodCallException('@TODO method disabled - will be removed in 3.0 with a release of doctrine/common');
+        throw new BadMethodCallException('@TODO method disabled - will be removed in 3.0 with a release of doctrine/common');
     }
 
     /**
@@ -292,7 +293,7 @@ class NonProxyLoadingEntityManager implements EntityManagerInterface
      */
     public function detach($object) : void
     {
-        throw new \BadMethodCallException('@TODO method disabled - will be removed in 3.0 with a release of doctrine/common');
+        throw new BadMethodCallException('@TODO method disabled - will be removed in 3.0 with a release of doctrine/common');
     }
 
     /**

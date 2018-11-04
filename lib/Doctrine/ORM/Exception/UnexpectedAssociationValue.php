@@ -5,9 +5,10 @@ declare(strict_types=1);
 namespace Doctrine\ORM\Exception;
 
 use Doctrine\ORM\Cache\Exception\CacheException;
+use LogicException;
 use function sprintf;
 
-final class UnexpectedAssociationValue extends \LogicException implements CacheException
+final class UnexpectedAssociationValue extends LogicException implements CacheException
 {
     public static function create(
         string $class,

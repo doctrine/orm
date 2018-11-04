@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Doctrine\Tests\ORM\Sequencing;
 
+use BadMethodCallException;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Sequencing\SequenceGenerator;
 use Doctrine\Tests\Mocks\ConnectionMock;
@@ -32,7 +33,7 @@ class SequenceGeneratorTest extends OrmTestCase
 
     public function testGeneration() : void
     {
-        $this->connection->setFetchOneException(new \BadMethodCallException(
+        $this->connection->setFetchOneException(new BadMethodCallException(
             'Fetch* method used. Query method should be used instead, '
             . 'as NEXTVAL should be run on a master server in master-slave setup.'
         ));

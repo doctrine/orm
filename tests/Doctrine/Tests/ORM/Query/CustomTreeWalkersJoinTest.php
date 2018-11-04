@@ -8,6 +8,7 @@ use Doctrine\ORM\Query;
 use Doctrine\Tests\Models\CMS\CmsAddress;
 use Doctrine\Tests\Models\CMS\CmsUser;
 use Doctrine\Tests\OrmTestCase;
+use Exception;
 
 /**
  * Test case for custom AST walking and adding new joins.
@@ -33,7 +34,7 @@ class CustomTreeWalkersJoinTest extends OrmTestCase
             $sqlGenerated = $query->getSql();
 
             $query->free();
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             $this->fail($e->getMessage() . ' at "' . $e->getFile() . '" on line ' . $e->getLine());
         }
 

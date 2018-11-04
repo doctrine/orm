@@ -11,7 +11,6 @@ use Doctrine\ORM\Annotation as ORM;
  *
  * @ORM\Entity
  * @ORM\Table(name="cms_addresses")
- *
  * @ORM\EntityListeners({CmsAddressListener::class})
  */
 class CmsAddress

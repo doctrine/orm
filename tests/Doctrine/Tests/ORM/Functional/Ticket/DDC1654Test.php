@@ -17,8 +17,8 @@ class DDC1654Test extends OrmFunctionalTestCase
         parent::setUp();
         $this->setUpEntitySchema(
             [
-            DDC1654Post::class,
-            DDC1654Comment::class,
+                DDC1654Post::class,
+                DDC1654Comment::class,
             ]
         );
     }

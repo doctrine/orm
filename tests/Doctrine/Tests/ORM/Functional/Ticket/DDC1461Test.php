@@ -7,6 +7,7 @@ namespace Doctrine\Tests\ORM\Functional\Ticket;
 use Doctrine\ORM\Annotation as ORM;
 use Doctrine\ORM\UnitOfWork;
 use Doctrine\Tests\OrmFunctionalTestCase;
+use Exception;
 use function get_class;
 
 /**
@@ -21,11 +22,11 @@ class DDC1461Test extends OrmFunctionalTestCase
         try {
             $this->schemaTool->createSchema(
                 [
-                $this->em->getClassMetadata(DDC1461TwitterAccount::class),
-                $this->em->getClassMetadata(DDC1461User::class),
+                    $this->em->getClassMetadata(DDC1461TwitterAccount::class),
+                    $this->em->getClassMetadata(DDC1461User::class),
                 ]
             );
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
         }
     }
 
@@ -64,6 +65,7 @@ class DDC1461User
 
     /**
      * @ORM\OneToOne(targetEntity=DDC1461TwitterAccount::class, orphanRemoval=true, fetch="EAGER", cascade = {"persist"}, inversedBy="user")
+     *
      * @var TwitterAccount
      */
     public $twitterAccount;

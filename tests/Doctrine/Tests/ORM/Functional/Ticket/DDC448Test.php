@@ -14,9 +14,9 @@ class DDC448Test extends OrmFunctionalTestCase
         parent::setUp();
         $this->schemaTool->createSchema(
             [
-            $this->em->getClassMetadata(DDC448MainTable::class),
-            $this->em->getClassMetadata(DDC448ConnectedClass::class),
-            $this->em->getClassMetadata(DDC448SubTable::class),
+                $this->em->getClassMetadata(DDC448MainTable::class),
+                $this->em->getClassMetadata(DDC448ConnectedClass::class),
+                $this->em->getClassMetadata(DDC448SubTable::class),
             ]
         );
     }

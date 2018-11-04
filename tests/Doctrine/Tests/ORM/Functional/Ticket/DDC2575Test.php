@@ -22,9 +22,9 @@ class DDC2575Test extends OrmFunctionalTestCase
 
         $this->schemaTool->createSchema(
             [
-            $this->em->getClassMetadata(DDC2575Root::class),
-            $this->em->getClassMetadata(DDC2575A::class),
-            $this->em->getClassMetadata(DDC2575B::class),
+                $this->em->getClassMetadata(DDC2575Root::class),
+                $this->em->getClassMetadata(DDC2575A::class),
+                $this->em->getClassMetadata(DDC2575B::class),
             ]
         );
 

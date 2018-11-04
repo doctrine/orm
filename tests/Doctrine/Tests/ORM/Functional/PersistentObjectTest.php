@@ -7,6 +7,7 @@ namespace Doctrine\Tests\ORM\Functional;
 use Doctrine\ORM\Annotation as ORM;
 use Doctrine\ORM\PersistentObject;
 use Doctrine\Tests\OrmFunctionalTestCase;
+use Exception;
 
 /**
  * Test that Doctrine ORM correctly works with the EntityManagerAware and PersistentObject
@@ -26,7 +27,7 @@ class PersistentObjectTest extends OrmFunctionalTestCase
                     $this->em->getClassMetadata(PersistentEntity::class),
                 ]
             );
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
         }
 
         PersistentObject::setEntityManager($this->em);
@@ -96,18 +97,21 @@ class PersistentEntity extends PersistentObject
 {
     /**
      * @ORM\Id @ORM\Column(type="integer") @ORM\GeneratedValue
+     *
      * @var int
      */
     protected $id;
 
     /**
      * @ORM\Column(type="string")
+     *
      * @var string
      */
     protected $name;
 
     /**
      * @ORM\ManyToOne(targetEntity=PersistentEntity::class)
+     *
      * @var PersistentEntity
      */
     protected $parent;

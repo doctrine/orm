@@ -23,9 +23,9 @@ class DDC2579Test extends OrmFunctionalTestCase
 
         $this->schemaTool->createSchema(
             [
-            $this->em->getClassMetadata(DDC2579Entity::class),
-            $this->em->getClassMetadata(DDC2579EntityAssoc::class),
-            $this->em->getClassMetadata(DDC2579AssocAssoc::class),
+                $this->em->getClassMetadata(DDC2579Entity::class),
+                $this->em->getClassMetadata(DDC2579EntityAssoc::class),
+                $this->em->getClassMetadata(DDC2579AssocAssoc::class),
             ]
         );
     }

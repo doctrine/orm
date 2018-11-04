@@ -9,6 +9,7 @@ use Doctrine\ORM\Query\QueryException;
 use Doctrine\Tests\Models\CMS\CmsAddress;
 use Doctrine\Tests\Models\CMS\CmsUser;
 use Doctrine\Tests\OrmTestCase;
+use Exception;
 use function array_merge;
 use function count;
 
@@ -43,7 +44,7 @@ class CustomTreeWalkersTest extends OrmTestCase
     {
         try {
             $sqlGenerated = $this->generateSql($dqlToBeTested, $treeWalkers, $outputWalker);
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             $this->fail($e->getMessage() . ' at "' . $e->getFile() . '" on line ' . $e->getLine());
         }
 

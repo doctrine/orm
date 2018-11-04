@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Doctrine\Tests\ORM\Functional\Ticket;
 
+use DateTime;
+use DateTimeZone;
 use Doctrine\Tests\Models\Generic\DateTimeModel;
 use Doctrine\Tests\OrmFunctionalTestCase;
 
@@ -98,18 +100,18 @@ class DDC657Test extends OrmFunctionalTestCase
 
     public function loadFixtures()
     {
-        $timezone = new \DateTimeZone('America/Sao_Paulo');
+        $timezone = new DateTimeZone('America/Sao_Paulo');
 
         $dateTime1 = new DateTimeModel();
         $dateTime2 = new DateTimeModel();
 
-        $dateTime1->date     = new \DateTime('2010-01-01', $timezone);
-        $dateTime1->time     = new \DateTime('2010-01-01 11:11:11', $timezone);
-        $dateTime1->datetime = new \DateTime('2010-01-01 11:11:11', $timezone);
+        $dateTime1->date     = new DateTime('2010-01-01', $timezone);
+        $dateTime1->time     = new DateTime('2010-01-01 11:11:11', $timezone);
+        $dateTime1->datetime = new DateTime('2010-01-01 11:11:11', $timezone);
 
-        $dateTime2->date     = new \DateTime('2010-02-02', $timezone);
-        $dateTime2->time     = new \DateTime('2010-02-02 12:12:12', $timezone);
-        $dateTime2->datetime = new \DateTime('2010-02-02 12:12:12', $timezone);
+        $dateTime2->date     = new DateTime('2010-02-02', $timezone);
+        $dateTime2->time     = new DateTime('2010-02-02 12:12:12', $timezone);
+        $dateTime2->datetime = new DateTime('2010-02-02 12:12:12', $timezone);
 
         $this->em->persist($dateTime1);
         $this->em->persist($dateTime2);

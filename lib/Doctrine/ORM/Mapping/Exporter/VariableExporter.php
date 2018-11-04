@@ -29,7 +29,7 @@ class VariableExporter implements Exporter
         }
 
         $indentation  = str_repeat(self::INDENTATION, $indentationLevel);
-        $longestKey   = array_reduce(array_keys($value), function ($k, $v) {
+        $longestKey   = array_reduce(array_keys($value), static function ($k, $v) {
             return (string) (strlen((string) $k) > strlen((string) $v) ? $k : $v);
         });
         $maxKeyLength = strlen($longestKey) + (is_numeric($longestKey) ? 0 : 2);

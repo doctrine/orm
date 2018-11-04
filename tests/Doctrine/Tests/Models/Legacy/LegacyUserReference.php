@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Doctrine\Tests\Models\Legacy;
 
+use DateTime;
 use Doctrine\ORM\Annotation as ORM;
 
 /**
@@ -40,7 +41,7 @@ class LegacyUserReference
         $this->source      = $source;
         $this->target      = $target;
         $this->description = $description;
-        $this->created     = new \DateTime('now');
+        $this->created     = new DateTime('now');
     }
 
     public function source()

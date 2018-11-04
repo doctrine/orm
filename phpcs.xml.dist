@@ -110,6 +110,11 @@
     </rule>
 
     <!-- file with multiple namespaces confuses the sniff -->
+    <rule ref="SlevomatCodingStandard.Namespaces.UseSpacing.IncorrectLinesCountBetweenSameTypeOfUse">
+        <exclude-pattern>tests/Doctrine/Tests/ORM/Functional/Ticket/DDC2084Test.php</exclude-pattern>
+    </rule>
+
+    <!-- file with multiple namespaces confuses the sniff -->
     <rule ref="SlevomatCodingStandard.Namespaces.AlphabeticallySortedUses.IncorrectlyOrderedUses">
         <exclude-pattern>tests/Doctrine/Tests/ORM/Functional/Ticket/DDC2084Test.php</exclude-pattern>
     </rule>

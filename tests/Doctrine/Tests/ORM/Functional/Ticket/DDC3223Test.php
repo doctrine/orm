@@ -19,10 +19,10 @@ class DDC3223Test extends OrmFunctionalTestCase
 
         $this->setUpEntitySchema(
             [
-            Journalist::class,
-            Participant::class,
-            Status::class,
-            ProfileStatus::class,
+                Journalist::class,
+                Participant::class,
+                Status::class,
+                ProfileStatus::class,
             ]
         );
     }
@@ -81,6 +81,7 @@ class Participant
     /**
      * @ORM\ManyToOne(targetEntity=ProfileStatus::class)
      * @ORM\JoinColumn(name="status_id", nullable=false)
+     *
      * @var ProfileStatus
      */
     public $profileStatus;

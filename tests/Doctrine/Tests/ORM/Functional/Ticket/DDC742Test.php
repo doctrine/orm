@@ -9,6 +9,7 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\Annotation as ORM;
 use Doctrine\ORM\PersistentCollection;
 use Doctrine\Tests\OrmFunctionalTestCase;
+use Exception;
 use function mkdir;
 use function sys_get_temp_dir;
 use function uniqid;
@@ -39,7 +40,7 @@ class DDC742Test extends OrmFunctionalTestCase
                     $this->em->getClassMetadata(DDC742Comment::class),
                 ]
             );
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
         }
 
         // make sure classes will be deserialized from caches
@@ -93,12 +94,14 @@ class DDC742User
      * @ORM\Id
      * @ORM\GeneratedValue(strategy="AUTO")
      * @ORM\Column(type="integer")
+     *
      * @var int
      */
     public $id;
 
     /**
      * @ORM\Column(length=100, type="string")
+     *
      * @var string
      */
     public $title;
@@ -128,12 +131,14 @@ class DDC742Comment
      * @ORM\Id
      * @ORM\GeneratedValue(strategy="AUTO")
      * @ORM\Column(type="integer")
+     *
      * @var int
      */
     public $id;
 
     /**
      * @ORM\Column(length=100, type="string")
+     *
      * @var string
      */
     public $content;

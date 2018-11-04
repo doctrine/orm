@@ -24,9 +24,7 @@ class CustomIdObjectType extends Type
      */
     public function convertToPHPValue($value, AbstractPlatform $platform)
     {
-        $idObject = new CustomIdObject($value);
-
-        return $idObject;
+        return new CustomIdObject($value);
     }
 
     /**

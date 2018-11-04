@@ -11,6 +11,7 @@ use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\Mapping\FieldMetadata;
 use Doctrine\ORM\Mapping\ManyToManyAssociationMetadata;
 use Doctrine\ORM\Mapping\ToOneAssociationMetadata;
+use RuntimeException;
 use function sprintf;
 
 /**
@@ -26,7 +27,7 @@ class PersisterHelper
      *
      * @return Type
      *
-     * @throws \RuntimeException
+     * @throws RuntimeException
      */
     public static function getTypeOfColumn($columnName, ClassMetadata $class, EntityManagerInterface $em)
     {
@@ -35,11 +36,11 @@ class PersisterHelper
             $property  = $class->getProperty($fieldName);
 
             switch (true) {
-                case ($property instanceof FieldMetadata):
+                case $property instanceof FieldMetadata:
                     return $property->getType();
 
                 // Optimization: Do not loop through all properties later since we can recognize to-one owning scenario
-                case ($property instanceof ToOneAssociationMetadata):
+                case $property instanceof ToOneAssociationMetadata:
                     // We know this is the owning side of a to-one because we found columns in the class (join columns)
                     foreach ($property->getJoinColumns() as $joinColumn) {
                         if ($joinColumn->getColumnName() !== $columnName) {
@@ -71,8 +72,7 @@ class PersisterHelper
 
             $joinColumns = $association instanceof ManyToManyAssociationMetadata
                 ? $association->getJoinTable()->getInverseJoinColumns()
-                : $association->getJoinColumns()
-            ;
+                : $association->getJoinColumns();
 
             foreach ($joinColumns as $joinColumn) {
                 if ($joinColumn->getColumnName() !== $columnName) {
@@ -83,7 +83,7 @@ class PersisterHelper
             }
         }
 
-        throw new \RuntimeException(sprintf(
+        throw new RuntimeException(sprintf(
             'Could not resolve type of column "%s" of class "%s"',
             $columnName,
             $class->getClassName()

@@ -49,6 +49,7 @@ class GH7366Entity
      * @ORM\Id
      * @ORM\Column(type="integer")
      * @ORM\GeneratedValue
+     *
      * @var int
      */
     public $id;
@@ -61,6 +62,7 @@ class GH7366Entity
 
     /**
      * @ORM\Column(length=32)
+     *
      * @var string
      */
     protected $name;

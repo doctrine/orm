@@ -14,6 +14,7 @@ use function str_replace;
 
 /**
  * This class is used to generate DQL expressions via a set of PHP static functions.
+ *
  * @todo Rename: ExpressionBuilder
  */
 class Expr

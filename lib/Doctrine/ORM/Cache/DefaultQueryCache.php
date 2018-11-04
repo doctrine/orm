@@ -80,7 +80,7 @@ class DefaultQueryCache implements QueryCache
 
         $result      = [];
         $entityName  = reset($rsm->aliasMap);
-        $hasRelation = ( ! empty($rsm->relationMap));
+        $hasRelation = ! empty($rsm->relationMap);
         $unitOfWork  = $this->em->getUnitOfWork();
         $persister   = $unitOfWork->getEntityPersister($entityName);
         $region      = $persister->getCacheRegion();
@@ -88,7 +88,7 @@ class DefaultQueryCache implements QueryCache
 
         $cm = $this->em->getClassMetadata($entityName);
 
-        $generateKeys = function (array $entry) use ($cm) : EntityCacheKey {
+        $generateKeys = static function (array $entry) use ($cm) : EntityCacheKey {
             return new EntityCacheKey($cm->getRootClassName(), $entry['identifier']);
         };
 
@@ -160,7 +160,7 @@ class DefaultQueryCache implements QueryCache
                     continue;
                 }
 
-                $generateKeys = function ($id) use ($assocMetadata) : EntityCacheKey {
+                $generateKeys = static function ($id) use ($assocMetadata) : EntityCacheKey {
                     return new EntityCacheKey($assocMetadata->getRootClassName(), $id);
                 };
 
@@ -226,6 +226,7 @@ class DefaultQueryCache implements QueryCache
 
     /**
      * {@inheritdoc}
+     *
      * @param mixed[] $hints
      */
     public function put(QueryCacheKey $key, ResultSetMapping $rsm, $result, array $hints = [])

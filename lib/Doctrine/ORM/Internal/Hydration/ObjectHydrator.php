@@ -109,7 +109,7 @@ class ObjectHydrator extends AbstractHydrator
      */
     protected function cleanup()
     {
-        $eagerLoad = (isset($this->hints[UnitOfWork::HINT_DEFEREAGERLOAD])) && $this->hints[UnitOfWork::HINT_DEFEREAGERLOAD] === true;
+        $eagerLoad = isset($this->hints[UnitOfWork::HINT_DEFEREAGERLOAD]) && $this->hints[UnitOfWork::HINT_DEFEREAGERLOAD] === true;
 
         parent::cleanup();
 
@@ -507,7 +507,7 @@ class ObjectHydrator extends AbstractHydrator
         // Append scalar values to mixed result sets
         if (isset($rowData['scalars'])) {
             if (! isset($resultKey)) {
-                $resultKey = (isset($this->rsm->indexByMap['scalars']))
+                $resultKey = isset($this->rsm->indexByMap['scalars'])
                     ? $row[$this->rsm->indexByMap['scalars']]
                     : $this->resultCounter - 1;
             }

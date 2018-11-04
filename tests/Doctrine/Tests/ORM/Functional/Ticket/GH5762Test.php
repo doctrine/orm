@@ -22,9 +22,9 @@ class GH5762Test extends OrmFunctionalTestCase
 
         $this->schemaTool->createSchema(
             [
-            $this->em->getClassMetadata(GH5762Driver::class),
-            $this->em->getClassMetadata(GH5762DriverRide::class),
-            $this->em->getClassMetadata(GH5762Car::class),
+                $this->em->getClassMetadata(GH5762Driver::class),
+                $this->em->getClassMetadata(GH5762DriverRide::class),
+                $this->em->getClassMetadata(GH5762Car::class),
             ]
         );
     }

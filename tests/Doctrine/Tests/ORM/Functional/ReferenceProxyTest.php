@@ -13,11 +13,11 @@ use Doctrine\Tests\Models\ECommerce\ECommerceShipping;
 use Doctrine\Tests\OrmFunctionalTestCase;
 use ProxyManager\GeneratorStrategy\FileWriterGeneratorStrategy;
 use ProxyManager\Proxy\GhostObjectInterface;
+use ReflectionClass;
 use function get_class;
 
 /**
  * Tests the generation of a proxy object for lazy loading.
- *
  */
 class ReferenceProxyTest extends OrmFunctionalTestCase
 {
@@ -259,7 +259,7 @@ class ReferenceProxyTest extends OrmFunctionalTestCase
             ['id' => 123]
         );
 
-        $proxyClass = new \ReflectionClass($proxy);
+        $proxyClass = new ReflectionClass($proxy);
 
         self::assertFileExists($proxyClass->getFileName());
 

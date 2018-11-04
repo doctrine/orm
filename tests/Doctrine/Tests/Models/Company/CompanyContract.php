@@ -32,6 +32,7 @@ abstract class CompanyContract
 
     /**
      * @ORM\Column(type="boolean")
+     *
      * @var bool
      */
     private $completed = false;

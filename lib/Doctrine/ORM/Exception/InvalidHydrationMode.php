@@ -4,9 +4,10 @@ declare(strict_types=1);
 
 namespace Doctrine\ORM\Exception;
 
+use LogicException;
 use function sprintf;
 
-final class InvalidHydrationMode extends \LogicException implements ManagerException
+final class InvalidHydrationMode extends LogicException implements ManagerException
 {
     public static function fromMode(string $mode) : self
     {

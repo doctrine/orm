@@ -24,10 +24,10 @@ class DDC2306Test extends OrmFunctionalTestCase
 
         $this->schemaTool->createSchema(
             [
-            $this->em->getClassMetadata(DDC2306Zone::class),
-            $this->em->getClassMetadata(DDC2306User::class),
-            $this->em->getClassMetadata(DDC2306Address::class),
-            $this->em->getClassMetadata(DDC2306UserAddress::class),
+                $this->em->getClassMetadata(DDC2306Zone::class),
+                $this->em->getClassMetadata(DDC2306User::class),
+                $this->em->getClassMetadata(DDC2306Address::class),
+                $this->em->getClassMetadata(DDC2306UserAddress::class),
             ]
         );
     }
@@ -98,9 +98,9 @@ class DDC2306User
     public $id;
 
     /**
-     * @var DDC2306UserAddress[]|Collection
-     *
      * @ORM\OneToMany(targetEntity=DDC2306UserAddress::class, mappedBy="user")
+     *
+     * @var DDC2306UserAddress[]|Collection
      */
     public $addresses;
 
@@ -121,9 +121,9 @@ class DDC2306Address
     public $id;
 
     /**
-     * @var DDC2306UserAddress[]|Collection
-     *
      * @ORM\OneToMany(targetEntity=DDC2306UserAddress::class, mappedBy="address", orphanRemoval=true)
+     *
+     * @var DDC2306UserAddress[]|Collection
      */
     public $users;
 

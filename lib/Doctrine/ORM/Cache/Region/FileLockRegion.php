@@ -10,6 +10,7 @@ use Doctrine\ORM\Cache\CollectionCacheEntry;
 use Doctrine\ORM\Cache\ConcurrentRegion;
 use Doctrine\ORM\Cache\Lock;
 use Doctrine\ORM\Cache\Region;
+use InvalidArgumentException;
 use const DIRECTORY_SEPARATOR;
 use const LOCK_EX;
 use function array_filter;
@@ -47,16 +48,16 @@ class FileLockRegion implements ConcurrentRegion
      * @param string $directory
      * @param string $lockLifetime
      *
-     * @throws \InvalidArgumentException
+     * @throws InvalidArgumentException
      */
     public function __construct(Region $region, $directory, $lockLifetime)
     {
         if (! is_dir($directory) && ! @mkdir($directory, 0775, true)) {
-            throw new \InvalidArgumentException(sprintf('The directory "%s" does not exist and could not be created.', $directory));
+            throw new InvalidArgumentException(sprintf('The directory "%s" does not exist and could not be created.', $directory));
         }
 
         if (! is_writable($directory)) {
-            throw new \InvalidArgumentException(sprintf('The directory "%s" is not writable.', $directory));
+            throw new InvalidArgumentException(sprintf('The directory "%s" is not writable.', $directory));
         }
 
         $this->region       = $region;

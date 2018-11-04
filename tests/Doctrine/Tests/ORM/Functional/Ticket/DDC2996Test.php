@@ -17,8 +17,8 @@ class DDC2996Test extends OrmFunctionalTestCase
     {
         $this->schemaTool->createSchema(
             [
-            $this->em->getClassMetadata(DDC2996User::class),
-            $this->em->getClassMetadata(DDC2996UserPreference::class),
+                $this->em->getClassMetadata(DDC2996User::class),
+                $this->em->getClassMetadata(DDC2996UserPreference::class),
             ]
         );
 

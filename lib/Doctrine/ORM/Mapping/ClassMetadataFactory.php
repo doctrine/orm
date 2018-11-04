@@ -22,6 +22,7 @@ use Doctrine\ORM\Sequencing\Planning\CompositeValueGenerationPlan;
 use Doctrine\ORM\Sequencing\Planning\NoopValueGenerationPlan;
 use Doctrine\ORM\Sequencing\Planning\SingleValueGenerationPlan;
 use Doctrine\ORM\Sequencing\Planning\ValueGenerationExecutor;
+use InvalidArgumentException;
 use ReflectionException;
 use function array_map;
 use function class_exists;
@@ -244,8 +245,8 @@ class ClassMetadataFactory extends AbstractClassMetadataFactory
      * Populates the discriminator value of the given metadata (if not set) by iterating over discriminator
      * map classes and looking for a fitting one.
      *
-     * @throws \InvalidArgumentException
-     * @throws \ReflectionException
+     * @throws InvalidArgumentException
+     * @throws ReflectionException
      * @throws MappingException
      */
     private function resolveDiscriminatorValue(ClassMetadata $metadata) : void

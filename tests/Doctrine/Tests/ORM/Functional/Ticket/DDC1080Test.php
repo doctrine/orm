@@ -241,8 +241,9 @@ class DDC1080FooBar
      */
     protected $bar;
     /**
-     * @var int orderNr
      * @ORM\Column(name="orderNr", type="integer", nullable=false)
+     *
+     * @var int orderNr
      */
     protected $orderNr;
 
@@ -260,6 +261,7 @@ class DDC1080FooBar
      * Set the foo property
      *
      * @param DDC1080Foo $foo
+     *
      * @return DDC1080FooBar
      */
     public function setFoo($foo)
@@ -283,6 +285,7 @@ class DDC1080FooBar
      * Set the bar property
      *
      * @param DDC1080Bar $bar
+     *
      * @return DDC1080FooBar
      */
     public function setBar($bar)
@@ -306,6 +309,7 @@ class DDC1080FooBar
      * Set the orderNr property
      *
      * @param int|null $orderNr
+     *
      * @return DDC1080FooBar
      */
     public function setOrderNr($orderNr)

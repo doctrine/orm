@@ -7,6 +7,7 @@ namespace Doctrine\Tests\ORM\Functional\Ticket;
 use Doctrine\ORM\Annotation as ORM;
 use Doctrine\ORM\Query;
 use Doctrine\Tests\OrmFunctionalTestCase;
+use Exception;
 
 /**
  * @group DDC-2931
@@ -20,10 +21,10 @@ class DDC2931Test extends OrmFunctionalTestCase
         try {
             $this->schemaTool->createSchema(
                 [
-                $this->em->getClassMetadata(DDC2931User::class),
+                    $this->em->getClassMetadata(DDC2931User::class),
                 ]
             );
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             // no action needed - schema seems to be already in place
         }
     }
@@ -108,6 +109,7 @@ class DDC2931User
     /**
      * Return Rank recursively
      * My rank is 1 + rank of my parent
+     *
      * @return int
      */
     public function getRank()

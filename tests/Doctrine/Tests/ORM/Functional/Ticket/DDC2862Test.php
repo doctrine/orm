@@ -23,8 +23,8 @@ class DDC2862Test extends OrmFunctionalTestCase
         try {
             $this->schemaTool->createSchema(
                 [
-                $this->em->getClassMetadata(DDC2862User::class),
-                $this->em->getClassMetadata(DDC2862Driver::class),
+                    $this->em->getClassMetadata(DDC2862User::class),
+                    $this->em->getClassMetadata(DDC2862Driver::class),
                 ]
             );
         } catch (ToolsException $exc) {
@@ -133,6 +133,7 @@ class DDC2862Driver
 
     /**
      * @ORM\Column(type="string")
+     *
      * @var string
      */
     protected $name;
@@ -140,6 +141,7 @@ class DDC2862Driver
     /**
      * @ORM\Cache()
      * @ORM\OneToOne(targetEntity=DDC2862User::class)
+     *
      * @var User
      */
     protected $userProfile;
@@ -207,6 +209,7 @@ class DDC2862User
 
     /**
      * @ORM\Column(type="string")
+     *
      * @var string
      */
     protected $name;

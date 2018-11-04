@@ -20,10 +20,10 @@ class DDC3644Test extends OrmFunctionalTestCase
 
         $this->setUpEntitySchema(
             [
-            DDC3644User::class,
-            DDC3644Address::class,
-            DDC3644Animal::class,
-            DDC3644Pet::class,
+                DDC3644User::class,
+                DDC3644Address::class,
+                DDC3644Animal::class,
+                DDC3644Pet::class,
             ]
         );
     }
@@ -158,7 +158,7 @@ class DDC3644User
 
         $this->addresses = $addresses;
 
-        $addresses->map(function ($address) use ($self) {
+        $addresses->map(static function ($address) use ($self) {
             $address->user = $self;
         });
     }
@@ -169,7 +169,7 @@ class DDC3644User
 
         $this->pets = $pets;
 
-        $pets->map(function ($pet) use ($self) {
+        $pets->map(static function ($pet) use ($self) {
             $pet->owner = $self;
         });
     }

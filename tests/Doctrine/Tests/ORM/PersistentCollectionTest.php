@@ -13,6 +13,8 @@ use Doctrine\Tests\Mocks\EntityManagerMock;
 use Doctrine\Tests\Models\ECommerce\ECommerceCart;
 use Doctrine\Tests\Models\ECommerce\ECommerceProduct;
 use Doctrine\Tests\OrmTestCase;
+use PHPUnit_Framework_MockObject_MockObject;
+use stdClass;
 use function array_keys;
 
 /**
@@ -110,7 +112,7 @@ class PersistentCollectionTest extends OrmTestCase
      */
     public function testRemovingElementsAlsoRemovesKeys() : void
     {
-        $dummy = new \stdClass();
+        $dummy = new stdClass();
 
         $this->setUpPersistentCollection();
 
@@ -126,7 +128,7 @@ class PersistentCollectionTest extends OrmTestCase
      */
     public function testClearWillAlsoClearKeys() : void
     {
-        $this->collection->add(new \stdClass());
+        $this->collection->add(new stdClass());
         $this->collection->clear();
         self::assertEquals([], array_keys($this->collection->toArray()));
     }
@@ -136,7 +138,7 @@ class PersistentCollectionTest extends OrmTestCase
      */
     public function testClearWillAlsoResetKeyPositions() : void
     {
-        $dummy = new \stdClass();
+        $dummy = new stdClass();
 
         $this->collection->add($dummy);
         $this->collection->removeElement($dummy);
@@ -154,13 +156,13 @@ class PersistentCollectionTest extends OrmTestCase
      */
     public function testWillKeepNewItemsInDirtyCollectionAfterInitialization() : void
     {
-        /** @var UnitOfWork|\PHPUnit_Framework_MockObject_MockObject $unitOfWork */
+        /** @var UnitOfWork|PHPUnit_Framework_MockObject_MockObject $unitOfWork */
         $unitOfWork = $this->createMock(UnitOfWork::class);
 
         $this->emMock->setUnitOfWork($unitOfWork);
 
-        $newElement       = new \stdClass();
-        $persistedElement = new \stdClass();
+        $newElement       = new stdClass();
+        $persistedElement = new stdClass();
 
         $this->collection->add($newElement);
 
@@ -171,7 +173,7 @@ class PersistentCollectionTest extends OrmTestCase
             ->expects(self::once())
             ->method('loadCollection')
             ->with($this->collection)
-            ->willReturnCallback(function (PersistentCollection $persistentCollection) use ($persistedElement) : void {
+            ->willReturnCallback(static function (PersistentCollection $persistentCollection) use ($persistedElement) : void {
                 $persistentCollection->unwrap()->add($persistedElement);
             });
 
@@ -189,14 +191,14 @@ class PersistentCollectionTest extends OrmTestCase
      */
     public function testWillDeDuplicateNewItemsThatWerePreviouslyPersistedInDirtyCollectionAfterInitialization() : void
     {
-        /** @var UnitOfWork|\PHPUnit_Framework_MockObject_MockObject $unitOfWork */
+        /** @var UnitOfWork|PHPUnit_Framework_MockObject_MockObject $unitOfWork */
         $unitOfWork = $this->createMock(UnitOfWork::class);
 
         $this->emMock->setUnitOfWork($unitOfWork);
 
-        $newElement                    = new \stdClass();
-        $newElementThatIsAlsoPersisted = new \stdClass();
-        $persistedElement              = new \stdClass();
+        $newElement                    = new stdClass();
+        $newElementThatIsAlsoPersisted = new stdClass();
+        $persistedElement              = new stdClass();
 
         $this->collection->add($newElementThatIsAlsoPersisted);
         $this->collection->add($newElement);
@@ -208,7 +210,7 @@ class PersistentCollectionTest extends OrmTestCase
             ->expects(self::once())
             ->method('loadCollection')
             ->with($this->collection)
-            ->willReturnCallback(function (PersistentCollection $persistentCollection) use (
+            ->willReturnCallback(static function (PersistentCollection $persistentCollection) use (
                 $persistedElement,
                 $newElementThatIsAlsoPersisted
             ) : void {
@@ -233,13 +235,13 @@ class PersistentCollectionTest extends OrmTestCase
      */
     public function testWillNotMarkCollectionAsDirtyAfterInitializationIfNoElementsWereAdded() : void
     {
-        /** @var UnitOfWork|\PHPUnit_Framework_MockObject_MockObject $unitOfWork */
+        /** @var UnitOfWork|PHPUnit_Framework_MockObject_MockObject $unitOfWork */
         $unitOfWork = $this->createMock(UnitOfWork::class);
 
         $this->emMock->setUnitOfWork($unitOfWork);
 
-        $newElementThatIsAlsoPersisted = new \stdClass();
-        $persistedElement              = new \stdClass();
+        $newElementThatIsAlsoPersisted = new stdClass();
+        $persistedElement              = new stdClass();
 
         $this->collection->add($newElementThatIsAlsoPersisted);
 
@@ -250,7 +252,7 @@ class PersistentCollectionTest extends OrmTestCase
             ->expects(self::once())
             ->method('loadCollection')
             ->with($this->collection)
-            ->willReturnCallback(function (PersistentCollection $persistentCollection) use (
+            ->willReturnCallback(static function (PersistentCollection $persistentCollection) use (
                 $persistedElement,
                 $newElementThatIsAlsoPersisted
             ) : void {

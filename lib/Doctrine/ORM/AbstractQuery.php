@@ -300,7 +300,7 @@ abstract class AbstractQuery
     public function getParameter($key)
     {
         $filteredParameters = $this->parameters->filter(
-            function (Query\Parameter $parameter) use ($key) : bool {
+            static function (Query\Parameter $parameter) use ($key) : bool {
                 $parameterName = $parameter->getName();
 
                 return $key === $parameterName || (string) $key === (string) $parameterName;
@@ -438,13 +438,13 @@ abstract class AbstractQuery
      * some form of caching with UnitOfWork registration you should use
      * {@see AbstractQuery::setResultCacheProfile()}.
      *
+     * @return static This query instance.
+     *
      * @example
      * $lifetime = 100;
      * $resultKey = "abc";
      * $query->setHydrationCacheProfile(new QueryCacheProfile());
      * $query->setHydrationCacheProfile(new QueryCacheProfile($lifetime, $resultKey));
-     *
-     * @return static This query instance.
      */
     public function setHydrationCacheProfile(?QueryCacheProfile $profile = null)
     {
@@ -557,7 +557,7 @@ abstract class AbstractQuery
      */
     public function setResultCacheLifetime($lifetime)
     {
-        $lifetime = ($lifetime !== null) ? (int) $lifetime : 0;
+        $lifetime = $lifetime !== null ? (int) $lifetime : 0;
 
         $this->queryCacheProfile = $this->queryCacheProfile
             ? $this->queryCacheProfile->setLifetime($lifetime)
@@ -883,11 +883,11 @@ abstract class AbstractQuery
             $this->setParameters($parameters);
         }
 
-        $setCacheEntry = function () {
+        $setCacheEntry = static function () {
         };
 
         if ($this->hydrationCacheProfile !== null) {
-            list($cacheKey, $realCacheKey) = $this->getHydrationCacheId();
+            [$cacheKey, $realCacheKey] = $this->getHydrationCacheId();
 
             $queryCacheProfile = $this->getHydrationCacheProfile();
             $cache             = $queryCacheProfile->getResultCacheDriver();
@@ -901,7 +901,7 @@ abstract class AbstractQuery
                 $result = [];
             }
 
-            $setCacheEntry = function ($data) use ($cache, $result, $cacheKey, $realCacheKey, $queryCacheProfile) {
+            $setCacheEntry = static function ($data) use ($cache, $result, $cacheKey, $realCacheKey, $queryCacheProfile) {
                 $result[$realCacheKey] = $data;
 
                 $cache->save($cacheKey, $result, $queryCacheProfile->getLifetime());

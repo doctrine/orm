@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Doctrine\Tests\ORM\Functional\Ticket;
 
 use Doctrine\Tests\OrmFunctionalTestCase;
+use Exception;
 
 /**
  * @group DDC-2084
@@ -18,11 +19,11 @@ class DDC2084Test extends OrmFunctionalTestCase
         try {
             $this->schemaTool->createSchema(
                 [
-                $this->em->getClassMetadata(__NAMESPACE__ . '\DDC2084\MyEntity1'),
-                $this->em->getClassMetadata(__NAMESPACE__ . '\DDC2084\MyEntity2'),
+                    $this->em->getClassMetadata(__NAMESPACE__ . '\DDC2084\MyEntity1'),
+                    $this->em->getClassMetadata(__NAMESPACE__ . '\DDC2084\MyEntity2'),
                 ]
             );
-        } catch (\Exception $exc) {
+        } catch (Exception $exc) {
         }
     }
 
@@ -66,7 +67,6 @@ class DDC2084Test extends OrmFunctionalTestCase
 namespace Doctrine\Tests\ORM\Functional\Ticket\DDC2084;
 
 use Doctrine\ORM\Annotation as ORM;
-use Doctrine\Tests\OrmFunctionalTestCase;
 
 /**
  * @ORM\Entity

@@ -7,6 +7,8 @@ namespace Doctrine\Tests\ORM\Functional;
 use Doctrine\ORM\Events;
 use Doctrine\Tests\Models\Cache\Country;
 use Doctrine\Tests\Models\Cache\State;
+use Exception;
+use RuntimeException;
 use function call_user_func;
 use function uniqid;
 
@@ -201,8 +203,8 @@ class SecondLevelCacheTest extends SecondLevelCacheAbstractTest
     {
         $listener = new ListenerSecondLevelCacheTest(
             [
-                Events::postFlush => function () {
-                    throw new \RuntimeException('post flush failure');
+                Events::postFlush => static function () {
+                    throw new RuntimeException('post flush failure');
                 },
             ]
         );
@@ -218,7 +220,7 @@ class SecondLevelCacheTest extends SecondLevelCacheAbstractTest
             $this->em->persist($country);
             $this->em->flush();
             $this->fail('Should throw exception');
-        } catch (\RuntimeException $exc) {
+        } catch (RuntimeException $exc) {
             self::assertNotNull($country->getId());
             self::assertEquals('post flush failure', $exc->getMessage());
             self::assertTrue($this->cache->containsEntity(Country::class, $country->getId()));
@@ -233,8 +235,8 @@ class SecondLevelCacheTest extends SecondLevelCacheAbstractTest
 
         $listener = new ListenerSecondLevelCacheTest(
             [
-                Events::postUpdate => function () {
-                    throw new \RuntimeException('post update failure');
+                Events::postUpdate => static function () {
+                    throw new RuntimeException('post update failure');
                 },
             ]
         );
@@ -259,7 +261,7 @@ class SecondLevelCacheTest extends SecondLevelCacheAbstractTest
         try {
             $this->em->flush();
             $this->fail('Should throw exception');
-        } catch (\Exception $exc) {
+        } catch (Exception $exc) {
             self::assertEquals('post update failure', $exc->getMessage());
         }
 
@@ -279,8 +281,8 @@ class SecondLevelCacheTest extends SecondLevelCacheAbstractTest
         $this->em->clear();
 
         $listener = new ListenerSecondLevelCacheTest([
-            Events::postRemove => function () {
-                throw new \RuntimeException('post remove failure');
+            Events::postRemove => static function () {
+                throw new RuntimeException('post remove failure');
             },
         ]);
 
@@ -301,7 +303,7 @@ class SecondLevelCacheTest extends SecondLevelCacheAbstractTest
         try {
             $this->em->flush();
             $this->fail('Should throw exception');
-        } catch (\Exception $exc) {
+        } catch (Exception $exc) {
             self::assertEquals('post remove failure', $exc->getMessage());
         }
 

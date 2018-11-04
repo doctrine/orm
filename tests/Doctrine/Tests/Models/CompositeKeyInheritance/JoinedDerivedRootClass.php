@@ -16,19 +16,21 @@ use Doctrine\ORM\Annotation as ORM;
 class JoinedDerivedRootClass
 {
     /**
-     * @var JoinedDerivedIdentityClass
      * @ORM\ManyToOne(
      *     targetEntity=JoinedDerivedIdentityClass::class,
      *     inversedBy="children"
      * )
      * @ORM\Id
+     *
+     * @var JoinedDerivedIdentityClass
      */
     protected $keyPart1 = 'part-1';
 
     /**
-     * @var string
      * @ORM\Column(type="string")
      * @ORM\Id
+     *
+     * @var string
      */
     protected $keyPart2 = 'part-2';
 }

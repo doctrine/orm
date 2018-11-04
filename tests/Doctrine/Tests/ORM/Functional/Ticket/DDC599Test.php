@@ -7,6 +7,7 @@ namespace Doctrine\Tests\ORM\Functional\Ticket;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\Annotation as ORM;
 use Doctrine\Tests\OrmFunctionalTestCase;
+use Exception;
 use function iterator_to_array;
 
 class DDC599Test extends OrmFunctionalTestCase
@@ -21,7 +22,7 @@ class DDC599Test extends OrmFunctionalTestCase
                 $this->em->getClassMetadata(DDC599Subitem::class),
                 $this->em->getClassMetadata(DDC599Child::class),
             ]);
-        } catch (\Exception $ignored) {
+        } catch (Exception $ignored) {
         }
     }
 

@@ -8,6 +8,7 @@ use Doctrine\DBAL\Connection;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\Query\ParameterTypeInferer;
+use InvalidArgumentException;
 use function ksort;
 use function serialize;
 
@@ -78,12 +79,12 @@ abstract class SQLFilter
      *
      * @return string The SQL escaped parameter to use in a query.
      *
-     * @throws \InvalidArgumentException
+     * @throws InvalidArgumentException
      */
     final public function getParameter($name)
     {
         if (! isset($this->parameters[$name])) {
-            throw new \InvalidArgumentException("Parameter '" . $name . "' does not exist.");
+            throw new InvalidArgumentException("Parameter '" . $name . "' does not exist.");
         }
 
         return $this->em->getConnection()->quote($this->parameters[$name]['value'], $this->parameters[$name]['type']);

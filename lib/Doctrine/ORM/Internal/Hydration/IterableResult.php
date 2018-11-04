@@ -4,11 +4,13 @@ declare(strict_types=1);
 
 namespace Doctrine\ORM\Internal\Hydration;
 
+use Iterator;
+
 /**
  * Represents a result structure that can be iterated over, hydrating row-by-row
  * during the iteration. An IterableResult is obtained by AbstractHydrator#iterate().
  */
-class IterableResult implements \Iterator
+class IterableResult implements Iterator
 {
     /** @var AbstractHydrator */
     private $hydrator;

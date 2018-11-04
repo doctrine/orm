@@ -40,7 +40,6 @@ class CacheMetadataListener
     }
 
     /**
-     *
      * @return bool
      */
     private function isVisited(ClassMetadata $metadata)

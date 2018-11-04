@@ -27,6 +27,9 @@ use Doctrine\Tests\Models\DDC964\DDC964Admin;
 use Doctrine\Tests\Models\DDC964\DDC964Guest;
 use Doctrine\Tests\OrmTestCase;
 use DoctrineGlobalArticle;
+use PHPUnit_Framework_MockObject_MockObject;
+use ReflectionClass;
+use stdClass;
 use const CASE_UPPER;
 use function reset;
 use function serialize;
@@ -40,7 +43,7 @@ require_once __DIR__ . '/../../Models/Global/GlobalNamespaceModel.php';
 
 class ClassMetadataTest extends OrmTestCase
 {
-    /** @var Mapping\ClassMetadataBuildingContext|\PHPUnit_Framework_MockObject_MockObject */
+    /** @var Mapping\ClassMetadataBuildingContext|PHPUnit_Framework_MockObject_MockObject */
     private $metadataBuildingContext;
 
     public function setUp() : void
@@ -58,7 +61,7 @@ class ClassMetadataTest extends OrmTestCase
         $cm = new ClassMetadata(CMS\CmsUser::class, $this->metadataBuildingContext);
         $cm->setTable(new Mapping\TableMetadata('cms_users'));
 
-        self::assertInstanceOf(\ReflectionClass::class, $cm->getReflectionClass());
+        self::assertInstanceOf(ReflectionClass::class, $cm->getReflectionClass());
         self::assertEquals(CMS\CmsUser::class, $cm->getClassName());
         self::assertEquals(CMS\CmsUser::class, $cm->getRootClassName());
         self::assertEquals([], $cm->getSubClasses());
@@ -105,7 +108,7 @@ class ClassMetadataTest extends OrmTestCase
         $cm->wakeupReflection(new RuntimeReflectionService());
 
         // Check state
-        self::assertInstanceOf(\ReflectionClass::class, $cm->getReflectionClass());
+        self::assertInstanceOf(ReflectionClass::class, $cm->getReflectionClass());
         self::assertEquals(CMS\CmsUser::class, $cm->getClassName());
         self::assertEquals(CMS\CmsEmployee::class, $cm->getRootClassName());
         self::assertEquals('Doctrine\Tests\Models\CMS\UserRepository', $cm->getCustomRepositoryClassName());
@@ -360,8 +363,8 @@ class ClassMetadataTest extends OrmTestCase
         $association = new Mapping\OneToOneAssociationMetadata('foo');
 
         $association->setDeclaringClass($cm);
-        $association->setSourceEntity(\stdClass::class);
-        $association->setTargetEntity(\stdClass::class);
+        $association->setSourceEntity(stdClass::class);
+        $association->setTargetEntity(stdClass::class);
         $association->setMappedBy('foo');
 
         $cm->addInheritedProperty($association);
@@ -371,8 +374,8 @@ class ClassMetadataTest extends OrmTestCase
         $association = new Mapping\OneToOneAssociationMetadata('foo');
 
         $association->setDeclaringClass($cm);
-        $association->setSourceEntity(\stdClass::class);
-        $association->setTargetEntity(\stdClass::class);
+        $association->setSourceEntity(stdClass::class);
+        $association->setTargetEntity(stdClass::class);
         $association->setMappedBy('foo');
 
         $cm->addInheritedProperty($association);
@@ -941,7 +944,6 @@ class ClassMetadataTest extends OrmTestCase
 
     /**
      * @group DDC-1955
-     *
      * @expectedException        \Doctrine\ORM\Mapping\MappingException
      * @expectedExceptionMessage Entity Listener "\InvalidClassName" declared on "Doctrine\Tests\Models\CMS\CmsUser" not found.
      */
@@ -955,7 +957,6 @@ class ClassMetadataTest extends OrmTestCase
 
     /**
      * @group DDC-1955
-     *
      * @expectedException        \Doctrine\ORM\Mapping\MappingException
      * @expectedExceptionMessage Entity Listener "Doctrine\Tests\Models\Company\CompanyContractListener" declared on "Doctrine\Tests\Models\CMS\CmsUser" has no method "invalidMethod".
      */

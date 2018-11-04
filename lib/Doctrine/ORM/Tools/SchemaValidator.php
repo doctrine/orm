@@ -125,7 +125,7 @@ class SchemaValidator
 
         /** @var ClassMetadata $targetMetadata */
         $targetMetadata    = $metadataFactory->getMetadataFor($targetEntity);
-        $containsForeignId = array_filter($targetMetadata->identifier, function ($identifier) use ($targetMetadata) {
+        $containsForeignId = array_filter($targetMetadata->identifier, static function ($identifier) use ($targetMetadata) {
             $targetProperty = $targetMetadata->getProperty($identifier);
 
             return $targetProperty instanceof AssociationMetadata;
@@ -228,7 +228,7 @@ class SchemaValidator
 
                 if (count($targetIdentifierColumns) !== count($joinTable->getInverseJoinColumns())) {
                     $columnNames = array_map(
-                        function (JoinColumnMetadata $joinColumn) {
+                        static function (JoinColumnMetadata $joinColumn) {
                             return $joinColumn->getReferencedColumnName();
                         },
                         $joinTable->getInverseJoinColumns()
@@ -243,7 +243,7 @@ class SchemaValidator
 
                 if (count($classIdentifierColumns) !== count($joinTable->getJoinColumns())) {
                     $columnNames = array_map(
-                        function (JoinColumnMetadata $joinColumn) {
+                        static function (JoinColumnMetadata $joinColumn) {
                             return $joinColumn->getReferencedColumnName();
                         },
                         $joinTable->getJoinColumns()

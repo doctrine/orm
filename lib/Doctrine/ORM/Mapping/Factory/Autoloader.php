@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Doctrine\ORM\Mapping\Factory;
 
+use Closure;
 use InvalidArgumentException;
 use const DIRECTORY_SEPARATOR;
 use function call_user_func;
@@ -59,7 +60,7 @@ class Autoloader
         string $metadataDir,
         string $metadataNamespace,
         ?callable $notFoundCallback = null
-    ) : \Closure {
+    ) : Closure {
         $metadataNamespace = ltrim($metadataNamespace, '\\');
 
         if (! ($notFoundCallback === null || is_callable($notFoundCallback))) {
@@ -70,7 +71,7 @@ class Autoloader
             );
         }
 
-        $autoloader = function ($className) use ($metadataDir, $metadataNamespace, $notFoundCallback) {
+        $autoloader = static function ($className) use ($metadataDir, $metadataNamespace, $notFoundCallback) {
             if (strpos($className, $metadataNamespace) === 0) {
                 $file = Autoloader::resolveFile($metadataDir, $metadataNamespace, $className);
 

@@ -10,6 +10,7 @@ use Doctrine\Common\Persistence\Mapping\MappingException as CommonMappingExcepti
 use Doctrine\ORM\Reflection\ReflectionService;
 use Doctrine\ORM\Reflection\RuntimeReflectionService;
 use Doctrine\ORM\Utility\StaticClassNameConverter;
+use InvalidArgumentException;
 use ReflectionException;
 use function array_reverse;
 
@@ -118,8 +119,8 @@ abstract class AbstractClassMetadataFactory implements ClassMetadataFactory
      *
      * @return ClassMetadata[] The ClassMetadata instances of all mapped classes.
      *
-     * @throws \InvalidArgumentException
-     * @throws \ReflectionException
+     * @throws InvalidArgumentException
+     * @throws ReflectionException
      * @throws MappingException
      */
     public function getAllMetadata() : array
@@ -143,7 +144,7 @@ abstract class AbstractClassMetadataFactory implements ClassMetadataFactory
      *
      * @param string $className The name of the class.
      *
-     * @throws \InvalidArgumentException
+     * @throws InvalidArgumentException
      * @throws ReflectionException
      * @throws CommonMappingException
      */
@@ -216,7 +217,7 @@ abstract class AbstractClassMetadataFactory implements ClassMetadataFactory
      *
      * @return ClassMetadata[]
      *
-     * @throws \InvalidArgumentException
+     * @throws InvalidArgumentException
      */
     protected function loadMetadata(string $name, ClassMetadataBuildingContext $metadataBuildingContext) : array
     {
@@ -270,7 +271,7 @@ abstract class AbstractClassMetadataFactory implements ClassMetadataFactory
      *
      * @return string[]
      *
-     * @throws \InvalidArgumentException
+     * @throws InvalidArgumentException
      */
     protected function getParentClasses($name) : array
     {

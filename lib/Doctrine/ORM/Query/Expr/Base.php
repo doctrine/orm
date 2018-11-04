@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Doctrine\ORM\Query\Expr;
 
+use InvalidArgumentException;
 use function count;
 use function get_class;
 use function implode;
@@ -58,7 +59,7 @@ abstract class Base
      *
      * @return Base
      *
-     * @throws \InvalidArgumentException
+     * @throws InvalidArgumentException
      */
     public function add($arg)
     {
@@ -68,7 +69,7 @@ abstract class Base
                 $class = get_class($arg);
 
                 if (! in_array($class, $this->allowedClasses, true)) {
-                    throw new \InvalidArgumentException(
+                    throw new InvalidArgumentException(
                         sprintf("Expression of type '%s' not allowed in this context.", $class)
                     );
                 }

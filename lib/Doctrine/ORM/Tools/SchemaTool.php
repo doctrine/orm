@@ -27,6 +27,7 @@ use Doctrine\ORM\Tools\Event\GenerateSchemaEventArgs;
 use Doctrine\ORM\Tools\Event\GenerateSchemaTableEventArgs;
 use Doctrine\ORM\Tools\Exception\MissingColumnException;
 use Doctrine\ORM\Tools\Exception\NotSupported;
+use Throwable;
 use function array_diff;
 use function array_key_exists;
 use function array_keys;
@@ -75,7 +76,7 @@ class SchemaTool
         foreach ($createSchemaSql as $sql) {
             try {
                 $conn->executeQuery($sql);
-            } catch (\Throwable $e) {
+            } catch (Throwable $e) {
                 throw ToolsException::schemaToolFailure($sql, $e);
             }
         }
@@ -109,8 +110,7 @@ class SchemaTool
         return isset($processedClasses[$class->getClassName()]) ||
             $class->isMappedSuperclass ||
             $class->isEmbeddedClass ||
-            ($class->inheritanceType === InheritanceType::SINGLE_TABLE && ! $class->isRootEntity())
-        ;
+            ($class->inheritanceType === InheritanceType::SINGLE_TABLE && ! $class->isRootEntity());
     }
 
     /**
@@ -529,7 +529,7 @@ class SchemaTool
             $foreignClass = $this->em->getClassMetadata($property->getTargetEntity());
 
             switch (true) {
-                case ($property instanceof ToOneAssociationMetadata):
+                case $property instanceof ToOneAssociationMetadata:
                     $primaryKeyColumns = []; // PK is unnecessary for this relation-type
 
                     $this->gatherRelationJoinColumns(
@@ -544,11 +544,11 @@ class SchemaTool
 
                     break;
 
-                case ($property instanceof OneToManyAssociationMetadata):
+                case $property instanceof OneToManyAssociationMetadata:
                     //... create join table, one-many through join table supported later
                     throw NotSupported::create();
 
-                case ($property instanceof ManyToManyAssociationMetadata):
+                case $property instanceof ManyToManyAssociationMetadata:
                     // create join table
                     $joinTable     = $property->getJoinTable();
                     $joinTableName = $joinTable->getQuotedQualifiedName($this->platform);
@@ -671,7 +671,7 @@ class SchemaTool
         $uniqueConstraints = [];
 
         foreach ($joinColumns as $joinColumn) {
-            list($definingClass, $referencedFieldName) = $this->getDefiningClass(
+            [$definingClass, $referencedFieldName] = $this->getDefiningClass(
                 $class,
                 $joinColumn->getReferencedColumnName()
             );
@@ -791,7 +791,7 @@ class SchemaTool
         foreach ($dropSchemaSql as $sql) {
             try {
                 $conn->executeQuery($sql);
-            } catch (\Throwable $e) {
+            } catch (Throwable $e) {
                 // ignored
             }
         }

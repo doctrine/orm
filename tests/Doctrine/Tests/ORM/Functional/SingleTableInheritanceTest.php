@@ -233,7 +233,7 @@ class SingleTableInheritanceTest extends OrmFunctionalTestCase
 
         $contracts = $this->em->createQuery('SELECT c FROM Doctrine\Tests\Models\Company\CompanyContract c ORDER BY c.id')->getScalarResult();
 
-        $discrValues = array_map(function ($a) {
+        $discrValues = array_map(static function ($a) {
             return $a['c_discr'];
         }, $contracts);
 

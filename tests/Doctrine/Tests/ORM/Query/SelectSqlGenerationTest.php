@@ -24,6 +24,7 @@ use Doctrine\Tests\Models\CMS\CmsPhonenumber;
 use Doctrine\Tests\Models\Company\CompanyEmployee;
 use Doctrine\Tests\Models\Company\CompanyPerson;
 use Doctrine\Tests\OrmTestCase;
+use Exception;
 use function get_class;
 
 class SelectSqlGenerationTest extends OrmTestCase
@@ -54,8 +55,7 @@ class SelectSqlGenerationTest extends OrmTestCase
 
             $query
                 ->setHint(ORMQuery::HINT_FORCE_PARTIAL_LOAD, true)
-                ->useQueryCache(false)
-            ;
+                ->useQueryCache(false);
 
             foreach ($queryHints as $name => $value) {
                 $query->setHint($name, $value);
@@ -64,7 +64,7 @@ class SelectSqlGenerationTest extends OrmTestCase
             $sqlGenerated = $query->getSQL();
 
             $query->free();
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             $this->fail($e->getMessage() . "\n" . $e->getTraceAsString());
         }
 
@@ -91,8 +91,7 @@ class SelectSqlGenerationTest extends OrmTestCase
 
         $query
             ->setHint(ORMQuery::HINT_FORCE_PARTIAL_LOAD, true)
-            ->useQueryCache(false)
-        ;
+            ->useQueryCache(false);
 
         foreach ($queryHints as $name => $value) {
             $query->setHint($name, $value);
@@ -1240,7 +1239,7 @@ class SelectSqlGenerationTest extends OrmTestCase
 
             $query->getSql();
             $query->free();
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             $exceptionThrown = true;
         }
 

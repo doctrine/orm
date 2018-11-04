@@ -11,6 +11,7 @@ use Doctrine\ORM\Query;
 use Doctrine\ORM\Query\Exec\AbstractSqlExecutor;
 use Doctrine\ORM\Query\ParserResult;
 use Doctrine\Tests\OrmFunctionalTestCase;
+use ReflectionProperty;
 use function count;
 
 /**
@@ -18,12 +19,12 @@ use function count;
  */
 class QueryCacheTest extends OrmFunctionalTestCase
 {
-    /** @var \ReflectionProperty */
+    /** @var ReflectionProperty */
     private $cacheDataReflection;
 
     protected function setUp() : void
     {
-        $this->cacheDataReflection = new \ReflectionProperty(ArrayCache::class, 'data');
+        $this->cacheDataReflection = new ReflectionProperty(ArrayCache::class, 'data');
         $this->cacheDataReflection->setAccessible(true);
 
         $this->useModelSet('cms');
@@ -60,6 +61,7 @@ class QueryCacheTest extends OrmFunctionalTestCase
 
     /**
      * @param <type> $query
+     *
      * @depends testQueryCacheDependsOnHints
      */
     public function testQueryCacheDependsOnFirstResult($query) : void
@@ -76,6 +78,7 @@ class QueryCacheTest extends OrmFunctionalTestCase
 
     /**
      * @param <type> $query
+     *
      * @depends testQueryCacheDependsOnHints
      */
     public function testQueryCacheDependsOnMaxResults($query) : void
@@ -91,6 +94,7 @@ class QueryCacheTest extends OrmFunctionalTestCase
 
     /**
      * @param <type> $query
+     *
      * @depends testQueryCacheDependsOnHints
      */
     public function testQueryCacheDependsOnHydrationMode($query) : void

@@ -8,6 +8,7 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\Annotation as ORM;
 use Doctrine\ORM\Query;
 use Doctrine\Tests\OrmFunctionalTestCase;
+use Exception;
 
 /**
  * @group DDC-618
@@ -20,8 +21,8 @@ class DDC618Test extends OrmFunctionalTestCase
         try {
             $this->schemaTool->createSchema(
                 [
-                $this->em->getClassMetadata(DDC618Author::class),
-                $this->em->getClassMetadata(DDC618Book::class),
+                    $this->em->getClassMetadata(DDC618Author::class),
+                    $this->em->getClassMetadata(DDC618Book::class),
                 ]
             );
 
@@ -43,7 +44,7 @@ class DDC618Test extends OrmFunctionalTestCase
 
             $this->em->flush();
             $this->em->clear();
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
         }
     }
 
