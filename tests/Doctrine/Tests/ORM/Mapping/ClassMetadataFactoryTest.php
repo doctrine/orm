@@ -32,7 +32,6 @@ use Doctrine\Tests\Models\JoinedInheritanceType\RootClass;
 use Doctrine\Tests\Models\Quote;
 use Doctrine\Tests\OrmTestCase;
 use DoctrineGlobalArticle;
-use function array_search;
 use function reset;
 use function sprintf;
 
@@ -152,43 +151,32 @@ class ClassMetadataFactoryTest extends OrmTestCase
         self::assertFalse($em->getMetadataFactory()->isTransient(CmsArticle::class));
     }
 
-    public function testAddDefaultDiscriminatorMap() : void
+    /**
+     * @dataProvider classesInInheritanceWithNoMapProvider()
+     */
+    public function testNoDefaultDiscriminatorMapIsAssumed(string $rootClassName, string $targetClassName) : void
     {
         $cmf    = new ClassMetadataFactory();
         $driver = $this->createAnnotationDriver([__DIR__ . '/../../Models/JoinedInheritanceType/']);
         $em     = $this->createEntityManager($driver);
         $cmf->setEntityManager($em);
 
-        $rootMetadata                 = $cmf->getMetadataFor(RootClass::class);
-        $childMetadata                = $cmf->getMetadataFor(ChildClass::class);
-        $anotherChildMetadata         = $cmf->getMetadataFor(AnotherChildClass::class);
-        $rootDiscriminatorMap         = $rootMetadata->discriminatorMap;
-        $childDiscriminatorMap        = $childMetadata->discriminatorMap;
-        $anotherChildDiscriminatorMap = $anotherChildMetadata->discriminatorMap;
+        $this->expectException(MappingException::class);
+        $this->expectExceptionMessage(
+            sprintf("Entity class '%s' is using inheritance but no discriminator map was defined.", $rootClassName)
+        );
 
-        $rootClass         = RootClass::class;
-        $childClass        = ChildClass::class;
-        $anotherChildClass = AnotherChildClass::class;
+        $cmf->getMetadataFor($targetClassName);
+    }
 
-        $rootClassKey         = array_search($rootClass, $rootDiscriminatorMap, true);
-        $childClassKey        = array_search($childClass, $rootDiscriminatorMap, true);
-        $anotherChildClassKey = array_search($anotherChildClass, $rootDiscriminatorMap, true);
-
-        self::assertEquals('rootclass', $rootClassKey);
-        self::assertEquals('childclass', $childClassKey);
-        self::assertEquals('anotherchildclass', $anotherChildClassKey);
-
-        self::assertEquals($childDiscriminatorMap, $rootDiscriminatorMap);
-        self::assertEquals($anotherChildDiscriminatorMap, $rootDiscriminatorMap);
-
-        // ClassMetadataFactory::addDefaultDiscriminatorMap shouldn't be called again, because the
-        // discriminator map is already cached
-        $cmf = $this->getMockBuilder(ClassMetadataFactory::class)->setMethods(['addDefaultDiscriminatorMap'])->getMock();
-        $cmf->setEntityManager($em);
-        $cmf->expects($this->never())
-            ->method('addDefaultDiscriminatorMap');
-
-        $rootMetadata = $cmf->getMetadataFor(RootClass::class);
+    /**
+     * @return string[]
+     */
+    public function classesInInheritanceWithNoMapProvider() : iterable
+    {
+        yield 'root entity' => [RootClass::class, RootClass::class];
+        yield 'child entity' => [RootClass::class, ChildClass::class];
+        yield 'another child entity' => [RootClass::class, AnotherChildClass::class];
     }
 
     public function testGetAllMetadataWorksWithBadConnection() : void
