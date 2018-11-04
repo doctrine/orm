@@ -39,7 +39,7 @@ class TrimFunction extends FunctionNode
         $stringPrimary = $sqlWalker->walkStringPrimary($this->stringPrimary);
         $platform      = $sqlWalker->getConnection()->getDatabasePlatform();
         $trimMode      = $this->getTrimMode();
-        $trimChar      = ($this->trimChar !== false)
+        $trimChar      = $this->trimChar !== false
             ? $sqlWalker->getConnection()->quote($this->trimChar)
             : false;
 

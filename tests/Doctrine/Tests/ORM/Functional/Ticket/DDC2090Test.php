@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Doctrine\Tests\ORM\Functional\Ticket;
 
+use DateTime;
 use Doctrine\Tests\Models\Company\CompanyEmployee;
 use Doctrine\Tests\OrmFunctionalTestCase;
 
@@ -21,18 +22,18 @@ class DDC2090Test extends OrmFunctionalTestCase
 
     public function testIssue() : void
     {
-        $date1     = new \DateTime('2011-11-11 11:11:11');
-        $date2     = new \DateTime('2012-12-12 12:12:12');
+        $date1     = new DateTime('2011-11-11 11:11:11');
+        $date2     = new DateTime('2012-12-12 12:12:12');
         $employee1 = new CompanyEmployee();
         $employee2 = new CompanyEmployee();
 
         $employee1->setName('Fabio B. Silva');
-        $employee1->setStartDate(new \DateTime('yesterday'));
+        $employee1->setStartDate(new DateTime('yesterday'));
         $employee1->setDepartment('R&D');
         $employee1->setSalary(100);
 
         $employee2->setName('Doctrine Bot');
-        $employee1->setStartDate(new \DateTime('yesterday'));
+        $employee1->setStartDate(new DateTime('yesterday'));
         $employee2->setDepartment('QA');
         $employee2->setSalary(100);
 
@@ -48,9 +49,9 @@ class DDC2090Test extends OrmFunctionalTestCase
             ->where('e = :e')
             ->setParameters(
                 [
-                'e'      => $employee1,
-                'date'   => $date1,
-                'salary' => 101,
+                    'e'      => $employee1,
+                    'date'   => $date1,
+                    'salary' => 101,
                 ]
             )
             ->getQuery()
@@ -64,9 +65,9 @@ class DDC2090Test extends OrmFunctionalTestCase
             ->where('e = :e')
             ->setParameters(
                 [
-                'e'      => $employee2,
-                'date'   => $date2,
-                'salary' => 102,
+                    'e'      => $employee2,
+                    'date'   => $date2,
+                    'salary' => 102,
                 ]
             )
             ->getQuery()

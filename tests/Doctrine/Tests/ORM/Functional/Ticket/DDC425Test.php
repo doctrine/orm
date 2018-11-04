@@ -16,7 +16,7 @@ class DDC425Test extends OrmFunctionalTestCase
         parent::setUp();
         $this->schemaTool->createSchema(
             [
-            $this->em->getClassMetadata(DDC425Entity::class),
+                $this->em->getClassMetadata(DDC425Entity::class),
             ]
         );
     }

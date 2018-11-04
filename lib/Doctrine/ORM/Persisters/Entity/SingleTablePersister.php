@@ -58,11 +58,11 @@ class SingleTablePersister extends AbstractEntityInheritancePersister
                 }
 
                 switch (true) {
-                    case ($property instanceof FieldMetadata):
+                    case $property instanceof FieldMetadata:
                         $columnList[] = $this->getSelectColumnSQL($fieldName, $subClass);
                         break;
 
-                    case ($property instanceof ToOneAssociationMetadata && $property->isOwningSide()):
+                    case $property instanceof ToOneAssociationMetadata && $property->isOwningSide():
                         $targetClass = $this->em->getClassMetadata($property->getTargetEntity());
 
                         foreach ($property->getJoinColumns() as $joinColumn) {

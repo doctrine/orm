@@ -17,12 +17,14 @@ class Bond
 {
     /**
      * @ORM\Id @ORM\GeneratedValue @ORM\Column(type="integer")
+     *
      * @var int
      */
     private $id;
 
     /**
      * @ORM\Column(type="string")
+     *
      * @var string
      */
     private $name;
@@ -30,6 +32,7 @@ class Bond
     /**
      * @ORM\ManyToMany(targetEntity=Stock::class, indexBy="symbol")
      * @ORM\JoinTable(name="exchange_bonds_stocks")
+     *
      * @var Stock[]
      */
     public $stocks;

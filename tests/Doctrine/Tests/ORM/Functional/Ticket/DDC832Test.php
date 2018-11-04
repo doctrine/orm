@@ -8,6 +8,7 @@ use Doctrine\DBAL\Logging\EchoSQLLogger;
 use Doctrine\DBAL\Schema\AbstractSchemaManager;
 use Doctrine\ORM\Annotation as ORM;
 use Doctrine\Tests\OrmFunctionalTestCase;
+use Exception;
 
 class DDC832Test extends OrmFunctionalTestCase
 {
@@ -31,7 +32,7 @@ class DDC832Test extends OrmFunctionalTestCase
                     $this->em->getClassMetadata(DDC832Like::class),
                 ]
             );
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
         }
     }
 

@@ -11,6 +11,7 @@ use Doctrine\Common\Collections\Expr\Value;
 use Doctrine\ORM\Mapping\AssociationMetadata;
 use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\Persisters\Entity\BasicEntityPersister;
+use RuntimeException;
 use function implode;
 use function in_array;
 use function is_object;
@@ -61,7 +62,7 @@ class SqlExpressionVisitor extends ExpressionVisitor
      *
      * @return mixed
      *
-     * @throws \RuntimeException
+     * @throws RuntimeException
      */
     public function walkCompositeExpression(CompositeExpression $expr)
     {
@@ -79,7 +80,7 @@ class SqlExpressionVisitor extends ExpressionVisitor
                 return '(' . implode(' OR ', $expressionList) . ')';
 
             default:
-                throw new \RuntimeException('Unknown composite ' . $expr->getType());
+                throw new RuntimeException('Unknown composite ' . $expr->getType());
         }
     }
 

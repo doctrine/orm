@@ -10,6 +10,7 @@ use Doctrine\Common\Collections\Criteria;
 use Doctrine\ORM\Annotation as ORM;
 use Doctrine\ORM\PersistentObject;
 use Doctrine\Tests\OrmFunctionalTestCase;
+use Exception;
 
 class PersistentCollectionTest extends OrmFunctionalTestCase
 {
@@ -22,7 +23,7 @@ class PersistentCollectionTest extends OrmFunctionalTestCase
                 $this->em->getClassMetadata(PersistentCollectionHolder::class),
                 $this->em->getClassMetadata(PersistentCollectionContent::class),
             ]);
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
         }
 
         PersistentObject::setEntityManager($this->em);
@@ -107,13 +108,15 @@ class PersistentCollectionHolder extends PersistentObject
 {
     /**
      * @ORM\Id @ORM\Column(type="integer") @ORM\GeneratedValue
+     *
      * @var int
      */
     protected $id;
 
     /**
-     * @var Collection
      * @ORM\ManyToMany(targetEntity=PersistentCollectionContent::class, cascade={"all"}, fetch="EXTRA_LAZY")
+     *
+     * @var Collection
      */
     protected $collection;
 
@@ -151,6 +154,7 @@ class PersistentCollectionContent extends PersistentObject
 {
     /**
      * @ORM\Id @ORM\Column(type="integer") @ORM\GeneratedValue
+     *
      * @var int
      */
     protected $id;

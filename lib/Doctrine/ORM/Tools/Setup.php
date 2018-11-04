@@ -13,6 +13,8 @@ use Doctrine\Common\Cache\RedisCache;
 use Doctrine\Common\ClassLoader;
 use Doctrine\ORM\Configuration;
 use Doctrine\ORM\Mapping\Driver\XmlDriver;
+use Memcached;
+use Redis;
 use function class_exists;
 use function extension_loaded;
 use function md5;
@@ -135,7 +137,7 @@ class Setup
         }
 
         if (extension_loaded('memcached')) {
-            $memcached = new \Memcached();
+            $memcached = new Memcached();
             $memcached->addServer('127.0.0.1', 11211);
 
             $cache = new MemcachedCache();
@@ -145,7 +147,7 @@ class Setup
         }
 
         if (extension_loaded('redis')) {
-            $redis = new \Redis();
+            $redis = new Redis();
             $redis->connect('127.0.0.1');
 
             $cache = new RedisCache();

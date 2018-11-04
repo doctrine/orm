@@ -7,6 +7,7 @@ namespace Doctrine\Tests\ORM\Functional\Ticket;
 use Doctrine\ORM\Annotation as ORM;
 use Doctrine\ORM\UnitOfWork;
 use Doctrine\Tests\OrmFunctionalTestCase;
+use Exception;
 
 class DDC353Test extends OrmFunctionalTestCase
 {
@@ -16,11 +17,11 @@ class DDC353Test extends OrmFunctionalTestCase
         try {
             $this->schemaTool->createSchema(
                 [
-                $this->em->getClassMetadata(DDC353File::class),
-                $this->em->getClassMetadata(DDC353Picture::class),
+                    $this->em->getClassMetadata(DDC353File::class),
+                    $this->em->getClassMetadata(DDC353Picture::class),
                 ]
             );
-        } catch (\Exception $ignored) {
+        } catch (Exception $ignored) {
         }
     }
 

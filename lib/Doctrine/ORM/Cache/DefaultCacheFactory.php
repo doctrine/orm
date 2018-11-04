@@ -25,6 +25,8 @@ use Doctrine\ORM\Mapping\CacheUsage;
 use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\Persisters\Collection\CollectionPersister;
 use Doctrine\ORM\Persisters\Entity\EntityPersister;
+use InvalidArgumentException;
+use LogicException;
 use const DIRECTORY_SEPARATOR;
 use function sprintf;
 
@@ -100,7 +102,7 @@ class DefaultCacheFactory implements CacheFactory
                 return new NonStrictReadWriteCachedEntityPersister($persister, $region, $em, $metadata);
 
             default:
-                throw new \InvalidArgumentException(sprintf('Unrecognized access strategy type [%s]', $usage));
+                throw new InvalidArgumentException(sprintf('Unrecognized access strategy type [%s]', $usage));
         }
     }
 
@@ -127,7 +129,7 @@ class DefaultCacheFactory implements CacheFactory
                 return new NonStrictReadWriteCachedCollectionPersister($persister, $region, $em, $association);
 
             default:
-                throw new \InvalidArgumentException(
+                throw new InvalidArgumentException(
                     sprintf('Unrecognized access strategy type [%s]', $usage)
                 );
         }
@@ -175,14 +177,13 @@ class DefaultCacheFactory implements CacheFactory
 
         $cacheAdapter = $this->createRegionCache($regionName);
         $lifetime     = $this->regionsConfig->getLifetime($regionName);
-        $region       = ($cacheAdapter instanceof MultiGetCache)
+        $region       = $cacheAdapter instanceof MultiGetCache
             ? new DefaultMultiGetRegion($regionName, $cacheAdapter, $lifetime)
-            : new DefaultRegion($regionName, $cacheAdapter, $lifetime)
-        ;
+            : new DefaultRegion($regionName, $cacheAdapter, $lifetime);
 
         if ($cache->getUsage() === CacheUsage::READ_WRITE) {
             if (! $this->fileLockRegionDirectory) {
-                throw new \LogicException(
+                throw new LogicException(
                     'If you want to use a "READ_WRITE" cache an implementation of "Doctrine\ORM\Cache\ConcurrentRegion" is required, ' .
                     'The default implementation provided by doctrine is "Doctrine\ORM\Cache\Region\FileLockRegion" if you want to use it please provide a valid directory, DefaultCacheFactory#setFileLockRegionDirectory(). '
                 );

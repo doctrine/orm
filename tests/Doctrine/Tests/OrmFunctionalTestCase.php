@@ -22,7 +22,10 @@ use Doctrine\ORM\Tools\DebugUnitOfWorkListener;
 use Doctrine\ORM\Tools\SchemaTool;
 use Doctrine\Tests\DbalTypes\Rot13Type;
 use Doctrine\Tests\EventListener\CacheMetadataListener;
+use Exception;
 use PHPUnit\Framework\AssertionFailedError;
+use RuntimeException;
+use Throwable;
 use const PHP_EOL;
 use function array_map;
 use function array_reverse;
@@ -329,7 +332,6 @@ abstract class OrmFunctionalTestCase extends OrmTestCase
 
     /**
      * @param string $setName
-     *
      */
     protected function useModelSet($setName)
     {
@@ -338,7 +340,6 @@ abstract class OrmFunctionalTestCase extends OrmTestCase
 
     /**
      * Sweeps the database tables and clears the EntityManager.
-     *
      */
     protected function tearDown() : void
     {
@@ -618,13 +619,12 @@ abstract class OrmFunctionalTestCase extends OrmTestCase
     /**
      * @param array $classNames
      *
-     *
-     * @throws \RuntimeException
+     * @throws RuntimeException
      */
     protected function setUpEntitySchema(array $classNames)
     {
         if ($this->em === null) {
-            throw new \RuntimeException('EntityManager not set, you have to call parent::setUp() before invoking this method.');
+            throw new RuntimeException('EntityManager not set, you have to call parent::setUp() before invoking this method.');
         }
 
         $classes = [];
@@ -644,7 +644,6 @@ abstract class OrmFunctionalTestCase extends OrmTestCase
     /**
      * Creates a connection to the test database, if there is none yet, and
      * creates the necessary tables.
-     *
      */
     protected function setUp() : void
     {
@@ -656,9 +655,9 @@ abstract class OrmFunctionalTestCase extends OrmTestCase
 
         if (isset($GLOBALS['DOCTRINE_MARK_SQL_LOGS'])) {
             if (in_array(static::$sharedConn->getDatabasePlatform()->getName(), ['mysql', 'postgresql'], true)) {
-                static::$sharedConn->executeQuery('SELECT 1 /*' . get_class($this) . '*/');
+                static::$sharedConn->executeQuery('SELECT 1 /*' . static::class . '*/');
             } elseif (static::$sharedConn->getDatabasePlatform()->getName() === 'oracle') {
-                static::$sharedConn->executeQuery('SELECT 1 /*' . get_class($this) . '*/ FROM dual');
+                static::$sharedConn->executeQuery('SELECT 1 /*' . static::class . '*/ FROM dual');
             }
         }
 
@@ -778,11 +777,9 @@ abstract class OrmFunctionalTestCase extends OrmTestCase
     }
 
     /**
-     *
-     *
-     * @throws \Throwable
+     * @throws Throwable
      */
-    protected function onNotSuccessfulTest(\Throwable $e)
+    protected function onNotSuccessfulTest(Throwable $e)
     {
         if ($e instanceof AssertionFailedError) {
             throw $e;
@@ -794,7 +791,7 @@ abstract class OrmFunctionalTestCase extends OrmTestCase
 
             foreach ($last25queries as $i => $query) {
                 $params = array_map(
-                    function ($p) {
+                    static function ($p) {
                         return is_object($p) ? get_class($p) : var_export($p, true);
                     },
                     $query['params'] ?: []
@@ -819,7 +816,7 @@ abstract class OrmFunctionalTestCase extends OrmTestCase
 
             $message = '[' . get_class($e) . '] ' . $e->getMessage() . PHP_EOL . PHP_EOL . 'With queries:' . PHP_EOL . $queries . PHP_EOL . 'Trace:' . PHP_EOL . $traceMsg;
 
-            throw new \Exception($message, (int) $e->getCode(), $e);
+            throw new Exception($message, (int) $e->getCode(), $e);
         }
 
         throw $e;

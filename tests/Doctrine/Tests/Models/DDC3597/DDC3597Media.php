@@ -14,22 +14,23 @@ use Doctrine\ORM\Annotation as ORM;
 abstract class DDC3597Media extends DDC3597Root
 {
     /**
-     * @var string
-     *
      * @ORM\Column
+     *
+     * @var string
      */
     private $distributionHash;
 
     /**
-     * @var int
-     *
      * @ORM\Column
+     *
+     * @var int
      */
     private $size = 0;
 
     /**
-     * @var string
      * @ORM\Column
+     *
+     * @var string
      */
     private $format;
 

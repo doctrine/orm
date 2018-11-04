@@ -9,6 +9,7 @@ use Doctrine\DBAL\Platforms\AbstractPlatform;
 use Doctrine\DBAL\Types\Type;
 use Doctrine\ORM\Annotation as ORM;
 use Doctrine\Tests\OrmFunctionalTestCase;
+use Exception;
 
 class DDC3785Test extends OrmFunctionalTestCase
 {
@@ -26,7 +27,7 @@ class DDC3785Test extends OrmFunctionalTestCase
                     $this->em->getClassMetadata(DDC3785Attribute::class),
                 ]
             );
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
         }
     }
 

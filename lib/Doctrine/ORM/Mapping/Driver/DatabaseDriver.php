@@ -14,6 +14,7 @@ use Doctrine\DBAL\Schema\SchemaException;
 use Doctrine\DBAL\Schema\Table;
 use Doctrine\DBAL\Types\Type;
 use Doctrine\ORM\Mapping;
+use InvalidArgumentException;
 use function array_diff;
 use function array_keys;
 use function array_merge;
@@ -143,7 +144,7 @@ class DatabaseDriver implements MappingDriver
         $this->reverseEngineerMappingFromDatabase();
 
         if (! isset($this->classToTableNames[$className])) {
-            throw new \InvalidArgumentException('Unknown class ' . $className);
+            throw new InvalidArgumentException('Unknown class ' . $className);
         }
 
         // @todo guilhermeblanco This should somehow disappear... =)
@@ -244,7 +245,7 @@ class DatabaseDriver implements MappingDriver
         $this->tables = $this->manyToManyTables = $this->classToTableNames = [];
 
         foreach ($tables as $tableName => $table) {
-            $foreignKeys = ($this->sm->getDatabasePlatform()->supportsForeignKeyConstraints())
+            $foreignKeys = $this->sm->getDatabasePlatform()->supportsForeignKeyConstraints()
                 ? $table->getForeignKeys()
                 : [];
 
@@ -461,7 +462,7 @@ class DatabaseDriver implements MappingDriver
      */
     private function getTableForeignKeys(Table $table)
     {
-        return ($this->sm->getDatabasePlatform()->supportsForeignKeyConstraints())
+        return $this->sm->getDatabasePlatform()->supportsForeignKeyConstraints()
             ? $table->getForeignKeys()
             : [];
     }

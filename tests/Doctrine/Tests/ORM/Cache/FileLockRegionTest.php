@@ -13,6 +13,8 @@ use Doctrine\Tests\Mocks\CacheEntryMock;
 use Doctrine\Tests\Mocks\CacheKeyMock;
 use RecursiveDirectoryIterator;
 use RecursiveIteratorIterator;
+use ReflectionMethod;
+use ReflectionProperty;
 use const E_WARNING;
 use function file_put_contents;
 use function is_dir;
@@ -44,12 +46,11 @@ class FileLockRegionTest extends AbstractRegionTest
     }
 
     /**
-     *
      * @return string
      */
     private function getFileName(ConcurrentRegion $region, CacheKey $key)
     {
-        $reflection = new \ReflectionMethod($region, 'getLockFileName');
+        $reflection = new ReflectionMethod($region, 'getLockFileName');
 
         $reflection->setAccessible(true);
 
@@ -230,7 +231,7 @@ class FileLockRegionTest extends AbstractRegionTest
         $key      = new CacheKeyMock('key');
         $entry    = new CacheEntryMock(['foo' => 'bar']);
         $file     = $this->getFileName($this->region, $key);
-        $property = new \ReflectionProperty($this->region, 'lockLifetime');
+        $property = new ReflectionProperty($this->region, 'lockLifetime');
 
         $property->setAccessible(true);
         $property->setValue($this->region, -10);
@@ -256,12 +257,12 @@ class FileLockRegionTest extends AbstractRegionTest
     public function testHandlesScanErrorsGracefullyOnEvictAll() : void
     {
         $region              = $this->createRegion();
-        $reflectionDirectory = new \ReflectionProperty($region, 'directory');
+        $reflectionDirectory = new ReflectionProperty($region, 'directory');
 
         $reflectionDirectory->setAccessible(true);
         $reflectionDirectory->setValue($region, str_repeat('a', 10000));
 
-        set_error_handler(function () {
+        set_error_handler(static function () {
         }, E_WARNING);
         self::assertTrue($region->evictAll());
         restore_error_handler();

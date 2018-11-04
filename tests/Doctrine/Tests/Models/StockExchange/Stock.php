@@ -14,6 +14,7 @@ class Stock
 {
     /**
      * @ORM\Id @ORM\GeneratedValue @ORM\Column(type="integer")
+     *
      * @var int
      */
     private $id;
@@ -30,6 +31,7 @@ class Stock
 
     /**
      * @ORM\ManyToOne(targetEntity=Market::class, inversedBy="stocks")
+     *
      * @var Market
      */
     private $market;

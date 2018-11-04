@@ -30,6 +30,8 @@ use Doctrine\Tests\Models\Cache\AttractionLocationInfo;
 use Doctrine\Tests\Models\Cache\City;
 use Doctrine\Tests\Models\Cache\State;
 use Doctrine\Tests\OrmTestCase;
+use InvalidArgumentException;
+use LogicException;
 
 /**
  * @group DDC-2183
@@ -62,8 +64,7 @@ class DefaultCacheFactoryTest extends OrmTestCase
         $this->factory = $this->getMockBuilder(DefaultCacheFactory::class)
             ->setMethods(['getRegion'])
             ->setConstructorArgs($arguments)
-            ->getMock()
-        ;
+            ->getMock();
     }
 
     public function testImplementsCacheFactory() : void
@@ -266,7 +267,7 @@ class DefaultCacheFactoryTest extends OrmTestCase
             new CacheMetadata('-1', 'doctrine_tests_models_cache_state')
         );
 
-        $this->expectException(\InvalidArgumentException::class);
+        $this->expectException(InvalidArgumentException::class);
         $this->expectExceptionMessage('Unrecognized access strategy type [-1]');
 
         $this->factory->buildCachedEntityPersister($em, $persister, $metadata);
@@ -283,7 +284,7 @@ class DefaultCacheFactoryTest extends OrmTestCase
             new CacheMetadata('-1', 'doctrine_tests_models_cache_state__cities')
         );
 
-        $this->expectException(\InvalidArgumentException::class);
+        $this->expectException(InvalidArgumentException::class);
         $this->expectExceptionMessage('Unrecognized access strategy type [-1]');
 
         $this->factory->buildCachedCollectionPersister($em, $persister, $association);
@@ -293,7 +294,7 @@ class DefaultCacheFactoryTest extends OrmTestCase
     {
         $factory = new DefaultCacheFactory($this->regionsConfig, $this->getSharedSecondLevelCacheDriverImpl());
 
-        $this->expectException(\LogicException::class);
+        $this->expectException(LogicException::class);
         $this->expectExceptionMessage(
             'If you want to use a "READ_WRITE" cache an implementation of "Doctrine\ORM\Cache\ConcurrentRegion" '
             . 'is required, The default implementation provided by doctrine is '
@@ -310,7 +311,7 @@ class DefaultCacheFactoryTest extends OrmTestCase
 
         $factory->setFileLockRegionDirectory('');
 
-        $this->expectException(\LogicException::class);
+        $this->expectException(LogicException::class);
         $this->expectExceptionMessage(
             'If you want to use a "READ_WRITE" cache an implementation of "Doctrine\ORM\Cache\ConcurrentRegion" '
             . 'is required, The default implementation provided by doctrine is '

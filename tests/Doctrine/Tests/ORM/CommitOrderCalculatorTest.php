@@ -10,6 +10,7 @@ use Doctrine\ORM\Mapping\ClassMetadataBuildingContext;
 use Doctrine\ORM\Mapping\ClassMetadataFactory;
 use Doctrine\ORM\Reflection\RuntimeReflectionService;
 use Doctrine\Tests\OrmTestCase;
+use PHPUnit_Framework_MockObject_MockObject;
 
 /**
  * Tests of the commit order calculation.
@@ -23,7 +24,7 @@ class CommitOrderCalculatorTest extends OrmTestCase
     /** @var CommitOrderCalculator */
     private $calc;
 
-    /** @var ClassMetadataBuildingContext|\PHPUnit_Framework_MockObject_MockObject */
+    /** @var ClassMetadataBuildingContext|PHPUnit_Framework_MockObject_MockObject */
     private $metadataBuildingContext;
 
     protected function setUp() : void

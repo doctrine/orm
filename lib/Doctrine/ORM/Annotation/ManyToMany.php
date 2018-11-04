@@ -26,7 +26,6 @@ final class ManyToMany implements Annotation
      * The fetching strategy to use for the association.
      *
      * @var string
-     *
      * @Enum({"LAZY", "EAGER", "EXTRA_LAZY"})
      */
     public $fetch = 'LAZY';

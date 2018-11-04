@@ -6,6 +6,8 @@ namespace Doctrine\ORM\Tools\Console\Command;
 
 use Doctrine\Common\Util\Debug;
 use Doctrine\ORM\EntityManagerInterface;
+use LogicException;
+use RuntimeException;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
@@ -52,20 +54,20 @@ class RunDqlCommand extends Command
         $dql = $input->getArgument('dql');
 
         if ($dql === null) {
-            throw new \RuntimeException("Argument 'dql' is required in order to execute this command correctly.");
+            throw new RuntimeException("Argument 'dql' is required in order to execute this command correctly.");
         }
 
         $depth = $input->getOption('depth');
 
         if (! is_numeric($depth)) {
-            throw new \LogicException("Option 'depth' must contain an integer value");
+            throw new LogicException("Option 'depth' must contain an integer value");
         }
 
         $hydrationModeName = $input->getOption('hydrate');
         $hydrationMode     = 'Doctrine\ORM\Query::HYDRATE_' . strtoupper(str_replace('-', '_', $hydrationModeName));
 
         if (! defined($hydrationMode)) {
-            throw new \RuntimeException(sprintf(
+            throw new RuntimeException(sprintf(
                 "Hydration mode '%s' does not exist. It should be either: object. array, scalar or single-scalar.",
                 $hydrationModeName
             ));
@@ -76,7 +78,7 @@ class RunDqlCommand extends Command
 
         if ($firstResult !== null) {
             if (! is_numeric($firstResult)) {
-                throw new \LogicException("Option 'first-result' must contain an integer value");
+                throw new LogicException("Option 'first-result' must contain an integer value");
             }
 
             $query->setFirstResult((int) $firstResult);
@@ -86,7 +88,7 @@ class RunDqlCommand extends Command
 
         if ($maxResult !== null) {
             if (! is_numeric($maxResult)) {
-                throw new \LogicException("Option 'max-result' must contain an integer value");
+                throw new LogicException("Option 'max-result' must contain an integer value");
             }
 
             $query->setMaxResults((int) $maxResult);

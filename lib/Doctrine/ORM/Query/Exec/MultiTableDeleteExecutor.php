@@ -80,7 +80,7 @@ class MultiTableDeleteExecutor extends AbstractSqlExecutor
         // 3. Create and store DELETE statements
         $hierarchyClasses = array_merge(
             array_map(
-                function ($className) use ($em) {
+                static function ($className) use ($em) {
                     return $em->getClassMetadata($className);
                 },
                 array_reverse($primaryClass->getSubClasses())

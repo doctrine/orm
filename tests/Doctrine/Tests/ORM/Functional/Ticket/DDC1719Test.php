@@ -18,7 +18,7 @@ class DDC1719Test extends OrmFunctionalTestCase
 
         $this->schemaTool->createSchema(
             [
-            $this->em->getClassMetadata(DDC1719SimpleEntity::class),
+                $this->em->getClassMetadata(DDC1719SimpleEntity::class),
             ]
         );
     }
@@ -29,7 +29,7 @@ class DDC1719Test extends OrmFunctionalTestCase
 
         $this->schemaTool->dropSchema(
             [
-            $this->em->getClassMetadata(DDC1719SimpleEntity::class),
+                $this->em->getClassMetadata(DDC1719SimpleEntity::class),
             ]
         );
     }

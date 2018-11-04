@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Doctrine\ORM\Mapping;
 
+use InvalidArgumentException;
 use function get_class;
 use function gettype;
 use function is_object;
@@ -42,7 +43,7 @@ class DefaultEntityListenerResolver implements EntityListenerResolver
     public function register($object)
     {
         if (! is_object($object)) {
-            throw new \InvalidArgumentException(sprintf('An object was expected, but got "%s".', gettype($object)));
+            throw new InvalidArgumentException(sprintf('An object was expected, but got "%s".', gettype($object)));
         }
 
         $this->instances[get_class($object)] = $object;

@@ -5,6 +5,8 @@ declare(strict_types=1);
 namespace Doctrine\ORM\Mapping;
 
 use Doctrine\ORM\Exception\ORMException;
+use LogicException;
+use ReflectionException;
 use function array_map;
 use function get_parent_class;
 use function implode;
@@ -13,7 +15,7 @@ use function sprintf;
 /**
  * A MappingException indicates that something is wrong with the mapping setup.
  */
-class MappingException extends \LogicException implements ORMException
+class MappingException extends LogicException implements ORMException
 {
     /**
      * @return MappingException
@@ -307,7 +309,7 @@ class MappingException extends \LogicException implements ORMException
      *
      * @return MappingException
      */
-    public static function reflectionFailure($entity, \ReflectionException $previousException)
+    public static function reflectionFailure($entity, ReflectionException $previousException)
     {
         return new self('An error occurred in ' . $entity, 0, $previousException);
     }
@@ -783,7 +785,7 @@ class MappingException extends \LogicException implements ORMException
      */
     public static function invalidCascadeOption(array $cascades, $className, $propertyName)
     {
-        $cascades = implode(', ', array_map(function ($e) {
+        $cascades = implode(', ', array_map(static function ($e) {
             return "'" . $e . "'";
         }, $cascades));
 

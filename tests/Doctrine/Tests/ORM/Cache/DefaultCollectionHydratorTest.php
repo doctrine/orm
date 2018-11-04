@@ -44,8 +44,8 @@ class DefaultCollectionHydratorTest extends OrmFunctionalTestCase
         $targetRegion = $this->em->getCache()->getEntityCacheRegion(City::class);
         $entry        = new CollectionCacheEntry(
             [
-            new EntityCacheKey(City::class, ['id' => 31]),
-            new EntityCacheKey(City::class, ['id' => 32]),
+                new EntityCacheKey(City::class, ['id' => 31]),
+                new EntityCacheKey(City::class, ['id' => 32]),
             ]
         );
 

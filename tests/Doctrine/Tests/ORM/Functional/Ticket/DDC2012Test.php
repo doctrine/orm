@@ -30,8 +30,8 @@ class DDC2012Test extends OrmFunctionalTestCase
 
         $this->schemaTool->createSchema(
             [
-            $this->em->getClassMetadata(DDC2012Item::class),
-            $this->em->getClassMetadata(DDC2012ItemPerson::class),
+                $this->em->getClassMetadata(DDC2012Item::class),
+                $this->em->getClassMetadata(DDC2012ItemPerson::class),
             ]
         );
     }

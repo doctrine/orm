@@ -14,7 +14,6 @@ use Doctrine\Tests\DoctrineTestCase;
 
 /**
  * @group DDC-2183
- *
  * @covers \Doctrine\ORM\Cache\CacheConfiguration
  */
 class CacheConfigTest extends DoctrineTestCase

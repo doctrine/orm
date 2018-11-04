@@ -19,10 +19,10 @@ use function array_pop;
 final class ManyToManyPersisterTest extends OrmTestCase
 {
     /**
+     * @throws ORMException
+     *
      * @group 6991
      * @group ManyToManyPersister
-     *
-     * @throws ORMException
      */
     public function testDeleteManyToManyCollection() : void
     {

@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Doctrine\Tests\ORM\Functional;
 
+use DateTime;
 use Doctrine\Common\Collections\Criteria;
 use Doctrine\ORM\LazyCriteriaCollection;
 use Doctrine\Tests\Models\Generic\DateTimeModel;
@@ -26,21 +27,21 @@ class EntityRepositoryCriteriaTest extends OrmFunctionalTestCase
         $today->datetime =
         $today->date     =
         $today->time     =
-            new \DateTime('today');
+            new DateTime('today');
         $this->em->persist($today);
 
         $tomorrow           = new DateTimeModel();
         $tomorrow->datetime =
         $tomorrow->date     =
         $tomorrow->time     =
-            new \DateTime('tomorrow');
+            new DateTime('tomorrow');
         $this->em->persist($tomorrow);
 
         $yesterday           = new DateTimeModel();
         $yesterday->datetime =
         $yesterday->date     =
         $yesterday->time     =
-            new \DateTime('yesterday');
+            new DateTime('yesterday');
         $this->em->persist($yesterday);
 
         $this->em->flush();
@@ -56,7 +57,7 @@ class EntityRepositoryCriteriaTest extends OrmFunctionalTestCase
 
         $repository = $this->em->getRepository(DateTimeModel::class);
         $dates      = $repository->matching(new Criteria(
-            Criteria::expr()->lte('datetime', new \DateTime('today'))
+            Criteria::expr()->lte('datetime', new DateTime('today'))
         ));
 
         self::assertCount(2, $dates);
@@ -67,7 +68,7 @@ class EntityRepositoryCriteriaTest extends OrmFunctionalTestCase
         $today           = new DateTimeModel();
         $today->datetime =
         $today->date     =
-            new \DateTime('today');
+            new DateTime('today');
 
         $this->em->persist($today);
 
@@ -75,7 +76,7 @@ class EntityRepositoryCriteriaTest extends OrmFunctionalTestCase
         $tomorrow->datetime =
         $tomorrow->date     =
         $tomorrow->time     =
-            new \DateTime('tomorrow');
+            new DateTime('tomorrow');
         $this->em->persist($tomorrow);
 
         $this->em->flush();
@@ -131,7 +132,7 @@ class EntityRepositoryCriteriaTest extends OrmFunctionalTestCase
 
         // Test it can work even with a constraint
         $dates = $repository->matching(new Criteria(
-            Criteria::expr()->lte('datetime', new \DateTime('today'))
+            Criteria::expr()->lte('datetime', new DateTime('today'))
         ));
 
         self::assertFalse($dates->isInitialized());

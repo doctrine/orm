@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Doctrine\Tests\Models\DDC117;
 
+use DateTime;
 use Doctrine\ORM\Annotation as ORM;
 
 /**
@@ -39,7 +40,7 @@ class DDC117Reference
         $this->source      = $source;
         $this->target      = $target;
         $this->description = $description;
-        $this->created     = new \DateTime('now');
+        $this->created     = new DateTime('now');
     }
 
     public function source()

@@ -14,9 +14,9 @@ class DDC493Test extends OrmFunctionalTestCase
         parent::setUp();
         $this->schemaTool->createSchema(
             [
-            $this->em->getClassMetadata(DDC493Customer::class),
-            $this->em->getClassMetadata(DDC493Distributor::class),
-            $this->em->getClassMetadata(DDC493Contact::class),
+                $this->em->getClassMetadata(DDC493Customer::class),
+                $this->em->getClassMetadata(DDC493Distributor::class),
+                $this->em->getClassMetadata(DDC493Contact::class),
             ]
         );
     }

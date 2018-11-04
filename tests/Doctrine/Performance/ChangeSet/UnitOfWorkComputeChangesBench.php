@@ -7,6 +7,7 @@ namespace Doctrine\Performance\ChangeSet;
 use Doctrine\ORM\UnitOfWork;
 use Doctrine\Performance\EntityManagerFactory;
 use Doctrine\Tests\Models\CMS\CmsUser;
+use LogicException;
 use PhpBench\Benchmark\Metadata\Annotations\BeforeMethods;
 use function str_replace;
 
@@ -50,7 +51,7 @@ final class UnitOfWorkComputeChangesBench
         $this->unitOfWork->computeChangeSets();
 
         if ($this->unitOfWork->getScheduledEntityUpdates()) {
-            throw new \LogicException('Unit of work should be clean at this stage');
+            throw new LogicException('Unit of work should be clean at this stage');
         }
 
         foreach ($this->users as $user) {

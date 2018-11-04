@@ -54,16 +54,18 @@ class DDC1300Test extends OrmFunctionalTestCase
 class DDC1300Foo
 {
     /**
-     * @var int fooID
      * @ORM\Column(name="fooID", type="integer", nullable=false)
      * @ORM\GeneratedValue(strategy="AUTO")
      * @ORM\Id
+     *
+     * @var int fooID
      */
     public $fooID;
 
     /**
-     * @var string fooReference
      * @ORM\Column(name="fooReference", type="string", nullable=true, length=45)
+     *
+     * @var string fooReference
      */
     public $fooReference;
 
@@ -97,15 +99,17 @@ class DDC1300FooLocale
     public $foo;
 
     /**
-     * @var string locale
      * @ORM\Column(name="locale", type="string", nullable=false, length=5)
      * @ORM\Id
+     *
+     * @var string locale
      */
     public $locale;
 
     /**
-     * @var string title
      * @ORM\Column(name="title", type="string", nullable=true, length=150)
+     *
+     * @var string title
      */
     public $title;
 }

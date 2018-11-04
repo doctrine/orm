@@ -19,6 +19,7 @@ use Doctrine\ORM\Query\AST\SelectStatement;
 use Doctrine\ORM\Query\AST\SimpleArithmeticExpression;
 use Doctrine\ORM\Query\AST\WhereClause;
 use Doctrine\ORM\Query\TreeWalkerAdapter;
+use RuntimeException;
 use function count;
 use function reset;
 
@@ -48,7 +49,7 @@ class WhereInWalker extends TreeWalkerAdapter
      * The total number of parameters is retrieved from
      * the HINT_PAGINATOR_ID_COUNT query hint.
      *
-     * @throws \RuntimeException
+     * @throws RuntimeException
      */
     public function walkSelectStatement(SelectStatement $AST)
     {
@@ -57,7 +58,7 @@ class WhereInWalker extends TreeWalkerAdapter
         $from = $AST->fromClause->identificationVariableDeclarations;
 
         if (count($from) > 1) {
-            throw new \RuntimeException('Cannot count query which selects two FROM components, cannot make distinction');
+            throw new RuntimeException('Cannot count query which selects two FROM components, cannot make distinction');
         }
 
         $fromRoot  = reset($from);
@@ -69,8 +70,7 @@ class WhereInWalker extends TreeWalkerAdapter
         if ($property instanceof AssociationMetadata) {
             $pathType = $property instanceof ToOneAssociationMetadata
                 ? PathExpression::TYPE_SINGLE_VALUED_ASSOCIATION
-                : PathExpression::TYPE_COLLECTION_VALUED_ASSOCIATION
-            ;
+                : PathExpression::TYPE_COLLECTION_VALUED_ASSOCIATION;
         }
 
         $pathExpression = new PathExpression(
@@ -105,9 +105,9 @@ class WhereInWalker extends TreeWalkerAdapter
                 $AST->whereClause->conditionalExpression = new ConditionalExpression(
                     [new ConditionalTerm(
                         [
-                                $AST->whereClause->conditionalExpression,
-                                $conditionalPrimary,
-                            ]
+                            $AST->whereClause->conditionalExpression,
+                            $conditionalPrimary,
+                        ]
                     ),
                     ]
                 );

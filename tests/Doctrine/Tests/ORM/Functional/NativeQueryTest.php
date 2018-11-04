@@ -20,6 +20,8 @@ use Doctrine\Tests\Models\Company\CompanyFixContract;
 use Doctrine\Tests\Models\DDC3899\DDC3899FixContract;
 use Doctrine\Tests\Models\DDC3899\DDC3899User;
 use Doctrine\Tests\OrmFunctionalTestCase;
+use InvalidArgumentException;
+use ReflectionClass;
 
 /**
  * NativeQueryTest
@@ -360,7 +362,7 @@ class NativeQueryTest extends OrmFunctionalTestCase
      */
     public function testAbstractClassInSingleTableInheritanceSchemaWithRSMBuilderThrowsException() : void
     {
-        $this->expectException(\InvalidArgumentException::class);
+        $this->expectException(InvalidArgumentException::class);
         $this->expectExceptionMessage('ResultSetMapping builder does not currently support your inheritance scheme.');
 
         $rsm = new ResultSetMappingBuilder($this->em);
@@ -493,7 +495,7 @@ class NativeQueryTest extends OrmFunctionalTestCase
 
     protected function getResultSetMapping(AbstractQuery $query) : ResultSetMapping
     {
-        $reflClass  = new \ReflectionClass($query);
+        $reflClass  = new ReflectionClass($query);
         $reflMethod = $reflClass->getMethod('getResultSetMapping');
 
         $reflMethod->setAccessible(true);

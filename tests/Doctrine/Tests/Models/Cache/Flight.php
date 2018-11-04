@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Doctrine\Tests\Models\Cache;
 
+use DateTime;
 use Doctrine\ORM\Annotation as ORM;
 
 /**
@@ -36,7 +37,7 @@ class Flight
     {
         $this->goingTo     = $goingTo;
         $this->leavingFrom = $leavingFrom;
-        $this->departure   = new \DateTime();
+        $this->departure   = new DateTime();
     }
 
     public function getLeavingFrom()

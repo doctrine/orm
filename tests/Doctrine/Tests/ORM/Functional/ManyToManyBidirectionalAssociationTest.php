@@ -154,7 +154,7 @@ class ManyToManyBidirectionalAssociationTest extends AbstractManyToManyAssociati
 
     public function assertLazyLoadFromInverseSide($products)
     {
-        list ($firstProduct, $secondProduct) = $products;
+        [$firstProduct, $secondProduct] = $products;
 
         $firstProductCategories  = $firstProduct->getCategories();
         $secondProductCategories = $secondProduct->getCategories();
@@ -189,7 +189,7 @@ class ManyToManyBidirectionalAssociationTest extends AbstractManyToManyAssociati
 
     public function assertLazyLoadFromOwningSide($categories)
     {
-        list ($firstCategory, $secondCategory) = $categories;
+        [$firstCategory, $secondCategory] = $categories;
 
         $firstCategoryProducts  = $firstCategory->getProducts();
         $secondCategoryProducts = $secondCategory->getProducts();

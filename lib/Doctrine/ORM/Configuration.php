@@ -34,6 +34,7 @@ use ProxyManager\Factory\LazyLoadingGhostFactory;
 use ProxyManager\FileLocator\FileLocator;
 use ProxyManager\GeneratorStrategy\EvaluatingGeneratorStrategy;
 use ProxyManager\GeneratorStrategy\FileWriterGeneratorStrategy;
+use ReflectionClass;
 use function strtolower;
 
 /**
@@ -450,7 +451,7 @@ class Configuration extends DBALConfiguration
      */
     public function setDefaultRepositoryClassName(string $repositoryClassName) : void
     {
-        $reflectionClass = new \ReflectionClass($repositoryClassName);
+        $reflectionClass = new ReflectionClass($repositoryClassName);
 
         if (! $reflectionClass->implementsInterface(ObjectRepository::class)) {
             throw InvalidEntityRepository::fromClassName($repositoryClassName);

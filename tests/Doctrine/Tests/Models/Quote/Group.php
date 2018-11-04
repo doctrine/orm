@@ -23,10 +23,10 @@ class Group
     public $name;
 
     /**
-     * @var Group
-     *
      * @ORM\ManyToOne(targetEntity=Group::class, cascade={"persist"})
      * @ORM\JoinColumn(name="parent-id", referencedColumnName="group-id")
+     *
+     * @var Group
      */
     public $parent;
 

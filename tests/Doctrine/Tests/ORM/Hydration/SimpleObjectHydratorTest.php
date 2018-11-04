@@ -18,7 +18,6 @@ class SimpleObjectHydratorTest extends HydrationTestCase
 {
     /**
      * @group DDC-1470
-     *
      * @expectedException \Doctrine\ORM\Internal\Hydration\HydrationException
      * @expectedExceptionMessage The discriminator column "discr" is missing for "Doctrine\Tests\Models\Company\CompanyPerson" using the DQL alias "p".
      */
@@ -33,10 +32,10 @@ class SimpleObjectHydratorTest extends HydrationTestCase
         $rsm->setDiscriminatorColumn('p', 'discr');
 
         $resultSet = [
-              [
-                  'u__id'   => '1',
-                  'u__name' => 'Fabio B. Silva',
-              ],
+            [
+                'u__id'   => '1',
+                'u__name' => 'Fabio B. Silva',
+            ],
         ];
 
         $stmt     = new HydratorMockStatement($resultSet);
@@ -74,7 +73,6 @@ class SimpleObjectHydratorTest extends HydrationTestCase
 
     /**
      * @group DDC-3076
-     *
      * @expectedException \Doctrine\ORM\Internal\Hydration\HydrationException
      * @expectedExceptionMessage The discriminator value "subworker" is invalid. It must be one of "person", "manager", "employee".
      */
@@ -89,11 +87,11 @@ class SimpleObjectHydratorTest extends HydrationTestCase
         $rsm->setDiscriminatorColumn('p', 'discr');
 
         $resultSet = [
-              [
-                  'p__id'   => '1',
-                  'p__name' => 'Fabio B. Silva',
-                  'discr'   => 'subworker',
-              ],
+            [
+                'p__id'   => '1',
+                'p__name' => 'Fabio B. Silva',
+                'discr'   => 'subworker',
+            ],
         ];
 
         $stmt     = new HydratorMockStatement($resultSet);

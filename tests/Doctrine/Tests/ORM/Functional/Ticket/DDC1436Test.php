@@ -6,6 +6,7 @@ namespace Doctrine\Tests\ORM\Functional\Ticket;
 
 use Doctrine\ORM\Annotation as ORM;
 use Doctrine\Tests\OrmFunctionalTestCase;
+use Exception;
 
 /**
  * @group DDC-1436
@@ -19,10 +20,10 @@ class DDC1436Test extends OrmFunctionalTestCase
         try {
             $this->schemaTool->createSchema(
                 [
-                $this->em->getClassMetadata(DDC1436Page::class),
+                    $this->em->getClassMetadata(DDC1436Page::class),
                 ]
             );
-        } catch (\Exception $ignored) {
+        } catch (Exception $ignored) {
         }
     }
 

@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Doctrine\Tests\ORM\Functional;
 
+use BadMethodCallException;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Criteria;
 use Doctrine\DBAL\Connection;
@@ -375,7 +376,7 @@ class EntityRepositoryTest extends OrmFunctionalTestCase
      */
     public function testInvalidMagicCall() : void
     {
-        $this->expectException(\BadMethodCallException::class);
+        $this->expectException(BadMethodCallException::class);
 
         $repos = $this->em->getRepository(CmsUser::class);
         $repos->foo();
@@ -386,8 +387,8 @@ class EntityRepositoryTest extends OrmFunctionalTestCase
      */
     public function testFindByAssociationKeyExceptionOnInverseSide() : void
     {
-        list($userId, $addressId) = $this->loadAssociatedFixture();
-        $repos                    = $this->em->getRepository(CmsUser::class);
+        [$userId, $addressId] = $this->loadAssociatedFixture();
+        $repos                = $this->em->getRepository(CmsUser::class);
 
         $this->expectException(InvalidFindByCall::class);
         $this->expectExceptionMessage("You cannot search for the association field 'Doctrine\Tests\Models\CMS\CmsUser#address', because it is the inverse side of an association. Find methods only work on owning side associations.");
@@ -400,9 +401,9 @@ class EntityRepositoryTest extends OrmFunctionalTestCase
      */
     public function testFindOneByAssociationKey() : void
     {
-        list($userId, $addressId) = $this->loadAssociatedFixture();
-        $repos                    = $this->em->getRepository(CmsAddress::class);
-        $address                  = $repos->findOneBy(['user' => $userId]);
+        [$userId, $addressId] = $this->loadAssociatedFixture();
+        $repos                = $this->em->getRepository(CmsAddress::class);
+        $address              = $repos->findOneBy(['user' => $userId]);
 
         self::assertInstanceOf(CmsAddress::class, $address);
         self::assertEquals($addressId, $address->id);
@@ -427,9 +428,9 @@ class EntityRepositoryTest extends OrmFunctionalTestCase
      */
     public function testFindByAssociationKey() : void
     {
-        list($userId, $addressId) = $this->loadAssociatedFixture();
-        $repos                    = $this->em->getRepository(CmsAddress::class);
-        $addresses                = $repos->findBy(['user' => $userId]);
+        [$userId, $addressId] = $this->loadAssociatedFixture();
+        $repos                = $this->em->getRepository(CmsAddress::class);
+        $addresses            = $repos->findBy(['user' => $userId]);
 
         self::assertContainsOnly(CmsAddress::class, $addresses);
         self::assertCount(1, $addresses);
@@ -441,9 +442,9 @@ class EntityRepositoryTest extends OrmFunctionalTestCase
      */
     public function testFindAssociationByMagicCall() : void
     {
-        list($userId, $addressId) = $this->loadAssociatedFixture();
-        $repos                    = $this->em->getRepository(CmsAddress::class);
-        $addresses                = $repos->findByUser($userId);
+        [$userId, $addressId] = $this->loadAssociatedFixture();
+        $repos                = $this->em->getRepository(CmsAddress::class);
+        $addresses            = $repos->findByUser($userId);
 
         self::assertContainsOnly(CmsAddress::class, $addresses);
         self::assertCount(1, $addresses);
@@ -455,9 +456,9 @@ class EntityRepositoryTest extends OrmFunctionalTestCase
      */
     public function testFindOneAssociationByMagicCall() : void
     {
-        list($userId, $addressId) = $this->loadAssociatedFixture();
-        $repos                    = $this->em->getRepository(CmsAddress::class);
-        $address                  = $repos->findOneByUser($userId);
+        [$userId, $addressId] = $this->loadAssociatedFixture();
+        $repos                = $this->em->getRepository(CmsAddress::class);
+        $address              = $repos->findOneByUser($userId);
 
         self::assertInstanceOf(CmsAddress::class, $address);
         self::assertEquals($addressId, $address->id);
@@ -623,7 +624,6 @@ class EntityRepositoryTest extends OrmFunctionalTestCase
 
     /**
      * @group DDC-1376
-     *
      * @expectedException Doctrine\ORM\Repository\Exception\InvalidFindByCall
      * @expectedExceptionMessage You cannot search for the association field 'Doctrine\Tests\Models\CMS\CmsUser#address', because it is the inverse side of an association.
      */
@@ -796,7 +796,7 @@ class EntityRepositoryTest extends OrmFunctionalTestCase
      */
     public function testMatchingCriteriaAssocationByObjectInMemory() : void
     {
-        list($userId, $addressId) = $this->loadAssociatedFixture();
+        [$userId, $addressId] = $this->loadAssociatedFixture();
 
         $user = $this->em->find(CmsUser::class, $userId);
 
@@ -819,7 +819,7 @@ class EntityRepositoryTest extends OrmFunctionalTestCase
      */
     public function testMatchingCriteriaAssocationInWithArray() : void
     {
-        list($userId, $addressId) = $this->loadAssociatedFixture();
+        [$userId, $addressId] = $this->loadAssociatedFixture();
 
         $user = $this->em->find(CmsUser::class, $userId);
 

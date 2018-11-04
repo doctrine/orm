@@ -5,6 +5,10 @@ declare(strict_types=1);
 namespace Doctrine\ORM\Reflection;
 
 use Doctrine\Common\Persistence\Mapping\MappingException;
+use ReflectionClass;
+use ReflectionException;
+use ReflectionMethod;
+use ReflectionProperty;
 use function class_exists;
 use function class_parents;
 
@@ -30,7 +34,7 @@ class RuntimeReflectionService implements ReflectionService
      */
     public function getClassShortName(string $className) : string
     {
-        $reflectionClass = new \ReflectionClass($className);
+        $reflectionClass = new ReflectionClass($className);
 
         return $reflectionClass->getShortName();
     }
@@ -40,7 +44,7 @@ class RuntimeReflectionService implements ReflectionService
      */
     public function getClassNamespace(string $className) : string
     {
-        $reflectionClass = new \ReflectionClass($className);
+        $reflectionClass = new ReflectionClass($className);
 
         return $reflectionClass->getNamespaceName();
     }
@@ -48,17 +52,17 @@ class RuntimeReflectionService implements ReflectionService
     /**
      * {@inheritdoc}
      */
-    public function getClass(string $className) : ?\ReflectionClass
+    public function getClass(string $className) : ?ReflectionClass
     {
-        return new \ReflectionClass($className);
+        return new ReflectionClass($className);
     }
 
     /**
      * {@inheritdoc}
      */
-    public function getAccessibleProperty(string $className, string $propertyName) : ?\ReflectionProperty
+    public function getAccessibleProperty(string $className, string $propertyName) : ?ReflectionProperty
     {
-        $reflectionProperty = new \ReflectionProperty($className, $propertyName);
+        $reflectionProperty = new ReflectionProperty($className, $propertyName);
 
         $reflectionProperty->setAccessible(true);
 
@@ -71,8 +75,8 @@ class RuntimeReflectionService implements ReflectionService
     public function hasPublicMethod(string $className, string $methodName) : bool
     {
         try {
-            $reflectionMethod = new \ReflectionMethod($className, $methodName);
-        } catch (\ReflectionException $e) {
+            $reflectionMethod = new ReflectionMethod($className, $methodName);
+        } catch (ReflectionException $e) {
             return false;
         }
 

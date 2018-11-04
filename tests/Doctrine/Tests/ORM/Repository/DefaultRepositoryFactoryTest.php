@@ -14,6 +14,7 @@ use Doctrine\ORM\Repository\DefaultRepositoryFactory;
 use Doctrine\Tests\DoctrineTestCase;
 use Doctrine\Tests\Models\DDC753\DDC753DefaultRepository;
 use Doctrine\Tests\Models\DDC869\DDC869PaymentRepository;
+use PHPUnit_Framework_MockObject_MockObject;
 
 /**
  * Tests for {@see \Doctrine\ORM\Repository\DefaultRepositoryFactory}
@@ -22,16 +23,16 @@ use Doctrine\Tests\Models\DDC869\DDC869PaymentRepository;
  */
 class DefaultRepositoryFactoryTest extends DoctrineTestCase
 {
-    /** @var EntityManagerInterface|\PHPUnit_Framework_MockObject_MockObject */
+    /** @var EntityManagerInterface|PHPUnit_Framework_MockObject_MockObject */
     private $entityManager;
 
-    /** @var Configuration|\PHPUnit_Framework_MockObject_MockObject */
+    /** @var Configuration|PHPUnit_Framework_MockObject_MockObject */
     private $configuration;
 
     /** @var DefaultRepositoryFactory */
     private $repositoryFactory;
 
-    /** @var ClassMetadataBuildingContext|\PHPUnit_Framework_MockObject_MockObject */
+    /** @var ClassMetadataBuildingContext|PHPUnit_Framework_MockObject_MockObject */
     private $metadataBuildingContext;
 
     /**
@@ -62,7 +63,7 @@ class DefaultRepositoryFactoryTest extends DoctrineTestCase
 
         self::assertInstanceOf(
             DDC869PaymentRepository::class,
-            $this->repositoryFactory->getRepository($this->entityManager, __CLASS__)
+            $this->repositoryFactory->getRepository($this->entityManager, self::class)
         );
     }
 
@@ -74,8 +75,8 @@ class DefaultRepositoryFactoryTest extends DoctrineTestCase
             ->will($this->returnCallback([$this, 'buildClassMetadata']));
 
         self::assertSame(
-            $this->repositoryFactory->getRepository($this->entityManager, __CLASS__),
-            $this->repositoryFactory->getRepository($this->entityManager, __CLASS__)
+            $this->repositoryFactory->getRepository($this->entityManager, self::class),
+            $this->repositoryFactory->getRepository($this->entityManager, self::class)
         );
     }
 
@@ -88,12 +89,11 @@ class DefaultRepositoryFactoryTest extends DoctrineTestCase
         $this->entityManager
             ->expects($this->any())
             ->method('getClassMetadata')
-            ->will($this->returnValue($customMetadata))
-        ;
+            ->will($this->returnValue($customMetadata));
 
         self::assertInstanceOf(
             DDC753DefaultRepository::class,
-            $this->repositoryFactory->getRepository($this->entityManager, __CLASS__)
+            $this->repositoryFactory->getRepository($this->entityManager, self::class)
         );
     }
 
@@ -110,21 +110,21 @@ class DefaultRepositoryFactoryTest extends DoctrineTestCase
             ->method('getClassMetadata')
             ->will($this->returnCallback([$this, 'buildClassMetadata']));
 
-        $repo1 = $this->repositoryFactory->getRepository($em1, __CLASS__);
-        $repo2 = $this->repositoryFactory->getRepository($em2, __CLASS__);
+        $repo1 = $this->repositoryFactory->getRepository($em1, self::class);
+        $repo2 = $this->repositoryFactory->getRepository($em2, self::class);
 
-        self::assertSame($repo1, $this->repositoryFactory->getRepository($em1, __CLASS__));
-        self::assertSame($repo2, $this->repositoryFactory->getRepository($em2, __CLASS__));
+        self::assertSame($repo1, $this->repositoryFactory->getRepository($em1, self::class));
+        self::assertSame($repo2, $this->repositoryFactory->getRepository($em2, self::class));
 
         self::assertNotSame($repo1, $repo2);
     }
 
     /**
-     * @private
-     *
      * @param string $className
      *
      * @return ClassMetadata
+     *
+     * @private
      */
     public function buildClassMetadata($className)
     {
@@ -136,7 +136,7 @@ class DefaultRepositoryFactoryTest extends DoctrineTestCase
     }
 
     /**
-     * @return EntityManagerInterface|\PHPUnit_Framework_MockObject_MockObject
+     * @return EntityManagerInterface|PHPUnit_Framework_MockObject_MockObject
      */
     private function createEntityManager()
     {

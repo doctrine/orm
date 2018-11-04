@@ -8,6 +8,7 @@ use Doctrine\Common\NotifyPropertyChanged;
 use Doctrine\Common\PropertyChangedListener;
 use Doctrine\ORM\Annotation as ORM;
 use Doctrine\Tests\OrmFunctionalTestCase;
+use Exception;
 use ProxyManager\Proxy\GhostObjectInterface;
 use function in_array;
 
@@ -19,11 +20,11 @@ class DDC1690Test extends OrmFunctionalTestCase
         try {
             $this->schemaTool->createSchema(
                 [
-                $this->em->getClassMetadata(DDC1690Parent::class),
-                $this->em->getClassMetadata(DDC1690Child::class),
+                    $this->em->getClassMetadata(DDC1690Parent::class),
+                    $this->em->getClassMetadata(DDC1690Child::class),
                 ]
             );
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             // Swallow all exceptions. We do not test the schema tool here.
         }
     }

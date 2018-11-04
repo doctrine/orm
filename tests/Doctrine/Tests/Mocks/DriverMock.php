@@ -8,6 +8,7 @@ use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\Driver;
 use Doctrine\DBAL\Platforms\AbstractPlatform;
 use Doctrine\DBAL\Schema\AbstractSchemaManager;
+use Exception;
 
 /**
  * Mock class for Driver.
@@ -85,7 +86,7 @@ class DriverMock implements Driver
         return;
     }
 
-    public function convertExceptionCode(\Exception $exception)
+    public function convertExceptionCode(Exception $exception)
     {
         return 0;
     }

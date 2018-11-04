@@ -85,18 +85,21 @@ class GH7286Entity
      * @ORM\Id
      * @ORM\Column(type="integer")
      * @ORM\GeneratedValue
+     *
      * @var int
      */
     public $id;
 
     /**
      * @ORM\Column(nullable=true)
+     *
      * @var string|null
      */
     public $type;
 
     /**
      * @ORM\Column(type="integer")
+     *
      * @var int
      */
     public $version;

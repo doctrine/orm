@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Doctrine\Tests\Models\DDC1590;
 
+use DateTime;
 use Doctrine\ORM\Annotation as ORM;
 
 /**
@@ -35,7 +36,7 @@ abstract class DDC1590Entity
     /**
      * Set createdAt
      *
-     * @param \DateTime $createdAt
+     * @param DateTime $createdAt
      *
      * @return DDC1590User
      */
@@ -49,7 +50,7 @@ abstract class DDC1590Entity
     /**
      * Get createdAt
      *
-     * @return \DateTime
+     * @return DateTime
      */
     public function getCreatedAt()
     {

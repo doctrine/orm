@@ -9,6 +9,7 @@ use Doctrine\DBAL\LockMode;
 use Doctrine\ORM\Annotation as ORM;
 use Doctrine\ORM\OptimisticLockException;
 use Doctrine\Tests\OrmFunctionalTestCase;
+use Exception;
 use function date;
 use function strtotime;
 
@@ -27,7 +28,7 @@ class OptimisticTest extends OrmFunctionalTestCase
                     $this->em->getClassMetadata(OptimisticTimestamp::class),
                 ]
             );
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             // Swallow all exceptions. We do not test the schema tool here.
         }
 

@@ -91,7 +91,6 @@ class ResolveTargetEntityListenerTest extends OrmTestCase
     /**
      * @group 1572
      * @group functional
-     *
      * @coversNothing
      */
     public function testDoesResolveTargetEntitiesInDQLAlsoWithInterfaces() : void

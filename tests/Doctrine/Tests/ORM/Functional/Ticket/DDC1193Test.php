@@ -17,9 +17,9 @@ class DDC1193Test extends OrmFunctionalTestCase
         //$this->em->getConnection()->getConfiguration()->setSQLLogger(new \Doctrine\DBAL\Logging\EchoSQLLogger);
         $this->schemaTool->createSchema(
             [
-            $this->em->getClassMetadata(DDC1193Company::class),
-            $this->em->getClassMetadata(DDC1193Person::class),
-            $this->em->getClassMetadata(DDC1193Account::class),
+                $this->em->getClassMetadata(DDC1193Company::class),
+                $this->em->getClassMetadata(DDC1193Person::class),
+                $this->em->getClassMetadata(DDC1193Account::class),
             ]
         );
     }

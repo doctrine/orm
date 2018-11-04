@@ -8,6 +8,8 @@ use Doctrine\DBAL\FetchMode;
 use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\Mapping\InheritanceType;
 use Doctrine\ORM\Query;
+use Exception;
+use RuntimeException;
 use function array_keys;
 use function array_search;
 use function count;
@@ -26,11 +28,11 @@ class SimpleObjectHydrator extends AbstractHydrator
     protected function prepare()
     {
         if (count($this->rsm->aliasMap) !== 1) {
-            throw new \RuntimeException('Cannot use SimpleObjectHydrator with a ResultSetMapping that contains more than one object result.');
+            throw new RuntimeException('Cannot use SimpleObjectHydrator with a ResultSetMapping that contains more than one object result.');
         }
 
         if ($this->rsm->scalarMappings) {
-            throw new \RuntimeException('Cannot use SimpleObjectHydrator with a ResultSetMapping that contains scalar mappings.');
+            throw new RuntimeException('Cannot use SimpleObjectHydrator with a ResultSetMapping that contains scalar mappings.');
         }
 
         $this->class = $this->getClassMetadata(reset($this->rsm->aliasMap));
@@ -105,7 +107,7 @@ class SimpleObjectHydrator extends AbstractHydrator
         foreach ($sqlResult as $column => $value) {
             // An ObjectHydrator should be used instead of SimpleObjectHydrator
             if (isset($this->rsm->relationMap[$column])) {
-                throw new \Exception(sprintf('Unable to retrieve association information for column "%s"', $column));
+                throw new Exception(sprintf('Unable to retrieve association information for column "%s"', $column));
             }
 
             $cacheKeyInfo = $this->hydrateColumnInfo($column);

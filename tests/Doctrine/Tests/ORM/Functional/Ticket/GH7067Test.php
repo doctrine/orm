@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Doctrine\Tests\ORM\Functional\Ticket;
 
+use DateTime;
 use Doctrine\ORM\Annotation as ORM;
 use Doctrine\Tests\OrmFunctionalTestCase;
 
@@ -23,7 +24,7 @@ final class GH7067Test extends OrmFunctionalTestCase
     public function testSLCWithVersion() : void
     {
         $entity             = new GH7067Entity();
-        $entity->lastUpdate = new \DateTime();
+        $entity->lastUpdate = new DateTime();
 
         $this->em->persist($entity);
         $this->em->flush();
@@ -34,7 +35,7 @@ final class GH7067Test extends OrmFunctionalTestCase
 
         self::assertNotNull($notCached->version, 'Version already cached by persister above, it must be not null');
 
-        $notCached->lastUpdate = new \DateTime('+1 second');
+        $notCached->lastUpdate = new DateTime('+1 second');
 
         $this->em->flush();
         $this->em->clear();
@@ -57,7 +58,7 @@ class GH7067Entity
     /**
      * @ORM\Column(type="datetime")
      *
-     * @var \DateTime
+     * @var DateTime
      */
     public $lastUpdate;
 
@@ -65,7 +66,7 @@ class GH7067Entity
      * @ORM\Column(type="datetime")
      * @ORM\Version()
      *
-     * @var \DateTime
+     * @var DateTime
      */
     public $version;
 }

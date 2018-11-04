@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Doctrine\Tests\Models\Cache;
 
+use DateTime;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\Annotation as ORM;
 use function date;
@@ -59,7 +60,7 @@ class Token
         $this->logins    = new ArrayCollection();
         $this->token     = $token;
         $this->client    = $client;
-        $this->expiresAt = new \DateTime(date('Y-m-d H:i:s', strtotime('+7 day')));
+        $this->expiresAt = new DateTime(date('Y-m-d H:i:s', strtotime('+7 day')));
     }
 
     public function addLogin(Login $login)

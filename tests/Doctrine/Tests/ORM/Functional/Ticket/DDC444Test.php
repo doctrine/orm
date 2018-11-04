@@ -16,7 +16,7 @@ class DDC444Test extends OrmFunctionalTestCase
         //$this->em->getConnection()->getConfiguration()->setSQLLogger(new \Doctrine\DBAL\Logging\EchoSQLLogger);
         $this->schemaTool->createSchema(
             [
-            $this->em->getClassMetadata(DDC444User::class),
+                $this->em->getClassMetadata(DDC444User::class),
             ]
         );
     }

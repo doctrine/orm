@@ -6,6 +6,7 @@ namespace Doctrine\Tests\ORM\Functional\Ticket;
 
 use Doctrine\ORM\Annotation as ORM;
 use Doctrine\Tests\OrmFunctionalTestCase;
+use Exception;
 use ProxyManager\Proxy\GhostObjectInterface;
 use function get_class;
 
@@ -27,7 +28,7 @@ class DDC522Test extends OrmFunctionalTestCase
                     $this->em->getClassMetadata(DDC522ForeignKeyTest::class),
                 ]
             );
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
         }
     }
 
@@ -51,8 +52,7 @@ class DDC522Test extends OrmFunctionalTestCase
 
         $cart = $this->em
             ->createQuery('select ca, c from ' . DDC522Cart::class . ' ca join ca.customer c')
-            ->getSingleResult()
-        ;
+            ->getSingleResult();
 
         self::assertInstanceOf(DDC522Cart::class, $cart);
         self::assertInstanceOf(DDC522Customer::class, $cart->customer);

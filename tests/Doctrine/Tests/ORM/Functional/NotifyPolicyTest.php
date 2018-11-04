@@ -9,6 +9,7 @@ use Doctrine\Common\NotifyPropertyChanged;
 use Doctrine\Common\PropertyChangedListener;
 use Doctrine\ORM\Annotation as ORM;
 use Doctrine\Tests\OrmFunctionalTestCase;
+use Exception;
 
 /**
  * NativeQueryTest
@@ -21,11 +22,11 @@ class NotifyPolicyTest extends OrmFunctionalTestCase
         try {
             $this->schemaTool->createSchema(
                 [
-                $this->em->getClassMetadata(NotifyUser::class),
-                $this->em->getClassMetadata(NotifyGroup::class),
+                    $this->em->getClassMetadata(NotifyUser::class),
+                    $this->em->getClassMetadata(NotifyGroup::class),
                 ]
             );
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             // Swallow all exceptions. We do not test the schema tool here.
         }
     }

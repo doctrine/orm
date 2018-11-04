@@ -20,8 +20,8 @@ class DDC3330Test extends OrmFunctionalTestCase
 
         $this->setUpEntitySchema(
             [
-            DDC3330Building::class,
-            DDC3330Hall::class,
+                DDC3330Building::class,
+                DDC3330Hall::class,
             ]
         );
     }

@@ -65,21 +65,21 @@ class GH5887Test extends OrmFunctionalTestCase
 class GH5887Cart
 {
     /**
-     * @var int
-     *
      * @ORM\Id
      * @ORM\Column(type="integer")
      * @ORM\GeneratedValue(strategy="NONE")
+     *
+     * @var int
      */
     private $id;
 
     /**
      * One Cart has One Customer.
      *
-     * @var GH5887Customer
-     *
      * @ORM\OneToOne(targetEntity=GH5887Customer::class, inversedBy="cart")
      * @ORM\JoinColumn(name="customer_id", referencedColumnName="id")
+     *
+     * @var GH5887Customer
      */
     private $customer;
 
@@ -122,20 +122,20 @@ class GH5887Cart
 class GH5887Customer
 {
     /**
-     * @var GH5887CustomIdObject
-     *
      * @ORM\Id
      * @ORM\Column(type="GH5887CustomIdObject")
      * @ORM\GeneratedValue(strategy="NONE")
+     *
+     * @var GH5887CustomIdObject
      */
     private $id;
 
     /**
      * One Customer has One Cart.
      *
-     * @var GH5887Cart
-     *
      * @ORM\OneToOne(targetEntity=GH5887Cart::class, mappedBy="customer")
+     *
+     * @var GH5887Cart
      */
     private $cart;
 

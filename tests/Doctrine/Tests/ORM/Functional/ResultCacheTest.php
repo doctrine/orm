@@ -13,6 +13,7 @@ use Doctrine\ORM\Query\ResultSetMapping;
 use Doctrine\Tests\Models\CMS\CmsArticle;
 use Doctrine\Tests\Models\CMS\CmsUser;
 use Doctrine\Tests\OrmFunctionalTestCase;
+use ReflectionProperty;
 use function count;
 
 /**
@@ -20,12 +21,12 @@ use function count;
  */
 class ResultCacheTest extends OrmFunctionalTestCase
 {
-    /** @var \ReflectionProperty */
+    /** @var ReflectionProperty */
     private $cacheDataReflection;
 
     protected function setUp() : void
     {
-        $this->cacheDataReflection = new \ReflectionProperty(ArrayCache::class, 'data');
+        $this->cacheDataReflection = new ReflectionProperty(ArrayCache::class, 'data');
         $this->cacheDataReflection->setAccessible(true);
 
         $this->useModelSet('cms');
@@ -163,6 +164,7 @@ class ResultCacheTest extends OrmFunctionalTestCase
 
     /**
      * @param string $query
+     *
      * @depends testNativeQueryResultCaching
      */
     public function testResultCacheNotDependsOnQueryHints($query) : void
@@ -178,6 +180,7 @@ class ResultCacheTest extends OrmFunctionalTestCase
 
     /**
      * @param <type> $query
+     *
      * @depends testNativeQueryResultCaching
      */
     public function testResultCacheDependsOnParameters($query) : void
@@ -193,6 +196,7 @@ class ResultCacheTest extends OrmFunctionalTestCase
 
     /**
      * @param <type> $query
+     *
      * @depends testNativeQueryResultCaching
      */
     public function testResultCacheNotDependsOnHydrationMode($query) : void

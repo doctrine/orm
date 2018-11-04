@@ -10,7 +10,6 @@ use Doctrine\ORM\PersistentCollection;
 
 /**
  * Hydrator cache entry for collections
- *
  */
 interface CollectionHydrator
 {

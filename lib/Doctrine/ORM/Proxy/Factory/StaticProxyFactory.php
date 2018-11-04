@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Doctrine\ORM\Proxy\Factory;
 
+use Closure;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\EntityNotFoundException;
 use Doctrine\ORM\Mapping\ClassMetadata;
@@ -11,6 +12,7 @@ use Doctrine\ORM\Mapping\TransientMetadata;
 use Doctrine\ORM\Persisters\Entity\EntityPersister;
 use ProxyManager\Factory\LazyLoadingGhostFactory;
 use ProxyManager\Proxy\GhostObjectInterface;
+use ReflectionProperty;
 use function array_filter;
 use function array_merge;
 use function count;
@@ -30,7 +32,7 @@ final class StaticProxyFactory implements ProxyFactory
     /** @var LazyLoadingGhostFactory */
     private $proxyFactory;
 
-    /** @var \Closure[] indexed by metadata class name */
+    /** @var Closure[] indexed by metadata class name */
     private $cachedInitializers = [];
 
     /** @var EntityPersister[] indexed by metadata class name */
@@ -54,7 +56,7 @@ final class StaticProxyFactory implements ProxyFactory
      */
     public function generateProxyClasses(array $classes) : int
     {
-        $concreteClasses = array_filter($classes, function (ClassMetadata $metadata) : bool {
+        $concreteClasses = array_filter($classes, static function (ClassMetadata $metadata) : bool {
             return ! ($metadata->isMappedSuperclass || $metadata->getReflectionClass()->isAbstract());
         });
 
@@ -63,7 +65,7 @@ final class StaticProxyFactory implements ProxyFactory
                 ->proxyFactory
                 ->createProxy(
                     $metadata->getClassName(),
-                    function () {
+                    static function () {
                         // empty closure, serves its purpose, for now
                     },
                     $this->skippedFieldsFqns($metadata)
@@ -104,9 +106,9 @@ final class StaticProxyFactory implements ProxyFactory
         return $proxyInstance;
     }
 
-    private function makeInitializer(ClassMetadata $metadata, EntityPersister $persister) : \Closure
+    private function makeInitializer(ClassMetadata $metadata, EntityPersister $persister) : Closure
     {
-        return function (
+        return static function (
             GhostObjectInterface $ghostObject,
             string $method,
             // we don't care
@@ -191,7 +193,7 @@ final class StaticProxyFactory implements ProxyFactory
         return $idFieldFqcns;
     }
 
-    private function propertyFqcn(\ReflectionProperty $property) : string
+    private function propertyFqcn(ReflectionProperty $property) : string
     {
         if ($property->isPrivate()) {
             return "\0" . $property->getDeclaringClass()->getName() . "\0" . $property->getName();

@@ -6,6 +6,7 @@ namespace Doctrine\Tests\ORM\Functional;
 
 use Doctrine\ORM\Annotation as ORM;
 use Doctrine\Tests\OrmFunctionalTestCase;
+use Exception;
 use function get_class;
 
 /**
@@ -19,11 +20,11 @@ class DefaultValuesTest extends OrmFunctionalTestCase
         try {
             $this->schemaTool->createSchema(
                 [
-                $this->em->getClassMetadata(DefaultValueUser::class),
-                $this->em->getClassMetadata(DefaultValueAddress::class),
+                    $this->em->getClassMetadata(DefaultValueUser::class),
+                    $this->em->getClassMetadata(DefaultValueAddress::class),
                 ]
             );
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             // Swallow all exceptions. We do not test the schema tool here.
         }
     }

@@ -10,6 +10,7 @@ use Doctrine\Common\Collections\Expr\Comparison;
 use Doctrine\Common\Collections\Expr\CompositeExpression;
 use Doctrine\Common\Collections\Expr\ExpressionVisitor;
 use Doctrine\Common\Collections\Expr\Value;
+use RuntimeException;
 use function count;
 use function str_replace;
 use function strpos;
@@ -95,7 +96,7 @@ class QueryExpressionVisitor extends ExpressionVisitor
                 return new Expr\Orx($expressionList);
 
             default:
-                throw new \RuntimeException('Unknown composite ' . $expr->getType());
+                throw new RuntimeException('Unknown composite ' . $expr->getType());
         }
     }
 
@@ -181,7 +182,7 @@ class QueryExpressionVisitor extends ExpressionVisitor
                     );
                 }
 
-                throw new \RuntimeException('Unknown comparison operator: ' . $comparison->getOperator());
+                throw new RuntimeException('Unknown comparison operator: ' . $comparison->getOperator());
         }
     }
 

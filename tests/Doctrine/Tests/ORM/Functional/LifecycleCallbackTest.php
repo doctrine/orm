@@ -11,6 +11,7 @@ use Doctrine\ORM\Event\PreFlushEventArgs;
 use Doctrine\ORM\Event\PreUpdateEventArgs;
 use Doctrine\ORM\Query;
 use Doctrine\Tests\OrmFunctionalTestCase;
+use Exception;
 use function count;
 use function current;
 use function get_class;
@@ -30,7 +31,7 @@ class LifecycleCallbackTest extends OrmFunctionalTestCase
                     $this->em->getClassMetadata(LifecycleCallbackCascader::class),
                 ]
             );
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             // Swallow all exceptions. We do not test the schema tool here.
         }
     }

@@ -6,6 +6,7 @@ namespace Doctrine\Tests\ORM\Functional\Ticket;
 
 use Doctrine\ORM\Annotation as ORM;
 use Doctrine\Tests\OrmFunctionalTestCase;
+use Exception;
 
 class Ticket2481Test extends OrmFunctionalTestCase
 {
@@ -17,7 +18,7 @@ class Ticket2481Test extends OrmFunctionalTestCase
             $this->schemaTool->createSchema(
                 [$this->em->getClassMetadata(Ticket2481Product::class)]
             );
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             // Swallow all exceptions. We do not test the schema tool here.
         }
         $this->conn = $this->em->getConnection();

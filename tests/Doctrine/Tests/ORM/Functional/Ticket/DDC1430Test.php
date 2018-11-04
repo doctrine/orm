@@ -4,9 +4,11 @@ declare(strict_types=1);
 
 namespace Doctrine\Tests\ORM\Functional\Ticket;
 
+use DateTime;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\Annotation as ORM;
 use Doctrine\Tests\OrmFunctionalTestCase;
+use Exception;
 
 /**
  * @group DDC-1430
@@ -20,12 +22,12 @@ class DDC1430Test extends OrmFunctionalTestCase
         try {
             $this->schemaTool->createSchema(
                 [
-                $this->em->getClassMetadata(DDC1430Order::class),
-                $this->em->getClassMetadata(DDC1430OrderProduct::class),
+                    $this->em->getClassMetadata(DDC1430Order::class),
+                    $this->em->getClassMetadata(DDC1430OrderProduct::class),
                 ]
             );
             $this->loadFixtures();
-        } catch (\Exception $exc) {
+        } catch (Exception $exc) {
         }
     }
 
@@ -181,7 +183,7 @@ class DDC1430Order
     public function __construct($status)
     {
         $this->status   = $status;
-        $this->date     = new \DateTime();
+        $this->date     = new DateTime();
         $this->products = new ArrayCollection();
     }
 
@@ -194,7 +196,7 @@ class DDC1430Order
     }
 
     /**
-     * @return \DateTime
+     * @return DateTime
      */
     public function getDate()
     {
@@ -245,10 +247,10 @@ class DDC1430OrderProduct
     protected $id;
 
     /**
-     * @var DDC1430Order $order
-     *
      * @ORM\ManyToOne(targetEntity=DDC1430Order::class, inversedBy="products")
      * @ORM\JoinColumn(name="order_id", referencedColumnName="order_id", nullable = false)
+     *
+     * @var DDC1430Order $order
      */
     private $order;
 

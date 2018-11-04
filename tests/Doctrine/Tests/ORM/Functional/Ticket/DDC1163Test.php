@@ -20,10 +20,10 @@ class DDC1163Test extends OrmFunctionalTestCase
         //$this->em->getConnection()->getConfiguration()->setSQLLogger(new \Doctrine\DBAL\Logging\EchoSQLLogger);
         $this->schemaTool->createSchema(
             [
-            $this->em->getClassMetadata(DDC1163Product::class),
-            $this->em->getClassMetadata(DDC1163SpecialProduct::class),
-            $this->em->getClassMetadata(DDC1163ProxyHolder::class),
-            $this->em->getClassMetadata(DDC1163Tag::class),
+                $this->em->getClassMetadata(DDC1163Product::class),
+                $this->em->getClassMetadata(DDC1163SpecialProduct::class),
+                $this->em->getClassMetadata(DDC1163ProxyHolder::class),
+                $this->em->getClassMetadata(DDC1163Tag::class),
             ]
         );
     }
@@ -100,15 +100,17 @@ class DDC1163Test extends OrmFunctionalTestCase
 class DDC1163ProxyHolder
 {
     /**
-     * @var int
      * @ORM\Column(name="id", type="integer")
      * @ORM\Id
      * @ORM\GeneratedValue(strategy="AUTO")
+     *
+     * @var int
      */
     private $id;
     /**
-     * @var SpecialProduct
      * @ORM\OneToOne(targetEntity=DDC1163SpecialProduct::class)
+     *
+     * @var SpecialProduct
      */
     private $specialProduct;
 
@@ -137,10 +139,11 @@ class DDC1163ProxyHolder
 abstract class DDC1163Product
 {
     /**
-     * @var int
      * @ORM\Column(name="id", type="integer")
      * @ORM\Id
      * @ORM\GeneratedValue(strategy="AUTO")
+     *
+     * @var int
      */
     protected $id;
 
@@ -156,8 +159,9 @@ abstract class DDC1163Product
 class DDC1163SpecialProduct extends DDC1163Product
 {
     /**
-     * @var string
      * @ORM\Column(name="subclass_property", type="string", nullable=true)
+     *
+     * @var string
      */
     private $subclassProperty;
 
@@ -176,23 +180,26 @@ class DDC1163SpecialProduct extends DDC1163Product
 class DDC1163Tag
 {
     /**
-     * @var int
      * @ORM\Column(name="id", type="integer")
      * @ORM\Id
      * @ORM\GeneratedValue(strategy="AUTO")
+     *
+     * @var int
      */
     private $id;
     /**
-     * @var string
      * @ORM\Column(name="name", type="string")
+     *
+     * @var string
      */
     private $name;
     /**
-     * @var Product
      * @ORM\ManyToOne(targetEntity=DDC1163Product::class, inversedBy="tags")
      * @ORM\JoinColumns({
      *   @ORM\JoinColumn(name="product_id", referencedColumnName="id")
      * })
+     *
+     * @var Product
      */
     private $product;
 

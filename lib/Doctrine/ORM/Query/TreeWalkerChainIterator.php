@@ -4,12 +4,14 @@ declare(strict_types=1);
 
 namespace Doctrine\ORM\Query;
 
+use ArrayAccess;
 use Doctrine\ORM\Query;
+use Iterator;
 use function key;
 use function next;
 use function reset;
 
-class TreeWalkerChainIterator implements \Iterator, \ArrayAccess
+class TreeWalkerChainIterator implements Iterator, ArrayAccess
 {
     /** @var TreeWalker[] */
     private $walkers = [];

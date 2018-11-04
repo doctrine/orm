@@ -65,6 +65,7 @@ class DDC1181Hotel
 
     /**
      * @ORM\OneToMany(targetEntity=DDC1181Booking::class, mappedBy="hotel", cascade={"remove"})
+     *
      * @var Booking[]
      */
     public $bookings;
@@ -76,23 +77,23 @@ class DDC1181Hotel
 class DDC1181Booking
 {
     /**
-     * @var Hotel
-     *
      * @ORM\Id
      * @ORM\ManyToOne(targetEntity=DDC1181Hotel::class, inversedBy="bookings")
      * @ORM\JoinColumns({
      *   @ORM\JoinColumn(name="hotel_id", referencedColumnName="id")
      * })
+     *
+     * @var Hotel
      */
     public $hotel;
     /**
-     * @var Room
-     *
      * @ORM\Id
      * @ORM\ManyToOne(targetEntity=DDC1181Room::class)
      * @ORM\JoinColumns({
      *   @ORM\JoinColumn(name="room_id", referencedColumnName="id")
      * })
+     *
+     * @var Room
      */
     public $room;
 }

@@ -10,7 +10,6 @@ use Doctrine\ORM\Mapping\ClassMetadata;
 
 /**
  * Class that holds event arguments for a loadMetadata event.
- *
  */
 class LoadClassMetadataEventArgs extends EventArgs
 {

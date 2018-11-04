@@ -18,16 +18,18 @@ use Doctrine\ORM\Annotation as ORM;
 class SingleRootClass
 {
     /**
-     * @var string
      * @ORM\Column(type="string")
      * @ORM\Id
+     *
+     * @var string
      */
     protected $keyPart1 = 'part-1';
 
     /**
-     * @var string
      * @ORM\Column(type="string")
      * @ORM\Id
+     *
+     * @var string
      */
     protected $keyPart2 = 'part-2';
 }

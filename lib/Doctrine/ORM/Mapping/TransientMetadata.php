@@ -5,13 +5,14 @@ declare(strict_types=1);
 namespace Doctrine\ORM\Mapping;
 
 use Doctrine\ORM\Reflection\ReflectionService;
+use ReflectionProperty;
 
 class TransientMetadata implements Property
 {
     /** @var ClassMetadata */
     protected $declaringClass;
 
-    /** @var \ReflectionProperty */
+    /** @var ReflectionProperty */
     protected $reflection;
 
     /** @var string */
@@ -70,7 +71,7 @@ class TransientMetadata implements Property
     /**
      * {@inheritdoc}
      */
-    public function setReflectionProperty(\ReflectionProperty $reflectionProperty) : void
+    public function setReflectionProperty(ReflectionProperty $reflectionProperty) : void
     {
         $this->reflection = $reflectionProperty;
     }

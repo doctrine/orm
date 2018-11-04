@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Doctrine\ORM\Tools\Pagination;
 
+use ArrayIterator;
+use Countable;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Type;
 use Doctrine\ORM\NoResultException;
@@ -12,6 +14,7 @@ use Doctrine\ORM\Query\Parameter;
 use Doctrine\ORM\Query\Parser;
 use Doctrine\ORM\Query\ResultSetMapping;
 use Doctrine\ORM\QueryBuilder;
+use IteratorAggregate;
 use function array_key_exists;
 use function array_map;
 use function array_sum;
@@ -20,7 +23,7 @@ use function count;
 /**
  * The paginator can handle various complex scenarios with DQL.
  */
-class Paginator implements \Countable, \IteratorAggregate
+class Paginator implements Countable, IteratorAggregate
 {
     /** @var Query */
     private $query;
@@ -134,7 +137,7 @@ class Paginator implements \Countable, \IteratorAggregate
 
             // don't do this for an empty id array
             if (count($ids) === 0) {
-                return new \ArrayIterator([]);
+                return new ArrayIterator([]);
             }
 
             $this->appendTreeWalker($whereInQuery, WhereInWalker::class);
@@ -150,11 +153,10 @@ class Paginator implements \Countable, \IteratorAggregate
                 ->setMaxResults($length)
                 ->setFirstResult($offset)
                 ->setCacheable($this->query->isCacheable())
-                ->getResult($this->query->getHydrationMode())
-            ;
+                ->getResult($this->query->getHydrationMode());
         }
 
-        return new \ArrayIterator($result);
+        return new ArrayIterator($result);
     }
 
     /**

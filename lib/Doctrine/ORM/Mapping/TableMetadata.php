@@ -59,7 +59,7 @@ class TableMetadata
             return $platform->quoteIdentifier($this->name);
         }
 
-        $separator = ( ! $platform->supportsSchemas() && $platform->canEmulateSchemas()) ? '__' : '.';
+        $separator = ! $platform->supportsSchemas() && $platform->canEmulateSchemas() ? '__' : '.';
 
         return $platform->quoteIdentifier(sprintf('%s%s%s', $this->schema, $separator, $this->name));
     }

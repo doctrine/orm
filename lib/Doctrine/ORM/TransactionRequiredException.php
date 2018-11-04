@@ -5,11 +5,12 @@ declare(strict_types=1);
 namespace Doctrine\ORM;
 
 use Doctrine\ORM\Exception\ORMException;
+use LogicException;
 
 /**
  * Is thrown when a transaction is required for the current operation, but there is none open.
  */
-class TransactionRequiredException extends \LogicException implements ORMException
+class TransactionRequiredException extends LogicException implements ORMException
 {
     /**
      * @return TransactionRequiredException

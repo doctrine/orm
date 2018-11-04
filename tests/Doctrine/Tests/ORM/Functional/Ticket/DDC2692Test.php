@@ -9,6 +9,7 @@ use Doctrine\ORM\Annotation as ORM;
 use Doctrine\ORM\Event\PreFlushEventArgs;
 use Doctrine\ORM\Events;
 use Doctrine\Tests\OrmFunctionalTestCase;
+use Exception;
 
 /**
  * @group DDC-2692
@@ -25,10 +26,10 @@ class DDC2692Test extends OrmFunctionalTestCase
         try {
             $this->schemaTool->createSchema(
                 [
-                $this->em->getClassMetadata(DDC2692Foo::class),
+                    $this->em->getClassMetadata(DDC2692Foo::class),
                 ]
             );
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             return;
         }
         $this->em->clear();

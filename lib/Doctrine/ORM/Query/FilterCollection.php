@@ -7,6 +7,7 @@ namespace Doctrine\ORM\Query;
 use Doctrine\ORM\Configuration;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Query\Filter\SQLFilter;
+use InvalidArgumentException;
 use function ksort;
 
 /**
@@ -76,12 +77,12 @@ class FilterCollection
      *
      * @return SQLFilter The enabled filter.
      *
-     * @throws \InvalidArgumentException If the filter does not exist.
+     * @throws InvalidArgumentException If the filter does not exist.
      */
     public function enable($name)
     {
         if (! $this->has($name)) {
-            throw new \InvalidArgumentException("Filter '" . $name . "' does not exist.");
+            throw new InvalidArgumentException("Filter '" . $name . "' does not exist.");
         }
 
         if (! $this->isEnabled($name)) {
@@ -106,7 +107,7 @@ class FilterCollection
      *
      * @return SQLFilter The disabled filter.
      *
-     * @throws \InvalidArgumentException If the filter does not exist.
+     * @throws InvalidArgumentException If the filter does not exist.
      */
     public function disable($name)
     {
@@ -128,12 +129,12 @@ class FilterCollection
      *
      * @return SQLFilter The filter.
      *
-     * @throws \InvalidArgumentException If the filter is not enabled.
+     * @throws InvalidArgumentException If the filter is not enabled.
      */
     public function getFilter($name)
     {
         if (! $this->isEnabled($name)) {
-            throw new \InvalidArgumentException("Filter '" . $name . "' is not enabled.");
+            throw new InvalidArgumentException("Filter '" . $name . "' is not enabled.");
         }
 
         return $this->enabledFilters[$name];

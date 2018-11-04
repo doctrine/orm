@@ -23,7 +23,6 @@ class AttachEntityListenersListener
      * @param string      $listenerClass    The listener class.
      * @param string      $eventName        The entity lifecycle event.
      * @param string|null $listenerCallback The listener callback method or NULL to use $eventName.
-     *
      */
     public function addEntityListener($entityClass, $listenerClass, $eventName, $listenerCallback = null)
     {

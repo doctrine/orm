@@ -6,6 +6,7 @@ namespace Doctrine\Tests\ORM\Functional\Ticket;
 
 use Doctrine\ORM\Annotation as ORM;
 use Doctrine\Tests\OrmFunctionalTestCase;
+use Exception;
 
 /**
  * @group DDC-1400
@@ -24,7 +25,7 @@ class DDC1400Test extends OrmFunctionalTestCase
                     $this->em->getClassMetadata(DDC1400UserState::class),
                 ]
             );
-        } catch (\Exception $ignored) {
+        } catch (Exception $ignored) {
         }
     }
 

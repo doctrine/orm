@@ -56,18 +56,18 @@ class DDC1925Test extends OrmFunctionalTestCase
 class DDC1925Product
 {
     /**
-     * @var int $id
-     *
      * @ORM\Column(name="id", type="integer")
      * @ORM\Id
      * @ORM\GeneratedValue(strategy="AUTO")
+     *
+     * @var int $id
      */
     private $id;
 
     /**
-     * @var string $title
-     *
      * @ORM\Column(name="title", type="string", length=255)
+     *
+     * @var string $title
      */
     private $title;
 
@@ -136,18 +136,18 @@ class DDC1925Product
 class DDC1925User
 {
     /**
-     * @var int
-     *
      * @ORM\Column(name="id", type="integer")
      * @ORM\Id
      * @ORM\GeneratedValue(strategy="AUTO")
+     *
+     * @var int
      */
     private $id;
 
     /**
-     * @var string
-     *
      * @ORM\Column(name="title", type="string", length=255)
+     *
+     * @var string
      */
     private $title;
 

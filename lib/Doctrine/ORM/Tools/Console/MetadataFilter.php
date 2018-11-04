@@ -4,7 +4,11 @@ declare(strict_types=1);
 
 namespace Doctrine\ORM\Tools\Console;
 
+use ArrayIterator;
+use Countable;
 use Doctrine\ORM\Mapping\ClassMetadata;
+use FilterIterator;
+use RuntimeException;
 use function count;
 use function iterator_to_array;
 use function preg_match;
@@ -13,7 +17,7 @@ use function sprintf;
 /**
  * Used by CLI Tools to restrict entity-based commands to given patterns.
  */
-class MetadataFilter extends \FilterIterator implements \Countable
+class MetadataFilter extends FilterIterator implements Countable
 {
     /** @var string[] */
     private $filter = [];
@@ -28,7 +32,7 @@ class MetadataFilter extends \FilterIterator implements \Countable
      */
     public static function filter(array $metadatas, $filter)
     {
-        $metadatas = new MetadataFilter(new \ArrayIterator($metadatas), $filter);
+        $metadatas = new MetadataFilter(new ArrayIterator($metadatas), $filter);
 
         return iterator_to_array($metadatas);
     }
@@ -36,7 +40,7 @@ class MetadataFilter extends \FilterIterator implements \Countable
     /**
      * @param string[]|string $filter
      */
-    public function __construct(\ArrayIterator $metadata, $filter)
+    public function __construct(ArrayIterator $metadata, $filter)
     {
         $this->filter = (array) $filter;
 
@@ -59,7 +63,7 @@ class MetadataFilter extends \FilterIterator implements \Countable
             $pregResult = preg_match('/' . $filter . '/', $metadata->getClassName());
 
             if ($pregResult === false) {
-                throw new \RuntimeException(
+                throw new RuntimeException(
                     sprintf("Error while evaluating regex '/%s/'.", $filter)
                 );
             }

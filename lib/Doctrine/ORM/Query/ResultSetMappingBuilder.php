@@ -11,6 +11,7 @@ use Doctrine\ORM\Mapping\InheritanceType;
 use Doctrine\ORM\Mapping\JoinColumnMetadata;
 use Doctrine\ORM\Mapping\ToOneAssociationMetadata;
 use Doctrine\ORM\Utility\PersisterHelper;
+use InvalidArgumentException;
 use function in_array;
 use function sprintf;
 
@@ -70,7 +71,6 @@ class ResultSetMappingBuilder extends ResultSetMapping
      * @param string   $alias          The unique alias to use for the root entity.
      * @param string[] $renamedColumns Columns that have been renamed (tableColumnName => queryColumnName).
      * @param int|null $renameMode     One of the COLUMN_RENAMING_* constants or array for BC reasons (CUSTOM).
-     *
      */
     public function addRootEntityFromClassMetadata(
         string $class,
@@ -94,7 +94,6 @@ class ResultSetMappingBuilder extends ResultSetMapping
      *                                 with the joined entity result.
      * @param string[] $renamedColumns Columns that have been renamed (tableColumnName => queryColumnName).
      * @param int|null $renameMode     One of the COLUMN_RENAMING_* constants or array for BC reasons (CUSTOM).
-     *
      */
     public function addJoinedEntityFromClassMetadata(
         string $class,
@@ -115,7 +114,7 @@ class ResultSetMappingBuilder extends ResultSetMapping
      *
      * @param string[] $customRenameColumns
      *
-     * @throws \InvalidArgumentException
+     * @throws InvalidArgumentException
      */
     protected function addAllClassFields(string $class, string $alias, array $customRenameColumns, int $renameMode) : void
     {
@@ -124,21 +123,21 @@ class ResultSetMappingBuilder extends ResultSetMapping
         $platform      = $this->em->getConnection()->getDatabasePlatform();
 
         if (! $this->isInheritanceSupported($classMetadata)) {
-            throw new \InvalidArgumentException(
+            throw new InvalidArgumentException(
                 'ResultSetMapping builder does not currently support your inheritance scheme.'
             );
         }
 
         foreach ($classMetadata->getDeclaredPropertiesIterator() as $property) {
             switch (true) {
-                case ($property instanceof FieldMetadata):
+                case $property instanceof FieldMetadata:
                     $columnName  = $property->getColumnName();
                     $columnAlias = $platform->getSQLResultCasing(
                         $this->getColumnAlias($columnName, $renameMode, $customRenameColumns)
                     );
 
                     if (isset($this->fieldMappings[$columnAlias])) {
-                        throw new \InvalidArgumentException(
+                        throw new InvalidArgumentException(
                             sprintf("The column '%s' conflicts with another column in the mapper.", $columnName)
                         );
                     }
@@ -146,7 +145,7 @@ class ResultSetMappingBuilder extends ResultSetMapping
                     $this->addFieldResult($alias, $columnAlias, $property->getName());
                     break;
 
-                case ($property instanceof ToOneAssociationMetadata && $property->isOwningSide()):
+                case $property instanceof ToOneAssociationMetadata && $property->isOwningSide():
                     $targetClass = $this->em->getClassMetadata($property->getTargetEntity());
 
                     foreach ($property->getJoinColumns() as $joinColumn) {
@@ -158,7 +157,7 @@ class ResultSetMappingBuilder extends ResultSetMapping
                         );
 
                         if (isset($this->metaMappings[$columnAlias])) {
-                            throw new \InvalidArgumentException(
+                            throw new InvalidArgumentException(
                                 sprintf("The column '%s' conflicts with another column in the mapper.", $columnName)
                             );
                         }

@@ -7,6 +7,9 @@ namespace Doctrine\ORM\Mapping\Driver;
 use Doctrine\DBAL\Types\Type;
 use Doctrine\ORM\Events;
 use Doctrine\ORM\Mapping;
+use InvalidArgumentException;
+use ReflectionClass;
+use ReflectionMethod;
 use SimpleXMLElement;
 use function array_filter;
 use function class_exists;
@@ -381,7 +384,7 @@ class XmlDriver extends FileDriver
                 if (isset($oneToManyElement['index-by'])) {
                     $association->setIndexedBy((string) $oneToManyElement['index-by']);
                 } elseif (isset($oneToManyElement->{'index-by'})) {
-                    throw new \InvalidArgumentException('<index-by /> is not a valid tag');
+                    throw new InvalidArgumentException('<index-by /> is not a valid tag');
                 }
 
                 // Evaluate second level cache
@@ -529,7 +532,7 @@ class XmlDriver extends FileDriver
                 if (isset($manyToManyElement['index-by'])) {
                     $association->setIndexedBy((string) $manyToManyElement['index-by']);
                 } elseif (isset($manyToManyElement->{'index-by'})) {
-                    throw new \InvalidArgumentException('<index-by /> is not a valid tag');
+                    throw new InvalidArgumentException('<index-by /> is not a valid tag');
                 }
 
                 // Evaluate second level cache
@@ -654,12 +657,12 @@ class XmlDriver extends FileDriver
                     );
                 }
 
-                $listenerClass = new \ReflectionClass($listenerClassName);
+                $listenerClass = new ReflectionClass($listenerClassName);
 
                 // Evaluate the listener using naming convention.
                 if ($listenerElement->count() === 0) {
-                    /** @var \ReflectionMethod $method */
-                    foreach ($listenerClass->getMethods(\ReflectionMethod::IS_PUBLIC) as $method) {
+                    /** @var ReflectionMethod $method */
+                    foreach ($listenerClass->getMethods(ReflectionMethod::IS_PUBLIC) as $method) {
                         foreach ($this->getMethodCallbacks($method) as $callback) {
                             $metadata->addEntityListener($callback, $listenerClassName, $method->getName());
                         }
@@ -719,8 +722,7 @@ class XmlDriver extends FileDriver
     {
         $fieldMetadata = $isVersioned
             ? new Mapping\VersionFieldMetadata($fieldName)
-            : new Mapping\FieldMetadata($fieldName)
-        ;
+            : new Mapping\FieldMetadata($fieldName);
 
         $fieldMetadata->setType(Type::getType('string'));
 
@@ -819,8 +821,7 @@ class XmlDriver extends FileDriver
         $region = (string) ($cacheMapping['region'] ?? $defaultRegion);
         $usage  = isset($cacheMapping['usage'])
             ? constant(sprintf('%s::%s', Mapping\CacheUsage::class, strtoupper((string) $cacheMapping['usage'])))
-            : Mapping\CacheUsage::READ_ONLY
-        ;
+            : Mapping\CacheUsage::READ_ONLY;
 
         return new Mapping\CacheMetadata($usage, $region);
     }
@@ -830,7 +831,7 @@ class XmlDriver extends FileDriver
      *
      * @return string[]
      */
-    private function getMethodCallbacks(\ReflectionMethod $method)
+    private function getMethodCallbacks(ReflectionMethod $method)
     {
         $events = [
             Events::prePersist,
@@ -843,7 +844,7 @@ class XmlDriver extends FileDriver
             Events::preFlush,
         ];
 
-        return array_filter($events, function ($eventName) use ($method) {
+        return array_filter($events, static function ($eventName) use ($method) {
             return $eventName === $method->getName();
         });
     }

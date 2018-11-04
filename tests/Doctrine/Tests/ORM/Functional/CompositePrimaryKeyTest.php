@@ -115,8 +115,7 @@ class CompositePrimaryKeyTest extends OrmFunctionalTestCase
         $dql = 'SELECT t, p, c '
              . 'FROM Doctrine\Tests\Models\Navigation\NavTour t '
              . 'INNER JOIN t.pois p '
-             . 'INNER JOIN p.country c'
-        ;
+             . 'INNER JOIN p.country c';
 
         $tours = $this->em->createQuery($dql)->getResult();
 
@@ -137,8 +136,7 @@ class CompositePrimaryKeyTest extends OrmFunctionalTestCase
         $dql = 'SELECT t '
              . 'FROM Doctrine\Tests\Models\Navigation\NavTour t '
              . ', Doctrine\Tests\Models\Navigation\NavPointOfInterest p '
-             . 'WHERE p MEMBER OF t.pois'
-        ;
+             . 'WHERE p MEMBER OF t.pois';
 
         $query = $this->em->createQuery($dql);
         $tours = $query->getResult();

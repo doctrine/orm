@@ -6,6 +6,7 @@ namespace Doctrine\Tests\ORM\Functional;
 
 use Doctrine\ORM\Annotation as ORM;
 use Doctrine\Tests\OrmFunctionalTestCase;
+use Exception;
 use function get_class;
 
 /**
@@ -22,10 +23,10 @@ class ReadOnlyTest extends OrmFunctionalTestCase
         try {
             $this->schemaTool->createSchema(
                 [
-                $this->em->getClassMetadata(ReadOnlyEntity::class),
+                    $this->em->getClassMetadata(ReadOnlyEntity::class),
                 ]
             );
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
         }
     }
 
@@ -84,6 +85,7 @@ class ReadOnlyEntity
 {
     /**
      * @ORM\Id @ORM\GeneratedValue @ORM\Column(type="integer")
+     *
      * @var int
      */
     public $id;

@@ -7,6 +7,7 @@ namespace Doctrine\Tests\ORM\Functional\Locking;
 use Doctrine\DBAL\LockMode;
 use Doctrine\Tests\Models\CMS\CmsArticle;
 use Doctrine\Tests\OrmFunctionalTestCase;
+use GearmanClient;
 use const GEARMAN_SUCCESS;
 use function class_exists;
 use function max;
@@ -31,7 +32,7 @@ class GearmanLockTest extends OrmFunctionalTestCase
         parent::setUp();
         $this->tasks = [];
 
-        $this->gearman = new \GearmanClient();
+        $this->gearman = new GearmanClient();
         $this->gearman->addServer(
             $_SERVER['GEARMAN_HOST'] ?? null,
             $_SERVER['GEARMAN_PORT'] ?? 4730
@@ -181,8 +182,8 @@ class GearmanLockTest extends OrmFunctionalTestCase
     {
         $this->gearman->addTask($fn, serialize(
             [
-            'conn' => $this->em->getConnection()->getParams(),
-            'fixture' => $fixture,
+                'conn' => $this->em->getConnection()->getParams(),
+                'fixture' => $fixture,
             ]
         ));
 

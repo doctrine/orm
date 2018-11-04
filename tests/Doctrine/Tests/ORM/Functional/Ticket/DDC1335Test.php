@@ -7,6 +7,7 @@ namespace Doctrine\Tests\ORM\Functional\Ticket;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\Annotation as ORM;
 use Doctrine\Tests\OrmFunctionalTestCase;
+use Exception;
 
 /**
  * @group DDC-1335
@@ -19,12 +20,12 @@ class DDC1335Test extends OrmFunctionalTestCase
         try {
             $this->schemaTool->createSchema(
                 [
-                $this->em->getClassMetadata(DDC1335User::class),
-                $this->em->getClassMetadata(DDC1335Phone::class),
+                    $this->em->getClassMetadata(DDC1335User::class),
+                    $this->em->getClassMetadata(DDC1335Phone::class),
                 ]
             );
             $this->loadFixture();
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
         }
     }
 

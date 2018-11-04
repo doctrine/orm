@@ -12,6 +12,7 @@ use Doctrine\ORM\Query\AST\PathExpression;
 use Doctrine\ORM\Query\AST\SelectExpression;
 use Doctrine\ORM\Query\AST\SelectStatement;
 use Doctrine\ORM\Query\TreeWalkerAdapter;
+use RuntimeException;
 use function count;
 use function is_string;
 use function reset;
@@ -37,7 +38,7 @@ class LimitSubqueryWalker extends TreeWalkerAdapter
      * Walks down a SelectStatement AST node, modifying it to retrieve DISTINCT ids
      * of the root Entity.
      *
-     * @throws \RuntimeException
+     * @throws RuntimeException
      */
     public function walkSelectStatement(SelectStatement $AST)
     {
@@ -52,7 +53,7 @@ class LimitSubqueryWalker extends TreeWalkerAdapter
         $property = $rootClass->getProperty($rootClass->getSingleIdentifierFieldName());
 
         if ($property instanceof AssociationMetadata) {
-            throw new \RuntimeException(
+            throw new RuntimeException(
                 'Paginating an entity with foreign key as identifier only works when using the Output Walkers. ' .
                 'Call Paginator#setUseOutputWalkers(true) before iterating the paginator.'
             );
@@ -121,7 +122,7 @@ class LimitSubqueryWalker extends TreeWalkerAdapter
                     $queryComponent = $queryComponents[$expression->identificationVariable];
 
                     if (isset($queryComponent['parent']) && $queryComponent['relation'] instanceof ToManyAssociationMetadata) {
-                        throw new \RuntimeException(
+                        throw new RuntimeException(
                             'Cannot select distinct identifiers from query with LIMIT and ORDER BY on a column from a '
                             . 'fetch joined to-many association. Use output walkers.'
                         );

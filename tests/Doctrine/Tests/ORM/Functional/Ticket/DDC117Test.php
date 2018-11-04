@@ -13,6 +13,7 @@ use Doctrine\Tests\Models\DDC117\DDC117Link;
 use Doctrine\Tests\Models\DDC117\DDC117Reference;
 use Doctrine\Tests\Models\DDC117\DDC117Translation;
 use Doctrine\Tests\OrmFunctionalTestCase;
+use Exception;
 use function count;
 use function get_class;
 
@@ -226,7 +227,7 @@ class DDC117Test extends OrmFunctionalTestCase
         try {
             // exception depending on the underlying Database Driver
             $this->em->flush();
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             $exceptionThrown = true;
         }
 

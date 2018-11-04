@@ -12,6 +12,7 @@ use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\Persisters\Entity\EntityPersister;
 use Doctrine\Tests\Models\Cache\Country;
+use ReflectionProperty;
 
 /**
  * @group DDC-2183
@@ -30,7 +31,7 @@ class NonStrictReadWriteCachedEntityPersisterTest extends AbstractEntityPersiste
     {
         $entity    = new Country('Foo');
         $persister = $this->createPersisterDefault();
-        $property  = new \ReflectionProperty($persister, 'queuedCache');
+        $property  = new ReflectionProperty($persister, 'queuedCache');
 
         $property->setAccessible(true);
 
@@ -52,7 +53,7 @@ class NonStrictReadWriteCachedEntityPersisterTest extends AbstractEntityPersiste
         $persister = $this->createPersisterDefault();
         $key       = new EntityCacheKey(Country::class, ['id' => 1]);
         $entry     = new EntityCacheEntry(Country::class, ['id' => 1, 'name' => 'Foo']);
-        $property  = new \ReflectionProperty($persister, 'queuedCache');
+        $property  = new ReflectionProperty($persister, 'queuedCache');
 
         $property->setAccessible(true);
 
@@ -81,7 +82,7 @@ class NonStrictReadWriteCachedEntityPersisterTest extends AbstractEntityPersiste
         $persister = $this->createPersisterDefault();
         $key       = new EntityCacheKey(Country::class, ['id' => 1]);
         $entry     = new EntityCacheEntry(Country::class, ['id' => 1, 'name' => 'Foo']);
-        $property  = new \ReflectionProperty($persister, 'queuedCache');
+        $property  = new ReflectionProperty($persister, 'queuedCache');
 
         $property->setAccessible(true);
 
@@ -109,7 +110,7 @@ class NonStrictReadWriteCachedEntityPersisterTest extends AbstractEntityPersiste
         $entity    = new Country('Foo');
         $persister = $this->createPersisterDefault();
         $key       = new EntityCacheKey(Country::class, ['id' => 1]);
-        $property  = new \ReflectionProperty($persister, 'queuedCache');
+        $property  = new ReflectionProperty($persister, 'queuedCache');
 
         $property->setAccessible(true);
 

@@ -12,6 +12,7 @@ use Doctrine\Tests\Models\CMS\CmsEmail;
 use Doctrine\Tests\Models\CMS\CmsPhonenumber;
 use Doctrine\Tests\Models\CMS\CmsUser;
 use Doctrine\Tests\OrmFunctionalTestCase;
+use RuntimeException;
 
 /**
  * PostLoadEventTest
@@ -292,7 +293,7 @@ class PostLoadListenerCheckAssociationsArePopulated
         $object = $event->getObject();
         if ($object instanceof CmsUser) {
             if ($this->checked) {
-                throw new \RuntimeException('Expected to be one user!');
+                throw new RuntimeException('Expected to be one user!');
             }
             $this->checked   = true;
             $this->populated = $object->getEmail() !== null;
