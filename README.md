@@ -1,4 +1,4 @@
-[![Tidelift](https://tidelift.com/badges/github/doctrine/doctrine2)](https://tidelift.com/subscription/pkg/packagist-doctrine-orm?utm_source=packagist-doctrine-orm&utm_medium=referral&utm_campaign=readme)
+[![Tidelift](https://tidelift.com/badges/github/doctrine/orm)](https://tidelift.com/subscription/pkg/packagist-doctrine-orm?utm_source=packagist-doctrine-orm&utm_medium=referral&utm_campaign=readme)
 
 [Professionally supported Doctrine is now available](https://tidelift.com/subscription/pkg/packagist-doctrine-orm?utm_source=packagist-doctrine-orm&utm_medium=referral&utm_campaign=readme)
 
@@ -37,19 +37,19 @@ without requiring unnecessary code duplication.
 * [Documentation](http://docs.doctrine-project.org/projects/doctrine-orm/en/latest/index.html)
 
 
-  [Master image]: https://img.shields.io/travis/doctrine/doctrine2/master.svg?style=flat-square
-  [Master]: https://travis-ci.org/doctrine/doctrine2
-  [Master coverage image]: https://img.shields.io/scrutinizer/coverage/g/doctrine/doctrine2/master.svg?style=flat-square
-  [Master coverage]: https://scrutinizer-ci.com/g/doctrine/doctrine2/?branch=master
-  [2.7 image]: https://img.shields.io/travis/doctrine/doctrine2/2.7.svg?style=flat-square
-  [2.7]: https://github.com/doctrine/doctrine2/tree/2.7
-  [2.7 coverage image]: https://img.shields.io/scrutinizer/coverage/g/doctrine/doctrine2/2.7.svg?style=flat-square
-  [2.7 coverage]: https://scrutinizer-ci.com/g/doctrine/doctrine2/?branch=2.7
-  [2.6 image]: https://img.shields.io/travis/doctrine/doctrine2/2.6.svg?style=flat-square
-  [2.6]: https://github.com/doctrine/doctrine2/tree/2.6
-  [2.6 coverage image]: https://img.shields.io/scrutinizer/coverage/g/doctrine/doctrine2/2.6.svg?style=flat-square
-  [2.6 coverage]: https://scrutinizer-ci.com/g/doctrine/doctrine2/?branch=2.6
-  [2.5 image]: https://img.shields.io/travis/doctrine/doctrine2/2.5.svg?style=flat-square
-  [2.5]: https://github.com/doctrine/doctrine2/tree/2.5
-  [2.5 coverage image]: https://img.shields.io/scrutinizer/coverage/g/doctrine/doctrine2/2.5.svg?style=flat-square
-  [2.5 coverage]: https://scrutinizer-ci.com/g/doctrine/doctrine2/?branch=2.5
+  [Master image]: https://img.shields.io/travis/doctrine/orm/master.svg?style=flat-square
+  [Master]: https://travis-ci.org/doctrine/orm
+  [Master coverage image]: https://img.shields.io/scrutinizer/coverage/g/doctrine/orm/master.svg?style=flat-square
+  [Master coverage]: https://scrutinizer-ci.com/g/doctrine/orm/?branch=master
+  [2.7 image]: https://img.shields.io/travis/doctrine/orm/2.7.svg?style=flat-square
+  [2.7]: https://github.com/doctrine/orm/tree/2.7
+  [2.7 coverage image]: https://img.shields.io/scrutinizer/coverage/g/doctrine/orm/2.7.svg?style=flat-square
+  [2.7 coverage]: https://scrutinizer-ci.com/g/doctrine/orm/?branch=2.7
+  [2.6 image]: https://img.shields.io/travis/doctrine/orm/2.6.svg?style=flat-square
+  [2.6]: https://github.com/doctrine/orm/tree/2.6
+  [2.6 coverage image]: https://img.shields.io/scrutinizer/coverage/g/doctrine/orm/2.6.svg?style=flat-square
+  [2.6 coverage]: https://scrutinizer-ci.com/g/doctrine/orm/?branch=2.6
+  [2.5 image]: https://img.shields.io/travis/doctrine/orm/2.5.svg?style=flat-square
+  [2.5]: https://github.com/doctrine/orm/tree/2.5
+  [2.5 coverage image]: https://img.shields.io/scrutinizer/coverage/g/doctrine/orm/2.5.svg?style=flat-square
+  [2.5 coverage]: https://scrutinizer-ci.com/g/doctrine/orm/?branch=2.5

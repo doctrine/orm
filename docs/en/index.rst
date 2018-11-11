@@ -13,7 +13,7 @@ Doctrine ORM don't panic. You can get help from different sources:
 -  There is a :doc:`FAQ <reference/faq>` with answers to frequent questions.
 -  The `Doctrine Mailing List <https://groups.google.com/group/doctrine-user>`_
 -  Slack chat room `#orm <https://www.doctrine-project.org/slack>`_
--  Report a bug on `GitHub <https://github.com/doctrine/doctrine2/issues>`_.
+-  Report a bug on `GitHub <https://github.com/doctrine/orm/issues>`_.
 -  On `Twitter <https://twitter.com/search/%23doctrine2>`_ with ``#doctrine2``
 -  On `StackOverflow <https://stackoverflow.com/questions/tagged/doctrine2>`_
 

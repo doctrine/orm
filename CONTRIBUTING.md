@@ -11,7 +11,7 @@ unified and future proof.
 In order to submit a pull request, you will need to [fork the project][Fork] and obtain a fresh copy of the source code:
 
 ```sh
-git clone git@github.com:<your-github-name>/doctrine2.git orm
+git clone git@github.com:<your-github-name>/orm.git
 cd orm
 ```
 
@@ -81,10 +81,10 @@ everything as fast as possible, but cannot always live up to our own expectation
 
 Thank you very much again for your contribution!
 
-  [Master]: https://github.com/doctrine/doctrine2/tree/master
-  [2.7]: https://github.com/doctrine/doctrine2/tree/2.7
-  [2.6]: https://github.com/doctrine/doctrine2/tree/2.6
+  [Master]: https://github.com/doctrine/orm/tree/master
+  [2.7]: https://github.com/doctrine/orm/tree/2.7
+  [2.6]: https://github.com/doctrine/orm/tree/2.6
   [CS]: https://github.com/doctrine/coding-standard
   [Fork]: https://guides.github.com/activities/forking/
   [Travis]: https://www.travis-ci.org
-  [Test Example]: https://github.com/doctrine/doctrine2/tree/master/tests/Doctrine/Tests/ORM/Functional/Ticket/DDC2306Test.php
+  [Test Example]: https://github.com/doctrine/orm/tree/master/tests/Doctrine/Tests/ORM/Functional/Ticket/DDC2306Test.php
