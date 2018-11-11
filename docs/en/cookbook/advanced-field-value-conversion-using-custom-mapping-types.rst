@@ -204,7 +204,7 @@ This is where the ``convertToPHPValueSQL`` and  ``convertToDatabaseValueSQL``
 methods come into play.
 
 This methods wrap a sql expression (the WKT representation of the Point) into
-MySQL functions `ST_PointFromText <https://dev.mysql.com/doc/refman/8.0/en/gis-wkt-functions.html>`_
+MySQL functions `ST_PointFromText <https://dev.mysql.com/doc/refman/8.0/en/gis-wkt-functions.html#function_st-pointfromtext>`_
 and `ST_AsText <https://dev.mysql.com/doc/refman/8.0/en/gis-format-conversion-functions.html#function_st-astext>`_
 which convert WKT strings to and from the internal format of MySQL.
 
