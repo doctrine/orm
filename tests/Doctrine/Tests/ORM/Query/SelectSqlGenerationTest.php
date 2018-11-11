@@ -2302,7 +2302,7 @@ class SelectSqlGenerationTest extends OrmTestCase
     }
 
     /**
-     * GitHub issue #4764: https://github.com/doctrine/doctrine2/issues/4764
+     * GitHub issue #4764: https://github.com/doctrine/orm/issues/4764
      * @group DDC-3907
      * @dataProvider mathematicOperatorsProvider
      */

@@ -63,7 +63,7 @@ Where the ``attribute_name`` column contains the key and
 ``$attributes``.
 
 The feature request for persistence of primitive value arrays
-`is described in the DDC-298 ticket <https://github.com/doctrine/doctrine2/issues/3743>`_.
+`is described in the DDC-298 ticket <https://github.com/doctrine/orm/issues/3743>`_.
 
 Cascade Merge with Bi-directional Associations
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -71,8 +71,8 @@ Cascade Merge with Bi-directional Associations
 There are two bugs now that concern the use of cascade merge in combination with bi-directional associations.
 Make sure to study the behavior of cascade merge if you are using it:
 
--  `DDC-875 <https://github.com/doctrine/doctrine2/issues/5398>`_ Merge can sometimes add the same entity twice into a collection
--  `DDC-763 <https://github.com/doctrine/doctrine2/issues/5277>`_ Cascade merge on associated entities can insert too many rows through "Persistence by Reachability"
+-  `DDC-875 <https://github.com/doctrine/orm/issues/5398>`_ Merge can sometimes add the same entity twice into a collection
+-  `DDC-763 <https://github.com/doctrine/orm/issues/5277>`_ Cascade merge on associated entities can insert too many rows through "Persistence by Reachability"
 
 Custom Persisters
 ~~~~~~~~~~~~~~~~~
@@ -83,8 +83,8 @@ Currently there is no way to overwrite the persister implementation
 for a given entity, however there are several use-cases that can
 benefit from custom persister implementations:
 
--  `Add Upsert Support <https://github.com/doctrine/doctrine2/issues/5178>`_
--  `Evaluate possible ways in which stored-procedures can be used <https://github.com/doctrine/doctrine2/issues/4946>`_
+-  `Add Upsert Support <https://github.com/doctrine/orm/issues/5178>`_
+-  `Evaluate possible ways in which stored-procedures can be used <https://github.com/doctrine/orm/issues/4946>`_
 
 Persist Keys of Collections
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -94,7 +94,7 @@ PHP Arrays are ordered hash-maps and so should be the
 evaluate a feature that optionally persists and hydrates the keys
 of a Collection instance.
 
-`Ticket DDC-213 <https://github.com/doctrine/doctrine2/issues/2817>`_
+`Ticket DDC-213 <https://github.com/doctrine/orm/issues/2817>`_
 
 Mapping many tables to one entity
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -145,7 +145,7 @@ We don't plan to add every bug in the tracker there, just those
 issues that can potentially cause nightmares or pain of any sort.
 
 See bugs, improvement and feature requests on `Github issues
-<https://github.com/doctrine/doctrine2/issues>`_.
+<https://github.com/doctrine/orm/issues>`_.
 
 Identifier Quoting and Legacy Databases
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
