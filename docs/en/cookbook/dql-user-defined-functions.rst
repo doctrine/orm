@@ -246,4 +246,3 @@ vendor sql functions and extend the DQL languages scope.
 Code for this Extension to DQL and other Doctrine Extensions can be
 found
 `in the GitHub DoctrineExtensions repository <https://github.com/beberlei/DoctrineExtensions>`_.
-
