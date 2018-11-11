@@ -1,7 +1,7 @@
 Working with DateTime Instances
 ===============================
 
-There are many nitty gritty details when working with PHPs DateTime instances. You have know their inner
+There are many nitty gritty details when working with PHPs DateTime instances. You have to know their inner
 workings pretty well not to make mistakes with date handling. This cookbook entry holds several
 interesting pieces of information on how to work with PHP DateTime instances in Doctrine 2.
 
