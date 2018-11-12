@@ -112,7 +112,7 @@ class DefaultQueryCache implements QueryCache
             }
 
             if (! $hasRelation) {
-                $result[$index] = $unitOfWork->createEntity(
+                $result[$index] = $unitOfWork->getOrCreateEntity(
                     $entityEntry->class,
                     $entityEntry->resolveAssociationEntries($this->em),
                     self::$hints
@@ -143,7 +143,7 @@ class DefaultQueryCache implements QueryCache
                         return null;
                     }
 
-                    $data[$name] = $unitOfWork->createEntity(
+                    $data[$name] = $unitOfWork->getOrCreateEntity(
                         $assocEntry->class,
                         $assocEntry->resolveAssociationEntries($this->em),
                         self::$hints
@@ -183,7 +183,7 @@ class DefaultQueryCache implements QueryCache
                         return null;
                     }
 
-                    $collection[$assocIndex] = $unitOfWork->createEntity(
+                    $collection[$assocIndex] = $unitOfWork->getOrCreateEntity(
                         $assocEntry->class,
                         $assocEntry->resolveAssociationEntries($this->em),
                         self::$hints
@@ -216,7 +216,7 @@ class DefaultQueryCache implements QueryCache
                 }
             }
 
-            $result[$index] = $unitOfWork->createEntity($entityEntry->class, $data, self::$hints);
+            $result[$index] = $unitOfWork->getOrCreateEntity($entityEntry->class, $data, self::$hints);
         }
 
         $unitOfWork->hydrationComplete();

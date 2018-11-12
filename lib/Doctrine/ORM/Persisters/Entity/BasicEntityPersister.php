@@ -841,7 +841,7 @@ class BasicEntityPersister implements EntityPersister
             $value    = $property->getValue($sourceEntity);
 
             // unset the old value and set the new sql aliased value here. By definition
-            // unset($identifier[$targetKeyColumn] works here with how UnitOfWork::createEntity() calls this method.
+            // unset($identifier[$targetKeyColumn] works here with how UnitOfWork::getOrCreateEntity() calls this method.
             // @todo guilhermeblanco In master we have: $identifier[$targetClass->getFieldForColumn($targetKeyColumn)] =
             unset($identifier[$targetKeyColumn]);
 

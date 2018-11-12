@@ -6,6 +6,7 @@ namespace Doctrine\ORM\Mapping\Driver;
 
 use Doctrine\Common\Annotations\AnnotationReader;
 use Doctrine\Common\Annotations\Reader;
+use Doctrine\Common\Persistence\Mapping\Driver\FileLocator;
 use Doctrine\DBAL\Types\Type;
 use Doctrine\ORM\Annotation;
 use Doctrine\ORM\Cache\Exception\CacheException;
@@ -98,7 +99,7 @@ class AnnotationDriver implements MappingDriver
      * @param Reader               $reader The AnnotationReader to use, duck-typed.
      * @param string|string[]|null $paths  One or multiple paths where mapping classes can be found.
      */
-    public function __construct(Reader $reader, $paths = null)
+    public function __construct(Reader $reader, FileLocator $locator, $paths = null)
     {
         $this->reader = $reader;
         if ($paths) {

@@ -237,7 +237,7 @@ class ObjectHydrator extends AbstractHydrator
 
         $this->hints['fetchAlias'] = $dqlAlias;
 
-        return $this->uow->createEntity($className, $data, $this->hints);
+        return $this->uow->getOrCreateEntity($className, $data, $this->hints);
     }
 
     /**

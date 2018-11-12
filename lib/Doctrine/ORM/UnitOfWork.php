@@ -2057,9 +2057,8 @@ class UnitOfWork implements PropertyChangedListener
      * @return object The managed entity instance.
      *
      * @ignore
-     * @todo Rename: getOrCreateEntity
      */
-    public function createEntity($className, array $data, &$hints = [])
+    public function getOrCreateEntity($className, array $data, &$hints = [])
     {
         $class  = $this->em->getClassMetadata($className);
         $id     = $this->em->getIdentifierFlattener()->flattenIdentifier($class, $data);
@@ -2099,20 +2098,16 @@ class UnitOfWork implements PropertyChangedListener
                 $entity->injectEntityManager($this->em, $class);
             }
 
+            if ($entity instanceof NotifyPropertyChanged) {
+                $entity->addPropertyChangedListener($this);
+            }
+
             $this->originalEntityData[$oid] = $data;
         } else {
             $entity = $this->newInstance($class);
             $oid    = spl_object_id($entity);
 
-            $this->entityIdentifiers[$oid]  = $id;
-            $this->entityStates[$oid]       = self::STATE_MANAGED;
-            $this->originalEntityData[$oid] = $data;
-
-            $this->identityMap[$class->getRootClassName()][$idHash] = $entity;
-        }
-
-        if ($entity instanceof NotifyPropertyChanged) {
-            $entity->addPropertyChangedListener($this);
+            $this->registerManaged($entity, $id, $data);
         }
 
         foreach ($data as $field => $value) {
