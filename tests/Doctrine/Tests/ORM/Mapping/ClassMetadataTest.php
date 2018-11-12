@@ -100,7 +100,7 @@ class ClassMetadataTest extends OrmTestCase
 
         $cm->addProperty($association);
 
-        self::assertCount(1, $cm->getDeclaredPropertiesIterator());
+        self::assertCount(1, $cm->getPropertiesIterator());
 
         $serialized = serialize($cm);
         $cm         = unserialize($serialized);
@@ -124,7 +124,7 @@ class ClassMetadataTest extends OrmTestCase
         self::assertEquals(CMS\CmsEmployee::class, $cm->getAncestorsIterator()->current()->getClassName());
         self::assertEquals($discrColumn, $cm->discriminatorColumn);
         self::assertTrue($cm->isReadOnly());
-        self::assertCount(1, $cm->getDeclaredPropertiesIterator());
+        self::assertCount(1, $cm->getPropertiesIterator());
         self::assertInstanceOf(Mapping\OneToOneAssociationMetadata::class, $cm->getProperty('phonenumbers'));
 
         $oneOneMapping = $cm->getProperty('phonenumbers');

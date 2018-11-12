@@ -248,8 +248,8 @@ class ClassMetadata extends ComponentMetadata implements TableOwner
             $this->cache = clone $this->cache;
         }
 
-        foreach ($this->declaredProperties as $name => $property) {
-            $this->declaredProperties[$name] = clone $property;
+        foreach ($this->properties as $name => $property) {
+            $this->properties[$name] = clone $property;
         }
     }
 
@@ -283,7 +283,7 @@ class ClassMetadata extends ComponentMetadata implements TableOwner
 
         // This metadata is always serialized/cached.
         $serialized = array_merge($serialized, [
-            'declaredProperties',
+            'properties',
             'fieldNames',
             //'embeddedClasses',
             'identifier',
@@ -355,7 +355,7 @@ class ClassMetadata extends ComponentMetadata implements TableOwner
 
         $this->className = $this->reflectionClass->getName();
 
-        foreach ($this->declaredProperties as $property) {
+        foreach ($this->properties as $property) {
             /** @var Property $property */
             $property->wakeupReflection($reflectionService);
         }
@@ -377,7 +377,7 @@ class ClassMetadata extends ComponentMetadata implements TableOwner
             throw MappingException::identifierRequired($this->className);
         }
 
-        $explicitlyGeneratedProperties = array_filter($this->declaredProperties, static function (Property $property) : bool {
+        $explicitlyGeneratedProperties = array_filter($this->properties, static function (Property $property) : bool {
             return $property instanceof FieldMetadata
                 && $property->isPrimaryKey()
                 && $property->hasValueGenerator();
@@ -407,7 +407,7 @@ class ClassMetadata extends ComponentMetadata implements TableOwner
                     throw MappingException::invalidTargetEntityClass($targetEntity, $this->className, $property->getName());
                 }
             },
-            $this->declaredProperties
+            $this->properties
         );
     }
 
@@ -887,8 +887,8 @@ class ClassMetadata extends ComponentMetadata implements TableOwner
      */
     public function hasField($fieldName)
     {
-        return isset($this->declaredProperties[$fieldName])
-            && $this->declaredProperties[$fieldName] instanceof FieldMetadata;
+        return isset($this->properties[$fieldName])
+            && $this->properties[$fieldName] instanceof FieldMetadata;
     }
 
     /**
@@ -1017,7 +1017,7 @@ class ClassMetadata extends ComponentMetadata implements TableOwner
     {
         $fieldName = $property->getName();
 
-        if (! isset($this->declaredProperties[$fieldName])) {
+        if (! isset($this->properties[$fieldName])) {
             throw MappingException::invalidOverrideFieldName($this->className, $fieldName);
         }
 
@@ -1026,7 +1026,7 @@ class ClassMetadata extends ComponentMetadata implements TableOwner
 
         // If moving from transient to persistent, assume it's a new property
         if ($originalPropertyClassName === TransientMetadata::class) {
-            unset($this->declaredProperties[$fieldName]);
+            unset($this->properties[$fieldName]);
 
             $this->addProperty($property);
 
@@ -1043,7 +1043,7 @@ class ClassMetadata extends ComponentMetadata implements TableOwner
             throw MappingException::invalidOverrideVersionField($this->className, $fieldName);
         }
 
-        unset($this->declaredProperties[$fieldName]);
+        unset($this->properties[$fieldName]);
 
         if ($property instanceof FieldMetadata) {
             // Unset defined fieldName prior to override
@@ -1100,7 +1100,7 @@ class ClassMetadata extends ComponentMetadata implements TableOwner
      */
     public function isInheritedProperty($fieldName)
     {
-        $declaringClass = $this->declaredProperties[$fieldName]->getDeclaringClass();
+        $declaringClass = $this->properties[$fieldName]->getDeclaringClass();
 
         return $declaringClass->className !== $this->className;
     }
@@ -1134,7 +1134,7 @@ class ClassMetadata extends ComponentMetadata implements TableOwner
 
     public function getColumn(string $columnName) : ?LocalColumnMetadata
     {
-        foreach ($this->declaredProperties as $property) {
+        foreach ($this->properties as $property) {
             if ($property instanceof LocalColumnMetadata && $property->getColumnName() === $columnName) {
                 return $property;
             }
@@ -1150,7 +1150,7 @@ class ClassMetadata extends ComponentMetadata implements TableOwner
      * @throws MappingException
      * @throws CacheException
      */
-    public function addProperty(Property $property)
+    public function addProperty(Property $property) : void
     {
         $fieldName = $property->getName();
 
@@ -1200,7 +1200,7 @@ class ClassMetadata extends ComponentMetadata implements TableOwner
                 break;
         }
 
-        $this->addDeclaredProperty($property);
+        parent::addProperty($property);
     }
 
     /**
@@ -1233,11 +1233,11 @@ class ClassMetadata extends ComponentMetadata implements TableOwner
             }
         }
 
-        if (isset($this->declaredProperties[$property->getName()])) {
+        if (isset($this->properties[$property->getName()])) {
             throw MappingException::duplicateProperty($this->className, $this->getProperty($property->getName()));
         }
 
-        $this->declaredProperties[$property->getName()] = $inheritedProperty;
+        $this->properties[$property->getName()] = $inheritedProperty;
 
         if ($inheritedProperty instanceof VersionFieldMetadata) {
             $this->versionProperty = $inheritedProperty;
@@ -1445,7 +1445,7 @@ class ClassMetadata extends ComponentMetadata implements TableOwner
      */
     public function mapEmbedded(array $mapping) : void
     {
-        /*if (isset($this->declaredProperties[$mapping['fieldName']])) {
+        /*if (isset($this->properties[$mapping['fieldName']])) {
             throw MappingException::duplicateProperty($this->className, $this->getProperty($mapping['fieldName']));
         }
 

@@ -34,7 +34,7 @@ final class NormalizeIdentifier
     ) : array {
         $normalizedAssociatedId = [];
 
-        foreach ($targetClass->getDeclaredPropertiesIterator() as $name => $declaredProperty) {
+        foreach ($targetClass->getPropertiesIterator() as $name => $declaredProperty) {
             if (! array_key_exists($name, $flatIdentifier)) {
                 continue;
             }

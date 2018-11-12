@@ -175,7 +175,7 @@ class SchemaTool
                     // Add all non-inherited fields as columns
                     $pkColumns = [];
 
-                    foreach ($class->getDeclaredPropertiesIterator() as $fieldName => $property) {
+                    foreach ($class->getPropertiesIterator() as $fieldName => $property) {
                         if (! ($property instanceof FieldMetadata)) {
                             continue;
                         }
@@ -319,7 +319,7 @@ class SchemaTool
 
             $processedClasses[$class->getClassName()] = true;
 
-            foreach ($class->getDeclaredPropertiesIterator() as $property) {
+            foreach ($class->getPropertiesIterator() as $property) {
                 if (! $property instanceof FieldMetadata
                     || ! $property->hasValueGenerator()
                     || $property->getValueGenerator()->getType() !== GeneratorType::SEQUENCE
@@ -398,7 +398,7 @@ class SchemaTool
     {
         $pkColumns = [];
 
-        foreach ($class->getDeclaredPropertiesIterator() as $fieldName => $property) {
+        foreach ($class->getPropertiesIterator() as $fieldName => $property) {
             if (! ($property instanceof FieldMetadata)) {
                 continue;
             }
@@ -513,7 +513,7 @@ class SchemaTool
      */
     private function gatherRelationsSql($class, $table, $schema, &$addedFks, &$blacklistedFks)
     {
-        foreach ($class->getDeclaredPropertiesIterator() as $fieldName => $property) {
+        foreach ($class->getPropertiesIterator() as $fieldName => $property) {
             if (! ($property instanceof AssociationMetadata)) {
                 continue;
             }

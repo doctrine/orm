@@ -126,7 +126,7 @@ EOT
                     $this->formatEntityListeners($metadata->entityListeners),
                 ],
                 [$this->formatField('Property mappings:', '')],
-                $this->formatPropertyMappings($metadata->getDeclaredPropertiesIterator())
+                $this->formatPropertyMappings($metadata->getPropertiesIterator())
             )
         );
     }

@@ -53,7 +53,7 @@ class DefaultEntityHydrator implements EntityHydrator
             $data[$metadata->versionProperty->getName()] = $metadata->versionProperty->getValue($entity);
         }
 
-        foreach ($metadata->getDeclaredPropertiesIterator() as $name => $association) {
+        foreach ($metadata->getPropertiesIterator() as $name => $association) {
             if (! isset($data[$name]) || $association instanceof FieldMetadata) {
                 continue;
             }
@@ -153,7 +153,7 @@ class DefaultEntityHydrator implements EntityHydrator
             $hints[Query::HINT_REFRESH_ENTITY] = $entity;
         }
 
-        foreach ($metadata->getDeclaredPropertiesIterator() as $name => $association) {
+        foreach ($metadata->getPropertiesIterator() as $name => $association) {
             if ($association instanceof FieldMetadata || ! isset($data[$name]) || ! $association->getCache()) {
                 continue;
             }

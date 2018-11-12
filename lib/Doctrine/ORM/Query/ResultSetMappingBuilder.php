@@ -128,7 +128,7 @@ class ResultSetMappingBuilder extends ResultSetMapping
             );
         }
 
-        foreach ($classMetadata->getDeclaredPropertiesIterator() as $property) {
+        foreach ($classMetadata->getPropertiesIterator() as $property) {
             switch (true) {
                 case $property instanceof FieldMetadata:
                     $columnName  = $property->getColumnName();

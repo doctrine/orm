@@ -52,7 +52,7 @@ class SingleTablePersister extends AbstractEntityInheritancePersister
             $subClass = $this->em->getClassMetadata($subClassName);
 
             // Subclass columns
-            foreach ($subClass->getDeclaredPropertiesIterator() as $fieldName => $property) {
+            foreach ($subClass->getPropertiesIterator() as $fieldName => $property) {
                 if ($subClass->isInheritedProperty($fieldName)) {
                     continue;
                 }

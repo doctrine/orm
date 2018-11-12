@@ -99,9 +99,10 @@ class AnnotationDriver implements MappingDriver
      * @param Reader               $reader The AnnotationReader to use, duck-typed.
      * @param string|string[]|null $paths  One or multiple paths where mapping classes can be found.
      */
-    public function __construct(Reader $reader, FileLocator $locator, $paths = null)
+    public function __construct(Reader $reader, $paths = null)
     {
         $this->reader = $reader;
+
         if ($paths) {
             $this->addPaths((array) $paths);
         }

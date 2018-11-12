@@ -761,7 +761,7 @@ class SqlWalker implements TreeWalker
             }
 
             // Add foreign key columns of class and also parent classes
-            foreach ($class->getDeclaredPropertiesIterator() as $association) {
+            foreach ($class->getPropertiesIterator() as $association) {
                 if (! ($association instanceof ToOneAssociationMetadata && $association->isOwningSide())
                     || ( ! $addMetaColumns && ! $association->isPrimaryKey())) {
                     continue;
@@ -801,7 +801,7 @@ class SqlWalker implements TreeWalker
             foreach ($class->getSubClasses() as $subClassName) {
                 $subClass = $this->em->getClassMetadata($subClassName);
 
-                foreach ($subClass->getDeclaredPropertiesIterator() as $association) {
+                foreach ($subClass->getPropertiesIterator() as $association) {
                     // Skip if association is inherited
                     if ($subClass->isInheritedProperty($association->getName())) {
                         continue;
@@ -1435,7 +1435,7 @@ class SqlWalker implements TreeWalker
                 $sqlParts = [];
 
                 // Select all fields from the queried class
-                foreach ($class->getDeclaredPropertiesIterator() as $fieldName => $property) {
+                foreach ($class->getPropertiesIterator() as $fieldName => $property) {
                     if (! ($property instanceof FieldMetadata)) {
                         continue;
                     }
@@ -1470,7 +1470,7 @@ class SqlWalker implements TreeWalker
                     foreach ($class->getSubClasses() as $subClassName) {
                         $subClass = $this->em->getClassMetadata($subClassName);
 
-                        foreach ($subClass->getDeclaredPropertiesIterator() as $fieldName => $property) {
+                        foreach ($subClass->getPropertiesIterator() as $fieldName => $property) {
                             if (! ($property instanceof FieldMetadata)) {
                                 continue;
                             }
@@ -1740,7 +1740,7 @@ class SqlWalker implements TreeWalker
         $classMetadata = $this->queryComponents[$groupByItem]['metadata'];
         $sqlParts      = [];
 
-        foreach ($classMetadata->getDeclaredPropertiesIterator() as $property) {
+        foreach ($classMetadata->getPropertiesIterator() as $property) {
             switch (true) {
                 case $property instanceof FieldMetadata:
                     $type       = AST\PathExpression::TYPE_STATE_FIELD;

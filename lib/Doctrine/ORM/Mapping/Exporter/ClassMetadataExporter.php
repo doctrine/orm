@@ -132,7 +132,7 @@ class ClassMetadataExporter implements Exporter
         $bodyIndentation = str_repeat(self::INDENTATION, $indentationLevel + 1);
         $lines           = [];
 
-        foreach ($metadata->getDeclaredPropertiesIterator() as $name => $property) {
+        foreach ($metadata->getPropertiesIterator() as $name => $property) {
             $lines[] = null;
             $lines[] = $bodyIndentation . '// Property: ' . $name;
             $lines[] = $this->exportProperty($property, $indentationLevel + 1);

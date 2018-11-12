@@ -111,7 +111,7 @@ class ClassMetadataFactory extends AbstractClassMetadataFactory
         if ($parent) {
             $classMetadata->setParent($parent);
 
-            foreach ($parent->getDeclaredPropertiesIterator() as $fieldName => $property) {
+            foreach ($parent->getPropertiesIterator() as $fieldName => $property) {
                 $classMetadata->addInheritedProperty($property);
             }
 
@@ -177,7 +177,7 @@ class ClassMetadataFactory extends AbstractClassMetadataFactory
         $tableName = $class->getTableName();
 
         // Resolve column table names
-        foreach ($class->getDeclaredPropertiesIterator() as $property) {
+        foreach ($class->getPropertiesIterator() as $property) {
             if ($property instanceof FieldMetadata) {
                 $property->setTableName($property->getTableName() ?? $tableName);
 
@@ -285,7 +285,7 @@ class ClassMetadataFactory extends AbstractClassMetadataFactory
      */
     private function completeIdentifierGeneratorMappings(ClassMetadata $class) : void
     {
-        foreach ($class->getDeclaredPropertiesIterator() as $property) {
+        foreach ($class->getPropertiesIterator() as $property) {
             if (! $property instanceof FieldMetadata /*&& ! $property instanceof AssocationMetadata*/) {
                 continue;
             }
@@ -417,7 +417,7 @@ class ClassMetadataFactory extends AbstractClassMetadataFactory
     {
         $executors = [];
 
-        foreach ($class->getDeclaredPropertiesIterator() as $property) {
+        foreach ($class->getPropertiesIterator() as $property) {
             $executor = $this->buildValueGenerationExecutorForProperty($class, $property);
 
             if ($executor instanceof ValueGenerationExecutor) {
