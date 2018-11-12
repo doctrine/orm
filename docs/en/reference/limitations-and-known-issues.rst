@@ -63,7 +63,7 @@ Where the ``attribute_name`` column contains the key and
 ``$attributes``.
 
 The feature request for persistence of primitive value arrays
-`is described in the DDC-298 ticket <http://www.doctrine-project.org/jira/browse/DDC-298>`_.
+`is described in the DDC-298 ticket <https://github.com/doctrine/doctrine2/issues/3743>`_.
 
 Custom Persisters
 ~~~~~~~~~~~~~~~~~
@@ -74,8 +74,8 @@ Currently there is no way to overwrite the persister implementation
 for a given entity, however there are several use-cases that can
 benefit from custom persister implementations:
 
--  `Add Upsert Support <http://www.doctrine-project.org/jira/browse/DDC-668>`_
--  `Evaluate possible ways in which stored-procedures can be used <http://www.doctrine-project.org/jira/browse/DDC-445>`_
+-  `Add Upsert Support <https://github.com/doctrine/doctrine2/issues/5178>`_
+-  `Evaluate possible ways in which stored-procedures can be used <https://github.com/doctrine/doctrine2/issues/4946>`_
 
 Persist Keys of Collections
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -85,7 +85,7 @@ PHP Arrays are ordered hash-maps and so should be the
 evaluate a feature that optionally persists and hydrates the keys
 of a Collection instance.
 
-`Ticket DDC-213 <http://www.doctrine-project.org/jira/browse/DDC-213>`_
+`Ticket DDC-213 <https://github.com/doctrine/doctrine2/issues/2817>`_
 
 Mapping many tables to one entity
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -134,9 +134,8 @@ backwards compatibility issues or where no simple fix exists (yet).
 We don't plan to add every bug in the tracker there, just those
 issues that can potentially cause nightmares or pain of any sort.
 
-See the Open Bugs on Jira for more details on `bugs, improvement and feature
-requests
-<http://www.doctrine-project.org/jira/secure/IssueNavigator.jspa?reset=true&mode=hide&pid=10032&resolution=-1&sorter/field=updated&sorter/order=DESC>`_.
+See bugs, improvement and feature requests on `Github issues
+<https://github.com/doctrine/doctrine2/issues>`_.
 
 Identifier Quoting and Legacy Databases
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
