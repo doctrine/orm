@@ -107,7 +107,7 @@ The code and mappings for the Market entity looks like this:
         <doctrine-mapping xmlns="http://doctrine-project.org/schemas/orm/doctrine-mapping"
               xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
               xsi:schemaLocation="http://doctrine-project.org/schemas/orm/doctrine-mapping
-                                  http://www.doctrine-project.org/schemas/orm/doctrine-mapping.xsd">
+                                  https://www.doctrine-project.org/schemas/orm/doctrine-mapping.xsd">
 
             <entity name="Doctrine\Tests\Models\StockExchange\Market">
                 <id name="id" type="integer">
@@ -193,7 +193,7 @@ here are the code and mappings for it:
         <doctrine-mapping xmlns="http://doctrine-project.org/schemas/orm/doctrine-mapping"
               xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
               xsi:schemaLocation="http://doctrine-project.org/schemas/orm/doctrine-mapping
-                                  http://www.doctrine-project.org/schemas/orm/doctrine-mapping.xsd">
+                                  https://www.doctrine-project.org/schemas/orm/doctrine-mapping.xsd">
 
             <entity name="Doctrine\Tests\Models\StockExchange\Stock">
                 <id name="id" type="integer">
