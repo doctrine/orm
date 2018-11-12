@@ -214,7 +214,13 @@ built-in mapping types:
    DateTime object.
 -  ``datetimetz``: Type that maps a SQL DATETIME/TIMESTAMP to a PHP
    DateTime object with timezone.
+-  ``date_immutable``: Type that maps a SQL DATETIME/TIMESTAMP to a PHP
+   DateTimeImmutable object.
 -  ``datetime_immutable``: Type that maps a SQL DATETIME/TIMESTAMP to a PHP
+   DateTimeImmutable object.
+-  ``datetimetz_immutable``: Type that maps a SQL DATETIME/TIMESTAMP to a PHP
+   DateTimeImmutable object.
+-  ``time_immutable``: Type that maps a SQL DATETIME/TIMESTAMP to a PHP
    DateTimeImmutable object.
 -  ``text``: Type that maps a SQL CLOB to a PHP string.
 -  ``object``: Type that maps a SQL CLOB to a PHP object using
