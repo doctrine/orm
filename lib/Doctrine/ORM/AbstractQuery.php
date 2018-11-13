@@ -19,10 +19,12 @@
 
 namespace Doctrine\ORM;
 
+use Doctrine\Common\Persistence\Mapping\MappingException;
 use Doctrine\Common\Util\ClassUtils;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\Common\Collections\ArrayCollection;
 
+use Doctrine\ORM\Mapping\MappingException as ORMMappingException;
 use Doctrine\ORM\Query\Parameter;
 use Doctrine\ORM\Cache\QueryCacheKey;
 use Doctrine\DBAL\Cache\QueryCacheProfile;
@@ -410,16 +412,24 @@ abstract class AbstractQuery
             return $value;
         }
 
-        if (is_object($value) && $this->_em->getMetadataFactory()->hasMetadataFor(ClassUtils::getClass($value))) {
+        if ($value instanceof Mapping\ClassMetadata) {
+            return $value->name;
+        }
+
+        if (! is_object($value)) {
+            return $value;
+        }
+
+        try {
             $value = $this->_em->getUnitOfWork()->getSingleIdentifierValue($value);
 
             if ($value === null) {
                 throw ORMInvalidArgumentException::invalidIdentifierBindingEntity();
             }
-        }
-
-        if ($value instanceof Mapping\ClassMetadata) {
-            return $value->name;
+        } catch (MappingException | ORMMappingException $e) {
+            // Silence any mapping exceptions. These can occur if the object in
+            // question is not a mapped entity, in which case we just don't do
+            // any preparation on the value.
         }
 
         return $value;
