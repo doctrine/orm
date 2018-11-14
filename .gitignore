@@ -12,6 +12,5 @@ lib/Doctrine/DBAL
 .idea
 *.iml
 vendor/
-composer.lock
 /tests/Doctrine/Performance/history.db
 /.phpcs-cache

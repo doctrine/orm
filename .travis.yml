@@ -77,7 +77,7 @@ jobs:
 
     - stage: Code Quality
       env: DB=none STATIC_ANALYSIS
-      install: travis_retry composer update --prefer-dist --prefer-stable
+      install: travis_retry composer install --prefer-dist
       before_script:
         - echo "extension=memcached.so" >> ~/.phpenv/versions/$(phpenv version-name)/etc/php.ini
         - echo "extension=redis.so" >> ~/.phpenv/versions/$(phpenv version-name)/etc/php.ini
@@ -93,6 +93,7 @@ jobs:
       if: NOT type = pull_request
       env: DB=none CODING_STANDARDS
       php: 7.1
+      install: travis_retry composer install --prefer-dist
       script:
         - ./vendor/bin/phpcs
 
@@ -100,6 +101,7 @@ jobs:
       if: type = pull_request
       env: DB=none PULL_REQUEST_CODING_STANDARDS
       php: 7.1
+      install: travis_retry composer install --prefer-dist
       script:
         - |
           if [ $TRAVIS_BRANCH != "master" ]; then
