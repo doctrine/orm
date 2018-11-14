@@ -90,13 +90,30 @@ jobs:
       script: php phpbench.phar run -l dots --report=default
 
     - stage: Code Quality
+      if: NOT type = pull_request
       env: DB=none CODING_STANDARDS
-      php: nightly
+      php: 7.1
       script:
         - ./vendor/bin/phpcs
 
+    - stage: Code Quality
+      if: type = pull_request
+      env: DB=none PULL_REQUEST_CODING_STANDARDS
+      php: 7.1
+      script:
+        - |
+          if [ $TRAVIS_BRANCH != "master" ]; then
+            git remote set-branches --add origin $TRAVIS_BRANCH;
+            git fetch origin $TRAVIS_BRANCH;
+          fi
+        - git merge-base origin/$TRAVIS_BRANCH $TRAVIS_PULL_REQUEST_SHA || git fetch origin +refs/pull/$TRAVIS_PULL_REQUEST/merge --unshallow
+        - wget https://github.com/diff-sniffer/git/releases/download/0.2.0/git-phpcs.phar
+        - php git-phpcs.phar origin/$TRAVIS_BRANCH...$TRAVIS_PULL_REQUEST_SHA
+
   allow_failures:
     - php: nightly
+    - stage: Code Quality
+      env: DB=none CODING_STANDARDS
 
 cache:
   directories:
