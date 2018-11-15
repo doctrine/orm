@@ -189,6 +189,25 @@ class QueryTest extends OrmTestCase
         );
     }
 
+    public function testProcessParameterValueObject() : void
+    {
+        $query = $this->_em->createQuery('SELECT a FROM Doctrine\Tests\Models\CMS\CmsAddress a WHERE a.user = :user');
+        $user = new CmsUser();
+        $user->id = 12345;
+
+        self::assertSame(
+            12345,
+            $query->processParameterValue($user)
+        );
+    }
+
+    public function testProcessParameterValueNull() : void
+    {
+        $query = $this->_em->createQuery('SELECT a FROM Doctrine\Tests\Models\CMS\CmsAddress a WHERE a.user = :user');
+
+        self::assertNull($query->processParameterValue(null));
+    }
+
     public function testDefaultQueryHints()
     {
         $config = $this->_em->getConfiguration();
