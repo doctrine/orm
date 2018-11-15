@@ -18,7 +18,7 @@ steps of configuration.
     if ($applicationMode == "development") {
         $cache = new \Doctrine\Common\Cache\ArrayCache;
     } else {
-        $cache = new \Doctrine\Common\Cache\ApcCache;
+        $cache = new \Doctrine\Common\Cache\ApcuCache;
     }
 
     $config = new Configuration;
@@ -50,9 +50,8 @@ steps of configuration.
     conversions with the query cache. These 2 caches require only an
     absolute minimum of memory yet they heavily improve the runtime
     performance of Doctrine. The recommended cache driver to use with
-    Doctrine is `APC <https://php.net/apc>`_. APC provides you with
-    an opcode-cache (which is highly recommended anyway) and a very
-    fast in-memory cache storage that you can use for the metadata and
+    Doctrine is `APCu <https://php.net/apcu>`_. APCu provides you with
+    a very fast in-memory cache storage that you can use for the metadata and
     query caches as seen in the previous code snippet.
 
 Configuration Options
@@ -149,7 +148,6 @@ Usage of a metadata cache is highly recommended.
 
 The recommended implementations for production are:
 
--  ``Doctrine\Common\Cache\ApcCache``
 -  ``Doctrine\Common\Cache\ApcuCache``
 -  ``Doctrine\Common\Cache\MemcacheCache``
 -  ``Doctrine\Common\Cache\XcacheCache``
@@ -180,7 +178,6 @@ Usage of a query cache is highly recommended.
 
 The recommended implementations for production are:
 
--  ``Doctrine\Common\Cache\ApcCache``
 -  ``Doctrine\Common\Cache\ApcuCache``
 -  ``Doctrine\Common\Cache\MemcacheCache``
 -  ``Doctrine\Common\Cache\XcacheCache``
@@ -296,7 +293,7 @@ Development vs Production Configuration
 
 You should code your Doctrine2 bootstrapping with two different
 runtime models in mind. There are some serious benefits of using
-APC or Memcache in production. In development however this will
+APCu or Memcache in production. In development however this will
 frequently give you fatal errors, when you change your entities and
 the cache still keeps the outdated metadata. That is why we
 recommend the ``ArrayCache`` for development.
