@@ -23,8 +23,6 @@ use Doctrine\Tests\Models\CompositeKeyInheritance\JoinedDerivedChildClass;
 use Doctrine\Tests\Models\CompositeKeyInheritance\JoinedDerivedIdentityClass;
 use Doctrine\Tests\Models\CompositeKeyInheritance\JoinedDerivedRootClass;
 use Doctrine\Tests\Models\Forum\ForumAvatar;
-use Doctrine\Tests\Models\Forum\ForumBoard;
-use Doctrine\Tests\Models\Forum\ForumCategory;
 use Doctrine\Tests\Models\Forum\ForumUser;
 use Doctrine\Tests\Models\NullDefault\NullDefaultColumn;
 use Doctrine\Tests\OrmTestCase;
@@ -98,23 +96,23 @@ class SchemaToolTest extends OrmTestCase
         self::assertEquals($customColumnDef, $table->getColumn('avatar_id')->getColumnDefinition());
     }
 
+    /**
+     * @group 6830
+     */
     public function testPassColumnOptionsToJoinColumn() : void
     {
-        $em         = $this->getTestEntityManager();
+        $em       = $this->getTestEntityManager();
+        $category = $em->getClassMetadata(GH6830Category::class);
+        $board    = $em->getClassMetadata(GH6830Board::class);
+
         $schemaTool = new SchemaTool($em);
+        $schema     = $schemaTool->getSchemaFromMetadata([$category, $board]);
 
-        $category = $em->getClassMetadata(ForumCategory::class);
-        $board    = $em->getClassMetadata(ForumBoard::class);
+        self::assertTrue($schema->hasTable('GH6830Category'));
+        self::assertTrue($schema->hasTable('GH6830Board'));
 
-        $classes = [$category, $board];
-
-        $schema = $schemaTool->getSchemaFromMetadata($classes);
-
-        self::assertTrue($schema->hasTable('forum_categories'));
-        self::assertTrue($schema->hasTable('forum_boards'));
-
-        $tableCategory = $schema->getTable('forum_categories');
-        $tableBoard    = $schema->getTable('forum_boards');
+        $tableCategory = $schema->getTable('GH6830Category');
+        $tableBoard    = $schema->getTable('GH6830Board');
 
         self::assertTrue($tableBoard->hasColumn('category_id'));
 
@@ -379,4 +377,39 @@ class SecondEntity
 
     /** @ORM\Column(name="name") */
     public $name;
+}
+
+/**
+ * @ORM\Entity
+ */
+class GH6830Board
+{
+    /**
+     * @ORM\Id
+     * @ORM\Column(type="integer")
+     */
+    public $id;
+
+    /**
+     * @ORM\ManyToOne(targetEntity=GH6830Category::class, inversedBy="boards")
+     * @ORM\JoinColumn(name="category_id", referencedColumnName="id")
+     */
+    public $category;
+}
+
+/**
+ * @ORM\Entity
+ */
+class GH6830Category
+{
+    /**
+     * @ORM\Id
+     * @ORM\Column(type="string", length=8, options={"fixed":true, "collation":"latin1_bin", "foo":"bar"})
+     *
+     * @var string
+     */
+    public $id;
+
+    /** @ORM\OneToMany(targetEntity=GH6830Board::class, mappedBy="category") */
+    public $boards;
 }
