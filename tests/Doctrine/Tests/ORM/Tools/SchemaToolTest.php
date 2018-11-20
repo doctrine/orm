@@ -18,6 +18,8 @@ use Doctrine\Tests\Models\CompositeKeyInheritance\JoinedDerivedChildClass;
 use Doctrine\Tests\Models\CompositeKeyInheritance\JoinedDerivedIdentityClass;
 use Doctrine\Tests\Models\CompositeKeyInheritance\JoinedDerivedRootClass;
 use Doctrine\Tests\Models\Forum\ForumAvatar;
+use Doctrine\Tests\Models\Forum\ForumBoard;
+use Doctrine\Tests\Models\Forum\ForumCategory;
 use Doctrine\Tests\Models\Forum\ForumUser;
 use Doctrine\Tests\Models\NullDefault\NullDefaultColumn;
 use Doctrine\Tests\OrmTestCase;
@@ -84,6 +86,44 @@ class SchemaToolTest extends OrmTestCase
         $table = $schema->getTable("forum_users");
         $this->assertTrue($table->hasColumn('avatar_id'));
         $this->assertEquals($customColumnDef, $table->getColumn('avatar_id')->getColumnDefinition());
+    }
+
+    /**
+     * @group 6830
+     */
+    public function testPassColumnOptionsToJoinColumn() : void
+    {
+        $em = $this->_getTestEntityManager();
+        $category = $em->getClassMetadata(GH6830Category::class);
+        $board = $em->getClassMetadata(GH6830Board::class);
+
+        $schemaTool = new SchemaTool($em);
+        $schema = $schemaTool->getSchemaFromMetadata([$category, $board]);
+
+        self::assertTrue($schema->hasTable('GH6830Category'));
+        self::assertTrue($schema->hasTable('GH6830Board'));
+
+        $tableCategory = $schema->getTable('GH6830Category');
+        $tableBoard = $schema->getTable('GH6830Board');
+
+        self::assertTrue($tableBoard->hasColumn('category_id'));
+
+        self::assertSame(
+            $tableCategory->getColumn('id')->getFixed(),
+            $tableBoard->getColumn('category_id')->getFixed(),
+            'Foreign key/join column should have the same value of option `fixed` as the referenced column'
+        );
+
+        self::assertEquals(
+            $tableCategory->getColumn('id')->getCustomSchemaOptions(),
+            $tableBoard->getColumn('category_id')->getCustomSchemaOptions(),
+            'Foreign key/join column should have the same custom options as the referenced column'
+        );
+
+        self::assertEquals(
+            ['collation' => 'latin1_bin', 'foo' => 'bar'],
+            $tableBoard->getColumn('category_id')->getCustomSchemaOptions()
+        );
     }
 
     /**
@@ -321,4 +361,41 @@ class SecondEntity
      * @Column(name="name")
      */
     public $name;
+}
+
+/**
+ * @Entity
+ */
+class GH6830Board
+{
+    /**
+     * @Id
+     * @Column(type="integer")
+     */
+    public $id;
+
+    /**
+     * @ManyToOne(targetEntity=GH6830Category::class, inversedBy="boards")
+     * @JoinColumn(name="category_id", referencedColumnName="id")
+     */
+    public $category;
+}
+
+/**
+ * @Entity
+ */
+class GH6830Category
+{
+    /**
+     * @Id
+     * @Column(type="string", length=8, options={"fixed":true, "collation":"latin1_bin", "foo":"bar"})
+     *
+     * @var string
+     */
+    public $id;
+
+    /**
+     * @OneToMany(targetEntity=GH6830Board::class, mappedBy="category")
+     */
+    public $boards;
 }
