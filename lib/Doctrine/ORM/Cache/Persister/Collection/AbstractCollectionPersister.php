@@ -122,13 +122,7 @@ abstract class AbstractCollectionPersister implements CachedCollectionPersister
             return null;
         }
 
-        $cache = $this->hydrator->loadCacheEntry($this->sourceEntity, $key, $cache, $collection);
-
-        if ($cache === null) {
-            return null;
-        }
-
-        return $cache;
+        return $this->hydrator->loadCacheEntry($this->sourceEntity, $key, $cache, $collection);
     }
 
     /**
