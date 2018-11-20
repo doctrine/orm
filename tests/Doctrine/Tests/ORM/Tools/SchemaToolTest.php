@@ -88,23 +88,23 @@ class SchemaToolTest extends OrmTestCase
         $this->assertEquals($customColumnDef, $table->getColumn('avatar_id')->getColumnDefinition());
     }
 
-    public function testPassColumnOptionsToJoinColumn()
+    /**
+     * @group 6830
+     */
+    public function testPassColumnOptionsToJoinColumn() : void
     {
         $em = $this->_getTestEntityManager();
+        $category = $em->getClassMetadata(GH6830Category::class);
+        $board = $em->getClassMetadata(GH6830Board::class);
+
         $schemaTool = new SchemaTool($em);
+        $schema = $schemaTool->getSchemaFromMetadata([$category, $board]);
 
-        $category = $em->getClassMetadata(ForumCategory::class);
-        $board = $em->getClassMetadata(ForumBoard::class);
+        self::assertTrue($schema->hasTable('GH6830Category'));
+        self::assertTrue($schema->hasTable('GH6830Board'));
 
-        $classes = [$category, $board];
-
-        $schema = $schemaTool->getSchemaFromMetadata($classes);
-
-        self::assertTrue($schema->hasTable('forum_categories'));
-        self::assertTrue($schema->hasTable('forum_boards'));
-
-        $tableCategory = $schema->getTable('forum_categories');
-        $tableBoard = $schema->getTable('forum_boards');
+        $tableCategory = $schema->getTable('GH6830Category');
+        $tableBoard = $schema->getTable('GH6830Board');
 
         self::assertTrue($tableBoard->hasColumn('category_id'));
 
@@ -361,4 +361,41 @@ class SecondEntity
      * @Column(name="name")
      */
     public $name;
+}
+
+/**
+ * @Entity
+ */
+class GH6830Board
+{
+    /**
+     * @Id
+     * @Column(type="integer")
+     */
+    public $id;
+
+    /**
+     * @ManyToOne(targetEntity=GH6830Category::class, inversedBy="boards")
+     * @JoinColumn(name="category_id", referencedColumnName="id")
+     */
+    public $category;
+}
+
+/**
+ * @Entity
+ */
+class GH6830Category
+{
+    /**
+     * @Id
+     * @Column(type="string", length=8, options={"fixed":true, "collation":"latin1_bin", "foo":"bar"})
+     *
+     * @var string
+     */
+    public $id;
+
+    /**
+     * @OneToMany(targetEntity=GH6830Board::class, mappedBy="category")
+     */
+    public $boards;
 }
