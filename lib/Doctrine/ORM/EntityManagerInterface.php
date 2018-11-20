@@ -249,7 +249,7 @@ interface EntityManagerInterface extends ObjectManager
     *
     * @deprecated
     *
-    * @param int $hydrationMode
+    * @param string|int $hydrationMode
     *
     * @return \Doctrine\ORM\Internal\Hydration\AbstractHydrator
     */
@@ -258,7 +258,7 @@ interface EntityManagerInterface extends ObjectManager
     /**
      * Create a new instance for the given hydration mode.
      *
-     * @param int $hydrationMode
+     * @param string|int $hydrationMode
      *
      * @return \Doctrine\ORM\Internal\Hydration\AbstractHydrator
      *
