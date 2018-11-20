@@ -1027,7 +1027,7 @@ class QueryBuilder
      * </code>
      *
      * @param string $key   The key/field to set.
-     * @param string $value The value, expression, placeholder, etc.
+     * @param mixed  $value The value, expression, placeholder, etc.
      *
      * @return self
      */
