@@ -1326,7 +1326,7 @@ class QueryBuilder
     /**
      * Gets a query part by its name.
      *
-     * @return mixed $queryPart
+     * @return mixed
      *
      * @todo Rename: getQueryPart (or remove?)
      */

@@ -118,7 +118,7 @@ class BasicEntityPersister implements EntityPersister
     /**
      * The underlying DBAL Connection of the used EntityManager.
      *
-     * @var Connection $conn
+     * @var Connection
      */
     protected $conn;
 
