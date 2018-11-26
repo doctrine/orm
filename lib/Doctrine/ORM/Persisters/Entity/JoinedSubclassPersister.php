@@ -259,7 +259,7 @@ class JoinedSubclassPersister extends AbstractEntityInheritancePersister
                     . $where
                     . $orderBySql;
 
-        return $this->platform->modifyLimitQuery($query, $limit, $offset) . $lockSql;
+        return $this->platform->modifyLimitQuery($query, $limit, $offset ?? 0) . $lockSql;
     }
 
     /**

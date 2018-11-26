@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Doctrine\ORM\Mapping;
 
+use Doctrine\DBAL\Types\Type;
 use Doctrine\ORM\Exception\ORMException;
 use LogicException;
 use ReflectionException;
@@ -428,13 +429,13 @@ class MappingException extends LogicException implements ORMException
     }
 
     /**
-     * @param string $unsupportedType
+     * @param Type $unsupportedType
      *
      * @return MappingException
      */
     public static function unsupportedOptimisticLockingType($unsupportedType)
     {
-        return new self('Locking type "' . $unsupportedType . '" is not supported by Doctrine.');
+        return new self('Locking type "' . $unsupportedType->getName() . '" is not supported by Doctrine.');
     }
 
     /**

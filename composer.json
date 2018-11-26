@@ -31,7 +31,7 @@
         "doctrine/cache": "~1.6",
         "doctrine/collections": "^1.4",
         "doctrine/common": "^2.7.1",
-        "doctrine/dbal": "dev-snapshot/develop/2018-04-17 as 3.x-dev",
+        "doctrine/dbal": "dev-snapshot/develop/2018-11-26 as 3.x-dev",
         "doctrine/instantiator": "~1.1",
         "ocramius/package-versions": "^1.1.2",
         "ocramius/proxy-manager": "^2.1.1",
