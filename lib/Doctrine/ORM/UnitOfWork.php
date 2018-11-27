@@ -90,7 +90,7 @@ class UnitOfWork implements PropertyChangedListener
     /**
      * Hint used to collect all primary keys of associated entities during hydration
      * and execute it in a dedicated query afterwards
-     * @see https://doctrine-orm.readthedocs.org/en/latest/reference/dql-doctrine-query-language.html?highlight=eager#temporarily-change-fetch-mode-in-dql
+     * @see https://www.doctrine-project.org/projects/doctrine-orm/en/latest/reference/dql-doctrine-query-language.html#temporarily-change-fetch-mode-in-dql
      */
     const HINT_DEFEREAGERLOAD = 'deferEagerLoad';
 
