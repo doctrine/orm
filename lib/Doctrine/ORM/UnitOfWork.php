@@ -461,9 +461,6 @@ class UnitOfWork implements PropertyChangedListener
 
             $this->entityChangeSets[$oid] = $changeset;
 
-//            echo 'Extra update: ';
-//            \Doctrine\Common\Util\Debug::dump($changeset, 3);
-
             $this->getEntityPersister(get_class($entity))->update($entity);
         }
 
@@ -1003,9 +1000,6 @@ class UnitOfWork implements PropertyChangedListener
             }
 
             if (! empty($this->entityChangeSets[$oid])) {
-//                echo 'Update: ';
-//                \Doctrine\Common\Util\Debug::dump($this->entityChangeSets[$oid], 3);
-
                 $persister->update($entity);
             }
 
@@ -1044,7 +1038,6 @@ class UnitOfWork implements PropertyChangedListener
 
             // Entity with this $oid after deletion treated as NEW, even if the $oid
             // is obtained by a new entity because the old one went out of scope.
-            //$this->entityStates[$oid] = self::STATE_NEW;
             if (! $class->isIdentifierComposite()) {
                 $property = $class->getProperty($class->getSingleIdentifierFieldName());
 
@@ -1470,8 +1463,6 @@ class UnitOfWork implements PropertyChangedListener
 
         if (isset($this->identityMap[$className][$idHash])) {
             unset($this->identityMap[$className][$idHash], $this->readOnlyObjects[$oid]);
-
-            //$this->entityStates[$oid] = self::STATE_DETACHED;
 
             return true;
         }
