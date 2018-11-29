@@ -400,6 +400,16 @@ cache drivers to manually delete cache entries. For your
 convenience we offer command line tasks to help you with
 clearing the query, result and metadata cache.
 
+.. note::
+
+    Because APCu caches are stored in a memory segment owned by a php
+    process and not shared with other php processes, it is not possible
+    to clear the APCu cache of the webserver from the CLI context. The
+    following commands will not work as intended and will clear a
+    separate APCu cache that is owned by the PHP CLI process, provided
+    ``apcu.enable_cli`` is set to 1, `which it probably should not
+    <https://php.net/manual/en/apcu.configuration.php#ini.apcu.enable-cli>`_.
+
 From the Doctrine command line you can run the following commands:
 
 To clear the query cache use the ``orm:clear-cache:query`` task.
