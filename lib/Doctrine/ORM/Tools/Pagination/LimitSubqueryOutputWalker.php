@@ -214,7 +214,7 @@ class LimitSubqueryOutputWalker extends SqlWalker
         }
 
         // Apply the limit and offset.
-        $sql = $this->platform->modifyLimitQuery($sql, $this->maxResults, $this->firstResult);
+        $sql = $this->platform->modifyLimitQuery($sql, $this->maxResults, $this->firstResult ?? 0);
 
         // Add the columns to the ResultSetMapping. It's not really nice but
         // it works. Preferably I'd clear the RSM or simply create a new one
@@ -268,7 +268,7 @@ class LimitSubqueryOutputWalker extends SqlWalker
         $sql = $this->platform->modifyLimitQuery(
             $sql,
             $this->maxResults,
-            $this->firstResult
+            $this->firstResult ?? 0
         );
 
         // Add the columns to the ResultSetMapping. It's not really nice but

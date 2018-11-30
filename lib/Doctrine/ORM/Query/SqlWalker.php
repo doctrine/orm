@@ -547,7 +547,7 @@ class SqlWalker implements TreeWalker
         }
 
         if ($limit !== null || $offset !== null) {
-            $sql = $this->platform->modifyLimitQuery($sql, $limit, $offset);
+            $sql = $this->platform->modifyLimitQuery($sql, $limit, $offset ?? 0);
         }
 
         if ($lockMode === null || $lockMode === false || $lockMode === LockMode::NONE) {

@@ -66,7 +66,6 @@ final class ConsoleRunner
         $cli->addCommands(
             [
                 // DBAL Commands
-                new DBALConsole\Command\ImportCommand(),
                 new DBALConsole\Command\ReservedWordsCommand(),
                 new DBALConsole\Command\RunSqlCommand(),
 
