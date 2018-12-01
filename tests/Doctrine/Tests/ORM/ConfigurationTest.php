@@ -6,7 +6,6 @@ namespace Doctrine\Tests\ORM;
 
 use Doctrine\Common\Cache\ArrayCache;
 use Doctrine\Common\Cache\Cache;
-use Doctrine\Common\Proxy\AbstractProxyFactory;
 use Doctrine\ORM\Annotation as ORM;
 use Doctrine\ORM\Cache\CacheConfiguration;
 use Doctrine\ORM\Cache\Exception\MetadataCacheNotConfigured;
@@ -22,7 +21,7 @@ use Doctrine\ORM\Mapping\DefaultEntityListenerResolver;
 use Doctrine\ORM\Mapping\Driver\MappingDriver;
 use Doctrine\ORM\Mapping\EntityListenerResolver;
 use Doctrine\ORM\Mapping\Factory\NamingStrategy;
-use Doctrine\ORM\Proxy\Factory\StaticProxyFactory;
+use Doctrine\ORM\Proxy\Factory\ProxyFactory;
 use Doctrine\Tests\DoctrineTestCase;
 use Doctrine\Tests\Models\DDC753\DDC753CustomRepository;
 use ProxyManager\GeneratorStrategy\EvaluatingGeneratorStrategy;
@@ -104,7 +103,7 @@ class ConfigurationTest extends DoctrineTestCase
      */
     protected function setProductionSettings($skipCache = false)
     {
-        $this->configuration->setAutoGenerateProxyClasses(AbstractProxyFactory::AUTOGENERATE_FILE_NOT_EXISTS);
+        $this->configuration->setAutoGenerateProxyClasses(ProxyFactory::AUTOGENERATE_FILE_NOT_EXISTS);
 
         $cache = $this->createMock(Cache::class);
 
@@ -170,7 +169,7 @@ class ConfigurationTest extends DoctrineTestCase
     public function testEnsureProductionSettingsAutoGenerateProxyClassesEval() : void
     {
         $this->setProductionSettings();
-        $this->configuration->setAutoGenerateProxyClasses(AbstractProxyFactory::AUTOGENERATE_EVAL);
+        $this->configuration->setAutoGenerateProxyClasses(ProxyFactory::AUTOGENERATE_EVAL);
 
         $this->expectException(ProxyClassesAlwaysRegenerating::class);
         $this->expectExceptionMessage('Proxy Classes are always regenerating.');
@@ -350,11 +349,11 @@ class ConfigurationTest extends DoctrineTestCase
     {
         return [
             [
-                StaticProxyFactory::AUTOGENERATE_NEVER,
+                ProxyFactory::AUTOGENERATE_NEVER,
                 EvaluatingGeneratorStrategy::class,
             ],
             [
-                StaticProxyFactory::AUTOGENERATE_EVAL,
+                ProxyFactory::AUTOGENERATE_EVAL,
                 EvaluatingGeneratorStrategy::class,
             ],
             [
@@ -362,11 +361,11 @@ class ConfigurationTest extends DoctrineTestCase
                 EvaluatingGeneratorStrategy::class,
             ],
             [
-                StaticProxyFactory::AUTOGENERATE_ALWAYS,
+                ProxyFactory::AUTOGENERATE_ALWAYS,
                 FileWriterGeneratorStrategy::class,
             ],
             [
-                StaticProxyFactory::AUTOGENERATE_FILE_NOT_EXISTS,
+                ProxyFactory::AUTOGENERATE_FILE_NOT_EXISTS,
                 FileWriterGeneratorStrategy::class,
             ],
             [

@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Doctrine\ORM\Tools\Console\Command;
 
-use Doctrine\Common\Util\Debug;
 use Doctrine\ORM\EntityManagerInterface;
 use LogicException;
 use RuntimeException;
@@ -14,6 +13,8 @@ use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
+use Symfony\Component\VarDumper\Cloner\VarCloner;
+use Symfony\Component\VarDumper\Dumper\CliDumper;
 use function constant;
 use function defined;
 use function is_numeric;
@@ -37,7 +38,6 @@ class RunDqlCommand extends Command
              ->addOption('hydrate', null, InputOption::VALUE_REQUIRED, 'Hydration mode of result set. Should be either: object, array, scalar or single-scalar.', 'object')
              ->addOption('first-result', null, InputOption::VALUE_REQUIRED, 'The first result in the result set.')
              ->addOption('max-result', null, InputOption::VALUE_REQUIRED, 'The maximum number of results in the result set.')
-             ->addOption('depth', null, InputOption::VALUE_REQUIRED, 'Dumping depth of Entity graph.', 7)
              ->addOption('show-sql', null, InputOption::VALUE_NONE, 'Dump generated SQL instead of executing query')
              ->setHelp('Executes arbitrary DQL directly from the command line.');
     }
@@ -55,12 +55,6 @@ class RunDqlCommand extends Command
 
         if ($dql === null) {
             throw new RuntimeException("Argument 'dql' is required in order to execute this command correctly.");
-        }
-
-        $depth = $input->getOption('depth');
-
-        if (! is_numeric($depth)) {
-            throw new LogicException("Option 'depth' must contain an integer value");
         }
 
         $hydrationModeName = $input->getOption('hydrate');
@@ -101,6 +95,9 @@ class RunDqlCommand extends Command
 
         $resultSet = $query->execute([], constant($hydrationMode));
 
-        $ui->text(Debug::dump($resultSet, $input->getOption('depth'), true, false));
+        $dumper = new CliDumper(static function (string $payload) use ($output) : void {
+            $output->write($payload);
+        });
+        $dumper->dump((new VarCloner())->cloneVar($resultSet));
     }
 }

@@ -1,5 +1,14 @@
 # Upgrade to 3.0
 
+## BC Break: `orm:run-dql` command's `$depth` parameter removed
+
+The `$depth` parameter has been removed, the dumping functionality
+is now provided by [`symfony/var-dumper`](https://github.com/symfony/var-dumper).
+
+## BC Break: Dropped `Doctrine\ORM\Tools\Setup::registerAutoloadDirectory()`
+
+This method used deprecated Doctrine Autoloader and has been removed. Please rely on Composer autoloading instead.
+
 ## BC Break: Dropped automatic discriminator map discovery
 
 Automatic discriminator map discovery exhibited multiple flaws
