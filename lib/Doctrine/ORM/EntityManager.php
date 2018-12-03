@@ -174,6 +174,11 @@ final class EntityManager implements EntityManagerInterface
         }
     }
 
+    public function __debugInfo()
+    {
+        return [];
+    }
+    
     /**
      * {@inheritDoc}
      */
