@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Doctrine\ORM\Tools\Console\Command\ClearCache;
 
 use Doctrine\Common\Cache\ApcCache;
+use Doctrine\Common\Cache\ApcuCache;
 use Doctrine\Common\Cache\XcacheCache;
 use InvalidArgumentException;
 use LogicException;
@@ -62,10 +63,15 @@ EOT
         }
 
         if ($cacheDriver instanceof ApcCache) {
-            throw new LogicException('Cannot clear APC Cache from Console, its shared in the Webserver memory and not accessible from the CLI.');
+            throw new LogicException('Cannot clear APC Cache from Console, it is shared in the Webserver memory and not accessible from the CLI.');
         }
+
+        if ($cacheDriver instanceof ApcuCache) {
+            throw new LogicException('Cannot clear APCu Cache from Console, it is shared in the Webserver memory and not accessible from the CLI.');
+        }
+
         if ($cacheDriver instanceof XcacheCache) {
-            throw new LogicException('Cannot clear XCache Cache from Console, its shared in the Webserver memory and not accessible from the CLI.');
+            throw new LogicException('Cannot clear XCache Cache from Console, it is shared in the Webserver memory and not accessible from the CLI.');
         }
 
         $ui->comment('Clearing <info>all</info> Query cache entries');

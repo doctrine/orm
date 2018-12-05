@@ -1,5 +1,11 @@
 # Upgrade to 3.0
 
+## BC Break: Removed ability to clear cache via console with some cache drivers
+
+The console commands `orm:clear-cache:metadata`, `orm:clear-cache:result`,
+and `orm:clear-cache:query` cannot be used with the `ApcCache`, `ApcuCache`,
+or `XcacheCache` because the memory is only available to the webserver process.
+
 ## BC Break: `orm:run-dql` command's `$depth` parameter removed
 
 The `$depth` parameter has been removed, the dumping functionality
