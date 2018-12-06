@@ -78,8 +78,9 @@ class SimpleObjectHydrator extends AbstractHydrator
      */
     protected function hydrateRowData(array $sqlResult, array &$result)
     {
-        $entityName = $this->class->name;
-        $data       = [];
+        $entityName       = $this->class->name;
+        $data             = [];
+        $discrColumnValue = null;
 
         // We need to find the correct entity class name if we have inheritance in resultset
         if ($this->class->inheritanceType !== ClassMetadata::INHERITANCE_TYPE_NONE) {
@@ -104,7 +105,8 @@ class SimpleObjectHydrator extends AbstractHydrator
                 throw HydrationException::invalidDiscriminatorValue($sqlResult[$discrColumnName], array_keys($discrMap));
             }
 
-            $entityName = $discrMap[$sqlResult[$discrColumnName]];
+            $entityName       = $discrMap[$sqlResult[$discrColumnName]];
+            $discrColumnValue = $sqlResult[$discrColumnName];
 
             unset($sqlResult[$discrColumnName]);
         }
@@ -134,6 +136,11 @@ class SimpleObjectHydrator extends AbstractHydrator
 
             // Prevent overwrite in case of inherit classes using same property name (See AbstractHydrator)
             if ( ! isset($data[$fieldName]) || ! $valueIsNull) {
+                // If we have inheritance in resultset, make sure the field belongs to the correct class
+                if (isset($cacheKeyInfo['discriminatorValues']) && ! in_array($discrColumnValue, $cacheKeyInfo['discriminatorValues'], true)) {
+                    continue;
+                }
+
                 $data[$fieldName] = $value;
             }
         }
