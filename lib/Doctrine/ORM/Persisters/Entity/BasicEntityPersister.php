@@ -900,7 +900,6 @@ class BasicEntityPersister implements EntityPersister
         $this->switchPersisterContext($offset, $limit);
 
         $sql = $this->getSelectSQL($criteria, null, null, $limit, $offset, $orderBy);
-
         list($params, $types) = $this->expandParameters($criteria);
         $stmt = $this->conn->executeQuery($sql, $params, $types);
 
