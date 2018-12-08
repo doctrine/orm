@@ -900,6 +900,7 @@ class BasicEntityPersister implements EntityPersister
         $this->switchPersisterContext($offset, $limit);
 
         $sql = $this->getSelectSQL($criteria, null, null, $limit, $offset, $orderBy);
+
         list($params, $types) = $this->expandParameters($criteria);
         $stmt = $this->conn->executeQuery($sql, $params, $types);
 
@@ -1955,17 +1956,21 @@ class BasicEntityPersister implements EntityPersister
             return [$newValue];
         }
 
-        if (is_object($value)
-            && ($class = $this->em->getClassMetadata(get_class($value)))
-            && $class->isIdentifierComposite
-        ) {
-            $newValue = [];
+        if (is_object($value)) {
+            $valueClass = ClassUtils::getClass($value);
+            if ( ! $this->em->getMetadataFactory()->isTransient($valueClass)) {
+                $class = $this->em->getClassMetadata($valueClass);
+                if ($class->isIdentifierComposite) {
+                    $newValue = [];
 
-            foreach ($class->getIdentifierValues($value) as $innerValue) {
-                $newValue = array_merge($newValue, $this->getValues($innerValue));
+                    foreach ($class->getIdentifierValues($value) as $innerValue) {
+                        $newValue = array_merge($newValue, $this->getValues($innerValue));
+                    }
+
+                    return $newValue;
+                }
             }
 
-            return $newValue;
         }
 
         return [$this->getIndividualValue($value)];
