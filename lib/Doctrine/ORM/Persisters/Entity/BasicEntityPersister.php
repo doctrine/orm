@@ -1955,17 +1955,17 @@ class BasicEntityPersister implements EntityPersister
             return [$newValue];
         }
 
-        if (is_object($value) && $this->em->getMetadataFactory()->hasMetadataFor(ClassUtils::getClass($value))) {
-            $class = $this->em->getClassMetadata(get_class($value));
-            if ($class->isIdentifierComposite) {
-                $newValue = [];
+        if (is_object($value)
+            && ($class = $this->em->getClassMetadata(get_class($value)))
+            && $class->isIdentifierComposite
+        ) {
+            $newValue = [];
 
-                foreach ($class->getIdentifierValues($value) as $innerValue) {
-                    $newValue = array_merge($newValue, $this->getValues($innerValue));
-                }
-
-                return $newValue;
+            foreach ($class->getIdentifierValues($value) as $innerValue) {
+                $newValue = array_merge($newValue, $this->getValues($innerValue));
             }
+
+            return $newValue;
         }
 
         return [$this->getIndividualValue($value)];
