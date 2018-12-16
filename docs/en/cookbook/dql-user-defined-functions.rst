@@ -21,7 +21,7 @@ the :doc:`Native Query <../reference/native-sql>` chapter.
 The DQL Parser has hooks to register functions that can then be
 used in your DQL queries and transformed into SQL, allowing to
 extend Doctrines Query capabilities to the vendors strength. This
-post explains the Used-Defined Functions API (UDF) of the Dql
+post explains the User-Defined Functions API (UDF) of the Dql
 Parser and shows some examples to give you some hints how you would
 extend DQL.
 
