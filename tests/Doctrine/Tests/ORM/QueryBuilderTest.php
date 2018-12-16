@@ -609,8 +609,11 @@ class QueryBuilderTest extends OrmTestCase
             ->setParameter('id', 1);
 
         $parameter = new Parameter('id', 1, ParameterTypeInferer::inferType(1));
+        $inferred  = $qb->getParameter('id');
 
-        $this->assertEquals($parameter, $qb->getParameter('id'));
+        self::assertSame($parameter->getValue(), $inferred->getValue());
+        self::assertSame($parameter->getType(), $inferred->getType());
+        self::assertFalse($inferred->typeWasSpecified());
     }
 
     public function testSetParameters()
