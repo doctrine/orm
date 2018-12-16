@@ -7,11 +7,11 @@ namespace Doctrine\Tests\ORM;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Criteria;
 use Doctrine\ORM\Cache;
-use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Query;
 use Doctrine\ORM\Query\Parameter;
 use Doctrine\ORM\Query\ParameterTypeInferer;
 use Doctrine\ORM\QueryBuilder;
+use Doctrine\Tests\Mocks\EntityManagerMock;
 use Doctrine\Tests\Models\Cache\State;
 use Doctrine\Tests\Models\CMS\CmsArticle;
 use Doctrine\Tests\Models\CMS\CmsGroup;
@@ -27,7 +27,7 @@ use function get_class;
  */
 class QueryBuilderTest extends OrmTestCase
 {
-    /** @var EntityManagerInterface */
+    /** @var EntityManagerMock */
     private $em;
 
     protected function setUp() : void
@@ -788,7 +788,7 @@ class QueryBuilderTest extends OrmTestCase
     public function testGetEntityManager() : void
     {
         $qb = $this->em->createQueryBuilder();
-        self::assertEquals($this->em, $qb->getEntityManager());
+        self::assertEquals($this->em->getWrappedEntityManager(), $qb->getEntityManager());
     }
 
     public function testInitialStateIsClean() : void

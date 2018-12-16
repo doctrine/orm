@@ -17,6 +17,7 @@ use Doctrine\ORM\Query;
 use Doctrine\ORM\Query\ResultSetMapping;
 use Doctrine\ORM\QueryBuilder;
 use Doctrine\ORM\UnitOfWork;
+use Doctrine\Tests\Mocks\EntityManagerMock;
 use Doctrine\Tests\Models\CMS\CmsUser;
 use Doctrine\Tests\Models\GeoNames\Country;
 use Doctrine\Tests\Models\IdentityIsAssociation\SimpleId;
@@ -29,7 +30,7 @@ use TypeError;
 
 class EntityManagerTest extends OrmTestCase
 {
-    /** @var EntityManager */
+    /** @var EntityManagerMock */
     private $em;
 
     public function setUp() : void
@@ -199,7 +200,7 @@ class EntityManagerTest extends OrmTestCase
 
     public function transactionalCallback($em)
     {
-        self::assertSame($this->em, $em);
+        self::assertSame($this->em->getWrappedEntityManager(), $em);
 
         return 'callback';
     }
