@@ -22,6 +22,14 @@
         {"name": "Jonathan Wage", "email": "jonwage@gmail.com"},
         {"name": "Marco Pivetta", "email": "ocramius@gmail.com"}
     ],
+    "support": {
+        "chat": "https://www.doctrine-project.org/slack",
+        "docs": "https://www.doctrine-project.org/projects/orm.html",
+        "email": "doctrine-user@googlegroups.com",
+        "issues": "https://github.com/doctrine/doctrine2/issues",
+        "rss": "https://github.com/doctrine/doctrine2/releases.atom",
+        "source": "https://github.com/doctrine/doctrine2"
+    },
     "config": {
         "sort-packages": true
     },
