@@ -76,4 +76,3 @@ DQL;
         $this->parsedQueryWithDeclaredParameterType->execute();
     }
 }
-

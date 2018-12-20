@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\Performance;
 
 use Doctrine\Common\EventManager;
@@ -12,6 +14,8 @@ use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Proxy\ProxyFactory;
 use Doctrine\ORM\Tools\SchemaTool;
+use function array_map;
+use function realpath;
 
 final class EntityManagerFactory
 {
@@ -57,7 +61,8 @@ final class EntityManagerFactory
         // A connection that doesn't really do anything
         $connection = new class ([], new Driver(), null, new EventManager()) extends Connection
         {
-            public function executeQuery($query, array $params = [], $types = [], QueryCacheProfile $qcp = null)
+            /** {@inheritdoc} */
+            public function executeQuery($query, array $params = [], $types = [], ?QueryCacheProfile $qcp = null)
             {
                 return new ArrayStatement([]);
             }
