@@ -15,10 +15,8 @@ use Doctrine\ORM\Cache\CacheFactory;
 use Doctrine\ORM\Cache\DefaultCacheFactory;
 use Doctrine\ORM\Cache\Logging\StatisticsCacheLogger;
 use Doctrine\ORM\Configuration;
-use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Mapping\Driver\AnnotationDriver;
 use Doctrine\ORM\Proxy\Factory\ProxyFactory;
-use Doctrine\Tests\Mocks;
 use function is_array;
 use function realpath;
 
@@ -82,8 +80,6 @@ abstract class OrmTestCase extends DoctrineTestCase
      * @param mixed             $conf
      * @param EventManager|null $eventManager
      * @param bool              $withSharedMetadata
-     *
-     * @return Mocks\EntityManagerMock
      */
     protected function getTestEntityManager(
         $conn = null,

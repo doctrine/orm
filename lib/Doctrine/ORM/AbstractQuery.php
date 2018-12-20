@@ -838,8 +838,8 @@ abstract class AbstractQuery
      * Executes the query and returns an IterableResult that can be used to incrementally
      * iterate over the result.
      *
-     * @param ArrayCollection|array|null $parameters    The query parameters.
-     * @param string|int|null            $hydrationMode The hydration mode to use.
+     * @param ArrayCollection|mixed[]|null $parameters    The query parameters.
+     * @param string|int|null              $hydrationMode The hydration mode to use.
      *
      * @return IterableResult
      */
@@ -862,8 +862,8 @@ abstract class AbstractQuery
     /**
      * Executes the query.
      *
-     * @param ArrayCollection|array|null $parameters    Query parameters.
-     * @param string|int|null            $hydrationMode Processing mode to be used during the hydration process.
+     * @param ArrayCollection|mixed[]|null $parameters    Query parameters.
+     * @param string|int|null              $hydrationMode Processing mode to be used during the hydration process.
      *
      * @return mixed
      */
@@ -877,8 +877,8 @@ abstract class AbstractQuery
     /**
      * Execute query ignoring second level cache.
      *
-     * @param ArrayCollection|array|null $parameters
-     * @param string|int|null            $hydrationMode
+     * @param ArrayCollection|mixed[]|null $parameters
+     * @param string|int|null              $hydrationMode
      *
      * @return mixed
      */
@@ -936,8 +936,8 @@ abstract class AbstractQuery
     /**
      * Load from second level cache or executes the query and put into cache.
      *
-     * @param ArrayCollection|array|null $parameters
-     * @param string|int|null            $hydrationMode
+     * @param ArrayCollection|mixed[]|null $parameters
+     * @param string|int|null              $hydrationMode
      *
      * @return mixed
      */
