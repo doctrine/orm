@@ -19,6 +19,8 @@
 
 namespace Doctrine\ORM\Query;
 
+use function trim;
+
 /**
  * Defines a Query Parameter.
  *
@@ -50,6 +52,13 @@ class Parameter
     private $type;
 
     /**
+     * Whether the parameter type was explicitly specified or not
+     *
+     * @var bool
+     */
+    private $typeSpecified;
+
+    /**
      * Constructor.
      *
      * @param string $name  Parameter name
@@ -58,7 +67,8 @@ class Parameter
      */
     public function __construct($name, $value, $type = null)
     {
-        $this->name = trim($name, ':');
+        $this->name          = trim($name, ':');
+        $this->typeSpecified = $type !== null;
 
         $this->setValue($value, $type);
     }
@@ -103,5 +113,10 @@ class Parameter
     {
         $this->value = $value;
         $this->type  = $type ?: ParameterTypeInferer::inferType($value);
+    }
+
+    public function typeWasSpecified() : bool
+    {
+        return $this->typeSpecified;
     }
 }

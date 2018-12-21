@@ -2,24 +2,26 @@
 
 namespace Doctrine\Tests\ORM\Query;
 
+use DateTime;
 use Doctrine\Common\Cache\ArrayCache;
 use Doctrine\Common\Collections\ArrayCollection;
-
-use Doctrine\DBAL\Cache\QueryCacheProfile;
-use Doctrine\ORM\EntityManager;
+use Doctrine\DBAL\Types\Type;
 use Doctrine\ORM\Internal\Hydration\IterableResult;
 use Doctrine\ORM\Query\Parameter;
 use Doctrine\ORM\Query\QueryException;
+use Doctrine\ORM\UnitOfWork;
 use Doctrine\Tests\Mocks\DriverConnectionMock;
+use Doctrine\Tests\Mocks\EntityManagerMock;
 use Doctrine\Tests\Mocks\StatementArrayMock;
 use Doctrine\Tests\Models\CMS\CmsAddress;
 use Doctrine\Tests\Models\CMS\CmsUser;
+use Doctrine\Tests\Models\Generic\DateTimeModel;
 use Doctrine\Tests\OrmTestCase;
 
 class QueryTest extends OrmTestCase
 {
-    /** @var EntityManager */
-    protected $_em = null;
+    /** @var EntityManagerMock */
+    protected $_em;
 
     protected function setUp()
     {
@@ -399,5 +401,23 @@ class QueryTest extends OrmTestCase
         $query->setResultCacheProfile();
 
         self::assertAttributeSame(null, '_queryCacheProfile', $query);
+    }
+
+    /** @group 7527 */
+    public function testValuesAreNotBeingResolvedForSpecifiedParameterTypes() : void
+    {
+        $unitOfWork = $this->createMock(UnitOfWork::class);
+
+        $this->_em->setUnitOfWork($unitOfWork);
+
+        $unitOfWork
+            ->expects(self::never())
+            ->method('getSingleIdentifierValue');
+
+        $query = $this->_em->createQuery('SELECT d FROM ' . DateTimeModel::class . ' d WHERE d.datetime = :value');
+
+        $query->setParameter('value', new DateTime(), Type::DATETIME);
+
+        self::assertEmpty($query->getResult());
     }
 }

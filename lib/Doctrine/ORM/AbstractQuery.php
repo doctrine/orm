@@ -72,7 +72,7 @@ abstract class AbstractQuery
     /**
      * The parameter map of this query.
      *
-     * @var \Doctrine\Common\Collections\ArrayCollection
+     * @var ArrayCollection|Parameter[]
      */
     protected $parameters;
 
@@ -306,7 +306,7 @@ abstract class AbstractQuery
     /**
      * Get all defined parameters.
      *
-     * @return \Doctrine\Common\Collections\ArrayCollection The defined query parameters.
+     * @return ArrayCollection The defined query parameters.
      */
     public function getParameters()
     {
@@ -336,7 +336,7 @@ abstract class AbstractQuery
     /**
      * Sets a collection of query parameters.
      *
-     * @param \Doctrine\Common\Collections\ArrayCollection|array $parameters
+     * @param ArrayCollection|mixed[] $parameters
      *
      * @return static This query instance.
      */

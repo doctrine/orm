@@ -11,6 +11,7 @@ use Doctrine\ORM\Cache\DefaultCacheFactory;
 use Doctrine\ORM\Configuration;
 use Doctrine\ORM\Mapping\Driver\AnnotationDriver;
 use Doctrine\Tests\Mocks;
+use Doctrine\Tests\Mocks\EntityManagerMock;
 
 /**
  * Base testcase class for all ORM testcases.
@@ -113,10 +114,8 @@ abstract class OrmTestCase extends DoctrineTestCase
      * @param mixed                              $conf
      * @param \Doctrine\Common\EventManager|null $eventManager
      * @param bool                               $withSharedMetadata
-     *
-     * @return \Doctrine\ORM\EntityManager
      */
-    protected function _getTestEntityManager($conn = null, $conf = null, $eventManager = null, $withSharedMetadata = true)
+    protected function _getTestEntityManager($conn = null, $conf = null, $eventManager = null, $withSharedMetadata = true) : EntityManagerMock
     {
         $metadataCache = $withSharedMetadata
             ? self::getSharedMetadataCacheImpl()
@@ -160,7 +159,7 @@ abstract class OrmTestCase extends DoctrineTestCase
             $conn = DriverManager::getConnection($conn, $config, $eventManager);
         }
 
-        return Mocks\EntityManagerMock::create($conn, $config, $eventManager);
+        return EntityManagerMock::create($conn, $config, $eventManager);
     }
 
     protected function enableSecondLevelCache($log = true)
