@@ -28,6 +28,7 @@ use Doctrine\ORM\Repository\RepositoryFactory;
 use Doctrine\ORM\Utility\IdentifierFlattener;
 use Doctrine\ORM\Utility\StaticClassNameConverter;
 use InvalidArgumentException;
+use ReflectionClass;
 use ReflectionException;
 use Throwable;
 use function array_keys;
@@ -239,11 +240,21 @@ final class EntityManager implements EntityManagerInterface
             $this->conn->commit();
 
             return $return;
-        } catch (Throwable $e) {
+        } catch (Throwable $exception) {
             $this->close();
-            $this->conn->rollBack();
+            try {
+                $this->conn->rollBack();
+            } catch (Throwable $rollbackException) {
+                $reflection = new ReflectionClass($rollbackException);
+                $prop = $reflection->getProperty('previous');
+                $prop->setAccessible('true');
+                $prop->setValue($rollbackException, $exception);
+                $prop->setAccessible('false');
 
-            throw $e;
+                throw $rollbackException;
+            }
+
+            throw $exception;
         }
     }
 
