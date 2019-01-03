@@ -748,10 +748,10 @@ class UnitOfWorkTest extends OrmTestCase
         try {
             $this->unitOfWork->commit();
         } catch (CommitInsideCommit $e) {
-            $this->fail('UnitOfWork::$commitInProgress flag must be reset in case of exception during commit process');
+            self::fail('UnitOfWork::$commitInProgress flag must be reset in case of exception during commit process');
         }
 
-        $this->assertEquals(1, $listener->listenerCallCounter);
+        self::assertEquals(1, $listener->listenerCallCounter);
     }
 }
 
