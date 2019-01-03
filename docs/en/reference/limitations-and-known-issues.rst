@@ -63,7 +63,7 @@ Where the ``attribute_name`` column contains the key and
 ``$attributes``.
 
 The feature request for persistence of primitive value arrays
-`is described in the DDC-298 ticket <https://github.com/doctrine/doctrine2/issues/3743>`_.
+`is described in the DDC-298 ticket <https://github.com/doctrine/orm/issues/3743>`_.
 
 Custom Persisters
 ~~~~~~~~~~~~~~~~~
@@ -74,8 +74,8 @@ Currently there is no way to overwrite the persister implementation
 for a given entity, however there are several use-cases that can
 benefit from custom persister implementations:
 
--  `Add Upsert Support <https://github.com/doctrine/doctrine2/issues/5178>`_
--  `Evaluate possible ways in which stored-procedures can be used <https://github.com/doctrine/doctrine2/issues/4946>`_
+-  `Add Upsert Support <https://github.com/doctrine/orm/issues/5178>`_
+-  `Evaluate possible ways in which stored-procedures can be used <https://github.com/doctrine/orm/issues/4946>`_
 
 Persist Keys of Collections
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -85,7 +85,7 @@ PHP Arrays are ordered hash-maps and so should be the
 evaluate a feature that optionally persists and hydrates the keys
 of a Collection instance.
 
-`Ticket DDC-213 <https://github.com/doctrine/doctrine2/issues/2817>`_
+`Ticket DDC-213 <https://github.com/doctrine/orm/issues/2817>`_
 
 Mapping many tables to one entity
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -135,7 +135,7 @@ We don't plan to add every bug in the tracker there, just those
 issues that can potentially cause nightmares or pain of any sort.
 
 See bugs, improvement and feature requests on `Github issues
-<https://github.com/doctrine/doctrine2/issues>`_.
+<https://github.com/doctrine/orm/issues>`_.
 
 Identifier Quoting and Legacy Databases
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~

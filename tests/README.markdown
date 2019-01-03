@@ -1,16 +1,16 @@
-# Running the Doctrine 2 Testsuite
+# Running the Doctrine ORM Testsuite
 
-To execute the Doctrine2 testsuite, you just need to execute this simple steps:
+To execute the ORM testsuite, you just need to execute this simple steps:
 
  * Clone the project from GitHub
- * Enter the Doctrine2 folder
+ * Enter the ORM folder
  * Install the dependencies
  * Execute the tests
  
  All this is (normally) done with:
 
-    git clone git@github.com:doctrine/doctrine2.git
-    cd doctrine2
+    git clone git@github.com:doctrine/orm.git
+    cd orm
     composer install
     ./vendor/bin/phpunit
 
