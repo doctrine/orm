@@ -270,7 +270,7 @@ DQL;
     }
     
     /**
-     * https://github.com/doctrine/doctrine2/issues/6568
+     * https://github.com/doctrine/orm/issues/6568
      */
     public function testPostLoadIsInvokedOnFetchJoinedEntities()
     {

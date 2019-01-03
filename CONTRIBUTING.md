@@ -44,12 +44,12 @@ Please try to add a test for your pull-request.
 You can run the unit-tests by calling ``vendor/bin/phpunit`` from the root of the project.
 It will run all the tests with an in memory SQLite database.
 
-In order to do that, you will need a fresh copy of doctrine2, and you
+In order to do that, you will need a fresh copy of the ORM, and you
 will have to run a composer installation in the project:
 
 ```sh
-git clone git@github.com:doctrine/doctrine2.git
-cd doctrine2
+git clone git@github.com:doctrine/orm.git
+cd orm
 curl -sS https://getcomposer.org/installer | php --
 ./composer.phar install
 ```
@@ -66,7 +66,7 @@ sqlite database.
 Tips for creating unit tests:
 
 1. If you put a test into the `Ticket` namespace as described above, put the testcase and all entities into the same class.
-   See `https://github.com/doctrine/doctrine2/tree/master/tests/Doctrine/Tests/ORM/Functional/Ticket/DDC2306Test.php` for an
+   See `https://github.com/doctrine/orm/tree/master/tests/Doctrine/Tests/ORM/Functional/Ticket/DDC2306Test.php` for an
    example.
 
 ## Travis
