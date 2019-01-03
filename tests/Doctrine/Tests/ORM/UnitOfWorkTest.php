@@ -729,8 +729,10 @@ class UnitOfWorkTest extends OrmTestCase
     {
         $listener = new class()
         {
+            public $listenerCallCounter = 0;
             public function preFlush(PreFlushEventArgs $eventArgs)
             {
+                $this->listenerCallCounter++;
                 throw new RuntimeException();
             }
         };
@@ -749,7 +751,7 @@ class UnitOfWorkTest extends OrmTestCase
             $this->fail('UnitOfWork::$commitInProgress flag must be reset in case of exception during commit process');
         }
 
-        $this->assertTrue(true);
+        $this->assertEquals(1, $listener->listenerCallCounter);
     }
 }
 
