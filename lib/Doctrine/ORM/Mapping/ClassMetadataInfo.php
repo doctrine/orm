@@ -3042,9 +3042,9 @@ class ClassMetadataInfo implements ClassMetadata
         $this->versionField = $mapping['fieldName'];
 
         if ( ! isset($mapping['default'])) {
-            if (in_array($mapping['type'], ['integer', 'bigint', 'smallint'])) {
+            if (in_array($mapping['type'], ['integer', 'bigint', 'smallint'], true)) {
                 $mapping['default'] = 1;
-            } else if ($mapping['type'] == 'datetime') {
+            } else if (in_array($mapping['type'], ['datetime', 'datetime_immutable', 'datetimetz', 'datetimetz_immutable'], true)) {
                 $mapping['default'] = 'CURRENT_TIMESTAMP';
             } else {
                 throw MappingException::unsupportedOptimisticLockingType($this->name, $mapping['fieldName'], $mapping['type']);
