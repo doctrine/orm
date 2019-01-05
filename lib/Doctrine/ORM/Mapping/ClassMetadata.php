@@ -526,7 +526,7 @@ class ClassMetadata extends ComponentMetadata implements TableOwner
             return;
         }
 
-        if ($property->getTypeName() === 'datetime') {
+        if (in_array($property->getTypeName(), ['datetime', 'datetime_immutable', 'datetimetz', 'datetimetz_immutable'], true)) {
             $property->setOptions(array_merge($options, ['default' => 'CURRENT_TIMESTAMP']));
 
             return;
