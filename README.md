@@ -4,7 +4,7 @@
 
 | [Master][Master] | [2.7][2.7] | [2.6][2.6] | [2.5][2.5] |
 |:----------------:|:----------:|:----------:|:----------:|
-| [![Build status][Master image]][Master] | [![Build status][2.7 image]][2.7] | [![Build status][2.6 image]][2.6] | [![Build status][2.5 image]][2.5] |
+| [![Build status][Master image]][Master Travis] | [![Build status][2.7 image]][2.7] | [![Build status][2.6 image]][2.6] | [![Build status][2.5 image]][2.5] |
 | [![Coverage Status][Master coverage image]][Master coverage] | [![Coverage Status][2.7 coverage image]][2.7 coverage] | [![Coverage Status][2.6 coverage image]][2.6 coverage] | [![Coverage Status][2.5 coverage image]][2.5 coverage] |
 
  ##### :warning: You are browsing the code of upcoming Doctrine 3.0.
@@ -23,7 +23,7 @@ without requiring unnecessary code duplication.
 ### Which branch should I choose?
 
  * I am submitting a bugfix for a stable release
-   * Your PR should target the [lowest active stable branch (2.6)](2.6).
+   * Your PR should target the [lowest active stable branch (2.6)][2.6].
  * I am submitting a new feature
    * Your PR should target the [master branch (3.0)][Master].
  * I am submitting a BC-breaking change
@@ -38,9 +38,10 @@ without requiring unnecessary code duplication.
 
 
   [Master image]: https://img.shields.io/travis/doctrine/orm/master.svg?style=flat-square
-  [Master]: https://travis-ci.org/doctrine/orm
+  [Master Travis]: https://travis-ci.org/doctrine/orm
   [Master coverage image]: https://img.shields.io/scrutinizer/coverage/g/doctrine/orm/master.svg?style=flat-square
   [Master coverage]: https://scrutinizer-ci.com/g/doctrine/orm/?branch=master
+  [Master]: https://github.com/doctrine/orm/tree/master
   [2.7 image]: https://img.shields.io/travis/doctrine/orm/2.7.svg?style=flat-square
   [2.7]: https://github.com/doctrine/orm/tree/2.7
   [2.7 coverage image]: https://img.shields.io/scrutinizer/coverage/g/doctrine/orm/2.7.svg?style=flat-square
