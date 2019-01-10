@@ -78,21 +78,6 @@ abstract class DDC7561AbstractOrder {
  * @Table(name="ddc_7561_card_orders")
  */
 class DDC7561CardOrder extends DDC7561AbstractOrder {
-    /**
-     * @var string
-     */
-    private $amount;
-
-    /**
-     * @param int $id
-     * @param string $amount
-     */
-    public function __construct(int $id, string $amount)
-    {
-        parent::__construct($id);
-
-        $this->amount = $amount;
-    }
 }
 
 /**
