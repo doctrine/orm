@@ -4,11 +4,10 @@ namespace Doctrine\Tests\ORM\Functional\Ticket;
 
 use Doctrine\Tests\OrmFunctionalTestCase;
 use Doctrine\DBAL\Platforms\AbstractPlatform;
-use Doctrine\DBAL\Types\ConversionException;
 use Doctrine\DBAL\Types\Type;
 
 /**
- * @group DDC-1707
+ * @group DDC-7561
  */
 class DDC7561Test extends OrmFunctionalTestCase
 {
@@ -17,8 +16,8 @@ class DDC7561Test extends OrmFunctionalTestCase
         parent::setUp();
 
         Type::addType(
-            'ddc_7561_withdraw_order_confirmation_status',
-            DDC7561DDC7561ConfirmationStatusType::class
+            DDC7561NonNullableValueType::class,
+            DDC7561NonNullableValueType::class
         );
 
         $this->_schemaTool->createSchema(
@@ -32,7 +31,7 @@ class DDC7561Test extends OrmFunctionalTestCase
 
     public function testExpectsDDC7561CardOrderFetching()
     {
-        $expectedOrder = new DDC7561CardOrder(1, '1000', 'USD');
+        $expectedOrder = new DDC7561CardOrder(1, '1000');
 
         $this->_em->persist($expectedOrder);
         $this->_em->flush();
@@ -59,27 +58,18 @@ class DDC7561Test extends OrmFunctionalTestCase
 abstract class DDC7561AbstractOrder {
     /**
      * @Id()
-     * @GeneratedValue()
+     * @GeneratedValue(strategy="NONE")
      * @Column(type="integer")
      * @var int
      */
     private $id;
 
     /**
-     * DDC7561AbstractOrder constructor.
      * @param int $id
      */
     public function __construct(int $id)
     {
         $this->id = $id;
-    }
-
-    /**
-     * @return int
-     */
-    public function getId(): int
-    {
-        return $this->id;
     }
 }
 
@@ -94,38 +84,14 @@ class DDC7561CardOrder extends DDC7561AbstractOrder {
     private $amount;
 
     /**
-     * @var string
-     */
-    private $currencyIsoCode;
-
-    /**
-     * DDC7561CardOrder constructor.
      * @param int $id
      * @param string $amount
-     * @param string $currencyIsoCode
      */
-    public function __construct(int $id, string $amount, string $currencyIsoCode)
+    public function __construct(int $id, string $amount)
     {
         parent::__construct($id);
 
         $this->amount = $amount;
-        $this->currencyIsoCode = $currencyIsoCode;
-    }
-
-    /**
-     * @return string
-     */
-    public function getAmount(): string
-    {
-        return $this->amount;
-    }
-
-    /**
-     * @return string
-     */
-    public function getCurrencyIsoCode(): string
-    {
-        return $this->currencyIsoCode;
     }
 }
 
@@ -135,102 +101,37 @@ class DDC7561CardOrder extends DDC7561AbstractOrder {
  */
 class DDC7561WithdrawOrder extends DDC7561AbstractOrder {
     /**
-     * @Column(type="decimal", precision=10, scale=2)
-     *
-     * @var string
+     * @var DDC7561NonNullableValue
+     * @Column(type="Doctrine\Tests\ORM\Functional\Ticket\DDC7561NonNullableValueType")
      */
-    private $amount;
+    private $nonNullableValue;
 
     /**
-     * @Column(type="string", length=3)
-     * @var string
-     */
-    private $currencyIsoCode;
-
-    /**
-     * @var DDC7561ConfirmationStatus
-     * @Column(type="ddc_7561_withdraw_order_confirmation_status")
-     */
-    private $DDC7561ConfirmationStatus;
-
-    /**
-     * DDC7561WithdrawOrder constructor.
      * @param int $id
-     * @param string $amount
-     * @param string $currencyIsoCode
      */
-    public function __construct(int $id, string $amount, string $currencyIsoCode)
+    public function __construct(int $id)
     {
         parent::__construct($id);
-        $this->amount = $amount;
-        $this->currencyIsoCode = $currencyIsoCode;
-        $this->DDC7561ConfirmationStatus = new DDC7561ConfirmationStatus('pending');
-    }
-
-    /**
-     * @return string
-     */
-    public function getAmount(): string
-    {
-        return $this->amount;
-    }
-
-    /**
-     * @return string
-     */
-    public function getCurrencyIsoCode(): string
-    {
-        return $this->currencyIsoCode;
-    }
-
-    /**
-     * @return DDC7561ConfirmationStatus
-     */
-    public function getDDC7561ConfirmationStatus(): DDC7561ConfirmationStatus
-    {
-        return $this->DDC7561ConfirmationStatus;
+        $this->nonNullableValue = new DDC7561NonNullableValue('pending');
     }
 }
 
-class DDC7561DDC7561ConfirmationStatusType extends Type
+class DDC7561NonNullableValueType extends Type
 {
     /**
-     * @param mixed            $value
-     * @param AbstractPlatform $platform
-     *
      * @return string
-     *
-     * @throws ConversionException
      */
     public function convertToDatabaseValue($value, AbstractPlatform $platform): string
     {
-        if (!$value instanceof DDC7561ConfirmationStatus) {
-            throw new ConversionException(\sprintf(
-                'Value must be instance of "%s", instance "%s" given',
-                DDC7561ConfirmationStatus::class,
-                \is_object($value) ? \get_class($value) : \gettype($value)
-            ));
-        }
-
-        /* @var DDC7561ConfirmationStatus $value */
-        return $value->getValue();
+        return $value;
     }
 
     /**
-     * @param mixed            $value
-     * @param AbstractPlatform $platform
-     *
-     * @return DDC7561ConfirmationStatus
-     *
-     * @throws ConversionException
+     * @return DDC7561NonNullableValue
      */
-    public function convertToPHPValue($value, AbstractPlatform $platform): DDC7561ConfirmationStatus
+    public function convertToPHPValue($value, AbstractPlatform $platform): DDC7561NonNullableValue
     {
-        try {
-            return new DDC7561ConfirmationStatus($value);
-        } catch (\Throwable $e) {
-            throw new ConversionException($e->getMessage(), $e->getCode(), $e);
-        }
+        return new DDC7561NonNullableValue($value);
     }
 
     /**
@@ -241,7 +142,7 @@ class DDC7561DDC7561ConfirmationStatusType extends Type
      */
     public function getSQLDeclaration(array $fieldDeclaration, AbstractPlatform $platform): string
     {
-        return 'ddc_7561_withdraw_order_confirmation_status';
+        return $platform->getVarcharTypeDeclarationSQL($fieldDeclaration);
     }
 
     /**
@@ -249,11 +150,11 @@ class DDC7561DDC7561ConfirmationStatusType extends Type
      */
     public function getName(): string
     {
-        return 'ddc_7561_withdraw_order_confirmation_status';
+        return self::class;
     }
 }
 
-class DDC7561ConfirmationStatus {
+class DDC7561NonNullableValue {
     /**
      * @var string
      */
@@ -265,18 +166,6 @@ class DDC7561ConfirmationStatus {
      */
     public function __construct(string $value)
     {
-        if (\in_array($value, ['pending', 'approved', 'declined'])) {
-            throw new \InvalidArgumentException();
-        }
-
         $this->value = $value;
-    }
-
-    /**
-     * @return string
-     */
-    public function getValue(): string
-    {
-        return $this->value;
     }
 }
