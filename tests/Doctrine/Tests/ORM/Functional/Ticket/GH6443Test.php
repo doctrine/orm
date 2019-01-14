@@ -31,7 +31,7 @@ class GH6443Test extends OrmFunctionalTestCase
         $entity     = new GH6443Post();
         $entity->id = 'Foo';
 
-        $dql = 'SELECT p FROM ' . GH6443Post::class . ' p WHERE p = ?1';
+        $dql   = 'SELECT p FROM ' . GH6443Post::class . ' p WHERE p = ?1';
         $query = $this->em->createQuery($dql);
 
         // we do not know that the internal type is a rot13, so we can not add the type parameter here
@@ -58,7 +58,7 @@ class GH6443Test extends OrmFunctionalTestCase
         $metadata    = $this->em->getClassMetadata(GH6443Post::class);
         $entityProxy = $this->em->getProxyFactory()->getProxy($metadata, ['id' => 'Foo']);
 
-        $dql = 'SELECT p FROM ' . GH6443Post::class . ' p WHERE p = ?1';
+        $dql   = 'SELECT p FROM ' . GH6443Post::class . ' p WHERE p = ?1';
         $query = $this->em->createQuery($dql);
 
         // we do not know that the internal type is a rot13, so we can not add the type parameter here
@@ -88,7 +88,7 @@ class GH6443Test extends OrmFunctionalTestCase
         $entity->id       = 'Foo';
         $entity->secondId = 'Bar';
 
-        $dql = 'SELECT entity FROM ' . GH6443CombinedIdentityEntity::class . ' entity WHERE entity = ?1';
+        $dql   = 'SELECT entity FROM ' . GH6443CombinedIdentityEntity::class . ' entity WHERE entity = ?1';
         $query = $this->em->createQuery($dql);
 
         // we set the entity as arameter
@@ -96,7 +96,6 @@ class GH6443Test extends OrmFunctionalTestCase
 
         // this is when the exception should be thrown
         $query->getResult();
-
     }
 
     /**
@@ -122,8 +121,8 @@ class GH6443Test extends OrmFunctionalTestCase
         parent::tearDown();
 
         $this->schemaTool->dropSchema([
-                $this->em->getClassMetadata(GH6443Post::class),
-                $this->em->getClassMetadata(GH6443CombinedIdentityEntity::class),
+            $this->em->getClassMetadata(GH6443Post::class),
+            $this->em->getClassMetadata(GH6443CombinedIdentityEntity::class),
         ]);
     }
 }

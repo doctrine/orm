@@ -393,7 +393,7 @@ final class Query extends AbstractQuery
 
             $value = $this->processParameterValue($value);
             if ($type === null) {
-                $type  = $parameter->getValue() === $value
+                $type = $parameter->getValue() === $value
                     ? $parameter->getType()
                     : ParameterTypeInferer::inferType($value);
             }
