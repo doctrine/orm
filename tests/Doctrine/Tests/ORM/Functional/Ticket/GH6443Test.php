@@ -82,7 +82,7 @@ class GH6443Test extends OrmFunctionalTestCase
      */
     public function testIssueWithCompositeIdentifier()
     {
-        self::expectException(ORMInvalidArgumentException::class);
+        $this->expectException(ORMInvalidArgumentException::class);
 
         $entity           = new GH6443CombinedIdentityEntity();
         $entity->id       = 'Foo';
