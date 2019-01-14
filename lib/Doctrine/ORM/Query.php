@@ -386,7 +386,7 @@ final class Query extends AbstractQuery
             if (is_object($value) && $this->em->getMetadataFactory()->hasMetadataFor(StaticClassNameConverter::getClass($value))) {
                 $metadata = $this->em->getClassMetadata(StaticClassNameConverter::getClass($value));
                 if ($metadata->isIdentifierComposite()) {
-                    ORMInvalidArgumentException::invalidCompositeIdentifier();
+                    throw ORMInvalidArgumentException::invalidCompositeIdentifier();
                 }
                 $type = $metadata->getColumn($metadata->getIdentifier()[0])->getTypeName();
             }
