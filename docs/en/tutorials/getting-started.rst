@@ -19,7 +19,7 @@ installed:
 
 - PHP (latest stable version)
 - Composer Package Manager (`Install Composer
-  <http://getcomposer.org/doc/00-intro.md>`_)
+  <https://getcomposer.org/doc/00-intro.md>`_)
 
 The code of this tutorial is `available on Github <https://github.com/doctrine/doctrine2-orm-tutorial>`_.
 
@@ -31,9 +31,8 @@ The code of this tutorial is `available on Github <https://github.com/doctrine/d
 What is Doctrine?
 -----------------
 
-Doctrine 2 is an `object-relational mapper (ORM)
-<http://en.wikipedia.org/wiki/Object-relational_mapping>`_ for PHP 5.4+ that
-provides transparent persistence for PHP objects. It uses the Data Mapper
+Doctrine 2 is an `object-relational mapper (ORM) <https://en.wikipedia.org/wiki/Object-relational_mapping>`_
+for PHP 7.1+ that provides transparent persistence for PHP objects. It uses the Data Mapper
 pattern at the heart, aiming for a complete separation of your domain/business
 logic from the persistence in a relational database management system.
 
@@ -62,7 +61,7 @@ An Example Model: Bug Tracker
 
 For this Getting Started Guide for Doctrine we will implement the
 Bug Tracker domain model from the
-`Zend\_Db\_Table <http://framework.zend.com/manual/1.12/en/zend.db.adapter.html>`_
+`Zend_Db_Table <https://framework.zend.com/manual/1.12/en/zend.db.adapter.html>`_
 documentation. Reading their documentation we can extract the
 requirements:
 
@@ -169,7 +168,7 @@ read up on the configuration details in the
 The third block shows the configuration options required to connect to
 a database. In this case, we'll use a file-based SQLite database. All the
 configuration options for all the shipped drivers are given in the
-`DBAL Configuration section of the manual <http://docs.doctrine-project.org/projects/doctrine-dbal/en/latest/>`_.
+`DBAL Configuration section of the manual <https://www.doctrine-project.org/projects/doctrine-dbal/en/current/>`_.
 
 The last block shows how the ``EntityManager`` is obtained from a
 factory method.

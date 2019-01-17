@@ -134,4 +134,4 @@ instances. This was already discussed in the previous blog post on
 the Versionable extension, which requires another type of event
 called "onFlush".
 
-Further readings: :doc:`Lifecycle Events <../reference/events>`
+Further readings: :ref:`reference-events-lifecycle-events`

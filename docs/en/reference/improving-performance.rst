@@ -52,7 +52,7 @@ for more information on how this fetch mode works.
 Temporarily change fetch mode in DQL
 ------------------------------------
 
-See :ref:`Doctrine Query Language chapter <dql-temporarily-change-fetch-mode>`
+See :ref:`dql-temporarily-change-fetch-mode`
 
 
 Apply Best Practices

@@ -18,7 +18,7 @@ well.
 Requirements
 ------------
 
-Doctrine 2 requires a minimum of PHP 5.4. For greatly improved
+Doctrine 2 requires a minimum of PHP 7.1. For greatly improved
 performance it is also recommended that you use APC with PHP.
 
 Doctrine 2 Packages

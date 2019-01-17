@@ -245,7 +245,7 @@ as follows:
    persist operation. However, the persist operation is cascaded to
    entities referenced by X, if the relationships from X to these
    other entities are mapped with cascade=PERSIST or cascade=ALL (see
-   ":ref:`Transitive Persistence <transitive-persistence>`").
+   ":ref:`transitive-persistence`").
 -  If X is a removed entity, it becomes managed.
 -  If X is a detached entity, an exception will be thrown on
    flush.
@@ -286,12 +286,12 @@ as follows:
 -  If X is a new entity, it is ignored by the remove operation.
    However, the remove operation is cascaded to entities referenced by
    X, if the relationship from X to these other entities is mapped
-   with cascade=REMOVE or cascade=ALL (see ":ref:`Transitive Persistence <transitive-persistence>`").
+   with cascade=REMOVE or cascade=ALL (see ":ref:`transitive-persistence`").
 -  If X is a managed entity, the remove operation causes it to
    become removed. The remove operation is cascaded to entities
    referenced by X, if the relationships from X to these other
    entities is mapped with cascade=REMOVE or cascade=ALL (see
-   ":ref:`Transitive Persistence <transitive-persistence>`").
+   ":ref:`transitive-persistence`").
 -  If X is a detached entity, an InvalidArgumentException will be
    thrown.
 -  If X is a removed entity, it is ignored by the remove operation.
@@ -357,14 +357,14 @@ as follows:
    become detached. The detach operation is cascaded to entities
    referenced by X, if the relationships from X to these other
    entities is mapped with cascade=DETACH or cascade=ALL (see
-   ":ref:`Transitive Persistence <transitive-persistence>`"). Entities which previously referenced X
+   ":ref:`transitive-persistence`"). Entities which previously referenced X
    will continue to reference X.
 -  If X is a new or detached entity, it is ignored by the detach
    operation.
 -  If X is a removed entity, the detach operation is cascaded to
    entities referenced by X, if the relationships from X to these
    other entities is mapped with cascade=DETACH or cascade=ALL (see
-   ":ref:`Transitive Persistence <transitive-persistence>`"). Entities which previously referenced X
+   ":ref:`transitive-persistence`"). Entities which previously referenced X
    will continue to reference X.
 
 There are several situations in which an entity is detached
@@ -423,7 +423,7 @@ as follows:
 -  If X is a managed entity, it is ignored by the merge operation,
    however, the merge operation is cascaded to entities referenced by
    relationships from X if these relationships have been mapped with
-   the cascade element value MERGE or ALL (see ":ref:`Transitive Persistence <transitive-persistence>`").
+   the cascade element value MERGE or ALL (see ":ref:`transitive-persistence`").
 -  For all entities Y referenced by relationships from X having the
    cascade element value MERGE or ALL, Y is merged recursively as Y'.
    For all such Y referenced by X, X' is set to reference Y'. (Note

@@ -110,8 +110,7 @@ production system you'll want to use a real caching system like
 APC, get rid of EchoSqlLogger, and turn off
 autoGenerateProxyClasses.
 
-For more details, consult the
-`Doctrine 2 Configuration documentation <http://docs.doctrine-project.org/projects/doctrine-orm/en/latest/reference/configuration.html>`_.
+For more details, consult the :doc:`Doctrine 2 Configuration documentation <reference/configuration>`.
 
 Now to use it
 -------------

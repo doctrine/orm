@@ -11,8 +11,8 @@ However, it is quite easy to make use of these methods in a safe
 way by guarding the custom wakeup or clone code with an entity
 identity check, as demonstrated in the following sections.
 
-Safely implementing \_\_wakeup
-------------------------------
+Safely implementing __wakeup
+----------------------------
 
 To safely implement ``__wakeup``, simply enclose your
 implementation code in an identity check as follows:
@@ -37,8 +37,8 @@ implementation code in an identity check as follows:
         //...
     }
 
-Safely implementing \_\_clone
------------------------------
+Safely implementing __clone
+---------------------------
 
 Safely implementing ``__clone`` is pretty much the same:
 

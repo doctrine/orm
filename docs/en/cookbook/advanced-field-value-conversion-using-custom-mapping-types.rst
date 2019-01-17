@@ -11,9 +11,9 @@ There are several ways to achieve this: converting the value inside the Type
 class, converting the value on the database-level or a combination of both.
 
 This article describes the third way by implementing the MySQL specific column
-type `Point <http://dev.mysql.com/doc/refman/5.5/en/gis-class-point.html>`_.
+type `Point <https://dev.mysql.com/doc/refman/8.0/en/gis-class-point.html>`_.
 
-The ``Point`` type is part of the `Spatial extension <http://dev.mysql.com/doc/refman/5.5/en/spatial-extensions.html>`_
+The ``Point`` type is part of the `Spatial extension <https://dev.mysql.com/doc/refman/8.0/en/spatial-extensions.html>`_
 of MySQL and enables you to store a single location in a coordinate space by
 using x and y coordinates. You can use the Point type to store a 
 longitude/latitude pair to represent a geographic location.
@@ -192,9 +192,9 @@ object into a string representation before saving to the database (in the
 ``convertToDatabaseValue`` method) and back into an object after fetching the
 value from the database (in the ``convertToPHPValue`` method).
 
-The format of the string representation format is called `Well-known text (WKT)
-<http://en.wikipedia.org/wiki/Well-known_text>`_. The advantage of this format
-is, that it is both human readable and parsable by MySQL.
+The format of the string representation format is called
+`Well-known text (WKT) <http://en.wikipedia.org/wiki/Well-known_text>`_.
+The advantage of this format is, that it is both human readable and parsable by MySQL.
 
 Internally, MySQL stores geometry values in a binary format that is not 
 identical to the WKT format. So, we need to let MySQL transform the WKT
@@ -204,8 +204,8 @@ This is where the ``convertToPHPValueSQL`` and  ``convertToDatabaseValueSQL``
 methods come into play.
 
 This methods wrap a sql expression (the WKT representation of the Point) into
-MySQL functions `PointFromText <http://dev.mysql.com/doc/refman/5.5/en/creating-spatial-values.html#function_pointfromtext>`_
-and `AsText <http://dev.mysql.com/doc/refman/5.5/en/functions-to-convert-geometries-between-formats.html#function_astext>`_
+MySQL functions `ST_PointFromText <https://dev.mysql.com/doc/refman/8.0/en/gis-wkt-functions.html#function_st-pointfromtext>`_
+and `ST_AsText <https://dev.mysql.com/doc/refman/8.0/en/gis-format-conversion-functions.html#function_st-astext>`_
 which convert WKT strings to and from the internal format of MySQL.
 
 .. note::

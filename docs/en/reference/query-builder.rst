@@ -502,7 +502,7 @@ complete list of supported helper methods available:
 Adding a Criteria to a Query
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-You can also add a :ref:`Criteria <filtering-collections>` to a QueryBuilder by
+You can also add a :ref:`filtering-collections` to a QueryBuilder by
 using ``addCriteria``:
 
 .. code-block:: php

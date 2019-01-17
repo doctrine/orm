@@ -3,7 +3,7 @@ Strategy-Pattern
 
 This recipe will give you a short introduction on how to design
 similar entities without using expensive (i.e. slow) inheritance
-but with not more than \* the well-known strategy pattern \* event
+but with not more than *the well-known strategy pattern* event
 listeners
 
 Scenario / Problem
