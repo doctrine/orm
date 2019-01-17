@@ -118,9 +118,6 @@ Cookbook
   :doc:`Entities in the Session <cookbook/entities-in-session>` |
   :doc:`Keeping your Modules independent <cookbook/resolve-target-entity-listener>`
 
-* **Integration into Frameworks/Libraries**
-  :doc:`CodeIgniter <cookbook/integrating-with-codeigniter>`
-
 * **Hidden Gems**
   :doc:`Prefixing Table Name <cookbook/sql-table-prefixes>`
 
