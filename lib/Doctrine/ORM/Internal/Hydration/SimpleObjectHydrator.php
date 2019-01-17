@@ -106,7 +106,11 @@ class SimpleObjectHydrator extends AbstractHydrator
 
             $entityName = $discrMap[$sqlResult[$discrColumnName]];
 
+            $discriminator = $sqlResult[$discrColumnName];
+
             unset($sqlResult[$discrColumnName]);
+
+            $this->removeColumnsNotRelatedToEntityDiscriminator($discriminator, $sqlResult);
         }
 
         foreach ($sqlResult as $column => $value) {
@@ -149,6 +153,25 @@ class SimpleObjectHydrator extends AbstractHydrator
 
         if (isset($this->_hints[Query::HINT_INTERNAL_ITERATION]) && $this->_hints[Query::HINT_INTERNAL_ITERATION]) {
             $this->_uow->hydrationComplete();
+        }
+    }
+
+    /**
+     * @param string $discriminator
+     * @param array $sqlResult
+     */
+    private function removeColumnsNotRelatedToEntityDiscriminator(string $discriminator, array &$sqlResult)
+    {
+        foreach ($sqlResult as $column => $value) {
+            $cacheKeyInfo = $this->hydrateColumnInfo($column);
+
+            if (!isset($cacheKeyInfo['discriminatorValue'])) {
+                continue;
+            }
+
+            if ($cacheKeyInfo['discriminatorValue'] !== $discriminator) {
+                unset($sqlResult[$column]);
+            }
         }
     }
 }
