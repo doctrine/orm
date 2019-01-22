@@ -236,7 +236,7 @@ as follows:
    persist operation. However, the persist operation is cascaded to
    entities referenced by X, if the relationships from X to these
    other entities are mapped with cascade=PERSIST or cascade=ALL (see
-   ":ref:`Transitive Persistence <transitive-persistence>`").
+   ":ref:`transitive-persistence`").
 -  If X is a removed entity, it becomes managed.
 -  If X is a detached entity, an exception will be thrown on
    flush.
@@ -275,12 +275,12 @@ as follows:
 -  If X is a new entity, it is ignored by the remove operation.
    However, the remove operation is cascaded to entities referenced by
    X, if the relationship from X to these other entities is mapped
-   with cascade=REMOVE or cascade=ALL (see ":ref:`Transitive Persistence <transitive-persistence>`").
+   with cascade=REMOVE or cascade=ALL (see ":ref:`transitive-persistence`").
 -  If X is a managed entity, the remove operation causes it to
    become removed. The remove operation is cascaded to entities
    referenced by X, if the relationships from X to these other
    entities is mapped with cascade=REMOVE or cascade=ALL (see
-   ":ref:`Transitive Persistence <transitive-persistence>`").
+   ":ref:`transitive-persistence`").
 -  If X is a detached entity, an InvalidArgumentException will be
    thrown.
 -  If X is a removed entity, it is ignored by the remove operation.
