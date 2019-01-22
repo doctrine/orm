@@ -292,7 +292,7 @@ instance of ``Doctrine\DBAL\Connection``. If an array is passed it
 is directly passed along to the DBAL Factory
 ``Doctrine\DBAL\DriverManager::getConnection()``. The DBAL
 configuration is explained in the
-`DBAL section <./../../../../../projects/doctrine-dbal/en/latest/reference/configuration.html>`_.
+`DBAL section <https://www.doctrine-project.org/projects/doctrine-dbal/en/current/reference/configuration.html>`_.
 
 Proxy Objects
 -------------
