@@ -120,8 +120,10 @@ class SimpleObjectHydrator extends AbstractHydrator
             $cacheKeyInfo = $this->hydrateColumnInfo($column);
 
             if ( ! $cacheKeyInfo || ($this->class->discriminatorValue &&
+                    !$cacheKeyInfo['isIdentifier'] &&
                     isset($cacheKeyInfo['discriminatorValue']) &&
-                    $this->class->discriminatorValue !== $cacheKeyInfo['discriminatorValue'])
+                    $this->class->discriminatorValue !== $cacheKeyInfo['discriminatorValue'] &&
+                    !in_array($this->class->discriminatorValue, $cacheKeyInfo['discriminatorValues']))
             ) {
                 continue;
             }
