@@ -121,7 +121,7 @@ class SimpleObjectHydrator extends AbstractHydrator
 
             if ( ! $cacheKeyInfo || ($this->class->discriminatorValue &&
                     isset($cacheKeyInfo['discriminatorValue']) &&
-                    $this->class->discriminatorValue !== isset($cacheKeyInfo['discriminatorValue']))
+                    $this->class->discriminatorValue !== $cacheKeyInfo['discriminatorValue'])
             ) {
                 continue;
             }
