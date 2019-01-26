@@ -2,6 +2,7 @@
 
 namespace Doctrine\Tests\ORM;
 
+use DateTime;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\EventManager;
 use Doctrine\Common\NotifyPropertyChanged;
@@ -789,6 +790,31 @@ class UnitOfWorkTest extends OrmTestCase
         self::assertCount(1, $persister1->getInserts());
         self::assertCount(0, $persister2->getInserts());
     }
+
+    /**
+     * @group #7583
+     * @throws \Exception
+     */
+    public function testUpdateEntityWithObjectProperty(): void
+    {
+        $persister = new EntityPersisterMock($this->_emMock, $this->_emMock->getClassMetadata(Flight::class));
+        $this->_unitOfWork->setEntityPersister(Flight::class, $persister);
+
+        $departure = '2019-01-26 14:20:00';
+
+        $flight = new Flight('Novosibirsk', 'Moscow', $departure);
+        $this->_unitOfWork->persist($flight);
+        $this->_unitOfWork->commit();
+
+        $persister->reset();
+
+        //set equal value
+        $flight->setDeparture(new DateTime($departure));
+        $this->_unitOfWork->persist($flight);
+        $this->_unitOfWork->commit();
+
+        self::assertCount(0, $persister->getUpdates());
+    }
 }
 
 /**
@@ -993,5 +1019,58 @@ class EntityWithNonCascadingAssociation
     public function __construct()
     {
         $this->id = uniqid(self::class, true);
+    }
+}
+
+/**
+ * @Entity
+ */
+class Flight
+{
+    /**
+     * @var string
+     *
+     * @Id
+     * @Column(type="string")
+     */
+    private $leavingFrom;
+
+    /**
+     * @var string
+     *
+     * @Id
+     * @Column(type="string")
+     */
+    private $goingTo;
+
+    /**
+     * @var DateTime
+     *
+     * @Column(type="datetime")
+     */
+    private $departure;
+
+    /**
+     * Flight constructor.
+     *
+     * @param string $leavingFrom
+     * @param string $goingTo
+     * @param string $departure
+     *
+     * @throws \Exception
+     */
+    public function __construct(string $leavingFrom, string $goingTo, string $departure)
+    {
+        $this->goingTo = $goingTo;
+        $this->leavingFrom = $leavingFrom;
+        $this->departure = new DateTime($departure);
+    }
+
+    /**
+     * @param DateTime $departure
+     */
+    public function setDeparture(DateTime $departure)
+    {
+        $this->departure = $departure;
     }
 }
