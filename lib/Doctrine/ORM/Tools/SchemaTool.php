@@ -899,7 +899,7 @@ class SchemaTool
 
     /**
      * Gets the sequence of SQL statements that need to be performed in order
-     * to bring the given class mappings in-synch with the relational schema.
+     * to bring the given class mappings in sync with the relational schema.
      *
      * @param ClassMetadata[] $classes  The classes to consider.
      * @param bool            $saveMode If TRUE, only generates SQL for a partial update
