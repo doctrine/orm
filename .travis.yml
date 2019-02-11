@@ -55,7 +55,7 @@ jobs:
     - stage: Test
       dist: xenial
       env: DB=mysql MYSQL_VERSION=5.7
-      php: nightly
+      php: 7.4snapshot
       services:
         - mysql
       before_script:
@@ -102,7 +102,7 @@ jobs:
     - stage: Code Quality
       if: NOT type = pull_request
       env: DB=none CODING_STANDARDS
-      php: 7.1
+      php: 7.4snapshot
       install: travis_retry composer install --prefer-dist
       script:
         - ./vendor/bin/phpcs
