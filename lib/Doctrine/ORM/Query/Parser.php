@@ -2558,6 +2558,18 @@ class Parser
             }
 
             $this->lexer->resetPeek();
+        } elseif ($token['type'] === Lexer::T_CASE || ($token['type'] === Lexer::T_OPEN_PARENTHESIS && $peek['type'] === Lexer::T_CASE)) {
+            // Need to discover if it's a regular or an "in" comparison
+            do {
+                $token = $this->lexer->peek();
+            } while ($token['type'] != Lexer::T_END);
+            while ($token = $this->lexer->peek()) {
+                if ($token['type'] !== Lexer::T_CLOSE_PARENTHESIS) {
+                    break;
+                }
+            }
+            $lookahead = $this->lexer->peek();
+            $this->lexer->resetPeek();
         }
 
         if ($token['type'] === Lexer::T_BETWEEN) {
