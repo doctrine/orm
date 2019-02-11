@@ -6,7 +6,7 @@ php:
   - 7.1
   - 7.2
   - 7.3
-  - nightly
+  - 7.4snapshot
 
 env:
   - DB=sqlite
@@ -47,7 +47,7 @@ jobs:
 
     - stage: Test
       env: DB=mysql MYSQL_VERSION=5.7
-      php: nightly
+      php: 7.4snapshot
       before_script:
         - ./tests/travis/install-mysql-$MYSQL_VERSION.sh
       sudo: required
@@ -91,12 +91,12 @@ jobs:
 
     - stage: Code Quality
       env: DB=none CODING_STANDARDS
-      php: nightly
+      php: 7.4snapshot
       script:
         - ./vendor/bin/phpcs
 
   allow_failures:
-    - php: nightly
+    - php: 7.4snapshot
 
 cache:
   directories:
