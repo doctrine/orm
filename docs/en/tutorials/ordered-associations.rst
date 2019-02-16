@@ -50,7 +50,7 @@ positional statement. Multiple Fields are separated by a comma (,).
 The referenced field names have to exist on the ``targetEntity``
 class of the ``@ORM\ManyToMany`` or ``@ORM\OneToMany`` annotation.
 
-The semantics of this feature can be described as follows.
+The semantics of this feature can be described as follows:
 
 -  ``@ORM\OrderBy`` acts as an implicit ORDER BY clause for the given
    fields, that is appended to all the explicitly given ORDER BY
@@ -58,7 +58,7 @@ The semantics of this feature can be described as follows.
 -  All collections of the ordered type are always retrieved in an
    ordered fashion.
 -  To keep the database impact low, these implicit ORDER BY items
-   are only added to an DQL Query if the collection is fetch joined in
+   are only added to a DQL Query if the collection is fetch joined in
    the DQL query.
 
 Given our previously defined example, the following would not add
