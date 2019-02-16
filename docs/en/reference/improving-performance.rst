@@ -4,7 +4,7 @@ Improving Performance
 Bytecode Cache
 --------------
 
-It is highly recommended to make use of a bytecode cache like APC.
+It is highly recommended to make use of a bytecode cache like OPcache.
 A bytecode cache removes the need for parsing PHP code on every
 request and can greatly improve performance.
 
