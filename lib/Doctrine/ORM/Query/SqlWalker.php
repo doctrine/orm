@@ -444,7 +444,7 @@ class SqlWalker implements TreeWalker
         foreach ($dqlAliases as $dqlAlias) {
             $class = $this->queryComponents[$dqlAlias]['metadata'];
 
-            if ( ! $class->isInheritanceTypeSingleTable()) continue;
+            if ( ! $class->isInheritanceTypeSingleTable() || ! $class->parentClasses) continue;
 
             $conn   = $this->em->getConnection();
             $values = [];

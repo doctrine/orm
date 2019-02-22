@@ -208,7 +208,7 @@ class SelectSqlGenerationTest extends OrmTestCase
 
         $this->assertSqlGeneration(
             'SELECT c FROM Doctrine\Tests\Models\Company\CompanyContract c JOIN c.salesPerson s LEFT JOIN Doctrine\Tests\Models\Company\CompanyEvent e WITH s.id = e.id',
-            'SELECT c0_.id AS id_0, c0_.completed AS completed_1, c0_.fixPrice AS fixPrice_2, c0_.hoursWorked AS hoursWorked_3, c0_.pricePerHour AS pricePerHour_4, c0_.maxPrice AS maxPrice_5, c0_.discr AS discr_6 FROM company_contracts c0_ INNER JOIN company_employees c1_ ON c0_.salesPerson_id = c1_.id LEFT JOIN company_persons c2_ ON c1_.id = c2_.id LEFT JOIN company_events c3_ ON (c2_.id = c3_.id) WHERE c0_.discr IN (\'fix\', \'flexible\', \'flexultra\')'
+            'SELECT c0_.id AS id_0, c0_.completed AS completed_1, c0_.fixPrice AS fixPrice_2, c0_.hoursWorked AS hoursWorked_3, c0_.pricePerHour AS pricePerHour_4, c0_.maxPrice AS maxPrice_5, c0_.discr AS discr_6 FROM company_contracts c0_ INNER JOIN company_employees c1_ ON c0_.salesPerson_id = c1_.id LEFT JOIN company_persons c2_ ON c1_.id = c2_.id LEFT JOIN company_events c3_ ON (c2_.id = c3_.id)'
         );
     }
 
@@ -1526,7 +1526,7 @@ class SelectSqlGenerationTest extends OrmTestCase
     {
         $this->assertSqlGeneration(
             'SELECT c FROM Doctrine\Tests\Models\Company\CompanyContract c',
-            "SELECT c0_.id AS id_0, c0_.completed AS completed_1, c0_.fixPrice AS fixPrice_2, c0_.hoursWorked AS hoursWorked_3, c0_.pricePerHour AS pricePerHour_4, c0_.maxPrice AS maxPrice_5, c0_.discr AS discr_6, c0_.salesPerson_id AS salesPerson_id_7 FROM company_contracts c0_ WHERE c0_.discr IN ('fix', 'flexible', 'flexultra')",
+            "SELECT c0_.id AS id_0, c0_.completed AS completed_1, c0_.fixPrice AS fixPrice_2, c0_.hoursWorked AS hoursWorked_3, c0_.pricePerHour AS pricePerHour_4, c0_.maxPrice AS maxPrice_5, c0_.discr AS discr_6, c0_.salesPerson_id AS salesPerson_id_7 FROM company_contracts c0_",
             [ORMQuery::HINT_FORCE_PARTIAL_LOAD => false]
         );
     }
@@ -1538,7 +1538,7 @@ class SelectSqlGenerationTest extends OrmTestCase
     {
         $this->assertSqlGeneration(
             'SELECT c FROM Doctrine\Tests\Models\Company\CompanyContract c',
-            "SELECT c0_.id AS id_0, c0_.completed AS completed_1, c0_.fixPrice AS fixPrice_2, c0_.hoursWorked AS hoursWorked_3, c0_.pricePerHour AS pricePerHour_4, c0_.maxPrice AS maxPrice_5, c0_.discr AS discr_6 FROM company_contracts c0_ WHERE c0_.discr IN ('fix', 'flexible', 'flexultra')",
+            "SELECT c0_.id AS id_0, c0_.completed AS completed_1, c0_.fixPrice AS fixPrice_2, c0_.hoursWorked AS hoursWorked_3, c0_.pricePerHour AS pricePerHour_4, c0_.maxPrice AS maxPrice_5, c0_.discr AS discr_6 FROM company_contracts c0_",
             [ORMQuery::HINT_FORCE_PARTIAL_LOAD => true]
         );
     }
@@ -2001,7 +2001,7 @@ class SelectSqlGenerationTest extends OrmTestCase
     {
         $this->assertSqlGeneration(
             'SELECT u, a FROM Doctrine\Tests\Models\Quote\User u JOIN u.address a',
-            'SELECT q0_."user-id" AS userid_0, q0_."user-name" AS username_1, q1_."address-id" AS addressid_2, q1_."address-zip" AS addresszip_3, q1_.type AS type_4 FROM "quote-user" q0_ INNER JOIN "quote-address" q1_ ON q0_."address-id" = q1_."address-id" AND q1_.type IN (\'simple\', \'full\')'
+            'SELECT q0_."user-id" AS userid_0, q0_."user-name" AS username_1, q1_."address-id" AS addressid_2, q1_."address-zip" AS addresszip_3, q1_.type AS type_4 FROM "quote-user" q0_ INNER JOIN "quote-address" q1_ ON q0_."address-id" = q1_."address-id"'
         );
 
         $this->assertSqlGeneration(
@@ -2016,7 +2016,7 @@ class SelectSqlGenerationTest extends OrmTestCase
 
         $this->assertSqlGeneration(
             'SELECT a, u FROM Doctrine\Tests\Models\Quote\Address a JOIN a.user u',
-            'SELECT q0_."address-id" AS addressid_0, q0_."address-zip" AS addresszip_1, q1_."user-id" AS userid_2, q1_."user-name" AS username_3, q0_.type AS type_4 FROM "quote-address" q0_ INNER JOIN "quote-user" q1_ ON q0_."user-id" = q1_."user-id" WHERE q0_.type IN (\'simple\', \'full\')'
+            'SELECT q0_."address-id" AS addressid_0, q0_."address-zip" AS addresszip_1, q1_."user-id" AS userid_2, q1_."user-name" AS username_3, q0_.type AS type_4 FROM "quote-address" q0_ INNER JOIN "quote-user" q1_ ON q0_."user-id" = q1_."user-id"'
         );
 
         $this->assertSqlGeneration(
@@ -2186,7 +2186,7 @@ class SelectSqlGenerationTest extends OrmTestCase
         // Regression test for the bug
         $this->assertSqlGeneration(
             'SELECT c FROM Doctrine\Tests\Models\Company\CompanyEmployee e LEFT JOIN Doctrine\Tests\Models\Company\CompanyContract c WITH c.salesPerson = e.id',
-            "SELECT c0_.id AS id_0, c0_.completed AS completed_1, c0_.fixPrice AS fixPrice_2, c0_.hoursWorked AS hoursWorked_3, c0_.pricePerHour AS pricePerHour_4, c0_.maxPrice AS maxPrice_5, c0_.discr AS discr_6 FROM company_employees c1_ INNER JOIN company_persons c2_ ON c1_.id = c2_.id LEFT JOIN company_contracts c0_ ON (c0_.salesPerson_id = c2_.id) AND c0_.discr IN ('fix', 'flexible', 'flexultra')"
+            "SELECT c0_.id AS id_0, c0_.completed AS completed_1, c0_.fixPrice AS fixPrice_2, c0_.hoursWorked AS hoursWorked_3, c0_.pricePerHour AS pricePerHour_4, c0_.maxPrice AS maxPrice_5, c0_.discr AS discr_6 FROM company_employees c1_ INNER JOIN company_persons c2_ ON c1_.id = c2_.id LEFT JOIN company_contracts c0_ ON (c0_.salesPerson_id = c2_.id)"
         );
     }
 
@@ -2198,7 +2198,7 @@ class SelectSqlGenerationTest extends OrmTestCase
         // Ensure other WHERE predicates are passed through to the main WHERE clause
         $this->assertSqlGeneration(
             'SELECT c FROM Doctrine\Tests\Models\Company\CompanyEmployee e LEFT JOIN Doctrine\Tests\Models\Company\CompanyContract c WITH c.salesPerson = e.id WHERE e.salary > 1000',
-            "SELECT c0_.id AS id_0, c0_.completed AS completed_1, c0_.fixPrice AS fixPrice_2, c0_.hoursWorked AS hoursWorked_3, c0_.pricePerHour AS pricePerHour_4, c0_.maxPrice AS maxPrice_5, c0_.discr AS discr_6 FROM company_employees c1_ INNER JOIN company_persons c2_ ON c1_.id = c2_.id LEFT JOIN company_contracts c0_ ON (c0_.salesPerson_id = c2_.id) AND c0_.discr IN ('fix', 'flexible', 'flexultra') WHERE c1_.salary > 1000"
+            "SELECT c0_.id AS id_0, c0_.completed AS completed_1, c0_.fixPrice AS fixPrice_2, c0_.hoursWorked AS hoursWorked_3, c0_.pricePerHour AS pricePerHour_4, c0_.maxPrice AS maxPrice_5, c0_.discr AS discr_6 FROM company_employees c1_ INNER JOIN company_persons c2_ ON c1_.id = c2_.id LEFT JOIN company_contracts c0_ ON (c0_.salesPerson_id = c2_.id) WHERE c1_.salary > 1000"
         );
     }
 
@@ -2210,7 +2210,7 @@ class SelectSqlGenerationTest extends OrmTestCase
         // Test inner joins too
         $this->assertSqlGeneration(
             'SELECT c FROM Doctrine\Tests\Models\Company\CompanyEmployee e INNER JOIN Doctrine\Tests\Models\Company\CompanyContract c WITH c.salesPerson = e.id',
-            "SELECT c0_.id AS id_0, c0_.completed AS completed_1, c0_.fixPrice AS fixPrice_2, c0_.hoursWorked AS hoursWorked_3, c0_.pricePerHour AS pricePerHour_4, c0_.maxPrice AS maxPrice_5, c0_.discr AS discr_6 FROM company_employees c1_ INNER JOIN company_persons c2_ ON c1_.id = c2_.id INNER JOIN company_contracts c0_ ON (c0_.salesPerson_id = c2_.id) AND c0_.discr IN ('fix', 'flexible', 'flexultra')"
+            "SELECT c0_.id AS id_0, c0_.completed AS completed_1, c0_.fixPrice AS fixPrice_2, c0_.hoursWorked AS hoursWorked_3, c0_.pricePerHour AS pricePerHour_4, c0_.maxPrice AS maxPrice_5, c0_.discr AS discr_6 FROM company_employees c1_ INNER JOIN company_persons c2_ ON c1_.id = c2_.id INNER JOIN company_contracts c0_ ON (c0_.salesPerson_id = c2_.id)"
         );
     }
 
@@ -2223,7 +2223,7 @@ class SelectSqlGenerationTest extends OrmTestCase
         // the where clause when not joining onto that table
         $this->assertSqlGeneration(
             'SELECT c FROM Doctrine\Tests\Models\Company\CompanyContract c LEFT JOIN Doctrine\Tests\Models\Company\CompanyEmployee e WITH e.id = c.salesPerson WHERE c.completed = true',
-            "SELECT c0_.id AS id_0, c0_.completed AS completed_1, c0_.fixPrice AS fixPrice_2, c0_.hoursWorked AS hoursWorked_3, c0_.pricePerHour AS pricePerHour_4, c0_.maxPrice AS maxPrice_5, c0_.discr AS discr_6 FROM company_contracts c0_ LEFT JOIN (company_employees c1_ INNER JOIN company_persons c2_ ON c1_.id = c2_.id) ON (c2_.id = c0_.salesPerson_id) WHERE (c0_.completed = 1) AND c0_.discr IN ('fix', 'flexible', 'flexultra')"
+            "SELECT c0_.id AS id_0, c0_.completed AS completed_1, c0_.fixPrice AS fixPrice_2, c0_.hoursWorked AS hoursWorked_3, c0_.pricePerHour AS pricePerHour_4, c0_.maxPrice AS maxPrice_5, c0_.discr AS discr_6 FROM company_contracts c0_ LEFT JOIN (company_employees c1_ INNER JOIN company_persons c2_ ON c1_.id = c2_.id) ON (c2_.id = c0_.salesPerson_id) WHERE c0_.completed = 1"
         );
     }
 
@@ -2237,7 +2237,7 @@ class SelectSqlGenerationTest extends OrmTestCase
         // via a join association
         $this->assertSqlGeneration(
             'SELECT c FROM Doctrine\Tests\Models\Company\CompanyContract c JOIN c.salesPerson s WHERE c.completed = true',
-            "SELECT c0_.id AS id_0, c0_.completed AS completed_1, c0_.fixPrice AS fixPrice_2, c0_.hoursWorked AS hoursWorked_3, c0_.pricePerHour AS pricePerHour_4, c0_.maxPrice AS maxPrice_5, c0_.discr AS discr_6 FROM company_contracts c0_ INNER JOIN company_employees c1_ ON c0_.salesPerson_id = c1_.id LEFT JOIN company_persons c2_ ON c1_.id = c2_.id WHERE (c0_.completed = 1) AND c0_.discr IN ('fix', 'flexible', 'flexultra')"
+            "SELECT c0_.id AS id_0, c0_.completed AS completed_1, c0_.fixPrice AS fixPrice_2, c0_.hoursWorked AS hoursWorked_3, c0_.pricePerHour AS pricePerHour_4, c0_.maxPrice AS maxPrice_5, c0_.discr AS discr_6 FROM company_contracts c0_ INNER JOIN company_employees c1_ ON c0_.salesPerson_id = c1_.id LEFT JOIN company_persons c2_ ON c1_.id = c2_.id WHERE c0_.completed = 1"
         );
     }
 
@@ -2251,7 +2251,7 @@ class SelectSqlGenerationTest extends OrmTestCase
         // into the ON clause of the join
         $this->assertSqlGeneration(
             'SELECT e, COUNT(c) FROM Doctrine\Tests\Models\Company\CompanyEmployee e JOIN e.contracts c WHERE e.department = :department',
-            "SELECT c0_.id AS id_0, c0_.name AS name_1, c1_.salary AS salary_2, c1_.department AS department_3, c1_.startDate AS startDate_4, COUNT(c2_.id) AS sclr_5, c0_.discr AS discr_6 FROM company_employees c1_ INNER JOIN company_persons c0_ ON c1_.id = c0_.id INNER JOIN company_contract_employees c3_ ON c1_.id = c3_.employee_id INNER JOIN company_contracts c2_ ON c2_.id = c3_.contract_id AND c2_.discr IN ('fix', 'flexible', 'flexultra') WHERE c1_.department = ?",
+            "SELECT c0_.id AS id_0, c0_.name AS name_1, c1_.salary AS salary_2, c1_.department AS department_3, c1_.startDate AS startDate_4, COUNT(c2_.id) AS sclr_5, c0_.discr AS discr_6 FROM company_employees c1_ INNER JOIN company_persons c0_ ON c1_.id = c0_.id INNER JOIN company_contract_employees c3_ ON c1_.id = c3_.employee_id INNER JOIN company_contracts c2_ ON c2_.id = c3_.contract_id WHERE c1_.department = ?",
             [],
             ['department' => 'foobar']
         );
