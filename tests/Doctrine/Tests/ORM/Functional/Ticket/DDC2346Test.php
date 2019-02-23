@@ -27,9 +27,9 @@ class DDC2346Test extends OrmFunctionalTestCase
 
         $this->schemaTool->createSchema(
             [
-            $this->em->getClassMetadata(DDC2346Foo::class),
-            $this->em->getClassMetadata(DDC2346Bar::class),
-            $this->em->getClassMetadata(DDC2346Baz::class),
+                $this->em->getClassMetadata(DDC2346Foo::class),
+                $this->em->getClassMetadata(DDC2346Bar::class),
+                $this->em->getClassMetadata(DDC2346Baz::class),
             ]
         );
 
@@ -77,9 +77,9 @@ class DDC2346Foo
     public $id;
 
     /**
-     * @var DDC2346Bar[]|Collection
-     *
      * @ORM\OneToMany(targetEntity=DDC2346Bar::class, mappedBy="foo")
+     *
+     * @var DDC2346Bar[]|Collection
      */
     public $bars;
 

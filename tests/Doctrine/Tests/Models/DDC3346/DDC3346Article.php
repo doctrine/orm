@@ -20,10 +20,10 @@ class DDC3346Article
     public $id;
 
     /**
-     * @var DDC3346Author
-     *
      * @ORM\ManyToOne(targetEntity=DDC3346Author::class, inversedBy="articles")
      * @ORM\JoinColumn(name="user_id", referencedColumnName="id")
+     *
+     * @var DDC3346Author
      */
     public $user;
 }

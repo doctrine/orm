@@ -4,13 +4,15 @@ declare(strict_types=1);
 
 namespace Doctrine\ORM;
 
+use DateTime;
 use Doctrine\ORM\Exception\ORMException;
+use RuntimeException;
 
 /**
  * An OptimisticLockException is thrown when a version check on an object
  * that uses optimistic locking through a version field fails.
  */
-class OptimisticLockException extends \RuntimeException implements ORMException
+class OptimisticLockException extends RuntimeException implements ORMException
 {
     /** @var object|null */
     private $entity;
@@ -54,8 +56,8 @@ class OptimisticLockException extends \RuntimeException implements ORMException
      */
     public static function lockFailedVersionMismatch($entity, $expectedLockVersion, $actualLockVersion)
     {
-        $expectedLockVersion = ($expectedLockVersion instanceof \DateTime) ? $expectedLockVersion->getTimestamp() : $expectedLockVersion;
-        $actualLockVersion   = ($actualLockVersion instanceof \DateTime) ? $actualLockVersion->getTimestamp() : $actualLockVersion;
+        $expectedLockVersion = $expectedLockVersion instanceof DateTime ? $expectedLockVersion->getTimestamp() : $expectedLockVersion;
+        $actualLockVersion   = $actualLockVersion instanceof DateTime ? $actualLockVersion->getTimestamp() : $actualLockVersion;
 
         return new self('The optimistic lock failed, version ' . $expectedLockVersion . ' was expected, but is actually ' . $actualLockVersion, $entity);
     }

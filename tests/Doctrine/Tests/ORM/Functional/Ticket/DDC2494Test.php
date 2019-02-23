@@ -27,8 +27,8 @@ class DDC2494Test extends OrmFunctionalTestCase
 
         $this->schemaTool->createSchema(
             [
-            $this->em->getClassMetadata(DDC2494Currency::class),
-            $this->em->getClassMetadata(DDC2494Campaign::class),
+                $this->em->getClassMetadata(DDC2494Currency::class),
+                $this->em->getClassMetadata(DDC2494Campaign::class),
             ]
         );
     }
@@ -92,9 +92,9 @@ class DDC2494Currency
     protected $temp;
 
     /**
-     * @var Collection
-     *
      * @ORM\OneToMany(targetEntity=DDC2494Campaign::class, mappedBy="currency")
+     *
+     * @var Collection
      */
     protected $campaigns;
 
@@ -134,10 +134,10 @@ class DDC2494Campaign
     protected $id;
 
     /**
-     * @var \Doctrine\Tests\ORM\Functional\Ticket\DDC2494Currency
-     *
      * @ORM\ManyToOne(targetEntity=DDC2494Currency::class, inversedBy="campaigns")
      * @ORM\JoinColumn(name="currency_id", referencedColumnName="id", nullable=false)
+     *
+     * @var \Doctrine\Tests\ORM\Functional\Ticket\DDC2494Currency
      */
     protected $currency;
 

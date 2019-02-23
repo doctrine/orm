@@ -12,15 +12,17 @@ use Doctrine\ORM\Annotation as ORM;
 class JoinedChildClass extends JoinedRootClass
 {
     /**
-     * @var string
      * @ORM\Column(type="string")
+     *
+     * @var string
      */
     public $extension = 'ext';
 
     /**
-     * @var string
      * @ORM\Column(type="string")
      * @ORM\Id
+     *
+     * @var string
      */
     private $additionalId = 'additional';
 }

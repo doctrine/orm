@@ -4,8 +4,10 @@ declare(strict_types=1);
 
 namespace Doctrine\Tests\ORM\Functional\Ticket;
 
+use DateTime;
 use Doctrine\ORM\Annotation as ORM;
 use Doctrine\Tests\OrmFunctionalTestCase;
+use Exception;
 
 class DDC1209Test extends OrmFunctionalTestCase
 {
@@ -20,7 +22,7 @@ class DDC1209Test extends OrmFunctionalTestCase
                     $this->em->getClassMetadata(DDC1209Entity3::class),
                 ]
             );
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
         }
     }
 
@@ -136,7 +138,7 @@ class DDC1209Entity3
     }
 }
 
-class DateTime2 extends \DateTime
+class DateTime2 extends DateTime
 {
     public function __toString()
     {

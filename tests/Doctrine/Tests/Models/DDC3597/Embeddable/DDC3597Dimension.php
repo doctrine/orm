@@ -14,14 +14,16 @@ use Doctrine\ORM\Annotation as ORM;
 class DDC3597Dimension
 {
     /**
-     * @var int
      * @ORM\Column(type="integer", name="width")
+     *
+     * @var int
      */
     private $width;
 
     /**
-     * @var int
      * @ORM\Column(type="integer", name="height")
+     *
+     * @var int
      */
     private $height;
 

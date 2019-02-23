@@ -10,6 +10,7 @@ use Doctrine\DBAL\Driver\Statement;
 
 /**
  * Base class for SQL statement executors.
+ *
  * @todo Rename: AbstractSQLExecutor
  */
 abstract class AbstractSqlExecutor

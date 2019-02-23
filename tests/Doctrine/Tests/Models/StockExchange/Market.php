@@ -15,18 +15,21 @@ class Market
 {
     /**
      * @ORM\Id @ORM\Column(type="integer") @ORM\GeneratedValue
+     *
      * @var int
      */
     private $id;
 
     /**
      * @ORM\Column(type="string")
+     *
      * @var string
      */
     private $name;
 
     /**
      * @ORM\OneToMany(targetEntity=Stock::class, mappedBy="market", indexBy="symbol")
+     *
      * @var Stock[]
      */
     public $stocks;

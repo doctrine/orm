@@ -6,6 +6,7 @@ namespace Doctrine\ORM\Mapping\Driver\Annotation\Binder;
 
 use Doctrine\ORM\Annotation;
 use Doctrine\ORM\Mapping;
+use ReflectionClass;
 
 /**
  * Class ComponentMetadataBinder
@@ -15,7 +16,7 @@ class EntityClassMetadataBinder
     /** @var Mapping\ClassMetadataBuildingContext */
     private $metadataBuildingContext;
 
-    /** @var \ReflectionClass */
+    /** @var ReflectionClass */
     private $reflectionClass;
 
     /**
@@ -27,7 +28,6 @@ class EntityClassMetadataBinder
 
     /**
      * @todo guilhermeblanco This should disappear once we instantiation happens in the Driver
-     *
      * @var Mapping\ClassMetadata
      */
     private $classMetadata;
@@ -36,7 +36,7 @@ class EntityClassMetadataBinder
      * @param Annotation\Annotation[] $classAnnotations
      */
     public function __construct(
-        \ReflectionClass $reflectionClass,
+        ReflectionClass $reflectionClass,
         array $classAnnotations,
         Mapping\ClassMetadata $classMetadata,
         Mapping\ClassMetadataBuildingContext $metadataBuildingContext

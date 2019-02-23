@@ -20,8 +20,8 @@ class DDC1151Test extends OrmFunctionalTestCase
 
         $sql = $this->schemaTool->getCreateSchemaSql(
             [
-            $this->em->getClassMetadata(DDC1151User::class),
-            $this->em->getClassMetadata(DDC1151Group::class),
+                $this->em->getClassMetadata(DDC1151User::class),
+                $this->em->getClassMetadata(DDC1151Group::class),
             ]
         );
 

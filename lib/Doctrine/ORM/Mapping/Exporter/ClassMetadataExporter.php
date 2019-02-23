@@ -47,10 +47,9 @@ class ClassMetadataExporter implements Exporter
     {
         $reflectionClass   = $metadata->getReflectionClass();
         $shortClassName    = $reflectionClass->getShortName();
-        $extendedClassName = ($metadata instanceof Mapping\MappedSuperClassMetadata)
+        $extendedClassName = $metadata instanceof Mapping\MappedSuperClassMetadata
             ? 'MappedSuperClassMetadata'
-            : 'EntityClassMetadata'
-        ;
+            : 'EntityClassMetadata';
 
         $lines[] = sprintf('class %sClassMetadata extends Mapping\%s', $shortClassName, $extendedClassName);
         $lines[] = '{';
@@ -204,27 +203,27 @@ class ClassMetadataExporter implements Exporter
         $lines           = [];
 
         switch (true) {
-            case ($property instanceof Mapping\VersionFieldMetadata):
+            case $property instanceof Mapping\VersionFieldMetadata:
                 $propertyExporter = new VersionFieldMetadataExporter();
                 break;
 
-            case ($property instanceof Mapping\FieldMetadata):
+            case $property instanceof Mapping\FieldMetadata:
                 $propertyExporter = new FieldMetadataExporter();
                 break;
 
-            case ($property instanceof Mapping\OneToOneAssociationMetadata):
+            case $property instanceof Mapping\OneToOneAssociationMetadata:
                 $propertyExporter = new OneToOneAssociationMetadataExporter();
                 break;
 
-            case ($property instanceof Mapping\OneToManyAssociationMetadata):
+            case $property instanceof Mapping\OneToManyAssociationMetadata:
                 $propertyExporter = new OneToManyAssociationMetadataExporter();
                 break;
 
-            case ($property instanceof Mapping\ManyToOneAssociationMetadata):
+            case $property instanceof Mapping\ManyToOneAssociationMetadata:
                 $propertyExporter = new ManyToOneAssociationMetadataExporter();
                 break;
 
-            case ($property instanceof Mapping\ManyToManyAssociationMetadata):
+            case $property instanceof Mapping\ManyToManyAssociationMetadata:
                 $propertyExporter = new ManyToManyAssociationMetadataExporter();
                 break;
 

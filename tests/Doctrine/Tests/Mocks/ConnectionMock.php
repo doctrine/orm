@@ -11,6 +11,7 @@ use Doctrine\DBAL\Driver;
 use Doctrine\DBAL\Driver\ResultStatement;
 use Doctrine\DBAL\Driver\Statement;
 use Doctrine\DBAL\Platforms\AbstractPlatform;
+use Exception;
 use function is_string;
 
 /**
@@ -21,7 +22,7 @@ class ConnectionMock extends Connection
     /** @var mixed */
     private $fetchOneResult;
 
-    /** @var \Exception|null */
+    /** @var Exception|null */
     private $fetchOneException;
 
     /** @var Statement|null */
@@ -135,7 +136,7 @@ class ConnectionMock extends Connection
     /**
      * @return void
      */
-    public function setFetchOneException(?\Exception $exception = null)
+    public function setFetchOneException(?Exception $exception = null)
     {
         $this->fetchOneException = $exception;
     }

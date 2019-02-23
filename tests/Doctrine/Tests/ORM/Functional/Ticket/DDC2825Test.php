@@ -34,11 +34,11 @@ class DDC2825Test extends OrmFunctionalTestCase
     }
 
     /**
-     * @dataProvider getTestedClasses
-     *
      * @param string $className
      * @param string $expectedSchemaName
      * @param string $expectedTableName
+     *
+     * @dataProvider getTestedClasses
      */
     public function testClassSchemaMappingsValidity($className, $expectedSchemaName, $expectedTableName) : void
     {
@@ -70,9 +70,9 @@ class DDC2825Test extends OrmFunctionalTestCase
     }
 
     /**
-     * @dataProvider getTestedClasses
-     *
      * @param string $className
+     *
+     * @dataProvider getTestedClasses
      */
     public function testPersistenceOfEntityWithSchemaMapping($className) : void
     {

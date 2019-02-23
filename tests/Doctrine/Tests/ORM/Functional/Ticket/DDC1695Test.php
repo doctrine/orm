@@ -40,130 +40,130 @@ class DDC1695Test extends OrmFunctionalTestCase
 class DDC1695News
 {
     /**
-     * @var int
-     *
      * @ORM\Column(name="IdNews", type="integer", nullable=false)
      * @ORM\Id
      * @ORM\GeneratedValue
+     *
+     * @var int
      */
     private $idNews;
 
     /**
-     * @var int
-     *
      * @ORM\Column(name="IdUser", type="bigint", nullable=false)
+     *
+     * @var int
      */
     private $idUser;
 
     /**
-     * @var int
-     *
      * @ORM\Column(name="IdLanguage", type="integer", nullable=false)
+     *
+     * @var int
      */
     private $idLanguage;
 
     /**
-     * @var int
-     *
      * @ORM\Column(name="IdCondition", type="integer", nullable=true)
+     *
+     * @var int
      */
     private $idCondition;
 
     /**
-     * @var int
-     *
      * @ORM\Column(name="IdHealthProvider", type="integer", nullable=true)
+     *
+     * @var int
      */
     private $idHealthProvider;
 
     /**
-     * @var int
-     *
      * @ORM\Column(name="IdSpeciality", type="integer", nullable=true)
+     *
+     * @var int
      */
     private $idSpeciality;
 
     /**
-     * @var int
-     *
      * @ORM\Column(name="IdMedicineType", type="integer", nullable=true)
+     *
+     * @var int
      */
     private $idMedicineType;
 
     /**
-     * @var int
-     *
      * @ORM\Column(name="IdTreatment", type="integer", nullable=true)
+     *
+     * @var int
      */
     private $idTreatment;
 
     /**
-     * @var string
-     *
      * @ORM\Column(name="Title", type="string", nullable=true)
+     *
+     * @var string
      */
     private $title;
 
     /**
-     * @var string
-     *
      * @ORM\Column(name="SmallText", type="string", nullable=true)
+     *
+     * @var string
      */
     private $smallText;
 
     /**
-     * @var string
-     *
      * @ORM\Column(name="LongText", type="string", nullable=true)
+     *
+     * @var string
      */
     private $longText;
 
     /**
-     * @var DateTimeZone
-     *
      * @ORM\Column(name="PublishDate", type="datetimetz", nullable=true)
+     *
+     * @var DateTimeZone
      */
     private $publishDate;
 
     /**
-     * @var array
-     *
      * @ORM\Column(name="IdxNews", type="json_array", nullable=true)
+     *
+     * @var array
      */
     private $idxNews;
 
     /**
-     * @var bool
-     *
      * @ORM\Column(name="Highlight", type="boolean", nullable=false)
+     *
+     * @var bool
      */
     private $highlight;
 
     /**
-     * @var int
-     *
      * @ORM\Column(name="Order", type="integer", nullable=false)
+     *
+     * @var int
      */
     private $order;
 
     /**
-     * @var bool
-     *
      * @ORM\Column(name="Deleted", type="boolean", nullable=false)
+     *
+     * @var bool
      */
     private $deleted;
 
     /**
-     * @var bool
-     *
      * @ORM\Column(name="Active", type="boolean", nullable=false)
+     *
+     * @var bool
      */
     private $active;
 
     /**
-     * @var bool
-     *
      * @ORM\Column(name="UpdateToHighlighted", type="boolean", nullable=true)
+     *
+     * @var bool
      */
     private $updateToHighlighted;
 }

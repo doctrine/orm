@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Doctrine\ORM\Mapping;
 
 use Doctrine\ORM\Reflection\ReflectionService;
+use ReflectionProperty;
 
 /**
  * @property MappedSuperClassMetadata $parent
@@ -14,7 +15,7 @@ class EmbeddedClassMetadata extends ComponentMetadata implements Property
     /** @var ClassMetadata */
     private $declaringClass;
 
-    /** @var \ReflectionProperty */
+    /** @var ReflectionProperty */
     private $reflection;
 
     /** @var string */
@@ -88,7 +89,7 @@ class EmbeddedClassMetadata extends ComponentMetadata implements Property
     /**
      * {@inheritdoc}
      */
-    public function setReflectionProperty(\ReflectionProperty $reflectionProperty) : void
+    public function setReflectionProperty(ReflectionProperty $reflectionProperty) : void
     {
         $this->reflection = $reflectionProperty;
     }

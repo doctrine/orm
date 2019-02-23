@@ -13,18 +13,20 @@ use Doctrine\ORM\Annotation as ORM;
 class JoinedDerivedIdentityClass
 {
     /**
-     * @var string
      * @ORM\Column(type="string")
      * @ORM\Id
+     *
+     * @var string
      */
     protected $id = 'part-0';
 
     /**
-     * @var JoinedDerivedRootClass[]
      * @ORM\OneToMany(
      *     targetEntity=JoinedDerivedRootClass::class,
      *     mappedBy="keyPart1"
      * )
+     *
+     * @var JoinedDerivedRootClass[]
      */
     protected $children;
 }

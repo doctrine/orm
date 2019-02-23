@@ -145,10 +145,7 @@ class SecondLevelCacheSingleTableInheritanceTest extends SecondLevelCacheAbstrac
 
         self::assertCount(count($this->attractions), $result2);
         self::assertEquals($queryCount + 1, $this->getCurrentQueryCount());
-
-        foreach ($result2 as $entity) {
-            self::assertInstanceOf(Attraction::class, $entity);
-        }
+        self::assertContainsOnlyInstancesOf(Attraction::class, $result2);
     }
 
     public function testShouldNotPutOneToManyRelationOnPersist() : void
@@ -251,9 +248,6 @@ class SecondLevelCacheSingleTableInheritanceTest extends SecondLevelCacheAbstrac
 
         self::assertCount(count($this->attractions) + 1, $result2);
         self::assertEquals($queryCount + 1, $this->getCurrentQueryCount());
-
-        foreach ($result2 as $entity) {
-            self::assertInstanceOf(Attraction::class, $entity);
-        }
+        self::assertContainsOnlyInstancesOf(Attraction::class, $result2);
     }
 }

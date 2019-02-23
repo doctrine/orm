@@ -10,6 +10,7 @@ use Doctrine\ORM\Annotation as ORM;
 use Doctrine\Tests\Models\CMS\CmsAddress;
 use Doctrine\Tests\Models\CMS\CmsUser;
 use Doctrine\Tests\OrmFunctionalTestCase;
+use Exception;
 use ProxyManager\Proxy\GhostObjectInterface;
 
 /**
@@ -25,11 +26,11 @@ class DDC1452Test extends OrmFunctionalTestCase
         try {
             $this->schemaTool->createSchema(
                 [
-                $this->em->getClassMetadata(DDC1452EntityA::class),
-                $this->em->getClassMetadata(DDC1452EntityB::class),
+                    $this->em->getClassMetadata(DDC1452EntityA::class),
+                    $this->em->getClassMetadata(DDC1452EntityB::class),
                 ]
             );
-        } catch (\Exception $ignored) {
+        } catch (Exception $ignored) {
         }
     }
 

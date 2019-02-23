@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Doctrine\ORM\Mapping;
 
 use Doctrine\ORM\Reflection\ReflectionService;
+use ReflectionProperty;
 
 interface Property
 {
@@ -29,7 +30,7 @@ interface Property
 
     public function isPrimaryKey() : bool;
 
-    public function setReflectionProperty(\ReflectionProperty $reflectionProperty) : void;
+    public function setReflectionProperty(ReflectionProperty $reflectionProperty) : void;
 
     public function wakeupReflection(ReflectionService $reflectionService) : void;
 }

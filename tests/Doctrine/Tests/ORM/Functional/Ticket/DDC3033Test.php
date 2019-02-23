@@ -19,8 +19,8 @@ class DDC3033Test extends OrmFunctionalTestCase
     {
         $this->schemaTool->createSchema(
             [
-            $this->em->getClassMetadata(DDC3033User::class),
-            $this->em->getClassMetadata(DDC3033Product::class),
+                $this->em->getClassMetadata(DDC3033User::class),
+                $this->em->getClassMetadata(DDC3033Product::class),
             ]
         );
 
@@ -65,18 +65,18 @@ class DDC3033Product
     public $changeSet = [];
 
     /**
-     * @var int $id
-     *
      * @ORM\Column(name="id", type="integer")
      * @ORM\Id
      * @ORM\GeneratedValue(strategy="AUTO")
+     *
+     * @var int $id
      */
     public $id;
 
     /**
-     * @var string $title
-     *
      * @ORM\Column(name="title", type="string", length=255)
+     *
+     * @var string $title
      */
     public $title;
 
@@ -127,18 +127,18 @@ class DDC3033Product
 class DDC3033User
 {
     /**
-     * @var int
-     *
      * @ORM\Column(name="id", type="integer")
      * @ORM\Id
      * @ORM\GeneratedValue(strategy="AUTO")
+     *
+     * @var int
      */
     public $id;
 
     /**
-     * @var string
-     *
      * @ORM\Column(name="title", type="string", length=255)
+     *
+     * @var string
      */
     public $name;
 }

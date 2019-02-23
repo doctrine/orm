@@ -11,6 +11,8 @@ use Doctrine\ORM\TransactionRequiredException;
 use Doctrine\Tests\Models\CMS\CmsArticle;
 use Doctrine\Tests\Models\CMS\CmsUser;
 use Doctrine\Tests\OrmFunctionalTestCase;
+use Exception;
+use InvalidArgumentException;
 use function array_pop;
 
 /**
@@ -89,7 +91,7 @@ class LockTest extends OrmFunctionalTestCase
     {
         $article = new CmsArticle();
 
-        $this->expectException(\InvalidArgumentException::class);
+        $this->expectException(InvalidArgumentException::class);
         $this->expectExceptionMessage('Entity ' . CmsArticle::class);
 
         $this->em->lock($article, LockMode::OPTIMISTIC, $article->version + 1);
@@ -155,7 +157,7 @@ class LockTest extends OrmFunctionalTestCase
         try {
             $this->em->lock($article, LockMode::PESSIMISTIC_WRITE);
             $this->em->commit();
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             $this->em->rollback();
             throw $e;
         }
@@ -190,7 +192,7 @@ class LockTest extends OrmFunctionalTestCase
         try {
             $this->em->lock($article, LockMode::PESSIMISTIC_READ);
             $this->em->commit();
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             $this->em->rollback();
             throw $e;
         }

@@ -8,6 +8,7 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\Annotation as ORM;
 use Doctrine\ORM\PersistentCollection;
 use Doctrine\Tests\OrmFunctionalTestCase;
+use Exception;
 
 /**
  * Functional tests for the Single Table Inheritance mapping strategy.
@@ -28,7 +29,7 @@ class AdvancedAssociationTest extends OrmFunctionalTestCase
                     $this->em->getClassMetadata(Type::class),
                 ]
             );
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             // Automatically mark failure
             self::fail($e->getMessage());
         }
@@ -48,7 +49,7 @@ class AdvancedAssociationTest extends OrmFunctionalTestCase
                     $this->em->getClassMetadata(Type::class),
                 ]
             );
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             // Automatically mark failure
             self::fail($e->getMessage());
         }
@@ -155,19 +156,21 @@ class AdvancedAssociationTest extends OrmFunctionalTestCase
  */
 class Lemma
 {
-    public const CLASS_NAME = __CLASS__;
+    public const CLASS_NAME = self::class;
 
     /**
-     * @var int
      * @ORM\Id
      * @ORM\Column(type="integer", name="lemma_id")
      * @ORM\GeneratedValue(strategy="AUTO")
+     *
+     * @var int
      */
     private $id;
 
     /**
-     * @var string
      * @ORM\Column(type="string", name="lemma_name", unique=true, length=255)
+     *
+     * @var string
      */
     private $lemma;
 
@@ -242,35 +245,39 @@ class Lemma
  */
 class Type
 {
-    public const CLASS_NAME = __CLASS__;
+    public const CLASS_NAME = self::class;
 
     /**
-     * @var int
      * @ORM\Id
      * @ORM\Column(type="integer", name="type_id")
      * @ORM\GeneratedValue(strategy="AUTO")
+     *
+     * @var int
      */
     private $id;
 
     /**
-     * @var string
      * @ORM\Column(type="string", name="type_name", unique=true)
+     *
+     * @var string
      */
     private $type;
 
     /**
-     * @var string
      * @ORM\Column(type="string", name="type_abbreviation", unique=true)
+     *
+     * @var string
      */
     private $abbreviation;
 
     /**
-     * @var kateglo\application\helpers\collections\ArrayCollection
      * @ORM\ManyToMany(targetEntity=Lemma::class)
      * @ORM\JoinTable(name="lemma_type",
      *     joinColumns={@ORM\JoinColumn(name="type_id", referencedColumnName="type_id")},
      *     inverseJoinColumns={@ORM\JoinColumn(name="lemma_id", referencedColumnName="lemma_id")}
      * )
+     *
+     * @var kateglo\application\helpers\collections\ArrayCollection
      */
     private $lemmas;
 
@@ -365,7 +372,7 @@ class Type
  */
 class Phrase
 {
-    public const CLASS_NAME = __CLASS__;
+    public const CLASS_NAME = self::class;
 
     /**
      * @ORM\Id
@@ -457,7 +464,7 @@ class Phrase
  */
 class PhraseType
 {
-    public const CLASS_NAME = __CLASS__;
+    public const CLASS_NAME = self::class;
 
     /**
      * @ORM\Id
@@ -549,7 +556,7 @@ class PhraseType
  */
 class Definition
 {
-    public const CLASS_NAME = __CLASS__;
+    public const CLASS_NAME = self::class;
 
     /**
      * @ORM\Id
@@ -594,7 +601,7 @@ class Definition
     public function removePhrase()
     {
         if ($this->phrase !== null) {
-            /*@var $phrase kateglo\application\models\Phrase */
+            /** @var kateglo\application\models\Phrase $phrase */
             $phrase       = $this->phrase;
             $this->phrase = null;
             $phrase->removeDefinition($this);

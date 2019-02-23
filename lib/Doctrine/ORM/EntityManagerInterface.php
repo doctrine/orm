@@ -14,6 +14,7 @@ use Doctrine\ORM\Query\FilterCollection;
 use Doctrine\ORM\Query\ResultSetMapping;
 use Doctrine\ORM\Utility\IdentifierFlattener;
 use ProxyManager\Proxy\GhostObjectInterface;
+use Throwable;
 
 /**
  * EntityManager interface
@@ -80,7 +81,7 @@ interface EntityManagerInterface extends ObjectManager
      *
      * @return mixed The value returned from the closure.
      *
-     * @throws \Throwable
+     * @throws Throwable
      */
     public function transactional(callable $func);
 

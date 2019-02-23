@@ -12,6 +12,7 @@ use Doctrine\ORM\Events;
 use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\Query\ResultSetMapping;
 use Doctrine\ORM\UnitOfWork;
+use ReflectionClass;
 use function array_map;
 use function array_merge;
 use function in_array;
@@ -250,7 +251,7 @@ abstract class AbstractHydrator
             $fieldName = $cacheKeyInfo['fieldName'];
 
             switch (true) {
-                case (isset($cacheKeyInfo['isNewObjectParameter'])):
+                case isset($cacheKeyInfo['isNewObjectParameter']):
                     $argIndex = $cacheKeyInfo['argIndex'];
                     $objIndex = $cacheKeyInfo['objIndex'];
                     $type     = $cacheKeyInfo['type'];
@@ -260,7 +261,7 @@ abstract class AbstractHydrator
                     $rowData['newObjects'][$objIndex]['args'][$argIndex] = $value;
                     break;
 
-                case (isset($cacheKeyInfo['isScalar'])):
+                case isset($cacheKeyInfo['isScalar']):
                     $type  = $cacheKeyInfo['type'];
                     $value = $type->convertToPHPValue($value, $this->platform);
 
@@ -358,7 +359,7 @@ abstract class AbstractHydrator
 
         switch (true) {
             // NOTE: Most of the times it's a field mapping, so keep it first!!!
-            case (isset($this->rsm->fieldMappings[$key])):
+            case isset($this->rsm->fieldMappings[$key]):
                 $classMetadata = $this->getClassMetadata($this->rsm->declaringClasses[$key]);
                 $fieldName     = $this->rsm->fieldMappings[$key];
                 $ownerMap      = $this->rsm->columnOwnerMap[$key];
@@ -386,7 +387,7 @@ abstract class AbstractHydrator
 
                 return $this->cache[$key] = $columnInfo;
 
-            case (isset($this->rsm->newObjectMappings[$key])):
+            case isset($this->rsm->newObjectMappings[$key]):
                 // WARNING: A NEW object is also a scalar, so it must be declared before!
                 $mapping = $this->rsm->newObjectMappings[$key];
 
@@ -397,17 +398,17 @@ abstract class AbstractHydrator
                     'type'                 => $this->rsm->typeMappings[$key],
                     'argIndex'             => $mapping['argIndex'],
                     'objIndex'             => $mapping['objIndex'],
-                    'class'                => new \ReflectionClass($mapping['className']),
+                    'class'                => new ReflectionClass($mapping['className']),
                 ];
 
-            case (isset($this->rsm->scalarMappings[$key])):
+            case isset($this->rsm->scalarMappings[$key]):
                 return $this->cache[$key] = [
                     'isScalar'  => true,
                     'fieldName' => $this->rsm->scalarMappings[$key],
                     'type'      => $this->rsm->typeMappings[$key],
                 ];
 
-            case (isset($this->rsm->metaMappings[$key])):
+            case isset($this->rsm->metaMappings[$key]):
                 // Meta column (has meaning in relational schema only, i.e. foreign keys or discriminator columns).
                 $fieldName = $this->rsm->metaMappings[$key];
                 $dqlAlias  = $this->rsm->columnOwnerMap[$key];

@@ -5,11 +5,13 @@ declare(strict_types=1);
 namespace Doctrine\Tests\ORM\Query;
 
 use Doctrine\Tests\OrmTestCase;
+use Exception;
 
 /**
  * Test case for testing the saving and referencing of query identifiers.
  *
  * @link        http://www.phpdoctrine.org
+ *
  * @todo        1) [romanb] We  might want to split the SQL generation tests into multiple
  *              testcases later since we'll have a lot of them and we might want to have special SQL
  *              generation tests for some dbms specific SQL syntaxes.
@@ -31,7 +33,7 @@ class DeleteSqlGenerationTest extends OrmTestCase
             $sqlGenerated = $query->getSql();
 
             $query->free();
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             $this->fail($e->getMessage());
         }
 

@@ -13,9 +13,9 @@ use Doctrine\ORM\Mapping as ORM;
 class DDC5934Member
 {
     /**
-     * @var ArrayCollection
-     *
      * @ORM\ManyToMany(targetEntity=DDC5934BaseContract::class, mappedBy="members")
+     *
+     * @var ArrayCollection
      */
     public $contracts;
 

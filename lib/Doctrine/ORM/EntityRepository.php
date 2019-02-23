@@ -4,11 +4,12 @@ declare(strict_types=1);
 
 namespace Doctrine\ORM;
 
+use BadMethodCallException;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\Common\Collections\Criteria;
 use Doctrine\Common\Collections\Selectable;
+use Doctrine\Common\Inflector\Inflector;
 use Doctrine\Common\Persistence\ObjectRepository;
-use Doctrine\Common\Util\Inflector;
 use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\Query\ResultSetMappingBuilder;
 use Doctrine\ORM\Repository\Exception\InvalidMagicMethodCall;
@@ -128,7 +129,7 @@ class EntityRepository implements ObjectRepository, Selectable
     {
         $persister = $this->em->getUnitOfWork()->getEntityPersister($this->entityName);
 
-        return $persister->loadAll($criteria, $orderBy !== null ? $orderBy : [], $limit, $offset);
+        return $persister->loadAll($criteria, $orderBy ?? [], $limit, $offset);
     }
 
     /**
@@ -149,11 +150,11 @@ class EntityRepository implements ObjectRepository, Selectable
     /**
      * Counts entities by a set of criteria.
      *
-     * @todo Add this method to `ObjectRepository` interface in the next major release
-     *
      * @param Criteria[] $criteria
      *
      * @return int The cardinality of the objects that match the given criteria.
+     *
+     * @todo Add this method to `ObjectRepository` interface in the next major release
      */
     public function count(array $criteria)
     {
@@ -169,7 +170,7 @@ class EntityRepository implements ObjectRepository, Selectable
      * @return mixed The returned value from the resolved method.
      *
      * @throws ORMException
-     * @throws \BadMethodCallException If the method called is invalid.
+     * @throws BadMethodCallException If the method called is invalid.
      */
     public function __call($method, $arguments)
     {
@@ -185,7 +186,7 @@ class EntityRepository implements ObjectRepository, Selectable
             return $this->resolveMagicCall('count', substr($method, 7), $arguments);
         }
 
-        throw new \BadMethodCallException(
+        throw new BadMethodCallException(
             sprintf(
                 "Undefined method '%s'. The method name must start with either findBy, findOneBy or countBy!",
                 $method
@@ -245,9 +246,9 @@ class EntityRepository implements ObjectRepository, Selectable
      * @param string  $by        The property name used as condition
      * @param mixed[] $arguments The arguments to pass at method call
      *
-     * @throws ORMException If the method called is invalid or the requested field/association does not exist.
-     *
      * @return mixed
+     *
+     * @throws ORMException If the method called is invalid or the requested field/association does not exist.
      */
     private function resolveMagicCall($method, $by, array $arguments)
     {

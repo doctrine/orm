@@ -32,7 +32,9 @@ use Doctrine\Tests\Models\JoinedInheritanceType\RootClass;
 use Doctrine\Tests\Models\Quote;
 use Doctrine\Tests\OrmTestCase;
 use DoctrineGlobalArticle;
-use function array_search;
+use Exception;
+use InvalidArgumentException;
+use stdClass;
 use function reset;
 use function sprintf;
 
@@ -152,43 +154,32 @@ class ClassMetadataFactoryTest extends OrmTestCase
         self::assertFalse($em->getMetadataFactory()->isTransient(CmsArticle::class));
     }
 
-    public function testAddDefaultDiscriminatorMap() : void
+    /**
+     * @dataProvider classesInInheritanceWithNoMapProvider()
+     */
+    public function testNoDefaultDiscriminatorMapIsAssumed(string $rootClassName, string $targetClassName) : void
     {
         $cmf    = new ClassMetadataFactory();
         $driver = $this->createAnnotationDriver([__DIR__ . '/../../Models/JoinedInheritanceType/']);
         $em     = $this->createEntityManager($driver);
         $cmf->setEntityManager($em);
 
-        $rootMetadata                 = $cmf->getMetadataFor(RootClass::class);
-        $childMetadata                = $cmf->getMetadataFor(ChildClass::class);
-        $anotherChildMetadata         = $cmf->getMetadataFor(AnotherChildClass::class);
-        $rootDiscriminatorMap         = $rootMetadata->discriminatorMap;
-        $childDiscriminatorMap        = $childMetadata->discriminatorMap;
-        $anotherChildDiscriminatorMap = $anotherChildMetadata->discriminatorMap;
+        $this->expectException(MappingException::class);
+        $this->expectExceptionMessage(
+            sprintf("Entity class '%s' is using inheritance but no discriminator map was defined.", $rootClassName)
+        );
 
-        $rootClass         = RootClass::class;
-        $childClass        = ChildClass::class;
-        $anotherChildClass = AnotherChildClass::class;
+        $cmf->getMetadataFor($targetClassName);
+    }
 
-        $rootClassKey         = array_search($rootClass, $rootDiscriminatorMap, true);
-        $childClassKey        = array_search($childClass, $rootDiscriminatorMap, true);
-        $anotherChildClassKey = array_search($anotherChildClass, $rootDiscriminatorMap, true);
-
-        self::assertEquals('rootclass', $rootClassKey);
-        self::assertEquals('childclass', $childClassKey);
-        self::assertEquals('anotherchildclass', $anotherChildClassKey);
-
-        self::assertEquals($childDiscriminatorMap, $rootDiscriminatorMap);
-        self::assertEquals($anotherChildDiscriminatorMap, $rootDiscriminatorMap);
-
-        // ClassMetadataFactory::addDefaultDiscriminatorMap shouldn't be called again, because the
-        // discriminator map is already cached
-        $cmf = $this->getMockBuilder(ClassMetadataFactory::class)->setMethods(['addDefaultDiscriminatorMap'])->getMock();
-        $cmf->setEntityManager($em);
-        $cmf->expects($this->never())
-            ->method('addDefaultDiscriminatorMap');
-
-        $rootMetadata = $cmf->getMetadataFor(RootClass::class);
+    /**
+     * @return string[]
+     */
+    public function classesInInheritanceWithNoMapProvider() : iterable
+    {
+        yield 'root entity' => [RootClass::class, RootClass::class];
+        yield 'child entity' => [RootClass::class, ChildClass::class];
+        yield 'another child entity' => [RootClass::class, AnotherChildClass::class];
     }
 
     public function testGetAllMetadataWorksWithBadConnection() : void
@@ -203,7 +194,7 @@ class ClassMetadataFactoryTest extends OrmTestCase
 
         $conn->expects($this->any())
             ->method('getDatabasePlatform')
-            ->will($this->throwException(new \Exception('Exception thrown in test when calling getDatabasePlatform')));
+            ->will($this->throwException(new Exception('Exception thrown in test when calling getDatabasePlatform')));
 
         $cmf = new ClassMetadataFactory();
         $cmf->setEntityManager($em);
@@ -386,7 +377,7 @@ class ClassMetadataFactoryTest extends OrmTestCase
         $cmf          = new ClassMetadataFactory();
         $mockDriver   = new MetadataDriverMock();
         $em           = $this->createEntityManager($mockDriver);
-        $listener     = $this->getMockBuilder(\stdClass::class)->setMethods(['onClassMetadataNotFound'])->getMock();
+        $listener     = $this->getMockBuilder(stdClass::class)->setMethods(['onClassMetadataNotFound'])->getMock();
         $eventManager = $em->getEventManager();
 
         $cmf->setEntityManager($em);
@@ -394,7 +385,7 @@ class ClassMetadataFactoryTest extends OrmTestCase
         $listener
             ->expects($this->any())
             ->method('onClassMetadataNotFound')
-            ->will($this->returnCallback(function (OnClassMetadataNotFoundEventArgs $args) use ($metadata, $em, $test) {
+            ->will($this->returnCallback(static function (OnClassMetadataNotFoundEventArgs $args) use ($metadata, $em, $test) {
                 $test->assertNull($args->getFoundMetadata());
                 $test->assertSame('Foo', $args->getClassName());
                 $test->assertSame($em, $args->getObjectManager());
@@ -433,9 +424,9 @@ class ClassMetadataFactoryTest extends OrmTestCase
 
         $metadata->mapEmbedded(
             [
-            'fieldName'    => 'embedded',
-            'class'        => '',
-            'columnPrefix' => false,
+                'fieldName'    => 'embedded',
+                'class'        => '',
+                'columnPrefix' => false,
             ]
         );
 
@@ -480,7 +471,7 @@ class ClassMetadataFactoryTestSubject extends ClassMetadataFactory
         $this->requestedClasses[] = $className;
 
         if (! isset($this->mockMetadata[$className])) {
-            throw new \InvalidArgumentException(sprintf('No mock metadata found for class %s.', $className));
+            throw new InvalidArgumentException(sprintf('No mock metadata found for class %s.', $className));
         }
 
         return $this->mockMetadata[$className];

@@ -110,7 +110,6 @@ class CmsUser
 
     /**
      * Adds a phonenumber to the user.
-     *
      */
     public function addPhonenumber(CmsPhonenumber $phone)
     {

@@ -6,6 +6,7 @@ namespace Doctrine\Tests\ORM\Functional\Ticket;
 
 use Doctrine\ORM\Annotation as ORM;
 use Doctrine\Tests\OrmFunctionalTestCase;
+use Exception;
 use const PHP_EOL;
 use function get_class;
 
@@ -23,12 +24,12 @@ class DDC1655Test extends OrmFunctionalTestCase
         try {
             $this->schemaTool->createSchema(
                 [
-                $this->em->getClassMetadata(DDC1655Foo::class),
-                $this->em->getClassMetadata(DDC1655Bar::class),
-                $this->em->getClassMetadata(DDC1655Baz::class),
+                    $this->em->getClassMetadata(DDC1655Foo::class),
+                    $this->em->getClassMetadata(DDC1655Bar::class),
+                    $this->em->getClassMetadata(DDC1655Baz::class),
                 ]
             );
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             $this->fail($e->getMessage() . PHP_EOL . $e->getTraceAsString());
         }
     }

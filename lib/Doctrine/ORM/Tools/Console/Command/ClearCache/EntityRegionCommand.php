@@ -6,6 +6,7 @@ namespace Doctrine\ORM\Tools\Console\Command\ClearCache;
 
 use Doctrine\ORM\Cache;
 use Doctrine\ORM\Cache\Region\DefaultRegion;
+use InvalidArgumentException;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
@@ -73,18 +74,18 @@ EOT
         $cache       = $em->getCache();
 
         if (! $cache instanceof Cache) {
-            throw new \InvalidArgumentException('No second-level cache is configured on the given EntityManager.');
+            throw new InvalidArgumentException('No second-level cache is configured on the given EntityManager.');
         }
 
         if (! $entityClass && ! $input->getOption('all')) {
-            throw new \InvalidArgumentException('Invalid argument "--entity-class"');
+            throw new InvalidArgumentException('Invalid argument "--entity-class"');
         }
 
         if ($input->getOption('flush')) {
             $entityRegion = $cache->getEntityCacheRegion($entityClass);
 
             if (! $entityRegion instanceof DefaultRegion) {
-                throw new \InvalidArgumentException(sprintf(
+                throw new InvalidArgumentException(sprintf(
                     'The option "--flush" expects a "Doctrine\ORM\Cache\Region\DefaultRegion", but got "%s".',
                     is_object($entityRegion) ? get_class($entityRegion) : gettype($entityRegion)
                 ));

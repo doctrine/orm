@@ -7,10 +7,10 @@ namespace Doctrine\Tests\ORM\Query;
 use Doctrine\DBAL\Types\Type as DBALType;
 use Doctrine\Tests\DbalTypes\NegativeToPositiveType;
 use Doctrine\Tests\OrmTestCase;
+use Exception;
 
 /**
  * Test case for testing the saving and referencing of query identifiers.
- *
  */
 class UpdateSqlGenerationTest extends OrmTestCase
 {
@@ -34,7 +34,7 @@ class UpdateSqlGenerationTest extends OrmTestCase
             $sqlGenerated = $query->getSql();
 
             $query->free();
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             $this->fail($e->getMessage());
         }
 

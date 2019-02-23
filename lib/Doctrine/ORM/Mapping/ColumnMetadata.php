@@ -50,9 +50,9 @@ abstract class ColumnMetadata
     }
 
     /**
-     * @todo Enable scalar typehint here
-     *
      * @param string $tableName
+     *
+     * @todo Enable scalar typehint here
      */
     public function setTableName($tableName) : void
     {

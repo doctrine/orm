@@ -14,6 +14,7 @@ use Doctrine\Tests\Models\CustomType\CustomTypeChild;
 use Doctrine\Tests\Models\CustomType\CustomTypeParent;
 use Doctrine\Tests\Models\Generic\NonAlphaColumnsEntity;
 use Doctrine\Tests\OrmTestCase;
+use ReflectionMethod;
 
 class BasicEntityPersisterTypeValueSqlTest extends OrmTestCase
 {
@@ -52,7 +53,7 @@ class BasicEntityPersisterTypeValueSqlTest extends OrmTestCase
 
     public function testGetInsertSQLUsesTypeValuesSQL() : void
     {
-        $method = new \ReflectionMethod($this->persister, 'getInsertSQL');
+        $method = new ReflectionMethod($this->persister, 'getInsertSQL');
         $method->setAccessible(true);
 
         $sql = $method->invoke($this->persister);
@@ -88,7 +89,7 @@ class BasicEntityPersisterTypeValueSqlTest extends OrmTestCase
 
     public function testGetSelectConditionSQLUsesTypeValuesSQL() : void
     {
-        $method = new \ReflectionMethod($this->persister, 'getSelectConditionSQL');
+        $method = new ReflectionMethod($this->persister, 'getSelectConditionSQL');
         $method->setAccessible(true);
 
         $sql = $method->invoke($this->persister, ['customInteger' => 1, 'child' => 1]);
@@ -102,7 +103,7 @@ class BasicEntityPersisterTypeValueSqlTest extends OrmTestCase
     public function testStripNonAlphanumericCharactersFromSelectColumnListSQL() : void
     {
         $persister = new BasicEntityPersister($this->em, $this->em->getClassMetadata(NonAlphaColumnsEntity::class));
-        $method    = new \ReflectionMethod($persister, 'getSelectColumnsSQL');
+        $method    = new ReflectionMethod($persister, 'getSelectColumnsSQL');
         $method->setAccessible(true);
 
         self::assertEquals('t1."simple-entity-id" AS c0, t1."simple-entity-value" AS c2', $method->invoke($persister));

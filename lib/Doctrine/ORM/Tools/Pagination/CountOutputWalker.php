@@ -12,6 +12,7 @@ use Doctrine\ORM\Query\AST\SelectStatement;
 use Doctrine\ORM\Query\ParserResult;
 use Doctrine\ORM\Query\ResultSetMapping;
 use Doctrine\ORM\Query\SqlWalker;
+use RuntimeException;
 use function array_diff;
 use function array_keys;
 use function count;
@@ -66,7 +67,7 @@ class CountOutputWalker extends SqlWalker
      *
      * @return string
      *
-     * @throws \RuntimeException
+     * @throws RuntimeException
      */
     public function walkSelectStatement(SelectStatement $AST)
     {
@@ -92,7 +93,7 @@ class CountOutputWalker extends SqlWalker
         // Get the root entity and alias from the AST fromClause
         $from = $AST->fromClause->identificationVariableDeclarations;
         if (count($from) > 1) {
-            throw new \RuntimeException('Cannot count query which selects two FROM components, cannot make distinction');
+            throw new RuntimeException('Cannot count query which selects two FROM components, cannot make distinction');
         }
 
         $fromRoot       = reset($from);
@@ -124,7 +125,7 @@ class CountOutputWalker extends SqlWalker
         }
 
         if (count($rootIdentifier) !== count($sqlIdentifier)) {
-            throw new \RuntimeException(sprintf(
+            throw new RuntimeException(sprintf(
                 'Not all identifier properties can be found in the ResultSetMapping: %s',
                 implode(', ', array_diff($rootIdentifier, array_keys($sqlIdentifier)))
             ));

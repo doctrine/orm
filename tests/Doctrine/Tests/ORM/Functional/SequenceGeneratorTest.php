@@ -6,6 +6,7 @@ namespace Doctrine\Tests\ORM\Functional;
 
 use Doctrine\ORM\Annotation as ORM;
 use Doctrine\Tests\OrmFunctionalTestCase;
+use Exception;
 
 /**
  * Description of SequenceGeneratorTest
@@ -26,7 +27,7 @@ class SequenceGeneratorTest extends OrmFunctionalTestCase
                     $this->em->getClassMetadata(SequenceEntity::class),
                 ]
             );
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
         }
     }
 

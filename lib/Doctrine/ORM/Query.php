@@ -52,25 +52,15 @@ final class Query extends AbstractQuery
     /**
      * The refresh hint turns any query into a refresh query with the result that
      * any local changes in entities are overridden with the fetched values.
-     *
-     * @var string
      */
     public const HINT_REFRESH = 'doctrine.refresh';
 
-    /**
-     * @var string
-     */
     public const HINT_CACHE_ENABLED = 'doctrine.cache.enabled';
 
-    /**
-     * @var string
-     */
     public const HINT_CACHE_EVICT = 'doctrine.cache.evict';
 
     /**
      * Internal hint: is set to the proxy entity that is currently triggered for loading
-     *
-     * @var string
      */
     public const HINT_REFRESH_ENTITY = 'doctrine.refresh.entity';
 
@@ -78,7 +68,6 @@ final class Query extends AbstractQuery
      * The forcePartialLoad query hint forces a particular query to return
      * partial objects.
      *
-     * @var string
      * @todo Rename: HINT_OPTIMIZE
      */
     public const HINT_FORCE_PARTIAL_LOAD = 'doctrine.forcePartialLoad';
@@ -88,37 +77,25 @@ final class Query extends AbstractQuery
      * discriminator columns to be selected and returned as part of the query result.
      *
      * This hint does only apply to non-object queries.
-     *
-     * @var string
      */
     public const HINT_INCLUDE_META_COLUMNS = 'doctrine.includeMetaColumns';
 
     /**
      * An array of class names that implement \Doctrine\ORM\Query\TreeWalker and
      * are iterated and executed after the DQL has been parsed into an AST.
-     *
-     * @var string
      */
     public const HINT_CUSTOM_TREE_WALKERS = 'doctrine.customTreeWalkers';
 
     /**
      * A string with a class name that implements \Doctrine\ORM\Query\TreeWalker
      * and is used for generating the target SQL from any DQL AST tree.
-     *
-     * @var string
      */
     public const HINT_CUSTOM_OUTPUT_WALKER = 'doctrine.customOutputWalker';
 
     //const HINT_READ_ONLY = 'doctrine.readOnly';
 
-    /**
-     * @var string
-     */
     public const HINT_INTERNAL_ITERATION = 'doctrine.internal.iteration';
 
-    /**
-     * @var string
-     */
     public const HINT_LOCK_MODE = 'doctrine.lockMode';
 
     /**
@@ -317,7 +294,7 @@ final class Query extends AbstractQuery
             $this->evictEntityCacheRegion();
         }
 
-        list($sqlParams, $types) = $this->processParameterMappings($paramMappings);
+        [$sqlParams, $types] = $this->processParameterMappings($paramMappings);
 
         $this->evictResultSetCache(
             $executor,
@@ -365,7 +342,7 @@ final class Query extends AbstractQuery
             throw new QueryException('The hint "HINT_CACHE_EVICT" is not valid for select statements.');
         }
 
-        $className = ($AST instanceof DeleteStatement)
+        $className = $AST instanceof DeleteStatement
             ? $AST->deleteClause->abstractSchemaName
             : $AST->updateClause->abstractSchemaName;
 
@@ -404,7 +381,7 @@ final class Query extends AbstractQuery
             }
 
             $value = $this->processParameterValue($value);
-            $type  = ($parameter->getValue() === $value)
+            $type  = $parameter->getValue() === $value
                 ? $parameter->getType()
                 : ParameterTypeInferer::inferType($value);
 

@@ -40,7 +40,6 @@ class ResolveTargetEntityListener implements EventSubscriber
      *
      * @param string $originalEntity
      * @param string $newEntity
-     *
      */
     public function addResolveTargetEntity($originalEntity, $newEntity)
     {

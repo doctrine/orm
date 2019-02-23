@@ -32,10 +32,10 @@ class CustomFunctionsTest extends OrmFunctionalTestCase
         $this->em->flush();
 
         // Instead of defining the function with the class name, we use a callback
-        $this->em->getConfiguration()->addCustomStringFunction('FOO', function ($funcName) {
+        $this->em->getConfiguration()->addCustomStringFunction('FOO', static function ($funcName) {
             return new NoOp($funcName);
         });
-        $this->em->getConfiguration()->addCustomNumericFunction('BAR', function ($funcName) {
+        $this->em->getConfiguration()->addCustomNumericFunction('BAR', static function ($funcName) {
             return new NoOp($funcName);
         });
 

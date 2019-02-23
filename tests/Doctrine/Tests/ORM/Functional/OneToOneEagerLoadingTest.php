@@ -8,6 +8,7 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\Annotation as ORM;
 use Doctrine\ORM\Tools\SchemaTool;
 use Doctrine\Tests\OrmFunctionalTestCase;
+use Exception;
 use ProxyManager\Proxy\GhostObjectInterface;
 use function count;
 use function get_class;
@@ -24,14 +25,14 @@ class OneToOneEagerLoadingTest extends OrmFunctionalTestCase
         try {
             $schemaTool->createSchema(
                 [
-                $this->em->getClassMetadata(Train::class),
-                $this->em->getClassMetadata(TrainDriver::class),
-                $this->em->getClassMetadata(TrainOwner::class),
-                $this->em->getClassMetadata(Waggon::class),
-                $this->em->getClassMetadata(TrainOrder::class),
+                    $this->em->getClassMetadata(Train::class),
+                    $this->em->getClassMetadata(TrainDriver::class),
+                    $this->em->getClassMetadata(TrainOwner::class),
+                    $this->em->getClassMetadata(Waggon::class),
+                    $this->em->getClassMetadata(TrainOrder::class),
                 ]
             );
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
         }
     }
 
@@ -247,17 +248,20 @@ class Train
 {
     /**
      * @ORM\Id @ORM\Column(type="integer") @ORM\GeneratedValue
+     *
      * @var int
      */
     public $id;
     /**
      * Owning side
+     *
      * @ORM\OneToOne(targetEntity=TrainDriver::class, inversedBy="train", fetch="EAGER", cascade={"persist"})
      * @ORM\JoinColumn(nullable=true)
      */
     public $driver;
     /**
      * Owning side
+     *
      * @ORM\OneToOne(targetEntity=TrainOwner::class, inversedBy="train", fetch="EAGER", cascade={"persist"})
      * @ORM\JoinColumn(nullable=false)
      */
@@ -301,6 +305,7 @@ class TrainDriver
     public $name;
     /**
      * Inverse side
+     *
      * @ORM\OneToOne(targetEntity=Train::class, mappedBy="driver", fetch="EAGER")
      */
     public $train;
@@ -327,6 +332,7 @@ class TrainOwner
     public $name;
     /**
      * Inverse side
+     *
      * @ORM\OneToOne(targetEntity=Train::class, mappedBy="owner", fetch="EAGER")
      */
     public $train;

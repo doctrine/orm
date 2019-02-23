@@ -7,6 +7,7 @@ namespace Doctrine\ORM\Tools\Console;
 use Doctrine\DBAL\Tools\Console as DBALConsole;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Tools\Console\Helper\EntityManagerHelper;
+use OutOfBoundsException;
 use PackageVersions\Versions;
 use Symfony\Component\Console\Application;
 use Symfony\Component\Console\Command\Command as SymfonyCommand;
@@ -47,7 +48,7 @@ final class ConsoleRunner
      *
      * @param SymfonyCommand[] $commands
      *
-     * @throws \OutOfBoundsException
+     * @throws OutOfBoundsException
      */
     public static function createApplication(HelperSet $helperSet, array $commands = []) : Application
     {
@@ -65,7 +66,6 @@ final class ConsoleRunner
         $cli->addCommands(
             [
                 // DBAL Commands
-                new DBALConsole\Command\ImportCommand(),
                 new DBALConsole\Command\ReservedWordsCommand(),
                 new DBALConsole\Command\RunSqlCommand(),
 

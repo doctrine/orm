@@ -7,6 +7,7 @@ namespace Doctrine\Tests\ORM\Functional\Ticket;
 use Doctrine\ORM\Annotation as ORM;
 use Doctrine\ORM\Query\ResultSetMappingBuilder;
 use Doctrine\Tests\OrmFunctionalTestCase;
+use Exception;
 
 /**
  * @group DDC-2660
@@ -23,12 +24,12 @@ class DDC2660Test extends OrmFunctionalTestCase
         try {
             $this->schemaTool->createSchema(
                 [
-                $this->em->getClassMetadata(DDC2660Product::class),
-                $this->em->getClassMetadata(DDC2660Customer::class),
-                $this->em->getClassMetadata(DDC2660CustomerOrder::class),
+                    $this->em->getClassMetadata(DDC2660Product::class),
+                    $this->em->getClassMetadata(DDC2660Customer::class),
+                    $this->em->getClassMetadata(DDC2660CustomerOrder::class),
                 ]
             );
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             return;
         }
 

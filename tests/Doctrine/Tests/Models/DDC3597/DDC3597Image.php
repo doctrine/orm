@@ -15,8 +15,9 @@ use Doctrine\Tests\Models\DDC3597\Embeddable\DDC3597Dimension;
 class DDC3597Image extends DDC3597Media
 {
     /**
-     * @var DDC3597Dimension
      * @ORM\Embedded(class = DDC3597Dimension::class, columnPrefix = false)
+     *
+     * @var DDC3597Dimension
      */
     private $dimension;
 

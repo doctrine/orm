@@ -6,6 +6,7 @@ namespace Doctrine\Tests\ORM\Functional\Ticket;
 
 use Doctrine\ORM\Annotation as ORM;
 use Doctrine\Tests\OrmFunctionalTestCase;
+use Exception;
 use ProxyManager\Proxy\GhostObjectInterface;
 
 /**
@@ -20,11 +21,11 @@ class DDC1228Test extends OrmFunctionalTestCase
         try {
             $this->schemaTool->createSchema(
                 [
-                $this->em->getClassMetadata(DDC1228User::class),
-                $this->em->getClassMetadata(DDC1228Profile::class),
+                    $this->em->getClassMetadata(DDC1228User::class),
+                    $this->em->getClassMetadata(DDC1228Profile::class),
                 ]
             );
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
         }
     }
 
@@ -97,18 +98,21 @@ class DDC1228User
 {
     /**
      * @ORM\Id @ORM\Column(type="integer") @ORM\GeneratedValue
+     *
      * @var int
      */
     public $id;
 
     /**
      * @ORM\Column(type="string")
+     *
      * @var string
      */
     public $name = 'Bar';
 
     /**
      * @ORM\OneToOne(targetEntity=DDC1228Profile::class)
+     *
      * @var Profile
      */
     public $profile;
@@ -126,12 +130,14 @@ class DDC1228Profile
 {
     /**
      * @ORM\Id @ORM\Column(type="integer") @ORM\GeneratedValue
+     *
      * @var int
      */
     public $id;
 
     /**
      * @ORM\Column(type="string")
+     *
      * @var string
      */
     public $name;

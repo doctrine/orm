@@ -48,7 +48,7 @@ class AbstractManyToManyAssociationTestCase extends OrmFunctionalTestCase
 
     public function assertCollectionEquals(Collection $first, Collection $second)
     {
-        return $first->forAll(function ($k, $e) use ($second) {
+        return $first->forAll(static function ($k, $e) use ($second) {
             return $second->contains($e);
         });
     }

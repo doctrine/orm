@@ -32,9 +32,7 @@ class SchemaValidatorTest extends OrmFunctionalTestCase
     }
 
     /**
-     *
      * @throws DBALException
-     *
      */
     private function registerType(string $className)
     {

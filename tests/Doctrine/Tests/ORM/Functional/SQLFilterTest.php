@@ -29,6 +29,9 @@ use Doctrine\Tests\Models\Company\CompanyManager;
 use Doctrine\Tests\Models\Company\CompanyOrganization;
 use Doctrine\Tests\Models\Company\CompanyPerson;
 use Doctrine\Tests\OrmFunctionalTestCase;
+use InvalidArgumentException;
+use ReflectionMethod;
+use ReflectionProperty;
 use function in_array;
 use function serialize;
 
@@ -97,7 +100,7 @@ class SQLFilterTest extends OrmFunctionalTestCase
         $exceptionThrown = false;
         try {
             $filter = $em->getFilters()->enable('foo');
-        } catch (\InvalidArgumentException $e) {
+        } catch (InvalidArgumentException $e) {
             $exceptionThrown = true;
         }
         self::assertTrue($exceptionThrown);
@@ -135,7 +138,7 @@ class SQLFilterTest extends OrmFunctionalTestCase
         $exceptionThrown = false;
         try {
             $filter = $em->getFilters()->disable('foo');
-        } catch (\InvalidArgumentException $e) {
+        } catch (InvalidArgumentException $e) {
             $exceptionThrown = true;
         }
         self::assertTrue($exceptionThrown);
@@ -144,7 +147,7 @@ class SQLFilterTest extends OrmFunctionalTestCase
         $exceptionThrown = false;
         try {
             $filter = $em->getFilters()->disable('locale');
-        } catch (\InvalidArgumentException $e) {
+        } catch (InvalidArgumentException $e) {
             $exceptionThrown = true;
         }
         self::assertTrue($exceptionThrown);
@@ -165,7 +168,7 @@ class SQLFilterTest extends OrmFunctionalTestCase
         $exceptionThrown = false;
         try {
             $filter = $em->getFilters()->getFilter('soft_delete');
-        } catch (\InvalidArgumentException $e) {
+        } catch (InvalidArgumentException $e) {
             $exceptionThrown = true;
         }
         self::assertTrue($exceptionThrown);
@@ -202,21 +205,17 @@ class SQLFilterTest extends OrmFunctionalTestCase
     protected function getMockConnection()
     {
         // Setup connection mock
-        $conn = $this->getMockBuilder(Connection::class)
+        return $this->getMockBuilder(Connection::class)
             ->disableOriginalConstructor()
             ->getMock();
-
-        return $conn;
     }
 
     protected function getMockEntityManager()
     {
         // Setup connection mock
-        $em = $this->getMockBuilder(EntityManagerInterface::class)
+        return $this->getMockBuilder(EntityManagerInterface::class)
             ->disableOriginalConstructor()
             ->getMock();
-
-        return $em;
     }
 
     protected function addMockFilterCollection($em)
@@ -274,7 +273,7 @@ class SQLFilterTest extends OrmFunctionalTestCase
 
         $filter = new MyLocaleFilter($em);
 
-        $reflMethod = new \ReflectionMethod(SQLFilter::class, 'getConnection');
+        $reflMethod = new ReflectionMethod(SQLFilter::class, 'getConnection');
         $reflMethod->setAccessible(true);
 
         self::assertSame($conn, $reflMethod->invoke($filter));
@@ -350,7 +349,7 @@ class SQLFilterTest extends OrmFunctionalTestCase
 
     public function testQueryCacheDependsOnFilters() : void
     {
-        $cacheDataReflection = new \ReflectionProperty(ArrayCache::class, 'data');
+        $cacheDataReflection = new ReflectionProperty(ArrayCache::class, 'data');
         $cacheDataReflection->setAccessible(true);
 
         $query = $this->em->createQuery('select ux from Doctrine\Tests\Models\CMS\CmsUser ux');
@@ -852,8 +851,7 @@ class SQLFilterTest extends OrmFunctionalTestCase
         $this->em
             ->getFilters()
             ->enable('completed_contract')
-            ->setParameter('completed', true, DBALType::BOOLEAN)
-        ;
+            ->setParameter('completed', true, DBALType::BOOLEAN);
     }
 
     public function testManyToManyExtraLazyCountWithFilterOnSTI() : void

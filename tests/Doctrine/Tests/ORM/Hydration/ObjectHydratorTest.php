@@ -29,6 +29,7 @@ use Doctrine\Tests\Models\Hydration\EntityWithArrayDefaultArrayValueM2M;
 use Doctrine\Tests\Models\Hydration\SimpleEntity;
 use ProxyManager\Configuration;
 use ProxyManager\Factory\LazyLoadingGhostFactory;
+use ReflectionClass;
 
 class ObjectHydratorTest extends HydrationTestCase
 {
@@ -1023,7 +1024,7 @@ class ObjectHydratorTest extends HydrationTestCase
         ];
 
         $proxyInstance = (new LazyLoadingGhostFactory(new Configuration()))
-            ->createProxy(ECommerceShipping::class, function () {
+            ->createProxy(ECommerceShipping::class, static function () {
                 self::fail('Proxy is not supposed to be lazy-loaded');
             });
 
@@ -1074,7 +1075,7 @@ class ObjectHydratorTest extends HydrationTestCase
         ];
 
         $proxyInstance = (new LazyLoadingGhostFactory(new Configuration()))
-            ->createProxy(ECommerceShipping::class, function () {
+            ->createProxy(ECommerceShipping::class, static function () {
                 self::fail('Proxy is not supposed to be lazy-loaded');
             });
 
@@ -1243,7 +1244,6 @@ class ObjectHydratorTest extends HydrationTestCase
      *   LEFT JOIN a.comments c
      *
      * @todo Figure it out why this test is commented out and provide a better description in docblock
-     *
      * @group bubu
      * @dataProvider provideDataForUserEntityResult
      */
@@ -1901,7 +1901,6 @@ class ObjectHydratorTest extends HydrationTestCase
 
     /**
      * @group DDC-1470
-     *
      * @expectedException \Doctrine\ORM\Internal\Hydration\HydrationException
      * @expectedExceptionMessage The meta mapping for the discriminator column "c_discr" is missing for "Doctrine\Tests\Models\Company\CompanyFixContract" using the DQL alias "c".
      */
@@ -1915,10 +1914,10 @@ class ObjectHydratorTest extends HydrationTestCase
         $rsm->setDiscriminatorColumn('c', 'c_discr');
 
         $resultSet = [
-              [
-                  'c__id'   => '1',
-                  'c_discr' => 'fix',
-              ],
+            [
+                'c__id'   => '1',
+                'c_discr' => 'fix',
+            ],
         ];
 
         $stmt     = new HydratorMockStatement($resultSet);
@@ -1928,7 +1927,6 @@ class ObjectHydratorTest extends HydrationTestCase
 
     /**
      * @group DDC-1470
-     *
      * @expectedException \Doctrine\ORM\Internal\Hydration\HydrationException
      * @expectedExceptionMessage The discriminator column "discr" is missing for "Doctrine\Tests\Models\Company\CompanyEmployee" using the DQL alias "e".
      */
@@ -1947,12 +1945,12 @@ class ObjectHydratorTest extends HydrationTestCase
         $rsm->setDiscriminatorColumn('e', 'e_discr');
 
         $resultSet = [
-              [
-                  'c__id'   => '1',
-                  'c_discr' => 'fix',
-                  'e__id'   => '1',
-                  'e__name' => 'Fabio B. Silva',
-              ],
+            [
+                'c__id'   => '1',
+                'c_discr' => 'fix',
+                'e__id'   => '1',
+                'e__name' => 'Fabio B. Silva',
+            ],
         ];
 
         $stmt     = new HydratorMockStatement($resultSet);
@@ -1962,7 +1960,6 @@ class ObjectHydratorTest extends HydrationTestCase
 
     /**
      * @group DDC-3076
-     *
      * @expectedException \Doctrine\ORM\Internal\Hydration\HydrationException
      * @expectedExceptionMessage The discriminator value "subworker" is invalid. It must be one of "person", "manager", "employee".
      */
@@ -1977,11 +1974,11 @@ class ObjectHydratorTest extends HydrationTestCase
         $rsm->setDiscriminatorColumn('p', 'discr');
 
         $resultSet = [
-              [
-                  'p__id'   => '1',
-                  'p__name' => 'Fabio B. Silva',
-                  'discr'   => 'subworker',
-              ],
+            [
+                'p__id'   => '1',
+                'p__name' => 'Fabio B. Silva',
+                'discr'   => 'subworker',
+            ],
         ];
 
         $stmt     = new HydratorMockStatement($resultSet);
@@ -2022,7 +2019,7 @@ class ObjectHydratorTest extends HydrationTestCase
      */
     private function swapPrivateProperty($object, string $propertyName, $newValue)
     {
-        $reflectionClass    = new \ReflectionClass($object);
+        $reflectionClass    = new ReflectionClass($object);
         $reflectionProperty = $reflectionClass->getProperty($propertyName);
 
         $reflectionProperty->setAccessible(true);

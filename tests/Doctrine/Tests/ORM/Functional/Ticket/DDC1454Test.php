@@ -7,6 +7,7 @@ namespace Doctrine\Tests\ORM\Functional\Ticket;
 use Doctrine\ORM\Annotation as ORM;
 use Doctrine\ORM\UnitOfWork;
 use Doctrine\Tests\OrmFunctionalTestCase;
+use Exception;
 use function getrandmax;
 use function random_int;
 
@@ -26,7 +27,7 @@ class DDC1454Test extends OrmFunctionalTestCase
                     $this->em->getClassMetadata(DDC1454Picture::class),
                 ]
             );
-        } catch (\Exception $ignored) {
+        } catch (Exception $ignored) {
         }
     }
 

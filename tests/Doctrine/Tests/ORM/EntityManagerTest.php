@@ -23,6 +23,9 @@ use Doctrine\Tests\Models\IdentityIsAssociation\SimpleId;
 use Doctrine\Tests\Models\IdentityIsAssociation\ToOneAssociationIdToSimpleId;
 use Doctrine\Tests\Models\IdentityIsAssociation\ToOneCompositeAssociationToMultipleSimpleId;
 use Doctrine\Tests\OrmTestCase;
+use InvalidArgumentException;
+use stdClass;
+use TypeError;
 
 class EntityManagerTest extends OrmTestCase
 {
@@ -154,8 +157,9 @@ class EntityManagerTest extends OrmTestCase
     }
 
     /**
-     * @dataProvider dataAffectedByErrorIfClosedException
      * @param string $methodName
+     *
+     * @dataProvider dataAffectedByErrorIfClosedException
      */
     public function testAffectedByErrorIfClosedException($methodName) : void
     {
@@ -163,7 +167,7 @@ class EntityManagerTest extends OrmTestCase
         $this->expectExceptionMessage('closed');
 
         $this->em->close();
-        $this->em->{$methodName}(new \stdClass());
+        $this->em->{$methodName}(new stdClass());
     }
 
     public function dataToBeReturnedByTransactional()
@@ -182,7 +186,7 @@ class EntityManagerTest extends OrmTestCase
     {
         self::assertSame(
             $value,
-            $this->em->transactional(function ($em) use ($value) {
+            $this->em->transactional(static function ($em) use ($value) {
                 return $value;
             })
         );
@@ -201,7 +205,7 @@ class EntityManagerTest extends OrmTestCase
 
     public function testCreateInvalidConnection() : void
     {
-        $this->expectException(\InvalidArgumentException::class);
+        $this->expectException(InvalidArgumentException::class);
         $this->expectExceptionMessage('Invalid $connection argument of type integer given: "1".');
 
         $config = new Configuration();
@@ -215,14 +219,14 @@ class EntityManagerTest extends OrmTestCase
     public function testTransactionalReThrowsThrowables() : void
     {
         try {
-            $this->em->transactional(function () {
-                (function (array $value) {
+            $this->em->transactional(static function () {
+                (static function (array $value) {
                     // this only serves as an IIFE that throws a `TypeError`
                 })(null);
             });
 
             self::fail('TypeError expected to be thrown');
-        } catch (\TypeError $ignored) {
+        } catch (TypeError $ignored) {
             self::assertFalse($this->em->isOpen());
         }
     }

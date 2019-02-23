@@ -39,9 +39,7 @@ class UnitOfWorkMock extends UnitOfWork
             return $this->mockDataChangeSets[$oid];
         }
 
-        $data = parent::getEntityChangeSet($entity);
-
-        return $data;
+        return parent::getEntityChangeSet($entity);
     }
 
     /* MOCK API */

@@ -23,8 +23,6 @@ final class Events
      * EntityManager remove operation for that entity is executed.
      *
      * This is an entity lifecycle event.
-     *
-     * @var string
      */
     public const preRemove = 'preRemove';
 
@@ -33,8 +31,6 @@ final class Events
      * been deleted. It will be invoked after the database delete operations.
      *
      * This is an entity lifecycle event.
-     *
-     * @var string
      */
     public const postRemove = 'postRemove';
 
@@ -43,8 +39,6 @@ final class Events
      * EntityManager persist operation for that entity is executed.
      *
      * This is an entity lifecycle event.
-     *
-     * @var string
      */
     public const prePersist = 'prePersist';
 
@@ -54,8 +48,6 @@ final class Events
      * Generated primary key values are available in the postPersist event.
      *
      * This is an entity lifecycle event.
-     *
-     * @var string
      */
     public const postPersist = 'postPersist';
 
@@ -64,8 +56,6 @@ final class Events
      * entity data.
      *
      * This is an entity lifecycle event.
-     *
-     * @var string
      */
     public const preUpdate = 'preUpdate';
 
@@ -74,8 +64,6 @@ final class Events
      * entity data.
      *
      * This is an entity lifecycle event.
-     *
-     * @var string
      */
     public const postUpdate = 'postUpdate';
 
@@ -89,24 +77,18 @@ final class Events
      * or event handler.
      *
      * This is an entity lifecycle event.
-     *
-     * @var string
      */
     public const postLoad = 'postLoad';
 
     /**
      * The loadClassMetadata event occurs after the mapping metadata for a class
      * has been loaded from a mapping source (annotations/xml).
-     *
-     * @var string
      */
     public const loadClassMetadata = 'loadClassMetadata';
 
     /**
      * The onClassMetadataNotFound event occurs whenever loading metadata for a class
      * failed.
-     *
-     * @var string
      */
     public const onClassMetadataNotFound = 'onClassMetadataNotFound';
 
@@ -123,8 +105,6 @@ final class Events
      * actual database operations are executed. The event is only raised if there is
      * actually something to do for the underlying UnitOfWork. If nothing needs to be done,
      * the onFlush event is not raised.
-     *
-     * @var string
      */
     public const onFlush = 'onFlush';
 
@@ -134,16 +114,12 @@ final class Events
      * actually something to do for the underlying UnitOfWork. If nothing needs to be done,
      * the postFlush event is not raised. The event won't be raised if an error occurs during the
      * flush operation.
-     *
-     * @var string
      */
     public const postFlush = 'postFlush';
 
     /**
      * The onClear event occurs when the EntityManager#clear() operation is invoked,
      * after all references to entities have been removed from the unit of work.
-     *
-     * @var string
      */
     public const onClear = 'onClear';
 }

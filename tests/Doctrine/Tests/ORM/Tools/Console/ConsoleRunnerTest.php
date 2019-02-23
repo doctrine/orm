@@ -12,7 +12,6 @@ use Symfony\Component\Console\Helper\HelperSet;
 
 /**
  * @group DDC-3186
- *
  * @covers \Doctrine\ORM\Tools\Console\ConsoleRunner
  */
 final class ConsoleRunnerTest extends DoctrineTestCase
@@ -25,7 +24,6 @@ final class ConsoleRunnerTest extends DoctrineTestCase
         self::assertSame($helperSet, $app->getHelperSet());
         self::assertEquals(Versions::getVersion('doctrine/orm'), $app->getVersion());
 
-        self::assertTrue($app->has('dbal:import'));
         self::assertTrue($app->has('dbal:reserved-words'));
         self::assertTrue($app->has('dbal:run-sql'));
         self::assertTrue($app->has('orm:clear-cache:region:collection'));

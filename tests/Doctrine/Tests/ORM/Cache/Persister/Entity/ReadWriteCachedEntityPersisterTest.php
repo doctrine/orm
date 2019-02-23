@@ -13,6 +13,7 @@ use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\Persisters\Entity\EntityPersister;
 use Doctrine\Tests\Models\Cache\Country;
+use ReflectionProperty;
 
 /**
  * @group DDC-2183
@@ -134,7 +135,7 @@ class ReadWriteCachedEntityPersisterTest extends AbstractEntityPersisterTest
         $lock      = Lock::createLockRead();
         $persister = $this->createPersisterDefault();
         $key       = new EntityCacheKey(Country::class, ['id' => 1]);
-        $property  = new \ReflectionProperty(ReadWriteCachedEntityPersister::class, 'queuedCache');
+        $property  = new ReflectionProperty(ReadWriteCachedEntityPersister::class, 'queuedCache');
 
         $property->setAccessible(true);
 
@@ -165,7 +166,7 @@ class ReadWriteCachedEntityPersisterTest extends AbstractEntityPersisterTest
         $lock      = Lock::createLockRead();
         $persister = $this->createPersisterDefault();
         $key       = new EntityCacheKey(Country::class, ['id' => 1]);
-        $property  = new \ReflectionProperty(ReadWriteCachedEntityPersister::class, 'queuedCache');
+        $property  = new ReflectionProperty(ReadWriteCachedEntityPersister::class, 'queuedCache');
 
         $property->setAccessible(true);
 
@@ -195,7 +196,7 @@ class ReadWriteCachedEntityPersisterTest extends AbstractEntityPersisterTest
         $entity    = new Country('Foo');
         $persister = $this->createPersisterDefault();
         $key       = new EntityCacheKey(Country::class, ['id' => 1]);
-        $property  = new \ReflectionProperty(ReadWriteCachedEntityPersister::class, 'queuedCache');
+        $property  = new ReflectionProperty(ReadWriteCachedEntityPersister::class, 'queuedCache');
 
         $property->setAccessible(true);
 
@@ -219,7 +220,7 @@ class ReadWriteCachedEntityPersisterTest extends AbstractEntityPersisterTest
         $entity    = new Country('Foo');
         $persister = $this->createPersisterDefault();
         $key       = new EntityCacheKey(Country::class, ['id' => 1]);
-        $property  = new \ReflectionProperty(ReadWriteCachedEntityPersister::class, 'queuedCache');
+        $property  = new ReflectionProperty(ReadWriteCachedEntityPersister::class, 'queuedCache');
 
         $property->setAccessible(true);
 

@@ -24,9 +24,9 @@ class DDC2504RootClass
     public $id;
 
     /**
-     * @var DDC2504OtherClass
-     *
      * @ORM\ManyToOne(targetEntity=DDC2504OtherClass::class, inversedBy="childClasses")
+     *
+     * @var DDC2504OtherClass
      */
     public $other;
 }

@@ -221,7 +221,7 @@ class JoinedSubclassPersister extends AbstractEntityInheritancePersister
         }
 
         $orderBySql   = $this->getOrderBySQL($orderBy, $baseTableAlias);
-        $conditionSql = ($criteria instanceof Criteria)
+        $conditionSql = $criteria instanceof Criteria
             ? $this->getSelectConditionCriteriaSQL($criteria)
             : $this->getSelectConditionSQL($criteria, $association);
 
@@ -259,7 +259,7 @@ class JoinedSubclassPersister extends AbstractEntityInheritancePersister
                     . $where
                     . $orderBySql;
 
-        return $this->platform->modifyLimitQuery($query, $limit, $offset) . $lockSql;
+        return $this->platform->modifyLimitQuery($query, $limit, $offset ?? 0) . $lockSql;
     }
 
     /**
@@ -271,7 +271,7 @@ class JoinedSubclassPersister extends AbstractEntityInheritancePersister
         $baseTableAlias = $this->getSQLTableAlias($this->class->getTableName());
         $joinSql        = $this->getJoinSql($baseTableAlias);
 
-        $conditionSql = ($criteria instanceof Criteria)
+        $conditionSql = $criteria instanceof Criteria
             ? $this->getSelectConditionCriteriaSQL($criteria)
             : $this->getSelectConditionSQL($criteria);
 
@@ -285,12 +285,10 @@ class JoinedSubclassPersister extends AbstractEntityInheritancePersister
                 : $filterSql;
         }
 
-        $sql = 'SELECT COUNT(*) '
+        return 'SELECT COUNT(*) '
             . 'FROM ' . $tableName . ' ' . $baseTableAlias
             . $joinSql
             . (empty($conditionSql) ? '' : ' WHERE ' . $conditionSql);
-
-        return $sql;
     }
 
     /**
@@ -389,11 +387,11 @@ class JoinedSubclassPersister extends AbstractEntityInheritancePersister
                 }
 
                 switch (true) {
-                    case ($property instanceof FieldMetadata):
+                    case $property instanceof FieldMetadata:
                         $columnList[] = $this->getSelectColumnSQL($fieldName, $subClass);
                         break;
 
-                    case ($property instanceof ToOneAssociationMetadata && $property->isOwningSide()):
+                    case $property instanceof ToOneAssociationMetadata && $property->isOwningSide():
                         $targetClass = $this->em->getClassMetadata($property->getTargetEntity());
 
                         foreach ($property->getJoinColumns() as $joinColumn) {

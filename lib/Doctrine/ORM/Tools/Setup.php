@@ -10,10 +10,10 @@ use Doctrine\Common\Cache\Cache;
 use Doctrine\Common\Cache\CacheProvider;
 use Doctrine\Common\Cache\MemcachedCache;
 use Doctrine\Common\Cache\RedisCache;
-use Doctrine\Common\ClassLoader;
 use Doctrine\ORM\Configuration;
 use Doctrine\ORM\Mapping\Driver\XmlDriver;
-use function class_exists;
+use Memcached;
+use Redis;
 use function extension_loaded;
 use function md5;
 use function sys_get_temp_dir;
@@ -23,25 +23,6 @@ use function sys_get_temp_dir;
  */
 class Setup
 {
-    /**
-     * Use this method to register all autoloads for a downloaded Doctrine library.
-     * Pick the directory the library was uncompressed into.
-     *
-     * @param string $directory
-     */
-    public static function registerAutoloadDirectory($directory)
-    {
-        if (! class_exists('Doctrine\Common\ClassLoader', false)) {
-            require_once $directory . '/Doctrine/Common/ClassLoader.php';
-        }
-
-        $loader = new ClassLoader('Doctrine', $directory);
-        $loader->register();
-
-        $loader = new ClassLoader('Symfony\Component', $directory . '/Doctrine');
-        $loader->register();
-    }
-
     /**
      * Creates a configuration with an annotation metadata driver.
      *
@@ -135,7 +116,7 @@ class Setup
         }
 
         if (extension_loaded('memcached')) {
-            $memcached = new \Memcached();
+            $memcached = new Memcached();
             $memcached->addServer('127.0.0.1', 11211);
 
             $cache = new MemcachedCache();
@@ -145,7 +126,7 @@ class Setup
         }
 
         if (extension_loaded('redis')) {
-            $redis = new \Redis();
+            $redis = new Redis();
             $redis->connect('127.0.0.1');
 
             $cache = new RedisCache();

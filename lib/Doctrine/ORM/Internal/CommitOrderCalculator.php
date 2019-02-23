@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Doctrine\ORM\Internal;
 
+use stdClass;
 use function array_reverse;
 
 /**
@@ -34,7 +35,7 @@ class CommitOrderCalculator
      * - <b>dependencyList</b> (array<string>)
      * Map of node dependencies defined as hashes.
      *
-     * @var \stdClass[]
+     * @var stdClass[]
      */
     private $nodeList = [];
 
@@ -65,7 +66,7 @@ class CommitOrderCalculator
      */
     public function addNode($hash, $node)
     {
-        $vertex = new \stdClass();
+        $vertex = new stdClass();
 
         $vertex->hash           = $hash;
         $vertex->state          = self::NOT_VISITED;
@@ -85,7 +86,7 @@ class CommitOrderCalculator
     public function addDependency($fromHash, $toHash, $weight)
     {
         $vertex = $this->nodeList[$fromHash];
-        $edge   = new \stdClass();
+        $edge   = new stdClass();
 
         $edge->from   = $fromHash;
         $edge->to     = $toHash;
@@ -125,7 +126,7 @@ class CommitOrderCalculator
      *
      * {@internal Highly performance-sensitive method. }}
      *
-     * @param \stdClass $vertex
+     * @param stdClass $vertex
      */
     private function visit($vertex)
     {
@@ -142,6 +143,16 @@ class CommitOrderCalculator
                 case self::IN_PROGRESS:
                     if (isset($adjacentVertex->dependencyList[$vertex->hash]) &&
                         $adjacentVertex->dependencyList[$vertex->hash]->weight < $edge->weight) {
+                        // If we have some non-visited dependencies in the in-progress dependency, we
+                        // need to visit them before adding the node.
+                        foreach ($adjacentVertex->dependencyList as $adjacentEdge) {
+                            $adjacentEdgeVertex = $this->nodeList[$adjacentEdge->to];
+
+                            if ($adjacentEdgeVertex->state === self::NOT_VISITED) {
+                                $this->visit($adjacentEdgeVertex);
+                            }
+                        }
+
                         $adjacentVertex->state = self::VISITED;
 
                         $this->sortedNodeList[] = $adjacentVertex->value;

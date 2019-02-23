@@ -6,6 +6,7 @@ namespace Doctrine\ORM\Tools\Console\Command;
 
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Tools\Console\MetadataFilter;
+use InvalidArgumentException;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
@@ -63,13 +64,13 @@ class GenerateProxiesCommand extends Command
         $destPath = realpath($destPath);
 
         if (! file_exists($destPath)) {
-            throw new \InvalidArgumentException(
+            throw new InvalidArgumentException(
                 sprintf("Proxies destination directory '<info>%s</info>' does not exist.", $em->getConfiguration()->getProxyDir())
             );
         }
 
         if (! is_writable($destPath)) {
-            throw new \InvalidArgumentException(
+            throw new InvalidArgumentException(
                 sprintf("Proxies destination directory '<info>%s</info>' does not have write permissions.", $destPath)
             );
         }

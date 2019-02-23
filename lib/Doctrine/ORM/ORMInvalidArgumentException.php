@@ -6,6 +6,7 @@ namespace Doctrine\ORM;
 
 use Doctrine\ORM\Mapping\AssociationMetadata;
 use Doctrine\ORM\Mapping\ClassMetadata;
+use InvalidArgumentException;
 use function array_map;
 use function count;
 use function get_class;
@@ -20,7 +21,7 @@ use function sprintf;
 /**
  * Contains exception messages for all invalid lifecycle state exceptions inside UnitOfWork
  */
-class ORMInvalidArgumentException extends \InvalidArgumentException
+class ORMInvalidArgumentException extends InvalidArgumentException
 {
     /**
      * @param object $entity
@@ -84,7 +85,7 @@ class ORMInvalidArgumentException extends \InvalidArgumentException
     public static function newEntitiesFoundThroughRelationships($newEntitiesWithAssociations)
     {
         $errorMessages = array_map(
-            function (array $newEntityWithAssociation) : string {
+            static function (array $newEntityWithAssociation) : string {
                 [$associationMetadata, $entity] = $newEntityWithAssociation;
 
                 return self::newEntityFoundThroughRelationshipMessage($associationMetadata, $entity);
@@ -117,8 +118,7 @@ class ORMInvalidArgumentException extends \InvalidArgumentException
 
         $messageAppend = method_exists($entry, '__toString')
             ? ''
-            : " If you cannot find out which entity causes the problem implement '%s#__toString()' to get a clue."
-        ;
+            : " If you cannot find out which entity causes the problem implement '%s#__toString()' to get a clue.";
 
         return new self(sprintf(
             $message,

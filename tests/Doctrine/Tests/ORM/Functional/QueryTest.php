@@ -172,7 +172,7 @@ class QueryTest extends OrmFunctionalTestCase
                   ->setParameters($parameters)
                   ->getResult();
 
-        $extractValue = function (Parameter $parameter) {
+        $extractValue = static function (Parameter $parameter) {
             return $parameter->getValue();
         };
 
@@ -576,8 +576,8 @@ class QueryTest extends OrmFunctionalTestCase
         $query = $this->em->createQuery('SELECT u FROM Doctrine\Tests\Models\CMS\CmsUser u WHERE u.status = :a AND u.id IN (:b)');
         $query->setParameters(new ArrayCollection(
             [
-            new Parameter('b', [$user1->id, $user2->id, $user3->id]),
-            new Parameter('a', 'developer'),
+                new Parameter('b', [$user1->id, $user2->id, $user3->id]),
+                new Parameter('a', 'developer'),
             ]
         ));
         $result = $query->getResult();

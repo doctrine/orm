@@ -24,9 +24,9 @@ class DDC1595Test extends OrmFunctionalTestCase
 
         $this->schemaTool->createSchema(
             [
-            $this->em->getClassMetadata(DDC1595BaseInheritance::class),
-            $this->em->getClassMetadata(DDC1595InheritedEntity1::class),
-            $this->em->getClassMetadata(DDC1595InheritedEntity2::class),
+                $this->em->getClassMetadata(DDC1595BaseInheritance::class),
+                $this->em->getClassMetadata(DDC1595InheritedEntity1::class),
+                $this->em->getClassMetadata(DDC1595InheritedEntity2::class),
             ]
         );
     }
@@ -73,7 +73,6 @@ class DDC1595Test extends OrmFunctionalTestCase
 /**
  * @ORM\Entity
  * @ORM\Table(name="base")
- *
  * @ORM\InheritanceType("SINGLE_TABLE")
  * @ORM\DiscriminatorColumn(name="type", type="string")
  * @ORM\DiscriminatorMap({

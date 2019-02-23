@@ -16,6 +16,7 @@ use Doctrine\Tests\Models\Cache\City;
 use Doctrine\Tests\Models\Cache\Country;
 use Doctrine\Tests\Models\Cache\State;
 use ProxyManager\Proxy\GhostObjectInterface;
+use ReflectionMethod;
 
 /**
  * @group DDC-2183
@@ -804,8 +805,8 @@ class SecondLevelCacheQueryCacheTest extends SecondLevelCacheAbstractTest
         $this->secondLevelCacheLogger->clearStats();
         $this->em->clear();
 
-        $getHash = function (AbstractQuery $query) {
-            $method = new \ReflectionMethod($query, 'getHash');
+        $getHash = static function (AbstractQuery $query) {
+            $method = new ReflectionMethod($query, 'getHash');
             $method->setAccessible(true);
 
             return $method->invoke($query);
@@ -831,7 +832,7 @@ class SecondLevelCacheQueryCacheTest extends SecondLevelCacheAbstractTest
             ->get($key);
 
         self::assertInstanceOf(Cache\QueryCacheEntry::class, $entry);
-        $entry->time = $entry->time / 2;
+        $entry->time /= 2;
 
         $this->cache->getQueryCache()
             ->getRegion()
@@ -1151,9 +1152,6 @@ class SecondLevelCacheQueryCacheTest extends SecondLevelCacheAbstractTest
 
         self::assertCount(3, $result2);
         self::assertEquals($queryCount + 1, $this->getCurrentQueryCount());
-
-        foreach ($result2 as $entity) {
-            self::assertInstanceOf(Country::class, $entity);
-        }
+        self::assertContainsOnlyInstancesOf(Country::class, $result2);
     }
 }

@@ -24,8 +24,8 @@ class DDC2214Test extends OrmFunctionalTestCase
 
         $this->schemaTool->createSchema(
             [
-            $this->em->getClassMetadata(DDC2214Foo::class),
-            $this->em->getClassMetadata(DDC2214Bar::class),
+                $this->em->getClassMetadata(DDC2214Foo::class),
+                $this->em->getClassMetadata(DDC2214Bar::class),
             ]
         );
     }

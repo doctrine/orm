@@ -14,6 +14,7 @@ use Doctrine\Tests\Models\DDC889\DDC889Class;
 use Doctrine\Tests\Models\Generic\SerializationModel;
 use Doctrine\Tests\Models\ValueObjects\Name;
 use Doctrine\Tests\Models\ValueObjects\Person;
+use DOMDocument;
 use const ARRAY_FILTER_USE_KEY;
 use const DIRECTORY_SEPARATOR;
 use const PATHINFO_FILENAME;
@@ -155,7 +156,6 @@ class XmlMappingDriverTest extends AbstractMappingDriverTest
 
     /**
      * @group DDC-1468
-     *
      * @expectedException \Doctrine\Common\Persistence\Mapping\MappingException
      * @expectedExceptionMessage Invalid mapping file 'Doctrine.Tests.Models.Generic.SerializationModel.dcm.xml' for class 'Doctrine\Tests\Models\Generic\SerializationModel'.
      */
@@ -166,13 +166,14 @@ class XmlMappingDriverTest extends AbstractMappingDriverTest
 
     /**
      * @param string $xmlMappingFile
+     *
      * @dataProvider dataValidSchema
      * @group DDC-2429
      */
     public function testValidateXmlSchema($xmlMappingFile) : void
     {
         $xsdSchemaFile = __DIR__ . '/../../../../../doctrine-mapping.xsd';
-        $dom           = new \DOMDocument('UTF-8');
+        $dom           = new DOMDocument();
 
         $dom->load($xmlMappingFile);
 
@@ -188,11 +189,11 @@ class XmlMappingDriverTest extends AbstractMappingDriverTest
 
         $invalid = ['Doctrine.Tests.Models.DDC889.DDC889Class.dcm'];
 
-        $list = array_filter($list, function ($filename) use ($invalid) {
+        $list = array_filter($list, static function ($filename) use ($invalid) {
             return ! in_array($filename, $invalid, true);
         }, ARRAY_FILTER_USE_KEY);
 
-        return array_map(function ($item) {
+        return array_map(static function ($item) {
             return [$item];
         }, $list);
     }

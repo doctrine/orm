@@ -5,7 +5,10 @@ declare(strict_types=1);
 namespace Doctrine\ORM\Tools\Console\Command\ClearCache;
 
 use Doctrine\Common\Cache\ApcCache;
+use Doctrine\Common\Cache\ApcuCache;
 use Doctrine\Common\Cache\XcacheCache;
+use InvalidArgumentException;
+use LogicException;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
@@ -56,24 +59,29 @@ EOT
         $cacheDriver = $em->getConfiguration()->getQueryCacheImpl();
 
         if (! $cacheDriver) {
-            throw new \InvalidArgumentException('No Query cache driver is configured on given EntityManager.');
+            throw new InvalidArgumentException('No Query cache driver is configured on given EntityManager.');
         }
 
         if ($cacheDriver instanceof ApcCache) {
-            throw new \LogicException('Cannot clear APC Cache from Console, its shared in the Webserver memory and not accessible from the CLI.');
+            throw new LogicException('Cannot clear APC Cache from Console, it is shared in the Webserver memory and not accessible from the CLI.');
         }
+
+        if ($cacheDriver instanceof ApcuCache) {
+            throw new LogicException('Cannot clear APCu Cache from Console, it is shared in the Webserver memory and not accessible from the CLI.');
+        }
+
         if ($cacheDriver instanceof XcacheCache) {
-            throw new \LogicException('Cannot clear XCache Cache from Console, its shared in the Webserver memory and not accessible from the CLI.');
+            throw new LogicException('Cannot clear XCache Cache from Console, it is shared in the Webserver memory and not accessible from the CLI.');
         }
 
         $ui->comment('Clearing <info>all</info> Query cache entries');
 
         $result  = $cacheDriver->deleteAll();
-        $message = ($result) ? 'Successfully deleted cache entries.' : 'No cache entries were deleted.';
+        $message = $result ? 'Successfully deleted cache entries.' : 'No cache entries were deleted.';
 
         if ($input->getOption('flush') === true) {
             $result  = $cacheDriver->flushAll();
-            $message = ($result) ? 'Successfully flushed cache entries.' : $message;
+            $message = $result ? 'Successfully flushed cache entries.' : $message;
         }
 
         if (! $result) {

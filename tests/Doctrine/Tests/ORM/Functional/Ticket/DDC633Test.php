@@ -6,6 +6,7 @@ namespace Doctrine\Tests\ORM\Functional\Ticket;
 
 use Doctrine\ORM\Annotation as ORM;
 use Doctrine\Tests\OrmFunctionalTestCase;
+use Exception;
 use ProxyManager\Proxy\GhostObjectInterface;
 
 class DDC633Test extends OrmFunctionalTestCase
@@ -16,11 +17,11 @@ class DDC633Test extends OrmFunctionalTestCase
         try {
             $this->schemaTool->createSchema(
                 [
-                $this->em->getClassMetadata(DDC633Patient::class),
-                $this->em->getClassMetadata(DDC633Appointment::class),
+                    $this->em->getClassMetadata(DDC633Patient::class),
+                    $this->em->getClassMetadata(DDC633Appointment::class),
                 ]
             );
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
         }
     }
 

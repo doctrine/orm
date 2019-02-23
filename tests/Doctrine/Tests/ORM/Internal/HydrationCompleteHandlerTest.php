@@ -11,6 +11,7 @@ use Doctrine\ORM\Events;
 use Doctrine\ORM\Internal\HydrationCompleteHandler;
 use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\Tests\DoctrineTestCase;
+use PHPUnit_Framework_MockObject_MockObject;
 use stdClass;
 use function in_array;
 
@@ -21,10 +22,10 @@ use function in_array;
  */
 class HydrationCompleteHandlerTest extends DoctrineTestCase
 {
-    /** @var ListenersInvoker|\PHPUnit_Framework_MockObject_MockObject */
+    /** @var ListenersInvoker|PHPUnit_Framework_MockObject_MockObject */
     private $listenersInvoker;
 
-    /** @var EntityManagerInterface|\PHPUnit_Framework_MockObject_MockObject */
+    /** @var EntityManagerInterface|PHPUnit_Framework_MockObject_MockObject */
     private $entityManager;
 
     /** @var HydrationCompleteHandler */
@@ -41,9 +42,9 @@ class HydrationCompleteHandlerTest extends DoctrineTestCase
     }
 
     /**
-     * @dataProvider invocationFlagProvider
-     *
      * @param int $listenersFlag
+     *
+     * @dataProvider invocationFlagProvider
      */
     public function testDefersPostLoadOfEntity($listenersFlag) : void
     {
@@ -69,7 +70,7 @@ class HydrationCompleteHandlerTest extends DoctrineTestCase
                 $metadata,
                 Events::postLoad,
                 $entity,
-                $this->callback(function (LifecycleEventArgs $args) use ($entityManager, $entity) {
+                $this->callback(static function (LifecycleEventArgs $args) use ($entityManager, $entity) {
                     return $entity === $args->getEntity() && $entityManager === $args->getObjectManager();
                 }),
                 $listenersFlag
@@ -79,9 +80,9 @@ class HydrationCompleteHandlerTest extends DoctrineTestCase
     }
 
     /**
-     * @dataProvider invocationFlagProvider
-     *
      * @param int $listenersFlag
+     *
+     * @dataProvider invocationFlagProvider
      */
     public function testDefersPostLoadOfEntityOnlyOnce($listenersFlag) : void
     {
@@ -105,9 +106,9 @@ class HydrationCompleteHandlerTest extends DoctrineTestCase
     }
 
     /**
-     * @dataProvider invocationFlagProvider
-     *
      * @param int $listenersFlag
+     *
+     * @dataProvider invocationFlagProvider
      */
     public function testDefersMultiplePostLoadOfEntity($listenersFlag) : void
     {
@@ -137,7 +138,7 @@ class HydrationCompleteHandlerTest extends DoctrineTestCase
                 $this->logicalOr($metadata1, $metadata2),
                 Events::postLoad,
                 $this->logicalOr($entity1, $entity2),
-                $this->callback(function (LifecycleEventArgs $args) use ($entityManager, $entity1, $entity2) {
+                $this->callback(static function (LifecycleEventArgs $args) use ($entityManager, $entity1, $entity2) {
                     return in_array($args->getEntity(), [$entity1, $entity2], true)
                         && $entityManager === $args->getObjectManager();
                 }),

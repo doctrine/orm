@@ -8,15 +8,18 @@ use Doctrine\ORM\Decorator\EntityManagerDecorator;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Query\ResultSetMapping;
 use Doctrine\Tests\DoctrineTestCase;
+use PHPUnit_Framework_MockObject_MockObject;
+use ReflectionClass;
+use ReflectionMethod;
 use function array_fill;
 use function call_user_func_array;
 
 class EntityManagerDecoratorTest extends DoctrineTestCase
 {
-    /** @var EntityManagerInterface|\PHPUnit_Framework_MockObject_MockObject */
+    /** @var EntityManagerInterface|PHPUnit_Framework_MockObject_MockObject */
     private $wrapped;
 
-    /** @var EntityManagerDecorator|\PHPUnit_Framework_MockObject_MockObject */
+    /** @var EntityManagerDecorator|PHPUnit_Framework_MockObject_MockObject */
     private $decorator;
 
     public function setUp() : void
@@ -28,7 +31,7 @@ class EntityManagerDecoratorTest extends DoctrineTestCase
 
     public function getMethodParameters()
     {
-        $class   = new \ReflectionClass(EntityManagerInterface::class);
+        $class   = new ReflectionClass(EntityManagerInterface::class);
         $methods = [];
 
         foreach ($class->getMethods() as $method) {
@@ -42,7 +45,7 @@ class EntityManagerDecoratorTest extends DoctrineTestCase
         return $methods;
     }
 
-    private function getParameters(\ReflectionMethod $method)
+    private function getParameters(ReflectionMethod $method)
     {
         /** Special case EntityManager::createNativeQuery() */
         if ($method->getName() === 'createNativeQuery') {
@@ -54,7 +57,7 @@ class EntityManagerDecoratorTest extends DoctrineTestCase
             return [
                 $method->getName(),
                 [
-                    function () {
+                    static function () {
                     },
                 ],
             ];

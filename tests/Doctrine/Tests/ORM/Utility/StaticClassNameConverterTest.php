@@ -36,7 +36,6 @@ class StaticClassNameConverterTest extends TestCase
 
     /**
      * @dataProvider classNamesProvider
-     *
      * @runInSeparateProcess
      */
     public function testClassNameConversionFromObject(string $givenClassName, string $expectedClassName) : void

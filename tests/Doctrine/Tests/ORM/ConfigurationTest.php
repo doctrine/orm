@@ -6,7 +6,6 @@ namespace Doctrine\Tests\ORM;
 
 use Doctrine\Common\Cache\ArrayCache;
 use Doctrine\Common\Cache\Cache;
-use Doctrine\Common\Proxy\AbstractProxyFactory;
 use Doctrine\ORM\Annotation as ORM;
 use Doctrine\ORM\Cache\CacheConfiguration;
 use Doctrine\ORM\Cache\Exception\MetadataCacheNotConfigured;
@@ -22,7 +21,7 @@ use Doctrine\ORM\Mapping\DefaultEntityListenerResolver;
 use Doctrine\ORM\Mapping\Driver\MappingDriver;
 use Doctrine\ORM\Mapping\EntityListenerResolver;
 use Doctrine\ORM\Mapping\Factory\NamingStrategy;
-use Doctrine\ORM\Proxy\Factory\StaticProxyFactory;
+use Doctrine\ORM\Proxy\Factory\ProxyFactory;
 use Doctrine\Tests\DoctrineTestCase;
 use Doctrine\Tests\Models\DDC753\DDC753CustomRepository;
 use ProxyManager\GeneratorStrategy\EvaluatingGeneratorStrategy;
@@ -104,7 +103,7 @@ class ConfigurationTest extends DoctrineTestCase
      */
     protected function setProductionSettings($skipCache = false)
     {
-        $this->configuration->setAutoGenerateProxyClasses(AbstractProxyFactory::AUTOGENERATE_FILE_NOT_EXISTS);
+        $this->configuration->setAutoGenerateProxyClasses(ProxyFactory::AUTOGENERATE_FILE_NOT_EXISTS);
 
         $cache = $this->createMock(Cache::class);
 
@@ -170,7 +169,7 @@ class ConfigurationTest extends DoctrineTestCase
     public function testEnsureProductionSettingsAutoGenerateProxyClassesEval() : void
     {
         $this->setProductionSettings();
-        $this->configuration->setAutoGenerateProxyClasses(AbstractProxyFactory::AUTOGENERATE_EVAL);
+        $this->configuration->setAutoGenerateProxyClasses(ProxyFactory::AUTOGENERATE_EVAL);
 
         $this->expectException(ProxyClassesAlwaysRegenerating::class);
         $this->expectExceptionMessage('Proxy Classes are always regenerating.');
@@ -180,79 +179,79 @@ class ConfigurationTest extends DoctrineTestCase
 
     public function testAddGetCustomStringFunction() : void
     {
-        $this->configuration->addCustomStringFunction('FunctionName', __CLASS__);
+        $this->configuration->addCustomStringFunction('FunctionName', self::class);
 
-        self::assertSame(__CLASS__, $this->configuration->getCustomStringFunction('FunctionName'));
+        self::assertSame(self::class, $this->configuration->getCustomStringFunction('FunctionName'));
         self::assertNull($this->configuration->getCustomStringFunction('NonExistingFunction'));
 
-        $this->configuration->setCustomStringFunctions(['OtherFunctionName' => __CLASS__]);
+        $this->configuration->setCustomStringFunctions(['OtherFunctionName' => self::class]);
 
-        self::assertSame(__CLASS__, $this->configuration->getCustomStringFunction('OtherFunctionName'));
+        self::assertSame(self::class, $this->configuration->getCustomStringFunction('OtherFunctionName'));
     }
 
     public function testAddGetCustomNumericFunction() : void
     {
-        $this->configuration->addCustomNumericFunction('FunctionName', __CLASS__);
+        $this->configuration->addCustomNumericFunction('FunctionName', self::class);
 
-        self::assertSame(__CLASS__, $this->configuration->getCustomNumericFunction('FunctionName'));
+        self::assertSame(self::class, $this->configuration->getCustomNumericFunction('FunctionName'));
         self::assertNull($this->configuration->getCustomNumericFunction('NonExistingFunction'));
 
-        $this->configuration->setCustomNumericFunctions(['OtherFunctionName' => __CLASS__]);
+        $this->configuration->setCustomNumericFunctions(['OtherFunctionName' => self::class]);
 
-        self::assertSame(__CLASS__, $this->configuration->getCustomNumericFunction('OtherFunctionName'));
+        self::assertSame(self::class, $this->configuration->getCustomNumericFunction('OtherFunctionName'));
     }
 
     public function testAddGetCustomDatetimeFunction() : void
     {
-        $this->configuration->addCustomDatetimeFunction('FunctionName', __CLASS__);
+        $this->configuration->addCustomDatetimeFunction('FunctionName', self::class);
 
-        self::assertSame(__CLASS__, $this->configuration->getCustomDatetimeFunction('FunctionName'));
+        self::assertSame(self::class, $this->configuration->getCustomDatetimeFunction('FunctionName'));
         self::assertNull($this->configuration->getCustomDatetimeFunction('NonExistingFunction'));
 
-        $this->configuration->setCustomDatetimeFunctions(['OtherFunctionName' => __CLASS__]);
+        $this->configuration->setCustomDatetimeFunctions(['OtherFunctionName' => self::class]);
 
-        self::assertSame(__CLASS__, $this->configuration->getCustomDatetimeFunction('OtherFunctionName'));
+        self::assertSame(self::class, $this->configuration->getCustomDatetimeFunction('OtherFunctionName'));
     }
 
     public function testAddGetCustomHydrationMode() : void
     {
         self::assertNull($this->configuration->getCustomHydrationMode('NonExisting'));
 
-        $this->configuration->addCustomHydrationMode('HydrationModeName', __CLASS__);
+        $this->configuration->addCustomHydrationMode('HydrationModeName', self::class);
 
-        self::assertSame(__CLASS__, $this->configuration->getCustomHydrationMode('HydrationModeName'));
+        self::assertSame(self::class, $this->configuration->getCustomHydrationMode('HydrationModeName'));
     }
 
     public function testSetCustomHydrationModes() : void
     {
-        $this->configuration->addCustomHydrationMode('HydrationModeName', __CLASS__);
+        $this->configuration->addCustomHydrationMode('HydrationModeName', self::class);
 
-        self::assertSame(__CLASS__, $this->configuration->getCustomHydrationMode('HydrationModeName'));
+        self::assertSame(self::class, $this->configuration->getCustomHydrationMode('HydrationModeName'));
 
         $this->configuration->setCustomHydrationModes(
-            ['AnotherHydrationModeName' => __CLASS__]
+            ['AnotherHydrationModeName' => self::class]
         );
 
         self::assertNull($this->configuration->getCustomHydrationMode('HydrationModeName'));
-        self::assertSame(__CLASS__, $this->configuration->getCustomHydrationMode('AnotherHydrationModeName'));
+        self::assertSame(self::class, $this->configuration->getCustomHydrationMode('AnotherHydrationModeName'));
     }
 
     public function testSetGetClassMetadataFactoryName() : void
     {
         self::assertSame(ClassMetadataFactory::class, $this->configuration->getClassMetadataFactoryName());
 
-        $this->configuration->setClassMetadataFactoryName(__CLASS__);
+        $this->configuration->setClassMetadataFactoryName(self::class);
 
-        self::assertSame(__CLASS__, $this->configuration->getClassMetadataFactoryName());
+        self::assertSame(self::class, $this->configuration->getClassMetadataFactoryName());
     }
 
     public function testAddGetFilters() : void
     {
         self::assertNull($this->configuration->getFilterClassName('NonExistingFilter'));
 
-        $this->configuration->addFilter('FilterName', __CLASS__);
+        $this->configuration->addFilter('FilterName', self::class);
 
-        self::assertSame(__CLASS__, $this->configuration->getFilterClassName('FilterName'));
+        self::assertSame(self::class, $this->configuration->getFilterClassName('FilterName'));
     }
 
     public function setDefaultRepositoryClassName()
@@ -264,7 +263,7 @@ class ConfigurationTest extends DoctrineTestCase
         self::assertSame(DDC753CustomRepository::class, $this->configuration->getDefaultRepositoryClassName());
 
         $this->expectException(ORMException::class);
-        $this->configuration->setDefaultRepositoryClassName(__CLASS__);
+        $this->configuration->setDefaultRepositoryClassName(self::class);
     }
 
     public function testSetGetNamingStrategy() : void
@@ -330,9 +329,9 @@ class ConfigurationTest extends DoctrineTestCase
     }
 
     /**
-     * @dataProvider expectedGeneratorStrategies
-     *
      * @param int|bool $proxyAutoGenerateFlag
+     *
+     * @dataProvider expectedGeneratorStrategies
      */
     public function testProxyManagerConfigurationWillBeUpdatedWithCorrectGeneratorStrategies(
         $proxyAutoGenerateFlag,
@@ -350,11 +349,11 @@ class ConfigurationTest extends DoctrineTestCase
     {
         return [
             [
-                StaticProxyFactory::AUTOGENERATE_NEVER,
+                ProxyFactory::AUTOGENERATE_NEVER,
                 EvaluatingGeneratorStrategy::class,
             ],
             [
-                StaticProxyFactory::AUTOGENERATE_EVAL,
+                ProxyFactory::AUTOGENERATE_EVAL,
                 EvaluatingGeneratorStrategy::class,
             ],
             [
@@ -362,11 +361,11 @@ class ConfigurationTest extends DoctrineTestCase
                 EvaluatingGeneratorStrategy::class,
             ],
             [
-                StaticProxyFactory::AUTOGENERATE_ALWAYS,
+                ProxyFactory::AUTOGENERATE_ALWAYS,
                 FileWriterGeneratorStrategy::class,
             ],
             [
-                StaticProxyFactory::AUTOGENERATE_FILE_NOT_EXISTS,
+                ProxyFactory::AUTOGENERATE_FILE_NOT_EXISTS,
                 FileWriterGeneratorStrategy::class,
             ],
             [

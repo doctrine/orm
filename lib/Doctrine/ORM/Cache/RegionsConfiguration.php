@@ -10,6 +10,7 @@ namespace Doctrine\ORM\Cache;
 class RegionsConfiguration
 {
     /**-
+     *
      * @var int[]
      */
     private $lifetimes = [];

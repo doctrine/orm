@@ -59,6 +59,7 @@ class DDC1250ClientHistory
 
     /**
      * @ORM\OneToOne(targetEntity=DDC1250ClientHistory::class, mappedBy="declinedClientsHistory")
+     *
      * @var
      */
     public $declinedBy;

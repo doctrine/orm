@@ -4,10 +4,11 @@ declare(strict_types=1);
 
 namespace Doctrine\ORM\Mapping;
 
+use Doctrine\DBAL\Types\Type;
 use Doctrine\ORM\Exception\ORMException;
-use function array_keys;
+use LogicException;
+use ReflectionException;
 use function array_map;
-use function array_values;
 use function get_parent_class;
 use function implode;
 use function sprintf;
@@ -15,7 +16,7 @@ use function sprintf;
 /**
  * A MappingException indicates that something is wrong with the mapping setup.
  */
-class MappingException extends \LogicException implements ORMException
+class MappingException extends LogicException implements ORMException
 {
     /**
      * @return MappingException
@@ -309,7 +310,7 @@ class MappingException extends \LogicException implements ORMException
      *
      * @return MappingException
      */
-    public static function reflectionFailure($entity, \ReflectionException $previousException)
+    public static function reflectionFailure($entity, ReflectionException $previousException)
     {
         return new self('An error occurred in ' . $entity, 0, $previousException);
     }
@@ -428,13 +429,13 @@ class MappingException extends \LogicException implements ORMException
     }
 
     /**
-     * @param string $unsupportedType
+     * @param Type $unsupportedType
      *
      * @return MappingException
      */
     public static function unsupportedOptimisticLockingType($unsupportedType)
     {
-        return new self('Locking type "' . $unsupportedType . '" is not supported by Doctrine.');
+        return new self('Locking type "' . $unsupportedType->getName() . '" is not supported by Doctrine.');
     }
 
     /**
@@ -471,28 +472,6 @@ class MappingException extends \LogicException implements ORMException
             $className,
             $owningClass
         ));
-    }
-
-    /**
-     * @param string   $className
-     * @param string[] $entries
-     * @param string[] $map
-     *
-     * @return MappingException
-     */
-    public static function duplicateDiscriminatorEntry($className, array $entries, array $map)
-    {
-        return new self(
-            'The entries ' . implode(', ', $entries) . " in discriminator map of class '" . $className . "' is duplicated. " .
-            'If the discriminator map is automatically generated you have to convert it to an explicit discriminator map now. ' .
-            'The entries of the current map are: @DiscriminatorMap({' . implode(', ', array_map(
-                function ($a, $b) {
-                    return sprintf("'%s': '%s'", $a, $b);
-                },
-                array_keys($map),
-                array_values($map)
-            )) . '})'
-        );
     }
 
     /**
@@ -807,7 +786,7 @@ class MappingException extends \LogicException implements ORMException
      */
     public static function invalidCascadeOption(array $cascades, $className, $propertyName)
     {
-        $cascades = implode(', ', array_map(function ($e) {
+        $cascades = implode(', ', array_map(static function ($e) {
             return "'" . $e . "'";
         }, $cascades));
 

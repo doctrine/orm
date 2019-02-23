@@ -11,6 +11,7 @@ use Doctrine\ORM\Query\AST\PathExpression;
 use Doctrine\ORM\Query\AST\SelectExpression;
 use Doctrine\ORM\Query\AST\SelectStatement;
 use Doctrine\ORM\Query\TreeWalkerAdapter;
+use RuntimeException;
 use function count;
 use function reset;
 
@@ -27,12 +28,12 @@ class CountWalker extends TreeWalkerAdapter
     /**
      * Walks down a SelectStatement AST node, modifying it to retrieve a COUNT.
      *
-     * @throws \RuntimeException
+     * @throws RuntimeException
      */
     public function walkSelectStatement(SelectStatement $AST)
     {
         if ($AST->havingClause) {
-            throw new \RuntimeException('Cannot count query that uses a HAVING clause. Use the output walkers for pagination');
+            throw new RuntimeException('Cannot count query that uses a HAVING clause. Use the output walkers for pagination');
         }
 
         $queryComponents = $this->getQueryComponents();
@@ -40,7 +41,7 @@ class CountWalker extends TreeWalkerAdapter
         $from = $AST->fromClause->identificationVariableDeclarations;
 
         if (count($from) > 1) {
-            throw new \RuntimeException('Cannot count query which selects two FROM components, cannot make distinction');
+            throw new RuntimeException('Cannot count query which selects two FROM components, cannot make distinction');
         }
 
         $fromRoot  = reset($from);
@@ -52,8 +53,7 @@ class CountWalker extends TreeWalkerAdapter
         if ($property instanceof AssociationMetadata) {
             $pathType = $property instanceof ToOneAssociationMetadata
                 ? PathExpression::TYPE_SINGLE_VALUED_ASSOCIATION
-                : PathExpression::TYPE_COLLECTION_VALUED_ASSOCIATION
-            ;
+                : PathExpression::TYPE_COLLECTION_VALUED_ASSOCIATION;
         }
 
         $pathExpression = new PathExpression(

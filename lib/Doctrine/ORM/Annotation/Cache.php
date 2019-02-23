@@ -14,7 +14,6 @@ final class Cache implements Annotation
 {
     /**
      * @Enum({"READ_ONLY", "NONSTRICT_READ_WRITE", "READ_WRITE"})
-     *
      * @var string The concurrency strategy.
      */
     public $usage = 'READ_ONLY';

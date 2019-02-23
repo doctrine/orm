@@ -5,10 +5,12 @@ declare(strict_types=1);
 namespace Doctrine\Tests\ORM\Functional\Locking;
 
 use DateTime;
+use DateTimeImmutable;
 use Doctrine\DBAL\LockMode;
 use Doctrine\ORM\Annotation as ORM;
 use Doctrine\ORM\OptimisticLockException;
 use Doctrine\Tests\OrmFunctionalTestCase;
+use Exception;
 use function date;
 use function strtotime;
 
@@ -25,9 +27,10 @@ class OptimisticTest extends OrmFunctionalTestCase
                     $this->em->getClassMetadata(OptimisticJoinedChild::class),
                     $this->em->getClassMetadata(OptimisticStandard::class),
                     $this->em->getClassMetadata(OptimisticTimestamp::class),
+                    $this->em->getClassMetadata(OptimisticImmutableTimestamp::class),
                 ]
             );
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             // Swallow all exceptions. We do not test the schema tool here.
         }
 
@@ -203,6 +206,22 @@ class OptimisticTest extends OrmFunctionalTestCase
         return $test;
     }
 
+    public function testOptimisticImmutableTimestampSetsDefaultValue() : OptimisticImmutableTimestamp
+    {
+        $test = new OptimisticImmutableTimestamp();
+
+        $test->name = 'Testing';
+
+        self::assertNull($test->version, 'Pre-Condition');
+
+        $this->em->persist($test);
+        $this->em->flush();
+
+        self::assertInstanceOf(DateTimeImmutable::class, $test->version);
+
+        return $test;
+    }
+
     /**
      * @depends testOptimisticTimestampSetsDefaultValue
      */
@@ -336,5 +355,24 @@ class OptimisticTimestamp
     public $name;
 
     /** @ORM\Version @ORM\Column(type="datetime") */
+    public $version;
+}
+
+/**
+ * @ORM\Entity
+ * @ORM\Table(name="optimistic_immutable_timestamp")
+ */
+class OptimisticImmutableTimestamp
+{
+    /**
+     * @ORM\Id @ORM\Column(type="integer")
+     * @ORM\GeneratedValue(strategy="AUTO")
+     */
+    public $id;
+
+    /** @ORM\Column(type="string", length=255) */
+    public $name;
+
+    /** @ORM\Version @ORM\Column(type="datetime_immutable") */
     public $version;
 }

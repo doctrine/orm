@@ -36,8 +36,7 @@ class SizeFunction extends FunctionNode
         $targetClass       = $sqlWalker->getEntityManager()->getClassMetadata($association->getTargetEntity());
         $owningAssociation = $association->isOwningSide()
             ? $association
-            : $targetClass->getProperty($association->getMappedBy())
-        ;
+            : $targetClass->getProperty($association->getMappedBy());
 
         if ($association instanceof OneToManyAssociationMetadata) {
             $targetTableName  = $targetClass->table->getQuotedQualifiedName($platform);
@@ -82,8 +81,7 @@ class SizeFunction extends FunctionNode
 
             $joinColumns = $association->isOwningSide()
                 ? $joinTable->getJoinColumns()
-                : $joinTable->getInverseJoinColumns()
-            ;
+                : $joinTable->getInverseJoinColumns();
 
             $first = true;
 

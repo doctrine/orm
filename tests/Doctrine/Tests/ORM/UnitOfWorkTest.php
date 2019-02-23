@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Doctrine\Tests\ORM;
 
+use ArrayObject;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\EventManager;
 use Doctrine\Common\NotifyPropertyChanged;
@@ -27,6 +28,8 @@ use Doctrine\Tests\Models\Forum\ForumUser;
 use Doctrine\Tests\Models\GeoNames\City;
 use Doctrine\Tests\Models\GeoNames\Country;
 use Doctrine\Tests\OrmTestCase;
+use InvalidArgumentException;
+use PHPUnit_Framework_MockObject_MockObject;
 use stdClass;
 use function count;
 use function get_class;
@@ -61,10 +64,10 @@ class UnitOfWorkTest extends OrmTestCase
      */
     private $emMock;
 
-    /** @var EventManager|\PHPUnit_Framework_MockObject_MockObject */
+    /** @var EventManager|PHPUnit_Framework_MockObject_MockObject */
     private $eventManager;
 
-    /** @var ClassMetadataBuildingContext|\PHPUnit_Framework_MockObject_MockObject */
+    /** @var ClassMetadataBuildingContext|PHPUnit_Framework_MockObject_MockObject */
     private $metadataBuildingContext;
 
     protected function setUp() : void
@@ -322,16 +325,15 @@ class UnitOfWorkTest extends OrmTestCase
      */
     public function testLockWithoutEntityThrowsException() : void
     {
-        $this->expectException(\InvalidArgumentException::class);
+        $this->expectException(InvalidArgumentException::class);
         $this->unitOfWork->lock(null, null, null);
     }
 
     /**
-     * @group DDC-3490
-     *
-     * @dataProvider invalidAssociationValuesDataProvider
-     *
      * @param mixed $invalidValue
+     *
+     * @group DDC-3490
+     * @dataProvider invalidAssociationValuesDataProvider
      */
     public function testRejectsPersistenceOfObjectsWithInvalidAssociationValue($invalidValue) : void
     {
@@ -353,11 +355,10 @@ class UnitOfWorkTest extends OrmTestCase
     }
 
     /**
-     * @group DDC-3490
-     *
-     * @dataProvider invalidAssociationValuesDataProvider
-     *
      * @param mixed $invalidValue
+     *
+     * @group DDC-3490
+     * @dataProvider invalidAssociationValuesDataProvider
      */
     public function testRejectsChangeSetComputationForObjectsWithInvalidAssociationValue($invalidValue) : void
     {
@@ -460,11 +461,10 @@ class UnitOfWorkTest extends OrmTestCase
     }
 
     /**
-     * @dataProvider entitiesWithValidIdentifiersProvider
-     *
      * @param object $entity
      * @param string $idHash
      *
+     * @dataProvider entitiesWithValidIdentifiersProvider
      */
     public function testAddToIdentityMapValidIdentifiers($entity, $idHash) : void
     {
@@ -520,11 +520,10 @@ class UnitOfWorkTest extends OrmTestCase
     }
 
     /**
-     * @dataProvider entitiesWithInvalidIdentifiersProvider
-     *
      * @param object $entity
      * @param array  $identifier
      *
+     * @dataProvider entitiesWithInvalidIdentifiersProvider
      */
     public function testAddToIdentityMapInvalidIdentifiers($entity, array $identifier) : void
     {
@@ -917,6 +916,6 @@ class EntityWithNonCascadingAssociation
     }
 }
 
-class MyArrayObjectEntity extends \ArrayObject
+class MyArrayObjectEntity extends ArrayObject
 {
 }

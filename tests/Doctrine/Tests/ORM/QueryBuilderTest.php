@@ -17,13 +17,13 @@ use Doctrine\Tests\Models\CMS\CmsArticle;
 use Doctrine\Tests\Models\CMS\CmsGroup;
 use Doctrine\Tests\Models\CMS\CmsUser;
 use Doctrine\Tests\OrmTestCase;
+use InvalidArgumentException;
 use function array_filter;
 use function get_class;
 
 /**
  * Test case for the QueryBuilder class used to build DQL query string in a
  * object oriented way.
- *
  */
 class QueryBuilderTest extends OrmTestCase
 {
@@ -1066,13 +1066,12 @@ class QueryBuilderTest extends OrmTestCase
      */
     public function testWhereAppend() : void
     {
-        $this->expectException(\InvalidArgumentException::class);
+        $this->expectException(InvalidArgumentException::class);
         $this->expectExceptionMessage("Using \$append = true does not have an effect with 'where' or 'having' parts. See QueryBuilder#andWhere() for an example for correct usage.");
 
         $qb = $this->em->createQueryBuilder()
             ->add('where', 'u.foo = ?1')
-            ->add('where', 'u.bar = ?2', true)
-        ;
+            ->add('where', 'u.bar = ?2', true);
     }
 
     public function testSecondLevelCacheQueryBuilderOptions() : void

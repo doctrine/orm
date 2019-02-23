@@ -17,8 +17,8 @@ class DDC2182Test extends OrmFunctionalTestCase
 
         $sql = $this->schemaTool->getCreateSchemaSql(
             [
-            $this->em->getClassMetadata(DDC2182OptionParent::class),
-            $this->em->getClassMetadata(DDC2182OptionChild::class),
+                $this->em->getClassMetadata(DDC2182OptionParent::class),
+                $this->em->getClassMetadata(DDC2182OptionChild::class),
             ]
         );
 

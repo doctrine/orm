@@ -4,7 +4,8 @@ language: php
 
 php:
   - 7.2
-  - nightly
+  - 7.3
+  - 7.4snapshot
 
 env:
   - DB=sqlite
@@ -41,7 +42,7 @@ jobs:
 
     - stage: Test
       env: DB=mysql MYSQL_VERSION=5.7
-      php: nightly
+      php: 7.4snapshot
       before_script:
         - ./tests/travis/install-mysql-$MYSQL_VERSION.sh
       sudo: required
@@ -52,6 +53,7 @@ jobs:
 
     - stage: Test
       if: type = cron
+      php: 7.3
       env: DB=sqlite DEV_DEPENDENCIES
       install:
         - rm composer.lock
@@ -90,7 +92,7 @@ jobs:
         - ./vendor/bin/phpcs
 
   allow_failures:
-    - php: nightly
+    - php: 7.4snapshot
     # temporarily disabled
     - env: DB=mysql
     - env: DB=mariadb

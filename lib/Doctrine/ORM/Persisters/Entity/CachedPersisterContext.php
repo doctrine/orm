@@ -15,7 +15,6 @@ use Doctrine\ORM\Query\ResultSetMapping;
  *
  * This object is highly mutable due to performance reasons. Same reasoning
  * behind its properties being public.
- *
  */
 class CachedPersisterContext
 {

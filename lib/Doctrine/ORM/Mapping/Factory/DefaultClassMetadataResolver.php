@@ -14,8 +14,6 @@ class DefaultClassMetadataResolver implements ClassMetadataResolver
 {
     /**
      * Marker for ClassMetadata class names.
-     *
-     * @var string
      */
     public const MARKER = '__CG__';
 

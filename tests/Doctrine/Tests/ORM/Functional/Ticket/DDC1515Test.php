@@ -17,8 +17,8 @@ class DDC1515Test extends OrmFunctionalTestCase
         parent::setUp();
         $this->schemaTool->createSchema(
             [
-            $this->em->getClassMetadata(DDC1515Foo::class),
-            $this->em->getClassMetadata(DDC1515Bar::class),
+                $this->em->getClassMetadata(DDC1515Foo::class),
+                $this->em->getClassMetadata(DDC1515Bar::class),
             ]
         );
     }

@@ -13,6 +13,7 @@ use Doctrine\ORM\Mapping\ComponentMetadata;
 use Doctrine\ORM\Mapping\FieldMetadata;
 use Doctrine\ORM\Mapping\Property;
 use Doctrine\ORM\Mapping\TableMetadata;
+use InvalidArgumentException;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
@@ -142,7 +143,7 @@ EOT
                                           ->getAllClassNames();
 
         if (! $entityClassNames) {
-            throw new \InvalidArgumentException(
+            throw new InvalidArgumentException(
                 'You do not have any mapped Doctrine ORM entities according to the current configuration. ' .
                 'If you have entities or mapping files you should check your mapping configuration for errors.'
             );
@@ -168,20 +169,20 @@ EOT
 
         $matches = array_filter(
             $this->getMappedEntities($entityManager),
-            function ($mappedEntity) use ($entityName) {
+            static function ($mappedEntity) use ($entityName) {
                 return preg_match('{' . preg_quote($entityName) . '}', $mappedEntity);
             }
         );
 
         if (! $matches) {
-            throw new \InvalidArgumentException(sprintf(
+            throw new InvalidArgumentException(sprintf(
                 'Could not find any mapped Entity classes matching "%s"',
                 $entityName
             ));
         }
 
         if (count($matches) > 1) {
-            throw new \InvalidArgumentException(sprintf(
+            throw new InvalidArgumentException(sprintf(
                 'Entity name "%s" is ambiguous, possible matches: "%s"',
                 $entityName,
                 implode(', ', $matches)
@@ -269,7 +270,7 @@ EOT
             return $value;
         }
 
-        throw new \InvalidArgumentException(sprintf('Do not know how to format value "%s"', print_r($value, true)));
+        throw new InvalidArgumentException(sprintf('Do not know how to format value "%s"', print_r($value, true)));
     }
 
     /**

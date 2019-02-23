@@ -35,6 +35,6 @@ class CmsComment
 
     public function __toString()
     {
-        return __CLASS__ . '[id=' . $this->id . ']';
+        return self::class . '[id=' . $this->id . ']';
     }
 }

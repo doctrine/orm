@@ -5,11 +5,12 @@ declare(strict_types=1);
 namespace Doctrine\Tests\Mocks;
 
 use Doctrine\DBAL\Driver\Statement;
+use IteratorAggregate;
 
 /**
  * This class is a mock of the Statement interface.
  */
-class StatementMock implements \IteratorAggregate, Statement
+class StatementMock implements IteratorAggregate, Statement
 {
     /**
      * {@inheritdoc}

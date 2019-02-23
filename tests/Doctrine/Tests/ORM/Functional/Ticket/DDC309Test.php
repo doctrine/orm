@@ -14,8 +14,8 @@ class DDC309Test extends OrmFunctionalTestCase
         parent::setUp();
         $this->schemaTool->createSchema(
             [
-            $this->em->getClassMetadata(DDC309Country::class),
-            $this->em->getClassMetadata(DDC309User::class),
+                $this->em->getClassMetadata(DDC309Country::class),
+                $this->em->getClassMetadata(DDC309User::class),
             ]
         );
     }

@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Doctrine\Tests\ORM\Cache;
 
+use ArrayObject;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Type;
 use Doctrine\ORM\Cache;
@@ -24,6 +25,7 @@ use Doctrine\Tests\Models\Cache\Restaurant;
 use Doctrine\Tests\Models\Cache\State;
 use Doctrine\Tests\Models\Generic\BooleanModel;
 use Doctrine\Tests\OrmTestCase;
+use ReflectionMethod;
 use function microtime;
 use function sprintf;
 
@@ -509,7 +511,7 @@ class DefaultQueryCacheTest extends OrmTestCase
     {
         $rsm   = new ResultSetMappingBuilder($this->em);
         $key   = new QueryCacheKey('query.key1', 0);
-        $entry = new \ArrayObject(
+        $entry = new ArrayObject(
             [
                 ['identifier' => ['id' => 1]],
                 ['identifier' => ['id' => 2]],
@@ -557,7 +559,7 @@ class DefaultQueryCacheTest extends OrmTestCase
 
     public function testGetAssociationValue() : void
     {
-        $reflection = new \ReflectionMethod($this->queryCache, 'getAssociationValue');
+        $reflection = new ReflectionMethod($this->queryCache, 'getAssociationValue');
         $rsm        = new ResultSetMappingBuilder($this->em);
         $key        = new QueryCacheKey('query.key1', 0);
 

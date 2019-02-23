@@ -6,6 +6,8 @@ namespace Doctrine\Tests\ORM\Mapping\Symfony;
 
 use Doctrine\Common\Persistence\Mapping\MappingException;
 use Doctrine\Tests\DoctrineTestCase;
+use RecursiveDirectoryIterator;
+use RecursiveIteratorIterator;
 use function mkdir;
 use function rmdir;
 use function sys_get_temp_dir;
@@ -21,8 +23,8 @@ abstract class AbstractDriverTest extends DoctrineTestCase
     {
         $driver = $this->getDriver(
             [
-            'MyNamespace\MySubnamespace\EntityFoo' => 'foo',
-            'MyNamespace\MySubnamespace\Entity' => $this->dir,
+                'MyNamespace\MySubnamespace\EntityFoo' => 'foo',
+                'MyNamespace\MySubnamespace\Entity' => $this->dir,
             ]
         );
 
@@ -34,7 +36,7 @@ abstract class AbstractDriverTest extends DoctrineTestCase
     {
         $driver = $this->getDriver(
             [
-            'MyNamespace\MySubnamespace\Entity' => $this->dir,
+                'MyNamespace\MySubnamespace\Entity' => $this->dir,
             ]
         );
 
@@ -49,7 +51,7 @@ abstract class AbstractDriverTest extends DoctrineTestCase
 
         $driver = $this->getDriver(
             [
-            'MyNamespace\MySubnamespace\Entity' => $this->dir,
+                'MyNamespace\MySubnamespace\Entity' => $this->dir,
             ]
         );
 
@@ -63,7 +65,7 @@ abstract class AbstractDriverTest extends DoctrineTestCase
 
         $driver = $this->getDriver(
             [
-            'MyNamespace\MySubnamespace\Entity' => $this->dir,
+                'MyNamespace\MySubnamespace\Entity' => $this->dir,
             ]
         );
 
@@ -78,7 +80,7 @@ abstract class AbstractDriverTest extends DoctrineTestCase
 
     protected function tearDown() : void
     {
-        $iterator = new \RecursiveIteratorIterator(new \RecursiveDirectoryIterator($this->dir), \RecursiveIteratorIterator::CHILD_FIRST);
+        $iterator = new RecursiveIteratorIterator(new RecursiveDirectoryIterator($this->dir), RecursiveIteratorIterator::CHILD_FIRST);
 
         foreach ($iterator as $path) {
             if ($path->isDir()) {

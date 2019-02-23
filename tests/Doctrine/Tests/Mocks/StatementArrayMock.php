@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Doctrine\Tests\Mocks;
 
+use ArrayIterator;
 use function count;
 use function current;
 use function next;
@@ -25,7 +26,7 @@ class StatementArrayMock extends StatementMock
 
     public function getIterator()
     {
-        return new \ArrayIterator($this->result);
+        return new ArrayIterator($this->result);
     }
 
     public function columnCount()

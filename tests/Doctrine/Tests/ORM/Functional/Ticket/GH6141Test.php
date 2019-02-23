@@ -10,6 +10,7 @@ use Doctrine\DBAL\Types\Type;
 use Doctrine\ORM\AbstractQuery;
 use Doctrine\ORM\Annotation as ORM;
 use Doctrine\Tests\OrmFunctionalTestCase;
+use InvalidArgumentException;
 use function in_array;
 
 class GH6141Test extends OrmFunctionalTestCase
@@ -116,12 +117,12 @@ class GH6141People
      *
      * @return GH6141People
      *
-     * @throws \InvalidArgumentException
+     * @throws InvalidArgumentException
      */
     public static function get($value)
     {
         if (! self::isValid($value)) {
-            throw new \InvalidArgumentException();
+            throw new InvalidArgumentException();
         }
 
         return new self($value);

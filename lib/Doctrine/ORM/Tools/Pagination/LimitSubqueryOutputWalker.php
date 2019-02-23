@@ -25,6 +25,7 @@ use Doctrine\ORM\Query\ParserResult;
 use Doctrine\ORM\Query\QueryException;
 use Doctrine\ORM\Query\ResultSetMapping;
 use Doctrine\ORM\Query\SqlWalker;
+use RuntimeException;
 use function array_diff;
 use function array_keys;
 use function array_map;
@@ -100,8 +101,7 @@ class LimitSubqueryOutputWalker extends SqlWalker
 
         $query
             ->setFirstResult(null)
-            ->setMaxResults(null)
-        ;
+            ->setMaxResults(null);
 
         $this->em = $query->getEntityManager();
 
@@ -158,7 +158,7 @@ class LimitSubqueryOutputWalker extends SqlWalker
      *
      * @return string
      *
-     * @throws \RuntimeException
+     * @throws RuntimeException
      */
     public function walkSelectStatement(SelectStatement $AST)
     {
@@ -175,7 +175,7 @@ class LimitSubqueryOutputWalker extends SqlWalker
      *
      * @return string
      *
-     * @throws \RuntimeException
+     * @throws RuntimeException
      */
     public function walkSelectStatementWithRowNumber(SelectStatement $AST)
     {
@@ -191,7 +191,7 @@ class LimitSubqueryOutputWalker extends SqlWalker
 
         $innerSql           = $this->getInnerSQL($AST);
         $sqlIdentifier      = $this->getSQLIdentifier($AST);
-        $sqlAliasIdentifier = array_map(function ($info) {
+        $sqlAliasIdentifier = array_map(static function ($info) {
             return $info['alias'];
         }, $sqlIdentifier);
 
@@ -214,7 +214,7 @@ class LimitSubqueryOutputWalker extends SqlWalker
         }
 
         // Apply the limit and offset.
-        $sql = $this->platform->modifyLimitQuery($sql, $this->maxResults, $this->firstResult);
+        $sql = $this->platform->modifyLimitQuery($sql, $this->maxResults, $this->firstResult ?? 0);
 
         // Add the columns to the ResultSetMapping. It's not really nice but
         // it works. Preferably I'd clear the RSM or simply create a new one
@@ -235,7 +235,7 @@ class LimitSubqueryOutputWalker extends SqlWalker
      *
      * @return string
      *
-     * @throws \RuntimeException
+     * @throws RuntimeException
      */
     public function walkSelectStatementWithoutRowNumber(SelectStatement $AST, $addMissingItemsFromOrderByToSelect = true)
     {
@@ -254,7 +254,7 @@ class LimitSubqueryOutputWalker extends SqlWalker
 
         $innerSql           = $this->getInnerSQL($AST);
         $sqlIdentifier      = $this->getSQLIdentifier($AST);
-        $sqlAliasIdentifier = array_map(function ($info) {
+        $sqlAliasIdentifier = array_map(static function ($info) {
             return $info['alias'];
         }, $sqlIdentifier);
 
@@ -268,7 +268,7 @@ class LimitSubqueryOutputWalker extends SqlWalker
         $sql = $this->platform->modifyLimitQuery(
             $sql,
             $this->maxResults,
-            $this->firstResult
+            $this->firstResult ?? 0
         );
 
         // Add the columns to the ResultSetMapping. It's not really nice but
@@ -288,7 +288,6 @@ class LimitSubqueryOutputWalker extends SqlWalker
     /**
      * Finds all PathExpressions in an AST's OrderByClause, and ensures that
      * the referenced fields are present in the SelectClause of the passed AST.
-     *
      */
     private function addMissingItemsFromOrderByToSelect(SelectStatement $AST)
     {
@@ -494,7 +493,7 @@ class LimitSubqueryOutputWalker extends SqlWalker
         $from = $AST->fromClause->identificationVariableDeclarations;
 
         if (count($from) !== 1) {
-            throw new \RuntimeException('Cannot count query which selects two FROM components, cannot make distinction');
+            throw new RuntimeException('Cannot count query which selects two FROM components, cannot make distinction');
         }
 
         $fromRoot       = reset($from);
@@ -533,11 +532,11 @@ class LimitSubqueryOutputWalker extends SqlWalker
         }
 
         if (count($sqlIdentifier) === 0) {
-            throw new \RuntimeException('The Paginator does not support Queries which only yield ScalarResults.');
+            throw new RuntimeException('The Paginator does not support Queries which only yield ScalarResults.');
         }
 
         if (count($rootIdentifier) !== count($sqlIdentifier)) {
-            throw new \RuntimeException(sprintf(
+            throw new RuntimeException(sprintf(
                 'Not all identifier properties can be found in the ResultSetMapping: %s',
                 implode(', ', array_diff($rootIdentifier, array_keys($sqlIdentifier)))
             ));

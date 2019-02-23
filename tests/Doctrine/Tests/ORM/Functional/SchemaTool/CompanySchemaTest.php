@@ -61,7 +61,7 @@ class CompanySchemaTest extends OrmFunctionalTestCase
 
         $sql = $this->schemaTool->getDropSchemaSQL(
             [
-            $this->em->getClassMetadata(CompanyManager::class),
+                $this->em->getClassMetadata(CompanyManager::class),
             ]
         );
         self::assertCount(4, $sql);

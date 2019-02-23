@@ -16,6 +16,7 @@ use Doctrine\Tests\Models\CMS\CmsComment;
 use Doctrine\Tests\Models\CMS\CmsPhonenumber;
 use Doctrine\Tests\Models\CMS\CmsUser;
 use Doctrine\Tests\OrmFunctionalTestCase;
+use InvalidArgumentException;
 use ProxyManager\Proxy\GhostObjectInterface;
 use function get_class;
 
@@ -641,7 +642,7 @@ class BasicFunctionalTest extends OrmFunctionalTestCase
 
         $user->setAddress($address);
 
-        $this->em->transactional(function ($em) use ($user) {
+        $this->em->transactional(static function ($em) use ($user) {
             $em->persist($user);
         });
         $this->em->clear();
@@ -696,7 +697,7 @@ class BasicFunctionalTest extends OrmFunctionalTestCase
      */
     public function testNewAssociatedEntityDuringFlushThrowsException() : void
     {
-        $this->expectException(\InvalidArgumentException::class);
+        $this->expectException(InvalidArgumentException::class);
 
         $user           = new CmsUser();
         $user->username = 'beberlei';
@@ -722,7 +723,7 @@ class BasicFunctionalTest extends OrmFunctionalTestCase
      */
     public function testNewAssociatedEntityDuringFlushThrowsException2() : void
     {
-        $this->expectException(\InvalidArgumentException::class);
+        $this->expectException(InvalidArgumentException::class);
 
         $user           = new CmsUser();
         $user->username = 'beberlei';
@@ -756,7 +757,7 @@ class BasicFunctionalTest extends OrmFunctionalTestCase
      */
     public function testNewAssociatedEntityDuringFlushThrowsException3() : void
     {
-        $this->expectException(\InvalidArgumentException::class);
+        $this->expectException(InvalidArgumentException::class);
 
         $art        = new CmsArticle();
         $art->topic = 'topic';

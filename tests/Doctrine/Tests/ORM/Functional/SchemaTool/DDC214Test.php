@@ -7,6 +7,7 @@ namespace Doctrine\Tests\ORM\Functional\SchemaTool;
 use Doctrine\DBAL\Schema\Comparator;
 use Doctrine\Tests\Models;
 use Doctrine\Tests\OrmFunctionalTestCase;
+use Exception;
 use const PHP_EOL;
 use function array_filter;
 use function implode;
@@ -75,7 +76,7 @@ class DDC214Test extends OrmFunctionalTestCase
 
         try {
             $this->schemaTool->createSchema($classMetadata);
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             // was already created
         }
 
@@ -88,7 +89,7 @@ class DDC214Test extends OrmFunctionalTestCase
         $schemaDiff = $comparator->compare($fromSchema, $toSchema);
 
         $sql = $schemaDiff->toSql($this->em->getConnection()->getDatabasePlatform());
-        $sql = array_filter($sql, function ($sql) {
+        $sql = array_filter($sql, static function ($sql) {
             return strpos($sql, 'DROP') === false;
         });
 

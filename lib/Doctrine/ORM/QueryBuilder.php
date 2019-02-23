@@ -8,6 +8,8 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Criteria;
 use Doctrine\ORM\Query\Expr;
 use Doctrine\ORM\Query\QueryExpressionVisitor;
+use InvalidArgumentException;
+use RuntimeException;
 use function array_keys;
 use function array_merge;
 use function array_unshift;
@@ -406,16 +408,17 @@ class QueryBuilder
      * </code>
      *
      * @deprecated Please use $qb->getRootAliases() instead.
-     * @throws \RuntimeException
      *
      * @return string
+     *
+     * @throws RuntimeException
      */
     public function getRootAlias()
     {
         $aliases = $this->getRootAliases();
 
         if (! isset($aliases[0])) {
-            throw new \RuntimeException('No alias was set before invoking getRootAlias().');
+            throw new RuntimeException('No alias was set before invoking getRootAlias().');
         }
 
         return $aliases[0];
@@ -597,7 +600,7 @@ class QueryBuilder
     public function getParameter($key)
     {
         $filteredParameters = $this->parameters->filter(
-            function (Query\Parameter $parameter) use ($key) : bool {
+            static function (Query\Parameter $parameter) use ($key) : bool {
                 $parameterName = $parameter->getName();
 
                 return $key === $parameterName || (string) $key === (string) $parameterName;
@@ -672,7 +675,7 @@ class QueryBuilder
     public function add($dqlPartName, $dqlPart, $append = false)
     {
         if ($append && ($dqlPartName === 'where' || $dqlPartName === 'having')) {
-            throw new \InvalidArgumentException(
+            throw new InvalidArgumentException(
                 "Using \$append = true does not have an effect with 'where' or 'having' " .
                 'parts. See QueryBuilder#andWhere() for an example for correct usage.'
             );
@@ -709,7 +712,7 @@ class QueryBuilder
                 $this->dqlParts[$dqlPartName][] = $dqlPart;
             }
         } else {
-            $this->dqlParts[$dqlPartName] = ($isMultiple) ? [$dqlPart] : $dqlPart;
+            $this->dqlParts[$dqlPartName] = $isMultiple ? [$dqlPart] : $dqlPart;
         }
 
         $this->state = self::STATE_DIRTY;
@@ -1076,9 +1079,9 @@ class QueryBuilder
      *         ->andWhere('u.is_active = 1');
      * </code>
      *
-     * @//param mixed $where The query restrictions.
-     *
      * @see where()
+     *
+     * @//param mixed $where The query restrictions.
      */
     public function andWhere()
     {
@@ -1107,9 +1110,9 @@ class QueryBuilder
      *         ->orWhere('u.id = 2');
      * </code>
      *
-     * @//param mixed $where The WHERE statement.
-     *
      * @see where()
+     *
+     * @//param mixed $where The WHERE statement.
      */
     public function orWhere()
     {
@@ -1240,7 +1243,7 @@ class QueryBuilder
      */
     public function orderBy($sort, $order = null)
     {
-        $orderBy = ($sort instanceof Expr\OrderBy) ? $sort : new Expr\OrderBy($sort, $order);
+        $orderBy = $sort instanceof Expr\OrderBy ? $sort : new Expr\OrderBy($sort, $order);
 
         return $this->add('orderBy', $orderBy);
     }
@@ -1255,7 +1258,7 @@ class QueryBuilder
      */
     public function addOrderBy($sort, $order = null)
     {
-        $orderBy = ($sort instanceof Expr\OrderBy) ? $sort : new Expr\OrderBy($sort, $order);
+        $orderBy = $sort instanceof Expr\OrderBy ? $sort : new Expr\OrderBy($sort, $order);
 
         return $this->add('orderBy', $orderBy, true);
     }
@@ -1323,7 +1326,7 @@ class QueryBuilder
     /**
      * Gets a query part by its name.
      *
-     * @return mixed $queryPart
+     * @return mixed
      *
      * @todo Rename: getQueryPart (or remove?)
      */
@@ -1471,7 +1474,6 @@ class QueryBuilder
 
     /**
      * Deep clones all expression objects in the DQL parts.
-     *
      */
     public function __clone()
     {

@@ -19,8 +19,8 @@ class DDC2350Test extends OrmFunctionalTestCase
 
         $this->schemaTool->createSchema(
             [
-            $this->em->getClassMetadata(DDC2350User::class),
-            $this->em->getClassMetadata(DDC2350Bug::class),
+                $this->em->getClassMetadata(DDC2350User::class),
+                $this->em->getClassMetadata(DDC2350Bug::class),
             ]
         );
     }

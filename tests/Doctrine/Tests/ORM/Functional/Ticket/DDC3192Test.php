@@ -32,8 +32,8 @@ class DDC3192Test extends OrmFunctionalTestCase
 
         $this->schemaTool->createSchema(
             [
-            $this->em->getClassMetadata(DDC3192Currency::class),
-            $this->em->getClassMetadata(DDC3192Transaction::class),
+                $this->em->getClassMetadata(DDC3192Currency::class),
+                $this->em->getClassMetadata(DDC3192Transaction::class),
             ]
         );
     }
@@ -84,9 +84,9 @@ class DDC3192Currency
     public $code;
 
     /**
-     * @var Collection
-     *
      * @ORM\OneToMany(targetEntity=DDC3192Transaction::class, mappedBy="currency")
+     *
+     * @var Collection
      */
     public $transactions;
 
@@ -110,17 +110,17 @@ class DDC3192Transaction
     public $id;
 
     /**
-     * @var int
-     *
      * @ORM\Column(type="integer")
+     *
+     * @var int
      */
     public $amount;
 
     /**
-     * @var \Doctrine\Tests\ORM\Functional\Ticket\DDC3192Currency
-     *
      * @ORM\ManyToOne(targetEntity=DDC3192Currency::class, inversedBy="transactions")
      * @ORM\JoinColumn(name="currency_id", referencedColumnName="code", nullable=false)
+     *
+     * @var \Doctrine\Tests\ORM\Functional\Ticket\DDC3192Currency
      */
     public $currency;
 

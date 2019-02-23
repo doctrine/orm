@@ -220,6 +220,7 @@ Generated MySQL Schema:
     CREATE TABLE Cart (
         id INT AUTO_INCREMENT NOT NULL,
         customer_id INT DEFAULT NULL,
+        UNIQUE INDEX UNIQ_BA388B79395C3F3 (customer_id),
         PRIMARY KEY(id)
     ) ENGINE = InnoDB;
     CREATE TABLE Customer (
@@ -274,8 +275,8 @@ One-To-Many, Bidirectional
 --------------------------
 
 A one-to-many association has to be bidirectional, unless you are using a
-join table. This is because the many side in a one-to-many association holds
-the foreign key, making it the owning side. Doctrine needs the many side
+join table. This is because the "many" side in a one-to-many association holds
+the foreign key, making it the owning side. Doctrine needs the "many" side
 defined in order to understand the association.
 
 This bidirectional mapping requires the ``mappedBy`` attribute on the
@@ -296,7 +297,7 @@ bidirectional many-to-one.
         {
             // ...
             /**
-             * One Product has Many Features.
+             * One product has many features. This is the inverse side.
              * @OneToMany(targetEntity="Feature", mappedBy="product")
              */
             private $features;
@@ -312,7 +313,7 @@ bidirectional many-to-one.
         {
             // ...
             /**
-             * Many Features have One Product.
+             * Many features have one product. This is the owning side.
              * @ManyToOne(targetEntity="Product", inversedBy="features")
              * @JoinColumn(name="product_id", referencedColumnName="id")
              */

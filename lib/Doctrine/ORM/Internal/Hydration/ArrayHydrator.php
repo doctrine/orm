@@ -140,7 +140,7 @@ class ArrayHydrator extends AbstractHydrator
                 } else {
                     $oneToOne = true;
 
-                    if (( ! isset($nonemptyComponents[$dqlAlias])) &&
+                    if (! isset($nonemptyComponents[$dqlAlias]) &&
                         ( ! isset($baseElement[$relationAlias]))
                     ) {
                         $baseElement[$relationAlias] = null;
@@ -249,7 +249,6 @@ class ArrayHydrator extends AbstractHydrator
      * @param bool|int $index    Index of the element in the collection.
      * @param string   $dqlAlias
      * @param bool     $oneToOne Whether it is a single-valued association or not.
-     *
      */
     private function updateResultPointer(array &$coll, $index, $dqlAlias, $oneToOne)
     {

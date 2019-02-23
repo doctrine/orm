@@ -49,8 +49,6 @@ class DDC933Test extends OrmFunctionalTestCase
     }
 
     /**
-     *
-     *
      * @throws MappingException
      * @throws ORMException
      * @throws OptimisticLockException

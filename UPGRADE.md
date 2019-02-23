@@ -1,5 +1,35 @@
 # Upgrade to 3.0
 
+## BC Break: Removed ability to clear cache via console with some cache drivers
+
+The console commands `orm:clear-cache:metadata`, `orm:clear-cache:result`,
+and `orm:clear-cache:query` cannot be used with the `ApcCache`, `ApcuCache`,
+or `XcacheCache` because the memory is only available to the webserver process.
+
+## BC Break: `orm:run-dql` command's `$depth` parameter removed
+
+The `$depth` parameter has been removed, the dumping functionality
+is now provided by [`symfony/var-dumper`](https://github.com/symfony/var-dumper).
+
+## BC Break: Dropped `Doctrine\ORM\Tools\Setup::registerAutoloadDirectory()`
+
+This method used deprecated Doctrine Autoloader and has been removed. Please rely on Composer autoloading instead.
+
+## BC Break: Dropped automatic discriminator map discovery
+
+Automatic discriminator map discovery exhibited multiple flaws
+that can't be reliably addressed and supported:
+
+ * discovered entries are not namespaced which leads to collisions,
+ * the class name is part of the discriminator map, therefore the class
+   must never be renamed.
+
+As a consequence this feature has been dropped.
+
+If your code relied on this feature, please build the discriminator map for
+your inheritance tree manually where each entry is an unqualified lowercase
+name of the member entities.
+
 ## BC Break: Missing type declaration added for identifier generators
 
 The interfaces `Doctrine\ORM\Sequencing\Generator` and
@@ -309,13 +339,13 @@ now has a required parameter `$pathExpr`.
 
 Method `Doctrine\ORM\Query\Parser#isInternalFunction()` was removed because
 the distinction between internal function and user defined DQL was removed.
-[#6500](https://github.com/doctrine/doctrine2/pull/6500)
+[#6500](https://github.com/doctrine/orm/pull/6500)
 
 ## Minor BC BREAK: removed `Doctrine\ORM\ORMException#overwriteInternalDQLFunctionNotAllowed()`
 
 Method `Doctrine\ORM\Query\Parser#overwriteInternalDQLFunctionNotAllowed()` was
 removed because of the choice to allow users to overwrite internal functions, ie
-`AVG`, `SUM`, `COUNT`, `MIN` and `MAX`. [#6500](https://github.com/doctrine/doctrine2/pull/6500)
+`AVG`, `SUM`, `COUNT`, `MIN` and `MAX`. [#6500](https://github.com/doctrine/orm/pull/6500)
 
 ## Minor BC BREAK: removed $className parameter on `AbstractEntityInheritancePersister#getSelectJoinColumnSQL()`
 
@@ -335,7 +365,7 @@ As a consequence, automatic cache setup in Doctrine\ORM\Tools\Setup::create*Conf
 ## Minor BC BREAK: removed `Doctrine\ORM\Query\SqlWalker#walkCaseExpression()`
 
 Method `Doctrine\ORM\Query\SqlWalker#walkCaseExpression()` was unused and part
-of the internal API of the ORM, so it was removed. [#5600](https://github.com/doctrine/doctrine2/pull/5600).
+of the internal API of the ORM, so it was removed. [#5600](https://github.com/doctrine/orm/pull/5600).
 
 ## Minor BC BREAK: query cache key time is now a float
 

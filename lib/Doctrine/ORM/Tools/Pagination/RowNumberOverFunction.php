@@ -34,10 +34,10 @@ class RowNumberOverFunction extends FunctionNode
     }
 
     /**
+     * @throws ORMException
+     *
      * @override
      * @inheritdoc
-     *
-     * @throws ORMException
      */
     public function parse(Parser $parser)
     {

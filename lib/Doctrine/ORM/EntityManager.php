@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Doctrine\ORM;
 
+use BadMethodCallException;
 use Doctrine\Common\EventManager;
 use Doctrine\Common\Persistence\Mapping\MappingException;
 use Doctrine\Common\Persistence\ObjectRepository;
@@ -26,6 +27,9 @@ use Doctrine\ORM\Query\ResultSetMapping;
 use Doctrine\ORM\Repository\RepositoryFactory;
 use Doctrine\ORM\Utility\IdentifierFlattener;
 use Doctrine\ORM\Utility\StaticClassNameConverter;
+use InvalidArgumentException;
+use ReflectionException;
+use Throwable;
 use function array_keys;
 use function get_class;
 use function gettype;
@@ -144,7 +148,6 @@ final class EntityManager implements EntityManagerInterface
     /**
      * Creates a new EntityManager that operates on the given database connection
      * and uses the given Configuration and EventManager implementations.
-     *
      */
     protected function __construct(Connection $conn, Configuration $config, EventManager $eventManager)
     {
@@ -236,7 +239,7 @@ final class EntityManager implements EntityManagerInterface
             $this->conn->commit();
 
             return $return;
-        } catch (\Throwable $e) {
+        } catch (Throwable $e) {
             $this->close();
             $this->conn->rollBack();
 
@@ -274,8 +277,8 @@ final class EntityManager implements EntityManagerInterface
      *
      * @param string $className
      *
-     * @throws \ReflectionException
-     * @throws \InvalidArgumentException
+     * @throws ReflectionException
+     * @throws InvalidArgumentException
      * @throws MappingException
      */
     public function getClassMetadata($className) : Mapping\ClassMetadata
@@ -325,7 +328,7 @@ final class EntityManager implements EntityManagerInterface
      */
     public function merge($object)
     {
-        throw new \BadMethodCallException('@TODO method disabled - will be removed in 3.0 with a release of doctrine/common');
+        throw new BadMethodCallException('@TODO method disabled - will be removed in 3.0 with a release of doctrine/common');
     }
 
     /**
@@ -335,7 +338,7 @@ final class EntityManager implements EntityManagerInterface
      */
     public function detach($object)
     {
-        throw new \BadMethodCallException('@TODO method disabled - will be removed in 3.0 with a release of doctrine/common');
+        throw new BadMethodCallException('@TODO method disabled - will be removed in 3.0 with a release of doctrine/common');
     }
 
     /**
@@ -504,7 +507,7 @@ final class EntityManager implements EntityManagerInterface
         // Check identity map first, if its already in there just return it.
         $entity = $this->unitOfWork->tryGetById($sortedId, $class->getRootClassName());
         if ($entity !== false) {
-            return ($entity instanceof $className) ? $entity : null;
+            return $entity instanceof $className ? $entity : null;
         }
 
         if ($class->getSubClasses()) {
@@ -566,7 +569,7 @@ final class EntityManager implements EntityManagerInterface
         // Check identity map first, if its already in there just return it.
         $entity = $this->unitOfWork->tryGetById($sortedId, $class->getRootClassName());
         if ($entity !== false) {
-            return ($entity instanceof $className) ? $entity : null;
+            return $entity instanceof $className ? $entity : null;
         }
 
         $persister = $this->unitOfWork->getEntityPersister($class->getClassName());
@@ -585,7 +588,6 @@ final class EntityManager implements EntityManagerInterface
      * by this EntityManager become detached.
      *
      * @param null $entityName Unused. @todo Remove from ObjectManager.
-     *
      */
     public function clear($entityName = null)
     {
@@ -816,7 +818,7 @@ final class EntityManager implements EntityManagerInterface
      *
      * @return EntityManager The created EntityManager.
      *
-     * @throws \InvalidArgumentException
+     * @throws InvalidArgumentException
      * @throws ORMException
      */
     public static function create($connection, Configuration $config, ?EventManager $eventManager = null)
@@ -839,7 +841,7 @@ final class EntityManager implements EntityManagerInterface
      *
      * @return Connection
      *
-     * @throws \InvalidArgumentException
+     * @throws InvalidArgumentException
      * @throws ORMException
      */
     protected static function createConnection($connection, Configuration $config, ?EventManager $eventManager = null)
@@ -849,7 +851,7 @@ final class EntityManager implements EntityManagerInterface
         }
 
         if (! $connection instanceof Connection) {
-            throw new \InvalidArgumentException(
+            throw new InvalidArgumentException(
                 sprintf(
                     'Invalid $connection argument of type %s given%s.',
                     is_object($connection) ? get_class($connection) : gettype($connection),
@@ -904,7 +906,7 @@ final class EntityManager implements EntityManagerInterface
                 if (! $class->isVersioned()) {
                     throw OptimisticLockException::notVersioned($class->getClassName());
                 }
-            // Intentional fallthrough
+                break;
             case LockMode::PESSIMISTIC_READ:
             case LockMode::PESSIMISTIC_WRITE:
                 if (! $this->getConnection()->isTransactionActive()) {

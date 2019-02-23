@@ -11,6 +11,10 @@ use Doctrine\ORM\Annotation;
 use Doctrine\ORM\Events;
 use Doctrine\ORM\Mapping;
 use Doctrine\ORM\Mapping\Factory;
+use ReflectionClass;
+use ReflectionMethod;
+use ReflectionProperty;
+use UnexpectedValueException;
 use function array_diff;
 use function array_filter;
 use function array_intersect;
@@ -87,7 +91,7 @@ class NewAnnotationDriver implements MappingDriver
         Mapping\ClassMetadataBuildingContext $metadataBuildingContext
     ) {
         // IMPORTANT: We're handling $metadata as "parent" metadata here, while building the $className ClassMetadata.
-        $reflectionClass = new \ReflectionClass($className);
+        $reflectionClass = new ReflectionClass($className);
 
         // Evaluate annotations on class metadata
         $classAnnotations = $this->getClassAnnotations($reflectionClass);
@@ -106,7 +110,7 @@ class NewAnnotationDriver implements MappingDriver
         }
 
         // Evaluate annotations on properties/fields
-        /** @var \ReflectionProperty $reflectionProperty */
+        /** @var ReflectionProperty $reflectionProperty */
         foreach ($reflectionClass->getProperties() as $reflectionProperty) {
             if ($reflectionProperty->getDeclaringClass()->getClassName() !== $reflectionClass->getName()) {
                 continue;
@@ -151,7 +155,7 @@ class NewAnnotationDriver implements MappingDriver
      */
     public function isTransient($className)
     {
-        $reflectionClass  = new \ReflectionClass($className);
+        $reflectionClass  = new ReflectionClass($className);
         $classAnnotations = $this->reader->getClassAnnotations($reflectionClass);
 
         foreach ($classAnnotations as $annotation) {
@@ -172,7 +176,7 @@ class NewAnnotationDriver implements MappingDriver
      */
     private function convertClassAnnotationsToClassMetadata(
         array $classAnnotations,
-        \ReflectionClass $reflectionClass,
+        ReflectionClass $reflectionClass,
         Mapping\ClassMetadata $parent
     ) {
         switch (true) {
@@ -210,11 +214,11 @@ class NewAnnotationDriver implements MappingDriver
      * @return Mapping\ClassMetadata
      *
      * @throws Mapping\MappingException
-     * @throws \UnexpectedValueException
+     * @throws UnexpectedValueException
      */
     private function convertClassAnnotationsToEntityClassMetadata(
         array $classAnnotations,
-        \ReflectionClass $reflectionClass,
+        ReflectionClass $reflectionClass,
         Mapping\ClassMetadata $parent
     ) {
         /** @var Annotation\Entity $entityAnnot */
@@ -261,10 +265,10 @@ class NewAnnotationDriver implements MappingDriver
                     );
                 }
 
-                $listenerClass = new \ReflectionClass($listenerClassName);
+                $listenerClass = new ReflectionClass($listenerClassName);
 
-                /** @var \ReflectionMethod $method */
-                foreach ($listenerClass->getMethods(\ReflectionMethod::IS_PUBLIC) as $method) {
+                /** @var ReflectionMethod $method */
+                foreach ($listenerClass->getMethods(ReflectionMethod::IS_PUBLIC) as $method) {
                     foreach ($this->getMethodCallbacks($method) as $callback) {
                         $classMetadata->addEntityListener($callback, $listenerClassName, $method->getName());
                     }
@@ -274,8 +278,8 @@ class NewAnnotationDriver implements MappingDriver
 
         // Evaluate @HasLifecycleCallbacks annotation
         if (isset($classAnnotations[Annotation\HasLifecycleCallbacks::class])) {
-            /** @var \ReflectionMethod $method */
-            foreach ($reflectionClass->getMethods(\ReflectionMethod::IS_PUBLIC) as $method) {
+            /** @var ReflectionMethod $method */
+            foreach ($reflectionClass->getMethods(ReflectionMethod::IS_PUBLIC) as $method) {
                 foreach ($this->getMethodCallbacks($method) as $callback) {
                     $classMetadata->addLifecycleCallback($method->getName(), $callback);
                 }
@@ -341,7 +345,7 @@ class NewAnnotationDriver implements MappingDriver
      */
     private function convertClassAnnotationsToMappedSuperClassMetadata(
         array $classAnnotations,
-        \ReflectionClass $reflectionClass,
+        ReflectionClass $reflectionClass,
         Mapping\ClassMetadata $parent
     ) {
         /** @var Annotation\MappedSuperclass $mappedSuperclassAnnot */
@@ -425,7 +429,7 @@ class NewAnnotationDriver implements MappingDriver
      * @throws Mapping\MappingException
      */
     private function convertReflectionPropertyAnnotationsToProperty(
-        \ReflectionProperty $reflectionProperty,
+        ReflectionProperty $reflectionProperty,
         array $propertyAnnotations,
         Mapping\ClassMetadata $classMetadata
     ) {
@@ -484,7 +488,7 @@ class NewAnnotationDriver implements MappingDriver
      * @throws Mapping\MappingException
      */
     private function convertReflectionPropertyToFieldMetadata(
-        \ReflectionProperty $reflectionProperty,
+        ReflectionProperty $reflectionProperty,
         array $propertyAnnotations,
         Mapping\ClassMetadata $classMetadata
     ) {
@@ -504,13 +508,11 @@ class NewAnnotationDriver implements MappingDriver
 
         $columnName = empty($columnAnnot->name)
             ? $this->namingStrategy->propertyToColumnName($fieldName, $className)
-            : $columnAnnot->name
-        ;
+            : $columnAnnot->name;
 
         $fieldMetadata = $isVersioned
             ? new Mapping\VersionFieldMetadata($fieldName)
-            : new Mapping\FieldMetadata($fieldName)
-        ;
+            : new Mapping\FieldMetadata($fieldName);
 
         $fieldMetadata->setType(Type::getType($columnAnnot->type));
         $fieldMetadata->setColumnName($columnName);
@@ -570,7 +572,7 @@ class NewAnnotationDriver implements MappingDriver
      * @return Mapping\OneToOneAssociationMetadata
      */
     private function convertReflectionPropertyToOneToOneAssociationMetadata(
-        \ReflectionProperty $reflectionProperty,
+        ReflectionProperty $reflectionProperty,
         array $propertyAnnotations,
         Mapping\ClassMetadata $classMetadata
     ) {
@@ -651,7 +653,7 @@ class NewAnnotationDriver implements MappingDriver
      * @return Mapping\ManyToOneAssociationMetadata
      */
     private function convertReflectionPropertyToManyToOneAssociationMetadata(
-        \ReflectionProperty $reflectionProperty,
+        ReflectionProperty $reflectionProperty,
         array $propertyAnnotations,
         Mapping\ClassMetadata $classMetadata
     ) {
@@ -727,7 +729,7 @@ class NewAnnotationDriver implements MappingDriver
      * @return Mapping\OneToManyAssociationMetadata
      */
     private function convertReflectionPropertyToOneToManyAssociationMetadata(
-        \ReflectionProperty $reflectionProperty,
+        ReflectionProperty $reflectionProperty,
         array $propertyAnnotations,
         Mapping\ClassMetadata $classMetadata
     ) {
@@ -785,7 +787,7 @@ class NewAnnotationDriver implements MappingDriver
      * @return Mapping\ManyToManyAssociationMetadata
      */
     private function convertReflectionPropertyToManyToManyAssociationMetadata(
-        \ReflectionProperty $reflectionProperty,
+        ReflectionProperty $reflectionProperty,
         array $propertyAnnotations,
         Mapping\ClassMetadata $classMetadata
     ) {
@@ -859,7 +861,7 @@ class NewAnnotationDriver implements MappingDriver
      * @return Mapping\JoinTableMetadata
      */
     private function convertJoinTableAnnotationToJoinTableMetadata(
-        \ReflectionProperty $reflectionProperty,
+        ReflectionProperty $reflectionProperty,
         Annotation\JoinTable $joinTableAnnot,
         Mapping\ClassMetadata $classMetadata
     ) {
@@ -902,7 +904,7 @@ class NewAnnotationDriver implements MappingDriver
      * @return Mapping\JoinColumnMetadata
      */
     private function convertJoinColumnAnnotationToJoinColumnMetadata(
-        \ReflectionProperty $reflectionProperty,
+        ReflectionProperty $reflectionProperty,
         Annotation\JoinColumn $joinColumnAnnot,
         Mapping\ClassMetadata $classMetadata
     ) {
@@ -910,12 +912,10 @@ class NewAnnotationDriver implements MappingDriver
         $joinColumn           = new Mapping\JoinColumnMetadata();
         $columnName           = empty($joinColumnAnnot->name)
             ? $this->namingStrategy->propertyToColumnName($fieldName, $classMetadata->getClassName())
-            : $joinColumnAnnot->name
-        ;
+            : $joinColumnAnnot->name;
         $referencedColumnName = empty($joinColumnAnnot->referencedColumnName)
             ? $this->namingStrategy->referenceColumnName()
-            : $joinColumnAnnot->referencedColumnName
-        ;
+            : $joinColumnAnnot->referencedColumnName;
 
         $joinColumn->setColumnName($columnName);
         $joinColumn->setReferencedColumnName($referencedColumnName);
@@ -942,7 +942,7 @@ class NewAnnotationDriver implements MappingDriver
      *
      * @return string[]
      */
-    private function getMethodCallbacks(\ReflectionMethod $method)
+    private function getMethodCallbacks(ReflectionMethod $method)
     {
         $annotations = $this->getMethodAnnotations($method);
         $events      = [
@@ -1019,7 +1019,7 @@ class NewAnnotationDriver implements MappingDriver
     /**
      * @return Annotation\Annotation[]
      */
-    private function getClassAnnotations(\ReflectionClass $reflectionClass)
+    private function getClassAnnotations(ReflectionClass $reflectionClass)
     {
         $classAnnotations = $this->reader->getClassAnnotations($reflectionClass);
 
@@ -1037,7 +1037,7 @@ class NewAnnotationDriver implements MappingDriver
     /**
      * @return Annotation\Annotation[]
      */
-    private function getPropertyAnnotations(\ReflectionProperty $reflectionProperty)
+    private function getPropertyAnnotations(ReflectionProperty $reflectionProperty)
     {
         $propertyAnnotations = $this->reader->getPropertyAnnotations($reflectionProperty);
 
@@ -1055,7 +1055,7 @@ class NewAnnotationDriver implements MappingDriver
     /**
      * @return Annotation\Annotation[]
      */
-    private function getMethodAnnotations(\ReflectionMethod $reflectionMethod)
+    private function getMethodAnnotations(ReflectionMethod $reflectionMethod)
     {
         $methodAnnotations = $this->reader->getMethodAnnotations($reflectionMethod);
 

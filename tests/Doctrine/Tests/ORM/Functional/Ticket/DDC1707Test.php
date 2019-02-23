@@ -9,6 +9,7 @@ use Doctrine\ORM\Event\LifecycleEventArgs;
 use Doctrine\ORM\Event\ListenersInvoker;
 use Doctrine\ORM\Events;
 use Doctrine\Tests\OrmFunctionalTestCase;
+use Exception;
 
 /**
  * @group DDC-1707
@@ -22,11 +23,11 @@ class DDC1707Test extends OrmFunctionalTestCase
         try {
             $this->schemaTool->createSchema(
                 [
-                $this->em->getClassMetadata(DDC1509File::class),
-                $this->em->getClassMetadata(DDC1509Picture::class),
+                    $this->em->getClassMetadata(DDC1509File::class),
+                    $this->em->getClassMetadata(DDC1509Picture::class),
                 ]
             );
-        } catch (\Exception $ignored) {
+        } catch (Exception $ignored) {
         }
     }
 

@@ -151,10 +151,7 @@ class SecondLevelCacheJoinTableInheritanceTest extends SecondLevelCacheAbstractT
 
         self::assertCount(count($this->attractionsInfo), $result2);
         self::assertEquals($queryCount + 1, $this->getCurrentQueryCount());
-
-        foreach ($result2 as $entity) {
-            self::assertInstanceOf(AttractionInfo::class, $entity);
-        }
+        self::assertContainsOnlyInstancesOf(AttractionInfo::class, $result2);
     }
 
     public function testOneToManyRelationJoinTable() : void
@@ -231,9 +228,6 @@ class SecondLevelCacheJoinTableInheritanceTest extends SecondLevelCacheAbstractT
 
         self::assertCount(count($this->attractionsInfo) + 1, $result2);
         self::assertEquals($queryCount + 6, $this->getCurrentQueryCount());
-
-        foreach ($result2 as $entity) {
-            self::assertInstanceOf(AttractionInfo::class, $entity);
-        }
+        self::assertContainsOnlyInstancesOf(AttractionInfo::class, $result2);
     }
 }

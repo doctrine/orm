@@ -25,15 +25,14 @@ The code of this tutorial is `available on Github <https://github.com/doctrine/d
 
 .. note::
 
-    This tutorial assumes you work with **Doctrine 2.4** and above.
+    This tutorial assumes you work with **Doctrine 2.6** and above.
     Some of the code will not work with lower versions.
 
 What is Doctrine?
 -----------------
 
-Doctrine 2 is an `object-relational mapper (ORM)
-<https://en.wikipedia.org/wiki/Object-relational_mapping>`_ for PHP 5.4+ that
-provides transparent persistence for PHP objects. It uses the Data Mapper
+Doctrine 2 is an `object-relational mapper (ORM) <https://en.wikipedia.org/wiki/Object-relational_mapping>`_
+for PHP 7.1+ that provides transparent persistence for PHP objects. It uses the Data Mapper
 pattern at the heart, aiming for a complete separation of your domain/business
 logic from the persistence in a relational database management system.
 
@@ -62,7 +61,7 @@ An Example Model: Bug Tracker
 
 For this Getting Started Guide for Doctrine we will implement the
 Bug Tracker domain model from the
-`Zend\_Db\_Table <https://framework.zend.com/manual/1.12/en/zend.db.adapter.html>`_
+`Zend_Db_Table <https://framework.zend.com/manual/1.12/en/zend.db.adapter.html>`_
 documentation. Reading their documentation we can extract the
 requirements:
 
@@ -80,14 +79,14 @@ Project Setup
 -------------
 
 Create a new empty folder for this tutorial project, for example
-``doctrine2-tutorial`` and create a new file ``composer.json`` with
-the following contents:
+``doctrine2-tutorial`` and create a new file ``composer.json`` inside
+that directory with the following contents:
 
 ::
 
     {
         "require": {
-            "doctrine/orm": "2.4.*"
+            "doctrine/orm": "^2.6.2"
         },
         "autoload": {
             "psr-0": {"": "src/"}
@@ -101,7 +100,7 @@ Install Doctrine using the Composer Dependency Management tool, by calling:
     $ composer install
 
 This will install the packages Doctrine Common, Doctrine DBAL, Doctrine ORM
-and Symfony Console into the `vendor` directory. The Symfony
+and Symfony Console into the ``vendor`` directory. The Symfony
 dependencies are not required by Doctrine but will be used in this tutorial.
 
 Add the following directories:
@@ -144,7 +143,7 @@ step:
     // obtaining the entity manager
     $entityManager = EntityManager::create($conn, $config);
 
-The require_once statement sets up the class autoloading for Doctrine and
+The ``require_once`` statement sets up the class autoloading for Doctrine and
 its dependencies using Composer's autoloader.
 
 The second block consists of the instantiation of the ORM
@@ -156,7 +155,7 @@ read up on the configuration details in the
 The third block shows the configuration options required to connect to
 a database. In this case, we'll use a file-based SQLite database. All the
 configuration options for all the shipped drivers are given in the
-`DBAL Configuration section of the manual <http://docs.doctrine-project.org/projects/doctrine-dbal/en/latest/>`_.
+`DBAL Configuration section of the manual <https://www.doctrine-project.org/projects/doctrine-dbal/en/current/>`_.
 
 The last block shows how the ``EntityManager`` is obtained from a
 factory method.
@@ -167,7 +166,7 @@ Generating the Database Schema
 Doctrine has a command-line interface that allows you to access the SchemaTool,
 a component that can generate a relational database schema based entirely on the
 defined entity classes and their metadata. For this tool to work, a
-cli-config.php file must exist in the project root directory:
+``cli-config.php`` file must exist in the project root directory:
 
 .. code-block:: php
 
@@ -177,14 +176,13 @@ cli-config.php file must exist in the project root directory:
 
     return \Doctrine\ORM\Tools\Console\ConsoleRunner::createHelperSet($entityManager);
 
-Change into your project directory and call the Doctrine command-line tool:
+Now call the Doctrine command-line tool:
 
 ::
 
-    $ cd project/
     $ vendor/bin/doctrine orm:schema-tool:create
 
-Since we haven't added any entity metadata in `src` yet, you'll see a message
+Since we haven't added any entity metadata in ``src`` yet, you'll see a message
 stating "No Metadata Classes to process." In the next section, we'll create a
 Product entity along with the corresponding metadata, and run this command again.
 
@@ -203,8 +201,8 @@ Or you can use the update functionality:
 
     $ vendor/bin/doctrine orm:schema-tool:update --force
 
-The updating of databases uses a Diff Algorithm for a given
-Database Schema. This is a cornerstone of the ``Doctrine\DBAL`` package,
+The updating of databases uses a diff algorithm for a given
+database schema. This is a cornerstone of the ``Doctrine\DBAL`` package,
 which can even be used without the Doctrine ORM package.
 
 Starting with the Product Entity
@@ -499,8 +497,8 @@ but you only need to choose one.
               </entity>
         </doctrine-mapping>
 
-The top-level ``entity`` definition tag specifies information about
-the class and table-name. The primitive type ``Product#name`` is
+The top-level ``entity`` definition specifies information about
+the class and table name. The primitive type ``Product#name`` is
 defined as a ``field`` attribute. The ``id`` property is defined with
 the ``id`` tag.  It has a ``generator`` tag nested inside, which
 specifies that the primary key generation mechanism should automatically

@@ -79,7 +79,6 @@ abstract class AbstractEntityPersisterTest extends OrmTestCase
     ];
 
     /**
-     *
      * @return AbstractEntityPersister
      */
     abstract protected function createPersister(EntityManagerInterface $em, EntityPersister $persister, Region $region, ClassMetadata $metadata);

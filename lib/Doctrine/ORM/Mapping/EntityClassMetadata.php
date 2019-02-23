@@ -4,6 +4,9 @@ declare(strict_types=1);
 
 namespace Doctrine\ORM\Mapping;
 
+use AppendIterator;
+use ArrayIterator;
+use Iterator;
 use function sprintf;
 
 abstract class EntityClassMetadata extends ComponentMetadata
@@ -161,15 +164,15 @@ abstract class EntityClassMetadata extends ComponentMetadata
         return (bool) $this->subClasses;
     }
 
-    public function getSubClassIterator() : \Iterator
+    public function getSubClassIterator() : Iterator
     {
-        $iterator = new \AppendIterator();
+        $iterator = new AppendIterator();
 
         foreach ($this->subClasses as $subClassMetadata) {
             $iterator->append($subClassMetadata->getSubClassIterator());
         }
 
-        $iterator->append(new \ArrayIterator($this->subClasses));
+        $iterator->append(new ArrayIterator($this->subClasses));
 
         return $iterator;
     }

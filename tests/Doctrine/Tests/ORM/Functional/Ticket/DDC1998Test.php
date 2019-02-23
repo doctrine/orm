@@ -21,7 +21,7 @@ class DDC1998Test extends OrmFunctionalTestCase
 
         $this->schemaTool->createSchema(
             [
-            $this->em->getClassMetadata(DDC1998Entity::class),
+                $this->em->getClassMetadata(DDC1998Entity::class),
             ]
         );
 

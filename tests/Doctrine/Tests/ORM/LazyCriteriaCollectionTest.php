@@ -9,6 +9,7 @@ use Doctrine\Common\Collections\Criteria;
 use Doctrine\ORM\LazyCriteriaCollection;
 use Doctrine\ORM\Persisters\Entity\EntityPersister;
 use Doctrine\Tests\DoctrineTestCase;
+use PHPUnit_Framework_MockObject_MockObject;
 use stdClass;
 
 /**
@@ -16,7 +17,7 @@ use stdClass;
  */
 class LazyCriteriaCollectionTest extends DoctrineTestCase
 {
-    /** @var EntityPersister|\PHPUnit_Framework_MockObject_MockObject */
+    /** @var EntityPersister|PHPUnit_Framework_MockObject_MockObject */
     private $persister;
 
     /** @var Criteria */

@@ -6,6 +6,7 @@ namespace Doctrine\Tests\ORM\Functional;
 
 use Doctrine\ORM\Annotation as ORM;
 use Doctrine\Tests\OrmFunctionalTestCase;
+use Exception;
 
 /**
  * Functional tests for the Single Table Inheritance mapping strategy.
@@ -18,12 +19,12 @@ class OrderedJoinedTableInheritanceCollectionTest extends OrmFunctionalTestCase
         try {
             $this->schemaTool->createSchema(
                 [
-                $this->em->getClassMetadata(OJTICPet::class),
-                $this->em->getClassMetadata(OJTICCat::class),
-                $this->em->getClassMetadata(OJTICDog::class),
+                    $this->em->getClassMetadata(OJTICPet::class),
+                    $this->em->getClassMetadata(OJTICCat::class),
+                    $this->em->getClassMetadata(OJTICDog::class),
                 ]
             );
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             // Swallow all exceptions. We do not test the schema tool here.
         }
 

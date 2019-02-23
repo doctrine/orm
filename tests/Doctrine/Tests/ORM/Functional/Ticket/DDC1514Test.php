@@ -7,6 +7,7 @@ namespace Doctrine\Tests\ORM\Functional\Ticket;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\Annotation as ORM;
 use Doctrine\Tests\OrmFunctionalTestCase;
+use Exception;
 
 /**
  * @group DDC-1514
@@ -20,12 +21,12 @@ class DDC1514Test extends OrmFunctionalTestCase
         try {
             $this->schemaTool->createSchema(
                 [
-                $this->em->getClassMetadata(DDC1514EntityA::class),
-                $this->em->getClassMetadata(DDC1514EntityB::class),
-                $this->em->getClassMetadata(DDC1514EntityC::class),
+                    $this->em->getClassMetadata(DDC1514EntityA::class),
+                    $this->em->getClassMetadata(DDC1514EntityB::class),
+                    $this->em->getClassMetadata(DDC1514EntityC::class),
                 ]
             );
-        } catch (\Exception $ignored) {
+        } catch (Exception $ignored) {
         }
     }
 

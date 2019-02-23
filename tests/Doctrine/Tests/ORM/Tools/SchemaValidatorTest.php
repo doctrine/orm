@@ -275,25 +275,25 @@ class InvalidEntity4
 class DDC1587ValidEntity1
 {
     /**
-     * @var int
-     *
      * @ORM\Id @ORM\GeneratedValue
      * @ORM\Column(name="pk", type="integer")
+     *
+     * @var int
      */
     private $pk;
 
     /**
-     * @var string
-     *
      * @ORM\Column(name="name", type="string", length=32)
+     *
+     * @var string
      */
     private $name;
 
     /**
-     * @var Identifier
-     *
      * @ORM\OneToOne(targetEntity=DDC1587ValidEntity2::class, cascade={"all"}, mappedBy="agent")
      * @ORM\JoinColumn(name="pk", referencedColumnName="pk_agent")
+     *
+     * @var Identifier
      */
     private $identifier;
 }
@@ -305,18 +305,18 @@ class DDC1587ValidEntity1
 class DDC1587ValidEntity2
 {
     /**
-     * @var DDC1587ValidEntity1
-     *
      * @ORM\Id
      * @ORM\OneToOne(targetEntity=DDC1587ValidEntity1::class, inversedBy="identifier")
      * @ORM\JoinColumn(name="pk_agent", referencedColumnName="pk", nullable=false)
+     *
+     * @var DDC1587ValidEntity1
      */
     private $agent;
 
     /**
-     * @var string
-     *
      * @ORM\Column(name="num", type="string", length=16, nullable=true)
+     *
+     * @var string
      */
     private $num;
 }

@@ -7,6 +7,7 @@ namespace Doctrine\Tests\ORM\Functional;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\Annotation as ORM;
 use Doctrine\Tests\OrmFunctionalTestCase;
+use Exception;
 use ProxyManager\Proxy\GhostObjectInterface;
 use function get_class;
 
@@ -27,7 +28,7 @@ class ClassTableInheritanceTest2 extends OrmFunctionalTestCase
                     $this->em->getClassMetadata(CTIRelated2::class),
                 ]
             );
-        } catch (\Exception $ignored) {
+        } catch (Exception $ignored) {
             // Swallow all exceptions. We do not test the schema tool here.
         }
     }

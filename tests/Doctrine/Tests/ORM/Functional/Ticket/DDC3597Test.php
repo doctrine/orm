@@ -19,9 +19,9 @@ class DDC3597Test extends OrmFunctionalTestCase
         parent::setUp();
         $this->schemaTool->createSchema(
             [
-            $this->em->getClassMetadata(DDC3597Root::class),
-            $this->em->getClassMetadata(DDC3597Media::class),
-            $this->em->getClassMetadata(DDC3597Image::class),
+                $this->em->getClassMetadata(DDC3597Root::class),
+                $this->em->getClassMetadata(DDC3597Media::class),
+                $this->em->getClassMetadata(DDC3597Image::class),
             ]
         );
     }

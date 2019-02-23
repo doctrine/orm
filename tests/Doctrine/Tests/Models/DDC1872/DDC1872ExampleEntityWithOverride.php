@@ -8,7 +8,6 @@ use Doctrine\ORM\Annotation as ORM;
 
 /**
  * @ORM\Entity
- *
  * @ORM\AttributeOverrides({
  *     @ORM\AttributeOverride(name="foo",
  *         column=@ORM\Column(
@@ -20,7 +19,6 @@ use Doctrine\ORM\Annotation as ORM;
  *         )
  *     )
  * })
- *
  * @ORM\AssociationOverrides({
  *     @ORM\AssociationOverride(
  *         name="bar",

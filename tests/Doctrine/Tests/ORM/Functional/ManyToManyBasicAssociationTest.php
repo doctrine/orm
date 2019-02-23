@@ -284,6 +284,7 @@ class ManyToManyBasicAssociationTest extends OrmFunctionalTestCase
 
     /**
      * @param  int $groupCount
+     *
      * @return CmsUser
      */
     public function addCmsUserGblancoWithGroups($groupCount = 1)
@@ -427,7 +428,7 @@ class ManyToManyBasicAssociationTest extends OrmFunctionalTestCase
             $user
                 ->getGroups()
                 ->matching($criteria)
-                ->map(function (CmsGroup $group) {
+                ->map(static function (CmsGroup $group) {
                     return $group->getName();
                 })
                 ->toArray()
@@ -471,7 +472,7 @@ class ManyToManyBasicAssociationTest extends OrmFunctionalTestCase
             $user
                 ->getTags()
                 ->matching($criteria)
-                ->map(function (CmsTag $tag) {
+                ->map(static function (CmsTag $tag) {
                     return $tag->getName();
                 })
                 ->toArray()
@@ -530,8 +531,7 @@ class ManyToManyBasicAssociationTest extends OrmFunctionalTestCase
         $criteria = Criteria::create()
             ->orderBy(['id' => Criteria::ASC])
             ->setFirstResult(1)
-            ->setMaxResults(3)
-        ;
+            ->setMaxResults(3);
 
         $result = $groups->matching($criteria);
 

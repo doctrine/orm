@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Doctrine\Tests\Models\Cache;
 
+use DateTime;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\Annotation as ORM;
 
@@ -48,7 +49,7 @@ class Travel
     public function __construct(Traveler $traveler)
     {
         $this->traveler      = $traveler;
-        $this->createdAt     = new \DateTime('now');
+        $this->createdAt     = new DateTime('now');
         $this->visitedCities = new ArrayCollection();
     }
 
@@ -92,7 +93,7 @@ class Travel
     }
 
     /**
-     * @return \DateTime
+     * @return DateTime
      */
     public function getCreatedAt()
     {

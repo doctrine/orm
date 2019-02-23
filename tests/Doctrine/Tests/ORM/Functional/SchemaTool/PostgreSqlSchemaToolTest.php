@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Doctrine\Tests\ORM\Functional\SchemaTool;
 
+use DateTime;
 use Doctrine\ORM\Annotation as ORM;
 use Doctrine\ORM\Tools\SchemaTool;
 use Doctrine\Tests\Models;
@@ -20,7 +21,7 @@ class PostgreSqlSchemaToolTest extends OrmFunctionalTestCase
         parent::setUp();
 
         if ($this->em->getConnection()->getDatabasePlatform()->getName() !== 'postgresql') {
-            $this->markTestSkipped('The ' . __CLASS__ . ' requires the use of postgresql.');
+            $this->markTestSkipped('The ' . self::class . ' requires the use of postgresql.');
         }
     }
 
@@ -131,7 +132,7 @@ class PostgreSqlSchemaToolTest extends OrmFunctionalTestCase
         $tool->createSchema($classes);
 
         $sql = $tool->getUpdateSchemaSql($classes);
-        $sql = array_filter($sql, function ($sql) {
+        $sql = array_filter($sql, static function ($sql) {
             return strpos($sql, 'DROP SEQUENCE stonewood.') === 0;
         });
 
@@ -147,44 +148,49 @@ class DDC1657Screen
 {
     /**
      * Identifier
-     * @var int
      *
      * @ORM\Id
      * @ORM\GeneratedValue(strategy="IDENTITY")
      * @ORM\Column(name="pk", type="integer", nullable=false)
+     *
+     * @var int
      */
     private $pk;
 
     /**
      * Title
-     * @var string
      *
      * @ORM\Column(name="title", type="string", length=255, nullable=false)
+     *
+     * @var string
      */
     private $title;
 
     /**
      * Path
-     * @var string
      *
      * @ORM\Column(name="path", type="string", length=255, nullable=false)
+     *
+     * @var string
      */
     private $path;
 
     /**
      * Register date
-     * @var \DateTime
      *
      * @ORM\Column(name="ddate", type="date", nullable=false)
+     *
+     * @var DateTime
      */
     private $ddate;
 
     /**
      * Avatar
-     * @var DDC1657Avatar
      *
      * @ORM\ManyToOne(targetEntity=DDC1657Avatar::class)
      * @ORM\JoinColumn(name="pk_avatar", referencedColumnName="pk", nullable=true, onDelete="CASCADE")
+     *
+     * @var DDC1657Avatar
      */
     private $avatar;
 }
@@ -197,11 +203,12 @@ class DDC1657Avatar
 {
     /**
      * Identifier
-     * @var int
      *
      * @ORM\Id
      * @ORM\GeneratedValue(strategy="IDENTITY")
      * @ORM\Column(name="pk", type="integer", nullable=false)
+     *
+     * @var int
      */
     private $pk;
 }

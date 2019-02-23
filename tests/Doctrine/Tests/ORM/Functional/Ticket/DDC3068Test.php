@@ -44,7 +44,7 @@ class DDC3068Test extends OrmFunctionalTestCase
         $ride1 = $this->em->find(Ride::class, [
             'driver' => $this->foo->getId(),
             'car'    => $this->merc->getBrand(),
-            ]);
+        ]);
 
         self::assertInstanceOf(Ride::class, $ride1);
 

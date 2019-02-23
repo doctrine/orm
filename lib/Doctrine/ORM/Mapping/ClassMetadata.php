@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Doctrine\ORM\Mapping;
 
+use ArrayIterator;
 use Doctrine\ORM\Cache\Exception\CacheException;
 use Doctrine\ORM\Cache\Exception\NonCacheableEntityAssociation;
 use Doctrine\ORM\EntityManagerInterface;
@@ -11,6 +12,7 @@ use Doctrine\ORM\Mapping\Factory\NamingStrategy;
 use Doctrine\ORM\Reflection\ReflectionService;
 use Doctrine\ORM\Sequencing\Planning\ValueGenerationPlan;
 use Doctrine\ORM\Utility\PersisterHelper;
+use RuntimeException;
 use function array_diff;
 use function array_filter;
 use function array_intersect;
@@ -29,7 +31,6 @@ use function sprintf;
 /**
  * A <tt>ClassMetadata</tt> instance holds all the object-relational mapping metadata
  * of an entity and its associations.
- *
  */
 class ClassMetadata extends ComponentMetadata implements TableOwner
 {
@@ -122,9 +123,9 @@ class ClassMetadata extends ComponentMetadata implements TableOwner
      * <b>This does only apply to the JOINED and SINGLE_TABLE inheritance mapping strategies
      * where a discriminator column is used.</b>
      *
-     * @var mixed
-     *
      * @see discriminatorColumn
+     *
+     * @var mixed
      */
     public $discriminatorValue;
 
@@ -134,9 +135,9 @@ class ClassMetadata extends ComponentMetadata implements TableOwner
      * <b>This does only apply to the JOINED and SINGLE_TABLE inheritance mapping strategies
      * where a discriminator column is used.</b>
      *
-     * @var string[]
-     *
      * @see discriminatorColumn
+     *
+     * @var string[]
      */
     public $discriminatorMap = [];
 
@@ -204,7 +205,7 @@ class ClassMetadata extends ComponentMetadata implements TableOwner
         $this->className = $className;
     }
 
-    public function getColumnsIterator() : \ArrayIterator
+    public function getColumnsIterator() : ArrayIterator
     {
         $iterator = parent::getColumnsIterator();
 
@@ -215,9 +216,9 @@ class ClassMetadata extends ComponentMetadata implements TableOwner
         return $iterator;
     }
 
-    public function getAncestorsIterator() : \ArrayIterator
+    public function getAncestorsIterator() : ArrayIterator
     {
-        $ancestors = new \ArrayIterator();
+        $ancestors = new ArrayIterator();
         $parent    = $this;
 
         while (($parent = $parent->parent) !== null) {
@@ -233,10 +234,9 @@ class ClassMetadata extends ComponentMetadata implements TableOwner
 
     public function getRootClassName() : string
     {
-        return ($this->parent instanceof ClassMetadata && ! $this->parent->isMappedSuperclass)
+        return $this->parent instanceof ClassMetadata && ! $this->parent->isMappedSuperclass
             ? $this->parent->getRootClassName()
-            : $this->className
-        ;
+            : $this->className;
     }
 
     /**
@@ -262,7 +262,7 @@ class ClassMetadata extends ComponentMetadata implements TableOwner
      */
     public function __toString()
     {
-        return __CLASS__ . '@' . spl_object_id($this);
+        return self::class . '@' . spl_object_id($this);
     }
 
     /**
@@ -377,7 +377,7 @@ class ClassMetadata extends ComponentMetadata implements TableOwner
             throw MappingException::identifierRequired($this->className);
         }
 
-        $explicitlyGeneratedProperties = array_filter($this->declaredProperties, function (Property $property) : bool {
+        $explicitlyGeneratedProperties = array_filter($this->declaredProperties, static function (Property $property) : bool {
             return $property instanceof FieldMetadata
                 && $property->isPrimaryKey()
                 && $property->hasValueGenerator();
@@ -526,7 +526,7 @@ class ClassMetadata extends ComponentMetadata implements TableOwner
             return;
         }
 
-        if ($property->getTypeName() === 'datetime') {
+        if (in_array($property->getTypeName(), ['datetime', 'datetime_immutable', 'datetimetz', 'datetimetz_immutable'], true)) {
             $property->setOptions(array_merge($options, ['default' => 'CURRENT_TIMESTAMP']));
 
             return;
@@ -603,7 +603,7 @@ class ClassMetadata extends ComponentMetadata implements TableOwner
      *
      * @param ToOneAssociationMetadata $property The association mapping to validate & complete.
      *
-     * @throws \RuntimeException
+     * @throws RuntimeException
      * @throws MappingException
      */
     protected function validateAndCompleteToOneAssociationMetadata(ToOneAssociationMetadata $property)
@@ -645,7 +645,7 @@ class ClassMetadata extends ComponentMetadata implements TableOwner
 
             if ($uniqueConstraintColumns) {
                 if (! $this->table) {
-                    throw new \RuntimeException(
+                    throw new RuntimeException(
                         'ClassMetadata::setTable() has to be called before defining a one to one relationship.'
                     );
                 }
@@ -921,8 +921,7 @@ class ClassMetadata extends ComponentMetadata implements TableOwner
 
             $joinColumns = $property instanceof ManyToManyAssociationMetadata
                 ? $property->getJoinTable()->getInverseJoinColumns()
-                : $property->getJoinColumns()
-            ;
+                : $property->getJoinColumns();
 
             foreach ($joinColumns as $joinColumn) {
                 /** @var JoinColumnMetadata $joinColumn */
@@ -963,8 +962,7 @@ class ClassMetadata extends ComponentMetadata implements TableOwner
     {
         $schema = $this->getSchemaName() === null
             ? ''
-            : $this->getSchemaName() . '_'
-        ;
+            : $this->getSchemaName() . '_';
 
         // replace dots with underscores because PostgreSQL creates temporary tables in a special schema
         return $schema . $this->getTableName() . '_id_tmp';
@@ -973,9 +971,9 @@ class ClassMetadata extends ComponentMetadata implements TableOwner
     /**
      * Sets the mapped subclasses of this class.
      *
-     * @todo guilhermeblanco Only used for ClassMetadataTest. Remove if possible!
-     *
      * @param string[] $subclasses The names of all mapped subclasses.
+     *
+     * @todo guilhermeblanco Only used for ClassMetadataTest. Remove if possible!
      */
     public function setSubclasses(array $subclasses) : void
     {
@@ -1011,7 +1009,7 @@ class ClassMetadata extends ComponentMetadata implements TableOwner
     /**
      * Sets the override property mapping for an entity relationship.
      *
-     * @throws \RuntimeException
+     * @throws RuntimeException
      * @throws MappingException
      * @throws CacheException
      */
@@ -1104,7 +1102,7 @@ class ClassMetadata extends ComponentMetadata implements TableOwner
     {
         $declaringClass = $this->declaredProperties[$fieldName]->getDeclaringClass();
 
-        return ! ($declaringClass->className === $this->className);
+        return $declaringClass->className !== $this->className;
     }
 
     /**
@@ -1148,7 +1146,7 @@ class ClassMetadata extends ComponentMetadata implements TableOwner
     /**
      * Add a property mapping.
      *
-     * @throws \RuntimeException
+     * @throws RuntimeException
      * @throws MappingException
      * @throws CacheException
      */
@@ -1164,34 +1162,34 @@ class ClassMetadata extends ComponentMetadata implements TableOwner
         $property->setDeclaringClass($this);
 
         switch (true) {
-            case ($property instanceof VersionFieldMetadata):
+            case $property instanceof VersionFieldMetadata:
                 $this->validateAndCompleteFieldMapping($property);
                 $this->validateAndCompleteVersionFieldMapping($property);
                 break;
 
-            case ($property instanceof FieldMetadata):
+            case $property instanceof FieldMetadata:
                 $this->validateAndCompleteFieldMapping($property);
                 break;
 
-            case ($property instanceof OneToOneAssociationMetadata):
+            case $property instanceof OneToOneAssociationMetadata:
                 $this->validateAndCompleteAssociationMapping($property);
                 $this->validateAndCompleteToOneAssociationMetadata($property);
                 $this->validateAndCompleteOneToOneMapping($property);
                 break;
 
-            case ($property instanceof OneToManyAssociationMetadata):
+            case $property instanceof OneToManyAssociationMetadata:
                 $this->validateAndCompleteAssociationMapping($property);
                 $this->validateAndCompleteToManyAssociationMetadata($property);
                 $this->validateAndCompleteOneToManyMapping($property);
                 break;
 
-            case ($property instanceof ManyToOneAssociationMetadata):
+            case $property instanceof ManyToOneAssociationMetadata:
                 $this->validateAndCompleteAssociationMapping($property);
                 $this->validateAndCompleteToOneAssociationMetadata($property);
                 $this->validateAndCompleteManyToOneMapping($property);
                 break;
 
-            case ($property instanceof ManyToManyAssociationMetadata):
+            case $property instanceof ManyToManyAssociationMetadata:
                 $this->validateAndCompleteAssociationMapping($property);
                 $this->validateAndCompleteToManyAssociationMetadata($property);
                 $this->validateAndCompleteManyToManyMapping($property);
@@ -1345,9 +1343,9 @@ class ClassMetadata extends ComponentMetadata implements TableOwner
     /**
      * Sets the discriminator column definition.
      *
-     * @throws MappingException
-     *
      * @see getDiscriminatorColumn()
+     *
+     * @throws MappingException
      */
     public function setDiscriminatorColumn(DiscriminatorColumnMetadata $discriminatorColumn) : void
     {

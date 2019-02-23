@@ -14,8 +14,8 @@ class DDC809Test extends OrmFunctionalTestCase
         parent::setUp();
         $this->schemaTool->createSchema(
             [
-            $this->em->getClassMetadata(DDC809Variant::class),
-            $this->em->getClassMetadata(DDC809SpecificationValue::class),
+                $this->em->getClassMetadata(DDC809Variant::class),
+                $this->em->getClassMetadata(DDC809SpecificationValue::class),
             ]
         );
 
@@ -102,9 +102,9 @@ class DDC809SpecificationValue
     protected $specificationValueId;
 
     /**
-     * @var DDC809Variant
-     *
      * @ORM\ManyToMany(targetEntity=DDC809Variant::class, mappedBy="SpecificationValues")
+     *
+     * @var DDC809Variant
      */
     protected $Variants;
 }

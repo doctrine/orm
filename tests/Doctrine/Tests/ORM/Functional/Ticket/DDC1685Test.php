@@ -8,6 +8,7 @@ use Doctrine\ORM\Tools\Pagination\Paginator;
 use Doctrine\Tests\Models\DDC117\DDC117Article;
 use Doctrine\Tests\Models\DDC117\DDC117ArticleDetails;
 use Doctrine\Tests\OrmFunctionalTestCase;
+use RuntimeException;
 
 /**
  * @group DDC-1685
@@ -45,9 +46,7 @@ class DDC1685Test extends OrmFunctionalTestCase
 
     public function testPaginateIterate() : void
     {
-        foreach ($this->paginator as $ad) {
-            self::assertInstanceOf(DDC117ArticleDetails::class, $ad);
-        }
+        self::assertContainsOnlyInstancesOf(DDC117ArticleDetails::class, $this->paginator);
     }
 
     public function testPaginateCountNoOutputWalkers() : void
@@ -61,11 +60,9 @@ class DDC1685Test extends OrmFunctionalTestCase
     {
         $this->paginator->setUseOutputWalkers(false);
 
-        $this->expectException(\RuntimeException::class);
+        $this->expectException(RuntimeException::class);
         $this->expectExceptionMessage('Paginating an entity with foreign key as identifier only works when using the Output Walkers. Call Paginator#setUseOutputWalkers(true) before iterating the paginator.');
 
-        foreach ($this->paginator as $ad) {
-            self::assertInstanceOf(DDC117ArticleDetails::class, $ad);
-        }
+        self::assertContainsOnlyInstancesOf(DDC117ArticleDetails::class, $this->paginator);
     }
 }

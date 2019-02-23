@@ -54,8 +54,9 @@ class DDC3103Test extends OrmFunctionalTestCase
 class DDC3103ArticleId
 {
     /**
-     * @var string
      * @ORM\Column(name="name", type="string", length=255)
+     *
+     * @var string
      */
     protected $nameValue;
 }
