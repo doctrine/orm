@@ -356,6 +356,8 @@ class UnitOfWork implements PropertyChangedListener
             $this->dispatchOnFlushEvent();
             $this->dispatchPostFlushEvent();
 
+            $this->postCommitCleanup($entity);
+
             return; // Nothing to do.
         }
 
