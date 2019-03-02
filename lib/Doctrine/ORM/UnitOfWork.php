@@ -349,6 +349,8 @@ class UnitOfWork implements PropertyChangedListener
             $this->dispatchOnFlushEvent();
             $this->dispatchPostFlushEvent();
 
+            $this->postCommitCleanup();
+
             return; // Nothing to do.
         }
 
@@ -426,7 +428,11 @@ class UnitOfWork implements PropertyChangedListener
 
         $this->dispatchPostFlushEvent();
 
-        // Clean up
+        $this->postCommitCleanup();
+    }
+
+    private function postCommitCleanup() : void
+    {
         $this->entityInsertions            =
         $this->entityUpdates               =
         $this->entityDeletions             =
