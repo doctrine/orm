@@ -2081,7 +2081,7 @@ class BasicEntityPersister implements EntityPersister
      */
     protected function getClassIdentifiersTypes(ClassMetadata $class): array
     {
-        return array_map(function ($identifier) use ($class) {
+        return array_map(function($identifier) use ($class) {
             if (isset($class->fieldMappings[$identifier])) {
                 return $class->fieldMappings[$identifier]['type'];
             }

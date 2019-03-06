@@ -14,7 +14,7 @@ class CustomIdObjectHashType extends Type
      */
     public function convertToDatabaseValue($value, AbstractPlatform $platform)
     {
-        return $value->id . '_test';
+        return $value->id.'_test';
     }
 
     /**
