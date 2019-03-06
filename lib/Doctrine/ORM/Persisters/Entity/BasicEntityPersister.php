@@ -2077,7 +2077,7 @@ class BasicEntityPersister implements EntityPersister
      * Retrieves class identifiers types
      *
      * @param ClassMetadata $class
-     * @return string[]
+     * @return int[]|string[]
      */
     protected function getClassIdentifiersTypes(ClassMetadata $class): array
     {
