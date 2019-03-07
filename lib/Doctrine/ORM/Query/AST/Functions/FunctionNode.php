@@ -5,13 +5,14 @@ declare(strict_types=1);
 namespace Doctrine\ORM\Query\AST\Functions;
 
 use Doctrine\ORM\Query\AST\Node;
+use Doctrine\ORM\Query\AST\TypableNode;
 use Doctrine\ORM\Query\Parser;
 use Doctrine\ORM\Query\SqlWalker;
 
 /**
  * Abstract Function Node.
  */
-abstract class FunctionNode extends Node
+abstract class FunctionNode extends Node implements TypableNode
 {
     /** @var string */
     public $name;
@@ -43,4 +44,12 @@ abstract class FunctionNode extends Node
      * @return void
      */
     abstract public function parse(Parser $parser);
+
+    /**
+     * @return string
+     */
+    public function getReturnType(): string
+    {
+        return \Doctrine\DBAL\Types\Type::STRING;
+    }
 }

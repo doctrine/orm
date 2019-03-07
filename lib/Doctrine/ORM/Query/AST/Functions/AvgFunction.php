@@ -31,4 +31,12 @@ final class AvgFunction extends FunctionNode
     {
         $this->aggregateExpression = $parser->AggregateExpression();
     }
+
+    /**
+     * @inheritDoc
+     */
+    public function getReturnType(): string
+    {
+        return \Doctrine\DBAL\Types\Type::FLOAT;
+    }
 }

@@ -41,4 +41,12 @@ class SqrtFunction extends FunctionNode
 
         $parser->match(Lexer::T_CLOSE_PARENTHESIS);
     }
+
+    /**
+     * @inheritDoc
+     */
+    public function getReturnType(): string
+    {
+        return \Doctrine\DBAL\Types\Type::FLOAT;
+    }
 }

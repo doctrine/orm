@@ -1389,9 +1389,8 @@ class SqlWalker implements TreeWalker
                     // Conceptually we could resolve field type here by traverse through AST to retrieve field type,
                     // but this is not a feasible solution; assume 'string'.
                     $type = 'string';
-                    // but some functions have predefined types
-                    if ($expr instanceof Query\AST\Functions\CountFunction) {
-                        $type = 'integer';
+                    if ($expr instanceof Query\AST\TypableNode) {
+                        $type = $expr->getReturnType();
                     }
                     $this->rsm->addScalarResult($columnAlias, $resultAlias, Type::getType($type));
                 }
