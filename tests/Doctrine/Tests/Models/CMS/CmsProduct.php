@@ -20,19 +20,13 @@ class CmsProduct
      */
     public $id;
 
-    /**
-     * @ORM\Column(type="string")
-     */
+    /** @ORM\Column(type="string") */
     public $name;
 
-    /**
-     * @ORM\Column(type="decimal")
-     */
+    /** @ORM\Column(type="decimal") */
     public $price;
 
-    /**
-     * @ORM\Column(type="datetime")
-     */
+    /** @ORM\Column(type="datetime") */
     public $created_at;
 
     public function getId()
@@ -45,8 +39,8 @@ class CmsProduct
         return $this->price;
     }
 
-    public function setPrice(float $price) {
+    public function setPrice(float $price)
+    {
         $this->price = $price;
     }
-
 }

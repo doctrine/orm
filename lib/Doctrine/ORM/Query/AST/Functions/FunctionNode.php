@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Doctrine\ORM\Query\AST\Functions;
 
+use Doctrine\DBAL\Types\Type;
 use Doctrine\ORM\Query\AST\Node;
 use Doctrine\ORM\Query\AST\TypableNode;
 use Doctrine\ORM\Query\Parser;
@@ -45,11 +46,8 @@ abstract class FunctionNode extends Node implements TypableNode
      */
     abstract public function parse(Parser $parser);
 
-    /**
-     * @return string
-     */
-    public function getReturnType(): string
+    public function getReturnType() : string
     {
-        return \Doctrine\DBAL\Types\Type::STRING;
+        return Type::STRING;
     }
 }

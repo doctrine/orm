@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Doctrine\ORM\Query\AST\Functions;
 
+use Doctrine\DBAL\Types\Type;
 use Doctrine\ORM\Query\AST\Node;
 use Doctrine\ORM\Query\Lexer;
 use Doctrine\ORM\Query\Parser;
@@ -45,8 +46,8 @@ class LengthFunction extends FunctionNode
     /**
      * @inheritDoc
      */
-    public function getReturnType(): string
+    public function getReturnType() : string
     {
-        return \Doctrine\DBAL\Types\Type::INTEGER;
+        return Type::INTEGER;
     }
 }
