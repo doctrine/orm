@@ -8,6 +8,7 @@ use Doctrine\ORM\Mapping\Factory\DefaultNamingStrategy;
 use Doctrine\ORM\Mapping\Factory\NamingStrategy;
 use Doctrine\ORM\Mapping\Factory\UnderscoreNamingStrategy;
 use Doctrine\Tests\ORM\Mapping\NamingStrategy\JoinColumnClassNamingStrategy;
+use Doctrine\Tests\ORM\Mapping\NamingStrategy\TablePrefixNamingStrategy;
 use Doctrine\Tests\OrmTestCase;
 use const CASE_LOWER;
 use const CASE_UPPER;
@@ -39,6 +40,14 @@ class NamingStrategyTest extends OrmTestCase
     private static function underscoreNamingUpper()
     {
         return new UnderscoreNamingStrategy(CASE_UPPER);
+    }
+
+    /**
+     * @return TablePrefixNamingStrategy
+     */
+    private static function tablePrefixNaming()
+    {
+        return new TablePrefixNamingStrategy();
     }
 
     /**
@@ -87,6 +96,23 @@ class NamingStrategyTest extends OrmTestCase
                 'NAME',
                 '\Some\Class\Name',
             ],
+
+            // TablePrefixNamingStrategy
+            [
+                self::tablePrefixNaming(),
+                'SomeClassName',
+                'SomeClassName',
+            ],
+            [
+                self::tablePrefixNaming(),
+                'SomeClassName',
+                '\SomeClassName',
+            ],
+            [
+                self::tablePrefixNaming(),
+                'Name',
+                '\Some\Class\Name',
+            ],
         ];
     }
 
@@ -111,16 +137,19 @@ class NamingStrategyTest extends OrmTestCase
                 self::defaultNaming(),
                 'someProperty',
                 'someProperty',
+                null,
             ],
             [
                 self::defaultNaming(),
                 'SOME_PROPERTY',
                 'SOME_PROPERTY',
+                null,
             ],
             [
                 self::defaultNaming(),
                 'some_property',
                 'some_property',
+                null,
             ],
 
             // UnderscoreNamingStrategy
@@ -128,34 +157,59 @@ class NamingStrategyTest extends OrmTestCase
                 self::underscoreNamingLower(),
                 'some_property',
                 'someProperty',
+                null,
             ],
             [
                 self::underscoreNamingUpper(),
                 'SOME_PROPERTY',
                 'someProperty',
+                null,
             ],
             [
                 self::underscoreNamingUpper(),
                 'SOME_PROPERTY',
                 'some_property',
+                null,
             ],
             [
                 self::underscoreNamingUpper(),
                 'SOME_PROPERTY',
                 'SOME_PROPERTY',
+                null,
+            ],
+
+            // TablePrefixNamingStrategy
+            [
+                self::tablePrefixNaming(),
+                'Entity_someProperty',
+                'someProperty',
+                'Some\Entity',
+            ],
+            [
+                self::tablePrefixNaming(),
+                'ENTITY_SOME_PROPERTY',
+                'SOME_PROPERTY',
+                'SOME\ENTITY',
+            ],
+            [
+                self::tablePrefixNaming(),
+                'entity_some_property',
+                'some_property',
+                'some\entity',
             ],
         ];
     }
 
     /**
-     * @param string $expected
-     * @param string $propertyName
+     * @param string      $expected
+     * @param string      $propertyName
+     * @param string|null $className
      *
      * @dataProvider dataPropertyToColumnName
      */
-    public function testPropertyToColumnName(NamingStrategy $strategy, $expected, $propertyName) : void
+    public function testPropertyToColumnName(NamingStrategy $strategy, $expected, $propertyName, $className) : void
     {
-        self::assertEquals($expected, $strategy->propertyToColumnName($propertyName));
+        self::assertEquals($expected, $strategy->propertyToColumnName($propertyName, $className));
     }
 
     /**
@@ -167,22 +221,26 @@ class NamingStrategyTest extends OrmTestCase
     {
         return [
             // DefaultNamingStrategy
-            [self::defaultNaming(), 'id'],
+            [self::defaultNaming(), 'id', null],
 
             // UnderscoreNamingStrategy
-            [self::underscoreNamingLower(), 'id'],
-            [self::underscoreNamingUpper(), 'ID'],
+            [self::underscoreNamingLower(), 'id', null],
+            [self::underscoreNamingUpper(), 'ID', null],
+
+            // TablePrefixNamingStrategy
+            [self::tablePrefixNaming(), 'Entity_id', 'Some\Entity'],
         ];
     }
 
     /**
-     * @param string $expected
+     * @param string      $expected
+     * @param string|null $targetEntity
      *
      * @dataProvider dataReferenceColumnName
      */
-    public function testReferenceColumnName(NamingStrategy $strategy, $expected) : void
+    public function testReferenceColumnName(NamingStrategy $strategy, $expected, $targetEntity) : void
     {
-        self::assertEquals($expected, $strategy->referenceColumnName());
+        self::assertEquals($expected, $strategy->referenceColumnName($targetEntity));
     }
 
     /**
@@ -203,16 +261,21 @@ class NamingStrategyTest extends OrmTestCase
             // JoinColumnClassNamingStrategy
             [new JoinColumnClassNamingStrategy(), 'classname_someColumn_id', 'someColumn', 'Some\ClassName'],
             [new JoinColumnClassNamingStrategy(), 'classname_some_column_id', 'some_column', 'ClassName'],
+
+            // TablePrefixNamingStrategy
+            [self::tablePrefixNaming(), 'ClassName_someColumn_id', 'someColumn', 'Some\ClassName'],
+            [self::tablePrefixNaming(), 'ClassName_some_column_id', 'some_column', 'ClassName'],
         ];
     }
 
     /**
-     * @param string $expected
-     * @param string $propertyName
+     * @param string      $expected
+     * @param string      $propertyName
+     * @param string|null $className
      *
      * @dataProvider dataJoinColumnName
      */
-    public function testJoinColumnName(NamingStrategy $strategy, $expected, $propertyName, $className = null) : void
+    public function testJoinColumnName(NamingStrategy $strategy, $expected, $propertyName, $className) : void
     {
         self::assertEquals($expected, $strategy->joinColumnName($propertyName, $className));
     }
@@ -292,6 +355,29 @@ class NamingStrategyTest extends OrmTestCase
                 'ClassName',
                 null,
             ],
+
+            // TablePrefixNamingStrategy
+            [
+                self::tablePrefixNaming(),
+                'someclassname_classname',
+                'SomeClassName',
+                'Some\ClassName',
+                null,
+            ],
+            [
+                self::tablePrefixNaming(),
+                'someclassname_classname',
+                '\SomeClassName',
+                'ClassName',
+                null,
+            ],
+            [
+                self::tablePrefixNaming(),
+                'name_classname',
+                '\Some\Class\Name',
+                'ClassName',
+                null,
+            ],
         ];
     }
 
@@ -362,19 +448,35 @@ class NamingStrategyTest extends OrmTestCase
                 'IDENTIFIER',
                 null,
             ],
+
+            // TablePrefixNamingStrategy
+            [
+                self::tablePrefixNaming(),
+                'someclass_someanotherclass_someclassname_id',
+                'SomeClassName',
+                null,
+                'someclass_someanotherclass',
+            ],
+            [
+                self::tablePrefixNaming(),
+                'someclass_someanotherclass_name_identifier',
+                '\Some\Class\Name',
+                'identifier',
+                'someclass_someanotherclass',
+            ],
         ];
     }
 
     /**
-     * @param string $expected
-     * @param string $propertyEntityName
-     * @param string $referencedColumnName
-     * @param string $propertyName
+     * @param string      $expected
+     * @param string      $propertyEntityName
+     * @param string      $referencedColumnName
+     * @param string|null $joinTableName
      *
      * @dataProvider dataJoinKeyColumnName
      */
-    public function testJoinKeyColumnName(NamingStrategy $strategy, $expected, $propertyEntityName, $referencedColumnName = null, $propertyName = null) : void
+    public function testJoinKeyColumnName(NamingStrategy $strategy, $expected, $propertyEntityName, $referencedColumnName = null, $joinTableName = null) : void
     {
-        self::assertEquals($expected, $strategy->joinKeyColumnName($propertyEntityName, $referencedColumnName, $propertyName));
+        self::assertEquals($expected, $strategy->joinKeyColumnName($propertyEntityName, $referencedColumnName, $joinTableName));
     }
 }

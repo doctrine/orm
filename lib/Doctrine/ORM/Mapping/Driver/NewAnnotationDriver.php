@@ -914,7 +914,7 @@ class NewAnnotationDriver implements MappingDriver
             ? $this->namingStrategy->propertyToColumnName($fieldName, $classMetadata->getClassName())
             : $joinColumnAnnot->name;
         $referencedColumnName = empty($joinColumnAnnot->referencedColumnName)
-            ? $this->namingStrategy->referenceColumnName()
+            ? $this->namingStrategy->referenceColumnName($classMetadata->getClassName())
             : $joinColumnAnnot->referencedColumnName;
 
         $joinColumn->setColumnName($columnName);

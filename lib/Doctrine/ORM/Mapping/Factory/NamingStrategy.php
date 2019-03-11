@@ -43,9 +43,11 @@ interface NamingStrategy
     /**
      * Returns the default reference column name.
      *
+     * @param string|null $targetEntity
+     *
      * @return string A column name.
      */
-    public function referenceColumnName();
+    public function referenceColumnName($targetEntity = null);
 
     /**
      * Returns a join column name for a property.
@@ -73,8 +75,9 @@ interface NamingStrategy
      *
      * @param string      $entityName           An entity.
      * @param string|null $referencedColumnName A property.
+     * @param string|null $joinTableName
      *
      * @return string A join column name.
      */
-    public function joinKeyColumnName($entityName, $referencedColumnName = null);
+    public function joinKeyColumnName($entityName, $referencedColumnName = null, $joinTableName = null);
 }
