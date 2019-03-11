@@ -5,8 +5,8 @@ There are use-cases when you'll want to sort collections when they are
 retrieved from the database. In userland you do this as long as you
 haven't initially saved an entity with its associations into the
 database. To retrieve a sorted collection from the database you can
-use the ``@OrderBy`` annotation with an collection that specifies
-an DQL snippet that is appended to all queries with this
+use the ``@OrderBy`` annotation with a collection that specifies
+a DQL snippet that is appended to all queries with this
 collection.
 
 Additional to any ``@OneToMany`` or ``@ManyToMany`` annotation you
@@ -64,7 +64,7 @@ positional statement. Multiple Fields are separated by a comma (,).
 The referenced field names have to exist on the ``targetEntity``
 class of the ``@ManyToMany`` or ``@OneToMany`` annotation.
 
-The semantics of this feature can be described as follows.
+The semantics of this feature can be described as follows:
 
 
 -  ``@OrderBy`` acts as an implicit ORDER BY clause for the given
@@ -73,7 +73,7 @@ The semantics of this feature can be described as follows.
 -  All collections of the ordered type are always retrieved in an
    ordered fashion.
 -  To keep the database impact low, these implicit ORDER BY items
-   are only added to an DQL Query if the collection is fetch joined in
+   are only added to a DQL Query if the collection is fetch joined in
    the DQL query.
 
 Given our previously defined example, the following would not add
