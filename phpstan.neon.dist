@@ -1,4 +1,8 @@
 parameters:
+    level: 1
+    paths:
+        - lib
+
     earlyTerminatingMethodCalls:
         Doctrine\ORM\Query\Parser:
             - syntaxError
