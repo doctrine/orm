@@ -1557,7 +1557,7 @@ deal with it:
 Conclusion
 ----------
 
-This tutorial is over here, I hope you had fun. Additional content
+This tutorial ends here, I hope you had fun. Additional content
 will be added to this tutorial incrementally, topics will include:
 
 -   More on Association Mappings
