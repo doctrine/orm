@@ -391,7 +391,7 @@ Example:
 
     <?php
     /**
-     * @Entity(repositoryClass="MyProject\UserRepository")
+     * @Entity(repositoryClass="MyProject\UserRepository", readOnly=true)
      */
     class User
     {
