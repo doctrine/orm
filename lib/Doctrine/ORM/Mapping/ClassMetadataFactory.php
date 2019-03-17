@@ -470,15 +470,10 @@ class ClassMetadataFactory extends AbstractClassMetadataFactory
                     $platform->quoteIdentifier($definition['sequenceName']),
                     $definition['allocationSize']
                 );
-
-                break;
-
             case GeneratorType::CUSTOM:
                 $class = $property->getValueGenerator()->getDefinition()['class'];
 
                 return new $class();
-
-                break;
         }
     }
 }
