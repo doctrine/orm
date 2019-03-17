@@ -125,6 +125,7 @@ class ManyToManySelfReferentialAssociationTest extends AbstractManyToManyAssocia
     protected function findProducts()
     {
         $query = $this->em->createQuery('SELECT p, r FROM Doctrine\Tests\Models\ECommerce\ECommerceProduct p LEFT JOIN p.related r ORDER BY p.id, r.id');
+
         return $query->getResult();
     }
 }

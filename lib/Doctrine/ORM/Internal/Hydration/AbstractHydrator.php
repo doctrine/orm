@@ -386,7 +386,6 @@ abstract class AbstractHydrator
                 }
 
                 return $this->cache[$key] = $columnInfo;
-
             case isset($this->rsm->newObjectMappings[$key]):
                 // WARNING: A NEW object is also a scalar, so it must be declared before!
                 $mapping = $this->rsm->newObjectMappings[$key];
@@ -400,14 +399,12 @@ abstract class AbstractHydrator
                     'objIndex'             => $mapping['objIndex'],
                     'class'                => new ReflectionClass($mapping['className']),
                 ];
-
             case isset($this->rsm->scalarMappings[$key]):
                 return $this->cache[$key] = [
                     'isScalar'  => true,
                     'fieldName' => $this->rsm->scalarMappings[$key],
                     'type'      => $this->rsm->typeMappings[$key],
                 ];
-
             case isset($this->rsm->metaMappings[$key]):
                 // Meta column (has meaning in relational schema only, i.e. foreign keys or discriminator columns).
                 $fieldName = $this->rsm->metaMappings[$key];

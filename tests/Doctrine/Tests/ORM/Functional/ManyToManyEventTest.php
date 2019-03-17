@@ -53,6 +53,7 @@ class ManyToManyEventTest extends OrmFunctionalTestCase
         $group          = new CmsGroup();
         $group->name    = 'users';
         $user->addGroup($group);
+
         return $user;
     }
 }

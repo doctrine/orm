@@ -118,6 +118,7 @@ class ConnectionMock extends Connection
         if (is_string($input)) {
             return "'" . $input . "'";
         }
+
         return $input;
     }
 

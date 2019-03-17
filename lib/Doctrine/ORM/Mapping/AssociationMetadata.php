@@ -7,9 +7,6 @@ namespace Doctrine\ORM\Mapping;
 use Doctrine\ORM\Reflection\ReflectionService;
 use ReflectionProperty;
 
-/**
- * Class AssociationMetadata
- */
 class AssociationMetadata implements Property
 {
     /** @var ClassMetadata */

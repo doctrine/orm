@@ -1898,7 +1898,6 @@ class ObjectHydratorTest extends HydrationTestCase
         );
     }
 
-
     /**
      * @group DDC-1470
      * @expectedException \Doctrine\ORM\Internal\Hydration\HydrationException

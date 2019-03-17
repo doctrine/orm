@@ -37,6 +37,7 @@ class DriverMock implements Driver
         if (! $this->platformMock) {
             $this->platformMock = new DatabasePlatformMock();
         }
+
         return $this->platformMock;
     }
 

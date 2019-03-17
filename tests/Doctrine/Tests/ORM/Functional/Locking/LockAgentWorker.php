@@ -71,6 +71,7 @@ class LockAgentWorker
         return $this->process($job, static function ($fixture, $em) {
             /** @var Doctrine\ORM\Query $query */
             $query = $em->createQuery($fixture['dql']);
+
             $query->setLockMode($fixture['lockMode']);
             $query->setParameters($fixture['dqlParams']);
             $result = $query->getResult();
@@ -81,6 +82,7 @@ class LockAgentWorker
     {
         return $this->process($job, static function ($fixture, $em) {
             $entity = $em->find($fixture['entityName'], $fixture['entityId']);
+
             $em->lock($entity, $fixture['lockMode']);
         });
     }
@@ -101,6 +103,7 @@ class LockAgentWorker
         if (! isset($workload['fixture'])) {
             throw new InvalidArgumentException('Missing Fixture parameters');
         }
+
         return $workload['fixture'];
     }
 

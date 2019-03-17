@@ -96,7 +96,6 @@ class UnitOfWorkTest extends OrmTestCase
         self::assertFalse($this->unitOfWork->isScheduledForDelete($user));
     }
 
-
     /** Operational tests */
     public function testSavingSingleEntityWithIdentityColumnForcesInsert() : void
     {
@@ -531,7 +530,6 @@ class UnitOfWorkTest extends OrmTestCase
 
         $this->unitOfWork->registerManaged($entity, $identifier, []);
     }
-
 
     public function entitiesWithInvalidIdentifiersProvider()
     {

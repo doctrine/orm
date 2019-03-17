@@ -101,7 +101,6 @@ class DDC345Group
     /** @ORM\OneToMany(targetEntity=DDC345Membership::class, mappedBy="group", cascade={"persist"}) */
     public $Memberships;
 
-
     public function __construct()
     {
         $this->Memberships = new ArrayCollection();

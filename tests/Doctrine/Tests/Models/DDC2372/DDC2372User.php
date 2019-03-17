@@ -9,7 +9,7 @@ use Doctrine\ORM\Annotation as ORM;
 /** @ORM\Entity @ORM\Table(name="users") */
 class DDC2372User
 {
-    use Traits\DDC2372AddressTrait;
+    use Traits\DDC2372Address;
 
     /**
      * @ORM\Id @ORM\Column(type="integer")

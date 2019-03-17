@@ -55,7 +55,6 @@ class DateSubFunction extends DateAddFunction
                     $this->firstDateExpression->dispatch($sqlWalker),
                     $this->intervalExpression->dispatch($sqlWalker)
                 );
-
             default:
                 throw QueryException::semanticalError(
                     'DATE_SUB() only supports units of type second, minute, hour, day, week, month and year.'

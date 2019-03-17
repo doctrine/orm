@@ -200,6 +200,7 @@ class EntityManagerTest extends OrmTestCase
     public function transactionalCallback($em)
     {
         self::assertSame($this->em, $em);
+
         return 'callback';
     }
 

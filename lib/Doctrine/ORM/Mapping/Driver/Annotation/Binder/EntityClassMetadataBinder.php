@@ -8,9 +8,6 @@ use Doctrine\ORM\Annotation;
 use Doctrine\ORM\Mapping;
 use ReflectionClass;
 
-/**
- * Class ComponentMetadataBinder
- */
 class EntityClassMetadataBinder
 {
     /** @var Mapping\ClassMetadataBuildingContext */

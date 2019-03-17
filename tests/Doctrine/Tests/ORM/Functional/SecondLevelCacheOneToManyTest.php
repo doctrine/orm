@@ -170,7 +170,6 @@ class SecondLevelCacheOneToManyTest extends SecondLevelCacheAbstractTest
         self::assertEquals($queryCount + 1, $this->getCurrentQueryCount());
     }
 
-
     public function testShoudNotPutOneToManyRelationOnPersist() : void
     {
         $this->loadFixturesCountries();

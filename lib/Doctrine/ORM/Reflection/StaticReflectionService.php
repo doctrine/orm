@@ -32,6 +32,7 @@ class StaticReflectionService implements ReflectionService
         if (strpos($className, '\\') !== false) {
             $className = substr($className, strrpos($className, '\\')+1);
         }
+
         return $className;
     }
 

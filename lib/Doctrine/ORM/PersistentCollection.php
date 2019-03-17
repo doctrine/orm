@@ -505,6 +505,7 @@ final class PersistentCollection extends AbstractLazyCollection implements Selec
     {
         if (! isset($offset)) {
             $this->add($value);
+
             return;
         }
 

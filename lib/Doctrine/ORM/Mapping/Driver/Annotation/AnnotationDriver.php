@@ -195,6 +195,7 @@ class AnnotationDriver implements Mapping\Driver\MappingDriver
                 return false;
             }
         }
+
         return true;
     }
 
@@ -480,7 +481,6 @@ class AnnotationDriver implements Mapping\Driver\MappingDriver
                     $metadata,
                     $metadataBuildingContext
                 );
-
             case isset($propertyAnnotations[Annotation\OneToOne::class]):
                 return $this->convertReflectionPropertyToOneToOneAssociationMetadata(
                     $reflectionProperty,
@@ -488,7 +488,6 @@ class AnnotationDriver implements Mapping\Driver\MappingDriver
                     $metadata,
                     $metadataBuildingContext
                 );
-
             case isset($propertyAnnotations[Annotation\ManyToOne::class]):
                 return $this->convertReflectionPropertyToManyToOneAssociationMetadata(
                     $reflectionProperty,
@@ -496,7 +495,6 @@ class AnnotationDriver implements Mapping\Driver\MappingDriver
                     $metadata,
                     $metadataBuildingContext
                 );
-
             case isset($propertyAnnotations[Annotation\OneToMany::class]):
                 return $this->convertReflectionPropertyToOneToManyAssociationMetadata(
                     $reflectionProperty,
@@ -504,7 +502,6 @@ class AnnotationDriver implements Mapping\Driver\MappingDriver
                     $metadata,
                     $metadataBuildingContext
                 );
-
             case isset($propertyAnnotations[Annotation\ManyToMany::class]):
                 return $this->convertReflectionPropertyToManyToManyAssociationMetadata(
                     $reflectionProperty,
@@ -512,10 +509,8 @@ class AnnotationDriver implements Mapping\Driver\MappingDriver
                     $metadata,
                     $metadataBuildingContext
                 );
-
             case isset($propertyAnnotations[Annotation\Embedded::class]):
                 return null;
-
             default:
                 return new Mapping\TransientMetadata($reflectionProperty->getName());
         }

@@ -19,7 +19,7 @@ class TransientMetadataExporter implements Exporter
     {
         /** @var TransientMetadata $value */
         $indentation     = str_repeat(self::INDENTATION, $indentationLevel);
-        $objectReference = $indentation . static::VARIABLE;
+        $objectReference = $indentation . self::VARIABLE;
 
         return $objectReference . ' = ' . $this->exportInstantiation($value);
     }

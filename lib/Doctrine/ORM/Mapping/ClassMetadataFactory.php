@@ -463,18 +463,21 @@ class ClassMetadataFactory extends AbstractClassMetadataFactory
                 return $property->getTypeName() === 'bigint'
                     ? new Sequencing\BigIntegerIdentityGenerator($sequenceName)
                     : new Sequencing\IdentityGenerator($sequenceName);
-
             case GeneratorType::SEQUENCE:
                 $definition = $property->getValueGenerator()->getDefinition();
+
                 return new Sequencing\SequenceGenerator(
                     $platform->quoteIdentifier($definition['sequenceName']),
                     $definition['allocationSize']
                 );
+
                 break;
 
             case GeneratorType::CUSTOM:
                 $class = $property->getValueGenerator()->getDefinition()['class'];
+
                 return new $class();
+
                 break;
         }
     }

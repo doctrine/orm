@@ -284,6 +284,7 @@ class SelectSqlGenerationTest extends OrmTestCase
             'SELECT t0."id" AS c0, t0."username" AS c1 FROM "forum_users" t0 ORDER BY t0."id" ASC'
         );
     }
+
     public function testSupportsOrderByDesc() : void
     {
         $this->assertSqlGeneration(
@@ -1641,6 +1642,7 @@ class SelectSqlGenerationTest extends OrmTestCase
             'SELECT t0."name" AS c0 FROM "company_employees" t1 INNER JOIN "company_persons" t0 ON t1."id" = t0."id"'
         );
     }
+
     /**
      * @group DDC-1435
      */

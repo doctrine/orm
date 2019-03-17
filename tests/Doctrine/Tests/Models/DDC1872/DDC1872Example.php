@@ -9,7 +9,7 @@ use Doctrine\ORM\Annotation as ORM;
 /**
  * Trait class
  */
-trait DDC1872ExampleTrait
+trait DDC1872Example
 {
     /** @ORM\Id @ORM\Column(type="string") */
     private $id;

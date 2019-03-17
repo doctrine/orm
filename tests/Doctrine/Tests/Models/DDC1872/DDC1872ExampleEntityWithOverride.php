@@ -30,5 +30,5 @@ use Doctrine\ORM\Annotation as ORM;
  */
 class DDC1872ExampleEntityWithOverride
 {
-    use DDC1872ExampleTrait;
+    use DDC1872Example;
 }

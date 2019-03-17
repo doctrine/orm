@@ -139,7 +139,6 @@ class Lemma
         $this->relations = new ArrayCollection();
     }
 
-
     /**
      * @return int
      */
@@ -163,7 +162,6 @@ class Lemma
     {
         return $this->lemma;
     }
-
 
     public function addRelation(Relation $relation)
     {

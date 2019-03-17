@@ -94,5 +94,6 @@ abstract class AbstractDriverTest extends DoctrineTestCase
     }
 
     abstract protected function getFileExtension();
+
     abstract protected function getDriver(array $paths = []);
 }

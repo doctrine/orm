@@ -252,6 +252,7 @@ DQL;
             break;
         }
     }
+
     /**
      * @group DDC-54
      * @group DDC-3005
@@ -399,26 +400,32 @@ class LifecycleCallbackTestUser
     private $value;
     /** @ORM\Column(type="string") */
     private $name;
+
     public function getId()
     {
         return $this->id;
     }
+
     public function getValue()
     {
         return $this->value;
     }
+
     public function setValue($value)
     {
         $this->value = $value;
     }
+
     public function getName()
     {
         return $this->name;
     }
+
     public function setName($name)
     {
         $this->name = $name;
     }
+
     /** @ORM\PreUpdate */
     public function testCallback() : void
     {

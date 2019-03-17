@@ -249,13 +249,10 @@ abstract class PersistentObject implements EntityManagerAware
         switch ($command) {
             case 'set':
                 return $this->set($field, $args);
-
             case 'get':
                 return $this->get($field);
-
             case 'add':
                 return $this->add($field, $args);
-
             default:
                 throw new BadMethodCallException('There is no method ' . $method . ' on ' . $this->cm->getClassName());
         }

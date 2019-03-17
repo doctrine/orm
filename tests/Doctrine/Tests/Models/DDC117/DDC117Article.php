@@ -76,6 +76,7 @@ class DDC117Article
     {
         return $this->links;
     }
+
     public function resetText()
     {
         $this->details = null;

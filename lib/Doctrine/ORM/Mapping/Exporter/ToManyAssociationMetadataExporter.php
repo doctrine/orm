@@ -19,7 +19,7 @@ abstract class ToManyAssociationMetadataExporter extends AssociationMetadataExpo
         /** @var ToManyAssociationMetadata $value */
         $variableExporter = new VariableExporter();
         $indentation      = str_repeat(self::INDENTATION, $indentationLevel);
-        $objectReference  = $indentation . static::VARIABLE;
+        $objectReference  = $indentation . self::VARIABLE;
         $lines            = [];
 
         $lines[] = parent::export($value, $indentationLevel);

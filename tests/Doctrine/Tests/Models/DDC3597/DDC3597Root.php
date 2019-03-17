@@ -69,7 +69,6 @@ abstract class DDC3597Root
         return (int) $this->id;
     }
 
-
     /**
      * @return DateTime
      */

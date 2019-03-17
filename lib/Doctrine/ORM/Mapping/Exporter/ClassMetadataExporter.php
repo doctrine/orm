@@ -64,7 +64,7 @@ class ClassMetadataExporter implements Exporter
     {
         $indentation     = str_repeat(self::INDENTATION, $indentationLevel);
         $bodyIndentation = str_repeat(self::INDENTATION, $indentationLevel + 1);
-        $objectReference = $bodyIndentation . static::VARIABLE;
+        $objectReference = $bodyIndentation . self::VARIABLE;
         $lines           = [];
 
         $lines[] = $indentation . 'public function __construct(';
@@ -96,7 +96,7 @@ class ClassMetadataExporter implements Exporter
     private function exportInheritance(Mapping\ClassMetadata $metadata, int $indentationLevel) : string
     {
         $bodyIndentation = str_repeat(self::INDENTATION, $indentationLevel + 1);
-        $objectReference = $bodyIndentation . static::VARIABLE;
+        $objectReference = $bodyIndentation . self::VARIABLE;
         $lines           = [];
 
         if ($metadata->inheritanceType) {
@@ -144,7 +144,7 @@ class ClassMetadataExporter implements Exporter
     private function exportLifecycleCallbacks(Mapping\ClassMetadata $metadata, int $indentationLevel) : string
     {
         $bodyIndentation = str_repeat(self::INDENTATION, $indentationLevel + 1);
-        $objectReference = $bodyIndentation . static::VARIABLE;
+        $objectReference = $bodyIndentation . self::VARIABLE;
         $lines           = [];
 
         if ($metadata->lifecycleCallbacks) {
@@ -166,7 +166,7 @@ class ClassMetadataExporter implements Exporter
         $variableExporter      = new VariableExporter();
         $discriminatorExporter = new DiscriminatorColumnMetadataExporter();
         $indentation           = str_repeat(self::INDENTATION, $indentationLevel);
-        $objectReference       = $indentation . static::VARIABLE;
+        $objectReference       = $indentation . self::VARIABLE;
         $lines                 = [];
 
         $lines[] = $discriminatorExporter->export($metadata->discriminatorColumn, $indentationLevel);
@@ -186,7 +186,7 @@ class ClassMetadataExporter implements Exporter
     {
         $tableExporter   = new TableMetadataExporter();
         $indentation     = str_repeat(self::INDENTATION, $indentationLevel);
-        $objectReference = $indentation . static::VARIABLE;
+        $objectReference = $indentation . self::VARIABLE;
         $lines           = [];
 
         $lines[] = $tableExporter->export($table, $indentationLevel);
@@ -199,7 +199,7 @@ class ClassMetadataExporter implements Exporter
     private function exportProperty(Mapping\Property $property, int $indentationLevel) : string
     {
         $indentation     = str_repeat(self::INDENTATION, $indentationLevel);
-        $objectReference = $indentation . static::VARIABLE;
+        $objectReference = $indentation . self::VARIABLE;
         $lines           = [];
 
         switch (true) {
