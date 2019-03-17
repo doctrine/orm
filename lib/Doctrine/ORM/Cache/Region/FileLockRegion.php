@@ -242,10 +242,6 @@ class FileLockRegion implements ConcurrentRegion
             return false;
         }
 
-        if (! @unlink($this->getLockFileName($key))) {
-            return false;
-        }
-
-        return true;
+        return @unlink($this->getLockFileName($key));
     }
 }

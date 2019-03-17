@@ -770,19 +770,14 @@ final class EntityManager implements EntityManagerInterface
         switch ($hydrationMode) {
             case Query::HYDRATE_OBJECT:
                 return new Internal\Hydration\ObjectHydrator($this);
-
             case Query::HYDRATE_ARRAY:
                 return new Internal\Hydration\ArrayHydrator($this);
-
             case Query::HYDRATE_SCALAR:
                 return new Internal\Hydration\ScalarHydrator($this);
-
             case Query::HYDRATE_SINGLE_SCALAR:
                 return new Internal\Hydration\SingleScalarHydrator($this);
-
             case Query::HYDRATE_SIMPLEOBJECT:
                 return new Internal\Hydration\SimpleObjectHydrator($this);
-
             default:
                 $class = $this->config->getCustomHydrationMode($hydrationMode);
                 if ($class !== null) {

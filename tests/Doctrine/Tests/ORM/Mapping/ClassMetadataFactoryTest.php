@@ -232,6 +232,7 @@ class ClassMetadataFactoryTest extends OrmTestCase
         $entityManager = $this->createEntityManager($mockDriver);
         $cmf           = new ClassMetadataFactoryTestSubject();
         $cmf->setEntityManager($entityManager);
+
         return $cmf;
     }
 

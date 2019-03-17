@@ -193,6 +193,7 @@ class ManyToManyPersister extends AbstractCollectionPersister
 
         return $persister->getManyToManyCollection($association, $collection->getOwner(), $offset, $length);
     }
+
     /**
      * {@inheritdoc}
      */
@@ -843,6 +844,7 @@ class ManyToManyPersister extends AbstractCollectionPersister
 
             return ' ORDER BY ' . implode(', ', $orderBy);
         }
+
         return '';
     }
 
@@ -858,6 +860,7 @@ class ManyToManyPersister extends AbstractCollectionPersister
         if ($limit !== null || $offset !== null) {
             return $this->platform->modifyLimitQuery('', $limit, $offset ?? 0);
         }
+
         return '';
     }
 }

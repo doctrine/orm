@@ -1817,11 +1817,10 @@ class BasicEntityPersister implements EntityPersister
             return $columns;
         }
 
+        // very careless developers could potentially open up this normally hidden api for userland attacks,
+        // therefore checking for spaces and function calls which are not allowed.
+        // found a join column condition, not really a "field"
         if ($association !== null && strpos($field, ' ') === false && strpos($field, '(') === false) {
-            // very careless developers could potentially open up this normally hidden api for userland attacks,
-            // therefore checking for spaces and function calls which are not allowed.
-
-            // found a join column condition, not really a "field"
             return [$field];
         }
 

@@ -350,7 +350,6 @@ class ExprTest extends OrmTestCase
         self::assertEquals('false', $this->expr->literal(false));
     }
 
-
     /**
      * @group DDC-1686
      */

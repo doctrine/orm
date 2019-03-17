@@ -35,7 +35,7 @@ use function strtoupper;
 class NewAnnotationDriver implements MappingDriver
 {
     /** @var int[] */
-    static protected $entityAnnotationClasses = [
+    protected static $entityAnnotationClasses = [
         Annotation\Entity::class           => 1,
         Annotation\MappedSuperclass::class => 2,
     ];
@@ -195,14 +195,12 @@ class NewAnnotationDriver implements MappingDriver
                     $reflectionClass,
                     $parent
                 );
-
             case isset($classAnnotations[Annotation\Embeddable::class]):
                 return $this->convertClassAnnotationsToEntityClassMetadata(
                     $classAnnotations,
                     $reflectionClass,
                     $parent
                 );
-
             default:
                 throw Mapping\MappingException::classIsNotAValidEntityOrMappedSuperClass($reflectionClass->getName());
         }
@@ -442,35 +440,30 @@ class NewAnnotationDriver implements MappingDriver
                     $propertyAnnotations,
                     $classMetadata
                 );
-
             case isset($propertyAnnotations[Annotation\OneToOne::class]):
                 return $this->convertReflectionPropertyToOneToOneAssociationMetadata(
                     $reflectionProperty,
                     $propertyAnnotations,
                     $classMetadata
                 );
-
             case isset($propertyAnnotations[Annotation\ManyToOne::class]):
                 return $this->convertReflectionPropertyToManyToOneAssociationMetadata(
                     $reflectionProperty,
                     $propertyAnnotations,
                     $classMetadata
                 );
-
             case isset($propertyAnnotations[Annotation\OneToMany::class]):
                 return $this->convertReflectionPropertyToOneToManyAssociationMetadata(
                     $reflectionProperty,
                     $propertyAnnotations,
                     $classMetadata
                 );
-
             case isset($propertyAnnotations[Annotation\ManyToMany::class]):
                 return $this->convertReflectionPropertyToManyToManyAssociationMetadata(
                     $reflectionProperty,
                     $propertyAnnotations,
                     $classMetadata
                 );
-
             case isset($propertyAnnotations[Annotation\Embedded::class]):
                 // @todo guilhermeblanco Implement later... =)
                 break;

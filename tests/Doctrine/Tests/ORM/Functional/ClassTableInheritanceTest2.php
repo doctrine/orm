@@ -173,7 +173,6 @@ class CTIRelated2
     /** @ORM\ManyToMany(targetEntity=CTIChild::class) */
     private $ctiChildren;
 
-
     public function __construct()
     {
         $this->ctiChildren = new ArrayCollection();

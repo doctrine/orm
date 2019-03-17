@@ -22,7 +22,7 @@ class CacheMetadataExporter implements Exporter
     {
         /** @var CacheMetadata $value */
         $indentation     = str_repeat(self::INDENTATION, $indentationLevel);
-        $objectReference = $indentation . static::VARIABLE;
+        $objectReference = $indentation . self::VARIABLE;
         $lines           = [];
 
         $lines[] = $objectReference . ' = ' . $this->exportInstantiation($value);

@@ -881,6 +881,7 @@ class ExtraLazyCollectionTest extends OrmFunctionalTestCase
         self::assertFalse($user->groups->isInitialized(), 'The collection must not be initialized');
         self::assertEquals($queryCount + 1, $this->getCurrentQueryCount());
     }
+
     public function testContainsKeyIndexByManyToManyNonOwning() : void
     {
         $user  = $this->em->find(CmsUser::class, $this->userId2);
@@ -910,6 +911,7 @@ class ExtraLazyCollectionTest extends OrmFunctionalTestCase
         self::assertFalse($user->groups->isInitialized(), 'The collection must not be initialized');
         self::assertEquals($queryCount + 1, $this->getCurrentQueryCount());
     }
+
     public function testContainsKeyIndexByWithPkManyToManyNonOwning() : void
     {
         $class = $this->em->getClassMetadata(CmsGroup::class);

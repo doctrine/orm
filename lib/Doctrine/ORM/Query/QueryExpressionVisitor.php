@@ -91,10 +91,8 @@ class QueryExpressionVisitor extends ExpressionVisitor
         switch ($expr->getType()) {
             case CompositeExpression::TYPE_AND:
                 return new Expr\Andx($expressionList);
-
             case CompositeExpression::TYPE_OR:
                 return new Expr\Orx($expressionList);
-
             default:
                 throw new RuntimeException('Unknown composite ' . $expr->getType());
         }

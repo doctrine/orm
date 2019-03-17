@@ -104,7 +104,6 @@ class CascadeRemoveOrderEntityO
      */
     private $oneToManyG;
 
-
     public function __construct()
     {
         $this->oneToManyG = new ArrayCollection();

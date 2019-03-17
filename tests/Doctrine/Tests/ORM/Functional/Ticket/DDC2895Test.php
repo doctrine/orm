@@ -10,9 +10,6 @@ use Doctrine\Tests\OrmFunctionalTestCase;
 use Exception;
 use function get_class;
 
-/**
- * Class DDC2895Test
- */
 class DDC2895Test extends OrmFunctionalTestCase
 {
     public function setUp() : void

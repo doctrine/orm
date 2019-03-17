@@ -67,6 +67,7 @@ class PostFlushEventTest extends OrmFunctionalTestCase
         $user           = new CmsUser();
         $user->username = 'dfreudenberger';
         $user->name     = 'Daniel Freudenberger';
+
         return $user;
     }
 }

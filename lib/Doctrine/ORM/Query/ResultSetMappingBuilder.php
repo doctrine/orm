@@ -202,10 +202,8 @@ class ResultSetMappingBuilder extends ResultSetMapping
         switch ($mode) {
             case self::COLUMN_RENAMING_INCREMENT:
                 return $columnName . $this->sqlCounter++;
-
             case self::COLUMN_RENAMING_CUSTOM:
                 return $customRenameColumns[$columnName] ?? $columnName;
-
             case self::COLUMN_RENAMING_NONE:
                 return $columnName;
         }

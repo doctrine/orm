@@ -67,7 +67,6 @@ class GH7366Entity
      */
     protected $name;
 
-
     public function __construct(string $name)
     {
         $this->name = $name;

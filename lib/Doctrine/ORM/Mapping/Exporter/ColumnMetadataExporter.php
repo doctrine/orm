@@ -22,7 +22,7 @@ abstract class ColumnMetadataExporter implements Exporter
         /** @var ColumnMetadata $value */
         $variableExporter = new VariableExporter();
         $indentation      = str_repeat(self::INDENTATION, $indentationLevel);
-        $objectReference  = $indentation . static::VARIABLE;
+        $objectReference  = $indentation . self::VARIABLE;
         $lines            = [];
 
         $lines[] = $objectReference . ' = ' . $this->exportInstantiation($value);

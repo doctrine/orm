@@ -482,6 +482,7 @@ class DDC117Test extends OrmFunctionalTestCase
 
         self::assertEquals(UnitOfWork::STATE_MANAGED, $this->em->getUnitOfWork()->getEntityState($reference));
     }
+
     /**
      * @group DDC-117
      */

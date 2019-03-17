@@ -114,26 +114,32 @@ class DDC719Group extends Entity
     {
         return $this->name;
     }
+
     public function setName($name)
     {
         $this->name = $name;
     }
+
     public function getDescription()
     {
         return $this->description;
     }
+
     public function setDescription($description)
     {
         $this->description = $description;
     }
+
     public function getChildren()
     {
         return $this->children;
     }
+
     public function getParents()
     {
         return $this->parents;
     }
+
     public function getChannels()
     {
         return $this->channels;

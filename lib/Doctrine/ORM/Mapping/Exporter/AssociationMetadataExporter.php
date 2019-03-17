@@ -24,7 +24,7 @@ abstract class AssociationMetadataExporter implements Exporter
         $cacheExporter    = new CacheMetadataExporter();
         $variableExporter = new VariableExporter();
         $indentation      = str_repeat(self::INDENTATION, $indentationLevel);
-        $objectReference  = $indentation . static::VARIABLE;
+        $objectReference  = $indentation . self::VARIABLE;
         $cascade          = $this->resolveCascade($value->getCascade());
         $lines            = [];
 

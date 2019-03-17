@@ -218,7 +218,6 @@ abstract class AbstractMappingDriverTest extends OrmTestCase
         );
     }
 
-
     /**
      * @param ClassMetadata $class
      *
@@ -957,7 +956,6 @@ abstract class AbstractMappingDriverTest extends OrmTestCase
         self::assertEquals('prePersistHandler2', $prePersist['method']);
     }
 
-
     /**
      * @group DDC-1955
      */
@@ -1177,7 +1175,6 @@ class User
      * @ORM\Version
      */
     public $version;
-
 
     /**
      * @ORM\PrePersist

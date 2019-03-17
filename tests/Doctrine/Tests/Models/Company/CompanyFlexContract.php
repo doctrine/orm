@@ -58,6 +58,7 @@ class CompanyFlexContract extends CompanyContract
     {
         $this->pricePerHour = $pricePerHour;
     }
+
     public function getManagers()
     {
         return $this->managers;

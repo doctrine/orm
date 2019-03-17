@@ -286,6 +286,7 @@ class Parser
         // Short-circuit on first condition, usually types match
         if ($lookaheadType === $token) {
             $this->lexer->moveNext();
+
             return;
         }
 
@@ -1924,16 +1925,13 @@ class Parser
             case $lookahead === Lexer::T_MINUS:
             case $lookahead === Lexer::T_PLUS:
                 return $this->SimpleArithmeticExpression();
-
             case $lookahead === Lexer::T_STRING:
                 return $this->StringPrimary();
-
             case $lookahead === Lexer::T_TRUE:
             case $lookahead === Lexer::T_FALSE:
                 $this->match($lookahead);
 
                 return new AST\Literal(AST\Literal::BOOLEAN, $this->lexer->token['value']);
-
             case $lookahead === Lexer::T_INPUT_PARAMETER:
                 switch (true) {
                     case $this->isMathOperator($peek):
@@ -1950,7 +1948,6 @@ class Parser
                 // Since NULLIF and COALESCE can be identified as a function,
                 // we need to check these before checking for FunctionDeclaration
                 return $this->CaseExpression();
-
             case $lookahead === Lexer::T_OPEN_PARENTHESIS:
                 return $this->SimpleArithmeticExpression();
 
@@ -1962,7 +1959,6 @@ class Parser
                     case $this->isMathOperator($this->peekBeyondClosingParenthesis()):
                         // SUM(u.id) + COUNT(u.id)
                         return $this->SimpleArithmeticExpression();
-
                     default:
                         // IDENTITY(u)
                         return $this->FunctionDeclaration();
@@ -1981,7 +1977,6 @@ class Parser
                 }
 
                 return $this->StateFieldPathExpression();
-
             default:
                 $this->syntaxError();
         }
@@ -2006,10 +2001,8 @@ class Parser
         switch ($lookahead) {
             case Lexer::T_NULLIF:
                 return $this->NullIfExpression();
-
             case Lexer::T_COALESCE:
                 return $this->CoalesceExpression();
-
             case Lexer::T_CASE:
                 $this->lexer->resetPeek();
                 $peek = $this->lexer->peek();
@@ -2019,7 +2012,6 @@ class Parser
                 }
 
                 return $this->SimpleCaseExpression();
-
             default:
                 // Do nothing
                 break;
@@ -2296,12 +2288,10 @@ class Parser
                         $expression = $this->StateFieldPathExpression();
 
                         return new AST\SimpleSelectExpression($expression);
-
                     case $peek['type'] !== Lexer::T_OPEN_PARENTHESIS:
                         $expression = $this->IdentificationVariable();
 
                         return new AST\SimpleSelectExpression($expression);
-
                     case $this->isFunction():
                         // SUM(u.id) + COUNT(u.id)
                         if ($this->isMathOperator($this->peekBeyondClosingParenthesis())) {
@@ -2311,9 +2301,9 @@ class Parser
                         if ($this->isAggregateFunction($this->lexer->lookahead['type'])) {
                             return new AST\SimpleSelectExpression($this->AggregateExpression());
                         }
+
                         // IDENTITY(u)
                         return new AST\SimpleSelectExpression($this->FunctionDeclaration());
-
                     default:
                         // Do nothing
                 }
@@ -2333,7 +2323,6 @@ class Parser
                 $this->match(Lexer::T_CLOSE_PARENTHESIS);
 
                 return new AST\SimpleSelectExpression($expression);
-
             default:
                 // Do nothing
         }
@@ -2812,7 +2801,6 @@ class Parser
             case Lexer::T_NULLIF:
             case Lexer::T_CASE:
                 return $this->CaseExpression();
-
             case Lexer::T_IDENTIFIER:
                 $peek = $this->lexer->glimpse();
 
@@ -2829,10 +2817,8 @@ class Parser
                 }
 
                 return $this->StateFieldPathExpression();
-
             case Lexer::T_INPUT_PARAMETER:
                 return $this->InputParameter();
-
             default:
                 $peek = $this->lexer->glimpse();
 
@@ -2898,10 +2884,8 @@ class Parser
                 $this->match(Lexer::T_STRING);
 
                 return new AST\Literal(AST\Literal::STRING, $this->lexer->token['value']);
-
             case Lexer::T_INPUT_PARAMETER:
                 return $this->InputParameter();
-
             case Lexer::T_CASE:
             case Lexer::T_COALESCE:
             case Lexer::T_NULLIF:
@@ -3297,7 +3281,6 @@ class Parser
                 $this->match(Lexer::T_EQUALS);
 
                 return '=';
-
             case '<':
                 $this->match(Lexer::T_LOWER_THAN);
                 $operator = '<';
@@ -3311,7 +3294,6 @@ class Parser
                 }
 
                 return $operator;
-
             case '>':
                 $this->match(Lexer::T_GREATER_THAN);
                 $operator = '>';
@@ -3322,13 +3304,11 @@ class Parser
                 }
 
                 return $operator;
-
             case '!':
                 $this->match(Lexer::T_NEGATE);
                 $this->match(Lexer::T_EQUALS);
 
                 return '<>';
-
             default:
                 $this->syntaxError('=, <, <=, <>, >, >=, !=');
         }
@@ -3350,16 +3330,12 @@ class Parser
         switch (true) {
             case $customFunctionDeclaration !== null:
                 return $customFunctionDeclaration;
-
             case isset(self::$_STRING_FUNCTIONS[$funcName]):
                 return $this->FunctionsReturningStrings();
-
             case isset(self::$_NUMERIC_FUNCTIONS[$funcName]):
                 return $this->FunctionsReturningNumerics();
-
             case isset(self::$_DATETIME_FUNCTIONS[$funcName]):
                 return $this->FunctionsReturningDatetime();
-
             default:
                 $this->syntaxError('known function', $token);
         }
@@ -3381,13 +3357,10 @@ class Parser
         switch (true) {
             case $config->getCustomStringFunction($funcName) !== null:
                 return $this->CustomFunctionsReturningStrings();
-
             case $config->getCustomNumericFunction($funcName) !== null:
                 return $this->CustomFunctionsReturningNumerics();
-
             case $config->getCustomDatetimeFunction($funcName) !== null:
                 return $this->CustomFunctionsReturningDatetime();
-
             default:
                 return null;
         }

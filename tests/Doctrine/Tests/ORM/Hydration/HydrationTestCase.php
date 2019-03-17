@@ -27,6 +27,7 @@ class HydrationTestCase extends OrmTestCase
         //$parserResult->setDefaultQueryComponentAlias(key($queryComponents));
         //$parserResult->setTableAliasMap($tableToClassAliasMap);
         $parserResult->setMixedQuery($isMixedQuery);
+
         return $parserResult;
     }
 }

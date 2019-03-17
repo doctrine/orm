@@ -158,15 +158,13 @@ class DDC2984DomainUserId
     }
 }
 
-/**
- * Class DDC2984UserIdCustomDbalType
- */
 class DDC2984UserIdCustomDbalType extends StringType
 {
     public function getName()
     {
         return 'ddc2984_domain_user_id';
     }
+
     /**
      * {@inheritDoc}
      */

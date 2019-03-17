@@ -67,7 +67,6 @@ class DateAddFunction extends FunctionNode
                     $this->firstDateExpression->dispatch($sqlWalker),
                     $this->intervalExpression->dispatch($sqlWalker)
                 );
-
             default:
                 throw QueryException::semanticalError(
                     'DATE_ADD() only supports units of type second, minute, hour, day, week, month and year.'

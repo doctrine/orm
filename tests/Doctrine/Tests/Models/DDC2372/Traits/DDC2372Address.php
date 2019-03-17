@@ -6,7 +6,7 @@ namespace Doctrine\Tests\Models\DDC2372\Traits;
 
 use Doctrine\ORM\Annotation as ORM;
 
-trait DDC2372AddressTrait
+trait DDC2372Address
 {
     /**
      * @ORM\OneToOne(targetEntity=DDC2372Address::class, inversedBy="user")

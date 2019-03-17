@@ -533,7 +533,6 @@ class SQLFilterTest extends OrmFunctionalTestCase
         self::assertCount(1, $query->getResult());
     }
 
-
     private function loadLazyFixtureData()
     {
         $class = $this->em->getClassMetadata(CmsUser::class);
@@ -1019,6 +1018,7 @@ class SQLFilterTest extends OrmFunctionalTestCase
         self::assertFalse($manager->soldContracts->isInitialized());
         self::assertCount(1, $manager->soldContracts->slice(0, 10));
     }
+
     private function loadCompanyOrganizationEventJoinedSubclassFixtureData()
     {
         $organization = new CompanyOrganization();
@@ -1050,7 +1050,6 @@ class SQLFilterTest extends OrmFunctionalTestCase
             ->enable('event_id')
             ->setParameter('id', $this->eventId2);
     }
-
 
     public function testOneToManyExtraLazyCountWithFilterOnCTI() : void
     {

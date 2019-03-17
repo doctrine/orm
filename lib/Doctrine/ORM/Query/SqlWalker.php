@@ -249,14 +249,12 @@ class SqlWalker implements TreeWalker
                 return $primaryClass->inheritanceType === InheritanceType::JOINED
                     ? new Exec\MultiTableDeleteExecutor($AST, $this)
                     : new Exec\SingleTableDeleteUpdateExecutor($AST, $this);
-
             case $AST instanceof AST\UpdateStatement:
                 $primaryClass = $this->em->getClassMetadata($AST->updateClause->abstractSchemaName);
 
                 return $primaryClass->inheritanceType === InheritanceType::JOINED
                     ? new Exec\MultiTableUpdateExecutor($AST, $this)
                     : new Exec\SingleTableDeleteUpdateExecutor($AST, $this);
-
             default:
                 return new Exec\SingleSelectExecutor($AST, $this);
         }
@@ -2159,13 +2157,10 @@ class SqlWalker implements TreeWalker
         switch ($literal->type) {
             case AST\Literal::STRING:
                 return $this->conn->quote($literal->value);
-
             case AST\Literal::BOOLEAN:
                 return $this->conn->getDatabasePlatform()->convertBooleans(strtolower($literal->value) === 'true');
-
             case AST\Literal::NUMERIC:
                 return $literal->value;
-
             default:
                 throw QueryException::invalidLiteral($literal);
         }

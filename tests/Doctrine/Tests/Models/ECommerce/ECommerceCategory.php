@@ -112,7 +112,6 @@ class ECommerceCategory
         $this->children[] = $child;
     }
 
-
     public function removeChild(ECommerceCategory $child)
     {
         $removed = $this->children->removeElement($child);

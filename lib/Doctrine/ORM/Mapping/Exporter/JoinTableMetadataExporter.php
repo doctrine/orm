@@ -24,7 +24,7 @@ class JoinTableMetadataExporter extends TableMetadataExporter
         /** @var JoinTableMetadata $value */
         $joinColumnExporter = new JoinColumnMetadataExporter();
         $indentation        = str_repeat(self::INDENTATION, $indentationLevel);
-        $objectReference    = $indentation . static::VARIABLE;
+        $objectReference    = $indentation . self::VARIABLE;
         $lines              = [];
 
         $lines[] = parent::export($value, $indentationLevel);

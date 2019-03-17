@@ -127,6 +127,7 @@ class ECommerceProduct
         if ($removed) {
             $feature->removeProduct();
         }
+
         return $removed;
     }
 

@@ -29,7 +29,6 @@ class DDC1335Test extends OrmFunctionalTestCase
         }
     }
 
-
     public function testDql() : void
     {
         $dql    = 'SELECT u FROM ' . __NAMESPACE__ . '\DDC1335User u INDEX BY u.id';

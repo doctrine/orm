@@ -90,6 +90,7 @@ class RunDqlCommand extends Command
 
         if ($input->getOption('show-sql')) {
             $ui->text($query->getSQL());
+
             return;
         }
 

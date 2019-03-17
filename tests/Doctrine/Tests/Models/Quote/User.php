@@ -66,7 +66,6 @@ class User
         $this->groups = new ArrayCollection();
     }
 
-
     public function getPhones()
     {
         return $this->phones;

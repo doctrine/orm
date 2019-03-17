@@ -40,6 +40,7 @@ class SchemaValidatorTest extends OrmFunctionalTestCase
 
         if (DBALType::hasType($type)) {
             DBALType::overrideType($type, $className);
+
             return;
         }
 

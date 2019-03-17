@@ -121,6 +121,7 @@ class AnnotationDriverTest extends AbstractMappingDriverTest
     {
         $annotationDriver = $this->loadDriver();
         $annotationDriver->addPaths([__DIR__ . '/../../Models/CMS/']);
+
         return $annotationDriver;
     }
 

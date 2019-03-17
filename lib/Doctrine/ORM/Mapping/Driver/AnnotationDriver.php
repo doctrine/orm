@@ -196,6 +196,7 @@ class AnnotationDriver implements MappingDriver
                 return false;
             }
         }
+
         return true;
     }
 
@@ -366,14 +367,12 @@ class AnnotationDriver implements MappingDriver
                     $reflectionClass,
                     $metadata
                 );
-
             case isset($classAnnotations[Annotation\Embeddable::class]):
                 return $this->convertClassAnnotationsToEmbeddableClassMetadata(
                     $classAnnotations,
                     $reflectionClass,
                     $metadata
                 );
-
             default:
                 throw Mapping\MappingException::classIsNotAValidEntityOrMappedSuperClass($reflectionClass->getName());
         }
@@ -492,38 +491,32 @@ class AnnotationDriver implements MappingDriver
                     $propertyAnnotations,
                     $metadata
                 );
-
             case isset($propertyAnnotations[Annotation\OneToOne::class]):
                 return $this->convertReflectionPropertyToOneToOneAssociationMetadata(
                     $reflectionProperty,
                     $propertyAnnotations,
                     $metadata
                 );
-
             case isset($propertyAnnotations[Annotation\ManyToOne::class]):
                 return $this->convertReflectionPropertyToManyToOneAssociationMetadata(
                     $reflectionProperty,
                     $propertyAnnotations,
                     $metadata
                 );
-
             case isset($propertyAnnotations[Annotation\OneToMany::class]):
                 return $this->convertReflectionPropertyToOneToManyAssociationMetadata(
                     $reflectionProperty,
                     $propertyAnnotations,
                     $metadata
                 );
-
             case isset($propertyAnnotations[Annotation\ManyToMany::class]):
                 return $this->convertReflectionPropertyToManyToManyAssociationMetadata(
                     $reflectionProperty,
                     $propertyAnnotations,
                     $metadata
                 );
-
             case isset($propertyAnnotations[Annotation\Embedded::class]):
                 return null;
-
             default:
                 return new Mapping\TransientMetadata($reflectionProperty->getName());
         }

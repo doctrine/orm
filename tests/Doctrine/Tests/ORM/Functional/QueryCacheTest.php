@@ -40,7 +40,6 @@ class QueryCacheTest extends OrmFunctionalTestCase
         return count($this->cacheDataReflection->getValue($cache));
     }
 
-
     public function testQueryCacheDependsOnHints() : Query
     {
         $query = $this->em->createQuery('select ux from Doctrine\Tests\Models\CMS\CmsUser ux');

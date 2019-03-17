@@ -94,13 +94,10 @@ class DefaultCacheFactory implements CacheFactory
         switch ($usage) {
             case CacheUsage::READ_ONLY:
                 return new ReadOnlyCachedEntityPersister($persister, $region, $em, $metadata);
-
             case CacheUsage::READ_WRITE:
                 return new ReadWriteCachedEntityPersister($persister, $region, $em, $metadata);
-
             case CacheUsage::NONSTRICT_READ_WRITE:
                 return new NonStrictReadWriteCachedEntityPersister($persister, $region, $em, $metadata);
-
             default:
                 throw new InvalidArgumentException(sprintf('Unrecognized access strategy type [%s]', $usage));
         }
@@ -121,13 +118,10 @@ class DefaultCacheFactory implements CacheFactory
         switch ($usage) {
             case CacheUsage::READ_ONLY:
                 return new ReadOnlyCachedCollectionPersister($persister, $region, $em, $association);
-
             case CacheUsage::READ_WRITE:
                 return new ReadWriteCachedCollectionPersister($persister, $region, $em, $association);
-
             case CacheUsage::NONSTRICT_READ_WRITE:
                 return new NonStrictReadWriteCachedCollectionPersister($persister, $region, $em, $association);
-
             default:
                 throw new InvalidArgumentException(
                     sprintf('Unrecognized access strategy type [%s]', $usage)

@@ -77,6 +77,7 @@ class GenerateProxiesCommand extends Command
 
         if (empty($metadatas)) {
             $ui->success('No Metadata Classes to process.');
+
             return;
         }
 

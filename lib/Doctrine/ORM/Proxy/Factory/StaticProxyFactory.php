@@ -121,7 +121,8 @@ final class StaticProxyFactory implements ProxyFactory
             $persister
 ) : bool {
             $originalInitializer = $initializer;
-            $initializer         = null;
+
+            $initializer = null;
 
             $identifier = $persister->getIdentifier($ghostObject);
 

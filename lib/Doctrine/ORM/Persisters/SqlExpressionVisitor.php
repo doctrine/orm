@@ -75,10 +75,8 @@ class SqlExpressionVisitor extends ExpressionVisitor
         switch ($expr->getType()) {
             case CompositeExpression::TYPE_AND:
                 return '(' . implode(' AND ', $expressionList) . ')';
-
             case CompositeExpression::TYPE_OR:
                 return '(' . implode(' OR ', $expressionList) . ')';
-
             default:
                 throw new RuntimeException('Unknown composite ' . $expr->getType());
         }

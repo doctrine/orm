@@ -48,6 +48,7 @@ class HydratorMockStatement implements IteratorAggregate, Statement
             return false;
         }
         $val = array_shift($row);
+
         return $val ?? false;
     }
 
@@ -58,6 +59,7 @@ class HydratorMockStatement implements IteratorAggregate, Statement
     {
         $current = current($this->resultSet);
         next($this->resultSet);
+
         return $current;
     }
 

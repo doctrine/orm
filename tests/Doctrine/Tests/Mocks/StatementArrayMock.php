@@ -57,6 +57,7 @@ class StatementArrayMock extends StatementMock
         $current = current($this->result);
         if ($current) {
             next($this->result);
+
             return reset($current);
         }
 

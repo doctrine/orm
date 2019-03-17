@@ -629,7 +629,6 @@ class QueryBuilderTest extends OrmTestCase
         self::assertEquals($parameters, $qb->getQuery()->getParameters());
     }
 
-
     public function testGetParameters() : void
     {
         $qb = $this->em->createQueryBuilder();
@@ -941,7 +940,6 @@ class QueryBuilderTest extends OrmTestCase
         self::assertSame('value2', $qb->getParameter('alias2_field')->getValue());
         self::assertSame('value3', $qb->getParameter('alias2_field_2')->getValue());
     }
-
 
     /**
      * @group DDC-1933

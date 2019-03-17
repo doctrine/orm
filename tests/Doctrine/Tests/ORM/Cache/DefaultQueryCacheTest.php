@@ -645,7 +645,7 @@ class DefaultQueryCacheTest extends OrmTestCase
 
         for ($i = 0; $i < 4; $i++) {
             $entity  = new BooleanModel();
-            $boolean = ($i % 2 === 0);
+            $boolean = $i % 2 === 0;
 
             $entity->id           = $i;
             $entity->booleanField = $boolean;
