@@ -6,6 +6,7 @@ namespace Doctrine\ORM\Query;
 
 use function array_diff;
 use function array_keys;
+use Doctrine\ORM\AbstractQuery;
 
 /**
  * Represents a chain of tree walkers that modify an AST and finally emit output.
@@ -55,7 +56,7 @@ class TreeWalkerChain implements TreeWalker
     /**
      * {@inheritdoc}
      */
-    public function __construct($query, $parserResult, array $queryComponents)
+    public function __construct(AbstractQuery $query, ParserResult $parserResult, array $queryComponents)
     {
         $this->queryComponents = $queryComponents;
         $this->walkers         = new TreeWalkerChainIterator($this, $query, $parserResult);
