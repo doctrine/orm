@@ -149,11 +149,15 @@ class CommitOrderCalculator
      *
      * @param \stdClass $vertex
      */
-    private function visit($vertex)
+    private function visit($vertex, int $minimumWeight = 0)
     {
         $vertex->state = self::IN_PROGRESS;
 
         foreach ($vertex->dependencyList as $edge) {
+            if ($edge->weight < $minimumWeight) {
+                // Skip edges of weight below minimum weight, useful when revisiting
+                continue;
+            }
             $adjacentVertex = $this->nodeList[$edge->to];
 
             switch ($adjacentVertex->state) {
@@ -162,23 +166,8 @@ class CommitOrderCalculator
                     break;
 
                 case self::IN_PROGRESS:
-                    if (isset($adjacentVertex->dependencyList[$vertex->hash]) &&
-                        $adjacentVertex->dependencyList[$vertex->hash]->weight < $edge->weight) {
-
-                        // If we have some non-visited dependencies in the in-progress dependency, we
-                        // need to visit them before adding the node.
-                        foreach ($adjacentVertex->dependencyList as $adjacentEdge) {
-                            $adjacentEdgeVertex = $this->nodeList[$adjacentEdge->to];
-
-                            if ($adjacentEdgeVertex->state === self::NOT_VISITED) {
-                                $this->visit($adjacentEdgeVertex);
-                            }
-                        }
-
-                        $adjacentVertex->state = self::VISITED;
-
-                        $this->sortedNodeList[] = $adjacentVertex->value;
-                    }
+                    // Revisit increasing minimum weight
+                    $this->visit($adjacentVertex, $minimumWeight + 1);
                     break;
 
                 case self::NOT_VISITED:
