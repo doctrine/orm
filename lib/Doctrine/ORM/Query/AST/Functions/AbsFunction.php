@@ -46,8 +46,8 @@ class AbsFunction extends FunctionNode
     /**
      * @inheritDoc
      */
-    public function getReturnType() : string
+    public function getReturnType() : Type
     {
-        return Type::FLOAT;
+        return Type::getType(Type::FLOAT);
     }
 }

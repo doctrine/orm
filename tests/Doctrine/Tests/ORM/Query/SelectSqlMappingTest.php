@@ -30,30 +30,26 @@ class SelectSqlMappingTest extends OrmTestCase
      */
     public function assertScalarTypes($dqlToBeTested, array $types)
     {
-        try {
-            $query = $this->em->createQuery($dqlToBeTested);
+        $query = $this->em->createQuery($dqlToBeTested);
 
-            $query
-                ->setHint(ORMQuery::HINT_FORCE_PARTIAL_LOAD, true)
-                ->useQueryCache(false);
+        $query
+            ->setHint(ORMQuery::HINT_FORCE_PARTIAL_LOAD, true)
+            ->useQueryCache(false);
 
-            $r      = new ReflectionObject($query);
-            $method = $r->getMethod('getResultSetMapping');
-            $method->setAccessible(true);
-            /** @var ORMQuery\ResultSetMapping $mapping */
-            $mapping = $method->invoke($query);
-            foreach ($types as $key => $expectedType) {
-                $alias = array_search($key, $mapping->scalarMappings);
-                self::assertInstanceOf(
-                    $expectedType,
-                    $mapping->typeMappings[$alias],
-                    sprintf('The field "%s" was expected as a $expectedType', $key)
-                );
-            }
-            $query->free();
-        } catch (Exception $e) {
-            $this->fail($e->getMessage() . "\n" . $e->getTraceAsString());
+        $r      = new ReflectionObject($query);
+        $method = $r->getMethod('getResultSetMapping');
+        $method->setAccessible(true);
+        /** @var ORMQuery\ResultSetMapping $mapping */
+        $mapping = $method->invoke($query);
+        foreach ($types as $key => $expectedType) {
+            $alias = array_search($key, $mapping->scalarMappings);
+            self::assertInstanceOf(
+                $expectedType,
+                $mapping->typeMappings[$alias],
+                sprintf('The field "%s" was expected as a %s', $key, $expectedType)
+            );
         }
+        $query->free();
     }
 
     /**

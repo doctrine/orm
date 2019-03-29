@@ -7,7 +7,7 @@ namespace Doctrine\Tests\Models\CMS;
 use Doctrine\ORM\Annotation as ORM;
 
 /**
- * CmsAddress
+ * CmsProduct
  *
  * @ORM\Entity
  * @ORM\Table(name="cms_products")

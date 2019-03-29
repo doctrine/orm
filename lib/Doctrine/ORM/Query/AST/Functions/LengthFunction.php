@@ -46,8 +46,8 @@ class LengthFunction extends FunctionNode
     /**
      * @inheritDoc
      */
-    public function getReturnType() : string
+    public function getReturnType() : Type
     {
-        return Type::INTEGER;
+        return Type::getType(Type::INTEGER);
     }
 }
