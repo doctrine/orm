@@ -6,6 +6,7 @@ namespace Doctrine\ORM\Query\AST\Functions;
 
 use Doctrine\DBAL\Types\Type;
 use Doctrine\ORM\Query\AST\SimpleArithmeticExpression;
+use Doctrine\ORM\Query\AST\TypedExpression;
 use Doctrine\ORM\Query\Lexer;
 use Doctrine\ORM\Query\Parser;
 use Doctrine\ORM\Query\SqlWalker;
@@ -13,7 +14,7 @@ use Doctrine\ORM\Query\SqlWalker;
 /**
  * "SQRT" "(" SimpleArithmeticExpression ")"
  */
-class SqrtFunction extends FunctionNode
+class SqrtFunction extends FunctionNode implements TypedExpression
 {
     /** @var SimpleArithmeticExpression */
     public $simpleArithmeticExpression;
@@ -46,8 +47,8 @@ class SqrtFunction extends FunctionNode
     /**
      * @inheritDoc
      */
-    public function getReturnType() : string
+    public function getReturnType() : Type
     {
-        return Type::FLOAT;
+        return Type::getType(Type::FLOAT);
     }
 }
