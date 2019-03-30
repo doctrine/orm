@@ -8,7 +8,6 @@ use Doctrine\DBAL\Types\FloatType;
 use Doctrine\DBAL\Types\IntegerType;
 use Doctrine\ORM\Query as ORMQuery;
 use Doctrine\Tests\OrmTestCase;
-use Exception;
 use ReflectionObject;
 use function array_search;
 use function sprintf;
@@ -26,7 +25,8 @@ class SelectSqlMappingTest extends OrmTestCase
      * Assert a valid SQL generation.
      *
      * @param string $dqlToBeTested
-     * @param array  $types
+     * @param array $types
+     * @throws \ReflectionException
      */
     public function assertScalarTypes($dqlToBeTested, array $types)
     {
