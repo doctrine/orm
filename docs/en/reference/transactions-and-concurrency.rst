@@ -74,7 +74,7 @@ looks like this:
         $em->persist($user);
         $em->flush();
         $em->getConnection()->commit();
-    } catch (Exception $e) {
+    } catch (\Exception $e) {
         $em->getConnection()->rollBack();
         throw $e;
     }
