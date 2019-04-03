@@ -1012,9 +1012,9 @@ This is essentially the same as the following, more verbose, mapping:
             /**
              * Many Users have Many Groups.
              * @ManyToMany(targetEntity="Group")
-             * @JoinTable(name="User_Group",
-             *      joinColumns={@JoinColumn(name="User_id", referencedColumnName="id")},
-             *      inverseJoinColumns={@JoinColumn(name="Group_id", referencedColumnName="id")}
+             * @JoinTable(name="user_group",
+             *      joinColumns={@JoinColumn(name="user_id", referencedColumnName="id")},
+             *      inverseJoinColumns={@JoinColumn(name="group_id", referencedColumnName="id")}
              *      )
              */
             private $groups;
@@ -1026,12 +1026,12 @@ This is essentially the same as the following, more verbose, mapping:
         <doctrine-mapping>
             <entity class="User">
                 <many-to-many field="groups" target-entity="Group">
-                    <join-table name="User_Group">
+                    <join-table name="user_group">
                         <join-columns>
-                            <join-column id="User_id" referenced-column-name="id" />
+                            <join-column id="user_id" referenced-column-name="id" />
                         </join-columns>
                         <inverse-join-columns>
-                            <join-column id="Group_id" referenced-column-name="id" />
+                            <join-column id="group_id" referenced-column-name="id" />
                         </inverse-join-columns>
                     </join-table>
                 </many-to-many>
@@ -1046,12 +1046,12 @@ This is essentially the same as the following, more verbose, mapping:
             groups:
               targetEntity: Group
               joinTable:
-                name: User_Group
+                name: user_group
                 joinColumns:
-                  User_id:
+                  user_id:
                     referencedColumnName: id
                 inverseJoinColumns:
-                  Group_id:
+                  group_id:
                     referencedColumnName: id
 
 In that case, the name of the join table defaults to a combination
