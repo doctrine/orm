@@ -286,7 +286,7 @@ below.
         // ...
 
         /**
-         * One Student has One Student.
+         * One Student has One Mentor.
          * @OneToOne(targetEntity="Student")
          * @JoinColumn(name="mentor_id", referencedColumnName="id")
          */
