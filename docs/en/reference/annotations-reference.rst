@@ -1085,7 +1085,8 @@ DocBlock.
 @SequenceGenerator
 ~~~~~~~~~~~~~~~~~~~~~
 
-For use with @GeneratedValue(strategy="SEQUENCE") this
+For use with @GeneratedValue(strategy="IDENTITY") or 
+@GeneratedValue(strategy="SEQUENCE") this
 annotation allows to specify details about the sequence, such as
 the increment size and initial values of the sequence.
 
