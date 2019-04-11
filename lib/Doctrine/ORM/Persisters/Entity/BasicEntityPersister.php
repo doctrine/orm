@@ -163,9 +163,17 @@ class BasicEntityPersister implements EntityPersister
      * The INSERT SQL statement used for entities handled by this persister.
      * This SQL is only generated once per request, if at all.
      *
-     * @var string
+     * @var null|string
      */
     private $insertSql;
+
+    /**
+     * List of columns of the currently cached insertSql.
+     * The insertSql is reset if another column list is given which happens e.g. when changing the id generator.
+     *
+     * @var null|string[]
+     */
+    private $insertSqlColumns;
 
     /**
      * The quote strategy.
@@ -1390,11 +1398,12 @@ class BasicEntityPersister implements EntityPersister
      */
     public function getInsertSQL()
     {
-        if ($this->insertSql !== null) {
+        $columns = $this->getInsertColumnList();
+
+        if ($this->insertSql !== null && $this->insertSqlColumns === $columns) {
             return $this->insertSql;
         }
 
-        $columns   = $this->getInsertColumnList();
         $tableName = $this->quoteStrategy->getTableName($this->class, $this->platform);
 
         if (empty($columns)) {
@@ -1419,6 +1428,8 @@ class BasicEntityPersister implements EntityPersister
 
             $values[] = $placeholder;
         }
+
+        $this->insertSqlColumns = $columns;
 
         $columns = implode(', ', $columns);
         $values  = implode(', ', $values);
