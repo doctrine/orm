@@ -735,7 +735,8 @@ class SqlWalker implements TreeWalker
                     $class->getClassName(),
                     $dqlAlias,
                     $this->queryComponents[$dqlAlias]['parent'],
-                    $this->queryComponents[$dqlAlias]['relation']->getName()
+                    $this->queryComponents[$dqlAlias]['relation']->getName(),
+                    $resultAlias
                 );
             }
 
