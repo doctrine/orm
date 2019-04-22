@@ -12,7 +12,7 @@ use Exception;
 /**
  * Functional tests for the Single Table Inheritance mapping strategy.
  */
-class AdvancedAssociationTest extends OrmFunctionalTestCase
+class Ticket69 extends OrmFunctionalTestCase
 {
     protected function setUp() : void
     {

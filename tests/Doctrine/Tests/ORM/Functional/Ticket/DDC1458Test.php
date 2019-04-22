@@ -7,7 +7,7 @@ namespace Doctrine\Tests\ORM\Functional\Ticket;
 use Doctrine\ORM\Annotation as ORM;
 use Doctrine\Tests\OrmFunctionalTestCase;
 
-class DDC1258Test extends OrmFunctionalTestCase
+class DDC1458Test extends OrmFunctionalTestCase
 {
     public function setUp() : void
     {

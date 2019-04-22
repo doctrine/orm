@@ -7,7 +7,7 @@ namespace Doctrine\Tests\ORM\Functional\Ticket;
 use Doctrine\ORM\Annotation as ORM;
 use Doctrine\Tests\OrmFunctionalTestCase;
 
-class Ticket4646MultipleInstanceOfWithMultipleParametersTest extends OrmFunctionalTestCase
+class Ticket4646InstanceOfWithMultipleParametersTest extends OrmFunctionalTestCase
 {
     protected function setUp() : void
     {
