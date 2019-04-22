@@ -14,7 +14,7 @@ use Doctrine\ORM\Internal\Hydration\AbstractHydrator;
 use Doctrine\ORM\Query\ResultSetMapping;
 use Doctrine\ORM\UnitOfWork;
 use Doctrine\Tests\OrmFunctionalTestCase;
-use PHPUnit_Framework_MockObject_MockObject;
+use PHPUnit\Framework\MockObject\MockObject;
 use function iterator_to_array;
 
 /**
@@ -22,13 +22,13 @@ use function iterator_to_array;
  */
 class AbstractHydratorTest extends OrmFunctionalTestCase
 {
-    /** @var EventManager|PHPUnit_Framework_MockObject_MockObject */
+    /** @var EventManager|\PHPUnit\Framework\MockObject\MockObject */
     private $mockEventManager;
 
-    /** @var Statement|PHPUnit_Framework_MockObject_MockObject */
+    /** @var Statement|\PHPUnit\Framework\MockObject\MockObject */
     private $mockStatement;
 
-    /** @var ResultSetMapping|PHPUnit_Framework_MockObject_MockObject */
+    /** @var ResultSetMapping|\PHPUnit\Framework\MockObject\MockObject */
     private $mockResultMapping;
 
     /** @var AbstractHydrator */

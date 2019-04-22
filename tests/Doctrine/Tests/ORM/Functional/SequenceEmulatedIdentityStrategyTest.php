@@ -57,7 +57,7 @@ class SequenceEmulatedIdentityStrategyTest extends OrmFunctionalTestCase
         $entity->setValue('hello');
         $this->em->persist($entity);
         $this->em->flush();
-        self::assertInternalType('numeric', $entity->getId());
+        self::assertIsNumeric($entity->getId());
         self::assertGreaterThan(0, $entity->getId());
         self::assertTrue($this->em->contains($entity));
     }

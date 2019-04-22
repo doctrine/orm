@@ -31,12 +31,10 @@ class AnnotationDriverTest extends AbstractMappingDriverTest
         $mappingDriver->loadMetadataForClass('stdClass', null, $this->metadataBuildingContext);
     }
 
-    /**
-     * @expectedException \Doctrine\ORM\Cache\Exception\CacheException
-     * @expectedExceptionMessage Entity association field "Doctrine\Tests\ORM\Mapping\AnnotationSLC#foo" not configured as part of the second-level cache.
-     */
     public function testFailingSecondLevelCacheAssociation() : void
     {
+        $this->expectException('Doctrine\ORM\Cache\Exception\CacheException');
+        $this->expectExceptionMessage('Entity association field "Doctrine\Tests\ORM\Mapping\AnnotationSLC#foo" not configured as part of the second-level cache.');
         $mappingDriver = $this->loadDriver();
 
         $mappingDriver->loadMetadataForClass(AnnotationSLC::class, null, $this->metadataBuildingContext);

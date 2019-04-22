@@ -11,7 +11,7 @@ use Doctrine\ORM\Cache\Logging\CacheLoggerChain;
 use Doctrine\ORM\Cache\QueryCacheKey;
 use Doctrine\Tests\DoctrineTestCase;
 use Doctrine\Tests\Models\Cache\State;
-use PHPUnit_Framework_MockObject_MockObject;
+use PHPUnit\Framework\MockObject\MockObject;
 
 /**
  * @group DDC-2183
@@ -21,7 +21,7 @@ class CacheLoggerChainTest extends DoctrineTestCase
     /** @var CacheLoggerChain */
     private $logger;
 
-    /** @var PHPUnit_Framework_MockObject_MockObject|CacheLogger */
+    /** @var \PHPUnit\Framework\MockObject\MockObject|CacheLogger */
     private $mock;
 
     protected function setUp() : void

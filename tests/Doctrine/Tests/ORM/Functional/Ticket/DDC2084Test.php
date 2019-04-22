@@ -54,12 +54,10 @@ class DDC2084Test extends OrmFunctionalTestCase
         self::assertEquals('Foo', $e->getMyEntity2()->getValue());
     }
 
-    /**
-     * @expectedException \Doctrine\ORM\ORMInvalidArgumentException
-     * @expectedExceptionMessage  Binding entities to query parameters only allowed for entities that have an identifier.
-     */
     public function testinvalidIdentifierBindingEntityException() : void
     {
+        $this->expectException('Doctrine\ORM\ORMInvalidArgumentException');
+        $this->expectExceptionMessage('Binding entities to query parameters only allowed for entities that have an identifier.');
         $this->em->find(__NAMESPACE__ . '\DDC2084\MyEntity1', new DDC2084\MyEntity2('Foo'));
     }
 }

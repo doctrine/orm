@@ -28,7 +28,7 @@ use Doctrine\Tests\Models\DDC964\DDC964Admin;
 use Doctrine\Tests\Models\DDC964\DDC964Guest;
 use Doctrine\Tests\OrmTestCase;
 use DoctrineGlobalArticle;
-use PHPUnit_Framework_MockObject_MockObject;
+use PHPUnit\Framework\MockObject\MockObject;
 use ReflectionClass;
 use stdClass;
 use const CASE_UPPER;
@@ -44,7 +44,7 @@ require_once __DIR__ . '/../../Models/Global/GlobalNamespaceModel.php';
 
 class ClassMetadataTest extends OrmTestCase
 {
-    /** @var Mapping\ClassMetadataBuildingContext|PHPUnit_Framework_MockObject_MockObject */
+    /** @var Mapping\ClassMetadataBuildingContext|\PHPUnit\Framework\MockObject\MockObject */
     private $metadataBuildingContext;
 
     public function setUp() : void
@@ -871,11 +871,11 @@ class ClassMetadataTest extends OrmTestCase
 
     /**
      * @group DDC-1746
-     * @expectedException        \Doctrine\ORM\Mapping\MappingException
-     * @expectedExceptionMessage You have specified invalid cascade options for Doctrine\Tests\Models\CMS\CmsUser::$address: 'invalid'; available options: 'remove', 'persist', and 'refresh'
      */
     public function testInvalidCascade() : void
     {
+        $this->expectException(MappingException::class);
+        $this->expectExceptionMessage("You have specified invalid cascade options for Doctrine\Tests\Models\CMS\CmsUser::\$address: 'invalid'; available options: 'remove', 'persist', and 'refresh'");
         $cm = new ClassMetadata(CMS\CmsUser::class, null, $this->metadataBuildingContext);
         $cm->setTable(new Mapping\TableMetadata('cms_users'));
 
@@ -889,11 +889,11 @@ class ClassMetadataTest extends OrmTestCase
 
     /**
      * @group DDC-964
-     * @expectedException        \Doctrine\ORM\Mapping\MappingException
-     * @expectedExceptionMessage Invalid field override named 'invalidPropertyName' for class 'Doctrine\Tests\Models\DDC964\DDC964Admin'
      */
     public function testInvalidPropertyAssociationOverrideNameException() : void
     {
+        $this->expectException(MappingException::class);
+        $this->expectExceptionMessage("Invalid field override named 'invalidPropertyName' for class 'Doctrine\Tests\Models\DDC964\DDC964Admin'");
         $cm = new ClassMetadata(DDC964Admin::class, null, $this->metadataBuildingContext);
         $cm->setTable(new Mapping\TableMetadata('ddc964_admin'));
 
@@ -908,11 +908,11 @@ class ClassMetadataTest extends OrmTestCase
 
     /**
      * @group DDC-964
-     * @expectedException        \Doctrine\ORM\Mapping\MappingException
-     * @expectedExceptionMessage Invalid field override named 'invalidPropertyName' for class 'Doctrine\Tests\Models\DDC964\DDC964Guest'.
      */
     public function testInvalidPropertyAttributeOverrideNameException() : void
     {
+        $this->expectException(MappingException::class);
+        $this->expectExceptionMessage("Invalid field override named 'invalidPropertyName' for class 'Doctrine\Tests\Models\DDC964\DDC964Guest'.");
         $cm = new ClassMetadata(DDC964Guest::class, null, $this->metadataBuildingContext);
         $cm->setTable(new Mapping\TableMetadata('ddc964_guest'));
 
@@ -929,11 +929,11 @@ class ClassMetadataTest extends OrmTestCase
 
     /**
      * @group DDC-1955
-     * @expectedException        \Doctrine\ORM\Mapping\MappingException
-     * @expectedExceptionMessage Entity Listener "\InvalidClassName" declared on "Doctrine\Tests\Models\CMS\CmsUser" not found.
      */
     public function testInvalidEntityListenerClassException() : void
     {
+        $this->expectException(MappingException::class);
+        $this->expectExceptionMessage('Entity Listener "\InvalidClassName" declared on "Doctrine\Tests\Models\CMS\CmsUser" not found.');
         $cm = new ClassMetadata(CMS\CmsUser::class, null, $this->metadataBuildingContext);
         $cm->setTable(new Mapping\TableMetadata('cms_users'));
 
@@ -942,11 +942,11 @@ class ClassMetadataTest extends OrmTestCase
 
     /**
      * @group DDC-1955
-     * @expectedException        \Doctrine\ORM\Mapping\MappingException
-     * @expectedExceptionMessage Entity Listener "Doctrine\Tests\Models\Company\CompanyContractListener" declared on "Doctrine\Tests\Models\CMS\CmsUser" has no method "invalidMethod".
      */
     public function testInvalidEntityListenerMethodException() : void
     {
+        $this->expectException(MappingException::class);
+        $this->expectExceptionMessage('Entity Listener "Doctrine\Tests\Models\Company\CompanyContractListener" declared on "Doctrine\Tests\Models\CMS\CmsUser" has no method "invalidMethod".');
         $cm = new ClassMetadata(CMS\CmsUser::class, null, $this->metadataBuildingContext);
         $cm->setTable(new Mapping\TableMetadata('cms_users'));
 

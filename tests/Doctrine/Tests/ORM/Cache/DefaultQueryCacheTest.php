@@ -601,12 +601,10 @@ class DefaultQueryCacheTest extends OrmTestCase
         self::assertCount(1, $attractions[1]);
     }
 
-    /**
-     * @expectedException Doctrine\ORM\Cache\Exception\CacheException
-     * @expectedExceptionMessage Second level cache does not support scalar results.
-     */
     public function testScalarResultException() : void
     {
+        $this->expectException('Doctrine\ORM\Cache\Exception\CacheException');
+        $this->expectExceptionMessage('Second level cache does not support scalar results.');
         $result = [];
         $key    = new QueryCacheKey('query.key1', 0);
         $rsm    = new ResultSetMappingBuilder($this->em);
@@ -616,12 +614,10 @@ class DefaultQueryCacheTest extends OrmTestCase
         $this->queryCache->put($key, $rsm, $result);
     }
 
-    /**
-     * @expectedException Doctrine\ORM\Cache\Exception\CacheException
-     * @expectedExceptionMessage Second level cache does not support multiple root entities.
-     */
     public function testSupportMultipleRootEntitiesException() : void
     {
+        $this->expectException('Doctrine\ORM\Cache\Exception\CacheException');
+        $this->expectExceptionMessage('Second level cache does not support multiple root entities.');
         $result = [];
         $key    = new QueryCacheKey('query.key1', 0);
         $rsm    = new ResultSetMappingBuilder($this->em);
@@ -632,12 +628,10 @@ class DefaultQueryCacheTest extends OrmTestCase
         $this->queryCache->put($key, $rsm, $result);
     }
 
-    /**
-     * @expectedException Doctrine\ORM\Cache\Exception\CacheException
-     * @expectedExceptionMessage Entity "Doctrine\Tests\Models\Generic\BooleanModel" not configured as part of the second-level cache.
-     */
     public function testNotCacheableEntityException() : void
     {
+        $this->expectException('Doctrine\ORM\Cache\Exception\CacheException');
+        $this->expectExceptionMessage('Entity "Doctrine\Tests\Models\Generic\BooleanModel" not configured as part of the second-level cache.');
         $result = [];
         $key    = new QueryCacheKey('query.key1', 0);
         $rsm    = new ResultSetMappingBuilder($this->em);

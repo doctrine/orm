@@ -11,6 +11,7 @@ use Doctrine\ORM\Mapping\ClassMetadataBuildingContext;
 use Doctrine\ORM\Mapping\ClassMetadataFactory;
 use Doctrine\ORM\Reflection\ReflectionService;
 use Doctrine\Tests\OrmTestCase;
+use PHPUnit\Framework\MockObject\MockObject;
 
 /**
  * Tests of the commit order calculation.
@@ -24,7 +25,7 @@ class CommitOrderCalculatorTest extends OrmTestCase
     /** @var CommitOrderCalculator */
     private $calc;
 
-    /** @var ClassMetadataBuildingContext|PHPUnit_Framework_MockObject_MockObject */
+    /** @var ClassMetadataBuildingContext|\PHPUnit\Framework\MockObject\MockObject */
     private $metadataBuildingContext;
 
     protected function setUp() : void
@@ -113,7 +114,7 @@ class CommitOrderCalculatorTest extends OrmTestCase
         ];
 
         // We want to perform a strict comparison of the array
-        $this->assertContains($sorted, $correctOrders, '', false, true, true);
+        $this->assertContains($sorted, $correctOrders, '', false, true);
     }
 }
 

@@ -30,7 +30,7 @@ use Doctrine\Tests\Models\GeoNames\City;
 use Doctrine\Tests\Models\GeoNames\Country;
 use Doctrine\Tests\OrmTestCase;
 use InvalidArgumentException;
-use PHPUnit_Framework_MockObject_MockObject;
+use PHPUnit\Framework\MockObject\MockObject;
 use stdClass;
 use function get_class;
 use function random_int;
@@ -64,10 +64,10 @@ class UnitOfWorkTest extends OrmTestCase
      */
     private $emMock;
 
-    /** @var EventManager|PHPUnit_Framework_MockObject_MockObject */
+    /** @var EventManager|\PHPUnit\Framework\MockObject\MockObject */
     private $eventManager;
 
-    /** @var ClassMetadataBuildingContext|PHPUnit_Framework_MockObject_MockObject */
+    /** @var ClassMetadataBuildingContext|\PHPUnit\Framework\MockObject\MockObject */
     private $metadataBuildingContext;
 
     protected function setUp() : void
@@ -130,7 +130,7 @@ class UnitOfWorkTest extends OrmTestCase
         self::assertCount(0, $userPersister->getDeletes());
 
         // should have an id
-        self::assertInternalType('numeric', $user->id);
+        self::assertIsNumeric($user->id);
     }
 
     /**
@@ -158,8 +158,8 @@ class UnitOfWorkTest extends OrmTestCase
 
         $this->unitOfWork->commit();
 
-        self::assertInternalType('numeric', $user->id);
-        self::assertInternalType('numeric', $avatar->id);
+        self::assertIsNumeric($user->id);
+        self::assertIsNumeric($avatar->id);
 
         self::assertCount(1, $userPersister->getInserts());
         self::assertCount(0, $userPersister->getUpdates());

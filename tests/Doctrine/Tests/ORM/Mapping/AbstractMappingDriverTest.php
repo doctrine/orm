@@ -363,9 +363,9 @@ abstract class AbstractMappingDriverTest extends OrmTestCase
         $idOptions   = $class->getProperty('id')->getOptions();
         $nameOptions = $class->getProperty('name')->getOptions();
 
-        self::assertInternalType('bool', $idOptions['unsigned']);
+        self::assertIsBool($idOptions['unsigned']);
         self::assertFalse($idOptions['unsigned']);
-        self::assertInternalType('bool', $nameOptions['fixed']);
+        self::assertIsBool($nameOptions['fixed']);
         self::assertFalse($nameOptions['fixed']);
 
         return $class;

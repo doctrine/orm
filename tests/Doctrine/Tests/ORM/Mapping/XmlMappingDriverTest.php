@@ -5,6 +5,8 @@ declare(strict_types=1);
 namespace Doctrine\Tests\ORM\Mapping;
 
 use Doctrine\Common\Collections\Criteria;
+use Doctrine\Common\Persistence\Mapping\MappingException;
+use Doctrine\ORM\Cache\Exception\CacheException;
 use Doctrine\ORM\Mapping\ClassMetadataFactory;
 use Doctrine\ORM\Mapping\Driver\XmlDriver;
 use Doctrine\Tests\Models\DDC117\DDC117Translation;
@@ -47,12 +49,10 @@ class XmlMappingDriverTest extends AbstractMappingDriverTest
         self::assertEquals($expectedMap, $class->discriminatorMap);
     }
 
-    /**
-     * @expectedException \Doctrine\ORM\Cache\Exception\CacheException
-     * @expectedExceptionMessage Entity association field "Doctrine\Tests\ORM\Mapping\XMLSLC#foo" not configured as part of the second-level cache.
-     */
     public function testFailingSecondLevelCacheAssociation() : void
     {
+        $this->expectException('Doctrine\ORM\Cache\Exception\CacheException');
+        $this->expectExceptionMessage('Entity association field "Doctrine\Tests\ORM\Mapping\XMLSLC#foo" not configured as part of the second-level cache.');
         $mappingDriver = $this->loadDriver();
 
         $mappingDriver->loadMetadataForClass(XMLSLC::class, null, $this->metadataBuildingContext);
@@ -151,11 +151,11 @@ class XmlMappingDriverTest extends AbstractMappingDriverTest
 
     /**
      * @group DDC-1468
-     * @expectedException \Doctrine\Common\Persistence\Mapping\MappingException
-     * @expectedExceptionMessage Invalid mapping file 'Doctrine.Tests.Models.Generic.SerializationModel.dcm.xml' for class 'Doctrine\Tests\Models\Generic\SerializationModel'.
      */
     public function testInvalidMappingFileException() : void
     {
+        $this->expectException('Doctrine\Common\Persistence\Mapping\MappingException');
+        $this->expectExceptionMessage('Invalid mapping file \'Doctrine.Tests.Models.Generic.SerializationModel.dcm.xml\' for class \'Doctrine\Tests\Models\Generic\SerializationModel\'.');
         $this->createClassMetadata(SerializationModel::class);
     }
 
@@ -214,11 +214,11 @@ class XmlMappingDriverTest extends AbstractMappingDriverTest
 
     /**
      * @group DDC-889
-     * @expectedException \Doctrine\Common\Persistence\Mapping\MappingException
-     * @expectedExceptionMessage Invalid mapping file 'Doctrine.Tests.Models.DDC889.DDC889Class.dcm.xml' for class 'Doctrine\Tests\Models\DDC889\DDC889Class'.
      */
     public function testinvalidEntityOrMappedSuperClassShouldMentionParentClasses() : void
     {
+        $this->expectException('Doctrine\Common\Persistence\Mapping\MappingException');
+        $this->expectExceptionMessage('Invalid mapping file \'Doctrine.Tests.Models.DDC889.DDC889Class.dcm.xml\' for class \'Doctrine\Tests\Models\DDC889\DDC889Class\'.');
         $this->createClassMetadata(DDC889Class::class);
     }
 }

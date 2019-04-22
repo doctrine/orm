@@ -64,7 +64,7 @@ class RunDqlCommandTest extends OrmFunctionalTestCase
             )
         );
 
-        self::assertContains(DateTimeModel::class, $this->tester->getDisplay());
+        self::assertStringContainsString(DateTimeModel::class, $this->tester->getDisplay());
     }
 
     public function testWillShowQuery() : void

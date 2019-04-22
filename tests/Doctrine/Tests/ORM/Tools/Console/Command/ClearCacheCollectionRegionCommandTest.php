@@ -48,7 +48,7 @@ class ClearCacheCollectionRegionCommandTest extends OrmFunctionalTestCase
             ['decorated' => false]
         );
 
-        self::assertContains(' // Clearing all second-level cache collection regions', $tester->getDisplay());
+        self::assertStringContainsString(' // Clearing all second-level cache collection regions', $tester->getDisplay());
     }
 
     public function testClearByOwnerEntityClassName() : void
@@ -65,7 +65,7 @@ class ClearCacheCollectionRegionCommandTest extends OrmFunctionalTestCase
             ['decorated' => false]
         );
 
-        self::assertContains(
+        self::assertStringContainsString(
             ' // Clearing second-level cache for collection "Doctrine\Tests\Models\Cache\State#cities"',
             $tester->getDisplay()
         );
@@ -86,12 +86,12 @@ class ClearCacheCollectionRegionCommandTest extends OrmFunctionalTestCase
             ['decorated' => false]
         );
 
-        self::assertContains(
+        self::assertStringContainsString(
             ' // Clearing second-level cache entry for collection "Doctrine\Tests\Models\Cache\State#cities" owner',
             $tester->getDisplay()
         );
 
-        self::assertContains(' // entity identified by "1"', $tester->getDisplay());
+        self::assertStringContainsString(' // entity identified by "1"', $tester->getDisplay());
     }
 
     public function testFlushRegionName() : void
@@ -109,7 +109,7 @@ class ClearCacheCollectionRegionCommandTest extends OrmFunctionalTestCase
             ['decorated' => false]
         );
 
-        self::assertContains(
+        self::assertStringContainsString(
             ' // Flushing cache provider configured for "Doctrine\Tests\Models\Cache\State#cities"',
             $tester->getDisplay()
         );

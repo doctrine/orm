@@ -8,7 +8,7 @@ use Doctrine\ORM\Decorator\EntityManagerDecorator;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Query\ResultSetMapping;
 use Doctrine\Tests\DoctrineTestCase;
-use PHPUnit_Framework_MockObject_MockObject;
+use PHPUnit\Framework\MockObject\MockObject;
 use ReflectionClass;
 use ReflectionMethod;
 use function array_fill;
@@ -16,10 +16,10 @@ use function call_user_func_array;
 
 class EntityManagerDecoratorTest extends DoctrineTestCase
 {
-    /** @var EntityManagerInterface|PHPUnit_Framework_MockObject_MockObject */
+    /** @var EntityManagerInterface|\PHPUnit\Framework\MockObject\MockObject */
     private $wrapped;
 
-    /** @var EntityManagerDecorator|PHPUnit_Framework_MockObject_MockObject */
+    /** @var EntityManagerDecorator|\PHPUnit\Framework\MockObject\MockObject */
     private $decorator;
 
     public function setUp() : void

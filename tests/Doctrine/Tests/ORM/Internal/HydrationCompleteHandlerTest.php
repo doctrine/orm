@@ -11,7 +11,7 @@ use Doctrine\ORM\Events;
 use Doctrine\ORM\Internal\HydrationCompleteHandler;
 use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\Tests\DoctrineTestCase;
-use PHPUnit_Framework_MockObject_MockObject;
+use PHPUnit\Framework\MockObject\MockObject;
 use stdClass;
 use function in_array;
 
@@ -22,10 +22,10 @@ use function in_array;
  */
 class HydrationCompleteHandlerTest extends DoctrineTestCase
 {
-    /** @var ListenersInvoker|PHPUnit_Framework_MockObject_MockObject */
+    /** @var ListenersInvoker|\PHPUnit\Framework\MockObject\MockObject */
     private $listenersInvoker;
 
-    /** @var EntityManagerInterface|PHPUnit_Framework_MockObject_MockObject */
+    /** @var EntityManagerInterface|\PHPUnit\Framework\MockObject\MockObject */
     private $entityManager;
 
     /** @var HydrationCompleteHandler */

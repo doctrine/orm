@@ -69,19 +69,11 @@ class DDC1238Test extends OrmFunctionalTestCase
 
         $user->initializeProxy();
 
-        self::assertInternalType(
-            'integer',
-            $user->getId(),
-            'Even if a proxy is detached, it should still have an identifier'
-        );
+        self::assertIsInt($user->getId(), 'Even if a proxy is detached, it should still have an identifier');
 
         $user2->initializeProxy();
 
-        self::assertInternalType(
-            'integer',
-            $user2->getId(),
-            'The managed instance still has an identifier'
-        );
+        self::assertIsInt($user2->getId(), 'The managed instance still has an identifier');
     }
 }
 

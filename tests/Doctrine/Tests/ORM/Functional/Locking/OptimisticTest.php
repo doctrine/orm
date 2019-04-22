@@ -128,7 +128,7 @@ class OptimisticTest extends OrmFunctionalTestCase
             $this->em->persist($test);
             $this->em->flush();
 
-            self::assertInternalType('int', $test->getVersion());
+            self::assertIsInt($test->getVersion());
             self::assertEquals($i + 1, $test->getVersion());
         }
     }
@@ -142,7 +142,7 @@ class OptimisticTest extends OrmFunctionalTestCase
         $this->em->persist($test);
         $this->em->flush();
 
-        self::assertInternalType('int', $test->getVersion());
+        self::assertIsInt($test->getVersion());
         self::assertEquals(1, $test->getVersion());
 
         return $test;

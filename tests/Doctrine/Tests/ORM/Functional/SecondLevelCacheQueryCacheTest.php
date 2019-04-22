@@ -1088,12 +1088,10 @@ class SecondLevelCacheQueryCacheTest extends SecondLevelCacheAbstractTest
         self::assertFalse($this->cache->containsEntity(Country::class, $this->countries[1]->getId()));
     }
 
-    /**
-     * @expectedException \Doctrine\ORM\Cache\Exception\CacheException
-     * @expectedExceptionMessage Second level cache does not support partial entities.
-     */
     public function testCacheablePartialQueryException() : void
     {
+        $this->expectException('Doctrine\ORM\Cache\Exception\CacheException');
+        $this->expectExceptionMessage('Second level cache does not support partial entities.');
         $this->evictRegions();
         $this->loadFixturesCountries();
 
@@ -1103,23 +1101,19 @@ class SecondLevelCacheQueryCacheTest extends SecondLevelCacheAbstractTest
             ->getResult();
     }
 
-    /**
-     * @expectedException \Doctrine\ORM\Cache\Exception\CacheException
-     * @expectedExceptionMessage Second-level cache query supports only select statements.
-     */
     public function testNonCacheableQueryDeleteStatementException() : void
     {
+        $this->expectException('Doctrine\ORM\Cache\Exception\CacheException');
+        $this->expectExceptionMessage('Second-level cache query supports only select statements.');
         $this->em->createQuery('DELETE Doctrine\Tests\Models\Cache\Country u WHERE u.id = 4')
             ->setCacheable(true)
             ->getResult();
     }
 
-    /**
-     * @expectedException \Doctrine\ORM\Cache\Exception\CacheException
-     * @expectedExceptionMessage Second-level cache query supports only select statements.
-     */
     public function testNonCacheableQueryUpdateStatementException() : void
     {
+        $this->expectException('Doctrine\ORM\Cache\Exception\CacheException');
+        $this->expectExceptionMessage('Second-level cache query supports only select statements.');
         $this->em->createQuery("UPDATE Doctrine\Tests\Models\Cache\Country u SET u.name = 'foo' WHERE u.id = 4")
             ->setCacheable(true)
             ->getResult();

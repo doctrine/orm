@@ -17,3 +17,4 @@ composer.phar
 /.phpcs-cache
 phpbench.phar
 phpbench.phar.pubkey
+.phpunit.result.cache

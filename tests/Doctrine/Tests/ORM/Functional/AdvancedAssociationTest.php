@@ -83,7 +83,7 @@ class AdvancedAssociationTest extends OrmFunctionalTestCase
 
         // test1 - lazy-loading many-to-one after find()
         $phrase2 = $this->em->find(Phrase::class, $phrase->getId());
-        self::assertInternalType('integer', $phrase2->getType()->getId());
+        self::assertIsInt($phrase2->getType()->getId());
 
         $this->em->clear();
 

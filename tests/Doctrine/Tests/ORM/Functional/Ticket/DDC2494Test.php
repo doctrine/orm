@@ -62,13 +62,13 @@ class DDC2494Test extends OrmFunctionalTestCase
         self::assertArrayHasKey('convertToPHPValue', DDC2494TinyIntType::$calls);
         self::assertCount(1, DDC2494TinyIntType::$calls['convertToPHPValue']);
 
-        self::assertInternalType('integer', $item->getCurrency()->getId());
+        self::assertIsInt($item->getCurrency()->getId());
         self::assertCount(1, DDC2494TinyIntType::$calls['convertToPHPValue']);
         self::assertFalse($item->getCurrency()->isProxyInitialized());
 
         self::assertEquals($queryCount, $this->getCurrentQueryCount());
 
-        self::assertInternalType('integer', $item->getCurrency()->getTemp());
+        self::assertIsInt($item->getCurrency()->getTemp());
         self::assertCount(3, DDC2494TinyIntType::$calls['convertToPHPValue']);
         self::assertTrue($item->getCurrency()->isProxyInitialized());
 

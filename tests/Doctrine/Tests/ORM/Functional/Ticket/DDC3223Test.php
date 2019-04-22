@@ -50,7 +50,7 @@ class DDC3223Test extends OrmFunctionalTestCase
 
         $clonedIdentifier = $clonedProfileStatus->getId();
 
-        self::assertInternalType('integer', $clonedIdentifier);
+        self::assertIsInt($clonedIdentifier);
         self::assertSame(
             $profileStatus->getId(),
             $clonedIdentifier,

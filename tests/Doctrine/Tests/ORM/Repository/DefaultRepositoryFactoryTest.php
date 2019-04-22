@@ -138,7 +138,7 @@ class DefaultRepositoryFactoryTest extends DoctrineTestCase
     }
 
     /**
-     * @return EntityManagerInterface|PHPUnit_Framework_MockObject_MockObject
+     * @return EntityManagerInterface|\PHPUnit\Framework\MockObject\MockObject
      */
     private function createEntityManager()
     {

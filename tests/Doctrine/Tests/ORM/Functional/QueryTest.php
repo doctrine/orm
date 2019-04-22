@@ -54,7 +54,7 @@ class QueryTest extends OrmFunctionalTestCase
 
         $resultArray = $query->getArrayResult();
         self::assertCount(1, $resultArray);
-        self::assertInternalType('array', $resultArray[0][0]);
+        self::assertIsArray($resultArray[0][0]);
         self::assertEquals('Guilherme', $resultArray[0][0]['name']);
         self::assertEquals('gblanco', $resultArray[0][0]['username']);
         self::assertEquals('developer', $resultArray[0][0]['status']);
@@ -317,38 +317,30 @@ class QueryTest extends OrmFunctionalTestCase
         $this->em->flush();
     }
 
-    /**
-     * @expectedException \Doctrine\ORM\Query\QueryException
-     */
     public function testIterateResultFetchJoinedCollectionThrowsException() : void
     {
+        $this->expectException('Doctrine\ORM\Query\QueryException');
         $query    = $this->em->createQuery("SELECT u, a FROM ' . CmsUser::class . ' u JOIN u.articles a");
         $articles = $query->iterate();
     }
 
-    /**
-     * @expectedException Doctrine\ORM\NoResultException
-     */
     public function testGetSingleResultThrowsExceptionOnNoResult() : void
     {
+        $this->expectException('Doctrine\ORM\NoResultException');
         $this->em->createQuery('select a from Doctrine\Tests\Models\CMS\CmsArticle a')
              ->getSingleResult();
     }
 
-    /**
-     * @expectedException Doctrine\ORM\NoResultException
-     */
     public function testGetSingleScalarResultThrowsExceptionOnNoResult() : void
     {
+        $this->expectException('Doctrine\ORM\NoResultException');
         $this->em->createQuery('select a from Doctrine\Tests\Models\CMS\CmsArticle a')
              ->getSingleScalarResult();
     }
 
-    /**
-     * @expectedException Doctrine\ORM\NonUniqueResultException
-     */
     public function testGetSingleScalarResultThrowsExceptionOnNonUniqueResult() : void
     {
+        $this->expectException('Doctrine\ORM\NonUniqueResultException');
         $user           = new CmsUser();
         $user->name     = 'Guilherme';
         $user->username = 'gblanco';

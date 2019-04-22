@@ -17,7 +17,7 @@ use function sprintf;
  */
 class DDC2224Test extends OrmFunctionalTestCase
 {
-    public static function setUpBeforeClass()
+    public static function setUpBeforeClass() : void
     {
         Type::addType('DDC2224Type', DDC2224Type::class);
     }

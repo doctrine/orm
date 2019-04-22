@@ -79,11 +79,9 @@ class FilterCollectionTest extends OrmTestCase
         self::assertTrue($filterCollection->isEnabled(self::TEST_FILTER));
     }
 
-    /**
-     * @expectedException InvalidArgumentException
-     */
     public function testGetFilterInvalidArgument() : void
     {
+        $this->expectException('InvalidArgumentException');
         $filterCollection = $this->em->getFilters();
         $filterCollection->getFilter(self::TEST_FILTER);
     }

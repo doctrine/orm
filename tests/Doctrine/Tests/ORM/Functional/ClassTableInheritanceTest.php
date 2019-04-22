@@ -57,8 +57,8 @@ class ClassTableInheritanceTest extends OrmFunctionalTestCase
         self::assertCount(2, $entities);
         self::assertInstanceOf(CompanyPerson::class, $entities[0]);
         self::assertInstanceOf(CompanyEmployee::class, $entities[1]);
-        self::assertInternalType('numeric', $entities[0]->getId());
-        self::assertInternalType('numeric', $entities[1]->getId());
+        self::assertIsNumeric($entities[0]->getId());
+        self::assertIsNumeric($entities[1]->getId());
         self::assertEquals('Roman S. Borschel', $entities[0]->getName());
         self::assertEquals('Guilherme Blanco', $entities[1]->getName());
         self::assertEquals(100000, $entities[1]->getSalary());
@@ -71,7 +71,7 @@ class ClassTableInheritanceTest extends OrmFunctionalTestCase
 
         self::assertCount(1, $entities);
         self::assertInstanceOf(CompanyEmployee::class, $entities[0]);
-        self::assertInternalType('numeric', $entities[0]->getId());
+        self::assertIsNumeric($entities[0]->getId());
         self::assertEquals('Guilherme Blanco', $entities[0]->getName());
         self::assertEquals(100000, $entities[0]->getSalary());
 
@@ -126,7 +126,7 @@ class ClassTableInheritanceTest extends OrmFunctionalTestCase
         self::assertEquals('Roman B.', $manager->getName());
         self::assertEquals(119000, $manager->getSalary());
         self::assertEquals('CEO', $manager->getTitle());
-        self::assertInternalType('numeric', $manager->getId());
+        self::assertIsNumeric($manager->getId());
     }
 
     public function testFindOnBaseClass() : void
@@ -147,7 +147,7 @@ class ClassTableInheritanceTest extends OrmFunctionalTestCase
         self::assertEquals('Roman S. Borschel', $person->getName());
         self::assertEquals(100000, $person->getSalary());
         self::assertEquals('CTO', $person->getTitle());
-        self::assertInternalType('numeric', $person->getId());
+        self::assertIsNumeric($person->getId());
     }
 
     public function testSelfReferencingOneToOne() : void

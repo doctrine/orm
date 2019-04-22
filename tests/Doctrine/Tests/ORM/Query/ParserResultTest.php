@@ -41,7 +41,7 @@ class ParserResultTest extends DoctrineTestCase
 
     public function testGetParameterMappings() : void
     {
-        self::assertInternalType('array', $this->parserResult->getParameterMappings());
+        self::assertIsArray($this->parserResult->getParameterMappings());
 
         $this->parserResult->addParameterMapping(1, 1);
         $this->parserResult->addParameterMapping(1, 2);

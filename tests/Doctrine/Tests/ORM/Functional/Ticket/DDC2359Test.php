@@ -15,7 +15,7 @@ use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\Mapping\ClassMetadataFactory;
 use Doctrine\ORM\Mapping\Driver\MappingDriver;
 use Doctrine\Tests\DoctrineTestCase;
-use PHPUnit_Framework_MockObject_MockObject;
+use PHPUnit\Framework\MockObject\MockObject;
 
 /**
  * @group DDC-2359
@@ -33,7 +33,7 @@ class DDC2359Test extends DoctrineTestCase
         $mockPlatform  = $this->createMock(AbstractPlatform::class);
         $entityManager = $this->createMock(EntityManagerInterface::class);
 
-        /** @var ClassMetadataFactory|PHPUnit_Framework_MockObject_MockObject $metadataFactory */
+        /** @var ClassMetadataFactory|\PHPUnit\Framework\MockObject\MockObject $metadataFactory */
         $metadataFactory = $this->getMockBuilder(ClassMetadataFactory::class)
                                 ->setMethods(['doLoadMetadata', 'getTargetPlatform', 'wakeupReflection'])
                                 ->getMock();

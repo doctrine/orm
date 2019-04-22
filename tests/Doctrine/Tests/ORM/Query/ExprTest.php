@@ -331,11 +331,9 @@ class ExprTest extends OrmTestCase
         self::assertEquals('u.username ASC', (string) $orderExpr);
     }
 
-    /**
-     * @expectedException InvalidArgumentException
-     */
     public function testAddThrowsException() : void
     {
+        $this->expectException('InvalidArgumentException');
         $orExpr = $this->expr->orX();
         $orExpr->add($this->expr->quot(5, 2));
     }

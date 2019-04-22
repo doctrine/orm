@@ -45,8 +45,8 @@ class InfoCommandTest extends OrmFunctionalTestCase
     {
         $this->tester->execute(['command' => $this->command->getName()]);
 
-        self::assertContains(AttractionInfo::class, $this->tester->getDisplay());
-        self::assertContains(City::class, $this->tester->getDisplay());
+        self::assertStringContainsString(AttractionInfo::class, $this->tester->getDisplay());
+        self::assertStringContainsString(City::class, $this->tester->getDisplay());
     }
 
     public function testEmptyEntityClassNames() : void
@@ -73,12 +73,12 @@ class InfoCommandTest extends OrmFunctionalTestCase
 
         $tester->execute(['command' => $command->getName()]);
 
-        self::assertContains(
+        self::assertStringContainsString(
             ' ! [CAUTION] You do not have any mapped Doctrine ORM entities according to the current configuration',
             $tester->getDisplay()
         );
 
-        self::assertContains(
+        self::assertStringContainsString(
             ' !           If you have entities or mapping files you should check your mapping configuration for errors.',
             $tester->getDisplay()
         );
@@ -112,7 +112,7 @@ class InfoCommandTest extends OrmFunctionalTestCase
 
         $tester->execute(['command' => $command->getName()]);
 
-        self::assertContains('[FAIL] InvalidEntity', $tester->getDisplay());
-        self::assertContains('exception message', $tester->getDisplay());
+        self::assertStringContainsString('[FAIL] InvalidEntity', $tester->getDisplay());
+        self::assertStringContainsString('exception message', $tester->getDisplay());
     }
 }

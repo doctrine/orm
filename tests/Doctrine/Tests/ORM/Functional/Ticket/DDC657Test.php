@@ -41,13 +41,13 @@ class DDC657Test extends OrmFunctionalTestCase
 
         self::assertCount(2, $result);
 
-        self::assertContains('11:11:11', $result[0]['time']);
-        self::assertContains('2010-01-01', $result[0]['date']);
-        self::assertContains('2010-01-01 11:11:11', $result[0]['datetime']);
+        self::assertStringContainsString('11:11:11', $result[0]['time']);
+        self::assertStringContainsString('2010-01-01', $result[0]['date']);
+        self::assertStringContainsString('2010-01-01 11:11:11', $result[0]['datetime']);
 
-        self::assertContains('12:12:12', $result[1]['time']);
-        self::assertContains('2010-02-02', $result[1]['date']);
-        self::assertContains('2010-02-02 12:12:12', $result[1]['datetime']);
+        self::assertStringContainsString('12:12:12', $result[1]['time']);
+        self::assertStringContainsString('2010-02-02', $result[1]['date']);
+        self::assertStringContainsString('2010-02-02 12:12:12', $result[1]['datetime']);
     }
 
     public function testaTicketEntityArrayResult() : void
@@ -71,7 +71,7 @@ class DDC657Test extends OrmFunctionalTestCase
         $query    = $this->em->createQuery('SELECT d.id, d.time, d.date, d.datetime FROM ' . DateTimeModel::class . ' d ORDER BY d.date ASC');
         $datetime = $query->setMaxResults(1)->getSingleResult();
 
-        self::assertInternalType('array', $datetime);
+        self::assertIsArray($datetime);
 
         self::assertInstanceOf('DateTime', $datetime['datetime']);
         self::assertInstanceOf('DateTime', $datetime['time']);
