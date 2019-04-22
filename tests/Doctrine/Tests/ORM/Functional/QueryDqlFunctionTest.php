@@ -281,13 +281,11 @@ class QueryDqlFunctionTest extends OrmFunctionalTestCase
         $query = $this->em->createQuery("SELECT DATE_DIFF(CURRENT_TIMESTAMP(), DATE_ADD(CURRENT_TIMESTAMP(), 10, 'day')) AS diff FROM Doctrine\Tests\Models\Company\CompanyManager m");
         $arg   = $query->getArrayResult();
 
-        self::assertEquals(-10, $arg[0]['diff'], 'Should be roughly -10 (or -9)');
         self::assertEqualsWithDelta(-10, $arg[0]['diff'], 1, 'Should be roughly -10 (or -9)');
 
         $query = $this->em->createQuery("SELECT DATE_DIFF(DATE_ADD(CURRENT_TIMESTAMP(), 10, 'day'), CURRENT_TIMESTAMP()) AS diff FROM Doctrine\Tests\Models\Company\CompanyManager m");
         $arg   = $query->getArrayResult();
 
-        self::assertEquals(10, $arg[0]['diff'], 'Should be roughly 10 (or 9)');
         self::assertEqualsWithDelta(10, $arg[0]['diff'], 1, 'Should be roughly 10 (or 9)');
     }
 
@@ -312,12 +310,12 @@ class QueryDqlFunctionTest extends OrmFunctionalTestCase
         self::assertArrayHasKey('now', $result);
         self::assertArrayHasKey('add', $result);
 
-        self::assertEquals(
+        self::assertEqualsWithDelta(
             (new DateTimeImmutable($result['now']))->modify(sprintf('+%d %s', $amount, $unit)),
             new DateTimeImmutable($result['add']),
+            $delta,
             ''
         );
-        self::assertEqualsWithDelta((new DateTimeImmutable($result['now']))->modify(sprintf('+%d %s', $amount, $unit)), new DateTimeImmutable($result['add']), $delta, '');
     }
 
     /**
@@ -341,12 +339,12 @@ class QueryDqlFunctionTest extends OrmFunctionalTestCase
         self::assertArrayHasKey('now', $result);
         self::assertArrayHasKey('sub', $result);
 
-        self::assertEquals(
+        self::assertEqualsWithDelta(
             (new DateTimeImmutable($result['now']))->modify(sprintf('-%d %s', $amount, $unit)),
             new DateTimeImmutable($result['sub']),
+            $delta,
             ''
         );
-        self::assertEqualsWithDelta((new DateTimeImmutable($result['now']))->modify(sprintf('-%d %s', $amount, $unit)), new DateTimeImmutable($result['sub']), $delta, '');
     }
 
     public function dateAddSubProvider() : array
