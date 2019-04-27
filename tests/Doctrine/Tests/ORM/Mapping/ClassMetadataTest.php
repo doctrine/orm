@@ -44,7 +44,7 @@ require_once __DIR__ . '/../../Models/Global/GlobalNamespaceModel.php';
 
 class ClassMetadataTest extends OrmTestCase
 {
-    /** @var Mapping\ClassMetadataBuildingContext|\PHPUnit\Framework\MockObject\MockObject */
+    /** @var Mapping\ClassMetadataBuildingContext|MockObject */
     private $metadataBuildingContext;
 
     public function setUp() : void

@@ -22,10 +22,10 @@ use function in_array;
  */
 class HydrationCompleteHandlerTest extends DoctrineTestCase
 {
-    /** @var ListenersInvoker|\PHPUnit\Framework\MockObject\MockObject */
+    /** @var ListenersInvoker|MockObject */
     private $listenersInvoker;
 
-    /** @var EntityManagerInterface|\PHPUnit\Framework\MockObject\MockObject */
+    /** @var EntityManagerInterface|MockObject */
     private $entityManager;
 
     /** @var HydrationCompleteHandler */

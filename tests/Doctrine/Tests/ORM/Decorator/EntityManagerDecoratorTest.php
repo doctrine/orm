@@ -16,10 +16,10 @@ use function call_user_func_array;
 
 class EntityManagerDecoratorTest extends DoctrineTestCase
 {
-    /** @var EntityManagerInterface|\PHPUnit\Framework\MockObject\MockObject */
+    /** @var EntityManagerInterface|MockObject */
     private $wrapped;
 
-    /** @var EntityManagerDecorator|\PHPUnit\Framework\MockObject\MockObject */
+    /** @var EntityManagerDecorator|MockObject */
     private $decorator;
 
     public function setUp() : void

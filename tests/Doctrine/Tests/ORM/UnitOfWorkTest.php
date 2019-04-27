@@ -64,10 +64,10 @@ class UnitOfWorkTest extends OrmTestCase
      */
     private $emMock;
 
-    /** @var EventManager|\PHPUnit\Framework\MockObject\MockObject */
+    /** @var EventManager|MockObject */
     private $eventManager;
 
-    /** @var ClassMetadataBuildingContext|\PHPUnit\Framework\MockObject\MockObject */
+    /** @var ClassMetadataBuildingContext|MockObject */
     private $metadataBuildingContext;
 
     protected function setUp() : void

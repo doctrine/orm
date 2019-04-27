@@ -156,7 +156,7 @@ class PersistentCollectionTest extends OrmTestCase
      */
     public function testWillKeepNewItemsInDirtyCollectionAfterInitialization() : void
     {
-        /** @var UnitOfWork|\PHPUnit\Framework\MockObject\MockObject $unitOfWork */
+        /** @var UnitOfWork|MockObject $unitOfWork */
         $unitOfWork = $this->createMock(UnitOfWork::class);
 
         $this->emMock->setUnitOfWork($unitOfWork);
@@ -191,7 +191,7 @@ class PersistentCollectionTest extends OrmTestCase
      */
     public function testWillDeDuplicateNewItemsThatWerePreviouslyPersistedInDirtyCollectionAfterInitialization() : void
     {
-        /** @var UnitOfWork|\PHPUnit\Framework\MockObject\MockObject $unitOfWork */
+        /** @var UnitOfWork|MockObject $unitOfWork */
         $unitOfWork = $this->createMock(UnitOfWork::class);
 
         $this->emMock->setUnitOfWork($unitOfWork);
@@ -235,7 +235,7 @@ class PersistentCollectionTest extends OrmTestCase
      */
     public function testWillNotMarkCollectionAsDirtyAfterInitializationIfNoElementsWereAdded() : void
     {
-        /** @var UnitOfWork|\PHPUnit\Framework\MockObject\MockObject $unitOfWork */
+        /** @var UnitOfWork|MockObject $unitOfWork */
         $unitOfWork = $this->createMock(UnitOfWork::class);
 
         $this->emMock->setUnitOfWork($unitOfWork);

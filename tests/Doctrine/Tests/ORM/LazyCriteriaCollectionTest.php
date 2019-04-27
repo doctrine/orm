@@ -17,7 +17,7 @@ use stdClass;
  */
 class LazyCriteriaCollectionTest extends DoctrineTestCase
 {
-    /** @var EntityPersister|\PHPUnit\Framework\MockObject\MockObject */
+    /** @var EntityPersister|MockObject */
     private $persister;
 
     /** @var Criteria */

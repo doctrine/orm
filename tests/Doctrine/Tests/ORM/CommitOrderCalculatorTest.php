@@ -25,7 +25,7 @@ class CommitOrderCalculatorTest extends OrmTestCase
     /** @var CommitOrderCalculator */
     private $calc;
 
-    /** @var ClassMetadataBuildingContext|\PHPUnit\Framework\MockObject\MockObject */
+    /** @var ClassMetadataBuildingContext|MockObject */
     private $metadataBuildingContext;
 
     protected function setUp() : void
