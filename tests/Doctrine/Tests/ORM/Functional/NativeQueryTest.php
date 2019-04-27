@@ -372,7 +372,7 @@ class NativeQueryTest extends OrmFunctionalTestCase
 
     public function testRSMBuilderThrowsExceptionOnColumnConflict() : void
     {
-        $this->expectException('InvalidArgumentException');
+        $this->expectException(InvalidArgumentException::class);
         $rsm = new ResultSetMappingBuilder($this->em);
 
         $rsm->addRootEntityFromClassMetadata(CmsUser::class, 'u');

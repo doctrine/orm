@@ -6,6 +6,7 @@ namespace Doctrine\Tests\ORM\Functional\Ticket;
 
 use Doctrine\Tests\OrmFunctionalTestCase;
 use Exception;
+use Doctrine\ORM\ORMInvalidArgumentException;
 
 /**
  * @group DDC-2084
@@ -56,7 +57,7 @@ class DDC2084Test extends OrmFunctionalTestCase
 
     public function testinvalidIdentifierBindingEntityException() : void
     {
-        $this->expectException('Doctrine\ORM\ORMInvalidArgumentException');
+        $this->expectException(ORMInvalidArgumentException::class);
         $this->expectExceptionMessage('Binding entities to query parameters only allowed for entities that have an identifier.');
         $this->em->find(__NAMESPACE__ . '\DDC2084\MyEntity1', new DDC2084\MyEntity2('Foo'));
     }

@@ -6,6 +6,7 @@ namespace Doctrine\Tests\ORM\Tools\Pagination;
 
 use Doctrine\ORM\Query;
 use Doctrine\ORM\Tools\Pagination\CountWalker;
+use RuntimeException;
 
 /**
  * @group DDC-1613
@@ -60,7 +61,7 @@ class CountWalkerTest extends PaginationTestCase
 
     public function testCountQueryHavingException() : void
     {
-        $this->expectException('RuntimeException');
+        $this->expectException(RuntimeException::class);
         $this->expectExceptionMessage('Cannot count query that uses a HAVING clause. Use the output walkers for pagination');
         $query = $this->entityManager->createQuery(
             'SELECT g, COUNT(u.id) AS userCount FROM Doctrine\Tests\Models\CMS\CmsGroup g LEFT JOIN g.users u GROUP BY g.id HAVING userCount > 0'

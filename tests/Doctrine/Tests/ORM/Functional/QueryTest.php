@@ -7,6 +7,7 @@ namespace Doctrine\Tests\ORM\Functional;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\Mapping\FetchMode;
 use Doctrine\ORM\NonUniqueResultException;
+use Doctrine\ORM\NoResultException;
 use Doctrine\ORM\Query;
 use Doctrine\ORM\Query\Parameter;
 use Doctrine\ORM\Query\QueryException;
@@ -319,28 +320,28 @@ class QueryTest extends OrmFunctionalTestCase
 
     public function testIterateResultFetchJoinedCollectionThrowsException() : void
     {
-        $this->expectException('Doctrine\ORM\Query\QueryException');
+        $this->expectException(QueryException::class);
         $query    = $this->em->createQuery("SELECT u, a FROM ' . CmsUser::class . ' u JOIN u.articles a");
         $articles = $query->iterate();
     }
 
     public function testGetSingleResultThrowsExceptionOnNoResult() : void
     {
-        $this->expectException('Doctrine\ORM\NoResultException');
+        $this->expectException(NoResultException::class);
         $this->em->createQuery('select a from Doctrine\Tests\Models\CMS\CmsArticle a')
              ->getSingleResult();
     }
 
     public function testGetSingleScalarResultThrowsExceptionOnNoResult() : void
     {
-        $this->expectException('Doctrine\ORM\NoResultException');
+        $this->expectException(NoResultException::class);
         $this->em->createQuery('select a from Doctrine\Tests\Models\CMS\CmsArticle a')
              ->getSingleScalarResult();
     }
 
     public function testGetSingleScalarResultThrowsExceptionOnNonUniqueResult() : void
     {
-        $this->expectException('Doctrine\ORM\NonUniqueResultException');
+        $this->expectException(NonUniqueResultException::class);
         $user           = new CmsUser();
         $user->name     = 'Guilherme';
         $user->username = 'gblanco';

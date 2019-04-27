@@ -6,6 +6,7 @@ namespace Doctrine\Tests\ORM\Mapping;
 
 use Doctrine\ORM\Mapping\DefaultEntityListenerResolver;
 use Doctrine\Tests\OrmTestCase;
+use InvalidArgumentException;
 
 /**
  * @group DDC-1955
@@ -88,7 +89,7 @@ class EntityListenerResolverTest extends OrmTestCase
 
     public function testRegisterStringException() : void
     {
-        $this->expectException('InvalidArgumentException');
+        $this->expectException(InvalidArgumentException::class);
         $this->expectExceptionMessage('An object was expected, but got "string".');
         $this->resolver->register('CompanyContractListener');
     }

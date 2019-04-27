@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Doctrine\Tests\ORM\Hydration;
 
 use Doctrine\DBAL\Types\Type;
+use Doctrine\ORM\Internal\Hydration\HydrationException;
 use Doctrine\ORM\Internal\Hydration\SimpleObjectHydrator;
 use Doctrine\ORM\Query\ResultSetMapping;
 use Doctrine\Tests\Mocks\HydratorMockStatement;
@@ -21,7 +22,7 @@ class SimpleObjectHydratorTest extends HydrationTestCase
      */
     public function testMissingDiscriminatorColumnException() : void
     {
-        $this->expectException('Doctrine\ORM\Internal\Hydration\HydrationException');
+        $this->expectException(HydrationException::class);
         $this->expectExceptionMessage('The discriminator column "discr" is missing for "Doctrine\Tests\Models\Company\CompanyPerson" using the DQL alias "p".');
         $rsm = new ResultSetMapping();
 
@@ -76,7 +77,7 @@ class SimpleObjectHydratorTest extends HydrationTestCase
      */
     public function testInvalidDiscriminatorValueException() : void
     {
-        $this->expectException('Doctrine\ORM\Internal\Hydration\HydrationException');
+        $this->expectException(HydrationException::class);
         $this->expectExceptionMessage('The discriminator value "subworker" is invalid. It must be one of "person", "manager", "employee".');
         $rsm = new ResultSetMapping();
 

@@ -8,6 +8,7 @@ use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\Query\Filter\SQLFilter;
 use Doctrine\Tests\OrmTestCase;
+use InvalidArgumentException;
 
 /**
  * Test case for FilterCollection
@@ -81,7 +82,7 @@ class FilterCollectionTest extends OrmTestCase
 
     public function testGetFilterInvalidArgument() : void
     {
-        $this->expectException('InvalidArgumentException');
+        $this->expectException(InvalidArgumentException::class);
         $filterCollection = $this->em->getFilters();
         $filterCollection->getFilter(self::TEST_FILTER);
     }

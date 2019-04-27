@@ -51,7 +51,7 @@ class XmlMappingDriverTest extends AbstractMappingDriverTest
 
     public function testFailingSecondLevelCacheAssociation() : void
     {
-        $this->expectException('Doctrine\ORM\Cache\Exception\CacheException');
+        $this->expectException(CacheException::class);
         $this->expectExceptionMessage('Entity association field "Doctrine\Tests\ORM\Mapping\XMLSLC#foo" not configured as part of the second-level cache.');
         $mappingDriver = $this->loadDriver();
 
@@ -154,7 +154,7 @@ class XmlMappingDriverTest extends AbstractMappingDriverTest
      */
     public function testInvalidMappingFileException() : void
     {
-        $this->expectException('Doctrine\Common\Persistence\Mapping\MappingException');
+        $this->expectException(MappingException::class);
         $this->expectExceptionMessage('Invalid mapping file \'Doctrine.Tests.Models.Generic.SerializationModel.dcm.xml\' for class \'Doctrine\Tests\Models\Generic\SerializationModel\'.');
         $this->createClassMetadata(SerializationModel::class);
     }
@@ -217,7 +217,7 @@ class XmlMappingDriverTest extends AbstractMappingDriverTest
      */
     public function testinvalidEntityOrMappedSuperClassShouldMentionParentClasses() : void
     {
-        $this->expectException('Doctrine\Common\Persistence\Mapping\MappingException');
+        $this->expectException(MappingException::class);
         $this->expectExceptionMessage('Invalid mapping file \'Doctrine.Tests.Models.DDC889.DDC889Class.dcm.xml\' for class \'Doctrine\Tests\Models\DDC889\DDC889Class\'.');
         $this->createClassMetadata(DDC889Class::class);
     }

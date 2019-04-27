@@ -333,7 +333,7 @@ class ExprTest extends OrmTestCase
 
     public function testAddThrowsException() : void
     {
-        $this->expectException('InvalidArgumentException');
+        $this->expectException(InvalidArgumentException::class);
         $orExpr = $this->expr->orX();
         $orExpr->add($this->expr->quot(5, 2));
     }

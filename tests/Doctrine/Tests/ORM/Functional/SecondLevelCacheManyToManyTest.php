@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Doctrine\Tests\ORM\Functional;
 
+use Doctrine\ORM\Cache\Exception\CacheException;
 use Doctrine\Tests\Models\Cache\City;
 use Doctrine\Tests\Models\Cache\State;
 use Doctrine\Tests\Models\Cache\Travel;
@@ -190,7 +191,7 @@ class SecondLevelCacheManyToManyTest extends SecondLevelCacheAbstractTest
 
     public function testReadOnlyCollection() : void
     {
-        $this->expectException('Doctrine\ORM\Cache\Exception\CacheException');
+        $this->expectException(CacheException::class);
         $this->expectExceptionMessage('Cannot update a readonly collection "Doctrine\Tests\Models\Cache\Travel#visitedCities');
         $this->evictRegions();
 

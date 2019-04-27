@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Doctrine\Tests\ORM\Functional;
 
 use Doctrine\ORM\Query;
+use Doctrine\ORM\Query\QueryException;
 use Doctrine\Tests\Models\CMS\CmsAddress;
 use Doctrine\Tests\Models\CMS\CmsAddressDTO;
 use Doctrine\Tests\Models\CMS\CmsEmail;
@@ -983,7 +984,7 @@ class NewOperatorTest extends OrmFunctionalTestCase
 
     public function testInvalidClassException() : void
     {
-        $this->expectException('Doctrine\ORM\Query\QueryException');
+        $this->expectException(QueryException::class);
         $this->expectExceptionMessage('[Semantical Error] line 0, col 11 near \'\InvalidClass(u.name)\': Error: Class "\InvalidClass" is not defined.');
         $dql = 'SELECT new \InvalidClass(u.name) FROM Doctrine\Tests\Models\CMS\CmsUser u';
         $this->em->createQuery($dql)->getResult();
@@ -991,7 +992,7 @@ class NewOperatorTest extends OrmFunctionalTestCase
 
     public function testInvalidClassConstructorException() : void
     {
-        $this->expectException('Doctrine\ORM\Query\QueryException');
+        $this->expectException(QueryException::class);
         $this->expectExceptionMessage('[Semantical Error] line 0, col 11 near \'\stdClass(u.name)\': Error: Class "\stdClass" has not a valid constructor.');
         $dql = 'SELECT new \stdClass(u.name) FROM Doctrine\Tests\Models\CMS\CmsUser u';
         $this->em->createQuery($dql)->getResult();
@@ -999,7 +1000,7 @@ class NewOperatorTest extends OrmFunctionalTestCase
 
     public function testInvalidClassWithoutConstructorException() : void
     {
-        $this->expectException('Doctrine\ORM\Query\QueryException');
+        $this->expectException(QueryException::class);
         $this->expectExceptionMessage('[Semantical Error] line 0, col 11 near \'Doctrine\Tests\ORM\Functional\ClassWithTooMuchArgs(u.name)\': Error: Number of arguments does not match with "Doctrine\Tests\ORM\Functional\ClassWithTooMuchArgs" constructor declaration.');
         $dql = 'SELECT new Doctrine\Tests\ORM\Functional\ClassWithTooMuchArgs(u.name) FROM Doctrine\Tests\Models\CMS\CmsUser u';
         $this->em->createQuery($dql)->getResult();
@@ -1007,7 +1008,7 @@ class NewOperatorTest extends OrmFunctionalTestCase
 
     public function testClassCantBeInstantiatedException() : void
     {
-        $this->expectException('Doctrine\ORM\Query\QueryException');
+        $this->expectException(QueryException::class);
         $this->expectExceptionMessage('[Semantical Error] line 0, col 11 near \'Doctrine\Tests\ORM\Functional\ClassWithPrivateConstructor(u.name)\': Error: Class "Doctrine\Tests\ORM\Functional\ClassWithPrivateConstructor" can not be instantiated.');
         $dql = 'SELECT new Doctrine\Tests\ORM\Functional\ClassWithPrivateConstructor(u.name) FROM Doctrine\Tests\Models\CMS\CmsUser u';
         $this->em->createQuery($dql)->getResult();

@@ -10,6 +10,7 @@ use Doctrine\Common\Collections\Criteria;
 use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\LockMode;
 use Doctrine\ORM\EntityRepository;
+use Doctrine\ORM\Exception\InvalidEntityRepository;
 use Doctrine\ORM\Exception\ORMException;
 use Doctrine\ORM\Exception\UnrecognizedIdentifierFields;
 use Doctrine\ORM\OptimisticLockException;
@@ -17,6 +18,7 @@ use Doctrine\ORM\Persisters\Exception\InvalidOrientation;
 use Doctrine\ORM\Persisters\Exception\UnrecognizedField;
 use Doctrine\ORM\Query;
 use Doctrine\ORM\Repository\Exception\InvalidFindByCall;
+use Doctrine\ORM\Repository\Exception\InvalidMagicMethodCall;
 use Doctrine\ORM\TransactionRequiredException;
 use Doctrine\Tests\Models\CMS\CmsAddress;
 use Doctrine\Tests\Models\CMS\CmsEmail;
@@ -284,14 +286,14 @@ class EntityRepositoryTest extends OrmFunctionalTestCase
 
     public function testExceptionIsThrownWhenCallingFindByWithoutParameter() : void
     {
-        $this->expectException('Doctrine\ORM\Repository\Exception\InvalidMagicMethodCall');
+        $this->expectException(InvalidMagicMethodCall::class);
         $this->em->getRepository(CmsUser::class)
                   ->findByStatus();
     }
 
     public function testExceptionIsThrownWhenUsingInvalidFieldName() : void
     {
-        $this->expectException('Doctrine\ORM\Repository\Exception\InvalidMagicMethodCall');
+        $this->expectException(InvalidMagicMethodCall::class);
         $this->em->getRepository(CmsUser::class)
                   ->findByThisFieldDoesNotExist('testvalue');
     }
@@ -601,7 +603,7 @@ class EntityRepositoryTest extends OrmFunctionalTestCase
      */
     public function testSetDefaultRepositoryInvalidClassError() : void
     {
-        $this->expectException('Doctrine\ORM\Exception\InvalidEntityRepository');
+        $this->expectException(InvalidEntityRepository::class);
         $this->expectExceptionMessage('Invalid repository class \'Doctrine\Tests\Models\DDC753\DDC753InvalidRepository\'. It must be a Doctrine\Common\Persistence\ObjectRepository.');
         self::assertEquals($this->em->getConfiguration()->getDefaultRepositoryClassName(), EntityRepository::class);
         $this->em->getConfiguration()->setDefaultRepositoryClassName(DDC753InvalidRepository::class);
@@ -623,7 +625,7 @@ class EntityRepositoryTest extends OrmFunctionalTestCase
      */
     public function testInvalidOrderByAssociation() : void
     {
-        $this->expectException('Doctrine\ORM\Repository\Exception\InvalidFindByCall');
+        $this->expectException(InvalidFindByCall::class);
         $this->expectExceptionMessage('You cannot search for the association field \'Doctrine\Tests\Models\CMS\CmsUser#address\', because it is the inverse side of an association.');
         $this->em->getRepository(CmsUser::class)
             ->findBy(['status' => 'test'], ['address' => 'ASC']);

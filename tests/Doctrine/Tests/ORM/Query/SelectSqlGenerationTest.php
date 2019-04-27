@@ -929,7 +929,7 @@ class SelectSqlGenerationTest extends OrmTestCase
 
     public function testOrderBySupportsSingleValuedPathExpressionInverseSide() : void
     {
-        $this->expectException('Doctrine\ORM\Query\QueryException');
+        $this->expectException(QueryException::class);
         $q = $this->em->createQuery('select u from Doctrine\Tests\Models\CMS\CmsUser u order by u.address');
 
         $q->getSQL();
