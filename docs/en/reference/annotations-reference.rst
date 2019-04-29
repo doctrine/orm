@@ -181,7 +181,7 @@ Examples:
     protected $initials;
 
     /**
-     * @Column(type="integer", name="login_count" nullable=false, options={"unsigned":true, "default":0})
+     * @Column(type="integer", name="login_count", nullable=false, options={"unsigned":true, "default":0})
      */
     protected $loginCount;
 
