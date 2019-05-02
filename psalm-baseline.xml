@@ -211,6 +211,12 @@
     </PossiblyNullReference>
   </file>
   <file src="lib/Doctrine/ORM/Cache/DefaultCache.php">
+    <ArgumentTypeCoercion occurrences="4">
+      <code>$metadata-&gt;getProperty($association)</code>
+      <code>$metadata-&gt;getProperty($association)</code>
+      <code>$metadata-&gt;getProperty($association)</code>
+      <code>$metadata-&gt;getProperty($association)</code>
+    </ArgumentTypeCoercion>
     <DocblockTypeContradiction occurrences="1">
       <code>$this-&gt;defaultQueryCache = $this-&gt;cacheFactory-&gt;buildQueryCache($this-&gt;em)</code>
     </DocblockTypeContradiction>
@@ -235,18 +241,16 @@
       <code>$regionName === null &amp;&amp; $this-&gt;defaultQueryCache !== null</code>
       <code>$this-&gt;defaultQueryCache</code>
     </RedundantConditionGivenDocblockType>
-    <TypeCoercion occurrences="4">
-      <code>$metadata-&gt;getProperty($association)</code>
-      <code>$metadata-&gt;getProperty($association)</code>
-      <code>$metadata-&gt;getProperty($association)</code>
-      <code>$metadata-&gt;getProperty($association)</code>
-    </TypeCoercion>
     <UndefinedInterfaceMethod occurrences="2">
       <code>getRootClassName</code>
       <code>getDeclaredPropertiesIterator</code>
     </UndefinedInterfaceMethod>
   </file>
   <file src="lib/Doctrine/ORM/Cache/DefaultCacheFactory.php">
+    <ArgumentTypeCoercion occurrences="2">
+      <code>$region</code>
+      <code>$region</code>
+    </ArgumentTypeCoercion>
     <InvalidNullableReturnType occurrences="1">
       <code>string</code>
     </InvalidNullableReturnType>
@@ -265,10 +269,6 @@
       <code>$cache</code>
       <code>$cache</code>
     </PossiblyNullArgument>
-    <TypeCoercion occurrences="2">
-      <code>$region</code>
-      <code>$region</code>
-    </TypeCoercion>
   </file>
   <file src="lib/Doctrine/ORM/Cache/DefaultCollectionHydrator.php">
     <InvalidNullableReturnType occurrences="1">
@@ -309,6 +309,15 @@
     </UndefinedInterfaceMethod>
   </file>
   <file src="lib/Doctrine/ORM/Cache/DefaultQueryCache.php">
+    <ArgumentTypeCoercion occurrences="7">
+      <code>$cacheKeys-&gt;identifiers[$index]</code>
+      <code>$cacheKeys-&gt;identifiers[$index]</code>
+      <code>$assocKeys-&gt;identifiers[$assocIndex]</code>
+      <code>$assocKeys-&gt;identifiers[$assocIndex]</code>
+      <code>$association</code>
+      <code>$association</code>
+      <code>$association</code>
+    </ArgumentTypeCoercion>
     <DocblockTypeContradiction occurrences="1">
       <code>$assocValue === null</code>
     </DocblockTypeContradiction>
@@ -337,15 +346,6 @@
       <code>getCacheLogger</code>
       <code>getValue</code>
     </PossiblyNullReference>
-    <TypeCoercion occurrences="7">
-      <code>$cacheKeys-&gt;identifiers[$index]</code>
-      <code>$cacheKeys-&gt;identifiers[$index]</code>
-      <code>$assocKeys-&gt;identifiers[$assocIndex]</code>
-      <code>$assocKeys-&gt;identifiers[$assocIndex]</code>
-      <code>$association</code>
-      <code>$association</code>
-      <code>$association</code>
-    </TypeCoercion>
     <UndefinedInterfaceMethod occurrences="6">
       <code>getCacheRegion</code>
       <code>getCacheRegion</code>
@@ -395,6 +395,9 @@
     </MissingReturnType>
   </file>
   <file src="lib/Doctrine/ORM/Cache/Persister/Collection/AbstractCollectionPersister.php">
+    <ArgumentTypeCoercion occurrences="1">
+      <code>$cache</code>
+    </ArgumentTypeCoercion>
     <InvalidReturnStatement occurrences="1">
       <code>$this-&gt;hydrator-&gt;loadCacheEntry($this-&gt;sourceEntity, $key, $cache, $collection)</code>
     </InvalidReturnStatement>
@@ -415,15 +418,14 @@
       <code>getCacheFactory</code>
       <code>buildCollectionHydrator</code>
     </PossiblyNullReference>
+    <PropertyTypeCoercion occurrences="1">
+      <code>$em-&gt;getMetadataFactory()</code>
+    </PropertyTypeCoercion>
     <RedundantConditionGivenDocblockType occurrences="3">
       <code>$this-&gt;cacheLogger &amp;&amp; $cached</code>
       <code>$this-&gt;cacheLogger</code>
       <code>$this-&gt;cacheLogger</code>
     </RedundantConditionGivenDocblockType>
-    <TypeCoercion occurrences="2">
-      <code>$em-&gt;getMetadataFactory()</code>
-      <code>$cache</code>
-    </TypeCoercion>
     <UndefinedInterfaceMethod occurrences="2">
       <code>getCacheRegion</code>
       <code>getEntityHydrator</code>
@@ -446,6 +448,9 @@
     </UndefinedInterfaceMethod>
   </file>
   <file src="lib/Doctrine/ORM/Cache/Persister/Entity/AbstractEntityPersister.php">
+    <ArgumentTypeCoercion occurrences="1">
+      <code>$cacheEntry</code>
+    </ArgumentTypeCoercion>
     <DocblockTypeContradiction occurrences="2">
       <code>$criteria instanceof Criteria</code>
       <code>$entity === null</code>
@@ -485,6 +490,9 @@
       <code>getTimestampRegion</code>
       <code>getValue</code>
     </PossiblyNullReference>
+    <PropertyTypeCoercion occurrences="1">
+      <code>$em-&gt;getMetadataFactory()</code>
+    </PropertyTypeCoercion>
     <RedundantConditionGivenDocblockType occurrences="14">
       <code>$this-&gt;cacheLogger &amp;&amp; $cached</code>
       <code>$this-&gt;cacheLogger</code>
@@ -501,10 +509,6 @@
       <code>$this-&gt;cacheLogger</code>
       <code>$this-&gt;cacheLogger</code>
     </RedundantConditionGivenDocblockType>
-    <TypeCoercion occurrences="2">
-      <code>$em-&gt;getMetadataFactory()</code>
-      <code>$cacheEntry</code>
-    </TypeCoercion>
     <UndefinedInterfaceMethod occurrences="12">
       <code>getInsertSQL</code>
       <code>getTargetEntity</code>
@@ -610,6 +614,9 @@
     </NoInterfaceProperties>
   </file>
   <file src="lib/Doctrine/ORM/Configuration.php">
+    <ArgumentTypeCoercion occurrences="1">
+      <code>$repositoryClassName</code>
+    </ArgumentTypeCoercion>
     <InvalidPropertyAssignmentValue occurrences="3">
       <code>$this-&gt;customStringFunctions</code>
       <code>$this-&gt;customNumericFunctions</code>
@@ -624,9 +631,6 @@
     <MissingReturnType occurrences="1">
       <code>addCustomDatetimeFunction</code>
     </MissingReturnType>
-    <TypeCoercion occurrences="1">
-      <code>$repositoryClassName</code>
-    </TypeCoercion>
   </file>
   <file src="lib/Doctrine/ORM/Configuration/MetadataConfiguration.php">
     <DeprecatedConstant occurrences="1">
@@ -657,6 +661,9 @@
     </TooManyArguments>
   </file>
   <file src="lib/Doctrine/ORM/EntityManager.php">
+    <ArgumentTypeCoercion occurrences="1">
+      <code>$this-&gt;metadataFactory</code>
+    </ArgumentTypeCoercion>
     <DocblockTypeContradiction occurrences="7">
       <code>$this-&gt;expressionBuilder === null</code>
       <code>is_object($entity)</code>
@@ -710,6 +717,9 @@
       <code>$filterCollection</code>
       <code>$cache</code>
     </PropertyNotSetInConstructor>
+    <PropertyTypeCoercion occurrences="1">
+      <code>new $metadataFactoryClassName()</code>
+    </PropertyTypeCoercion>
     <RedundantCondition occurrences="1">
       <code>is_object($connection)</code>
     </RedundantCondition>
@@ -717,10 +727,6 @@
       <code>$this-&gt;filterCollection === null || $this-&gt;filterCollection-&gt;isClean()</code>
       <code>$this-&gt;filterCollection !== null</code>
     </RedundantConditionGivenDocblockType>
-    <TypeCoercion occurrences="2">
-      <code>new $metadataFactoryClassName()</code>
-      <code>$this-&gt;metadataFactory</code>
-    </TypeCoercion>
     <TypeDoesNotContainType occurrences="1">
       <code>': "' . $connection . '"'</code>
     </TypeDoesNotContainType>
@@ -790,12 +796,12 @@
       <code>$stmt</code>
       <code>$hints</code>
     </PropertyNotSetInConstructor>
-    <TypeCoercion occurrences="4">
+    <PropertyTypeCoercion occurrences="4">
       <code>$stmt</code>
       <code>$resultSetMapping</code>
       <code>$stmt</code>
       <code>$resultSetMapping</code>
-    </TypeCoercion>
+    </PropertyTypeCoercion>
     <UndefinedInterfaceMethod occurrences="1">
       <code>getType</code>
     </UndefinedInterfaceMethod>
@@ -924,9 +930,9 @@
     <PropertyNotSetInConstructor occurrences="1">
       <code>LazyCriteriaCollection</code>
     </PropertyNotSetInConstructor>
-    <TypeCoercion occurrences="1">
+    <PropertyTypeCoercion occurrences="1">
       <code>$entityPersister</code>
-    </TypeCoercion>
+    </PropertyTypeCoercion>
     <UndefinedInterfaceMethod occurrences="1">
       <code>matching</code>
     </UndefinedInterfaceMethod>
@@ -965,9 +971,9 @@
       <code>$targetEntity</code>
       <code>$sourceEntity</code>
     </PropertyNotSetInConstructor>
-    <TypeCoercion occurrences="1">
+    <PropertyTypeCoercion occurrences="1">
       <code>$declaringClass</code>
-    </TypeCoercion>
+    </PropertyTypeCoercion>
   </file>
   <file src="lib/Doctrine/ORM/Mapping/ClassMetadata.php">
     <DocblockTypeContradiction occurrences="5">
@@ -1163,6 +1169,17 @@
     </MissingReturnType>
   </file>
   <file src="lib/Doctrine/ORM/Mapping/Driver/Annotation/AnnotationDriver.php">
+    <ArgumentTypeCoercion occurrences="9">
+      <code>$className</code>
+      <code>$metadata-&gt;getClassName()</code>
+      <code>$cacheAnnot</code>
+      <code>$columnAnnot</code>
+      <code>$joinColumnAnnot</code>
+      <code>$joinColumnAnnot</code>
+      <code>$joinTableAnnot</code>
+      <code>$override</code>
+      <code>$cacheAnnot</code>
+    </ArgumentTypeCoercion>
     <ImplementedReturnTypeMismatch occurrences="1">
       <code>Mapping\ClassMetadata</code>
     </ImplementedReturnTypeMismatch>
@@ -1225,17 +1242,6 @@
       <code>$entityAnnot-&gt;repositoryClass !== null</code>
       <code>$mappedSuperclassAnnot-&gt;repositoryClass !== null</code>
     </RedundantConditionGivenDocblockType>
-    <TypeCoercion occurrences="9">
-      <code>$className</code>
-      <code>$metadata-&gt;getClassName()</code>
-      <code>$cacheAnnot</code>
-      <code>$columnAnnot</code>
-      <code>$joinColumnAnnot</code>
-      <code>$joinColumnAnnot</code>
-      <code>$joinTableAnnot</code>
-      <code>$override</code>
-      <code>$cacheAnnot</code>
-    </TypeCoercion>
     <UndefinedPropertyFetch occurrences="2">
       <code>$parent-&gt;inheritanceType</code>
       <code>$parent-&gt;table</code>
@@ -1250,22 +1256,34 @@
     </UndefinedMethod>
   </file>
   <file src="lib/Doctrine/ORM/Mapping/Driver/Annotation/Binder/EntityClassMetadataBinder.php">
+    <ArgumentTypeCoercion occurrences="1">
+      <code>$this-&gt;classAnnotations[Annotation\Entity::class]</code>
+    </ArgumentTypeCoercion>
     <RedundantConditionGivenDocblockType occurrences="1">
       <code>$entityAnnotation-&gt;repositoryClass !== null</code>
     </RedundantConditionGivenDocblockType>
-    <TypeCoercion occurrences="1">
-      <code>$this-&gt;classAnnotations[Annotation\Entity::class]</code>
-    </TypeCoercion>
   </file>
   <file src="lib/Doctrine/ORM/Mapping/Driver/Annotation/Binder/MappedSuperClassMetadataBinder.php">
+    <ArgumentTypeCoercion occurrences="1">
+      <code>$this-&gt;classAnnotations[Annotation\MappedSuperclass::class]</code>
+    </ArgumentTypeCoercion>
     <RedundantConditionGivenDocblockType occurrences="1">
       <code>$mappedSuperclassAnnotation-&gt;repositoryClass !== null</code>
     </RedundantConditionGivenDocblockType>
-    <TypeCoercion occurrences="1">
-      <code>$this-&gt;classAnnotations[Annotation\MappedSuperclass::class]</code>
-    </TypeCoercion>
   </file>
   <file src="lib/Doctrine/ORM/Mapping/Driver/AnnotationDriver.php">
+    <ArgumentTypeCoercion occurrences="10">
+      <code>$className</code>
+      <code>$metadata-&gt;getClassName()</code>
+      <code>$cacheAnnot</code>
+      <code>$columnAnnot</code>
+      <code>$joinColumnAnnot</code>
+      <code>$joinColumnAnnot</code>
+      <code>$joinTableAnnot</code>
+      <code>$tableAnnot</code>
+      <code>$override</code>
+      <code>$cacheAnnot</code>
+    </ArgumentTypeCoercion>
     <ImplementedReturnTypeMismatch occurrences="1">
       <code>Mapping\ClassMetadata</code>
     </ImplementedReturnTypeMismatch>
@@ -1320,23 +1338,13 @@
     <PossiblyNullArgument occurrences="1">
       <code>$metadata-&gt;getTableName()</code>
     </PossiblyNullArgument>
+    <PropertyTypeCoercion occurrences="1">
+      <code>$reader</code>
+    </PropertyTypeCoercion>
     <RedundantConditionGivenDocblockType occurrences="2">
       <code>$entityAnnot-&gt;repositoryClass !== null</code>
       <code>$mappedSuperclassAnnot-&gt;repositoryClass !== null</code>
     </RedundantConditionGivenDocblockType>
-    <TypeCoercion occurrences="11">
-      <code>$reader</code>
-      <code>$className</code>
-      <code>$metadata-&gt;getClassName()</code>
-      <code>$cacheAnnot</code>
-      <code>$columnAnnot</code>
-      <code>$joinColumnAnnot</code>
-      <code>$joinColumnAnnot</code>
-      <code>$joinTableAnnot</code>
-      <code>$tableAnnot</code>
-      <code>$override</code>
-      <code>$cacheAnnot</code>
-    </TypeCoercion>
     <UndefinedPropertyFetch occurrences="3">
       <code>$parent-&gt;inheritanceType</code>
       <code>$parent-&gt;isMappedSuperclass</code>
@@ -1421,6 +1429,20 @@
     </PossiblyNullArgument>
   </file>
   <file src="lib/Doctrine/ORM/Mapping/Driver/NewAnnotationDriver.php">
+    <ArgumentTypeCoercion occurrences="12">
+      <code>$className</code>
+      <code>$cacheAnnot</code>
+      <code>$classMetadata</code>
+      <code>$classMetadata</code>
+      <code>$className</code>
+      <code>$cacheAnnot</code>
+      <code>$joinColumnAnnot</code>
+      <code>$cacheAnnot</code>
+      <code>$joinColumnAnnot</code>
+      <code>$cacheAnnot</code>
+      <code>$joinTableAnnot</code>
+      <code>$cacheAnnot</code>
+    </ArgumentTypeCoercion>
     <ImplementedReturnTypeMismatch occurrences="1">
       <code>Mapping\ClassMetadata</code>
     </ImplementedReturnTypeMismatch>
@@ -1491,20 +1513,6 @@
       <code>$entityAnnot-&gt;repositoryClass !== null</code>
       <code>$mappedSuperclassAnnot-&gt;repositoryClass !== null</code>
     </RedundantConditionGivenDocblockType>
-    <TypeCoercion occurrences="12">
-      <code>$className</code>
-      <code>$cacheAnnot</code>
-      <code>$classMetadata</code>
-      <code>$classMetadata</code>
-      <code>$className</code>
-      <code>$cacheAnnot</code>
-      <code>$joinColumnAnnot</code>
-      <code>$cacheAnnot</code>
-      <code>$joinColumnAnnot</code>
-      <code>$cacheAnnot</code>
-      <code>$joinTableAnnot</code>
-      <code>$cacheAnnot</code>
-    </TypeCoercion>
     <UndefinedMethod occurrences="1">
       <code>getClassName</code>
     </UndefinedMethod>
@@ -1516,6 +1524,9 @@
     </MissingParamType>
   </file>
   <file src="lib/Doctrine/ORM/Mapping/Driver/XmlDriver.php">
+    <ArgumentTypeCoercion occurrences="1">
+      <code>$override</code>
+    </ArgumentTypeCoercion>
     <InvalidStringClass occurrences="1">
       <code>new $existingClass($fieldName)</code>
     </InvalidStringClass>
@@ -1526,9 +1537,6 @@
     <PossiblyNullArgument occurrences="1">
       <code>$metadata-&gt;getTableName()</code>
     </PossiblyNullArgument>
-    <TypeCoercion occurrences="1">
-      <code>$override</code>
-    </TypeCoercion>
     <UndefinedPropertyFetch occurrences="2">
       <code>$parent-&gt;inheritanceType</code>
       <code>$parent-&gt;table</code>
@@ -1548,9 +1556,9 @@
       <code>$declaringClass</code>
       <code>$reflection</code>
     </PropertyNotSetInConstructor>
-    <TypeCoercion occurrences="1">
+    <PropertyTypeCoercion occurrences="1">
       <code>$declaringClass</code>
-    </TypeCoercion>
+    </PropertyTypeCoercion>
   </file>
   <file src="lib/Doctrine/ORM/Mapping/EntityClassMetadata.php">
     <PropertyNotSetInConstructor occurrences="1">
@@ -1769,9 +1777,9 @@
       <code>$declaringClass</code>
       <code>$reflection</code>
     </PropertyNotSetInConstructor>
-    <TypeCoercion occurrences="1">
+    <PropertyTypeCoercion occurrences="1">
       <code>$declaringClass</code>
-    </TypeCoercion>
+    </PropertyTypeCoercion>
   </file>
   <file src="lib/Doctrine/ORM/Mapping/VersionFieldMetadata.php">
     <PropertyNotSetInConstructor occurrences="1">
@@ -1805,6 +1813,9 @@
     </NullArgument>
   </file>
   <file src="lib/Doctrine/ORM/PersistentCollection.php">
+    <DocblockTypeContradiction occurrences="1">
+      <code>is_object($value)</code>
+    </DocblockTypeContradiction>
     <ImplementedReturnTypeMismatch occurrences="1">
       <code>Collection|object[]</code>
     </ImplementedReturnTypeMismatch>
@@ -1821,8 +1832,11 @@
       <code>setDirty</code>
       <code>setInitialized</code>
     </MissingReturnType>
-    <PossiblyNullArgument occurrences="1">
+    <PossiblyNullArgument occurrences="4">
       <code>$this-&gt;association-&gt;getIndexedBy()</code>
+      <code>$offset</code>
+      <code>$offset</code>
+      <code>$offset</code>
     </PossiblyNullArgument>
     <PossiblyNullPropertyAssignmentValue occurrences="2">
       <code>$association-&gt;getInversedBy() ?: $association-&gt;getMappedBy()</code>
@@ -1849,9 +1863,6 @@
     <TooManyArguments occurrences="1">
       <code>andX</code>
     </TooManyArguments>
-    <TooManyTemplateParams occurrences="1">
-      <code>Collection|object[]</code>
-    </TooManyTemplateParams>
     <UndefinedInterfaceMethod occurrences="1">
       <code>matching</code>
     </UndefinedInterfaceMethod>
@@ -1874,6 +1885,13 @@
     </PossiblyNullReference>
   </file>
   <file src="lib/Doctrine/ORM/Persisters/Collection/ManyToManyPersister.php">
+    <ArgumentTypeCoercion occurrences="5">
+      <code>$association</code>
+      <code>$association</code>
+      <code>$association</code>
+      <code>$association</code>
+      <code>$association</code>
+    </ArgumentTypeCoercion>
     <InvalidArgument occurrences="4">
       <code>$types</code>
       <code>$criteria</code>
@@ -1947,13 +1965,6 @@
     <PossiblyUndefinedMethod occurrences="1">
       <code>getJoinTable</code>
     </PossiblyUndefinedMethod>
-    <TypeCoercion occurrences="5">
-      <code>$association</code>
-      <code>$association</code>
-      <code>$association</code>
-      <code>$association</code>
-      <code>$association</code>
-    </TypeCoercion>
     <UndefinedInterfaceMethod occurrences="7">
       <code>getJoinTable</code>
       <code>getColumnName</code>
@@ -1977,6 +1988,11 @@
     </UndefinedMethod>
   </file>
   <file src="lib/Doctrine/ORM/Persisters/Collection/OneToManyPersister.php">
+    <ArgumentTypeCoercion occurrences="3">
+      <code>$criteria</code>
+      <code>$association</code>
+      <code>$criteria</code>
+    </ArgumentTypeCoercion>
     <InvalidArgument occurrences="1">
       <code>$criteria</code>
     </InvalidArgument>
@@ -1993,11 +2009,6 @@
     <PossiblyNullReference occurrences="1">
       <code>getJoinColumns</code>
     </PossiblyNullReference>
-    <TypeCoercion occurrences="3">
-      <code>$criteria</code>
-      <code>$association</code>
-      <code>$criteria</code>
-    </TypeCoercion>
     <UndefinedInterfaceMethod occurrences="1">
       <code>getJoinColumns</code>
     </UndefinedInterfaceMethod>
@@ -2024,6 +2035,14 @@
     </PossiblyNullArrayOffset>
   </file>
   <file src="lib/Doctrine/ORM/Persisters/Entity/BasicEntityPersister.php">
+    <ArgumentTypeCoercion occurrences="6">
+      <code>$versionProperty</code>
+      <code>$versionedClass</code>
+      <code>$versionedClass</code>
+      <code>$stmt</code>
+      <code>$stmt</code>
+      <code>$eagerProperty</code>
+    </ArgumentTypeCoercion>
     <DuplicateArrayKey occurrences="1">
       <code>Comparison::IS          =&gt; '= %s'</code>
     </DuplicateArrayKey>
@@ -2180,14 +2199,6 @@
       <code>$property instanceof ToManyAssociationMetadata &amp;&amp; $property-&gt;getIndexedBy()</code>
       <code>$this-&gt;insertSql !== null</code>
     </RedundantConditionGivenDocblockType>
-    <TypeCoercion occurrences="6">
-      <code>$versionProperty</code>
-      <code>$versionedClass</code>
-      <code>$versionedClass</code>
-      <code>$stmt</code>
-      <code>$stmt</code>
-      <code>$eagerProperty</code>
-    </TypeCoercion>
     <UndefinedInterfaceMethod occurrences="19">
       <code>getTargetEntity</code>
       <code>getJoinColumns</code>
@@ -2233,6 +2244,9 @@
     </MissingParamType>
   </file>
   <file src="lib/Doctrine/ORM/Persisters/Entity/JoinedSubclassPersister.php">
+    <ArgumentTypeCoercion occurrences="1">
+      <code>$property-&gt;getDeclaringClass()</code>
+    </ArgumentTypeCoercion>
     <DocblockTypeContradiction occurrences="1">
       <code>is_array($id)</code>
     </DocblockTypeContradiction>
@@ -2281,9 +2295,6 @@
     <RedundantConditionGivenDocblockType occurrences="1">
       <code>! is_array($id) || ! isset($id[$columnName])</code>
     </RedundantConditionGivenDocblockType>
-    <TypeCoercion occurrences="1">
-      <code>$property-&gt;getDeclaringClass()</code>
-    </TypeCoercion>
     <UndefinedInterfaceMethod occurrences="7">
       <code>getInsertSQL</code>
       <code>getInsertSQL</code>
@@ -2579,12 +2590,12 @@
     </UndefinedInterfaceMethod>
   </file>
   <file src="lib/Doctrine/ORM/Query/AST/Functions/LengthFunction.php">
+    <ArgumentTypeCoercion occurrences="1">
+      <code>$this-&gt;stringPrimary</code>
+    </ArgumentTypeCoercion>
     <PropertyNotSetInConstructor occurrences="1">
       <code>$stringPrimary</code>
     </PropertyNotSetInConstructor>
-    <TypeCoercion occurrences="1">
-      <code>$this-&gt;stringPrimary</code>
-    </TypeCoercion>
   </file>
   <file src="lib/Doctrine/ORM/Query/AST/Functions/LocateFunction.php">
     <InvalidScalarArgument occurrences="1"/>
@@ -2597,12 +2608,12 @@
     </PropertyNotSetInConstructor>
   </file>
   <file src="lib/Doctrine/ORM/Query/AST/Functions/LowerFunction.php">
+    <ArgumentTypeCoercion occurrences="1">
+      <code>$this-&gt;stringPrimary</code>
+    </ArgumentTypeCoercion>
     <PropertyNotSetInConstructor occurrences="1">
       <code>$stringPrimary</code>
     </PropertyNotSetInConstructor>
-    <TypeCoercion occurrences="1">
-      <code>$this-&gt;stringPrimary</code>
-    </TypeCoercion>
   </file>
   <file src="lib/Doctrine/ORM/Query/AST/Functions/MaxFunction.php">
     <PropertyNotSetInConstructor occurrences="1">
@@ -2677,12 +2688,12 @@
     </PropertyNotSetInConstructor>
   </file>
   <file src="lib/Doctrine/ORM/Query/AST/Functions/UpperFunction.php">
+    <ArgumentTypeCoercion occurrences="1">
+      <code>$this-&gt;stringPrimary</code>
+    </ArgumentTypeCoercion>
     <PropertyNotSetInConstructor occurrences="1">
       <code>$stringPrimary</code>
     </PropertyNotSetInConstructor>
-    <TypeCoercion occurrences="1">
-      <code>$this-&gt;stringPrimary</code>
-    </TypeCoercion>
   </file>
   <file src="lib/Doctrine/ORM/Query/AST/GeneralCaseExpression.php">
     <MissingReturnType occurrences="1">
@@ -3054,9 +3065,9 @@
     <PropertyNotSetInConstructor occurrences="1">
       <code>$filterHash</code>
     </PropertyNotSetInConstructor>
-    <TypeCoercion occurrences="1">
+    <PropertyTypeCoercion occurrences="1">
       <code>$this-&gt;enabledFilters</code>
-    </TypeCoercion>
+    </PropertyTypeCoercion>
     <UndefinedClass occurrences="1">
       <code>new $filterClass($this-&gt;em)</code>
     </UndefinedClass>
@@ -3293,6 +3304,10 @@
     </UndefinedInterfaceMethod>
   </file>
   <file src="lib/Doctrine/ORM/Query/SqlWalker.php">
+    <ArgumentTypeCoercion occurrences="2">
+      <code>$parentClass</code>
+      <code>$scalarExpression</code>
+    </ArgumentTypeCoercion>
     <DocblockTypeContradiction occurrences="9">
       <code>''</code>
       <code>$condExpr instanceof AST\ConditionalExpression</code>
@@ -3412,10 +3427,6 @@
       <code>$leftExpr instanceof AST\Node</code>
       <code>$rightExpr instanceof AST\Node</code>
     </RedundantConditionGivenDocblockType>
-    <TypeCoercion occurrences="2">
-      <code>$parentClass</code>
-      <code>$scalarExpression</code>
-    </TypeCoercion>
     <UndefinedMethod occurrences="3">
       <code>getTableName</code>
       <code>getMaxResults</code>
@@ -3592,11 +3603,11 @@
     </RedundantConditionGivenDocblockType>
   </file>
   <file src="lib/Doctrine/ORM/Reflection/RuntimeReflectionService.php">
-    <TypeCoercion occurrences="3">
+    <ArgumentTypeCoercion occurrences="3">
       <code>$className</code>
       <code>$className</code>
       <code>$className</code>
-    </TypeCoercion>
+    </ArgumentTypeCoercion>
   </file>
   <file src="lib/Doctrine/ORM/Reflection/StaticReflectionService.php">
     <PossiblyFalseOperand occurrences="2">
@@ -3663,6 +3674,21 @@
     <MissingReturnType occurrences="1">
       <code>configure</code>
     </MissingReturnType>
+    <PossiblyInvalidArgument occurrences="13">
+      <code>$ownerClass</code>
+      <code>$assoc</code>
+      <code>$ownerClass</code>
+      <code>$assoc</code>
+      <code>$ownerClass</code>
+      <code>$assoc</code>
+      <code>$ownerId</code>
+      <code>$ownerClass</code>
+      <code>$assoc</code>
+      <code>$ownerClass</code>
+      <code>$assoc</code>
+      <code>$ownerClass</code>
+      <code>$assoc</code>
+    </PossiblyInvalidArgument>
   </file>
   <file src="lib/Doctrine/ORM/Tools/Console/Command/ClearCache/EntityRegionCommand.php">
     <InvalidReturnType occurrences="1">
@@ -3671,6 +3697,15 @@
     <MissingReturnType occurrences="1">
       <code>configure</code>
     </MissingReturnType>
+    <PossiblyInvalidArgument occurrences="7">
+      <code>$entityClass</code>
+      <code>$entityClass</code>
+      <code>$entityClass</code>
+      <code>$entityId</code>
+      <code>$entityClass</code>
+      <code>$entityClass</code>
+      <code>$entityClass</code>
+    </PossiblyInvalidArgument>
   </file>
   <file src="lib/Doctrine/ORM/Tools/Console/Command/ClearCache/MetadataCommand.php">
     <MissingReturnType occurrences="1">
@@ -3692,6 +3727,12 @@
     <MissingReturnType occurrences="1">
       <code>configure</code>
     </MissingReturnType>
+    <PossiblyInvalidArgument occurrences="4">
+      <code>$name</code>
+      <code>$name</code>
+      <code>$name</code>
+      <code>$name</code>
+    </PossiblyInvalidArgument>
     <RedundantConditionGivenDocblockType occurrences="1">
       <code>is_object($queryRegion)</code>
     </RedundantConditionGivenDocblockType>
@@ -3717,6 +3758,9 @@
     <InvalidReturnType occurrences="1">
       <code>execute</code>
     </InvalidReturnType>
+    <InvalidScalarArgument occurrences="1">
+      <code>$input-&gt;getOption('filter')</code>
+    </InvalidScalarArgument>
     <MissingReturnType occurrences="1">
       <code>configure</code>
     </MissingReturnType>
@@ -3761,6 +3805,9 @@
       <code>configure</code>
       <code>displayEntity</code>
     </MissingReturnType>
+    <PossiblyInvalidArgument occurrences="1">
+      <code>$input-&gt;getArgument('entityName')</code>
+    </PossiblyInvalidArgument>
     <PossiblyNullReference occurrences="4">
       <code>getName</code>
       <code>getAllClassNames</code>
@@ -3775,9 +3822,16 @@
     <InvalidReturnType occurrences="1">
       <code>execute</code>
     </InvalidReturnType>
+    <InvalidScalarArgument occurrences="1">
+      <code>$hydrationModeName</code>
+    </InvalidScalarArgument>
     <MissingReturnType occurrences="1">
       <code>configure</code>
     </MissingReturnType>
+    <PossiblyInvalidArgument occurrences="2">
+      <code>$hydrationModeName</code>
+      <code>$dql</code>
+    </PossiblyInvalidArgument>
   </file>
   <file src="lib/Doctrine/ORM/Tools/Console/Command/SchemaTool/AbstractCommand.php">
     <InvalidArgument occurrences="1">
@@ -3919,6 +3973,9 @@
     </PossiblyNullPropertyFetch>
   </file>
   <file src="lib/Doctrine/ORM/Tools/Pagination/Paginator.php">
+    <ArgumentTypeCoercion occurrences="1">
+      <code>$parameters</code>
+    </ArgumentTypeCoercion>
     <DocblockTypeContradiction occurrences="1">
       <code>$this-&gt;count === null</code>
     </DocblockTypeContradiction>
@@ -3935,9 +3992,6 @@
     <PropertyNotSetInConstructor occurrences="1">
       <code>$count</code>
     </PropertyNotSetInConstructor>
-    <TypeCoercion occurrences="1">
-      <code>$parameters</code>
-    </TypeCoercion>
   </file>
   <file src="lib/Doctrine/ORM/Tools/Pagination/RowNumberOverFunction.php">
     <PropertyNotSetInConstructor occurrences="1">
@@ -3985,6 +4039,9 @@
     </MissingReturnType>
   </file>
   <file src="lib/Doctrine/ORM/Tools/SchemaTool.php">
+    <ArgumentTypeCoercion occurrences="1">
+      <code>$idProperty</code>
+    </ArgumentTypeCoercion>
     <InvalidArgument occurrences="6">
       <code>$processedClasses</code>
       <code>$pkColumns</code>
@@ -4038,9 +4095,6 @@
       <code>is_numeric($indexName)</code>
       <code>$indexName</code>
     </RedundantCondition>
-    <TypeCoercion occurrences="1">
-      <code>$idProperty</code>
-    </TypeCoercion>
     <UndefinedMethod occurrences="1">
       <code>getJoinColumns</code>
     </UndefinedMethod>
@@ -4083,6 +4137,14 @@
     </UndefinedInterfaceMethod>
   </file>
   <file src="lib/Doctrine/ORM/UnitOfWork.php">
+    <ArgumentTypeCoercion occurrences="6">
+      <code>$property</code>
+      <code>$property</code>
+      <code>$association</code>
+      <code>$association</code>
+      <code>$association</code>
+      <code>'count'</code>
+    </ArgumentTypeCoercion>
     <DocblockTypeContradiction occurrences="5">
       <code>$this-&gt;entityDeletions</code>
       <code>$owner === null</code>
@@ -4208,14 +4270,6 @@
       <code>$owner === null</code>
       <code>! is_object($object) || ! $this-&gt;isInIdentityMap($object)</code>
     </RedundantConditionGivenDocblockType>
-    <TypeCoercion occurrences="6">
-      <code>$property</code>
-      <code>$property</code>
-      <code>$association</code>
-      <code>$association</code>
-      <code>$association</code>
-      <code>'count'</code>
-    </TypeCoercion>
     <UndefinedInterfaceMethod occurrences="8">
       <code>getMapping</code>
       <code>getMapping</code>
@@ -4400,6 +4454,9 @@
     </MissingReturnType>
   </file>
   <file src="tests/Doctrine/Tests/EventListener/CacheMetadataListener.php">
+    <ArgumentTypeCoercion occurrences="1">
+      <code>$em</code>
+    </ArgumentTypeCoercion>
     <InvalidArgument occurrences="1">
       <code>$metadata</code>
     </InvalidArgument>
@@ -4408,9 +4465,6 @@
       <code>recordVisit</code>
       <code>enableCaching</code>
     </MissingReturnType>
-    <TypeCoercion occurrences="1">
-      <code>$em</code>
-    </TypeCoercion>
     <UndefinedInterfaceMethod occurrences="1">
       <code>getClassName</code>
     </UndefinedInterfaceMethod>
@@ -4472,9 +4526,9 @@
     <PropertyNotSetInConstructor occurrences="1">
       <code>ConnectionMock</code>
     </PropertyNotSetInConstructor>
-    <TypeCoercion occurrences="1">
+    <PropertyTypeCoercion occurrences="1">
       <code>$platform</code>
-    </TypeCoercion>
+    </PropertyTypeCoercion>
     <UndefinedThisPropertyAssignment occurrences="1">
       <code>$this-&gt;platform</code>
     </UndefinedThisPropertyAssignment>
@@ -5663,16 +5717,6 @@
       <code>getDescription</code>
     </MissingReturnType>
   </file>
-  <file src="tests/Doctrine/Tests/Models/ManyToManyPersister/ChildClass.php">
-    <TooManyTemplateParams occurrences="1">
-      <code>Collection|ParentClass[]</code>
-    </TooManyTemplateParams>
-  </file>
-  <file src="tests/Doctrine/Tests/Models/ManyToManyPersister/ParentClass.php">
-    <TooManyTemplateParams occurrences="1">
-      <code>Collection|ChildClass[]</code>
-    </TooManyTemplateParams>
-  </file>
   <file src="tests/Doctrine/Tests/Models/Navigation/NavCountry.php">
     <MissingParamType occurrences="1">
       <code>$name</code>
@@ -5953,6 +5997,12 @@
     </PropertyNotSetInConstructor>
   </file>
   <file src="tests/Doctrine/Tests/ORM/Cache/DefaultCacheFactoryTest.php">
+    <ArgumentTypeCoercion occurrences="4">
+      <code>$association</code>
+      <code>$association</code>
+      <code>$association</code>
+      <code>$association</code>
+    </ArgumentTypeCoercion>
     <InvalidPropertyAssignmentValue occurrences="1"/>
     <PossiblyNullArgument occurrences="4">
       <code>$association</code>
@@ -5975,12 +6025,6 @@
       <code>$regionsConfig</code>
       <code>DefaultCacheFactoryTest</code>
     </PropertyNotSetInConstructor>
-    <TypeCoercion occurrences="4">
-      <code>$association</code>
-      <code>$association</code>
-      <code>$association</code>
-      <code>$association</code>
-    </TypeCoercion>
     <UndefinedInterfaceMethod occurrences="18">
       <code>expects</code>
       <code>expects</code>
@@ -6003,6 +6047,9 @@
     </UndefinedInterfaceMethod>
   </file>
   <file src="tests/Doctrine/Tests/ORM/Cache/DefaultCacheTest.php">
+    <ArgumentTypeCoercion occurrences="1">
+      <code>$metadata-&gt;getProperty($association)</code>
+    </ArgumentTypeCoercion>
     <MissingReturnType occurrences="2">
       <code>putEntityCacheEntry</code>
       <code>putCollectionCacheEntry</code>
@@ -6015,9 +6062,6 @@
       <code>$em</code>
       <code>DefaultCacheTest</code>
     </PropertyNotSetInConstructor>
-    <TypeCoercion occurrences="1">
-      <code>$metadata-&gt;getProperty($association)</code>
-    </TypeCoercion>
     <UndefinedInterfaceMethod occurrences="2">
       <code>getCacheRegion</code>
       <code>getCacheRegion</code>
@@ -6037,6 +6081,10 @@
     </TooManyArguments>
   </file>
   <file src="tests/Doctrine/Tests/ORM/Cache/DefaultEntityHydratorTest.php">
+    <ArgumentTypeCoercion occurrences="2">
+      <code>$proxy</code>
+      <code>$proxy</code>
+    </ArgumentTypeCoercion>
     <PossiblyNullArgument occurrences="1">
       <code>$proxy</code>
     </PossiblyNullArgument>
@@ -6045,10 +6093,6 @@
       <code>$em</code>
       <code>DefaultEntityHydratorTest</code>
     </PropertyNotSetInConstructor>
-    <TypeCoercion occurrences="2">
-      <code>$proxy</code>
-      <code>$proxy</code>
-    </TypeCoercion>
   </file>
   <file src="tests/Doctrine/Tests/ORM/Cache/DefaultQueryCacheTest.php">
     <MissingPropertyType occurrences="10">
@@ -6139,6 +6183,9 @@
     </PropertyNotSetInConstructor>
   </file>
   <file src="tests/Doctrine/Tests/ORM/Cache/Persister/Collection/AbstractCollectionPersisterTest.php">
+    <ArgumentTypeCoercion occurrences="1">
+      <code>$assoc</code>
+    </ArgumentTypeCoercion>
     <InvalidPropertyAssignmentValue occurrences="1"/>
     <InvalidReturnStatement occurrences="1"/>
     <InvalidReturnType occurrences="1">
@@ -6156,9 +6203,6 @@
     <PossiblyNullArgument occurrences="1">
       <code>$assoc</code>
     </PossiblyNullArgument>
-    <TypeCoercion occurrences="1">
-      <code>$assoc</code>
-    </TypeCoercion>
     <UndefinedInterfaceMethod occurrences="9">
       <code>flushAll</code>
       <code>expects</code>
@@ -6182,6 +6226,9 @@
     </PropertyNotSetInConstructor>
   </file>
   <file src="tests/Doctrine/Tests/ORM/Cache/Persister/Collection/ReadWriteCachedCollectionPersisterTest.php">
+    <ArgumentTypeCoercion occurrences="1">
+      <code>$region</code>
+    </ArgumentTypeCoercion>
     <InvalidReturnStatement occurrences="1"/>
     <InvalidReturnType occurrences="1">
       <code>Region</code>
@@ -6189,9 +6236,6 @@
     <PropertyNotSetInConstructor occurrences="1">
       <code>ReadWriteCachedCollectionPersisterTest</code>
     </PropertyNotSetInConstructor>
-    <TypeCoercion occurrences="1">
-      <code>$region</code>
-    </TypeCoercion>
     <UndefinedInterfaceMethod occurrences="18">
       <code>expects</code>
       <code>expects</code>
@@ -6274,6 +6318,9 @@
     </PropertyNotSetInConstructor>
   </file>
   <file src="tests/Doctrine/Tests/ORM/Cache/Persister/Entity/ReadWriteCachedEntityPersisterTest.php">
+    <ArgumentTypeCoercion occurrences="1">
+      <code>$region</code>
+    </ArgumentTypeCoercion>
     <InvalidReturnStatement occurrences="1"/>
     <InvalidReturnType occurrences="1">
       <code>Region</code>
@@ -6281,9 +6328,6 @@
     <PropertyNotSetInConstructor occurrences="1">
       <code>ReadWriteCachedEntityPersisterTest</code>
     </PropertyNotSetInConstructor>
-    <TypeCoercion occurrences="1">
-      <code>$region</code>
-    </TypeCoercion>
     <UndefinedInterfaceMethod occurrences="14">
       <code>expects</code>
       <code>expects</code>
@@ -6428,9 +6472,9 @@
       <code>$em</code>
       <code>EntityManagerTest</code>
     </PropertyNotSetInConstructor>
-    <TypeCoercion occurrences="1">
+    <PropertyTypeCoercion occurrences="1">
       <code>$this-&gt;getTestEntityManager()</code>
-    </TypeCoercion>
+    </PropertyTypeCoercion>
     <UndefinedClass occurrences="4">
       <code>$nestedIdReference</code>
       <code>$nestedIdReference</code>
@@ -6663,6 +6707,9 @@
     </PropertyNotSetInConstructor>
   </file>
   <file src="tests/Doctrine/Tests/ORM/Functional/CompositePrimaryKeyTest.php">
+    <ArgumentTypeCoercion occurrences="1">
+      <code>$poi</code>
+    </ArgumentTypeCoercion>
     <MissingReturnType occurrences="2">
       <code>putGermanysBrandenburderTor</code>
       <code>putTripAroundEurope</code>
@@ -6683,9 +6730,6 @@
     <PropertyNotSetInConstructor occurrences="1">
       <code>CompositePrimaryKeyTest</code>
     </PropertyNotSetInConstructor>
-    <TypeCoercion occurrences="1">
-      <code>$poi</code>
-    </TypeCoercion>
   </file>
   <file src="tests/Doctrine/Tests/ORM/Functional/CompositePrimaryKeyWithAssociationsTest.php">
     <MissingPropertyType occurrences="1">
@@ -6822,7 +6866,7 @@
       <code>$listener</code>
       <code>EntityListenersTest</code>
     </PropertyNotSetInConstructor>
-    <TypeCoercion occurrences="1"/>
+    <PropertyTypeCoercion occurrences="1"/>
   </file>
   <file src="tests/Doctrine/Tests/ORM/Functional/EntityRepositoryCriteriaTest.php">
     <MissingPropertyType occurrences="1">
@@ -8116,12 +8160,19 @@
     </PropertyNotSetInConstructor>
   </file>
   <file src="tests/Doctrine/Tests/ORM/Functional/QueryTest.php">
-    <InvalidScalarArgument occurrences="4">
+    <ArgumentTypeCoercion occurrences="1">
+      <code>$identityMap[CmsArticle::class]</code>
+    </ArgumentTypeCoercion>
+    <InvalidScalarArgument occurrences="5">
       <code>1</code>
       <code>2</code>
+      <code>$extractValue</code>
       <code>1</code>
       <code>FetchMode::EAGER</code>
     </InvalidScalarArgument>
+    <InvalidTemplateParam occurrences="1">
+      <code>$parameters-&gt;map($extractValue)</code>
+    </InvalidTemplateParam>
     <MissingPropertyType occurrences="7">
       <code>$article1-&gt;id</code>
       <code>$author-&gt;id</code>
@@ -8140,9 +8191,6 @@
     <PropertyNotSetInConstructor occurrences="1">
       <code>QueryTest</code>
     </PropertyNotSetInConstructor>
-    <TypeCoercion occurrences="1">
-      <code>$identityMap[CmsArticle::class]</code>
-    </TypeCoercion>
   </file>
   <file src="tests/Doctrine/Tests/ORM/Functional/ReadOnlyTest.php">
     <MissingParamType occurrences="2">
@@ -8397,6 +8445,14 @@
     </PossiblyNullReference>
   </file>
   <file src="tests/Doctrine/Tests/ORM/Functional/SecondLevelCacheCompositePrimaryKeyTest.php">
+    <ArgumentTypeCoercion occurrences="6">
+      <code>$leavingFrom</code>
+      <code>$goingTo</code>
+      <code>$leavingFrom</code>
+      <code>$goingTo</code>
+      <code>$leavingFrom</code>
+      <code>$goingTo</code>
+    </ArgumentTypeCoercion>
     <PossiblyNullArgument occurrences="7">
       <code>$leavingFrom</code>
       <code>$goingTo</code>
@@ -8420,14 +8476,6 @@
     <PropertyNotSetInConstructor occurrences="1">
       <code>SecondLevelCacheCompositePrimaryKeyTest</code>
     </PropertyNotSetInConstructor>
-    <TypeCoercion occurrences="6">
-      <code>$leavingFrom</code>
-      <code>$goingTo</code>
-      <code>$leavingFrom</code>
-      <code>$goingTo</code>
-      <code>$leavingFrom</code>
-      <code>$goingTo</code>
-    </TypeCoercion>
   </file>
   <file src="tests/Doctrine/Tests/ORM/Functional/SecondLevelCacheCompositePrimaryKeyWithAssociationsTest.php">
     <MissingPropertyType occurrences="1">
@@ -8494,6 +8542,9 @@
     </UndefinedInterfaceMethod>
   </file>
   <file src="tests/Doctrine/Tests/ORM/Functional/SecondLevelCacheExtraLazyCollectionTest.php">
+    <ArgumentTypeCoercion occurrences="1">
+      <code>$ref</code>
+    </ArgumentTypeCoercion>
     <PossiblyNullArgument occurrences="1">
       <code>$owner</code>
     </PossiblyNullArgument>
@@ -8513,9 +8564,6 @@
     <PropertyNotSetInConstructor occurrences="1">
       <code>SecondLevelCacheExtraLazyCollectionTest</code>
     </PropertyNotSetInConstructor>
-    <TypeCoercion occurrences="1">
-      <code>$ref</code>
-    </TypeCoercion>
     <UndefinedInterfaceMethod occurrences="4">
       <code>setFetchMode</code>
       <code>setFetchMode</code>
@@ -8524,6 +8572,9 @@
     </UndefinedInterfaceMethod>
   </file>
   <file src="tests/Doctrine/Tests/ORM/Functional/SecondLevelCacheJoinTableInheritanceTest.php">
+    <ArgumentTypeCoercion occurrences="1">
+      <code>$this-&gt;em-&gt;find(Attraction::class, $this-&gt;attractions[5]-&gt;getId())</code>
+    </ArgumentTypeCoercion>
     <PossiblyNullArgument occurrences="1">
       <code>$this-&gt;em-&gt;find(Attraction::class, $this-&gt;attractions[5]-&gt;getId())</code>
     </PossiblyNullArgument>
@@ -8555,9 +8606,6 @@
     <PropertyNotSetInConstructor occurrences="1">
       <code>SecondLevelCacheJoinTableInheritanceTest</code>
     </PropertyNotSetInConstructor>
-    <TypeCoercion occurrences="1">
-      <code>$this-&gt;em-&gt;find(Attraction::class, $this-&gt;attractions[5]-&gt;getId())</code>
-    </TypeCoercion>
   </file>
   <file src="tests/Doctrine/Tests/ORM/Functional/SecondLevelCacheManyToManyTest.php">
     <PossiblyNullArgument occurrences="1">
@@ -8619,6 +8667,9 @@
     </PropertyNotSetInConstructor>
   </file>
   <file src="tests/Doctrine/Tests/ORM/Functional/SecondLevelCacheManyToOneTest.php">
+    <ArgumentTypeCoercion occurrences="1">
+      <code>$c3</code>
+    </ArgumentTypeCoercion>
     <InvalidPropertyAssignmentValue occurrences="1">
       <code>$action2</code>
     </InvalidPropertyAssignmentValue>
@@ -8692,11 +8743,11 @@
     <PropertyNotSetInConstructor occurrences="1">
       <code>SecondLevelCacheManyToOneTest</code>
     </PropertyNotSetInConstructor>
-    <TypeCoercion occurrences="1">
-      <code>$c3</code>
-    </TypeCoercion>
   </file>
   <file src="tests/Doctrine/Tests/ORM/Functional/SecondLevelCacheOneToManyTest.php">
+    <ArgumentTypeCoercion occurrences="1">
+      <code>$entity</code>
+    </ArgumentTypeCoercion>
     <MissingPropertyType occurrences="1">
       <code>$token-&gt;token</code>
     </MissingPropertyType>
@@ -8776,9 +8827,6 @@
     <PropertyNotSetInConstructor occurrences="1">
       <code>SecondLevelCacheOneToManyTest</code>
     </PropertyNotSetInConstructor>
-    <TypeCoercion occurrences="1">
-      <code>$entity</code>
-    </TypeCoercion>
   </file>
   <file src="tests/Doctrine/Tests/ORM/Functional/SecondLevelCacheOneToOneTest.php">
     <MissingPropertyType occurrences="2">
@@ -8860,17 +8908,20 @@
     </PropertyNotSetInConstructor>
   </file>
   <file src="tests/Doctrine/Tests/ORM/Functional/SecondLevelCacheRepositoryTest.php">
+    <ArgumentTypeCoercion occurrences="1">
+      <code>$this-&gt;em-&gt;find(Country::class, $this-&gt;countries[0]-&gt;getId())</code>
+    </ArgumentTypeCoercion>
     <PossiblyNullArgument occurrences="1">
       <code>$country</code>
     </PossiblyNullArgument>
     <PropertyNotSetInConstructor occurrences="1">
       <code>SecondLevelCacheRepositoryTest</code>
     </PropertyNotSetInConstructor>
-    <TypeCoercion occurrences="1">
-      <code>$this-&gt;em-&gt;find(Country::class, $this-&gt;countries[0]-&gt;getId())</code>
-    </TypeCoercion>
   </file>
   <file src="tests/Doctrine/Tests/ORM/Functional/SecondLevelCacheSingleTableInheritanceTest.php">
+    <ArgumentTypeCoercion occurrences="1">
+      <code>$this-&gt;em-&gt;find(City::class, $this-&gt;cities[1]-&gt;getId())</code>
+    </ArgumentTypeCoercion>
     <PossiblyNullArgument occurrences="1">
       <code>$this-&gt;em-&gt;find(City::class, $this-&gt;cities[1]-&gt;getId())</code>
     </PossiblyNullArgument>
@@ -8907,9 +8958,6 @@
     <PropertyNotSetInConstructor occurrences="1">
       <code>SecondLevelCacheSingleTableInheritanceTest</code>
     </PropertyNotSetInConstructor>
-    <TypeCoercion occurrences="1">
-      <code>$this-&gt;em-&gt;find(City::class, $this-&gt;cities[1]-&gt;getId())</code>
-    </TypeCoercion>
   </file>
   <file src="tests/Doctrine/Tests/ORM/Functional/SecondLevelCacheTest.php">
     <MissingParamType occurrences="5">
@@ -9043,12 +9091,12 @@
     </UndefinedInterfaceMethod>
   </file>
   <file src="tests/Doctrine/Tests/ORM/Functional/StandardEntityPersisterTest.php">
+    <ArgumentTypeCoercion occurrences="1">
+      <code>$class-&gt;getProperty('customer')</code>
+    </ArgumentTypeCoercion>
     <PropertyNotSetInConstructor occurrences="1">
       <code>StandardEntityPersisterTest</code>
     </PropertyNotSetInConstructor>
-    <TypeCoercion occurrences="1">
-      <code>$class-&gt;getProperty('customer')</code>
-    </TypeCoercion>
   </file>
   <file src="tests/Doctrine/Tests/ORM/Functional/Ticket/DDC1040Test.php">
     <PropertyNotSetInConstructor occurrences="1">
@@ -9454,6 +9502,9 @@
     </PropertyNotSetInConstructor>
   </file>
   <file src="tests/Doctrine/Tests/ORM/Functional/Ticket/DDC142Test.php">
+    <ArgumentTypeCoercion occurrences="1">
+      <code>$addressRef</code>
+    </ArgumentTypeCoercion>
     <MissingPropertyType occurrences="1">
       <code>$user-&gt;id</code>
     </MissingPropertyType>
@@ -9478,9 +9529,6 @@
     <PropertyNotSetInConstructor occurrences="1">
       <code>DDC142Test</code>
     </PropertyNotSetInConstructor>
-    <TypeCoercion occurrences="1">
-      <code>$addressRef</code>
-    </TypeCoercion>
   </file>
   <file src="tests/Doctrine/Tests/ORM/Functional/Ticket/DDC1430Test.php">
     <MissingParamType occurrences="1">
@@ -10084,6 +10132,9 @@
     </PropertyNotSetInConstructor>
   </file>
   <file src="tests/Doctrine/Tests/ORM/Functional/Ticket/DDC2074Test.php">
+    <ArgumentTypeCoercion occurrences="1">
+      <code>$class-&gt;getProperty('categories')</code>
+    </ArgumentTypeCoercion>
     <PossiblyNullArgument occurrences="1">
       <code>$class-&gt;getProperty('categories')</code>
     </PossiblyNullArgument>
@@ -10096,9 +10147,6 @@
     <PropertyNotSetInConstructor occurrences="1">
       <code>DDC2074Test</code>
     </PropertyNotSetInConstructor>
-    <TypeCoercion occurrences="1">
-      <code>$class-&gt;getProperty('categories')</code>
-    </TypeCoercion>
   </file>
   <file src="tests/Doctrine/Tests/ORM/Functional/Ticket/DDC2084Test.php">
     <MissingParamType occurrences="2">
@@ -10296,8 +10344,9 @@
     </PropertyNotSetInConstructor>
   </file>
   <file src="tests/Doctrine/Tests/ORM/Functional/Ticket/DDC2306Test.php">
-    <MissingPropertyType occurrences="3">
+    <MissingPropertyType occurrences="4">
       <code>$address-&gt;id</code>
+      <code>$address-&gt;users-&gt;first()-&gt;user</code>
       <code>$user-&gt;id</code>
       <code>$user-&gt;id</code>
     </MissingPropertyType>
@@ -10305,25 +10354,21 @@
       <code>$user-&gt;id</code>
       <code>$user-&gt;id</code>
     </NoInterfaceProperties>
+    <PossiblyInvalidPropertyFetch occurrences="1">
+      <code>$address-&gt;users-&gt;first()-&gt;user</code>
+    </PossiblyInvalidPropertyFetch>
     <PossiblyUndefinedMethod occurrences="1">
       <code>initializeProxy</code>
     </PossiblyUndefinedMethod>
     <PropertyNotSetInConstructor occurrences="1">
       <code>DDC2306Test</code>
     </PropertyNotSetInConstructor>
-    <TooManyTemplateParams occurrences="2">
-      <code>DDC2306UserAddress[]|Collection</code>
-      <code>DDC2306UserAddress[]|Collection</code>
-    </TooManyTemplateParams>
   </file>
   <file src="tests/Doctrine/Tests/ORM/Functional/Ticket/DDC2346Test.php">
     <PropertyNotSetInConstructor occurrences="2">
       <code>$logger</code>
       <code>DDC2346Test</code>
     </PropertyNotSetInConstructor>
-    <TooManyTemplateParams occurrences="1">
-      <code>DDC2346Bar[]|Collection</code>
-    </TooManyTemplateParams>
   </file>
   <file src="tests/Doctrine/Tests/ORM/Functional/Ticket/DDC2350Test.php">
     <MissingPropertyType occurrences="1">
@@ -10685,6 +10730,10 @@
     </PropertyNotSetInConstructor>
   </file>
   <file src="tests/Doctrine/Tests/ORM/Functional/Ticket/DDC2984Test.php">
+    <ArgumentTypeCoercion occurrences="2">
+      <code>$sameUser</code>
+      <code>$equalUser</code>
+    </ArgumentTypeCoercion>
     <MissingReturnType occurrences="2">
       <code>applyName</code>
       <code>getName</code>
@@ -10696,10 +10745,6 @@
     <PropertyNotSetInConstructor occurrences="1">
       <code>DDC2984Test</code>
     </PropertyNotSetInConstructor>
-    <TypeCoercion occurrences="2">
-      <code>$sameUser</code>
-      <code>$equalUser</code>
-    </TypeCoercion>
   </file>
   <file src="tests/Doctrine/Tests/ORM/Functional/Ticket/DDC2996Test.php">
     <MissingParamType occurrences="1">
@@ -11405,6 +11450,9 @@
     </PropertyNotSetInConstructor>
   </file>
   <file src="tests/Doctrine/Tests/ORM/Functional/Ticket/DDC767Test.php">
+    <ArgumentTypeCoercion occurrences="1">
+      <code>$this-&gt;em-&gt;find(get_class($group1), $groupId)</code>
+    </ArgumentTypeCoercion>
     <MissingPropertyType occurrences="4">
       <code>$user-&gt;id</code>
       <code>$group2-&gt;id</code>
@@ -11417,9 +11465,6 @@
     <PropertyNotSetInConstructor occurrences="1">
       <code>DDC767Test</code>
     </PropertyNotSetInConstructor>
-    <TypeCoercion occurrences="1">
-      <code>$this-&gt;em-&gt;find(get_class($group1), $groupId)</code>
-    </TypeCoercion>
   </file>
   <file src="tests/Doctrine/Tests/ORM/Functional/Ticket/DDC809Test.php">
     <MissingConstructor occurrences="1">
@@ -11782,9 +11827,6 @@
     <PropertyNotSetInConstructor occurrences="1">
       <code>GH7062Test</code>
     </PropertyNotSetInConstructor>
-    <TooManyTemplateParams occurrences="1">
-      <code>Collection|GH7062RankingPosition[]</code>
-    </TooManyTemplateParams>
   </file>
   <file src="tests/Doctrine/Tests/ORM/Functional/Ticket/GH7067Test.php">
     <MissingConstructor occurrences="1">
@@ -11815,10 +11857,10 @@
     <PropertyNotSetInConstructor occurrences="1">
       <code>GH7259Test</code>
     </PropertyNotSetInConstructor>
-    <TypeCoercion occurrences="2">
+    <PropertyTypeCoercion occurrences="2">
       <code>$space</code>
       <code>$space</code>
-    </TypeCoercion>
+    </PropertyTypeCoercion>
   </file>
   <file src="tests/Doctrine/Tests/ORM/Functional/Ticket/GH7286Test.php">
     <PropertyNotSetInConstructor occurrences="4">
@@ -12981,6 +13023,9 @@
     </UndefinedMethod>
   </file>
   <file src="tests/Doctrine/Tests/ORM/Persisters/ManyToManyPersisterTest.php">
+    <ArgumentTypeCoercion occurrences="1">
+      <code>$childReloaded-&gt;parents</code>
+    </ArgumentTypeCoercion>
     <PossiblyNullArgument occurrences="1">
       <code>$childReloaded-&gt;parents</code>
     </PossiblyNullArgument>
@@ -12990,9 +13035,6 @@
     <PropertyNotSetInConstructor occurrences="1">
       <code>ManyToManyPersisterTest</code>
     </PropertyNotSetInConstructor>
-    <TypeCoercion occurrences="1">
-      <code>$childReloaded-&gt;parents</code>
-    </TypeCoercion>
   </file>
   <file src="tests/Doctrine/Tests/ORM/Proxy/ProxyFactoryTest.php">
     <InvalidArgument occurrences="15">
@@ -13395,9 +13437,9 @@
       <code>$connection</code>
       <code>SequenceGeneratorTest</code>
     </PropertyNotSetInConstructor>
-    <TypeCoercion occurrences="1">
+    <PropertyTypeCoercion occurrences="1">
       <code>$this-&gt;entityManager-&gt;getConnection()</code>
-    </TypeCoercion>
+    </PropertyTypeCoercion>
   </file>
   <file src="tests/Doctrine/Tests/ORM/Tools/AttachEntityListenersListenerTest.php">
     <MissingPropertyType occurrences="2">
@@ -13433,6 +13475,9 @@
     </PropertyNotSetInConstructor>
   </file>
   <file src="tests/Doctrine/Tests/ORM/Tools/Console/Command/ClearCacheMetadataCommandTest.php">
+    <ArgumentTypeCoercion occurrences="1">
+      <code>new $driver()</code>
+    </ArgumentTypeCoercion>
     <MissingParamType occurrences="2">
       <code>$driver</code>
       <code>$name</code>
@@ -13442,11 +13487,11 @@
       <code>$command</code>
       <code>ClearCacheMetadataCommandTest</code>
     </PropertyNotSetInConstructor>
-    <TypeCoercion occurrences="1">
-      <code>new $driver()</code>
-    </TypeCoercion>
   </file>
   <file src="tests/Doctrine/Tests/ORM/Tools/Console/Command/ClearCacheQueryCommandTest.php">
+    <ArgumentTypeCoercion occurrences="1">
+      <code>new $driver()</code>
+    </ArgumentTypeCoercion>
     <MissingParamType occurrences="2">
       <code>$driver</code>
       <code>$name</code>
@@ -13456,9 +13501,6 @@
       <code>$command</code>
       <code>ClearCacheQueryCommandTest</code>
     </PropertyNotSetInConstructor>
-    <TypeCoercion occurrences="1">
-      <code>new $driver()</code>
-    </TypeCoercion>
   </file>
   <file src="tests/Doctrine/Tests/ORM/Tools/Console/Command/ClearCacheQueryRegionCommandTest.php">
     <PropertyNotSetInConstructor occurrences="3">
@@ -13468,6 +13510,9 @@
     </PropertyNotSetInConstructor>
   </file>
   <file src="tests/Doctrine/Tests/ORM/Tools/Console/Command/ClearCacheResultCommandTest.php">
+    <ArgumentTypeCoercion occurrences="1">
+      <code>new $driver()</code>
+    </ArgumentTypeCoercion>
     <MissingParamType occurrences="2">
       <code>$driver</code>
       <code>$name</code>
@@ -13477,9 +13522,6 @@
       <code>$command</code>
       <code>ClearCacheResultCommandTest</code>
     </PropertyNotSetInConstructor>
-    <TypeCoercion occurrences="1">
-      <code>new $driver()</code>
-    </TypeCoercion>
   </file>
   <file src="tests/Doctrine/Tests/ORM/Tools/Console/Command/InfoCommandTest.php">
     <InvalidArgument occurrences="2">
@@ -13492,9 +13534,9 @@
       <code>$tester</code>
       <code>InfoCommandTest</code>
     </PropertyNotSetInConstructor>
-    <TypeCoercion occurrences="1">
+    <PropertyTypeCoercion occurrences="1">
       <code>$this-&gt;application-&gt;find('orm:info')</code>
-    </TypeCoercion>
+    </PropertyTypeCoercion>
     <UndefinedInterfaceMethod occurrences="7">
       <code>method</code>
       <code>method</code>
@@ -13512,9 +13554,9 @@
       <code>$tester</code>
       <code>MappingDescribeCommandTest</code>
     </PropertyNotSetInConstructor>
-    <TypeCoercion occurrences="1">
+    <PropertyTypeCoercion occurrences="1">
       <code>$this-&gt;application-&gt;find('orm:mapping:describe')</code>
-    </TypeCoercion>
+    </PropertyTypeCoercion>
   </file>
   <file src="tests/Doctrine/Tests/ORM/Tools/Console/Command/RunDqlCommandTest.php">
     <PropertyNotSetInConstructor occurrences="4">
@@ -13666,9 +13708,9 @@
       <code>$factory</code>
       <code>ResolveTargetEntityListenerTest</code>
     </PropertyNotSetInConstructor>
-    <TypeCoercion occurrences="1">
+    <PropertyTypeCoercion occurrences="1">
       <code>$this-&gt;em-&gt;getMetadataFactory()</code>
-    </TypeCoercion>
+    </PropertyTypeCoercion>
     <UndefinedInterfaceMethod occurrences="1">
       <code>getTargetEntity</code>
     </UndefinedInterfaceMethod>
@@ -13830,6 +13872,10 @@
     </UndefinedPropertyAssignment>
   </file>
   <file src="tests/Doctrine/Tests/ORM/Utility/HierarchyDiscriminatorResolverTest.php">
+    <ArgumentTypeCoercion occurrences="2">
+      <code>$em-&gt;reveal()</code>
+      <code>$em-&gt;reveal()</code>
+    </ArgumentTypeCoercion>
     <InvalidArgument occurrences="1">
       <code>$this-&gt;createMock(Mapping\ClassMetadataFactory::class)</code>
     </InvalidArgument>
@@ -13842,10 +13888,6 @@
       <code>willReturn</code>
       <code>willReturn</code>
     </TooManyArguments>
-    <TypeCoercion occurrences="2">
-      <code>$em-&gt;reveal()</code>
-      <code>$em-&gt;reveal()</code>
-    </TypeCoercion>
     <UndefinedPropertyAssignment occurrences="3">
       <code>$childClassMetadata-&gt;name</code>
       <code>$classMetadata-&gt;name</code>
@@ -13873,6 +13915,10 @@
     </PropertyNotSetInConstructor>
   </file>
   <file src="tests/Doctrine/Tests/OrmFunctionalTestCase.php">
+    <ArgumentTypeCoercion occurrences="2">
+      <code>self::$metadataCacheImpl</code>
+      <code>$conn</code>
+    </ArgumentTypeCoercion>
     <DocblockTypeContradiction occurrences="2">
       <code>$this-&gt;em === null</code>
       <code>$this-&gt;em</code>
@@ -13902,17 +13948,13 @@
       <code>getConfiguration</code>
       <code>getEventManager</code>
     </PossiblyUndefinedMethod>
-    <TypeCoercion occurrences="3">
+    <PropertyTypeCoercion occurrences="1">
       <code>new $GLOBALS['DOCTRINE_CACHE_IMPL']()</code>
-      <code>self::$metadataCacheImpl</code>
-      <code>$conn</code>
-    </TypeCoercion>
+    </PropertyTypeCoercion>
   </file>
   <file src="tests/Doctrine/Tests/OrmPerformanceTestCase.php">
-    <InvalidReturnType occurrences="1">
+    <MissingReturnType occurrences="2">
       <code>runTest</code>
-    </InvalidReturnType>
-    <MissingReturnType occurrences="1">
       <code>setMaxRunningTime</code>
     </MissingReturnType>
     <PropertyNotSetInConstructor occurrences="1">
@@ -14153,6 +14195,9 @@
     </MissingFile>
   </file>
   <file src="tests/Doctrine/Tests/TestUtil.php">
+    <ArgumentTypeCoercion occurrences="1">
+      <code>$subscriberInstance</code>
+    </ArgumentTypeCoercion>
     <InvalidStringClass occurrences="1">
       <code>new $subscriberClass()</code>
     </InvalidStringClass>
@@ -14165,9 +14210,6 @@
       <code>getParamsForTemporaryConnection</code>
       <code>getParamsForMainConnection</code>
     </MissingReturnType>
-    <TypeCoercion occurrences="1">
-      <code>$subscriberInstance</code>
-    </TypeCoercion>
   </file>
   <file src="vendor/doctrine/dbal/lib/Doctrine/DBAL/Connection.php">
     <ImplementedReturnTypeMismatch occurrences="2">
