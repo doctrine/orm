@@ -352,7 +352,7 @@ Example:
     #[Entity(repositoryClass: UserRepository::class, readOnly: false)]
     class User
     {
-        //...
+        // ...
     }
 
 .. _attrref_generatedvalue:

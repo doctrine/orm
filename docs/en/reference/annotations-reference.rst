@@ -402,7 +402,7 @@ Example:
      */
     class User
     {
-        //...
+        // ...
     }
 
 .. _annref_entity_result:

@@ -324,7 +324,7 @@ Example:
          */
         class User
         {
-            //other fields mapping
+            // other fields mapping
 
             /**
              * @ManyToMany(targetEntity="Group", inversedBy="users")

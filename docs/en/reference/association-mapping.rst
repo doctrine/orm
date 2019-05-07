@@ -977,10 +977,10 @@ similar defaults. As an example, consider this mapping:
         <?php
         class User
         {
-            //...
+            // ...
             /** @ManyToMany(targetEntity="Group") */
             private $groups;
-            //...
+            // ...
         }
 
     .. code-block:: xml
@@ -1008,7 +1008,7 @@ This is essentially the same as the following, more verbose, mapping:
         <?php
         class User
         {
-            //...
+            // ...
             /**
              * Many Users have Many Groups.
              * @ManyToMany(targetEntity="Group")
@@ -1018,7 +1018,7 @@ This is essentially the same as the following, more verbose, mapping:
              *      )
              */
             private $groups;
-            //...
+            // ...
         }
 
     .. code-block:: xml
