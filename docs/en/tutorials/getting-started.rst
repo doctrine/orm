@@ -464,17 +464,15 @@ but you only need to choose one.
         <?php
         // src/Product.php
 
-        use Doctrine\ORM\Annotation as ORM;
-
         /**
-         * @ORM\Entity @ORM\Table(name="products")
+         * @Entity @Table(name="products")
          **/
         class Product
         {
-            /** @ORM\Id @ORM\Column(type="integer") @ORM\GeneratedValue **/
+            /** @Id @Column(type="integer") @GeneratedValue **/
             private $id;
 
-            /** @ORM\Column(type="string") **/
+            /** @Column(type="string") **/
             private $name;
 
             // .. (other code)
@@ -633,34 +631,32 @@ classes. We'll store them in ``src/Bug.php`` and ``src/User.php``, respectively.
     <?php
     // src/Bug.php
 
-    use Doctrine\ORM\Annotation as ORM;
-
     /**
-     * @ORM\Entity(repositoryClass="BugRepository")
-     * @ORM\Table(name="bugs")
+     * @Entity(repositoryClass="BugRepository")
+     * @Table(name="bugs")
      */
     class Bug
     {
         /**
-         * @ORM\Id @ORM\Column(type="integer") @ORM\GeneratedValue
+         * @Id @Column(type="integer") @GeneratedValue
          * @var int
          */
         private $id;
 
         /**
-         * @ORM\Column(type="string")
+         * @Column(type="string")
          * @var string
          */
         private $description;
 
         /**
-         * @ORM\Column(type="datetime")
+         * @Column(type="datetime")
          * @var DateTime
          */
         private $created;
 
         /**
-         * @ORM\Column(type="string")
+         * @Column(type="string")
          * @var string
          */
         private $status;
@@ -706,22 +702,20 @@ classes. We'll store them in ``src/Bug.php`` and ``src/User.php``, respectively.
     <?php
     // src/User.php
 
-    use Doctrine\ORM\Annotation as ORM;
-
     /**
-     * @ORM\Entity
-     * @ORM\Table(name="users")
+     * @Entity
+     * @Table(name="users")
      */
     class User
     {
         /**
-         * @ORM\Id @ORM\GeneratedValue @ORM\Column(type="integer")
+         * @Id @GeneratedValue @Column(type="integer")
          * @var int
          */
         private $id;
 
         /**
-         * @ORM\Column(type="string")
+         * @Column(type="string")
          * @var string
          */
         private $name;
@@ -974,46 +968,44 @@ the ``Product`` before:
         <?php
         // src/Bug.php
 
-        use Doctrine\ORM\Annotation as ORM;
-
         /**
-         * @ORM\Entity
-         * @ORM\Table(name="bugs")
+         * @Entity
+         * @Table(name="bugs")
          */
         class Bug
         {
             /**
-             * @ORM\Id @ORM\Column(type="integer") @ORM\GeneratedValue
+             * @Id @Column(type="integer") @GeneratedValue
              **/
             private $id;
 
             /**
-             * @ORM\Column(type="string")
+             * @Column(type="string")
              **/
             private $description;
 
             /**
-             * @ORM\Column(type="datetime")
+             * @Column(type="datetime")
              **/
             private $created;
 
             /**
-             * @ORM\Column(type="string")
+             * @Column(type="string")
              **/
             private $status;
 
             /**
-             * @ORM\ManyToOne(targetEntity="User", inversedBy="assignedBugs")
+             * @ManyToOne(targetEntity="User", inversedBy="assignedBugs")
              **/
             private $engineer;
 
             /**
-             * @ORM\ManyToOne(targetEntity="User", inversedBy="reportedBugs")
+             * @ManyToOne(targetEntity="User", inversedBy="reportedBugs")
              **/
             private $reporter;
 
             /**
-             * @ORM\ManyToMany(targetEntity="Product")
+             * @ManyToMany(targetEntity="Product")
              **/
             private $products;
 
@@ -1075,34 +1067,32 @@ Finally, we'll add metadata mappings for the ``User`` entity.
         <?php
         // src/User.php
 
-        use Doctrine\ORM\Annotation as ORM;
-
         /**
-         * @ORM\Entity
-         * @ORM\Table(name="users")
+         * @Entity
+         * @Table(name="users")
          */
         class User
         {
             /**
-             * @ORM\Id @ORM\GeneratedValue @ORM\Column(type="integer")
+             * @Id @GeneratedValue @Column(type="integer")
              * @var int
              **/
             private $id;
 
             /**
-             * @ORM\Column(type="string")
+             * @Column(type="string")
              * @var string
              **/
             private $name;
 
             /**
-             * @ORM\OneToMany(targetEntity="Bug", mappedBy="reporter")
+             * @OneToMany(targetEntity="Bug", mappedBy="reporter")
              * @var Bug[] An ArrayCollection of Bug objects.
              **/
             private $reportedBugs = null;
 
             /**
-             * @ORM\OneToMany(targetEntity="Bug", mappedBy="engineer")
+             * @OneToMany(targetEntity="Bug", mappedBy="engineer")
              * @var Bug[] An ArrayCollection of Bug objects.
              **/
             private $assignedBugs = null;
@@ -1606,11 +1596,9 @@ we have to adjust the metadata slightly.
 
         <?php
 
-        use Doctrine\ORM\Annotation as ORM;
-
         /**
-         * @ORM\Entity(repositoryClass="BugRepository")
-         * @ORM\Table(name="bugs")
+         * @Entity(repositoryClass="BugRepository")
+         * @Table(name="bugs")
          **/
         class Bug
         {
