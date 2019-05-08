@@ -725,3 +725,26 @@ methods:
     There is a limitation on the compatibility of Criteria comparisons.
     You have to use scalar values only as the value in a comparison or
     the behaviour between different backends is not the same.
+
+
+.. note::
+
+   To have an **is not null** that acts like a *Criteria::expr()->isNotNull('field')* you can use
+
+.. code-block:: php
+
+   <?php
+   
+   $criteria = Criteria::create();
+   $expr = $criteria::expr();
+   $collection->matching($criteria->where($expr->neq('field', null)));
+
+For the *Criteria::expr()->like()* functionality, **Criteria::expr()->contains('property', 'value')** is the equivalent of the SQL property LIKE %value%. However it does not allow for changing to value% or %value (may be changed in future versions).
+
+Unfortunately for *Criteria::expr()->notLike()* and the other LIKE variants, the \Doctrine\Common\Collections\ExpressionBuilder used by Criteria does not support them. 
+
+.. note::
+
+   Read this StackOverflow post(https://stackoverflow.com/questions/26653651/collections-criteriaexpr-isnotnull-and-notlike) for filtering collections. 
+
+
