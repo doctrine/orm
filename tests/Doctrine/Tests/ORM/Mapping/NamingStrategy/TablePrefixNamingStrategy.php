@@ -2,17 +2,18 @@
 
 declare(strict_types=1);
 
-namespace Doctrine\ORM\Mapping\Factory;
+namespace Doctrine\Tests\ORM\Mapping\NamingStrategy;
 
+use Doctrine\ORM\Mapping\Factory\NamingStrategy;
 use function strpos;
 use function strrpos;
 use function strtolower;
 use function substr;
 
 /**
- * The default NamingStrategy
+ * Naming strategy prefixes fields with a table name.
  */
-class DefaultNamingStrategy implements NamingStrategy
+class TablePrefixNamingStrategy implements NamingStrategy
 {
     /**
      * {@inheritdoc}
@@ -31,7 +32,7 @@ class DefaultNamingStrategy implements NamingStrategy
      */
     public function propertyToColumnName($propertyName, $className = null)
     {
-        return $propertyName;
+        return $this->classToTableName($className) . '_' . $propertyName;
     }
 
     /**
@@ -39,7 +40,7 @@ class DefaultNamingStrategy implements NamingStrategy
      */
     public function embeddedFieldToColumnName($propertyName, $embeddedColumnName, $className = null, $embeddedClassName = null)
     {
-        return $propertyName . '_' . $embeddedColumnName;
+        return $this->classToTableName($className) . '_' . $propertyName . '_' . $embeddedColumnName;
     }
 
     /**
@@ -47,7 +48,7 @@ class DefaultNamingStrategy implements NamingStrategy
      */
     public function referenceColumnName($targetEntity = null)
     {
-        return 'id';
+        return $this->classToTableName($targetEntity) . '_id';
     }
 
     /**
@@ -55,7 +56,7 @@ class DefaultNamingStrategy implements NamingStrategy
      */
     public function joinColumnName($propertyName, $className = null)
     {
-        return $propertyName . '_' . $this->referenceColumnName();
+        return $this->classToTableName($className) . '_' . $propertyName . '_id';
     }
 
     /**
@@ -72,7 +73,7 @@ class DefaultNamingStrategy implements NamingStrategy
      */
     public function joinKeyColumnName($entityName, $referencedColumnName = null, $joinTableName = null)
     {
-        return strtolower($this->classToTableName($entityName) . '_' .
-            ($referencedColumnName ?: $this->referenceColumnName()));
+        return $joinTableName . '_' . strtolower($this->classToTableName($entityName) . '_' .
+            ($referencedColumnName ?: 'id'));
     }
 }

@@ -637,7 +637,7 @@ class ClassMetadata extends ComponentMetadata implements TableOwner
                 }
 
                 if (! $joinColumn->getReferencedColumnName()) {
-                    $joinColumn->setReferencedColumnName($this->namingStrategy->referenceColumnName());
+                    $joinColumn->setReferencedColumnName($this->namingStrategy->referenceColumnName($property->getTargetEntity()));
                 }
 
                 $this->fieldNames[$joinColumn->getColumnName()] = $fieldName;
@@ -770,9 +770,9 @@ class ClassMetadata extends ComponentMetadata implements TableOwner
             $selfReferencingEntityWithoutJoinColumns = $property->getSourceEntity() === $property->getTargetEntity() && ! $joinTable->hasColumns();
 
             if (! $joinTable->getJoinColumns()) {
-                $referencedColumnName = $this->namingStrategy->referenceColumnName();
+                $referencedColumnName = $this->namingStrategy->referenceColumnName($property->getTargetEntity());
                 $sourceReferenceName  = $selfReferencingEntityWithoutJoinColumns ? 'source' : $referencedColumnName;
-                $columnName           = $this->namingStrategy->joinKeyColumnName($property->getSourceEntity(), $sourceReferenceName);
+                $columnName           = $this->namingStrategy->joinKeyColumnName($property->getSourceEntity(), $sourceReferenceName, $joinTable->getName());
                 $joinColumn           = new JoinColumnMetadata();
 
                 $joinColumn->setColumnName($columnName);
@@ -783,9 +783,9 @@ class ClassMetadata extends ComponentMetadata implements TableOwner
             }
 
             if (! $joinTable->getInverseJoinColumns()) {
-                $referencedColumnName = $this->namingStrategy->referenceColumnName();
+                $referencedColumnName = $this->namingStrategy->referenceColumnName($property->getTargetEntity());
                 $targetReferenceName  = $selfReferencingEntityWithoutJoinColumns ? 'target' : $referencedColumnName;
-                $columnName           = $this->namingStrategy->joinKeyColumnName($property->getTargetEntity(), $targetReferenceName);
+                $columnName           = $this->namingStrategy->joinKeyColumnName($property->getTargetEntity(), $targetReferenceName, $joinTable->getName());
                 $joinColumn           = new JoinColumnMetadata();
 
                 $joinColumn->setColumnName($columnName);
@@ -798,7 +798,7 @@ class ClassMetadata extends ComponentMetadata implements TableOwner
             foreach ($joinTable->getJoinColumns() as $joinColumn) {
                 /** @var JoinColumnMetadata $joinColumn */
                 if (! $joinColumn->getReferencedColumnName()) {
-                    $joinColumn->setReferencedColumnName($this->namingStrategy->referenceColumnName());
+                    $joinColumn->setReferencedColumnName($this->namingStrategy->referenceColumnName($property->getTargetEntity()));
                 }
 
                 $referencedColumnName = $joinColumn->getReferencedColumnName();
@@ -806,7 +806,8 @@ class ClassMetadata extends ComponentMetadata implements TableOwner
                 if (! $joinColumn->getColumnName()) {
                     $columnName = $this->namingStrategy->joinKeyColumnName(
                         $property->getSourceEntity(),
-                        $referencedColumnName
+                        $referencedColumnName,
+                        $joinTable->getName()
                     );
 
                     $joinColumn->setColumnName($columnName);
@@ -816,7 +817,7 @@ class ClassMetadata extends ComponentMetadata implements TableOwner
             foreach ($joinTable->getInverseJoinColumns() as $inverseJoinColumn) {
                 /** @var JoinColumnMetadata $inverseJoinColumn */
                 if (! $inverseJoinColumn->getReferencedColumnName()) {
-                    $inverseJoinColumn->setReferencedColumnName($this->namingStrategy->referenceColumnName());
+                    $inverseJoinColumn->setReferencedColumnName($this->namingStrategy->referenceColumnName($property->getTargetEntity()));
                 }
 
                 $referencedColumnName = $inverseJoinColumn->getReferencedColumnName();
@@ -824,7 +825,8 @@ class ClassMetadata extends ComponentMetadata implements TableOwner
                 if (! $inverseJoinColumn->getColumnName()) {
                     $columnName = $this->namingStrategy->joinKeyColumnName(
                         $property->getTargetEntity(),
-                        $referencedColumnName
+                        $referencedColumnName,
+                        $joinTable->getName()
                     );
 
                     $inverseJoinColumn->setColumnName($columnName);
