@@ -173,14 +173,14 @@ class Setup
             */
 
             if (extension_loaded('apcu')) {
-                return new ApcuCache();
+                return new \Doctrine\Common\Cache\ApcuCache();
             }
 
             if (extension_loaded('memcached')) {
                 $memcached = new Memcached();
                 $memcached->addServer('127.0.0.1', 11211);
 
-                $cache = new MemcachedCache();
+                $cache = new \Doctrine\Common\Cache\MemcachedCache();
                 $cache->setMemcached($memcached);
 
                 return $cache;
@@ -190,7 +190,7 @@ class Setup
                 $redis = new Redis();
                 $redis->connect('127.0.0.1');
 
-                $cache = new RedisCache();
+                $cache = new \Doctrine\Common\Cache\RedisCache();
                 $cache->setRedis($redis);
 
                 return $cache;
