@@ -165,29 +165,47 @@ class Setup
             return new ArrayCache();
         }
 
-        if (extension_loaded('apcu')) {
-            return new \Doctrine\Common\Cache\ApcuCache();
-        }
+        try {
 
+            /*
+            For backwards-compatability, attempt to create to a caching provider with
+            default settings if that providers extension is installed.
+            */
 
-        if (extension_loaded('memcached')) {
-            $memcached = new \Memcached();
-            $memcached->addServer('127.0.0.1', 11211);
+            if (extension_loaded('apcu')) {
+                return new ApcuCache();
+            }
 
-            $cache = new \Doctrine\Common\Cache\MemcachedCache();
-            $cache->setMemcached($memcached);
+            if (extension_loaded('memcached')) {
+                $memcached = new Memcached();
+                $memcached->addServer('127.0.0.1', 11211);
 
-            return $cache;
-        }
+                $cache = new MemcachedCache();
+                $cache->setMemcached($memcached);
 
-        if (extension_loaded('redis')) {
-            $redis = new \Redis();
-            $redis->connect('127.0.0.1');
+                return $cache;
+            }
 
-            $cache = new \Doctrine\Common\Cache\RedisCache();
-            $cache->setRedis($redis);
+            if (extension_loaded('redis')) {
+                $redis = new Redis();
+                $redis->connect('127.0.0.1');
 
-            return $cache;
+                $cache = new RedisCache();
+                $cache->setRedis($redis);
+
+                return $cache;
+            }
+            
+        } catch (\Exception $ex) {
+
+            /*
+            Deliberate catch of top level \Exception in the event that an extension IS installed, but
+            an attempt to use it fails (Eg. Redis is installed, but there is no server running on
+            localhost).
+
+            This block is empty because the fallback to use ArrayCache() seems as good for an exception
+            as if there were no matching extensions installed.
+            */
         }
 
         return new ArrayCache();
