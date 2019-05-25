@@ -8,6 +8,7 @@ use Doctrine\Tests\Models\CMS\CmsUser;
 use Doctrine\Tests\Models\CMS\CmsArticle;
 use Doctrine\Common\Cache\ArrayCache;
 use Doctrine\Tests\OrmFunctionalTestCase;
+use function count;
 
 /**
  * ResultCacheTest
@@ -112,7 +113,7 @@ class ResultCacheTest extends OrmFunctionalTestCase
         $query->setResultCacheDriver($cache);
         $query->setResultCacheId('testing_result_cache_id');
         $query->useResultCache(false);
-        $users = $query->getResult();
+        $query->getResult();
 
         $this->assertFalse($cache->contains('testing_result_cache_id'));
 
@@ -129,27 +130,35 @@ class ResultCacheTest extends OrmFunctionalTestCase
         $sqlCount = count($this->_sqlLoggerStack->queries);
         $query    = $this->_em->createQuery('select ux from Doctrine\Tests\Models\CMS\CmsUser ux WHERE ux.id = ?1');
 
-        $query->setParameter(1, 1);
         $query->setResultCacheDriver($cache);
         $query->useResultCache(true);
-        $query->getResult();
 
-        $query->setParameter(1, 2);
-        $query->getResult();
-
-        $this->assertEquals($sqlCount + 2, count($this->_sqlLoggerStack->queries), "Two non-cached queries.");
-
+        // these queries should result in cache miss:
         $query->setParameter(1, 1);
-        $query->useResultCache(true);
         $query->getResult();
-
         $query->setParameter(1, 2);
         $query->getResult();
 
-        $this->assertEquals($sqlCount + 2, count($this->_sqlLoggerStack->queries), "The next two sql should have been cached, but were not.");
+        $this->assertCount(
+            $sqlCount + 2,
+            $this->_sqlLoggerStack->queries,
+            'Two non-cached queries.'
+        );
+
+        // these two queries should actually be cached, as they repeat previous ones:
+        $query->setParameter(1, 1);
+        $query->getResult();
+        $query->setParameter(1, 2);
+        $query->getResult();
+
+        $this->assertCount(
+            $sqlCount + 2,
+            $this->_sqlLoggerStack->queries,
+            'The next two sql queries should have been cached, but were not.'
+        );
     }
 
-    public function testEnableResultCache()
+    public function testEnableResultCache() : void
     {
         $cache = new ArrayCache();
         $query = $this->_em->createQuery('select ux from Doctrine\Tests\Models\CMS\CmsUser ux');
@@ -157,7 +166,7 @@ class ResultCacheTest extends OrmFunctionalTestCase
         $query->enableResultCache();
         $query->setResultCacheDriver($cache);
         $query->setResultCacheId('testing_result_cache_id');
-        $users = $query->getResult();
+        $query->getResult();
 
         $this->assertTrue($cache->contains('testing_result_cache_id'));
 
@@ -167,33 +176,41 @@ class ResultCacheTest extends OrmFunctionalTestCase
     /**
      * @group DDC-1026
      */
-    public function testEnableResultCacheParams()
+    public function testEnableResultCacheParams() : void
     {
         $cache    = new ArrayCache();
         $sqlCount = count($this->_sqlLoggerStack->queries);
         $query    = $this->_em->createQuery('select ux from Doctrine\Tests\Models\CMS\CmsUser ux WHERE ux.id = ?1');
 
-        $query->setParameter(1, 1);
         $query->setResultCacheDriver($cache);
         $query->enableResultCache();
-        $query->getResult();
 
-        $query->setParameter(1, 2);
-        $query->getResult();
-
-        $this->assertCount($sqlCount + 2, $this->_sqlLoggerStack->queries, "Two non-cached queries.");
-
+        // these queries should result in cache miss:
         $query->setParameter(1, 1);
-        $query->enableResultCache();
         $query->getResult();
-
         $query->setParameter(1, 2);
         $query->getResult();
 
-        $this->assertCount($sqlCount + 2, $this->_sqlLoggerStack->queries, "The next two sql should have been cached, but were not.");
+        $this->assertCount(
+            $sqlCount + 2,
+            $this->_sqlLoggerStack->queries,
+            'Two non-cached queries.'
+        );
+
+        // these two queries should actually be cached, as they repeat previous ones:
+        $query->setParameter(1, 1);
+        $query->getResult();
+        $query->setParameter(1, 2);
+        $query->getResult();
+
+        $this->assertCount(
+            $sqlCount + 2,
+            $this->_sqlLoggerStack->queries,
+            'The next two sql queries should have been cached, but were not.'
+        );
     }
 
-    public function testDisableResultCache()
+    public function testDisableResultCache() : void
     {
         $cache = new ArrayCache();
         $query = $this->_em->createQuery('select ux from Doctrine\Tests\Models\CMS\CmsUser ux');
@@ -201,7 +218,7 @@ class ResultCacheTest extends OrmFunctionalTestCase
         $query->setResultCacheDriver($cache);
         $query->setResultCacheId('testing_result_cache_id');
         $query->disableResultCache();
-        $users = $query->getResult();
+        $query->getResult();
 
         $this->assertFalse($cache->contains('testing_result_cache_id'));
 
