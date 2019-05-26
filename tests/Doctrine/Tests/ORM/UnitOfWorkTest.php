@@ -751,7 +751,7 @@ class UnitOfWorkTest extends OrmTestCase
             self::fail('UnitOfWork::$commitInProgress flag must be reset in case of exception during commit process');
         }
 
-        self::assertEquals(1, $listener->listenerCallCounter);
+        self::assertSame(1, $listener->listenerCallCounter);
     }
 }
 
