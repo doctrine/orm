@@ -133,7 +133,7 @@ step:
     $isDevMode = true;
     $config = Setup::createAnnotationMetadataConfiguration(array(__DIR__."/src"), $isDevMode);
     // or if you prefer XML
-    //$config = Setup::createXMLMetadataConfiguration(array(__DIR__."/config"), $isDevMode);
+    // $config = Setup::createXMLMetadataConfiguration(array(__DIR__."/config"), $isDevMode);
     // database configuration parameters
     $conn = array(
         'driver' => 'pdo_sqlite',
@@ -1614,7 +1614,7 @@ we have to adjust the metadata slightly.
          **/
         class Bug
         {
-            //...
+            // ...
         }
 
     .. code-block:: xml
