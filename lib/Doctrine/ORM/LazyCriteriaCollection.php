@@ -12,7 +12,7 @@ use Doctrine\ORM\Persisters\Entity\BasicEntityPersister;
 use Doctrine\ORM\Persisters\Entity\EntityPersister;
 
 /**
- * A lazy collection that allow a fast count when using criteria object
+ * A lazy collection that allows a fast count when using criteria object
  * Once count gets executed once without collection being initialized, result
  * is cached and returned on subsequent calls until collection gets loaded,
  * then returning the number of loaded results.
