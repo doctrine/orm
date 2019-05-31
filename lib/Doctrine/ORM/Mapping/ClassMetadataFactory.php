@@ -633,23 +633,29 @@ class ClassMetadataFactory extends AbstractClassMetadataFactory
 
                 // Platforms that do not have native IDENTITY support need a sequence to emulate this behaviour.
                 if ($this->getTargetPlatform()->usesSequenceEmulatedIdentityColumns()) {
-                    $columnName     = $class->getSingleIdentifierColumnName();
-                    $quoted         = isset($class->fieldMappings[$fieldName]['quoted']) || isset($class->table['quoted']);
-                    $sequencePrefix = $class->getSequencePrefix($this->getTargetPlatform());
-                    $sequenceName   = $this->getTargetPlatform()->getIdentitySequenceName($sequencePrefix, $columnName);
-                    $definition     = [
-                        'sequenceName' => $this->getTargetPlatform()->fixSchemaElementName($sequenceName)
-                    ];
+                    $definition = $class->sequenceGeneratorDefinition;
 
-                    if ($quoted) {
-                        $definition['quoted'] = true;
+                    if ($definition && isset($definition['sequenceName'])) {
+                        $sequenceName = $definition['sequenceName'];
+                    } else {
+                        $columnName     = $class->getSingleIdentifierColumnName();
+                        $quoted         = isset($class->fieldMappings[$fieldName]['quoted']) || isset($class->table['quoted']);
+                        $sequencePrefix = $class->getSequencePrefix($this->getTargetPlatform());
+                        $sequenceName   = $this->getTargetPlatform()->getIdentitySequenceName($sequencePrefix, $columnName);
+                        $definition     = [
+                            'sequenceName' => $this->getTargetPlatform()->fixSchemaElementName($sequenceName)
+                        ];
+
+                        if ($quoted) {
+                            $definition['quoted'] = true;
+                        }
+
+                        $sequenceName = $this
+                            ->em
+                            ->getConfiguration()
+                            ->getQuoteStrategy()
+                            ->getSequenceName($definition, $class, $this->getTargetPlatform());
                     }
-
-                    $sequenceName = $this
-                        ->em
-                        ->getConfiguration()
-                        ->getQuoteStrategy()
-                        ->getSequenceName($definition, $class, $this->getTargetPlatform());
                 }
 
                 $generator = ($fieldName && $class->fieldMappings[$fieldName]['type'] === 'bigint')
