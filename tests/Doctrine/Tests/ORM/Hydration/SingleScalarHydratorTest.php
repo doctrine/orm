@@ -2,6 +2,8 @@
 
 namespace Doctrine\Tests\ORM\Hydration;
 
+use Doctrine\Common\Cache\ArrayCache;
+use Doctrine\DBAL\Cache\ResultCacheStatement;
 use Doctrine\ORM\Internal\Hydration\SingleScalarHydrator;
 use Doctrine\ORM\NonUniqueResultException;
 use Doctrine\Tests\Mocks\HydratorMockStatement;
@@ -89,5 +91,24 @@ class SingleScalarHydratorTest extends HydrationTestCase
             $this->expectException(NonUniqueResultException::class);
             $hydrator->hydrateAll($stmt, $rsm);
         }
+    }
+
+    public function testHydrateSingleScalarResultCreatesCache()
+    {
+        $rsm = new ResultSetMapping;
+        $rsm->addEntityResult(CmsUser::class, 'u');
+        $rsm->addFieldResult('u', 'u__id', 'id');
+        $rsm->addFieldResult('u', 'u__name', 'name');
+
+        $cache    = new ArrayCache();
+        $rows     = [['u__name' => 'romanb']];
+        $stmt     = new HydratorMockStatement($rows);
+
+        $stmt     = new ResultCacheStatement($stmt, $cache, 'foo', 'bar', 30);
+        $hydrator = new SingleScalarHydrator($this->_em);
+
+        $result = $hydrator->hydrateAll($stmt, $rsm);
+        $this->assertEquals('romanb', $result);
+        $this->assertEquals(['bar' => $rows], $cache->fetch('foo'));
     }
 }
