@@ -7,6 +7,7 @@ namespace Doctrine\Tests\ORM\Mapping;
 use Doctrine\ORM\Mapping\Factory\DefaultNamingStrategy;
 use Doctrine\ORM\Mapping\Factory\NamingStrategy;
 use Doctrine\ORM\Mapping\Factory\UnderscoreNamingStrategy;
+use Doctrine\ORM\Mapping\Factory\UnderscorePluralNamingStrategy;
 use Doctrine\Tests\ORM\Mapping\NamingStrategy\JoinColumnClassNamingStrategy;
 use Doctrine\Tests\OrmTestCase;
 use const CASE_LOWER;
@@ -39,6 +40,22 @@ class NamingStrategyTest extends OrmTestCase
     private static function underscoreNamingUpper()
     {
         return new UnderscoreNamingStrategy(CASE_UPPER);
+    }
+
+    /**
+     * @return UnderscoreNamingStrategy
+     */
+    private static function underscorePluralNamingLower()
+    {
+        return new UnderscorePluralNamingStrategy(CASE_LOWER);
+    }
+
+    /**
+     * @return UnderscoreNamingStrategy
+     */
+    private static function underscorePluralNamingUpper()
+    {
+        return new UnderscorePluralNamingStrategy(CASE_UPPER);
     }
 
     /**
@@ -85,6 +102,28 @@ class NamingStrategyTest extends OrmTestCase
             [
                 self::underscoreNamingUpper(),
                 'NAME',
+                '\Some\Class\Name',
+            ],
+
+            // UnderscorePluralNamingStrategy
+            [
+                self::underscorePluralNamingLower(),
+                'some_class_names',
+                '\Name\Space\SomeClassName',
+            ],
+            [
+                self::underscorePluralNamingLower(),
+                'names',
+                '\Some\Class\Name',
+            ],
+            [
+                self::underscorePluralNamingUpper(),
+                'SOME_CLASS_NAMES',
+                '\Name\Space\SomeClassName',
+            ],
+            [
+                self::underscorePluralNamingUpper(),
+                'NAMES',
                 '\Some\Class\Name',
             ],
         ];
@@ -144,6 +183,28 @@ class NamingStrategyTest extends OrmTestCase
                 'SOME_PROPERTY',
                 'SOME_PROPERTY',
             ],
+
+            // UnderscorePluralNamingStrategy
+            [
+                self::underscorePluralNamingLower(),
+                'some_property',
+                'someProperty',
+            ],
+            [
+                self::underscorePluralNamingUpper(),
+                'SOME_PROPERTY',
+                'someProperty',
+            ],
+            [
+                self::underscorePluralNamingUpper(),
+                'SOME_PROPERTY',
+                'some_property',
+            ],
+            [
+                self::underscorePluralNamingUpper(),
+                'SOME_PROPERTY',
+                'SOME_PROPERTY',
+            ],
         ];
     }
 
@@ -172,6 +233,10 @@ class NamingStrategyTest extends OrmTestCase
             // UnderscoreNamingStrategy
             [self::underscoreNamingLower(), 'id'],
             [self::underscoreNamingUpper(), 'ID'],
+
+            // UnderscorePluralNamingStrategy
+            [self::underscorePluralNamingLower(), 'id'],
+            [self::underscorePluralNamingUpper(), 'ID'],
         ];
     }
 
@@ -200,6 +265,9 @@ class NamingStrategyTest extends OrmTestCase
             // UnderscoreNamingStrategy
             [self::underscoreNamingLower(), 'some_column_id', 'someColumn', null],
             [self::underscoreNamingUpper(), 'SOME_COLUMN_ID', 'someColumn', null],
+            // UnderscorePluralNamingStrategy
+            [self::underscorePluralNamingLower(), 'some_column_id', 'someColumn', null],
+            [self::underscorePluralNamingUpper(), 'SOME_COLUMN_ID', 'someColumn', null],
             // JoinColumnClassNamingStrategy
             [new JoinColumnClassNamingStrategy(), 'classname_someColumn_id', 'someColumn', 'Some\ClassName'],
             [new JoinColumnClassNamingStrategy(), 'classname_some_column_id', 'some_column', 'ClassName'],
@@ -292,6 +360,51 @@ class NamingStrategyTest extends OrmTestCase
                 'ClassName',
                 null,
             ],
+
+            // UnderscorePluralNamingStrategy
+            [
+                self::underscorePluralNamingLower(),
+                'some_class_name_class_name',
+                'SomeClassName',
+                'Some\ClassName',
+                null,
+            ],
+            [
+                self::underscorePluralNamingLower(),
+                'some_class_name_class_name',
+                '\SomeClassName',
+                'ClassName',
+                null,
+            ],
+            [
+                self::underscorePluralNamingLower(),
+                'name_class_name',
+                '\Some\Class\Name',
+                'ClassName',
+                null,
+            ],
+
+            [
+                self::underscorePluralNamingUpper(),
+                'SOME_CLASS_NAME_CLASS_NAME',
+                'SomeClassName',
+                'Some\ClassName',
+                null,
+            ],
+            [
+                self::underscorePluralNamingUpper(),
+                'SOME_CLASS_NAME_CLASS_NAME',
+                '\SomeClassName',
+                'ClassName',
+                null,
+            ],
+            [
+                self::underscorePluralNamingUpper(),
+                'NAME_CLASS_NAME',
+                '\Some\Class\Name',
+                'ClassName',
+                null,
+            ],
         ];
     }
 
@@ -357,6 +470,37 @@ class NamingStrategyTest extends OrmTestCase
             ],
             [
                 self::underscoreNamingUpper(),
+                'CLASS_NAME_IDENTIFIER',
+                '\Some\Class\ClassName',
+                'IDENTIFIER',
+                null,
+            ],
+
+            // UnderscorePluralNamingStrategy
+            [
+                self::underscorePluralNamingLower(),
+                'some_class_name_id',
+                'SomeClassName',
+                null,
+                null,
+            ],
+            [
+                self::underscorePluralNamingLower(),
+                'class_name_identifier',
+                '\Some\Class\ClassName',
+                'identifier',
+                null,
+            ],
+
+            [
+                self::underscorePluralNamingUpper(),
+                'SOME_CLASS_NAME_ID',
+                'SomeClassName',
+                null,
+                null,
+            ],
+            [
+                self::underscorePluralNamingUpper(),
                 'CLASS_NAME_IDENTIFIER',
                 '\Some\Class\ClassName',
                 'IDENTIFIER',
