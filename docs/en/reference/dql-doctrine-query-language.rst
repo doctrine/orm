@@ -103,9 +103,9 @@ their inclusion in the SELECT clause.
 
 In this case, the result will be an array of arrays.  In the example
 above, each element of the result array would be an array of the
-scalar name and address values. 
+scalar name and address values.
 
-You can select scalars from any entity in the query. 
+You can select scalars from any entity in the query.
 
 **Mixed**
 
@@ -1172,7 +1172,7 @@ why we are listing as many of the assumptions here for reference:
 - If an object is already in memory from a previous query of any kind, then
   then the previous object is used, even if the database may contain more
   recent data. Data from the database is discarded. This even happens if the
-  previous object is still an unloaded proxy. 
+  previous object is still an unloaded proxy.
 
 This list might be incomplete.
 
@@ -1452,10 +1452,10 @@ Given that there are 10 users and corresponding addresses in the database the ex
     SELECT * FROM address WHERE id IN (1, 2, 3, 4, 5, 6, 7, 8, 9, 10);
 
 .. note::
-    Changing the fetch mode during a query mostly makes sense for one-to-one and many-to-one relations. In that case, 
+    Changing the fetch mode during a query mostly makes sense for one-to-one and many-to-one relations. In that case,
     all the necessary IDs are available after the root entity (``user`` in the above example) has been loaded. So, one
     query per association can be executed to fetch all the referred-to entities (``address``).
-    
+
     For one-to-many relations, changing the fetch mode to eager will cause to execute one query **for every root entity
     loaded**. This gives no improvement over the ``lazy`` fetch mode which will also initialize the associations on
     a one-by-one basis once they are accessed.
