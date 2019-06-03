@@ -34,6 +34,13 @@ jobs:
     - stage: Test
       env: DB=mysql MYSQL_VERSION=5.7
       php: 7.1
+      addons:
+        apt:
+          sources:
+            - mysql-5.7-trusty
+          packages:
+            - mysql-server
+            - mysql-client
       before_script:
         - ./tests/travis/install-mysql-$MYSQL_VERSION.sh
       sudo: required
@@ -41,6 +48,13 @@ jobs:
     - stage: Test
       env: DB=mysql MYSQL_VERSION=5.7
       php: 7.2
+      addons:
+        apt:
+          sources:
+            - mysql-5.7-trusty
+          packages:
+            - mysql-server
+            - mysql-client
       before_script:
         - ./tests/travis/install-mysql-$MYSQL_VERSION.sh
       sudo: required
@@ -48,6 +62,13 @@ jobs:
     - stage: Test
       env: DB=mysql MYSQL_VERSION=5.7
       php: nightly
+      addons:
+        apt:
+          sources:
+            - mysql-5.7-trusty
+          packages:
+            - mysql-server
+            - mysql-client
       before_script:
         - ./tests/travis/install-mysql-$MYSQL_VERSION.sh
       sudo: required
