@@ -15,7 +15,7 @@ use function strtoupper;
 use function substr;
 
 /**
- * Naming strategy implementing the underscore naming convention.
+ * Naming strategy implementing the underscore plural naming convention.
  * Converts 'MyEntity' to 'my_entities' or 'MY_ENTITIES'.
  */
 class UnderscorePluralNamingStrategy implements NamingStrategy
@@ -57,11 +57,7 @@ class UnderscorePluralNamingStrategy implements NamingStrategy
      */
     public function classToTableName($className)
     {
-        if (strpos($className, '\\') !== false) {
-            $className = substr($className, strrpos($className, '\\') + 1);
-        }
-
-        return $this->underscore($className);
+        return $this->_classToTableName($className, true);
     }
 
     /**
@@ -101,7 +97,7 @@ class UnderscorePluralNamingStrategy implements NamingStrategy
      */
     public function joinTableName($sourceEntity, $targetEntity, $propertyName = null)
     {
-        return $this->classToTableName($sourceEntity) . '_' . $this->classToTableName($targetEntity);
+        return $this->_classToTableName($sourceEntity) . '_' . $this->_classToTableName($targetEntity);
     }
 
     /**
@@ -109,8 +105,27 @@ class UnderscorePluralNamingStrategy implements NamingStrategy
      */
     public function joinKeyColumnName($entityName, $referencedColumnName = null)
     {
-        return $this->classToTableName($entityName) . '_' .
+        return $this->_classToTableName($entityName) . '_' .
                 ($referencedColumnName ?: $this->referenceColumnName());
+    }
+
+    /**
+     * @param string $string
+     * @param bool $pluralize
+     *
+     * @return string
+     */
+    private function _classToTableName($className, $pluralize = false)
+    {
+        if (strpos($className, '\\') !== false) {
+            $className = substr($className, strrpos($className, '\\') + 1);
+        }
+
+        if ($pluralize) {
+            $className = Inflector::pluralize($className);
+        }
+
+        return $this->underscore($className);
     }
 
     /**
@@ -121,7 +136,6 @@ class UnderscorePluralNamingStrategy implements NamingStrategy
     private function underscore($string)
     {
         $string = preg_replace('/(?<=[a-z])([A-Z])/', '_$1', $string);
-        $string = Inflector::pluralize($string);
 
         if ($this->case === CASE_UPPER) {
             return strtoupper($string);
