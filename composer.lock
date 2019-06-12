@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "4572bf84ed9a890cbabc1c9ec4e14ec4",
+    "content-hash": "36598469b3c632f3bc971af779ca4c2a",
     "packages": [
         {
             "name": "doctrine/annotations",
@@ -1679,69 +1679,25 @@
             "time": "2018-02-19T10:16:54+00:00"
         },
         {
-            "name": "phpstan/phpdoc-parser",
-            "version": "0.3.1",
+            "name": "phpstan/phpstan-shim",
+            "version": "0.11.4",
             "source": {
                 "type": "git",
-                "url": "https://github.com/phpstan/phpdoc-parser.git",
-                "reference": "2cc49f47c69b023eaf05b48e6529389893b13d74"
+                "url": "https://github.com/phpstan/phpstan-shim.git",
+                "reference": "70e1a346907142449ac085745f158aa715b4e0b8"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/phpstan/phpdoc-parser/zipball/2cc49f47c69b023eaf05b48e6529389893b13d74",
-                "reference": "2cc49f47c69b023eaf05b48e6529389893b13d74",
+                "url": "https://api.github.com/repos/phpstan/phpstan-shim/zipball/70e1a346907142449ac085745f158aa715b4e0b8",
+                "reference": "70e1a346907142449ac085745f158aa715b4e0b8",
                 "shasum": ""
             },
             "require": {
                 "php": "~7.1"
             },
-            "require-dev": {
-                "consistence/coding-standard": "^2.0.0",
-                "jakub-onderka/php-parallel-lint": "^0.9.2",
-                "phing/phing": "^2.16.0",
-                "phpstan/phpstan": "^0.10",
-                "phpunit/phpunit": "^6.3",
-                "slevomat/coding-standard": "^3.3.0",
-                "symfony/process": "^3.4 || ^4.0"
-            },
-            "type": "library",
-            "extra": {
-                "branch-alias": {
-                    "dev-master": "0.3-dev"
-                }
-            },
-            "autoload": {
-                "psr-4": {
-                    "PHPStan\\PhpDocParser\\": [
-                        "src/"
-                    ]
-                }
-            },
-            "notification-url": "https://packagist.org/downloads/",
-            "license": [
-                "MIT"
-            ],
-            "description": "PHPDoc parser with support for nullable, intersection and generic types",
-            "time": "2019-01-14T12:26:23+00:00"
-        },
-        {
-            "name": "phpstan/phpstan-shim",
-            "version": "0.9.2",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/phpstan/phpstan-shim.git",
-                "reference": "e4720fb2916be05de02869780072253e7e0e8a75"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/phpstan/phpstan-shim/zipball/e4720fb2916be05de02869780072253e7e0e8a75",
-                "reference": "e4720fb2916be05de02869780072253e7e0e8a75",
-                "shasum": ""
-            },
-            "require": {
-                "php": "~7.0"
-            },
             "replace": {
+                "nikic/php-parser": "^4.0.2",
+                "phpstan/phpdoc-parser": "^0.3",
                 "phpstan/phpstan": "self.version"
             },
             "bin": [
@@ -1751,15 +1707,20 @@
             "type": "library",
             "extra": {
                 "branch-alias": {
-                    "dev-master": "0.9-dev"
+                    "dev-master": "0.11-dev"
                 }
+            },
+            "autoload": {
+                "files": [
+                    "bootstrap.php"
+                ]
             },
             "notification-url": "https://packagist.org/downloads/",
             "license": [
                 "MIT"
             ],
             "description": "PHPStan Phar distribution",
-            "time": "2018-01-28T14:29:27+00:00"
+            "time": "2019-03-14T15:24:47+00:00"
         },
         {
             "name": "phpunit/php-code-coverage",

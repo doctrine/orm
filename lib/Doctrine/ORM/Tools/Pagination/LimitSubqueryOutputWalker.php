@@ -11,6 +11,7 @@ use Doctrine\DBAL\Platforms\PostgreSqlPlatform;
 use Doctrine\DBAL\Platforms\SQLAnywherePlatform;
 use Doctrine\DBAL\Platforms\SQLServerPlatform;
 use Doctrine\DBAL\Types\Type;
+use Doctrine\ORM\AbstractQuery;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Mapping\AssociationMetadata;
 use Doctrine\ORM\Mapping\FieldMetadata;
@@ -89,7 +90,7 @@ class LimitSubqueryOutputWalker extends SqlWalker
      * @param ParserResult $parserResult
      * @param mixed[][]    $queryComponents
      */
-    public function __construct($query, $parserResult, array $queryComponents)
+    public function __construct(AbstractQuery $query, ParserResult $parserResult, array $queryComponents)
     {
         $this->platform        = $query->getEntityManager()->getConnection()->getDatabasePlatform();
         $this->rsm             = $parserResult->getResultSetMapping();

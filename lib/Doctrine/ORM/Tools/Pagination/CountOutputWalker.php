@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Doctrine\ORM\Tools\Pagination;
 
 use Doctrine\DBAL\Platforms\AbstractPlatform;
+use Doctrine\ORM\AbstractQuery;
 use Doctrine\ORM\Mapping\AssociationMetadata;
 use Doctrine\ORM\Mapping\FieldMetadata;
 use Doctrine\ORM\Query;
@@ -49,7 +50,7 @@ class CountOutputWalker extends SqlWalker
      * @param ParserResult $parserResult
      * @param mixed[][]    $queryComponents
      */
-    public function __construct($query, $parserResult, array $queryComponents)
+    public function __construct(AbstractQuery $query, ParserResult $parserResult, array $queryComponents)
     {
         $this->platform        = $query->getEntityManager()->getConnection()->getDatabasePlatform();
         $this->rsm             = $parserResult->getResultSetMapping();
