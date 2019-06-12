@@ -1599,6 +1599,19 @@ class BasicEntityPersister implements EntityPersister
     public function getSelectConditionStatementSQL($field, $value, $assoc = null, $comparison = null)
     {
         $selectedColumns = [];
+
+        if ($value instanceof Criteria && $value->getWhereExpression() instanceof Comparison) {
+            /** @var Comparison $expression */
+            $expression = $value->getWhereExpression();
+
+            // replace $field, if it was not specified earlier
+            if (is_numeric($field)) {
+                $field = $expression->getField();
+            }
+            $value = $expression->getValue();
+            $comparison = $expression->getOperator();
+        }
+
         $columns         = $this->getSelectConditionStatementColumnSQL($field, $assoc);
 
         if (count($columns) > 1 && $comparison === Comparison::IN) {

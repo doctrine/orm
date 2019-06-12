@@ -2,6 +2,7 @@
 
 namespace Doctrine\Tests\ORM\Persisters;
 
+use Doctrine\Common\Collections\Criteria;
 use Doctrine\ORM\Persisters\Entity\BasicEntityPersister;
 use Doctrine\Common\Collections\Expr\Comparison;
 use Doctrine\Tests\Models\GeoNames\Admin1AlternateName;
@@ -54,5 +55,18 @@ class BasicEntityPersisterCompositeTypeSqlTest extends OrmTestCase
     public function testSelectConditionStatementIn()
     {
         $this->_persister->getSelectConditionStatementSQL('admin1', [], [], Comparison::IN);
+    }
+
+    /**
+     * this represents the case that occurs when getSelectConditionSQL() is called with Criteria[] as $criteria
+     * as used by findBy([$criteris]) with Critia[] given as argument
+     */
+    public function testSelectConditionStatementWithCriteria()
+    {
+        $criteria = Criteria::create();
+        $criteria->where(Criteria::expr()->gt('id', 1));
+
+        $statement= $this->_persister->getSelectConditionStatementSQL(0, $criteria);
+        $this->assertEquals('t0.id > ?', $statement);
     }
 }
