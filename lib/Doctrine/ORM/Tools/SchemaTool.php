@@ -29,7 +29,9 @@ use Doctrine\ORM\Tools\Exception\MissingColumnException;
 use Doctrine\ORM\Tools\Exception\NotSupported;
 use Throwable;
 use function array_diff;
-use function array_key_exists;
+use function array_diff_key;
+use function array_flip;
+use function array_intersect_key;
 use function array_keys;
 use function count;
 use function implode;
@@ -45,6 +47,8 @@ use function strtolower;
  */
 class SchemaTool
 {
+    private const KNOWN_COLUMN_OPTIONS = ['comment', 'unsigned', 'fixed', 'default'];
+
     /** @var EntityManagerInterface */
     private $em;
 
@@ -459,19 +463,8 @@ class SchemaTool
 
         $fieldOptions = $fieldMetadata->getOptions();
 
-        if ($fieldOptions) {
-            $knownOptions = ['comment', 'unsigned', 'fixed', 'default'];
-
-            foreach ($knownOptions as $knownOption) {
-                if (array_key_exists($knownOption, $fieldOptions)) {
-                    $options[$knownOption] = $fieldOptions[$knownOption];
-
-                    unset($fieldOptions[$knownOption]);
-                }
-            }
-
-            $options['customSchemaOptions'] = $fieldOptions;
-        }
+        // the 'default' option can be overwritten here
+        $options = $this->gatherColumnOptions($fieldOptions) + $options;
 
         if ($fieldMetadata->hasValueGenerator() && $fieldMetadata->getValueGenerator()->getType() === GeneratorType::IDENTITY && $classMetadata->getIdentifierFieldNames() === [$fieldName]) {
             $options['autoincrement'] = true;
@@ -710,9 +703,7 @@ class SchemaTool
                     'columnDefinition' => $columnDef,
                 ];
 
-                if ($property->getOptions()) {
-                    $columnOptions['options'] = $property->getOptions();
-                }
+                $columnOptions += $this->gatherColumnOptions($property->getOptions());
 
                 switch ($columnType) {
                     case 'string':
@@ -773,6 +764,23 @@ class SchemaTool
                 $fkOptions
             );
         }
+    }
+
+    /**
+     * @param mixed[] $mapping
+     *
+     * @return mixed[]
+     */
+    private function gatherColumnOptions(array $mapping) : array
+    {
+        if ($mapping === []) {
+            return [];
+        }
+
+        $options                        = array_intersect_key($mapping, array_flip(self::KNOWN_COLUMN_OPTIONS));
+        $options['customSchemaOptions'] = array_diff_key($mapping, $options);
+
+        return $options;
     }
 
     /**

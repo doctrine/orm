@@ -21,6 +21,7 @@ use Doctrine\ORM\Query\QueryException;
 use Doctrine\ORM\Utility\HierarchyDiscriminatorResolver;
 use function array_keys;
 use function array_values;
+use function assert;
 use function count;
 use function in_array;
 use function ksort;
@@ -364,26 +365,13 @@ final class Query extends AbstractQuery
         $types     = [];
 
         foreach ($this->parameters as $parameter) {
-            $key   = $parameter->getName();
-            $value = $parameter->getValue();
-            $rsm   = $this->getResultSetMapping();
+            $key = $parameter->getName();
 
             if (! isset($paramMappings[$key])) {
                 throw QueryException::unknownParameter($key);
             }
 
-            if (isset($rsm->metadataParameterMapping[$key]) && $value instanceof ClassMetadata) {
-                $value = $value->getMetadataValue($rsm->metadataParameterMapping[$key]);
-            }
-
-            if (isset($rsm->discriminatorParameters[$key]) && $value instanceof ClassMetadata) {
-                $value = array_keys(HierarchyDiscriminatorResolver::resolveDiscriminatorsForClass($value, $this->em));
-            }
-
-            $value = $this->processParameterValue($value);
-            $type  = $parameter->getValue() === $value
-                ? $parameter->getType()
-                : ParameterTypeInferer::inferType($value);
+            [$value, $type] = $this->resolveParameterValue($parameter);
 
             foreach ($paramMappings[$key] as $position) {
                 $types[$position] = $type;
@@ -415,6 +403,38 @@ final class Query extends AbstractQuery
         }
 
         return [$sqlParams, $types];
+    }
+
+    /** @return mixed[] tuple of (value, type) */
+    private function resolveParameterValue(Parameter $parameter) : array
+    {
+        if ($parameter->typeWasSpecified()) {
+            return [$parameter->getValue(), $parameter->getType()];
+        }
+
+        $key           = $parameter->getName();
+        $originalValue = $parameter->getValue();
+        $value         = $originalValue;
+        $rsm           = $this->getResultSetMapping();
+
+        assert($rsm !== null);
+
+        if ($value instanceof ClassMetadata && isset($rsm->metadataParameterMapping[$key])) {
+            $value = $value->getMetadataValue($rsm->metadataParameterMapping[$key]);
+        }
+
+        if ($value instanceof ClassMetadata && isset($rsm->discriminatorParameters[$key])) {
+            $value = array_keys(HierarchyDiscriminatorResolver::resolveDiscriminatorsForClass($value, $this->em));
+        }
+
+        $processedValue = $this->processParameterValue($value);
+
+        return [
+            $processedValue,
+            $originalValue === $processedValue
+                ? $parameter->getType()
+                : ParameterTypeInferer::inferType($processedValue),
+        ];
     }
 
     /**

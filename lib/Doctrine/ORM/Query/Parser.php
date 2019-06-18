@@ -1933,15 +1933,12 @@ class Parser
 
                 return new AST\Literal(AST\Literal::BOOLEAN, $this->lexer->token['value']);
             case $lookahead === Lexer::T_INPUT_PARAMETER:
-                switch (true) {
-                    case $this->isMathOperator($peek):
-                        // :param + u.value
-                        return $this->SimpleArithmeticExpression();
-                    default:
-                        return $this->InputParameter();
+                if ($this->isMathOperator($peek)) {
+                    // :param + u.value
+                    return $this->SimpleArithmeticExpression();
                 }
-                // cannot get here
 
+                return $this->InputParameter();
             case $lookahead === Lexer::T_CASE:
             case $lookahead === Lexer::T_COALESCE:
             case $lookahead === Lexer::T_NULLIF:

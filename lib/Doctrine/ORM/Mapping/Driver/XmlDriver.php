@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Doctrine\ORM\Mapping\Driver;
 
+use Doctrine\Common\Collections\Criteria;
 use Doctrine\DBAL\Types\Type;
 use Doctrine\ORM\Events;
 use Doctrine\ORM\Mapping;
@@ -375,7 +376,9 @@ class XmlDriver extends FileDriver
                     $orderBy = [];
 
                     foreach ($oneToManyElement->{'order-by'}->{'order-by-field'} as $orderByField) {
-                        $orderBy[(string) $orderByField['name']] = (string) $orderByField['direction'];
+                        $orderBy[(string) $orderByField['name']] = isset($orderByField['direction'])
+                            ? (string) $orderByField['direction']
+                            : Criteria::ASC;
                     }
 
                     $association->setOrderBy($orderBy);
@@ -523,7 +526,9 @@ class XmlDriver extends FileDriver
                     $orderBy = [];
 
                     foreach ($manyToManyElement->{'order-by'}->{'order-by-field'} as $orderByField) {
-                        $orderBy[(string) $orderByField['name']] = (string) $orderByField['direction'];
+                        $orderBy[(string) $orderByField['name']] = isset($orderByField['direction'])
+                            ? (string) $orderByField['direction']
+                            : Criteria::ASC;
                     }
 
                     $association->setOrderBy($orderBy);

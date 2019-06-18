@@ -851,13 +851,32 @@ class UnitOfWork implements PropertyChangedListener
         $generationPlan->executeImmediate($this->em, $entity);
 
         if (! $generationPlan->containsDeferred()) {
-            $id                            = $this->em->getIdentifierFlattener()->flattenIdentifier($class, $persister->getIdentifier($entity));
-            $this->entityIdentifiers[$oid] = $id;
+            $id = $this->em->getIdentifierFlattener()->flattenIdentifier($class, $persister->getIdentifier($entity));
+
+            // Some identifiers may be foreign keys to new entities.
+            // In this case, we don't have the value yet and should treat it as if we have a post-insert generator
+            if (! $this->hasMissingIdsWhichAreForeignKeys($class, $id)) {
+                $this->entityIdentifiers[$oid] = $id;
+            }
         }
 
         $this->entityStates[$oid] = self::STATE_MANAGED;
 
         $this->scheduleForInsert($entity);
+    }
+
+    /**
+     * @param mixed[] $idValue
+     */
+    private function hasMissingIdsWhichAreForeignKeys(ClassMetadata $class, array $idValue) : bool
+    {
+        foreach ($idValue as $idField => $idFieldValue) {
+            if ($idFieldValue === null && isset($class->associationMappings[$idField])) {
+                return true;
+            }
+        }
+
+        return false;
     }
 
     /**

@@ -6,6 +6,7 @@ namespace Doctrine\ORM;
 
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
+use Doctrine\Common\Persistence\Mapping\MappingException as CommonMappingException;
 use Doctrine\DBAL\Cache\QueryCacheProfile;
 use Doctrine\DBAL\Driver\Statement;
 use Doctrine\ORM\Cache\Exception\InvalidResultCacheDriver;
@@ -13,9 +14,9 @@ use Doctrine\ORM\Cache\Logging\CacheLogger;
 use Doctrine\ORM\Cache\QueryCacheKey;
 use Doctrine\ORM\Cache\TimestampCacheKey;
 use Doctrine\ORM\Internal\Hydration\IterableResult;
+use Doctrine\ORM\Mapping\MappingException;
 use Doctrine\ORM\Query\Parameter;
 use Doctrine\ORM\Query\ResultSetMapping;
-use Doctrine\ORM\Utility\StaticClassNameConverter;
 use function array_map;
 use function array_shift;
 use function count;
@@ -63,7 +64,7 @@ abstract class AbstractQuery
     /**
      * The parameter map of this query.
      *
-     * @var ArrayCollection
+     * @var ArrayCollection|Parameter[]
      */
     protected $parameters;
 
@@ -91,7 +92,7 @@ abstract class AbstractQuery
     /**
      * The hydration mode.
      *
-     * @var int
+     * @var string|int
      */
     protected $hydrationMode = self::HYDRATE_OBJECT;
 
@@ -313,7 +314,7 @@ abstract class AbstractQuery
     /**
      * Sets a collection of query parameters.
      *
-     * @param ArrayCollection|array|Parameter[]|mixed[] $parameters
+     * @param ArrayCollection|mixed[] $parameters
      *
      * @return static This query instance.
      */
@@ -393,12 +394,20 @@ abstract class AbstractQuery
             return $value;
         }
 
-        if (is_object($value) && $this->em->getMetadataFactory()->hasMetadataFor(StaticClassNameConverter::getClass($value))) {
+        if (! is_object($value)) {
+            return $value;
+        }
+
+        try {
             $value = $this->em->getUnitOfWork()->getSingleIdentifierValue($value);
 
             if ($value === null) {
                 throw ORMInvalidArgumentException::invalidIdentifierBindingEntity();
             }
+        } catch (MappingException | CommonMappingException $e) {
+            // Silence any mapping exceptions. These can occur if the object in
+            // question is not a mapped entity, in which case we just don't do
+            // any preparation on the value.
         }
 
         return $value;
@@ -635,8 +644,8 @@ abstract class AbstractQuery
     /**
      * Defines the processing mode to be used during hydration / result set transformation.
      *
-     * @param int $hydrationMode Doctrine processing mode to be used during hydration process.
-     *                           One of the Query::HYDRATE_* constants.
+     * @param string|int $hydrationMode Doctrine processing mode to be used during hydration process.
+     *                                  One of the Query::HYDRATE_* constants.
      *
      * @return static This query instance.
      */
@@ -650,7 +659,7 @@ abstract class AbstractQuery
     /**
      * Gets the hydration mode currently used by the query.
      *
-     * @return int
+     * @return string|int
      */
     public function getHydrationMode()
     {
@@ -662,7 +671,7 @@ abstract class AbstractQuery
      *
      * Alias for execute(null, $hydrationMode = HYDRATE_OBJECT).
      *
-     * @param int $hydrationMode
+     * @param string|int $hydrationMode
      *
      * @return mixed
      */
@@ -698,7 +707,7 @@ abstract class AbstractQuery
     /**
      * Get exactly one result or null.
      *
-     * @param int $hydrationMode
+     * @param string|int $hydrationMode
      *
      * @return mixed
      *
@@ -735,7 +744,7 @@ abstract class AbstractQuery
      * If the result is not unique, a NonUniqueResultException is thrown.
      * If there is no result, a NoResultException is thrown.
      *
-     * @param int $hydrationMode
+     * @param string|int $hydrationMode
      *
      * @return mixed
      *
@@ -829,8 +838,8 @@ abstract class AbstractQuery
      * Executes the query and returns an IterableResult that can be used to incrementally
      * iterate over the result.
      *
-     * @param ArrayCollection|array|Parameter[]|mixed[]|null $parameters    The query parameters.
-     * @param int|null                                       $hydrationMode The hydration mode to use.
+     * @param ArrayCollection|mixed[]|null $parameters    The query parameters.
+     * @param string|int|null              $hydrationMode The hydration mode to use.
      *
      * @return IterableResult
      */
@@ -853,8 +862,8 @@ abstract class AbstractQuery
     /**
      * Executes the query.
      *
-     * @param ArrayCollection|array|Parameter[]|mixed[]|null $parameters    Query parameters.
-     * @param int|null                                       $hydrationMode Processing mode to be used during the hydration process.
+     * @param ArrayCollection|mixed[]|null $parameters    Query parameters.
+     * @param string|int|null              $hydrationMode Processing mode to be used during the hydration process.
      *
      * @return mixed
      */
@@ -868,8 +877,8 @@ abstract class AbstractQuery
     /**
      * Execute query ignoring second level cache.
      *
-     * @param ArrayCollection|array|Parameter[]|mixed[]|null $parameters
-     * @param int|null                                       $hydrationMode
+     * @param ArrayCollection|mixed[]|null $parameters
+     * @param string|int|null              $hydrationMode
      *
      * @return mixed
      */
@@ -927,8 +936,8 @@ abstract class AbstractQuery
     /**
      * Load from second level cache or executes the query and put into cache.
      *
-     * @param ArrayCollection|array|Parameter[]|mixed[]|null $parameters
-     * @param int|null                                       $hydrationMode
+     * @param ArrayCollection|mixed[]|null $parameters
+     * @param string|int|null              $hydrationMode
      *
      * @return mixed
      */
