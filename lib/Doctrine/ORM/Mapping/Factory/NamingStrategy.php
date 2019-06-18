@@ -35,8 +35,6 @@ interface NamingStrategy
      * @param string $embeddedColumnName An embedded column name.
      * @param string $className          The fully-qualified class name.
      * @param string $embeddedClassName  The fully-qualified embedded class name.
-     *
-     * @return string
      */
     public function embeddedFieldToColumnName(
         string $propertyName,

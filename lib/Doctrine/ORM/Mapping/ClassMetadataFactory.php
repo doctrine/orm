@@ -15,7 +15,6 @@ use Doctrine\ORM\Exception\ORMException;
 use Doctrine\ORM\Mapping\Exception\InvalidCustomGenerator;
 use Doctrine\ORM\Mapping\Exception\TableGeneratorNotImplementedYet;
 use Doctrine\ORM\Mapping\Exception\UnknownGeneratorType;
-use Doctrine\ORM\Sequencing;
 use Doctrine\ORM\Sequencing\Planning\AssociationValueGeneratorExecutor;
 use Doctrine\ORM\Sequencing\Planning\ColumnValueGeneratorExecutor;
 use Doctrine\ORM\Sequencing\Planning\CompositeValueGenerationPlan;

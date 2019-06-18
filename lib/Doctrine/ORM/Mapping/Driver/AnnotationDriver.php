@@ -186,8 +186,6 @@ class AnnotationDriver implements MappingDriver
      *
      * @param string $className
      *
-     * @return bool
-     *
      * @throws ReflectionException
      */
     public function isTransient($className) : bool
