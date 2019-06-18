@@ -37,12 +37,8 @@ class XmlMappingDriverTest extends AbstractMappingDriverTest
     public function testClassTableInheritanceDiscriminatorMap() : void
     {
         $mappingDriver = $this->loadDriver();
-
-        $class = new ClassMetadata(CTI::class, $this->metadataBuildingContext);
-
-        $mappingDriver->loadMetadataForClass(CTI::class, $class, $this->metadataBuildingContext);
-
-        $expectedMap = [
+        $class         = $mappingDriver->loadMetadataForClass(CTI::class, null, $this->metadataBuildingContext);
+        $expectedMap   = [
             'foo' => CTIFoo::class,
             'bar' => CTIBar::class,
             'baz' => CTIBaz::class,
@@ -60,9 +56,7 @@ class XmlMappingDriverTest extends AbstractMappingDriverTest
     {
         $mappingDriver = $this->loadDriver();
 
-        $class = new ClassMetadata(XMLSLC::class, $this->metadataBuildingContext);
-
-        $mappingDriver->loadMetadataForClass(XMLSLC::class, $class, $this->metadataBuildingContext);
+        $mappingDriver->loadMetadataForClass(XMLSLC::class, null, $this->metadataBuildingContext);
     }
 
     public function testIdentifierWithAssociationKey() : void

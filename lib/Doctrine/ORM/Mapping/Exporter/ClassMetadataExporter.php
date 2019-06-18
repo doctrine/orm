@@ -72,7 +72,7 @@ class ClassMetadataExporter implements Exporter
         $lines[] = $bodyIndentation . '?ClassMetadata $parent = null';
         $lines[] = $indentation . ')';
         $lines[] = $indentation . '{';
-        $lines[] = $bodyIndentation . 'parent::__construct("' . $metadata->getClassName() . '", $parent);';
+        $lines[] = $bodyIndentation . 'parent::__construct("' . $metadata->getClassName() . '", $parent, $metadataBuildingContext);';
 
         if ($metadata->getCustomRepositoryClassName()) {
             $lines[] = null;

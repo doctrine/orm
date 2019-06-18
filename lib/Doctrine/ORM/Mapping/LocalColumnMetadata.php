@@ -58,8 +58,10 @@ abstract class LocalColumnMetadata extends ColumnMetadata
         return $this->valueGenerator;
     }
 
-    public function setValueGenerator(?ValueGeneratorMetadata $valueGenerator) : void
+    public function setValueGenerator(ValueGeneratorMetadata $valueGenerator) : void
     {
+        $valueGenerator->setDeclaringProperty($this);
+
         $this->valueGenerator = $valueGenerator;
     }
 }

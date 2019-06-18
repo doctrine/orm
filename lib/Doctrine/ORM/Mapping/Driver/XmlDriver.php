@@ -45,9 +45,11 @@ class XmlDriver extends FileDriver
      */
     public function loadMetadataForClass(
         string $className,
-        Mapping\ClassMetadata $metadata,
+        ?Mapping\ComponentMetadata $parent,
         Mapping\ClassMetadataBuildingContext $metadataBuildingContext
-    ) {
+    ) : Mapping\ComponentMetadata {
+        $metadata = new Mapping\ClassMetadata($className, $parent, $metadataBuildingContext);
+
         /** @var SimpleXMLElement $xmlRoot */
         $xmlRoot = $this->getElement($className);
 
@@ -275,7 +277,9 @@ class XmlDriver extends FileDriver
                         throw Mapping\MappingException::tableIdGeneratorNotImplemented($className);
                     }
 
-                    $fieldMetadata->setValueGenerator(new Mapping\ValueGeneratorMetadata($idGeneratorType, $idGeneratorDefinition));
+                    $fieldMetadata->setValueGenerator(
+                        new Mapping\ValueGeneratorMetadata($idGeneratorType, $idGeneratorDefinition)
+                    );
                 }
             }
 
@@ -684,6 +688,8 @@ class XmlDriver extends FileDriver
                 }
             }
         }
+
+        return $metadata;
     }
 
     /**

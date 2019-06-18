@@ -26,14 +26,15 @@ class HierarchyDiscriminatorResolverTest extends TestCase
 
     public function testResolveDiscriminatorsForClass() : void
     {
-        $childClassMetadata                     = new ClassMetadata('ChildEntity', $this->staticMetadataBuildingContext);
+        $classMetadata                     = new ClassMetadata('Entity', null, $this->staticMetadataBuildingContext);
+        $classMetadata->name               = 'Some\Class\Name';
+        $classMetadata->discriminatorValue = 'discriminator';
+
+        $childClassMetadata                     = new ClassMetadata('ChildEntity', $classMetadata, $this->staticMetadataBuildingContext);
         $childClassMetadata->name               = 'Some\Class\Child\Name';
         $childClassMetadata->discriminatorValue = 'child-discriminator';
 
-        $classMetadata = new ClassMetadata('Entity', $this->staticMetadataBuildingContext);
         $classMetadata->setSubclasses([$childClassMetadata->getClassName()]);
-        $classMetadata->name               = 'Some\Class\Name';
-        $classMetadata->discriminatorValue = 'discriminator';
 
         $em = $this->prophesize(EntityManagerInterface::class);
         $em->getClassMetadata($classMetadata->getClassName())
@@ -52,7 +53,7 @@ class HierarchyDiscriminatorResolverTest extends TestCase
 
     public function testResolveDiscriminatorsForClassWithNoSubclasses() : void
     {
-        $classMetadata = new ClassMetadata('Entity', $this->staticMetadataBuildingContext);
+        $classMetadata = new ClassMetadata('Entity', null, $this->staticMetadataBuildingContext);
         $classMetadata->setSubclasses([]);
         $classMetadata->name               = 'Some\Class\Name';
         $classMetadata->discriminatorValue = 'discriminator';

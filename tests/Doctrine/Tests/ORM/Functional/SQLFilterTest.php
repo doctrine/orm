@@ -315,12 +315,12 @@ class SQLFilterTest extends OrmFunctionalTestCase
         $filter = new MySoftDeleteFilter($this->getMockEntityManager());
 
         // Test for an entity that gets extra filter data
-        $metadata = new ClassMetadata('MyEntity\SoftDeleteNewsItem', $metadataBuildingContext);
+        $metadata = new ClassMetadata('MyEntity\SoftDeleteNewsItem', null, $metadataBuildingContext);
 
         self::assertEquals('t1_.deleted = 0', $filter->addFilterConstraint($metadata, 't1_'));
 
         // Test for an entity that doesn't get extra filter data
-        $metadata = new ClassMetadata('MyEntity\NoSoftDeleteNewsItem', $metadataBuildingContext);
+        $metadata = new ClassMetadata('MyEntity\NoSoftDeleteNewsItem', null, $metadataBuildingContext);
 
         self::assertEquals('', $filter->addFilterConstraint($metadata, 't1_'));
     }

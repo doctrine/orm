@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Doctrine\ORM\Mapping\Factory;
 
+use Doctrine\ORM\Mapping\ClassMetadataBuildingContext;
 use Doctrine\ORM\Mapping\Driver\MappingDriver;
 use Doctrine\ORM\Mapping\Exporter\ClassMetadataExporter;
 
@@ -29,11 +30,14 @@ class ClassMetadataGenerator
     /**
      * Generates class metadata code.
      */
-    public function generate(ClassMetadataDefinition $definition) : string
-    {
+    public function generate(
+        ClassMetadataDefinition $definition,
+        ClassMetadataBuildingContext $metadataBuildingContext
+    ) : string {
         $metadata = $this->mappingDriver->loadMetadataForClass(
             $definition->entityClassName,
-            $definition->parentClassMetadata
+            $definition->parentClassMetadata,
+            $metadataBuildingContext
         );
 
         return $this->metadataExporter->export($metadata);

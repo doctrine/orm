@@ -128,7 +128,7 @@ class DefaultRepositoryFactoryTest extends DoctrineTestCase
      */
     public function buildClassMetadata($className)
     {
-        $metadata = new ClassMetadata($className, $this->metadataBuildingContext);
+        $metadata = new ClassMetadata($className, null, $this->metadataBuildingContext);
 
         $metadata->setCustomRepositoryClassName(null);
 

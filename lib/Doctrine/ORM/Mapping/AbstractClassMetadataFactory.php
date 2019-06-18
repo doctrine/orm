@@ -122,6 +122,7 @@ abstract class AbstractClassMetadataFactory implements ClassMetadataFactory
      * @throws InvalidArgumentException
      * @throws ReflectionException
      * @throws MappingException
+     * @throws CommonMappingException
      */
     public function getAllMetadata() : array
     {
@@ -145,7 +146,6 @@ abstract class AbstractClassMetadataFactory implements ClassMetadataFactory
      * @param string $className The name of the class.
      *
      * @throws InvalidArgumentException
-     * @throws ReflectionException
      * @throws CommonMappingException
      */
     public function getMetadataFor($className) : ClassMetadata
@@ -154,11 +154,11 @@ abstract class AbstractClassMetadataFactory implements ClassMetadataFactory
             return $this->loadedMetadata[$className];
         }
 
-        $realClassName = $this->normalizeClassName($className);
+        $entityClassName = StaticClassNameConverter::getRealClass($className);
 
-        if (isset($this->loadedMetadata[$realClassName])) {
+        if (isset($this->loadedMetadata[$entityClassName])) {
             // We do not have the alias name in the map, include it
-            return $this->loadedMetadata[$className] = $this->loadedMetadata[$realClassName];
+            return $this->loadedMetadata[$className] = $this->loadedMetadata[$entityClassName];
         }
 
         $metadataBuildingContext = $this->newClassMetadataBuildingContext();
@@ -166,40 +166,40 @@ abstract class AbstractClassMetadataFactory implements ClassMetadataFactory
 
         try {
             if ($this->cacheDriver) {
-                $cached = $this->cacheDriver->fetch($realClassName . $this->cacheSalt);
+                $cached = $this->cacheDriver->fetch($entityClassName . $this->cacheSalt);
 
                 if ($cached instanceof ClassMetadata) {
-                    $this->loadedMetadata[$realClassName] = $cached;
+                    $this->loadedMetadata[$entityClassName] = $cached;
 
                     $cached->wakeupReflection($metadataBuildingContext->getReflectionService());
                 } else {
-                    foreach ($this->loadMetadata($realClassName, $metadataBuildingContext) as $loadedClass) {
+                    foreach ($this->loadMetadata($entityClassName, $metadataBuildingContext) as $loadedClass) {
                         $loadedClassName = $loadedClass->getClassName();
 
                         $this->cacheDriver->save($loadedClassName . $this->cacheSalt, $loadedClass, null);
                     }
                 }
             } else {
-                $this->loadMetadata($realClassName, $metadataBuildingContext);
+                $this->loadMetadata($entityClassName, $metadataBuildingContext);
             }
         } catch (CommonMappingException $loadingException) {
-            $fallbackMetadataResponse = $this->onNotFoundMetadata($realClassName, $metadataBuildingContext);
+            $fallbackMetadataResponse = $this->onNotFoundMetadata($entityClassName, $metadataBuildingContext);
 
             if (! $fallbackMetadataResponse) {
                 throw $loadingException;
             }
 
-            $this->loadedMetadata[$realClassName] = $fallbackMetadataResponse;
+            $this->loadedMetadata[$entityClassName] = $fallbackMetadataResponse;
         }
 
-        if ($className !== $realClassName) {
+        if ($className !== $entityClassName) {
             // We do not have the alias name in the map, include it
-            $this->loadedMetadata[$className] = $this->loadedMetadata[$realClassName];
+            $this->loadedMetadata[$className] = $this->loadedMetadata[$entityClassName];
         }
 
         $metadataBuildingContext->validate();
 
-        return $this->loadedMetadata[$className];
+        return $this->loadedMetadata[$entityClassName];
     }
 
     /**
@@ -261,7 +261,9 @@ abstract class AbstractClassMetadataFactory implements ClassMetadataFactory
             $this->initialize();
         }
 
-        return $this->getDriver()->isTransient($this->normalizeClassName($className));
+        $entityClassName = StaticClassNameConverter::getRealClass($className);
+
+        return $this->getDriver()->isTransient($entityClassName);
     }
 
     /**
@@ -297,11 +299,6 @@ abstract class AbstractClassMetadataFactory implements ClassMetadataFactory
         ClassMetadataBuildingContext $metadataBuildingContext
     ) : ?ClassMetadata {
         return null;
-    }
-
-    private function normalizeClassName(string $className) : string
-    {
-        return StaticClassNameConverter::getRealClass($className);
     }
 
     /**

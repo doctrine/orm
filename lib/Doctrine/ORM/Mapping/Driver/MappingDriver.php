@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace Doctrine\ORM\Mapping\Driver;
 
-use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\Mapping\ClassMetadataBuildingContext;
+use Doctrine\ORM\Mapping\ComponentMetadata;
 
 /**
  * Contract for metadata drivers.
@@ -19,17 +19,16 @@ interface MappingDriver
      */
     public function loadMetadataForClass(
         string $className,
-        ClassMetadata $metadata,
-        // ComponentMetadata $parent
+        ?ComponentMetadata $parent,
         ClassMetadataBuildingContext $metadataBuildingContext
-    ); // : ComponentMetadata
+    ) : ComponentMetadata;
 
     /**
      * Gets the names of all mapped classes known to this driver.
      *
      * @return string[] The names of all mapped classes known to this driver.
      */
-    public function getAllClassNames();
+    public function getAllClassNames() : array;
 
     /**
      * Returns whether the class with the specified name should have its metadata loaded.
@@ -39,5 +38,5 @@ interface MappingDriver
      *
      * @return bool
      */
-    public function isTransient($className);
+    public function isTransient($className) : bool;
 }

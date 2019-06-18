@@ -101,6 +101,7 @@ class AnnotationDriver implements MappingDriver
     public function __construct(Reader $reader, $paths = null)
     {
         $this->reader = $reader;
+
         if ($paths) {
             $this->addPaths((array) $paths);
         }
@@ -149,7 +150,7 @@ class AnnotationDriver implements MappingDriver
     /**
      * Retrieve the current annotation reader
      *
-     * @return AnnotationReader
+     * @return Reader
      */
     public function getReader()
     {
@@ -186,8 +187,10 @@ class AnnotationDriver implements MappingDriver
      * @param string $className
      *
      * @return bool
+     *
+     * @throws ReflectionException
      */
-    public function isTransient($className)
+    public function isTransient($className) : bool
     {
         $classAnnotations = $this->reader->getClassAnnotations(new ReflectionClass($className));
 
@@ -203,7 +206,7 @@ class AnnotationDriver implements MappingDriver
     /**
      * {@inheritDoc}
      */
-    public function getAllClassNames()
+    public function getAllClassNames() : array
     {
         if ($this->classNames !== null) {
             return $this->classNames;
@@ -274,20 +277,15 @@ class AnnotationDriver implements MappingDriver
      * @throws Mapping\MappingException
      * @throws ReflectionException
      * @throws RuntimeException
+     * @throws UnexpectedValueException
      */
     public function loadMetadataForClass(
         string $className,
-        Mapping\ClassMetadata $metadata,
+        ?Mapping\ComponentMetadata $parent,
         Mapping\ClassMetadataBuildingContext $metadataBuildingContext
-    ) : Mapping\ClassMetadata {
-        $reflectionClass = $metadata->getReflectionClass();
-
-        if (! $reflectionClass) {
-            // this happens when running annotation driver in combination with
-            // static reflection services. This is not the nicest fix
-            $reflectionClass = new ReflectionClass($metadata->getClassName());
-        }
-
+    ) : Mapping\ComponentMetadata {
+        $reflectionClass  = new ReflectionClass($className);
+        $metadata         = new Mapping\ClassMetadata($className, $parent, $metadataBuildingContext);
         $classAnnotations = $this->getClassAnnotations($reflectionClass);
         $classMetadata    = $this->convertClassAnnotationsToClassMetadata(
             $classAnnotations,
@@ -315,7 +313,8 @@ class AnnotationDriver implements MappingDriver
             $property            = $this->convertPropertyAnnotationsToProperty(
                 $propertyAnnotations,
                 $reflectionProperty,
-                $classMetadata
+                $classMetadata,
+                $metadataBuildingContext
             );
 
             if ($classMetadata->isMappedSuperclass &&
@@ -327,14 +326,10 @@ class AnnotationDriver implements MappingDriver
                 );
             }
 
-            if (! $property) {
-                continue;
-            }
-
             $metadata->addProperty($property);
         }
 
-        $this->attachPropertyOverrides($classAnnotations, $reflectionClass, $metadata);
+        $this->attachPropertyOverrides($classAnnotations, $reflectionClass, $metadata, $metadataBuildingContext);
 
         return $classMetadata;
     }
@@ -343,6 +338,8 @@ class AnnotationDriver implements MappingDriver
      * @param Annotation\Annotation[] $classAnnotations
      *
      * @throws Mapping\MappingException
+     * @throws UnexpectedValueException
+     * @throws ReflectionException
      */
     private function convertClassAnnotationsToClassMetadata(
         array $classAnnotations,
@@ -384,6 +381,7 @@ class AnnotationDriver implements MappingDriver
      * @return Mapping\ClassMetadata
      *
      * @throws Mapping\MappingException
+     * @throws ReflectionException
      * @throws UnexpectedValueException
      */
     private function convertClassAnnotationsToEntityClassMetadata(
@@ -426,7 +424,7 @@ class AnnotationDriver implements MappingDriver
             );
 
             if ($metadata->inheritanceType !== Mapping\InheritanceType::NONE) {
-                $this->attachDiscriminatorColumn($classAnnotations, $reflectionClass, $metadata);
+                $this->attachDiscriminatorColumn($classAnnotations, $reflectionClass, $metadata, $metadataBuildingContext);
             }
         }
 
@@ -438,6 +436,9 @@ class AnnotationDriver implements MappingDriver
 
     /**
      * @param Annotation\Annotation[] $classAnnotations
+     *
+     * @throws Mapping\MappingException
+     * @throws ReflectionException
      */
     private function convertClassAnnotationsToMappedSuperClassMetadata(
         array $classAnnotations,
@@ -482,38 +483,44 @@ class AnnotationDriver implements MappingDriver
     private function convertPropertyAnnotationsToProperty(
         array $propertyAnnotations,
         ReflectionProperty $reflectionProperty,
-        Mapping\ClassMetadata $metadata
+        Mapping\ClassMetadata $metadata,
+        Mapping\ClassMetadataBuildingContext $metadataBuildingContext
     ) : ?Mapping\Property {
         switch (true) {
             case isset($propertyAnnotations[Annotation\Column::class]):
                 return $this->convertReflectionPropertyToFieldMetadata(
                     $reflectionProperty,
                     $propertyAnnotations,
-                    $metadata
+                    $metadata,
+                    $metadataBuildingContext
                 );
             case isset($propertyAnnotations[Annotation\OneToOne::class]):
                 return $this->convertReflectionPropertyToOneToOneAssociationMetadata(
                     $reflectionProperty,
                     $propertyAnnotations,
-                    $metadata
+                    $metadata,
+                    $metadataBuildingContext
                 );
             case isset($propertyAnnotations[Annotation\ManyToOne::class]):
                 return $this->convertReflectionPropertyToManyToOneAssociationMetadata(
                     $reflectionProperty,
                     $propertyAnnotations,
-                    $metadata
+                    $metadata,
+                    $metadataBuildingContext
                 );
             case isset($propertyAnnotations[Annotation\OneToMany::class]):
                 return $this->convertReflectionPropertyToOneToManyAssociationMetadata(
                     $reflectionProperty,
                     $propertyAnnotations,
-                    $metadata
+                    $metadata,
+                    $metadataBuildingContext
                 );
             case isset($propertyAnnotations[Annotation\ManyToMany::class]):
                 return $this->convertReflectionPropertyToManyToManyAssociationMetadata(
                     $reflectionProperty,
                     $propertyAnnotations,
-                    $metadata
+                    $metadata,
+                    $metadataBuildingContext
                 );
             case isset($propertyAnnotations[Annotation\Embedded::class]):
                 return null;
@@ -528,12 +535,13 @@ class AnnotationDriver implements MappingDriver
      * @throws Mapping\MappingException
      */
     private function convertReflectionPropertyToFieldMetadata(
-        ReflectionProperty $reflProperty,
+        ReflectionProperty $reflectionProperty,
         array $propertyAnnotations,
-        Mapping\ClassMetadata $metadata
+        Mapping\ClassMetadata $metadata,
+        Mapping\ClassMetadataBuildingContext $metadataBuildingContext
     ) : Mapping\FieldMetadata {
         $className   = $metadata->getClassName();
-        $fieldName   = $reflProperty->getName();
+        $fieldName   = $reflectionProperty->getName();
         $isVersioned = isset($propertyAnnotations[Annotation\Version::class]);
         $columnAnnot = $propertyAnnotations[Annotation\Column::class];
 
@@ -584,7 +592,9 @@ class AnnotationDriver implements MappingDriver
                         throw Mapping\MappingException::tableIdGeneratorNotImplemented($className);
                 }
 
-                $fieldMetadata->setValueGenerator(new Mapping\ValueGeneratorMetadata($idGeneratorType, $idGeneratorDefinition));
+                $fieldMetadata->setValueGenerator(
+                    new Mapping\ValueGeneratorMetadata($idGeneratorType, $idGeneratorDefinition)
+                );
             }
         }
 
@@ -599,7 +609,8 @@ class AnnotationDriver implements MappingDriver
     private function convertReflectionPropertyToOneToOneAssociationMetadata(
         ReflectionProperty $reflectionProperty,
         array $propertyAnnotations,
-        Mapping\ClassMetadata $metadata
+        Mapping\ClassMetadata $metadata,
+        Mapping\ClassMetadataBuildingContext $metadataBuildingContext
     ) {
         $className     = $metadata->getClassName();
         $fieldName     = $reflectionProperty->getName();
@@ -662,7 +673,8 @@ class AnnotationDriver implements MappingDriver
     private function convertReflectionPropertyToManyToOneAssociationMetadata(
         ReflectionProperty $reflectionProperty,
         array $propertyAnnotations,
-        Mapping\ClassMetadata $metadata
+        Mapping\ClassMetadata $metadata,
+        Mapping\ClassMetadataBuildingContext $metadataBuildingContext
     ) {
         $className      = $metadata->getClassName();
         $fieldName      = $reflectionProperty->getName();
@@ -719,7 +731,8 @@ class AnnotationDriver implements MappingDriver
     private function convertReflectionPropertyToOneToManyAssociationMetadata(
         ReflectionProperty $reflectionProperty,
         array $propertyAnnotations,
-        Mapping\ClassMetadata $metadata
+        Mapping\ClassMetadata $metadata,
+        Mapping\ClassMetadataBuildingContext $metadataBuildingContext
     ) : Mapping\OneToManyAssociationMetadata {
         $className      = $metadata->getClassName();
         $fieldName      = $reflectionProperty->getName();
@@ -763,7 +776,8 @@ class AnnotationDriver implements MappingDriver
     private function convertReflectionPropertyToManyToManyAssociationMetadata(
         ReflectionProperty $reflectionProperty,
         array $propertyAnnotations,
-        Mapping\ClassMetadata $metadata
+        Mapping\ClassMetadata $metadata,
+        Mapping\ClassMetadataBuildingContext $metadataBuildingContext
     ) : Mapping\ManyToManyAssociationMetadata {
         $className       = $metadata->getClassName();
         $fieldName       = $reflectionProperty->getName();
@@ -858,7 +872,7 @@ class AnnotationDriver implements MappingDriver
     private function convertTableAnnotationToTableMetadata(
         Annotation\Table $tableAnnot,
         Mapping\TableMetadata $tableMetadata
-    ) : void {
+    ) : Mapping\TableMetadata {
         if (! empty($tableAnnot->name)) {
             $tableMetadata->setName($tableAnnot->name);
         }
@@ -889,6 +903,8 @@ class AnnotationDriver implements MappingDriver
                 'flags'   => $uniqueConstraintAnnot->flags,
             ]);
         }
+
+        return $tableMetadata;
     }
 
     /**
@@ -1025,7 +1041,8 @@ class AnnotationDriver implements MappingDriver
     private function attachDiscriminatorColumn(
         array $classAnnotations,
         ReflectionClass $reflectionClass,
-        Mapping\ClassMetadata $metadata
+        Mapping\ClassMetadata $metadata,
+        Mapping\ClassMetadataBuildingContext $metadataBuildingContext
     ) : void {
         $discriminatorColumn = new Mapping\DiscriminatorColumnMetadata();
 
@@ -1128,7 +1145,8 @@ class AnnotationDriver implements MappingDriver
     private function attachPropertyOverrides(
         array $classAnnotations,
         ReflectionClass $reflectionClass,
-        Mapping\ClassMetadata $metadata
+        Mapping\ClassMetadata $metadata,
+        Mapping\ClassMetadataBuildingContext $metadataBuildingContext
     ) : void {
         // Evaluate AssociationOverrides annotation
         if (isset($classAnnotations[Annotation\AssociationOverrides::class])) {
@@ -1229,7 +1247,7 @@ class AnnotationDriver implements MappingDriver
      *
      * @throws Mapping\MappingException If a cascade option is not valid.
      */
-    private function getCascade(string $className, string $fieldName, array $originalCascades)
+    private function getCascade(string $className, string $fieldName, array $originalCascades) : array
     {
         $cascadeTypes = ['remove', 'persist', 'refresh'];
         $cascades     = array_map('strtolower', $originalCascades);

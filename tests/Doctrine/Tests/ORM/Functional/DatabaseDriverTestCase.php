@@ -35,9 +35,7 @@ abstract class DatabaseDriverTestCase extends OrmFunctionalTestCase
         $metadatas = [];
 
         foreach ($driver->getAllClassNames() as $className) {
-            $class = new ClassMetadata($className, $metadataBuildingContext);
-
-            $driver->loadMetadataForClass($className, $class, $metadataBuildingContext);
+            $class = $driver->loadMetadataForClass($className, null, $metadataBuildingContext);
 
             $metadatas[$className] = $class;
         }
@@ -48,7 +46,7 @@ abstract class DatabaseDriverTestCase extends OrmFunctionalTestCase
     /**
      * @param  string $className
      *
-     * @return ClassMetadata
+     * @return ClassMetadata[]
      */
     protected function extractClassMetadata(array $classNames)
     {
@@ -57,7 +55,7 @@ abstract class DatabaseDriverTestCase extends OrmFunctionalTestCase
             $this->createMock(ReflectionService::class)
         );
         $classNames              = array_map('strtolower', $classNames);
-        $metadatas               = [];
+        $metadataList            = [];
 
         $sm     = $this->em->getConnection()->getSchemaManager();
         $driver = new DatabaseDriver($sm);
@@ -67,17 +65,15 @@ abstract class DatabaseDriverTestCase extends OrmFunctionalTestCase
                 continue;
             }
 
-            $class = new ClassMetadata($className, $metadataBuildingContext);
+            $class = $driver->loadMetadataForClass($className, null, $metadataBuildingContext);
 
-            $driver->loadMetadataForClass($className, $class);
-
-            $metadatas[$className] = $class;
+            $metadataList[$className] = $class;
         }
 
-        if (count($metadatas) !== count($classNames)) {
-            $this->fail("Have not found all classes matching the names '" . implode(', ', $classNames) . "' only tables " . implode(', ', array_keys($metadatas)));
+        if (count($metadataList) !== count($classNames)) {
+            $this->fail("Have not found all classes matching the names '" . implode(', ', $classNames) . "' only tables " . implode(', ', array_keys($metadataList)));
         }
 
-        return $metadatas;
+        return $metadataList;
     }
 }

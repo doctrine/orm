@@ -189,15 +189,51 @@ class ClassMetadata extends ComponentMetadata implements TableOwner
      * Initializes a new ClassMetadata instance that will hold the object-relational mapping
      * metadata of the class with the given name.
      *
-     * @param string $entityName The name of the entity class.
+     * @param string             $entityName The name of the entity class.
+     * @param ClassMetadata|null $parent     Optional parent class metadata.
      */
     public function __construct(
         string $entityName,
+        ?ComponentMetadata $parent,
         ClassMetadataBuildingContext $metadataBuildingContext
     ) {
         parent::__construct($entityName, $metadataBuildingContext);
 
         $this->namingStrategy = $metadataBuildingContext->getNamingStrategy();
+
+        if ($parent) {
+            $this->setParent($parent);
+        }
+    }
+
+    /**
+     * {@inheritdoc}
+     *
+     * @throws MappingException
+     */
+    public function setParent(ComponentMetadata $parent) : void
+    {
+        parent::setParent($parent);
+
+        foreach ($parent->getDeclaredPropertiesIterator() as $fieldName => $property) {
+            $this->addInheritedProperty($property);
+        }
+
+        // @todo guilhermeblanco Assume to be a ClassMetadata temporarily until ClassMetadata split is complete.
+        /** @var ClassMetadata $parent */
+        $this->setInheritanceType($parent->inheritanceType);
+        $this->setIdentifier($parent->identifier);
+        $this->setLifecycleCallbacks($parent->lifecycleCallbacks);
+        $this->setChangeTrackingPolicy($parent->changeTrackingPolicy);
+
+        if ($parent->discriminatorColumn) {
+            $this->setDiscriminatorColumn($parent->discriminatorColumn);
+            $this->setDiscriminatorMap($parent->discriminatorMap);
+        }
+
+        if ($parent->isMappedSuperclass) {
+            $this->setCustomRepositoryClassName($parent->getCustomRepositoryClassName());
+        }
     }
 
     public function setClassName(string $className)

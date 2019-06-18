@@ -106,37 +106,7 @@ class ClassMetadataFactory extends AbstractClassMetadataFactory
         ?ClassMetadata $parent,
         ClassMetadataBuildingContext $metadataBuildingContext
     ) : ClassMetadata {
-        $classMetadata = new ClassMetadata($className, $metadataBuildingContext);
-
-        if ($parent) {
-            $classMetadata->setParent($parent);
-
-            foreach ($parent->getDeclaredPropertiesIterator() as $fieldName => $property) {
-                $classMetadata->addInheritedProperty($property);
-            }
-
-            $classMetadata->setInheritanceType($parent->inheritanceType);
-            $classMetadata->setIdentifier($parent->identifier);
-
-            if ($parent->discriminatorColumn) {
-                $classMetadata->setDiscriminatorColumn($parent->discriminatorColumn);
-                $classMetadata->setDiscriminatorMap($parent->discriminatorMap);
-            }
-
-            $classMetadata->setLifecycleCallbacks($parent->lifecycleCallbacks);
-            $classMetadata->setChangeTrackingPolicy($parent->changeTrackingPolicy);
-
-            if ($parent->isMappedSuperclass) {
-                $classMetadata->setCustomRepositoryClassName($parent->getCustomRepositoryClassName());
-            }
-        }
-
-        // Invoke driver
-        try {
-            $this->driver->loadMetadataForClass($classMetadata->getClassName(), $classMetadata, $metadataBuildingContext);
-        } catch (ReflectionException $e) {
-            throw MappingException::reflectionFailure($classMetadata->getClassName(), $e);
-        }
+        $classMetadata = $this->driver->loadMetadataForClass($className, $parent, $metadataBuildingContext);
 
         $this->completeIdentifierGeneratorMappings($classMetadata);
 
@@ -305,15 +275,12 @@ class ClassMetadataFactory extends AbstractClassMetadataFactory
         $generator = $field->getValueGenerator();
 
         if ($generator->getType() === GeneratorType::AUTO) {
-            $generator = new ValueGeneratorMetadata(
-                $platform->prefersSequences()
-                    ? GeneratorType::SEQUENCE
-                    : ($platform->prefersIdentityColumns()
-                        ? GeneratorType::IDENTITY
-                        : GeneratorType::TABLE
-                ),
-                $field->getValueGenerator()->getDefinition()
-            );
+            $generatorType = $platform->prefersSequences() || $platform->usesSequenceEmulatedIdentityColumns()
+                ? GeneratorType::SEQUENCE
+                : ($platform->prefersIdentityColumns() ? GeneratorType::IDENTITY : GeneratorType::TABLE);
+
+            $generator = new ValueGeneratorMetadata($generatorType, $field->getValueGenerator()->getDefinition());
+
             $field->setValueGenerator($generator);
         }
 
@@ -348,9 +315,11 @@ class ClassMetadataFactory extends AbstractClassMetadataFactory
 
             case GeneratorType::CUSTOM:
                 $definition = $generator->getDefinition();
+
                 if (! isset($definition['class'])) {
                     throw InvalidCustomGenerator::onClassNotConfigured();
                 }
+
                 if (! class_exists($definition['class'])) {
                     throw InvalidCustomGenerator::onMissingClass($definition);
                 }
@@ -393,21 +362,23 @@ class ClassMetadataFactory extends AbstractClassMetadataFactory
 
     private function buildValueGenerationPlan(ClassMetadata $class) : void
     {
-        $executors = $this->buildValueGenerationExecutorList($class);
+        $valueGenerationExecutorList = $this->buildValueGenerationExecutorList($class);
 
-        switch (count($executors)) {
+        switch (count($valueGenerationExecutorList)) {
             case 0:
-                $class->setValueGenerationPlan(new NoopValueGenerationPlan());
+                $valueGenerationPlan = new NoopValueGenerationPlan();
                 break;
 
             case 1:
-                $class->setValueGenerationPlan(new SingleValueGenerationPlan($class, $executors[0]));
+                $valueGenerationPlan = new SingleValueGenerationPlan($class, $valueGenerationExecutorList[0]);
                 break;
 
             default:
-                $class->setValueGenerationPlan(new CompositeValueGenerationPlan($class, $executors));
+                $valueGenerationPlan = new CompositeValueGenerationPlan($class, $valueGenerationExecutorList);
                 break;
         }
+
+        $class->setValueGenerationPlan($valueGenerationPlan);
     }
 
     /**
@@ -433,7 +404,10 @@ class ClassMetadataFactory extends AbstractClassMetadataFactory
         Property $property
     ) : ?ValueGenerationExecutor {
         if ($property instanceof LocalColumnMetadata && $property->hasValueGenerator()) {
-            return new ColumnValueGeneratorExecutor($property, $this->createPropertyValueGenerator($class, $property));
+            return new ColumnValueGeneratorExecutor(
+                $property,
+                $property->getValueGenerator()->getSequencingGenerator($this->getTargetPlatform())
+            );
         }
 
         if ($property instanceof ToOneAssociationMetadata && $property->isPrimaryKey()) {
@@ -441,39 +415,5 @@ class ClassMetadataFactory extends AbstractClassMetadataFactory
         }
 
         return null;
-    }
-
-    private function createPropertyValueGenerator(
-        ClassMetadata $class,
-        LocalColumnMetadata $property
-    ) : Sequencing\Generator {
-        $platform = $this->getTargetPlatform();
-
-        switch ($property->getValueGenerator()->getType()) {
-            case GeneratorType::IDENTITY:
-                $sequenceName = null;
-
-                // Platforms that do not have native IDENTITY support need a sequence to emulate this behaviour.
-                if ($platform->usesSequenceEmulatedIdentityColumns()) {
-                    $sequencePrefix = $platform->getSequencePrefix($class->getTableName(), $class->getSchemaName());
-                    $idSequenceName = $platform->getIdentitySequenceName($sequencePrefix, $property->getColumnName());
-                    $sequenceName   = $platform->quoteIdentifier($platform->fixSchemaElementName($idSequenceName));
-                }
-
-                return $property->getTypeName() === 'bigint'
-                    ? new Sequencing\BigIntegerIdentityGenerator($sequenceName)
-                    : new Sequencing\IdentityGenerator($sequenceName);
-            case GeneratorType::SEQUENCE:
-                $definition = $property->getValueGenerator()->getDefinition();
-
-                return new Sequencing\SequenceGenerator(
-                    $platform->quoteIdentifier($definition['sequenceName']),
-                    $definition['allocationSize']
-                );
-            case GeneratorType::CUSTOM:
-                $class = $property->getValueGenerator()->getDefinition()['class'];
-
-                return new $class();
-        }
     }
 }

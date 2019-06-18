@@ -247,7 +247,7 @@ class ClassMetadataFactoryTest extends OrmTestCase
             new RuntimeReflectionService()
         );
 
-        $cm1 = new ClassMetadata(TestEntity1::class, $metadataBuildingContext);
+        $cm1 = new ClassMetadata(TestEntity1::class, null, $metadataBuildingContext);
 
         $tableMetadata = new Mapping\TableMetadata();
         $tableMetadata->setName('group');
