@@ -6,6 +6,10 @@ Common package. Doctrine uses it to dispatch system events, mainly
 :ref:`lifecycle events <reference-events-lifecycle-events>`.
 You can also use it for your own custom events.
 
+Doctrine event listeners are intended for persistence hooks (i.e. *"save also
+this when saving that"*). They should not be used for domain logic, such as
+logging changes, setting updatedAt and createdAt properties, etc.
+
 The Event System
 ----------------
 
