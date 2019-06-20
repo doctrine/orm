@@ -452,12 +452,14 @@ abstract class AbstractEntityPersister implements CachedEntityPersister
                 $class = $this->metadataFactory->getMetadataFor($cacheEntry->class);
             }
 
-            if (($entity = $this->hydrator->loadCacheEntry($class, $cacheKey, $cacheEntry, $entity)) !== null) {
+            $cachedEntity = $this->hydrator->loadCacheEntry($class, $cacheKey, $cacheEntry, $entity);
+
+            if ($cachedEntity !== null) {
                 if ($this->cacheLogger) {
                     $this->cacheLogger->entityCacheHit($this->regionName, $cacheKey);
                 }
 
-                return $entity;
+                return $cachedEntity;
             }
         }
 
