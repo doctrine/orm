@@ -11,6 +11,7 @@ use Doctrine\ORM\Mapping\ClassMetadataBuildingContext;
 use Doctrine\ORM\Mapping\Driver\MappingDriver;
 use Doctrine\ORM\Mapping\Factory\Strategy\ConditionalFileWriterClassMetadataGeneratorStrategy;
 use Doctrine\ORM\Reflection\ReflectionService;
+use Doctrine\ORM\Reflection\RuntimeReflectionService;
 use Doctrine\ORM\Utility\StaticClassNameConverter;
 use InvalidArgumentException;
 use function array_reverse;
@@ -93,7 +94,7 @@ abstract class AbstractClassMetadataFactory implements ClassMetadataFactory
             return $this->loaded[$entityClassName];
         }
 
-        $metadataBuildingContext = new ClassMetadataBuildingContext($this);
+        $metadataBuildingContext = new ClassMetadataBuildingContext($this, new RuntimeReflectionService());
         $parentClassNameList     = $this->getParentClassNameList($entityClassName);
         $parentClassNameList[]   = $entityClassName;
         $parent                  = null;
@@ -105,7 +106,7 @@ abstract class AbstractClassMetadataFactory implements ClassMetadataFactory
                 continue;
             }
 
-            $definition = $this->getOrCreateClassMetadataDefinition($parentClassName, $parent);
+            $definition = $this->getOrCreateClassMetadataDefinition($parentClassName, $parent, $metadataBuildingContext);
 
             $parent = $this->loaded[$parentClassName] = $this->createClassMetadata($definition);
         }

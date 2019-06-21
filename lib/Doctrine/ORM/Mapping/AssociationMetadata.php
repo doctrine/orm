@@ -4,7 +4,10 @@ declare(strict_types=1);
 
 namespace Doctrine\ORM\Mapping;
 
+use Doctrine\DBAL\Platforms\AbstractPlatform;
 use Doctrine\ORM\Reflection\ReflectionService;
+use Doctrine\ORM\Sequencing\Planning\AssociationValueGeneratorExecutor;
+use Doctrine\ORM\Sequencing\Planning\ValueGenerationExecutor;
 use ReflectionProperty;
 
 class AssociationMetadata implements Property
@@ -236,6 +239,13 @@ class AssociationMetadata implements Property
         $this->setReflectionProperty(
             $reflectionService->getAccessibleProperty($this->declaringClass->getClassName(), $this->name)
         );
+    }
+
+    public function getValueGenerationExecutor(AbstractPlatform $platform) : ?ValueGenerationExecutor
+    {
+        return $this->isPrimaryKey() /* It is impossible to have a ToManyAssociation while being primary! */
+            ? new AssociationValueGeneratorExecutor()
+            : null;
     }
 
     public function __clone()

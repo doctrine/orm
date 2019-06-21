@@ -24,6 +24,7 @@ use function sprintf;
 use function str_replace;
 use function strtolower;
 use function strtoupper;
+use function var_export;
 
 /**
  * XmlDriver is a metadata driver that enables mapping through XML files.
@@ -208,8 +209,7 @@ class XmlDriver extends FileDriver
         if (isset($xmlRoot->field)) {
             foreach ($xmlRoot->field as $fieldElement) {
                 $fieldName        = (string) $fieldElement['name'];
-                $isFieldVersioned = isset($fieldElement['version']) && $fieldElement['version'];
-                $fieldMetadata    = $this->convertFieldElementToFieldMetadata($fieldElement, $fieldName, $isFieldVersioned);
+                $fieldMetadata    = $this->convertFieldElementToFieldMetadata($fieldElement, $fieldName, $metadata, $metadataBuildingContext);
 
                 $metadata->addProperty($fieldMetadata);
             }
@@ -247,9 +247,14 @@ class XmlDriver extends FileDriver
                 continue;
             }
 
-            $fieldMetadata = $this->convertFieldElementToFieldMetadata($idElement, $fieldName, false);
+            $fieldMetadata = $this->convertFieldElementToFieldMetadata($idElement, $fieldName, $metadata, $metadataBuildingContext);
 
             $fieldMetadata->setPrimaryKey(true);
+
+            // Prevent PK and version on same field
+            if ($fieldMetadata->isVersioned()) {
+                throw Mapping\MappingException::cannotVersionIdField($className, $fieldName);
+            }
 
             if (isset($idElement->generator)) {
                 $strategy = (string) ($idElement->generator['strategy'] ?? 'AUTO');
@@ -273,6 +278,18 @@ class XmlDriver extends FileDriver
                             'class' => (string) $customGenerator['class'],
                             'arguments' => [],
                         ];
+
+                        if (! isset($idGeneratorDefinition['class'])) {
+                            throw new Mapping\MappingException(
+                                sprintf('Cannot instantiate custom generator, no class has been defined')
+                            );
+                        }
+
+                        if (! class_exists($idGeneratorDefinition['class'])) {
+                            throw new Mapping\MappingException(
+                                sprintf('Cannot instantiate custom generator : %s', var_export($idGeneratorDefinition, true))
+                            );
+                        }
                     } elseif (isset($idElement->{'table-generator'})) {
                         throw Mapping\MappingException::tableIdGeneratorNotImplemented($className);
                     }
@@ -565,7 +582,7 @@ class XmlDriver extends FileDriver
                 $fieldName = (string) $overrideElement['name'];
 
                 foreach ($overrideElement->field as $fieldElement) {
-                    $fieldMetadata = $this->convertFieldElementToFieldMetadata($fieldElement, $fieldName, false);
+                    $fieldMetadata = $this->convertFieldElementToFieldMetadata($fieldElement, $fieldName, $metadata, $metadataBuildingContext);
 
                     $metadata->setPropertyOverride($fieldMetadata);
                 }
@@ -728,22 +745,27 @@ class XmlDriver extends FileDriver
 
     /**
      * @return Mapping\FieldMetadata
+     *
+     * @throws Mapping\MappingException
      */
-    private function convertFieldElementToFieldMetadata(SimpleXMLElement $fieldElement, string $fieldName, bool $isVersioned)
+    private function convertFieldElementToFieldMetadata(
+        SimpleXMLElement $fieldElement,
+        string $fieldName,
+        Mapping\ClassMetadata $metadata,
+        Mapping\ClassMetadataBuildingContext $metadataBuildingContext
+    )
     {
-        $fieldMetadata = $isVersioned
-            ? new Mapping\VersionFieldMetadata($fieldName)
-            : new Mapping\FieldMetadata($fieldName);
+        $className     = $metadata->getClassName();
+        $isVersioned   = isset($fieldElement['version']) && $fieldElement['version'];
+        $fieldMetadata = new Mapping\FieldMetadata($fieldName);
+        $fieldType     = isset($fieldElement['type']) ? (string) $fieldElement['type'] : 'string';
+        $columnName    = isset($fieldElement['column'])
+            ? (string) $fieldElement['column']
+            : $metadataBuildingContext->getNamingStrategy()->propertyToColumnName($fieldName, $className);
 
-        $fieldMetadata->setType(Type::getType('string'));
-
-        if (isset($fieldElement['type'])) {
-            $fieldMetadata->setType(Type::getType((string) $fieldElement['type']));
-        }
-
-        if (isset($fieldElement['column'])) {
-            $fieldMetadata->setColumnName((string) $fieldElement['column']);
-        }
+        $fieldMetadata->setType(Type::getType($fieldType));
+        $fieldMetadata->setVersioned($isVersioned);
+        $fieldMetadata->setColumnName($columnName);
 
         if (isset($fieldElement['length'])) {
             $fieldMetadata->setLength((int) $fieldElement['length']);
@@ -771,6 +793,11 @@ class XmlDriver extends FileDriver
 
         if (isset($fieldElement->options)) {
             $fieldMetadata->setOptions($this->parseOptions($fieldElement->options->children()));
+        }
+
+        // Prevent column duplication
+        if ($metadata->checkPropertyDuplication($columnName)) {
+            throw Mapping\MappingException::duplicateColumnName($className, $columnName);
         }
 
         return $fieldMetadata;

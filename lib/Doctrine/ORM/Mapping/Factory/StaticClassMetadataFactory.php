@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Doctrine\ORM\Mapping\Factory;
 
+use Doctrine\ORM\Reflection\ReflectionService;
 use Doctrine\ORM\Reflection\StaticReflectionService;
 
 /**
@@ -15,7 +16,7 @@ class StaticClassMetadataFactory extends AbstractClassMetadataFactory
     /** @var StaticReflectionService */
     private $reflectionService;
 
-    protected function getReflectionService() : StaticReflectionService
+    protected function getReflectionService() : ReflectionService
     {
         if (! $this->reflectionService) {
             $this->reflectionService = new StaticReflectionService();

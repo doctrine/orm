@@ -67,16 +67,19 @@ class ValueGeneratorMetadata
                     $sequencePrefix = $platform->getSequencePrefix($class->getTableName(), $class->getSchemaName());
                     $idSequenceName = $platform->getIdentitySequenceName($sequencePrefix, $this->declaringProperty->getColumnName());
                     $sequenceName   = $platform->quoteIdentifier($platform->fixSchemaElementName($idSequenceName));
+                    $allocationSize = $this->definition['allocationSize'] ?? 1;
+
+                    return new Sequencing\SequenceGenerator($sequenceName, $allocationSize);
                 }
 
                 return $this->declaringProperty->getTypeName() === 'bigint'
-                    ? new Sequencing\BigIntegerIdentityGenerator($sequenceName)
-                    : new Sequencing\IdentityGenerator($sequenceName);
+                    ? new Sequencing\BigIntegerIdentityGenerator()
+                    : new Sequencing\IdentityGenerator();
             case GeneratorType::SEQUENCE:
-                return new Sequencing\SequenceGenerator(
-                    $platform->quoteIdentifier($this->definition['sequenceName']),
-                    $this->definition['allocationSize']
-                );
+                $sequenceName   = $platform->quoteIdentifier($this->definition['sequenceName']);
+                $allocationSize = $this->definition['allocationSize'] ?? 1;
+
+                return new Sequencing\SequenceGenerator($sequenceName, $allocationSize);
             case GeneratorType::CUSTOM:
                 $class = $this->definition['class'];
 

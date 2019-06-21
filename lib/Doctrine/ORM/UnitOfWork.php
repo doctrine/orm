@@ -32,7 +32,6 @@ use Doctrine\ORM\Mapping\OneToManyAssociationMetadata;
 use Doctrine\ORM\Mapping\OneToOneAssociationMetadata;
 use Doctrine\ORM\Mapping\ToManyAssociationMetadata;
 use Doctrine\ORM\Mapping\ToOneAssociationMetadata;
-use Doctrine\ORM\Mapping\VersionFieldMetadata;
 use Doctrine\ORM\Persisters\Collection\CollectionPersister;
 use Doctrine\ORM\Persisters\Collection\ManyToManyPersister;
 use Doctrine\ORM\Persisters\Collection\OneToManyPersister;
@@ -917,11 +916,12 @@ class UnitOfWork implements PropertyChangedListener
 
         foreach ($class->getDeclaredPropertiesIterator() as $name => $property) {
             switch (true) {
-                case $property instanceof VersionFieldMetadata:
-                    // Ignore version field
-                    break;
-
                 case $property instanceof FieldMetadata:
+                    // Ignore version field
+                    if ($property->isVersioned()) {
+                        break;
+                    }
+
                     if (! $property->isPrimaryKey()
                         || ! $property->getValueGenerator()
                         || $property->getValueGenerator()->getType() !== GeneratorType::IDENTITY) {

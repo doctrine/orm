@@ -15,8 +15,6 @@ use Doctrine\ORM\Exception\ORMException;
 use Doctrine\ORM\Mapping\Exception\InvalidCustomGenerator;
 use Doctrine\ORM\Mapping\Exception\TableGeneratorNotImplementedYet;
 use Doctrine\ORM\Mapping\Exception\UnknownGeneratorType;
-use Doctrine\ORM\Sequencing\Planning\AssociationValueGeneratorExecutor;
-use Doctrine\ORM\Sequencing\Planning\ColumnValueGeneratorExecutor;
 use Doctrine\ORM\Sequencing\Planning\CompositeValueGenerationPlan;
 use Doctrine\ORM\Sequencing\Planning\NoopValueGenerationPlan;
 use Doctrine\ORM\Sequencing\Planning\SingleValueGenerationPlan;
@@ -26,6 +24,8 @@ use ReflectionException;
 use function array_map;
 use function class_exists;
 use function count;
+use function in_array;
+use function reset;
 use function sprintf;
 
 /**
@@ -108,17 +108,6 @@ class ClassMetadataFactory extends AbstractClassMetadataFactory
         $classMetadata = $this->driver->loadMetadataForClass($className, $parent, $metadataBuildingContext);
 
         $this->completeIdentifierGeneratorMappings($classMetadata);
-
-        if ($parent) {
-            if ($parent->getCache()) {
-                $classMetadata->setCache(clone $parent->getCache());
-            }
-
-            if (! empty($parent->entityListeners) && empty($classMetadata->entityListeners)) {
-                $classMetadata->entityListeners = $parent->entityListeners;
-            }
-        }
-
         $this->completeRuntimeMetadata($classMetadata, $parent);
 
         if ($this->evm->hasListeners(Events::loadClassMetadata)) {
@@ -273,7 +262,7 @@ class ClassMetadataFactory extends AbstractClassMetadataFactory
         $class     = $field->getDeclaringClass();
         $generator = $field->getValueGenerator();
 
-        if ($generator->getType() === GeneratorType::AUTO) {
+        if (in_array($generator->getType(), [GeneratorType::AUTO, GeneratorType::IDENTITY], true)) {
             $generatorType = $platform->prefersSequences() || $platform->usesSequenceEmulatedIdentityColumns()
                 ? GeneratorType::SEQUENCE
                 : ($platform->prefersIdentityColumns() ? GeneratorType::IDENTITY : GeneratorType::TABLE);
@@ -369,7 +358,7 @@ class ClassMetadataFactory extends AbstractClassMetadataFactory
                 break;
 
             case 1:
-                $valueGenerationPlan = new SingleValueGenerationPlan($class, $valueGenerationExecutorList[0]);
+                $valueGenerationPlan = new SingleValueGenerationPlan($class, reset($valueGenerationExecutorList));
                 break;
 
             default:
@@ -388,31 +377,13 @@ class ClassMetadataFactory extends AbstractClassMetadataFactory
         $executors = [];
 
         foreach ($class->getDeclaredPropertiesIterator() as $property) {
-            $executor = $this->buildValueGenerationExecutorForProperty($class, $property);
+            $executor = $property->getValueGenerationExecutor($this->getTargetPlatform());
 
             if ($executor instanceof ValueGenerationExecutor) {
-                $executors[] = $executor;
+                $executors[$property->getName()] = $executor;
             }
         }
 
         return $executors;
-    }
-
-    private function buildValueGenerationExecutorForProperty(
-        ClassMetadata $class,
-        Property $property
-    ) : ?ValueGenerationExecutor {
-        if ($property instanceof LocalColumnMetadata && $property->hasValueGenerator()) {
-            return new ColumnValueGeneratorExecutor(
-                $property,
-                $property->getValueGenerator()->getSequencingGenerator($this->getTargetPlatform())
-            );
-        }
-
-        if ($property instanceof ToOneAssociationMetadata && $property->isPrimaryKey()) {
-            return new AssociationValueGeneratorExecutor();
-        }
-
-        return null;
     }
 }

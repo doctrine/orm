@@ -6,15 +6,16 @@ namespace Doctrine\ORM\Mapping\Driver;
 
 use Doctrine\Common\Annotations\AnnotationReader;
 use Doctrine\Common\Persistence\Mapping\Driver\FileLocator;
+use Doctrine\DBAL\DBALException;
 use Doctrine\DBAL\Types\Type;
 use Doctrine\ORM\Annotation;
 use Doctrine\ORM\Events;
 use Doctrine\ORM\Mapping;
 use Doctrine\ORM\Mapping\Factory;
 use ReflectionClass;
+use ReflectionException;
 use ReflectionMethod;
 use ReflectionProperty;
-use UnexpectedValueException;
 use function array_diff;
 use function array_filter;
 use function array_intersect;
@@ -81,15 +82,16 @@ class NewAnnotationDriver implements MappingDriver
     /**
      * {@inheritdoc}
      *
-     * @return Mapping\ClassMetadata
+     * @return Mapping\ComponentMetadata
      *
      * @throws Mapping\MappingException
+     * @throws ReflectionException
      */
     public function loadMetadataForClass(
         string $className,
-        Mapping\ClassMetadata $metadata,
+        ?Mapping\ComponentMetadata $parent,
         Mapping\ClassMetadataBuildingContext $metadataBuildingContext
-    ) {
+    ) : Mapping\ComponentMetadata {
         // IMPORTANT: We're handling $metadata as "parent" metadata here, while building the $className ClassMetadata.
         $reflectionClass = new ReflectionClass($className);
 
@@ -98,7 +100,8 @@ class NewAnnotationDriver implements MappingDriver
         $classMetadata    = $this->convertClassAnnotationsToClassMetadata(
             $classAnnotations,
             $reflectionClass,
-            $metadata
+            $parent,
+            $metadataBuildingContext
         );
 
         // Evaluate @Cache annotation
@@ -132,7 +135,7 @@ class NewAnnotationDriver implements MappingDriver
     /**
      * {@inheritdoc}
      */
-    public function getAllClassNames()
+    public function getAllClassNames() : array
     {
         if ($this->classNames !== null) {
             return $this->classNames;
@@ -153,7 +156,7 @@ class NewAnnotationDriver implements MappingDriver
     /**
      * {@inheritdoc}
      */
-    public function isTransient($className)
+    public function isTransient($className) : bool
     {
         $reflectionClass  = new ReflectionClass($className);
         $classAnnotations = $this->reader->getClassAnnotations($reflectionClass);
@@ -172,19 +175,22 @@ class NewAnnotationDriver implements MappingDriver
      *
      * @return Mapping\ClassMetadata|Mapping\ComponentMetadata
      *
-     * @throws Mapping\MappingException
+     * @throws DBALException
+     * @throws ReflectionException
      */
     private function convertClassAnnotationsToClassMetadata(
         array $classAnnotations,
         ReflectionClass $reflectionClass,
-        Mapping\ClassMetadata $parent
-    ) {
+        ?Mapping\ComponentMetadata $parent,
+        Mapping\ClassMetadataBuildingContext $metadataBuildingContext
+    ) : Mapping\ComponentMetadata {
         switch (true) {
             case isset($classAnnotations[Annotation\Entity::class]):
                 return $this->convertClassAnnotationsToEntityClassMetadata(
                     $classAnnotations,
                     $reflectionClass,
-                    $parent
+                    $parent,
+                    $metadataBuildingContext
                 );
 
                 break;
@@ -193,13 +199,15 @@ class NewAnnotationDriver implements MappingDriver
                 return $this->convertClassAnnotationsToMappedSuperClassMetadata(
                     $classAnnotations,
                     $reflectionClass,
-                    $parent
+                    $parent,
+                    $metadataBuildingContext
                 );
             case isset($classAnnotations[Annotation\Embeddable::class]):
                 return $this->convertClassAnnotationsToEntityClassMetadata(
                     $classAnnotations,
                     $reflectionClass,
-                    $parent
+                    $parent,
+                    $metadataBuildingContext
                 );
             default:
                 throw Mapping\MappingException::classIsNotAValidEntityOrMappedSuperClass($reflectionClass->getName());
@@ -211,17 +219,18 @@ class NewAnnotationDriver implements MappingDriver
      *
      * @return Mapping\ClassMetadata
      *
-     * @throws Mapping\MappingException
-     * @throws UnexpectedValueException
+     * @throws DBALException
+     * @throws ReflectionException
      */
     private function convertClassAnnotationsToEntityClassMetadata(
         array $classAnnotations,
         ReflectionClass $reflectionClass,
-        Mapping\ClassMetadata $parent
+        ?Mapping\ComponentMetadata $parent,
+        Mapping\ClassMetadataBuildingContext $metadataBuildingContext
     ) {
         /** @var Annotation\Entity $entityAnnot */
         $entityAnnot   = $classAnnotations[Annotation\Entity::class];
-        $classMetadata = new Mapping\ClassMetadata($reflectionClass->getName(), $parent);
+        $classMetadata = new Mapping\ClassMetadata($reflectionClass->getName(), $parent, $metadataBuildingContext);
 
         if ($entityAnnot->repositoryClass !== null) {
             $classMetadata->setCustomRepositoryClassName($entityAnnot->repositoryClass);
@@ -344,7 +353,8 @@ class NewAnnotationDriver implements MappingDriver
     private function convertClassAnnotationsToMappedSuperClassMetadata(
         array $classAnnotations,
         ReflectionClass $reflectionClass,
-        Mapping\ClassMetadata $parent
+        ?Mapping\ComponentMetadata $parent,
+        Mapping\ClassMetadataBuildingContext $metadataBuildingContext
     ) {
         /** @var Annotation\MappedSuperclass $mappedSuperclassAnnot */
         $mappedSuperclassAnnot = $classAnnotations[Annotation\MappedSuperclass::class];
@@ -479,6 +489,7 @@ class NewAnnotationDriver implements MappingDriver
      * @return Mapping\FieldMetadata
      *
      * @throws Mapping\MappingException
+     * @throws DBALException
      */
     private function convertReflectionPropertyToFieldMetadata(
         ReflectionProperty $reflectionProperty,
@@ -503,11 +514,10 @@ class NewAnnotationDriver implements MappingDriver
             ? $this->namingStrategy->propertyToColumnName($fieldName, $className)
             : $columnAnnot->name;
 
-        $fieldMetadata = $isVersioned
-            ? new Mapping\VersionFieldMetadata($fieldName)
-            : new Mapping\FieldMetadata($fieldName);
+        $fieldMetadata = new Mapping\FieldMetadata($fieldName);
 
         $fieldMetadata->setType(Type::getType($columnAnnot->type));
+        $fieldMetadata->setVersioned($isVersioned);
         $fieldMetadata->setColumnName($columnName);
         $fieldMetadata->setScale($columnAnnot->scale);
         $fieldMetadata->setPrecision($columnAnnot->precision);

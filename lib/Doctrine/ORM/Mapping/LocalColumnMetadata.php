@@ -4,6 +4,10 @@ declare(strict_types=1);
 
 namespace Doctrine\ORM\Mapping;
 
+use Doctrine\DBAL\Platforms\AbstractPlatform;
+use Doctrine\ORM\Sequencing\Planning\ColumnValueGeneratorExecutor;
+use Doctrine\ORM\Sequencing\Planning\ValueGenerationExecutor;
+
 abstract class LocalColumnMetadata extends ColumnMetadata
 {
     /** @var int|null */
@@ -63,5 +67,12 @@ abstract class LocalColumnMetadata extends ColumnMetadata
         $valueGenerator->setDeclaringProperty($this);
 
         $this->valueGenerator = $valueGenerator;
+    }
+
+    public function getValueGenerationExecutor(AbstractPlatform $platform) : ?ValueGenerationExecutor
+    {
+        return $this->hasValueGenerator()
+            ? new ColumnValueGeneratorExecutor($this, $this->valueGenerator->getSequencingGenerator($platform))
+            : null;
     }
 }

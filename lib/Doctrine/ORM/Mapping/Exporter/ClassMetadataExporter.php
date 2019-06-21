@@ -203,10 +203,6 @@ class ClassMetadataExporter implements Exporter
         $lines           = [];
 
         switch (true) {
-            case $property instanceof Mapping\VersionFieldMetadata:
-                $propertyExporter = new VersionFieldMetadataExporter();
-                break;
-
             case $property instanceof Mapping\FieldMetadata:
                 $propertyExporter = new FieldMetadataExporter();
                 break;
