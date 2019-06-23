@@ -283,14 +283,24 @@ but you only need to choose one.
 
         <?php
         // src/Product.php
+
+        use Doctrine\ORM\Mapping as ORM;
+
         /**
-         * @Entity @Table(name="products")
-         **/
+         * @ORM\Entity
+         * @ORM\Table(name="products")
+         */
         class Product
         {
-            /** @Id @Column(type="integer") @GeneratedValue **/
+            /** 
+             * @ORM\Id
+             * @ORM\Column(type="integer")
+             * @ORM\GeneratedValue
+             */
             protected $id;
-            /** @Column(type="string") **/
+            /** 
+             * @ORM\Column(type="string") 
+             */
             protected $name;
 
             // .. (other code)
@@ -467,28 +477,37 @@ classes. We'll store them in ``src/Bug.php`` and ``src/User.php``, respectively.
 
     <?php
     // src/Bug.php
+
+    use Doctrine\ORM\Mapping as ORM;
+
     /**
-     * @Entity(repositoryClass="BugRepository") @Table(name="bugs")
+     * @ORM\Entity(repositoryClass="BugRepository")
+     * @ORM\Table(name="bugs")
      */
     class Bug
     {
         /**
-         * @Id @Column(type="integer") @GeneratedValue
+         * @ORM\Id
+         * @ORM\Column(type="integer")
+         * @ORM\GeneratedValue
          * @var int
          */
         protected $id;
+
         /**
-         * @Column(type="string")
+         * @ORM\Column(type="string")
          * @var string
          */
         protected $description;
+
         /**
-         * @Column(type="datetime")
+         * @ORM\Column(type="datetime")
          * @var DateTime
          */
         protected $created;
+
         /**
-         * @Column(type="string")
+         * @ORM\Column(type="string")
          * @var string
          */
         protected $status;
@@ -533,18 +552,25 @@ classes. We'll store them in ``src/Bug.php`` and ``src/User.php``, respectively.
 
     <?php
     // src/User.php
+
+    use Doctrine\ORM\Mapping as ORM;
+
     /**
-     * @Entity @Table(name="users")
+     * @ORM\Entity 
+     * @ORM\Table(name="users")
      */
     class User
     {
         /**
-         * @Id @GeneratedValue @Column(type="integer")
+         * @ORM\Id
+         * @ORM\GeneratedValue
+         * @ORM\Column(type="integer")
          * @var int
          */
         protected $id;
+
         /**
-         * @Column(type="string")
+         * @ORM\Column(type="string")
          * @var string
          */
         protected $name;
@@ -774,7 +800,7 @@ the database that points from Bugs to Products.
     {
         // ... (previous code)
 
-        protected $products = null;
+        protected $products;
 
         public function assignToProduct(Product $product)
         {
@@ -796,41 +822,50 @@ the ``Product`` before:
 
         <?php
         // src/Bug.php
+
+        use Doctrine\ORM\Mapping as ORM;
+
         /**
-         * @Entity @Table(name="bugs")
-         **/
+         * @ORM\Entity 
+         * @ORM\Table(name="bugs")
+         */
         class Bug
         {
             /**
-             * @Id @Column(type="integer") @GeneratedValue
-             **/
+             * @ORM\Id 
+             * @ORM\Column(type="integer") 
+             * @ORM\GeneratedValue
+             */
             protected $id;
+
             /**
-             * @Column(type="string")
-             **/
+             * @ORM\Column(type="string")
+             */
             protected $description;
+
             /**
-             * @Column(type="datetime")
-             **/
+             * @ORM\Column(type="datetime")
+             */
             protected $created;
+
             /**
-             * @Column(type="string")
-             **/
+             * @ORM\Column(type="string")
+             */
             protected $status;
 
             /**
-             * @ManyToOne(targetEntity="User", inversedBy="assignedBugs")
-             **/
+             * @ORM\ManyToOne(targetEntity="User", inversedBy="assignedBugs")
+             */
             protected $engineer;
 
             /**
-             * @ManyToOne(targetEntity="User", inversedBy="reportedBugs")
-             **/
+             * @ORM\ManyToOne(targetEntity="User", inversedBy="reportedBugs")
+             */
             protected $reporter;
 
             /**
-             * @ManyToMany(targetEntity="Product")
-             **/
+             * @ORM\ManyToMany(targetEntity="Product")
+             */
             protected $products;
 
             // ... (other code)
@@ -924,34 +959,40 @@ Finally, we'll add metadata mappings for the ``User`` entity.
 
         <?php
         // src/User.php
+
+        use Doctrine\ORM\Mapping as ORM;
+
         /**
-         * @Entity @Table(name="users")
-         **/
+         * @ORM\Entity
+         * @ORM\Table(name="users")
+         */
         class User
         {
             /**
-             * @Id @GeneratedValue @Column(type="integer")
+             * @ORM\Id 
+             * @ORM\GeneratedValue 
+             * @ORM\Column(type="integer")
              * @var int
-             **/
+             */
             protected $id;
 
             /**
-             * @Column(type="string")
+             * @ORM\Column(type="string")
              * @var string
-             **/
+             */
             protected $name;
 
             /**
-             * @OneToMany(targetEntity="Bug", mappedBy="reporter")
+             * @ORM\OneToMany(targetEntity="Bug", mappedBy="reporter")
              * @var Bug[] An ArrayCollection of Bug objects.
-             **/
-            protected $reportedBugs = null;
+             */
+            protected $reportedBugs;
 
             /**
-             * @OneToMany(targetEntity="Bug", mappedBy="engineer")
+             * @ORM\OneToMany(targetEntity="Bug", mappedBy="engineer")
              * @var Bug[] An ArrayCollection of Bug objects.
-             **/
-            protected $assignedBugs = null;
+             */
+            protected $assignedBugs;
 
             // .. (other code)
         }
@@ -1489,9 +1530,12 @@ we have to adjust the metadata slightly.
     .. code-block:: php
 
         <?php
+
+        use Doctrine\ORM\Mapping as ORM;
+
         /**
-         * @Entity(repositoryClass="BugRepository")
-         * @Table(name="bugs")
+         * @ORM\Entity(repositoryClass="BugRepository")
+         * @ORM\Table(name="bugs")
          **/
         class Bug
         {
