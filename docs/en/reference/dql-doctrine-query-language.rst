@@ -997,7 +997,7 @@ the Query class. Here they are:
    is thrown. If the result contains no objects, an ``NoResultException``
    is thrown. The pure/mixed distinction does not apply.
 -  ``Query#getOneOrNullResult()``: Retrieve a single object. If the
-   result contains more than one object, an ``NonUniqueResultException``
+   result contains more than one object, a ``NonUniqueResultException``
    is thrown. If no object is found null will be returned.
 -  ``Query#getArrayResult()``: Retrieves an array graph (a nested
    array) that is largely interchangeable with the object graph
