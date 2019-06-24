@@ -10,7 +10,7 @@ use Doctrine\ORM\Reflection\ReflectionService;
 
 class ClassMetadataBuildingContext
 {
-    /** @var AbstractClassMetadataFactory */
+    /** @var ClassMetadataFactory */
     private $classMetadataFactory;
 
     /** @var ReflectionService */
@@ -26,7 +26,7 @@ class ClassMetadataBuildingContext
     private $inSecondPass = false;
 
     public function __construct(
-        AbstractClassMetadataFactory $classMetadataFactory,
+        ClassMetadataFactory $classMetadataFactory,
         ReflectionService $reflectionService,
         ?NamingStrategy $namingStrategy = null
     ) {
@@ -35,7 +35,7 @@ class ClassMetadataBuildingContext
         $this->namingStrategy       = $namingStrategy ?: new DefaultNamingStrategy();
     }
 
-    public function getClassMetadataFactory() : AbstractClassMetadataFactory
+    public function getClassMetadataFactory() : ClassMetadataFactory
     {
         return $this->classMetadataFactory;
     }

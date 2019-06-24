@@ -4,7 +4,11 @@ declare(strict_types=1);
 
 namespace Doctrine\ORM\Mapping;
 
+use Doctrine\Common\Cache\Cache;
 use Doctrine\Common\EventManager;
+use Doctrine\Common\Persistence\Mapping\ClassMetadataFactory as PersistenceClassMetadataFactory;
+use Doctrine\Common\Persistence\Mapping\MappingException as PersistenceMappingException;
+use Doctrine\Common\Persistence\Mapping\MappingException as CommonMappingException;
 use Doctrine\DBAL\Platforms;
 use Doctrine\DBAL\Platforms\AbstractPlatform;
 use Doctrine\ORM\EntityManagerInterface;
@@ -14,13 +18,17 @@ use Doctrine\ORM\Events;
 use Doctrine\ORM\Exception\ORMException;
 use Doctrine\ORM\Mapping\Exception\TableGeneratorNotImplementedYet;
 use Doctrine\ORM\Mapping\Exception\UnknownGeneratorType;
+use Doctrine\ORM\Reflection\ReflectionService;
+use Doctrine\ORM\Reflection\RuntimeReflectionService;
 use Doctrine\ORM\Sequencing\Planning\CompositeValueGenerationPlan;
 use Doctrine\ORM\Sequencing\Planning\NoopValueGenerationPlan;
 use Doctrine\ORM\Sequencing\Planning\SingleValueGenerationPlan;
 use Doctrine\ORM\Sequencing\Planning\ValueGenerationExecutor;
+use Doctrine\ORM\Utility\StaticClassNameConverter;
 use InvalidArgumentException;
 use ReflectionException;
 use function array_map;
+use function array_reverse;
 use function count;
 use function in_array;
 use function reset;
@@ -31,8 +39,21 @@ use function sprintf;
  * metadata mapping information of a class which describes how a class should be mapped
  * to a relational database.
  */
-class ClassMetadataFactory extends AbstractClassMetadataFactory
+class ClassMetadataFactory implements PersistenceClassMetadataFactory
 {
+    /**
+     * Salt used by specific Object Manager implementation.
+     *
+     * @var string
+     */
+    protected $cacheSalt = '$CLASSMETADATA';
+
+    /** @var bool */
+    protected $initialized = false;
+
+    /** @var ReflectionService|null */
+    protected $reflectionService;
+
     /** @var EntityManagerInterface|null */
     private $em;
 
@@ -45,21 +66,131 @@ class ClassMetadataFactory extends AbstractClassMetadataFactory
     /** @var EventManager */
     private $evm;
 
+    /** @var Cache|null */
+    private $cacheDriver;
+
+    /** @var ClassMetadata[] */
+    private $loadedMetadata = [];
+
     /**
-     * {@inheritdoc}
+     * Sets the entity manager used to build ClassMetadata instances.
      */
-    protected function loadMetadata(string $name, ClassMetadataBuildingContext $metadataBuildingContext) : array
-    {
-        $loaded = parent::loadMetadata($name, $metadataBuildingContext);
-
-        array_map([$this, 'resolveDiscriminatorValue'], $loaded);
-
-        return $loaded;
-    }
-
     public function setEntityManager(EntityManagerInterface $em)
     {
         $this->em = $em;
+    }
+
+    /**
+     * Sets the cache driver used by the factory to cache ClassMetadata instances.
+     */
+    public function setCacheDriver(?Cache $cacheDriver = null) : void
+    {
+        $this->cacheDriver = $cacheDriver;
+    }
+
+    /**
+     * Gets the cache driver used by the factory to cache ClassMetadata instances.
+     */
+    public function getCacheDriver() : ?Cache
+    {
+        return $this->cacheDriver;
+    }
+
+    /**
+     * Returns an array of all the loaded metadata currently in memory.
+     *
+     * @return ClassMetadata[]
+     */
+    public function getLoadedMetadata() : array
+    {
+        return $this->loadedMetadata;
+    }
+
+    /**
+     * Sets the reflectionService.
+     */
+    public function setReflectionService(ReflectionService $reflectionService) : void
+    {
+        $this->reflectionService = $reflectionService;
+    }
+
+    /**
+     * Gets the reflection service associated with this metadata factory.
+     */
+    public function getReflectionService() : ReflectionService
+    {
+        if ($this->reflectionService === null) {
+            $this->reflectionService = new RuntimeReflectionService();
+        }
+
+        return $this->reflectionService;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function isTransient($className) : bool
+    {
+        if (! $this->initialized) {
+            $this->initialize();
+        }
+
+        $entityClassName = StaticClassNameConverter::getRealClass($className);
+
+        return $this->getDriver()->isTransient($entityClassName);
+    }
+
+    /**
+     * Checks whether the factory has the metadata for a class loaded already.
+     *
+     * @param string $className
+     *
+     * @return bool TRUE if the metadata of the class in question is already loaded, FALSE otherwise.
+     */
+    public function hasMetadataFor($className) : bool
+    {
+        return isset($this->loadedMetadata[$className]);
+    }
+
+    /**
+     * Sets the metadata descriptor for a specific class.
+     *
+     * NOTE: This is only useful in very special cases, like when generating proxy classes.
+     *
+     * @param string        $className
+     * @param ClassMetadata $class
+     */
+    public function setMetadataFor($className, $class) : void
+    {
+        $this->loadedMetadata[$className] = $class;
+    }
+
+    /**
+     * Forces the factory to load the metadata of all classes known to the underlying
+     * mapping driver.
+     *
+     * @return ClassMetadata[] The ClassMetadata instances of all mapped classes.
+     *
+     * @throws InvalidArgumentException
+     * @throws ReflectionException
+     * @throws MappingException
+     * @throws PersistenceMappingException
+     * @throws ORMException
+     */
+    public function getAllMetadata() : array
+    {
+        if (! $this->initialized) {
+            $this->initialize();
+        }
+
+        $driver   = $this->getDriver();
+        $metadata = [];
+
+        foreach ($driver->getAllClassNames() as $className) {
+            $metadata[] = $this->getMetadataFor($className);
+        }
+
+        return $metadata;
     }
 
     /**
@@ -72,6 +203,158 @@ class ClassMetadataFactory extends AbstractClassMetadataFactory
         $this->driver      = $this->em->getConfiguration()->getMetadataDriverImpl();
         $this->evm         = $this->em->getEventManager();
         $this->initialized = true;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    protected function getDriver() : Driver\MappingDriver
+    {
+        return $this->driver;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    protected function isEntity(ClassMetadata $class) : bool
+    {
+        return isset($class->isMappedSuperclass) && $class->isMappedSuperclass === false;
+    }
+
+    /**
+     * Gets the class metadata descriptor for a class.
+     *
+     * @param string $className The name of the class.
+     *
+     * @throws InvalidArgumentException
+     * @throws PersistenceMappingException
+     * @throws ORMException
+     */
+    public function getMetadataFor($className) : ClassMetadata
+    {
+        if (isset($this->loadedMetadata[$className])) {
+            return $this->loadedMetadata[$className];
+        }
+
+        $entityClassName = StaticClassNameConverter::getRealClass($className);
+
+        if (isset($this->loadedMetadata[$entityClassName])) {
+            // We do not have the alias name in the map, include it
+            return $this->loadedMetadata[$className] = $this->loadedMetadata[$entityClassName];
+        }
+
+        $metadataBuildingContext = $this->newClassMetadataBuildingContext();
+        $loadingException        = null;
+
+        try {
+            if ($this->cacheDriver) {
+                $cached = $this->cacheDriver->fetch($entityClassName . $this->cacheSalt);
+
+                if ($cached instanceof ClassMetadata) {
+                    $this->loadedMetadata[$entityClassName] = $cached;
+
+                    $cached->wakeupReflection($metadataBuildingContext->getReflectionService());
+                } else {
+                    foreach ($this->loadMetadata($entityClassName, $metadataBuildingContext) as $loadedClass) {
+                        $loadedClassName = $loadedClass->getClassName();
+
+                        $this->cacheDriver->save($loadedClassName . $this->cacheSalt, $loadedClass, null);
+                    }
+                }
+            } else {
+                $this->loadMetadata($entityClassName, $metadataBuildingContext);
+            }
+        } catch (PersistenceMappingException $loadingException) {
+            $fallbackMetadataResponse = $this->onNotFoundMetadata($entityClassName, $metadataBuildingContext);
+
+            if (! $fallbackMetadataResponse) {
+                throw $loadingException;
+            }
+
+            $this->loadedMetadata[$entityClassName] = $fallbackMetadataResponse;
+        }
+
+        if ($className !== $entityClassName) {
+            // We do not have the alias name in the map, include it
+            $this->loadedMetadata[$className] = $this->loadedMetadata[$entityClassName];
+        }
+
+        $metadataBuildingContext->validate();
+
+        return $this->loadedMetadata[$entityClassName];
+    }
+
+    /**
+     * Loads the metadata of the class in question and all it's ancestors whose metadata
+     * is still not loaded.
+     *
+     * Important: The class $name does not necessarily exist at this point here.
+     * Scenarios in a code-generation setup might have access to XML
+     * Mapping files without the actual PHP code existing here. That is why the
+     * {@see Doctrine\ORM\Reflection\ReflectionService} interface
+     * should be used for reflection.
+     *
+     * @param string $name The name of the class for which the metadata should get loaded.
+     *
+     * @return ClassMetadata[]
+     *
+     * @throws InvalidArgumentException
+     * @throws ORMException
+     */
+    protected function loadMetadata(string $name, ClassMetadataBuildingContext $metadataBuildingContext) : array
+    {
+        if (! $this->initialized) {
+            $this->initialize();
+        }
+
+        $loaded          = [];
+        $parentClasses   = $this->getParentClasses($name);
+        $parentClasses[] = $name;
+
+        // Move down the hierarchy of parent classes, starting from the topmost class
+        $parent = null;
+
+        foreach ($parentClasses as $className) {
+            if (isset($this->loadedMetadata[$className])) {
+                $parent = $this->loadedMetadata[$className];
+
+                continue;
+            }
+
+            $class = $this->doLoadMetadata($className, $parent, $metadataBuildingContext);
+
+            $this->loadedMetadata[$className] = $class;
+
+            $parent   = $class;
+            $loaded[] = $class;
+        }
+
+        array_map([$this, 'resolveDiscriminatorValue'], $loaded);
+
+        return $loaded;
+    }
+
+    /**
+     * Gets an array of parent classes for the given entity class.
+     *
+     * @param string $name
+     *
+     * @return string[]
+     *
+     * @throws InvalidArgumentException
+     */
+    protected function getParentClasses($name) : array
+    {
+        // Collect parent classes, ignoring transient (not-mapped) classes.
+        $parentClasses = [];
+
+        foreach (array_reverse($this->getReflectionService()->getParentClasses($name)) as $parentClass) {
+            if (! $this->getDriver()->isTransient($parentClass)) {
+                $parentClasses[] = $parentClass;
+            }
+        }
+
+        return $parentClasses;
     }
 
     /**
@@ -102,7 +385,8 @@ class ClassMetadataFactory extends AbstractClassMetadataFactory
         string $className,
         ?ClassMetadata $parent,
         ClassMetadataBuildingContext $metadataBuildingContext
-    ) : ClassMetadata {
+    ) : ?ComponentMetadata {
+        /** @var ClassMetadata $classMetadata */
         $classMetadata = $this->driver->loadMetadataForClass($className, $parent, $metadataBuildingContext);
 
         $this->completeIdentifierGeneratorMappings($classMetadata);
@@ -204,6 +488,7 @@ class ClassMetadataFactory extends AbstractClassMetadataFactory
      * @throws InvalidArgumentException
      * @throws ReflectionException
      * @throws MappingException
+     * @throws PersistenceMappingException
      */
     private function resolveDiscriminatorValue(ClassMetadata $metadata) : void
     {
@@ -307,22 +592,6 @@ class ClassMetadataFactory extends AbstractClassMetadataFactory
             default:
                 throw UnknownGeneratorType::create($generator->getType());
         }
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    protected function getDriver() : Driver\MappingDriver
-    {
-        return $this->driver;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    protected function isEntity(ClassMetadata $class) : bool
-    {
-        return isset($class->isMappedSuperclass) && $class->isMappedSuperclass === false;
     }
 
     private function getTargetPlatform() : Platforms\AbstractPlatform
