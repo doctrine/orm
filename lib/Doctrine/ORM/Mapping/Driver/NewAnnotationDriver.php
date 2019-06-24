@@ -263,21 +263,35 @@ class NewAnnotationDriver implements MappingDriver
         if (isset($classAnnotations[Annotation\EntityListeners::class])) {
             /** @var Annotation\EntityListeners $entityListenersAnnot */
             $entityListenersAnnot = $classAnnotations[Annotation\EntityListeners::class];
+            $eventMap             = [
+                Events::prePersist  => Annotation\PrePersist::class,
+                Events::postPersist => Annotation\PostPersist::class,
+                Events::preUpdate   => Annotation\PreUpdate::class,
+                Events::postUpdate  => Annotation\PostUpdate::class,
+                Events::preRemove   => Annotation\PreRemove::class,
+                Events::postRemove  => Annotation\PostRemove::class,
+                Events::postLoad    => Annotation\PostLoad::class,
+                Events::preFlush    => Annotation\PreFlush::class,
+            ];
 
             foreach ($entityListenersAnnot->value as $listenerClassName) {
                 if (! class_exists($listenerClassName)) {
                     throw Mapping\MappingException::entityListenerClassNotFound(
                         $listenerClassName,
-                        $reflectionClass->getName()
+                        $classMetadata->getClassName()
                     );
                 }
 
                 $listenerClass = new ReflectionClass($listenerClassName);
 
-                /** @var ReflectionMethod $method */
-                foreach ($listenerClass->getMethods(ReflectionMethod::IS_PUBLIC) as $method) {
-                    foreach ($this->getMethodCallbacks($method) as $callback) {
-                        $classMetadata->addEntityListener($callback, $listenerClassName, $method->getName());
+                /** @var ReflectionMethod $reflectionMethod */
+                foreach ($listenerClass->getMethods(ReflectionMethod::IS_PUBLIC) as $reflectionMethod) {
+                    $annotations = $this->getMethodAnnotations($reflectionMethod);
+
+                    foreach ($eventMap as $eventName => $annotationClassName) {
+                        if (isset($annotations[$annotationClassName])) {
+                            $classMetadata->addEntityListener($eventName, $listenerClassName, $reflectionMethod->getName());
+                        }
                     }
                 }
             }
@@ -285,10 +299,25 @@ class NewAnnotationDriver implements MappingDriver
 
         // Evaluate @HasLifecycleCallbacks annotation
         if (isset($classAnnotations[Annotation\HasLifecycleCallbacks::class])) {
-            /** @var ReflectionMethod $method */
-            foreach ($reflectionClass->getMethods(ReflectionMethod::IS_PUBLIC) as $method) {
-                foreach ($this->getMethodCallbacks($method) as $callback) {
-                    $classMetadata->addLifecycleCallback($method->getName(), $callback);
+            $eventMap = [
+                Events::prePersist  => Annotation\PrePersist::class,
+                Events::postPersist => Annotation\PostPersist::class,
+                Events::preUpdate   => Annotation\PreUpdate::class,
+                Events::postUpdate  => Annotation\PostUpdate::class,
+                Events::preRemove   => Annotation\PreRemove::class,
+                Events::postRemove  => Annotation\PostRemove::class,
+                Events::postLoad    => Annotation\PostLoad::class,
+                Events::preFlush    => Annotation\PreFlush::class,
+            ];
+
+            /** @var ReflectionMethod $reflectionMethod */
+            foreach ($reflectionClass->getMethods(ReflectionMethod::IS_PUBLIC) as $reflectionMethod) {
+                $annotations = $this->getMethodAnnotations($reflectionMethod);
+
+                foreach ($eventMap as $eventName => $annotationClassName) {
+                    if (isset($annotations[$annotationClassName])) {
+                        $classMetadata->addLifecycleCallback($eventName, $reflectionMethod->getName());
+                    }
                 }
             }
         }

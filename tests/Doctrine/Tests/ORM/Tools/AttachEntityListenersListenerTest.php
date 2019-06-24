@@ -58,7 +58,8 @@ class AttachEntityListenersListenerTest extends OrmTestCase
         $this->listener->addEntityListener(
             AttachEntityListenersListenerTestBarEntity::class,
             AttachEntityListenersListenerTestListener2::class,
-            Events::prePersist
+            Events::prePersist,
+            'prePersist'
         );
 
         $this->listener->addEntityListener(
@@ -94,13 +95,15 @@ class AttachEntityListenersListenerTest extends OrmTestCase
         $this->listener->addEntityListener(
             AttachEntityListenersListenerTestFooEntity::class,
             AttachEntityListenersListenerTestListener::class,
-            Events::postPersist
+            Events::postPersist,
+            'postPersist'
         );
 
         $this->listener->addEntityListener(
             AttachEntityListenersListenerTestFooEntity::class,
             AttachEntityListenersListenerTestListener::class,
-            Events::postPersist
+            Events::postPersist,
+            'postPersist'
         );
 
         $class = $this->factory->getMetadataFor(AttachEntityListenersListenerTestFooEntity::class);
@@ -140,16 +143,19 @@ class AttachEntityListenersListenerTestListener
 {
     public $calls;
 
+    /** @ORM\PrePersist */
     public function prePersist()
     {
         $this->calls[__FUNCTION__][] = func_get_args();
     }
 
+    /** @ORM\PostLoad */
     public function postLoadHandler()
     {
         $this->calls[__FUNCTION__][] = func_get_args();
     }
 
+    /** @ORM\PostPersist */
     public function postPersist()
     {
         $this->calls[__FUNCTION__][] = func_get_args();
@@ -160,11 +166,13 @@ class AttachEntityListenersListenerTestListener2
 {
     public $calls;
 
+    /** @ORM\PrePersist */
     public function prePersist()
     {
         $this->calls[__FUNCTION__][] = func_get_args();
     }
 
+    /** @ORM\PostPersist */
     public function postPersistHandler()
     {
         $this->calls[__FUNCTION__][] = func_get_args();

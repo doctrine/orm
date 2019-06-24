@@ -1916,6 +1916,8 @@ class SqlWalker implements TreeWalker
 
             return '(' . $this->walkConditionalExpression($condExpr) . ')';
         }
+
+        return '';
     }
 
     /**

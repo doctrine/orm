@@ -12,7 +12,6 @@ use Doctrine\ORM\Event\LoadClassMetadataEventArgs;
 use Doctrine\ORM\Event\OnClassMetadataNotFoundEventArgs;
 use Doctrine\ORM\Events;
 use Doctrine\ORM\Exception\ORMException;
-use Doctrine\ORM\Mapping\Exception\InvalidCustomGenerator;
 use Doctrine\ORM\Mapping\Exception\TableGeneratorNotImplementedYet;
 use Doctrine\ORM\Mapping\Exception\UnknownGeneratorType;
 use Doctrine\ORM\Sequencing\Planning\CompositeValueGenerationPlan;
@@ -22,7 +21,6 @@ use Doctrine\ORM\Sequencing\Planning\ValueGenerationExecutor;
 use InvalidArgumentException;
 use ReflectionException;
 use function array_map;
-use function class_exists;
 use function count;
 use function in_array;
 use function reset;
@@ -244,7 +242,7 @@ class ClassMetadataFactory extends AbstractClassMetadataFactory
     private function completeIdentifierGeneratorMappings(ClassMetadata $class) : void
     {
         foreach ($class->getDeclaredPropertiesIterator() as $property) {
-            if (! $property instanceof FieldMetadata /*&& ! $property instanceof AssocationMetadata*/) {
+            if (! $property instanceof FieldMetadata /*&& ! $property instanceof AssociationMetadata*/) {
                 continue;
             }
 
@@ -302,18 +300,6 @@ class ClassMetadataFactory extends AbstractClassMetadataFactory
                 break;
 
             case GeneratorType::CUSTOM:
-                $definition = $generator->getDefinition();
-
-                if (! isset($definition['class'])) {
-                    throw InvalidCustomGenerator::onClassNotConfigured();
-                }
-
-                if (! class_exists($definition['class'])) {
-                    throw InvalidCustomGenerator::onMissingClass($definition);
-                }
-
-                break;
-
             case GeneratorType::IDENTITY:
             case GeneratorType::NONE:
                 break;

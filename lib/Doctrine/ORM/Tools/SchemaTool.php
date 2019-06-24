@@ -7,6 +7,7 @@ namespace Doctrine\ORM\Tools;
 use Doctrine\DBAL\Platforms\AbstractPlatform;
 use Doctrine\DBAL\Schema\Column;
 use Doctrine\DBAL\Schema\Comparator;
+use Doctrine\DBAL\Schema\ForeignKeyConstraint;
 use Doctrine\DBAL\Schema\Index;
 use Doctrine\DBAL\Schema\Schema;
 use Doctrine\DBAL\Schema\Table;
@@ -852,7 +853,7 @@ class SchemaTool
         foreach ($fullSchema->getTables() as $table) {
             if (! $schema->hasTable($table->getName())) {
                 foreach ($table->getForeignKeys() as $foreignKey) {
-                    /** @var $foreignKey \Doctrine\DBAL\Schema\ForeignKeyConstraint */
+                    /** @var $foreignKey ForeignKeyConstraint */
                     if ($schema->hasTable($foreignKey->getForeignTableName())) {
                         $visitor->acceptForeignKey($table, $foreignKey);
                     }

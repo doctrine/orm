@@ -1,4 +1,4 @@
-<?php
+<?php /** @noinspection ALL */
 
 declare(strict_types=1);
 
@@ -11,6 +11,7 @@ use Doctrine\ORM\Annotation;
 use Doctrine\ORM\Cache\Exception\CacheException;
 use Doctrine\ORM\Events;
 use Doctrine\ORM\Mapping;
+use Doctrine\ORM\Mapping\Builder;
 use FilesystemIterator;
 use RecursiveDirectoryIterator;
 use RecursiveIteratorIterator;
@@ -42,7 +43,6 @@ use function realpath;
 use function sprintf;
 use function str_replace;
 use function strpos;
-use function strtolower;
 use function strtoupper;
 use function var_export;
 
@@ -193,8 +193,8 @@ class AnnotationDriver implements MappingDriver
     {
         $classAnnotations = $this->reader->getClassAnnotations(new ReflectionClass($className));
 
-        foreach ($classAnnotations as $annot) {
-            if (isset($this->entityAnnotationClasses[get_class($annot)])) {
+        foreach ($classAnnotations as $annotation) {
+            if (isset($this->entityAnnotationClasses[get_class($annotation)])) {
                 return false;
             }
         }
@@ -203,7 +203,9 @@ class AnnotationDriver implements MappingDriver
     }
 
     /**
-     * {@inheritDoc}
+     * {@inheritdoc}
+     *
+     * @throws ReflectionException
      */
     public function getAllClassNames() : array
     {
@@ -257,8 +259,9 @@ class AnnotationDriver implements MappingDriver
         $declared = get_declared_classes();
 
         foreach ($declared as $className) {
-            $rc         = new ReflectionClass($className);
-            $sourceFile = $rc->getFileName();
+            $reflectionClass = new ReflectionClass($className);
+            $sourceFile      = $reflectionClass->getFileName();
+
             if (in_array($sourceFile, $includedFiles, true) && ! $this->isTransient($className)) {
                 $classes[] = $className;
             }
@@ -295,10 +298,13 @@ class AnnotationDriver implements MappingDriver
 
         // Evaluate @Cache annotation
         if (isset($classAnnotations[Annotation\Cache::class])) {
-            $cacheAnnot = $classAnnotations[Annotation\Cache::class];
-            $cache      = $this->convertCacheAnnotationToCacheMetadata($cacheAnnot, $metadata);
+            $cacheBuilder = new Builder\CacheMetadataBuilder($metadataBuildingContext);
 
-            $classMetadata->setCache($cache);
+            $cacheBuilder
+                ->withEntityClassMetadata($metadata)
+                ->withCacheAnnotation($classAnnotations[Annotation\Cache::class]);
+
+            $metadata->setCache($cacheBuilder->build());
         }
 
         // Evaluate annotations on properties/fields
@@ -428,7 +434,7 @@ class AnnotationDriver implements MappingDriver
         }
 
         $this->attachLifecycleCallbacks($classAnnotations, $reflectionClass, $metadata);
-        $this->attachEntityListeners($classAnnotations, $reflectionClass, $metadata);
+        $this->attachEntityListeners($classAnnotations, $metadata);
 
         return $metadata;
     }
@@ -455,7 +461,7 @@ class AnnotationDriver implements MappingDriver
         $metadata->isEmbeddedClass    = false;
 
         $this->attachLifecycleCallbacks($classAnnotations, $reflectionClass, $metadata);
-        $this->attachEntityListeners($classAnnotations, $reflectionClass, $metadata);
+        $this->attachEntityListeners($classAnnotations, $metadata);
 
         return $metadata;
     }
@@ -656,15 +662,13 @@ class AnnotationDriver implements MappingDriver
 
     /**
      * @param Annotation\Annotation[] $propertyAnnotations
-     *
-     * @return Mapping\OneToOneAssociationMetadata
      */
     private function convertReflectionPropertyToOneToOneAssociationMetadata(
         ReflectionProperty $reflectionProperty,
         array $propertyAnnotations,
         Mapping\ClassMetadata $metadata,
         Mapping\ClassMetadataBuildingContext $metadataBuildingContext
-    ) {
+    ) : Mapping\OneToOneAssociationMetadata {
         $className     = $metadata->getClassName();
         $fieldName     = $reflectionProperty->getName();
         $oneToOneAnnot = $propertyAnnotations[Annotation\OneToOne::class];
@@ -690,7 +694,17 @@ class AnnotationDriver implements MappingDriver
             $assocMetadata->setPrimaryKey(true);
         }
 
-        $this->attachAssociationPropertyCache($propertyAnnotations, $reflectionProperty, $assocMetadata, $metadata);
+        // Check for Cache
+        if (isset($propertyAnnotations[Annotation\Cache::class])) {
+            $cacheBuilder = new Builder\CacheMetadataBuilder($metadataBuildingContext);
+
+            $cacheBuilder
+                ->withEntityClassMetadata($metadata)
+                ->withFieldName($fieldName)
+                ->withCacheAnnotation($propertyAnnotations[Annotation\Cache::class]);
+
+            $assocMetadata->setCache($cacheBuilder->build());
+        }
 
         // Check for JoinColumn/JoinColumns annotations
         switch (true) {
@@ -720,15 +734,13 @@ class AnnotationDriver implements MappingDriver
 
     /**
      * @param Annotation\Annotation[] $propertyAnnotations
-     *
-     * @return Mapping\ManyToOneAssociationMetadata
      */
     private function convertReflectionPropertyToManyToOneAssociationMetadata(
         ReflectionProperty $reflectionProperty,
         array $propertyAnnotations,
         Mapping\ClassMetadata $metadata,
         Mapping\ClassMetadataBuildingContext $metadataBuildingContext
-    ) {
+    ) : Mapping\ManyToOneAssociationMetadata {
         $className      = $metadata->getClassName();
         $fieldName      = $reflectionProperty->getName();
         $manyToOneAnnot = $propertyAnnotations[Annotation\ManyToOne::class];
@@ -748,7 +760,17 @@ class AnnotationDriver implements MappingDriver
             $assocMetadata->setPrimaryKey(true);
         }
 
-        $this->attachAssociationPropertyCache($propertyAnnotations, $reflectionProperty, $assocMetadata, $metadata);
+        // Check for Cache
+        if (isset($propertyAnnotations[Annotation\Cache::class])) {
+            $cacheBuilder = new Builder\CacheMetadataBuilder($metadataBuildingContext);
+
+            $cacheBuilder
+                ->withEntityClassMetadata($metadata)
+                ->withFieldName($fieldName)
+                ->withCacheAnnotation($propertyAnnotations[Annotation\Cache::class]);
+
+            $assocMetadata->setCache($cacheBuilder->build());
+        }
 
         // Check for JoinColumn/JoinColumns annotations
         switch (true) {
@@ -816,7 +838,17 @@ class AnnotationDriver implements MappingDriver
             throw Mapping\MappingException::illegalToManyIdentifierAssociation($className, $fieldName);
         }
 
-        $this->attachAssociationPropertyCache($propertyAnnotations, $reflectionProperty, $assocMetadata, $metadata);
+        // Check for Cache
+        if (isset($propertyAnnotations[Annotation\Cache::class])) {
+            $cacheBuilder = new Builder\CacheMetadataBuilder($metadataBuildingContext);
+
+            $cacheBuilder
+                ->withEntityClassMetadata($metadata)
+                ->withFieldName($fieldName)
+                ->withCacheAnnotation($propertyAnnotations[Annotation\Cache::class]);
+
+            $assocMetadata->setCache($cacheBuilder->build());
+        }
 
         return $assocMetadata;
     }
@@ -876,7 +908,17 @@ class AnnotationDriver implements MappingDriver
             throw Mapping\MappingException::illegalToManyIdentifierAssociation($className, $fieldName);
         }
 
-        $this->attachAssociationPropertyCache($propertyAnnotations, $reflectionProperty, $assocMetadata, $metadata);
+        // Check for Cache
+        if (isset($propertyAnnotations[Annotation\Cache::class])) {
+            $cacheBuilder = new Builder\CacheMetadataBuilder($metadataBuildingContext);
+
+            $cacheBuilder
+                ->withEntityClassMetadata($metadata)
+                ->withFieldName($fieldName)
+                ->withCacheAnnotation($propertyAnnotations[Annotation\Cache::class]);
+
+            $assocMetadata->setCache($cacheBuilder->build());
+        }
 
         return $assocMetadata;
     }
@@ -1026,25 +1068,6 @@ class AnnotationDriver implements MappingDriver
     }
 
     /**
-     * Parse the given Cache as CacheMetadata
-     *
-     * @param string|null $fieldName
-     */
-    private function convertCacheAnnotationToCacheMetadata(
-        Annotation\Cache $cacheAnnot,
-        Mapping\ClassMetadata $metadata,
-        $fieldName = null
-    ) : Mapping\CacheMetadata {
-        $baseRegion    = strtolower(str_replace('\\', '_', $metadata->getRootClassName()));
-        $defaultRegion = $baseRegion . ($fieldName ? '__' . $fieldName : '');
-
-        $usage  = constant(sprintf('%s::%s', Mapping\CacheUsage::class, $cacheAnnot->usage));
-        $region = $cacheAnnot->region ?: $defaultRegion;
-
-        return new Mapping\CacheMetadata($usage, $region);
-    }
-
-    /**
      * @param Annotation\Annotation[] $classAnnotations
      */
     private function attachTable(
@@ -1144,10 +1167,25 @@ class AnnotationDriver implements MappingDriver
     ) : void {
         // Evaluate @HasLifecycleCallbacks annotation
         if (isset($classAnnotations[Annotation\HasLifecycleCallbacks::class])) {
-            /** @var ReflectionMethod $method */
-            foreach ($reflectionClass->getMethods(ReflectionMethod::IS_PUBLIC) as $method) {
-                foreach ($this->getMethodCallbacks($method) as $callback) {
-                    $metadata->addLifecycleCallback($method->getName(), $callback);
+            $eventMap = [
+                Events::prePersist  => Annotation\PrePersist::class,
+                Events::postPersist => Annotation\PostPersist::class,
+                Events::preUpdate   => Annotation\PreUpdate::class,
+                Events::postUpdate  => Annotation\PostUpdate::class,
+                Events::preRemove   => Annotation\PreRemove::class,
+                Events::postRemove  => Annotation\PostRemove::class,
+                Events::postLoad    => Annotation\PostLoad::class,
+                Events::preFlush    => Annotation\PreFlush::class,
+            ];
+
+            /** @var ReflectionMethod $reflectionMethod */
+            foreach ($reflectionClass->getMethods(ReflectionMethod::IS_PUBLIC) as $reflectionMethod) {
+                $annotations = $this->getMethodAnnotations($reflectionMethod);
+
+                foreach ($eventMap as $eventName => $annotationClassName) {
+                    if (isset($annotations[$annotationClassName])) {
+                        $metadata->addLifecycleCallback($eventName, $reflectionMethod->getName());
+                    }
                 }
             }
         }
@@ -1161,13 +1199,22 @@ class AnnotationDriver implements MappingDriver
      */
     private function attachEntityListeners(
         array $classAnnotations,
-        ReflectionClass $reflectionClass,
         Mapping\ClassMetadata $metadata
     ) : void {
         // Evaluate @EntityListeners annotation
         if (isset($classAnnotations[Annotation\EntityListeners::class])) {
             /** @var Annotation\EntityListeners $entityListenersAnnot */
             $entityListenersAnnot = $classAnnotations[Annotation\EntityListeners::class];
+            $eventMap             = [
+                Events::prePersist  => Annotation\PrePersist::class,
+                Events::postPersist => Annotation\PostPersist::class,
+                Events::preUpdate   => Annotation\PreUpdate::class,
+                Events::postUpdate  => Annotation\PostUpdate::class,
+                Events::preRemove   => Annotation\PreRemove::class,
+                Events::postRemove  => Annotation\PostRemove::class,
+                Events::postLoad    => Annotation\PostLoad::class,
+                Events::preFlush    => Annotation\PreFlush::class,
+            ];
 
             foreach ($entityListenersAnnot->value as $listenerClassName) {
                 if (! class_exists($listenerClassName)) {
@@ -1179,10 +1226,14 @@ class AnnotationDriver implements MappingDriver
 
                 $listenerClass = new ReflectionClass($listenerClassName);
 
-                /** @var ReflectionMethod $method */
-                foreach ($listenerClass->getMethods(ReflectionMethod::IS_PUBLIC) as $method) {
-                    foreach ($this->getMethodCallbacks($method) as $callback) {
-                        $metadata->addEntityListener($callback, $listenerClassName, $method->getName());
+                /** @var ReflectionMethod $reflectionMethod */
+                foreach ($listenerClass->getMethods(ReflectionMethod::IS_PUBLIC) as $reflectionMethod) {
+                    $annotations = $this->getMethodAnnotations($reflectionMethod);
+
+                    foreach ($eventMap as $eventName => $annotationClassName) {
+                        if (isset($annotations[$annotationClassName])) {
+                            $metadata->addEntityListener($eventName, $listenerClassName, $reflectionMethod->getName());
+                        }
                     }
                 }
             }
@@ -1267,28 +1318,6 @@ class AnnotationDriver implements MappingDriver
     }
 
     /**
-     * @param Annotation\Annotation[] $propertyAnnotations
-     */
-    private function attachAssociationPropertyCache(
-        array $propertyAnnotations,
-        ReflectionProperty $reflectionProperty,
-        Mapping\AssociationMetadata $assocMetadata,
-        Mapping\ClassMetadata $metadata
-    ) : void {
-        // Check for Cache
-        if (isset($propertyAnnotations[Annotation\Cache::class])) {
-            $cacheAnnot    = $propertyAnnotations[Annotation\Cache::class];
-            $cacheMetadata = $this->convertCacheAnnotationToCacheMetadata(
-                $cacheAnnot,
-                $metadata,
-                $reflectionProperty->getName()
-            );
-
-            $assocMetadata->setCache($cacheMetadata);
-        }
-    }
-
-    /**
      * Attempts to resolve the cascade modes.
      *
      * @param string   $className        The class name.
@@ -1336,37 +1365,6 @@ class AnnotationDriver implements MappingDriver
         }
 
         return constant($fetchModeConstant);
-    }
-
-    /**
-     * Parses the given method.
-     *
-     * @return string[]
-     */
-    private function getMethodCallbacks(ReflectionMethod $method) : array
-    {
-        $annotations = $this->getMethodAnnotations($method);
-        $events      = [
-            Events::prePersist  => Annotation\PrePersist::class,
-            Events::postPersist => Annotation\PostPersist::class,
-            Events::preUpdate   => Annotation\PreUpdate::class,
-            Events::postUpdate  => Annotation\PostUpdate::class,
-            Events::preRemove   => Annotation\PreRemove::class,
-            Events::postRemove  => Annotation\PostRemove::class,
-            Events::postLoad    => Annotation\PostLoad::class,
-            Events::preFlush    => Annotation\PreFlush::class,
-        ];
-
-        // Check for callbacks
-        $callbacks = [];
-
-        foreach ($events as $eventName => $annotationClassName) {
-            if (isset($annotations[$annotationClassName]) || $method->getName() === $eventName) {
-                $callbacks[] = $eventName;
-            }
-        }
-
-        return $callbacks;
     }
 
     /**
@@ -1421,21 +1419,5 @@ class AnnotationDriver implements MappingDriver
         }
 
         return $methodAnnotations;
-    }
-
-    /**
-     * Factory method for the Annotation Driver.
-     *
-     * @param string|string[] $paths
-     *
-     * @return AnnotationDriver
-     */
-    public static function create($paths = [], ?AnnotationReader $reader = null)
-    {
-        if ($reader === null) {
-            $reader = new AnnotationReader();
-        }
-
-        return new self($reader, $paths);
     }
 }

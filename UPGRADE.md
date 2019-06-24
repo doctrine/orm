@@ -40,6 +40,11 @@ declaration for parameters and return (as much as possible).
 
 If you want to extend it now you have to provide your own validation schema.
 
+## BC Break: Entity Listeners no long support naming convention methods
+
+If you want their behavior to be kept, please add the necessary Annotation methods (in case XML driver is used,
+no changes are necessary).
+
 ## BC Break: Removed `Doctrine\ORM\Mapping\Exporter\VariableExporter` constants
 
 This constant has been removed

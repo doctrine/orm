@@ -37,7 +37,7 @@ class OneToManyPersister extends AbstractCollectionPersister
             // Handling non-orphan removal should never happen, as @OneToMany
             // can only be inverse side. For owning side one to many, it is
             // required to have a join table, which would classify as a ManyToManyPersister.
-            return;
+            return 0;
         }
 
         $targetClass = $this->em->getClassMetadata($association->getTargetEntity());

@@ -205,6 +205,7 @@ class ResultSetMappingBuilder extends ResultSetMapping
             case self::COLUMN_RENAMING_CUSTOM:
                 return $customRenameColumns[$columnName] ?? $columnName;
             case self::COLUMN_RENAMING_NONE:
+            default:
                 return $columnName;
         }
     }

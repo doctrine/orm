@@ -85,5 +85,7 @@ class ValueGeneratorMetadata
 
                 return new $class();
         }
+
+        return null;
     }
 }
