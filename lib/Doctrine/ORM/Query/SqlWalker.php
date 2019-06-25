@@ -646,12 +646,20 @@ class SqlWalker implements TreeWalker
                 $fieldName = $pathExpr->field;
                 $dqlAlias = $pathExpr->identificationVariable;
                 $class = $this->queryComponents[$dqlAlias]['metadata'];
+                $col = '';
 
                 if ($this->useSqlTableAliases) {
-                    $sql .= $this->walkIdentificationVariable($dqlAlias, $fieldName) . '.';
+                    $col .= $this->walkIdentificationVariable($dqlAlias, $fieldName) . '.';
                 }
 
-                $sql .= $this->quoteStrategy->getColumnName($fieldName, $class, $this->platform);
+                $col .= $this->quoteStrategy->getColumnName($fieldName, $class, $this->platform);
+
+                if (isset($class->fieldMappings[$fieldName]['requireSQLConversion'])) {
+                    $type = Type::getType($class->getTypeOfField($fieldName));
+                    $col = $type->convertToPHPValueSQL($col, $this->platform);
+                }
+
+                $sql .= $col;
                 break;
 
             case AST\PathExpression::TYPE_SINGLE_VALUED_ASSOCIATION:
