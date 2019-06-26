@@ -409,7 +409,33 @@ class AnnotationDriver implements MappingDriver
         $metadata->isMappedSuperclass = false;
         $metadata->isEmbeddedClass    = false;
 
-        $this->attachTable($classAnnotations, $reflectionClass, $metadata, $metadataBuildingContext);
+        // Process table information
+        $parent = $metadata->getParent();
+
+        if ($parent && $parent->inheritanceType === Mapping\InheritanceType::SINGLE_TABLE) {
+            // Handle the case where a middle mapped super class inherits from a single table inheritance tree.
+            do {
+                if (! $parent->isMappedSuperclass) {
+                    $metadata->setTable($parent->table);
+
+                    break;
+                }
+
+                $parent = $parent->getParent();
+            } while ($parent !== null);
+        } else {
+            $tableBuilder = new Builder\TableMetadataBuilder($metadataBuildingContext);
+
+            $tableBuilder
+                ->withEntityClassMetadata($metadata);
+
+            // Evaluate @Table annotation
+            if (isset($classAnnotations[Annotation\Table::class])) {
+                $tableBuilder->withTableAnnotation($classAnnotations[Annotation\Table::class]);
+            }
+
+            $metadata->setTable($tableBuilder->build());
+        }
 
         // Evaluate @ChangeTrackingPolicy annotation
         if (isset($classAnnotations[Annotation\ChangeTrackingPolicy::class])) {
@@ -961,47 +987,6 @@ class AnnotationDriver implements MappingDriver
     }
 
     /**
-     * Parse the given Table as TableMetadata
-     */
-    private function convertTableAnnotationToTableMetadata(
-        Annotation\Table $tableAnnot,
-        Mapping\TableMetadata $tableMetadata
-    ) : Mapping\TableMetadata {
-        if (! empty($tableAnnot->name)) {
-            $tableMetadata->setName($tableAnnot->name);
-        }
-
-        if (! empty($tableAnnot->schema)) {
-            $tableMetadata->setSchema($tableAnnot->schema);
-        }
-
-        foreach ($tableAnnot->options as $optionName => $optionValue) {
-            $tableMetadata->addOption($optionName, $optionValue);
-        }
-
-        foreach ($tableAnnot->indexes as $indexAnnot) {
-            $tableMetadata->addIndex([
-                'name'    => $indexAnnot->name,
-                'columns' => $indexAnnot->columns,
-                'unique'  => $indexAnnot->unique,
-                'options' => $indexAnnot->options,
-                'flags'   => $indexAnnot->flags,
-            ]);
-        }
-
-        foreach ($tableAnnot->uniqueConstraints as $uniqueConstraintAnnot) {
-            $tableMetadata->addUniqueConstraint([
-                'name'    => $uniqueConstraintAnnot->name,
-                'columns' => $uniqueConstraintAnnot->columns,
-                'options' => $uniqueConstraintAnnot->options,
-                'flags'   => $uniqueConstraintAnnot->flags,
-            ]);
-        }
-
-        return $tableMetadata;
-    }
-
-    /**
      * Parse the given JoinTable as JoinTableMetadata
      */
     private function convertJoinTableAnnotationToJoinTableMetadata(
@@ -1065,47 +1050,6 @@ class AnnotationDriver implements MappingDriver
         }
 
         return $joinColumn;
-    }
-
-    /**
-     * @param Annotation\Annotation[] $classAnnotations
-     */
-    private function attachTable(
-        array $classAnnotations,
-        ReflectionClass $reflectionClass,
-        Mapping\ClassMetadata $metadata,
-        Mapping\ClassMetadataBuildingContext $metadataBuildingContext
-    ) : void {
-        $parent = $metadata->getParent();
-
-        if ($parent && $parent->inheritanceType === Mapping\InheritanceType::SINGLE_TABLE) {
-            // Handle the case where a middle mapped super class inherits from a single table inheritance tree.
-            do {
-                if (! $parent->isMappedSuperclass) {
-                    $metadata->setTable($parent->table);
-
-                    break;
-                }
-
-                $parent = $parent->getParent();
-            } while ($parent !== null);
-
-            return;
-        }
-
-        $namingStrategy = $metadataBuildingContext->getNamingStrategy();
-        $tableMetadata  = new Mapping\TableMetadata();
-
-        $tableMetadata->setName($namingStrategy->classToTableName($metadata->getClassName()));
-
-        // Evaluate @Table annotation
-        if (isset($classAnnotations[Annotation\Table::class])) {
-            $tableAnnot = $classAnnotations[Annotation\Table::class];
-
-            $this->convertTableAnnotationToTableMetadata($tableAnnot, $tableMetadata);
-        }
-
-        $metadata->setTable($tableMetadata);
     }
 
     /**
