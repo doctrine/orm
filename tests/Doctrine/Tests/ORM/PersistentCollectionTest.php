@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Doctrine\Tests\ORM;
 
 use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\ORM\Mapping\ChangeTrackingPolicy;
 use Doctrine\ORM\PersistentCollection;
 use Doctrine\ORM\UnitOfWork;
 use Doctrine\Tests\Mocks\ConnectionMock;
@@ -268,5 +269,26 @@ class PersistentCollectionTest extends OrmTestCase
         );
         self::assertTrue($this->collection->isInitialized());
         self::assertFalse($this->collection->isDirty());
+    }
+
+    public function testModifyUOWForDeferredImplicitOwnerOnClear() : void
+    {
+        $unitOfWork = $this->createMock(UnitOfWork::class);
+        $unitOfWork->expects(self::once())->method('scheduleCollectionDeletion');
+        $this->emMock->setUnitOfWork($unitOfWork);
+
+        $this->collection->clear();
+    }
+
+    public function testDoNotModifyUOWForDeferredExplicitOwnerOnClear() : void
+    {
+        $unitOfWork = $this->createMock(UnitOfWork::class);
+        $unitOfWork->expects(self::never())->method('scheduleCollectionDeletion');
+        $this->emMock->setUnitOfWork($unitOfWork);
+
+        $classMetaData = $this->emMock->getClassMetadata(ECommerceCart::class);
+        $classMetaData->setChangeTrackingPolicy(ChangeTrackingPolicy::DEFERRED_EXPLICIT);
+
+        $this->collection->clear();
     }
 }
