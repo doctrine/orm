@@ -25,6 +25,7 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Selectable;
 use Doctrine\Common\Collections\Criteria;
 use Doctrine\ORM\Mapping\ClassMetadata;
+use function get_class;
 
 /**
  * A PersistentCollection represents a collection of elements that have persistent state.
@@ -565,7 +566,9 @@ final class PersistentCollection extends AbstractLazyCollection implements Selec
         if ($this->association['isOwningSide'] && $this->owner) {
             $this->changed();
 
-            $uow->scheduleCollectionDeletion($this);
+            if (! $this->em->getClassMetadata(get_class($this->owner))->isChangeTrackingDeferredExplicit()) {
+                $uow->scheduleCollectionDeletion($this);
+            }
 
             $this->takeSnapshot();
         }
