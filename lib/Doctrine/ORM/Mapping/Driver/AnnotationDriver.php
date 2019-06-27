@@ -301,7 +301,7 @@ class AnnotationDriver implements MappingDriver
             $cacheBuilder = new Builder\CacheMetadataBuilder($metadataBuildingContext);
 
             $cacheBuilder
-                ->withEntityClassMetadata($metadata)
+                ->withComponentMetadata($metadata)
                 ->withCacheAnnotation($classAnnotations[Annotation\Cache::class]);
 
             $metadata->setCache($cacheBuilder->build());
@@ -427,12 +427,8 @@ class AnnotationDriver implements MappingDriver
             $tableBuilder = new Builder\TableMetadataBuilder($metadataBuildingContext);
 
             $tableBuilder
-                ->withEntityClassMetadata($metadata);
-
-            // Evaluate @Table annotation
-            if (isset($classAnnotations[Annotation\Table::class])) {
-                $tableBuilder->withTableAnnotation($classAnnotations[Annotation\Table::class]);
-            }
+                ->withEntityClassMetadata($metadata)
+                ->withTableAnnotation($classAnnotations[Annotation\Table::class] ?? null);
 
             $metadata->setTable($tableBuilder->build());
         }
@@ -556,7 +552,13 @@ class AnnotationDriver implements MappingDriver
             case isset($propertyAnnotations[Annotation\Embedded::class]):
                 return null;
             default:
-                return new Mapping\TransientMetadata($reflectionProperty->getName());
+                $transientBuilder = new Builder\TransientMetadataBuilder($metadataBuildingContext);
+
+                $transientBuilder
+                    ->withComponentMetadata($metadata)
+                    ->withFieldName($reflectionProperty->getName());
+
+                return $transientBuilder->build();
         }
     }
 
@@ -725,7 +727,7 @@ class AnnotationDriver implements MappingDriver
             $cacheBuilder = new Builder\CacheMetadataBuilder($metadataBuildingContext);
 
             $cacheBuilder
-                ->withEntityClassMetadata($metadata)
+                ->withComponentMetadata($metadata)
                 ->withFieldName($fieldName)
                 ->withCacheAnnotation($propertyAnnotations[Annotation\Cache::class]);
 
@@ -791,7 +793,7 @@ class AnnotationDriver implements MappingDriver
             $cacheBuilder = new Builder\CacheMetadataBuilder($metadataBuildingContext);
 
             $cacheBuilder
-                ->withEntityClassMetadata($metadata)
+                ->withComponentMetadata($metadata)
                 ->withFieldName($fieldName)
                 ->withCacheAnnotation($propertyAnnotations[Annotation\Cache::class]);
 
@@ -869,7 +871,7 @@ class AnnotationDriver implements MappingDriver
             $cacheBuilder = new Builder\CacheMetadataBuilder($metadataBuildingContext);
 
             $cacheBuilder
-                ->withEntityClassMetadata($metadata)
+                ->withComponentMetadata($metadata)
                 ->withFieldName($fieldName)
                 ->withCacheAnnotation($propertyAnnotations[Annotation\Cache::class]);
 
@@ -939,7 +941,7 @@ class AnnotationDriver implements MappingDriver
             $cacheBuilder = new Builder\CacheMetadataBuilder($metadataBuildingContext);
 
             $cacheBuilder
-                ->withEntityClassMetadata($metadata)
+                ->withComponentMetadata($metadata)
                 ->withFieldName($fieldName)
                 ->withCacheAnnotation($propertyAnnotations[Annotation\Cache::class]);
 

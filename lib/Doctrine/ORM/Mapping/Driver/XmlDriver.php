@@ -129,7 +129,7 @@ class XmlDriver extends FileDriver
             $cacheBuilder = new Builder\CacheMetadataBuilder($metadataBuildingContext);
 
             $cacheBuilder
-                ->withEntityClassMetadata($metadata)
+                ->withComponentMetadata($metadata)
                 ->withCacheAnnotation($this->convertCacheElementToCacheAnnotation($xmlRoot->cache));
 
             $metadata->setCache($cacheBuilder->build());
@@ -341,7 +341,7 @@ class XmlDriver extends FileDriver
                     $cacheBuilder = new Builder\CacheMetadataBuilder($metadataBuildingContext);
 
                     $cacheBuilder
-                        ->withEntityClassMetadata($metadata)
+                        ->withComponentMetadata($metadata)
                         ->withFieldName($association->getName())
                         ->withCacheAnnotation($this->convertCacheElementToCacheAnnotation($oneToOneElement->cache));
 
@@ -403,7 +403,7 @@ class XmlDriver extends FileDriver
                     $cacheBuilder = new Builder\CacheMetadataBuilder($metadataBuildingContext);
 
                     $cacheBuilder
-                        ->withEntityClassMetadata($metadata)
+                        ->withComponentMetadata($metadata)
                         ->withFieldName($association->getName())
                         ->withCacheAnnotation($this->convertCacheElementToCacheAnnotation($oneToManyElement->cache));
 
@@ -417,7 +417,7 @@ class XmlDriver extends FileDriver
         // Evaluate <many-to-one ...> mappings
         if (isset($xmlRoot->{'many-to-one'})) {
             foreach ($xmlRoot->{'many-to-one'} as $manyToOneElement) {
-                $association = new Mapping\ManyToOneAssociationMetadata((string) $manyToOneElement['field']);
+                $association  = new Mapping\ManyToOneAssociationMetadata((string) $manyToOneElement['field']);
                 $targetEntity = (string) $manyToOneElement['target-entity'];
 
                 $association->setTargetEntity($targetEntity);
@@ -457,7 +457,7 @@ class XmlDriver extends FileDriver
                     $cacheBuilder = new Builder\CacheMetadataBuilder($metadataBuildingContext);
 
                     $cacheBuilder
-                        ->withEntityClassMetadata($metadata)
+                        ->withComponentMetadata($metadata)
                         ->withFieldName($association->getName())
                         ->withCacheAnnotation($this->convertCacheElementToCacheAnnotation($manyToOneElement->cache));
 
@@ -555,7 +555,7 @@ class XmlDriver extends FileDriver
                     $cacheBuilder = new Builder\CacheMetadataBuilder($metadataBuildingContext);
 
                     $cacheBuilder
-                        ->withEntityClassMetadata($metadata)
+                        ->withComponentMetadata($metadata)
                         ->withFieldName($association->getName())
                         ->withCacheAnnotation($this->convertCacheElementToCacheAnnotation($manyToManyElement->cache));
 
@@ -692,7 +692,7 @@ class XmlDriver extends FileDriver
      *
      * @return Annotation\Index[] The indexes array.
      */
-    private function parseIndexes(SimpleXMLElement $indexes)
+    private function parseIndexes(SimpleXMLElement $indexes) : array
     {
         $array = [];
 
@@ -725,7 +725,7 @@ class XmlDriver extends FileDriver
      *
      * @return Annotation\UniqueConstraint[] The unique constraints array.
      */
-    private function parseUniqueConstraints(SimpleXMLElement $uniqueConstraints)
+    private function parseUniqueConstraints(SimpleXMLElement $uniqueConstraints) : array
     {
         $array = [];
 
@@ -754,7 +754,7 @@ class XmlDriver extends FileDriver
      *
      * @return mixed[] The options array.
      */
-    private function parseOptions(SimpleXMLElement $options)
+    private function parseOptions(SimpleXMLElement $options) : array
     {
         $array = [];
 
@@ -783,8 +783,6 @@ class XmlDriver extends FileDriver
     }
 
     /**
-     * @return Mapping\FieldMetadata
-     *
      * @throws Mapping\MappingException
      */
     private function convertFieldElementToFieldMetadata(
@@ -792,8 +790,7 @@ class XmlDriver extends FileDriver
         string $fieldName,
         Mapping\ClassMetadata $metadata,
         Mapping\ClassMetadataBuildingContext $metadataBuildingContext
-    )
-    {
+    ) : Mapping\FieldMetadata {
         $className     = $metadata->getClassName();
         $isVersioned   = isset($fieldElement['version']) && $fieldElement['version'];
         $fieldMetadata = new Mapping\FieldMetadata($fieldName);
@@ -847,10 +844,8 @@ class XmlDriver extends FileDriver
      * found in the given SimpleXMLElement.
      *
      * @param SimpleXMLElement $joinColumnElement The XML element.
-     *
-     * @return Mapping\JoinColumnMetadata
      */
-    private function convertJoinColumnElementToJoinColumnMetadata(SimpleXMLElement $joinColumnElement)
+    private function convertJoinColumnElementToJoinColumnMetadata(SimpleXMLElement $joinColumnElement) : Mapping\JoinColumnMetadata
     {
         $joinColumnMetadata = new Mapping\JoinColumnMetadata();
 
@@ -883,7 +878,7 @@ class XmlDriver extends FileDriver
     /**
      * Parse the given Cache as CacheMetadata
      */
-    private function convertCacheElementToCacheAnnotation(SimpleXMLElement $cacheMapping): Annotation\Cache
+    private function convertCacheElementToCacheAnnotation(SimpleXMLElement $cacheMapping) : Annotation\Cache
     {
         $cacheAnnotation = new Annotation\Cache();
 
@@ -905,7 +900,7 @@ class XmlDriver extends FileDriver
      *
      * @return string[] The list of cascade options.
      */
-    private function getCascadeMappings(SimpleXMLElement $cascadeElement)
+    private function getCascadeMappings(SimpleXMLElement $cascadeElement) : array
     {
         $cascades = [];
 

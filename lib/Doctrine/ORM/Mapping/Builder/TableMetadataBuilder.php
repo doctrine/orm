@@ -16,14 +16,12 @@ class TableMetadataBuilder
     /** @var Mapping\ClassMetadata */
     private $entityClassMetadata;
 
-    /** @var Annotation\Table */
+    /** @var Annotation\Table|null */
     private $tableAnnotation;
 
     public function __construct(Mapping\ClassMetadataBuildingContext $metadataBuildingContext)
     {
         $this->metadataBuildingContext = $metadataBuildingContext;
-
-        return $this;
     }
 
     public function withEntityClassMetadata(Mapping\ClassMetadata $entityClassMetadata) : TableMetadataBuilder
@@ -33,7 +31,7 @@ class TableMetadataBuilder
         return $this;
     }
 
-    public function withTableAnnotation(Annotation\Table $tableAnnotation) : TableMetadataBuilder
+    public function withTableAnnotation(?Annotation\Table $tableAnnotation) : TableMetadataBuilder
     {
         $this->tableAnnotation = $tableAnnotation;
 

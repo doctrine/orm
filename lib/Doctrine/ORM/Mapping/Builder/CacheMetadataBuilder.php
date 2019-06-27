@@ -19,7 +19,7 @@ class CacheMetadataBuilder
     private $metadataBuildingContext;
 
     /** @var Mapping\ClassMetadata */
-    private $entityClassMetadata;
+    private $componentMetadata;
 
     /** @var string|null */
     private $fieldName;
@@ -30,13 +30,11 @@ class CacheMetadataBuilder
     public function __construct(Mapping\ClassMetadataBuildingContext $metadataBuildingContext)
     {
         $this->metadataBuildingContext = $metadataBuildingContext;
-
-        return $this;
     }
 
-    public function withEntityClassMetadata(Mapping\ClassMetadata $entityClassMetadata) : CacheMetadataBuilder
+    public function withComponentMetadata(Mapping\ClassMetadata $componentMetadata) : CacheMetadataBuilder
     {
-        $this->entityClassMetadata = $entityClassMetadata;
+        $this->componentMetadata = $componentMetadata;
 
         return $this;
     }
@@ -58,12 +56,12 @@ class CacheMetadataBuilder
     public function build() : Mapping\CacheMetadata
     {
         // Validate required fields
-        assert($this->entityClassMetadata !== null);
+        assert($this->componentMetadata !== null);
         assert($this->cacheAnnotation !== null);
 
-        $entityClassName = $this->entityClassMetadata->getRootClassName();
-        $baseRegion      = strtolower(str_replace('\\', '_', $entityClassName));
-        $defaultRegion   = $baseRegion . ($this->fieldName ? '__' . $this->fieldName : '');
+        $componentName = $this->componentMetadata->getRootClassName();
+        $baseRegion    = strtolower(str_replace('\\', '_', $componentName));
+        $defaultRegion = $baseRegion . ($this->fieldName ? '__' . $this->fieldName : '');
 
         $usage  = constant(sprintf('%s::%s', Mapping\CacheUsage::class, strtoupper($this->cacheAnnotation->usage)));
         $region = $this->cacheAnnotation->region ?: $defaultRegion;

@@ -1168,6 +1168,8 @@ class ClassMetadata extends ComponentMetadata implements TableOwner
 
         switch (true) {
             case $property instanceof FieldMetadata:
+                $property->setColumnName($property->getColumnName() ?? $property->getName());
+
                 $this->fieldNames[$property->getColumnName()] = $property->getName();
 
                 if ($property->isVersioned()) {
@@ -1219,12 +1221,12 @@ class ClassMetadata extends ComponentMetadata implements TableOwner
      */
     public function addInheritedProperty(Property $property)
     {
-        $inheritedProperty = clone $property;
-        $declaringClass    = $property->getDeclaringClass();
-
         if (isset($this->declaredProperties[$property->getName()])) {
             throw MappingException::duplicateProperty($this->className, $this->getProperty($property->getName()));
         }
+
+        $declaringClass    = $property->getDeclaringClass();
+        $inheritedProperty = $declaringClass->isMappedSuperclass ? clone $property : $property;
 
         if ($inheritedProperty instanceof FieldMetadata) {
             if (! $declaringClass->isMappedSuperclass) {
