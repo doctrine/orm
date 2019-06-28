@@ -1413,12 +1413,7 @@ class ClassMetadata extends ComponentMetadata implements TableOwner
         $this->valueGenerationPlan = $valueGenerationPlan;
     }
 
-    /**
-     * @param $columnName
-     *
-     * @return bool
-     */
-    public function checkPropertyDuplication($columnName) : bool
+    public function checkPropertyDuplication(string $columnName) : bool
     {
         return isset($this->fieldNames[$columnName])
             || ($this->discriminatorColumn !== null && $this->discriminatorColumn->getColumnName() === $columnName);

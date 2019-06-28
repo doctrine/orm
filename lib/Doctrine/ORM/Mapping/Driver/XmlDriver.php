@@ -143,31 +143,18 @@ class XmlDriver extends FileDriver
             );
 
             if ($metadata->inheritanceType !== Mapping\InheritanceType::NONE) {
-                $discriminatorColumn = new Mapping\DiscriminatorColumnMetadata();
+                $discriminatorColumnBuilder = new Builder\DiscriminatorColumnMetadataBuilder($metadataBuildingContext);
 
-                $discriminatorColumn->setTableName($metadata->getTableName());
-                $discriminatorColumn->setColumnName('dtype');
-                $discriminatorColumn->setType(Type::getType('string'));
-                $discriminatorColumn->setLength(255);
+                $discriminatorColumnBuilder
+                    ->withComponentMetadata($metadata)
+                    ->withDiscriminatorColumnAnnotation(
+                        isset($xmlRoot->{'discriminator-column'})
+                            ? $this->convertDiscriminiatorColumnElementToDiscriminatorColumnAnnotation($xmlRoot->{'discriminator-column'})
+                            : null
+                    );
 
-                // Evaluate <discriminator-column...>
-                if (isset($xmlRoot->{'discriminator-column'})) {
-                    $discriminatorColumnMapping = $xmlRoot->{'discriminator-column'};
-                    $typeName                   = (string) ($discriminatorColumnMapping['type'] ?? 'string');
 
-                    $discriminatorColumn->setType(Type::getType($typeName));
-                    $discriminatorColumn->setColumnName((string) $discriminatorColumnMapping['name']);
-
-                    if (isset($discriminatorColumnMapping['column-definition'])) {
-                        $discriminatorColumn->setColumnDefinition((string) $discriminatorColumnMapping['column-definition']);
-                    }
-
-                    if (isset($discriminatorColumnMapping['length'])) {
-                        $discriminatorColumn->setLength((int) $discriminatorColumnMapping['length']);
-                    }
-                }
-
-                $metadata->setDiscriminatorColumn($discriminatorColumn);
+                $metadata->setDiscriminatorColumn($discriminatorColumnBuilder->build());
 
                 // Evaluate <discriminator-map...>
                 if (isset($xmlRoot->{'discriminator-map'})) {
@@ -891,6 +878,25 @@ class XmlDriver extends FileDriver
         }
 
         return $cacheAnnotation;
+    }
+
+    private function convertDiscriminiatorColumnElementToDiscriminatorColumnAnnotation(
+        SimpleXMLElement $discriminatorColumnMapping
+    ) : Annotation\DiscriminatorColumn {
+        $discriminatorColumnAnnotation = new Annotation\DiscriminatorColumn();
+
+        $discriminatorColumnAnnotation->type = (string) ($discriminatorColumnMapping['type'] ?? 'string');
+        $discriminatorColumnAnnotation->name = (string) $discriminatorColumnMapping['name'];
+
+        if (isset($discriminatorColumnMapping['column-definition'])) {
+            $discriminatorColumnAnnotation->columnDefinition = (string) $discriminatorColumnMapping['column-definition'];
+        }
+
+        if (isset($discriminatorColumnMapping['length'])) {
+            $discriminatorColumnAnnotation->length = (int) $discriminatorColumnMapping['length'];
+        }
+
+        return $discriminatorColumnAnnotation;
     }
 
     /**

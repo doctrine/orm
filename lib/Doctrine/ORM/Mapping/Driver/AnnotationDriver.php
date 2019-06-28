@@ -451,7 +451,21 @@ class AnnotationDriver implements MappingDriver
             );
 
             if ($metadata->inheritanceType !== Mapping\InheritanceType::NONE) {
-                $this->attachDiscriminatorColumn($classAnnotations, $reflectionClass, $metadata, $metadataBuildingContext);
+                $discriminatorColumnBuilder = new Builder\DiscriminatorColumnMetadataBuilder($metadataBuildingContext);
+
+                $discriminatorColumnBuilder
+                    ->withComponentMetadata($metadata)
+                    ->withDiscriminatorColumnAnnotation($classAnnotations[Annotation\DiscriminatorColumn::class] ?? null);
+
+                $metadata->setDiscriminatorColumn($discriminatorColumnBuilder->build());
+
+                // Evaluate DiscriminatorMap annotation
+                if (isset($classAnnotations[Annotation\DiscriminatorMap::class])) {
+                    $discriminatorMapAnnotation = $classAnnotations[Annotation\DiscriminatorMap::class];
+                    $discriminatorMap           = $discriminatorMapAnnotation->value;
+
+                    $metadata->setDiscriminatorMap($discriminatorMap);
+                }
             }
         }
 
@@ -1052,55 +1066,6 @@ class AnnotationDriver implements MappingDriver
         }
 
         return $joinColumn;
-    }
-
-    /**
-     * @param Annotation\Annotation[] $classAnnotations
-     *
-     * @throws Mapping\MappingException
-     */
-    private function attachDiscriminatorColumn(
-        array $classAnnotations,
-        ReflectionClass $reflectionClass,
-        Mapping\ClassMetadata $metadata,
-        Mapping\ClassMetadataBuildingContext $metadataBuildingContext
-    ) : void {
-        $discriminatorColumn = new Mapping\DiscriminatorColumnMetadata();
-
-        $discriminatorColumn->setTableName($metadata->getTableName());
-        $discriminatorColumn->setColumnName('dtype');
-        $discriminatorColumn->setType(Type::getType('string'));
-        $discriminatorColumn->setLength(255);
-
-        // Evaluate DiscriminatorColumn annotation
-        if (isset($classAnnotations[Annotation\DiscriminatorColumn::class])) {
-            /** @var Annotation\DiscriminatorColumn $discriminatorColumnAnnotation */
-            $discriminatorColumnAnnotation = $classAnnotations[Annotation\DiscriminatorColumn::class];
-            $typeName                      = ! empty($discriminatorColumnAnnotation->type)
-                ? $discriminatorColumnAnnotation->type
-                : 'string';
-
-            $discriminatorColumn->setType(Type::getType($typeName));
-            $discriminatorColumn->setColumnName($discriminatorColumnAnnotation->name);
-
-            if (! empty($discriminatorColumnAnnotation->columnDefinition)) {
-                $discriminatorColumn->setColumnDefinition($discriminatorColumnAnnotation->columnDefinition);
-            }
-
-            if (! empty($discriminatorColumnAnnotation->length)) {
-                $discriminatorColumn->setLength($discriminatorColumnAnnotation->length);
-            }
-        }
-
-        $metadata->setDiscriminatorColumn($discriminatorColumn);
-
-        // Evaluate DiscriminatorMap annotation
-        if (isset($classAnnotations[Annotation\DiscriminatorMap::class])) {
-            $discriminatorMapAnnotation = $classAnnotations[Annotation\DiscriminatorMap::class];
-            $discriminatorMap           = $discriminatorMapAnnotation->value;
-
-            $metadata->setDiscriminatorMap($discriminatorMap);
-        }
     }
 
     /**

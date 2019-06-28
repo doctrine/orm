@@ -13,7 +13,7 @@ use function str_replace;
 use function strtolower;
 use function strtoupper;
 
-class CacheMetadataBuilder
+class FieldMetadataBuilder
 {
     /** @var Mapping\ClassMetadataBuildingContext */
     private $metadataBuildingContext;
@@ -26,7 +26,7 @@ class CacheMetadataBuilder
         $this->metadataBuildingContext = $metadataBuildingContext;
     }
 
-    public function withComponentMetadata(Mapping\ClassMetadata $componentMetadata) : CacheMetadataBuilder
+    public function withComponentMetadata(Mapping\ClassMetadata $componentMetadata) : FieldMetadataBuilder
     {
         $this->componentMetadata = $componentMetadata;
 
@@ -35,6 +35,12 @@ class CacheMetadataBuilder
 
     public function build() : Mapping\FieldMetadata
     {
+        // Validate required fields
+        assert($this->componentMetadata !== null);
+        assert($this->cacheAnnotation !== null);
+
+        $fieldMetadata = new Mapping\FieldMetadata();
+
         return $fieldMetadata;
     }
 }
