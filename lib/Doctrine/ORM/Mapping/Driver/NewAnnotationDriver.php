@@ -126,7 +126,7 @@ class NewAnnotationDriver implements MappingDriver
                 $classMetadata
             );
 
-            $classMetadata->addDeclaredProperty($property);
+            $classMetadata->addProperty($property);
         }
 
         return $classMetadata;

@@ -337,7 +337,7 @@ class JoinedSubclassPersister extends AbstractEntityInheritancePersister
         $columnList = [];
 
         // Add columns
-        foreach ($this->class->getDeclaredPropertiesIterator() as $fieldName => $property) {
+        foreach ($this->class->getPropertiesIterator() as $fieldName => $property) {
             if ($property instanceof FieldMetadata) {
                 $columnList[] = $this->getSelectColumnSQL($fieldName, $property->getDeclaringClass());
 
@@ -380,7 +380,7 @@ class JoinedSubclassPersister extends AbstractEntityInheritancePersister
             $subClass = $this->em->getClassMetadata($subClassName);
 
             // Add columns
-            foreach ($subClass->getDeclaredPropertiesIterator() as $fieldName => $property) {
+            foreach ($subClass->getPropertiesIterator() as $fieldName => $property) {
                 if ($subClass->isInheritedProperty($fieldName)) {
                     continue;
                 }
@@ -431,7 +431,7 @@ class JoinedSubclassPersister extends AbstractEntityInheritancePersister
             $this->columns[$columnName] = $column;
         }
 
-        foreach ($this->class->getDeclaredPropertiesIterator() as $name => $property) {
+        foreach ($this->class->getPropertiesIterator() as $name => $property) {
             if (($property instanceof FieldMetadata && ($property->isVersioned() || $this->class->isInheritedProperty($name)))
                 || ($property instanceof AssociationMetadata && $this->class->isInheritedProperty($name))
                 /*|| isset($this->class->embeddedClasses[$name])*/) {

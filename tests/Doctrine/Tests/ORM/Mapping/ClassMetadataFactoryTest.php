@@ -62,7 +62,7 @@ class ClassMetadataFactoryTest extends OrmTestCase
         self::assertEquals(Mapping\InheritanceType::NONE, $cm1->inheritanceType);
         self::assertEquals(Mapping\GeneratorType::AUTO, $cm1->getProperty('id')->getValueGenerator()->getType());
         self::assertTrue($cm1->hasField('name'));
-        self::assertCount(4, $cm1->getDeclaredPropertiesIterator()); // 2 fields + 2 associations
+        self::assertCount(4, $cm1->getPropertiesIterator()); // 2 fields + 2 associations
         self::assertEquals('group', $cm1->table->getName());
 
         // Go

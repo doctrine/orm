@@ -116,7 +116,7 @@ class DatabaseDriverTest extends DatabaseDriverTestCase
         self::assertNull($bazMetadata->getProperty('barId'), "The foreign Key field should not be inflected, as 'barId' field is an association.");
         self::assertNotNull($bazMetadata->getProperty('id'));
 
-        self::assertArrayHasKey('bar', $bazMetadata->getDeclaredPropertiesIterator());
+        self::assertArrayHasKey('bar', $bazMetadata->getPropertiesIterator());
         self::assertInstanceOf(ManyToOneAssociationMetadata::class, $bazMetadata->getProperty('bar'));
     }
 
@@ -157,7 +157,7 @@ class DatabaseDriverTest extends DatabaseDriverTestCase
 
         $metadatas = $this->convertToClassMetadata([$tableA, $tableB], [$tableMany]);
 
-        self::assertCount(1, $metadatas['DbdriverBaz']->getDeclaredPropertiesIterator(), 'no association mappings should be detected.');
+        self::assertCount(1, $metadatas['DbdriverBaz']->getPropertiesIterator(), 'no association mappings should be detected.');
     }
 
     public function testLoadMetadataFromDatabaseDetail() : void

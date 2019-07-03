@@ -49,7 +49,7 @@ class DDC2359Test extends DoctrineTestCase
 
         $mockMetadata
             ->expects($this->any())
-            ->method('getDeclaredPropertiesIterator')
+            ->method('getPropertiesIterator')
             ->will($this->returnValue(new ArrayIterator([])));
 
         $entityManager

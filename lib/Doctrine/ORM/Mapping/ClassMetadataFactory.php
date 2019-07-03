@@ -493,7 +493,7 @@ class ClassMetadataFactory implements PersistenceClassMetadataFactory
      */
     private function completeIdentifierGeneratorMappings(ClassMetadata $class) : void
     {
-        foreach ($class->getDeclaredPropertiesIterator() as $property) {
+        foreach ($class->getPropertiesIterator() as $property) {
             if (! $property instanceof FieldMetadata /*&& ! $property instanceof AssociationMetadata*/) {
                 continue;
             }
@@ -598,7 +598,7 @@ class ClassMetadataFactory implements PersistenceClassMetadataFactory
     {
         $executors = [];
 
-        foreach ($class->getDeclaredPropertiesIterator() as $property) {
+        foreach ($class->getPropertiesIterator() as $property) {
             $executor = $property->getValueGenerationExecutor($this->getTargetPlatform());
 
             if ($executor instanceof ValueGenerationExecutor) {
