@@ -729,6 +729,7 @@ class AnnotationDriver implements MappingDriver
 
         if (! empty($oneToOneAnnot->inversedBy)) {
             $assocMetadata->setInversedBy($oneToOneAnnot->inversedBy);
+            $assocMetadata->setOwningSide(true);
         }
 
         // Check for Id
@@ -748,26 +749,38 @@ class AnnotationDriver implements MappingDriver
             $assocMetadata->setCache($cacheBuilder->build());
         }
 
+        // Check for owning side to consider join column
+        if (! $assocMetadata->isOwningSide()) {
+            return $assocMetadata;
+        }
+
         // Check for JoinColumn/JoinColumns annotations
+        $joinColumnBuilder = new Builder\JoinColumnMetadataBuilder($metadataBuildingContext);
+
+        $joinColumnBuilder
+            ->withComponentMetadata($metadata)
+            ->withFieldName($fieldName);
+
         switch (true) {
             case isset($propertyAnnotations[Annotation\JoinColumn::class]):
-                $joinColumnAnnot = $propertyAnnotations[Annotation\JoinColumn::class];
+                $joinColumnBuilder->withJoinColumnAnnotation($propertyAnnotations[Annotation\JoinColumn::class]);
 
-                $assocMetadata->addJoinColumn(
-                    $this->convertJoinColumnAnnotationToJoinColumnMetadata($joinColumnAnnot)
-                );
-
+                $assocMetadata->addJoinColumn($joinColumnBuilder->build());
                 break;
 
             case isset($propertyAnnotations[Annotation\JoinColumns::class]):
                 $joinColumnsAnnot = $propertyAnnotations[Annotation\JoinColumns::class];
 
                 foreach ($joinColumnsAnnot->value as $joinColumnAnnot) {
-                    $assocMetadata->addJoinColumn(
-                        $this->convertJoinColumnAnnotationToJoinColumnMetadata($joinColumnAnnot)
-                    );
+                    $joinColumnBuilder->withJoinColumnAnnotation($joinColumnAnnot);
+
+                    $assocMetadata->addJoinColumn($joinColumnBuilder->build());
                 }
 
+                break;
+
+            default:
+                $assocMetadata->addJoinColumn($joinColumnBuilder->build());
                 break;
         }
 
@@ -783,6 +796,7 @@ class AnnotationDriver implements MappingDriver
         Mapping\ClassMetadata $metadata,
         Mapping\ClassMetadataBuildingContext $metadataBuildingContext
     ) : Mapping\ManyToOneAssociationMetadata {
+        // ManyToOne must be owning side by design
         $className      = $metadata->getClassName();
         $fieldName      = $reflectionProperty->getName();
         $manyToOneAnnot = $propertyAnnotations[Annotation\ManyToOne::class];
@@ -815,25 +829,32 @@ class AnnotationDriver implements MappingDriver
         }
 
         // Check for JoinColumn/JoinColumns annotations
+        $joinColumnBuilder = new Builder\JoinColumnMetadataBuilder($metadataBuildingContext);
+
+        $joinColumnBuilder
+            ->withComponentMetadata($metadata)
+            ->withFieldName($fieldName);
+
         switch (true) {
             case isset($propertyAnnotations[Annotation\JoinColumn::class]):
-                $joinColumnAnnot = $propertyAnnotations[Annotation\JoinColumn::class];
+                $joinColumnBuilder->withJoinColumnAnnotation($propertyAnnotations[Annotation\JoinColumn::class]);
 
-                $assocMetadata->addJoinColumn(
-                    $this->convertJoinColumnAnnotationToJoinColumnMetadata($joinColumnAnnot)
-                );
-
+                $assocMetadata->addJoinColumn($joinColumnBuilder->build());
                 break;
 
             case isset($propertyAnnotations[Annotation\JoinColumns::class]):
                 $joinColumnsAnnot = $propertyAnnotations[Annotation\JoinColumns::class];
 
                 foreach ($joinColumnsAnnot->value as $joinColumnAnnot) {
-                    $assocMetadata->addJoinColumn(
-                        $this->convertJoinColumnAnnotationToJoinColumnMetadata($joinColumnAnnot)
-                    );
+                    $joinColumnBuilder->withJoinColumnAnnotation($joinColumnAnnot);
+
+                    $assocMetadata->addJoinColumn($joinColumnBuilder->build());
                 }
 
+                break;
+
+            default:
+                $assocMetadata->addJoinColumn($joinColumnBuilder->build());
                 break;
         }
 
@@ -933,7 +954,11 @@ class AnnotationDriver implements MappingDriver
         // Check for JoinTable
         if (isset($propertyAnnotations[Annotation\JoinTable::class])) {
             $joinTableAnnot    = $propertyAnnotations[Annotation\JoinTable::class];
-            $joinTableMetadata = $this->convertJoinTableAnnotationToJoinTableMetadata($joinTableAnnot);
+            $joinTableMetadata = $this->convertJoinTableAnnotationToJoinTableMetadata(
+                $joinTableAnnot,
+                $metadata,
+                $metadataBuildingContext
+            );
 
             $assocMetadata->setJoinTable($joinTableMetadata);
         }
@@ -1006,7 +1031,9 @@ class AnnotationDriver implements MappingDriver
      * Parse the given JoinTable as JoinTableMetadata
      */
     private function convertJoinTableAnnotationToJoinTableMetadata(
-        Annotation\JoinTable $joinTableAnnot
+        Annotation\JoinTable $joinTableAnnot,
+        Mapping\ClassMetadata $metadata,
+        Mapping\ClassMetadataBuildingContext $metadataBuildingContext
     ) : Mapping\JoinTableMetadata {
         $joinTable = new Mapping\JoinTableMetadata();
 
@@ -1018,6 +1045,7 @@ class AnnotationDriver implements MappingDriver
             $joinTable->setSchema($joinTableAnnot->schema);
         }
 
+        // @todo guilhermeblanco Use Builder here.
         foreach ($joinTableAnnot->joinColumns as $joinColumnAnnot) {
             $joinColumn = $this->convertJoinColumnAnnotationToJoinColumnMetadata($joinColumnAnnot);
 
@@ -1179,19 +1207,29 @@ class AnnotationDriver implements MappingDriver
 
                 // Check for JoinColumn/JoinColumns annotations
                 if ($associationOverride->joinColumns) {
+                    $joinColumnBuilder = new Builder\JoinColumnMetadataBuilder($metadataBuildingContext);
+
+                    $joinColumnBuilder
+                        ->withComponentMetadata($metadata)
+                        ->withFieldName($override->getName());
+
                     $joinColumns = [];
 
-                    foreach ($associationOverride->joinColumns as $joinColumnAnnot) {
-                        $joinColumns[] = $this->convertJoinColumnAnnotationToJoinColumnMetadata($joinColumnAnnot);
-                    }
+                    foreach ($associationOverride->joinColumns as $joinColumnAnnotation) {
+                        $joinColumnBuilder->withJoinColumnAnnotation($joinColumnAnnotation);
 
-                    $override->setJoinColumns($joinColumns);
+                        $override->addJoinColumn($joinColumnBuilder->build());
+                    }
                 }
 
                 // Check for JoinTable annotations
                 if ($associationOverride->joinTable) {
                     $joinTableAnnot    = $associationOverride->joinTable;
-                    $joinTableMetadata = $this->convertJoinTableAnnotationToJoinTableMetadata($joinTableAnnot);
+                    $joinTableMetadata = $this->convertJoinTableAnnotationToJoinTableMetadata(
+                        $joinTableAnnot,
+                        $metadata,
+                        $metadataBuildingContext
+                    );
 
                     $override->setJoinTable($joinTableMetadata);
                 }

@@ -509,6 +509,8 @@ class ClassMetadataTest extends OrmTestCase
 
     public function testDefaultJoinColumnName() : void
     {
+        $this->markTestIncomplete('This test needs to be moved to JoinColumnMetadataBuilderTest');
+
         $cm = new ClassMetadata(CMS\CmsAddress::class, null, $this->metadataBuildingContext);
         $cm->setTable(new Mapping\TableMetadata('cms_address'));
 
@@ -575,6 +577,8 @@ class ClassMetadataTest extends OrmTestCase
      */
     public function testOneToOneUnderscoreNamingStrategyDefaults() : void
     {
+        $this->markTestIncomplete('This test needs to be moved to JoinColumnMetadataBuilderTest');
+
         $namingStrategy = new UnderscoreNamingStrategy(CASE_UPPER);
 
         $this->metadataBuildingContext = new Mapping\ClassMetadataBuildingContext(

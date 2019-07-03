@@ -615,11 +615,6 @@ class ClassMetadata extends ComponentMetadata implements TableOwner
         $fieldName = $property->getName();
 
         if ($property->isOwningSide()) {
-            if (empty($property->getJoinColumns())) {
-                // Apply default join column
-                $property->addJoinColumn(new JoinColumnMetadata());
-            }
-
             $uniqueConstraintColumns = [];
 
             foreach ($property->getJoinColumns() as $joinColumn) {
@@ -632,16 +627,6 @@ class ClassMetadata extends ComponentMetadata implements TableOwner
                     } else {
                         $uniqueConstraintColumns[] = $joinColumn->getColumnName();
                     }
-                }
-
-                $joinColumn->setTableName(! $this->isMappedSuperclass ? $this->getTableName() : null);
-
-                if (! $joinColumn->getColumnName()) {
-                    $joinColumn->setColumnName($this->namingStrategy->joinColumnName($fieldName, $this->className));
-                }
-
-                if (! $joinColumn->getReferencedColumnName()) {
-                    $joinColumn->setReferencedColumnName($this->namingStrategy->referenceColumnName());
                 }
 
                 $this->fieldNames[$joinColumn->getColumnName()] = $fieldName;
@@ -681,43 +666,6 @@ class ClassMetadata extends ComponentMetadata implements TableOwner
 
         if ($property->isPrimaryKey() && ! $property->isOwningSide()) {
             throw MappingException::illegalInverseIdentifierAssociation($this->className, $fieldName);
-        }
-    }
-
-    /**
-     * Validates & completes a to-many association mapping.
-     *
-     * @param ToManyAssociationMetadata $property The association mapping to validate & complete.
-     *
-     * @throws MappingException
-     */
-    protected function validateAndCompleteToManyAssociationMetadata(ToManyAssociationMetadata $property)
-    {
-        // Do nothing
-    }
-
-    /**
-     * Validates & completes a one-to-one association mapping.
-     *
-     * @param OneToOneAssociationMetadata $property The association mapping to validate & complete.
-     */
-    protected function validateAndCompleteOneToOneMapping(OneToOneAssociationMetadata $property)
-    {
-        // Do nothing
-    }
-
-    /**
-     * Validates & completes a many-to-one association mapping.
-     *
-     * @param ManyToOneAssociationMetadata $property The association mapping to validate & complete.
-     *
-     * @throws MappingException
-     */
-    protected function validateAndCompleteManyToOneMapping(ManyToOneAssociationMetadata $property)
-    {
-        // A many-to-one mapping is essentially a one-one backreference
-        if ($property->isOrphanRemoval()) {
-            throw MappingException::illegalOrphanRemoval($this->className, $property->getName());
         }
     }
 
@@ -1116,10 +1064,6 @@ class ClassMetadata extends ComponentMetadata implements TableOwner
     {
         $this->table = $table;
 
-        if (empty($table->getName())) {
-            $table->setName($this->namingStrategy->classToTableName($this->className));
-        }
-
         // Make sure inherited and declared properties reflect newly defined table
         foreach ($this->properties as $property) {
             switch (true) {
@@ -1199,24 +1143,20 @@ class ClassMetadata extends ComponentMetadata implements TableOwner
             case $property instanceof OneToOneAssociationMetadata:
                 $this->validateAndCompleteAssociationMapping($property);
                 $this->validateAndCompleteToOneAssociationMetadata($property);
-                $this->validateAndCompleteOneToOneMapping($property);
                 break;
 
             case $property instanceof OneToManyAssociationMetadata:
                 $this->validateAndCompleteAssociationMapping($property);
-                $this->validateAndCompleteToManyAssociationMetadata($property);
                 $this->validateAndCompleteOneToManyMapping($property);
                 break;
 
             case $property instanceof ManyToOneAssociationMetadata:
                 $this->validateAndCompleteAssociationMapping($property);
                 $this->validateAndCompleteToOneAssociationMetadata($property);
-                $this->validateAndCompleteManyToOneMapping($property);
                 break;
 
             case $property instanceof ManyToManyAssociationMetadata:
                 $this->validateAndCompleteAssociationMapping($property);
-                $this->validateAndCompleteToManyAssociationMetadata($property);
                 $this->validateAndCompleteManyToManyMapping($property);
                 break;
 
