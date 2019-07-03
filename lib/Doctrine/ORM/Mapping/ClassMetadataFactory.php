@@ -390,7 +390,6 @@ class ClassMetadataFactory implements PersistenceClassMetadataFactory
         $classMetadata = $this->driver->loadMetadataForClass($className, $parent, $metadataBuildingContext);
 
         $this->completeIdentifierGeneratorMappings($classMetadata);
-        $this->completeRuntimeMetadata($classMetadata, $parent);
 
         if ($this->evm->hasListeners(Events::loadClassMetadata)) {
             $eventArgs = new LoadClassMetadataEventArgs($classMetadata, $this->em);
@@ -402,38 +401,6 @@ class ClassMetadataFactory implements PersistenceClassMetadataFactory
         $this->validateRuntimeMetadata($classMetadata, $parent);
 
         return $classMetadata;
-    }
-
-    protected function completeRuntimeMetadata(ClassMetadata $class, ?ClassMetadata $parent = null) : void
-    {
-        if (! $parent || ! $parent->isMappedSuperclass) {
-            return;
-        }
-
-        if ($class->isMappedSuperclass) {
-            return;
-        }
-
-        $tableName = $class->getTableName();
-
-        // Resolve column table names
-        foreach ($class->getDeclaredPropertiesIterator() as $property) {
-            if ($property instanceof FieldMetadata) {
-                $property->setTableName($property->getTableName() ?? $tableName);
-
-                continue;
-            }
-
-            if (! ($property instanceof ToOneAssociationMetadata)) {
-                continue;
-            }
-
-            // Resolve association join column table names
-            foreach ($property->getJoinColumns() as $joinColumn) {
-                /** @var JoinColumnMetadata $joinColumn */
-                $joinColumn->setTableName($joinColumn->getTableName() ?? $tableName);
-            }
-        }
     }
 
     /**

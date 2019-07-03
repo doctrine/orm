@@ -44,9 +44,10 @@ class TableMetadataBuilder
         assert($this->entityClassMetadata !== null);
 
         $namingStrategy = $this->metadataBuildingContext->getNamingStrategy();
-        $tableMetadata  = new Mapping\TableMetadata();
-
-        $tableMetadata->setName($namingStrategy->classToTableName($this->entityClassMetadata->getClassName()));
+        $tableName      = $this->tableAnnotation !== null && ! empty($this->tableAnnotation->name)
+            ? $this->tableAnnotation->name
+            : $namingStrategy->classToTableName($this->entityClassMetadata->getClassName());
+        $tableMetadata  = new Mapping\TableMetadata($tableName);
 
         if ($this->tableAnnotation === null) {
             return $tableMetadata;

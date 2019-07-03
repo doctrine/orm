@@ -1119,6 +1119,24 @@ class ClassMetadata extends ComponentMetadata implements TableOwner
         if (empty($table->getName())) {
             $table->setName($this->namingStrategy->classToTableName($this->className));
         }
+
+        // Make sure inherited and declared properties reflect newly defined table
+        foreach ($this->declaredProperties as $property) {
+            switch (true) {
+                case $property instanceof FieldMetadata:
+                    $property->setTableName($property->getTableName() ?? $table->getName());
+                    break;
+
+                case $property instanceof ToOneAssociationMetadata:
+                    // Resolve association join column table names
+                    foreach ($property->getJoinColumns() as $joinColumn) {
+                        /** @var JoinColumnMetadata $joinColumn */
+                        $joinColumn->setTableName($joinColumn->getTableName() ?? $table->getName());
+                    }
+
+                    break;
+            }
+        }
     }
 
     /**
