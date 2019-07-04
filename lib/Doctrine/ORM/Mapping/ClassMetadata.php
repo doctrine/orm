@@ -695,97 +695,6 @@ class ClassMetadata extends ComponentMetadata implements TableOwner
     }
 
     /**
-     * Validates & completes a many-to-many association mapping.
-     *
-     * @param ManyToManyAssociationMetadata $property The association mapping to validate & complete.
-     *
-     * @throws MappingException
-     */
-    protected function validateAndCompleteManyToManyMapping(ManyToManyAssociationMetadata $property)
-    {
-        if ($property->isOwningSide()) {
-            // owning side MUST have a join table
-            $joinTable = $property->getJoinTable() ?: new JoinTableMetadata();
-
-            $property->setJoinTable($joinTable);
-
-            if (! $joinTable->getName()) {
-                $joinTableName = $this->namingStrategy->joinTableName(
-                    $property->getSourceEntity(),
-                    $property->getTargetEntity(),
-                    $property->getName()
-                );
-
-                $joinTable->setName($joinTableName);
-            }
-
-            $selfReferencingEntityWithoutJoinColumns = $property->getSourceEntity() === $property->getTargetEntity() && ! $joinTable->hasColumns();
-
-            if (! $joinTable->getJoinColumns()) {
-                $referencedColumnName = $this->namingStrategy->referenceColumnName();
-                $sourceReferenceName  = $selfReferencingEntityWithoutJoinColumns ? 'source' : $referencedColumnName;
-                $columnName           = $this->namingStrategy->joinKeyColumnName($property->getSourceEntity(), $sourceReferenceName);
-                $joinColumn           = new JoinColumnMetadata();
-
-                $joinColumn->setColumnName($columnName);
-                $joinColumn->setReferencedColumnName($referencedColumnName);
-                $joinColumn->setOnDelete('CASCADE');
-
-                $joinTable->addJoinColumn($joinColumn);
-            }
-
-            if (! $joinTable->getInverseJoinColumns()) {
-                $referencedColumnName = $this->namingStrategy->referenceColumnName();
-                $targetReferenceName  = $selfReferencingEntityWithoutJoinColumns ? 'target' : $referencedColumnName;
-                $columnName           = $this->namingStrategy->joinKeyColumnName($property->getTargetEntity(), $targetReferenceName);
-                $joinColumn           = new JoinColumnMetadata();
-
-                $joinColumn->setColumnName($columnName);
-                $joinColumn->setReferencedColumnName($referencedColumnName);
-                $joinColumn->setOnDelete('CASCADE');
-
-                $joinTable->addInverseJoinColumn($joinColumn);
-            }
-
-            foreach ($joinTable->getJoinColumns() as $joinColumn) {
-                /** @var JoinColumnMetadata $joinColumn */
-                if (! $joinColumn->getReferencedColumnName()) {
-                    $joinColumn->setReferencedColumnName($this->namingStrategy->referenceColumnName());
-                }
-
-                $referencedColumnName = $joinColumn->getReferencedColumnName();
-
-                if (! $joinColumn->getColumnName()) {
-                    $columnName = $this->namingStrategy->joinKeyColumnName(
-                        $property->getSourceEntity(),
-                        $referencedColumnName
-                    );
-
-                    $joinColumn->setColumnName($columnName);
-                }
-            }
-
-            foreach ($joinTable->getInverseJoinColumns() as $inverseJoinColumn) {
-                /** @var JoinColumnMetadata $inverseJoinColumn */
-                if (! $inverseJoinColumn->getReferencedColumnName()) {
-                    $inverseJoinColumn->setReferencedColumnName($this->namingStrategy->referenceColumnName());
-                }
-
-                $referencedColumnName = $inverseJoinColumn->getReferencedColumnName();
-
-                if (! $inverseJoinColumn->getColumnName()) {
-                    $columnName = $this->namingStrategy->joinKeyColumnName(
-                        $property->getTargetEntity(),
-                        $referencedColumnName
-                    );
-
-                    $inverseJoinColumn->setColumnName($columnName);
-                }
-            }
-        }
-    }
-
-    /**
      * {@inheritDoc}
      */
     public function getIdentifierFieldNames()
@@ -1157,7 +1066,6 @@ class ClassMetadata extends ComponentMetadata implements TableOwner
 
             case $property instanceof ManyToManyAssociationMetadata:
                 $this->validateAndCompleteAssociationMapping($property);
-                $this->validateAndCompleteManyToManyMapping($property);
                 break;
 
             default:

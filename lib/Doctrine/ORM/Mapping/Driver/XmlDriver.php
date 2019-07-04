@@ -153,7 +153,6 @@ class XmlDriver extends FileDriver
                             : null
                     );
 
-
                 $metadata->setDiscriminatorColumn($discriminatorColumnBuilder->build());
 
                 // Evaluate <discriminator-map...>
@@ -521,6 +520,10 @@ class XmlDriver extends FileDriver
                     );
                 }
 
+                if (isset($manyToManyElement->cascade)) {
+                    $association->setCascade($this->getCascadeMappings($manyToManyElement->cascade));
+                }
+
                 if (isset($manyToManyElement['orphan-removal'])) {
                     $association->setOrphanRemoval($this->evaluateBoolean($manyToManyElement['orphan-removal']));
                 }
@@ -528,53 +531,16 @@ class XmlDriver extends FileDriver
                 if (isset($manyToManyElement['mapped-by'])) {
                     $association->setMappedBy((string) $manyToManyElement['mapped-by']);
                     $association->setOwningSide(false);
-                } elseif (isset($manyToManyElement->{'join-table'})) {
-                    if (isset($manyToManyElement['inversed-by'])) {
-                        $association->setInversedBy((string) $manyToManyElement['inversed-by']);
-                    }
-
-                    $joinTableElement = $manyToManyElement->{'join-table'};
-                    $joinTable        = new Mapping\JoinTableMetadata();
-
-                    if (isset($joinTableElement['name'])) {
-                        $joinTable->setName((string) $joinTableElement['name']);
-                    }
-
-                    if (isset($joinTableElement['schema'])) {
-                        $joinTable->setSchema((string) $joinTableElement['schema']);
-                    }
-
-                    $joinColumnBuilder = new Builder\JoinColumnMetadataBuilder($metadataBuildingContext);
-
-                    $joinColumnBuilder
-                        ->withComponentMetadata($metadata)
-                        ->withFieldName($association->getName());
-
-                    if (isset($joinTableElement->{'join-columns'})) {
-                        foreach ($joinTableElement->{'join-columns'}->{'join-column'} as $joinColumnElement) {
-                            $joinColumnAnnotation = $this->convertJoinColumnElementToJoinColumnAnnotation($joinColumnElement);
-
-                            $joinColumnBuilder->withJoinColumnAnnotation($joinColumnAnnotation);
-
-                            $joinTable->addJoinColumn($joinColumnBuilder->build());
-                        }
-                    }
-
-                    if (isset($joinTableElement->{'inverse-join-columns'})) {
-                        foreach ($joinTableElement->{'inverse-join-columns'}->{'join-column'} as $joinColumnElement) {
-                            $joinColumnAnnotation = $this->convertJoinColumnElementToJoinColumnAnnotation($joinColumnElement);
-
-                            $joinColumnBuilder->withJoinColumnAnnotation($joinColumnAnnotation);
-
-                            $joinTable->addInverseJoinColumn($joinColumnBuilder->build());
-                        }
-                    }
-
-                    $association->setJoinTable($joinTable);
                 }
 
-                if (isset($manyToManyElement->cascade)) {
-                    $association->setCascade($this->getCascadeMappings($manyToManyElement->cascade));
+                if (isset($manyToManyElement['inversed-by'])) {
+                    $association->setInversedBy((string) $manyToManyElement['inversed-by']);
+                }
+
+                if (isset($manyToManyElement['index-by'])) {
+                    $association->setIndexedBy((string) $manyToManyElement['index-by']);
+                } elseif (isset($manyToManyElement->{'index-by'})) {
+                    throw new InvalidArgumentException('<index-by /> is not a valid tag');
                 }
 
                 if (isset($manyToManyElement->{'order-by'})) {
@@ -589,13 +555,7 @@ class XmlDriver extends FileDriver
                     $association->setOrderBy($orderBy);
                 }
 
-                if (isset($manyToManyElement['index-by'])) {
-                    $association->setIndexedBy((string) $manyToManyElement['index-by']);
-                } elseif (isset($manyToManyElement->{'index-by'})) {
-                    throw new InvalidArgumentException('<index-by /> is not a valid tag');
-                }
-
-                // Evaluate second level cache
+                // Check for cache
                 if (isset($manyToManyElement->cache)) {
                     $cacheBuilder = new Builder\CacheMetadataBuilder($metadataBuildingContext);
 
@@ -606,6 +566,29 @@ class XmlDriver extends FileDriver
 
                     $association->setCache($cacheBuilder->build());
                 }
+
+                // Check for owning side to consider join column
+                if (! $association->isOwningSide()) {
+                    $metadata->addProperty($association);
+
+                    continue;
+                }
+
+                $joinTableBuilder = new Builder\JoinTableMetadataBuilder($metadataBuildingContext);
+
+                $joinTableBuilder
+                    ->withComponentMetadata($metadata)
+                    ->withFieldName($association->getName())
+                    ->withTargetEntity($targetEntity);
+
+                if (isset($manyToManyElement->{'join-table'})) {
+                    $joinTableElement    = $manyToManyElement->{'join-table'};
+                    $joinTableAnnotation = $this->convertJoinTableElementToJoinTableAnnotation($joinTableElement);
+
+                    $joinTableBuilder->withJoinTableAnnotation($joinTableAnnotation);
+                }
+
+                $association->setJoinTable($joinTableBuilder->build());
 
                 $metadata->addProperty($association);
             }
@@ -637,6 +620,8 @@ class XmlDriver extends FileDriver
                 $existingClass = get_class($property);
                 $override      = new $existingClass($fieldName);
 
+                $override->setTargetEntity($property->getTargetEntity());
+
                 // Check for join-columns
                 if (isset($overrideElement->{'join-columns'})) {
                     $joinColumnBuilder = new Builder\JoinColumnMetadataBuilder($metadataBuildingContext);
@@ -656,44 +641,17 @@ class XmlDriver extends FileDriver
 
                 // Check for join-table
                 if ($overrideElement->{'join-table'}) {
-                    $joinTableElement = $overrideElement->{'join-table'};
-                    $joinTable        = new Mapping\JoinTableMetadata();
+                    $joinTableElement    = $overrideElement->{'join-table'};
+                    $joinTableAnnotation = $this->convertJoinTableElementToJoinTableAnnotation($joinTableElement);
+                    $joinTableBuilder    = new Builder\JoinTableMetadataBuilder($metadataBuildingContext);
 
-                    if (isset($joinTableElement['name'])) {
-                        $joinTable->setName((string) $joinTableElement['name']);
-                    }
-
-                    if (isset($joinTableElement['schema'])) {
-                        $joinTable->setSchema((string) $joinTableElement['schema']);
-                    }
-
-                    $joinColumnBuilder = new Builder\JoinColumnMetadataBuilder($metadataBuildingContext);
-
-                    $joinColumnBuilder
+                    $joinTableBuilder
                         ->withComponentMetadata($metadata)
-                        ->withFieldName($override->getName());
+                        ->withFieldName($property->getName())
+                        ->withTargetEntity($property->getTargetEntity())
+                        ->withJoinTableAnnotation($joinTableAnnotation);
 
-                    if (isset($joinTableElement->{'join-columns'})) {
-                        foreach ($joinTableElement->{'join-columns'}->{'join-column'} as $joinColumnElement) {
-                            $joinColumnAnnotation = $this->convertJoinColumnElementToJoinColumnAnnotation($joinColumnElement);
-
-                            $joinColumnBuilder->withJoinColumnAnnotation($joinColumnAnnotation);
-
-                            $joinTable->addJoinColumn($joinColumnBuilder->build());
-                        }
-                    }
-
-                    if (isset($joinTableElement->{'inverse-join-columns'})) {
-                        foreach ($joinTableElement->{'inverse-join-columns'}->{'join-column'} as $joinColumnElement) {
-                            $joinColumnAnnotation = $this->convertJoinColumnElementToJoinColumnAnnotation($joinColumnElement);
-
-                            $joinColumnBuilder->withJoinColumnAnnotation($joinColumnAnnotation);
-
-                            $joinTable->addInverseJoinColumn($joinColumnBuilder->build());
-                        }
-                    }
-
-                    $override->setJoinTable($joinTable);
+                    $override->setJoinTable($joinTableBuilder->build());
                 }
 
                 // Check for inversed-by
@@ -898,6 +856,48 @@ class XmlDriver extends FileDriver
         }
 
         return $fieldMetadata;
+    }
+
+    /**
+     * Constructs a JoinTable annotation based on the information
+     * found in the given SimpleXMLElement.
+     *
+     * @param SimpleXMLElement $joinTableElement The XML element.
+     */
+    private function convertJoinTableElementToJoinTableAnnotation(
+        SimpleXMLElement $joinTableElement
+    ) : Annotation\JoinTable {
+        $joinTableAnnotation = new Annotation\JoinTable();
+
+        if (isset($joinTableElement['name'])) {
+            $joinTableAnnotation->name = (string) $joinTableElement['name'];
+        }
+
+        if (isset($joinTableElement['schema'])) {
+            $joinTableAnnotation->schema = (string) $joinTableElement['schema'];
+        }
+
+        if (isset($joinTableElement->{'join-columns'})) {
+            $joinColumns = [];
+
+            foreach ($joinTableElement->{'join-columns'}->{'join-column'} as $joinColumnElement) {
+                $joinColumns[] = $this->convertJoinColumnElementToJoinColumnAnnotation($joinColumnElement);
+            }
+
+            $joinTableAnnotation->joinColumns = $joinColumns;
+        }
+
+        if (isset($joinTableElement->{'inverse-join-columns'})) {
+            $joinColumns = [];
+
+            foreach ($joinTableElement->{'inverse-join-columns'}->{'join-column'} as $joinColumnElement) {
+                $joinColumns[] = $this->convertJoinColumnElementToJoinColumnAnnotation($joinColumnElement);
+            }
+
+            $joinTableAnnotation->inverseJoinColumns = $joinColumns;
+        }
+
+        return $joinTableAnnotation;
     }
 
     /**

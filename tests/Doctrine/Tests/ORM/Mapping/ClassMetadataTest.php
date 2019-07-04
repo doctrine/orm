@@ -214,6 +214,8 @@ class ClassMetadataTest extends OrmTestCase
 
     public function testMapManyToManyJoinTableDefaults() : void
     {
+        $this->markTestIncomplete('This test needs to be moved to JoinTableMetadataBuilderTest');
+
         $cm = new ClassMetadata(CMS\CmsUser::class, null, $this->metadataBuildingContext);
         $cm->setTable(new Mapping\TableMetadata('cms_users'));
 
@@ -254,6 +256,8 @@ class ClassMetadataTest extends OrmTestCase
 
     public function testSerializeManyToManyJoinTableCascade() : void
     {
+        $this->markTestIncomplete('This test needs to be moved to JoinTableMetadataBuilderTest');
+
         $cm = new ClassMetadata(CMS\CmsUser::class, null, $this->metadataBuildingContext);
         $cm->setTable(new Mapping\TableMetadata('cms_users'));
 
@@ -472,6 +476,8 @@ class ClassMetadataTest extends OrmTestCase
 
     public function testDefaultTableName() : void
     {
+        $this->markTestIncomplete('This test needs to be moved to JoinTableMetadataBuilderTest');
+
         $cm = new ClassMetadata(CMS\CmsUser::class, null, $this->metadataBuildingContext);
         $cm->setTable(new Mapping\TableMetadata('CmsUser'));
 
@@ -609,6 +615,8 @@ class ClassMetadataTest extends OrmTestCase
      */
     public function testManyToManyUnderscoreNamingStrategyDefaults() : void
     {
+        $this->markTestIncomplete('This test needs to be moved to JoinTableMetadataBuilderTest');
+
         $namingStrategy = new UnderscoreNamingStrategy(CASE_UPPER);
 
         $this->metadataBuildingContext = new Mapping\ClassMetadataBuildingContext(
@@ -682,6 +690,8 @@ class ClassMetadataTest extends OrmTestCase
      */
     public function testJoinTableMappingDefaults() : void
     {
+        $this->markTestIncomplete('This test needs to be moved to JoinTableMetadataBuilderTest');
+
         $cm = new ClassMetadata('DoctrineGlobalArticle', null, $this->metadataBuildingContext);
 
         $association = new Mapping\ManyToManyAssociationMetadata('author');
@@ -940,6 +950,8 @@ class ClassMetadataTest extends OrmTestCase
 
     public function testManyToManySelfReferencingNamingStrategyDefaults() : void
     {
+        $this->markTestIncomplete('This test needs to be moved to JoinTableMetadataBuilderTest');
+
         $cm = new ClassMetadata(CustomTypeParent::class, null, $this->metadataBuildingContext);
         $cm->setTable(new Mapping\TableMetadata('custom_type_parent'));
 
