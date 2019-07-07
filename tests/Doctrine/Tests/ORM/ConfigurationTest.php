@@ -328,6 +328,14 @@ class ConfigurationTest extends DoctrineTestCase
         self::assertSame($namespace, $this->configuration->getProxyManagerConfiguration()->getProxiesNamespace());
     }
 
+    public function testGetProxyDir(): void
+    {
+        $proxyDir = $this->makeTemporaryValidDirectory();
+
+        $this->configuration->setProxyDir($proxyDir);
+        self::assertSame($proxyDir, $this->configuration->getProxyDir());
+    }
+
     /**
      * @param int|bool $proxyAutoGenerateFlag
      *

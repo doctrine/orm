@@ -109,6 +109,16 @@ class Configuration extends DBALConfiguration
     }
 
     /**
+     * Gets the directory where Doctrine generates any necessary proxy class files.
+     *
+     * @return string
+     */
+    public function getProxyDir(): string
+    {
+        return $this->getProxyManagerConfiguration()->getProxiesTargetDir();
+    }
+
+    /**
      * Sets the strategy for automatically generating proxy classes.
      *
      * @param bool|int $autoGenerate Possible values are constants of Doctrine\ORM\Proxy\Factory\ProxyFactory.
