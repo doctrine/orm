@@ -31,8 +31,7 @@ class FieldMetadataBuilder
     {
         // Validate required fields
         assert($this->componentMetadata !== null);
-        assert($this->cacheAnnotation !== null);
 
-        return new Mapping\FieldMetadata();
+        return new Mapping\FieldMetadata('We need a name here Mr. Blanco');
     }
 }
