@@ -31,7 +31,6 @@ use Doctrine\Tests\OrmTestCase;
 use InvalidArgumentException;
 use PHPUnit_Framework_MockObject_MockObject;
 use stdClass;
-use function count;
 use function get_class;
 use function random_int;
 use function serialize;

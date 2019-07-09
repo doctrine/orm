@@ -4,14 +4,8 @@ declare(strict_types=1);
 
 namespace Doctrine\ORM\Mapping\Builder;
 
-use Doctrine\ORM\Annotation;
 use Doctrine\ORM\Mapping;
 use function assert;
-use function constant;
-use function sprintf;
-use function str_replace;
-use function strtolower;
-use function strtoupper;
 
 class FieldMetadataBuilder
 {
@@ -39,8 +33,6 @@ class FieldMetadataBuilder
         assert($this->componentMetadata !== null);
         assert($this->cacheAnnotation !== null);
 
-        $fieldMetadata = new Mapping\FieldMetadata();
-
-        return $fieldMetadata;
+        return new Mapping\FieldMetadata();
     }
 }
