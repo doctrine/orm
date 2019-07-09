@@ -4,10 +4,6 @@ declare(strict_types=1);
 
 namespace Doctrine\ORM\Mapping;
 
-use Doctrine\DBAL\Platforms\AbstractPlatform;
-use Doctrine\ORM\Sequencing\Planning\AssociationValueGeneratorExecutor;
-use Doctrine\ORM\Sequencing\Planning\ValueGenerationExecutor;
-
 class ToOneAssociationMetadata extends AssociationMetadata
 {
     /** @var JoinColumnMetadata[] */

@@ -8,7 +8,6 @@ use Doctrine\Common\Cache\Cache;
 use Doctrine\Common\EventManager;
 use Doctrine\Common\Persistence\Mapping\ClassMetadataFactory as PersistenceClassMetadataFactory;
 use Doctrine\Common\Persistence\Mapping\MappingException as PersistenceMappingException;
-use Doctrine\Common\Persistence\Mapping\MappingException as CommonMappingException;
 use Doctrine\DBAL\Platforms;
 use Doctrine\DBAL\Platforms\AbstractPlatform;
 use Doctrine\ORM\EntityManagerInterface;

@@ -16,8 +16,6 @@ use Doctrine\ORM\Mapping\Factory\UnderscoreNamingStrategy;
 use Doctrine\ORM\Mapping\MappingException;
 use Doctrine\ORM\Reflection\RuntimeReflectionService;
 use Doctrine\Tests\Models\Cache\City;
-use Doctrine\Tests\Models\CMS\CmsAddress;
-use Doctrine\Tests\Models\CMS\CmsAddressListener;
 use Doctrine\Tests\Models\Company\CompanyContract;
 use Doctrine\Tests\Models\Company\CompanyContractListener;
 use Doctrine\Tests\Models\Company\CompanyFixContract;
