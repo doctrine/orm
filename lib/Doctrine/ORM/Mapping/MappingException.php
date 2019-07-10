@@ -429,11 +429,9 @@ class MappingException extends LogicException implements ORMException
     }
 
     /**
-     * @param Type $unsupportedType
-     *
      * @return MappingException
      */
-    public static function unsupportedOptimisticLockingType($unsupportedType)
+    public static function unsupportedOptimisticLockingType(Type $unsupportedType)
     {
         return new self('Locking type "' . $unsupportedType->getName() . '" is not supported by Doctrine.');
     }
@@ -530,15 +528,15 @@ class MappingException extends LogicException implements ORMException
      *
      * @return MappingException
      */
-    public static function sqlConversionNotAllowedForPrimaryKeyProperties($className, Property $property)
+    public static function sqlConversionNotAllowedForPrimaryKeyProperties($className, $fieldName, $type)
     {
         return new self(sprintf(
             'It is not possible to set id field "%s" to type "%s" in entity class "%s". ' .
             'The type "%s" requires conversion SQL which is not allowed for identifiers.',
-            $property->getName(),
-            $property->getTypeName(),
+            $fieldName,
+            $type,
             $className,
-            $property->getTypeName()
+            $type
         ));
     }
 

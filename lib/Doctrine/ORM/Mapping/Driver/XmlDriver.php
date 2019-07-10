@@ -6,7 +6,6 @@ namespace Doctrine\ORM\Mapping\Driver;
 
 use Doctrine\Common\Collections\Criteria;
 use Doctrine\DBAL\DBALException;
-use Doctrine\DBAL\Types\Type;
 use Doctrine\ORM\Annotation;
 use Doctrine\ORM\Events;
 use Doctrine\ORM\Mapping;
@@ -179,9 +178,31 @@ class XmlDriver extends FileDriver
 
         // Evaluate <field ...> mappings
         if (isset($xmlRoot->field)) {
+            $fieldBuilder = new Builder\FieldMetadataBuilder($metadataBuildingContext);
+
+            $fieldBuilder
+                ->withComponentMetadata($metadata);
+
             foreach ($xmlRoot->field as $fieldElement) {
-                $fieldName     = (string) $fieldElement['name'];
-                $fieldMetadata = $this->convertFieldElementToFieldMetadata($fieldElement, $fieldName, $metadata, $metadataBuildingContext);
+                $versionAnnotation = isset($fieldElement['version']) && $this->evaluateBoolean($fieldElement['version'])
+                    ? new Annotation\Version()
+                    : null;
+
+                $fieldBuilder
+                    ->withFieldName((string) $fieldElement['name'])
+                    ->withColumnAnnotation($this->convertFieldElementToColumnAnnotation($fieldElement))
+                    ->withIdAnnotation(null)
+                    ->withVersionAnnotation($versionAnnotation);
+
+                $fieldMetadata = $fieldBuilder->build();
+
+                // Prevent column duplication
+                if ($metadata->checkPropertyDuplication($fieldMetadata->getColumnName())) {
+                    throw Mapping\MappingException::duplicateColumnName(
+                        $metadata->getClassName(),
+                        $fieldMetadata->getColumnName()
+                    );
+                }
 
                 $metadata->addProperty($fieldMetadata);
             }
@@ -210,6 +231,11 @@ class XmlDriver extends FileDriver
         // Evaluate <id ...> mappings
         $associationIds = [];
 
+        $fieldBuilder = new Builder\FieldMetadataBuilder($metadataBuildingContext);
+
+        $fieldBuilder
+            ->withComponentMetadata($metadata);
+
         foreach ($xmlRoot->id as $idElement) {
             $fieldName = (string) $idElement['name'];
 
@@ -219,13 +245,24 @@ class XmlDriver extends FileDriver
                 continue;
             }
 
-            $fieldMetadata = $this->convertFieldElementToFieldMetadata($idElement, $fieldName, $metadata, $metadataBuildingContext);
+            $versionAnnotation = isset($idElement['version']) && $this->evaluateBoolean($idElement['version'])
+                ? new Annotation\Version()
+                : null;
 
-            $fieldMetadata->setPrimaryKey(true);
+            $fieldBuilder
+                ->withFieldName($fieldName)
+                ->withColumnAnnotation($this->convertFieldElementToColumnAnnotation($idElement))
+                ->withIdAnnotation(new Annotation\Id())
+                ->withVersionAnnotation($versionAnnotation);
 
-            // Prevent PK and version on same field
-            if ($fieldMetadata->isVersioned()) {
-                throw Mapping\MappingException::cannotVersionIdField($className, $fieldName);
+            $fieldMetadata = $fieldBuilder->build();
+
+            // Prevent column duplication
+            if ($metadata->checkPropertyDuplication($fieldMetadata->getColumnName())) {
+                throw Mapping\MappingException::duplicateColumnName(
+                    $metadata->getClassName(),
+                    $fieldMetadata->getColumnName()
+                );
             }
 
             if (isset($idElement->generator)) {
@@ -596,11 +633,34 @@ class XmlDriver extends FileDriver
 
         // Evaluate association-overrides
         if (isset($xmlRoot->{'attribute-overrides'})) {
+            $fieldBuilder = new Builder\FieldMetadataBuilder($metadataBuildingContext);
+
+            $fieldBuilder
+                ->withComponentMetadata($metadata);
+
             foreach ($xmlRoot->{'attribute-overrides'}->{'attribute-override'} as $overrideElement) {
                 $fieldName = (string) $overrideElement['name'];
 
                 foreach ($overrideElement->field as $fieldElement) {
-                    $fieldMetadata = $this->convertFieldElementToFieldMetadata($fieldElement, $fieldName, $metadata, $metadataBuildingContext);
+                    $versionAnnotation = isset($fieldElement['version']) && $this->evaluateBoolean($fieldElement['version'])
+                        ? new Annotation\Version()
+                        : null;
+
+                    $fieldBuilder
+                        ->withFieldName($fieldName)
+                        ->withColumnAnnotation($this->convertFieldElementToColumnAnnotation($fieldElement))
+                        ->withIdAnnotation(null)
+                        ->withVersionAnnotation($versionAnnotation);
+
+                    $fieldMetadata = $fieldBuilder->build();
+
+                    // Prevent column duplication
+                    if ($metadata->checkPropertyDuplication($fieldMetadata->getColumnName())) {
+                        throw Mapping\MappingException::duplicateColumnName(
+                            $metadata->getClassName(),
+                            $fieldMetadata->getColumnName()
+                        );
+                    }
 
                     $metadata->setPropertyOverride($fieldMetadata);
                 }
@@ -801,61 +861,46 @@ class XmlDriver extends FileDriver
         return $array;
     }
 
-    /**
-     * @throws Mapping\MappingException
-     */
-    private function convertFieldElementToFieldMetadata(
-        SimpleXMLElement $fieldElement,
-        string $fieldName,
-        Mapping\ClassMetadata $metadata,
-        Mapping\ClassMetadataBuildingContext $metadataBuildingContext
-    ) : Mapping\FieldMetadata {
-        $className     = $metadata->getClassName();
-        $isVersioned   = isset($fieldElement['version']) && $fieldElement['version'];
-        $fieldMetadata = new Mapping\FieldMetadata($fieldName);
-        $fieldType     = isset($fieldElement['type']) ? (string) $fieldElement['type'] : 'string';
-        $columnName    = isset($fieldElement['column'])
-            ? (string) $fieldElement['column']
-            : $metadataBuildingContext->getNamingStrategy()->propertyToColumnName($fieldName, $className);
+    private function convertFieldElementToColumnAnnotation(
+        SimpleXMLElement $fieldElement
+    ) : Annotation\Column {
+        $columnAnnotation = new Annotation\Column();
 
-        $fieldMetadata->setType(Type::getType($fieldType));
-        $fieldMetadata->setVersioned($isVersioned);
-        $fieldMetadata->setColumnName($columnName);
+        $columnAnnotation->type = isset($fieldElement['type']) ? (string) $fieldElement['type'] : 'string';
+
+        if (isset($fieldElement['column'])) {
+            $columnAnnotation->name = (string) $fieldElement['column'];
+        }
 
         if (isset($fieldElement['length'])) {
-            $fieldMetadata->setLength((int) $fieldElement['length']);
+            $columnAnnotation->length = (int) $fieldElement['length'];
         }
 
         if (isset($fieldElement['precision'])) {
-            $fieldMetadata->setPrecision((int) $fieldElement['precision']);
+            $columnAnnotation->precision = (int) $fieldElement['precision'];
         }
 
         if (isset($fieldElement['scale'])) {
-            $fieldMetadata->setScale((int) $fieldElement['scale']);
+            $columnAnnotation->scale = (int) $fieldElement['scale'];
         }
 
         if (isset($fieldElement['unique'])) {
-            $fieldMetadata->setUnique($this->evaluateBoolean($fieldElement['unique']));
+            $columnAnnotation->unique = $this->evaluateBoolean($fieldElement['unique']);
         }
 
         if (isset($fieldElement['nullable'])) {
-            $fieldMetadata->setNullable($this->evaluateBoolean($fieldElement['nullable']));
+            $columnAnnotation->nullable = $this->evaluateBoolean($fieldElement['nullable']);
         }
 
         if (isset($fieldElement['column-definition'])) {
-            $fieldMetadata->setColumnDefinition((string) $fieldElement['column-definition']);
+            $columnAnnotation->columnDefinition = (string) $fieldElement['column-definition'];
         }
 
         if (isset($fieldElement->options)) {
-            $fieldMetadata->setOptions($this->parseOptions($fieldElement->options->children()));
+            $columnAnnotation->options = $this->parseOptions($fieldElement->options->children());
         }
 
-        // Prevent column duplication
-        if ($metadata->checkPropertyDuplication($columnName)) {
-            throw Mapping\MappingException::duplicateColumnName($className, $columnName);
-        }
-
-        return $fieldMetadata;
+        return $columnAnnotation;
     }
 
     /**

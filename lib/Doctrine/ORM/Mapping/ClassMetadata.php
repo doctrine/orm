@@ -510,36 +510,6 @@ class ClassMetadata extends ComponentMetadata implements TableOwner
     }
 
     /**
-     * Validates & completes the basic mapping information for field mapping.
-     *
-     * @throws MappingException If something is wrong with the mapping.
-     */
-    protected function validateAndCompleteVersionFieldMapping(FieldMetadata $property)
-    {
-        $this->versionProperty = $property;
-
-        $options = $property->getOptions();
-
-        if (isset($options['default'])) {
-            return;
-        }
-
-        if (in_array($property->getTypeName(), ['integer', 'bigint', 'smallint'], true)) {
-            $property->setOptions(array_merge($options, ['default' => 1]));
-
-            return;
-        }
-
-        if (in_array($property->getTypeName(), ['datetime', 'datetime_immutable', 'datetimetz', 'datetimetz_immutable'], true)) {
-            $property->setOptions(array_merge($options, ['default' => 'CURRENT_TIMESTAMP']));
-
-            return;
-        }
-
-        throw MappingException::unsupportedOptimisticLockingType($property->getType());
-    }
-
-    /**
      * Validates & completes the basic mapping information that is common to all
      * association mappings (one-to-one, many-ot-one, one-to-many, many-to-many).
      *
@@ -1039,12 +1009,10 @@ class ClassMetadata extends ComponentMetadata implements TableOwner
 
         switch (true) {
             case $property instanceof FieldMetadata:
-                $property->setColumnName($property->getColumnName() ?? $property->getName());
-
                 $this->fieldNames[$property->getColumnName()] = $property->getName();
 
                 if ($property->isVersioned()) {
-                    $this->validateAndCompleteVersionFieldMapping($property);
+                    $this->versionProperty = $property;
                 }
 
                 break;

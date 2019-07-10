@@ -587,62 +587,23 @@ class AnnotationDriver implements MappingDriver
         Mapping\ClassMetadata $metadata,
         Mapping\ClassMetadataBuildingContext $metadataBuildingContext
     ) : Mapping\FieldMetadata {
-        $className   = $metadata->getClassName();
-        $fieldName   = $reflectionProperty->getName();
-        $isVersioned = isset($propertyAnnotations[Annotation\Version::class]);
-        $columnAnnot = $propertyAnnotations[Annotation\Column::class];
+        $fieldBuilder = new Builder\FieldMetadataBuilder($metadataBuildingContext);
 
-        if ($columnAnnot->type === null) {
-            throw Mapping\MappingException::propertyTypeIsRequired($className, $fieldName);
-        }
+        $fieldBuilder
+            ->withComponentMetadata($metadata)
+            ->withFieldName($reflectionProperty->getName())
+            ->withColumnAnnotation($propertyAnnotations[Annotation\Column::class])
+            ->withIdAnnotation($propertyAnnotations[Annotation\Id::class] ?? null)
+            ->withVersionAnnotation($propertyAnnotations[Annotation\Version::class] ?? null);
 
-        $fieldMetadata = new Mapping\FieldMetadata($fieldName);
-        $columnName    = ! empty($columnAnnot->name)
-            ? $columnAnnot->name
-            : $metadataBuildingContext->getNamingStrategy()->propertyToColumnName($fieldName, $className);
-
-        $fieldMetadata->setType(Type::getType($columnAnnot->type));
-        $fieldMetadata->setVersioned($isVersioned);
-        $fieldMetadata->setColumnName($columnName);
-
-        if (! $metadata->isMappedSuperclass) {
-            $fieldMetadata->setTableName($metadata->getTableName());
-        }
-
-        if (! empty($columnAnnot->columnDefinition)) {
-            $fieldMetadata->setColumnDefinition($columnAnnot->columnDefinition);
-        }
-
-        if (! empty($columnAnnot->length)) {
-            $fieldMetadata->setLength($columnAnnot->length);
-        }
-
-        if ($columnAnnot->options) {
-            $fieldMetadata->setOptions($columnAnnot->options);
-        }
-
-        $fieldMetadata->setScale($columnAnnot->scale);
-        $fieldMetadata->setPrecision($columnAnnot->precision);
-        $fieldMetadata->setNullable($columnAnnot->nullable);
-        $fieldMetadata->setUnique($columnAnnot->unique);
-
-        // Check for Id
-        if (isset($propertyAnnotations[Annotation\Id::class])) {
-            $fieldMetadata->setPrimaryKey(true);
-
-            if ($fieldMetadata->getType()->canRequireSQLConversion()) {
-                throw Mapping\MappingException::sqlConversionNotAllowedForPrimaryKeyProperties($className, $fieldMetadata);
-            }
-        }
-
-        // Prevent PK and version on same field
-        if ($fieldMetadata->isPrimaryKey() && $fieldMetadata->isVersioned()) {
-            throw Mapping\MappingException::cannotVersionIdField($className, $fieldName);
-        }
+        $fieldMetadata = $fieldBuilder->build();
 
         // Prevent column duplication
-        if ($metadata->checkPropertyDuplication($columnName)) {
-            throw Mapping\MappingException::duplicateColumnName($className, $columnName);
+        if ($metadata->checkPropertyDuplication($fieldMetadata->getColumnName())) {
+            throw Mapping\MappingException::duplicateColumnName(
+                $metadata->getClassName(),
+                $fieldMetadata->getColumnName()
+            );
         }
 
         // Check for GeneratedValue strategy
@@ -690,7 +651,7 @@ class AnnotationDriver implements MappingDriver
 
                     /** @todo If it is not supported, why does this exist? */
                     case isset($propertyAnnotations['Doctrine\ORM\Mapping\TableGenerator']):
-                        throw Mapping\MappingException::tableIdGeneratorNotImplemented($className);
+                        throw Mapping\MappingException::tableIdGeneratorNotImplemented($metadata->getClassName());
                 }
 
                 $fieldMetadata->setValueGenerator(

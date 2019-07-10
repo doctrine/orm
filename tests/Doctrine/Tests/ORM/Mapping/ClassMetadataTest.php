@@ -313,6 +313,8 @@ class ClassMetadataTest extends OrmTestCase
      */
     public function testSetInvalidVersionMappingThrowsException() : void
     {
+        $this->markTestIncomplete('This test needs to be moved to FieldMetadataBuilderTest');
+
         $cm = new ClassMetadata(CMS\CmsUser::class, null, $this->metadataBuildingContext);
         $cm->setTable(new Mapping\TableMetadata('cms_users'));
 
@@ -394,6 +396,7 @@ class ClassMetadataTest extends OrmTestCase
         $fieldMetadata = new Mapping\FieldMetadata('name');
 
         $fieldMetadata->setType(Type::getType('string'));
+        $fieldMetadata->setColumnName('name');
 
         $cm->addProperty($fieldMetadata);
 

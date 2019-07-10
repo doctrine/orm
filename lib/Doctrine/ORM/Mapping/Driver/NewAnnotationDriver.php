@@ -539,13 +539,14 @@ class NewAnnotationDriver implements MappingDriver
             throw Mapping\MappingException::cannotVersionIdField($className, $fieldName);
         }
 
+        $fieldType  = Type::getType($columnAnnot->type);
         $columnName = empty($columnAnnot->name)
             ? $this->namingStrategy->propertyToColumnName($fieldName, $className)
             : $columnAnnot->name;
 
         $fieldMetadata = new Mapping\FieldMetadata($fieldName);
 
-        $fieldMetadata->setType(Type::getType($columnAnnot->type));
+        $fieldMetadata->setType($fieldType);
         $fieldMetadata->setVersioned($isVersioned);
         $fieldMetadata->setColumnName($columnName);
         $fieldMetadata->setScale($columnAnnot->scale);
@@ -555,8 +556,12 @@ class NewAnnotationDriver implements MappingDriver
 
         // Check for Id
         if ($isPrimaryKey) {
-            if ($fieldMetadata->getType()->canRequireSQLConversion()) {
-                throw Mapping\MappingException::sqlConversionNotAllowedForPrimaryKeyProperties($className, $fieldMetadata);
+            if ($fieldType->canRequireSQLConversion()) {
+                throw Mapping\MappingException::sqlConversionNotAllowedForPrimaryKeyProperties(
+                    $className,
+                    $fieldName,
+                    $fieldType->getName()
+                );
             }
 
             $fieldMetadata->setPrimaryKey(true);
