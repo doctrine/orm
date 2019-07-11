@@ -196,7 +196,7 @@ class Setup
                 return $cache;
             }
             
-        } catch (\Exception $ex) {
+        } catch (\Throwable $ex) {
 
             /*
             Deliberate catch of top level \Exception in the event that an extension IS installed, but
