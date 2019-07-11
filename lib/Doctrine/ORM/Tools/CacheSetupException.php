@@ -19,27 +19,36 @@
 
 namespace Doctrine\ORM\Tools;
 
+use Doctrine\ORM\ORMException;
+use Throwable;
+
 /**
  * A custom exception for handling failures during cache configuration from Doctrine\ORM\Tools\Setup
  *
+ * @link    www.doctrine-project.org
+ * @since   2.0
  * @author Paul Court <g@rgoyle.com>
  */
-class CacheSetupException extends \Doctrine\ORM\ORMException
+class CacheSetupException extends ORMException
 {
-    
-    public static function autoSetupFailed(\Throwable $previous = null)
+    /**
+     * @param Throwable|null $previous
+     * @return CacheSetupException
+     */
+    public static function autoSetupFailed(Throwable $previous = null)
     {
         $code = 0;
         if ($previous !== null) {
             $code = $previous->getCode();
         }
-        return new self(""
-                . "An attempt to automatically create a cache instance failed! - The most "
-                . "likely cause is the presence of a supported extension (apcu, memcached or "
-                . "redis) but no matching service running locally on 127.0.0.1. The best way"
-                . "to fix this is to manually create a cache instance and pass it to the "
-                . "Doctrine\ORM\Tools\Setup method that you are trying to use.", 
-                $code, 
-                $previous);
+        return new self(''
+            . 'An attempt to automatically create a cache instance failed! - The most '
+            . 'likely cause is the presence of a supported extension (apcu, memcached or '
+            . 'redis) but no matching service running locally on 127.0.0.1. The best way'
+            . 'to fix this is to manually create a cache instance and pass it to the '
+            . 'Doctrine\ORM\Tools\Setup method that you are trying to use.',
+            $code,
+            $previous
+            );
     }
 }
