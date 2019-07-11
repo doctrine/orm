@@ -168,7 +168,7 @@ class Setup
         try {
 
             /*
-            For backwards-compatability, attempt to create to a caching provider with
+            For backwards-compatability, attempt to create a caching provider with
             default settings if that providers extension is installed.
             */
 
