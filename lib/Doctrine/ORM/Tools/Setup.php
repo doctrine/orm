@@ -196,18 +196,10 @@ class Setup
                 return $cache;
             }
             
+            return new ArrayCache();
+            
         } catch (\Throwable $ex) {
-
-            /*
-            Deliberate catch of top level \Exception in the event that an extension IS installed, but
-            an attempt to use it fails (Eg. Redis is installed, but there is no server running on
-            localhost).
-
-            This block is empty because the fallback to use ArrayCache() seems as good for an exception
-            as if there were no matching extensions installed.
-            */
+            throw CacheSetupException::autoSetupFailed($ex);
         }
-
-        return new ArrayCache();
     }
 }
