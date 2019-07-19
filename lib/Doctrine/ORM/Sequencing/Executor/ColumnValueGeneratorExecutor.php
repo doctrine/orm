@@ -2,11 +2,11 @@
 
 declare(strict_types=1);
 
-namespace Doctrine\ORM\Sequencing\Planning;
+namespace Doctrine\ORM\Sequencing\Executor;
 
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Mapping\LocalColumnMetadata;
-use Doctrine\ORM\Sequencing\Generator;
+use Doctrine\ORM\Sequencing\Generator\Generator;
 
 class ColumnValueGeneratorExecutor implements ValueGenerationExecutor
 {

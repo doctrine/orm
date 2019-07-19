@@ -15,6 +15,9 @@ class FieldMetadataBuilder
     /** @var Mapping\ClassMetadataBuildingContext */
     private $metadataBuildingContext;
 
+    /** @var ValueGeneratorMetadataBuilder */
+    private $valueGeneratorMetadataBuilder;
+
     /** @var Mapping\ClassMetadata */
     private $componentMetadata;
 
@@ -30,9 +33,21 @@ class FieldMetadataBuilder
     /** @var Annotation\Version|null */
     private $versionAnnotation;
 
-    public function __construct(Mapping\ClassMetadataBuildingContext $metadataBuildingContext)
-    {
-        $this->metadataBuildingContext = $metadataBuildingContext;
+    /** @var Annotation\GeneratedValue|null */
+    private $generatedValueAnnotation;
+
+    /** @var Annotation\SequenceGenerator|null */
+    private $sequenceGeneratorAnnotation;
+
+    /** @var Annotation\CustomIdGenerator|null */
+    private $customIdGeneratorAnnotation;
+
+    public function __construct(
+        Mapping\ClassMetadataBuildingContext $metadataBuildingContext,
+        ?ValueGeneratorMetadataBuilder $valueGeneratorMetadataBuilder = null
+    ) {
+        $this->metadataBuildingContext       = $metadataBuildingContext;
+        $this->valueGeneratorMetadataBuilder = $valueGeneratorMetadataBuilder ?: new ValueGeneratorMetadataBuilder($metadataBuildingContext);
     }
 
     public function withComponentMetadata(Mapping\ClassMetadata $componentMetadata) : FieldMetadataBuilder
@@ -70,6 +85,30 @@ class FieldMetadataBuilder
         return $this;
     }
 
+    public function withGeneratedValueAnnotation(
+        ?Annotation\GeneratedValue $generatedValueAnnotation
+    ) : FieldMetadataBuilder {
+        $this->generatedValueAnnotation = $generatedValueAnnotation;
+
+        return $this;
+    }
+
+    public function withSequenceGeneratorAnnotation(
+        ?Annotation\SequenceGenerator $sequenceGeneratorAnnotation
+    ) : FieldMetadataBuilder {
+        $this->sequenceGeneratorAnnotation = $sequenceGeneratorAnnotation;
+
+        return $this;
+    }
+
+    public function withCustomIdGeneratorAnnotation(
+        ?Annotation\CustomIdGenerator $customIdGeneratorAnnotation
+    ) : FieldMetadataBuilder {
+        $this->customIdGeneratorAnnotation = $customIdGeneratorAnnotation;
+
+        return $this;
+    }
+
     public function build() : Mapping\FieldMetadata
     {
         // Validate required fields
@@ -102,6 +141,18 @@ class FieldMetadataBuilder
                     $fieldType->getName()
                 );
             }
+
+            // Check for value generator
+            $valueGeneratorMetadata = $this->valueGeneratorMetadataBuilder
+                ->withComponentMetadata($this->componentMetadata)
+                ->withFieldName($this->fieldName)
+                ->withFieldType($fieldType)
+                ->withGeneratedValueAnnotation($this->generatedValueAnnotation)
+                ->withSequenceGeneratorAnnotation($this->sequenceGeneratorAnnotation)
+                ->withCustomIdGeneratorAnnotation($this->customIdGeneratorAnnotation)
+                ->build();
+
+            $fieldMetadata->setValueGenerator($valueGeneratorMetadata);
         }
 
         // Check for version

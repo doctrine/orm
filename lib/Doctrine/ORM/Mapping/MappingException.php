@@ -366,16 +366,6 @@ class MappingException extends LogicException implements ORMException
      *
      * @return MappingException
      */
-    public static function tableIdGeneratorNotImplemented($className)
-    {
-        return new self('TableIdGenerator is not yet implemented for use with class ' . $className);
-    }
-
-    /**
-     * @param string $className
-     *
-     * @return MappingException
-     */
     public static function duplicateProperty($className, Property $property)
     {
         return new self(sprintf(

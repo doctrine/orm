@@ -331,10 +331,11 @@ class SchemaTool
                     continue;
                 }
 
-                $quotedName = $this->platform->quoteIdentifier($property->getValueGenerator()->getDefinition()['sequenceName']);
+                $generator  = $property->getValueGenerator()->getGenerator();
+                $quotedName = $generator->getSequenceName();
 
                 if (! $schema->hasSequence($quotedName)) {
-                    $schema->createSequence($quotedName, $property->getValueGenerator()->getDefinition()['allocationSize']);
+                    $schema->createSequence($quotedName, $generator->getAllocationSize());
                 }
             }
 

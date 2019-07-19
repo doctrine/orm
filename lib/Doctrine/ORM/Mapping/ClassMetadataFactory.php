@@ -22,7 +22,7 @@ use Doctrine\ORM\Reflection\RuntimeReflectionService;
 use Doctrine\ORM\Sequencing\Planning\CompositeValueGenerationPlan;
 use Doctrine\ORM\Sequencing\Planning\NoopValueGenerationPlan;
 use Doctrine\ORM\Sequencing\Planning\SingleValueGenerationPlan;
-use Doctrine\ORM\Sequencing\Planning\ValueGenerationExecutor;
+use Doctrine\ORM\Sequencing\Executor\ValueGenerationExecutor;
 use Doctrine\ORM\Utility\StaticClassNameConverter;
 use InvalidArgumentException;
 use ReflectionException;
@@ -212,6 +212,15 @@ class ClassMetadataFactory implements PersistenceClassMetadataFactory
         return $this->driver;
     }
 
+    public function getTargetPlatform() : Platforms\AbstractPlatform
+    {
+        if (! $this->targetPlatform) {
+            $this->targetPlatform = $this->em->getConnection()->getDatabasePlatform();
+        }
+
+        return $this->targetPlatform;
+    }
+
     /**
      * {@inheritdoc}
      */
@@ -388,8 +397,6 @@ class ClassMetadataFactory implements PersistenceClassMetadataFactory
         /** @var ClassMetadata $classMetadata */
         $classMetadata = $this->driver->loadMetadataForClass($className, $parent, $metadataBuildingContext);
 
-        $this->completeIdentifierGeneratorMappings($classMetadata);
-
         if ($this->evm->hasListeners(Events::loadClassMetadata)) {
             $eventArgs = new LoadClassMetadataEventArgs($classMetadata, $this->em);
 
@@ -443,6 +450,7 @@ class ClassMetadataFactory implements PersistenceClassMetadataFactory
         return new ClassMetadataBuildingContext(
             $this,
             $this->getReflectionService(),
+            $this->getTargetPlatform(),
             $this->em->getConfiguration()->getNamingStrategy()
         );
     }
@@ -484,94 +492,17 @@ class ClassMetadataFactory implements PersistenceClassMetadataFactory
         throw MappingException::mappedClassNotPartOfDiscriminatorMap($metadata->getClassName(), $metadata->getRootClassName());
     }
 
-    /**
-     * Completes the ID generator mapping. If "auto" is specified we choose the generator
-     * most appropriate for the targeted database platform.
-     *
-     * @throws ORMException
-     */
-    private function completeIdentifierGeneratorMappings(ClassMetadata $class) : void
-    {
-        foreach ($class->getPropertiesIterator() as $property) {
-            if (! $property instanceof FieldMetadata /*&& ! $property instanceof AssociationMetadata*/) {
-                continue;
-            }
-
-            $this->completeFieldIdentifierGeneratorMapping($property);
-        }
-    }
-
-    private function completeFieldIdentifierGeneratorMapping(FieldMetadata $field)
-    {
-        if (! $field->hasValueGenerator()) {
-            return;
-        }
-
-        $platform  = $this->getTargetPlatform();
-        $class     = $field->getDeclaringClass();
-        $generator = $field->getValueGenerator();
-
-        if (in_array($generator->getType(), [GeneratorType::AUTO, GeneratorType::IDENTITY], true)) {
-            $generatorType = $platform->prefersSequences() || $platform->usesSequenceEmulatedIdentityColumns()
-                ? GeneratorType::SEQUENCE
-                : ($platform->prefersIdentityColumns() ? GeneratorType::IDENTITY : GeneratorType::TABLE);
-
-            $generator = new ValueGeneratorMetadata($generatorType, $field->getValueGenerator()->getDefinition());
-
-            $field->setValueGenerator($generator);
-        }
-
-        // Validate generator definition and set defaults where needed
-        switch ($generator->getType()) {
-            case GeneratorType::SEQUENCE:
-                // If there is no sequence definition yet, create a default definition
-                if ($generator->getDefinition()) {
-                    break;
-                }
-
-                // @todo guilhermeblanco Move sequence generation to DBAL
-                $sequencePrefix = $platform->getSequencePrefix($field->getTableName(), $field->getSchemaName());
-                $idSequenceName = sprintf('%s_%s_seq', $sequencePrefix, $field->getColumnName());
-                $sequenceName   = $platform->fixSchemaElementName($idSequenceName);
-
-                $field->setValueGenerator(
-                    new ValueGeneratorMetadata(
-                        $generator->getType(),
-                        [
-                            'sequenceName'   => $sequenceName,
-                            'allocationSize' => 1,
-                        ]
-                    )
-                );
-
-                break;
-
-            case GeneratorType::TABLE:
-                throw TableGeneratorNotImplementedYet::create();
-                break;
-
-            case GeneratorType::CUSTOM:
-            case GeneratorType::IDENTITY:
-            case GeneratorType::NONE:
-                break;
-
-            default:
-                throw UnknownGeneratorType::create($generator->getType());
-        }
-    }
-
-    private function getTargetPlatform() : Platforms\AbstractPlatform
-    {
-        if (! $this->targetPlatform) {
-            $this->targetPlatform = $this->em->getConnection()->getDatabasePlatform();
-        }
-
-        return $this->targetPlatform;
-    }
-
     private function buildValueGenerationPlan(ClassMetadata $class) : void
     {
-        $valueGenerationExecutorList = $this->buildValueGenerationExecutorList($class);
+        $valueGenerationExecutorList = [];
+
+        foreach ($class->getPropertiesIterator() as $property) {
+            $executor = $property->getValueGenerationExecutor($this->getTargetPlatform());
+
+            if ($executor instanceof ValueGenerationExecutor) {
+                $valueGenerationExecutorList[$property->getName()] = $executor;
+            }
+        }
 
         switch (count($valueGenerationExecutorList)) {
             case 0:
@@ -588,23 +519,5 @@ class ClassMetadataFactory implements PersistenceClassMetadataFactory
         }
 
         $class->setValueGenerationPlan($valueGenerationPlan);
-    }
-
-    /**
-     * @return ValueGenerationExecutor[]
-     */
-    private function buildValueGenerationExecutorList(ClassMetadata $class) : array
-    {
-        $executors = [];
-
-        foreach ($class->getPropertiesIterator() as $property) {
-            $executor = $property->getValueGenerationExecutor($this->getTargetPlatform());
-
-            if ($executor instanceof ValueGenerationExecutor) {
-                $executors[$property->getName()] = $executor;
-            }
-        }
-
-        return $executors;
     }
 }

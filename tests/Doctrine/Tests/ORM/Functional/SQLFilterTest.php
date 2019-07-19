@@ -6,6 +6,7 @@ namespace Doctrine\Tests\ORM\Functional;
 
 use Doctrine\Common\Cache\ArrayCache;
 use Doctrine\DBAL\Connection;
+use Doctrine\DBAL\Platforms\AbstractPlatform;
 use Doctrine\DBAL\Types\Type as DBALType;
 use Doctrine\ORM\Configuration;
 use Doctrine\ORM\EntityManagerInterface;
@@ -309,7 +310,8 @@ class SQLFilterTest extends OrmFunctionalTestCase
     {
         $metadataBuildingContext = new ClassMetadataBuildingContext(
             $this->createMock(ClassMetadataFactory::class),
-            $this->createMock(ReflectionService::class)
+            $this->createMock(ReflectionService::class),
+            $this->createMock(AbstractPlatform::class)
         );
 
         $filter = new MySoftDeleteFilter($this->getMockEntityManager());

@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Doctrine\Tests\ORM\Mapping;
 
+use Doctrine\DBAL\Platforms\AbstractPlatform;
 use Doctrine\DBAL\Types\Type;
 use Doctrine\ORM\Events;
 use Doctrine\ORM\Mapping;
@@ -13,6 +14,7 @@ use Doctrine\ORM\Mapping\Factory\DefaultNamingStrategy;
 use Doctrine\ORM\Mapping\Factory\UnderscoreNamingStrategy;
 use Doctrine\ORM\Mapping\JoinColumnMetadata;
 use Doctrine\ORM\Mapping\MappingException;
+use Doctrine\ORM\Reflection\ReflectionService;
 use Doctrine\ORM\Reflection\RuntimeReflectionService;
 use Doctrine\ORM\Reflection\StaticReflectionService;
 use Doctrine\Tests\Models\CMS;
@@ -52,7 +54,8 @@ class ClassMetadataTest extends OrmTestCase
 
         $this->metadataBuildingContext = new Mapping\ClassMetadataBuildingContext(
             $this->createMock(Mapping\ClassMetadataFactory::class),
-            new RuntimeReflectionService()
+            new RuntimeReflectionService(),
+            $this->createMock(AbstractPlatform::class)
         );
     }
 

@@ -4,13 +4,13 @@ declare(strict_types=1);
 
 namespace Doctrine\Tests\ORM;
 
+use Doctrine\DBAL\Platforms\AbstractPlatform;
 use Doctrine\ORM\Internal\CommitOrderCalculator;
 use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\Mapping\ClassMetadataBuildingContext;
 use Doctrine\ORM\Mapping\ClassMetadataFactory;
-use Doctrine\ORM\Reflection\RuntimeReflectionService;
+use Doctrine\ORM\Reflection\ReflectionService;
 use Doctrine\Tests\OrmTestCase;
-use PHPUnit_Framework_MockObject_MockObject;
 
 /**
  * Tests of the commit order calculation.
@@ -32,7 +32,8 @@ class CommitOrderCalculatorTest extends OrmTestCase
         $this->calc                    = new CommitOrderCalculator();
         $this->metadataBuildingContext = new ClassMetadataBuildingContext(
             $this->createMock(ClassMetadataFactory::class),
-            new RuntimeReflectionService()
+            $this->createMock(ReflectionService::class),
+            $this->createMock(AbstractPlatform::class)
         );
     }
 

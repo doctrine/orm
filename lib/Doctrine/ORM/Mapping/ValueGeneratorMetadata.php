@@ -4,9 +4,7 @@ declare(strict_types=1);
 
 namespace Doctrine\ORM\Mapping;
 
-use Doctrine\DBAL\DBALException;
-use Doctrine\DBAL\Platforms\AbstractPlatform;
-use Doctrine\ORM\Sequencing;
+use Doctrine\ORM\Sequencing\Generator;
 
 class ValueGeneratorMetadata
 {
@@ -16,16 +14,16 @@ class ValueGeneratorMetadata
     /** @var string */
     protected $type;
 
-    /** @var mixed[] */
-    protected $definition;
+    /** @var Generator\Generator */
+    protected $generator;
 
     /**
      * @param mixed[] $definition
      */
-    public function __construct(string $type, array $definition = [])
+    public function __construct(string $type, Generator\Generator $generator)
     {
-        $this->type       = $type;
-        $this->definition = $definition;
+        $this->type      = $type;
+        $this->generator = $generator;
     }
 
     public function getDeclaringProperty() : Property
@@ -43,49 +41,8 @@ class ValueGeneratorMetadata
         return $this->type;
     }
 
-    /**
-     * @return mixed[]
-     */
-    public function getDefinition() : array
+    public function getGenerator() : Generator\Generator
     {
-        return $this->definition;
-    }
-
-    /**
-     * @throws DBALException
-     */
-    public function getSequencingGenerator(AbstractPlatform $platform) : Sequencing\Generator
-    {
-        $class = $this->declaringProperty->getDeclaringClass();
-
-        switch ($this->type) {
-            case GeneratorType::IDENTITY:
-                $sequenceName = null;
-
-                // Platforms that do not have native IDENTITY support need a sequence to emulate this behaviour.
-                if ($platform->usesSequenceEmulatedIdentityColumns()) {
-                    $sequencePrefix = $platform->getSequencePrefix($class->getTableName(), $class->getSchemaName());
-                    $idSequenceName = $platform->getIdentitySequenceName($sequencePrefix, $this->declaringProperty->getColumnName());
-                    $sequenceName   = $platform->quoteIdentifier($platform->fixSchemaElementName($idSequenceName));
-                    $allocationSize = $this->definition['allocationSize'] ?? 1;
-
-                    return new Sequencing\SequenceGenerator($sequenceName, $allocationSize);
-                }
-
-                return $this->declaringProperty->getTypeName() === 'bigint'
-                    ? new Sequencing\BigIntegerIdentityGenerator()
-                    : new Sequencing\IdentityGenerator();
-            case GeneratorType::SEQUENCE:
-                $sequenceName   = $platform->quoteIdentifier($this->definition['sequenceName']);
-                $allocationSize = $this->definition['allocationSize'] ?? 1;
-
-                return new Sequencing\SequenceGenerator($sequenceName, $allocationSize);
-            case GeneratorType::CUSTOM:
-                $class = $this->definition['class'];
-
-                return new $class();
-        }
-
-        return null;
+        return $this->generator;
     }
 }

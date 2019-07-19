@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Doctrine\ORM\Sequencing;
+namespace Doctrine\ORM\Sequencing\Generator;
 
 use Doctrine\ORM\EntityManagerInterface;
 use Serializable;
@@ -38,6 +38,16 @@ class SequenceGenerator implements Generator, Serializable
     {
         $this->sequenceName   = $sequenceName;
         $this->allocationSize = $allocationSize;
+    }
+
+    public function getSequenceName() : string
+    {
+        return $this->sequenceName;
+    }
+
+    public function getAllocationSize() : int
+    {
+        return $this->allocationSize;
     }
 
     /**

@@ -11,7 +11,7 @@
         </discriminator-map>
         <id name="id" type="integer" column="id">
             <generator strategy="CUSTOM" />
-            <custom-id-generator class="stdClass" />
+            <custom-id-generator class="Doctrine\Tests\ORM\Mapping\CustomGenerator" />
         </id>
     </entity>
 </doctrine-mapping>

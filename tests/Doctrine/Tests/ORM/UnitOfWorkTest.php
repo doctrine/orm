@@ -9,6 +9,7 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\EventManager;
 use Doctrine\Common\NotifyPropertyChanged;
 use Doctrine\Common\PropertyChangedListener;
+use Doctrine\DBAL\Platforms\AbstractPlatform;
 use Doctrine\ORM\Annotation as ORM;
 use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\Mapping\ClassMetadataBuildingContext;
@@ -75,7 +76,8 @@ class UnitOfWorkTest extends OrmTestCase
 
         $this->metadataBuildingContext = new ClassMetadataBuildingContext(
             $this->createMock(ClassMetadataFactory::class),
-            new RuntimeReflectionService()
+            new RuntimeReflectionService(),
+            $this->createMock(AbstractPlatform::class)
         );
 
         $this->eventManager   = $this->getMockBuilder(EventManager::class)->getMock();

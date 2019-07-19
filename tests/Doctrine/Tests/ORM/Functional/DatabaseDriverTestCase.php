@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Doctrine\Tests\ORM\Functional;
 
+use Doctrine\DBAL\Platforms\AbstractPlatform;
 use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\Mapping\ClassMetadataBuildingContext;
 use Doctrine\ORM\Mapping\ClassMetadataFactory;
@@ -26,7 +27,8 @@ abstract class DatabaseDriverTestCase extends OrmFunctionalTestCase
     {
         $metadataBuildingContext = new ClassMetadataBuildingContext(
             $this->createMock(ClassMetadataFactory::class),
-            $this->createMock(ReflectionService::class)
+            $this->createMock(ReflectionService::class),
+            $this->createMock(AbstractPlatform::class)
         );
         $sm                      = $this->em->getConnection()->getSchemaManager();
         $driver                  = new DatabaseDriver($sm);
@@ -52,7 +54,8 @@ abstract class DatabaseDriverTestCase extends OrmFunctionalTestCase
     {
         $metadataBuildingContext = new ClassMetadataBuildingContext(
             $this->createMock(ClassMetadataFactory::class),
-            $this->createMock(ReflectionService::class)
+            $this->createMock(ReflectionService::class),
+            $this->createMock(AbstractPlatform::class)
         );
         $classNames              = array_map('strtolower', $classNames);
         $metadataList            = [];

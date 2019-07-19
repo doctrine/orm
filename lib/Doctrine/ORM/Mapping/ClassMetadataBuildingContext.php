@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Doctrine\ORM\Mapping;
 
+use Doctrine\DBAL\Platforms\AbstractPlatform;
 use Doctrine\ORM\Mapping\Factory\DefaultNamingStrategy;
 use Doctrine\ORM\Mapping\Factory\NamingStrategy;
 use Doctrine\ORM\Reflection\ReflectionService;
@@ -15,6 +16,9 @@ class ClassMetadataBuildingContext
 
     /** @var ReflectionService */
     private $reflectionService;
+
+    /** @var AbstractPlatform */
+    private $targetPlatform;
 
     /** @var NamingStrategy */
     private $namingStrategy;
@@ -28,10 +32,12 @@ class ClassMetadataBuildingContext
     public function __construct(
         ClassMetadataFactory $classMetadataFactory,
         ReflectionService $reflectionService,
+        AbstractPlatform $targetPlatform,
         ?NamingStrategy $namingStrategy = null
     ) {
         $this->classMetadataFactory = $classMetadataFactory;
         $this->reflectionService    = $reflectionService;
+        $this->targetPlatform       = $targetPlatform;
         $this->namingStrategy       = $namingStrategy ?: new DefaultNamingStrategy();
     }
 
@@ -43,6 +49,11 @@ class ClassMetadataBuildingContext
     public function getReflectionService() : ReflectionService
     {
         return $this->reflectionService;
+    }
+
+    public function getTargetPlatform() : AbstractPlatform
+    {
+        return $this->targetPlatform;
     }
 
     public function getNamingStrategy() : NamingStrategy

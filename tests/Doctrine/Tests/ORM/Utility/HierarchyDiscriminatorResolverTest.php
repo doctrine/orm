@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Doctrine\Tests\ORM\Utility;
 
+use Doctrine\DBAL\Platforms\AbstractPlatform;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Mapping;
 use Doctrine\ORM\Mapping\ClassMetadata;
@@ -20,7 +21,8 @@ class HierarchyDiscriminatorResolverTest extends TestCase
     {
         $this->staticMetadataBuildingContext = new Mapping\ClassMetadataBuildingContext(
             $this->createMock(Mapping\ClassMetadataFactory::class),
-            new StaticReflectionService()
+            new StaticReflectionService(),
+            $this->createMock(AbstractPlatform::class)
         );
     }
 

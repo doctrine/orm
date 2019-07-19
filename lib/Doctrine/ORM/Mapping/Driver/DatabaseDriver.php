@@ -14,6 +14,7 @@ use Doctrine\DBAL\Schema\SchemaException;
 use Doctrine\DBAL\Schema\Table;
 use Doctrine\DBAL\Types\Type;
 use Doctrine\ORM\Mapping;
+use Doctrine\ORM\Sequencing\Generator;
 use InvalidArgumentException;
 use function array_diff;
 use function array_keys;
@@ -346,7 +347,13 @@ class DatabaseDriver implements MappingDriver
 
         // We need to check for the columns here, because we might have associations as id as well.
         if ($ids && count($primaryKeys) === 1) {
-            $ids[0]->setValueGenerator(new Mapping\ValueGeneratorMetadata(Mapping\GeneratorType::AUTO));
+            $generator = $fieldMetadata->getTypeName() === 'bigint'
+                ? new Generator\BigIntegerIdentityGenerator()
+                : new Generator\IdentityGenerator();
+
+            $valueGenerator = new Mapping\ValueGeneratorMetadata(Mapping\GeneratorType::IDENTITY, $generator);
+
+            $ids[0]->setValueGenerator($valueGenerator);
         }
     }
 

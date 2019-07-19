@@ -6,7 +6,7 @@ namespace Doctrine\ORM\Mapping;
 
 use Doctrine\DBAL\Platforms\AbstractPlatform;
 use Doctrine\ORM\Reflection\ReflectionService;
-use Doctrine\ORM\Sequencing\Planning\ValueGenerationExecutor;
+use Doctrine\ORM\Sequencing\Executor\ValueGenerationExecutor;
 use ReflectionProperty;
 
 class TransientMetadata implements Property

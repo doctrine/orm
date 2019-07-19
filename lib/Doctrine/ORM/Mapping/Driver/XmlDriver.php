@@ -249,13 +249,27 @@ class XmlDriver extends FileDriver
                 ? new Annotation\Version()
                 : null;
 
-            $fieldBuilder
+            $fieldMetadata = $fieldBuilder
                 ->withFieldName($fieldName)
                 ->withColumnAnnotation($this->convertFieldElementToColumnAnnotation($idElement))
                 ->withIdAnnotation(new Annotation\Id())
-                ->withVersionAnnotation($versionAnnotation);
-
-            $fieldMetadata = $fieldBuilder->build();
+                ->withVersionAnnotation($versionAnnotation)
+                ->withGeneratedValueAnnotation(
+                    isset($idElement->generator)
+                        ? $this->convertGeneratorElementToGeneratedValueAnnotation($idElement->generator)
+                        : null
+                )
+                ->withSequenceGeneratorAnnotation(
+                    isset($idElement->{'sequence-generator'})
+                        ? $this->convertSequenceGeneratorElementToSequenceGeneratorAnnotation($idElement->{'sequence-generator'})
+                        : null
+                )
+                ->withCustomIdGeneratorAnnotation(
+                    isset($idElement->{'custom-id-generator'})
+                        ? $this->convertCustomIdGeneratorElementToCustomIdGeneratorAnnotation($idElement->{'custom-id-generator'})
+                        : null
+                )
+                ->build();
 
             // Prevent column duplication
             if ($metadata->checkPropertyDuplication($fieldMetadata->getColumnName())) {
@@ -263,50 +277,6 @@ class XmlDriver extends FileDriver
                     $metadata->getClassName(),
                     $fieldMetadata->getColumnName()
                 );
-            }
-
-            if (isset($idElement->generator)) {
-                $strategy = (string) ($idElement->generator['strategy'] ?? 'AUTO');
-
-                $idGeneratorType = constant(sprintf('%s::%s', Mapping\GeneratorType::class, strtoupper($strategy)));
-
-                if ($idGeneratorType !== Mapping\GeneratorType::NONE) {
-                    $idGeneratorDefinition = [];
-
-                    // Check for SequenceGenerator/TableGenerator definition
-                    if (isset($idElement->{'sequence-generator'})) {
-                        $seqGenerator          = $idElement->{'sequence-generator'};
-                        $idGeneratorDefinition = [
-                            'sequenceName'   => (string) $seqGenerator['sequence-name'],
-                            'allocationSize' => (string) $seqGenerator['allocation-size'],
-                        ];
-                    } elseif (isset($idElement->{'custom-id-generator'})) {
-                        $customGenerator = $idElement->{'custom-id-generator'};
-
-                        $idGeneratorDefinition = [
-                            'class'     => (string) $customGenerator['class'],
-                            'arguments' => [],
-                        ];
-
-                        if (! isset($idGeneratorDefinition['class'])) {
-                            throw new Mapping\MappingException(
-                                sprintf('Cannot instantiate custom generator, no class has been defined')
-                            );
-                        }
-
-                        if (! class_exists($idGeneratorDefinition['class'])) {
-                            throw new Mapping\MappingException(
-                                sprintf('Cannot instantiate custom generator : %s', var_export($idGeneratorDefinition, true))
-                            );
-                        }
-                    } elseif (isset($idElement->{'table-generator'})) {
-                        throw Mapping\MappingException::tableIdGeneratorNotImplemented($className);
-                    }
-
-                    $fieldMetadata->setValueGenerator(
-                        new Mapping\ValueGeneratorMetadata($idGeneratorType, $idGeneratorDefinition)
-                    );
-                }
             }
 
             $metadata->addProperty($fieldMetadata);
@@ -901,6 +871,38 @@ class XmlDriver extends FileDriver
         }
 
         return $columnAnnotation;
+    }
+
+    private function convertGeneratorElementToGeneratedValueAnnotation(
+        SimpleXMLElement $generatorElement
+    ) : Annotation\GeneratedValue {
+        $generatedValueAnnotation = new Annotation\GeneratedValue();
+
+        $generatedValueAnnotation->strategy = (string) ($generatorElement['strategy'] ?? 'AUTO');
+
+        return $generatedValueAnnotation;
+    }
+
+    private function convertSequenceGeneratorElementToSequenceGeneratorAnnotation(
+        SimpleXMLElement $sequenceGeneratorElement
+    ) : Annotation\SequenceGenerator {
+        $sequenceGeneratorAnnotation = new Annotation\SequenceGenerator();
+
+        $sequenceGeneratorAnnotation->sequenceName   = (string) ($sequenceGeneratorElement['sequence-name'] ?? null);
+        $sequenceGeneratorAnnotation->allocationSize = (int) ($sequenceGeneratorElement['allocation-size'] ?? 1);
+
+        return $sequenceGeneratorAnnotation;
+    }
+
+    private function convertCustomIdGeneratorElementToCustomIdGeneratorAnnotation(
+        SimpleXMLElement $customIdGeneratorElement
+    ) : Annotation\CustomIdGenerator {
+        $customIdGeneratorAnnotation = new Annotation\CustomIdGenerator();
+
+        $customIdGeneratorAnnotation->class     = (string) $customIdGeneratorElement['class'];
+        $customIdGeneratorAnnotation->arguments = [];
+
+        return $customIdGeneratorAnnotation;
     }
 
     /**

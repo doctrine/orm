@@ -6,7 +6,7 @@ namespace Doctrine\Tests\ORM\Sequencing;
 
 use BadMethodCallException;
 use Doctrine\ORM\EntityManagerInterface;
-use Doctrine\ORM\Sequencing\SequenceGenerator;
+use Doctrine\ORM\Sequencing\Generator\SequenceGenerator;
 use Doctrine\Tests\Mocks\ConnectionMock;
 use Doctrine\Tests\Mocks\StatementArrayMock;
 use Doctrine\Tests\OrmTestCase;

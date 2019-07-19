@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Doctrine\Tests\ORM\Mapping;
 
+use Doctrine\DBAL\Platforms\AbstractPlatform;
 use Doctrine\DBAL\Types\Type;
 use Doctrine\ORM\Annotation as ORM;
 use Doctrine\ORM\EntityManagerInterface;
@@ -14,7 +15,9 @@ use Doctrine\ORM\Mapping\ClassMetadataFactory;
 use Doctrine\ORM\Mapping\Factory\DefaultNamingStrategy;
 use Doctrine\ORM\Mapping\Factory\UnderscoreNamingStrategy;
 use Doctrine\ORM\Mapping\MappingException;
-use Doctrine\ORM\Reflection\RuntimeReflectionService;
+use Doctrine\ORM\Reflection\ReflectionService;
+use Doctrine\ORM\Sequencing\Generator\Generator;
+use Doctrine\ORM\Sequencing\Generator\SequenceGenerator;
 use Doctrine\Tests\Models\Cache\City;
 use Doctrine\Tests\Models\Company\CompanyContract;
 use Doctrine\Tests\Models\Company\CompanyContractListener;
@@ -44,6 +47,9 @@ use function strpos;
 
 abstract class AbstractMappingDriverTest extends OrmTestCase
 {
+    /** @var AbstractPlatform */
+    protected $targetPlatform;
+
     /** @var Mapping\ClassMetadataBuildingContext */
     protected $metadataBuildingContext;
 
@@ -51,9 +57,27 @@ abstract class AbstractMappingDriverTest extends OrmTestCase
     {
         parent::setUp();
 
+        $this->targetPlatform = $this->createMock(AbstractPlatform::class);
+
+        $this->targetPlatform
+            ->expects($this->any())
+            ->method('prefersSequences')
+            ->will($this->returnValue(true));
+
+        $this->targetPlatform
+            ->expects($this->any())
+            ->method('usesSequenceEmulatedIdentityColumns')
+            ->will($this->returnValue(true));
+
+        $this->targetPlatform
+            ->expects($this->any())
+            ->method('fixSchemaElementName')
+            ->will($this->returnArgument(0));
+
         $this->metadataBuildingContext = new Mapping\ClassMetadataBuildingContext(
             $this->createMock(ClassMetadataFactory::class),
-            new RuntimeReflectionService()
+            $this->createMock(ReflectionService::class),
+            $this->targetPlatform
         );
     }
 
@@ -183,33 +207,25 @@ abstract class AbstractMappingDriverTest extends OrmTestCase
      */
     public function testEntitySequence($class) : void
     {
-        self::assertInternalType(
-            'array',
-            $class->getProperty('id')->getValueGenerator()->getDefinition(),
-            'No Sequence Definition set on this driver.'
-        );
-        self::assertEquals(
-            [
-                'sequenceName'   => 'tablename_seq',
-                'allocationSize' => 100,
-            ],
-            $class->getProperty('id')->getValueGenerator()->getDefinition()
-        );
+        $valueGenerator = $class->getProperty('id')->getValueGenerator();
+
+        self::assertEquals(Mapping\GeneratorType::SEQUENCE, $valueGenerator->getType(), 'Generator Type');
+        self::assertInstanceOf(SequenceGenerator::class, $valueGenerator->getGenerator(), 'No Sequence Definition set on this driver.');
+
+        /** @var SequenceGenerator $generator */
+        $generator = $valueGenerator->getGenerator();
+
+        self::assertEquals('tablename_seq', $generator->getSequenceName());
+        self::assertEquals(100, $generator->getAllocationSize());
     }
 
     public function testEntityCustomGenerator() : void
     {
-        $class = $this->createClassMetadata(Animal::class);
+        $class          = $this->createClassMetadata(Animal::class);
+        $valueGenerator = $class->getProperty('id')->getValueGenerator();
 
-        self::assertEquals(Mapping\GeneratorType::CUSTOM, $class->getProperty('id')->getValueGenerator()->getType(), 'Generator Type');
-        self::assertEquals(
-            [
-                'class'     => 'stdClass',
-                'arguments' => [],
-            ],
-            $class->getProperty('id')->getValueGenerator()->getDefinition(),
-            'Generator Definition'
-        );
+        self::assertEquals(Mapping\GeneratorType::CUSTOM, $valueGenerator->getType(), 'Generator Type');
+        self::assertInstanceOf(CustomGenerator::class, $valueGenerator->getGenerator(), 'Generator Definition');
     }
 
     /**
@@ -328,7 +344,11 @@ abstract class AbstractMappingDriverTest extends OrmTestCase
 
         self::assertEquals('integer', $property->getTypeName());
         self::assertEquals(['id'], $class->identifier);
-        self::assertEquals(Mapping\GeneratorType::AUTO, $property->getValueGenerator()->getType(), 'ID-Generator is not GeneratorType::AUTO');
+        self::assertEquals(
+            Mapping\GeneratorType::SEQUENCE,
+            $property->getValueGenerator()->getType(),
+            'ID-Generator is not GeneratorType::AUTO'
+        );
 
         return $class;
     }
@@ -1286,6 +1306,19 @@ class User
     }
 }
 
+class CustomGenerator implements Generator
+{
+    public function generate(EntityManagerInterface $em, ?object $entity)
+    {
+        // TODO: Implement generate() method.
+    }
+
+    public function isPostInsertGenerator(): bool
+    {
+        return false;
+    }
+}
+
 /**
  * @ORM\Entity
  * @ORM\InheritanceType("SINGLE_TABLE")
@@ -1296,7 +1329,7 @@ abstract class Animal
 {
     /**
      * @ORM\Id @ORM\Column(type="string") @ORM\GeneratedValue(strategy="CUSTOM")
-     * @ORM\CustomIdGenerator(class=stdClass::class)
+     * @ORM\CustomIdGenerator(class=CustomGenerator::class)
      */
     public $id;
 }

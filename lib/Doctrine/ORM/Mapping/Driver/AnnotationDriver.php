@@ -587,16 +587,17 @@ class AnnotationDriver implements MappingDriver
         Mapping\ClassMetadata $metadata,
         Mapping\ClassMetadataBuildingContext $metadataBuildingContext
     ) : Mapping\FieldMetadata {
-        $fieldBuilder = new Builder\FieldMetadataBuilder($metadataBuildingContext);
-
-        $fieldBuilder
+        $fieldBuilder  = new Builder\FieldMetadataBuilder($metadataBuildingContext);
+        $fieldMetadata = $fieldBuilder
             ->withComponentMetadata($metadata)
             ->withFieldName($reflectionProperty->getName())
             ->withColumnAnnotation($propertyAnnotations[Annotation\Column::class])
             ->withIdAnnotation($propertyAnnotations[Annotation\Id::class] ?? null)
-            ->withVersionAnnotation($propertyAnnotations[Annotation\Version::class] ?? null);
-
-        $fieldMetadata = $fieldBuilder->build();
+            ->withVersionAnnotation($propertyAnnotations[Annotation\Version::class] ?? null)
+            ->withGeneratedValueAnnotation($propertyAnnotations[Annotation\GeneratedValue::class] ?? null)
+            ->withSequenceGeneratorAnnotation($propertyAnnotations[Annotation\SequenceGenerator::class] ?? null)
+            ->withCustomIdGeneratorAnnotation($propertyAnnotations[Annotation\CustomIdGenerator::class] ?? null)
+            ->build();
 
         // Prevent column duplication
         if ($metadata->checkPropertyDuplication($fieldMetadata->getColumnName())) {
@@ -606,59 +607,59 @@ class AnnotationDriver implements MappingDriver
             );
         }
 
-        // Check for GeneratedValue strategy
-        if (isset($propertyAnnotations[Annotation\GeneratedValue::class])) {
-            $generatedValueAnnot = $propertyAnnotations[Annotation\GeneratedValue::class];
-            $strategy            = strtoupper($generatedValueAnnot->strategy);
-            $idGeneratorType     = constant(sprintf('%s::%s', Mapping\GeneratorType::class, $strategy));
-
-            if ($idGeneratorType !== Mapping\GeneratorType::NONE) {
-                $idGeneratorDefinition = [];
-
-                // Check for CustomGenerator/SequenceGenerator/TableGenerator definition
-                switch (true) {
-                    case isset($propertyAnnotations[Annotation\SequenceGenerator::class]):
-                        $seqGeneratorAnnot = $propertyAnnotations[Annotation\SequenceGenerator::class];
-
-                        $idGeneratorDefinition = [
-                            'sequenceName' => $seqGeneratorAnnot->sequenceName,
-                            'allocationSize' => $seqGeneratorAnnot->allocationSize,
-                        ];
-
-                        break;
-
-                    case isset($propertyAnnotations[Annotation\CustomIdGenerator::class]):
-                        $customGeneratorAnnot = $propertyAnnotations[Annotation\CustomIdGenerator::class];
-
-                        $idGeneratorDefinition = [
-                            'class' => $customGeneratorAnnot->class,
-                            'arguments' => $customGeneratorAnnot->arguments,
-                        ];
-
-                        if (! isset($idGeneratorDefinition['class'])) {
-                            throw new Mapping\MappingException(
-                                sprintf('Cannot instantiate custom generator, no class has been defined')
-                            );
-                        }
-
-                        if (! class_exists($idGeneratorDefinition['class'])) {
-                            throw new Mapping\MappingException(
-                                sprintf('Cannot instantiate custom generator : %s', var_export($idGeneratorDefinition, true))
-                            );
-                        }
-
-                        break;
-
-                    /** @todo If it is not supported, why does this exist? */
-                    case isset($propertyAnnotations['Doctrine\ORM\Mapping\TableGenerator']):
-                        throw Mapping\MappingException::tableIdGeneratorNotImplemented($metadata->getClassName());
-                }
-
-                $fieldMetadata->setValueGenerator(
-                    new Mapping\ValueGeneratorMetadata($idGeneratorType, $idGeneratorDefinition)
-                );
-            }
-        }
+//        // Check for GeneratedValue strategy
+//        if (isset($propertyAnnotations[Annotation\GeneratedValue::class])) {
+//            $generatedValueAnnot = $propertyAnnotations[Annotation\GeneratedValue::class];
+//            $strategy            = strtoupper($generatedValueAnnot->strategy);
+//            $idGeneratorType     = constant(sprintf('%s::%s', Mapping\GeneratorType::class, $strategy));
+//
+//            if ($idGeneratorType !== Mapping\GeneratorType::NONE) {
+//                $idGeneratorDefinition = [];
+//
+//                // Check for CustomGenerator/SequenceGenerator/TableGenerator definition
+//                switch (true) {
+//                    case isset($propertyAnnotations[Annotation\SequenceGenerator::class]):
+//                        $seqGeneratorAnnot = $propertyAnnotations[Annotation\SequenceGenerator::class];
+//
+//                        $idGeneratorDefinition = [
+//                            'sequenceName' => $seqGeneratorAnnot->sequenceName,
+//                            'allocationSize' => $seqGeneratorAnnot->allocationSize,
+//                        ];
+//
+//                        break;
+//
+//                    case isset($propertyAnnotations[Annotation\CustomIdGenerator::class]):
+//                        $customGeneratorAnnot = $propertyAnnotations[Annotation\CustomIdGenerator::class];
+//
+//                        $idGeneratorDefinition = [
+//                            'class' => $customGeneratorAnnot->class,
+//                            'arguments' => $customGeneratorAnnot->arguments,
+//                        ];
+//
+//                        if (! isset($idGeneratorDefinition['class'])) {
+//                            throw new Mapping\MappingException(
+//                                sprintf('Cannot instantiate custom generator, no class has been defined')
+//                            );
+//                        }
+//
+//                        if (! class_exists($idGeneratorDefinition['class'])) {
+//                            throw new Mapping\MappingException(
+//                                sprintf('Cannot instantiate custom generator : %s', var_export($idGeneratorDefinition, true))
+//                            );
+//                        }
+//
+//                        break;
+//
+//                    /** @todo If it is not supported, why does this exist? */
+//                    case isset($propertyAnnotations['Doctrine\ORM\Mapping\TableGenerator']):
+//                        throw Mapping\MappingException::tableIdGeneratorNotImplemented($metadata->getClassName());
+//                }
+//
+//                $fieldMetadata->setValueGenerator(
+//                    new Mapping\ValueGeneratorMetadata($idGeneratorType, $idGeneratorDefinition)
+//                );
+//            }
+//        }
 
         return $fieldMetadata;
     }
@@ -959,43 +960,6 @@ class AnnotationDriver implements MappingDriver
     }
 
     /**
-     * Parse the given Column as FieldMetadata
-     */
-    private function convertColumnAnnotationToFieldMetadata(
-        Annotation\Column $columnAnnot,
-        string $fieldName,
-        bool $isVersioned
-    ) : Mapping\FieldMetadata {
-        $fieldMetadata = new Mapping\FieldMetadata($fieldName);
-
-        $fieldMetadata->setType(Type::getType($columnAnnot->type));
-        $fieldMetadata->setVersioned($isVersioned);
-
-        if (! empty($columnAnnot->name)) {
-            $fieldMetadata->setColumnName($columnAnnot->name);
-        }
-
-        if (! empty($columnAnnot->columnDefinition)) {
-            $fieldMetadata->setColumnDefinition($columnAnnot->columnDefinition);
-        }
-
-        if (! empty($columnAnnot->length)) {
-            $fieldMetadata->setLength($columnAnnot->length);
-        }
-
-        if ($columnAnnot->options) {
-            $fieldMetadata->setOptions($columnAnnot->options);
-        }
-
-        $fieldMetadata->setScale($columnAnnot->scale);
-        $fieldMetadata->setPrecision($columnAnnot->precision);
-        $fieldMetadata->setNullable($columnAnnot->nullable);
-        $fieldMetadata->setUnique($columnAnnot->unique);
-
-        return $fieldMetadata;
-    }
-
-    /**
      * @param Annotation\Annotation[] $classAnnotations
      */
     private function attachLifecycleCallbacks(
@@ -1155,15 +1119,19 @@ class AnnotationDriver implements MappingDriver
         // Evaluate AttributeOverrides annotation
         if (isset($classAnnotations[Annotation\AttributeOverrides::class])) {
             $attributeOverridesAnnot = $classAnnotations[Annotation\AttributeOverrides::class];
+            $fieldBuilder            = new Builder\FieldMetadataBuilder($metadataBuildingContext);
 
-            foreach ($attributeOverridesAnnot->value as $attributeOverrideAnnot) {
-                $fieldMetadata = $this->convertColumnAnnotationToFieldMetadata(
-                    $attributeOverrideAnnot->column,
-                    $attributeOverrideAnnot->name,
-                    false
-                );
+            $fieldBuilder
+                ->withComponentMetadata($metadata)
+                ->withIdAnnotation(null)
+                ->withVersionAnnotation(null);
 
-                $metadata->setPropertyOverride($fieldMetadata);
+            foreach ($attributeOverridesAnnot->value as $attributeOverrideAnnotation) {
+                $fieldBuilder
+                    ->withFieldName($attributeOverrideAnnotation->name)
+                    ->withColumnAnnotation($attributeOverrideAnnotation->column);
+
+                $metadata->setPropertyOverride($fieldBuilder->build());
             }
         }
     }
