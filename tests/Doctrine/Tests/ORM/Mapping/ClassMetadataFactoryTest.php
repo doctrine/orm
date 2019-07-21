@@ -392,10 +392,10 @@ class ClassMetadataFactoryTest extends OrmTestCase
         $listener
             ->expects($this->any())
             ->method('onClassMetadataNotFound')
-            ->will($this->returnCallback(static function (OnClassMetadataNotFoundEventArgs $args) use ($metadata, $em, $test): void {
-                $test->assertNull($args->getFoundMetadata());
-                $test->assertSame('Foo', $args->getClassName());
-                $test->assertSame($em, $args->getObjectManager());
+            ->will($this->returnCallback(static function (OnClassMetadataNotFoundEventArgs $args) use ($metadata, $em): void {
+                self::assertNull($args->getFoundMetadata());
+                self::assertSame('Foo', $args->getClassName());
+                self::assertSame($em, $args->getObjectManager());
 
                 $args->setFoundMetadata($metadata);
             }));
