@@ -335,8 +335,6 @@ class ClassMetadataFactoryTest extends OrmTestCase
      */
     public function testFallbackLoadingCausesEventTriggeringThatCanModifyFetchedMetadata() : void
     {
-        $test = $this;
-
         /** @var ClassMetadata $metadata */
         $metadata     = $this->createMock(ClassMetadata::class);
         $cmf          = new ClassMetadataFactory();
@@ -350,10 +348,10 @@ class ClassMetadataFactoryTest extends OrmTestCase
         $listener
             ->expects($this->any())
             ->method('onClassMetadataNotFound')
-            ->will($this->returnCallback(static function (OnClassMetadataNotFoundEventArgs $args) use ($metadata, $em, $test) {
-                $test->assertNull($args->getFoundMetadata());
-                $test->assertSame('Foo', $args->getClassName());
-                $test->assertSame($em, $args->getObjectManager());
+            ->will($this->returnCallback(static function (OnClassMetadataNotFoundEventArgs $args) use ($metadata, $em) {
+                self::assertNull($args->getFoundMetadata());
+                self::assertSame('Foo', $args->getClassName());
+                self::assertSame($em, $args->getObjectManager());
 
                 $args->setFoundMetadata($metadata);
             }));

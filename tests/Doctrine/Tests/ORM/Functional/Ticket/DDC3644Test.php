@@ -154,23 +154,19 @@ class DDC3644User
 
     public function setAddresses(Collection $addresses)
     {
-        $self = $this;
-
         $this->addresses = $addresses;
 
-        $addresses->map(static function ($address) use ($self) {
-            $address->user = $self;
+        $addresses->map(function ($address) {
+            $address->user = $this;
         });
     }
 
     public function setPets(Collection $pets)
     {
-        $self = $this;
-
         $this->pets = $pets;
 
-        $pets->map(static function ($pet) use ($self) {
-            $pet->owner = $self;
+        $pets->map(function ($pet) {
+            $pet->owner = $this;
         });
     }
 }
