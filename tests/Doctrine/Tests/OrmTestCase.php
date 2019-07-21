@@ -17,6 +17,7 @@ use Doctrine\ORM\Cache\Logging\StatisticsCacheLogger;
 use Doctrine\ORM\Configuration;
 use Doctrine\ORM\Mapping\Driver\AnnotationDriver;
 use Doctrine\ORM\Proxy\Factory\ProxyFactory;
+use ReflectionClass;
 use function is_array;
 use function realpath;
 
@@ -170,5 +171,23 @@ abstract class OrmTestCase extends DoctrineTestCase
         }
 
         return $this->secondLevelCacheDriverImpl;
+    }
+
+    public static function assertAttributeEmpty(string $haystackAttributeName, $haystackClassOrObject, string $message = '') : void
+    {
+        $class    = new ReflectionClass($haystackClassOrObject);
+        $property = $class->getProperty($haystackAttributeName);
+        $property->setAccessible(true);
+
+        self::assertEmpty($property->getValue($haystackClassOrObject));
+    }
+
+    public static function assertAttributeSame($expected, string $actualAttributeName, $actualClassOrObject, string $message = '') : void
+    {
+        $class    = new ReflectionClass($actualClassOrObject);
+        $property = $class->getProperty($actualAttributeName);
+        $property->setAccessible(true);
+
+        self::assertSame($expected, $property->getValue($actualClassOrObject));
     }
 }

@@ -22,7 +22,6 @@ class DDC3123Test extends OrmFunctionalTestCase
 
     public function testIssue() : void
     {
-        $test = $this;
         $user = new CmsUser();
         $uow  = $this->em->getUnitOfWork();
 
@@ -39,8 +38,8 @@ class DDC3123Test extends OrmFunctionalTestCase
         $listener
             ->expects($this->once())
             ->method(Events::postFlush)
-            ->will($this->returnCallback(static function () use ($uow, $test) {
-                $test->assertAttributeEmpty('extraUpdates', $uow, 'ExtraUpdates are reset before postFlush');
+            ->will($this->returnCallback(static function () use ($uow) {
+                self::assertAttributeEmpty('extraUpdates', $uow, 'ExtraUpdates are reset before postFlush');
             }));
 
         $this->em->getEventManager()->addEventListener(Events::postFlush, $listener);
