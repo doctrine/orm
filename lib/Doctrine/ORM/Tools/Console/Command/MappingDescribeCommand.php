@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace Doctrine\ORM\Tools\Console\Command;
 
 use Doctrine\Common\Persistence\Mapping\MappingException;
-use Doctrine\ORM\Annotation\GeneratedValue;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Mapping\AssociationMetadata;
 use Doctrine\ORM\Mapping\ClassMetadata;

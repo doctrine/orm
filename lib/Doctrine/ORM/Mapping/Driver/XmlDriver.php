@@ -22,7 +22,6 @@ use function simplexml_load_string;
 use function sprintf;
 use function str_replace;
 use function strtoupper;
-use function var_export;
 
 /**
  * XmlDriver is a metadata driver that enables mapping through XML files.

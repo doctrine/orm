@@ -6,7 +6,6 @@ namespace Doctrine\ORM\Mapping\Driver;
 
 use Doctrine\Common\Annotations\AnnotationReader;
 use Doctrine\Common\Annotations\Reader;
-use Doctrine\DBAL\Types\Type;
 use Doctrine\ORM\Annotation;
 use Doctrine\ORM\Cache\Exception\CacheException;
 use Doctrine\ORM\Events;
@@ -43,8 +42,6 @@ use function realpath;
 use function sprintf;
 use function str_replace;
 use function strpos;
-use function strtoupper;
-use function var_export;
 
 /**
  * The AnnotationDriver reads the mapping metadata from docblock annotations.

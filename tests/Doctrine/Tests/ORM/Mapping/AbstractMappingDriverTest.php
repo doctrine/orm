@@ -1313,7 +1313,7 @@ class CustomGenerator implements Generator
         // TODO: Implement generate() method.
     }
 
-    public function isPostInsertGenerator(): bool
+    public function isPostInsertGenerator() : bool
     {
         return false;
     }

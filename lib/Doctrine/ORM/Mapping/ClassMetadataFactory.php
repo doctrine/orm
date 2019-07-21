@@ -15,23 +15,19 @@ use Doctrine\ORM\Event\LoadClassMetadataEventArgs;
 use Doctrine\ORM\Event\OnClassMetadataNotFoundEventArgs;
 use Doctrine\ORM\Events;
 use Doctrine\ORM\Exception\ORMException;
-use Doctrine\ORM\Mapping\Exception\TableGeneratorNotImplementedYet;
-use Doctrine\ORM\Mapping\Exception\UnknownGeneratorType;
 use Doctrine\ORM\Reflection\ReflectionService;
 use Doctrine\ORM\Reflection\RuntimeReflectionService;
+use Doctrine\ORM\Sequencing\Executor\ValueGenerationExecutor;
 use Doctrine\ORM\Sequencing\Planning\CompositeValueGenerationPlan;
 use Doctrine\ORM\Sequencing\Planning\NoopValueGenerationPlan;
 use Doctrine\ORM\Sequencing\Planning\SingleValueGenerationPlan;
-use Doctrine\ORM\Sequencing\Executor\ValueGenerationExecutor;
 use Doctrine\ORM\Utility\StaticClassNameConverter;
 use InvalidArgumentException;
 use ReflectionException;
 use function array_map;
 use function array_reverse;
 use function count;
-use function in_array;
 use function reset;
-use function sprintf;
 
 /**
  * The ClassMetadataFactory is used to create ClassMetadata objects that contain all the

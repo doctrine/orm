@@ -12,7 +12,6 @@ use Doctrine\ORM\Configuration;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Event\OnClassMetadataNotFoundEventArgs;
 use Doctrine\ORM\Events;
-use Doctrine\ORM\Exception\ORMException;
 use Doctrine\ORM\Mapping;
 use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\Mapping\ClassMetadataFactory;
@@ -223,7 +222,7 @@ class ClassMetadataFactoryTest extends OrmTestCase
         $fieldMetadata->setPrimaryKey(true);
         $fieldMetadata->setValueGenerator(new Mapping\ValueGeneratorMetadata(
             Mapping\GeneratorType::SEQUENCE,
-            new Generator\SequenceGenerator("group_id_seq", 1)
+            new Generator\SequenceGenerator('group_id_seq', 1)
         ));
 
         $cm1->addProperty($fieldMetadata);
