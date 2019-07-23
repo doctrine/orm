@@ -354,6 +354,34 @@ class DefaultQueryCacheTest extends OrmTestCase
         $this->assertEquals('Bar', $result[1]->getName());
     }
 
+    public function testGetWithAssociationCacheMiss() : void
+    {
+        $rsm   = new ResultSetMappingBuilder($this->em);
+        $key   = new QueryCacheKey('query.key1', 0);
+        $entry = new QueryCacheEntry(
+            [
+                ['identifier' => ['id' => 1]],
+                ['identifier' => ['id' => 2]],
+            ]
+        );
+
+        $this->region->addReturn('get', $entry);
+
+        $this->region->addReturn(
+            'getMultiple',
+            [
+                new EntityCacheEntry(Country::class, ['id' => 1, 'name' => 'Foo']),
+                false,
+            ]
+        );
+
+        $rsm->addRootEntityFromClassMetadata(Country::class, 'c');
+
+        $result = $this->queryCache->get($key, $rsm);
+
+        self::assertNull($result);
+    }
+
     public function testCancelPutResultIfEntityPutFails()
     {
         $result   = [];

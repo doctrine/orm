@@ -124,7 +124,7 @@ class DefaultQueryCache implements QueryCache
         foreach ($cacheEntry->result as $index => $entry) {
             $entityEntry = is_array($entries) && array_key_exists($index, $entries) ? $entries[$index] : null;
 
-            if ($entityEntry === null) {
+            if (! $entityEntry instanceof EntityCacheEntry) {
                 if ($this->cacheLogger !== null) {
                     $this->cacheLogger->entityCacheMiss($regionName, $cacheKeys->identifiers[$index]);
                 }
