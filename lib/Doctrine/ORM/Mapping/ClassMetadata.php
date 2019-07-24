@@ -8,7 +8,6 @@ use ArrayIterator;
 use Doctrine\ORM\Cache\Exception\CacheException;
 use Doctrine\ORM\Cache\Exception\NonCacheableEntityAssociation;
 use Doctrine\ORM\EntityManagerInterface;
-use Doctrine\ORM\Mapping\Factory\NamingStrategy;
 use Doctrine\ORM\Reflection\ReflectionService;
 use Doctrine\ORM\Sequencing\Planning\ValueGenerationPlan;
 use Doctrine\ORM\Utility\PersisterHelper;
@@ -173,13 +172,6 @@ class ClassMetadata extends ComponentMetadata implements TableOwner
     public $versionProperty;
 
     /**
-     * NamingStrategy determining the default column and table names.
-     *
-     * @var NamingStrategy
-     */
-    protected $namingStrategy;
-
-    /**
      * Value generation plan is responsible for generating values for auto-generated fields.
      *
      * @var ValueGenerationPlan
@@ -199,8 +191,6 @@ class ClassMetadata extends ComponentMetadata implements TableOwner
         ClassMetadataBuildingContext $metadataBuildingContext
     ) {
         parent::__construct($entityName, $metadataBuildingContext);
-
-        $this->namingStrategy = $metadataBuildingContext->getNamingStrategy();
 
         if ($parent) {
             $this->setParent($parent);

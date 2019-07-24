@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Doctrine\ORM\Configuration;
 
+use Doctrine\DBAL\Platforms\AbstractPlatform;
 use Doctrine\ORM\Mapping\Driver\MappingDriver;
 use Doctrine\ORM\Mapping\Factory\AbstractClassMetadataFactory;
 use Doctrine\ORM\Mapping\Factory\ClassMetadataResolver;
@@ -29,6 +30,9 @@ class MetadataConfiguration
 
     /** @var MappingDriver */
     private $mappingDriver;
+
+    /** @var AbstractPlatform */
+    private $targetPlatform;
 
     /** @var NamingStrategy */
     private $namingStrategy;
@@ -74,6 +78,16 @@ class MetadataConfiguration
     public function setMappingDriver(MappingDriver $mappingDriver)
     {
         $this->mappingDriver = $mappingDriver;
+    }
+
+    public function getTargetPlatform() : AbstractPlatform
+    {
+        return $this->targetPlatform;
+    }
+
+    public function setTargetPlatform(AbstractPlatform $targetPlatform) : void
+    {
+        $this->targetPlatform = $targetPlatform;
     }
 
     public function getNamingStrategy() : NamingStrategy

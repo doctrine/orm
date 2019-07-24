@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Doctrine\ORM\Mapping\Factory;
 
 use Doctrine\Common\Persistence\Mapping\ClassMetadataFactory;
+use Doctrine\DBAL\Platforms\AbstractPlatform;
 use Doctrine\ORM\Configuration\MetadataConfiguration;
 use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\Mapping\ClassMetadataBuildingContext;
@@ -48,6 +49,12 @@ abstract class AbstractClassMetadataFactory implements ClassMetadataFactory
     /** @var MappingDriver */
     protected $mappingDriver;
 
+    /** @var AbstractPlatform */
+    protected $targetPlatform;
+
+    /** @var NamingStrategy */
+    protected $namingStrategy;
+
     /** @var ClassMetadataDefinition[] */
     private $definitions = [];
 
@@ -56,15 +63,20 @@ abstract class AbstractClassMetadataFactory implements ClassMetadataFactory
 
     public function __construct(MetadataConfiguration $configuration)
     {
-        $mappingDriver = $configuration->getMappingDriver();
-        $resolver      = $configuration->getResolver();
+        $mappingDriver  = $configuration->getMappingDriver();
+        $resolver       = $configuration->getResolver();
+        $targetPlatform = $configuration->getTargetPlatform();
+        $namingStrategy = $configuration->getNamingStrategy();
         //$autoGenerate      = $configuration->getAutoGenerate();
+
         $generator         = new ClassMetadataGenerator($mappingDriver);
         $generatorStrategy = new ConditionalFileWriterClassMetadataGeneratorStrategy($generator);
         $definitionFactory = new ClassMetadataDefinitionFactory($resolver, $generatorStrategy);
 
         $this->mappingDriver     = $mappingDriver;
         $this->definitionFactory = $definitionFactory;
+        $this->targetPlatform    = $targetPlatform;
+        $this->namingStrategy    = $namingStrategy;
     }
 
     /**
@@ -94,21 +106,32 @@ abstract class AbstractClassMetadataFactory implements ClassMetadataFactory
             return $this->loaded[$entityClassName];
         }
 
-        $metadataBuildingContext = new ClassMetadataBuildingContext($this, new RuntimeReflectionService());
-        $parentClassNameList     = $this->getParentClassNameList($entityClassName);
-        $parentClassNameList[]   = $entityClassName;
-        $parent                  = null;
+        $metadataBuildingContext = new ClassMetadataBuildingContext(
+            $this,
+            new RuntimeReflectionService(),
+            $this->targetPlatform,
+            $this->namingStrategy
+        );
+
+        $parentClassMetadata = null;
+        $parentClassNameList = $this->getParentClassNameList($entityClassName);
+
+        $parentClassNameList[] = $entityClassName;
 
         foreach ($parentClassNameList as $parentClassName) {
             if (isset($this->loaded[$parentClassName])) {
-                $parent = $this->loaded[$parentClassName];
+                $parentClassMetadata = $this->loaded[$parentClassName];
 
                 continue;
             }
 
-            $definition = $this->getOrCreateClassMetadataDefinition($parentClassName, $parent, $metadataBuildingContext);
+            $definition = $this->getOrCreateClassMetadataDefinition(
+                $parentClassName,
+                $parentClassMetadata,
+                $metadataBuildingContext
+            );
 
-            $parent = $this->loaded[$parentClassName] = $this->createClassMetadata($definition);
+            $parentClassMetadata = $this->loaded[$parentClassName] = $this->createClassMetadata($definition);
         }
 
         $metadataBuildingContext->validate();

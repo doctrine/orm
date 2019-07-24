@@ -22,6 +22,7 @@ use function array_merge;
 use function count;
 use function current;
 use function in_array;
+use function reset;
 use function sort;
 use function str_replace;
 use function strtolower;
@@ -347,7 +348,8 @@ class DatabaseDriver implements MappingDriver
 
         // We need to check for the columns here, because we might have associations as id as well.
         if ($ids && count($primaryKeys) === 1) {
-            $generator = $fieldMetadata->getTypeName() === 'bigint'
+            $fieldMetadata = reset($ids);
+            $generator     = $fieldMetadata->getTypeName() === 'bigint'
                 ? new Generator\BigIntegerIdentityGenerator()
                 : new Generator\IdentityGenerator();
 
