@@ -44,7 +44,7 @@ final class GH5804Test extends OrmFunctionalTestCase
     }
 }
 
-final class GH5804Generator implements Generator
+final class GH5804Generator implements Generator\Generator
 {
     /**
      * {@inheritdoc}

@@ -158,7 +158,7 @@ final class StaticProxyFactory implements ProxyFactory
     {
         $transientFieldsFqns = [];
 
-        foreach ($metadata->getDeclaredPropertiesIterator() as $name => $property) {
+        foreach ($metadata->getPropertiesIterator() as $name => $property) {
             if (! $property instanceof TransientMetadata) {
                 continue;
             }

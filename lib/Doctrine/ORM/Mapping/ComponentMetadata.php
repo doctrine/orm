@@ -31,7 +31,7 @@ abstract class ComponentMetadata
     protected $cache;
 
     /** @var Property[] */
-    protected $declaredProperties = [];
+    protected $properties = [];
 
     public function __construct(string $className, ClassMetadataBuildingContext $metadataBuildingContext)
     {
@@ -74,9 +74,9 @@ abstract class ComponentMetadata
     /**
      * @return iterable|Property[]
      */
-    public function getDeclaredPropertiesIterator() : iterable
+    public function getPropertiesIterator() : iterable
     {
-        foreach ($this->declaredProperties as $name => $property) {
+        foreach ($this->properties as $name => $property) {
             yield $name => $property;
         }
     }
@@ -85,13 +85,12 @@ abstract class ComponentMetadata
      * @throws ReflectionException
      * @throws MappingException
      */
-    public function addDeclaredProperty(Property $property) : void
+    public function addProperty(Property $property) : void
     {
         $className    = $this->getClassName();
         $propertyName = $property->getName();
 
-        // @todo guilhermeblanco Switch to hasProperty once inherited properties are not being mapped on child classes
-        if ($this->hasDeclaredProperty($propertyName)) {
+        if ($this->hasProperty($propertyName)) {
             throw MappingException::duplicateProperty($className, $this->getProperty($propertyName));
         }
 
@@ -105,46 +104,21 @@ abstract class ComponentMetadata
             $property->setReflectionProperty($reflectionProperty);
         }
 
-        $this->declaredProperties[$propertyName] = $property;
-    }
-
-    public function hasDeclaredProperty(string $propertyName) : bool
-    {
-        return isset($this->declaredProperties[$propertyName]);
-    }
-
-    /**
-     * @return iterable|Property[]
-     */
-    public function getPropertiesIterator() : iterable
-    {
-        if ($this->parent) {
-            yield from $this->parent->getPropertiesIterator();
-        }
-
-        yield from $this->getDeclaredPropertiesIterator();
-    }
-
-    public function getProperty(string $propertyName) : ?Property
-    {
-        if (isset($this->declaredProperties[$propertyName])) {
-            return $this->declaredProperties[$propertyName];
-        }
-
-        if ($this->parent) {
-            return $this->parent->getProperty($propertyName);
-        }
-
-        return null;
+        $this->properties[$propertyName] = $property;
     }
 
     public function hasProperty(string $propertyName) : bool
     {
-        if (isset($this->declaredProperties[$propertyName])) {
-            return true;
+        return isset($this->properties[$propertyName]);
+    }
+
+    public function getProperty(string $propertyName) : ?Property
+    {
+        if (isset($this->properties[$propertyName])) {
+            return $this->properties[$propertyName];
         }
 
-        return $this->parent && $this->parent->hasProperty($propertyName);
+        return null;
     }
 
     /**
@@ -154,8 +128,7 @@ abstract class ComponentMetadata
     {
         $iterator = new ArrayIterator();
 
-        // @todo guilhermeblanco Must be switched to getPropertiesIterator once class only has its declared properties
-        foreach ($this->getDeclaredPropertiesIterator() as $property) {
+        foreach ($this->getPropertiesIterator() as $property) {
             switch (true) {
                 case $property instanceof FieldMetadata:
                     $iterator->offsetSet($property->getColumnName(), $property);

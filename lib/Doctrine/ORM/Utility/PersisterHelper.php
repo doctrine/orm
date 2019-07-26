@@ -57,7 +57,7 @@ class PersisterHelper
         }
 
         // iterate over association mappings
-        foreach ($class->getDeclaredPropertiesIterator() as $association) {
+        foreach ($class->getPropertiesIterator() as $association) {
             if (! ($association instanceof AssociationMetadata)) {
                 continue;
             }

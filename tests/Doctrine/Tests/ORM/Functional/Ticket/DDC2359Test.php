@@ -7,6 +7,7 @@ namespace Doctrine\Tests\ORM\Functional\Ticket;
 use ArrayIterator;
 use Doctrine\Common\EventManager;
 use Doctrine\DBAL\Connection;
+use Doctrine\DBAL\Platforms\AbstractPlatform;
 use Doctrine\ORM\Annotation as ORM;
 use Doctrine\ORM\Configuration;
 use Doctrine\ORM\EntityManagerInterface;
@@ -29,11 +30,12 @@ class DDC2359Test extends DoctrineTestCase
     {
         $mockDriver    = $this->createMock(MappingDriver::class);
         $mockMetadata  = $this->createMock(ClassMetadata::class);
+        $mockPlatform  = $this->createMock(AbstractPlatform::class);
         $entityManager = $this->createMock(EntityManagerInterface::class);
 
         /** @var ClassMetadataFactory|PHPUnit_Framework_MockObject_MockObject $metadataFactory */
         $metadataFactory = $this->getMockBuilder(ClassMetadataFactory::class)
-                                ->setMethods(['doLoadMetadata', 'wakeupReflection'])
+                                ->setMethods(['doLoadMetadata', 'getTargetPlatform', 'wakeupReflection'])
                                 ->getMock();
 
         $configuration = $this->getMockBuilder(Configuration::class)
@@ -49,7 +51,7 @@ class DDC2359Test extends DoctrineTestCase
 
         $mockMetadata
             ->expects($this->any())
-            ->method('getDeclaredPropertiesIterator')
+            ->method('getPropertiesIterator')
             ->will($this->returnValue(new ArrayIterator([])));
 
         $entityManager
@@ -66,6 +68,11 @@ class DDC2359Test extends DoctrineTestCase
             ->expects($this->any())
             ->method('getEventManager')
             ->will($this->returnValue($this->createMock(EventManager::class)));
+
+        $metadataFactory
+            ->expects($this->any())
+            ->method('getTargetPlatform')
+            ->will($this->returnValue($mockPlatform));
 
         $metadataFactory
             ->expects($this->any())

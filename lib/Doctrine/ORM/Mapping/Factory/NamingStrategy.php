@@ -16,7 +16,7 @@ interface NamingStrategy
      *
      * @return string A table name.
      */
-    public function classToTableName($className);
+    public function classToTableName(string $className) : string;
 
     /**
      * Returns a column name for a property.
@@ -26,26 +26,29 @@ interface NamingStrategy
      *
      * @return string A column name.
      */
-    public function propertyToColumnName($propertyName, $className = null);
+    public function propertyToColumnName(string $propertyName, ?string $className = null) : string;
 
     /**
      * Returns a column name for an embedded property.
      *
-     * @param string $propertyName
-     * @param string $embeddedColumnName
-     * @param string $className
-     * @param string $embeddedClassName
-     *
-     * @return string
+     * @param string $propertyName       A property name.
+     * @param string $embeddedColumnName An embedded column name.
+     * @param string $className          The fully-qualified class name.
+     * @param string $embeddedClassName  The fully-qualified embedded class name.
      */
-    public function embeddedFieldToColumnName($propertyName, $embeddedColumnName, $className = null, $embeddedClassName = null);
+    public function embeddedFieldToColumnName(
+        string $propertyName,
+        string $embeddedColumnName,
+        ?string $className = null,
+        ?string $embeddedClassName = null
+    ) : string;
 
     /**
      * Returns the default reference column name.
      *
      * @return string A column name.
      */
-    public function referenceColumnName();
+    public function referenceColumnName() : string;
 
     /**
      * Returns a join column name for a property.
@@ -55,7 +58,7 @@ interface NamingStrategy
      *
      * @return string A join column name.
      */
-    public function joinColumnName($propertyName, $className = null);
+    public function joinColumnName(string $propertyName, ?string $className = null) : string;
 
     /**
      * Returns a join table name.
@@ -66,7 +69,7 @@ interface NamingStrategy
      *
      * @return string A join table name.
      */
-    public function joinTableName($sourceEntity, $targetEntity, $propertyName = null);
+    public function joinTableName(string $sourceEntity, string $targetEntity, ?string $propertyName = null) : string;
 
     /**
      * Returns the foreign key column name for the given parameters.
@@ -76,5 +79,5 @@ interface NamingStrategy
      *
      * @return string A join column name.
      */
-    public function joinKeyColumnName($entityName, $referencedColumnName = null);
+    public function joinKeyColumnName(string $entityName, ?string $referencedColumnName = null) : string;
 }

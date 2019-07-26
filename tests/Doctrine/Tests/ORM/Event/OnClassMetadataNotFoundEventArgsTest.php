@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Doctrine\Tests\ORM;
 
+use Doctrine\DBAL\Platforms\AbstractPlatform;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Event\OnClassMetadataNotFoundEventArgs;
 use Doctrine\ORM\Mapping\ClassMetadata;
@@ -24,7 +25,8 @@ class OnClassMetadataNotFoundEventArgsTest extends DoctrineTestCase
         $entityManager           = $this->createMock(EntityManagerInterface::class);
         $metadataBuildingContext = new ClassMetadataBuildingContext(
             $this->createMock(ClassMetadataFactory::class),
-            $this->createMock(ReflectionService::class)
+            $this->createMock(ReflectionService::class),
+            $this->createMock(AbstractPlatform::class)
         );
 
         $args = new OnClassMetadataNotFoundEventArgs('foo', $metadataBuildingContext, $entityManager);

@@ -32,7 +32,6 @@ use Doctrine\ORM\Mapping\OneToManyAssociationMetadata;
 use Doctrine\ORM\Mapping\OneToOneAssociationMetadata;
 use Doctrine\ORM\Mapping\ToManyAssociationMetadata;
 use Doctrine\ORM\Mapping\ToOneAssociationMetadata;
-use Doctrine\ORM\Mapping\VersionFieldMetadata;
 use Doctrine\ORM\Persisters\Collection\CollectionPersister;
 use Doctrine\ORM\Persisters\Collection\ManyToManyPersister;
 use Doctrine\ORM\Persisters\Collection\OneToManyPersister;
@@ -544,7 +543,7 @@ class UnitOfWork implements PropertyChangedListener
 
         $actualData = [];
 
-        foreach ($class->getDeclaredPropertiesIterator() as $name => $property) {
+        foreach ($class->getPropertiesIterator() as $name => $property) {
             $value = $property->getValue($entity);
 
             if ($property instanceof ToManyAssociationMetadata && $value !== null) {
@@ -679,7 +678,7 @@ class UnitOfWork implements PropertyChangedListener
         }
 
         // Look for changes in associations of the entity
-        foreach ($class->getDeclaredPropertiesIterator() as $property) {
+        foreach ($class->getPropertiesIterator() as $property) {
             if (! $property instanceof AssociationMetadata) {
                 continue;
             }
@@ -851,13 +850,32 @@ class UnitOfWork implements PropertyChangedListener
         $generationPlan->executeImmediate($this->em, $entity);
 
         if (! $generationPlan->containsDeferred()) {
-            $id                            = $this->em->getIdentifierFlattener()->flattenIdentifier($class, $persister->getIdentifier($entity));
-            $this->entityIdentifiers[$oid] = $id;
+            $id = $this->em->getIdentifierFlattener()->flattenIdentifier($class, $persister->getIdentifier($entity));
+
+            // Some identifiers may be foreign keys to new entities.
+            // In this case, we don't have the value yet and should treat it as if we have a post-insert generator
+            if (! $this->hasMissingIdsWhichAreForeignKeys($class, $id)) {
+                $this->entityIdentifiers[$oid] = $id;
+            }
         }
 
         $this->entityStates[$oid] = self::STATE_MANAGED;
 
         $this->scheduleForInsert($entity);
+    }
+
+    /**
+     * @param mixed[] $idValue
+     */
+    private function hasMissingIdsWhichAreForeignKeys(ClassMetadata $class, array $idValue) : bool
+    {
+        foreach ($idValue as $idField => $idFieldValue) {
+            if ($idFieldValue === null && isset($class->associationMappings[$idField])) {
+                return true;
+            }
+        }
+
+        return false;
     }
 
     /**
@@ -896,13 +914,14 @@ class UnitOfWork implements PropertyChangedListener
 
         $actualData = [];
 
-        foreach ($class->getDeclaredPropertiesIterator() as $name => $property) {
+        foreach ($class->getPropertiesIterator() as $name => $property) {
             switch (true) {
-                case $property instanceof VersionFieldMetadata:
-                    // Ignore version field
-                    break;
-
                 case $property instanceof FieldMetadata:
+                    // Ignore version field
+                    if ($property->isVersioned()) {
+                        break;
+                    }
+
                     if (! $property->isPrimaryKey()
                         || ! $property->getValueGenerator()
                         || $property->getValueGenerator()->getType() !== GeneratorType::IDENTITY) {
@@ -1090,7 +1109,7 @@ class UnitOfWork implements PropertyChangedListener
 
         // Calculate dependencies for new nodes
         while ($class = array_pop($newNodes)) {
-            foreach ($class->getDeclaredPropertiesIterator() as $property) {
+            foreach ($class->getPropertiesIterator() as $property) {
                 if (! ($property instanceof ToOneAssociationMetadata && $property->isOwningSide())) {
                     continue;
                 }
@@ -1746,7 +1765,7 @@ class UnitOfWork implements PropertyChangedListener
     {
         $class = $this->em->getClassMetadata(get_class($entity));
 
-        foreach ($class->getDeclaredPropertiesIterator() as $association) {
+        foreach ($class->getPropertiesIterator() as $association) {
             if (! ($association instanceof AssociationMetadata && in_array('refresh', $association->getCascade(), true))) {
                 continue;
             }
@@ -1793,7 +1812,7 @@ class UnitOfWork implements PropertyChangedListener
             return;
         }
 
-        foreach ($class->getDeclaredPropertiesIterator() as $association) {
+        foreach ($class->getPropertiesIterator() as $association) {
             if (! ($association instanceof AssociationMetadata && in_array('persist', $association->getCascade(), true))) {
                 continue;
             }
@@ -1853,7 +1872,7 @@ class UnitOfWork implements PropertyChangedListener
         $entitiesToCascade = [];
         $class             = $this->em->getClassMetadata(get_class($entity));
 
-        foreach ($class->getDeclaredPropertiesIterator() as $association) {
+        foreach ($class->getPropertiesIterator() as $association) {
             if (! ($association instanceof AssociationMetadata && in_array('remove', $association->getCascade(), true))) {
                 continue;
             }
@@ -2141,7 +2160,7 @@ class UnitOfWork implements PropertyChangedListener
             return $entity;
         }
 
-        foreach ($class->getDeclaredPropertiesIterator() as $field => $association) {
+        foreach ($class->getPropertiesIterator() as $field => $association) {
             if (! ($association instanceof AssociationMetadata)) {
                 continue;
             }

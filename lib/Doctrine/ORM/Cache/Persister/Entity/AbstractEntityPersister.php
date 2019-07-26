@@ -211,7 +211,7 @@ abstract class AbstractEntityPersister implements CachedEntityPersister
         if ($this->joinedAssociations === null) {
             $associations = [];
 
-            foreach ($this->class->getDeclaredPropertiesIterator() as $association) {
+            foreach ($this->class->getPropertiesIterator() as $association) {
                 if ($association instanceof ToOneAssociationMetadata &&
                     $association->getCache() &&
                     ($association->getFetchMode() === FetchMode::EAGER || ! $association->isOwningSide())) {

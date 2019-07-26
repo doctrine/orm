@@ -9,6 +9,7 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\EventManager;
 use Doctrine\Common\NotifyPropertyChanged;
 use Doctrine\Common\PropertyChangedListener;
+use Doctrine\DBAL\Platforms\AbstractPlatform;
 use Doctrine\ORM\Annotation as ORM;
 use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\Mapping\ClassMetadataBuildingContext;
@@ -31,7 +32,6 @@ use Doctrine\Tests\OrmTestCase;
 use InvalidArgumentException;
 use PHPUnit_Framework_MockObject_MockObject;
 use stdClass;
-use function count;
 use function get_class;
 use function random_int;
 use function serialize;
@@ -76,7 +76,8 @@ class UnitOfWorkTest extends OrmTestCase
 
         $this->metadataBuildingContext = new ClassMetadataBuildingContext(
             $this->createMock(ClassMetadataFactory::class),
-            new RuntimeReflectionService()
+            new RuntimeReflectionService(),
+            $this->createMock(AbstractPlatform::class)
         );
 
         $this->eventManager   = $this->getMockBuilder(EventManager::class)->getMock();
@@ -216,46 +217,6 @@ class UnitOfWorkTest extends OrmTestCase
         $updates = $itemPersister->getUpdates();
         self::assertCount(1, $updates);
         self::assertSame($updates[0], $item);
-    }
-
-    public function testChangeTrackingNotifyIndividualCommit() : void
-    {
-        self::markTestIncomplete(
-            '@guilhermeblanco, this test was added directly on master#a16dc65cd206aed67a01a19f01f6318192b826af and'
-            . ' since we do not support committing individual entities I think it is invalid now...'
-        );
-
-        $persister = new EntityPersisterMock($this->emMock, $this->emMock->getClassMetadata('Doctrine\Tests\ORM\NotifyChangedEntity'));
-        $this->unitOfWork->setEntityPersister('Doctrine\Tests\ORM\NotifyChangedEntity', $persister);
-        $itemPersister = new EntityPersisterMock($this->emMock, $this->emMock->getClassMetadata('Doctrine\Tests\ORM\NotifyChangedRelatedItem'));
-        $this->unitOfWork->setEntityPersister('Doctrine\Tests\ORM\NotifyChangedRelatedItem', $itemPersister);
-
-        $entity = new NotifyChangedEntity();
-        $entity->setData('thedata');
-
-        $entity2 = new NotifyChangedEntity();
-        $entity2->setData('thedata');
-
-        $this->unitOfWork->persist($entity);
-        $this->unitOfWork->persist($entity2);
-        $this->unitOfWork->commit($entity);
-        $this->unitOfWork->commit();
-
-        self::assertEquals(2, count($persister->getInserts()));
-
-        $persister->reset();
-
-        self::assertTrue($this->unitOfWork->isInIdentityMap($entity2));
-
-        $entity->setData('newdata');
-        $entity2->setData('newdata');
-
-        $this->unitOfWork->commit($entity);
-
-        self::assertTrue($this->unitOfWork->isScheduledForDirtyCheck($entity2));
-        self::assertEquals(['data' => ['thedata', 'newdata']], $this->unitOfWork->getEntityChangeSet($entity2));
-        self::assertFalse($this->unitOfWork->isScheduledForDirtyCheck($entity));
-        self::assertEquals([], $this->unitOfWork->getEntityChangeSet($entity));
     }
 
     public function testGetEntityStateOnVersionedEntityWithAssignedIdentifier() : void
@@ -684,7 +645,7 @@ class UnitOfWorkTest extends OrmTestCase
      */
     public function testCanInstantiateInternalPhpClassSubclass() : void
     {
-        $classMetadata = new ClassMetadata(MyArrayObjectEntity::class, $this->metadataBuildingContext);
+        $classMetadata = new ClassMetadata(MyArrayObjectEntity::class, null, $this->metadataBuildingContext);
 
         self::assertInstanceOf(MyArrayObjectEntity::class, $this->unitOfWork->newInstance($classMetadata));
     }
@@ -697,7 +658,7 @@ class UnitOfWorkTest extends OrmTestCase
         /** @var ClassMetadata $classMetadata */
         $classMetadata = unserialize(
             serialize(
-                new ClassMetadata(MyArrayObjectEntity::class, $this->metadataBuildingContext)
+                new ClassMetadata(MyArrayObjectEntity::class, null, $this->metadataBuildingContext)
             )
         );
 

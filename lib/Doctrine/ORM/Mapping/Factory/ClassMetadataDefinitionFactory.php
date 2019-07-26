@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Doctrine\ORM\Mapping\Factory;
 
 use Doctrine\ORM\Mapping\ClassMetadata;
+use Doctrine\ORM\Mapping\ClassMetadataBuildingContext;
 use Doctrine\ORM\Mapping\Factory\Strategy\ClassMetadataGeneratorStrategy;
 use function class_exists;
 
@@ -22,14 +23,17 @@ class ClassMetadataDefinitionFactory
         $this->generatorStrategy = $generatorStrategy;
     }
 
-    public function build(string $className, ?ClassMetadata $parentMetadata) : ClassMetadataDefinition
-    {
+    public function build(
+        string $className,
+        ?ClassMetadata $parentMetadata,
+        ClassMetadataBuildingContext $metadataBuildingContext
+    ) : ClassMetadataDefinition {
         $definition = $this->createDefinition($className, $parentMetadata);
 
         if (! class_exists($definition->metadataClassName, false)) {
             $metadataClassPath = $this->resolver->resolveMetadataClassPath($className);
 
-            $this->generatorStrategy->generate($metadataClassPath, $definition);
+            $this->generatorStrategy->generate($metadataClassPath, $definition, $metadataBuildingContext);
         }
 
         return $definition;

@@ -14,6 +14,7 @@ use Doctrine\DBAL\Schema\SchemaException;
 use Doctrine\DBAL\Schema\Table;
 use Doctrine\DBAL\Types\Type;
 use Doctrine\ORM\Mapping;
+use Doctrine\ORM\Sequencing\Generator;
 use InvalidArgumentException;
 use function array_diff;
 use function array_keys;
@@ -21,6 +22,7 @@ use function array_merge;
 use function count;
 use function current;
 use function in_array;
+use function reset;
 use function sort;
 use function str_replace;
 use function strtolower;
@@ -73,7 +75,7 @@ class DatabaseDriver implements MappingDriver
     /**
      * {@inheritDoc}
      */
-    public function isTransient($className)
+    public function isTransient($className) : bool
     {
         return true;
     }
@@ -81,7 +83,7 @@ class DatabaseDriver implements MappingDriver
     /**
      * {@inheritDoc}
      */
-    public function getAllClassNames()
+    public function getAllClassNames() : array
     {
         $this->reverseEngineerMappingFromDatabase();
 
@@ -138,17 +140,16 @@ class DatabaseDriver implements MappingDriver
      */
     public function loadMetadataForClass(
         string $className,
-        Mapping\ClassMetadata $metadata,
+        ?Mapping\ComponentMetadata $parent,
         Mapping\ClassMetadataBuildingContext $metadataBuildingContext
-    ) {
+    ) : Mapping\ComponentMetadata {
         $this->reverseEngineerMappingFromDatabase();
 
         if (! isset($this->classToTableNames[$className])) {
             throw new InvalidArgumentException('Unknown class ' . $className);
         }
 
-        // @todo guilhermeblanco This should somehow disappear... =)
-        $metadata->setClassName($className);
+        $metadata = new Mapping\ClassMetadata($className, $parent, $metadataBuildingContext);
 
         $this->buildTable($metadata);
         $this->buildFieldMappings($metadata);
@@ -225,6 +226,8 @@ class DatabaseDriver implements MappingDriver
                 break;
             }
         }
+
+        return $metadata;
     }
 
     /**
@@ -345,7 +348,14 @@ class DatabaseDriver implements MappingDriver
 
         // We need to check for the columns here, because we might have associations as id as well.
         if ($ids && count($primaryKeys) === 1) {
-            $ids[0]->setValueGenerator(new Mapping\ValueGeneratorMetadata(Mapping\GeneratorType::AUTO));
+            $fieldMetadata = reset($ids);
+            $generator     = $fieldMetadata->getTypeName() === 'bigint'
+                ? new Generator\BigIntegerIdentityGenerator()
+                : new Generator\IdentityGenerator();
+
+            $valueGenerator = new Mapping\ValueGeneratorMetadata(Mapping\GeneratorType::IDENTITY, $generator);
+
+            $ids[0]->setValueGenerator($valueGenerator);
         }
     }
 

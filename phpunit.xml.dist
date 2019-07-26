@@ -22,11 +22,6 @@
     beStrictAboutTestsThatDoNotTestAnything="true"
     bootstrap="./tests/Doctrine/Tests/TestInit.php"
 >
-
-    <php>
-        <env name="COLUMNS" value="120"/>
-    </php>
-
     <testsuites>
         <testsuite name="Doctrine ORM Test Suite">
             <directory>./tests/Doctrine/Tests/ORM</directory>
@@ -42,6 +37,7 @@
     </groups>
 
   <php>
+    <env name="COLUMNS" value="120"/>
     <!-- "Real" test database -->
     <!-- uncomment, otherwise sqlite memory runs
     <var name="db_type" value="pdo_mysql"/>

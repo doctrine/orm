@@ -27,7 +27,6 @@ use Doctrine\ORM\Mapping\MappingException;
 use Doctrine\ORM\Mapping\OneToManyAssociationMetadata;
 use Doctrine\ORM\Mapping\ToManyAssociationMetadata;
 use Doctrine\ORM\Mapping\ToOneAssociationMetadata;
-use Doctrine\ORM\Mapping\VersionFieldMetadata;
 use Doctrine\ORM\OptimisticLockException;
 use Doctrine\ORM\PersistentCollection;
 use Doctrine\ORM\Persisters\Exception\CantUseInOperatorOnCompositeKeys;
@@ -291,7 +290,7 @@ class BasicEntityPersister implements EntityPersister
      *
      * @return mixed
      */
-    protected function fetchVersionValue(VersionFieldMetadata $versionProperty, array $id)
+    protected function fetchVersionValue(FieldMetadata $versionProperty, array $id)
     {
         $versionedClass = $versionProperty->getDeclaringClass();
         $tableName      = $versionedClass->table->getQuotedQualifiedName($this->platform);
@@ -536,7 +535,7 @@ class BasicEntityPersister implements EntityPersister
      */
     protected function deleteJoinTableRecords($identifier)
     {
-        foreach ($this->class->getDeclaredPropertiesIterator() as $association) {
+        foreach ($this->class->getPropertiesIterator() as $association) {
             if (! ($association instanceof ManyToManyAssociationMetadata)) {
                 continue;
             }
@@ -1279,7 +1278,7 @@ class BasicEntityPersister implements EntityPersister
         $eagerAliasCounter = 0;
         $columnList        = [];
 
-        foreach ($this->class->getDeclaredPropertiesIterator() as $fieldName => $property) {
+        foreach ($this->class->getPropertiesIterator() as $fieldName => $property) {
             switch (true) {
                 case $property instanceof FieldMetadata:
                     $columnList[] = $this->getSelectColumnSQL($fieldName, $this->class);
@@ -1314,7 +1313,7 @@ class BasicEntityPersister implements EntityPersister
 
                     $this->currentPersisterContext->rsm->addJoinedEntityResult($targetEntity, $assocAlias, 'r', $fieldName);
 
-                    foreach ($eagerEntity->getDeclaredPropertiesIterator() as $eagerProperty) {
+                    foreach ($eagerEntity->getPropertiesIterator() as $eagerProperty) {
                         switch (true) {
                             case $eagerProperty instanceof FieldMetadata:
                                 $columnList[] = $this->getSelectColumnSQL($eagerProperty->getName(), $eagerEntity, $assocAlias);
@@ -1514,13 +1513,13 @@ class BasicEntityPersister implements EntityPersister
             ? $this->class->versionProperty->getName()
             : null;
 
-        foreach ($this->class->getDeclaredPropertiesIterator() as $name => $property) {
+        foreach ($this->class->getPropertiesIterator() as $name => $property) {
             /*if (isset($this->class->embeddedClasses[$name])) {
                 continue;
             }*/
 
             switch (true) {
-                case $property instanceof VersionFieldMetadata:
+                case $property instanceof FieldMetadata && $property->isVersioned():
                     // Do nothing
                     break;
 

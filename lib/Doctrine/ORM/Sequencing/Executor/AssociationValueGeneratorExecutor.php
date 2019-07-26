@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Doctrine\ORM\Sequencing\Planning;
+namespace Doctrine\ORM\Sequencing\Executor;
 
 use Doctrine\ORM\EntityManagerInterface;
 

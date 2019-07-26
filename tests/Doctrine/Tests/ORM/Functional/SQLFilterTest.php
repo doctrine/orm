@@ -6,6 +6,7 @@ namespace Doctrine\Tests\ORM\Functional;
 
 use Doctrine\Common\Cache\ArrayCache;
 use Doctrine\DBAL\Connection;
+use Doctrine\DBAL\Platforms\AbstractPlatform;
 use Doctrine\DBAL\Types\Type as DBALType;
 use Doctrine\ORM\Configuration;
 use Doctrine\ORM\EntityManagerInterface;
@@ -309,18 +310,19 @@ class SQLFilterTest extends OrmFunctionalTestCase
     {
         $metadataBuildingContext = new ClassMetadataBuildingContext(
             $this->createMock(ClassMetadataFactory::class),
-            $this->createMock(ReflectionService::class)
+            $this->createMock(ReflectionService::class),
+            $this->createMock(AbstractPlatform::class)
         );
 
         $filter = new MySoftDeleteFilter($this->getMockEntityManager());
 
         // Test for an entity that gets extra filter data
-        $metadata = new ClassMetadata('MyEntity\SoftDeleteNewsItem', $metadataBuildingContext);
+        $metadata = new ClassMetadata('MyEntity\SoftDeleteNewsItem', null, $metadataBuildingContext);
 
         self::assertEquals('t1_.deleted = 0', $filter->addFilterConstraint($metadata, 't1_'));
 
         // Test for an entity that doesn't get extra filter data
-        $metadata = new ClassMetadata('MyEntity\NoSoftDeleteNewsItem', $metadataBuildingContext);
+        $metadata = new ClassMetadata('MyEntity\NoSoftDeleteNewsItem', null, $metadataBuildingContext);
 
         self::assertEquals('', $filter->addFilterConstraint($metadata, 't1_'));
     }

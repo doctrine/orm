@@ -34,19 +34,19 @@ final class NormalizeIdentifier
     ) : array {
         $normalizedAssociatedId = [];
 
-        foreach ($targetClass->getDeclaredPropertiesIterator() as $name => $declaredProperty) {
+        foreach ($targetClass->getPropertiesIterator() as $name => $property) {
             if (! array_key_exists($name, $flatIdentifier)) {
                 continue;
             }
 
-            if ($declaredProperty instanceof FieldMetadata) {
+            if ($property instanceof FieldMetadata) {
                 $normalizedAssociatedId[$name] = $flatIdentifier[$name];
 
                 continue;
             }
 
-            if ($declaredProperty instanceof ToOneAssociationMetadata) {
-                $targetIdMetadata = $entityManager->getClassMetadata($declaredProperty->getTargetEntity());
+            if ($property instanceof ToOneAssociationMetadata) {
+                $targetIdMetadata = $entityManager->getClassMetadata($property->getTargetEntity());
 
                 // Note: the ORM prevents using an entity with a composite identifier as an identifier association
                 //       therefore, reset($targetIdMetadata->identifier) is always correct

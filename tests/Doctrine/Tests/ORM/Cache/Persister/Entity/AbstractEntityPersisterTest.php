@@ -6,6 +6,7 @@ namespace Doctrine\Tests\ORM\Cache\Persister\Entity;
 
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Criteria;
+use Doctrine\ORM\Cache\ConcurrentRegion;
 use Doctrine\ORM\Cache\Persister\CachedPersister;
 use Doctrine\ORM\Cache\Persister\Entity\AbstractEntityPersister;
 use Doctrine\ORM\Cache\Persister\Entity\CachedEntityPersister;
@@ -102,9 +103,7 @@ abstract class AbstractEntityPersisterTest extends OrmTestCase
      */
     protected function createRegion()
     {
-        return $this->getMockBuilder(Region::class)
-                    ->setMethods($this->regionMockMethods)
-                    ->getMock();
+        return $this->createMock(ConcurrentRegion::class);
     }
 
     /**

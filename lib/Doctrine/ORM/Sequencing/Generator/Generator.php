@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Doctrine\ORM\Sequencing;
+namespace Doctrine\ORM\Sequencing\Generator;
 
 use Doctrine\ORM\EntityManagerInterface;
 

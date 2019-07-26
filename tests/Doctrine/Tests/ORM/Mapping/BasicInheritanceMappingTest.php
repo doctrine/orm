@@ -68,7 +68,7 @@ class BasicInheritanceMappingTest extends OrmTestCase
         self::assertNotNull($class->getProperty('transient'));
         self::assertInstanceOf(TransientMetadata::class, $class->getProperty('transient'));
 
-        self::assertArrayHasKey('mappedRelated1', iterator_to_array($class->getDeclaredPropertiesIterator()));
+        self::assertArrayHasKey('mappedRelated1', iterator_to_array($class->getPropertiesIterator()));
     }
 
     /**
@@ -149,11 +149,11 @@ class BasicInheritanceMappingTest extends OrmTestCase
         /** @var ClassMetadata $class */
         $class = $this->cmf->getMetadataFor(SuperclassEntity::class);
 
-        self::assertSame(GeneratorType::SEQUENCE, $class->getProperty('id')->getValueGenerator()->getType());
-        self::assertEquals(
-            ['allocationSize' => 1, 'sequenceName' => 'foo'],
-            $class->getProperty('id')->getValueGenerator()->getDefinition()
-        );
+        $valueGenerator = $class->getProperty('id')->getValueGenerator();
+
+        self::assertSame(GeneratorType::SEQUENCE, $valueGenerator->getType());
+        self::assertEquals('foo', $valueGenerator->getGenerator()->getSequenceName());
+        self::assertEquals(1, $valueGenerator->getGenerator()->getAllocationSize());
     }
 
     /**
@@ -165,11 +165,11 @@ class BasicInheritanceMappingTest extends OrmTestCase
         /** @var ClassMetadata $class */
         $class = $this->cmf->getMetadataFor(HierarchyD::class);
 
-        self::assertSame(GeneratorType::SEQUENCE, $class->getProperty('id')->getValueGenerator()->getType());
-        self::assertEquals(
-            ['allocationSize' => 1, 'sequenceName' => 'foo'],
-            $class->getProperty('id')->getValueGenerator()->getDefinition()
-        );
+        $valueGenerator = $class->getProperty('id')->getValueGenerator();
+
+        self::assertSame(GeneratorType::SEQUENCE, $valueGenerator->getType());
+        self::assertEquals('foo', $valueGenerator->getGenerator()->getSequenceName());
+        self::assertEquals(1, $valueGenerator->getGenerator()->getAllocationSize());
     }
 
     /**
@@ -181,11 +181,11 @@ class BasicInheritanceMappingTest extends OrmTestCase
         /** @var ClassMetadata $class */
         $class = $this->cmf->getMetadataFor(MediumSuperclassEntity::class);
 
-        self::assertSame(GeneratorType::SEQUENCE, $class->getProperty('id')->getValueGenerator()->getType());
-        self::assertEquals(
-            ['allocationSize' => 1, 'sequenceName' => 'foo'],
-            $class->getProperty('id')->getValueGenerator()->getDefinition()
-        );
+        $valueGenerator = $class->getProperty('id')->getValueGenerator();
+
+        self::assertSame(GeneratorType::SEQUENCE, $valueGenerator->getType());
+        self::assertEquals('foo', $valueGenerator->getGenerator()->getSequenceName());
+        self::assertEquals(1, $valueGenerator->getGenerator()->getAllocationSize());
     }
 }
 

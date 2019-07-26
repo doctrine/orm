@@ -7,12 +7,11 @@ namespace Doctrine\Tests\ORM\Query;
 use Doctrine\ORM\Query\Expr;
 use Doctrine\Tests\Models\Company\CompanyEmployee;
 use Doctrine\Tests\OrmTestCase;
+use InvalidArgumentException;
 
 /**
  * Test case for the DQL Expr class used for generating DQL snippets through
  * a programmatic interface
- *
- * @link        http://www.phpdoctrine.org
  */
 class ExprTest extends OrmTestCase
 {
@@ -333,7 +332,7 @@ class ExprTest extends OrmTestCase
     }
 
     /**
-     * @expectedException \InvalidArgumentException
+     * @expectedException InvalidArgumentException
      */
     public function testAddThrowsException() : void
     {

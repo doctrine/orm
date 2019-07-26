@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Doctrine\Tests\ORM\Repository;
 
+use Doctrine\DBAL\Platforms\AbstractPlatform;
 use Doctrine\ORM\Configuration;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Mapping\ClassMetadata;
@@ -14,7 +15,7 @@ use Doctrine\ORM\Repository\DefaultRepositoryFactory;
 use Doctrine\Tests\DoctrineTestCase;
 use Doctrine\Tests\Models\DDC753\DDC753DefaultRepository;
 use Doctrine\Tests\Models\DDC869\DDC869PaymentRepository;
-use PHPUnit_Framework_MockObject_MockObject;
+use PHPUnit\Framework\MockObject\MockObject;
 
 /**
  * Tests for {@see \Doctrine\ORM\Repository\DefaultRepositoryFactory}
@@ -23,16 +24,16 @@ use PHPUnit_Framework_MockObject_MockObject;
  */
 class DefaultRepositoryFactoryTest extends DoctrineTestCase
 {
-    /** @var EntityManagerInterface|PHPUnit_Framework_MockObject_MockObject */
+    /** @var EntityManagerInterface|MockObject */
     private $entityManager;
 
-    /** @var Configuration|PHPUnit_Framework_MockObject_MockObject */
+    /** @var Configuration|MockObject */
     private $configuration;
 
     /** @var DefaultRepositoryFactory */
     private $repositoryFactory;
 
-    /** @var ClassMetadataBuildingContext|PHPUnit_Framework_MockObject_MockObject */
+    /** @var ClassMetadataBuildingContext|MockObject */
     private $metadataBuildingContext;
 
     /**
@@ -42,7 +43,8 @@ class DefaultRepositoryFactoryTest extends DoctrineTestCase
     {
         $this->metadataBuildingContext = new ClassMetadataBuildingContext(
             $this->createMock(ClassMetadataFactory::class),
-            $this->createMock(ReflectionService::class)
+            $this->createMock(ReflectionService::class),
+            $this->createMock(AbstractPlatform::class)
         );
         $this->configuration           = $this->createMock(Configuration::class);
         $this->entityManager           = $this->createEntityManager();
@@ -128,7 +130,7 @@ class DefaultRepositoryFactoryTest extends DoctrineTestCase
      */
     public function buildClassMetadata($className)
     {
-        $metadata = new ClassMetadata($className, $this->metadataBuildingContext);
+        $metadata = new ClassMetadata($className, null, $this->metadataBuildingContext);
 
         $metadata->setCustomRepositoryClassName(null);
 

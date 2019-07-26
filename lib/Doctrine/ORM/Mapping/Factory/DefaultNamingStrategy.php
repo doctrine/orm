@@ -51,7 +51,7 @@ class DefaultNamingStrategy implements NamingStrategy
     /**
      * {@inheritdoc}
      */
-    public function classToTableName($className)
+    public function classToTableName(string $className) : string
     {
         return $this->_classToTableName($className, $this->plural);
     }
@@ -59,7 +59,7 @@ class DefaultNamingStrategy implements NamingStrategy
     /**
      * {@inheritdoc}
      */
-    public function propertyToColumnName($propertyName, $className = null)
+    public function propertyToColumnName(string $propertyName, ?string $className = null) : string
     {
         return $propertyName;
     }
@@ -67,15 +67,19 @@ class DefaultNamingStrategy implements NamingStrategy
     /**
      * {@inheritdoc}
      */
-    public function embeddedFieldToColumnName($propertyName, $embeddedColumnName, $className = null, $embeddedClassName = null)
-    {
+    public function embeddedFieldToColumnName(
+        string $propertyName,
+        string $embeddedColumnName,
+        ?string $className = null,
+        ?string $embeddedClassName = null
+    ) : string {
         return $propertyName . '_' . $embeddedColumnName;
     }
 
     /**
      * {@inheritdoc}
      */
-    public function referenceColumnName()
+    public function referenceColumnName() : string
     {
         return 'id';
     }
@@ -83,7 +87,7 @@ class DefaultNamingStrategy implements NamingStrategy
     /**
      * {@inheritdoc}
      */
-    public function joinColumnName($propertyName, $className = null)
+    public function joinColumnName(string $propertyName, ?string $className = null) : string
     {
         return $propertyName . '_' . $this->referenceColumnName();
     }
@@ -91,7 +95,7 @@ class DefaultNamingStrategy implements NamingStrategy
     /**
      * {@inheritdoc}
      */
-    public function joinTableName($sourceEntity, $targetEntity, $propertyName = null)
+    public function joinTableName(string $sourceEntity, string $targetEntity, ?string $propertyName = null) : string
     {
         return strtolower($this->_classToTableName($sourceEntity) . '_' .
             $this->_classToTableName($targetEntity));
@@ -100,10 +104,11 @@ class DefaultNamingStrategy implements NamingStrategy
     /**
      * {@inheritdoc}
      */
-    public function joinKeyColumnName($entityName, $referencedColumnName = null)
+    public function joinKeyColumnName(string $entityName, ?string $referencedColumnName = null) : string
     {
-        return strtolower($this->_classToTableName($entityName) . '_' .
-            ($referencedColumnName ?: $this->referenceColumnName()));
+        return strtolower(
+            $this->_classToTableName($entityName) . '_' . ($referencedColumnName ?: $this->referenceColumnName())
+        );
     }
 
     /**

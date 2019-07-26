@@ -15,7 +15,6 @@ use Doctrine\ORM\Mapping\JoinColumnMetadata;
 use Doctrine\ORM\Mapping\ManyToManyAssociationMetadata;
 use Doctrine\ORM\Mapping\ToManyAssociationMetadata;
 use Doctrine\ORM\Mapping\ToOneAssociationMetadata;
-use Doctrine\ORM\Mapping\VersionFieldMetadata;
 use Doctrine\ORM\Utility\PersisterHelper;
 use function array_combine;
 use function array_keys;
@@ -338,7 +337,7 @@ class JoinedSubclassPersister extends AbstractEntityInheritancePersister
         $columnList = [];
 
         // Add columns
-        foreach ($this->class->getDeclaredPropertiesIterator() as $fieldName => $property) {
+        foreach ($this->class->getPropertiesIterator() as $fieldName => $property) {
             if ($property instanceof FieldMetadata) {
                 $columnList[] = $this->getSelectColumnSQL($fieldName, $property->getDeclaringClass());
 
@@ -381,7 +380,7 @@ class JoinedSubclassPersister extends AbstractEntityInheritancePersister
             $subClass = $this->em->getClassMetadata($subClassName);
 
             // Add columns
-            foreach ($subClass->getDeclaredPropertiesIterator() as $fieldName => $property) {
+            foreach ($subClass->getPropertiesIterator() as $fieldName => $property) {
                 if ($subClass->isInheritedProperty($fieldName)) {
                     continue;
                 }
@@ -432,8 +431,8 @@ class JoinedSubclassPersister extends AbstractEntityInheritancePersister
             $this->columns[$columnName] = $column;
         }
 
-        foreach ($this->class->getDeclaredPropertiesIterator() as $name => $property) {
-            if (($property instanceof FieldMetadata && ($property instanceof VersionFieldMetadata || $this->class->isInheritedProperty($name)))
+        foreach ($this->class->getPropertiesIterator() as $name => $property) {
+            if (($property instanceof FieldMetadata && ($property->isVersioned() || $this->class->isInheritedProperty($name)))
                 || ($property instanceof AssociationMetadata && $this->class->isInheritedProperty($name))
                 /*|| isset($this->class->embeddedClasses[$name])*/) {
                 continue;

@@ -11,6 +11,8 @@ use Doctrine\Tests\OrmFunctionalTestCase;
 
 /**
  * @group DDC-117
+ * @group DDC-3597
+ * @group embedded
  */
 class DDC3597Test extends OrmFunctionalTestCase
 {
@@ -26,9 +28,6 @@ class DDC3597Test extends OrmFunctionalTestCase
         );
     }
 
-    /**
-     * @group DDC-3597
-     */
     public function testSaveImageEntity() : void
     {
         $imageEntity = new DDC3597Image('foobar');

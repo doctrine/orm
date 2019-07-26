@@ -128,7 +128,7 @@ class ResultSetMappingBuilder extends ResultSetMapping
             );
         }
 
-        foreach ($classMetadata->getDeclaredPropertiesIterator() as $property) {
+        foreach ($classMetadata->getPropertiesIterator() as $property) {
             switch (true) {
                 case $property instanceof FieldMetadata:
                     $columnName  = $property->getColumnName();
@@ -205,6 +205,7 @@ class ResultSetMappingBuilder extends ResultSetMapping
             case self::COLUMN_RENAMING_CUSTOM:
                 return $customRenameColumns[$columnName] ?? $columnName;
             case self::COLUMN_RENAMING_NONE:
+            default:
                 return $columnName;
         }
     }

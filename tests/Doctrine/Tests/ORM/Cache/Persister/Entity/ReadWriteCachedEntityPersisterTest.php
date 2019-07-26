@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Doctrine\Tests\ORM\Cache\Persister\Entity;
 
-use Doctrine\ORM\Cache\ConcurrentRegion;
 use Doctrine\ORM\Cache\EntityCacheKey;
 use Doctrine\ORM\Cache\Lock;
 use Doctrine\ORM\Cache\Persister\Entity\ReadWriteCachedEntityPersister;
@@ -38,16 +37,6 @@ class ReadWriteCachedEntityPersisterTest extends AbstractEntityPersisterTest
     protected function createPersister(EntityManagerInterface $em, EntityPersister $persister, Region $region, ClassMetadata $metadata)
     {
         return new ReadWriteCachedEntityPersister($persister, $region, $em, $metadata);
-    }
-
-    /**
-     * @return Region
-     */
-    protected function createRegion()
-    {
-        return $this->getMockBuilder(ConcurrentRegion::class)
-                    ->setConstructorArgs($this->regionMockMethods)
-                    ->getMock();
     }
 
     public function testDeleteShouldLockItem() : void

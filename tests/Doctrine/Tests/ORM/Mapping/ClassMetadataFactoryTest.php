@@ -6,18 +6,18 @@ namespace Doctrine\Tests\ORM\Mapping;
 
 use Doctrine\Common\EventManager;
 use Doctrine\DBAL\Connection;
+use Doctrine\DBAL\Platforms\AbstractPlatform;
 use Doctrine\DBAL\Types\Type;
 use Doctrine\ORM\Configuration;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Event\OnClassMetadataNotFoundEventArgs;
 use Doctrine\ORM\Events;
-use Doctrine\ORM\Exception\ORMException;
 use Doctrine\ORM\Mapping;
 use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\Mapping\ClassMetadataFactory;
 use Doctrine\ORM\Mapping\Driver\MappingDriver;
 use Doctrine\ORM\Mapping\MappingException;
-use Doctrine\ORM\Reflection\RuntimeReflectionService;
+use Doctrine\ORM\Reflection\ReflectionService;
 use Doctrine\ORM\Sequencing\Generator;
 use Doctrine\Tests\Mocks\ConnectionMock;
 use Doctrine\Tests\Mocks\DriverMock;
@@ -60,9 +60,9 @@ class ClassMetadataFactoryTest extends OrmTestCase
         // Prechecks
         self::assertCount(0, $cm1->getAncestorsIterator());
         self::assertEquals(Mapping\InheritanceType::NONE, $cm1->inheritanceType);
-        self::assertEquals(Mapping\GeneratorType::AUTO, $cm1->getProperty('id')->getValueGenerator()->getType());
+        self::assertEquals(Mapping\GeneratorType::SEQUENCE, $cm1->getProperty('id')->getValueGenerator()->getType());
         self::assertTrue($cm1->hasField('name'));
-        self::assertCount(4, $cm1->getDeclaredPropertiesIterator()); // 2 fields + 2 associations
+        self::assertCount(4, $cm1->getPropertiesIterator()); // 2 fields + 2 associations
         self::assertEquals('group', $cm1->table->getName());
 
         // Go
@@ -72,46 +72,6 @@ class ClassMetadataFactoryTest extends OrmTestCase
         self::assertEquals('group', $cmMap1->table->getName());
         self::assertCount(0, $cmMap1->getAncestorsIterator());
         self::assertTrue($cmMap1->hasField('name'));
-    }
-
-    public function testGetMetadataForThrowsExceptionOnUnknownCustomGeneratorClass() : void
-    {
-        $cm1 = $this->createValidClassMetadata();
-
-        $cm1->getProperty('id')->setValueGenerator(
-            new Mapping\ValueGeneratorMetadata(
-                Mapping\GeneratorType::CUSTOM,
-                [
-                    'class' => 'NotExistingGenerator',
-                    'arguments' => [],
-                ]
-            )
-        );
-
-        $cmf = $this->createTestFactory();
-
-        $cmf->setMetadataForClass($cm1->getClassName(), $cm1);
-
-        $this->expectException(ORMException::class);
-
-        $actual = $cmf->getMetadataFor($cm1->getClassName());
-    }
-
-    public function testGetMetadataForThrowsExceptionOnMissingCustomGeneratorDefinition() : void
-    {
-        $cm1 = $this->createValidClassMetadata();
-
-        $cm1->getProperty('id')->setValueGenerator(
-            new Mapping\ValueGeneratorMetadata(Mapping\GeneratorType::CUSTOM)
-        );
-
-        $cmf = $this->createTestFactory();
-
-        $cmf->setMetadataForClass($cm1->getClassName(), $cm1);
-
-        $this->expectException(ORMException::class);
-
-        $actual = $cmf->getMetadataFor($cm1->getClassName());
     }
 
     public function testHasGetMetadataNamespaceSeparatorIsNotNormalized() : void
@@ -244,10 +204,11 @@ class ClassMetadataFactoryTest extends OrmTestCase
         // Self-made metadata
         $metadataBuildingContext = new Mapping\ClassMetadataBuildingContext(
             $this->createMock(ClassMetadataFactory::class),
-            new RuntimeReflectionService()
+            $this->createMock(ReflectionService::class),
+            $this->createMock(AbstractPlatform::class)
         );
 
-        $cm1 = new ClassMetadata(TestEntity1::class, $metadataBuildingContext);
+        $cm1 = new ClassMetadata(TestEntity1::class, null, $metadataBuildingContext);
 
         $tableMetadata = new Mapping\TableMetadata();
         $tableMetadata->setName('group');
@@ -259,7 +220,10 @@ class ClassMetadataFactoryTest extends OrmTestCase
 
         $fieldMetadata->setType(Type::getType('integer'));
         $fieldMetadata->setPrimaryKey(true);
-        $fieldMetadata->setValueGenerator(new Mapping\ValueGeneratorMetadata(Mapping\GeneratorType::AUTO));
+        $fieldMetadata->setValueGenerator(new Mapping\ValueGeneratorMetadata(
+            Mapping\GeneratorType::SEQUENCE,
+            new Generator\SequenceGenerator('group_id_seq', 1)
+        ));
 
         $cm1->addProperty($fieldMetadata);
 
@@ -498,7 +462,7 @@ class TestEntity1
     private $embedded;
 }
 
-class CustomIdGenerator implements Generator
+class CustomIdGenerator implements Generator\Generator
 {
     /**
      * {@inheritdoc}
