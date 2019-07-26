@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Doctrine\ORM\Mapping\Factory;
 
+use Doctrine\Common\Inflector\Inflector;
 use function strpos;
 use function strrpos;
 use function strtolower;
@@ -14,16 +15,45 @@ use function substr;
  */
 class DefaultNamingStrategy implements NamingStrategy
 {
+
+    /** @var bool */
+    private $plural;
+
+    /**
+     * Underscore naming strategy construct.
+     *
+     * @param bool $plural
+     */
+    public function __construct($plural = false)
+    {
+        $this->plural = $plural;
+    }
+
+    /**
+     * @return bool
+     */
+    public function isPlural()
+    {
+        return $this->plural;
+    }
+
+    /**
+     * Set naming as plural
+     * Converts 'MyEntity' to 'MyEntities'
+     *
+     * @param bool $plural
+     */
+    public function setPlural($plural)
+    {
+        $this->plural = $plural;
+    }
+
     /**
      * {@inheritdoc}
      */
     public function classToTableName($className)
     {
-        if (strpos($className, '\\') !== false) {
-            return substr($className, strrpos($className, '\\') + 1);
-        }
-
-        return $className;
+        return $this->_classToTableName($className, $this->plural);
     }
 
     /**
@@ -63,8 +93,8 @@ class DefaultNamingStrategy implements NamingStrategy
      */
     public function joinTableName($sourceEntity, $targetEntity, $propertyName = null)
     {
-        return strtolower($this->classToTableName($sourceEntity) . '_' .
-            $this->classToTableName($targetEntity));
+        return strtolower($this->_classToTableName($sourceEntity) . '_' .
+            $this->_classToTableName($targetEntity));
     }
 
     /**
@@ -72,7 +102,26 @@ class DefaultNamingStrategy implements NamingStrategy
      */
     public function joinKeyColumnName($entityName, $referencedColumnName = null)
     {
-        return strtolower($this->classToTableName($entityName) . '_' .
+        return strtolower($this->_classToTableName($entityName) . '_' .
             ($referencedColumnName ?: $this->referenceColumnName()));
+    }
+
+    /**
+     * @param string $string
+     * @param bool $pluralize
+     *
+     * @return string
+     */
+    private function _classToTableName($className, $pluralize = false)
+    {
+        if (strpos($className, '\\') !== false) {
+            $className = substr($className, strrpos($className, '\\') + 1);
+        }
+
+        if ($pluralize) {
+            $className = Inflector::pluralize($className);
+        }
+
+        return $className;
     }
 }

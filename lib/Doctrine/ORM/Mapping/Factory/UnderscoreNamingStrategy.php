@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Doctrine\ORM\Mapping\Factory;
 
+use Doctrine\Common\Inflector\Inflector;
 use const CASE_LOWER;
 use const CASE_UPPER;
 use function preg_replace;
@@ -22,14 +23,19 @@ class UnderscoreNamingStrategy implements NamingStrategy
     /** @var int */
     private $case;
 
+    /** @var bool */
+    private $plural;
+
     /**
      * Underscore naming strategy construct.
      *
      * @param int $case CASE_LOWER | CASE_UPPER
+     * @param bool $plural
      */
-    public function __construct($case = CASE_LOWER)
+    public function __construct($case = CASE_LOWER, $plural = false)
     {
         $this->case = $case;
+        $this->plural = $plural;
     }
 
     /**
@@ -52,15 +58,30 @@ class UnderscoreNamingStrategy implements NamingStrategy
     }
 
     /**
+     * @return bool
+     */
+    public function isPlural()
+    {
+        return $this->plural;
+    }
+
+    /**
+     * Set naming as plural
+     * Converts 'MyEntity' to 'my_entities' or 'MY_ENTITIES'.
+     *
+     * @param bool $plural
+     */
+    public function setPlural($plural)
+    {
+        $this->plural = $plural;
+    }
+
+    /**
      * {@inheritdoc}
      */
     public function classToTableName($className)
     {
-        if (strpos($className, '\\') !== false) {
-            $className = substr($className, strrpos($className, '\\') + 1);
-        }
-
-        return $this->underscore($className);
+        return $this->_classToTableName($className, $this->plural);
     }
 
     /**
@@ -100,7 +121,7 @@ class UnderscoreNamingStrategy implements NamingStrategy
      */
     public function joinTableName($sourceEntity, $targetEntity, $propertyName = null)
     {
-        return $this->classToTableName($sourceEntity) . '_' . $this->classToTableName($targetEntity);
+        return $this->_classToTableName($sourceEntity) . '_' . $this->_classToTableName($targetEntity);
     }
 
     /**
@@ -108,8 +129,27 @@ class UnderscoreNamingStrategy implements NamingStrategy
      */
     public function joinKeyColumnName($entityName, $referencedColumnName = null)
     {
-        return $this->classToTableName($entityName) . '_' .
+        return $this->_classToTableName($entityName) . '_' .
                 ($referencedColumnName ?: $this->referenceColumnName());
+    }
+
+    /**
+     * @param string $string
+     * @param bool $pluralize
+     *
+     * @return string
+     */
+    private function _classToTableName($className, $pluralize = false)
+    {
+        if (strpos($className, '\\') !== false) {
+            $className = substr($className, strrpos($className, '\\') + 1);
+        }
+
+        if ($pluralize) {
+            $className = Inflector::pluralize($className);
+        }
+
+        return $this->underscore($className);
     }
 
     /**
