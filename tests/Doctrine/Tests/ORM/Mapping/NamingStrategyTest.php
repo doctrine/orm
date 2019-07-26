@@ -295,8 +295,8 @@ class NamingStrategyTest extends OrmTestCase
             [self::defaultNaming(), 'someColumn_id', 'someColumn', null],
             [self::defaultNaming(), 'some_column_id', 'some_column', null],
             // DefaultNamingStrategy plural
-            [self::defaultNaming(), 'someColumn_id', 'someColumn', null],
-            [self::defaultNaming(), 'some_column_id', 'some_column', null],
+            [self::defaultNamingPlural(), 'someColumn_id', 'someColumn', null],
+            [self::defaultNamingPlural(), 'some_column_id', 'some_column', null],
 
             // UnderscoreNamingStrategy
             [self::underscoreNamingLower(), 'some_column_id', 'someColumn', null],
