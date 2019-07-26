@@ -111,13 +111,7 @@ class DefaultNamingStrategy implements NamingStrategy
         );
     }
 
-    /**
-     * @param string $string
-     * @param bool $pluralize
-     *
-     * @return string
-     */
-    private function _classToTableName($className, $pluralize = false)
+    private function _classToTableName(string $className, bool $pluralize = false) : string
     {
         if (strpos($className, '\\') !== false) {
             $className = substr($className, strrpos($className, '\\') + 1);

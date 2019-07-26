@@ -137,13 +137,7 @@ class UnderscoreNamingStrategy implements NamingStrategy
                 ($referencedColumnName ?: $this->referenceColumnName());
     }
 
-    /**
-     * @param string $string
-     * @param bool $pluralize
-     *
-     * @return string
-     */
-    private function _classToTableName($className, $pluralize = false)
+    private function _classToTableName(string $className, bool $pluralize = false) : string
     {
         if (strpos($className, '\\') !== false) {
             $className = substr($className, strrpos($className, '\\') + 1);
@@ -155,7 +149,7 @@ class UnderscoreNamingStrategy implements NamingStrategy
 
         return $this->underscore($className);
     }
-  
+
     private function underscore(string $string) : string
     {
         $string = preg_replace('/(?<=[a-z])([A-Z])/', '_$1', $string);
