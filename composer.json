@@ -53,7 +53,7 @@
     "require-dev": {
         "ext-pdo": "*",
         "doctrine/coding-standard": "^6.0",
-        "phpstan/phpstan-shim": "^0.9.2",
+        "phpstan/phpstan": "^0.11",
         "phpunit/phpunit": "^7.0"
     },
     "autoload": {

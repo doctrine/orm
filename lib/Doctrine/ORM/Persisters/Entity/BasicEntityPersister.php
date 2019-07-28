@@ -93,7 +93,6 @@ class BasicEntityPersister implements EntityPersister
 {
     /** @var string[] */
     private static $comparisonMap = [
-        Comparison::EQ          => '= %s',
         Comparison::IS          => '= %s',
         Comparison::NEQ         => '!= %s',
         Comparison::GT          => '> %s',
