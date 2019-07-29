@@ -158,8 +158,11 @@ class ObjectHydrator extends AbstractHydrator
     {
         $result = [];
 
-        while ($row = $this->_stmt->fetch(PDO::FETCH_ASSOC)) {
-            $this->hydrateRowData($row, $result);
+        $rows = $this->_stmt->fetchAll(PDO::FETCH_ASSOC);
+        if (isset($rows) && $rows != null && is_array($rows)) {
+            foreach ($rows as $row) {
+                $this->hydrateRowData($row, $result);
+            }
         }
 
         // Take snapshots from all newly initialized collections
