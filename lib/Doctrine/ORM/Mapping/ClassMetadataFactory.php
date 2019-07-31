@@ -703,6 +703,9 @@ class ClassMetadataFactory extends AbstractClassMetadataFactory
 
             case ClassMetadata::GENERATOR_TYPE_CUSTOM:
                 $definition = $class->customGeneratorDefinition;
+                if ($definition === null) {
+                    throw new ORMException("Can't instantiate custom generator : no custom generator definition");
+                }
                 if ( ! class_exists($definition['class'])) {
                     throw new ORMException("Can't instantiate custom generator : " .
                         $definition['class']);
