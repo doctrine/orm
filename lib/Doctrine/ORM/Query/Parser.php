@@ -2853,7 +2853,7 @@ class Parser
             default:
                 $peek = $this->lexer->glimpse();
 
-                if ($peek['value'] == '(') {
+                if ($peek && $peek['value'] == '(') {
                     return $this->FunctionDeclaration();
                 }
 
