@@ -128,11 +128,21 @@ class SetupTest extends OrmTestCase
     public function testConfigureCache()
     {
         $cache = new ArrayCache();
-        $config = Setup::createAnnotationMetadataConfiguration([], true, null, $cache);
+        $config = Setup::createAnnotationMetadataConfiguration([], false, null, $cache);
 
         $this->assertSame($cache, $config->getResultCacheImpl());
         $this->assertSame($cache, $config->getMetadataCacheImpl());
         $this->assertSame($cache, $config->getQueryCacheImpl());
+    }
+
+    public function testDevModeOverridesCacheCustomInstance()
+    {
+        $cache = new ArrayCache();
+        $config = Setup::createAnnotationMetadataConfiguration([], true, null, $cache);
+
+        $this->assertNotSame($cache, $config->getResultCacheImpl());
+        $this->assertNotSame($cache, $config->getMetadataCacheImpl());
+        $this->assertNotSame($cache, $config->getQueryCacheImpl());
     }
 
     /**
@@ -141,7 +151,7 @@ class SetupTest extends OrmTestCase
     public function testConfigureCacheCustomInstance()
     {
         $cache  = $this->createMock(Cache::class);
-        $config = Setup::createConfiguration(true, null, $cache);
+        $config = Setup::createConfiguration(false, null, $cache);
 
         $this->assertSame($cache, $config->getResultCacheImpl());
         $this->assertSame($cache, $config->getMetadataCacheImpl());

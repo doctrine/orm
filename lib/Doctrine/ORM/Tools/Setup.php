@@ -157,18 +157,17 @@ class Setup
 
     private static function createCacheInstance(bool $isDevMode, ?Cache $cache) : Cache
     {
-        if ($cache !== null) {
-            return $cache;
-        }
-
         if ($isDevMode === true) {
             return new ArrayCache();
+        }
+
+        if ($cache !== null) {
+            return $cache;
         }
 
         if (extension_loaded('apcu')) {
             return new \Doctrine\Common\Cache\ApcuCache();
         }
-
 
         if (extension_loaded('memcached')) {
             $memcached = new \Memcached();
