@@ -47,21 +47,22 @@ class SchemaToolTest extends OrmTestCase
         $this->assertTrue($schema->getTable('cms_users')->columnsAreIndexed(['username']), "username column should be indexed.");
     }
 
-    public function testAnnotationOptionsAttribute()
+    public function testAnnotationOptionsAttribute() : void
     {
         $em = $this->_getTestEntityManager();
         $schemaTool = new SchemaTool($em);
 
-        $classes = [
-            $em->getClassMetadata(TestEntityWithAnnotationOptionsAttribute::class),
-        ];
+        $schema = $schemaTool->getSchemaFromMetadata(
+            [$em->getClassMetadata(TestEntityWithAnnotationOptionsAttribute::class)]
+        );
+        $table  = $schema->getTable('TestEntityWithAnnotationOptionsAttribute');
 
-        $schema = $schemaTool->getSchemaFromMetadata($classes);
-
-        $expected = ['foo' => 'bar', 'baz' => ['key' => 'val']];
-
-        $this->assertEquals($expected, $schema->getTable('TestEntityWithAnnotationOptionsAttribute')->getOptions(), "options annotation are passed to the tables options");
-        $this->assertEquals($expected, $schema->getTable('TestEntityWithAnnotationOptionsAttribute')->getColumn('test')->getCustomSchemaOptions(), "options annotation are passed to the columns customSchemaOptions");
+        foreach ([$table->getOptions(), $table->getColumn('test')->getCustomSchemaOptions()] as $options) {
+            self::assertArrayHasKey('foo', $options);
+            self::assertSame('bar', $options['foo']);
+            self::assertArrayHasKey('baz', $options);
+            self::assertSame(['key' => 'val'], $options['baz']);
+        }
     }
 
     /**
