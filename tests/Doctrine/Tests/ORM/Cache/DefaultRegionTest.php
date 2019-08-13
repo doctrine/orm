@@ -95,6 +95,32 @@ class DefaultRegionTest extends AbstractRegionTest
         $this->assertEquals($value1, $actual[0]);
         $this->assertEquals($value2, $actual[1]);
     }
+
+    /**
+     * @test
+     * @group GH7266
+     */
+    public function corruptedDataDoesNotLeakIntoApplicationWhenGettingSingleEntry() : void
+    {
+        $key1 = new CacheKeyMock('key.1');
+        $this->cache->save($this->region->getName() . '_' . $key1->hash, 'a-very-invalid-value');
+
+        self::assertTrue($this->region->contains($key1));
+        self::assertNull($this->region->get($key1));
+    }
+
+    /**
+     * @test
+     * @group GH7266
+     */
+    public function corruptedDataDoesNotLeakIntoApplicationWhenGettingMultipleEntries() : void
+    {
+        $key1 = new CacheKeyMock('key.1');
+        $this->cache->save($this->region->getName() . '_' . $key1->hash, 'a-very-invalid-value');
+
+        self::assertTrue($this->region->contains($key1));
+        self::assertNull($this->region->getMultiple(new CollectionCacheEntry([$key1])));
+    }
 }
 
 /**
