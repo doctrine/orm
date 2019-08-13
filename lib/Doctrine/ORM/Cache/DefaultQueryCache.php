@@ -117,7 +117,7 @@ class DefaultQueryCache implements QueryCache
 
         $cm = $this->em->getClassMetadata($entityName);
 
-        $generateKeys = function (array $entry) use ($cm): EntityCacheKey {
+        $generateKeys = static function (array $entry) use ($cm) : EntityCacheKey {
             return new EntityCacheKey($cm->rootEntityName, $entry['identifier']);
         };
 
