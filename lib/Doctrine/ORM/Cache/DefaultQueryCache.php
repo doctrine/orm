@@ -22,6 +22,7 @@ namespace Doctrine\ORM\Cache;
 
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\Cache\Persister\CachedPersister;
+use Doctrine\ORM\Cache\Persister\Entity\CachedEntityPersister;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Query\ResultSetMapping;
 use Doctrine\ORM\Mapping\ClassMetadata;
@@ -29,6 +30,7 @@ use Doctrine\ORM\PersistentCollection;
 use Doctrine\Common\Proxy\Proxy;
 use Doctrine\ORM\Cache;
 use Doctrine\ORM\Query;
+use function assert;
 
 /**
  * Default query cache implementation.
@@ -108,8 +110,10 @@ class DefaultQueryCache implements QueryCache
         $entityName  = reset($rsm->aliasMap);
         $hasRelation = ! empty($rsm->relationMap);
         $persister   = $this->uow->getEntityPersister($entityName);
-        $region      = $persister->getCacheRegion();
-        $regionName  = $region->getName();
+        assert($persister instanceof CachedEntityPersister);
+
+        $region     = $persister->getCacheRegion();
+        $regionName = $region->getName();
 
         $cm = $this->em->getClassMetadata($entityName);
 
@@ -145,9 +149,11 @@ class DefaultQueryCache implements QueryCache
             $data = $entityEntry->data;
 
             foreach ($entry['associations'] as $name => $assoc) {
-                $assocPersister  = $this->uow->getEntityPersister($assoc['targetEntity']);
-                $assocRegion     = $assocPersister->getCacheRegion();
-                $assocMetadata   = $this->em->getClassMetadata($assoc['targetEntity']);
+                $assocPersister = $this->uow->getEntityPersister($assoc['targetEntity']);
+                assert($assocPersister instanceof CachedEntityPersister);
+
+                $assocRegion   = $assocPersister->getCacheRegion();
+                $assocMetadata = $this->em->getClassMetadata($assoc['targetEntity']);
 
                 if ($assoc['type'] & ClassMetadata::TO_ONE) {
 
