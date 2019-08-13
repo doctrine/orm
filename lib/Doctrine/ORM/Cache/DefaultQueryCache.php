@@ -106,7 +106,7 @@ class DefaultQueryCache implements QueryCache
 
         $result      = [];
         $entityName  = reset($rsm->aliasMap);
-        $hasRelation = ( ! empty($rsm->relationMap));
+        $hasRelation = ! empty($rsm->relationMap);
         $persister   = $this->uow->getEntityPersister($entityName);
         $region      = $persister->getCacheRegion();
         $regionName  = $region->getName();
@@ -267,7 +267,7 @@ class DefaultQueryCache implements QueryCache
         $rootAlias   = key($rsm->aliasMap);
         $persister   = $this->uow->getEntityPersister($entityName);
 
-        if ( ! ($persister instanceof CachedPersister)) {
+        if (! $persister instanceof CachedEntityPersister) {
             throw CacheException::nonCacheableEntity($entityName);
         }
 
