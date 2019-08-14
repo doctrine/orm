@@ -22,6 +22,7 @@ namespace Doctrine\ORM\Cache;
 
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\Cache\Persister\CachedPersister;
+use Doctrine\ORM\Cache\Persister\Entity\CachedEntityPersister;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Query\ResultSetMapping;
 use Doctrine\ORM\Mapping\ClassMetadata;
@@ -29,6 +30,7 @@ use Doctrine\ORM\PersistentCollection;
 use Doctrine\Common\Proxy\Proxy;
 use Doctrine\ORM\Cache;
 use Doctrine\ORM\Query;
+use function assert;
 
 /**
  * Default query cache implementation.
@@ -106,25 +108,27 @@ class DefaultQueryCache implements QueryCache
 
         $result      = [];
         $entityName  = reset($rsm->aliasMap);
-        $hasRelation = ( ! empty($rsm->relationMap));
+        $hasRelation = ! empty($rsm->relationMap);
         $persister   = $this->uow->getEntityPersister($entityName);
-        $region      = $persister->getCacheRegion();
-        $regionName  = $region->getName();
+        assert($persister instanceof CachedEntityPersister);
+
+        $region     = $persister->getCacheRegion();
+        $regionName = $region->getName();
 
         $cm = $this->em->getClassMetadata($entityName);
 
-        $generateKeys = function (array $entry) use ($cm): EntityCacheKey {
+        $generateKeys = static function (array $entry) use ($cm) : EntityCacheKey {
             return new EntityCacheKey($cm->rootEntityName, $entry['identifier']);
         };
 
         $cacheKeys = new CollectionCacheEntry(array_map($generateKeys, $cacheEntry->result));
-        $entries   = $region->getMultiple($cacheKeys);
+        $entries   = $region->getMultiple($cacheKeys) ?? [];
 
         // @TODO - move to cache hydration component
         foreach ($cacheEntry->result as $index => $entry) {
-            $entityEntry = is_array($entries) && array_key_exists($index, $entries) ? $entries[$index] : null;
+            $entityEntry = $entries[$index] ?? null;
 
-            if ($entityEntry === null) {
+            if (! $entityEntry instanceof EntityCacheEntry) {
                 if ($this->cacheLogger !== null) {
                     $this->cacheLogger->entityCacheMiss($regionName, $cacheKeys->identifiers[$index]);
                 }
@@ -145,9 +149,11 @@ class DefaultQueryCache implements QueryCache
             $data = $entityEntry->data;
 
             foreach ($entry['associations'] as $name => $assoc) {
-                $assocPersister  = $this->uow->getEntityPersister($assoc['targetEntity']);
-                $assocRegion     = $assocPersister->getCacheRegion();
-                $assocMetadata   = $this->em->getClassMetadata($assoc['targetEntity']);
+                $assocPersister = $this->uow->getEntityPersister($assoc['targetEntity']);
+                assert($assocPersister instanceof CachedEntityPersister);
+
+                $assocRegion   = $assocPersister->getCacheRegion();
+                $assocMetadata = $this->em->getClassMetadata($assoc['targetEntity']);
 
                 if ($assoc['type'] & ClassMetadata::TO_ONE) {
 
@@ -267,7 +273,7 @@ class DefaultQueryCache implements QueryCache
         $rootAlias   = key($rsm->aliasMap);
         $persister   = $this->uow->getEntityPersister($entityName);
 
-        if ( ! ($persister instanceof CachedPersister)) {
+        if (! $persister instanceof CachedEntityPersister) {
             throw CacheException::nonCacheableEntity($entityName);
         }
 

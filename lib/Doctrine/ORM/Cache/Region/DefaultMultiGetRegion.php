@@ -21,6 +21,7 @@
 namespace Doctrine\ORM\Cache\Region;
 
 use Doctrine\Common\Cache\MultiGetCache;
+use Doctrine\ORM\Cache\CacheEntry;
 use Doctrine\ORM\Cache\CollectionCacheEntry;
 
 /**
@@ -67,7 +68,12 @@ class DefaultMultiGetRegion extends DefaultRegion
         }
 
         $returnableItems = [];
+
         foreach ($keysToRetrieve as $index => $key) {
+            if (! $items[$key] instanceof CacheEntry) {
+                return null;
+            }
+
             $returnableItems[$index] = $items[$key];
         }
 
