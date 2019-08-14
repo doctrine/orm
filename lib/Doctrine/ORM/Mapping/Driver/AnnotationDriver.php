@@ -526,434 +526,115 @@ class AnnotationDriver implements MappingDriver
     ) : ?Mapping\Property {
         switch (true) {
             case isset($propertyAnnotations[Annotation\Column::class]):
-                return $this->convertReflectionPropertyToFieldMetadata(
-                    $reflectionProperty,
-                    $propertyAnnotations,
-                    $metadata,
-                    $metadataBuildingContext
-                );
+                $fieldBuilder  = new Builder\FieldMetadataBuilder($metadataBuildingContext);
+                $fieldMetadata = $fieldBuilder
+                    ->withComponentMetadata($metadata)
+                    ->withFieldName($reflectionProperty->getName())
+                    ->withColumnAnnotation($propertyAnnotations[Annotation\Column::class])
+                    ->withIdAnnotation($propertyAnnotations[Annotation\Id::class] ?? null)
+                    ->withVersionAnnotation($propertyAnnotations[Annotation\Version::class] ?? null)
+                    ->withGeneratedValueAnnotation($propertyAnnotations[Annotation\GeneratedValue::class] ?? null)
+                    ->withSequenceGeneratorAnnotation($propertyAnnotations[Annotation\SequenceGenerator::class] ?? null)
+                    ->withCustomIdGeneratorAnnotation($propertyAnnotations[Annotation\CustomIdGenerator::class] ?? null)
+                    ->build();
+
+                // Prevent column duplication
+                $columnName = $fieldMetadata->getColumnName();
+
+                if ($metadata->checkPropertyDuplication($columnName)) {
+                    throw Mapping\MappingException::duplicateColumnName($metadata->getClassName(), $columnName);
+                }
+
+                $metadata->fieldNames[$fieldMetadata->getColumnName()] = $fieldMetadata->getName();
+
+                return $fieldMetadata;
             case isset($propertyAnnotations[Annotation\OneToOne::class]):
-                return $this->convertReflectionPropertyToOneToOneAssociationMetadata(
-                    $reflectionProperty,
-                    $propertyAnnotations,
-                    $metadata,
-                    $metadataBuildingContext
-                );
+                $oneToOneAssociationBuilder = new Builder\OneToOneAssociationMetadataBuilder($metadataBuildingContext);
+                $associationMetadata        = $oneToOneAssociationBuilder
+                    ->withComponentMetadata($metadata)
+                    ->withFieldName($reflectionProperty->getName())
+                    ->withOneToOneAnnotation($propertyAnnotations[Annotation\OneToOne::class] ?? null)
+                    ->withIdAnnotation($propertyAnnotations[Annotation\Id::class] ?? null)
+                    ->withCacheAnnotation($propertyAnnotations[Annotation\Cache::class] ?? null)
+                    ->withJoinColumnsAnnotation($propertyAnnotations[Annotation\JoinColumns::class] ?? null)
+                    ->withJoinColumnAnnotation($propertyAnnotations[Annotation\JoinColumn::class] ?? null)
+                    ->build();
+
+                // Prevent column duplication
+                foreach ($associationMetadata->getJoinColumns() as $joinColumnMetadata) {
+                    $columnName = $joinColumnMetadata->getColumnName();
+
+                    // @todo guilhermeblanco Open an issue to discuss making this scenario impossible.
+                    //if ($metadata->checkPropertyDuplication($columnName)) {
+                    //    throw Mapping\MappingException::duplicateColumnName($metadata->getClassName(), $columnName);
+                    //}
+
+                    if ($associationMetadata->isOwningSide()) {
+                        $metadata->fieldNames[$columnName] = $associationMetadata->getName();
+                    }
+                }
+
+                return $associationMetadata;
             case isset($propertyAnnotations[Annotation\ManyToOne::class]):
-                return $this->convertReflectionPropertyToManyToOneAssociationMetadata(
-                    $reflectionProperty,
-                    $propertyAnnotations,
-                    $metadata,
-                    $metadataBuildingContext
-                );
+                $manyToOneAssociationBuilder = new Builder\ManyToOneAssociationMetadataBuilder($metadataBuildingContext);
+                $associationMetadata         = $manyToOneAssociationBuilder
+                    ->withComponentMetadata($metadata)
+                    ->withFieldName($reflectionProperty->getName())
+                    ->withManyToOneAnnotation($propertyAnnotations[Annotation\ManyToOne::class] ?? null)
+                    ->withIdAnnotation($propertyAnnotations[Annotation\Id::class] ?? null)
+                    ->withCacheAnnotation($propertyAnnotations[Annotation\Cache::class] ?? null)
+                    ->withJoinColumnsAnnotation($propertyAnnotations[Annotation\JoinColumns::class] ?? null)
+                    ->withJoinColumnAnnotation($propertyAnnotations[Annotation\JoinColumn::class] ?? null)
+                    ->build();
+
+                // Prevent column duplication
+                foreach ($associationMetadata->getJoinColumns() as $joinColumnMetadata) {
+                    $columnName = $joinColumnMetadata->getColumnName();
+
+                    // @todo guilhermeblanco Open an issue to discuss making this scenario impossible.
+                    //if ($metadata->checkPropertyDuplication($columnName)) {
+                    //    throw Mapping\MappingException::duplicateColumnName($metadata->getClassName(), $columnName);
+                    //}
+
+                    if ($associationMetadata->isOwningSide()) {
+                        $metadata->fieldNames[$columnName] = $associationMetadata->getName();
+                    }
+                }
+
+                return $associationMetadata;
             case isset($propertyAnnotations[Annotation\OneToMany::class]):
-                return $this->convertReflectionPropertyToOneToManyAssociationMetadata(
-                    $reflectionProperty,
-                    $propertyAnnotations,
-                    $metadata,
-                    $metadataBuildingContext
-                );
+                $oneToManyAssociationBuilder = new Builder\OneToManyAssociationMetadataBuilder($metadataBuildingContext);
+
+                return $oneToManyAssociationBuilder
+                    ->withComponentMetadata($metadata)
+                    ->withFieldName($reflectionProperty->getName())
+                    ->withOneToManyAnnotation($propertyAnnotations[Annotation\OneToMany::class] ?? null)
+                    ->withIdAnnotation($propertyAnnotations[Annotation\Id::class] ?? null)
+                    ->withCacheAnnotation($propertyAnnotations[Annotation\Cache::class] ?? null)
+                    ->withOrderByAnnotation($propertyAnnotations[Annotation\OrderBy::class] ?? null)
+                    ->build();
             case isset($propertyAnnotations[Annotation\ManyToMany::class]):
-                return $this->convertReflectionPropertyToManyToManyAssociationMetadata(
-                    $reflectionProperty,
-                    $propertyAnnotations,
-                    $metadata,
-                    $metadataBuildingContext
-                );
+                $manyToManyAssociationBuilder = new Builder\ManyToManyAssociationMetadataBuilder($metadataBuildingContext);
+
+                return $manyToManyAssociationBuilder
+                    ->withComponentMetadata($metadata)
+                    ->withFieldName($reflectionProperty->getName())
+                    ->withManyToManyAnnotation($propertyAnnotations[Annotation\ManyToMany::class] ?? null)
+                    ->withIdAnnotation($propertyAnnotations[Annotation\Id::class] ?? null)
+                    ->withCacheAnnotation($propertyAnnotations[Annotation\Cache::class] ?? null)
+                    ->withJoinTableAnnotation($propertyAnnotations[Annotation\JoinTable::class] ?? null)
+                    ->withOrderByAnnotation($propertyAnnotations[Annotation\OrderBy::class] ?? null)
+                    ->build();
             case isset($propertyAnnotations[Annotation\Embedded::class]):
                 return null;
             default:
                 $transientBuilder = new Builder\TransientMetadataBuilder($metadataBuildingContext);
 
-                $transientBuilder
+                return $transientBuilder
                     ->withComponentMetadata($metadata)
-                    ->withFieldName($reflectionProperty->getName());
-
-                return $transientBuilder->build();
+                    ->withFieldName($reflectionProperty->getName())
+                    ->build();
         }
-    }
-
-    /**
-     * @param Annotation\Annotation[] $propertyAnnotations
-     *
-     * @throws Mapping\MappingException
-     */
-    private function convertReflectionPropertyToFieldMetadata(
-        ReflectionProperty $reflectionProperty,
-        array $propertyAnnotations,
-        Mapping\ClassMetadata $metadata,
-        Mapping\ClassMetadataBuildingContext $metadataBuildingContext
-    ) : Mapping\FieldMetadata {
-        $fieldBuilder  = new Builder\FieldMetadataBuilder($metadataBuildingContext);
-        $fieldMetadata = $fieldBuilder
-            ->withComponentMetadata($metadata)
-            ->withFieldName($reflectionProperty->getName())
-            ->withColumnAnnotation($propertyAnnotations[Annotation\Column::class])
-            ->withIdAnnotation($propertyAnnotations[Annotation\Id::class] ?? null)
-            ->withVersionAnnotation($propertyAnnotations[Annotation\Version::class] ?? null)
-            ->withGeneratedValueAnnotation($propertyAnnotations[Annotation\GeneratedValue::class] ?? null)
-            ->withSequenceGeneratorAnnotation($propertyAnnotations[Annotation\SequenceGenerator::class] ?? null)
-            ->withCustomIdGeneratorAnnotation($propertyAnnotations[Annotation\CustomIdGenerator::class] ?? null)
-            ->build();
-
-        // Prevent column duplication
-        if ($metadata->checkPropertyDuplication($fieldMetadata->getColumnName())) {
-            throw Mapping\MappingException::duplicateColumnName(
-                $metadata->getClassName(),
-                $fieldMetadata->getColumnName()
-            );
-        }
-
-//        // Check for GeneratedValue strategy
-//        if (isset($propertyAnnotations[Annotation\GeneratedValue::class])) {
-//            $generatedValueAnnot = $propertyAnnotations[Annotation\GeneratedValue::class];
-//            $strategy            = strtoupper($generatedValueAnnot->strategy);
-//            $idGeneratorType     = constant(sprintf('%s::%s', Mapping\GeneratorType::class, $strategy));
-//
-//            if ($idGeneratorType !== Mapping\GeneratorType::NONE) {
-//                $idGeneratorDefinition = [];
-//
-//                // Check for CustomGenerator/SequenceGenerator/TableGenerator definition
-//                switch (true) {
-//                    case isset($propertyAnnotations[Annotation\SequenceGenerator::class]):
-//                        $seqGeneratorAnnot = $propertyAnnotations[Annotation\SequenceGenerator::class];
-//
-//                        $idGeneratorDefinition = [
-//                            'sequenceName' => $seqGeneratorAnnot->sequenceName,
-//                            'allocationSize' => $seqGeneratorAnnot->allocationSize,
-//                        ];
-//
-//                        break;
-//
-//                    case isset($propertyAnnotations[Annotation\CustomIdGenerator::class]):
-//                        $customGeneratorAnnot = $propertyAnnotations[Annotation\CustomIdGenerator::class];
-//
-//                        $idGeneratorDefinition = [
-//                            'class' => $customGeneratorAnnot->class,
-//                            'arguments' => $customGeneratorAnnot->arguments,
-//                        ];
-//
-//                        if (! isset($idGeneratorDefinition['class'])) {
-//                            throw new Mapping\MappingException(
-//                                sprintf('Cannot instantiate custom generator, no class has been defined')
-//                            );
-//                        }
-//
-//                        if (! class_exists($idGeneratorDefinition['class'])) {
-//                            throw new Mapping\MappingException(
-//                                sprintf('Cannot instantiate custom generator : %s', var_export($idGeneratorDefinition, true))
-//                            );
-//                        }
-//
-//                        break;
-//
-//                    /** @todo If it is not supported, why does this exist? */
-//                    case isset($propertyAnnotations['Doctrine\ORM\Mapping\TableGenerator']):
-//                        throw Mapping\MappingException::tableIdGeneratorNotImplemented($metadata->getClassName());
-//                }
-//
-//                $fieldMetadata->setValueGenerator(
-//                    new Mapping\ValueGeneratorMetadata($idGeneratorType, $idGeneratorDefinition)
-//                );
-//            }
-//        }
-
-        return $fieldMetadata;
-    }
-
-    /**
-     * @param Annotation\Annotation[] $propertyAnnotations
-     */
-    private function convertReflectionPropertyToOneToOneAssociationMetadata(
-        ReflectionProperty $reflectionProperty,
-        array $propertyAnnotations,
-        Mapping\ClassMetadata $metadata,
-        Mapping\ClassMetadataBuildingContext $metadataBuildingContext
-    ) : Mapping\OneToOneAssociationMetadata {
-        $className     = $metadata->getClassName();
-        $fieldName     = $reflectionProperty->getName();
-        $oneToOneAnnot = $propertyAnnotations[Annotation\OneToOne::class];
-        $assocMetadata = new Mapping\OneToOneAssociationMetadata($fieldName);
-        $targetEntity  = $oneToOneAnnot->targetEntity;
-
-        $assocMetadata->setTargetEntity($targetEntity);
-        $assocMetadata->setCascade($this->getCascade($className, $fieldName, $oneToOneAnnot->cascade));
-        $assocMetadata->setOrphanRemoval($oneToOneAnnot->orphanRemoval);
-        $assocMetadata->setFetchMode($this->getFetchMode($className, $oneToOneAnnot->fetch));
-
-        if (! empty($oneToOneAnnot->mappedBy)) {
-            $assocMetadata->setMappedBy($oneToOneAnnot->mappedBy);
-            $assocMetadata->setOwningSide(false);
-        }
-
-        if (! empty($oneToOneAnnot->inversedBy)) {
-            $assocMetadata->setInversedBy($oneToOneAnnot->inversedBy);
-            $assocMetadata->setOwningSide(true);
-        }
-
-        // Check for Id
-        if (isset($propertyAnnotations[Annotation\Id::class])) {
-            $assocMetadata->setPrimaryKey(true);
-        }
-
-        // Check for Cache
-        if (isset($propertyAnnotations[Annotation\Cache::class])) {
-            $cacheBuilder = new Builder\CacheMetadataBuilder($metadataBuildingContext);
-
-            $cacheBuilder
-                ->withComponentMetadata($metadata)
-                ->withFieldName($fieldName)
-                ->withCacheAnnotation($propertyAnnotations[Annotation\Cache::class]);
-
-            $assocMetadata->setCache($cacheBuilder->build());
-        }
-
-        // Check for owning side to consider join column
-        if (! $assocMetadata->isOwningSide()) {
-            return $assocMetadata;
-        }
-
-        // Check for JoinColumn/JoinColumns annotations
-        $joinColumnBuilder = new Builder\JoinColumnMetadataBuilder($metadataBuildingContext);
-
-        $joinColumnBuilder
-            ->withComponentMetadata($metadata)
-            ->withFieldName($fieldName);
-
-        switch (true) {
-            case isset($propertyAnnotations[Annotation\JoinColumn::class]):
-                $joinColumnBuilder->withJoinColumnAnnotation($propertyAnnotations[Annotation\JoinColumn::class]);
-
-                $assocMetadata->addJoinColumn($joinColumnBuilder->build());
-                break;
-
-            case isset($propertyAnnotations[Annotation\JoinColumns::class]):
-                $joinColumnsAnnot = $propertyAnnotations[Annotation\JoinColumns::class];
-
-                foreach ($joinColumnsAnnot->value as $joinColumnAnnot) {
-                    $joinColumnBuilder->withJoinColumnAnnotation($joinColumnAnnot);
-
-                    $assocMetadata->addJoinColumn($joinColumnBuilder->build());
-                }
-
-                break;
-
-            default:
-                $assocMetadata->addJoinColumn($joinColumnBuilder->build());
-                break;
-        }
-
-        return $assocMetadata;
-    }
-
-    /**
-     * @param Annotation\Annotation[] $propertyAnnotations
-     */
-    private function convertReflectionPropertyToManyToOneAssociationMetadata(
-        ReflectionProperty $reflectionProperty,
-        array $propertyAnnotations,
-        Mapping\ClassMetadata $metadata,
-        Mapping\ClassMetadataBuildingContext $metadataBuildingContext
-    ) : Mapping\ManyToOneAssociationMetadata {
-        // ManyToOne must be owning side by design
-        $className      = $metadata->getClassName();
-        $fieldName      = $reflectionProperty->getName();
-        $manyToOneAnnot = $propertyAnnotations[Annotation\ManyToOne::class];
-        $assocMetadata  = new Mapping\ManyToOneAssociationMetadata($fieldName);
-        $targetEntity   = $manyToOneAnnot->targetEntity;
-
-        $assocMetadata->setTargetEntity($targetEntity);
-        $assocMetadata->setCascade($this->getCascade($className, $fieldName, $manyToOneAnnot->cascade));
-        $assocMetadata->setFetchMode($this->getFetchMode($className, $manyToOneAnnot->fetch));
-
-        if (! empty($manyToOneAnnot->inversedBy)) {
-            $assocMetadata->setInversedBy($manyToOneAnnot->inversedBy);
-        }
-
-        // Check for Id
-        if (isset($propertyAnnotations[Annotation\Id::class])) {
-            $assocMetadata->setPrimaryKey(true);
-        }
-
-        // Check for Cache
-        if (isset($propertyAnnotations[Annotation\Cache::class])) {
-            $cacheBuilder = new Builder\CacheMetadataBuilder($metadataBuildingContext);
-
-            $cacheBuilder
-                ->withComponentMetadata($metadata)
-                ->withFieldName($fieldName)
-                ->withCacheAnnotation($propertyAnnotations[Annotation\Cache::class]);
-
-            $assocMetadata->setCache($cacheBuilder->build());
-        }
-
-        // Check for JoinColumn/JoinColumns annotations
-        $joinColumnBuilder = new Builder\JoinColumnMetadataBuilder($metadataBuildingContext);
-
-        $joinColumnBuilder
-            ->withComponentMetadata($metadata)
-            ->withFieldName($fieldName);
-
-        switch (true) {
-            case isset($propertyAnnotations[Annotation\JoinColumn::class]):
-                $joinColumnBuilder->withJoinColumnAnnotation($propertyAnnotations[Annotation\JoinColumn::class]);
-
-                $assocMetadata->addJoinColumn($joinColumnBuilder->build());
-                break;
-
-            case isset($propertyAnnotations[Annotation\JoinColumns::class]):
-                $joinColumnsAnnot = $propertyAnnotations[Annotation\JoinColumns::class];
-
-                foreach ($joinColumnsAnnot->value as $joinColumnAnnot) {
-                    $joinColumnBuilder->withJoinColumnAnnotation($joinColumnAnnot);
-
-                    $assocMetadata->addJoinColumn($joinColumnBuilder->build());
-                }
-
-                break;
-
-            default:
-                $assocMetadata->addJoinColumn($joinColumnBuilder->build());
-                break;
-        }
-
-        return $assocMetadata;
-    }
-
-    /**
-     * @param Annotation\Annotation[] $propertyAnnotations
-     *
-     * @throws Mapping\MappingException
-     */
-    private function convertReflectionPropertyToOneToManyAssociationMetadata(
-        ReflectionProperty $reflectionProperty,
-        array $propertyAnnotations,
-        Mapping\ClassMetadata $metadata,
-        Mapping\ClassMetadataBuildingContext $metadataBuildingContext
-    ) : Mapping\OneToManyAssociationMetadata {
-        $className      = $metadata->getClassName();
-        $fieldName      = $reflectionProperty->getName();
-        $oneToManyAnnot = $propertyAnnotations[Annotation\OneToMany::class];
-        $assocMetadata  = new Mapping\OneToManyAssociationMetadata($fieldName);
-        $targetEntity   = $oneToManyAnnot->targetEntity;
-
-        $assocMetadata->setTargetEntity($targetEntity);
-        $assocMetadata->setCascade($this->getCascade($className, $fieldName, $oneToManyAnnot->cascade));
-        $assocMetadata->setOrphanRemoval($oneToManyAnnot->orphanRemoval);
-        $assocMetadata->setFetchMode($this->getFetchMode($className, $oneToManyAnnot->fetch));
-        $assocMetadata->setOwningSide(false);
-        $assocMetadata->setMappedBy($oneToManyAnnot->mappedBy);
-
-        if (! empty($oneToManyAnnot->indexBy)) {
-            $assocMetadata->setIndexedBy($oneToManyAnnot->indexBy);
-        }
-
-        // Check for OrderBy
-        if (isset($propertyAnnotations[Annotation\OrderBy::class])) {
-            $orderByAnnot = $propertyAnnotations[Annotation\OrderBy::class];
-
-            $assocMetadata->setOrderBy($orderByAnnot->value);
-        }
-
-        // Check for Id
-        if (isset($propertyAnnotations[Annotation\Id::class])) {
-            throw Mapping\MappingException::illegalToManyIdentifierAssociation($className, $fieldName);
-        }
-
-        // Check for Cache
-        if (isset($propertyAnnotations[Annotation\Cache::class])) {
-            $cacheBuilder = new Builder\CacheMetadataBuilder($metadataBuildingContext);
-
-            $cacheBuilder
-                ->withComponentMetadata($metadata)
-                ->withFieldName($fieldName)
-                ->withCacheAnnotation($propertyAnnotations[Annotation\Cache::class]);
-
-            $assocMetadata->setCache($cacheBuilder->build());
-        }
-
-        return $assocMetadata;
-    }
-
-    /**
-     * @param Annotation\Annotation[] $propertyAnnotations
-     *
-     * @throws Mapping\MappingException
-     */
-    private function convertReflectionPropertyToManyToManyAssociationMetadata(
-        ReflectionProperty $reflectionProperty,
-        array $propertyAnnotations,
-        Mapping\ClassMetadata $metadata,
-        Mapping\ClassMetadataBuildingContext $metadataBuildingContext
-    ) : Mapping\ManyToManyAssociationMetadata {
-        $className       = $metadata->getClassName();
-        $fieldName       = $reflectionProperty->getName();
-        $manyToManyAnnot = $propertyAnnotations[Annotation\ManyToMany::class];
-        $assocMetadata   = new Mapping\ManyToManyAssociationMetadata($fieldName);
-        $targetEntity    = $manyToManyAnnot->targetEntity;
-
-        $assocMetadata->setTargetEntity($targetEntity);
-        $assocMetadata->setCascade($this->getCascade($className, $fieldName, $manyToManyAnnot->cascade));
-        $assocMetadata->setOrphanRemoval($manyToManyAnnot->orphanRemoval);
-        $assocMetadata->setFetchMode($this->getFetchMode($className, $manyToManyAnnot->fetch));
-
-        if (! empty($manyToManyAnnot->mappedBy)) {
-            $assocMetadata->setMappedBy($manyToManyAnnot->mappedBy);
-            $assocMetadata->setOwningSide(false);
-        }
-
-        if (! empty($manyToManyAnnot->inversedBy)) {
-            $assocMetadata->setInversedBy($manyToManyAnnot->inversedBy);
-        }
-
-        if (! empty($manyToManyAnnot->indexBy)) {
-            $assocMetadata->setIndexedBy($manyToManyAnnot->indexBy);
-        }
-
-        // Check for OrderBy
-        if (isset($propertyAnnotations[Annotation\OrderBy::class])) {
-            $orderByAnnot = $propertyAnnotations[Annotation\OrderBy::class];
-
-            $assocMetadata->setOrderBy($orderByAnnot->value);
-        }
-
-        // Check for Id
-        if (isset($propertyAnnotations[Annotation\Id::class])) {
-            throw Mapping\MappingException::illegalToManyIdentifierAssociation($className, $fieldName);
-        }
-
-        // Check for Cache
-        if (isset($propertyAnnotations[Annotation\Cache::class])) {
-            $cacheBuilder = new Builder\CacheMetadataBuilder($metadataBuildingContext);
-
-            $cacheBuilder
-                ->withComponentMetadata($metadata)
-                ->withFieldName($fieldName)
-                ->withCacheAnnotation($propertyAnnotations[Annotation\Cache::class]);
-
-            $assocMetadata->setCache($cacheBuilder->build());
-        }
-
-        // Check for owning side to consider join column
-        if (! $assocMetadata->isOwningSide()) {
-            return $assocMetadata;
-        }
-
-        $joinTableBuilder = new Builder\JoinTableMetadataBuilder($metadataBuildingContext);
-
-        $joinTableBuilder
-            ->withComponentMetadata($metadata)
-            ->withTargetEntity($targetEntity)
-            ->withFieldName($fieldName);
-
-        // Check for JoinTable
-        if (isset($propertyAnnotations[Annotation\JoinTable::class])) {
-            $joinTableBuilder->withJoinTableAnnotation($propertyAnnotations[Annotation\JoinTable::class]);
-        }
-
-        $assocMetadata->setJoinTable($joinTableBuilder->build());
-
-        return $assocMetadata;
     }
 
     /**
@@ -1054,21 +735,18 @@ class AnnotationDriver implements MappingDriver
         if (isset($classAnnotations[Annotation\AssociationOverrides::class])) {
             $associationOverridesAnnot = $classAnnotations[Annotation\AssociationOverrides::class];
 
-            foreach ($associationOverridesAnnot->value as $associationOverride) {
-                $fieldName = $associationOverride->name;
+            foreach ($associationOverridesAnnot->value as $associationOverrideAnnotation) {
+                $fieldName = $associationOverrideAnnotation->name;
                 $property  = $metadata->getProperty($fieldName);
 
                 if (! $property) {
                     throw Mapping\MappingException::invalidOverrideFieldName($metadata->getClassName(), $fieldName);
                 }
 
-                $existingClass = get_class($property);
-                $override      = new $existingClass($fieldName);
-
-                $override->setTargetEntity($property->getTargetEntity());
+                $override = clone $property;
 
                 // Check for JoinColumn/JoinColumns annotations
-                if ($associationOverride->joinColumns) {
+                if ($associationOverrideAnnotation->joinColumns) {
                     $joinColumnBuilder = new Builder\JoinColumnMetadataBuilder($metadataBuildingContext);
 
                     $joinColumnBuilder
@@ -1077,36 +755,48 @@ class AnnotationDriver implements MappingDriver
 
                     $joinColumns = [];
 
-                    foreach ($associationOverride->joinColumns as $joinColumnAnnotation) {
+                    foreach ($associationOverrideAnnotation->joinColumns as $joinColumnAnnotation) {
                         $joinColumnBuilder->withJoinColumnAnnotation($joinColumnAnnotation);
 
-                        $override->addJoinColumn($joinColumnBuilder->build());
+                        $joinColumnMetadata = $joinColumnBuilder->build();
+                        $columnName         = $joinColumnMetadata->getColumnName();
+
+                        // @todo guilhermeblanco Open an issue to discuss making this scenario impossible.
+                        //if ($metadata->checkPropertyDuplication($columnName)) {
+                        //    throw Mapping\MappingException::duplicateColumnName($metadata->getClassName(), $columnName);
+                        //}
+
+                        if ($override->isOwningSide()) {
+                            $metadata->fieldNames[$columnName] = $fieldName;
+                        }
+
+                        $joinColumns[] = $joinColumnMetadata;
                     }
+
+                    $override->setJoinColumns($joinColumns);
                 }
 
                 // Check for JoinTable annotations
-                if ($associationOverride->joinTable) {
+                if ($associationOverrideAnnotation->joinTable) {
                     $joinTableBuilder = new Builder\JoinTableMetadataBuilder($metadataBuildingContext);
 
                     $joinTableBuilder
                         ->withComponentMetadata($metadata)
                         ->withFieldName($fieldName)
                         ->withTargetEntity($property->getTargetEntity())
-                        ->withJoinTableAnnotation($associationOverride->joinTable);
+                        ->withJoinTableAnnotation($associationOverrideAnnotation->joinTable);
 
                     $override->setJoinTable($joinTableBuilder->build());
                 }
 
                 // Check for inversedBy
-                if ($associationOverride->inversedBy) {
-                    $override->setInversedBy($associationOverride->inversedBy);
+                if ($associationOverrideAnnotation->inversedBy) {
+                    $override->setInversedBy($associationOverrideAnnotation->inversedBy);
                 }
 
                 // Check for fetch
-                if ($associationOverride->fetch) {
-                    $override->setFetchMode(
-                        constant(Mapping\FetchMode::class . '::' . $associationOverride->fetch)
-                    );
+                if ($associationOverrideAnnotation->fetch) {
+                    $override->setFetchMode(constant(Mapping\FetchMode::class . '::' . $associationOverrideAnnotation->fetch));
                 }
 
                 $metadata->setPropertyOverride($override);
@@ -1124,11 +814,28 @@ class AnnotationDriver implements MappingDriver
                 ->withVersionAnnotation(null);
 
             foreach ($attributeOverridesAnnot->value as $attributeOverrideAnnotation) {
+                $fieldName = $attributeOverrideAnnotation->name;
+                $property  = $metadata->getProperty($fieldName);
+
+                if (! $property) {
+                    throw Mapping\MappingException::invalidOverrideFieldName($metadata->getClassName(), $fieldName);
+                }
+
                 $fieldBuilder
-                    ->withFieldName($attributeOverrideAnnotation->name)
+                    ->withFieldName($fieldName)
                     ->withColumnAnnotation($attributeOverrideAnnotation->column);
 
-                $metadata->setPropertyOverride($fieldBuilder->build());
+                $fieldMetadata = $fieldBuilder->build();
+                $columnName    = $fieldMetadata->getColumnName();
+
+                // Prevent column duplication
+                if ($metadata->checkPropertyDuplication($columnName)) {
+                    throw Mapping\MappingException::duplicateColumnName($metadata->getClassName(), $columnName);
+                }
+
+                $metadata->fieldNames[$fieldMetadata->getColumnName()] = $fieldName;
+
+                $metadata->setPropertyOverride($fieldMetadata);
             }
         }
     }

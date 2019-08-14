@@ -418,7 +418,6 @@ class ClassMetadataFactory implements PersistenceClassMetadataFactory
         }
 
         $class->validateIdentifier();
-        $class->validateAssociations();
         $class->validateLifecycleCallbacks($this->getReflectionService());
 
         // verify inheritance
