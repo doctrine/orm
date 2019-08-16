@@ -1140,13 +1140,17 @@ class QueryBuilder
      *         ->groupBy('u.id');
      * </code>
      *
-     * @param string $groupBy The grouping expression.
+     * @param string|string[] $groupBy The grouping expression.
      *
      * @return self
      */
     public function groupBy($groupBy)
     {
-        return $this->add('groupBy', new Expr\GroupBy(func_get_args()));
+        if (! is_array($groupBy)) {
+            $groupBy = func_get_args();
+        }
+
+        return $this->add('groupBy', new Expr\GroupBy($groupBy));
     }
 
     /**
@@ -1160,13 +1164,17 @@ class QueryBuilder
      *         ->addGroupBy('u.createdAt');
      * </code>
      *
-     * @param string $groupBy The grouping expression.
+     * @param string|string[] $groupBy The grouping expression.
      *
      * @return self
      */
     public function addGroupBy($groupBy)
     {
-        return $this->add('groupBy', new Expr\GroupBy(func_get_args()), true);
+        if (! is_array($groupBy)) {
+            $groupBy = func_get_args();
+        }
+
+        return $this->add('groupBy', new Expr\GroupBy($groupBy), true);
     }
 
     /**

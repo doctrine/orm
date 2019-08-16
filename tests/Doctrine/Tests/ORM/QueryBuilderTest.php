@@ -88,6 +88,15 @@ class QueryBuilderTest extends OrmTestCase
         self::assertValidQueryBuilder($qb, 'SELECT u.id, u.username FROM Doctrine\Tests\Models\CMS\CmsUser u');
     }
 
+    public function testMultiSelectWithAlias() : void
+    {
+        $qb = $this->em->createQueryBuilder()
+            ->from(CmsUser::class, 'u')
+            ->select(['u' => ['id', 'username'], 'e' => ['id', 'name']]);
+
+        self::assertValidQueryBuilder($qb, 'SELECT u.id, u.username, e.id, e.name FROM Doctrine\Tests\Models\CMS\CmsUser u');
+    }
+
     public function testSimpleDelete() : void
     {
         $qb = $this->em->createQueryBuilder()
@@ -335,6 +344,17 @@ class QueryBuilderTest extends OrmTestCase
             ->addGroupBy('u.username');
 
         self::assertValidQueryBuilder($qb, 'SELECT u FROM Doctrine\Tests\Models\CMS\CmsUser u GROUP BY u.id, u.username');
+    }
+
+    public function testMultiGroupByWithAlias() : void
+    {
+        $qb = $this->em->createQueryBuilder()
+            ->select('u')
+            ->from(CmsUser::class, 'u')
+            ->groupBy(['u' => ['id', 'name'], 'e' => ['id']])
+            ->addGroupBy('u.username');
+
+        self::assertValidQueryBuilder($qb, 'SELECT u FROM Doctrine\Tests\Models\CMS\CmsUser u GROUP BY u.id, u.name, e.id, u.username');
     }
 
     public function testHaving() : void

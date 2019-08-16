@@ -7,7 +7,7 @@ namespace Doctrine\ORM\Query\Expr;
 /**
  * Expression class for building DQL select statements.
  */
-class Select extends Base
+class Select extends BaseAlias
 {
     /** @var string */
     protected $preSeparator = '';

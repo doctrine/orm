@@ -7,7 +7,7 @@ namespace Doctrine\ORM\Query\Expr;
 /**
  * Expression class for building DQL Group By parts.
  */
-class GroupBy extends Base
+class GroupBy extends BaseAlias
 {
     /** @var string */
     protected $preSeparator = '';
