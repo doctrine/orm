@@ -355,7 +355,7 @@ class FirstEntity
 
     /**
      * @ORM\OneToOne(targetEntity=SecondEntity::class)
-     * @ORM\JoinColumn(name="id", referencedColumnName="fist_entity_id")
+     * @ORM\JoinColumn(name="id", referencedColumnName="first_entity_id")
      */
     public $secondEntity;
 
@@ -371,7 +371,7 @@ class SecondEntity
 {
     /**
      * @ORM\Id
-     * @ORM\Column(name="fist_entity_id")
+     * @ORM\Column(name="first_entity_id")
      */
     public $fist_entity_id;
 

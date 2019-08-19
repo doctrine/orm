@@ -12,7 +12,7 @@
 
         <field name="name" column="user-name" />
 
-        <one-to-many field="phones" target-entity="Doctrine\Tests\ORM\Mapping\Phone" mapped-by="user">
+        <one-to-many field="phones" target-entity="Doctrine\Tests\Models\Quote\Phone" mapped-by="user">
             <cascade><cascade-persist /></cascade>
         </one-to-many>
 

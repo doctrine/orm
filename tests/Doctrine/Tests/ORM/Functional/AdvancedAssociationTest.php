@@ -276,8 +276,6 @@ class Type
      *     joinColumns={@ORM\JoinColumn(name="type_id", referencedColumnName="type_id")},
      *     inverseJoinColumns={@ORM\JoinColumn(name="lemma_id", referencedColumnName="lemma_id")}
      * )
-     *
-     * @var kateglo\application\helpers\collections\ArrayCollection
      */
     private $lemmas;
 
@@ -348,7 +346,7 @@ class Type
      *
      * @return void
      */
-    public function removeLEmma(Lemma $lemma)
+    public function removeLemma(Lemma $lemma)
     {
         $removed = $this->lemmas->removeElement($lemma);
 
@@ -358,7 +356,7 @@ class Type
     }
 
     /**
-     * @return kateglo\application\helpers\collections\ArrayCollection
+     * @return ArrayCollection
      */
     public function getCategories()
     {

@@ -6,27 +6,21 @@ namespace Doctrine\ORM\Mapping;
 
 use ArrayIterator;
 use Doctrine\ORM\Cache\Exception\CacheException;
-use Doctrine\ORM\Cache\Exception\NonCacheableEntityAssociation;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Reflection\ReflectionService;
 use Doctrine\ORM\Sequencing\Planning\ValueGenerationPlan;
 use Doctrine\ORM\Utility\PersisterHelper;
 use ReflectionException;
 use RuntimeException;
-use function array_diff;
 use function array_filter;
-use function array_intersect;
-use function array_map;
 use function array_merge;
 use function class_exists;
-use function count;
 use function get_class;
 use function in_array;
 use function interface_exists;
 use function is_subclass_of;
 use function method_exists;
 use function spl_object_id;
-use function sprintf;
 
 /**
  * A <tt>ClassMetadata</tt> instance holds all the object-relational mapping metadata
@@ -460,29 +454,6 @@ class ClassMetadata extends ComponentMetadata implements TableOwner
     }
 
     /**
-     * Validates association targets actually exist.
-     *
-     * @throws MappingException
-     */
-    public function validateAssociations() : void
-    {
-        array_map(
-            function (Property $property) {
-                if (! ($property instanceof AssociationMetadata)) {
-                    return;
-                }
-
-                $targetEntity = $property->getTargetEntity();
-
-                if (! class_exists($targetEntity)) {
-                    throw MappingException::invalidTargetEntityClass($targetEntity, $this->className, $property->getName());
-                }
-            },
-            $this->properties
-        );
-    }
-
-    /**
      * Validates lifecycle callbacks.
      *
      * @throws MappingException
@@ -495,161 +466,6 @@ class ClassMetadata extends ComponentMetadata implements TableOwner
                 if (! $reflectionService->hasPublicMethod($this->className, $callbackFuncName)) {
                     throw MappingException::lifecycleCallbackMethodNotFound($this->className, $callbackFuncName);
                 }
-            }
-        }
-    }
-
-    /**
-     * Validates & completes the basic mapping information that is common to all
-     * association mappings (one-to-one, many-ot-one, one-to-many, many-to-many).
-     *
-     * @throws MappingException If something is wrong with the mapping.
-     * @throws CacheException   If entity is not cacheable.
-     */
-    protected function validateAndCompleteAssociationMapping(AssociationMetadata $property)
-    {
-        $fieldName    = $property->getName();
-        $targetEntity = $property->getTargetEntity();
-
-        if (! $targetEntity) {
-            throw MappingException::missingTargetEntity($fieldName);
-        }
-
-        $property->setSourceEntity($this->className);
-        $property->setTargetEntity($targetEntity);
-
-        // Complete id mapping
-        if ($property->isPrimaryKey()) {
-            if ($property->isOrphanRemoval()) {
-                throw MappingException::illegalOrphanRemovalOnIdentifierAssociation($this->className, $fieldName);
-            }
-
-            if ($property instanceof ToOneAssociationMetadata && count($property->getJoinColumns()) >= 2) {
-                throw MappingException::cannotMapCompositePrimaryKeyEntitiesAsForeignId(
-                    $property->getTargetEntity(),
-                    $this->className,
-                    $fieldName
-                );
-            }
-
-            if ($this->cache && ! $property->getCache()) {
-                throw NonCacheableEntityAssociation::fromEntityAndField($this->className, $fieldName);
-            }
-
-            if ($property instanceof ToManyAssociationMetadata) {
-                throw MappingException::illegalToManyIdentifierAssociation($this->className, $property->getName());
-            }
-
-            if (! in_array($property->getName(), $this->identifier, true)) {
-                $this->identifier[] = $property->getName();
-            }
-        }
-
-        // Cascades
-        $cascadeTypes = ['remove', 'persist', 'refresh'];
-        $cascades     = array_map('strtolower', $property->getCascade());
-
-        if (in_array('all', $cascades, true)) {
-            $cascades = $cascadeTypes;
-        }
-
-        if (count($cascades) !== count(array_intersect($cascades, $cascadeTypes))) {
-            $diffCascades = array_diff($cascades, array_intersect($cascades, $cascadeTypes));
-
-            throw MappingException::invalidCascadeOption($diffCascades, $this->className, $fieldName);
-        }
-
-        $property->setCascade($cascades);
-    }
-
-    /**
-     * Validates & completes a to-one association mapping.
-     *
-     * @param ToOneAssociationMetadata $property The association mapping to validate & complete.
-     *
-     * @throws RuntimeException
-     * @throws MappingException
-     */
-    protected function validateAndCompleteToOneAssociationMetadata(ToOneAssociationMetadata $property)
-    {
-        $fieldName = $property->getName();
-
-        if ($property->isOwningSide()) {
-            $uniqueConstraintColumns = [];
-
-            foreach ($property->getJoinColumns() as $joinColumn) {
-                /** @var JoinColumnMetadata $joinColumn */
-                if ($property instanceof OneToOneAssociationMetadata && $this->inheritanceType !== InheritanceType::SINGLE_TABLE) {
-                    if (count($property->getJoinColumns()) === 1) {
-                        if (! $property->isPrimaryKey()) {
-                            $joinColumn->setUnique(true);
-                        }
-                    } else {
-                        $uniqueConstraintColumns[] = $joinColumn->getColumnName();
-                    }
-                }
-
-                $this->fieldNames[$joinColumn->getColumnName()] = $fieldName;
-            }
-
-            if ($uniqueConstraintColumns) {
-                if (! $this->table) {
-                    throw new RuntimeException(
-                        'ClassMetadata::setTable() has to be called before defining a one to one relationship.'
-                    );
-                }
-
-                $this->table->addUniqueConstraint(
-                    [
-                        'name'    => sprintf('%s_uniq', $fieldName),
-                        'columns' => $uniqueConstraintColumns,
-                        'options' => [],
-                        'flags'   => [],
-                    ]
-                );
-            }
-        }
-
-        if ($property->isOrphanRemoval()) {
-            $cascades = $property->getCascade();
-
-            if (! in_array('remove', $cascades, true)) {
-                $cascades[] = 'remove';
-
-                $property->setCascade($cascades);
-            }
-
-            // @todo guilhermeblanco where is this used?
-            // @todo guilhermeblanco Shouldn￿'t we iterate through JoinColumns to set non-uniqueness?
-            //$property->setUnique(false);
-        }
-
-        if ($property->isPrimaryKey() && ! $property->isOwningSide()) {
-            throw MappingException::illegalInverseIdentifierAssociation($this->className, $fieldName);
-        }
-    }
-
-    /**
-     * Validates & completes a one-to-many association mapping.
-     *
-     * @param OneToManyAssociationMetadata $property The association mapping to validate & complete.
-     *
-     * @throws MappingException
-     */
-    protected function validateAndCompleteOneToManyMapping(OneToManyAssociationMetadata $property)
-    {
-        // OneToMany MUST have mappedBy
-        if (! $property->getMappedBy()) {
-            throw MappingException::oneToManyRequiresMappedBy($property->getName());
-        }
-
-        if ($property->isOrphanRemoval()) {
-            $cascades = $property->getCascade();
-
-            if (! in_array('remove', $cascades, true)) {
-                $cascades[] = 'remove';
-
-                $property->setCascade($cascades);
             }
         }
     }
@@ -999,31 +815,10 @@ class ClassMetadata extends ComponentMetadata implements TableOwner
 
         switch (true) {
             case $property instanceof FieldMetadata:
-                $this->fieldNames[$property->getColumnName()] = $property->getName();
-
                 if ($property->isVersioned()) {
                     $this->versionProperty = $property;
                 }
 
-                break;
-
-            case $property instanceof OneToOneAssociationMetadata:
-                $this->validateAndCompleteAssociationMapping($property);
-                $this->validateAndCompleteToOneAssociationMetadata($property);
-                break;
-
-            case $property instanceof OneToManyAssociationMetadata:
-                $this->validateAndCompleteAssociationMapping($property);
-                $this->validateAndCompleteOneToManyMapping($property);
-                break;
-
-            case $property instanceof ManyToOneAssociationMetadata:
-                $this->validateAndCompleteAssociationMapping($property);
-                $this->validateAndCompleteToOneAssociationMetadata($property);
-                break;
-
-            case $property instanceof ManyToManyAssociationMetadata:
-                $this->validateAndCompleteAssociationMapping($property);
                 break;
 
             default:

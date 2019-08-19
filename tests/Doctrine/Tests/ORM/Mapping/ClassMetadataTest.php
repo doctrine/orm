@@ -392,6 +392,8 @@ class ClassMetadataTest extends OrmTestCase
 
     public function testDuplicateColumnNameThrowsMappingException() : void
     {
+        $this->markTestIncomplete('This test needs to be moved to ClassMetadataBuilderTest');
+
         $cm = new ClassMetadata(CMS\CmsUser::class, null, $this->metadataBuildingContext);
         $cm->setTable(new Mapping\TableMetadata('cms_users'));
 
@@ -733,6 +735,8 @@ class ClassMetadataTest extends OrmTestCase
      */
     public function testOrphanRemovalIdentifierAssociation() : void
     {
+        $this->markTestIncomplete('This test needs to be moved to ClassMetadataBuilderTest');
+
         $cm = new ClassMetadata(DDC117ArticleDetails::class, null, $this->metadataBuildingContext);
         $cm->setTable(new Mapping\TableMetadata('ddc117_article_details'));
 
@@ -753,6 +757,8 @@ class ClassMetadataTest extends OrmTestCase
      */
     public function testInverseIdentifierAssociation() : void
     {
+        $this->markTestIncomplete('This test needs to be moved to ClassMetadataBuilderTest');
+
         $cm = new ClassMetadata(DDC117ArticleDetails::class, null, $this->metadataBuildingContext);
         $cm->setTable(new Mapping\TableMetadata('ddc117_article_details'));
 
@@ -774,6 +780,8 @@ class ClassMetadataTest extends OrmTestCase
      */
     public function testIdentifierAssociationManyToMany() : void
     {
+        $this->markTestIncomplete('This test needs to be moved to ClassMetadataBuilderTest');
+
         $cm = new ClassMetadata(DDC117ArticleDetails::class, null, $this->metadataBuildingContext);
         $cm->setTable(new Mapping\TableMetadata('ddc117_article_details'));
 
@@ -854,6 +862,8 @@ class ClassMetadataTest extends OrmTestCase
      */
     public function testTargetEntityNotFound() : void
     {
+        $this->markTestIncomplete('This test needs to be moved to ClassMetadataBuilderTest');
+
         $cm = new ClassMetadata(CMS\CmsUser::class, null, $this->metadataBuildingContext);
         $cm->setTable(new Mapping\TableMetadata('cms_users'));
 
@@ -876,6 +886,8 @@ class ClassMetadataTest extends OrmTestCase
      */
     public function testInvalidCascade() : void
     {
+        $this->markTestIncomplete('This test needs to be moved to ClassMetadataBuilderTest');
+
         $cm = new ClassMetadata(CMS\CmsUser::class, null, $this->metadataBuildingContext);
         $cm->setTable(new Mapping\TableMetadata('cms_users'));
 
