@@ -115,8 +115,10 @@ class LimitSubqueryWalker extends TreeWalkerAdapter
             foreach ($expressions as $expression) {
                 if ($expression instanceof PathExpression) {
                     $AST->selectClause->selectExpressions[] = new SelectExpression(
-                        $this->createSelectExpressionItem($expression), '_dctrn_ord' . $this->_aliasCounter++
+                        $this->createSelectExpressionItem($expression),
+                        '_dctrn_ord' . $this->_aliasCounter++
                     );
+
                     $hasPathExpression = true;
                 }
             }
