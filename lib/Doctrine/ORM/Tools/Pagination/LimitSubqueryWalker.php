@@ -104,10 +104,9 @@ class LimitSubqueryWalker extends TreeWalkerAdapter
                     $expressions = [$item->expression];
                     break;
                 case $item->expression instanceof SimpleArithmeticExpression:
-                    $expressions = array_filter(
-                        $item->expression->arithmeticTerms,
-                        function ($term) { return $term instanceof PathExpression; }
-                    );
+                    $expressions = \array_filter($item->expression->arithmeticTerms, static function ($term) {
+                        return $term instanceof PathExpression;
+                    });
                     break;
                 default:
                     $expressions = [];
