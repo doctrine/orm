@@ -23,7 +23,7 @@ class GH7805Test extends OrmFunctionalTestCase
         $this->_em->persist($article);
         $this->_em->flush();
 
-        $query = $this->_em->createQuery('SELECT a FROM Doctrine\Tests\Models\CMS\CmsArticle a ORDER BY a.topic + 0 ASC');
+        $query = $this->_em->createQuery('SELECT a FROM Doctrine\Tests\Models\CMS\CmsArticle a ORDER BY a.version + 0 ASC');
         $query->setFirstResult(0);
         $query->setMaxResults(1);
 
