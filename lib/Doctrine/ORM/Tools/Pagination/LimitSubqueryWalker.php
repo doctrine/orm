@@ -99,27 +99,12 @@ class LimitSubqueryWalker extends TreeWalkerAdapter
         }
 
         foreach ($AST->orderByClause->orderByItems as $item) {
-            switch (true) {
-                case $item->expression instanceof PathExpression:
-                    $expressions = [$item->expression];
-                    break;
-                case $item->expression instanceof SimpleArithmeticExpression:
-                    $expressions = \array_filter($item->expression->arithmeticTerms, static function ($term) {
-                        return $term instanceof PathExpression;
-                    });
-                    break;
-                default:
-                    $expressions = [];
-            }
-
-            foreach ($expressions as $expression) {
+            if ($item->expression instanceof PathExpression || $item->expression instanceof SimpleArithmeticExpression) {
                 $AST->selectClause->selectExpressions[] = new SelectExpression(
-                    $this->createSelectExpressionItem($expression),
+                    $this->createSelectExpressionItem($item->expression),
                     '_dctrn_ord' . $this->_aliasCounter++
                 );
-            }
 
-            if ( ! empty($expressions)) {
                 continue;
             }
 
@@ -174,20 +159,20 @@ class LimitSubqueryWalker extends TreeWalkerAdapter
     /**
      * Retrieve either an IdentityFunction (IDENTITY(u.assoc)) or a state field (u.name).
      *
-     * @param \Doctrine\ORM\Query\AST\PathExpression $pathExpression
+     * @param mixed $expression
      *
-     * @return \Doctrine\ORM\Query\AST\Functions\IdentityFunction
+     * @return IdentityFunction
      */
-    private function createSelectExpressionItem(PathExpression $pathExpression)
+    private function createSelectExpressionItem($expression)
     {
-        if ($pathExpression->type === PathExpression::TYPE_SINGLE_VALUED_ASSOCIATION) {
+        if ($expression instanceof PathExpression && $expression->type === PathExpression::TYPE_SINGLE_VALUED_ASSOCIATION) {
             $identity = new IdentityFunction('identity');
 
-            $identity->pathExpression = clone $pathExpression;
+            $identity->pathExpression = clone $expression;
 
             return $identity;
         }
 
-        return clone $pathExpression;
+        return clone $expression;
     }
 }

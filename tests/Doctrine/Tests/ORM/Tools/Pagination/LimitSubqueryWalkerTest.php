@@ -61,7 +61,7 @@ class LimitSubqueryWalkerTest extends PaginationTestCase
         $limitQuery->setHint(Query::HINT_CUSTOM_TREE_WALKERS, [LimitSubqueryWalker::class]);
 
         self::assertSame(
-            'SELECT DISTINCT m0_.id AS id_0, m0_.title AS title_1 FROM MyBlogPost m0_ INNER JOIN Category c1_ ON m0_.category_id = c1_.id GROUP BY m0_.id ORDER BY m0_.title + 0 ASC',
+            'SELECT DISTINCT m0_.id AS id_0, m0_.title + 0 AS sclr_1 FROM MyBlogPost m0_ INNER JOIN Category c1_ ON m0_.category_id = c1_.id GROUP BY m0_.id ORDER BY m0_.title + 0 ASC',
             $limitQuery->getSQL()
         );
     }
