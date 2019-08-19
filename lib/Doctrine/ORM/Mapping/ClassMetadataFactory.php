@@ -390,6 +390,10 @@ class ClassMetadataFactory implements PersistenceClassMetadataFactory
         ?ClassMetadata $parent,
         ClassMetadataBuildingContext $metadataBuildingContext
     ) : ?ComponentMetadata {
+        $reflectionService = $metadataBuildingContext->getReflectionService();
+        $reflectionClass   = $reflectionService->getClass($className);
+        $className         = $reflectionClass ? $reflectionClass->getName() : $className;
+
         /** @var ClassMetadata $classMetadata */
         $classMetadata = $this->driver->loadMetadataForClass($className, $parent, $metadataBuildingContext);
 
@@ -398,6 +402,8 @@ class ClassMetadataFactory implements PersistenceClassMetadataFactory
 
             $this->evm->dispatchEvent(Events::loadClassMetadata, $eventArgs);
         }
+
+        $classMetadata->wakeupReflection($metadataBuildingContext->getReflectionService());
 
         $this->buildValueGenerationPlan($classMetadata);
         $this->validateRuntimeMetadata($classMetadata, $parent);

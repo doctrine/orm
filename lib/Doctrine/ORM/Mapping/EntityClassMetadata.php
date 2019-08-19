@@ -67,9 +67,9 @@ abstract class EntityClassMetadata extends ComponentMetadata
      */
     protected $table;
 
-    public function __construct(string $className, ClassMetadataBuildingContext $metadataBuildingContext)
+    public function __construct(string $className)
     {
-        parent::__construct($className, $metadataBuildingContext);
+        parent::__construct($className);
 
         $this->entityName = $className;
     }

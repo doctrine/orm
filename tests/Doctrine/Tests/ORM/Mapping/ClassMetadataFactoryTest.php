@@ -6,7 +6,6 @@ namespace Doctrine\Tests\ORM\Mapping;
 
 use Doctrine\Common\EventManager;
 use Doctrine\DBAL\Connection;
-use Doctrine\DBAL\Platforms\AbstractPlatform;
 use Doctrine\DBAL\Types\Type;
 use Doctrine\ORM\Configuration;
 use Doctrine\ORM\EntityManagerInterface;
@@ -17,7 +16,6 @@ use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\Mapping\ClassMetadataFactory;
 use Doctrine\ORM\Mapping\Driver\MappingDriver;
 use Doctrine\ORM\Mapping\MappingException;
-use Doctrine\ORM\Reflection\ReflectionService;
 use Doctrine\ORM\Sequencing\Generator;
 use Doctrine\Tests\Mocks\ConnectionMock;
 use Doctrine\Tests\Mocks\DriverMock;
@@ -201,14 +199,7 @@ class ClassMetadataFactoryTest extends OrmTestCase
      */
     protected function createValidClassMetadata()
     {
-        // Self-made metadata
-        $metadataBuildingContext = new Mapping\ClassMetadataBuildingContext(
-            $this->createMock(ClassMetadataFactory::class),
-            $this->createMock(ReflectionService::class),
-            $this->createMock(AbstractPlatform::class)
-        );
-
-        $cm1 = new ClassMetadata(TestEntity1::class, null, $metadataBuildingContext);
+        $cm1 = new ClassMetadata(TestEntity1::class, null);
 
         $tableMetadata = new Mapping\TableMetadata();
         $tableMetadata->setName('group');

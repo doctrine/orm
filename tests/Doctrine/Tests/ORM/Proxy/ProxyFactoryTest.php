@@ -103,8 +103,10 @@ class ProxyFactoryTest extends OrmTestCase
 
     public function testSkipMappedSuperClassesOnGeneration() : void
     {
-        $cm                     = new ClassMetadata(stdClass::class, null, $this->metadataBuildingContext);
+        $cm                     = new ClassMetadata(stdClass::class, null);
         $cm->isMappedSuperclass = true;
+
+        $cm->wakeupReflection($this->metadataBuildingContext->getReflectionService());
 
         self::assertSame(
             0,
@@ -119,8 +121,10 @@ class ProxyFactoryTest extends OrmTestCase
      */
     public function testSkipEmbeddableClassesOnGeneration() : void
     {
-        $cm                  = new ClassMetadata(stdClass::class, null, $this->metadataBuildingContext);
+        $cm                  = new ClassMetadata(stdClass::class, null);
         $cm->isEmbeddedClass = true;
+
+        $cm->wakeupReflection($this->metadataBuildingContext->getReflectionService());
 
         self::assertSame(
             0,
@@ -134,7 +138,9 @@ class ProxyFactoryTest extends OrmTestCase
      */
     public function testSkipAbstractClassesOnGeneration() : void
     {
-        $cm = new ClassMetadata(AbstractClass::class, null, $this->metadataBuildingContext);
+        $cm = new ClassMetadata(AbstractClass::class, null);
+
+        $cm->wakeupReflection($this->metadataBuildingContext->getReflectionService());
 
         self::assertNotNull($cm->getReflectionClass());
 

@@ -47,7 +47,7 @@ class XmlDriver extends FileDriver
         ?Mapping\ComponentMetadata $parent,
         Mapping\ClassMetadataBuildingContext $metadataBuildingContext
     ) : Mapping\ComponentMetadata {
-        $metadata = new Mapping\ClassMetadata($className, $parent, $metadataBuildingContext);
+        $metadata = new Mapping\ClassMetadata($className, $parent);
 
         /** @var SimpleXMLElement $xmlRoot */
         $xmlRoot = $this->getElement($className);

@@ -5,9 +5,9 @@ declare(strict_types=1);
 namespace Doctrine\ORM\Mapping;
 
 use ArrayIterator;
+use Doctrine\ORM\Reflection\ReflectionService;
 use ReflectionClass;
 use ReflectionException;
-use ReflectionProperty;
 
 /**
  * A <tt>ComponentMetadata</tt> instance holds object-relational property mapping.
@@ -33,12 +33,9 @@ abstract class ComponentMetadata
     /** @var Property[] */
     protected $properties = [];
 
-    public function __construct(string $className, ClassMetadataBuildingContext $metadataBuildingContext)
+    public function __construct(string $className)
     {
-        $reflectionService = $metadataBuildingContext->getReflectionService();
-
-        $this->reflectionClass = $reflectionService->getClass($className);
-        $this->className       = $this->reflectionClass ? $this->reflectionClass->getName() : $className;
+        $this->className = $className;
     }
 
     public function getClassName() : string
@@ -54,6 +51,23 @@ abstract class ComponentMetadata
     public function getParent() : ?ComponentMetadata
     {
         return $this->parent;
+    }
+
+    public function wakeupReflection(ReflectionService $reflectionService) : void
+    {
+        // Restore ReflectionClass and properties
+        $this->reflectionClass = $reflectionService->getClass($this->className);
+
+        if (! $this->reflectionClass) {
+            return;
+        }
+
+        $this->className = $this->reflectionClass->getName();
+
+        foreach ($this->properties as $property) {
+            /** @var Property $property */
+            $property->wakeupReflection($reflectionService);
+        }
     }
 
     public function getReflectionClass() : ?ReflectionClass
@@ -95,14 +109,6 @@ abstract class ComponentMetadata
         }
 
         $property->setDeclaringClass($this);
-
-        if ($this->reflectionClass) {
-            $reflectionProperty = new ReflectionProperty($className, $propertyName);
-
-            $reflectionProperty->setAccessible(true);
-
-            $property->setReflectionProperty($reflectionProperty);
-        }
 
         $this->properties[$propertyName] = $property;
     }

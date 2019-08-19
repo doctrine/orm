@@ -149,7 +149,7 @@ class DatabaseDriver implements MappingDriver
             throw new InvalidArgumentException('Unknown class ' . $className);
         }
 
-        $metadata = new Mapping\ClassMetadata($className, $parent, $metadataBuildingContext);
+        $metadata = new Mapping\ClassMetadata($className, $parent);
 
         $this->buildTable($metadata);
         $this->buildFieldMappings($metadata);

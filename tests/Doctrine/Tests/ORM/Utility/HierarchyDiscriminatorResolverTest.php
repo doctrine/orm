@@ -4,35 +4,20 @@ declare(strict_types=1);
 
 namespace Doctrine\Tests\ORM\Utility;
 
-use Doctrine\DBAL\Platforms\AbstractPlatform;
 use Doctrine\ORM\EntityManagerInterface;
-use Doctrine\ORM\Mapping;
 use Doctrine\ORM\Mapping\ClassMetadata;
-use Doctrine\ORM\Reflection\StaticReflectionService;
 use Doctrine\ORM\Utility\HierarchyDiscriminatorResolver;
 use PHPUnit\Framework\TestCase;
 
 class HierarchyDiscriminatorResolverTest extends TestCase
 {
-    /** @var Mapping\ClassMetadataBuildingContext */
-    private $staticMetadataBuildingContext;
-
-    public function setUp() : void
-    {
-        $this->staticMetadataBuildingContext = new Mapping\ClassMetadataBuildingContext(
-            $this->createMock(Mapping\ClassMetadataFactory::class),
-            new StaticReflectionService(),
-            $this->createMock(AbstractPlatform::class)
-        );
-    }
-
     public function testResolveDiscriminatorsForClass() : void
     {
-        $classMetadata                     = new ClassMetadata('Entity', null, $this->staticMetadataBuildingContext);
+        $classMetadata                     = new ClassMetadata('Entity', null);
         $classMetadata->name               = 'Some\Class\Name';
         $classMetadata->discriminatorValue = 'discriminator';
 
-        $childClassMetadata                     = new ClassMetadata('ChildEntity', $classMetadata, $this->staticMetadataBuildingContext);
+        $childClassMetadata                     = new ClassMetadata('ChildEntity', $classMetadata);
         $childClassMetadata->name               = 'Some\Class\Child\Name';
         $childClassMetadata->discriminatorValue = 'child-discriminator';
 
@@ -55,7 +40,7 @@ class HierarchyDiscriminatorResolverTest extends TestCase
 
     public function testResolveDiscriminatorsForClassWithNoSubclasses() : void
     {
-        $classMetadata = new ClassMetadata('Entity', null, $this->staticMetadataBuildingContext);
+        $classMetadata = new ClassMetadata('Entity', null);
         $classMetadata->setSubclasses([]);
         $classMetadata->name               = 'Some\Class\Name';
         $classMetadata->discriminatorValue = 'discriminator';

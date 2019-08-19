@@ -26,9 +26,9 @@ class EmbeddedClassMetadata extends ComponentMetadata implements Property
     /** @var bool */
     protected $primaryKey = false;
 
-    public function __construct(string $name, string $className, ?MappedSuperClassMetadata $parent = null)
+    public function __construct(string $name, string $className/*, ?MappedSuperClassMetadata $parent = null*/)
     {
-        parent::__construct($className, $parent);
+        parent::__construct($className);
 
         $this->name = $name;
     }

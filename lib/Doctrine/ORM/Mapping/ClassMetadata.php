@@ -179,12 +179,9 @@ class ClassMetadata extends ComponentMetadata implements TableOwner
      * @param string             $entityName The name of the entity class.
      * @param ClassMetadata|null $parent     Optional parent class metadata.
      */
-    public function __construct(
-        string $entityName,
-        ?ComponentMetadata $parent,
-        ClassMetadataBuildingContext $metadataBuildingContext
-    ) {
-        parent::__construct($entityName, $metadataBuildingContext);
+    public function __construct(string $entityName, ?ComponentMetadata $parent)
+    {
+        parent::__construct($entityName);
 
         if ($parent) {
             $this->setParent($parent);
@@ -371,26 +368,6 @@ class ClassMetadata extends ComponentMetadata implements TableOwner
         }
 
         return $serialized;
-    }
-
-    /**
-     * Restores some state that can not be serialized/unserialized.
-     */
-    public function wakeupReflection(ReflectionService $reflectionService) : void
-    {
-        // Restore ReflectionClass and properties
-        $this->reflectionClass = $reflectionService->getClass($this->className);
-
-        if (! $this->reflectionClass) {
-            return;
-        }
-
-        $this->className = $this->reflectionClass->getName();
-
-        foreach ($this->properties as $property) {
-            /** @var Property $property */
-            $property->wakeupReflection($reflectionService);
-        }
     }
 
     /**

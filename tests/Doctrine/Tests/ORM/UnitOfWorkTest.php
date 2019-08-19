@@ -9,11 +9,8 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\EventManager;
 use Doctrine\Common\NotifyPropertyChanged;
 use Doctrine\Common\PropertyChangedListener;
-use Doctrine\DBAL\Platforms\AbstractPlatform;
 use Doctrine\ORM\Annotation as ORM;
 use Doctrine\ORM\Mapping\ClassMetadata;
-use Doctrine\ORM\Mapping\ClassMetadataBuildingContext;
-use Doctrine\ORM\Mapping\ClassMetadataFactory;
 use Doctrine\ORM\Mapping\GeneratorType;
 use Doctrine\ORM\ORMInvalidArgumentException;
 use Doctrine\ORM\Reflection\RuntimeReflectionService;
@@ -67,18 +64,9 @@ class UnitOfWorkTest extends OrmTestCase
     /** @var EventManager|PHPUnit_Framework_MockObject_MockObject */
     private $eventManager;
 
-    /** @var ClassMetadataBuildingContext|PHPUnit_Framework_MockObject_MockObject */
-    private $metadataBuildingContext;
-
     protected function setUp() : void
     {
         parent::setUp();
-
-        $this->metadataBuildingContext = new ClassMetadataBuildingContext(
-            $this->createMock(ClassMetadataFactory::class),
-            new RuntimeReflectionService(),
-            $this->createMock(AbstractPlatform::class)
-        );
 
         $this->eventManager   = $this->getMockBuilder(EventManager::class)->getMock();
         $this->connectionMock = new ConnectionMock([], new DriverMock(), null, $this->eventManager);
@@ -645,7 +633,7 @@ class UnitOfWorkTest extends OrmTestCase
      */
     public function testCanInstantiateInternalPhpClassSubclass() : void
     {
-        $classMetadata = new ClassMetadata(MyArrayObjectEntity::class, null, $this->metadataBuildingContext);
+        $classMetadata = new ClassMetadata(MyArrayObjectEntity::class, null);
 
         self::assertInstanceOf(MyArrayObjectEntity::class, $this->unitOfWork->newInstance($classMetadata));
     }
@@ -658,7 +646,7 @@ class UnitOfWorkTest extends OrmTestCase
         /** @var ClassMetadata $classMetadata */
         $classMetadata = unserialize(
             serialize(
-                new ClassMetadata(MyArrayObjectEntity::class, null, $this->metadataBuildingContext)
+                new ClassMetadata(MyArrayObjectEntity::class, null)
             )
         );
 

@@ -230,7 +230,7 @@ class NewAnnotationDriver implements MappingDriver
     ) {
         /** @var Annotation\Entity $entityAnnot */
         $entityAnnot   = $classAnnotations[Annotation\Entity::class];
-        $classMetadata = new Mapping\ClassMetadata($reflectionClass->getName(), $parent, $metadataBuildingContext);
+        $classMetadata = new Mapping\ClassMetadata($reflectionClass->getName(), $parent);
 
         if ($entityAnnot->repositoryClass !== null) {
             $classMetadata->setCustomRepositoryClassName($entityAnnot->repositoryClass);
@@ -387,7 +387,7 @@ class NewAnnotationDriver implements MappingDriver
     ) {
         /** @var Annotation\MappedSuperclass $mappedSuperclassAnnot */
         $mappedSuperclassAnnot = $classAnnotations[Annotation\MappedSuperclass::class];
-        $classMetadata         = new Mapping\MappedSuperClassMetadata($reflectionClass->getName(), $parent);
+        $classMetadata         = new Mapping\MappedSuperClassMetadata($reflectionClass->getName());
 
         if ($mappedSuperclassAnnot->repositoryClass !== null) {
             $classMetadata->setCustomRepositoryClassName($mappedSuperclassAnnot->repositoryClass);

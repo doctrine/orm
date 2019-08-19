@@ -32,7 +32,7 @@ class DDC3103Test extends OrmFunctionalTestCase
             $this->createMock(ReflectionService::class)
         );
 
-        $classMetadata = new ClassMetadata(DDC3103ArticleId::class, $metadataBuildingContext);
+        $classMetadata = new ClassMetadata(DDC3103ArticleId::class);
 
         $driver->loadMetadataForClass(DDC3103ArticleId::class, $classMetadata, $metadataBuildingContext);
 
