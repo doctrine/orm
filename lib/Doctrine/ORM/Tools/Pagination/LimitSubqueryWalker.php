@@ -22,11 +22,12 @@ namespace Doctrine\ORM\Tools\Pagination;
 use Doctrine\DBAL\Types\Type;
 use Doctrine\ORM\Mapping\ClassMetadataInfo;
 use Doctrine\ORM\Query;
-use Doctrine\ORM\Query\TreeWalkerAdapter;
 use Doctrine\ORM\Query\AST\Functions\IdentityFunction;
 use Doctrine\ORM\Query\AST\PathExpression;
 use Doctrine\ORM\Query\AST\SelectExpression;
 use Doctrine\ORM\Query\AST\SelectStatement;
+use Doctrine\ORM\Query\AST\SimpleArithmeticExpression;
+use Doctrine\ORM\Query\TreeWalkerAdapter;
 
 /**
  * Replaces the selectClause of the AST with a SELECT DISTINCT root.id equivalent.
@@ -98,11 +99,29 @@ class LimitSubqueryWalker extends TreeWalkerAdapter
         }
 
         foreach ($AST->orderByClause->orderByItems as $item) {
-            if ($item->expression instanceof PathExpression) {
-                $AST->selectClause->selectExpressions[] = new SelectExpression(
-                    $this->createSelectExpressionItem($item->expression), '_dctrn_ord' . $this->_aliasCounter++
-                );
+            switch (true) {
+                case $item->expression instanceof PathExpression:
+                    $expressions = [$item->expression];
+                    break;
+                case $item->expression instanceof SimpleArithmeticExpression:
+                    $expressions = $item->expression->arithmeticTerms;
+                    break;
+                default:
+                    $expressions = [];
+            }
 
+            $hasPathExpression = false;
+
+            foreach ($expressions as $expression) {
+                if ($expression instanceof PathExpression) {
+                    $AST->selectClause->selectExpressions[] = new SelectExpression(
+                        $this->createSelectExpressionItem($expression), '_dctrn_ord' . $this->_aliasCounter++
+                    );
+                    $hasPathExpression = true;
+                }
+            }
+
+            if ($hasPathExpression) {
                 continue;
             }
 
