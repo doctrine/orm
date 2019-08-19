@@ -104,26 +104,23 @@ class LimitSubqueryWalker extends TreeWalkerAdapter
                     $expressions = [$item->expression];
                     break;
                 case $item->expression instanceof SimpleArithmeticExpression:
-                    $expressions = $item->expression->arithmeticTerms;
+                    $expressions = array_filter(
+                        $item->expression->arithmeticTerms,
+                        function ($term) { return $term instanceof PathExpression; }
+                    );
                     break;
                 default:
                     $expressions = [];
             }
 
-            $hasPathExpression = false;
-
             foreach ($expressions as $expression) {
-                if ($expression instanceof PathExpression) {
-                    $AST->selectClause->selectExpressions[] = new SelectExpression(
-                        $this->createSelectExpressionItem($expression),
-                        '_dctrn_ord' . $this->_aliasCounter++
-                    );
-
-                    $hasPathExpression = true;
-                }
+                $AST->selectClause->selectExpressions[] = new SelectExpression(
+                    $this->createSelectExpressionItem($expression),
+                    '_dctrn_ord' . $this->_aliasCounter++
+                );
             }
 
-            if ($hasPathExpression) {
+            if ( ! empty($expressions)) {
                 continue;
             }
 
