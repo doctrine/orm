@@ -19,6 +19,7 @@ class GH7805Test extends OrmFunctionalTestCase
         $article = new CmsArticle;
         $article->topic = 'Test SimpleArithmetic ORDER BY';
         $article->text = 'This test fails on MySQL.';
+        $article->version = 1;
 
         $this->_em->persist($article);
         $this->_em->flush();
