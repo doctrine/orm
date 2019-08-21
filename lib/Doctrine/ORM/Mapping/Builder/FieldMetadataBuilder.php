@@ -85,25 +85,22 @@ class FieldMetadataBuilder
         return $this;
     }
 
-    public function withGeneratedValueAnnotation(
-        ?Annotation\GeneratedValue $generatedValueAnnotation
-    ) : FieldMetadataBuilder {
+    public function withGeneratedValueAnnotation(?Annotation\GeneratedValue $generatedValueAnnotation) : FieldMetadataBuilder
+    {
         $this->generatedValueAnnotation = $generatedValueAnnotation;
 
         return $this;
     }
 
-    public function withSequenceGeneratorAnnotation(
-        ?Annotation\SequenceGenerator $sequenceGeneratorAnnotation
-    ) : FieldMetadataBuilder {
+    public function withSequenceGeneratorAnnotation(?Annotation\SequenceGenerator $sequenceGeneratorAnnotation) : FieldMetadataBuilder
+    {
         $this->sequenceGeneratorAnnotation = $sequenceGeneratorAnnotation;
 
         return $this;
     }
 
-    public function withCustomIdGeneratorAnnotation(
-        ?Annotation\CustomIdGenerator $customIdGeneratorAnnotation
-    ) : FieldMetadataBuilder {
+    public function withCustomIdGeneratorAnnotation(?Annotation\CustomIdGenerator $customIdGeneratorAnnotation) : FieldMetadataBuilder
+    {
         $this->customIdGeneratorAnnotation = $customIdGeneratorAnnotation;
 
         return $this;

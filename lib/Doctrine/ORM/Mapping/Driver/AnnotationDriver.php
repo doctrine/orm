@@ -34,7 +34,6 @@ use function is_numeric;
 use function preg_match;
 use function preg_quote;
 use function realpath;
-use function sprintf;
 use function str_replace;
 use function strpos;
 
@@ -279,357 +278,31 @@ class AnnotationDriver implements MappingDriver
         Mapping\ClassMetadataBuildingContext $metadataBuildingContext
     ) : Mapping\ComponentMetadata {
         $reflectionClass  = new ReflectionClass($className);
-        $metadata         = new Mapping\ClassMetadata($className, $parent);
         $classAnnotations = $this->getClassAnnotations($reflectionClass);
-        $classMetadata    = $this->convertClassAnnotationsToClassMetadata(
-            $classAnnotations,
-            $reflectionClass,
-            $metadata,
-            $metadataBuildingContext
-        );
+        $classBuilder     = new Builder\ClassMetadataBuilder($metadataBuildingContext);
+        $classMetadata    = $classBuilder
+            ->withClassName($reflectionClass->getName())
+            ->withParentMetadata($parent)
+            ->withEntityAnnotation($classAnnotations[Annotation\Entity::class] ?? null)
+            ->withMappedSuperclassAnnotation($classAnnotations[Annotation\MappedSuperclass::class] ?? null)
+            ->withEmbeddableAnnotation($classAnnotations[Annotation\Embeddable::class] ?? null)
+            ->withTableAnnotation($classAnnotations[Annotation\Table::class] ?? null)
+            ->withInheritanceTypeAnnotation($classAnnotations[Annotation\InheritanceType::class] ?? null)
+            ->withDiscriminatorColumnAnnotation($classAnnotations[Annotation\DiscriminatorColumn::class] ?? null)
+            ->withDiscriminatorMapAnnotation($classAnnotations[Annotation\DiscriminatorMap::class] ?? null)
+            ->withChangeTrackingPolicyAnnotation($classAnnotations[Annotation\ChangeTrackingPolicy::class] ?? null)
+            ->withCacheAnnotation($classAnnotations[Annotation\Cache::class] ?? null)
+            ->build();
 
-        // Evaluate @Cache annotation
-        if (isset($classAnnotations[Annotation\Cache::class])) {
-            $cacheBuilder = new Builder\CacheMetadataBuilder($metadataBuildingContext);
-
-            $cacheBuilder
-                ->withComponentMetadata($metadata)
-                ->withCacheAnnotation($classAnnotations[Annotation\Cache::class]);
-
-            $metadata->setCache($cacheBuilder->build());
+        if (! $classMetadata->isEmbeddedClass) {
+            $this->attachLifecycleCallbacks($classAnnotations, $reflectionClass, $classMetadata);
+            $this->attachEntityListeners($classAnnotations, $classMetadata);
         }
 
-        // Evaluate annotations on properties/fields
-        /** @var ReflectionProperty $reflProperty */
-        foreach ($reflectionClass->getProperties() as $reflectionProperty) {
-            if ($reflectionProperty->getDeclaringClass()->getName() !== $reflectionClass->getName()) {
-                continue;
-            }
-
-            $propertyAnnotations = $this->getPropertyAnnotations($reflectionProperty);
-            $property            = $this->convertPropertyAnnotationsToProperty(
-                $propertyAnnotations,
-                $reflectionProperty,
-                $classMetadata,
-                $metadataBuildingContext
-            );
-
-            if ($classMetadata->isMappedSuperclass &&
-                $property instanceof Mapping\ToManyAssociationMetadata &&
-                ! $property->isOwningSide()) {
-                throw Mapping\MappingException::illegalToManyAssociationOnMappedSuperclass(
-                    $classMetadata->getClassName(),
-                    $property->getName()
-                );
-            }
-
-            $metadata->addProperty($property);
-        }
-
-        $this->attachPropertyOverrides($classAnnotations, $reflectionClass, $metadata, $metadataBuildingContext);
+        $this->attachProperties($classAnnotations, $reflectionClass, $classMetadata, $metadataBuildingContext);
+        $this->attachPropertyOverrides($classAnnotations, $reflectionClass, $classMetadata, $metadataBuildingContext);
 
         return $classMetadata;
-    }
-
-    /**
-     * @param Annotation\Annotation[] $classAnnotations
-     *
-     * @throws Mapping\MappingException
-     * @throws UnexpectedValueException
-     * @throws ReflectionException
-     */
-    private function convertClassAnnotationsToClassMetadata(
-        array $classAnnotations,
-        ReflectionClass $reflectionClass,
-        Mapping\ClassMetadata $metadata,
-        Mapping\ClassMetadataBuildingContext $metadataBuildingContext
-    ) : Mapping\ClassMetadata {
-        switch (true) {
-            case isset($classAnnotations[Annotation\Entity::class]):
-                return $this->convertClassAnnotationsToEntityClassMetadata(
-                    $classAnnotations,
-                    $reflectionClass,
-                    $metadata,
-                    $metadataBuildingContext
-                );
-
-                break;
-
-            case isset($classAnnotations[Annotation\MappedSuperclass::class]):
-                return $this->convertClassAnnotationsToMappedSuperClassMetadata(
-                    $classAnnotations,
-                    $reflectionClass,
-                    $metadata
-                );
-            case isset($classAnnotations[Annotation\Embeddable::class]):
-                return $this->convertClassAnnotationsToEmbeddableClassMetadata(
-                    $classAnnotations,
-                    $reflectionClass,
-                    $metadata
-                );
-            default:
-                throw Mapping\MappingException::classIsNotAValidEntityOrMappedSuperClass($reflectionClass->getName());
-        }
-    }
-
-    /**
-     * @param Annotation\Annotation[] $classAnnotations
-     *
-     * @return Mapping\ClassMetadata
-     *
-     * @throws Mapping\MappingException
-     * @throws ReflectionException
-     * @throws UnexpectedValueException
-     */
-    private function convertClassAnnotationsToEntityClassMetadata(
-        array $classAnnotations,
-        ReflectionClass $reflectionClass,
-        Mapping\ClassMetadata $metadata,
-        Mapping\ClassMetadataBuildingContext $metadataBuildingContext
-    ) {
-        /** @var Annotation\Entity $entityAnnot */
-        $entityAnnot = $classAnnotations[Annotation\Entity::class];
-
-        if ($entityAnnot->repositoryClass !== null) {
-            $metadata->setCustomRepositoryClassName($entityAnnot->repositoryClass);
-        }
-
-        if ($entityAnnot->readOnly) {
-            $metadata->asReadOnly();
-        }
-
-        $metadata->isMappedSuperclass = false;
-        $metadata->isEmbeddedClass    = false;
-
-        // Process table information
-        $parent = $metadata->getParent();
-
-        if ($parent && $parent->inheritanceType === Mapping\InheritanceType::SINGLE_TABLE) {
-            // Handle the case where a middle mapped super class inherits from a single table inheritance tree.
-            do {
-                if (! $parent->isMappedSuperclass) {
-                    $metadata->setTable($parent->table);
-
-                    break;
-                }
-
-                $parent = $parent->getParent();
-            } while ($parent !== null);
-        } else {
-            $tableBuilder = new Builder\TableMetadataBuilder($metadataBuildingContext);
-
-            $tableBuilder
-                ->withEntityClassMetadata($metadata)
-                ->withTableAnnotation($classAnnotations[Annotation\Table::class] ?? null);
-
-            $metadata->setTable($tableBuilder->build());
-        }
-
-        // Evaluate @ChangeTrackingPolicy annotation
-        if (isset($classAnnotations[Annotation\ChangeTrackingPolicy::class])) {
-            $changeTrackingAnnot = $classAnnotations[Annotation\ChangeTrackingPolicy::class];
-
-            $metadata->setChangeTrackingPolicy(
-                constant(sprintf('%s::%s', Mapping\ChangeTrackingPolicy::class, $changeTrackingAnnot->value))
-            );
-        }
-
-        // Evaluate @InheritanceType annotation
-        if (isset($classAnnotations[Annotation\InheritanceType::class])) {
-            $inheritanceTypeAnnot = $classAnnotations[Annotation\InheritanceType::class];
-
-            $metadata->setInheritanceType(
-                constant(sprintf('%s::%s', Mapping\InheritanceType::class, $inheritanceTypeAnnot->value))
-            );
-
-            if ($metadata->inheritanceType !== Mapping\InheritanceType::NONE) {
-                $discriminatorColumnBuilder = new Builder\DiscriminatorColumnMetadataBuilder($metadataBuildingContext);
-
-                $discriminatorColumnBuilder
-                    ->withComponentMetadata($metadata)
-                    ->withDiscriminatorColumnAnnotation($classAnnotations[Annotation\DiscriminatorColumn::class] ?? null);
-
-                $metadata->setDiscriminatorColumn($discriminatorColumnBuilder->build());
-
-                // Evaluate DiscriminatorMap annotation
-                if (isset($classAnnotations[Annotation\DiscriminatorMap::class])) {
-                    $discriminatorMapAnnotation = $classAnnotations[Annotation\DiscriminatorMap::class];
-                    $discriminatorMap           = $discriminatorMapAnnotation->value;
-
-                    $metadata->setDiscriminatorMap($discriminatorMap);
-                }
-            }
-        }
-
-        $this->attachLifecycleCallbacks($classAnnotations, $reflectionClass, $metadata);
-        $this->attachEntityListeners($classAnnotations, $metadata);
-
-        return $metadata;
-    }
-
-    /**
-     * @param Annotation\Annotation[] $classAnnotations
-     *
-     * @throws Mapping\MappingException
-     * @throws ReflectionException
-     */
-    private function convertClassAnnotationsToMappedSuperClassMetadata(
-        array $classAnnotations,
-        ReflectionClass $reflectionClass,
-        Mapping\ClassMetadata $metadata
-    ) : Mapping\ClassMetadata {
-        /** @var Annotation\MappedSuperclass $mappedSuperclassAnnot */
-        $mappedSuperclassAnnot = $classAnnotations[Annotation\MappedSuperclass::class];
-
-        if ($mappedSuperclassAnnot->repositoryClass !== null) {
-            $metadata->setCustomRepositoryClassName($mappedSuperclassAnnot->repositoryClass);
-        }
-
-        $metadata->isMappedSuperclass = true;
-        $metadata->isEmbeddedClass    = false;
-
-        $this->attachLifecycleCallbacks($classAnnotations, $reflectionClass, $metadata);
-        $this->attachEntityListeners($classAnnotations, $metadata);
-
-        return $metadata;
-    }
-
-    /**
-     * @param Annotation\Annotation[] $classAnnotations
-     */
-    private function convertClassAnnotationsToEmbeddableClassMetadata(
-        array $classAnnotations,
-        ReflectionClass $reflectionClass,
-        Mapping\ClassMetadata $metadata
-    ) : Mapping\ClassMetadata {
-        $metadata->isMappedSuperclass = false;
-        $metadata->isEmbeddedClass    = true;
-
-        return $metadata;
-    }
-
-    /**
-     * @param Annotation\Annotation[] $propertyAnnotations
-     *
-     * @todo guilhermeblanco Remove nullable typehint once embeddables are back
-     */
-    private function convertPropertyAnnotationsToProperty(
-        array $propertyAnnotations,
-        ReflectionProperty $reflectionProperty,
-        Mapping\ClassMetadata $metadata,
-        Mapping\ClassMetadataBuildingContext $metadataBuildingContext
-    ) : ?Mapping\Property {
-        switch (true) {
-            case isset($propertyAnnotations[Annotation\Column::class]):
-                $fieldBuilder  = new Builder\FieldMetadataBuilder($metadataBuildingContext);
-                $fieldMetadata = $fieldBuilder
-                    ->withComponentMetadata($metadata)
-                    ->withFieldName($reflectionProperty->getName())
-                    ->withColumnAnnotation($propertyAnnotations[Annotation\Column::class])
-                    ->withIdAnnotation($propertyAnnotations[Annotation\Id::class] ?? null)
-                    ->withVersionAnnotation($propertyAnnotations[Annotation\Version::class] ?? null)
-                    ->withGeneratedValueAnnotation($propertyAnnotations[Annotation\GeneratedValue::class] ?? null)
-                    ->withSequenceGeneratorAnnotation($propertyAnnotations[Annotation\SequenceGenerator::class] ?? null)
-                    ->withCustomIdGeneratorAnnotation($propertyAnnotations[Annotation\CustomIdGenerator::class] ?? null)
-                    ->build();
-
-                // Prevent column duplication
-                $columnName = $fieldMetadata->getColumnName();
-
-                if ($metadata->checkPropertyDuplication($columnName)) {
-                    throw Mapping\MappingException::duplicateColumnName($metadata->getClassName(), $columnName);
-                }
-
-                $metadata->fieldNames[$fieldMetadata->getColumnName()] = $fieldMetadata->getName();
-
-                return $fieldMetadata;
-            case isset($propertyAnnotations[Annotation\OneToOne::class]):
-                $oneToOneAssociationBuilder = new Builder\OneToOneAssociationMetadataBuilder($metadataBuildingContext);
-                $associationMetadata        = $oneToOneAssociationBuilder
-                    ->withComponentMetadata($metadata)
-                    ->withFieldName($reflectionProperty->getName())
-                    ->withOneToOneAnnotation($propertyAnnotations[Annotation\OneToOne::class] ?? null)
-                    ->withIdAnnotation($propertyAnnotations[Annotation\Id::class] ?? null)
-                    ->withCacheAnnotation($propertyAnnotations[Annotation\Cache::class] ?? null)
-                    ->withJoinColumnsAnnotation($propertyAnnotations[Annotation\JoinColumns::class] ?? null)
-                    ->withJoinColumnAnnotation($propertyAnnotations[Annotation\JoinColumn::class] ?? null)
-                    ->build();
-
-                // Prevent column duplication
-                foreach ($associationMetadata->getJoinColumns() as $joinColumnMetadata) {
-                    $columnName = $joinColumnMetadata->getColumnName();
-
-                    // @todo guilhermeblanco Open an issue to discuss making this scenario impossible.
-                    //if ($metadata->checkPropertyDuplication($columnName)) {
-                    //    throw Mapping\MappingException::duplicateColumnName($metadata->getClassName(), $columnName);
-                    //}
-
-                    if ($associationMetadata->isOwningSide()) {
-                        $metadata->fieldNames[$columnName] = $associationMetadata->getName();
-                    }
-                }
-
-                return $associationMetadata;
-            case isset($propertyAnnotations[Annotation\ManyToOne::class]):
-                $manyToOneAssociationBuilder = new Builder\ManyToOneAssociationMetadataBuilder($metadataBuildingContext);
-                $associationMetadata         = $manyToOneAssociationBuilder
-                    ->withComponentMetadata($metadata)
-                    ->withFieldName($reflectionProperty->getName())
-                    ->withManyToOneAnnotation($propertyAnnotations[Annotation\ManyToOne::class] ?? null)
-                    ->withIdAnnotation($propertyAnnotations[Annotation\Id::class] ?? null)
-                    ->withCacheAnnotation($propertyAnnotations[Annotation\Cache::class] ?? null)
-                    ->withJoinColumnsAnnotation($propertyAnnotations[Annotation\JoinColumns::class] ?? null)
-                    ->withJoinColumnAnnotation($propertyAnnotations[Annotation\JoinColumn::class] ?? null)
-                    ->build();
-
-                // Prevent column duplication
-                foreach ($associationMetadata->getJoinColumns() as $joinColumnMetadata) {
-                    $columnName = $joinColumnMetadata->getColumnName();
-
-                    // @todo guilhermeblanco Open an issue to discuss making this scenario impossible.
-                    //if ($metadata->checkPropertyDuplication($columnName)) {
-                    //    throw Mapping\MappingException::duplicateColumnName($metadata->getClassName(), $columnName);
-                    //}
-
-                    if ($associationMetadata->isOwningSide()) {
-                        $metadata->fieldNames[$columnName] = $associationMetadata->getName();
-                    }
-                }
-
-                return $associationMetadata;
-            case isset($propertyAnnotations[Annotation\OneToMany::class]):
-                $oneToManyAssociationBuilder = new Builder\OneToManyAssociationMetadataBuilder($metadataBuildingContext);
-
-                return $oneToManyAssociationBuilder
-                    ->withComponentMetadata($metadata)
-                    ->withFieldName($reflectionProperty->getName())
-                    ->withOneToManyAnnotation($propertyAnnotations[Annotation\OneToMany::class] ?? null)
-                    ->withIdAnnotation($propertyAnnotations[Annotation\Id::class] ?? null)
-                    ->withCacheAnnotation($propertyAnnotations[Annotation\Cache::class] ?? null)
-                    ->withOrderByAnnotation($propertyAnnotations[Annotation\OrderBy::class] ?? null)
-                    ->build();
-            case isset($propertyAnnotations[Annotation\ManyToMany::class]):
-                $manyToManyAssociationBuilder = new Builder\ManyToManyAssociationMetadataBuilder($metadataBuildingContext);
-
-                return $manyToManyAssociationBuilder
-                    ->withComponentMetadata($metadata)
-                    ->withFieldName($reflectionProperty->getName())
-                    ->withManyToManyAnnotation($propertyAnnotations[Annotation\ManyToMany::class] ?? null)
-                    ->withIdAnnotation($propertyAnnotations[Annotation\Id::class] ?? null)
-                    ->withCacheAnnotation($propertyAnnotations[Annotation\Cache::class] ?? null)
-                    ->withJoinTableAnnotation($propertyAnnotations[Annotation\JoinTable::class] ?? null)
-                    ->withOrderByAnnotation($propertyAnnotations[Annotation\OrderBy::class] ?? null)
-                    ->build();
-            case isset($propertyAnnotations[Annotation\Embedded::class]):
-                return null;
-            default:
-                $transientBuilder = new Builder\TransientMetadataBuilder($metadataBuildingContext);
-
-                return $transientBuilder
-                    ->withComponentMetadata($metadata)
-                    ->withFieldName($reflectionProperty->getName())
-                    ->build();
-        }
     }
 
     /**
@@ -720,6 +393,52 @@ class AnnotationDriver implements MappingDriver
      *
      * @throws Mapping\MappingException
      */
+    private function attachProperties(
+        array $classAnnotations,
+        ReflectionClass $reflectionClass,
+        Mapping\ClassMetadata $metadata,
+        Mapping\ClassMetadataBuildingContext $metadataBuildingContext
+    ) : void {
+        // Evaluate annotations on properties/fields
+        $propertyBuilder = new Builder\PropertyMetadataBuilder($metadataBuildingContext);
+
+        /** @var ReflectionProperty $reflProperty */
+        foreach ($reflectionClass->getProperties() as $reflectionProperty) {
+            if ($reflectionProperty->getDeclaringClass()->getName() !== $reflectionClass->getName()) {
+                continue;
+            }
+
+            $propertyAnnotations = $this->getPropertyAnnotations($reflectionProperty);
+            $propertyMetadata    = $propertyBuilder
+                ->withComponentMetadata($metadata)
+                ->withFieldName($reflectionProperty->getName())
+                ->withIdAnnotation($propertyAnnotations[Annotation\Id::class] ?? null)
+                ->withCacheAnnotation($propertyAnnotations[Annotation\Cache::class] ?? null)
+                ->withColumnAnnotation($propertyAnnotations[Annotation\Column::class] ?? null)
+                ->withEmbeddedAnnotation($propertyAnnotations[Annotation\Embedded::class] ?? null)
+                ->withOneToOneAnnotation($propertyAnnotations[Annotation\OneToOne::class] ?? null)
+                ->withManyToOneAnnotation($propertyAnnotations[Annotation\ManyToOne::class] ?? null)
+                ->withOneToManyAnnotation($propertyAnnotations[Annotation\OneToMany::class] ?? null)
+                ->withManyToManyAnnotation($propertyAnnotations[Annotation\ManyToMany::class] ?? null)
+                ->withJoinTableAnnotation($propertyAnnotations[Annotation\JoinTable::class] ?? null)
+                ->withJoinColumnsAnnotation($propertyAnnotations[Annotation\JoinColumns::class] ?? null)
+                ->withJoinColumnAnnotation($propertyAnnotations[Annotation\JoinColumn::class] ?? null)
+                ->withOrderByAnnotation($propertyAnnotations[Annotation\OrderBy::class] ?? null)
+                ->withVersionAnnotation($propertyAnnotations[Annotation\Version::class] ?? null)
+                ->withGeneratedValueAnnotation($propertyAnnotations[Annotation\GeneratedValue::class] ?? null)
+                ->withSequenceGeneratorAnnotation($propertyAnnotations[Annotation\SequenceGenerator::class] ?? null)
+                ->withCustomIdGeneratorAnnotation($propertyAnnotations[Annotation\CustomIdGenerator::class] ?? null)
+                ->build();
+
+            $metadata->addProperty($propertyMetadata);
+        }
+    }
+
+    /**
+     * @param Annotation\Annotation[] $classAnnotations
+     *
+     * @throws Mapping\MappingException
+     */
     private function attachPropertyOverrides(
         array $classAnnotations,
         ReflectionClass $reflectionClass,
@@ -760,10 +479,6 @@ class AnnotationDriver implements MappingDriver
                         //if ($metadata->checkPropertyDuplication($columnName)) {
                         //    throw Mapping\MappingException::duplicateColumnName($metadata->getClassName(), $columnName);
                         //}
-
-                        if ($override->isOwningSide()) {
-                            $metadata->fieldNames[$columnName] = $fieldName;
-                        }
 
                         $joinColumns[] = $joinColumnMetadata;
                     }
@@ -827,8 +542,6 @@ class AnnotationDriver implements MappingDriver
                 if ($metadata->checkPropertyDuplication($columnName)) {
                     throw Mapping\MappingException::duplicateColumnName($metadata->getClassName(), $columnName);
                 }
-
-                $metadata->fieldNames[$fieldMetadata->getColumnName()] = $fieldName;
 
                 $metadata->setPropertyOverride($fieldMetadata);
             }

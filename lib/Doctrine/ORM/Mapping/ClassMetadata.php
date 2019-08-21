@@ -796,6 +796,14 @@ class ClassMetadata extends ComponentMetadata implements TableOwner
                     $this->versionProperty = $property;
                 }
 
+                $this->fieldNames[$property->getColumnName()] = $property->getName();
+                break;
+
+            case $property instanceof ToOneAssociationMetadata:
+                foreach ($property->getJoinColumns() as $joinColumnMetadata) {
+                    $this->fieldNames[$joinColumnMetadata->getColumnName()] = $property->getName();
+                }
+
                 break;
 
             default:
