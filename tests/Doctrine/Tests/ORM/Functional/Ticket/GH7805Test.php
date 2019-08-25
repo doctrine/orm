@@ -18,12 +18,32 @@ class GH7805Test extends OrmFunctionalTestCase
         parent::setUp();
     }
 
+    public function testPaginationWithFunction()
+    {
+        $article = new CmsArticle();
+
+        $article->topic   = 'Test ORDER BY with Function';
+        $article->text    = 'This test fails on MySQL if ORDER BY part is not added to SELECT.';
+        $article->version = 1;
+
+        $this->_em->persist($article);
+        $this->_em->flush();
+
+        $query = $this->_em->createQuery('SELECT a FROM Doctrine\Tests\Models\CMS\CmsArticle a ORDER BY SQRT(a.version) ASC');
+        $query->setFirstResult(0);
+        $query->setMaxResults(1);
+
+        $paginator = new Paginator($query, true);
+        $paginator->setUseOutputWalkers(false);
+        $this->assertEquals(1, count(iterator_to_array($paginator)));
+    }
+
     public function testPaginationWithSimpleArithmetic()
     {
         $article = new CmsArticle();
 
-        $article->topic   = 'Test SimpleArithmetic ORDER BY';
-        $article->text    = 'This test fails on MySQL.';
+        $article->topic   = 'Test ORDER BY with SimpleArithmetic';
+        $article->text    = 'This test fails on MySQL if ORDER BY part is not added to SELECT.';
         $article->version = 1;
 
         $this->_em->persist($article);

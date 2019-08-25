@@ -23,10 +23,10 @@ use Doctrine\DBAL\Types\Type;
 use Doctrine\ORM\Mapping\ClassMetadataInfo;
 use Doctrine\ORM\Query;
 use Doctrine\ORM\Query\AST\Functions\IdentityFunction;
+use Doctrine\ORM\Query\AST\Node;
 use Doctrine\ORM\Query\AST\PathExpression;
 use Doctrine\ORM\Query\AST\SelectExpression;
 use Doctrine\ORM\Query\AST\SelectStatement;
-use Doctrine\ORM\Query\AST\SimpleArithmeticExpression;
 use Doctrine\ORM\Query\TreeWalkerAdapter;
 
 /**
@@ -99,7 +99,7 @@ class LimitSubqueryWalker extends TreeWalkerAdapter
         }
 
         foreach ($AST->orderByClause->orderByItems as $item) {
-            if ($item->expression instanceof PathExpression || $item->expression instanceof SimpleArithmeticExpression) {
+            if ($item->expression instanceof Node) {
                 $AST->selectClause->selectExpressions[] = new SelectExpression(
                     $this->createSelectExpressionItem($item->expression),
                     '_dctrn_ord' . $this->_aliasCounter++
@@ -159,11 +159,11 @@ class LimitSubqueryWalker extends TreeWalkerAdapter
     /**
      * Retrieve either an IdentityFunction (IDENTITY(u.assoc)) or a state field (u.name).
      *
-     * @param mixed $expression
+     * @param Node $expression
      *
-     * @return IdentityFunction
+     * @return Node
      */
-    private function createSelectExpressionItem($expression)
+    private function createSelectExpressionItem(Node $expression)
     {
         if ($expression instanceof PathExpression && $expression->type === PathExpression::TYPE_SINGLE_VALUED_ASSOCIATION) {
             $identity = new IdentityFunction('identity');
