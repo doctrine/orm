@@ -159,8 +159,6 @@ class LimitSubqueryWalker extends TreeWalkerAdapter
     /**
      * Retrieve either an IdentityFunction (IDENTITY(u.assoc)) or a state field (u.name).
      *
-     * @param Node $expression
-     *
      * @return Node
      */
     private function createSelectExpressionItem(Node $expression)
