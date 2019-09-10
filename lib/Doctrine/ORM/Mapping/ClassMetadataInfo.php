@@ -241,9 +241,9 @@ class ClassMetadataInfo implements ClassMetadata
      * )
      * </code>
      *
-     * @var array
-     *
      * @todo Merge with tableGeneratorDefinition into generic generatorDefinition
+     *
+     * @var array<string, string>|null
      */
     public $customGeneratorDefinition;
 

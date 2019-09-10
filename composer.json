@@ -28,7 +28,7 @@
     },
     "require-dev": {
         "doctrine/coding-standard": "^5.0",
-        "phpunit/phpunit": "^6.5",
+        "phpunit/phpunit": "^7.5",
         "symfony/yaml": "~3.4|~4.0"
     },
     "suggest": {

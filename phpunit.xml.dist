@@ -18,11 +18,6 @@
          failOnRisky="true"
          bootstrap="./tests/Doctrine/Tests/TestInit.php"
 >
-
-    <php>
-        <env name="COLUMNS" value="120"/>
-    </php>
-
     <testsuites>
         <testsuite name="Doctrine ORM Test Suite">
             <directory>./tests/Doctrine/Tests/ORM</directory>
@@ -54,6 +49,8 @@
     <var name="tmpdb_password" value="" />
     <var name="tmpdb_name" value="doctrine_tests_tmp" />
     <var name="tmpdb_port" value="3306"/>
+
+    <env name="COLUMNS" value="120"/>
   </php>
 
 </phpunit>

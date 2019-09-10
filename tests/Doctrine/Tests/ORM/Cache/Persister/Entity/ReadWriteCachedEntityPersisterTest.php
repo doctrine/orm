@@ -17,18 +17,6 @@ use Doctrine\ORM\Cache\Persister\Entity\ReadWriteCachedEntityPersister;
  */
 class ReadWriteCachedEntityPersisterTest extends AbstractEntityPersisterTest
 {
-    protected $regionMockMethods = [
-        'getName',
-        'contains',
-        'get',
-        'getMultiple',
-        'put',
-        'evict',
-        'evictAll',
-        'lock',
-        'unlock',
-    ];
-
     /**
      * {@inheritdoc}
      */
@@ -42,9 +30,7 @@ class ReadWriteCachedEntityPersisterTest extends AbstractEntityPersisterTest
      */
     protected function createRegion()
     {
-        return $this->getMockBuilder(ConcurrentRegion::class)
-                    ->setConstructorArgs($this->regionMockMethods)
-                    ->getMock();
+        return $this->createMock(ConcurrentRegion::class);
     }
 
     public function testDeleteShouldLockItem()
