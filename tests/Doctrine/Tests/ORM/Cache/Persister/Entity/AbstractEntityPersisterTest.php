@@ -36,52 +36,6 @@ abstract class AbstractEntityPersisterTest extends OrmTestCase
     protected $em;
 
     /**
-     * @var array
-     */
-    protected $regionMockMethods = [
-        'getName',
-        'contains',
-        'get',
-        'getMultiple',
-        'put',
-        'evict',
-        'evictAll'
-    ];
-
-    /**
-     * @var array
-     */
-    protected $entityPersisterMockMethods = [
-        'getClassMetadata',
-        'getResultSetMapping',
-        'getInserts',
-        'getInsertSQL',
-        'getSelectSQL',
-        'getCountSQL',
-        'expandParameters',
-        'expandCriteriaParameters',
-        'getSelectConditionStatementSQL',
-        'addInsert',
-        'executeInserts',
-        'update',
-        'delete',
-        'getOwningTable',
-        'load',
-        'loadById',
-        'loadOneToOneEntity',
-        'count',
-        'refresh',
-        'loadCriteria',
-        'loadAll',
-        'getManyToManyCollection',
-        'loadManyToManyCollection',
-        'loadOneToManyCollection',
-        'lock',
-        'getOneToManyCollection',
-        'exists'
-    ];
-
-    /**
      * @param \Doctrine\ORM\EntityManager                     $em
      * @param \Doctrine\ORM\Persisters\Entity\EntityPersister $persister
      * @param \Doctrine\ORM\Cache\Region                      $region
@@ -97,11 +51,9 @@ abstract class AbstractEntityPersisterTest extends OrmTestCase
         $this->enableSecondLevelCache();
         parent::setUp();
 
-        $this->em               = $this->_getTestEntityManager();
-        $this->region           = $this->createRegion();
-        $this->entityPersister  = $this->getMockBuilder(EntityPersister::class)
-                                       ->setMethods($this->entityPersisterMockMethods)
-                                       ->getMock();
+        $this->em              = $this->_getTestEntityManager();
+        $this->region          = $this->createRegion();
+        $this->entityPersister = $this->createMock(EntityPersister::class);
     }
 
     /**
@@ -109,9 +61,7 @@ abstract class AbstractEntityPersisterTest extends OrmTestCase
      */
     protected function createRegion()
     {
-        return $this->getMockBuilder(Region::class)
-                    ->setMethods($this->regionMockMethods)
-                    ->getMock();
+        return $this->createMock(Region::class);
     }
 
     /**
