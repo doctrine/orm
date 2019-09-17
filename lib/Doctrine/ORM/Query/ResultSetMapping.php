@@ -19,6 +19,12 @@
 
 namespace Doctrine\ORM\Query;
 
+use Doctrine\ORM\EntityManagerInterface;
+use Doctrine\ORM\Mapping\MappingException;
+use function array_keys;
+use function array_values;
+use function assert;
+
 /**
  * A ResultSetMapping describes how a result set of an SQL query maps to a Doctrine result.
  *
@@ -583,5 +589,40 @@ class ResultSetMapping
 
         return $this;
     }
-}
 
+    /**
+     * Retrieves the DBAL type name for the single identifier column of the root of a selection.
+     * Composite identifiers not supported!
+     *
+     * @internal only to be used by ORM internals: do not use in downstream projects! This API is a minimal abstraction
+     *           that only ORM internals need, and it tries to make sense of the very complex and squishy array-alike
+     *           structure inside this class. Some assumptions are coded in here, so here be dragons.
+     *
+     * @throws MappingException If the identifier is not a single field, or if metadata for its
+     *                          owner is incorrect/missing.
+     */
+    final public function getTypeOfSelectionRootSingleIdentifierColumn(EntityManagerInterface $em) : string
+    {
+        assert($this->isSelect);
+
+        if ($this->isIdentifierColumn !== []) {
+            // Identifier columns are already discovered here: we can use the first one directly.
+            assert($this->typeMappings !== []);
+
+            return $this->typeMappings[array_keys(array_values($this->isIdentifierColumn)[0])[0]];
+        }
+
+        // We are selecting entities, and the first selected entity is our root of the selection.
+        if ($this->aliasMap !== []) {
+            $metadata = $em->getClassMetadata($this->aliasMap[array_keys($this->aliasMap)[0]]);
+
+            return $metadata->getTypeOfField($metadata->getSingleIdentifierFieldName());
+        }
+
+        // We are selecting scalar fields - the first selected field will be assumed (!!! assumption !!!) as identifier
+        assert($this->scalarMappings !== []);
+        assert($this->typeMappings !== []);
+
+        return $this->typeMappings[array_keys($this->scalarMappings)[0]];
+    }
+}

@@ -11,6 +11,7 @@ use Doctrine\DBAL\Types\Type;
 use Doctrine\ORM\Tools\Pagination\Paginator;
 use Doctrine\Tests\OrmFunctionalTestCase;
 use function array_map;
+use function is_string;
 use function iterator_to_array;
 
 /**
@@ -134,7 +135,7 @@ final class GH7820LineTextType extends StringType
     {
         $text = parent::convertToPHPValue($value, $platform);
 
-        if (! \is_string($text)) {
+        if (! is_string($text)) {
             return $text;
         }
 

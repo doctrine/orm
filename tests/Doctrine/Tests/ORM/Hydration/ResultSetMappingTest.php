@@ -3,12 +3,15 @@
 namespace Doctrine\Tests\ORM\Hydration;
 
 use Doctrine\ORM\Mapping\ClassMetadata;
+use Doctrine\ORM\Query\Parser;
 use Doctrine\ORM\Query\ResultSetMapping;
 use Doctrine\Tests\Models\CMS\CmsEmail;
 use Doctrine\Tests\Models\CMS\CmsPhonenumber;
 use Doctrine\Tests\Models\CMS\CmsUser;
 use Doctrine\Tests\Models\Legacy\LegacyUser;
 use Doctrine\Tests\Models\Legacy\LegacyUserReference;
+use Doctrine\Tests\Models\ValueConversionType\AuxiliaryEntity;
+use Doctrine\Tests\Models\ValueConversionType\OwningManyToOneIdForeignKeyEntity;
 
 /**
  * Description of ResultSetMappingTest
@@ -65,6 +68,7 @@ class ResultSetMappingTest extends \Doctrine\Tests\OrmTestCase
         $this->assertEquals('status', $this->_rsm->getFieldName('status'));
         $this->assertEquals('username', $this->_rsm->getFieldName('username'));
         $this->assertEquals('name', $this->_rsm->getFieldName('name'));
+        $this->assertSame('integer', $this->_rsm->getTypeOfSelectionRootSingleIdentifierColumn($this->_em));
     }
 
     /**
@@ -94,6 +98,7 @@ class ResultSetMappingTest extends \Doctrine\Tests\OrmTestCase
         $this->assertTrue($rms->isRelation('p'));
         $this->assertTrue($rms->hasParentAlias('p'));
         $this->assertTrue($rms->isMixedResult());
+        $this->assertSame('integer', $this->_rsm->getTypeOfSelectionRootSingleIdentifierColumn($this->_em));
     }
 
     /**
@@ -269,6 +274,27 @@ class ResultSetMappingTest extends \Doctrine\Tests\OrmTestCase
         $this->assertEquals(CmsUser::class, $rsm->getDeclaringClass('status'));
         $this->assertEquals(CmsUser::class, $rsm->getDeclaringClass('username'));
     }
+
+    public function testIdentifierTypeForScalarExpression() : void
+    {
+        $rsm = (new Parser($this->_em->createQuery('SELECT e.id4 FROM ' . AuxiliaryEntity::class . ' e')))
+            ->parse()
+            ->getResultSetMapping();
+
+        self::assertNotNull($rsm);
+        self::assertSame('rot13', $rsm->getTypeOfSelectionRootSingleIdentifierColumn($this->_em));
+    }
+
+    public function testIdentifierTypeForRootEntityColumnThatHasAssociationAsIdentifier() : void
+    {
+        $rsm = (new Parser($this->_em->createQuery('SELECT e FROM ' . OwningManyToOneIdForeignKeyEntity::class . ' e')))
+            ->parse()
+            ->getResultSetMapping();
+
+        self::assertNotNull($rsm);
+        self::assertSame('rot13', $rsm->getTypeOfSelectionRootSingleIdentifierColumn($this->_em));
+    }
+
     /**
      * @group DDC-117
      */
