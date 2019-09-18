@@ -138,7 +138,10 @@ step:
     
     // Create a simple "default" Doctrine ORM configuration for Annotations
     $isDevMode = true;
-    $config = Setup::createAnnotationMetadataConfiguration(array(__DIR__."/src"), $isDevMode);
+    $proxyDir = null;
+    $cache = null;
+    $useSimpleAnnotationReader = false;
+    $config = Setup::createAnnotationMetadataConfiguration(array(__DIR__."/src"), $isDevMode, $proxyDir, $cache, $useSimpleAnnotationReader);
     // or if you prefer yaml or XML
     //$config = Setup::createXMLMetadataConfiguration(array(__DIR__."/config/xml"), $isDevMode);
     //$config = Setup::createYAMLMetadataConfiguration(array(__DIR__."/config/yaml"), $isDevMode);
@@ -155,6 +158,10 @@ step:
 .. note::
     The YAML driver is deprecated and will be removed in version 3.0.
     It is strongly recommended to switch to one of the other mappings.
+
+.. note::
+    It is recommended not to use the SimpleAnnotationReader because its
+    usage will be removed for version 3.0.
 
 The ``require_once`` statement sets up the class autoloading for Doctrine and
 its dependencies using Composer's autoloader.
