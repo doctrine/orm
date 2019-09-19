@@ -19,16 +19,12 @@
 
 namespace Doctrine\ORM\Tools\Pagination;
 
-use Doctrine\ORM\EntityManagerInterface;
-use Doctrine\ORM\Mapping\MappingException;
-use Doctrine\ORM\Query\Parser;
-use Doctrine\ORM\QueryBuilder;
-use Doctrine\ORM\Query;
-use Doctrine\ORM\Query\ResultSetMapping;
 use Doctrine\ORM\NoResultException;
+use Doctrine\ORM\Query;
+use Doctrine\ORM\Query\Parser;
+use Doctrine\ORM\Query\ResultSetMapping;
+use Doctrine\ORM\QueryBuilder;
 use function array_map;
-use function assert;
-use function current;
 
 /**
  * The paginator can handle various complex scenarios with DQL.
@@ -163,12 +159,7 @@ class Paginator implements \Countable, \IteratorAggregate
             }
 
             $whereInQuery = $this->cloneQuery($this->query);
-            $em           = $subQuery->getEntityManager();
-            $connection   = $em->getConnection();
-            $idType       = $this->getIdentifiersQueryScalarResultType($subQuery, $em);
-            $ids          = array_map(static function (array $row) use ($connection, $idType) {
-                return $connection->convertToDatabaseValue(current($row), $idType);
-            }, $foundIdRows);
+            $ids          = array_map('current', $foundIdRows);
 
             $this->appendTreeWalker($whereInQuery, WhereInWalker::class);
             $whereInQuery->setHint(WhereInWalker::HINT_PAGINATOR_ID_COUNT, count($ids));
@@ -293,26 +284,5 @@ class Paginator implements \Countable, \IteratorAggregate
         }
 
         $query->setParameters($parameters);
-    }
-
-    /**
-     * Parses a query that is supposed to fetch a set of entity identifier only,
-     * and retrieves the type of said identifier.
-     *
-     * @throws MappingException If metadata couldn't be loaded, or if there isn't a single
-     *                          identifier for the given query.
-     */
-    private function getIdentifiersQueryScalarResultType(
-        Query $query,
-        EntityManagerInterface $em
-    ) : ?string {
-        $rsm = (new Parser($query))
-            ->parse()
-            ->getResultSetMapping();
-
-        assert($rsm !== null);
-        assert($rsm->isSelect);
-
-        return $rsm->getTypeOfSelectionRootSingleIdentifierColumn($em);
     }
 }

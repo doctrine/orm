@@ -2017,7 +2017,7 @@ class ClassMetadataInfo implements ClassMetadata
      *
      * @param string $fieldName
      *
-     * @return \Doctrine\DBAL\Types\Type|string|null
+     * @return string|null
      *
      * @todo 3.0 Remove this. PersisterHelper should fix it somehow
      */
