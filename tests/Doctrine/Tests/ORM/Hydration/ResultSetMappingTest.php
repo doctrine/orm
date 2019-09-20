@@ -269,6 +269,7 @@ class ResultSetMappingTest extends \Doctrine\Tests\OrmTestCase
         $this->assertEquals(CmsUser::class, $rsm->getDeclaringClass('status'));
         $this->assertEquals(CmsUser::class, $rsm->getDeclaringClass('username'));
     }
+
     /**
      * @group DDC-117
      */

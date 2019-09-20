@@ -19,11 +19,12 @@
 
 namespace Doctrine\ORM\Tools\Pagination;
 
-use Doctrine\ORM\Query\Parser;
-use Doctrine\ORM\QueryBuilder;
-use Doctrine\ORM\Query;
-use Doctrine\ORM\Query\ResultSetMapping;
 use Doctrine\ORM\NoResultException;
+use Doctrine\ORM\Query;
+use Doctrine\ORM\Query\Parser;
+use Doctrine\ORM\Query\ResultSetMapping;
+use Doctrine\ORM\QueryBuilder;
+use function array_map;
 
 /**
  * The paginator can handle various complex scenarios with DQL.
@@ -150,13 +151,15 @@ class Paginator implements \Countable, \IteratorAggregate
 
             $subQuery->setFirstResult($offset)->setMaxResults($length);
 
-            $ids = array_map('current', $subQuery->getScalarResult());
+            $foundIdRows = $subQuery->getScalarResult();
 
-            $whereInQuery = $this->cloneQuery($this->query);
             // don't do this for an empty id array
-            if (count($ids) === 0) {
+            if ($foundIdRows === []) {
                 return new \ArrayIterator([]);
             }
+
+            $whereInQuery = $this->cloneQuery($this->query);
+            $ids          = array_map('current', $foundIdRows);
 
             $this->appendTreeWalker($whereInQuery, WhereInWalker::class);
             $whereInQuery->setHint(WhereInWalker::HINT_PAGINATOR_ID_COUNT, count($ids));
