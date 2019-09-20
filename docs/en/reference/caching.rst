@@ -282,6 +282,8 @@ You can set the namespace a cache driver should use by using the
     <?php
     $cacheDriver->setNamespace('my_namespace_');
 
+.. _integrating-with-the-orm:
+
 Integrating with the ORM
 ------------------------
 
