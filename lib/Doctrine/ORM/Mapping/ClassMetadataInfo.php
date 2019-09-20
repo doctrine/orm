@@ -2033,7 +2033,7 @@ class ClassMetadataInfo implements ClassMetadata
      *
      * @param string $columnName
      *
-     * @return \Doctrine\DBAL\Types\Type|string|null
+     * @return string|null
      *
      * @deprecated 3.0 remove this. this method is bogus and unreliable, since it cannot resolve the type of a column
      *             that is derived by a referenced field on a different entity.
