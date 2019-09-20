@@ -37,7 +37,9 @@ use Doctrine\ORM\Query;
 use Doctrine\ORM\UnitOfWork;
 use Doctrine\ORM\Utility\IdentifierFlattener;
 use Doctrine\ORM\Utility\PersisterHelper;
+use function array_map;
 use function array_merge;
+use function assert;
 use function reset;
 
 /**
@@ -2074,29 +2076,20 @@ class BasicEntityPersister implements EntityPersister
     }
 
     /**
-     * Retrieves class identifiers types
-     *
-     * @param ClassMetadata $class
-     * @return int[]|string[]
+     * @return string[]
      */
-    protected function getClassIdentifiersTypes(ClassMetadata $class): array
+    protected function getClassIdentifiersTypes(ClassMetadata $class) : array
     {
-        return array_map(function($identifier) use ($class) {
-            if (isset($class->fieldMappings[$identifier])) {
-                return $class->fieldMappings[$identifier]['type'];
-            }
+        $entityManager = $this->em;
 
-            $targetMapping = $this->em->getClassMetadata($class->associationMappings[$identifier]['targetEntity']);
+        return array_map(
+            static function ($fieldName) use ($class, $entityManager) : string {
+                $types = PersisterHelper::getTypeOfField($fieldName, $class, $entityManager);
+                assert(isset($types[0]));
 
-            if (isset($targetMapping->fieldMappings[$targetMapping->identifier[0]])) {
-                return $targetMapping->fieldMappings[$targetMapping->identifier[0]]['type'];
-            }
-
-            if (isset($targetMapping->associationMappings[$targetMapping->identifier[0]])) {
-                return $targetMapping->associationMappings[$targetMapping->identifier[0]]['type'];
-            }
-
-            throw ORMException::unrecognizedField($targetMapping->identifier[0]);
-        }, $class->identifier);
+                return $types[0];
+            },
+            $class->identifier
+        );
     }
 }
