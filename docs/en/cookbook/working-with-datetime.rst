@@ -95,7 +95,7 @@ the UTC time at the time of the booking and the timezone the event happened in.
         public function convertToDatabaseValue($value, AbstractPlatform $platform)
         {
             if ($value instanceof \DateTime) {
-                $value->setTimezone(self::getUtc());
+                $value->setTimezone(self::$utc ?? self::$utc = new \DateTimeZone('UTC'));
             }
 
             return parent::convertToDatabaseValue($value, $platform);
@@ -110,7 +110,7 @@ the UTC time at the time of the booking and the timezone the event happened in.
             $converted = \DateTime::createFromFormat(
                 $platform->getDateTimeFormatString(),
                 $value,
-                self::$utc ? self::$utc : self::$utc = new \DateTimeZone('UTC')
+                self::$utc ?? self::$utc = new \DateTimeZone('UTC')
             );
 
             if (! $converted) {
