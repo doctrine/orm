@@ -500,18 +500,20 @@ class JoinedSubclassPersister extends AbstractEntityInheritancePersister
         $parentClass = $this->class;
 
         while (($parentClass = $parentClass->getParent()) !== null) {
-            $conditions = [];
-            $tableName  = $parentClass->table->getQuotedQualifiedName($this->platform);
-            $tableAlias = $this->getSQLTableAlias($parentClass->getTableName());
-            $joinSql   .= ' INNER JOIN ' . $tableName . ' ' . $tableAlias . ' ON ';
+            if (! $parentClass->isMappedSuperclass) {
+                $conditions = [];
+                $tableName  = $parentClass->table->getQuotedQualifiedName($this->platform);
+                $tableAlias = $this->getSQLTableAlias($parentClass->getTableName());
+                $joinSql   .= ' INNER JOIN ' . $tableName . ' ' . $tableAlias . ' ON ';
 
-            foreach ($identifierColumns as $idColumn) {
-                $quotedColumnName = $this->platform->quoteIdentifier($idColumn->getColumnName());
+                foreach ($identifierColumns as $idColumn) {
+                    $quotedColumnName = $this->platform->quoteIdentifier($idColumn->getColumnName());
 
-                $conditions[] = $baseTableAlias . '.' . $quotedColumnName . ' = ' . $tableAlias . '.' . $quotedColumnName;
+                    $conditions[] = $baseTableAlias . '.' . $quotedColumnName . ' = ' . $tableAlias . '.' . $quotedColumnName;
+                }
+
+                $joinSql .= implode(' AND ', $conditions);
             }
-
-            $joinSql .= implode(' AND ', $conditions);
         }
 
         // OUTER JOIN sub tables
