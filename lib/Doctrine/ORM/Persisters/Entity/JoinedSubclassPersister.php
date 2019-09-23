@@ -341,7 +341,13 @@ class JoinedSubclassPersister extends AbstractEntityInheritancePersister
         // Add columns
         foreach ($this->class->getPropertiesIterator() as $fieldName => $property) {
             if ($property instanceof FieldMetadata) {
-                $columnList[] = $this->getSelectColumnSQL($fieldName, $property->getDeclaringClass());
+                $tableClass = $parentClass = $this->class;
+                while ($parentClass !== $property->getDeclaringClass() && ($parentClass = $parentClass->getParent()) !== null) {
+                    if (! $parentClass->isMappedSuperclass) {
+                        $tableClass = $parentClass;
+                    }
+                }
+                $columnList[] = $this->getSelectColumnSQL($fieldName, $tableClass);
 
                 continue;
             }
