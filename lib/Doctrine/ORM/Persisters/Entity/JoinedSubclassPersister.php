@@ -54,12 +54,14 @@ class JoinedSubclassPersister extends AbstractEntityInheritancePersister
         $parentClass = $this->class;
 
         while (($parentClass = $parentClass->getParent()) !== null) {
-            $parentTableName = $parentClass->getTableName();
+            if (! $parentClass->isMappedSuperclass) {
+                $parentTableName = $parentClass->getTableName();
 
-            if ($parentClass !== $rootClass) {
-                $parentPersister = $this->em->getUnitOfWork()->getEntityPersister($parentClass->getClassName());
+                if ($parentClass !== $rootClass) {
+                    $parentPersister = $this->em->getUnitOfWork()->getEntityPersister($parentClass->getClassName());
 
-                $subTableStmts[$parentTableName] = $this->conn->prepare($parentPersister->getInsertSQL());
+                    $subTableStmts[$parentTableName] = $this->conn->prepare($parentPersister->getInsertSQL());
+                }
             }
         }
 
@@ -420,15 +422,20 @@ class JoinedSubclassPersister extends AbstractEntityInheritancePersister
     protected function getInsertColumnList()
     {
         // Identifier columns must always come first in the column list of subclasses.
-        $columns       = [];
-        $parentColumns = $this->class->getParent()
-            ? $this->class->getIdentifierColumns($this->em)
-            : [];
+        $columns     = [];
+        $parentClass = $this->class;
+        while (($parentClass = $parentClass->getParent()) !== null) {
+            if (! $parentClass->isMappedSuperclass) {
+                $parentColumns = $parentClass->getIdentifierColumns($this->em);
 
-        foreach ($parentColumns as $columnName => $column) {
-            $columns[] = $columnName;
+                foreach ($parentColumns as $columnName => $column) {
+                    $columns[] = $columnName;
 
-            $this->columns[$columnName] = $column;
+                    $this->columns[$columnName] = $column;
+                }
+
+                break;
+            }
         }
 
         foreach ($this->class->getPropertiesIterator() as $name => $property) {
