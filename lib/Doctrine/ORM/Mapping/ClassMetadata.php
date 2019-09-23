@@ -715,8 +715,20 @@ class ClassMetadata extends ComponentMetadata implements TableOwner
     public function isInheritedProperty($fieldName)
     {
         $declaringClass = $this->properties[$fieldName]->getDeclaringClass();
+        if ($declaringClass === $this) {
+            return false;
+        } else if (! $declaringClass->isMappedSuperclass) {
+            return true;
+        }
 
-        return $declaringClass->className !== $this->className;
+        $parentClass = $this;
+        while (($parentClass = $parentClass->getParent()) !== $declaringClass) {
+            if (! $parentClass->isMappedSuperclass) {
+                return true;
+            }
+        }
+
+        return false;
     }
 
     /**
