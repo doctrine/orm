@@ -433,9 +433,9 @@ class JoinedSubclassPersister extends AbstractEntityInheritancePersister
     {
         // Identifier columns must always come first in the column list of subclasses.
         $columns       = [];
-        $parentColumns = $this->class->getRootClassName() !== $this->class->getClassName()
-            ? $this->class->getIdentifierColumns($this->em)
-            : [];
+        $parentColumns = $this->class->isRootEntity()
+            ? []
+            : $this->class->getIdentifierColumns($this->em);
 
         foreach ($parentColumns as $columnName => $column) {
             $columns[] = $columnName;
