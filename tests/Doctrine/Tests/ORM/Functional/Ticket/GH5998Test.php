@@ -16,25 +16,33 @@ class GH5998Test extends OrmFunctionalTestCase
         parent::setUp();
         $this->schemaTool->createSchema(
             [
-            $this->em->getClassMetadata(GH5998Main::class),
-            $this->em->getClassMetadata(GH5998Child::class),
+            $this->em->getClassMetadata(GH5998JTI::class),
+            $this->em->getClassMetadata(GH5998JTIChild::class),
+            $this->em->getClassMetadata(GH5998STI::class),
             ]
         );
     }
 
     /**
-     * Verifies that MappedSuperclasses work within a JTI hierarchy.
+     * Verifies that MappedSuperclasses work within an inheritance hierarchy.
      */
     public function testIssue()
     {
+        // Test JTI
+        $this->testClass(GH5998JTIChild::class);
+        // Test STI
+        $this->testClass(GH5998STIChild::class);
+    }
+
+    private function testClass($className) {
         // Test insert
-        $child = new GH5998Child('Sam', 0, 1);
+        $child = new $className('Sam', 0, 1);
         $this->em->persist($child);
         $this->em->flush();
         $this->em->clear();
 
         // Test find
-        $child = $this->em->getRepository(GH5998Child::class)->find(1);
+        $child = $this->em->getRepository($className)->find(1);
         self::assertNotNull($child);
 
         // Test lock and update
@@ -44,14 +52,14 @@ class GH5998Test extends OrmFunctionalTestCase
             $child->status = 0;
         });
         $this->em->clear();
-        $child = $this->em->getRepository(GH5998Child::class)->find(1);
+        $child = $this->em->getRepository($className)->find(1);
         self::assertEquals($child->firstName, 'Bob');
         self::assertEquals($child->status, 0);
 
         // Test delete
         $this->em->remove($child);
         $this->em->flush();
-        $child = $this->em->getRepository(GH5998Child::class)->find(1);
+        $child = $this->em->getRepository($className)->find(1);
         self::assertNull($child);
     }
 }
@@ -76,9 +84,9 @@ class GH5998Common
 /**
  * @ORM\Entity
  * @ORM\InheritanceType("JOINED")
- * @ORM\DiscriminatorMap({"child" = "Doctrine\Tests\ORM\Functional\Ticket\GH5998Child"})
+ * @ORM\DiscriminatorMap({"child" = "Doctrine\Tests\ORM\Functional\Ticket\GH5998JTIChild"})
  */
-abstract class GH5998Main extends GH5998Common
+abstract class GH5998JTI extends GH5998Common
 {
     /**
      * @ORM\Column(type="string", length=255);
@@ -89,12 +97,42 @@ abstract class GH5998Main extends GH5998Common
 /**
  * @ORM\Entity
  */
-class GH5998Child extends GH5998Main
+class GH5998JTIChild extends GH5998JTI
 {
     /**
      * @ORM\Column(type="integer")
      */
     public $type;
+    function __construct(string $firstName, int $type, int $status)
+    {
+        $this->firstName = $firstName;
+        $this->type = $type;
+        $this->status = $status;
+    }
+}
+
+/**
+ * @ORM\Entity
+ * @ORM\InheritanceType("SINGLE_TABLE")
+ * @ORM\DiscriminatorMap({"child" = "Doctrine\Tests\ORM\Functional\Ticket\GH5998STIChild"})
+ */
+abstract class GH5998STI extends GH5998Common
+{
+    /**
+     * @ORM\Column(type="string", length=255);
+     */
+    public $firstName;
+    /**
+     * @ORM\Column(type="integer")
+     */
+    public $type;
+}
+
+/**
+ * @ORM\Entity
+ */
+class GH5998STIChild extends GH5998STI
+{
     function __construct(string $firstName, int $type, int $status)
     {
         $this->firstName = $firstName;
