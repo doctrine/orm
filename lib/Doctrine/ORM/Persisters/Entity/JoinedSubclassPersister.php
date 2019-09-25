@@ -432,20 +432,15 @@ class JoinedSubclassPersister extends AbstractEntityInheritancePersister
     protected function getInsertColumnList()
     {
         // Identifier columns must always come first in the column list of subclasses.
-        $columns     = [];
-        $parentClass = $this->class;
-        while (($parentClass = $parentClass->getParent()) !== null) {
-            if (! $parentClass->isMappedSuperclass) {
-                $parentColumns = $parentClass->getIdentifierColumns($this->em);
+        $columns       = [];
+        $parentColumns = $this->class->getRootClassName() !== $this->class->getClassName()
+            ? $this->class->getIdentifierColumns($this->em)
+            : [];
 
-                foreach ($parentColumns as $columnName => $column) {
-                    $columns[] = $columnName;
+        foreach ($parentColumns as $columnName => $column) {
+            $columns[] = $columnName;
 
-                    $this->columns[$columnName] = $column;
-                }
-
-                break;
-            }
+            $this->columns[$columnName] = $column;
         }
 
         foreach ($this->class->getPropertiesIterator() as $name => $property) {
