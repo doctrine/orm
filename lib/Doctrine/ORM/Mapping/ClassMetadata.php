@@ -263,9 +263,13 @@ class ClassMetadata extends ComponentMetadata implements TableOwner
 
     public function getRootClassName() : string
     {
-        return $this->parent instanceof ClassMetadata && ! $this->parent->isMappedSuperclass
-            ? $this->parent->getRootClassName()
-            : $this->className;
+        $rootClass = $parentClass = $this;
+        while (($parentClass = $parentClass->getParent()) !== null) {
+            if (! $parentClass->isMappedSuperclass) {
+                $rootClass = $parentClass;
+            }
+        }
+        return $rootClass->className;
     }
 
     /**
