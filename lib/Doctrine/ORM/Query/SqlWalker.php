@@ -975,11 +975,11 @@ class SqlWalker implements TreeWalker
             ? $targetClass->getProperty($association->getMappedBy())
             : $association;
 
-        if ($this->query->getHint(Query::HINT_INTERNAL_ITERATION) === true &&
-            (! $this->query->getHint(self::HINT_DISTINCT) && isset($this->selectedClasses[$joinedDqlAlias]))) {
-            if ($association instanceof ToManyAssociationMetadata) {
-                throw QueryException::iterateWithFetchJoinNotAllowed($owningAssociation);
-            }
+        if (isset($this->selectedClasses[$joinedDqlAlias]) &&
+            $association instanceof ToManyAssociationMetadata &&
+            $this->query->getHint(Query::HINT_INTERNAL_ITERATION) === true &&
+            ! $this->query->getHint(self::HINT_DISTINCT)) {
+            throw QueryException::iterateWithFetchJoinNotAllowed($owningAssociation);
         }
 
         $targetTableJoin = null;
