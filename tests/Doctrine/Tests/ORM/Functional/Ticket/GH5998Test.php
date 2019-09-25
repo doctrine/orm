@@ -75,10 +75,6 @@ class GH5998Common
      * @ORM\GeneratedValue
      */
     public $id;
-    /**
-     * @ORM\Column(type="integer");
-     */
-    public $status;
 }
 
 /**
@@ -95,9 +91,20 @@ abstract class GH5998JTI extends GH5998Common
 }
 
 /**
+ * @ORM\MappedSuperclass
+ */
+class GH5998JTICommon extends GH5998JTI
+{
+    /**
+     * @ORM\Column(type="integer");
+     */
+    public $status;
+}
+
+/**
  * @ORM\Entity
  */
-class GH5998JTIChild extends GH5998JTI
+class GH5998JTIChild extends GH5998JTICommon
 {
     /**
      * @ORM\Column(type="integer")
@@ -122,17 +129,28 @@ abstract class GH5998STI extends GH5998Common
      * @ORM\Column(type="string", length=255);
      */
     public $firstName;
+}
+
+/**
+ * @ORM\MappedSuperclass
+ */
+class GH5998STICommon extends GH5998STI
+{
     /**
-     * @ORM\Column(type="integer")
+     * @ORM\Column(type="integer");
      */
-    public $type;
+    public $status;
 }
 
 /**
  * @ORM\Entity
  */
-class GH5998STIChild extends GH5998STI
+class GH5998STIChild extends GH5998STICommon
 {
+    /**
+     * @ORM\Column(type="integer")
+     */
+    public $type;
     function __construct(string $firstName, int $type, int $status)
     {
         $this->firstName = $firstName;
