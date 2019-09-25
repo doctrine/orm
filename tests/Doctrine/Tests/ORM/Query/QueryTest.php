@@ -147,6 +147,12 @@ class QueryTest extends OrmTestCase
     /**
      * @expectedException Doctrine\ORM\Query\QueryException
      */
+    public function testIterateWithNoDistinctAndManyAssociationSelectClause() : void
+    {
+        $q = $this->em->createQuery('select u, a from Doctrine\Tests\Models\CMS\CmsUser u LEFT JOIN u.articles a');
+        $q->iterate();
+    }
+
     public function testIterateWithNoDistinctAndWithValidSelectClause() : void
     {
         $q = $this->em->createQuery('select u from Doctrine\Tests\Models\CMS\CmsUser u LEFT JOIN u.articles a');
