@@ -269,6 +269,7 @@ class ClassMetadata extends ComponentMetadata implements TableOwner
                 $rootClass = $parentClass;
             }
         }
+
         return $rootClass->className;
     }
 
