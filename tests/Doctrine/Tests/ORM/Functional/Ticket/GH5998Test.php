@@ -1,9 +1,11 @@
 <?php
+
 declare(strict_types=1);
 
 namespace Doctrine\Tests\ORM\Functional\Ticket;
-use Doctrine\ORM\Annotation as ORM;
+
 use Doctrine\DBAL\LockMode;
+use Doctrine\ORM\Annotation as ORM;
 use Doctrine\Tests\OrmFunctionalTestCase;
 
 /**
@@ -11,16 +13,15 @@ use Doctrine\Tests\OrmFunctionalTestCase;
  */
 class GH5998Test extends OrmFunctionalTestCase
 {
-    protected function setUp(): void
+    protected function setUp() : void
     {
         parent::setUp();
-        $this->schemaTool->createSchema(
-            [
+        $this->schemaTool->createSchema([
             $this->em->getClassMetadata(GH5998JTI::class),
             $this->em->getClassMetadata(GH5998JTIChild::class),
             $this->em->getClassMetadata(GH5998STI::class),
-            ]
-        );
+            $this->em->getClassMetadata(GH5998Related::class),
+        ]);
     }
 
     /**
@@ -29,15 +30,18 @@ class GH5998Test extends OrmFunctionalTestCase
     public function testIssue()
     {
         // Test JTI
-        $this->testClass(GH5998JTIChild::class);
+        $this->classTests(GH5998JTIChild::class);
         // Test STI
-        $this->testClass(GH5998STIChild::class);
+        $this->classTests(GH5998STIChild::class);
     }
 
-    private function testClass($className) {
+    private function classTests($className)
+    {
         // Test insert
         $child = new $className('Sam', 0, 1);
+        $child->rel = new GH5998Related();
         $this->em->persist($child);
+        $this->em->persist($child->rel);
         $this->em->flush();
         $this->em->clear();
 
@@ -46,10 +50,10 @@ class GH5998Test extends OrmFunctionalTestCase
         self::assertNotNull($child);
 
         // Test lock and update
-        $this->em->transactional(function($em) use ($child) {
+        $this->em->transactional(static function ($em) use ($child) {
             $em->lock($child, LockMode::NONE);
             $child->firstName = 'Bob';
-            $child->status = 0;
+            $child->status    = 0;
         });
         $this->em->clear();
         $child = $this->em->getRepository($className)->find(1);
@@ -75,18 +79,21 @@ class GH5998Common
      * @ORM\GeneratedValue
      */
     public $id;
+    /**
+     * @ORM\ManyToOne(targetEntity=GH5998Related::class)
+     * @ORM\JoinColumn(name="related_id", referencedColumnName="id")
+     */
+    public $rel;
 }
 
 /**
  * @ORM\Entity
  * @ORM\InheritanceType("JOINED")
- * @ORM\DiscriminatorMap({"child" = "Doctrine\Tests\ORM\Functional\Ticket\GH5998JTIChild"})
+ * @ORM\DiscriminatorMap({"child" = GH5998JTIChild::class})
  */
 abstract class GH5998JTI extends GH5998Common
 {
-    /**
-     * @ORM\Column(type="string", length=255);
-     */
+    /** @ORM\Column(type="string", length=255) */
     public $firstName;
 }
 
@@ -95,9 +102,7 @@ abstract class GH5998JTI extends GH5998Common
  */
 class GH5998JTICommon extends GH5998JTI
 {
-    /**
-     * @ORM\Column(type="integer");
-     */
+    /** @ORM\Column(type="integer") */
     public $status;
 }
 
@@ -106,28 +111,25 @@ class GH5998JTICommon extends GH5998JTI
  */
 class GH5998JTIChild extends GH5998JTICommon
 {
-    /**
-     * @ORM\Column(type="integer")
-     */
+    /** @ORM\Column(type="integer") */
     public $type;
-    function __construct(string $firstName, int $type, int $status)
+
+    public function __construct(string $firstName, int $type, int $status)
     {
         $this->firstName = $firstName;
-        $this->type = $type;
-        $this->status = $status;
+        $this->type      = $type;
+        $this->status    = $status;
     }
 }
 
 /**
  * @ORM\Entity
  * @ORM\InheritanceType("SINGLE_TABLE")
- * @ORM\DiscriminatorMap({"child" = "Doctrine\Tests\ORM\Functional\Ticket\GH5998STIChild"})
+ * @ORM\DiscriminatorMap({"child" = GH5998STIChild::class})
  */
 abstract class GH5998STI extends GH5998Common
 {
-    /**
-     * @ORM\Column(type="string", length=255);
-     */
+    /** @ORM\Column(type="string", length=255) */
     public $firstName;
 }
 
@@ -136,9 +138,7 @@ abstract class GH5998STI extends GH5998Common
  */
 class GH5998STICommon extends GH5998STI
 {
-    /**
-     * @ORM\Column(type="integer");
-     */
+    /** @ORM\Column(type="integer") */
     public $status;
 }
 
@@ -147,14 +147,26 @@ class GH5998STICommon extends GH5998STI
  */
 class GH5998STIChild extends GH5998STICommon
 {
-    /**
-     * @ORM\Column(type="integer")
-     */
+    /** @ORM\Column(type="integer") */
     public $type;
-    function __construct(string $firstName, int $type, int $status)
+
+    public function __construct(string $firstName, int $type, int $status)
     {
         $this->firstName = $firstName;
-        $this->type = $type;
-        $this->status = $status;
+        $this->type      = $type;
+        $this->status    = $status;
     }
+}
+
+/**
+ * @ORM\Entity
+ */
+class GH5998Related
+{
+    /**
+     * @ORM\Id
+     * @ORM\Column(type="integer")
+     * @ORM\GeneratedValue
+     */
+    public $id;
 }
