@@ -156,7 +156,8 @@ class QueryTest extends OrmTestCase
     public function testIterateWithNoDistinctAndWithValidSelectClause() : void
     {
         $q = $this->em->createQuery('select u from Doctrine\Tests\Models\CMS\CmsUser u LEFT JOIN u.articles a');
-        $q->iterate();
+
+        self::assertInstanceOf(IterableResult::class, $q->iterate());
     }
 
     public function testIterateWithDistinct() : void
