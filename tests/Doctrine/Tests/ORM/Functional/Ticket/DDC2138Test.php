@@ -14,6 +14,9 @@ class DDC2138Test extends OrmFunctionalTestCase
     public function testForeignKeyOnSTIWithMultipleMapping()
     {
         $em = $this->_em;
+        if (! $em->getConnection()->getDatabasePlatform()->supportsForeignKeyConstraints()) {
+            $this->markTestSkipped('Platform does not support foreign keys.');
+        }
         $schemaTool = new SchemaTool($em);
 
         $classes = [
