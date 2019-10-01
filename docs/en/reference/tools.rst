@@ -252,15 +252,6 @@ will output the SQL for the ran operation.
 Before using the orm:schema-tool commands, remember to configure
 your cli-config.php properly.
 
-.. note::
-
-    When using the Annotation Mapping Driver you have to either setup
-    your autoloader in the cli-config.php correctly to find all the
-    entities, or you can use the second argument of the
-    ``EntityManagerHelper`` to specify all the paths of your entities
-    (or mapping files), i.e.
-    ``new \Doctrine\ORM\Tools\Console\Helper\EntityManagerHelper($em, $mappingPaths);``
-
 Entity Generation
 -----------------
 
