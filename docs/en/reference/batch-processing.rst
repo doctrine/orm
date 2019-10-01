@@ -16,6 +16,15 @@ especially what the strategies presented here provide help with.
     operations.
 
 
+.. note::
+
+    Logger can have a serious memory and time impact on bulk treatments. 
+    Deactivating it can be a solution.
+.. code-block:: php
+
+    <?php
+    $em->getConnection()->getConfiguration()->setSQLLogger(null);
+
 Bulk Inserts
 ------------
 
