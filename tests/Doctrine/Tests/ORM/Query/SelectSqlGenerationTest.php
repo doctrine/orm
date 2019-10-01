@@ -2315,6 +2315,18 @@ class SelectSqlGenerationTest extends OrmTestCase
     }
 
     /**
+     * GitHub issue #7846: https://github.com/doctrine/orm/issues/7846
+     * @group 7846
+     */
+    public function testAliasCanBeUsedWithFunctions()
+    {
+        $this->assertSqlGeneration(
+            "SELECT u.name AS foo FROM Doctrine\Tests\Models\CMS\CmsUser u WHERE LOWER(foo) = '3'",
+            "SELECT c0_.name AS name_0 FROM cms_users c0_ WHERE LOWER(name_0) = '3'"
+        );
+    }
+
+    /**
      * @return array
      */
     public function mathematicOperatorsProvider()
