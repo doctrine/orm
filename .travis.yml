@@ -92,7 +92,6 @@ jobs:
         - ./vendor/bin/phpcs
 
   allow_failures:
-    - php: 7.4snapshot
     # temporarily disabled
     - env: DB=mysql
     - env: DB=mariadb
