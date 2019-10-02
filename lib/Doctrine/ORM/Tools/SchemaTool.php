@@ -709,6 +709,11 @@ class SchemaTool
         }
 
         $compositeName = $theJoinTable->getName().'.'.implode('', $localColumns);
+
+        if (! $this->platform->supportsForeignKeyConstraints()) {
+            return;
+        }
+
         if (isset($addedFks[$compositeName])
             && ($foreignTableName != $addedFks[$compositeName]['foreignTableName']
             || 0 < count(array_diff($foreignColumns, $addedFks[$compositeName]['foreignColumns'])))
