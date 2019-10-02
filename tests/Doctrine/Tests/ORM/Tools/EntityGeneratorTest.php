@@ -1223,6 +1223,10 @@ class
                 '@Column(name="test", type="string", length=10, options={"comment"="testing"})',
                 ['type' => 'string', 'length' => 10, 'options' => ['comment' => 'testing']],
             ],
+            'string-comment-quote'   => [
+                '@Column(name="test", type="string", length=10, options={"comment"="testing ""quotes"""})',
+                ['type' => 'string', 'length' => 10, 'options' => ['comment' => 'testing "quotes"']],
+            ],
             'string-collation' => [
                 '@Column(name="test", type="string", length=10, options={"collation"="utf8mb4_general_ci"})',
                 ['type' => 'string', 'length' => 10, 'options' => ['collation' => 'utf8mb4_general_ci']],

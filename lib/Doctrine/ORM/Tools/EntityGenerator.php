@@ -23,6 +23,7 @@ use Doctrine\Common\Collections\Collection;
 use Doctrine\Common\Inflector\Inflector;
 use Doctrine\DBAL\Types\Type;
 use Doctrine\ORM\Mapping\ClassMetadataInfo;
+use function str_replace;
 
 /**
  * Generic class used to generate PHP5 entity classes from ClassMetadataInfo instances.
@@ -1679,7 +1680,7 @@ public function __construct(<params>)
             }
 
             if (isset($fieldMapping['options']['comment']) && $fieldMapping['options']['comment']) {
-                $options[] = '"comment"="' . $fieldMapping['options']['comment'] .'"';
+                $options[] = '"comment"="' . str_replace('"', '""', $fieldMapping['options']['comment']) . '"';
             }
 
             if (isset($fieldMapping['options']['collation']) && $fieldMapping['options']['collation']) {
