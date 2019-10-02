@@ -156,7 +156,7 @@ wishes to be hydrated. Default result-types include:
 - SQL to simple scalar result arrays
 - SQL to a single result variable
 
-Hydration to entities and arrays is one of most complex parts of Doctrine
+Hydration to entities and arrays is one of the most complex parts of Doctrine
 algorithm-wise. It can build results with for example:
 
 - Single table selects
