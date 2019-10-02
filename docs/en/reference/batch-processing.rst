@@ -18,8 +18,8 @@ especially what the strategies presented here provide help with.
 
 .. note::
 
-    Logger can have a serious memory and time impact on bulk treatments. 
-    Deactivating it can be a solution.
+    Having an SQL logger enabled when processing batches can have a serious impact on performance and resource usage.
+    To avoid that you should disable it in the DBAL configuration:
 .. code-block:: php
 
     <?php
