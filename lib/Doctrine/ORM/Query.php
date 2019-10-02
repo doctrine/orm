@@ -145,7 +145,7 @@ final class Query extends AbstractQuery
     /**
      * Cached DQL query.
      *
-     * @var string
+     * @var string|null
      */
     private $_dql = null;
 
@@ -159,7 +159,7 @@ final class Query extends AbstractQuery
     /**
      * The first result to return (the "offset").
      *
-     * @var integer
+     * @var int|null
      */
     private $_firstResult = null;
 
@@ -587,7 +587,7 @@ final class Query extends AbstractQuery
     /**
      * Returns the DQL query that is represented by this query object.
      *
-     * @return string DQL query.
+     * @return string|null
      */
     public function getDQL()
     {
@@ -640,7 +640,7 @@ final class Query extends AbstractQuery
      * Gets the position of the first result the query object was set to retrieve (the "offset").
      * Returns NULL if {@link setFirstResult} was not applied to this query.
      *
-     * @return integer The position of the first result.
+     * @return int|null The position of the first result.
      */
     public function getFirstResult()
     {
