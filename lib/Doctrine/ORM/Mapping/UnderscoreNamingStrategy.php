@@ -20,17 +20,29 @@
 
 namespace Doctrine\ORM\Mapping;
 
+use const CASE_LOWER;
+use const CASE_UPPER;
+use function preg_replace;
+use function strpos;
+use function strrpos;
+use function strtolower;
+use function strtoupper;
+use function substr;
+
 /**
  * Naming strategy implementing the underscore naming convention.
  * Converts 'MyEntity' to 'my_entity' or 'MY_ENTITY'.
  *
- * 
+ *
  * @link    www.doctrine-project.org
  * @since   2.3
  * @author  Fabio B. Silva <fabio.bat.silva@gmail.com>
  */
 class UnderscoreNamingStrategy implements NamingStrategy
 {
+    private const DEFAULT_PATTERN        = '/(?<=[a-z])([A-Z])/';
+    private const PATTERN_FOR_PROPERTIES = '/(?<=[a-z0-9])([A-Z])/';
+
     /**
      * @var integer
      */
@@ -57,7 +69,7 @@ class UnderscoreNamingStrategy implements NamingStrategy
     /**
      * Sets string case CASE_LOWER | CASE_UPPER.
      * Alphabetic characters converted to lowercase or uppercase.
-     * 
+     *
      * @param integer $case
      *
      * @return void
@@ -84,7 +96,7 @@ class UnderscoreNamingStrategy implements NamingStrategy
      */
     public function propertyToColumnName($propertyName, $className = null)
     {
-        return $this->underscore($propertyName);
+        return $this->underscore($propertyName, self::PATTERN_FOR_PROPERTIES);
     }
 
     /**
@@ -108,7 +120,7 @@ class UnderscoreNamingStrategy implements NamingStrategy
      */
     public function joinColumnName($propertyName, $className = null)
     {
-        return $this->underscore($propertyName) . '_' . $this->referenceColumnName();
+        return $this->underscore($propertyName, self::PATTERN_FOR_PROPERTIES) . '_' . $this->referenceColumnName();
     }
 
     /**
@@ -118,7 +130,7 @@ class UnderscoreNamingStrategy implements NamingStrategy
     {
         return $this->classToTableName($sourceEntity) . '_' . $this->classToTableName($targetEntity);
     }
-    
+
     /**
      * {@inheritdoc}
      */
@@ -127,15 +139,10 @@ class UnderscoreNamingStrategy implements NamingStrategy
         return $this->classToTableName($entityName) . '_' .
                 ($referencedColumnName ?: $this->referenceColumnName());
     }
-    
-    /**
-     * @param string $string
-     *
-     * @return string
-     */
-    private function underscore($string)
+
+    private function underscore(string $string, string $pattern = self::DEFAULT_PATTERN) : string
     {
-        $string = preg_replace('/(?<=[a-z])([A-Z])/', '_$1', $string);
+        $string = preg_replace($pattern, '_$1', $string);
 
         if ($this->case === CASE_UPPER) {
             return strtoupper($string);

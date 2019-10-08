@@ -108,11 +108,27 @@ class NamingStrategyTest extends OrmTestCase
                 self::defaultNaming(), 'some_property',
                 'some_property'
             ],
+            [
+                self::defaultNaming(), 'base64Encoded',
+                'base64Encoded'
+            ],
+            [
+                self::defaultNaming(), 'base64_encoded',
+                'base64_encoded'
+            ],
 
             // UnderscoreNamingStrategy
             [
                 self::underscoreNamingLower(), 'some_property',
                 'someProperty'
+            ],
+            [
+                self::underscoreNamingLower(), 'base64_encoded',
+                'base64Encoded'
+            ],
+            [
+                self::underscoreNamingLower(), 'base64encoded',
+                'base64encoded'
             ],
             [
                 self::underscoreNamingUpper(), 'SOME_PROPERTY',
@@ -125,6 +141,14 @@ class NamingStrategyTest extends OrmTestCase
             [
                 self::underscoreNamingUpper(), 'SOME_PROPERTY',
                 'SOME_PROPERTY'
+            ],
+            [
+                self::underscoreNamingUpper(), 'BASE64_ENCODED',
+                'base64Encoded'
+            ],
+            [
+                self::underscoreNamingUpper(), 'BASE64ENCODED',
+                'base64encoded'
             ],
         ];
     }
@@ -180,10 +204,14 @@ class NamingStrategyTest extends OrmTestCase
             // DefaultNamingStrategy
             [self::defaultNaming(), 'someColumn_id', 'someColumn', null],
             [self::defaultNaming(), 'some_column_id', 'some_column', null],
+            [self::defaultNaming(), 'base64Encoded_id', 'base64Encoded', null],
+            [self::defaultNaming(), 'base64_encoded_id', 'base64_encoded', null],
 
             // UnderscoreNamingStrategy
             [self::underscoreNamingLower(), 'some_column_id', 'someColumn', null],
+            [self::underscoreNamingLower(), 'base64_encoded_id', 'base64Encoded', null],
             [self::underscoreNamingUpper(), 'SOME_COLUMN_ID', 'someColumn', null],
+            [self::underscoreNamingUpper(), 'BASE64_ENCODED_ID', 'base64Encoded', null],
             // JoinColumnClassNamingStrategy
             [new JoinColumnClassNamingStrategy(), 'classname_someColumn_id', 'someColumn', 'Some\ClassName'],
             [new JoinColumnClassNamingStrategy(), 'classname_some_column_id', 'some_column', 'ClassName'],
