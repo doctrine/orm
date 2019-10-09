@@ -31,6 +31,12 @@ final class GH7761Test extends OrmFunctionalTestCase
         $this->_em->clear();
     }
 
+    protected function tearDown()
+    {
+        $this->_em->clear();
+        parent::tearDown();
+    }
+
     public function testCollectionClearDoesNotClearIfNotPersisted() : void
     {
         /** @var GH7761Entity $entity */
@@ -43,8 +49,20 @@ final class GH7761Test extends OrmFunctionalTestCase
 
         $entity = $this->_em->find(GH7761Entity::class, 1);
         self::assertCount(1, $entity->children);
+    }
+
+    public function testCollectionClearDoesClearIfPersisted() : void
+    {
+        /** @var GH7761Entity $entity */
+        $entity = $this->_em->find(GH7761Entity::class, 1);
+        $entity->children->clear();
+        $this->_em->persist($entity);
+        $this->_em->flush();
 
         $this->_em->clear();
+
+        $entity = $this->_em->find(GH7761Entity::class, 1);
+        self::assertCount(0, $entity->children);
     }
 }
 
