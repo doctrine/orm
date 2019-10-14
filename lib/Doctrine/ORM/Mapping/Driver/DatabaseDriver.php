@@ -187,11 +187,9 @@ class DatabaseDriver implements MappingDriver
                 $associationMapping['fieldName']    = $this->getFieldNameForColumn($manyTable->getName(), current($otherFk->getColumns()), true);
                 $associationMapping['targetEntity'] = $this->getClassNameForTable($otherFk->getForeignTableName());
 
-		if (isset($metadata->fieldMappings[$associationMapping['fieldName']])
-                        || isset($metadata->associationMappings[$associationMapping['fieldName']])) {
+                if (isset($metadata->fieldMappings[$associationMapping['fieldName']]) || isset($metadata->associationMappings[$associationMapping['fieldName']])) {
                         $ii=2;
-                        while ( isset($metadata->fieldMappings[$associationMapping['fieldName'].(string)$ii]) ||
-                                isset($metadata->associationMappings[$associationMapping['fieldName'].(string)$ii])) {
+                        while ( isset($metadata->fieldMappings[$associationMapping['fieldName'].(string)$ii]) || isset($metadata->associationMappings[$associationMapping['fieldName'].(string)$ii])) {
                                 $ii++;
                         }
                         $associationMapping['fieldName'] .= (string)$ii; 
