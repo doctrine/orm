@@ -186,7 +186,7 @@ Since we haven't added any entity metadata in ``src`` yet, you'll see a message
 stating "No Metadata Classes to process." In the next section, we'll create a
 Product entity along with the corresponding metadata, and run this command again.
 
-Note that as you modify your entities' metadata during the development process,
+Note that as you modify your entities metadata during the development process,
 you'll need to update your database schema to stay in sync with the metadata.
 You can easily recreate the database using the following commands:
 
