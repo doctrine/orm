@@ -112,7 +112,7 @@ EOT
 
         if (empty($metadatas)) {
             $ui->success('No Metadata Classes to process.');
-            return;
+            return 0;
         }
 
         $entityGenerator = new EntityGenerator();
@@ -138,5 +138,7 @@ EOT
         // Outputting information message
         $ui->newLine();
         $ui->success(sprintf('Entity classes generated to "%s"', $destPath));
+
+        return 0;
     }
 }

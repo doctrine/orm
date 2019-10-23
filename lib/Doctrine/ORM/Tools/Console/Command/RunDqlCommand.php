@@ -104,11 +104,13 @@ class RunDqlCommand extends Command
 
         if ($input->getOption('show-sql')) {
             $ui->text($query->getSQL());
-            return;
+            return 0;
         }
 
         $resultSet = $query->execute([], constant($hydrationMode));
 
         $ui->text(Debug::dump($resultSet, $input->getOption('depth'), true, false));
+
+        return 0;
     }
 }

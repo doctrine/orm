@@ -108,7 +108,7 @@ EOT
 
             $ui->comment(sprintf('Flushing cache provider configured for entity named <info>"%s"</info>', $entityClass));
 
-            return;
+            return 0;
         }
 
         if ($input->getOption('all')) {
@@ -116,7 +116,7 @@ EOT
 
             $cache->evictEntityRegions();
 
-            return;
+            return 0;
         }
 
         if ($entityId) {
@@ -129,10 +129,12 @@ EOT
             );
             $cache->evictEntity($entityClass, $entityId);
 
-            return;
+            return 0;
         }
 
         $ui->comment(sprintf('Clearing second-level cache for entity <info>"%s"</info>', $entityClass));
         $cache->evictEntityRegion($entityClass);
+
+        return 0;
     }
 }
