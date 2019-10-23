@@ -127,6 +127,8 @@ class ConvertDoctrine1SchemaCommand extends Command
         $numSpaces = $input->getOption('num-spaces');
 
         $this->convertDoctrine1Schema($fromPaths, $destPath, $toType, $numSpaces, $extend, $output);
+
+        return 0;
     }
 
     /**

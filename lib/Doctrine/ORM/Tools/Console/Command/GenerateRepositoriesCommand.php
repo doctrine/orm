@@ -84,7 +84,7 @@ class GenerateRepositoriesCommand extends Command
 
         if (empty($metadatas)) {
             $ui->success('No Metadata Classes to process.');
-            return;
+            return 0;
         }
 
         $numRepositories = 0;
@@ -104,11 +104,13 @@ class GenerateRepositoriesCommand extends Command
 
         if ($numRepositories === 0) {
             $ui->text('No Repository classes were found to be processed.');
-            return;
+            return 0;
         }
 
         // Outputting information message
         $ui->newLine();
         $ui->text(sprintf('Repository classes generated to "<info>%s</info>"', $destPath));
+
+        return 0;
     }
 }
