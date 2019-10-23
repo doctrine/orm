@@ -105,6 +105,21 @@ class EntityRepositoryCriteriaTest extends OrmFunctionalTestCase
         $this->assertEquals(1, count($dates));
     }
 
+    public function testIsNullComparisonQuery()
+    {
+        $this->loadNullFieldFixtures();
+        $repository = $this->_em->getRepository(DateTimeModel::class);
+
+        $repository->matching(new Criteria(
+            Criteria::expr()->isNull('time')
+        ))->first();
+
+        $this->assertContains(
+            'col_time IS NULL',
+            $this->_sqlLoggerStack->queries[$this->_sqlLoggerStack->currentQuery]['sql']
+        );
+    }
+
     public function testEqNullComparison()
     {
         $this->loadNullFieldFixtures();
