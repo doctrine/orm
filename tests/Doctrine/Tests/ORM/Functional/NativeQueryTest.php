@@ -12,8 +12,10 @@ use Doctrine\Tests\Models\CMS\CmsAddress;
 use Doctrine\Tests\Models\CMS\CmsEmail;
 use Doctrine\Tests\Models\CMS\CmsPhonenumber;
 use Doctrine\Tests\Models\CMS\CmsUser;
+use Doctrine\Tests\Models\Company\CompanyAuction;
 use Doctrine\Tests\Models\Company\CompanyContract;
 use Doctrine\Tests\Models\Company\CompanyEmployee;
+use Doctrine\Tests\Models\Company\CompanyEvent;
 use Doctrine\Tests\Models\Company\CompanyFixContract;
 use Doctrine\Tests\Models\Company\CompanyFlexContract;
 use Doctrine\Tests\Models\Company\CompanyPerson;
@@ -339,6 +341,31 @@ class NativeQueryTest extends OrmFunctionalTestCase
 
         $rsm = new ResultSetMappingBuilder($this->_em);
         $rsm->addRootEntityFromClassMetadata(CompanyContract::class, 'c');
+    }
+
+    /**
+     * @group rsm-sti
+     */
+    public function testConcreteClassInJoinedTableInheritanceSchemaWithRSMBuilderIsFine() : void
+    {
+        $rsm = new ResultSetMappingBuilder($this->em);
+
+        $rsm->addRootEntityFromClassMetadata(CompanyAuction::class, 'c');
+
+        self::assertSame(CompanyAuction::class, $rsm->getClassName('c'));
+    }
+
+    /**
+     * @group rsm-sti
+     */
+    public function testAbstractClassInJoinedTableInheritanceSchemaWithRSMBuilderThrowsException() : void
+    {
+        $this->expectException(InvalidArgumentException::class);
+        $this->expectExceptionMessage('ResultSetMapping builder does not currently support your inheritance scheme.');
+
+        $rsm = new ResultSetMappingBuilder($this->em);
+
+        $rsm->addRootEntityFromClassMetadata(CompanyEvent::class, 'c');
     }
 
     /**

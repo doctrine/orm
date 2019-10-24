@@ -182,12 +182,13 @@ class ResultSetMappingBuilder extends ResultSetMapping
 
     private function isInheritanceSupported(ClassMetadataInfo $classMetadata)
     {
-        if ($classMetadata->isInheritanceTypeSingleTable()
-            && in_array($classMetadata->name, $classMetadata->discriminatorMap, true)) {
+        $isInheritanceType = $classMetadata->isInheritanceTypeSingleTable() || $classMetadata->isInheritanceTypeJoined();
+
+        if ($isInheritanceType && in_array($classMetadata->name, $classMetadata->discriminatorMap, true)) {
             return true;
         }
 
-        return ! ($classMetadata->isInheritanceTypeSingleTable() || $classMetadata->isInheritanceTypeJoined());
+        return ! $isInheritanceType;
     }
 
     /**
