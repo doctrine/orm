@@ -800,7 +800,9 @@ DQL and its syntax as well as the Doctrine class can be found in
 :doc:`the dedicated chapter <dql-doctrine-query-language>`.
 For programmatically building up queries based on conditions that
 are only known at runtime, Doctrine provides the special
-``Doctrine\ORM\QueryBuilder`` class. More information on
+``Doctrine\ORM\QueryBuilder`` class. While this a powerful tool,
+it also brings more complexity to your code compared to plain DQL,
+so you should only use it when you need it. More information on
 constructing queries with a QueryBuilder can be found
 :doc:`in Query Builder chapter <query-builder>`.
 
