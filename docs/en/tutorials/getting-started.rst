@@ -1210,8 +1210,7 @@ The console output of this script is then:
     throw your ORM into the dumpster, because it doesn't support some
     the more powerful SQL concepts.
 
-
-    Instead of handwriting DQL you can use the ``QueryBuilder`` retrieved
+    If you need to build your query dynamically, you can use the ``QueryBuilder`` retrieved
     by calling ``$entityManager->createQueryBuilder()``. There are more
     details about this in the relevant part of the documentation.
 
