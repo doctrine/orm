@@ -249,7 +249,7 @@ Example usage
     $em->clear();
 
     // Fetch the Location object
-    $query = $em->createQuery("SELECT l FROM Geo\Entity\Location WHERE l.address = '1600 Amphitheatre Parkway, Mountain View, CA'");
+    $query = $em->createQuery("SELECT l FROM Geo\Entity\Location l WHERE l.address = '1600 Amphitheatre Parkway, Mountain View, CA'");
     $location = $query->getSingleResult();
 
     /* @var Geo\ValueObject\Point */
