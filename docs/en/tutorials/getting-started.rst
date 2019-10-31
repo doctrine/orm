@@ -437,12 +437,16 @@ There are several advantages to using such a model:
 
 * **Entity state is always valid.** Since no setters exist, this means that we
 only update portions of the entity that should already be valid.
+
 * Instead of having plain getters and setters, our entity now has
 **real behavior**: it is much easier to determine the logic in the domain.
+
 * DTOs can be reused in other components, for example deserializing mixed
 content, using forms...
+
 * Classic and static constructors can be used to manage different ways to
 create our objects, and they can also use DTOs.
+
 * Anemic entities tend to isolate the entity from logic, whereas rich
 entities allow putting the logic in the object itself, including data
 validation.
