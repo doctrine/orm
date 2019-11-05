@@ -107,6 +107,16 @@ abstract class OrmFunctionalTestCase extends OrmTestCase
             Models\CMS\CmsArticle::class,
             Models\CMS\CmsComment::class,
         ],
+        'cmscustomid' => [
+            Models\CMSCustomId\CmsUser::class,
+            Models\CMSCustomId\CmsPhonenumber::class,
+            Models\CMSCustomId\CmsAddress::class,
+            Models\CMSCustomId\CmsEmail::class,
+            Models\CMSCustomId\CmsGroup::class,
+            Models\CMSCustomId\CmsTag::class,
+            Models\CMSCustomId\CmsArticle::class,
+            Models\CMSCustomId\CmsComment::class,
+        ],
         'company' => [
             Models\Company\CompanyPerson::class,
             Models\Company\CompanyEmployee::class,
@@ -354,6 +364,19 @@ abstract class OrmFunctionalTestCase extends OrmTestCase
             $conn->executeUpdate('DELETE FROM cms_articles');
             $conn->executeUpdate('DELETE FROM cms_users');
             $conn->executeUpdate('DELETE FROM cms_emails');
+        }
+
+        if (isset($this->_usedModelSets['cmscustomid'])) {
+            $conn->executeUpdate('DELETE FROM cms_users_groups_customid');
+            $conn->executeUpdate('DELETE FROM cms_groups_customid');
+            $conn->executeUpdate('DELETE FROM cms_users_tags_customid');
+            $conn->executeUpdate('DELETE FROM cms_tags_customid');
+            $conn->executeUpdate('DELETE FROM cms_addresses_customid');
+            $conn->executeUpdate('DELETE FROM cms_phonenumbers_customid');
+            $conn->executeUpdate('DELETE FROM cms_comments_customid');
+            $conn->executeUpdate('DELETE FROM cms_articles_customid');
+            $conn->executeUpdate('DELETE FROM cms_users_customid');
+            $conn->executeUpdate('DELETE FROM cms_emails_customid');
         }
 
         if (isset($this->_usedModelSets['ecommerce'])) {
