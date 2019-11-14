@@ -115,23 +115,20 @@ class XmlDriver extends FileDriver
             }
         }
 
+        // Evaluate <embedded ...> mappings
         if (isset($xmlRoot->embedded)) {
-            foreach ($xmlRoot->embedded as $embeddedMapping) {
-                $columnPrefix = isset($embeddedMapping['column-prefix'])
-                    ? (string) $embeddedMapping['column-prefix']
-                    : null;
+            foreach ($xmlRoot->embedded as $embeddedElement) {
+                $propertyBuilder
+                    ->withFieldName((string) $embeddedElement['name'])
+                    ->withEmbeddedAnnotation($this->convertEmbeddedElementToEmbeddedAnnotation($embeddedElement))
+                    ->withIdAnnotation(null)
+                    ->withVersionAnnotation(
+                        isset($embeddedElement['version']) && $this->evaluateBoolean($embeddedElement['version'])
+                            ? new Annotation\Version()
+                            : null
+                    );
 
-                $useColumnPrefix = isset($embeddedMapping['use-column-prefix'])
-                    ? $this->evaluateBoolean($embeddedMapping['use-column-prefix'])
-                    : true;
-
-                $mapping = [
-                    'fieldName'    => (string) $embeddedMapping['name'],
-                    'class'        => (string) $embeddedMapping['class'],
-                    'columnPrefix' => $useColumnPrefix ? $columnPrefix : false,
-                ];
-
-                $classMetadata->mapEmbedded($mapping);
+                $classMetadata->addProperty($propertyBuilder->build());
             }
         }
 
@@ -682,6 +679,20 @@ class XmlDriver extends FileDriver
         }
 
         return $columnAnnotation;
+    }
+
+    private function convertEmbeddedElementToEmbeddedAnnotation(
+        SimpleXMLElement $embeddedElement
+    ) : Annotation\Embedded {
+        $embeddedAnnotation = new Annotation\Embedded();
+
+        $embeddedAnnotation->class = (string) $embeddedElement['class'];
+
+        if (isset($embeddedElement['column-prefix'])) {
+            $embeddedAnnotation->columnPrefix = (string) $embeddedElement['column-prefix'];
+        }
+
+        return $embeddedAnnotation;
     }
 
     private function convertOneToOneElementToOneToOneAnnotation(

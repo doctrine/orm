@@ -9,7 +9,6 @@ use Doctrine\ORM\Cache\Exception\CacheException;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Reflection\ReflectionService;
 use Doctrine\ORM\Sequencing\Planning\ValueGenerationPlan;
-use Doctrine\ORM\Utility\PersisterHelper;
 use ReflectionException;
 use RuntimeException;
 use function array_filter;
@@ -232,17 +231,6 @@ class ClassMetadata extends ComponentMetadata implements TableOwner
     public function setClassName(string $className)
     {
         $this->className = $className;
-    }
-
-    public function getColumnsIterator() : ArrayIterator
-    {
-        $iterator = parent::getColumnsIterator();
-
-        if ($this->discriminatorColumn) {
-            $iterator->offsetSet($this->discriminatorColumn->getColumnName(), $this->discriminatorColumn);
-        }
-
-        return $iterator;
     }
 
     public function getAncestorsIterator() : ArrayIterator
@@ -529,8 +517,7 @@ class ClassMetadata extends ComponentMetadata implements TableOwner
             $targetClass = $em->getClassMetadata($property->getTargetEntity());
 
             if (! $property->isOwningSide()) {
-                $property    = $targetClass->getProperty($property->getMappedBy());
-                $targetClass = $em->getClassMetadata($property->getTargetEntity());
+                $property = $targetClass->getProperty($property->getMappedBy());
             }
 
             $joinColumns = $property instanceof ManyToManyAssociationMetadata
@@ -539,14 +526,7 @@ class ClassMetadata extends ComponentMetadata implements TableOwner
 
             foreach ($joinColumns as $joinColumn) {
                 /** @var JoinColumnMetadata $joinColumn */
-                $columnName           = $joinColumn->getColumnName();
-                $referencedColumnName = $joinColumn->getReferencedColumnName();
-
-                if (! $joinColumn->getType()) {
-                    $joinColumn->setType(PersisterHelper::getTypeOfColumn($referencedColumnName, $targetClass, $em));
-                }
-
-                $columns[$columnName] = $joinColumn;
+                $columns[$joinColumn->getColumnName()] = $joinColumn;
             }
         }
 
@@ -760,11 +740,25 @@ class ClassMetadata extends ComponentMetadata implements TableOwner
             || $type === InheritanceType::TABLE_PER_CLASS;
     }
 
-    public function getColumn(string $columnName) : ?LocalColumnMetadata
+    public function getColumn(string $columnName) : ?ColumnMetadata
     {
         foreach ($this->properties as $property) {
-            if ($property instanceof LocalColumnMetadata && $property->getColumnName() === $columnName) {
-                return $property;
+            switch (true) {
+                case $property instanceof FieldMetadata:
+                    if ($property->getColumnName() === $columnName) {
+                        return $property;
+                    }
+
+                    break;
+
+                case $property instanceof ToOneAssociationMetadata:
+                    foreach ($property->getJoinColumns() as $joinColumn) {
+                        if ($joinColumn->getColumnName() === $columnName) {
+                            return $joinColumn;
+                        }
+                    }
+
+                    break;
             }
         }
 

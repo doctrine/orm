@@ -4,11 +4,14 @@ declare(strict_types=1);
 
 namespace Doctrine\ORM\Mapping\Builder;
 
+use Doctrine\DBAL\Types\Type;
 use Doctrine\ORM\Annotation;
 use Doctrine\ORM\Cache\Exception\NonCacheableEntityAssociation;
 use Doctrine\ORM\Mapping;
+use RuntimeException;
 use function count;
 use function in_array;
+use function sprintf;
 
 abstract class ToOneAssociationMetadataBuilder extends AssociationMetadataBuilder
 {
@@ -115,7 +118,17 @@ abstract class ToOneAssociationMetadataBuilder extends AssociationMetadataBuilde
                 foreach ($this->joinColumnsAnnotation->value as $joinColumnAnnotation) {
                     $this->joinColumnMetadataBuilder->withJoinColumnAnnotation($joinColumnAnnotation);
 
-                    $associationMetadata->addJoinColumn($this->joinColumnMetadataBuilder->build());
+                    $joinColumnMetadata = $this->joinColumnMetadataBuilder->build();
+                    $dataTypeResolver   = $this->createLazyDataTypeResolver(
+                        $this->metadataBuildingContext,
+                        $associationMetadata,
+                        $joinColumnMetadata,
+                        $associationMetadata->getTargetEntity()
+                    );
+
+                    $joinColumnMetadata->setType($dataTypeResolver);
+
+                    $associationMetadata->addJoinColumn($joinColumnMetadata);
                 }
 
                 // Prevent currently unsupported scenario: association with multiple columns and being marked as primary
@@ -132,13 +145,31 @@ abstract class ToOneAssociationMetadataBuilder extends AssociationMetadataBuilde
             case $this->joinColumnAnnotation !== null:
                 $this->joinColumnMetadataBuilder->withJoinColumnAnnotation($this->joinColumnAnnotation);
 
-                $associationMetadata->addJoinColumn($this->joinColumnMetadataBuilder->build());
+                $joinColumnMetadata = $this->joinColumnMetadataBuilder->build();
+                $dataTypeResolver   = $this->createLazyDataTypeResolver(
+                    $this->metadataBuildingContext,
+                    $associationMetadata,
+                    $joinColumnMetadata,
+                    $associationMetadata->getTargetEntity()
+                );
+
+                $joinColumnMetadata->setType($dataTypeResolver);
+
+                $associationMetadata->addJoinColumn($joinColumnMetadata);
                 break;
 
             default:
                 $joinColumnMetadata = $this->joinColumnMetadataBuilder->build();
+                $dataTypeResolver   = $this->createLazyDataTypeResolver(
+                    $this->metadataBuildingContext,
+                    $associationMetadata,
+                    $joinColumnMetadata,
+                    $associationMetadata->getTargetEntity()
+                );
 
-                $associationMetadata->addJoinColumn($this->joinColumnMetadataBuilder->build());
+                $joinColumnMetadata->setType($dataTypeResolver);
+
+                $associationMetadata->addJoinColumn($joinColumnMetadata);
                 break;
         }
     }

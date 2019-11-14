@@ -12,6 +12,7 @@ use Doctrine\Tests\Models\GeoNames\Admin1;
 use Doctrine\Tests\Models\GeoNames\Admin1AlternateName;
 use Doctrine\Tests\Models\GeoNames\Country;
 use Doctrine\Tests\OrmTestCase;
+use function array_map;
 
 class BasicEntityPersisterCompositeTypeParametersTest extends OrmTestCase
 {
@@ -44,7 +45,15 @@ class BasicEntityPersisterCompositeTypeParametersTest extends OrmTestCase
 
         [$values, $types] = $this->persister->expandParameters(['admin1' => $admin1]);
 
-        self::assertEquals([Type::getType('integer'), Type::getType('string')], $types);
+        self::assertEquals(
+            ['integer', 'string'],
+            array_map(
+                static function (Type $type) : string {
+                    return $type->getName();
+                },
+                $types
+            )
+        );
         self::assertEquals([10, 'IT'], $values);
     }
 
@@ -58,7 +67,15 @@ class BasicEntityPersisterCompositeTypeParametersTest extends OrmTestCase
 
         [$values, $types] = $this->persister->expandCriteriaParameters($criteria);
 
-        self::assertEquals([Type::getType('integer'), Type::getType('string')], $types);
+        self::assertEquals(
+            ['integer', 'string'],
+            array_map(
+                static function (Type $type) : string {
+                    return $type->getName();
+                },
+                $types
+            )
+        );
         self::assertEquals([10, 'IT'], $values);
     }
 }

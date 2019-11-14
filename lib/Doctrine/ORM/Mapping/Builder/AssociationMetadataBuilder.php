@@ -4,8 +4,10 @@ declare(strict_types=1);
 
 namespace Doctrine\ORM\Mapping\Builder;
 
+use Doctrine\DBAL\Types\Type;
 use Doctrine\ORM\Annotation;
 use Doctrine\ORM\Mapping;
+use RuntimeException;
 use function array_diff;
 use function array_intersect;
 use function array_map;
@@ -155,5 +157,34 @@ abstract class AssociationMetadataBuilder
         }
 
         return constant($fetchModeConstant);
+    }
+
+    protected function createLazyDataTypeResolver(
+        Mapping\ClassMetadataBuildingContext $metadataBuildingContext,
+        Mapping\AssociationMetadata $associationMetadata,
+        Mapping\JoinColumnMetadata $joinColumnMetadata,
+        string $targetEntity
+    ) {
+        return new Mapping\LazyDataType(
+            static function () use ($metadataBuildingContext, $associationMetadata, $joinColumnMetadata, $targetEntity) : Type {
+                $classMetadataFactory = $metadataBuildingContext->getClassMetadataFactory();
+                $targetClassMetadata  = $classMetadataFactory->getMetadataFor($targetEntity);
+                $targetColumnMetadata = $targetClassMetadata->getColumn($joinColumnMetadata->getReferencedColumnName());
+
+                if (! $targetColumnMetadata) {
+                    throw new RuntimeException(sprintf(
+                        'Could not resolve type of column "%s" of class "%s"',
+                        $joinColumnMetadata->getReferencedColumnName(),
+                        $associationMetadata->getDeclaringClass()->getClassName()
+                    ));
+                }
+
+                $type = $targetColumnMetadata->getType();
+
+                $joinColumnMetadata->setType($type);
+
+                return $type;
+            }
+        );
     }
 }

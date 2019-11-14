@@ -15,7 +15,6 @@ use Doctrine\ORM\Mapping\JoinColumnMetadata;
 use Doctrine\ORM\Mapping\ManyToManyAssociationMetadata;
 use Doctrine\ORM\Mapping\ToManyAssociationMetadata;
 use Doctrine\ORM\Mapping\ToOneAssociationMetadata;
-use Doctrine\ORM\Utility\PersisterHelper;
 use function array_combine;
 use function array_keys;
 use function implode;
@@ -348,16 +347,8 @@ class JoinedSubclassPersister extends AbstractEntityInheritancePersister
                 continue;
             }
 
-            $targetClass = $this->em->getClassMetadata($property->getTargetEntity());
-
             foreach ($property->getJoinColumns() as $joinColumn) {
                 /** @var JoinColumnMetadata $joinColumn */
-                $referencedColumnName = $joinColumn->getReferencedColumnName();
-
-                if (! $joinColumn->getType()) {
-                    $joinColumn->setType(PersisterHelper::getTypeOfColumn($referencedColumnName, $targetClass, $this->em));
-                }
-
                 $columnList[] = $this->getSelectJoinColumnSQL($joinColumn);
             }
         }
@@ -391,16 +382,8 @@ class JoinedSubclassPersister extends AbstractEntityInheritancePersister
                         break;
 
                     case $property instanceof ToOneAssociationMetadata && $property->isOwningSide():
-                        $targetClass = $this->em->getClassMetadata($property->getTargetEntity());
-
                         foreach ($property->getJoinColumns() as $joinColumn) {
                             /** @var JoinColumnMetadata $joinColumn */
-                            $referencedColumnName = $joinColumn->getReferencedColumnName();
-
-                            if (! $joinColumn->getType()) {
-                                $joinColumn->setType(PersisterHelper::getTypeOfColumn($referencedColumnName, $targetClass, $this->em));
-                            }
-
                             $columnList[] = $this->getSelectJoinColumnSQL($joinColumn);
                         }
 
@@ -444,12 +427,7 @@ class JoinedSubclassPersister extends AbstractEntityInheritancePersister
 
                     foreach ($property->getJoinColumns() as $joinColumn) {
                         /** @var JoinColumnMetadata $joinColumn */
-                        $columnName           = $joinColumn->getColumnName();
-                        $referencedColumnName = $joinColumn->getReferencedColumnName();
-
-                        if (! $joinColumn->getType()) {
-                            $joinColumn->setType(PersisterHelper::getTypeOfColumn($referencedColumnName, $targetClass, $this->em));
-                        }
+                        $columnName = $joinColumn->getColumnName();
 
                         $columns[] = $columnName;
 

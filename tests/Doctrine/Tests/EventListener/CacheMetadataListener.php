@@ -4,8 +4,9 @@ declare(strict_types=1);
 
 namespace Doctrine\Tests\EventListener;
 
-use Doctrine\Common\Persistence\Event\LoadClassMetadataEventArgs;
 use Doctrine\ORM\EntityManagerInterface;
+use Doctrine\ORM\Event\LoadClassMetadataEventArgs;
+use Doctrine\ORM\Mapping\AssociationMetadata;
 use Doctrine\ORM\Mapping\CacheMetadata;
 use Doctrine\ORM\Mapping\CacheUsage;
 use Doctrine\ORM\Mapping\ClassMetadata;
@@ -29,7 +30,7 @@ class CacheMetadataListener
     public function loadClassMetadata(LoadClassMetadataEventArgs $event)
     {
         $metadata = $event->getClassMetadata();
-        $em       = $event->getObjectManager();
+        $em       = $event->getEntityManager();
 
         /** @var $metadata \Doctrine\ORM\Mapping\ClassMetadata */
         if (strstr($metadata->getClassName(), 'Doctrine\Tests\Models\Cache')) {
@@ -62,26 +63,29 @@ class CacheMetadataListener
             return;
         }
 
-        $region = strtolower(str_replace('\\', '_', $metadata->getRootClassName()));
+        $region        = strtolower(str_replace('\\', '_', $metadata->getRootClassName()));
+        $cacheMetadata = new CacheMetadata(CacheUsage::NONSTRICT_READ_WRITE, $region);
 
-        $metadata->setCache(new CacheMetadata(CacheUsage::NONSTRICT_READ_WRITE, $region));
+        $metadata->setCache($cacheMetadata);
 
         $this->recordVisit($metadata);
 
         // only enable association-caching when the target has already been
         // given caching settings
-        foreach ($metadata->associationMappings as $association) {
-            $targetMeta = $em->getClassMetadata($association->getTargetEntity());
+        foreach ($metadata->getPropertiesIterator() as $property) {
+            if (! ($property instanceof AssociationMetadata)) {
+                continue;
+            }
 
-            $this->enableCaching($targetMeta, $em);
+            $targetMetadata = $em->getClassMetadata($property->getTargetEntity());
 
-            if ($this->isVisited($targetMeta)) {
-                $association->setCache(
-                    new CacheMetadata(
-                        CacheUsage::NONSTRICT_READ_WRITE,
-                        sprintf('%s__%s', $region, $association->getName())
-                    )
-                );
+            $this->enableCaching($targetMetadata, $em);
+
+            if ($this->isVisited($targetMetadata)) {
+                $region        = sprintf('%s__%s', $region, $property->getName());
+                $cacheMetadata =  new CacheMetadata(CacheUsage::NONSTRICT_READ_WRITE, $region);
+
+                $property->setCache($cacheMetadata);
             }
         }
     }

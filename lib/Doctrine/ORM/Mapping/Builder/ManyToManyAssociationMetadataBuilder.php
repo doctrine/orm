@@ -126,6 +126,31 @@ class ManyToManyAssociationMetadataBuilder extends ToManyAssociationMetadataBuil
     {
         $this->joinTableMetadataBuilder->withTargetEntity($associationMetadata->getTargetEntity());
 
-        $associationMetadata->setJoinTable($this->joinTableMetadataBuilder->build());
+        $joinTableMetadata = $this->joinTableMetadataBuilder->build();
+
+        $associationMetadata->setJoinTable($joinTableMetadata);
+
+        // Assign LazyDataType to join columns and inversed join columns
+        foreach ($joinTableMetadata->getJoinColumns() as $joinColumnMetadata) {
+            $dataTypeResolver = $this->createLazyDataTypeResolver(
+                $this->metadataBuildingContext,
+                $associationMetadata,
+                $joinColumnMetadata,
+                $associationMetadata->getSourceEntity()
+            );
+
+            $joinColumnMetadata->setType($dataTypeResolver);
+        }
+
+        foreach ($joinTableMetadata->getInverseJoinColumns() as $inverseJoinColumnMetadata) {
+            $dataTypeResolver = $this->createLazyDataTypeResolver(
+                $this->metadataBuildingContext,
+                $associationMetadata,
+                $inverseJoinColumnMetadata,
+                $associationMetadata->getTargetEntity()
+            );
+
+            $inverseJoinColumnMetadata->setType($dataTypeResolver);
+        }
     }
 }

@@ -28,6 +28,9 @@ class PropertyMetadataBuilder
     /** @var ManyToManyAssociationMetadataBuilder */
     private $manyToManyAssociationMetadataBuilder;
 
+    /** @var EmbeddedMetadataBuilder */
+    private $embeddedMetadataBuilder;
+
     /** @var TransientMetadataBuilder */
     private $transientMetadataBuilder;
 
@@ -92,6 +95,7 @@ class PropertyMetadataBuilder
         ?ManyToOneAssociationMetadataBuilder $manyToOneAssociationMetadataBuilder = null,
         ?OneToManyAssociationMetadataBuilder $oneToManyAssociationMetadataBuilder = null,
         ?ManyToManyAssociationMetadataBuilder $manyToManyAssociationMetadataBuilder = null,
+        ?EmbeddedMetadataBuilder $embeddedMetadataBuilder = null,
         ?TransientMetadataBuilder $transientMetadataBuilder = null
     ) {
         $this->metadataBuildingContext              = $metadataBuildingContext;
@@ -100,6 +104,7 @@ class PropertyMetadataBuilder
         $this->manyToOneAssociationMetadataBuilder  = $manyToOneAssociationMetadataBuilder ?: new ManyToOneAssociationMetadataBuilder($metadataBuildingContext);
         $this->oneToManyAssociationMetadataBuilder  = $oneToManyAssociationMetadataBuilder ?: new OneToManyAssociationMetadataBuilder($metadataBuildingContext);
         $this->manyToManyAssociationMetadataBuilder = $manyToManyAssociationMetadataBuilder ?: new ManyToManyAssociationMetadataBuilder($metadataBuildingContext);
+        $this->embeddedMetadataBuilder              = $embeddedMetadataBuilder ?: new EmbeddedMetadataBuilder($metadataBuildingContext);
         $this->transientMetadataBuilder             = $transientMetadataBuilder ?: new TransientMetadataBuilder($metadataBuildingContext);
     }
 
@@ -112,6 +117,7 @@ class PropertyMetadataBuilder
         $this->manyToOneAssociationMetadataBuilder->withComponentMetadata($componentMetadata);
         $this->oneToManyAssociationMetadataBuilder->withComponentMetadata($componentMetadata);
         $this->manyToManyAssociationMetadataBuilder->withComponentMetadata($componentMetadata);
+        $this->embeddedMetadataBuilder->withComponentMetadata($componentMetadata);
         $this->transientMetadataBuilder->withComponentMetadata($componentMetadata);
 
         return $this;
@@ -126,6 +132,7 @@ class PropertyMetadataBuilder
         $this->manyToOneAssociationMetadataBuilder->withFieldName($fieldName);
         $this->oneToManyAssociationMetadataBuilder->withFieldName($fieldName);
         $this->manyToManyAssociationMetadataBuilder->withFieldName($fieldName);
+        $this->embeddedMetadataBuilder->withFieldName($fieldName);
         $this->transientMetadataBuilder->withFieldName($fieldName);
 
         return $this;
@@ -138,6 +145,7 @@ class PropertyMetadataBuilder
         $this->fieldMetadataBuilder->withIdAnnotation($idAnnotation);
         $this->oneToOneAssociationMetadataBuilder->withIdAnnotation($idAnnotation);
         $this->manyToOneAssociationMetadataBuilder->withIdAnnotation($idAnnotation);
+        $this->embeddedMetadataBuilder->withIdAnnotation($idAnnotation);
 
         return $this;
     }
@@ -184,7 +192,7 @@ class PropertyMetadataBuilder
             $this->oneToManyAnnotation  = null;
             $this->manyToManyAnnotation = null;
 
-            // $this->embeddedMetadataBuilder->withEmbeddedAnnotation($embeddedAnnotation);
+            $this->embeddedMetadataBuilder->withEmbeddedAnnotation($embeddedAnnotation);
         }
 
         return $this;
@@ -337,7 +345,7 @@ class PropertyMetadataBuilder
         return $this;
     }
 
-    public function build() : ?Mapping\Property
+    public function build() : Mapping\Property
     {
         // Validate required fields
         assert($this->componentMetadata !== null);
@@ -358,8 +366,21 @@ class PropertyMetadataBuilder
 
                 return $propertyMetadata;
             case $this->embeddedAnnotation !== null:
-                // @todo guilhermeblanco Remove nullable typehint once embeddeds are back
-                return null;
+                return $this->embeddedMetadataBuilder->build();
+
+                // Prevent column duplication
+                // @todo guilhermeblanco Open an issue to discuss making this scenario impossible.
+//                $classMetadataFactory = $this->metadataBuildingContext->getClassMetadataFactory();
+//                $targetEmbeddable     = $classMetadataFactory->getMetadataFor($embeddedMetadata->getTargetEntity());
+//
+//                foreach ($targetEmbeddable->getColumnsIterator() as $columnMetadata) {
+//                    $columnName = ($embeddedMetadata->getColumnPrefix() ?: '') . $columnMetadata->getColumnName();
+//
+//                    if ($this->componentMetadata->checkPropertyDuplication($columnName)) {
+//                        throw Mapping\MappingException::duplicateColumnName($componentClassName, $columnName);
+//                }
+//
+//                return $embeddedMetadata;
             case $this->oneToOneAnnotation !== null:
                 return $this->oneToOneAssociationMetadataBuilder->build();
 
