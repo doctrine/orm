@@ -566,9 +566,7 @@ final class PersistentCollection extends AbstractLazyCollection implements Selec
         if ($this->association['isOwningSide'] && $this->owner) {
             $this->changed();
 
-            if (! $this->em->getClassMetadata(get_class($this->owner))->isChangeTrackingDeferredExplicit()) {
-                $uow->scheduleCollectionDeletion($this);
-            }
+            $uow->scheduleCollectionDeletion($this);
 
             $this->takeSnapshot();
         }
