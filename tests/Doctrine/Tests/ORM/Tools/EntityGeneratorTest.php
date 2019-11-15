@@ -327,6 +327,26 @@ class EntityGeneratorTest extends OrmTestCase
         $this->assertEquals($isbnMetadata->name, $reflParameters[0]->getClass()->name);
     }
 
+    public function testBooleanDefaultValue()
+    {
+        $metadata = $this->generateBookEntityFixture(['isbn' => $this->generateIsbnEmbeddableFixture()]);
+
+        $metadata->mapField(['fieldName' => 'foo', 'type' => 'boolean', 'options' => ['default' => '1']]);
+
+        $testEmbeddableMetadata = $this->generateTestEmbeddableFixture();
+        $this->mapEmbedded('testEmbedded', $metadata, $testEmbeddableMetadata);
+
+        $this->_generator->writeEntityClass($metadata, $this->_tmpDir);
+
+        $this->assertFileExists($this->_tmpDir . '/' . $this->_namespace . '/EntityGeneratorBook.php~');
+
+        $book = $this->newInstance($metadata);
+        $reflClass = new \ReflectionClass($metadata->name);
+
+        $this->assertNotSame($book->getfoo(), '1');
+        $this->assertSame($book->getFoo(), true);
+    }
+
     public function testEntityUpdatingWorks()
     {
         $metadata = $this->generateBookEntityFixture(['isbn' => $this->generateIsbnEmbeddableFixture()]);
