@@ -31,12 +31,6 @@ final class GH7761Test extends OrmFunctionalTestCase
         $this->_em->clear();
     }
 
-    protected function tearDown()
-    {
-        $this->_em->clear();
-        parent::tearDown();
-    }
-
     public function testCollectionClearDoesNotClearIfNotPersisted() : void
     {
         /** @var GH7761Entity $entity */
@@ -51,6 +45,9 @@ final class GH7761Test extends OrmFunctionalTestCase
         self::assertCount(1, $entity->children);
     }
 
+    /**
+     * @group GH-7862
+     */
     public function testCollectionClearDoesClearIfPersisted() : void
     {
         /** @var GH7761Entity $entity */

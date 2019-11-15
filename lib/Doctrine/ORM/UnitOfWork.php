@@ -46,6 +46,7 @@ use Doctrine\ORM\Utility\IdentifierFlattener;
 use InvalidArgumentException;
 use Throwable;
 use UnexpectedValueException;
+use function get_class;
 
 /**
  * The UnitOfWork is responsible for tracking changes to objects during an
@@ -380,7 +381,18 @@ class UnitOfWork implements PropertyChangedListener
         try {
             // Collection deletions (deletions of complete collections)
             foreach ($this->collectionDeletions as $collectionToDelete) {
-                $this->getCollectionPersister($collectionToDelete->getMapping())->delete($collectionToDelete);
+                if (! $collectionToDelete instanceof PersistentCollection) {
+                    $this->getCollectionPersister($collectionToDelete->getMapping())->delete($collectionToDelete);
+
+                    continue;
+                }
+
+                // Deferred explicit tracked collections can be removed only when owning relation was persisted
+                $owner = $collectionToDelete->getOwner();
+
+                if ($this->em->getClassMetadata(get_class($owner))->isChangeTrackingDeferredImplicit() || $this->isScheduledForDirtyCheck($owner)) {
+                    $this->getCollectionPersister($collectionToDelete->getMapping())->delete($collectionToDelete);
+                }
             }
 
             if ($this->entityInsertions) {
