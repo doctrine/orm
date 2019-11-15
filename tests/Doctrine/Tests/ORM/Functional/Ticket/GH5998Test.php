@@ -46,7 +46,7 @@ class GH5998Test extends OrmFunctionalTestCase
         $this->em->clear();
 
         // Test find
-        $child = $this->em->getRepository($className)->find(1);
+        $child = $this->em->createQuery("SELECT t FROM $className t WHERE t.status = 1")->getOneOrNullResult();
         self::assertNotNull($child);
 
         // Test lock and update
