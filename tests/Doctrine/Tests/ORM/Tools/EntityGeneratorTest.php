@@ -12,9 +12,11 @@ use Doctrine\ORM\Tools\EntityGenerator;
 use Doctrine\Tests\Models\DDC2372\DDC2372Admin;
 use Doctrine\Tests\Models\DDC2372\DDC2372User;
 use Doctrine\Tests\OrmTestCase;
+use Doctrine\Tests\VerifyDeprecations;
 
 class EntityGeneratorTest extends OrmTestCase
 {
+    use VerifyDeprecations;
 
     /**
      * @var EntityGenerator
@@ -47,6 +49,12 @@ class EntityGeneratorTest extends OrmTestCase
             }
         }
         rmdir($this->_tmpDir . '/' . $this->_namespace);
+    }
+
+    /** @after */
+    public function ensureTestGeneratedDeprecationMessages() : void
+    {
+        $this->assertHasDeprecationMessages();
     }
 
     /**

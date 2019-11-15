@@ -7,12 +7,15 @@ use Doctrine\Common\PropertyChangedListener;
 use Doctrine\Common\Proxy\Proxy;
 use Doctrine\ORM\Tools\ToolsException;
 use Doctrine\Tests\OrmFunctionalTestCase;
+use Doctrine\Tests\VerifyDeprecations;
 
 /**
  * @group DDC-2230
  */
 class DDC2230Test extends OrmFunctionalTestCase
 {
+    use VerifyDeprecations;
+
     protected function setUp()
     {
         parent::setUp();
@@ -48,6 +51,7 @@ class DDC2230Test extends OrmFunctionalTestCase
 
         $this->assertInstanceOf(Proxy::class, $address);
         $this->assertFalse($address->__isInitialized());
+        $this->assertHasDeprecationMessages();
     }
 
     public function testNotifyTrackingCalledOnProxyInitialization()
@@ -67,6 +71,7 @@ class DDC2230Test extends OrmFunctionalTestCase
         $addressProxy->__load();
 
         $this->assertSame($this->_em->getUnitOfWork(), $addressProxy->listener);
+        $this->assertNotHasDeprecationMessages();
     }
 }
 

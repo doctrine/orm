@@ -83,7 +83,7 @@ class ProxiesLikeEntitiesTest extends OrmFunctionalTestCase
         $this->assertInstanceOf(CmsUserProxy::class, $uninitializedProxy);
 
         $this->_em->persist($uninitializedProxy);
-        $this->_em->flush($uninitializedProxy);
+        $this->_em->flush();
         $this->assertFalse($uninitializedProxy->__isInitialized(), 'Proxy didn\'t get initialized during flush operations');
         $this->assertEquals($userId, $uninitializedProxy->getId());
         $this->_em->remove($uninitializedProxy);

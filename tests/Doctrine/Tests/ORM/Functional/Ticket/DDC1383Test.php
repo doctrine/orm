@@ -2,11 +2,15 @@
 
 namespace Doctrine\Tests\ORM\Functional\Ticket;
 
+use Doctrine\Tests\VerifyDeprecations;
+
 /**
  * @group DDC-1383
  */
 class DDC1383Test extends \Doctrine\Tests\OrmFunctionalTestCase
 {
+    use VerifyDeprecations;
+
     protected function setUp()
     {
         parent::setUp();
@@ -47,6 +51,7 @@ class DDC1383Test extends \Doctrine\Tests\OrmFunctionalTestCase
 		// Parent is NOT instance of entity
 		self::assertTrue($parent instanceof DDC1383Entity,
 				"Entity class is " . get_class($parent) . ', "DDC1383Entity" was expected');
+        $this->assertHasDeprecationMessages();
     }
 }
 

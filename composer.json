@@ -3,7 +3,7 @@
     "type": "library",
     "description": "Object-Relational-Mapper for PHP",
     "keywords": ["orm", "database"],
-    "homepage": "http://www.doctrine-project.org",
+    "homepage": "https://www.doctrine-project.org/projects/orm.html",
     "license": "MIT",
     "authors": [
         {"name": "Guilherme Blanco", "email": "guilhermeblanco@gmail.com"},
@@ -18,18 +18,20 @@
     "require": {
         "php": "^7.1",
         "ext-pdo": "*",
-        "doctrine/annotations": "~1.5",
-        "doctrine/cache": "~1.6",
-        "doctrine/collections": "^1.4",
-        "doctrine/common": "^2.7.1",
-        "doctrine/dbal": "^2.6",
-        "doctrine/instantiator": "~1.1",
-        "symfony/console": "~3.0|~4.0"
+        "doctrine/annotations": "^1.8",
+        "doctrine/cache": "^1.9.1",
+        "doctrine/collections": "^1.5",
+        "doctrine/common": "^2.11",
+        "doctrine/dbal": "^2.9.3",
+        "doctrine/event-manager": "^1.1",
+        "doctrine/instantiator": "^1.3",
+        "doctrine/persistence": "^1.2",
+        "symfony/console": "^3.0|^4.0|^5.0"
     },
     "require-dev": {
         "doctrine/coding-standard": "^5.0",
         "phpunit/phpunit": "^7.5",
-        "symfony/yaml": "~3.4|~4.0"
+        "symfony/yaml": "^3.4|^4.0|^5.0"
     },
     "suggest": {
         "symfony/yaml": "If you want to use YAML Metadata Mapping Driver"
@@ -46,7 +48,7 @@
     "bin": ["bin/doctrine"],
     "extra": {
         "branch-alias": {
-            "dev-master": "2.6.x-dev"
+            "dev-master": "2.7.x-dev"
         }
     },
     "archive": {

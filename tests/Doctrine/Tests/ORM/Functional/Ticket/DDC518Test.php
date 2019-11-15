@@ -2,8 +2,12 @@
 
 namespace Doctrine\Tests\ORM\Functional\Ticket;
 
+use Doctrine\Tests\VerifyDeprecations;
+
 class DDC518Test extends \Doctrine\Tests\OrmFunctionalTestCase
 {
+    use VerifyDeprecations;
+
     public function setUp()
     {
         $this->useModelSet('cms');
@@ -31,5 +35,6 @@ class DDC518Test extends \Doctrine\Tests\OrmFunctionalTestCase
         $managedArticle = $this->_em->merge($article);
 
         $this->assertSame($article->user, $managedArticle->user);
+        $this->assertHasDeprecationMessages();
     }
 }

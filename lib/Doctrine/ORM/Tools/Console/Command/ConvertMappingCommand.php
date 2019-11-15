@@ -167,6 +167,8 @@ EOT
                 $destPath
             )
         );
+
+        return 0;
     }
 
     /**

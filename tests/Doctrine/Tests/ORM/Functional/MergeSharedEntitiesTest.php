@@ -4,9 +4,12 @@ namespace Doctrine\Tests\ORM\Functional;
 
 use Doctrine\ORM\Tools\ToolsException;
 use Doctrine\Tests\OrmFunctionalTestCase;
+use Doctrine\Tests\VerifyDeprecations;
 
 class MergeSharedEntitiesTest extends OrmFunctionalTestCase
 {
+    use VerifyDeprecations;
+
     /**
      * {@inheritDoc}
      */
@@ -23,6 +26,12 @@ class MergeSharedEntitiesTest extends OrmFunctionalTestCase
             );
         } catch (ToolsException $ignored) {
         }
+    }
+
+    /** @after */
+    public function ensureTestGeneratedDeprecationMessages() : void
+    {
+        $this->assertHasDeprecationMessages();
     }
 
     public function testMergeSharedNewEntities()

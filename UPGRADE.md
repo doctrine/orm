@@ -1,3 +1,108 @@
+# Upgrade to 2.7
+
+## Deprecated code generators and related console commands
+ 
+These console commands have been deprecated:
+
+ * `orm:convert-mapping`
+ * `orm:generate:entities`
+ * `orm:generate-repositories`
+
+These classes have been deprecated:
+
+ * `Doctrine\ORM\Tools\EntityGenerator`
+ * `Doctrine\ORM\Tools\EntityRepositoryGenerator`
+
+Whole Doctrine\ORM\Tools\Export namespace with all its members have been deprecated as well.
+
+## Deprecated `Doctrine\ORM\Proxy\Proxy` marker interface
+
+Proxy objects in Doctrine 3.0 will no longer implement `Doctrine\ORM\Proxy\Proxy` nor
+`Doctrine\Common\Persistence\Proxy`: instead, they implement
+`ProxyManager\Proxy\GhostObjectInterface`.
+
+These related classes have been deprecated:
+
+ * `Doctrine\ORM\Proxy\ProxyFactory`
+ * `Doctrine\ORM\Proxy\Autoloader` - we suggest using the composer autoloader instead
+ 
+These methods have been deprecated:
+
+ * `Doctrine\ORM\Configuration#getAutoGenerateProxyClasses()`
+ * `Doctrine\ORM\Configuration#getProxyDir()`
+ * `Doctrine\ORM\Configuration#getProxyNamespace()`
+
+## Deprecated `Doctrine\ORM\Version`
+
+The `Doctrine\ORM\Version` class is now deprecated and will be removed in Doctrine 3.0:
+please refrain from checking the ORM version at runtime or use
+[Ocramius/PackageVersions](https://github.com/Ocramius/PackageVersions/).
+
+## Deprecated `EntityManager#merge()` and `EntityManager#detach()` methods
+
+Merge and detach semantics were a poor fit for the PHP "share-nothing" architecture.
+In addition to that, merging/detaching caused multiple issues with data integrity
+in the managed entity graph, which was constantly spawning more edge-case bugs/scenarios.
+
+The following API methods were therefore deprecated:
+
+* `EntityManager#merge()`
+* `EntityManager#detach()`
+* `UnitOfWork#merge()`
+* `UnitOfWork#detach()`
+
+Users are encouraged to migrate `EntityManager#detach()` calls to `EntityManager#clear()`.
+
+In order to maintain performance on batch processing jobs, it is endorsed to enable
+the second level cache (http://docs.doctrine-project.org/projects/doctrine-orm/en/latest/reference/second-level-cache.html)
+on entities that are frequently reused across multiple `EntityManager#clear()` calls.
+
+An alternative to `EntityManager#merge()` will not be provided by ORM 3.0, since the merging
+semantics should be part of the business domain rather than the persistence domain of an
+application. If your application relies heavily on CRUD-alike interactions and/or `PATCH`
+restful operations, you should look at alternatives such as [JMSSerializer](https://github.com/schmittjoh/serializer).
+
+## Extending `EntityManager` is deprecated
+
+Final keyword will be added to the `EntityManager::class` in Doctrine 3.0 in order to ensure that EntityManager
+ is not used as valid extension point. Valid extension point should be EntityManagerInterface.
+
+## Deprecated `EntityManager#flush($entity)` and `EntityManager#flush($entities)`
+
+If your code relies on single entity flushing optimisations via
+`EntityManager#flush($entity)`, the signature has been changed to
+`EntityManager#flush()`.
+
+Said API was affected by multiple data integrity bugs due to the fact
+that change tracking was being restricted upon a subset of the managed
+entities. The ORM cannot support committing subsets of the managed 
+entities while also guaranteeing data integrity, therefore this
+utility was removed.
+
+The `flush()` semantics will remain the same, but the change tracking will be performed
+on all entities managed by the unit of work, and not just on the provided
+`$entity` or `$entities`, as the parameter is now completely ignored.
+
+The same applies to `UnitOfWork#commit($entity)`, which will simply be
+`UnitOfWork#commit()`.
+
+If you would still like to perform batching operations over small `UnitOfWork`
+instances, it is suggested to follow these paths instead:
+
+ * eagerly use `EntityManager#clear()` in conjunction with a specific second level
+   cache configuration (see http://docs.doctrine-project.org/projects/doctrine-orm/en/latest/reference/second-level-cache.html)
+ * use an explicit change tracking policy (see http://docs.doctrine-project.org/projects/doctrine-orm/en/latest/reference/change-tracking-policies.html)
+
+## Deprecated `YAML` mapping drivers.
+
+If your code relies on `YamlDriver`  or `SimpleYamlDriver`, you **MUST** change to
+annotation or XML drivers instead.
+
+## Deprecated: `Doctrine\ORM\EntityManagerInterface#copy()`
+
+Method `Doctrine\ORM\EntityManagerInterface#copy()` never got its implementation and is deprecated.
+It will be removed in 3.0.
+
 # Upgrade to 2.6
 
 ## Added `Doctrine\ORM\EntityRepository::count()` method
