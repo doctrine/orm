@@ -341,7 +341,9 @@ abstract class OrmFunctionalTestCase extends OrmTestCase
 
         $platform = $conn->getDatabasePlatform();
 
-        $this->_sqlLoggerStack->enabled = false;
+        if ($this->_sqlLoggerStack instanceof DebugStack) {
+            $this->_sqlLoggerStack->enabled = false;
+        }
 
         if (isset($this->_usedModelSets['cms'])) {
             $conn->executeUpdate('DELETE FROM cms_users_groups');
