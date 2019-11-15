@@ -720,20 +720,46 @@ class ClassMetadata extends ComponentMetadata implements TableOwner
     public function isInheritedProperty($fieldName)
     {
         $declaringClass = $this->properties[$fieldName]->getDeclaringClass();
-        if ($declaringClass->className === $this->className) {
-            return false;
-        } else if (! $declaringClass->isMappedSuperclass) {
-            return true;
+
+        return $declaringClass->className !== $this->className;
+    }
+
+    /**
+     * Checks whether a mapped column is inherited from a parent table.
+     *
+     * @param string $fieldName
+     *
+     * @return bool TRUE if the field is inherited, FALSE otherwise.
+     */
+    public function isInheritedColumn($fieldName)
+    {
+        $declaringClass = $this->getPropertyTableClass($fieldName);
+
+        return $declaringClass->className !== $this->className;
+    }
+
+    /**
+     * Gets the class for the table that a field belongs to.
+     *
+     * @param string $fieldName
+     *
+     * @return ClassMetadata.
+     */
+    public function getPropertyTableClass($fieldName) : ClassMetadata
+    {
+        $declaringClass = $this->properties[$fieldName]->getDeclaringClass();
+        if (! $declaringClass->isMappedSuperclass) {
+            return $declaringClass;
         }
 
-        $parentClass = $this;
-        while (($parentClass = $parentClass->getParent()) !== $declaringClass) {
+        $tableClass = $parentClass = $this;
+        while (($parentClass = $parentClass->getParent()) && $parentClass !== $declaringClass) {
             if (! $parentClass->isMappedSuperclass) {
-                return true;
+                $tableClass = $parentClass;
             }
         }
 
-        return false;
+        return $tableClass;
     }
 
     /**
@@ -861,7 +887,13 @@ class ClassMetadata extends ComponentMetadata implements TableOwner
             $this->fieldNames[$property->getColumnName()] = $property->getName();
         } elseif ($inheritedProperty instanceof AssociationMetadata) {
             if ($declaringClass->isMappedSuperclass) {
-                $inheritedProperty->setSourceEntity($this->className);
+                $tableClass = $parentClass = $this;
+                while (($parentClass = $parentClass->getParent()) && $parentClass !== $declaringClass) {
+                    if (! $parentClass->isMappedSuperclass) {
+                        $tableClass = $parentClass;
+                    }
+                }
+                $inheritedProperty->setSourceEntity($tableClass->className);
             }
 
             // Need to add inherited fieldNames

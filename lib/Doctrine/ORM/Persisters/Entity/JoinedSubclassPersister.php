@@ -150,7 +150,7 @@ class JoinedSubclassPersister extends AbstractEntityInheritancePersister
         // Make sure the table with the version column is updated even if no columns on that
         // table were affected.
         if ($isVersioned) {
-            $versionedClass = $this->class->versionProperty->getDeclaringClass();
+            $versionedClass = $this->class->getPropertyTableClass($this->class->versionProperty->getName());
             $versionedTable = $versionedClass->getTableName();
 
             if (! isset($updateData[$versionedTable])) {
@@ -346,12 +346,7 @@ class JoinedSubclassPersister extends AbstractEntityInheritancePersister
         // Add columns
         foreach ($this->class->getPropertiesIterator() as $fieldName => $property) {
             if ($property instanceof FieldMetadata) {
-                $tableClass = $parentClass = $this->class;
-                while ($parentClass !== $property->getDeclaringClass() && ($parentClass = $parentClass->getParent()) !== null) {
-                    if (! $parentClass->isMappedSuperclass) {
-                        $tableClass = $parentClass;
-                    }
-                }
+                $tableClass = $this->class->getPropertyTableClass($fieldName);
                 $columnList[] = $this->getSelectColumnSQL($fieldName, $tableClass);
 
                 continue;
@@ -394,7 +389,7 @@ class JoinedSubclassPersister extends AbstractEntityInheritancePersister
 
             // Add columns
             foreach ($subClass->getPropertiesIterator() as $fieldName => $property) {
-                if ($subClass->isInheritedProperty($fieldName)) {
+                if ($subClass->isInheritedColumn($fieldName)) {
                     continue;
                 }
 
@@ -445,8 +440,8 @@ class JoinedSubclassPersister extends AbstractEntityInheritancePersister
         }
 
         foreach ($this->class->getPropertiesIterator() as $name => $property) {
-            if (($property instanceof FieldMetadata && ($property->isVersioned() || $this->class->isInheritedProperty($name)))
-                || ($property instanceof AssociationMetadata && $this->class->isInheritedProperty($name)
+            if (($property instanceof FieldMetadata && ($property->isVersioned() || $this->class->isInheritedColumn($name)))
+                || ($property instanceof AssociationMetadata && $this->class->isInheritedColumn($name)
                 || $property instanceof TransientMetadata)
                 /*|| isset($this->class->embeddedClasses[$name])*/) {
                 continue;

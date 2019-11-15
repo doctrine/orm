@@ -184,7 +184,7 @@ class SchemaTool
                             continue;
                         }
 
-                        if (! $class->isInheritedProperty($fieldName)) {
+                        if (! $class->isInheritedColumn($fieldName)) {
                             $columnName = $this->platform->quoteIdentifier($property->getColumnName());
 
                             $this->gatherColumn($class, $property, $table);
@@ -207,7 +207,7 @@ class SchemaTool
                         foreach ($class->identifier as $identifierField) {
                             $idProperty = $class->getProperty($identifierField);
 
-                            if ($class->isInheritedProperty($identifierField)) {
+                            if ($class->isInheritedColumn($identifierField)) {
                                 $column     = $this->gatherColumn($class, $idProperty, $table);
                                 $columnName = $column->getQuotedName($this->platform);
 
@@ -408,7 +408,7 @@ class SchemaTool
                 continue;
             }
 
-            if ($class->inheritanceType === InheritanceType::SINGLE_TABLE && $class->isInheritedProperty($fieldName)) {
+            if ($class->inheritanceType === InheritanceType::SINGLE_TABLE && $class->isInheritedColumn($fieldName)) {
                 continue;
             }
 
@@ -512,7 +512,7 @@ class SchemaTool
                 continue;
             }
 
-            if ($class->isInheritedProperty($fieldName)) {
+            if ($class->isInheritedColumn($fieldName)) {
                 continue;
             }
 

@@ -20,6 +20,7 @@ class GH5998Test extends OrmFunctionalTestCase
             $this->em->getClassMetadata(GH5998JTI::class),
             $this->em->getClassMetadata(GH5998JTIChild::class),
             $this->em->getClassMetadata(GH5998STI::class),
+            $this->em->getClassMetadata(GH5998Basic::class),
             $this->em->getClassMetadata(GH5998Related::class),
         ]);
     }
@@ -33,6 +34,8 @@ class GH5998Test extends OrmFunctionalTestCase
         $this->classTests(GH5998JTIChild::class);
         // Test STI
         $this->classTests(GH5998STIChild::class);
+        // Test Basic
+        $this->classTests(GH5998Basic::class);
     }
 
     private function classTests($className)
@@ -45,8 +48,13 @@ class GH5998Test extends OrmFunctionalTestCase
         $this->em->flush();
         $this->em->clear();
 
-        // Test find
-        $child = $this->em->createQuery("SELECT t FROM $className t WHERE t.status = 1")->getOneOrNullResult();
+        // Test find by rel
+        $child = $this->em->getRepository($className)->findOneBy(['rel'=>$child->rel]);
+        self::assertNotNull($child);
+        $this->em->clear();
+
+        // Test query by id with fetch join
+        $child = $this->em->createQuery("SELECT t, r FROM $className t JOIN t.rel r WHERE t.id = 1")->getOneOrNullResult();
         self::assertNotNull($child);
 
         // Test lock and update
@@ -84,6 +92,13 @@ class GH5998Common
      * @ORM\JoinColumn(name="related_id", referencedColumnName="id")
      */
     public $rel;
+    /**
+     * @ORM\Version
+     * @ORM\Column(type="integer")
+     */
+    public $version;
+
+    public $other;
 }
 
 /**
@@ -147,6 +162,26 @@ class GH5998STICommon extends GH5998STI
  */
 class GH5998STIChild extends GH5998STICommon
 {
+    /** @ORM\Column(type="integer") */
+    public $type;
+
+    public function __construct(string $firstName, int $type, int $status)
+    {
+        $this->firstName = $firstName;
+        $this->type      = $type;
+        $this->status    = $status;
+    }
+}
+
+/**
+ * @ORM\Entity
+ */
+class GH5998Basic extends GH5998Common
+{
+    /** @ORM\Column(type="string", length=255) */
+    public $firstName;
+    /** @ORM\Column(type="integer") */
+    public $status;
     /** @ORM\Column(type="integer") */
     public $type;
 

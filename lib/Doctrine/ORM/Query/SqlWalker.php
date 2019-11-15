@@ -638,11 +638,7 @@ class SqlWalker implements TreeWalker
             return $this->getSQLTableAlias($class->getTableName(), $identificationVariable);
         }
 
-        $property = $class->getProperty($fieldName);
-
-        if ($class->inheritanceType === InheritanceType::JOINED && $class->isInheritedProperty($fieldName)) {
-            $class = $property->getDeclaringClass();
-        }
+        $class = $class->getPropertyTableClass($fieldName);
 
         return $this->getSQLTableAlias($class->getTableName(), $identificationVariable);
     }
@@ -803,7 +799,7 @@ class SqlWalker implements TreeWalker
 
                 foreach ($subClass->getPropertiesIterator() as $association) {
                     // Skip if association is inherited
-                    if ($subClass->isInheritedProperty($association->getName())) {
+                    if ($subClass->isInheritedColumn($association->getName())) {
                         continue;
                     }
 
@@ -1475,7 +1471,7 @@ class SqlWalker implements TreeWalker
                                 continue;
                             }
 
-                            if ($subClass->isInheritedProperty($fieldName) || ($partialFieldSet && ! in_array($fieldName, $partialFieldSet, true))) {
+                            if ($subClass->isInheritedColumn($fieldName) || ($partialFieldSet && ! in_array($fieldName, $partialFieldSet, true))) {
                                 continue;
                             }
 
