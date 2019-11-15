@@ -512,7 +512,7 @@ class SchemaTool
                 continue;
             }
 
-            if ($class->isInheritedProperty($fieldName) && ! $property->getDeclaringClass()->isMappedSuperclass) {
+            if ($class->isInheritedProperty($fieldName)) {
                 continue;
             }
 
