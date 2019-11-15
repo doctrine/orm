@@ -274,16 +274,4 @@ class PersistentCollectionTest extends OrmTestCase
 
         $this->collection->clear();
     }
-
-    public function testDoNotModifyUOWForDeferredExplicitOwnerOnClear() : void
-    {
-        $unitOfWork = $this->createMock(UnitOfWork::class);
-        $unitOfWork->expects(self::never())->method('scheduleCollectionDeletion');
-        $this->_emMock->setUnitOfWork($unitOfWork);
-
-        $classMetaData = $this->_emMock->getClassMetadata(ECommerceCart::class);
-        $classMetaData->setChangeTrackingPolicy(ClassMetadataInfo::CHANGETRACKING_DEFERRED_EXPLICIT);
-
-        $this->collection->clear();
-    }
 }

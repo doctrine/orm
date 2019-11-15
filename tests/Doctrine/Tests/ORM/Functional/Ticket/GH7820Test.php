@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Doctrine\Tests\ORM\Functional\Ticket;
 
+use Doctrine\Common\Cache\ClearableCache;
 use Doctrine\Common\Collections\Criteria;
 use Doctrine\DBAL\Platforms\AbstractPlatform;
 use Doctrine\DBAL\Types\StringType;
@@ -11,6 +12,7 @@ use Doctrine\DBAL\Types\Type;
 use Doctrine\ORM\Tools\Pagination\Paginator;
 use Doctrine\Tests\OrmFunctionalTestCase;
 use function array_map;
+use function assert;
 use function is_string;
 use function iterator_to_array;
 
@@ -53,6 +55,9 @@ class GH7820Test extends OrmFunctionalTestCase
 
         $this->setUpEntitySchema([GH7820Line::class]);
 
+        $this->_em->createQuery('DELETE FROM ' . GH7820Line::class . ' l')
+            ->execute();
+
         foreach (self::SONG as $index => $line) {
             $this->_em->persist(new GH7820Line(GH7820LineText::fromText($line), $index));
         }
@@ -71,6 +76,41 @@ class GH7820Test extends OrmFunctionalTestCase
             array_map(static function (GH7820Line $line) : string {
                 return $line->toString();
             }, iterator_to_array(new Paginator($query)))
+        );
+    }
+
+    /** @group GH7837 */
+    public function testWillFindSongsInPaginatorEvenWithCachedQueryParsing() : void
+    {
+        $cache = $this->_em->getConfiguration()
+            ->getQueryCacheImpl();
+
+        assert($cache instanceof ClearableCache);
+
+        $cache->deleteAll();
+
+        $query = $this->_em->getRepository(GH7820Line::class)
+            ->createQueryBuilder('l')
+            ->orderBy('l.lineNumber', Criteria::ASC);
+
+        self::assertSame(
+            self::SONG,
+            array_map(static function (GH7820Line $line) : string {
+                return $line->toString();
+            }, iterator_to_array(new Paginator($query))),
+            'Expected to return expected data before query cache is populated with DQL -> SQL translation. Were SQL parameters translated?'
+        );
+
+        $query = $this->_em->getRepository(GH7820Line::class)
+            ->createQueryBuilder('l')
+            ->orderBy('l.lineNumber', Criteria::ASC);
+
+        self::assertSame(
+            self::SONG,
+            array_map(static function (GH7820Line $line) : string {
+                return $line->toString();
+            }, iterator_to_array(new Paginator($query))),
+            'Expected to return expected data even when DQL -> SQL translation is present in cache. Were SQL parameters translated again?'
         );
     }
 }

@@ -9,6 +9,12 @@ programmatically build queries, and also provides a fluent API.
 This means that you can change between one methodology to the other
 as you want, or just pick a preferred one.
 
+.. note::
+
+    The ``QueryBuilder`` is not an abstraction of DQL, but merely a tool to dynamically build it.
+    You should still use plain DQL when you can, as it is simpler and more readable.
+    More about this in the :doc:`FAQ <faq>`_.
+
 Constructing a new QueryBuilder object
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
@@ -80,7 +86,7 @@ Working with QueryBuilder
 High level API methods
 ^^^^^^^^^^^^^^^^^^^^^^
 
-To simplify even more the way you build a query in Doctrine, you can take
+The most straightforward way to build a dynamic query with the ``QueryBuilder`` is by taking
 advantage of Helper methods. For all base code, there is a set of
 useful methods to simplify a programmer's life. To illustrate how
 to work with them, here is the same example 6 re-written using
@@ -97,10 +103,9 @@ to work with them, here is the same example 6 re-written using
        ->orderBy('u.name', 'ASC');
 
 ``QueryBuilder`` helper methods are considered the standard way to
-build DQL queries. Although it is supported, using string-based
-queries should be avoided.  You are greatly encouraged to use
-``$qb->expr()->*`` methods. Here is a converted example 8 to
-suggested standard way to build queries:
+use the ``QueryBuilder``. The ``$qb->expr()->*`` methods can help you
+build conditional expressions dynamically. Here is a converted example 8 to
+suggested way to build queries with dynamic conditions:
 
 .. code-block:: php
 
