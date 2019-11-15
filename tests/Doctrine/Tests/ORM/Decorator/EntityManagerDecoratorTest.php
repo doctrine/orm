@@ -68,11 +68,11 @@ class EntityManagerDecoratorTest extends DoctrineTestCase
         }
 
         if ($method->getNumberOfRequiredParameters() > 0) {
-            return [$method->getName(), array_fill(0, $method->getNumberOfRequiredParameters(), 'req') ?: []];
+            return [$method->getName(), \array_fill(0, $method->getNumberOfRequiredParameters(), 'req') ?: []];
         }
 
         if ($method->getNumberOfParameters() !== $method->getNumberOfRequiredParameters()) {
-            return [$method->getName(), array_fill(0, $method->getNumberOfParameters(), 'all') ?: []];
+            return [$method->getName(), \array_fill(0, $method->getNumberOfParameters(), 'all') ?: []];
         }
 
         return [];
@@ -87,7 +87,7 @@ class EntityManagerDecoratorTest extends DoctrineTestCase
             ->expects(self::once())
             ->method($method);
 
-        call_user_func_array([$stub, 'with'], $parameters);
-        call_user_func_array([$this->decorator, $method], $parameters);
+        \call_user_func_array([$stub, 'with'], $parameters);
+        \call_user_func_array([$this->decorator, $method], $parameters);
     }
 }

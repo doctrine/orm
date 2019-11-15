@@ -32,7 +32,7 @@ class CacheMetadataListener
         $em       = $event->getObjectManager();
 
         /** @var $metadata \Doctrine\ORM\Mapping\ClassMetadata */
-        if (strstr($metadata->getClassName(), 'Doctrine\Tests\Models\Cache')) {
+        if (\strstr($metadata->getClassName(), 'Doctrine\Tests\Models\Cache')) {
             return;
         }
 
@@ -62,7 +62,7 @@ class CacheMetadataListener
             return;
         }
 
-        $region = strtolower(str_replace('\\', '_', $metadata->getRootClassName()));
+        $region = \strtolower(\str_replace('\\', '_', $metadata->getRootClassName()));
 
         $metadata->setCache(new CacheMetadata(CacheUsage::NONSTRICT_READ_WRITE, $region));
 
@@ -79,7 +79,7 @@ class CacheMetadataListener
                 $association->setCache(
                     new CacheMetadata(
                         CacheUsage::NONSTRICT_READ_WRITE,
-                        sprintf('%s__%s', $region, $association->getName())
+                        \sprintf('%s__%s', $region, $association->getName())
                     )
                 );
             }

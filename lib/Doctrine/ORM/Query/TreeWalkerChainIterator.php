@@ -34,7 +34,7 @@ class TreeWalkerChainIterator implements Iterator, ArrayAccess
      */
     public function rewind()
     {
-        return reset($this->walkers);
+        return \reset($this->walkers);
     }
 
     /**
@@ -42,7 +42,7 @@ class TreeWalkerChainIterator implements Iterator, ArrayAccess
      */
     public function current()
     {
-        return $this->offsetGet(key($this->walkers));
+        return $this->offsetGet(\key($this->walkers));
     }
 
     /**
@@ -50,7 +50,7 @@ class TreeWalkerChainIterator implements Iterator, ArrayAccess
      */
     public function key()
     {
-        return key($this->walkers);
+        return \key($this->walkers);
     }
 
     /**
@@ -58,9 +58,9 @@ class TreeWalkerChainIterator implements Iterator, ArrayAccess
      */
     public function next()
     {
-        next($this->walkers);
+        \next($this->walkers);
 
-        return $this->offsetGet(key($this->walkers));
+        return $this->offsetGet(\key($this->walkers));
     }
 
     /**
@@ -68,7 +68,7 @@ class TreeWalkerChainIterator implements Iterator, ArrayAccess
      */
     public function valid()
     {
-        return key($this->walkers) !== null;
+        return \key($this->walkers) !== null;
     }
 
     /**

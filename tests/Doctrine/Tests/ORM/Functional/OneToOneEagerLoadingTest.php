@@ -52,9 +52,9 @@ class OneToOneEagerLoadingTest extends OrmFunctionalTestCase
         $this->em->flush();
         $this->em->clear();
 
-        $sqlCount = count($this->sqlLoggerStack->queries);
+        $sqlCount = \count($this->sqlLoggerStack->queries);
 
-        $train = $this->em->find(get_class($train), $train->id);
+        $train = $this->em->find(\get_class($train), $train->id);
         self::assertNotInstanceOf(GhostObjectInterface::class, $train->driver);
         self::assertEquals('Benjamin', $train->driver->name);
 
@@ -72,9 +72,9 @@ class OneToOneEagerLoadingTest extends OrmFunctionalTestCase
         $this->em->flush();
         $this->em->clear();
 
-        $sqlCount = count($this->sqlLoggerStack->queries);
+        $sqlCount = \count($this->sqlLoggerStack->queries);
 
-        $train = $this->em->find(get_class($train), $train->id);
+        $train = $this->em->find(\get_class($train), $train->id);
         self::assertNotInstanceOf(GhostObjectInterface::class, $train->driver);
         self::assertNull($train->driver);
 
@@ -93,9 +93,9 @@ class OneToOneEagerLoadingTest extends OrmFunctionalTestCase
         $this->em->flush();
         $this->em->clear();
 
-        $sqlCount = count($this->sqlLoggerStack->queries);
+        $sqlCount = \count($this->sqlLoggerStack->queries);
 
-        $driver = $this->em->find(get_class($owner), $owner->id);
+        $driver = $this->em->find(\get_class($owner), $owner->id);
         self::assertNotInstanceOf(GhostObjectInterface::class, $owner->train);
         self::assertNotNull($owner->train);
 
@@ -115,9 +115,9 @@ class OneToOneEagerLoadingTest extends OrmFunctionalTestCase
 
         self::assertNull($driver->train);
 
-        $sqlCount = count($this->sqlLoggerStack->queries);
+        $sqlCount = \count($this->sqlLoggerStack->queries);
 
-        $driver = $this->em->find(get_class($driver), $driver->id);
+        $driver = $this->em->find(\get_class($driver), $driver->id);
         self::assertNotInstanceOf(GhostObjectInterface::class, $driver->train);
         self::assertNull($driver->train);
 
@@ -134,7 +134,7 @@ class OneToOneEagerLoadingTest extends OrmFunctionalTestCase
         $this->em->flush();
         $this->em->clear();
 
-        $waggon = $this->em->find(get_class($waggon), $waggon->id);
+        $waggon = $this->em->find(\get_class($waggon), $waggon->id);
         self::assertNotInstanceOf(GhostObjectInterface::class, $waggon->train);
         self::assertNotNull($waggon->train);
     }
@@ -152,7 +152,7 @@ class OneToOneEagerLoadingTest extends OrmFunctionalTestCase
         $this->em->flush();
         $this->em->clear();
 
-        $this->em->find(get_class($train), $train->id);
+        $this->em->find(\get_class($train), $train->id);
 
         self::assertSQLEquals(
             'SELECT t0."id" AS c1, t0."driver_id" AS c2, t4."id" AS c3, t4."name" AS c5, t0."owner_id" AS c6, t8."id" AS c7, t8."name" AS c9 FROM "Train" t0 LEFT JOIN "TrainDriver" t4 ON t0."driver_id" = t4."id" INNER JOIN "TrainOwner" t8 ON t0."owner_id" = t8."id" WHERE t0."id" = ?',
@@ -161,7 +161,7 @@ class OneToOneEagerLoadingTest extends OrmFunctionalTestCase
 
         $this->em->clear();
 
-        $this->em->find(get_class($driver), $driver->id);
+        $this->em->find(\get_class($driver), $driver->id);
 
         self::assertSQLEquals(
             'SELECT t0."id" AS c1, t0."name" AS c2, t4."id" AS c3, t4."driver_id" AS c5, t4."owner_id" AS c6 FROM "TrainOwner" t0 LEFT JOIN "Train" t4 ON t4."owner_id" = t0."id" WHERE t0."id" IN (?)',
@@ -184,7 +184,7 @@ class OneToOneEagerLoadingTest extends OrmFunctionalTestCase
         $this->em->flush();
         $this->em->clear();
 
-        $this->em->find(get_class($waggon), $waggon->id);
+        $this->em->find(\get_class($waggon), $waggon->id);
 
         // The last query is the eager loading of the owner of the train
         self::assertSQLEquals(
@@ -211,7 +211,7 @@ class OneToOneEagerLoadingTest extends OrmFunctionalTestCase
         $this->em->flush();
         $this->em->clear();
 
-        $this->em->find(get_class($owner), $owner->id);
+        $this->em->find(\get_class($owner), $owner->id);
 
         self::assertSQLEquals(
             'SELECT t0."id" AS c1, t0."name" AS c2, t4."id" AS c3, t4."driver_id" AS c5, t4."owner_id" AS c6 FROM "TrainOwner" t0 LEFT JOIN "Train" t4 ON t4."owner_id" = t0."id" WHERE t0."id" = ?',

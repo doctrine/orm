@@ -653,7 +653,7 @@ class EntityRepositoryTest extends OrmFunctionalTestCase
         $repo = $this->em->getRepository(CmsAddress::class);
         $data = $repo->findBy(['user' => [1, 2, 3]]);
 
-        $query = array_pop($this->sqlLoggerStack->queries);
+        $query = \array_pop($this->sqlLoggerStack->queries);
         self::assertEquals([1, 2, 3], $query['params'][0]);
         self::assertEquals(Connection::PARAM_INT_ARRAY, $query['types'][0]);
     }
@@ -891,7 +891,7 @@ class EntityRepositoryTest extends OrmFunctionalTestCase
     public function testMatchingCriteriaNullAssocComparison() : void
     {
         $fixtures       = $this->loadFixtureUserEmail();
-        $user           = $this->em->find(get_class($fixtures[0]), $fixtures[0]->id);
+        $user           = $this->em->find(\get_class($fixtures[0]), $fixtures[0]->id);
         $repository     = $this->em->getRepository(CmsUser::class);
         $criteriaIsNull = Criteria::create()->where(Criteria::expr()->isNull('email'));
         $criteriaEqNull = Criteria::create()->where(Criteria::expr()->eq('email', null));
@@ -1000,7 +1000,7 @@ class EntityRepositoryTest extends OrmFunctionalTestCase
         $users = $this->em->getRepository(CmsUser::class)->findBy(['status' => [null]]);
 
         self::assertCount(1, $users);
-        self::assertSame($user1, reset($users));
+        self::assertSame($user1, \reset($users));
     }
 
     /**
@@ -1028,7 +1028,7 @@ class EntityRepositoryTest extends OrmFunctionalTestCase
             ->findBy(['status' => ['foo', null]]);
 
         self::assertCount(1, $users);
-        self::assertSame($user1, reset($users));
+        self::assertSame($user1, \reset($users));
     }
 
     /**

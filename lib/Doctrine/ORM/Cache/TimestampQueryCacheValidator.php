@@ -29,7 +29,7 @@ class TimestampQueryCacheValidator implements QueryCacheValidator
             return true;
         }
 
-        return ($entry->time + $key->lifetime) > microtime(true);
+        return ($entry->time + $key->lifetime) > \microtime(true);
     }
 
     /**

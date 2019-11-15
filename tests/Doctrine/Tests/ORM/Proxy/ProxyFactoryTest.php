@@ -297,7 +297,7 @@ class ProxyFactoryTest extends OrmTestCase
                 )
             )
             ->willReturnCallback(static function (array $id, ComparableObject $comparableObject) {
-                $comparableObject->setComparedFieldValue(json_encode($id));
+                $comparableObject->setComparedFieldValue(\json_encode($id));
 
                 return $comparableObject;
             });

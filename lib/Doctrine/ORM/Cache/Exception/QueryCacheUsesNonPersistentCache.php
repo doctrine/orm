@@ -13,7 +13,7 @@ final class QueryCacheUsesNonPersistentCache extends LogicException implements C
     public static function fromDriver(Cache $cache) : self
     {
         return new self(
-            'Query Cache uses a non-persistent cache driver, ' . get_class($cache) . '.'
+            'Query Cache uses a non-persistent cache driver, ' . \get_class($cache) . '.'
         );
     }
 }

@@ -24,7 +24,7 @@ class GearmanLockTest extends OrmFunctionalTestCase
 
     protected function setUp() : void
     {
-        if (! class_exists('GearmanClient', false)) {
+        if (! \class_exists('GearmanClient', false)) {
             $this->markTestSkipped('pecl/gearman is required for this test to run.');
         }
 
@@ -51,7 +51,7 @@ class GearmanLockTest extends OrmFunctionalTestCase
 
     public function gearmanTaskCompleted($task)
     {
-        $this->maxRunTime = max($this->maxRunTime, $task->data());
+        $this->maxRunTime = \max($this->maxRunTime, $task->data());
     }
 
     public function testFindWithLock() : void
@@ -180,7 +180,7 @@ class GearmanLockTest extends OrmFunctionalTestCase
 
     protected function startJob($fn, $fixture)
     {
-        $this->gearman->addTask($fn, serialize(
+        $this->gearman->addTask($fn, \serialize(
             [
                 'conn' => $this->em->getConnection()->getParams(),
                 'fixture' => $fixture,

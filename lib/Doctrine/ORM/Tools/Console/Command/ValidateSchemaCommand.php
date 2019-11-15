@@ -52,7 +52,7 @@ class ValidateSchemaCommand extends Command
             if ($errors) {
                 foreach ($errors as $className => $errorMessages) {
                     $ui->text(
-                        sprintf(
+                        \sprintf(
                             '<error>[FAIL]</error> The entity-class <comment>%s</comment> mapping is invalid:',
                             $className
                         )

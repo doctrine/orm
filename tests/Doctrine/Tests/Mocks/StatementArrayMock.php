@@ -31,9 +31,9 @@ class StatementArrayMock extends StatementMock
 
     public function columnCount()
     {
-        $row = reset($this->result);
+        $row = \reset($this->result);
         if ($row) {
-            return count($row);
+            return \count($row);
         }
 
         return 0;
@@ -46,19 +46,19 @@ class StatementArrayMock extends StatementMock
 
     public function fetch($fetchMode = null, ...$args)
     {
-        $current = current($this->result);
-        next($this->result);
+        $current = \current($this->result);
+        \next($this->result);
 
         return $current;
     }
 
     public function fetchColumn($columnIndex = 0)
     {
-        $current = current($this->result);
+        $current = \current($this->result);
         if ($current) {
-            next($this->result);
+            \next($this->result);
 
-            return reset($current);
+            return \reset($current);
         }
 
         return false;
@@ -66,6 +66,6 @@ class StatementArrayMock extends StatementMock
 
     public function rowCount() : int
     {
-        return count($this->result);
+        return \count($this->result);
     }
 }

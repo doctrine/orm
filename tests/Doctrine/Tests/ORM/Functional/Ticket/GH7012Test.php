@@ -51,7 +51,7 @@ final class GH7012Test extends OrmFunctionalTestCase
         $queries = $this->sqlLoggerStack->queries;
 
         self::assertSQLEquals(
-            sprintf('UPDATE %s SET %s = ? WHERE %s = ?', $quotedTableName, $quotedColumn, $quotedIdentifier),
+            \sprintf('UPDATE %s SET %s = ? WHERE %s = ?', $quotedTableName, $quotedColumn, $quotedIdentifier),
             $queries[$this->sqlLoggerStack->currentQuery - 1]['sql']
         );
     }

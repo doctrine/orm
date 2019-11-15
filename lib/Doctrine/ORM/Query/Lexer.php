@@ -147,8 +147,8 @@ class Lexer extends AbstractLexer
 
         switch (true) {
             // Recognize numeric values
-            case is_numeric($value):
-                if (strpos($value, '.') !== false || stripos($value, 'e') !== false) {
+            case \is_numeric($value):
+                if (\strpos($value, '.') !== false || \stripos($value, 'e') !== false) {
                     return self::T_FLOAT;
                 }
 
@@ -156,27 +156,27 @@ class Lexer extends AbstractLexer
 
             // Recognize quoted strings
             case $value[0] === "'":
-                $value = str_replace("''", "'", substr($value, 1, strlen($value) - 2));
+                $value = \str_replace("''", "'", \substr($value, 1, \strlen($value) - 2));
 
                 return self::T_STRING;
 
             // Recognize identifiers, aliased or qualified names
-            case ctype_alpha($value[0]) || $value[0] === '_' || $value[0] === '\\':
-                $name = 'Doctrine\ORM\Query\Lexer::T_' . strtoupper($value);
+            case \ctype_alpha($value[0]) || $value[0] === '_' || $value[0] === '\\':
+                $name = 'Doctrine\ORM\Query\Lexer::T_' . \strtoupper($value);
 
-                if (defined($name)) {
-                    $type = constant($name);
+                if (\defined($name)) {
+                    $type = \constant($name);
 
                     if ($type > 100) {
                         return $type;
                     }
                 }
 
-                if (strpos($value, ':') !== false) {
+                if (\strpos($value, ':') !== false) {
                     return self::T_ALIASED_NAME;
                 }
 
-                if (strpos($value, '\\') !== false) {
+                if (\strpos($value, '\\') !== false) {
                     return self::T_FULLY_QUALIFIED_NAME;
                 }
 

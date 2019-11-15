@@ -59,7 +59,7 @@ class DDC3160OnFlushListener
             $this->inserts++;
             if ($entity instanceof CmsUser) {
                 $entity->username = 'romanc';
-                $cm               = $em->getClassMetadata(get_class($entity));
+                $cm               = $em->getClassMetadata(\get_class($entity));
                 $uow->recomputeSingleEntityChangeSet($cm, $entity);
             }
         }

@@ -37,13 +37,13 @@ class IdentityFunction extends FunctionNode
         $association   = $class->getProperty($assocField);
         $targetEntity  = $sqlWalker->getEntityManager()->getClassMetadata($association->getTargetEntity());
         $joinColumns   = $association->getJoinColumns();
-        $joinColumn    = reset($joinColumns);
+        $joinColumn    = \reset($joinColumns);
 
         if ($this->fieldMapping !== null) {
             $property = $targetEntity->getProperty($this->fieldMapping);
 
             if ($property === null) {
-                throw new QueryException(sprintf('Undefined reference field mapping "%s"', $this->fieldMapping));
+                throw new QueryException(\sprintf('Undefined reference field mapping "%s"', $this->fieldMapping));
             }
 
             $joinColumn = null;
@@ -57,7 +57,7 @@ class IdentityFunction extends FunctionNode
             }
 
             if ($joinColumn === null) {
-                throw new QueryException(sprintf('Unable to resolve the reference field mapping "%s"', $this->fieldMapping));
+                throw new QueryException(\sprintf('Unable to resolve the reference field mapping "%s"', $this->fieldMapping));
             }
         }
 

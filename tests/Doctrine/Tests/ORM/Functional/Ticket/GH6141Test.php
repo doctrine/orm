@@ -135,7 +135,7 @@ class GH6141People
      */
     private static function isValid($valid)
     {
-        return in_array($valid, [self::BOSS, self::EMPLOYEE], true);
+        return \in_array($valid, [self::BOSS, self::EMPLOYEE], true);
     }
 
     /**

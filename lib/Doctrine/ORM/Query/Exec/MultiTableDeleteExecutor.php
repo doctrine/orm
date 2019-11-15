@@ -52,13 +52,13 @@ class MultiTableDeleteExecutor extends AbstractSqlExecutor
 
         $tempTable        = $platform->getTemporaryTableName($rootClass->getTemporaryIdTableName());
         $idColumns        = $rootClass->getIdentifierColumns($em);
-        $idColumnNameList = implode(', ', array_keys($idColumns));
+        $idColumnNameList = \implode(', ', \array_keys($idColumns));
 
         // 1. Create an INSERT INTO temptable ... SELECT identifiers WHERE $AST->getWhereClause()
         $sqlWalker->setSQLTableAlias($primaryClass->getTableName(), 'i0', $primaryDqlAlias);
 
         $this->insertSql = 'INSERT INTO ' . $tempTable . ' (' . $idColumnNameList . ')'
-                . ' SELECT i0.' . implode(', i0.', array_keys($idColumns));
+                . ' SELECT i0.' . \implode(', i0.', \array_keys($idColumns));
 
         $rangeDecl        = new AST\RangeVariableDeclaration($primaryClass->getClassName(), $primaryDqlAlias);
         $fromClause       = new AST\FromClause([new AST\IdentificationVariableDeclaration($rangeDecl, null, [])]);
@@ -70,7 +70,7 @@ class MultiTableDeleteExecutor extends AbstractSqlExecutor
         }
 
         // 2. Create statement used in DELETE ... WHERE ... IN (subselect)
-        $deleteSQLTemplate = sprintf(
+        $deleteSQLTemplate = \sprintf(
             'DELETE FROM %%s WHERE (%s) IN (SELECT %s FROM %s)',
             $idColumnNameList,
             $idColumnNameList,
@@ -78,19 +78,19 @@ class MultiTableDeleteExecutor extends AbstractSqlExecutor
         );
 
         // 3. Create and store DELETE statements
-        $hierarchyClasses = array_merge(
-            array_map(
+        $hierarchyClasses = \array_merge(
+            \array_map(
                 static function ($className) use ($em) {
                     return $em->getClassMetadata($className);
                 },
-                array_reverse($primaryClass->getSubClasses())
+                \array_reverse($primaryClass->getSubClasses())
             ),
             [$primaryClass],
             $primaryClass->getAncestorsIterator()->getArrayCopy()
         );
 
         foreach ($hierarchyClasses as $class) {
-            $this->sqlStatements[] = sprintf($deleteSQLTemplate, $class->table->getQuotedQualifiedName($platform));
+            $this->sqlStatements[] = \sprintf($deleteSQLTemplate, $class->table->getQuotedQualifiedName($platform));
         }
 
         // 4. Store DDL for temporary identifier table.

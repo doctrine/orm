@@ -72,7 +72,7 @@ class DDC599Test extends OrmFunctionalTestCase
     {
         $class = $this->em->getClassMetadata(DDC599Subitem::class);
 
-        self::assertArrayHasKey('children', iterator_to_array($class->getPropertiesIterator()));
+        self::assertArrayHasKey('children', \iterator_to_array($class->getPropertiesIterator()));
         self::assertContains('remove', $class->getProperty('children')->getCascade());
     }
 }

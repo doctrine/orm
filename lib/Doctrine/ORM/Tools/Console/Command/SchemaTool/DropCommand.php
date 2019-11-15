@@ -59,7 +59,7 @@ EOT
             $ui->newLine();
 
             foreach ($sqls as $sql) {
-                $ui->text(sprintf('    %s;', $sql));
+                $ui->text(\sprintf('    %s;', $sql));
             }
 
             return 0;
@@ -96,12 +96,12 @@ EOT
 
         $ui->text(
             [
-                sprintf('The Schema-Tool would execute <info>"%s"</info> queries to update the database.', count($sqls)),
+                \sprintf('The Schema-Tool would execute <info>"%s"</info> queries to update the database.', \count($sqls)),
                 '',
                 'Please run the operation by passing one - or both - of the following options:',
                 '',
-                sprintf('    <info>%s --force</info> to execute the command', $this->getName()),
-                sprintf('    <info>%s --dump-sql</info> to dump the SQL statements to the screen', $this->getName()),
+                \sprintf('    <info>%s --force</info> to execute the command', $this->getName()),
+                \sprintf('    <info>%s --dump-sql</info> to dump the SQL statements to the screen', $this->getName()),
             ]
         );
 

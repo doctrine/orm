@@ -59,22 +59,22 @@ class DebugUnitOfWorkListener
         $uow         = $em->getUnitOfWork();
         $identityMap = $uow->getIdentityMap();
 
-        $fh = fopen($this->file, 'xb+');
+        $fh = \fopen($this->file, 'xb+');
 
-        if (count($identityMap) === 0) {
-            fwrite($fh, 'Flush Operation [' . $this->context . "] - Empty identity map.\n");
+        if (\count($identityMap) === 0) {
+            \fwrite($fh, 'Flush Operation [' . $this->context . "] - Empty identity map.\n");
 
             return;
         }
 
-        fwrite($fh, 'Flush Operation [' . $this->context . "] - Dumping identity map:\n");
+        \fwrite($fh, 'Flush Operation [' . $this->context . "] - Dumping identity map:\n");
 
         foreach ($identityMap as $className => $map) {
-            fwrite($fh, 'Class: ' . $className . "\n");
+            \fwrite($fh, 'Class: ' . $className . "\n");
 
             foreach ($map as $entity) {
-                fwrite($fh, ' Entity: ' . $this->getIdString($entity, $uow) . ' ' . spl_object_id($entity) . "\n");
-                fwrite($fh, "  Associations:\n");
+                \fwrite($fh, ' Entity: ' . $this->getIdString($entity, $uow) . ' ' . spl_object_id($entity) . "\n");
+                \fwrite($fh, "  Associations:\n");
 
                 $cm = $em->getClassMetadata($className);
 
@@ -83,36 +83,36 @@ class DebugUnitOfWorkListener
                         continue;
                     }
 
-                    fwrite($fh, '   ' . $field . ' ');
+                    \fwrite($fh, '   ' . $field . ' ');
 
                     $value = $association->getValue($entity);
 
                     if ($value === null) {
-                        fwrite($fh, " NULL\n");
+                        \fwrite($fh, " NULL\n");
 
                         continue;
                     }
 
                     if ($association instanceof ToOneAssociationMetadata) {
                         if ($value instanceof GhostObjectInterface && ! $value->isProxyInitialized()) {
-                            fwrite($fh, '[PROXY] ');
+                            \fwrite($fh, '[PROXY] ');
                         }
 
-                        fwrite($fh, $this->getIdString($value, $uow) . ' ' . spl_object_id($value) . "\n");
+                        \fwrite($fh, $this->getIdString($value, $uow) . ' ' . spl_object_id($value) . "\n");
                     } else {
                         $initialized = ! ($value instanceof PersistentCollection) || $value->isInitialized();
 
                         if ($initialized) {
-                            fwrite($fh, '[INITIALIZED] ' . $this->getType($value) . ' ' . count($value) . " elements\n");
+                            \fwrite($fh, '[INITIALIZED] ' . $this->getType($value) . ' ' . \count($value) . " elements\n");
 
                             foreach ($value as $obj) {
-                                fwrite($fh, '    ' . $this->getIdString($obj, $uow) . ' ' . spl_object_id($obj) . "\n");
+                                \fwrite($fh, '    ' . $this->getIdString($obj, $uow) . ' ' . spl_object_id($obj) . "\n");
                             }
                         } else {
-                            fwrite($fh, '[PROXY] ' . $this->getType($value) . " unknown element size\n");
+                            \fwrite($fh, '[PROXY] ' . $this->getType($value) . " unknown element size\n");
 
                             foreach ($value->unwrap() as $obj) {
-                                fwrite($fh, '    ' . $this->getIdString($obj, $uow) . ' ' . spl_object_id($obj) . "\n");
+                                \fwrite($fh, '    ' . $this->getIdString($obj, $uow) . ' ' . spl_object_id($obj) . "\n");
                             }
                         }
                     }
@@ -120,7 +120,7 @@ class DebugUnitOfWorkListener
             }
         }
 
-        fclose($fh);
+        \fclose($fh);
     }
 
     /**
@@ -130,13 +130,13 @@ class DebugUnitOfWorkListener
      */
     private function getType($var)
     {
-        if (is_object($var)) {
+        if (\is_object($var)) {
             $refl = new ReflectionObject($var);
 
             return $refl->getShortName();
         }
 
-        return gettype($var);
+        return \gettype($var);
     }
 
     /**

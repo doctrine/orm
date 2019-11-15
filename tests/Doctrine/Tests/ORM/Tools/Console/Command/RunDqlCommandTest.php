@@ -83,6 +83,6 @@ class RunDqlCommandTest extends OrmFunctionalTestCase
             )
         );
 
-        self::assertStringMatchesFormat('SELECT %a', trim($this->tester->getDisplay()));
+        self::assertStringMatchesFormat('SELECT %a', \trim($this->tester->getDisplay()));
     }
 }

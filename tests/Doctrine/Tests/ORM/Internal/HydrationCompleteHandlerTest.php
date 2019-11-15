@@ -139,7 +139,7 @@ class HydrationCompleteHandlerTest extends DoctrineTestCase
                 Events::postLoad,
                 $this->logicalOr($entity1, $entity2),
                 $this->callback(static function (LifecycleEventArgs $args) use ($entityManager, $entity1, $entity2) {
-                    return in_array($args->getEntity(), [$entity1, $entity2], true)
+                    return \in_array($args->getEntity(), [$entity1, $entity2], true)
                         && $entityManager === $args->getObjectManager();
                 }),
                 $listenersFlag

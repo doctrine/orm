@@ -102,7 +102,7 @@ class Paginator implements Countable, IteratorAggregate
     {
         if ($this->count === null) {
             try {
-                $this->count = array_sum(array_map('current', $this->getCountQuery()->getScalarResult()));
+                $this->count = \array_sum(\array_map('current', $this->getCountQuery()->getScalarResult()));
             } catch (NoResultException $e) {
                 $this->count = 0;
             }
@@ -131,18 +131,18 @@ class Paginator implements Countable, IteratorAggregate
 
             $subQuery->setFirstResult($offset)->setMaxResults($length);
 
-            $ids = array_map('current', $subQuery->getScalarResult());
+            $ids = \array_map('current', $subQuery->getScalarResult());
 
             $whereInQuery = $this->cloneQuery($this->query);
 
             // don't do this for an empty id array
-            if (count($ids) === 0) {
+            if (\count($ids) === 0) {
                 return new ArrayIterator([]);
             }
 
             $this->appendTreeWalker($whereInQuery, WhereInWalker::class);
 
-            $whereInQuery->setHint(WhereInWalker::HINT_PAGINATOR_ID_COUNT, count($ids));
+            $whereInQuery->setHint(WhereInWalker::HINT_PAGINATOR_ID_COUNT, \count($ids));
             $whereInQuery->setFirstResult(null)->setMaxResults(null);
             $whereInQuery->setParameter(WhereInWalker::PAGINATOR_ID_ALIAS, $ids);
             $whereInQuery->setCacheable($this->query->isCacheable());
@@ -258,7 +258,7 @@ class Paginator implements Countable, IteratorAggregate
         foreach ($parameters as $key => $parameter) {
             $parameterName = $parameter->getName();
 
-            if (! (isset($parameterMappings[$parameterName]) || array_key_exists($parameterName, $parameterMappings))) {
+            if (! (isset($parameterMappings[$parameterName]) || \array_key_exists($parameterName, $parameterMappings))) {
                 unset($parameters[$key]);
             }
         }

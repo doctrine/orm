@@ -26,7 +26,7 @@ class DDC214Test extends OrmFunctionalTestCase
 
         $conn = $this->em->getConnection();
 
-        if (strpos($conn->getDriver()->getName(), 'sqlite') !== false) {
+        if (\strpos($conn->getDriver()->getName(), 'sqlite') !== false) {
             $this->markTestSkipped('SQLite does not support ALTER TABLE statements.');
         }
     }
@@ -89,10 +89,10 @@ class DDC214Test extends OrmFunctionalTestCase
         $schemaDiff = $comparator->compare($fromSchema, $toSchema);
 
         $sql = $schemaDiff->toSql($this->em->getConnection()->getDatabasePlatform());
-        $sql = array_filter($sql, static function ($sql) {
-            return strpos($sql, 'DROP') === false;
+        $sql = \array_filter($sql, static function ($sql) {
+            return \strpos($sql, 'DROP') === false;
         });
 
-        self::assertCount(0, $sql, 'SQL: ' . implode(PHP_EOL, $sql));
+        self::assertCount(0, $sql, 'SQL: ' . \implode(PHP_EOL, $sql));
     }
 }

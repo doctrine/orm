@@ -118,7 +118,7 @@ class CommitOrderCalculator
         $this->nodeList       = [];
         $this->sortedNodeList = [];
 
-        return array_reverse($sortedList);
+        return \array_reverse($sortedList);
     }
 
     /**

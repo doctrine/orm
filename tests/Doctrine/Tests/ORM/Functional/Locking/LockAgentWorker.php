@@ -46,17 +46,17 @@ class LockAgentWorker
     {
         $fixture = $this->processWorkload($job);
 
-        $s = microtime(true);
+        $s = \microtime(true);
         $this->em->beginTransaction();
         $do($fixture, $this->em);
 
-        sleep(1);
+        \sleep(1);
         $this->em->rollback();
         $this->em->clear();
         $this->em->close();
         $this->em->getConnection()->close();
 
-        return microtime(true) - $s;
+        return \microtime(true) - $s;
     }
 
     public function findWithLock($job)
@@ -92,9 +92,9 @@ class LockAgentWorker
         echo 'Received job: ' . $job->handle() . ' for function ' . $job->functionName() . "\n";
 
         $workload = $job->workload();
-        $workload = unserialize($workload);
+        $workload = \unserialize($workload);
 
-        if (! isset($workload['conn']) || ! is_array($workload['conn'])) {
+        if (! isset($workload['conn']) || ! \is_array($workload['conn'])) {
             throw new InvalidArgumentException('Missing Database parameters');
         }
 

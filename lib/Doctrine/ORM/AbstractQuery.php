@@ -321,7 +321,7 @@ abstract class AbstractQuery
     public function setParameters($parameters)
     {
         // BC compatibility with 2.3-
-        if (is_array($parameters)) {
+        if (\is_array($parameters)) {
             $parameterCollection = new ArrayCollection();
 
             foreach ($parameters as $key => $value) {
@@ -373,7 +373,7 @@ abstract class AbstractQuery
      */
     public function processParameterValue($value)
     {
-        if (is_scalar($value)) {
+        if (\is_scalar($value)) {
             return $value;
         }
 
@@ -385,16 +385,16 @@ abstract class AbstractQuery
             $value = $value->toArray();
         }
 
-        if (is_array($value)) {
+        if (\is_array($value)) {
             foreach ($value as $key => $paramValue) {
                 $paramValue  = $this->processParameterValue($paramValue);
-                $value[$key] = is_array($paramValue) ? reset($paramValue) : $paramValue;
+                $value[$key] = \is_array($paramValue) ? \reset($paramValue) : $paramValue;
             }
 
             return $value;
         }
 
-        if (! is_object($value)) {
+        if (! \is_object($value)) {
             return $value;
         }
 
@@ -725,15 +725,15 @@ abstract class AbstractQuery
             return null;
         }
 
-        if (! is_array($result)) {
+        if (! \is_array($result)) {
             return $result;
         }
 
-        if (count($result) > 1) {
+        if (\count($result) > 1) {
             throw new NonUniqueResultException();
         }
 
-        return array_shift($result);
+        return \array_shift($result);
     }
 
     /**
@@ -759,15 +759,15 @@ abstract class AbstractQuery
             throw new NoResultException();
         }
 
-        if (! is_array($result)) {
+        if (! \is_array($result)) {
             return $result;
         }
 
-        if (count($result) > 1) {
+        if (\count($result) > 1) {
             throw new NonUniqueResultException();
         }
 
-        return array_shift($result);
+        return \array_shift($result);
     }
 
     /**
@@ -919,7 +919,7 @@ abstract class AbstractQuery
 
         $stmt = $this->doExecute();
 
-        if (is_numeric($stmt)) {
+        if (\is_numeric($stmt)) {
             $setCacheEntry($stmt);
 
             return $stmt;
@@ -981,7 +981,7 @@ abstract class AbstractQuery
      */
     private function getTimestampKey()
     {
-        $entityName = reset($this->resultSetMapping->aliasMap);
+        $entityName = \reset($this->resultSetMapping->aliasMap);
 
         if (empty($entityName)) {
             return null;
@@ -1012,7 +1012,7 @@ abstract class AbstractQuery
         $hints                  = $this->getHints();
         $hints['hydrationMode'] = $this->getHydrationMode();
 
-        ksort($hints);
+        \ksort($hints);
 
         return $queryCacheProfile->generateCacheKeys($sql, $parameters, $hints);
     }
@@ -1072,20 +1072,20 @@ abstract class AbstractQuery
     {
         $query  = $this->getSQL();
         $hints  = $this->getHints();
-        $params = array_map(function (Parameter $parameter) {
+        $params = \array_map(function (Parameter $parameter) {
             $value = $parameter->getValue();
 
             // Small optimization
             // Does not invoke processParameterValue for scalar values
-            if (is_scalar($value)) {
+            if (\is_scalar($value)) {
                 return $value;
             }
 
             return $this->processParameterValue($value);
         }, $this->parameters->getValues());
 
-        ksort($hints);
+        \ksort($hints);
 
-        return sha1($query . '-' . serialize($params) . '-' . serialize($hints));
+        return \sha1($query . '-' . \serialize($params) . '-' . \serialize($hints));
     }
 }

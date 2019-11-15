@@ -845,7 +845,7 @@ class BasicFunctionalTest extends OrmFunctionalTestCase
         $this->em->flush();
         $this->em->clear();
 
-        self::assertEquals('Benjamin E.', $this->em->find(get_class($user), $userId)->name);
+        self::assertEquals('Benjamin E.', $this->em->find(\get_class($user), $userId)->name);
     }
 
     /**

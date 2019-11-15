@@ -27,7 +27,7 @@ class SimpleObjectHydrator extends AbstractHydrator
      */
     protected function prepare()
     {
-        if (count($this->rsm->aliasMap) !== 1) {
+        if (\count($this->rsm->aliasMap) !== 1) {
             throw new RuntimeException('Cannot use SimpleObjectHydrator with a ResultSetMapping that contains more than one object result.');
         }
 
@@ -35,7 +35,7 @@ class SimpleObjectHydrator extends AbstractHydrator
             throw new RuntimeException('Cannot use SimpleObjectHydrator with a ResultSetMapping that contains scalar mappings.');
         }
 
-        $this->class = $this->getClassMetadata(reset($this->rsm->aliasMap));
+        $this->class = $this->getClassMetadata(\reset($this->rsm->aliasMap));
     }
 
     /**
@@ -78,7 +78,7 @@ class SimpleObjectHydrator extends AbstractHydrator
             $discrColumnName            = $this->platform->getSQLResultCasing(
                 $this->class->discriminatorColumn->getColumnName()
             );
-            $metaMappingDiscrColumnName = array_search($discrColumnName, $this->rsm->metaMappings);
+            $metaMappingDiscrColumnName = \array_search($discrColumnName, $this->rsm->metaMappings);
 
             // Find mapped discriminator column from the result set.
             if ($metaMappingDiscrColumnName) {
@@ -86,17 +86,17 @@ class SimpleObjectHydrator extends AbstractHydrator
             }
 
             if (! isset($sqlResult[$discrColumnName])) {
-                throw HydrationException::missingDiscriminatorColumn($entityName, $discrColumnName, key($this->rsm->aliasMap));
+                throw HydrationException::missingDiscriminatorColumn($entityName, $discrColumnName, \key($this->rsm->aliasMap));
             }
 
             if ($sqlResult[$discrColumnName] === '') {
-                throw HydrationException::emptyDiscriminatorValue(key($this->rsm->aliasMap));
+                throw HydrationException::emptyDiscriminatorValue(\key($this->rsm->aliasMap));
             }
 
             $discrMap = $this->class->discriminatorMap;
 
             if (! isset($discrMap[$sqlResult[$discrColumnName]])) {
-                throw HydrationException::invalidDiscriminatorValue($sqlResult[$discrColumnName], array_keys($discrMap));
+                throw HydrationException::invalidDiscriminatorValue($sqlResult[$discrColumnName], \array_keys($discrMap));
             }
 
             $entityName = $discrMap[$sqlResult[$discrColumnName]];
@@ -107,7 +107,7 @@ class SimpleObjectHydrator extends AbstractHydrator
         foreach ($sqlResult as $column => $value) {
             // An ObjectHydrator should be used instead of SimpleObjectHydrator
             if (isset($this->rsm->relationMap[$column])) {
-                throw new Exception(sprintf('Unable to retrieve association information for column "%s"', $column));
+                throw new Exception(\sprintf('Unable to retrieve association information for column "%s"', $column));
             }
 
             $cacheKeyInfo = $this->hydrateColumnInfo($column);

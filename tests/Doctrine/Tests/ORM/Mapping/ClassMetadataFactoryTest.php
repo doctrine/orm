@@ -124,7 +124,7 @@ class ClassMetadataFactoryTest extends OrmTestCase
 
         $this->expectException(MappingException::class);
         $this->expectExceptionMessage(
-            sprintf("Entity class '%s' is using inheritance but no discriminator map was defined.", $rootClassName)
+            \sprintf("Entity class '%s' is using inheritance but no discriminator map was defined.", $rootClassName)
         );
 
         $cmf->getMetadataFor($targetClassName);
@@ -274,7 +274,7 @@ class ClassMetadataFactoryTest extends OrmTestCase
 
         $user                = $phoneMetadata->getProperty('user');
         $userJoinColumns     = $user->getJoinColumns();
-        $phoneUserJoinColumn = reset($userJoinColumns);
+        $phoneUserJoinColumn = \reset($userJoinColumns);
 
         self::assertEquals('user-id', $phoneUserJoinColumn->getColumnName());
         self::assertEquals('user-id', $phoneUserJoinColumn->getReferencedColumnName());
@@ -293,14 +293,14 @@ class ClassMetadataFactoryTest extends OrmTestCase
 
         $group               = $groupMetadata->getProperty('parent');
         $groupJoinColumns    = $group->getJoinColumns();
-        $groupUserJoinColumn = reset($groupJoinColumns);
+        $groupUserJoinColumn = \reset($groupJoinColumns);
 
         self::assertEquals('parent-id', $groupUserJoinColumn->getColumnName());
         self::assertEquals('group-id', $groupUserJoinColumn->getReferencedColumnName());
 
         $user                  = $addressMetadata->getProperty('user');
         $userJoinColumns       = $user->getJoinColumns();
-        $addressUserJoinColumn = reset($userJoinColumns);
+        $addressUserJoinColumn = \reset($userJoinColumns);
 
         self::assertEquals('user-id', $addressUserJoinColumn->getColumnName());
         self::assertEquals('user-id', $addressUserJoinColumn->getReferencedColumnName());
@@ -308,9 +308,9 @@ class ClassMetadataFactoryTest extends OrmTestCase
         $groups                       = $userMetadata->getProperty('groups');
         $groupsJoinTable              = $groups->getJoinTable();
         $userGroupsJoinColumns        = $groupsJoinTable->getJoinColumns();
-        $userGroupsJoinColumn         = reset($userGroupsJoinColumns);
+        $userGroupsJoinColumn         = \reset($userGroupsJoinColumns);
         $userGroupsInverseJoinColumns = $groupsJoinTable->getInverseJoinColumns();
-        $userGroupsInverseJoinColumn  = reset($userGroupsInverseJoinColumns);
+        $userGroupsInverseJoinColumn  = \reset($userGroupsInverseJoinColumns);
 
         self::assertEquals('quote-users-groups', $groupsJoinTable->getName());
         self::assertEquals('user-id', $userGroupsJoinColumn->getColumnName());
@@ -425,7 +425,7 @@ class ClassMetadataFactoryTestSubject extends ClassMetadataFactory
         $this->requestedClasses[] = $className;
 
         if (! isset($this->mockMetadata[$className])) {
-            throw new InvalidArgumentException(sprintf('No mock metadata found for class %s.', $className));
+            throw new InvalidArgumentException(\sprintf('No mock metadata found for class %s.', $className));
         }
 
         return $this->mockMetadata[$className];

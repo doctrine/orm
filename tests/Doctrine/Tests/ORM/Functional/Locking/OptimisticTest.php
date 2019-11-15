@@ -238,7 +238,7 @@ class OptimisticTest extends OrmFunctionalTestCase
         // Manually increment the version datetime column
         $format = $this->em->getConnection()->getDatabasePlatform()->getDateTimeFormatString();
 
-        $this->conn->executeQuery('UPDATE optimistic_timestamp SET version = ? WHERE id = ?', [date($format, strtotime($test->version->format($format)) + 3600), $test->id]);
+        $this->conn->executeQuery('UPDATE optimistic_timestamp SET version = ? WHERE id = ?', [\date($format, \strtotime($test->version->format($format)) + 3600), $test->id]);
 
         // Try and update the record and it should throw an exception
         $caughtException = null;

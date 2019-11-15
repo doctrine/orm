@@ -46,7 +46,7 @@ class Parameter
      */
     public function __construct($name, $value, $type = null)
     {
-        $this->name          = trim((string) $name, ':');
+        $this->name          = \trim((string) $name, ':');
         $this->typeSpecified = $type !== null;
 
         $this->setValue($value, $type);

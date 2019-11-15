@@ -62,12 +62,12 @@ final class NativeQuery extends AbstractQuery
             $types[$name]      = $type;
         }
 
-        if ($parameters && is_int(key($parameters))) {
-            ksort($parameters);
-            ksort($types);
+        if ($parameters && \is_int(\key($parameters))) {
+            \ksort($parameters);
+            \ksort($types);
 
-            $parameters = array_values($parameters);
-            $types      = array_values($types);
+            $parameters = \array_values($parameters);
+            $types      = \array_values($types);
         }
 
         return $this->em->getConnection()->executeQuery($this->sql, $parameters, $types, $this->queryCacheProfile);

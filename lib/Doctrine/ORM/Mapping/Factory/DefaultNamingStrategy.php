@@ -19,8 +19,8 @@ class DefaultNamingStrategy implements NamingStrategy
      */
     public function classToTableName(string $className) : string
     {
-        if (strpos($className, '\\') !== false) {
-            return substr($className, strrpos($className, '\\') + 1);
+        if (\strpos($className, '\\') !== false) {
+            return \substr($className, \strrpos($className, '\\') + 1);
         }
 
         return $className;
@@ -67,7 +67,7 @@ class DefaultNamingStrategy implements NamingStrategy
      */
     public function joinTableName(string $sourceEntity, string $targetEntity, ?string $propertyName = null) : string
     {
-        return strtolower($this->classToTableName($sourceEntity) . '_' .
+        return \strtolower($this->classToTableName($sourceEntity) . '_' .
             $this->classToTableName($targetEntity));
     }
 
@@ -76,7 +76,7 @@ class DefaultNamingStrategy implements NamingStrategy
      */
     public function joinKeyColumnName(string $entityName, ?string $referencedColumnName = null) : string
     {
-        return strtolower(
+        return \strtolower(
             $this->classToTableName($entityName) . '_' . ($referencedColumnName ?: $this->referenceColumnName())
         );
     }

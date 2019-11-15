@@ -62,7 +62,7 @@ class GH6217AssociatedEntity
 
     public function __construct()
     {
-        $this->id = uniqid(self::class, true);
+        $this->id = \uniqid(self::class, true);
     }
 }
 

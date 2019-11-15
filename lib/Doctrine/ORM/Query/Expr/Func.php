@@ -50,6 +50,6 @@ class Func
      */
     public function __toString()
     {
-        return $this->name . '(' . implode(', ', $this->arguments) . ')';
+        return $this->name . '(' . \implode(', ', $this->arguments) . ')';
     }
 }

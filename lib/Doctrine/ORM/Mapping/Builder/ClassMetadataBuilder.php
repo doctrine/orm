@@ -160,7 +160,7 @@ class ClassMetadataBuilder
 
     public function build() : Mapping\ClassMetadata
     {
-        assert($this->className !== null);
+        \assert($this->className !== null);
 
         $reflectionService = $this->metadataBuildingContext->getReflectionService();
         $reflectionClass   = $reflectionService->getClass($this->className);
@@ -254,7 +254,7 @@ class ClassMetadataBuilder
     {
         if ($this->inheritanceTypeAnnotation !== null) {
             $typeName = $this->inheritanceTypeAnnotation->value;
-            $type     = constant(sprintf('%s::%s', Mapping\InheritanceType::class, $typeName));
+            $type     = \constant(\sprintf('%s::%s', Mapping\InheritanceType::class, $typeName));
 
             $classMetadata->setInheritanceType($type);
 
@@ -288,7 +288,7 @@ class ClassMetadataBuilder
     {
         if ($this->changeTrackingPolicyAnnotation !== null) {
             $policyName = $this->changeTrackingPolicyAnnotation->value;
-            $policy     = constant(sprintf('%s::%s', Mapping\ChangeTrackingPolicy::class, $policyName));
+            $policy     = \constant(\sprintf('%s::%s', Mapping\ChangeTrackingPolicy::class, $policyName));
 
             $classMetadata->setChangeTrackingPolicy($policy);
         }

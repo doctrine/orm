@@ -143,7 +143,7 @@ abstract class EntityClassMetadata extends ComponentMetadata
         while ($superClassMetadata !== null) {
             if ($superClassMetadata->entityName === $subClassMetadata->entityName) {
                 throw new MappingException(
-                    sprintf(
+                    \sprintf(
                         'Circular inheritance mapping detected: "%s" have itself as superclass when extending "%s".',
                         $subClassMetadata->entityName,
                         $superClassMetadata->entityName

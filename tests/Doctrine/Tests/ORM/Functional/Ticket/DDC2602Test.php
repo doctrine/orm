@@ -149,7 +149,7 @@ class DDC2602PostLoadListener
         ');
 
         $result    = $query->getResult();
-        $content   = json_decode($entity->content);
+        $content   = \json_decode($entity->content);
         $fieldList = new ArrayCollection();
 
         foreach ($content as $selection) {
@@ -159,7 +159,7 @@ class DDC2602PostLoadListener
 
             $fieldSelection->field      = $field;
             $fieldSelection->choiceList = $field->choiceList->filter(static function ($choice) use ($choiceList) {
-                return in_array($choice->id, $choiceList, true);
+                return \in_array($choice->id, $choiceList, true);
             });
 
             $fieldList->add($fieldSelection);

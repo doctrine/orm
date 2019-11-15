@@ -184,7 +184,7 @@ class DDC2984UserIdCustomDbalType extends StringType
             return null;
         }
 
-        if (is_string($value)) {
+        if (\is_string($value)) {
             return $value;
         }
 

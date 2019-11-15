@@ -233,11 +233,11 @@ class SingleTableInheritanceTest extends OrmFunctionalTestCase
 
         $contracts = $this->em->createQuery('SELECT c FROM Doctrine\Tests\Models\Company\CompanyContract c ORDER BY c.id')->getScalarResult();
 
-        $discrValues = array_map(static function ($a) {
+        $discrValues = \array_map(static function ($a) {
             return $a['c_discr'];
         }, $contracts);
 
-        sort($discrValues);
+        \sort($discrValues);
 
         self::assertEquals(['fix', 'flexible', 'flexultra'], $discrValues);
     }
@@ -320,10 +320,10 @@ class SingleTableInheritanceTest extends OrmFunctionalTestCase
         $this->loadFullFixture();
 
         // remove managed copy of the fix contract
-        $this->em->remove($this->em->find(get_class($this->fix), $this->fix->getId()));
+        $this->em->remove($this->em->find(\get_class($this->fix), $this->fix->getId()));
         $this->em->flush();
 
-        self::assertNull($this->em->find(get_class($this->fix), $this->fix->getId()), 'Contract should not be present in the database anymore.');
+        self::assertNull($this->em->find(\get_class($this->fix), $this->fix->getId()), 'Contract should not be present in the database anymore.');
     }
 
     /**

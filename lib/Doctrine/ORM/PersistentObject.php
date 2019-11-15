@@ -243,8 +243,8 @@ abstract class PersistentObject implements EntityManagerAware
      */
     public function __call($method, $args)
     {
-        $command = substr($method, 0, 3);
-        $field   = lcfirst(substr($method, 3));
+        $command = \substr($method, 0, 3);
+        $field   = \lcfirst(\substr($method, 3));
 
         switch ($command) {
             case 'set':

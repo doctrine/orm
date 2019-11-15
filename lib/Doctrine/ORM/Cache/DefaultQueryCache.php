@@ -79,7 +79,7 @@ class DefaultQueryCache implements QueryCache
         }
 
         $result      = [];
-        $entityName  = reset($rsm->aliasMap);
+        $entityName  = \reset($rsm->aliasMap);
         $hasRelation = ! empty($rsm->relationMap);
         $unitOfWork  = $this->em->getUnitOfWork();
         $persister   = $unitOfWork->getEntityPersister($entityName);
@@ -92,12 +92,12 @@ class DefaultQueryCache implements QueryCache
             return new EntityCacheKey($cm->getRootClassName(), $entry['identifier']);
         };
 
-        $cacheKeys = new CollectionCacheEntry(array_map($generateKeys, $cacheEntry->result));
+        $cacheKeys = new CollectionCacheEntry(\array_map($generateKeys, $cacheEntry->result));
         $entries   = $region->getMultiple($cacheKeys);
 
         // @TODO - move to cache hydration component
         foreach ($cacheEntry->result as $index => $entry) {
-            $entityEntry = is_array($entries) ? ($entries[$index] ?? null) : null;
+            $entityEntry = \is_array($entries) ? ($entries[$index] ?? null) : null;
 
             if ($entityEntry === null) {
                 if ($this->cacheLogger !== null) {
@@ -164,14 +164,14 @@ class DefaultQueryCache implements QueryCache
                     return new EntityCacheKey($assocMetadata->getRootClassName(), $id);
                 };
 
-                $assocKeys    = new CollectionCacheEntry(array_map($generateKeys, $assoc['list']));
+                $assocKeys    = new CollectionCacheEntry(\array_map($generateKeys, $assoc['list']));
                 $assocEntries = $assocRegion->getMultiple($assocKeys);
 
                 // *-to-many association
                 $collection = [];
 
                 foreach ($assoc['list'] as $assocIndex => $assocId) {
-                    $assocEntry = is_array($assocEntries) ? ($assocEntries[$assocIndex] ?? null) : null;
+                    $assocEntry = \is_array($assocEntries) ? ($assocEntries[$assocIndex] ?? null) : null;
 
                     if ($assocEntry === null) {
                         if ($this->cacheLogger !== null) {
@@ -235,7 +235,7 @@ class DefaultQueryCache implements QueryCache
             throw FeatureNotImplemented::scalarResults();
         }
 
-        if (count($rsm->entityMappings) > 1) {
+        if (\count($rsm->entityMappings) > 1) {
             throw FeatureNotImplemented::multipleRootEntities();
         }
 
@@ -252,8 +252,8 @@ class DefaultQueryCache implements QueryCache
         }
 
         $data       = [];
-        $entityName = reset($rsm->aliasMap);
-        $rootAlias  = key($rsm->aliasMap);
+        $entityName = \reset($rsm->aliasMap);
+        $rootAlias  = \key($rsm->aliasMap);
         $unitOfWork = $this->em->getUnitOfWork();
         $persister  = $unitOfWork->getEntityPersister($entityName);
 
@@ -303,7 +303,7 @@ class DefaultQueryCache implements QueryCache
                 }
 
                 // store single nested association
-                if (! is_array($assocValue)) {
+                if (! \is_array($assocValue)) {
                     // Cancel put result if association put fail
                     if ($this->storeAssociationCache($key, $association, $assocValue) === null) {
                         return false;
@@ -394,7 +394,7 @@ class DefaultQueryCache implements QueryCache
             $field  = $rsm->relationMap[$alias];
             $class  = $rsm->aliasMap[$parent];
 
-            array_unshift($path, [
+            \array_unshift($path, [
                 'field'  => $field,
                 'class'  => $class,
             ]);
@@ -413,7 +413,7 @@ class DefaultQueryCache implements QueryCache
      */
     private function getAssociationPathValue($value, array $path)
     {
-        $mapping     = array_shift($path);
+        $mapping     = \array_shift($path);
         $metadata    = $this->em->getClassMetadata($mapping['class']);
         $association = $metadata->getProperty($mapping['field']);
         $value       = $association->getValue($value);

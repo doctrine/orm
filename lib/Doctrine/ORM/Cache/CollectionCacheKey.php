@@ -42,11 +42,11 @@ class CollectionCacheKey extends CacheKey
      */
     public function __construct($entityClass, $association, array $ownerIdentifier)
     {
-        ksort($ownerIdentifier);
+        \ksort($ownerIdentifier);
 
         $this->ownerIdentifier = $ownerIdentifier;
         $this->entityClass     = (string) $entityClass;
         $this->association     = (string) $association;
-        $this->hash            = str_replace('\\', '.', strtolower($entityClass)) . '_' . implode(' ', $ownerIdentifier) . '__' . $association;
+        $this->hash            = \str_replace('\\', '.', \strtolower($entityClass)) . '_' . \implode(' ', $ownerIdentifier) . '__' . $association;
     }
 }

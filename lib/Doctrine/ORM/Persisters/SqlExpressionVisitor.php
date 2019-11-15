@@ -46,8 +46,8 @@ class SqlExpressionVisitor extends ExpressionVisitor
 
         if ($property instanceof AssociationMetadata &&
             $value !== null &&
-            ! is_object($value) &&
-            ! in_array($comparison->getOperator(), [Comparison::IN, Comparison::NIN], true)) {
+            ! \is_object($value) &&
+            ! \in_array($comparison->getOperator(), [Comparison::IN, Comparison::NIN], true)) {
             throw MatchingAssociationFieldRequiresObject::fromClassAndAssociation(
                 $this->classMetadata->getClassName(),
                 $field
@@ -74,9 +74,9 @@ class SqlExpressionVisitor extends ExpressionVisitor
 
         switch ($expr->getType()) {
             case CompositeExpression::TYPE_AND:
-                return '(' . implode(' AND ', $expressionList) . ')';
+                return '(' . \implode(' AND ', $expressionList) . ')';
             case CompositeExpression::TYPE_OR:
-                return '(' . implode(' OR ', $expressionList) . ')';
+                return '(' . \implode(' OR ', $expressionList) . ')';
             default:
                 throw new RuntimeException('Unknown composite ' . $expr->getType());
         }

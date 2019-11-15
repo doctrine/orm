@@ -70,7 +70,7 @@ class XmlMappingDriverTest extends AbstractMappingDriverTest
         $class = $factory->getMetadataFor(DDC117Translation::class);
 
         self::assertEquals(['language', 'article'], $class->identifier);
-        self::assertArrayHasKey('article', iterator_to_array($class->getPropertiesIterator()));
+        self::assertArrayHasKey('article', \iterator_to_array($class->getPropertiesIterator()));
 
         $association = $class->getProperty('article');
 
@@ -177,14 +177,14 @@ class XmlMappingDriverTest extends AbstractMappingDriverTest
 
     public static function dataValidSchema()
     {
-        $list    = glob(__DIR__ . '/xml/*.xml');
+        $list    = \glob(__DIR__ . '/xml/*.xml');
         $invalid = ['Doctrine.Tests.Models.DDC889.DDC889Class.dcm'];
 
-        $list = array_filter($list, static function ($item) use ($invalid) {
-            return ! in_array(pathinfo($item, PATHINFO_FILENAME), $invalid, true);
+        $list = \array_filter($list, static function ($item) use ($invalid) {
+            return ! \in_array(\pathinfo($item, PATHINFO_FILENAME), $invalid, true);
         });
 
-        return array_map(static function ($item) {
+        return \array_map(static function ($item) {
             return [$item];
         }, $list);
     }

@@ -85,15 +85,15 @@ EOT
             $entityRegion = $cache->getEntityCacheRegion($entityClass);
 
             if (! $entityRegion instanceof DefaultRegion) {
-                throw new InvalidArgumentException(sprintf(
+                throw new InvalidArgumentException(\sprintf(
                     'The option "--flush" expects a "Doctrine\ORM\Cache\Region\DefaultRegion", but got "%s".',
-                    is_object($entityRegion) ? get_class($entityRegion) : gettype($entityRegion)
+                    \is_object($entityRegion) ? \get_class($entityRegion) : \gettype($entityRegion)
                 ));
             }
 
             $entityRegion->getCache()->flushAll();
 
-            $ui->comment(sprintf('Flushing cache provider configured for entity named <info>"%s"</info>', $entityClass));
+            $ui->comment(\sprintf('Flushing cache provider configured for entity named <info>"%s"</info>', $entityClass));
 
             return;
         }
@@ -108,7 +108,7 @@ EOT
 
         if ($entityId) {
             $ui->comment(
-                sprintf(
+                \sprintf(
                     'Clearing second-level cache entry for entity <info>"%s"</info> identified by <info>"%s"</info>',
                     $entityClass,
                     $entityId
@@ -119,7 +119,7 @@ EOT
             return;
         }
 
-        $ui->comment(sprintf('Clearing second-level cache for entity <info>"%s"</info>', $entityClass));
+        $ui->comment(\sprintf('Clearing second-level cache for entity <info>"%s"</info>', $entityClass));
         $cache->evictEntityRegion($entityClass);
     }
 }

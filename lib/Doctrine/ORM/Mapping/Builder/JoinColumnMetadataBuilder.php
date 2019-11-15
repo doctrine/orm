@@ -52,8 +52,8 @@ class JoinColumnMetadataBuilder
     public function build() : Mapping\JoinColumnMetadata
     {
         // Validate required fields
-        assert($this->componentMetadata !== null);
-        assert($this->fieldName !== null);
+        \assert($this->componentMetadata !== null);
+        \assert($this->fieldName !== null);
 
         $componentClassName = $this->componentMetadata->getClassName();
         $namingStrategy     = $this->metadataBuildingContext->getNamingStrategy();
@@ -90,7 +90,7 @@ class JoinColumnMetadataBuilder
         }
 
         if ($this->joinColumnAnnotation->onDelete) {
-            $joinColumnMetadata->setOnDelete(strtoupper($this->joinColumnAnnotation->onDelete));
+            $joinColumnMetadata->setOnDelete(\strtoupper($this->joinColumnAnnotation->onDelete));
         }
 
         return $joinColumnMetadata;

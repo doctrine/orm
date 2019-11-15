@@ -95,7 +95,7 @@ abstract class AssociationMetadataBuilder
         }
 
         // Validate that target entity exists
-        if (! (class_exists($targetEntity) || interface_exists($targetEntity))) {
+        if (! (\class_exists($targetEntity) || \interface_exists($targetEntity))) {
             throw Mapping\MappingException::invalidTargetEntityClass(
                 $targetEntity,
                 $this->componentMetadata->getClassName(),
@@ -118,14 +118,14 @@ abstract class AssociationMetadataBuilder
     protected function getCascade(array $originalCascades) : array
     {
         $cascadeTypes = ['remove', 'persist', 'refresh'];
-        $cascades     = array_map('strtolower', $originalCascades);
+        $cascades     = \array_map('strtolower', $originalCascades);
 
-        if (in_array('all', $cascades, true)) {
+        if (\in_array('all', $cascades, true)) {
             $cascades = $cascadeTypes;
         }
 
-        if (count($cascades) !== count(array_intersect($cascades, $cascadeTypes))) {
-            $diffCascades = array_diff($cascades, array_intersect($cascades, $cascadeTypes));
+        if (\count($cascades) !== \count(\array_intersect($cascades, $cascadeTypes))) {
+            $diffCascades = \array_diff($cascades, \array_intersect($cascades, $cascadeTypes));
 
             throw Mapping\MappingException::invalidCascadeOption(
                 $diffCascades,
@@ -148,12 +148,12 @@ abstract class AssociationMetadataBuilder
      */
     protected function getFetchMode($fetchMode) : string
     {
-        $fetchModeConstant = sprintf('%s::%s', Mapping\FetchMode::class, $fetchMode);
+        $fetchModeConstant = \sprintf('%s::%s', Mapping\FetchMode::class, $fetchMode);
 
-        if (! defined($fetchModeConstant)) {
+        if (! \defined($fetchModeConstant)) {
             throw Mapping\MappingException::invalidFetchMode($this->componentMetadata->getClassName(), $fetchMode);
         }
 
-        return constant($fetchModeConstant);
+        return \constant($fetchModeConstant);
     }
 }

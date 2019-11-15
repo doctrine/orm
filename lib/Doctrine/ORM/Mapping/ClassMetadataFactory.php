@@ -333,7 +333,7 @@ class ClassMetadataFactory implements PersistenceClassMetadataFactory
             $loaded[] = $class;
         }
 
-        array_map([$this, 'resolveDiscriminatorValue'], $loaded);
+        \array_map([$this, 'resolveDiscriminatorValue'], $loaded);
 
         return $loaded;
     }
@@ -352,7 +352,7 @@ class ClassMetadataFactory implements PersistenceClassMetadataFactory
         // Collect parent classes, ignoring transient (not-mapped) classes.
         $parentClasses = [];
 
-        foreach (array_reverse($this->getReflectionService()->getParentClasses($name)) as $parentClass) {
+        foreach (\array_reverse($this->getReflectionService()->getParentClasses($name)) as $parentClass) {
             if (! $this->getDriver()->isTransient($parentClass)) {
                 $parentClasses[] = $parentClass;
             }
@@ -505,13 +505,13 @@ class ClassMetadataFactory implements PersistenceClassMetadataFactory
             }
         }
 
-        switch (count($valueGenerationExecutorList)) {
+        switch (\count($valueGenerationExecutorList)) {
             case 0:
                 $valueGenerationPlan = new NoopValueGenerationPlan();
                 break;
 
             case 1:
-                $valueGenerationPlan = new SingleValueGenerationPlan($class, reset($valueGenerationExecutorList));
+                $valueGenerationPlan = new SingleValueGenerationPlan($class, \reset($valueGenerationExecutorList));
                 break;
 
             default:

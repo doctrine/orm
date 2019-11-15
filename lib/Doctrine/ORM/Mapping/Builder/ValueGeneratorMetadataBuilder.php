@@ -95,19 +95,19 @@ class ValueGeneratorMetadataBuilder
     public function build() : ?Mapping\ValueGeneratorMetadata
     {
         // Validate required fields
-        assert($this->componentMetadata !== null);
-        assert($this->fieldName !== null);
-        assert($this->fieldType !== null);
+        \assert($this->componentMetadata !== null);
+        \assert($this->fieldName !== null);
+        \assert($this->fieldType !== null);
 
         if (! $this->generatedValueAnnotation) {
             return null;
         }
 
         $platform      = $this->metadataBuildingContext->getTargetPlatform();
-        $strategy      = strtoupper($this->generatedValueAnnotation->strategy);
-        $generatorType = constant(sprintf('%s::%s', Mapping\GeneratorType::class, $strategy));
+        $strategy      = \strtoupper($this->generatedValueAnnotation->strategy);
+        $generatorType = \constant(\sprintf('%s::%s', Mapping\GeneratorType::class, $strategy));
 
-        if (in_array($generatorType, [Mapping\GeneratorType::AUTO, Mapping\GeneratorType::IDENTITY], true)) {
+        if (\in_array($generatorType, [Mapping\GeneratorType::AUTO, Mapping\GeneratorType::IDENTITY], true)) {
             $generatorType = $platform->prefersSequences() || $platform->usesSequenceEmulatedIdentityColumns()
                 ? Mapping\GeneratorType::SEQUENCE
                 : ($platform->prefersIdentityColumns() ? Mapping\GeneratorType::IDENTITY : Mapping\GeneratorType::TABLE);
@@ -134,7 +134,7 @@ class ValueGeneratorMetadataBuilder
 
                 if (empty($sequenceName)) {
                     $sequenceName = $platform->fixSchemaElementName(
-                        sprintf(
+                        \sprintf(
                             '%s_%s_seq',
                             $platform->getSequencePrefix(
                                 $this->componentMetadata->getTableName(),
@@ -152,7 +152,7 @@ class ValueGeneratorMetadataBuilder
                 break;
 
             case Mapping\GeneratorType::CUSTOM:
-                assert($this->customIdGeneratorAnnotation !== null);
+                \assert($this->customIdGeneratorAnnotation !== null);
 
                 if (empty($this->customIdGeneratorAnnotation->class)) {
                     $message = 'Cannot instantiate custom generator, no class has been defined';
@@ -166,7 +166,7 @@ class ValueGeneratorMetadataBuilder
 
                     return new Mapping\ValueGeneratorMetadata($generatorType, $generator);
                 } catch (ReflectionException $exception) {
-                    $message = sprintf(
+                    $message = \sprintf(
                         'Cannot instantiate custom generator : %s',
                         $this->customIdGeneratorAnnotation->class
                     );

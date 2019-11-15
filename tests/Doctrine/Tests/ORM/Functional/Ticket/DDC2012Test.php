@@ -45,7 +45,7 @@ class DDC2012Test extends OrmFunctionalTestCase
         $this->em->flush();
         $this->em->clear();
 
-        $item = $this->em->find(get_class($item), $item->id);
+        $item = $this->em->find(\get_class($item), $item->id);
 
         self::assertArrayHasKey('convertToDatabaseValueSQL', DDC2012TsVectorType::$calls);
         self::assertArrayHasKey('convertToDatabaseValue', DDC2012TsVectorType::$calls);
@@ -64,7 +64,7 @@ class DDC2012Test extends OrmFunctionalTestCase
         $this->em->flush();
         $this->em->clear();
 
-        $item = $this->em->find(get_class($item), $item->id);
+        $item = $this->em->find(\get_class($item), $item->id);
 
         self::assertCount(2, DDC2012TsVectorType::$calls['convertToDatabaseValueSQL']);
         self::assertCount(2, DDC2012TsVectorType::$calls['convertToDatabaseValue']);
@@ -125,8 +125,8 @@ class DDC2012TsVectorType extends Type
      */
     public function convertToDatabaseValue($value, AbstractPlatform $platform)
     {
-        if (is_array($value)) {
-            $value = implode(' ', $value);
+        if (\is_array($value)) {
+            $value = \implode(' ', $value);
         }
 
         self::$calls[__FUNCTION__][] = [
@@ -147,7 +147,7 @@ class DDC2012TsVectorType extends Type
             'platform'  => $platform,
         ];
 
-        return explode(' ', strtolower($value));
+        return \explode(' ', \strtolower($value));
     }
 
     /**

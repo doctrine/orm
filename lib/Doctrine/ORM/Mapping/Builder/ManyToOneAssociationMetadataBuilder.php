@@ -26,9 +26,9 @@ class ManyToOneAssociationMetadataBuilder extends ToOneAssociationMetadataBuilde
     public function build() : Mapping\ManyToOneAssociationMetadata
     {
         // Validate required fields
-        assert($this->componentMetadata !== null);
-        assert($this->manyToOneAnnotation !== null);
-        assert($this->fieldName !== null);
+        \assert($this->componentMetadata !== null);
+        \assert($this->manyToOneAnnotation !== null);
+        \assert($this->fieldName !== null);
 
         $componentClassName  = $this->componentMetadata->getClassName();
         $associationMetadata = new Mapping\ManyToOneAssociationMetadata($this->fieldName);

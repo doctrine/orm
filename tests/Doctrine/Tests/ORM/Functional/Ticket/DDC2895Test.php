@@ -44,7 +44,7 @@ class DDC2895Test extends OrmFunctionalTestCase
         $this->em->clear();
 
         /** @var DDC2895 $ddc2895 */
-        $ddc2895 = $this->em->find(get_class($ddc2895), $ddc2895->id);
+        $ddc2895 = $this->em->find(\get_class($ddc2895), $ddc2895->id);
 
         self::assertNotNull($ddc2895->getLastModified());
     }

@@ -322,7 +322,7 @@ class ConfigurationTest extends DoctrineTestCase
 
     public function testProxyManagerConfigurationContainsGivenProxyNamespace() : void
     {
-        $namespace = str_replace('.', '', uniqid('Namespace', true));
+        $namespace = \str_replace('.', '', \uniqid('Namespace', true));
 
         $this->configuration->setProxyNamespace($namespace);
         self::assertSame($namespace, $this->configuration->getProxyManagerConfiguration()->getProxiesNamespace());
@@ -377,10 +377,10 @@ class ConfigurationTest extends DoctrineTestCase
 
     private function makeTemporaryValidDirectory() : string
     {
-        $path = tempnam(sys_get_temp_dir(), 'ProxyConfigurationTest');
+        $path = \tempnam(\sys_get_temp_dir(), 'ProxyConfigurationTest');
 
-        unlink($path);
-        mkdir($path);
+        \unlink($path);
+        \mkdir($path);
 
         return $path;
     }

@@ -67,7 +67,7 @@ class Setup
      */
     public static function createConfiguration($isDevMode = false, $proxyDir = null, ?Cache $cache = null)
     {
-        $proxyDir = $proxyDir ?: sys_get_temp_dir();
+        $proxyDir = $proxyDir ?: \sys_get_temp_dir();
 
         $cache = self::createCacheConfiguration($isDevMode, $proxyDir, $cache);
 
@@ -96,7 +96,7 @@ class Setup
             $namespace .= ':';
         }
 
-        $cache->setNamespace($namespace . 'dc2_' . md5($proxyDir) . '_'); // to avoid collisions
+        $cache->setNamespace($namespace . 'dc2_' . \md5($proxyDir) . '_'); // to avoid collisions
 
         return $cache;
     }
@@ -111,11 +111,11 @@ class Setup
             return new ArrayCache();
         }
 
-        if (extension_loaded('apcu')) {
+        if (\extension_loaded('apcu')) {
             return new ApcuCache();
         }
 
-        if (extension_loaded('memcached')) {
+        if (\extension_loaded('memcached')) {
             $memcached = new Memcached();
             $memcached->addServer('127.0.0.1', 11211);
 
@@ -125,7 +125,7 @@ class Setup
             return $cache;
         }
 
-        if (extension_loaded('redis')) {
+        if (\extension_loaded('redis')) {
             $redis = new Redis();
             $redis->connect('127.0.0.1');
 

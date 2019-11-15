@@ -41,7 +41,7 @@ class DDC2138Test extends OrmFunctionalTestCase
         self::assertCount(1, $foreignKeys, 'user_id column has to have FK, but not object_id');
 
         /** @var ForeignKeyConstraint $fk */
-        $fk = reset($foreignKeys);
+        $fk = \reset($foreignKeys);
 
         self::assertEquals('users', $fk->getForeignTableName());
 

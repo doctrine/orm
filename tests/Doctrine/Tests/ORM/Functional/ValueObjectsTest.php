@@ -101,7 +101,7 @@ class ValueObjectsTest extends OrmFunctionalTestCase
     {
         for ($i = 0; $i < 3; $i++) {
             $person                   = new DDC93Person();
-            $person->name             = sprintf('Donkey Kong%d', $i);
+            $person->name             = \sprintf('Donkey Kong%d', $i);
             $person->address          = new DDC93Address();
             $person->address->street  = 'Tree';
             $person->address->zip     = '12345';
@@ -315,7 +315,7 @@ class ValueObjectsTest extends OrmFunctionalTestCase
     {
         $this->expectException(MappingException::class);
         $this->expectExceptionMessage(
-            sprintf(
+            \sprintf(
                 'Infinite nesting detected for embedded property %s::nested. ' .
                 'You cannot embed an embeddable from the same type inside an embeddable.',
                 __NAMESPACE__ . '\\' . $declaredEmbeddableClassName

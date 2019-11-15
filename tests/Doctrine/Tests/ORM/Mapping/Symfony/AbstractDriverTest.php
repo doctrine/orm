@@ -28,7 +28,7 @@ abstract class AbstractDriverTest extends DoctrineTestCase
             ]
         );
 
-        touch($filename = $this->dir . '/Foo' . $this->getFileExtension());
+        \touch($filename = $this->dir . '/Foo' . $this->getFileExtension());
         self::assertEquals($filename, $driver->getLocator()->findMappingFile('MyNamespace\MySubnamespace\Entity\Foo'));
     }
 
@@ -40,7 +40,7 @@ abstract class AbstractDriverTest extends DoctrineTestCase
             ]
         );
 
-        touch($filename = $this->dir . '/Foo.Bar' . $this->getFileExtension());
+        \touch($filename = $this->dir . '/Foo.Bar' . $this->getFileExtension());
         self::assertEquals($filename, $driver->getLocator()->findMappingFile('MyNamespace\MySubnamespace\Entity\Foo\Bar'));
     }
 
@@ -74,8 +74,8 @@ abstract class AbstractDriverTest extends DoctrineTestCase
 
     protected function setUp() : void
     {
-        $this->dir = sys_get_temp_dir() . '/abstract_driver_test';
-        @mkdir($this->dir, 0777, true);
+        $this->dir = \sys_get_temp_dir() . '/abstract_driver_test';
+        @\mkdir($this->dir, 0777, true);
     }
 
     protected function tearDown() : void
@@ -84,13 +84,13 @@ abstract class AbstractDriverTest extends DoctrineTestCase
 
         foreach ($iterator as $path) {
             if ($path->isDir()) {
-                @rmdir((string) $path);
+                @\rmdir((string) $path);
             } else {
-                @unlink((string) $path);
+                @\unlink((string) $path);
             }
         }
 
-        @rmdir($this->dir);
+        @\rmdir($this->dir);
     }
 
     abstract protected function getFileExtension();

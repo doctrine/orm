@@ -55,7 +55,7 @@ class SizeFunction extends FunctionNode
                     $sql .= ' AND ';
                 }
 
-                $sql .= sprintf(
+                $sql .= \sprintf(
                     '%s.%s = %s.%s',
                     $targetTableAlias,
                     $platform->quoteIdentifier($joinColumn->getColumnName()),
@@ -92,7 +92,7 @@ class SizeFunction extends FunctionNode
                     $sql .= ' AND ';
                 }
 
-                $sql .= sprintf(
+                $sql .= \sprintf(
                     '%s.%s = %s.%s',
                     $joinTableAlias,
                     $platform->quoteIdentifier($joinColumn->getColumnName()),

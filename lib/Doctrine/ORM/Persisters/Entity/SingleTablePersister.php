@@ -81,7 +81,7 @@ class SingleTablePersister extends AbstractEntityInheritancePersister
             }
         }
 
-        $this->currentPersisterContext->selectColumnListSql = implode(', ', $columnList);
+        $this->currentPersisterContext->selectColumnListSql = \implode(', ', $columnList);
 
         return $this->currentPersisterContext->selectColumnListSql;
     }
@@ -151,7 +151,7 @@ class SingleTablePersister extends AbstractEntityInheritancePersister
             $values[] = $this->conn->quote($this->class->discriminatorValue);
         }
 
-        $discrValues = array_flip($this->class->discriminatorMap);
+        $discrValues = \array_flip($this->class->discriminatorMap);
 
         foreach ($this->class->getSubClasses() as $subclassName) {
             $values[] = $this->conn->quote($discrValues[$subclassName]);
@@ -162,10 +162,10 @@ class SingleTablePersister extends AbstractEntityInheritancePersister
         $tableAlias       = $this->getSQLTableAlias($discrColumn->getTableName());
         $quotedColumnName = $this->platform->quoteIdentifier($discrColumn->getColumnName());
 
-        return sprintf(
+        return \sprintf(
             '%s IN (%s)',
             $discrColumnType->convertToDatabaseValueSQL($tableAlias . '.' . $quotedColumnName, $this->platform),
-            implode(', ', $values)
+            \implode(', ', $values)
         );
     }
 

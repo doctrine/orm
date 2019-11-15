@@ -43,7 +43,7 @@ class ResolveTargetEntityListener implements EventSubscriber
      */
     public function addResolveTargetEntity($originalEntity, $newEntity)
     {
-        $this->resolveTargetEntities[ltrim($originalEntity, '\\')] = ltrim($newEntity, '\\');
+        $this->resolveTargetEntities[\ltrim($originalEntity, '\\')] = \ltrim($newEntity, '\\');
     }
 
     /**
@@ -51,7 +51,7 @@ class ResolveTargetEntityListener implements EventSubscriber
      */
     public function onClassMetadataNotFound(OnClassMetadataNotFoundEventArgs $args)
     {
-        if (array_key_exists($args->getClassName(), $this->resolveTargetEntities)) {
+        if (\array_key_exists($args->getClassName(), $this->resolveTargetEntities)) {
             $resolvedClassName = $this->resolveTargetEntities[$args->getClassName()];
             $resolvedMetadata  = $args->getObjectManager()->getClassMetadata($resolvedClassName);
 

@@ -206,7 +206,7 @@ class QueryException extends LogicException implements ORMException
     public static function iterateWithFetchJoinNotAllowed(AssociationMetadata $association)
     {
         return new self(
-            sprintf(
+            \sprintf(
                 'Iterate with fetch join in class %s using association %s not allowed.',
                 $association->getSourceEntity(),
                 $association->getName()

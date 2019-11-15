@@ -68,7 +68,7 @@ class Printer
     public function println($str)
     {
         if (! $this->silent) {
-            echo str_repeat('    ', $this->indent), $str, "\n";
+            echo \str_repeat('    ', $this->indent), $str, "\n";
         }
     }
 }

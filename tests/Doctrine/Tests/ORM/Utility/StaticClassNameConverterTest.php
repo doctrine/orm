@@ -40,9 +40,9 @@ class StaticClassNameConverterTest extends TestCase
      */
     public function testClassNameConversionFromObject(string $givenClassName, string $expectedClassName) : void
     {
-        $namespaceParts = explode('\\', $givenClassName);
-        $className      = array_pop($namespaceParts);
-        $namespace      = implode('\\', $namespaceParts);
+        $namespaceParts = \explode('\\', $givenClassName);
+        $className      = \array_pop($namespaceParts);
+        $namespace      = \implode('\\', $namespaceParts);
 
         eval('namespace ' . $namespace . ' { class ' . $className . ' {} }');
 

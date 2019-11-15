@@ -106,7 +106,7 @@ class AnnotationDriver implements MappingDriver
      */
     public function addPaths(array $paths)
     {
-        $this->paths = array_unique(array_merge($this->paths, $paths));
+        $this->paths = \array_unique(\array_merge($this->paths, $paths));
     }
 
     /**
@@ -126,7 +126,7 @@ class AnnotationDriver implements MappingDriver
      */
     public function addExcludePaths(array $paths)
     {
-        $this->excludePaths = array_unique(array_merge($this->excludePaths, $paths));
+        $this->excludePaths = \array_unique(\array_merge($this->excludePaths, $paths));
     }
 
     /**
@@ -185,7 +185,7 @@ class AnnotationDriver implements MappingDriver
         $classAnnotations = $this->reader->getClassAnnotations(new ReflectionClass($className));
 
         foreach ($classAnnotations as $annotation) {
-            if (isset($this->entityAnnotationClasses[get_class($annotation)])) {
+            if (isset($this->entityAnnotationClasses[\get_class($annotation)])) {
                 return false;
             }
         }
@@ -212,7 +212,7 @@ class AnnotationDriver implements MappingDriver
         $includedFiles = [];
 
         foreach ($this->paths as $path) {
-            if (! is_dir($path)) {
+            if (! \is_dir($path)) {
                 throw Mapping\MappingException::fileMappingDriversRequireConfiguredDirectoryPath($path);
             }
 
@@ -221,22 +221,22 @@ class AnnotationDriver implements MappingDriver
                     new RecursiveDirectoryIterator($path, FilesystemIterator::SKIP_DOTS),
                     RecursiveIteratorIterator::LEAVES_ONLY
                 ),
-                '/^.+' . preg_quote($this->fileExtension) . '$/i',
+                '/^.+' . \preg_quote($this->fileExtension) . '$/i',
                 RecursiveRegexIterator::GET_MATCH
             );
 
             foreach ($iterator as $file) {
                 $sourceFile = $file[0];
 
-                if (! preg_match('(^phar:)i', $sourceFile)) {
-                    $sourceFile = realpath($sourceFile);
+                if (! \preg_match('(^phar:)i', $sourceFile)) {
+                    $sourceFile = \realpath($sourceFile);
                 }
 
                 foreach ($this->excludePaths as $excludePath) {
-                    $exclude = str_replace('\\', '/', realpath($excludePath));
-                    $current = str_replace('\\', '/', $sourceFile);
+                    $exclude = \str_replace('\\', '/', \realpath($excludePath));
+                    $current = \str_replace('\\', '/', $sourceFile);
 
-                    if (strpos($current, $exclude) !== false) {
+                    if (\strpos($current, $exclude) !== false) {
                         continue 2;
                     }
                 }
@@ -247,13 +247,13 @@ class AnnotationDriver implements MappingDriver
             }
         }
 
-        $declared = get_declared_classes();
+        $declared = \get_declared_classes();
 
         foreach ($declared as $className) {
             $reflectionClass = new ReflectionClass($className);
             $sourceFile      = $reflectionClass->getFileName();
 
-            if (in_array($sourceFile, $includedFiles, true) && ! $this->isTransient($className)) {
+            if (\in_array($sourceFile, $includedFiles, true) && ! $this->isTransient($className)) {
                 $classes[] = $className;
             }
         }
@@ -365,7 +365,7 @@ class AnnotationDriver implements MappingDriver
             ];
 
             foreach ($entityListenersAnnot->value as $listenerClassName) {
-                if (! class_exists($listenerClassName)) {
+                if (! \class_exists($listenerClassName)) {
                     throw Mapping\MappingException::entityListenerClassNotFound(
                         $listenerClassName,
                         $metadata->getClassName()
@@ -506,7 +506,7 @@ class AnnotationDriver implements MappingDriver
 
                 // Check for fetch
                 if ($associationOverrideAnnotation->fetch) {
-                    $override->setFetchMode(constant(Mapping\FetchMode::class . '::' . $associationOverrideAnnotation->fetch));
+                    $override->setFetchMode(\constant(Mapping\FetchMode::class . '::' . $associationOverrideAnnotation->fetch));
                 }
 
                 $metadata->setPropertyOverride($override);
@@ -556,11 +556,11 @@ class AnnotationDriver implements MappingDriver
         $classAnnotations = $this->reader->getClassAnnotations($reflectionClass);
 
         foreach ($classAnnotations as $key => $annot) {
-            if (! is_numeric($key)) {
+            if (! \is_numeric($key)) {
                 continue;
             }
 
-            $classAnnotations[get_class($annot)] = $annot;
+            $classAnnotations[\get_class($annot)] = $annot;
         }
 
         return $classAnnotations;
@@ -574,11 +574,11 @@ class AnnotationDriver implements MappingDriver
         $propertyAnnotations = $this->reader->getPropertyAnnotations($reflectionProperty);
 
         foreach ($propertyAnnotations as $key => $annot) {
-            if (! is_numeric($key)) {
+            if (! \is_numeric($key)) {
                 continue;
             }
 
-            $propertyAnnotations[get_class($annot)] = $annot;
+            $propertyAnnotations[\get_class($annot)] = $annot;
         }
 
         return $propertyAnnotations;
@@ -592,11 +592,11 @@ class AnnotationDriver implements MappingDriver
         $methodAnnotations = $this->reader->getMethodAnnotations($reflectionMethod);
 
         foreach ($methodAnnotations as $key => $annot) {
-            if (! is_numeric($key)) {
+            if (! \is_numeric($key)) {
                 continue;
             }
 
-            $methodAnnotations[get_class($annot)] = $annot;
+            $methodAnnotations[\get_class($annot)] = $annot;
         }
 
         return $methodAnnotations;

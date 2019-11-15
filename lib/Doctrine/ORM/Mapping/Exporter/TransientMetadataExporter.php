@@ -18,7 +18,7 @@ class TransientMetadataExporter implements Exporter
     public function export($value, int $indentationLevel = 0) : string
     {
         /** @var TransientMetadata $value */
-        $indentation     = str_repeat(self::INDENTATION, $indentationLevel);
+        $indentation     = \str_repeat(self::INDENTATION, $indentationLevel);
         $objectReference = $indentation . self::VARIABLE;
 
         return $objectReference . ' = ' . $this->exportInstantiation($value);
@@ -26,7 +26,7 @@ class TransientMetadataExporter implements Exporter
 
     protected function exportInstantiation(TransientMetadata $metadata) : string
     {
-        return sprintf(
+        return \sprintf(
             'new Mapping\TransientMetadata("%s");',
             $metadata->getName()
         );

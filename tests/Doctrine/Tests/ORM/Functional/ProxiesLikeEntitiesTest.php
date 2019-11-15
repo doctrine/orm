@@ -159,7 +159,7 @@ class ProxiesLikeEntitiesTest extends OrmFunctionalTestCase
         $this->em->clear();
 
         $result = $this->em
-            ->createQuery(sprintf('SELECT u FROM %s u WHERE u.id = ?1', $this->proxyClassName))
+            ->createQuery(\sprintf('SELECT u FROM %s u WHERE u.id = ?1', $this->proxyClassName))
             ->setParameter(1, $this->user->getId())
             ->getSingleResult();
 

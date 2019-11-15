@@ -31,7 +31,7 @@ class DateAddFunction extends FunctionNode
      */
     public function getSql(SqlWalker $sqlWalker)
     {
-        switch (strtolower($this->unit->value)) {
+        switch (\strtolower($this->unit->value)) {
             case 'second':
                 return $sqlWalker->getConnection()->getDatabasePlatform()->getDateAddSecondsExpression(
                     $this->firstDateExpression->dispatch($sqlWalker),

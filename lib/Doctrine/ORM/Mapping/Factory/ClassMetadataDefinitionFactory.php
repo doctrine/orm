@@ -30,7 +30,7 @@ class ClassMetadataDefinitionFactory
     ) : ClassMetadataDefinition {
         $definition = $this->createDefinition($className, $parentMetadata);
 
-        if (! class_exists($definition->metadataClassName, false)) {
+        if (! \class_exists($definition->metadataClassName, false)) {
             $metadataClassPath = $this->resolver->resolveMetadataClassPath($className);
 
             $this->generatorStrategy->generate($metadataClassPath, $definition, $metadataBuildingContext);

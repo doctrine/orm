@@ -91,7 +91,7 @@ class DefaultCacheTest extends OrmTestCase
     public function testContainsEntity() : void
     {
         $identifier = ['id' => 1];
-        $cacheEntry = array_merge($identifier, ['name' => 'Brazil']);
+        $cacheEntry = \array_merge($identifier, ['name' => 'Brazil']);
 
         self::assertFalse($this->cache->containsEntity(Country::class, 1));
 
@@ -104,7 +104,7 @@ class DefaultCacheTest extends OrmTestCase
     public function testEvictEntity() : void
     {
         $identifier = ['id' => 1];
-        $cacheEntry = array_merge($identifier, ['name' => 'Brazil']);
+        $cacheEntry = \array_merge($identifier, ['name' => 'Brazil']);
 
         $this->putEntityCacheEntry(Country::class, $identifier, $cacheEntry);
 
@@ -119,7 +119,7 @@ class DefaultCacheTest extends OrmTestCase
     public function testEvictEntityRegion() : void
     {
         $identifier = ['id' => 1];
-        $cacheEntry = array_merge($identifier, ['name' => 'Brazil']);
+        $cacheEntry = \array_merge($identifier, ['name' => 'Brazil']);
 
         $this->putEntityCacheEntry(Country::class, $identifier, $cacheEntry);
 
@@ -134,7 +134,7 @@ class DefaultCacheTest extends OrmTestCase
     public function testEvictEntityRegions() : void
     {
         $identifier = ['id' => 1];
-        $cacheEntry = array_merge($identifier, ['name' => 'Brazil']);
+        $cacheEntry = \array_merge($identifier, ['name' => 'Brazil']);
 
         $this->putEntityCacheEntry(Country::class, $identifier, $cacheEntry);
 

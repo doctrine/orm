@@ -61,7 +61,7 @@ class TableMetadata
 
         $separator = ! $platform->supportsSchemas() && $platform->canEmulateSchemas() ? '__' : '.';
 
-        return $platform->quoteIdentifier(sprintf('%s%s%s', $this->schema, $separator, $this->name));
+        return $platform->quoteIdentifier(\sprintf('%s%s%s', $this->schema, $separator, $this->name));
     }
 
     /**

@@ -37,7 +37,7 @@ class DDC812Test extends OrmFunctionalTestCase
         $this->em->flush();
         $this->em->clear();
 
-        $article2 = $this->em->find(get_class($article), $article->id);
+        $article2 = $this->em->find(\get_class($article), $article->id);
 
         $article2Again = $this->em->createQuery(
             'select a, c from Doctrine\Tests\Models\CMS\CmsArticle a join a.comments c where a.id = ?1'

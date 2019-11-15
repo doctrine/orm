@@ -62,13 +62,13 @@ class MultiTableUpdateExecutor extends AbstractSqlExecutor
 
         $tempTable        = $platform->getTemporaryTableName($rootClass->getTemporaryIdTableName());
         $idColumns        = $rootClass->getIdentifierColumns($em);
-        $idColumnNameList = implode(', ', array_keys($idColumns));
+        $idColumnNameList = \implode(', ', \array_keys($idColumns));
 
         // 1. Create an INSERT INTO temptable ... SELECT identifiers WHERE $AST->getWhereClause()
         $sqlWalker->setSQLTableAlias($primaryClass->getTableName(), 'i0', $updateClause->aliasIdentificationVariable);
 
         $this->insertSql = 'INSERT INTO ' . $tempTable . ' (' . $idColumnNameList . ')'
-                . ' SELECT i0.' . implode(', i0.', array_keys($idColumns));
+                . ' SELECT i0.' . \implode(', i0.', \array_keys($idColumns));
 
         $rangeDecl  = new AST\RangeVariableDeclaration($primaryClass->getClassName(), $updateClause->aliasIdentificationVariable);
         $fromClause = new AST\FromClause([new AST\IdentificationVariableDeclaration($rangeDecl, null, [])]);
@@ -76,7 +76,7 @@ class MultiTableUpdateExecutor extends AbstractSqlExecutor
         $this->insertSql .= $sqlWalker->walkFromClause($fromClause);
 
         // 2. Create statement used in UPDATE ... WHERE ... IN (subselect)
-        $updateSQLTemplate = sprintf(
+        $updateSQLTemplate = \sprintf(
             'UPDATE %%s SET %%s WHERE (%s) IN (SELECT %s FROM %s)',
             $idColumnNameList,
             $idColumnNameList,
@@ -84,12 +84,12 @@ class MultiTableUpdateExecutor extends AbstractSqlExecutor
         );
 
         // 3. Create and store UPDATE statements
-        $hierarchyClasses = array_merge(
-            array_map(
+        $hierarchyClasses = \array_merge(
+            \array_map(
                 static function ($className) use ($em) {
                     return $em->getClassMetadata($className);
                 },
-                array_reverse($primaryClass->getSubClasses())
+                \array_reverse($primaryClass->getSubClasses())
             ),
             [$primaryClass],
             $primaryClass->getAncestorsIterator()->getArrayCopy()
@@ -117,10 +117,10 @@ class MultiTableUpdateExecutor extends AbstractSqlExecutor
             }
 
             if ($updateSQLParts) {
-                $this->sqlStatements[$i] = sprintf(
+                $this->sqlStatements[$i] = \sprintf(
                     $updateSQLTemplate,
                     $class->table->getQuotedQualifiedName($platform),
-                    implode(', ', $updateSQLParts)
+                    \implode(', ', $updateSQLParts)
                 );
 
                 $i++;
@@ -160,8 +160,8 @@ class MultiTableUpdateExecutor extends AbstractSqlExecutor
             // Insert identifiers. Parameters from the update clause are cut off.
             $numUpdated = $conn->executeUpdate(
                 $this->insertSql,
-                array_slice($params, $this->numParametersInUpdateClause),
-                array_slice($types, $this->numParametersInUpdateClause)
+                \array_slice($params, $this->numParametersInUpdateClause),
+                \array_slice($types, $this->numParametersInUpdateClause)
             );
 
             // Execute UPDATE statements

@@ -77,7 +77,7 @@ class ClassTableInheritanceTest extends OrmFunctionalTestCase
 
         $this->em->clear();
 
-        $guilherme = $this->em->getRepository(get_class($employee))->findOneBy(['name' => 'Guilherme Blanco']);
+        $guilherme = $this->em->getRepository(\get_class($employee))->findOneBy(['name' => 'Guilherme Blanco']);
 
         self::assertInstanceOf(CompanyEmployee::class, $guilherme);
         self::assertEquals('Guilherme Blanco', $guilherme->getName());
@@ -275,7 +275,7 @@ class ClassTableInheritanceTest extends OrmFunctionalTestCase
         $result = $q->getResult();
 
         self::assertCount(1, $result);
-        self::assertInstanceOf(CompanyAuction::class, $result[0], sprintf('Is of class %s', get_class($result[0])));
+        self::assertInstanceOf(CompanyAuction::class, $result[0], \sprintf('Is of class %s', \get_class($result[0])));
 
         $this->em->clear();
 
@@ -348,7 +348,7 @@ class ClassTableInheritanceTest extends OrmFunctionalTestCase
         $this->em->remove($employee1);
         $this->em->flush();
 
-        self::assertNull($this->em->find(get_class($employee1), $employee1Id));
+        self::assertNull($this->em->find(\get_class($employee1), $employee1Id));
     }
 
     /**
@@ -474,12 +474,12 @@ class ClassTableInheritanceTest extends OrmFunctionalTestCase
         $manager->setTitle('Awesome!');
         $manager->setDepartment('IT');
 
-        self::assertFalse($this->em->getUnitOfWork()->getEntityPersister(get_class($manager))->exists($manager));
+        self::assertFalse($this->em->getUnitOfWork()->getEntityPersister(\get_class($manager))->exists($manager));
 
         $this->em->persist($manager);
         $this->em->flush();
 
-        self::assertTrue($this->em->getUnitOfWork()->getEntityPersister(get_class($manager))->exists($manager));
+        self::assertTrue($this->em->getUnitOfWork()->getEntityPersister(\get_class($manager))->exists($manager));
     }
 
     /**

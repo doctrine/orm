@@ -51,20 +51,20 @@ class DDC2825Test extends OrmFunctionalTestCase
         self::assertEquals($expectedSchemaName, $classMetadata->table->getSchema());
 
         if ($platform->supportsSchemas()) {
-            $fullTableName = sprintf('"%s"."%s"', $expectedSchemaName, $expectedTableName);
+            $fullTableName = \sprintf('"%s"."%s"', $expectedSchemaName, $expectedTableName);
         } else {
-            $fullTableName = sprintf('"%s__%s"', $expectedSchemaName, $expectedTableName);
+            $fullTableName = \sprintf('"%s__%s"', $expectedSchemaName, $expectedTableName);
         }
 
         self::assertEquals($fullTableName, $quotedTableName);
 
         $property       = $classMetadata->getProperty($classMetadata->getSingleIdentifierFieldName());
         $sequencePrefix = $platform->getSequencePrefix($classMetadata->getTableName(), $classMetadata->getSchemaName());
-        $idSequenceName = sprintf('%s_%s_seq', $sequencePrefix, $property->getColumnName());
+        $idSequenceName = \sprintf('%s_%s_seq', $sequencePrefix, $property->getColumnName());
 
         // Checks sequence name validity
         self::assertEquals(
-            str_replace('"', '', $fullTableName) . '_' . $property->getColumnName() . '_seq',
+            \str_replace('"', '', $fullTableName) . '_' . $property->getColumnName() . '_seq',
             $idSequenceName
         );
     }

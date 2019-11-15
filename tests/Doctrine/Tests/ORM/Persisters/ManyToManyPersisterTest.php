@@ -49,7 +49,7 @@ final class ManyToManyPersisterTest extends OrmTestCase
         $conn = $em->getConnection();
 
         $updates    = $conn->getExecuteUpdates();
-        $lastUpdate = array_pop($updates);
+        $lastUpdate = \array_pop($updates);
 
         self::assertEquals('DELETE FROM "parent_child" WHERE "child_id1" = ? AND "child_id2" = ?', $lastUpdate['query']);
         self::assertEquals([1, 42], $lastUpdate['params']);

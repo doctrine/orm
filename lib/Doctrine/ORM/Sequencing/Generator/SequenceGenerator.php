@@ -86,7 +86,7 @@ class SequenceGenerator implements Generator, Serializable
 
     public function serialize() : string
     {
-        return serialize(
+        return \serialize(
             [
                 'allocationSize' => $this->allocationSize,
                 'sequenceName'   => $this->sequenceName,
@@ -99,7 +99,7 @@ class SequenceGenerator implements Generator, Serializable
      */
     public function unserialize($serialized) : void
     {
-        $array = unserialize($serialized);
+        $array = \unserialize($serialized);
 
         $this->sequenceName   = $array['sequenceName'];
         $this->allocationSize = $array['allocationSize'];

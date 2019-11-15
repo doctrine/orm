@@ -18,7 +18,7 @@ class ConditionalFileWriterClassMetadataGeneratorStrategy extends FileWriterClas
         ClassMetadataDefinition $definition,
         ClassMetadataBuildingContext $metadataBuildingContext
     ) : void {
-        if (! file_exists($filePath)) {
+        if (! \file_exists($filePath)) {
             parent::generate($filePath, $definition, $metadataBuildingContext);
 
             return;

@@ -34,7 +34,7 @@ class MetadataFilter extends FilterIterator implements Countable
     {
         $metadatas = new MetadataFilter(new ArrayIterator($metadatas), $filter);
 
-        return iterator_to_array($metadatas);
+        return \iterator_to_array($metadatas);
     }
 
     /**
@@ -52,7 +52,7 @@ class MetadataFilter extends FilterIterator implements Countable
      */
     public function accept()
     {
-        if (count($this->filter) === 0) {
+        if (\count($this->filter) === 0) {
             return true;
         }
 
@@ -60,11 +60,11 @@ class MetadataFilter extends FilterIterator implements Countable
         $metadata = $it->current();
 
         foreach ($this->filter as $filter) {
-            $pregResult = preg_match('/' . $filter . '/', $metadata->getClassName());
+            $pregResult = \preg_match('/' . $filter . '/', $metadata->getClassName());
 
             if ($pregResult === false) {
                 throw new RuntimeException(
-                    sprintf("Error while evaluating regex '/%s/'.", $filter)
+                    \sprintf("Error while evaluating regex '/%s/'.", $filter)
                 );
             }
 
@@ -81,6 +81,6 @@ class MetadataFilter extends FilterIterator implements Countable
      */
     public function count()
     {
-        return count($this->getInnerIterator());
+        return \count($this->getInnerIterator());
     }
 }

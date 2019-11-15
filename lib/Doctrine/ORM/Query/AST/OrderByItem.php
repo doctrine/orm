@@ -30,7 +30,7 @@ class OrderByItem extends Node
      */
     public function isAsc()
     {
-        return strtoupper($this->type) === 'ASC';
+        return \strtoupper($this->type) === 'ASC';
     }
 
     /**
@@ -38,7 +38,7 @@ class OrderByItem extends Node
      */
     public function isDesc()
     {
-        return strtoupper($this->type) === 'DESC';
+        return \strtoupper($this->type) === 'DESC';
     }
 
     /**

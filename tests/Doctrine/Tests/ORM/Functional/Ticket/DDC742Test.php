@@ -26,9 +26,9 @@ class DDC742Test extends OrmFunctionalTestCase
     {
         parent::setUp();
 
-        $testDir = sys_get_temp_dir() . '/DDC742Test' . uniqid();
+        $testDir = \sys_get_temp_dir() . '/DDC742Test' . \uniqid();
 
-        mkdir($testDir);
+        \mkdir($testDir);
 
         // using a Filesystemcache to ensure that the cached data is serialized
         $this->em->getMetadataFactory()->setCacheDriver(new FilesystemCache($testDir));

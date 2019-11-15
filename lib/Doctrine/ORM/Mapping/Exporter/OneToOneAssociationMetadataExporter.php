@@ -16,9 +16,9 @@ class OneToOneAssociationMetadataExporter extends ToOneAssociationMetadataExport
      */
     protected function exportInstantiation(AssociationMetadata $metadata) : string
     {
-        assert($metadata instanceof OneToOneAssociationMetadata);
+        \assert($metadata instanceof OneToOneAssociationMetadata);
 
-        return sprintf(
+        return \sprintf(
             'new Mapping\OneToOneAssociationMetadata("%s");',
             $metadata->getName()
         );

@@ -15,6 +15,6 @@ class FuncGetArgs
 
     public function funcGetArgsCallingMethod() : array
     {
-        return func_get_args();
+        return \func_get_args();
     }
 }

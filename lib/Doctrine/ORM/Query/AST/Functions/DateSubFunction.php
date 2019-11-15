@@ -19,7 +19,7 @@ class DateSubFunction extends DateAddFunction
      */
     public function getSql(SqlWalker $sqlWalker)
     {
-        switch (strtolower($this->unit->value)) {
+        switch (\strtolower($this->unit->value)) {
             case 'second':
                 return $sqlWalker->getConnection()->getDatabasePlatform()->getDateSubSecondsExpression(
                     $this->firstDateExpression->dispatch($sqlWalker),

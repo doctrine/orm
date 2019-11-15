@@ -78,7 +78,7 @@ class CountOutputWalker extends SqlWalker
         $sql = parent::walkSelectStatement($AST);
 
         if ($AST->groupByClause) {
-            return sprintf(
+            return \sprintf(
                 'SELECT %s AS dctrn_count FROM (%s) dctrn_table',
                 $this->platform->getCountExpression('*'),
                 $sql
@@ -92,11 +92,11 @@ class CountOutputWalker extends SqlWalker
 
         // Get the root entity and alias from the AST fromClause
         $from = $AST->fromClause->identificationVariableDeclarations;
-        if (count($from) > 1) {
+        if (\count($from) > 1) {
             throw new RuntimeException('Cannot count query which selects two FROM components, cannot make distinction');
         }
 
-        $fromRoot       = reset($from);
+        $fromRoot       = \reset($from);
         $rootAlias      = $fromRoot->rangeVariableDeclaration->aliasIdentificationVariable;
         $rootClass      = $this->queryComponents[$rootAlias]['metadata'];
         $rootIdentifier = $rootClass->identifier;
@@ -107,16 +107,16 @@ class CountOutputWalker extends SqlWalker
             $property = $rootClass->getProperty($identifier);
 
             if ($property instanceof FieldMetadata) {
-                foreach (array_keys($this->rsm->fieldMappings, $identifier, true) as $alias) {
+                foreach (\array_keys($this->rsm->fieldMappings, $identifier, true) as $alias) {
                     if ($this->rsm->columnOwnerMap[$alias] === $rootAlias) {
                         $sqlIdentifier[$identifier] = $alias;
                     }
                 }
             } elseif ($property instanceof AssociationMetadata) {
                 $joinColumns = $property->getJoinColumns();
-                $joinColumn  = reset($joinColumns);
+                $joinColumn  = \reset($joinColumns);
 
-                foreach (array_keys($this->rsm->metaMappings, $joinColumn->getColumnName(), true) as $alias) {
+                foreach (\array_keys($this->rsm->metaMappings, $joinColumn->getColumnName(), true) as $alias) {
                     if ($this->rsm->columnOwnerMap[$alias] === $rootAlias) {
                         $sqlIdentifier[$identifier] = $alias;
                     }
@@ -124,18 +124,18 @@ class CountOutputWalker extends SqlWalker
             }
         }
 
-        if (count($rootIdentifier) !== count($sqlIdentifier)) {
-            throw new RuntimeException(sprintf(
+        if (\count($rootIdentifier) !== \count($sqlIdentifier)) {
+            throw new RuntimeException(\sprintf(
                 'Not all identifier properties can be found in the ResultSetMapping: %s',
-                implode(', ', array_diff($rootIdentifier, array_keys($sqlIdentifier)))
+                \implode(', ', \array_diff($rootIdentifier, \array_keys($sqlIdentifier)))
             ));
         }
 
         // Build the counter query
-        return sprintf(
+        return \sprintf(
             'SELECT %s AS dctrn_count FROM (SELECT DISTINCT %s FROM (%s) dctrn_result) dctrn_table',
             $this->platform->getCountExpression('*'),
-            implode(', ', $sqlIdentifier),
+            \implode(', ', $sqlIdentifier),
             $sql
         );
     }

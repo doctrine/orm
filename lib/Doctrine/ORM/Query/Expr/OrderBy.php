@@ -53,7 +53,7 @@ class OrderBy
      */
     public function count()
     {
-        return count($this->parts);
+        return \count($this->parts);
     }
 
     /**
@@ -69,6 +69,6 @@ class OrderBy
      */
     public function __toString()
     {
-        return $this->preSeparator . implode($this->separator, $this->parts) . $this->postSeparator;
+        return $this->preSeparator . \implode($this->separator, $this->parts) . $this->postSeparator;
     }
 }

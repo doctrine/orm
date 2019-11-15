@@ -84,10 +84,10 @@ class OneToManySelfReferentialAssociationTest extends OrmFunctionalTestCase
 
         self::assertInstanceOf(ECommerceCategory::class, $children[0]);
         self::assertSame($parent, $children[0]->getParent());
-        self::assertEquals(' books', strstr($children[0]->getName(), ' books'));
+        self::assertEquals(' books', \strstr($children[0]->getName(), ' books'));
         self::assertInstanceOf(ECommerceCategory::class, $children[1]);
         self::assertSame($parent, $children[1]->getParent());
-        self::assertEquals(' books', strstr($children[1]->getName(), ' books'));
+        self::assertEquals(' books', \strstr($children[1]->getName(), ' books'));
     }
 
     public function testLazyLoadsOneToManyAssociation() : void
@@ -103,10 +103,10 @@ class OneToManySelfReferentialAssociationTest extends OrmFunctionalTestCase
 
         self::assertInstanceOf(ECommerceCategory::class, $children[0]);
         self::assertSame($parent, $children[0]->getParent());
-        self::assertEquals(' books', strstr($children[0]->getName(), ' books'));
+        self::assertEquals(' books', \strstr($children[0]->getName(), ' books'));
         self::assertInstanceOf(ECommerceCategory::class, $children[1]);
         self::assertSame($parent, $children[1]->getParent());
-        self::assertEquals(' books', strstr($children[1]->getName(), ' books'));
+        self::assertEquals(' books', \strstr($children[1]->getName(), ' books'));
     }
 
     private function createFixture()

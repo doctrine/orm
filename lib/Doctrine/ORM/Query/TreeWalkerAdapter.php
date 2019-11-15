@@ -60,7 +60,7 @@ abstract class TreeWalkerAdapter implements TreeWalker
     {
         $requiredKeys = ['metadata', 'parent', 'relation', 'map', 'nestingLevel', 'token'];
 
-        if (array_diff($requiredKeys, array_keys($queryComponent))) {
+        if (\array_diff($requiredKeys, \array_keys($queryComponent))) {
             throw QueryException::invalidQueryComponent($dqlAlias);
         }
 

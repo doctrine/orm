@@ -35,8 +35,8 @@ class DDC1918Test extends OrmFunctionalTestCase
 
         for ($i = 0; $i < 10; $i++) {
             $user           = new CmsUser();
-            $user->username = sprintf('user%d', $i);
-            $user->name     = sprintf('user%d', $i);
+            $user->username = \sprintf('user%d', $i);
+            $user->name     = \sprintf('user%d', $i);
             $user->status   = 'active';
             $user->groups   = $groups;
 
@@ -50,18 +50,18 @@ class DDC1918Test extends OrmFunctionalTestCase
         $query->setMaxResults(3);
 
         $paginator = new Paginator($query, true);
-        self::assertCount(3, iterator_to_array($paginator));
+        self::assertCount(3, \iterator_to_array($paginator));
 
         $query->setFirstResult(8);
         $query->setMaxResults(3);
 
         $paginator = new Paginator($query, true);
-        self::assertCount(2, iterator_to_array($paginator));
+        self::assertCount(2, \iterator_to_array($paginator));
 
         $query->setFirstResult(10);
         $query->setMaxResults(3);
 
         $paginator = new Paginator($query, true);
-        self::assertCount(0, iterator_to_array($paginator));
+        self::assertCount(0, \iterator_to_array($paginator));
     }
 }

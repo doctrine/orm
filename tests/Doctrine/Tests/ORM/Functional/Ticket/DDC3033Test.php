@@ -113,7 +113,7 @@ class DDC3033Product
         $em            = $eventArgs->getEntityManager();
         $uow           = $em->getUnitOfWork();
         $entity        = $eventArgs->getEntity();
-        $classMetadata = $em->getClassMetadata(get_class($entity));
+        $classMetadata = $em->getClassMetadata(\get_class($entity));
 
         $uow->computeChangeSet($classMetadata, $entity);
         $this->changeSet = $uow->getEntityChangeSet($entity);

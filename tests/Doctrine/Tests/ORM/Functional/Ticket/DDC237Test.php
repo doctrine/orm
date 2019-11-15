@@ -43,13 +43,13 @@ class DDC237Test extends OrmFunctionalTestCase
         $this->em->flush();
         $this->em->clear();
 
-        $x2 = $this->em->find(get_class($x), $x->id); // proxy injected for Y
+        $x2 = $this->em->find(\get_class($x), $x->id); // proxy injected for Y
         self::assertInstanceOf(GhostObjectInterface::class, $x2->y);
         self::assertFalse($x2->y->isProxyInitialized());
 
         // proxy for Y is in identity map
 
-        $z2 = $this->em->createQuery('select z,y from ' . get_class($z) . ' z join z.y y where z.id = ?1')
+        $z2 = $this->em->createQuery('select z,y from ' . \get_class($z) . ' z join z.y y where z.id = ?1')
                 ->setParameter(1, $z->id)
                 ->getSingleResult();
         self::assertInstanceOf(GhostObjectInterface::class, $z2->y);

@@ -18,7 +18,7 @@ class Lock
     public function __construct(string $value, ?int $time = null)
     {
         $this->value = $value;
-        $this->time  = $time ?: time();
+        $this->time  = $time ?: \time();
     }
 
     /**
@@ -26,6 +26,6 @@ class Lock
      */
     public static function createLockRead()
     {
-        return new self(uniqid((string) time(), true));
+        return new self(\uniqid((string) \time(), true));
     }
 }

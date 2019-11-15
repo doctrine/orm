@@ -32,7 +32,7 @@ class DDC444Test extends OrmFunctionalTestCase
         $this->em->flush();
         $this->em->clear();
 
-        $q = $this->em->createQuery(sprintf('SELECT u FROM %s u', $classname));
+        $q = $this->em->createQuery(\sprintf('SELECT u FROM %s u', $classname));
         $u = $q->getSingleResult();
         self::assertEquals('Initial value', $u->name);
 
@@ -42,7 +42,7 @@ class DDC444Test extends OrmFunctionalTestCase
         $this->em->flush();
         $this->em->clear();
 
-        $u = $this->em->createQuery(sprintf('SELECT u FROM %s u', $classname));
+        $u = $this->em->createQuery(\sprintf('SELECT u FROM %s u', $classname));
         $u = $q->getSingleResult();
 
         self::assertEquals('Initial value', $u->name);
@@ -52,7 +52,7 @@ class DDC444Test extends OrmFunctionalTestCase
         // Now we however persisted it, and this should have updated our friend
         $this->em->flush();
 
-        $q = $this->em->createQuery(sprintf('SELECT u FROM %s u', $classname));
+        $q = $this->em->createQuery(\sprintf('SELECT u FROM %s u', $classname));
         $u = $q->getSingleResult();
 
         self::assertEquals('Modified value', $u->name);

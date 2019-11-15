@@ -30,7 +30,7 @@ class AttachEntityListenersListener
         string $eventName,
         string $listenerCallback
     ) : void {
-        $this->entityListeners[ltrim($entityClass, '\\')][] = [
+        $this->entityListeners[\ltrim($entityClass, '\\')][] = [
             'event'  => $eventName,
             'class'  => $listenerClass,
             'method' => $listenerCallback,

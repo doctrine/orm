@@ -45,7 +45,7 @@ class DDC1461Test extends OrmFunctionalTestCase
         $this->em->persist($user);
         $this->em->flush();
 
-        $user = $this->em->find(get_class($user), $user->id);
+        $user = $this->em->find(\get_class($user), $user->id);
         self::assertNotNull($user->twitterAccount);
     }
 }

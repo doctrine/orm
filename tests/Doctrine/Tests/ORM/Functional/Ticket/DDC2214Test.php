@@ -54,7 +54,7 @@ class DDC2214Test extends OrmFunctionalTestCase
             ->setParameter('ids', [$bar])
             ->getResult();
 
-        $query = end($logger->queries);
+        $query = \end($logger->queries);
 
         self::assertEquals(Connection::PARAM_INT_ARRAY, $query['types'][0]);
     }

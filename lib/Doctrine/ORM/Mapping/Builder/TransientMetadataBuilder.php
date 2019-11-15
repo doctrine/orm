@@ -40,8 +40,8 @@ class TransientMetadataBuilder
     public function build() : Mapping\TransientMetadata
     {
         // Validate required fields
-        assert($this->componentMetadata !== null);
-        assert($this->fieldName !== null);
+        \assert($this->componentMetadata !== null);
+        \assert($this->fieldName !== null);
 
         $transientMetadata = new Mapping\TransientMetadata($this->fieldName);
 

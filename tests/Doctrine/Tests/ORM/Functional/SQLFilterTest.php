@@ -335,7 +335,7 @@ class SQLFilterTest extends OrmFunctionalTestCase
             'locale' => ['value' => 'en', 'type' => DBALType::STRING],
         ];
 
-        self::assertEquals(serialize($parameters), '' . $filter);
+        self::assertEquals(\serialize($parameters), '' . $filter);
         self::assertEquals('' . $filter, '' . $filter2);
     }
 
@@ -1113,7 +1113,7 @@ class MyLocaleFilter extends SQLFilter
 {
     public function addFilterConstraint(ClassMetadata $targetEntity, $targetTableAlias)
     {
-        if (! in_array('LocaleAware', $targetEntity->getReflectionClass()->getInterfaceNames(), true)) {
+        if (! \in_array('LocaleAware', $targetEntity->getReflectionClass()->getInterfaceNames(), true)) {
             return '';
         }
 

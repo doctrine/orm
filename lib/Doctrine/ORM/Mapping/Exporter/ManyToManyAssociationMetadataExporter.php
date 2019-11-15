@@ -20,7 +20,7 @@ class ManyToManyAssociationMetadataExporter extends ToManyAssociationMetadataExp
     public function export($value, int $indentationLevel = 0) : string
     {
         /** @var ManyToManyAssociationMetadata $value */
-        $indentation     = str_repeat(self::INDENTATION, $indentationLevel);
+        $indentation     = \str_repeat(self::INDENTATION, $indentationLevel);
         $objectReference = $indentation . self::VARIABLE;
         $lines           = [];
 
@@ -35,7 +35,7 @@ class ManyToManyAssociationMetadataExporter extends ToManyAssociationMetadataExp
             $lines[] = $objectReference . '->setJoinTable(' . $joinTableExporter::VARIABLE . ');';
         }
 
-        return implode(PHP_EOL, $lines);
+        return \implode(PHP_EOL, $lines);
     }
 
     /**
@@ -43,9 +43,9 @@ class ManyToManyAssociationMetadataExporter extends ToManyAssociationMetadataExp
      */
     protected function exportInstantiation(AssociationMetadata $metadata) : string
     {
-        assert($metadata instanceof ManyToManyAssociationMetadata);
+        \assert($metadata instanceof ManyToManyAssociationMetadata);
 
-        return sprintf(
+        return \sprintf(
             'new Mapping\ManyToManyAssociationMetadata("%s");',
             $metadata->getName()
         );

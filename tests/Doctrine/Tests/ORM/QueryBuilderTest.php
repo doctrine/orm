@@ -597,7 +597,7 @@ class QueryBuilderTest extends OrmTestCase
             ->from(CmsUser::class, 'u');
         $q  = $qb->getQuery();
 
-        self::assertEquals(Query::class, get_class($q));
+        self::assertEquals(Query::class, \get_class($q));
     }
 
     public function testSetParameter() : void
@@ -1128,7 +1128,7 @@ class QueryBuilderTest extends OrmTestCase
         $dql      = $qb->getDQL();
 
         $qb2 = $this->em->createQueryBuilder();
-        foreach (array_filter($dqlParts) as $name => $part) {
+        foreach (\array_filter($dqlParts) as $name => $part) {
             $qb2->add($name, $part);
         }
         $dql2 = $qb2->getDQL();

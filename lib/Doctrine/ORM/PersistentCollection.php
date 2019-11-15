@@ -238,9 +238,9 @@ final class PersistentCollection extends AbstractLazyCollection implements Selec
     {
         $collectionItems = $this->collection->toArray();
 
-        return array_values(array_diff_key(
-            array_combine(array_map('spl_object_id', $this->snapshot), $this->snapshot),
-            array_combine(array_map('spl_object_id', $collectionItems), $collectionItems)
+        return \array_values(\array_diff_key(
+            \array_combine(\array_map('spl_object_id', $this->snapshot), $this->snapshot),
+            \array_combine(\array_map('spl_object_id', $collectionItems), $collectionItems)
         ));
     }
 
@@ -254,9 +254,9 @@ final class PersistentCollection extends AbstractLazyCollection implements Selec
     {
         $collectionItems = $this->collection->toArray();
 
-        return array_values(array_diff_key(
-            array_combine(array_map('spl_object_id', $collectionItems), $collectionItems),
-            array_combine(array_map('spl_object_id', $this->snapshot), $this->snapshot)
+        return \array_values(\array_diff_key(
+            \array_combine(\array_map('spl_object_id', $collectionItems), $collectionItems),
+            \array_combine(\array_map('spl_object_id', $this->snapshot), $this->snapshot)
         ));
     }
 
@@ -284,7 +284,7 @@ final class PersistentCollection extends AbstractLazyCollection implements Selec
         if ($this->association instanceof ManyToManyAssociationMetadata &&
             $this->owner &&
             $this->association->isOwningSide() &&
-            $this->em->getClassMetadata(get_class($this->owner))->changeTrackingPolicy === ChangeTrackingPolicy::NOTIFY) {
+            $this->em->getClassMetadata(\get_class($this->owner))->changeTrackingPolicy === ChangeTrackingPolicy::NOTIFY) {
             $this->em->getUnitOfWork()->scheduleForSynchronization($this->owner);
         }
     }
@@ -459,7 +459,7 @@ final class PersistentCollection extends AbstractLazyCollection implements Selec
 
         $this->changed();
 
-        if (is_object($value) && $this->em) {
+        if (\is_object($value) && $this->em) {
             $this->em->getUnitOfWork()->cancelOrphanRemoval($value);
         }
     }
@@ -473,7 +473,7 @@ final class PersistentCollection extends AbstractLazyCollection implements Selec
 
         $this->changed();
 
-        if (is_object($value) && $this->em) {
+        if (\is_object($value) && $this->em) {
             $this->em->getUnitOfWork()->cancelOrphanRemoval($value);
         }
 
@@ -623,7 +623,7 @@ final class PersistentCollection extends AbstractLazyCollection implements Selec
      */
     public function __clone()
     {
-        if (is_object($this->collection)) {
+        if (\is_object($this->collection)) {
             $this->collection = clone $this->collection;
         }
 
@@ -716,13 +716,13 @@ final class PersistentCollection extends AbstractLazyCollection implements Selec
     private function restoreNewObjectsInDirtyCollection(array $newObjects) : void
     {
         $loadedObjects               = $this->collection->toArray();
-        $newObjectsByOid             = array_combine(array_map('spl_object_id', $newObjects), $newObjects);
-        $loadedObjectsByOid          = array_combine(array_map('spl_object_id', $loadedObjects), $loadedObjects);
-        $newObjectsThatWereNotLoaded = array_diff_key($newObjectsByOid, $loadedObjectsByOid);
+        $newObjectsByOid             = \array_combine(\array_map('spl_object_id', $newObjects), $newObjects);
+        $loadedObjectsByOid          = \array_combine(\array_map('spl_object_id', $loadedObjects), $loadedObjects);
+        $newObjectsThatWereNotLoaded = \array_diff_key($newObjectsByOid, $loadedObjectsByOid);
 
         if ($newObjectsThatWereNotLoaded) {
             // Reattach NEW objects added through add(), if any.
-            array_walk($newObjectsThatWereNotLoaded, [$this->collection, 'add']);
+            \array_walk($newObjectsThatWereNotLoaded, [$this->collection, 'add']);
 
             $this->isDirty = true;
         }

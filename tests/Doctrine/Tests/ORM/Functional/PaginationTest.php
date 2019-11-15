@@ -127,21 +127,21 @@ class PaginationTest extends OrmFunctionalTestCase
     private function iterateWithOrderAsc($useOutputWalkers, $fetchJoinCollection, $baseDql, $checkField)
     {
         // Ascending
-        $dql   = sprintf('%s ASC', $baseDql);
+        $dql   = \sprintf('%s ASC', $baseDql);
         $query = $this->em->createQuery($dql);
 
         $paginator = new Paginator($query, $fetchJoinCollection);
         $paginator->setUseOutputWalkers($useOutputWalkers);
         $iter = $paginator->getIterator();
         self::assertCount(9, $iter);
-        $result = iterator_to_array($iter);
+        $result = \iterator_to_array($iter);
         self::assertEquals($checkField . '0', $result[0]->{$checkField});
     }
 
     private function iterateWithOrderAscWithLimit($useOutputWalkers, $fetchJoinCollection, $baseDql, $checkField)
     {
         // Ascending
-        $dql   = sprintf('%s ASC', $baseDql);
+        $dql   = \sprintf('%s ASC', $baseDql);
         $query = $this->em->createQuery($dql);
 
         // With limit
@@ -150,14 +150,14 @@ class PaginationTest extends OrmFunctionalTestCase
         $paginator->setUseOutputWalkers($useOutputWalkers);
         $iter = $paginator->getIterator();
         self::assertCount(3, $iter);
-        $result = iterator_to_array($iter);
+        $result = \iterator_to_array($iter);
         self::assertEquals($checkField . '0', $result[0]->{$checkField});
     }
 
     private function iterateWithOrderAscWithLimitAndOffset($useOutputWalkers, $fetchJoinCollection, $baseDql, $checkField)
     {
         // Ascending
-        $dql   = sprintf('%s ASC', $baseDql);
+        $dql   = \sprintf('%s ASC', $baseDql);
         $query = $this->em->createQuery($dql);
 
         // With offset
@@ -166,26 +166,26 @@ class PaginationTest extends OrmFunctionalTestCase
         $paginator->setUseOutputWalkers($useOutputWalkers);
         $iter = $paginator->getIterator();
         self::assertCount(3, $iter);
-        $result = iterator_to_array($iter);
+        $result = \iterator_to_array($iter);
         self::assertEquals($checkField . '3', $result[0]->{$checkField});
     }
 
     private function iterateWithOrderDesc($useOutputWalkers, $fetchJoinCollection, $baseDql, $checkField)
     {
-        $dql   = sprintf('%s DESC', $baseDql);
+        $dql   = \sprintf('%s DESC', $baseDql);
         $query = $this->em->createQuery($dql);
 
         $paginator = new Paginator($query, $fetchJoinCollection);
         $paginator->setUseOutputWalkers($useOutputWalkers);
         $iter = $paginator->getIterator();
         self::assertCount(9, $iter);
-        $result = iterator_to_array($iter);
+        $result = \iterator_to_array($iter);
         self::assertEquals($checkField . '8', $result[0]->{$checkField});
     }
 
     private function iterateWithOrderDescWithLimit($useOutputWalkers, $fetchJoinCollection, $baseDql, $checkField)
     {
-        $dql   = sprintf('%s DESC', $baseDql);
+        $dql   = \sprintf('%s DESC', $baseDql);
         $query = $this->em->createQuery($dql);
 
         // With limit
@@ -194,13 +194,13 @@ class PaginationTest extends OrmFunctionalTestCase
         $paginator->setUseOutputWalkers($useOutputWalkers);
         $iter = $paginator->getIterator();
         self::assertCount(3, $iter);
-        $result = iterator_to_array($iter);
+        $result = \iterator_to_array($iter);
         self::assertEquals($checkField . '8', $result[0]->{$checkField});
     }
 
     private function iterateWithOrderDescWithLimitAndOffset($useOutputWalkers, $fetchJoinCollection, $baseDql, $checkField)
     {
-        $dql   = sprintf('%s DESC', $baseDql);
+        $dql   = \sprintf('%s DESC', $baseDql);
         $query = $this->em->createQuery($dql);
 
         // With offset
@@ -209,7 +209,7 @@ class PaginationTest extends OrmFunctionalTestCase
         $paginator->setUseOutputWalkers($useOutputWalkers);
         $iter = $paginator->getIterator();
         self::assertCount(3, $iter);
-        $result = iterator_to_array($iter);
+        $result = \iterator_to_array($iter);
         self::assertEquals($checkField . '5', $result[0]->{$checkField});
     }
 
@@ -586,7 +586,7 @@ class PaginationTest extends OrmFunctionalTestCase
         $paginator = new Paginator($query, true);
         $paginator->setUseOutputWalkers(true);
 
-        $users = iterator_to_array($paginator->getIterator());
+        $users = \iterator_to_array($paginator->getIterator());
         self::assertCount(9, $users);
         foreach ($users as $i => $user) {
             self::assertEquals('username' . (8 - $i), $user->username);
@@ -607,7 +607,7 @@ class PaginationTest extends OrmFunctionalTestCase
         $this->expectException(RuntimeException::class);
         $this->expectExceptionMessage('Cannot count query that uses a HAVING clause. Use the output walkers for pagination');
 
-        count($paginator);
+        \count($paginator);
     }
 
     /**
@@ -704,27 +704,27 @@ class PaginationTest extends OrmFunctionalTestCase
         $groups = [];
         for ($j = 0; $j < 3; $j++) {
             $group       = new CmsGroup();
-            $group->name = sprintf('group%d', $j);
+            $group->name = \sprintf('group%d', $j);
             $groups[]    = $group;
             $this->em->persist($group);
         }
 
         for ($i = 0; $i < 9; $i++) {
             $user               = new CmsUser();
-            $user->name         = sprintf('Name%d', $i);
-            $user->username     = sprintf('username%d', $i);
+            $user->name         = \sprintf('Name%d', $i);
+            $user->username     = \sprintf('username%d', $i);
             $user->status       = 'active';
             $user->email        = new CmsEmail();
             $user->email->user  = $user;
-            $user->email->email = sprintf('email%d', $i);
+            $user->email->email = \sprintf('email%d', $i);
             for ($j = 0; $j < 3; $j++) {
                 $user->addGroup($groups[$j]);
             }
             $this->em->persist($user);
             for ($j = 0; $j < $i + 1; $j++) {
                 $article        = new CmsArticle();
-                $article->topic = sprintf('topic%d%d', $i, $j);
-                $article->text  = sprintf('text%d%d', $i, $j);
+                $article->topic = \sprintf('topic%d%d', $i, $j);
+                $article->text  = \sprintf('text%d%d', $i, $j);
                 $article->setAuthor($user);
                 $article->version = 0;
                 $this->em->persist($article);
@@ -733,15 +733,15 @@ class PaginationTest extends OrmFunctionalTestCase
 
         for ($i = 0; $i < 9; $i++) {
             $company                     = new Company();
-            $company->name               = sprintf('name%d', $i);
+            $company->name               = \sprintf('name%d', $i);
             $company->logo               = new Logo();
-            $company->logo->image        = sprintf('image%d', $i);
+            $company->logo->image        = \sprintf('image%d', $i);
             $company->logo->image_width  = 100 + $i;
             $company->logo->image_height = 100 + $i;
             $company->logo->company      = $company;
             for ($j=0; $j<3; $j++) {
                 $department             = new Department();
-                $department->name       = sprintf('name%d%d', $i, $j);
+                $department->name       = \sprintf('name%d%d', $i, $j);
                 $department->company    = $company;
                 $company->departments[] = $department;
             }
@@ -750,8 +750,8 @@ class PaginationTest extends OrmFunctionalTestCase
 
         for ($i = 0; $i < 9; $i++) {
             $user        = new User1();
-            $user->name  = sprintf('name%d', $i);
-            $user->email = sprintf('email%d', $i);
+            $user->name  = \sprintf('name%d', $i);
+            $user->email = \sprintf('email%d', $i);
             $this->em->persist($user);
         }
 

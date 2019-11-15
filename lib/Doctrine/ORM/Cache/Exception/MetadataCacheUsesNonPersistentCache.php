@@ -13,7 +13,7 @@ final class MetadataCacheUsesNonPersistentCache extends LogicException implement
     public static function fromDriver(Cache $cache) : self
     {
         return new self(
-            'Metadata Cache uses a non-persistent cache driver, ' . get_class($cache) . '.'
+            'Metadata Cache uses a non-persistent cache driver, ' . \get_class($cache) . '.'
         );
     }
 }

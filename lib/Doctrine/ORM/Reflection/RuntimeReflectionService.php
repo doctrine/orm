@@ -22,11 +22,11 @@ class RuntimeReflectionService implements ReflectionService
      */
     public function getParentClasses(string $className) : array
     {
-        if (! class_exists($className)) {
+        if (! \class_exists($className)) {
             throw MappingException::nonExistingClass($className);
         }
 
-        return class_parents($className);
+        return \class_parents($className);
     }
 
     /**

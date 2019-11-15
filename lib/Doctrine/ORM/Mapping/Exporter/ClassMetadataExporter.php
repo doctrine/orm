@@ -40,7 +40,7 @@ class ClassMetadataExporter implements Exporter
         $lines[] = $this->exportClass($value, $indentationLevel);
         $lines[] = null;
 
-        return implode(PHP_EOL, $lines);
+        return \implode(PHP_EOL, $lines);
     }
 
     private function exportClass(Mapping\ClassMetadata $metadata, int $indentationLevel) : string
@@ -51,19 +51,19 @@ class ClassMetadataExporter implements Exporter
             ? 'MappedSuperClassMetadata'
             : 'EntityClassMetadata';
 
-        $lines[] = sprintf('class %sClassMetadata extends Mapping\%s', $shortClassName, $extendedClassName);
+        $lines[] = \sprintf('class %sClassMetadata extends Mapping\%s', $shortClassName, $extendedClassName);
         $lines[] = '{';
         $lines[] = $this->exportConstructor($metadata, $indentationLevel + 1);
         $lines[] = '}';
         $lines[] = null;
 
-        return implode(PHP_EOL, $lines);
+        return \implode(PHP_EOL, $lines);
     }
 
     private function exportConstructor(Mapping\ClassMetadata $metadata, int $indentationLevel) : string
     {
-        $indentation     = str_repeat(self::INDENTATION, $indentationLevel);
-        $bodyIndentation = str_repeat(self::INDENTATION, $indentationLevel + 1);
+        $indentation     = \str_repeat(self::INDENTATION, $indentationLevel);
+        $bodyIndentation = \str_repeat(self::INDENTATION, $indentationLevel + 1);
         $objectReference = $bodyIndentation . self::VARIABLE;
         $lines           = [];
 
@@ -81,7 +81,7 @@ class ClassMetadataExporter implements Exporter
 
         if ($metadata->changeTrackingPolicy) {
             $lines[] = null;
-            $lines[] = $objectReference . '->setChangeTrackingPolicy(Mapping\ChangeTrackingPolicy::' . strtoupper($metadata->changeTrackingPolicy) . ');';
+            $lines[] = $objectReference . '->setChangeTrackingPolicy(Mapping\ChangeTrackingPolicy::' . \strtoupper($metadata->changeTrackingPolicy) . ');';
         }
 
         $lines[] = $this->exportInheritance($metadata, $indentationLevel);
@@ -90,18 +90,18 @@ class ClassMetadataExporter implements Exporter
         $lines[] = $this->exportLifecycleCallbacks($metadata, $indentationLevel);
         $lines[] = $indentation . '}';
 
-        return implode(PHP_EOL, $lines);
+        return \implode(PHP_EOL, $lines);
     }
 
     private function exportInheritance(Mapping\ClassMetadata $metadata, int $indentationLevel) : string
     {
-        $bodyIndentation = str_repeat(self::INDENTATION, $indentationLevel + 1);
+        $bodyIndentation = \str_repeat(self::INDENTATION, $indentationLevel + 1);
         $objectReference = $bodyIndentation . self::VARIABLE;
         $lines           = [];
 
         if ($metadata->inheritanceType) {
             $lines[] = null;
-            $lines[] = $objectReference . '->setInheritanceType(Mapping\InheritanceType::' . strtoupper($metadata->inheritanceType) . ');';
+            $lines[] = $objectReference . '->setInheritanceType(Mapping\InheritanceType::' . \strtoupper($metadata->inheritanceType) . ');';
         }
 
         if ($metadata->discriminatorColumn) {
@@ -110,12 +110,12 @@ class ClassMetadataExporter implements Exporter
             $lines[] = $this->exportDiscriminatorMetadata($metadata, $indentationLevel + 1);
         }
 
-        return implode(PHP_EOL, $lines);
+        return \implode(PHP_EOL, $lines);
     }
 
     private function exportTable(Mapping\ClassMetadata $metadata, int $indentationLevel) : string
     {
-        $bodyIndentation = str_repeat(self::INDENTATION, $indentationLevel + 1);
+        $bodyIndentation = \str_repeat(self::INDENTATION, $indentationLevel + 1);
         $lines           = [];
 
         if ($metadata->table) {
@@ -124,12 +124,12 @@ class ClassMetadataExporter implements Exporter
             $lines[] = $this->exportTableMetadata($metadata->table, $indentationLevel + 1);
         }
 
-        return implode(PHP_EOL, $lines);
+        return \implode(PHP_EOL, $lines);
     }
 
     private function exportProperties(Mapping\ClassMetadata $metadata, int $indentationLevel) : string
     {
-        $bodyIndentation = str_repeat(self::INDENTATION, $indentationLevel + 1);
+        $bodyIndentation = \str_repeat(self::INDENTATION, $indentationLevel + 1);
         $lines           = [];
 
         foreach ($metadata->getPropertiesIterator() as $name => $property) {
@@ -138,12 +138,12 @@ class ClassMetadataExporter implements Exporter
             $lines[] = $this->exportProperty($property, $indentationLevel + 1);
         }
 
-        return implode(PHP_EOL, $lines);
+        return \implode(PHP_EOL, $lines);
     }
 
     private function exportLifecycleCallbacks(Mapping\ClassMetadata $metadata, int $indentationLevel) : string
     {
-        $bodyIndentation = str_repeat(self::INDENTATION, $indentationLevel + 1);
+        $bodyIndentation = \str_repeat(self::INDENTATION, $indentationLevel + 1);
         $objectReference = $bodyIndentation . self::VARIABLE;
         $lines           = [];
 
@@ -158,14 +158,14 @@ class ClassMetadataExporter implements Exporter
             }
         }
 
-        return implode(PHP_EOL, $lines);
+        return \implode(PHP_EOL, $lines);
     }
 
     private function exportDiscriminatorMetadata(Mapping\ClassMetadata $metadata, int $indentationLevel) : string
     {
         $variableExporter      = new VariableExporter();
         $discriminatorExporter = new DiscriminatorColumnMetadataExporter();
-        $indentation           = str_repeat(self::INDENTATION, $indentationLevel);
+        $indentation           = \str_repeat(self::INDENTATION, $indentationLevel);
         $objectReference       = $indentation . self::VARIABLE;
         $lines                 = [];
 
@@ -179,13 +179,13 @@ class ClassMetadataExporter implements Exporter
             $lines[] = $objectReference . '->setDiscriminatorMap(' . $discriminatorMap . ');';
         }
 
-        return implode(PHP_EOL, $lines);
+        return \implode(PHP_EOL, $lines);
     }
 
     private function exportTableMetadata(Mapping\TableMetadata $table, int $indentationLevel) : string
     {
         $tableExporter   = new TableMetadataExporter();
-        $indentation     = str_repeat(self::INDENTATION, $indentationLevel);
+        $indentation     = \str_repeat(self::INDENTATION, $indentationLevel);
         $objectReference = $indentation . self::VARIABLE;
         $lines           = [];
 
@@ -193,12 +193,12 @@ class ClassMetadataExporter implements Exporter
         $lines[] = null;
         $lines[] = $objectReference . '->setTable(' . $tableExporter::VARIABLE . ');';
 
-        return implode(PHP_EOL, $lines);
+        return \implode(PHP_EOL, $lines);
     }
 
     private function exportProperty(Mapping\Property $property, int $indentationLevel) : string
     {
-        $indentation     = str_repeat(self::INDENTATION, $indentationLevel);
+        $indentation     = \str_repeat(self::INDENTATION, $indentationLevel);
         $objectReference = $indentation . self::VARIABLE;
         $lines           = [];
 
@@ -232,6 +232,6 @@ class ClassMetadataExporter implements Exporter
         $lines[] = null;
         $lines[] = $objectReference . '->addProperty(' . $propertyExporter::VARIABLE . ');';
 
-        return implode(PHP_EOL, $lines);
+        return \implode(PHP_EOL, $lines);
     }
 }

@@ -126,9 +126,9 @@ class DefaultRegion implements Region
     public function evictAll()
     {
         if (! $this->cache instanceof ClearableCache) {
-            throw new BadMethodCallException(sprintf(
+            throw new BadMethodCallException(\sprintf(
                 'Clearing all cache entries is not supported by the supplied cache adapter of type %s',
-                get_class($this->cache)
+                \get_class($this->cache)
             ));
         }
 

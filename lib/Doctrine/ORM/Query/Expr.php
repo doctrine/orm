@@ -35,7 +35,7 @@ class Expr
      */
     public function andX($x = null)
     {
-        return new Expr\Andx(func_get_args());
+        return new Expr\Andx(\func_get_args());
     }
 
     /**
@@ -54,7 +54,7 @@ class Expr
      */
     public function orX($x = null)
     {
-        return new Expr\Orx(func_get_args());
+        return new Expr\Orx(\func_get_args());
     }
 
     /**
@@ -253,7 +253,7 @@ class Expr
      */
     public function countDistinct($x)
     {
-        return 'COUNT(DISTINCT ' . implode(', ', func_get_args()) . ')';
+        return 'COUNT(DISTINCT ' . \implode(', ', \func_get_args()) . ')';
     }
 
     /**
@@ -427,7 +427,7 @@ class Expr
      */
     public function in($x, $y)
     {
-        if (is_array($y)) {
+        if (\is_array($y)) {
             foreach ($y as &$literal) {
                 if (! ($literal instanceof Expr\Literal)) {
                     $literal = $this->quoteLiteral($literal);
@@ -448,7 +448,7 @@ class Expr
      */
     public function notIn($x, $y)
     {
-        if (is_array($y)) {
+        if (\is_array($y)) {
             foreach ($y as &$literal) {
                 if (! ($literal instanceof Expr\Literal)) {
                     $literal = $this->quoteLiteral($literal);
@@ -519,7 +519,7 @@ class Expr
      */
     public function concat($x, $y)
     {
-        return new Expr\Func('CONCAT', func_get_args());
+        return new Expr\Func('CONCAT', \func_get_args());
     }
 
     /**
@@ -598,13 +598,13 @@ class Expr
      */
     private function quoteLiteral($literal)
     {
-        if (is_numeric($literal) && ! is_string($literal)) {
+        if (\is_numeric($literal) && ! \is_string($literal)) {
             return (string) $literal;
-        } elseif (is_bool($literal)) {
+        } elseif (\is_bool($literal)) {
             return $literal ? 'true' : 'false';
         }
 
-        return "'" . str_replace("'", "''", $literal) . "'";
+        return "'" . \str_replace("'", "''", $literal) . "'";
     }
 
     /**

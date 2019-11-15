@@ -38,13 +38,13 @@ class FileWriterClassMetadataGeneratorStrategy implements ClassMetadataGenerator
     ) : void {
         $sourceCode = $this->generator->generate($definition, $metadataBuildingContext);
 
-        $this->ensureDirectoryIsReady(dirname($filePath));
+        $this->ensureDirectoryIsReady(\dirname($filePath));
 
-        $tmpFileName = $filePath . '.' . uniqid('', true);
+        $tmpFileName = $filePath . '.' . \uniqid('', true);
 
-        file_put_contents($tmpFileName, $sourceCode);
-        @chmod($tmpFileName, 0664);
-        rename($tmpFileName, $filePath);
+        \file_put_contents($tmpFileName, $sourceCode);
+        @\chmod($tmpFileName, 0664);
+        \rename($tmpFileName, $filePath);
 
         require $filePath;
     }
@@ -54,12 +54,12 @@ class FileWriterClassMetadataGeneratorStrategy implements ClassMetadataGenerator
      */
     private function ensureDirectoryIsReady(string $directory)
     {
-        if (! is_dir($directory) && (@mkdir($directory, 0775, true) === false)) {
-            throw new RuntimeException(sprintf('Your metadata directory "%s" must be writable', $directory));
+        if (! \is_dir($directory) && (@\mkdir($directory, 0775, true) === false)) {
+            throw new RuntimeException(\sprintf('Your metadata directory "%s" must be writable', $directory));
         }
 
-        if (! is_writable($directory)) {
-            throw new RuntimeException(sprintf('Your proxy directory "%s" must be writable', $directory));
+        if (! \is_writable($directory)) {
+            throw new RuntimeException(\sprintf('Your proxy directory "%s" must be writable', $directory));
         }
     }
 }

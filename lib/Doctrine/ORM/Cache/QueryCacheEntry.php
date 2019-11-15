@@ -32,7 +32,7 @@ class QueryCacheEntry implements CacheEntry
     public function __construct($result, $time = null)
     {
         $this->result = $result;
-        $this->time   = $time ?: microtime(true);
+        $this->time   = $time ?: \microtime(true);
     }
 
     /**

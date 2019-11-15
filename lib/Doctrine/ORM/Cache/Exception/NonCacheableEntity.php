@@ -11,7 +11,7 @@ class NonCacheableEntity extends LogicException implements CacheException
 {
     public static function fromEntity(string $entityName) : self
     {
-        return new self(sprintf(
+        return new self(\sprintf(
             'Entity "%s" not configured as part of the second-level cache.',
             $entityName
         ));

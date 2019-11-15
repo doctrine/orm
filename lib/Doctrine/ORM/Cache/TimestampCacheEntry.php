@@ -23,7 +23,7 @@ class TimestampCacheEntry implements CacheEntry
      */
     public function __construct($time = null)
     {
-        $this->time = $time ? (float) $time : microtime(true);
+        $this->time = $time ? (float) $time : \microtime(true);
     }
 
     /**

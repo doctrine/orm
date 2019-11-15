@@ -11,6 +11,6 @@ class CannotUpdateReadOnlyEntity extends LogicException implements CacheExceptio
 {
     public static function fromEntity(string $entityName) : self
     {
-        return new self(sprintf('Cannot update a readonly entity "%s"', $entityName));
+        return new self(\sprintf('Cannot update a readonly entity "%s"', $entityName));
     }
 }

@@ -61,7 +61,7 @@ abstract class SQLFilter
         $this->parameters[$name] = ['value' => $value, 'type' => $type];
 
         // Keep the parameters sorted for the hash
-        ksort($this->parameters);
+        \ksort($this->parameters);
 
         // The filter collection of the EM is now dirty
         $this->em->getFilters()->setFiltersStateDirty();
@@ -109,7 +109,7 @@ abstract class SQLFilter
      */
     final public function __toString()
     {
-        return serialize($this->parameters);
+        return \serialize($this->parameters);
     }
 
     /**

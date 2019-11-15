@@ -259,7 +259,7 @@ abstract class AbstractEntityPersister implements CachedEntityPersister
             ? $this->persister->expandCriteriaParameters($criteria)
             : $this->persister->expandParameters($criteria);
 
-        return sha1($query . serialize($params) . serialize($orderBy) . $limit . $offset);
+        return \sha1($query . \serialize($params) . \serialize($orderBy) . $limit . $offset);
     }
 
     /**

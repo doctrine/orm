@@ -123,7 +123,7 @@ class OneToOneUnidirectionalAssociationTest extends OrmFunctionalTestCase
         $this->em->persist($product);
         $this->em->flush();
 
-        $product = $this->em->find(get_class($product), $product->getId());
+        $product = $this->em->find(\get_class($product), $product->getId());
 
         self::assertNull($product->getShipping());
     }

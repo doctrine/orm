@@ -85,8 +85,8 @@ class ClassMetadataTest extends OrmTestCase
 
         self::assertCount(1, $cm->getPropertiesIterator());
 
-        $serialized = serialize($cm);
-        $cm         = unserialize($serialized);
+        $serialized = \serialize($cm);
+        $cm         = \unserialize($serialized);
 
         $cm->wakeupReflection(new RuntimeReflectionService());
 
@@ -251,7 +251,7 @@ class ClassMetadataTest extends OrmTestCase
         $cm->addProperty($association);
 
         $association = $cm->getProperty('groups');
-        $association = unserialize(serialize($association));
+        $association = \unserialize(\serialize($association));
 
         $joinTable = $association->getJoinTable();
 
@@ -527,7 +527,7 @@ class ClassMetadataTest extends OrmTestCase
 
         $association = $cm->getProperty('user');
         $joinColumns = $association->getJoinColumns();
-        $joinColumn  = reset($joinColumns);
+        $joinColumn  = \reset($joinColumns);
 
         self::assertEquals('user_id', $joinColumn->getColumnName());
 
@@ -558,9 +558,9 @@ class ClassMetadataTest extends OrmTestCase
         $association        = $cm->getProperty('user');
         $joinTable          = $association->getJoinTable();
         $joinColumns        = $joinTable->getJoinColumns();
-        $joinColumn         = reset($joinColumns);
+        $joinColumn         = \reset($joinColumns);
         $inverseJoinColumns = $joinTable->getInverseJoinColumns();
-        $inverseJoinColumn  = reset($inverseJoinColumns);
+        $inverseJoinColumn  = \reset($inverseJoinColumns);
 
         self::assertEquals('cmsaddress_id', $joinColumn->getColumnName());
         self::assertEquals('cmsuser_id', $inverseJoinColumn->getColumnName());
@@ -584,7 +584,7 @@ class ClassMetadataTest extends OrmTestCase
 
         $association = $metadata->getProperty('user');
         $joinColumns = $association->getJoinColumns();
-        $joinColumn  = reset($joinColumns);
+        $joinColumn  = \reset($joinColumns);
 
         self::assertEquals('USER_ID', $joinColumn->getColumnName());
         self::assertEquals('ID', $joinColumn->getReferencedColumnName());
@@ -609,9 +609,9 @@ class ClassMetadataTest extends OrmTestCase
         $association        = $metadata->getProperty('user');
         $joinTable          = $association->getJoinTable();
         $joinColumns        = $joinTable->getJoinColumns();
-        $joinColumn         = reset($joinColumns);
+        $joinColumn         = \reset($joinColumns);
         $inverseJoinColumns = $joinTable->getInverseJoinColumns();
-        $inverseJoinColumn  = reset($inverseJoinColumns);
+        $inverseJoinColumn  = \reset($inverseJoinColumns);
 
         self::assertEquals('CMS_ADDRESS_CMS_USER', $joinTable->getName());
 
@@ -789,8 +789,8 @@ class ClassMetadataTest extends OrmTestCase
         $metadata->addEntityListener(Events::prePersist, CompanyContractListener::class, 'prePersistHandler');
         $metadata->addEntityListener(Events::postPersist, CompanyContractListener::class, 'postPersistHandler');
 
-        $serialize   = serialize($metadata);
-        $unserialize = unserialize($serialize);
+        $serialize   = \serialize($metadata);
+        $unserialize = \unserialize($serialize);
 
         self::assertEquals($metadata->entityListeners, $unserialize->entityListeners);
     }
@@ -802,7 +802,7 @@ class ClassMetadataTest extends OrmTestCase
     {
         $this->markTestIncomplete('This test needs to be moved to ClassMetadataBuilderTest');
 
-        $cm = new ClassMetadata(strtoupper(CMS\CmsUser::class), null);
+        $cm = new ClassMetadata(\strtoupper(CMS\CmsUser::class), null);
         $cm->setTable(new Mapping\TableMetadata('cms_users'));
 
         self::assertEquals(CMS\CmsUser::class, $cm->getClassName());
@@ -1074,11 +1074,11 @@ class MyNamespacedNamingStrategy extends DefaultNamingStrategy
      */
     public function classToTableName(string $className) : string
     {
-        if (strpos($className, '\\') !== false) {
-            $className = str_replace('\\', '_', str_replace('Doctrine\Tests\Models\\', '', $className));
+        if (\strpos($className, '\\') !== false) {
+            $className = \str_replace('\\', '_', \str_replace('Doctrine\Tests\Models\\', '', $className));
         }
 
-        return strtolower($className);
+        return \strtolower($className);
     }
 }
 
@@ -1089,6 +1089,6 @@ class MyPrefixNamingStrategy extends DefaultNamingStrategy
      */
     public function propertyToColumnName(string $propertyName, ?string $className = null) : string
     {
-        return strtolower($this->classToTableName($className)) . '_' . $propertyName;
+        return \strtolower($this->classToTableName($className)) . '_' . $propertyName;
     }
 }

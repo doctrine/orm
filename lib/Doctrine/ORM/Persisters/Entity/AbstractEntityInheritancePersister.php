@@ -46,7 +46,7 @@ abstract class AbstractEntityInheritancePersister extends BasicEntityPersister
         $columnAlias      = $this->getSQLColumnAlias();
         $columnType       = $joinColumnMetadata->getType();
         $quotedColumnName = $this->platform->quoteIdentifier($joinColumnMetadata->getColumnName());
-        $sql              = sprintf('%s.%s', $tableAlias, $quotedColumnName);
+        $sql              = \sprintf('%s.%s', $tableAlias, $quotedColumnName);
 
         $this->currentPersisterContext->rsm->addMetaResult(
             'r',

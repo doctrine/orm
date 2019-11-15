@@ -23,7 +23,7 @@ class JoinTableMetadataExporter extends TableMetadataExporter
     {
         /** @var JoinTableMetadata $value */
         $joinColumnExporter = new JoinColumnMetadataExporter();
-        $indentation        = str_repeat(self::INDENTATION, $indentationLevel);
+        $indentation        = \str_repeat(self::INDENTATION, $indentationLevel);
         $objectReference    = $indentation . self::VARIABLE;
         $lines              = [];
 
@@ -39,14 +39,14 @@ class JoinTableMetadataExporter extends TableMetadataExporter
             $lines[] = $objectReference . '->addInverseJoinColumn(' . $joinColumnExporter::VARIABLE . ');';
         }
 
-        return implode(PHP_EOL, $lines);
+        return \implode(PHP_EOL, $lines);
     }
 
     protected function exportInstantiation(TableMetadata $metadata) : string
     {
-        assert($metadata instanceof JoinTableMetadata);
+        \assert($metadata instanceof JoinTableMetadata);
 
-        return sprintf(
+        return \sprintf(
             'new Mapping\JoinTableMetadata("%s");',
             $metadata->getName()
         );

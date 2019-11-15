@@ -17,7 +17,7 @@ class CompanyFlexUltraContractListener
      */
     public function prePersistHandler1(CompanyContract $contract, LifecycleEventArgs $args)
     {
-        $this->prePersistCalls[] = func_get_args();
+        $this->prePersistCalls[] = \func_get_args();
     }
 
     /**
@@ -25,6 +25,6 @@ class CompanyFlexUltraContractListener
      */
     public function prePersistHandler2(CompanyContract $contract, LifecycleEventArgs $args)
     {
-        $this->prePersistCalls[] = func_get_args();
+        $this->prePersistCalls[] = \func_get_args();
     }
 }

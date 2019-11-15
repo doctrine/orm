@@ -16,7 +16,7 @@ final class UnexpectedAssociationValue extends LogicException implements CacheEx
         string $given,
         string $expected
     ) : self {
-        return new self(sprintf(
+        return new self(\sprintf(
             'Found entity of type %s on association %s#%s, but expecting %s',
             $given,
             $class,

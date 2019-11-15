@@ -50,6 +50,6 @@ abstract class StaticClassNameConverter
         $inflector                       = self::$classNameInflector
             ?? self::$classNameInflector = (new Configuration())->getClassNameInflector();
 
-        return $inflector->getUserClassName(get_class($object));
+        return $inflector->getUserClassName(\get_class($object));
     }
 }

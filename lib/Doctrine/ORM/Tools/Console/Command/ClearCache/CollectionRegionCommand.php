@@ -87,16 +87,16 @@ EOT
             $collectionRegion = $cache->getCollectionCacheRegion($ownerClass, $assoc);
 
             if (! $collectionRegion instanceof DefaultRegion) {
-                throw new InvalidArgumentException(sprintf(
+                throw new InvalidArgumentException(\sprintf(
                     'The option "--flush" expects a "Doctrine\ORM\Cache\Region\DefaultRegion", but got "%s".',
-                    is_object($collectionRegion) ? get_class($collectionRegion) : gettype($collectionRegion)
+                    \is_object($collectionRegion) ? \get_class($collectionRegion) : \gettype($collectionRegion)
                 ));
             }
 
             $collectionRegion->getCache()->flushAll();
 
             $ui->comment(
-                sprintf(
+                \sprintf(
                     'Flushing cache provider configured for <info>"%s#%s"</info>',
                     $ownerClass,
                     $assoc
@@ -116,7 +116,7 @@ EOT
 
         if ($ownerId) {
             $ui->comment(
-                sprintf(
+                \sprintf(
                     'Clearing second-level cache entry for collection <info>"%s#%s"</info> owner entity identified by <info>"%s"</info>',
                     $ownerClass,
                     $assoc,
@@ -128,7 +128,7 @@ EOT
             return;
         }
 
-        $ui->comment(sprintf('Clearing second-level cache for collection <info>"%s#%s"</info>', $ownerClass, $assoc));
+        $ui->comment(\sprintf('Clearing second-level cache for collection <info>"%s#%s"</info>', $ownerClass, $assoc));
         $cache->evictCollectionRegion($ownerClass, $assoc);
     }
 }

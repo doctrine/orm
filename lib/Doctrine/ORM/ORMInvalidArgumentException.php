@@ -84,7 +84,7 @@ class ORMInvalidArgumentException extends InvalidArgumentException
      */
     public static function newEntitiesFoundThroughRelationships($newEntitiesWithAssociations)
     {
-        $errorMessages = array_map(
+        $errorMessages = \array_map(
             static function (array $newEntityWithAssociation) : string {
                 [$associationMetadata, $entity] = $newEntityWithAssociation;
 
@@ -93,14 +93,14 @@ class ORMInvalidArgumentException extends InvalidArgumentException
             $newEntitiesWithAssociations
         );
 
-        if (count($errorMessages) === 1) {
-            return new self(reset($errorMessages));
+        if (\count($errorMessages) === 1) {
+            return new self(\reset($errorMessages));
         }
 
         return new self(
             'Multiple non-persisted new entities were found through the given association graph:'
             . "\n\n * "
-            . implode("\n * ", $errorMessages)
+            . \implode("\n * ", $errorMessages)
         );
     }
 
@@ -116,16 +116,16 @@ class ORMInvalidArgumentException extends InvalidArgumentException
             . 'on this unknown entity or configure cascade persist this association in the mapping for example '
             . '@ManyToOne(..,cascade={"persist"}).%s';
 
-        $messageAppend = method_exists($entry, '__toString')
+        $messageAppend = \method_exists($entry, '__toString')
             ? ''
             : " If you cannot find out which entity causes the problem implement '%s#__toString()' to get a clue.";
 
-        return new self(sprintf(
+        return new self(\sprintf(
             $message,
             $association->getSourceEntity(),
             $association->getName(),
             self::objToStr($entry),
-            sprintf($messageAppend, $association->getTargetEntity())
+            \sprintf($messageAppend, $association->getTargetEntity())
         ));
     }
 
@@ -138,7 +138,7 @@ class ORMInvalidArgumentException extends InvalidArgumentException
     {
         $messsage = "A detached entity of type %s (%s) was found through the relationship '%s#%s' during cascading a persist operation.";
 
-        return new self(sprintf(
+        return new self(\sprintf(
             $messsage,
             $association->getTargetEntity(),
             self::objToStr($entry),
@@ -201,7 +201,7 @@ class ORMInvalidArgumentException extends InvalidArgumentException
     public static function invalidObject($context, $given, $parameterIndex = 1)
     {
         return new self($context . ' expects parameter ' . $parameterIndex .
-            ' to be an entity object, ' . gettype($given) . ' given.');
+            ' to be an entity object, ' . \gettype($given) . ' given.');
     }
 
     /**
@@ -230,12 +230,12 @@ class ORMInvalidArgumentException extends InvalidArgumentException
     {
         $expectedType = $targetClass->getClassName();
 
-        return new self(sprintf(
+        return new self(\sprintf(
             'Expected value of type "%s" for association field "%s#$%s", got "%s" instead.',
             $expectedType,
             $association->getSourceEntity(),
             $association->getName(),
-            is_object($actualValue) ? get_class($actualValue) : gettype($actualValue)
+            \is_object($actualValue) ? \get_class($actualValue) : \gettype($actualValue)
         ));
     }
 
@@ -246,7 +246,7 @@ class ORMInvalidArgumentException extends InvalidArgumentException
      */
     private static function objToStr($obj) : string
     {
-        return method_exists($obj, '__toString') ? (string) $obj : get_class($obj) . '@' . spl_object_id($obj);
+        return \method_exists($obj, '__toString') ? (string) $obj : \get_class($obj) . '@' . spl_object_id($obj);
     }
 
     /**
@@ -260,7 +260,7 @@ class ORMInvalidArgumentException extends InvalidArgumentException
             . ' To solve this issue: Either explicitly call EntityManager#persist()'
             . ' on this unknown entity or configure cascade persist'
             . ' this association in the mapping for example @ManyToOne(..,cascade={"persist"}).'
-            . (method_exists($entity, '__toString')
+            . (\method_exists($entity, '__toString')
                 ? ''
                 : ' If you cannot find out which entity causes the problem implement \''
                 . $association->getTargetEntity() . '#__toString()\' to get a clue.'

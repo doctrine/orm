@@ -47,7 +47,7 @@ class DiscriminatorColumnMetadataBuilder
     public function build() : Mapping\DiscriminatorColumnMetadata
     {
         // Validate required fields
-        assert($this->componentMetadata !== null);
+        \assert($this->componentMetadata !== null);
 
         $discriminatorColumn = new Mapping\DiscriminatorColumnMetadata();
 

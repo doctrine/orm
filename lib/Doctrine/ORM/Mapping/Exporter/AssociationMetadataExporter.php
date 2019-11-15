@@ -23,7 +23,7 @@ abstract class AssociationMetadataExporter implements Exporter
         /** @var AssociationMetadata $value */
         $cacheExporter    = new CacheMetadataExporter();
         $variableExporter = new VariableExporter();
-        $indentation      = str_repeat(self::INDENTATION, $indentationLevel);
+        $indentation      = \str_repeat(self::INDENTATION, $indentationLevel);
         $objectReference  = $indentation . self::VARIABLE;
         $cascade          = $this->resolveCascade($value->getCascade());
         $lines            = [];
@@ -47,12 +47,12 @@ abstract class AssociationMetadataExporter implements Exporter
 
         $lines[] = $objectReference . '->setSourceEntity("' . $value->getSourceEntity() . '");';
         $lines[] = $objectReference . '->setTargetEntity("' . $value->getTargetEntity() . '");';
-        $lines[] = $objectReference . '->setFetchMode(Mapping\FetchMode::' . strtoupper($value->getFetchMode()) . '");';
+        $lines[] = $objectReference . '->setFetchMode(Mapping\FetchMode::' . \strtoupper($value->getFetchMode()) . '");';
         $lines[] = $objectReference . '->setCascade(' . $variableExporter->export($cascade, $indentationLevel + 1) . ');';
         $lines[] = $objectReference . '->setOrphanRemoval(' . $variableExporter->export($value->isOrphanRemoval(), $indentationLevel + 1) . ');';
         $lines[] = $objectReference . '->setPrimaryKey(' . $variableExporter->export($value->isPrimaryKey(), $indentationLevel + 1) . ');';
 
-        return implode(PHP_EOL, $lines);
+        return \implode(PHP_EOL, $lines);
     }
 
     /**
@@ -62,7 +62,7 @@ abstract class AssociationMetadataExporter implements Exporter
      */
     private function resolveCascade(array $cascade) : array
     {
-        return array_diff(['remove', 'persist', 'refresh'], $cascade)
+        return \array_diff(['remove', 'persist', 'refresh'], $cascade)
             ? $cascade
             : ['all'];
     }

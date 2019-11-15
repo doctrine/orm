@@ -279,8 +279,8 @@ final class Query extends AbstractQuery
 
         // Prepare parameters
         $paramMappings = $this->parserResult->getParameterMappings();
-        $paramCount    = count($this->parameters);
-        $mappingCount  = count($paramMappings);
+        $paramCount    = \count($this->parameters);
+        $mappingCount  = \count($paramMappings);
 
         if ($paramCount > $mappingCount) {
             throw QueryException::tooManyParameters($mappingCount, $paramCount);
@@ -328,7 +328,7 @@ final class Query extends AbstractQuery
         foreach ($statements as $statement) {
             $cacheKeys = $this->queryCacheProfile->generateCacheKeys($statement, $sqlParams, $types, $connectionParams);
 
-            $cacheDriver->delete(reset($cacheKeys));
+            $cacheDriver->delete(\reset($cacheKeys));
         }
     }
 
@@ -378,28 +378,28 @@ final class Query extends AbstractQuery
             }
 
             $sqlPositions      = $paramMappings[$key];
-            $sqlPositionsCount = count($sqlPositions);
+            $sqlPositionsCount = \count($sqlPositions);
 
             // optimized multi value sql positions away for now,
             // they are not allowed in DQL anyways.
             $value      = [$value];
-            $countValue = count($value);
+            $countValue = \count($value);
 
             for ($i = 0, $l = $sqlPositionsCount; $i < $l; $i++) {
                 $sqlParams[$sqlPositions[$i]] = $value[($i % $countValue)];
             }
         }
 
-        if (count($sqlParams) !== count($types)) {
+        if (\count($sqlParams) !== \count($types)) {
             throw QueryException::parameterTypeMismatch();
         }
 
         if ($sqlParams) {
-            ksort($sqlParams);
-            $sqlParams = array_values($sqlParams);
+            \ksort($sqlParams);
+            $sqlParams = \array_values($sqlParams);
 
-            ksort($types);
-            $types = array_values($types);
+            \ksort($types);
+            $types = \array_values($types);
         }
 
         return [$sqlParams, $types];
@@ -417,14 +417,14 @@ final class Query extends AbstractQuery
         $value         = $originalValue;
         $rsm           = $this->getResultSetMapping();
 
-        assert($rsm !== null);
+        \assert($rsm !== null);
 
         if ($value instanceof ClassMetadata && isset($rsm->metadataParameterMapping[$key])) {
             $value = $value->getMetadataValue($rsm->metadataParameterMapping[$key]);
         }
 
         if ($value instanceof ClassMetadata && isset($rsm->discriminatorParameters[$key])) {
-            $value = array_keys(HierarchyDiscriminatorResolver::resolveDiscriminatorsForClass($value, $this->em));
+            $value = \array_keys(HierarchyDiscriminatorResolver::resolveDiscriminatorsForClass($value, $this->em));
         }
 
         $processedValue = $this->processParameterValue($value);
@@ -591,7 +591,7 @@ final class Query extends AbstractQuery
      */
     public function contains($dql)
     {
-        return stripos($this->getDQL(), $dql) !== false;
+        return \stripos($this->getDQL(), $dql) !== false;
     }
 
     /**
@@ -695,7 +695,7 @@ final class Query extends AbstractQuery
      */
     public function setLockMode($lockMode)
     {
-        if (in_array($lockMode, [LockMode::NONE, LockMode::PESSIMISTIC_READ, LockMode::PESSIMISTIC_WRITE], true)) {
+        if (\in_array($lockMode, [LockMode::NONE, LockMode::PESSIMISTIC_READ, LockMode::PESSIMISTIC_WRITE], true)) {
             if (! $this->em->getConnection()->isTransactionActive()) {
                 throw TransactionRequiredException::transactionRequired();
             }
@@ -729,19 +729,19 @@ final class Query extends AbstractQuery
      */
     protected function getQueryCacheId()
     {
-        ksort($this->hints);
+        \ksort($this->hints);
 
         $platform = $this->getEntityManager()
             ->getConnection()
             ->getDatabasePlatform()
             ->getName();
 
-        return md5(
-            $this->getDQL() . serialize($this->hints) .
+        return \md5(
+            $this->getDQL() . \serialize($this->hints) .
             '&platform=' . $platform .
             ($this->em->hasFilters() ? $this->em->getFilters()->getHash() : '') .
             '&firstResult=' . $this->firstResult . '&maxResult=' . $this->maxResults .
-            '&hydrationMode=' . $this->hydrationMode . '&types=' . serialize($this->parsedTypes) . 'DOCTRINE_QUERY_CACHE_SALT'
+            '&hydrationMode=' . $this->hydrationMode . '&types=' . \serialize($this->parsedTypes) . 'DOCTRINE_QUERY_CACHE_SALT'
         );
     }
 
@@ -750,7 +750,7 @@ final class Query extends AbstractQuery
      */
     protected function getHash()
     {
-        return sha1(parent::getHash() . '-' . $this->firstResult . '-' . $this->maxResults);
+        return \sha1(parent::getHash() . '-' . $this->firstResult . '-' . $this->maxResults);
     }
 
     /**

@@ -11,7 +11,7 @@ class NonCacheableEntityAssociation extends LogicException implements CacheExcep
 {
     public static function fromEntityAndField(string $entityName, string $field) : self
     {
-        return new self(sprintf(
+        return new self(\sprintf(
             'Entity association field "%s#%s" not configured as part of the second-level cache.',
             $entityName,
             $field

@@ -234,8 +234,8 @@ class ExtraLazyCollectionTest extends OrmFunctionalTestCase
         self::assertEquals($queryCount + 1, $this->getCurrentQueryCount());
 
         self::assertCount(2, $someGroups);
-        self::assertTrue($user->groups->contains(array_shift($someGroups)));
-        self::assertTrue($user->groups->contains(array_shift($someGroups)));
+        self::assertTrue($user->groups->contains(\array_shift($someGroups)));
+        self::assertTrue($user->groups->contains(\array_shift($someGroups)));
     }
 
     /**

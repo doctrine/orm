@@ -91,7 +91,7 @@ class FilterCollection
             $this->enabledFilters[$name] = new $filterClass($this->em);
 
             // Keep the enabled filters sorted for the hash
-            ksort($this->enabledFilters);
+            \ksort($this->enabledFilters);
 
             // Now the filter collection is dirty
             $this->filtersState = self::FILTERS_STATE_DIRTY;

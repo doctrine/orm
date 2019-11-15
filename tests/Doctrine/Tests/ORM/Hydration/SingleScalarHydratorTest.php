@@ -83,7 +83,7 @@ class SingleScalarHydratorTest extends HydrationTestCase
             return;
         }
 
-        if (in_array($name, ['result3', 'result4'], true)) {
+        if (\in_array($name, ['result3', 'result4'], true)) {
             $this->expectException(NonUniqueResultException::class);
 
             $hydrator->hydrateAll($stmt, $rsm);

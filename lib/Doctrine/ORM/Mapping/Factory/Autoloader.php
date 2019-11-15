@@ -34,17 +34,17 @@ class Autoloader
      */
     public static function resolveFile(string $metadataDir, string $metadataNamespace, string $className) : string
     {
-        if (strpos($className, $metadataNamespace) !== 0) {
+        if (\strpos($className, $metadataNamespace) !== 0) {
             throw new InvalidArgumentException(
-                sprintf('The class "%s" is not part of the metadata namespace "%s"', $className, $metadataNamespace)
+                \sprintf('The class "%s" is not part of the metadata namespace "%s"', $className, $metadataNamespace)
             );
         }
 
         // remove metadata namespace from class name
-        $classNameRelativeToMetadataNamespace = substr($className, strlen($metadataNamespace));
+        $classNameRelativeToMetadataNamespace = \substr($className, \strlen($metadataNamespace));
 
         // remove namespace separators from remaining class name
-        $fileName = str_replace('\\', '', $classNameRelativeToMetadataNamespace);
+        $fileName = \str_replace('\\', '', $classNameRelativeToMetadataNamespace);
 
         return $metadataDir . DIRECTORY_SEPARATOR . $fileName . '.php';
     }
@@ -61,29 +61,29 @@ class Autoloader
         string $metadataNamespace,
         ?callable $notFoundCallback = null
     ) : Closure {
-        $metadataNamespace = ltrim($metadataNamespace, '\\');
+        $metadataNamespace = \ltrim($metadataNamespace, '\\');
 
-        if (! ($notFoundCallback === null || is_callable($notFoundCallback))) {
-            $type = is_object($notFoundCallback) ? get_class($notFoundCallback) : gettype($notFoundCallback);
+        if (! ($notFoundCallback === null || \is_callable($notFoundCallback))) {
+            $type = \is_object($notFoundCallback) ? \get_class($notFoundCallback) : \gettype($notFoundCallback);
 
             throw new InvalidArgumentException(
-                sprintf('Invalid \$notFoundCallback given: must be a callable, "%s" given', $type)
+                \sprintf('Invalid \$notFoundCallback given: must be a callable, "%s" given', $type)
             );
         }
 
         $autoloader = static function ($className) use ($metadataDir, $metadataNamespace, $notFoundCallback) {
-            if (strpos($className, $metadataNamespace) === 0) {
+            if (\strpos($className, $metadataNamespace) === 0) {
                 $file = Autoloader::resolveFile($metadataDir, $metadataNamespace, $className);
 
-                if ($notFoundCallback && ! file_exists($file)) {
-                    call_user_func($notFoundCallback, $metadataDir, $metadataNamespace, $className);
+                if ($notFoundCallback && ! \file_exists($file)) {
+                    \call_user_func($notFoundCallback, $metadataDir, $metadataNamespace, $className);
                 }
 
                 require $file;
             }
         };
 
-        spl_autoload_register($autoloader);
+        \spl_autoload_register($autoloader);
 
         return $autoloader;
     }

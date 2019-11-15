@@ -28,9 +28,9 @@ class OneToManyAssociationMetadataBuilder extends ToManyAssociationMetadataBuild
     public function build() : Mapping\OneToManyAssociationMetadata
     {
         // Validate required fields
-        assert($this->componentMetadata !== null);
-        assert($this->oneToManyAnnotation !== null);
-        assert($this->fieldName !== null);
+        \assert($this->componentMetadata !== null);
+        \assert($this->oneToManyAnnotation !== null);
+        \assert($this->fieldName !== null);
 
         if (empty($this->oneToManyAnnotation->mappedBy)) {
             throw Mapping\MappingException::oneToManyRequiresMappedBy($this->fieldName);
@@ -54,7 +54,7 @@ class OneToManyAssociationMetadataBuilder extends ToManyAssociationMetadataBuild
             $associationMetadata->setOrphanRemoval($this->oneToManyAnnotation->orphanRemoval);
 
             // Orphan removal also implies a cascade remove
-            $associationMetadata->setCascade(array_unique(array_merge($associationMetadata->getCascade(), ['remove'])));
+            $associationMetadata->setCascade(\array_unique(\array_merge($associationMetadata->getCascade(), ['remove'])));
         }
 
         if ($this->orderByAnnotation !== null) {

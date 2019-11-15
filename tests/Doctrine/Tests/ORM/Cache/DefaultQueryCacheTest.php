@@ -90,7 +90,7 @@ class DefaultQueryCacheTest extends OrmTestCase
         $rsm->addRootEntityFromClassMetadata(Country::class, 'c');
 
         for ($i = 0; $i < 4; $i++) {
-            $name   = sprintf('Country %d', $i);
+            $name   = \sprintf('Country %d', $i);
             $entity = new Country($name);
 
             $entity->setId($i);
@@ -128,8 +128,8 @@ class DefaultQueryCacheTest extends OrmTestCase
         $rsm->addJoinedEntityFromClassMetadata(State::class, 's', 'c', 'state', ['id' => 'state_id', 'name' => 'state_name']);
 
         for ($i = 0; $i < 4; $i++) {
-            $state = new State(sprintf('State %d', $i));
-            $city  = new City(sprintf('City %d', $i), $state);
+            $state = new State(\sprintf('State %d', $i));
+            $city  = new City(\sprintf('City %d', $i), $state);
 
             $city->setId($i);
             $state->setId($i * 2);
@@ -167,9 +167,9 @@ class DefaultQueryCacheTest extends OrmTestCase
         $rsm->addJoinedEntityFromClassMetadata(Country::class, 'co', 's', 'country', ['id' => 'country_id', 'name' => 'country_name']);
 
         for ($i = 0; $i < 4; $i++) {
-            $country = new Country(sprintf('Country %d', $i));
-            $state   = new State(sprintf('State %d', $i), $country);
-            $city    = new City(sprintf('City %d', $i), $state);
+            $country = new Country(\sprintf('Country %d', $i));
+            $state   = new State(\sprintf('State %d', $i), $country);
+            $city    = new City(\sprintf('City %d', $i), $state);
 
             $city->setId($i);
             $state->setId($i * 2);
@@ -212,7 +212,7 @@ class DefaultQueryCacheTest extends OrmTestCase
         $rsm->addJoinedEntityFromClassMetadata(State::class, 's', 'c', 'state', ['id' => 'state_id', 'name' => 'state_name']);
 
         for ($i = 0; $i < 4; $i++) {
-            $city = new City(sprintf('City %d', $i), null);
+            $city = new City(\sprintf('City %d', $i), null);
 
             $city->setId($i);
 
@@ -243,7 +243,7 @@ class DefaultQueryCacheTest extends OrmTestCase
         $rsm->addJoinedEntityFromClassMetadata(City::class, 'c', 's', 'cities', ['id' => 'c_id', 'name' => 'c_name']);
 
         for ($i = 0; $i < 4; $i++) {
-            $state = new State(sprintf('State %d', $i));
+            $state = new State(\sprintf('State %d', $i));
             $city1 = new City('City 1', $state);
             $city2 = new City('City 2', $state);
 
@@ -354,7 +354,7 @@ class DefaultQueryCacheTest extends OrmTestCase
         $rsm->addRootEntityFromClassMetadata(Country::class, 'c');
 
         for ($i = 0; $i < 4; $i++) {
-            $name   = sprintf('Country %d', $i);
+            $name   = \sprintf('Country %d', $i);
             $entity = new Country($name);
 
             $entity->setId($i);
@@ -461,7 +461,7 @@ class DefaultQueryCacheTest extends OrmTestCase
         $rsm->addRootEntityFromClassMetadata(Country::class, 'c');
 
         for ($i = 0; $i < 4; $i++) {
-            $name   = sprintf('Country %d', $i);
+            $name   = \sprintf('Country %d', $i);
             $entity = new Country($name);
 
             $entity->setId($i);
@@ -490,7 +490,7 @@ class DefaultQueryCacheTest extends OrmTestCase
             ['id' => 2, 'name' => 'Bar'],
         ];
 
-        $entry->time = microtime(true) - 100;
+        $entry->time = \microtime(true) - 100;
 
         $this->region->addReturn('get', $entry);
 

@@ -95,7 +95,7 @@ class LifecycleCallbackTest extends OrmFunctionalTestCase
 
         $this->em->clear();
 
-        $user2 = $this->em->find(get_class($user), $user->getId());
+        $user2 = $this->em->find(\get_class($user), $user->getId());
 
         self::assertEquals('Alice', $user2->getName());
         self::assertEquals('Hello World', $user2->getValue());
@@ -200,13 +200,13 @@ DQL;
 
         $entities = $this
             ->em
-            ->createQuery(sprintf($dql, $e1->getId(), $e2->getId()))
+            ->createQuery(\sprintf($dql, $e1->getId(), $e2->getId()))
             ->getResult();
 
-        self::assertTrue(current($entities)->postLoadCallbackInvoked);
-        self::assertTrue(current($entities)->postLoadCascaderNotNull);
-        self::assertTrue(current($entities)->cascader->postLoadCallbackInvoked);
-        self::assertEquals(current($entities)->cascader->postLoadEntitiesCount, 2);
+        self::assertTrue(\current($entities)->postLoadCallbackInvoked);
+        self::assertTrue(\current($entities)->postLoadCascaderNotNull);
+        self::assertTrue(\current($entities)->cascader->postLoadCallbackInvoked);
+        self::assertEquals(\current($entities)->cascader->postLoadEntitiesCount, 2);
     }
 
     /**
@@ -242,7 +242,7 @@ DQL;
 
         $result = $this
             ->em
-            ->createQuery(sprintf($dql, $e1->getId(), $e2->getId()))
+            ->createQuery(\sprintf($dql, $e1->getId(), $e2->getId()))
             ->iterate();
 
         foreach ($result as $entity) {
@@ -531,7 +531,7 @@ class LifecycleCallbackCascader
     public function doStuffOnPostLoad()
     {
         $this->postLoadCallbackInvoked = true;
-        $this->postLoadEntitiesCount   = count($this->entities);
+        $this->postLoadEntitiesCount   = \count($this->entities);
     }
 
     public function getId()

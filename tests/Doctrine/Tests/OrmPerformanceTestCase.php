@@ -19,13 +19,13 @@ class OrmPerformanceTestCase extends OrmFunctionalTestCase
 
     protected function runTest()
     {
-        $s = microtime(true);
+        $s = \microtime(true);
         parent::runTest();
-        $time = microtime(true) - $s;
+        $time = \microtime(true) - $s;
 
         if ($this->maxRunningTime !== 0 && $time > $this->maxRunningTime) {
             $this->fail(
-                sprintf(
+                \sprintf(
                     'expected running time: <= %s but was: %s',
                     $this->maxRunningTime,
                     $time
@@ -41,7 +41,7 @@ class OrmPerformanceTestCase extends OrmFunctionalTestCase
      */
     public function setMaxRunningTime($maxRunningTime)
     {
-        if (! (is_int($maxRunningTime) && $maxRunningTime >= 0)) {
+        if (! (\is_int($maxRunningTime) && $maxRunningTime >= 0)) {
             throw new InvalidArgumentException();
         }
 

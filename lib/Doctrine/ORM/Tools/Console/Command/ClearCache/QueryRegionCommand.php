@@ -84,16 +84,16 @@ EOT
             $queryRegion = $queryCache->getRegion();
 
             if (! $queryRegion instanceof DefaultRegion) {
-                throw new InvalidArgumentException(sprintf(
+                throw new InvalidArgumentException(\sprintf(
                     'The option "--flush" expects a "Doctrine\ORM\Cache\Region\DefaultRegion", but got "%s".',
-                    is_object($queryRegion) ? get_class($queryRegion) : gettype($queryRegion)
+                    \is_object($queryRegion) ? \get_class($queryRegion) : \gettype($queryRegion)
                 ));
             }
 
             $queryRegion->getCache()->flushAll();
 
             $ui->comment(
-                sprintf(
+                \sprintf(
                     'Flushing cache provider configured for second-level cache query region named <info>"%s"</info>',
                     $name
                 )
@@ -110,7 +110,7 @@ EOT
             return;
         }
 
-        $ui->comment(sprintf('Clearing second-level cache query region named <info>"%s"</info>', $name));
+        $ui->comment(\sprintf('Clearing second-level cache query region named <info>"%s"</info>', $name));
         $cache->evictQueryRegion($name);
     }
 }

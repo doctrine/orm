@@ -45,7 +45,7 @@ class DefaultMultiGetRegion extends DefaultRegion
         }
 
         $items = $this->cache->fetchMultiple($keysToRetrieve);
-        if (count($items) !== count($keysToRetrieve)) {
+        if (\count($items) !== \count($keysToRetrieve)) {
             return null;
         }
 

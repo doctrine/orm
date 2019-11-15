@@ -57,7 +57,7 @@ final class UnitOfWorkComputeChangesBench
         foreach ($this->users as $user) {
             $user->status    = 'other';
             $user->username .= '++';
-            $user->name      = str_replace('Mr.', 'Mrs.', $user->name);
+            $user->name      = \str_replace('Mr.', 'Mrs.', $user->name);
         }
     }
 

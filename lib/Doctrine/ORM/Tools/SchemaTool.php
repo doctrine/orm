@@ -281,7 +281,7 @@ class SchemaTool
 
             if ($class->table->getIndexes()) {
                 foreach ($class->table->getIndexes() as $indexName => $indexData) {
-                    $indexName = is_numeric($indexName) ? null : $indexName;
+                    $indexName = \is_numeric($indexName) ? null : $indexName;
                     $index     = new Index($indexName, $indexData['columns'], $indexData['unique'], $indexData['flags'], $indexData['options']);
 
                     foreach ($table->getIndexes() as $tableIndexName => $tableIndex) {
@@ -301,7 +301,7 @@ class SchemaTool
 
             if ($class->table->getUniqueConstraints()) {
                 foreach ($class->table->getUniqueConstraints() as $indexName => $indexData) {
-                    $indexName = is_numeric($indexName) ? null : $indexName;
+                    $indexName = \is_numeric($indexName) ? null : $indexName;
                     $uniqIndex = new Index($indexName, $indexData['columns'], true, false, $indexData['flags'], $indexData['options']);
 
                     foreach ($table->getIndexes() as $tableIndexName => $tableIndex) {
@@ -446,15 +446,15 @@ class SchemaTool
             $options['notnull'] = false;
         }
 
-        if (strtolower($columnType) === 'string' && $options['length'] === null) {
+        if (\strtolower($columnType) === 'string' && $options['length'] === null) {
             $options['length'] = 255;
         }
 
-        if (is_int($fieldMetadata->getPrecision())) {
+        if (\is_int($fieldMetadata->getPrecision())) {
             $options['precision'] = $fieldMetadata->getPrecision();
         }
 
-        if (is_int($fieldMetadata->getScale())) {
+        if (\is_int($fieldMetadata->getScale())) {
             $options['scale'] = $fieldMetadata->getScale();
         }
 
@@ -604,9 +604,9 @@ class SchemaTool
         }
 
         $idColumns        = $class->getIdentifierColumns($this->em);
-        $idColumnNameList = array_keys($idColumns);
+        $idColumnNameList = \array_keys($idColumns);
 
-        if (! in_array($referencedColumnName, $idColumnNameList, true)) {
+        if (! \in_array($referencedColumnName, $idColumnNameList, true)) {
             return null;
         }
 
@@ -620,11 +620,11 @@ class SchemaTool
 
             $joinColumns = $property->getJoinColumns();
 
-            if (count($joinColumns) > 1) {
+            if (\count($joinColumns) > 1) {
                 throw MappingException::noSingleAssociationJoinColumnFound($class->getClassName(), $fieldName);
             }
 
-            $joinColumn = reset($joinColumns);
+            $joinColumn = \reset($joinColumns);
 
             if ($joinColumn->getColumnName() === $referencedColumnName) {
                 $targetEntity = $this->em->getClassMetadata($property->getTargetEntity());
@@ -708,7 +708,7 @@ class SchemaTool
 
                 switch ($columnType) {
                     case 'string':
-                        $columnOptions['length'] = is_int($property->getLength()) ? $property->getLength() : 255;
+                        $columnOptions['length'] = \is_int($property->getLength()) ? $property->getLength() : 255;
                         break;
 
                     case 'decimal':
@@ -732,19 +732,19 @@ class SchemaTool
         // Prefer unique constraints over implicit simple indexes created for foreign keys.
         // Also avoids index duplication.
         foreach ($uniqueConstraints as $indexName => $unique) {
-            $theJoinTable->addUniqueIndex($unique['columns'], is_numeric($indexName) ? null : $indexName);
+            $theJoinTable->addUniqueIndex($unique['columns'], \is_numeric($indexName) ? null : $indexName);
         }
 
-        $compositeName = $theJoinTable->getName() . '.' . implode('', $localColumns);
+        $compositeName = $theJoinTable->getName() . '.' . \implode('', $localColumns);
 
         if (isset($addedFks[$compositeName])
             && ($foreignTableName !== $addedFks[$compositeName]['foreignTableName']
-            || 0 < count(array_diff($foreignColumns, $addedFks[$compositeName]['foreignColumns'])))
+            || 0 < \count(\array_diff($foreignColumns, $addedFks[$compositeName]['foreignColumns'])))
         ) {
             foreach ($theJoinTable->getForeignKeys() as $fkName => $key) {
-                if (count(array_diff($key->getLocalColumns(), $localColumns)) === 0
+                if (\count(\array_diff($key->getLocalColumns(), $localColumns)) === 0
                     && (($key->getForeignTableName() !== $foreignTableName)
-                    || 0 < count(array_diff($key->getForeignColumns(), $foreignColumns)))
+                    || 0 < \count(\array_diff($key->getForeignColumns(), $foreignColumns)))
                 ) {
                     $theJoinTable->removeForeignKey($fkName);
                     break;
@@ -778,8 +778,8 @@ class SchemaTool
             return [];
         }
 
-        $options                        = array_intersect_key($mapping, array_flip(self::KNOWN_COLUMN_OPTIONS));
-        $options['customSchemaOptions'] = array_diff_key($mapping, $options);
+        $options                        = \array_intersect_key($mapping, \array_flip(self::KNOWN_COLUMN_OPTIONS));
+        $options['customSchemaOptions'] = \array_diff_key($mapping, $options);
 
         return $options;
     }
@@ -875,7 +875,7 @@ class SchemaTool
                 /** @var $sequence Table */
                 if ($table->hasPrimaryKey()) {
                     $columns = $table->getPrimaryKey()->getColumns();
-                    if (count($columns) === 1) {
+                    if (\count($columns) === 1) {
                         $checkSequence = $table->getName() . '_' . $columns[0] . '_seq';
                         if ($fullSchema->hasSequence($checkSequence)) {
                             $visitor->acceptSequence($fullSchema->getSequence($checkSequence));

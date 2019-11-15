@@ -252,7 +252,7 @@ class DDC117Test extends OrmFunctionalTestCase
         $this->em->clear();
 
         /** @var DDC117Article $article */
-        $article = $this->em->find(get_class($this->article1), $this->article1->id());
+        $article = $this->em->find(\get_class($this->article1), $this->article1->id());
         self::assertEquals('not so very long text!', $article->getText());
     }
 
@@ -261,7 +261,7 @@ class DDC117Test extends OrmFunctionalTestCase
      */
     public function testOneToOneCascadeRemove() : void
     {
-        $article = $this->em->find(get_class($this->article1), $this->article1->id());
+        $article = $this->em->find(\get_class($this->article1), $this->article1->id());
         $this->em->remove($article);
         $this->em->flush();
 
@@ -315,7 +315,7 @@ class DDC117Test extends OrmFunctionalTestCase
     public function testLoadOneToManyCollectionOfForeignKeyEntities() : void
     {
         /** @var DDC117Article $article */
-        $article = $this->em->find(get_class($this->article1), $this->article1->id());
+        $article = $this->em->find(\get_class($this->article1), $this->article1->id());
 
         $translations = $article->getTranslations();
         self::assertFalse($translations->isInitialized());
@@ -354,7 +354,7 @@ class DDC117Test extends OrmFunctionalTestCase
         $this->em->flush();
         $this->em->clear();
 
-        $editor = $this->em->find(get_class($editor), $editor->id);
+        $editor = $this->em->find(\get_class($editor), $editor->id);
         self::assertCount(0, $editor->reviewingTranslations);
     }
 
@@ -396,7 +396,7 @@ class DDC117Test extends OrmFunctionalTestCase
         $this->em->flush();
         $this->em->clear();
 
-        $editor           = $this->em->find(get_class($editor), $editor->id);
+        $editor           = $this->em->find(\get_class($editor), $editor->id);
         $lastTranslatedBy = $editor->reviewingTranslations[0]->getLastTranslatedBy();
         $lastTranslatedBy->count();
 
@@ -411,13 +411,13 @@ class DDC117Test extends OrmFunctionalTestCase
         $editor = new DDC117Editor('beberlei');
 
         /** @var DDC117Article $article1 */
-        $article1 = $this->em->find(get_class($this->article1), $this->article1->id());
+        $article1 = $this->em->find(\get_class($this->article1), $this->article1->id());
         foreach ($article1->getTranslations() as $translation) {
             $editor->reviewingTranslations[] = $translation;
         }
 
         /** @var DDC117Article $article2 */
-        $article2 = $this->em->find(get_class($this->article2), $this->article2->id());
+        $article2 = $this->em->find(\get_class($this->article2), $this->article2->id());
         $article2->addTranslation('de', 'Vanille-Krapferl'); // omnomnom
         $article2->addTranslation('fr', "Sorry can't speak french!");
 
@@ -430,7 +430,7 @@ class DDC117Test extends OrmFunctionalTestCase
         $this->em->flush();
         $this->em->clear();
 
-        return $this->em->find(get_class($editor), $editor->id);
+        return $this->em->find(\get_class($editor), $editor->id);
     }
 
     /**
@@ -439,7 +439,7 @@ class DDC117Test extends OrmFunctionalTestCase
     public function testArrayHydrationWithCompositeKey() : void
     {
         $dql    = 'SELECT r,s,t FROM Doctrine\Tests\Models\DDC117\DDC117Reference r INNER JOIN r.source s INNER JOIN r.target t';
-        $before = count($this->em->createQuery($dql)->getResult());
+        $before = \count($this->em->createQuery($dql)->getResult());
 
         $this->article1 = $this->em->find(DDC117Article::class, $this->article1->id());
         $this->article2 = $this->em->find(DDC117Article::class, $this->article2->id());

@@ -380,7 +380,7 @@ class QueryBuilder
     {
         $rootAlias = null;
 
-        if (in_array($parentAlias, $this->getRootAliases(), true)) {
+        if (\in_array($parentAlias, $this->getRootAliases(), true)) {
             $rootAlias = $parentAlias;
         } elseif (isset($this->joinRootAliases[$parentAlias])) {
             $rootAlias = $this->joinRootAliases[$parentAlias];
@@ -443,10 +443,10 @@ class QueryBuilder
         $aliases = [];
 
         foreach ($this->dqlParts['from'] as &$fromClause) {
-            if (is_string($fromClause)) {
-                $spacePos = strrpos($fromClause, ' ');
-                $from     = substr($fromClause, 0, $spacePos);
-                $alias    = substr($fromClause, $spacePos + 1);
+            if (\is_string($fromClause)) {
+                $spacePos = \strrpos($fromClause, ' ');
+                $from     = \substr($fromClause, 0, $spacePos);
+                $alias    = \substr($fromClause, $spacePos + 1);
 
                 $fromClause = new Query\Expr\From($from, $alias);
             }
@@ -474,7 +474,7 @@ class QueryBuilder
      */
     public function getAllAliases()
     {
-        return array_merge($this->getRootAliases(), array_keys($this->joinRootAliases));
+        return \array_merge($this->getRootAliases(), \array_keys($this->joinRootAliases));
     }
 
     /**
@@ -496,10 +496,10 @@ class QueryBuilder
         $entities = [];
 
         foreach ($this->dqlParts['from'] as &$fromClause) {
-            if (is_string($fromClause)) {
-                $spacePos = strrpos($fromClause, ' ');
-                $from     = substr($fromClause, 0, $spacePos);
-                $alias    = substr($fromClause, $spacePos + 1);
+            if (\is_string($fromClause)) {
+                $spacePos = \strrpos($fromClause, ' ');
+                $from     = \substr($fromClause, 0, $spacePos);
+                $alias    = \substr($fromClause, $spacePos + 1);
 
                 $fromClause = new Query\Expr\From($from, $alias);
             }
@@ -563,7 +563,7 @@ class QueryBuilder
     public function setParameters($parameters)
     {
         // BC compatibility with 2.3-
-        if (is_array($parameters)) {
+        if (\is_array($parameters)) {
             $parameterCollection = new ArrayCollection();
 
             foreach ($parameters as $key => $value) {
@@ -681,12 +681,12 @@ class QueryBuilder
             );
         }
 
-        $isMultiple = is_array($this->dqlParts[$dqlPartName])
+        $isMultiple = \is_array($this->dqlParts[$dqlPartName])
             && ! ($dqlPartName === 'join' && ! $append);
 
         // Allow adding any part retrieved from self::getDQLParts().
-        if (is_array($dqlPart) && $dqlPartName !== 'join') {
-            $dqlPart = reset($dqlPart);
+        if (\is_array($dqlPart) && $dqlPartName !== 'join') {
+            $dqlPart = \reset($dqlPart);
         }
 
         // This is introduced for backwards compatibility reasons.
@@ -695,7 +695,7 @@ class QueryBuilder
             $newDqlPart = [];
 
             foreach ($dqlPart as $k => $v) {
-                $k = is_numeric($k) ? $this->getRootAlias() : $k;
+                $k = \is_numeric($k) ? $this->getRootAlias() : $k;
 
                 $newDqlPart[$k] = $v;
             }
@@ -704,8 +704,8 @@ class QueryBuilder
         }
 
         if ($append && $isMultiple) {
-            if (is_array($dqlPart)) {
-                $key = key($dqlPart);
+            if (\is_array($dqlPart)) {
+                $key = \key($dqlPart);
 
                 $this->dqlParts[$dqlPartName][$key][] = $dqlPart[$key];
             } else {
@@ -743,7 +743,7 @@ class QueryBuilder
             return $this;
         }
 
-        $selects = is_array($select) ? $select : func_get_args();
+        $selects = \is_array($select) ? $select : \func_get_args();
 
         return $this->add('select', new Expr\Select($selects), false);
     }
@@ -792,7 +792,7 @@ class QueryBuilder
             return $this;
         }
 
-        $selects = is_array($select) ? $select : func_get_args();
+        $selects = \is_array($select) ? $select : \func_get_args();
 
         return $this->add('select', new Expr\Select($selects), true);
     }
@@ -899,9 +899,9 @@ class QueryBuilder
     {
         $rootAliases = $this->getRootAliases();
 
-        if (! in_array($alias, $rootAliases, true)) {
+        if (! \in_array($alias, $rootAliases, true)) {
             throw new Query\QueryException(
-                sprintf('Specified root alias %s must be set before invoking indexBy().', $alias)
+                \sprintf('Specified root alias %s must be set before invoking indexBy().', $alias)
             );
         }
 
@@ -967,8 +967,8 @@ class QueryBuilder
      */
     public function innerJoin($join, $alias, $conditionType = null, $condition = null, $indexBy = null)
     {
-        $hasParentAlias = strpos($join, '.');
-        $parentAlias    = substr($join, 0, $hasParentAlias === false ? 0 : $hasParentAlias);
+        $hasParentAlias = \strpos($join, '.');
+        $parentAlias    = \substr($join, 0, $hasParentAlias === false ? 0 : $hasParentAlias);
         $rootAlias      = $this->findRootAlias($alias, $parentAlias);
         $join           = new Expr\Join(
             Expr\Join::INNER_JOIN,
@@ -1006,8 +1006,8 @@ class QueryBuilder
      */
     public function leftJoin($join, $alias, $conditionType = null, $condition = null, $indexBy = null)
     {
-        $hasParentAlias = strpos($join, '.');
-        $parentAlias    = substr($join, 0, $hasParentAlias === false ? 0 : $hasParentAlias);
+        $hasParentAlias = \strpos($join, '.');
+        $parentAlias    = \substr($join, 0, $hasParentAlias === false ? 0 : $hasParentAlias);
         $rootAlias      = $this->findRootAlias($alias, $parentAlias);
         $join           = new Expr\Join(Expr\Join::LEFT_JOIN, $join, $alias, $conditionType, $condition, $indexBy);
 
@@ -1060,8 +1060,8 @@ class QueryBuilder
      */
     public function where($predicates)
     {
-        if (! (func_num_args() === 1 && $predicates instanceof Expr\Composite)) {
-            $predicates = new Expr\Andx(func_get_args());
+        if (! (\func_num_args() === 1 && $predicates instanceof Expr\Composite)) {
+            $predicates = new Expr\Andx(\func_get_args());
         }
 
         return $this->add('where', $predicates);
@@ -1085,13 +1085,13 @@ class QueryBuilder
      */
     public function andWhere()
     {
-        $args  = func_get_args();
+        $args  = \func_get_args();
         $where = $this->getDQLPart('where');
 
         if ($where instanceof Expr\Andx) {
             $where->addMultiple($args);
         } else {
-            array_unshift($args, $where);
+            \array_unshift($args, $where);
             $where = new Expr\Andx($args);
         }
 
@@ -1116,13 +1116,13 @@ class QueryBuilder
      */
     public function orWhere()
     {
-        $args  = func_get_args();
+        $args  = \func_get_args();
         $where = $this->getDQLPart('where');
 
         if ($where instanceof Expr\Orx) {
             $where->addMultiple($args);
         } else {
-            array_unshift($args, $where);
+            \array_unshift($args, $where);
             $where = new Expr\Orx($args);
         }
 
@@ -1146,7 +1146,7 @@ class QueryBuilder
      */
     public function groupBy($groupBy)
     {
-        return $this->add('groupBy', new Expr\GroupBy(func_get_args()));
+        return $this->add('groupBy', new Expr\GroupBy(\func_get_args()));
     }
 
     /**
@@ -1166,7 +1166,7 @@ class QueryBuilder
      */
     public function addGroupBy($groupBy)
     {
-        return $this->add('groupBy', new Expr\GroupBy(func_get_args()), true);
+        return $this->add('groupBy', new Expr\GroupBy(\func_get_args()), true);
     }
 
     /**
@@ -1179,8 +1179,8 @@ class QueryBuilder
      */
     public function having($having)
     {
-        if (! (func_num_args() === 1 && ($having instanceof Expr\Andx || $having instanceof Expr\Orx))) {
-            $having = new Expr\Andx(func_get_args());
+        if (! (\func_num_args() === 1 && ($having instanceof Expr\Andx || $having instanceof Expr\Orx))) {
+            $having = new Expr\Andx(\func_get_args());
         }
 
         return $this->add('having', $having);
@@ -1196,13 +1196,13 @@ class QueryBuilder
      */
     public function andHaving($having)
     {
-        $args   = func_get_args();
+        $args   = \func_get_args();
         $having = $this->getDQLPart('having');
 
         if ($having instanceof Expr\Andx) {
             $having->addMultiple($args);
         } else {
-            array_unshift($args, $having);
+            \array_unshift($args, $having);
             $having = new Expr\Andx($args);
         }
 
@@ -1219,13 +1219,13 @@ class QueryBuilder
      */
     public function orHaving($having)
     {
-        $args   = func_get_args();
+        $args   = \func_get_args();
         $having = $this->getDQLPart('having');
 
         if ($having instanceof Expr\Orx) {
             $having->addMultiple($args);
         } else {
-            array_unshift($args, $having);
+            \array_unshift($args, $having);
             $having = new Expr\Orx($args);
         }
 
@@ -1295,7 +1295,7 @@ class QueryBuilder
             foreach ($criteria->getOrderings() as $sort => $order) {
                 $hasValidAlias = false;
                 foreach ($allAliases as $alias) {
-                    if (strpos($sort . '.', $alias . '.') === 0) {
+                    if (\strpos($sort . '.', $alias . '.') === 0) {
                         $hasValidAlias = true;
                         break;
                     }
@@ -1400,7 +1400,7 @@ class QueryBuilder
             }
         }
 
-        $dql .= implode(', ', $fromClauses)
+        $dql .= \implode(', ', $fromClauses)
               . $this->getReducedDQLQueryPart('where', ['pre' => ' WHERE '])
               . $this->getReducedDQLQueryPart('groupBy', ['pre' => ' GROUP BY ', 'separator' => ', '])
               . $this->getReducedDQLQueryPart('having', ['pre' => ' HAVING '])
@@ -1424,7 +1424,7 @@ class QueryBuilder
         }
 
         return ($options['pre'] ?? '')
-             . (is_array($queryPart) ? implode($options['separator'], $queryPart) : $queryPart)
+             . (\is_array($queryPart) ? \implode($options['separator'], $queryPart) : $queryPart)
              . ($options['post'] ?? '');
     }
 
@@ -1436,7 +1436,7 @@ class QueryBuilder
     public function resetDQLParts($parts = null)
     {
         if ($parts === null) {
-            $parts = array_keys($this->dqlParts);
+            $parts = \array_keys($this->dqlParts);
         }
 
         foreach ($parts as $part) {
@@ -1455,7 +1455,7 @@ class QueryBuilder
      */
     public function resetDQLPart($part)
     {
-        $this->dqlParts[$part] = is_array($this->dqlParts[$part]) ? [] : null;
+        $this->dqlParts[$part] = \is_array($this->dqlParts[$part]) ? [] : null;
         $this->state           = self::STATE_DIRTY;
 
         return $this;
@@ -1478,13 +1478,13 @@ class QueryBuilder
     public function __clone()
     {
         foreach ($this->dqlParts as $part => $elements) {
-            if (is_array($this->dqlParts[$part])) {
+            if (\is_array($this->dqlParts[$part])) {
                 foreach ($this->dqlParts[$part] as $idx => $element) {
-                    if (is_object($element)) {
+                    if (\is_object($element)) {
                         $this->dqlParts[$part][$idx] = clone $element;
                     }
                 }
-            } elseif (is_object($elements)) {
+            } elseif (\is_object($elements)) {
                 $this->dqlParts[$part] = clone $elements;
             }
         }

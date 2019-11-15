@@ -24,28 +24,28 @@ class FieldMetadataExporter extends LocalColumnMetadataExporter
     {
         /** @var FieldMetadata $value */
         $variableExporter = new VariableExporter();
-        $indentation      = str_repeat(self::INDENTATION, $indentationLevel);
+        $indentation      = \str_repeat(self::INDENTATION, $indentationLevel);
         $objectReference  = $indentation . self::VARIABLE;
 
         $lines   = [];
         $lines[] = parent::export($value, $indentationLevel);
-        $lines[] = $objectReference . '->setVersioned(' . ltrim($variableExporter->export($value->isVersioned(), $indentationLevel + 1)) . ');';
+        $lines[] = $objectReference . '->setVersioned(' . \ltrim($variableExporter->export($value->isVersioned(), $indentationLevel + 1)) . ');';
 
-        return implode(PHP_EOL, $lines);
+        return \implode(PHP_EOL, $lines);
     }
 
     protected function exportInstantiation(ColumnMetadata $metadata) : string
     {
-        assert($metadata instanceof FieldMetadata);
+        \assert($metadata instanceof FieldMetadata);
 
         $lines   = [];
-        $lines[] = sprintf(
+        $lines[] = \sprintf(
             'new Mapping\FieldMetadata("%s", "%s", Type::getType("%s"));',
             $metadata->getName(),
             $metadata->getColumnName(),
             $metadata->getTypeName()
         );
 
-        return implode(PHP_EOL, $lines);
+        return \implode(PHP_EOL, $lines);
     }
 }

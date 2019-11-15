@@ -446,7 +446,7 @@ abstract class AbstractMappingDriverTest extends OrmTestCase
      */
     public function testOwningOneToOneAssociation($class) : ClassMetadata
     {
-        self::assertArrayHasKey('address', iterator_to_array($class->getPropertiesIterator()));
+        self::assertArrayHasKey('address', \iterator_to_array($class->getPropertiesIterator()));
 
         $association = $class->getProperty('address');
 
@@ -465,7 +465,7 @@ abstract class AbstractMappingDriverTest extends OrmTestCase
      */
     public function testInverseOneToManyAssociation($class) : ClassMetadata
     {
-        self::assertArrayHasKey('phonenumbers', iterator_to_array($class->getPropertiesIterator()));
+        self::assertArrayHasKey('phonenumbers', \iterator_to_array($class->getPropertiesIterator()));
 
         $association = $class->getProperty('phonenumbers');
 
@@ -488,7 +488,7 @@ abstract class AbstractMappingDriverTest extends OrmTestCase
      */
     public function testManyToManyAssociationWithCascadeAll($class) : ClassMetadata
     {
-        self::assertArrayHasKey('groups', iterator_to_array($class->getPropertiesIterator()));
+        self::assertArrayHasKey('groups', \iterator_to_array($class->getPropertiesIterator()));
 
         $association = $class->getProperty('groups');
 
@@ -541,7 +541,7 @@ abstract class AbstractMappingDriverTest extends OrmTestCase
         $association = $class->getProperty('groups');
         $joinTable   = $association->getJoinTable();
         $joinColumns = $joinTable->getJoinColumns();
-        $joinColumn  = reset($joinColumns);
+        $joinColumn  = \reset($joinColumns);
 
         self::assertFalse($joinColumn->isNullable());
         self::assertFalse($joinColumn->isUnique());
@@ -562,7 +562,7 @@ abstract class AbstractMappingDriverTest extends OrmTestCase
         $association        = $class->getProperty('groups');
         $joinTable          = $association->getJoinTable();
         $inverseJoinColumns = $joinTable->getInverseJoinColumns();
-        $inverseJoinColumn  = reset($inverseJoinColumns);
+        $inverseJoinColumn  = \reset($inverseJoinColumns);
 
         self::assertEquals('CHAR(32) NOT NULL', $property->getColumnDefinition());
         self::assertEquals('INT NULL', $inverseJoinColumn->getColumnDefinition());
@@ -579,7 +579,7 @@ abstract class AbstractMappingDriverTest extends OrmTestCase
     {
         $association = $class->getProperty('address');
         $joinColumns = $association->getJoinColumns();
-        $joinColumn  = reset($joinColumns);
+        $joinColumn  = \reset($joinColumns);
 
         self::assertEquals('CASCADE', $joinColumn->getOnDelete());
 
@@ -591,7 +591,7 @@ abstract class AbstractMappingDriverTest extends OrmTestCase
      */
     public function testDiscriminatorColumnDefaults() : void
     {
-        if (strpos(static::class, 'PHPMappingDriver') !== false) {
+        if (\strpos(static::class, 'PHPMappingDriver') !== false) {
             $this->markTestSkipped('PHP Mapping Drivers have no defaults.');
         }
 
@@ -748,15 +748,15 @@ abstract class AbstractMappingDriverTest extends OrmTestCase
         $guestMetadata = $factory->getMetadataFor(DDC964Guest::class);
 
         // assert groups association mappings
-        self::assertArrayHasKey('groups', iterator_to_array($guestMetadata->getPropertiesIterator()));
-        self::assertArrayHasKey('groups', iterator_to_array($adminMetadata->getPropertiesIterator()));
+        self::assertArrayHasKey('groups', \iterator_to_array($guestMetadata->getPropertiesIterator()));
+        self::assertArrayHasKey('groups', \iterator_to_array($adminMetadata->getPropertiesIterator()));
 
         $guestGroups = $guestMetadata->getProperty('groups');
         $adminGroups = $adminMetadata->getProperty('groups');
 
         // assert not override attributes
         self::assertEquals($guestGroups->getName(), $adminGroups->getName());
-        self::assertEquals(get_class($guestGroups), get_class($adminGroups));
+        self::assertEquals(\get_class($guestGroups), \get_class($adminGroups));
         self::assertEquals($guestGroups->getMappedBy(), $adminGroups->getMappedBy());
         self::assertEquals($guestGroups->getInversedBy(), $adminGroups->getInversedBy());
         self::assertEquals($guestGroups->isOwningSide(), $adminGroups->isOwningSide());
@@ -766,9 +766,9 @@ abstract class AbstractMappingDriverTest extends OrmTestCase
         // assert not override attributes
         $guestGroupsJoinTable          = $guestGroups->getJoinTable();
         $guestGroupsJoinColumns        = $guestGroupsJoinTable->getJoinColumns();
-        $guestGroupsJoinColumn         = reset($guestGroupsJoinColumns);
+        $guestGroupsJoinColumn         = \reset($guestGroupsJoinColumns);
         $guestGroupsInverseJoinColumns = $guestGroupsJoinTable->getInverseJoinColumns();
-        $guestGroupsInverseJoinColumn  = reset($guestGroupsInverseJoinColumns);
+        $guestGroupsInverseJoinColumn  = \reset($guestGroupsInverseJoinColumns);
 
         self::assertEquals('ddc964_users_groups', $guestGroupsJoinTable->getName());
         self::assertEquals('user_id', $guestGroupsJoinColumn->getColumnName());
@@ -776,24 +776,24 @@ abstract class AbstractMappingDriverTest extends OrmTestCase
 
         $adminGroupsJoinTable          = $adminGroups->getJoinTable();
         $adminGroupsJoinColumns        = $adminGroupsJoinTable->getJoinColumns();
-        $adminGroupsJoinColumn         = reset($adminGroupsJoinColumns);
+        $adminGroupsJoinColumn         = \reset($adminGroupsJoinColumns);
         $adminGroupsInverseJoinColumns = $adminGroupsJoinTable->getInverseJoinColumns();
-        $adminGroupsInverseJoinColumn  = reset($adminGroupsInverseJoinColumns);
+        $adminGroupsInverseJoinColumn  = \reset($adminGroupsInverseJoinColumns);
 
         self::assertEquals('ddc964_users_admingroups', $adminGroupsJoinTable->getName());
         self::assertEquals('adminuser_id', $adminGroupsJoinColumn->getColumnName());
         self::assertEquals('admingroup_id', $adminGroupsInverseJoinColumn->getColumnName());
 
         // assert address association mappings
-        self::assertArrayHasKey('address', iterator_to_array($guestMetadata->getPropertiesIterator()));
-        self::assertArrayHasKey('address', iterator_to_array($adminMetadata->getPropertiesIterator()));
+        self::assertArrayHasKey('address', \iterator_to_array($guestMetadata->getPropertiesIterator()));
+        self::assertArrayHasKey('address', \iterator_to_array($adminMetadata->getPropertiesIterator()));
 
         $guestAddress = $guestMetadata->getProperty('address');
         $adminAddress = $adminMetadata->getProperty('address');
 
         // assert not override attributes
         self::assertEquals($guestAddress->getName(), $adminAddress->getName());
-        self::assertEquals(get_class($guestAddress), get_class($adminAddress));
+        self::assertEquals(\get_class($guestAddress), \get_class($adminAddress));
         self::assertEquals($guestAddress->getMappedBy(), $adminAddress->getMappedBy());
         self::assertEquals($guestAddress->getInversedBy(), $adminAddress->getInversedBy());
         self::assertEquals($guestAddress->isOwningSide(), $adminAddress->isOwningSide());
@@ -802,12 +802,12 @@ abstract class AbstractMappingDriverTest extends OrmTestCase
 
         // assert override
         $guestAddressJoinColumns = $guestAddress->getJoinColumns();
-        $guestAddressJoinColumn  = reset($guestAddressJoinColumns);
+        $guestAddressJoinColumn  = \reset($guestAddressJoinColumns);
 
         self::assertEquals('address_id', $guestAddressJoinColumn->getColumnName());
 
         $adminAddressJoinColumns = $adminAddress->getJoinColumns();
-        $adminAddressJoinColumn  = reset($adminAddressJoinColumns);
+        $adminAddressJoinColumn  = \reset($adminAddressJoinColumns);
 
         self::assertEquals('adminaddress_id', $adminAddressJoinColumn->getColumnName());
     }
@@ -821,7 +821,7 @@ abstract class AbstractMappingDriverTest extends OrmTestCase
         $adminMetadata = $factory->getMetadataFor(DDC3579Admin::class);
 
         // assert groups association mappings
-        self::assertArrayHasKey('groups', iterator_to_array($adminMetadata->getPropertiesIterator()));
+        self::assertArrayHasKey('groups', \iterator_to_array($adminMetadata->getPropertiesIterator()));
 
         $adminGroups = $adminMetadata->getProperty('groups');
 
@@ -837,7 +837,7 @@ abstract class AbstractMappingDriverTest extends OrmTestCase
         // check override metadata
         $contractMetadata = $this->createClassMetadataFactory()->getMetadataFor(DDC5934Contract::class);
 
-        self::assertArrayHasKey('members', iterator_to_array($contractMetadata->getPropertiesIterator()));
+        self::assertArrayHasKey('members', \iterator_to_array($contractMetadata->getPropertiesIterator()));
 
         $contractMembers = $contractMetadata->getProperty('members');
 
@@ -982,7 +982,7 @@ abstract class AbstractMappingDriverTest extends OrmTestCase
         self::assertEquals(Mapping\CacheUsage::READ_ONLY, $class->getCache()->getUsage());
         self::assertEquals('doctrine_tests_models_cache_city', $class->getCache()->getRegion());
 
-        self::assertArrayHasKey('state', iterator_to_array($class->getPropertiesIterator()));
+        self::assertArrayHasKey('state', \iterator_to_array($class->getPropertiesIterator()));
 
         $stateAssociation = $class->getProperty('state');
 
@@ -990,7 +990,7 @@ abstract class AbstractMappingDriverTest extends OrmTestCase
         self::assertEquals(Mapping\CacheUsage::READ_ONLY, $stateAssociation->getCache()->getUsage());
         self::assertEquals('doctrine_tests_models_cache_city__state', $stateAssociation->getCache()->getRegion());
 
-        self::assertArrayHasKey('attractions', iterator_to_array($class->getPropertiesIterator()));
+        self::assertArrayHasKey('attractions', \iterator_to_array($class->getPropertiesIterator()));
 
         $attractionsAssociation = $class->getProperty('attractions');
 
@@ -1031,7 +1031,7 @@ abstract class AbstractMappingDriverTest extends OrmTestCase
      */
     public function testDiscriminatorColumnDefaultLength() : void
     {
-        if (strpos(static::class, 'PHPMappingDriver') !== false) {
+        if (\strpos(static::class, 'PHPMappingDriver') !== false) {
             $this->markTestSkipped('PHP Mapping Drivers have no defaults.');
         }
 
@@ -1050,7 +1050,7 @@ abstract class AbstractMappingDriverTest extends OrmTestCase
      */
     public function testDiscriminatorColumnDefaultType() : void
     {
-        if (strpos(static::class, 'PHPMappingDriver') !== false) {
+        if (\strpos(static::class, 'PHPMappingDriver') !== false) {
             $this->markTestSkipped('PHP Mapping Drivers have no defaults.');
         }
 
@@ -1069,7 +1069,7 @@ abstract class AbstractMappingDriverTest extends OrmTestCase
      */
     public function testDiscriminatorColumnDefaultName() : void
     {
-        if (strpos(static::class, 'PHPMappingDriver') !== false) {
+        if (\strpos(static::class, 'PHPMappingDriver') !== false) {
             $this->markTestSkipped('PHP Mapping Drivers have no defaults.');
         }
 

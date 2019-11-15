@@ -65,12 +65,12 @@ abstract class Base
     {
         if ($arg !== null && (! $arg instanceof self || $arg->count() > 0)) {
             // If we decide to keep Expr\Base instances, we can use this check
-            if (! is_string($arg)) {
-                $class = get_class($arg);
+            if (! \is_string($arg)) {
+                $class = \get_class($arg);
 
-                if (! in_array($class, $this->allowedClasses, true)) {
+                if (! \in_array($class, $this->allowedClasses, true)) {
                     throw new InvalidArgumentException(
-                        sprintf("Expression of type '%s' not allowed in this context.", $class)
+                        \sprintf("Expression of type '%s' not allowed in this context.", $class)
                     );
                 }
             }
@@ -86,7 +86,7 @@ abstract class Base
      */
     public function count()
     {
-        return count($this->parts);
+        return \count($this->parts);
     }
 
     /**
@@ -98,6 +98,6 @@ abstract class Base
             return (string) $this->parts[0];
         }
 
-        return $this->preSeparator . implode($this->separator, $this->parts) . $this->postSeparator;
+        return $this->preSeparator . \implode($this->separator, $this->parts) . $this->postSeparator;
     }
 }

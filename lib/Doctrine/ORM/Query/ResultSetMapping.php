@@ -221,7 +221,7 @@ class ResultSetMapping
     {
         $found = false;
 
-        foreach (array_merge($this->metaMappings, $this->fieldMappings) as $columnName => $columnFieldName) {
+        foreach (\array_merge($this->metaMappings, $this->fieldMappings) as $columnName => $columnFieldName) {
             if (! ($columnFieldName === $fieldName && $this->columnOwnerMap[$columnName] === $alias)) {
                 continue;
             }
@@ -517,7 +517,7 @@ class ResultSetMapping
      */
     public function getEntityResultCount()
     {
-        return count($this->aliasMap);
+        return \count($this->aliasMap);
     }
 
     /**

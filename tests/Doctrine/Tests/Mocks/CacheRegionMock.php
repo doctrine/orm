@@ -42,7 +42,7 @@ class CacheRegionMock implements Region
     private function getReturn($method, $default)
     {
         if (isset($this->returns[$method]) && ! empty($this->returns[$method])) {
-            return array_shift($this->returns[$method]);
+            return \array_shift($this->returns[$method]);
         }
 
         return $default;

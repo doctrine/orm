@@ -191,7 +191,7 @@ class QueryTest extends OrmFunctionalTestCase
                   ->getResult();
 
         self::assertSame(
-            array_values($parameters),
+            \array_values($parameters),
             $this->sqlLoggerStack->queries[$this->sqlLoggerStack->currentQuery]['params']
         );
     }
@@ -268,7 +268,7 @@ class QueryTest extends OrmFunctionalTestCase
             $topics[] = $article->topic;
 
             $identityMap      = $this->em->getUnitOfWork()->getIdentityMap();
-            $identityMapCount = count($identityMap[CmsArticle::class]);
+            $identityMapCount = \count($identityMap[CmsArticle::class]);
             self::assertGreaterThan($iteratedCount, $identityMapCount);
 
             $iteratedCount++;

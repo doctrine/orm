@@ -99,7 +99,7 @@ class DefaultCacheFactory implements CacheFactory
             case CacheUsage::NONSTRICT_READ_WRITE:
                 return new NonStrictReadWriteCachedEntityPersister($persister, $region, $em, $metadata);
             default:
-                throw new InvalidArgumentException(sprintf('Unrecognized access strategy type [%s]', $usage));
+                throw new InvalidArgumentException(\sprintf('Unrecognized access strategy type [%s]', $usage));
         }
     }
 
@@ -124,7 +124,7 @@ class DefaultCacheFactory implements CacheFactory
                 return new NonStrictReadWriteCachedCollectionPersister($persister, $region, $em, $association);
             default:
                 throw new InvalidArgumentException(
-                    sprintf('Unrecognized access strategy type [%s]', $usage)
+                    \sprintf('Unrecognized access strategy type [%s]', $usage)
                 );
         }
     }

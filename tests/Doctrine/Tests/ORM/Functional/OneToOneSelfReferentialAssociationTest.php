@@ -107,7 +107,7 @@ class OneToOneSelfReferentialAssociationTest extends OrmFunctionalTestCase
 
         $this->em->clear();
 
-        $entity2 = $this->em->find(get_class($entity1), $entity1->getId());
+        $entity2 = $this->em->find(\get_class($entity1), $entity1->getId());
 
         self::assertInstanceOf(MultiSelfReference::class, $entity2->getOther1());
         self::assertInstanceOf(MultiSelfReference::class, $entity2->getOther2());

@@ -160,7 +160,7 @@ class SchemaToolTest extends OrmTestCase
 
         $schema = $schemaTool->getSchemaFromMetadata($classes);
 
-        self::assertEquals(count($classes), $listener->tableCalls);
+        self::assertEquals(\count($classes), $listener->tableCalls);
         self::assertTrue($listener->schemaCalled);
     }
 
@@ -215,7 +215,7 @@ class SchemaToolTest extends OrmTestCase
         $indexes = $schema->getTable('first_entity')->getIndexes();
 
         self::assertCount(1, $indexes, 'there should be only one index');
-        self::assertTrue(current($indexes)->isPrimary(), 'index should be primary');
+        self::assertTrue(\current($indexes)->isPrimary(), 'index should be primary');
     }
 
     public function testSetDiscriminatorColumnWithoutLength() : void

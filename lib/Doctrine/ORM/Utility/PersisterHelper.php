@@ -83,7 +83,7 @@ class PersisterHelper
             }
         }
 
-        throw new RuntimeException(sprintf(
+        throw new RuntimeException(\sprintf(
             'Could not resolve type of column "%s" of class "%s"',
             $columnName,
             $class->getClassName()

@@ -49,7 +49,7 @@ class DDC767Test extends OrmFunctionalTestCase
         $this->em->clear();
 
         /** @var CmsUser $pUser */
-        $pUser = $this->em->find(get_class($user), $user->id);
+        $pUser = $this->em->find(\get_class($user), $user->id);
 
         self::assertNotNull($pUser, 'User not retrieved from database.');
 
@@ -64,7 +64,7 @@ class DDC767Test extends OrmFunctionalTestCase
 
             // Add new
             foreach ($groups as $groupId) {
-                $pUser->addGroup($this->em->find(get_class($group1), $groupId));
+                $pUser->addGroup($this->em->find(\get_class($group1), $groupId));
             }
 
             $this->em->flush();

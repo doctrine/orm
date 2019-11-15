@@ -69,27 +69,27 @@ final class SingleTableInheritanceInsertPerformanceBench
 
     public function benchInsertFixContracts() : void
     {
-        array_map([$this->entityManager, 'persist'], $this->fixContracts);
+        \array_map([$this->entityManager, 'persist'], $this->fixContracts);
         $this->entityManager->flush();
     }
 
     public function benchInsertFlexContracts() : void
     {
-        array_map([$this->entityManager, 'persist'], $this->flexContracts);
+        \array_map([$this->entityManager, 'persist'], $this->flexContracts);
         $this->entityManager->flush();
     }
 
     public function benchInsertUltraContracts() : void
     {
-        array_map([$this->entityManager, 'persist'], $this->ultraContracts);
+        \array_map([$this->entityManager, 'persist'], $this->ultraContracts);
         $this->entityManager->flush();
     }
 
     public function benchInsertAllContracts() : void
     {
-        array_map([$this->entityManager, 'persist'], $this->fixContracts);
-        array_map([$this->entityManager, 'persist'], $this->flexContracts);
-        array_map([$this->entityManager, 'persist'], $this->ultraContracts);
+        \array_map([$this->entityManager, 'persist'], $this->fixContracts);
+        \array_map([$this->entityManager, 'persist'], $this->flexContracts);
+        \array_map([$this->entityManager, 'persist'], $this->ultraContracts);
         $this->entityManager->flush();
     }
 }

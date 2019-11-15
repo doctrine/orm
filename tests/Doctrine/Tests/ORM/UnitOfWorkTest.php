@@ -419,7 +419,7 @@ class UnitOfWorkTest extends OrmTestCase
         $this->unitOfWork->persist($entity);
         $this->unitOfWork->addToIdentityMap($entity);
 
-        self::assertSame($entity, $this->unitOfWork->getByIdHash($idHash, get_class($entity)));
+        self::assertSame($entity, $this->unitOfWork->getByIdHash($idHash, \get_class($entity)));
     }
 
     public function entitiesWithValidIdentifiersProvider()
@@ -430,7 +430,7 @@ class UnitOfWorkTest extends OrmTestCase
 
         $nonEmptyString = new EntityWithStringIdentifier();
 
-        $nonEmptyString->id = uniqid('id', true);
+        $nonEmptyString->id = \uniqid('id', true);
 
         $emptyStrings = new EntityWithCompositeStringIdentifier();
 
@@ -439,8 +439,8 @@ class UnitOfWorkTest extends OrmTestCase
 
         $nonEmptyStrings = new EntityWithCompositeStringIdentifier();
 
-        $nonEmptyStrings->id1 = uniqid('id1', true);
-        $nonEmptyStrings->id2 = uniqid('id2', true);
+        $nonEmptyStrings->id1 = \uniqid('id1', true);
+        $nonEmptyStrings->id2 = \uniqid('id2', true);
 
         $booleanTrue = new EntityWithBooleanIdentifier();
 
@@ -484,11 +484,11 @@ class UnitOfWorkTest extends OrmTestCase
     {
         $firstNullString = new EntityWithCompositeStringIdentifier();
 
-        $firstNullString->id2 = uniqid('id2', true);
+        $firstNullString->id2 = \uniqid('id2', true);
 
         $secondNullString = new EntityWithCompositeStringIdentifier();
 
-        $secondNullString->id1 = uniqid('id1', true);
+        $secondNullString->id1 = \uniqid('id1', true);
 
         return [
             'null string, single field'      => [new EntityWithStringIdentifier(), ['id' => null]],
@@ -644,8 +644,8 @@ class UnitOfWorkTest extends OrmTestCase
     public function testCanInstantiateInternalPhpClassSubclassFromUnserializedMetadata() : void
     {
         /** @var ClassMetadata $classMetadata */
-        $classMetadata = unserialize(
-            serialize(
+        $classMetadata = \unserialize(
+            \serialize(
                 new ClassMetadata(MyArrayObjectEntity::class, null)
             )
         );
@@ -816,8 +816,8 @@ class EntityWithRandomlyGeneratedField
 
     public function __construct()
     {
-        $this->id             = uniqid('id', true);
-        $this->generatedField = random_int(0, 100000);
+        $this->id             = \uniqid('id', true);
+        $this->generatedField = \random_int(0, 100000);
     }
 }
 
@@ -829,7 +829,7 @@ class CascadePersistedEntity
 
     public function __construct()
     {
-        $this->id = uniqid(self::class, true);
+        $this->id = \uniqid(self::class, true);
     }
 }
 
@@ -844,7 +844,7 @@ class EntityWithCascadingAssociation
 
     public function __construct()
     {
-        $this->id = uniqid(self::class, true);
+        $this->id = \uniqid(self::class, true);
     }
 }
 
@@ -859,7 +859,7 @@ class EntityWithNonCascadingAssociation
 
     public function __construct()
     {
-        $this->id = uniqid(self::class, true);
+        $this->id = \uniqid(self::class, true);
     }
 }
 

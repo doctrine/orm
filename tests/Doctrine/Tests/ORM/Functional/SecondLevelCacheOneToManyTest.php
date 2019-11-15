@@ -382,7 +382,7 @@ class SecondLevelCacheOneToManyTest extends SecondLevelCacheAbstractTest
         $this->em->flush();
         $this->em->clear();
 
-        $query  = sprintf('SELECT t, tt FROM Doctrine\Tests\Models\Cache\Traveler t JOIN t.travels tt WHERE t.id = %d', $travelerId);
+        $query  = \sprintf('SELECT t, tt FROM Doctrine\Tests\Models\Cache\Traveler t JOIN t.travels tt WHERE t.id = %d', $travelerId);
         $result = $this->em->createQuery($query)->getSingleResult();
 
         self::assertEquals(4, $result->getTravels()->count());

@@ -50,7 +50,7 @@ class SecondLevelCacheTest extends OrmFunctionalTestCase
      */
     public function countQuery(EntityManagerInterface $em)
     {
-        return count($em->getConfiguration()->getSQLLogger()->queries);
+        return \count($em->getConfiguration()->getSQLLogger()->queries);
     }
 
     public function testFindEntityWithoutCache() : void
@@ -137,21 +137,21 @@ class SecondLevelCacheTest extends OrmFunctionalTestCase
     {
         $times        = 100;
         $size         = 500;
-        $startPersist = microtime(true);
+        $startPersist = \microtime(true);
 
         echo PHP_EOL . $label;
 
         for ($i = 0; $i < $size; $i++) {
-            $em->persist(new Country(sprintf('Country %d', $i)));
+            $em->persist(new Country(\sprintf('Country %d', $i)));
         }
 
         $em->flush();
         $em->clear();
 
-        printf("\n[%s] persist %s countries", number_format(microtime(true) - $startPersist, 6), $size);
+        \printf("\n[%s] persist %s countries", \number_format(\microtime(true) - $startPersist, 6), $size);
 
         $dql       = 'SELECT c FROM Doctrine\Tests\Models\Cache\Country c WHERE c.name LIKE :name';
-        $startFind = microtime(true);
+        $startFind = \microtime(true);
 
         for ($i = 0; $i < $times; $i++) {
             $em->createQuery($dql)
@@ -160,8 +160,8 @@ class SecondLevelCacheTest extends OrmFunctionalTestCase
                 ->getResult();
         }
 
-        printf("\n[%s] select %s countries (%s times)", number_format(microtime(true) - $startFind, 6), $size, $times);
-        printf("\n%s\n", str_repeat('-', 50));
+        \printf("\n[%s] select %s countries (%s times)", \number_format(\microtime(true) - $startFind, 6), $size, $times);
+        \printf("\n%s\n", \str_repeat('-', 50));
     }
 
     public function findEntityOneToMany(EntityManagerInterface $em, $label)
@@ -170,7 +170,7 @@ class SecondLevelCacheTest extends OrmFunctionalTestCase
         $size         = 30;
         $states       = [];
         $cities       = [];
-        $startPersist = microtime(true);
+        $startPersist = \microtime(true);
         $country      = new Country('Country');
 
         echo PHP_EOL . $label;
@@ -190,7 +190,7 @@ class SecondLevelCacheTest extends OrmFunctionalTestCase
 
         foreach ($states as $key => $state) {
             for ($i = 0; $i < $size; $i++) {
-                $city = new City(sprintf('City %s - %d', $key, $i), $state);
+                $city = new City(\sprintf('City %s - %d', $key, $i), $state);
 
                 $em->persist($city);
 
@@ -203,9 +203,9 @@ class SecondLevelCacheTest extends OrmFunctionalTestCase
         $em->flush();
         $em->clear();
 
-        printf("\n[%s] persist %s states and %s cities", number_format(microtime(true) - $startPersist, 6), count($states), count($cities));
+        \printf("\n[%s] persist %s states and %s cities", \number_format(\microtime(true) - $startPersist, 6), \count($states), \count($cities));
 
-        $startFind = microtime(true);
+        $startFind = \microtime(true);
 
         for ($i = 0; $i < $times; $i++) {
             foreach ($states as $state) {
@@ -217,8 +217,8 @@ class SecondLevelCacheTest extends OrmFunctionalTestCase
             }
         }
 
-        printf("\n[%s] find %s states and %s cities (%s times)", number_format(microtime(true) - $startFind, 6), count($states), count($cities), $times);
-        printf("\n%s\n", str_repeat('-', 50));
+        \printf("\n[%s] find %s states and %s cities (%s times)", \number_format(\microtime(true) - $startFind, 6), \count($states), \count($cities), $times);
+        \printf("\n%s\n", \str_repeat('-', 50));
     }
 
     private function findEntity(EntityManagerInterface $em, $label)
@@ -226,7 +226,7 @@ class SecondLevelCacheTest extends OrmFunctionalTestCase
         $times        = 10;
         $size         = 500;
         $countries    = [];
-        $startPersist = microtime(true);
+        $startPersist = \microtime(true);
 
         echo PHP_EOL . $label;
 
@@ -241,9 +241,9 @@ class SecondLevelCacheTest extends OrmFunctionalTestCase
         $em->flush();
         $em->clear();
 
-        printf("\n[%s] persist %s countries", number_format(microtime(true) - $startPersist, 6), $size);
+        \printf("\n[%s] persist %s countries", \number_format(\microtime(true) - $startPersist, 6), $size);
 
-        $startFind = microtime(true);
+        $startFind = \microtime(true);
 
         for ($i = 0; $i <= $times; $i++) {
             foreach ($countries as $country) {
@@ -252,15 +252,15 @@ class SecondLevelCacheTest extends OrmFunctionalTestCase
             }
         }
 
-        printf("\n[%s] find %s countries (%s times)", number_format(microtime(true) - $startFind, 6), $size, $times);
-        printf("\n%s\n", str_repeat('-', 50));
+        \printf("\n[%s] find %s countries (%s times)", \number_format(\microtime(true) - $startFind, 6), $size, $times);
+        \printf("\n%s\n", \str_repeat('-', 50));
     }
 
     private function findAllEntity(EntityManagerInterface $em, $label)
     {
         $times        = 100;
         $size         = 50;
-        $startPersist = microtime(true);
+        $startPersist = \microtime(true);
         $rep          = $em->getRepository(Country::class);
 
         echo PHP_EOL . $label;
@@ -272,9 +272,9 @@ class SecondLevelCacheTest extends OrmFunctionalTestCase
         $em->flush();
         $em->clear();
 
-        printf("\n[%s] persist %s countries", number_format(microtime(true) - $startPersist, 6), $size);
+        \printf("\n[%s] persist %s countries", \number_format(\microtime(true) - $startPersist, 6), $size);
 
-        $startFind = microtime(true);
+        $startFind = \microtime(true);
 
         for ($i = 0; $i <= $times; $i++) {
             $list = $rep->findAll();
@@ -283,7 +283,7 @@ class SecondLevelCacheTest extends OrmFunctionalTestCase
             self::assertCount($size, $list);
         }
 
-        printf("\n[%s] find %s countries (%s times)", number_format(microtime(true) - $startFind, 6), $size, $times);
-        printf("\n%s\n", str_repeat('-', 50));
+        \printf("\n[%s] find %s countries (%s times)", \number_format(\microtime(true) - $startFind, 6), $size, $times);
+        \printf("\n%s\n", \str_repeat('-', 50));
     }
 }

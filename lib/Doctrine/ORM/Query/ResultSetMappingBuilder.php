@@ -138,7 +138,7 @@ class ResultSetMappingBuilder extends ResultSetMapping
 
                     if (isset($this->fieldMappings[$columnAlias])) {
                         throw new InvalidArgumentException(
-                            sprintf("The column '%s' conflicts with another column in the mapper.", $columnName)
+                            \sprintf("The column '%s' conflicts with another column in the mapper.", $columnName)
                         );
                     }
 
@@ -158,7 +158,7 @@ class ResultSetMappingBuilder extends ResultSetMapping
 
                         if (isset($this->metaMappings[$columnAlias])) {
                             throw new InvalidArgumentException(
-                                sprintf("The column '%s' conflicts with another column in the mapper.", $columnName)
+                                \sprintf("The column '%s' conflicts with another column in the mapper.", $columnName)
                             );
                         }
 
@@ -181,11 +181,11 @@ class ResultSetMappingBuilder extends ResultSetMapping
     private function isInheritanceSupported(ClassMetadata $metadata)
     {
         if ($metadata->inheritanceType === InheritanceType::SINGLE_TABLE
-            && in_array($metadata->getClassName(), $metadata->discriminatorMap, true)) {
+            && \in_array($metadata->getClassName(), $metadata->discriminatorMap, true)) {
             return true;
         }
 
-        return ! in_array($metadata->inheritanceType, [InheritanceType::SINGLE_TABLE, InheritanceType::JOINED], true);
+        return ! \in_array($metadata->inheritanceType, [InheritanceType::SINGLE_TABLE, InheritanceType::JOINED], true);
     }
 
     /**

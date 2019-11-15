@@ -47,14 +47,14 @@ class DDC1595Test extends OrmFunctionalTestCase
         // DDC-1596
         self::assertSQLEquals(
             'SELECT t0."id" AS c1, t0."type" FROM "base" t0 WHERE t0."id" = ? AND t0."type" IN (\'Entity1\')',
-            $sqlLogger->queries[count($sqlLogger->queries)]['sql']
+            $sqlLogger->queries[\count($sqlLogger->queries)]['sql']
         );
 
         $entities = $entity1->getEntities()->getValues();
 
         self::assertSQLEquals(
             'SELECT t0."id" AS c1, t0."type" FROM "base" t0 INNER JOIN "entity1_entity2" ON t0."id" = "entity1_entity2"."item" WHERE "entity1_entity2"."parent" = ? AND t0."type" IN (\'Entity2\')',
-            $sqlLogger->queries[count($sqlLogger->queries)]['sql']
+            $sqlLogger->queries[\count($sqlLogger->queries)]['sql']
         );
 
         $this->em->clear();
@@ -65,7 +65,7 @@ class DDC1595Test extends OrmFunctionalTestCase
 
         self::assertSQLEquals(
             'SELECT COUNT(*) FROM "entity1_entity2" t WHERE t."parent" = ?',
-            $sqlLogger->queries[count($sqlLogger->queries)]['sql']
+            $sqlLogger->queries[\count($sqlLogger->queries)]['sql']
         );
     }
 }

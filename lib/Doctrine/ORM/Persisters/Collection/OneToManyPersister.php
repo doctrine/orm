@@ -203,7 +203,7 @@ class OneToManyPersister extends AbstractCollectionPersister
         }
 
         $tableName = $targetClass->table->getQuotedQualifiedName($this->platform);
-        $statement = 'DELETE FROM ' . $tableName . ' WHERE ' . implode(' = ? AND ', $columns) . ' = ?';
+        $statement = 'DELETE FROM ' . $tableName . ' WHERE ' . \implode(' = ? AND ', $columns) . ' = ?';
 
         return $this->conn->executeUpdate($statement, $parameters);
     }
@@ -228,7 +228,7 @@ class OneToManyPersister extends AbstractCollectionPersister
         // 1) Build temporary table DDL
         $tempTable         = $this->platform->getTemporaryTableName($rootClass->getTemporaryIdTableName());
         $idColumns         = $rootClass->getIdentifierColumns($this->em);
-        $idColumnNameList  = implode(', ', array_keys($idColumns));
+        $idColumnNameList  = \implode(', ', \array_keys($idColumns));
         $columnDefinitions = [];
 
         foreach ($idColumns as $columnName => $column) {
@@ -246,16 +246,16 @@ class OneToManyPersister extends AbstractCollectionPersister
         $this->conn->executeUpdate($statement);
 
         // 2) Build insert table records into temporary table
-        $dql   = ' SELECT t0.' . implode(', t0.', $rootClass->getIdentifierFieldNames())
+        $dql   = ' SELECT t0.' . \implode(', t0.', $rootClass->getIdentifierFieldNames())
                . ' FROM ' . $targetClass->getClassName() . ' t0 WHERE t0.' . $association->getMappedBy() . ' = :owner';
         $query = $this->em->createQuery($dql)->setParameter('owner', $collection->getOwner());
 
         $statement  = 'INSERT INTO ' . $tempTable . ' (' . $idColumnNameList . ') ' . $query->getSQL();
-        $parameters = array_values($sourcePersister->getIdentifier($collection->getOwner()));
+        $parameters = \array_values($sourcePersister->getIdentifier($collection->getOwner()));
         $numDeleted = $this->conn->executeUpdate($statement, $parameters);
 
         // 3) Create statement used in DELETE ... WHERE ... IN (subselect)
-        $deleteSQLTemplate = sprintf(
+        $deleteSQLTemplate = \sprintf(
             'DELETE FROM %%s WHERE (%s) IN (SELECT %s FROM %s)',
             $idColumnNameList,
             $idColumnNameList,
@@ -263,19 +263,19 @@ class OneToManyPersister extends AbstractCollectionPersister
         );
 
         // 4) Delete records on each table in the hierarchy
-        $hierarchyClasses = array_merge(
-            array_map(
+        $hierarchyClasses = \array_merge(
+            \array_map(
                 function ($className) {
                     return $this->em->getClassMetadata($className);
                 },
-                array_reverse($targetClass->getSubClasses())
+                \array_reverse($targetClass->getSubClasses())
             ),
             [$targetClass],
             $targetClass->getAncestorsIterator()->getArrayCopy()
         );
 
         foreach ($hierarchyClasses as $class) {
-            $statement = sprintf($deleteSQLTemplate, $class->table->getQuotedQualifiedName($this->platform));
+            $statement = \sprintf($deleteSQLTemplate, $class->table->getQuotedQualifiedName($this->platform));
 
             $this->conn->executeUpdate($statement);
         }

@@ -11,6 +11,6 @@ final class InvalidHydrationMode extends LogicException implements ManagerExcept
 {
     public static function fromMode(string $mode) : self
     {
-        return new self(sprintf('"%s" is an invalid hydration mode.', $mode));
+        return new self(\sprintf('"%s" is an invalid hydration mode.', $mode));
     }
 }

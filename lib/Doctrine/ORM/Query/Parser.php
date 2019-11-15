@@ -393,7 +393,7 @@ class Parser
      */
     private function fixIdentificationVariableOrder($AST)
     {
-        if (count($this->identVariableExpressions) <= 1) {
+        if (\count($this->identVariableExpressions) <= 1) {
             return;
         }
 
@@ -403,7 +403,7 @@ class Parser
             }
 
             $expr = $this->identVariableExpressions[$dqlAlias];
-            $key  = array_search($expr, $AST->selectClause->selectExpressions, true);
+            $key  = \array_search($expr, $AST->selectClause->selectExpressions, true);
 
             unset($AST->selectClause->selectExpressions[$key]);
 
@@ -427,9 +427,9 @@ class Parser
 
         $tokenPos = $token['position'] ?? '-1';
 
-        $message  = sprintf('line 0, col %d: Error: ', $tokenPos);
-        $message .= $expected !== '' ? sprintf('Expected %s, got ', $expected) : 'Unexpected ';
-        $message .= $this->lexer->lookahead === null ? 'end of string.' : sprintf("'%s'", $token['value']);
+        $message  = \sprintf('line 0, col %d: Error: ', $tokenPos);
+        $message .= $expected !== '' ? \sprintf('Expected %s, got ', $expected) : 'Unexpected ';
+        $message .= $this->lexer->lookahead === null ? 'end of string.' : \sprintf("'%s'", $token['value']);
 
         throw QueryException::syntaxError($message, QueryException::dqlError($this->query->getDQL()));
     }
@@ -453,13 +453,13 @@ class Parser
 
         // Find a position of a final word to display in error string
         $dql    = $this->query->getDQL();
-        $length = strlen($dql);
+        $length = \strlen($dql);
         $pos    = $token['position'] + $distance;
-        $pos    = strpos($dql, ' ', $length > $pos ? $pos : $length);
+        $pos    = \strpos($dql, ' ', $length > $pos ? $pos : $length);
         $length = $pos !== false ? $pos - $token['position'] : $distance;
 
         $tokenPos = isset($token['position']) && $token['position'] > 0 ? $token['position'] : '-1';
-        $tokenStr = substr($dql, (int) $token['position'], $length);
+        $tokenStr = \substr($dql, (int) $token['position'], $length);
 
         // Building informative message
         $message = 'line 0, col ' . $tokenPos . " near '" . $tokenStr . "': Error: " . $message;
@@ -515,7 +515,7 @@ class Parser
      */
     private function isMathOperator($token)
     {
-        return in_array($token['type'], [Lexer::T_PLUS, Lexer::T_MINUS, Lexer::T_DIVIDE, Lexer::T_MULTIPLY], true);
+        return \in_array($token['type'], [Lexer::T_PLUS, Lexer::T_MINUS, Lexer::T_DIVIDE, Lexer::T_MULTIPLY], true);
     }
 
     /**
@@ -542,7 +542,7 @@ class Parser
      */
     private function isAggregateFunction($tokenType)
     {
-        return in_array($tokenType, [Lexer::T_AVG, Lexer::T_MIN, Lexer::T_MAX, Lexer::T_SUM, Lexer::T_COUNT], true);
+        return \in_array($tokenType, [Lexer::T_AVG, Lexer::T_MIN, Lexer::T_MAX, Lexer::T_SUM, Lexer::T_COUNT], true);
     }
 
     /**
@@ -552,7 +552,7 @@ class Parser
      */
     private function isNextAllAnySome()
     {
-        return in_array($this->lexer->lookahead['type'], [Lexer::T_ALL, Lexer::T_ANY, Lexer::T_SOME], true);
+        return \in_array($this->lexer->lookahead['type'], [Lexer::T_ALL, Lexer::T_ANY, Lexer::T_SOME], true);
     }
 
     /**
@@ -567,7 +567,7 @@ class Parser
             // Check if IdentificationVariable exists in queryComponents
             if (! isset($this->queryComponents[$identVariable])) {
                 $this->semanticalError(
-                    sprintf("'%s' is not defined.", $identVariable),
+                    \sprintf("'%s' is not defined.", $identVariable),
                     $deferredItem['token']
                 );
             }
@@ -577,7 +577,7 @@ class Parser
             // Check if queryComponent points to an AbstractSchemaName or a ResultVariable
             if (! isset($qComp['metadata'])) {
                 $this->semanticalError(
-                    sprintf("'%s' does not point to a Class.", $identVariable),
+                    \sprintf("'%s' does not point to a Class.", $identVariable),
                     $deferredItem['token']
                 );
             }
@@ -585,7 +585,7 @@ class Parser
             // Validate if identification variable nesting level is lower or equal than the current one
             if ($qComp['nestingLevel'] > $deferredItem['nestingLevel']) {
                 $this->semanticalError(
-                    sprintf("'%s' is used outside the scope of its declaration.", $identVariable),
+                    \sprintf("'%s' is used outside the scope of its declaration.", $identVariable),
                     $deferredItem['token']
                 );
             }
@@ -607,32 +607,32 @@ class Parser
             $fromClassName = $AST->fromClause->identificationVariableDeclarations[0]->rangeVariableDeclaration->abstractSchemaName ?? null;
 
             // If the namespace is not given then assumes the first FROM entity namespace
-            if (strpos($className, '\\') === false && ! class_exists($className) && strpos($fromClassName, '\\') !== false) {
-                $namespace = substr($fromClassName, 0, strrpos($fromClassName, '\\'));
+            if (\strpos($className, '\\') === false && ! \class_exists($className) && \strpos($fromClassName, '\\') !== false) {
+                $namespace = \substr($fromClassName, 0, \strrpos($fromClassName, '\\'));
                 $fqcn      = $namespace . '\\' . $className;
 
-                if (class_exists($fqcn)) {
+                if (\class_exists($fqcn)) {
                     $expression->className = $fqcn;
                     $className             = $fqcn;
                 }
             }
 
-            if (! class_exists($className)) {
-                $this->semanticalError(sprintf('Class "%s" is not defined.', $className), $token);
+            if (! \class_exists($className)) {
+                $this->semanticalError(\sprintf('Class "%s" is not defined.', $className), $token);
             }
 
             $class = new ReflectionClass($className);
 
             if (! $class->isInstantiable()) {
-                $this->semanticalError(sprintf('Class "%s" can not be instantiated.', $className), $token);
+                $this->semanticalError(\sprintf('Class "%s" can not be instantiated.', $className), $token);
             }
 
             if ($class->getConstructor() === null) {
-                $this->semanticalError(sprintf('Class "%s" has not a valid constructor.', $className), $token);
+                $this->semanticalError(\sprintf('Class "%s" has not a valid constructor.', $className), $token);
             }
 
-            if ($class->getConstructor()->getNumberOfRequiredParameters() > count($args)) {
-                $this->semanticalError(sprintf('Number of arguments does not match with "%s" constructor declaration.', $className), $token);
+            if ($class->getConstructor()->getNumberOfRequiredParameters() > \count($args)) {
+                $this->semanticalError(\sprintf('Number of arguments does not match with "%s" constructor declaration.', $className), $token);
             }
         }
     }
@@ -656,14 +656,14 @@ class Parser
                 }
 
                 $this->semanticalError(
-                    sprintf("There is no mapped field named '%s' on class %s.", $field, $class->getClassName()),
+                    \sprintf("There is no mapped field named '%s' on class %s.", $field, $class->getClassName()),
                     $deferredItem['token']
                 );
             }
 
-            if (array_intersect($class->identifier, $expr->partialFieldSet) !== $class->identifier) {
+            if (\array_intersect($class->identifier, $expr->partialFieldSet) !== $class->identifier) {
                 $this->semanticalError(
-                    sprintf('The partial field selection of class %s must contain the identifier.', $class->getClassName()),
+                    \sprintf('The partial field selection of class %s must contain the identifier.', $class->getClassName()),
                     $deferredItem['token']
                 );
             }
@@ -682,7 +682,7 @@ class Parser
             // Check if ResultVariable exists in queryComponents
             if (! isset($this->queryComponents[$resultVariable])) {
                 $this->semanticalError(
-                    sprintf("'%s' is not defined.", $resultVariable),
+                    \sprintf("'%s' is not defined.", $resultVariable),
                     $deferredItem['token']
                 );
             }
@@ -692,7 +692,7 @@ class Parser
             // Check if queryComponent points to an AbstractSchemaName or a ResultVariable
             if (! isset($qComp['resultVariable'])) {
                 $this->semanticalError(
-                    sprintf("'%s' does not point to a ResultVariable.", $resultVariable),
+                    \sprintf("'%s' does not point to a ResultVariable.", $resultVariable),
                     $deferredItem['token']
                 );
             }
@@ -700,7 +700,7 @@ class Parser
             // Validate if identification variable nesting level is lower or equal than the current one
             if ($qComp['nestingLevel'] > $deferredItem['nestingLevel']) {
                 $this->semanticalError(
-                    sprintf("'%s' is used outside the scope of its declaration.", $resultVariable),
+                    \sprintf("'%s' is used outside the scope of its declaration.", $resultVariable),
                     $deferredItem['token']
                 );
             }
@@ -771,9 +771,9 @@ class Parser
 
                 // Build the error message
                 $semanticalError  = 'Invalid PathExpression. ';
-                $semanticalError .= count($expectedStringTypes) === 1
+                $semanticalError .= \count($expectedStringTypes) === 1
                     ? 'Must be a ' . $expectedStringTypes[0] . '.'
-                    : implode(' or ', $expectedStringTypes) . ' expected.';
+                    : \implode(' or ', $expectedStringTypes) . ' expected.';
 
                 $this->semanticalError($semanticalError, $deferredItem['token']);
             }
@@ -913,7 +913,7 @@ class Parser
         $exists             = isset($this->queryComponents[$aliasIdentVariable]);
 
         if ($exists) {
-            $this->semanticalError(sprintf("'%s' is already defined.", $aliasIdentVariable), $this->lexer->token);
+            $this->semanticalError(\sprintf("'%s' is already defined.", $aliasIdentVariable), $this->lexer->token);
         }
 
         return $aliasIdentVariable;
@@ -940,7 +940,7 @@ class Parser
 
         $this->match(Lexer::T_ALIASED_NAME);
 
-        [$namespaceAlias, $simpleClassName] = explode(':', $this->lexer->token['value']);
+        [$namespaceAlias, $simpleClassName] = \explode(':', $this->lexer->token['value']);
 
         return $this->em->getConfiguration()->getEntityNamespace($namespaceAlias) . '\\' . $simpleClassName;
     }
@@ -954,7 +954,7 @@ class Parser
      */
     private function validateAbstractSchemaName($schemaName) : void
     {
-        if (class_exists($schemaName, true) || interface_exists($schemaName, true)) {
+        if (\class_exists($schemaName, true) || \interface_exists($schemaName, true)) {
             return;
         }
 
@@ -964,12 +964,12 @@ class Parser
             return;
         } catch (MappingException $mappingException) {
             $this->semanticalError(
-                sprintf('Class %s could not be mapped', $schemaName),
+                \sprintf('Class %s could not be mapped', $schemaName),
                 $this->lexer->token
             );
         }
 
-        $this->semanticalError(sprintf("Class '%s' is not defined.", $schemaName), $this->lexer->token);
+        $this->semanticalError(\sprintf("Class '%s' is not defined.", $schemaName), $this->lexer->token);
     }
 
     /**
@@ -985,7 +985,7 @@ class Parser
         $exists         = isset($this->queryComponents[$resultVariable]);
 
         if ($exists) {
-            $this->semanticalError(sprintf("'%s' is already defined.", $resultVariable), $this->lexer->token);
+            $this->semanticalError(\sprintf("'%s' is already defined.", $resultVariable), $this->lexer->token);
         }
 
         return $resultVariable;
@@ -2367,7 +2367,7 @@ class Parser
 
         // Phase 1 AST optimization: Prevent AST\ConditionalExpression
         // if only one AST\ConditionalTerm is defined
-        if (count($conditionalTerms) === 1) {
+        if (\count($conditionalTerms) === 1) {
             return $conditionalTerms[0];
         }
 
@@ -2392,7 +2392,7 @@ class Parser
 
         // Phase 1 AST optimization: Prevent AST\ConditionalTerm
         // if only one AST\ConditionalFactor is defined
-        if (count($conditionalFactors) === 1) {
+        if (\count($conditionalFactors) === 1) {
             return $conditionalFactors[0];
         }
 
@@ -2446,8 +2446,8 @@ class Parser
         // Peek beyond the matching closing parenthesis ')'
         $peek = $this->peekBeyondClosingParenthesis();
 
-        if (in_array($peek['value'], ['=', '<', '<=', '<>', '>', '>=', '!='], true) ||
-            in_array($peek['type'], [Lexer::T_NOT, Lexer::T_BETWEEN, Lexer::T_LIKE, Lexer::T_IN, Lexer::T_IS, Lexer::T_EXISTS], true) ||
+        if (\in_array($peek['value'], ['=', '<', '<=', '<>', '>', '>=', '!='], true) ||
+            \in_array($peek['type'], [Lexer::T_NOT, Lexer::T_BETWEEN, Lexer::T_LIKE, Lexer::T_IN, Lexer::T_IS, Lexer::T_EXISTS], true) ||
             $this->isMathOperator($peek)) {
             $condPrimary->simpleConditionalExpression = $this->SimpleConditionalExpression();
 
@@ -2716,7 +2716,7 @@ class Parser
 
         // Phase 1 AST optimization: Prevent AST\SimpleArithmeticExpression
         // if only one AST\ArithmeticTerm is defined
-        if (count($terms) === 1) {
+        if (\count($terms) === 1) {
             return $terms[0];
         }
 
@@ -2742,7 +2742,7 @@ class Parser
 
         // Phase 1 AST optimization: Prevent AST\ArithmeticTerm
         // if only one AST\ArithmeticFactor is defined
-        if (count($factors) === 1) {
+        if (\count($factors) === 1) {
             return $factors[0];
         }
 
@@ -2939,7 +2939,7 @@ class Parser
         $lookaheadType = $this->lexer->lookahead['type'];
         $isDistinct    = false;
 
-        if (! in_array($lookaheadType, [Lexer::T_COUNT, Lexer::T_AVG, Lexer::T_MAX, Lexer::T_MIN, Lexer::T_SUM], true)) {
+        if (! \in_array($lookaheadType, [Lexer::T_COUNT, Lexer::T_AVG, Lexer::T_MAX, Lexer::T_MIN, Lexer::T_SUM], true)) {
             $this->syntaxError('One of: MAX, MIN, AVG, SUM, COUNT');
         }
 
@@ -2969,7 +2969,7 @@ class Parser
         $lookaheadType = $this->lexer->lookahead['type'];
         $value         = $this->lexer->lookahead['value'];
 
-        if (! in_array($lookaheadType, [Lexer::T_ALL, Lexer::T_ANY, Lexer::T_SOME], true)) {
+        if (! \in_array($lookaheadType, [Lexer::T_ALL, Lexer::T_ANY, Lexer::T_SOME], true)) {
             $this->syntaxError('ALL, ANY or SOME');
         }
 
@@ -3319,7 +3319,7 @@ class Parser
     public function FunctionDeclaration()
     {
         $token    = $this->lexer->lookahead;
-        $funcName = strtolower($token['value']);
+        $funcName = \strtolower($token['value']);
 
         $customFunctionDeclaration = $this->CustomFunctionDeclaration();
 
@@ -3346,7 +3346,7 @@ class Parser
     private function CustomFunctionDeclaration()
     {
         $token    = $this->lexer->lookahead;
-        $funcName = strtolower($token['value']);
+        $funcName = \strtolower($token['value']);
 
         // Check for custom functions afterwards
         $config = $this->em->getConfiguration();
@@ -3379,7 +3379,7 @@ class Parser
      */
     public function FunctionsReturningNumerics()
     {
-        $funcNameLower = strtolower($this->lexer->lookahead['value']);
+        $funcNameLower = \strtolower($this->lexer->lookahead['value']);
         $funcClass     = self::$_NUMERIC_FUNCTIONS[$funcNameLower];
 
         $function = new $funcClass($funcNameLower);
@@ -3394,12 +3394,12 @@ class Parser
     public function CustomFunctionsReturningNumerics()
     {
         // getCustomNumericFunction is case-insensitive
-        $functionName  = strtolower($this->lexer->lookahead['value']);
+        $functionName  = \strtolower($this->lexer->lookahead['value']);
         $functionClass = $this->em->getConfiguration()->getCustomNumericFunction($functionName);
 
-        $function = is_string($functionClass)
+        $function = \is_string($functionClass)
             ? new $functionClass($functionName)
-            : call_user_func($functionClass, $functionName);
+            : \call_user_func($functionClass, $functionName);
 
         $function->parse($this);
 
@@ -3418,7 +3418,7 @@ class Parser
      */
     public function FunctionsReturningDatetime()
     {
-        $funcNameLower = strtolower($this->lexer->lookahead['value']);
+        $funcNameLower = \strtolower($this->lexer->lookahead['value']);
         $funcClass     = self::$_DATETIME_FUNCTIONS[$funcNameLower];
 
         $function = new $funcClass($funcNameLower);
@@ -3436,9 +3436,9 @@ class Parser
         $functionName  = $this->lexer->lookahead['value'];
         $functionClass = $this->em->getConfiguration()->getCustomDatetimeFunction($functionName);
 
-        $function = is_string($functionClass)
+        $function = \is_string($functionClass)
             ? new $functionClass($functionName)
-            : call_user_func($functionClass, $functionName);
+            : \call_user_func($functionClass, $functionName);
 
         $function->parse($this);
 
@@ -3458,7 +3458,7 @@ class Parser
      */
     public function FunctionsReturningStrings()
     {
-        $funcNameLower = strtolower($this->lexer->lookahead['value']);
+        $funcNameLower = \strtolower($this->lexer->lookahead['value']);
         $funcClass     = self::$_STRING_FUNCTIONS[$funcNameLower];
 
         $function = new $funcClass($funcNameLower);
@@ -3476,9 +3476,9 @@ class Parser
         $functionName  = $this->lexer->lookahead['value'];
         $functionClass = $this->em->getConfiguration()->getCustomStringFunction($functionName);
 
-        $function = is_string($functionClass)
+        $function = \is_string($functionClass)
             ? new $functionClass($functionName)
-            : call_user_func($functionClass, $functionName);
+            : \call_user_func($functionClass, $functionName);
 
         $function->parse($this);
 

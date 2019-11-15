@@ -29,8 +29,8 @@ class SetupTest extends OrmTestCase
 
     public function setUp() : void
     {
-        $this->originalAutoloaderCount = count(spl_autoload_functions());
-        $this->originalIncludePath     = get_include_path();
+        $this->originalAutoloaderCount = \count(\spl_autoload_functions());
+        $this->originalIncludePath     = \get_include_path();
     }
 
     public function tearDown() : void
@@ -39,11 +39,11 @@ class SetupTest extends OrmTestCase
             return;
         }
 
-        set_include_path($this->originalIncludePath);
+        \set_include_path($this->originalIncludePath);
 
-        foreach (spl_autoload_functions() as $i => $loader) {
+        foreach (\spl_autoload_functions() as $i => $loader) {
             if ($i > $this->originalAutoloaderCount + 1) {
-                spl_autoload_unregister($loader);
+                \spl_autoload_unregister($loader);
             }
         }
     }
@@ -53,7 +53,7 @@ class SetupTest extends OrmTestCase
         $config = Setup::createAnnotationMetadataConfiguration([], true);
 
         self::assertInstanceOf(Configuration::class, $config);
-        self::assertEquals(sys_get_temp_dir(), $config->getProxyManagerConfiguration()->getProxiesTargetDir());
+        self::assertEquals(\sys_get_temp_dir(), $config->getProxyManagerConfiguration()->getProxiesTargetDir());
         self::assertEquals('DoctrineProxies', $config->getProxyManagerConfiguration()->getProxiesNamespace());
         self::assertInstanceOf(AnnotationDriver::class, $config->getMetadataDriverImpl());
     }
@@ -74,7 +74,7 @@ class SetupTest extends OrmTestCase
         $config = Setup::createConfiguration(false, __DIR__);
         $cache  = $config->getMetadataCacheImpl();
 
-        self::assertSame('dc2_' . md5(__DIR__) . '_', $cache->getNamespace());
+        self::assertSame('dc2_' . \md5(__DIR__) . '_', $cache->getNamespace());
     }
 
     /**
@@ -85,7 +85,7 @@ class SetupTest extends OrmTestCase
         $config = Setup::createConfiguration(false, __DIR__, new ArrayCache());
         $cache  = $config->getMetadataCacheImpl();
 
-        self::assertSame('dc2_' . md5(__DIR__) . '_', $cache->getNamespace());
+        self::assertSame('dc2_' . \md5(__DIR__) . '_', $cache->getNamespace());
     }
 
     /**
@@ -100,7 +100,7 @@ class SetupTest extends OrmTestCase
         $cache  = $config->getMetadataCacheImpl();
 
         self::assertSame($originalCache, $cache);
-        self::assertSame('foo:dc2_' . md5(__DIR__) . '_', $cache->getNamespace());
+        self::assertSame('foo:dc2_' . \md5(__DIR__) . '_', $cache->getNamespace());
     }
 
     /**
@@ -141,10 +141,10 @@ class SetupTest extends OrmTestCase
 
     private function makeTemporaryDirectory() : string
     {
-        $path = tempnam(sys_get_temp_dir(), 'foo');
+        $path = \tempnam(\sys_get_temp_dir(), 'foo');
 
-        unlink($path);
-        mkdir($path);
+        \unlink($path);
+        \mkdir($path);
 
         return $path;
     }

@@ -45,7 +45,7 @@ class LimitSubqueryWalker extends TreeWalkerAdapter
         $queryComponents = $this->getQueryComponents();
         // Get the root entity and alias from the AST fromClause
         $from      = $AST->fromClause->identificationVariableDeclarations;
-        $fromRoot  = reset($from);
+        $fromRoot  = \reset($from);
         $rootAlias = $fromRoot->rangeVariableDeclaration->aliasIdentificationVariable;
         $rootClass = $queryComponents[$rootAlias]['metadata'];
 
@@ -86,7 +86,7 @@ class LimitSubqueryWalker extends TreeWalkerAdapter
                 continue;
             }
 
-            if (is_string($item->expression) && isset($queryComponents[$item->expression])) {
+            if (\is_string($item->expression) && isset($queryComponents[$item->expression])) {
                 $qComp = $queryComponents[$item->expression];
 
                 if (isset($qComp['resultVariable'])) {
@@ -110,9 +110,9 @@ class LimitSubqueryWalker extends TreeWalkerAdapter
         $queryComponents = $this->getQueryComponents();
         $query           = $this->getQuery();
         $from            = $AST->fromClause->identificationVariableDeclarations;
-        $fromRoot        = reset($from);
+        $fromRoot        = \reset($from);
 
-        if ($query instanceof Query && $query->getMaxResults() && $AST->orderByClause && count($fromRoot->joins)) {
+        if ($query instanceof Query && $query->getMaxResults() && $AST->orderByClause && \count($fromRoot->joins)) {
             // Check each orderby item.
             // TODO: check complex orderby items too...
             foreach ($AST->orderByClause->orderByItems as $orderByItem) {

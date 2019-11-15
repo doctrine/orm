@@ -73,7 +73,7 @@ class DriverChain implements MappingDriver
     ) : Mapping\ComponentMetadata {
         /** @var MappingDriver $driver */
         foreach ($this->drivers as $namespace => $driver) {
-            if (strpos($className, $namespace) === 0) {
+            if (\strpos($className, $namespace) === 0) {
                 return $driver->loadMetadataForClass($className, $parent, $metadataBuildingContext);
             }
         }
@@ -82,7 +82,7 @@ class DriverChain implements MappingDriver
             return $this->defaultDriver->loadMetadataForClass($className, $parent, $metadataBuildingContext);
         }
 
-        throw Mapping\MappingException::classNotFoundInNamespaces($className, array_keys($this->drivers));
+        throw Mapping\MappingException::classNotFoundInNamespaces($className, \array_keys($this->drivers));
     }
 
     /**
@@ -102,7 +102,7 @@ class DriverChain implements MappingDriver
             }
 
             foreach ($driverClasses[$oid] as $className) {
-                if (strpos($className, $namespace) === 0) {
+                if (\strpos($className, $namespace) === 0) {
                     $classNames[$className] = true;
                 }
             }
@@ -114,7 +114,7 @@ class DriverChain implements MappingDriver
             }
         }
 
-        return array_keys($classNames);
+        return \array_keys($classNames);
     }
 
     /**
@@ -124,7 +124,7 @@ class DriverChain implements MappingDriver
     {
         /** @var MappingDriver $driver */
         foreach ($this->drivers as $namespace => $driver) {
-            if (strpos($className, $namespace) === 0) {
+            if (\strpos($className, $namespace) === 0) {
                 return $driver->isTransient($className);
             }
         }

@@ -41,7 +41,7 @@ class DefaultValuesTest extends OrmFunctionalTestCase
         $this->em->clear();
 
         $userId = $user->id; // e.g. from $_REQUEST
-        $user2  = $this->em->getReference(get_class($user), $userId);
+        $user2  = $this->em->getReference(\get_class($user), $userId);
 
         $this->em->flush();
         self::assertFalse($user2->isProxyInitialized());
@@ -59,7 +59,7 @@ class DefaultValuesTest extends OrmFunctionalTestCase
         self::assertFalse($user2->isProxyInitialized());
         $this->em->clear();
 
-        $a2 = $this->em->find(get_class($a), $a->id);
+        $a2 = $this->em->find(\get_class($a), $a->id);
         self::assertInstanceOf(DefaultValueUser::class, $a2->getUser());
         self::assertEquals($userId, $a2->getUser()->getId());
         self::assertEquals('Poweruser', $a2->getUser()->type);

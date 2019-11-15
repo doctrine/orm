@@ -36,7 +36,7 @@ class SchemaValidatorTest extends OrmFunctionalTestCase
      */
     private function registerType(string $className)
     {
-        $type = constant($className . '::NAME');
+        $type = \constant($className . '::NAME');
 
         if (DBALType::hasType($type)) {
             DBALType::overrideType($type, $className);
@@ -51,7 +51,7 @@ class SchemaValidatorTest extends OrmFunctionalTestCase
     {
         $modelSets = [];
 
-        foreach (array_keys(self::$modelSets) as $modelSet) {
+        foreach (\array_keys(self::$modelSets) as $modelSet) {
             $modelSets[$modelSet] = [$modelSet];
         }
 
@@ -73,7 +73,7 @@ class SchemaValidatorTest extends OrmFunctionalTestCase
         foreach ($classes as $class) {
             $ce = $validator->validateClass($class);
 
-            self::assertEmpty($ce, 'Invalid Modelset: ' . $modelSet . ' class ' . $class->getClassName() . ': ' . implode("\n", $ce));
+            self::assertEmpty($ce, 'Invalid Modelset: ' . $modelSet . ' class ' . $class->getClassName() . ': ' . \implode("\n", $ce));
         }
     }
 }

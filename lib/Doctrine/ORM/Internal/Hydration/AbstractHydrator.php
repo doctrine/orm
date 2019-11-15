@@ -276,7 +276,7 @@ abstract class AbstractHydrator
                     // If there are field name collisions in the child class, then we need
                     // to only hydrate if we are looking at the correct discriminator value
                     if (isset($cacheKeyInfo['discriminatorColumn'], $data[$cacheKeyInfo['discriminatorColumn']])
-                        && ! in_array((string) $data[$cacheKeyInfo['discriminatorColumn']], $cacheKeyInfo['discriminatorValues'], true)
+                        && ! \in_array((string) $data[$cacheKeyInfo['discriminatorColumn']], $cacheKeyInfo['discriminatorValues'], true)
                     ) {
                         break;
                     }
@@ -375,7 +375,7 @@ abstract class AbstractHydrator
                 // the current discriminator value must be saved in order to disambiguate fields hydration,
                 // should there be field name collisions
                 if ($classMetadata->getParent() && isset($this->rsm->discriminatorColumns[$ownerMap])) {
-                    return $this->cache[$key] = array_merge(
+                    return $this->cache[$key] = \array_merge(
                         $columnInfo,
                         [
                             'discriminatorColumn' => $this->rsm->discriminatorColumns[$ownerMap],
@@ -432,7 +432,7 @@ abstract class AbstractHydrator
      */
     private function getDiscriminatorValues(ClassMetadata $classMetadata) : array
     {
-        $values = array_map(
+        $values = \array_map(
             function (string $subClass) : string {
                 return (string) $this->getClassMetadata($subClass)->discriminatorValue;
             },

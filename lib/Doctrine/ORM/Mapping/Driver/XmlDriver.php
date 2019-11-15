@@ -393,7 +393,7 @@ class XmlDriver extends FileDriver
                 // Check for fetch
                 if (isset($overrideElement['fetch'])) {
                     $override->setFetchMode(
-                        constant('Doctrine\ORM\Mapping\FetchMode::' . (string) $overrideElement['fetch'])
+                        \constant('Doctrine\ORM\Mapping\FetchMode::' . (string) $overrideElement['fetch'])
                     );
                 }
 
@@ -404,7 +404,7 @@ class XmlDriver extends FileDriver
         // Evaluate <lifecycle-callbacks...>
         if (isset($xmlRoot->{'lifecycle-callbacks'})) {
             foreach ($xmlRoot->{'lifecycle-callbacks'}->{'lifecycle-callback'} as $lifecycleCallback) {
-                $eventName  = constant(Events::class . '::' . (string) $lifecycleCallback['type']);
+                $eventName  = \constant(Events::class . '::' . (string) $lifecycleCallback['type']);
                 $methodName = (string) $lifecycleCallback['method'];
 
                 $classMetadata->addLifecycleCallback($eventName, $methodName);
@@ -416,7 +416,7 @@ class XmlDriver extends FileDriver
             foreach ($xmlRoot->{'entity-listeners'}->{'entity-listener'} as $listenerElement) {
                 $listenerClassName = (string) $listenerElement['class'];
 
-                if (! class_exists($listenerClassName)) {
+                if (! \class_exists($listenerClassName)) {
                     throw Mapping\MappingException::entityListenerClassNotFound(
                         $listenerClassName,
                         $classMetadata->getClassName()
@@ -442,7 +442,7 @@ class XmlDriver extends FileDriver
     {
         $result = [];
         // Note: we do not use `simplexml_load_file()` because of https://bugs.php.net/bug.php?id=62577
-        $xmlElement = simplexml_load_string(file_get_contents($file));
+        $xmlElement = \simplexml_load_string(\file_get_contents($file));
 
         if (isset($xmlElement->entity)) {
             foreach ($xmlElement->entity as $entityElement) {
@@ -541,9 +541,9 @@ class XmlDriver extends FileDriver
     ) : Annotation\Index {
         $indexAnnotation = new Annotation\Index();
 
-        $indexAnnotation->columns = explode(',', (string) $indexElement['columns']);
+        $indexAnnotation->columns = \explode(',', (string) $indexElement['columns']);
         $indexAnnotation->options = isset($indexElement->options) ? $this->parseOptions($indexElement->options->children()) : [];
-        $indexAnnotation->flags   = isset($indexElement['flags']) ? explode(',', (string) $indexElement['flags']) : [];
+        $indexAnnotation->flags   = isset($indexElement['flags']) ? \explode(',', (string) $indexElement['flags']) : [];
 
         if (isset($indexElement['name'])) {
             $indexAnnotation->name = (string) $indexElement['name'];
@@ -561,9 +561,9 @@ class XmlDriver extends FileDriver
     ) : Annotation\UniqueConstraint {
         $uniqueConstraintAnnotation = new Annotation\UniqueConstraint();
 
-        $uniqueConstraintAnnotation->columns = explode(',', (string) $uniqueConstraintElement['columns']);
+        $uniqueConstraintAnnotation->columns = \explode(',', (string) $uniqueConstraintElement['columns']);
         $uniqueConstraintAnnotation->options = isset($uniqueConstraintElement->options) ? $this->parseOptions($uniqueConstraintElement->options->children()) : [];
-        $uniqueConstraintAnnotation->flags   = isset($uniqueConstraintElement['flags']) ? explode(',', (string) $uniqueConstraintElement['flags']) : [];
+        $uniqueConstraintAnnotation->flags   = isset($uniqueConstraintElement['flags']) ? \explode(',', (string) $uniqueConstraintElement['flags']) : [];
 
         if (isset($uniqueConstraintElement['name'])) {
             $uniqueConstraintAnnotation->name = (string) $uniqueConstraintElement['name'];
@@ -577,7 +577,7 @@ class XmlDriver extends FileDriver
     ) : Annotation\InheritanceType {
         $inheritanceTypeAnnotation = new Annotation\InheritanceType();
 
-        $inheritanceTypeAnnotation->value = strtoupper((string) $inheritanceTypeElement['inheritance-type']);
+        $inheritanceTypeAnnotation->value = \strtoupper((string) $inheritanceTypeElement['inheritance-type']);
 
         return $inheritanceTypeAnnotation;
     }
@@ -587,7 +587,7 @@ class XmlDriver extends FileDriver
     ) : Annotation\ChangeTrackingPolicy {
         $changeTrackingPolicyAnnotation = new Annotation\ChangeTrackingPolicy();
 
-        $changeTrackingPolicyAnnotation->value = strtoupper((string) $changeTrackingPolicyElement['change-tracking-policy']);
+        $changeTrackingPolicyAnnotation->value = \strtoupper((string) $changeTrackingPolicyElement['change-tracking-policy']);
 
         return $changeTrackingPolicyAnnotation;
     }
@@ -636,7 +636,7 @@ class XmlDriver extends FileDriver
         }
 
         if (isset($cacheElement['usage'])) {
-            $cacheAnnotation->usage = strtoupper((string) $cacheElement['usage']);
+            $cacheAnnotation->usage = \strtoupper((string) $cacheElement['usage']);
         }
 
         return $cacheAnnotation;
@@ -892,7 +892,7 @@ class XmlDriver extends FileDriver
         }
 
         if (isset($joinColumnElement['on-delete'])) {
-            $joinColumnAnnotation->onDelete = strtoupper((string) $joinColumnElement['on-delete']);
+            $joinColumnAnnotation->onDelete = \strtoupper((string) $joinColumnElement['on-delete']);
         }
 
         return $joinColumnAnnotation;
@@ -965,7 +965,7 @@ class XmlDriver extends FileDriver
             // because Annotation use "persist" and we want to make sure that
             // this driver doesn't need to know anything about the supported
             // cascading actions
-            $cascades[] = str_replace('cascade-', '', $action->getName());
+            $cascades[] = \str_replace('cascade-', '', $action->getName());
         }
 
         return $cascades;
@@ -1007,7 +1007,7 @@ class XmlDriver extends FileDriver
             if (isset($attributes->name)) {
                 $nameAttribute = (string) $attributes->name;
 
-                $array[$nameAttribute] = in_array($nameAttribute, ['unsigned', 'fixed'], true)
+                $array[$nameAttribute] = \in_array($nameAttribute, ['unsigned', 'fixed'], true)
                     ? $this->evaluateBoolean($value)
                     : $value;
             } else {

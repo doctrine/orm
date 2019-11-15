@@ -47,7 +47,7 @@ class MetadataConfiguration
 
     public function setNamespace(string $namespace)
     {
-        $this->namespace = ltrim($namespace, '\\');
+        $this->namespace = \ltrim($namespace, '\\');
     }
 
     public function getDirectory() : string
@@ -57,7 +57,7 @@ class MetadataConfiguration
 
     public function setDirectory(string $directory)
     {
-        $this->directory = rtrim($directory, DIRECTORY_SEPARATOR);
+        $this->directory = \rtrim($directory, DIRECTORY_SEPARATOR);
     }
 
     public function getResolver() : ClassMetadataResolver

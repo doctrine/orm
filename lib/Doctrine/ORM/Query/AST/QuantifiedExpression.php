@@ -30,7 +30,7 @@ class QuantifiedExpression extends Node
      */
     public function isAll()
     {
-        return strtoupper($this->type) === 'ALL';
+        return \strtoupper($this->type) === 'ALL';
     }
 
     /**
@@ -38,7 +38,7 @@ class QuantifiedExpression extends Node
      */
     public function isAny()
     {
-        return strtoupper($this->type) === 'ANY';
+        return \strtoupper($this->type) === 'ANY';
     }
 
     /**
@@ -46,7 +46,7 @@ class QuantifiedExpression extends Node
      */
     public function isSome()
     {
-        return strtoupper($this->type) === 'SOME';
+        return \strtoupper($this->type) === 'SOME';
     }
 
     /**

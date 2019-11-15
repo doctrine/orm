@@ -60,7 +60,7 @@ class Token
         $this->logins    = new ArrayCollection();
         $this->token     = $token;
         $this->client    = $client;
-        $this->expiresAt = new DateTime(date('Y-m-d H:i:s', strtotime('+7 day')));
+        $this->expiresAt = new DateTime(\date('Y-m-d H:i:s', \strtotime('+7 day')));
     }
 
     public function addLogin(Login $login)

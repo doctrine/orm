@@ -45,8 +45,8 @@ class DDC1643Test extends OrmFunctionalTestCase
         $this->em->flush();
         $this->em->clear();
 
-        $this->user1 = $this->em->find(get_class($user1), $user1->id);
-        $this->user2 = $this->em->find(get_class($user1), $user2->id);
+        $this->user1 = $this->em->find(\get_class($user1), $user1->id);
+        $this->user2 = $this->em->find(\get_class($user1), $user2->id);
     }
 
     public function testClonePersistentCollectionAndReuse() : void
@@ -58,7 +58,7 @@ class DDC1643Test extends OrmFunctionalTestCase
         $this->em->flush();
         $this->em->clear();
 
-        $user1 = $this->em->find(get_class($user1), $user1->id);
+        $user1 = $this->em->find(\get_class($user1), $user1->id);
 
         self::assertCount(2, $user1->groups);
     }
@@ -73,8 +73,8 @@ class DDC1643Test extends OrmFunctionalTestCase
         $this->em->flush();
         $this->em->clear();
 
-        $user1 = $this->em->find(get_class($user1), $user1->id);
-        $user2 = $this->em->find(get_class($user1), $user2->id);
+        $user1 = $this->em->find(\get_class($user1), $user1->id);
+        $user2 = $this->em->find(\get_class($user1), $user2->id);
 
         self::assertCount(2, $user1->groups);
         self::assertCount(2, $user2->groups);
@@ -94,8 +94,8 @@ class DDC1643Test extends OrmFunctionalTestCase
         $this->em->flush();
         $this->em->clear();
 
-        $user1 = $this->em->find(get_class($user1), $user1->id);
-        $user2 = $this->em->find(get_class($user1), $user2->id);
+        $user1 = $this->em->find(\get_class($user1), $user1->id);
+        $user2 = $this->em->find(\get_class($user1), $user2->id);
 
         self::assertCount(3, $user2->groups);
         self::assertCount(2, $user1->groups);
@@ -117,8 +117,8 @@ class DDC1643Test extends OrmFunctionalTestCase
         $this->em->flush();
         $this->em->clear();
 
-        $user1 = $this->em->find(get_class($user1), $user1->id);
-        $user2 = $this->em->find(get_class($user1), $user2->id);
+        $user1 = $this->em->find(\get_class($user1), $user1->id);
+        $user2 = $this->em->find(\get_class($user1), $user2->id);
 
         self::assertCount(3, $user2->groups);
         self::assertCount(3, $user1->groups);

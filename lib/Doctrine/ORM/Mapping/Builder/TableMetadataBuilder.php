@@ -41,7 +41,7 @@ class TableMetadataBuilder
     public function build() : Mapping\TableMetadata
     {
         // Validate required fields
-        assert($this->entityClassMetadata !== null);
+        \assert($this->entityClassMetadata !== null);
 
         $namingStrategy = $this->metadataBuildingContext->getNamingStrategy();
         $tableName      = $this->tableAnnotation !== null && ! empty($this->tableAnnotation->name)

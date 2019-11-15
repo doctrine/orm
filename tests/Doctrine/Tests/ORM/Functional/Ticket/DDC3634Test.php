@@ -126,9 +126,9 @@ class DDC3634LastInsertIdMockingConnection extends Connection
 
     private function forwardCall()
     {
-        $trace = debug_backtrace(0, 2)[1];
+        $trace = \debug_backtrace(0, 2)[1];
 
-        return call_user_func_array([$this->realConnection, $trace['function']], $trace['args']);
+        return \call_user_func_array([$this->realConnection, $trace['function']], $trace['args']);
     }
 
     public function getParams()

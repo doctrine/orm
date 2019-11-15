@@ -45,7 +45,7 @@ class MetadataFilterTest extends OrmTestCase
 
         self::assertContains($metadataAaa, $metadatas);
         self::assertContains($metadataBbb, $metadatas);
-        self::assertCount(count($originalMetadatas), $metadatas);
+        self::assertCount(\count($originalMetadatas), $metadatas);
     }
 
     public function testFilterWithString() : void

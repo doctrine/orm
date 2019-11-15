@@ -21,9 +21,9 @@ final class InvalidCustomGenerator extends LogicException implements ORMExceptio
      */
     public static function onMissingClass(array $definition) : self
     {
-        return new self(sprintf(
+        return new self(\sprintf(
             'Cannot instantiate custom generator : %s',
-            var_export($definition, true)
+            \var_export($definition, true)
         ));
     }
 }

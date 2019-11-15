@@ -146,19 +146,19 @@ class AttachEntityListenersListenerTestListener
     /** @ORM\PrePersist */
     public function prePersist()
     {
-        $this->calls[__FUNCTION__][] = func_get_args();
+        $this->calls[__FUNCTION__][] = \func_get_args();
     }
 
     /** @ORM\PostLoad */
     public function postLoadHandler()
     {
-        $this->calls[__FUNCTION__][] = func_get_args();
+        $this->calls[__FUNCTION__][] = \func_get_args();
     }
 
     /** @ORM\PostPersist */
     public function postPersist()
     {
-        $this->calls[__FUNCTION__][] = func_get_args();
+        $this->calls[__FUNCTION__][] = \func_get_args();
     }
 }
 
@@ -169,12 +169,12 @@ class AttachEntityListenersListenerTestListener2
     /** @ORM\PrePersist */
     public function prePersist()
     {
-        $this->calls[__FUNCTION__][] = func_get_args();
+        $this->calls[__FUNCTION__][] = \func_get_args();
     }
 
     /** @ORM\PostPersist */
     public function postPersistHandler()
     {
-        $this->calls[__FUNCTION__][] = func_get_args();
+        $this->calls[__FUNCTION__][] = \func_get_args();
     }
 }

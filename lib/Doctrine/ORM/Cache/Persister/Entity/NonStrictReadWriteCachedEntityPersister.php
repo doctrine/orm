@@ -85,7 +85,7 @@ class NonStrictReadWriteCachedEntityPersister extends AbstractEntityPersister
     private function updateCache($entity, $isChanged)
     {
         $uow       = $this->em->getUnitOfWork();
-        $class     = $this->metadataFactory->getMetadataFor(get_class($entity));
+        $class     = $this->metadataFactory->getMetadataFor(\get_class($entity));
         $key       = new EntityCacheKey($class->getRootClassName(), $uow->getEntityIdentifier($entity));
         $entry     = $this->hydrator->buildCacheEntry($class, $key, $entity);
         $cached    = $this->region->put($key, $entry);

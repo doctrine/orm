@@ -43,11 +43,11 @@ class HydratorMockStatement implements IteratorAggregate, Statement
      */
     public function fetchColumn($columnNumber = 0)
     {
-        $row = current($this->resultSet);
-        if (! is_array($row)) {
+        $row = \current($this->resultSet);
+        if (! \is_array($row)) {
             return false;
         }
-        $val = array_shift($row);
+        $val = \array_shift($row);
 
         return $val ?? false;
     }
@@ -57,8 +57,8 @@ class HydratorMockStatement implements IteratorAggregate, Statement
      */
     public function fetch($fetchMode = null, ...$args)
     {
-        $current = current($this->resultSet);
-        next($this->resultSet);
+        $current = \current($this->resultSet);
+        \next($this->resultSet);
 
         return $current;
     }

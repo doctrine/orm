@@ -30,8 +30,8 @@ final class EntityManagerFactory
         $config->setAutoGenerateProxyClasses(StaticProxyFactory::AUTOGENERATE_EVAL);
         $config->setMetadataDriverImpl(
             $config->newDefaultAnnotationDriver([
-                realpath(__DIR__ . '/Models/Cache'),
-                realpath(__DIR__ . '/Models/GeoNames'),
+                \realpath(__DIR__ . '/Models/Cache'),
+                \realpath(__DIR__ . '/Models/GeoNames'),
             ])
         );
 
@@ -44,7 +44,7 @@ final class EntityManagerFactory
         );
 
         (new SchemaTool($entityManager))
-            ->createSchema(array_map([$entityManager, 'getClassMetadata'], $schemaClassNames));
+            ->createSchema(\array_map([$entityManager, 'getClassMetadata'], $schemaClassNames));
 
         return $entityManager;
     }
@@ -59,9 +59,9 @@ final class EntityManagerFactory
         $config->setMetadataDriverImpl(
             $config->newDefaultAnnotationDriver(
                 [
-                    realpath(__DIR__ . '/Models/Cache'),
-                    realpath(__DIR__ . '/Models/Generic'),
-                    realpath(__DIR__ . '/Models/GeoNames'),
+                    \realpath(__DIR__ . '/Models/Cache'),
+                    \realpath(__DIR__ . '/Models/Generic'),
+                    \realpath(__DIR__ . '/Models/GeoNames'),
                 ]
             )
         );

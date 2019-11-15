@@ -25,8 +25,8 @@ class DefaultClassMetadataResolver implements ClassMetadataResolver
 
     public function __construct(string $namespace, string $directory)
     {
-        $this->namespace = ltrim($namespace, '\\');
-        $this->directory = rtrim($directory, DIRECTORY_SEPARATOR);
+        $this->namespace = \ltrim($namespace, '\\');
+        $this->directory = \rtrim($directory, DIRECTORY_SEPARATOR);
     }
 
     /**
@@ -34,7 +34,7 @@ class DefaultClassMetadataResolver implements ClassMetadataResolver
      */
     public function resolveMetadataClassName(string $className) : string
     {
-        return sprintf('%s\%s\%s', $this->namespace, self::MARKER, ltrim($className, '\\'));
+        return \sprintf('%s\%s\%s', $this->namespace, self::MARKER, \ltrim($className, '\\'));
     }
 
     /**
@@ -42,6 +42,6 @@ class DefaultClassMetadataResolver implements ClassMetadataResolver
      */
     public function resolveMetadataClassPath(string $className) : string
     {
-        return sprintf('%s/%s/%s.php', $this->directory, self::MARKER, str_replace('\\', '.', $className));
+        return \sprintf('%s/%s/%s.php', $this->directory, self::MARKER, \str_replace('\\', '.', $className));
     }
 }

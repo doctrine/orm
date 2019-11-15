@@ -72,7 +72,7 @@ class ReadOnlyTest extends OrmFunctionalTestCase
         $this->em->flush();
         $this->em->getUnitOfWork()->markReadOnly($readOnly);
 
-        $this->em->clear(get_class($readOnly));
+        $this->em->clear(\get_class($readOnly));
 
         self::assertFalse($this->em->getUnitOfWork()->isReadOnly($readOnly));
     }

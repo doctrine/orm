@@ -74,7 +74,7 @@ class DDC2224Type extends Type
      */
     public function convertToDatabaseValueSQL($sqlExpr, AbstractPlatform $platform)
     {
-        return sprintf('FUNCTION(%s)', $sqlExpr);
+        return \sprintf('FUNCTION(%s)', $sqlExpr);
     }
 }
 

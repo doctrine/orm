@@ -18,7 +18,7 @@ abstract class ToOneAssociationMetadataExporter extends AssociationMetadataExpor
     {
         /** @var ToOneAssociationMetadata $value */
         $joinColumnExporter = new JoinColumnMetadataExporter();
-        $indentation        = str_repeat(self::INDENTATION, $indentationLevel);
+        $indentation        = \str_repeat(self::INDENTATION, $indentationLevel);
         $objectReference    = $indentation . self::VARIABLE;
         $lines              = [];
 
@@ -31,6 +31,6 @@ abstract class ToOneAssociationMetadataExporter extends AssociationMetadataExpor
             $lines[] = $objectReference . '->addJoinColumn(' . $joinColumnExporter::VARIABLE . ');';
         }
 
-        return implode(PHP_EOL, $lines);
+        return \implode(PHP_EOL, $lines);
     }
 }

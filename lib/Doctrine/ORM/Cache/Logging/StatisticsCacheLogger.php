@@ -202,7 +202,7 @@ class StatisticsCacheLogger implements CacheLogger
      */
     public function getPutCount()
     {
-        return array_sum($this->cachePutCountMap);
+        return \array_sum($this->cachePutCountMap);
     }
 
     /**
@@ -212,7 +212,7 @@ class StatisticsCacheLogger implements CacheLogger
      */
     public function getHitCount()
     {
-        return array_sum($this->cacheHitCountMap);
+        return \array_sum($this->cacheHitCountMap);
     }
 
     /**
@@ -222,6 +222,6 @@ class StatisticsCacheLogger implements CacheLogger
      */
     public function getMissCount()
     {
-        return array_sum($this->cacheMissCountMap);
+        return \array_sum($this->cacheMissCountMap);
     }
 }

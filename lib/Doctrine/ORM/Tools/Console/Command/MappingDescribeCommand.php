@@ -94,7 +94,7 @@ EOT
 
         $ui->table(
             ['Field', 'Value'],
-            array_merge(
+            \array_merge(
                 [
                     $this->formatField('Name', $metadata->getClassName()),
                     $this->formatField('Root entity name', $metadata->getRootClassName()),
@@ -169,29 +169,29 @@ EOT
         } catch (MappingException $e) {
         }
 
-        $matches = array_filter(
+        $matches = \array_filter(
             $this->getMappedEntities($entityManager),
             static function ($mappedEntity) use ($entityName) {
-                return preg_match('{' . preg_quote($entityName) . '}', $mappedEntity);
+                return \preg_match('{' . \preg_quote($entityName) . '}', $mappedEntity);
             }
         );
 
         if (! $matches) {
-            throw new InvalidArgumentException(sprintf(
+            throw new InvalidArgumentException(\sprintf(
                 'Could not find any mapped Entity classes matching "%s"',
                 $entityName
             ));
         }
 
-        if (count($matches) > 1) {
-            throw new InvalidArgumentException(sprintf(
+        if (\count($matches) > 1) {
+            throw new InvalidArgumentException(\sprintf(
                 'Entity name "%s" is ambiguous, possible matches: "%s"',
                 $entityName,
-                implode(', ', $matches)
+                \implode(', ', $matches)
             ));
         }
 
-        return $entityManager->getClassMetadata(current($matches));
+        return $entityManager->getClassMetadata(\current($matches));
     }
 
     /**
@@ -215,7 +215,7 @@ EOT
             }
 
             if ($parentClass->inheritanceType) {
-                $attributes[] = ucfirst(strtolower($parentClass->inheritanceType));
+                $attributes[] = \ucfirst(\strtolower($parentClass->inheritanceType));
             }
 
             if ($parentClass->isReadOnly()) {
@@ -227,7 +227,7 @@ EOT
             }
 
             $output[] = $this->formatField(
-                sprintf('  %s', $parentClass->getParent()),
+                \sprintf('  %s', $parentClass->getParent()),
                 ($parentClass->isRootEntity() ? '(Root) ' : '') . $this->formatValue($attributes)
             );
         }
@@ -252,7 +252,7 @@ EOT
             return '<comment>Null</comment>';
         }
 
-        if (is_bool($value)) {
+        if (\is_bool($value)) {
             return '<comment>' . ($value ? 'True' : 'False') . '</comment>';
         }
 
@@ -260,19 +260,19 @@ EOT
             return '<comment>Empty</comment>';
         }
 
-        if (is_array($value)) {
-            return json_encode($value, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
+        if (\is_array($value)) {
+            return \json_encode($value, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
         }
 
-        if (is_object($value)) {
-            return sprintf('<%s>', get_class($value));
+        if (\is_object($value)) {
+            return \sprintf('<%s>', \get_class($value));
         }
 
-        if (is_scalar($value)) {
+        if (\is_scalar($value)) {
             return $value;
         }
 
-        throw new InvalidArgumentException(sprintf('Do not know how to format value "%s"', print_r($value, true)));
+        throw new InvalidArgumentException(\sprintf('Do not know how to format value "%s"', \print_r($value, true)));
     }
 
     /**
@@ -289,7 +289,7 @@ EOT
             $value = '<comment>None</comment>';
         }
 
-        return [sprintf('<info>%s</info>', $label), $this->formatValue($value)];
+        return [\sprintf('<info>%s</info>', $label), $this->formatValue($value)];
     }
 
     /**
@@ -304,14 +304,14 @@ EOT
         $output = [];
 
         foreach ($propertyMappings as $propertyName => $property) {
-            $output[] = $this->formatField(sprintf('  %s', $propertyName), '');
+            $output[] = $this->formatField(\sprintf('  %s', $propertyName), '');
 
             if ($property instanceof FieldMetadata) {
-                $output = array_merge($output, $this->formatColumn($property));
+                $output = \array_merge($output, $this->formatColumn($property));
             } elseif ($property instanceof AssociationMetadata) {
                 // @todo guilhermeblanco Fix me! We are trying to iterate through an AssociationMetadata instance
                 foreach ($property as $field => $value) {
-                    $output[] = $this->formatField(sprintf('    %s', $field), $this->formatValue($value));
+                    $output[] = $this->formatField(\sprintf('    %s', $field), $this->formatValue($value));
                 }
             }
         }
@@ -342,7 +342,7 @@ EOT
         $output[] = $this->formatField('    options', $this->formatValue($columnMetadata->getOptions()));
 
         if ($columnMetadata instanceof FieldMetadata) {
-            $output = array_merge($output, $this->formatValueGenerator($columnMetadata->getValueGenerator()));
+            $output = \array_merge($output, $this->formatValueGenerator($columnMetadata->getValueGenerator()));
         }
 
         return $output;
@@ -379,7 +379,7 @@ EOT
      */
     private function formatEntityListeners(array $entityListeners)
     {
-        return $this->formatField('Entity listeners', array_map('get_class', $entityListeners));
+        return $this->formatField('Entity listeners', \array_map('get_class', $entityListeners));
     }
 
     /**

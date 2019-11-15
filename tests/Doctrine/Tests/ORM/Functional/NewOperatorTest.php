@@ -402,17 +402,17 @@ class NewOperatorTest extends OrmFunctionalTestCase
         self::assertEquals($this->fixtures[2]->address->city, $result[2]->address);
 
         self::assertEquals(
-            count($this->fixtures[0]->phonenumbers),
+            \count($this->fixtures[0]->phonenumbers),
             $result[0]->phonenumbers
         );
 
         self::assertEquals(
-            count($this->fixtures[1]->phonenumbers),
+            \count($this->fixtures[1]->phonenumbers),
             $result[1]->phonenumbers
         );
 
         self::assertEquals(
-            count($this->fixtures[2]->phonenumbers),
+            \count($this->fixtures[2]->phonenumbers),
             $result[2]->phonenumbers
         );
     }
@@ -462,17 +462,17 @@ class NewOperatorTest extends OrmFunctionalTestCase
         self::assertEquals($this->fixtures[2]->address->city, $result[2]->address);
 
         self::assertEquals(
-            (count($this->fixtures[0]->phonenumbers) + $this->fixtures[0]->id),
+            (\count($this->fixtures[0]->phonenumbers) + $this->fixtures[0]->id),
             $result[0]->phonenumbers
         );
 
         self::assertEquals(
-            (count($this->fixtures[1]->phonenumbers) + $this->fixtures[1]->id),
+            (\count($this->fixtures[1]->phonenumbers) + $this->fixtures[1]->id),
             $result[1]->phonenumbers
         );
 
         self::assertEquals(
-            (count($this->fixtures[2]->phonenumbers) + $this->fixtures[2]->id),
+            (\count($this->fixtures[2]->phonenumbers) + $this->fixtures[2]->id),
             $result[2]->phonenumbers
         );
     }

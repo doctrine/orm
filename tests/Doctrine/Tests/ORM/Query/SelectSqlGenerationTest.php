@@ -737,7 +737,7 @@ class SelectSqlGenerationTest extends OrmTestCase
         $person = new CompanyPerson();
 
         $unitOfWork = $this->em->getUnitOfWork();
-        $persister  = $unitOfWork->getEntityPersister(get_class($person));
+        $persister  = $unitOfWork->getEntityPersister(\get_class($person));
 
         $persister->setIdentifier($person, ['id' => 101]);
 

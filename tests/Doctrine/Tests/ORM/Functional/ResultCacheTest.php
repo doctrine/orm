@@ -39,7 +39,7 @@ class ResultCacheTest extends OrmFunctionalTestCase
      */
     private function getCacheSize(ArrayCache $cache)
     {
-        return count($this->cacheDataReflection->getValue($cache));
+        return \count($this->cacheDataReflection->getValue($cache));
     }
 
     public function testResultCache() : void
@@ -115,7 +115,7 @@ class ResultCacheTest extends OrmFunctionalTestCase
     public function testUseResultCacheParams() : void
     {
         $cache    = new ArrayCache();
-        $sqlCount = count($this->sqlLoggerStack->queries);
+        $sqlCount = \count($this->sqlLoggerStack->queries);
         $query    = $this->em->createQuery('select ux from Doctrine\Tests\Models\CMS\CmsUser ux WHERE ux.id = ?1');
 
         $query->setParameter(1, 1);

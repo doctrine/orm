@@ -32,8 +32,8 @@ class DBAL483Test extends OrmFunctionalTestCase
 
         $updateSql = $this->schemaTool->getUpdateSchemaSql([$class]);
 
-        $updateSql = array_filter($updateSql, static function ($sql) {
-            return strpos($sql, 'DBAL483') !== false;
+        $updateSql = \array_filter($updateSql, static function ($sql) {
+            return \strpos($sql, 'DBAL483') !== false;
         });
 
         self::assertCount(0, $updateSql);

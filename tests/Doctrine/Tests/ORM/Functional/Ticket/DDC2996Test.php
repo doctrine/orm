@@ -77,7 +77,7 @@ class DDC2996UserPreference
         if ($uow->getOriginalEntityData($this->user)) {
             $this->user->counter++;
             $uow->recomputeSingleEntityChangeSet(
-                $em->getClassMetadata(get_class($this->user)),
+                $em->getClassMetadata(\get_class($this->user)),
                 $this->user
             );
         }

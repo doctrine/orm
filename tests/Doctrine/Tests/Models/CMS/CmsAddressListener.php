@@ -13,42 +13,42 @@ class CmsAddressListener
 
     public function prePersist()
     {
-        $this->calls[__FUNCTION__][] = func_get_args();
+        $this->calls[__FUNCTION__][] = \func_get_args();
     }
 
     public function postPersist()
     {
-        $this->calls[__FUNCTION__][] = func_get_args();
+        $this->calls[__FUNCTION__][] = \func_get_args();
     }
 
     public function preUpdate()
     {
-        $this->calls[__FUNCTION__][] = func_get_args();
+        $this->calls[__FUNCTION__][] = \func_get_args();
     }
 
     public function postUpdate()
     {
-        $this->calls[__FUNCTION__][] = func_get_args();
+        $this->calls[__FUNCTION__][] = \func_get_args();
     }
 
     public function preRemove()
     {
-        $this->calls[__FUNCTION__][] = func_get_args();
+        $this->calls[__FUNCTION__][] = \func_get_args();
     }
 
     public function postRemove()
     {
-        $this->calls[__FUNCTION__][] = func_get_args();
+        $this->calls[__FUNCTION__][] = \func_get_args();
     }
 
     public function postLoad()
     {
-        $this->calls[__FUNCTION__][] = func_get_args();
+        $this->calls[__FUNCTION__][] = \func_get_args();
     }
 
     public function preFlush()
     {
-        $this->calls[__FUNCTION__][] = func_get_args();
+        $this->calls[__FUNCTION__][] = \func_get_args();
     }
 
     protected function postPersistHandler()

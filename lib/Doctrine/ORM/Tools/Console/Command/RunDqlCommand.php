@@ -58,10 +58,10 @@ class RunDqlCommand extends Command
         }
 
         $hydrationModeName = $input->getOption('hydrate');
-        $hydrationMode     = 'Doctrine\ORM\Query::HYDRATE_' . strtoupper(str_replace('-', '_', $hydrationModeName));
+        $hydrationMode     = 'Doctrine\ORM\Query::HYDRATE_' . \strtoupper(\str_replace('-', '_', $hydrationModeName));
 
-        if (! defined($hydrationMode)) {
-            throw new RuntimeException(sprintf(
+        if (! \defined($hydrationMode)) {
+            throw new RuntimeException(\sprintf(
                 "Hydration mode '%s' does not exist. It should be either: object. array, scalar or single-scalar.",
                 $hydrationModeName
             ));
@@ -71,7 +71,7 @@ class RunDqlCommand extends Command
         $firstResult = $input->getOption('first-result');
 
         if ($firstResult !== null) {
-            if (! is_numeric($firstResult)) {
+            if (! \is_numeric($firstResult)) {
                 throw new LogicException("Option 'first-result' must contain an integer value");
             }
 
@@ -81,7 +81,7 @@ class RunDqlCommand extends Command
         $maxResult = $input->getOption('max-result');
 
         if ($maxResult !== null) {
-            if (! is_numeric($maxResult)) {
+            if (! \is_numeric($maxResult)) {
                 throw new LogicException("Option 'max-result' must contain an integer value");
             }
 
@@ -94,7 +94,7 @@ class RunDqlCommand extends Command
             return;
         }
 
-        $resultSet = $query->execute([], constant($hydrationMode));
+        $resultSet = $query->execute([], \constant($hydrationMode));
 
         $dumper = new CliDumper(static function (string $payload) use ($output) : void {
             $output->write($payload);

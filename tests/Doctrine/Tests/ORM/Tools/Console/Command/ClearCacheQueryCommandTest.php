@@ -51,7 +51,7 @@ class ClearCacheQueryCommandTest extends OrmFunctionalTestCase
         $tester = new CommandTester($command);
 
         $this->expectException(LogicException::class);
-        $this->expectExceptionMessage(sprintf('Cannot clear %s from Console', $name));
+        $this->expectExceptionMessage(\sprintf('Cannot clear %s from Console', $name));
 
         $tester->execute(
             [

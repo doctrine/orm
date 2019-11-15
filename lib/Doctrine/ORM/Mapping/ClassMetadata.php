@@ -311,7 +311,7 @@ class ClassMetadata extends ComponentMetadata implements TableOwner
         $serialized = [];
 
         // This metadata is always serialized/cached.
-        $serialized = array_merge($serialized, [
+        $serialized = \array_merge($serialized, [
             'properties',
             'fieldNames',
             //'embeddedClasses',
@@ -395,7 +395,7 @@ class ClassMetadata extends ComponentMetadata implements TableOwner
             return $fieldName === $this->identifier[0];
         }
 
-        return in_array($fieldName, $this->identifier, true);
+        return \in_array($fieldName, $this->identifier, true);
     }
 
     public function isIdentifierComposite() : bool
@@ -419,7 +419,7 @@ class ClassMetadata extends ComponentMetadata implements TableOwner
             throw MappingException::identifierRequired($this->className);
         }
 
-        $explicitlyGeneratedProperties = array_filter($this->properties, static function (Property $property) : bool {
+        $explicitlyGeneratedProperties = \array_filter($this->properties, static function (Property $property) : bool {
             return $property instanceof FieldMetadata
                 && $property->isPrimaryKey()
                 && $property->hasValueGenerator();
@@ -636,7 +636,7 @@ class ClassMetadata extends ComponentMetadata implements TableOwner
         }
 
         $originalProperty          = $this->getProperty($fieldName);
-        $originalPropertyClassName = get_class($originalProperty);
+        $originalPropertyClassName = \get_class($originalProperty);
 
         // If moving from transient to persistent, assume it's a new property
         if ($originalPropertyClassName === TransientMetadata::class) {
@@ -648,7 +648,7 @@ class ClassMetadata extends ComponentMetadata implements TableOwner
         }
 
         // Do not allow to change property type
-        if ($originalPropertyClassName !== get_class($property)) {
+        if ($originalPropertyClassName !== \get_class($property)) {
             throw MappingException::invalidOverridePropertyType($this->className, $fieldName);
         }
 
@@ -811,7 +811,7 @@ class ClassMetadata extends ComponentMetadata implements TableOwner
                 break;
         }
 
-        if ($property->isPrimaryKey() && ! in_array($fieldName, $this->identifier, true)) {
+        if ($property->isPrimaryKey() && ! \in_array($fieldName, $this->identifier, true)) {
             $this->identifier[] = $fieldName;
         }
 
@@ -903,7 +903,7 @@ class ClassMetadata extends ComponentMetadata implements TableOwner
      */
     public function addLifecycleCallback(string $eventName, string $methodName)
     {
-        if (in_array($methodName, $this->lifecycleCallbacks[$eventName] ?? [], true)) {
+        if (\in_array($methodName, $this->lifecycleCallbacks[$eventName] ?? [], true)) {
             return;
         }
 
@@ -926,16 +926,16 @@ class ClassMetadata extends ComponentMetadata implements TableOwner
             'method' => $methodName,
         ];
 
-        if (! class_exists($class)) {
+        if (! \class_exists($class)) {
             throw MappingException::entityListenerClassNotFound($class, $this->className);
         }
 
-        if (! method_exists($class, $methodName)) {
+        if (! \method_exists($class, $methodName)) {
             throw MappingException::entityListenerMethodNotFound($class, $methodName, $this->className);
         }
 
         // Check if entity listener already got registered and ignore it if positive
-        if (in_array($listener, $this->entityListeners[$eventName] ?? [], true)) {
+        if (\in_array($listener, $this->entityListeners[$eventName] ?? [], true)) {
             return;
         }
 
@@ -959,7 +959,7 @@ class ClassMetadata extends ComponentMetadata implements TableOwner
 
         $allowedTypeList = ['boolean', 'array', 'object', 'datetime', 'time', 'date'];
 
-        if (in_array($discriminatorColumn->getTypeName(), $allowedTypeList, true)) {
+        if (\in_array($discriminatorColumn->getTypeName(), $allowedTypeList, true)) {
             throw MappingException::invalidDiscriminatorColumnType($discriminatorColumn->getTypeName());
         }
 
@@ -998,11 +998,11 @@ class ClassMetadata extends ComponentMetadata implements TableOwner
             return;
         }
 
-        if (! (class_exists($className) || interface_exists($className))) {
+        if (! (\class_exists($className) || \interface_exists($className))) {
             throw MappingException::invalidClassInDiscriminatorMap($className, $this->className);
         }
 
-        if (is_subclass_of($className, $this->className) && ! in_array($className, $this->subClasses, true)) {
+        if (\is_subclass_of($className, $this->className) && ! \in_array($className, $this->subClasses, true)) {
             $this->subClasses[] = $className;
         }
     }

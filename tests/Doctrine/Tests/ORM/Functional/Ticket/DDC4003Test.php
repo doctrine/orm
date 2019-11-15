@@ -32,7 +32,7 @@ class DDC4003Test extends SecondLevelCacheAbstractTest
         $bar = $repository->findOneBy(['id' => $id]);
 
         // Let's change it so that we can compare its state
-        $bar->setName($newName = uniqid());
+        $bar->setName($newName = \uniqid());
         $this->em->persist($bar);
         $this->em->flush();
 

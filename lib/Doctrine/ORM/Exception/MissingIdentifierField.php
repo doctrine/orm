@@ -11,7 +11,7 @@ final class MissingIdentifierField extends LogicException implements ManagerExce
 {
     public static function fromFieldAndClass($fieldName, $className) : self
     {
-        return new self(sprintf(
+        return new self(\sprintf(
             'The identifier %s is missing for a query of %s',
             $fieldName,
             $className

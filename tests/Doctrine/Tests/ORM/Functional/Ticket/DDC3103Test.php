@@ -42,7 +42,7 @@ class DDC3103Test extends OrmFunctionalTestCase
         );
 
         self::assertTrue(
-            unserialize(serialize($classMetadata))->isEmbeddedClass,
+            \unserialize(\serialize($classMetadata))->isEmbeddedClass,
             'The isEmbeddedClass property should still be true after serialization and unserialization.'
         );
     }

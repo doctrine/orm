@@ -174,20 +174,20 @@ class EntityRepository implements ObjectRepository, Selectable
      */
     public function __call($method, $arguments)
     {
-        if (strpos($method, 'findBy') === 0) {
-            return $this->resolveMagicCall('findBy', substr($method, 6), $arguments);
+        if (\strpos($method, 'findBy') === 0) {
+            return $this->resolveMagicCall('findBy', \substr($method, 6), $arguments);
         }
 
-        if (strpos($method, 'findOneBy') === 0) {
-            return $this->resolveMagicCall('findOneBy', substr($method, 9), $arguments);
+        if (\strpos($method, 'findOneBy') === 0) {
+            return $this->resolveMagicCall('findOneBy', \substr($method, 9), $arguments);
         }
 
-        if (strpos($method, 'countBy') === 0) {
-            return $this->resolveMagicCall('count', substr($method, 7), $arguments);
+        if (\strpos($method, 'countBy') === 0) {
+            return $this->resolveMagicCall('count', \substr($method, 7), $arguments);
         }
 
         throw new BadMethodCallException(
-            sprintf(
+            \sprintf(
                 "Undefined method '%s'. The method name must start with either findBy, findOneBy or countBy!",
                 $method
             )
@@ -256,7 +256,7 @@ class EntityRepository implements ObjectRepository, Selectable
             throw InvalidMagicMethodCall::onMissingParameter($method . $by);
         }
 
-        $fieldName = lcfirst(Inflector::classify($by));
+        $fieldName = \lcfirst(Inflector::classify($by));
 
         if ($this->class->getProperty($fieldName) === null) {
             throw InvalidMagicMethodCall::becauseFieldNotFoundIn(
@@ -266,6 +266,6 @@ class EntityRepository implements ObjectRepository, Selectable
             );
         }
 
-        return $this->{$method}([$fieldName => $arguments[0]], ...array_slice($arguments, 1));
+        return $this->{$method}([$fieldName => $arguments[0]], ...\array_slice($arguments, 1));
     }
 }

@@ -109,9 +109,9 @@ class FieldMetadataBuilder
     public function build() : Mapping\FieldMetadata
     {
         // Validate required fields
-        assert($this->componentMetadata !== null);
-        assert($this->columnAnnotation !== null);
-        assert($this->fieldName !== null);
+        \assert($this->componentMetadata !== null);
+        \assert($this->columnAnnotation !== null);
+        \assert($this->fieldName !== null);
 
         $componentClassName = $this->componentMetadata->getClassName();
         $namingStrategy     = $this->metadataBuildingContext->getNamingStrategy();
@@ -159,14 +159,14 @@ class FieldMetadataBuilder
                 case 'integer':
                 case 'bigint':
                 case 'smallint':
-                    $fieldOptions = array_merge(['default' => 1], $fieldOptions);
+                    $fieldOptions = \array_merge(['default' => 1], $fieldOptions);
                     break;
 
                 case 'datetime':
                 case 'datetime_immutable':
                 case 'datetimetz':
                 case 'datetimetz_immutable':
-                    $fieldOptions = array_merge(['default' => 'CURRENT_TIMESTAMP'], $fieldOptions);
+                    $fieldOptions = \array_merge(['default' => 'CURRENT_TIMESTAMP'], $fieldOptions);
                     break;
 
                 default:

@@ -12,6 +12,6 @@ final class UnrecognizedField extends LogicException implements PersisterExcepti
 {
     public static function byName(string $field) : self
     {
-        return new self(sprintf('Unrecognized field: %s', $field));
+        return new self(\sprintf('Unrecognized field: %s', $field));
     }
 }

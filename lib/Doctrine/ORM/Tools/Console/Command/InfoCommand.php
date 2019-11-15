@@ -58,7 +58,7 @@ EOT
             return 1;
         }
 
-        $ui->text(sprintf('Found <info>%d</info> mapped entities:', count($entityClassNames)));
+        $ui->text(\sprintf('Found <info>%d</info> mapped entities:', \count($entityClassNames)));
         $ui->newLine();
 
         $failure = false;
@@ -66,12 +66,12 @@ EOT
         foreach ($entityClassNames as $entityClassName) {
             try {
                 $entityManager->getClassMetadata($entityClassName);
-                $ui->text(sprintf('<info>[OK]</info>   %s', $entityClassName));
+                $ui->text(\sprintf('<info>[OK]</info>   %s', $entityClassName));
             } catch (MappingException $e) {
                 $ui->text(
                     [
-                        sprintf('<error>[FAIL]</error> %s', $entityClassName),
-                        sprintf('<comment>%s</comment>', $e->getMessage()),
+                        \sprintf('<error>[FAIL]</error> %s', $entityClassName),
+                        \sprintf('<comment>%s</comment>', $e->getMessage()),
                         '',
                     ]
                 );

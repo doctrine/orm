@@ -57,14 +57,14 @@ abstract class DatabaseDriverTestCase extends OrmFunctionalTestCase
             $this->createMock(ReflectionService::class),
             $this->createMock(AbstractPlatform::class)
         );
-        $classNames              = array_map('strtolower', $classNames);
+        $classNames              = \array_map('strtolower', $classNames);
         $metadataList            = [];
 
         $sm     = $this->em->getConnection()->getSchemaManager();
         $driver = new DatabaseDriver($sm);
 
         foreach ($driver->getAllClassNames() as $className) {
-            if (! in_array(strtolower($className), $classNames, true)) {
+            if (! \in_array(\strtolower($className), $classNames, true)) {
                 continue;
             }
 
@@ -73,8 +73,8 @@ abstract class DatabaseDriverTestCase extends OrmFunctionalTestCase
             $metadataList[$className] = $class;
         }
 
-        if (count($metadataList) !== count($classNames)) {
-            $this->fail("Have not found all classes matching the names '" . implode(', ', $classNames) . "' only tables " . implode(', ', array_keys($metadataList)));
+        if (\count($metadataList) !== \count($classNames)) {
+            $this->fail("Have not found all classes matching the names '" . \implode(', ', $classNames) . "' only tables " . \implode(', ', \array_keys($metadataList)));
         }
 
         return $metadataList;

@@ -62,7 +62,7 @@ class DDC6303Test extends OrmFunctionalTestCase
      */
     private function assertHydratedEntitiesSameToPersistedOnes(array $persistedEntities) : void
     {
-        array_walk($persistedEntities, [$this->em, 'persist']);
+        \array_walk($persistedEntities, [$this->em, 'persist']);
 
         $this->em->flush();
         $this->em->clear();
@@ -73,10 +73,10 @@ class DDC6303Test extends OrmFunctionalTestCase
             ->getRepository(DDC6303BaseClass::class)
             ->createQueryBuilder('p')
             ->where('p.id IN(:ids)')
-            ->setParameter('ids', array_keys($persistedEntities))
+            ->setParameter('ids', \array_keys($persistedEntities))
             ->getQuery()->getResult();
 
-        self::assertCount(count($persistedEntities), $entities);
+        self::assertCount(\count($persistedEntities), $entities);
 
         foreach ($entities as $entity) {
             self::assertEquals($entity, $persistedEntities[$entity->id]);

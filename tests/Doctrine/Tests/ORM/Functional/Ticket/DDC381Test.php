@@ -40,8 +40,8 @@ class DDC381Test extends OrmFunctionalTestCase
         // explicitly load proxy (getId() does not trigger reload of proxy)
         $id = $entity->getOtherMethod();
 
-        $data   = serialize($entity);
-        $entity = unserialize($data);
+        $data   = \serialize($entity);
+        $entity = \unserialize($data);
 
         self::assertEquals($persistedId, $entity->getId());
     }

@@ -95,9 +95,9 @@ class ArrayHydrator extends AbstractHydrator
                 // Get a reference to the right element in the result tree.
                 // This element will get the associated element attached.
                 if ($this->rsm->isMixed && isset($this->rootAliases[$parent])) {
-                    $first = reset($this->resultPointers);
+                    $first = \reset($this->resultPointers);
                     // TODO: Exception if $key === null ?
-                    $baseElement =& $this->resultPointers[$parent][key($first)];
+                    $baseElement =& $this->resultPointers[$parent][\key($first)];
                 } elseif (isset($this->resultPointers[$parent])) {
                     $baseElement =& $this->resultPointers[$parent];
                 } else {
@@ -132,9 +132,9 @@ class ArrayHydrator extends AbstractHydrator
                                 $baseElement[$relationAlias][] = $element;
                             }
 
-                            end($baseElement[$relationAlias]);
+                            \end($baseElement[$relationAlias]);
 
-                            $this->identifierMap[$path][$id[$parent]][$id[$dqlAlias]] = key($baseElement[$relationAlias]);
+                            $this->identifierMap[$path][$id[$parent]][$id[$dqlAlias]] = \key($baseElement[$relationAlias]);
                         }
                     }
                 } else {
@@ -151,7 +151,7 @@ class ArrayHydrator extends AbstractHydrator
 
                 $coll =& $baseElement[$relationAlias];
 
-                if (is_array($coll)) {
+                if (\is_array($coll)) {
                     $this->updateResultPointer($coll, $index, $dqlAlias, $oneToOne);
                 }
             } else {
@@ -222,15 +222,15 @@ class ArrayHydrator extends AbstractHydrator
                 $resultKey = $this->resultCounter - 1;
             }
 
-            $scalarCount      = (isset($rowData['scalars']) ? count($rowData['scalars']) : 0);
-            $onlyOneRootAlias = $scalarCount === 0 && count($rowData['newObjects']) === 1;
+            $scalarCount      = (isset($rowData['scalars']) ? \count($rowData['scalars']) : 0);
+            $onlyOneRootAlias = $scalarCount === 0 && \count($rowData['newObjects']) === 1;
 
             foreach ($rowData['newObjects'] as $objIndex => $newObject) {
                 $class = $newObject['class'];
                 $args  = $newObject['args'];
                 $obj   = $class->newInstanceArgs($args);
 
-                if ($onlyOneRootAlias || count($args) === $scalarCount) {
+                if ($onlyOneRootAlias || \count($args) === $scalarCount) {
                     $result[$resultKey] = $obj;
 
                     continue;
@@ -274,7 +274,7 @@ class ArrayHydrator extends AbstractHydrator
             return;
         }
 
-        end($coll);
-        $this->resultPointers[$dqlAlias] =& $coll[key($coll)];
+        \end($coll);
+        $this->resultPointers[$dqlAlias] =& $coll[\key($coll)];
     }
 }

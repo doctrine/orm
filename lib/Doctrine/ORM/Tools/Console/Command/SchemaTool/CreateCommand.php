@@ -49,7 +49,7 @@ EOT
             $ui->newLine();
 
             foreach ($sqls as $sql) {
-                $ui->text(sprintf('    %s;', $sql));
+                $ui->text(\sprintf('    %s;', $sql));
             }
 
             return 0;

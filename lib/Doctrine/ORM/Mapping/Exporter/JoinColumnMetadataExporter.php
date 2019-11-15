@@ -22,7 +22,7 @@ class JoinColumnMetadataExporter extends ColumnMetadataExporter
     public function export($value, int $indentationLevel = 0) : string
     {
         /** @var JoinColumnMetadata $value */
-        $indentation     = str_repeat(self::INDENTATION, $indentationLevel);
+        $indentation     = \str_repeat(self::INDENTATION, $indentationLevel);
         $objectReference = $indentation . self::VARIABLE;
         $lines           = [];
 
@@ -31,14 +31,14 @@ class JoinColumnMetadataExporter extends ColumnMetadataExporter
         $lines[] = $objectReference . '->setAliasedName("' . $value->getAliasedName() . '");';
         $lines[] = $objectReference . '->setOnDelete("' . $value->getOnDelete() . '");';
 
-        return implode(PHP_EOL, $lines);
+        return \implode(PHP_EOL, $lines);
     }
 
     protected function exportInstantiation(ColumnMetadata $metadata) : string
     {
-        assert($metadata instanceof JoinColumnMetadata);
+        \assert($metadata instanceof JoinColumnMetadata);
 
-        return sprintf(
+        return \sprintf(
             'new Mapping\JoinColumnMetadata("%s", Type::getType("%s"));',
             $metadata->getColumnName(),
             $metadata->getTypeName()

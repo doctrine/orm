@@ -56,8 +56,8 @@ class UnderscoreNamingStrategy implements NamingStrategy
      */
     public function classToTableName(string $className) : string
     {
-        if (strpos($className, '\\') !== false) {
-            $className = substr($className, strrpos($className, '\\') + 1);
+        if (\strpos($className, '\\') !== false) {
+            $className = \substr($className, \strrpos($className, '\\') + 1);
         }
 
         return $this->underscore($className);
@@ -118,12 +118,12 @@ class UnderscoreNamingStrategy implements NamingStrategy
 
     private function underscore(string $string) : string
     {
-        $string = preg_replace('/(?<=[a-z])([A-Z])/', '_$1', $string);
+        $string = \preg_replace('/(?<=[a-z])([A-Z])/', '_$1', $string);
 
         if ($this->case === CASE_UPPER) {
-            return strtoupper($string);
+            return \strtoupper($string);
         }
 
-        return strtolower($string);
+        return \strtolower($string);
     }
 }

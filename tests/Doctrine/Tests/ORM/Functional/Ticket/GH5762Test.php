@@ -43,7 +43,7 @@ class GH5762Test extends OrmFunctionalTestCase
             $cars[] = $ride->car->brand;
         }
 
-        self::assertEquals(count($cars), count(array_unique($cars)));
+        self::assertEquals(\count($cars), \count(\array_unique($cars)));
 
         self::assertContains('BMW', $cars);
         self::assertContains('Crysler', $cars);

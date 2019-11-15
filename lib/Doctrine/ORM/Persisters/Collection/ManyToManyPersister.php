@@ -148,7 +148,7 @@ class ManyToManyPersister extends AbstractCollectionPersister
                 $joinColumn->setType(PersisterHelper::getTypeOfColumn($referencedColumnName, $sourceClass, $this->em));
             }
 
-            $conditions[] = sprintf('t.%s = ?', $quotedColumnName);
+            $conditions[] = \sprintf('t.%s = ?', $quotedColumnName);
             $params[]     = $identifier[$sourceClass->fieldNames[$referencedColumnName]];
             $types[]      = $joinColumn->getType();
         }
@@ -178,7 +178,7 @@ class ManyToManyPersister extends AbstractCollectionPersister
         $sql = 'SELECT COUNT(*)'
             . ' FROM ' . $joinTableName . ' t'
             . $joinTargetEntitySQL
-            . ' WHERE ' . implode(' AND ', $conditions);
+            . ' WHERE ' . \implode(' AND ', $conditions);
 
         return $this->conn->fetchColumn($sql, $params, 0, $types);
     }
@@ -207,7 +207,7 @@ class ManyToManyPersister extends AbstractCollectionPersister
 
         [$quotedJoinTable, $whereClauses, $params, $types] = $this->getJoinTableRestrictionsWithKey($collection, $key, true);
 
-        $sql = 'SELECT 1 FROM ' . $quotedJoinTable . ' WHERE ' . implode(' AND ', $whereClauses);
+        $sql = 'SELECT 1 FROM ' . $quotedJoinTable . ' WHERE ' . \implode(' AND ', $whereClauses);
 
         return (bool) $this->conn->fetchColumn($sql, $params, 0, $types);
     }
@@ -223,7 +223,7 @@ class ManyToManyPersister extends AbstractCollectionPersister
 
         [$quotedJoinTable, $whereClauses, $params, $types] = $this->getJoinTableRestrictions($collection, $element, true);
 
-        $sql = 'SELECT 1 FROM ' . $quotedJoinTable . ' WHERE ' . implode(' AND ', $whereClauses);
+        $sql = 'SELECT 1 FROM ' . $quotedJoinTable . ' WHERE ' . \implode(' AND ', $whereClauses);
 
         return (bool) $this->conn->fetchColumn($sql, $params, 0, $types);
     }
@@ -239,7 +239,7 @@ class ManyToManyPersister extends AbstractCollectionPersister
 
         [$quotedJoinTable, $whereClauses, $params, $types] = $this->getJoinTableRestrictions($collection, $element, false);
 
-        $sql = 'DELETE FROM ' . $quotedJoinTable . ' WHERE ' . implode(' AND ', $whereClauses);
+        $sql = 'DELETE FROM ' . $quotedJoinTable . ' WHERE ' . \implode(' AND ', $whereClauses);
 
         return (bool) $this->conn->executeUpdate($sql, $params, $types);
     }
@@ -251,7 +251,7 @@ class ManyToManyPersister extends AbstractCollectionPersister
     {
         $association   = $collection->getMapping();
         $owner         = $collection->getOwner();
-        $ownerMetadata = $this->em->getClassMetadata(get_class($owner));
+        $ownerMetadata = $this->em->getClassMetadata(\get_class($owner));
         $identifier    = $this->uow->getEntityIdentifier($owner);
         $targetClass   = $this->em->getClassMetadata($association->getTargetEntity());
         $onConditions  = $this->getOnConditionSQL($association);
@@ -273,7 +273,7 @@ class ManyToManyPersister extends AbstractCollectionPersister
                 $joinColumn->setType(PersisterHelper::getTypeOfColumn($referencedColumnName, $ownerMetadata, $this->em));
             }
 
-            $whereClauses[] = sprintf('t.%s = ?', $quotedColumnName);
+            $whereClauses[] = \sprintf('t.%s = ?', $quotedColumnName);
             $params[]       = $identifier[$ownerMetadata->fieldNames[$referencedColumnName]];
             $types[]        = $joinColumn->getType();
         }
@@ -286,7 +286,7 @@ class ManyToManyPersister extends AbstractCollectionPersister
             $property   = $targetClass->getProperty($name);
             $columnName = $this->platform->quoteIdentifier($property->getColumnName());
 
-            $whereClauses[] = sprintf('te.%s %s ?', $columnName, $operator);
+            $whereClauses[] = \sprintf('te.%s %s ?', $columnName, $operator);
             $params[]       = $value;
             $types[]        = $property->getType();
         }
@@ -300,8 +300,8 @@ class ManyToManyPersister extends AbstractCollectionPersister
         $sql = 'SELECT ' . $resultSetMapping->generateSelectClause()
             . ' FROM ' . $tableName . ' te'
             . ' JOIN ' . $joinTableName . ' t ON'
-            . implode(' AND ', $onConditions)
-            . ' WHERE ' . implode(' AND ', $whereClauses);
+            . \implode(' AND ', $onConditions)
+            . ' WHERE ' . \implode(' AND ', $whereClauses);
 
         $sql .= $this->getOrderingSql($criteria, $targetClass);
         $sql .= $this->getLimitSql($criteria);
@@ -337,7 +337,7 @@ class ManyToManyPersister extends AbstractCollectionPersister
         // A join is needed if there is filtering on the target entity
         $tableName = $rootClass->table->getQuotedQualifiedName($this->platform);
         $joinSql   = ' JOIN ' . $tableName . ' te'
-            . ' ON' . implode(' AND ', $this->getOnConditionSQL($association));
+            . ' ON' . \implode(' AND ', $this->getOnConditionSQL($association));
 
         return [$joinSql, $filterSql];
     }
@@ -366,7 +366,7 @@ class ManyToManyPersister extends AbstractCollectionPersister
             return '';
         }
 
-        $filterSql = implode(' AND ', $filterClauses);
+        $filterSql = \implode(' AND ', $filterClauses);
 
         return isset($filterClauses[1])
             ? '(' . $filterSql . ')'
@@ -418,7 +418,7 @@ class ManyToManyPersister extends AbstractCollectionPersister
             $columns[] = $this->platform->quoteIdentifier($joinColumn->getColumnName());
         }
 
-        return 'DELETE FROM ' . $joinTableName . ' WHERE ' . implode(' = ? AND ', $columns) . ' = ?';
+        return 'DELETE FROM ' . $joinTableName . ' WHERE ' . \implode(' = ? AND ', $columns) . ' = ?';
     }
 
     /**
@@ -436,8 +436,8 @@ class ManyToManyPersister extends AbstractCollectionPersister
         $joinColumns = $joinTable->getJoinColumns();
 
         // Optimization for single column identifier
-        if (count($joinColumns) === 1) {
-            return [reset($identifier)];
+        if (\count($joinColumns) === 1) {
+            return [\reset($identifier)];
         }
 
         // Composite identifier
@@ -495,7 +495,7 @@ class ManyToManyPersister extends AbstractCollectionPersister
         }
 
         return [
-            sprintf('DELETE FROM %s WHERE %s = ?', $joinTableName, implode(' = ? AND ', $columns)),
+            \sprintf('DELETE FROM %s WHERE %s = ?', $joinTableName, \implode(' = ? AND ', $columns)),
             $types,
         ];
     }
@@ -558,11 +558,11 @@ class ManyToManyPersister extends AbstractCollectionPersister
             $types[]   = $joinColumn->getType();
         }
 
-        $columnNamesAsString  = implode(', ', $columns);
-        $columnValuesAsString = implode(', ', array_fill(0, count($columns), '?'));
+        $columnNamesAsString  = \implode(', ', $columns);
+        $columnValuesAsString = \implode(', ', \array_fill(0, \count($columns), '?'));
 
         return [
-            sprintf('INSERT INTO %s (%s) VALUES (%s)', $joinTableName, $columnNamesAsString, $columnValuesAsString),
+            \sprintf('INSERT INTO %s (%s) VALUES (%s)', $joinTableName, $columnNamesAsString, $columnValuesAsString),
             $types,
         ];
     }
@@ -594,7 +594,7 @@ class ManyToManyPersister extends AbstractCollectionPersister
     {
         $params           = [];
         $association      = $collection->getMapping();
-        $owningClass      = $this->em->getClassMetadata(get_class($collection->getOwner()));
+        $owningClass      = $this->em->getClassMetadata(\get_class($collection->getOwner()));
         $targetClass      = $collection->getTypeClass();
         $owningIdentifier = $this->uow->getEntityIdentifier($collection->getOwner());
         $targetIdentifier = $this->uow->getEntityIdentifier($element);
@@ -650,7 +650,7 @@ class ManyToManyPersister extends AbstractCollectionPersister
         $whereClauses    = [];
         $params          = [];
         $types           = [];
-        $joinNeeded      = ! in_array($indexBy, $targetClass->identifier, true);
+        $joinNeeded      = ! \in_array($indexBy, $targetClass->identifier, true);
 
         if ($joinNeeded) { // extra join needed if indexBy is not a @id
             $joinConditions = [];
@@ -664,14 +664,14 @@ class ManyToManyPersister extends AbstractCollectionPersister
             }
 
             $tableName        = $targetClass->table->getQuotedQualifiedName($this->platform);
-            $quotedJoinTable .= ' JOIN ' . $tableName . ' tr ON ' . implode(' AND ', $joinConditions);
+            $quotedJoinTable .= ' JOIN ' . $tableName . ' tr ON ' . \implode(' AND ', $joinConditions);
             $indexByProperty  = $targetClass->getProperty($indexBy);
 
             switch (true) {
                 case $indexByProperty instanceof FieldMetadata:
                     $quotedColumnName = $this->platform->quoteIdentifier($indexByProperty->getColumnName());
 
-                    $whereClauses[] = sprintf('tr.%s = ?', $quotedColumnName);
+                    $whereClauses[] = \sprintf('tr.%s = ?', $quotedColumnName);
                     $params[]       = $key;
                     $types[]        = $indexByProperty->getType();
                     break;
@@ -691,7 +691,7 @@ class ManyToManyPersister extends AbstractCollectionPersister
                 $joinColumn->setType(PersisterHelper::getTypeOfColumn($referencedColumnName, $sourceClass, $this->em));
             }
 
-            $whereClauses[] = sprintf('t.%s = ?', $quotedColumnName);
+            $whereClauses[] = \sprintf('t.%s = ?', $quotedColumnName);
             $params[]       = $identifier[$sourceClass->fieldNames[$joinColumn->getReferencedColumnName()]];
             $types[]        = $joinColumn->getType();
         }
@@ -706,7 +706,7 @@ class ManyToManyPersister extends AbstractCollectionPersister
                     $joinColumn->setType(PersisterHelper::getTypeOfColumn($referencedColumnName, $targetClass, $this->em));
                 }
 
-                $whereClauses[] = sprintf('t.%s = ?', $quotedColumnName);
+                $whereClauses[] = \sprintf('t.%s = ?', $quotedColumnName);
                 $params[]       = $key;
                 $types[]        = $joinColumn->getType();
             }
@@ -842,7 +842,7 @@ class ManyToManyPersister extends AbstractCollectionPersister
                 $orderBy[] = $columnName . ' ' . $direction;
             }
 
-            return ' ORDER BY ' . implode(', ', $orderBy);
+            return ' ORDER BY ' . \implode(', ', $orderBy);
         }
 
         return '';

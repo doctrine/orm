@@ -146,11 +146,11 @@ class AnnotationDriverTest extends AbstractMappingDriverTest
         $factory->setEntityManager($em);
 
         $classPage = $factory->getMetadataFor(File::class);
-        self::assertArrayHasKey('parentDirectory', iterator_to_array($classPage->getPropertiesIterator()));
+        self::assertArrayHasKey('parentDirectory', \iterator_to_array($classPage->getPropertiesIterator()));
         self::assertEquals(File::class, $classPage->getProperty('parentDirectory')->getSourceEntity());
 
         $classDirectory = $factory->getMetadataFor(Directory::class);
-        self::assertArrayHasKey('parentDirectory', iterator_to_array($classDirectory->getPropertiesIterator()));
+        self::assertArrayHasKey('parentDirectory', \iterator_to_array($classDirectory->getPropertiesIterator()));
         self::assertEquals(Directory::class, $classDirectory->getProperty('parentDirectory')->getSourceEntity());
     }
 

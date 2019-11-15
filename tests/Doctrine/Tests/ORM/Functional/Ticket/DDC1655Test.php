@@ -79,9 +79,9 @@ class DDC1655Test extends OrmFunctionalTestCase
         $this->em->flush();
         $this->em->clear();
 
-        $baz = $this->em->find(get_class($baz), $baz->id);
+        $baz = $this->em->find(\get_class($baz), $baz->id);
         foreach ($baz->foos as $foo) {
-            self::assertEquals(1, $foo->loaded, 'should have loaded callback counter incremented for ' . get_class($foo));
+            self::assertEquals(1, $foo->loaded, 'should have loaded callback counter incremented for ' . \get_class($foo));
         }
     }
 
@@ -97,11 +97,11 @@ class DDC1655Test extends OrmFunctionalTestCase
         $this->em->flush();
         $this->em->clear();
 
-        $bar = $this->em->find(get_class($bar), $bar->id);
+        $bar = $this->em->find(\get_class($bar), $bar->id);
         self::assertEquals(1, $bar->loaded);
         self::assertEquals(1, $bar->subLoaded);
 
-        $bar = $this->em->find(get_class($bar), $bar->id);
+        $bar = $this->em->find(\get_class($bar), $bar->id);
         self::assertEquals(1, $bar->loaded);
         self::assertEquals(1, $bar->subLoaded);
 

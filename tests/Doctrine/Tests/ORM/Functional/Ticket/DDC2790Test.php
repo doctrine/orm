@@ -39,9 +39,9 @@ class DDC2790Test extends OrmFunctionalTestCase
         $entity->name     = 'Roman';
 
         $qb = $this->em->createQueryBuilder();
-        $qb->from(get_class($entity), 'c');
+        $qb->from(\get_class($entity), 'c');
         $qb->select('count(c)');
-        $initial = intval($qb->getQuery()->getSingleScalarResult());
+        $initial = \intval($qb->getQuery()->getSingleScalarResult());
 
         $this->em->persist($entity);
         $this->em->flush();
@@ -54,9 +54,9 @@ class DDC2790Test extends OrmFunctionalTestCase
         $this->em->flush();
 
         $qb = $this->em->createQueryBuilder();
-        $qb->from(get_class($entity), 'c');
+        $qb->from(\get_class($entity), 'c');
         $qb->select('count(c)');
-        $count = intval($qb->getQuery()->getSingleScalarResult());
+        $count = \intval($qb->getQuery()->getSingleScalarResult());
         self::assertEquals($initial, $count);
     }
 }
@@ -74,7 +74,7 @@ class OnFlushListener
         $deletions = $uow->getScheduledEntityDeletions();
         $updates   = $uow->getScheduledEntityUpdates();
 
-        $undelete = array_intersect_key($deletions, $updates);
+        $undelete = \array_intersect_key($deletions, $updates);
         foreach ($undelete as $d) {
             $em->persist($d);
         }

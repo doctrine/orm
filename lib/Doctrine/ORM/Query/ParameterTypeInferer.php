@@ -30,11 +30,11 @@ class ParameterTypeInferer
      */
     public static function inferType($value)
     {
-        if (is_int($value)) {
+        if (\is_int($value)) {
             return Type::INTEGER;
         }
 
-        if (is_bool($value)) {
+        if (\is_bool($value)) {
             return Type::BOOLEAN;
         }
 
@@ -46,8 +46,8 @@ class ParameterTypeInferer
             return Type::DATEINTERVAL;
         }
 
-        if (is_array($value)) {
-            return is_int(current($value))
+        if (\is_array($value)) {
+            return \is_int(\current($value))
                 ? Connection::PARAM_INT_ARRAY
                 : Connection::PARAM_STR_ARRAY;
         }

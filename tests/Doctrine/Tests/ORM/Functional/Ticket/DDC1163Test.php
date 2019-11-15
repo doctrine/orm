@@ -85,7 +85,7 @@ class DDC1163Test extends OrmFunctionalTestCase
         // this screams violation of law of demeter ;)
         self::assertEquals(
             DDC1163SpecialProduct::class,
-            $this->em->getUnitOfWork()->getEntityPersister(get_class($specialProduct))->getClassMetadata()->getClassName()
+            $this->em->getUnitOfWork()->getEntityPersister(\get_class($specialProduct))->getClassMetadata()->getClassName()
         );
 
         $tag = new DDC1163Tag('Foo');

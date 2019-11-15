@@ -156,7 +156,7 @@ class DDC3192CurrencyCode extends Type
      */
     public function convertToPHPValue($value, AbstractPlatform $platform)
     {
-        return array_search((int) $value, self::$map, true);
+        return \array_search((int) $value, self::$map, true);
     }
 
     /**

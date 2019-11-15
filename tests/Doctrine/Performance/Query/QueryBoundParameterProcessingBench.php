@@ -56,7 +56,7 @@ DQL;
         $this->parsedQueryWithInferredParameterType = $entityManager->createQuery($dql);
         $this->parsedQueryWithDeclaredParameterType = $entityManager->createQuery($dql);
 
-        foreach (range(1, 10) as $index) {
+        foreach (\range(1, 10) as $index) {
             $this->parsedQueryWithInferredParameterType->setParameter('parameter' . $index, new DateTime());
             $this->parsedQueryWithDeclaredParameterType->setParameter('parameter' . $index, new DateTime(), DateTimeType::DATETIME);
         }

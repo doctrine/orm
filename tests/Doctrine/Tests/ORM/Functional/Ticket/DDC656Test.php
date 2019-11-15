@@ -30,18 +30,18 @@ class DDC656Test extends OrmFunctionalTestCase
         $entity->setType('type1');
         $this->em->persist($entity);
 
-        $this->em->getUnitOfWork()->computeChangeSet($this->em->getClassMetadata(get_class($entity)), $entity);
+        $this->em->getUnitOfWork()->computeChangeSet($this->em->getClassMetadata(\get_class($entity)), $entity);
         $data1 = $this->em->getUnitOfWork()->getEntityChangeSet($entity);
         $entity->setType('type2');
-        $this->em->getUnitOfWork()->recomputeSingleEntityChangeSet($this->em->getClassMetadata(get_class($entity)), $entity);
+        $this->em->getUnitOfWork()->recomputeSingleEntityChangeSet($this->em->getClassMetadata(\get_class($entity)), $entity);
         $data2 = $this->em->getUnitOfWork()->getEntityChangeSet($entity);
 
-        self::assertEquals(array_keys($data1), array_keys($data2));
+        self::assertEquals(\array_keys($data1), \array_keys($data2));
 
         $this->em->flush();
         $this->em->clear();
 
-        $persistedEntity = $this->em->find(get_class($entity), $entity->specificationId);
+        $persistedEntity = $this->em->find(\get_class($entity), $entity->specificationId);
         self::assertEquals('type2', $persistedEntity->getType());
         self::assertEquals('test1', $persistedEntity->getName());
     }

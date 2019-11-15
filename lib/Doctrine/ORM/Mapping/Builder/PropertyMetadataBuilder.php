@@ -340,8 +340,8 @@ class PropertyMetadataBuilder
     public function build() : ?Mapping\Property
     {
         // Validate required fields
-        assert($this->componentMetadata !== null);
-        assert($this->fieldName !== null);
+        \assert($this->componentMetadata !== null);
+        \assert($this->fieldName !== null);
 
         $componentClassName = $this->componentMetadata->getClassName();
 

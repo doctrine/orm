@@ -47,7 +47,7 @@ class DefaultEntityHydrator implements EntityHydrator
         $persister           = $this->uow->getEntityPersister($metadata->getClassName());
 
         $data = $this->uow->getOriginalEntityData($entity);
-        $data = array_merge($data, $persister->getIdentifier($entity)); // why update has no identifier values ?
+        $data = \array_merge($data, $persister->getIdentifier($entity)); // why update has no identifier values ?
 
         if ($metadata->isVersioned()) {
             $data[$metadata->versionProperty->getName()] = $metadata->versionProperty->getValue($entity);

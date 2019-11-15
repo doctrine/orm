@@ -133,7 +133,7 @@ class TestUtil
 
         if (isset($GLOBALS['db_path'])) {
             $params['path'] = $GLOBALS['db_path'];
-            unlink($GLOBALS['db_path']);
+            \unlink($GLOBALS['db_path']);
         }
 
         return $params;
@@ -143,7 +143,7 @@ class TestUtil
     {
         if (isset($GLOBALS['db_event_subscribers'])) {
             $evm = $conn->getEventManager();
-            foreach (explode(',', $GLOBALS['db_event_subscribers']) as $subscriberClass) {
+            foreach (\explode(',', $GLOBALS['db_event_subscribers']) as $subscriberClass) {
                 $subscriberInstance = new $subscriberClass();
                 $evm->addEventSubscriber($subscriberInstance);
             }

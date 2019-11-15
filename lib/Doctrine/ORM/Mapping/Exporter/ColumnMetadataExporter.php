@@ -21,7 +21,7 @@ abstract class ColumnMetadataExporter implements Exporter
     {
         /** @var ColumnMetadata $value */
         $variableExporter = new VariableExporter();
-        $indentation      = str_repeat(self::INDENTATION, $indentationLevel);
+        $indentation      = \str_repeat(self::INDENTATION, $indentationLevel);
         $objectReference  = $indentation . self::VARIABLE;
         $lines            = [];
 
@@ -32,12 +32,12 @@ abstract class ColumnMetadataExporter implements Exporter
         }
 
         $lines[] = $objectReference . '->setTableName("' . $value->getTableName() . '");';
-        $lines[] = $objectReference . '->setOptions(' . ltrim($variableExporter->export($value->getOptions(), $indentationLevel + 1)) . ');';
-        $lines[] = $objectReference . '->setPrimaryKey(' . ltrim($variableExporter->export($value->isPrimaryKey(), $indentationLevel + 1)) . ');';
-        $lines[] = $objectReference . '->setNullable(' . ltrim($variableExporter->export($value->isNullable(), $indentationLevel + 1)) . ');';
-        $lines[] = $objectReference . '->setUnique(' . ltrim($variableExporter->export($value->isUnique(), $indentationLevel + 1)) . ');';
+        $lines[] = $objectReference . '->setOptions(' . \ltrim($variableExporter->export($value->getOptions(), $indentationLevel + 1)) . ');';
+        $lines[] = $objectReference . '->setPrimaryKey(' . \ltrim($variableExporter->export($value->isPrimaryKey(), $indentationLevel + 1)) . ');';
+        $lines[] = $objectReference . '->setNullable(' . \ltrim($variableExporter->export($value->isNullable(), $indentationLevel + 1)) . ');';
+        $lines[] = $objectReference . '->setUnique(' . \ltrim($variableExporter->export($value->isUnique(), $indentationLevel + 1)) . ');';
 
-        return implode(PHP_EOL, $lines);
+        return \implode(PHP_EOL, $lines);
     }
 
     abstract protected function exportInstantiation(ColumnMetadata $metadata) : string;

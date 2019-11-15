@@ -59,7 +59,7 @@ class FileLockRegionTest extends AbstractRegionTest
 
     protected function createRegion()
     {
-        $this->directory = sys_get_temp_dir() . '/doctrine_lock_' . uniqid();
+        $this->directory = \sys_get_temp_dir() . '/doctrine_lock_' . \uniqid();
 
         $region = new DefaultRegion('concurren_region_test', $this->cache);
 
@@ -105,7 +105,7 @@ class FileLockRegionTest extends AbstractRegionTest
         self::assertTrue($this->region->put($key, $entry));
         self::assertTrue($this->region->contains($key));
 
-        file_put_contents($file, 'foo');
+        \file_put_contents($file, 'foo');
         self::assertFileExists($file);
         self::assertStringEqualsFile($file, 'foo');
 
@@ -133,7 +133,7 @@ class FileLockRegionTest extends AbstractRegionTest
         self::assertFileExists($file);
 
         // change the lock
-        file_put_contents($file, 'foo');
+        \file_put_contents($file, 'foo');
         self::assertFileExists($file);
         self::assertStringEqualsFile($file, 'foo');
 
@@ -158,7 +158,7 @@ class FileLockRegionTest extends AbstractRegionTest
         self::assertTrue($this->region->contains($key));
 
         // create lock
-        file_put_contents($file, 'foo');
+        \file_put_contents($file, 'foo');
         self::assertFileExists($file);
         self::assertStringEqualsFile($file, 'foo');
 
@@ -260,12 +260,12 @@ class FileLockRegionTest extends AbstractRegionTest
         $reflectionDirectory = new ReflectionProperty($region, 'directory');
 
         $reflectionDirectory->setAccessible(true);
-        $reflectionDirectory->setValue($region, str_repeat('a', 10000));
+        $reflectionDirectory->setValue($region, \str_repeat('a', 10000));
 
-        set_error_handler(static function () {
+        \set_error_handler(static function () {
         }, E_WARNING);
         self::assertTrue($region->evictAll());
-        restore_error_handler();
+        \restore_error_handler();
     }
 
     /**
@@ -275,7 +275,7 @@ class FileLockRegionTest extends AbstractRegionTest
     {
         $path = $path ?: $this->directory;
 
-        if (! is_dir($path)) {
+        if (! \is_dir($path)) {
             return;
         }
 
@@ -286,9 +286,9 @@ class FileLockRegionTest extends AbstractRegionTest
 
         foreach ($directoryIterator as $file) {
             if ($file->isFile()) {
-                @unlink($file->getRealPath());
+                @\unlink($file->getRealPath());
             } elseif ($file->getRealPath() !== false) {
-                @rmdir($file->getRealPath());
+                @\rmdir($file->getRealPath());
             }
         }
     }

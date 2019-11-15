@@ -98,7 +98,7 @@ class TrimFunction extends FunctionNode
         $lexer = $parser->getLexer();
         $value = $lexer->lookahead['value'];
 
-        if (strcasecmp('leading', $value) === 0) {
+        if (\strcasecmp('leading', $value) === 0) {
             $parser->match(Lexer::T_LEADING);
 
             $this->leading = true;
@@ -106,7 +106,7 @@ class TrimFunction extends FunctionNode
             return;
         }
 
-        if (strcasecmp('trailing', $value) === 0) {
+        if (\strcasecmp('trailing', $value) === 0) {
             $parser->match(Lexer::T_TRAILING);
 
             $this->trailing = true;
@@ -114,7 +114,7 @@ class TrimFunction extends FunctionNode
             return;
         }
 
-        if (strcasecmp('both', $value) === 0) {
+        if (\strcasecmp('both', $value) === 0) {
             $parser->match(Lexer::T_BOTH);
 
             $this->both = true;

@@ -43,7 +43,7 @@ final class GH6029Test extends OrmFunctionalTestCase
 
         $this->expectException(ORMInvalidArgumentException::class);
         $this->expectExceptionMessage(
-            sprintf(
+            \sprintf(
                 'Expected value of type "%s" for association field "%s#$groups", got "%s" instead.',
                 GH6029Group::class,
                 GH6029User::class,
@@ -68,7 +68,7 @@ final class GH6029Test extends OrmFunctionalTestCase
 
         $this->expectException(ORMInvalidArgumentException::class);
         $this->expectExceptionMessage(
-            sprintf(
+            \sprintf(
                 'Expected value of type "%s" for association field "%s#$features", got "%s" instead.',
                 GH6029Feature::class,
                 GH6029Product::class,

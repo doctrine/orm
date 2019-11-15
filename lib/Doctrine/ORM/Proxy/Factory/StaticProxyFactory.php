@@ -56,7 +56,7 @@ final class StaticProxyFactory implements ProxyFactory
      */
     public function generateProxyClasses(array $classes) : int
     {
-        $concreteClasses = array_filter($classes, static function (ClassMetadata $metadata) : bool {
+        $concreteClasses = \array_filter($classes, static function (ClassMetadata $metadata) : bool {
             return ! ($metadata->isMappedSuperclass || $metadata->getReflectionClass()->isAbstract());
         });
 
@@ -72,7 +72,7 @@ final class StaticProxyFactory implements ProxyFactory
                 );
         }
 
-        return count($concreteClasses);
+        return \count($concreteClasses);
     }
 
     /**
@@ -145,7 +145,7 @@ final class StaticProxyFactory implements ProxyFactory
      */
     private function skippedFieldsFqns(ClassMetadata $metadata) : array
     {
-        return array_merge(
+        return \array_merge(
             $this->identifierFieldFqns($metadata),
             $this->transientFieldsFqns($metadata)
         );

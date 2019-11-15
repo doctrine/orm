@@ -34,10 +34,10 @@ class EntityCacheKey extends CacheKey
      */
     public function __construct($entityClass, array $identifier)
     {
-        ksort($identifier);
+        \ksort($identifier);
 
         $this->identifier  = $identifier;
         $this->entityClass = $entityClass;
-        $this->hash        = str_replace('\\', '.', strtolower($entityClass) . '_' . implode(' ', $identifier));
+        $this->hash        = \str_replace('\\', '.', \strtolower($entityClass) . '_' . \implode(' ', $identifier));
     }
 }

@@ -18,7 +18,7 @@ abstract class ToManyAssociationMetadataExporter extends AssociationMetadataExpo
     {
         /** @var ToManyAssociationMetadata $value */
         $variableExporter = new VariableExporter();
-        $indentation      = str_repeat(self::INDENTATION, $indentationLevel);
+        $indentation      = \str_repeat(self::INDENTATION, $indentationLevel);
         $objectReference  = $indentation . self::VARIABLE;
         $lines            = [];
 
@@ -30,6 +30,6 @@ abstract class ToManyAssociationMetadataExporter extends AssociationMetadataExpo
 
         $lines[] = $objectReference . '->setOderBy(' . $variableExporter->export($value->getOrderBy(), $indentationLevel + 1) . ');';
 
-        return implode(PHP_EOL, $lines);
+        return \implode(PHP_EOL, $lines);
     }
 }

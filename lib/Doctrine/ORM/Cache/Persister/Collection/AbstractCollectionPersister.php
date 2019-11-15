@@ -139,7 +139,7 @@ abstract class AbstractCollectionPersister implements CachedCollectionPersister
         // Only preserve ordering if association configured it
         if (! ($association instanceof ToManyAssociationMetadata && $association->getIndexedBy())) {
             // Elements may be an array or a Collection
-            $elements = array_values($elements instanceof Collection ? $elements->getValues() : $elements);
+            $elements = \array_values($elements instanceof Collection ? $elements->getValues() : $elements);
         }
 
         $entry = $this->hydrator->buildCacheEntry($this->targetEntity, $key, $elements);
@@ -196,7 +196,7 @@ abstract class AbstractCollectionPersister implements CachedCollectionPersister
         $entry     = $this->region->get($key);
 
         if ($entry !== null) {
-            return count($entry->identifiers);
+            return \count($entry->identifiers);
         }
 
         return $this->persister->count($collection);

@@ -52,12 +52,12 @@ class FileLockRegion implements ConcurrentRegion
      */
     public function __construct(Region $region, $directory, $lockLifetime)
     {
-        if (! is_dir($directory) && ! @mkdir($directory, 0775, true)) {
-            throw new InvalidArgumentException(sprintf('The directory "%s" does not exist and could not be created.', $directory));
+        if (! \is_dir($directory) && ! @\mkdir($directory, 0775, true)) {
+            throw new InvalidArgumentException(\sprintf('The directory "%s" does not exist and could not be created.', $directory));
         }
 
-        if (! is_writable($directory)) {
-            throw new InvalidArgumentException(sprintf('The directory "%s" is not writable.', $directory));
+        if (! \is_writable($directory)) {
+            throw new InvalidArgumentException(\sprintf('The directory "%s" is not writable.', $directory));
         }
 
         $this->region       = $region;
@@ -72,7 +72,7 @@ class FileLockRegion implements ConcurrentRegion
     {
         $filename = $this->getLockFileName($key);
 
-        if (! is_file($filename)) {
+        if (! \is_file($filename)) {
             return false;
         }
 
@@ -80,7 +80,7 @@ class FileLockRegion implements ConcurrentRegion
         $content = $this->getLockContent($filename);
 
         if (! $content || ! $time) {
-            @unlink($filename);
+            @\unlink($filename);
 
             return false;
         }
@@ -90,8 +90,8 @@ class FileLockRegion implements ConcurrentRegion
         }
 
         // outdated lock
-        if (($time + $this->lockLifetime) <= time()) {
-            @unlink($filename);
+        if (($time + $this->lockLifetime) <= \time()) {
+            @\unlink($filename);
 
             return false;
         }
@@ -114,7 +114,7 @@ class FileLockRegion implements ConcurrentRegion
      */
     private function getLockContent($filename)
     {
-        return @file_get_contents($filename);
+        return @\file_get_contents($filename);
     }
 
     /**
@@ -124,7 +124,7 @@ class FileLockRegion implements ConcurrentRegion
      */
     private function getLockTime($filename)
     {
-        return @fileatime($filename);
+        return @\fileatime($filename);
     }
 
     /**
@@ -164,7 +164,7 @@ class FileLockRegion implements ConcurrentRegion
      */
     public function getMultiple(CollectionCacheEntry $collection)
     {
-        if (array_filter(array_map([$this, 'isLocked'], $collection->identifiers))) {
+        if (\array_filter(\array_map([$this, 'isLocked'], $collection->identifiers))) {
             return null;
         }
 
@@ -189,7 +189,7 @@ class FileLockRegion implements ConcurrentRegion
     public function evict(CacheKey $key)
     {
         if ($this->isLocked($key)) {
-            @unlink($this->getLockFileName($key));
+            @\unlink($this->getLockFileName($key));
         }
 
         return $this->region->evict($key);
@@ -202,11 +202,11 @@ class FileLockRegion implements ConcurrentRegion
     {
         // The check below is necessary because on some platforms glob returns false
         // when nothing matched (even though no errors occurred)
-        $filenames = glob(sprintf('%s/*.%s', $this->directory, self::LOCK_EXTENSION));
+        $filenames = \glob(\sprintf('%s/*.%s', $this->directory, self::LOCK_EXTENSION));
 
         if ($filenames) {
             foreach ($filenames as $filename) {
-                @unlink($filename);
+                @\unlink($filename);
             }
         }
 
@@ -225,10 +225,10 @@ class FileLockRegion implements ConcurrentRegion
         $lock     = Lock::createLockRead();
         $filename = $this->getLockFileName($key);
 
-        if (! @file_put_contents($filename, $lock->value, LOCK_EX)) {
+        if (! @\file_put_contents($filename, $lock->value, LOCK_EX)) {
             return null;
         }
-        chmod($filename, 0664);
+        \chmod($filename, 0664);
 
         return $lock;
     }
@@ -242,6 +242,6 @@ class FileLockRegion implements ConcurrentRegion
             return false;
         }
 
-        return @unlink($this->getLockFileName($key));
+        return @\unlink($this->getLockFileName($key));
     }
 }

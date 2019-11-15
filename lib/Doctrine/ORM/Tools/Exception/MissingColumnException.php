@@ -12,7 +12,7 @@ final class MissingColumnException extends LogicException implements ORMExceptio
 {
     public static function fromColumnSourceAndTarget(string $column, string $source, string $target) : self
     {
-        return new self(sprintf(
+        return new self(\sprintf(
             'Column name "%s" referenced for relation from %s towards %s does not exist.',
             $column,
             $source,

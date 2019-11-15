@@ -153,14 +153,14 @@ class CustomTreeWalker extends Query\TreeWalkerAdapter
 
             $existingTerms = $whereClause->conditionalExpression->conditionalTerms;
 
-            if (count($existingTerms) > 1) {
+            if (\count($existingTerms) > 1) {
                 // More than one term, so we need to wrap all these terms in a single root term
                 // i.e: "WHERE u.name = :foo or u.other = :bar" => "WHERE (u.name = :foo or u.other = :bar) AND <our condition>"
 
                 $primary                        = new Query\AST\ConditionalPrimary();
                 $primary->conditionalExpression = new Query\AST\ConditionalExpression($existingTerms);
                 $existingFactor                 = new Query\AST\ConditionalFactor($primary);
-                $term                           = new Query\AST\ConditionalTerm(array_merge([$existingFactor], $factors));
+                $term                           = new Query\AST\ConditionalTerm(\array_merge([$existingFactor], $factors));
 
                 $selectStatement->whereClause->conditionalExpression->conditionalTerms = [$term];
             } else {
@@ -174,7 +174,7 @@ class CustomTreeWalker extends Query\TreeWalkerAdapter
                     $selectStatement->whereClause->conditionalExpression->conditionalTerms[0] = $singleTerm;
                 }
 
-                $singleTerm->conditionalFactors                                        = array_merge($singleTerm->conditionalFactors, $factors);
+                $singleTerm->conditionalFactors                                        = \array_merge($singleTerm->conditionalFactors, $factors);
                 $selectStatement->whereClause->conditionalExpression->conditionalTerms = [$singleTerm];
             }
         } else {

@@ -110,14 +110,14 @@ class QueryExpressionVisitor extends ExpressionVisitor
         $field = $this->queryAliases[0] . '.' . $comparison->getField();
 
         foreach ($this->queryAliases as $alias) {
-            if (strpos($comparison->getField() . '.', $alias . '.') === 0) {
+            if (\strpos($comparison->getField() . '.', $alias . '.') === 0) {
                 $field = $comparison->getField();
                 break;
             }
         }
 
-        $parameterName  = str_replace('.', '_', $comparison->getField());
-        $parameterCount = count($this->parameters);
+        $parameterName  = \str_replace('.', '_', $comparison->getField());
+        $parameterCount = \count($this->parameters);
 
         foreach ($this->parameters as $parameter) {
             if ($parameter->getName() === $parameterName) {

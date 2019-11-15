@@ -506,7 +506,7 @@ abstract class OrmFunctionalTestCase extends OrmTestCase
 
         if (isset($this->usedModelSets['quote'])) {
             $conn->executeUpdate(
-                sprintf(
+                \sprintf(
                     'UPDATE %s SET %s = NULL',
                     $platform->quoteIdentifier('quote-address'),
                     $platform->quoteIdentifier('user-id')
@@ -654,7 +654,7 @@ abstract class OrmFunctionalTestCase extends OrmTestCase
         }
 
         if (isset($GLOBALS['DOCTRINE_MARK_SQL_LOGS'])) {
-            if (in_array(static::$sharedConn->getDatabasePlatform()->getName(), ['mysql', 'postgresql'], true)) {
+            if (\in_array(static::$sharedConn->getDatabasePlatform()->getName(), ['mysql', 'postgresql'], true)) {
                 static::$sharedConn->executeQuery('SELECT 1 /*' . static::class . '*/');
             } elseif (static::$sharedConn->getDatabasePlatform()->getName() === 'oracle') {
                 static::$sharedConn->executeQuery('SELECT 1 /*' . static::class . '*/ FROM dual');
@@ -717,7 +717,7 @@ abstract class OrmFunctionalTestCase extends OrmTestCase
             $config->setResultCacheImpl($this->resultCacheImpl);
         }
 
-        $enableSecondLevelCache = getenv('ENABLE_SECOND_LEVEL_CACHE');
+        $enableSecondLevelCache = \getenv('ENABLE_SECOND_LEVEL_CACHE');
 
         if ($this->isSecondLevelCacheEnabled || $enableSecondLevelCache) {
             $cacheConfig = new CacheConfiguration();
@@ -742,8 +742,8 @@ abstract class OrmFunctionalTestCase extends OrmTestCase
 
         $config->setMetadataDriverImpl(
             $mappingDriver ?? $config->newDefaultAnnotationDriver([
-                realpath(__DIR__ . '/Models/Cache'),
-                realpath(__DIR__ . '/Models/GeoNames'),
+                \realpath(__DIR__ . '/Models/Cache'),
+                \realpath(__DIR__ . '/Models/GeoNames'),
             ])
         );
 
@@ -763,7 +763,7 @@ abstract class OrmFunctionalTestCase extends OrmTestCase
         }
 
         if (isset($GLOBALS['db_event_subscribers'])) {
-            foreach (explode(',', $GLOBALS['db_event_subscribers']) as $subscriberClass) {
+            foreach (\explode(',', $GLOBALS['db_event_subscribers']) as $subscriberClass) {
                 $subscriberInstance = new $subscriberClass();
                 $evm->addEventSubscriber($subscriberInstance);
             }
@@ -785,19 +785,19 @@ abstract class OrmFunctionalTestCase extends OrmTestCase
             throw $e;
         }
 
-        if (isset($this->sqlLoggerStack->queries) && count($this->sqlLoggerStack->queries)) {
+        if (isset($this->sqlLoggerStack->queries) && \count($this->sqlLoggerStack->queries)) {
             $queries       = '';
-            $last25queries = array_slice(array_reverse($this->sqlLoggerStack->queries, true), 0, 25, true);
+            $last25queries = \array_slice(\array_reverse($this->sqlLoggerStack->queries, true), 0, 25, true);
 
             foreach ($last25queries as $i => $query) {
-                $params = array_map(
+                $params = \array_map(
                     static function ($p) {
-                        return is_object($p) ? get_class($p) : var_export($p, true);
+                        return \is_object($p) ? \get_class($p) : \var_export($p, true);
                     },
                     $query['params'] ?: []
                 );
 
-                $queries .= $i . ". SQL: '" . $query['sql'] . "' Params: " . implode(', ', $params) . PHP_EOL;
+                $queries .= $i . ". SQL: '" . $query['sql'] . "' Params: " . \implode(', ', $params) . PHP_EOL;
             }
 
             $trace    = $e->getTrace();
@@ -805,7 +805,7 @@ abstract class OrmFunctionalTestCase extends OrmTestCase
 
             foreach ($trace as $part) {
                 if (isset($part['file'])) {
-                    if (strpos($part['file'], 'PHPUnit/') !== false) {
+                    if (\strpos($part['file'], 'PHPUnit/') !== false) {
                         // Beginning with PHPUnit files we don't print the trace anymore.
                         break;
                     }
@@ -814,7 +814,7 @@ abstract class OrmFunctionalTestCase extends OrmTestCase
                 }
             }
 
-            $message = '[' . get_class($e) . '] ' . $e->getMessage() . PHP_EOL . PHP_EOL . 'With queries:' . PHP_EOL . $queries . PHP_EOL . 'Trace:' . PHP_EOL . $traceMsg;
+            $message = '[' . \get_class($e) . '] ' . $e->getMessage() . PHP_EOL . PHP_EOL . 'With queries:' . PHP_EOL . $queries . PHP_EOL . 'Trace:' . PHP_EOL . $traceMsg;
 
             throw new Exception($message, (int) $e->getCode(), $e);
         }
@@ -825,8 +825,8 @@ abstract class OrmFunctionalTestCase extends OrmTestCase
     public static function assertSQLEquals($expectedSql, $actualSql)
     {
         self::assertEquals(
-            strtolower((string) $expectedSql),
-            strtolower((string) $actualSql),
+            \strtolower((string) $expectedSql),
+            \strtolower((string) $actualSql),
             'Lowercase comparison of SQL statements failed.'
         );
     }
@@ -838,7 +838,7 @@ abstract class OrmFunctionalTestCase extends OrmTestCase
      */
     protected function getCurrentQueryCount()
     {
-        return count($this->sqlLoggerStack->queries);
+        return \count($this->sqlLoggerStack->queries);
     }
 
     /**

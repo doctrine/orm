@@ -17,7 +17,7 @@ class JoinColumnClassNamingStrategy extends DefaultNamingStrategy
      */
     public function joinColumnName(string $propertyName, ?string $className = null) : string
     {
-        return strtolower($this->classToTableName($className))
+        return \strtolower($this->classToTableName($className))
             . '_' . $propertyName
             . '_' . $this->referenceColumnName();
     }

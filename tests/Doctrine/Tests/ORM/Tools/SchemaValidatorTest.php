@@ -63,8 +63,8 @@ class SchemaValidatorTest extends OrmTestCase
 
         self::assertEquals(
             [
-                sprintf($message1, 'Entity1Entity2', InvalidEntity2::class, 'key4'),
-                sprintf($message2, 'Entity1Entity2', InvalidEntity1::class, 'key2'),
+                \sprintf($message1, 'Entity1Entity2', InvalidEntity2::class, 'key4'),
+                \sprintf($message2, 'Entity1Entity2', InvalidEntity1::class, 'key2'),
             ],
             $errors
         );
@@ -85,8 +85,8 @@ class SchemaValidatorTest extends OrmTestCase
 
         self::assertEquals(
             [
-                sprintf($message1, 'id', InvalidEntity1::class),
-                sprintf($message2, 'assoc', InvalidEntity1::class, "key1', 'key2"),
+                \sprintf($message1, 'id', InvalidEntity1::class),
+                \sprintf($message2, 'assoc', InvalidEntity1::class, "key1', 'key2"),
             ],
             $errors
         );
@@ -118,8 +118,8 @@ class SchemaValidatorTest extends OrmTestCase
 
         self::assertEquals(
             [
-                sprintf($message1, DDC1649Three::class, 'two', DDC1649Two::class),
-                sprintf($message2, 'id', DDC1649Two::class),
+                \sprintf($message1, DDC1649Three::class, 'two', DDC1649Two::class),
+                \sprintf($message2, 'id', DDC1649Two::class),
             ],
             $errors
         );
@@ -137,7 +137,7 @@ class SchemaValidatorTest extends OrmTestCase
             . "specified mappedBy association on the target-entity %s#%s does not contain the required 'inversedBy=\"%s\"' attribute.";
 
         self::assertEquals(
-            [sprintf($message, DDC3274One::class, 'two', DDC3274Two::class, 'one', 'two')],
+            [\sprintf($message, DDC3274One::class, 'two', DDC3274Two::class, 'one', 'two')],
             $errors
         );
     }
@@ -153,7 +153,7 @@ class SchemaValidatorTest extends OrmTestCase
         $message = "The association %s#%s is ordered by a property '%s' that is non-existing field on the target entity '%s'.";
 
         self::assertEquals(
-            [sprintf($message, DDC3322One::class, 'invalidAssoc', 'invalidField', DDC3322ValidEntity1::class)],
+            [\sprintf($message, DDC3322One::class, 'invalidAssoc', 'invalidField', DDC3322ValidEntity1::class)],
             $errors
         );
     }
@@ -169,7 +169,7 @@ class SchemaValidatorTest extends OrmTestCase
         $message = "The association %s#%s is ordered by a property '%s' on '%s' that is a collection-valued association.";
 
         self::assertEquals(
-            [sprintf($message, DDC3322Two::class, 'invalidAssoc', 'oneToMany', DDC3322ValidEntity1::class)],
+            [\sprintf($message, DDC3322Two::class, 'invalidAssoc', 'oneToMany', DDC3322ValidEntity1::class)],
             $errors
         );
     }
@@ -185,7 +185,7 @@ class SchemaValidatorTest extends OrmTestCase
         $message = "The association %s#%s is ordered by a property '%s' on '%s' that is the inverse side of an association.";
 
         self::assertEquals(
-            [sprintf($message, DDC3322Three::class, 'invalidAssoc', 'oneToOneInverse', DDC3322ValidEntity1::class)],
+            [\sprintf($message, DDC3322Three::class, 'invalidAssoc', 'oneToOneInverse', DDC3322ValidEntity1::class)],
             $errors
         );
     }
@@ -198,7 +198,7 @@ class SchemaValidatorTest extends OrmTestCase
         $message = "The referenced column name '%s' has to be a primary key column on the target entity class '%s'.";
 
         self::assertEquals(
-            [sprintf($message, 'nonId4', InvalidEntity4::class)],
+            [\sprintf($message, 'nonId4', InvalidEntity4::class)],
             $errors
         );
     }

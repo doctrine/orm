@@ -73,9 +73,9 @@ class ManyToManyAssociationMetadataBuilder extends ToManyAssociationMetadataBuil
     public function build() : Mapping\ManyToManyAssociationMetadata
     {
         // Validate required fields
-        assert($this->componentMetadata !== null);
-        assert($this->manyToManyAnnotation !== null);
-        assert($this->fieldName !== null);
+        \assert($this->componentMetadata !== null);
+        \assert($this->manyToManyAnnotation !== null);
+        \assert($this->fieldName !== null);
 
         $componentClassName  = $this->componentMetadata->getClassName();
         $associationMetadata = new Mapping\ManyToManyAssociationMetadata($this->fieldName);
@@ -103,7 +103,7 @@ class ManyToManyAssociationMetadataBuilder extends ToManyAssociationMetadataBuil
             $associationMetadata->setOrphanRemoval($this->manyToManyAnnotation->orphanRemoval);
 
             // Orphan removal also implies a cascade remove
-            $associationMetadata->setCascade(array_unique(array_merge($associationMetadata->getCascade(), ['remove'])));
+            $associationMetadata->setCascade(\array_unique(\array_merge($associationMetadata->getCascade(), ['remove'])));
         }
 
         if ($this->orderByAnnotation !== null) {

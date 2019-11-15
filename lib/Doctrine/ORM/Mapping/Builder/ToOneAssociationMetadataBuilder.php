@@ -100,7 +100,7 @@ abstract class ToOneAssociationMetadataBuilder extends AssociationMetadataBuilde
             // @todo guilhermeblanco The below block of code modifies component metadata properties, and it should be moved
             //                       to the component metadata builder instead of here.
 
-            if (! in_array($this->fieldName, $this->componentMetadata->identifier, true)) {
+            if (! \in_array($this->fieldName, $this->componentMetadata->identifier, true)) {
                 $this->componentMetadata->identifier[] = $this->fieldName;
             }
 
@@ -119,7 +119,7 @@ abstract class ToOneAssociationMetadataBuilder extends AssociationMetadataBuilde
                 }
 
                 // Prevent currently unsupported scenario: association with multiple columns and being marked as primary
-                if ($associationMetadata->isPrimaryKey() && count($associationMetadata->getJoinColumns()) > 1) {
+                if ($associationMetadata->isPrimaryKey() && \count($associationMetadata->getJoinColumns()) > 1) {
                     throw Mapping\MappingException::cannotMapCompositePrimaryKeyEntitiesAsForeignId(
                         $this->componentMetadata->getClassName(),
                         $associationMetadata->getTargetEntity(),

@@ -35,7 +35,7 @@ final class NormalizeIdentifier
         $normalizedAssociatedId = [];
 
         foreach ($targetClass->getPropertiesIterator() as $name => $property) {
-            if (! array_key_exists($name, $flatIdentifier)) {
+            if (! \array_key_exists($name, $flatIdentifier)) {
                 continue;
             }
 
@@ -55,7 +55,7 @@ final class NormalizeIdentifier
                     $this->__invoke(
                         $entityManager,
                         $targetIdMetadata,
-                        [reset($targetIdMetadata->identifier) => $flatIdentifier[$name]]
+                        [\reset($targetIdMetadata->identifier) => $flatIdentifier[$name]]
                     )
                 );
             }

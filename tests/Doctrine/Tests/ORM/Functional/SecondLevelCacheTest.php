@@ -254,7 +254,7 @@ class SecondLevelCacheTest extends SecondLevelCacheAbstractTest
         self::assertInstanceOf(State::class, $state);
         self::assertEquals($stateName, $state->getName());
 
-        $state->setName($stateName . uniqid());
+        $state->setName($stateName . \uniqid());
 
         $this->em->persist($state);
 
@@ -345,7 +345,7 @@ class ListenerSecondLevelCacheTest
     private function dispatch($eventName, $args)
     {
         if (isset($this->callbacks[$eventName])) {
-            call_user_func($this->callbacks[$eventName], $args);
+            \call_user_func($this->callbacks[$eventName], $args);
         }
     }
 

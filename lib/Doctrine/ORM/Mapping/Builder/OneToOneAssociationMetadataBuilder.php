@@ -32,9 +32,9 @@ class OneToOneAssociationMetadataBuilder extends ToOneAssociationMetadataBuilder
     public function build() : Mapping\OneToOneAssociationMetadata
     {
         // Validate required fields
-        assert($this->componentMetadata !== null);
-        assert($this->oneToOneAnnotation !== null);
-        assert($this->fieldName !== null);
+        \assert($this->componentMetadata !== null);
+        \assert($this->oneToOneAnnotation !== null);
+        \assert($this->fieldName !== null);
 
         $componentClassName  = $this->componentMetadata->getClassName();
         $associationMetadata = new Mapping\OneToOneAssociationMetadata($this->fieldName);
@@ -48,7 +48,7 @@ class OneToOneAssociationMetadataBuilder extends ToOneAssociationMetadataBuilder
             $associationMetadata->setOrphanRemoval($this->oneToOneAnnotation->orphanRemoval);
 
             // Orphan removal also implies a cascade remove
-            $associationMetadata->setCascade(array_unique(array_merge($associationMetadata->getCascade(), ['remove'])));
+            $associationMetadata->setCascade(\array_unique(\array_merge($associationMetadata->getCascade(), ['remove'])));
         }
 
         if (! empty($this->oneToOneAnnotation->mappedBy)) {
@@ -86,8 +86,8 @@ class OneToOneAssociationMetadataBuilder extends ToOneAssociationMetadataBuilder
     {
         $joinColumns = $associationMetadata->getJoinColumns();
 
-        if (count($joinColumns) === 1) {
-            $joinColumn = reset($joinColumns);
+        if (\count($joinColumns) === 1) {
+            $joinColumn = \reset($joinColumns);
 
             if (! $associationMetadata->isPrimaryKey()) {
                 $joinColumn->setUnique(true);
@@ -114,7 +114,7 @@ class OneToOneAssociationMetadataBuilder extends ToOneAssociationMetadataBuilder
 
         if ($uniqueConstraintColumns) {
             $tableMetadata->addUniqueConstraint([
-                'name'    => sprintf('%s_uniq', $this->fieldName),
+                'name'    => \sprintf('%s_uniq', $this->fieldName),
                 'columns' => $uniqueConstraintColumns,
                 'options' => [],
                 'flags'   => [],

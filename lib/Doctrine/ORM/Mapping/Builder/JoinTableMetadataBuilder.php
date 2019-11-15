@@ -71,9 +71,9 @@ class JoinTableMetadataBuilder
     public function build() : Mapping\JoinTableMetadata
     {
         // Validate required fields
-        assert($this->componentMetadata !== null);
-        assert($this->targetEntity !== null);
-        assert($this->fieldName !== null);
+        \assert($this->componentMetadata !== null);
+        \assert($this->targetEntity !== null);
+        \assert($this->fieldName !== null);
 
         $namingStrategy    = $this->metadataBuildingContext->getNamingStrategy();
         $souceEntity       = $this->componentMetadata->getClassName();

@@ -45,7 +45,7 @@ class DDC992Test extends OrmFunctionalTestCase
         $this->em->flush();
         $this->em->clear();
 
-        $child = $this->em->getRepository(get_class($role))->find($child->roleID);
+        $child = $this->em->getRepository(\get_class($role))->find($child->roleID);
         self::assertCount(1, $child->extends);
         foreach ($child->extends as $parent) {
             self::assertEquals($role->getRoleID(), $parent->getRoleID());
@@ -64,8 +64,8 @@ class DDC992Test extends OrmFunctionalTestCase
         $this->em->flush();
         $this->em->clear();
 
-        $parentRepository = $this->em->getRepository(get_class($parent));
-        $childRepository  = $this->em->getRepository(get_class($child));
+        $parentRepository = $this->em->getRepository(\get_class($parent));
+        $childRepository  = $this->em->getRepository(\get_class($child));
 
         $parent = $parentRepository->find($parent->id);
         self::assertCount(1, $parent->childs);

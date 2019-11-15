@@ -99,7 +99,7 @@ abstract class OrmTestCase extends DoctrineTestCase
         $config->setProxyNamespace('Doctrine\Tests\Proxies');
         $config->setAutoGenerateProxyClasses(ProxyFactory::AUTOGENERATE_EVAL);
         $config->setMetadataDriverImpl(
-            $config->newDefaultAnnotationDriver([realpath(__DIR__ . '/Models/Cache')])
+            $config->newDefaultAnnotationDriver([\realpath(__DIR__ . '/Models/Cache')])
         );
 
         if ($this->isSecondLevelCacheEnabled) {
@@ -123,7 +123,7 @@ abstract class OrmTestCase extends DoctrineTestCase
             ];
         }
 
-        if (is_array($conn)) {
+        if (\is_array($conn)) {
             $conn = DriverManager::getConnection($conn, $config, $eventManager);
         }
 

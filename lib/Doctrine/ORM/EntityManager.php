@@ -377,14 +377,14 @@ final class EntityManager implements EntityManagerInterface
      */
     public function find($entityName, $id, $lockMode = null, $lockVersion = null)
     {
-        $class     = $this->metadataFactory->getMetadataFor(ltrim($entityName, '\\'));
+        $class     = $this->metadataFactory->getMetadataFor(\ltrim($entityName, '\\'));
         $className = $class->getClassName();
 
         if ($lockMode !== null) {
             $this->checkLockRequirements($lockMode, $class);
         }
 
-        if (! is_array($id)) {
+        if (! \is_array($id)) {
             if ($class->isIdentifierComposite()) {
                 throw ORMInvalidArgumentException::invalidCompositeIdentifier();
             }
@@ -393,7 +393,7 @@ final class EntityManager implements EntityManagerInterface
         }
 
         foreach ($id as $i => $value) {
-            if (is_object($value) && $this->metadataFactory->hasMetadataFor(StaticClassNameConverter::getClass($value))) {
+            if (\is_object($value) && $this->metadataFactory->hasMetadataFor(StaticClassNameConverter::getClass($value))) {
                 $id[$i] = $this->unitOfWork->getSingleIdentifierValue($value);
 
                 if ($id[$i] === null) {
@@ -414,7 +414,7 @@ final class EntityManager implements EntityManagerInterface
         }
 
         if ($id) {
-            throw UnrecognizedIdentifierFields::fromClassAndFieldNames($className, array_keys($id));
+            throw UnrecognizedIdentifierFields::fromClassAndFieldNames($className, \array_keys($id));
         }
 
         $unitOfWork = $this->getUnitOfWork();
@@ -464,10 +464,10 @@ final class EntityManager implements EntityManagerInterface
      */
     public function getReference($entityName, $id)
     {
-        $class     = $this->metadataFactory->getMetadataFor(ltrim($entityName, '\\'));
+        $class     = $this->metadataFactory->getMetadataFor(\ltrim($entityName, '\\'));
         $className = $class->getClassName();
 
-        if (! is_array($id)) {
+        if (! \is_array($id)) {
             if ($class->isIdentifierComposite()) {
                 throw ORMInvalidArgumentException::invalidCompositeIdentifier();
             }
@@ -480,7 +480,7 @@ final class EntityManager implements EntityManagerInterface
         foreach ($id as $i => $value) {
             $scalarId[$i] = $value;
 
-            if (is_object($value) && $this->metadataFactory->hasMetadataFor(StaticClassNameConverter::getClass($value))) {
+            if (\is_object($value) && $this->metadataFactory->hasMetadataFor(StaticClassNameConverter::getClass($value))) {
                 $scalarId[$i] = $this->unitOfWork->getSingleIdentifierValue($value);
 
                 if ($scalarId[$i] === null) {
@@ -501,7 +501,7 @@ final class EntityManager implements EntityManagerInterface
         }
 
         if ($scalarId) {
-            throw UnrecognizedIdentifierFields::fromClassAndFieldNames($className, array_keys($scalarId));
+            throw UnrecognizedIdentifierFields::fromClassAndFieldNames($className, \array_keys($scalarId));
         }
 
         // Check identity map first, if its already in there just return it.
@@ -530,10 +530,10 @@ final class EntityManager implements EntityManagerInterface
      */
     public function getPartialReference($entityName, $id)
     {
-        $class     = $this->metadataFactory->getMetadataFor(ltrim($entityName, '\\'));
+        $class     = $this->metadataFactory->getMetadataFor(\ltrim($entityName, '\\'));
         $className = $class->getClassName();
 
-        if (! is_array($id)) {
+        if (! \is_array($id)) {
             if ($class->isIdentifierComposite()) {
                 throw ORMInvalidArgumentException::invalidCompositeIdentifier();
             }
@@ -542,7 +542,7 @@ final class EntityManager implements EntityManagerInterface
         }
 
         foreach ($id as $i => $value) {
-            if (is_object($value) && $this->metadataFactory->hasMetadataFor(StaticClassNameConverter::getClass($value))) {
+            if (\is_object($value) && $this->metadataFactory->hasMetadataFor(StaticClassNameConverter::getClass($value))) {
                 $id[$i] = $this->unitOfWork->getSingleIdentifierValue($value);
 
                 if ($id[$i] === null) {
@@ -563,7 +563,7 @@ final class EntityManager implements EntityManagerInterface
         }
 
         if ($id) {
-            throw UnrecognizedIdentifierFields::fromClassAndFieldNames($className, array_keys($id));
+            throw UnrecognizedIdentifierFields::fromClassAndFieldNames($className, \array_keys($id));
         }
 
         // Check identity map first, if its already in there just return it.
@@ -626,7 +626,7 @@ final class EntityManager implements EntityManagerInterface
      */
     public function persist($entity)
     {
-        if (! is_object($entity)) {
+        if (! \is_object($entity)) {
             throw ORMInvalidArgumentException::invalidObject('EntityManager#persist()', $entity);
         }
 
@@ -648,7 +648,7 @@ final class EntityManager implements EntityManagerInterface
      */
     public function remove($entity)
     {
-        if (! is_object($entity)) {
+        if (! \is_object($entity)) {
             throw ORMInvalidArgumentException::invalidObject('EntityManager#remove()', $entity);
         }
 
@@ -668,7 +668,7 @@ final class EntityManager implements EntityManagerInterface
      */
     public function refresh($entity)
     {
-        if (! is_object($entity)) {
+        if (! \is_object($entity)) {
             throw ORMInvalidArgumentException::invalidObject('EntityManager#refresh()', $entity);
         }
 
@@ -841,16 +841,16 @@ final class EntityManager implements EntityManagerInterface
      */
     protected static function createConnection($connection, Configuration $config, ?EventManager $eventManager = null)
     {
-        if (is_array($connection)) {
+        if (\is_array($connection)) {
             return DriverManager::getConnection($connection, $config, $eventManager ?: new EventManager());
         }
 
         if (! $connection instanceof Connection) {
             throw new InvalidArgumentException(
-                sprintf(
+                \sprintf(
                     'Invalid $connection argument of type %s given%s.',
-                    is_object($connection) ? get_class($connection) : gettype($connection),
-                    is_object($connection) ? '' : ': "' . $connection . '"'
+                    \is_object($connection) ? \get_class($connection) : \gettype($connection),
+                    \is_object($connection) ? '' : ': "' . $connection . '"'
                 )
             );
         }

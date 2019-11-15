@@ -21,20 +21,20 @@ class CacheMetadataExporter implements Exporter
     public function export($value, int $indentationLevel = 0) : string
     {
         /** @var CacheMetadata $value */
-        $indentation     = str_repeat(self::INDENTATION, $indentationLevel);
+        $indentation     = \str_repeat(self::INDENTATION, $indentationLevel);
         $objectReference = $indentation . self::VARIABLE;
         $lines           = [];
 
         $lines[] = $objectReference . ' = ' . $this->exportInstantiation($value);
 
-        return implode(PHP_EOL, $lines);
+        return \implode(PHP_EOL, $lines);
     }
 
     protected function exportInstantiation(CacheMetadata $metadata) : string
     {
-        return sprintf(
+        return \sprintf(
             'new Mapping\CacheMetadata(Mapping\CacheUsage::%s, "%s");',
-            strtoupper($metadata->getUsage()),
+            \strtoupper($metadata->getUsage()),
             $metadata->getRegion()
         );
     }

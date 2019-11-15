@@ -47,7 +47,7 @@ class JoinColumnMetadata extends ColumnMetadata
 
     public function setOnDelete(string $onDelete) : void
     {
-        $this->onDelete = strtoupper($onDelete);
+        $this->onDelete = \strtoupper($onDelete);
     }
 
     public function isOnDeleteCascade() : bool

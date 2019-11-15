@@ -11,7 +11,7 @@ final class UnknownEntityNamespace extends LogicException implements Configurati
 {
     public static function fromNamespaceAlias(string $entityNamespaceAlias) : self
     {
-        return new self(sprintf(
+        return new self(\sprintf(
             'Unknown Entity namespace alias "%s"',
             $entityNamespaceAlias
         ));

@@ -109,7 +109,7 @@ class JoinedSubclassPersister extends AbstractEntityInheritancePersister
             }
 
             foreach ($data as $columnName => $value) {
-                if (! is_array($id) || ! isset($id[$columnName])) {
+                if (! \is_array($id) || ! isset($id[$columnName])) {
                     $type = $this->columns[$columnName]->getType();
 
                     $stmt->bindValue($paramIndex++, $value, $type);
@@ -169,7 +169,7 @@ class JoinedSubclassPersister extends AbstractEntityInheritancePersister
     public function delete($entity)
     {
         $identifier = $this->em->getUnitOfWork()->getEntityIdentifier($entity);
-        $id         = array_combine(array_keys($this->class->getIdentifierColumns($this->em)), $identifier);
+        $id         = \array_combine(\array_keys($this->class->getIdentifierColumns($this->em)), $identifier);
 
         $this->deleteJoinTableRecords($identifier);
 
@@ -315,7 +315,7 @@ class JoinedSubclassPersister extends AbstractEntityInheritancePersister
                 $conditions[] = $baseTableAlias . '.' . $quotedColumnName . ' = ' . $tableAlias . '.' . $quotedColumnName;
             }
 
-            $joinSql .= implode(' AND ', $conditions);
+            $joinSql .= \implode(' AND ', $conditions);
         }
 
         return parent::getLockTablesSql($lockMode) . $joinSql;
@@ -410,7 +410,7 @@ class JoinedSubclassPersister extends AbstractEntityInheritancePersister
             }
         }
 
-        $this->currentPersisterContext->selectColumnListSql = implode(', ', $columnList);
+        $this->currentPersisterContext->selectColumnListSql = \implode(', ', $columnList);
 
         return $this->currentPersisterContext->selectColumnListSql;
     }
@@ -513,7 +513,7 @@ class JoinedSubclassPersister extends AbstractEntityInheritancePersister
                 $conditions[] = $baseTableAlias . '.' . $quotedColumnName . ' = ' . $tableAlias . '.' . $quotedColumnName;
             }
 
-            $joinSql .= implode(' AND ', $conditions);
+            $joinSql .= \implode(' AND ', $conditions);
         }
 
         // OUTER JOIN sub tables
@@ -530,7 +530,7 @@ class JoinedSubclassPersister extends AbstractEntityInheritancePersister
                 $conditions[] = $baseTableAlias . '.' . $quotedColumnName . ' = ' . $tableAlias . '.' . $quotedColumnName;
             }
 
-            $joinSql .= implode(' AND ', $conditions);
+            $joinSql .= \implode(' AND ', $conditions);
         }
 
         return $joinSql;

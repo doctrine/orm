@@ -221,7 +221,7 @@ class ObjectHydrator extends AbstractHydrator
             $discriminatorValue = (string) $data[$discrColumn];
 
             if (! isset($discrMap[$discriminatorValue])) {
-                throw HydrationException::invalidDiscriminatorValue($discriminatorValue, array_keys($discrMap));
+                throw HydrationException::invalidDiscriminatorValue($discriminatorValue, \array_keys($discrMap));
             }
 
             $className = $discrMap[$discriminatorValue];
@@ -311,7 +311,7 @@ class ObjectHydrator extends AbstractHydrator
                 // Get a reference to the parent object to which the joined element belongs.
                 if ($this->rsm->isMixed && isset($this->rootAliases[$parentAlias])) {
                     $objectClass  = $this->resultPointers[$parentAlias];
-                    $parentObject = $objectClass[key($objectClass)];
+                    $parentObject = $objectClass[\key($objectClass)];
                 } elseif (isset($this->resultPointers[$parentAlias])) {
                     $parentObject = $this->resultPointers[$parentAlias];
                 } else {
@@ -530,7 +530,7 @@ class ObjectHydrator extends AbstractHydrator
                 $args  = $newObject['args'];
                 $obj   = $class->newInstanceArgs($args);
 
-                if ($hasNoScalars && count($rowData['newObjects']) === 1) {
+                if ($hasNoScalars && \count($rowData['newObjects']) === 1) {
                     $result[$resultKey] = $obj;
 
                     continue;
@@ -551,8 +551,8 @@ class ObjectHydrator extends AbstractHydrator
     {
         parent::onClear($eventArgs);
 
-        $aliases = array_keys($this->identifierMap);
+        $aliases = \array_keys($this->identifierMap);
 
-        $this->identifierMap = array_fill_keys($aliases, []);
+        $this->identifierMap = \array_fill_keys($aliases, []);
     }
 }

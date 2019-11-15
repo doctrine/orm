@@ -11,7 +11,7 @@ class CannotUpdateReadOnlyCollection extends LogicException implements CacheExce
 {
     public static function fromEntityAndField(string $sourceEntity, string $fieldName) : self
     {
-        return new self(sprintf(
+        return new self(\sprintf(
             'Cannot update a readonly collection "%s#%s"',
             $sourceEntity,
             $fieldName

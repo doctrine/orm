@@ -37,7 +37,7 @@ class QueryDqlFunctionTest extends OrmFunctionalTestCase
         $salaryAvg = $this->em->createQuery('SELECT AVG(m.salary) AS salary FROM Doctrine\Tests\Models\Company\CompanyManager m')
                                ->getSingleResult();
 
-        self::assertEquals(375000, round($salaryAvg['salary'], 0));
+        self::assertEquals(375000, \round($salaryAvg['salary'], 0));
     }
 
     public function testAggregateMin() : void
@@ -149,10 +149,10 @@ class QueryDqlFunctionTest extends OrmFunctionalTestCase
                          ->getArrayResult();
 
         self::assertCount(4, $result);
-        self::assertEquals(316, round($result[0]['sqrtsalary']));
-        self::assertEquals(447, round($result[1]['sqrtsalary']));
-        self::assertEquals(632, round($result[2]['sqrtsalary']));
-        self::assertEquals(894, round($result[3]['sqrtsalary']));
+        self::assertEquals(316, \round($result[0]['sqrtsalary']));
+        self::assertEquals(447, \round($result[1]['sqrtsalary']));
+        self::assertEquals(632, \round($result[2]['sqrtsalary']));
+        self::assertEquals(894, \round($result[3]['sqrtsalary']));
     }
 
     public function testFunctionUpper() : void
@@ -296,7 +296,7 @@ class QueryDqlFunctionTest extends OrmFunctionalTestCase
      */
     public function testDateAdd(string $unit, int $amount, int $delta = 0) : void
     {
-        $query = sprintf(
+        $query = \sprintf(
             'SELECT CURRENT_TIMESTAMP() as now, DATE_ADD(CURRENT_TIMESTAMP(), %d, \'%s\') AS add FROM %s m',
             $amount,
             $unit,
@@ -311,7 +311,7 @@ class QueryDqlFunctionTest extends OrmFunctionalTestCase
         self::assertArrayHasKey('add', $result);
 
         self::assertEquals(
-            (new DateTimeImmutable($result['now']))->modify(sprintf('+%d %s', $amount, $unit)),
+            (new DateTimeImmutable($result['now']))->modify(\sprintf('+%d %s', $amount, $unit)),
             new DateTimeImmutable($result['add']),
             '',
             $delta
@@ -325,7 +325,7 @@ class QueryDqlFunctionTest extends OrmFunctionalTestCase
      */
     public function testDateSub(string $unit, int $amount, int $delta = 0) : void
     {
-        $query = sprintf(
+        $query = \sprintf(
             'SELECT CURRENT_TIMESTAMP() as now, DATE_SUB(CURRENT_TIMESTAMP(), %d, \'%s\') AS sub FROM %s m',
             $amount,
             $unit,
@@ -340,7 +340,7 @@ class QueryDqlFunctionTest extends OrmFunctionalTestCase
         self::assertArrayHasKey('sub', $result);
 
         self::assertEquals(
-            (new DateTimeImmutable($result['now']))->modify(sprintf('-%d %s', $amount, $unit)),
+            (new DateTimeImmutable($result['now']))->modify(\sprintf('-%d %s', $amount, $unit)),
             new DateTimeImmutable($result['sub']),
             '',
             $delta

@@ -59,16 +59,16 @@ class NormalizeIdentifierTest extends OrmFunctionalTestCase
      */
     private function assertSameIdentifierStructure(array $expectedId, array $id) : void
     {
-        self::assertSame(array_keys($expectedId), array_keys($id));
+        self::assertSame(\array_keys($expectedId), \array_keys($id));
 
         foreach ($expectedId as $field => $value) {
-            if (! is_object($value)) {
+            if (! \is_object($value)) {
                 self::assertSame($id[$field], $value);
 
                 continue;
             }
 
-            self::assertInstanceOf(get_class($value), $id[$field]);
+            self::assertInstanceOf(\get_class($value), $id[$field]);
 
             $nestedIdProperties       = [];
             $nestedExpectedProperties = [];

@@ -54,7 +54,7 @@ class SecondLevelCacheSingleTableInheritanceTest extends SecondLevelCacheAbstrac
 
         foreach ($this->attractions as $attraction) {
             self::assertTrue($this->cache->containsEntity(Attraction::class, $attraction->getId()));
-            self::assertTrue($this->cache->containsEntity(get_class($attraction), $attraction->getId()));
+            self::assertTrue($this->cache->containsEntity(\get_class($attraction), $attraction->getId()));
         }
     }
 
@@ -134,7 +134,7 @@ class SecondLevelCacheSingleTableInheritanceTest extends SecondLevelCacheAbstrac
             ->setCacheable(true)
             ->getResult();
 
-        self::assertCount(count($this->attractions), $result1);
+        self::assertCount(\count($this->attractions), $result1);
         self::assertEquals($queryCount + 1, $this->getCurrentQueryCount());
 
         $this->em->clear();
@@ -143,7 +143,7 @@ class SecondLevelCacheSingleTableInheritanceTest extends SecondLevelCacheAbstrac
             ->setCacheable(true)
             ->getResult();
 
-        self::assertCount(count($this->attractions), $result2);
+        self::assertCount(\count($this->attractions), $result2);
         self::assertEquals($queryCount + 1, $this->getCurrentQueryCount());
         self::assertContainsOnlyInstancesOf(Attraction::class, $result2);
     }
@@ -228,7 +228,7 @@ class SecondLevelCacheSingleTableInheritanceTest extends SecondLevelCacheAbstrac
             ->setCacheable(true)
             ->getResult();
 
-        self::assertCount(count($this->attractions), $result1);
+        self::assertCount(\count($this->attractions), $result1);
         self::assertEquals($queryCount + 1, $this->getCurrentQueryCount());
 
         $contact = new Beach(
@@ -246,7 +246,7 @@ class SecondLevelCacheSingleTableInheritanceTest extends SecondLevelCacheAbstrac
             ->setCacheable(true)
             ->getResult();
 
-        self::assertCount(count($this->attractions) + 1, $result2);
+        self::assertCount(\count($this->attractions) + 1, $result2);
         self::assertEquals($queryCount + 1, $this->getCurrentQueryCount());
         self::assertContainsOnlyInstancesOf(Attraction::class, $result2);
     }

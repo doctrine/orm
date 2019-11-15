@@ -27,7 +27,7 @@ class Rot13Type extends Type
             return null;
         }
 
-        return str_rot13($value);
+        return \str_rot13($value);
     }
 
     /**
@@ -44,7 +44,7 @@ class Rot13Type extends Type
             return null;
         }
 
-        return str_rot13($value);
+        return \str_rot13($value);
     }
 
     /**
