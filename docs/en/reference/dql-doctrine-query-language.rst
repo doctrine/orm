@@ -204,7 +204,8 @@ This section contains a large set of DQL queries and some
 explanations of what is happening. The actual result also depends
 on the hydration mode.
 
-Hydrate all User entities:
+Hydrate all User entities
+^^^^^^^^^^^^^^^^^^^^^^^^^
 
 .. code-block:: php
 
@@ -212,7 +213,8 @@ Hydrate all User entities:
     $query = $em->createQuery('SELECT u FROM MyProject\Model\User u');
     $users = $query->getResult(); // array of User objects
 
-Retrieve the IDs of all CmsUsers:
+Retrieve the IDs of all CmsUsers
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 .. code-block:: php
 
@@ -220,13 +222,18 @@ Retrieve the IDs of all CmsUsers:
     $query = $em->createQuery('SELECT u.id FROM CmsUser u');
     $ids = $query->getResult(); // array of CmsUser ids
 
-Retrieve the IDs of all users that have written an article:
+Retrieve the IDs of all users that have written an article
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 .. code-block:: php
 
     <?php
     $query = $em->createQuery('SELECT DISTINCT u.id FROM CmsArticle a JOIN a.user u');
     $ids = $query->getResult(); // array of CmsUser ids
+
+
+Retrieve all articles and sort them by username
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 Retrieve all articles and sort them by the name of the articles
 users instance:
@@ -237,7 +244,8 @@ users instance:
     $query = $em->createQuery('SELECT a FROM CmsArticle a JOIN a.user u ORDER BY u.name ASC');
     $articles = $query->getResult(); // array of CmsArticle objects
 
-Retrieve the Username and Name of a CmsUser:
+Retrieve the Username and Name of a CmsUser
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 .. code-block:: php
 
@@ -246,7 +254,8 @@ Retrieve the Username and Name of a CmsUser:
     $users = $query->getResult(); // array of CmsUser username and name values
     echo $users[0]['username'];
 
-Retrieve a ForumUser and his single associated entity:
+Retrieve a ForumUser and his single associated entity
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 .. code-block:: php
 
@@ -255,7 +264,8 @@ Retrieve a ForumUser and his single associated entity:
     $users = $query->getResult(); // array of ForumUser objects with the avatar association loaded
     echo get_class($users[0]->getAvatar());
 
-Retrieve a CmsUser and fetch join all the phonenumbers he has:
+Retrieve a CmsUser and fetch join all owning phonenumbers
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 .. code-block:: php
 
@@ -264,7 +274,8 @@ Retrieve a CmsUser and fetch join all the phonenumbers he has:
     $users = $query->getResult(); // array of CmsUser objects with the phonenumbers association loaded
     $phonenumbers = $users[0]->getPhonenumbers();
 
-Hydrate a result in Ascending:
+Hydrate a result in Ascending
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 .. code-block:: php
 
@@ -272,7 +283,8 @@ Hydrate a result in Ascending:
     $query = $em->createQuery('SELECT u FROM ForumUser u ORDER BY u.id ASC');
     $users = $query->getResult(); // array of ForumUser objects
 
-Or in Descending Order:
+Hydrate a result in Descending Order
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 .. code-block:: php
 
@@ -280,7 +292,8 @@ Or in Descending Order:
     $query = $em->createQuery('SELECT u FROM ForumUser u ORDER BY u.id DESC');
     $users = $query->getResult(); // array of ForumUser objects
 
-Using Aggregate Functions:
+Using Aggregate Functions
+^^^^^^^^^^^^^^^^^^^^^^^^^
 
 .. code-block:: php
 
@@ -291,7 +304,8 @@ Using Aggregate Functions:
     $query = $em->createQuery('SELECT u, count(g.id) FROM Entities\User u JOIN u.groups g GROUP BY u.id');
     $result = $query->getResult();
 
-With WHERE Clause and Positional Parameter:
+Using WHERE Clause and Positional Parameter
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 .. code-block:: php
 
@@ -300,7 +314,8 @@ With WHERE Clause and Positional Parameter:
     $query->setParameter(1, 321);
     $users = $query->getResult(); // array of ForumUser objects
 
-With WHERE Clause and Named Parameter:
+Using WHERE Clause and Named Parameter
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 .. code-block:: php
 
@@ -309,7 +324,8 @@ With WHERE Clause and Named Parameter:
     $query->setParameter('name', 'Bob');
     $users = $query->getResult(); // array of ForumUser objects
 
-With Nested Conditions in WHERE Clause:
+Using Nested Conditions in WHERE Clause
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 .. code-block:: php
 
@@ -322,7 +338,8 @@ With Nested Conditions in WHERE Clause:
     ));
     $users = $query->getResult(); // array of ForumUser objects
 
-With COUNT DISTINCT:
+COUNT DISTINCT
+^^^^^^^^^^^^^^
 
 .. code-block:: php
 
@@ -330,13 +347,17 @@ With COUNT DISTINCT:
     $query = $em->createQuery('SELECT COUNT(DISTINCT u.name) FROM CmsUser');
     $users = $query->getResult(); // array of ForumUser objects
 
-With Arithmetic Expression in WHERE clause:
+Using Arithmetic Expression in WHERE clause
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 .. code-block:: php
 
     <?php
     $query = $em->createQuery('SELECT u FROM CmsUser u WHERE ((u.id + 5000) * u.id + 3) < 10000000');
     $users = $query->getResult(); // array of ForumUser objects
+
+Hide aliased columns from the result
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 Retrieve user entities with Arithmetic Expression in ORDER clause, using the ``HIDDEN`` keyword:
 
@@ -345,6 +366,9 @@ Retrieve user entities with Arithmetic Expression in ORDER clause, using the ``H
     <?php
     $query = $em->createQuery('SELECT u, u.posts_count + u.likes_count AS HIDDEN score FROM CmsUser u ORDER BY score');
     $users = $query->getResult(); // array of User objects
+
+Select all user-ids and optionally associated article-ids
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 Using a LEFT JOIN to hydrate all user-ids and optionally associated
 article-ids:
@@ -355,8 +379,8 @@ article-ids:
     $query = $em->createQuery('SELECT u.id, a.id as article_id FROM CmsUser u LEFT JOIN u.articles a');
     $results = $query->getResult(); // array of user ids and every article_id for each user
 
-Restricting a JOIN clause by additional conditions specified by
-WITH:
+Restricting a JOIN clause by additional conditions specified by WITH
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 .. code-block:: php
 
@@ -365,7 +389,8 @@ WITH:
     $query->setParameter('foo', '%foo%');
     $users = $query->getResult();
 
-Using several Fetch JOINs:
+Using several Fetch JOINs
+^^^^^^^^^^^^^^^^^^^^^^^^^
 
 .. code-block:: php
 
@@ -373,7 +398,8 @@ Using several Fetch JOINs:
     $query = $em->createQuery('SELECT u, a, p, c FROM CmsUser u JOIN u.articles a JOIN u.phonenumbers p JOIN a.comments c');
     $users = $query->getResult();
 
-BETWEEN in WHERE clause:
+BETWEEN in WHERE clause
+^^^^^^^^^^^^^^^^^^^^^^^
 
 .. code-block:: php
 
@@ -383,7 +409,8 @@ BETWEEN in WHERE clause:
     $query->setParameter(2, 321);
     $usernames = $query->getResult();
 
-DQL Functions in WHERE clause:
+DQL Functions in WHERE clause
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 .. code-block:: php
 
@@ -391,7 +418,8 @@ DQL Functions in WHERE clause:
     $query = $em->createQuery("SELECT u.name FROM CmsUser u WHERE TRIM(u.name) = 'someone'");
     $usernames = $query->getResult();
 
-IN() Expression:
+IN() Expression
+^^^^^^^^^^^^^^^
 
 .. code-block:: php
 
@@ -405,7 +433,8 @@ IN() Expression:
     $query = $em->createQuery('SELECT u FROM CmsUser u WHERE u.id NOT IN (1)');
     $users = $query->getResult();
 
-CONCAT() DQL Function:
+CONCAT() DQL Function
+^^^^^^^^^^^^^^^^^^^^^
 
 .. code-block:: php
 
@@ -419,6 +448,7 @@ CONCAT() DQL Function:
     $idUsernames = $query->getResult();
 
 EXISTS in WHERE clause with correlated Subquery
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 .. code-block:: php
 
@@ -426,7 +456,8 @@ EXISTS in WHERE clause with correlated Subquery
     $query = $em->createQuery('SELECT u.id FROM CmsUser u WHERE EXISTS (SELECT p.phonenumber FROM CmsPhonenumber p WHERE p.user = u.id)');
     $ids = $query->getResult();
 
-Get all users who are members of $group.
+Get all users who are members of $group
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 .. code-block:: php
 
@@ -436,6 +467,7 @@ Get all users who are members of $group.
     $ids = $query->getResult();
 
 Get all users that have more than 1 phonenumber
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 .. code-block:: php
 
@@ -444,6 +476,7 @@ Get all users that have more than 1 phonenumber
     $users = $query->getResult();
 
 Get all users that have no phonenumber
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 .. code-block:: php
 
@@ -451,8 +484,11 @@ Get all users that have no phonenumber
     $query = $em->createQuery('SELECT u FROM CmsUser u WHERE u.phonenumbers IS EMPTY');
     $users = $query->getResult();
 
-Get all instances of a specific type, for use with inheritance
-hierarchies:
+Get all instances of a specific type
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+Get all instances of a specific type, for use with inheritance hierarchies. These queries can be useful for
+:doc:`inheritance mapping <inheritance-mapping>`.
 
 .. versionadded:: 2.1
 
@@ -463,7 +499,10 @@ hierarchies:
     $query = $em->createQuery('SELECT u FROM Doctrine\Tests\Models\Company\CompanyPerson u WHERE u INSTANCE OF ?1');
     $query = $em->createQuery('SELECT u FROM Doctrine\Tests\Models\Company\CompanyPerson u WHERE u NOT INSTANCE OF ?1');
 
-Get all users visible on a given website that have chosen certain gender:
+Using IDENTITY() in queries
+^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+Get all users visible on a given website that have chosen certain gender.
 
 .. versionadded:: 2.2
 
@@ -474,12 +513,15 @@ Get all users visible on a given website that have chosen certain gender:
 
 .. versionadded:: 2.4
 
-Starting with 2.4, the IDENTITY() DQL function also works for composite primary keys:
+Starting with 2.4, the IDENTITY() DQL function also works for composite primary keys
 
 .. code-block:: php
 
     <?php
     $query = $em->createQuery("SELECT IDENTITY(c.location, 'latitude') AS latitude, IDENTITY(c.location, 'longitude') AS longitude FROM Checkpoint c WHERE c.user = ?1");
+
+Arbitrary Join
+^^^^^^^^^^^^^^
 
 Joins between entities without associations were not possible until version
 2.4, where you can generate an arbitrary join with the following syntax:
@@ -703,8 +745,8 @@ clauses:
 -  TRIM([LEADING \| TRAILING \| BOTH] ['trchar' FROM] str) - Trim
    the string by the given trim char, defaults to whitespaces.
 -  UPPER(str) - Return the upper-case of the given string.
--  DATE_ADD(date, days, unit) - Add the number of days to a given date. (Supported units are DAY, MONTH)
--  DATE_SUB(date, days, unit) - Substract the number of days from a given date. (Supported units are DAY, MONTH)
+-  DATE_ADD(date, days, unit) - Add the number of days to a given date. (Supported units are YEAR, MONTH, WEEK, DAY, HOUR, MINUTE, SECOND)
+-  DATE_SUB(date, days, unit) - Substract the number of days from a given date. (Supported units are YEAR, MONTH, WEEK, DAY, HOUR, MINUTE, SECOND)
 -  DATE_DIFF(date1, date2) - Calculate the difference in days between date1-date2.
 
 Arithmetic operators
