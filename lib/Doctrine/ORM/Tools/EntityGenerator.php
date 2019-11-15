@@ -24,6 +24,7 @@ use Doctrine\Common\Inflector\Inflector;
 use Doctrine\DBAL\Types\Type;
 use Doctrine\ORM\Mapping\ClassMetadataInfo;
 use function str_replace;
+use function trigger_error;
 
 /**
  * Generic class used to generate PHP5 entity classes from ClassMetadataInfo instances.
@@ -45,6 +46,8 @@ use function str_replace;
  * @author  Guilherme Blanco <guilhermeblanco@hotmail.com>
  * @author  Jonathan Wage <jonwage@gmail.com>
  * @author  Roman Borschel <roman@code-factory.org>
+ *
+ * @deprecated 3.0 This class is being removed from the ORM and won't have any replacement
  */
 class EntityGenerator
 {
@@ -335,6 +338,8 @@ public function __construct(<params>)
      */
     public function __construct()
     {
+        @trigger_error(self::class . ' is deprecated and will be removed in Doctrine 3.0', E_USER_DEPRECATED);
+
         if (version_compare(\Doctrine\Common\Version::VERSION, '2.2.0-DEV', '>=')) {
             $this->annotationsPrefix = 'ORM\\';
         }

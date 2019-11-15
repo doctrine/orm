@@ -141,7 +141,7 @@ class ValueObjectsTest extends OrmFunctionalTestCase
 
         $person = new DDC93Person('Johannes', new DDC93Address('Moo', '12345', 'Karlsruhe', new DDC93Country('Germany')));
         $this->_em->persist($person);
-        $this->_em->flush($person);
+        $this->_em->flush();
 
         // SELECT
         $selectDql = "SELECT p FROM " . __NAMESPACE__ ."\\DDC93Person p WHERE p.address.city = :city AND p.address.country.name = :country";
@@ -184,7 +184,7 @@ class ValueObjectsTest extends OrmFunctionalTestCase
     {
         $person = new DDC93Person('Karl', new DDC93Address('Foo', '12345', 'Gosport', new DDC93Country('England')));
         $this->_em->persist($person);
-        $this->_em->flush($person);
+        $this->_em->flush();
         $this->_em->clear();
 
         // Prove that the entity was persisted correctly.
@@ -254,7 +254,7 @@ class ValueObjectsTest extends OrmFunctionalTestCase
     {
         $car = new DDC93Car(new DDC93Address('Foo', '12345', 'Asdf'));
         $this->_em->persist($car);
-        $this->_em->flush($car);
+        $this->_em->flush();
 
         $reloadedCar = $this->_em->find(DDC93Car::class, $car->id);
         $this->assertEquals($car, $reloadedCar);

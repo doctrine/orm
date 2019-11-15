@@ -16,9 +16,12 @@ use Doctrine\Tests\Models\CMS\CmsComment;
 use Doctrine\Tests\Models\CMS\CmsPhonenumber;
 use Doctrine\Tests\Models\CMS\CmsUser;
 use Doctrine\Tests\OrmFunctionalTestCase;
+use Doctrine\Tests\VerifyDeprecations;
 
 class BasicFunctionalTest extends OrmFunctionalTestCase
 {
+    use VerifyDeprecations;
+
     protected function setUp()
     {
         $this->useModelSet('cms');
@@ -499,7 +502,7 @@ class BasicFunctionalTest extends OrmFunctionalTestCase
         $this->_em->persist($address);
 
         $this->_em->flush();
-        $this->_em->detach($address);
+        $this->_em->clear(CmsAddress::class);
 
         $this->assertFalse($this->_em->contains($address));
         $this->assertTrue($this->_em->contains($user));
@@ -894,6 +897,7 @@ class BasicFunctionalTest extends OrmFunctionalTestCase
 
         $user2 = $this->_em->find(get_class($managedUser), $userId);
         $this->assertInstanceOf(CmsUser::class, $user2);
+        $this->assertHasDeprecationMessages();
     }
 
     public function testMergeNonPersistedProperties()
@@ -921,6 +925,7 @@ class BasicFunctionalTest extends OrmFunctionalTestCase
         $this->assertNull($user2->nonPersistedProperty);
         $this->assertNull($user2->nonPersistedPropertyObject);
         $this->assertEquals('active', $user2->status);
+        $this->assertHasDeprecationMessages();
     }
 
     public function testMergeThrowsExceptionIfEntityWithGeneratedIdentifierDoesNotExist()
@@ -933,6 +938,7 @@ class BasicFunctionalTest extends OrmFunctionalTestCase
 
         $this->expectException(EntityNotFoundException::class);
         $this->_em->merge($user);
+        $this->assertHasDeprecationMessages();
     }
 
     /**
@@ -962,6 +968,7 @@ class BasicFunctionalTest extends OrmFunctionalTestCase
         $this->_em->clear();
 
         $this->assertNull($this->_em->find(get_class($ph), $ph->phonenumber)->getUser());
+        $this->assertHasDeprecationMessages();
     }
 
     /**
@@ -1073,6 +1080,7 @@ class BasicFunctionalTest extends OrmFunctionalTestCase
         $this->assertTrue($userB->id > 0, 'user b has an id');
         $this->assertTrue($userC->id > 0, 'user c has an id');
         $this->assertEquals('UserC', $userC->name, 'name has not changed because we did not flush it');
+        $this->assertHasDeprecationMessages();
     }
 
     /**
@@ -1094,6 +1102,7 @@ class BasicFunctionalTest extends OrmFunctionalTestCase
 
         $user = $this->_em->find(get_class($user), $user->id);
         $this->assertEquals('administrator', $user->status);
+        $this->assertHasDeprecationMessages();
     }
 
     /**
@@ -1137,6 +1146,7 @@ class BasicFunctionalTest extends OrmFunctionalTestCase
 
         $this->assertTrue($this->_em->contains($otherUser), "Other user is contained in EntityManager");
         $this->assertTrue($otherUser->id > 0, "other user has an id");
+        $this->assertHasDeprecationMessages();
     }
 
     /**
@@ -1164,6 +1174,7 @@ class BasicFunctionalTest extends OrmFunctionalTestCase
 
         $this->assertTrue($this->_em->contains($address), "Other user is contained in EntityManager");
         $this->assertTrue($address->id > 0, "other user has an id");
+        $this->assertHasDeprecationMessages();
     }
 
     /**
@@ -1213,6 +1224,7 @@ class BasicFunctionalTest extends OrmFunctionalTestCase
         $this->_em->clear();
 
         $this->assertNull($this->_em->find(get_class($user), $userId));
+        $this->assertHasDeprecationMessages();
     }
 
     /**
@@ -1241,6 +1253,7 @@ class BasicFunctionalTest extends OrmFunctionalTestCase
 
         $this->assertTrue($this->_em->contains($otherUser), "Other user is contained in EntityManager");
         $this->assertTrue($otherUser->id > 0, "other user has an id");
+        $this->assertHasDeprecationMessages();
     }
 
     /**
@@ -1270,6 +1283,7 @@ class BasicFunctionalTest extends OrmFunctionalTestCase
 
         $user2 = $this->_em->find(get_class($user2), $user2->id);
         $this->assertEquals('developer', $user2->status);
+        $this->assertHasDeprecationMessages();
     }
 
     /**

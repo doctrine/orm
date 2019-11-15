@@ -13,6 +13,7 @@ use Doctrine\Tests\Mocks\DriverMock;
 use Doctrine\Common\EventManager;
 use Doctrine\ORM\Tools\DisconnectedClassMetadataFactory;
 use Doctrine\Tests\OrmTestCase;
+use Doctrine\Tests\VerifyDeprecations;
 
 /**
  * Test case for converting a Doctrine 1 style schema to Doctrine 2 mapping files
@@ -26,6 +27,8 @@ use Doctrine\Tests\OrmTestCase;
  */
 class ConvertDoctrine1SchemaTest extends OrmTestCase
 {
+    use VerifyDeprecations;
+
     protected function _createEntityManager($metadataDriver)
     {
         $driverMock = new DriverMock();
@@ -77,6 +80,7 @@ class ConvertDoctrine1SchemaTest extends OrmTestCase
         $this->assertEquals('User', $profileClass->associationMappings['User']['targetEntity']);
 
         $this->assertEquals('username', $userClass->table['uniqueConstraints']['username']['columns'][0]);
+        $this->assertHasDeprecationMessages();
     }
 
     public function tearDown()

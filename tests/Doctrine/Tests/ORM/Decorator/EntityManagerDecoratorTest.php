@@ -5,10 +5,14 @@ namespace Doctrine\Tests\ORM\Decorator;
 use Doctrine\ORM\Decorator\EntityManagerDecorator;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Query\ResultSetMapping;
+use Doctrine\Tests\VerifyDeprecations;
 use PHPUnit\Framework\TestCase;
+use function in_array;
 
 class EntityManagerDecoratorTest extends TestCase
 {
+    use VerifyDeprecations;
+
     const VOID_METHODS = [
         'persist',
         'remove',
@@ -83,5 +87,12 @@ class EntityManagerDecoratorTest extends TestCase
         };
 
         $this->assertSame($return, $decorator->$method(...$parameters));
+
+        if (in_array($method, ['copy', 'merge', 'detach', 'getHydrator'], true)) {
+            $this->assertHasDeprecationMessages();
+            return;
+        }
+
+        $this->assertNotHasDeprecationMessages();
     }
 }

@@ -20,9 +20,12 @@ use Doctrine\ORM\UnitOfWork;
 use Doctrine\Tests\Models\CMS\CmsUser;
 use Doctrine\Tests\Models\GeoNames\Country;
 use Doctrine\Tests\OrmTestCase;
+use Doctrine\Tests\VerifyDeprecations;
 
 class EntityManagerTest extends OrmTestCase
 {
+    use VerifyDeprecations;
+
     /**
      * @var EntityManager
      */
@@ -304,5 +307,45 @@ class EntityManagerTest extends OrmTestCase
         $this->_em->clear(null);
 
         $this->assertFalse($this->_em->contains($entity));
+    }
+
+    public function testDeprecatedFlushWithArguments() : void
+    {
+        $entity = new Country(456, 'United Kingdom');
+        $this->_em->persist($entity);
+
+        $this->expectDeprecationMessage('Calling Doctrine\ORM\EntityManager::flush() with any arguments to flush specific entities is deprecated and will not be supported in Doctrine 3.0.');
+        $this->_em->flush($entity);
+    }
+
+    public function testDeprecatedMerge() : void
+    {
+        $entity = new Country(456, 'United Kingdom');
+        $this->_em->persist($entity);
+
+        $this->expectDeprecationMessage('Method Doctrine\ORM\EntityManager::merge() is deprecated and will be removed in Doctrine 3.0.');
+        $this->_em->merge($entity);
+    }
+
+    public function testDeprecatedDetach() : void
+    {
+        $entity = new Country(456, 'United Kingdom');
+        $this->_em->persist($entity);
+
+        $this->expectDeprecationMessage('Method Doctrine\ORM\EntityManager::detach() is deprecated and will be removed in Doctrine 3.0.');
+        $this->_em->detach($entity);
+    }
+
+    public function testDeprecatedCopy() : void
+    {
+        $entity = new Country(456, 'United Kingdom');
+        $this->_em->persist($entity);
+
+        try {
+            $this->expectDeprecationMessage('Method Doctrine\ORM\EntityManager::copy() is deprecated and will be removed in Doctrine 3.0.');
+            $this->_em->copy($entity);
+        } catch (\BadMethodCallException $e) {
+            // do nothing
+        }
     }
 }

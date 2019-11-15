@@ -11,9 +11,12 @@ use Doctrine\ORM\Mapping\Driver\YamlDriver;
 use Doctrine\ORM\Tools\Setup;
 use Doctrine\ORM\Version;
 use Doctrine\Tests\OrmTestCase;
+use Doctrine\Tests\VerifyDeprecations;
 
 class SetupTest extends OrmTestCase
 {
+    use VerifyDeprecations;
+
     private $originalAutoloaderCount;
     private $originalIncludePath;
 
@@ -74,6 +77,7 @@ class SetupTest extends OrmTestCase
 
         $this->assertInstanceOf(Configuration::class, $config);
         $this->assertInstanceOf(YamlDriver::class, $config->getMetadataDriverImpl());
+        $this->assertHasDeprecationMessages();
     }
 
     /**

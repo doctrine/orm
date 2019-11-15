@@ -27,6 +27,7 @@ use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
+use Symfony\Component\Console\Style\SymfonyStyle;
 
 /**
  * Command to convert a Doctrine 1 schema to a Doctrine 2 mapping file.
@@ -37,6 +38,8 @@ use Symfony\Component\Console\Output\OutputInterface;
  * @author  Guilherme Blanco <guilhermeblanco@hotmail.com>
  * @author  Jonathan Wage <jonwage@gmail.com>
  * @author  Roman Borschel <roman@code-factory.org>
+ *
+ * @deprecated 3.0 This class is being removed from the ORM and won't have any replacement
  */
 class ConvertDoctrine1SchemaCommand extends Command
 {
@@ -116,6 +119,9 @@ class ConvertDoctrine1SchemaCommand extends Command
      */
     protected function execute(InputInterface $input, OutputInterface $output)
     {
+        $ui = new SymfonyStyle($input, $output);
+        $ui->warning('Command ' . $this->getName() . ' is deprecated and will be removed in Doctrine 3.0.');
+
         // Process source directories
         $fromPaths = array_merge([$input->getArgument('from-path')], $input->getOption('from'));
 

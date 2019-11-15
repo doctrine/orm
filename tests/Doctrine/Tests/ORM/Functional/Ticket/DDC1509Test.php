@@ -2,11 +2,14 @@
 
 namespace Doctrine\Tests\ORM\Functional\Ticket;
 
+use Doctrine\Tests\VerifyDeprecations;
+
 /**
  * @group DDC-1509
  */
 class DDC1509Test extends \Doctrine\Tests\OrmFunctionalTestCase
 {
+    use VerifyDeprecations;
 
     protected function setUp()
     {
@@ -48,6 +51,7 @@ class DDC1509Test extends \Doctrine\Tests\OrmFunctionalTestCase
 
         $this->assertNotNull($pic->getThumbnail());
         $this->assertNotNull($pic->getFile());
+        $this->assertHasDeprecationMessages();
     }
 
 }
