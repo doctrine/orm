@@ -2,13 +2,17 @@
 
 namespace Doctrine\Tests\ORM\Functional;
 
+use Doctrine\DBAL\Types\Type as DBALType;
 use Doctrine\ORM\Query;
 use Doctrine\ORM\Tools\Pagination\Paginator;
+use Doctrine\Tests\DbalTypes\CustomIdObject;
+use Doctrine\Tests\DbalTypes\CustomIdObjectType;
 use Doctrine\Tests\Models\CMS\CmsArticle;
 use Doctrine\Tests\Models\CMS\CmsEmail;
 use Doctrine\Tests\Models\CMS\CmsGroup;
 use Doctrine\Tests\Models\CMS\CmsUser;
 use Doctrine\Tests\Models\Company\CompanyManager;
+use Doctrine\Tests\Models\CustomType\CustomIdObjectTypeParent;
 use Doctrine\Tests\Models\Pagination\Company;
 use Doctrine\Tests\Models\Pagination\Department;
 use Doctrine\Tests\Models\Pagination\Logo;
@@ -26,6 +30,14 @@ class PaginationTest extends OrmFunctionalTestCase
         $this->useModelSet('cms');
         $this->useModelSet('pagination');
         $this->useModelSet('company');
+        $this->useModelSet('custom_id_object_type');
+
+        if (DBALType::hasType(CustomIdObjectType::NAME)) {
+            DBALType::overrideType(CustomIdObjectType::NAME, CustomIdObjectType::class);
+        } else {
+            DBALType::addType(CustomIdObjectType::NAME, CustomIdObjectType::class);
+        }
+
         parent::setUp();
         $this->populate();
     }
@@ -639,6 +651,22 @@ class PaginationTest extends OrmFunctionalTestCase
         $paginator->setUseOutputWalkers(false);
         $this->assertCount(1, $paginator->getIterator());
         $this->assertEquals(1, $paginator->count());
+    }
+
+    /**
+     * @group GH-7890
+     */
+    public function testCustomIdTypeWithoutOutputWalker()
+    {
+        $this->_em->persist(new CustomIdObjectTypeParent(new CustomIdObject('foo')));
+        $this->_em->flush();
+
+        $dql   = 'SELECT p FROM Doctrine\Tests\Models\CustomType\CustomIdObjectTypeParent p';
+        $query = $this->_em->createQuery($dql);
+
+        $paginator = new Paginator($query, true);
+        $paginator->setUseOutputWalkers(false);
+        $this->assertCount(1, $paginator->getIterator());
     }
 
     public function testCountQueryStripsParametersInSelect()
