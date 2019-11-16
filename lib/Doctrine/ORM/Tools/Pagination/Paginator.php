@@ -28,6 +28,7 @@ use Doctrine\ORM\Query\ResultSetMapping;
 use Doctrine\ORM\QueryBuilder;
 use function array_map;
 use function assert;
+use function current;
 
 /**
  * The paginator can handle various complex scenarios with DQL.
@@ -161,8 +162,13 @@ class Paginator implements \Countable, \IteratorAggregate
                 return new \ArrayIterator([]);
             }
 
+            $em           = $subQuery->getEntityManager();
+            $connection   = $em->getConnection();
+            $idType       = $this->getIdentifiersQueryScalarResultType($subQuery, $em);
             $whereInQuery = $this->cloneQuery($this->query);
-            $ids          = array_map('current', $foundIdRows);
+            $ids          = array_map(static function (array $row) use ($idType, $connection) {
+                return $connection->convertToPHPValue(current($row), $idType);
+            }, $foundIdRows);
 
             $this->appendTreeWalker($whereInQuery, WhereInWalker::class);
             $whereInQuery->setHint(WhereInWalker::HINT_PAGINATOR_ID_COUNT, count($ids));
