@@ -36,7 +36,7 @@ use function trigger_error;
  * @author Jonathan H. Wage <jonwage@gmail.com>
  * @author Roman Borschel <roman@code-factory.org>
  *
- * @deprecated 3.0 This class is being removed from the ORM and won't have any replacement
+ * @deprecated 2.7 This class is being removed from the ORM and won't have any replacement
  */
 class YamlDriver extends FileDriver
 {

@@ -71,7 +71,7 @@ class Configuration extends \Doctrine\DBAL\Configuration
      *
      * @return string|null
      *
-     * @deprecated 3.0 We're switch to `ocramius/proxy-manager` and this method isn't applicable any longer
+     * @deprecated 2.7 We're switch to `ocramius/proxy-manager` and this method isn't applicable any longer
      * @see https://github.com/Ocramius/ProxyManager
      */
     public function getProxyDir()
@@ -86,7 +86,7 @@ class Configuration extends \Doctrine\DBAL\Configuration
      *
      * @return int Possible values are constants of Doctrine\Common\Proxy\AbstractProxyFactory.
      *
-     * @deprecated 3.0 We're switch to `ocramius/proxy-manager` and this method isn't applicable any longer
+     * @deprecated 2.7 We're switch to `ocramius/proxy-manager` and this method isn't applicable any longer
      * @see https://github.com/Ocramius/ProxyManager
      */
     public function getAutoGenerateProxyClasses()
@@ -114,7 +114,7 @@ class Configuration extends \Doctrine\DBAL\Configuration
      *
      * @return string|null
      *
-     * @deprecated 3.0 We're switch to `ocramius/proxy-manager` and this method isn't applicable any longer
+     * @deprecated 2.7 We're switch to `ocramius/proxy-manager` and this method isn't applicable any longer
      * @see https://github.com/Ocramius/ProxyManager
      */
     public function getProxyNamespace()

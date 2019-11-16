@@ -36,7 +36,7 @@ These methods have been deprecated:
 
 The `Doctrine\ORM\Version` class is now deprecated and will be removed in Doctrine 3.0:
 please refrain from checking the ORM version at runtime or use
-[Ocramius/PackageVersions](https://github.com/Ocramius/PackageVersions/).
+[ocramius/package-versions](https://github.com/Ocramius/PackageVersions/).
 
 ## Deprecated `EntityManager#merge()` and `EntityManager#detach()` methods
 

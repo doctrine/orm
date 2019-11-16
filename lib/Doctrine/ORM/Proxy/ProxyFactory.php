@@ -38,7 +38,7 @@ use Doctrine\ORM\Utility\IdentifierFlattener;
  * @author Marco Pivetta  <ocramius@gmail.com>
  * @since 2.0
  *
- * @deprecated 3.0 This class is being removed from the ORM and won't have any replacement
+ * @deprecated 2.7 This class is being removed from the ORM and won't have any replacement
  */
 class ProxyFactory extends AbstractProxyFactory
 {

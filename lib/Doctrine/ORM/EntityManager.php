@@ -658,7 +658,7 @@ use function trigger_error;
      *
      * @throws ORMInvalidArgumentException
      *
-     * @deprecated 3.0 This method is being removed from the ORM and won't have any replacement
+     * @deprecated 2.7 This method is being removed from the ORM and won't have any replacement
      */
     public function detach($entity)
     {
@@ -683,7 +683,7 @@ use function trigger_error;
      * @throws ORMInvalidArgumentException
      * @throws ORMException
      *
-     * @deprecated 3.0 This method is being removed from the ORM and won't have any replacement
+     * @deprecated 2.7 This method is being removed from the ORM and won't have any replacement
      */
     public function merge($entity)
     {

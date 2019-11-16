@@ -1878,7 +1878,7 @@ class UnitOfWork implements PropertyChangedListener
      * @throws OptimisticLockException If the entity uses optimistic locking through a version
      *         attribute and the version check against the managed copy fails.
      *
-     * @deprecated 3.0 This method is being removed from the ORM and won't have any replacement
+     * @deprecated 2.7 This method is being removed from the ORM and won't have any replacement
      */
     public function merge($entity)
     {
@@ -2069,7 +2069,7 @@ class UnitOfWork implements PropertyChangedListener
      *
      * @return void
      *
-     * @deprecated 3.0 This method is being removed from the ORM and won't have any replacement
+     * @deprecated 2.7 This method is being removed from the ORM and won't have any replacement
      */
     public function detach($entity)
     {
