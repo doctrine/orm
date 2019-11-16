@@ -1,5 +1,10 @@
 # Upgrade to 2.7
 
+## Minor BC BREAK: paginator output walkers aren't be called anymore on sub-queries for queries without max results  
+
+To optimize DB interaction, `Doctrine\ORM\Tools\Pagination\Paginator` no longer fetches identifiers to be able to
+perform the pagination with join collections when max results isn't set in the query.
+
 ## Deprecated code generators and related console commands
  
 These console commands have been deprecated:
