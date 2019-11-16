@@ -583,21 +583,45 @@ abstract class AbstractQuery
      * Set whether or not to cache the results of this query and if so, for
      * how long and which ID to use for the cache entry.
      *
-     * @param boolean $bool
-     * @param integer $lifetime
-     * @param string  $resultCacheId
+     * @deprecated 2.7 Use {@see enableResultCache} and {@see disableResultCache} instead.
+     *
+     * @param bool   $useCache
+     * @param int    $lifetime
+     * @param string $resultCacheId
      *
      * @return static This query instance.
      */
-    public function useResultCache($bool, $lifetime = null, $resultCacheId = null)
+    public function useResultCache($useCache, $lifetime = null, $resultCacheId = null)
     {
-        if ($bool) {
-            $this->setResultCacheLifetime($lifetime);
-            $this->setResultCacheId($resultCacheId);
+        return $useCache
+            ? $this->enableResultCache($lifetime, $resultCacheId)
+            : $this->disableResultCache();
+    }
 
-            return $this;
-        }
+    /**
+     * Enables caching of the results of this query, for given or default amount of seconds
+     * and optionally specifies which ID to use for the cache entry.
+     *
+     * @param int|null    $lifetime      How long the cache entry is valid, in seconds.
+     * @param string|null $resultCacheId ID to use for the cache entry.
+     *
+     * @return static This query instance.
+     */
+    public function enableResultCache(?int $lifetime = null, ?string $resultCacheId = null) : self
+    {
+        $this->setResultCacheLifetime($lifetime);
+        $this->setResultCacheId($resultCacheId);
 
+        return $this;
+    }
+
+    /**
+     * Disables caching of the results of this query.
+     *
+     * @return static This query instance.
+     */
+    public function disableResultCache() : self
+    {
         $this->_queryCacheProfile = null;
 
         return $this;
