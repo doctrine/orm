@@ -32,6 +32,16 @@ class NamingStrategyTest extends OrmTestCase
         return new UnderscoreNamingStrategy(CASE_UPPER);
     }
 
+    private static function numberAwareUnderscoreNamingLower() : UnderscoreNamingStrategy
+    {
+        return new UnderscoreNamingStrategy(CASE_LOWER, true);
+    }
+
+    private static function numberAwareUnderscoreNamingUpper() : UnderscoreNamingStrategy
+    {
+        return new UnderscoreNamingStrategy(CASE_UPPER, true);
+    }
+
     /**
      * Data Provider for NamingStrategy#classToTableName
      *
@@ -44,12 +54,25 @@ class NamingStrategyTest extends OrmTestCase
             [self::defaultNaming(), 'SomeClassName', 'SomeClassName'],
             [self::defaultNaming(), 'SomeClassName', '\SomeClassName'],
             [self::defaultNaming(), 'Name', '\Some\Class\Name'],
+            [self::defaultNaming(), 'Name2Test', '\Some\Class\Name2Test'],
 
             // UnderscoreNamingStrategy
             [self::underscoreNamingLower(), 'some_class_name', '\Name\Space\SomeClassName'],
             [self::underscoreNamingLower(), 'name', '\Some\Class\Name'],
+            [self::underscoreNamingLower(), 'name2test', '\Some\Class\Name2Test'],
             [self::underscoreNamingUpper(), 'SOME_CLASS_NAME', '\Name\Space\SomeClassName'],
             [self::underscoreNamingUpper(), 'NAME', '\Some\Class\Name'],
+            [self::underscoreNamingUpper(), 'NAME2TEST', '\Some\Class\Name2Test'],
+
+            // NumberAwareUnderscoreNamingStrategy
+            [self::numberAwareUnderscoreNamingLower(), 'some_class_name', '\Name\Space\SomeClassName'],
+            [self::numberAwareUnderscoreNamingLower(), 'name', '\Some\Class\Name'],
+            [self::numberAwareUnderscoreNamingLower(), 'name2_test', '\Some\Class\Name2Test'],
+            [self::numberAwareUnderscoreNamingLower(), 'name2test', '\Some\Class\Name2test'],
+            [self::numberAwareUnderscoreNamingUpper(), 'SOME_CLASS_NAME', '\Name\Space\SomeClassName'],
+            [self::numberAwareUnderscoreNamingUpper(), 'NAME', '\Some\Class\Name'],
+            [self::numberAwareUnderscoreNamingUpper(), 'NAME2_TEST', '\Some\Class\Name2Test'],
+            [self::numberAwareUnderscoreNamingUpper(), 'NAME2TEST', '\Some\Class\Name2test'],
         ];
     }
 
@@ -78,13 +101,23 @@ class NamingStrategyTest extends OrmTestCase
 
             // UnderscoreNamingStrategy
             [self::underscoreNamingLower(), 'some_property', 'someProperty'],
-            [self::underscoreNamingLower(), 'base64_encoded', 'base64Encoded'],
+            [self::underscoreNamingLower(), 'base64encoded', 'base64Encoded'],
             [self::underscoreNamingLower(), 'base64encoded', 'base64encoded'],
             [self::underscoreNamingUpper(), 'SOME_PROPERTY', 'someProperty'],
             [self::underscoreNamingUpper(), 'SOME_PROPERTY', 'some_property'],
             [self::underscoreNamingUpper(), 'SOME_PROPERTY', 'SOME_PROPERTY'],
-            [self::underscoreNamingUpper(), 'BASE64_ENCODED', 'base64Encoded'],
+            [self::underscoreNamingUpper(), 'BASE64ENCODED', 'base64Encoded'],
             [self::underscoreNamingUpper(), 'BASE64ENCODED', 'base64encoded'],
+
+            // NumberAwareUnderscoreNamingStrategy
+            [self::numberAwareUnderscoreNamingLower(), 'some_property', 'someProperty'],
+            [self::numberAwareUnderscoreNamingLower(), 'base64_encoded', 'base64Encoded'],
+            [self::numberAwareUnderscoreNamingLower(), 'base64encoded', 'base64encoded'],
+            [self::numberAwareUnderscoreNamingUpper(), 'SOME_PROPERTY', 'someProperty'],
+            [self::numberAwareUnderscoreNamingUpper(), 'SOME_PROPERTY', 'some_property'],
+            [self::numberAwareUnderscoreNamingUpper(), 'SOME_PROPERTY', 'SOME_PROPERTY'],
+            [self::numberAwareUnderscoreNamingUpper(), 'BASE64_ENCODED', 'base64Encoded'],
+            [self::numberAwareUnderscoreNamingUpper(), 'BASE64ENCODED', 'base64encoded'],
         ];
     }
 
@@ -110,6 +143,10 @@ class NamingStrategyTest extends OrmTestCase
             // UnderscoreNamingStrategy
             [self::underscoreNamingLower(), 'id'],
             [self::underscoreNamingUpper(), 'ID'],
+
+            // NumberAwareUnderscoreNamingStrategy
+            [self::numberAwareUnderscoreNamingLower(), 'id'],
+            [self::numberAwareUnderscoreNamingUpper(), 'ID'],
         ];
     }
 
@@ -137,9 +174,18 @@ class NamingStrategyTest extends OrmTestCase
 
             // UnderscoreNamingStrategy
             [self::underscoreNamingLower(), 'some_column_id', 'someColumn', null],
-            [self::underscoreNamingLower(), 'base64_encoded_id', 'base64Encoded', null],
+            [self::underscoreNamingLower(), 'base64encoded_id', 'base64Encoded', null],
             [self::underscoreNamingUpper(), 'SOME_COLUMN_ID', 'someColumn', null],
-            [self::underscoreNamingUpper(), 'BASE64_ENCODED_ID', 'base64Encoded', null],
+            [self::underscoreNamingUpper(), 'BASE64ENCODED_ID', 'base64Encoded', null],
+
+            // NumberAwareUnderscoreNamingStrategy
+            [self::numberAwareUnderscoreNamingLower(), 'some_column_id', 'someColumn', null],
+            [self::numberAwareUnderscoreNamingLower(), 'base64_encoded_id', 'base64Encoded', null],
+            [self::numberAwareUnderscoreNamingLower(), 'base64encoded_id', 'base64encoded', null],
+            [self::numberAwareUnderscoreNamingUpper(), 'SOME_COLUMN_ID', 'someColumn', null],
+            [self::numberAwareUnderscoreNamingUpper(), 'BASE64_ENCODED_ID', 'base64Encoded', null],
+            [self::numberAwareUnderscoreNamingUpper(), 'BASE64ENCODED_ID', 'base64encoded', null],
+
             // JoinColumnClassNamingStrategy
             [new JoinColumnClassNamingStrategy(), 'classname_someColumn_id', 'someColumn', 'Some\ClassName'],
             [new JoinColumnClassNamingStrategy(), 'classname_some_column_id', 'some_column', 'ClassName'],
@@ -173,11 +219,23 @@ class NamingStrategyTest extends OrmTestCase
 
             // UnderscoreNamingStrategy
             [self::underscoreNamingLower(), 'some_class_name_class_name', 'SomeClassName', 'Some\ClassName', null],
+            [self::underscoreNamingLower(), 'class1test_class2test', 'Class1Test', 'Some\Class2Test', null],
             [self::underscoreNamingLower(), 'some_class_name_class_name', '\SomeClassName', 'ClassName', null],
             [self::underscoreNamingLower(), 'name_class_name', '\Some\Class\Name', 'ClassName', null],
             [self::underscoreNamingUpper(), 'SOME_CLASS_NAME_CLASS_NAME', 'SomeClassName', 'Some\ClassName', null],
+            [self::underscoreNamingUpper(), 'CLASS1TEST_CLASS2TEST', 'Class1Test', 'Some\Class2Test', null],
             [self::underscoreNamingUpper(), 'SOME_CLASS_NAME_CLASS_NAME', '\SomeClassName', 'ClassName', null],
             [self::underscoreNamingUpper(), 'NAME_CLASS_NAME', '\Some\Class\Name', 'ClassName', null],
+
+            // NumberAwareUnderscoreNamingStrategy
+            [self::numberAwareUnderscoreNamingLower(), 'some_class_name_class_name', 'SomeClassName', 'Some\ClassName', null],
+            [self::numberAwareUnderscoreNamingLower(), 'class1_test_class2_test', 'Class1Test', 'Some\Class2Test', null],
+            [self::numberAwareUnderscoreNamingLower(), 'some_class_name_class_name', '\SomeClassName', 'ClassName', null],
+            [self::numberAwareUnderscoreNamingLower(), 'name_class_name', '\Some\Class\Name', 'ClassName', null],
+            [self::numberAwareUnderscoreNamingUpper(), 'SOME_CLASS_NAME_CLASS_NAME', 'SomeClassName', 'Some\ClassName', null],
+            [self::numberAwareUnderscoreNamingUpper(), 'CLASS1_TEST_CLASS2_TEST', 'Class1Test', 'Some\Class2Test', null],
+            [self::numberAwareUnderscoreNamingUpper(), 'SOME_CLASS_NAME_CLASS_NAME', '\SomeClassName', 'ClassName', null],
+            [self::numberAwareUnderscoreNamingUpper(), 'NAME_CLASS_NAME', '\Some\Class\Name', 'ClassName', null],
         ];
     }
 
@@ -207,11 +265,24 @@ class NamingStrategyTest extends OrmTestCase
             [self::defaultNaming(), 'name_identifier', '\Some\Class\Name', 'identifier', null],
 
             // UnderscoreNamingStrategy
+            [self::underscoreNamingLower(), 'some_class_name2test_id', 'SomeClassName2Test', null, null],
             [self::underscoreNamingLower(), 'some_class_name_id', 'SomeClassName', null, null],
             [self::underscoreNamingLower(), 'class_name_identifier', '\Some\Class\ClassName', 'identifier', null],
-
+            [self::underscoreNamingLower(), 'name2test_identifier', '\Some\Class\Name2Test', 'identifier', null],
             [self::underscoreNamingUpper(), 'SOME_CLASS_NAME_ID', 'SomeClassName', null, null],
+            [self::underscoreNamingUpper(), 'SOME_CLASS_NAME2TEST_ID', 'SomeClassName2Test', null, null],
             [self::underscoreNamingUpper(), 'CLASS_NAME_IDENTIFIER', '\Some\Class\ClassName', 'IDENTIFIER', null],
+            [self::underscoreNamingUpper(), 'NAME2TEST_IDENTIFIER', '\Some\Class\Name2Test', 'IDENTIFIER', null],
+
+            // NumberAwareUnderscoreNamingStrategy
+            [self::numberAwareUnderscoreNamingLower(), 'some_class_name2_test_id', 'SomeClassName2Test', null, null],
+            [self::numberAwareUnderscoreNamingLower(), 'some_class_name_id', 'SomeClassName', null, null],
+            [self::numberAwareUnderscoreNamingLower(), 'class_name_identifier', '\Some\Class\ClassName', 'identifier', null],
+            [self::numberAwareUnderscoreNamingLower(), 'name2_test_identifier', '\Some\Class\Name2Test', 'identifier', null],
+            [self::numberAwareUnderscoreNamingUpper(), 'SOME_CLASS_NAME_ID', 'SomeClassName', null, null],
+            [self::numberAwareUnderscoreNamingUpper(), 'SOME_CLASS_NAME2_TEST_ID', 'SomeClassName2Test', null, null],
+            [self::numberAwareUnderscoreNamingUpper(), 'CLASS_NAME_IDENTIFIER', '\Some\Class\ClassName', 'IDENTIFIER', null],
+            [self::numberAwareUnderscoreNamingUpper(), 'NAME2_TEST_IDENTIFIER', '\Some\Class\Name2Test', 'IDENTIFIER', null],
         ];
     }
 
