@@ -19,6 +19,8 @@
 
 namespace Doctrine\ORM\Mapping;
 
+use Doctrine\Common\Annotations\Annotation\Enum;
+
 /**
  * This annotation is used to override association mapping of property for an entity relationship.
  *

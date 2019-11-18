@@ -19,6 +19,8 @@
 
 namespace Doctrine\ORM\Mapping;
 
+use Doctrine\Common\Annotations\Annotation\Enum;
+
 /**
  * Caching to an entity or a collection.
  *
