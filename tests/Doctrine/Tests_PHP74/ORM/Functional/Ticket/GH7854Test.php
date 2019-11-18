@@ -31,7 +31,7 @@ class GH7854Test extends OrmFunctionalTestCase
         $this->_em->clear();
 
         $entities = $this->_em->getRepository(GH7854TestEntity::class)->findAll();
-    
+
         self::assertEquals($entity, $entities[0]);
     }
 }

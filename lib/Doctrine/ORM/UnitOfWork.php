@@ -47,6 +47,7 @@ use InvalidArgumentException;
 use Throwable;
 use UnexpectedValueException;
 use function get_class;
+use function method_exists;
 
 /**
  * The UnitOfWork is responsible for tracking changes to objects during an
@@ -631,7 +632,11 @@ class UnitOfWork implements PropertyChangedListener
         $actualData = [];
 
         foreach ($class->reflFields as $name => $refProp) {
-            $value = $refProp->getValue($entity);
+            if (method_exists($refProp, 'isInitialized') && $refProp->getDeclaringClass()->isInstance($entity)) {
+                $value = $refProp->isInitialized($entity) ? $refProp->getValue($entity) : null;
+            } else {
+                $value = $refProp->getValue($entity);
+            }
 
             if ($class->isCollectionValuedAssociation($name) && $value !== null) {
                 if ($value instanceof PersistentCollection) {
