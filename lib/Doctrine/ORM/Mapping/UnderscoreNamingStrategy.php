@@ -40,22 +40,26 @@ use function substr;
  */
 class UnderscoreNamingStrategy implements NamingStrategy
 {
-    private const DEFAULT_PATTERN        = '/(?<=[a-z])([A-Z])/';
-    private const PATTERN_FOR_PROPERTIES = '/(?<=[a-z0-9])([A-Z])/';
+    private const DEFAULT_PATTERN      = '/(?<=[a-z])([A-Z])/';
+    private const NUMBER_AWARE_PATTERN = '/(?<=[a-z0-9])([A-Z])/';
 
     /**
      * @var integer
      */
     private $case;
 
+    /** @var string */
+    private $pattern;
+
     /**
      * Underscore naming strategy construct.
      *
-     * @param integer $case CASE_LOWER | CASE_UPPER
+     * @param int $case CASE_LOWER | CASE_UPPER
      */
-    public function __construct($case = CASE_LOWER)
+    public function __construct($case = CASE_LOWER, bool $numberAware = false)
     {
-        $this->case = $case;
+        $this->case    = $case;
+        $this->pattern = $numberAware ? self::NUMBER_AWARE_PATTERN : self::DEFAULT_PATTERN;
     }
 
     /**
@@ -96,7 +100,7 @@ class UnderscoreNamingStrategy implements NamingStrategy
      */
     public function propertyToColumnName($propertyName, $className = null)
     {
-        return $this->underscore($propertyName, self::PATTERN_FOR_PROPERTIES);
+        return $this->underscore($propertyName);
     }
 
     /**
@@ -120,7 +124,7 @@ class UnderscoreNamingStrategy implements NamingStrategy
      */
     public function joinColumnName($propertyName, $className = null)
     {
-        return $this->underscore($propertyName, self::PATTERN_FOR_PROPERTIES) . '_' . $this->referenceColumnName();
+        return $this->underscore($propertyName) . '_' . $this->referenceColumnName();
     }
 
     /**
@@ -140,9 +144,9 @@ class UnderscoreNamingStrategy implements NamingStrategy
                 ($referencedColumnName ?: $this->referenceColumnName());
     }
 
-    private function underscore(string $string, string $pattern = self::DEFAULT_PATTERN) : string
+    private function underscore(string $string) : string
     {
-        $string = preg_replace($pattern, '_$1', $string);
+        $string = preg_replace($this->pattern, '_$1', $string);
 
         if ($this->case === CASE_UPPER) {
             return strtoupper($string);
