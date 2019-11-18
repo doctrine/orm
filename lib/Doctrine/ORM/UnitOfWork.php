@@ -636,6 +636,7 @@ class UnitOfWork implements PropertyChangedListener
             if ($class->isCollectionValuedAssociation($name) && $value !== null) {
                 if ($value instanceof PersistentCollection) {
                     if ($value->getOwner() === $entity) {
+                        $actualData[$name] = $value;
                         continue;
                     }
 
@@ -768,7 +769,7 @@ class UnitOfWork implements PropertyChangedListener
 
             if ($changeSet) {
                 $this->entityChangeSets[$oid]   = $changeSet;
-                $this->originalEntityData[$oid] = $actualData;
+                $this->updateOriginalEntityData($class, $oid, $actualData);
                 $this->entityUpdates[$oid]      = $entity;
             }
         }
@@ -785,13 +786,39 @@ class UnitOfWork implements PropertyChangedListener
                 $assoc['isOwningSide'] &&
                 $assoc['type'] == ClassMetadata::MANY_TO_MANY &&
                 $val instanceof PersistentCollection &&
-                $val->isDirty()) {
-
+                $val->isDirty()
+            ) {
                 $this->entityChangeSets[$oid]   = [];
-                $this->originalEntityData[$oid] = $actualData;
+                $this->updateOriginalEntityData($class, $oid, $actualData);
                 $this->entityUpdates[$oid]      = $entity;
             }
         }
+    }
+
+    /**
+     * Updates original entity data with new data.
+     * Should be called after computing changesets to re-set originalEntityData with actual data.
+     * Preserves id stored in original entity data, which is messing from actual data.
+     *
+     * Should only be called when original data was present before computing change set,
+     * which means that entity was persisted before and contains valid id.
+     * In other cases simply `$this->originalEntityData[$oid] = $actualData;` is just fine.
+     *
+     * @param ClassMetadata $metadata
+     * @param string $oid
+     * @param array $actualData
+     */
+    private function updateOriginalEntityData(ClassMetadata $metadata, string $oid, array $actualData)
+    {
+        if ($metadata->isIdGeneratorIdentity()) {
+            $originalData = $this->originalEntityData[$oid];
+            foreach ($metadata->getIdentifier() as $identifier) {
+                if (isset($originalData[$identifier])) {
+                    $actualData[$identifier] = $originalData[$identifier];
+                }
+            }
+        }
+        $this->originalEntityData[$oid] = $actualData;
     }
 
     /**
@@ -1006,6 +1033,10 @@ class UnitOfWork implements PropertyChangedListener
             throw ORMInvalidArgumentException::entityNotManaged($entity);
         }
 
+        if ( ! isset($this->originalEntityData[$oid])) {
+            throw new \RuntimeException('Cannot call recomputeSingleEntityChangeSet before computeChangeSet on an entity.');
+        }
+
         // skip if change tracking is "NOTIFY"
         if ($class->isChangeTrackingNotify()) {
             return;
@@ -1020,13 +1051,16 @@ class UnitOfWork implements PropertyChangedListener
         foreach ($class->reflFields as $name => $refProp) {
             if (( ! $class->isIdentifier($name) || ! $class->isIdGeneratorIdentity())
                 && ($name !== $class->versionField)
-                && ! $class->isCollectionValuedAssociation($name)) {
+                && (
+                    ! $class->isCollectionValuedAssociation($name)
+                    || (
+                        isset($this->originalEntityData[$oid][$name])
+                        && $this->originalEntityData[$oid][$name] === $refProp->getValue($entity)
+                    )
+                )
+            ) {
                 $actualData[$name] = $refProp->getValue($entity);
             }
-        }
-
-        if ( ! isset($this->originalEntityData[$oid])) {
-            throw new \RuntimeException('Cannot call recomputeSingleEntityChangeSet before computeChangeSet on an entity.');
         }
 
         $originalData = $this->originalEntityData[$oid];
@@ -1047,7 +1081,7 @@ class UnitOfWork implements PropertyChangedListener
                 $this->entityChangeSets[$oid] = $changeSet;
                 $this->entityUpdates[$oid]    = $entity;
             }
-            $this->originalEntityData[$oid] = $actualData;
+            $this->updateOriginalEntityData($class, $oid, $actualData);
         }
     }
 
