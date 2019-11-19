@@ -86,7 +86,7 @@ class YamlMappingDriverTest extends AbstractMappingDriverTest
     public function testDeprecation() : void
     {
         $this->createClassMetadata(DDC2069Entity::class);
-        $this->expectDeprecationMessage('YAML mapping driver is deprecated and will be removed in Doctrine 3.0, please migrate to annotation or XML driver.');
+        $this->expectDeprecationMessage('YAML mapping driver is deprecated and will be removed in Doctrine ORM 3.0, please migrate to annotation or XML driver.');
     }
 
 }
