@@ -424,10 +424,18 @@ class UnitOfWork implements PropertyChangedListener
                 }
             }
 
-            $conn->commit();
+            // Commit failed silently
+            if ( ! $conn->commit()) {
+                $object = is_object($entity) ? $entity : null;
+
+                throw new OptimisticLockException('Commit failed', $object);
+            }
         } catch (Throwable $e) {
             $this->em->close();
-            $conn->rollBack();
+
+            if ($conn->isTransactionActive()) {
+                $conn->rollBack();
+            }
 
             $this->afterTransactionRolledBack();
 
