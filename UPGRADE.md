@@ -10,6 +10,14 @@ Method `Doctrine\ORM\AbstractQuery#useResultCache()` which could be used for bot
 To optimize DB interaction, `Doctrine\ORM\Tools\Pagination\Paginator` no longer fetches identifiers to be able to
 perform the pagination with join collections when max results isn't set in the query.
 
+## Deprecated number unaware `Doctrine\ORM\Mapping\UnderscoreNamingStrategy`
+
+In the last patch of the `v2.6.x` series, we fixed a bug that was not converting names properly when they had numbers
+(e.g.: `base64Encoded` was wrongly converted to `base64encoded` instead of `base64_encoded`).
+
+In order to not break BC we've introduced a way to enable the fixed behavior using a boolean constructor argument. This
+argument will be removed in 3.0 and the default behavior will be the fixed one.
+
 ## Deprecated: `Doctrine\ORM\AbstractQuery#useResultCache()`	
 
 Method `Doctrine\ORM\AbstractQuery#useResultCache()` is deprecated because it is split into `enableResultCache()`
