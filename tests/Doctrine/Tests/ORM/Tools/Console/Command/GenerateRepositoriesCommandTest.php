@@ -172,7 +172,7 @@ class GenerateRepositoriesCommandTest extends OrmFunctionalTestCase
             ]
         );
 
-        self::assertContains('Command orm:generate-repositories is deprecated and will be removed in Doctrine 3.0.', $tester->getDisplay());
+        self::assertContains('Command orm:generate-repositories is deprecated and will be removed in Doctrine ORM 3.0.', $tester->getDisplay());
         self::assertContains('[OK] No Metadata Classes to process.', $tester->getDisplay());
     }
 }

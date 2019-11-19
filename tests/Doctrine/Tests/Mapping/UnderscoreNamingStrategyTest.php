@@ -16,7 +16,7 @@ final class UnderscoreNamingStrategyTest extends TestCase
     /** @test */
     public function checkDeprecationMessage() : void
     {
-        $this->expectDeprecationMessage('Creating Doctrine\ORM\Mapping\UnderscoreNamingStrategy without making it number aware is deprecated and will be removed in Doctrine 3.0.');
+        $this->expectDeprecationMessage('Creating Doctrine\ORM\Mapping\UnderscoreNamingStrategy without making it number aware is deprecated and will be removed in Doctrine ORM 3.0.');
         new UnderscoreNamingStrategy(CASE_LOWER, false);
     }
 }

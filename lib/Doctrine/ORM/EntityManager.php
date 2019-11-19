@@ -358,7 +358,7 @@ use function trigger_error;
     {
         if ($entity !== null) {
             @trigger_error(
-                'Calling ' . __METHOD__ . '() with any arguments to flush specific entities is deprecated and will not be supported in Doctrine 3.0.',
+                'Calling ' . __METHOD__ . '() with any arguments to flush specific entities is deprecated and will not be supported in Doctrine ORM 3.0.',
                 E_USER_DEPRECATED
             );
         }
@@ -558,7 +558,7 @@ use function trigger_error;
 
         if ($entityName !== null) {
             @trigger_error(
-                'Calling ' . __METHOD__ . '() with any arguments to clear specific entities is deprecated and will not be supported in Doctrine 3.0.',
+                'Calling ' . __METHOD__ . '() with any arguments to clear specific entities is deprecated and will not be supported in Doctrine ORM 3.0.',
                 E_USER_DEPRECATED
             );
         }
@@ -670,7 +670,7 @@ use function trigger_error;
      */
     public function detach($entity)
     {
-        @trigger_error('Method ' . __METHOD__ . '() is deprecated and will be removed in Doctrine 3.0.', E_USER_DEPRECATED);
+        @trigger_error('Method ' . __METHOD__ . '() is deprecated and will be removed in Doctrine ORM 3.0.', E_USER_DEPRECATED);
 
         if ( ! is_object($entity)) {
             throw ORMInvalidArgumentException::invalidObject('EntityManager#detach()', $entity);
@@ -695,7 +695,7 @@ use function trigger_error;
      */
     public function merge($entity)
     {
-        @trigger_error('Method ' . __METHOD__ . '() is deprecated and will be removed in Doctrine 3.0.', E_USER_DEPRECATED);
+        @trigger_error('Method ' . __METHOD__ . '() is deprecated and will be removed in Doctrine ORM 3.0.', E_USER_DEPRECATED);
 
         if ( ! is_object($entity)) {
             throw ORMInvalidArgumentException::invalidObject('EntityManager#merge()', $entity);
@@ -711,7 +711,7 @@ use function trigger_error;
      */
     public function copy($entity, $deep = false)
     {
-        @trigger_error('Method ' . __METHOD__ . '() is deprecated and will be removed in Doctrine 3.0.', E_USER_DEPRECATED);
+        @trigger_error('Method ' . __METHOD__ . '() is deprecated and will be removed in Doctrine ORM 3.0.', E_USER_DEPRECATED);
 
         throw new \BadMethodCallException("Not implemented.");
     }

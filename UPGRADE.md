@@ -40,7 +40,7 @@ Whole Doctrine\ORM\Tools\Export namespace with all its members have been depreca
 
 ## Deprecated `Doctrine\ORM\Proxy\Proxy` marker interface
 
-Proxy objects in Doctrine 3.0 will no longer implement `Doctrine\ORM\Proxy\Proxy` nor
+Proxy objects in Doctrine ORM 3.0 will no longer implement `Doctrine\ORM\Proxy\Proxy` nor
 `Doctrine\Common\Persistence\Proxy`: instead, they implement
 `ProxyManager\Proxy\GhostObjectInterface`.
 
@@ -57,7 +57,7 @@ These methods have been deprecated:
 
 ## Deprecated `Doctrine\ORM\Version`
 
-The `Doctrine\ORM\Version` class is now deprecated and will be removed in Doctrine 3.0:
+The `Doctrine\ORM\Version` class is now deprecated and will be removed in Doctrine ORM 3.0:
 please refrain from checking the ORM version at runtime or use
 [ocramius/package-versions](https://github.com/Ocramius/PackageVersions/).
 
@@ -87,7 +87,7 @@ restful operations, you should look at alternatives such as [JMSSerializer](http
 
 ## Extending `EntityManager` is deprecated
 
-Final keyword will be added to the `EntityManager::class` in Doctrine 3.0 in order to ensure that EntityManager
+Final keyword will be added to the `EntityManager::class` in Doctrine ORM 3.0 in order to ensure that EntityManager
  is not used as valid extension point. Valid extension point should be EntityManagerInterface.
 
 ## Deprecated `EntityManager#clear($entityName)`

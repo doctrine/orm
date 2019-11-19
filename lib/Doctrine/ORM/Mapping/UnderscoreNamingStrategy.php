@@ -62,7 +62,7 @@ class UnderscoreNamingStrategy implements NamingStrategy
     {
         if (! $numberAware) {
             @trigger_error(
-                'Creating ' . self::class . ' without making it number aware is deprecated and will be removed in Doctrine 3.0.',
+                'Creating ' . self::class . ' without making it number aware is deprecated and will be removed in Doctrine ORM 3.0.',
                 E_USER_DEPRECATED
             );
         }

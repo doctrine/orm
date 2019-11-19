@@ -19,6 +19,7 @@
 
 namespace Doctrine\ORM\Tools\Export;
 
+use const E_USER_DEPRECATED;
 use function trigger_error;
 
 /**
@@ -46,7 +47,7 @@ class ClassMetadataExporter
 
     public function __construct()
     {
-        @trigger_error(self::class . ' is deprecated and will be removed in Doctrine 3.0', E_USER_DEPRECATED);
+        @trigger_error(self::class . ' is deprecated and will be removed in Doctrine ORM 3.0', E_USER_DEPRECATED);
     }
 
     /**

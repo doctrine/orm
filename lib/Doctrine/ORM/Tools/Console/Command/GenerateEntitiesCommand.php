@@ -89,7 +89,7 @@ EOT
     protected function execute(InputInterface $input, OutputInterface $output)
     {
         $ui = new SymfonyStyle($input, $output);
-        $ui->warning('Command ' . $this->getName() . ' is deprecated and will be removed in Doctrine 3.0.');
+        $ui->warning('Command ' . $this->getName() . ' is deprecated and will be removed in Doctrine ORM 3.0.');
 
         $em = $this->getHelper('em')->getEntityManager();
 

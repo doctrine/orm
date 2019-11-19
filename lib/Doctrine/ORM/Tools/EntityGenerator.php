@@ -23,6 +23,7 @@ use Doctrine\Common\Collections\Collection;
 use Doctrine\Common\Inflector\Inflector;
 use Doctrine\DBAL\Types\Type;
 use Doctrine\ORM\Mapping\ClassMetadataInfo;
+use const E_USER_DEPRECATED;
 use function str_replace;
 use function trigger_error;
 
@@ -338,7 +339,7 @@ public function __construct(<params>)
      */
     public function __construct()
     {
-        @trigger_error(self::class . ' is deprecated and will be removed in Doctrine 3.0', E_USER_DEPRECATED);
+        @trigger_error(self::class . ' is deprecated and will be removed in Doctrine ORM 3.0', E_USER_DEPRECATED);
 
         if (version_compare(\Doctrine\Common\Version::VERSION, '2.2.0-DEV', '>=')) {
             $this->annotationsPrefix = 'ORM\\';
