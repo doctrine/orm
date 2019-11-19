@@ -309,6 +309,15 @@ class EntityManagerTest extends OrmTestCase
         $this->assertFalse($this->_em->contains($entity));
     }
 
+    public function testDeprecatedClearWithArguments() : void
+    {
+        $entity = new Country(456, 'United Kingdom');
+        $this->_em->persist($entity);
+
+        $this->expectDeprecationMessage('Calling Doctrine\ORM\EntityManager::clear() with any arguments to clear specific entities is deprecated and will not be supported in Doctrine 3.0.');
+        $this->_em->clear(Country::class);
+    }
+
     public function testDeprecatedFlushWithArguments() : void
     {
         $entity = new Country(456, 'United Kingdom');

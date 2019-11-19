@@ -22,12 +22,14 @@ namespace Doctrine\ORM\Mapping;
 
 use const CASE_LOWER;
 use const CASE_UPPER;
+use const E_USER_DEPRECATED;
 use function preg_replace;
 use function strpos;
 use function strrpos;
 use function strtolower;
 use function strtoupper;
 use function substr;
+use function trigger_error;
 
 /**
  * Naming strategy implementing the underscore naming convention.
@@ -58,6 +60,13 @@ class UnderscoreNamingStrategy implements NamingStrategy
      */
     public function __construct($case = CASE_LOWER, bool $numberAware = false)
     {
+        if (! $numberAware) {
+            @trigger_error(
+                'Creating ' . self::class . ' without making it number aware is deprecated and will be removed in Doctrine 3.0.',
+                E_USER_DEPRECATED
+            );
+        }
+
         $this->case    = $case;
         $this->pattern = $numberAware ? self::NUMBER_AWARE_PATTERN : self::DEFAULT_PATTERN;
     }
