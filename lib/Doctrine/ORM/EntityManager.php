@@ -29,6 +29,7 @@ use Doctrine\ORM\Proxy\ProxyFactory;
 use Doctrine\ORM\Query\FilterCollection;
 use Doctrine\Common\Util\ClassUtils;
 use Throwable;
+use const E_USER_DEPRECATED;
 use function trigger_error;
 
 /**
@@ -553,6 +554,13 @@ use function trigger_error;
     {
         if (null !== $entityName && ! is_string($entityName)) {
             throw ORMInvalidArgumentException::invalidEntityName($entityName);
+        }
+
+        if ($entityName !== null) {
+            @trigger_error(
+                'Calling ' . __METHOD__ . '() with any arguments to clear specific entities is deprecated and will not be supported in Doctrine 3.0.',
+                E_USER_DEPRECATED
+            );
         }
 
         $this->unitOfWork->clear(

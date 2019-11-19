@@ -82,6 +82,14 @@ restful operations, you should look at alternatives such as [JMSSerializer](http
 Final keyword will be added to the `EntityManager::class` in Doctrine 3.0 in order to ensure that EntityManager
  is not used as valid extension point. Valid extension point should be EntityManagerInterface.
 
+## Deprecated `EntityManager#clear($entityName)`
+
+If your code relies on clearing a single entity type via `EntityManager#clear($entityName)`,
+the signature has been changed to `EntityManager#clear()`.
+
+The main reason is that partial clears caused multiple issues with data integrity
+in the managed entity graph, which was constantly spawning more edge-case bugs/scenarios.
+
 ## Deprecated `EntityManager#flush($entity)` and `EntityManager#flush($entities)`
 
 If your code relies on single entity flushing optimisations via
