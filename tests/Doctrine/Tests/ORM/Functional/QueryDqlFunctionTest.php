@@ -353,7 +353,7 @@ class QueryDqlFunctionTest extends OrmFunctionalTestCase
 
         return [
             'year'   => ['year', 1, $secondsInDay],
-            'month'  => ['month', 1, $secondsInDay],
+            'month'  => ['month', 1, 4 * $secondsInDay],
             'week'   => ['week', 1, $secondsInDay],
             'day'    => ['day', 2, $secondsInDay],
             'hour'   => ['hour', 1, 3600],
