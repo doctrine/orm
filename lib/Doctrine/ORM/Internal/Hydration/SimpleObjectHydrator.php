@@ -104,6 +104,8 @@ class SimpleObjectHydrator extends AbstractHydrator
                 throw HydrationException::invalidDiscriminatorValue($sqlResult[$discrColumnName], array_keys($discrMap));
             }
 
+            $this->class->discriminatorValue = $sqlResult[$discrColumnName];
+
             $entityName = $discrMap[$sqlResult[$discrColumnName]];
 
             unset($sqlResult[$discrColumnName]);
@@ -117,7 +119,12 @@ class SimpleObjectHydrator extends AbstractHydrator
 
             $cacheKeyInfo = $this->hydrateColumnInfo($column);
 
-            if ( ! $cacheKeyInfo) {
+            if ( ! $cacheKeyInfo || ($this->class->discriminatorValue &&
+                    !$cacheKeyInfo['isIdentifier'] &&
+                    isset($cacheKeyInfo['discriminatorValue']) &&
+                    $this->class->discriminatorValue !== $cacheKeyInfo['discriminatorValue'] &&
+                    !in_array($this->class->discriminatorValue, $cacheKeyInfo['discriminatorValues']))
+            ) {
                 continue;
             }
 
