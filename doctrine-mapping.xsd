@@ -207,6 +207,13 @@
     </xs:restriction>
   </xs:simpleType>
 
+  <xs:simpleType name="columnname" id="columnname">
+    <xs:restriction base="xs:token">
+      <xs:pattern value="[a-zA-Z0-9\-_]+|`[a-zA-Z0-9\-_]+`" id="columnname.pattern">
+      </xs:pattern>
+    </xs:restriction>
+  </xs:simpleType>
+
   <xs:complexType name="option" mixed="true">
     <xs:sequence minOccurs="0" maxOccurs="unbounded">
       <xs:element name="option" type="orm:option"/>
@@ -296,7 +303,7 @@
     </xs:sequence>
     <xs:attribute name="name" type="xs:NMTOKEN" use="required" />
     <xs:attribute name="type" type="xs:NMTOKEN" default="string" />
-    <xs:attribute name="column" type="xs:NMTOKEN" />
+    <xs:attribute name="column" type="orm:columnname" />
     <xs:attribute name="length" type="xs:NMTOKEN" />
     <xs:attribute name="unique" type="xs:boolean" default="false" />
     <xs:attribute name="nullable" type="xs:boolean" default="false" />
@@ -398,7 +405,7 @@
     </xs:sequence>
     <xs:attribute name="name" type="xs:NMTOKEN" use="required" />
     <xs:attribute name="type" type="xs:NMTOKEN" />
-    <xs:attribute name="column" type="xs:NMTOKEN" />
+    <xs:attribute name="column" type="orm:columnname" />
     <xs:attribute name="length" type="xs:NMTOKEN" />
     <xs:attribute name="association-key" type="xs:boolean" default="false" />
     <xs:attribute name="column-definition" type="xs:string" />
@@ -442,7 +449,7 @@
       <xs:any minOccurs="0" maxOccurs="unbounded" namespace="##other"/>
     </xs:sequence>
     <xs:attribute name="name" type="xs:NMTOKEN" use="optional" />
-    <xs:attribute name="referenced-column-name" type="xs:NMTOKEN" use="optional" default="id" />
+    <xs:attribute name="referenced-column-name" type="orm:columnname" use="optional" default="id" />
     <xs:attribute name="unique" type="xs:boolean" default="false" />
     <xs:attribute name="nullable" type="xs:boolean" default="true" />
     <xs:attribute name="on-delete" type="orm:fk-action" />
@@ -608,7 +615,7 @@
       <xs:any minOccurs="0" maxOccurs="unbounded" namespace="##other"/>
     </xs:sequence>
     <xs:attribute name="type" type="xs:NMTOKEN" default="string" />
-    <xs:attribute name="column" type="xs:NMTOKEN" />
+    <xs:attribute name="column" type="orm:columnname" />
     <xs:attribute name="length" type="xs:NMTOKEN" />
     <xs:attribute name="unique" type="xs:boolean" default="false" />
     <xs:attribute name="nullable" type="xs:boolean" default="false" />
