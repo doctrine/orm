@@ -13,6 +13,7 @@ use Doctrine\Tests\Models\DDC2372\DDC2372Admin;
 use Doctrine\Tests\Models\DDC2372\DDC2372User;
 use Doctrine\Tests\OrmTestCase;
 use Doctrine\Tests\VerifyDeprecations;
+use \ReflectionClass;
 
 class EntityGeneratorTest extends OrmTestCase
 {
@@ -340,8 +341,8 @@ class EntityGeneratorTest extends OrmTestCase
 
         $this->assertFileExists($this->_tmpDir . '/' . $this->_namespace . '/EntityGeneratorBook.php~');
 
-        $book = $this->newInstance($metadata);
-        $reflClass = new \ReflectionClass($metadata->name);
+        $book      = $this->newInstance($metadata);
+        $reflClass = new ReflectionClass($metadata->name);
 
         $this->assertNotSame($book->getfoo(), '1');
         $this->assertSame($book->getFoo(), true);
