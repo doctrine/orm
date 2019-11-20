@@ -538,25 +538,16 @@ class ManyToManyPersister extends AbstractCollectionPersister
     {
         $params      = [];
         $mapping     = $collection->getMapping();
-        $isComposite = count($mapping['joinTableColumns']) > 2;
 
         $identifier1 = $this->uow->getEntityIdentifier($collection->getOwner());
         $identifier2 = $this->uow->getEntityIdentifier($element);
 
-        $class1 = $class2 = null;
-        if ($isComposite) {
-            $class1 = $this->em->getClassMetadata(get_class($collection->getOwner()));
-            $class2 = $collection->getTypeClass();
-        }
+        $class1 = $this->em->getClassMetadata(get_class($collection->getOwner()));
+        $class2 = $collection->getTypeClass();
+
 
         foreach ($mapping['joinTableColumns'] as $joinTableColumn) {
             $isRelationToSource = isset($mapping['relationToSourceKeyColumns'][$joinTableColumn]);
-
-            if ( ! $isComposite) {
-                $params[] = $isRelationToSource ? array_pop($identifier1) : array_pop($identifier2);
-
-                continue;
-            }
 
             if ($isRelationToSource) {
                 $params[] = $identifier1[$class1->getFieldForColumn($mapping['relationToSourceKeyColumns'][$joinTableColumn])];
