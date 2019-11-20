@@ -344,8 +344,7 @@ class EntityGeneratorTest extends OrmTestCase
         $book      = $this->newInstance($metadata);
         $reflClass = new ReflectionClass($metadata->name);
 
-        $this->assertNotSame($book->getfoo(), '1');
-        $this->assertSame($book->getFoo(), true);
+        $this->assertTrue($book->getfoo());
     }
 
     public function testEntityUpdatingWorks()
