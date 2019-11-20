@@ -424,7 +424,7 @@
 
   <xs:simpleType name="fqcn" id="fqcn">
     <xs:restriction base="xs:token">
-      <xs:pattern value="[a-zA-Z_u01-uff][a-zA-Z0-9_u01-uff]+" id="fqcn.pattern">
+      <xs:pattern value="([a-zA-Z_&#x7F;][a-zA-Z0-9_&#x7F;]*\\)*[a-zA-Z_&#x7F;][a-zA-Z0-9_&#x7F;]*" id="fqcn.pattern">
       </xs:pattern>
     </xs:restriction>
   </xs:simpleType>
