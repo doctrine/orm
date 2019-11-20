@@ -2526,6 +2526,11 @@ class Parser
                 case '(':
                     // Peeks beyond the matched closing parenthesis.
                     $token = $this->peekBeyondClosingParenthesis(false);
+                    
+                    if (null === $token 
+                        || in_array($token['type'], [Lexer::T_AND, Lexer::T_OR, Lexer::T_CLOSE_PARENTHESIS], true)) {
+                        return $this->CustomBooleanFunctionDeclaration();
+                    }
 
                     if ($token['type'] === Lexer::T_NOT) {
                         $token = $this->lexer->peek();
@@ -2592,6 +2597,20 @@ class Parser
         }
 
         return $this->ComparisonExpression();
+    }
+    
+    public function CustomBooleanFunctionDeclaration()
+    {
+        $token = $this->lexer->lookahead;
+        $funcName = strtolower($token['value']);
+        // Check for custom functions afterwards
+        $config = $this->em->getConfiguration();
+
+        if ($config->getCustomBooleanFunction($funcName) !== null) {
+            return $this->CustomFunctionsReturningBoolean();
+        }
+        
+        $this->syntaxError('known custom boolean function', $token);
     }
 
     /**
@@ -3527,6 +3546,24 @@ class Parser
         // getCustomStringFunction is case-insensitive
         $functionName  = $this->lexer->lookahead['value'];
         $functionClass = $this->em->getConfiguration()->getCustomStringFunction($functionName);
+
+        $function = is_string($functionClass)
+            ? new $functionClass($functionName)
+            : call_user_func($functionClass, $functionName);
+
+        $function->parse($this);
+
+        return $function;
+    }
+
+    /**
+     * @return Functions\FunctionNode
+     */
+    public function CustomFunctionsReturningBoolean(): Functions\FunctionNode
+    {
+        // getCustomStringFunction is case-insensitive
+        $functionName  = $this->lexer->lookahead['value'];
+        $functionClass = $this->em->getConfiguration()->getCustomBooleanFunction($functionName);
 
         $function = is_string($functionClass)
             ? new $functionClass($functionName)

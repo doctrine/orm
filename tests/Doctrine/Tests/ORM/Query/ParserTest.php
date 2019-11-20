@@ -3,6 +3,7 @@
 namespace Doctrine\Tests\ORM\Query;
 
 use Doctrine\ORM\Query;
+use Doctrine\ORM\Query\AST\Functions\ConcatFunction;
 use Doctrine\ORM\Query\Lexer;
 use Doctrine\ORM\Query\Parser;
 use Doctrine\ORM\Query\QueryException;
@@ -98,6 +99,32 @@ class ParserTest extends OrmTestCase
 
         $parser->match($expectedToken);
     }
+    
+    public function testFunctionsOnWhereClause()
+    {
+        $parser = $this->createParser("WHERE SomeFunction('a', 'b')");
+        $sql    = $parser->WhereClause();
+        
+        $this->assertInstanceOf(ConcatFunction::class, $sql->conditionalExpression->simpleConditionalExpression);
+        
+        $parser = $this->createParser("WHERE SomeFunction('a', 'b') AND SomeFunction('a', 'b')");
+        $sql    = $parser->WhereClause();
+        
+        $this->assertInstanceOf(ConcatFunction::class, $sql->conditionalExpression->conditionalFactors[0]->simpleConditionalExpression);
+        $this->assertInstanceOf(ConcatFunction::class, $sql->conditionalExpression->conditionalFactors[1]->simpleConditionalExpression);
+
+        $parser = $this->createParser("WHERE SomeFunction('a', 'b') OR SomeFunction('a', 'b')");
+        $sql    = $parser->WhereClause();
+
+        $this->assertInstanceOf(ConcatFunction::class, $sql->conditionalExpression->conditionalTerms[0]->simpleConditionalExpression);
+        $this->assertInstanceOf(ConcatFunction::class, $sql->conditionalExpression->conditionalTerms[1]->simpleConditionalExpression);
+
+        $parser = $this->createParser("WHERE (SomeFunction('a', 'b') OR SomeFunction('a', 'b'))");
+        $sql    = $parser->WhereClause();
+        
+        $this->assertInstanceOf(ConcatFunction::class, $sql->conditionalExpression->conditionalExpression->conditionalTerms[0]->simpleConditionalExpression);
+        $this->assertInstanceOf(ConcatFunction::class, $sql->conditionalExpression->conditionalExpression->conditionalTerms[1]->simpleConditionalExpression);
+    }
 
     public function validMatches()
     {
@@ -136,7 +163,13 @@ class ParserTest extends OrmTestCase
 
     private function createParser($dql)
     {
-        $query = new Query($this->_getTestEntityManager());
+        $manager = $this->_getTestEntityManager();
+        
+        $manager->getConfiguration()->addCustomBooleanFunction('SomeFunction', function () {
+            return new ConcatFunction('SomeFunction');
+        });
+        
+        $query = new Query($manager);
         $query->setDQL($dql);
 
         $parser = new Parser($query);
