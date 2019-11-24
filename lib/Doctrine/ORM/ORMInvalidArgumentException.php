@@ -154,7 +154,7 @@ class ORMInvalidArgumentException extends InvalidArgumentException
      */
     public static function entityNotManaged($entity)
     {
-        return new self('Entity ' . self::objToStr($entity) . ' is not managed. An entity is managed if its fetched ' .
+        return new self('Entity ' . self::objToStr($entity) . ' is not managed. An entity is managed if it is fetched ' .
             'from the database or registered as new through EntityManager#persist');
     }
 
