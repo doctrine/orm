@@ -1647,7 +1647,7 @@ From, Join and Index by
     RangeVariableDeclaration                   ::= AbstractSchemaName ["AS"] AliasIdentificationVariable
     JoinAssociationDeclaration                 ::= JoinAssociationPathExpression ["AS"] AliasIdentificationVariable [IndexBy]
     Join                                       ::= ["LEFT" ["OUTER"] | "INNER"] "JOIN" (JoinAssociationDeclaration | RangeVariableDeclaration) ["WITH" ConditionalExpression]
-    IndexBy                                    ::= "INDEX" "BY" StateFieldPathExpression
+    IndexBy                                    ::= "INDEX" "BY" SingleValuedPathExpression
 
 Select Expressions
 ~~~~~~~~~~~~~~~~~~

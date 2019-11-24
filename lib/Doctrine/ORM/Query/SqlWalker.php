@@ -883,9 +883,38 @@ class SqlWalker implements TreeWalker
      */
     public function walkIndexBy($indexBy)
     {
-        $pathExpression = $indexBy->simpleStateFieldPathExpression;
-        $alias          = $pathExpression->identificationVariable;
-        $field          = $pathExpression->field;
+        $pathExpr = $indexBy->singleValuedPathExpression;
+        $alias    = $pathExpr->identificationVariable;
+
+        /** @var Query\AST\PathExpression $pathExpr */
+        switch ($pathExpr->type) {
+            case AST\PathExpression::TYPE_STATE_FIELD:
+                $field = $pathExpr->field;
+                break;
+
+            case AST\PathExpression::TYPE_SINGLE_VALUED_ASSOCIATION:
+                // 1- the owning side:
+                //    Just use the foreign key, i.e. u.group_id
+                $fieldName   = $pathExpr->field;
+                $class       = $this->queryComponents[$alias]['metadata'];
+                $association = $class->getProperty($fieldName);
+
+                if (! $association->isOwningSide()) {
+                    throw QueryException::associationPathInverseSideNotSupported($pathExpr);
+                }
+
+                $joinColumns = $association->getJoinColumns();
+
+                if (count($joinColumns) > 1) {
+                    throw QueryException::associationPathCompositeKeyNotSupported();
+                }
+
+                $field = reset($joinColumns)->getColumnName();
+                break;
+
+            default:
+                throw QueryException::invalidPathExpression($pathExpr);
+        }
 
         if (isset($this->scalarFields[$alias][$field])) {
             $this->rsm->addIndexByScalar($this->scalarFields[$alias][$field]);

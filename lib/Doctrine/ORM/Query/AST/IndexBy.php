@@ -5,19 +5,19 @@ declare(strict_types=1);
 namespace Doctrine\ORM\Query\AST;
 
 /**
- * IndexBy ::= "INDEX" "BY" SimpleStateFieldPathExpression
+ * IndexBy ::= "INDEX" "BY" SingleValuedPathExpression
  */
 class IndexBy extends Node
 {
     /** @var PathExpression */
-    public $simpleStateFieldPathExpression;
+    public $singleValuedPathExpression;
 
     /**
-     * @param PathExpression $simpleStateFieldPathExpression
+     * @param PathExpression $singleValuedPathExpression
      */
-    public function __construct($simpleStateFieldPathExpression)
+    public function __construct($singleValuedPathExpression)
     {
-        $this->simpleStateFieldPathExpression = $simpleStateFieldPathExpression;
+        $this->singleValuedPathExpression = $singleValuedPathExpression;
     }
 
     /**
