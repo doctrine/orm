@@ -603,6 +603,13 @@ then phonenumber-id:
               ...
           'nameUpper' => string 'JWAGE' (length=5)
 
+You can also index by a to-one association, which will use the id of
+the associated entity (the join column) as the key in the result set:
+
+.. code-block:: sql
+
+    SELECT p, u FROM Participant INDEX BY p.user JOIN p.user u WHERE p.event = 3
+
 UPDATE queries
 --------------
 
@@ -1615,7 +1622,7 @@ From, Join and Index by
     RangeVariableDeclaration                   ::= AbstractSchemaName ["AS"] AliasIdentificationVariable
     JoinAssociationDeclaration                 ::= JoinAssociationPathExpression ["AS"] AliasIdentificationVariable [IndexBy]
     Join                                       ::= ["LEFT" ["OUTER"] | "INNER"] "JOIN" (JoinAssociationDeclaration | RangeVariableDeclaration) ["WITH" ConditionalExpression]
-    IndexBy                                    ::= "INDEX" "BY" StateFieldPathExpression
+    IndexBy                                    ::= "INDEX" "BY" SingleValuedPathExpression
 
 Select Expressions
 ~~~~~~~~~~~~~~~~~~

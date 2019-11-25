@@ -27,6 +27,8 @@ use Doctrine\ORM\OptimisticLockException;
 use Doctrine\ORM\Query;
 use Doctrine\ORM\Utility\HierarchyDiscriminatorResolver;
 use Doctrine\ORM\Utility\PersisterHelper;
+use function count;
+use function reset;
 use function trim;
 
 /**
@@ -864,9 +866,39 @@ class SqlWalker implements TreeWalker
      */
     public function walkIndexBy($indexBy)
     {
-        $pathExpression = $indexBy->simpleStateFieldPathExpression;
+        $pathExpression = $indexBy->singleValuedPathExpression;
         $alias          = $pathExpression->identificationVariable;
-        $field          = $pathExpression->field;
+
+        switch ($pathExpression->type) {
+            case AST\PathExpression::TYPE_STATE_FIELD:
+                $field = $pathExpression->field;
+                break;
+
+            case AST\PathExpression::TYPE_SINGLE_VALUED_ASSOCIATION:
+                // Just use the foreign key, i.e. u.group_id
+                $fieldName = $pathExpression->field;
+                $class     = $this->queryComponents[$alias]['metadata'];
+
+                if (isset($class->associationMappings[$fieldName]['inherited'])) {
+                    $class = $this->em->getClassMetadata($class->associationMappings[$fieldName]['inherited']);
+                }
+
+                $association = $class->associationMappings[$fieldName];
+
+                if (! $association['isOwningSide']) {
+                    throw QueryException::associationPathInverseSideNotSupported($pathExpression);
+                }
+
+                if (count($association['sourceToTargetKeyColumns']) > 1) {
+                    throw QueryException::associationPathCompositeKeyNotSupported();
+                }
+
+                $field = reset($association['targetToSourceKeyColumns']);
+                break;
+
+            default:
+                throw QueryException::invalidPathExpression($pathExpression);
+        }
 
         if (isset($this->scalarFields[$alias][$field])) {
             $this->rsm->addIndexByScalar($this->scalarFields[$alias][$field]);

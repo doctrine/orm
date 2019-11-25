@@ -1925,7 +1925,7 @@ class Parser
     }
 
     /**
-     * IndexBy ::= "INDEX" "BY" StateFieldPathExpression
+     * IndexBy ::= "INDEX" "BY" SingleValuedPathExpression
      *
      * @return \Doctrine\ORM\Query\AST\IndexBy
      */
@@ -1933,7 +1933,7 @@ class Parser
     {
         $this->match(Lexer::T_INDEX);
         $this->match(Lexer::T_BY);
-        $pathExpr = $this->StateFieldPathExpression();
+        $pathExpr = $this->SingleValuedPathExpression();
 
         // Add the INDEX BY info to the query component
         $this->queryComponents[$pathExpr->identificationVariable]['map'] = $pathExpr->field;
