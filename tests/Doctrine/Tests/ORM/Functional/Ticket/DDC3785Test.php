@@ -147,7 +147,7 @@ class DDC3785AssetIdType extends Type
     /**
      * {@inheritdoc}
      */
-    public function getSQLDeclaration(array $fieldDeclaration, AbstractPlatform $platform)
+    public function getSQLDeclaration(array $fieldDeclaration, AbstractPlatform $platform) : string
     {
         return $platform->getGuidTypeDeclarationSQL($fieldDeclaration);
     }
@@ -171,7 +171,7 @@ class DDC3785AssetIdType extends Type
     /**
      * {@inheritdoc}
      */
-    public function getName()
+    public function getName() : string
     {
         return 'ddc3785_asset_id';
     }

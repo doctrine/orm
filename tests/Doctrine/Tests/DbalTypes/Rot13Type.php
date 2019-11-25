@@ -55,7 +55,7 @@ class Rot13Type extends Type
      *
      * @return string
      */
-    public function getSQLDeclaration(array $fieldDeclaration, AbstractPlatform $platform)
+    public function getSQLDeclaration(array $fieldDeclaration, AbstractPlatform $platform) : string
     {
         return $platform->getVarcharTypeDeclarationSQL($fieldDeclaration);
     }
@@ -77,7 +77,7 @@ class Rot13Type extends Type
      *
      * @return string
      */
-    public function getName()
+    public function getName() : string
     {
         return 'rot13';
     }

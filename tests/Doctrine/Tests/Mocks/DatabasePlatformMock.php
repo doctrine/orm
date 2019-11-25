@@ -23,7 +23,7 @@ class DatabasePlatformMock extends AbstractPlatform
     /**
      * {@inheritdoc}
      */
-    public function prefersIdentityColumns()
+    public function prefersIdentityColumns() : bool
     {
         return $this->prefersIdentityColumns;
     }
@@ -31,7 +31,7 @@ class DatabasePlatformMock extends AbstractPlatform
     /**
      * {@inheritdoc}
      */
-    public function prefersSequences()
+    public function prefersSequences() : bool
     {
         return $this->prefersSequences;
     }
@@ -39,7 +39,7 @@ class DatabasePlatformMock extends AbstractPlatform
     /**
      * {@inheritdoc}
      */
-    public function getSequenceNextValSQL($sequenceName)
+    public function getSequenceNextValSQL($sequenceName) : string
     {
         return $this->sequenceNextValSql;
     }
@@ -47,49 +47,57 @@ class DatabasePlatformMock extends AbstractPlatform
     /**
      * {@inheritdoc}
      */
-    public function getBooleanTypeDeclarationSQL(array $field)
+    public function getBooleanTypeDeclarationSQL(array $columnDef) : string
     {
     }
 
     /**
      * {@inheritdoc}
      */
-    public function getIntegerTypeDeclarationSQL(array $field)
+    public function getIntegerTypeDeclarationSQL(array $columnDef) : string
     {
     }
 
     /**
      * {@inheritdoc}
      */
-    public function getBigIntTypeDeclarationSQL(array $field)
+    public function getBigIntTypeDeclarationSQL(array $columnDef) : string
     {
     }
 
     /**
      * {@inheritdoc}
      */
-    public function getSmallIntTypeDeclarationSQL(array $field)
+    public function getSmallIntTypeDeclarationSQL(array $columnDef) : string
     {
     }
 
     /**
      * {@inheritdoc}
      */
-    protected function _getCommonIntegerTypeDeclarationSQL(array $columnDef)
+    protected function _getCommonIntegerTypeDeclarationSQL(array $columnDef) : string
     {
     }
 
     /**
      * {@inheritdoc}
      */
-    public function getVarcharTypeDeclarationSQL(array $field)
+    public function getVarcharTypeDeclarationSQL(array $columnDef) : string
     {
     }
 
     /**
      * {@inheritdoc}
      */
-    public function getClobTypeDeclarationSQL(array $field)
+    public function getBlobTypeDeclarationSQL(array $columnDef) : string
+    {
+        throw DBALException::notSupported(__METHOD__);
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getClobTypeDeclarationSQL(array $columnDef) : string
     {
     }
 
@@ -128,7 +136,7 @@ class DatabasePlatformMock extends AbstractPlatform
     /**
      * {@inheritdoc}
      */
-    public function getName()
+    public function getName() : string
     {
         return 'mock';
     }
@@ -136,15 +144,15 @@ class DatabasePlatformMock extends AbstractPlatform
     /**
      * {@inheritdoc}
      */
-    protected function initializeDoctrineTypeMappings()
+    public function getCurrentDatabaseExpression() : string
     {
+        return '';
     }
 
     /**
      * {@inheritdoc}
      */
-    public function getBlobTypeDeclarationSQL(array $field)
+    protected function initializeDoctrineTypeMappings() : void
     {
-        throw DBALException::notSupported(__METHOD__);
     }
 }

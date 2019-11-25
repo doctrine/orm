@@ -14,7 +14,7 @@ class UpperCaseStringType extends StringType
     /**
      * {@inheritdoc}
      */
-    public function getName()
+    public function getName() : string
     {
         return self::NAME;
     }
@@ -22,7 +22,7 @@ class UpperCaseStringType extends StringType
     /**
      * {@inheritdoc}
      */
-    public function canRequireSQLConversion()
+    public function canRequireSQLConversion() : bool
     {
         return true;
     }
@@ -30,7 +30,7 @@ class UpperCaseStringType extends StringType
     /**
      * {@inheritdoc}
      */
-    public function convertToDatabaseValueSQL($sqlExpr, AbstractPlatform $platform)
+    public function convertToDatabaseValueSQL($sqlExpr, AbstractPlatform $platform) : string
     {
         return 'UPPER(' . $sqlExpr . ')';
     }
@@ -38,7 +38,7 @@ class UpperCaseStringType extends StringType
     /**
      * {@inheritdoc}
      */
-    public function convertToPHPValueSQL($sqlExpr, $platform)
+    public function convertToPHPValueSQL($sqlExpr, $platform) : string
     {
         return 'LOWER(' . $sqlExpr . ')';
     }
