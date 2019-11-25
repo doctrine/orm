@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Doctrine\Tests\Mocks;
 
 use Doctrine\DBAL\Driver\Statement;
+use Doctrine\DBAL\ParameterType;
 use IteratorAggregate;
 use function array_shift;
 use function current;
@@ -33,7 +34,7 @@ class HydratorMockStatement implements IteratorAggregate, Statement
     /**
      * {@inheritdoc}
      */
-    public function fetchAll($fetchMode = null, ...$args)
+    public function fetchAll(?int $fetchMode = null, ...$args) : array
     {
         return $this->resultSet;
     }
@@ -55,7 +56,7 @@ class HydratorMockStatement implements IteratorAggregate, Statement
     /**
      * {@inheritdoc}
      */
-    public function fetch($fetchMode = null, ...$args)
+    public function fetch(?int $fetchMode = null, ...$args)
     {
         $current = current($this->resultSet);
         next($this->resultSet);
@@ -66,30 +67,31 @@ class HydratorMockStatement implements IteratorAggregate, Statement
     /**
      * {@inheritdoc}
      */
-    public function closeCursor()
+    public function closeCursor() : void
     {
-        return true;
+        return;
     }
 
     /**
      * {@inheritdoc}
      */
-    public function bindValue($param, $value, $type = null)
-    {
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function bindParam($column, &$variable, $type = null, $length = null)
+    public function bindValue($param, $value, int $type = ParameterType::STRING) : void
     {
     }
 
     /**
      * {@inheritdoc}
      */
-    public function columnCount()
+    public function bindParam($column, &$variable, int $type = ParameterType::STRING, ?int $length = null) : void
     {
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function columnCount() : int
+    {
+        return 0;
     }
 
     /**
@@ -109,7 +111,7 @@ class HydratorMockStatement implements IteratorAggregate, Statement
     /**
      * {@inheritdoc}
      */
-    public function execute($params = null)
+    public function execute(?array $params = null) : void
     {
     }
 
@@ -131,7 +133,7 @@ class HydratorMockStatement implements IteratorAggregate, Statement
     /**
      * {@inheritdoc}
      */
-    public function setFetchMode($fetchMode, ...$args)
+    public function setFetchMode(int $fetchMode, ...$args) : void
     {
     }
 }

@@ -6,6 +6,7 @@ namespace Doctrine\Tests\Mocks;
 
 use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\Schema\AbstractSchemaManager;
+use Doctrine\DBAL\Schema\Column;
 
 /**
  * Mock class for AbstractSchemaManager.
@@ -20,7 +21,7 @@ class SchemaManagerMock extends AbstractSchemaManager
     /**
      * {@inheritdoc}
      */
-    protected function _getPortableTableColumnDefinition($tableColumn)
+    protected function _getPortableTableColumnDefinition(array $tableColumn) : Column
     {
     }
 }

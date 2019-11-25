@@ -29,7 +29,7 @@ class StatementArrayMock extends StatementMock
         return new ArrayIterator($this->result);
     }
 
-    public function columnCount()
+    public function columnCount() : int
     {
         $row = reset($this->result);
         if ($row) {
@@ -39,12 +39,12 @@ class StatementArrayMock extends StatementMock
         return 0;
     }
 
-    public function fetchAll($fetchMode = null, ...$args)
+    public function fetchAll(?int $fetchMode = null, ...$args) : array
     {
         return $this->result;
     }
 
-    public function fetch($fetchMode = null, ...$args)
+    public function fetch(?int $fetchMode = null, ...$args)
     {
         $current = current($this->result);
         next($this->result);
