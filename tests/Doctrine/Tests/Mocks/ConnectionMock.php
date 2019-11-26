@@ -12,7 +12,6 @@ use Doctrine\DBAL\Driver\ResultStatement;
 use Doctrine\DBAL\Driver\Statement;
 use Doctrine\DBAL\Platforms\AbstractPlatform;
 use Exception;
-use ReflectionClass;
 use function is_string;
 
 /**
@@ -33,7 +32,7 @@ class ConnectionMock extends Connection
     private $platformMock;
 
     /** @var string */
-    private $lastInsertId = 0;
+    private $lastInsertId = '0';
 
     /** @var array */
     private $inserts = [];

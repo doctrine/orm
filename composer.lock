@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "bbedda0a00e71069590b80eb0d93ba1c",
+    "content-hash": "8deb7f131b783b959cad9557d659230a",
     "packages": [
         {
             "name": "doctrine/annotations",
@@ -233,12 +233,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/doctrine/dbal.git",
-                "reference": "ab888962987575f26530f974c057c42903a50169"
+                "reference": "b4d076e341cda6aec25ff8a682dc9c93da1e00d5"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/doctrine/dbal/zipball/ab888962987575f26530f974c057c42903a50169",
-                "reference": "ab888962987575f26530f974c057c42903a50169",
+                "url": "https://api.github.com/repos/doctrine/dbal/zipball/b4d076e341cda6aec25ff8a682dc9c93da1e00d5",
+                "reference": "b4d076e341cda6aec25ff8a682dc9c93da1e00d5",
                 "shasum": ""
             },
             "require": {
@@ -3081,8 +3081,7 @@
     "prefer-lowest": false,
     "platform": {
         "php": "^7.2",
-        "ext-ctype": "*",
-        "ext-pdo": "*"
+        "ext-ctype": "*"
     },
     "platform-dev": []
 }

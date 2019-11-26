@@ -69,7 +69,6 @@ class HydratorMockStatement implements IteratorAggregate, Statement
      */
     public function closeCursor() : void
     {
-        return;
     }
 
     /**
