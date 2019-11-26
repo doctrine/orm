@@ -12,7 +12,7 @@ use Doctrine\DBAL\Schema\Identifier;
 use Doctrine\DBAL\Schema\Index;
 use Doctrine\DBAL\Schema\SchemaException;
 use Doctrine\DBAL\Schema\Table;
-use Doctrine\DBAL\Types\Type;
+use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping;
 use Doctrine\ORM\Sequencing\Generator;
 use InvalidArgumentException;
@@ -375,14 +375,14 @@ class DatabaseDriver implements MappingDriver
 
         // Type specific elements
         switch ($column->getType()->getName()) {
-            case Type::TARRAY:
-            case Type::BLOB:
-            case Type::GUID:
-            case Type::JSON_ARRAY:
-            case Type::OBJECT:
-            case Type::SIMPLE_ARRAY:
-            case Type::STRING:
-            case Type::TEXT:
+            case Types::ARRAY:
+            case Types::BLOB:
+            case Types::GUID:
+            case Types::JSON:
+            case Types::OBJECT:
+            case Types::SIMPLE_ARRAY:
+            case Types::STRING:
+            case Types::TEXT:
                 if ($column->getLength()) {
                     $fieldMetadata->setLength($column->getLength());
                 }
@@ -390,15 +390,15 @@ class DatabaseDriver implements MappingDriver
                 $options['fixed'] = $column->getFixed();
                 break;
 
-            case Type::DECIMAL:
-            case Type::FLOAT:
+            case Types::DECIMAL:
+            case Types::FLOAT:
                 $fieldMetadata->setScale($column->getScale());
                 $fieldMetadata->setPrecision($column->getPrecision());
                 break;
 
-            case Type::INTEGER:
-            case Type::BIGINT:
-            case Type::SMALLINT:
+            case Types::INTEGER:
+            case Types::BIGINT:
+            case Types::SMALLINT:
                 $options['unsigned'] = $column->getUnsigned();
                 break;
         }

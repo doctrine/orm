@@ -282,7 +282,7 @@ class SchemaTool
             if ($class->table->getIndexes()) {
                 foreach ($class->table->getIndexes() as $indexName => $indexData) {
                     $indexName = is_numeric($indexName) ? null : $indexName;
-                    $index     = new Index($indexName, $indexData['columns'], $indexData['unique'], $indexData['flags'], $indexData['options']);
+                    $index     = new Index($indexName, $indexData['columns'], $indexData['unique'], false, $indexData['flags'], $indexData['options']);
 
                     foreach ($table->getIndexes() as $tableIndexName => $tableIndex) {
                         if ($tableIndex->isFullfilledBy($index)) {
