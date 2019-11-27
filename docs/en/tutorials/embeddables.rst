@@ -79,6 +79,10 @@ In terms of your database schema, Doctrine will automatically inline all
 columns from the ``Address`` class into the table of the ``User`` class,
 just as if you had declared them directly there.
 
+.. note::
+
+    The Embeddable class must be specified as fully qualified (e.g. ``Embeddable\Address``). Relying on `use` and omitting the FQCN will not work.
+
 Initializing embeddables
 ------------------------
 
