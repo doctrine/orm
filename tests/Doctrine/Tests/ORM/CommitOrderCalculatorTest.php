@@ -15,6 +15,7 @@ use Doctrine\Tests\OrmTestCase;
  */
 class CommitOrderCalculatorTest extends OrmTestCase
 {
+    /** @var CommitOrderCalculator */
     private $_calc;
 
     protected function setUp()
@@ -100,6 +101,52 @@ class CommitOrderCalculatorTest extends OrmTestCase
         // We want to perform a strict comparison of the array
         $this->assertContains($sorted, $correctOrders, '', false, true, true);
     }
+
+    public function testCommitOrdering4()
+    {
+        $class1 = new ClassMetadata(NodeClass1::class);
+        $class2 = new ClassMetadata(NodeClass2::class);
+        $class3 = new ClassMetadata(NodeClass3::class);
+
+        $this->_calc->addNode($class1->name, $class1);
+        $this->_calc->addNode($class2->name, $class2);
+        $this->_calc->addNode($class3->name, $class3);
+
+        $this->_calc->addDependency($class2->name, $class1->name, 1);
+        $this->_calc->addDependency($class1->name, $class2->name, 0);
+        $this->_calc->addDependency($class1->name, $class3->name, 1);
+
+        $sorted = $this->_calc->sort();
+
+        $correctOrder = [$class2, $class1, $class3];
+
+        $this->assertSame($correctOrder, $sorted);
+    }
+
+    public function testCommitOrdering5()
+    {
+        $class1 = new ClassMetadata(NodeClass1::class);
+        $class2 = new ClassMetadata(NodeClass2::class);
+        $class3 = new ClassMetadata(NodeClass3::class);
+        $class4 = new ClassMetadata(NodeClass4::class);
+
+        $this->_calc->addNode($class1->name, $class1);
+        $this->_calc->addNode($class2->name, $class2);
+        $this->_calc->addNode($class3->name, $class3);
+        $this->_calc->addNode($class4->name, $class4);
+
+        $this->_calc->addDependency($class1->name, $class4->name, 1);
+        $this->_calc->addDependency($class1->name, $class3->name, 0);
+        $this->_calc->addDependency($class2->name, $class1->name, 1);
+        $this->_calc->addDependency($class3->name, $class2->name, 1);
+
+        $sorted = $this->_calc->sort();
+
+        $correctOrder = [$class3, $class2, $class1, $class4];
+
+        $this->assertSame($correctOrder, $sorted);
+    }
+
 }
 
 class NodeClass1 {}
