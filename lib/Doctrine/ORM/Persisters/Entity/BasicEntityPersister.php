@@ -920,15 +920,19 @@ class BasicEntityPersister implements EntityPersister
 
         $valueVisitor->dispatch($expression);
 
-        [$params, $types] = $valueVisitor->getParamsAndTypes();
+        list($params, $types) = $valueVisitor->getParamsAndTypes();
 
         foreach ($params as $param) {
             $sqlParams = array_merge($sqlParams, $this->getValues($param));
         }
 
         foreach ($types as $type) {
-            [$field, $value] = $type;
-            $sqlTypes        = array_merge($sqlTypes, $this->getTypes($field, $value, $this->class));
+            list ($field, $value, $operator) = $type;
+            $sqlType = $this->getTypes($field, $value, $this->class);
+            if($operator === Comparison::CONTAINS && $sqlType[0] === Type::JSON) {
+                $sqlType[0] = Type::STRING;
+            }
+            $sqlTypes = array_merge($sqlTypes, $sqlType);
         }
 
         return [$sqlParams, $sqlTypes];
