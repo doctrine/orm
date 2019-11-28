@@ -183,7 +183,7 @@ problems using the following approach:
         // do stuff with the data in the row, $row[0] is always the object
     
         // detach from Doctrine, so that it can be Garbage-Collected immediately
-        $this->_em->detach($row[0]);
+        $this->_em->clear($row[0]);
     }
 
 .. note::
