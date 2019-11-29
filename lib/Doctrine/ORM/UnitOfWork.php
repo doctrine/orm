@@ -775,7 +775,9 @@ class UnitOfWork implements PropertyChangedListener
 
         // Look for changes in associations of the entity
         foreach ($class->associationMappings as $field => $assoc) {
-            if (($val = $class->reflFields[$field]->getValue($entity)) === null) {
+            if ((method_exists($class->reflFields[$field], 'isInitialized') && ! $class->reflFields[$field]->isInitialized($entity))
+                || $class->reflFields[$field]->getValue($entity) === null
+            ) {
                 continue;
             }
 
@@ -1020,7 +1022,9 @@ class UnitOfWork implements PropertyChangedListener
         foreach ($class->reflFields as $name => $refProp) {
             if (( ! $class->isIdentifier($name) || ! $class->isIdGeneratorIdentity())
                 && ($name !== $class->versionField)
-                && ! $class->isCollectionValuedAssociation($name)) {
+                && ! $class->isCollectionValuedAssociation($name)
+                && (method_exists($refProp, 'isInitialized') && $refProp->isInitialized($entity))
+            ) {
                 $actualData[$name] = $refProp->getValue($entity);
             }
         }
