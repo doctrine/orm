@@ -134,6 +134,24 @@ class ParserTest extends OrmTestCase
         ];
     }
 
+    /**
+     * PHP 7.4 would fail with Notice: Trying to access array offset on value of type null.
+     *
+     * @see https://github.com/doctrine/orm/pull/7934
+     *
+     * @group GH7934
+     */
+    public function testNullLookahead() : void
+    {
+        $query = new Query($this->_getTestEntityManager());
+        $query->setDQL('SELECT CURRENT_TIMESTAMP()');
+
+        $parser = new Parser($query);
+
+        $this->expectException(QueryException::class);
+        $parser->match(Lexer::T_SELECT);
+    }
+
     private function createParser($dql)
     {
         $query = new Query($this->_getTestEntityManager());
