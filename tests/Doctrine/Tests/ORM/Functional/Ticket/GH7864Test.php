@@ -1,11 +1,15 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\Tests\ORM\Functional\Ticket;
 
-use Doctrine\Tests\Models\Tweet\User;
 use Doctrine\Tests\Models\Tweet\Tweet;
+use Doctrine\Tests\Models\Tweet\User;
+use Doctrine\Tests\OrmFunctionalTestCase;
+use function array_values;
 
-class GH7864Test extends \Doctrine\Tests\OrmFunctionalTestCase
+class GH7864Test extends OrmFunctionalTestCase
 {
     protected function setUp() : void
     {
@@ -16,15 +20,15 @@ class GH7864Test extends \Doctrine\Tests\OrmFunctionalTestCase
 
     public function testExtraLazyRemoveElement()
     {
-        $user = new User();
-        $user->name = "test";
+        $user       = new User();
+        $user->name = 'test';
 
-        $tweet1 = new Tweet();
-        $tweet1->content = "Hello World!";
+        $tweet1          = new Tweet();
+        $tweet1->content = 'Hello World!';
         $user->addTweet($tweet1);
 
-        $tweet2 = new Tweet();
-        $tweet2->content = "Goodbye, and thanks for all the fish";
+        $tweet2          = new Tweet();
+        $tweet2->content = 'Goodbye, and thanks for all the fish';
         $user->addTweet($tweet2);
 
         $this->_em->persist($user);
@@ -33,12 +37,14 @@ class GH7864Test extends \Doctrine\Tests\OrmFunctionalTestCase
         $this->_em->flush();
         $this->_em->clear();
 
-        $user = $this->_em->find(User::class, $user->id);
+        $user  = $this->_em->find(User::class, $user->id);
         $tweet = $this->_em->find(Tweet::class, $tweet1->id);
 
         $user->tweets->removeElement($tweet);
 
-        $tweets = $user->tweets->map(function (Tweet $tweet) { return $tweet->content; });
+        $tweets = $user->tweets->map(static function (Tweet $tweet) {
+            return $tweet->content;
+        });
 
         $this->assertEquals(['Goodbye, and thanks for all the fish'], array_values($tweets->toArray()));
     }
