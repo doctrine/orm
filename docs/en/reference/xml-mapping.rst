@@ -342,7 +342,7 @@ attribute:
 
 -  AUTO - Automatic detection of the identifier strategy based on
    the preferred solution of the database vendor.
--  IDENTITY - Use of a IDENTIFY strategy such as Auto-Increment IDs
+-  IDENTITY - Use an IDENTITY strategy such as Auto-Increment IDs
    available to Doctrine AFTER the INSERT statement has been executed.
 -  SEQUENCE - Use of a database sequence to retrieve the
    entity-ids. This is possible before the INSERT statement is
