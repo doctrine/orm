@@ -19,6 +19,7 @@ can be called without triggering a full load of the collection:
 -  ``Collection#count()``
 -  ``Collection#get($key)``  (available with Doctrine 2.4)
 -  ``Collection#slice($offset, $length = null)``
+-  ``Collection#removeElement($element)`` for either owning side collections or inverse collections with orphanRemoval=true
 
 For each of the above methods the following semantics apply:
 
