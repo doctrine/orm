@@ -2,6 +2,7 @@
 
 namespace Doctrine\Tests\ORM\Hydration;
 
+use Doctrine\ORM\Internal\Hydration\ObjectHydrator;
 use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\PersistentCollection;
 use Doctrine\ORM\Proxy\ProxyFactory;
@@ -76,7 +77,7 @@ class ObjectHydratorTest extends HydrationTestCase
         ];
 
         $stmt     = new HydratorMockStatement($resultSet);
-        $hydrator = new \Doctrine\ORM\Internal\Hydration\ObjectHydrator($this->_em);
+        $hydrator = new ObjectHydrator($this->_em);
         $result   = $hydrator->hydrateAll($stmt, $rsm, [Query::HINT_FORCE_PARTIAL_LOAD => true]);
 
         $this->assertEquals(2, count($result));
@@ -115,7 +116,7 @@ class ObjectHydratorTest extends HydrationTestCase
         ];
 
         $stmt     = new HydratorMockStatement($resultSet);
-        $hydrator = new \Doctrine\ORM\Internal\Hydration\ObjectHydrator($this->_em);
+        $hydrator = new ObjectHydrator($this->_em);
         $result   = $hydrator->hydrateAll($stmt, $rsm, [Query::HINT_FORCE_PARTIAL_LOAD => true]);
 
         $this->assertEquals(2, count($result));
@@ -164,7 +165,7 @@ class ObjectHydratorTest extends HydrationTestCase
         ];
 
         $stmt     = new HydratorMockStatement($resultSet);
-        $hydrator = new \Doctrine\ORM\Internal\Hydration\ObjectHydrator($this->_em);
+        $hydrator = new ObjectHydrator($this->_em);
         $result   = $hydrator->hydrateAll($stmt, $rsm, [Query::HINT_FORCE_PARTIAL_LOAD => true]);
 
         $this->assertEquals(4, count($result));
@@ -218,7 +219,7 @@ class ObjectHydratorTest extends HydrationTestCase
         ];
 
         $stmt     = new HydratorMockStatement($resultSet);
-        $hydrator = new \Doctrine\ORM\Internal\Hydration\ObjectHydrator($this->_em);
+        $hydrator = new ObjectHydrator($this->_em);
         $result   = $hydrator->hydrateAll($stmt, $rsm, [Query::HINT_FORCE_PARTIAL_LOAD => true]);
 
         $this->assertEquals(4, count($result));
@@ -279,7 +280,7 @@ class ObjectHydratorTest extends HydrationTestCase
         ];
 
         $stmt     = new HydratorMockStatement($resultSet);
-        $hydrator = new \Doctrine\ORM\Internal\Hydration\ObjectHydrator($this->_em);
+        $hydrator = new ObjectHydrator($this->_em);
         $result   = $hydrator->hydrateAll($stmt, $rsm, [Query::HINT_FORCE_PARTIAL_LOAD => true]);
 
         $this->assertEquals(4, count($result));
@@ -340,7 +341,7 @@ class ObjectHydratorTest extends HydrationTestCase
         ];
 
         $stmt     = new HydratorMockStatement($resultSet);
-        $hydrator = new \Doctrine\ORM\Internal\Hydration\ObjectHydrator($this->_em);
+        $hydrator = new ObjectHydrator($this->_em);
         $result   = $hydrator->hydrateAll($stmt, $rsm, [Query::HINT_FORCE_PARTIAL_LOAD => true]);
 
         $this->assertEquals(4, count($result));
@@ -402,7 +403,7 @@ class ObjectHydratorTest extends HydrationTestCase
         ];
 
         $stmt     = new HydratorMockStatement($resultSet);
-        $hydrator = new \Doctrine\ORM\Internal\Hydration\ObjectHydrator($this->_em);
+        $hydrator = new ObjectHydrator($this->_em);
         $result   = $hydrator->hydrateAll($stmt, $rsm, [Query::HINT_FORCE_PARTIAL_LOAD => true]);
 
         $this->assertEquals(2, count($result));
@@ -466,7 +467,7 @@ class ObjectHydratorTest extends HydrationTestCase
         ];
 
         $stmt     = new HydratorMockStatement($resultSet);
-        $hydrator = new \Doctrine\ORM\Internal\Hydration\ObjectHydrator($this->_em);
+        $hydrator = new ObjectHydrator($this->_em);
         $result   = $hydrator->hydrateAll($stmt, $rsm, [Query::HINT_FORCE_PARTIAL_LOAD => true]);
 
         $this->assertEquals(2, count($result));
@@ -547,7 +548,7 @@ class ObjectHydratorTest extends HydrationTestCase
 
 
         $stmt     = new HydratorMockStatement($resultSet);
-        $hydrator = new \Doctrine\ORM\Internal\Hydration\ObjectHydrator($this->_em);
+        $hydrator = new ObjectHydrator($this->_em);
         $result   = $hydrator->hydrateAll($stmt, $rsm, [Query::HINT_FORCE_PARTIAL_LOAD => true]);
 
         $this->assertEquals(2, count($result));
@@ -661,7 +662,7 @@ class ObjectHydratorTest extends HydrationTestCase
         ];
 
         $stmt     = new HydratorMockStatement($resultSet);
-        $hydrator = new \Doctrine\ORM\Internal\Hydration\ObjectHydrator($this->_em);
+        $hydrator = new ObjectHydrator($this->_em);
         $result   = $hydrator->hydrateAll($stmt, $rsm, [Query::HINT_FORCE_PARTIAL_LOAD => true]);
 
         $this->assertEquals(2, count($result));
@@ -791,7 +792,7 @@ class ObjectHydratorTest extends HydrationTestCase
         ];
 
         $stmt     = new HydratorMockStatement($resultSet);
-        $hydrator = new \Doctrine\ORM\Internal\Hydration\ObjectHydrator($this->_em);
+        $hydrator = new ObjectHydrator($this->_em);
         $result   = $hydrator->hydrateAll($stmt, $rsm, [Query::HINT_FORCE_PARTIAL_LOAD => true]);
 
         $this->assertEquals(2, count($result));
@@ -904,7 +905,7 @@ class ObjectHydratorTest extends HydrationTestCase
         ];
 
         $stmt     = new HydratorMockStatement($resultSet);
-        $hydrator = new \Doctrine\ORM\Internal\Hydration\ObjectHydrator($this->_em);
+        $hydrator = new ObjectHydrator($this->_em);
         $result   = $hydrator->hydrateAll($stmt, $rsm, [Query::HINT_FORCE_PARTIAL_LOAD => true]);
 
         $this->assertEquals(2, count($result));
@@ -947,7 +948,7 @@ class ObjectHydratorTest extends HydrationTestCase
         ];
 
         $stmt     = new HydratorMockStatement($resultSet);
-        $hydrator = new \Doctrine\ORM\Internal\Hydration\ObjectHydrator($this->_em);
+        $hydrator = new ObjectHydrator($this->_em);
         $result   = $hydrator->hydrateAll($stmt, $rsm, [Query::HINT_FORCE_PARTIAL_LOAD => true]);
 
         $this->assertEquals(1, count($result));
@@ -980,7 +981,7 @@ class ObjectHydratorTest extends HydrationTestCase
         ];
 
         $stmt     = new HydratorMockStatement($resultSet);
-        $hydrator = new \Doctrine\ORM\Internal\Hydration\ObjectHydrator($this->_em);
+        $hydrator = new ObjectHydrator($this->_em);
         $result   = $hydrator->hydrateAll($stmt, $rsm, [Query::HINT_FORCE_PARTIAL_LOAD => true]);
 
         $this->assertEquals(2, count($result));
@@ -1036,7 +1037,7 @@ class ObjectHydratorTest extends HydrationTestCase
         $metadata->associationMappings['shipping']['fetch'] = ClassMetadata::FETCH_LAZY;
 
         $stmt     = new HydratorMockStatement($resultSet);
-        $hydrator = new \Doctrine\ORM\Internal\Hydration\ObjectHydrator($this->_em);
+        $hydrator = new ObjectHydrator($this->_em);
         $result   = $hydrator->hydrateAll($stmt, $rsm);
 
         $this->assertEquals(1, count($result));
@@ -1085,7 +1086,7 @@ class ObjectHydratorTest extends HydrationTestCase
         $metadata->associationMappings['shipping']['fetch'] = ClassMetadata::FETCH_LAZY;
 
         $stmt     = new HydratorMockStatement($resultSet);
-        $hydrator = new \Doctrine\ORM\Internal\Hydration\ObjectHydrator($this->_em);
+        $hydrator = new ObjectHydrator($this->_em);
         $result   = $hydrator->hydrateAll($stmt, $rsm);
 
         $this->assertEquals(1, count($result));
@@ -1145,7 +1146,7 @@ class ObjectHydratorTest extends HydrationTestCase
         ];
 
         $stmt     = new HydratorMockStatement($resultSet);
-        $hydrator = new \Doctrine\ORM\Internal\Hydration\ObjectHydrator($this->_em);
+        $hydrator = new ObjectHydrator($this->_em);
         $result   = $hydrator->hydrateAll($stmt, $rsm, [Query::HINT_FORCE_PARTIAL_LOAD => true]);
 
         $this->assertEquals(2, count($result));
@@ -1208,7 +1209,7 @@ class ObjectHydratorTest extends HydrationTestCase
         ];
 
         $stmt     = new HydratorMockStatement($resultSet);
-        $hydrator = new \Doctrine\ORM\Internal\Hydration\ObjectHydrator($this->_em);
+        $hydrator = new ObjectHydrator($this->_em);
         $result   = $hydrator->hydrateAll($stmt, $rsm, [Query::HINT_FORCE_PARTIAL_LOAD => true]);
 
         $this->assertEquals(2, count($result));
@@ -1246,9 +1247,13 @@ class ObjectHydratorTest extends HydrationTestCase
             ]
         ];
 
-        $stmt           = new HydratorMockStatement($resultSet);
-        $hydrator       = new \Doctrine\ORM\Internal\Hydration\ObjectHydrator($this->_em);
-        $iterableResult = $hydrator->iterate($stmt, $rsm, [Query::HINT_FORCE_PARTIAL_LOAD => true]);
+        $hydrator = new ObjectHydrator($this->_em);
+
+        $iterableResult = $hydrator->iterate(
+            new HydratorMockStatement($resultSet),
+            $rsm,
+            [Query::HINT_FORCE_PARTIAL_LOAD => true]
+        );
         $rowNum         = 0;
 
         while (($row = $iterableResult->next()) !== false) {
@@ -1265,6 +1270,33 @@ class ObjectHydratorTest extends HydrationTestCase
 
             ++$rowNum;
         }
+
+        self::assertSame(2, $rowNum);
+
+        $iterableResult = $hydrator->getIterable(
+            new HydratorMockStatement($resultSet),
+            $rsm,
+            [Query::HINT_FORCE_PARTIAL_LOAD => true]
+        );
+        $rowNum         = 0;
+
+        foreach ($iterableResult as $user) {
+            self::assertInstanceOf(CmsUser::class, $user);
+
+            if ($rowNum === 0) {
+                self::assertEquals(1, $user->id);
+                self::assertEquals('romanb', $user->name);
+            }
+
+            if ($rowNum === 1) {
+                self::assertEquals(2, $user->id);
+                self::assertEquals('jwage', $user->name);
+            }
+
+            ++$rowNum;
+        }
+
+        self::assertSame(2, $rowNum);
     }
 
     /**
@@ -1290,10 +1322,13 @@ class ObjectHydratorTest extends HydrationTestCase
             ]
         ];
 
-        $stmt           = new HydratorMockStatement($resultSet);
-        $hydrator       = new \Doctrine\ORM\Internal\Hydration\ObjectHydrator($this->_em);
-        $iterableResult = $hydrator->iterate($stmt, $rsm, [Query::HINT_FORCE_PARTIAL_LOAD => true]);
+        $hydrator       = new ObjectHydrator($this->_em);
         $rowNum         = 0;
+        $iterableResult = $hydrator->iterate(
+            new HydratorMockStatement($resultSet),
+            $rsm,
+            [Query::HINT_FORCE_PARTIAL_LOAD => true]
+        );
 
         while (($row = $iterableResult->next()) !== false) {
             $this->assertEquals(1, count($row));
@@ -1311,6 +1346,35 @@ class ObjectHydratorTest extends HydrationTestCase
 
             ++$rowNum;
         }
+
+        self::assertSame(2, $rowNum);
+
+        $rowNum         = 0;
+        $iterableResult = $hydrator->getIterable(
+            new HydratorMockStatement($resultSet),
+            $rsm,
+            [Query::HINT_FORCE_PARTIAL_LOAD => true]
+        );
+
+        foreach ($iterableResult as $row) {
+            self::assertCount(1, $row);
+            self::assertArrayHasKey('user', $row);
+            self::assertInstanceOf(CmsUser::class, $row['user']);
+
+            if ($rowNum === 0) {
+                self::assertEquals(1, $row['user']->id);
+                self::assertEquals('romanb', $row['user']->name);
+            }
+
+            if ($rowNum === 1) {
+                self::assertEquals(2, $row['user']->id);
+                self::assertEquals('jwage', $row['user']->name);
+            }
+
+            ++$rowNum;
+        }
+
+        self::assertSame(2, $rowNum);
     }
 
     /**
@@ -1422,7 +1486,7 @@ class ObjectHydratorTest extends HydrationTestCase
         ];
 
         $stmt     = new HydratorMockStatement($resultSet);
-        $hydrator = new \Doctrine\ORM\Internal\Hydration\ObjectHydrator($this->_em);
+        $hydrator = new ObjectHydrator($this->_em);
         $result   = $hydrator->hydrateAll($stmt, $rsm, [Query::HINT_FORCE_PARTIAL_LOAD => true]);
 
         $this->assertEquals(2, count($result));
@@ -1545,7 +1609,7 @@ class ObjectHydratorTest extends HydrationTestCase
         ];
 
         $stmt     = new HydratorMockStatement($resultSet);
-        $hydrator = new \Doctrine\ORM\Internal\Hydration\ObjectHydrator($this->_em);
+        $hydrator = new ObjectHydrator($this->_em);
         $result   = $hydrator->hydrateAll($stmt, $rsm, [Query::HINT_FORCE_PARTIAL_LOAD => true]);
 
         $this->assertEquals(2, count($result));
@@ -1603,7 +1667,7 @@ class ObjectHydratorTest extends HydrationTestCase
         ];
 
         $stmt     = new HydratorMockStatement($resultSet);
-        $hydrator = new \Doctrine\ORM\Internal\Hydration\ObjectHydrator($this->_em);
+        $hydrator = new ObjectHydrator($this->_em);
         $result   = $hydrator->hydrateAll($stmt, $rsm, [Query::HINT_FORCE_PARTIAL_LOAD => true]);
 
         $this->assertEquals(4, count($result), "Should hydrate four results.");
@@ -1673,7 +1737,7 @@ class ObjectHydratorTest extends HydrationTestCase
         ];
 
         $stmt     = new HydratorMockStatement($resultSet);
-        $hydrator = new \Doctrine\ORM\Internal\Hydration\ObjectHydrator($this->_em);
+        $hydrator = new ObjectHydrator($this->_em);
         $result   = $hydrator->hydrateAll($stmt, $rsm, [Query::HINT_FORCE_PARTIAL_LOAD => true]);
 
         $this->assertEquals(2, count($result));
@@ -1727,7 +1791,7 @@ class ObjectHydratorTest extends HydrationTestCase
         ];
 
         $stmt     = new HydratorMockStatement($resultSet);
-        $hydrator = new \Doctrine\ORM\Internal\Hydration\ObjectHydrator($this->_em);
+        $hydrator = new ObjectHydrator($this->_em);
         $result   = $hydrator->hydrateAll($stmt, $rsm, [Query::HINT_FORCE_PARTIAL_LOAD => true]);
 
         $this->assertEquals(2, count($result));
@@ -1769,7 +1833,7 @@ class ObjectHydratorTest extends HydrationTestCase
         ];
 
         $stmt     = new HydratorMockStatement($resultSet);
-        $hydrator = new \Doctrine\ORM\Internal\Hydration\ObjectHydrator($this->_em);
+        $hydrator = new ObjectHydrator($this->_em);
         $result   = $hydrator->hydrateAll($stmt, $rsm, [Query::HINT_FORCE_PARTIAL_LOAD => true]);
 
         $this->assertEquals(2, count($result));
@@ -1807,7 +1871,7 @@ class ObjectHydratorTest extends HydrationTestCase
         ];
 
         $stmt     = new HydratorMockStatement($resultSet);
-        $hydrator = new \Doctrine\ORM\Internal\Hydration\ObjectHydrator($this->_em);
+        $hydrator = new ObjectHydrator($this->_em);
         $result   = $hydrator->hydrateAll($stmt, $rsm, [Query::HINT_FORCE_PARTIAL_LOAD => true]);
 
         $this->assertEquals(
@@ -1842,7 +1906,7 @@ class ObjectHydratorTest extends HydrationTestCase
         ];
 
         $stmt     = new HydratorMockStatement($resultSet);
-        $hydrator = new \Doctrine\ORM\Internal\Hydration\ObjectHydrator($this->_em);
+        $hydrator = new ObjectHydrator($this->_em);
         $hydrator->hydrateAll($stmt, $rsm);
     }
 
@@ -1875,7 +1939,7 @@ class ObjectHydratorTest extends HydrationTestCase
         ];
 
         $stmt     = new HydratorMockStatement($resultSet);
-        $hydrator = new \Doctrine\ORM\Internal\Hydration\ObjectHydrator($this->_em);
+        $hydrator = new ObjectHydrator($this->_em);
         $hydrator->hydrateAll($stmt, $rsm);
     }
 
@@ -1902,8 +1966,8 @@ class ObjectHydratorTest extends HydrationTestCase
               ],
         ];
 
-        $stmt       = new HydratorMockStatement($resultSet);
-        $hydrator   = new \Doctrine\ORM\Internal\Hydration\ObjectHydrator($this->_em);
+        $stmt     = new HydratorMockStatement($resultSet);
+        $hydrator = new ObjectHydrator($this->_em);
         $hydrator->hydrateAll($stmt, $rsm);
     }
 
@@ -1924,7 +1988,7 @@ class ObjectHydratorTest extends HydrationTestCase
         ];
 
         $stmt     = new HydratorMockStatement($resultSet);
-        $hydrator = new \Doctrine\ORM\Internal\Hydration\ObjectHydrator($this->_em);
+        $hydrator = new ObjectHydrator($this->_em);
         $result   = $hydrator->hydrateAll($stmt, $rsm);
 
         $this->assertCount(1, $result);

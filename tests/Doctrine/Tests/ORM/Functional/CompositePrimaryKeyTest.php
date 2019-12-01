@@ -3,6 +3,7 @@
 namespace Doctrine\Tests\ORM\Functional;
 use Doctrine\ORM\ORMException;
 use Doctrine\ORM\Query\QueryException;
+use Doctrine\Tests\GetIterableTester;
 use Doctrine\Tests\Models\Navigation\NavCountry;
 use Doctrine\Tests\Models\Navigation\NavPointOfInterest;
 use Doctrine\Tests\Models\Navigation\NavTour;
@@ -86,11 +87,16 @@ class CompositePrimaryKeyTest extends OrmFunctionalTestCase
         $this->_em->clear();
 
         $dql    = "SELECT IDENTITY(p.poi, 'long') AS long, IDENTITY(p.poi, 'lat') AS lat FROM Doctrine\Tests\Models\Navigation\NavPhotos p";
-        $result = $this->_em->createQuery($dql)->getResult();
+        $query  = $this->_em->createQuery($dql);
+        $result = $query->getResult();
 
         $this->assertCount(1, $result);
         $this->assertEquals(200, $result[0]['long']);
         $this->assertEquals(100, $result[0]['lat']);
+
+        $this->_em->clear();
+
+        GetIterableTester::assertResultsAreTheSame($query);
     }
 
     public function testManyToManyCompositeRelation()
@@ -112,7 +118,10 @@ class CompositePrimaryKeyTest extends OrmFunctionalTestCase
                'INNER JOIN t.pois p INNER JOIN p.country c';
         $tours = $this->_em->createQuery($dql)->getResult();
 
-        $this->assertEquals(1, count($tours));
+        $query = $this->_em->createQuery($dql);
+        $tours = $query->getResult();
+
+        self::assertCount(1, $tours);
 
         $pois = $tours[0]->getPointOfInterests();
 
@@ -133,6 +142,10 @@ class CompositePrimaryKeyTest extends OrmFunctionalTestCase
                            ->getResult();
 
         $this->assertEquals(1, count($tours));
+
+        $this->_em->clear();
+
+        GetIterableTester::assertResultsAreTheSame($query);
     }
 
     public function testSpecifyUnknownIdentifierPrimaryKeyFails()

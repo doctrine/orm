@@ -5,6 +5,7 @@ namespace Doctrine\Tests\ORM\Functional;
 use Doctrine\Common\Collections\Criteria;
 use Doctrine\ORM\PersistentCollection;
 use Doctrine\ORM\Proxy\Proxy;
+use Doctrine\Tests\GetIterableTester;
 use Doctrine\Tests\Models\Company\CompanyAuction;
 use Doctrine\Tests\Models\Company\CompanyEmployee;
 use Doctrine\Tests\Models\Company\CompanyEvent;
@@ -62,15 +63,23 @@ class ClassTableInheritanceTest extends OrmFunctionalTestCase
 
         $this->_em->clear();
 
+        GetIterableTester::assertResultsAreTheSame($query);
+
+        $this->_em->clear();
+
         $query = $this->_em->createQuery('select p from ' . CompanyEmployee::class . ' p');
 
         $entities = $query->getResult();
 
-        $this->assertCount(1, $entities);
-        $this->assertInstanceOf(CompanyEmployee::class, $entities[0]);
+        self::assertCount(1, $entities);
+        self::assertInstanceOf(CompanyEmployee::class, $entities[0]);
         $this->assertTrue(is_numeric($entities[0]->getId()));
-        $this->assertEquals('Guilherme Blanco', $entities[0]->getName());
-        $this->assertEquals(100000, $entities[0]->getSalary());
+        self::assertEquals('Guilherme Blanco', $entities[0]->getName());
+        self::assertEquals(100000, $entities[0]->getSalary());
+
+        $this->_em->clear();
+
+        GetIterableTester::assertResultsAreTheSame($query);
 
         $this->_em->clear();
 
@@ -170,6 +179,10 @@ class ClassTableInheritanceTest extends OrmFunctionalTestCase
         $this->assertInstanceOf(CompanyEmployee::class, $result[0]->getSpouse());
         $this->assertEquals('John Smith', $result[0]->getSpouse()->getName());
         $this->assertSame($result[0], $result[0]->getSpouse()->getSpouse());
+
+        $this->_em->clear();
+
+        GetIterableTester::assertResultsAreTheSame($query);
     }
 
     public function testSelfReferencingManyToMany()
@@ -242,6 +255,10 @@ class ClassTableInheritanceTest extends OrmFunctionalTestCase
             $this->assertInstanceOf(CompanyRaffle::class, $events[0]);
             $this->assertInstanceOf(CompanyAuction::class, $events[1]);
         }
+
+        $this->_em->clear();
+
+        GetIterableTester::assertResultsAreTheSame($q);
     }
 
     public function testLazyLoading2()
@@ -264,6 +281,10 @@ class ClassTableInheritanceTest extends OrmFunctionalTestCase
 
         $this->_em->clear();
 
+        GetIterableTester::assertResultsAreTheSame($q);
+
+        $this->_em->clear();
+
         $q = $this->_em->createQuery('select a from ' . CompanyOrganization::class . ' a where a.id = ?1');
         $q->setParameter(1, $org->getId());
 
@@ -276,6 +297,10 @@ class ClassTableInheritanceTest extends OrmFunctionalTestCase
         // mainEvent should have been loaded because it can't be lazy
         $this->assertInstanceOf(CompanyAuction::class, $mainEvent);
         $this->assertNotInstanceOf(Proxy::class, $mainEvent);
+
+        $this->_em->clear();
+
+        GetIterableTester::assertResultsAreTheSame($q);
     }
 
     /**
@@ -286,10 +311,14 @@ class ClassTableInheritanceTest extends OrmFunctionalTestCase
         $this->_em->createQuery('UPDATE ' . CompanyEmployee::class . ' AS p SET p.salary = 1')
                   ->execute();
 
-        $result = $this->_em->createQuery('SELECT count(p.id) FROM ' . CompanyEmployee::class . ' p WHERE p.salary = 1')
-                            ->getResult();
+        $query  = $this->_em->createQuery('SELECT count(p.id) FROM ' . CompanyEmployee::class . ' p WHERE p.salary = 1');
+        $result = $query->getResult();
 
         $this->assertGreaterThan(0, count($result));
+
+        $this->_em->clear();
+
+        GetIterableTester::assertResultsAreTheSame($query);
     }
 
     /**

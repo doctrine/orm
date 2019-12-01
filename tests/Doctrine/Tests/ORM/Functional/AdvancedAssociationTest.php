@@ -4,6 +4,7 @@ namespace Doctrine\Tests\ORM\Functional;
 
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\PersistentCollection;
+use Doctrine\Tests\GetIterableTester;
 use Doctrine\Tests\OrmFunctionalTestCase;
 
 /**
@@ -72,6 +73,10 @@ class AdvancedAssociationTest extends OrmFunctionalTestCase
 
         $this->_em->clear();
 
+        GetIterableTester::assertResultsAreTheSame($query);
+
+        $this->_em->clear();
+
         // test2 - eager load in DQL query with double-join back and forth
         $query = $this->_em->createQuery("SELECT p,t,pp FROM Doctrine\Tests\ORM\Functional\Phrase p JOIN p.type t JOIN t.phrases pp");
         $res = $query->getResult();
@@ -99,6 +104,10 @@ class AdvancedAssociationTest extends OrmFunctionalTestCase
 
         $this->assertInstanceOf(Definition::class, $definitions[0]);
         $this->assertEquals(2, $definitions->count());
+
+        $this->_em->clear();
+
+        GetIterableTester::assertResultsAreTheSame($query);
     }
 
     public function testManyToMany()
@@ -122,6 +131,10 @@ class AdvancedAssociationTest extends OrmFunctionalTestCase
         $types = $res[0]->getTypes();
 
         $this->assertInstanceOf(Type::class, $types[0]);
+
+        $this->_em->clear();
+
+        GetIterableTester::assertResultsAreTheSame($query);
     }
 }
 
