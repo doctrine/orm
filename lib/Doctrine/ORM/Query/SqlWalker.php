@@ -1339,10 +1339,20 @@ class SqlWalker implements TreeWalker
 
                 $this->scalarResultAliasMap[$resultAlias] = $columnAlias;
 
-                if ( ! $hidden) {
-                    // We cannot resolve field type here; assume 'string'.
-                    $this->rsm->addScalarResult($columnAlias, $resultAlias, 'string');
+                if ($hidden) {
+                    break;
                 }
+
+                if (! $expr instanceof Query\AST\TypedExpression) {
+                    // Conceptually we could resolve field type here by traverse through AST to retrieve field type,
+                    // but this is not a feasible solution; assume 'string'.
+                    $this->rsm->addScalarResult($columnAlias, $resultAlias, 'string');
+
+                    break;
+                }
+
+                $this->rsm->addScalarResult($columnAlias, $resultAlias, $expr->getReturnType()->getName());
+
                 break;
 
             case ($expr instanceof AST\Subselect):

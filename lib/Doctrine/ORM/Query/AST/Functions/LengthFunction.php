@@ -19,6 +19,8 @@
 
 namespace Doctrine\ORM\Query\AST\Functions;
 
+use Doctrine\DBAL\Types\Type;
+use Doctrine\ORM\Query\AST\TypedExpression;
 use Doctrine\ORM\Query\Lexer;
 
 /**
@@ -32,7 +34,7 @@ use Doctrine\ORM\Query\Lexer;
  * @author  Roman Borschel <roman@code-factory.org>
  * @author  Benjamin Eberlei <kontakt@beberlei.de>
  */
-class LengthFunction extends FunctionNode
+class LengthFunction extends FunctionNode implements TypedExpression
 {
     public $stringPrimary;
 
@@ -59,5 +61,10 @@ class LengthFunction extends FunctionNode
         $this->stringPrimary = $parser->StringPrimary();
 
         $parser->match(Lexer::T_CLOSE_PARENTHESIS);
+    }
+
+    public function getReturnType() : Type
+    {
+        return Type::getType(Type::INTEGER);
     }
 }
