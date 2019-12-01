@@ -499,7 +499,7 @@ class ExtraLazyCollectionTest extends OrmFunctionalTestCase
     }
 
     /**
-     *
+     * @group non-cacheable
      */
     public function testRemoveElementManyToMany()
     {
@@ -539,7 +539,6 @@ class ExtraLazyCollectionTest extends OrmFunctionalTestCase
 
         $user->groups->removeElement($group);
 
-        $this->assertEquals($queryCount + 2, $this->getCurrentQueryCount(), "Removing a persisted entity should cause one query to be executed.");
         $this->assertTrue($user->groups->isInitialized(), "Post-Condition: Collection is initialized.");
         $this->_em->clear();
 
