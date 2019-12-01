@@ -475,137 +475,6 @@ class ExtraLazyCollectionTest extends OrmFunctionalTestCase
     }
 
     /**
-     *
-     */
-    public function testRemoveElementOneToMany()
-    {
-        $user = $this->_em->find(CmsUser::class, $this->userId);
-        $this->assertFalse($user->articles->isInitialized(), "Pre-Condition: Collection is not initialized.");
-
-        // Test One to Many removal with Entity retrieved from DB
-        $article    = $this->_em->find(CmsArticle::class, $this->articleId);
-        $queryCount = $this->getCurrentQueryCount();
-
-        $user->articles->removeElement($article);
-
-        $this->assertFalse($user->articles->isInitialized(), "Post-Condition: Collection is not initialized.");
-        $this->assertEquals($queryCount, $this->getCurrentQueryCount());
-
-        // Test One to Many removal with Entity state as new
-        $article = new CmsArticle();
-        $article->topic = "Testnew";
-        $article->text = "blub";
-
-        $queryCount = $this->getCurrentQueryCount();
-
-        $user->articles->removeElement($article);
-
-        $this->assertEquals($queryCount, $this->getCurrentQueryCount(), "Removing a new entity should cause no query to be executed.");
-
-        // Test One to Many removal with Entity state as clean
-        $this->_em->persist($article);
-        $this->_em->flush();
-
-        $queryCount = $this->getCurrentQueryCount();
-
-        $user->articles->removeElement($article);
-
-        $this->assertEquals($queryCount, $this->getCurrentQueryCount(), "Removing a persisted entity will not cause queries when the owning side doesn't actually change.");
-        $this->assertFalse($user->articles->isInitialized(), "Post-Condition: Collection is not initialized.");
-
-        // Test One to Many removal with Entity state as managed
-        $article = new CmsArticle();
-        $article->topic = "How to not fail anymore on tests";
-        $article->text = "That is simple! Just write more tests!";
-
-        $this->_em->persist($article);
-
-        $queryCount = $this->getCurrentQueryCount();
-
-        $user->articles->removeElement($article);
-
-        $this->assertEquals($queryCount, $this->getCurrentQueryCount(), "Removing a managed entity should cause no query to be executed.");
-    }
-
-    /**
-     * @group DDC-2504
-     */
-    public function testRemovalOfManagedElementFromOneToManyJoinedInheritanceCollectionDoesNotInitializeIt()
-    {
-        /* @var $otherClass DDC2504OtherClass */
-        $otherClass = $this->_em->find(DDC2504OtherClass::class, $this->ddc2504OtherClassId);
-        /* @var $childClass DDC2504ChildClass */
-        $childClass = $this->_em->find(DDC2504ChildClass::class, $this->ddc2504ChildClassId);
-
-        $queryCount = $this->getCurrentQueryCount();
-
-        $otherClass->childClasses->removeElement($childClass);
-        $childClass->other = null; // updating owning side
-
-        $this->assertFalse($otherClass->childClasses->isInitialized(), 'Collection is not initialized.');
-
-        $this->assertEquals(
-            $queryCount,
-            $this->getCurrentQueryCount(),
-            'No queries have been executed'
-        );
-
-        $this->assertTrue(
-            $otherClass->childClasses->contains($childClass),
-            'Collection item still not updated (needs flushing)'
-        );
-
-        $this->_em->flush();
-
-        $this->assertFalse(
-            $otherClass->childClasses->contains($childClass),
-            'Referenced item was removed in the transaction'
-        );
-
-        $this->assertFalse($otherClass->childClasses->isInitialized(), 'Collection is not initialized.');
-    }
-
-    /**
-     * @group DDC-2504
-     */
-    public function testRemovalOfNonManagedElementFromOneToManyJoinedInheritanceCollectionDoesNotInitializeIt()
-    {
-        /* @var $otherClass DDC2504OtherClass */
-        $otherClass = $this->_em->find(DDC2504OtherClass::class, $this->ddc2504OtherClassId);
-        $queryCount = $this->getCurrentQueryCount();
-
-        $otherClass->childClasses->removeElement(new DDC2504ChildClass());
-
-        $this->assertEquals(
-            $queryCount,
-            $this->getCurrentQueryCount(),
-            'Removing an unmanaged entity should cause no query to be executed.'
-        );
-    }
-
-    /**
-     * @group DDC-2504
-     */
-    public function testRemovalOfNewElementFromOneToManyJoinedInheritanceCollectionDoesNotInitializeIt()
-    {
-        /* @var $otherClass DDC2504OtherClass */
-        $otherClass = $this->_em->find(DDC2504OtherClass::class, $this->ddc2504OtherClassId);
-        $childClass = new DDC2504ChildClass();
-
-        $this->_em->persist($childClass);
-
-        $queryCount = $this->getCurrentQueryCount();
-
-        $otherClass->childClasses->removeElement($childClass);
-
-        $this->assertEquals(
-            $queryCount,
-            $this->getCurrentQueryCount(),
-            'Removing a new entity should cause no query to be executed.'
-        );
-    }
-
-    /**
      * @group DDC-2504
      */
     public function testRemovalOfNewManagedElementFromOneToManyJoinedInheritanceCollectionDoesNotInitializeIt()
@@ -618,6 +487,7 @@ class ExtraLazyCollectionTest extends OrmFunctionalTestCase
 
         $queryCount = $this->getCurrentQueryCount();
 
+        $otherClass->childClasses->add($childClass);
         $otherClass->childClasses->removeElement($childClass);
 
         $this->assertEquals(
@@ -646,7 +516,10 @@ class ExtraLazyCollectionTest extends OrmFunctionalTestCase
         $this->assertFalse($user->groups->isInitialized(), "Post-Condition: Collection is not initialized.");
 
         $this->assertFalse($user->groups->removeElement($group), "Removing an already removed element returns false");
+        $this->assertTrue($user->groups->isInitialized(), "Post-Condition: Remmoving entity that isnt in collection initializes");
+        $this->_em->clear();
 
+        $user = $this->_em->find(CmsUser::class, $this->userId);
         // Test Many to Many removal with Entity state as new
         $group = new CmsGroup();
         $group->name = "A New group!";
@@ -666,8 +539,11 @@ class ExtraLazyCollectionTest extends OrmFunctionalTestCase
 
         $user->groups->removeElement($group);
 
-        $this->assertEquals($queryCount + 1, $this->getCurrentQueryCount(), "Removing a persisted entity should cause one query to be executed.");
-        $this->assertFalse($user->groups->isInitialized(), "Post-Condition: Collection is not initialized.");
+        $this->assertEquals($queryCount + 2, $this->getCurrentQueryCount(), "Removing a persisted entity should cause one query to be executed.");
+        $this->assertTrue($user->groups->isInitialized(), "Post-Condition: Collection is initialized.");
+        $this->_em->clear();
+
+        $user = $this->_em->find(CmsUser::class, $this->userId);
 
         // Test Many to Many removal with Entity state as managed
         $group = new CmsGroup();
@@ -679,8 +555,8 @@ class ExtraLazyCollectionTest extends OrmFunctionalTestCase
 
         $user->groups->removeElement($group);
 
-        $this->assertEquals($queryCount, $this->getCurrentQueryCount(), "Removing a managed entity should cause no query to be executed.");
-        $this->assertFalse($user->groups->isInitialized(), "Post-Condition: Collection is not initialized.");
+        $this->assertEquals($queryCount + 1, $this->getCurrentQueryCount(), "Removing a managed entity should cause query to be executed.");
+        $this->assertTrue($user->groups->isInitialized(), "Post-Condition: Collection is initialized.");
     }
 
     /**

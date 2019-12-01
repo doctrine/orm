@@ -372,6 +372,10 @@ final class PersistentCollection extends AbstractLazyCollection implements Selec
                 return $this->collection->removeElement($element);
             }
 
+            if ($this->em->getUnitOfWork()->getEntityState($element) === UnitOfWork::STATE_NEW) {
+                return true;
+            }
+
             $persister = $this->em->getUnitOfWork()->getCollectionPersister($this->association);
 
             if ($persister->removeElement($this, $element) === true) {
