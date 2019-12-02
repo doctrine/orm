@@ -30,6 +30,7 @@ class GH7854Test extends OrmFunctionalTestCase
         $this->_em->flush();
         $this->_em->clear();
 
+        /** @var GH7854TestEntity[] $entities */
         $entities = $this->_em->getRepository(GH7854TestEntity::class)->findAll();
 
         self::assertEquals($entity, $entities[0]);
@@ -42,9 +43,16 @@ class GH7854Test extends OrmFunctionalTestCase
 class GH7854TestEntity
 {
     /**
+     * @Id
+     * @Column(name="id", type="integer")
+     * @GeneratedValue
+     */
+    private int $id;
+
+    /**
      * @Embedded(class=GH7854ValueObject::class)
      */
-    public GH7854ValueObject $valueObject;
+    private ?GH7854ValueObject $valueObject;
 }
 
 /**
@@ -52,6 +60,6 @@ class GH7854TestEntity
  */
 class GH7854ValueObject
 {
-    /** @Id() @Column(type="integer") @GeneratedValue(strategy="AUTO") */
+    /** @Column(name="value", type="integer") */
     public int $value;
 }

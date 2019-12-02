@@ -21,7 +21,6 @@ namespace Doctrine\ORM\Mapping;
 
 use Doctrine\Instantiator\Instantiator;
 use ReflectionProperty;
-use function method_exists;
 
 /**
  * Acts as a proxy to a nested Property structure, making it look like
@@ -73,7 +72,7 @@ class ReflectionEmbeddedProperty extends ReflectionProperty
      */
     public function getValue($object = null)
     {
-        $embeddedObject = $this->getParentPropertyValue($object);
+        $embeddedObject = $this->parentProperty->getValue($object);
 
         if (null === $embeddedObject) {
             return null;
@@ -87,7 +86,7 @@ class ReflectionEmbeddedProperty extends ReflectionProperty
      */
     public function setValue($object, $value = null)
     {
-        $embeddedObject = $this->getParentPropertyValue($object);
+        $embeddedObject = $this->parentProperty->getValue($object);
 
         if (null === $embeddedObject) {
             $this->instantiator = $this->instantiator ?: new Instantiator();
@@ -98,19 +97,5 @@ class ReflectionEmbeddedProperty extends ReflectionProperty
         }
 
         $this->childProperty->setValue($embeddedObject, $value);
-    }
-
-    /**
-     * @param object $object
-     *
-     * @return mixed
-     */
-    private function getParentPropertyValue($object)
-    {
-        if (method_exists($this->parentProperty, 'isInitialized') && $this->parentProperty->getDeclaringClass()->isInstance($object)) {
-            return $this->parentProperty->isInitialized($object) ? $this->parentProperty->getValue($object) : null;
-        }
-
-        return $this->parentProperty->getValue($object);
     }
 }
