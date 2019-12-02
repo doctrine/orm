@@ -13,7 +13,7 @@
    <testsuites>
      <testsuite name="Doctrine ORM Test Suite">
         <directory>./../Doctrine/Tests/ORM</directory>
-        <directory phpVersion="7.4" phpVersionOperator=">=">./tests/Doctrine/Tests_PHP74</directory>
+        <directory phpVersion="7.4" phpVersionOperator=">=">./../Doctrine/Tests_PHP74</directory>
      </testsuite>
     </testsuites>
     <filter>
