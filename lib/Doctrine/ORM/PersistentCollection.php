@@ -380,7 +380,7 @@ final class PersistentCollection extends AbstractLazyCollection implements Selec
 
             if ($persister->removeElement($this, $element) === true) {
                 // only  owning side or orphan removal triggers successful
-                // delete so that we can keep this collection unitialized.
+                // delete so that we can keep this collection uninitialized.
                 return true;
             }
         }
