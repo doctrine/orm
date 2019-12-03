@@ -36,6 +36,13 @@ With extra lazy collections you can now not only add entities to large collectio
 easily using a combination of ``count`` and ``slice``.
 
 
+.. warning::
+
+   Using ``removeElement`` will directly issue DELETE queries to the database.
+   This circumvents the flush operation and might run outside a transactional
+   boundary if you don't create one yourself.
+
+
 Enabling Extra-Lazy Associations
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
