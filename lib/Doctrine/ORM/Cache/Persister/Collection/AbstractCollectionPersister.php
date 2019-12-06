@@ -246,20 +246,6 @@ abstract class AbstractCollectionPersister implements CachedCollectionPersister
     /**
      * {@inheritdoc}
      */
-    public function removeElement(PersistentCollection $collection, $element)
-    {
-        if ($persisterResult = $this->persister->removeElement($collection, $element)) {
-            $this->evictCollectionCache($collection);
-            $this->evictElementCache($this->sourceEntity->rootEntityName, $collection->getOwner());
-            $this->evictElementCache($this->targetEntity->rootEntityName, $element);
-        }
-
-        return $persisterResult;
-    }
-
-    /**
-     * {@inheritdoc}
-     */
     public function slice(PersistentCollection $collection, $offset, $length = null)
     {
         return $this->persister->slice($collection, $offset, $length);

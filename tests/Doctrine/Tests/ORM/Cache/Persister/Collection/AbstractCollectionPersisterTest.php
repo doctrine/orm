@@ -227,23 +227,6 @@ abstract class AbstractCollectionPersisterTest extends OrmTestCase
         $this->assertFalse($persister->containsKey($collection, 0));
     }
 
-    public function testInvokeRemoveElement()
-    {
-        $entity     = new State("Foo");
-        $element    = new State("Bar");
-        $persister  = $this->createPersisterDefault();
-        $collection = $this->createCollection($entity);
-
-        $this->em->getUnitOfWork()->registerManaged($entity, ['id'=>1], ['id'=>1, 'name'=>'Foo']);
-
-        $this->collectionPersister->expects($this->once())
-            ->method('removeElement')
-            ->with($this->equalTo($collection), $this->equalTo($element))
-            ->will($this->returnValue(false));
-
-        $this->assertFalse($persister->removeElement($collection, $element));
-    }
-
     public function testInvokeGet()
     {
         $entity     = new State("Foo");

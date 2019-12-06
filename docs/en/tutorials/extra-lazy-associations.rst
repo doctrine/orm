@@ -19,7 +19,6 @@ can be called without triggering a full load of the collection:
 -  ``Collection#count()``
 -  ``Collection#get($key)``  (available with Doctrine 2.4)
 -  ``Collection#slice($offset, $length = null)``
--  ``Collection#removeElement($element)`` for either owning side collections or inverse collections with orphanRemoval=true
 
 For each of the above methods the following semantics apply:
 
@@ -38,9 +37,11 @@ easily using a combination of ``count`` and ``slice``.
 
 .. warning::
 
-   Using ``removeElement`` will directly issue DELETE queries to the database.
-   This circumvents the flush operation and might run outside a transactional
-   boundary if you don't create one yourself.
+   ``removeElement`` directly issued DELETE queries to the database from
+   version 2.4.0 to 2.7.0.  This circumvents the flush operation and might run
+   outside a transactional boundary if you don't create one yourself. We
+   consider this a critical bug in the assumptio of how the ORM works and
+   reverted ``removeElement`` EXTRA_LAZY behavior in 2.7.1.
 
 
 Enabling Extra-Lazy Associations
