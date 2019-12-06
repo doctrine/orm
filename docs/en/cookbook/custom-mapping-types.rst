@@ -73,7 +73,10 @@ method. See the following example:
     // ...
 
     // Register my type
-    Type::addType('mytype', 'My\Project\Types\MyType');
+    
+    if(!array_key_exists('mytype', Type::getTypesMap())){
+        Type::addType('mytype', 'My\Project\Types\MyType');
+    }
 
 To convert the underlying database type of your
 new "mytype" directly into an instance of ``MyType`` when performing
