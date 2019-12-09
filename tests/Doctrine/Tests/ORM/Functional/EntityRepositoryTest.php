@@ -1123,5 +1123,14 @@ class EntityRepositoryTest extends OrmFunctionalTestCase
             $this->assertTrue(in_array($user, [$user1, $user2]));
         }
     }
+
+    public function testDeprecatedClear() : void
+    {
+        $repository = $this->_em->getRepository(CmsAddress::class);
+
+        $this->expectDeprecationMessage('Method Doctrine\ORM\EntityRepository::clear() is deprecated and will be removed in Doctrine ORM 3.0.');
+        $this->expectDeprecationMessage('Calling Doctrine\ORM\EntityManager::clear() with any arguments to clear specific entities is deprecated and will not be supported in Doctrine ORM 3.0.');
+        $repository->clear();
+    }
 }
 
