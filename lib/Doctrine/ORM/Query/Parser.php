@@ -302,7 +302,7 @@ class Parser
      */
     public function match($token)
     {
-        $lookaheadType = $this->lexer->lookahead['type'];
+        $lookaheadType = $this->lexer->lookahead['type'] ?? null;
 
         // Short-circuit on first condition, usually types match
         if ($lookaheadType === $token) {
