@@ -35,6 +35,7 @@ use Doctrine\ORM\Event\PreFlushEventArgs;
 use Doctrine\ORM\Event\PreUpdateEventArgs;
 use Doctrine\ORM\Internal\HydrationCompleteHandler;
 use Doctrine\ORM\Mapping\ClassMetadata;
+use Doctrine\ORM\Mapping\ClassMetadataInfo;
 use Doctrine\ORM\Mapping\Reflection\ReflectionPropertiesGetter;
 use Doctrine\ORM\Persisters\Collection\ManyToManyPersister;
 use Doctrine\ORM\Persisters\Collection\OneToManyPersister;
@@ -46,7 +47,9 @@ use Doctrine\ORM\Utility\IdentifierFlattener;
 use InvalidArgumentException;
 use Throwable;
 use UnexpectedValueException;
+use function assert;
 use function get_class;
+use function method_exists;
 
 /**
  * The UnitOfWork is responsible for tracking changes to objects during an
@@ -2310,14 +2313,20 @@ class UnitOfWork implements PropertyChangedListener
     private function cascadePersist($entity, array &$visited)
     {
         $class = $this->em->getClassMetadata(get_class($entity));
+        assert($class instanceof ClassMetadataInfo);
 
         $associationMappings = array_filter(
-            $class->associationMappings,
+            $class->getAssociationMappings(),
             function ($assoc) { return $assoc['isCascadePersist']; }
         );
 
         foreach ($associationMappings as $assoc) {
-            $relatedEntities = $class->reflFields[$assoc['fieldName']]->getValue($entity);
+            $relatedField    = $class->getReflectionProperty($assoc['fieldName']);
+            $relatedEntities = null;
+
+            if (! method_exists($relatedField, 'isInitialized') || $relatedField->isInitialized($entity)) {
+                $relatedEntities = $relatedField->getValue($entity);
+            }
 
             switch (true) {
                 case ($relatedEntities instanceof PersistentCollection):

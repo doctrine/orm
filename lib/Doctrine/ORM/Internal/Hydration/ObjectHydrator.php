@@ -26,6 +26,9 @@ use Doctrine\ORM\PersistentCollection;
 use Doctrine\ORM\Query;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\Proxy\Proxy;
+use function assert;
+use function method_exists;
+use function spl_object_hash;
 
 /**
  * The ObjectHydrator constructs an object graph out of an SQL result set.
@@ -182,9 +185,14 @@ class ObjectHydrator extends AbstractHydrator
      */
     private function initRelatedCollection($entity, $class, $fieldName, $parentDqlAlias)
     {
-        $oid      = spl_object_hash($entity);
-        $relation = $class->associationMappings[$fieldName];
-        $value    = $class->reflFields[$fieldName]->getValue($entity);
+        $oid       = spl_object_hash($entity);
+        $relation  = $class->getAssociationMapping($fieldName);
+        $reflField = $class->getReflectionProperty($fieldName);
+        $value     = null;
+
+        if (! method_exists($reflField, 'isInitialized') || $reflField->isInitialized($entity)) {
+            $value = $reflField->getValue($entity);
+        }
 
         if ($value === null || is_array($value)) {
             $value = new ArrayCollection((array) $value);
@@ -196,7 +204,7 @@ class ObjectHydrator extends AbstractHydrator
             );
             $value->setOwner($entity, $relation);
 
-            $class->reflFields[$fieldName]->setValue($entity, $value);
+            $reflField->setValue($entity, $value);
             $this->_uow->setOriginalEntityProperty($oid, $fieldName, $value);
 
             $this->initializedCollections[$oid . $fieldName] = $value;
@@ -352,9 +360,10 @@ class ObjectHydrator extends AbstractHydrator
                 }
 
                 $parentClass    = $this->_metadataCache[$this->_rsm->aliasMap[$parentAlias]];
-                $relationField  = $this->_rsm->relationMap[$dqlAlias];
-                $relation       = $parentClass->associationMappings[$relationField];
-                $reflField      = $parentClass->reflFields[$relationField];
+                assert($parentClass instanceof ClassMetadata);
+                $relationField = $this->_rsm->relationMap[$dqlAlias];
+                $relation      = $parentClass->getAssociationMapping($relationField);
+                $reflField     = $parentClass->getReflectionProperty($relationField);
 
                 // Get a reference to the parent object to which the joined element belongs.
                 if ($this->_rsm->isMixed && isset($this->rootAliases[$parentAlias])) {
@@ -375,13 +384,16 @@ class ObjectHydrator extends AbstractHydrator
                     continue;
                 }
 
-                $oid = spl_object_hash($parentObject);
+                $oid            = spl_object_hash($parentObject);
+                $reflFieldValue = null;
+
+                if (! method_exists($reflField, 'isInitialized') || $reflField->isInitialized($parentObject)) {
+                    $reflFieldValue = $reflField->getValue($parentObject);
+                }
 
                 // Check the type of the relation (many or single-valued)
                 if ( ! ($relation['type'] & ClassMetadata::TO_ONE)) {
                     // PATH A: Collection-valued association
-                    $reflFieldValue = $reflField->getValue($parentObject);
-
                     if (isset($nonemptyComponents[$dqlAlias])) {
                         $collKey = $oid . $relationField;
                         if (isset($this->initializedCollections[$collKey])) {
@@ -429,8 +441,6 @@ class ObjectHydrator extends AbstractHydrator
 
                 } else {
                     // PATH B: Single-valued association
-                    $reflFieldValue = $reflField->getValue($parentObject);
-
                     if ( ! $reflFieldValue || isset($this->_hints[Query::HINT_REFRESH]) || ($reflFieldValue instanceof Proxy && !$reflFieldValue->__isInitialized__)) {
                         // we only need to take action if this value is null,
                         // we refresh the entity or its an uninitialized proxy.
@@ -439,23 +449,24 @@ class ObjectHydrator extends AbstractHydrator
                             $reflField->setValue($parentObject, $element);
                             $this->_uow->setOriginalEntityProperty($oid, $relationField, $element);
                             $targetClass = $this->_metadataCache[$relation['targetEntity']];
+                            assert($targetClass instanceof ClassMetadata);
 
                             if ($relation['isOwningSide']) {
                                 // TODO: Just check hints['fetched'] here?
                                 // If there is an inverse mapping on the target class its bidirectional
                                 if ($relation['inversedBy']) {
-                                    $inverseAssoc = $targetClass->associationMappings[$relation['inversedBy']];
+                                    $inverseAssoc = $targetClass->getAssociationMapping($relation['inversedBy']);
                                     if ($inverseAssoc['type'] & ClassMetadata::TO_ONE) {
-                                        $targetClass->reflFields[$inverseAssoc['fieldName']]->setValue($element, $parentObject);
+                                        $targetClass->getReflectionProperty($inverseAssoc['fieldName'])->setValue($element, $parentObject);
                                         $this->_uow->setOriginalEntityProperty(spl_object_hash($element), $inverseAssoc['fieldName'], $parentObject);
                                     }
                                 } else if ($parentClass === $targetClass && $relation['mappedBy']) {
                                     // Special case: bi-directional self-referencing one-one on the same class
-                                    $targetClass->reflFields[$relationField]->setValue($element, $parentObject);
+                                    $targetClass->getReflectionProperty($relationField)->setValue($element, $parentObject);
                                 }
                             } else {
                                 // For sure bidirectional, as there is no inverse side in unidirectional mappings
-                                $targetClass->reflFields[$relation['mappedBy']]->setValue($element, $parentObject);
+                                $targetClass->getReflectionProperty($relation['mappedBy'])->setValue($element, $parentObject);
                                 $this->_uow->setOriginalEntityProperty(spl_object_hash($element), $relation['mappedBy'], $parentObject);
                             }
                             // Update result pointer
