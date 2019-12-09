@@ -427,7 +427,11 @@ class UnitOfWork implements PropertyChangedListener
             $conn->commit();
         } catch (Throwable $e) {
             $this->em->close();
-            $conn->rollBack();
+            try {
+                $conn->rollBack();
+            } catch (Throwable $e2) {
+                throw new \Exception('UoW debug: ' . $e->getMessage() . ', ' . $e2->getMessage() . ', ' . $e);
+            }
 
             $this->afterTransactionRolledBack();
 
