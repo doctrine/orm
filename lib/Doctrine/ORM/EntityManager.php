@@ -28,6 +28,8 @@ use Doctrine\ORM\Query\ResultSetMapping;
 use Doctrine\ORM\Proxy\ProxyFactory;
 use Doctrine\ORM\Query\FilterCollection;
 use Doctrine\Common\Util\ClassUtils;
+use Doctrine\Persistence\Mapping\MappingException;
+use Doctrine\Persistence\ObjectRepository;
 use Throwable;
 use const E_USER_DEPRECATED;
 use function trigger_error;
@@ -546,9 +548,9 @@ use function trigger_error;
      *
      * @return void
      *
-     * @throws ORMInvalidArgumentException                           if a non-null non-string value is given
-     * @throws \Doctrine\Common\Persistence\Mapping\MappingException if a $entityName is given, but that entity is not
-     *                                                               found in the mappings
+     * @throws ORMInvalidArgumentException If a non-null non-string value is given.
+     * @throws MappingException            If a $entityName is given, but that entity is not
+     *                                     found in the mappings.
      */
     public function clear($entityName = null)
     {
@@ -729,7 +731,7 @@ use function trigger_error;
      *
      * @param string $entityName The name of the entity.
      *
-     * @return \Doctrine\Common\Persistence\ObjectRepository|\Doctrine\ORM\EntityRepository The repository class.
+     * @return ObjectRepository|EntityRepository The repository class.
      */
     public function getRepository($entityName)
     {

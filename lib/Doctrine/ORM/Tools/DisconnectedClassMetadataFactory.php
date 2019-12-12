@@ -19,8 +19,8 @@
 
 namespace Doctrine\ORM\Tools;
 
-use Doctrine\Common\Persistence\Mapping\StaticReflectionService;
 use Doctrine\ORM\Mapping\ClassMetadataFactory;
+use Doctrine\Persistence\Mapping\StaticReflectionService;
 
 /**
  * The DisconnectedClassMetadataFactory is used to create ClassMetadataInfo objects
@@ -39,7 +39,7 @@ use Doctrine\ORM\Mapping\ClassMetadataFactory;
 class DisconnectedClassMetadataFactory extends ClassMetadataFactory
 {
     /**
-     * @return \Doctrine\Common\Persistence\Mapping\StaticReflectionService
+     * @return StaticReflectionService
      */
     public function getReflectionService()
     {
