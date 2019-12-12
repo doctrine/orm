@@ -19,6 +19,8 @@
 
 namespace Doctrine\ORM\Query\AST\Functions;
 
+use Doctrine\DBAL\Types\Type;
+use Doctrine\ORM\Query\AST\TypedExpression;
 use Doctrine\ORM\Query\Parser;
 use Doctrine\ORM\Query\SqlWalker;
 use Doctrine\ORM\Query\AST\AggregateExpression;
@@ -29,7 +31,7 @@ use Doctrine\ORM\Query\AST\AggregateExpression;
  * @since   2.6
  * @author  Mathew Davies <thepixeldeveloper@icloud.com>
  */
-final class CountFunction extends FunctionNode
+final class CountFunction extends FunctionNode implements TypedExpression
 {
     /**
      * @var AggregateExpression
@@ -50,5 +52,10 @@ final class CountFunction extends FunctionNode
     public function parse(Parser $parser): void
     {
         $this->aggregateExpression = $parser->AggregateExpression();
+    }
+
+    public function getReturnType() : Type
+    {
+        return Type::getType(Type::INTEGER);
     }
 }
