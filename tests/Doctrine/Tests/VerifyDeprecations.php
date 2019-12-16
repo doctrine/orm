@@ -1,10 +1,12 @@
 <?php
+
 declare(strict_types=1);
 
 namespace Doctrine\Tests;
 
-use function set_error_handler;
 use const E_USER_DEPRECATED;
+use function in_array;
+use function set_error_handler;
 
 trait VerifyDeprecations
 {
