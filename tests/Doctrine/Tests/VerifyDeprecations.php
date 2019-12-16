@@ -1,10 +1,12 @@
 <?php
+
 declare(strict_types=1);
 
 namespace Doctrine\Tests;
 
-use function set_error_handler;
 use const E_USER_DEPRECATED;
+use function in_array;
+use function set_error_handler;
 
 trait VerifyDeprecations
 {
@@ -14,6 +16,9 @@ trait VerifyDeprecations
     /** @var string[] */
     private $actualDeprecations = [];
 
+    /** @var string[] */
+    private $ignoredDeprecations = [];
+
     /** @var callable|null */
     private $originalHandler;
 
@@ -22,9 +27,14 @@ trait VerifyDeprecations
     {
         $this->actualDeprecations   = [];
         $this->expectedDeprecations = [];
+        $this->ignoredDeprecations  = [];
 
         $this->originalHandler = set_error_handler(
             function (int $errorNumber, string $errorMessage) : void {
+                if (in_array($errorMessage, $this->ignoredDeprecations, true)) {
+                    return;
+                }
+
                 $this->actualDeprecations[] = $errorMessage;
             },
             E_USER_DEPRECATED
@@ -50,6 +60,11 @@ trait VerifyDeprecations
             $this->actualDeprecations,
             'Triggered deprecation messages do not match with expected ones.'
         );
+    }
+
+    protected function ignoreDeprecationMessage(string $message) : void
+    {
+        $this->ignoredDeprecations[] = $message;
     }
 
     protected function expectDeprecationMessage(string $message) : void
