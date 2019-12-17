@@ -22,7 +22,8 @@ namespace Doctrine\ORM\Tools\Console;
 use Doctrine\DBAL\Tools\Console as DBALConsole;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Tools\Console\Helper\EntityManagerHelper;
-use Doctrine\ORM\Version;
+use OutOfBoundsException;
+use PackageVersions\Versions;
 use Symfony\Component\Console\Application;
 use Symfony\Component\Console\Helper\HelperSet;
 
@@ -70,10 +71,11 @@ final class ConsoleRunner
      * @param array                                       $commands
      *
      * @return \Symfony\Component\Console\Application
+     * @throws OutOfBoundsException
      */
     public static function createApplication(HelperSet $helperSet, array $commands = []) : Application
     {
-        $cli = new Application('Doctrine Command Line Interface', Version::VERSION);
+        $cli = new Application('Doctrine Command Line Interface', Versions::getVersion('doctrine/orm'));
         $cli->setCatchExceptions(true);
         $cli->setHelperSet($helperSet);
         self::addCommands($cli);
