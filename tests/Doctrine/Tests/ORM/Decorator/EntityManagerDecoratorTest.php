@@ -94,7 +94,7 @@ class EntityManagerDecoratorTest extends TestCase
 
         $this->assertSame($return, $decorator->$method(...$parameters));
 
-        if (in_array($method, ['copy', 'merge', 'detach', 'getHydrator'], true)) {
+        if (in_array($method, ['copy', 'merge', 'detach', 'getHydrator', 'getCache'], true)) {
             $this->assertHasDeprecationMessages();
             return;
         }

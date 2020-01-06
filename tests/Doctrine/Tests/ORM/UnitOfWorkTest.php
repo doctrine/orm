@@ -12,7 +12,6 @@ use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\OptimisticLockException;
 use Doctrine\ORM\ORMInvalidArgumentException;
 use Doctrine\ORM\UnitOfWork;
-use Doctrine\Tests\Mocks\ConnectionCommitFailMock;
 use Doctrine\Tests\Mocks\ConnectionMock;
 use Doctrine\Tests\Mocks\DriverMock;
 use Doctrine\Tests\Mocks\EntityManagerMock;
@@ -795,14 +794,18 @@ class UnitOfWorkTest extends OrmTestCase
     /**
      * @group #7946 Throw OptimisticLockException when connection::commit() returns false.
      */
-    public function testCommitThrowOptimisticLockExceptionWhenConnectionCommitReturnFalse(): void
+    public function testCommitThrowOptimisticLockExceptionWhenConnectionCommitReturnFalse() : void
     {
         // Set another connection mock that fail on commit
-        $this->_connectionMock = new ConnectionCommitFailMock([], new DriverMock());
-        $this->eventManager = $this->getMockBuilder(EventManager::class)->getMock();
-        $this->_emMock = EntityManagerMock::create($this->_connectionMock, null, $this->eventManager);
-        $this->_unitOfWork = new UnitOfWorkMock($this->_emMock);
+        $this->_connectionMock = $this->getMockBuilder(ConnectionMock::class)
+            ->setConstructorArgs([[], new DriverMock()])
+            ->setMethods(['commit'])
+            ->getMock();
+        $this->_emMock         = EntityManagerMock::create($this->_connectionMock, null, $this->eventManager);
+        $this->_unitOfWork     = new UnitOfWorkMock($this->_emMock);
         $this->_emMock->setUnitOfWork($this->_unitOfWork);
+
+        $this->_connectionMock->method('commit')->willReturn(false);
 
         // Setup fake persister and id generator
         $userPersister = new EntityPersisterMock($this->_emMock, $this->_emMock->getClassMetadata(ForumUser::class));
@@ -810,7 +813,7 @@ class UnitOfWorkTest extends OrmTestCase
         $this->_unitOfWork->setEntityPersister(ForumUser::class, $userPersister);
 
         // Create a test user
-        $user = new ForumUser();
+        $user           = new ForumUser();
         $user->username = 'Jasper';
         $this->_unitOfWork->persist($user);
 

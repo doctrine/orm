@@ -47,6 +47,7 @@ use InvalidArgumentException;
 use Throwable;
 use UnexpectedValueException;
 use function get_class;
+use function is_object;
 
 /**
  * The UnitOfWork is responsible for tracking changes to objects during an
@@ -425,7 +426,7 @@ class UnitOfWork implements PropertyChangedListener
             }
 
             // Commit failed silently
-            if ( ! $conn->commit()) {
+            if ($conn->commit() === false) {
                 $object = is_object($entity) ? $entity : null;
 
                 throw new OptimisticLockException('Commit failed', $object);
