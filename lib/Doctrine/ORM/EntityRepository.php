@@ -158,6 +158,11 @@ class EntityRepository implements ObjectRepository, Selectable
      */
     public function count(array $criteria)
     {
+        return $this->countBy($criteria);
+    }
+    
+    public function countBy(array $criteria)
+    {
         return $this->em->getUnitOfWork()->getEntityPersister($this->entityName)->count($criteria);
     }
 
