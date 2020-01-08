@@ -3,8 +3,8 @@
 namespace Doctrine\Tests\ORM\Tools\Console;
 
 use Doctrine\ORM\Tools\Console\ConsoleRunner;
-use Doctrine\ORM\Version;
 use Doctrine\Tests\DoctrineTestCase;
+use PackageVersions\Versions;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Helper\HelperSet;
 
@@ -21,7 +21,7 @@ final class ConsoleRunnerTest extends DoctrineTestCase
         $app       = ConsoleRunner::createApplication($helperSet);
 
         self::assertSame($helperSet, $app->getHelperSet());
-        self::assertEquals(Version::VERSION, $app->getVersion());
+        self::assertSame(Versions::getVersion('doctrine/orm'), $app->getVersion());
 
         self::assertTrue($app->has('dbal:import'));
         self::assertTrue($app->has('dbal:reserved-words'));

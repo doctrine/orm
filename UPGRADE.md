@@ -10,6 +10,12 @@ Method `Doctrine\ORM\AbstractQuery#useResultCache()` which could be used for bot
 To optimize DB interaction, `Doctrine\ORM\Tools\Pagination\Paginator` no longer fetches identifiers to be able to
 perform the pagination with join collections when max results isn't set in the query.
 
+## Minor BC BREAK: tables filtered with `schema_filter` are no longer created
+
+When generating schema diffs, if a source table is filtered out by a `schema_filter` expression, then a `CREATE TABLE` was
+always generated, even if the table already existed. This has been changed in this release and the table will no longer
+be created.
+
 ## Deprecated number unaware `Doctrine\ORM\Mapping\UnderscoreNamingStrategy`
 
 In the last patch of the `v2.6.x` series, we fixed a bug that was not converting names properly when they had numbers

@@ -26,6 +26,7 @@ use Doctrine\ORM\Mapping\ClassMetadataInfo;
 use const E_USER_DEPRECATED;
 use function str_replace;
 use function trigger_error;
+use function var_export;
 
 /**
  * Generic class used to generate PHP5 entity classes from ClassMetadataInfo instances.
@@ -1328,9 +1329,17 @@ public function __construct(<params>)
                 continue;
             }
 
+            $defaultValue = '';
+            if (isset($fieldMapping['options']['default'])) {
+                if ($fieldMapping['type'] === 'boolean' && $fieldMapping['options']['default'] === '1') {
+                    $defaultValue = ' = true';
+                } else {
+                    $defaultValue = ' = ' . var_export($fieldMapping['options']['default'], true);
+                }
+            }
+
             $lines[] = $this->generateFieldMappingPropertyDocBlock($fieldMapping, $metadata);
-            $lines[] = $this->spaces . $this->fieldVisibility . ' $' . $fieldMapping['fieldName']
-                     . (isset($fieldMapping['options']['default']) ? ' = ' . var_export($fieldMapping['options']['default'], true) : null) . ";\n";
+            $lines[] = $this->spaces . $this->fieldVisibility . ' $' . $fieldMapping['fieldName'] . $defaultValue . ";\n";
         }
 
         return implode("\n", $lines);

@@ -28,6 +28,12 @@ class EntityManagerDecoratorTest extends TestCase
      */
     private $wrapped;
 
+    /** @before */
+    public function ignoreDeprecationMessagesFromDoctrinePersistence() : void
+    {
+        $this->ignoreDeprecationMessage('The Doctrine\Common\Persistence\ObjectManagerDecorator class is deprecated since doctrine/persistence 1.3 and will be removed in 2.0. Use \Doctrine\Persistence\ObjectManagerDecorator instead.');
+    }
+
     public function setUp()
     {
         $this->wrapped = $this->createMock(EntityManagerInterface::class);

@@ -13,6 +13,7 @@ use Doctrine\Tests\Models\DDC2372\DDC2372Admin;
 use Doctrine\Tests\Models\DDC2372\DDC2372User;
 use Doctrine\Tests\OrmTestCase;
 use Doctrine\Tests\VerifyDeprecations;
+use ReflectionClass;
 
 class EntityGeneratorTest extends OrmTestCase
 {
@@ -325,6 +326,25 @@ class EntityGeneratorTest extends OrmTestCase
         $reflMethod = new \ReflectionMethod($metadata->name, 'setIsbn');
         $reflParameters = $reflMethod->getParameters();
         $this->assertEquals($isbnMetadata->name, $reflParameters[0]->getClass()->name);
+    }
+
+    public function testBooleanDefaultValue()
+    {
+        $metadata = $this->generateBookEntityFixture(['isbn' => $this->generateIsbnEmbeddableFixture()]);
+
+        $metadata->mapField(['fieldName' => 'foo', 'type' => 'boolean', 'options' => ['default' => '1']]);
+
+        $testEmbeddableMetadata = $this->generateTestEmbeddableFixture();
+        $this->mapEmbedded('testEmbedded', $metadata, $testEmbeddableMetadata);
+
+        $this->_generator->writeEntityClass($metadata, $this->_tmpDir);
+
+        $this->assertFileExists($this->_tmpDir . '/' . $this->_namespace . '/EntityGeneratorBook.php~');
+
+        $book      = $this->newInstance($metadata);
+        $reflClass = new ReflectionClass($metadata->name);
+
+        $this->assertTrue($book->getfoo());
     }
 
     public function testEntityUpdatingWorks()
