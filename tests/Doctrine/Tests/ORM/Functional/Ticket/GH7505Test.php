@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Doctrine\Tests\ORM\Functional\Ticket;
 
-use Doctrine\ORM\Annotation as ORM;
 use Doctrine\Tests\OrmFunctionalTestCase;
 
 final class GH7505Test extends OrmFunctionalTestCase
@@ -26,15 +25,15 @@ final class GH7505Test extends OrmFunctionalTestCase
     public function testSimpleArrayTypeHydratedCorrectly() : void
     {
         $arrayResponse = new GH7505ArrayResponse();
-        $this->em->persist($arrayResponse);
+        $this->_em->persist($arrayResponse);
 
         $textResponse = new GH7505TextResponse();
-        $this->em->persist($textResponse);
+        $this->_em->persist($textResponse);
 
-        $this->em->flush();
-        $this->em->clear();
+        $this->_em->flush();
+        $this->_em->clear();
 
-        $repository = $this->em->getRepository(GH7505AbstractResponse::class);
+        $repository = $this->_em->getRepository(GH7505AbstractResponse::class);
 
         /** @var GH7505ArrayResponse $arrayResponse */
         $arrayResponse = $repository->find($arrayResponse->id);
@@ -47,11 +46,11 @@ final class GH7505Test extends OrmFunctionalTestCase
 }
 
 /**
- * @ORM\Entity()
- * @ORM\Table(name="gh7505_responses")
- * @ORM\InheritanceType("SINGLE_TABLE")
- * @ORM\DiscriminatorColumn(name="discr", type="string")
- * @ORM\DiscriminatorMap({
+ * @Entity()
+ * @Table(name="gh7505_responses")
+ * @InheritanceType("SINGLE_TABLE")
+ * @DiscriminatorColumn(name="discr", type="string")
+ * @DiscriminatorMap({
  *     "array" = GH7505ArrayResponse::class,
  *     "text"  = GH7505TextResponse::class,
  * })
@@ -59,19 +58,19 @@ final class GH7505Test extends OrmFunctionalTestCase
 abstract class GH7505AbstractResponse
 {
     /**
-     * @ORM\Id @ORM\GeneratedValue
-     * @ORM\Column(type="integer")
+     * @Id @GeneratedValue
+     * @Column(type="integer")
      */
     public $id;
 }
 
 /**
- * @ORM\Entity()
+ * @Entity()
  */
 class GH7505ArrayResponse extends GH7505AbstractResponse
 {
     /**
-     * @ORM\Column(name="value_array", type="simple_array")
+     * @Column(name="value_array", type="simple_array")
      *
      * @var array
      */
@@ -79,12 +78,12 @@ class GH7505ArrayResponse extends GH7505AbstractResponse
 }
 
 /**
- * @ORM\Entity()
+ * @Entity()
  */
 class GH7505TextResponse extends GH7505AbstractResponse
 {
     /**
-     * @ORM\Column(name="value_string", type="string")
+     * @Column(name="value_string", type="string")
      *
      * @var string|null
      */
