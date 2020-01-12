@@ -112,6 +112,11 @@ abstract class SQLFilter
         return serialize($this->parameters);
     }
 
+    final protected function getEntityManager() : EntityManagerInterface
+    {
+        return $this->em;
+    }
+
     /**
      * Returns the database connection used by the entity manager
      *
