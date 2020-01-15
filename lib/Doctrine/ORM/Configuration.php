@@ -17,6 +17,7 @@ use Doctrine\ORM\Cache\Exception\MetadataCacheUsesNonPersistentCache;
 use Doctrine\ORM\Cache\Exception\QueryCacheNotConfigured;
 use Doctrine\ORM\Cache\Exception\QueryCacheUsesNonPersistentCache;
 use Doctrine\ORM\Exception\InvalidEntityRepository;
+use Doctrine\ORM\Exception\ORMException;
 use Doctrine\ORM\Exception\ProxyClassesAlwaysRegenerating;
 use Doctrine\ORM\Mapping\ClassMetadataFactory;
 use Doctrine\ORM\Mapping\DefaultEntityListenerResolver;
@@ -72,13 +73,19 @@ class Configuration extends DBALConfiguration
     /** @var string[] of hydrator class names, indexed by mode name */
     private $customHydrationModes = [];
 
-    /** @var string */
+    /**
+     * @var string
+     * @psalm-var class-string
+     */
     private $classMetadataFactoryClassName = ClassMetadataFactory::class;
 
     /** @var string[] of filter class names, indexed by filter name */
     private $filters;
 
-    /** @var string */
+    /**
+     * @var string
+     * @psalm-var class-string
+     */
     private $defaultRepositoryClassName = EntityRepository::class;
 
     /** @var NamingStrategy|null */
@@ -276,6 +283,7 @@ class Configuration extends DBALConfiguration
      * Gets the implementation class name of a registered custom string DQL function.
      *
      * @return string|callable|null
+     * @psalm-return class-string|callable|null
      */
     public function getCustomStringFunction(string $functionName)
     {
@@ -317,6 +325,7 @@ class Configuration extends DBALConfiguration
      * Gets the implementation class name of a registered custom numeric DQL function.
      *
      * @return string|callable|null
+     * @psalm-return class-string|callable|null
      */
     public function getCustomNumericFunction(string $functionName)
     {
@@ -348,6 +357,7 @@ class Configuration extends DBALConfiguration
      * DQL function names are case-insensitive.
      *
      * @param string|callable $classNameOrFactory Class name or a callable that returns the function.
+     * @psalm-param class-string|callable $classNameOrFactory
      */
     public function addCustomDatetimeFunction(string $functionName, $classNameOrFactory)
     {
@@ -358,6 +368,7 @@ class Configuration extends DBALConfiguration
      * Gets the implementation class name of a registered custom date/time DQL function.
      *
      * @return string|callable|null
+     * @psalm-return class-string|callable|null
      */
     public function getCustomDatetimeFunction(string $functionName)
     {
@@ -372,7 +383,7 @@ class Configuration extends DBALConfiguration
      *
      * Any previously added date/time functions are discarded.
      *
-     * @param iterable|string[] $functions The map of custom DQL date/time functions.
+     * @param string[] $functions The map of custom DQL date/time functions.
      */
     public function setCustomDatetimeFunctions(array $functions) : void
     {
@@ -399,6 +410,7 @@ class Configuration extends DBALConfiguration
      * Gets the hydrator class for the given hydration mode name.
      *
      * @return string|null The hydrator class name.
+     * @psalm-return ?class-string
      */
     public function getCustomHydrationMode(string $modeName) : ?string
     {
@@ -415,12 +427,16 @@ class Configuration extends DBALConfiguration
 
     /**
      * Sets a class metadata factory.
+     * @psalm-param class-string $classMetadataFactoryClassName
      */
     public function setClassMetadataFactoryName(string $classMetadataFactoryClassName) : void
     {
         $this->classMetadataFactoryClassName = $classMetadataFactoryClassName;
     }
 
+    /**
+     * @psalm-return class-string
+     */
     public function getClassMetadataFactoryName() : string
     {
         return $this->classMetadataFactoryClassName;
@@ -438,6 +454,7 @@ class Configuration extends DBALConfiguration
      * Gets the class name for a given filter name.
      *
      * @return string|null The class name of the filter
+     * @psalm-return ?class-string
      */
     public function getFilterClassName(string $filterName) : ?string
     {
@@ -462,6 +479,7 @@ class Configuration extends DBALConfiguration
 
     /**
      * Get default repository class.
+     * @psalm-return class-string
      */
     public function getDefaultRepositoryClassName() : string
     {

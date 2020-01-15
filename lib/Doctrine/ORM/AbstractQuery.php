@@ -13,6 +13,7 @@ use Doctrine\ORM\Cache\Exception\InvalidResultCacheDriver;
 use Doctrine\ORM\Cache\Logging\CacheLogger;
 use Doctrine\ORM\Cache\QueryCacheKey;
 use Doctrine\ORM\Cache\TimestampCacheKey;
+use Doctrine\ORM\Exception\ORMException;
 use Doctrine\ORM\Internal\Hydration\IterableResult;
 use Doctrine\ORM\Mapping\MappingException;
 use Doctrine\ORM\Query\Parameter;

@@ -33,6 +33,7 @@ class ClassMetadata extends ComponentMetadata implements TableOwner
      * (Optional).
      *
      * @var string
+     * @psalm-var class-string
      */
     protected $customRepositoryClassName;
 
@@ -869,6 +870,9 @@ class ClassMetadata extends ComponentMetadata implements TableOwner
         $this->customRepositoryClassName = $repositoryClassName;
     }
 
+    /**
+     * @psalm-return ?class-string
+     */
     public function getCustomRepositoryClassName() : ?string
     {
         return $this->customRepositoryClassName;

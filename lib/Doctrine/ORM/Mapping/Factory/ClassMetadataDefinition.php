@@ -11,7 +11,10 @@ class ClassMetadataDefinition
     /** @var string */
     public $entityClassName;
 
-    /** @var string */
+    /**
+     * @var string
+     * @psalm-var class-string
+     */
     public $metadataClassName;
 
     /** @var ClassMetadata|null */

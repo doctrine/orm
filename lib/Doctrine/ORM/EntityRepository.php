@@ -10,6 +10,7 @@ use Doctrine\Common\Collections\Criteria;
 use Doctrine\Common\Collections\Selectable;
 use Doctrine\Common\Inflector\Inflector;
 use Doctrine\Common\Persistence\ObjectRepository;
+use Doctrine\ORM\Exception\ORMException;
 use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\Query\ResultSetMappingBuilder;
 use Doctrine\ORM\Repository\Exception\InvalidMagicMethodCall;

@@ -41,6 +41,7 @@ class Parser
      * READ-ONLY: Maps BUILT-IN string function names to AST class names.
      *
      * @var string[]
+     * @psalm-var class-string<Functions\FunctionNode>
      */
     private static $_STRING_FUNCTIONS = [
         'concat'    => Functions\ConcatFunction::class,
@@ -55,6 +56,7 @@ class Parser
      * READ-ONLY: Maps BUILT-IN numeric function names to AST class names.
      *
      * @var string[]
+     * @psalm-var class-string<Functions\FunctionNode>
      */
     private static $_NUMERIC_FUNCTIONS = [
         'length'    => Functions\LengthFunction::class,
@@ -79,6 +81,7 @@ class Parser
      * READ-ONLY: Maps BUILT-IN datetime function names to AST class names.
      *
      * @var string[]
+     * @psalm-var class-string<Functions\FunctionNode>
      */
     private static $_DATETIME_FUNCTIONS = [
         'current_date'      => Functions\CurrentDateFunction::class,

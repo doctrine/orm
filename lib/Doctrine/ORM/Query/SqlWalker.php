@@ -127,6 +127,7 @@ class SqlWalker implements TreeWalker
      * Map of all components/classes that appear in the DQL query.
      *
      * @var mixed[][]
+     * @psalm-var array<string, array{metadata: ClassMetadata, mixed}>
      */
     private $queryComponents;
 
@@ -209,6 +210,7 @@ class SqlWalker implements TreeWalker
      * @param string $dqlAlias The DQL alias.
      *
      * @return mixed[][]
+     * @psalm-return array{metadata: ClassMetadata, mixed}
      */
     public function getQueryComponent($dqlAlias)
     {

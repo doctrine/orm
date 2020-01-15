@@ -15,7 +15,7 @@ interface MappingDriver
     /**
      * Loads the metadata for the specified class into the provided container.
      *
-     * @return void
+     * @return ComponentMetadata
      */
     public function loadMetadataForClass(
         string $className,
