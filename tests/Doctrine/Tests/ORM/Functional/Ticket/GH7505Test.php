@@ -6,6 +6,9 @@ namespace Doctrine\Tests\ORM\Functional\Ticket;
 
 use Doctrine\Tests\OrmFunctionalTestCase;
 
+/**
+ * @group GH7505
+ */
 final class GH7505Test extends OrmFunctionalTestCase
 {
     /**
