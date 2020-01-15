@@ -133,7 +133,7 @@ final class Query extends AbstractQuery
      *
      * @var integer
      */
-    private $_state = self::STATE_CLEAN;
+    private $_state = self::STATE_DIRTY;
 
     /**
      * A snapshot of the parameter types the query was parsed with.
