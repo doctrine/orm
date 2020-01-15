@@ -74,7 +74,6 @@ class GH7505ArrayResponse extends GH7505AbstractResponse
 {
     /**
      * @Column(name="value_array", type="simple_array")
-     *
      * @var array
      */
     public $value = [];
@@ -87,7 +86,6 @@ class GH7505TextResponse extends GH7505AbstractResponse
 {
     /**
      * @Column(name="value_string", type="string")
-     *
      * @var string|null
      */
     public $value;

@@ -22,6 +22,7 @@ namespace Doctrine\ORM\Internal\Hydration;
 use PDO;
 use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\Query;
+use function in_array;
 
 class SimpleObjectHydrator extends AbstractHydrator
 {
