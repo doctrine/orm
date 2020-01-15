@@ -114,7 +114,7 @@ final class StaticProxyFactory implements ProxyFactory
             // we don't care
             array $parameters,
             // we don't care
-            & $initializer,
+            &$initializer,
             array $properties // we currently do not use this
         ) use (
             $metadata,

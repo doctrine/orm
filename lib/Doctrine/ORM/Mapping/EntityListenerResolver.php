@@ -22,9 +22,10 @@ interface EntityListenerResolver
      * Returns a entity listener instance for the given class name.
      *
      * @param string $className The fully-qualified class name
-     * @psalm-param class-string $className
      *
      * @return object An entity listener
+     *
+     * @psalm-param class-string $className
      */
     public function resolve($className);
 
