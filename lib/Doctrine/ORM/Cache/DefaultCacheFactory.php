@@ -196,7 +196,14 @@ class DefaultCacheFactory implements CacheFactory
     public function getRegion(array $cache)
     {
         if (isset($this->regions[$cache['region']])) {
-            return $this->regions[$cache['region']];
+            $region = $this->regions[$cache['region']];
+            if ($cache['usage'] === ClassMetadata::CACHE_USAGE_READ_WRITE &&
+                !($region instanceof ConcurrentRegion)
+            ) {
+                throw new \LogicException('If you want to use a "READ_WRITE" cache an implementation of "Doctrine\ORM\Cache\ConcurrentRegion" is required');
+            }
+
+            return $region;
         }
 
         $name         = $cache['region'];
