@@ -87,6 +87,7 @@ jobs:
 
     - stage: Code Quality
       env: DB=none STATIC_ANALYSIS
+      php: 7.4
       install: travis_retry composer install --prefer-dist
       before_script:
         - echo "extension=memcached.so" >> ~/.phpenv/versions/$(phpenv version-name)/etc/php.ini
