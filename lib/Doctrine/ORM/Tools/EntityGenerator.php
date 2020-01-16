@@ -149,7 +149,7 @@ class EntityGenerator
     /**
      * Whether or not to make generated embeddables immutable.
      *
-     * @var boolean.
+     * @var bool
      */
     protected $embeddablesImmutable = false;
 
