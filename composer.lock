@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "d404c911e2a46d2abe29f3f70f772f7e",
+    "content-hash": "22be7b4b42da2931c1033f8818a0caa9",
     "packages": [
         {
             "name": "doctrine/annotations",
@@ -807,16 +807,16 @@
         },
         {
             "name": "ocramius/package-versions",
-            "version": "1.0.0",
+            "version": "1.2.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/Ocramius/PackageVersions.git",
-                "reference": "df93e9e62fb7eb246f52a810b1710f95f332a53d"
+                "reference": "ad8a245decad4897cc6b432743913dad0d69753c"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/Ocramius/PackageVersions/zipball/df93e9e62fb7eb246f52a810b1710f95f332a53d",
-                "reference": "df93e9e62fb7eb246f52a810b1710f95f332a53d",
+                "url": "https://api.github.com/repos/Ocramius/PackageVersions/zipball/ad8a245decad4897cc6b432743913dad0d69753c",
+                "reference": "ad8a245decad4897cc6b432743913dad0d69753c",
                 "shasum": ""
             },
             "require": {
@@ -824,8 +824,10 @@
                 "php": "~7.0"
             },
             "require-dev": {
-                "composer/composer": "^1.0.0-ALPHA8@ALPHA",
-                "phpunit/phpunit": "^5.0"
+                "composer/composer": "^1.3",
+                "ext-zip": "*",
+                "humbug/humbug": "dev-master",
+                "phpunit/phpunit": "^6.4"
             },
             "type": "composer-plugin",
             "extra": {
@@ -850,7 +852,7 @@
                 }
             ],
             "description": "Composer plugin that provides efficient querying for installed package versions (no runtime IO)",
-            "time": "2016-01-25T23:26:33+00:00"
+            "time": "2017-11-24T11:07:03+00:00"
         },
         {
             "name": "psr/log",
