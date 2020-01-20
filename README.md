@@ -1,7 +1,7 @@
-| [Master][Master] | [2.5][2.5] |
+| [Master][Master] | [2.8.x][2.8] |
 |:----------------:|:----------:|
-| [![Build status][Master image]][Master] | [![Build status][2.5 image]][2.5] |
-| [![Coverage Status][Master coverage image]][Master coverage] | [![Coverage Status][2.5 coverage image]][2.5 coverage] |
+| [![Build status][Master image]][Master] | [![Build status][2.8 image]][2.8] |
+| [![Coverage Status][Master coverage image]][Master coverage] | [![Coverage Status][2.8 coverage image]][2.8 coverage] |
 
 Doctrine 2 is an object-relational mapper (ORM) for PHP 7.1+ that provides transparent persistence
 for PHP objects. It sits on top of a powerful database abstraction layer (DBAL). One of its key features
@@ -13,14 +13,14 @@ without requiring unnecessary code duplication.
 ## More resources:
 
 * [Website](http://www.doctrine-project.org)
-* [Documentation](http://docs.doctrine-project.org/projects/doctrine-orm/en/latest/index.html)
+* [Documentation](https://www.doctrine-project.org/projects/doctrine-orm/en/latest/index.html)
 
 
   [Master image]: https://img.shields.io/travis/doctrine/orm/master.svg?style=flat-square
   [Master]: https://travis-ci.org/doctrine/orm
   [Master coverage image]: https://img.shields.io/scrutinizer/coverage/g/doctrine/orm/master.svg?style=flat-square
   [Master coverage]: https://scrutinizer-ci.com/g/doctrine/orm/?branch=master
-  [2.5 image]: https://img.shields.io/travis/doctrine/orm/2.5.svg?style=flat-square
-  [2.5]: https://github.com/doctrine/orm/tree/2.5
-  [2.5 coverage image]: https://img.shields.io/scrutinizer/coverage/g/doctrine/orm/2.5.svg?style=flat-square
-  [2.5 coverage]: https://scrutinizer-ci.com/g/doctrine/orm/?branch=2.5
+  [2.8 image]: https://img.shields.io/travis/doctrine/orm/2.8.x.svg?style=flat-square
+  [2.8]: https://github.com/doctrine/orm/tree/2.8.x
+  [2.8 coverage image]: https://img.shields.io/scrutinizer/coverage/g/doctrine/orm/2.8.x.svg?style=flat-square
+  [2.8 coverage]: https://scrutinizer-ci.com/g/doctrine/orm/?branch=2.8.x
