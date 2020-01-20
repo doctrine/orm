@@ -336,7 +336,7 @@ abstract class AbstractQuery
     /**
      * Sets a collection of query parameters.
      *
-     * @param ArrayCollection|mixed[] $parameters
+     * @param ArrayCollection|array<mixed> $parameters
      *
      * @return static This query instance.
      */
