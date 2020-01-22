@@ -165,31 +165,41 @@ class Setup
             return new ArrayCache();
         }
 
-        if (extension_loaded('apcu')) {
-            return new \Doctrine\Common\Cache\ApcuCache();
+        try {
+
+            /*
+            For backwards-compatability, attempt to create a caching provider with
+            default settings if that providers extension is installed.
+            */
+
+            if (extension_loaded('apcu')) {
+                return new \Doctrine\Common\Cache\ApcuCache();
+            }
+
+            if (extension_loaded('memcached')) {
+                $memcached = new \Memcached();
+                $memcached->addServer('127.0.0.1', 11211);
+
+                $cache = new \Doctrine\Common\Cache\MemcachedCache();
+                $cache->setMemcached($memcached);
+
+                return $cache;
+            }
+
+            if (extension_loaded('redis')) {
+                $redis = new \Redis();
+                $redis->connect('127.0.0.1');
+
+                $cache = new \Doctrine\Common\Cache\RedisCache();
+                $cache->setRedis($redis);
+
+                return $cache;
+            }
+            
+            return new ArrayCache();
+            
+        } catch (\Throwable $ex) {
+            throw CacheSetupException::autoSetupFailed($ex);
         }
-
-
-        if (extension_loaded('memcached')) {
-            $memcached = new \Memcached();
-            $memcached->addServer('127.0.0.1', 11211);
-
-            $cache = new \Doctrine\Common\Cache\MemcachedCache();
-            $cache->setMemcached($memcached);
-
-            return $cache;
-        }
-
-        if (extension_loaded('redis')) {
-            $redis = new \Redis();
-            $redis->connect('127.0.0.1');
-
-            $cache = new \Doctrine\Common\Cache\RedisCache();
-            $cache->setRedis($redis);
-
-            return $cache;
-        }
-
-        return new ArrayCache();
     }
 }
