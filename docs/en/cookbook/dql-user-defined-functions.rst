@@ -240,7 +240,7 @@ functionalities in DQL, we would be excited to see user extensions
 that add vendor specific function packages, for example more math
 functions, XML + GIS Support, Hashing functions and so on.
 
-For 2.0 we will come with the current set of functions, however for
+For ORM we will come with the current set of functions, however for
 a future version we will re-evaluate if we can abstract even more
 vendor sql functions and extend the DQL languages scope.
 

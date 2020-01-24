@@ -73,7 +73,7 @@ sample ``cli-config.php`` file looks as follows:
 
     // Any way to access the EntityManager from  your application
     $em = GetMyEntityManager();
-    
+
     $helperSet = new \Symfony\Component\Console\Helper\HelperSet(array(
         'db' => new \Doctrine\DBAL\Tools\Console\Helper\ConnectionHelper($em->getConnection()),
         'em' => new \Doctrine\ORM\Tools\Console\Helper\EntityManagerHelper($em)
@@ -84,7 +84,7 @@ script will ultimately use. The Doctrine Binary will automatically
 find the first instance of HelperSet in the global variable
 namespace and use this.
 
-.. note:: 
+.. note::
 
     You have to adjust this snippet for your specific application or framework
     and use their facilities to access the Doctrine EntityManager and
@@ -375,7 +375,7 @@ First you need to retrieve the metadata instances with the
             $em->getConnection()->getSchemaManager()
         )
     );
-    
+
     $cmf = new \Doctrine\ORM\Tools\DisconnectedClassMetadataFactory();
     $cmf->setEntityManager($em);
     $metadata = $cmf->getAllMetadata();

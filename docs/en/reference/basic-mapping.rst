@@ -484,14 +484,10 @@ according to the used database platform.
 
 .. _reference-basic-mapping-custom-mapping-types:
 
-.. versionadded: 2.3
-
 For more control over column quoting the ``Doctrine\ORM\Mapping\QuoteStrategy`` interface
-was introduced in 2.3. It is invoked for every column, table, alias and other
+was introduced in ORM. It is invoked for every column, table, alias and other
 SQL names. You can implement the QuoteStrategy and set it by calling
 ``Doctrine\ORM\Configuration#setQuoteStrategy()``.
-
-.. versionadded: 2.4
 
 The ANSI Quote Strategy was added, which assumes quoting is not necessary for any SQL name.
 You can use it with the following code:

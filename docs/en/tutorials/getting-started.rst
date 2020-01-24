@@ -23,11 +23,6 @@ installed:
 
 The code of this tutorial is `available on Github <https://github.com/doctrine/doctrine2-orm-tutorial>`_.
 
-.. note::
-
-    This tutorial assumes you work with **Doctrine 2.6** and above.
-    Some of the code will not work with lower versions.
-
 What is Doctrine?
 -----------------
 
@@ -133,9 +128,9 @@ step:
     // bootstrap.php
     use Doctrine\ORM\Tools\Setup;
     use Doctrine\ORM\EntityManager;
-    
+
     require_once "vendor/autoload.php";
-    
+
     // Create a simple "default" Doctrine ORM configuration for Annotations
     $isDevMode = true;
     $proxyDir = null;
@@ -145,13 +140,13 @@ step:
     // or if you prefer yaml or XML
     //$config = Setup::createXMLMetadataConfiguration(array(__DIR__."/config/xml"), $isDevMode);
     //$config = Setup::createYAMLMetadataConfiguration(array(__DIR__."/config/yaml"), $isDevMode);
-    
+
     // database configuration parameters
     $conn = array(
         'driver' => 'pdo_sqlite',
         'path' => __DIR__ . '/db.sqlite',
     );
-    
+
     // obtaining the entity manager
     $entityManager = EntityManager::create($conn, $config);
 
@@ -193,7 +188,7 @@ defined entity classes and their metadata. For this tool to work, a
     <?php
     // cli-config.php
     require_once "bootstrap.php";
-    
+
     return \Doctrine\ORM\Tools\Console\ConsoleRunner::createHelperSet($entityManager);
 
 Now call the Doctrine command-line tool:
@@ -299,14 +294,14 @@ but you only need to choose one.
          */
         class Product
         {
-            /** 
+            /**
              * @ORM\Id
              * @ORM\Column(type="integer")
              * @ORM\GeneratedValue
              */
             protected $id;
-            /** 
-             * @ORM\Column(type="string") 
+            /**
+             * @ORM\Column(type="string")
              */
             protected $name;
 
@@ -563,7 +558,7 @@ classes. We'll store them in ``src/Bug.php`` and ``src/User.php``, respectively.
     use Doctrine\ORM\Mapping as ORM;
 
     /**
-     * @ORM\Entity 
+     * @ORM\Entity
      * @ORM\Table(name="users")
      */
     class User
@@ -611,7 +606,7 @@ foreign keys through their own identities.
 For every foreign key you either have a Doctrine ManyToOne or OneToOne
 association. On the inverse sides of these foreign keys you can have
 OneToMany associations. Obviously you can have ManyToMany associations
-that connect two tables with each other through a join table with 
+that connect two tables with each other through a join table with
 two foreign keys.
 
 Now that you know the basics about references in Doctrine, we can extend the
@@ -833,14 +828,14 @@ the ``Product`` before:
         use Doctrine\ORM\Mapping as ORM;
 
         /**
-         * @ORM\Entity 
+         * @ORM\Entity
          * @ORM\Table(name="bugs")
          */
         class Bug
         {
             /**
-             * @ORM\Id 
-             * @ORM\Column(type="integer") 
+             * @ORM\Id
+             * @ORM\Column(type="integer")
              * @ORM\GeneratedValue
              */
             protected $id;
@@ -937,8 +932,8 @@ the ``Product`` before:
 
 
 Here we have the entity, id and primitive type definitions.
-For the "created" field we have used the ``datetime`` type, 
-which translates the YYYY-mm-dd HH:mm:ss database format 
+For the "created" field we have used the ``datetime`` type,
+which translates the YYYY-mm-dd HH:mm:ss database format
 into a PHP DateTime instance and back.
 
 After the field definitions, the two qualified references to the
@@ -976,8 +971,8 @@ Finally, we'll add metadata mappings for the ``User`` entity.
         class User
         {
             /**
-             * @ORM\Id 
-             * @ORM\GeneratedValue 
+             * @ORM\Id
+             * @ORM\GeneratedValue
              * @ORM\Column(type="integer")
              * @var int
              */
@@ -1216,10 +1211,10 @@ The console output of this script is then:
 
 
     As a last resort you can still use Native SQL and a description of the
-    result set to retrieve entities from the database. DQL boils down to a 
-    Native SQL statement and a ``ResultSetMapping`` instance itself. Using 
-    Native SQL you could even use stored procedures for data retrieval, or 
-    make use of advanced non-portable database queries like PostgreSql's 
+    result set to retrieve entities from the database. DQL boils down to a
+    Native SQL statement and a ``ResultSetMapping`` instance itself. Using
+    Native SQL you could even use stored procedures for data retrieval, or
+    make use of advanced non-portable database queries like PostgreSql's
     recursive queries.
 
 
@@ -1232,7 +1227,7 @@ objects only from Doctrine however. For a simple list view like the
 previous one we only need read access to our entities and can
 switch the hydration from objects to simple PHP arrays instead.
 
-Hydration can be an expensive process so only retrieving what you need can 
+Hydration can be an expensive process so only retrieving what you need can
 yield considerable performance benefits for read-only requests.
 
 Implementing the same list view as before using array hydration we

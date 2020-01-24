@@ -1,8 +1,6 @@
 Composite and Foreign Keys as Primary Key
 =========================================
 
-.. versionadded:: 2.1
-
 Doctrine ORM supports composite primary keys natively. Composite keys are a very powerful relational database concept
 and we took good care to make sure Doctrine ORM supports as many of the composite primary key use-cases.
 For Doctrine ORM composite keys of primitive data-types are supported, even foreign keys as
@@ -119,10 +117,6 @@ and to ``year`` to the related entities.
 
 Identity through foreign Entities
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-.. note::
-
-    Identity through foreign entities is only supported with Doctrine 2.1
 
 There are tons of use-cases where the identity of an Entity should be determined by the entity
 of one or many parent entities.

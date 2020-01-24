@@ -1,13 +1,9 @@
 Working with Indexed Associations
 =================================
 
-.. note::
-
-    This feature is available from version 2.1 of Doctrine.
-
 Doctrine ORM collections are modelled after PHPs native arrays. PHP arrays are an ordered hashmap, but in
 the first version of Doctrine keys retrieved from the database were always numerical unless ``INDEX BY``
-was used. Starting with Doctrine 2.1 you can index your collections by a value in the related entity.
+was used. You can index your collections by a value in the related entity.
 This is a first step towards full ordered hashmap support through the Doctrine ORM.
 The feature works like an implicit ``INDEX BY`` for the selected association but has several
 downsides also:

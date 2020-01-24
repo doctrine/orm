@@ -388,7 +388,7 @@ Optional attributes:
    EntityRepository. Use of repositories for entities is encouraged to keep
    specialized DQL and SQL operations separated from the Model/Domain
    Layer.
--  **readOnly**: (>= 2.1) Specifies that this entity is marked as read only and not
+-  **readOnly**: Specifies that this entity is marked as read only and not
    considered for change-tracking. Entities of this type can be persisted
    and removed though.
 
@@ -817,7 +817,7 @@ The @MappedSuperclass annotation cannot be used in conjunction with
 Optional attributes:
 
 
--  **repositoryClass**: (>= 2.2) Specifies the FQCN of a subclass of the EntityRepository.
+-  **repositoryClass**: Specifies the FQCN of a subclass of the EntityRepository.
    That will be inherited for all subclasses of that Mapped Superclass.
 
 Example:
@@ -1236,7 +1236,7 @@ Optional attributes:
 
 -  **indexes**: Array of @Index annotations
 -  **uniqueConstraints**: Array of @UniqueConstraint annotations.
--  **schema**: (>= 2.5) Name of the schema the table lies in.
+-  **schema**: Name of the schema the table lies in.
 
 Example:
 

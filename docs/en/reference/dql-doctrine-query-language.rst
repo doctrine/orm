@@ -458,8 +458,6 @@ Get all users that have no phonenumber
 Get all instances of a specific type, for use with inheritance
 hierarchies:
 
-.. versionadded:: 2.1
-
 .. code-block:: php
 
     <?php
@@ -469,24 +467,20 @@ hierarchies:
 
 Get all users visible on a given website that have chosen certain gender:
 
-.. versionadded:: 2.2
-
 .. code-block:: php
 
     <?php
     $query = $em->createQuery('SELECT u FROM User u WHERE u.gender IN (SELECT IDENTITY(agl.gender) FROM Site s JOIN s.activeGenderList agl WHERE s.id = ?1)');
 
-.. versionadded:: 2.4
-
-Starting with 2.4, the IDENTITY() DQL function also works for composite primary keys:
+The IDENTITY() DQL function also works for composite primary keys
 
 .. code-block:: php
 
     <?php
     $query = $em->createQuery("SELECT IDENTITY(c.location, 'latitude') AS latitude, IDENTITY(c.location, 'longitude') AS longitude FROM Checkpoint c WHERE c.user = ?1");
 
-Joins between entities without associations were not possible until version
-2.4, where you can generate an arbitrary join with the following syntax:
+Joins between entities without associations are available,
+where you can generate an arbitrary join with the following syntax:
 
 .. code-block:: php
 
@@ -533,8 +527,6 @@ You use the partial syntax when joining as well:
 
 "NEW" Operator Syntax
 ^^^^^^^^^^^^^^^^^^^^^
-
-.. versionadded:: 2.4
 
 Using the ``NEW`` operator you can construct Data Transfer Objects (DTOs) directly from DQL queries.
 

@@ -311,10 +311,8 @@ foreign key semantics of onDelete="CASCADE".
 Deleting an object with all its associated objects can be achieved
 in multiple ways with very different performance impacts.
 
-1. If an association is marked as ``CASCADE=REMOVE`` Doctrine ORM
-   will fetch this association. If it is a Single association it will
 
-1. If an association is marked as ``CASCADE=REMOVE`` Doctrine 2
+1. If an association is marked as ``CASCADE=REMOVE`` Doctrine ORM
    will fetch this association. If its a Single association it will
    pass this entity to
    ´EntityManager#remove()``. If the association is a collection, Doctrine will loop over all    its elements and pass them to``EntityManager#remove()\`.
@@ -745,8 +743,6 @@ Additionally, you can just count the result of the provided conditions when you 
 
 By Criteria
 ~~~~~~~~~~~
-
-.. versionadded:: 2.3
 
 The Repository implement the ``Doctrine\Common\Collections\Selectable``
 interface. That means you can build ``Doctrine\Common\Collections\Criteria``

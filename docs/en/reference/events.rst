@@ -217,7 +217,7 @@ These can be hooked into by two different types of event
 listeners:
 
 -  Lifecycle Callbacks are methods on the entity classes that are
-   called when the event is triggered. As of v2.4 they receive some kind
+   called when the event is triggered. They receive some kind
    of ``EventArgs`` instance.
 -  Lifecycle Event Listeners and Subscribers are classes with specific callback
    methods that receives some kind of ``EventArgs`` instance.
@@ -374,9 +374,7 @@ defined on your ``User`` model.
 Lifecycle Callbacks Event Argument
 -----------------------------------
 
-.. versionadded:: 2.4
-
-Since 2.4 the triggered event is given to the lifecycle-callback.
+The triggered event is also given to the lifecycle-callback.
 
 With the additional argument you have access to the
 ``EntityManager`` and ``UnitOfWork`` APIs inside these callback methods.
@@ -751,8 +749,6 @@ EntityManager.
 
 Entity listeners
 ----------------
-
-.. versionadded:: 2.4
 
 An entity listener is a lifecycle listener class used for an entity.
 
