@@ -1,7 +1,7 @@
 Events
 ======
 
-Doctrine 2 features a lightweight event system that is part of the
+Doctrine ORM features a lightweight event system that is part of the
 Common package. Doctrine uses it to dispatch system events, mainly
 :ref:`lifecycle events <reference-events-lifecycle-events>`.
 You can also use it for your own custom events.
@@ -70,7 +70,7 @@ method.
     <?php
     $evm->removeEventListener(array(self::preFoo, self::postFoo), $this);
 
-The Doctrine 2 event system also has a simple concept of event
+The Doctrine ORM event system also has a simple concept of event
 subscribers. We can define a simple ``TestEventSubscriber`` class
 which implements the ``\Doctrine\Common\EventSubscriber`` interface
 and implements a ``getSubscribedEvents()`` method which returns an
@@ -124,7 +124,7 @@ Now you can test the ``$eventSubscriber`` instance to see if the
 Naming convention
 ~~~~~~~~~~~~~~~~~
 
-Events being used with the Doctrine 2 EventManager are best named
+Events being used with the Doctrine ORM EventManager are best named
 with camelcase and the value of the corresponding constant should
 be the name of the constant itself, even with spelling. This has
 several reasons:

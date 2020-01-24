@@ -293,7 +293,7 @@ Defining Identity and Generator Strategies
 
 An entity has to have at least one ``<id />`` element. For
 composite keys you can specify more than one id-element, however
-surrogate keys are recommended for use with Doctrine 2. The Id
+surrogate keys are recommended for use with Doctrine ORM. The Id
 field allows to define properties of the identifier and allows a
 subset of the ``<field />`` element attributes:
 

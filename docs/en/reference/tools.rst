@@ -5,7 +5,7 @@ Doctrine Console
 ----------------
 
 The Doctrine Console is a Command Line Interface tool for simplifying common
-administration tasks during the development of a project that uses Doctrine 2.
+administration tasks during the development of a project that uses ORM.
 
 Take a look at the :doc:`Installation and Configuration <configuration>`
 chapter for more information how to setup the console command.
@@ -412,7 +412,7 @@ You can also reverse engineer a database using the
 Runtime vs Development Mapping Validation
 -----------------------------------------
 
-For performance reasons Doctrine 2 has to skip some of the
+For performance reasons Doctrine ORM has to skip some of the
 necessary validation of metadata mappings. You have to execute
 this validation in your development workflow to verify the
 associations are correctly defined.

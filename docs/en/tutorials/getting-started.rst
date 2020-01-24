@@ -31,7 +31,7 @@ The code of this tutorial is `available on Github <https://github.com/doctrine/d
 What is Doctrine?
 -----------------
 
-Doctrine 2 is an `object-relational mapper (ORM) <https://en.wikipedia.org/wiki/Object-relational_mapping>`_
+Doctrine ORM is an `object-relational mapper (ORM) <https://en.wikipedia.org/wiki/Object-relational_mapping>`_
 for PHP 7.1+ that provides transparent persistence for PHP objects. It uses the Data Mapper
 pattern at the heart, aiming for a complete separation of your domain/business
 logic from the persistence in a relational database management system.
@@ -123,7 +123,7 @@ Obtaining the EntityManager
 Doctrine's public interface is through the ``EntityManager``. This class
 provides access points to the complete lifecycle management for your entities,
 and transforms entities from and back to persistence. You have to
-configure and create it to use your entities with Doctrine 2. I
+configure and create it to use your entities with Doctrine ORM. I
 will show the configuration steps and then discuss them step by
 step:
 
@@ -680,8 +680,8 @@ careful to implement a bidirectional reference in the domain model.
 The concept of owning or inverse side of a relation is central to
 this notion and should always be kept in mind. The following
 assumptions are made about relations and have to be followed to be
-able to work with Doctrine 2. These assumptions are not unique to
-Doctrine 2 but are best practices in handling database relations
+able to work with Doctrine ORM. These assumptions are not unique to
+Doctrine ORM but are best practices in handling database relations
 and Object-Relational Mapping.
 
 -  In a one-to-one relation, the entity holding the foreign key of

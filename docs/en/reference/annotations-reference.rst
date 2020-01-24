@@ -5,29 +5,29 @@ You've probably used docblock annotations in some form already,
 most likely to provide documentation metadata for a tool like
 ``PHPDocumentor`` (@author, @link, ...). Docblock annotations are a
 tool to embed metadata inside the documentation section which can
-then be processed by some tool. Doctrine 2 generalizes the concept
+then be processed by some tool. Doctrine ORM generalizes the concept
 of docblock annotations so that they can be used for any kind of
 metadata and so that it is easy to define new docblock annotations.
 In order to allow more involved annotation values and to reduce the
-chances of clashes with other docblock annotations, the Doctrine 2
+chances of clashes with other docblock annotations, the Doctrine ORM
 docblock annotations feature an alternative syntax that is heavily
 inspired by the Annotation syntax introduced in Java 5.
 
 The implementation of these enhanced docblock annotations is
 located in the ``Doctrine\Common\Annotations`` namespace and
-therefore part of the Common package. Doctrine 2 docblock
+therefore part of the Common package. Doctrine ORM docblock
 annotations support namespaces and nested annotations among other
-things. The Doctrine 2 ORM defines its own set of docblock
+things. The Doctrine ORM ORM defines its own set of docblock
 annotations for supplying object-relational mapping metadata.
 
 .. note::
 
     If you're not comfortable with the concept of docblock
-    annotations, don't worry, as mentioned earlier Doctrine 2 provides
+    annotations, don't worry, as mentioned earlier Doctrine ORM provides
     XML and YAML alternatives and you could easily implement your own
     favourite mechanism for defining ORM metadata.
 
-In this chapter a reference of every Doctrine 2 Annotation is given
+In this chapter a reference of every Doctrine ORM Annotation is given
 with short explanations on their context and usage.
 
 Index
@@ -213,7 +213,7 @@ Optional attributes:
 ~~~~~~~~~~~~~~~~~~~~~
 
 The Change Tracking Policy annotation allows to specify how the
-Doctrine 2 UnitOfWork should detect changes in properties of
+Doctrine ORM UnitOfWork should detect changes in properties of
 entities during flush. By default each entity is checked according
 to a deferred implicit strategy, which means upon flush UnitOfWork
 compares all the properties of an entity to a previously stored
@@ -254,7 +254,7 @@ Example:
 
     <?php
     /**
-     * @Id 
+     * @Id
      * @Column(type="integer")
      * @GeneratedValue(strategy="CUSTOM")
      * @CustomIdGenerator(class="My\Namespace\MyIdGenerator")

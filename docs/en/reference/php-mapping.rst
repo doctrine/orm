@@ -1,7 +1,7 @@
 PHP Mapping
 ===========
 
-Doctrine 2 also allows you to provide the ORM metadata in the form
+Doctrine ORM also allows you to provide the ORM metadata in the form
 of plain PHP code using the ``ClassMetadata`` API. You can write
 the code in PHP files or inside of a static function named
 ``loadMetadata($class)`` on the entity class itself.

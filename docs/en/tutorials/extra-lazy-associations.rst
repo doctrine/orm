@@ -5,7 +5,7 @@ Extra Lazy Associations
 
 In many cases associations between entities can get pretty large. Even in a simple scenario like a blog.
 where posts can be commented, you always have to assume that a post draws hundreds of comments.
-In Doctrine 2.0 if you accessed an association it would always get loaded completely into memory. This
+In Doctrine ORM if you accessed an association it would always get loaded completely into memory. This
 can lead to pretty serious performance problems, if your associations contain several hundreds or thousands
 of entities.
 
@@ -25,7 +25,7 @@ For each of the above methods the following semantics apply:
 -  For each call, if the Collection is not yet loaded, issue a straight SELECT statement against the database.
 -  For each call, if the collection is already loaded, fallback to the default functionality for lazy collections. No additional SELECT statements are executed.
 
-Additionally even with Doctrine 2.0 the following methods do not trigger the collection load:
+Additionally even with Doctrine ORM the following methods do not trigger the collection load:
 
 -  ``Collection#add($entity)``
 -  ``Collection#offsetSet($key, $entity)`` - ArrayAccess with no specific key ``$coll[] = $entity``, it does

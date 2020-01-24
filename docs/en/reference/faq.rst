@@ -128,10 +128,10 @@ See the previous question for a solution to this task.
 Inheritance
 -----------
 
-Can I use Inheritance with Doctrine 2?
+Can I use Inheritance with Doctrine ORM?
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
- 
-Yes, you can use Single- or Joined-Table Inheritance in Doctrine 2.
+
+Yes, you can use Single- or Joined-Table Inheritance in ORM.
 
 See the documentation chapter on :doc:`inheritance mapping <inheritance-mapping>` for
 the details.

@@ -6,7 +6,7 @@ Aggregate Fields
 You will often come across the requirement to display aggregate
 values of data that can be computed by using the MIN, MAX, COUNT or
 SUM SQL functions. For any ORM this is a tricky issue
-traditionally. Doctrine 2 offers several ways to get access to
+traditionally. Doctrine ORM offers several ways to get access to
 these values and this article will describe all of them from
 different perspectives.
 

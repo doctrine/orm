@@ -407,7 +407,7 @@ There are two approaches to handle this problem in your code:
 Transitive persistence / Cascade Operations
 -------------------------------------------
 
-Doctrine 2 provides a mechanism for transitive persistence through cascading of certain operations.
+Doctrine ORM provides a mechanism for transitive persistence through cascading of certain operations.
 Each association to another entity or a collection of
 entities can be configured to automatically cascade the following operations to the associated entities:
 ``persist``, ``remove``, ``merge``, ``detach``, ``refresh`` or ``all``.

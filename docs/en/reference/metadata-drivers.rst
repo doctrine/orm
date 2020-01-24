@@ -147,7 +147,7 @@ ClassMetadata
 -------------
 
 The last piece you need to know and understand about metadata in
-Doctrine 2 is the API of the ``ClassMetadata`` classes. You need to
+Doctrine ORM is the API of the ``ClassMetadata`` classes. You need to
 be familiar with them in order to implement your own drivers but
 more importantly to retrieve mapping information for a certain
 entity when needed.
