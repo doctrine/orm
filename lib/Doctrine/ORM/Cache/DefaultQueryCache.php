@@ -279,9 +279,11 @@ class DefaultQueryCache implements QueryCache
 
         $region = $persister->getCacheRegion();
 
+        $cm = $this->em->getClassMetadata($entityName);
+
         foreach ($result as $index => $entity) {
             $identifier                     = $this->uow->getEntityIdentifier($entity);
-            $entityKey                      = new EntityCacheKey($entityName, $identifier);
+            $entityKey                      = new EntityCacheKey($cm->rootEntityName, $identifier);
 
             if (($key->cacheMode & Cache::MODE_REFRESH) || ! $region->contains($entityKey)) {
                 // Cancel put result if entity put fail
