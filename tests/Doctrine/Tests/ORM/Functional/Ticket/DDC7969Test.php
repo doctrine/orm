@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace tests\Doctrine\Tests\ORM\Functional\Ticket;
 
 use Doctrine\Tests\Models\Cache\Attraction;
