@@ -10,6 +10,7 @@ use Doctrine\ORM\Cache;
 use Doctrine\ORM\Query;
 use Doctrine\ORM\Query\Parameter;
 use Doctrine\ORM\Query\ParameterTypeInferer;
+use Doctrine\ORM\Query\QueryException;
 use Doctrine\ORM\QueryBuilder;
 use Doctrine\Tests\Mocks\EntityManagerMock;
 use Doctrine\Tests\Models\Cache\State;
@@ -77,6 +78,29 @@ class QueryBuilderTest extends OrmTestCase
             ->update();
 
         self::assertEquals($qb->getType(), QueryBuilder::UPDATE);
+    }
+
+    public function testRequiredSelectExpr() : void
+    {
+        $this->expectException(QueryException::class);
+        $this->expectExceptionMessage('SELECT expression is required for building DQL');
+
+        $qb = $this->em->createQueryBuilder()
+            ->from(CmsUser::class, 'u');
+
+        $qb->getDQL();
+    }
+
+    public function testRequiredSelectDistinctExpr() : void
+    {
+        $this->expectException(QueryException::class);
+        $this->expectExceptionMessage('SELECT expression is required for building DQL');
+
+        $qb = $this->em->createQueryBuilder()
+            ->distinct()
+            ->from(CmsUser::class, 'u');
+
+        $qb->getDQL();
     }
 
     public function testSimpleSelect() : void

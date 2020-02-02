@@ -1375,9 +1375,12 @@ class QueryBuilder
      */
     private function getDQLForSelect()
     {
-        $dql = 'SELECT'
-             . ($this->dqlParts['distinct']===true ? ' DISTINCT' : '')
-             . $this->getReducedDQLQueryPart('select', ['pre' => ' ', 'separator' => ', ']);
+        $selectPart = $this->getReducedDQLQueryPart('select', ['pre' => ' ', 'separator' => ', ']);
+        if (!$selectPart) {
+            throw new Query\QueryException('SELECT expression is required for building DQL');
+        }
+
+        $dql = 'SELECT' . ($this->dqlParts['distinct']===true ? ' DISTINCT' : '') . $selectPart;
 
         $fromParts   = $this->getDQLPart('from');
         $joinParts   = $this->getDQLPart('join');
