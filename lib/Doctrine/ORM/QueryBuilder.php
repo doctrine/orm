@@ -1376,7 +1376,7 @@ class QueryBuilder
     private function getDQLForSelect()
     {
         $selectPart = $this->getReducedDQLQueryPart('select', ['pre' => ' ', 'separator' => ', ']);
-        if (!$selectPart) {
+        if (! $selectPart) {
             throw new Query\QueryException('SELECT expression is required for building DQL');
         }
 
