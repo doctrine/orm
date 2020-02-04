@@ -11,7 +11,7 @@ use Doctrine\Tests\ORM\Functional\SecondLevelCacheAbstractTest;
 
 class DDC7969Test extends SecondLevelCacheAbstractTest
 {
-    public function testChildEntityRetrievedFromCache()
+    public function testChildEntityRetrievedFromCache(): void
     {
         $this->loadFixturesCountries();
         $this->loadFixturesStates();
