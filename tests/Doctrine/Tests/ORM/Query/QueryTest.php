@@ -64,6 +64,19 @@ class QueryTest extends OrmTestCase
         self::assertEquals($parameters, $query->getParameters());
     }
 
+    public function testSetParametersWithInvalidSignature() : void
+    {
+        $query = $this->em->createQuery('select u from Doctrine\Tests\Models\CMS\CmsUser u where u.username = ?1');
+
+        $parameters = new ArrayCollection(['key' => 'value']);
+
+        $query->setParameters($parameters);
+
+        $this->expectException(QueryException::class);
+        $this->expectExceptionMessage('Set parameter must be instance of \Doctrine\ORM\Query\Parameter');
+        $query->getSQL();
+    }
+
     public function testFree() : void
     {
         $query = $this->em->createQuery('select u from Doctrine\Tests\Models\CMS\CmsUser u where u.username = ?1');
