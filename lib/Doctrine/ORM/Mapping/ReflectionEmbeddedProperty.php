@@ -96,6 +96,8 @@ class ReflectionEmbeddedProperty extends ReflectionProperty
             $this->parentProperty->setValue($object, $embeddedObject);
         }
 
-        $this->childProperty->setValue($embeddedObject, $value);
+        if (null !== $value || null === $this->childProperty->getType() || true === $this->childProperty->getType()->allowsNull()) {
+            $this->childProperty->setValue($embeddedObject, $value);
+        }
     }
 }
