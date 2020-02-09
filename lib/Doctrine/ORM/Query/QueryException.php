@@ -250,4 +250,25 @@ class QueryException extends LogicException implements ORMException
             "requires 'metadata', 'parent', 'relation', 'map', 'nestingLevel' and 'token' keys."
         );
     }
+
+    public static function missingSelectExpression(): QueryException
+    {
+        return new self(
+            'SELECT expression is required for building DQL'
+        );
+    }
+
+    public static function noAliasesBeforeInvokingCriteria(): QueryException
+    {
+        return new self(
+            'No aliases are set before invoking addCriteria().'
+        );
+    }
+
+    public static function specifiedRootAliasMustBeSetBeforeInvokingIndexBy($dqlAlias): QueryException
+    {
+        return new self(
+            sprintf('Specified root alias %s must be set before invoking indexBy().', $dqlAlias)
+        );
+    }
 }
