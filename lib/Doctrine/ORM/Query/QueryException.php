@@ -251,21 +251,21 @@ class QueryException extends LogicException implements ORMException
         );
     }
 
-    public static function missingSelectExpression(): QueryException
+    public static function missingSelectExpression() : QueryException
     {
         return new self(
             'SELECT expression is required for building DQL'
         );
     }
 
-    public static function noAliasesBeforeInvokingCriteria(): QueryException
+    public static function noAliasesBeforeInvokingCriteria() : QueryException
     {
         return new self(
             'No aliases are set before invoking addCriteria().'
         );
     }
 
-    public static function specifiedRootAliasMustBeSetBeforeInvokingIndexBy($dqlAlias): QueryException
+    public static function specifiedRootAliasMustBeSetBeforeInvokingIndexBy($dqlAlias) : QueryException
     {
         return new self(
             sprintf('Specified root alias %s must be set before invoking indexBy().', $dqlAlias)

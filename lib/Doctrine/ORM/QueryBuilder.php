@@ -24,7 +24,6 @@ use function is_object;
 use function is_string;
 use function key;
 use function reset;
-use function sprintf;
 use function strpos;
 use function strrpos;
 use function substr;
