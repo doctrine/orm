@@ -214,22 +214,6 @@ class ManyToManyPersister extends AbstractCollectionPersister
     /**
      * {@inheritDoc}
      */
-    public function removeElement(PersistentCollection $collection, $element)
-    {
-        if ( ! $this->isValidEntityState($element)) {
-            return false;
-        }
-
-        list($quotedJoinTable, $whereClauses, $params, $types) = $this->getJoinTableRestrictions($collection, $element, false);
-
-        $sql = 'DELETE FROM ' . $quotedJoinTable . ' WHERE ' . implode(' AND ', $whereClauses);
-
-        return (bool) $this->conn->executeUpdate($sql, $params, $types);
-    }
-
-    /**
-     * {@inheritDoc}
-     */
     public function loadCriteria(PersistentCollection $collection, Criteria $criteria)
     {
         $mapping       = $collection->getMapping();

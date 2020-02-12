@@ -169,28 +169,6 @@ class OneToManyPersister extends AbstractCollectionPersister
     /**
      * {@inheritdoc}
      */
-    public function removeElement(PersistentCollection $collection, $element)
-    {
-        $mapping = $collection->getMapping();
-
-        if ( ! $mapping['orphanRemoval']) {
-            // no-op: this is not the owning side, therefore no operations should be applied
-            return false;
-        }
-
-        if ( ! $this->isValidEntityState($element)) {
-            return false;
-        }
-
-        return $this
-            ->uow
-            ->getEntityPersister($mapping['targetEntity'])
-            ->delete($element);
-    }
-
-    /**
-     * {@inheritdoc}
-     */
     public function loadCriteria(PersistentCollection $collection, Criteria $criteria)
     {
         throw new \BadMethodCallException("Filtering a collection by Criteria is not supported by this CollectionPersister.");
