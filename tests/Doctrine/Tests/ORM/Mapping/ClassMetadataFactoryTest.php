@@ -493,7 +493,7 @@ class TestEntity1
 
 class CustomIdGenerator extends AbstractIdGenerator
 {
-    public function generate(EntityManager $em, $entity)
+    public function generate(EntityManagerInterface $em, $entity)
     {
     }
 }
