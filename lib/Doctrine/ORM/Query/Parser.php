@@ -189,7 +189,7 @@ class Parser
     {
         $this->query        = $query;
         $this->em           = $query->getEntityManager();
-        $this->lexer        = new Lexer($query->getDQL());
+        $this->lexer        = new Lexer((string) $query->getDQL());
         $this->parserResult = new ParserResult();
     }
 

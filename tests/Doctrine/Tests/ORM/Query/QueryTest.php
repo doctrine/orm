@@ -420,4 +420,13 @@ class QueryTest extends OrmTestCase
 
         self::assertEmpty($query->getResult());
     }
+
+    /** @group 7982 */
+    public function testNonExistentExecutor()
+    {
+        $this->expectException(QueryException::class);
+        $this->expectExceptionMessage('[Syntax Error] line 0, col -1: Error: Expected SELECT, UPDATE or DELETE, got end of string.');
+
+        $query = $this->_em->createQuery('0')->execute();
+    }
 }
