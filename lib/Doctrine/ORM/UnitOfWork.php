@@ -314,7 +314,7 @@ class UnitOfWork implements PropertyChangedListener
     /**
      * @return IdentifierFlattener
      */
-    public function getIdentifierFlattener(): IdentifierFlattener
+    public function getIdentifierFlattener() : IdentifierFlattener
     {
         return $this->identifierFlattener;
     }
