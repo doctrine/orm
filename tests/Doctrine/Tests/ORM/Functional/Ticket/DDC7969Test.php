@@ -31,6 +31,7 @@ class DDC7969Test extends SecondLevelCacheAbstractTest
         $repository = $this->_em->getRepository(Bar::class);
 
         $this->assertFalse($this->cache->containsEntity(Bar::class, $bar->getId()));
+        $this->assertFalse($this->cache->containsEntity(Attraction::class, $bar->getId()));
 
         $repository->findOneBy([
             'name' => $bar->getName(),
