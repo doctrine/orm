@@ -312,6 +312,14 @@ class UnitOfWork implements PropertyChangedListener
     }
 
     /**
+     * @return IdentifierFlattener
+     */
+    public function getIdentifierFlattener(): IdentifierFlattener
+    {
+        return $this->identifierFlattener;
+    }
+
+    /**
      * Commits the UnitOfWork, executing all operations that have been postponed
      * up to this point. The state of all managed entities will be synchronized with
      * the database.
