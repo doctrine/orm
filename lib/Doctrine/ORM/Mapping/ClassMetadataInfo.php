@@ -956,7 +956,7 @@ class ClassMetadataInfo implements ClassMetadata
                     $parentReflFields[$mapping['declaredField']],
                     $reflService->getAccessibleProperty($mapping['originalClass'], $mapping['originalField']),
                     $mapping['originalClass'],
-                    isset($mapping['nullable']) ? $mapping['nullable'] : false
+                    $mapping['nullable'] ?? false
                 );
                 continue;
             }
@@ -3299,7 +3299,7 @@ class ClassMetadataInfo implements ClassMetadata
         $this->embeddedClasses[$mapping['fieldName']] = [
             'class' => $this->fullyQualifiedClassName($mapping['class']),
             'columnPrefix' => $mapping['columnPrefix'],
-            'nullable' => isset($mapping['nullable']) ? $mapping['nullable'] : false,
+            'nullable' => $mapping['nullable'] ?? null,
             'declaredField' => $mapping['declaredField'] ?? null,
             'originalField' => $mapping['originalField'] ?? null,
         ];
