@@ -344,6 +344,8 @@ class ValueObjectsTest extends OrmFunctionalTestCase
         $this->_em->persist($event);
         $this->_em->flush();
 
+        $this->assertNull($event->submissions);
+
         return $event;
     }
 
@@ -353,6 +355,8 @@ class ValueObjectsTest extends OrmFunctionalTestCase
      */
     public function testEmbeddedObjectShouldNotBeCreatedWhenIsNullableAndHaveNoData(DDC3529Event $event)
     {
+        $this->_em->clear();
+
         $event = $this->_em->find(DDC3529Event::CLASSNAME, $event->id);
 
         $this->assertEquals('PHP Conference', $event->name);
@@ -369,6 +373,10 @@ class ValueObjectsTest extends OrmFunctionalTestCase
      */
     public function testEmbeddedObjectShouldBeCreatedWhenIsNullableButHaveData(DDC3529Event $event)
     {
+        $this->_em->clear();
+
+        $event = $this->_em->find(DDC3529Event::CLASSNAME, $event->id);
+
         $event->submissions = new DDC3529DateInterval(new \DateTime('2014-11-20 08:00:00'), new \DateTime('2014-12-23 19:00:00'));
 
         $this->_em->persist($event);
@@ -389,6 +397,8 @@ class ValueObjectsTest extends OrmFunctionalTestCase
      */
     public function testFindShouldReturnNullAfterTheObjectWasRemoved(DDC3529Event $event)
     {
+        $this->_em->clear();
+
         $eventId = $event->id;
 
         $event = $this->_em->find(DDC3529Event::CLASSNAME, $eventId);
