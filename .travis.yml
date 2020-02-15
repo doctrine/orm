@@ -6,7 +6,7 @@ php:
   - 7.1
   - 7.2
   - 7.3
-  - 7.4snapshot
+  - 7.4
 
 env:
   - DB=sqlite
@@ -54,7 +54,7 @@ jobs:
     - stage: Test
       dist: xenial
       env: DB=mysql MYSQL_VERSION=5.7
-      php: 7.4snapshot
+      php: 7.4
       services:
         - mysql
       before_script:
@@ -102,7 +102,7 @@ jobs:
     - stage: Code Quality
       if: NOT type = pull_request
       env: DB=none CODING_STANDARDS
-      php: 7.4snapshot
+      php: 7.4
       install: travis_retry composer install --prefer-dist
       script:
         - ./vendor/bin/phpcs
