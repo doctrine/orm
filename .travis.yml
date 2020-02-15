@@ -7,7 +7,6 @@ php:
   - 7.2
   - 7.3
   - 7.4snapshot
-  - nightly
 
 env:
   - DB=sqlite
@@ -124,7 +123,6 @@ jobs:
         - php git-phpcs.phar origin/$TRAVIS_BRANCH...$TRAVIS_PULL_REQUEST_SHA
 
   allow_failures:
-    - php: nightly
     - stage: Code Quality
       env: DB=none CODING_STANDARDS
 
