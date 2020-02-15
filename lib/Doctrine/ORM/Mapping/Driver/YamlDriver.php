@@ -352,6 +352,7 @@ class YamlDriver extends FileDriver
                     'fieldName' => $name,
                     'class' => $embeddedMapping['class'],
                     'columnPrefix' => $embeddedMapping['columnPrefix'] ?? null,
+                    'nullable' => isset($embeddedMapping['nullable']) ? $embeddedMapping['nullable'] : null,
                 ];
                 $metadata->mapEmbedded($mapping);
             }
