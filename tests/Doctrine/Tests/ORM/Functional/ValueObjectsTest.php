@@ -1,6 +1,7 @@
 <?php
 
 namespace Doctrine\Tests\ORM\Functional;
+
 use DateTime;
 use Doctrine\Common\Reflection\RuntimePublicReflectionProperty;
 use Doctrine\ORM\Mapping\MappingException;
