@@ -311,9 +311,6 @@ class UnitOfWork implements PropertyChangedListener
         $this->reflectionPropertiesGetter = new ReflectionPropertiesGetter(new RuntimeReflectionService());
     }
 
-    /**
-     * @return IdentifierFlattener
-     */
     public function getIdentifierFlattener() : IdentifierFlattener
     {
         return $this->identifierFlattener;
