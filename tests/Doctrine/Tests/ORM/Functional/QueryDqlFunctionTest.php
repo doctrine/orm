@@ -417,7 +417,7 @@ class QueryDqlFunctionTest extends OrmFunctionalTestCase
 
         $row = $query->getSingleResult();
 
-        $this->assertSame(1, $row['id']);
+        $this->assertIsInt($row['id']);
     }
 
     protected function generateFixture()
@@ -428,7 +428,7 @@ class QueryDqlFunctionTest extends OrmFunctionalTestCase
         $manager1->setDepartment('IT');
         $manager1->setSalary(100000);
 
-        $car = new CompanyCar("wroom");
+        $car = new CompanyCar('wroom');
         $manager1->setCar($car);
 
         $manager2 = new CompanyManager();

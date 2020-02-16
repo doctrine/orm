@@ -37,19 +37,13 @@ use Doctrine\ORM\Query\QueryException;
  */
 class IdentityFunction extends FunctionNode implements TypedExpression
 {
-    /**
-     * @var \Doctrine\ORM\Query\AST\PathExpression
-     */
+    /** @var \Doctrine\ORM\Query\AST\PathExpression */
     public $pathExpression;
 
-    /**
-     * @var string
-     */
+    /** @var string */
     public $fieldMapping;
 
-    /**
-     * @var string
-     */
+    /** @var string */
     private $type;
 
     /**
