@@ -20,6 +20,7 @@
 namespace Doctrine\ORM\Query\AST\Functions;
 
 use Doctrine\DBAL\Types\Type;
+use Doctrine\ORM\Query\AST\PathExpression;
 use Doctrine\ORM\Query\AST\TypedExpression;
 use Doctrine\ORM\Query\Lexer;
 use Doctrine\ORM\Query\Parser;
@@ -37,7 +38,7 @@ use Doctrine\ORM\Query\QueryException;
  */
 class IdentityFunction extends FunctionNode implements TypedExpression
 {
-    /** @var \Doctrine\ORM\Query\AST\PathExpression */
+    /** @var PathExpression */
     public $pathExpression;
 
     /** @var string */
