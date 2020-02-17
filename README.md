@@ -20,19 +20,17 @@ without requiring unnecessary code duplication.
 
 ### Which branch should I choose?
 
- * I am submitting a bugfix for a stable release
-   * Your PR should target the [lowest active stable branch (2.8)][2.8].
- * I am submitting a new feature
-   * Your PR should target the [master branch (3.0)][Master].
- * I am submitting a BC-breaking change
-   * Your PR must target the [master branch (3.0)][Master].
-   * Please also try to provide a deprecation path in a PR targeting the [2.8 branch][2.8].
+Please see [Choosing the branch](CONTRIBUTING.md#choosing-the-branch) to get more information about which branch
+you should target your pull request at.
 
 ## Doctrine ORM for enterprise
 
 Available as part of the Tidelift Subscription.
 
-The maintainers of Doctrine ORM and thousands of other packages are working with Tidelift to deliver commercial support and maintenance for the open source dependencies you use to build your applications. Save time, reduce risk, and improve code health, while paying the maintainers of the exact dependencies you use. [Learn more.](https://tidelift.com/subscription/pkg/packagist-doctrine-orm?utm_source=packagist-doctrine-orm&utm_medium=referral&utm_campaign=enterprise&utm_term=repo)
+The maintainers of Doctrine ORM and thousands of other packages are working with Tidelift to deliver commercial support
+and maintenance for the open source dependencies you use to build your applications. Save time, reduce risk, and improve
+code health, while paying the maintainers of the exact dependencies you use.
+[Learn more.](https://tidelift.com/subscription/pkg/packagist-doctrine-orm?utm_source=packagist-doctrine-orm&utm_medium=referral&utm_campaign=enterprise&utm_term=repo)
 
 ## More resources:
 

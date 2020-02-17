@@ -8,7 +8,8 @@ unified and future proof.
 
 ## Obtaining a copy
 
-In order to submit a pull request, you will need to [fork the project][Fork] and obtain a fresh copy of the source code:
+In order to submit a pull request, you will need to [fork the project][Fork] and obtain a
+fresh copy of the source code:
 
 ```sh
 git clone git@github.com:<your-github-name>/orm.git
@@ -24,14 +25,15 @@ curl -sS https://getcomposer.org/installer | php
 ## Choosing the branch
 
  * I am submitting a bugfix for a stable release
-   * Your PR should target the [lowest active stable branch (2.6)][2.6].
+   * Your PR should target the [lowest active stable branch (2.7)][2.7].
  * I am submitting a new feature
    * Your PR should target the [master branch (3.0)][Master].
  * I am submitting a BC-breaking change
    * Your PR must target the [master branch (3.0)][Master].
-   * Please also try to provide a deprecation path in a PR targeting the [2.7 branch][2.7].
+   * Please also try to provide a deprecation path in a PR targeting the [2.8 branch][2.8].
 
-Please always create a new branch for your changes (i.e. do not commit directly into `master` in your fork), otherwise you would run into troubles with creating multiple pull requests.
+Please always create a new branch for your changes (i.e. do not commit directly into `master`
+in your fork), otherwise you would run into troubles with creating multiple pull requests.
 
 ## Coding Standard
 
@@ -60,7 +62,8 @@ take a look at the ``tests/travis`` folder for some examples. Then run:
 
 Tips for creating unit tests:
 
-1. If you put a test into the `Ticket` namespace as described above, put the testcase and all entities into the same file.
+1. If you put a test into the `Ticket` namespace as described above, put the testcase
+   and all entities into the same file.
    See [DDC2306Test][Test Example] for an example.
 
 ## CI
@@ -82,8 +85,8 @@ everything as fast as possible, but cannot always live up to our own expectation
 Thank you very much again for your contribution!
 
   [Master]: https://github.com/doctrine/orm/tree/master
+  [2.8]: https://github.com/doctrine/orm/tree/2.8.x
   [2.7]: https://github.com/doctrine/orm/tree/2.7
-  [2.6]: https://github.com/doctrine/orm/tree/2.6
   [CS]: https://github.com/doctrine/coding-standard
   [Fork]: https://guides.github.com/activities/forking/
   [Travis]: https://www.travis-ci.org
