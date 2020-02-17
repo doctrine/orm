@@ -243,6 +243,11 @@ a relevant lifecycle event. More than one callback can be defined for each
 lifecycle event. Lifecycle Callbacks are best used for simple operations
 specific to a particular entity class's lifecycle.
 
+
+.. note::
+
+    Note that Licecycle Callbacks are not supported for Embeddables.
+
 .. code-block:: php
 
     <?php
