@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\Tests\ORM\Cache;
 
 use Doctrine\ORM\Cache\AssociationCacheEntry;
@@ -7,6 +9,8 @@ use Doctrine\ORM\Cache\CacheEntry;
 use Doctrine\ORM\Cache\DefaultEntityHydrator;
 use Doctrine\ORM\Cache\EntityCacheEntry;
 use Doctrine\ORM\Cache\EntityCacheKey;
+use Doctrine\ORM\Cache\EntityHydrator;
+use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\UnitOfWork;
 use Doctrine\Tests\Models\Cache\Country;
 use Doctrine\Tests\Models\Cache\State;
@@ -17,173 +21,176 @@ use Doctrine\Tests\OrmTestCase;
  */
 class DefaultEntityHydratorTest extends OrmTestCase
 {
-    /**
-     * @var \Doctrine\ORM\Cache\EntityHydrator
-     */
+    /** @var EntityHydrator */
     private $structure;
 
-    /**
-     * @var \Doctrine\ORM\EntityManager
-     */
+    /** @var EntityManagerInterface */
     private $em;
 
-    protected function setUp()
+    protected function setUp() : void
     {
         parent::setUp();
 
-        $this->em        = $this->_getTestEntityManager();
+        $this->em        = $this->getTestEntityManager();
         $this->structure = new DefaultEntityHydrator($this->em);
     }
 
-    public function testImplementsEntityEntryStructure()
+    public function testImplementsEntityEntryStructure() : void
     {
-        $this->assertInstanceOf('\Doctrine\ORM\Cache\EntityHydrator', $this->structure);
+        self::assertInstanceOf('Doctrine\ORM\Cache\EntityHydrator', $this->structure);
     }
 
-    public function testCreateEntity()
+    public function testCreateEntity() : void
     {
         $metadata = $this->em->getClassMetadata(Country::class);
-        $key      = new EntityCacheKey($metadata->name, ['id'=>1]);
-        $entry    = new EntityCacheEntry($metadata->name, ['id'=>1, 'name'=>'Foo']);
+        $key      = new EntityCacheKey($metadata->getClassName(), ['id' => 1]);
+        $entry    = new EntityCacheEntry($metadata->getClassName(), ['id' => 1, 'name' => 'Foo']);
         $entity   = $this->structure->loadCacheEntry($metadata, $key, $entry);
 
-        $this->assertInstanceOf($metadata->name, $entity);
+        self::assertInstanceOf($metadata->getClassName(), $entity);
 
-        $this->assertEquals(1, $entity->getId());
-        $this->assertEquals('Foo', $entity->getName());
-        $this->assertEquals(UnitOfWork::STATE_MANAGED, $this->em->getUnitOfWork()->getEntityState($entity));
+        self::assertEquals(1, $entity->getId());
+        self::assertEquals('Foo', $entity->getName());
+        self::assertEquals(UnitOfWork::STATE_MANAGED, $this->em->getUnitOfWork()->getEntityState($entity));
     }
 
-    public function testLoadProxy()
+    public function testLoadProxy() : void
     {
         $metadata = $this->em->getClassMetadata(Country::class);
-        $key      = new EntityCacheKey($metadata->name, ['id'=>1]);
-        $entry    = new EntityCacheEntry($metadata->name, ['id'=>1, 'name'=>'Foo']);
-        $proxy    = $this->em->getReference($metadata->name, $key->identifier);
+        $key      = new EntityCacheKey($metadata->getClassName(), ['id' => 1]);
+        $entry    = new EntityCacheEntry($metadata->getClassName(), ['id' => 1, 'name' => 'Foo']);
+        $proxy    = $this->em->getReference($metadata->getClassName(), $key->identifier);
         $entity   = $this->structure->loadCacheEntry($metadata, $key, $entry, $proxy);
 
-        $this->assertInstanceOf($metadata->name, $entity);
-        $this->assertSame($proxy, $entity);
+        self::assertInstanceOf($metadata->getClassName(), $entity);
+        self::assertSame($proxy, $entity);
 
-        $this->assertEquals(1, $entity->getId());
-        $this->assertEquals('Foo', $entity->getName());
-        $this->assertEquals(UnitOfWork::STATE_MANAGED, $this->em->getUnitOfWork()->getEntityState($proxy));
+        self::assertEquals(1, $entity->getId());
+        self::assertEquals('Foo', $entity->getName());
+        self::assertEquals(UnitOfWork::STATE_MANAGED, $this->em->getUnitOfWork()->getEntityState($proxy));
     }
 
-    public function testBuildCacheEntry()
+    public function testBuildCacheEntry() : void
     {
         $entity   = new Country('Foo');
         $uow      = $this->em->getUnitOfWork();
-        $data     = ['id'=>1, 'name'=>'Foo'];
+        $data     = ['id' => 1, 'name' => 'Foo'];
         $metadata = $this->em->getClassMetadata(Country::class);
-        $key      = new EntityCacheKey($metadata->name, ['id'=>1]);
+        $key      = new EntityCacheKey($metadata->getClassName(), ['id' => 1]);
 
         $entity->setId(1);
         $uow->registerManaged($entity, $key->identifier, $data);
 
-        $cache  = $this->structure->buildCacheEntry($metadata, $key, $entity);
+        $cache = $this->structure->buildCacheEntry($metadata, $key, $entity);
 
-        $this->assertInstanceOf(CacheEntry::class, $cache);
-        $this->assertInstanceOf(EntityCacheEntry::class, $cache);
+        self::assertInstanceOf(CacheEntry::class, $cache);
+        self::assertInstanceOf(EntityCacheEntry::class, $cache);
 
-        $this->assertArrayHasKey('id', $cache->data);
-        $this->assertArrayHasKey('name', $cache->data);
-        $this->assertEquals(
+        self::assertArrayHasKey('id', $cache->data);
+        self::assertArrayHasKey('name', $cache->data);
+        self::assertEquals(
             [
-            'id'   => 1,
-            'name' => 'Foo',
-            ], $cache->data);
+                'id'   => 1,
+                'name' => 'Foo',
+            ],
+            $cache->data
+        );
     }
 
-    public function testBuildCacheEntryAssociation()
+    public function testBuildCacheEntryAssociation() : void
     {
-        $country        = new Country('Foo');
-        $state          = new State('Bat', $country);
-        $uow            = $this->em->getUnitOfWork();
-        $countryData    = ['id'=>11, 'name'=>'Foo'];
-        $stateData      = ['id'=>12, 'name'=>'Bar', 'country' => $country];
-        $metadata       = $this->em->getClassMetadata(State::class);
-        $key            = new EntityCacheKey($metadata->name, ['id'=>11]);
+        $country     = new Country('Foo');
+        $state       = new State('Bat', $country);
+        $uow         = $this->em->getUnitOfWork();
+        $countryData = ['id' => 11, 'name' => 'Foo'];
+        $stateData   = ['id' => 12, 'name' => 'Bar', 'country' => $country];
+        $metadata    = $this->em->getClassMetadata(State::class);
+        $key         = new EntityCacheKey($metadata->getClassName(), ['id' => 11]);
 
         $country->setId(11);
         $state->setId(12);
 
-        $uow->registerManaged($country, ['id'=>11], $countryData);
-        $uow->registerManaged($state, ['id'=>12], $stateData);
+        $uow->registerManaged($country, ['id' => 11], $countryData);
+        $uow->registerManaged($state, ['id' => 12], $stateData);
 
         $cache = $this->structure->buildCacheEntry($metadata, $key, $state);
 
-        $this->assertInstanceOf(CacheEntry::class, $cache);
-        $this->assertInstanceOf(EntityCacheEntry::class, $cache);
+        self::assertInstanceOf(CacheEntry::class, $cache);
+        self::assertInstanceOf(EntityCacheEntry::class, $cache);
 
-        $this->assertArrayHasKey('id', $cache->data);
-        $this->assertArrayHasKey('name', $cache->data);
-        $this->assertArrayHasKey('country', $cache->data);
-        $this->assertEquals(
+        self::assertArrayHasKey('id', $cache->data);
+        self::assertArrayHasKey('name', $cache->data);
+        self::assertArrayHasKey('country', $cache->data);
+        self::assertEquals(
             [
-            'id'        => 12,
-            'name'      => 'Bar',
-            'country'   => new AssociationCacheEntry(Country::class, ['id' => 11]),
-            ], $cache->data);
+                'id'        => 12,
+                'name'      => 'Bar',
+                'country'   => new AssociationCacheEntry(Country::class, ['id' => 11]),
+            ],
+            $cache->data
+        );
     }
 
-    public function testBuildCacheEntryNonInitializedAssocProxy()
+    public function testBuildCacheEntryNonInitializedAssocProxy() : void
     {
-        $proxy          = $this->em->getReference(Country::class, 11);
-        $entity         = new State('Bat', $proxy);
-        $uow            = $this->em->getUnitOfWork();
-        $entityData     = ['id'=>12, 'name'=>'Bar', 'country' => $proxy];
-        $metadata       = $this->em->getClassMetadata(State::class);
-        $key            = new EntityCacheKey($metadata->name, ['id'=>11]);
+        $proxy      = $this->em->getReference(Country::class, 11);
+        $entity     = new State('Bat', $proxy);
+        $uow        = $this->em->getUnitOfWork();
+        $entityData = ['id' => 12, 'name' => 'Bar', 'country' => $proxy];
+        $metadata   = $this->em->getClassMetadata(State::class);
+        $key        = new EntityCacheKey($metadata->getClassName(), ['id' => 11]);
 
         $entity->setId(12);
 
-        $uow->registerManaged($entity, ['id'=>12], $entityData);
+        $uow->registerManaged($entity, ['id' => 12], $entityData);
 
         $cache = $this->structure->buildCacheEntry($metadata, $key, $entity);
 
-        $this->assertInstanceOf(CacheEntry::class, $cache);
-        $this->assertInstanceOf(EntityCacheEntry::class, $cache);
+        self::assertInstanceOf(CacheEntry::class, $cache);
+        self::assertInstanceOf(EntityCacheEntry::class, $cache);
 
-        $this->assertArrayHasKey('id', $cache->data);
-        $this->assertArrayHasKey('name', $cache->data);
-        $this->assertArrayHasKey('country', $cache->data);
-        $this->assertEquals(
+        self::assertArrayHasKey('id', $cache->data);
+        self::assertArrayHasKey('name', $cache->data);
+        self::assertArrayHasKey('country', $cache->data);
+        self::assertEquals(
             [
-            'id'        => 12,
-            'name'      => 'Bar',
-            'country'   => new AssociationCacheEntry(Country::class, ['id' => 11]),
-            ], $cache->data);
+                'id'        => 12,
+                'name'      => 'Bar',
+                'country'   => new AssociationCacheEntry(Country::class, ['id' => 11]),
+            ],
+            $cache->data
+        );
     }
 
-    public function testCacheEntryWithWrongIdentifierType()
+    public function testCacheEntryWithWrongIdentifierType() : void
     {
-        $proxy          = $this->em->getReference(Country::class, 11);
-        $entity         = new State('Bat', $proxy);
-        $uow            = $this->em->getUnitOfWork();
-        $entityData     = ['id'=> 12, 'name'=>'Bar', 'country' => $proxy];
-        $metadata       = $this->em->getClassMetadata(State::class);
-        $key            = new EntityCacheKey($metadata->name, ['id'=>'12']);
+        $proxy      = $this->em->getReference(Country::class, 11);
+        $entity     = new State('Bat', $proxy);
+        $uow        = $this->em->getUnitOfWork();
+        $entityData = ['id' => 12, 'name' => 'Bar', 'country' => $proxy];
+        $metadata   = $this->em->getClassMetadata(State::class);
+        $key        = new EntityCacheKey($metadata->getClassName(), ['id' => '12']);
 
         $entity->setId(12);
 
-        $uow->registerManaged($entity, ['id'=>12], $entityData);
+        $uow->registerManaged($entity, ['id' => 12], $entityData);
 
         $cache = $this->structure->buildCacheEntry($metadata, $key, $entity);
 
-        $this->assertInstanceOf(CacheEntry::class, $cache);
-        $this->assertInstanceOf(EntityCacheEntry::class, $cache);
+        self::assertInstanceOf(CacheEntry::class, $cache);
+        self::assertInstanceOf(EntityCacheEntry::class, $cache);
 
-        $this->assertArrayHasKey('id', $cache->data);
-        $this->assertArrayHasKey('name', $cache->data);
-        $this->assertArrayHasKey('country', $cache->data);
-        $this->assertSame($entity->getId(), $cache->data['id']);
-        $this->assertEquals(
+        self::assertArrayHasKey('id', $cache->data);
+        self::assertArrayHasKey('name', $cache->data);
+        self::assertArrayHasKey('country', $cache->data);
+        self::assertSame($entity->getId(), $cache->data['id']);
+        self::assertEquals(
             [
-            'id'        => 12,
-            'name'      => 'Bar',
-            'country'   => new AssociationCacheEntry(Country::class, ['id' => 11]),
-            ], $cache->data);
+                'id'        => 12,
+                'name'      => 'Bar',
+                'country'   => new AssociationCacheEntry(Country::class, ['id' => 11]),
+            ],
+            $cache->data
+        );
     }
-
 }

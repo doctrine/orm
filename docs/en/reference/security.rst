@@ -10,7 +10,7 @@ we cannot protect you from SQL injection.
 Please also read the documentation chapter on Security in Doctrine DBAL. This
 page only handles Security issues in the ORM.
 
-- [DBAL Security Page](https://github.com/doctrine/dbal/blob/master/docs/en/reference/security.rst)
+- `DBAL Security Page <http://www.doctrine-project.org/projects/doctrine-dbal/en/current/reference/security.html>`
 
 If you find a Security bug in Doctrine, please report it on Jira and change the
 Security Level to "Security Issues". It will be visible to Doctrine Core
@@ -81,7 +81,6 @@ this is technically impossible. The correct way is:
     $query = $entityManager->createQuery($dql);
     $query->setParameter(1, $_GET['status']);
 
-
 Preventing Mass Assignment Vulnerabilities
 ------------------------------------------
 
@@ -118,8 +117,8 @@ entity might look like this:
         }
     }
 
-Now the possiblity of mass-asignment exists on this entity and can
-be exploitet by attackers to set the "isAdmin" flag to true on any
+Now the possibility of mass-assignment exists on this entity and can
+be exploited by attackers to set the "isAdmin" flag to true on any
 object when you pass the whole request data to this method like:
 
 .. code-block:: php

@@ -1,32 +1,36 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\Tests\Models\Taxi;
+
+use Doctrine\ORM\Annotation as ORM;
 
 /**
  * Test model that contains only Id-columns
  *
- * @Entity
- * @Table(name="taxi_ride")
+ * @ORM\Entity
+ * @ORM\Table(name="taxi_ride")
  */
 class Ride
 {
     /**
-     * @Id
-     * @ManyToOne(targetEntity="Driver", inversedBy="freeDriverRides")
-     * @JoinColumn(name="driver_id", referencedColumnName="id")
+     * @ORM\Id
+     * @ORM\ManyToOne(targetEntity=Driver::class, inversedBy="freeDriverRides")
+     * @ORM\JoinColumn(name="driver_id", referencedColumnName="id")
      */
     private $driver;
 
     /**
-     * @Id
-     * @ManyToOne(targetEntity="Car", inversedBy="freeCarRides")
-     * @JoinColumn(name="car", referencedColumnName="brand")
+     * @ORM\Id
+     * @ORM\ManyToOne(targetEntity=Car::class, inversedBy="freeCarRides")
+     * @ORM\JoinColumn(name="car", referencedColumnName="brand")
      */
     private $car;
 
     public function __construct(Driver $driver, Car $car)
     {
         $this->driver = $driver;
-        $this->car = $car;
+        $this->car    = $car;
     }
 }

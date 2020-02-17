@@ -1,81 +1,81 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\Tests\ORM\Functional\Ticket;
 
+use Doctrine\ORM\Annotation as ORM;
 use Doctrine\ORM\Tools\ResolveTargetEntityListener;
+use Doctrine\Tests\OrmFunctionalTestCase;
 
 /**
  * @group DDC-3300
  */
-class DDC3300Test extends \Doctrine\Tests\OrmFunctionalTestCase
+class DDC3300Test extends OrmFunctionalTestCase
 {
-    public function testResolveTargetEntitiesChangesDiscriminatorMapValues()
+    public function testResolveTargetEntitiesChangesDiscriminatorMapValues() : void
     {
         $resolveTargetEntity = new ResolveTargetEntityListener();
 
         $resolveTargetEntity->addResolveTargetEntity(
-            DDC3300BossInterface::class,
             DDC3300Boss::class,
-            []
+            DDC3300ConcreteBoss::class
         );
 
         $resolveTargetEntity->addResolveTargetEntity(
-            DDC3300EmployeeInterface::class,
             DDC3300Employee::class,
-            []
+            DDC3300ConcreteEmployee::class
         );
 
-        $this->_em->getEventManager()->addEventSubscriber($resolveTargetEntity);
+        $this->em->getEventManager()->addEventSubscriber($resolveTargetEntity);
 
-        $this->_schemaTool->createSchema(
-            [
-            $this->_em->getClassMetadata(DDC3300Person::class),
-            ]
-        );
+        $this->schemaTool->createSchema([
+            $this->em->getClassMetadata(DDC3300Person::class),
+        ]);
 
-        $boss     = new DDC3300Boss();
-        $employee = new DDC3300Employee();
+        $boss     = new DDC3300ConcreteBoss();
+        $employee = new DDC3300ConcreteEmployee();
 
-        $this->_em->persist($boss);
-        $this->_em->persist($employee);
+        $this->em->persist($boss);
+        $this->em->persist($employee);
 
-        $this->_em->flush();
-        $this->_em->clear();
+        $this->em->flush();
+        $this->em->clear();
 
-        $this->assertEquals($boss, $this->_em->find(DDC3300BossInterface::class, $boss->id));
-        $this->assertEquals($employee, $this->_em->find(DDC3300EmployeeInterface::class, $employee->id));
+        self::assertEquals($boss, $this->em->find(DDC3300Boss::class, $boss->id));
+        self::assertEquals($employee, $this->em->find(DDC3300Employee::class, $employee->id));
     }
 }
 
 /**
- * @Entity
- * @InheritanceType("SINGLE_TABLE")
- * @DdiscriminatorColumn(name="discr", type="string")
- * @DiscriminatorMap({
- *      "boss"     = "Doctrine\Tests\ORM\Functional\Ticket\DDC3300BossInterface",
- *      "employee" = "Doctrine\Tests\ORM\Functional\Ticket\DDC3300EmployeeInterface"
+ * @ORM\Entity
+ * @ORM\InheritanceType("SINGLE_TABLE")
+ * @ORM\DiscriminatorColumn(name="discr", type="string")
+ * @ORM\DiscriminatorMap({
+ *      "boss"     = DDC3300Boss::class,
+ *      "employee" = DDC3300Employee::class
  * })
  */
 abstract class DDC3300Person
 {
-    /** @Id @Column(type="integer") @GeneratedValue(strategy="AUTO") */
+    /** @ORM\Id @ORM\Column(type="integer") @ORM\GeneratedValue(strategy="AUTO") */
     public $id;
 }
 
-interface DDC3300BossInterface
+interface DDC3300Boss
 {
 }
 
-/** @Entity */
-class DDC3300Boss extends DDC3300Person implements DDC3300BossInterface
+/** @ORM\Entity */
+class DDC3300ConcreteBoss extends DDC3300Person implements DDC3300Boss
 {
 }
 
-interface DDC3300EmployeeInterface
+interface DDC3300Employee
 {
 }
 
-/** @Entity */
-class DDC3300Employee extends DDC3300Person implements DDC3300EmployeeInterface
+/** @ORM\Entity */
+class DDC3300ConcreteEmployee extends DDC3300Person implements DDC3300Employee
 {
 }

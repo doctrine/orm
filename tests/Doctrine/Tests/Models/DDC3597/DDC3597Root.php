@@ -1,78 +1,87 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\Tests\Models\DDC3597;
-use Doctrine\ORM\Mapping\DiscriminatorMap;
+
+use DateTime;
+use Doctrine\ORM\Annotation as ORM;
 
 /**
  * Description of Root
  *
- * @Entity
- *
- * @InheritanceType("JOINED")
- * @DiscriminatorColumn(name="discriminator", type="string")
- * @DiscriminatorMap({ "image" = "DDC3597Image"})
- * @HasLifecycleCallbacks
+ * @ORM\Entity
+ * @ORM\InheritanceType("JOINED")
+ * @ORM\DiscriminatorColumn(name="discriminator", type="string")
+ * @ORM\DiscriminatorMap({ "image" = DDC3597Image::class})
+ * @ORM\HasLifecycleCallbacks
  */
-abstract class DDC3597Root {
-
+abstract class DDC3597Root
+{
     /**
-     * @var int
+     * @ORM\Column(name="id", type="integer", nullable=false)
+     * @ORM\Id
+     * @ORM\GeneratedValue(strategy="IDENTITY")
      *
-     * @Column(name="id", type="integer", nullable=false)
-     * @Id
-     * @GeneratedValue(strategy="IDENTITY")
+     * @var int
      */
     protected $id;
 
     /**
-     * @var \DateTime
-     * @Column(name="created_at", type="datetime", nullable=false)
+     * @ORM\Column(name="created_at", type="datetime", nullable=false)
+     *
+     * @var DateTime
      */
-    protected $createdAt = null;
+    protected $createdAt;
 
     /**
-     * @var \DateTime
-     * @Column(name="updated_at", type="datetime", nullable=false)
+     * @ORM\Column(name="updated_at", type="datetime", nullable=false)
+     *
+     * @var DateTime
      */
-    protected $updatedAt = null;
+    protected $updatedAt;
 
     /**
      * Set createdAt
      *
-     * @PrePersist
+     * @ORM\PrePersist
      */
-    public function _prePersist() {
-        $this->updatedAt = $this->createdAt = new \DateTime();
+    public function prePersist()
+    {
+        $this->updatedAt = $this->createdAt = new DateTime();
     }
 
     /**
      * Set updatedAt
      *
-     * @PreUpdate
+     * @ORM\PreUpdate
      */
-    public function _preUpdate() {
-        $this->updatedAt = new \DateTime();
+    public function preUpdate()
+    {
+        $this->updatedAt = new DateTime();
     }
 
     /**
      * @return int
      */
-    public function getId() {
-        return (int)$this->id;
+    public function getId()
+    {
+        return (int) $this->id;
     }
 
-
     /**
-     * @return \DateTime
+     * @return DateTime
      */
-    public function getCreatedAt() {
+    public function getCreatedAt()
+    {
         return $this->createdAt;
     }
 
     /**
-     * @return \DateTime
+     * @return DateTime
      */
-    public function getUpdatedAt() {
+    public function getUpdatedAt()
+    {
         return $this->updatedAt;
     }
 }

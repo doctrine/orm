@@ -1,25 +1,35 @@
 <?php
+
+declare(strict_types=1);
+
 namespace Doctrine\Tests\Models\CompositeKeyInheritance;
 
+use Doctrine\ORM\Annotation as ORM;
+
 /**
- * @Entity
- * @InheritanceType("SINGLE_TABLE")
- * @DiscriminatorColumn(name="discr", type="string")
- * @DiscriminatorMap({"child" = "SingleChildClass", "root" = "SingleRootClass"})
+ * @ORM\Entity
+ * @ORM\InheritanceType("SINGLE_TABLE")
+ * @ORM\DiscriminatorColumn(name="discr", type="string")
+ * @ORM\DiscriminatorMap({
+ *     "child" = SingleChildClass::class,
+ *     "root" = SingleRootClass::class
+ * })
  */
 class SingleRootClass
 {
     /**
+     * @ORM\Column(type="string")
+     * @ORM\Id
+     *
      * @var string
-     * @Column(type="string")
-     * @Id
      */
     protected $keyPart1 = 'part-1';
 
     /**
+     * @ORM\Column(type="string")
+     * @ORM\Id
+     *
      * @var string
-     * @Column(type="string")
-     * @Id
      */
     protected $keyPart2 = 'part-2';
 }

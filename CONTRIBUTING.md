@@ -1,79 +1,81 @@
-# Contribute to Doctrine
+# Contributing to Doctrine ORM
 
-Thank you for contributing to Doctrine!
+Thank you for contributing to Doctrine ORM!
 
-Before we can merge your Pull-Request here are some guidelines that you need to follow.
+Before we can merge your pull request here are some guidelines that you need to follow.
 These guidelines exist not to annoy you, but to keep the code base clean,
 unified and future proof.
 
-## We only accept PRs  to "master"
+## Obtaining a copy
 
-Our branching strategy is "everything to master first", even
-bugfixes and we then merge them into the stable branches. You should only 
-open pull requests against the master branch. Otherwise we cannot accept the PR.
+In order to submit a pull request, you will need to [fork the project][Fork] and obtain a
+fresh copy of the source code:
 
-There is one exception to the rule, when we merged a bug into some stable branches
-we do occasionally accept pull requests that merge the same bug fix into earlier
-branches.
+```sh
+git clone git@github.com:<your-github-name>/orm.git
+cd orm
+```
+
+Then you will have to run a Composer installation in the project:
+```sh
+curl -sS https://getcomposer.org/installer | php
+./composer.phar install
+```
+
+## Choosing the branch
+
+ * I am submitting a bugfix for a stable release
+   * Your PR should target the [lowest active stable branch (2.7)][2.7].
+ * I am submitting a new feature
+   * Your PR should target the [master branch (3.0)][Master].
+ * I am submitting a BC-breaking change
+   * Your PR must target the [master branch (3.0)][Master].
+   * Please also try to provide a deprecation path in a PR targeting the [2.8 branch][2.8].
+
+Please always create a new branch for your changes (i.e. do not commit directly into `master`
+in your fork), otherwise you would run into troubles with creating multiple pull requests.
 
 ## Coding Standard
 
-We use PSR-1 and PSR-2:
+We follow the [Doctrine Coding Standard][CS].
+Please refer to this repository to learn about the rules your code should follow.
+You can also use `vendor/bin/phpcs` to validate your changes locally.
 
-* https://github.com/php-fig/fig-standards/blob/master/accepted/PSR-1-basic-coding-standard.md
-* https://github.com/php-fig/fig-standards/blob/master/accepted/PSR-2-coding-style-guide.md
+## Tests
 
-with some exceptions/differences:
-
-* Keep the nesting of control structures per method as small as possible
-* Align equals (=) signs
-* Add spaces between assignment, control and return statements
-* Prefer early exit over nesting conditions
-* Add spaces around a negation if condition ``if ( ! $cond)``
-
-## Unit-Tests
-
-Please try to add a test for your pull-request.
+Please try to add a test for your pull request.
 
 * If you want to fix a bug or provide a reproduce case, create a test file in
-  ``tests/Doctrine/Tests/ORM/Functional/Ticket`` with the name of the ticket,
-  ``DDC1234Test.php`` for example.
-* If you want to contribute new functionality add unit- or functional tests
+  ``tests/Doctrine/Tests/ORM/Functional/Ticket`` with the identifier of the issue,
+  i.e. ``GH1234Test.php`` for an issue with id `#1234`.
+* If you want to contribute new functionality, add unit or functional tests
   depending on the scope of the feature.
 
-You can run the unit-tests by calling ``vendor/bin/phpunit`` from the root of the project.
-It will run all the tests with an in memory SQLite database.
-
-In order to do that, you will need a fresh copy of doctrine2, and you
-will have to run a composer installation in the project:
-
-```sh
-git clone git@github.com:doctrine/doctrine2.git
-cd doctrine2
-curl -sS https://getcomposer.org/installer | php --
-./composer.phar install
-```
+You can run the tests by calling ``vendor/bin/phpunit`` from the root of the project.
+It will run all the tests with an in-memory SQLite database.
 
 To run the testsuite against another database, copy the ``phpunit.xml.dist``
 to for example ``mysql.phpunit.xml`` and edit the parameters. You can
 take a look at the ``tests/travis`` folder for some examples. Then run:
 
     vendor/bin/phpunit -c mysql.phpunit.xml
-    
-If you do not provide these parameters, the test suite will use an in-memory
-sqlite database.
 
 Tips for creating unit tests:
 
-1. If you put a test into the `Ticket` namespace as described above, put the testcase and all entities into the same class.
-   See `https://github.com/doctrine/doctrine2/tree/master/tests/Doctrine/Tests/ORM/Functional/Ticket/DDC2306Test.php` for an
-   example.
+1. If you put a test into the `Ticket` namespace as described above, put the testcase
+   and all entities into the same file.
+   See [DDC2306Test][Test Example] for an example.
 
-## Travis
+## CI
 
-We automatically run your pull request through [Travis CI](http://www.travis-ci.org)
-against SQLite, MySQL and PostgreSQL. If you break the tests, we cannot merge your code,
-so please make sure that your code is working before opening up a Pull-Request.
+We automatically run all pull requests through [Travis CI][Travis].
+
+* The test suite is ran against SQLite, MySQL, MariaDB and PostgreSQL on all supported PHP versions.
+* The code is validated against our [Coding Standard](#coding-standard).
+* The code is checked by a static analysis tool.
+
+If you break the tests, we cannot merge your code,
+so please make sure that your code is working before opening a pull request.
 
 ## Getting merged
 
@@ -82,3 +84,10 @@ everything as fast as possible, but cannot always live up to our own expectation
 
 Thank you very much again for your contribution!
 
+  [Master]: https://github.com/doctrine/orm/tree/master
+  [2.8]: https://github.com/doctrine/orm/tree/2.8.x
+  [2.7]: https://github.com/doctrine/orm/tree/2.7
+  [CS]: https://github.com/doctrine/coding-standard
+  [Fork]: https://guides.github.com/activities/forking/
+  [Travis]: https://www.travis-ci.org
+  [Test Example]: https://github.com/doctrine/orm/tree/master/tests/Doctrine/Tests/ORM/Functional/Ticket/DDC2306Test.php

@@ -1,17 +1,27 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\Tests\Models\Company;
 
-/** @Entity @Table(name="company_raffles") */
-class CompanyRaffle extends CompanyEvent {
-    /** @Column */
+use Doctrine\ORM\Annotation as ORM;
+
+/**
+ * @ORM\Entity
+ * @ORM\Table(name="company_raffles")
+ */
+class CompanyRaffle extends CompanyEvent
+{
+    /** @ORM\Column */
     private $data;
 
-    public function setData($data) {
+    public function setData($data)
+    {
         $this->data = $data;
     }
 
-    public function getData() {
+    public function getData()
+    {
         return $this->data;
     }
 }

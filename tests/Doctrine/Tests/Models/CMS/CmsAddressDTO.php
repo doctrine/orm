@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\Tests\Models\CMS;
 
 class CmsAddressDTO
@@ -10,8 +12,8 @@ class CmsAddressDTO
 
     public function __construct($country = null, $city = null, $zip = null)
     {
-        $this->country  = $country;
-        $this->city     = $city;
-        $this->zip      = $zip;
+        $this->country = $country;
+        $this->city    = $city;
+        $this->zip     = $zip;
     }
 }

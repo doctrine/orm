@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\Tests\ORM\Query;
 
 use Doctrine\Common\Collections\ArrayCollection;
@@ -9,40 +11,34 @@ use Doctrine\Common\Collections\ExpressionBuilder as CriteriaBuilder;
 use Doctrine\ORM\Query\Expr as QueryBuilder;
 use Doctrine\ORM\Query\Parameter;
 use Doctrine\ORM\Query\QueryExpressionVisitor;
-use PHPUnit\Framework\TestCase;
+use Doctrine\Tests\DoctrineTestCase;
 
 /**
  * Test for QueryExpressionVisitor
- *
- * @author Kirill chEbba Chebunin <iam@chebba.org>
  */
-class QueryExpressionVisitorTest extends TestCase
+class QueryExpressionVisitorTest extends DoctrineTestCase
 {
-    /**
-     * @var QueryExpressionVisitor
-     */
+    /** @var QueryExpressionVisitor */
     private $visitor;
 
     /**
      * {@inheritDoc}
      */
-    protected function setUp()
+    protected function setUp() : void
     {
-        $this->visitor = new QueryExpressionVisitor(['o','p']);
+        $this->visitor = new QueryExpressionVisitor(['o', 'p']);
     }
 
     /**
-     * @param CriteriaComparison     $criteriaExpr
      * @param QueryBuilder\Comparison|string $queryExpr
-     * @param Parameter              $parameter
      *
      * @dataProvider comparisonData
      */
-    public function testWalkComparison(CriteriaComparison $criteriaExpr, $queryExpr, Parameter $parameter = null)
+    public function testWalkComparison(CriteriaComparison $criteriaExpr, $queryExpr, ?Parameter $parameter = null) : void
     {
-        $this->assertEquals($queryExpr, $this->visitor->walkComparison($criteriaExpr));
+        self::assertEquals($queryExpr, $this->visitor->walkComparison($criteriaExpr));
         if ($parameter) {
-            $this->assertEquals(new ArrayCollection([$parameter]), $this->visitor->getParameters());
+            self::assertEquals(new ArrayCollection([$parameter]), $this->visitor->getParameters());
         }
     }
 
@@ -80,45 +76,45 @@ class QueryExpressionVisitorTest extends TestCase
         ];
     }
 
-    public function testWalkAndCompositeExpression()
+    public function testWalkAndCompositeExpression() : void
     {
-        $cb = new CriteriaBuilder();
+        $cb   = new CriteriaBuilder();
         $expr = $this->visitor->walkCompositeExpression(
             $cb->andX(
-                $cb->eq("foo", 1),
-                $cb->eq("bar", 1)
+                $cb->eq('foo', 1),
+                $cb->eq('bar', 1)
             )
         );
 
-        $this->assertInstanceOf(QueryBuilder\Andx::class, $expr);
-        $this->assertCount(2, $expr->getParts());
+        self::assertInstanceOf(QueryBuilder\Andx::class, $expr);
+        self::assertCount(2, $expr->getParts());
     }
 
-    public function testWalkOrCompositeExpression()
+    public function testWalkOrCompositeExpression() : void
     {
-        $cb = new CriteriaBuilder();
+        $cb   = new CriteriaBuilder();
         $expr = $this->visitor->walkCompositeExpression(
             $cb->orX(
-                $cb->eq("foo", 1),
-                $cb->eq("bar", 1)
+                $cb->eq('foo', 1),
+                $cb->eq('bar', 1)
             )
         );
 
-        $this->assertInstanceOf(QueryBuilder\Orx::class, $expr);
-        $this->assertCount(2, $expr->getParts());
+        self::assertInstanceOf(QueryBuilder\Orx::class, $expr);
+        self::assertCount(2, $expr->getParts());
     }
 
-    public function testWalkValue()
+    public function testWalkValue() : void
     {
-        $this->assertEquals('value', $this->visitor->walkValue(new Value('value')));
+        self::assertEquals('value', $this->visitor->walkValue(new Value('value')));
     }
 
-    public function testClearParameters()
+    public function testClearParameters() : void
     {
         $this->visitor->getParameters()->add(new Parameter('field', 'value'));
 
         $this->visitor->clearParameters();
 
-        $this->assertCount(0, $this->visitor->getParameters());
+        self::assertCount(0, $this->visitor->getParameters());
     }
 }

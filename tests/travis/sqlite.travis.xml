@@ -6,6 +6,10 @@
          failOnRisky="true"
          bootstrap="../Doctrine/Tests/TestInit.php"
 >
+    <php>
+        <env name="COLUMNS" value="120"/>
+    </php>
+
    <testsuites>
      <testsuite name="Doctrine ORM Test Suite">
         <directory>./../Doctrine/Tests/ORM</directory>
@@ -18,6 +22,7 @@
     </filter>
     <groups>
       <exclude>
+         <group>embedded</group>
          <group>performance</group>
          <group>locking_functional</group>
       </exclude>

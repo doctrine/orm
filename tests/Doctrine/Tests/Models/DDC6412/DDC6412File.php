@@ -1,21 +1,22 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\Tests\Models\DDC6412;
 
+use Doctrine\ORM\Annotation as ORM;
+
 /**
- * @Entity
+ * @ORM\Entity
  */
 class DDC6412File
 {
     /**
-     * @Column(type="integer")
-     * @GeneratedValue
+     * @ORM\Column(type="integer")
+     * @ORM\GeneratedValue
      */
     public $id;
-    
-    /**
-     * @Column(length=50, name="file_name")
-     */
+
+    /** @ORM\Column(length=50, name="file_name") */
     public $name;
 }
-

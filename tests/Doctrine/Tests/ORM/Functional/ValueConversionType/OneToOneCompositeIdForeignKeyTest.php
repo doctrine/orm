@@ -1,8 +1,9 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\Tests\ORM\Functional\ValueConversionType;
 
-use Doctrine\Tests\Models;
 use Doctrine\Tests\Models\ValueConversionType as Entity;
 use Doctrine\Tests\OrmFunctionalTestCase;
 
@@ -17,150 +18,109 @@ use Doctrine\Tests\OrmFunctionalTestCase;
  */
 class OneToOneCompositeIdForeignKeyTest extends OrmFunctionalTestCase
 {
-    public function setUp()
+    public function setUp() : void
     {
         $this->useModelSet('vct_onetoone_compositeid_foreignkey');
+
         parent::setUp();
 
-        $auxiliary = new Entity\AuxiliaryEntity();
+        $auxiliary      = new Entity\AuxiliaryEntity();
         $auxiliary->id4 = 'abc';
 
-        $inversed = new Entity\InversedOneToOneCompositeIdForeignKeyEntity();
-        $inversed->id1 = 'def';
+        $inversed                = new Entity\InversedOneToOneCompositeIdForeignKeyEntity();
+        $inversed->id1           = 'def';
         $inversed->foreignEntity = $auxiliary;
-        $inversed->someProperty = 'some value to be loaded';
+        $inversed->someProperty  = 'some value to be loaded';
 
-        $owning = new Entity\OwningOneToOneCompositeIdForeignKeyEntity();
+        $owning      = new Entity\OwningOneToOneCompositeIdForeignKeyEntity();
         $owning->id2 = 'ghi';
 
         $inversed->associatedEntity = $owning;
-        $owning->associatedEntity = $inversed;
+        $owning->associatedEntity   = $inversed;
 
-        $this->_em->persist($auxiliary);
-        $this->_em->persist($inversed);
-        $this->_em->persist($owning);
+        $this->em->persist($auxiliary);
+        $this->em->persist($inversed);
+        $this->em->persist($owning);
 
-        $this->_em->flush();
-        $this->_em->clear();
+        $this->em->flush();
+        $this->em->clear();
     }
 
-    public static function tearDownAfterClass()
+    public function testThatTheValueOfIdentifiersAreConvertedInTheDatabase() : void
     {
-        $conn = static::$_sharedConn;
+        $conn = $this->em->getConnection();
 
-        $conn->executeUpdate('DROP TABLE vct_owning_onetoone_compositeid_foreignkey');
-        $conn->executeUpdate('DROP TABLE vct_inversed_onetoone_compositeid_foreignkey');
-        $conn->executeUpdate('DROP TABLE vct_auxiliary');
+        self::assertEquals('nop', $conn->fetchColumn('SELECT id4 FROM vct_auxiliary LIMIT 1'));
+
+        self::assertEquals('qrs', $conn->fetchColumn('SELECT id1 FROM vct_inversed_onetoone_compositeid_foreignkey LIMIT 1'));
+        self::assertEquals('nop', $conn->fetchColumn('SELECT foreign_id FROM vct_inversed_onetoone_compositeid_foreignkey LIMIT 1'));
+
+        self::assertEquals('tuv', $conn->fetchColumn('SELECT id2 FROM vct_owning_onetoone_compositeid_foreignkey LIMIT 1'));
+        self::assertEquals('qrs', $conn->fetchColumn('SELECT associated_id FROM vct_owning_onetoone_compositeid_foreignkey LIMIT 1'));
+        self::assertEquals('nop', $conn->fetchColumn('SELECT associated_foreign_id FROM vct_owning_onetoone_compositeid_foreignkey LIMIT 1'));
     }
 
-    public function testThatTheValueOfIdentifiersAreConvertedInTheDatabase()
+    public function testThatEntitiesAreFetchedFromTheDatabase() : void
     {
-        $conn = $this->_em->getConnection();
+        $auxiliary = $this->em->find(Entity\AuxiliaryEntity::class, 'abc');
 
-        $this->assertEquals('nop', $conn->fetchColumn('SELECT id4 FROM vct_auxiliary LIMIT 1'));
-
-        $this->assertEquals('qrs', $conn->fetchColumn('SELECT id1 FROM vct_inversed_onetoone_compositeid_foreignkey LIMIT 1'));
-        $this->assertEquals('nop', $conn->fetchColumn('SELECT foreign_id FROM vct_inversed_onetoone_compositeid_foreignkey LIMIT 1'));
-
-        $this->assertEquals('tuv', $conn->fetchColumn('SELECT id2 FROM vct_owning_onetoone_compositeid_foreignkey LIMIT 1'));
-        $this->assertEquals('qrs', $conn->fetchColumn('SELECT associated_id FROM vct_owning_onetoone_compositeid_foreignkey LIMIT 1'));
-        $this->assertEquals('nop', $conn->fetchColumn('SELECT associated_foreign_id FROM vct_owning_onetoone_compositeid_foreignkey LIMIT 1'));
-    }
-
-    /**
-     * @depends testThatTheValueOfIdentifiersAreConvertedInTheDatabase
-     */
-    public function testThatEntitiesAreFetchedFromTheDatabase()
-    {
-        $auxiliary = $this->_em->find(
-            Models\ValueConversionType\AuxiliaryEntity::class,
-            'abc'
-        );
-
-        $inversed = $this->_em->find(
-            Models\ValueConversionType\InversedOneToOneCompositeIdForeignKeyEntity::class,
+        $inversed = $this->em->find(
+            Entity\InversedOneToOneCompositeIdForeignKeyEntity::class,
             ['id1' => 'def', 'foreignEntity' => 'abc']
         );
 
-        $owning = $this->_em->find(
-            Models\ValueConversionType\OwningOneToOneCompositeIdForeignKeyEntity::class,
-            'ghi'
-        );
+        $owning = $this->em->find(Entity\OwningOneToOneCompositeIdForeignKeyEntity::class, 'ghi');
 
-        $this->assertInstanceOf(Models\ValueConversionType\AuxiliaryEntity::class, $auxiliary);
-        $this->assertInstanceOf(Models\ValueConversionType\InversedOneToOneCompositeIdForeignKeyEntity::class, $inversed);
-        $this->assertInstanceOf(Models\ValueConversionType\OwningOneToOneCompositeIdForeignKeyEntity::class, $owning);
+        self::assertInstanceOf(Entity\AuxiliaryEntity::class, $auxiliary);
+        self::assertInstanceOf(Entity\InversedOneToOneCompositeIdForeignKeyEntity::class, $inversed);
+        self::assertInstanceOf(Entity\OwningOneToOneCompositeIdForeignKeyEntity::class, $owning);
     }
 
-    /**
-     * @depends testThatEntitiesAreFetchedFromTheDatabase
-     */
-    public function testThatTheValueOfIdentifiersAreConvertedBackAfterBeingFetchedFromTheDatabase()
+    public function testThatTheValueOfIdentifiersAreConvertedBackAfterBeingFetchedFromTheDatabase() : void
     {
-        $auxiliary = $this->_em->find(
-            Models\ValueConversionType\AuxiliaryEntity::class,
-            'abc'
-        );
+        $auxiliary = $this->em->find(Entity\AuxiliaryEntity::class, 'abc');
 
-        $inversed = $this->_em->find(
-            Models\ValueConversionType\InversedOneToOneCompositeIdForeignKeyEntity::class,
+        $inversed = $this->em->find(
+            Entity\InversedOneToOneCompositeIdForeignKeyEntity::class,
             ['id1' => 'def', 'foreignEntity' => 'abc']
         );
 
-        $owning = $this->_em->find(
-            Models\ValueConversionType\OwningOneToOneCompositeIdForeignKeyEntity::class,
-            'ghi'
-        );
+        $owning = $this->em->find(Entity\OwningOneToOneCompositeIdForeignKeyEntity::class, 'ghi');
 
-        $this->assertEquals('abc', $auxiliary->id4);
-        $this->assertEquals('def', $inversed->id1);
-        $this->assertEquals('abc', $inversed->foreignEntity->id4);
-        $this->assertEquals('ghi', $owning->id2);
+        self::assertEquals('abc', $auxiliary->id4);
+        self::assertEquals('def', $inversed->id1);
+        self::assertEquals('abc', $inversed->foreignEntity->id4);
+        self::assertEquals('ghi', $owning->id2);
     }
 
-    /**
-     * @depends testThatTheValueOfIdentifiersAreConvertedBackAfterBeingFetchedFromTheDatabase
-     */
-    public function testThatInversedEntityIsFetchedFromTheDatabaseUsingAuxiliaryEntityAsId()
+    public function testThatInversedEntityIsFetchedFromTheDatabaseUsingAuxiliaryEntityAsId() : void
     {
-        $auxiliary = $this->_em->find(
-            Models\ValueConversionType\AuxiliaryEntity::class,
-            'abc'
-        );
+        $auxiliary = $this->em->find(Entity\AuxiliaryEntity::class, 'abc');
 
-        $inversed = $this->_em->find(
-            Models\ValueConversionType\InversedOneToOneCompositeIdForeignKeyEntity::class,
+        $inversed = $this->em->find(
+            Entity\InversedOneToOneCompositeIdForeignKeyEntity::class,
             ['id1' => 'def', 'foreignEntity' => $auxiliary]
         );
 
-        $this->assertInstanceOf(Models\ValueConversionType\InversedOneToOneCompositeIdForeignKeyEntity::class, $inversed);
+        self::assertInstanceOf(Entity\InversedOneToOneCompositeIdForeignKeyEntity::class, $inversed);
     }
 
-    /**
-     * @depends testThatEntitiesAreFetchedFromTheDatabase
-     */
-    public function testThatTheProxyFromOwningToInversedIsLoaded()
+    public function testThatTheProxyFromOwningToInversedIsLoaded() : void
     {
-        $owning = $this->_em->find(
-            Models\ValueConversionType\OwningOneToOneCompositeIdForeignKeyEntity::class,
-            'ghi'
-        );
+        $owning = $this->em->find(Entity\OwningOneToOneCompositeIdForeignKeyEntity::class, 'ghi');
 
         $inversedProxy = $owning->associatedEntity;
 
-        $this->assertEquals('some value to be loaded', $inversedProxy->someProperty);
+        self::assertEquals('some value to be loaded', $inversedProxy->someProperty);
     }
 
-    /**
-     * @depends testThatEntitiesAreFetchedFromTheDatabase
-     */
-    public function testThatTheEntityFromInversedToOwningIsEagerLoaded()
+    public function testThatTheEntityFromInversedToOwningIsEagerLoaded() : void
     {
-        $inversed = $this->_em->find(
-            Models\ValueConversionType\InversedOneToOneCompositeIdForeignKeyEntity::class,
+        $inversed = $this->em->find(
+            Entity\InversedOneToOneCompositeIdForeignKeyEntity::class,
             ['id1' => 'def', 'foreignEntity' => 'abc']
         );
 
-        $this->assertInstanceOf(Models\ValueConversionType\OwningOneToOneCompositeIdForeignKeyEntity::class, $inversed->associatedEntity);
+        self::assertInstanceOf(Entity\OwningOneToOneCompositeIdForeignKeyEntity::class, $inversed->associatedEntity);
     }
 }

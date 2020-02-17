@@ -1,9 +1,11 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\Tests\Mocks;
 
-use Doctrine\ORM\Cache\TimestampRegion;
 use Doctrine\ORM\Cache\CacheKey;
+use Doctrine\ORM\Cache\TimestampRegion;
 
 /**
  * Timestamp region mock

@@ -1,16 +1,14 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\Tests\Models\DDC3293;
 
 class DDC3293User
 {
-    /**
-     * @var string
-     */
+    /** @var int */
     protected $id;
 
-    /**
-     * @var \Doctrine\Tests\Models\DDC3293\DDC3293Address
-     */
+    /** @var DDC3293Address */
     protected $address;
 }

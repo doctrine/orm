@@ -1,43 +1,40 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\Tests\Models\DDC117;
 
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\ORM\Annotation as ORM;
+
 /**
- * @Entity
+ * @ORM\Entity
  */
 class DDC117Article
 {
-    /** @Id @Column(type="integer", name="article_id") @GeneratedValue */
+    /** @ORM\Id @ORM\Column(type="integer", name="article_id") @ORM\GeneratedValue */
     private $id;
 
-    /** @Column */
+    /** @ORM\Column */
     private $title;
 
-    /**
-     * @OneToMany(targetEntity="DDC117Reference", mappedBy="source", cascade={"remove"})
-     */
+    /** @ORM\OneToMany(targetEntity=DDC117Reference::class, mappedBy="source", cascade={"remove"}) */
     private $references;
 
-    /**
-     * @OneToOne(targetEntity="DDC117ArticleDetails", mappedBy="article", cascade={"persist", "remove"})
-     */
+    /** @ORM\OneToOne(targetEntity=DDC117ArticleDetails::class, mappedBy="article", cascade={"persist", "remove"}) */
     private $details;
 
-    /**
-     * @OneToMany(targetEntity="DDC117Translation", mappedBy="article", cascade={"persist", "remove"})
-     */
+    /** @ORM\OneToMany(targetEntity=DDC117Translation::class, mappedBy="article", cascade={"persist", "remove"}) */
     private $translations;
 
-    /**
-     * @OneToMany(targetEntity="DDC117Link", mappedBy="source", indexBy="target_id", cascade={"persist", "remove"})
-     */
+    /** @ORM\OneToMany(targetEntity=DDC117Link::class, mappedBy="source", indexBy="target_id", cascade={"persist", "remove"}) */
     private $links;
 
     public function __construct($title)
     {
-        $this->title = $title;
-        $this->references = new \Doctrine\Common\Collections\ArrayCollection();
-        $this->translations = new \Doctrine\Common\Collections\ArrayCollection();
+        $this->title        = $title;
+        $this->references   = new ArrayCollection();
+        $this->translations = new ArrayCollection();
     }
 
     public function setDetails($details)
@@ -79,6 +76,7 @@ class DDC117Article
     {
         return $this->links;
     }
+
     public function resetText()
     {
         $this->details = null;

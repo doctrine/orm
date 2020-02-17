@@ -1,64 +1,73 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\Tests\ORM\Functional\Ticket;
+
+use Doctrine\ORM\Annotation as ORM;
+use Doctrine\Tests\OrmFunctionalTestCase;
 
 /**
  * @group DDC-2175
  */
-class DDC2175Test extends \Doctrine\Tests\OrmFunctionalTestCase
+class DDC2175Test extends OrmFunctionalTestCase
 {
-    protected function setUp()
+    protected function setUp() : void
     {
         parent::setUp();
-        $this->_schemaTool->createSchema(
-            [
-            $this->_em->getClassMetadata(DDC2175Entity::class),
-            ]
+
+        $this->schemaTool->createSchema(
+            [$this->em->getClassMetadata(DDC2175Entity::class)]
         );
     }
 
-    public function testIssue()
+    protected function tearDown() : void
     {
-        $entity = new DDC2175Entity();
-        $entity->field = "foo";
+        parent::tearDown();
 
-        $this->_em->persist($entity);
-        $this->_em->flush();
+        $this->schemaTool->dropSchema(
+            [$this->em->getClassMetadata(DDC2175Entity::class)]
+        );
+    }
 
-        $this->assertEquals(1, $entity->version);
+    public function testIssue() : void
+    {
+        $entity        = new DDC2175Entity();
+        $entity->field = 'foo';
 
-        $entity->field = "bar";
-        $this->_em->flush();
+        $this->em->persist($entity);
+        $this->em->flush();
 
-        $this->assertEquals(2, $entity->version);
+        self::assertEquals(1, $entity->version);
 
-        $entity->field = "baz";
-        $this->_em->flush();
+        $entity->field = 'bar';
+        $this->em->flush();
 
-        $this->assertEquals(3, $entity->version);
+        self::assertEquals(2, $entity->version);
+
+        $entity->field = 'baz';
+        $this->em->flush();
+
+        self::assertEquals(3, $entity->version);
     }
 }
 
 /**
- * @Entity
- * @InheritanceType("JOINED")
- * @DiscriminatorMap({"entity": "DDC2175Entity"})
+ * @ORM\Entity
+ * @ORM\InheritanceType("JOINED")
+ * @ORM\DiscriminatorMap({"entity": DDC2175Entity::class})
  */
 class DDC2175Entity
 {
-    /**
-     * @Id @GeneratedValue @Column(type="integer")
-     */
+    /** @ORM\Id @ORM\GeneratedValue @ORM\Column(type="integer") */
     public $id;
 
-    /**
-     * @Column(type="string")
-     */
+    /** @ORM\Column(type="string") */
     public $field;
 
     /**
-     * @Version
-     * @Column(type="integer")
+     * @ORM\Version
+     * @ORM\Column(type="integer")
      */
     public $version;
 }

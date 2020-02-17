@@ -13,19 +13,13 @@ Database Schema
 How do I set the charset and collation for MySQL tables?
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-You can't set these values inside the annotations, yml or xml mapping files. To make a database
+You can't set these values inside the annotations or xml mapping files. To make a database
 work with the default charset and collation you should configure MySQL to use it as default charset,
 or create the database with charset and collation details. This way they get inherited to all newly
 created database tables and columns.
 
 Entity Classes
 --------------
-
-I access a variable and its null, what is wrong?
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-If this variable is a public variable then you are violating one of the criteria for entities.
-All properties have to be protected or private for the proxy object pattern to work.
 
 How can I add default values to a column?
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -58,7 +52,7 @@ or adding entities to a collection twice. You have to check for both conditions 
 in the code before calling ``$em->flush()`` if you know that unique constraint failures
 can occur.
 
-In `Symfony2 <http://www.symfony.com>`_ for example there is a Unique Entity Validator
+In `Symfony2 <https://www.symfony.com>`_ for example there is a Unique Entity Validator
 to achieve this task.
 
 For collections you can check with ``$collection->contains($entity)`` if an entity is already
@@ -108,7 +102,6 @@ foreign keys as primary keys feature of Doctrine introduced in version 2.1.
 
 See :doc:`the tutorial on composite primary keys for more information<../tutorials/composite-primary-keys>`.
 
-
 How can i paginate fetch-joined collections?
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
@@ -118,8 +111,8 @@ over this collection using a LIMIT statement (or vendor equivalent).
 Doctrine does not offer a solution for this out of the box but there are several extensions
 that do:
 
-* `DoctrineExtensions <http://github.com/beberlei/DoctrineExtensions>`_
-* `Pagerfanta <http://github.com/whiteoctober/pagerfanta>`_
+* `DoctrineExtensions <https://github.com/beberlei/DoctrineExtensions>`_
+* `Pagerfanta <https://github.com/whiteoctober/pagerfanta>`_
 
 Why does pagination not work correctly with fetch joins?
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -136,7 +129,7 @@ Inheritance
 
 Can I use Inheritance with Doctrine 2?
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
- 
+
 Yes, you can use Single- or Joined-Table Inheritance in Doctrine 2.
 
 See the documentation chapter on :doc:`inheritance mapping <inheritance-mapping>` for
@@ -148,23 +141,6 @@ Why does Doctrine not create proxy objects for my inheritance hierarchy?
 If you set a many-to-one or one-to-one association target-entity to any parent class of
 an inheritance hierarchy Doctrine does not know what PHP class the foreign is actually of.
 To find this out it has to execute a SQL query to look this information up in the database.
-
-EntityGenerator
----------------
-
-Why does the EntityGenerator not do X?
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-The EntityGenerator is not a full fledged code-generator that solves all tasks. Code-Generation
-is not a first-class priority in Doctrine 2 anymore (compared to Doctrine 1). The EntityGenerator
-is supposed to kick-start you, but not towards 100%.
-
-Why does the EntityGenerator not generate inheritance correctly?
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-Just from the details of the discriminator map the EntityGenerator cannot guess the inheritance hierarchy.
-This is why the generation of inherited entities does not fully work. You have to adjust some additional
-code to get this one working correctly.
 
 Performance
 -----------

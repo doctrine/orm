@@ -1,82 +1,87 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\Tests\ORM\Functional\Ticket;
 
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\DBAL\Platforms\AbstractPlatform;
 use Doctrine\DBAL\Types\Type;
+use Doctrine\ORM\Annotation as ORM;
+use Doctrine\Tests\OrmFunctionalTestCase;
+use Exception;
 
-class DDC3785Test extends \Doctrine\Tests\OrmFunctionalTestCase
+class DDC3785Test extends OrmFunctionalTestCase
 {
-    protected function setUp()
+    protected function setUp() : void
     {
         parent::setUp();
 
-        Type::addType('ddc3785_asset_id', DDC3785_AssetIdType::class);
+        Type::addType('ddc3785_asset_id', DDC3785AssetIdType::class);
 
         try {
-            $this->_schemaTool->createSchema(
+            $this->schemaTool->createSchema(
                 [
-                    $this->_em->getClassMetadata(DDC3785_Asset::class),
-                    $this->_em->getClassMetadata(DDC3785_AssetId::class),
-                    $this->_em->getClassMetadata(DDC3785_Attribute::class)
+                    $this->em->getClassMetadata(DDC3785Asset::class),
+                    $this->em->getClassMetadata(DDC3785AssetId::class),
+                    $this->em->getClassMetadata(DDC3785Attribute::class),
                 ]
             );
-        } catch(\Exception $e) {
+        } catch (Exception $e) {
         }
     }
 
     /**
+     * @group embedded
      * @group DDC-3785
      */
-    public function testOwningValueObjectIdIsCorrectlyTransformedWhenRemovingOrphanedChildEntities()
+    public function testOwningValueObjectIdIsCorrectlyTransformedWhenRemovingOrphanedChildEntities() : void
     {
-        $id = new DDC3785_AssetId('919609ba-57d9-4a13-be1d-d202521e858a');
+        $id = new DDC3785AssetId('919609ba-57d9-4a13-be1d-d202521e858a');
 
         $attributes = [
-            $attribute1 = new DDC3785_Attribute('foo1', 'bar1'),
-            $attribute2 = new DDC3785_Attribute('foo2', 'bar2')
+            $attribute1 = new DDC3785Attribute('foo1', 'bar1'),
+            $attribute2 = new DDC3785Attribute('foo2', 'bar2'),
         ];
 
-        $this->_em->persist($asset = new DDC3785_Asset($id, $attributes));
-        $this->_em->flush();
+        $this->em->persist($asset = new DDC3785Asset($id, $attributes));
+        $this->em->flush();
 
         $asset->getAttributes()
               ->removeElement($attribute1);
 
         $idToBeRemoved = $attribute1->id;
 
-        $this->_em->persist($asset);
-        $this->_em->flush();
+        $this->em->persist($asset);
+        $this->em->flush();
 
-        self::assertNull($this->_em->find(DDC3785_Attribute::class, $idToBeRemoved));
-        self::assertNotNull($this->_em->find(DDC3785_Attribute::class, $attribute2->id));
+        self::assertNull($this->em->find(DDC3785Attribute::class, $idToBeRemoved));
+        self::assertNotNull($this->em->find(DDC3785Attribute::class, $attribute2->id));
     }
 }
 
 /**
- * @Entity
- * @Table(name="asset")
+ * @ORM\Entity
+ * @ORM\Table(name="asset")
  */
-class DDC3785_Asset
+class DDC3785Asset
 {
-    /**
-     * @Id @GeneratedValue(strategy="NONE") @Column(type="ddc3785_asset_id")
-     */
+    /** @ORM\Id @ORM\GeneratedValue(strategy="NONE") @ORM\Column(type="ddc3785_asset_id") */
     private $id;
 
     /**
-     * @ManyToMany(targetEntity="DDC3785_Attribute", cascade={"persist"}, orphanRemoval=true)
-     * @JoinTable(name="asset_attributes",
-     *      joinColumns={@JoinColumn(name="asset_id", referencedColumnName="id")},
-     *      inverseJoinColumns={@JoinColumn(name="attribute_id", referencedColumnName="id")}
-     *      )
-     **/
+     * @ORM\ManyToMany(targetEntity=DDC3785Attribute::class, cascade={"persist"}, orphanRemoval=true)
+     * @ORM\JoinTable(
+     *     name="asset_attributes",
+     *     joinColumns={@ORM\JoinColumn(name="asset_id", referencedColumnName="id")},
+     *     inverseJoinColumns={@ORM\JoinColumn(name="attribute_id", referencedColumnName="id")}
+     * )
+     */
     private $attributes;
 
-    public function __construct(DDC3785_AssetId $id, $attributes = [])
+    public function __construct(DDC3785AssetId $id, $attributes = [])
     {
-        $this->id = $id;
+        $this->id         = $id;
         $this->attributes = new ArrayCollection();
 
         foreach ($attributes as $attribute) {
@@ -96,34 +101,34 @@ class DDC3785_Asset
 }
 
 /**
- * @Entity
- * @Table(name="attribute")
+ * @ORM\Entity
+ * @ORM\Table(name="attribute")
  */
-class DDC3785_Attribute
+class DDC3785Attribute
 {
     /**
-     * @Id @Column(type="integer")
-     * @GeneratedValue
+     * @ORM\Id @ORM\Column(type="integer")
+     * @ORM\GeneratedValue
      */
     public $id;
 
-    /** @Column(type = "string") */
+    /** @ORM\Column(type = "string") */
     private $name;
 
-    /** @Column(type = "string") */
+    /** @ORM\Column(type = "string") */
     private $value;
 
     public function __construct($name, $value)
     {
-        $this->name = $name;
+        $this->name  = $name;
         $this->value = $value;
     }
 }
 
-/** @Embeddable */
-class DDC3785_AssetId
+/** @ORM\Embeddable */
+class DDC3785AssetId
 {
-    /** @Column(type = "guid") */
+    /** @ORM\Column(type = "guid") */
     private $id;
 
     public function __construct($id)
@@ -133,11 +138,11 @@ class DDC3785_AssetId
 
     public function __toString()
     {
-        return $this->id;
+        return (string) $this->id;
     }
 }
 
-class DDC3785_AssetIdType extends Type
+class DDC3785AssetIdType extends Type
 {
     /**
      * {@inheritdoc}
@@ -152,7 +157,7 @@ class DDC3785_AssetIdType extends Type
      */
     public function convertToDatabaseValue($value, AbstractPlatform $platform)
     {
-        return (string)$value;
+        return (string) $value;
     }
 
     /**
@@ -160,7 +165,7 @@ class DDC3785_AssetIdType extends Type
      */
     public function convertToPHPValue($value, AbstractPlatform $platform)
     {
-        return new DDC3785_AssetId($value);
+        return new DDC3785AssetId($value);
     }
 
     /**

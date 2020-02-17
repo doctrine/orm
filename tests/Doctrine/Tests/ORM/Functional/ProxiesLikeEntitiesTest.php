@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\Tests\ORM\Functional;
 
 use Doctrine\Tests\Models\CMS\CmsAddress;
@@ -10,7 +12,10 @@ use Doctrine\Tests\Models\CMS\CmsPhonenumber;
 use Doctrine\Tests\Models\CMS\CmsTag;
 use Doctrine\Tests\Models\CMS\CmsUser;
 use Doctrine\Tests\OrmFunctionalTestCase;
-use Doctrine\Tests\Proxies\__CG__\Doctrine\Tests\Models\CMS\CmsUser as CmsUserProxy;
+use Exception;
+use ProxyManager\Configuration;
+use ProxyManager\Proxy\GhostObjectInterface;
+use function sprintf;
 
 /**
  * Test that Doctrine ORM correctly works with proxy instances exactly like with ordinary Entities
@@ -18,124 +23,153 @@ use Doctrine\Tests\Proxies\__CG__\Doctrine\Tests\Models\CMS\CmsUser as CmsUserPr
  * The test considers two possible cases:
  *  a) __initialized__ = true and no identifier set in proxy
  *  b) __initialized__ = false and identifier set in proxy and in property
+ *
  * @todo All other cases would cause lazy loading
  */
 class ProxiesLikeEntitiesTest extends OrmFunctionalTestCase
 {
-    /**
-     * @var CmsUser
-     */
+    /** @var CmsUser */
     protected $user;
 
-    protected function setUp()
+    /** @var string */
+    private $proxyClassName;
+
+    protected function setUp() : void
     {
         parent::setUp();
         try {
-            $this->_schemaTool->createSchema(
+            $this->schemaTool->createSchema(
                 [
-                    $this->_em->getClassMetadata(CmsUser::class),
-                    $this->_em->getClassMetadata(CmsTag::class),
-                    $this->_em->getClassMetadata(CmsPhonenumber::class),
-                    $this->_em->getClassMetadata(CmsArticle::class),
-                    $this->_em->getClassMetadata(CmsAddress::class),
-                    $this->_em->getClassMetadata(CmsEmail::class),
-                    $this->_em->getClassMetadata(CmsGroup::class),
+                    $this->em->getClassMetadata(CmsUser::class),
+                    $this->em->getClassMetadata(CmsTag::class),
+                    $this->em->getClassMetadata(CmsPhonenumber::class),
+                    $this->em->getClassMetadata(CmsArticle::class),
+                    $this->em->getClassMetadata(CmsAddress::class),
+                    $this->em->getClassMetadata(CmsEmail::class),
+                    $this->em->getClassMetadata(CmsGroup::class),
                 ]
             );
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
         }
-        $this->user = new CmsUser();
+        $this->user           = new CmsUser();
         $this->user->username = 'ocramius';
-        $this->user->name = 'Marco';
-        $this->_em->persist($this->user);
-        $this->_em->flush();
-        $this->_em->clear();
+        $this->user->name     = 'Marco';
+        $this->em->persist($this->user);
+        $this->em->flush();
+        $this->em->clear();
+
+        $this->proxyClassName = (new Configuration())->getClassNameInflector()->getProxyClassName(CmsUser::class);
     }
 
     /**
      * Verifies that a proxy can be successfully persisted and updated
      */
-    public function testPersistUpdate()
+    public function testPersistUpdate() : void
     {
         // Considering case (a)
-        $proxy = $this->_em->getProxyFactory()->getProxy(CmsUser::class, ['id' => 123]);
-        $proxy->__isInitialized__ = true;
-        $proxy->id = null;
+        $metadata = $this->em->getClassMetadata(CmsUser::class);
+        $proxy    = $this->em->getProxyFactory()->getProxy($metadata, ['id' => 123]);
+
+        $proxy->setProxyInitializer(null);
+        $proxy->id       = null;
         $proxy->username = 'ocra';
-        $proxy->name = 'Marco';
-        $this->_em->persist($proxy);
-        $this->_em->flush();
-        $this->assertNotNull($proxy->getId());
+        $proxy->name     = 'Marco';
+
+        $this->em->persist($proxy);
+        $this->em->flush();
+
+        self::assertNotNull($proxy->getId());
+
         $proxy->name = 'Marco Pivetta';
-        $this->_em->getUnitOfWork()
-            ->computeChangeSet($this->_em->getClassMetadata(CmsUser::class), $proxy);
-        $this->assertNotEmpty($this->_em->getUnitOfWork()->getEntityChangeSet($proxy));
-        $this->assertEquals('Marco Pivetta', $this->_em->find(CmsUser::class, $proxy->getId())->name);
-        $this->_em->remove($proxy);
-        $this->_em->flush();
+
+        $this->em->getUnitOfWork()->computeChangeSet($metadata, $proxy);
+        self::assertNotEmpty($this->em->getUnitOfWork()->getEntityChangeSet($proxy));
+        self::assertEquals('Marco Pivetta', $this->em->find(CmsUser::class, $proxy->getId())->name);
+
+        $this->em->remove($proxy);
+        $this->em->flush();
     }
 
-    public function testEntityWithIdentifier()
+    public function testEntityWithIdentifier() : void
     {
         $userId = $this->user->getId();
-        /* @var $uninitializedProxy CmsUserProxy */
-        $uninitializedProxy = $this->_em->getReference(CmsUser::class, $userId);
-        $this->assertInstanceOf(CmsUserProxy::class, $uninitializedProxy);
+        /** @var CmsUser|GhostObjectInterface $uninitializedProxy */
+        $uninitializedProxy = $this->em->getReference(CmsUser::class, $userId);
+        self::assertInstanceOf(GhostObjectInterface::class, $uninitializedProxy);
+        self::assertInstanceOf(CmsUser::class, $uninitializedProxy);
+        self::assertFalse($uninitializedProxy->isProxyInitialized());
 
-        $this->_em->persist($uninitializedProxy);
-        $this->_em->flush($uninitializedProxy);
-        $this->assertFalse($uninitializedProxy->__isInitialized(), 'Proxy didn\'t get initialized during flush operations');
-        $this->assertEquals($userId, $uninitializedProxy->getId());
-        $this->_em->remove($uninitializedProxy);
-        $this->_em->flush();
+        $this->em->persist($uninitializedProxy);
+        $this->em->flush();
+        self::assertFalse($uninitializedProxy->isProxyInitialized(), 'Proxy didn\'t get initialized during flush operations');
+        self::assertEquals($userId, $uninitializedProxy->getId());
+        $this->em->remove($uninitializedProxy);
+        $this->em->flush();
     }
 
     /**
      * Verifying that proxies can be used without problems as query parameters
      */
-    public function testProxyAsDqlParameterPersist()
+    public function testProxyAsDqlParameterPersist() : void
     {
-        $proxy = $this->_em->getProxyFactory()->getProxy(CmsUser::class, ['id' => $this->user->getId()]
+        $proxy = $this->em->getProxyFactory()->getProxy(
+            $this->em->getClassMetadata(CmsUser::class),
+            ['id' => $this->user->getId()]
         );
+
         $proxy->id = $this->user->getId();
+
         $result = $this
-            ->_em
+            ->em
             ->createQuery('SELECT u FROM Doctrine\Tests\Models\CMS\CmsUser u WHERE u = ?1')
             ->setParameter(1, $proxy)
             ->getSingleResult();
-        $this->assertSame($this->user->getId(), $result->getId());
-        $this->_em->remove($proxy);
-        $this->_em->flush();
+
+        self::assertSame($this->user->getId(), $result->getId());
+
+        $this->em->remove($proxy);
+        $this->em->flush();
     }
 
     /**
      * Verifying that proxies can be used without problems as query parameters
      */
-    public function testFindWithProxyName()
+    public function testFindWithProxyName() : void
     {
-        $result = $this->_em->find(CmsUserProxy::class, $this->user->getId());
-        $this->assertSame($this->user->getId(), $result->getId());
-        $this->_em->clear();
+        self::assertNotEquals(CmsUser::class, $this->proxyClassName);
 
-        $result = $this->_em->getReference(CmsUserProxy::class, $this->user->getId());
-        $this->assertSame($this->user->getId(), $result->getId());
-        $this->_em->clear();
+        $result = $this->em->find($this->proxyClassName, $this->user->getId());
 
-        $result = $this->_em->getRepository(CmsUserProxy::class)->findOneBy(['username' => $this->user->username]);
-        $this->assertSame($this->user->getId(), $result->getId());
-        $this->_em->clear();
+        self::assertSame($this->user->getId(), $result->getId());
 
-        $result = $this->_em
-            ->createQuery('SELECT u FROM Doctrine\Tests\Proxies\__CG__\Doctrine\Tests\Models\CMS\CmsUser u WHERE u.id = ?1')
+        $this->em->clear();
+
+        $result = $this->em->getReference($this->proxyClassName, $this->user->getId());
+
+        self::assertSame($this->user->getId(), $result->getId());
+
+        $this->em->clear();
+
+        $result = $this->em->getRepository($this->proxyClassName)->findOneBy([
+            'username' => $this->user->username,
+        ]);
+
+        self::assertSame($this->user->getId(), $result->getId());
+
+        $this->em->clear();
+
+        $result = $this->em
+            ->createQuery(sprintf('SELECT u FROM %s u WHERE u.id = ?1', $this->proxyClassName))
             ->setParameter(1, $this->user->getId())
             ->getSingleResult();
 
-        $this->assertSame($this->user->getId(), $result->getId());
-        $this->_em->clear();
+        self::assertSame($this->user->getId(), $result->getId());
+
+        $this->em->clear();
     }
 
-    protected function tearDown()
+    protected function tearDown() : void
     {
-        $this->_em->createQuery('DELETE FROM Doctrine\Tests\Models\CMS\CmsUser u')->execute();
+        $this->em->createQuery('DELETE FROM Doctrine\Tests\Models\CMS\CmsUser u')->execute();
     }
 }

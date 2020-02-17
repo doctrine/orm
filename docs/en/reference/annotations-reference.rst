@@ -24,7 +24,7 @@ annotations for supplying object-relational mapping metadata.
 
     If you're not comfortable with the concept of docblock
     annotations, don't worry, as mentioned earlier Doctrine 2 provides
-    XML and YAML alternatives and you could easily implement your own
+    the XML alternative and you could easily implement your own
     favourite mechanism for defining ORM metadata.
 
 In this chapter a reference of every Doctrine 2 Annotation is given
@@ -181,7 +181,7 @@ Examples:
     protected $initials;
 
     /**
-     * @Column(type="integer", name="login_count" nullable=false, options={"unsigned":true, "default":0})
+     * @Column(type="integer", name="login_count", nullable=false, options={"unsigned":true, "default":0})
      */
     protected $loginCount;
 
@@ -254,7 +254,7 @@ Example:
 
     <?php
     /**
-     * @Id 
+     * @Id
      * @Column(type="integer")
      * @GeneratedValue(strategy="CUSTOM")
      * @CustomIdGenerator(class="My\Namespace\MyIdGenerator")
@@ -276,12 +276,10 @@ to a string column of length 255 called ``dtype``.
 
 Required attributes:
 
-
 -  **name**: The column name of the discriminator. This name is also
    used during Array hydration as key to specify the class-name.
 
 Optional attributes:
-
 
 -  **type**: By default this is string.
 -  **length**: By default this is 255.
@@ -312,15 +310,14 @@ depending on whether the classes are in the namespace or not.
         // ...
     }
 
-
 .. _annref_embeddable:
 
 @Embeddable
 ~~~~~~~~~~~~~~~~~~~~~
 
-The embeddable is required on an entity targeted to be embeddable inside
-another. It works together with the :ref:`@Embedded <annref_embedded>`
-annotation to establish the relationship between two entities.
+The embeddable annotation is required on a class, in order to make it
+embeddable inside an entity. It works together with the :ref:`@Embedded <annref_embedded>`
+annotation to establish the relationship between the two classes.
 
 .. code-block:: php
 
@@ -338,20 +335,18 @@ annotation to establish the relationship between two entities.
          * @Embedded(class = "Address")
          */
         private $address;
-
 
 .. _annref_embedded:
 
 @Embedded
 ~~~~~~~~~~~~~~~~~~~~~
 
-The embedded annotation is required on a member class varible targed to
-embed it's class argument inside it's own class.
+The embedded annotation is required on an entity's member variable,
+in order to specify that it is an embedded class.
 
 Required attributes:
 
 -  **class**: The embeddable class
-
 
 .. code-block:: php
 
@@ -371,7 +366,6 @@ Required attributes:
     class Address
     {
     // ...
-
 
 .. _annref_entity:
 
@@ -382,7 +376,6 @@ Required annotation to mark a PHP class as an entity. Doctrine manages
 the persistence of all classes marked as entities.
 
 Optional attributes:
-
 
 -  **repositoryClass**: Specifies the FQCN of a subclass of the
    EntityRepository. Use of repositories for entities is encouraged to keep
@@ -398,11 +391,11 @@ Example:
 
     <?php
     /**
-     * @Entity(repositoryClass="MyProject\UserRepository")
+     * @Entity(repositoryClass="MyProject\UserRepository", readOnly=true)
      */
     class User
     {
-        //...
+        // ...
     }
 
 .. _annref_entity_result:
@@ -433,7 +426,6 @@ Required attributes:
 
 -  **name**: Name of the persistent field or property of the class.
 
-
 Optional attributes:
 
 -  **column**: Name of the column in the SELECT clause.
@@ -453,9 +445,9 @@ used as default.
 
 Optional attributes:
 
-
 -  **strategy**: Set the name of the identifier generation strategy.
-   Valid values are AUTO, SEQUENCE, TABLE, IDENTITY, UUID, CUSTOM and NONE.
+   Valid values are ``AUTO``, ``SEQUENCE``, ``TABLE``, ``IDENTITY``, ``CUSTOM`` and ``NONE``, explained
+   in the :ref:`Identifier Generation Strategies <identifier-generation-strategies>` section.
    If not specified, default value is AUTO.
 
 Example:
@@ -510,7 +502,6 @@ generate a database index on the specified table columns. It only
 has meaning in the SchemaTool schema generation context.
 
 Required attributes:
-
 
 -  **name**: Name of the Index
 -  **columns**: Array of columns.
@@ -625,7 +616,6 @@ inferred from the table and primary key names.
 
 Required attributes:
 
-
 -  **name**: Column name that holds the foreign key identifier for
    this relation. In the context of @JoinTable it specifies the column
    name in the join table.
@@ -633,7 +623,6 @@ Required attributes:
    is used for joining of this relation.
 
 Optional attributes:
-
 
 -  **unique**: Determines whether this relation is exclusive between the
    affected entities and should be enforced as such on the database
@@ -685,7 +674,6 @@ using the affected table and the column names.
 
 Optional attributes:
 
-
 -  **name**: Database name of the join-table
 -  **joinColumns**: An array of @JoinColumn annotations describing the
    join-relation between the owning entities table and the join table.
@@ -717,13 +705,11 @@ describes a many-to-one relationship between two entities.
 
 Required attributes:
 
-
 -  **targetEntity**: FQCN of the referenced target entity. Can be the
    unqualified class name if both classes are in the same namespace.
    *IMPORTANT:* No leading backslash!
 
 Optional attributes:
-
 
 -  **cascade**: Cascade Option
 -  **fetch**: One of LAZY or EAGER
@@ -753,13 +739,11 @@ entities.
 
 Required attributes:
 
-
 -  **targetEntity**: FQCN of the referenced target entity. Can be the
    unqualified class name if both classes are in the same namespace.
    *IMPORTANT:* No leading backslash!
 
 Optional attributes:
-
 
 -  **mappedBy**: This option specifies the property name on the
    targetEntity that is the owning side of this relation. It is a
@@ -816,7 +800,6 @@ The @MappedSuperclass annotation cannot be used in conjunction with
 
 Optional attributes:
 
-
 -  **repositoryClass**: (>= 2.2) Specifies the FQCN of a subclass of the EntityRepository.
    That will be inherited for all subclasses of that Mapped Superclass.
 
@@ -853,12 +836,10 @@ Required attributes:
 -  **name**: The name used to refer to the query with the EntityManager methods that create query objects.
 -  **query**: The SQL query string.
 
-
 Optional attributes:
 
 -  **resultClass**: The class of the result.
 -  **resultSetMapping**: The name of a SqlResultSetMapping, as defined in metadata.
-
 
 Example:
 
@@ -925,13 +906,11 @@ primary key column names apply here too.
 
 Required attributes:
 
-
 -  **targetEntity**: FQCN of the referenced target entity. Can be the
    unqualified class name if both classes are in the same namespace.
    *IMPORTANT:* No leading backslash!
 
 Optional attributes:
-
 
 -  **cascade**: Cascade Option
 -  **fetch**: One of LAZY or EAGER
@@ -959,13 +938,11 @@ Example:
 
 Required attributes:
 
-
 -  **targetEntity**: FQCN of the referenced target entity. Can be the
    unqualified class name if both classes are in the same namespace.
    *IMPORTANT:* No leading backslash!
 
 Optional attributes:
-
 
 -  **cascade**: Cascade Option
 -  **orphanRemoval**: Boolean that specifies if orphans, inverse
@@ -983,7 +960,7 @@ Example:
 
     <?php
     /**
-     * @OneToMany(targetEntity="Phonenumber", mappedBy="user", cascade={"persist", "remove", "merge"}, orphanRemoval=true)
+     * @OneToMany(targetEntity="Phonenumber", mappedBy="user", cascade={"persist", "remove"}, orphanRemoval=true)
      */
     public $phonenumbers;
 
@@ -1091,11 +1068,9 @@ the increment size and initial values of the sequence.
 
 Required attributes:
 
-
 -  **sequenceName**: Name of the sequence
 
 Optional attributes:
-
 
 -  **allocationSize**: Increment the sequence by the allocation size
    when its fetched. A value larger than 1 allows optimization for
@@ -1126,7 +1101,6 @@ The SqlResultSetMapping annotation can be applied to an entity or mapped supercl
 Required attributes:
 
 -  **name**: The name given to the result set mapping, and used to refer to it in the methods of the Query API.
-
 
 Optional attributes:
 
@@ -1228,11 +1202,9 @@ unqualified classname.
 
 Required attributes:
 
-
 -  **name**: Name of the table
 
 Optional attributes:
-
 
 -  **indexes**: Array of @Index annotations
 -  **uniqueConstraints**: Array of @UniqueConstraint annotations.
@@ -1265,7 +1237,6 @@ columns. It only has meaning in the SchemaTool schema generation
 context.
 
 Required attributes:
-
 
 -  **name**: Name of the Index
 -  **columns**: Array of columns.

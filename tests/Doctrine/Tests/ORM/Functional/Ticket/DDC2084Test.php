@@ -1,24 +1,29 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\Tests\ORM\Functional\Ticket;
+
+use Doctrine\Tests\OrmFunctionalTestCase;
+use Exception;
 
 /**
  * @group DDC-2084
  */
-class DDC2084Test extends \Doctrine\Tests\OrmFunctionalTestCase
+class DDC2084Test extends OrmFunctionalTestCase
 {
-    public function setUp()
+    public function setUp() : void
     {
         parent::setUp();
 
         try {
-            $this->_schemaTool->createSchema(
+            $this->schemaTool->createSchema(
                 [
-                $this->_em->getClassMetadata(__NAMESPACE__ . '\DDC2084\MyEntity1'),
-                $this->_em->getClassMetadata(__NAMESPACE__ . '\DDC2084\MyEntity2'),
+                    $this->em->getClassMetadata(__NAMESPACE__ . '\DDC2084\MyEntity1'),
+                    $this->em->getClassMetadata(__NAMESPACE__ . '\DDC2084\MyEntity2'),
                 ]
             );
-        } catch (\Exception $exc) {
+        } catch (Exception $exc) {
         }
     }
 
@@ -27,50 +32,52 @@ class DDC2084Test extends \Doctrine\Tests\OrmFunctionalTestCase
         $e2 = new DDC2084\MyEntity2('Foo');
         $e1 = new DDC2084\MyEntity1($e2);
 
-        $this->_em->persist($e2);
-        $this->_em->flush();
+        $this->em->persist($e2);
+        $this->em->flush();
 
-        $this->_em->persist($e1);
-        $this->_em->flush();
+        $this->em->persist($e1);
+        $this->em->flush();
 
-        $this->_em->clear();
+        $this->em->clear();
 
         return $e1;
     }
 
-    public function testIssue()
+    public function testIssue() : void
     {
         $e1 = $this->loadFixture();
         $e2 = $e1->getMyEntity2();
-        $e  = $this->_em->find(__NAMESPACE__ . '\DDC2084\MyEntity1', $e2);
+        $e  = $this->em->find(__NAMESPACE__ . '\DDC2084\MyEntity1', $e2);
 
-        $this->assertInstanceOf(__NAMESPACE__ . '\DDC2084\MyEntity1', $e);
-        $this->assertInstanceOf(__NAMESPACE__ . '\DDC2084\MyEntity2', $e->getMyEntity2());
-        $this->assertEquals('Foo', $e->getMyEntity2()->getValue());
+        self::assertInstanceOf(__NAMESPACE__ . '\DDC2084\MyEntity1', $e);
+        self::assertInstanceOf(__NAMESPACE__ . '\DDC2084\MyEntity2', $e->getMyEntity2());
+        self::assertEquals('Foo', $e->getMyEntity2()->getValue());
     }
 
     /**
      * @expectedException \Doctrine\ORM\ORMInvalidArgumentException
      * @expectedExceptionMessage  Binding entities to query parameters only allowed for entities that have an identifier.
      */
-    public function testinvalidIdentifierBindingEntityException()
+    public function testinvalidIdentifierBindingEntityException() : void
     {
-        $this->_em->find(__NAMESPACE__ . '\DDC2084\MyEntity1', new DDC2084\MyEntity2('Foo'));
+        $this->em->find(__NAMESPACE__ . '\DDC2084\MyEntity1', new DDC2084\MyEntity2('Foo'));
     }
 }
 
 namespace Doctrine\Tests\ORM\Functional\Ticket\DDC2084;
 
+use Doctrine\ORM\Annotation as ORM;
+
 /**
- * @Entity
- * @Table(name="DDC2084_ENTITY1")
+ * @ORM\Entity
+ * @ORM\Table(name="DDC2084_ENTITY1")
  */
 class MyEntity1
 {
     /**
-     * @Id
-     * @OneToOne(targetEntity="MyEntity2")
-     * @JoinColumn(name="entity2_id", referencedColumnName="id", nullable=false)
+     * @ORM\Id
+     * @ORM\OneToOne(targetEntity=MyEntity2::class)
+     * @ORM\JoinColumn(name="entity2_id", referencedColumnName="id", nullable=false)
      */
     private $entity2;
 
@@ -91,21 +98,19 @@ class MyEntity1
 }
 
 /**
- * @Entity
- * @Table(name="DDC2084_ENTITY2")
+ * @ORM\Entity
+ * @ORM\Table(name="DDC2084_ENTITY2")
  */
 class MyEntity2
 {
     /**
-     * @Id
-     * @Column(type="integer")
-     * @GeneratedValue(strategy="AUTO")
+     * @ORM\Id
+     * @ORM\Column(type="integer")
+     * @ORM\GeneratedValue(strategy="AUTO")
      */
     private $id;
 
-    /**
-     * @Column
-     */
+    /** @ORM\Column */
     private $value;
 
     public function __construct($value)

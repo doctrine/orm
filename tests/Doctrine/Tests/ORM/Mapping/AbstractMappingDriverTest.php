@@ -1,29 +1,30 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\Tests\ORM\Mapping;
 
-use Doctrine\Common\Persistence\Mapping\RuntimeReflectionService;
-use Doctrine\ORM\EntityManager;
+use Doctrine\DBAL\Platforms\AbstractPlatform;
+use Doctrine\DBAL\Types\Type;
+use Doctrine\ORM\Annotation as ORM;
+use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Events;
+use Doctrine\ORM\Mapping;
 use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\Mapping\ClassMetadataFactory;
-use Doctrine\ORM\Mapping\ClassMetadataInfo;
-use Doctrine\ORM\Mapping\DefaultNamingStrategy;
-use Doctrine\ORM\Mapping\DiscriminatorColumn;
-use Doctrine\ORM\Mapping\Id;
+use Doctrine\ORM\Mapping\Factory\DefaultNamingStrategy;
+use Doctrine\ORM\Mapping\Factory\UnderscoreNamingStrategy;
 use Doctrine\ORM\Mapping\MappingException;
-use Doctrine\ORM\Mapping\UnderscoreNamingStrategy;
+use Doctrine\ORM\Reflection\ReflectionService;
+use Doctrine\ORM\Sequencing\Generator\Generator;
+use Doctrine\ORM\Sequencing\Generator\SequenceGenerator;
 use Doctrine\Tests\Models\Cache\City;
-use Doctrine\Tests\Models\CMS\CmsAddress;
-use Doctrine\Tests\Models\CMS\CmsAddressListener;
-use Doctrine\Tests\Models\CMS\CmsUser;
 use Doctrine\Tests\Models\Company\CompanyContract;
 use Doctrine\Tests\Models\Company\CompanyContractListener;
 use Doctrine\Tests\Models\Company\CompanyFixContract;
 use Doctrine\Tests\Models\Company\CompanyFlexContract;
 use Doctrine\Tests\Models\Company\CompanyFlexUltraContract;
 use Doctrine\Tests\Models\Company\CompanyFlexUltraContractListener;
-use Doctrine\Tests\Models\Company\CompanyPerson;
 use Doctrine\Tests\Models\DDC1476\DDC1476EntityWithDefaultFieldType;
 use Doctrine\Tests\Models\DDC2825\ExplicitSchemaAndTable;
 use Doctrine\Tests\Models\DDC2825\SchemaAndTableInTableName;
@@ -36,380 +37,551 @@ use Doctrine\Tests\Models\DDC889\DDC889Class;
 use Doctrine\Tests\Models\DDC889\DDC889Entity;
 use Doctrine\Tests\Models\DDC964\DDC964Admin;
 use Doctrine\Tests\Models\DDC964\DDC964Guest;
+use Doctrine\Tests\Models\Quote;
 use Doctrine\Tests\OrmTestCase;
+use const CASE_UPPER;
+use function get_class;
+use function iterator_to_array;
+use function reset;
+use function strpos;
 
 abstract class AbstractMappingDriverTest extends OrmTestCase
 {
-    abstract protected function _loadDriver();
+    /** @var AbstractPlatform */
+    protected $targetPlatform;
+
+    /** @var Mapping\ClassMetadataBuildingContext */
+    protected $metadataBuildingContext;
+
+    protected function setUp() : void
+    {
+        parent::setUp();
+
+        $this->targetPlatform = $this->createMock(AbstractPlatform::class);
+
+        $this->targetPlatform
+            ->expects($this->any())
+            ->method('prefersSequences')
+            ->will($this->returnValue(true));
+
+        $this->targetPlatform
+            ->expects($this->any())
+            ->method('usesSequenceEmulatedIdentityColumns')
+            ->will($this->returnValue(true));
+
+        $this->targetPlatform
+            ->expects($this->any())
+            ->method('fixSchemaElementName')
+            ->will($this->returnArgument(0));
+
+        $this->metadataBuildingContext = new Mapping\ClassMetadataBuildingContext(
+            $this->createMock(ClassMetadataFactory::class),
+            $this->createMock(ReflectionService::class),
+            $this->targetPlatform
+        );
+    }
+
+    abstract protected function loadDriver();
 
     public function createClassMetadata($entityClassName)
     {
-        $mappingDriver = $this->_loadDriver();
+        $mappingDriver = $this->loadDriver();
 
-        $class = new ClassMetadata($entityClassName);
-        $class->initializeReflection(new RuntimeReflectionService());
-        $mappingDriver->loadMetadataForClass($entityClassName, $class);
-
-        return $class;
+        return $mappingDriver->loadMetadataForClass($entityClassName, null, $this->metadataBuildingContext);
     }
 
-    /**
-     * @param \Doctrine\ORM\EntityManager $entityClassName
-     * @return \Doctrine\ORM\Mapping\ClassMetadataFactory
-     */
-    protected function createClassMetadataFactory(EntityManager $em = null)
+    protected function createClassMetadataFactory(?EntityManagerInterface $em = null) : ClassMetadataFactory
     {
-        $driver     = $this->_loadDriver();
-        $em         = $em ?: $this->_getTestEntityManager();
-        $factory    = new ClassMetadataFactory();
+        $driver  = $this->loadDriver();
+        $em      = $em ?: $this->getTestEntityManager();
+        $factory = new ClassMetadataFactory();
+
         $em->getConfiguration()->setMetadataDriverImpl($driver);
         $factory->setEntityManager($em);
 
         return $factory;
     }
 
-    public function testEntityTableNameAndInheritance()
+    public function testEntityTableNameAndInheritance() : ClassMetadata
     {
         $class = $this->createClassMetadata(User::class);
 
-        $this->assertEquals('cms_users', $class->getTableName());
-        $this->assertEquals(ClassMetadata::INHERITANCE_TYPE_NONE, $class->inheritanceType);
+        self::assertEquals('cms_users', $class->getTableName());
+        self::assertEquals(Mapping\InheritanceType::NONE, $class->inheritanceType);
 
         return $class;
     }
 
-    /**
-     * @depends testEntityTableNameAndInheritance
-     * @param ClassMetadata $class
-     */
-    public function testEntityIndexes($class)
+    public function testEntityIndexes() : ClassMetadata
     {
-        $this->assertArrayHasKey('indexes', $class->table, 'ClassMetadata should have indexes key in table property.');
-        $this->assertEquals(
+        $class = $this->createClassMetadata('Doctrine\Tests\ORM\Mapping\User');
+
+        self::assertCount(2, $class->table->getIndexes());
+        self::assertEquals(
             [
-            'name_idx' => ['columns' => ['name']],
-            0 => ['columns' => ['user_email']]
-            ], $class->table['indexes']);
+                'name_idx' => [
+                    'name'    => 'name_idx',
+                    'columns' => ['name'],
+                    'unique'  => false,
+                    'options' => [],
+                    'flags'   => [],
+                ],
+                0 => [
+                    'name'    => null,
+                    'columns' => ['user_email'],
+                    'unique'  => false,
+                    'options' => [],
+                    'flags'   => [],
+                ],
+            ],
+            $class->table->getIndexes()
+        );
 
         return $class;
     }
 
-    public function testEntityIndexFlagsAndPartialIndexes()
+    public function testEntityIndexFlagsAndPartialIndexes() : void
     {
         $class = $this->createClassMetadata(Comment::class);
 
-        $this->assertEquals(
+        self::assertEquals(
             [
-            0 => [
-                'columns' => ['content'],
-                'flags' => ['fulltext'],
-                'options' => ['where' => 'content IS NOT NULL'],
-            ]
-            ], $class->table['indexes']);
-    }
-
-    /**
-     * @depends testEntityTableNameAndInheritance
-     * @param ClassMetadata $class
-     */
-    public function testEntityUniqueConstraints($class)
-    {
-        $this->assertArrayHasKey('uniqueConstraints', $class->table,
-            'ClassMetadata should have uniqueConstraints key in table property when Unique Constraints are set.');
-
-        $this->assertEquals(
-            [
-            "search_idx" => ["columns" => ["name", "user_email"], 'options' => ['where' => 'name IS NOT NULL']]
-            ], $class->table['uniqueConstraints']);
-
-        return $class;
-    }
-
-    /**
-     * @depends testEntityTableNameAndInheritance
-     * @param ClassMetadata $class
-     */
-    public function testEntityOptions($class)
-    {
-        $this->assertArrayHasKey('options', $class->table, 'ClassMetadata should have options key in table property.');
-
-        $this->assertEquals(
-            [
-            'foo' => 'bar', 'baz' => ['key' => 'val']
-            ], $class->table['options']);
-
-        return $class;
-    }
-
-    /**
-     * @depends testEntityOptions
-     * @param ClassMetadata $class
-     */
-    public function testEntitySequence($class)
-    {
-        $this->assertInternalType('array', $class->sequenceGeneratorDefinition, 'No Sequence Definition set on this driver.');
-        $this->assertEquals(
-            [
-                'sequenceName' => 'tablename_seq',
-                'allocationSize' => 100,
-                'initialValue' => 1,
+                0 => [
+                    'name'    => null,
+                    'columns' => ['content'],
+                    'unique'  => false,
+                    'flags'   => ['fulltext'],
+                    'options' => ['where' => 'content IS NOT NULL'],
+                ],
             ],
-            $class->sequenceGeneratorDefinition
+            $class->table->getIndexes()
         );
     }
 
-    public function testEntityCustomGenerator()
-    {
-        $class = $this->createClassMetadata(Animal::class);
-
-        $this->assertEquals(ClassMetadata::GENERATOR_TYPE_CUSTOM,
-            $class->generatorType, "Generator Type");
-        $this->assertEquals(
-            ["class" => "stdClass"],
-            $class->customGeneratorDefinition,
-            "Custom Generator Definition");
-    }
-
-
     /**
-     * @depends testEntityTableNameAndInheritance
-     * @param ClassMetadata $class
-     */
-    public function testFieldMappings($class)
-    {
-        $this->assertEquals(4, count($class->fieldMappings));
-        $this->assertTrue(isset($class->fieldMappings['id']));
-        $this->assertTrue(isset($class->fieldMappings['name']));
-        $this->assertTrue(isset($class->fieldMappings['email']));
-        $this->assertTrue(isset($class->fieldMappings['version']));
-
-        return $class;
-    }
-
-    /**
-     * @depends testFieldMappings
-     * @param ClassMetadata $class
-     */
-    public function testVersionedField($class)
-    {
-        $this->assertTrue($class->isVersioned);
-        $this->assertEquals("version", $class->versionField);
-
-        $this->assertFalse(isset($class->fieldMappings['version']['version']));
-    }
-
-    /**
-     * @depends testEntityTableNameAndInheritance
-     * @param ClassMetadata $class
-     */
-    public function testFieldMappingsColumnNames($class)
-    {
-        $this->assertEquals("id", $class->fieldMappings['id']['columnName']);
-        $this->assertEquals("name", $class->fieldMappings['name']['columnName']);
-        $this->assertEquals("user_email", $class->fieldMappings['email']['columnName']);
-
-        return $class;
-    }
-
-    /**
-     * @depends testEntityTableNameAndInheritance
-     * @param ClassMetadata $class
-     */
-    public function testStringFieldMappings($class)
-    {
-        $this->assertEquals('string', $class->fieldMappings['name']['type']);
-        $this->assertEquals(50, $class->fieldMappings['name']['length']);
-        $this->assertTrue($class->fieldMappings['name']['nullable']);
-        $this->assertTrue($class->fieldMappings['name']['unique']);
-
-        return $class;
-    }
-
-    /**
-     * @depends testEntityTableNameAndInheritance
-     *
      * @param ClassMetadata $class
      *
-     * @return ClassMetadata
+     * @depends testEntityTableNameAndInheritance
      */
-    public function testFieldOptions(ClassMetadata $class)
+    public function testEntityUniqueConstraints($class) : ClassMetadata
     {
+        self::assertCount(1, $class->table->getUniqueConstraints());
+        self::assertEquals(
+            [
+                'search_idx' => [
+                    'name'    => 'search_idx',
+                    'columns' => ['name', 'user_email'],
+                    'options' => [],
+                    'flags'   => [],
+                ],
+            ],
+            $class->table->getUniqueConstraints()
+        );
+
+        return $class;
+    }
+
+    /**
+     * @param ClassMetadata $class
+     *
+     * @depends testEntityTableNameAndInheritance
+     */
+    public function testEntityOptions($class) : ClassMetadata
+    {
+        self::assertCount(2, $class->table->getOptions());
+        self::assertEquals(
+            [
+                'foo' => 'bar',
+                'baz' => ['key' => 'val'],
+            ],
+            $class->table->getOptions()
+        );
+
+        return $class;
+    }
+
+    /**
+     * @param ClassMetadata $class
+     *
+     * @depends testEntityOptions
+     */
+    public function testEntitySequence($class) : void
+    {
+        $valueGenerator = $class->getProperty('id')->getValueGenerator();
+
+        self::assertEquals(Mapping\GeneratorType::SEQUENCE, $valueGenerator->getType(), 'Generator Type');
+        self::assertInstanceOf(SequenceGenerator::class, $valueGenerator->getGenerator(), 'No Sequence Definition set on this driver.');
+
+        /** @var SequenceGenerator $generator */
+        $generator = $valueGenerator->getGenerator();
+
+        self::assertEquals('tablename_seq', $generator->getSequenceName());
+        self::assertEquals(100, $generator->getAllocationSize());
+    }
+
+    public function testEntityCustomGenerator() : void
+    {
+        $class          = $this->createClassMetadata(Animal::class);
+        $valueGenerator = $class->getProperty('id')->getValueGenerator();
+
+        self::assertEquals(Mapping\GeneratorType::CUSTOM, $valueGenerator->getType(), 'Generator Type');
+        self::assertInstanceOf(CustomGenerator::class, $valueGenerator->getGenerator(), 'Generator Definition');
+    }
+
+    /**
+     * @param ClassMetadata $class
+     *
+     * @depends testEntityTableNameAndInheritance
+     */
+    public function testProperties($class) : ClassMetadata
+    {
+        self::assertCount(7, $class->getPropertiesIterator());
+
+        self::assertNotNull($class->getProperty('id'));
+        self::assertNotNull($class->getProperty('name'));
+        self::assertNotNull($class->getProperty('email'));
+        self::assertNotNull($class->getProperty('version'));
+        self::assertNotNull($class->getProperty('version'));
+
+        return $class;
+    }
+
+    /**
+     * @param ClassMetadata $class
+     *
+     * @depends testProperties
+     */
+    public function testVersionProperty($class) : void
+    {
+        self::assertTrue($class->isVersioned());
+        self::assertNotNull($class->versionProperty);
+
+        $versionPropertyName = $class->versionProperty->getName();
+
+        self::assertEquals('version', $versionPropertyName);
+        self::assertNotNull($class->getProperty($versionPropertyName));
+    }
+
+    /**
+     * @param ClassMetadata $class
+     *
+     * @depends testEntityTableNameAndInheritance
+     */
+    public function testFieldMappingsColumnNames($class) : ClassMetadata
+    {
+        self::assertNotNull($class->getProperty('id'));
+        self::assertNotNull($class->getProperty('name'));
+        self::assertNotNull($class->getProperty('email'));
+
+        self::assertEquals('id', $class->getProperty('id')->getColumnName());
+        self::assertEquals('name', $class->getProperty('name')->getColumnName());
+        self::assertEquals('user_email', $class->getProperty('email')->getColumnName());
+
+        return $class;
+    }
+
+    /**
+     * @param ClassMetadata $class
+     *
+     * @depends testEntityTableNameAndInheritance
+     */
+    public function testStringFieldMappings($class) : ClassMetadata
+    {
+        self::assertNotNull($class->getProperty('name'));
+
+        $property = $class->getProperty('name');
+
+        self::assertEquals('string', $property->getTypeName());
+        self::assertEquals(50, $property->getLength());
+        self::assertTrue($property->isNullable());
+        self::assertTrue($property->isUnique());
+
+        return $class;
+    }
+
+    /**
+     * @depends testEntityTableNameAndInheritance
+     */
+    public function testFieldOptions(ClassMetadata $class) : ClassMetadata
+    {
+        self::assertNotNull($class->getProperty('name'));
+
+        $property = $class->getProperty('name');
         $expected = ['foo' => 'bar', 'baz' => ['key' => 'val'], 'fixed' => false];
-        $this->assertEquals($expected, $class->fieldMappings['name']['options']);
+
+        self::assertEquals($expected, $property->getOptions());
 
         return $class;
     }
 
     /**
+     * @param ClassMetadata $class
+     *
      * @depends testEntityTableNameAndInheritance
-     * @param ClassMetadata $class
      */
-    public function testIdFieldOptions($class)
+    public function testIdFieldOptions($class) : ClassMetadata
     {
-        $this->assertEquals(['foo' => 'bar', 'unsigned' => false], $class->fieldMappings['id']['options']);
+        self::assertNotNull($class->getProperty('id'));
+
+        $property = $class->getProperty('id');
+        $expected = ['foo' => 'bar', 'unsigned' => false];
+
+        self::assertEquals($expected, $property->getOptions());
 
         return $class;
     }
 
     /**
-     * @depends testFieldMappings
      * @param ClassMetadata $class
+     *
+     * @depends testProperties
      */
-    public function testIdentifier($class)
+    public function testIdentifier($class) : ClassMetadata
     {
-        $this->assertEquals(['id'], $class->identifier);
-        $this->assertEquals('integer', $class->fieldMappings['id']['type']);
-        $this->assertEquals(ClassMetadata::GENERATOR_TYPE_AUTO, $class->generatorType, "ID-Generator is not ClassMetadata::GENERATOR_TYPE_AUTO");
+        self::assertNotNull($class->getProperty('id'));
+
+        $property = $class->getProperty('id');
+
+        self::assertEquals('integer', $property->getTypeName());
+        self::assertEquals(['id'], $class->identifier);
+        self::assertEquals(
+            Mapping\GeneratorType::SEQUENCE,
+            $property->getValueGenerator()->getType(),
+            'ID-Generator is not GeneratorType::AUTO'
+        );
 
         return $class;
     }
 
     /**
      * @group #6129
-     *
-     * @return ClassMetadata
      */
-    public function testBooleanValuesForOptionIsSetCorrectly()
+    public function testBooleanValuesForOptionIsSetCorrectly() : ClassMetadata
     {
         $class = $this->createClassMetadata(User::class);
 
-        $this->assertInternalType('bool', $class->fieldMappings['id']['options']['unsigned']);
-        $this->assertFalse($class->fieldMappings['id']['options']['unsigned']);
+        $idOptions   = $class->getProperty('id')->getOptions();
+        $nameOptions = $class->getProperty('name')->getOptions();
 
-        $this->assertInternalType('bool', $class->fieldMappings['name']['options']['fixed']);
-        $this->assertFalse($class->fieldMappings['name']['options']['fixed']);
-
-        return $class;
-    }
-
-    /**
-     * @depends testIdentifier
-     * @param ClassMetadata $class
-     */
-    public function testAssociations($class)
-    {
-        $this->assertEquals(3, count($class->associationMappings));
+        self::assertInternalType('bool', $idOptions['unsigned']);
+        self::assertFalse($idOptions['unsigned']);
+        self::assertInternalType('bool', $nameOptions['fixed']);
+        self::assertFalse($nameOptions['fixed']);
 
         return $class;
     }
 
-    /**
-     * @depends testAssociations
-     * @param ClassMetadata $class
-     */
-    public function testOwningOneToOneAssociation($class)
+    public function testOneToOneUnidirectional() : void
     {
-        $this->assertTrue(isset($class->associationMappings['address']));
-        $this->assertTrue($class->associationMappings['address']['isOwningSide']);
-        $this->assertEquals('user', $class->associationMappings['address']['inversedBy']);
+        // One to One owning
+        $fullAddressClass = $this->createClassMetadata(Quote\FullAddress::class);
+        $cityAssociation  = $fullAddressClass->getProperty('city');
+
+        self::assertInstanceOf(Mapping\OneToOneAssociationMetadata::class, $cityAssociation);
+        self::assertTrue($cityAssociation->isOwningSide());
+    }
+
+    public function testOneToOneBidirectional() : void
+    {
+        // One to One owning / One To One inverse
+        $addressClass    = $this->createClassMetadata(Quote\Address::class);
+        $userAssociation = $addressClass->getProperty('user');
+
+        self::assertInstanceOf(Mapping\OneToOneAssociationMetadata::class, $userAssociation);
+        self::assertTrue($userAssociation->isOwningSide());
+
+        $userClass          = $this->createClassMetadata(Quote\User::class);
+        $addressAssociation = $userClass->getProperty('address');
+
+        self::assertInstanceOf(Mapping\OneToOneAssociationMetadata::class, $addressAssociation);
+        self::assertFalse($addressAssociation->isOwningSide());
+    }
+
+    public function testManyToOneUnidirectional() : void
+    {
+        // Many to One owning
+        $groupClass       = $this->createClassMetadata(Quote\Group::class);
+        $groupAssociation = $groupClass->getProperty('parent');
+
+        self::assertInstanceOf(Mapping\ManyToOneAssociationMetadata::class, $groupAssociation);
+        self::assertTrue($groupAssociation->isOwningSide());
+    }
+
+    public function testManyToOneBidirectional() : void
+    {
+        // Many To One owning / One To Many inverse
+        $phoneClass      = $this->createClassMetadata(Quote\Phone::class);
+        $userAssociation = $phoneClass->getProperty('user');
+
+        self::assertInstanceOf(Mapping\ManyToOneAssociationMetadata::class, $userAssociation);
+        self::assertTrue($userAssociation->isOwningSide());
+
+        $userClass        = $this->createClassMetadata(Quote\User::class);
+        $phoneAssociation = $userClass->getProperty('phones');
+
+        self::assertInstanceOf(Mapping\OneToManyAssociationMetadata::class, $phoneAssociation);
+        self::assertFalse($phoneAssociation->isOwningSide());
+    }
+
+    public function testManyToManyBidirectional() : void
+    {
+        // Many to Many owning / Many to Many inverse
+        $userClass        = $this->createClassMetadata(Quote\User::class);
+        $groupAssociation = $userClass->getProperty('groups');
+
+        self::assertInstanceOf(Mapping\ManyToManyAssociationMetadata::class, $groupAssociation);
+        self::assertTrue($groupAssociation->isOwningSide());
+
+        $groupClass      = $this->createClassMetadata(Quote\Group::class);
+        $userAssociation = $groupClass->getProperty('users');
+
+        self::assertInstanceOf(Mapping\ManyToManyAssociationMetadata::class, $userAssociation);
+        self::assertFalse($userAssociation->isOwningSide());
+    }
+
+    /**
+     * @param ClassMetadata $class
+     *
+     * @depends testProperties
+     */
+    public function testOwningOneToOneAssociation($class) : ClassMetadata
+    {
+        self::assertArrayHasKey('address', iterator_to_array($class->getPropertiesIterator()));
+
+        $association = $class->getProperty('address');
+
+        self::assertTrue($association->isOwningSide());
+        self::assertEquals('user', $association->getInversedBy());
         // Check cascading
-        $this->assertTrue($class->associationMappings['address']['isCascadeRemove']);
-        $this->assertFalse($class->associationMappings['address']['isCascadePersist']);
-        $this->assertFalse($class->associationMappings['address']['isCascadeRefresh']);
-        $this->assertFalse($class->associationMappings['address']['isCascadeDetach']);
-        $this->assertFalse($class->associationMappings['address']['isCascadeMerge']);
+        self::assertEquals(['remove'], $association->getCascade());
 
         return $class;
     }
 
     /**
-     * @depends testOwningOneToOneAssociation
      * @param ClassMetadata $class
+     *
+     * @depends testOwningOneToOneAssociation
      */
-    public function testInverseOneToManyAssociation($class)
+    public function testInverseOneToManyAssociation($class) : ClassMetadata
     {
-        $this->assertTrue(isset($class->associationMappings['phonenumbers']));
-        $this->assertFalse($class->associationMappings['phonenumbers']['isOwningSide']);
-        $this->assertTrue($class->associationMappings['phonenumbers']['isCascadePersist']);
-        $this->assertTrue($class->associationMappings['phonenumbers']['isCascadeRemove']);
-        $this->assertFalse($class->associationMappings['phonenumbers']['isCascadeRefresh']);
-        $this->assertFalse($class->associationMappings['phonenumbers']['isCascadeDetach']);
-        $this->assertFalse($class->associationMappings['phonenumbers']['isCascadeMerge']);
-        $this->assertTrue($class->associationMappings['phonenumbers']['orphanRemoval']);
+        self::assertArrayHasKey('phonenumbers', iterator_to_array($class->getPropertiesIterator()));
+
+        $association = $class->getProperty('phonenumbers');
+
+        self::assertFalse($association->isOwningSide());
+        self::assertTrue($association->isOrphanRemoval());
+
+        // Check cascading
+        self::assertEquals(['persist', 'remove'], $association->getCascade());
 
         // Test Order By
-        $this->assertEquals(['number' => 'ASC'], $class->associationMappings['phonenumbers']['orderBy']);
+        self::assertEquals(['number' => 'ASC'], $association->getOrderBy());
 
         return $class;
     }
 
     /**
+     * @param ClassMetadata $class
+     *
      * @depends testInverseOneToManyAssociation
-     * @param ClassMetadata $class
      */
-    public function testManyToManyAssociationWithCascadeAll($class)
+    public function testManyToManyAssociationWithCascadeAll($class) : ClassMetadata
     {
-        $this->assertTrue(isset($class->associationMappings['groups']));
-        $this->assertTrue($class->associationMappings['groups']['isOwningSide']);
+        self::assertArrayHasKey('groups', iterator_to_array($class->getPropertiesIterator()));
+
+        $association = $class->getProperty('groups');
+
+        self::assertTrue($association->isOwningSide());
+
         // Make sure that cascade-all works as expected
-        $this->assertTrue($class->associationMappings['groups']['isCascadeRemove']);
-        $this->assertTrue($class->associationMappings['groups']['isCascadePersist']);
-        $this->assertTrue($class->associationMappings['groups']['isCascadeRefresh']);
-        $this->assertTrue($class->associationMappings['groups']['isCascadeDetach']);
-        $this->assertTrue($class->associationMappings['groups']['isCascadeMerge']);
+        self::assertEquals(['remove', 'persist', 'refresh'], $association->getCascade());
 
-        $this->assertFalse(isset($class->associationMappings['groups']['orderBy']));
+        // Test Order By
+        self::assertEquals([], $association->getOrderBy());
 
         return $class;
     }
 
     /**
-     * @depends testManyToManyAssociationWithCascadeAll
      * @param ClassMetadata $class
-     */
-    public function testLifecycleCallbacks($class)
-    {
-        $this->assertEquals(count($class->lifecycleCallbacks), 2);
-        $this->assertEquals($class->lifecycleCallbacks['prePersist'][0], 'doStuffOnPrePersist');
-        $this->assertEquals($class->lifecycleCallbacks['postPersist'][0], 'doStuffOnPostPersist');
-
-        return $class;
-    }
-
-    /**
+     *
      * @depends testManyToManyAssociationWithCascadeAll
-     * @param ClassMetadata $class
      */
-    public function testLifecycleCallbacksSupportMultipleMethodNames($class)
+    public function testLifecycleCallbacks($class) : ClassMetadata
     {
-        $this->assertEquals(count($class->lifecycleCallbacks['prePersist']), 2);
-        $this->assertEquals($class->lifecycleCallbacks['prePersist'][1], 'doOtherStuffOnPrePersistToo');
+        self::assertCount(2, $class->lifecycleCallbacks);
+        self::assertEquals($class->lifecycleCallbacks['prePersist'][0], 'doStuffOnPrePersist');
+        self::assertEquals($class->lifecycleCallbacks['postPersist'][0], 'doStuffOnPostPersist');
 
         return $class;
     }
 
     /**
+     * @param ClassMetadata $class
+     *
+     * @depends testManyToManyAssociationWithCascadeAll
+     */
+    public function testLifecycleCallbacksSupportMultipleMethodNames($class) : ClassMetadata
+    {
+        self::assertCount(2, $class->lifecycleCallbacks['prePersist']);
+        self::assertEquals($class->lifecycleCallbacks['prePersist'][1], 'doOtherStuffOnPrePersistToo');
+
+        return $class;
+    }
+
+    /**
+     * @param ClassMetadata $class
+     *
      * @depends testLifecycleCallbacksSupportMultipleMethodNames
-     * @param ClassMetadata $class
      */
-    public function testJoinColumnUniqueAndNullable($class)
+    public function testJoinColumnUniqueAndNullable($class) : ClassMetadata
     {
         // Non-Nullability of Join Column
-        $this->assertFalse($class->associationMappings['groups']['joinTable']['joinColumns'][0]['nullable']);
-        $this->assertFalse($class->associationMappings['groups']['joinTable']['joinColumns'][0]['unique']);
+        $association = $class->getProperty('groups');
+        $joinTable   = $association->getJoinTable();
+        $joinColumns = $joinTable->getJoinColumns();
+        $joinColumn  = reset($joinColumns);
+
+        self::assertFalse($joinColumn->isNullable());
+        self::assertFalse($joinColumn->isUnique());
 
         return $class;
     }
 
     /**
+     * @param ClassMetadata $class
+     *
      * @depends testJoinColumnUniqueAndNullable
-     * @param ClassMetadata $class
      */
-    public function testColumnDefinition($class)
+    public function testColumnDefinition($class) : ClassMetadata
     {
-        $this->assertEquals("CHAR(32) NOT NULL", $class->fieldMappings['email']['columnDefinition']);
-        $this->assertEquals("INT NULL", $class->associationMappings['groups']['joinTable']['inverseJoinColumns'][0]['columnDefinition']);
+        self::assertNotNull($class->getProperty('email'));
+
+        $property           = $class->getProperty('email');
+        $association        = $class->getProperty('groups');
+        $joinTable          = $association->getJoinTable();
+        $inverseJoinColumns = $joinTable->getInverseJoinColumns();
+        $inverseJoinColumn  = reset($inverseJoinColumns);
+
+        self::assertEquals('CHAR(32) NOT NULL', $property->getColumnDefinition());
+        self::assertEquals('INT NULL', $inverseJoinColumn->getColumnDefinition());
 
         return $class;
     }
 
     /**
-     * @depends testColumnDefinition
      * @param ClassMetadata $class
+     *
+     * @depends testColumnDefinition
      */
-    public function testJoinColumnOnDelete($class)
+    public function testJoinColumnOnDelete($class) : ClassMetadata
     {
-        $this->assertEquals('CASCADE', $class->associationMappings['address']['joinColumns'][0]['onDelete']);
+        $association = $class->getProperty('address');
+        $joinColumns = $association->getJoinColumns();
+        $joinColumn  = reset($joinColumns);
+
+        self::assertEquals('CASCADE', $joinColumn->getOnDelete());
 
         return $class;
     }
@@ -417,145 +589,135 @@ abstract class AbstractMappingDriverTest extends OrmTestCase
     /**
      * @group DDC-514
      */
-    public function testDiscriminatorColumnDefaults()
+    public function testDiscriminatorColumnDefaults() : void
     {
-        if (strpos(get_class($this), 'PHPMappingDriver') !== false) {
+        if (strpos(static::class, 'PHPMappingDriver') !== false) {
             $this->markTestSkipped('PHP Mapping Drivers have no defaults.');
         }
 
         $class = $this->createClassMetadata(Animal::class);
 
-        $this->assertEquals(
-            ['name' => 'discr', 'type' => 'string', 'length' => '32', 'fieldName' => 'discr', 'columnDefinition' => null],
-            $class->discriminatorColumn
-        );
+        self::assertNotNull($class->discriminatorColumn);
+
+        $discrColumn = $class->discriminatorColumn;
+
+        self::assertEquals('Animal', $discrColumn->getTableName());
+        self::assertEquals('discr', $discrColumn->getColumnName());
+        self::assertEquals('string', $discrColumn->getTypeName());
+        self::assertEquals(32, $discrColumn->getLength());
+        self::assertNull($discrColumn->getColumnDefinition());
     }
 
     /**
      * @group DDC-869
      */
-    public function testMappedSuperclassWithRepository()
+    public function testMappedSuperclassWithRepository() : void
     {
-        $em         = $this->_getTestEntityManager();
-        $factory    = $this->createClassMetadataFactory($em);
+        $em      = $this->getTestEntityManager();
+        $factory = $this->createClassMetadataFactory($em);
+        $class   = $factory->getMetadataFor(DDC869CreditCardPayment::class);
 
-
-        $class = $factory->getMetadataFor(DDC869CreditCardPayment::class);
-
-        $this->assertTrue(isset($class->fieldMappings['id']));
-        $this->assertTrue(isset($class->fieldMappings['value']));
-        $this->assertTrue(isset($class->fieldMappings['creditCardNumber']));
-        $this->assertEquals($class->customRepositoryClassName, DDC869PaymentRepository::class);
-        $this->assertInstanceOf(DDC869PaymentRepository::class, $em->getRepository(DDC869CreditCardPayment::class));
-        $this->assertTrue($em->getRepository(DDC869ChequePayment::class)->isTrue());
-
-
+        self::assertNotNull($class->getProperty('id'));
+        self::assertNotNull($class->getProperty('value'));
+        self::assertNotNull($class->getProperty('creditCardNumber'));
+        self::assertEquals($class->getCustomRepositoryClassName(), DDC869PaymentRepository::class);
+        self::assertInstanceOf(DDC869PaymentRepository::class, $em->getRepository(DDC869CreditCardPayment::class));
+        self::assertTrue($em->getRepository(DDC869ChequePayment::class)->isTrue());
 
         $class = $factory->getMetadataFor(DDC869ChequePayment::class);
 
-        $this->assertTrue(isset($class->fieldMappings['id']));
-        $this->assertTrue(isset($class->fieldMappings['value']));
-        $this->assertTrue(isset($class->fieldMappings['serialNumber']));
-        $this->assertEquals($class->customRepositoryClassName, DDC869PaymentRepository::class);
-        $this->assertInstanceOf(DDC869PaymentRepository::class, $em->getRepository(DDC869ChequePayment::class));
-        $this->assertTrue($em->getRepository(DDC869ChequePayment::class)->isTrue());
+        self::assertNotNull($class->getProperty('id'));
+        self::assertNotNull($class->getProperty('value'));
+        self::assertNotNull($class->getProperty('serialNumber'));
+        self::assertEquals($class->getCustomRepositoryClassName(), DDC869PaymentRepository::class);
+        self::assertInstanceOf(DDC869PaymentRepository::class, $em->getRepository(DDC869ChequePayment::class));
+        self::assertTrue($em->getRepository(DDC869ChequePayment::class)->isTrue());
     }
 
     /**
      * @group DDC-1476
      */
-    public function testDefaultFieldType()
+    public function testDefaultFieldType() : void
     {
-        $factory    = $this->createClassMetadataFactory();
-        $class      = $factory->getMetadataFor(DDC1476EntityWithDefaultFieldType::class);
+        $factory = $this->createClassMetadataFactory();
+        $class   = $factory->getMetadataFor(DDC1476EntityWithDefaultFieldType::class);
 
+        self::assertNotNull($class->getProperty('id'));
+        self::assertNotNull($class->getProperty('name'));
 
-        $this->assertArrayHasKey('id', $class->fieldMappings);
-        $this->assertArrayHasKey('name', $class->fieldMappings);
+        $idProperty   = $class->getProperty('id');
+        $nameProperty = $class->getProperty('name');
 
+        self::assertInstanceOf(Mapping\FieldMetadata::class, $idProperty);
+        self::assertInstanceOf(Mapping\FieldMetadata::class, $nameProperty);
 
-        $this->assertArrayHasKey('type', $class->fieldMappings['id']);
-        $this->assertArrayHasKey('type', $class->fieldMappings['name']);
+        self::assertEquals('string', $idProperty->getTypeName());
+        self::assertEquals('string', $nameProperty->getTypeName());
 
-        $this->assertEquals('string', $class->fieldMappings['id']['type']);
-        $this->assertEquals('string', $class->fieldMappings['name']['type']);
+        self::assertEquals('id', $idProperty->getName());
+        self::assertEquals('name', $nameProperty->getName());
 
+        self::assertEquals('id', $idProperty->getColumnName());
+        self::assertEquals('name', $nameProperty->getColumnName());
 
-
-        $this->assertArrayHasKey('fieldName', $class->fieldMappings['id']);
-        $this->assertArrayHasKey('fieldName', $class->fieldMappings['name']);
-
-        $this->assertEquals('id', $class->fieldMappings['id']['fieldName']);
-        $this->assertEquals('name', $class->fieldMappings['name']['fieldName']);
-
-
-
-        $this->assertArrayHasKey('columnName', $class->fieldMappings['id']);
-        $this->assertArrayHasKey('columnName', $class->fieldMappings['name']);
-
-        $this->assertEquals('id', $class->fieldMappings['id']['columnName']);
-        $this->assertEquals('name', $class->fieldMappings['name']['columnName']);
-
-        $this->assertEquals(ClassMetadataInfo::GENERATOR_TYPE_NONE, $class->generatorType);
+        self::assertFalse($idProperty->hasValueGenerator());
     }
 
     /**
      * @group DDC-1170
      */
-    public function testIdentifierColumnDefinition()
+    public function testIdentifierColumnDefinition() : void
     {
         $class = $this->createClassMetadata(DDC1170Entity::class);
 
+        self::assertNotNull($class->getProperty('id'));
+        self::assertNotNull($class->getProperty('value'));
 
-        $this->assertArrayHasKey('id', $class->fieldMappings);
-        $this->assertArrayHasKey('value', $class->fieldMappings);
-
-        $this->assertArrayHasKey('columnDefinition', $class->fieldMappings['id']);
-        $this->assertArrayHasKey('columnDefinition', $class->fieldMappings['value']);
-
-        $this->assertEquals("INT unsigned NOT NULL", $class->fieldMappings['id']['columnDefinition']);
-        $this->assertEquals("VARCHAR(255) NOT NULL", $class->fieldMappings['value']['columnDefinition']);
+        self::assertEquals('INT unsigned NOT NULL', $class->getProperty('id')->getColumnDefinition());
+        self::assertEquals('VARCHAR(255) NOT NULL', $class->getProperty('value')->getColumnDefinition());
     }
 
     /**
      * @group DDC-559
      */
-    public function testNamingStrategy()
+    public function testNamingStrategy() : void
     {
-        $em         = $this->_getTestEntityManager();
-        $factory    = $this->createClassMetadataFactory($em);
+        $em      = $this->getTestEntityManager();
+        $factory = $this->createClassMetadataFactory($em);
 
-
-        $this->assertInstanceOf(DefaultNamingStrategy::class, $em->getConfiguration()->getNamingStrategy());
+        self::assertInstanceOf(DefaultNamingStrategy::class, $em->getConfiguration()->getNamingStrategy());
         $em->getConfiguration()->setNamingStrategy(new UnderscoreNamingStrategy(CASE_UPPER));
-        $this->assertInstanceOf(UnderscoreNamingStrategy::class, $em->getConfiguration()->getNamingStrategy());
+        self::assertInstanceOf(UnderscoreNamingStrategy::class, $em->getConfiguration()->getNamingStrategy());
 
-        $class = $factory->getMetadataFor(DDC1476EntityWithDefaultFieldType::class);
+        $class        = $factory->getMetadataFor(DDC1476EntityWithDefaultFieldType::class);
+        $idProperty   = $class->getProperty('id');
+        $nameProperty = $class->getProperty('name');
 
-        $this->assertEquals('ID', $class->getColumnName('id'));
-        $this->assertEquals('NAME', $class->getColumnName('name'));
-        $this->assertEquals('DDC1476ENTITY_WITH_DEFAULT_FIELD_TYPE', $class->table['name']);
+        self::assertEquals('ID', $idProperty->getColumnName());
+        self::assertEquals('NAME', $nameProperty->getColumnName());
+        self::assertEquals('DDC1476ENTITY_WITH_DEFAULT_FIELD_TYPE', $class->table->getName());
     }
 
     /**
      * @group DDC-807
      * @group DDC-553
      */
-    public function testDiscriminatorColumnDefinition()
+    public function testDiscriminatorColumnDefinition() : void
     {
         $class = $this->createClassMetadata(DDC807Entity::class);
 
-        $this->assertArrayHasKey('columnDefinition', $class->discriminatorColumn);
-        $this->assertArrayHasKey('name', $class->discriminatorColumn);
+        self::assertNotNull($class->discriminatorColumn);
 
-        $this->assertEquals("ENUM('ONE','TWO')", $class->discriminatorColumn['columnDefinition']);
-        $this->assertEquals("dtype", $class->discriminatorColumn['name']);
+        $discrColumn = $class->discriminatorColumn;
+
+        self::assertEquals('dtype', $discrColumn->getColumnName());
+        self::assertEquals("ENUM('ONE','TWO')", $discrColumn->getColumnDefinition());
     }
 
     /**
      * @group DDC-889
      */
-    public function testInvalidEntityOrMappedSuperClassShouldMentionParentClasses()
+    public function testInvalidEntityOrMappedSuperClassShouldMentionParentClasses() : void
     {
         $this->expectException(MappingException::class);
         $this->expectExceptionMessage('Class "Doctrine\Tests\Models\DDC889\DDC889Class" sub class of "Doctrine\Tests\Models\DDC889\DDC889SuperClass" is not a valid entity or mapped super class.');
@@ -566,7 +728,7 @@ abstract class AbstractMappingDriverTest extends OrmTestCase
     /**
      * @group DDC-889
      */
-    public function testIdentifierRequiredShouldMentionParentClasses()
+    public function testIdentifierRequiredShouldMentionParentClasses() : void
     {
         $factory = $this->createClassMetadataFactory();
 
@@ -576,799 +738,633 @@ abstract class AbstractMappingDriverTest extends OrmTestCase
         $factory->getMetadataFor(DDC889Entity::class);
     }
 
-    public function testNamedQuery()
-    {
-        $driver = $this->_loadDriver();
-        $class = $this->createClassMetadata(User::class);
-
-        $this->assertCount(1, $class->getNamedQueries(), sprintf("Named queries not processed correctly by driver %s", get_class($driver)));
-    }
-
     /**
-     * @group DDC-1663
-     */
-    public function testNamedNativeQuery()
-    {
-
-        $class = $this->createClassMetadata(CmsAddress::class);
-
-        //named native query
-        $this->assertCount(3, $class->namedNativeQueries);
-        $this->assertArrayHasKey('find-all', $class->namedNativeQueries);
-        $this->assertArrayHasKey('find-by-id', $class->namedNativeQueries);
-
-
-        $findAllQuery = $class->getNamedNativeQuery('find-all');
-        $this->assertEquals('find-all', $findAllQuery['name']);
-        $this->assertEquals('mapping-find-all', $findAllQuery['resultSetMapping']);
-        $this->assertEquals('SELECT id, country, city FROM cms_addresses', $findAllQuery['query']);
-
-        $findByIdQuery = $class->getNamedNativeQuery('find-by-id');
-        $this->assertEquals('find-by-id', $findByIdQuery['name']);
-        $this->assertEquals(CmsAddress::class,$findByIdQuery['resultClass']);
-        $this->assertEquals('SELECT * FROM cms_addresses WHERE id = ?',  $findByIdQuery['query']);
-
-        $countQuery = $class->getNamedNativeQuery('count');
-        $this->assertEquals('count', $countQuery['name']);
-        $this->assertEquals('mapping-count', $countQuery['resultSetMapping']);
-        $this->assertEquals('SELECT COUNT(*) AS count FROM cms_addresses',  $countQuery['query']);
-
-        // result set mapping
-        $this->assertCount(3, $class->sqlResultSetMappings);
-        $this->assertArrayHasKey('mapping-count', $class->sqlResultSetMappings);
-        $this->assertArrayHasKey('mapping-find-all', $class->sqlResultSetMappings);
-        $this->assertArrayHasKey('mapping-without-fields', $class->sqlResultSetMappings);
-
-        $findAllMapping = $class->getSqlResultSetMapping('mapping-find-all');
-        $this->assertEquals('mapping-find-all', $findAllMapping['name']);
-        $this->assertEquals(CmsAddress::class, $findAllMapping['entities'][0]['entityClass']);
-        $this->assertEquals(['name'=>'id','column'=>'id'], $findAllMapping['entities'][0]['fields'][0]);
-        $this->assertEquals(['name'=>'city','column'=>'city'], $findAllMapping['entities'][0]['fields'][1]);
-        $this->assertEquals(['name'=>'country','column'=>'country'], $findAllMapping['entities'][0]['fields'][2]);
-
-        $withoutFieldsMapping = $class->getSqlResultSetMapping('mapping-without-fields');
-        $this->assertEquals('mapping-without-fields', $withoutFieldsMapping['name']);
-        $this->assertEquals(CmsAddress::class, $withoutFieldsMapping['entities'][0]['entityClass']);
-        $this->assertEquals([], $withoutFieldsMapping['entities'][0]['fields']);
-
-        $countMapping = $class->getSqlResultSetMapping('mapping-count');
-        $this->assertEquals('mapping-count', $countMapping['name']);
-        $this->assertEquals(['name'=>'count'], $countMapping['columns'][0]);
-
-    }
-
-    /**
-     * @group DDC-1663
-     */
-    public function testSqlResultSetMapping()
-    {
-
-        $userMetadata   = $this->createClassMetadata(CmsUser::class);
-        $personMetadata = $this->createClassMetadata(CompanyPerson::class);
-
-        // user asserts
-        $this->assertCount(4, $userMetadata->getSqlResultSetMappings());
-
-        $mapping = $userMetadata->getSqlResultSetMapping('mappingJoinedAddress');
-        $this->assertEquals([],$mapping['columns']);
-        $this->assertEquals('mappingJoinedAddress', $mapping['name']);
-        $this->assertNull($mapping['entities'][0]['discriminatorColumn']);
-        $this->assertEquals(['name'=>'id','column'=>'id'],                     $mapping['entities'][0]['fields'][0]);
-        $this->assertEquals(['name'=>'name','column'=>'name'],                 $mapping['entities'][0]['fields'][1]);
-        $this->assertEquals(['name'=>'status','column'=>'status'],             $mapping['entities'][0]['fields'][2]);
-        $this->assertEquals(['name'=>'address.zip','column'=>'zip'],           $mapping['entities'][0]['fields'][3]);
-        $this->assertEquals(['name'=>'address.city','column'=>'city'],         $mapping['entities'][0]['fields'][4]);
-        $this->assertEquals(['name'=>'address.country','column'=>'country'],   $mapping['entities'][0]['fields'][5]);
-        $this->assertEquals(['name'=>'address.id','column'=>'a_id'],           $mapping['entities'][0]['fields'][6]);
-        $this->assertEquals($userMetadata->name,                                    $mapping['entities'][0]['entityClass']);
-
-
-        $mapping = $userMetadata->getSqlResultSetMapping('mappingJoinedPhonenumber');
-        $this->assertEquals([],$mapping['columns']);
-        $this->assertEquals('mappingJoinedPhonenumber', $mapping['name']);
-        $this->assertNull($mapping['entities'][0]['discriminatorColumn']);
-        $this->assertEquals(['name'=>'id','column'=>'id'],                             $mapping['entities'][0]['fields'][0]);
-        $this->assertEquals(['name'=>'name','column'=>'name'],                         $mapping['entities'][0]['fields'][1]);
-        $this->assertEquals(['name'=>'status','column'=>'status'],                     $mapping['entities'][0]['fields'][2]);
-        $this->assertEquals(['name'=>'phonenumbers.phonenumber','column'=>'number'],   $mapping['entities'][0]['fields'][3]);
-        $this->assertEquals($userMetadata->name,                                            $mapping['entities'][0]['entityClass']);
-
-        $mapping = $userMetadata->getSqlResultSetMapping('mappingUserPhonenumberCount');
-        $this->assertEquals(['name'=>'numphones'],$mapping['columns'][0]);
-        $this->assertEquals('mappingUserPhonenumberCount', $mapping['name']);
-        $this->assertNull($mapping['entities'][0]['discriminatorColumn']);
-        $this->assertEquals(['name'=>'id','column'=>'id'],         $mapping['entities'][0]['fields'][0]);
-        $this->assertEquals(['name'=>'name','column'=>'name'],     $mapping['entities'][0]['fields'][1]);
-        $this->assertEquals(['name'=>'status','column'=>'status'], $mapping['entities'][0]['fields'][2]);
-        $this->assertEquals($userMetadata->name,                        $mapping['entities'][0]['entityClass']);
-
-        $mapping = $userMetadata->getSqlResultSetMapping('mappingMultipleJoinsEntityResults');
-        $this->assertEquals(['name'=>'numphones'],$mapping['columns'][0]);
-        $this->assertEquals('mappingMultipleJoinsEntityResults', $mapping['name']);
-        $this->assertNull($mapping['entities'][0]['discriminatorColumn']);
-        $this->assertEquals(['name'=>'id','column'=>'u_id'],           $mapping['entities'][0]['fields'][0]);
-        $this->assertEquals(['name'=>'name','column'=>'u_name'],       $mapping['entities'][0]['fields'][1]);
-        $this->assertEquals(['name'=>'status','column'=>'u_status'],   $mapping['entities'][0]['fields'][2]);
-        $this->assertEquals($userMetadata->name,                            $mapping['entities'][0]['entityClass']);
-        $this->assertNull($mapping['entities'][1]['discriminatorColumn']);
-        $this->assertEquals(['name'=>'id','column'=>'a_id'],           $mapping['entities'][1]['fields'][0]);
-        $this->assertEquals(['name'=>'zip','column'=>'a_zip'],         $mapping['entities'][1]['fields'][1]);
-        $this->assertEquals(['name'=>'country','column'=>'a_country'], $mapping['entities'][1]['fields'][2]);
-        $this->assertEquals(CmsAddress::class,         $mapping['entities'][1]['entityClass']);
-
-        //person asserts
-        $this->assertCount(1, $personMetadata->getSqlResultSetMappings());
-
-        $mapping = $personMetadata->getSqlResultSetMapping('mappingFetchAll');
-        $this->assertEquals([],$mapping['columns']);
-        $this->assertEquals('mappingFetchAll', $mapping['name']);
-        $this->assertEquals('discriminator',                            $mapping['entities'][0]['discriminatorColumn']);
-        $this->assertEquals(['name'=>'id','column'=>'id'],         $mapping['entities'][0]['fields'][0]);
-        $this->assertEquals(['name'=>'name','column'=>'name'],     $mapping['entities'][0]['fields'][1]);
-        $this->assertEquals($personMetadata->name,                      $mapping['entities'][0]['entityClass']);
-    }
-
-    /*
      * @group DDC-964
      */
-    public function testAssociationOverridesMapping()
+    public function testAssociationOverridesMapping() : void
     {
-
-        $factory        = $this->createClassMetadataFactory();
-        $adminMetadata  = $factory->getMetadataFor(DDC964Admin::class);
-        $guestMetadata  = $factory->getMetadataFor(DDC964Guest::class);
-
+        $factory       = $this->createClassMetadataFactory();
+        $adminMetadata = $factory->getMetadataFor(DDC964Admin::class);
+        $guestMetadata = $factory->getMetadataFor(DDC964Guest::class);
 
         // assert groups association mappings
-        $this->assertArrayHasKey('groups', $guestMetadata->associationMappings);
-        $this->assertArrayHasKey('groups', $adminMetadata->associationMappings);
+        self::assertArrayHasKey('groups', iterator_to_array($guestMetadata->getPropertiesIterator()));
+        self::assertArrayHasKey('groups', iterator_to_array($adminMetadata->getPropertiesIterator()));
 
-        $guestGroups = $guestMetadata->associationMappings['groups'];
-        $adminGroups = $adminMetadata->associationMappings['groups'];
+        $guestGroups = $guestMetadata->getProperty('groups');
+        $adminGroups = $adminMetadata->getProperty('groups');
 
         // assert not override attributes
-        $this->assertEquals($guestGroups['fieldName'], $adminGroups['fieldName']);
-        $this->assertEquals($guestGroups['type'], $adminGroups['type']);
-        $this->assertEquals($guestGroups['mappedBy'], $adminGroups['mappedBy']);
-        $this->assertEquals($guestGroups['inversedBy'], $adminGroups['inversedBy']);
-        $this->assertEquals($guestGroups['isOwningSide'], $adminGroups['isOwningSide']);
-        $this->assertEquals($guestGroups['fetch'], $adminGroups['fetch']);
-        $this->assertEquals($guestGroups['isCascadeRemove'], $adminGroups['isCascadeRemove']);
-        $this->assertEquals($guestGroups['isCascadePersist'], $adminGroups['isCascadePersist']);
-        $this->assertEquals($guestGroups['isCascadeRefresh'], $adminGroups['isCascadeRefresh']);
-        $this->assertEquals($guestGroups['isCascadeMerge'], $adminGroups['isCascadeMerge']);
-        $this->assertEquals($guestGroups['isCascadeDetach'], $adminGroups['isCascadeDetach']);
+        self::assertEquals($guestGroups->getName(), $adminGroups->getName());
+        self::assertEquals(get_class($guestGroups), get_class($adminGroups));
+        self::assertEquals($guestGroups->getMappedBy(), $adminGroups->getMappedBy());
+        self::assertEquals($guestGroups->getInversedBy(), $adminGroups->getInversedBy());
+        self::assertEquals($guestGroups->isOwningSide(), $adminGroups->isOwningSide());
+        self::assertEquals($guestGroups->getFetchMode(), $adminGroups->getFetchMode());
+        self::assertEquals($guestGroups->getCascade(), $adminGroups->getCascade());
 
-         // assert not override attributes
-        $this->assertEquals('ddc964_users_groups', $guestGroups['joinTable']['name']);
-        $this->assertEquals('user_id', $guestGroups['joinTable']['joinColumns'][0]['name']);
-        $this->assertEquals('group_id', $guestGroups['joinTable']['inverseJoinColumns'][0]['name']);
+        // assert not override attributes
+        $guestGroupsJoinTable          = $guestGroups->getJoinTable();
+        $guestGroupsJoinColumns        = $guestGroupsJoinTable->getJoinColumns();
+        $guestGroupsJoinColumn         = reset($guestGroupsJoinColumns);
+        $guestGroupsInverseJoinColumns = $guestGroupsJoinTable->getInverseJoinColumns();
+        $guestGroupsInverseJoinColumn  = reset($guestGroupsInverseJoinColumns);
 
-        $this->assertEquals(['user_id'=>'id'], $guestGroups['relationToSourceKeyColumns']);
-        $this->assertEquals(['group_id'=>'id'], $guestGroups['relationToTargetKeyColumns']);
-        $this->assertEquals(['user_id','group_id'], $guestGroups['joinTableColumns']);
+        self::assertEquals('ddc964_users_groups', $guestGroupsJoinTable->getName());
+        self::assertEquals('user_id', $guestGroupsJoinColumn->getColumnName());
+        self::assertEquals('group_id', $guestGroupsInverseJoinColumn->getColumnName());
 
+        $adminGroupsJoinTable          = $adminGroups->getJoinTable();
+        $adminGroupsJoinColumns        = $adminGroupsJoinTable->getJoinColumns();
+        $adminGroupsJoinColumn         = reset($adminGroupsJoinColumns);
+        $adminGroupsInverseJoinColumns = $adminGroupsJoinTable->getInverseJoinColumns();
+        $adminGroupsInverseJoinColumn  = reset($adminGroupsInverseJoinColumns);
 
-        $this->assertEquals('ddc964_users_admingroups', $adminGroups['joinTable']['name']);
-        $this->assertEquals('adminuser_id', $adminGroups['joinTable']['joinColumns'][0]['name']);
-        $this->assertEquals('admingroup_id', $adminGroups['joinTable']['inverseJoinColumns'][0]['name']);
-
-        $this->assertEquals(['adminuser_id'=>'id'], $adminGroups['relationToSourceKeyColumns']);
-        $this->assertEquals(['admingroup_id'=>'id'], $adminGroups['relationToTargetKeyColumns']);
-        $this->assertEquals(['adminuser_id','admingroup_id'], $adminGroups['joinTableColumns']);
-
+        self::assertEquals('ddc964_users_admingroups', $adminGroupsJoinTable->getName());
+        self::assertEquals('adminuser_id', $adminGroupsJoinColumn->getColumnName());
+        self::assertEquals('admingroup_id', $adminGroupsInverseJoinColumn->getColumnName());
 
         // assert address association mappings
-        $this->assertArrayHasKey('address', $guestMetadata->associationMappings);
-        $this->assertArrayHasKey('address', $adminMetadata->associationMappings);
+        self::assertArrayHasKey('address', iterator_to_array($guestMetadata->getPropertiesIterator()));
+        self::assertArrayHasKey('address', iterator_to_array($adminMetadata->getPropertiesIterator()));
 
-        $guestAddress = $guestMetadata->associationMappings['address'];
-        $adminAddress = $adminMetadata->associationMappings['address'];
+        $guestAddress = $guestMetadata->getProperty('address');
+        $adminAddress = $adminMetadata->getProperty('address');
 
         // assert not override attributes
-        $this->assertEquals($guestAddress['fieldName'], $adminAddress['fieldName']);
-        $this->assertEquals($guestAddress['type'], $adminAddress['type']);
-        $this->assertEquals($guestAddress['mappedBy'], $adminAddress['mappedBy']);
-        $this->assertEquals($guestAddress['inversedBy'], $adminAddress['inversedBy']);
-        $this->assertEquals($guestAddress['isOwningSide'], $adminAddress['isOwningSide']);
-        $this->assertEquals($guestAddress['fetch'], $adminAddress['fetch']);
-        $this->assertEquals($guestAddress['isCascadeRemove'], $adminAddress['isCascadeRemove']);
-        $this->assertEquals($guestAddress['isCascadePersist'], $adminAddress['isCascadePersist']);
-        $this->assertEquals($guestAddress['isCascadeRefresh'], $adminAddress['isCascadeRefresh']);
-        $this->assertEquals($guestAddress['isCascadeMerge'], $adminAddress['isCascadeMerge']);
-        $this->assertEquals($guestAddress['isCascadeDetach'], $adminAddress['isCascadeDetach']);
+        self::assertEquals($guestAddress->getName(), $adminAddress->getName());
+        self::assertEquals(get_class($guestAddress), get_class($adminAddress));
+        self::assertEquals($guestAddress->getMappedBy(), $adminAddress->getMappedBy());
+        self::assertEquals($guestAddress->getInversedBy(), $adminAddress->getInversedBy());
+        self::assertEquals($guestAddress->isOwningSide(), $adminAddress->isOwningSide());
+        self::assertEquals($guestAddress->getFetchMode(), $adminAddress->getFetchMode());
+        self::assertEquals($guestAddress->getCascade(), $adminAddress->getCascade());
 
         // assert override
-        $this->assertEquals('address_id', $guestAddress['joinColumns'][0]['name']);
-        $this->assertEquals(['address_id'=>'id'], $guestAddress['sourceToTargetKeyColumns']);
-        $this->assertEquals(['address_id'=>'address_id'], $guestAddress['joinColumnFieldNames']);
-        $this->assertEquals(['id'=>'address_id'], $guestAddress['targetToSourceKeyColumns']);
+        $guestAddressJoinColumns = $guestAddress->getJoinColumns();
+        $guestAddressJoinColumn  = reset($guestAddressJoinColumns);
 
+        self::assertEquals('address_id', $guestAddressJoinColumn->getColumnName());
 
-        $this->assertEquals('adminaddress_id', $adminAddress['joinColumns'][0]['name']);
-        $this->assertEquals(['adminaddress_id'=>'id'], $adminAddress['sourceToTargetKeyColumns']);
-        $this->assertEquals(['adminaddress_id'=>'adminaddress_id'], $adminAddress['joinColumnFieldNames']);
-        $this->assertEquals(['id'=>'adminaddress_id'], $adminAddress['targetToSourceKeyColumns']);
+        $adminAddressJoinColumns = $adminAddress->getJoinColumns();
+        $adminAddressJoinColumn  = reset($adminAddressJoinColumns);
+
+        self::assertEquals('adminaddress_id', $adminAddressJoinColumn->getColumnName());
     }
 
-    /*
+    /**
      * @group DDC-3579
      */
-    public function testInversedByOverrideMapping()
+    public function testInversedByOverrideMapping() : void
     {
-
-        $factory        = $this->createClassMetadataFactory();
-        $adminMetadata  = $factory->getMetadataFor(DDC3579Admin::class);
+        $factory       = $this->createClassMetadataFactory();
+        $adminMetadata = $factory->getMetadataFor(DDC3579Admin::class);
 
         // assert groups association mappings
-        $this->assertArrayHasKey('groups', $adminMetadata->associationMappings);
-        $adminGroups = $adminMetadata->associationMappings['groups'];
+        self::assertArrayHasKey('groups', iterator_to_array($adminMetadata->getPropertiesIterator()));
+
+        $adminGroups = $adminMetadata->getProperty('groups');
 
         // assert override
-        $this->assertEquals('admins', $adminGroups['inversedBy']);
+        self::assertEquals('admins', $adminGroups->getInversedBy());
     }
 
     /**
      * @group DDC-5934
      */
-    public function testFetchOverrideMapping()
+    public function testFetchOverrideMapping() : void
     {
         // check override metadata
         $contractMetadata = $this->createClassMetadataFactory()->getMetadataFor(DDC5934Contract::class);
 
-        $this->assertArrayHasKey('members', $contractMetadata->associationMappings);
-        $this->assertSame(ClassMetadata::FETCH_EXTRA_LAZY, $contractMetadata->associationMappings['members']['fetch']);
+        self::assertArrayHasKey('members', iterator_to_array($contractMetadata->getPropertiesIterator()));
+
+        $contractMembers = $contractMetadata->getProperty('members');
+
+        self::assertSame(Mapping\FetchMode::EXTRA_LAZY, $contractMembers->getFetchMode());
     }
 
     /**
      * @group DDC-964
      */
-    public function testAttributeOverridesMapping()
+    public function testAttributeOverridesMapping() : void
     {
-
         $factory       = $this->createClassMetadataFactory();
-        $guestMetadata = $factory->getMetadataFor(DDC964Guest::class);
         $adminMetadata = $factory->getMetadataFor(DDC964Admin::class);
 
-        $this->assertTrue($adminMetadata->fieldMappings['id']['id']);
-        $this->assertEquals('id', $adminMetadata->fieldMappings['id']['fieldName']);
-        $this->assertEquals('user_id', $adminMetadata->fieldMappings['id']['columnName']);
-        $this->assertEquals(['user_id'=>'id','user_name'=>'name'], $adminMetadata->fieldNames);
-        $this->assertEquals(['id'=>'user_id','name'=>'user_name'], $adminMetadata->columnNames);
-        $this->assertEquals(150, $adminMetadata->fieldMappings['id']['length']);
+        self::assertEquals(
+            [
+                'user_id' => 'id',
+                'user_name' => 'name',
+                'adminaddress_id' => 'address',
+            ],
+            $adminMetadata->fieldNames
+        );
 
+        self::assertNotNull($adminMetadata->getProperty('id'));
 
-        $this->assertEquals('name', $adminMetadata->fieldMappings['name']['fieldName']);
-        $this->assertEquals('user_name', $adminMetadata->fieldMappings['name']['columnName']);
-        $this->assertEquals(250, $adminMetadata->fieldMappings['name']['length']);
-        $this->assertTrue($adminMetadata->fieldMappings['name']['nullable']);
-        $this->assertFalse($adminMetadata->fieldMappings['name']['unique']);
+        $idProperty = $adminMetadata->getProperty('id');
 
+        self::assertTrue($idProperty->isPrimaryKey());
+        self::assertEquals('id', $idProperty->getName());
+        self::assertEquals('user_id', $idProperty->getColumnName());
 
-        $this->assertTrue($guestMetadata->fieldMappings['id']['id']);
-        $this->assertEquals('guest_id', $guestMetadata->fieldMappings['id']['columnName']);
-        $this->assertEquals('id', $guestMetadata->fieldMappings['id']['fieldName']);
-        $this->assertEquals(['guest_id'=>'id','guest_name'=>'name'], $guestMetadata->fieldNames);
-        $this->assertEquals(['id'=>'guest_id','name'=>'guest_name'], $guestMetadata->columnNames);
-        $this->assertEquals(140, $guestMetadata->fieldMappings['id']['length']);
+        self::assertNotNull($adminMetadata->getProperty('name'));
 
-        $this->assertEquals('name', $guestMetadata->fieldMappings['name']['fieldName']);
-        $this->assertEquals('guest_name', $guestMetadata->fieldMappings['name']['columnName']);
-        $this->assertEquals(240, $guestMetadata->fieldMappings['name']['length']);
-        $this->assertFalse($guestMetadata->fieldMappings['name']['nullable']);
-        $this->assertTrue($guestMetadata->fieldMappings['name']['unique']);
+        $nameProperty = $adminMetadata->getProperty('name');
+
+        self::assertEquals('name', $nameProperty->getName());
+        self::assertEquals('user_name', $nameProperty->getColumnName());
+        self::assertEquals(250, $nameProperty->getLength());
+        self::assertTrue($nameProperty->isNullable());
+        self::assertFalse($nameProperty->isUnique());
+
+        $guestMetadata = $factory->getMetadataFor(DDC964Guest::class);
+
+        self::assertEquals(
+            [
+                'guest_id' => 'id',
+                'guest_name' => 'name',
+                'address_id' => 'address',
+            ],
+            $guestMetadata->fieldNames
+        );
+
+        self::assertNotNull($guestMetadata->getProperty('id'));
+
+        $idProperty = $guestMetadata->getProperty('id');
+
+        self::assertTrue($idProperty->isPrimaryKey());
+        self::assertEquals('id', $idProperty->getName());
+        self::assertEquals('guest_id', $idProperty->getColumnName());
+
+        self::assertNotNull($guestMetadata->getProperty('name'));
+
+        $nameProperty = $guestMetadata->getProperty('name');
+
+        self::assertEquals('name', $nameProperty->getName());
+        self::assertEquals('guest_name', $nameProperty->getColumnName());
+        self::assertEquals(240, $nameProperty->getLength());
+        self::assertFalse($nameProperty->isNullable());
+        self::assertTrue($nameProperty->isUnique());
     }
 
     /**
      * @group DDC-1955
      */
-    public function testEntityListeners()
+    public function testEntityListeners() : void
     {
-        $em         = $this->_getTestEntityManager();
-        $factory    = $this->createClassMetadataFactory($em);
+        $factory    = $this->createClassMetadataFactory();
         $superClass = $factory->getMetadataFor(CompanyContract::class);
         $flexClass  = $factory->getMetadataFor(CompanyFixContract::class);
         $fixClass   = $factory->getMetadataFor(CompanyFlexContract::class);
-        $ultraClass = $factory->getMetadataFor(CompanyFlexUltraContract::class);
 
-        $this->assertArrayHasKey(Events::prePersist, $superClass->entityListeners);
-        $this->assertArrayHasKey(Events::postPersist, $superClass->entityListeners);
+        self::assertArrayHasKey(Events::prePersist, $superClass->entityListeners);
+        self::assertArrayHasKey(Events::postPersist, $superClass->entityListeners);
 
-        $this->assertCount(1, $superClass->entityListeners[Events::prePersist]);
-        $this->assertCount(1, $superClass->entityListeners[Events::postPersist]);
+        self::assertCount(1, $superClass->entityListeners[Events::prePersist]);
+        self::assertCount(1, $superClass->entityListeners[Events::postPersist]);
 
         $postPersist = $superClass->entityListeners[Events::postPersist][0];
         $prePersist  = $superClass->entityListeners[Events::prePersist][0];
 
-        $this->assertEquals(CompanyContractListener::class, $postPersist['class']);
-        $this->assertEquals(CompanyContractListener::class, $prePersist['class']);
-        $this->assertEquals('postPersistHandler', $postPersist['method']);
-        $this->assertEquals('prePersistHandler', $prePersist['method']);
+        self::assertEquals(CompanyContractListener::class, $postPersist['class']);
+        self::assertEquals(CompanyContractListener::class, $prePersist['class']);
+        self::assertEquals('postPersistHandler', $postPersist['method']);
+        self::assertEquals('prePersistHandler', $prePersist['method']);
 
         //Inherited listeners
-        $this->assertEquals($fixClass->entityListeners, $superClass->entityListeners);
-        $this->assertEquals($flexClass->entityListeners, $superClass->entityListeners);
+        self::assertEquals($fixClass->entityListeners, $superClass->entityListeners);
+        self::assertEquals($flexClass->entityListeners, $superClass->entityListeners);
     }
 
     /**
      * @group DDC-1955
      */
-    public function testEntityListenersOverride()
+    public function testEntityListenersOverride() : void
     {
-        $em         = $this->_getTestEntityManager();
-        $factory    = $this->createClassMetadataFactory($em);
+        $factory    = $this->createClassMetadataFactory();
         $ultraClass = $factory->getMetadataFor(CompanyFlexUltraContract::class);
 
         //overridden listeners
-        $this->assertArrayHasKey(Events::postPersist, $ultraClass->entityListeners);
-        $this->assertArrayHasKey(Events::prePersist, $ultraClass->entityListeners);
+        self::assertArrayHasKey(Events::postPersist, $ultraClass->entityListeners);
+        self::assertArrayHasKey(Events::prePersist, $ultraClass->entityListeners);
 
-        $this->assertCount(1, $ultraClass->entityListeners[Events::postPersist]);
-        $this->assertCount(3, $ultraClass->entityListeners[Events::prePersist]);
+        self::assertCount(1, $ultraClass->entityListeners[Events::postPersist]);
+        self::assertCount(3, $ultraClass->entityListeners[Events::prePersist]);
 
         $postPersist = $ultraClass->entityListeners[Events::postPersist][0];
         $prePersist  = $ultraClass->entityListeners[Events::prePersist][0];
 
-        $this->assertEquals(CompanyContractListener::class, $postPersist['class']);
-        $this->assertEquals(CompanyContractListener::class, $prePersist['class']);
-        $this->assertEquals('postPersistHandler', $postPersist['method']);
-        $this->assertEquals('prePersistHandler', $prePersist['method']);
+        self::assertEquals(CompanyContractListener::class, $postPersist['class']);
+        self::assertEquals(CompanyContractListener::class, $prePersist['class']);
+        self::assertEquals('postPersistHandler', $postPersist['method']);
+        self::assertEquals('prePersistHandler', $prePersist['method']);
 
         $prePersist = $ultraClass->entityListeners[Events::prePersist][1];
-        $this->assertEquals(CompanyFlexUltraContractListener::class, $prePersist['class']);
-        $this->assertEquals('prePersistHandler1', $prePersist['method']);
+        self::assertEquals(CompanyFlexUltraContractListener::class, $prePersist['class']);
+        self::assertEquals('prePersistHandler1', $prePersist['method']);
 
         $prePersist = $ultraClass->entityListeners[Events::prePersist][2];
-        $this->assertEquals(CompanyFlexUltraContractListener::class, $prePersist['class']);
-        $this->assertEquals('prePersistHandler2', $prePersist['method']);
-    }
-
-
-    /**
-     * @group DDC-1955
-     */
-    public function testEntityListenersNamingConvention()
-    {
-        $em         = $this->_getTestEntityManager();
-        $factory    = $this->createClassMetadataFactory($em);
-        $metadata   = $factory->getMetadataFor(CmsAddress::class);
-
-        $this->assertArrayHasKey(Events::postPersist, $metadata->entityListeners);
-        $this->assertArrayHasKey(Events::prePersist, $metadata->entityListeners);
-        $this->assertArrayHasKey(Events::postUpdate, $metadata->entityListeners);
-        $this->assertArrayHasKey(Events::preUpdate, $metadata->entityListeners);
-        $this->assertArrayHasKey(Events::postRemove, $metadata->entityListeners);
-        $this->assertArrayHasKey(Events::preRemove, $metadata->entityListeners);
-        $this->assertArrayHasKey(Events::postLoad, $metadata->entityListeners);
-        $this->assertArrayHasKey(Events::preFlush, $metadata->entityListeners);
-
-        $this->assertCount(1, $metadata->entityListeners[Events::postPersist]);
-        $this->assertCount(1, $metadata->entityListeners[Events::prePersist]);
-        $this->assertCount(1, $metadata->entityListeners[Events::postUpdate]);
-        $this->assertCount(1, $metadata->entityListeners[Events::preUpdate]);
-        $this->assertCount(1, $metadata->entityListeners[Events::postRemove]);
-        $this->assertCount(1, $metadata->entityListeners[Events::preRemove]);
-        $this->assertCount(1, $metadata->entityListeners[Events::postLoad]);
-        $this->assertCount(1, $metadata->entityListeners[Events::preFlush]);
-
-        $postPersist = $metadata->entityListeners[Events::postPersist][0];
-        $prePersist  = $metadata->entityListeners[Events::prePersist][0];
-        $postUpdate  = $metadata->entityListeners[Events::postUpdate][0];
-        $preUpdate   = $metadata->entityListeners[Events::preUpdate][0];
-        $postRemove  = $metadata->entityListeners[Events::postRemove][0];
-        $preRemove   = $metadata->entityListeners[Events::preRemove][0];
-        $postLoad    = $metadata->entityListeners[Events::postLoad][0];
-        $preFlush    = $metadata->entityListeners[Events::preFlush][0];
-
-
-        $this->assertEquals(CmsAddressListener::class, $postPersist['class']);
-        $this->assertEquals(CmsAddressListener::class, $prePersist['class']);
-        $this->assertEquals(CmsAddressListener::class, $postUpdate['class']);
-        $this->assertEquals(CmsAddressListener::class, $preUpdate['class']);
-        $this->assertEquals(CmsAddressListener::class, $postRemove['class']);
-        $this->assertEquals(CmsAddressListener::class, $preRemove['class']);
-        $this->assertEquals(CmsAddressListener::class, $postLoad['class']);
-        $this->assertEquals(CmsAddressListener::class, $preFlush['class']);
-
-        $this->assertEquals(Events::postPersist, $postPersist['method']);
-        $this->assertEquals(Events::prePersist, $prePersist['method']);
-        $this->assertEquals(Events::postUpdate, $postUpdate['method']);
-        $this->assertEquals(Events::preUpdate, $preUpdate['method']);
-        $this->assertEquals(Events::postRemove, $postRemove['method']);
-        $this->assertEquals(Events::preRemove, $preRemove['method']);
-        $this->assertEquals(Events::postLoad, $postLoad['method']);
-        $this->assertEquals(Events::preFlush, $preFlush['method']);
+        self::assertEquals(CompanyFlexUltraContractListener::class, $prePersist['class']);
+        self::assertEquals('prePersistHandler2', $prePersist['method']);
     }
 
     /**
      * @group DDC-2183
      */
-    public function testSecondLevelCacheMapping()
+    public function testSecondLevelCacheMapping() : void
     {
-        $em      = $this->_getTestEntityManager();
-        $factory = $this->createClassMetadataFactory($em);
+        $factory = $this->createClassMetadataFactory();
         $class   = $factory->getMetadataFor(City::class);
-        $this->assertArrayHasKey('usage', $class->cache);
-        $this->assertArrayHasKey('region', $class->cache);
-        $this->assertEquals(ClassMetadata::CACHE_USAGE_READ_ONLY, $class->cache['usage']);
-        $this->assertEquals('doctrine_tests_models_cache_city', $class->cache['region']);
 
-        $this->assertArrayHasKey('state', $class->associationMappings);
-        $this->assertArrayHasKey('cache', $class->associationMappings['state']);
-        $this->assertArrayHasKey('usage', $class->associationMappings['state']['cache']);
-        $this->assertArrayHasKey('region', $class->associationMappings['state']['cache']);
-        $this->assertEquals(ClassMetadata::CACHE_USAGE_READ_ONLY, $class->associationMappings['state']['cache']['usage']);
-        $this->assertEquals('doctrine_tests_models_cache_city__state', $class->associationMappings['state']['cache']['region']);
+        self::assertNotNull($class->getCache());
+        self::assertEquals(Mapping\CacheUsage::READ_ONLY, $class->getCache()->getUsage());
+        self::assertEquals('doctrine_tests_models_cache_city', $class->getCache()->getRegion());
 
-        $this->assertArrayHasKey('attractions', $class->associationMappings);
-        $this->assertArrayHasKey('cache', $class->associationMappings['attractions']);
-        $this->assertArrayHasKey('usage', $class->associationMappings['attractions']['cache']);
-        $this->assertArrayHasKey('region', $class->associationMappings['attractions']['cache']);
-        $this->assertEquals(ClassMetadata::CACHE_USAGE_READ_ONLY, $class->associationMappings['attractions']['cache']['usage']);
-        $this->assertEquals('doctrine_tests_models_cache_city__attractions', $class->associationMappings['attractions']['cache']['region']);
+        self::assertArrayHasKey('state', iterator_to_array($class->getPropertiesIterator()));
+
+        $stateAssociation = $class->getProperty('state');
+
+        self::assertNotNull($stateAssociation->getCache());
+        self::assertEquals(Mapping\CacheUsage::READ_ONLY, $stateAssociation->getCache()->getUsage());
+        self::assertEquals('doctrine_tests_models_cache_city__state', $stateAssociation->getCache()->getRegion());
+
+        self::assertArrayHasKey('attractions', iterator_to_array($class->getPropertiesIterator()));
+
+        $attractionsAssociation = $class->getProperty('attractions');
+
+        self::assertNotNull($attractionsAssociation->getCache());
+        self::assertEquals(Mapping\CacheUsage::READ_ONLY, $attractionsAssociation->getCache()->getUsage());
+        self::assertEquals('doctrine_tests_models_cache_city__attractions', $attractionsAssociation->getCache()->getRegion());
     }
 
     /**
      * @group DDC-2825
      * @group 881
      */
-    public function testSchemaDefinitionViaExplicitTableSchemaAnnotationProperty()
+    public function testSchemaDefinitionViaExplicitTableSchemaAnnotationProperty() : void
     {
-        /* @var $metadata \Doctrine\ORM\Mapping\ClassMetadata */
-        $metadata = $this->createClassMetadataFactory()->getMetadataFor(ExplicitSchemaAndTable::class);
+        $factory  = $this->createClassMetadataFactory();
+        $metadata = $factory->getMetadataFor(ExplicitSchemaAndTable::class);
 
-        $this->assertSame('explicit_schema', $metadata->getSchemaName());
-        $this->assertSame('explicit_table', $metadata->getTableName());
+        self::assertSame('explicit_schema', $metadata->getSchemaName());
+        self::assertSame('explicit_table', $metadata->getTableName());
     }
 
     /**
      * @group DDC-2825
      * @group 881
      */
-    public function testSchemaDefinitionViaSchemaDefinedInTableNameInTableAnnotationProperty()
+    public function testSchemaDefinitionViaSchemaDefinedInTableNameInTableAnnotationProperty() : void
     {
-        /* @var $metadata \Doctrine\ORM\Mapping\ClassMetadata */
-        $metadata = $this->createClassMetadataFactory()->getMetadataFor(SchemaAndTableInTableName::class);
+        $factory  = $this->createClassMetadataFactory();
+        $metadata = $factory->getMetadataFor(SchemaAndTableInTableName::class);
 
-        $this->assertSame('implicit_schema', $metadata->getSchemaName());
-        $this->assertSame('implicit_table', $metadata->getTableName());
+        self::assertSame('implicit_schema', $metadata->getSchemaName());
+        self::assertSame('implicit_table', $metadata->getTableName());
     }
 
     /**
      * @group DDC-514
      * @group DDC-1015
      */
-    public function testDiscriminatorColumnDefaultLength()
+    public function testDiscriminatorColumnDefaultLength() : void
     {
-        if (strpos(get_class($this), 'PHPMappingDriver') !== false) {
+        if (strpos(static::class, 'PHPMappingDriver') !== false) {
             $this->markTestSkipped('PHP Mapping Drivers have no defaults.');
         }
+
         $class = $this->createClassMetadata(SingleTableEntityNoDiscriminatorColumnMapping::class);
-        $this->assertEquals(255, $class->discriminatorColumn['length']);
+
+        self::assertEquals(255, $class->discriminatorColumn->getLength());
+
         $class = $this->createClassMetadata(SingleTableEntityIncompleteDiscriminatorColumnMapping::class);
-        $this->assertEquals(255, $class->discriminatorColumn['length']);
+
+        self::assertEquals(255, $class->discriminatorColumn->getLength());
     }
 
     /**
      * @group DDC-514
      * @group DDC-1015
      */
-    public function testDiscriminatorColumnDefaultType()
+    public function testDiscriminatorColumnDefaultType() : void
     {
-        if (strpos(get_class($this), 'PHPMappingDriver') !== false) {
+        if (strpos(static::class, 'PHPMappingDriver') !== false) {
             $this->markTestSkipped('PHP Mapping Drivers have no defaults.');
         }
+
         $class = $this->createClassMetadata(SingleTableEntityNoDiscriminatorColumnMapping::class);
-        $this->assertEquals('string', $class->discriminatorColumn['type']);
+
+        self::assertEquals('string', $class->discriminatorColumn->getTypeName());
+
         $class = $this->createClassMetadata(SingleTableEntityIncompleteDiscriminatorColumnMapping::class);
-        $this->assertEquals('string', $class->discriminatorColumn['type']);
+
+        self::assertEquals('string', $class->discriminatorColumn->getTypeName());
     }
 
     /**
      * @group DDC-514
      * @group DDC-1015
      */
-    public function testDiscriminatorColumnDefaultName()
+    public function testDiscriminatorColumnDefaultName() : void
     {
-        if (strpos(get_class($this), 'PHPMappingDriver') !== false) {
+        if (strpos(static::class, 'PHPMappingDriver') !== false) {
             $this->markTestSkipped('PHP Mapping Drivers have no defaults.');
         }
-        $class = $this->createClassMetadata(SingleTableEntityNoDiscriminatorColumnMapping::class);
-        $this->assertEquals('dtype', $class->discriminatorColumn['name']);
-        $class = $this->createClassMetadata(SingleTableEntityIncompleteDiscriminatorColumnMapping::class);
-        $this->assertEquals('dtype', $class->discriminatorColumn['name']);
-    }
 
+        $class = $this->createClassMetadata(SingleTableEntityNoDiscriminatorColumnMapping::class);
+
+        self::assertEquals('dtype', $class->discriminatorColumn->getColumnName());
+
+        $class = $this->createClassMetadata(SingleTableEntityIncompleteDiscriminatorColumnMapping::class);
+
+        self::assertEquals('dtype', $class->discriminatorColumn->getColumnName());
+    }
 }
 
 /**
- * @Entity
- * @HasLifecycleCallbacks
- * @Table(
+ * @ORM\Entity
+ * @ORM\HasLifecycleCallbacks
+ * @ORM\Table(
  *  name="cms_users",
- *  uniqueConstraints={@UniqueConstraint(name="search_idx", columns={"name", "user_email"}, options={"where": "name IS NOT NULL"})},
- *  indexes={@Index(name="name_idx", columns={"name"}), @Index(name="0", columns={"user_email"})},
+ *  uniqueConstraints={@ORM\UniqueConstraint(name="search_idx", columns={"name", "user_email"})},
+ *  indexes={@ORM\Index(name="name_idx", columns={"name"}), @ORM\Index(columns={"user_email"})},
  *  options={"foo": "bar", "baz": {"key": "val"}}
  * )
- * @NamedQueries({@NamedQuery(name="all", query="SELECT u FROM __CLASS__ u")})
  */
 class User
 {
     /**
-     * @Id
-     * @Column(type="integer", options={"foo": "bar", "unsigned": false})
-     * @generatedValue(strategy="AUTO")
-     * @SequenceGenerator(sequenceName="tablename_seq", initialValue=1, allocationSize=100)
-     **/
+     * @ORM\Id
+     * @ORM\Column(type="integer", options={"foo": "bar", "unsigned": false})
+     * @ORM\GeneratedValue(strategy="AUTO")
+     * @ORM\SequenceGenerator(sequenceName="tablename_seq", allocationSize=100)
+     */
     public $id;
 
-    /**
-     * @Column(length=50, nullable=true, unique=true, options={"foo": "bar", "baz": {"key": "val"}, "fixed": false})
-     */
+    /** @ORM\Column(length=50, nullable=true, unique=true, options={"foo": "bar", "baz": {"key": "val"}, "fixed": false}) */
     public $name;
 
-    /**
-     * @Column(name="user_email", columnDefinition="CHAR(32) NOT NULL")
-     */
+    /** @ORM\Column(name="user_email", columnDefinition="CHAR(32) NOT NULL") */
     public $email;
 
     /**
-     * @OneToOne(targetEntity="Address", cascade={"remove"}, inversedBy="user")
-     * @JoinColumn(onDelete="CASCADE")
+     * @ORM\OneToOne(targetEntity=Address::class, cascade={"remove"}, inversedBy="user")
+     * @ORM\JoinColumn(onDelete="CASCADE")
      */
     public $address;
 
     /**
-     * @OneToMany(targetEntity="Phonenumber", mappedBy="user", cascade={"persist"}, orphanRemoval=true)
-     * @OrderBy({"number"="ASC"})
+     * @ORM\OneToMany(targetEntity=Phonenumber::class, mappedBy="user", cascade={"persist"}, orphanRemoval=true)
+     * @ORM\OrderBy({"number"="ASC"})
      */
     public $phonenumbers;
 
     /**
-     * @ManyToMany(targetEntity="Group", cascade={"all"})
-     * @JoinTable(name="cms_user_groups",
-     *    joinColumns={@JoinColumn(name="user_id", referencedColumnName="id", nullable=false, unique=false)},
-     *    inverseJoinColumns={@JoinColumn(name="group_id", referencedColumnName="id", columnDefinition="INT NULL")}
+     * @ORM\ManyToMany(targetEntity=Group::class, cascade={"all"})
+     * @ORM\JoinTable(name="cms_user_groups",
+     *    joinColumns={@ORM\JoinColumn(name="user_id", referencedColumnName="id", nullable=false, unique=false)},
+     *    inverseJoinColumns={@ORM\JoinColumn(name="group_id", referencedColumnName="id", columnDefinition="INT NULL")}
      * )
      */
     public $groups;
 
     /**
-     * @Column(type="integer")
-     * @Version
+     * @ORM\Column(type="integer")
+     * @ORM\Version
      */
     public $version;
 
-
     /**
-     * @PrePersist
+     * @ORM\PrePersist
      */
     public function doStuffOnPrePersist()
     {
     }
 
     /**
-     * @PrePersist
+     * @ORM\PrePersist
      */
-    public function doOtherStuffOnPrePersistToo() {
+    public function doOtherStuffOnPrePersistToo()
+    {
     }
 
     /**
-     * @PostPersist
+     * @ORM\PostPersist
      */
     public function doStuffOnPostPersist()
     {
-
     }
 
-    public static function loadMetadata(ClassMetadataInfo $metadata)
+    public static function loadMetadata(ClassMetadata $metadata)
     {
-        $metadata->setInheritanceType(ClassMetadataInfo::INHERITANCE_TYPE_NONE);
-        $metadata->setPrimaryTable(
+        $tableMetadata = new Mapping\TableMetadata();
+
+        $tableMetadata->setName('cms_users');
+        $tableMetadata->addIndex(
             [
-           'name' => 'cms_users',
-           'options' => ['foo' => 'bar', 'baz' => ['key' => 'val']],
+                'name'    => 'name_idx',
+                'columns' => ['name'],
+                'unique'  => false,
+                'options' => [],
+                'flags'   => [],
             ]
         );
-        $metadata->setChangeTrackingPolicy(ClassMetadataInfo::CHANGETRACKING_DEFERRED_IMPLICIT);
-        $metadata->addLifecycleCallback('doStuffOnPrePersist', 'prePersist');
-        $metadata->addLifecycleCallback('doOtherStuffOnPrePersistToo', 'prePersist');
-        $metadata->addLifecycleCallback('doStuffOnPostPersist', 'postPersist');
-        $metadata->mapField(
+
+        $tableMetadata->addIndex(
             [
-           'id' => true,
-           'fieldName' => 'id',
-           'type' => 'integer',
-           'columnName' => 'id',
-           'options' => ['foo' => 'bar', 'unsigned' => false],
+                'name'    => null,
+                'columns' => ['user_email'],
+                'unique'  => false,
+                'options' => [],
+                'flags'   => [],
             ]
         );
-        $metadata->mapField(
+
+        $tableMetadata->addUniqueConstraint(
             [
-           'fieldName' => 'name',
-           'type' => 'string',
-           'length' => 50,
-           'unique' => true,
-           'nullable' => true,
-           'columnName' => 'name',
-           'options' => ['foo' => 'bar', 'baz' => ['key' => 'val'], 'fixed' => false],
+                'name'    => 'search_idx',
+                'columns' => ['name', 'user_email'],
+                'options' => [],
+                'flags'   => [],
             ]
         );
-        $metadata->mapField(
+        $tableMetadata->addOption('foo', 'bar');
+        $tableMetadata->addOption('baz', ['key' => 'val']);
+
+        $metadata->setTable($tableMetadata);
+        $metadata->setInheritanceType(Mapping\InheritanceType::NONE);
+        $metadata->setChangeTrackingPolicy(Mapping\ChangeTrackingPolicy::DEFERRED_IMPLICIT);
+
+        $metadata->addLifecycleCallback('prePersist', 'doStuffOnPrePersist');
+        $metadata->addLifecycleCallback('prePersist', 'doOtherStuffOnPrePersistToo');
+        $metadata->addLifecycleCallback('postPersist', 'doStuffOnPostPersist');
+
+        $metadata->setGeneratorDefinition(
             [
-           'fieldName' => 'email',
-           'type' => 'string',
-           'columnName' => 'user_email',
-           'columnDefinition' => 'CHAR(32) NOT NULL',
-            ]
-        );
-        $mapping = ['fieldName' => 'version', 'type' => 'integer'];
-        $metadata->setVersionMapping($mapping);
-        $metadata->mapField($mapping);
-        $metadata->setIdGeneratorType(ClassMetadataInfo::GENERATOR_TYPE_AUTO);
-        $metadata->mapOneToOne(
-            [
-           'fieldName' => 'address',
-           'targetEntity' => Address::class,
-           'cascade' =>
-           [
-           0 => 'remove',
-           ],
-           'mappedBy' => NULL,
-           'inversedBy' => 'user',
-           'joinColumns' =>
-           [
-           0 =>
-           [
-            'name' => 'address_id',
-            'referencedColumnName' => 'id',
-            'onDelete' => 'CASCADE',
-           ],
-           ],
-           'orphanRemoval' => false,
-            ]
-        );
-        $metadata->mapOneToMany(
-            [
-           'fieldName' => 'phonenumbers',
-           'targetEntity' => Phonenumber::class,
-           'cascade' =>
-           [
-           1 => 'persist',
-           ],
-           'mappedBy' => 'user',
-           'orphanRemoval' => true,
-           'orderBy' =>
-           [
-           'number' => 'ASC',
-           ],
-            ]
-        );
-        $metadata->mapManyToMany(
-            [
-           'fieldName' => 'groups',
-           'targetEntity' => Group::class,
-           'cascade' =>
-           [
-           0 => 'remove',
-           1 => 'persist',
-           2 => 'refresh',
-           3 => 'merge',
-           4 => 'detach',
-           ],
-           'mappedBy' => NULL,
-           'joinTable' =>
-           [
-           'name' => 'cms_users_groups',
-           'joinColumns' =>
-           [
-            0 =>
-            [
-            'name' => 'user_id',
-            'referencedColumnName' => 'id',
-            'unique' => false,
-            'nullable' => false,
-            ],
-           ],
-           'inverseJoinColumns' =>
-           [
-            0 =>
-            [
-            'name' => 'group_id',
-            'referencedColumnName' => 'id',
-            'columnDefinition' => 'INT NULL',
-            ],
-           ],
-           ],
-           'orderBy' => NULL,
-            ]
-        );
-        $metadata->table['uniqueConstraints'] = [
-            'search_idx' => ['columns' => ['name', 'user_email'], 'options'=> ['where' => 'name IS NOT NULL']],
-        ];
-        $metadata->table['indexes'] = [
-            'name_idx' => ['columns' => ['name']], 0 => ['columns' => ['user_email']]
-        ];
-        $metadata->setSequenceGeneratorDefinition(
-            [
-                'sequenceName' => 'tablename_seq',
+                'sequenceName'   => 'tablename_seq',
                 'allocationSize' => 100,
-                'initialValue' => 1,
             ]
         );
-        $metadata->addNamedQuery(
+
+        $fieldMetadata = new Mapping\FieldMetadata('id');
+        $fieldMetadata->setType(Type::getType('integer'));
+        $fieldMetadata->setPrimaryKey(true);
+        $fieldMetadata->setOptions(['foo' => 'bar', 'unsigned' => false]);
+
+        $metadata->addProperty($fieldMetadata);
+
+        $fieldMetadata = new Mapping\FieldMetadata('name');
+        $fieldMetadata->setType(Type::getType('string'));
+        $fieldMetadata->setLength(50);
+        $fieldMetadata->setNullable(true);
+        $fieldMetadata->setUnique(true);
+        $fieldMetadata->setOptions(
             [
-                'name' => 'all',
-                'query' => 'SELECT u FROM __CLASS__ u'
+                'foo' => 'bar',
+                'baz' => ['key' => 'val'],
+                'fixed' => false,
             ]
         );
+
+        $metadata->addProperty($fieldMetadata);
+
+        $fieldMetadata = new Mapping\FieldMetadata('email');
+
+        $fieldMetadata->setType(Type::getType('string'));
+        $fieldMetadata->setColumnName('user_email');
+        $fieldMetadata->setColumnDefinition('CHAR(32) NOT NULL');
+
+        $metadata->addProperty($fieldMetadata);
+
+        $fieldMetadata = new Mapping\FieldMetadata('version');
+
+        $fieldMetadata->setType(Type::getType('integer'));
+        $fieldMetadata->setVersioned(true);
+
+        $metadata->addProperty($fieldMetadata);
+        $metadata->setIdGeneratorType(Mapping\GeneratorType::AUTO);
+
+        $joinColumns = [];
+
+        $joinColumn = new Mapping\JoinColumnMetadata();
+
+        $joinColumn->setColumnName('address_id');
+        $joinColumn->setReferencedColumnName('id');
+        $joinColumn->setOnDelete('CASCADE');
+
+        $joinColumns[] = $joinColumn;
+
+        $association = new Mapping\OneToOneAssociationMetadata('address');
+
+        $association->setJoinColumns($joinColumns);
+        $association->setTargetEntity(Address::class);
+        $association->setInversedBy('user');
+        $association->setCascade(['remove']);
+        $association->setOrphanRemoval(false);
+
+        $metadata->addProperty($association);
+
+        $association = new Mapping\OneToManyAssociationMetadata('phonenumbers');
+
+        $association->setTargetEntity(Phonenumber::class);
+        $association->setMappedBy('user');
+        $association->setCascade(['persist']);
+        $association->setOrderBy(['number' => 'ASC']);
+        $association->setOrphanRemoval(true);
+
+        $metadata->addProperty($association);
+
+        $joinTable = new Mapping\JoinTableMetadata();
+        $joinTable->setName('cms_users_groups');
+
+        $joinColumn = new Mapping\JoinColumnMetadata();
+
+        $joinColumn->setColumnName('user_id');
+        $joinColumn->setReferencedColumnName('id');
+        $joinColumn->setNullable(false);
+        $joinColumn->setUnique(false);
+
+        $joinTable->addJoinColumn($joinColumn);
+
+        $joinColumn = new Mapping\JoinColumnMetadata();
+
+        $joinColumn->setColumnName('group_id');
+        $joinColumn->setReferencedColumnName('id');
+        $joinColumn->setColumnDefinition('INT NULL');
+
+        $joinTable->addInverseJoinColumn($joinColumn);
+
+        $association = new Mapping\ManyToManyAssociationMetadata('groups');
+
+        $association->setJoinTable($joinTable);
+        $association->setTargetEntity(Group::class);
+        $association->setCascade(['remove', 'persist', 'refresh']);
+
+        $metadata->addProperty($association);
+    }
+}
+
+class CustomGenerator implements Generator
+{
+    public function generate(EntityManagerInterface $em, ?object $entity)
+    {
+        // TODO: Implement generate() method.
+    }
+
+    public function isPostInsertGenerator() : bool
+    {
+        return false;
     }
 }
 
 /**
- * @Entity
- * @InheritanceType("SINGLE_TABLE")
- * @DiscriminatorMap({"cat" = "Cat", "dog" = "Dog"})
- * @DiscriminatorColumn(name="discr", length=32, type="string")
+ * @ORM\Entity
+ * @ORM\InheritanceType("SINGLE_TABLE")
+ * @ORM\DiscriminatorMap({"cat" = Cat::class, "dog" = Dog::class})
+ * @ORM\DiscriminatorColumn(name="discr", length=32, type="string")
  */
 abstract class Animal
 {
     /**
-     * @Id @Column(type="string") @GeneratedValue(strategy="CUSTOM")
-     * @CustomIdGenerator(class="stdClass")
+     * @ORM\Id @ORM\Column(type="string") @ORM\GeneratedValue(strategy="CUSTOM")
+     * @ORM\CustomIdGenerator(class=CustomGenerator::class)
      */
     public $id;
-
-    public static function loadMetadata(ClassMetadataInfo $metadata)
-    {
-        $metadata->setIdGeneratorType(ClassMetadataInfo::GENERATOR_TYPE_CUSTOM);
-        $metadata->setCustomGeneratorDefinition(["class" => "stdClass"]);
-    }
 }
 
-/** @Entity */
+/** @ORM\Entity */
 class Cat extends Animal
 {
-    public static function loadMetadata(ClassMetadataInfo $metadata)
-    {
-
-    }
 }
 
-/** @Entity */
+/** @ORM\Entity */
 class Dog extends Animal
 {
-    public static function loadMetadata(ClassMetadataInfo $metadata)
-    {
-
-    }
 }
 
-
 /**
- * @Entity
+ * @ORM\Entity
  */
 class DDC1170Entity
 {
-
     /**
      * @param string $value
      */
-    function __construct($value = null)
+    public function __construct($value = null)
     {
         $this->value = $value;
     }
 
     /**
-     * @Id
-     * @GeneratedValue(strategy="NONE")
-     * @Column(type="integer", columnDefinition = "INT unsigned NOT NULL")
-     **/
+     * @ORM\Id
+     * @ORM\GeneratedValue(strategy="NONE")
+     * @ORM\Column(type="integer", columnDefinition = "INT unsigned NOT NULL")
+     */
     private $id;
 
-    /**
-     * @Column(columnDefinition = "VARCHAR(255) NOT NULL")
-     */
+    /** @ORM\Column(columnDefinition = "VARCHAR(255) NOT NULL") */
     private $value;
 
     /**
@@ -1386,174 +1382,106 @@ class DDC1170Entity
     {
         return $this->value;
     }
-
-    public static function loadMetadata(ClassMetadataInfo $metadata)
-    {
-        $metadata->mapField(
-            [
-           'id'                 => true,
-           'fieldName'          => 'id',
-           'columnDefinition'   => 'INT unsigned NOT NULL',
-            ]
-        );
-
-        $metadata->mapField(
-            [
-            'fieldName'         => 'value',
-            'columnDefinition'  => 'VARCHAR(255) NOT NULL'
-            ]
-        );
-
-        $metadata->setIdGeneratorType(ClassMetadataInfo::GENERATOR_TYPE_NONE);
-    }
-
 }
 
 /**
- * @Entity
- * @InheritanceType("SINGLE_TABLE")
- * @DiscriminatorMap({"ONE" = "DDC807SubClasse1", "TWO" = "DDC807SubClasse2"})
- * @DiscriminatorColumn(name = "dtype", columnDefinition="ENUM('ONE','TWO')")
+ * @ORM\Entity
+ * @ORM\InheritanceType("SINGLE_TABLE")
+ * @ORM\DiscriminatorMap({"ONE" = DDC807SubClasse1::class, "TWO" = DDC807SubClasse2::class})
+ * @ORM\DiscriminatorColumn(name = "dtype", columnDefinition="ENUM('ONE','TWO')")
  */
 class DDC807Entity
 {
     /**
-     * @Id
-     * @Column(type="integer")
-     * @GeneratedValue(strategy="NONE")
-     **/
-   public $id;
-
-   public static function loadMetadata(ClassMetadataInfo $metadata)
-    {
-         $metadata->mapField(
-             [
-           'id'                 => true,
-           'fieldName'          => 'id',
-             ]
-         );
-
-        $metadata->setDiscriminatorColumn(
-            [
-            'name'              => "dtype",
-            'type'              => "string",
-            'columnDefinition'  => "ENUM('ONE','TWO')"
-            ]
-        );
-
-        $metadata->setIdGeneratorType(ClassMetadataInfo::GENERATOR_TYPE_NONE);
-    }
+     * @ORM\Id
+     * @ORM\Column(type="integer")
+     * @ORM\GeneratedValue(strategy="NONE")
+     */
+    public $id;
 }
 
-class DDC807SubClasse1 {}
-class DDC807SubClasse2 {}
+class DDC807SubClasse1
+{
+}
+class DDC807SubClasse2
+{
+}
 
-class Address {}
-class Phonenumber {}
-class Group {}
+class Address
+{
+}
+class Phonenumber
+{
+}
+class Group
+{
+}
 
 /**
- * @Entity
- * @Table(indexes={@Index(columns={"content"}, flags={"fulltext"}, options={"where": "content IS NOT NULL"})})
+ * @ORM\Entity
+ * @ORM\Table(indexes={@ORM\Index(columns={"content"}, flags={"fulltext"}, options={"where": "content IS NOT NULL"})})
  */
 class Comment
 {
-    /**
-     * @Column(type="text")
-     */
+    /** @ORM\Column(type="text") */
     private $content;
-
-    public static function loadMetadata(ClassMetadataInfo $metadata)
-    {
-        $metadata->setInheritanceType(ClassMetadataInfo::INHERITANCE_TYPE_NONE);
-        $metadata->setPrimaryTable(
-            [
-            'indexes' => [
-                ['columns' => ['content'], 'flags' => ['fulltext'], 'options' => ['where' => 'content IS NOT NULL']]
-            ]
-            ]
-        );
-
-        $metadata->mapField(
-            [
-            'fieldName' => 'content',
-            'type' => 'text',
-            'scale' => 0,
-            'length' => NULL,
-            'unique' => false,
-            'nullable' => false,
-            'precision' => 0,
-            'columnName' => 'content',
-            ]
-        );
-    }
 }
 
 /**
- * @Entity
- * @InheritanceType("SINGLE_TABLE")
- * @DiscriminatorMap({
- *     "ONE" = "SingleTableEntityNoDiscriminatorColumnMappingSub1",
- *     "TWO" = "SingleTableEntityNoDiscriminatorColumnMappingSub2"
+ * @ORM\Entity
+ * @ORM\InheritanceType("SINGLE_TABLE")
+ * @ORM\DiscriminatorMap({
+ *     "ONE" = Doctrine\Tests\ORM\Mapping\SingleTableEntityNoDiscriminatorColumnMappingSub1::class,
+ *     "TWO" = Doctrine\Tests\ORM\Mapping\SingleTableEntityNoDiscriminatorColumnMappingSub2::class
  * })
  */
 class SingleTableEntityNoDiscriminatorColumnMapping
 {
     /**
-     * @Id
-     * @Column(type="integer")
-     * @GeneratedValue(strategy="NONE")
+     * @ORM\Id
+     * @ORM\Column(type="integer")
+     * @ORM\GeneratedValue(strategy="NONE")
      */
     public $id;
-
-    public static function loadMetadata(ClassMetadataInfo $metadata)
-    {
-        $metadata->mapField(
-            [
-            'id' => true,
-            'fieldName' => 'id',
-            ]
-        );
-
-        $metadata->setIdGeneratorType(ClassMetadataInfo::GENERATOR_TYPE_NONE);
-    }
 }
 
-class SingleTableEntityNoDiscriminatorColumnMappingSub1 extends SingleTableEntityNoDiscriminatorColumnMapping {}
-class SingleTableEntityNoDiscriminatorColumnMappingSub2 extends SingleTableEntityNoDiscriminatorColumnMapping {}
+/**
+ * @ORM\Entity
+ */
+class SingleTableEntityNoDiscriminatorColumnMappingSub1 extends SingleTableEntityNoDiscriminatorColumnMapping
+{
+}
 
 /**
- * @Entity
- * @InheritanceType("SINGLE_TABLE")
- * @DiscriminatorMap({
- *     "ONE" = "SingleTableEntityIncompleteDiscriminatorColumnMappingSub1",
- *     "TWO" = "SingleTableEntityIncompleteDiscriminatorColumnMappingSub2"
+ * @ORM\Entity
+ */
+class SingleTableEntityNoDiscriminatorColumnMappingSub2 extends SingleTableEntityNoDiscriminatorColumnMapping
+{
+}
+
+/**
+ * @ORM\Entity
+ * @ORM\InheritanceType("SINGLE_TABLE")
+ * @ORM\DiscriminatorMap({
+ *     "ONE" = Doctrine\Tests\ORM\Mapping\SingleTableEntityIncompleteDiscriminatorColumnMappingSub1::class,
+ *     "TWO" = Doctrine\Tests\ORM\Mapping\SingleTableEntityIncompleteDiscriminatorColumnMappingSub2::class
  * })
- * @DiscriminatorColumn(name="dtype")
+ * @ORM\DiscriminatorColumn(name="dtype")
  */
 class SingleTableEntityIncompleteDiscriminatorColumnMapping
 {
     /**
-     * @Id
-     * @Column(type="integer")
-     * @GeneratedValue(strategy="NONE")
+     * @ORM\Id
+     * @ORM\Column(type="integer")
+     * @ORM\GeneratedValue(strategy="NONE")
      */
     public $id;
-
-    public static function loadMetadata(ClassMetadataInfo $metadata)
-    {
-        $metadata->mapField(
-            [
-            'id' => true,
-            'fieldName' => 'id',
-            ]
-        );
-
-        $metadata->setIdGeneratorType(ClassMetadataInfo::GENERATOR_TYPE_NONE);
-    }
 }
 
-class SingleTableEntityIncompleteDiscriminatorColumnMappingSub1
-    extends SingleTableEntityIncompleteDiscriminatorColumnMapping {}
-class SingleTableEntityIncompleteDiscriminatorColumnMappingSub2
-    extends SingleTableEntityIncompleteDiscriminatorColumnMapping {}
+class SingleTableEntityIncompleteDiscriminatorColumnMappingSub1 extends SingleTableEntityIncompleteDiscriminatorColumnMapping
+{
+}
+
+class SingleTableEntityIncompleteDiscriminatorColumnMappingSub2 extends SingleTableEntityIncompleteDiscriminatorColumnMapping
+{
+}

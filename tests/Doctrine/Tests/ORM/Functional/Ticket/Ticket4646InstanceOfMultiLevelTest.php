@@ -1,32 +1,35 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\Tests\ORM\Functional\Ticket;
 
+use Doctrine\ORM\Annotation as ORM;
 use Doctrine\Tests\OrmFunctionalTestCase;
 
 class Ticket4646InstanceOfMultiLevelTest extends OrmFunctionalTestCase
 {
-    protected function setUp(): void
+    protected function setUp() : void
     {
         parent::setUp();
 
-        $this->_schemaTool->createSchema([
-            $this->_em->getClassMetadata(PersonTicket4646MultiLevel::class),
-            $this->_em->getClassMetadata(EmployeeTicket4646MultiLevel::class),
-            $this->_em->getClassMetadata(EngineerTicket4646MultiLevel::class),
+        $this->schemaTool->createSchema([
+            $this->em->getClassMetadata(PersonTicket4646MultiLevel::class),
+            $this->em->getClassMetadata(EmployeeTicket4646MultiLevel::class),
+            $this->em->getClassMetadata(EngineerTicket4646MultiLevel::class),
         ]);
     }
 
-    public function testInstanceOf(): void
+    public function testInstanceOf() : void
     {
-        $this->_em->persist(new PersonTicket4646MultiLevel());
-        $this->_em->persist(new EmployeeTicket4646MultiLevel());
-        $this->_em->persist(new EngineerTicket4646MultiLevel());
-        $this->_em->flush();
+        $this->em->persist(new PersonTicket4646MultiLevel());
+        $this->em->persist(new EmployeeTicket4646MultiLevel());
+        $this->em->persist(new EngineerTicket4646MultiLevel());
+        $this->em->flush();
 
-        $dql = 'SELECT p FROM Doctrine\Tests\ORM\Functional\Ticket\PersonTicket4646MultiLevel p
+        $dql    = 'SELECT p FROM Doctrine\Tests\ORM\Functional\Ticket\PersonTicket4646MultiLevel p
                 WHERE p INSTANCE OF Doctrine\Tests\ORM\Functional\Ticket\PersonTicket4646MultiLevel';
-        $query = $this->_em->createQuery($dql);
+        $query  = $this->em->createQuery($dql);
         $result = $query->getResult();
 
         self::assertCount(3, $result);
@@ -35,11 +38,11 @@ class Ticket4646InstanceOfMultiLevelTest extends OrmFunctionalTestCase
 }
 
 /**
- * @Entity()
- * @Table(name="instance_of_multi_level_test_person")
- * @InheritanceType(value="JOINED")
- * @DiscriminatorColumn(name="kind", type="string")
- * @DiscriminatorMap(value={
+ * @ORM\Entity()
+ * @ORM\Table(name="instance_of_multi_level_test_person")
+ * @ORM\InheritanceType(value="JOINED")
+ * @ORM\DiscriminatorColumn(name="kind", type="string")
+ * @ORM\DiscriminatorMap(value={
  *     "person": "Doctrine\Tests\ORM\Functional\Ticket\PersonTicket4646MultiLevel",
  *     "employee": "Doctrine\Tests\ORM\Functional\Ticket\EmployeeTicket4646MultiLevel",
  *     "engineer": "Doctrine\Tests\ORM\Functional\Ticket\EngineerTicket4646MultiLevel",
@@ -48,29 +51,29 @@ class Ticket4646InstanceOfMultiLevelTest extends OrmFunctionalTestCase
 class PersonTicket4646MultiLevel
 {
     /**
-     * @Id()
-     * @GeneratedValue()
-     * @Column(type="integer")
+     * @ORM\Id()
+     * @ORM\GeneratedValue()
+     * @ORM\Column(type="integer")
      */
     private $id;
 
-    public function getId(): ?int
+    public function getId() : ?int
     {
         return $this->id;
     }
 }
 
 /**
- * @Entity()
- * @Table(name="instance_of_multi_level_employee")
+ * @ORM\Entity()
+ * @ORM\Table(name="instance_of_multi_level_employee")
  */
 class EmployeeTicket4646MultiLevel extends PersonTicket4646MultiLevel
 {
 }
 
 /**
- * @Entity()
- * @Table(name="instance_of_multi_level_engineer")
+ * @ORM\Entity()
+ * @ORM\Table(name="instance_of_multi_level_engineer")
  */
 class EngineerTicket4646MultiLevel extends EmployeeTicket4646MultiLevel
 {

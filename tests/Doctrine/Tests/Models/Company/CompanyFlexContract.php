@@ -1,70 +1,35 @@
 <?php
+
+declare(strict_types=1);
+
 namespace Doctrine\Tests\Models\Company;
 
+use Doctrine\ORM\Annotation as ORM;
+
 /**
- * @Entity
- *
- * @NamedNativeQueries({
- *      @NamedNativeQuery(
- *          name           = "all",
- *          resultClass    = "__CLASS__",
- *          query          = "SELECT id, hoursWorked, discr FROM company_contracts"
- *      ),
- *      @NamedNativeQuery(
- *          name           = "all-flex",
- *          resultClass    = "CompanyFlexContract",
- *          query          = "SELECT id, hoursWorked, discr FROM company_contracts"
- *      ),
- * })
- *
- * @SqlResultSetMappings({
- *      @SqlResultSetMapping(
- *          name    = "mapping-all-flex",
- *          entities= {
- *              @EntityResult(
- *                  entityClass         = "__CLASS__",
- *                  discriminatorColumn = "discr",
- *                  fields              = {
- *                      @FieldResult("id"),
- *                      @FieldResult("hoursWorked"),
- *                  }
- *              )
- *          }
- *      ),
- *      @SqlResultSetMapping(
- *          name    = "mapping-all",
- *          entities= {
- *              @EntityResult(
- *                  entityClass         = "CompanyFlexContract",
- *                  discriminatorColumn = "discr",
- *                  fields              = {
- *                      @FieldResult("id"),
- *                      @FieldResult("hoursWorked"),
- *                  }
- *              )
- *          }
- *      ),
- * })
+ * @ORM\Entity
  */
 class CompanyFlexContract extends CompanyContract
 {
     /**
-     * @column(type="integer")
+     * @ORM\Column(type="integer")
+     *
      * @var int
      */
     private $hoursWorked = 0;
 
     /**
-     * @column(type="integer")
+     * @ORM\Column(type="integer")
+     *
      * @var int
      */
     private $pricePerHour = 0;
 
     /**
-     * @ManyToMany(targetEntity="CompanyManager", inversedBy="managedContracts", fetch="EXTRA_LAZY")
-     * @JoinTable(name="company_contract_managers",
-     *    joinColumns={@JoinColumn(name="contract_id", referencedColumnName="id", onDelete="CASCADE")},
-     *    inverseJoinColumns={@JoinColumn(name="employee_id", referencedColumnName="id")}
+     * @ORM\ManyToMany(targetEntity=CompanyManager::class, inversedBy="managedContracts", fetch="EXTRA_LAZY")
+     * @ORM\JoinTable(name="company_contract_managers",
+     *    joinColumns={@ORM\JoinColumn(name="contract_id", referencedColumnName="id", onDelete="CASCADE")},
+     *    inverseJoinColumns={@ORM\JoinColumn(name="employee_id", referencedColumnName="id")}
      * )
      */
     public $managers;
@@ -93,6 +58,7 @@ class CompanyFlexContract extends CompanyContract
     {
         $this->pricePerHour = $pricePerHour;
     }
+
     public function getManagers()
     {
         return $this->managers;
@@ -106,24 +72,5 @@ class CompanyFlexContract extends CompanyContract
     public function removeManager(CompanyManager $manager)
     {
         $this->managers->removeElement($manager);
-    }
-
-    static public function loadMetadata(\Doctrine\ORM\Mapping\ClassMetadataInfo $metadata)
-    {
-        $metadata->mapField(
-            [
-            'type'      => 'integer',
-            'name'      => 'hoursWorked',
-            'fieldName' => 'hoursWorked',
-            ]
-        );
-
-        $metadata->mapField(
-            [
-            'type'      => 'integer',
-            'name'      => 'pricePerHour',
-            'fieldName' => 'pricePerHour',
-            ]
-        );
     }
 }

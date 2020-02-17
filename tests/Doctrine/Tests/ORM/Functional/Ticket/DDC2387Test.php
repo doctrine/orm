@@ -1,22 +1,25 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\Tests\ORM\Functional\Ticket;
 
+use Doctrine\DBAL\Schema\Table;
+use Doctrine\ORM\Mapping\GeneratorType;
 use Doctrine\Tests\ORM\Functional\DatabaseDriverTestCase;
-use Doctrine\ORM\Mapping\ClassMetadataInfo;
 
 class DDC2387Test extends DatabaseDriverTestCase
 {
     /**
      * @group DDC-2387
      */
-    public function testCompositeAssociationKeyDetection()
+    public function testCompositeAssociationKeyDetection() : void
     {
-        $product = new \Doctrine\DBAL\Schema\Table('ddc2387_product');
+        $product = new Table('ddc2387_product');
         $product->addColumn('id', 'integer');
         $product->setPrimaryKey(['id']);
 
-        $attributes = new \Doctrine\DBAL\Schema\Table('ddc2387_attributes');
+        $attributes = new Table('ddc2387_attributes');
         $attributes->addColumn('product_id', 'integer');
         $attributes->addColumn('attribute_name', 'string');
         $attributes->setPrimaryKey(['product_id', 'attribute_name']);
@@ -24,7 +27,7 @@ class DDC2387Test extends DatabaseDriverTestCase
 
         $metadata = $this->convertToClassMetadata([$product, $attributes], []);
 
-        $this->assertEquals(ClassMetadataInfo::GENERATOR_TYPE_NONE, $metadata['Ddc2387Attributes']->generatorType);
-        $this->assertEquals(ClassMetadataInfo::GENERATOR_TYPE_AUTO, $metadata['Ddc2387Product']->generatorType);
+        self::assertFalse($metadata['Ddc2387Attributes']->getProperty('productId')->hasValueGenerator());
+        self::assertEquals(GeneratorType::IDENTITY, $metadata['Ddc2387Product']->getProperty('id')->getValueGenerator()->getType());
     }
 }

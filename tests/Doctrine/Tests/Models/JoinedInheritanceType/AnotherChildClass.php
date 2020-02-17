@@ -1,9 +1,13 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\Tests\Models\JoinedInheritanceType;
 
+use Doctrine\ORM\Annotation as ORM;
+
 /**
- * @Entity
+ * @ORM\Entity
  */
 class AnotherChildClass extends ChildClass
 {

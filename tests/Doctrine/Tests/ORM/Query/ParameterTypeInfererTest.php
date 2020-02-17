@@ -1,32 +1,38 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\Tests\ORM\Query;
 
-use Doctrine\ORM\Query\ParameterTypeInferer;
+use DateInterval;
+use DateTime;
+use DateTimeImmutable;
 use Doctrine\DBAL\Connection;
+use Doctrine\DBAL\ParameterType;
 use Doctrine\DBAL\Types\Type;
+use Doctrine\ORM\Query\ParameterTypeInferer;
 use Doctrine\Tests\OrmTestCase;
-use PDO;
+use const PHP_VERSION_ID;
 
 class ParameterTypeInfererTest extends OrmTestCase
 {
-
     public function providerParameterTypeInferer()
     {
-         $data = [
+        $data = [
             [1,                 Type::INTEGER],
-            ["bar",             PDO::PARAM_STR],
-            ["1",               PDO::PARAM_STR],
-            [new \DateTime,     Type::DATETIME],
+            ['bar',             ParameterType::STRING],
+            ['1',               ParameterType::STRING],
+            [new DateTime(),     Type::DATETIME],
+            [new DateInterval('P1D'), Type::DATEINTERVAL],
             [[2],          Connection::PARAM_INT_ARRAY],
-            [["foo"],      Connection::PARAM_STR_ARRAY],
-            [["1","2"],    Connection::PARAM_STR_ARRAY],
+            [['foo'],      Connection::PARAM_STR_ARRAY],
+            [['1','2'],    Connection::PARAM_STR_ARRAY],
             [[],           Connection::PARAM_STR_ARRAY],
             [true,              Type::BOOLEAN],
-         ];
+        ];
 
         if (PHP_VERSION_ID >= 50500) {
-            $data[] = [new \DateTimeImmutable(), Type::DATETIME];
+            $data[] = [new DateTimeImmutable(), Type::DATETIME];
         }
 
         return $data;
@@ -35,9 +41,8 @@ class ParameterTypeInfererTest extends OrmTestCase
     /**
      * @dataProvider providerParameterTypeInferer
      */
-
-    public function testParameterTypeInferer($value, $expected)
+    public function testParameterTypeInferer($value, $expected) : void
     {
-        $this->assertEquals($expected, ParameterTypeInferer::inferType($value));
+        self::assertEquals($expected, ParameterTypeInferer::inferType($value));
     }
 }

@@ -1,16 +1,17 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\Tests\ORM\Tools\Console;
 
 use Doctrine\ORM\Tools\Console\ConsoleRunner;
-use Doctrine\ORM\Version;
 use Doctrine\Tests\DoctrineTestCase;
+use PackageVersions\Versions;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Helper\HelperSet;
 
 /**
  * @group DDC-3186
- *
  * @covers \Doctrine\ORM\Tools\Console\ConsoleRunner
  */
 final class ConsoleRunnerTest extends DoctrineTestCase
@@ -21,9 +22,8 @@ final class ConsoleRunnerTest extends DoctrineTestCase
         $app       = ConsoleRunner::createApplication($helperSet);
 
         self::assertSame($helperSet, $app->getHelperSet());
-        self::assertEquals(Version::VERSION, $app->getVersion());
+        self::assertEquals(Versions::getVersion('doctrine/orm'), $app->getVersion());
 
-        self::assertTrue($app->has('dbal:import'));
         self::assertTrue($app->has('dbal:reserved-words'));
         self::assertTrue($app->has('dbal:run-sql'));
         self::assertTrue($app->has('orm:clear-cache:region:collection'));
@@ -32,17 +32,8 @@ final class ConsoleRunnerTest extends DoctrineTestCase
         self::assertTrue($app->has('orm:clear-cache:metadata'));
         self::assertTrue($app->has('orm:clear-cache:query'));
         self::assertTrue($app->has('orm:clear-cache:result'));
-        self::assertTrue($app->has('orm:convert-d1-schema'));
-        self::assertTrue($app->has('orm:convert-mapping'));
-        self::assertTrue($app->has('orm:convert:d1-schema'));
-        self::assertTrue($app->has('orm:convert:mapping'));
         self::assertTrue($app->has('orm:ensure-production-settings'));
-        self::assertTrue($app->has('orm:generate-entities'));
         self::assertTrue($app->has('orm:generate-proxies'));
-        self::assertTrue($app->has('orm:generate-repositories'));
-        self::assertTrue($app->has('orm:generate:entities'));
-        self::assertTrue($app->has('orm:generate:proxies'));
-        self::assertTrue($app->has('orm:generate:repositories'));
         self::assertTrue($app->has('orm:info'));
         self::assertTrue($app->has('orm:mapping:describe'));
         self::assertTrue($app->has('orm:run-dql'));

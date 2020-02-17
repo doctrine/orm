@@ -25,36 +25,44 @@ appear in the middle of an otherwise mapped inheritance hierarchy
     For further support of inheritance, the single or
     joined table inheritance features have to be used.
 
-
 Example:
 
 .. code-block:: php
 
     <?php
     /** @MappedSuperclass */
-    class MappedSuperclassBase
+    class Person
     {
         /** @Column(type="integer") */
         protected $mapped1;
         /** @Column(type="string") */
         protected $mapped2;
         /**
-         * @OneToOne(targetEntity="MappedSuperclassRelated1")
-         * @JoinColumn(name="related1_id", referencedColumnName="id")
+         * @OneToOne(targetEntity="Toothbrush")
+         * @JoinColumn(name="toothbrush_id", referencedColumnName="id")
          */
-        protected $mappedRelated1;
-    
+        protected $toothbrush;
+
         // ... more fields and methods
     }
-    
+
     /** @Entity */
-    class EntitySubClass extends MappedSuperclassBase
+    class Employee extends Person
     {
         /** @Id @Column(type="integer") */
         private $id;
         /** @Column(type="string") */
         private $name;
-    
+
+        // ... more fields and methods
+    }
+
+    /** @Entity */
+    class Toothbrush
+    {
+        /** @Id @Column(type="integer") */
+        private $id;
+
         // ... more fields and methods
     }
 
@@ -73,7 +81,7 @@ defined on that class directly.
 Single Table Inheritance
 ------------------------
 
-`Single Table Inheritance <http://martinfowler.com/eaaCatalog/singleTableInheritance.html>`_
+`Single Table Inheritance <https://martinfowler.com/eaaCatalog/singleTableInheritance.html>`_
 is an inheritance mapping strategy where all classes of a hierarchy
 are mapped to a single database table. In order to distinguish
 which row represents which type in the hierarchy a so-called
@@ -84,10 +92,10 @@ Example:
 .. configuration-block::
 
     .. code-block:: php
-    
+
         <?php
         namespace MyProject\Model;
-        
+
         /**
          * @Entity
          * @InheritanceType("SINGLE_TABLE")
@@ -98,7 +106,7 @@ Example:
         {
             // ...
         }
-        
+
         /**
          * @Entity
          */
@@ -107,25 +115,9 @@ Example:
             // ...
         }
 
-    .. code-block:: yaml
-    
-        MyProject\Model\Person:
-          type: entity
-          inheritanceType: SINGLE_TABLE
-          discriminatorColumn:
-            name: discr
-            type: string
-          discriminatorMap:
-            person: Person
-            employee: Employee
-                
-        MyProject\Model\Employee:
-          type: entity
-            
 Things to note:
 
-
--  The @InheritanceType and @DiscriminatorColumn must be specified 
+-  The @InheritanceType and @DiscriminatorColumn must be specified
    on the topmost class that is part of the mapped entity hierarchy.
 -  The @DiscriminatorMap specifies which values of the
    discriminator column identify a row as being of a certain type. In
@@ -139,9 +131,7 @@ Things to note:
    be fully qualified if the classes are contained in the same
    namespace as the entity class on which the discriminator map is
    applied.
--  If no discriminator map is provided, then the map is generated
-   automatically. The automatically generated discriminator map 
-   contains the lowercase short name of each class as key.
+-  If no discriminator map is provided, an exception will be thrown.
 
 Design-time considerations
 ~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -159,12 +149,12 @@ This strategy is very efficient for querying across all types in
 the hierarchy or for specific types. No table joins are required,
 only a WHERE clause listing the type identifiers. In particular,
 relationships involving types that employ this mapping strategy are
-very performant.
+very performing.
 
 There is a general performance consideration with Single Table
-Inheritance: If the target-entity of a many-to-one or one-to-one 
-association is an STI entity, it is preferable for performance reasons that it 
-be a leaf entity in the inheritance hierarchy, (ie. have no subclasses). 
+Inheritance: If the target-entity of a many-to-one or one-to-one
+association is an STI entity, it is preferable for performance reasons that it
+be a leaf entity in the inheritance hierarchy, (ie. have no subclasses).
 Otherwise Doctrine *CANNOT* create proxy instances
 of this entity and will *ALWAYS* load the entity eagerly.
 
@@ -174,14 +164,14 @@ SQL Schema considerations
 For Single-Table-Inheritance to work in scenarios where you are
 using either a legacy database schema or a self-written database
 schema you have to make sure that all columns that are not in the
-root entity but in any of the different sub-entities has to allows
+root entity but in any of the different sub-entities has to allow
 null values. Columns that have NOT NULL constraints have to be on
 the root entity of the single-table inheritance hierarchy.
 
 Class Table Inheritance
 -----------------------
 
-`Class Table Inheritance <http://martinfowler.com/eaaCatalog/classTableInheritance.html>`_
+`Class Table Inheritance <https://martinfowler.com/eaaCatalog/classTableInheritance.html>`_
 is an inheritance mapping strategy where each class in a hierarchy
 is mapped to several tables: its own table and the tables of all
 parent classes. The table of a child class is linked to the table
@@ -196,7 +186,7 @@ Example:
 
     <?php
     namespace MyProject\Model;
-    
+
     /**
      * @Entity
      * @InheritanceType("JOINED")
@@ -207,7 +197,7 @@ Example:
     {
         // ...
     }
-    
+
     /** @Entity */
     class Employee extends Person
     {
@@ -215,7 +205,6 @@ Example:
     }
 
 Things to note:
-
 
 -  The @InheritanceType, @DiscriminatorColumn and @DiscriminatorMap
    must be specified on the topmost class that is part of the mapped
@@ -229,9 +218,7 @@ Things to note:
    be fully qualified if the classes are contained in the same
    namespace as the entity class on which the discriminator map is
    applied.
--  If no discriminator map is provided, then the map is generated
-   automatically. The automatically generated discriminator map 
-   contains the lowercase short name of each class as key.
+-  If no discriminator map is provided, an exception will be thrown.
 
 .. note::
 
@@ -240,7 +227,6 @@ Things to note:
     inheritance makes use of the foreign key property
     ``ON DELETE CASCADE`` in all database implementations. A failure to
     implement this yourself will lead to dead rows in the database.
-
 
 Design-time considerations
 ~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -268,9 +254,9 @@ themselves on access of any subtype fields, so accessing fields of
 subtypes after such a query is not safe.
 
 There is a general performance consideration with Class Table
-Inheritance: If the target-entity of a many-to-one or one-to-one 
-association is a CTI entity, it is preferable for performance reasons that it 
-be a leaf entity in the inheritance hierarchy, (ie. have no subclasses). 
+Inheritance: If the target-entity of a many-to-one or one-to-one
+association is a CTI entity, it is preferable for performance reasons that it
+be a leaf entity in the inheritance hierarchy, (ie. have no subclasses).
 Otherwise Doctrine *CANNOT* create proxy instances
 of this entity and will *ALWAYS* load the entity eagerly.
 
@@ -293,7 +279,6 @@ Used to override a mapping for an entity field or relationship.
 May be applied to an entity that extends a mapped superclass
 to override a relationship or field mapping defined by the mapped superclass.
 
-
 Association Override
 ~~~~~~~~~~~~~~~~~~~~
 Override a mapping for an entity relationship.
@@ -315,7 +300,7 @@ Example:
          */
         class User
         {
-            //other fields mapping
+            // other fields mapping
 
             /**
              * @ManyToMany(targetEntity="Group", inversedBy="users")
@@ -365,8 +350,7 @@ Example:
                 <many-to-many field="groups" target-entity="Group" inversed-by="users">
                     <cascade>
                         <cascade-persist/>
-                        <cascade-merge/>
-                        <cascade-detach/>
+                        <cascade-refresh/>
                     </cascade>
                     <join-table name="users_groups">
                         <join-columns>
@@ -402,51 +386,6 @@ Example:
                 </association-overrides>
             </entity>
         </doctrine-mapping>
-    .. code-block:: yaml
-
-        # user mapping
-        MyProject\Model\User:
-          type: mappedSuperclass
-          # other fields mapping
-          manyToOne:
-            address:
-              targetEntity: Address
-              joinColumn:
-                name: address_id
-                referencedColumnName: id
-              cascade: [ persist, merge ]
-          manyToMany:
-            groups:
-              targetEntity: Group
-              joinTable:
-                name: users_groups
-                joinColumns:
-                  user_id:
-                    referencedColumnName: id
-                inverseJoinColumns:
-                  group_id:
-                    referencedColumnName: id
-              cascade: [ persist, merge, detach ]
-
-        # admin mapping
-        MyProject\Model\Admin:
-          type: entity
-          associationOverride:
-            address:
-              joinColumn:
-                adminaddress_id:
-                  name: adminaddress_id
-                  referencedColumnName: id
-            groups:
-              joinTable:
-                name: users_admingroups
-                joinColumns:
-                  adminuser_id:
-                    referencedColumnName: id
-                inverseJoinColumns:
-                  admingroup_id:
-                    referencedColumnName: id
-
 
 Things to note:
 
@@ -454,7 +393,7 @@ Things to note:
 -  This feature is available for all kind of associations. (OneToOne, OneToMany, ManyToOne, ManyToMany)
 -  The association type *CANNOT* be changed.
 -  The override could redefine the joinTables or joinColumns depending on the association type.
--  The override could redefine inversedBy to reference more than one extended entity.
+-  The override could redefine ``inversedBy`` to reference more than one extended entity.
 -  The override could redefine fetch to modify the fetch strategy of the extended entity.
 
 Attribute Override
@@ -493,7 +432,7 @@ Could be used by an entity that extends a mapped superclass to override a field 
          *          column=@Column(
          *              name     = "guest_id",
          *              type     = "integer",
-                        length   = 140
+         *              length   = 140
          *          )
          *      ),
          *      @AttributeOverride(name="name",
@@ -501,7 +440,7 @@ Could be used by an entity that extends a mapped superclass to override a field 
          *              name     = "guest_name",
          *              nullable = false,
          *              unique   = true,
-                        length   = 240
+         *              length   = 240
          *          )
          *      )
          * })
@@ -522,7 +461,7 @@ Could be used by an entity that extends a mapped superclass to override a field 
                 <many-to-one field="address" target-entity="Address">
                     <cascade>
                         <cascade-persist/>
-                        <cascade-merge/>
+                        <cascade-refresh/>
                     </cascade>
                     <join-column name="address_id" referenced-column-name="id"/>
                 </many-to-one>
@@ -543,42 +482,6 @@ Could be used by an entity that extends a mapped superclass to override a field 
                 </attribute-overrides>
             </entity>
         </doctrine-mapping>
-    .. code-block:: yaml
-
-        # user mapping
-        MyProject\Model\User:
-          type: mappedSuperclass
-          id:
-            id:
-              type: integer
-              column: user_id
-              length: 150
-              generator:
-                strategy: AUTO
-          fields:
-            name:
-              type: string
-              column: user_name
-              length: 250
-              nullable: true
-              unique: false
-          #other fields mapping
-
-
-        # guest mapping
-        MyProject\Model\Guest:
-          type: entity
-          attributeOverride:
-            id:
-              column: guest_id
-              type: integer
-              length: 140
-            name:
-              column: guest_name
-              type: string
-              length: 240
-              nullable: false
-              unique: true
 
 Things to note:
 

@@ -1,7 +1,10 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\Tests\ORM\Tools\Console\Command;
 
+use Doctrine\ORM\Tools\Console\Command\InfoCommand;
 use Doctrine\ORM\Tools\Console\Command\MappingDescribeCommand;
 use Doctrine\ORM\Tools\Console\Helper\EntityManagerHelper;
 use Doctrine\Tests\Models\Cache\AttractionInfo;
@@ -17,64 +20,52 @@ use Symfony\Component\Console\Tester\CommandTester;
  */
 class MappingDescribeCommandTest extends OrmFunctionalTestCase
 {
-    /**
-     * @var \Symfony\Component\Console\Application
-     */
+    /** @var Application */
     private $application;
 
-    /**
-     * @var \Doctrine\ORM\Tools\Console\Command\InfoCommand
-     */
+    /** @var InfoCommand */
     private $command;
 
-    /**
-     * @var \Symfony\Component\Console\Tester\CommandTester
-     */
+    /** @var CommandTester */
     private $tester;
 
-    protected function setUp()
+    protected function setUp() : void
     {
         parent::setUp();
 
         $this->application = new Application();
-        $command = new MappingDescribeCommand();
-
-        $this->application->setHelperSet(new HelperSet(
-            [
-            'em' => new EntityManagerHelper($this->_em)
-            ]
-        ));
-
-        $this->application->add($command);
+        $this->application->setHelperSet(new HelperSet(['em' => new EntityManagerHelper($this->em)]));
+        $this->application->add(new MappingDescribeCommand());
 
         $this->command = $this->application->find('orm:mapping:describe');
-        $this->tester = new CommandTester($command);
+        $this->tester  = new CommandTester($this->command);
     }
 
-    public function testShowSpecificFuzzySingle()
+    public function testShowSpecificFuzzySingle() : void
     {
         $this->tester->execute(
             [
-            'command' => $this->command->getName(),
-            'entityName' => 'AttractionInfo',
+                'command'    => $this->command->getName(),
+                'entityName' => 'AttractionInfo',
             ]
         );
 
         $display = $this->tester->getDisplay();
-        $this->assertContains(AttractionInfo::class, $display);
-        $this->assertContains('Root entity name', $display);
+
+        self::assertContains(AttractionInfo::class, $display);
+        self::assertContains('Root entity name', $display);
     }
 
     /**
      * @expectedException \InvalidArgumentException
      * @expectedExceptionMessage possible matches
      */
-    public function testShowSpecificFuzzyAmbiguous()
+    public function testShowSpecificFuzzyAmbiguous() : void
     {
         $this->tester->execute(
             [
-            'command' => $this->command->getName(),
-            'entityName' => 'Attraction',
+                'command'    => $this->command->getName(),
+                'entityName' => 'Attraction',
             ]
         );
     }
@@ -83,14 +74,13 @@ class MappingDescribeCommandTest extends OrmFunctionalTestCase
      * @expectedException \InvalidArgumentException
      * @expectedExceptionMessage Could not find any mapped Entity classes matching "AttractionFooBar"
      */
-    public function testShowSpecificNotFound()
+    public function testShowSpecificNotFound() : void
     {
         $this->tester->execute(
             [
-            'command' => $this->command->getName(),
-            'entityName' => 'AttractionFooBar'
+                'command'    => $this->command->getName(),
+                'entityName' => 'AttractionFooBar',
             ]
         );
     }
 }
-

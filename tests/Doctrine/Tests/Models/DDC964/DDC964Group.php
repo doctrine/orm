@@ -1,36 +1,32 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\Tests\Models\DDC964;
 
 use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\ORM\Annotation as ORM;
 
 /**
- * @Entity
+ * @ORM\Entity
  */
 class DDC964Group
 {
-
     /**
-     * @GeneratedValue
-     * @Id @Column(type="integer")
+     * @ORM\GeneratedValue
+     * @ORM\Id @ORM\Column(type="integer")
      */
     private $id;
 
-    /**
-     * @Column
-     */
+    /** @ORM\Column */
     private $name;
 
-    /**
-     * @ArrayCollection
-     * 
-     * @ManyToMany(targetEntity="DDC964User", mappedBy="groups")
-     */
+    /** @ORM\ManyToMany(targetEntity=DDC964User::class, mappedBy="groups") */
     private $users;
 
     public function __construct($name = null)
     {
-        $this->name = $name;
+        $this->name  = $name;
         $this->users = new ArrayCollection();
     }
 
@@ -50,9 +46,6 @@ class DDC964Group
         return $this->name;
     }
 
-    /**
-     * @param DDC964User $user
-     */
     public function addUser(DDC964User $user)
     {
         $this->users[] = $user;
@@ -65,6 +58,4 @@ class DDC964Group
     {
         return $this->users;
     }
-
 }
-

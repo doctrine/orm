@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\Tests\ORM\Functional\Ticket;
 
 use Doctrine\Tests\Models;
@@ -10,24 +12,24 @@ use Doctrine\Tests\OrmFunctionalTestCase;
  */
 class DDC1041Test extends OrmFunctionalTestCase
 {
-    public function setUp()
+    public function setUp() : void
     {
         $this->useModelSet('company');
         parent::setUp();
     }
 
-    public function testGrabWrongSubtypeReturnsNull()
+    public function testGrabWrongSubtypeReturnsNull() : void
     {
         $fix = new Models\Company\CompanyFixContract();
         $fix->setFixPrice(2000);
 
-        $this->_em->persist($fix);
-        $this->_em->flush();
+        $this->em->persist($fix);
+        $this->em->flush();
 
         $id = $fix->getId();
 
-        $this->assertNull($this->_em->find(Models\Company\CompanyFlexContract::class, $id));
-        $this->assertNull($this->_em->getReference(Models\Company\CompanyFlexContract::class, $id));
-        $this->assertNull($this->_em->getPartialReference(Models\Company\CompanyFlexContract::class, $id));
+        self::assertNull($this->em->find(Models\Company\CompanyFlexContract::class, $id));
+        self::assertNull($this->em->getReference(Models\Company\CompanyFlexContract::class, $id));
+        self::assertNull($this->em->getPartialReference(Models\Company\CompanyFlexContract::class, $id));
     }
 }

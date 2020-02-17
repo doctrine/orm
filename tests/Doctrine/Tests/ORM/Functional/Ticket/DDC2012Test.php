@@ -1,17 +1,26 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\Tests\ORM\Functional\Ticket;
 
-use Doctrine\DBAL\Types\Type;
 use Doctrine\DBAL\Platforms\AbstractPlatform;
+use Doctrine\DBAL\Types\Type;
+use Doctrine\ORM\Annotation as ORM;
+use Doctrine\Tests\OrmFunctionalTestCase;
+use function explode;
+use function get_class;
+use function implode;
+use function is_array;
+use function strtolower;
 
 /**
  * @group DDC-2012
  * @group non-cacheable
  */
-class DDC2012Test extends \Doctrine\Tests\OrmFunctionalTestCase
+class DDC2012Test extends OrmFunctionalTestCase
 {
-    protected function setUp()
+    protected function setUp() : void
     {
         parent::setUp();
 
@@ -19,91 +28,87 @@ class DDC2012Test extends \Doctrine\Tests\OrmFunctionalTestCase
 
         DDC2012TsVectorType::$calls = [];
 
-        $this->_schemaTool->createSchema(
+        $this->schemaTool->createSchema(
             [
-            $this->_em->getClassMetadata(DDC2012Item::class),
-            $this->_em->getClassMetadata(DDC2012ItemPerson::class),
+                $this->em->getClassMetadata(DDC2012Item::class),
+                $this->em->getClassMetadata(DDC2012ItemPerson::class),
             ]
         );
     }
 
-    public function testIssue()
+    public function testIssue() : void
     {
-        $item       = new DDC2012ItemPerson();
-        $item->tsv  = ['word1', 'word2', 'word3'];
+        $item      = new DDC2012ItemPerson();
+        $item->tsv = ['word1', 'word2', 'word3'];
 
-        $this->_em->persist($item);
-        $this->_em->flush();
-        $this->_em->clear();
+        $this->em->persist($item);
+        $this->em->flush();
+        $this->em->clear();
 
-        $item = $this->_em->find(get_class($item), $item->id);
+        $item = $this->em->find(get_class($item), $item->id);
 
-        $this->assertArrayHasKey('convertToDatabaseValueSQL', DDC2012TsVectorType::$calls);
-        $this->assertArrayHasKey('convertToDatabaseValue', DDC2012TsVectorType::$calls);
-        $this->assertArrayHasKey('convertToPHPValue', DDC2012TsVectorType::$calls);
+        self::assertArrayHasKey('convertToDatabaseValueSQL', DDC2012TsVectorType::$calls);
+        self::assertArrayHasKey('convertToDatabaseValue', DDC2012TsVectorType::$calls);
+        self::assertArrayHasKey('convertToPHPValue', DDC2012TsVectorType::$calls);
 
-        $this->assertCount(1, DDC2012TsVectorType::$calls['convertToDatabaseValueSQL']);
-        $this->assertCount(1, DDC2012TsVectorType::$calls['convertToDatabaseValue']);
-        $this->assertCount(1, DDC2012TsVectorType::$calls['convertToPHPValue']);
+        self::assertCount(1, DDC2012TsVectorType::$calls['convertToDatabaseValueSQL']);
+        self::assertCount(1, DDC2012TsVectorType::$calls['convertToDatabaseValue']);
+        self::assertCount(1, DDC2012TsVectorType::$calls['convertToPHPValue']);
 
-        $this->assertInstanceOf(DDC2012Item::class, $item);
-        $this->assertEquals(['word1', 'word2', 'word3'], $item->tsv);
-
+        self::assertInstanceOf(DDC2012Item::class, $item);
+        self::assertEquals(['word1', 'word2', 'word3'], $item->tsv);
 
         $item->tsv = ['word1', 'word2'];
 
-        $this->_em->persist($item);
-        $this->_em->flush();
-        $this->_em->clear();
+        $this->em->persist($item);
+        $this->em->flush();
+        $this->em->clear();
 
-        $item = $this->_em->find(get_class($item), $item->id);
+        $item = $this->em->find(get_class($item), $item->id);
 
-        $this->assertCount(2, DDC2012TsVectorType::$calls['convertToDatabaseValueSQL']);
-        $this->assertCount(2, DDC2012TsVectorType::$calls['convertToDatabaseValue']);
-        $this->assertCount(2, DDC2012TsVectorType::$calls['convertToPHPValue']);
+        self::assertCount(2, DDC2012TsVectorType::$calls['convertToDatabaseValueSQL']);
+        self::assertCount(2, DDC2012TsVectorType::$calls['convertToDatabaseValue']);
+        self::assertCount(2, DDC2012TsVectorType::$calls['convertToPHPValue']);
 
-        $this->assertInstanceOf(DDC2012Item::class, $item);
-        $this->assertEquals(['word1', 'word2'], $item->tsv);
+        self::assertInstanceOf(DDC2012Item::class, $item);
+        self::assertEquals(['word1', 'word2'], $item->tsv);
     }
 }
 
 /**
- * @Table(name="ddc2010_item")
- * @Entity
- * @InheritanceType("JOINED")
- * @DiscriminatorColumn(name="type_id", type="smallint")
- * @DiscriminatorMap({
- *      1 = "DDC2012ItemPerson",
- *      2 = "DDC2012Item"
+ * @ORM\Table(name="ddc2010_item")
+ * @ORM\Entity
+ * @ORM\InheritanceType("JOINED")
+ * @ORM\DiscriminatorColumn(name="type_id", type="smallint")
+ * @ORM\DiscriminatorMap({
+ *      1 = DDC2012ItemPerson::class,
+ *      2 = DDC2012Item::class
  * })
  */
 class DDC2012Item
 {
     /**
-     * @Id
-     * @GeneratedValue
-     * @Column(type="integer")
+     * @ORM\Id
+     * @ORM\GeneratedValue
+     * @ORM\Column(type="integer")
      */
     public $id;
 
-    /**
-     * @Column(name="tsv", type="tsvector", nullable=true)
-     */
+    /** @ORM\Column(name="tsv", type="tsvector", nullable=true) */
     public $tsv;
 }
 
 /**
- * @Table(name="ddc2010_item_person")
- * @Entity
+ * @ORM\Table(name="ddc2010_item_person")
+ * @ORM\Entity
  */
 class DDC2012ItemPerson extends DDC2012Item
 {
-
 }
 
 class DDC2012TsVectorType extends Type
 {
-    const MYTYPE = 'tsvector';
+    public const MYTYPE = 'tsvector';
 
     public static $calls = [];
 
@@ -121,7 +126,7 @@ class DDC2012TsVectorType extends Type
     public function convertToDatabaseValue($value, AbstractPlatform $platform)
     {
         if (is_array($value)) {
-            $value = implode(" ", $value);
+            $value = implode(' ', $value);
         }
 
         self::$calls[__FUNCTION__][] = [
@@ -142,7 +147,7 @@ class DDC2012TsVectorType extends Type
             'platform'  => $platform,
         ];
 
-        return explode(" ", strtolower($value));
+        return explode(' ', strtolower($value));
     }
 
     /**

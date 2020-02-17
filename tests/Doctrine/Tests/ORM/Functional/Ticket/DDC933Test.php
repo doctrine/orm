@@ -1,15 +1,21 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\Tests\ORM\Functional\Ticket;
 
+use Doctrine\Common\Persistence\Mapping\MappingException;
 use Doctrine\DBAL\LockMode;
+use Doctrine\ORM\Exception\ORMException;
+use Doctrine\ORM\OptimisticLockException;
+use Doctrine\ORM\TransactionRequiredException;
 use Doctrine\Tests\Models\Company\CompanyManager;
 use Doctrine\Tests\OrmFunctionalTestCase;
 use Doctrine\Tests\TestUtil;
 
 class DDC933Test extends OrmFunctionalTestCase
 {
-    public function setUp()
+    public function setUp() : void
     {
         $this->useModelSet('company');
 
@@ -19,9 +25,9 @@ class DDC933Test extends OrmFunctionalTestCase
     /**
      * @group DDC-933
      */
-    public function testLockCTIClass()
+    public function testLockCTIClass() : void
     {
-        if ($this->_em->getConnection()->getDatabasePlatform()->getName() === 'sqlite') {
+        if ($this->em->getConnection()->getDatabasePlatform()->getName() === 'sqlite') {
             self::markTestSkipped('It should not run on in-memory databases');
         }
 
@@ -29,33 +35,28 @@ class DDC933Test extends OrmFunctionalTestCase
         $manager->setName('beberlei');
         $manager->setSalary(1234);
         $manager->setTitle('Vice President of This Test');
-        $manager->setDepartment("Foo");
+        $manager->setDepartment('Foo');
 
-        $this->_em->persist($manager);
-        $this->_em->flush();
+        $this->em->persist($manager);
+        $this->em->flush();
 
-        $this->_em->beginTransaction();
-        $this->_em->lock($manager, LockMode::PESSIMISTIC_READ);
-        $this->_em->rollback();
+        $this->em->beginTransaction();
+        $this->em->lock($manager, LockMode::PESSIMISTIC_READ);
+        $this->em->rollback();
 
         // if lock hasn't been released we'd have an exception here
         $this->assertManagerCanBeUpdatedOnAnotherConnection($manager->getId(), 'Master of This Test');
     }
 
     /**
-     * @param int    $id
-     * @param string $newName
-     *
-     * @return void
-     *
-     * @throws \Doctrine\Common\Persistence\Mapping\MappingException
-     * @throws \Doctrine\ORM\ORMException
-     * @throws \Doctrine\ORM\OptimisticLockException
-     * @throws \Doctrine\ORM\TransactionRequiredException
+     * @throws MappingException
+     * @throws ORMException
+     * @throws OptimisticLockException
+     * @throws TransactionRequiredException
      */
     private function assertManagerCanBeUpdatedOnAnotherConnection(int $id, string $newName)
     {
-        $em = $this->_getEntityManager(TestUtil::getConnection());
+        $em = $this->getEntityManager(TestUtil::getConnection());
 
         /** @var CompanyManager $manager */
         $manager = $em->find(CompanyManager::class, $id);

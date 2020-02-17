@@ -1,15 +1,20 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\Tests\Models\StockExchange;
 
+use Doctrine\ORM\Annotation as ORM;
+
 /**
- * @Entity
- * @Table(name="exchange_stocks")
+ * @ORM\Entity
+ * @ORM\Table(name="exchange_stocks")
  */
 class Stock
 {
     /**
-     * @Id @GeneratedValue @Column(type="integer")
+     * @ORM\Id @ORM\GeneratedValue @ORM\Column(type="integer")
+     *
      * @var int
      */
     private $id;
@@ -17,17 +22,16 @@ class Stock
     /**
      * For real this column would have to be unique=true. But I want to test behavior of non-unique overrides.
      *
-     * @Column(type="string")
+     * @ORM\Column(type="string")
      */
     private $symbol;
 
-    /**
-     * @Column(type="decimal")
-     */
+    /** @ORM\Column(type="decimal") */
     private $price;
 
     /**
-     * @ManyToOne(targetEntity="Market", inversedBy="stocks")
+     * @ORM\ManyToOne(targetEntity=Market::class, inversedBy="stocks")
+     *
      * @var Market
      */
     private $market;
@@ -35,7 +39,7 @@ class Stock
     public function __construct($symbol, $initialOfferingPrice, Market $market)
     {
         $this->symbol = $symbol;
-        $this->price = $initialOfferingPrice;
+        $this->price  = $initialOfferingPrice;
         $this->market = $market;
         $market->addStock($this);
     }

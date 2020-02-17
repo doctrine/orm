@@ -1,55 +1,58 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\Tests\ORM\Functional;
+
+use Doctrine\ORM\Annotation as ORM;
 use Doctrine\Tests\OrmFunctionalTestCase;
+use Exception;
 
 /**
  * Description of SequenceGeneratorTest
- *
- * @author robo
  */
 class SequenceGeneratorTest extends OrmFunctionalTestCase
 {
-    public function setUp()
+    public function setUp() : void
     {
         parent::setUp();
 
-        if ( ! $this->_em->getConnection()->getDatabasePlatform()->supportsSequences()) {
+        if (! $this->em->getConnection()->getDatabasePlatform()->supportsSequences()) {
             $this->markTestSkipped('Only working for Databases that support sequences.');
         }
 
         try {
-            $this->_schemaTool->createSchema(
+            $this->schemaTool->createSchema(
                 [
-                    $this->_em->getClassMetadata(SequenceEntity::class),
+                    $this->em->getClassMetadata(SequenceEntity::class),
                 ]
             );
-        } catch(\Exception $e) {
+        } catch (Exception $e) {
         }
     }
 
-    public function testHighAllocationSizeSequence()
+    public function testHighAllocationSizeSequence() : void
     {
         for ($i = 0; $i < 11; ++$i) {
-            $this->_em->persist(new SequenceEntity());
+            $this->em->persist(new SequenceEntity());
         }
 
-        $this->_em->flush();
+        $this->em->flush();
 
-        self::assertCount(11, $this->_em->getRepository(SequenceEntity::class)->findAll());
+        self::assertCount(11, $this->em->getRepository(SequenceEntity::class)->findAll());
     }
 }
 
 /**
- * @Entity
+ * @ORM\Entity
  */
 class SequenceEntity
 {
     /**
-     * @Id
-     * @column(type="integer")
-     * @GeneratedValue(strategy="SEQUENCE")
-     * @SequenceGenerator(allocationSize=5, sequenceName="person_id_seq")
+     * @ORM\Id
+     * @ORM\Column(type="integer")
+     * @ORM\GeneratedValue(strategy="SEQUENCE")
+     * @ORM\SequenceGenerator(allocationSize=5,sequenceName="person_id_seq")
      */
     public $id;
 }

@@ -1,51 +1,59 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\Tests\Models\Quote;
 
 use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\ORM\Annotation as ORM;
 
 /**
- * @Entity
- * @Table(name="`quote-user`")
+ * @ORM\Entity
+ * @ORM\Table(name="quote-user")
  */
 class User
 {
     /**
-     * @Id
-     * @GeneratedValue
-     * @Column(type="integer", name="`user-id`")
+     * @ORM\Id
+     * @ORM\GeneratedValue
+     * @ORM\Column(type="integer", name="user-id")
      */
     public $id;
 
-    /**
-     * @Column(type="string", name="`user-name`")
-     */
+    /** @ORM\Column(type="string", name="user-name") */
     public $name;
 
-    /**
-     * @OneToMany(targetEntity="Phone", mappedBy="user", cascade={"persist"})
-     */
+    /** @ORM\OneToMany(targetEntity=Phone::class, mappedBy="user", cascade={"persist"}) */
     public $phones;
 
     /**
-     * @JoinColumn(name="`address-id`", referencedColumnName="`address-id`")
-     * @OneToOne(targetEntity="Address", mappedBy="user", cascade={"persist"}, fetch="EAGER")
+     * @ORM\OneToOne(
+     *     targetEntity=Address::class,
+     *     mappedBy="user",
+     *     cascade={"persist"},
+     *     fetch="EAGER"
+     * )
      */
     public $address;
 
     /**
-     * @ManyToMany(targetEntity="Group", inversedBy="users", cascade={"all"}, fetch="EXTRA_LAZY")
-     * @JoinTable(name="`quote-users-groups`",
+     * @ORM\ManyToMany(
+     *     targetEntity=Group::class,
+     *     inversedBy="users",
+     *     cascade={"all"},
+     *     fetch="EXTRA_LAZY"
+     * )
+     * @ORM\JoinTable(name="quote-users-groups",
      *      joinColumns={
-     *          @JoinColumn(
-     *              name="`user-id`",
-     *              referencedColumnName="`user-id`"
+     *          @ORM\JoinColumn(
+     *              name="user-id",
+     *              referencedColumnName="user-id"
      *          )
      *      },
      *      inverseJoinColumns={
-     *          @JoinColumn(
-     *              name="`group-id`",
-     *              referencedColumnName="`group-id`"
+     *          @ORM\JoinColumn(
+     *              name="group-id",
+     *              referencedColumnName="group-id"
      *          )
      *      }
      * )
@@ -54,10 +62,9 @@ class User
 
     public function __construct()
     {
-        $this->phones = new ArrayCollection;
-        $this->groups = new ArrayCollection;
+        $this->phones = new ArrayCollection();
+        $this->groups = new ArrayCollection();
     }
-
 
     public function getPhones()
     {
@@ -74,7 +81,8 @@ class User
         return $this->groups;
     }
 
-    public function setAddress(Address $address) {
+    public function setAddress(Address $address)
+    {
         if ($this->address !== $address) {
             $this->address = $address;
             $address->setUser($this);

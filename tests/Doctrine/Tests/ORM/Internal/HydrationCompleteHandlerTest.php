@@ -1,21 +1,6 @@
 <?php
-/*
- * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
- * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
- * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
- * A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT
- * OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
- * SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
- * LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
- * DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
- * THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
- * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
- * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- *
- * This software consists of voluntary contributions made by many individuals
- * and is licensed under the MIT license. For more information, see
- * <http://www.doctrine-project.org>.
- */
+
+declare(strict_types=1);
 
 namespace Doctrine\Tests\ORM\Internal;
 
@@ -25,35 +10,31 @@ use Doctrine\ORM\Event\ListenersInvoker;
 use Doctrine\ORM\Events;
 use Doctrine\ORM\Internal\HydrationCompleteHandler;
 use Doctrine\ORM\Mapping\ClassMetadata;
-use PHPUnit\Framework\TestCase;
+use Doctrine\Tests\DoctrineTestCase;
+use PHPUnit_Framework_MockObject_MockObject;
 use stdClass;
+use function in_array;
 
 /**
  * Tests for {@see \Doctrine\ORM\Internal\HydrationCompleteHandler}
  *
  * @covers \Doctrine\ORM\Internal\HydrationCompleteHandler
  */
-class HydrationCompleteHandlerTest extends TestCase
+class HydrationCompleteHandlerTest extends DoctrineTestCase
 {
-    /**
-     * @var \Doctrine\ORM\Event\ListenersInvoker|\PHPUnit_Framework_MockObject_MockObject
-     */
+    /** @var ListenersInvoker|PHPUnit_Framework_MockObject_MockObject */
     private $listenersInvoker;
 
-    /**
-     * @var \Doctrine\ORM\EntityManagerInterface|\PHPUnit_Framework_MockObject_MockObject
-     */
+    /** @var EntityManagerInterface|PHPUnit_Framework_MockObject_MockObject */
     private $entityManager;
 
-    /**
-     * @var HydrationCompleteHandler
-     */
+    /** @var HydrationCompleteHandler */
     private $handler;
 
     /**
      * {@inheritDoc}
      */
-    protected function setUp()
+    protected function setUp() : void
     {
         $this->listenersInvoker = $this->createMock(ListenersInvoker::class);
         $this->entityManager    = $this->createMock(EntityManagerInterface::class);
@@ -61,13 +42,13 @@ class HydrationCompleteHandlerTest extends TestCase
     }
 
     /**
-     * @dataProvider invocationFlagProvider
-     *
      * @param int $listenersFlag
+     *
+     * @dataProvider invocationFlagProvider
      */
-    public function testDefersPostLoadOfEntity($listenersFlag)
+    public function testDefersPostLoadOfEntity($listenersFlag) : void
     {
-        /* @var $metadata \Doctrine\ORM\Mapping\ClassMetadata */
+        /** @var ClassMetadata $metadata */
         $metadata      = $this->createMock(ClassMetadata::class);
         $entity        = new stdClass();
         $entityManager = $this->entityManager;
@@ -89,7 +70,7 @@ class HydrationCompleteHandlerTest extends TestCase
                 $metadata,
                 Events::postLoad,
                 $entity,
-                $this->callback(function (LifecycleEventArgs $args) use ($entityManager, $entity) {
+                $this->callback(static function (LifecycleEventArgs $args) use ($entityManager, $entity) {
                     return $entity === $args->getEntity() && $entityManager === $args->getObjectManager();
                 }),
                 $listenersFlag
@@ -99,13 +80,13 @@ class HydrationCompleteHandlerTest extends TestCase
     }
 
     /**
-     * @dataProvider invocationFlagProvider
-     *
      * @param int $listenersFlag
+     *
+     * @dataProvider invocationFlagProvider
      */
-    public function testDefersPostLoadOfEntityOnlyOnce($listenersFlag)
+    public function testDefersPostLoadOfEntityOnlyOnce($listenersFlag) : void
     {
-        /* @var $metadata \Doctrine\ORM\Mapping\ClassMetadata */
+        /** @var ClassMetadata $metadata */
         $metadata = $this->createMock(ClassMetadata::class);
         $entity   = new stdClass();
 
@@ -125,19 +106,19 @@ class HydrationCompleteHandlerTest extends TestCase
     }
 
     /**
-     * @dataProvider invocationFlagProvider
-     *
      * @param int $listenersFlag
+     *
+     * @dataProvider invocationFlagProvider
      */
-    public function testDefersMultiplePostLoadOfEntity($listenersFlag)
+    public function testDefersMultiplePostLoadOfEntity($listenersFlag) : void
     {
-        /* @var $metadata1 \Doctrine\ORM\Mapping\ClassMetadata */
-        /* @var $metadata2 \Doctrine\ORM\Mapping\ClassMetadata */
-        $metadata1      = $this->createMock(ClassMetadata::class);
-        $metadata2      = $this->createMock(ClassMetadata::class);
-        $entity1        = new stdClass();
-        $entity2        = new stdClass();
-        $entityManager  = $this->entityManager;
+        /** @var $metadata1 \Doctrine\ORM\Mapping\ClassMetadata */
+        /** @var ClassMetadata $metadata2 */
+        $metadata1     = $this->createMock(ClassMetadata::class);
+        $metadata2     = $this->createMock(ClassMetadata::class);
+        $entity1       = new stdClass();
+        $entity2       = new stdClass();
+        $entityManager = $this->entityManager;
 
         $this
             ->listenersInvoker
@@ -157,7 +138,7 @@ class HydrationCompleteHandlerTest extends TestCase
                 $this->logicalOr($metadata1, $metadata2),
                 Events::postLoad,
                 $this->logicalOr($entity1, $entity2),
-                $this->callback(function (LifecycleEventArgs $args) use ($entityManager, $entity1, $entity2) {
+                $this->callback(static function (LifecycleEventArgs $args) use ($entityManager, $entity1, $entity2) {
                     return in_array($args->getEntity(), [$entity1, $entity2], true)
                         && $entityManager === $args->getObjectManager();
                 }),
@@ -167,9 +148,9 @@ class HydrationCompleteHandlerTest extends TestCase
         $this->handler->hydrationComplete();
     }
 
-    public function testSkipsDeferredPostLoadOfMetadataWithNoInvokedListeners()
+    public function testSkipsDeferredPostLoadOfMetadataWithNoInvokedListeners() : void
     {
-        /* @var $metadata \Doctrine\ORM\Mapping\ClassMetadata */
+        /** @var ClassMetadata $metadata */
         $metadata = $this->createMock(ClassMetadata::class);
         $entity   = new stdClass();
 

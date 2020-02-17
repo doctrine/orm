@@ -16,7 +16,6 @@ By adding SQL to the conditional clauses of queries, the filter system filters
 out rows belonging to the entities at the level of the SQL result set. This
 means that the filtered entities are never hydrated (which can be expensive).
 
-
 Example filter class
 --------------------
 Throughout this document the example ``MyLocaleFilter`` class will be used to
@@ -47,14 +46,13 @@ proper quoting of parameters.
         public function addFilterConstraint(ClassMetadata $targetEntity, $targetTableAlias)
         {
             // Check if the entity implements the LocalAware interface
-            if (!$targetEntity->reflClass->implementsInterface('LocaleAware')) {
+            if (!$targetEntity->getReflectionClass()->implementsInterface('LocaleAware')) {
                 return "";
             }
 
             return $targetTableAlias.'.locale = ' . $this->getParameter('locale'); // getParameter applies quoting automatically
         }
     }
-
 
 Configuration
 -------------
@@ -65,10 +63,8 @@ Filter classes are added to the configuration as following:
     <?php
     $config->addFilter("locale", "\Doctrine\Tests\ORM\Functional\MyLocaleFilter");
 
-
 The ``Configuration#addFilter()`` method takes a name for the filter and the name of the
 class responsible for the actual filtering.
-
 
 Disabling/Enabling Filters and Setting Parameters
 ---------------------------------------------------

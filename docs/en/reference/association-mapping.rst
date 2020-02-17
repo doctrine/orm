@@ -22,9 +22,9 @@ One tip for working with relations is to read the relation from left to right, w
 - ManyToOne - Many instances of the current Entity refer to One instance of the refered Entity.
 - OneToOne - One instance of the current Entity refers to One instance of the refered Entity.
 
-See below for all the possible relations. 
+See below for all the possible relations.
 
-An association is considered to be unidirectional if only one side of the association has 
+An association is considered to be unidirectional if only one side of the association has
 a property referring to the other side.
 
 To gain a full understanding of associations you should also read about :doc:`owning and
@@ -33,7 +33,7 @@ inverse sides of associations <unitofwork-associations>`
 Many-To-One, Unidirectional
 ---------------------------
 
-A many-to-one association is the most common association between objects.
+A many-to-one association is the most common association between objects. Example: Many Users have One Address:
 
 .. configuration-block::
 
@@ -46,7 +46,6 @@ A many-to-one association is the most common association between objects.
             // ...
 
             /**
-             * Many Users have One Address.
              * @ManyToOne(targetEntity="Address")
              * @JoinColumn(name="address_id", referencedColumnName="id")
              */
@@ -68,18 +67,6 @@ A many-to-one association is the most common association between objects.
                 </many-to-one>
             </entity>
         </doctrine-mapping>
-
-    .. code-block:: yaml
-
-        User:
-          type: entity
-          manyToOne:
-            address:
-              targetEntity: Address
-              joinColumn:
-                name: address_id
-                referencedColumnName: id
-
 
 .. note::
 
@@ -146,17 +133,6 @@ references one ``Shipment`` entity.
             </entity>
         </doctrine-mapping>
 
-    .. code-block:: yaml
-
-        Product:
-          type: entity
-          oneToOne:
-            shipment:
-              targetEntity: Shipment
-              joinColumn:
-                name: shipment_id
-                referencedColumnName: id
-
 Note that the @JoinColumn is not really necessary in this example,
 as the defaults would be the same.
 
@@ -183,7 +159,7 @@ Here is a one-to-one relationship between a ``Customer`` and a
 ``Cart``. The ``Cart`` has a reference back to the ``Customer`` so
 it is bidirectional.
 
-Here we see the ``mappedBy`` and ``inversedBy`` annotations for the first time.
+Here we see the ``mappedBy`` and ``inversedBy`` attributes for the first time.
 They are used to tell Doctrine which property on the other side refers to the
 object.
 
@@ -234,22 +210,6 @@ object.
             </entity>
         </doctrine-mapping>
 
-    .. code-block:: yaml
-
-        Customer:
-          oneToOne:
-            cart:
-              targetEntity: Cart
-              mappedBy: customer
-        Cart:
-          oneToOne:
-            customer:
-              targetEntity: Customer
-              inversedBy: cart
-              joinColumn:
-                name: customer_id
-                referencedColumnName: id
-
 Note that the @JoinColumn is not really necessary in this example,
 as the defaults would be the same.
 
@@ -260,6 +220,7 @@ Generated MySQL Schema:
     CREATE TABLE Cart (
         id INT AUTO_INCREMENT NOT NULL,
         customer_id INT DEFAULT NULL,
+        UNIQUE INDEX UNIQ_BA388B79395C3F3 (customer_id),
         PRIMARY KEY(id)
     ) ENGINE = InnoDB;
     CREATE TABLE Customer (
@@ -314,8 +275,8 @@ One-To-Many, Bidirectional
 --------------------------
 
 A one-to-many association has to be bidirectional, unless you are using a
-join table. This is because the many side in a one-to-many association holds
-the foreign key, making it the owning side. Doctrine needs the many side
+join table. This is because the "many" side in a one-to-many association holds
+the foreign key, making it the owning side. Doctrine needs the "many" side
 defined in order to understand the association.
 
 This bidirectional mapping requires the ``mappedBy`` attribute on the
@@ -336,7 +297,7 @@ bidirectional many-to-one.
         {
             // ...
             /**
-             * One Product has Many Features.
+             * One product has many features. This is the inverse side.
              * @OneToMany(targetEntity="Feature", mappedBy="product")
              */
             private $features;
@@ -352,7 +313,7 @@ bidirectional many-to-one.
         {
             // ...
             /**
-             * Many Features have One Product.
+             * Many features have one product. This is the owning side.
              * @ManyToOne(targetEntity="Product", inversedBy="features")
              * @JoinColumn(name="product_id", referencedColumnName="id")
              */
@@ -372,24 +333,6 @@ bidirectional many-to-one.
                 </many-to-one>
             </entity>
         </doctrine-mapping>
-
-    .. code-block:: yaml
-
-        Product:
-          type: entity
-          oneToMany:
-            features:
-              targetEntity: Feature
-              mappedBy: product
-        Feature:
-          type: entity
-          manyToOne:
-            product:
-              targetEntity: Product
-              inversedBy: features
-              joinColumn:
-                name: product_id
-                referencedColumnName: id
 
 Note that the @JoinColumn is not really necessary in this example,
 as the defaults would be the same.
@@ -470,24 +413,6 @@ The following example sets up such a unidirectional one-to-many association:
             </entity>
         </doctrine-mapping>
 
-    .. code-block:: yaml
-
-        User:
-          type: entity
-          manyToMany:
-            phonenumbers:
-              targetEntity: Phonenumber
-              joinTable:
-                name: users_phonenumbers
-                joinColumns:
-                  user_id:
-                    referencedColumnName: id
-                inverseJoinColumns:
-                  phonenumber_id:
-                    referencedColumnName: id
-                    unique: true
-
-
 Generates the following MySQL Schema:
 
 .. code-block:: sql
@@ -557,19 +482,6 @@ database perspective is known as an adjacency list approach.
                 <many-to-one field="parent" target-entity="Category" inversed-by="children" />
             </entity>
         </doctrine-mapping>
-
-    .. code-block:: yaml
-
-        Category:
-          type: entity
-          oneToMany:
-            children:
-              targetEntity: Category
-              mappedBy: parent
-          manyToOne:
-            parent:
-              targetEntity: Category
-              inversedBy: children
 
 Note that the @JoinColumn is not really necessary in this example,
 as the defaults would be the same.
@@ -641,22 +553,6 @@ entities:
                 </many-to-many>
             </entity>
         </doctrine-mapping>
-
-    .. code-block:: yaml
-
-        User:
-          type: entity
-          manyToMany:
-            groups:
-              targetEntity: Group
-              joinTable:
-                name: users_groups
-                joinColumns:
-                  user_id:
-                    referencedColumnName: id
-                inverseJoinColumns:
-                  group_id:
-                    referencedColumnName: id
 
 Generated MySQL Schema:
 
@@ -755,30 +651,6 @@ one is bidirectional.
             </entity>
         </doctrine-mapping>
 
-    .. code-block:: yaml
-
-        User:
-          type: entity
-          manyToMany:
-            groups:
-              targetEntity: Group
-              inversedBy: users
-              joinTable:
-                name: users_groups
-                joinColumns:
-                  user_id:
-                    referencedColumnName: id
-                inverseJoinColumns:
-                  group_id:
-                    referencedColumnName: id
-
-        Group:
-          type: entity
-          manyToMany:
-            users:
-              targetEntity: User
-              mappedBy: groups
-
 The MySQL schema is exactly the same as for the Many-To-Many
 uni-directional case above.
 
@@ -796,7 +668,7 @@ Take an example of two entities ``Article`` and ``Tag``. Whenever
 you want to connect an Article to a Tag and vice-versa, it is
 mostly the Article that is responsible for this relation. Whenever
 you add a new article, you want to connect it with existing or new
-tags. Your create Article form will probably support this notion
+tags. Your "Create Article" form will probably support this notion
 and allow specifying the tags directly. This is why you should pick
 the Article as owning side, as it makes the code more
 understandable:
@@ -924,14 +796,6 @@ As an example, consider this mapping:
             </entity>
         </doctrine-mapping>
 
-    .. code-block:: yaml
-
-        Product:
-          type: entity
-          oneToOne:
-            shipment:
-              targetEntity: Shipment
-
 This is essentially the same as the following, more verbose,
 mapping:
 
@@ -957,17 +821,6 @@ mapping:
             </entity>
         </doctrine-mapping>
 
-    .. code-block:: yaml
-
-        Product:
-          type: entity
-          oneToOne:
-            shipment:
-              targetEntity: Shipment
-              joinColumn:
-                name: shipment_id
-                referencedColumnName: id
-
 The @JoinTable definition used for many-to-many mappings has
 similar defaults. As an example, consider this mapping:
 
@@ -978,10 +831,10 @@ similar defaults. As an example, consider this mapping:
         <?php
         class User
         {
-            //...
+            // ...
             /** @ManyToMany(targetEntity="Group") */
             private $groups;
-            //...
+            // ...
         }
 
     .. code-block:: xml
@@ -992,14 +845,6 @@ similar defaults. As an example, consider this mapping:
             </entity>
         </doctrine-mapping>
 
-    .. code-block:: yaml
-
-        User:
-          type: entity
-          manyToMany:
-            groups:
-              targetEntity: Group
-
 This is essentially the same as the following, more verbose, mapping:
 
 .. configuration-block::
@@ -1009,7 +854,7 @@ This is essentially the same as the following, more verbose, mapping:
         <?php
         class User
         {
-            //...
+            // ...
             /**
              * Many Users have Many Groups.
              * @ManyToMany(targetEntity="Group")
@@ -1019,7 +864,7 @@ This is essentially the same as the following, more verbose, mapping:
              *      )
              */
             private $groups;
-            //...
+            // ...
         }
 
     .. code-block:: xml
@@ -1038,22 +883,6 @@ This is essentially the same as the following, more verbose, mapping:
                 </many-to-many>
             </entity>
         </doctrine-mapping>
-
-    .. code-block:: yaml
-
-        User:
-          type: entity
-          manyToMany:
-            groups:
-              targetEntity: Group
-              joinTable:
-                name: User_Group
-                joinColumns:
-                  User_id:
-                    referencedColumnName: id
-                inverseJoinColumns:
-                  Group_id:
-                    referencedColumnName: id
 
 In that case, the name of the join table defaults to a combination
 of the simple, unqualified class names of the participating

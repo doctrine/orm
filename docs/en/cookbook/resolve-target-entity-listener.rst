@@ -68,7 +68,7 @@ An Invoice entity
 
     namespace Acme\InvoiceModule\Entity;
 
-    use Doctrine\ORM\Mapping AS ORM;
+    use Doctrine\ORM\Mapping as ORM;
     use Acme\InvoiceModule\Model\InvoiceSubjectInterface;
 
     /**
@@ -138,5 +138,4 @@ With the ``ResolveTargetEntityListener``, we are able to decouple our
 bundles, keeping them usable by themselves, but still being able to
 define relationships between different objects. By using this method,
 I've found my bundles end up being easier to maintain independently.
-
 

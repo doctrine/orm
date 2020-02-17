@@ -1,7 +1,10 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\Performance\Hydration;
 
+use Doctrine\DBAL\Types\Type;
 use Doctrine\ORM\Internal\Hydration\ObjectHydrator;
 use Doctrine\ORM\Query;
 use Doctrine\ORM\Query\ResultSetMapping;
@@ -16,22 +19,16 @@ use PhpBench\Benchmark\Metadata\Annotations\BeforeMethods;
  */
 final class MixedQueryFetchJoinPartialObjectHydrationPerformanceBench
 {
-    /**
-     * @var ObjectHydrator
-     */
+    /** @var ObjectHydrator */
     private $hydrator;
 
-    /**
-     * @var ResultSetMapping
-     */
+    /** @var ResultSetMapping */
     private $rsm;
 
-    /**
-     * @var HydratorMockStatement
-     */
+    /** @var HydratorMockStatement */
     private $stmt;
 
-    public function init()
+    public function init() : void
     {
         $resultSet = [
             [
@@ -56,8 +53,8 @@ final class MixedQueryFetchJoinPartialObjectHydrationPerformanceBench
                 'u__username'    => 'romanb',
                 'u__name'        => 'Roman',
                 'sclr0'          => 'JWAGE',
-                'p__phonenumber' => '91'
-            ]
+                'p__phonenumber' => '91',
+            ],
         ];
 
         for ($i = 4; $i < 2000; ++$i) {
@@ -67,13 +64,13 @@ final class MixedQueryFetchJoinPartialObjectHydrationPerformanceBench
                 'u__username'    => 'jwage',
                 'u__name'        => 'Jonathan',
                 'sclr0'          => 'JWAGE' . $i,
-                'p__phonenumber' => '91'
+                'p__phonenumber' => '91',
             ];
         }
 
         $this->stmt     = new HydratorMockStatement($resultSet);
         $this->hydrator = new ObjectHydrator(EntityManagerFactory::getEntityManager([]));
-        $this->rsm      = new ResultSetMapping;
+        $this->rsm      = new ResultSetMapping();
 
         $this->rsm->addEntityResult(CmsUser::class, 'u');
         $this->rsm->addJoinedEntityResult(CmsPhonenumber::class, 'p', 'u', 'phonenumbers');
@@ -81,13 +78,12 @@ final class MixedQueryFetchJoinPartialObjectHydrationPerformanceBench
         $this->rsm->addFieldResult('u', 'u__status', 'status');
         $this->rsm->addFieldResult('u', 'u__username', 'username');
         $this->rsm->addFieldResult('u', 'u__name', 'name');
-        $this->rsm->addScalarResult('sclr0', 'nameUpper');
+        $this->rsm->addScalarResult('sclr0', 'nameUpper', Type::getType('string'));
         $this->rsm->addFieldResult('p', 'p__phonenumber', 'phonenumber');
     }
 
-    public function benchHydration()
+    public function benchHydration() : void
     {
         $this->hydrator->hydrateAll($this->stmt, $this->rsm, [Query::HINT_FORCE_PARTIAL_LOAD => true]);
     }
 }
-

@@ -1,8 +1,9 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\Tests\ORM\Functional\ValueConversionType;
 
-use Doctrine\Tests\Models;
 use Doctrine\Tests\Models\ValueConversionType as Entity;
 use Doctrine\Tests\OrmFunctionalTestCase;
 
@@ -16,138 +17,90 @@ use Doctrine\Tests\OrmFunctionalTestCase;
  */
 class ManyToManyTest extends OrmFunctionalTestCase
 {
-    public function setUp()
+    public function setUp() : void
     {
         $this->useModelSet('vct_manytomany');
 
         parent::setUp();
 
-        $inversed = new Entity\InversedManyToManyEntity();
+        $inversed      = new Entity\InversedManyToManyEntity();
         $inversed->id1 = 'abc';
 
-        $owning = new Entity\OwningManyToManyEntity();
+        $owning      = new Entity\OwningManyToManyEntity();
         $owning->id2 = 'def';
 
         $inversed->associatedEntities->add($owning);
         $owning->associatedEntities->add($inversed);
 
-        $this->_em->persist($inversed);
-        $this->_em->persist($owning);
+        $this->em->persist($inversed);
+        $this->em->persist($owning);
 
-        $this->_em->flush();
-        $this->_em->clear();
+        $this->em->flush();
+        $this->em->clear();
     }
 
-    public static function tearDownAfterClass()
+    public function testThatTheValueOfIdentifiersAreConvertedInTheDatabase() : void
     {
-        $conn = static::$_sharedConn;
+        $conn = $this->em->getConnection();
 
-        $conn->executeUpdate('DROP TABLE vct_xref_manytomany');
-        $conn->executeUpdate('DROP TABLE vct_owning_manytomany');
-        $conn->executeUpdate('DROP TABLE vct_inversed_manytomany');
+        self::assertEquals('nop', $conn->fetchColumn('SELECT id1 FROM vct_inversed_manytomany LIMIT 1'));
+
+        self::assertEquals('qrs', $conn->fetchColumn('SELECT id2 FROM vct_owning_manytomany LIMIT 1'));
+
+        self::assertEquals('nop', $conn->fetchColumn('SELECT inversed_id FROM vct_xref_manytomany LIMIT 1'));
+        self::assertEquals('qrs', $conn->fetchColumn('SELECT owning_id FROM vct_xref_manytomany LIMIT 1'));
     }
 
-    public function testThatTheValueOfIdentifiersAreConvertedInTheDatabase()
+    public function testThatEntitiesAreFetchedFromTheDatabase() : void
     {
-        $conn = $this->_em->getConnection();
+        $inversed = $this->em->find(Entity\InversedManyToManyEntity::class, 'abc');
+        $owning   = $this->em->find(Entity\OwningManyToManyEntity::class, 'def');
 
-        $this->assertEquals('nop', $conn->fetchColumn('SELECT id1 FROM vct_inversed_manytomany LIMIT 1'));
-
-        $this->assertEquals('qrs', $conn->fetchColumn('SELECT id2 FROM vct_owning_manytomany LIMIT 1'));
-
-        $this->assertEquals('nop', $conn->fetchColumn('SELECT inversed_id FROM vct_xref_manytomany LIMIT 1'));
-        $this->assertEquals('qrs', $conn->fetchColumn('SELECT owning_id FROM vct_xref_manytomany LIMIT 1'));
+        self::assertInstanceOf(Entity\InversedManyToManyEntity::class, $inversed);
+        self::assertInstanceOf(Entity\OwningManyToManyEntity::class, $owning);
     }
 
-    /**
-     * @depends testThatTheValueOfIdentifiersAreConvertedInTheDatabase
-     */
-    public function testThatEntitiesAreFetchedFromTheDatabase()
+    public function testThatTheValueOfIdentifiersAreConvertedBackAfterBeingFetchedFromTheDatabase() : void
     {
-        $inversed = $this->_em->find(
-            Models\ValueConversionType\InversedManyToManyEntity::class,
-            'abc'
-        );
+        $inversed = $this->em->find(Entity\InversedManyToManyEntity::class, 'abc');
+        $owning   = $this->em->find(Entity\OwningManyToManyEntity::class, 'def');
 
-        $owning = $this->_em->find(
-            Models\ValueConversionType\OwningManyToManyEntity::class,
-            'def'
-        );
-
-        $this->assertInstanceOf(Models\ValueConversionType\InversedManyToManyEntity::class, $inversed);
-        $this->assertInstanceOf(Models\ValueConversionType\OwningManyToManyEntity::class, $owning);
+        self::assertEquals('abc', $inversed->id1);
+        self::assertEquals('def', $owning->id2);
     }
 
-    /**
-     * @depends testThatEntitiesAreFetchedFromTheDatabase
-     */
-    public function testThatTheValueOfIdentifiersAreConvertedBackAfterBeingFetchedFromTheDatabase()
+    public function testThatTheCollectionFromOwningToInversedIsLoaded() : void
     {
-        $inversed = $this->_em->find(
-            Models\ValueConversionType\InversedManyToManyEntity::class,
-            'abc'
-        );
+        $owning = $this->em->find(Entity\OwningManyToManyEntity::class, 'def');
 
-        $owning = $this->_em->find(
-            Models\ValueConversionType\OwningManyToManyEntity::class,
-            'def'
-        );
-
-        $this->assertEquals('abc', $inversed->id1);
-        $this->assertEquals('def', $owning->id2);
+        self::assertCount(1, $owning->associatedEntities);
     }
 
-    /**
-     * @depends testThatEntitiesAreFetchedFromTheDatabase
-     */
-    public function testThatTheCollectionFromOwningToInversedIsLoaded()
+    public function testThatTheCollectionFromInversedToOwningIsLoaded() : void
     {
-        $owning = $this->_em->find(
-            Models\ValueConversionType\OwningManyToManyEntity::class,
-            'def'
-        );
+        $inversed = $this->em->find(Entity\InversedManyToManyEntity::class, 'abc');
 
-        $this->assertCount(1, $owning->associatedEntities);
+        self::assertCount(1, $inversed->associatedEntities);
     }
 
-    /**
-     * @depends testThatEntitiesAreFetchedFromTheDatabase
-     */
-    public function testThatTheCollectionFromInversedToOwningIsLoaded()
+    public function testThatTheJoinTableRowsAreRemovedWhenRemovingTheAssociation() : void
     {
-        $inversed = $this->_em->find(
-            Models\ValueConversionType\InversedManyToManyEntity::class,
-            'abc'
-        );
-
-        $this->assertCount(1, $inversed->associatedEntities);
-    }
-
-    /**
-     * @depends testThatTheCollectionFromOwningToInversedIsLoaded
-     * @depends testThatTheCollectionFromInversedToOwningIsLoaded
-     */
-    public function testThatTheJoinTableRowsAreRemovedWhenRemovingTheAssociation()
-    {
-        $conn = $this->_em->getConnection();
+        $conn = $this->em->getConnection();
 
         // remove association
 
-        $inversed = $this->_em->find(
-            Models\ValueConversionType\InversedManyToManyEntity::class,
-            'abc'
-        );
+        $inversed = $this->em->find(Entity\InversedManyToManyEntity::class, 'abc');
 
         foreach ($inversed->associatedEntities as $owning) {
             $inversed->associatedEntities->removeElement($owning);
             $owning->associatedEntities->removeElement($inversed);
         }
 
-        $this->_em->flush();
-        $this->_em->clear();
+        $this->em->flush();
+        $this->em->clear();
 
         // test association is removed
 
-        $this->assertEquals(0, $conn->fetchColumn('SELECT COUNT(*) FROM vct_xref_manytomany'));
+        self::assertEquals(0, $conn->fetchColumn('SELECT COUNT(*) FROM vct_xref_manytomany'));
     }
 }

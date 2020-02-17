@@ -36,13 +36,15 @@ will still end up with the same reference:
 
     public function testIdentityMapReference()
     {
-        $objectA = $this->entityManager->getReference('EntityName', 1);
-        // check for proxyinterface
-        $this->assertInstanceOf('Doctrine\ORM\Proxy\Proxy', $objectA);
+        /** @var EntityName|\ProxyManager\Proxy\GhostObjectInterface $objectA */
+        $objectA = $this->entityManager->getReference(EntityName::class, 1);
 
-        $objectB = $this->entityManager->find('EntityName', 1);
+        self::assertInstanceOf(\ProxyManager\Proxy\GhostObjectInterface::class, $objectA);
+        self::assertFalse($objectA->isProxyInitialized());
 
-        $this->assertSame($objectA, $objectB)
+        $objectB = $this->entityManager->find(EntityName::class, 1);
+
+        self::assertSame($objectA, $objectB)
     }
 
 The identity map being indexed by primary keys only allows shortcuts when you
@@ -104,7 +106,7 @@ How Doctrine Detects Changes
 Doctrine is a data-mapper that tries to achieve persistence-ignorance (PI).
 This means you map php objects into a relational database that don't
 necessarily know about the database at all. A natural question would now be,
-"how does Doctrine even detect objects have changed?". 
+"how does Doctrine even detect objects have changed?".
 
 For this Doctrine keeps a second map inside the UnitOfWork. Whenever you fetch
 an object from the database Doctrine will keep a copy of all the properties and
@@ -129,11 +131,9 @@ optimize the performance of the Flush Operation:
 - Temporarily mark entities as read only. If you have a very large UnitOfWork
   but know that a large set of entities has not changed, just mark them as read
   only with ``$entityManager->getUnitOfWork()->markReadOnly($entity)``.
-- Flush only a single entity with ``$entityManager->flush($entity)``.
 - Use :doc:`Change Tracking Policies <change-tracking-policies>` to use more
   explicit strategies of notifying the UnitOfWork what objects/properties
   changed.
-
 
 Query Internals
 ---------------
@@ -198,4 +198,3 @@ ClassMetadataFactory
 ~~~~~~~~~~~~~~~~~~~~
 
 tbr
-

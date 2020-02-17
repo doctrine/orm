@@ -1,63 +1,47 @@
 <?php
 
-/*
- * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
- * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
- * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
- * A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT
- * OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
- * SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
- * LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
- * DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
- * THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
- * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
- * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- *
- * This software consists of voluntary contributions made by many individuals
- * and is licensed under the MIT license. For more information, see
- * <http://www.doctrine-project.org>.
- */
+declare(strict_types=1);
 
 namespace Doctrine\ORM;
 
+use Doctrine\ORM\Cache\QueryCache;
+use Doctrine\ORM\Cache\Region;
+
 /**
  * Provides an API for querying/managing the second level cache regions.
- *
- * @since   2.5
- * @author  Fabio B. Silva <fabio.bat.silva@gmail.com>
  */
 interface Cache
 {
-    const DEFAULT_QUERY_REGION_NAME = 'query_cache_region';
+    public const DEFAULT_QUERY_REGION_NAME = 'query_cache_region';
 
-    const DEFAULT_TIMESTAMP_REGION_NAME = 'timestamp_cache_region';
+    public const DEFAULT_TIMESTAMP_REGION_NAME = 'timestamp_cache_region';
 
     /**
      * May read items from the cache, but will not add items.
      */
-    const MODE_GET = 1;
+    public const MODE_GET = 1;
 
     /**
      * Will never read items from the cache,
      * but will add items to the cache as it reads them from the database.
      */
-    const MODE_PUT = 2;
+    public const MODE_PUT = 2;
 
     /**
      * May read items from the cache, and add items to the cache.
      */
-    const MODE_NORMAL = 3;
+    public const MODE_NORMAL = 3;
 
     /**
      * The query will never read items from the cache,
      * but will refresh items to the cache as it reads them from the database.
      */
-    const MODE_REFRESH = 4;
+    public const MODE_REFRESH = 4;
 
     /**
      * @param string $className The entity class.
      *
-     * @return \Doctrine\ORM\Cache\Region|null
+     * @return Region|null
      */
     public function getEntityCacheRegion($className);
 
@@ -65,7 +49,7 @@ interface Cache
      * @param string $className   The entity class.
      * @param string $association The field name that represents the association.
      *
-     * @return \Doctrine\ORM\Cache\Region|null
+     * @return Region|null
      */
     public function getCollectionCacheRegion($className, $association);
 
@@ -75,7 +59,7 @@ interface Cache
      * @param string $className  The entity class.
      * @param mixed  $identifier The entity identifier
      *
-     * @return boolean true if the underlying cache contains corresponding data; false otherwise.
+     * @return bool true if the underlying cache contains corresponding data; false otherwise.
      */
     public function containsEntity($className, $identifier);
 
@@ -112,7 +96,7 @@ interface Cache
      * @param string $association     The field name that represents the association.
      * @param mixed  $ownerIdentifier The identifier of the owning entity.
      *
-     * @return boolean true if the underlying cache contains corresponding data; false otherwise.
+     * @return bool true if the underlying cache contains corresponding data; false otherwise.
      */
     public function containsCollection($className, $association, $ownerIdentifier);
 
@@ -149,7 +133,7 @@ interface Cache
      *
      * @param string $regionName The cache name given to the query.
      *
-     * @return boolean true if the underlying cache contains corresponding data; false otherwise.
+     * @return bool true if the underlying cache contains corresponding data; false otherwise.
      */
     public function containsQuery($regionName);
 
@@ -172,7 +156,7 @@ interface Cache
      *
      * @param string|null $regionName Query cache region name, or default query cache if the region name is NULL.
      *
-     * @return \Doctrine\ORM\Cache\QueryCache The Query Cache associated with the region name.
+     * @return QueryCache The Query Cache associated with the region name.
      */
     public function getQueryCache($regionName = null);
 }

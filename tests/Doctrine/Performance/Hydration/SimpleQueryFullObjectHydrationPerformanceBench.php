@@ -1,9 +1,10 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\Performance\Hydration;
 
 use Doctrine\ORM\Internal\Hydration\ObjectHydrator;
-use Doctrine\ORM\Query;
 use Doctrine\ORM\Query\ResultSetMapping;
 use Doctrine\Performance\EntityManagerFactory;
 use Doctrine\Tests\Mocks\HydratorMockStatement;
@@ -16,22 +17,16 @@ use PhpBench\Benchmark\Metadata\Annotations\BeforeMethods;
  */
 final class SimpleQueryFullObjectHydrationPerformanceBench
 {
-    /**
-     * @var ObjectHydrator
-     */
+    /** @var ObjectHydrator */
     private $hydrator;
 
-    /**
-     * @var ResultSetMapping
-     */
+    /** @var ResultSetMapping */
     private $rsm;
 
-    /**
-     * @var HydratorMockStatement
-     */
+    /** @var HydratorMockStatement */
     private $stmt;
 
-    public function init()
+    public function init() : void
     {
         $resultSet = [
             [
@@ -39,8 +34,8 @@ final class SimpleQueryFullObjectHydrationPerformanceBench
                 'u__status'   => 'developer',
                 'u__username' => 'romanb',
                 'u__name'     => 'Roman',
-                'a__id'       => '1'
-            ]
+                'a__id'       => '1',
+            ],
         ];
 
         for ($i = 2; $i < 10000; ++$i) {
@@ -49,13 +44,13 @@ final class SimpleQueryFullObjectHydrationPerformanceBench
                 'u__status'   => 'developer',
                 'u__username' => 'jwage',
                 'u__name'     => 'Jonathan',
-                'a__id'       => $i
+                'a__id'       => $i,
             ];
         }
 
         $this->stmt     = new HydratorMockStatement($resultSet);
         $this->hydrator = new ObjectHydrator(EntityManagerFactory::getEntityManager([]));
-        $this->rsm      = new ResultSetMapping;
+        $this->rsm      = new ResultSetMapping();
 
         $this->rsm->addEntityResult(CmsUser::class, 'u');
         $this->rsm->addFieldResult('u', 'u__id', 'id');
@@ -66,9 +61,8 @@ final class SimpleQueryFullObjectHydrationPerformanceBench
         $this->rsm->addFieldResult('a', 'a__id', 'id');
     }
 
-    public function benchHydration()
+    public function benchHydration() : void
     {
         $this->hydrator->hydrateAll($this->stmt, $this->rsm);
     }
 }
-

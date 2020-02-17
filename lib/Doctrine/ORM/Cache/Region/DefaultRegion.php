@@ -1,68 +1,46 @@
 <?php
 
-/*
- * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
- * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
- * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
- * A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT
- * OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
- * SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
- * LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
- * DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
- * THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
- * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
- * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- *
- * This software consists of voluntary contributions made by many individuals
- * and is licensed under the MIT license. For more information, see
- * <http://www.doctrine-project.org>.
- */
+declare(strict_types=1);
 
 namespace Doctrine\ORM\Cache\Region;
 
+use BadMethodCallException;
 use Doctrine\Common\Cache\Cache as CacheAdapter;
+use Doctrine\Common\Cache\CacheProvider;
 use Doctrine\Common\Cache\ClearableCache;
 use Doctrine\ORM\Cache\CacheEntry;
 use Doctrine\ORM\Cache\CacheKey;
 use Doctrine\ORM\Cache\CollectionCacheEntry;
 use Doctrine\ORM\Cache\Lock;
 use Doctrine\ORM\Cache\Region;
+use function get_class;
+use function sprintf;
 
 /**
  * The simplest cache region compatible with all doctrine-cache drivers.
- *
- * @since   2.5
- * @author  Fabio B. Silva <fabio.bat.silva@gmail.com>
  */
 class DefaultRegion implements Region
 {
-    const REGION_KEY_SEPARATOR = '_';
+    public const REGION_KEY_SEPARATOR = '_';
 
-    /**
-     * @var CacheAdapter
-     */
+    /** @var CacheAdapter */
     protected $cache;
 
-    /**
-     * @var string
-     */
+    /** @var string */
     protected $name;
 
-    /**
-     * @var integer
-     */
+    /** @var int */
     protected $lifetime = 0;
 
     /**
-     * @param string       $name
-     * @param CacheAdapter $cache
-     * @param integer      $lifetime
+     * @param string $name
+     * @param int    $lifetime
      */
     public function __construct($name, CacheAdapter $cache, $lifetime = 0)
     {
         $this->cache    = $cache;
         $this->name     = (string) $name;
-        $this->lifetime = (integer) $lifetime;
+        $this->lifetime = (int) $lifetime;
     }
 
     /**
@@ -74,7 +52,7 @@ class DefaultRegion implements Region
     }
 
     /**
-     * @return \Doctrine\Common\Cache\CacheProvider
+     * @return CacheProvider
      */
     public function getCache()
     {
@@ -119,7 +97,6 @@ class DefaultRegion implements Region
     }
 
     /**
-     * @param CacheKey $key
      * @return string
      */
     protected function getCacheEntryKey(CacheKey $key)
@@ -130,7 +107,7 @@ class DefaultRegion implements Region
     /**
      * {@inheritdoc}
      */
-    public function put(CacheKey $key, CacheEntry $entry, Lock $lock = null)
+    public function put(CacheKey $key, CacheEntry $entry, ?Lock $lock = null)
     {
         return $this->cache->save($this->getCacheEntryKey($key), $entry, $this->lifetime);
     }
@@ -149,7 +126,7 @@ class DefaultRegion implements Region
     public function evictAll()
     {
         if (! $this->cache instanceof ClearableCache) {
-            throw new \BadMethodCallException(sprintf(
+            throw new BadMethodCallException(sprintf(
                 'Clearing all cache entries is not supported by the supplied cache adapter of type %s',
                 get_class($this->cache)
             ));

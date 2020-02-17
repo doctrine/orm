@@ -1,21 +1,34 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\Performance\Mock;
 
+use BadMethodCallException;
+use Doctrine\Common\EventManager;
+use Doctrine\Common\Persistence\Mapping\ClassMetadataFactory;
+use Doctrine\Common\Persistence\ObjectRepository;
+use Doctrine\DBAL\Connection;
+use Doctrine\ORM\Cache;
+use Doctrine\ORM\Configuration;
 use Doctrine\ORM\EntityManagerInterface;
-use Doctrine\ORM\Proxy\ProxyFactory;
+use Doctrine\ORM\Internal\Hydration\AbstractHydrator;
+use Doctrine\ORM\Mapping\ClassMetadata;
+use Doctrine\ORM\NativeQuery;
+use Doctrine\ORM\Proxy\Factory\StaticProxyFactory;
 use Doctrine\ORM\Query;
+use Doctrine\ORM\Query\Expr;
+use Doctrine\ORM\Query\FilterCollection;
 use Doctrine\ORM\Query\ResultSetMapping;
-use Doctrine\Tests\ORM\Performance\MockUnitOfWork;
+use Doctrine\ORM\QueryBuilder;
+use Doctrine\ORM\Utility\IdentifierFlattener;
 
 /**
  * An entity manager mock that prevents lazy-loading of proxies
  */
 class NonProxyLoadingEntityManager implements EntityManagerInterface
 {
-    /**
-     * @var EntityManagerInterface
-     */
+    /** @var EntityManagerInterface */
     private $realEntityManager;
 
     public function __construct(EntityManagerInterface $realEntityManager)
@@ -28,20 +41,13 @@ class NonProxyLoadingEntityManager implements EntityManagerInterface
      */
     public function getProxyFactory()
     {
-        $config = $this->realEntityManager->getConfiguration();
-
-        return new ProxyFactory(
-            $this,
-            $config->getProxyDir(),
-            $config->getProxyNamespace(),
-            $config->getAutoGenerateProxyClasses()
-        );
+        return new StaticProxyFactory($this, $this->realEntityManager->getConfiguration()->buildGhostObjectFactory());
     }
 
     /**
      * {@inheritDoc}
      */
-    public function getMetadataFactory()
+    public function getMetadataFactory() : ClassMetadataFactory
     {
         return $this->realEntityManager->getMetadataFactory();
     }
@@ -49,7 +55,7 @@ class NonProxyLoadingEntityManager implements EntityManagerInterface
     /**
      * {@inheritDoc}
      */
-    public function getClassMetadata($className)
+    public function getClassMetadata($className) : ClassMetadata
     {
         return $this->realEntityManager->getClassMetadata($className);
     }
@@ -65,7 +71,7 @@ class NonProxyLoadingEntityManager implements EntityManagerInterface
     /**
      * {@inheritDoc}
      */
-    public function getCache()
+    public function getCache() : ?Cache
     {
         return $this->realEntityManager->getCache();
     }
@@ -73,7 +79,7 @@ class NonProxyLoadingEntityManager implements EntityManagerInterface
     /**
      * {@inheritDoc}
      */
-    public function getConnection()
+    public function getConnection() : Connection
     {
         return $this->realEntityManager->getConnection();
     }
@@ -81,7 +87,7 @@ class NonProxyLoadingEntityManager implements EntityManagerInterface
     /**
      * {@inheritDoc}
      */
-    public function getExpressionBuilder()
+    public function getExpressionBuilder() : Expr
     {
         return $this->realEntityManager->getExpressionBuilder();
     }
@@ -89,7 +95,7 @@ class NonProxyLoadingEntityManager implements EntityManagerInterface
     /**
      * {@inheritDoc}
      */
-    public function beginTransaction()
+    public function beginTransaction() : void
     {
         $this->realEntityManager->beginTransaction();
     }
@@ -97,7 +103,7 @@ class NonProxyLoadingEntityManager implements EntityManagerInterface
     /**
      * {@inheritDoc}
      */
-    public function transactional($func)
+    public function transactional(callable $func)
     {
         return $this->realEntityManager->transactional($func);
     }
@@ -105,7 +111,7 @@ class NonProxyLoadingEntityManager implements EntityManagerInterface
     /**
      * {@inheritDoc}
      */
-    public function commit()
+    public function commit() : void
     {
         $this->realEntityManager->commit();
     }
@@ -113,7 +119,7 @@ class NonProxyLoadingEntityManager implements EntityManagerInterface
     /**
      * {@inheritDoc}
      */
-    public function rollback()
+    public function rollback() : void
     {
         $this->realEntityManager->rollback();
     }
@@ -121,7 +127,7 @@ class NonProxyLoadingEntityManager implements EntityManagerInterface
     /**
      * {@inheritDoc}
      */
-    public function createQuery($dql = '')
+    public function createQuery($dql = '') : Query
     {
         return $this->realEntityManager->createQuery($dql);
     }
@@ -129,15 +135,7 @@ class NonProxyLoadingEntityManager implements EntityManagerInterface
     /**
      * {@inheritDoc}
      */
-    public function createNamedQuery($name)
-    {
-        return $this->realEntityManager->createNamedQuery($name);
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    public function createNativeQuery($sql, ResultSetMapping $rsm)
+    public function createNativeQuery($sql, ResultSetMapping $rsm) : NativeQuery
     {
         return $this->realEntityManager->createNativeQuery($sql, $rsm);
     }
@@ -145,15 +143,7 @@ class NonProxyLoadingEntityManager implements EntityManagerInterface
     /**
      * {@inheritDoc}
      */
-    public function createNamedNativeQuery($name)
-    {
-        return $this->realEntityManager->createNamedNativeQuery($name);
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    public function createQueryBuilder()
+    public function createQueryBuilder() : QueryBuilder
     {
         return $this->realEntityManager->createQueryBuilder();
     }
@@ -177,7 +167,7 @@ class NonProxyLoadingEntityManager implements EntityManagerInterface
     /**
      * {@inheritDoc}
      */
-    public function close()
+    public function close() : void
     {
         $this->realEntityManager->close();
     }
@@ -185,15 +175,7 @@ class NonProxyLoadingEntityManager implements EntityManagerInterface
     /**
      * {@inheritDoc}
      */
-    public function copy($entity, $deep = false)
-    {
-        return $this->realEntityManager->copy($entity, $deep);
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    public function lock($entity, $lockMode, $lockVersion = null)
+    public function lock($entity, $lockMode, $lockVersion = null) : void
     {
         $this->realEntityManager->lock($entity, $lockMode, $lockVersion);
     }
@@ -201,7 +183,7 @@ class NonProxyLoadingEntityManager implements EntityManagerInterface
     /**
      * {@inheritDoc}
      */
-    public function getEventManager()
+    public function getEventManager() : EventManager
     {
         return $this->realEntityManager->getEventManager();
     }
@@ -209,7 +191,7 @@ class NonProxyLoadingEntityManager implements EntityManagerInterface
     /**
      * {@inheritDoc}
      */
-    public function getConfiguration()
+    public function getConfiguration() : Configuration
     {
         return $this->realEntityManager->getConfiguration();
     }
@@ -217,7 +199,7 @@ class NonProxyLoadingEntityManager implements EntityManagerInterface
     /**
      * {@inheritDoc}
      */
-    public function isOpen()
+    public function isOpen() : bool
     {
         return $this->realEntityManager->isOpen();
     }
@@ -225,7 +207,7 @@ class NonProxyLoadingEntityManager implements EntityManagerInterface
     /**
      * {@inheritDoc}
      */
-    public function getHydrator($hydrationMode)
+    public function getHydrator($hydrationMode) : AbstractHydrator
     {
         return $this->realEntityManager->getHydrator($hydrationMode);
     }
@@ -233,7 +215,7 @@ class NonProxyLoadingEntityManager implements EntityManagerInterface
     /**
      * {@inheritDoc}
      */
-    public function newHydrator($hydrationMode)
+    public function newHydrator($hydrationMode) : AbstractHydrator
     {
         return $this->realEntityManager->newHydrator($hydrationMode);
     }
@@ -241,7 +223,7 @@ class NonProxyLoadingEntityManager implements EntityManagerInterface
     /**
      * {@inheritDoc}
      */
-    public function getFilters()
+    public function getFilters() : FilterCollection
     {
         return $this->realEntityManager->getFilters();
     }
@@ -249,7 +231,7 @@ class NonProxyLoadingEntityManager implements EntityManagerInterface
     /**
      * {@inheritDoc}
      */
-    public function isFiltersStateClean()
+    public function isFiltersStateClean() : bool
     {
         return $this->realEntityManager->isFiltersStateClean();
     }
@@ -257,7 +239,7 @@ class NonProxyLoadingEntityManager implements EntityManagerInterface
     /**
      * {@inheritDoc}
      */
-    public function hasFilters()
+    public function hasFilters() : bool
     {
         return $this->realEntityManager->hasFilters();
     }
@@ -273,7 +255,7 @@ class NonProxyLoadingEntityManager implements EntityManagerInterface
     /**
      * {@inheritDoc}
      */
-    public function persist($object)
+    public function persist($object) : void
     {
         $this->realEntityManager->persist($object);
     }
@@ -281,7 +263,7 @@ class NonProxyLoadingEntityManager implements EntityManagerInterface
     /**
      * {@inheritDoc}
      */
-    public function remove($object)
+    public function remove($object) : void
     {
         $this->realEntityManager->remove($object);
     }
@@ -289,31 +271,35 @@ class NonProxyLoadingEntityManager implements EntityManagerInterface
     /**
      * {@inheritDoc}
      */
-    public function merge($object)
-    {
-        return $this->realEntityManager->merge($object);
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    public function clear($objectName = null)
+    public function clear($objectName = null) : void
     {
         $this->realEntityManager->clear($objectName);
     }
 
     /**
      * {@inheritDoc}
+     *
+     * @deprecated
      */
-    public function detach($object)
+    public function merge($object)
     {
-        $this->realEntityManager->detach($object);
+        throw new BadMethodCallException('@TODO method disabled - will be removed in 3.0 with a release of doctrine/common');
+    }
+
+    /**
+     * {@inheritDoc}
+     *
+     * @deprecated
+     */
+    public function detach($object) : void
+    {
+        throw new BadMethodCallException('@TODO method disabled - will be removed in 3.0 with a release of doctrine/common');
     }
 
     /**
      * {@inheritDoc}
      */
-    public function refresh($object)
+    public function refresh($object) : void
     {
         $this->realEntityManager->refresh($object);
     }
@@ -321,7 +307,7 @@ class NonProxyLoadingEntityManager implements EntityManagerInterface
     /**
      * {@inheritDoc}
      */
-    public function flush()
+    public function flush() : void
     {
         $this->realEntityManager->flush();
     }
@@ -329,7 +315,7 @@ class NonProxyLoadingEntityManager implements EntityManagerInterface
     /**
      * {@inheritDoc}
      */
-    public function getRepository($className)
+    public function getRepository($className) : ObjectRepository
     {
         return $this->realEntityManager->getRepository($className);
     }
@@ -337,7 +323,7 @@ class NonProxyLoadingEntityManager implements EntityManagerInterface
     /**
      * {@inheritDoc}
      */
-    public function initializeObject($obj)
+    public function initializeObject($obj) : void
     {
         $this->realEntityManager->initializeObject($obj);
     }
@@ -345,8 +331,16 @@ class NonProxyLoadingEntityManager implements EntityManagerInterface
     /**
      * {@inheritDoc}
      */
-    public function contains($object)
+    public function contains($object) : bool
     {
         return $this->realEntityManager->contains($object);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function getIdentifierFlattener() : IdentifierFlattener
+    {
+        return $this->realEntityManager->getIdentifierFlattener();
     }
 }

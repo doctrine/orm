@@ -1,7 +1,11 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\Tests\ORM\Hydration;
 
+use Doctrine\DBAL\Types\Type;
+use Doctrine\ORM\Internal\Hydration\ArrayHydrator;
 use Doctrine\ORM\Query\ResultSetMapping;
 use Doctrine\Tests\Mocks\HydratorMockStatement;
 use Doctrine\Tests\Models\CMS\CmsArticle;
@@ -27,9 +31,9 @@ class ArrayHydratorTest extends HydrationTestCase
      * SELECT PARTIAL u.{id, name}
      *   FROM Doctrine\Tests\Models\CMS\CmsUser u
      */
-    public function testSimpleEntityQuery()
+    public function testSimpleEntityQuery() : void
     {
-        $rsm = new ResultSetMapping;
+        $rsm = new ResultSetMapping();
 
         $rsm->addEntityResult(CmsUser::class, 'u');
         $rsm->addFieldResult('u', 'u__id', 'id');
@@ -39,26 +43,26 @@ class ArrayHydratorTest extends HydrationTestCase
         $resultSet = [
             [
                 'u__id' => '1',
-                'u__name' => 'romanb'
+                'u__name' => 'romanb',
             ],
             [
                 'u__id' => '2',
-                'u__name' => 'jwage'
-            ]
+                'u__name' => 'jwage',
+            ],
         ];
 
         $stmt     = new HydratorMockStatement($resultSet);
-        $hydrator = new \Doctrine\ORM\Internal\Hydration\ArrayHydrator($this->_em);
+        $hydrator = new ArrayHydrator($this->em);
         $result   = $hydrator->hydrateAll($stmt, $rsm);
 
-        $this->assertEquals(2, count($result));
-        $this->assertTrue(is_array($result));
+        self::assertCount(2, $result);
+        self::assertInternalType('array', $result);
 
-        $this->assertEquals(1, $result[0]['id']);
-        $this->assertEquals('romanb', $result[0]['name']);
+        self::assertEquals(1, $result[0]['id']);
+        self::assertEquals('romanb', $result[0]['name']);
 
-        $this->assertEquals(2, $result[1]['id']);
-        $this->assertEquals('jwage', $result[1]['name']);
+        self::assertEquals(2, $result[1]['id']);
+        self::assertEquals('jwage', $result[1]['name']);
     }
 
     /**
@@ -67,15 +71,15 @@ class ArrayHydratorTest extends HydrationTestCase
      *
      * @dataProvider provideDataForUserEntityResult
      */
-    public function testSimpleEntityWithScalarQuery($userEntityKey)
+    public function testSimpleEntityWithScalarQuery($userEntityKey) : void
     {
         $alias = $userEntityKey ?: 'u';
-        $rsm   = new ResultSetMapping;
+        $rsm   = new ResultSetMapping();
 
         $rsm->addEntityResult(CmsUser::class, $alias);
         $rsm->addFieldResult($alias, 's__id', 'id');
         $rsm->addFieldResult($alias, 's__name', 'name');
-        $rsm->addScalarResult('sclr0', 'nameUpper', 'string');
+        $rsm->addScalarResult('sclr0', 'nameUpper', Type::getType('string'));
 
         // Faked result set
         $resultSet = [
@@ -88,40 +92,40 @@ class ArrayHydratorTest extends HydrationTestCase
                 's__id' => '2',
                 's__name' => 'jwage',
                 'sclr0' => 'JWAGE',
-            ]
+            ],
         ];
 
         $stmt     = new HydratorMockStatement($resultSet);
-        $hydrator = new \Doctrine\ORM\Internal\Hydration\ArrayHydrator($this->_em);
+        $hydrator = new ArrayHydrator($this->em);
         $result   = $hydrator->hydrateAll($stmt, $rsm);
 
-        $this->assertEquals(2, count($result));
-        $this->assertTrue(is_array($result));
+        self::assertCount(2, $result);
+        self::assertInternalType('array', $result);
 
-        $this->assertArrayHasKey('nameUpper', $result[0]);
-        $this->assertArrayNotHasKey('id', $result[0]);
-        $this->assertArrayNotHasKey('name', $result[0]);
+        self::assertArrayHasKey('nameUpper', $result[0]);
+        self::assertArrayNotHasKey('id', $result[0]);
+        self::assertArrayNotHasKey('name', $result[0]);
 
-        $this->assertArrayHasKey(0, $result[0]);
-        $this->assertArrayHasKey('id', $result[0][0]);
-        $this->assertArrayHasKey('name', $result[0][0]);
+        self::assertArrayHasKey(0, $result[0]);
+        self::assertArrayHasKey('id', $result[0][0]);
+        self::assertArrayHasKey('name', $result[0][0]);
 
-        $this->assertArrayHasKey('nameUpper', $result[1]);
-        $this->assertArrayNotHasKey('id', $result[1]);
-        $this->assertArrayNotHasKey('name', $result[1]);
+        self::assertArrayHasKey('nameUpper', $result[1]);
+        self::assertArrayNotHasKey('id', $result[1]);
+        self::assertArrayNotHasKey('name', $result[1]);
 
-        $this->assertArrayHasKey(0, $result[1]);
-        $this->assertArrayHasKey('id', $result[1][0]);
-        $this->assertArrayHasKey('name', $result[1][0]);
+        self::assertArrayHasKey(0, $result[1]);
+        self::assertArrayHasKey('id', $result[1][0]);
+        self::assertArrayHasKey('name', $result[1][0]);
     }
 
     /**
      * SELECT PARTIAL u.{id, name} AS user
      *   FROM Doctrine\Tests\Models\CMS\CmsUser u
      */
-    public function testSimpleEntityQueryWithAliasedUserEntity()
+    public function testSimpleEntityQueryWithAliasedUserEntity() : void
     {
-        $rsm = new ResultSetMapping;
+        $rsm = new ResultSetMapping();
 
         $rsm->addEntityResult(CmsUser::class, 'u', 'user');
         $rsm->addFieldResult('u', 'u__id', 'id');
@@ -131,37 +135,37 @@ class ArrayHydratorTest extends HydrationTestCase
         $resultSet = [
             [
                 'u__id' => '1',
-                'u__name' => 'romanb'
+                'u__name' => 'romanb',
             ],
             [
                 'u__id' => '2',
-                'u__name' => 'jwage'
-            ]
+                'u__name' => 'jwage',
+            ],
         ];
 
         $stmt     = new HydratorMockStatement($resultSet);
-        $hydrator = new \Doctrine\ORM\Internal\Hydration\ArrayHydrator($this->_em);
+        $hydrator = new ArrayHydrator($this->em);
         $result   = $hydrator->hydrateAll($stmt, $rsm);
 
-        $this->assertEquals(2, count($result));
-        $this->assertTrue(is_array($result));
+        self::assertCount(2, $result);
+        self::assertInternalType('array', $result);
 
-        $this->assertArrayHasKey('user', $result[0]);
-        $this->assertEquals(1, $result[0]['user']['id']);
-        $this->assertEquals('romanb', $result[0]['user']['name']);
+        self::assertArrayHasKey('user', $result[0]);
+        self::assertEquals(1, $result[0]['user']['id']);
+        self::assertEquals('romanb', $result[0]['user']['name']);
 
-        $this->assertArrayHasKey('user', $result[1]);
-        $this->assertEquals(2, $result[1]['user']['id']);
-        $this->assertEquals('jwage', $result[1]['user']['name']);
+        self::assertArrayHasKey('user', $result[1]);
+        self::assertEquals(2, $result[1]['user']['id']);
+        self::assertEquals('jwage', $result[1]['user']['name']);
     }
 
     /**
      * SELECT PARTIAL u.{id, name}, PARTIAL a.{id, topic}
      *   FROM Doctrine\Tests\Models\CMS\CmsUser u, Doctrine\Tests\Models\CMS\CmsArticle a
      */
-    public function testSimpleMultipleRootEntityQuery()
+    public function testSimpleMultipleRootEntityQuery() : void
     {
-        $rsm = new ResultSetMapping;
+        $rsm = new ResultSetMapping();
 
         $rsm->addEntityResult(CmsUser::class, 'u');
         $rsm->addEntityResult(CmsArticle::class, 'a');
@@ -176,42 +180,42 @@ class ArrayHydratorTest extends HydrationTestCase
                 'u__id' => '1',
                 'u__name' => 'romanb',
                 'a__id' => '1',
-                'a__topic' => 'Cool things.'
+                'a__topic' => 'Cool things.',
             ],
             [
                 'u__id' => '2',
                 'u__name' => 'jwage',
                 'a__id' => '2',
-                'a__topic' => 'Cool things II.'
-            ]
+                'a__topic' => 'Cool things II.',
+            ],
         ];
 
         $stmt     = new HydratorMockStatement($resultSet);
-        $hydrator = new \Doctrine\ORM\Internal\Hydration\ArrayHydrator($this->_em);
+        $hydrator = new ArrayHydrator($this->em);
         $result   = $hydrator->hydrateAll($stmt, $rsm);
 
-        $this->assertEquals(4, count($result));
+        self::assertCount(4, $result);
 
-        $this->assertEquals(1, $result[0]['id']);
-        $this->assertEquals('romanb', $result[0]['name']);
+        self::assertEquals(1, $result[0]['id']);
+        self::assertEquals('romanb', $result[0]['name']);
 
-        $this->assertEquals(1, $result[1]['id']);
-        $this->assertEquals('Cool things.', $result[1]['topic']);
+        self::assertEquals(1, $result[1]['id']);
+        self::assertEquals('Cool things.', $result[1]['topic']);
 
-        $this->assertEquals(2, $result[2]['id']);
-        $this->assertEquals('jwage', $result[2]['name']);
+        self::assertEquals(2, $result[2]['id']);
+        self::assertEquals('jwage', $result[2]['name']);
 
-        $this->assertEquals(2, $result[3]['id']);
-        $this->assertEquals('Cool things II.', $result[3]['topic']);
+        self::assertEquals(2, $result[3]['id']);
+        self::assertEquals('Cool things II.', $result[3]['topic']);
     }
 
     /**
      * SELECT PARTIAL u.{id, name} AS user, PARTIAL a.{id, topic}
      *   FROM Doctrine\Tests\Models\CMS\CmsUser u, Doctrine\Tests\Models\CMS\CmsArticle a
      */
-    public function testSimpleMultipleRootEntityQueryWithAliasedUserEntity()
+    public function testSimpleMultipleRootEntityQueryWithAliasedUserEntity() : void
     {
-        $rsm = new ResultSetMapping;
+        $rsm = new ResultSetMapping();
 
         $rsm->addEntityResult(CmsUser::class, 'u', 'user');
         $rsm->addEntityResult(CmsArticle::class, 'a');
@@ -226,46 +230,46 @@ class ArrayHydratorTest extends HydrationTestCase
                 'u__id' => '1',
                 'u__name' => 'romanb',
                 'a__id' => '1',
-                'a__topic' => 'Cool things.'
+                'a__topic' => 'Cool things.',
             ],
             [
                 'u__id' => '2',
                 'u__name' => 'jwage',
                 'a__id' => '2',
-                'a__topic' => 'Cool things II.'
-            ]
+                'a__topic' => 'Cool things II.',
+            ],
         ];
 
         $stmt     = new HydratorMockStatement($resultSet);
-        $hydrator = new \Doctrine\ORM\Internal\Hydration\ArrayHydrator($this->_em);
+        $hydrator = new ArrayHydrator($this->em);
         $result   = $hydrator->hydrateAll($stmt, $rsm);
 
-        $this->assertEquals(4, count($result));
+        self::assertCount(4, $result);
 
-        $this->assertArrayHasKey('user', $result[0]);
-        $this->assertEquals(1, $result[0]['user']['id']);
-        $this->assertEquals('romanb', $result[0]['user']['name']);
+        self::assertArrayHasKey('user', $result[0]);
+        self::assertEquals(1, $result[0]['user']['id']);
+        self::assertEquals('romanb', $result[0]['user']['name']);
 
-        $this->assertArrayHasKey(0, $result[1]);
-        $this->assertEquals(1, $result[1][0]['id']);
-        $this->assertEquals('Cool things.', $result[1][0]['topic']);
+        self::assertArrayHasKey(0, $result[1]);
+        self::assertEquals(1, $result[1][0]['id']);
+        self::assertEquals('Cool things.', $result[1][0]['topic']);
 
-        $this->assertArrayHasKey('user', $result[2]);
-        $this->assertEquals(2, $result[2]['user']['id']);
-        $this->assertEquals('jwage', $result[2]['user']['name']);
+        self::assertArrayHasKey('user', $result[2]);
+        self::assertEquals(2, $result[2]['user']['id']);
+        self::assertEquals('jwage', $result[2]['user']['name']);
 
-        $this->assertArrayHasKey(0, $result[3]);
-        $this->assertEquals(2, $result[3][0]['id']);
-        $this->assertEquals('Cool things II.', $result[3][0]['topic']);
+        self::assertArrayHasKey(0, $result[3]);
+        self::assertEquals(2, $result[3][0]['id']);
+        self::assertEquals('Cool things II.', $result[3][0]['topic']);
     }
 
     /**
      * SELECT PARTIAL u.{id, name}, PARTIAL a.{id, topic} AS article
      *   FROM Doctrine\Tests\Models\CMS\CmsUser u, Doctrine\Tests\Models\CMS\CmsArticle a
      */
-    public function testSimpleMultipleRootEntityQueryWithAliasedArticleEntity()
+    public function testSimpleMultipleRootEntityQueryWithAliasedArticleEntity() : void
     {
-        $rsm = new ResultSetMapping;
+        $rsm = new ResultSetMapping();
 
         $rsm->addEntityResult(CmsUser::class, 'u');
         $rsm->addEntityResult(CmsArticle::class, 'a', 'article');
@@ -280,46 +284,46 @@ class ArrayHydratorTest extends HydrationTestCase
                 'u__id' => '1',
                 'u__name' => 'romanb',
                 'a__id' => '1',
-                'a__topic' => 'Cool things.'
+                'a__topic' => 'Cool things.',
             ],
             [
                 'u__id' => '2',
                 'u__name' => 'jwage',
                 'a__id' => '2',
-                'a__topic' => 'Cool things II.'
-            ]
+                'a__topic' => 'Cool things II.',
+            ],
         ];
 
         $stmt     = new HydratorMockStatement($resultSet);
-        $hydrator = new \Doctrine\ORM\Internal\Hydration\ArrayHydrator($this->_em);
+        $hydrator = new ArrayHydrator($this->em);
         $result   = $hydrator->hydrateAll($stmt, $rsm);
 
-        $this->assertEquals(4, count($result));
+        self::assertCount(4, $result);
 
-        $this->assertArrayHasKey(0, $result[0]);
-        $this->assertEquals(1, $result[0][0]['id']);
-        $this->assertEquals('romanb', $result[0][0]['name']);
+        self::assertArrayHasKey(0, $result[0]);
+        self::assertEquals(1, $result[0][0]['id']);
+        self::assertEquals('romanb', $result[0][0]['name']);
 
-        $this->assertArrayHasKey('article', $result[1]);
-        $this->assertEquals(1, $result[1]['article']['id']);
-        $this->assertEquals('Cool things.', $result[1]['article']['topic']);
+        self::assertArrayHasKey('article', $result[1]);
+        self::assertEquals(1, $result[1]['article']['id']);
+        self::assertEquals('Cool things.', $result[1]['article']['topic']);
 
-        $this->assertArrayHasKey(0, $result[2]);
-        $this->assertEquals(2, $result[2][0]['id']);
-        $this->assertEquals('jwage', $result[2][0]['name']);
+        self::assertArrayHasKey(0, $result[2]);
+        self::assertEquals(2, $result[2][0]['id']);
+        self::assertEquals('jwage', $result[2][0]['name']);
 
-        $this->assertArrayHasKey('article', $result[3]);
-        $this->assertEquals(2, $result[3]['article']['id']);
-        $this->assertEquals('Cool things II.', $result[3]['article']['topic']);
+        self::assertArrayHasKey('article', $result[3]);
+        self::assertEquals(2, $result[3]['article']['id']);
+        self::assertEquals('Cool things II.', $result[3]['article']['topic']);
     }
 
     /**
      * SELECT PARTIAL u.{id, name} AS user, PARTIAL a.{id, topic} AS article
      *   FROM Doctrine\Tests\Models\CMS\CmsUser u, Doctrine\Tests\Models\CMS\CmsArticle a
      */
-    public function testSimpleMultipleRootEntityQueryWithAliasedEntities()
+    public function testSimpleMultipleRootEntityQueryWithAliasedEntities() : void
     {
-        $rsm = new ResultSetMapping;
+        $rsm = new ResultSetMapping();
 
         $rsm->addEntityResult(CmsUser::class, 'u', 'user');
         $rsm->addEntityResult(CmsArticle::class, 'a', 'article');
@@ -334,37 +338,37 @@ class ArrayHydratorTest extends HydrationTestCase
                 'u__id' => '1',
                 'u__name' => 'romanb',
                 'a__id' => '1',
-                'a__topic' => 'Cool things.'
+                'a__topic' => 'Cool things.',
             ],
             [
                 'u__id' => '2',
                 'u__name' => 'jwage',
                 'a__id' => '2',
-                'a__topic' => 'Cool things II.'
-            ]
+                'a__topic' => 'Cool things II.',
+            ],
         ];
 
         $stmt     = new HydratorMockStatement($resultSet);
-        $hydrator = new \Doctrine\ORM\Internal\Hydration\ArrayHydrator($this->_em);
+        $hydrator = new ArrayHydrator($this->em);
         $result   = $hydrator->hydrateAll($stmt, $rsm);
 
-        $this->assertEquals(4, count($result));
+        self::assertCount(4, $result);
 
-        $this->assertArrayHasKey('user', $result[0]);
-        $this->assertEquals(1, $result[0]['user']['id']);
-        $this->assertEquals('romanb', $result[0]['user']['name']);
+        self::assertArrayHasKey('user', $result[0]);
+        self::assertEquals(1, $result[0]['user']['id']);
+        self::assertEquals('romanb', $result[0]['user']['name']);
 
-        $this->assertArrayHasKey('article', $result[1]);
-        $this->assertEquals(1, $result[1]['article']['id']);
-        $this->assertEquals('Cool things.', $result[1]['article']['topic']);
+        self::assertArrayHasKey('article', $result[1]);
+        self::assertEquals(1, $result[1]['article']['id']);
+        self::assertEquals('Cool things.', $result[1]['article']['topic']);
 
-        $this->assertArrayHasKey('user', $result[2]);
-        $this->assertEquals(2, $result[2]['user']['id']);
-        $this->assertEquals('jwage', $result[2]['user']['name']);
+        self::assertArrayHasKey('user', $result[2]);
+        self::assertEquals(2, $result[2]['user']['id']);
+        self::assertEquals('jwage', $result[2]['user']['name']);
 
-        $this->assertArrayHasKey('article', $result[3]);
-        $this->assertEquals(2, $result[3]['article']['id']);
-        $this->assertEquals('Cool things II.', $result[3]['article']['topic']);
+        self::assertArrayHasKey('article', $result[3]);
+        self::assertEquals(2, $result[3]['article']['id']);
+        self::assertEquals('Cool things II.', $result[3]['article']['topic']);
     }
 
     /**
@@ -375,14 +379,14 @@ class ArrayHydratorTest extends HydrationTestCase
      *
      * @dataProvider provideDataForUserEntityResult
      */
-    public function testMixedQueryNormalJoin($userEntityKey)
+    public function testMixedQueryNormalJoin($userEntityKey) : void
     {
-        $rsm = new ResultSetMapping;
+        $rsm = new ResultSetMapping();
 
         $rsm->addEntityResult(CmsUser::class, 'u', $userEntityKey ?: null);
         $rsm->addFieldResult('u', 'u__id', 'id');
         $rsm->addFieldResult('u', 'u__status', 'status');
-        $rsm->addScalarResult('sclr0', 'numPhones', 'integer');
+        $rsm->addScalarResult('sclr0', 'numPhones', Type::getType('integer'));
 
         // Faked result set
         $resultSet = [
@@ -396,25 +400,25 @@ class ArrayHydratorTest extends HydrationTestCase
                 'u__id' => '2',
                 'u__status' => 'developer',
                 'sclr0' => '1',
-            ]
+            ],
         ];
 
         $stmt     = new HydratorMockStatement($resultSet);
-        $hydrator = new \Doctrine\ORM\Internal\Hydration\ArrayHydrator($this->_em);
+        $hydrator = new ArrayHydrator($this->em);
         $result   = $hydrator->hydrateAll($stmt, $rsm);
 
-        $this->assertEquals(2, count($result));
-        $this->assertTrue(is_array($result));
-        $this->assertTrue(is_array($result[0]));
-        $this->assertTrue(is_array($result[1]));
+        self::assertCount(2, $result);
+        self::assertInternalType('array', $result);
+        self::assertInternalType('array', $result[0]);
+        self::assertInternalType('array', $result[1]);
 
         // first user => 2 phonenumbers
-        $this->assertArrayHasKey($userEntityKey, $result[0]);
-        $this->assertEquals(2, $result[0]['numPhones']);
+        self::assertArrayHasKey($userEntityKey, $result[0]);
+        self::assertEquals(2, $result[0]['numPhones']);
 
         // second user => 1 phonenumber
-        $this->assertArrayHasKey($userEntityKey, $result[1]);
-        $this->assertEquals(1, $result[1]['numPhones']);
+        self::assertArrayHasKey($userEntityKey, $result[1]);
+        self::assertEquals(1, $result[1]['numPhones']);
     }
 
     /**
@@ -424,9 +428,9 @@ class ArrayHydratorTest extends HydrationTestCase
      *
      * @dataProvider provideDataForUserEntityResult
      */
-    public function testMixedQueryFetchJoin($userEntityKey)
+    public function testMixedQueryFetchJoin($userEntityKey) : void
     {
-        $rsm = new ResultSetMapping;
+        $rsm = new ResultSetMapping();
 
         $rsm->addEntityResult(CmsUser::class, 'u', $userEntityKey ?: null);
         $rsm->addJoinedEntityResult(
@@ -437,7 +441,7 @@ class ArrayHydratorTest extends HydrationTestCase
         );
         $rsm->addFieldResult('u', 'u__id', 'id');
         $rsm->addFieldResult('u', 'u__status', 'status');
-        $rsm->addScalarResult('sclr0', 'nameUpper', 'string');
+        $rsm->addScalarResult('sclr0', 'nameUpper', Type::getType('string'));
         $rsm->addFieldResult('p', 'p__phonenumber', 'phonenumber');
 
         // Faked result set
@@ -459,31 +463,31 @@ class ArrayHydratorTest extends HydrationTestCase
                 'u__id' => '2',
                 'u__status' => 'developer',
                 'sclr0' => 'JWAGE',
-                'p__phonenumber' => '91'
-            ]
+                'p__phonenumber' => '91',
+            ],
         ];
 
         $stmt     = new HydratorMockStatement($resultSet);
-        $hydrator = new \Doctrine\ORM\Internal\Hydration\ArrayHydrator($this->_em);
+        $hydrator = new ArrayHydrator($this->em);
         $result   = $hydrator->hydrateAll($stmt, $rsm);
 
-        $this->assertEquals(2, count($result));
+        self::assertCount(2, $result);
 
-        $this->assertTrue(is_array($result));
-        $this->assertTrue(is_array($result[0]));
-        $this->assertTrue(is_array($result[1]));
+        self::assertInternalType('array', $result);
+        self::assertInternalType('array', $result[0]);
+        self::assertInternalType('array', $result[1]);
 
         // first user => 2 phonenumbers
-        $this->assertEquals(2, count($result[0][$userEntityKey]['phonenumbers']));
-        $this->assertEquals('ROMANB', $result[0]['nameUpper']);
+        self::assertCount(2, $result[0][$userEntityKey]['phonenumbers']);
+        self::assertEquals('ROMANB', $result[0]['nameUpper']);
 
         // second user => 1 phonenumber
-        $this->assertEquals(1, count($result[1][$userEntityKey]['phonenumbers']));
-        $this->assertEquals('JWAGE', $result[1]['nameUpper']);
+        self::assertCount(1, $result[1][$userEntityKey]['phonenumbers']);
+        self::assertEquals('JWAGE', $result[1]['nameUpper']);
 
-        $this->assertEquals(42, $result[0][$userEntityKey]['phonenumbers'][0]['phonenumber']);
-        $this->assertEquals(43, $result[0][$userEntityKey]['phonenumbers'][1]['phonenumber']);
-        $this->assertEquals(91, $result[1][$userEntityKey]['phonenumbers'][0]['phonenumber']);
+        self::assertEquals(42, $result[0][$userEntityKey]['phonenumbers'][0]['phonenumber']);
+        self::assertEquals(43, $result[0][$userEntityKey]['phonenumbers'][1]['phonenumber']);
+        self::assertEquals(91, $result[1][$userEntityKey]['phonenumbers'][0]['phonenumber']);
     }
 
     /**
@@ -495,9 +499,9 @@ class ArrayHydratorTest extends HydrationTestCase
      *
      * @dataProvider provideDataForUserEntityResult
      */
-    public function testMixedQueryFetchJoinCustomIndex($userEntityKey)
+    public function testMixedQueryFetchJoinCustomIndex($userEntityKey) : void
     {
-        $rsm = new ResultSetMapping;
+        $rsm = new ResultSetMapping();
 
         $rsm->addEntityResult(CmsUser::class, 'u', $userEntityKey ?: null);
         $rsm->addJoinedEntityResult(
@@ -508,7 +512,7 @@ class ArrayHydratorTest extends HydrationTestCase
         );
         $rsm->addFieldResult('u', 'u__id', 'id');
         $rsm->addFieldResult('u', 'u__status', 'status');
-        $rsm->addScalarResult('sclr0', 'nameUpper', 'string');
+        $rsm->addScalarResult('sclr0', 'nameUpper', Type::getType('string'));
         $rsm->addFieldResult('p', 'p__phonenumber', 'phonenumber');
         $rsm->addIndexBy('u', 'id');
         $rsm->addIndexBy('p', 'phonenumber');
@@ -532,35 +536,34 @@ class ArrayHydratorTest extends HydrationTestCase
                 'u__id' => '2',
                 'u__status' => 'developer',
                 'sclr0' => 'JWAGE',
-                'p__phonenumber' => '91'
-            ]
+                'p__phonenumber' => '91',
+            ],
         ];
 
-
         $stmt     = new HydratorMockStatement($resultSet);
-        $hydrator = new \Doctrine\ORM\Internal\Hydration\ArrayHydrator($this->_em);
+        $hydrator = new ArrayHydrator($this->em);
         $result   = $hydrator->hydrateAll($stmt, $rsm);
 
-        $this->assertEquals(2, count($result));
+        self::assertCount(2, $result);
 
-        $this->assertTrue(is_array($result));
-        $this->assertTrue(is_array($result[1]));
-        $this->assertTrue(is_array($result[2]));
+        self::assertInternalType('array', $result);
+        self::assertInternalType('array', $result[1]);
+        self::assertInternalType('array', $result[2]);
 
         // test the scalar values
-        $this->assertEquals('ROMANB', $result[1]['nameUpper']);
-        $this->assertEquals('JWAGE', $result[2]['nameUpper']);
+        self::assertEquals('ROMANB', $result[1]['nameUpper']);
+        self::assertEquals('JWAGE', $result[2]['nameUpper']);
 
         // first user => 2 phonenumbers. notice the custom indexing by user id
-        $this->assertEquals(2, count($result[1][$userEntityKey]['phonenumbers']));
+        self::assertCount(2, $result[1][$userEntityKey]['phonenumbers']);
 
         // second user => 1 phonenumber. notice the custom indexing by user id
-        $this->assertEquals(1, count($result[2][$userEntityKey]['phonenumbers']));
+        self::assertCount(1, $result[2][$userEntityKey]['phonenumbers']);
 
         // test the custom indexing of the phonenumbers
-        $this->assertTrue(isset($result[1][$userEntityKey]['phonenumbers']['42']));
-        $this->assertTrue(isset($result[1][$userEntityKey]['phonenumbers']['43']));
-        $this->assertTrue(isset($result[2][$userEntityKey]['phonenumbers']['91']));
+        self::assertTrue(isset($result[1][$userEntityKey]['phonenumbers']['42']));
+        self::assertTrue(isset($result[1][$userEntityKey]['phonenumbers']['43']));
+        self::assertTrue(isset($result[2][$userEntityKey]['phonenumbers']['91']));
     }
 
     /**
@@ -574,9 +577,9 @@ class ArrayHydratorTest extends HydrationTestCase
      * inner join PHONENUMBERS p ON u.id = p.user_id
      * inner join ARTICLES a ON u.id = a.user_id
      */
-    public function testMixedQueryMultipleFetchJoin()
+    public function testMixedQueryMultipleFetchJoin() : void
     {
-        $rsm = new ResultSetMapping;
+        $rsm = new ResultSetMapping();
 
         $rsm->addEntityResult(CmsUser::class, 'u');
         $rsm->addJoinedEntityResult(
@@ -593,7 +596,7 @@ class ArrayHydratorTest extends HydrationTestCase
         );
         $rsm->addFieldResult('u', 'u__id', 'id');
         $rsm->addFieldResult('u', 'u__status', 'status');
-        $rsm->addScalarResult('sclr0', 'nameUpper', 'string');
+        $rsm->addScalarResult('sclr0', 'nameUpper', Type::getType('string'));
         $rsm->addFieldResult('p', 'p__phonenumber', 'phonenumber');
         $rsm->addFieldResult('a', 'a__id', 'id');
         $rsm->addFieldResult('a', 'a__topic', 'topic');
@@ -607,7 +610,7 @@ class ArrayHydratorTest extends HydrationTestCase
                 'sclr0' => 'ROMANB',
                 'p__phonenumber' => '42',
                 'a__id' => '1',
-                'a__topic' => 'Getting things done!'
+                'a__topic' => 'Getting things done!',
             ],
             [
                 'u__id' => '1',
@@ -615,7 +618,7 @@ class ArrayHydratorTest extends HydrationTestCase
                 'sclr0' => 'ROMANB',
                 'p__phonenumber' => '43',
                 'a__id' => '1',
-                'a__topic' => 'Getting things done!'
+                'a__topic' => 'Getting things done!',
             ],
             [
                 'u__id' => '1',
@@ -623,7 +626,7 @@ class ArrayHydratorTest extends HydrationTestCase
                 'sclr0' => 'ROMANB',
                 'p__phonenumber' => '42',
                 'a__id' => '2',
-                'a__topic' => 'ZendCon'
+                'a__topic' => 'ZendCon',
             ],
             [
                 'u__id' => '1',
@@ -631,7 +634,7 @@ class ArrayHydratorTest extends HydrationTestCase
                 'sclr0' => 'ROMANB',
                 'p__phonenumber' => '43',
                 'a__id' => '2',
-                'a__topic' => 'ZendCon'
+                'a__topic' => 'ZendCon',
             ],
             [
                 'u__id' => '2',
@@ -639,7 +642,7 @@ class ArrayHydratorTest extends HydrationTestCase
                 'sclr0' => 'JWAGE',
                 'p__phonenumber' => '91',
                 'a__id' => '3',
-                'a__topic' => 'LINQ'
+                'a__topic' => 'LINQ',
             ],
             [
                 'u__id' => '2',
@@ -647,35 +650,35 @@ class ArrayHydratorTest extends HydrationTestCase
                 'sclr0' => 'JWAGE',
                 'p__phonenumber' => '91',
                 'a__id' => '4',
-                'a__topic' => 'PHP7'
+                'a__topic' => 'PHP7',
             ],
         ];
 
         $stmt     = new HydratorMockStatement($resultSet);
-        $hydrator = new \Doctrine\ORM\Internal\Hydration\ArrayHydrator($this->_em);
+        $hydrator = new ArrayHydrator($this->em);
         $result   = $hydrator->hydrateAll($stmt, $rsm);
 
-        $this->assertEquals(2, count($result));
-        $this->assertTrue(is_array($result));
-        $this->assertTrue(is_array($result[0]));
-        $this->assertTrue(is_array($result[1]));
+        self::assertCount(2, $result);
+        self::assertInternalType('array', $result);
+        self::assertInternalType('array', $result[0]);
+        self::assertInternalType('array', $result[1]);
         // first user => 2 phonenumbers, 2 articles
-        $this->assertEquals(2, count($result[0][0]['phonenumbers']));
-        $this->assertEquals(2, count($result[0][0]['articles']));
-        $this->assertEquals('ROMANB', $result[0]['nameUpper']);
+        self::assertCount(2, $result[0][0]['phonenumbers']);
+        self::assertCount(2, $result[0][0]['articles']);
+        self::assertEquals('ROMANB', $result[0]['nameUpper']);
         // second user => 1 phonenumber, 2 articles
-        $this->assertEquals(1, count($result[1][0]['phonenumbers']));
-        $this->assertEquals(2, count($result[1][0]['articles']));
-        $this->assertEquals('JWAGE', $result[1]['nameUpper']);
+        self::assertCount(1, $result[1][0]['phonenumbers']);
+        self::assertCount(2, $result[1][0]['articles']);
+        self::assertEquals('JWAGE', $result[1]['nameUpper']);
 
-        $this->assertEquals(42, $result[0][0]['phonenumbers'][0]['phonenumber']);
-        $this->assertEquals(43, $result[0][0]['phonenumbers'][1]['phonenumber']);
-        $this->assertEquals(91, $result[1][0]['phonenumbers'][0]['phonenumber']);
+        self::assertEquals(42, $result[0][0]['phonenumbers'][0]['phonenumber']);
+        self::assertEquals(43, $result[0][0]['phonenumbers'][1]['phonenumber']);
+        self::assertEquals(91, $result[1][0]['phonenumbers'][0]['phonenumber']);
 
-        $this->assertEquals('Getting things done!', $result[0][0]['articles'][0]['topic']);
-        $this->assertEquals('ZendCon', $result[0][0]['articles'][1]['topic']);
-        $this->assertEquals('LINQ', $result[1][0]['articles'][0]['topic']);
-        $this->assertEquals('PHP7', $result[1][0]['articles'][1]['topic']);
+        self::assertEquals('Getting things done!', $result[0][0]['articles'][0]['topic']);
+        self::assertEquals('ZendCon', $result[0][0]['articles'][1]['topic']);
+        self::assertEquals('LINQ', $result[1][0]['articles'][0]['topic']);
+        self::assertEquals('PHP7', $result[1][0]['articles'][1]['topic']);
     }
 
     /**
@@ -693,9 +696,9 @@ class ArrayHydratorTest extends HydrationTestCase
      * inner join ARTICLES a ON u.id = a.user_id
      * left outer join COMMENTS c ON a.id = c.article_id
      */
-    public function testMixedQueryMultipleDeepMixedFetchJoin()
+    public function testMixedQueryMultipleDeepMixedFetchJoin() : void
     {
-        $rsm = new ResultSetMapping;
+        $rsm = new ResultSetMapping();
 
         $rsm->addEntityResult(CmsUser::class, 'u');
         $rsm->addJoinedEntityResult(
@@ -718,7 +721,7 @@ class ArrayHydratorTest extends HydrationTestCase
         );
         $rsm->addFieldResult('u', 'u__id', 'id');
         $rsm->addFieldResult('u', 'u__status', 'status');
-        $rsm->addScalarResult('sclr0', 'nameUpper', 'string');
+        $rsm->addScalarResult('sclr0', 'nameUpper', Type::getType('string'));
         $rsm->addFieldResult('p', 'p__phonenumber', 'phonenumber');
         $rsm->addFieldResult('a', 'a__id', 'id');
         $rsm->addFieldResult('a', 'a__topic', 'topic');
@@ -736,7 +739,7 @@ class ArrayHydratorTest extends HydrationTestCase
                 'a__id' => '1',
                 'a__topic' => 'Getting things done!',
                 'c__id' => '1',
-                'c__topic' => 'First!'
+                'c__topic' => 'First!',
             ],
             [
                 'u__id' => '1',
@@ -746,7 +749,7 @@ class ArrayHydratorTest extends HydrationTestCase
                 'a__id' => '1',
                 'a__topic' => 'Getting things done!',
                 'c__id' => '1',
-                'c__topic' => 'First!'
+                'c__topic' => 'First!',
             ],
             [
                 'u__id' => '1',
@@ -756,7 +759,7 @@ class ArrayHydratorTest extends HydrationTestCase
                 'a__id' => '2',
                 'a__topic' => 'ZendCon',
                 'c__id' => null,
-                'c__topic' => null
+                'c__topic' => null,
             ],
             [
                 'u__id' => '1',
@@ -766,7 +769,7 @@ class ArrayHydratorTest extends HydrationTestCase
                 'a__id' => '2',
                 'a__topic' => 'ZendCon',
                 'c__id' => null,
-                'c__topic' => null
+                'c__topic' => null,
             ],
             [
                 'u__id' => '2',
@@ -776,7 +779,7 @@ class ArrayHydratorTest extends HydrationTestCase
                 'a__id' => '3',
                 'a__topic' => 'LINQ',
                 'c__id' => null,
-                'c__topic' => null
+                'c__topic' => null,
             ],
             [
                 'u__id' => '2',
@@ -786,49 +789,49 @@ class ArrayHydratorTest extends HydrationTestCase
                 'a__id' => '4',
                 'a__topic' => 'PHP7',
                 'c__id' => null,
-                'c__topic' => null
+                'c__topic' => null,
             ],
         ];
 
         $stmt     = new HydratorMockStatement($resultSet);
-        $hydrator = new \Doctrine\ORM\Internal\Hydration\ArrayHydrator($this->_em);
+        $hydrator = new ArrayHydrator($this->em);
         $result   = $hydrator->hydrateAll($stmt, $rsm);
 
-        $this->assertEquals(2, count($result));
-        $this->assertTrue(is_array($result));
-        $this->assertTrue(is_array($result[0]));
-        $this->assertTrue(is_array($result[1]));
+        self::assertCount(2, $result);
+        self::assertInternalType('array', $result);
+        self::assertInternalType('array', $result[0]);
+        self::assertInternalType('array', $result[1]);
 
         // first user => 2 phonenumbers, 2 articles, 1 comment on first article
-        $this->assertEquals(2, count($result[0][0]['phonenumbers']));
-        $this->assertEquals(2, count($result[0][0]['articles']));
-        $this->assertEquals(1, count($result[0][0]['articles'][0]['comments']));
-        $this->assertEquals('ROMANB', $result[0]['nameUpper']);
+        self::assertCount(2, $result[0][0]['phonenumbers']);
+        self::assertCount(2, $result[0][0]['articles']);
+        self::assertCount(1, $result[0][0]['articles'][0]['comments']);
+        self::assertEquals('ROMANB', $result[0]['nameUpper']);
         // second user => 1 phonenumber, 2 articles, no comments
-        $this->assertEquals(1, count($result[1][0]['phonenumbers']));
-        $this->assertEquals(2, count($result[1][0]['articles']));
-        $this->assertEquals('JWAGE', $result[1]['nameUpper']);
+        self::assertCount(1, $result[1][0]['phonenumbers']);
+        self::assertCount(2, $result[1][0]['articles']);
+        self::assertEquals('JWAGE', $result[1]['nameUpper']);
 
-        $this->assertEquals(42, $result[0][0]['phonenumbers'][0]['phonenumber']);
-        $this->assertEquals(43, $result[0][0]['phonenumbers'][1]['phonenumber']);
-        $this->assertEquals(91, $result[1][0]['phonenumbers'][0]['phonenumber']);
+        self::assertEquals(42, $result[0][0]['phonenumbers'][0]['phonenumber']);
+        self::assertEquals(43, $result[0][0]['phonenumbers'][1]['phonenumber']);
+        self::assertEquals(91, $result[1][0]['phonenumbers'][0]['phonenumber']);
 
-        $this->assertEquals('Getting things done!', $result[0][0]['articles'][0]['topic']);
-        $this->assertEquals('ZendCon', $result[0][0]['articles'][1]['topic']);
-        $this->assertEquals('LINQ', $result[1][0]['articles'][0]['topic']);
-        $this->assertEquals('PHP7', $result[1][0]['articles'][1]['topic']);
+        self::assertEquals('Getting things done!', $result[0][0]['articles'][0]['topic']);
+        self::assertEquals('ZendCon', $result[0][0]['articles'][1]['topic']);
+        self::assertEquals('LINQ', $result[1][0]['articles'][0]['topic']);
+        self::assertEquals('PHP7', $result[1][0]['articles'][1]['topic']);
 
-        $this->assertEquals('First!', $result[0][0]['articles'][0]['comments'][0]['topic']);
+        self::assertEquals('First!', $result[0][0]['articles'][0]['comments'][0]['topic']);
 
-        $this->assertTrue(isset($result[0][0]['articles'][0]['comments']));
+        self::assertTrue(isset($result[0][0]['articles'][0]['comments']));
 
         // empty comment collections
-        $this->assertTrue(is_array($result[0][0]['articles'][1]['comments']));
-        $this->assertEquals(0, count($result[0][0]['articles'][1]['comments']));
-        $this->assertTrue(is_array($result[1][0]['articles'][0]['comments']));
-        $this->assertEquals(0, count($result[1][0]['articles'][0]['comments']));
-        $this->assertTrue(is_array($result[1][0]['articles'][1]['comments']));
-        $this->assertEquals(0, count($result[1][0]['articles'][1]['comments']));
+        self::assertInternalType('array', $result[0][0]['articles'][1]['comments']);
+        self::assertCount(0, $result[0][0]['articles'][1]['comments']);
+        self::assertInternalType('array', $result[1][0]['articles'][0]['comments']);
+        self::assertCount(0, $result[1][0]['articles'][0]['comments']);
+        self::assertInternalType('array', $result[1][0]['articles'][1]['comments']);
+        self::assertCount(0, $result[1][0]['articles'][1]['comments']);
     }
 
     /**
@@ -850,9 +853,9 @@ class ArrayHydratorTest extends HydrationTestCase
      *  1    | 0          | First    | 1        |   3  | 1
      *  1    | 0          | First    | 2        |   4  | 1
      */
-    public function testEntityQueryCustomResultSetOrder()
+    public function testEntityQueryCustomResultSetOrder() : void
     {
-        $rsm = new ResultSetMapping;
+        $rsm = new ResultSetMapping();
 
         $rsm->addEntityResult(ForumCategory::class, 'c');
         $rsm->addJoinedEntityResult(
@@ -901,21 +904,21 @@ class ArrayHydratorTest extends HydrationTestCase
                 'b__id' => '4',
                 'b__position' => '2',
                 //'b__category_id' => '1'
-            ]
+            ],
         ];
 
         $stmt     = new HydratorMockStatement($resultSet);
-        $hydrator = new \Doctrine\ORM\Internal\Hydration\ArrayHydrator($this->_em);
+        $hydrator = new ArrayHydrator($this->em);
         $result   = $hydrator->hydrateAll($stmt, $rsm);
 
-        $this->assertEquals(2, count($result));
-        $this->assertTrue(is_array($result));
-        $this->assertTrue(is_array($result[0]));
-        $this->assertTrue(is_array($result[1]));
-        $this->assertTrue(isset($result[0]['boards']));
-        $this->assertEquals(3, count($result[0]['boards']));
-        $this->assertTrue(isset($result[1]['boards']));
-        $this->assertEquals(1, count($result[1]['boards']));
+        self::assertCount(2, $result);
+        self::assertInternalType('array', $result);
+        self::assertInternalType('array', $result[0]);
+        self::assertInternalType('array', $result[1]);
+        self::assertTrue(isset($result[0]['boards']));
+        self::assertCount(3, $result[0]['boards']);
+        self::assertTrue(isset($result[1]['boards']));
+        self::assertCount(1, $result[1]['boards']);
     }
 
     /**
@@ -926,17 +929,17 @@ class ArrayHydratorTest extends HydrationTestCase
      *
      * @dataProvider provideDataForUserEntityResult
      */
-    public function testChainedJoinWithScalars($entityKey)
+    public function testChainedJoinWithScalars($entityKey) : void
     {
-        $rsm = new ResultSetMapping;
+        $rsm = new ResultSetMapping();
 
         $rsm->addEntityResult(CmsUser::class, 'u', $entityKey ?: null);
         $rsm->addFieldResult('u', 'u__id', 'id');
         $rsm->addFieldResult('u', 'u__status', 'status');
-        $rsm->addScalarResult('a__id', 'id', 'integer');
-        $rsm->addScalarResult('a__topic', 'topic', 'string');
-        $rsm->addScalarResult('c__id', 'cid', 'integer');
-        $rsm->addScalarResult('c__topic', 'ctopic', 'string');
+        $rsm->addScalarResult('a__id', 'id', Type::getType('integer'));
+        $rsm->addScalarResult('a__topic', 'topic', Type::getType('string'));
+        $rsm->addScalarResult('c__id', 'cid', Type::getType('integer'));
+        $rsm->addScalarResult('c__topic', 'ctopic', Type::getType('string'));
 
         // Faked result set
         $resultSet = [
@@ -947,7 +950,7 @@ class ArrayHydratorTest extends HydrationTestCase
                 'a__id' => '1',
                 'a__topic' => 'The First',
                 'c__id' => '1',
-                'c__topic' => 'First Comment'
+                'c__topic' => 'First Comment',
             ],
             [
                 'u__id' => '1',
@@ -955,7 +958,7 @@ class ArrayHydratorTest extends HydrationTestCase
                 'a__id' => '1',
                 'a__topic' => 'The First',
                 'c__id' => '2',
-                'c__topic' => 'Second Comment'
+                'c__topic' => 'Second Comment',
             ],
             [
                 'u__id' => '1',
@@ -963,42 +966,42 @@ class ArrayHydratorTest extends HydrationTestCase
                 'a__id' => '42',
                 'a__topic' => 'The Answer',
                 'c__id' => null,
-                'c__topic' => null
+                'c__topic' => null,
             ],
         ];
 
         $stmt     = new HydratorMockStatement($resultSet);
-        $hydrator = new \Doctrine\ORM\Internal\Hydration\ArrayHydrator($this->_em);
+        $hydrator = new ArrayHydrator($this->em);
         $result   = $hydrator->hydrateAll($stmt, $rsm);
 
-        $this->assertEquals(3, count($result));
+        self::assertCount(3, $result);
 
-        $this->assertEquals(2, count($result[0][$entityKey])); // User array
-        $this->assertEquals(1, $result[0]['id']);
-        $this->assertEquals('The First', $result[0]['topic']);
-        $this->assertEquals(1, $result[0]['cid']);
-        $this->assertEquals('First Comment', $result[0]['ctopic']);
+        self::assertCount(2, $result[0][$entityKey]); // User array
+        self::assertEquals(1, $result[0]['id']);
+        self::assertEquals('The First', $result[0]['topic']);
+        self::assertEquals(1, $result[0]['cid']);
+        self::assertEquals('First Comment', $result[0]['ctopic']);
 
-        $this->assertEquals(2, count($result[1][$entityKey])); // User array, duplicated
-        $this->assertEquals(1, $result[1]['id']); // duplicated
-        $this->assertEquals('The First', $result[1]['topic']); // duplicated
-        $this->assertEquals(2, $result[1]['cid']);
-        $this->assertEquals('Second Comment', $result[1]['ctopic']);
+        self::assertCount(2, $result[1][$entityKey]); // User array, duplicated
+        self::assertEquals(1, $result[1]['id']); // duplicated
+        self::assertEquals('The First', $result[1]['topic']); // duplicated
+        self::assertEquals(2, $result[1]['cid']);
+        self::assertEquals('Second Comment', $result[1]['ctopic']);
 
-        $this->assertEquals(2, count($result[2][$entityKey])); // User array, duplicated
-        $this->assertEquals(42, $result[2]['id']);
-        $this->assertEquals('The Answer', $result[2]['topic']);
-        $this->assertNull($result[2]['cid']);
-        $this->assertNull($result[2]['ctopic']);
+        self::assertCount(2, $result[2][$entityKey]); // User array, duplicated
+        self::assertEquals(42, $result[2]['id']);
+        self::assertEquals('The Answer', $result[2]['topic']);
+        self::assertNull($result[2]['cid']);
+        self::assertNull($result[2]['ctopic']);
     }
 
     /**
      * SELECT PARTIAL u.{id, status}
      *   FROM Doctrine\Tests\Models\CMS\CmsUser u
      */
-    public function testResultIteration()
+    public function testResultIteration() : void
     {
-        $rsm = new ResultSetMapping;
+        $rsm = new ResultSetMapping();
 
         $rsm->addEntityResult(CmsUser::class, 'u');
         $rsm->addFieldResult('u', 'u__id', 'id');
@@ -1008,29 +1011,29 @@ class ArrayHydratorTest extends HydrationTestCase
         $resultSet = [
             [
                 'u__id' => '1',
-                'u__name' => 'romanb'
+                'u__name' => 'romanb',
             ],
             [
                 'u__id' => '2',
-                'u__name' => 'jwage'
-            ]
+                'u__name' => 'jwage',
+            ],
         ];
 
         $stmt     = new HydratorMockStatement($resultSet);
-        $hydrator = new \Doctrine\ORM\Internal\Hydration\ArrayHydrator($this->_em);
+        $hydrator = new ArrayHydrator($this->em);
         $iterator = $hydrator->iterate($stmt, $rsm);
         $rowNum   = 0;
 
         while (($row = $iterator->next()) !== false) {
-            $this->assertEquals(1, count($row));
-            $this->assertTrue(is_array($row[0]));
+            self::assertCount(1, $row);
+            self::assertInternalType('array', $row[0]);
 
-            if ($rowNum == 0) {
-                $this->assertEquals(1, $row[0]['id']);
-                $this->assertEquals('romanb', $row[0]['name']);
-            } else if ($rowNum == 1) {
-                $this->assertEquals(2, $row[0]['id']);
-                $this->assertEquals('jwage', $row[0]['name']);
+            if ($rowNum === 0) {
+                self::assertEquals(1, $row[0]['id']);
+                self::assertEquals('romanb', $row[0]['name']);
+            } elseif ($rowNum === 1) {
+                self::assertEquals(2, $row[0]['id']);
+                self::assertEquals('jwage', $row[0]['name']);
             }
 
             ++$rowNum;
@@ -1041,9 +1044,9 @@ class ArrayHydratorTest extends HydrationTestCase
      * SELECT PARTIAL u.{id, status}
      *   FROM Doctrine\Tests\Models\CMS\CmsUser u
      */
-    public function testResultIterationWithAliasedUserEntity()
+    public function testResultIterationWithAliasedUserEntity() : void
     {
-        $rsm = new ResultSetMapping;
+        $rsm = new ResultSetMapping();
 
         $rsm->addEntityResult(CmsUser::class, 'u', 'user');
         $rsm->addFieldResult('u', 'u__id', 'id');
@@ -1053,30 +1056,30 @@ class ArrayHydratorTest extends HydrationTestCase
         $resultSet = [
             [
                 'u__id' => '1',
-                'u__name' => 'romanb'
+                'u__name' => 'romanb',
             ],
             [
                 'u__id' => '2',
-                'u__name' => 'jwage'
-            ]
+                'u__name' => 'jwage',
+            ],
         ];
 
         $stmt     = new HydratorMockStatement($resultSet);
-        $hydrator = new \Doctrine\ORM\Internal\Hydration\ArrayHydrator($this->_em);
+        $hydrator = new ArrayHydrator($this->em);
         $iterator = $hydrator->iterate($stmt, $rsm);
         $rowNum   = 0;
 
         while (($row = $iterator->next()) !== false) {
-            $this->assertEquals(1, count($row));
-            $this->assertArrayHasKey(0, $row);
-            $this->assertArrayHasKey('user', $row[0]);
+            self::assertCount(1, $row);
+            self::assertArrayHasKey(0, $row);
+            self::assertArrayHasKey('user', $row[0]);
 
-            if ($rowNum == 0) {
-                $this->assertEquals(1, $row[0]['user']['id']);
-                $this->assertEquals('romanb', $row[0]['user']['name']);
-            } else if ($rowNum == 1) {
-                $this->assertEquals(2, $row[0]['user']['id']);
-                $this->assertEquals('jwage', $row[0]['user']['name']);
+            if ($rowNum === 0) {
+                self::assertEquals(1, $row[0]['user']['id']);
+                self::assertEquals('romanb', $row[0]['user']['name']);
+            } elseif ($rowNum === 1) {
+                self::assertEquals(2, $row[0]['user']['id']);
+                self::assertEquals('jwage', $row[0]['user']['name']);
             }
 
             ++$rowNum;
@@ -1089,9 +1092,9 @@ class ArrayHydratorTest extends HydrationTestCase
      *
      * @group DDC-644
      */
-    public function testSkipUnknownColumns()
+    public function testSkipUnknownColumns() : void
     {
-        $rsm = new ResultSetMapping;
+        $rsm = new ResultSetMapping();
 
         $rsm->addEntityResult(CmsUser::class, 'u');
         $rsm->addFieldResult('u', 'u__id', 'id');
@@ -1107,13 +1110,13 @@ class ArrayHydratorTest extends HydrationTestCase
         ];
 
         $stmt     = new HydratorMockStatement($resultSet);
-        $hydrator = new \Doctrine\ORM\Internal\Hydration\ArrayHydrator($this->_em);
+        $hydrator = new ArrayHydrator($this->em);
         $result   = $hydrator->hydrateAll($stmt, $rsm);
 
-        $this->assertEquals(1, count($result));
-        $this->assertArrayHasKey('id', $result[0]);
-        $this->assertArrayHasKey('name', $result[0]);
-        $this->assertArrayNotHasKey('foo', $result[0]);
+        self::assertCount(1, $result);
+        self::assertArrayHasKey('id', $result[0]);
+        self::assertArrayHasKey('name', $result[0]);
+        self::assertArrayNotHasKey('foo', $result[0]);
     }
 
     /**
@@ -1123,14 +1126,14 @@ class ArrayHydratorTest extends HydrationTestCase
      * @group DDC-1358
      * @dataProvider provideDataForUserEntityResult
      */
-    public function testMissingIdForRootEntity($userEntityKey)
+    public function testMissingIdForRootEntity($userEntityKey) : void
     {
-        $rsm = new ResultSetMapping;
+        $rsm = new ResultSetMapping();
 
         $rsm->addEntityResult(CmsUser::class, 'u', $userEntityKey ?: null);
         $rsm->addFieldResult('u', 'u__id', 'id');
         $rsm->addFieldResult('u', 'u__status', 'status');
-        $rsm->addScalarResult('sclr0', 'nameUpper', 'string');
+        $rsm->addScalarResult('sclr0', 'nameUpper', Type::getType('string'));
 
         // Faked result set
         $resultSet = [
@@ -1158,20 +1161,20 @@ class ArrayHydratorTest extends HydrationTestCase
         ];
 
         $stmt     = new HydratorMockStatement($resultSet);
-        $hydrator = new \Doctrine\ORM\Internal\Hydration\ArrayHydrator($this->_em);
+        $hydrator = new ArrayHydrator($this->em);
         $result   = $hydrator->hydrateAll($stmt, $rsm);
 
-        $this->assertEquals(4, count($result), "Should hydrate four results.");
+        self::assertCount(4, $result, 'Should hydrate four results.');
 
-        $this->assertEquals('ROMANB', $result[0]['nameUpper']);
-        $this->assertEquals('ROMANB', $result[1]['nameUpper']);
-        $this->assertEquals('JWAGE', $result[2]['nameUpper']);
-        $this->assertEquals('JWAGE', $result[3]['nameUpper']);
+        self::assertEquals('ROMANB', $result[0]['nameUpper']);
+        self::assertEquals('ROMANB', $result[1]['nameUpper']);
+        self::assertEquals('JWAGE', $result[2]['nameUpper']);
+        self::assertEquals('JWAGE', $result[3]['nameUpper']);
 
-        $this->assertEquals(['id' => 1, 'status' => 'developer'], $result[0][$userEntityKey]);
-        $this->assertNull($result[1][$userEntityKey]);
-        $this->assertEquals(['id' => 2, 'status' => 'developer'], $result[2][$userEntityKey]);
-        $this->assertNull($result[3][$userEntityKey]);
+        self::assertEquals(['id' => 1, 'status' => 'developer'], $result[0][$userEntityKey]);
+        self::assertNull($result[1][$userEntityKey]);
+        self::assertEquals(['id' => 2, 'status' => 'developer'], $result[2][$userEntityKey]);
+        self::assertNull($result[3][$userEntityKey]);
     }
 
     /**
@@ -1182,14 +1185,14 @@ class ArrayHydratorTest extends HydrationTestCase
      * @group DDC-1385
      * @dataProvider provideDataForUserEntityResult
      */
-    public function testIndexByAndMixedResult($userEntityKey)
+    public function testIndexByAndMixedResult($userEntityKey) : void
     {
-        $rsm = new ResultSetMapping;
+        $rsm = new ResultSetMapping();
 
         $rsm->addEntityResult(CmsUser::class, 'u', $userEntityKey ?: null);
         $rsm->addFieldResult('u', 'u__id', 'id');
         $rsm->addFieldResult('u', 'u__status', 'status');
-        $rsm->addScalarResult('sclr0', 'nameUpper', 'string');
+        $rsm->addScalarResult('sclr0', 'nameUpper', Type::getType('string'));
         $rsm->addIndexBy('u', 'id');
 
         // Faked result set
@@ -1208,15 +1211,15 @@ class ArrayHydratorTest extends HydrationTestCase
         ];
 
         $stmt     = new HydratorMockStatement($resultSet);
-        $hydrator = new \Doctrine\ORM\Internal\Hydration\ArrayHydrator($this->_em);
+        $hydrator = new ArrayHydrator($this->em);
         $result   = $hydrator->hydrateAll($stmt, $rsm);
 
-        $this->assertEquals(2, count($result));
+        self::assertCount(2, $result);
 
-        $this->assertTrue(isset($result[1]));
-        $this->assertEquals(1, $result[1][$userEntityKey]['id']);
+        self::assertArrayHasKey(1, $result);
+        self::assertEquals(1, $result[1][$userEntityKey]['id']);
 
-        $this->assertTrue(isset($result[2]));
-        $this->assertEquals(2, $result[2][$userEntityKey]['id']);
+        self::assertArrayHasKey(2, $result);
+        self::assertEquals(2, $result[2][$userEntityKey]['id']);
     }
 }

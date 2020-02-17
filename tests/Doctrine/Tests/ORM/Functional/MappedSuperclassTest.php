@@ -1,25 +1,27 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\Tests\ORM\Functional;
 
-use Doctrine\ORM\Proxy\Proxy;
 use Doctrine\Tests\Models\DirectoryTree\Directory;
 use Doctrine\Tests\Models\DirectoryTree\File;
 use Doctrine\Tests\OrmFunctionalTestCase;
+use ProxyManager\Proxy\GhostObjectInterface;
 
 /**
  * MappedSuperclassTest
- *
- * @author robo
  */
 class MappedSuperclassTest extends OrmFunctionalTestCase
 {
-    protected function setUp() {
+    protected function setUp() : void
+    {
         $this->useModelSet('directorytree');
+
         parent::setUp();
     }
 
-    public function testCRUD()
+    public function testCRUD() : void
     {
         $root = new Directory();
         $root->setName('Root');
@@ -32,19 +34,19 @@ class MappedSuperclassTest extends OrmFunctionalTestCase
         $file = new File($directory);
         $file->setName('test-b.html');
 
-        $this->_em->persist($root);
-        $this->_em->persist($directory);
-        $this->_em->persist($file);
+        $this->em->persist($root);
+        $this->em->persist($directory);
+        $this->em->persist($file);
 
-        $this->_em->flush();
-        $this->_em->clear();
+        $this->em->flush();
+        $this->em->clear();
 
-        $cleanFile = $this->_em->find(get_class($file), $file->getId());
+        $cleanFile = $this->em->find(File::class, $file->getId());
 
-        $this->assertInstanceOf(Directory::class, $cleanFile->getParent());
-        $this->assertInstanceOf(Proxy::class, $cleanFile->getParent());
-        $this->assertEquals($directory->getId(), $cleanFile->getParent()->getId());
-        $this->assertInstanceOf(Directory::class, $cleanFile->getParent()->getParent());
-        $this->assertEquals($root->getId(), $cleanFile->getParent()->getParent()->getId());
+        self::assertInstanceOf(Directory::class, $cleanFile->getParent());
+        self::assertInstanceOf(GhostObjectInterface::class, $cleanFile->getParent());
+        self::assertEquals($directory->getId(), $cleanFile->getParent()->getId());
+        self::assertInstanceOf(Directory::class, $cleanFile->getParent()->getParent());
+        self::assertEquals($root->getId(), $cleanFile->getParent()->getParent()->getId());
     }
 }

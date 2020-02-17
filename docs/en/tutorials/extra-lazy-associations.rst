@@ -34,7 +34,6 @@ Additionally even with Doctrine 2.0 the following methods do not trigger the col
 With extra lazy collections you can now not only add entities to large collections but also paginate them
 easily using a combination of ``count`` and ``slice``.
 
-
 Enabling Extra-Lazy Associations
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
@@ -46,15 +45,18 @@ switch to extra lazy as shown in these examples:
     .. code-block:: php
 
         <?php
+
         namespace Doctrine\Tests\Models\CMS;
 
+        use Doctrine\ORM\Annotation as ORM;
+
         /**
-         * @Entity
+         * @ORM\Entity
          */
         class CmsGroup
         {
             /**
-             * @ManyToMany(targetEntity="CmsUser", mappedBy="groups", fetch="EXTRA_LAZY")
+             * @ORM\ManyToMany(targetEntity="CmsUser", mappedBy="groups", fetch="EXTRA_LAZY")
              */
             public $users;
         }
@@ -65,22 +67,10 @@ switch to extra lazy as shown in these examples:
         <doctrine-mapping xmlns="http://doctrine-project.org/schemas/orm/doctrine-mapping"
               xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
               xsi:schemaLocation="http://doctrine-project.org/schemas/orm/doctrine-mapping
-                                  http://www.doctrine-project.org/schemas/orm/doctrine-mapping.xsd">
+                                  https://www.doctrine-project.org/schemas/orm/doctrine-mapping.xsd">
 
             <entity name="Doctrine\Tests\Models\CMS\CmsGroup">
                 <!-- ... -->
                 <many-to-many field="users" target-entity="CmsUser" mapped-by="groups" fetch="EXTRA_LAZY" />
             </entity>
         </doctrine-mapping>
-
-    .. code-block:: yaml
-
-        Doctrine\Tests\Models\CMS\CmsGroup:
-          type: entity
-          # ...
-          manyToMany:
-            users:
-              targetEntity: CmsUser
-              mappedBy: groups
-              fetch: EXTRA_LAZY
-

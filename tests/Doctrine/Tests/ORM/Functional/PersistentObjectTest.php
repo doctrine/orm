@@ -1,110 +1,117 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\Tests\ORM\Functional;
 
-use Doctrine\Common\Persistence\PersistentObject;
+use Doctrine\ORM\Annotation as ORM;
+use Doctrine\ORM\PersistentObject;
 use Doctrine\Tests\OrmFunctionalTestCase;
+use Exception;
 
 /**
- * Test that Doctrine ORM correctly works with the ObjectManagerAware and PersistentObject
+ * Test that Doctrine ORM correctly works with the EntityManagerAware and PersistentObject
  * classes from Common.
  *
  * @group DDC-1448
  */
 class PersistentObjectTest extends OrmFunctionalTestCase
 {
-    protected function setUp()
+    protected function setUp() : void
     {
         parent::setUp();
 
         try {
-            $this->_schemaTool->createSchema(
+            $this->schemaTool->createSchema(
                 [
-                    $this->_em->getClassMetadata(PersistentEntity::class),
+                    $this->em->getClassMetadata(PersistentEntity::class),
                 ]
             );
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
         }
 
-        PersistentObject::setObjectManager($this->_em);
+        PersistentObject::setEntityManager($this->em);
     }
 
-    public function testPersist()
+    public function testPersist() : void
     {
         $entity = new PersistentEntity();
-        $entity->setName("test");
+        $entity->setName('test');
 
-        $this->_em->persist($entity);
-        $this->_em->flush();
+        $this->em->persist($entity);
+        $this->em->flush();
 
         $this->addToAssertionCount(1);
     }
 
-    public function testFind()
+    public function testFind() : void
     {
         $entity = new PersistentEntity();
-        $entity->setName("test");
+        $entity->setName('test');
 
-        $this->_em->persist($entity);
-        $this->_em->flush();
-        $this->_em->clear();
+        $this->em->persist($entity);
+        $this->em->flush();
+        $this->em->clear();
 
-        $entity = $this->_em->find(PersistentEntity::class, $entity->getId());
+        $entity = $this->em->find(PersistentEntity::class, $entity->getId());
 
-        $this->assertEquals('test', $entity->getName());
+        self::assertEquals('test', $entity->getName());
         $entity->setName('foobar');
 
-        $this->_em->flush();
+        $this->em->flush();
     }
 
-    public function testGetReference()
+    public function testGetReference() : void
     {
         $entity = new PersistentEntity();
-        $entity->setName("test");
+        $entity->setName('test');
 
-        $this->_em->persist($entity);
-        $this->_em->flush();
-        $this->_em->clear();
+        $this->em->persist($entity);
+        $this->em->flush();
+        $this->em->clear();
 
-        $entity = $this->_em->getReference(PersistentEntity::class, $entity->getId());
+        $entity = $this->em->getReference(PersistentEntity::class, $entity->getId());
 
-        $this->assertEquals('test', $entity->getName());
+        self::assertEquals('test', $entity->getName());
     }
 
-    public function testSetAssociation()
+    public function testSetAssociation() : void
     {
         $entity = new PersistentEntity();
-        $entity->setName("test");
+        $entity->setName('test');
         $entity->setParent($entity);
 
-        $this->_em->persist($entity);
-        $this->_em->flush();
-        $this->_em->clear();
+        $this->em->persist($entity);
+        $this->em->flush();
+        $this->em->clear();
 
-        $entity = $this->_em->getReference(PersistentEntity::class, $entity->getId());
-        $this->assertSame($entity, $entity->getParent());
+        $entity = $this->em->getReference(PersistentEntity::class, $entity->getId());
+        self::assertSame($entity, $entity->getParent());
     }
 }
 
 /**
- * @Entity
+ * @ORM\Entity
  */
 class PersistentEntity extends PersistentObject
 {
     /**
-     * @Id @Column(type="integer") @GeneratedValue
+     * @ORM\Id @ORM\Column(type="integer") @ORM\GeneratedValue
+     *
      * @var int
      */
     protected $id;
 
     /**
-     * @Column(type="string")
+     * @ORM\Column(type="string")
+     *
      * @var string
      */
     protected $name;
 
     /**
-     * @ManyToOne(targetEntity="PersistentEntity")
+     * @ORM\ManyToOne(targetEntity=PersistentEntity::class)
+     *
      * @var PersistentEntity
      */
     protected $parent;

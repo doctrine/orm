@@ -1,64 +1,62 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\Tests\ORM\Functional\Ticket;
 
+use Doctrine\ORM\Annotation as ORM;
+use Doctrine\Tests\OrmFunctionalTestCase;
 
 /**
  * @group DDC-1515
  */
-class DDC1515Test extends \Doctrine\Tests\OrmFunctionalTestCase
+class DDC1515Test extends OrmFunctionalTestCase
 {
-    public function setUp()
+    public function setUp() : void
     {
         parent::setUp();
-        $this->_schemaTool->createSchema(
+        $this->schemaTool->createSchema(
             [
-            $this->_em->getClassMetadata(DDC1515Foo::class),
-            $this->_em->getClassMetadata(DDC1515Bar::class),
+                $this->em->getClassMetadata(DDC1515Foo::class),
+                $this->em->getClassMetadata(DDC1515Bar::class),
             ]
         );
     }
 
-    public function testIssue()
+    public function testIssue() : void
     {
         $bar = new DDC1515Bar();
-        $this->_em->persist($bar);
-        $this->_em->flush();
+        $this->em->persist($bar);
+        $this->em->flush();
 
-        $foo = new DDC1515Foo();
+        $foo      = new DDC1515Foo();
         $foo->bar = $bar;
-        $this->_em->persist($foo);
-        $this->_em->flush();
-        $this->_em->clear();
+        $this->em->persist($foo);
+        $this->em->flush();
+        $this->em->clear();
 
-        $bar = $this->_em->find(DDC1515Bar::class, $bar->id);
-        $this->assertInstanceOf(DDC1515Foo::class, $bar->foo);
+        $bar = $this->em->find(DDC1515Bar::class, $bar->id);
+        self::assertInstanceOf(DDC1515Foo::class, $bar->foo);
     }
 }
 
 /**
- * @Entity
+ * @ORM\Entity
  */
 class DDC1515Foo
 {
-    /**
-     * @OneToOne(targetEntity="DDC1515Bar", inversedBy="foo") @Id
-     */
+    /** @ORM\OneToOne(targetEntity=DDC1515Bar::class, inversedBy="foo") @ORM\Id */
     public $bar;
 }
 
 /**
- * @Entity
+ * @ORM\Entity
  */
 class DDC1515Bar
 {
-    /**
-     * @Id @Column(type="integer") @GeneratedValue
-     */
+    /** @ORM\Id @ORM\Column(type="integer") @ORM\GeneratedValue */
     public $id;
 
-    /**
-     * @OneToOne(targetEntity="DDC1515Foo", mappedBy="bar")
-     */
+    /** @ORM\OneToOne(targetEntity=DDC1515Foo::class, mappedBy="bar") */
     public $foo;
 }

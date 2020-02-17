@@ -1,62 +1,48 @@
 <?php
-/*
- * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
- * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
- * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
- * A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT
- * OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
- * SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
- * LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
- * DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
- * THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
- * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
- * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- *
- * This software consists of voluntary contributions made by many individuals
- * and is licensed under the MIT license. For more information, see
- * <http://www.doctrine-project.org>.
- */
+
+declare(strict_types=1);
 
 namespace Doctrine\ORM\Query;
+
+use Doctrine\ORM\AbstractQuery;
+use function array_diff;
+use function array_keys;
 
 /**
  * An adapter implementation of the TreeWalker interface. The methods in this class
  * are empty. ﻿This class exists as convenience for creating tree walkers.
- *
- * @author Roman Borschel <roman@code-factory.org>
- * @since 2.0
  */
 abstract class TreeWalkerAdapter implements TreeWalker
 {
     /**
      * The original Query.
      *
-     * @var \Doctrine\ORM\AbstractQuery
+     * @var AbstractQuery
      */
-    private $_query;
+    private $query;
 
     /**
      * The ParserResult of the original query that was produced by the Parser.
      *
-     * @var \Doctrine\ORM\Query\ParserResult
+     * @var ParserResult
      */
-    private $_parserResult;
+    private $parserResult;
 
     /**
      * The query components of the original query (the "symbol table") that was produced by the Parser.
      *
-     * @var array
+     * @var mixed[][]
      */
-    private $_queryComponents;
+    private $queryComponents;
 
     /**
      * {@inheritdoc}
      */
     public function __construct($query, $parserResult, array $queryComponents)
     {
-        $this->_query = $query;
-        $this->_parserResult = $parserResult;
-        $this->_queryComponents = $queryComponents;
+        $this->query           = $query;
+        $this->parserResult    = $parserResult;
+        $this->queryComponents = $queryComponents;
     }
 
     /**
@@ -64,7 +50,7 @@ abstract class TreeWalkerAdapter implements TreeWalker
      */
     public function getQueryComponents()
     {
-        return $this->_queryComponents;
+        return $this->queryComponents;
     }
 
     /**
@@ -78,35 +64,27 @@ abstract class TreeWalkerAdapter implements TreeWalker
             throw QueryException::invalidQueryComponent($dqlAlias);
         }
 
-        $this->_queryComponents[$dqlAlias] = $queryComponent;
-    }
-
-    /**
-     * @return array
-     */
-    protected function _getQueryComponents()
-    {
-        return $this->_queryComponents;
+        $this->queryComponents[$dqlAlias] = $queryComponent;
     }
 
     /**
      * Retrieves the Query Instance responsible for the current walkers execution.
      *
-     * @return \Doctrine\ORM\AbstractQuery
+     * @return AbstractQuery
      */
-    protected function _getQuery()
+    protected function getQuery()
     {
-        return $this->_query;
+        return $this->query;
     }
 
     /**
      * Retrieves the ParserResult.
      *
-     * @return \Doctrine\ORM\Query\ParserResult
+     * @return ParserResult
      */
-    protected function _getParserResult()
+    protected function getParserResult()
     {
-        return $this->_parserResult;
+        return $this->parserResult;
     }
 
     /**

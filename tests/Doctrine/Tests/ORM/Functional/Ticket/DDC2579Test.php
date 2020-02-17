@@ -1,88 +1,90 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\Tests\ORM\Functional\Ticket;
 
+use Doctrine\DBAL\Platforms\AbstractPlatform;
 use Doctrine\DBAL\Types\StringType;
 use Doctrine\DBAL\Types\Type;
-use Doctrine\DBAL\Platforms\AbstractPlatform;
+use Doctrine\ORM\Annotation as ORM;
+use Doctrine\Tests\OrmFunctionalTestCase;
 
 /**
  * @group DDC-2579
  */
-class DDC2579Test extends \Doctrine\Tests\OrmFunctionalTestCase
+class DDC2579Test extends OrmFunctionalTestCase
 {
-    protected function setUp()
+    protected function setUp() : void
     {
         parent::setUp();
 
         Type::addType(DDC2579Type::NAME, DDC2579Type::class);
 
-        $this->_schemaTool->createSchema(
+        $this->schemaTool->createSchema(
             [
-            $this->_em->getClassMetadata(DDC2579Entity::class),
-            $this->_em->getClassMetadata(DDC2579EntityAssoc::class),
-            $this->_em->getClassMetadata(DDC2579AssocAssoc::class),
+                $this->em->getClassMetadata(DDC2579Entity::class),
+                $this->em->getClassMetadata(DDC2579EntityAssoc::class),
+                $this->em->getClassMetadata(DDC2579AssocAssoc::class),
             ]
         );
     }
 
-    public function testIssue()
+    public function testIssue() : void
     {
-        $id         = new DDC2579Id("foo");
+        $id         = new DDC2579Id('foo');
         $assoc      = new DDC2579AssocAssoc($id);
         $assocAssoc = new DDC2579EntityAssoc($assoc);
         $entity     = new DDC2579Entity($assocAssoc);
-        $repository = $this->_em->getRepository(DDC2579Entity::class);
+        $repository = $this->em->getRepository(DDC2579Entity::class);
 
-        $this->_em->persist($assoc);
-        $this->_em->persist($assocAssoc);
-        $this->_em->persist($entity);
-        $this->_em->flush();
+        $this->em->persist($assoc);
+        $this->em->persist($assocAssoc);
+        $this->em->persist($entity);
+        $this->em->flush();
 
         $entity->value++;
 
-        $this->_em->persist($entity);
-        $this->_em->flush();
-        $this->_em->clear();
+        $this->em->persist($entity);
+        $this->em->flush();
+        $this->em->clear();
 
         $id       = $entity->id;
         $value    = $entity->value;
         $criteria = ['assoc' => $assoc, 'id' => $id];
         $entity   = $repository->findOneBy($criteria);
 
-        $this->assertInstanceOf(DDC2579Entity::class, $entity);
-        $this->assertEquals($value, $entity->value);
+        self::assertInstanceOf(DDC2579Entity::class, $entity);
+        self::assertEquals($value, $entity->value);
 
-        $this->_em->remove($entity);
-        $this->_em->flush();
-        $this->_em->clear();
+        $this->em->remove($entity);
+        $this->em->flush();
+        $this->em->clear();
 
-        $this->assertNull($repository->findOneBy($criteria));
-        $this->assertCount(0, $repository->findAll());
+        self::assertNull($repository->findOneBy($criteria));
+        self::assertCount(0, $repository->findAll());
     }
 }
 
 /**
- * @Entity
+ * @ORM\Entity
  */
 class DDC2579Entity
 {
     /**
-     * @Id
-     * @Column(type="ddc2579")
+     * @ORM\Id
+     * @ORM\Column(type="ddc2579")
      */
     public $id;
 
     /**
-     * @Id
-     * @ManyToOne(targetEntity="DDC2579EntityAssoc")
-     * @JoinColumn(name="relation_id", referencedColumnName="association_id")
+     * @ORM\Id
+     * @ORM\ManyToOne(targetEntity=DDC2579EntityAssoc::class)
+     * @ORM\JoinColumn(name="relation_id", referencedColumnName="association_id")
      */
     public $assoc;
 
-    /**
-     * @Column(type="integer")
-     */
+    /** @ORM\Column(type="integer") */
     public $value;
 
     public function __construct(DDC2579EntityAssoc $assoc, $value = 0)
@@ -91,18 +93,17 @@ class DDC2579Entity
         $this->assoc = $assoc;
         $this->value = $value;
     }
-
 }
 
 /**
- * @Entity
+ * @ORM\Entity
  */
 class DDC2579EntityAssoc
 {
     /**
-     * @Id
-     * @ManyToOne(targetEntity="DDC2579AssocAssoc")
-     * @JoinColumn(name="association_id", referencedColumnName="associationId")
+     * @ORM\Id
+     * @ORM\ManyToOne(targetEntity=DDC2579AssocAssoc::class)
+     * @ORM\JoinColumn(name="association_id", referencedColumnName="associationId")
      */
     public $assocAssoc;
 
@@ -113,33 +114,33 @@ class DDC2579EntityAssoc
 }
 
 /**
- * @Entity
+ * @ORM\Entity
  */
 class DDC2579AssocAssoc
 {
     /**
-     * @Id
-     * @Column(type="ddc2579")
+     * @ORM\Id
+     * @ORM\Column(type="ddc2579")
      */
     public $associationId;
 
     public function __construct(DDC2579Id $id)
     {
-        $this->associationId  = $id;
+        $this->associationId = $id;
     }
 }
 
 
 class DDC2579Type extends StringType
 {
-    const NAME = 'ddc2579';
+    public const NAME = 'ddc2579';
 
     /**
      * {@inheritdoc}
      */
     public function convertToDatabaseValue($value, AbstractPlatform $platform)
     {
-        return (string)$value;
+        return (string) $value;
     }
 
     public function convertToPhpValue($value, AbstractPlatform $platform)

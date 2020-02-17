@@ -1,12 +1,12 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\Tests\DbalTypes;
 
 class CustomIdObject
 {
-    /**
-     * @var string
-     */
+    /** @var string */
     public $id;
 
     /**

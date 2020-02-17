@@ -1,23 +1,25 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\Tests\Models\Navigation;
 
+use Doctrine\ORM\Annotation as ORM;
+
 /**
- * @Entity
- * @Table(name="navigation_users")
+ * @ORM\Entity
+ * @ORM\Table(name="navigation_users")
  */
 class NavUser
 {
     /**
-     * @Id
-     * @Column(type="integer")
-     * @generatedValue
+     * @ORM\Id
+     * @ORM\Column(type="integer")
+     * @ORM\GeneratedValue
      */
     private $id;
 
-    /**
-     * @column(type="string")
-     */
+    /** @ORM\Column(type="string") */
     private $name;
 
     public function __construct($name)
@@ -25,4 +27,3 @@ class NavUser
         $this->name = $name;
     }
 }
-

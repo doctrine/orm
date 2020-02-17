@@ -1,39 +1,48 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\Tests\ORM\Functional\Ticket;
 
-class DDC832Test extends \Doctrine\Tests\OrmFunctionalTestCase
+use Doctrine\DBAL\Logging\EchoSQLLogger;
+use Doctrine\DBAL\Schema\AbstractSchemaManager;
+use Doctrine\ORM\Annotation as ORM;
+use Doctrine\Tests\OrmFunctionalTestCase;
+use Exception;
+
+class DDC832Test extends OrmFunctionalTestCase
 {
-    public function setUp()
+    public function setUp() : void
     {
         parent::setUp();
 
-        $platform = $this->_em->getConnection()->getDatabasePlatform();
+        $platform = $this->em->getConnection()->getDatabasePlatform();
 
         if ($platform->getName() === 'oracle') {
             $this->markTestSkipped('Doesnt run on Oracle.');
         }
 
-        $this->_em->getConfiguration()->setSQLLogger(new \Doctrine\DBAL\Logging\EchoSQLLogger());
+        $this->em->getConfiguration()->setSQLLogger(new EchoSQLLogger());
 
         try {
-            $this->_schemaTool->createSchema(
+            $this->schemaTool->createSchema(
                 [
-                    $this->_em->getClassMetadata(DDC832JoinedIndex::class),
-                    $this->_em->getClassMetadata(DDC832JoinedTreeIndex::class),
-                    $this->_em->getClassMetadata(DDC832Like::class),
+                    $this->em->getClassMetadata(DDC832JoinedIndex::class),
+                    $this->em->getClassMetadata(DDC832JoinedTreeIndex::class),
+                    $this->em->getClassMetadata(DDC832Like::class),
                 ]
             );
-        } catch(\Exception $e) {
+        } catch (Exception $e) {
         }
     }
 
-    public function tearDown()
+    public function tearDown() : void
     {
-        /* @var $sm \Doctrine\DBAL\Schema\AbstractSchemaManager */
-        $platform = $this->_em->getConnection()->getDatabasePlatform();
+        /** @var AbstractSchemaManager $sm */
+        $platform = $this->em->getConnection()->getDatabasePlatform();
 
-        $sm = $this->_em->getConnection()->getSchemaManager();
+        $sm = $this->em->getConnection()->getSchemaManager();
+
         $sm->dropTable($platform->quoteIdentifier('TREE_INDEX'));
         $sm->dropTable($platform->quoteIdentifier('INDEX'));
         $sm->dropTable($platform->quoteIdentifier('LIKE'));
@@ -42,123 +51,121 @@ class DDC832Test extends \Doctrine\Tests\OrmFunctionalTestCase
     /**
      * @group DDC-832
      */
-    public function testQuotedTableBasicUpdate()
+    public function testQuotedTableBasicUpdate() : void
     {
         $like = new DDC832Like('test');
-        $this->_em->persist($like);
-        $this->_em->flush();
+        $this->em->persist($like);
+        $this->em->flush();
 
         $like->word = 'test2';
-        $this->_em->flush();
-        $this->_em->clear();
+        $this->em->flush();
+        $this->em->clear();
 
-        self::assertEquals($like, $this->_em->find(DDC832Like::class, $like->id));
+        self::assertEquals($like, $this->em->find(DDC832Like::class, $like->id));
     }
 
     /**
      * @group DDC-832
      */
-    public function testQuotedTableBasicRemove()
+    public function testQuotedTableBasicRemove() : void
     {
         $like = new DDC832Like('test');
-        $this->_em->persist($like);
-        $this->_em->flush();
+        $this->em->persist($like);
+        $this->em->flush();
 
         $idToBeRemoved = $like->id;
 
-        $this->_em->remove($like);
-        $this->_em->flush();
-        $this->_em->clear();
+        $this->em->remove($like);
+        $this->em->flush();
+        $this->em->clear();
 
-        self::assertNull($this->_em->find(DDC832Like::class, $idToBeRemoved));
+        self::assertNull($this->em->find(DDC832Like::class, $idToBeRemoved));
     }
 
     /**
      * @group DDC-832
      */
-    public function testQuotedTableJoinedUpdate()
+    public function testQuotedTableJoinedUpdate() : void
     {
         $index = new DDC832JoinedIndex('test');
-        $this->_em->persist($index);
-        $this->_em->flush();
+        $this->em->persist($index);
+        $this->em->flush();
 
         $index->name = 'asdf';
-        $this->_em->flush();
-        $this->_em->clear();
+        $this->em->flush();
+        $this->em->clear();
 
-        self::assertEquals($index, $this->_em->find(DDC832JoinedIndex::class, $index->id));
+        self::assertEquals($index, $this->em->find(DDC832JoinedIndex::class, $index->id));
     }
 
     /**
      * @group DDC-832
      */
-    public function testQuotedTableJoinedRemove()
+    public function testQuotedTableJoinedRemove() : void
     {
         $index = new DDC832JoinedIndex('test');
-        $this->_em->persist($index);
-        $this->_em->flush();
+        $this->em->persist($index);
+        $this->em->flush();
 
         $idToBeRemoved = $index->id;
 
-        $this->_em->remove($index);
-        $this->_em->flush();
-        $this->_em->clear();
+        $this->em->remove($index);
+        $this->em->flush();
+        $this->em->clear();
 
-        self::assertNull($this->_em->find(DDC832JoinedIndex::class, $idToBeRemoved));
+        self::assertNull($this->em->find(DDC832JoinedIndex::class, $idToBeRemoved));
     }
 
     /**
      * @group DDC-832
      */
-    public function testQuotedTableJoinedChildUpdate()
+    public function testQuotedTableJoinedChildUpdate() : void
     {
         $index = new DDC832JoinedTreeIndex('test', 1, 2);
-        $this->_em->persist($index);
-        $this->_em->flush();
+        $this->em->persist($index);
+        $this->em->flush();
 
         $index->name = 'asdf';
-        $this->_em->flush();
-        $this->_em->clear();
+        $this->em->flush();
+        $this->em->clear();
 
-        self::assertEquals($index, $this->_em->find(DDC832JoinedTreeIndex::class, $index->id));
+        self::assertEquals($index, $this->em->find(DDC832JoinedTreeIndex::class, $index->id));
     }
 
     /**
      * @group DDC-832
      */
-    public function testQuotedTableJoinedChildRemove()
+    public function testQuotedTableJoinedChildRemove() : void
     {
         $index = new DDC832JoinedTreeIndex('test', 1, 2);
-        $this->_em->persist($index);
-        $this->_em->flush();
+        $this->em->persist($index);
+        $this->em->flush();
 
         $idToBeRemoved = $index->id;
 
-        $this->_em->remove($index);
-        $this->_em->flush();
-        $this->_em->clear();
+        $this->em->remove($index);
+        $this->em->flush();
+        $this->em->clear();
 
-        self::assertNull($this->_em->find(DDC832JoinedTreeIndex::class, $idToBeRemoved));
+        self::assertNull($this->em->find(DDC832JoinedTreeIndex::class, $idToBeRemoved));
     }
 }
 
 /**
- * @Entity
- * @Table(name="`LIKE`")
+ * @ORM\Entity
+ * @ORM\Table(name="LIKE")
  */
 class DDC832Like
 {
-    /**
-     * @Id @Column(type="integer") @GeneratedValue
-     */
+    /** @ORM\Id @ORM\Column(type="integer") @ORM\GeneratedValue */
     public $id;
 
-    /** @Column(type="string") */
+    /** @ORM\Column(type="string") */
     public $word;
 
     /**
-     * @version
-     * @Column(type="integer")
+     * @ORM\Version
+     * @ORM\Column(type="integer")
      */
     public $version;
 
@@ -169,25 +176,23 @@ class DDC832Like
 }
 
 /**
- * @Entity
- * @Table(name="`INDEX`")
- * @InheritanceType("JOINED")
- * @DiscriminatorColumn(name="discr", type="string")
- * @DiscriminatorMap({"like" = "DDC832JoinedIndex", "fuzzy" = "DDC832JoinedTreeIndex"})
+ * @ORM\Entity
+ * @ORM\Table(name="INDEX")
+ * @ORM\InheritanceType("JOINED")
+ * @ORM\DiscriminatorColumn(name="discr", type="string")
+ * @ORM\DiscriminatorMap({"like" = DDC832JoinedIndex::class, "fuzzy" = DDC832JoinedTreeIndex::class})
  */
 class DDC832JoinedIndex
 {
-    /**
-     * @Id @Column(type="integer") @GeneratedValue
-     */
+    /** @ORM\Id @ORM\Column(type="integer") @ORM\GeneratedValue */
     public $id;
 
-    /** @Column(type="string") */
+    /** @ORM\Column(type="string") */
     public $name;
 
     /**
-     * @version
-     * @Column(type="integer")
+     * @ORM\Version
+     * @ORM\Column(type="integer")
      */
     public $version;
 
@@ -198,21 +203,21 @@ class DDC832JoinedIndex
 }
 
 /**
- * @Entity
- * @Table(name="`TREE_INDEX`")
+ * @ORM\Entity
+ * @ORM\Table(name="TREE_INDEX")
  */
 class DDC832JoinedTreeIndex extends DDC832JoinedIndex
 {
-    /** @Column(type="integer") */
+    /** @ORM\Column(type="integer") */
     public $lft;
 
-    /** @Column(type="integer") */
+    /** @ORM\Column(type="integer") */
     public $rgt;
 
     public function __construct($name, $lft, $rgt)
     {
         $this->name = $name;
-        $this->lft = $lft;
-        $this->rgt = $rgt;
+        $this->lft  = $lft;
+        $this->rgt  = $rgt;
     }
 }

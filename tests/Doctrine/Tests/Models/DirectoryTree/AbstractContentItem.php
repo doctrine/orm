@@ -1,23 +1,23 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\Tests\Models\DirectoryTree;
 
+use Doctrine\ORM\Annotation as ORM;
+
 /**
- * @MappedSuperclass
+ * @ORM\MappedSuperClass
  */
 abstract class AbstractContentItem
 {
-    /**
-     * @Id @Column(type="integer") @GeneratedValue
-     */
+    /** @ORM\Id @ORM\Column(type="integer") @ORM\GeneratedValue */
     private $id;
 
-    /**
-     * @ManyToOne(targetEntity="Directory")
-     */
+    /** @ORM\ManyToOne(targetEntity=Directory::class) */
     protected $parentDirectory;
 
-    /** @column(type="string") */
+    /** @ORM\Column(type="string") */
     protected $name;
 
     /**
@@ -34,7 +34,7 @@ abstract class AbstractContentItem
      */
     public static $fileSystem;
 
-    public function __construct(Directory $parentDir = null)
+    public function __construct(?Directory $parentDir = null)
     {
         $this->parentDirectory = $parentDir;
     }

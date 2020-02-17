@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\Tests\ORM\Functional\Ticket;
 
 use Doctrine\Tests\Models\Quote\Address;
@@ -13,26 +15,27 @@ use Doctrine\Tests\OrmFunctionalTestCase;
  */
 class GH6402Test extends OrmFunctionalTestCase
 {
-    protected function setUp()
+    protected function setUp() : void
     {
         $this->useModelSet('quote');
 
         parent::setUp();
     }
 
-    public function testFind()
+    public function testFind() : void
     {
         $id = $this->createAddress();
 
-        $address = $this->_em->find(Address::class, $id);
+        $address = $this->em->find(Address::class, $id);
+
         self::assertNotNull($address->user);
     }
 
-    public function testQuery()
+    public function testQuery() : void
     {
         $id = $this->createAddress();
 
-        $addresses = $this->_em->createQuery('SELECT a FROM ' . Address::class . ' a WHERE a.id = :id')
+        $addresses = $this->em->createQuery('SELECT a FROM ' . Address::class . ' a WHERE a.id = :id')
             ->setParameter('id', $id)
             ->getResult();
 
@@ -40,19 +43,20 @@ class GH6402Test extends OrmFunctionalTestCase
         self::assertNotNull($addresses[0]->user);
     }
 
-    public function testFindWithSubClass()
+    public function testFindWithSubClass() : void
     {
         $id = $this->createFullAddress();
 
-        $address = $this->_em->find(FullAddress::class, $id);
+        $address = $this->em->find(FullAddress::class, $id);
+
         self::assertNotNull($address->user);
     }
 
-    public function testQueryWithSubClass()
+    public function testQueryWithSubClass() : void
     {
         $id = $this->createFullAddress();
 
-        $addresses = $this->_em->createQuery('SELECT a FROM ' . FullAddress::class . ' a WHERE a.id = :id')
+        $addresses = $this->em->createQuery('SELECT a FROM ' . FullAddress::class . ' a WHERE a.id = :id')
             ->setParameter('id', $id)
             ->getResult();
 
@@ -62,7 +66,7 @@ class GH6402Test extends OrmFunctionalTestCase
 
     private function createAddress()
     {
-        $address = new Address();
+        $address      = new Address();
         $address->zip = 'bar';
 
         $this->persistAddress($address);
@@ -72,8 +76,8 @@ class GH6402Test extends OrmFunctionalTestCase
 
     private function createFullAddress()
     {
-        $address = new FullAddress();
-        $address->zip = 'bar';
+        $address       = new FullAddress();
+        $address->zip  = 'bar';
         $address->city = new City('London');
 
         $this->persistAddress($address);
@@ -83,12 +87,12 @@ class GH6402Test extends OrmFunctionalTestCase
 
     private function persistAddress(Address $address)
     {
-        $user = new User();
-        $user->name = "foo";
+        $user       = new User();
+        $user->name = 'foo';
         $user->setAddress($address);
 
-        $this->_em->persist($user);
-        $this->_em->flush();
-        $this->_em->clear();
+        $this->em->persist($user);
+        $this->em->flush();
+        $this->em->clear();
     }
 }

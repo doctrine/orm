@@ -1,64 +1,75 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\Tests\Mocks;
 
 use Doctrine\Common\EventManager;
 use Doctrine\ORM\Configuration;
+use Doctrine\ORM\Decorator\EntityManagerDecorator;
 use Doctrine\ORM\EntityManager;
+use Doctrine\ORM\EntityManagerInterface;
+use Doctrine\ORM\Proxy\Factory\ProxyFactory;
+use Doctrine\ORM\UnitOfWork;
+use ReflectionClass;
+use ReflectionException;
 
 /**
  * Special EntityManager mock used for testing purposes.
  */
-class EntityManagerMock extends EntityManager
+class EntityManagerMock extends EntityManagerDecorator
 {
-    /**
-     * @var \Doctrine\ORM\UnitOfWork|null
-     */
-    private $_uowMock;
+    /** @var UnitOfWork|null */
+    private $uowMock;
 
-    /**
-     * @var \Doctrine\ORM\Proxy\ProxyFactory|null
-     */
-    private $_proxyFactoryMock;
+    /** @var ProxyFactory|null */
+    private $proxyFactoryMock;
+
+    public function getWrappedEntityManager() : EntityManagerInterface
+    {
+        return $this->wrapped;
+    }
 
     /**
      * {@inheritdoc}
      */
     public function getUnitOfWork()
     {
-        return isset($this->_uowMock) ? $this->_uowMock : parent::getUnitOfWork();
+        return $this->uowMock ?? $this->wrapped->getUnitOfWork();
     }
-
-    /* Mock API */
 
     /**
      * Sets a (mock) UnitOfWork that will be returned when getUnitOfWork() is called.
      *
-     * @param \Doctrine\ORM\UnitOfWork $uow
+     * @param UnitOfWork $unitOfWork
      *
      * @return void
      */
-    public function setUnitOfWork($uow)
+    public function setUnitOfWork($unitOfWork)
     {
-        $this->_uowMock = $uow;
+        $this->uowMock = $unitOfWork;
+
+        $this->swapPropertyValue($this->wrapped, 'unitOfWork', $unitOfWork);
     }
 
     /**
-     * @param \Doctrine\ORM\Proxy\ProxyFactory $proxyFactory
+     * @param ProxyFactory $proxyFactory
      *
      * @return void
      */
     public function setProxyFactory($proxyFactory)
     {
-        $this->_proxyFactoryMock = $proxyFactory;
+        $this->proxyFactoryMock = $proxyFactory;
+
+        $this->swapPropertyValue($this->wrapped, 'proxyFactory', $proxyFactory);
     }
 
     /**
-     * @return \Doctrine\ORM\Proxy\ProxyFactory
+     * @return ProxyFactory
      */
     public function getProxyFactory()
     {
-        return isset($this->_proxyFactoryMock) ? $this->_proxyFactoryMock : parent::getProxyFactory();
+        return $this->proxyFactoryMock ?? $this->wrapped->getProxyFactory();
     }
 
     /**
@@ -66,18 +77,36 @@ class EntityManagerMock extends EntityManager
      *
      * {@inheritdoc}
      */
-    public static function create($conn, Configuration $config = null, EventManager $eventManager = null)
+    public static function create($conn, ?Configuration $config = null, ?EventManager $eventManager = null)
     {
-        if (null === $config) {
+        if ($config === null) {
             $config = new Configuration();
+
             $config->setProxyDir(__DIR__ . '/../Proxies');
             $config->setProxyNamespace('Doctrine\Tests\Proxies');
-            $config->setMetadataDriverImpl($config->newDefaultAnnotationDriver([], true));
-        }
-        if (null === $eventManager) {
-            $eventManager = new EventManager();
+            $config->setMetadataDriverImpl($config->newDefaultAnnotationDriver());
         }
 
-        return new EntityManagerMock($conn, $config, $eventManager);
+        if ($eventManager === null) {
+            $eventManager = $conn->getEventManager();
+        }
+
+        $em = EntityManager::create($conn, $config, $eventManager);
+
+        return new EntityManagerMock($em);
+    }
+
+    /**
+     * @param object $object
+     * @param mixed  $newValue
+     *
+     * @throws ReflectionException
+     */
+    private function swapPropertyValue($object, string $propertyName, $newValue) : void
+    {
+        $reflectionClass    = new ReflectionClass($object);
+        $reflectionProperty = $reflectionClass->getProperty($propertyName);
+        $reflectionProperty->setAccessible(true);
+        $reflectionProperty->setValue($object, $newValue);
     }
 }

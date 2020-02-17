@@ -1,82 +1,92 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\Tests\ORM\Mapping\Symfony;
+
 use Doctrine\Common\Persistence\Mapping\MappingException;
-use PHPUnit\Framework\TestCase;
+use Doctrine\Tests\DoctrineTestCase;
+use RecursiveDirectoryIterator;
+use RecursiveIteratorIterator;
+use function mkdir;
+use function rmdir;
+use function sys_get_temp_dir;
+use function touch;
+use function unlink;
 
 /**
  * @group DDC-1418
  */
-abstract class AbstractDriverTest extends TestCase
+abstract class AbstractDriverTest extends DoctrineTestCase
 {
-    public function testFindMappingFile()
+    public function testFindMappingFile() : void
     {
         $driver = $this->getDriver(
             [
-            'MyNamespace\MySubnamespace\EntityFoo' => 'foo',
-            'MyNamespace\MySubnamespace\Entity' => $this->dir,
+                'MyNamespace\MySubnamespace\EntityFoo' => 'foo',
+                'MyNamespace\MySubnamespace\Entity' => $this->dir,
             ]
         );
 
-        touch($filename = $this->dir.'/Foo'.$this->getFileExtension());
-        $this->assertEquals($filename, $driver->getLocator()->findMappingFile('MyNamespace\MySubnamespace\Entity\Foo'));
+        touch($filename = $this->dir . '/Foo' . $this->getFileExtension());
+        self::assertEquals($filename, $driver->getLocator()->findMappingFile('MyNamespace\MySubnamespace\Entity\Foo'));
     }
 
-    public function testFindMappingFileInSubnamespace()
+    public function testFindMappingFileInSubnamespace() : void
     {
         $driver = $this->getDriver(
             [
-            'MyNamespace\MySubnamespace\Entity' => $this->dir,
+                'MyNamespace\MySubnamespace\Entity' => $this->dir,
             ]
         );
 
-        touch($filename = $this->dir.'/Foo.Bar'.$this->getFileExtension());
-        $this->assertEquals($filename, $driver->getLocator()->findMappingFile('MyNamespace\MySubnamespace\Entity\Foo\Bar'));
+        touch($filename = $this->dir . '/Foo.Bar' . $this->getFileExtension());
+        self::assertEquals($filename, $driver->getLocator()->findMappingFile('MyNamespace\MySubnamespace\Entity\Foo\Bar'));
     }
 
-    public function testFindMappingFileNamespacedFoundFileNotFound()
+    public function testFindMappingFileNamespacedFoundFileNotFound() : void
     {
         $this->expectException(MappingException::class);
         $this->expectExceptionMessage('No mapping file found named');
 
         $driver = $this->getDriver(
             [
-            'MyNamespace\MySubnamespace\Entity' => $this->dir,
+                'MyNamespace\MySubnamespace\Entity' => $this->dir,
             ]
         );
 
         $driver->getLocator()->findMappingFile('MyNamespace\MySubnamespace\Entity\Foo');
     }
 
-    public function testFindMappingNamespaceNotFound()
+    public function testFindMappingNamespaceNotFound() : void
     {
         $this->expectException(MappingException::class);
         $this->expectExceptionMessage("No mapping file found named 'Foo" . $this->getFileExtension() . "' for class 'MyOtherNamespace\MySubnamespace\Entity\Foo'.");
 
         $driver = $this->getDriver(
             [
-            'MyNamespace\MySubnamespace\Entity' => $this->dir,
+                'MyNamespace\MySubnamespace\Entity' => $this->dir,
             ]
         );
 
         $driver->getLocator()->findMappingFile('MyOtherNamespace\MySubnamespace\Entity\Foo');
     }
 
-    protected function setUp()
+    protected function setUp() : void
     {
-        $this->dir = sys_get_temp_dir().'/abstract_driver_test';
+        $this->dir = sys_get_temp_dir() . '/abstract_driver_test';
         @mkdir($this->dir, 0777, true);
     }
 
-    protected function tearDown()
+    protected function tearDown() : void
     {
-        $iterator = new \RecursiveIteratorIterator(new \RecursiveDirectoryIterator($this->dir), \RecursiveIteratorIterator::CHILD_FIRST);
+        $iterator = new RecursiveIteratorIterator(new RecursiveDirectoryIterator($this->dir), RecursiveIteratorIterator::CHILD_FIRST);
 
         foreach ($iterator as $path) {
             if ($path->isDir()) {
-                @rmdir($path);
+                @rmdir((string) $path);
             } else {
-                @unlink($path);
+                @unlink((string) $path);
             }
         }
 
@@ -84,5 +94,6 @@ abstract class AbstractDriverTest extends TestCase
     }
 
     abstract protected function getFileExtension();
+
     abstract protected function getDriver(array $paths = []);
 }

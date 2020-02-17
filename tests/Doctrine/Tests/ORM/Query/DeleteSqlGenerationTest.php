@@ -1,267 +1,278 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\Tests\ORM\Query;
+
 use Doctrine\Tests\OrmTestCase;
+use Exception;
 
 /**
  * Test case for testing the saving and referencing of query identifiers.
  *
- * @author      Guilherme Blanco <guilhermeblanco@hotmail.com>
- * @author      Janne Vanhala <jpvanhal@cc.hut.fi>
- * @author      Konsta Vesterinen <kvesteri@cc.hut.fi>
- * @license     http://www.opensource.org/licenses/lgpl-license.php LGPL
  * @link        http://www.phpdoctrine.org
- * @since       2.0
- * @version     $Revision$
+ *
  * @todo        1) [romanb] We  might want to split the SQL generation tests into multiple
  *              testcases later since we'll have a lot of them and we might want to have special SQL
  *              generation tests for some dbms specific SQL syntaxes.
  */
 class DeleteSqlGenerationTest extends OrmTestCase
 {
-    private $_em;
+    private $em;
 
-    protected function setUp() {
-        $this->_em = $this->_getTestEntityManager();
+    protected function setUp() : void
+    {
+        $this->em = $this->getTestEntityManager();
     }
 
     public function assertSqlGeneration($dqlToBeTested, $sqlToBeConfirmed)
     {
         try {
-            $query = $this->_em->createQuery($dqlToBeTested);
-            parent::assertEquals($sqlToBeConfirmed, $query->getSql());
+            $query = $this->em->createQuery($dqlToBeTested);
+
+            $sqlGenerated = $query->getSql();
+
             $query->free();
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             $this->fail($e->getMessage());
         }
+
+        self::assertEquals($sqlToBeConfirmed, $sqlGenerated);
     }
 
-    public function testSupportsDeleteWithoutWhereAndFrom()
+    /**
+     * @group 6939
+     */
+    public function testSupportsDeleteWithoutWhereAndAlias() : void
+    {
+        $this->assertSqlGeneration(
+            'DELETE FROM Doctrine\Tests\Models\CMS\CmsUser',
+            'DELETE FROM "cms_users"'
+        );
+    }
+
+    public function testSupportsDeleteWithoutWhereAndFrom() : void
     {
         $this->assertSqlGeneration(
             'DELETE Doctrine\Tests\Models\CMS\CmsUser u',
-            'DELETE FROM cms_users'
+            'DELETE FROM "cms_users"'
         );
     }
 
-    public function testSupportsDeleteWithoutWhere()
+    public function testSupportsDeleteWithoutWhere() : void
     {
         $this->assertSqlGeneration(
             'DELETE FROM Doctrine\Tests\Models\CMS\CmsUser u',
-            'DELETE FROM cms_users'
+            'DELETE FROM "cms_users"'
         );
     }
 
-    public function testSupportsWhereClause()
+    public function testSupportsWhereClause() : void
     {
         $this->assertSqlGeneration(
             'DELETE Doctrine\Tests\Models\CMS\CmsUser u WHERE u.id = ?1',
-            'DELETE FROM cms_users WHERE id = ?'
+            'DELETE FROM "cms_users" WHERE "id" = ?'
         );
     }
 
-    public function testSupportsWhereOrExpressions()
+    public function testSupportsWhereOrExpressions() : void
     {
         $this->assertSqlGeneration(
             'DELETE Doctrine\Tests\Models\CMS\CmsUser u WHERE u.username = ?1 OR u.name = ?2',
-            'DELETE FROM cms_users WHERE username = ? OR name = ?'
+            'DELETE FROM "cms_users" WHERE "username" = ? OR "name" = ?'
         );
     }
 
-    public function testSupportsWhereNestedConditionalExpressions()
+    public function testSupportsWhereNestedConditionalExpressions() : void
     {
         $this->assertSqlGeneration(
             'DELETE Doctrine\Tests\Models\CMS\CmsUser u WHERE u.id = ?1 OR ( u.username = ?2 OR u.name = ?3)',
-            'DELETE FROM cms_users WHERE id = ? OR (username = ? OR name = ?)'
+            'DELETE FROM "cms_users" WHERE "id" = ? OR ("username" = ? OR "name" = ?)'
         );
-
-        //$this->assertSqlGeneration(
-        //    'DELETE FROM Doctrine\Tests\Models\CMS\CmsUser WHERE id = ?1',
-        //    'DELETE FROM cms_users WHERE id = ?'
-        //);
     }
 
-    public function testIsCaseAgnostic()
+    public function testIsCaseAgnostic() : void
     {
         $this->assertSqlGeneration(
-            "delete from Doctrine\Tests\Models\CMS\CmsUser u where u.username = ?1",
-            "DELETE FROM cms_users WHERE username = ?"
+            'delete from Doctrine\Tests\Models\CMS\CmsUser u where u.username = ?1',
+            'DELETE FROM "cms_users" WHERE "username" = ?'
         );
     }
 
-    public function testSupportsAndCondition()
+    public function testSupportsAndCondition() : void
     {
         $this->assertSqlGeneration(
-            "DELETE Doctrine\Tests\Models\CMS\CmsUser u WHERE u.username = ?1 AND u.name = ?2",
-            "DELETE FROM cms_users WHERE username = ? AND name = ?"
+            'DELETE Doctrine\Tests\Models\CMS\CmsUser u WHERE u.username = ?1 AND u.name = ?2',
+            'DELETE FROM "cms_users" WHERE "username" = ? AND "name" = ?'
         );
     }
 
-    public function testSupportsWhereNot()
+    public function testSupportsWhereNot() : void
     {
         $this->assertSqlGeneration(
-            "DELETE Doctrine\Tests\Models\CMS\CmsUser u WHERE NOT u.id != ?1",
-            "DELETE FROM cms_users WHERE NOT id <> ?"
+            'DELETE Doctrine\Tests\Models\CMS\CmsUser u WHERE NOT u.id != ?1',
+            'DELETE FROM "cms_users" WHERE NOT "id" <> ?'
         );
     }
 
-    public function testSupportsWhereNotWithParentheses()
+    public function testSupportsWhereNotWithParentheses() : void
     {
         $this->assertSqlGeneration(
-            "DELETE Doctrine\Tests\Models\CMS\CmsUser u WHERE NOT ( u.id != ?1 )",
-            "DELETE FROM cms_users WHERE NOT (id <> ?)"
+            'DELETE Doctrine\Tests\Models\CMS\CmsUser u WHERE NOT ( u.id != ?1 )',
+            'DELETE FROM "cms_users" WHERE NOT ("id" <> ?)'
         );
     }
 
-    public function testSupportsWhereNotWithAndExpression()
+    public function testSupportsWhereNotWithAndExpression() : void
     {
         $this->assertSqlGeneration(
-            "DELETE Doctrine\Tests\Models\CMS\CmsUser u WHERE NOT ( u.id != ?1 AND u.username = ?2 )",
-            "DELETE FROM cms_users WHERE NOT (id <> ? AND username = ?)"
+            'DELETE Doctrine\Tests\Models\CMS\CmsUser u WHERE NOT ( u.id != ?1 AND u.username = ?2 )',
+            'DELETE FROM "cms_users" WHERE NOT ("id" <> ? AND "username" = ?)'
         );
     }
 
-    // ConditionalPrimary was already tested (see testSupportsWhereClause() and testSupportsWhereNot())
-
-    public function testSupportsGreaterThanComparisonClause()
+    /**
+     * ConditionalPrimary was already tested (see testSupportsWhereClause() and testSupportsWhereNot())
+     */
+    public function testSupportsGreaterThanComparisonClause() : void
     {
-        // id = ? was already tested (see testDeleteWithWhere())
+        // "id" = ? was already tested (see testDeleteWithWhere())
         $this->assertSqlGeneration(
-            "DELETE Doctrine\Tests\Models\CMS\CmsUser u WHERE u.id > ?1",
-            "DELETE FROM cms_users WHERE id > ?"
+            'DELETE Doctrine\Tests\Models\CMS\CmsUser u WHERE u.id > ?1',
+            'DELETE FROM "cms_users" WHERE "id" > ?'
         );
     }
 
-    public function testSupportsGreaterThanOrEqualToComparisonClause()
-    {
-        $this->assertSqlGeneration(
-            "DELETE Doctrine\Tests\Models\CMS\CmsUser u WHERE u.id >= ?1",
-            "DELETE FROM cms_users WHERE id >= ?"
-        );
-    }
-
-    public function testSupportsLessThanComparisonClause()
+    public function testSupportsGreaterThanOrEqualToComparisonClause() : void
     {
         $this->assertSqlGeneration(
-            "DELETE Doctrine\Tests\Models\CMS\CmsUser u WHERE u.id < ?1",
-            "DELETE FROM cms_users WHERE id < ?"
+            'DELETE Doctrine\Tests\Models\CMS\CmsUser u WHERE u.id >= ?1',
+            'DELETE FROM "cms_users" WHERE "id" >= ?'
         );
     }
 
-    public function testSupportsLessThanOrEqualToComparisonClause()
+    public function testSupportsLessThanComparisonClause() : void
     {
         $this->assertSqlGeneration(
-            "DELETE Doctrine\Tests\Models\CMS\CmsUser u WHERE u.id <= ?1",
-            "DELETE FROM cms_users WHERE id <= ?"
+            'DELETE Doctrine\Tests\Models\CMS\CmsUser u WHERE u.id < ?1',
+            'DELETE FROM "cms_users" WHERE "id" < ?'
         );
     }
 
-    public function testSupportsNotEqualToComparisonClause()
+    public function testSupportsLessThanOrEqualToComparisonClause() : void
     {
         $this->assertSqlGeneration(
-            "DELETE Doctrine\Tests\Models\CMS\CmsUser u WHERE u.id <> ?1",
-            "DELETE FROM cms_users WHERE id <> ?"
+            'DELETE Doctrine\Tests\Models\CMS\CmsUser u WHERE u.id <= ?1',
+            'DELETE FROM "cms_users" WHERE "id" <= ?'
         );
     }
 
-    public function testSupportsNotEqualToComparisonClauseExpressedWithExclamationMark()
+    public function testSupportsNotEqualToComparisonClause() : void
     {
         $this->assertSqlGeneration(
-            "DELETE Doctrine\Tests\Models\CMS\CmsUser u WHERE u.id != ?1",
-            "DELETE FROM cms_users WHERE id <> ?"
+            'DELETE Doctrine\Tests\Models\CMS\CmsUser u WHERE u.id <> ?1',
+            'DELETE FROM "cms_users" WHERE "id" <> ?'
         );
     }
 
-    public function testSupportsNotBetweenClause()
+    public function testSupportsNotEqualToComparisonClauseExpressedWithExclamationMark() : void
     {
         $this->assertSqlGeneration(
-            "DELETE Doctrine\Tests\Models\CMS\CmsUser u WHERE u.id NOT BETWEEN ?1 AND ?2",
-            "DELETE FROM cms_users WHERE id NOT BETWEEN ? AND ?"
+            'DELETE Doctrine\Tests\Models\CMS\CmsUser u WHERE u.id != ?1',
+            'DELETE FROM "cms_users" WHERE "id" <> ?'
         );
     }
 
-    public function testSupportsBetweenClauseUsedWithAndClause()
+    public function testSupportsNotBetweenClause() : void
     {
         $this->assertSqlGeneration(
-            "DELETE Doctrine\Tests\Models\CMS\CmsUser u WHERE u.id BETWEEN ?1 AND ?2 AND u.username != ?3",
-            "DELETE FROM cms_users WHERE id BETWEEN ? AND ? AND username <> ?"
+            'DELETE Doctrine\Tests\Models\CMS\CmsUser u WHERE u.id NOT BETWEEN ?1 AND ?2',
+            'DELETE FROM "cms_users" WHERE "id" NOT BETWEEN ? AND ?'
         );
     }
 
-    public function testSupportsNotLikeClause()
+    public function testSupportsBetweenClauseUsedWithAndClause() : void
+    {
+        $this->assertSqlGeneration(
+            'DELETE Doctrine\Tests\Models\CMS\CmsUser u WHERE u.id BETWEEN ?1 AND ?2 AND u.username != ?3',
+            'DELETE FROM "cms_users" WHERE "id" BETWEEN ? AND ? AND "username" <> ?'
+        );
+    }
+
+    public function testSupportsNotLikeClause() : void
     {
         // "WHERE" Expression LikeExpression
         $this->assertSqlGeneration(
             'DELETE Doctrine\Tests\Models\CMS\CmsUser u WHERE u.username NOT LIKE ?1',
-            'DELETE FROM cms_users WHERE username NOT LIKE ?'
+            'DELETE FROM "cms_users" WHERE "username" NOT LIKE ?'
         );
     }
 
-    public function testSupportsLikeClauseWithEscapeExpression()
+    public function testSupportsLikeClauseWithEscapeExpression() : void
     {
         $this->assertSqlGeneration(
-            "DELETE Doctrine\Tests\Models\CMS\CmsUser u WHERE u.username LIKE ?1 ESCAPE '\\'",
-            "DELETE FROM cms_users WHERE username LIKE ? ESCAPE '\\'"
+            'DELETE Doctrine\Tests\Models\CMS\CmsUser u WHERE u.username LIKE ?1 ESCAPE \'\\\'',
+            'DELETE FROM "cms_users" WHERE "username" LIKE ? ESCAPE \'\\\''
         );
     }
 
-    public function testSupportsIsNullClause()
+    public function testSupportsIsNullClause() : void
     {
         // "WHERE" Expression NullComparisonExpression
         $this->assertSqlGeneration(
             'DELETE Doctrine\Tests\Models\CMS\CmsUser u WHERE u.name IS NULL',
-            'DELETE FROM cms_users WHERE name IS NULL'
+            'DELETE FROM "cms_users" WHERE "name" IS NULL'
         );
     }
 
-    public function testSupportsIsNotNullClause()
+    public function testSupportsIsNotNullClause() : void
     {
         $this->assertSqlGeneration(
             'DELETE Doctrine\Tests\Models\CMS\CmsUser u WHERE u.name IS NOT NULL',
-            'DELETE FROM cms_users WHERE name IS NOT NULL'
+            'DELETE FROM "cms_users" WHERE "name" IS NOT NULL'
         );
     }
 
-    public function testSupportsAtomExpressionAsClause()
+    public function testSupportsAtomExpressionAsClause() : void
     {
         $this->assertSqlGeneration(
             'DELETE Doctrine\Tests\Models\CMS\CmsUser u WHERE 1 = 1',
-            'DELETE FROM cms_users WHERE 1 = 1'
+            'DELETE FROM "cms_users" WHERE 1 = 1'
         );
     }
 
-    public function testSupportsParameterizedAtomExpression()
+    public function testSupportsParameterizedAtomExpression() : void
     {
         $this->assertSqlGeneration(
             'DELETE Doctrine\Tests\Models\CMS\CmsUser u WHERE ?1 = 1',
-            'DELETE FROM cms_users WHERE ? = 1'
+            'DELETE FROM "cms_users" WHERE ? = 1'
         );
     }
 
-    public function testSupportsInClause()
+    public function testSupportsInClause() : void
     {
         $this->assertSqlGeneration(
             'DELETE Doctrine\Tests\Models\CMS\CmsUser u WHERE u.id IN ( ?1, ?2, ?3, ?4 )',
-            'DELETE FROM cms_users WHERE id IN (?, ?, ?, ?)'
+            'DELETE FROM "cms_users" WHERE "id" IN (?, ?, ?, ?)'
         );
     }
 
-    public function testSupportsNotInClause()
+    public function testSupportsNotInClause() : void
     {
         $this->assertSqlGeneration(
             'DELETE Doctrine\Tests\Models\CMS\CmsUser u WHERE u.id NOT IN ( ?1, ?2 )',
-            'DELETE FROM cms_users WHERE id NOT IN (?, ?)'
+            'DELETE FROM "cms_users" WHERE "id" NOT IN (?, ?)'
         );
     }
 
     /**
      * @group DDC-980
      */
-    public function testSubselectTableAliasReferencing()
+    public function testSubselectTableAliasReferencing() : void
     {
         $this->assertSqlGeneration(
             'DELETE Doctrine\Tests\Models\CMS\CmsUser u WHERE SIZE(u.groups) = 10',
-            'DELETE FROM cms_users WHERE (SELECT COUNT(*) FROM cms_users_groups c0_ WHERE c0_.user_id = cms_users.id) = 10'
+            'DELETE FROM "cms_users" WHERE (SELECT COUNT(*) FROM "cms_users_groups" t0 WHERE t0."user_id" = "cms_users"."id") = 10'
         );
     }
 }

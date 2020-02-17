@@ -97,11 +97,10 @@ a naming strategy for database tables and columns.
 Implementing a naming strategy
 -------------------------------
 If you have database naming standards, like all table names should be prefixed
-by the application prefix, all column names should be upper case, you can easily
+by the application prefix, all column names should be lower case, you can easily
 achieve such standards by implementing a naming strategy.
 
 You need to create a class which implements ``Doctrine\ORM\Mapping\NamingStrategy``.
-
 
 .. code-block:: php
 

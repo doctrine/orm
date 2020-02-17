@@ -1,41 +1,41 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\Tests\ORM\Decorator;
 
 use Doctrine\ORM\Decorator\EntityManagerDecorator;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Query\ResultSetMapping;
-use PHPUnit\Framework\TestCase;
+use Doctrine\Tests\DoctrineTestCase;
+use PHPUnit_Framework_MockObject_MockObject;
+use ReflectionClass;
+use ReflectionMethod;
+use function array_fill;
+use function call_user_func_array;
 
-class EntityManagerDecoratorTest extends TestCase
+class EntityManagerDecoratorTest extends DoctrineTestCase
 {
-    const VOID_METHODS = [
-        'persist',
-        'remove',
-        'clear',
-        'detach',
-        'refresh',
-        'flush',
-        'initializeObject',
-    ];
-
-    /**
-     * @var EntityManagerInterface|\PHPUnit_Framework_MockObject_MockObject
-     */
+    /** @var EntityManagerInterface|PHPUnit_Framework_MockObject_MockObject */
     private $wrapped;
 
-    public function setUp()
+    /** @var EntityManagerDecorator|PHPUnit_Framework_MockObject_MockObject */
+    private $decorator;
+
+    public function setUp() : void
     {
-        $this->wrapped = $this->createMock(EntityManagerInterface::class);
+        $this->wrapped   = $this->createMock(EntityManagerInterface::class);
+        $this->decorator = new class($this->wrapped) extends EntityManagerDecorator {
+        };
     }
 
     public function getMethodParameters()
     {
-        $class = new \ReflectionClass(EntityManagerInterface::class);
+        $class   = new ReflectionClass(EntityManagerInterface::class);
         $methods = [];
 
         foreach ($class->getMethods() as $method) {
-            if ($method->isConstructor() || $method->isStatic() || !$method->isPublic()) {
+            if ($method->isConstructor() || $method->isStatic() || ! $method->isPublic()) {
                 continue;
             }
 
@@ -45,11 +45,22 @@ class EntityManagerDecoratorTest extends TestCase
         return $methods;
     }
 
-    private function getParameters(\ReflectionMethod $method)
+    private function getParameters(ReflectionMethod $method)
     {
         /** Special case EntityManager::createNativeQuery() */
         if ($method->getName() === 'createNativeQuery') {
             return [$method->getName(), ['name', new ResultSetMapping()]];
+        }
+
+        /** Special case EntityManager::transactional() */
+        if ($method->getName() === 'transactional') {
+            return [
+                $method->getName(),
+                [
+                    static function () {
+                    },
+                ],
+            ];
         }
 
         if ($method->getNumberOfRequiredParameters() === 0) {
@@ -60,7 +71,7 @@ class EntityManagerDecoratorTest extends TestCase
             return [$method->getName(), array_fill(0, $method->getNumberOfRequiredParameters(), 'req') ?: []];
         }
 
-        if ($method->getNumberOfParameters() != $method->getNumberOfRequiredParameters()) {
+        if ($method->getNumberOfParameters() !== $method->getNumberOfRequiredParameters()) {
             return [$method->getName(), array_fill(0, $method->getNumberOfParameters(), 'all') ?: []];
         }
 
@@ -70,18 +81,13 @@ class EntityManagerDecoratorTest extends TestCase
     /**
      * @dataProvider getMethodParameters
      */
-    public function testAllMethodCallsAreDelegatedToTheWrappedInstance($method, array $parameters)
+    public function testAllMethodCallsAreDelegatedToTheWrappedInstance($method, array $parameters) : void
     {
-        $return = !in_array($method, self::VOID_METHODS) ? 'INNER VALUE FROM ' . $method : null;
+        $stub = $this->wrapped
+            ->expects(self::once())
+            ->method($method);
 
-        $this->wrapped->expects($this->once())
-            ->method($method)
-            ->with(...$parameters)
-            ->willReturn($return);
-
-        $decorator = new class ($this->wrapped) extends EntityManagerDecorator {
-        };
-
-        $this->assertSame($return, $decorator->$method(...$parameters));
+        call_user_func_array([$stub, 'with'], $parameters);
+        call_user_func_array([$this->decorator, $method], $parameters);
     }
 }

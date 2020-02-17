@@ -1,29 +1,16 @@
 <?php
-/*
- * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
- * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
- * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
- * A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT
- * OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
- * SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
- * LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
- * DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
- * THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
- * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
- * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- *
- * This software consists of voluntary contributions made by many individuals
- * and is licensed under the MIT license. For more information, see
- * <http://www.doctrine-project.org>.
- */
+
+declare(strict_types=1);
 
 namespace Doctrine\ORM\Tools\Console;
 
 use Doctrine\DBAL\Tools\Console as DBALConsole;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Tools\Console\Helper\EntityManagerHelper;
-use Doctrine\ORM\Version;
+use OutOfBoundsException;
+use PackageVersions\Versions;
 use Symfony\Component\Console\Application;
+use Symfony\Component\Console\Command\Command as SymfonyCommand;
 use Symfony\Component\Console\Helper\HelperSet;
 
 /**
@@ -33,10 +20,6 @@ final class ConsoleRunner
 {
     /**
      * Create a Symfony Console HelperSet
-     *
-     * @param EntityManagerInterface $entityManager
-     *
-     * @return HelperSet
      */
     public static function createHelperSet(EntityManagerInterface $entityManager) : HelperSet
     {
@@ -51,10 +34,7 @@ final class ConsoleRunner
     /**
      * Runs console with the given helper set.
      *
-     * @param \Symfony\Component\Console\Helper\HelperSet  $helperSet
-     * @param \Symfony\Component\Console\Command\Command[] $commands
-     *
-     * @return void
+     * @param SymfonyCommand[] $commands
      */
     public static function run(HelperSet $helperSet, array $commands = []) : void
     {
@@ -66,14 +46,13 @@ final class ConsoleRunner
      * Creates a console application with the given helperset and
      * optional commands.
      *
-     * @param \Symfony\Component\Console\Helper\HelperSet $helperSet
-     * @param array                                       $commands
+     * @param SymfonyCommand[] $commands
      *
-     * @return \Symfony\Component\Console\Application
+     * @throws OutOfBoundsException
      */
     public static function createApplication(HelperSet $helperSet, array $commands = []) : Application
     {
-        $cli = new Application('Doctrine Command Line Interface', Version::VERSION);
+        $cli = new Application('Doctrine Command Line Interface', Versions::getVersion('doctrine/orm'));
         $cli->setCatchExceptions(true);
         $cli->setHelperSet($helperSet);
         self::addCommands($cli);
@@ -82,17 +61,11 @@ final class ConsoleRunner
         return $cli;
     }
 
-    /**
-     * @param Application $cli
-     *
-     * @return void
-     */
     public static function addCommands(Application $cli) : void
     {
         $cli->addCommands(
             [
                 // DBAL Commands
-                new DBALConsole\Command\ImportCommand(),
                 new DBALConsole\Command\ReservedWordsCommand(),
                 new DBALConsole\Command\RunSqlCommand(),
 
@@ -107,11 +80,7 @@ final class ConsoleRunner
                 new Command\SchemaTool\UpdateCommand(),
                 new Command\SchemaTool\DropCommand(),
                 new Command\EnsureProductionSettingsCommand(),
-                new Command\ConvertDoctrine1SchemaCommand(),
-                new Command\GenerateRepositoriesCommand(),
-                new Command\GenerateEntitiesCommand(),
                 new Command\GenerateProxiesCommand(),
-                new Command\ConvertMappingCommand(),
                 new Command\RunDqlCommand(),
                 new Command\ValidateSchemaCommand(),
                 new Command\InfoCommand(),

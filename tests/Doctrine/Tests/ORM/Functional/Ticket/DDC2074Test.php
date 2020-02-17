@@ -1,61 +1,64 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\Tests\ORM\Functional\Ticket;
 
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\PersistentCollection;
 use Doctrine\Tests\Models\ECommerce\ECommerceCategory;
 use Doctrine\Tests\Models\ECommerce\ECommerceProduct;
+use Doctrine\Tests\OrmFunctionalTestCase;
 
 /**
  * @group DDC-2074
  */
-class DDC2074Test extends \Doctrine\Tests\OrmFunctionalTestCase
+class DDC2074Test extends OrmFunctionalTestCase
 {
-    public function setUp()
+    public function setUp() : void
     {
         $this->useModelSet('ecommerce');
         parent::setUp();
     }
 
-    public function testShouldNotScheduleDeletionOnClonedInstances()
+    public function testShouldNotScheduleDeletionOnClonedInstances() : void
     {
-        $class = $this->_em->getClassMetadata(ECommerceProduct::class);
-        $product = new ECommerceProduct();
-        $category = new ECommerceCategory();
-        $collection = new PersistentCollection($this->_em, $class, new ArrayCollection([$category]));
-        $collection->setOwner($product, $class->associationMappings['categories']);
+        $class      = $this->em->getClassMetadata(ECommerceProduct::class);
+        $product    = new ECommerceProduct();
+        $category   = new ECommerceCategory();
+        $collection = new PersistentCollection($this->em, $class, new ArrayCollection([$category]));
+        $collection->setOwner($product, $class->getProperty('categories'));
 
-        $uow = $this->_em->getUnitOfWork();
+        $uow              = $this->em->getUnitOfWork();
         $clonedCollection = clone $collection;
         $clonedCollection->clear();
 
-        $this->assertEquals(0, count($uow->getScheduledCollectionDeletions()));
+        self::assertCount(0, $uow->getScheduledCollectionDeletions());
     }
 
-    public function testSavingClonedPersistentCollection()
+    public function testSavingClonedPersistentCollection() : void
     {
-        $product = new ECommerceProduct();
+        $product  = new ECommerceProduct();
         $category = new ECommerceCategory();
         $category->setName('foo');
         $product->addCategory($category);
 
-        $this->_em->persist($product);
-        $this->_em->persist($category);
-        $this->_em->flush();
+        $this->em->persist($product);
+        $this->em->persist($category);
+        $this->em->flush();
 
         $newProduct = clone $product;
 
-        $this->_em->persist($newProduct);
-        $this->_em->flush();
-        $this->_em->clear();
+        $this->em->persist($newProduct);
+        $this->em->flush();
+        $this->em->clear();
 
-        $product1 = $this->_em->find(ECommerceProduct::class, $product->getId());
-        $product2 = $this->_em->find(ECommerceProduct::class, $newProduct->getId());
+        $product1 = $this->em->find(ECommerceProduct::class, $product->getId());
+        $product2 = $this->em->find(ECommerceProduct::class, $newProduct->getId());
 
-        $this->assertCount(1, $product1->getCategories());
-        $this->assertCount(1, $product2->getCategories());
+        self::assertCount(1, $product1->getCategories());
+        self::assertCount(1, $product2->getCategories());
 
-        $this->assertSame($product1->getCategories()->get(0), $product2->getCategories()->get(0));
+        self::assertSame($product1->getCategories()->get(0), $product2->getCategories()->get(0));
     }
 }

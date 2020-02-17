@@ -1,23 +1,26 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\Tests\Models\DDC1590;
 
+use DateTime;
+use Doctrine\ORM\Annotation as ORM;
+
 /**
- * @Entity
- * @MappedSuperClass
+ * @ORM\Entity
+ * @ORM\MappedSuperClass
  */
 abstract class DDC1590Entity
 {
     /**
-     * @Id
-     * @Column(type="integer")
-     * @GeneratedValue(strategy="AUTO")
+     * @ORM\Id
+     * @ORM\Column(type="integer")
+     * @ORM\GeneratedValue(strategy="AUTO")
      */
     protected $id;
 
-    /**
-     * @Column(type="datetime")
-     */
+    /** @ORM\Column(type="datetime") */
     protected $created_at;
 
     /**
@@ -33,7 +36,7 @@ abstract class DDC1590Entity
     /**
      * Set createdAt
      *
-     * @param \DateTime $createdAt
+     * @param DateTime $createdAt
      *
      * @return DDC1590User
      */
@@ -47,7 +50,7 @@ abstract class DDC1590Entity
     /**
      * Get createdAt
      *
-     * @return \DateTime
+     * @return DateTime
      */
     public function getCreatedAt()
     {

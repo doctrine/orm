@@ -1,8 +1,13 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\Tests\ORM\Functional;
 
+use Doctrine\ORM\Annotation as ORM;
 use Doctrine\Tests\OrmFunctionalTestCase;
+use Exception;
+use function get_class;
 
 /**
  * Functional Query tests.
@@ -11,86 +16,87 @@ use Doctrine\Tests\OrmFunctionalTestCase;
  */
 class ReadOnlyTest extends OrmFunctionalTestCase
 {
-    protected function setUp()
+    protected function setUp() : void
     {
         parent::setUp();
 
         try {
-            $this->_schemaTool->createSchema(
+            $this->schemaTool->createSchema(
                 [
-                $this->_em->getClassMetadata(ReadOnlyEntity::class),
+                    $this->em->getClassMetadata(ReadOnlyEntity::class),
                 ]
             );
-        } catch(\Exception $e) {
+        } catch (Exception $e) {
         }
     }
 
-    public function testReadOnlyEntityNeverChangeTracked()
+    public function testReadOnlyEntityNeverChangeTracked() : void
     {
-        $readOnly = new ReadOnlyEntity("Test1", 1234);
-        $this->_em->persist($readOnly);
-        $this->_em->flush();
+        $readOnly = new ReadOnlyEntity('Test1', 1234);
+        $this->em->persist($readOnly);
+        $this->em->flush();
 
-        $readOnly->name = "Test2";
+        $readOnly->name         = 'Test2';
         $readOnly->numericValue = 4321;
 
-        $this->_em->flush();
-        $this->_em->clear();
+        $this->em->flush();
+        $this->em->clear();
 
-        $dbReadOnly = $this->_em->find(ReadOnlyEntity::class, $readOnly->id);
-        $this->assertEquals("Test1", $dbReadOnly->name);
-        $this->assertEquals(1234, $dbReadOnly->numericValue);
+        $dbReadOnly = $this->em->find(ReadOnlyEntity::class, $readOnly->id);
+        self::assertEquals('Test1', $dbReadOnly->name);
+        self::assertEquals(1234, $dbReadOnly->numericValue);
     }
 
     /**
      * @group DDC-1659
      */
-    public function testClearReadOnly()
+    public function testClearReadOnly() : void
     {
-        $readOnly = new ReadOnlyEntity("Test1", 1234);
-        $this->_em->persist($readOnly);
-        $this->_em->flush();
-        $this->_em->getUnitOfWork()->markReadOnly($readOnly);
+        $readOnly = new ReadOnlyEntity('Test1', 1234);
+        $this->em->persist($readOnly);
+        $this->em->flush();
+        $this->em->getUnitOfWork()->markReadOnly($readOnly);
 
-        $this->_em->clear();
+        $this->em->clear();
 
-        $this->assertFalse($this->_em->getUnitOfWork()->isReadOnly($readOnly));
+        self::assertFalse($this->em->getUnitOfWork()->isReadOnly($readOnly));
     }
 
     /**
      * @group DDC-1659
      */
-    public function testClearEntitiesReadOnly()
+    public function testClearEntitiesReadOnly() : void
     {
-        $readOnly = new ReadOnlyEntity("Test1", 1234);
-        $this->_em->persist($readOnly);
-        $this->_em->flush();
-        $this->_em->getUnitOfWork()->markReadOnly($readOnly);
+        $readOnly = new ReadOnlyEntity('Test1', 1234);
+        $this->em->persist($readOnly);
+        $this->em->flush();
+        $this->em->getUnitOfWork()->markReadOnly($readOnly);
 
-        $this->_em->clear(get_class($readOnly));
+        $this->em->clear(get_class($readOnly));
 
-        $this->assertFalse($this->_em->getUnitOfWork()->isReadOnly($readOnly));
+        self::assertFalse($this->em->getUnitOfWork()->isReadOnly($readOnly));
     }
 }
 
 /**
- * @Entity(readOnly=true)
+ * @ORM\Entity(readOnly=true)
  */
 class ReadOnlyEntity
 {
     /**
-     * @Id @GeneratedValue @Column(type="integer")
+     * @ORM\Id @ORM\GeneratedValue @ORM\Column(type="integer")
+     *
      * @var int
      */
     public $id;
-    /** @column(type="string") */
+    /** @ORM\Column(type="string") */
     public $name;
-    /** @Column(type="integer") */
+    /** @ORM\Column(type="integer") */
     public $numericValue;
 
     public function __construct($name, $number)
     {
-        $this->name = $name;
+        $this->name         = $name;
         $this->numericValue = $number;
     }
 }

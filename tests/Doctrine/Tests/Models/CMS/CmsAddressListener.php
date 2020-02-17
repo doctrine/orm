@@ -1,6 +1,11 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\Tests\Models\CMS;
+
+use BadMethodCallException;
+use function func_get_args;
 
 class CmsAddressListener
 {
@@ -15,7 +20,7 @@ class CmsAddressListener
     {
         $this->calls[__FUNCTION__][] = func_get_args();
     }
-    
+
     public function preUpdate()
     {
         $this->calls[__FUNCTION__][] = func_get_args();
@@ -48,11 +53,11 @@ class CmsAddressListener
 
     protected function postPersistHandler()
     {
-        throw new \BadMethodCallException("This is not a valid callback");
+        throw new BadMethodCallException('This is not a valid callback');
     }
 
     protected function prePersistHandler()
     {
-        throw new \BadMethodCallException("This is not a valid callback");
+        throw new BadMethodCallException('This is not a valid callback');
     }
 }

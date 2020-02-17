@@ -1,118 +1,127 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\Tests\ORM\Functional\Ticket;
 
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\ORM\Annotation as ORM;
 use Doctrine\Tests\OrmFunctionalTestCase;
 
 class DDC211Test extends OrmFunctionalTestCase
 {
-    protected function setUp()
+    protected function setUp() : void
     {
         parent::setUp();
-        $this->_schemaTool->createSchema(
+        $this->schemaTool->createSchema(
             [
-            $this->_em->getClassMetadata(DDC211User::class),
-            $this->_em->getClassMetadata(DDC211Group::class)
+                $this->em->getClassMetadata(DDC211User::class),
+                $this->em->getClassMetadata(DDC211Group::class),
             ]
         );
     }
 
-    public function testIssue()
+    public function testIssue() : void
     {
-        //$this->_em->getConnection()->getConfiguration()->setSQLLogger(new \Doctrine\DBAL\Logging\EchoSQLLogger);
+        //$this->em->getConnection()->getConfiguration()->setSQLLogger(new \Doctrine\DBAL\Logging\EchoSQLLogger);
 
-        $user = new DDC211User;
+        $user = new DDC211User();
         $user->setName('John Doe');
 
-        $this->_em->persist($user);
-        $this->_em->flush();
+        $this->em->persist($user);
+        $this->em->flush();
 
         $groupNames = ['group 1', 'group 2', 'group 3', 'group 4'];
         foreach ($groupNames as $name) {
-
-            $group = new DDC211Group;
+            $group = new DDC211Group();
             $group->setName($name);
-            $this->_em->persist($group);
-            $this->_em->flush();
+            $this->em->persist($group);
+            $this->em->flush();
 
-            if (!$user->getGroups()->contains($group)) {
+            if (! $user->getGroups()->contains($group)) {
                 $user->getGroups()->add($group);
                 $group->getUsers()->add($user);
-                $this->_em->flush();
+                $this->em->flush();
             }
         }
 
-        $this->assertEquals(4, $user->getGroups()->count());
-
+        self::assertEquals(4, $user->getGroups()->count());
     }
 }
 
 
 /**
- * @Entity
- * @Table(name="ddc211_users")
-*/
+ * @ORM\Entity
+ * @ORM\Table(name="ddc211_users")
+ */
 class DDC211User
 {
     /**
-     * @Id
-     * @Column(name="id", type="integer")
-     * @GeneratedValue(strategy="AUTO")
+     * @ORM\Id
+     * @ORM\Column(name="id", type="integer")
+     * @ORM\GeneratedValue(strategy="AUTO")
      */
     protected $id;
 
-    /**
-     * @Column(name="name", type="string")
-     */
+    /** @ORM\Column(name="name", type="string") */
     protected $name;
 
     /**
-    * @ManyToMany(targetEntity="DDC211Group", inversedBy="users")
-    *   @JoinTable(name="user_groups",
-    *       joinColumns={@JoinColumn(name="user_id", referencedColumnName="id")},
-    *       inverseJoinColumns={@JoinColumn(name="group_id", referencedColumnName="id")}
-    *   )
-    */
+     * @ORM\ManyToMany(targetEntity=DDC211Group::class, inversedBy="users")
+     *   @ORM\JoinTable(name="user_groups",
+     *       joinColumns={@ORM\JoinColumn(name="user_id", referencedColumnName="id")},
+     *       inverseJoinColumns={@ORM\JoinColumn(name="group_id", referencedColumnName="id")}
+     *   )
+     */
     protected $groups;
 
-    public function __construct() {
-        $this->groups = new \Doctrine\Common\Collections\ArrayCollection();
+    public function __construct()
+    {
+        $this->groups = new ArrayCollection();
     }
 
-    public function setName($name) { $this->name = $name; }
+    public function setName($name)
+    {
+        $this->name = $name;
+    }
 
-    public function getGroups() { return $this->groups; }
+    public function getGroups()
+    {
+        return $this->groups;
+    }
 }
 
 /**
- * @Entity
- * @Table(name="ddc211_groups")
+ * @ORM\Entity
+ * @ORM\Table(name="ddc211_groups")
  */
 class DDC211Group
 {
     /**
-     * @Id
-     * @Column(name="id", type="integer")
-     * @GeneratedValue(strategy="AUTO")
+     * @ORM\Id
+     * @ORM\Column(name="id", type="integer")
+     * @ORM\GeneratedValue(strategy="AUTO")
      */
     protected $id;
 
-    /**
-     * @Column(name="name", type="string")
-     */
+    /** @ORM\Column(name="name", type="string") */
     protected $name;
 
-    /**
-    * @ManyToMany(targetEntity="DDC211User", mappedBy="groups")
-    */
+    /** @ORM\ManyToMany(targetEntity=DDC211User::class, mappedBy="groups") */
     protected $users;
 
-    public function __construct() {
-        $this->users = new \Doctrine\Common\Collections\ArrayCollection();
+    public function __construct()
+    {
+        $this->users = new ArrayCollection();
     }
 
-    public function setName($name) { $this->name = $name; }
+    public function setName($name)
+    {
+        $this->name = $name;
+    }
 
-    public function getUsers() { return $this->users; }
+    public function getUsers()
+    {
+        return $this->users;
+    }
 }
-

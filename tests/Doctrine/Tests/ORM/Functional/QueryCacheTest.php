@@ -1,29 +1,30 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\Tests\ORM\Functional;
 
 use Doctrine\Common\Cache\ArrayCache;
 use Doctrine\Common\Cache\Cache;
 use Doctrine\Common\Cache\CacheProvider;
+use Doctrine\ORM\Query;
 use Doctrine\ORM\Query\Exec\AbstractSqlExecutor;
 use Doctrine\ORM\Query\ParserResult;
 use Doctrine\Tests\OrmFunctionalTestCase;
+use ReflectionProperty;
+use function count;
 
 /**
  * QueryCacheTest
- *
- * @author robo
  */
 class QueryCacheTest extends OrmFunctionalTestCase
 {
-    /**
-     * @var \ReflectionProperty
-     */
+    /** @var ReflectionProperty */
     private $cacheDataReflection;
 
-    protected function setUp()
+    protected function setUp() : void
     {
-        $this->cacheDataReflection = new \ReflectionProperty(ArrayCache::class, "data");
+        $this->cacheDataReflection = new ReflectionProperty(ArrayCache::class, 'data');
         $this->cacheDataReflection->setAccessible(true);
 
         $this->useModelSet('cms');
@@ -32,82 +33,83 @@ class QueryCacheTest extends OrmFunctionalTestCase
     }
 
     /**
-     * @param   ArrayCache $cache
-     * @return  integer
+     * @return  int
      */
     private function getCacheSize(ArrayCache $cache)
     {
-        return sizeof($this->cacheDataReflection->getValue($cache));
+        return count($this->cacheDataReflection->getValue($cache));
     }
 
-
-    public function testQueryCache_DependsOnHints()
+    public function testQueryCacheDependsOnHints() : Query
     {
-        $query = $this->_em->createQuery('select ux from Doctrine\Tests\Models\CMS\CmsUser ux');
+        $query = $this->em->createQuery('select ux from Doctrine\Tests\Models\CMS\CmsUser ux');
 
         $cache = new ArrayCache();
         $query->setQueryCacheDriver($cache);
 
         $query->getResult();
-        $this->assertEquals(1, $this->getCacheSize($cache));
+        self::assertEquals(1, $this->getCacheSize($cache));
 
         $query->setHint('foo', 'bar');
 
         $query->getResult();
-        $this->assertEquals(2, $this->getCacheSize($cache));
+        self::assertEquals(2, $this->getCacheSize($cache));
 
         return $query;
     }
 
     /**
      * @param <type> $query
-     * @depends testQueryCache_DependsOnHints
+     *
+     * @depends testQueryCacheDependsOnHints
      */
-    public function testQueryCache_DependsOnFirstResult($query)
+    public function testQueryCacheDependsOnFirstResult($query) : void
     {
-        $cache = $query->getQueryCacheDriver();
+        $cache      = $query->getQueryCacheDriver();
         $cacheCount = $this->getCacheSize($cache);
 
         $query->setFirstResult(10);
         $query->setMaxResults(9999);
 
         $query->getResult();
-        $this->assertEquals($cacheCount + 1, $this->getCacheSize($cache));
+        self::assertEquals($cacheCount + 1, $this->getCacheSize($cache));
     }
 
     /**
      * @param <type> $query
-     * @depends testQueryCache_DependsOnHints
+     *
+     * @depends testQueryCacheDependsOnHints
      */
-    public function testQueryCache_DependsOnMaxResults($query)
+    public function testQueryCacheDependsOnMaxResults($query) : void
     {
-        $cache = $query->getQueryCacheDriver();
+        $cache      = $query->getQueryCacheDriver();
         $cacheCount = $this->getCacheSize($cache);
 
         $query->setMaxResults(10);
 
         $query->getResult();
-        $this->assertEquals($cacheCount + 1, $this->getCacheSize($cache));
+        self::assertEquals($cacheCount + 1, $this->getCacheSize($cache));
     }
 
     /**
      * @param <type> $query
-     * @depends testQueryCache_DependsOnHints
+     *
+     * @depends testQueryCacheDependsOnHints
      */
-    public function testQueryCache_DependsOnHydrationMode($query)
+    public function testQueryCacheDependsOnHydrationMode($query) : void
     {
-        $cache = $query->getQueryCacheDriver();
+        $cache      = $query->getQueryCacheDriver();
         $cacheCount = $this->getCacheSize($cache);
 
         $query->getArrayResult();
-        $this->assertEquals($cacheCount + 1, $this->getCacheSize($cache));
+        self::assertEquals($cacheCount + 1, $this->getCacheSize($cache));
     }
 
-    public function testQueryCache_NoHitSaveParserResult()
+    public function testQueryCacheNoHitSaveParserResult() : void
     {
-        $this->_em->getConfiguration()->setQueryCacheImpl(new ArrayCache());
+        $this->em->getConfiguration()->setQueryCacheImpl(new ArrayCache());
 
-        $query = $this->_em->createQuery('select ux from Doctrine\Tests\Models\CMS\CmsUser ux');
+        $query = $this->em->createQuery('select ux from Doctrine\Tests\Models\CMS\CmsUser ux');
 
         $cache = $this->createMock(Cache::class);
 
@@ -121,11 +123,11 @@ class QueryCacheTest extends OrmFunctionalTestCase
         $query->getResult();
     }
 
-    public function testQueryCache_HitDoesNotSaveParserResult()
+    public function testQueryCacheHitDoesNotSaveParserResult() : void
     {
-        $this->_em->getConfiguration()->setQueryCacheImpl(new ArrayCache());
+        $this->em->getConfiguration()->setQueryCacheImpl(new ArrayCache());
 
-        $query = $this->_em->createQuery('select ux from Doctrine\Tests\Models\CMS\CmsUser ux');
+        $query = $this->em->createQuery('select ux from Doctrine\Tests\Models\CMS\CmsUser ux');
 
         $sqlExecMock = $this->getMockBuilder(AbstractSqlExecutor::class)
                             ->setMethods(['execute'])
@@ -133,7 +135,7 @@ class QueryCacheTest extends OrmFunctionalTestCase
 
         $sqlExecMock->expects($this->once())
                     ->method('execute')
-                    ->will($this->returnValue( 10 ));
+                    ->will($this->returnValue(10));
 
         $parserResultMock = $this->getMockBuilder(ParserResult::class)
                                  ->setMethods(['getSqlExecutor'])
@@ -160,4 +162,3 @@ class QueryCacheTest extends OrmFunctionalTestCase
         $users = $query->getResult();
     }
 }
-

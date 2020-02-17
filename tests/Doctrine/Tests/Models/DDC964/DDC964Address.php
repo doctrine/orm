@@ -1,37 +1,32 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\Tests\Models\DDC964;
 
+use Doctrine\ORM\Annotation as ORM;
+
 /**
- * @Entity
+ * @ORM\Entity
  */
 class DDC964Address
 {
-
     /**
-     * @GeneratedValue
-     * @Id @Column(type="integer")
+     * @ORM\GeneratedValue
+     * @ORM\Id @ORM\Column(type="integer")
      */
     private $id;
 
-    /**
-     * @Column
-     */
+    /** @ORM\Column */
     private $country;
 
-    /**
-     * @Column
-     */
+    /** @ORM\Column */
     private $zip;
 
-    /**
-     * @Column
-     */
+    /** @ORM\Column */
     private $city;
 
-    /**
-     * @Column
-     */
+    /** @ORM\Column */
     private $street;
 
     /**
@@ -42,10 +37,10 @@ class DDC964Address
      */
     public function __construct($zip = null, $country = null, $city = null, $street = null)
     {
-        $this->zip      = $zip;
-        $this->country  = $country;
-        $this->city     = $city;
-        $this->street   = $street;
+        $this->zip     = $zip;
+        $this->country = $country;
+        $this->city    = $city;
+        $this->street  = $street;
     }
 
     /**
@@ -119,5 +114,4 @@ class DDC964Address
     {
         $this->street = $street;
     }
-
 }

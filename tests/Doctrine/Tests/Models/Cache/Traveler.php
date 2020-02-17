@@ -1,49 +1,51 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\Tests\Models\Cache;
 
 use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
+use Doctrine\ORM\Annotation as ORM;
 
 /**
- * @Cache
- * @Entity
- * @Table("cache_traveler")
+ * @ORM\Cache
+ * @ORM\Entity
+ * @ORM\Table("cache_traveler")
  */
 class Traveler
 {
     /**
-     * @Id
-     * @GeneratedValue
-     * @Column(type="integer")
+     * @ORM\Id
+     * @ORM\GeneratedValue
+     * @ORM\Column(type="integer")
      */
     protected $id;
 
-    /**
-     * @Column
-     */
+    /** @ORM\Column */
     protected $name;
 
     /**
-     * @Cache("NONSTRICT_READ_WRITE")
-     * @OneToMany(targetEntity="Travel", mappedBy="traveler", cascade={"persist", "remove"}, orphanRemoval=true)
+     * @ORM\Cache("NONSTRICT_READ_WRITE")
+     * @ORM\OneToMany(targetEntity=Travel::class, mappedBy="traveler", cascade={"persist", "remove"}, orphanRemoval=true)
      *
-     * @var \Doctrine\Common\Collections\Collection
+     * @var Collection
      */
     public $travels;
 
     /**
-     * @Cache
-     * @OneToOne(targetEntity="TravelerProfile")
+     * @ORM\Cache
+     * @ORM\OneToOne(targetEntity=TravelerProfile::class)
      */
-     protected $profile;
+    protected $profile;
 
     /**
      * @param string $name
      */
     public function __construct($name)
     {
-        $this->name     = $name;
-        $this->travels  = new ArrayCollection();
+        $this->name    = $name;
+        $this->travels = new ArrayCollection();
     }
 
     public function getId()
@@ -67,16 +69,13 @@ class Traveler
     }
 
     /**
-     * @return \Doctrine\Tests\Models\Cache\TravelerProfile
+     * @return TravelerProfile
      */
     public function getProfile()
     {
         return $this->profile;
     }
 
-    /**
-     * @param \Doctrine\Tests\Models\Cache\TravelerProfile $profile
-     */
     public function setProfile(TravelerProfile $profile)
     {
         $this->profile = $profile;
@@ -87,12 +86,9 @@ class Traveler
         return $this->travels;
     }
 
-    /**
-     * @param \Doctrine\Tests\Models\Cache\Travel $item
-     */
     public function addTravel(Travel $item)
     {
-        if ( ! $this->travels->contains($item)) {
+        if (! $this->travels->contains($item)) {
             $this->travels->add($item);
         }
 
@@ -101,9 +97,6 @@ class Traveler
         }
     }
 
-    /**
-     * @param \Doctrine\Tests\Models\Cache\Travel $item
-     */
     public function removeTravel(Travel $item)
     {
         $this->travels->removeElement($item);

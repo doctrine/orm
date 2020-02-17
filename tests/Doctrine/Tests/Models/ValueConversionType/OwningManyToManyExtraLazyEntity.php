@@ -1,32 +1,35 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\Tests\Models\ValueConversionType;
 
 use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\ORM\Annotation as ORM;
 
 /**
- * @Entity
- * @Table(name="vct_owning_manytomany_extralazy")
+ * @ORM\Entity
+ * @ORM\Table(name="vct_owning_manytomany_extralazy")
  */
 class OwningManyToManyExtraLazyEntity
 {
     /**
-     * @Column(type="rot13")
-     * @Id
+     * @ORM\Column(type="rot13")
+     * @ORM\Id
      */
     public $id2;
 
     /**
-     * @ManyToMany(
-     *     targetEntity="InversedManyToManyExtraLazyEntity",
+     * @ORM\ManyToMany(
+     *     targetEntity=InversedManyToManyExtraLazyEntity::class,
      *     inversedBy="associatedEntities",
      *     fetch="EXTRA_LAZY",
      *     indexBy="id1"
      * )
-     * @JoinTable(
+     * @ORM\JoinTable(
      *     name="vct_xref_manytomany_extralazy",
-     *     joinColumns={@JoinColumn(name="owning_id", referencedColumnName="id2")},
-     *     inverseJoinColumns={@JoinColumn(name="inversed_id", referencedColumnName="id1")}
+     *     joinColumns={@ORM\JoinColumn(name="owning_id", referencedColumnName="id2")},
+     *     inverseJoinColumns={@ORM\JoinColumn(name="inversed_id", referencedColumnName="id1")}
      * )
      */
     public $associatedEntities;

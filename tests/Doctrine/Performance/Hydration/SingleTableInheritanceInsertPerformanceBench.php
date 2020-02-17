@@ -1,38 +1,33 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\Performance\Hydration;
 
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\Performance\EntityManagerFactory;
 use Doctrine\Tests\Models\Company;
 use PhpBench\Benchmark\Metadata\Annotations\BeforeMethods;
+use function array_map;
 
 /**
  * @BeforeMethods({"init"})
  */
 final class SingleTableInheritanceInsertPerformanceBench
 {
-    /**
-     * @var EntityManagerInterface
-     */
+    /** @var EntityManagerInterface */
     private $entityManager;
 
-    /**
-     * @var Company\CompanyFixContract[]
-     */
+    /** @var Company\CompanyFixContract[] */
     private $fixContracts = [];
 
-    /**
-     * @var Company\CompanyFlexContract[]
-     */
+    /** @var Company\CompanyFlexContract[] */
     private $flexContracts = [];
 
-    /**
-     * @var Company\CompanyFlexUltraContract[]
-     */
+    /** @var Company\CompanyFlexUltraContract[] */
     private $ultraContracts = [];
 
-    public function init()
+    public function init() : void
     {
         $this->entityManager = EntityManagerFactory::getEntityManager([
             Company\CompanyPerson::class,
@@ -72,25 +67,25 @@ final class SingleTableInheritanceInsertPerformanceBench
         }
     }
 
-    public function benchInsertFixContracts()
+    public function benchInsertFixContracts() : void
     {
         array_map([$this->entityManager, 'persist'], $this->fixContracts);
         $this->entityManager->flush();
     }
 
-    public function benchInsertFlexContracts()
+    public function benchInsertFlexContracts() : void
     {
         array_map([$this->entityManager, 'persist'], $this->flexContracts);
         $this->entityManager->flush();
     }
 
-    public function benchInsertUltraContracts()
+    public function benchInsertUltraContracts() : void
     {
         array_map([$this->entityManager, 'persist'], $this->ultraContracts);
         $this->entityManager->flush();
     }
 
-    public function benchInsertAllContracts()
+    public function benchInsertAllContracts() : void
     {
         array_map([$this->entityManager, 'persist'], $this->fixContracts);
         array_map([$this->entityManager, 'persist'], $this->flexContracts);

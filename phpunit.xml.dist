@@ -11,14 +11,17 @@
            tests/ folder: phpunit -c <filename> ...
            Example: phpunit -c mysqlconf.xml AllTests
 -->
-<phpunit xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:noNamespaceSchemaLocation="vendor/phpunit/phpunit/phpunit.xsd"
-         colors="true"
-         verbose="true"
-         failOnRisky="true"
-         bootstrap="./tests/Doctrine/Tests/TestInit.php"
+<phpunit
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:noNamespaceSchemaLocation="vendor/phpunit/phpunit/phpunit.xsd"
+    colors="true"
+    verbose="true"
+    failOnRisky="true"
+    beStrictAboutChangesToGlobalState="true"
+    beStrictAboutOutputDuringTests="true"
+    beStrictAboutTestsThatDoNotTestAnything="true"
+    bootstrap="./tests/Doctrine/Tests/TestInit.php"
 >
-
     <testsuites>
         <testsuite name="Doctrine ORM Test Suite">
             <directory>./tests/Doctrine/Tests/ORM</directory>
@@ -27,12 +30,14 @@
 
     <groups>
         <exclude>
+            <group>embedded</group>
             <group>performance</group>
             <group>locking_functional</group>
         </exclude>
     </groups>
 
   <php>
+    <env name="COLUMNS" value="120"/>
     <!-- "Real" test database -->
     <!-- uncomment, otherwise sqlite memory runs
     <var name="db_type" value="pdo_mysql"/>

@@ -3,9 +3,9 @@ sudo: false
 language: php
 
 php:
-  - 7.1
   - 7.2
-  - nightly
+  - 7.3
+  - 7.4snapshot
 
 env:
   - DB=sqlite
@@ -16,12 +16,15 @@ before_install:
   - mv ~/.phpenv/versions/$(phpenv version-name)/etc/conf.d/xdebug.ini{,.disabled} || echo "xdebug not available"
   - composer self-update
 
-install: travis_retry composer update --prefer-dist
+install:
+  - rm composer.lock
+  - travis_retry composer update --prefer-dist
 
 script:
   - if [[ "$DB" == "mysql" || "$DB" == "mariadb" ]]; then mysql -e "CREATE SCHEMA doctrine_tests; GRANT ALL PRIVILEGES ON doctrine_tests.* to travis@'%'"; fi
   - ENABLE_SECOND_LEVEL_CACHE=0 ./vendor/bin/phpunit -v -c tests/travis/$DB.travis.xml
-  - ENABLE_SECOND_LEVEL_CACHE=1 ./vendor/bin/phpunit -v -c tests/travis/$DB.travis.xml --exclude-group performance,non-cacheable,locking_functional
+  # temporarily disabled
+  #- ENABLE_SECOND_LEVEL_CACHE=1 ./vendor/bin/phpunit -v -c tests/travis/$DB.travis.xml --exclude-group performance,non-cacheable,locking_functional
 
 jobs:
   include:
@@ -32,13 +35,6 @@ jobs:
 
     - stage: Test
       env: DB=mysql MYSQL_VERSION=5.7
-      php: 7.1
-      before_script:
-        - ./tests/travis/install-mysql-$MYSQL_VERSION.sh
-      sudo: required
-
-    - stage: Test
-      env: DB=mysql MYSQL_VERSION=5.7
       php: 7.2
       before_script:
         - ./tests/travis/install-mysql-$MYSQL_VERSION.sh
@@ -46,7 +42,7 @@ jobs:
 
     - stage: Test
       env: DB=mysql MYSQL_VERSION=5.7
-      php: nightly
+      php: 7.4snapshot
       before_script:
         - ./tests/travis/install-mysql-$MYSQL_VERSION.sh
       sudo: required
@@ -55,15 +51,17 @@ jobs:
       env: DB=sqlite DEPENDENCIES=low
       install: travis_retry composer update --prefer-dist --prefer-lowest
 
-    - stage: Lint
-      env: DB=none
-      before_script:
-        - echo "extension=redis.so" >> ~/.phpenv/versions/$(phpenv version-name)/etc/php.ini
-        - travis_retry composer require --dev --prefer-dist --prefer-stable phpstan/phpstan:^0.7 symfony/console:^3.0
-      script: vendor/bin/phpstan analyse -l 1 -c phpstan.neon lib
+    - stage: Test
+      if: type = cron
+      php: 7.3
+      env: DB=sqlite DEV_DEPENDENCIES
+      install:
+        - rm composer.lock
+        - composer config minimum-stability dev
+        - travis_retry composer update --prefer-dist
 
-    - stage: Coverage
-      env: DB=sqlite
+    - stage: Test
+      env: DB=sqlite COVERAGE
       before_script:
         - mv ~/.phpenv/versions/$(phpenv version-name)/etc/conf.d/xdebug.ini{.disabled,}
         - if [[ ! $(php -m | grep -si xdebug) ]]; then echo "xdebug required for coverage"; exit 1; fi
@@ -73,13 +71,33 @@ jobs:
         - wget https://scrutinizer-ci.com/ocular.phar
         - php ocular.phar code-coverage:upload --format=php-clover build/logs/clover.xml
 
-    - stage: Benchmark
-      env: DB=none
+    - stage: Code Quality
+      env: DB=none STATIC_ANALYSIS
+      install: travis_retry composer install --prefer-dist
+      before_script:
+        - echo "extension=memcached.so" >> ~/.phpenv/versions/$(phpenv version-name)/etc/php.ini
+        - echo "extension=redis.so" >> ~/.phpenv/versions/$(phpenv version-name)/etc/php.ini
+      script: vendor/bin/phpstan analyse
+
+    - stage: Code Quality
+      env: DB=none BENCHMARK
       before_script: wget https://phpbench.github.io/phpbench/phpbench.phar https://phpbench.github.io/phpbench/phpbench.phar.pubkey
-      script: php phpbench.phar run -l dots --report=default
+      script: php phpbench.phar run --bootstrap=tests/Doctrine/Tests/TestInit.php -l dots --report=default
+
+    - stage: Code Quality
+      env: DB=none CODING_STANDARDS
+      install: travis_retry composer install --prefer-dist
+      php: 7.2
+      script:
+        - ./vendor/bin/phpcs
 
   allow_failures:
-    - php: nightly
+    - php: 7.4snapshot
+    # temporarily disabled
+    - env: DB=mysql
+    - env: DB=mariadb
+    - env: DB=pgsql
+    - env: DB=mysql MYSQL_VERSION=5.7
 
 cache:
   directories:

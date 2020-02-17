@@ -1,25 +1,31 @@
 <?php
+
+declare(strict_types=1);
+
 namespace Doctrine\Tests\ORM\Functional\Ticket;
 
 use Doctrine\DBAL\Platforms\AbstractPlatform;
 use Doctrine\DBAL\Types\StringType;
 use Doctrine\DBAL\Types\Type;
 use Doctrine\ORM\AbstractQuery;
+use Doctrine\ORM\Annotation as ORM;
 use Doctrine\Tests\OrmFunctionalTestCase;
+use InvalidArgumentException;
+use function in_array;
 
 class GH6141Test extends OrmFunctionalTestCase
 {
-    protected function setUp()
+    protected function setUp() : void
     {
         parent::setUp();
 
         Type::addType(GH6141PeopleType::NAME, GH6141PeopleType::class);
 
-        $this->_schemaTool->createSchema(
+        $this->schemaTool->createSchema(
             [
-                $this->_em->getClassMetadata(GH6141Person::class),
-                $this->_em->getClassMetadata(GH6141Boss::class),
-                $this->_em->getClassMetadata(GH6141Employee::class),
+                $this->em->getClassMetadata(GH6141Person::class),
+                $this->em->getClassMetadata(GH6141Boss::class),
+                $this->em->getClassMetadata(GH6141Employee::class),
             ]
         );
     }
@@ -31,18 +37,18 @@ class GH6141Test extends OrmFunctionalTestCase
      *
      * @group 6141
      */
-    public function testEnumDiscriminatorsShouldBeConvertedToString()
+    public function testEnumDiscriminatorsShouldBeConvertedToString() : void
     {
-        $boss = new GH6141Boss('John');
+        $boss     = new GH6141Boss('John');
         $employee = new GH6141Employee('Bob');
 
-        $this->_em->persist($boss);
-        $this->_em->persist($employee);
-        $this->_em->flush();
-        $this->_em->clear();
+        $this->em->persist($boss);
+        $this->em->persist($employee);
+        $this->em->flush();
+        $this->em->clear();
 
         // Using DQL here to make sure that we'll use ObjectHydrator instead of SimpleObjectHydrator
-        $query = $this->_em->createQueryBuilder()
+        $query = $this->em->createQueryBuilder()
             ->select('person')
             ->from(GH6141Person::class, 'person')
             ->where('person.name = :name')
@@ -67,14 +73,14 @@ class GH6141Test extends OrmFunctionalTestCase
 
 class GH6141PeopleType extends StringType
 {
-    const NAME = 'gh6141people';
+    public const NAME = 'gh6141people';
 
     /**
      * {@inheritdoc}
      */
     public function convertToDatabaseValue($value, AbstractPlatform $platform)
     {
-        if (!$value instanceof GH6141People) {
+        if (! $value instanceof GH6141People) {
             $value = GH6141People::get($value);
         }
 
@@ -100,12 +106,10 @@ class GH6141PeopleType extends StringType
 
 class GH6141People
 {
-    const BOSS = 'boss';
-    const EMPLOYEE = 'employee';
+    public const BOSS     = 'boss';
+    public const EMPLOYEE = 'employee';
 
-    /**
-     * @var string
-     */
+    /** @var string */
     private $value;
 
     /**
@@ -113,12 +117,12 @@ class GH6141People
      *
      * @return GH6141People
      *
-     * @throws \InvalidArgumentException
+     * @throws InvalidArgumentException
      */
     public static function get($value)
     {
-        if (!self::isValid($value)) {
-            throw new \InvalidArgumentException();
+        if (! self::isValid($value)) {
+            throw new InvalidArgumentException();
         }
 
         return new self($value);
@@ -131,7 +135,7 @@ class GH6141People
      */
     private static function isValid($valid)
     {
-        return in_array($valid, [self::BOSS, self::EMPLOYEE]);
+        return in_array($valid, [self::BOSS, self::EMPLOYEE], true);
     }
 
     /**
@@ -160,10 +164,10 @@ class GH6141People
 }
 
 /**
- * @Entity
- * @InheritanceType("JOINED")
- * @DiscriminatorColumn(name="discr", type="gh6141people")
- * @DiscriminatorMap({
+ * @ORM\Entity
+ * @ORM\InheritanceType("JOINED")
+ * @ORM\DiscriminatorColumn(name="discr", type="gh6141people")
+ * @ORM\DiscriminatorMap({
  *      Doctrine\Tests\ORM\Functional\Ticket\GH6141People::BOSS     = GH6141Boss::class,
  *      Doctrine\Tests\ORM\Functional\Ticket\GH6141People::EMPLOYEE = GH6141Employee::class
  * })
@@ -171,15 +175,13 @@ class GH6141People
 abstract class GH6141Person
 {
     /**
-     * @Id
-     * @Column(type="integer")
-     * @GeneratedValue(strategy="AUTO")
+     * @ORM\Id
+     * @ORM\Column(type="integer")
+     * @ORM\GeneratedValue(strategy="AUTO")
      */
     public $id;
 
-    /**
-     * @Column(type="string")
-     */
+    /** @ORM\Column(type="string") */
     public $name;
 
     /**
@@ -191,12 +193,12 @@ abstract class GH6141Person
     }
 }
 
-/** @Entity */
+/** @ORM\Entity */
 class GH6141Boss extends GH6141Person
 {
 }
 
-/** @Entity */
+/** @ORM\Entity */
 class GH6141Employee extends GH6141Person
 {
 }

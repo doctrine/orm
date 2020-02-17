@@ -1,18 +1,23 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\Tests\ORM\Functional\Ticket;
 
-class DDC279Test extends \Doctrine\Tests\OrmFunctionalTestCase
+use Doctrine\ORM\Annotation as ORM;
+use Doctrine\Tests\OrmFunctionalTestCase;
+
+class DDC279Test extends OrmFunctionalTestCase
 {
-    protected function setUp()
+    protected function setUp() : void
     {
         parent::setUp();
-        $this->_schemaTool->createSchema(
+        $this->schemaTool->createSchema(
             [
-            $this->_em->getClassMetadata(DDC279EntityXAbstract::class),
-            $this->_em->getClassMetadata(DDC279EntityX::class),
-            $this->_em->getClassMetadata(DDC279EntityY::class),
-            $this->_em->getClassMetadata(DDC279EntityZ::class),
+                $this->em->getClassMetadata(DDC279EntityXAbstract::class),
+                $this->em->getClassMetadata(DDC279EntityX::class),
+                $this->em->getClassMetadata(DDC279EntityY::class),
+                $this->em->getClassMetadata(DDC279EntityZ::class),
             ]
         );
     }
@@ -20,7 +25,7 @@ class DDC279Test extends \Doctrine\Tests\OrmFunctionalTestCase
     /**
      * @group DDC-279
      */
-    public function testDDC279()
+    public function testDDC279() : void
     {
         $x = new DDC279EntityX();
         $y = new DDC279EntityY();
@@ -33,15 +38,15 @@ class DDC279Test extends \Doctrine\Tests\OrmFunctionalTestCase
         $x->y = $y;
         $y->z = $z;
 
-        $this->_em->persist($x);
-        $this->_em->persist($y);
-        $this->_em->persist($z);
+        $this->em->persist($x);
+        $this->em->persist($y);
+        $this->em->persist($z);
 
-        $this->_em->flush();
-        $this->_em->clear();
+        $this->em->flush();
+        $this->em->clear();
 
-        $query = $this->_em->createQuery(
-            'SELECT x, y, z FROM Doctrine\Tests\ORM\Functional\Ticket\DDC279EntityX x '.
+        $query = $this->em->createQuery(
+            'SELECT x, y, z FROM Doctrine\Tests\ORM\Functional\Ticket\DDC279EntityX x ' .
             'INNER JOIN x.y y INNER JOIN y.z z WHERE x.id = ?1'
         )->setParameter(1, $x->id);
 
@@ -50,84 +55,77 @@ class DDC279Test extends \Doctrine\Tests\OrmFunctionalTestCase
         $expected1 = 'Y';
         $expected2 = 'Z';
 
-        $this->assertEquals(1, count($result));
+        self::assertCount(1, $result);
 
-        $this->assertEquals($expected1, $result[0]->y->data);
-        $this->assertEquals($expected2, $result[0]->y->z->data);
+        self::assertEquals($expected1, $result[0]->y->data);
+        self::assertEquals($expected2, $result[0]->y->z->data);
     }
 }
 
 
 /**
- * @Entity
- * @InheritanceType("JOINED")
- * @DiscriminatorColumn(name="discr", type="string")
- * @DiscriminatorMap({"DDC279EntityX" = "DDC279EntityX"})
+ * @ORM\Entity
+ * @ORM\InheritanceType("JOINED")
+ * @ORM\DiscriminatorColumn(name="discr", type="string")
+ * @ORM\DiscriminatorMap({"DDC279EntityX" = DDC279EntityX::class})
  */
 abstract class DDC279EntityXAbstract
 {
     /**
-     * @Id
-     * @GeneratedValue
-     * @Column(name="id", type="integer")
+     * @ORM\Id
+     * @ORM\GeneratedValue
+     * @ORM\Column(name="id", type="integer")
      */
     public $id;
 
-    /**
-     * @column(type="string")
-     */
+    /** @ORM\Column(type="string") */
     public $data;
-
 }
 
 /**
- * @Entity
+ * @ORM\Entity
  */
 class DDC279EntityX extends DDC279EntityXAbstract
 {
     /**
-     * @OneToOne(targetEntity="DDC279EntityY")
-     * @JoinColumn(name="y_id", referencedColumnName="id")
+     * @ORM\OneToOne(targetEntity=DDC279EntityY::class)
+     * @ORM\JoinColumn(name="y_id", referencedColumnName="id")
      */
     public $y;
 }
 
 /**
- * @Entity
+ * @ORM\Entity
  */
 class DDC279EntityY
 {
     /**
-     * @Id @GeneratedValue
-     * @Column(name="id", type="integer")
+     * @ORM\Id @ORM\GeneratedValue
+     * @ORM\Column(name="id", type="integer")
      */
     public $id;
 
-    /**
-     * @column(type="string")
-     */
+    /** @ORM\Column(type="string") */
     public $data;
 
     /**
-     * @OneToOne(targetEntity="DDC279EntityZ")
-     * @JoinColumn(name="z_id", referencedColumnName="id")
+     * @ORM\OneToOne(targetEntity=DDC279EntityZ::class)
+     * @ORM\JoinColumn(name="z_id", referencedColumnName="id")
      */
     public $z;
 }
 
 /**
- * @Entity
+ * @ORM\Entity
  */
 class DDC279EntityZ
 {
     /**
-     * @Id @GeneratedValue
-     * @Column(name="id", type="integer")
+     * @ORM\Id @ORM\GeneratedValue
+     * @ORM\Column(name="id", type="integer")
      */
     public $id;
 
-    /**
-     * @column(type="string")
-     */
+    /** @ORM\Column(type="string") */
     public $data;
 }

@@ -1,58 +1,61 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\Tests\ORM\Tools;
 
+use Doctrine\ORM\Annotation as ORM;
+use Doctrine\ORM\EntityManagerInterface;
+use Doctrine\ORM\Events;
 use Doctrine\ORM\Mapping\ClassMetadataFactory;
 use Doctrine\ORM\Tools\ResolveTargetEntityListener;
-use Doctrine\ORM\Events;
 use Doctrine\Tests\OrmTestCase;
+use function iterator_to_array;
 
 class ResolveTargetEntityListenerTest extends OrmTestCase
 {
-    /**
-     * @var \Doctrine\ORM\EntityManager
-     */
+    /** @var EntityManagerInterface */
     private $em;
 
-    /**
-     * @var ResolveTargetEntityListener
-     */
+    /** @var ResolveTargetEntityListener */
     private $listener;
 
-    /**
-     * @var ClassMetadataFactory
-     */
+    /** @var ClassMetadataFactory */
     private $factory;
 
-    public function setUp()
+    public function setUp() : void
     {
         $annotationDriver = $this->createAnnotationDriver();
 
-        $this->em = $this->_getTestEntityManager();
+        $this->em = $this->getTestEntityManager();
+
         $this->em->getConfiguration()->setMetadataDriverImpl($annotationDriver);
-        $this->factory = $this->em->getMetadataFactory();
+
+        $this->factory  = $this->em->getMetadataFactory();
         $this->listener = new ResolveTargetEntityListener();
     }
 
     /**
      * @group DDC-1544
      */
-    public function testResolveTargetEntityListenerCanResolveTargetEntity()
+    public function testResolveTargetEntityListenerCanResolveTargetEntity() : void
     {
         $evm = $this->em->getEventManager();
-        $this->listener->addResolveTargetEntity(ResolveTargetInterface::class, ResolveTargetEntity::class, []);
-        $this->listener->addResolveTargetEntity(TargetInterface::class, TargetEntity::class, []);
+
+        $this->listener->addResolveTargetEntity(ResolveTarget::class, ResolveTargetEntity::class);
+        $this->listener->addResolveTargetEntity(Target::class, TargetEntity::class);
+
         $evm->addEventSubscriber($this->listener);
 
         $cm   = $this->factory->getMetadataFor(ResolveTargetEntity::class);
-        $meta = $cm->associationMappings;
+        $meta = iterator_to_array($cm->getPropertiesIterator());
 
-        $this->assertSame(TargetEntity::class, $meta['manyToMany']['targetEntity']);
-        $this->assertSame(ResolveTargetEntity::class, $meta['manyToOne']['targetEntity']);
-        $this->assertSame(ResolveTargetEntity::class, $meta['oneToMany']['targetEntity']);
-        $this->assertSame(TargetEntity::class, $meta['oneToOne']['targetEntity']);
+        self::assertSame(TargetEntity::class, $meta['manyToMany']->getTargetEntity());
+        self::assertSame(ResolveTargetEntity::class, $meta['manyToOne']->getTargetEntity());
+        self::assertSame(ResolveTargetEntity::class, $meta['oneToMany']->getTargetEntity());
+        self::assertSame(TargetEntity::class, $meta['oneToOne']->getTargetEntity());
 
-        $this->assertSame($cm, $this->factory->getMetadataFor(ResolveTargetInterface::class));
+        self::assertSame($cm, $this->factory->getMetadataFor(ResolveTarget::class));
     }
 
     /**
@@ -60,96 +63,94 @@ class ResolveTargetEntityListenerTest extends OrmTestCase
      * @group 1181
      * @group 385
      */
-    public function testResolveTargetEntityListenerCanRetrieveTargetEntityByInterfaceName()
+    public function testResolveTargetEntityListenerCanRetrieveTargetEntityByInterfaceName() : void
     {
-        $this->listener->addResolveTargetEntity(ResolveTargetInterface::class, ResolveTargetEntity::class, []);
+        $evm = $this->em->getEventManager();
 
-        $this->em->getEventManager()->addEventSubscriber($this->listener);
+        $this->listener->addResolveTargetEntity(ResolveTarget::class, ResolveTargetEntity::class);
+        $this->listener->addResolveTargetEntity(Target::class, TargetEntity::class);
 
-        $cm = $this->factory->getMetadataFor(ResolveTargetInterface::class);
+        $evm->addEventSubscriber($this->listener);
 
-        $this->assertSame($this->factory->getMetadataFor(ResolveTargetEntity::class), $cm);
+        $cm = $this->factory->getMetadataFor(ResolveTarget::class);
+
+        self::assertSame($this->factory->getMetadataFor(ResolveTargetEntity::class), $cm);
     }
 
     /**
      * @group DDC-2109
      */
-    public function testAssertTableColumnsAreNotAddedInManyToMany()
+    public function testAssertTableColumnsAreNotAddedInManyToMany() : void
     {
         $evm = $this->em->getEventManager();
-        $this->listener->addResolveTargetEntity(ResolveTargetInterface::class, ResolveTargetEntity::class, []);
-        $this->listener->addResolveTargetEntity(TargetInterface::class, TargetEntity::class, []);
+
+        $this->listener->addResolveTargetEntity(ResolveTarget::class, ResolveTargetEntity::class);
+        $this->listener->addResolveTargetEntity(Target::class, TargetEntity::class);
 
         $evm->addEventListener(Events::loadClassMetadata, $this->listener);
-        $cm = $this->factory->getMetadataFor(ResolveTargetEntity::class);
-        $meta = $cm->associationMappings['manyToMany'];
 
-        $this->assertSame(TargetEntity::class, $meta['targetEntity']);
-        $this->assertEquals(['resolvetargetentity_id', 'targetinterface_id'], $meta['joinTableColumns']);
+        $cm   = $this->factory->getMetadataFor(ResolveTargetEntity::class);
+        $meta = $cm->getProperty('manyToMany');
+
+        self::assertSame(TargetEntity::class, $meta->getTargetEntity());
     }
 
     /**
      * @group 1572
      * @group functional
-     *
      * @coversNothing
      */
-    public function testDoesResolveTargetEntitiesInDQLAlsoWithInterfaces()
+    public function testDoesResolveTargetEntitiesInDQLAlsoWithInterfaces() : void
     {
         $evm = $this->em->getEventManager();
-        $this->listener->addResolveTargetEntity(ResolveTargetInterface::class, ResolveTargetEntity::class, []);
+
+        $this->listener->addResolveTargetEntity(ResolveTarget::class, ResolveTargetEntity::class);
 
         $evm->addEventSubscriber($this->listener);
 
-        $this->assertStringMatchesFormat(
-            'SELECT%AFROM ResolveTargetEntity%A',
+        self::assertStringMatchesFormat(
+            'SELECT %A FROM "ResolveTargetEntity" %A',
             $this
                 ->em
-                ->createQuery('SELECT f FROM Doctrine\Tests\ORM\Tools\ResolveTargetInterface f')
+                ->createQuery('SELECT f FROM Doctrine\Tests\ORM\Tools\ResolveTarget f')
                 ->getSQL()
         );
     }
 }
 
-interface ResolveTargetInterface
+interface ResolveTarget
 {
     public function getId();
 }
 
-interface TargetInterface extends ResolveTargetInterface
+interface Target extends ResolveTarget
 {
 }
 
 /**
- * @Entity
+ * @ORM\Entity
  */
-class ResolveTargetEntity implements ResolveTargetInterface
+class ResolveTargetEntity implements ResolveTarget
 {
     /**
-     * @Id
-     * @Column(type="integer")
-     * @GeneratedValue(strategy="AUTO")
+     * @ORM\Id
+     * @ORM\Column(type="integer")
+     * @ORM\GeneratedValue(strategy="AUTO")
      */
     private $id;
 
-    /**
-     * @ManyToMany(targetEntity="Doctrine\Tests\ORM\Tools\TargetInterface")
-     */
+    /** @ORM\ManyToMany(targetEntity=Target::class) */
     private $manyToMany;
 
-    /**
-     * @ManyToOne(targetEntity="Doctrine\Tests\ORM\Tools\ResolveTargetInterface", inversedBy="oneToMany")
-     */
+    /** @ORM\ManyToOne(targetEntity=ResolveTarget::class, inversedBy="oneToMany") */
     private $manyToOne;
 
-    /**
-     * @OneToMany(targetEntity="Doctrine\Tests\ORM\Tools\ResolveTargetInterface", mappedBy="manyToOne")
-     */
+    /** @ORM\OneToMany(targetEntity=ResolveTarget::class, mappedBy="manyToOne") */
     private $oneToMany;
 
     /**
-     * @OneToOne(targetEntity="Doctrine\Tests\ORM\Tools\TargetInterface")
-     * @JoinColumn(name="target_entity_id", referencedColumnName="id")
+     * @ORM\OneToOne(targetEntity=Target::class)
+     * @ORM\JoinColumn(name="target_entity_id", referencedColumnName="id")
      */
     private $oneToOne;
 
@@ -160,14 +161,14 @@ class ResolveTargetEntity implements ResolveTargetInterface
 }
 
 /**
- * @Entity
+ * @ORM\Entity
  */
-class TargetEntity implements TargetInterface
+class TargetEntity implements Target
 {
     /**
-     * @Id
-     * @Column(type="integer")
-     * @GeneratedValue(strategy="AUTO")
+     * @ORM\Id
+     * @ORM\Column(type="integer")
+     * @ORM\GeneratedValue(strategy="AUTO")
      */
     private $id;
 

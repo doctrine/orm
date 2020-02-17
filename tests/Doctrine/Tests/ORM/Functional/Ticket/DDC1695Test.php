@@ -1,158 +1,169 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\Tests\ORM\Functional\Ticket;
+
+use Doctrine\ORM\Annotation as ORM;
+use Doctrine\Tests\OrmFunctionalTestCase;
 
 /**
  * @group DDC-1695
  */
-class DDC1695Test extends \Doctrine\Tests\OrmFunctionalTestCase
+class DDC1695Test extends OrmFunctionalTestCase
 {
-    public function testIssue()
+    public function setUp() : void
     {
-        if ($this->_em->getConnection()->getDatabasePlatform()->getName() != "sqlite") {
-            $this->markTestSkipped("Only with sqlite");
-        }
-        $dql = "SELECT n.smallText, n.publishDate FROM " . __NAMESPACE__ . "\\DDC1695News n";
-        $sql = $this->_em->createQuery($dql)->getSQL();
+        parent::setUp();
 
-        $this->assertEquals(
-            'SELECT d0_."SmallText" AS SmallText_0, d0_."PublishDate" AS PublishDate_1 FROM "DDC1695News" d0_',
+        if ($this->em->getConnection()->getDatabasePlatform()->getName() !== 'sqlite') {
+            $this->markTestSkipped('Only with sqlite');
+        }
+    }
+
+    public function testIssue() : void
+    {
+        $dql = 'SELECT n.smallText, n.publishDate FROM ' . __NAMESPACE__ . '\\DDC1695News n';
+        $sql = $this->em->createQuery($dql)->getSQL();
+
+        self::assertEquals(
+            'SELECT t0."SmallText" AS c0, t0."PublishDate" AS c1 FROM "DDC1695News" t0',
             $sql
         );
     }
 }
 
 /**
- * @Table(name="`DDC1695News`")
- * @Entity
+ * @ORM\Table(name="DDC1695News")
+ * @ORM\Entity
  */
 class DDC1695News
 {
     /**
-     * @var int
+     * @ORM\Column(name="IdNews", type="integer", nullable=false)
+     * @ORM\Id
+     * @ORM\GeneratedValue
      *
-     * @Column(name="`IdNews`", type="integer", nullable=false)
-     * @Id
-     * @GeneratedValue
+     * @var int
      */
     private $idNews;
 
     /**
-     * @var int
+     * @ORM\Column(name="IdUser", type="bigint", nullable=false)
      *
-     * @Column(name="`IdUser`", type="bigint", nullable=false)
+     * @var int
      */
     private $idUser;
 
     /**
-     * @var int
+     * @ORM\Column(name="IdLanguage", type="integer", nullable=false)
      *
-     * @Column(name="`IdLanguage`", type="integer", nullable=false)
+     * @var int
      */
     private $idLanguage;
 
     /**
-     * @var int
+     * @ORM\Column(name="IdCondition", type="integer", nullable=true)
      *
-     * @Column(name="`IdCondition`", type="integer", nullable=true)
+     * @var int
      */
     private $idCondition;
 
     /**
-     * @var int
+     * @ORM\Column(name="IdHealthProvider", type="integer", nullable=true)
      *
-     * @Column(name="`IdHealthProvider`", type="integer", nullable=true)
+     * @var int
      */
     private $idHealthProvider;
 
     /**
-     * @var int
+     * @ORM\Column(name="IdSpeciality", type="integer", nullable=true)
      *
-     * @Column(name="`IdSpeciality`", type="integer", nullable=true)
+     * @var int
      */
     private $idSpeciality;
 
     /**
-     * @var int
+     * @ORM\Column(name="IdMedicineType", type="integer", nullable=true)
      *
-     * @Column(name="`IdMedicineType`", type="integer", nullable=true)
+     * @var int
      */
     private $idMedicineType;
 
     /**
-     * @var int
+     * @ORM\Column(name="IdTreatment", type="integer", nullable=true)
      *
-     * @Column(name="`IdTreatment`", type="integer", nullable=true)
+     * @var int
      */
     private $idTreatment;
 
     /**
-     * @var string
+     * @ORM\Column(name="Title", type="string", nullable=true)
      *
-     * @Column(name="`Title`", type="string", nullable=true)
+     * @var string
      */
     private $title;
 
     /**
-     * @var string
+     * @ORM\Column(name="SmallText", type="string", nullable=true)
      *
-     * @Column(name="`SmallText`", type="string", nullable=true)
+     * @var string
      */
     private $smallText;
 
     /**
-     * @var string
+     * @ORM\Column(name="LongText", type="string", nullable=true)
      *
-     * @Column(name="`LongText`", type="string", nullable=true)
+     * @var string
      */
     private $longText;
 
     /**
-     * @var DateTimeZone
+     * @ORM\Column(name="PublishDate", type="datetimetz", nullable=true)
      *
-     * @Column(name="`PublishDate`", type="datetimetz", nullable=true)
+     * @var DateTimeZone
      */
     private $publishDate;
 
     /**
-     * @var array
+     * @ORM\Column(name="IdxNews", type="json_array", nullable=true)
      *
-     * @Column(name="`IdxNews`", type="json_array", nullable=true)
+     * @var array
      */
     private $idxNews;
 
     /**
-     * @var bool
+     * @ORM\Column(name="Highlight", type="boolean", nullable=false)
      *
-     * @Column(name="`Highlight`", type="boolean", nullable=false)
+     * @var bool
      */
     private $highlight;
 
     /**
-     * @var int
+     * @ORM\Column(name="Order", type="integer", nullable=false)
      *
-     * @Column(name="`Order`", type="integer", nullable=false)
+     * @var int
      */
     private $order;
 
     /**
-     * @var bool
+     * @ORM\Column(name="Deleted", type="boolean", nullable=false)
      *
-     * @Column(name="`Deleted`", type="boolean", nullable=false)
+     * @var bool
      */
     private $deleted;
 
     /**
-     * @var bool
+     * @ORM\Column(name="Active", type="boolean", nullable=false)
      *
-     * @Column(name="`Active`", type="boolean", nullable=false)
+     * @var bool
      */
     private $active;
 
     /**
-     * @var bool
+     * @ORM\Column(name="UpdateToHighlighted", type="boolean", nullable=true)
      *
-     * @Column(name="`UpdateToHighlighted`", type="boolean", nullable=true)
+     * @var bool
      */
     private $updateToHighlighted;
 }

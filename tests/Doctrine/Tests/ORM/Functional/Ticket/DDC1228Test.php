@@ -1,99 +1,118 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\Tests\ORM\Functional\Ticket;
+
+use Doctrine\ORM\Annotation as ORM;
+use Doctrine\Tests\OrmFunctionalTestCase;
+use Exception;
+use ProxyManager\Proxy\GhostObjectInterface;
 
 /**
  * @group DDC-1228
  * @group DDC-1226
  */
-class DDC1228Test extends \Doctrine\Tests\OrmFunctionalTestCase
+class DDC1228Test extends OrmFunctionalTestCase
 {
-    public function setUp()
+    public function setUp() : void
     {
         parent::setUp();
         try {
-            $this->_schemaTool->createSchema(
+            $this->schemaTool->createSchema(
                 [
-                $this->_em->getClassMetadata(DDC1228User::class),
-                $this->_em->getClassMetadata(DDC1228Profile::class),
+                    $this->em->getClassMetadata(DDC1228User::class),
+                    $this->em->getClassMetadata(DDC1228Profile::class),
                 ]
             );
-        } catch(\Exception $e) {
-
+        } catch (Exception $e) {
         }
     }
 
-    public function testOneToOnePersist()
+    public function testOneToOnePersist() : void
     {
-        $user = new DDC1228User;
-        $profile = new DDC1228Profile();
-        $profile->name = "Foo";
+        $user          = new DDC1228User();
+        $profile       = new DDC1228Profile();
+        $profile->name = 'Foo';
         $user->profile = $profile;
 
-        $this->_em->persist($user);
-        $this->_em->persist($profile);
-        $this->_em->flush();
-        $this->_em->clear();
+        $this->em->persist($user);
+        $this->em->persist($profile);
+        $this->em->flush();
+        $this->em->clear();
 
-        $user = $this->_em->find(DDC1228User::class, $user->id);
+        /** @var DDC1228User $fetchedUser */
+        $fetchedUser = $this->em->find(DDC1228User::class, $user->id);
 
-        $this->assertFalse($user->getProfile()->__isInitialized__, "Proxy is not initialized");
-        $user->getProfile()->setName("Bar");
-        $this->assertTrue($user->getProfile()->__isInitialized__, "Proxy is not initialized");
+        /** @var DDC1228Profile|GhostObjectInterface $fetchedProfile */
+        $fetchedProfile = $fetchedUser->getProfile();
 
-        $this->assertEquals("Bar", $user->getProfile()->getName());
-        $this->assertEquals(["id" => 1, "name" => "Foo"], $this->_em->getUnitOfWork()->getOriginalEntityData($user->getProfile()));
+        self::assertInstanceOf(GhostObjectInterface::class, $fetchedProfile);
+        self::assertInstanceOf(DDC1228Profile::class, $fetchedProfile);
+        self::assertFalse($fetchedProfile->isProxyInitialized());
 
-        $this->_em->flush();
-        $this->_em->clear();
+        $fetchedProfile->setName('Bar');
 
-        $user = $this->_em->find(DDC1228User::class, $user->id);
-        $this->assertEquals("Bar", $user->getProfile()->getName());
+        self::assertTrue($fetchedProfile->isProxyInitialized());
+
+        self::assertEquals('Bar', $fetchedProfile->getName());
+        self::assertEquals(['id' => 1, 'name' => 'Foo'], $this->em->getUnitOfWork()->getOriginalEntityData($fetchedProfile));
+
+        $this->em->flush();
+        $this->em->clear();
+
+        /** @var DDC1228User $otherFetchedUser */
+        $otherFetchedUser = $this->em->find(DDC1228User::class, $fetchedUser->id);
+
+        self::assertEquals('Bar', $otherFetchedUser->getProfile()->getName());
     }
 
-    public function testRefresh()
+    public function testRefresh() : void
     {
-        $user = new DDC1228User;
-        $profile = new DDC1228Profile();
-        $profile->name = "Foo";
+        $user          = new DDC1228User();
+        $profile       = new DDC1228Profile();
+        $profile->name = 'Foo';
         $user->profile = $profile;
 
-        $this->_em->persist($user);
-        $this->_em->persist($profile);
-        $this->_em->flush();
-        $this->_em->clear();
+        $this->em->persist($user);
+        $this->em->persist($profile);
+        $this->em->flush();
+        $this->em->clear();
 
-        $user = $this->_em->getReference(DDC1228User::class, $user->id);
+        $user = $this->em->getReference(DDC1228User::class, $user->id);
 
-        $this->_em->refresh($user);
-        $user->name = "Baz";
-        $this->_em->flush();
-        $this->_em->clear();
+        $this->em->refresh($user);
+        $user->name = 'Baz';
+        $this->em->flush();
+        $this->em->clear();
 
-        $user = $this->_em->find(DDC1228User::class, $user->id);
-        $this->assertEquals("Baz", $user->name);
+        $user = $this->em->find(DDC1228User::class, $user->id);
+        self::assertEquals('Baz', $user->name);
     }
 }
 
 /**
- * @Entity
+ * @ORM\Entity
  */
 class DDC1228User
 {
     /**
-     * @Id @Column(type="integer") @GeneratedValue
+     * @ORM\Id @ORM\Column(type="integer") @ORM\GeneratedValue
+     *
      * @var int
      */
     public $id;
 
     /**
-     * @Column(type="string")
+     * @ORM\Column(type="string")
+     *
      * @var string
      */
     public $name = 'Bar';
 
     /**
-     * @OneToOne(targetEntity="DDC1228Profile")
+     * @ORM\OneToOne(targetEntity=DDC1228Profile::class)
+     *
      * @var Profile
      */
     public $profile;
@@ -105,18 +124,20 @@ class DDC1228User
 }
 
 /**
- * @Entity
+ * @ORM\Entity
  */
 class DDC1228Profile
 {
     /**
-     * @Id @Column(type="integer") @GeneratedValue
+     * @ORM\Id @ORM\Column(type="integer") @ORM\GeneratedValue
+     *
      * @var int
      */
     public $id;
 
     /**
-     * @column(type="string")
+     * @ORM\Column(type="string")
+     *
      * @var string
      */
     public $name;

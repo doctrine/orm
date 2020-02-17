@@ -1,50 +1,49 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\Tests\Models\Cache;
 
 use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\ORM\Annotation as ORM;
 
 /**
- * @Entity
- * @Table("cache_complex_action")
+ * @ORM\Entity
+ * @ORM\Table("cache_complex_action")
  */
 class ComplexAction
 {
-    /**
-     * @Column
-     */
+    /** @ORM\Column */
     public $name;
 
     /**
-     * @Id
-     * @OneToOne(targetEntity="Action", cascade={"persist", "remove"})
-     * @JoinColumn(name="action1_name", referencedColumnName="name")
+     * @ORM\Id
+     * @ORM\OneToOne(targetEntity=Action::class, cascade={"persist", "remove"})
+     * @ORM\JoinColumn(name="action1_name", referencedColumnName="name")
      */
     public $action1;
 
     /**
-     * @Id
-     * @OneToOne(targetEntity="Action", cascade={"persist", "remove"})
-     * @JoinColumn(name="action2_name", referencedColumnName="name")
+     * @ORM\Id
+     * @ORM\OneToOne(targetEntity=Action::class, cascade={"persist", "remove"})
+     * @ORM\JoinColumn(name="action2_name", referencedColumnName="name")
      */
     public $action2;
 
-    /**
-     * @OneToMany(targetEntity="Token", cascade={"persist", "remove"}, mappedBy="complexAction")
-     */
+    /** @ORM\OneToMany(targetEntity=Token::class, cascade={"persist", "remove"}, mappedBy="complexAction") */
     public $tokens;
 
     public function __construct(Action $action1, Action $action2, $name)
     {
-        $this->name = $name;
+        $this->name    = $name;
         $this->action1 = $action1;
         $this->action2 = $action2;
-        $this->tokens = new ArrayCollection();
+        $this->tokens  = new ArrayCollection();
     }
 
     public function addToken(Token $token)
     {
-        $this->tokens[] = $token;
+        $this->tokens[]       = $token;
         $token->complexAction = $this;
     }
 

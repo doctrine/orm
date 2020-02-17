@@ -1,9 +1,13 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\Tests\ORM\Functional\Ticket;
 
 use Doctrine\DBAL\Platforms\AbstractPlatform;
 use Doctrine\DBAL\Types as DBALTypes;
+use Doctrine\ORM\Annotation as ORM;
+use Doctrine\Tests\OrmFunctionalTestCase;
 
 /**
  * This test verifies that custom post-insert identifiers respect type conversion semantics.
@@ -12,9 +16,9 @@ use Doctrine\DBAL\Types as DBALTypes;
  *
  * @group 5935 5684 6020 6152
  */
-class DDC5684Test extends \Doctrine\Tests\OrmFunctionalTestCase
+class DDC5684Test extends OrmFunctionalTestCase
 {
-    protected function setUp()
+    protected function setUp() : void
     {
         parent::setUp();
 
@@ -24,37 +28,37 @@ class DDC5684Test extends \Doctrine\Tests\OrmFunctionalTestCase
             DBALTypes\Type::addType(DDC5684ObjectIdType::class, DDC5684ObjectIdType::class);
         }
 
-        $this->_schemaTool->createSchema([$this->_em->getClassMetadata(DDC5684Object::class)]);
+        $this->schemaTool->createSchema([$this->em->getClassMetadata(DDC5684Object::class)]);
     }
 
-    protected function tearDown()
+    protected function tearDown() : void
     {
-        $this->_schemaTool->dropSchema([$this->_em->getClassMetadata(DDC5684Object::class)]);
+        $this->schemaTool->dropSchema([$this->em->getClassMetadata(DDC5684Object::class)]);
 
         parent::tearDown();
     }
 
-    public function testAutoIncrementIdWithCustomType()
+    public function testAutoIncrementIdWithCustomType() : void
     {
         $object = new DDC5684Object();
-        $this->_em->persist($object);
-        $this->_em->flush();
+        $this->em->persist($object);
+        $this->em->flush();
 
-        $this->assertInstanceOf(DDC5684ObjectId::class, $object->id);
+        self::assertInstanceOf(DDC5684ObjectId::class, $object->id);
     }
 
-    public function testFetchObjectWithAutoIncrementedCustomType()
+    public function testFetchObjectWithAutoIncrementedCustomType() : void
     {
         $object = new DDC5684Object();
-        $this->_em->persist($object);
-        $this->_em->flush();
-        $this->_em->clear();
+        $this->em->persist($object);
+        $this->em->flush();
+        $this->em->clear();
 
-        $rawId = $object->id->value;
-        $object = $this->_em->find(DDC5684Object::class, new DDC5684ObjectId($rawId));
+        $rawId  = $object->id->value;
+        $object = $this->em->find(DDC5684Object::class, new DDC5684ObjectId($rawId));
 
-        $this->assertInstanceOf(DDC5684ObjectId::class, $object->id);
-        $this->assertEquals($rawId, $object->id->value);
+        self::assertInstanceOf(DDC5684ObjectId::class, $object->id);
+        self::assertEquals($rawId, $object->id->value);
     }
 }
 
@@ -97,15 +101,15 @@ class DDC5684ObjectId
 }
 
 /**
- * @Entity
- * @Table(name="ticket_5684_objects")
+ * @ORM\Entity
+ * @ORM\Table(name="ticket_5684_objects")
  */
 class DDC5684Object
 {
     /**
-     * @Id
-     * @Column(type=Doctrine\Tests\ORM\Functional\Ticket\DDC5684ObjectIdType::class)
-     * @GeneratedValue(strategy="AUTO")
+     * @ORM\Id
+     * @ORM\Column(type=Doctrine\Tests\ORM\Functional\Ticket\DDC5684ObjectIdType::class)
+     * @ORM\GeneratedValue(strategy="AUTO")
      */
     public $id;
 }

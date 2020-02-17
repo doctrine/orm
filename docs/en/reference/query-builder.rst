@@ -38,7 +38,6 @@ good example is to inspect what type of object the
 
 There're currently 3 possible return values for ``getType()``:
 
-
 -  ``QueryBuilder::SELECT``, which returns value 0
 -  ``QueryBuilder::DELETE``, returning value 1
 -  ``QueryBuilder::UPDATE``, which returns value 2
@@ -66,7 +65,6 @@ performance. Any changes that may affect the generated DQL actually
 modifies the state of ``QueryBuilder`` to a stage we call
 STATE\_DIRTY. One ``QueryBuilder`` can be in two different states:
 
-
 -  ``QueryBuilder::STATE_CLEAN``, which means DQL haven't been
    altered since last retrieval or nothing were added since its
    instantiation
@@ -75,7 +73,6 @@ STATE\_DIRTY. One ``QueryBuilder`` can be in two different states:
 
 Working with QueryBuilder
 ~~~~~~~~~~~~~~~~~~~~~~~~~
-
 
 High level API methods
 ^^^^^^^^^^^^^^^^^^^^^^
@@ -247,8 +244,8 @@ while the named placeholders start with a : followed by a string.
 Calling ``setParameter()`` automatically infers which type you are setting as
 value. This works for integers, arrays of strings/integers, DateTime instances
 and for managed entities. If you want to set a type explicitly you can call
-the third argument to ``setParameter()`` explicitly. It accepts either a PDO
-type or a DBAL Type name for conversion.
+the third argument to ``setParameter()`` explicitly. It accepts either a DBAL
+Doctrine\DBAL\ParameterType::* or a DBAL Type name for conversion.
 
 If you've got several parameters to bind to your query, you can
 also use setParameters() instead of setParameter() with the
@@ -379,7 +376,6 @@ complete list of supported helper methods available:
         // Example - $qb->expr()->orX($cond1 [, $condN])->add(...)->...
         public function orX($x = null); // Returns Expr\OrX instance
 
-
         /** Comparison objects **/
 
         // Example - $qb->expr()->eq('u.id', '?1') => u.id = ?1
@@ -406,7 +402,6 @@ complete list of supported helper methods available:
         // Example - $qb->expr()->isNotNull('u.id') => u.id IS NOT NULL
         public function isNotNull($x); // Returns string
 
-
         /** Arithmetic objects **/
 
         // Example - $qb->expr()->prod('u.id', '2') => u.id * 2
@@ -420,7 +415,6 @@ complete list of supported helper methods available:
 
         // Example - $qb->expr()->quot('u.id', '2') => u.id / 2
         public function quot($x, $y); // Returns Expr\Math instance
-
 
         /** Pseudo-function objects **/
 
@@ -455,7 +449,6 @@ complete list of supported helper methods available:
 
         // Example - $qb->expr()->between('u.id', '1', '10')
         public function between($val, $x, $y); // Returns Expr\Func
-
 
         /** Function objects **/
 
@@ -502,7 +495,7 @@ complete list of supported helper methods available:
 Adding a Criteria to a Query
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-You can also add a :ref:`Criteria <filtering-collections>` to a QueryBuilder by
+You can also add a :ref:`filtering-collections` to a QueryBuilder by
 using ``addCriteria``:
 
 .. code-block:: php
@@ -512,7 +505,7 @@ using ``addCriteria``:
     // ...
 
     $criteria = Criteria::create()
-        ->orderBy(['firstName', 'ASC']);
+        ->orderBy(['firstName' => Criteria::ASC]);
 
     // $qb instanceof QueryBuilder
     $qb->addCriteria($criteria);
@@ -530,7 +523,6 @@ All helper methods in ``QueryBuilder`` actually rely on a single
 one: ``add()``. This method is responsible of building every piece
 of DQL. It takes 3 parameters: ``$dqlPartName``, ``$dqlPart`` and
 ``$append`` (default=false)
-
 
 -  ``$dqlPartName``: Where the ``$dqlPart`` should be placed.
    Possible values: select, from, where, groupBy, having, orderBy

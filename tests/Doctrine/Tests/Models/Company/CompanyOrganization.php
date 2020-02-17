@@ -1,44 +1,62 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\Tests\Models\Company;
 
-/** @Entity @Table(name="company_organizations") */
-class CompanyOrganization {
-   /**
-    * @Id @Column(type="integer")
-    * @GeneratedValue(strategy="AUTO")
-    */
-   private $id;
+use Doctrine\ORM\Annotation as ORM;
+
+/**
+ * @ORM\Entity
+ * @ORM\Table(name="company_organizations")
+ */
+class CompanyOrganization
+{
+    /**
+     * @ORM\Id @ORM\Column(type="integer")
+     * @ORM\GeneratedValue(strategy="AUTO")
+     */
+    private $id;
 
     /**
-     * @OneToMany(targetEntity="CompanyEvent", mappedBy="organization", cascade={"persist"}, fetch="EXTRA_LAZY")
+     * @ORM\OneToMany(
+     *     targetEntity=CompanyEvent::class,
+     *     mappedBy="organization",
+     *     cascade={"persist"},
+     *     fetch="EXTRA_LAZY"
+     * )
      */
     public $events;
 
-    public function getId() {
+    public function getId()
+    {
         return $this->id;
     }
 
-    public function getEvents() {
+    public function getEvents()
+    {
         return $this->events;
     }
 
-    public function addEvent(CompanyEvent $event) {
+    public function addEvent(CompanyEvent $event)
+    {
         $this->events[] = $event;
         $event->setOrganization($this);
     }
 
     /**
-     * @OneToOne(targetEntity="CompanyEvent", cascade={"persist"})
-     * @JoinColumn(name="main_event_id", referencedColumnName="id", nullable=true)
+     * @ORM\OneToOne(targetEntity=CompanyEvent::class, cascade={"persist"})
+     * @ORM\JoinColumn(name="main_event_id", referencedColumnName="id", nullable=true)
      */
     private $mainevent;
 
-    public function getMainEvent() {
+    public function getMainEvent()
+    {
         return $this->mainevent;
     }
 
-    public function setMainEvent($event) {
+    public function setMainEvent($event)
+    {
         $this->mainevent = $event;
     }
 }

@@ -1,83 +1,89 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\Tests\ORM\Functional\Ticket;
+
+use Doctrine\ORM\Annotation as ORM;
+use Doctrine\ORM\UnitOfWork;
+use Doctrine\Tests\OrmFunctionalTestCase;
+use Exception;
+use function get_class;
 
 /**
  * @group DDC-1461
  */
-class DDC1461Test extends \Doctrine\Tests\OrmFunctionalTestCase
+class DDC1461Test extends OrmFunctionalTestCase
 {
-    public function setUp()
+    public function setUp() : void
     {
         parent::setUp();
 
         try {
-            $this->_schemaTool->createSchema(
+            $this->schemaTool->createSchema(
                 [
-                $this->_em->getClassMetadata(DDC1461TwitterAccount::class),
-                $this->_em->getClassMetadata(DDC1461User::class)
+                    $this->em->getClassMetadata(DDC1461TwitterAccount::class),
+                    $this->em->getClassMetadata(DDC1461User::class),
                 ]
             );
-        } catch(\Exception $e) {
-
+        } catch (Exception $e) {
         }
     }
 
-    public function testChangeDetectionDeferredExplicit()
+    public function testChangeDetectionDeferredExplicit() : void
     {
-        $user = new DDC1461User;
-        $this->_em->persist($user);
-        $this->_em->flush();
+        $user = new DDC1461User();
+        $this->em->persist($user);
+        $this->em->flush();
 
-        $this->assertEquals(\Doctrine\ORM\UnitOfWork::STATE_MANAGED, $this->_em->getUnitOfWork()->getEntityState($user, \Doctrine\ORM\UnitOfWork::STATE_NEW), "Entity should be managed.");
-        $this->assertEquals(\Doctrine\ORM\UnitOfWork::STATE_MANAGED, $this->_em->getUnitOfWork()->getEntityState($user), "Entity should be managed.");
+        self::assertEquals(UnitOfWork::STATE_MANAGED, $this->em->getUnitOfWork()->getEntityState($user, UnitOfWork::STATE_NEW), 'Entity should be managed.');
+        self::assertEquals(UnitOfWork::STATE_MANAGED, $this->em->getUnitOfWork()->getEntityState($user), 'Entity should be managed.');
 
-        $acc = new DDC1461TwitterAccount;
+        $acc                  = new DDC1461TwitterAccount();
         $user->twitterAccount = $acc;
 
-        $this->_em->persist($user);
-        $this->_em->flush();
+        $this->em->persist($user);
+        $this->em->flush();
 
-        $user = $this->_em->find(get_class($user), $user->id);
-        $this->assertNotNull($user->twitterAccount);
+        $user = $this->em->find(get_class($user), $user->id);
+        self::assertNotNull($user->twitterAccount);
     }
 }
 
 /**
- * @Entity
- * @ChangeTrackingPolicy("DEFERRED_EXPLICIT")
+ * @ORM\Entity
+ * @ORM\ChangeTrackingPolicy("DEFERRED_EXPLICIT")
  */
 class DDC1461User
 {
     /**
-     * @Id
-     * @GeneratedValue(strategy="AUTO")
-     * @Column(type="integer")
+     * @ORM\Id
+     * @ORM\GeneratedValue(strategy="AUTO")
+     * @ORM\Column(type="integer")
      */
     public $id;
 
     /**
-     * @OneToOne(targetEntity="DDC1461TwitterAccount", orphanRemoval=true, fetch="EAGER", cascade = {"persist"}, inversedBy="user")
+     * @ORM\OneToOne(targetEntity=DDC1461TwitterAccount::class, orphanRemoval=true, fetch="EAGER", cascade = {"persist"}, inversedBy="user")
+     *
      * @var TwitterAccount
      */
     public $twitterAccount;
 }
 
 /**
- * @Entity
- * @ChangeTrackingPolicy("DEFERRED_EXPLICIT")
+ * @ORM\Entity
+ * @ORM\ChangeTrackingPolicy("DEFERRED_EXPLICIT")
  */
 class DDC1461TwitterAccount
 {
     /**
-     * @Id
-     * @GeneratedValue(strategy="AUTO")
-     * @Column(type="integer")
+     * @ORM\Id
+     * @ORM\GeneratedValue(strategy="AUTO")
+     * @ORM\Column(type="integer")
      */
     public $id;
 
-    /**
-     * @OneToOne(targetEntity="DDC1461User", fetch="EAGER")
-     */
+    /** @ORM\OneToOne(targetEntity=DDC1461User::class, fetch="EAGER") */
     public $user;
 }

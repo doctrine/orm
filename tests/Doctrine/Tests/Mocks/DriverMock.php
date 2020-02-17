@@ -1,26 +1,25 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\Tests\Mocks;
 
 use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\Driver;
 use Doctrine\DBAL\Platforms\AbstractPlatform;
 use Doctrine\DBAL\Schema\AbstractSchemaManager;
+use Exception;
 
 /**
  * Mock class for Driver.
  */
 class DriverMock implements Driver
 {
-    /**
-     * @var \Doctrine\DBAL\Platforms\AbstractPlatform|null
-     */
-    private $_platformMock;
+    /** @var AbstractPlatform|null */
+    private $platformMock;
 
-    /**
-     * @var \Doctrine\DBAL\Schema\AbstractSchemaManager|null
-     */
-    private $_schemaManagerMock;
+    /** @var AbstractSchemaManager|null */
+    private $schemaManagerMock;
 
     /**
      * {@inheritdoc}
@@ -35,10 +34,11 @@ class DriverMock implements Driver
      */
     public function getDatabasePlatform()
     {
-        if ( ! $this->_platformMock) {
-            $this->_platformMock = new DatabasePlatformMock;
+        if (! $this->platformMock) {
+            $this->platformMock = new DatabasePlatformMock();
         }
-        return $this->_platformMock;
+
+        return $this->platformMock;
     }
 
     /**
@@ -46,33 +46,29 @@ class DriverMock implements Driver
      */
     public function getSchemaManager(Connection $conn)
     {
-        if ($this->_schemaManagerMock == null) {
+        if ($this->schemaManagerMock === null) {
             return new SchemaManagerMock($conn);
-        } else {
-            return $this->_schemaManagerMock;
         }
+
+        return $this->schemaManagerMock;
     }
 
-    /* MOCK API */
+    // MOCK API
 
     /**
-     * @param \Doctrine\DBAL\Platforms\AbstractPlatform $platform
-     *
      * @return void
      */
     public function setDatabasePlatform(AbstractPlatform $platform)
     {
-        $this->_platformMock = $platform;
+        $this->platformMock = $platform;
     }
 
     /**
-     * @param \Doctrine\DBAL\Schema\AbstractSchemaManager $sm
-     *
      * @return void
      */
     public function setSchemaManager(AbstractSchemaManager $sm)
     {
-        $this->_schemaManagerMock = $sm;
+        $this->schemaManagerMock = $sm;
     }
 
     /**
@@ -91,7 +87,7 @@ class DriverMock implements Driver
         return;
     }
 
-    public function convertExceptionCode(\Exception $exception)
+    public function convertExceptionCode(Exception $exception)
     {
         return 0;
     }

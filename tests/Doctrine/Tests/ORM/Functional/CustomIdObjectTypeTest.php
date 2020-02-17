@@ -1,17 +1,19 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\Tests\ORM\Functional;
 
+use Doctrine\DBAL\Types\Type as DBALType;
 use Doctrine\Tests\DbalTypes\CustomIdObject;
 use Doctrine\Tests\DbalTypes\CustomIdObjectType;
 use Doctrine\Tests\Models\CustomType\CustomIdObjectTypeChild;
 use Doctrine\Tests\Models\CustomType\CustomIdObjectTypeParent;
 use Doctrine\Tests\OrmFunctionalTestCase;
-use Doctrine\DBAL\Types\Type as DBALType;
 
 class CustomIdObjectTypeTest extends OrmFunctionalTestCase
 {
-    protected function setUp()
+    protected function setUp() : void
     {
         if (DBALType::hasType(CustomIdObjectType::NAME)) {
             DBALType::overrideType(CustomIdObjectType::NAME, CustomIdObjectType::class);
@@ -24,33 +26,33 @@ class CustomIdObjectTypeTest extends OrmFunctionalTestCase
         parent::setUp();
     }
 
-    public function testFindByCustomIdObject()
+    public function testFindByCustomIdObject() : void
     {
         $parent = new CustomIdObjectTypeParent(new CustomIdObject('foo'));
 
-        $this->_em->persist($parent);
-        $this->_em->flush();
+        $this->em->persist($parent);
+        $this->em->flush();
 
-        $result = $this->_em->find(CustomIdObjectTypeParent::class, $parent->id);
+        $result = $this->em->find(CustomIdObjectTypeParent::class, $parent->id);
 
-        $this->assertSame($parent, $result);
+        self::assertSame($parent, $result);
     }
 
     /**
      * @group DDC-3622
      * @group 1336
      */
-    public function testFetchJoinCustomIdObject()
+    public function testFetchJoinCustomIdObject() : void
     {
         $parent = new CustomIdObjectTypeParent(new CustomIdObject('foo'));
 
         $parent->children->add(new CustomIdObjectTypeChild(new CustomIdObject('bar'), $parent));
 
-        $this->_em->persist($parent);
-        $this->_em->flush();
+        $this->em->persist($parent);
+        $this->em->flush();
 
         $result = $this
-            ->_em
+            ->em
             ->createQuery(
                 'SELECT parent, children FROM '
                 . CustomIdObjectTypeParent::class
@@ -58,26 +60,26 @@ class CustomIdObjectTypeTest extends OrmFunctionalTestCase
             )
             ->getResult();
 
-        $this->assertCount(1, $result);
-        $this->assertSame($parent, $result[0]);
+        self::assertCount(1, $result);
+        self::assertSame($parent, $result[0]);
     }
 
     /**
      * @group DDC-3622
      * @group 1336
      */
-    public function testFetchJoinWhereCustomIdObject()
+    public function testFetchJoinWhereCustomIdObject() : void
     {
         $parent = new CustomIdObjectTypeParent(new CustomIdObject('foo'));
 
         $parent->children->add(new CustomIdObjectTypeChild(new CustomIdObject('bar'), $parent));
 
-        $this->_em->persist($parent);
-        $this->_em->flush();
+        $this->em->persist($parent);
+        $this->em->flush();
 
         // note: hydration is willingly broken in this example:
         $result = $this
-            ->_em
+            ->em
             ->createQuery(
                 'SELECT parent, children FROM '
                 . CustomIdObjectTypeParent::class
@@ -87,7 +89,7 @@ class CustomIdObjectTypeTest extends OrmFunctionalTestCase
             ->setParameter(1, $parent->children->first()->id)
             ->getResult();
 
-        $this->assertCount(1, $result);
-        $this->assertSame($parent, $result[0]);
+        self::assertCount(1, $result);
+        self::assertSame($parent, $result[0]);
     }
 }

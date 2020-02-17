@@ -1,31 +1,31 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\Tests\Models\DDC3579;
 
 use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\ORM\Annotation as ORM;
 
 /**
- * @MappedSuperclass
+ * @ORM\MappedSuperClass
  */
 class DDC3579User
 {
-
     /**
-     * @Id
-     * @GeneratedValue
-     * @Column(type="integer", name="user_id", length=150)
+     * @ORM\Id
+     * @ORM\GeneratedValue
+     * @ORM\Column(type="integer", name="user_id", length=150)
      */
     protected $id;
 
-    /**
-     * @Column(name="user_name", nullable=true, unique=false, length=250)
-     */
+    /** @ORM\Column(name="user_name", nullable=true, unique=false, length=250) */
     protected $name;
 
     /**
-     * @var ArrayCollection
+     * @ORM\ManyToMany(targetEntity=DDC3579Group::class)
      *
-     * @ManyToMany(targetEntity="DDC3579Group")
+     * @var ArrayCollection
      */
     protected $groups;
 
@@ -34,12 +34,12 @@ class DDC3579User
      */
     public function __construct($name = null)
     {
-        $this->name     = $name;
-        $this->groups   = new ArrayCollection;
+        $this->name   = $name;
+        $this->groups = new ArrayCollection();
     }
 
     /**
-     * @return integer
+     * @return int
      */
     public function getId()
     {
@@ -62,9 +62,6 @@ class DDC3579User
         $this->name = $name;
     }
 
-    /**
-     * @param DDC3579Group $group
-     */
     public function addGroup(DDC3579Group $group)
     {
         $this->groups->add($group);
@@ -77,38 +74,5 @@ class DDC3579User
     public function getGroups()
     {
         return $this->groups;
-    }
-
-    public static function loadMetadata($metadata)
-    {
-        $metadata->mapField(
-            [
-           'id'         => true,
-           'fieldName'  => 'id',
-           'type'       => 'integer',
-           'columnName' => 'user_id',
-           'length'     => 150,
-            ]
-        );
-
-        $metadata->mapField(
-            [
-            'fieldName' => 'name',
-            'type'      => 'string',
-            'columnName'=> 'user_name',
-            'nullable'  => true,
-            'unique'    => false,
-            'length'    => 250,
-            ]
-        );
-
-        $metadata->mapManyToMany(
-            [
-           'fieldName'      => 'groups',
-           'targetEntity'   => 'DDC3579Group'
-            ]
-        );
-
-        $metadata->setIdGeneratorType(\Doctrine\ORM\Mapping\ClassMetadataInfo::GENERATOR_TYPE_AUTO);
     }
 }

@@ -1,23 +1,30 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\Tests\ORM\Functional\Locking;
 
-use Doctrine\Tests\Models\CMS\CmsArticle;
 use Doctrine\DBAL\LockMode;
+use Doctrine\Tests\Models\CMS\CmsArticle;
 use Doctrine\Tests\OrmFunctionalTestCase;
+use GearmanClient;
+use const GEARMAN_SUCCESS;
+use function class_exists;
+use function max;
+use function serialize;
 
 /**
  * @group locking_functional
  */
 class GearmanLockTest extends OrmFunctionalTestCase
 {
-    private $gearman = null;
+    private $gearman;
     private $maxRunTime = 0;
     private $articleId;
 
-    protected function setUp()
+    protected function setUp() : void
     {
-        if (!class_exists('GearmanClient', false)) {
+        if (! class_exists('GearmanClient', false)) {
             $this->markTestSkipped('pecl/gearman is required for this test to run.');
         }
 
@@ -25,19 +32,19 @@ class GearmanLockTest extends OrmFunctionalTestCase
         parent::setUp();
         $this->tasks = [];
 
-        $this->gearman = new \GearmanClient();
+        $this->gearman = new GearmanClient();
         $this->gearman->addServer(
             $_SERVER['GEARMAN_HOST'] ?? null,
             $_SERVER['GEARMAN_PORT'] ?? 4730
         );
-        $this->gearman->setCompleteCallback([$this, "gearmanTaskCompleted"]);
+        $this->gearman->setCompleteCallback([$this, 'gearmanTaskCompleted']);
 
-        $article = new CmsArticle();
-        $article->text = "my article";
-        $article->topic = "Hello";
+        $article        = new CmsArticle();
+        $article->text  = 'my article';
+        $article->topic = 'Hello';
 
-        $this->_em->persist($article);
-        $this->_em->flush();
+        $this->em->persist($article);
+        $this->em->flush();
 
         $this->articleId = $article->id;
     }
@@ -47,81 +54,81 @@ class GearmanLockTest extends OrmFunctionalTestCase
         $this->maxRunTime = max($this->maxRunTime, $task->data());
     }
 
-    public function testFindWithLock()
+    public function testFindWithLock() : void
     {
         $this->asyncFindWithLock(CmsArticle::class, $this->articleId, LockMode::PESSIMISTIC_WRITE);
         $this->asyncFindWithLock(CmsArticle::class, $this->articleId, LockMode::PESSIMISTIC_WRITE);
 
-        $this->assertLockWorked();
+        self::assertLockWorked();
     }
 
-    public function testFindWithWriteThenReadLock()
+    public function testFindWithWriteThenReadLock() : void
     {
         $this->asyncFindWithLock(CmsArticle::class, $this->articleId, LockMode::PESSIMISTIC_WRITE);
         $this->asyncFindWithLock(CmsArticle::class, $this->articleId, LockMode::PESSIMISTIC_READ);
 
-        $this->assertLockWorked();
+        self::assertLockWorked();
     }
 
-    public function testFindWithReadThenWriteLock()
+    public function testFindWithReadThenWriteLock() : void
     {
         $this->asyncFindWithLock(CmsArticle::class, $this->articleId, LockMode::PESSIMISTIC_READ);
         $this->asyncFindWithLock(CmsArticle::class, $this->articleId, LockMode::PESSIMISTIC_WRITE);
 
-        $this->assertLockWorked();
+        self::assertLockWorked();
     }
 
-    public function testFindWithOneLock()
+    public function testFindWithOneLock() : void
     {
         $this->asyncFindWithLock(CmsArticle::class, $this->articleId, LockMode::PESSIMISTIC_WRITE);
         $this->asyncFindWithLock(CmsArticle::class, $this->articleId, LockMode::NONE);
 
-        $this->assertLockDoesNotBlock();
+        self::assertLockDoesNotBlock();
     }
 
-    public function testDqlWithLock()
+    public function testDqlWithLock() : void
     {
         $this->asyncDqlWithLock('SELECT a FROM Doctrine\Tests\Models\CMS\CmsArticle a', [], LockMode::PESSIMISTIC_WRITE);
         $this->asyncFindWithLock(CmsArticle::class, $this->articleId, LockMode::PESSIMISTIC_WRITE);
 
-        $this->assertLockWorked();
+        self::assertLockWorked();
     }
 
-    public function testLock()
+    public function testLock() : void
     {
         $this->asyncFindWithLock(CmsArticle::class, $this->articleId, LockMode::PESSIMISTIC_WRITE);
         $this->asyncLock(CmsArticle::class, $this->articleId, LockMode::PESSIMISTIC_WRITE);
 
-        $this->assertLockWorked();
+        self::assertLockWorked();
     }
 
-    public function testLock2()
+    public function testLock2() : void
     {
         $this->asyncFindWithLock(CmsArticle::class, $this->articleId, LockMode::PESSIMISTIC_WRITE);
         $this->asyncLock(CmsArticle::class, $this->articleId, LockMode::PESSIMISTIC_READ);
 
-        $this->assertLockWorked();
+        self::assertLockWorked();
     }
 
-    public function testLock3()
+    public function testLock3() : void
     {
         $this->asyncFindWithLock(CmsArticle::class, $this->articleId, LockMode::PESSIMISTIC_READ);
         $this->asyncLock(CmsArticle::class, $this->articleId, LockMode::PESSIMISTIC_WRITE);
 
-        $this->assertLockWorked();
+        self::assertLockWorked();
     }
 
-    public function testLock4()
+    public function testLock4() : void
     {
         $this->asyncFindWithLock(CmsArticle::class, $this->articleId, LockMode::NONE);
         $this->asyncLock(CmsArticle::class, $this->articleId, LockMode::PESSIMISTIC_WRITE);
 
-        $this->assertLockDoesNotBlock();
+        self::assertLockDoesNotBlock();
     }
 
     protected function assertLockDoesNotBlock()
     {
-        $this->assertLockWorked($onlyForSeconds = 1);
+        self::assertLockWorked($onlyForSeconds = 1);
     }
 
     protected function assertLockWorked($forTime = 2, $notLongerThan = null)
@@ -132,12 +139,15 @@ class GearmanLockTest extends OrmFunctionalTestCase
 
         $this->gearman->runTasks();
 
-        $this->assertTrue($this->maxRunTime > $forTime,
-            "Because of locking this tests should have run at least " . $forTime . " seconds, ".
-            "but only did for " . $this->maxRunTime . " seconds.");
-        $this->assertTrue($this->maxRunTime < $notLongerThan,
-            "The longest task should not run longer than " . $notLongerThan . " seconds, ".
-            "but did for " . $this->maxRunTime . " seconds."
+        self::assertTrue(
+            $this->maxRunTime > $forTime,
+            'Because of locking this tests should have run at least ' . $forTime . ' seconds, ' .
+            'but only did for ' . $this->maxRunTime . ' seconds.'
+        );
+        self::assertTrue(
+            $this->maxRunTime < $notLongerThan,
+            'The longest task should not run longer than ' . $notLongerThan . ' seconds, ' .
+            'but did for ' . $this->maxRunTime . ' seconds.'
         );
     }
 
@@ -147,8 +157,7 @@ class GearmanLockTest extends OrmFunctionalTestCase
             'entityName' => $entityName,
             'entityId' => $entityId,
             'lockMode' => $lockMode,
-        ]
-        );
+        ]);
     }
 
     protected function asyncDqlWithLock($dql, $params, $lockMode)
@@ -157,8 +166,7 @@ class GearmanLockTest extends OrmFunctionalTestCase
             'dql' => $dql,
             'dqlParams' => $params,
             'lockMode' => $lockMode,
-        ]
-        );
+        ]);
     }
 
     protected function asyncLock($entityName, $entityId, $lockMode)
@@ -167,19 +175,18 @@ class GearmanLockTest extends OrmFunctionalTestCase
             'entityName' => $entityName,
             'entityId' => $entityId,
             'lockMode' => $lockMode,
-        ]
-        );
+        ]);
     }
 
     protected function startJob($fn, $fixture)
     {
         $this->gearman->addTask($fn, serialize(
             [
-            'conn' => $this->_em->getConnection()->getParams(),
-            'fixture' => $fixture
+                'conn' => $this->em->getConnection()->getParams(),
+                'fixture' => $fixture,
             ]
         ));
 
-        $this->assertEquals(GEARMAN_SUCCESS, $this->gearman->returnCode());
+        self::assertEquals(GEARMAN_SUCCESS, $this->gearman->returnCode());
     }
 }

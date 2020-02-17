@@ -14,7 +14,7 @@ In Doctrine 1 the DQL language was not implemented using a real
 parser. This made modifications of the DQL by the user impossible.
 Doctrine 2 in contrast has a real parser for the DQL language,
 which transforms the DQL statement into an
-`Abstract Syntax Tree <http://en.wikipedia.org/wiki/Abstract_syntax_tree>`_
+`Abstract Syntax Tree <https://en.wikipedia.org/wiki/Abstract_syntax_tree>`_
 and generates the appropriate SQL statement for it. Since this
 process is deterministic Doctrine heavily caches the SQL that is
 generated from any given DQL query, which reduces the performance
@@ -28,7 +28,6 @@ generating the SQL statement.
 There are two types of custom tree walkers that you can hook into
 the DQL parser:
 
-
 -  An output walker. This one actually generates the SQL, and there
    is only ever one of them. We implemented the default SqlWalker
    implementation for it.
@@ -39,7 +38,6 @@ the DQL parser:
 Now this is all awfully technical, so let me come to some use-cases
 fast to keep you motivated. Using walker implementation you can for
 example:
-
 
 -  Modify the AST to generate a Count Query to be used with a
    paginator for any given DQL query.
@@ -88,7 +86,7 @@ API would look for this use-case:
     $pageNum = 1;
     $query = $em->createQuery($dql);
     $query->setFirstResult( ($pageNum-1) * 20)->setMaxResults(20);
-    
+
     $totalResults = Paginate::count($query);
     $results = $query->getResult();
 
@@ -101,12 +99,12 @@ The ``Paginate::count(Query $query)`` looks like:
     {
         static public function count(Query $query)
         {
-            /* @var $countQuery Query */
+            /** @var Query $countQuery */
             $countQuery = clone $query;
-    
+
             $countQuery->setHint(Query::HINT_CUSTOM_TREE_WALKERS, array('DoctrineExtensions\Paginate\CountSqlWalker'));
             $countQuery->setFirstResult(null)->setMaxResults(null);
-    
+
             return $countQuery->getSingleScalarResult();
         }
     }
@@ -130,20 +128,20 @@ implementation is:
         {
             $parent = null;
             $parentName = null;
-            foreach ($this->_getQueryComponents() as $dqlAlias => $qComp) {
+            foreach ($this->getQueryComponents() as $dqlAlias => $qComp) {
                 if ($qComp['parent'] === null && $qComp['nestingLevel'] == 0) {
                     $parent = $qComp;
                     $parentName = $dqlAlias;
                     break;
                 }
             }
-    
+
             $pathExpression = new PathExpression(
                 PathExpression::TYPE_STATE_FIELD | PathExpression::TYPE_SINGLE_VALUED_ASSOCIATION, $parentName,
                 $parent['metadata']->getSingleIdentifierFieldName()
             );
             $pathExpression->type = PathExpression::TYPE_STATE_FIELD;
-    
+
             $AST->selectClause->selectExpressions = array(
                 new SelectExpression(
                     new AggregateExpression('count', $pathExpression, true), null
@@ -196,7 +194,7 @@ SQL\_NO\_CACHE on those queries that need it:
         public function walkSelectClause($selectClause)
         {
             $sql = parent::walkSelectClause($selectClause);
-    
+
             if ($this->getQuery()->getHint('mysqlWalker.sqlNoCache') === true) {
                 if ($selectClause->isDistinct) {
                     $sql = str_replace('SELECT DISTINCT', 'SELECT DISTINCT SQL_NO_CACHE', $sql);
@@ -204,7 +202,7 @@ SQL\_NO\_CACHE on those queries that need it:
                     $sql = str_replace('SELECT', 'SELECT SQL_NO_CACHE', $sql);
                 }
             }
-    
+
             return $sql;
         }
     }
@@ -214,4 +212,3 @@ understanding of the DQL Parser and Walkers, but may offer your
 huge benefits with using vendor specific features. This would still
 allow you write DQL queries instead of NativeQueries to make use of
 vendor specific features.
-

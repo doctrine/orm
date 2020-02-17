@@ -7,7 +7,7 @@ form of XML documents.
 The XML driver is backed by an XML Schema document that describes
 the structure of a mapping document. The most recent version of the
 XML Schema document is available online at
-`http://www.doctrine-project.org/schemas/orm/doctrine-mapping.xsd <http://www.doctrine-project.org/schemas/orm/doctrine-mapping.xsd>`_.
+`https://www.doctrine-project.org/schemas/orm/doctrine-mapping.xsd <https://www.doctrine-project.org/schemas/orm/doctrine-mapping.xsd>`_.
 In order to point to the latest version of the document of a
 particular stable release branch, just append the release number,
 i.e.: doctrine-mapping-2.0.xsd The most convenient way to work with
@@ -21,7 +21,7 @@ setup for the latest code in trunk.
     <doctrine-mapping xmlns="http://doctrine-project.org/schemas/orm/doctrine-mapping"
           xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
           xsi:schemaLocation="http://doctrine-project.org/schemas/orm/doctrine-mapping
-                       https://raw.github.com/doctrine/doctrine2/master/doctrine-mapping.xsd">
+                              https://www.doctrine-project.org/schemas/orm/doctrine-mapping.xsd">
 
         ...
 
@@ -30,7 +30,6 @@ setup for the latest code in trunk.
 The XML mapping document of a class is loaded on-demand the first
 time it is requested and subsequently stored in the metadata cache.
 In order to work, this requires certain conventions:
-
 
 -  Each entity/mapped superclass must get its own dedicated XML
    mapping document.
@@ -107,7 +106,7 @@ of several common elements:
     <doctrine-mapping xmlns="http://doctrine-project.org/schemas/orm/doctrine-mapping"
           xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
           xsi:schemaLocation="http://doctrine-project.org/schemas/orm/doctrine-mapping
-                              http://raw.github.com/doctrine/doctrine2/master/doctrine-mapping.xsd">
+                              https://www.doctrine-project.org/schemas/orm/doctrine-mapping.xsd">
 
         <entity name="Doctrine\Tests\ORM\Mapping\User" table="cms_users">
 
@@ -194,11 +193,9 @@ specified as the ``<entity />`` element as a direct child of the
 
 Required attributes:
 
-
 -  name - The fully qualified class-name of the entity.
 
 Optional attributes:
-
 
 -  **table** - The Table-Name to be used for this entity. Otherwise the
    Unqualified Class-Name is used by default.
@@ -241,12 +238,10 @@ entity. For the ID mapping you have to use the ``<id />`` element.
 
 Required attributes:
 
-
 -  name - The name of the Property/Field on the given Entity PHP
    class.
 
 Optional attributes:
-
 
 -  type - The ``Doctrine\DBAL\Types\Type`` name, defaults to
    "string"
@@ -305,14 +300,12 @@ subset of the ``<field />`` element attributes:
 
 Required attributes:
 
-
 -  name - The name of the Property/Field on the given Entity PHP
    class.
 -  type - The ``Doctrine\DBAL\Types\Type`` name, preferably
    "string" or "integer".
 
 Optional attributes:
-
 
 -  column - Name of the column in the database, defaults to the
    field name.
@@ -339,7 +332,6 @@ have to use the ``NONE`` strategy.
 The following values are allowed for the ``<generator />`` strategy
 attribute:
 
-
 -  AUTO - Automatic detection of the identifier strategy based on
    the preferred solution of the database vendor.
 -  IDENTITY - Use of a IDENTIFY strategy such as Auto-Increment IDs
@@ -362,11 +354,9 @@ element to describe the sequence:
 
 Required attributes for ``<sequence-generator />``:
 
-
 -  sequence-name - The name of the sequence
 
 Optional attributes for ``<sequence-generator />``:
-
 
 -  allocation-size - By how much steps should the sequence be
    incremented when a value is retrieved. Defaults to 1
@@ -379,7 +369,6 @@ Optional attributes for ``<sequence-generator />``:
     have to specify and additionally define the <sequence-generator />
     element, if Doctrine chooses the sequence strategy for a
     platform.
-
 
 Defining a Mapped Superclass
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -399,7 +388,6 @@ can define it in XML using the ``<mapped-superclass />`` tag.
     </doctrine-mapping>
 
 Required attributes:
-
 
 -  name - Class name of the mapped superclass.
 
@@ -440,7 +428,6 @@ The allowed values for inheritance-type attribute are ``JOINED`` or
     All inheritance related definitions have to be defined on the root
     entity of the hierarchy.
 
-
 Defining Lifecycle Callbacks
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
@@ -473,7 +460,6 @@ For the inverse side the mapping is as simple as:
 
 Required attributes for inverse One-To-One:
 
-
 -  field - Name of the property/field on the entity's PHP class.
 -  target-entity - Name of the entity associated entity class. If
    this is not qualified the namespace of the current class is
@@ -491,14 +477,12 @@ For the owning side this mapping would look like:
 
 Required attributes for owning One-to-One:
 
-
 -  field - Name of the property/field on the entity's PHP class.
 -  target-entity - Name of the entity associated entity class. If
    this is not qualified the namespace of the current class is
    prepended. *IMPORTANT:* No leading backslash!
 
 Optional attributes for owning One-to-One:
-
 
 -  inversed-by - If the association is bidirectional the
    inversed-by attribute has to be specified with the name of the
@@ -542,14 +526,12 @@ like:
 
 Required attributes:
 
-
 -  field - Name of the property/field on the entity's PHP class.
 -  target-entity - Name of the entity associated entity class. If
    this is not qualified the namespace of the current class is
    prepended. *IMPORTANT:* No leading backslash!
 
 Optional attributes:
-
 
 -  inversed-by - If the association is bidirectional the
    inversed-by attribute has to be specified with the name of the
@@ -593,7 +575,6 @@ exists for bi-directional associations.
 
 Required attributes:
 
-
 -  field - Name of the property/field on the entity's PHP class.
 -  target-entity - Name of the entity associated entity class. If
    this is not qualified the namespace of the current class is
@@ -602,7 +583,6 @@ Required attributes:
    Phonenumber entity) that contains the owning side association.
 
 Optional attributes:
-
 
 -  fetch - Either LAZY, EXTRA_LAZY or EAGER, defaults to LAZY.
 -  index-by: Index the collection by a field on the target entity.
@@ -622,14 +602,12 @@ definitions and rely on their implicit values.
 
 Required attributes:
 
-
 -  field - Name of the property/field on the entity's PHP class.
 -  target-entity - Name of the entity associated entity class. If
    this is not qualified the namespace of the current class is
    prepended. *IMPORTANT:* No leading backslash!
 
 Optional attributes:
-
 
 -  mapped-by - Name of the field on the owning side that contains
    the owning side association if the defined many-to-many association
@@ -686,9 +664,7 @@ tags.
 Besides ``<cascade-all />`` the following operations can be
 specified by their respective tags:
 
-
 -  ``<cascade-persist />``
--  ``<cascade-merge />``
 -  ``<cascade-remove />``
 -  ``<cascade-refresh />``
 
@@ -701,13 +677,11 @@ key names are called that are used for joining two entities.
 
 Required attributes:
 
-
 -  name - The column name of the foreign key.
 -  referenced-column-name - The column name of the associated
    entities primary key
 
 Optional attributes:
-
 
 -  unique - If the join column should contain a UNIQUE constraint.
    This makes sense for Many-To-Many join-columns only to simulate a
@@ -768,7 +742,7 @@ entity relationship. You can define this in XML with the "association-key" attri
     <doctrine-mapping xmlns="http://doctrine-project.org/schemas/orm/doctrine-mapping"
           xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
           xsi:schemaLocation="http://doctrine-project.org/schemas/orm/doctrine-mapping
-                        http://raw.github.com/doctrine/doctrine2/master/doctrine-mapping.xsd">
+                              https://www.doctrine-project.org/schemas/orm/doctrine-mapping.xsd">
 
          <entity name="Application\Model\ArticleAttribute">
             <id name="article" association-key="true" />

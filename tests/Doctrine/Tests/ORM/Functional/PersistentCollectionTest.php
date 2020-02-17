@@ -1,116 +1,122 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\Tests\ORM\Functional;
 
 use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\Common\Collections\Criteria;
-use Doctrine\Common\Persistence\PersistentObject;
+use Doctrine\ORM\Annotation as ORM;
+use Doctrine\ORM\PersistentObject;
 use Doctrine\Tests\OrmFunctionalTestCase;
+use Exception;
 
 class PersistentCollectionTest extends OrmFunctionalTestCase
 {
-    protected function setUp()
+    protected function setUp() : void
     {
         parent::setUp();
-        try {
-            $this->_schemaTool->createSchema(
-                [
-                $this->_em->getClassMetadata(PersistentCollectionHolder::class),
-                $this->_em->getClassMetadata(PersistentCollectionContent::class),
-                ]
-            );
-        } catch (\Exception $e) {
 
+        try {
+            $this->schemaTool->createSchema([
+                $this->em->getClassMetadata(PersistentCollectionHolder::class),
+                $this->em->getClassMetadata(PersistentCollectionContent::class),
+            ]);
+        } catch (Exception $e) {
         }
-        PersistentObject::setObjectManager($this->_em);
+
+        PersistentObject::setEntityManager($this->em);
     }
 
-    public function testPersist()
+    public function testPersist() : void
     {
         $collectionHolder = new PersistentCollectionHolder();
-        $content = new PersistentCollectionContent('first element');
+        $content          = new PersistentCollectionContent('first element');
         $collectionHolder->addElement($content);
 
-        $this->_em->persist($collectionHolder);
-        $this->_em->flush();
-        $this->_em->clear();
+        $this->em->persist($collectionHolder);
+        $this->em->flush();
+        $this->em->clear();
 
-        $collectionHolder = $this->_em->find(PersistentCollectionHolder::class, $collectionHolder->getId());
+        $collectionHolder = $this->em->find(PersistentCollectionHolder::class, $collectionHolder->getId());
         $collectionHolder->getCollection();
 
         $content = new PersistentCollectionContent('second element');
         $collectionHolder->addElement($content);
 
-        $this->assertEquals(2, $collectionHolder->getCollection()->count());
+        self::assertEquals(2, $collectionHolder->getCollection()->count());
     }
 
     /**
-     * Tests that PersistentCollection::isEmpty() does not initialize the collection when FETCH_EXTRA_LAZY is used.
+     * Tests that PersistentCollection::isEmpty() does not initialize the collection when FetchMode::EXTRA_LAZY is used.
      */
-    public function testExtraLazyIsEmptyDoesNotInitializeCollection()
+    public function testExtraLazyIsEmptyDoesNotInitializeCollection() : void
     {
         $collectionHolder = new PersistentCollectionHolder();
 
-        $this->_em->persist($collectionHolder);
-        $this->_em->flush();
-        $this->_em->clear();
+        $this->em->persist($collectionHolder);
+        $this->em->flush();
+        $this->em->clear();
 
-        $collectionHolder = $this->_em->find(PersistentCollectionHolder::class, $collectionHolder->getId());
-        $collection = $collectionHolder->getRawCollection();
+        $collectionHolder = $this->em->find(PersistentCollectionHolder::class, $collectionHolder->getId());
+        $collection       = $collectionHolder->getRawCollection();
 
-        $this->assertTrue($collection->isEmpty());
-        $this->assertFalse($collection->isInitialized());
+        self::assertTrue($collection->isEmpty());
+        self::assertFalse($collection->isInitialized());
 
         $collectionHolder->addElement(new PersistentCollectionContent());
 
-        $this->_em->flush();
-        $this->_em->clear();
+        $this->em->flush();
+        $this->em->clear();
 
-        $collectionHolder = $this->_em->find(PersistentCollectionHolder::class, $collectionHolder->getId());
-        $collection = $collectionHolder->getRawCollection();
+        $collectionHolder = $this->em->find(PersistentCollectionHolder::class, $collectionHolder->getId());
+        $collection       = $collectionHolder->getRawCollection();
 
-        $this->assertFalse($collection->isEmpty());
-        $this->assertFalse($collection->isInitialized());
+        self::assertFalse($collection->isEmpty());
+        self::assertFalse($collection->isInitialized());
     }
 
     /**
      * @group #1206
      * @group DDC-3430
      */
-    public function testMatchingDoesNotModifyTheGivenCriteria()
+    public function testMatchingDoesNotModifyTheGivenCriteria() : void
     {
         $collectionHolder = new PersistentCollectionHolder();
 
-        $this->_em->persist($collectionHolder);
-        $this->_em->flush();
-        $this->_em->clear();
+        $this->em->persist($collectionHolder);
+        $this->em->flush();
+        $this->em->clear();
 
         $criteria = new Criteria();
 
-        $collectionHolder = $this->_em->find(PersistentCollectionHolder::class, $collectionHolder->getId());
+        $collectionHolder = $this->em->find(PersistentCollectionHolder::class, $collectionHolder->getId());
         $collectionHolder->getCollection()->matching($criteria);
 
-        $this->assertEmpty($criteria->getWhereExpression());
-        $this->assertEmpty($criteria->getFirstResult());
-        $this->assertEmpty($criteria->getMaxResults());
-        $this->assertEmpty($criteria->getOrderings());
+        self::assertEmpty($criteria->getWhereExpression());
+        self::assertEmpty($criteria->getFirstResult());
+        self::assertEmpty($criteria->getMaxResults());
+        self::assertEmpty($criteria->getOrderings());
     }
 }
 
 /**
- * @Entity
+ * @ORM\Entity
  */
 class PersistentCollectionHolder extends PersistentObject
 {
     /**
-     * @Id @Column(type="integer") @GeneratedValue
+     * @ORM\Id @ORM\Column(type="integer") @ORM\GeneratedValue
+     *
      * @var int
      */
     protected $id;
 
     /**
-     * @var \Doctrine\Common\Collections\Collection
-     * @ManyToMany(targetEntity="PersistentCollectionContent", cascade={"all"}, fetch="EXTRA_LAZY")
+     * @ORM\ManyToMany(targetEntity=PersistentCollectionContent::class, cascade={"all"}, fetch="EXTRA_LAZY")
+     *
+     * @var Collection
      */
     protected $collection;
 
@@ -119,16 +125,13 @@ class PersistentCollectionHolder extends PersistentObject
         $this->collection = new ArrayCollection();
     }
 
-    /**
-     * @param PersistentCollectionContent $element
-     */
     public function addElement(PersistentCollectionContent $element)
     {
         $this->collection->add($element);
     }
 
     /**
-     * @return \Doctrine\Common\Collections\Collection
+     * @return Collection
      */
     public function getCollection()
     {
@@ -136,7 +139,7 @@ class PersistentCollectionHolder extends PersistentObject
     }
 
     /**
-     * @return \Doctrine\Common\Collections\Collection
+     * @return Collection
      */
     public function getRawCollection()
     {
@@ -145,12 +148,13 @@ class PersistentCollectionHolder extends PersistentObject
 }
 
 /**
- * @Entity
+ * @ORM\Entity
  */
 class PersistentCollectionContent extends PersistentObject
 {
     /**
-     * @Id @Column(type="integer") @GeneratedValue
+     * @ORM\Id @ORM\Column(type="integer") @ORM\GeneratedValue
+     *
      * @var int
      */
     protected $id;

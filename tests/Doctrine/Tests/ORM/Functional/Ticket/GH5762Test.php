@@ -1,30 +1,35 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\Tests\ORM\Functional\Ticket;
 
 use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\ORM\Annotation as ORM;
 use Doctrine\ORM\PersistentCollection;
 use Doctrine\Tests\OrmFunctionalTestCase;
+use function array_unique;
+use function count;
 
 /**
  * @group GH-5762
  */
 class GH5762Test extends OrmFunctionalTestCase
 {
-    protected function setUp()
+    protected function setUp() : void
     {
         parent::setUp();
 
-        $this->_schemaTool->createSchema(
+        $this->schemaTool->createSchema(
             [
-            $this->_em->getClassMetadata(GH5762Driver::class),
-            $this->_em->getClassMetadata(GH5762DriverRide::class),
-            $this->_em->getClassMetadata(GH5762Car::class),
+                $this->em->getClassMetadata(GH5762Driver::class),
+                $this->em->getClassMetadata(GH5762DriverRide::class),
+                $this->em->getClassMetadata(GH5762Car::class),
             ]
         );
     }
 
-    public function testIssue()
+    public function testIssue() : void
     {
         $result = $this->fetchData();
 
@@ -51,7 +56,7 @@ class GH5762Test extends OrmFunctionalTestCase
     {
         $this->createData();
 
-        $qb = $this->_em->createQueryBuilder();
+        $qb = $this->em->createQueryBuilder();
         $qb->select('d, dr, c')
             ->from(GH5762Driver::class, 'd')
             ->leftJoin('d.driverRides', 'dr')
@@ -77,80 +82,76 @@ class GH5762Test extends OrmFunctionalTestCase
         $ride4 = new GH5762DriverRide($driver, $car4);
         $ride5 = new GH5762DriverRide($driver, $car5);
 
-        $this->_em->persist($car1);
-        $this->_em->persist($car2);
-        $this->_em->persist($car3);
-        $this->_em->persist($car4);
-        $this->_em->persist($car5);
+        $this->em->persist($car1);
+        $this->em->persist($car2);
+        $this->em->persist($car3);
+        $this->em->persist($car4);
+        $this->em->persist($car5);
 
-        $this->_em->persist($driver);
+        $this->em->persist($driver);
 
-        $this->_em->persist($ride1);
-        $this->_em->persist($ride2);
-        $this->_em->persist($ride3);
-        $this->_em->persist($ride4);
-        $this->_em->persist($ride5);
+        $this->em->persist($ride1);
+        $this->em->persist($ride2);
+        $this->em->persist($ride3);
+        $this->em->persist($ride4);
+        $this->em->persist($ride5);
 
-        $this->_em->flush();
-        $this->_em->clear();
+        $this->em->flush();
+        $this->em->clear();
     }
 }
 
 /**
- * @Entity
- * @Table(name="driver")
+ * @ORM\Entity
+ * @ORM\Table(name="driver")
  */
 class GH5762Driver
 {
     /**
-     * @Id
-     * @Column(type="integer")
-     * @GeneratedValue(strategy="NONE")
+     * @ORM\Id
+     * @ORM\Column(type="integer")
+     * @ORM\GeneratedValue(strategy="NONE")
      */
     public $id;
 
-    /**
-     * @Column(type="string", length=255);
-     */
+    /** @ORM\Column(type="string", length=255); */
     public $name;
 
-    /**
-     * @OneToMany(targetEntity="GH5762DriverRide", mappedBy="driver")
-     */
+    /** @ORM\OneToMany(targetEntity=GH5762DriverRide::class, mappedBy="driver") */
     public $driverRides;
 
     public function __construct($id, $name)
     {
         $this->driverRides = new ArrayCollection();
-        $this->id = $id;
-        $this->name = $name;
+        $this->id          = $id;
+        $this->name        = $name;
     }
 }
 
 /**
- * @Entity
- * @Table(name="driver_ride")
+ * @ORM\Entity
+ * @ORM\Table(name="driver_ride")
  */
 class GH5762DriverRide
 {
     /**
-     * @Id
-     * @ManyToOne(targetEntity="GH5762Driver", inversedBy="driverRides")
-     * @JoinColumn(name="driver_id", referencedColumnName="id")
+     * @ORM\Id
+     * @ORM\ManyToOne(targetEntity=GH5762Driver::class, inversedBy="driverRides")
+     * @ORM\JoinColumn(name="driver_id", referencedColumnName="id")
      */
     public $driver;
 
     /**
-     * @Id
-     * @ManyToOne(targetEntity="GH5762Car", inversedBy="carRides")
-     * @JoinColumn(name="car", referencedColumnName="brand")
+     * @ORM\Id
+     * @ORM\ManyToOne(targetEntity=GH5762Car::class, inversedBy="carRides")
+     * @ORM\JoinColumn(name="car", referencedColumnName="brand")
      */
     public $car;
 
-    function __construct(GH5762Driver $driver, GH5762Car $car)
+    public function __construct(GH5762Driver $driver, GH5762Car $car)
     {
         $this->driver = $driver;
-        $this->car = $car;
+        $this->car    = $car;
 
         $this->driver->driverRides->add($this);
         $this->car->carRides->add($this);
@@ -158,33 +159,28 @@ class GH5762DriverRide
 }
 
 /**
- * @Entity
- * @Table(name="car")
+ * @ORM\Entity
+ * @ORM\Table(name="car")
  */
 class GH5762Car
 {
-
     /**
-     * @Id
-     * @Column(type="string", length=25)
-     * @GeneratedValue(strategy="NONE")
+     * @ORM\Id
+     * @ORM\Column(type="string", length=25)
+     * @ORM\GeneratedValue(strategy="NONE")
      */
     public $brand;
 
-    /**
-     * @Column(type="string", length=255);
-     */
+    /** @ORM\Column(type="string", length=255); */
     public $model;
 
-    /**
-     * @OneToMany(targetEntity="GH5762DriverRide", mappedBy="car")
-     */
+    /** @ORM\OneToMany(targetEntity=GH5762DriverRide::class, mappedBy="car") */
     public $carRides;
 
     public function __construct($brand, $model)
     {
         $this->carRides = new ArrayCollection();
-        $this->brand = $brand;
-        $this->model = $model;
+        $this->brand    = $brand;
+        $this->model    = $model;
     }
 }

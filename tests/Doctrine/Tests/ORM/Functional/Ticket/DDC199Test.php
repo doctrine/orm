@@ -1,102 +1,99 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\Tests\ORM\Functional\Ticket;
 
+use Doctrine\ORM\Annotation as ORM;
 use Doctrine\Tests\OrmFunctionalTestCase;
 
 class DDC199Test extends OrmFunctionalTestCase
 {
-    protected function setUp()
+    protected function setUp() : void
     {
         parent::setUp();
-        $this->_schemaTool->createSchema(
+        $this->schemaTool->createSchema(
             [
-            $this->_em->getClassMetadata(DDC199ParentClass::class),
-            $this->_em->getClassMetadata(DDC199ChildClass::class),
-            $this->_em->getClassMetadata(DDC199RelatedClass::class)
+                $this->em->getClassMetadata(DDC199ParentClass::class),
+                $this->em->getClassMetadata(DDC199ChildClass::class),
+                $this->em->getClassMetadata(DDC199RelatedClass::class),
             ]
         );
     }
 
-    public function testPolymorphicLoading()
+    public function testPolymorphicLoading() : void
     {
-        $child = new DDC199ChildClass;
+        $child             = new DDC199ChildClass();
         $child->parentData = 'parentData';
-        $child->childData = 'childData';
-        $this->_em->persist($child);
+        $child->childData  = 'childData';
+        $this->em->persist($child);
 
-        $related1 = new DDC199RelatedClass;
+        $related1              = new DDC199RelatedClass();
         $related1->relatedData = 'related1';
-        $related1->parent = $child;
-        $this->_em->persist($related1);
+        $related1->parent      = $child;
+        $this->em->persist($related1);
 
-        $related2 = new DDC199RelatedClass;
+        $related2              = new DDC199RelatedClass();
         $related2->relatedData = 'related2';
-        $related2->parent = $child;
-        $this->_em->persist($related2);
+        $related2->parent      = $child;
+        $this->em->persist($related2);
 
-        $this->_em->flush();
-        $this->_em->clear();
+        $this->em->flush();
+        $this->em->clear();
 
-        $query = $this->_em->createQuery('select e,r from Doctrine\Tests\ORM\Functional\Ticket\DDC199ParentClass e join e.relatedEntities r');
+        $query  = $this->em->createQuery('select e,r from Doctrine\Tests\ORM\Functional\Ticket\DDC199ParentClass e join e.relatedEntities r');
         $result = $query->getResult();
 
-        $this->assertEquals(1, count($result));
-        $this->assertInstanceOf(DDC199ParentClass::class, $result[0]);
-        $this->assertTrue($result[0]->relatedEntities->isInitialized());
-        $this->assertEquals(2, $result[0]->relatedEntities->count());
-        $this->assertInstanceOf(DDC199RelatedClass::class, $result[0]->relatedEntities[0]);
-        $this->assertInstanceOf(DDC199RelatedClass::class, $result[0]->relatedEntities[1]);
+        self::assertCount(1, $result);
+        self::assertInstanceOf(DDC199ParentClass::class, $result[0]);
+        self::assertTrue($result[0]->relatedEntities->isInitialized());
+        self::assertEquals(2, $result[0]->relatedEntities->count());
+        self::assertInstanceOf(DDC199RelatedClass::class, $result[0]->relatedEntities[0]);
+        self::assertInstanceOf(DDC199RelatedClass::class, $result[0]->relatedEntities[1]);
     }
 }
 
 
 /**
- * @Entity @Table(name="ddc199_entities")
- * @InheritanceType("SINGLE_TABLE")
- * @DiscriminatorColumn(name="discr", type="string")
- * @DiscriminatorMap({"parent" = "DDC199ParentClass", "child" = "DDC199ChildClass"})
+ * @ORM\Entity @ORM\Table(name="ddc199_entities")
+ * @ORM\InheritanceType("SINGLE_TABLE")
+ * @ORM\DiscriminatorColumn(name="discr", type="string")
+ * @ORM\DiscriminatorMap({"parent" = DDC199ParentClass::class, "child" = DDC199ChildClass::class})
  */
 class DDC199ParentClass
 {
     /**
-     * @Id @Column(type="integer")
-     * @GeneratedValue(strategy="AUTO")
+     * @ORM\Id @ORM\Column(type="integer")
+     * @ORM\GeneratedValue(strategy="AUTO")
      */
     public $id;
 
-    /**
-     * @Column(type="string")
-     */
+    /** @ORM\Column(type="string") */
     public $parentData;
 
-    /**
-     * @OneToMany(targetEntity="DDC199RelatedClass", mappedBy="parent")
-     */
+    /** @ORM\OneToMany(targetEntity=DDC199RelatedClass::class, mappedBy="parent") */
     public $relatedEntities;
 }
 
 
-/** @Entity */
+/** @ORM\Entity */
 class DDC199ChildClass extends DDC199ParentClass
 {
-    /**
-     * @Column
-     */
+    /** @ORM\Column */
     public $childData;
 }
 
-/** @Entity @Table(name="ddc199_relatedclass") */
+/** @ORM\Entity @ORM\Table(name="ddc199_relatedclass") */
 class DDC199RelatedClass
 {
-    /** @Id @Column(type="integer") @GeneratedValue */
+    /** @ORM\Id @ORM\Column(type="integer") @ORM\GeneratedValue */
     public $id;
-    /** @Column */
+    /** @ORM\Column */
     public $relatedData;
 
     /**
-     * @ManyToOne(targetEntity="DDC199ParentClass", inversedBy="relatedEntities")
-     * @JoinColumn(name="parent_id", referencedColumnName="id")
+     * @ORM\ManyToOne(targetEntity=DDC199ParentClass::class, inversedBy="relatedEntities")
+     * @ORM\JoinColumn(name="parent_id", referencedColumnName="id")
      */
     public $parent;
 }

@@ -1,14 +1,17 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\Tests\ORM\Functional\Ticket;
 
 use Doctrine\Tests\Models\CMS\CmsArticle;
 use Doctrine\Tests\Models\CMS\CmsUser;
+use Doctrine\Tests\OrmFunctionalTestCase;
 
 /**
  * @group DDC-1545
  */
-class DDC1545Test extends \Doctrine\Tests\OrmFunctionalTestCase
+class DDC1545Test extends OrmFunctionalTestCase
 {
     private $articleId;
 
@@ -16,7 +19,7 @@ class DDC1545Test extends \Doctrine\Tests\OrmFunctionalTestCase
 
     private $user2Id;
 
-    public function setUp()
+    public function setUp() : void
     {
         $this->useModelSet('cms');
         parent::setUp();
@@ -24,173 +27,173 @@ class DDC1545Test extends \Doctrine\Tests\OrmFunctionalTestCase
 
     private function initDb($link)
     {
-        $article = new CmsArticle();
+        $article        = new CmsArticle();
         $article->topic = 'foo';
-        $article->text = 'foo';
+        $article->text  = 'foo';
 
-        $user = new CmsUser();
-        $user->status = 'foo';
+        $user           = new CmsUser();
+        $user->status   = 'foo';
         $user->username = 'foo';
-        $user->name = 'foo';
+        $user->name     = 'foo';
 
-        $user2 = new CmsUser();
-        $user2->status = 'bar';
+        $user2           = new CmsUser();
+        $user2->status   = 'bar';
         $user2->username = 'bar';
-        $user2->name = 'bar';
+        $user2->name     = 'bar';
 
         if ($link) {
             $article->user = $user;
         }
 
-        $this->_em->persist($article);
-        $this->_em->persist($user);
-        $this->_em->persist($user2);
-        $this->_em->flush();
-        $this->_em->clear();
+        $this->em->persist($article);
+        $this->em->persist($user);
+        $this->em->persist($user2);
+        $this->em->flush();
+        $this->em->clear();
 
         $this->articleId = $article->id;
-        $this->userId = $user->id;
-        $this->user2Id = $user2->id;
+        $this->userId    = $user->id;
+        $this->user2Id   = $user2->id;
     }
 
-    public function testLinkObjects()
+    public function testLinkObjects() : void
     {
         $this->initDb(false);
 
         // don't join association
-        $article = $this->_em->find(CmsArticle::class, $this->articleId);
+        $article = $this->em->find(CmsArticle::class, $this->articleId);
 
-        $user = $this->_em->find(CmsUser::class, $this->userId);
+        $user = $this->em->find(CmsUser::class, $this->userId);
 
         $article->user = $user;
 
-        $this->_em->flush();
-        $this->_em->clear();
+        $this->em->flush();
+        $this->em->clear();
 
-        $article = $this->_em
+        $article = $this->em
             ->createQuery('SELECT a, u FROM Doctrine\Tests\Models\Cms\CmsArticle a LEFT JOIN a.user u WHERE a.id = :id')
             ->setParameter('id', $this->articleId)
             ->getOneOrNullResult();
 
-        $this->assertNotNull($article->user);
-        $this->assertEquals($user->id, $article->user->id);
+        self::assertNotNull($article->user);
+        self::assertEquals($user->id, $article->user->id);
     }
 
-    public function testLinkObjectsWithAssociationLoaded()
+    public function testLinkObjectsWithAssociationLoaded() : void
     {
         $this->initDb(false);
 
         // join association
-        $article = $this->_em
+        $article = $this->em
             ->createQuery('SELECT a, u FROM Doctrine\Tests\Models\Cms\CmsArticle a LEFT JOIN a.user u WHERE a.id = :id')
             ->setParameter('id', $this->articleId)
             ->getOneOrNullResult();
 
-        $user = $this->_em->find(CmsUser::class, $this->userId);
+        $user = $this->em->find(CmsUser::class, $this->userId);
 
         $article->user = $user;
 
-        $this->_em->flush();
-        $this->_em->clear();
+        $this->em->flush();
+        $this->em->clear();
 
-        $article = $this->_em
+        $article = $this->em
             ->createQuery('SELECT a, u FROM Doctrine\Tests\Models\Cms\CmsArticle a LEFT JOIN a.user u WHERE a.id = :id')
             ->setParameter('id', $this->articleId)
             ->getOneOrNullResult();
 
-        $this->assertNotNull($article->user);
-        $this->assertEquals($user->id, $article->user->id);
+        self::assertNotNull($article->user);
+        self::assertEquals($user->id, $article->user->id);
     }
 
-    public function testUnlinkObjects()
+    public function testUnlinkObjects() : void
     {
         $this->initDb(true);
 
         // don't join association
-        $article = $this->_em->find(CmsArticle::class, $this->articleId);
+        $article = $this->em->find(CmsArticle::class, $this->articleId);
 
         $article->user = null;
 
-        $this->_em->flush();
-        $this->_em->clear();
+        $this->em->flush();
+        $this->em->clear();
 
-        $article = $this->_em
+        $article = $this->em
             ->createQuery('SELECT a, u FROM Doctrine\Tests\Models\Cms\CmsArticle a LEFT JOIN a.user u WHERE a.id = :id')
             ->setParameter('id', $this->articleId)
             ->getOneOrNullResult();
 
-        $this->assertNull($article->user);
+        self::assertNull($article->user);
     }
 
-    public function testUnlinkObjectsWithAssociationLoaded()
+    public function testUnlinkObjectsWithAssociationLoaded() : void
     {
         $this->initDb(true);
 
         // join association
-        $article = $this->_em
+        $article = $this->em
             ->createQuery('SELECT a, u FROM Doctrine\Tests\Models\Cms\CmsArticle a LEFT JOIN a.user u WHERE a.id = :id')
             ->setParameter('id', $this->articleId)
             ->getOneOrNullResult();
 
         $article->user = null;
 
-        $this->_em->flush();
-        $this->_em->clear();
+        $this->em->flush();
+        $this->em->clear();
 
-        $article = $this->_em
+        $article = $this->em
             ->createQuery('SELECT a, u FROM Doctrine\Tests\Models\Cms\CmsArticle a LEFT JOIN a.user u WHERE a.id = :id')
             ->setParameter('id', $this->articleId)
             ->getOneOrNullResult();
 
-        $this->assertNull($article->user);
+        self::assertNull($article->user);
     }
 
-    public function testChangeLink()
+    public function testChangeLink() : void
     {
         $this->initDb(false);
 
         // don't join association
-        $article = $this->_em->find(CmsArticle::class, $this->articleId);
+        $article = $this->em->find(CmsArticle::class, $this->articleId);
 
-        $user2 = $this->_em->find(CmsUser::class, $this->user2Id);
+        $user2 = $this->em->find(CmsUser::class, $this->user2Id);
 
         $article->user = $user2;
 
-        $this->_em->flush();
-        $this->_em->clear();
+        $this->em->flush();
+        $this->em->clear();
 
-        $article = $this->_em
+        $article = $this->em
             ->createQuery('SELECT a, u FROM Doctrine\Tests\Models\Cms\CmsArticle a LEFT JOIN a.user u WHERE a.id = :id')
             ->setParameter('id', $this->articleId)
             ->getOneOrNullResult();
 
-        $this->assertNotNull($article->user);
-        $this->assertEquals($user2->id, $article->user->id);
+        self::assertNotNull($article->user);
+        self::assertEquals($user2->id, $article->user->id);
     }
 
-    public function testChangeLinkWithAssociationLoaded()
+    public function testChangeLinkWithAssociationLoaded() : void
     {
         $this->initDb(false);
 
         // join association
-        $article = $this->_em
+        $article = $this->em
             ->createQuery('SELECT a, u FROM Doctrine\Tests\Models\Cms\CmsArticle a LEFT JOIN a.user u WHERE a.id = :id')
             ->setParameter('id', $this->articleId)
             ->getOneOrNullResult();
 
-        $user2 = $this->_em->find(CmsUser::class, $this->user2Id);
+        $user2 = $this->em->find(CmsUser::class, $this->user2Id);
 
         $article->user = $user2;
 
-        $this->_em->flush();
-        $this->_em->clear();
+        $this->em->flush();
+        $this->em->clear();
 
-        $article = $this->_em
+        $article = $this->em
             ->createQuery('SELECT a, u FROM Doctrine\Tests\Models\Cms\CmsArticle a LEFT JOIN a.user u WHERE a.id = :id')
             ->setParameter('id', $this->articleId)
             ->getOneOrNullResult();
 
-        $this->assertNotNull($article->user);
-        $this->assertEquals($user2->id, $article->user->id);
+        self::assertNotNull($article->user);
+        self::assertEquals($user2->id, $article->user->id);
     }
 }

@@ -1,64 +1,59 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\Tests\Mocks;
 
+use Doctrine\Common\EventManager;
+use Doctrine\DBAL\Configuration;
 use Doctrine\DBAL\Connection;
+use Doctrine\DBAL\Driver;
+use Doctrine\DBAL\Driver\ResultStatement;
 use Doctrine\DBAL\Driver\Statement;
+use Doctrine\DBAL\Platforms\AbstractPlatform;
+use Exception;
+use function is_string;
 
 /**
  * Mock class for Connection.
  */
 class ConnectionMock extends Connection
 {
-    /**
-     * @var mixed
-     */
-    private $_fetchOneResult;
+    /** @var mixed */
+    private $fetchOneResult;
+
+    /** @var Exception|null */
+    private $fetchOneException;
+
+    /** @var Statement|null */
+    private $queryResult;
+
+    /** @var DatabasePlatformMock */
+    private $platformMock;
+
+    /** @var int */
+    private $lastInsertId = 0;
+
+    /** @var array */
+    private $inserts = [];
+
+    /** @var array */
+    private $executeUpdates = [];
 
     /**
-     * @var \Exception|null
-     */
-    private $_fetchOneException;
-
-    /**
-     * @var Statement|null
-     */
-    private $_queryResult;
-
-    /**
-     * @var DatabasePlatformMock
-     */
-    private $_platformMock;
-
-    /**
-     * @var int
-     */
-    private $_lastInsertId = 0;
-
-    /**
-     * @var array
-     */
-    private $_inserts = [];
-
-    /**
-     * @var array
-     */
-    private $_executeUpdates = [];
-
-    /**
-     * @param array                              $params
-     * @param \Doctrine\DBAL\Driver              $driver
-     * @param \Doctrine\DBAL\Configuration|null  $config
-     * @param \Doctrine\Common\EventManager|null $eventManager
+     * @param array              $params
+     * @param Driver             $driver
+     * @param Configuration|null $config
+     * @param EventManager|null  $eventManager
      */
     public function __construct(array $params, $driver, $config = null, $eventManager = null)
     {
-        $this->_platformMock = new DatabasePlatformMock();
+        $this->platformMock = new DatabasePlatformMock();
 
         parent::__construct($params, $driver, $config, $eventManager);
 
         // Override possible assignment of platform to database platform mock
-        $this->_platform = $this->_platformMock;
+        $this->platform = $this->platformMock;
     }
 
     /**
@@ -66,7 +61,7 @@ class ConnectionMock extends Connection
      */
     public function getDatabasePlatform()
     {
-        return $this->_platformMock;
+        return $this->platformMock;
     }
 
     /**
@@ -74,15 +69,17 @@ class ConnectionMock extends Connection
      */
     public function insert($tableName, array $data, array $types = [])
     {
-        $this->_inserts[$tableName][] = $data;
+        $this->inserts[$tableName][] = $data;
     }
 
     /**
      * {@inheritdoc}
      */
-    public function executeUpdate($query, array $params = [], array $types = [])
+    public function executeUpdate(string $query, array $params = [], array $types = []) : int
     {
-        $this->_executeUpdates[] = ['query' => $query, 'params' => $params, 'types' => $types];
+        $this->executeUpdates[] = ['query' => $query, 'params' => $params, 'types' => $types];
+
+        return 42;
     }
 
     /**
@@ -90,7 +87,7 @@ class ConnectionMock extends Connection
      */
     public function lastInsertId($seqName = null)
     {
-        return $this->_lastInsertId;
+        return $this->lastInsertId;
     }
 
     /**
@@ -98,19 +95,19 @@ class ConnectionMock extends Connection
      */
     public function fetchColumn($statement, array $params = [], $colnum = 0, array $types = [])
     {
-        if (null !== $this->_fetchOneException) {
-            throw $this->_fetchOneException;
+        if ($this->fetchOneException !== null) {
+            throw $this->fetchOneException;
         }
 
-        return $this->_fetchOneResult;
+        return $this->fetchOneResult;
     }
 
     /**
      * {@inheritdoc}
      */
-    public function query() : Statement
+    public function query(string $sql) : ResultStatement
     {
-        return $this->_queryResult;
+        return $this->queryResult;
     }
 
     /**
@@ -121,6 +118,7 @@ class ConnectionMock extends Connection
         if (is_string($input)) {
             return "'" . $input . "'";
         }
+
         return $input;
     }
 
@@ -133,27 +131,25 @@ class ConnectionMock extends Connection
      */
     public function setFetchOneResult($fetchOneResult)
     {
-        $this->_fetchOneResult = $fetchOneResult;
+        $this->fetchOneResult = $fetchOneResult;
     }
 
     /**
-     * @param \Exception|null $exception
-     *
      * @return void
      */
-    public function setFetchOneException(\Exception $exception = null)
+    public function setFetchOneException(?Exception $exception = null)
     {
-        $this->_fetchOneException = $exception;
+        $this->fetchOneException = $exception;
     }
 
     /**
-     * @param \Doctrine\DBAL\Platforms\AbstractPlatform $platform
+     * @param AbstractPlatform $platform
      *
      * @return void
      */
     public function setDatabasePlatform($platform)
     {
-        $this->_platformMock = $platform;
+        $this->platformMock = $platform;
     }
 
     /**
@@ -163,15 +159,15 @@ class ConnectionMock extends Connection
      */
     public function setLastInsertId($id)
     {
-        $this->_lastInsertId = $id;
+        $this->lastInsertId = $id;
     }
 
     /**
-     * @param Statement $result
+     * @return void
      */
     public function setQueryResult(Statement $result)
     {
-        $this->_queryResult = $result;
+        $this->queryResult = $result;
     }
 
     /**
@@ -179,7 +175,7 @@ class ConnectionMock extends Connection
      */
     public function getInserts()
     {
-        return $this->_inserts;
+        return $this->inserts;
     }
 
     /**
@@ -187,7 +183,7 @@ class ConnectionMock extends Connection
      */
     public function getExecuteUpdates()
     {
-        return $this->_executeUpdates;
+        return $this->executeUpdates;
     }
 
     /**
@@ -195,7 +191,7 @@ class ConnectionMock extends Connection
      */
     public function reset()
     {
-        $this->_inserts = [];
-        $this->_lastInsertId = 0;
+        $this->inserts      = [];
+        $this->lastInsertId = 0;
     }
 }

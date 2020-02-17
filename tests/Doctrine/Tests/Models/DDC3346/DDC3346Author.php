@@ -1,26 +1,26 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\Tests\Models\DDC3346;
 
+use Doctrine\ORM\Annotation as ORM;
+
 /**
- * @Entity
- * @Table(name="ddc3346_users")
+ * @ORM\Entity
+ * @ORM\Table(name="ddc3346_users")
  */
 class DDC3346Author
 {
     /**
-     * @Id @Column(type="integer")
-     * @GeneratedValue
+     * @ORM\Id @ORM\Column(type="integer")
+     * @ORM\GeneratedValue
      */
     public $id;
 
-    /**
-     * @Column(type="string", length=255, unique=true)
-     */
+    /** @ORM\Column(type="string", length=255, unique=true) */
     public $username;
 
-    /**
-     * @OneToMany(targetEntity="DDC3346Article", mappedBy="user", fetch="EAGER", cascade={"detach"})
-     */
+    /** @ORM\OneToMany(targetEntity=DDC3346Article::class, mappedBy="user", fetch="EAGER") */
     public $articles = [];
 }

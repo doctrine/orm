@@ -17,11 +17,10 @@ and gain access to vendor specific functionalities using the
 ``EntityManager#createNativeQuery()`` API as described in
 the :doc:`Native Query <../reference/native-sql>` chapter.
 
-
 The DQL Parser has hooks to register functions that can then be
 used in your DQL queries and transformed into SQL, allowing to
 extend Doctrines Query capabilities to the vendors strength. This
-post explains the Used-Defined Functions API (UDF) of the Dql
+post explains the User-Defined Functions API (UDF) of the Dql
 Parser and shows some examples to give you some hints how you would
 extend DQL.
 
@@ -45,7 +44,7 @@ configuration:
     $config->addCustomStringFunction($name, $class);
     $config->addCustomNumericFunction($name, $class);
     $config->addCustomDatetimeFunction($name, $class);
-    
+
     $em = EntityManager::create($dbParams, $config);
 
 The ``$name`` is the name the function will be referred to in the
@@ -70,7 +69,7 @@ methods, which are quite handy in my opinion:
 Date Diff
 ---------
 
-`Mysql's DateDiff function <http://dev.mysql.com/doc/refman/5.1/en/date-and-time-functions.html#function_datediff>`_
+`Mysql's DateDiff function <https://dev.mysql.com/doc/refman/8.0/en/date-and-time-functions.html#function_datediff>`_
 takes two dates as argument and calculates the difference in days
 with ``date1-date2``.
 
@@ -96,7 +95,7 @@ discuss it step by step:
         // (1)
         public $firstDateExpression = null;
         public $secondDateExpression = null;
-    
+
         public function parse(\Doctrine\ORM\Query\Parser $parser)
         {
             $parser->match(Lexer::T_IDENTIFIER); // (2)
@@ -106,7 +105,7 @@ discuss it step by step:
             $this->secondDateExpression = $parser->ArithmeticPrimary(); // (6)
             $parser->match(Lexer::T_CLOSE_PARENTHESIS); // (3)
         }
-    
+
         public function getSql(\Doctrine\ORM\Query\SqlWalker $sqlWalker)
         {
             return 'DATEDIFF(' .
@@ -164,7 +163,7 @@ Date Add
 
 Often useful it the ability to do some simple date calculations in
 your DQL query using
-`MySql's DATE\_ADD function <http://dev.mysql.com/doc/refman/5.1/en/date-and-time-functions.html#function_date-add>`_.
+`MySql's DATE_ADD function <https://dev.mysql.com/doc/refman/8.0/en/date-and-time-functions.html#function_date-add>`_.
 
 I'll skip the blah and show the code for this function:
 
@@ -180,28 +179,28 @@ I'll skip the blah and show the code for this function:
         public $firstDateExpression = null;
         public $intervalExpression = null;
         public $unit = null;
-    
+
         public function parse(\Doctrine\ORM\Query\Parser $parser)
         {
             $parser->match(Lexer::T_IDENTIFIER);
             $parser->match(Lexer::T_OPEN_PARENTHESIS);
-    
+
             $this->firstDateExpression = $parser->ArithmeticPrimary();
-    
+
             $parser->match(Lexer::T_COMMA);
             $parser->match(Lexer::T_IDENTIFIER);
-    
+
             $this->intervalExpression = $parser->ArithmeticPrimary();
-    
+
             $parser->match(Lexer::T_IDENTIFIER);
-    
-            /* @var $lexer Lexer */
+
+            /** @var Lexer $lexer */
             $lexer = $parser->getLexer();
             $this->unit = $lexer->token['value'];
-    
+
             $parser->match(Lexer::T_CLOSE_PARENTHESIS);
         }
-    
+
         public function getSql(\Doctrine\ORM\Query\SqlWalker $sqlWalker)
         {
             return 'DATE_ADD(' .
@@ -246,6 +245,4 @@ vendor sql functions and extend the DQL languages scope.
 
 Code for this Extension to DQL and other Doctrine Extensions can be
 found
-`in my Github DoctrineExtensions repository <http://github.com/beberlei/DoctrineExtensions>`_.
-
-
+`in the GitHub DoctrineExtensions repository <https://github.com/beberlei/DoctrineExtensions>`_.

@@ -1,36 +1,383 @@
+# Upgrade to 3.0
+
+## BC Break: Removed ability to clear cache via console with some cache drivers
+
+The console commands `orm:clear-cache:metadata`, `orm:clear-cache:result`,
+and `orm:clear-cache:query` cannot be used with the `ApcCache`, `ApcuCache`,
+or `XcacheCache` because the memory is only available to the webserver process.
+
+## BC Break: `orm:run-dql` command's `$depth` parameter removed
+
+The `$depth` parameter has been removed, the dumping functionality
+is now provided by [`symfony/var-dumper`](https://github.com/symfony/var-dumper).
+
+## BC Break: Dropped `Doctrine\ORM\Tools\Setup::registerAutoloadDirectory()`
+
+This method used deprecated Doctrine Autoloader and has been removed. Please rely on Composer autoloading instead.
+
+## BC Break: Dropped automatic discriminator map discovery
+
+Automatic discriminator map discovery exhibited multiple flaws
+that can't be reliably addressed and supported:
+
+ * discovered entries are not namespaced which leads to collisions,
+ * the class name is part of the discriminator map, therefore the class
+   must never be renamed.
+
+As a consequence this feature has been dropped.
+
+If your code relied on this feature, please build the discriminator map for
+your inheritance tree manually where each entry is an unqualified lowercase
+name of the member entities.
+
+## BC Break: Missing type declaration added for identifier generators
+
+The interfaces `Doctrine\ORM\Sequencing\Generator` and
+`Doctrine\ORM\Sequencing\Planning\ValueGenerationPlan` now uses explicit type
+declaration for parameters and return (as much as possible).
+
+## BC Break: Removed possibility to extend the doctrine mapping xml schema with anything
+
+If you want to extend it now you have to provide your own validation schema.
+
+## BC Break: Entity Listeners no long support naming convention methods
+
+If you want their behavior to be kept, please add the necessary Annotation methods (in case XML driver is used,
+no changes are necessary).
+
+## BC Break: Removed `Doctrine\ORM\Mapping\Exporter\VariableExporter` constants
+
+This constant has been removed
+
+ * `Doctrine\ORM\Mapping\Exporter\VariableExporter::INDENTATION`
+
+## BC Break: Removed support for named queries and named native queries
+
+These classes have been removed:
+
+ * `Doctrine/ORM/Annotation/NamedQueries`
+ * `Doctrine/ORM/Annotation/NamedQuery`
+ * `Doctrine/ORM/Annotation/NamedNativeQueries`
+ * `Doctrine/ORM/Annotation/NamedNativeQuery`
+ * `Doctrine/ORM/Annotation/ColumnResult`
+ * `Doctrine/ORM/Annotation/FieldResult`
+ * `Doctrine/ORM/Annotation/EntityResult`
+ * `Doctrine/ORM/Annotation/SqlResultSetMapping`
+ * `Doctrine/ORM/Annotation/SqlResultSetMappings`
+
+These methods have been removed:
+
+ * `Doctrine/ORM/Configuration::addNamedQuery()`
+ * `Doctrine/ORM/Configuration::getNamedQuery()`
+ * `Doctrine/ORM/Configuration::addNamedNativeQuery()`
+ * `Doctrine/ORM/Configuration::getNamedNativeQuery()`
+ * `Doctrine/ORM/Decorator/EntityManagerDecorator::createNamedQuery()`
+ * `Doctrine/ORM/Decorator/EntityManagerDecorator::createNamedNativeQuery()`
+ * `Doctrine/ORM/EntityManager::createNamedQuery()`
+ * `Doctrine/ORM/EntityManager::createNamedNativeQuery()`
+ * `Doctrine/ORM/EntityManagerInterface::createNamedQuery()`
+ * `Doctrine/ORM/EntityManagerInterface::createNamedNativeQuery()`
+ * `Doctrine/ORM/EntityRepository::createNamedQuery()`
+ * `Doctrine/ORM/EntityRepository::createNamedNativeQuery()`
+ * `Doctrine/ORM/Mapping/ClassMetadata::getNamedQuery()`
+ * `Doctrine/ORM/Mapping/ClassMetadata::getNamedQueries()`
+ * `Doctrine/ORM/Mapping/ClassMetadata::addNamedQuery()`
+ * `Doctrine/ORM/Mapping/ClassMetadata::hasNamedQuery()`
+ * `Doctrine/ORM/Mapping/ClassMetadata::getNamedNativeQuery()`
+ * `Doctrine/ORM/Mapping/ClassMetadata::getNamedNativeQueries()`
+ * `Doctrine/ORM/Mapping/ClassMetadata::addNamedNativeQuery()`
+ * `Doctrine/ORM/Mapping/ClassMetadata::hasNamedNativeQuery()`
+ * `Doctrine\ORM\Mapping\ClassMetadata::addSqlResultSetMapping()`
+ * `Doctrine\ORM\Mapping\ClassMetadata::getSqlResultSetMapping()`
+ * `Doctrine\ORM\Mapping\ClassMetadata::getSqlResultSetMappings()`
+ * `Doctrine\ORM\Mapping\ClassMetadata::hasSqlResultSetMapping()`
+ 
+## BC Break: Removed support for entity namespace aliases
+
+The support for namespace aliases has been removed.
+Please migrate to using `::class` for referencing classes.
+
+These methods have been removed:
+
+ * `Doctrine\ORM\Configuration::addEntityNamespace()`
+ * `Doctrine\ORM\Configuration::getEntityNamespace()`
+ * `Doctrine\ORM\Configuration::setEntityNamespaces()`
+ * `Doctrine\ORM\Configuration::getEntityNamespaces()`
+ * `Doctrine\ORM\Mapping\AbstractClassMetadataFactory::getFqcnFromAlias()`
+ * `Doctrine\ORM\ORMException::unknownEntityNamespace()`
+
+## BC Break: Removed same-namespace class name resolution
+
+Support for same-namespace class name resolution in mappings has been removed.
+If you're using annotation driver, please migrate to references using `::class`.
+If you're using XML driver, please migrate to fully qualified references.
+
+These methods have been removed:
+
+ * Doctrine\ORM\Mapping\ClassMetadata::fullyQualifiedClassName()
+
+## BC Break: Removed code generators and related console commands
+
+These console commands have been removed:
+
+ * `orm:convert-mapping`
+ * `orm:generate:entities`
+ * `orm:generate-repositories`
+
+These classes have been removed:
+
+ * `Doctrine\ORM\Tools\EntityGenerator`
+ * `Doctrine\ORM\Tools\EntityRepositoryGenerator`
+
+The whole Doctrine\ORM\Tools\Export namespace with all its members has been removed as well.
+
+## BC Break: proxies no longer implement `Doctrine\ORM\Proxy\Proxy`
+
+Proxy objects no longer implement `Doctrine\ORM\Proxy\Proxy` nor
+`Doctrine\Common\Persistence\Proxy`: instead, they implement
+`ProxyManager\Proxy\GhostObjectInterface`.
+
+These related classes have been removed:
+
+ * `Doctrine\ORM\Proxy\ProxyFactory` - replaced by `Doctrine\ORM\Proxy\Factory\StaticProxyFactory`
+   and `Doctrine\ORM\Proxy\Factory\ProxyFactory`
+ * `Doctrine\ORM\Proxy\Proxy`
+ * `Doctrine\ORM\Proxy\Autoloader` - we suggest using the composer autoloader instead
+ * `Doctrine\ORM\Reflection\RuntimePublicReflectionProperty`
+
+These methods have been removed:
+
+ * `Doctrine\ORM\Configuration#getProxyDir()`
+ * `Doctrine\ORM\Configuration#getAutoGenerateProxyClasses()`
+ * `Doctrine\ORM\Configuration#getProxyNamespace()`
+
+Proxy class names change: the generated proxies now follow
+the [`ClassNameInflector`](https://github.com/Ocramius/ProxyManager/blob/2.1.1/src/ProxyManager/Inflector/ClassNameInflector.php)
+naming.
+
+Proxies are also always generated if not found: fatal errors due to missing
+proxy classes should no longer occur with ORM default settings.
+
+In addition to that, the following changes affect entity lazy-loading semantics:
+
+ * `final` methods are now allowed
+ * `__clone` is no longer called by the ORM
+ * `__wakeup` is no longer called by the ORM
+ * `serialize($proxy)` will lead to full recursive proxy initialization: please mitigate
+   the recursive initialization by implementing
+   the [`Serializable`](https://secure.php.net/manual/en/class.serializable.php) interface
+ * `clone $proxy` will lead to full initialization of the cloned instance, not the
+   original instance
+ * lazy-loading a detached proxy no longer causes the proxy identifiers to be reset
+   to `null`
+ * identifier properties are always set when the ORM produces a proxy instance
+ * calling a method on a proxy no longer causes proxy lazy-loading if the method does
+   not access any un-initialized proxy state
+ * accessing entity private state, even with reflection, will trigger lazy-loading
+
+## BC Break: Removed `Doctrine\ORM\Version`
+
+The `Doctrine\ORM\Version` class is no longer available: please refrain from checking the ORM version at runtime.
+
+## BC Break: Removed `EntityManager#merge()` and `EntityManager#detach()` methods
+
+Merge and detach semantics were a poor fit for the PHP "share-nothing" architecture.
+In addition to that, merging/detaching caused multiple issues with data integrity
+in the managed entity graph, which was constantly spawning more edge-case bugs/scenarios.
+
+The following API methods were therefore removed:
+
+* `EntityManager#merge()`
+* `EntityManager#detach()`
+* `UnitOfWork#merge()`
+* `UnitOfWork#detach()`
+
+Users are encouraged to migrate `EntityManager#detach()` calls to `EntityManager#clear()`.
+
+In order to maintain performance on batch processing jobs, it is endorsed to enable
+the second level cache (http://docs.doctrine-project.org/projects/doctrine-orm/en/latest/reference/second-level-cache.html)
+on entities that are frequently reused across multiple `EntityManager#clear()` calls.
+
+An alternative to `EntityManager#merge()` is not provided by ORM 3.0, since the merging
+semantics should be part of the business domain rather than the persistence domain of an
+application. If your application relies heavily on CRUD-alike interactions and/or `PATCH`
+restful operations, you should look at alternatives such as [JMSSerializer](https://github.com/schmittjoh/serializer).
+
+## BC Break: Added the final keyword for  `EntityManager`
+
+Final keyword has been added to the ``EntityManager::class`` in order to ensure that EntityManager is not used as valid extension point. Valid extension point should be EntityManagerInterface.
+
+## BC Break: ``EntityManagerInterface`` is now used instead of ``EntityManager`` in typehints
+
+`Sequencing\Generator#generate()` now takes ``EntityManagerInterface`` as its first argument instead of ``EntityManager``. If you have any custom generators, please update your code accordingly.
+
+## BC Break: Removed `EntityManager#flush($entity)` and `EntityManager#flush($entities)`
+
+If your code relies on single entity flushing optimisations via
+`EntityManager#flush($entity)`, the signature has been changed to
+`EntityManager#flush()`.
+
+Said API was affected by multiple data integrity bugs due to the fact
+that change tracking was being restricted upon a subset of the managed
+entities. The ORM cannot support committing subsets of the managed
+entities while also guaranteeing data integrity, therefore this
+utility was removed.
+
+The `flush()` semantics remain the same, but the change tracking will be performed
+on all entities managed by the unit of work, and not just on the provided
+`$entity` or `$entities`, as the parameter is now completely ignored.
+
+The same applies to `UnitOfWork#commit($entity)`, which now is simply
+`UnitOfWork#commit()`.
+
+If you would still like to perform batching operations over small `UnitOfWork`
+instances, it is suggested to follow these paths instead:
+
+ * eagerly use `EntityManager#clear()` in conjunction with a specific second level
+   cache configuration (see http://docs.doctrine-project.org/projects/doctrine-orm/en/latest/reference/second-level-cache.html)
+ * use an explicit change tracking policy (see http://docs.doctrine-project.org/projects/doctrine-orm/en/latest/reference/change-tracking-policies.html)
+
+## BC Break: Removed ``YAML`` mapping drivers.
+
+If your code relies on ``YamlDriver``  or ``SimpleYamlDriver``, you **MUST** change to
+annotation or XML drivers instead.
+
+## BC Break: Changed methods in ``ClassMetadata``
+
+* ``ClassMetadata::addInheritedProperty``
+* ``ClassMetadata::setDiscriminatorColumn``
+
+## BC Break: Removed methods in ``ClassMetadata``
+
+* ``ClassMetadata::getTypeOfField`` (to be removed, part of Common API)
+
+## BC Break: Removed methods in ``ClassMetadata``
+
+* ``ClassMetadata::setTableName`` => Use ``ClassMetadata::setPrimaryTable(['name' => ...])``
+* ``ClassMetadata::getFieldMapping`` => Use ``ClassMetadata::getProperty()`` and its methods
+* ``ClassMetadata::getQuotedColumnName`` => Use ``ClassMetadata::getProperty()::getQuotedColumnName()``
+* ``ClassMetadata::getQuotedTableName``
+* ``ClassMetadata::getQuotedJoinTableName``
+* ``ClassMetadata::getQuotedIdentifierColumnNames``
+* ``ClassMetadata::getIdentifierColumnNames`` => Use ``ClassMetadata::getIdentifierColumns($entityManager)``
+* ``ClassMetadata::setVersionMetadata``
+* ``ClassMetadata::setVersioned``
+* ``ClassMetadata::invokeLifecycleCallbacks``
+* ``ClassMetadata::isInheritedField`` => Use ``ClassMetadata::getProperty()::isInherited()``
+* ``ClassMetadata::isUniqueField`` => Use ``ClassMetadata::getProperty()::isUnique()``
+* ``ClassMetadata::isNullable`` => Use ``ClassMetadata::getProperty()::isNullable()``
+* ``ClassMetadata::getTypeOfColumn()`` => Use ``PersisterHelper::getTypeOfColumn()``
+
+## BC Break: Removed ``quoted`` index from table, field and sequence mappings
+
+Quoting is now always called. Implement your own ``Doctrine\ORM\Mapping\NamingStrategy`` to manipulate
+your schema, tables and column names to your custom desired naming convention.
+
+## BC Break: Removed ``ClassMetadata::$fieldMappings[$fieldName]['requireSQLConversion']``
+
+ORM Type SQL conversion is now always being applied, minimizing the risks of error prone code in ORM internals
+
+## BC Break: Removed ``ClassMetadata::$columnNames``
+
+If your code relies on this property, you should search/replace from this:
+
+    $metadata->columnNames[$fieldName]
+
+To this:
+
+    $metadata->getProperty($fieldName)->getColumnName()
+
+## BC Break: Renamed ``ClassMetadata::setIdentifierValues()`` to ``ClassMetadata::assignIdentifier()``
+
+Provides a more meaningful name to method.
+
+## BC Break: Removed ``ClassMetadata::$namespace``
+
+The namespace property in ClassMetadata was only used when using association
+classes in the same namespace and it was used to speedup ClassMetadata
+creation purposes. Namespace could be easily inferred by asking ``\ReflectionClass``
+which was already stored internally.
+
+### BC Break: Removed ``ClassMetadata::$isVersioned``
+
+Switched to a method alternative: ``ClassMetadata::isVersioned()``
+
+## BC Break: Removed ``Doctrine\ORM\Mapping\ClassMetadataInfo``
+
+There was no reason to keep a blank class. All references are now pointing
+to ``Doctrine\ORM\Mapping\ClassMetadata``.
+
+## BC Break: Annotations classes namespace change
+
+All Annotations classes got moved from ``Doctrine\ORM\Mapping`` into a more
+pertinent namespace ``Doctrine\ORM\Annotation``. This change was done to add
+room for Metadata namespace refactoring.
+
+## Minor BC break: Mappings now store ``DBAL\Type`` instances instead of strings
+
+This leads to manual ``ResultSetMapping`` building instances to also hold Types in meta results.
+Example:
+
+    $rsm->addMetaResult('e ', 'e_discr', 'discr', false, Type::getType('string'));
+
+## Enhancement: Mappings now store their declaring ``ClassMetadata``
+
+Every field, association or embedded now contains a pointer to its declaring ``ClassMetadata``.
+
+## Enhancement: Mappings now store their corresponding table name
+
+Every field, association join column or inline embedded field/association holds a reference to its owning table name.
+
+
 # Upgrade to 2.6
+
+## Added `Doctrine\ORM\EntityRepository::count()` method
+
+`Doctrine\ORM\EntityRepository::count()` has been added. This new method has different
+signature than `Countable::count()` (required parameter) and therefore are not compatible.
+If your repository implemented the `Countable` interface, you will have to use
+`$repository->count([])` instead and not implement `Countable` interface anymore.
 
 ## Minor BC BREAK: `Doctrine\ORM\Tools\Console\ConsoleRunner` is now final
 
 Since it's just an utilitarian class and should not be inherited.
 
-## Minor BC BREAK: removed `Doctrine\ORM\Query\Parser#isInternalFunction`
+## Minor BC BREAK: removed `Doctrine\ORM\Query\QueryException::associationPathInverseSideNotSupported()`
 
-Method `Doctrine\ORM\Query\QueryException::associationPathInverseSideNotSupported`
+Method `Doctrine\ORM\Query\QueryException::associationPathInverseSideNotSupported()`
 now has a required parameter `$pathExpr`.
 
-## Minor BC BREAK: removed `Doctrine\ORM\Query\Parser#isInternalFunction`
+## Minor BC BREAK: removed `Doctrine\ORM\Query\Parser#isInternalFunction()`
 
-Method `Doctrine\ORM\Query\Parser#isInternalFunction` was removed because 
+Method `Doctrine\ORM\Query\Parser#isInternalFunction()` was removed because
 the distinction between internal function and user defined DQL was removed.
-[#6500](https://github.com/doctrine/doctrine2/pull/6500)
+[#6500](https://github.com/doctrine/orm/pull/6500)
 
-## Minor BC BREAK: removed `Doctrine\ORM\ORMException#overwriteInternalDQLFunctionNotAllowed`
+## Minor BC BREAK: removed `Doctrine\ORM\ORMException#overwriteInternalDQLFunctionNotAllowed()`
 
-Method `Doctrine\ORM\Query\Parser#overwriteInternalDQLFunctionNotAllowed` was 
+Method `Doctrine\ORM\Query\Parser#overwriteInternalDQLFunctionNotAllowed()` was
 removed because of the choice to allow users to overwrite internal functions, ie
-`AVG`, `SUM`, `COUNT`, `MIN` and `MAX`. [#6500](https://github.com/doctrine/doctrine2/pull/6500)
+`AVG`, `SUM`, `COUNT`, `MIN` and `MAX`. [#6500](https://github.com/doctrine/orm/pull/6500)
+
+## Minor BC BREAK: removed $className parameter on `AbstractEntityInheritancePersister#getSelectJoinColumnSQL()`
+
+As `$className` parameter was not used in the method, it was safely removed.
+
+## PHP 7.1 is now required
+
+Doctrine 2.6 now requires PHP 7.1 or newer.
+
+As a consequence, automatic cache setup in Doctrine\ORM\Tools\Setup::create*Configuration() was changed:
+- APCu extension (ext-apcu) will now be used instead of abandoned APC (ext-apc).
+- Memcached extension (ext-memcached) will be used instead of obsolete Memcache (ext-memcache).
+- XCache support was dropped as it doesn't work with PHP 7.
 
 # Upgrade to 2.5
 
 ## Minor BC BREAK: removed `Doctrine\ORM\Query\SqlWalker#walkCaseExpression()`
 
 Method `Doctrine\ORM\Query\SqlWalker#walkCaseExpression()` was unused and part
-of the internal API of the ORM, so it was removed. [#5600](https://github.com/doctrine/doctrine2/pull/5600).
-
-## Minor BC BREAK: removed $className parameter on `AbstractEntityInheritancePersister#getSelectJoinColumnSQL()`
-
-As `$className` parameter was not used in the method, it was safely removed.
+of the internal API of the ORM, so it was removed. [#5600](https://github.com/doctrine/orm/pull/5600).
 
 ## Minor BC BREAK: query cache key time is now a float
 
@@ -55,8 +402,8 @@ either:
  - map those classes as `MappedSuperclass`
 
 ## Minor BC BREAK: ``EntityManagerInterface`` instead of ``EntityManager`` in type-hints
- 
-As of 2.5, classes requiring the ``EntityManager`` in any method signature will now require 
+
+As of 2.5, classes requiring the ``EntityManager`` in any method signature will now require
 an ``EntityManagerInterface`` instead.
 If you are extending any of the following classes, then you need to check following
 signatures:
@@ -149,7 +496,7 @@ the `Doctrine\ORM\Repository\DefaultRepositoryFactory`.
 When executing DQL queries with new object expressions, instead of returning DTOs numerically indexes, it will now respect user provided aliases. Consider the following query:
 
     SELECT new UserDTO(u.id,u.name) as user,new AddressDTO(a.street,a.postalCode) as address, a.id as addressId FROM User u INNER JOIN u.addresses a WITH a.isPrimary = true
-    
+
 Previously, your result would be similar to this:
 
     array(
@@ -179,6 +526,7 @@ From now on, the resultset will look like this:
 ## Minor BC BREAK: added second parameter $indexBy in EntityRepository#createQueryBuilder method signature
 
 Added way to access the underlying QueryBuilder#from() method's 'indexBy' parameter when using EntityRepository#createQueryBuilder()
+
 
 # Upgrade to 2.4
 
@@ -223,6 +571,7 @@ Before 2.4 it generates the SQL:
 Now parenthesis are considered, the previous DQL will generate:
 
     SELECT 100 / (2 * 2) FROM my_entity
+
 
 # Upgrade to 2.3
 
@@ -292,6 +641,7 @@ Also, following mapping drivers have been deprecated, please use their replaceme
  *  `Doctrine\ORM\Mapping\Driver\DriverChain`       => `Doctrine\Common\Persistence\Mapping\Driver\MappingDriverChain`
  *  `Doctrine\ORM\Mapping\Driver\PHPDriver`         => `Doctrine\Common\Persistence\Mapping\Driver\PHPDriver`
  *  `Doctrine\ORM\Mapping\Driver\StaticPHPDriver`   => `Doctrine\Common\Persistence\Mapping\Driver\StaticPHPDriver`
+
 
 # Upgrade to 2.2
 
@@ -376,6 +726,7 @@ Also, Doctrine 2.2 now is around 10-15% faster than 2.1.
 
 Previously EntityManager#find(null) returned null. It now throws an exception.
 
+
 # Upgrade to 2.1
 
 ## Interface for EntityRepository
@@ -400,6 +751,7 @@ The annotation reader was heavily refactored between 2.0 and 2.1-RC1. In theory 
 
 This is already done inside the ``$config->newDefaultAnnotationDriver``, so everything should automatically work if you are using this method. You can verify if everything still works by executing a console command such as schema-validate that loads all metadata into memory.
 
+
 # Update from 2.0-BETA3 to 2.0-BETA4
 
 ## XML Driver <change-tracking-policy /> element demoted to attribute
@@ -407,6 +759,7 @@ This is already done inside the ``$config->newDefaultAnnotationDriver``, so ever
 We changed how the XML Driver allows to define the change-tracking-policy. The working case is now:
 
     <entity change-tracking-policy="DEFERRED_IMPLICT" />
+
 
 # Update from 2.0-BETA2 to 2.0-BETA3
 
@@ -470,9 +823,11 @@ don't loose anything through this.
 The default allocation size for sequences has been changed from 10 to 1. This step was made
 to not cause confusion with users and also because it is partly some kind of premature optimization.
 
+
 # Update from 2.0-BETA1 to 2.0-BETA2
 
 There are no backwards incompatible changes in this release.
+
 
 # Upgrade from 2.0-ALPHA4 to 2.0-BETA1
 
@@ -544,7 +899,6 @@ access all entities.
 
 Xml and Yaml Drivers work as before!
 
-
 ## New inversedBy attribute
 
 It is now *mandatory* that the owning side of a bidirectional association specifies the
@@ -608,7 +962,7 @@ you need to use the following, explicit syntax:
 ## XML Mapping Driver
 
 The 'inheritance-type' attribute changed to take last bit of ClassMetadata constant names, i.e.
-NONE, SINGLE_TABLE, INHERITANCE_TYPE_JOINED
+NONE, SINGLE_TABLE, JOINED
 
 ## YAML Mapping Driver
 
@@ -639,6 +993,7 @@ performance benefits for the preUpdate event.
 The Collection interface in the Common package has been updated with some missing methods
 that were present only on the default implementation, ArrayCollection. Custom collection
 implementations need to be updated to adhere to the updated interface.
+
 
 # Upgrade from 2.0-ALPHA3 to 2.0-ALPHA4
 
@@ -676,6 +1031,8 @@ With new required method AbstractTask::buildDocumentation, its implementation de
     database schema without deleting any unused tables, sequences or foreign keys.
     * Use "doctrine schema-tool --complete-update" to do a full incremental update of
     your schema.
+
+
 # Upgrade from 2.0-ALPHA2 to 2.0-ALPHA3
 
 This section details the changes made to Doctrine 2.0-ALPHA3 to make it easier for you

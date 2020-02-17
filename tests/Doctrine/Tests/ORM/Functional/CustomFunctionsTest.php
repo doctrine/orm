@@ -1,8 +1,9 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\Tests\ORM\Functional;
 
-use Doctrine\ORM\Query;
 use Doctrine\ORM\Query\AST\Functions\FunctionNode;
 use Doctrine\ORM\Query\AST\PathExpression;
 use Doctrine\ORM\Query\Lexer;
@@ -15,62 +16,61 @@ require_once __DIR__ . '/../../TestInit.php';
 
 class CustomFunctionsTest extends OrmFunctionalTestCase
 {
-    protected function setUp()
+    protected function setUp() : void
     {
         $this->useModelSet('cms');
 
         parent::setUp();
     }
 
-    public function testCustomFunctionDefinedWithCallback()
+    public function testCustomFunctionDefinedWithCallback() : void
     {
-        $user = new CmsUser();
-        $user->name = 'Bob';
+        $user           = new CmsUser();
+        $user->name     = 'Bob';
         $user->username = 'Dylan';
-        $this->_em->persist($user);
-        $this->_em->flush();
+        $this->em->persist($user);
+        $this->em->flush();
 
         // Instead of defining the function with the class name, we use a callback
-        $this->_em->getConfiguration()->addCustomStringFunction('FOO', function($funcName) {
+        $this->em->getConfiguration()->addCustomStringFunction('FOO', static function ($funcName) {
             return new NoOp($funcName);
         });
-        $this->_em->getConfiguration()->addCustomNumericFunction('BAR', function($funcName) {
+        $this->em->getConfiguration()->addCustomNumericFunction('BAR', static function ($funcName) {
             return new NoOp($funcName);
         });
 
-        $query = $this->_em->createQuery('SELECT u FROM Doctrine\Tests\Models\CMS\CmsUser u'
+        $query = $this->em->createQuery('SELECT u FROM Doctrine\Tests\Models\CMS\CmsUser u'
             . ' WHERE FOO(u.name) = \'Bob\''
             . ' AND BAR(1) = 1');
 
         $users = $query->getResult();
 
-        $this->assertEquals(1, count($users));
-        $this->assertSame($user, $users[0]);
+        self::assertCount(1, $users);
+        self::assertSame($user, $users[0]);
     }
 
-    public function testCustomFunctionOverride()
+    public function testCustomFunctionOverride() : void
     {
-        $user = new CmsUser();
-        $user->name = 'Bob';
+        $user           = new CmsUser();
+        $user->name     = 'Bob';
         $user->username = 'Dylan';
-        $this->_em->persist($user);
-        $this->_em->flush();
 
-        $this->_em->getConfiguration()->addCustomStringFunction('COUNT', 'Doctrine\Tests\ORM\Functional\CustomCount');
+        $this->em->persist($user);
+        $this->em->flush();
 
-        $query = $this->_em->createQuery('SELECT COUNT(DISTINCT u.id) FROM Doctrine\Tests\Models\CMS\CmsUser u');
+        $this->em->getConfiguration()->addCustomStringFunction('COUNT', 'Doctrine\Tests\ORM\Functional\CustomCount');
+
+        $query = $this->em->createQuery('SELECT COUNT(DISTINCT u.id) FROM Doctrine\Tests\Models\CMS\CmsUser u');
 
         $usersCount = $query->getSingleScalarResult();
 
-        $this->assertEquals(1, $usersCount);
+        self::assertEquals(1, $usersCount);
     }
 }
 
 class NoOp extends FunctionNode
 {
-    /**
-     * @var PathExpression
-     */
+    /** @var PathExpression */
     private $field;
 
     public function parse(Parser $parser)
@@ -89,17 +89,15 @@ class NoOp extends FunctionNode
 
 class CustomCount extends FunctionNode
 {
-    /**
-     * @var Query\AST\AggregateExpression
-     */
+    /** @var AggregateExpression */
     private $aggregateExpression;
 
-    public function parse(Parser $parser): void
+    public function parse(Parser $parser) : void
     {
         $this->aggregateExpression = $parser->AggregateExpression();
     }
 
-    public function getSql(SqlWalker $sqlWalker): string
+    public function getSql(SqlWalker $sqlWalker) : string
     {
         return $this->aggregateExpression->dispatch($sqlWalker);
     }

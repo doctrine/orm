@@ -1,35 +1,39 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\Tests\ORM\Functional\Ticket;
 
 use Doctrine\Tests\Models\Cache\Country;
 use Doctrine\Tests\ORM\Functional\SecondLevelCacheAbstractTest;
+use function array_pop;
+use function sprintf;
 
 class DDC3967Test extends SecondLevelCacheAbstractTest
 {
-    protected function setUp()
+    protected function setUp() : void
     {
         parent::setUp();
 
         $this->loadFixturesCountries();
-        $this->_em->getCache()->evictEntityRegion(Country::class);
-        $this->_em->clear();
+        $this->em->getCache()->evictEntityRegion(Country::class);
+        $this->em->clear();
     }
 
-    public function testIdentifierCachedWithProperType()
+    public function testIdentifierCachedWithProperType() : void
     {
         $country = array_pop($this->countries);
-        $id = $country->getId();
+        $id      = $country->getId();
 
         // First time, loaded from database
-        $this->_em->find(Country::class, "$id");
-        $this->_em->clear();
+        $this->em->find(Country::class, sprintf('%d', $id));
+        $this->em->clear();
 
         // Second time, loaded from cache
         /** @var Country $country */
-        $country = $this->_em->find(Country::class, "$id");
+        $country = $this->em->find(Country::class, sprintf('%d', $id));
 
         // Identifier type should be integer
-        $this->assertSame($country->getId(), $id);
+        self::assertSame($country->getId(), $id);
     }
 }

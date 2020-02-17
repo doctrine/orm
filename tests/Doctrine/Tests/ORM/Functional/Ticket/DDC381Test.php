@@ -1,53 +1,58 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\Tests\ORM\Functional\Ticket;
 
-class DDC381Test extends \Doctrine\Tests\OrmFunctionalTestCase
+use Doctrine\ORM\Annotation as ORM;
+use Doctrine\Tests\OrmFunctionalTestCase;
+use Exception;
+use function serialize;
+use function unserialize;
+
+class DDC381Test extends OrmFunctionalTestCase
 {
-    protected function setUp()
+    protected function setUp() : void
     {
         parent::setUp();
 
         try {
-            $this->_schemaTool->createSchema(
+            $this->schemaTool->createSchema(
                 [
-                $this->_em->getClassMetadata(DDC381Entity::class),
+                    $this->em->getClassMetadata(DDC381Entity::class),
                 ]
             );
-        } catch(\Exception $e) {
-
+        } catch (Exception $e) {
         }
     }
 
-    public function testCallUnserializedProxyMethods()
+    public function testCallUnserializedProxyMethods() : void
     {
         $entity = new DDC381Entity();
 
-        $this->_em->persist($entity);
-        $this->_em->flush();
-        $this->_em->clear();
+        $this->em->persist($entity);
+        $this->em->flush();
+        $this->em->clear();
         $persistedId = $entity->getId();
 
-        $entity = $this->_em->getReference(DDC381Entity::class, $persistedId);
+        $entity = $this->em->getReference(DDC381Entity::class, $persistedId);
 
         // explicitly load proxy (getId() does not trigger reload of proxy)
         $id = $entity->getOtherMethod();
 
-        $data = serialize($entity);
+        $data   = serialize($entity);
         $entity = unserialize($data);
 
-        $this->assertEquals($persistedId, $entity->getId());
+        self::assertEquals($persistedId, $entity->getId());
     }
 }
 
 /**
- * @Entity
+ * @ORM\Entity
  */
 class DDC381Entity
 {
-    /**
-     * @Id @Column(type="integer") @GeneratedValue
-     */
+    /** @ORM\Id @ORM\Column(type="integer") @ORM\GeneratedValue */
     protected $id;
 
     public function getId()
@@ -57,6 +62,5 @@ class DDC381Entity
 
     public function getOtherMethod()
     {
-
     }
 }

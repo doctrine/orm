@@ -1,33 +1,39 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\Tests\ORM\Functional\Ticket;
+
+use Doctrine\ORM\Annotation as ORM;
+use Doctrine\Tests\OrmFunctionalTestCase;
+use Exception;
 
 /**
  * @group DDC-2759
  */
-class DDC2759Test extends \Doctrine\Tests\OrmFunctionalTestCase
+class DDC2759Test extends OrmFunctionalTestCase
 {
     /**
      * {@inheritDoc}
      */
-    protected function setUp()
+    protected function setUp() : void
     {
         parent::setUp();
 
         try {
-            $this->_schemaTool->createSchema(
+            $this->schemaTool->createSchema(
                 [
-                $this->_em->getClassMetadata(DDC2759Qualification::class),
-                $this->_em->getClassMetadata(DDC2759Category::class),
-                $this->_em->getClassMetadata(DDC2759QualificationMetadata::class),
-                $this->_em->getClassMetadata(DDC2759MetadataCategory::class),
+                    $this->em->getClassMetadata(DDC2759Qualification::class),
+                    $this->em->getClassMetadata(DDC2759Category::class),
+                    $this->em->getClassMetadata(DDC2759QualificationMetadata::class),
+                    $this->em->getClassMetadata(DDC2759MetadataCategory::class),
                 ]
             );
-        } catch(\Exception $e) {
+        } catch (Exception $e) {
             return;
         }
 
-        $qualification = new DDC2759Qualification();
+        $qualification         = new DDC2759Qualification();
         $qualificationMetadata = new DDC2759QualificationMetadata($qualification);
 
         $category1 = new DDC2759Category();
@@ -36,22 +42,22 @@ class DDC2759Test extends \Doctrine\Tests\OrmFunctionalTestCase
         $metadataCategory1 = new DDC2759MetadataCategory($qualificationMetadata, $category1);
         $metadataCategory2 = new DDC2759MetadataCategory($qualificationMetadata, $category2);
 
-        $this->_em->persist($qualification);
-        $this->_em->persist($qualificationMetadata);
+        $this->em->persist($qualification);
+        $this->em->persist($qualificationMetadata);
 
-        $this->_em->persist($category1);
-        $this->_em->persist($category2);
+        $this->em->persist($category1);
+        $this->em->persist($category2);
 
-        $this->_em->persist($metadataCategory1);
-        $this->_em->persist($metadataCategory2);
+        $this->em->persist($metadataCategory1);
+        $this->em->persist($metadataCategory2);
 
-        $this->_em->flush();
-        $this->_em->clear();
+        $this->em->flush();
+        $this->em->clear();
     }
 
-    public function testCorrectNumberOfAssociationsIsReturned()
+    public function testCorrectNumberOfAssociationsIsReturned() : void
     {
-        $repository = $this->_em->getRepository(DDC2759Qualification::class);
+        $repository = $this->em->getRepository(DDC2759Qualification::class);
 
         $builder = $repository->createQueryBuilder('q')
             ->select('q, qm, qmc')
@@ -61,40 +67,40 @@ class DDC2759Test extends \Doctrine\Tests\OrmFunctionalTestCase
         $result = $builder->getQuery()
             ->getArrayResult();
 
-        $this->assertCount(2, $result[0]['metadata']['metadataCategories']);
+        self::assertCount(2, $result[0]['metadata']['metadataCategories']);
     }
 }
 
-/** @Entity  @Table(name="ddc_2759_qualification") */
+/** @ORM\Entity  @ORM\Table(name="ddc_2759_qualification") */
 class DDC2759Qualification
 {
-    /** @Id @Column(type="integer") @GeneratedValue */
+    /** @ORM\Id @ORM\Column(type="integer") @ORM\GeneratedValue */
     public $id;
 
-    /** @OneToOne(targetEntity="DDC2759QualificationMetadata", mappedBy="content") */
+    /** @ORM\OneToOne(targetEntity=DDC2759QualificationMetadata::class, mappedBy="content") */
     public $metadata;
 }
 
-/** @Entity  @Table(name="ddc_2759_category") */
+/** @ORM\Entity  @ORM\Table(name="ddc_2759_category") */
 class DDC2759Category
 {
-    /** @Id @Column(type="integer") @GeneratedValue */
+    /** @ORM\Id @ORM\Column(type="integer") @ORM\GeneratedValue */
     public $id;
 
-    /** @OneToMany(targetEntity="DDC2759MetadataCategory", mappedBy="category") */
+    /** @ORM\OneToMany(targetEntity=DDC2759MetadataCategory::class, mappedBy="category") */
     public $metadataCategories;
 }
 
-/** @Entity  @Table(name="ddc_2759_qualification_metadata") */
+/** @ORM\Entity  @ORM\Table(name="ddc_2759_qualification_metadata") */
 class DDC2759QualificationMetadata
 {
-    /** @Id @Column(type="integer") @GeneratedValue */
+    /** @ORM\Id @ORM\Column(type="integer") @ORM\GeneratedValue */
     public $id;
 
-    /** @OneToOne(targetEntity="DDC2759Qualification", inversedBy="metadata") */
+    /** @ORM\OneToOne(targetEntity=DDC2759Qualification::class, inversedBy="metadata") */
     public $content;
 
-    /** @OneToMany(targetEntity="DDC2759MetadataCategory", mappedBy="metadata") */
+    /** @ORM\OneToMany(targetEntity=DDC2759MetadataCategory::class, mappedBy="metadata") */
     protected $metadataCategories;
 
     public function __construct(DDC2759Qualification $content)
@@ -103,16 +109,16 @@ class DDC2759QualificationMetadata
     }
 }
 
-/** @Entity  @Table(name="ddc_2759_metadata_category") */
+/** @ORM\Entity  @ORM\Table(name="ddc_2759_metadata_category") */
 class DDC2759MetadataCategory
 {
-    /** @Id @Column(type="integer") @GeneratedValue */
+    /** @ORM\Id @ORM\Column(type="integer") @ORM\GeneratedValue */
     public $id;
 
-    /** @ManyToOne(targetEntity="DDC2759QualificationMetadata", inversedBy="metadataCategories") */
+    /** @ORM\ManyToOne(targetEntity=DDC2759QualificationMetadata::class, inversedBy="metadataCategories") */
     public $metadata;
 
-    /** @ManyToOne(targetEntity="DDC2759Category", inversedBy="metadataCategories") */
+    /** @ORM\ManyToOne(targetEntity=DDC2759Category::class, inversedBy="metadataCategories") */
     public $category;
 
     public function __construct(DDC2759QualificationMetadata $metadata, DDC2759Category $category)

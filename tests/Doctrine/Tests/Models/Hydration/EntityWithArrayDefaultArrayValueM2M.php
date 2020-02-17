@@ -1,13 +1,17 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\Tests\Models\Hydration;
 
-/** @Entity */
+use Doctrine\ORM\Annotation as ORM;
+
+/** @ORM\Entity */
 class EntityWithArrayDefaultArrayValueM2M
 {
-    /** @Id @Column(type="integer") @GeneratedValue(strategy="AUTO") */
+    /** @ORM\Id @ORM\Column(type="integer") @ORM\GeneratedValue(strategy="AUTO") */
     public $id;
 
-    /** @ManyToMany(targetEntity=SimpleEntity::class) */
+    /** @ORM\ManyToMany(targetEntity=SimpleEntity::class) */
     public $collection = [];
 }

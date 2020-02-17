@@ -1,15 +1,17 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\Tests\ORM\Entity;
 
 use Doctrine\Tests\OrmTestCase;
 
 class ConstructorTest extends OrmTestCase
 {
-    public function testFieldInitializationInConstructor()
+    public function testFieldInitializationInConstructor() : void
     {
-        $entity = new ConstructorTestEntity1("romanb");
-        $this->assertEquals("romanb", $entity->username);
+        $entity = new ConstructorTestEntity1('romanb');
+        self::assertEquals('romanb', $entity->username);
     }
 }
 
@@ -25,4 +27,3 @@ class ConstructorTestEntity1
         }
     }
 }
-

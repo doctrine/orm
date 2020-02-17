@@ -1,30 +1,35 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\Tests\ORM\Functional\Ticket;
 
+use Doctrine\ORM\Annotation as ORM;
 use Doctrine\ORM\Query;
+use Doctrine\Tests\OrmFunctionalTestCase;
+use Exception;
 
 /**
  * @group DDC-2931
  */
-class DDC2931Test extends \Doctrine\Tests\OrmFunctionalTestCase
+class DDC2931Test extends OrmFunctionalTestCase
 {
-    public function setUp()
+    public function setUp() : void
     {
         parent::setUp();
 
         try {
-            $this->_schemaTool->createSchema(
+            $this->schemaTool->createSchema(
                 [
-                $this->_em->getClassMetadata(DDC2931User::class),
+                    $this->em->getClassMetadata(DDC2931User::class),
                 ]
             );
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             // no action needed - schema seems to be already in place
         }
     }
 
-    public function testIssue()
+    public function testIssue() : void
     {
         $first  = new DDC2931User();
         $second = new DDC2931User();
@@ -33,19 +38,19 @@ class DDC2931Test extends \Doctrine\Tests\OrmFunctionalTestCase
         $second->parent = $first;
         $third->parent  = $second;
 
-        $this->_em->persist($first);
-        $this->_em->persist($second);
-        $this->_em->persist($third);
+        $this->em->persist($first);
+        $this->em->persist($second);
+        $this->em->persist($third);
 
-        $this->_em->flush();
-        $this->_em->clear();
+        $this->em->flush();
+        $this->em->clear();
 
-        $second = $this->_em->find(DDC2931User::class, $second->id);
+        $second = $this->em->find(DDC2931User::class, $second->id);
 
-        $this->assertSame(2, $second->getRank());
+        self::assertSame(2, $second->getRank());
     }
 
-    public function testFetchJoinedEntitiesCanBeRefreshed()
+    public function testFetchJoinedEntitiesCanBeRefreshed() : void
     {
         $first  = new DDC2931User();
         $second = new DDC2931User();
@@ -58,18 +63,18 @@ class DDC2931Test extends \Doctrine\Tests\OrmFunctionalTestCase
         $second->value = 2;
         $third->value  = 3;
 
-        $this->_em->persist($first);
-        $this->_em->persist($second);
-        $this->_em->persist($third);
+        $this->em->persist($first);
+        $this->em->persist($second);
+        $this->em->persist($third);
 
-        $this->_em->flush();
+        $this->em->flush();
 
         $first->value  = 4;
         $second->value = 5;
         $third->value  = 6;
 
         $refreshedSecond = $this
-            ->_em
+            ->em
             ->createQuery(
                 'SELECT e, p, c FROM '
                 . __NAMESPACE__ . '\\DDC2931User e LEFT JOIN e.parent p LEFT JOIN e.child c WHERE e = :id'
@@ -78,33 +83,33 @@ class DDC2931Test extends \Doctrine\Tests\OrmFunctionalTestCase
             ->setHint(Query::HINT_REFRESH, true)
             ->getResult();
 
-        $this->assertCount(1, $refreshedSecond);
-        $this->assertSame(1, $first->value);
-        $this->assertSame(2, $second->value);
-        $this->assertSame(3, $third->value);
+        self::assertCount(1, $refreshedSecond);
+        self::assertSame(1, $first->value);
+        self::assertSame(2, $second->value);
+        self::assertSame(3, $third->value);
     }
 }
 
 
-/** @Entity */
+/** @ORM\Entity */
 class DDC2931User
 {
-
-    /** @Id @Column(type="integer") @GeneratedValue(strategy="AUTO") */
+    /** @ORM\Id @ORM\Column(type="integer") @ORM\GeneratedValue(strategy="AUTO") */
     public $id;
 
-    /** @OneToOne(targetEntity="DDC2931User", inversedBy="child") */
+    /** @ORM\OneToOne(targetEntity=DDC2931User::class, inversedBy="child") */
     public $parent;
 
-    /** @OneToOne(targetEntity="DDC2931User", mappedBy="parent") */
+    /** @ORM\OneToOne(targetEntity=DDC2931User::class, mappedBy="parent") */
     public $child;
 
-    /** @Column(type="integer") */
+    /** @ORM\Column(type="integer") */
     public $value = 0;
 
     /**
      * Return Rank recursively
      * My rank is 1 + rank of my parent
+     *
      * @return int
      */
     public function getRank()

@@ -1,15 +1,19 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\Tests\Models\Quote;
 
+use Doctrine\ORM\Annotation as ORM;
+
 /**
- * @Entity
+ * @ORM\Entity
  */
 class FullAddress extends Address
 {
     /**
-     * @OneToOne(targetEntity=City::class, cascade={"persist"})
-     * @JoinColumn(name="`city-id`", referencedColumnName="`city-id`")
+     * @ORM\OneToOne(targetEntity=City::class, cascade={"persist"})
+     * @ORM\JoinColumn(name="city-id", referencedColumnName="city-id")
      *
      * @var City
      */

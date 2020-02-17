@@ -1,46 +1,43 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\Tests\Models\DDC117;
 
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\ORM\Annotation as ORM;
+
 /**
- * @Entity
+ * @ORM\Entity
  */
 class DDC117Translation
 {
     /**
-     * @Id
-     * @ManyToOne(targetEntity="DDC117Article", inversedBy="translations")
-     * @JoinColumn(name="article_id", referencedColumnName="article_id")
+     * @ORM\Id
+     * @ORM\ManyToOne(targetEntity=DDC117Article::class, inversedBy="translations")
+     * @ORM\JoinColumn(name="article_id", referencedColumnName="article_id")
      */
     private $article;
 
-    /**
-     * @Id @column(type="string")
-     */
+    /** @ORM\Id @ORM\Column(type="string") */
     private $language;
 
-    /**
-     * @column(type="string")
-     */
+    /** @ORM\Column(type="string") */
     private $title;
 
-    /**
-     * @ManyToMany(targetEntity="DDC117Editor", mappedBy="reviewingTranslations")
-     */
+    /** @ORM\ManyToMany(targetEntity=DDC117Editor::class, mappedBy="reviewingTranslations") */
     public $reviewedByEditors;
 
-    /**
-     * @OneToMany(targetEntity="DDC117Editor", mappedBy="lastTranslation")
-     */
+    /** @ORM\OneToMany(targetEntity=DDC117Editor::class, mappedBy="lastTranslation") */
     public $lastTranslatedBy;
 
     public function __construct($article, $language, $title)
     {
-        $this->article = $article;
-        $this->language = $language;
-        $this->title = $title;
-        $this->reviewedByEditors = new \Doctrine\Common\Collections\ArrayCollection();
-        $this->lastTranslatedBy = new \Doctrine\Common\Collections\ArrayCollection();
+        $this->article           = $article;
+        $this->language          = $language;
+        $this->title             = $title;
+        $this->reviewedByEditors = new ArrayCollection();
+        $this->lastTranslatedBy  = new ArrayCollection();
     }
 
     public function getArticleId()

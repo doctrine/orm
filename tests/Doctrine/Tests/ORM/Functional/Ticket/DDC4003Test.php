@@ -1,13 +1,16 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\Tests\ORM\Functional\Ticket;
 
 use Doctrine\Tests\Models\Cache\Bar;
 use Doctrine\Tests\ORM\Functional\SecondLevelCacheAbstractTest;
+use function uniqid;
 
 class DDC4003Test extends SecondLevelCacheAbstractTest
 {
-    public function test_reads_through_repository_same_data_that_it_wrote_in_cache()
+    public function testReadsThroughRepositorySameDataThatItWroteInCache() : void
     {
         $this->loadFixturesCountries();
         $this->loadFixturesStates();
@@ -17,7 +20,7 @@ class DDC4003Test extends SecondLevelCacheAbstractTest
         // Get the id of the first bar
         $id = $this->attractions[0]->getId();
 
-        $repository = $this->_em->getRepository(Bar::class);
+        $repository = $this->em->getRepository(Bar::class);
 
         /**
          * This instance is fresh new, no QueryCache, so the full entity gets loaded from DB.
@@ -30,8 +33,8 @@ class DDC4003Test extends SecondLevelCacheAbstractTest
 
         // Let's change it so that we can compare its state
         $bar->setName($newName = uniqid());
-        $this->_em->persist($bar);
-        $this->_em->flush();
+        $this->em->persist($bar);
+        $this->em->flush();
 
         /**
          * Flush did 2 important things for us:
@@ -44,7 +47,7 @@ class DDC4003Test extends SecondLevelCacheAbstractTest
         $repository->findOneBy(['id' => $id]);
 
         // Lets clear EM so that we don't hit IdentityMap at all.
-        $this->_em->clear();
+        $this->em->clear();
 
         /**
          * Here's the failing step:
@@ -56,6 +59,6 @@ class DDC4003Test extends SecondLevelCacheAbstractTest
          */
         $cached = $repository->findOneBy(['id' => $id]);
 
-        $this->assertEquals($newName, $cached->getName());
+        self::assertEquals($newName, $cached->getName());
     }
 }

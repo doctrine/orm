@@ -1,28 +1,33 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\Tests\ORM\Functional\Ticket;
 
 use Doctrine\Common\Collections\ArrayCollection;
-use Doctrine\ORM\Proxy\Proxy;
+use Doctrine\Common\Collections\Collection;
+use Doctrine\ORM\Annotation as ORM;
+use Doctrine\Tests\OrmFunctionalTestCase;
+use ProxyManager\Proxy\GhostObjectInterface;
 
 /**
  * @group DDC-2306
  */
-class DDC2306Test extends \Doctrine\Tests\OrmFunctionalTestCase
+class DDC2306Test extends OrmFunctionalTestCase
 {
     /**
      * {@inheritDoc}
      */
-    protected function setUp()
+    protected function setUp() : void
     {
         parent::setUp();
 
-        $this->_schemaTool->createSchema(
+        $this->schemaTool->createSchema(
             [
-            $this->_em->getClassMetadata(DDC2306Zone::class),
-            $this->_em->getClassMetadata(DDC2306User::class),
-            $this->_em->getClassMetadata(DDC2306Address::class),
-            $this->_em->getClassMetadata(DDC2306UserAddress::class),
+                $this->em->getClassMetadata(DDC2306Zone::class),
+                $this->em->getClassMetadata(DDC2306User::class),
+                $this->em->getClassMetadata(DDC2306Address::class),
+                $this->em->getClassMetadata(DDC2306UserAddress::class),
             ]
         );
     }
@@ -39,37 +44,37 @@ class DDC2306Test extends \Doctrine\Tests\OrmFunctionalTestCase
      * As a result, a refresh requested for an entity `Foo` with identifier `123` may cause a proxy
      * of type `Bar` with identifier `123` to be marked as un-managed.
      */
-    public function testIssue()
+    public function testIssue() : void
     {
         $zone          = new DDC2306Zone();
-        $user          = new DDC2306User;
-        $address       = new DDC2306Address;
+        $user          = new DDC2306User();
+        $address       = new DDC2306Address();
         $userAddress   = new DDC2306UserAddress($user, $address);
         $user->zone    = $zone;
         $address->zone = $zone;
 
-        $this->_em->persist($zone);
-        $this->_em->persist($user);
-        $this->_em->persist($address);
-        $this->_em->persist($userAddress);
-        $this->_em->flush();
-        $this->_em->clear();
+        $this->em->persist($zone);
+        $this->em->persist($user);
+        $this->em->persist($address);
+        $this->em->persist($userAddress);
+        $this->em->flush();
+        $this->em->clear();
 
-        /* @var $address DDC2306Address */
-        $address = $this->_em->find(DDC2306Address::class, $address->id);
-        /* @var $user DDC2306User|Proxy */
-        $user    = $address->users->first()->user;
+        /** @var DDC2306Address $address */
+        $address = $this->em->find(DDC2306Address::class, $address->id);
+        /** @var DDC2306User|GhostObjectInterface $user */
+        $user = $address->users->first()->user;
 
-        $this->assertInstanceOf(Proxy::class, $user);
-        $this->assertInstanceOf(DDC2306User::class, $user);
+        self::assertInstanceOf(GhostObjectInterface::class, $user);
+        self::assertInstanceOf(DDC2306User::class, $user);
 
         $userId = $user->id;
 
-        $this->assertNotNull($userId);
+        self::assertNotNull($userId);
 
-        $user->__load();
+        $user->initializeProxy();
 
-        $this->assertEquals(
+        self::assertEquals(
             $userId,
             $user->id,
             'As of DDC-1734, the identifier is NULL for un-managed proxies. The identifier should be an integer here'
@@ -77,69 +82,71 @@ class DDC2306Test extends \Doctrine\Tests\OrmFunctionalTestCase
     }
 }
 
-/** @Entity */
+/** @ORM\Entity */
 class DDC2306Zone
 {
-    /** @Id @Column(type="integer") @GeneratedValue */
+    /** @ORM\Id @ORM\Column(type="integer") @ORM\GeneratedValue */
     public $id;
 }
 
 /**
- * @Entity
+ * @ORM\Entity
  */
 class DDC2306User
 {
-    /** @Id @Column(type="integer") @GeneratedValue */
+    /** @ORM\Id @ORM\Column(type="integer") @ORM\GeneratedValue */
     public $id;
 
     /**
-     * @var DDC2306UserAddress[]|\Doctrine\Common\Collections\Collection
+     * @ORM\OneToMany(targetEntity=DDC2306UserAddress::class, mappedBy="user")
      *
-     * @OneToMany(targetEntity="DDC2306UserAddress", mappedBy="user")
+     * @var DDC2306UserAddress[]|Collection
      */
     public $addresses;
 
-    /** @ManyToOne(targetEntity="DDC2306Zone", fetch="EAGER") */
+    /** @ORM\ManyToOne(targetEntity=DDC2306Zone::class, fetch="EAGER") */
     public $zone;
 
     /** Constructor */
-    public function __construct() {
+    public function __construct()
+    {
         $this->addresses = new ArrayCollection();
     }
 }
 
-/** @Entity */
+/** @ORM\Entity */
 class DDC2306Address
 {
-    /** @Id @Column(type="integer") @GeneratedValue */
+    /** @ORM\Id @ORM\Column(type="integer") @ORM\GeneratedValue */
     public $id;
 
     /**
-     * @var DDC2306UserAddress[]|\Doctrine\Common\Collections\Collection
+     * @ORM\OneToMany(targetEntity=DDC2306UserAddress::class, mappedBy="address", orphanRemoval=true)
      *
-     * @OneToMany(targetEntity="DDC2306UserAddress", mappedBy="address", orphanRemoval=true)
+     * @var DDC2306UserAddress[]|Collection
      */
     public $users;
 
-    /** @ManyToOne(targetEntity="DDC2306Zone", fetch="EAGER") */
+    /** @ORM\ManyToOne(targetEntity=DDC2306Zone::class, fetch="EAGER") */
     public $zone;
 
     /** Constructor */
-    public function __construct() {
+    public function __construct()
+    {
         $this->users = new ArrayCollection();
     }
 }
 
-/** @Entity */
+/** @ORM\Entity */
 class DDC2306UserAddress
 {
-    /** @Id @Column(type="integer") @GeneratedValue */
+    /** @ORM\Id @ORM\Column(type="integer") @ORM\GeneratedValue */
     public $id;
 
-    /** @ManyToOne(targetEntity="DDC2306User") */
+    /** @ORM\ManyToOne(targetEntity=DDC2306User::class) */
     public $user;
 
-    /** @ManyToOne(targetEntity="DDC2306Address", fetch="LAZY") */
+    /** @ORM\ManyToOne(targetEntity=DDC2306Address::class, fetch="LAZY") */
     public $address;
 
     /** Constructor */
