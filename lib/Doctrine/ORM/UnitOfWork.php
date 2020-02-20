@@ -2474,7 +2474,15 @@ class UnitOfWork implements PropertyChangedListener
      */
     public function getEntityIdentifier($entity)
     {
-        return $this->entityIdentifiers[spl_object_id($entity)];
+        $id = spl_object_id($entity);
+        if (!isset($this->entityIdentifiers[$id])) {
+            throw new EntityNotFoundException(sprintf(
+                'Unable to find "%s" entity identifier associated with the UnitOfWork',
+                get_class($entity),
+            ));
+        }
+
+        return $this->entityIdentifiers[$id];
     }
 
     /**
