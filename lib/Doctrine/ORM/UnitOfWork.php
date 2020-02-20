@@ -2478,7 +2478,7 @@ class UnitOfWork implements PropertyChangedListener
         if (!isset($this->entityIdentifiers[$id])) {
             throw new EntityNotFoundException(sprintf(
                 'Unable to find "%s" entity identifier associated with the UnitOfWork',
-                get_class($entity),
+                get_class($entity)
             ));
         }
 
