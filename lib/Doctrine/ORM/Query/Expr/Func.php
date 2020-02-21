@@ -19,6 +19,8 @@
 
 namespace Doctrine\ORM\Query\Expr;
 
+use function count;
+
 /**
  * Expression class for generating DQL functions.
  *
@@ -73,6 +75,10 @@ class Func
      */
     public function __toString()
     {
+        if (count($this->arguments) === 0) {
+            return $this->name . '(NULL)';
+        }
+
         return $this->name . '(' . implode(', ', $this->arguments) . ')';
     }
 }

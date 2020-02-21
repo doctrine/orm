@@ -282,6 +282,11 @@ class ExprTest extends OrmTestCase
         $this->assertEquals("u.type IN('foo', 'bar')", (string) $this->_expr->in('u.type', ['foo', 'bar']));
     }
 
+    public function testInExprForEmptyArray()
+    {
+        self::assertEquals('u.id IN(NULL)', (string) $this->_expr->in('u.id', []));
+    }
+
     public function testNotInExpr()
     {
         $this->assertEquals('u.id NOT IN(1, 2, 3)', (string) $this->_expr->notIn('u.id', [1, 2, 3]));
@@ -290,6 +295,11 @@ class ExprTest extends OrmTestCase
     public function testNotInLiteralExpr()
     {
         $this->assertEquals("u.type NOT IN('foo', 'bar')", (string) $this->_expr->notIn('u.type', ['foo', 'bar']));
+    }
+
+    public function testNotInExprForEmptyArray()
+    {
+        self::assertEquals('u.id NOT IN(NULL)', (string) $this->_expr->notIn('u.id', []));
     }
 
     public function testAndxOrxExpr()
