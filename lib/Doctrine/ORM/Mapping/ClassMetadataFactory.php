@@ -401,7 +401,7 @@ class ClassMetadataFactory extends AbstractClassMetadataFactory
     private function addInheritedFields(ClassMetadata $subClass, ClassMetadata $parentClass)
     {
         foreach ($parentClass->fieldMappings as $mapping) {
-            if ( ! isset($mapping['inherited']) && ! $parentClass->isMappedSuperclass) {
+            if ( ! isset($mapping['inherited']) && ! $parentClass->isMappedSuperclass && ! $parentClass->isEmbeddedClass) {
                 $mapping['inherited'] = $parentClass->name;
             }
             if ( ! isset($mapping['declared'])) {
@@ -780,7 +780,8 @@ class ClassMetadataFactory extends AbstractClassMetadataFactory
      */
     protected function isEntity(ClassMetadataInterface $class)
     {
-        return isset($class->isMappedSuperclass) && $class->isMappedSuperclass === false;
+        return isset($class->isMappedSuperclass) && $class->isMappedSuperclass === false
+            && isset($class->isEmbeddedClass) && $class->isEmbeddedClass === false;
     }
 
     /**
