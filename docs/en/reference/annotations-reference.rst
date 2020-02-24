@@ -619,22 +619,17 @@ Examples:
 This annotation is used in the context of relations in
 :ref:`@ManyToOne <annref_manytoone>`, :ref:`@OneToOne <annref_onetoone>` fields
 and in the Context of :ref:`@JoinTable <annref_jointable>` nested inside
-a @ManyToMany. This annotation is not required. If it is not
-specified the attributes *name* and *referencedColumnName* are
-inferred from the table and primary key names.
+a @ManyToMany. If this annotation or both *name* and *referencedColumnName*
+are missing they will be computed considering the field's name and the current
+:doc:`naming strategy <namingstrategy>`.
 
-Required attributes:
-
+Optional attributes:
 
 -  **name**: Column name that holds the foreign key identifier for
    this relation. In the context of @JoinTable it specifies the column
    name in the join table.
 -  **referencedColumnName**: Name of the primary key identifier that
-   is used for joining of this relation.
-
-Optional attributes:
-
-
+   is used for joining of this relation. Defaults to *id*.
 -  **unique**: Determines whether this relation is exclusive between the
    affected entities and should be enforced as such on the database
    constraint level. Defaults to false.
