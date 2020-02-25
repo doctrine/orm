@@ -19,10 +19,12 @@
 
 namespace Doctrine\ORM\Tools;
 
+use Doctrine\DBAL\DBALException;
 use Doctrine\DBAL\Schema\AbstractAsset;
 use Doctrine\DBAL\Schema\Comparator;
 use Doctrine\DBAL\Schema\Index;
 use Doctrine\DBAL\Schema\Schema;
+use Doctrine\DBAL\Schema\SchemaException;
 use Doctrine\DBAL\Schema\Table;
 use Doctrine\DBAL\Schema\Visitor\DropSchemaSqlCollector;
 use Doctrine\DBAL\Schema\Visitor\RemoveNamespacedAssets;
@@ -141,7 +143,9 @@ class SchemaTool
      *
      * @return Schema
      *
-     * @throws \Doctrine\ORM\ORMException
+     * @throws ORMException
+     * @throws DBALException
+     * @throws SchemaException
      */
     public function getSchemaFromMetadata(array $classes)
     {
@@ -164,6 +168,7 @@ class SchemaTool
             }
 
             $table = $schema->createTable($this->quoteStrategy->getTableName($class, $this->platform));
+            $this->addSchemaNameSpaceFromTable($schema, $table);
 
             if ($class->isInheritanceTypeSingleTable()) {
                 $this->gatherColumns($class, $table);
@@ -369,6 +374,27 @@ class SchemaTool
     }
 
     /**
+     * @param Schema $schema
+     * @param Table  $table
+     *
+     * @throws DBALException
+     * @throws SchemaException
+     */
+    private function addSchemaNameSpaceFromTable(Schema $schema, Table $table): void
+    {
+        if (!$this->platform->supportsSchemas()) {
+            return;
+        }
+
+        $nameSpace = $table->getNamespaceName() ?? $this->platform->getDefaultSchemaName();
+        if ($schema->hasNamespace($nameSpace)) {
+            return;
+        }
+
+        $schema->createNamespace($nameSpace);
+    }
+
+    /**
      * Gets a portable column definition as required by the DBAL for the discriminator
      * column of a class.
      *
@@ -505,7 +531,7 @@ class SchemaTool
      *
      * @return void
      *
-     * @throws \Doctrine\ORM\ORMException
+     * @throws ORMException
      */
     private function gatherRelationsSql($class, $table, $schema, &$addedFks, &$blacklistedFks)
     {
@@ -619,7 +645,7 @@ class SchemaTool
      *
      * @return void
      *
-     * @throws \Doctrine\ORM\ORMException
+     * @throws ORMException
      */
     private function gatherRelationJoinColumns(
         $joinColumns,
@@ -645,7 +671,7 @@ class SchemaTool
             );
 
             if ( ! $definingClass) {
-                throw new \Doctrine\ORM\ORMException(
+                throw new ORMException(
                     'Column name `' . $joinColumn['referencedColumnName'] . '` referenced for relation from '
                     . $mapping['sourceEntity'] . ' towards ' . $mapping['targetEntity'] . ' does not exist.'
                 );
