@@ -11,7 +11,9 @@ jobs:
       with:
         php-version: '7.4'
         extensions: mbstring
-        tools: cs2pr, phpcs
+        tools: composer cs2pr, phpcs
 
     - name: PHPCS
-      run: php vendor/bin/phpcs --report=checkstyle | cs2pr
+      run:
+          - composer install
+          - php vendor/bin/phpcs --report=checkstyle | cs2pr
