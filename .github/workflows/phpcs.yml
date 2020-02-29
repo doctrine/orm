@@ -14,4 +14,4 @@ jobs:
         tools: cs2pr, phpcs
 
     - name: PHPCS
-      run: phpcs --report=checkstyle | cs2pr
+      run: php vendor/bin/phpcs --report=checkstyle | cs2pr
