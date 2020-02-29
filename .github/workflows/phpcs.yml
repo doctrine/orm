@@ -16,4 +16,4 @@ jobs:
     - name: PHPCS
       run: |
         composer install --no-progress
-        php vendor/bin/phpcs --report=checkstyle | cs2pr
+        php vendor/bin/phpcs -q --report=checkstyle | cs2pr
