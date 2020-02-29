@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=0);
 /*
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
  * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
@@ -23,12 +24,13 @@ namespace Doctrine\ORM\Query\AST;
  * WhenClause ::= "WHEN" ConditionalExpression "THEN" ScalarExpression
  *
  * @since   2.2
- * 
+ *
  * @link    www.doctrine-project.org
  * @author  Benjamin Eberlei <kontakt@beberlei.de>
  * @author  Guilherme Blanco <guilhermeblanco@hotmail.com>
  * @author  Jonathan Wage <jonwage@gmail.com>
  * @author  Roman Borschel <roman@code-factory.org>
+ * @author  test <test@example.com>
  */
 class WhenClause extends Node
 {
