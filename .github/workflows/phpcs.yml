@@ -13,7 +13,8 @@ jobs:
         extensions: mbstring
         tools: composer, cs2pr, phpcs
 
-    - name: PHPCS
-      run: |
-        composer install --no-progress
-        php vendor/bin/phpcs -q --report=checkstyle --no-colors | cs2pr
+    - name: composer install
+      run: composer install --no-progress
+
+    - name: phpcs
+      run: php vendor/bin/phpcs -q --report=checkstyle --no-colors | cs2pr
