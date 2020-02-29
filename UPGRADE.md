@@ -1,3 +1,10 @@
+# Upgrade to 2.8
+
+## Minor BC BREAK: Failed commit now throw OptimisticLockException
+
+Method `Doctrine\ORM\UnitOfWork#commit()` can throw an OptimisticLockException when a commit silently fails and returns false
+since `Doctrine\DBAL\Connection#commit()` signature changed from returning void to boolean
+
 # Upgrade to 2.7
 
 ## Added `Doctrine\ORM\AbstractQuery#enableResultCache()` and `Doctrine\ORM\AbstractQuery#disableResultCache()` methods	
@@ -30,7 +37,7 @@ Method `Doctrine\ORM\AbstractQuery#useResultCache()` is deprecated because it is
 and `disableResultCache()`. It will be removed in 3.0.
 
 ## Deprecated code generators and related console commands
- 
+
 These console commands have been deprecated:
 
  * `orm:convert-mapping`

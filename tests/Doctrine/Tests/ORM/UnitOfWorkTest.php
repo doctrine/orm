@@ -9,6 +9,7 @@ use Doctrine\Common\Persistence\Event\LifecycleEventArgs;
 use Doctrine\Common\PropertyChangedListener;
 use Doctrine\ORM\Events;
 use Doctrine\ORM\Mapping\ClassMetadata;
+use Doctrine\ORM\OptimisticLockException;
 use Doctrine\ORM\ORMInvalidArgumentException;
 use Doctrine\ORM\UnitOfWork;
 use Doctrine\Tests\Mocks\ConnectionMock;
@@ -277,7 +278,7 @@ class UnitOfWorkTest extends OrmTestCase
 
         // Create a test user
         $user = new ForumUser();
-        $user->name = 'Jasper';
+        $user->username = 'Jasper';
         $this->_unitOfWork->persist($user);
         $this->_unitOfWork->commit();
 
@@ -788,6 +789,36 @@ class UnitOfWorkTest extends OrmTestCase
         // Persistence operations should just recover normally:
         self::assertCount(1, $persister1->getInserts());
         self::assertCount(0, $persister2->getInserts());
+    }
+
+    /**
+     * @group #7946 Throw OptimisticLockException when connection::commit() returns false.
+     */
+    public function testCommitThrowOptimisticLockExceptionWhenConnectionCommitReturnFalse() : void
+    {
+        // Set another connection mock that fail on commit
+        $this->_connectionMock = $this->getMockBuilder(ConnectionMock::class)
+            ->setConstructorArgs([[], new DriverMock()])
+            ->setMethods(['commit'])
+            ->getMock();
+        $this->_emMock         = EntityManagerMock::create($this->_connectionMock, null, $this->eventManager);
+        $this->_unitOfWork     = new UnitOfWorkMock($this->_emMock);
+        $this->_emMock->setUnitOfWork($this->_unitOfWork);
+
+        $this->_connectionMock->method('commit')->willReturn(false);
+
+        // Setup fake persister and id generator
+        $userPersister = new EntityPersisterMock($this->_emMock, $this->_emMock->getClassMetadata(ForumUser::class));
+        $userPersister->setMockIdGeneratorType(ClassMetadata::GENERATOR_TYPE_IDENTITY);
+        $this->_unitOfWork->setEntityPersister(ForumUser::class, $userPersister);
+
+        // Create a test user
+        $user           = new ForumUser();
+        $user->username = 'Jasper';
+        $this->_unitOfWork->persist($user);
+
+        $this->expectException(OptimisticLockException::class);
+        $this->_unitOfWork->commit();
     }
 }
 

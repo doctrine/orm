@@ -19,9 +19,9 @@
 
 namespace Doctrine\ORM\Decorator;
 
+use Doctrine\Common\Persistence\ObjectManagerDecorator;
 use Doctrine\ORM\Query\ResultSetMapping;
 use Doctrine\ORM\EntityManagerInterface;
-use Doctrine\Common\Persistence\ObjectManagerDecorator;
 
 /**
  * Base class for EntityManager decorators

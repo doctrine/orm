@@ -47,6 +47,7 @@ use InvalidArgumentException;
 use Throwable;
 use UnexpectedValueException;
 use function get_class;
+use function is_object;
 
 /**
  * The UnitOfWork is responsible for tracking changes to objects during an
@@ -424,10 +425,18 @@ class UnitOfWork implements PropertyChangedListener
                 }
             }
 
-            $conn->commit();
+            // Commit failed silently
+            if ($conn->commit() === false) {
+                $object = is_object($entity) ? $entity : null;
+
+                throw new OptimisticLockException('Commit failed', $object);
+            }
         } catch (Throwable $e) {
             $this->em->close();
-            $conn->rollBack();
+
+            if ($conn->isTransactionActive()) {
+                $conn->rollBack();
+            }
 
             $this->afterTransactionRolledBack();
 
