@@ -11,9 +11,9 @@ jobs:
       with:
         php-version: '7.4'
         extensions: mbstring
-        tools: composer cs2pr, phpcs
+        tools: composer, cs2pr, phpcs
 
     - name: PHPCS
       run: |
-        composer install
+        composer install --no-progress
         php vendor/bin/phpcs --report=checkstyle | cs2pr
