@@ -84,9 +84,7 @@ abstract class GH8031AbstractYearSequenceValue
      */
     protected $year;
 
-    /**
-     * @Embedded(class=GH8031Nested::class)
-     */
+    /** @Embedded(class=GH8031Nested::class) */
     protected $nested;
 
     public function __construct(int $number, int $year, GH8031Nested $nested)
