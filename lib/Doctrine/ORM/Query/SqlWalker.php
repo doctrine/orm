@@ -47,9 +47,9 @@ class SqlWalker implements TreeWalker
     const HINT_DISTINCT = 'doctrine.distinct';
 
     /**
-     * @var string
+     * Used to mark a query as containing a PARTIAL expression, which needs to be known by SLC.
      */
-    const HINT_PARTIAL = 'doctrine.partial';
+    public const HINT_PARTIAL = 'doctrine.partial';
 
     /**
      * @var ResultSetMapping
