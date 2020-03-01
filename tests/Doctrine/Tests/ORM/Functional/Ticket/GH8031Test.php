@@ -19,7 +19,7 @@ class GH8031Test extends OrmFunctionalTestCase
 
     public function testEntityIsFetched()
     {
-        $entity = new GH8031Invoice(new GH8031InvoiceCode(1, 2020));
+        $entity = new GH8031Invoice(new GH8031InvoiceCode(1, 2020, new GH8031Nested(10)));
         $this->_em->persist($entity);
         $this->_em->flush();
         $this->_em->clear();
@@ -35,6 +35,28 @@ class GH8031Test extends OrmFunctionalTestCase
             1,
             $this->_em->getRepository(GH8031Invoice::class)->findBy([], ['code.number' => 'ASC'])
         );
+    }
+}
+
+/**
+ * @Embeddable
+ */
+class GH8031Nested
+{
+    /**
+     * @Column(type="integer", name="number", length=6)
+     * @var int
+     */
+    protected $number;
+
+    public function __construct(int $number)
+    {
+        $this->number = $number;
+    }
+
+    public function getNumber() : int
+    {
+        return $this->number;
     }
 }
 
@@ -62,10 +84,16 @@ abstract class GH8031AbstractYearSequenceValue
      */
     protected $year;
 
-    public function __construct(int $number, int $year)
+    /**
+     * @Embedded(class=GH8031Nested::class)
+     */
+    protected $nested;
+
+    public function __construct(int $number, int $year, GH8031Nested $nested)
     {
         $this->number = $number;
         $this->year   = $year;
+        $this->nested = $nested;
     }
 
     public function getNumber() : int

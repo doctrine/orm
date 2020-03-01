@@ -469,10 +469,6 @@ class ClassMetadataFactory extends AbstractClassMetadataFactory
     private function addNestedEmbeddedClasses(ClassMetadata $subClass, ClassMetadata $parentClass, $prefix)
     {
         foreach ($subClass->embeddedClasses as $property => $embeddableClass) {
-            if (isset($embeddableClass['inherited'])) {
-                continue;
-            }
-
             $embeddableMetadata = $this->getMetadataFor($embeddableClass['class']);
 
             $parentClass->mapEmbedded(
