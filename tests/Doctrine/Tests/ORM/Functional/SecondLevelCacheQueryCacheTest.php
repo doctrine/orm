@@ -1095,7 +1095,6 @@ class SecondLevelCacheQueryCacheTest extends SecondLevelCacheAbstractTest
         $this->loadFixturesCountries();
 
         $this->_em->createQuery("SELECT PARTIAL c.{id} FROM Doctrine\Tests\Models\Cache\Country c")
-            ->setHint(Query::HINT_FORCE_PARTIAL_LOAD, true)
             ->setCacheable(true)
             ->getResult();
     }
