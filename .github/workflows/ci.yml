@@ -5,6 +5,7 @@ on:
       - master
 jobs:
   coding-standards:
+    name: "Coding Standards"
     runs-on: ubuntu-latest
     steps:
     - name: Checkout
@@ -24,6 +25,7 @@ jobs:
       run: "php vendor/bin/phpcs -q --report=checkstyle --no-colors | cs2pr"
 
   static-analysis:
+    name: "Static Analysis"
     runs-on: ubuntu-latest
     steps:
     - name: Checkout
