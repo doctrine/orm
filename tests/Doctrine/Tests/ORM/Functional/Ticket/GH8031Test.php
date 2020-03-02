@@ -36,6 +36,28 @@ class GH8031Test extends OrmFunctionalTestCase
             $this->_em->getRepository(GH8031Invoice::class)->findBy([], ['code.number' => 'ASC'])
         );
     }
+
+    public function testEmbeddableWithAssociationNotAllowed()
+    {
+        $cm = $this->_em->getClassMetadata(GH8031EmbeddableWithAssociation::class);
+
+        $this->assertArrayHasKey('invoice', $cm->associationMappings);
+
+        $cm = $this->_em->getClassMetadata(GH8031Invoice::class);
+
+        $this->assertCount(0, $cm->associationMappings);
+    }
+}
+
+/**
+ * @Embeddable
+ */
+class GH8031EmbeddableWithAssociation
+{
+    /**
+     * @ManyToOne(targetEntity=GH8031Invoice::class)
+     */
+    public $invoice;
 }
 
 /**
@@ -122,6 +144,11 @@ class GH8031Invoice
      * @var GH8031InvoiceCode
      */
     private $code;
+
+    /**
+     * @Embedded(class=GH8031EmbeddableWithAssociation::class)
+     */
+    private $embeddedAssoc;
 
     public function __construct(GH8031InvoiceCode $code)
     {
