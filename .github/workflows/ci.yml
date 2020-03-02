@@ -6,27 +6,7 @@ on:
 jobs:
   coding-standards:
     name: "Coding Standards"
-    runs-on: ubuntu-latest
-    steps:
-    - name: Checkout
-      uses: actions/checkout@v2
-
-    - name: Setup PHP
-      uses: shivammathur/setup-php@v2
-      with:
-        php-version: '7.4'
-        extensions: mbstring
-        tools: composer, cs2pr
-
-    - name: composer install
-      run: "composer install --no-progress"
-
-    - name: phpcs
-      run: "php vendor/bin/phpcs -q --report=checkstyle --no-colors | cs2pr"
-
-  static-analysis:
-    name: "Static Analysis"
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-18.04
     steps:
     - name: Checkout
       uses: actions/checkout@v2
@@ -39,7 +19,27 @@ jobs:
         tools: composer, cs2pr
 
     - name: composer install
-      run: "composer install --no-progress"
+      run: "composer install --no-progress --no-suggest --no-interaction --prefer-dist --optimize-autoloader"
+
+    - name: phpcs
+      run: "php vendor/bin/phpcs -q --report=checkstyle --no-colors | cs2pr"
+
+  static-analysis:
+    name: "Static Analysis"
+    runs-on: ubuntu-18.04
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v2
+
+    - name: Setup PHP
+      uses: shivammathur/setup-php@v2
+      with:
+        php-version: '7.2'
+        extensions: mbstring
+        tools: composer, cs2pr
+
+    - name: composer install
+      run: "composer install --no-progress --no-suggest --no-interaction --prefer-dist --optimize-autoloader"
 
     - name: phpstan
       run: "php vendor/bin/phpstan analyse --error-format=checkstyle --no-progress | cs2pr"
