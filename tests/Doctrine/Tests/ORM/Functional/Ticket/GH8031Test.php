@@ -54,9 +54,7 @@ class GH8031Test extends OrmFunctionalTestCase
  */
 class GH8031EmbeddableWithAssociation
 {
-    /**
-     * @ManyToOne(targetEntity=GH8031Invoice::class)
-     */
+    /** @ManyToOne(targetEntity=GH8031Invoice::class) */
     public $invoice;
 }
 
@@ -145,9 +143,7 @@ class GH8031Invoice
      */
     private $code;
 
-    /**
-     * @Embedded(class=GH8031EmbeddableWithAssociation::class)
-     */
+    /** @Embedded(class=GH8031EmbeddableWithAssociation::class) */
     private $embeddedAssoc;
 
     public function __construct(GH8031InvoiceCode $code)

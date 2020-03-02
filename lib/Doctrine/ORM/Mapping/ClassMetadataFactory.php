@@ -31,6 +31,7 @@ use Doctrine\ORM\Id\BigIntegerIdentityGenerator;
 use Doctrine\ORM\Id\IdentityGenerator;
 use Doctrine\ORM\ORMException;
 use ReflectionException;
+use function assert;
 
 /**
  * The ClassMetadataFactory is used to create ClassMetadata objects that contain all the
