@@ -14,29 +14,68 @@ class GH5544Test extends OrmFunctionalTestCase
     {
         parent::setUp();
 
-        $this->_schemaTool->createSchema([$this->_em->getClassMetadata(GH5544UserBrowser::class)]);
+        $this->_schemaTool->createSchema([
+            $this->_em->getClassMetadata(GH5544User::class),
+            $this->_em->getClassMetadata(GH5544UserBrowser::class),
+            $this->_em->getClassMetadata(GH5544BrowserGroup::class),
+        ]);
     }
 
-    public function testIssue() : void
+    public function testScalarIdentifier() : void
     {
-        $this->createData();
+        $this->createScalarIdentifierData();
         $initialQueryCount = $this->getCurrentQueryCount();
 
-        $query = $this->createQuery(false);
-        self::assertSame(1, (int) $query->getSingleScalarResult());
+        $query = $this->createScalarIdentifierQuery(false);
+        self::assertSame(2, (int) $query->getSingleScalarResult());
         self::assertEquals($initialQueryCount + 1, $this->getCurrentQueryCount());
 
-        $query = $this->createQuery(true);
-        self::assertSame(1, (int) $query->getSingleScalarResult());
+        $query = $this->createScalarIdentifierQuery(true);
+        self::assertSame(2, (int) $query->getSingleScalarResult());
         self::assertEquals($initialQueryCount + 2, $this->getCurrentQueryCount());
     }
 
-    private function createQuery(bool $distinct) : Query
+    public function testEntityIdentifier() : void
+    {
+        $this->createEntityIdentifierData();
+        $initialQueryCount = $this->getCurrentQueryCount();
+
+        $query = $this->createEntityIdentifierQuery(false);
+        self::assertSame(2, (int) $query->getSingleScalarResult());
+        self::assertEquals($initialQueryCount + 1, $this->getCurrentQueryCount());
+
+        $query = $this->createEntityIdentifierQuery(true);
+        self::assertSame(2, (int) $query->getSingleScalarResult());
+        self::assertEquals($initialQueryCount + 2, $this->getCurrentQueryCount());
+    }
+
+    private function createScalarIdentifierQuery(bool $distinct) : Query
     {
         return $this->_em
             ->createQueryBuilder()
             ->select(\sprintf(
-                'COUNT(%s CONCAT(ub.userId, :concat_separator, ub.browser)) cnt',
+                'COUNT(%s CONCAT(bg.os, :concat_separator, bg.browser)) cnt',
+                $distinct ? 'DISTINCT' : ''
+            ))
+            ->from(GH5544BrowserGroup::class, 'bg')
+            ->setParameter('concat_separator', '|')
+            ->getQuery();
+    }
+
+    private function createScalarIdentifierData() : void
+    {
+        $this->_em->persist(new GH5544BrowserGroup('Windows', 'Google Chrome', '80.0.3987.122'));
+        $this->_em->persist(new GH5544BrowserGroup('Ubuntu', 'Mozilla FireFox', '73.0.1'));
+        $this->_em->flush();
+        $this->_em->clear();
+    }
+
+    private function createEntityIdentifierQuery(bool $distinct) : Query
+    {
+        return $this->_em
+            ->createQueryBuilder()
+            ->select(\sprintf(
+                'COUNT(%s CONCAT(ub.user.id, :concat_separator, ub.browser)) cnt',
                 $distinct ? 'DISTINCT' : ''
             ))
             ->from(GH5544UserBrowser::class, 'ub')
@@ -44,12 +83,35 @@ class GH5544Test extends OrmFunctionalTestCase
             ->getQuery();
     }
 
-    private function createData() : void
+    private function createEntityIdentifierData() : void
     {
-        $this->_em->persist(new GH5544UserBrowser(123, 'Chrome'));
+        $user = new GH5544User(12345);
+        $this->_em->persist($user);
+        $this->_em->persist(new GH5544UserBrowser($user, 'Google Chrome'));
+        $this->_em->persist(new GH5544UserBrowser($user, 'Mozilla FireFox'));
         $this->_em->flush();
         $this->_em->clear();
     }
+}
+
+/**
+ * @Entity
+ * @Table(name="GH5544_user")
+ */
+class GH5544User
+{
+    /**
+     * @Id
+     * @GeneratedValue("NONE")
+     * @Column(type="integer")
+     */
+    public $id;
+
+    public function __construct(int $id)
+    {
+        $this->id = $id;
+    }
+
 }
 
 /**
@@ -59,11 +121,12 @@ class GH5544Test extends OrmFunctionalTestCase
 class GH5544UserBrowser
 {
     /**
-     * @Id
-     * @GeneratedValue("NONE")
-     * @Column(type="integer")
+     * @ORM\Id()
+     * @ORM\GeneratedValue("NONE")
+     * @ORM\ManyToOne(targetEntity="User")
+     * @ORM\JoinColumn(referencedColumnName="id", nullable=false)
      */
-    public $userId;
+    public $user;
 
     /**
      * @Id
@@ -72,9 +135,42 @@ class GH5544UserBrowser
      */
     public $browser;
 
-    public function __construct(int $userId, string $browser)
+    public function __construct(GH5544User $user, string $browser)
     {
-        $this->userId = $userId;
+        $this->user = $user;
         $this->browser = $browser;
+    }
+}
+
+/**
+ * @Entity
+ * @Table(name="GH5544_browser_group")
+ */
+class GH5544BrowserGroup
+{
+    /**
+     * @ORM\Id()
+     * @ORM\GeneratedValue("NONE")
+     * @Column(type="string", length=64)
+     */
+    public $os;
+
+    /**
+     * @Id
+     * @GeneratedValue("NONE")
+     * @Column(type="string", length=64)
+     */
+    public $browser;
+
+    /**
+     * @Column(type="string", length=64)
+     */
+    public $version;
+
+    public function __construct(string $os, string $browser, string $version)
+    {
+        $this->os = $os;
+        $this->browser = $browser;
+        $this->version = $version;
     }
 }
