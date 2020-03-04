@@ -24,11 +24,11 @@ class GH5544Test extends OrmFunctionalTestCase
         $initialQueryCount = $this->getCurrentQueryCount();
 
         $query = $this->createQuery(false);
-        self::assertSame('1', $query->getSingleScalarResult());
+        self::assertSame(1, (int) $query->getSingleScalarResult());
         self::assertEquals($initialQueryCount + 1, $this->getCurrentQueryCount());
 
         $query = $this->createQuery(true);
-        self::assertSame('1', $query->getSingleScalarResult());
+        self::assertSame(1, (int) $query->getSingleScalarResult());
         self::assertEquals($initialQueryCount + 2, $this->getCurrentQueryCount());
     }
 
