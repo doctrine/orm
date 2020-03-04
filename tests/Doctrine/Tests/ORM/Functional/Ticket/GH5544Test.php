@@ -1,5 +1,4 @@
 <?php
-declare(strict_types=1);
 
 namespace Doctrine\Tests\ORM\Functional\Ticket;
 
@@ -11,14 +10,14 @@ use Doctrine\Tests\OrmFunctionalTestCase;
  */
 class GH5544Test extends OrmFunctionalTestCase
 {
-    protected function setUp(): void
+    protected function setUp() : void
     {
         parent::setUp();
 
         $this->_schemaTool->createSchema([$this->_em->getClassMetadata(GH5544UserBrowser::class)]);
     }
 
-    public function testIssue(): void
+    public function testIssue() : void
     {
         $this->createData();
         $initialQueryCount = $this->getCurrentQueryCount();
@@ -32,11 +31,11 @@ class GH5544Test extends OrmFunctionalTestCase
         self::assertEquals($initialQueryCount + 2, $this->getCurrentQueryCount());
     }
 
-    private function createQuery(bool $distinct): Query
+    private function createQuery(bool $distinct) : Query
     {
         return $this->_em
             ->createQueryBuilder()
-            ->select(sprintf(
+            ->select(\sprintf(
                 'COUNT(%s CONCAT(ub.userId, :concat_separator, ub.browser)) cnt',
                 $distinct ? 'DISTINCT' : ''
             ))
@@ -45,7 +44,7 @@ class GH5544Test extends OrmFunctionalTestCase
             ->getQuery();
     }
 
-    private function createData(): void
+    private function createData() : void
     {
         $this->_em->persist(new GH5544UserBrowser(123, 'Chrome'));
         $this->_em->flush();
@@ -63,8 +62,6 @@ class GH5544UserBrowser
      * @Id
      * @GeneratedValue("NONE")
      * @Column(type="integer")
-     *
-     * @var int
      */
     public $userId;
 
@@ -72,15 +69,9 @@ class GH5544UserBrowser
      * @Id
      * @GeneratedValue("NONE")
      * @Column(type="string", length=64)
-     *
-     * @var string
      */
     public $browser;
 
-    /**
-     * @param int    $userId
-     * @param string $browser
-     */
     public function __construct(int $userId, string $browser)
     {
         $this->userId = $userId;
