@@ -71,7 +71,7 @@ class LimitSubqueryOutputWalker extends SqlWalker
     private $maxResults;
 
     /**
-     * @var \Doctrine\ORM\EntityManager
+     * @var \Doctrine\ORM\EntityManagerInterface
      */
     private $em;
 

@@ -46,7 +46,7 @@ class EntityRepository implements ObjectRepository, Selectable
     protected $_entityName;
 
     /**
-     * @var EntityManager
+     * @var EntityManagerInterface
      */
     protected $_em;
 
@@ -255,7 +255,7 @@ class EntityRepository implements ObjectRepository, Selectable
     }
 
     /**
-     * @return EntityManager
+     * @return EntityManagerInterface
      */
     protected function getEntityManager()
     {
