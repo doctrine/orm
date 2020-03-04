@@ -26,14 +26,14 @@ final class GH8055Test extends OrmFunctionalTestCase
 
     public function testNumericDescriminatorColumn() : void
     {
-        $entity = new GH8055SubClass();
+        $entity        = new GH8055SubClass();
         $entity->value = 'test';
         $this->_em->persist($entity);
         $this->_em->flush();
         $this->_em->clear();
 
         $repository = $this->_em->getRepository(GH8055SubClass::class);
-        $hydrated = $repository->find($entity->id);
+        $hydrated   = $repository->find($entity->id);
 
         self::assertSame('test', $hydrated->value);
     }
