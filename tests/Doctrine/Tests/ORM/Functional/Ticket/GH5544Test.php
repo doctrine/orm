@@ -21,32 +21,27 @@ class GH5544Test extends OrmFunctionalTestCase
         ]);
     }
 
-    public function testScalarIdentifier() : void
+    public function testIssue() : void
     {
         $this->createScalarIdentifierData();
-        $initialQueryCount = $this->getCurrentQueryCount();
-
-        $query = $this->createScalarIdentifierQuery(false);
-        self::assertSame(2, (int) $query->getSingleScalarResult());
-        self::assertEquals($initialQueryCount + 1, $this->getCurrentQueryCount());
-
-        $query = $this->createScalarIdentifierQuery(true);
-        self::assertSame(2, (int) $query->getSingleScalarResult());
-        self::assertEquals($initialQueryCount + 2, $this->getCurrentQueryCount());
-    }
-
-    public function testEntityIdentifier() : void
-    {
         $this->createEntityIdentifierData();
         $initialQueryCount = $this->getCurrentQueryCount();
 
-        $query = $this->createEntityIdentifierQuery(false);
+        $query = $this->createScalarIdentifierQuery(true);
         self::assertSame(2, (int) $query->getSingleScalarResult());
         self::assertEquals($initialQueryCount + 1, $this->getCurrentQueryCount());
 
-        $query = $this->createEntityIdentifierQuery(true);
+        $query = $this->createScalarIdentifierQuery(false);
         self::assertSame(2, (int) $query->getSingleScalarResult());
         self::assertEquals($initialQueryCount + 2, $this->getCurrentQueryCount());
+
+        $query = $this->createEntityIdentifierQuery(true);
+        self::assertSame(2, (int) $query->getSingleScalarResult());
+        self::assertEquals($initialQueryCount + 3, $this->getCurrentQueryCount());
+
+        $query = $this->createEntityIdentifierQuery(false);
+        self::assertSame(2, (int) $query->getSingleScalarResult());
+        self::assertEquals($initialQueryCount + 4, $this->getCurrentQueryCount());
     }
 
     private function createScalarIdentifierQuery(bool $distinct) : Query
