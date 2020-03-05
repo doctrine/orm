@@ -44,7 +44,7 @@ Serializing entity into the session
 -----------------------------------
 
 Entities that are serialized into the session normally contain references to
-other entities as well. Think of the user entity has a reference to his
+other entities as well. Think of the user entity has a reference to their
 articles, groups, photos or many other different entities. If you serialize
 this object into the session then you don't want to serialize the related
 entities as well. This is why you should call ``EntityManager#detach()`` on this

@@ -250,7 +250,7 @@ Retrieve the Username and Name of a CmsUser:
     $users = $query->getResult(); // array of CmsUser username and name values
     echo $users[0]['username'];
 
-Retrieve a ForumUser and his single associated entity:
+Retrieve a ForumUser and its single associated entity:
 
 .. code-block:: php
 
@@ -259,7 +259,7 @@ Retrieve a ForumUser and his single associated entity:
     $users = $query->getResult(); // array of ForumUser objects with the avatar association loaded
     echo get_class($users[0]->getAvatar());
 
-Retrieve a CmsUser and fetch join all the phonenumbers he has:
+Retrieve a CmsUser and fetch join all the phonenumbers it has:
 
 .. code-block:: php
 
