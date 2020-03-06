@@ -27,7 +27,7 @@ Work that have not yet been persisted are lost.
 
 .. note::
 
-    Doctrine does NEVER touch the public API of methods in your entity 
+    Doctrine does NEVER touch the public API of methods in your entity
     classes (like getters and setters) nor the constructor method.
     Instead, it uses reflection to get/set data from/to your entity objects.
     When Doctrine fetches data from DB and saves it back,
@@ -48,12 +48,12 @@ headline "Hello World" with the ID 1234:
     <?php
     $article = $entityManager->find('CMS\Article', 1234);
     $article->setHeadline('Hello World dude!');
-    
+
     $article2 = $entityManager->find('CMS\Article', 1234);
     echo $article2->getHeadline();
 
 In this case the Article is accessed from the entity manager twice,
-but modified in between. Doctrine 2 realizes this and will only
+but modified in between. Doctrine ORM realizes this and will only
 ever give you access to one instance of the Article with ID 1234,
 no matter how often do you retrieve it from the EntityManager and
 even no matter what kind of Query method you are using (find,
@@ -100,25 +100,25 @@ from newly opened EntityManager.
     {
         /** @Id @Column(type="integer") @GeneratedValue */
         private $id;
-    
+
         /** @Column(type="string") */
         private $headline;
-    
+
         /** @ManyToOne(targetEntity="User") */
         private $author;
-    
+
         /** @OneToMany(targetEntity="Comment", mappedBy="article") */
         private $comments;
-    
+
         public function __construct()
         {
             $this->comments = new ArrayCollection();
         }
-    
+
         public function getAuthor() { return $this->author; }
         public function getComments() { return $this->comments; }
     }
-    
+
     $article = $em->find('Article', 1);
 
 This code only retrieves the ``Article`` instance with id 1 executing
@@ -139,22 +139,22 @@ your code. See the following code:
 
     <?php
     $article = $em->find('Article', 1);
-    
+
     // accessing a method of the user instance triggers the lazy-load
     echo "Author: " . $article->getAuthor()->getName() . "\n";
-    
+
     // Lazy Loading Proxies pass instanceof tests:
     if ($article->getAuthor() instanceof User) {
         // a User Proxy is a generated "UserProxy" class
     }
-    
+
     // accessing the comments as an iterator triggers the lazy-load
     // retrieving ALL the comments of this article from the database
     // using a single SELECT statement
     foreach ($article->getComments() as $comment) {
         echo $comment->getText() . "\n\n";
     }
-    
+
     // Article::$comments passes instanceof tests for the Collection interface
     // But it will NOT pass for the ArrayCollection interface
     if ($article->getComments() instanceof \Doctrine\Common\Collections\Collection) {
@@ -174,7 +174,7 @@ methods along the lines of the ``getName()`` method shown below:
         {
             // lazy loading code
         }
-    
+
         public function getName()
         {
             $this->_load();
@@ -269,7 +269,7 @@ which means that its persistent state will be deleted once
     for and appear in query and collection results. See
     the section on :ref:`Database and UnitOfWork Out-Of-Sync <workingobjects_database_uow_outofsync>`
     for more information.
-    
+
 
 Example:
 
@@ -312,7 +312,7 @@ Deleting an object with all its associated objects can be achieved
 in multiple ways with very different performance impacts.
 
 
-1. If an association is marked as ``CASCADE=REMOVE`` Doctrine 2
+1. If an association is marked as ``CASCADE=REMOVE`` Doctrine ORM
    will fetch this association. If its a Single association it will
    pass this entity to
    ´EntityManager#remove()``. If the association is a collection, Doctrine will loop over all    its elements and pass them to``EntityManager#remove()\`.
@@ -640,7 +640,7 @@ just created via the "new" operator).
 Querying
 --------
 
-Doctrine 2 provides the following ways, in increasing level of
+Doctrine ORM provides the following ways, in increasing level of
 power and flexibility, to query for persistent objects. You should
 always start with the simplest one that suits your needs.
 
@@ -687,13 +687,13 @@ methods on a repository as follows:
 
     <?php
     // $em instanceof EntityManager
-    
+
     // All users that are 20 years old
     $users = $em->getRepository('MyProject\Domain\User')->findBy(array('age' => 20));
-    
+
     // All users that are 20 years old and have a surname of 'Miller'
     $users = $em->getRepository('MyProject\Domain\User')->findBy(array('age' => 20, 'surname' => 'Miller'));
-    
+
     // A single user by its nickname
     $user = $em->getRepository('MyProject\Domain\User')->findOneBy(array('nickname' => 'romanb'));
 
@@ -729,7 +729,7 @@ examples are equivalent:
     <?php
     // A single user by its nickname
     $user = $em->getRepository('MyProject\Domain\User')->findOneBy(array('nickname' => 'romanb'));
-    
+
     // A single user by its nickname (__call magic)
     $user = $em->getRepository('MyProject\Domain\User')->findOneByNickname('romanb');
 
@@ -743,8 +743,6 @@ Additionally, you can just count the result of the provided conditions when you 
 
 By Criteria
 ~~~~~~~~~~~
-
-.. versionadded:: 2.3
 
 The Repository implement the ``Doctrine\Common\Collections\Selectable``
 interface. That means you can build ``Doctrine\Common\Collections\Criteria``
@@ -787,7 +785,7 @@ A DQL query is represented by an instance of the
 
     <?php
     // $em instanceof EntityManager
-    
+
     // All users with an age between 20 and 30 (inclusive).
     $q = $em->createQuery("select u from MyDomain\Model\User u where u.age >= 20 and u.age <= 30");
     $users = $q->getResult();
@@ -832,18 +830,18 @@ in a central location.
 
     <?php
     namespace MyDomain\Model;
-    
+
     use Doctrine\ORM\EntityRepository;
     use Doctrine\ORM\Mapping as ORM;
-    
+
     /**
      * @ORM\Entity(repositoryClass="MyDomain\Model\UserRepository")
      */
     class User
     {
-    
+
     }
-    
+
     class UserRepository extends EntityRepository
     {
         public function getAllAdminUsers()
@@ -859,7 +857,7 @@ You can access your repository now by calling:
 
     <?php
     // $em instanceof EntityManager
-    
+
     $admins = $em->getRepository('MyDomain\Model\User')->getAllAdminUsers();
 
 

@@ -1,12 +1,12 @@
 Mysql Enums
 ===========
 
-The type system of Doctrine 2 consists of flyweights, which means there is only
+The type system of Doctrine ORM consists of flyweights, which means there is only
 one instance of any given type. Additionally types do not contain state. Both
 assumptions make it rather complicated to work with the Enum Type of MySQL that
 is used quite a lot by developers.
 
-When using Enums with a non-tweaked Doctrine 2 application you will get
+When using Enums with a non-tweaked Doctrine ORM application you will get
 errors from the Schema-Tool commands due to the unknown database type "enum".
 By default Doctrine does not map the MySQL enum type to a Doctrine type.
 This is because Enums contain state (their allowed values) and Doctrine

@@ -80,9 +80,7 @@ with inheritance hierarchies.
 
 The builder extends the ``ResultSetMapping`` class and as such has all the functionality of it as well.
 
-.. versionadded:: 2.4
-
-Starting with Doctrine ORM 2.4 you can generate the ``SELECT`` clause
+The ``SELECT`` clause can be generated
 from a ``ResultSetMappingBuilder``. You can either cast the builder
 object to ``(string)`` and the DQL aliases are used as SQL table aliases
 or use the ``generateSelectClause($tableAliases)`` method and pass

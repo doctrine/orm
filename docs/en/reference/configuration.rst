@@ -112,8 +112,6 @@ You need to register your applications EntityManager to the console tool
 to make use of the tasks by creating a ``cli-config.php`` file with the
 following content:
 
-On Doctrine 2.4 and above:
-
 .. code-block:: php
 
     <?php
@@ -126,19 +124,3 @@ On Doctrine 2.4 and above:
     $entityManager = GetEntityManager();
 
     return ConsoleRunner::createHelperSet($entityManager);
-
-On Doctrine 2.3 and below:
-
-.. code-block:: php
-
-    <?php
-    // cli-config.php
-    require_once 'my_bootstrap.php';
-
-    // Any way to access the EntityManager from  your application
-    $em = GetMyEntityManager();
-
-    $helperSet = new \Symfony\Component\Console\Helper\HelperSet(array(
-        'db' => new \Doctrine\DBAL\Tools\Console\Helper\ConnectionHelper($em->getConnection()),
-        'em' => new \Doctrine\ORM\Tools\Console\Helper\EntityManagerHelper($em)
-    ));

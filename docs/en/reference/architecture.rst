@@ -2,29 +2,29 @@ Architecture
 ============
 
 This chapter gives an overview of the overall architecture,
-terminology and constraints of Doctrine 2. It is recommended to
+terminology and constraints of Doctrine ORM. It is recommended to
 read this chapter carefully.
 
 Using an Object-Relational Mapper
 ---------------------------------
 
-As the term ORM already hints at, Doctrine 2 aims to simplify the
+As the term ORM already hints at, Doctrine ORM aims to simplify the
 translation between database rows and the PHP object model. The
 primary use case for Doctrine are therefore applications that
 utilize the Object-Oriented Programming Paradigm. For applications
-that do not primarily work with objects Doctrine 2 is not suited very
+that do not primarily work with objects Doctrine ORM is not suited very
 well.
 
 Requirements
 ------------
 
-Doctrine 2 requires a minimum of PHP 7.1. For greatly improved
+Doctrine ORM requires a minimum of PHP 7.1. For greatly improved
 performance it is also recommended that you use APC with PHP.
 
-Doctrine 2 Packages
+Doctrine ORM Packages
 -------------------
 
-Doctrine 2 is divided into three main packages.
+Doctrine ORM is divided into three main packages.
 
 -  Common
 -  DBAL (includes Common)
@@ -166,8 +166,8 @@ did not find a way yet, if you did, please contact us).
 The EntityManager
 ~~~~~~~~~~~~~~~~~
 
-The ``EntityManager`` class is a central access point to the ORM
-functionality provided by Doctrine 2. The ``EntityManager`` API is
+The ``EntityManager`` class is a central access point to the
+functionality provided by Doctrine ORM. The ``EntityManager`` API is
 used to manage the persistence of your objects and to query for
 persistent objects.
 

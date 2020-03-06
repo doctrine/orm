@@ -8,9 +8,7 @@ The XML driver is backed by an XML Schema document that describes
 the structure of a mapping document. The most recent version of the
 XML Schema document is available online at
 `https://www.doctrine-project.org/schemas/orm/doctrine-mapping.xsd <https://www.doctrine-project.org/schemas/orm/doctrine-mapping.xsd>`_.
-In order to point to the latest version of the document of a
-particular stable release branch, just append the release number,
-i.e.: doctrine-mapping-2.0.xsd The most convenient way to work with
+The most convenient way to work with
 XML mapping files is to use an IDE/editor that can provide
 code-completion based on such an XML Schema document. The following
 is an outline of a XML mapping document with the proper xmlns/xsi
@@ -208,10 +206,10 @@ Optional attributes:
 -  **inheritance-type** - The type of inheritance, defaults to none. A
    more detailed description follows in the
    *Defining Inheritance Mappings* section.
--  **read-only** - (>= 2.1) Specifies that this entity is marked as read only and not
+-  **read-only** - Specifies that this entity is marked as read only and not
    considered for change-tracking. Entities of this type can be persisted
    and removed though.
--  **schema** - (>= 2.5) The schema the table lies in, for platforms that support schemas
+-  **schema** - The schema the table lies in, for platforms that support schemas
 
 Defining Fields
 ~~~~~~~~~~~~~~~
@@ -293,7 +291,7 @@ Defining Identity and Generator Strategies
 
 An entity has to have at least one ``<id />`` element. For
 composite keys you can specify more than one id-element, however
-surrogate keys are recommended for use with Doctrine 2. The Id
+surrogate keys are recommended for use with Doctrine ORM. The Id
 field allows to define properties of the identifier and allows a
 subset of the ``<field />`` element attributes:
 

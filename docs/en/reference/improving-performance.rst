@@ -38,7 +38,7 @@ in scenarios where data is loaded for read-only purposes.
 Read-Only Entities
 ------------------
 
-Starting with Doctrine 2.1 you can mark entities as read only (See metadata mapping
+You can mark entities as read only (See metadata mapping
 references for details). This means that the entity marked as read only is never considered
 for updates, which means when you call flush on the EntityManager these entities are skipped
 even if properties changed. Read-Only allows to persist new entities of a kind and remove existing

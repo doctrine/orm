@@ -3,7 +3,7 @@ Working with DateTime Instances
 
 There are many nitty gritty details when working with PHPs DateTime instances. You have to know their inner
 workings pretty well not to make mistakes with date handling. This cookbook entry holds several
-interesting pieces of information on how to work with PHP DateTime instances in Doctrine 2.
+interesting pieces of information on how to work with PHP DateTime instances in ORM.
 
 DateTime changes are detected by Reference
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -58,7 +58,7 @@ Handling different Timezones with the DateTime Type
 
 If you first come across the requirement to save different timezones you may be still optimistic about how
 to manage this mess,
-however let me crush your expectations fast. There is not a single database out there (supported by Doctrine 2)
+however let me crush your expectations fast. There is not a single database out there (supported by Doctrine ORM)
 that supports timezones correctly. Correctly here means that you can cover all the use-cases that
 can come up with timezones. If you don't believe me you should read up on `Storing DateTime
 in Databases <http://derickrethans.nl/storing-date-time-in-database.html>`_.
@@ -67,7 +67,7 @@ The problem is simple. Not a single database vendor saves the timezone, only the
 However with frequent daylight saving and political timezone changes you can have a UTC offset that moves
 in different offset directions depending on the real location.
 
-The solution for this dilemma is simple. Don't use timezones with DateTime and Doctrine 2. However there is a workaround
+The solution for this dilemma is simple. Don't use timezones with DateTime and Doctrine ORM. However there is a workaround
 that even allows correct date-time handling with timezones:
 
 1. Always convert any DateTime instance to UTC.

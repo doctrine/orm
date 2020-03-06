@@ -1,4 +1,4 @@
-The Doctrine2 documentation is licensed under [CC BY-NC-SA 3.0](http://creativecommons.org/licenses/by-nc-sa/3.0/deed.en_US)
+The Doctrine ORM documentation is licensed under [CC BY-NC-SA 3.0](http://creativecommons.org/licenses/by-nc-sa/3.0/deed.en_US)
 
 Creative Commons Legal Code
 

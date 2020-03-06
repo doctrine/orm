@@ -16,13 +16,13 @@ transaction. Without any explicit transaction demarcation from your
 side, this quickly results in poor performance because transactions
 are not cheap.
 
-For the most part, Doctrine 2 already takes care of proper
+For the most part, Doctrine ORM already takes care of proper
 transaction demarcation for you: All the write operations
 (INSERT/UPDATE/DELETE) are queued until ``EntityManager#flush()``
 is invoked which wraps all of these changes in a single
 transaction.
 
-However, Doctrine 2 also allows (and encourages) you to take over
+However, Doctrine ORM also allows (and encourages) you to take over
 and control transaction demarcation yourself.
 
 These are two ways to deal with transactions when using the
@@ -154,7 +154,7 @@ occurred you should do that with a new ``EntityManager``.
 Locking Support
 ---------------
 
-Doctrine 2 offers support for Pessimistic- and Optimistic-locking
+Doctrine ORM offers support for Pessimistic- and Optimistic-locking
 strategies natively. This allows to take very fine-grained control
 over what kind of locking is required for your Entities in your
 application.
@@ -367,7 +367,7 @@ And the change headline action (POST Request):
 Pessimistic Locking
 ~~~~~~~~~~~~~~~~~~~
 
-Doctrine 2 supports Pessimistic Locking at the database level. No
+Doctrine ORM supports Pessimistic Locking at the database level. No
 attempt is being made to implement pessimistic locking inside
 Doctrine, rather vendor-specific and ANSI-SQL commands are used to
 acquire row-level locks. Every Entity can be part of a pessimistic
@@ -376,11 +376,11 @@ lock, there is no special metadata required to use this feature.
 However for Pessimistic Locking to work you have to disable the
 Auto-Commit Mode of your Database and start a transaction around
 your pessimistic lock use-case using the "Approach 2: Explicit
-Transaction Demarcation" described above. Doctrine 2 will throw an
+Transaction Demarcation" described above. Doctrine ORM will throw an
 Exception if you attempt to acquire an pessimistic lock and no
 transaction is running.
 
-Doctrine 2 currently supports two pessimistic lock modes:
+Doctrine ORM currently supports two pessimistic lock modes:
 
 
 -  Pessimistic Write

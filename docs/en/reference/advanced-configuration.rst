@@ -11,15 +11,15 @@ steps of configuration.
     <?php
     use Doctrine\ORM\EntityManager,
         Doctrine\ORM\Configuration;
-    
+
     // ...
-    
+
     if ($applicationMode == "development") {
         $cache = new \Doctrine\Common\Cache\ArrayCache;
     } else {
         $cache = new \Doctrine\Common\Cache\ApcCache;
     }
-    
+
     $config = new Configuration;
     $config->setMetadataCacheImpl($cache);
     $driverImpl = $config->newDefaultAnnotationDriver('/path/to/lib/MyProject/Entities');
@@ -27,18 +27,18 @@ steps of configuration.
     $config->setQueryCacheImpl($cache);
     $config->setProxyDir('/path/to/myproject/lib/MyProject/Proxies');
     $config->setProxyNamespace('MyProject\Proxies');
-    
+
     if ($applicationMode == "development") {
         $config->setAutoGenerateProxyClasses(true);
     } else {
         $config->setAutoGenerateProxyClasses(false);
     }
-    
+
     $connectionOptions = array(
         'driver' => 'pdo_sqlite',
         'path' => 'database.sqlite'
     );
-    
+
     $em = EntityManager::create($connectionOptions, $config);
 
 .. note::
@@ -259,7 +259,7 @@ In a production environment, it is highly recommended to use
 AUTOGENERATE_NEVER to allow for optimal performances. The other
 options are interesting in development environment.
 
-Before v2.4, ``setAutoGenerateProxyClasses`` would accept a boolean
+``setAutoGenerateProxyClasses`` can accept a boolean
 value. This is still possible, ``FALSE`` being equivalent to
 AUTOGENERATE_NEVER and ``TRUE`` to AUTOGENERATE_ALWAYS.
 
@@ -299,7 +299,7 @@ Proxy Objects
 
 A proxy object is an object that is put in place or used instead of
 the "real" object. A proxy object can add behavior to the object
-being proxied without that object being aware of it. In Doctrine 2,
+being proxied without that object being aware of it. In ORM,
 proxy objects are used to realize several features but mainly for
 transparent lazy-loading.
 
@@ -309,7 +309,7 @@ of the objects. This is an essential property as without it there
 would always be fragile partial objects at the outer edges of your
 object graph.
 
-Doctrine 2 implements a variant of the proxy pattern where it
+Doctrine ORM implements a variant of the proxy pattern where it
 generates classes that extend your entity classes and adds
 lazy-loading capabilities to them. Doctrine can then give you an
 instance of such a proxy class whenever you request an object of
@@ -411,7 +411,7 @@ be found.
 Multiple Metadata Sources
 -------------------------
 
-When using different components using Doctrine 2 you may end up
+When using different components using Doctrine ORM you may end up
 with them using two different metadata drivers, for example XML and
 YAML. You can use the DriverChain Metadata implementations to
 aggregate these drivers based on namespaces:

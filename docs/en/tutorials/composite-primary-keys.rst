@@ -1,11 +1,9 @@
 Composite and Foreign Keys as Primary Key
 =========================================
 
-.. versionadded:: 2.1
-
-Doctrine 2 supports composite primary keys natively. Composite keys are a very powerful relational database concept
-and we took good care to make sure Doctrine 2 supports as many of the composite primary key use-cases.
-For Doctrine 2.0 composite keys of primitive data-types are supported, for Doctrine 2.1 even foreign keys as
+Doctrine ORM supports composite primary keys natively. Composite keys are a very powerful relational database concept
+and we took good care to make sure Doctrine ORM supports as many of the composite primary key use-cases.
+For Doctrine ORM composite keys of primitive data-types are supported, even foreign keys as
 primary keys are supported.
 
 This tutorial shows how the semantics of composite primary keys work and how they map to the database.
@@ -19,7 +17,7 @@ the ID fields have to have their values set before you call ``EntityManager#pers
 Primitive Types only
 ~~~~~~~~~~~~~~~~~~~~
 
-Even in version 2.0 you can have composite keys as long as they only consist of the primitive types
+You can have composite keys as long as they only consist of the primitive types
 ``integer`` and ``string``. Suppose you want to create a database of cars and use the model-name
 and year of production as primary keys:
 
@@ -119,10 +117,6 @@ and to ``year`` to the related entities.
 
 Identity through foreign Entities
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-.. note::
-
-    Identity through foreign entities is only supported with Doctrine 2.1
 
 There are tons of use-cases where the identity of an Entity should be determined by the entity
 of one or many parent entities.

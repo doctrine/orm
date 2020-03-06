@@ -10,7 +10,7 @@ change it during the life of your project. This decision for a
 specific vendor potentially allows you to make use of powerful SQL
 features that are unique to the vendor.
 
-It is worth to mention that Doctrine 2 also allows you to handwrite
+It is worth to mention that Doctrine ORM also allows you to handwrite
 your SQL instead of extending the DQL parser. Extending DQL is sort of an
 advanced extension point. You can map arbitrary SQL to your objects
 and gain access to vendor specific functionalities using the
@@ -240,7 +240,7 @@ functionalities in DQL, we would be excited to see user extensions
 that add vendor specific function packages, for example more math
 functions, XML + GIS Support, Hashing functions and so on.
 
-For 2.0 we will come with the current set of functions, however for
+For ORM we will come with the current set of functions, however for
 a future version we will re-evaluate if we can abstract even more
 vendor sql functions and extend the DQL languages scope.
 
