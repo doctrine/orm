@@ -1213,7 +1213,7 @@ class UnitOfWork implements PropertyChangedListener
             if (! $class->isIdentifierNatural() &&
                 (
                     ! method_exists($class->reflFields[$class->identifier[0]], 'getType') ||
-                    $class->reflFields[$class->identifier[0]]->getType()->allowsNull()
+                    $class->reflFields[$class->identifier[0]]->getType() && $class->reflFields[$class->identifier[0]]->getType()->allowsNull()
                 )) {
                 $class->reflFields[$class->identifier[0]]->setValue($entity, null);
             }
