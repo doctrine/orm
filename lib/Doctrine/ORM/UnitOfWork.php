@@ -1211,8 +1211,7 @@ class UnitOfWork implements PropertyChangedListener
             // is obtained by a new entity because the old one went out of scope.
             //$this->entityStates[$oid] = self::STATE_NEW;
             if (! $class->isIdentifierNatural()) {
-                if (
-                    method_exists($class->reflFields[$class->identifier[0]], 'getType') &&
+                if (method_exists($class->reflFields[$class->identifier[0]], 'getType') &&
                     $class->reflFields[$class->identifier[0]]->getType() &&
                     ! $class->reflFields[$class->identifier[0]]->getType()->allowsNull()
                 ) {
