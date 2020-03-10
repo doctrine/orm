@@ -47,6 +47,7 @@ use InvalidArgumentException;
 use Throwable;
 use UnexpectedValueException;
 use function get_class;
+use function method_exists;
 
 /**
  * The UnitOfWork is responsible for tracking changes to objects during an
@@ -1209,7 +1210,11 @@ class UnitOfWork implements PropertyChangedListener
             // Entity with this $oid after deletion treated as NEW, even if the $oid
             // is obtained by a new entity because the old one went out of scope.
             //$this->entityStates[$oid] = self::STATE_NEW;
-            if ( ! $class->isIdentifierNatural()) {
+            if (! $class->isIdentifierNatural() &&
+                (
+                    ! method_exists($class->reflFields[$class->identifier[0]], 'getType') ||
+                    $class->reflFields[$class->identifier[0]]->getType()->allowsNull()
+                )) {
                 $class->reflFields[$class->identifier[0]]->setValue($entity, null);
             }
 
