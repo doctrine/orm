@@ -416,7 +416,7 @@ abstract class AbstractQuery
             return $value->name;
         }
 
-        if (! is_object($value)) {
+        if (is_object($value)) {
             return $value;
         }
 
