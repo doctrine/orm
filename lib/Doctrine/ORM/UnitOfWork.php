@@ -1210,12 +1210,16 @@ class UnitOfWork implements PropertyChangedListener
             // Entity with this $oid after deletion treated as NEW, even if the $oid
             // is obtained by a new entity because the old one went out of scope.
             //$this->entityStates[$oid] = self::STATE_NEW;
-            if (! $class->isIdentifierNatural() &&
-                (
-                    ! method_exists($class->reflFields[$class->identifier[0]], 'getType') ||
-                    $class->reflFields[$class->identifier[0]]->getType() && $class->reflFields[$class->identifier[0]]->getType()->allowsNull()
-                )) {
-                $class->reflFields[$class->identifier[0]]->setValue($entity, null);
+            if (! $class->isIdentifierNatural()) {
+                if (
+                    method_exists($class->reflFields[$class->identifier[0]], 'getType') &&
+                    $class->reflFields[$class->identifier[0]]->getType() &&
+                    ! $class->reflFields[$class->identifier[0]]->getType()->allowsNull()
+                ) {
+                    unset($entity->{$class->identifier[0]});
+                } else {
+                    $class->reflFields[$class->identifier[0]]->setValue($entity, null);
+                }
             }
 
             if ($invoke !== ListenersInvoker::INVOKE_NONE) {
