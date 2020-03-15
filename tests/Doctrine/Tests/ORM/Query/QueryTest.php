@@ -132,20 +132,16 @@ class QueryTest extends OrmTestCase
         $this->assertSame($this->_em->getConfiguration()->getResultCacheImpl(), $q->getQueryCacheProfile()->getResultCacheDriver());
     }
 
-    /**
-     * @expectedException Doctrine\ORM\Query\QueryException
-     **/
     public function testIterateWithNoDistinctAndWrongSelectClause()
     {
+        $this->expectException('Doctrine\ORM\Query\QueryException');
         $q = $this->_em->createQuery("select u, a from Doctrine\Tests\Models\CMS\CmsUser u LEFT JOIN u.articles a");
         $q->iterate();
     }
 
-    /**
-     * @expectedException Doctrine\ORM\Query\QueryException
-     **/
     public function testIterateWithNoDistinctAndWithValidSelectClause()
     {
+        $this->expectException('Doctrine\ORM\Query\QueryException');
         $q = $this->_em->createQuery("select u from Doctrine\Tests\Models\CMS\CmsUser u LEFT JOIN u.articles a");
         $q->iterate();
     }

@@ -315,38 +315,30 @@ class QueryTest extends OrmFunctionalTestCase
         $this->_em->flush();
     }
 
-    /**
-     * @expectedException \Doctrine\ORM\Query\QueryException
-     */
     public function testIterateResult_FetchJoinedCollection_ThrowsException()
     {
+        $this->expectException('Doctrine\ORM\Query\QueryException');
         $query = $this->_em->createQuery("SELECT u, a FROM ' . CmsUser::class . ' u JOIN u.articles a");
         $articles = $query->iterate();
     }
 
-    /**
-     * @expectedException Doctrine\ORM\NoResultException
-     */
     public function testGetSingleResultThrowsExceptionOnNoResult()
     {
+        $this->expectException('Doctrine\ORM\NoResultException');
         $this->_em->createQuery("select a from Doctrine\Tests\Models\CMS\CmsArticle a")
              ->getSingleResult();
     }
 
-    /**
-     * @expectedException Doctrine\ORM\NoResultException
-     */
     public function testGetSingleScalarResultThrowsExceptionOnNoResult()
     {
+        $this->expectException('Doctrine\ORM\NoResultException');
         $this->_em->createQuery("select a from Doctrine\Tests\Models\CMS\CmsArticle a")
              ->getSingleScalarResult();
     }
 
-    /**
-     * @expectedException Doctrine\ORM\NonUniqueResultException
-     */
     public function testGetSingleScalarResultThrowsExceptionOnNonUniqueResult()
     {
+        $this->expectException('Doctrine\ORM\NonUniqueResultException');
         $user = new CmsUser;
         $user->name = 'Guilherme';
         $user->username = 'gblanco';

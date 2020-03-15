@@ -811,12 +811,10 @@ class ClassMetadataTest extends OrmTestCase
         $this->assertEquals($metadata->entityListeners, $unserialize->entityListeners);
     }
 
-    /**
-     * @expectedException \Doctrine\ORM\Mapping\MappingException
-     * @expectedExceptionMessage Query named "userById" in "Doctrine\Tests\Models\CMS\CmsUser" was already declared, but it must be declared only once
-     */
     public function testNamingCollisionNamedQueryShouldThrowException()
     {
+        $this->expectException('Doctrine\ORM\Mapping\MappingException');
+        $this->expectExceptionMessage('Query named "userById" in "Doctrine\Tests\Models\CMS\CmsUser" was already declared, but it must be declared only once');
         $cm = new ClassMetadata(CMS\CmsUser::class);
         $cm->initializeReflection(new RuntimeReflectionService());
 
@@ -837,12 +835,11 @@ class ClassMetadataTest extends OrmTestCase
 
     /**
      * @group DDC-1663
-     *
-     * @expectedException \Doctrine\ORM\Mapping\MappingException
-     * @expectedExceptionMessage Query named "find-all" in "Doctrine\Tests\Models\CMS\CmsUser" was already declared, but it must be declared only once
      */
     public function testNamingCollisionNamedNativeQueryShouldThrowException()
     {
+        $this->expectException('Doctrine\ORM\Mapping\MappingException');
+        $this->expectExceptionMessage('Query named "find-all" in "Doctrine\Tests\Models\CMS\CmsUser" was already declared, but it must be declared only once');
         $cm = new ClassMetadata(CMS\CmsUser::class);
         $cm->initializeReflection(new RuntimeReflectionService());
 
@@ -867,12 +864,11 @@ class ClassMetadataTest extends OrmTestCase
 
     /**
      * @group DDC-1663
-     *
-     * @expectedException \Doctrine\ORM\Mapping\MappingException
-     * @expectedExceptionMessage Result set mapping named "find-all" in "Doctrine\Tests\Models\CMS\CmsUser" was already declared, but it must be declared only once
      */
     public function testNamingCollisionSqlResultSetMappingShouldThrowException()
     {
+        $this->expectException('Doctrine\ORM\Mapping\MappingException');
+        $this->expectExceptionMessage('Result set mapping named "find-all" in "Doctrine\Tests\Models\CMS\CmsUser" was already declared, but it must be declared only once');
         $cm = new ClassMetadata(CMS\CmsUser::class);
         $cm->initializeReflection(new RuntimeReflectionService());
 
@@ -943,12 +939,11 @@ class ClassMetadataTest extends OrmTestCase
 
     /**
      * @group DDC-1663
-     *
-     * @expectedException \Doctrine\ORM\Mapping\MappingException
-     * @expectedExceptionMessage Query name on entity class 'Doctrine\Tests\Models\CMS\CmsUser' is not defined.
      */
     public function testNameIsMandatoryForNamedQueryMappingException()
     {
+        $this->expectException('Doctrine\ORM\Mapping\MappingException');
+        $this->expectExceptionMessage('Query name on entity class \'Doctrine\Tests\Models\CMS\CmsUser\' is not defined.');
         $cm = new ClassMetadata(CMS\CmsUser::class);
         $cm->initializeReflection(new RuntimeReflectionService());
         $cm->addNamedQuery(
@@ -960,12 +955,11 @@ class ClassMetadataTest extends OrmTestCase
 
     /**
      * @group DDC-1663
-     *
-     * @expectedException \Doctrine\ORM\Mapping\MappingException
-     * @expectedExceptionMessage Query name on entity class 'Doctrine\Tests\Models\CMS\CmsUser' is not defined.
      */
     public function testNameIsMandatoryForNameNativeQueryMappingException()
     {
+        $this->expectException('Doctrine\ORM\Mapping\MappingException');
+        $this->expectExceptionMessage('Query name on entity class \'Doctrine\Tests\Models\CMS\CmsUser\' is not defined.');
         $cm = new ClassMetadata(CMS\CmsUser::class);
         $cm->initializeReflection(new RuntimeReflectionService());
         $cm->addNamedQuery(
@@ -979,12 +973,11 @@ class ClassMetadataTest extends OrmTestCase
 
     /**
      * @group DDC-1663
-     *
-     * @expectedException \Doctrine\ORM\Mapping\MappingException
-     * @expectedExceptionMessage Result set mapping named "find-all" in "Doctrine\Tests\Models\CMS\CmsUser requires a entity class name.
      */
     public function testNameIsMandatoryForEntityNameSqlResultSetMappingException()
     {
+        $this->expectException('Doctrine\ORM\Mapping\MappingException');
+        $this->expectExceptionMessage('Result set mapping named "find-all" in "Doctrine\Tests\Models\CMS\CmsUser requires a entity class name.');
         $cm = new ClassMetadata(CMS\CmsUser::class);
         $cm->initializeReflection(new RuntimeReflectionService());
         $cm->addSqlResultSetMapping(
@@ -999,12 +992,10 @@ class ClassMetadataTest extends OrmTestCase
         );
     }
 
-    /**
-     * @expectedException \Doctrine\ORM\Mapping\MappingException
-     * @expectedExceptionMessage Discriminator column name on entity class 'Doctrine\Tests\Models\CMS\CmsUser' is not defined.
-     */
     public function testNameIsMandatoryForDiscriminatorColumnsMappingException()
     {
+        $this->expectException('Doctrine\ORM\Mapping\MappingException');
+        $this->expectExceptionMessage('Discriminator column name on entity class \'Doctrine\Tests\Models\CMS\CmsUser\' is not defined.');
         $cm = new ClassMetadata(CMS\CmsUser::class);
         $cm->initializeReflection(new RuntimeReflectionService());
         $cm->setDiscriminatorColumn([]);
@@ -1082,11 +1073,11 @@ class ClassMetadataTest extends OrmTestCase
 
     /**
      * @group DDC-964
-     * @expectedException        Doctrine\ORM\Mapping\MappingException
-     * @expectedExceptionMessage Invalid field override named 'invalidPropertyName' for class 'Doctrine\Tests\Models\DDC964\DDC964Admin
      */
     public function testInvalidPropertyAssociationOverrideNameException()
     {
+        $this->expectException('Doctrine\ORM\Mapping\MappingException');
+        $this->expectExceptionMessage('Invalid field override named \'invalidPropertyName\' for class \'Doctrine\Tests\Models\DDC964\DDC964Admin');
         $cm = new ClassMetadata(DDC964Admin::class);
         $cm->initializeReflection(new RuntimeReflectionService());
         $cm->mapManyToOne(['fieldName' => 'address', 'targetEntity' => 'DDC964Address']);
@@ -1096,11 +1087,11 @@ class ClassMetadataTest extends OrmTestCase
 
     /**
      * @group DDC-964
-     * @expectedException        Doctrine\ORM\Mapping\MappingException
-     * @expectedExceptionMessage Invalid field override named 'invalidPropertyName' for class 'Doctrine\Tests\Models\DDC964\DDC964Guest'.
      */
     public function testInvalidPropertyAttributeOverrideNameException()
     {
+        $this->expectException('Doctrine\ORM\Mapping\MappingException');
+        $this->expectExceptionMessage('Invalid field override named \'invalidPropertyName\' for class \'Doctrine\Tests\Models\DDC964\DDC964Guest\'.');
         $cm = new ClassMetadata(DDC964Guest::class);
         $cm->initializeReflection(new RuntimeReflectionService());
         $cm->mapField(['fieldName' => 'name']);
@@ -1110,11 +1101,11 @@ class ClassMetadataTest extends OrmTestCase
 
     /**
      * @group DDC-964
-     * @expectedException        Doctrine\ORM\Mapping\MappingException
-     * @expectedExceptionMessage The column type of attribute 'name' on class 'Doctrine\Tests\Models\DDC964\DDC964Guest' could not be changed.
      */
     public function testInvalidOverrideAttributeFieldTypeException()
     {
+        $this->expectException('Doctrine\ORM\Mapping\MappingException');
+        $this->expectExceptionMessage('The column type of attribute \'name\' on class \'Doctrine\Tests\Models\DDC964\DDC964Guest\' could not be changed.');
         $cm = new ClassMetadata(DDC964Guest::class);
         $cm->initializeReflection(new RuntimeReflectionService());
         $cm->mapField(['fieldName' => 'name', 'type'=>'string']);
@@ -1124,12 +1115,11 @@ class ClassMetadataTest extends OrmTestCase
 
     /**
      * @group DDC-1955
-     *
-     * @expectedException        Doctrine\ORM\Mapping\MappingException
-     * @expectedExceptionMessage Entity Listener "\InvalidClassName" declared on "Doctrine\Tests\Models\CMS\CmsUser" not found.
      */
     public function testInvalidEntityListenerClassException()
     {
+        $this->expectException('Doctrine\ORM\Mapping\MappingException');
+        $this->expectExceptionMessage('Entity Listener "\InvalidClassName" declared on "Doctrine\Tests\Models\CMS\CmsUser" not found.');
         $cm = new ClassMetadata(CMS\CmsUser::class);
         $cm->initializeReflection(new RuntimeReflectionService());
 
@@ -1138,12 +1128,11 @@ class ClassMetadataTest extends OrmTestCase
 
     /**
      * @group DDC-1955
-     *
-     * @expectedException        Doctrine\ORM\Mapping\MappingException
-     * @expectedExceptionMessage Entity Listener "\Doctrine\Tests\Models\Company\CompanyContractListener" declared on "Doctrine\Tests\Models\CMS\CmsUser" has no method "invalidMethod".
      */
     public function testInvalidEntityListenerMethodException()
     {
+        $this->expectException('Doctrine\ORM\Mapping\MappingException');
+        $this->expectExceptionMessage('Entity Listener "\Doctrine\Tests\Models\Company\CompanyContractListener" declared on "Doctrine\Tests\Models\CMS\CmsUser" has no method "invalidMethod".');
         $cm = new ClassMetadata(CMS\CmsUser::class);
         $cm->initializeReflection(new RuntimeReflectionService());
 

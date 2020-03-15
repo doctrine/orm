@@ -59,12 +59,10 @@ class MappingDescribeCommandTest extends OrmFunctionalTestCase
         self::assertContains('Root entity name', $display);
     }
 
-    /**
-     * @expectedException \InvalidArgumentException
-     * @expectedExceptionMessage possible matches
-     */
     public function testShowSpecificFuzzyAmbiguous()
     {
+        $this->expectException('InvalidArgumentException');
+        $this->expectExceptionMessage('possible matches');
         $this->tester->execute(
             [
                 'command'    => $this->command->getName(),
@@ -73,12 +71,10 @@ class MappingDescribeCommandTest extends OrmFunctionalTestCase
         );
     }
 
-    /**
-     * @expectedException \InvalidArgumentException
-     * @expectedExceptionMessage Could not find any mapped Entity classes matching "AttractionFooBar"
-     */
     public function testShowSpecificNotFound()
     {
+        $this->expectException('InvalidArgumentException');
+        $this->expectExceptionMessage('Could not find any mapped Entity classes matching "AttractionFooBar"');
         $this->tester->execute(
             [
                 'command'    => $this->command->getName(),

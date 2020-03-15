@@ -1822,12 +1822,11 @@ class ObjectHydratorTest extends HydrationTestCase
 
     /**
      * @group DDC-1470
-     *
-     * @expectedException \Doctrine\ORM\Internal\Hydration\HydrationException
-     * @expectedExceptionMessage The meta mapping for the discriminator column "c_discr" is missing for "Doctrine\Tests\Models\Company\CompanyFixContract" using the DQL alias "c".
      */
     public function testMissingMetaMappingException()
     {
+        $this->expectException('Doctrine\ORM\Internal\Hydration\HydrationException');
+        $this->expectExceptionMessage('The meta mapping for the discriminator column "c_discr" is missing for "Doctrine\Tests\Models\Company\CompanyFixContract" using the DQL alias "c".');
         $rsm = new ResultSetMapping;
 
         $rsm->addEntityResult(CompanyFixContract::class, 'c');
@@ -1849,12 +1848,11 @@ class ObjectHydratorTest extends HydrationTestCase
 
     /**
      * @group DDC-1470
-     *
-     * @expectedException \Doctrine\ORM\Internal\Hydration\HydrationException
-     * @expectedExceptionMessage The discriminator column "discr" is missing for "Doctrine\Tests\Models\Company\CompanyEmployee" using the DQL alias "e".
      */
     public function testMissingDiscriminatorColumnException()
     {
+        $this->expectException('Doctrine\ORM\Internal\Hydration\HydrationException');
+        $this->expectExceptionMessage('The discriminator column "discr" is missing for "Doctrine\Tests\Models\Company\CompanyEmployee" using the DQL alias "e".');
         $rsm = new ResultSetMapping;
 
         $rsm->addEntityResult(CompanyFixContract::class, 'c');
@@ -1883,12 +1881,11 @@ class ObjectHydratorTest extends HydrationTestCase
 
     /**
      * @group DDC-3076
-     *
-     * @expectedException \Doctrine\ORM\Internal\Hydration\HydrationException
-     * @expectedExceptionMessage The discriminator value "subworker" is invalid. It must be one of "person", "manager", "employee".
      */
     public function testInvalidDiscriminatorValueException()
     {
+        $this->expectException('Doctrine\ORM\Internal\Hydration\HydrationException');
+        $this->expectExceptionMessage('The discriminator value "subworker" is invalid. It must be one of "person", "manager", "employee".');
         $rsm = new ResultSetMapping;
 
         $rsm->addEntityResult(CompanyPerson::class, 'p');
