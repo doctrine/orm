@@ -31,6 +31,7 @@ use Doctrine\ORM\Id\BigIntegerIdentityGenerator;
 use Doctrine\ORM\Id\IdentityGenerator;
 use Doctrine\ORM\ORMException;
 use ReflectionException;
+use function assert;
 
 /**
  * The ClassMetadataFactory is used to create ClassMetadata objects that contain all the
@@ -401,10 +402,10 @@ class ClassMetadataFactory extends AbstractClassMetadataFactory
     private function addInheritedFields(ClassMetadata $subClass, ClassMetadata $parentClass)
     {
         foreach ($parentClass->fieldMappings as $mapping) {
-            if ( ! isset($mapping['inherited']) && ! $parentClass->isMappedSuperclass) {
+            if (! isset($mapping['inherited']) && ! $parentClass->isMappedSuperclass && ! $parentClass->isEmbeddedClass) {
                 $mapping['inherited'] = $parentClass->name;
             }
-            if ( ! isset($mapping['declared'])) {
+            if (! isset($mapping['declared'])) {
                 $mapping['declared'] = $parentClass->name;
             }
             $subClass->addInheritedFieldMapping($mapping);
@@ -469,10 +470,6 @@ class ClassMetadataFactory extends AbstractClassMetadataFactory
     private function addNestedEmbeddedClasses(ClassMetadata $subClass, ClassMetadata $parentClass, $prefix)
     {
         foreach ($subClass->embeddedClasses as $property => $embeddableClass) {
-            if (isset($embeddableClass['inherited'])) {
-                continue;
-            }
-
             $embeddableMetadata = $this->getMetadataFor($embeddableClass['class']);
 
             $parentClass->mapEmbedded(
@@ -780,7 +777,9 @@ class ClassMetadataFactory extends AbstractClassMetadataFactory
      */
     protected function isEntity(ClassMetadataInterface $class)
     {
-        return isset($class->isMappedSuperclass) && $class->isMappedSuperclass === false;
+        assert($class instanceof ClassMetadata);
+
+        return $class->isMappedSuperclass === false && $class->isEmbeddedClass === false;
     }
 
     /**
