@@ -47,6 +47,11 @@ class SqlWalker implements TreeWalker
     const HINT_DISTINCT = 'doctrine.distinct';
 
     /**
+     * Used to mark a query as containing a PARTIAL expression, which needs to be known by SLC.
+     */
+    public const HINT_PARTIAL = 'doctrine.partial';
+
+    /**
      * @var ResultSetMapping
      */
     private $rsm;
@@ -1366,6 +1371,8 @@ class SqlWalker implements TreeWalker
             default:
                 // IdentificationVariable or PartialObjectExpression
                 if ($expr instanceof AST\PartialObjectExpression) {
+                    $this->query->setHint(self::HINT_PARTIAL, true);
+
                     $dqlAlias = $expr->identificationVariable;
                     $partialFieldSet = $expr->partialFieldSet;
                 } else {
