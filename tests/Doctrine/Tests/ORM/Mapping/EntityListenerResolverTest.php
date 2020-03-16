@@ -87,12 +87,10 @@ class EntityListenerResolverTest extends OrmTestCase
         $this->assertNotSame($obj2, $this->resolver->resolve($className2));
     }
 
-    /**
-     * @expectedException InvalidArgumentException
-     * @expectedExceptionMessage An object was expected, but got "string".
-     */
     public function testRegisterStringException()
     {
+        $this->expectException('InvalidArgumentException');
+        $this->expectExceptionMessage('An object was expected, but got "string".');
         $this->resolver->register('CompanyContractListener');
     }
 }
