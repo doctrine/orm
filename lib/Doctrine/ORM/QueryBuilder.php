@@ -100,7 +100,7 @@ class QueryBuilder
     /**
      * The index of the first result to retrieve.
      *
-     * @var integer
+     * @var integer|null
      */
     private $_firstResult = null;
 
@@ -616,7 +616,7 @@ class QueryBuilder
     /**
      * Sets the position of the first result to retrieve (the "offset").
      *
-     * @param integer $firstResult The first result to return.
+     * @param integer|null $firstResult The first result to return.
      *
      * @return self
      */
@@ -631,7 +631,7 @@ class QueryBuilder
      * Gets the position of the first result the query object was set to retrieve (the "offset").
      * Returns NULL if {@link setFirstResult} was not applied to this QueryBuilder.
      *
-     * @return integer The position of the first result.
+     * @return integer|null The position of the first result.
      */
     public function getFirstResult()
     {
