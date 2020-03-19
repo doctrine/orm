@@ -616,7 +616,7 @@ class QueryBuilder
     /**
      * Sets the position of the first result to retrieve (the "offset").
      *
-     * @param integer|null $firstResult The first result to return.
+     * @param int|null $firstResult The first result to return.
      *
      * @return self
      */
