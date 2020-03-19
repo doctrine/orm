@@ -100,7 +100,7 @@ class QueryBuilder
     /**
      * The index of the first result to retrieve.
      *
-     * @var integer|null
+     * @var int|null
      */
     private $_firstResult = null;
 
