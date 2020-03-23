@@ -1336,8 +1336,6 @@ class QueryBuilder
      * @param string $queryPartName
      *
      * @return mixed $queryPart
-     *
-     * @todo Rename: getQueryPart (or remove?)
      */
     public function getDQLPart($queryPartName)
     {
@@ -1348,8 +1346,6 @@ class QueryBuilder
      * Gets all query parts.
      *
      * @return array $dqlParts
-     *
-     * @todo Rename: getQueryParts (or remove?)
      */
     public function getDQLParts()
     {
