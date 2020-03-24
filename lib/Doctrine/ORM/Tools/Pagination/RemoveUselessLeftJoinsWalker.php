@@ -1,10 +1,18 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\ORM\Tools\Pagination;
 
 use Doctrine\ORM\Query;
 use Doctrine\ORM\Query\AST\SelectStatement;
 use Doctrine\ORM\Query\TreeWalkerAdapter;
+use function array_filter;
+use function array_key_exists;
+use function array_merge;
+use function array_unique;
+use function in_array;
+use function reset;
 
 class RemoveUselessLeftJoinsWalker extends TreeWalkerAdapter
 {
@@ -15,34 +23,34 @@ class RemoveUselessLeftJoinsWalker extends TreeWalkerAdapter
 
     private function removeUnusedJoins(SelectStatement $AST)
     {
-        $from = $AST->fromClause->identificationVariableDeclarations;
+        $from     = $AST->fromClause->identificationVariableDeclarations;
         $fromRoot = reset($from);
 
-        if (!isset($AST->whereClause) || !isset($AST->whereClause->conditionalExpression) || !isset($AST->whereClause->conditionalExpression->simpleConditionalExpression)) {
+        if (! isset($AST->whereClause) || ! isset($AST->whereClause->conditionalExpression) || ! isset($AST->whereClause->conditionalExpression->simpleConditionalExpression)) {
             return;
         }
 
         $expr = $AST->whereClause->conditionalExpression->simpleConditionalExpression;
 
-        if (!isset($expr->subselect)) {
+        if (! isset($expr->subselect)) {
             return;
         }
 
-        $subSelect = $expr->subselect;
+        $subSelect       = $expr->subselect;
         $subSelectUsages = $this->findSubSelectUsages($subSelect);
 
         foreach ($subSelect->subselectFromClause->identificationVariableDeclarations as $declaration) {
             $declaration->joins = $this->filterJoins($declaration->joins, $this->findUnusedJoins($declaration->joins, $subSelectUsages));
         }
 
-        $usages = $this->findSubSelectUsages($AST);
+        $usages          = $this->findSubSelectUsages($AST);
         $fromRoot->joins = $this->filterJoins($fromRoot->joins, $this->findUnusedJoins($fromRoot->joins, $usages));
     }
 
     private function recursiveAddUsages($usages, $parents)
     {
         foreach ($usages as $id) {
-            if (array_key_exists($id, $parents) && !in_array($parents[$id], $usages)) {
+            if (array_key_exists($id, $parents) && ! in_array($parents[$id], $usages)) {
                 $usages = $this->recursiveAddUsages(array_merge($usages, [$parents[$id]]), $parents);
             }
         }
@@ -61,7 +69,7 @@ class RemoveUselessLeftJoinsWalker extends TreeWalkerAdapter
 
         $unused = [];
         foreach ($joins as $join) {
-            if (Query\AST\Join::JOIN_TYPE_LEFT === $join->joinType && !in_array($join->joinAssociationDeclaration->aliasIdentificationVariable, $usages)) {
+            if ($join->joinType === Query\AST\Join::JOIN_TYPE_LEFT && ! in_array($join->joinAssociationDeclaration->aliasIdentificationVariable, $usages)) {
                 $unused[] = $join;
             }
         }
@@ -71,8 +79,8 @@ class RemoveUselessLeftJoinsWalker extends TreeWalkerAdapter
 
     private function filterJoins($joins, $toRemove)
     {
-        return array_filter($joins, function (Query\AST\Join $join) use ($toRemove) {
-            return !in_array($join, $toRemove);
+        return array_filter($joins, static function (Query\AST\Join $join) use ($toRemove) {
+            return ! in_array($join, $toRemove);
         });
     }
 
@@ -85,7 +93,7 @@ class RemoveUselessLeftJoinsWalker extends TreeWalkerAdapter
         return $expression->simpleArithmeticExpression->identificationVariable;
     }
 
-    private function extractIdentificationVariableFromExpression($expr): array
+    private function extractIdentificationVariableFromExpression($expr)
     {
         $usages = [];
 
@@ -94,10 +102,8 @@ class RemoveUselessLeftJoinsWalker extends TreeWalkerAdapter
             $usages[] = $this->extractIdentificationVariable($expr->rightExpression);
         } elseif ($expr instanceof Query\AST\PathExpression) {
             $usages[] = $expr->identificationVariable;
-        } else {
-            if(isset($expr->expression)) {
-                $usages[] = $this->extractIdentificationVariable($expr->expression);
-            }
+        } elseif (isset($expr->expression)) {
+            $usages[] = $this->extractIdentificationVariable($expr->expression);
         }
 
         return $usages;
@@ -126,12 +132,13 @@ class RemoveUselessLeftJoinsWalker extends TreeWalkerAdapter
         return $usages;
     }
 
-    protected function extractFromConditionalExpression($expression) {
+    protected function extractFromConditionalExpression($expression)
+    {
         $usages = [];
 
         if ($expression instanceof Query\AST\ConditionalTerm) {
             foreach ($expression->conditionalFactors as $factor) {
-                $expr = $factor->simpleConditionalExpression;
+                $expr   = $factor->simpleConditionalExpression;
                 $usages = array_merge($usages, $this->extractIdentificationVariableFromExpression($expr));
             }
         } elseif ($expression instanceof Query\AST\ConditionalPrimary) {
