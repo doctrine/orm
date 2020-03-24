@@ -10,7 +10,6 @@ class RemoveUselessLeftJoinsWalker extends TreeWalkerAdapter
 {
     public function walkSelectStatement(SelectStatement $AST)
     {
-        $queryComponents = $this->_getQueryComponents();
         $this->removeUnusedJoins($AST);
     }
 
@@ -93,8 +92,12 @@ class RemoveUselessLeftJoinsWalker extends TreeWalkerAdapter
         if ($expr instanceof Query\AST\ComparisonExpression) {
             $usages[] = $this->extractIdentificationVariable($expr->leftExpression);
             $usages[] = $this->extractIdentificationVariable($expr->rightExpression);
+        } elseif ($expr instanceof Query\AST\PathExpression) {
+            $usages[] = $expr->identificationVariable;
         } else {
-            $usages[] = $this->extractIdentificationVariable($expr->expression);
+            if(isset($expr->expression)) {
+                $usages[] = $this->extractIdentificationVariable($expr->expression);
+            }
         }
 
         return $usages;
@@ -105,25 +108,35 @@ class RemoveUselessLeftJoinsWalker extends TreeWalkerAdapter
         $usages = [];
 
         if (isset($select->whereClause)) {
-            if ($select->whereClause->conditionalExpression instanceof Query\AST\ConditionalTerm) {
-                foreach ($select->whereClause->conditionalExpression->conditionalFactors as $factor) {
-                    $expr = $factor->simpleConditionalExpression;
-                    $usages = array_merge($usages, $this->extractIdentificationVariableFromExpression($expr));
-                }
-            } elseif ($select->whereClause->conditionalExpression instanceof Query\AST\ConditionalPrimary) {
-                $usages = array_merge($usages, $this->extractIdentificationVariableFromExpression($select->whereClause->conditionalExpression->simpleConditionalExpression));
-            }
+            $usages = array_merge($usages, $this->extractFromConditionalExpression($select->whereClause->conditionalExpression));
         }
 
         if (isset($select->orderByClause)) {
             foreach ($select->orderByClause->orderByItems as $item) {
-                if ($item->expression instanceof Query\AST\OrderByItem || $item->expression instanceof Query\AST\PathExpression) {
-                    $usages[] = $item->expression->identificationVariable;
-                }
+                $usages = array_merge($usages, $this->extractIdentificationVariableFromExpression($item->expression));
             }
         }
 
+        if (isset($select->havingClause)) {
+            $usages = array_merge($usages, $this->extractFromConditionalExpression($select->havingClause->conditionalExpression));
+        }
+
         $usages = array_unique($usages);
+
+        return $usages;
+    }
+
+    protected function extractFromConditionalExpression($expression) {
+        $usages = [];
+
+        if ($expression instanceof Query\AST\ConditionalTerm) {
+            foreach ($expression->conditionalFactors as $factor) {
+                $expr = $factor->simpleConditionalExpression;
+                $usages = array_merge($usages, $this->extractIdentificationVariableFromExpression($expr));
+            }
+        } elseif ($expression instanceof Query\AST\ConditionalPrimary) {
+            $usages = array_merge($usages, $this->extractIdentificationVariableFromExpression($expression->simpleConditionalExpression));
+        }
 
         return $usages;
     }
