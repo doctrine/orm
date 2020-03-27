@@ -330,6 +330,13 @@ in multiple ways with very different performance impacts.
    because Doctrine will fetch and remove all associated entities
    explicitly nevertheless.
 
+.. note::
+
+    Calling ``remove`` on an entity will remove the object from the identiy
+    map and therefore detach it. Querying the same entity again, for example 
+    via a lazy loaded relation, will return a new object. 
+
+
 Detaching entities
 ------------------
 
