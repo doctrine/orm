@@ -14,3 +14,5 @@ lib/Doctrine/DBAL
 vendor/
 /tests/Doctrine/Performance/history.db
 /.phpcs-cache
+
+composer.phar

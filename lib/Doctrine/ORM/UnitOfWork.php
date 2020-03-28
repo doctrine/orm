@@ -2624,6 +2624,7 @@ class UnitOfWork implements PropertyChangedListener
      *
      * @return object The managed entity instance.
      *
+     * @throws ORMException
      * @todo Rename: getOrCreateEntity
      */
     public function createEntity($className, array $data, &$hints = [])
@@ -2847,9 +2848,11 @@ class UnitOfWork implements PropertyChangedListener
 
                     $this->originalEntityData[$oid][$field] = $newValue;
                     $class->reflFields[$field]->setValue($entity, $newValue);
+                    if ( ! isset($targetClass->associationMappings[$assoc['inversedBy']])) {
+                        throw new ORMException("The column " . $assoc['inversedBy'] . " is needed by " . $targetClass->getName() . " entity and should be are on the database");
+                    }
 
-		    if ($assoc['inversedBy'] && $assoc['type'] && ClassMetadata::ONE_TO_ONE  &&
-			    isset($targetClass->associationMappings[$assoc['inversedBy']])) {
+                    if ($assoc['inversedBy'] && $assoc['type'] & ClassMetadata::ONE_TO_ONE) {
 
                         $inverseAssoc = $targetClass->associationMappings[$assoc['inversedBy']];
                         $targetClass->reflFields[$inverseAssoc['fieldName']]->setValue($newValue, $entity);
