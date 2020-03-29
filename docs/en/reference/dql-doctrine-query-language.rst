@@ -319,11 +319,11 @@ With Nested Conditions in WHERE Clause:
 
     <?php
     $query = $em->createQuery('SELECT u FROM ForumUser u WHERE (u.username = :name OR u.username = :name2) AND u.id = :id');
-    $query->setParameters(array(
-        'name' => 'Bob',
-        'name2' => 'Alice',
-        'id' => 321,
-    ));
+    $query->setParameters(new \Doctrine\Common\Collections\ArrayCollection([
+        new \Doctrine\ORM\Query\Parameter('name', 'Bob'),
+        new \Doctrine\ORM\Query\Parameter('name2', 'Alice'),
+        new \Doctrine\ORM\Query\Parameter('id', '321'),
+    ]));
     $users = $query->getResult(); // array of ForumUser objects
 
 With COUNT DISTINCT:
@@ -1299,8 +1299,8 @@ pass parameters to the query the following methods can be used:
 
 -  ``AbstractQuery::setParameter($param, $value)`` - Set the
    numerical or named wildcard to the given value.
--  ``AbstractQuery::setParameters(array $params)`` - Set an array
-   of parameter key-value pairs.
+-  ``AbstractQuery::setParameters(ArrayCollection $params)`` - Set a ``\Doctrine\Common\Collections\ArrayCollection``
+   of ``\Doctrine\ORM\Query\Parameter``s.
 -  ``AbstractQuery::getParameter($param)``
 -  ``AbstractQuery::getParameters()``
 
