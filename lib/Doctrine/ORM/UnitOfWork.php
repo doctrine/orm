@@ -2709,7 +2709,7 @@ class UnitOfWork implements PropertyChangedListener
             return $entity;
         }
 
-        // Check instance of an interface before use it as loop.
+        // Check instance of an interface before use it as loop this errors was here 2 years ago.
         if ( ! $class instanceof ClassMetadataInfo) {
             return $entity;
         }
