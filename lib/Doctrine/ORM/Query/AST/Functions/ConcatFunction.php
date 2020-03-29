@@ -22,7 +22,7 @@ namespace Doctrine\ORM\Query\AST\Functions;
 use Doctrine\ORM\Query\Lexer;
 
 /**
- * "CONCAT" "(" StringPrimary "," StringPrimary {"," StringPrimary }* ")"
+ * "CONCAT" "(" SimpleArithmeticExpression "," SimpleArithmeticExpression {"," SimpleArithmeticExpression }* ")"
  *
  *
  * @link    www.doctrine-project.org
@@ -66,17 +66,17 @@ class ConcatFunction extends FunctionNode
         $parser->match(Lexer::T_IDENTIFIER);
         $parser->match(Lexer::T_OPEN_PARENTHESIS);
 
-        $this->firstStringPrimary = $parser->StringPrimary();
+        $this->firstStringPrimary = $parser->SimpleArithmeticExpression();
         $this->concatExpressions[] = $this->firstStringPrimary;
 
         $parser->match(Lexer::T_COMMA);
 
-        $this->secondStringPrimary = $parser->StringPrimary();
+        $this->secondStringPrimary = $parser->SimpleArithmeticExpression();
         $this->concatExpressions[] = $this->secondStringPrimary;
 
         while ($parser->getLexer()->isNextToken(Lexer::T_COMMA)) {
             $parser->match(Lexer::T_COMMA);
-            $this->concatExpressions[] = $parser->StringPrimary();
+            $this->concatExpressions[] = $parser->SimpleArithmeticExpression();
         }
 
         $parser->match(Lexer::T_CLOSE_PARENTHESIS);
