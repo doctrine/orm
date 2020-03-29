@@ -2709,6 +2709,10 @@ class UnitOfWork implements PropertyChangedListener
             return $entity;
         }
 
+        if ($class instanceof ClassMetadataInfo) {
+            return $entity;
+        }
+
         foreach ($class->associationMappings as $field => $assoc) {
             // Check if the association is not among the fetch-joined associations already.
             if (isset($hints['fetchAlias']) && isset($hints['fetched'][$hints['fetchAlias']][$field])) {
