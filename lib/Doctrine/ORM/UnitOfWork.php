@@ -2709,10 +2709,11 @@ class UnitOfWork implements PropertyChangedListener
             return $entity;
         }
 
-        // Check instance of an interface before use it as loop this errors was here 2 years ago.
-        if ( ! $class instanceof ClassMetadataInfo) {
+        // Check instance of an interface before use it.
+        if ($class instanceof ClassMetadataInfo === false) {
             return $entity;
         }
+
         foreach ($class->associationMappings as $field => $assoc) {
             // Check if the association is not among the fetch-joined associations already.
             if (isset($hints['fetchAlias']) && isset($hints['fetched'][$hints['fetchAlias']][$field])) {
