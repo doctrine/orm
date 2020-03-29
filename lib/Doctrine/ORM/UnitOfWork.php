@@ -2709,7 +2709,7 @@ class UnitOfWork implements PropertyChangedListener
             return $entity;
         }
 
-        if ($class instanceof ClassMetadataInfo) {
+        if ( ! $class instanceof ClassMetadataInfo) {
             return $entity;
         }
 
