@@ -46,9 +46,9 @@ use Doctrine\ORM\Utility\IdentifierFlattener;
 use InvalidArgumentException;
 use Throwable;
 use UnexpectedValueException;
+use function array_key_exists;
 use function get_class;
 use function is_object;
-use function array_key_exists;
 
 /**
  * The UnitOfWork is responsible for tracking changes to objects during an
