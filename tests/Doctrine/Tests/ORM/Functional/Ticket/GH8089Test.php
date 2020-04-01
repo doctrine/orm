@@ -44,6 +44,7 @@ class GH8089InvoiceCode extends GH8089AbstractYearSequenceValue
 
 /**
  * @Embeddable
+ * @MappedSuperclass
  */
 abstract class GH8089AbstractYearSequenceValue
 {
