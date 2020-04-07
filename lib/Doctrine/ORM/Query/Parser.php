@@ -1505,7 +1505,7 @@ class Parser
                 $expr = $this->FunctionDeclaration();
                 break;
 
-            case ($this->isMathOperator($peek)):
+            case ($this->isMathOperator($peek) || $this->isMathOperator($glimpse)):
                 $expr = $this->SimpleArithmeticExpression();
                 break;
 
