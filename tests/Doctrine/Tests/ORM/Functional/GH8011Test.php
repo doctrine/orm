@@ -50,6 +50,20 @@ class GH8011Test extends OrmFunctionalTestCase
         $this->assertEquals('Guilherme B.', $result[1]->getName());
     }
 
+    public function testOrderWithArithmeticExpressionWithLiteralAndSingleValuedPathExpression2()
+    {
+        $dql = 'SELECT p ' .
+            'FROM Doctrine\Tests\Models\Company\CompanyEmployee p ' .
+            'ORDER BY ((1 + p.id)) ASC';
+
+        /** @var CompanyEmployee[] $result */
+        $result = $this->_em->createQuery($dql)->getResult();
+
+        $this->assertEquals(2, count($result));
+        $this->assertEquals('Benjamin E.', $result[0]->getName());
+        $this->assertEquals('Guilherme B.', $result[1]->getName());
+    }
+
     public function testOrderWithArithmeticExpressionWithSingleValuedPathExpressionAndLiteral()
     {
         $dql = 'SELECT p ' .
@@ -78,6 +92,20 @@ class GH8011Test extends OrmFunctionalTestCase
         $this->assertEquals('Benjamin E.', $result[1]->getName());
     }
 
+    public function testOrderWithArithmeticExpressionWithResultVariableAndLiteral2()
+    {
+        $dql = 'SELECT p,  p.salary AS HIDDEN s ' .
+            'FROM Doctrine\Tests\Models\Company\CompanyEmployee p ' .
+            'ORDER BY ((s + 1)) DESC';
+
+        /** @var CompanyEmployee[] $result */
+        $result = $this->_em->createQuery($dql)->getResult();
+
+        $this->assertEquals(2, count($result));
+        $this->assertEquals('Guilherme B.', $result[0]->getName());
+        $this->assertEquals('Benjamin E.', $result[1]->getName());
+    }
+
     public function testOrderWithArithmeticExpressionWithLiteralAndResultVariable()
     {
         $dql = 'SELECT p,  p.salary AS HIDDEN s ' .
@@ -92,11 +120,39 @@ class GH8011Test extends OrmFunctionalTestCase
         $this->assertEquals('Benjamin E.', $result[1]->getName());
     }
 
+    public function testOrderWithArithmeticExpressionWithLiteralAndResultVariable2()
+    {
+        $dql = 'SELECT p,  p.salary AS HIDDEN s ' .
+            'FROM Doctrine\Tests\Models\Company\CompanyEmployee p ' .
+            'ORDER BY ((1 + s)) DESC';
+
+        /** @var CompanyEmployee[] $result */
+        $result = $this->_em->createQuery($dql)->getResult();
+
+        $this->assertEquals(2, count($result));
+        $this->assertEquals('Guilherme B.', $result[0]->getName());
+        $this->assertEquals('Benjamin E.', $result[1]->getName());
+    }
+
     public function testOrderWithArithmeticExpressionWithResultVariableAndSingleValuedPathExpression()
     {
         $dql = 'SELECT p,  p.salary AS HIDDEN s ' .
             'FROM Doctrine\Tests\Models\Company\CompanyEmployee p ' .
             'ORDER BY s + p.id DESC';
+
+        /** @var CompanyEmployee[] $result */
+        $result = $this->_em->createQuery($dql)->getResult();
+
+        $this->assertEquals(2, count($result));
+        $this->assertEquals('Guilherme B.', $result[0]->getName());
+        $this->assertEquals('Benjamin E.', $result[1]->getName());
+    }
+
+    public function testOrderWithArithmeticExpressionWithResultVariableAndSingleValuedPathExpression2()
+    {
+        $dql = 'SELECT p,  p.salary AS HIDDEN s ' .
+            'FROM Doctrine\Tests\Models\Company\CompanyEmployee p ' .
+            'ORDER BY ((s + p.id)) DESC';
 
         /** @var CompanyEmployee[] $result */
         $result = $this->_em->createQuery($dql)->getResult();
