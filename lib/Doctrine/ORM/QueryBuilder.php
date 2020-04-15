@@ -602,11 +602,13 @@ class QueryBuilder
      */
     public function getParameter($key)
     {
+        $key = Query\Parameter::normalizeName($key);
+
         $filteredParameters = $this->parameters->filter(
             function (Query\Parameter $parameter) use ($key) : bool {
                 $parameterName = $parameter->getName();
 
-                return $key === $parameterName || (string) $key === (string) $parameterName;
+                return $key === $parameterName;
             }
         );
 
