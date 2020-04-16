@@ -27,6 +27,7 @@ use Doctrine\ORM\OptimisticLockException;
 use Doctrine\ORM\Query;
 use Doctrine\ORM\Utility\HierarchyDiscriminatorResolver;
 use Doctrine\ORM\Utility\PersisterHelper;
+use function trim;
 
 /**
  * The SqlWalker is a TreeWalker that walks over a DQL AST and constructs
@@ -1553,12 +1554,20 @@ class SqlWalker implements TreeWalker
                     break;
 
                 case ($e instanceof AST\PathExpression):
-                    $dqlAlias  = $e->identificationVariable;
-                    $qComp     = $this->queryComponents[$dqlAlias];
-                    $class     = $qComp['metadata'];
-                    $fieldType = $class->fieldMappings[$e->field]['type'];
+                    $dqlAlias     = $e->identificationVariable;
+                    $qComp        = $this->queryComponents[$dqlAlias];
+                    $class        = $qComp['metadata'];
+                    $fieldType    = $class->fieldMappings[$e->field]['type'];
+                    $fieldName    = $e->field;
+                    $fieldMapping = $class->fieldMappings[$fieldName];
+                    $col          = trim($e->dispatch($this));
 
-                    $sqlSelectExpressions[] = trim($e->dispatch($this)) . ' AS ' . $columnAlias;
+                    if (isset($fieldMapping['requireSQLConversion'])) {
+                        $type = Type::getType($fieldType);
+                        $col  = $type->convertToPHPValueSQL($col, $this->platform);
+                    }
+
+                    $sqlSelectExpressions[] = $col . ' AS ' . $columnAlias;
                     break;
 
                 case ($e instanceof AST\Literal):
