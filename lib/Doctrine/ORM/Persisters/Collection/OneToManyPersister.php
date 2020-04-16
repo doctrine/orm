@@ -141,7 +141,10 @@ class OneToManyPersister extends AbstractCollectionPersister
         $criteria = new Criteria();
 
         $criteria->andWhere(Criteria::expr()->eq($mapping['mappedBy'], $collection->getOwner()));
-        $criteria->andWhere(Criteria::expr()->eq($mapping['indexBy'], $key));
+
+        $targetClass = $this->em->getClassMetadata($mapping['targetEntity']);
+        $indexByExpr = $targetClass->hasField($mapping['indexBy']) ? Criteria::expr()->eq($mapping['indexBy'], $key) : Criteria::expr()->in($targetClass->getFieldForColumn($mapping['indexBy']), [$key]);
+        $criteria->andWhere($indexByExpr);
 
         return (bool) $persister->count($criteria);
     }
