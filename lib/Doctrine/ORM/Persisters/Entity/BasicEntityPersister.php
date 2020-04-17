@@ -52,6 +52,7 @@ use function is_array;
 use function is_object;
 use function sprintf;
 use function strpos;
+use function strtolower;
 use function strtoupper;
 use function trim;
 
@@ -1605,13 +1606,13 @@ class BasicEntityPersister implements EntityPersister
             $tableName .= '#' . $assocName;
         }
 
-        if (isset($this->currentPersisterContext->sqlTableAliases[$tableName])) {
-            return $this->currentPersisterContext->sqlTableAliases[$tableName];
+        if (isset($this->currentPersisterContext->sqlTableAliases[strtolower($tableName)])) {
+            return $this->currentPersisterContext->sqlTableAliases[strtolower($tableName)];
         }
 
         $tableAlias = 't' . $this->currentPersisterContext->sqlAliasCounter++;
 
-        $this->currentPersisterContext->sqlTableAliases[$tableName] = $tableAlias;
+        $this->currentPersisterContext->sqlTableAliases[strtolower($tableName)] = $tableAlias;
 
         return $tableAlias;
     }
