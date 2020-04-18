@@ -421,6 +421,24 @@ class QueryTest extends OrmTestCase
         self::assertEmpty($query->getResult());
     }
 
+    /** @group 8113 */
+    public function testValuesAreNotBeingResolvedForDateTimeParameterTypes() : void
+    {
+        $unitOfWork = $this->createMock(UnitOfWork::class);
+
+        $this->_em->setUnitOfWork($unitOfWork);
+
+        $unitOfWork
+            ->expects(self::never())
+            ->method('getSingleIdentifierValue');
+
+        $query = $this->_em->createQuery('SELECT d FROM ' . DateTimeModel::class . ' d WHERE d.datetime = :value');
+
+        $query->setParameter('value', new DateTime());
+
+        self::assertEmpty($query->getResult());
+    }
+
     /** @group 7982 */
     public function testNonExistentExecutor()
     {
