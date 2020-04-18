@@ -432,7 +432,7 @@ final class Query extends AbstractQuery
     /** @return mixed[] tuple of (value, type) */
     private function resolveParameterValue(Parameter $parameter) : array
     {
-        if ($parameter->typeWasSpecified()) {
+        if ($parameter->typeWasSpecified() || $this->isEarlyInferredType($parameter)) {
             return [$parameter->getValue(), $parameter->getType()];
         }
 
@@ -790,5 +790,15 @@ final class Query extends AbstractQuery
         parent::__clone();
 
         $this->_state = self::STATE_DIRTY;
+    }
+
+    /**
+     * @param Parameter $parameter
+     *
+     * @return bool
+     */
+    private function isEarlyInferredType(Parameter $parameter)
+    {
+        return $parameter->getValue() instanceof \DateTimeInterface;
     }
 }
