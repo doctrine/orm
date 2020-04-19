@@ -1166,7 +1166,7 @@ public function __construct(<params>)
         $inheritanceClassMap = [];
 
         foreach ($metadata->discriminatorMap as $type => $class) {
-            $inheritanceClassMap[] .= '"' . $type . '" = "' . $class . '"';
+            $inheritanceClassMap[] = '"' . $type . '" = "' . $class . '"';
         }
 
         return '@' . $this->annotationsPrefix . 'DiscriminatorMap({' . implode(', ', $inheritanceClassMap) . '})';
