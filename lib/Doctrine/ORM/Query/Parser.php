@@ -171,7 +171,7 @@ class Parser
     /**
      * The custom last tree walker, if any, that is responsible for producing the output.
      *
-     * @var TreeWalker
+     * @var class-string<TreeWalker>
      */
     private $customOutputWalker;
 

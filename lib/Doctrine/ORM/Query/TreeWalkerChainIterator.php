@@ -25,7 +25,7 @@ namespace Doctrine\ORM\Query;
 class TreeWalkerChainIterator implements \Iterator, \ArrayAccess
 {
     /**
-     * @var TreeWalker[]
+     * @var class-string<TreeWalker>[]
      */
     private $walkers = [];
     /**
