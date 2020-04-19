@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "2b24c11061bfc0216397bfa7e2c17b6e",
+    "content-hash": "41b259f8d2ab145c98151104fc3e1aa8",
     "packages": [
         {
             "name": "doctrine/annotations",
@@ -2069,6 +2069,62 @@
                 "stub"
             ],
             "time": "2019-10-03T11:07:50+00:00"
+        },
+        {
+            "name": "phpstan/phpstan",
+            "version": "0.12.24",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/phpstan/phpstan.git",
+                "reference": "823a120fea50b68742b2be2285818202ecce511e"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/phpstan/phpstan/zipball/823a120fea50b68742b2be2285818202ecce511e",
+                "reference": "823a120fea50b68742b2be2285818202ecce511e",
+                "shasum": ""
+            },
+            "require": {
+                "php": "^7.1"
+            },
+            "conflict": {
+                "phpstan/phpstan-shim": "*"
+            },
+            "bin": [
+                "phpstan",
+                "phpstan.phar"
+            ],
+            "type": "library",
+            "extra": {
+                "branch-alias": {
+                    "dev-master": "0.12-dev"
+                }
+            },
+            "autoload": {
+                "files": [
+                    "bootstrap.php"
+                ]
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "description": "PHPStan - PHP Static Analysis Tool",
+            "funding": [
+                {
+                    "url": "https://github.com/ondrejmirtes",
+                    "type": "github"
+                },
+                {
+                    "url": "https://www.patreon.com/phpstan",
+                    "type": "patreon"
+                },
+                {
+                    "url": "https://tidelift.com/funding/github/packagist/phpstan/phpstan",
+                    "type": "tidelift"
+                }
+            ],
+            "time": "2020-05-10T14:25:55+00:00"
         },
         {
             "name": "phpunit/php-code-coverage",
