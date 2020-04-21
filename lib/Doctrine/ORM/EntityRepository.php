@@ -84,7 +84,7 @@ class EntityRepository implements ObjectRepository, Selectable
      */
     public function clear()
     {
-        $this->em->clear($this->class->getRootClassName());
+        $this->em->clear();
     }
 
     /**
