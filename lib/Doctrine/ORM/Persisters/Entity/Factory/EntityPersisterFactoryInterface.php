@@ -8,20 +8,18 @@ use Doctrine\ORM\Persisters\Entity\EntityPersister;
 
 interface EntityPersisterFactoryInterface
 {
+    /**
+     * Creates a basic entity persister
+     */
+    public function createBasic(EntityManagerInterface $em, ClassMetadata $class): EntityPersister;
 
-	/**
-	 * Creates a basic entity persister
-	 */
-	public function createBasic(EntityManagerInterface $em, ClassMetadata $class): EntityPersister;
+    /**
+     * Creates a single table entity persister
+     */
+    public function createSingleTable(EntityManagerInterface $em, ClassMetadata $class): EntityPersister;
 
-	/**
-	 * Creates a single table entity persister
-	 */
-	public function createSingleTable(EntityManagerInterface $em, ClassMetadata $class): EntityPersister;
-
-	/**
-	 * Creates a joined subclass entity persister
-	 */
-	public function createJoined(EntityManagerInterface $em, ClassMetadata $class): EntityPersister;
-
+    /**
+     * Creates a joined subclass entity persister
+     */
+    public function createJoined(EntityManagerInterface $em, ClassMetadata $class): EntityPersister;
 }

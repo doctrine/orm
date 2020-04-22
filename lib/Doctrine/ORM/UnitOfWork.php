@@ -2577,15 +2577,15 @@ class UnitOfWork implements PropertyChangedListener
 
         switch (true) {
             case $class->inheritanceType === InheritanceType::NONE:
-				$persister = $this->entityPersisterFactory->createBasic($this->em, $class);
+                $persister = $this->entityPersisterFactory->createBasic($this->em, $class);
                 break;
 
             case $class->inheritanceType === InheritanceType::SINGLE_TABLE:
-            	$persister = $this->entityPersisterFactory->createSingleTable($this->em, $class);
+                $persister = $this->entityPersisterFactory->createSingleTable($this->em, $class);
                 break;
 
             case $class->inheritanceType === InheritanceType::JOINED:
-            	$persister = $this->entityPersisterFactory->createJoined($this->em, $class);
+                $persister = $this->entityPersisterFactory->createJoined($this->em, $class);
                 break;
 
             default:

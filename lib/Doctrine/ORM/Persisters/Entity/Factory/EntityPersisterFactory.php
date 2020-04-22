@@ -11,29 +11,27 @@ use Doctrine\ORM\Persisters\Entity\SingleTablePersister;
 
 final class EntityPersisterFactory implements EntityPersisterFactoryInterface
 {
+    /**
+     * {@inheritDoc}
+     */
+    public function createBasic(EntityManagerInterface $em, ClassMetadata $class): EntityPersister
+    {
+        return new BasicEntityPersister($em, $class);
+    }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	public function createBasic(EntityManagerInterface $em, ClassMetadata $class): EntityPersister
-	{
-		return new BasicEntityPersister($em, $class);
-	}
+    /**
+     * {@inheritDoc}
+     */
+    public function createSingleTable(EntityManagerInterface $em, ClassMetadata $class): EntityPersister
+    {
+        return new SingleTablePersister($em, $class);
+    }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	public function createSingleTable(EntityManagerInterface $em, ClassMetadata $class): EntityPersister
-	{
-		return new SingleTablePersister($em, $class);
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
-	public function createJoined(EntityManagerInterface $em, ClassMetadata $class): EntityPersister
-	{
-		return new JoinedSubclassPersister($em, $class);
-	}
-
+    /**
+     * {@inheritDoc}
+     */
+    public function createJoined(EntityManagerInterface $em, ClassMetadata $class): EntityPersister
+    {
+        return new JoinedSubclassPersister($em, $class);
+    }
 }
