@@ -35,10 +35,9 @@ use Doctrine\ORM\Mapping\ToOneAssociationMetadata;
 use Doctrine\ORM\Persisters\Collection\CollectionPersister;
 use Doctrine\ORM\Persisters\Collection\ManyToManyPersister;
 use Doctrine\ORM\Persisters\Collection\OneToManyPersister;
-use Doctrine\ORM\Persisters\Entity\BasicEntityPersister;
 use Doctrine\ORM\Persisters\Entity\EntityPersister;
-use Doctrine\ORM\Persisters\Entity\JoinedSubclassPersister;
-use Doctrine\ORM\Persisters\Entity\SingleTablePersister;
+use Doctrine\ORM\Persisters\Entity\Factory\EntityPersisterFactory;
+use Doctrine\ORM\Persisters\Entity\Factory\EntityPersisterFactoryInterface;
 use Doctrine\ORM\Utility\NormalizeIdentifier;
 use Exception;
 use InvalidArgumentException;
@@ -301,6 +300,9 @@ class UnitOfWork implements PropertyChangedListener
     /** @var NormalizeIdentifier */
     private $normalizeIdentifier;
 
+    /** @var EntityPersisterFactoryInterface */
+    private $entityPersisterFactory;
+
     /**
      * Initializes a new UnitOfWork instance, bound to the given EntityManager.
      */
@@ -313,6 +315,7 @@ class UnitOfWork implements PropertyChangedListener
         $this->instantiator             = new Instantiator();
         $this->hydrationCompleteHandler = new HydrationCompleteHandler($this->listenersInvoker, $em);
         $this->normalizeIdentifier      = new NormalizeIdentifier();
+        $this->entityPersisterFactory   = new EntityPersisterFactory();
     }
 
     /**
@@ -2411,6 +2414,11 @@ class UnitOfWork implements PropertyChangedListener
         $collection->setInitialized(true);
     }
 
+    public function setEntityPersisterFactory(EntityPersisterFactoryInterface $entityPersisterFactory)
+    {
+        $this->entityPersisterFactory = $entityPersisterFactory;
+    }
+
     /**
      * Gets the identity map of the UnitOfWork.
      *
@@ -2569,15 +2577,15 @@ class UnitOfWork implements PropertyChangedListener
 
         switch (true) {
             case $class->inheritanceType === InheritanceType::NONE:
-                $persister = new BasicEntityPersister($this->em, $class);
+				$persister = $this->entityPersisterFactory->createBasic($this->em, $class);
                 break;
 
             case $class->inheritanceType === InheritanceType::SINGLE_TABLE:
-                $persister = new SingleTablePersister($this->em, $class);
+            	$persister = $this->entityPersisterFactory->createSingleTable($this->em, $class);
                 break;
 
             case $class->inheritanceType === InheritanceType::JOINED:
-                $persister = new JoinedSubclassPersister($this->em, $class);
+            	$persister = $this->entityPersisterFactory->createJoined($this->em, $class);
                 break;
 
             default:
