@@ -36,8 +36,8 @@ use Doctrine\ORM\Persisters\Collection\CollectionPersister;
 use Doctrine\ORM\Persisters\Collection\ManyToManyPersister;
 use Doctrine\ORM\Persisters\Collection\OneToManyPersister;
 use Doctrine\ORM\Persisters\Entity\EntityPersister;
+use Doctrine\ORM\Persisters\Entity\Factory\BasicEntityPersisterFactory;
 use Doctrine\ORM\Persisters\Entity\Factory\EntityPersisterFactory;
-use Doctrine\ORM\Persisters\Entity\Factory\EntityPersisterFactoryInterface;
 use Doctrine\ORM\Utility\NormalizeIdentifier;
 use Exception;
 use InvalidArgumentException;
@@ -300,7 +300,7 @@ class UnitOfWork implements PropertyChangedListener
     /** @var NormalizeIdentifier */
     private $normalizeIdentifier;
 
-    /** @var EntityPersisterFactoryInterface */
+    /** @var EntityPersisterFactory */
     private $entityPersisterFactory;
 
     /**
@@ -315,7 +315,7 @@ class UnitOfWork implements PropertyChangedListener
         $this->instantiator             = new Instantiator();
         $this->hydrationCompleteHandler = new HydrationCompleteHandler($this->listenersInvoker, $em);
         $this->normalizeIdentifier      = new NormalizeIdentifier();
-        $this->entityPersisterFactory   = new EntityPersisterFactory();
+        $this->entityPersisterFactory   = new BasicEntityPersisterFactory();
     }
 
     /**
@@ -2414,7 +2414,7 @@ class UnitOfWork implements PropertyChangedListener
         $collection->setInitialized(true);
     }
 
-    public function setEntityPersisterFactory(EntityPersisterFactoryInterface $entityPersisterFactory)
+    public function setEntityPersisterFactory(EntityPersisterFactory $entityPersisterFactory)
     {
         $this->entityPersisterFactory = $entityPersisterFactory;
     }

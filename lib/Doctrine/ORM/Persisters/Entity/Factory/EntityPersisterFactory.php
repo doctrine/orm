@@ -1,37 +1,27 @@
-<?php declare(strict_types = 1);
+<?php
+
+declare(strict_types=1);
 
 namespace Doctrine\ORM\Persisters\Entity\Factory;
 
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Mapping\ClassMetadata;
-use Doctrine\ORM\Persisters\Entity\BasicEntityPersister;
 use Doctrine\ORM\Persisters\Entity\EntityPersister;
-use Doctrine\ORM\Persisters\Entity\JoinedSubclassPersister;
-use Doctrine\ORM\Persisters\Entity\SingleTablePersister;
 
-final class EntityPersisterFactory implements EntityPersisterFactoryInterface
+interface EntityPersisterFactory
 {
     /**
-     * {@inheritDoc}
+     * Creates a basic entity persister
      */
-    public function createBasic(EntityManagerInterface $em, ClassMetadata $class): EntityPersister
-    {
-        return new BasicEntityPersister($em, $class);
-    }
+    public function createBasic(EntityManagerInterface $em, ClassMetadata $class) : EntityPersister;
 
     /**
-     * {@inheritDoc}
+     * Creates a single table entity persister
      */
-    public function createSingleTable(EntityManagerInterface $em, ClassMetadata $class): EntityPersister
-    {
-        return new SingleTablePersister($em, $class);
-    }
+    public function createSingleTable(EntityManagerInterface $em, ClassMetadata $class) : EntityPersister;
 
     /**
-     * {@inheritDoc}
+     * Creates a joined subclass entity persister
      */
-    public function createJoined(EntityManagerInterface $em, ClassMetadata $class): EntityPersister
-    {
-        return new JoinedSubclassPersister($em, $class);
-    }
+    public function createJoined(EntityManagerInterface $em, ClassMetadata $class) : EntityPersister;
 }
