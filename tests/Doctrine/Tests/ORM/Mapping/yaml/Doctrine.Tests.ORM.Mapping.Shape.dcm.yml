@@ -1,0 +1,14 @@
+Doctrine\Tests\ORM\Mapping\Shape:
+  type: entity
+  inheritanceType: SINGLE_TABLE
+  discriminatorMap:
+    cube: Doctrine\Tests\ORM\Mapping\cube
+  discriminatorColumn:
+    type: string
+    name: discr
+    length: 32
+  id:
+    id:
+      type: integer
+      generator:
+        strategy: AUTO
