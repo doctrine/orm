@@ -255,6 +255,21 @@ and for managed entities. If you want to set a type explicitly you can call
 the third argument to ``setParameter()`` explicitly. It accepts either a PDO
 type or a DBAL Type name for conversion.
 
+.. note::
+
+    Even though passing DateTime instance is allowed, it impacts performance 
+    as by default there is an attempt to load metadata for object, and if it's not found, 
+    type is inferred from the original value.
+    
+.. code-block:: php
+
+    <?php
+    
+    use Doctrine\DBAL\Types\Types;
+    
+    // prevents attempt to load metadata for date time class, improving performance
+    $qb->setParameter('date', new \DateTimeImmutable(), Types::DATE_IMMUTABLE)
+
 If you've got several parameters to bind to your query, you can
 also use setParameters() instead of setParameter() with the
 following syntax:
@@ -581,4 +596,3 @@ same query of example 6 written using
       ->add('from', new Expr\From('User', 'u'))
       ->add('where', new Expr\Comparison('u.id', '=', '?1'))
       ->add('orderBy', new Expr\OrderBy('u.name', 'ASC'));
-
