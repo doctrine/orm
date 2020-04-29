@@ -488,7 +488,6 @@ classes. We'll store them in ``src/Bug.php`` and ``src/User.php``, respectively.
     use Doctrine\ORM\Mapping as ORM;
 
     /**
-     * @ORM\Entity(repositoryClass="BugRepository")
      * @ORM\Table(name="bugs")
      */
     class Bug
