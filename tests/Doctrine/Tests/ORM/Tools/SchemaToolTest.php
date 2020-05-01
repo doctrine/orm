@@ -64,9 +64,19 @@ class SchemaToolTest extends OrmTestCase
         $schema = $schemaTool->getSchemaFromMetadata($classes);
 
         $expected = ['foo' => 'bar', 'baz' => ['key' => 'val']];
+        $table    = $schema->getTable('TestEntityWithAnnotationOptionsAttribute');
 
-        self::assertEquals($expected, $schema->getTable('TestEntityWithAnnotationOptionsAttribute')->getOptions(), 'options annotation are passed to the tables options');
-        self::assertEquals($expected, $schema->getTable('TestEntityWithAnnotationOptionsAttribute')->getColumn('test')->getCustomSchemaOptions(), 'options annotation are passed to the columns customSchemaOptions');
+        self::assertEquals(
+            array_merge($expected, ['create_options' => []]),
+            $table->getOptions(),
+            'options annotation are passed to the tables options'
+        );
+
+        self::assertEquals(
+            $expected,
+            $table->getColumn('test')->getCustomSchemaOptions(),
+            'options annotation are passed to the columns customSchemaOptions'
+        );
     }
 
     /**

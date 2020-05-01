@@ -347,7 +347,7 @@ abstract class AbstractQuery
      *
      * @return static This query instance.
      */
-    public function setParameter($key, $value, ?string $type = null)
+    public function setParameter($key, $value, $type = null)
     {
         $existingParameter = $this->getParameter($key);
 

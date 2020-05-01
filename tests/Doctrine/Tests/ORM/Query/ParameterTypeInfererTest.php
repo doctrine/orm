@@ -20,8 +20,8 @@ class ParameterTypeInfererTest extends OrmTestCase
     {
         $data = [
             [1,                 Type::INTEGER],
-            ['bar',             ParameterType::STRING],
-            ['1',               ParameterType::STRING],
+            ['bar',             Type::STRING],
+            ['1',               Type::STRING],
             [new DateTime(),     Type::DATETIME],
             [new DateInterval('P1D'), Type::DATEINTERVAL],
             [[2],          Connection::PARAM_INT_ARRAY],
