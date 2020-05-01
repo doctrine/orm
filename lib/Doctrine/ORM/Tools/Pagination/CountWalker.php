@@ -66,10 +66,8 @@ class CountWalker extends TreeWalkerAdapter
 
         $distinct = $this->getQuery()->getHint(self::HINT_DISTINCT);
 
-        $AST->selectClause->selectExpressions = [new SelectExpression(
-            new AggregateExpression('count', $pathExpression, $distinct),
-            null
-        ),
+        $AST->selectClause->selectExpressions = [
+            new SelectExpression(new AggregateExpression('count', $pathExpression, $distinct), null),
         ];
 
         // ORDER BY is not needed, only increases query execution through unnecessary sorting.

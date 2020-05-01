@@ -924,11 +924,10 @@ class SqlWalker implements TreeWalker
 
         $tableName  = $class->table->getQuotedQualifiedName($this->platform);
         $tableAlias = $this->getSQLTableAlias($class->getTableName(), $dqlAlias);
-
-        $sql = $this->platform->appendLockHint(
-            $tableName . ' ' . $tableAlias,
-            $this->query->getHint(Query::HINT_LOCK_MODE)
-        );
+        $lockMode   = $this->query->getHint(Query::HINT_LOCK_MODE);
+        $sql        = $lockMode !== false
+            ? $this->platform->appendLockHint($tableName . ' ' . $tableAlias, $lockMode)
+            : $tableName . ' ' . $tableAlias;
 
         if ($class->inheritanceType !== InheritanceType::JOINED) {
             return $sql;

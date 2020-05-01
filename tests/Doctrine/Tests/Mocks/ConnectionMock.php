@@ -10,6 +10,7 @@ use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\Driver;
 use Doctrine\DBAL\Driver\ResultStatement;
 use Doctrine\DBAL\Driver\Statement;
+use Doctrine\DBAL\ParameterType;
 use Doctrine\DBAL\Platforms\AbstractPlatform;
 use Exception;
 use function is_string;
@@ -31,8 +32,8 @@ class ConnectionMock extends Connection
     /** @var DatabasePlatformMock */
     private $platformMock;
 
-    /** @var int */
-    private $lastInsertId = 0;
+    /** @var string */
+    private $lastInsertId = '0';
 
     /** @var array */
     private $inserts = [];
@@ -51,15 +52,12 @@ class ConnectionMock extends Connection
         $this->platformMock = new DatabasePlatformMock();
 
         parent::__construct($params, $driver, $config, $eventManager);
-
-        // Override possible assignment of platform to database platform mock
-        $this->platform = $this->platformMock;
     }
 
     /**
      * {@inheritdoc}
      */
-    public function getDatabasePlatform()
+    public function getDatabasePlatform() : AbstractPlatform
     {
         return $this->platformMock;
     }
@@ -67,7 +65,7 @@ class ConnectionMock extends Connection
     /**
      * {@inheritdoc}
      */
-    public function insert($tableName, array $data, array $types = [])
+    public function insert($tableName, array $data, array $types = []) : int
     {
         $this->inserts[$tableName][] = $data;
     }
@@ -85,7 +83,7 @@ class ConnectionMock extends Connection
     /**
      * {@inheritdoc}
      */
-    public function lastInsertId($seqName = null)
+    public function lastInsertId($seqName = null) : string
     {
         return $this->lastInsertId;
     }
@@ -113,7 +111,7 @@ class ConnectionMock extends Connection
     /**
      * {@inheritdoc}
      */
-    public function quote($input, $type = null)
+    public function quote($input, $type = ParameterType::STRING) : string
     {
         if (is_string($input)) {
             return "'" . $input . "'";

@@ -15,6 +15,7 @@ use function unserialize;
 
 /**
  * @group DDC-3103
+ * @group embedded
  */
 class DDC3103Test extends OrmFunctionalTestCase
 {
@@ -23,8 +24,6 @@ class DDC3103Test extends OrmFunctionalTestCase
      */
     public function testIssue() : void
     {
-        $this->markTestSkipped('Embeddables are ommitted for now');
-
         $driver = $this->createAnnotationDriver();
 
         $metadataBuildingContext = new ClassMetadataBuildingContext(

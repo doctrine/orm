@@ -138,7 +138,7 @@ class DDC3192CurrencyCode extends Type
     /**
      * {@inheritdoc}
      */
-    public function getSQLDeclaration(array $fieldDeclaration, AbstractPlatform $platform)
+    public function getSQLDeclaration(array $fieldDeclaration, AbstractPlatform $platform) : string
     {
         return $platform->getSmallIntTypeDeclarationSQL($fieldDeclaration);
     }
@@ -162,7 +162,7 @@ class DDC3192CurrencyCode extends Type
     /**
      * {@inheritdoc}
      */
-    public function getName()
+    public function getName() : string
     {
         return 'ddc3192_currency_code';
     }

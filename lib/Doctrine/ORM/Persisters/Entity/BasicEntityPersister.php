@@ -312,7 +312,6 @@ class BasicEntityPersister implements EntityPersister
         $value = $this->conn->fetchColumn(
             $sql,
             array_values($flattenedId),
-            0,
             $this->extractIdentifierTypes($id, $versionedClass)
         );
 
@@ -2126,7 +2125,7 @@ class BasicEntityPersister implements EntityPersister
             $sql .= ' AND ' . $filterSql;
         }
 
-        return (bool) $this->conn->fetchColumn($sql, $params, 0, $types);
+        return (bool) $this->conn->fetchColumn($sql, $params, $types);
     }
 
     /**

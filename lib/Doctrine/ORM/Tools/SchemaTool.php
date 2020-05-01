@@ -282,7 +282,7 @@ class SchemaTool
             if ($class->table->getIndexes()) {
                 foreach ($class->table->getIndexes() as $indexName => $indexData) {
                     $indexName = is_numeric($indexName) ? null : $indexName;
-                    $index     = new Index($indexName, $indexData['columns'], $indexData['unique'], $indexData['flags'], $indexData['options']);
+                    $index     = new Index($indexName, $indexData['columns'], $indexData['unique'], false, $indexData['flags'], $indexData['options']);
 
                     foreach ($table->getIndexes() as $tableIndexName => $tableIndex) {
                         if ($tableIndex->isFullfilledBy($index)) {
@@ -689,22 +689,18 @@ class SchemaTool
                 // Only add the column to the table if it does not exist already.
                 // It might exist already if the foreign key is mapped into a regular
                 // property as well.
-                $property  = $definingClass->getProperty($referencedFieldName);
-                $columnDef = null;
+                $property      = $definingClass->getProperty($referencedFieldName);
+                $columnOptions = [
+                    'notnull' => ! $joinColumn->isNullable(),
+                ] + $this->gatherColumnOptions($property->getOptions());
 
                 if (! empty($joinColumn->getColumnDefinition())) {
-                    $columnDef = $joinColumn->getColumnDefinition();
+                    $columnOptions['columnDefinition'] = $joinColumn->getColumnDefinition();
                 } elseif ($property->getColumnDefinition()) {
-                    $columnDef = $property->getColumnDefinition();
+                    $columnOptions['columnDefinition'] = $property->getColumnDefinition();
                 }
 
-                $columnType    = $property->getTypeName();
-                $columnOptions = [
-                    'notnull'          => ! $joinColumn->isNullable(),
-                    'columnDefinition' => $columnDef,
-                ];
-
-                $columnOptions += $this->gatherColumnOptions($property->getOptions());
+                $columnType = $property->getTypeName();
 
                 switch ($columnType) {
                     case 'string':

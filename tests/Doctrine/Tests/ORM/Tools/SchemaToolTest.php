@@ -26,6 +26,7 @@ use Doctrine\Tests\Models\Forum\ForumAvatar;
 use Doctrine\Tests\Models\Forum\ForumUser;
 use Doctrine\Tests\Models\NullDefault\NullDefaultColumn;
 use Doctrine\Tests\OrmTestCase;
+use function array_merge;
 use function count;
 use function current;
 
@@ -64,9 +65,19 @@ class SchemaToolTest extends OrmTestCase
         $schema = $schemaTool->getSchemaFromMetadata($classes);
 
         $expected = ['foo' => 'bar', 'baz' => ['key' => 'val']];
+        $table    = $schema->getTable('TestEntityWithAnnotationOptionsAttribute');
 
-        self::assertEquals($expected, $schema->getTable('TestEntityWithAnnotationOptionsAttribute')->getOptions(), 'options annotation are passed to the tables options');
-        self::assertEquals($expected, $schema->getTable('TestEntityWithAnnotationOptionsAttribute')->getColumn('test')->getCustomSchemaOptions(), 'options annotation are passed to the columns customSchemaOptions');
+        self::assertEquals(
+            array_merge($expected, ['create_options' => []]),
+            $table->getOptions(),
+            'options annotation are passed to the tables options'
+        );
+
+        self::assertEquals(
+            $expected,
+            $table->getColumn('test')->getCustomSchemaOptions(),
+            'options annotation are passed to the columns customSchemaOptions'
+        );
     }
 
     /**

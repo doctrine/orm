@@ -54,13 +54,10 @@ class EntityManagerDecoratorTest extends DoctrineTestCase
 
         /** Special case EntityManager::transactional() */
         if ($method->getName() === 'transactional') {
-            return [
-                $method->getName(),
-                [
-                    static function () {
-                    },
-                ],
-            ];
+            $staticVoidFunction = static function () {
+            };
+
+            return [$method->getName(), [$staticVoidFunction]];
         }
 
         if ($method->getNumberOfRequiredParameters() === 0) {

@@ -28,7 +28,7 @@ class Parameter
     /**
      * The parameter type.
      *
-     * @var mixed
+     * @var int|string|null
      */
     private $type;
 
@@ -40,9 +40,9 @@ class Parameter
     private $typeSpecified;
 
     /**
-     * @param string $name  Parameter name
-     * @param mixed  $value Parameter value
-     * @param mixed  $type  Parameter type
+     * @param string          $name  Parameter name
+     * @param mixed           $value Parameter value
+     * @param int|string|null $type  Parameter type
      */
     public function __construct($name, $value, $type = null)
     {
