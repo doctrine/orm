@@ -16,14 +16,14 @@ class StatementMock implements IteratorAggregate, Statement
     /**
      * {@inheritdoc}
      */
-    public function bindValue($param, $value, int $type = ParameterType::STRING) : void
+    public function bindValue($param, $value, $type = ParameterType::STRING) : void
     {
     }
 
     /**
      * {@inheritdoc}
      */
-    public function bindParam($column, &$variable, int $type = ParameterType::STRING, ?int $length = null) : void
+    public function bindParam($column, &$variable, $type = ParameterType::STRING, $length = null) : void
     {
     }
 
@@ -44,7 +44,7 @@ class StatementMock implements IteratorAggregate, Statement
     /**
      * {@inheritdoc}
      */
-    public function execute(?array $params = null) : void
+    public function execute($params = null) : void
     {
     }
 
@@ -73,21 +73,21 @@ class StatementMock implements IteratorAggregate, Statement
     /**
      * {@inheritdoc}
      */
-    public function setFetchMode(int $fetchMode, ...$args) : void
+    public function setFetchMode($fetchMode, ...$args) : void
     {
     }
 
     /**
      * {@inheritdoc}
      */
-    public function fetch(?int $fetchMode = null, ...$args)
+    public function fetch($fetchMode = null, ...$args)
     {
     }
 
     /**
      * {@inheritdoc}
      */
-    public function fetchAll(?int $fetchMode = null, ...$args) : array
+    public function fetchAll($fetchMode = null, ...$args) : array
     {
     }
 

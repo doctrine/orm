@@ -333,7 +333,7 @@ class DDC3634LastInsertIdMockingConnection extends Connection
         return $this->forwardCall();
     }
 
-    public function lastInsertId(?string $seqName = null) : string
+    public function lastInsertId($seqName = null) : string
     {
         return $this->identifier;
     }

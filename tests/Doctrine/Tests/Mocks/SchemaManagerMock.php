@@ -21,7 +21,7 @@ class SchemaManagerMock extends AbstractSchemaManager
     /**
      * {@inheritdoc}
      */
-    protected function _getPortableTableColumnDefinition(array $tableColumn) : Column
+    protected function _getPortableTableColumnDefinition($tableColumn) : Column
     {
     }
 }

@@ -52,7 +52,7 @@ class DriverConnectionMock implements Connection
     /**
      * {@inheritdoc}
      */
-    public function quote($input) : string
+    public function quote($input, $type = ParameterType::STRING) : string
     {
     }
 
@@ -66,7 +66,7 @@ class DriverConnectionMock implements Connection
     /**
      * {@inheritdoc}
      */
-    public function lastInsertId(?string $name = null) : string
+    public function lastInsertId($name = null) : string
     {
     }
 

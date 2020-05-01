@@ -10,6 +10,7 @@ use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\Driver;
 use Doctrine\DBAL\Driver\ResultStatement;
 use Doctrine\DBAL\Driver\Statement;
+use Doctrine\DBAL\ParameterType;
 use Doctrine\DBAL\Platforms\AbstractPlatform;
 use Exception;
 use function is_string;
@@ -82,7 +83,7 @@ class ConnectionMock extends Connection
     /**
      * {@inheritdoc}
      */
-    public function lastInsertId(?string $seqName = null) : string
+    public function lastInsertId($seqName = null) : string
     {
         return $this->lastInsertId;
     }
@@ -110,7 +111,7 @@ class ConnectionMock extends Connection
     /**
      * {@inheritdoc}
      */
-    public function quote(string $input) : string
+    public function quote($input, $type = ParameterType::STRING) : string
     {
         if (is_string($input)) {
             return "'" . $input . "'";

@@ -452,14 +452,13 @@ class Parser
         $distance = 12;
 
         // Find a position of a final word to display in error string
-        $dql    = $this->query->getDQL();
-        $length = strlen($dql);
-        $pos    = $token['position'] + $distance;
-        $pos    = strpos($dql, ' ', $length > $pos ? $pos : $length);
-        $length = $pos !== false ? $pos - $token['position'] : $distance;
-
-        $tokenPos = isset($token['position']) && $token['position'] > 0 ? $token['position'] : '-1';
-        $tokenStr = substr($dql, (int) $token['position'], $length);
+        $dql      = $this->query->getDQL();
+        $length   = strlen($dql);
+        $tokenPos = $token && isset($token['position']) && $token['position'] > 0 ? $token['position'] : 0;
+        $pos      = $tokenPos + $distance;
+        $pos      = strpos($dql, ' ', $length > $pos ? $pos : $length);
+        $length   = $pos !== false ? $pos - $tokenPos : $distance;
+        $tokenStr = substr($dql, $tokenPos, $length);
 
         // Building informative message
         $message = 'line 0, col ' . $tokenPos . " near '" . $tokenStr . "': Error: " . $message;
@@ -515,7 +514,7 @@ class Parser
      */
     private function isMathOperator($token)
     {
-        return in_array($token['type'], [Lexer::T_PLUS, Lexer::T_MINUS, Lexer::T_DIVIDE, Lexer::T_MULTIPLY], true);
+        return $token && in_array($token['type'], [Lexer::T_PLUS, Lexer::T_MINUS, Lexer::T_DIVIDE, Lexer::T_MULTIPLY], true);
     }
 
     /**
@@ -530,7 +529,7 @@ class Parser
 
         $this->lexer->resetPeek();
 
-        return $lookaheadType >= Lexer::T_IDENTIFIER && $peek['type'] === Lexer::T_OPEN_PARENTHESIS;
+        return $lookaheadType >= Lexer::T_IDENTIFIER && $peek && $peek['type'] === Lexer::T_OPEN_PARENTHESIS;
     }
 
     /**
@@ -808,6 +807,11 @@ class Parser
         $statement = null;
 
         $this->lexer->moveNext();
+
+        // Check if we do have something to be parsed
+        if ($this->lexer->lookahead === null) {
+            $this->syntaxError('SELECT, UPDATE or DELETE');
+        }
 
         switch ($this->lexer->lookahead['type']) {
             case Lexer::T_SELECT:
@@ -1443,7 +1447,7 @@ class Parser
         // We need to check if we are in a IdentificationVariable or SingleValuedPathExpression
         $glimpse = $this->lexer->glimpse();
 
-        if ($glimpse['type'] === Lexer::T_DOT) {
+        if ($glimpse && $glimpse['type'] === Lexer::T_DOT) {
             return $this->SingleValuedPathExpression();
         }
 
@@ -1469,26 +1473,12 @@ class Parser
      */
     public function OrderByItem()
     {
-        $this->lexer->peek(); // lookahead => '.'
-        $this->lexer->peek(); // lookahead => token after '.'
-
-        $peek = $this->lexer->peek(); // lookahead => token after the token after the '.'
-
-        $this->lexer->resetPeek();
-
         $glimpse = $this->lexer->glimpse();
 
         switch (true) {
             case $this->isFunction():
-                $expr = $this->FunctionDeclaration();
-                break;
-
-            case $this->isMathOperator($peek):
+            case $glimpse && $glimpse['type'] === Lexer::T_DOT:
                 $expr = $this->SimpleArithmeticExpression();
-                break;
-
-            case $glimpse['type'] === Lexer::T_DOT:
-                $expr = $this->SingleValuedPathExpression();
                 break;
 
             case $this->lexer->peek() && $this->isMathOperator($this->peekBeyondClosingParenthesis()):
@@ -2446,9 +2436,10 @@ class Parser
         // Peek beyond the matching closing parenthesis ')'
         $peek = $this->peekBeyondClosingParenthesis();
 
-        if (in_array($peek['value'], ['=', '<', '<=', '<>', '>', '>=', '!='], true) ||
+        if ($peek && (
+            in_array($peek['value'], ['=', '<', '<=', '<>', '>', '>=', '!='], true) ||
             in_array($peek['type'], [Lexer::T_NOT, Lexer::T_BETWEEN, Lexer::T_LIKE, Lexer::T_IN, Lexer::T_IS, Lexer::T_EXISTS], true) ||
-            $this->isMathOperator($peek)) {
+            $this->isMathOperator($peek))) {
             $condPrimary->simpleConditionalExpression = $this->SimpleConditionalExpression();
 
             return $condPrimary;
@@ -2801,11 +2792,11 @@ class Parser
             case Lexer::T_IDENTIFIER:
                 $peek = $this->lexer->glimpse();
 
-                if ($peek['value'] === '(') {
+                if ($peek && $peek['value'] === '(') {
                     return $this->FunctionDeclaration();
                 }
 
-                if ($peek['value'] === '.') {
+                if ($peek && $peek['value'] === '.') {
                     return $this->SingleValuedPathExpression();
                 }
 
@@ -2819,7 +2810,7 @@ class Parser
             default:
                 $peek = $this->lexer->glimpse();
 
-                if ($peek['value'] === '(') {
+                if ($peek && $peek['value'] === '(') {
                     return $this->FunctionDeclaration();
                 }
 
@@ -3154,7 +3145,7 @@ class Parser
 
         $escapeChar = null;
 
-        if ($this->lexer->lookahead['type'] === Lexer::T_ESCAPE) {
+        if ($this->lexer->isNextToken(Lexer::T_ESCAPE)) {
             $this->match(Lexer::T_ESCAPE);
             $this->match(Lexer::T_STRING);
 

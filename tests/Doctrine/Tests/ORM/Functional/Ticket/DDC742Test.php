@@ -30,8 +30,9 @@ class DDC742Test extends OrmFunctionalTestCase
 
         mkdir($testDir);
 
+        // @todo guilhermeblanco Make sure this works later
         // using a Filesystemcache to ensure that the cached data is serialized
-        $this->em->getMetadataFactory()->setCacheDriver(new FilesystemCache($testDir));
+        //$this->em->getMetadataFactory()->setCacheDriver(new FilesystemCache($testDir));
 
         try {
             $this->schemaTool->createSchema(

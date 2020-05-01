@@ -24,7 +24,7 @@ class DriverMock implements Driver
     /**
      * {@inheritdoc}
      */
-    public function connect(array $params, ?string $username = null, ?string $password = null, array $driverOptions = []) : Driver\Connection
+    public function connect(array $params, $username = null, $password = null, array $driverOptions = []) : Driver\Connection
     {
         return new DriverConnectionMock();
     }

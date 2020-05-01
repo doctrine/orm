@@ -6,7 +6,7 @@ namespace Doctrine\Tests\ORM\Tools\Pagination;
 
 use Doctrine\DBAL\Platforms\MySqlPlatform;
 use Doctrine\DBAL\Platforms\OraclePlatform;
-use Doctrine\DBAL\Platforms\PostgreSqlPlatform;
+use Doctrine\DBAL\Platforms\PostgreSQL94Platform;
 use Doctrine\ORM\Query;
 use Doctrine\ORM\Tools\Pagination\LimitSubqueryOutputWalker;
 
@@ -30,7 +30,7 @@ final class LimitSubqueryOutputWalkerTest extends PaginationTestCase
     public function testLimitSubqueryWithSortPg() : void
     {
         $odp = $this->entityManager->getConnection()->getDatabasePlatform();
-        $this->entityManager->getConnection()->setDatabasePlatform(new PostgreSqlPlatform());
+        $this->entityManager->getConnection()->setDatabasePlatform(new PostgreSQL94Platform());
 
         $query      = $this->entityManager->createQuery(
             'SELECT p, c, a FROM Doctrine\Tests\ORM\Tools\Pagination\MyBlogPost p JOIN p.category c JOIN p.author a ORDER BY p.title'
@@ -49,7 +49,7 @@ final class LimitSubqueryOutputWalkerTest extends PaginationTestCase
     public function testLimitSubqueryWithScalarSortPg() : void
     {
         $odp = $this->entityManager->getConnection()->getDatabasePlatform();
-        $this->entityManager->getConnection()->setDatabasePlatform(new PostgreSqlPlatform());
+        $this->entityManager->getConnection()->setDatabasePlatform(new PostgreSQL94Platform());
 
         $query      = $this->entityManager->createQuery(
             'SELECT u, g, COUNT(g.id) AS g_quantity FROM Doctrine\Tests\ORM\Tools\Pagination\User u JOIN u.groups g ORDER BY g_quantity'
@@ -68,7 +68,7 @@ final class LimitSubqueryOutputWalkerTest extends PaginationTestCase
     public function testLimitSubqueryWithMixedSortPg() : void
     {
         $odp = $this->entityManager->getConnection()->getDatabasePlatform();
-        $this->entityManager->getConnection()->setDatabasePlatform(new PostgreSqlPlatform());
+        $this->entityManager->getConnection()->setDatabasePlatform(new PostgreSQL94Platform());
 
         $query      = $this->entityManager->createQuery(
             'SELECT u, g, COUNT(g.id) AS g_quantity FROM Doctrine\Tests\ORM\Tools\Pagination\User u JOIN u.groups g ORDER BY g_quantity, u.id DESC'
@@ -87,7 +87,7 @@ final class LimitSubqueryOutputWalkerTest extends PaginationTestCase
     public function testLimitSubqueryWithHiddenScalarSortPg() : void
     {
         $odp = $this->entityManager->getConnection()->getDatabasePlatform();
-        $this->entityManager->getConnection()->setDatabasePlatform(new PostgreSqlPlatform());
+        $this->entityManager->getConnection()->setDatabasePlatform(new PostgreSQL94Platform());
 
         $query      = $this->entityManager->createQuery(
             'SELECT u, g, COUNT(g.id) AS hidden g_quantity FROM Doctrine\Tests\ORM\Tools\Pagination\User u JOIN u.groups g ORDER BY g_quantity, u.id DESC'
@@ -106,7 +106,7 @@ final class LimitSubqueryOutputWalkerTest extends PaginationTestCase
     public function testLimitSubqueryPg() : void
     {
         $odp = $this->entityManager->getConnection()->getDatabasePlatform();
-        $this->entityManager->getConnection()->setDatabasePlatform(new PostgreSqlPlatform());
+        $this->entityManager->getConnection()->setDatabasePlatform(new PostgreSQL94Platform());
 
         $this->testLimitSubquery();
 
@@ -349,7 +349,7 @@ ORDER BY b.id DESC'
 
     public function testLimitSubqueryWithOrderByAndSubSelectInWhereClausePgSql() : void
     {
-        $this->entityManager->getConnection()->setDatabasePlatform(new PostgreSqlPlatform());
+        $this->entityManager->getConnection()->setDatabasePlatform(new PostgreSQL94Platform());
         $query = $this->entityManager->createQuery(
             'SELECT b FROM Doctrine\Tests\ORM\Tools\Pagination\BlogPost b
 WHERE  ((SELECT COUNT(simple.id) FROM Doctrine\Tests\ORM\Tools\Pagination\BlogPost simple) = 1)
@@ -412,7 +412,7 @@ ORDER BY b.id DESC'
      */
     public function testLimitSubqueryOrderBySubSelectOrderByExpressionPgSql() : void
     {
-        $this->entityManager->getConnection()->setDatabasePlatform(new PostgreSqlPlatform());
+        $this->entityManager->getConnection()->setDatabasePlatform(new PostgreSQL94Platform());
 
         $query = $this->entityManager->createQuery(
             'SELECT a,

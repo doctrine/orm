@@ -39,12 +39,12 @@ class StatementArrayMock extends StatementMock
         return 0;
     }
 
-    public function fetchAll(?int $fetchMode = null, ...$args) : array
+    public function fetchAll($fetchMode = null, ...$args) : array
     {
         return $this->result;
     }
 
-    public function fetch(?int $fetchMode = null, ...$args)
+    public function fetch($fetchMode = null, ...$args)
     {
         $current = current($this->result);
         next($this->result);
