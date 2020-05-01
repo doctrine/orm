@@ -7,19 +7,13 @@ php:
   - 7.4
 
 env:
-  - DB=mariadb104
-  - DB=sqlite3
-  - DB=mysql56
-  - DB=mysql57
-  - DB=pgsql94
-  - DB=pgsql100
+  - DB=mariadb
+  - DB=sqlite
+  - DB=mysql
+  - DB=pgsql
 
 before_install:
-  - |
-    if [[ $COVERAGE != 1 ]]; then
-      # disable xdebug for performance reasons when code coverage is not needed
-      phpenv config-rm xdebug.ini || echo "xdebug is not installed"
-    fi
+  - phpenv config-rm xdebug.ini || echo "xdebug is not installed"
   - echo "memory_limit=-1" >> ~/.phpenv/versions/$(phpenv version-name)/etc/conf.d/travis.ini
   - travis_retry composer self-update
 
@@ -29,7 +23,7 @@ install:
 
 script:
   - |
-    if [[ "$DB" == "mysql56" || "$DB" == "mysql57" ||  "$DB" == "mariadb104" ]]; then
+    if [[ "$DB" == "mysql" || "$DB" == "mariadb" ]]; then
       mysql -e "CREATE SCHEMA doctrine_tests; GRANT ALL PRIVILEGES ON doctrine_tests.* to travis@'%'";
     fi
   - ENABLE_SECOND_LEVEL_CACHE=0 ./vendor/bin/phpunit -v -c tests/travis/$DB.travis.xml
@@ -39,40 +33,25 @@ script:
 jobs:
   include:
     - stage: Test
-      env: DB=mariadb104
+      env: DB=mariadb
       addons:
         mariadb: '10.4'
 
     - stage: Test
-      env: DB=mysql56
-      sudo: required
-      addons:
-        apt:
-          packages:
-            - mysql-server-5.6
-            - mysql-client-core-5.6
-            - mysql-client-5.6
-
-    - stage: Test
-      env: DB=pgsql94
-      addons:
-        postgresql: '9.4'
-
-    - stage: Test
-      env: DB=sqlite3 DEPENDENCIES=low
+      env: DB=sqlite DEPENDENCIES=low
       install:
-        - travis_retry composer update --no-interaction --prefer-dist --no-suggest --prefer-lowest --no-progress --optimize-autoloader
+        - travis_retry composer update --no-interaction --prefer-dist --no-suggest --no-progress --prefer-lowest
 
     - stage: Test
       if: type = cron
-      env: DB=sqlite3 DEV_DEPENDENCIES
+      env: DB=sqlite DEV_DEPENDENCIES
       install:
         - rm composer.lock
         - composer config minimum-stability dev
-        - travis_retry composer update --no-interaction --prefer-dist --no-suggest --no-progress --optimize-autoloader
+        - travis_retry composer update --no-interaction --prefer-dist --no-suggest --no-progress
 
     - stage: Test
-      env: DB=sqlite COVERAGE=1
+      env: DB=sqlite COVERAGE
       before_script:
         - phpenv config-add xdebug.ini
         - if [[ ! $(php -m | grep -si xdebug) ]]; then echo "xdebug required for coverage"; exit 1; fi
@@ -90,11 +69,9 @@ jobs:
 
   allow_failures:
     # temporarily disabled
-    - env: DB=mariadb104
-    - env: DB=mysql56
-    - env: DB=mysql57
-    - env: DB=pgsql94
-    - env: DB=pgsql100
+    - env: DB=mariadb
+    - env: DB=mysql
+    - env: DB=pgsql
 
 cache:
   directories:
