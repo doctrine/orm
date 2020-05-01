@@ -344,7 +344,7 @@ class NativeQueryTest extends OrmFunctionalTestCase
     }
 
     /**
-     * @group rsm-sti
+     * @group GH-7151
      */
     public function testConcreteClassInJoinedTableInheritanceSchemaWithRSMBuilderIsFine() : void
     {
@@ -356,7 +356,7 @@ class NativeQueryTest extends OrmFunctionalTestCase
     }
 
     /**
-     * @group rsm-sti
+     * @group GH-7151
      */
     public function testAbstractClassInJoinedTableInheritanceSchemaWithRSMBuilderThrowsException() : void
     {
