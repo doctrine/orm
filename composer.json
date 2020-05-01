@@ -34,7 +34,7 @@
         "sort-packages": true
     },
     "require": {
-        "php": "^7.2",
+        "php": "^7.3",
         "ext-ctype": "*",
         "doctrine/annotations": "~1.7",
         "doctrine/cache": "~1.6",
