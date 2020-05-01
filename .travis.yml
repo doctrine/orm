@@ -5,7 +5,7 @@ language: php
 php:
   - 7.2
   - 7.3
-  - 7.4snapshot
+  - 7.4
 
 env:
   - DB=sqlite
@@ -42,7 +42,7 @@ jobs:
 
     - stage: Test
       env: DB=mysql MYSQL_VERSION=5.7
-      php: 7.4snapshot
+      php: 7.4
       before_script:
         - ./tests/travis/install-mysql-$MYSQL_VERSION.sh
       sudo: required
@@ -77,7 +77,7 @@ jobs:
       script: php phpbench.phar run --bootstrap=tests/Doctrine/Tests/TestInit.php -l dots --report=default
 
   allow_failures:
-    - php: 7.4snapshot
+    - php: 7.4
     # temporarily disabled
     - env: DB=mysql
     - env: DB=mariadb
