@@ -1,4 +1,4 @@
-dist: trusty
+dist: bionic
 sudo: false
 language: php
 
@@ -7,20 +7,31 @@ php:
   - 7.4
 
 env:
-  - DB=sqlite
-  - DB=mysql
-  - DB=pgsql
+  - DB=mariadb104
+  - DB=sqlite3
+  - DB=mysql56
+  - DB=mysql57
+  - DB=pgsql94
+  - DB=pgsql100
 
 before_install:
-  - mv ~/.phpenv/versions/$(phpenv version-name)/etc/conf.d/xdebug.ini{,.disabled} || echo "xdebug not available"
-  - composer self-update
+  - |
+    if [[ $COVERAGE != 1 ]]; then
+      # disable xdebug for performance reasons when code coverage is not needed
+      phpenv config-rm xdebug.ini || echo "xdebug is not installed"
+    fi
+  - echo "memory_limit=-1" >> ~/.phpenv/versions/$(phpenv version-name)/etc/conf.d/travis.ini
+  - travis_retry composer self-update
 
 install:
   - rm composer.lock
-  - travis_retry composer update --prefer-dist
+  - travis_retry composer update --no-interaction --prefer-dist --no-suggest --no-progress --optimize-autoloader
 
 script:
-  - if [[ "$DB" == "mysql" || "$DB" == "mariadb" ]]; then mysql -e "CREATE SCHEMA doctrine_tests; GRANT ALL PRIVILEGES ON doctrine_tests.* to travis@'%'"; fi
+  - |
+    if [[ "$DB" == "mysql56" || "$DB" == "mysql57" ||  "$DB" == "mariadb104" ]]; then
+      mysql -e "CREATE SCHEMA doctrine_tests; GRANT ALL PRIVILEGES ON doctrine_tests.* to travis@'%'";
+    fi
   - ENABLE_SECOND_LEVEL_CACHE=0 ./vendor/bin/phpunit -v -c tests/travis/$DB.travis.xml
   # temporarily disabled
   #- ENABLE_SECOND_LEVEL_CACHE=1 ./vendor/bin/phpunit -v -c tests/travis/$DB.travis.xml --exclude-group performance,non-cacheable,locking_functional
@@ -28,34 +39,42 @@ script:
 jobs:
   include:
     - stage: Test
-      env: DB=mariadb
+      env: DB=mariadb104
       addons:
-        mariadb: 10.1
+        mariadb: '10.4'
 
     - stage: Test
-      env: DB=mysql MYSQL_VERSION=5.7
-      php: 7.4
-      before_script:
-        - ./tests/travis/install-mysql-$MYSQL_VERSION.sh
+      env: DB=mysql56
       sudo: required
+      addons:
+        apt:
+          packages:
+            - mysql-server-5.6
+            - mysql-client-core-5.6
+            - mysql-client-5.6
 
     - stage: Test
-      env: DB=sqlite DEPENDENCIES=low
-      install: travis_retry composer update --prefer-dist --prefer-lowest
+      env: DB=pgsql94
+      addons:
+        postgresql: '9.4'
+
+    - stage: Test
+      env: DB=sqlite3 DEPENDENCIES=low
+      install:
+        - travis_retry composer update --no-interaction --prefer-dist --no-suggest --prefer-lowest --no-progress --optimize-autoloader
 
     - stage: Test
       if: type = cron
-      php: 7.3
-      env: DB=sqlite DEV_DEPENDENCIES
+      env: DB=sqlite3 DEV_DEPENDENCIES
       install:
         - rm composer.lock
         - composer config minimum-stability dev
-        - travis_retry composer update --prefer-dist
+        - travis_retry composer update --no-interaction --prefer-dist --no-suggest --no-progress --optimize-autoloader
 
     - stage: Test
-      env: DB=sqlite COVERAGE
+      env: DB=sqlite COVERAGE=1
       before_script:
-        - mv ~/.phpenv/versions/$(phpenv version-name)/etc/conf.d/xdebug.ini{.disabled,}
+        - phpenv config-add xdebug.ini
         - if [[ ! $(php -m | grep -si xdebug) ]]; then echo "xdebug required for coverage"; exit 1; fi
       script:
         - ENABLE_SECOND_LEVEL_CACHE=0 ./vendor/bin/phpunit -v -c tests/travis/$DB.travis.xml --coverage-clover ./build/logs/clover.xml
@@ -65,15 +84,17 @@ jobs:
 
     - stage: Code Quality
       env: DB=none BENCHMARK
-      before_script: wget https://phpbench.github.io/phpbench/phpbench.phar https://phpbench.github.io/phpbench/phpbench.phar.pubkey
+      before_script:
+        - wget https://phpbench.github.io/phpbench/phpbench.phar https://phpbench.github.io/phpbench/phpbench.phar.pubkey
       script: php phpbench.phar run --bootstrap=tests/Doctrine/Tests/TestInit.php -l dots --report=default
 
   allow_failures:
     # temporarily disabled
-    - env: DB=mysql
-    - env: DB=mariadb
-    - env: DB=pgsql
-    - env: DB=mysql MYSQL_VERSION=5.7
+    - env: DB=mariadb104
+    - env: DB=mysql56
+    - env: DB=mysql57
+    - env: DB=pgsql94
+    - env: DB=pgsql100
 
 cache:
   directories:
