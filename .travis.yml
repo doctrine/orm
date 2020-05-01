@@ -1,4 +1,4 @@
-dist: bionic
+dist: trusty
 sudo: false
 language: php
 
@@ -8,9 +8,9 @@ php:
 
 env:
   - DB=mariadb
-  - DB=sqlite
   - DB=mysql
   - DB=pgsql
+  - DB=sqlite
 
 before_install:
   - |
@@ -22,32 +22,23 @@ before_install:
 
 install:
   - rm composer.lock
-  - travis_retry composer update --no-interaction --prefer-dist --no-suggest --no-progress --optimize-autoloader
+  - travis_retry composer update --no-interaction --prefer-dist --no-suggest --no-progress
 
 script:
+  - |
+    if [[ "$DB" == "mysql" || "$DB" == "mariadb" ]]; then
+      mysql -e "CREATE SCHEMA doctrine_tests; GRANT ALL PRIVILEGES ON doctrine_tests.* to travis@'%'";
+    fi
   - ENABLE_SECOND_LEVEL_CACHE=0 ./vendor/bin/phpunit -v -c tests/travis/$DB.travis.xml
   # temporarily disabled
   #- ENABLE_SECOND_LEVEL_CACHE=1 ./vendor/bin/phpunit -v -c tests/travis/$DB.travis.xml --exclude-group performance,non-cacheable,locking_functional
 
 jobs:
   include:
-
-    - stage: Test
-      env: DB=pgsql
-      services:
-        - postgresql
-
-    - stage: Test
-      env: DB=mysql
-      services:
-        - mysql
-
     - stage: Test
       env: DB=mariadb
-      services:
-        - mariadb
       addons:
-        mariadb: '10.4'
+        mariadb: "10.4"
 
     - stage: Test
       env: DB=sqlite DEPENDENCIES=low
@@ -56,6 +47,7 @@ jobs:
 
     - stage: Test
       if: type = cron
+      php: 7.3
       env: DB=sqlite DEV_DEPENDENCIES
       install:
         - rm composer.lock
@@ -63,7 +55,7 @@ jobs:
         - travis_retry composer update --no-interaction --prefer-dist --no-suggest --no-progress
 
     - stage: Test
-      env: DB=sqlite COVERAGE=1
+      env: DB=sqlite COVERAGE
       before_script:
         - phpenv config-add xdebug.ini
         - if [[ ! $(php -m | grep -si xdebug) ]]; then echo "xdebug required for coverage"; exit 1; fi
@@ -77,12 +69,13 @@ jobs:
       env: DB=none BENCHMARK
       before_script:
         - wget https://phpbench.github.io/phpbench/phpbench.phar https://phpbench.github.io/phpbench/phpbench.phar.pubkey
-      script: php phpbench.phar run --bootstrap=tests/Doctrine/Tests/TestInit.php -l dots --report=default
+      script:
+        - php phpbench.phar run --bootstrap=tests/Doctrine/Tests/TestInit.php -l dots --report=default
 
   allow_failures:
     # temporarily disabled
-    - env: DB=mariadb
     - env: DB=mysql
+    - env: DB=mariadb
     - env: DB=pgsql
 
 cache:
