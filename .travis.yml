@@ -13,10 +13,6 @@ env:
   - DB=sqlite
 
 before_install:
-  - |
-    if [[ "$COVERAGE" != "1" ]]; then
-      phpenv config-rm xdebug.ini || echo "xdebug is not installed"
-    fi
   - echo "memory_limit=-1" >> ~/.phpenv/versions/$(phpenv version-name)/etc/conf.d/travis.ini
   - travis_retry composer self-update
 
@@ -57,7 +53,7 @@ jobs:
     - stage: Test
       env: DB=sqlite COVERAGE
       before_script:
-        - phpenv config-add xdebug.ini
+        - phpenv config-add ~/.phpenv/versions/$(phpenv version-name)/etc/conf.d/xdebug.ini
         - if [[ ! $(php -m | grep -si xdebug) ]]; then echo "xdebug required for coverage"; exit 1; fi
       script:
         - ENABLE_SECOND_LEVEL_CACHE=0 ./vendor/bin/phpunit -v -c tests/travis/$DB.travis.xml --coverage-clover ./build/logs/clover.xml
