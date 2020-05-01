@@ -13,7 +13,10 @@ env:
   - DB=pgsql
 
 before_install:
-  - phpenv config-rm xdebug.ini || echo "xdebug is not installed"
+  - |
+    if [[ "$COVERAGE" != "1" ]]; then
+      phpenv config-rm xdebug.ini || echo "xdebug is not installed"
+    fi
   - echo "memory_limit=-1" >> ~/.phpenv/versions/$(phpenv version-name)/etc/conf.d/travis.ini
   - travis_retry composer self-update
 
@@ -22,18 +25,27 @@ install:
   - travis_retry composer update --no-interaction --prefer-dist --no-suggest --no-progress --optimize-autoloader
 
 script:
-  - |
-    if [[ "$DB" == "mysql" || "$DB" == "mariadb" ]]; then
-      mysql -e "CREATE SCHEMA doctrine_tests; GRANT ALL PRIVILEGES ON doctrine_tests.* to travis@'%'";
-    fi
   - ENABLE_SECOND_LEVEL_CACHE=0 ./vendor/bin/phpunit -v -c tests/travis/$DB.travis.xml
   # temporarily disabled
   #- ENABLE_SECOND_LEVEL_CACHE=1 ./vendor/bin/phpunit -v -c tests/travis/$DB.travis.xml --exclude-group performance,non-cacheable,locking_functional
 
 jobs:
   include:
+
+    - stage: Test
+      env: DB=pgsql
+      services:
+        - postgresql
+
+    - stage: Test
+      env: DB=mysql
+      services:
+        - mysql
+
     - stage: Test
       env: DB=mariadb
+      services:
+        - mariadb
       addons:
         mariadb: '10.4'
 
@@ -51,7 +63,7 @@ jobs:
         - travis_retry composer update --no-interaction --prefer-dist --no-suggest --no-progress
 
     - stage: Test
-      env: DB=sqlite COVERAGE
+      env: DB=sqlite COVERAGE=1
       before_script:
         - phpenv config-add xdebug.ini
         - if [[ ! $(php -m | grep -si xdebug) ]]; then echo "xdebug required for coverage"; exit 1; fi
