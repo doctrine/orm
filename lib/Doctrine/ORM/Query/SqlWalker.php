@@ -925,7 +925,7 @@ class SqlWalker implements TreeWalker
         $tableName  = $class->table->getQuotedQualifiedName($this->platform);
         $tableAlias = $this->getSQLTableAlias($class->getTableName(), $dqlAlias);
         $lockMode   = $this->query->getHint(Query::HINT_LOCK_MODE);
-        $sql        = ($lockMode !== false)
+        $sql        = $lockMode !== false
             ? $this->platform->appendLockHint($tableName . ' ' . $tableAlias, $lockMode)
             : $tableName . ' ' . $tableAlias;
 

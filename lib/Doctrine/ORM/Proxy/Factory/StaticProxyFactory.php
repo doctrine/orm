@@ -82,24 +82,18 @@ final class StaticProxyFactory implements ProxyFactory
      */
     public function getProxy(ClassMetadata $metadata, array $identifier) : GhostObjectInterface
     {
-        $className                                 = $metadata->getClassName();
-        $persister                                 = $this->cachedPersisters[$className]
-            ?? $this->cachedPersisters[$className] = $this
-                ->entityManager
-                ->getUnitOfWork()
-                ->getEntityPersister($metadata->getClassName());
-
-        $proxyInstance                                            = $this
-            ->proxyFactory
-            ->createProxy(
-                $metadata->getClassName(),
-                $this->cachedInitializers[$className]
-                    ?? $this->cachedInitializers[$className]      = $this->makeInitializer($metadata, $persister),
-                $this->cachedSkippedProperties[$className]
-                    ?? $this->cachedSkippedProperties[$className] = [
-                        self::SKIPPED_PROPERTIES => $this->skippedFieldsFqns($metadata),
-                    ]
-            );
+        $className                                        = $metadata->getClassName();
+        $persister                                        = $this->cachedPersisters[$className]
+            ?? $this->cachedPersisters[$className]        = $this->entityManager->getUnitOfWork()->getEntityPersister($className);
+        $cachedInitializer                                = $this->cachedInitializers[$className]
+            ?? $this->cachedInitializers[$className]      = $this->makeInitializer($metadata, $persister);
+        $cachedSkippedProperties                          = $this->cachedSkippedProperties[$className]
+            ?? $this->cachedSkippedProperties[$className] = [self::SKIPPED_PROPERTIES => $this->skippedFieldsFqns($metadata)];
+        $proxyInstance                                    = $this->proxyFactory->createProxy(
+            $className,
+            $cachedInitializer,
+            $cachedSkippedProperties
+        );
 
         $persister->setIdentifier($proxyInstance, $identifier);
 
@@ -114,12 +108,12 @@ final class StaticProxyFactory implements ProxyFactory
             // we don't care
             array $parameters,
             // we don't care
-            & $initializer,
+            &$initializer,
             array $properties // we currently do not use this
         ) use (
             $metadata,
             $persister
-) : bool {
+        ) : bool {
             $originalInitializer = $initializer;
 
             $initializer = null;

@@ -7,7 +7,6 @@ namespace Doctrine\ORM\Query;
 use DateInterval;
 use DateTimeInterface;
 use Doctrine\DBAL\Connection;
-use Doctrine\DBAL\ParameterType;
 use Doctrine\DBAL\Types\Types;
 use function current;
 use function is_array;
