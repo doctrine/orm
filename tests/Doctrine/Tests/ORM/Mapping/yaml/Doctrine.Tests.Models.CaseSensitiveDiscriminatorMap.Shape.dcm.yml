@@ -1,8 +1,8 @@
-Doctrine\Tests\ORM\Mapping\Shape:
+Doctrine\Tests\Models\CaseSensitiveDiscriminatorMap\Shape:
   type: entity
   inheritanceType: SINGLE_TABLE
   discriminatorMap:
-    cube: Doctrine\Tests\ORM\Mapping\cube
+    cube: Doctrine\Tests\Models\CaseSensitiveDiscriminatorMap\cube
   discriminatorColumn:
     type: string
     name: discr

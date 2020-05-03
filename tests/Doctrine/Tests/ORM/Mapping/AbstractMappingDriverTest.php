@@ -14,6 +14,7 @@ use Doctrine\ORM\Mapping\MappingException;
 use Doctrine\ORM\Mapping\UnderscoreNamingStrategy;
 use Doctrine\Persistence\Mapping\RuntimeReflectionService;
 use Doctrine\Tests\Models\Cache\City;
+use Doctrine\Tests\Models\CaseSensitiveDiscriminatorMap\Shape;
 use Doctrine\Tests\Models\CMS\CmsAddress;
 use Doctrine\Tests\Models\CMS\CmsAddressListener;
 use Doctrine\Tests\Models\CMS\CmsUser;
@@ -1079,12 +1080,10 @@ abstract class AbstractMappingDriverTest extends OrmTestCase
         $this->assertEquals('dtype', $class->discriminatorColumn['name']);
     }
 
-    /**
-     * @expectedException \Doctrine\ORM\Mapping\MappingException
-     * @expectedExceptionMessage Entity class 'Doctrine\Tests\ORM\Mapping\cube' used in the discriminator map of class 'Doctrine\Tests\ORM\Mapping\Shape' does not exist.
-     */
     public function testInvalidSubClassCase()
     {
+        $this->expectException(MappingException::class);
+        $this->expectExceptionMessage('Entity class \'Doctrine\Tests\Models\CaseSensitiveDiscriminatorMap\cube\' used in the discriminator map of class \'Doctrine\Tests\Models\CaseSensitiveDiscriminatorMap\Shape\' does not exist.');
         $this->createClassMetadata(Shape::class);
     }
 }
@@ -1350,48 +1349,6 @@ class Dog extends Animal
     {
 
     }
-}
-
-/**
- * @Entity
- * @InheritanceType("SINGLE_TABLE")
- * @DiscriminatorMap({"cube" = cube::class})
- * @DiscriminatorColumn(name="discr", length=32, type="string")
- */
-abstract class Shape
-{
-    /** @Id @Column(type="string") @GeneratedValue(strategy="AUTO") */
-    public $id;
-
-    public static function loadMetadata(ClassMetadataInfo $metadata)
-    {
-        $metadata->setInheritanceType(ClassMetadataInfo::INHERITANCE_TYPE_SINGLE_TABLE);
-        $metadata->setDiscriminatorColumn([
-            'name' => 'discr',
-            'type' => 'string',
-            'length' => 32,
-        ]);
-        $metadata->setDiscriminatorMap([
-            'cube' => cube::class,
-        ]);
-        $metadata->mapField([
-            'fieldName' => 'id',
-            'type' => 'string',
-            'length' => NULL,
-            'precision' => 0,
-            'scale' => 0,
-            'nullable' => false,
-            'unique' => false,
-            'id' => true,
-            'columnName' => 'id',
-        ]);
-        $metadata->setIdGeneratorType(ClassMetadataInfo::GENERATOR_TYPE_AUTO);
-    }
-}
-
-/** @Entity */
-class Cube extends Shape
-{
 }
 
 /**
