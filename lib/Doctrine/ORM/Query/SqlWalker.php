@@ -327,29 +327,31 @@ class SqlWalker implements TreeWalker
         $parentClass = $class;
 
         while (($parentClass = $parentClass->getParent()) !== null) {
-            $tableName  = $parentClass->table->getQuotedQualifiedName($this->platform);
-            $tableAlias = $this->getSQLTableAlias($parentClass->getTableName(), $dqlAlias);
+            if (! $parentClass->isMappedSuperclass) {
+                $tableName  = $parentClass->table->getQuotedQualifiedName($this->platform);
+                $tableAlias = $this->getSQLTableAlias($parentClass->getTableName(), $dqlAlias);
 
-            // If this is a joined association we must use left joins to preserve the correct result.
-            $sql .= isset($this->queryComponents[$dqlAlias]['relation']) ? ' LEFT ' : ' INNER ';
-            $sql .= 'JOIN ' . $tableName . ' ' . $tableAlias . ' ON ';
+                // If this is a joined association we must use left joins to preserve the correct result.
+                $sql .= isset($this->queryComponents[$dqlAlias]['relation']) ? ' LEFT ' : ' INNER ';
+                $sql .= 'JOIN ' . $tableName . ' ' . $tableAlias . ' ON ';
 
-            $sqlParts = [];
+                $sqlParts = [];
 
-            foreach ($class->getIdentifierColumns($this->em) as $column) {
-                $quotedColumnName = $this->platform->quoteIdentifier($column->getColumnName());
+                foreach ($class->getIdentifierColumns($this->em) as $column) {
+                    $quotedColumnName = $this->platform->quoteIdentifier($column->getColumnName());
 
-                $sqlParts[] = $baseTableAlias . '.' . $quotedColumnName . ' = ' . $tableAlias . '.' . $quotedColumnName;
+                    $sqlParts[] = $baseTableAlias . '.' . $quotedColumnName . ' = ' . $tableAlias . '.' . $quotedColumnName;
+                }
+
+                $filterSql = $this->generateFilterConditionSQL($parentClass, $tableAlias);
+
+                // Add filters on the root class
+                if ($filterSql) {
+                    $sqlParts[] = $filterSql;
+                }
+
+                $sql .= implode(' AND ', $sqlParts);
             }
-
-            $filterSql = $this->generateFilterConditionSQL($parentClass, $tableAlias);
-
-            // Add filters on the root class
-            if ($filterSql) {
-                $sqlParts[] = $filterSql;
-            }
-
-            $sql .= implode(' AND ', $sqlParts);
         }
 
         // Ignore subclassing inclusion if partial objects is disallowed
@@ -636,11 +638,7 @@ class SqlWalker implements TreeWalker
             return $this->getSQLTableAlias($class->getTableName(), $identificationVariable);
         }
 
-        $property = $class->getProperty($fieldName);
-
-        if ($class->inheritanceType === InheritanceType::JOINED && $class->isInheritedProperty($fieldName)) {
-            $class = $property->getDeclaringClass();
-        }
+        $class = $class->getPropertyTableClass($fieldName);
 
         return $this->getSQLTableAlias($class->getTableName(), $identificationVariable);
     }
@@ -801,7 +799,7 @@ class SqlWalker implements TreeWalker
 
                 foreach ($subClass->getPropertiesIterator() as $association) {
                     // Skip if association is inherited
-                    if ($subClass->isInheritedProperty($association->getName())) {
+                    if ($subClass->isInheritedColumn($association->getName())) {
                         continue;
                     }
 
@@ -1472,7 +1470,7 @@ class SqlWalker implements TreeWalker
                                 continue;
                             }
 
-                            if ($subClass->isInheritedProperty($fieldName) || ($partialFieldSet && ! in_array($fieldName, $partialFieldSet, true))) {
+                            if ($subClass->isInheritedColumn($fieldName) || ($partialFieldSet && ! in_array($fieldName, $partialFieldSet, true))) {
                                 continue;
                             }
 

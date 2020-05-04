@@ -104,7 +104,7 @@ class MultiTableUpdateExecutor extends AbstractSqlExecutor
                 $field    = $updateItem->pathExpression->field;
                 $property = $class->getProperty($field);
 
-                if ($property && ! $class->isInheritedProperty($field)) {
+                if ($property && ! $class->isInheritedColumn($field)) {
                     $updateSQLParts[] = $sqlWalker->walkUpdateItem($updateItem);
                     $newValue         = $updateItem->newValue;
 
