@@ -870,7 +870,7 @@ class UnitOfWork implements PropertyChangedListener
     private function hasMissingIdsWhichAreForeignKeys(ClassMetadata $class, array $idValue) : bool
     {
         foreach ($idValue as $idField => $idFieldValue) {
-            if ($idFieldValue === null && isset($class->associationMappings[$idField])) {
+            if ($idFieldValue === null && $class->getProperty($idField) instanceof AssociationMetadata) {
                 return true;
             }
         }

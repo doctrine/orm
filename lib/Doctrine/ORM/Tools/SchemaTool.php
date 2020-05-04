@@ -15,6 +15,7 @@ use Doctrine\DBAL\Schema\Visitor\RemoveNamespacedAssets;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Mapping\AssociationMetadata;
 use Doctrine\ORM\Mapping\ClassMetadata;
+use Doctrine\ORM\Mapping\EmbeddedMetadata;
 use Doctrine\ORM\Mapping\FieldMetadata;
 use Doctrine\ORM\Mapping\GeneratorType;
 use Doctrine\ORM\Mapping\InheritanceType;
@@ -39,6 +40,7 @@ use function in_array;
 use function is_int;
 use function is_numeric;
 use function reset;
+use function sprintf;
 use function strtolower;
 
 /**
@@ -396,26 +398,32 @@ class SchemaTool
     /**
      * Gathers the column definitions as required by the DBAL of all field mappings
      * found in the given class.
-     *
-     * @param ClassMetadata $class
      */
-    private function gatherColumns($class, Table $table)
+    private function gatherColumns(ClassMetadata $class, Table $table, ?string $columnPrefix = null)
     {
         $pkColumns = [];
 
         foreach ($class->getPropertiesIterator() as $fieldName => $property) {
-            if (! ($property instanceof FieldMetadata)) {
-                continue;
-            }
-
             if ($class->inheritanceType === InheritanceType::SINGLE_TABLE && $class->isInheritedProperty($fieldName)) {
                 continue;
             }
 
-            $this->gatherColumn($class, $property, $table);
+            switch (true) {
+                case $property instanceof FieldMetadata:
+                    $this->gatherColumn($class, $property, $table, $columnPrefix);
 
-            if ($property->isPrimaryKey()) {
-                $pkColumns[] = $this->platform->quoteIdentifier($property->getColumnName());
+                    if ($property->isPrimaryKey()) {
+                        $pkColumns[] = $this->platform->quoteIdentifier($property->getColumnName());
+                    }
+
+                    break;
+
+                case $property instanceof EmbeddedMetadata:
+                    $foreignClass = $this->em->getClassMetadata($property->getTargetEntity());
+
+                    $this->gatherColumns($foreignClass, $table, $property->getColumnPrefix());
+
+                    break;
             }
         }
     }
@@ -423,15 +431,17 @@ class SchemaTool
     /**
      * Creates a column definition as required by the DBAL from an ORM field mapping definition.
      *
-     * @param ClassMetadata $classMetadata The class that owns the field mapping.
-     * @param FieldMetadata $fieldMetadata The field mapping.
-     *
      * @return Column The portable column definition as required by the DBAL.
      */
-    private function gatherColumn($classMetadata, FieldMetadata $fieldMetadata, Table $table)
+    private function gatherColumn(
+        ClassMetadata $classMetadata,
+        FieldMetadata $fieldMetadata,
+        Table $table,
+        ?string $columnPrefix = null
+    )
     {
         $fieldName  = $fieldMetadata->getName();
-        $columnName = $fieldMetadata->getColumnName();
+        $columnName = sprintf('%s%s', $columnPrefix, $fieldMetadata->getColumnName());
         $columnType = $fieldMetadata->getTypeName();
 
         $options = [
@@ -475,7 +485,7 @@ class SchemaTool
             $options['autoincrement'] = false;
         }
 
-        $quotedColumnName = $this->platform->quoteIdentifier($fieldMetadata->getColumnName());
+        $quotedColumnName = $this->platform->quoteIdentifier($columnName);
 
         if ($table->hasColumn($quotedColumnName)) {
             // required in some inheritance scenarios

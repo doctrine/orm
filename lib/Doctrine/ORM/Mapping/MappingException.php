@@ -754,6 +754,18 @@ class MappingException extends LogicException implements ORMException
     }
 
     /**
+     * @param string $targetEmbedded
+     * @param string $sourceEntity
+     * @param string $associationName
+     *
+     * @return MappingException
+     */
+    public static function invalidTargetEmbeddedClass($targetEmbedded, $sourceEntity, $associationName)
+    {
+        return new self("The target embedded '" . $targetEmbedded . "' cannot be found in '" . $sourceEntity . '#' . $associationName . "'.");
+    }
+
+    /**
      * @param string[] $cascades
      * @param string   $className
      * @param string   $propertyName

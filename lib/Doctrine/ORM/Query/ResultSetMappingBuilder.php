@@ -10,7 +10,6 @@ use Doctrine\ORM\Mapping\FieldMetadata;
 use Doctrine\ORM\Mapping\InheritanceType;
 use Doctrine\ORM\Mapping\JoinColumnMetadata;
 use Doctrine\ORM\Mapping\ToOneAssociationMetadata;
-use Doctrine\ORM\Utility\PersisterHelper;
 use InvalidArgumentException;
 use function in_array;
 use function sprintf;
@@ -150,9 +149,8 @@ class ResultSetMappingBuilder extends ResultSetMapping
 
                     foreach ($property->getJoinColumns() as $joinColumn) {
                         /** @var JoinColumnMetadata $joinColumn */
-                        $columnName           = $joinColumn->getColumnName();
-                        $referencedColumnName = $joinColumn->getReferencedColumnName();
-                        $columnAlias          = $platform->getSQLResultCasing(
+                        $columnName  = $joinColumn->getColumnName();
+                        $columnAlias = $platform->getSQLResultCasing(
                             $this->getColumnAlias($columnName, $renameMode, $customRenameColumns)
                         );
 
@@ -160,10 +158,6 @@ class ResultSetMappingBuilder extends ResultSetMapping
                             throw new InvalidArgumentException(
                                 sprintf("The column '%s' conflicts with another column in the mapper.", $columnName)
                             );
-                        }
-
-                        if (! $joinColumn->getType()) {
-                            $joinColumn->setType(PersisterHelper::getTypeOfColumn($referencedColumnName, $targetClass, $this->em));
                         }
 
                         $this->addMetaResult($alias, $columnAlias, $columnName, $property->isPrimaryKey(), $joinColumn->getType());

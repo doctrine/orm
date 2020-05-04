@@ -9,10 +9,7 @@ use Doctrine\ORM\Reflection\ReflectionService;
 use Doctrine\ORM\Sequencing\Executor\ValueGenerationExecutor;
 use ReflectionProperty;
 
-/**
- * @property MappedSuperClassMetadata $parent
- */
-class EmbeddedClassMetadata extends ComponentMetadata implements Property
+class EmbeddedMetadata implements Property
 {
     /** @var ClassMetadata */
     private $declaringClass;
@@ -26,10 +23,17 @@ class EmbeddedClassMetadata extends ComponentMetadata implements Property
     /** @var bool */
     protected $primaryKey = false;
 
-    public function __construct(string $name, string $className/*, ?MappedSuperClassMetadata $parent = null*/)
-    {
-        parent::__construct($className);
+    /** @var string */
+    private $targetEntity;
 
+    /** @var string */
+    private $sourceEntity;
+
+    /** @var string|null */
+    private $columnPrefix;
+
+    public function __construct(string $name)
+    {
         $this->name = $name;
     }
 
@@ -72,6 +76,36 @@ class EmbeddedClassMetadata extends ComponentMetadata implements Property
         return $this->primaryKey;
     }
 
+    public function getTargetEntity() : string
+    {
+        return $this->targetEntity;
+    }
+
+    public function setTargetEntity(string $targetEntity) : void
+    {
+        $this->targetEntity = $targetEntity;
+    }
+
+    public function getSourceEntity() : string
+    {
+        return $this->sourceEntity;
+    }
+
+    public function setSourceEntity(string $sourceEntity) : void
+    {
+        $this->sourceEntity = $sourceEntity;
+    }
+
+    public function getColumnPrefix() : ?string
+    {
+        return $this->columnPrefix;
+    }
+
+    public function setColumnPrefix(string $columnPrefix) : void
+    {
+        $this->columnPrefix = $columnPrefix;
+    }
+
     /**
      * {@inheritdoc}
      */
@@ -108,6 +142,8 @@ class EmbeddedClassMetadata extends ComponentMetadata implements Property
 
     public function getValueGenerationExecutor(AbstractPlatform $platform) : ?ValueGenerationExecutor
     {
-        return null;
+        return $this->isPrimaryKey()
+            ? new EmbeddedValueGeneratorExecutor()
+            : null;
     }
 }

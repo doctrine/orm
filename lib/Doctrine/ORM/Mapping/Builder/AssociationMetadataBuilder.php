@@ -4,8 +4,10 @@ declare(strict_types=1);
 
 namespace Doctrine\ORM\Mapping\Builder;
 
+use Doctrine\DBAL\Types\Type;
 use Doctrine\ORM\Annotation;
 use Doctrine\ORM\Mapping;
+use RuntimeException;
 use function array_diff;
 use function array_intersect;
 use function array_map;
@@ -155,5 +157,36 @@ abstract class AssociationMetadataBuilder
         }
 
         return constant($fetchModeConstant);
+    }
+
+    protected function createLazyDataTypeResolver(
+        Mapping\ClassMetadataBuildingContext $metadataBuildingContext,
+        Mapping\AssociationMetadata $associationMetadata,
+        Mapping\JoinColumnMetadata $joinColumnMetadata,
+        string $targetEntity
+    ) : Mapping\LazyDataType {
+        return Mapping\LazyDataType::create(
+            static function () use ($metadataBuildingContext, $associationMetadata, $joinColumnMetadata, $targetEntity) : Type {
+                $classMetadataFactory = $metadataBuildingContext->getClassMetadataFactory();
+                $targetClassMetadata  = $classMetadataFactory->getMetadataFor($targetEntity);
+                $targetColumnMetadata = $targetClassMetadata->getColumn($joinColumnMetadata->getReferencedColumnName());
+
+                if (! $targetColumnMetadata) {
+                    throw new RuntimeException(sprintf(
+                        'Could not resolve type of column "%s" of class "%s"',
+                        $joinColumnMetadata->getReferencedColumnName(),
+                        $associationMetadata->getDeclaringClass()->getClassName()
+                    ));
+                }
+
+                $resolvedType = $targetColumnMetadata->getType();
+
+                // Performance optimization: Once LazyDataType is resolved,
+                // replace the column type (lazy) with resolved column type.
+                $joinColumnMetadata->setType($resolvedType);
+
+                return $resolvedType;
+            }
+        );
     }
 }

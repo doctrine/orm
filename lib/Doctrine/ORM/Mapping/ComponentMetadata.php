@@ -120,36 +120,6 @@ abstract class ComponentMetadata
 
     public function getProperty(string $propertyName) : ?Property
     {
-        if (isset($this->properties[$propertyName])) {
-            return $this->properties[$propertyName];
-        }
-
-        return null;
-    }
-
-    /**
-     * @return ArrayIterator|ColumnMetadata[]
-     */
-    public function getColumnsIterator() : ArrayIterator
-    {
-        $iterator = new ArrayIterator();
-
-        foreach ($this->getPropertiesIterator() as $property) {
-            switch (true) {
-                case $property instanceof FieldMetadata:
-                    $iterator->offsetSet($property->getColumnName(), $property);
-                    break;
-
-                case $property instanceof ToOneAssociationMetadata && $property->isOwningSide():
-                    foreach ($property->getJoinColumns() as $joinColumn) {
-                        /** @var JoinColumnMetadata $joinColumn */
-                        $iterator->offsetSet($joinColumn->getColumnName(), $joinColumn);
-                    }
-
-                    break;
-            }
-        }
-
-        return $iterator;
+        return $this->properties[$propertyName] ?? null;
     }
 }

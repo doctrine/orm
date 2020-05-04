@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "31b8b2dd6e3b5304bcb59a944f64773a",
+    "content-hash": "fd3ca11866a547222b11ab6fdaa9b629",
     "packages": [
         {
             "name": "doctrine/annotations",
@@ -233,12 +233,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/doctrine/dbal.git",
-                "reference": "96ddf9e8cffd0bf148a0a02b9b8886fe881ed8fc"
+                "reference": "a1348e8b243e3e7656f38c5fa4ed053a275be72e"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/doctrine/dbal/zipball/96ddf9e8cffd0bf148a0a02b9b8886fe881ed8fc",
-                "reference": "96ddf9e8cffd0bf148a0a02b9b8886fe881ed8fc",
+                "url": "https://api.github.com/repos/doctrine/dbal/zipball/a1348e8b243e3e7656f38c5fa4ed053a275be72e",
+                "reference": "a1348e8b243e3e7656f38c5fa4ed053a275be72e",
                 "shasum": ""
             },
             "require": {
@@ -334,7 +334,7 @@
                     "type": "tidelift"
                 }
             ],
-            "time": "2020-05-01T02:45:06+00:00"
+            "time": "2020-05-04T17:09:29+00:00"
         },
         {
             "name": "doctrine/event-manager",
@@ -4206,7 +4206,7 @@
     "prefer-stable": false,
     "prefer-lowest": false,
     "platform": {
-        "php": "^7.2",
+        "php": "^7.3",
         "ext-ctype": "*"
     },
     "platform-dev": [],

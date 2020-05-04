@@ -22,7 +22,6 @@ use Doctrine\ORM\Mapping\ToOneAssociationMetadata;
 use Doctrine\ORM\OptimisticLockException;
 use Doctrine\ORM\Query;
 use Doctrine\ORM\Utility\HierarchyDiscriminatorResolver;
-use Doctrine\ORM\Utility\PersisterHelper;
 use function array_diff;
 use function array_filter;
 use function array_keys;
@@ -775,10 +774,6 @@ class SqlWalker implements TreeWalker
                     $columnAlias          = $this->getSQLColumnAlias();
                     $sqlTableAlias        = $this->getSQLTableAlias($joinColumn->getTableName(), $dqlAlias);
 
-                    if (! $joinColumn->getType()) {
-                        $joinColumn->setType(PersisterHelper::getTypeOfColumn($referencedColumnName, $targetClass, $this->em));
-                    }
-
                     $sqlSelectExpressions[] = sprintf(
                         '%s.%s AS %s',
                         $sqlTableAlias,
@@ -813,15 +808,10 @@ class SqlWalker implements TreeWalker
 
                     foreach ($association->getJoinColumns() as $joinColumn) {
                         /** @var JoinColumnMetadata $joinColumn */
-                        $columnName           = $joinColumn->getColumnName();
-                        $referencedColumnName = $joinColumn->getReferencedColumnName();
-                        $quotedColumnName     = $this->platform->quoteIdentifier($columnName);
-                        $columnAlias          = $this->getSQLColumnAlias();
-                        $sqlTableAlias        = $this->getSQLTableAlias($joinColumn->getTableName(), $dqlAlias);
-
-                        if (! $joinColumn->getType()) {
-                            $joinColumn->setType(PersisterHelper::getTypeOfColumn($referencedColumnName, $targetClass, $this->em));
-                        }
+                        $columnName       = $joinColumn->getColumnName();
+                        $quotedColumnName = $this->platform->quoteIdentifier($columnName);
+                        $columnAlias      = $this->getSQLColumnAlias();
+                        $sqlTableAlias    = $this->getSQLTableAlias($joinColumn->getTableName(), $dqlAlias);
 
                         $sqlSelectExpressions[] = sprintf(
                             '%s.%s AS %s',
