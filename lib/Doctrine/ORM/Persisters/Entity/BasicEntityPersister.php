@@ -16,6 +16,7 @@ use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Mapping\AssociationMetadata;
 use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\Mapping\ColumnMetadata;
+use Doctrine\ORM\Mapping\EmbeddedMetadata;
 use Doctrine\ORM\Mapping\FetchMode;
 use Doctrine\ORM\Mapping\FieldMetadata;
 use Doctrine\ORM\Mapping\GeneratorType;

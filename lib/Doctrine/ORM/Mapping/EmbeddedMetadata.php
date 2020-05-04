@@ -6,6 +6,7 @@ namespace Doctrine\ORM\Mapping;
 
 use Doctrine\DBAL\Platforms\AbstractPlatform;
 use Doctrine\ORM\Reflection\ReflectionService;
+use Doctrine\ORM\Sequencing\Executor\EmbeddedValueGeneratorExecutor;
 use Doctrine\ORM\Sequencing\Executor\ValueGenerationExecutor;
 use ReflectionProperty;
 
