@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Doctrine\ORM\Mapping;
 
-use ArrayIterator;
 use Doctrine\ORM\Reflection\ReflectionService;
 use ReflectionClass;
 use ReflectionException;

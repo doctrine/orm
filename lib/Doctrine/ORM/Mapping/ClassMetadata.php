@@ -9,7 +9,6 @@ use Doctrine\ORM\Cache\Exception\CacheException;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Reflection\ReflectionService;
 use Doctrine\ORM\Sequencing\Planning\ValueGenerationPlan;
-use Doctrine\ORM\Utility\PersisterHelper;
 use ReflectionException;
 use RuntimeException;
 use function array_filter;

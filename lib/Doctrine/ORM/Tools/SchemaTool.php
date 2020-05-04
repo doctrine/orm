@@ -438,8 +438,7 @@ class SchemaTool
         FieldMetadata $fieldMetadata,
         Table $table,
         ?string $columnPrefix = null
-    )
-    {
+    ) {
         $fieldName  = $fieldMetadata->getName();
         $columnName = sprintf('%s%s', $columnPrefix, $fieldMetadata->getColumnName());
         $columnType = $fieldMetadata->getTypeName();

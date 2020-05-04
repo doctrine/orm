@@ -16,7 +16,6 @@ use Doctrine\ORM\Mapping\ToOneAssociationMetadata;
 use Doctrine\ORM\PersistentCollection;
 use Doctrine\ORM\Persisters\SqlValueVisitor;
 use Doctrine\ORM\Query;
-use Doctrine\ORM\Utility\PersisterHelper;
 use function array_fill;
 use function count;
 use function get_class;
