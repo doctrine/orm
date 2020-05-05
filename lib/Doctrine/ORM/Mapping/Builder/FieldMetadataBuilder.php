@@ -193,7 +193,7 @@ class FieldMetadataBuilder
         $fieldMetadata->setNullable($this->columnAnnotation->nullable);
         $fieldMetadata->setUnique($this->columnAnnotation->unique);
 
-        if (! $this->componentMetadata->isMappedSuperclass) {
+        if (! $this->componentMetadata->isMappedSuperclass && ! $this->componentMetadata->isEmbeddedClass) {
             $fieldMetadata->setTableName($this->componentMetadata->getTableName());
         }
 

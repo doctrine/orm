@@ -16,6 +16,7 @@ use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Mapping\AssociationMetadata;
 use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\Mapping\ColumnMetadata;
+use Doctrine\ORM\Mapping\ComponentMetadata;
 use Doctrine\ORM\Mapping\EmbeddedMetadata;
 use Doctrine\ORM\Mapping\FetchMode;
 use Doctrine\ORM\Mapping\FieldMetadata;
@@ -1483,44 +1484,47 @@ class BasicEntityPersister implements EntityPersister
      */
     protected function getInsertColumnList()
     {
-        $columns             = [];
-        $versionPropertyName = $this->class->isVersioned()
-            ? $this->class->versionProperty->getName()
-            : null;
+        $this->columns = $this->getColumnList($this->class);
 
-        foreach ($this->class->getPropertiesIterator() as $name => $property) {
+        return array_keys($this->columns);
+    }
+
+    /**
+     * @return array<string, ColumnMetadata>
+     */
+    protected function getColumnList(ComponentMetadata $class, string $columnPrefix = '') : array
+    {
+        $columns = [];
+
+        foreach ($class->getPropertiesIterator() as $name => $property) {
             switch (true) {
                 case $property instanceof FieldMetadata && $property->isVersioned():
                     // Do nothing
                     break;
 
                 case $property instanceof LocalColumnMetadata:
-                    if ((! $property->hasValueGenerator() || $property->getValueGenerator()->getType() !== GeneratorType::IDENTITY)
-                        || $this->class->identifier[0] !== $name
-                    ) {
-                        $columnName = $property->getColumnName();
-
-                        $columns[] = $columnName;
-
-                        $this->columns[$columnName] = $property;
+                    if (! $property->hasValueGenerator() || $property->getValueGenerator()->getType() !== GeneratorType::IDENTITY) {
+                        $columns[sprintf('%s%s', $columnPrefix, $property->getColumnName())] = $property;
                     }
 
                     break;
 
                 case $property instanceof EmbeddedMetadata:
                     $targetClass = $this->em->getClassMetadata($property->getTargetEntity());
+                    $columns     = array_merge(
+                        $columns,
+                        $this->getColumnList(
+                            $targetClass,
+                            sprintf('%s%s', $columnPrefix, $property->getColumnPrefix())
+                        )
+                    );
 
                     break;
 
                 case $property instanceof AssociationMetadata:
                     if ($property->isOwningSide() && $property instanceof ToOneAssociationMetadata) {
                         foreach ($property->getJoinColumns() as $joinColumn) {
-                            /** @var JoinColumnMetadata $joinColumn */
-                            $columnName = $joinColumn->getColumnName();
-
-                            $columns[] = $columnName;
-
-                            $this->columns[$columnName] = $joinColumn;
+                            $columns[sprintf('%s%s', $columnPrefix, $joinColumn->getColumnName())] = $joinColumn;
                         }
                     }
 
