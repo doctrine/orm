@@ -2,11 +2,11 @@
 
 namespace Doctrine\Tests\ORM\Tools\Console\Command;
 
-use Doctrine\Common\Persistence\Mapping\Driver\MappingDriver;
 use Doctrine\ORM\Configuration;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Mapping\MappingException;
 use Doctrine\ORM\Tools\Console\Helper\EntityManagerHelper;
+use Doctrine\Persistence\Mapping\Driver\MappingDriver;
 use Doctrine\Tests\Models\Cache\AttractionInfo;
 use Doctrine\Tests\Models\Cache\City;
 use Symfony\Component\Console\Tester\CommandTester;

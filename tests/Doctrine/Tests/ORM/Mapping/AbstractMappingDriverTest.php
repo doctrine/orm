@@ -2,7 +2,6 @@
 
 namespace Doctrine\Tests\ORM\Mapping;
 
-use Doctrine\Common\Persistence\Mapping\RuntimeReflectionService;
 use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\Events;
 use Doctrine\ORM\Mapping\ClassMetadata;
@@ -13,6 +12,7 @@ use Doctrine\ORM\Mapping\DiscriminatorColumn;
 use Doctrine\ORM\Mapping\Id;
 use Doctrine\ORM\Mapping\MappingException;
 use Doctrine\ORM\Mapping\UnderscoreNamingStrategy;
+use Doctrine\Persistence\Mapping\RuntimeReflectionService;
 use Doctrine\Tests\Models\Cache\City;
 use Doctrine\Tests\Models\CMS\CmsAddress;
 use Doctrine\Tests\Models\CMS\CmsAddressListener;

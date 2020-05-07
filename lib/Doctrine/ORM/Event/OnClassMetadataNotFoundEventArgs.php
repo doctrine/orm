@@ -19,9 +19,10 @@
 
 namespace Doctrine\ORM\Event;
 
-use Doctrine\Common\Persistence\Event\ManagerEventArgs;
-use Doctrine\Common\Persistence\Mapping\ClassMetadata;
-use Doctrine\Common\Persistence\ObjectManager;
+use Doctrine\Persistence\Event\ManagerEventArgs;
+use Doctrine\Persistence\Mapping\ClassMetadata;
+use Doctrine\Persistence\ObjectManager;
+use function interface_exists;
 
 /**
  * Class that holds event arguments for a `onClassMetadataNotFound` event.
@@ -84,3 +85,4 @@ class OnClassMetadataNotFoundEventArgs extends ManagerEventArgs
     }
 }
 
+interface_exists(ClassMetadata::class);

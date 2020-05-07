@@ -19,8 +19,8 @@
 
 namespace Doctrine\ORM;
 
-use Doctrine\Common\Persistence\ObjectManager;
 use Doctrine\ORM\Query\ResultSetMapping;
+use Doctrine\Persistence\ObjectManager;
 
 /**
  * EntityManager interface

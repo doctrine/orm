@@ -2,9 +2,9 @@
 
 namespace Doctrine\Tests\ORM\Mapping\Reflection;
 
-use Doctrine\Common\Persistence\Mapping\ReflectionService;
-use Doctrine\Common\Persistence\Mapping\RuntimeReflectionService;
 use Doctrine\ORM\Mapping\Reflection\ReflectionPropertiesGetter;
+use Doctrine\Persistence\Mapping\ReflectionService;
+use Doctrine\Persistence\Mapping\RuntimeReflectionService;
 use Doctrine\Tests\Models\Reflection\ClassWithMixedProperties;
 use Doctrine\Tests\Models\Reflection\ParentClass;
 use PHPUnit\Framework\TestCase;

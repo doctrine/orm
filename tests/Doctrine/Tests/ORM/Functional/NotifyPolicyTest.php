@@ -3,8 +3,8 @@
 namespace Doctrine\Tests\ORM\Functional;
 
 use Doctrine\Common\Collections\ArrayCollection;
-use Doctrine\Common\NotifyPropertyChanged;
-use Doctrine\Common\PropertyChangedListener;
+use Doctrine\Persistence\NotifyPropertyChanged;
+use Doctrine\Persistence\PropertyChangedListener;
 use Doctrine\Tests\OrmFunctionalTestCase;
 
 /**

@@ -18,8 +18,9 @@
  */
 
 namespace Doctrine\ORM\Persisters\Entity;
-use Doctrine\Common\Persistence\Mapping\ClassMetadata;
+
 use Doctrine\ORM\Query\ResultSetMapping;
+use Doctrine\Persistence\Mapping\ClassMetadata;
 
 /**
  * A swappable persister context to use as a container for the current

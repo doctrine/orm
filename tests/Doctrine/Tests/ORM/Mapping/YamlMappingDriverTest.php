@@ -52,7 +52,7 @@ class YamlMappingDriverTest extends AbstractMappingDriverTest
     /**
      * @group DDC-1468
      *
-     * @expectedException Doctrine\Common\Persistence\Mapping\MappingException
+     * @expectedException Doctrine\Persistence\Mapping\MappingException
      * @expectedExceptionMessage Invalid mapping file 'Doctrine.Tests.Models.Generic.SerializationModel.dcm.yml' for class 'Doctrine\Tests\Models\Generic\SerializationModel'.
      */
     public function testInvalidMappingFileException()

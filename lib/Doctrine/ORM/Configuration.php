@@ -25,8 +25,6 @@ use Doctrine\Common\Annotations\CachedReader;
 use Doctrine\Common\Annotations\SimpleAnnotationReader;
 use Doctrine\Common\Cache\ArrayCache;
 use Doctrine\Common\Cache\Cache as CacheDriver;
-use Doctrine\Common\Persistence\Mapping\Driver\MappingDriver;
-use Doctrine\Common\Persistence\ObjectRepository;
 use Doctrine\Common\Proxy\AbstractProxyFactory;
 use Doctrine\ORM\Cache\CacheConfiguration;
 use Doctrine\ORM\Mapping\ClassMetadataFactory;
@@ -39,6 +37,9 @@ use Doctrine\ORM\Mapping\NamingStrategy;
 use Doctrine\ORM\Mapping\QuoteStrategy;
 use Doctrine\ORM\Repository\DefaultRepositoryFactory;
 use Doctrine\ORM\Repository\RepositoryFactory;
+use Doctrine\Persistence\Mapping\Driver\MappingDriver;
+use Doctrine\Persistence\ObjectRepository;
+use function interface_exists;
 
 /**
  * Configuration container for all configuration options of Doctrine.
@@ -676,7 +677,7 @@ class Configuration extends \Doctrine\DBAL\Configuration
      *
      * @return void
      *
-     * @throws ORMException If not is a \Doctrine\Common\Persistence\ObjectRepository
+     * @throws ORMException If $classname is not an ObjectRepository.
      */
     public function setDefaultRepositoryClassName($className)
     {
@@ -918,3 +919,5 @@ class Configuration extends \Doctrine\DBAL\Configuration
         $this->_attributes['defaultQueryHints'][$name] = $value;
     }
 }
+
+interface_exists(MappingDriver::class);
