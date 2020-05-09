@@ -22,6 +22,7 @@ use Doctrine\ORM\Internal\HydrationCompleteHandler;
 use Doctrine\ORM\Mapping\AssociationMetadata;
 use Doctrine\ORM\Mapping\ChangeTrackingPolicy;
 use Doctrine\ORM\Mapping\ClassMetadata;
+use Doctrine\ORM\Mapping\EmbeddedMetadata;
 use Doctrine\ORM\Mapping\FetchMode;
 use Doctrine\ORM\Mapping\FieldMetadata;
 use Doctrine\ORM\Mapping\GeneratorType;
@@ -44,6 +45,7 @@ use Exception;
 use InvalidArgumentException;
 use ProxyManager\Proxy\GhostObjectInterface;
 use RuntimeException;
+use SplFixedArray;
 use Throwable;
 use UnexpectedValueException;
 use function array_combine;
@@ -578,9 +580,15 @@ class UnitOfWork implements PropertyChangedListener
             foreach ($actualData as $propName => $actualValue) {
                 $property = $class->getProperty($propName);
 
-                if (($property instanceof FieldMetadata) ||
+                if ($property instanceof FieldMetadata ||
+                    $property instanceof EmbeddedMetadata ||
                     ($property instanceof ToOneAssociationMetadata && $property->isOwningSide())) {
-                    $changeSet[$propName] = [null, $actualValue];
+                    $change = new SplFixedArray(2);
+
+                    $change[0] = null;
+                    $change[1] = $actualValue;
+
+                    $changeSet[$propName] = $change;
                 }
             }
 
@@ -638,12 +646,22 @@ class UnitOfWork implements PropertyChangedListener
                             continue 2;
                         }
 
-                        $changeSet[$propName] = [$orgValue, $actualValue];
+                        $change = new SplFixedArray(2);
+
+                        $change[0] = $orgValue;
+                        $change[1] = $actualValue;
+
+                        $changeSet[$propName] = $change;
                         break;
 
                     case $property instanceof ToOneAssociationMetadata:
                         if ($property->isOwningSide()) {
-                            $changeSet[$propName] = [$orgValue, $actualValue];
+                            $change = new SplFixedArray(2);
+
+                            $change[0] = $orgValue;
+                            $change[1] = $actualValue;
+
+                            $changeSet[$propName] = $change;
                         }
 
                         if ($orgValue !== null && $property->isOrphanRemoval()) {
@@ -659,7 +677,13 @@ class UnitOfWork implements PropertyChangedListener
                             if (! $this->isCollectionScheduledForDeletion($orgValue)) {
                                 $this->scheduleCollectionDeletion($orgValue);
 
-                                $changeSet[$propName] = $orgValue; // Signal changeset, to-many associations will be ignored
+                                // Signal changeset, to-many associations will be ignored
+                                $change = new SplFixedArray(2);
+
+                                $change[0] = $orgValue;
+                                $change[1] = $actualValue;
+
+                                $changeSet[$propName] = $change;
                             }
                         }
 
