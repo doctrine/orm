@@ -138,16 +138,6 @@ class BasicEntityPersister implements EntityPersister
     protected $em;
 
     /**
-     * The map of column names to DBAL columns used when INSERTing or UPDATEing an entity.
-     *
-     * @see prepareInsertData($entity)
-     * @see prepareUpdateData($entity)
-     *
-     * @var ColumnMetadata[]
-     */
-    protected $columns = null;
-
-    /**
      * The map of column names to DBAL columns used when INSERTing an entity.
      *
      * @see getColumnList($class, $columnPrefix = '')
@@ -1566,12 +1556,8 @@ class BasicEntityPersister implements EntityPersister
             return $this->insertColumns;
         }
 
-        if ($this->columns === null) {
-            $this->columns = $this->getColumnList($this->class);
-        }
-
         return $this->insertColumns = array_filter(
-            $this->columns,
+            $this->getColumnList($this->class),
             static function (ColumnMetadata $columnMetadata) {
                 // Check for Column insertability
                 return true;
@@ -1593,12 +1579,8 @@ class BasicEntityPersister implements EntityPersister
             return $this->updateColumns;
         }
 
-        if ($this->columns === null) {
-            $this->columns = $this->getColumnList($this->class);
-        }
-
         return $this->updateColumns = array_filter(
-            $this->columns,
+            $this->getColumnList($this->class),
             static function (ColumnMetadata $columnMetadata) {
                 // Check for Column updatability
                 return true;

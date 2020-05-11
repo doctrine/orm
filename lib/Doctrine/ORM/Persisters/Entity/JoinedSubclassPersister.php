@@ -11,9 +11,11 @@ use Doctrine\DBAL\Types\Type;
 use Doctrine\ORM\Mapping\AssociationMetadata;
 use Doctrine\ORM\Mapping\ColumnMetadata;
 use Doctrine\ORM\Mapping\FieldMetadata;
+use Doctrine\ORM\Mapping\JoinColumnMetadata;
 use Doctrine\ORM\Mapping\ManyToManyAssociationMetadata;
 use Doctrine\ORM\Mapping\ToManyAssociationMetadata;
 use Doctrine\ORM\Mapping\ToOneAssociationMetadata;
+use Doctrine\ORM\Query\Parameter;
 use function array_combine;
 use function array_filter;
 use function array_keys;
@@ -77,10 +79,38 @@ class JoinedSubclassPersister extends AbstractEntityInheritancePersister
 
         if ($generationPlan->containsDeferred()) {
             $generationPlan->executeDeferred($this->em, $entity);
+        }
 
-            $id = $this->getIdentifier($entity);
-        } else {
-            $id = $this->em->getUnitOfWork()->getEntityIdentifier($entity);
+        // Collect identifier column values
+        $id = [];
+        $idParameters = [];
+
+        foreach ($this->class->getIdentifier() as $propertyName) {
+            $property      = $this->class->getProperty($propertyName);
+            $propertyValue = $property->getValue($entity);
+
+            $id[$propertyName] = $propertyValue;
+
+            switch (true) {
+                case $property instanceof FieldMetadata:
+                    $columnName = $property->getColumnName();
+
+                    $idParameters[$columnName] = new Parameter($columnName, $propertyValue, $property->getType());
+                    break;
+
+                case $property instanceof ToOneAssociationMetadata:
+                    $targetPersister = $this->em->getUnitOfWork()->getEntityPersister($property->getTargetEntity());
+
+                    foreach ($property->getJoinColumns() as $joinColumn) {
+                        $columnName           = $joinColumn->getColumnName();
+                        $referencedColumnName = $joinColumn->getReferencedColumnName();
+                        $columnValue          = $targetPersister->getColumnValue($propertyValue, $referencedColumnName);
+
+                        $idParameters[$columnName] = new Parameter($columnName, $columnValue, $joinColumn->getType());
+                    }
+
+                    break;
+            }
         }
 
         if ($this->class->isVersioned()) {
@@ -94,18 +124,12 @@ class JoinedSubclassPersister extends AbstractEntityInheritancePersister
             $paramIndex = 1;
             $tableData  = $insertData[$tableName] ?? [];
 
-            foreach ((array) $id as $idName => $idVal) {
-                $type = Type::getType('string');
-
-                if (isset($this->columns[$idName])) {
-                    $type = $this->columns[$idName]->getType();
-                }
-
-                $stmt->bindValue($paramIndex++, $idVal, $type);
+            foreach ($idParameters as $parameter) {
+                $stmt->bindValue($paramIndex++, $parameter->getValue(), $parameter->getType());
             }
 
             foreach ($tableData as $parameter) {
-                if (! is_array($id) || ! isset($id[$parameter->getName()])) {
+                if (! isset($idParameters[$parameter->getName()])) {
                     $stmt->bindValue($paramIndex++, $parameter->getValue(), $parameter->getType());
                 }
             }
@@ -384,37 +408,33 @@ class JoinedSubclassPersister extends AbstractEntityInheritancePersister
             return $this->insertColumns;
         }
 
-        if ($this->columns === null) {
-            // Identifier columns must always come first in the column list of subclasses.
-            $parentColumns = $this->class->getParent()
-                ? $this->class->getIdentifierColumns($this->em)
-                : [];
+        // Identifier columns must always come first in the column list of subclasses.
+        $parentColumns = $this->class->getParent()
+            ? $this->class->getIdentifierColumns($this->em)
+            : [];
 
-            $classColumns = [];
+        $classColumns = [];
 
-            foreach ($this->class->getPropertiesIterator() as $name => $property) {
-                if ($this->class->isInheritedProperty($name)) {
-                    continue;
-                }
-
-                $classColumns[] = $this->getPropertyColumnList($property);
+        foreach ($this->class->getPropertiesIterator() as $name => $property) {
+            if ($this->class->isInheritedProperty($name)) {
+                continue;
             }
 
-            $columns = array_merge($parentColumns, ...$classColumns);
+            $classColumns[] = $this->getPropertyColumnList($property);
+        }
 
-            // Add discriminator column if it is the topmost class.
-            if ($this->class->isRootEntity()) {
-                $discrColumn     = $this->class->discriminatorColumn;
-                $discrColumnName = $discrColumn->getColumnName();
+        $columns = array_merge($parentColumns, ...$classColumns);
 
-                $columns[$discrColumnName] = $discrColumn;
-            }
+        // Add discriminator column if it is the topmost class.
+        if ($this->class->isRootEntity()) {
+            $discrColumn     = $this->class->discriminatorColumn;
+            $discrColumnName = $discrColumn->getColumnName();
 
-            $this->columns = $columns;
+            $columns[$discrColumnName] = $discrColumn;
         }
 
         return $this->insertColumns = array_filter(
-            $this->columns,
+            $columns,
             static function (ColumnMetadata $columnMetadata) {
                 // Check for Column insertability
                 return true;

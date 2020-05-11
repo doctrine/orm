@@ -30,7 +30,7 @@ abstract class AbstractEntityInheritancePersister extends BasicEntityPersister
         $discrColumn     = $this->class->discriminatorColumn;
         $discrColumnName = $discrColumn->getColumnName();
 
-        $this->insertColumns[$discrColumnName] = $this->columns[$discrColumnName] = $discrColumn;
+        $this->insertColumns[$discrColumnName] = $discrColumn;
 
         return $this->insertColumns;
     }
