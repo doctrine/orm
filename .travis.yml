@@ -85,16 +85,6 @@ jobs:
         - php ocular.phar code-coverage:upload --format=php-clover build/logs/clover.xml
 
     - stage: Code Quality
-      env: DB=none STATIC_ANALYSIS
-      php: 7.4
-      install: travis_retry composer install --prefer-dist
-      before_script:
-        - echo "extension=memcached.so" >> ~/.phpenv/versions/$(phpenv version-name)/etc/php.ini
-        - echo "extension=redis.so" >> ~/.phpenv/versions/$(phpenv version-name)/etc/php.ini
-        - travis_retry composer require --dev --prefer-dist --prefer-stable phpstan/phpstan:^0.9
-      script: vendor/bin/phpstan analyse -l 1 -c phpstan.neon lib
-
-    - stage: Code Quality
       env: DB=none BENCHMARK
       before_script: wget https://phpbench.github.io/phpbench/phpbench.phar https://phpbench.github.io/phpbench/phpbench.phar.pubkey
       script: php phpbench.phar run -l dots --report=default
