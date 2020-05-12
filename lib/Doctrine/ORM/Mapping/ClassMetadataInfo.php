@@ -934,7 +934,8 @@ class ClassMetadataInfo implements ClassMetadata
                         $this->embeddedClasses[$embeddedClass['declaredField']]['class'],
                         $embeddedClass['originalField']
                     ),
-                    $this->embeddedClasses[$embeddedClass['declaredField']]['class']
+                    $this->embeddedClasses[$embeddedClass['declaredField']]['class'],
+                    $embeddedClass['nullable']
                 );
 
                 continue;
@@ -954,7 +955,8 @@ class ClassMetadataInfo implements ClassMetadata
                 $this->reflFields[$field] = new ReflectionEmbeddedProperty(
                     $parentReflFields[$mapping['declaredField']],
                     $reflService->getAccessibleProperty($mapping['originalClass'], $mapping['originalField']),
-                    $mapping['originalClass']
+                    $mapping['originalClass'],
+                    $mapping['nullable'] ?? false
                 );
                 continue;
             }
@@ -3297,6 +3299,7 @@ class ClassMetadataInfo implements ClassMetadata
         $this->embeddedClasses[$mapping['fieldName']] = [
             'class' => $this->fullyQualifiedClassName($mapping['class']),
             'columnPrefix' => $mapping['columnPrefix'],
+            'nullable' => $mapping['nullable'] ?? null,
             'declaredField' => $mapping['declaredField'] ?? null,
             'originalField' => $mapping['originalField'] ?? null,
         ];
@@ -3317,6 +3320,10 @@ class ClassMetadataInfo implements ClassMetadata
                 : $property;
             $fieldMapping['originalField'] = $fieldMapping['originalField'] ?? $fieldMapping['fieldName'];
             $fieldMapping['fieldName'] = $property . "." . $fieldMapping['fieldName'];
+
+            if ($this->embeddedClasses[$property]['nullable'] === true) {
+                $fieldMapping['nullable'] = $this->embeddedClasses[$property]['nullable'];
+            }
 
             if (! empty($this->embeddedClasses[$property]['columnPrefix'])) {
                 $fieldMapping['columnName'] = $this->embeddedClasses[$property]['columnPrefix'] . $fieldMapping['columnName'];

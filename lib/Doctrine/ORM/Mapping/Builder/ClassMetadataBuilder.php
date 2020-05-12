@@ -89,13 +89,14 @@ class ClassMetadataBuilder
      *
      * @return $this
      */
-    public function addEmbedded($fieldName, $class, $columnPrefix = null)
+    public function addEmbedded($fieldName, $class, $columnPrefix = null, bool $nullable = false)
     {
         $this->cm->mapEmbedded(
             [
                 'fieldName'    => $fieldName,
                 'class'        => $class,
-                'columnPrefix' => $columnPrefix
+                'columnPrefix' => $columnPrefix,
+                'nullable'     => $nullable,
             ]
         );
 

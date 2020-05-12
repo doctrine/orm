@@ -31,7 +31,7 @@ class ReflectionEmbeddedPropertyTest extends TestCase
         ReflectionProperty $childProperty,
         $embeddableClass
     ) {
-        $embeddedPropertyReflection = new ReflectionEmbeddedProperty($parentProperty, $childProperty, $embeddableClass);
+        $embeddedPropertyReflection = new ReflectionEmbeddedProperty($parentProperty, $childProperty, $embeddableClass, false);
 
         $instantiator = new Instantiator();
 
@@ -58,7 +58,7 @@ class ReflectionEmbeddedPropertyTest extends TestCase
         ReflectionProperty $childProperty,
         $embeddableClass
     ) {
-        $embeddedPropertyReflection = new ReflectionEmbeddedProperty($parentProperty, $childProperty, $embeddableClass);
+        $embeddedPropertyReflection = new ReflectionEmbeddedProperty($parentProperty, $childProperty, $embeddableClass, false);
 
         $instantiator = new Instantiator();
 

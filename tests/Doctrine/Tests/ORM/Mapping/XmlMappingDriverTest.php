@@ -127,6 +127,7 @@ class XmlMappingDriverTest extends AbstractMappingDriverTest
                     'columnPrefix' => 'nm_',
                     'declaredField' => null,
                     'originalField' => null,
+                    'nullable'      => false,
                 ]
             ],
             $class->embeddedClasses

@@ -421,8 +421,9 @@ class AnnotationDriver extends AbstractAnnotationDriver
 
                 $metadata->mapManyToMany($mapping);
             } else if ($embeddedAnnot = $this->reader->getPropertyAnnotation($property, Mapping\Embedded::class)) {
-                $mapping['class'] = $embeddedAnnot->class;
+                $mapping['class']        = $embeddedAnnot->class;
                 $mapping['columnPrefix'] = $embeddedAnnot->columnPrefix;
+                $mapping['nullable']     = $embeddedAnnot->nullable;
 
                 $metadata->mapEmbedded($mapping);
             }

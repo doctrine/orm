@@ -58,6 +58,7 @@ class ClassMetadataBuilderTest extends OrmTestCase
                 'columnPrefix' => null,
                 'declaredField' => null,
                 'originalField' => null,
+                'nullable'      => false,
             ]
             ], $this->cm->embeddedClasses);
     }
@@ -79,6 +80,7 @@ class ClassMetadataBuilderTest extends OrmTestCase
                 'columnPrefix' => 'nm_',
                 'declaredField' => null,
                 'originalField' => null,
+                'nullable'      => false,
             ]
             ], $this->cm->embeddedClasses);
     }
@@ -96,7 +98,8 @@ class ClassMetadataBuilderTest extends OrmTestCase
                 'class' => Name::class,
                 'columnPrefix' => null,
                 'declaredField' => null,
-                'originalField' => null
+                'originalField' => null,
+                'nullable'      => false,
             ],
             $this->cm->embeddedClasses['name']
         );
@@ -115,7 +118,8 @@ class ClassMetadataBuilderTest extends OrmTestCase
                 'class' => Name::class,
                 'columnPrefix' => 'nm_',
                 'declaredField' => null,
-                'originalField' => null
+                'originalField' => null,
+                'nullable'      => false,
             ],
             $this->cm->embeddedClasses['name']
         );

@@ -480,6 +480,7 @@ class ClassMetadataFactory extends AbstractClassMetadataFactory
                     'fieldName' => $prefix . '.' . $property,
                     'class' => $embeddableMetadata->name,
                     'columnPrefix' => $embeddableClass['columnPrefix'],
+                    'nullable' => $embeddableClass['nullable'],
                     'declaredField' => $embeddableClass['declaredField']
                             ? $prefix . '.' . $embeddableClass['declaredField']
                             : $prefix,

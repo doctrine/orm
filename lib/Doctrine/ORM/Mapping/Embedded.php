@@ -31,8 +31,9 @@ final class Embedded implements Annotation
      */
     public $class;
 
-    /**
-     * @var mixed
-     */
+    /** @var mixed */
     public $columnPrefix;
+
+    /** @var bool */
+    public $nullable = false;
 }

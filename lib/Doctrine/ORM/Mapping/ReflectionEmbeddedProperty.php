@@ -33,36 +33,27 @@ use ReflectionProperty;
  */
 class ReflectionEmbeddedProperty extends ReflectionProperty
 {
-    /**
-     * @var ReflectionProperty reflection property of the class where the embedded object has to be put
-     */
+    /** @var ReflectionProperty reflection property of the class where the embedded object has to be put */
     private $parentProperty;
 
-    /**
-     * @var ReflectionProperty reflection property of the embedded object
-     */
+    /** @var ReflectionProperty reflection property of the embedded object */
     private $childProperty;
 
-    /**
-     * @var string name of the embedded class to be eventually instantiated
-     */
+    /** @var string name of the embedded class to be eventually instantiated */
     private $embeddedClass;
 
-    /**
-     * @var Instantiator|null
-     */
+    /** @var Instantiator|null */
     private $instantiator;
 
-    /**
-     * @param ReflectionProperty $parentProperty
-     * @param ReflectionProperty $childProperty
-     * @param string             $embeddedClass
-     */
-    public function __construct(ReflectionProperty $parentProperty, ReflectionProperty $childProperty, $embeddedClass)
+    /** @var bool */
+    private $nullable = false;
+
+    public function __construct(ReflectionProperty $parentProperty, ReflectionProperty $childProperty, string $embeddedClass, bool $nullable)
     {
-        $this->parentProperty  = $parentProperty;
-        $this->childProperty   = $childProperty;
-        $this->embeddedClass   = (string) $embeddedClass;
+        $this->parentProperty = $parentProperty;
+        $this->childProperty  = $childProperty;
+        $this->embeddedClass  = $embeddedClass;
+        $this->nullable       = $nullable;
 
         parent::__construct($childProperty->getDeclaringClass()->getName(), $childProperty->getName());
     }
@@ -86,6 +77,10 @@ class ReflectionEmbeddedProperty extends ReflectionProperty
      */
     public function setValue($object, $value = null)
     {
+        if ($value === null && $this->nullable === true) {
+            return;
+        }
+
         $embeddedObject = $this->parentProperty->getValue($object);
 
         if (null === $embeddedObject) {

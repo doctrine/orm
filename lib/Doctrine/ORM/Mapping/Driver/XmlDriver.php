@@ -272,10 +272,15 @@ class XmlDriver extends FileDriver
                     ? $this->evaluateBoolean($embeddedMapping['use-column-prefix'])
                     : true;
 
+                $nullable = isset($embeddedMapping['nullable'])
+                    ? $this->evaluateBoolean($embeddedMapping['nullable'])
+                    : null;
+
                 $mapping = [
                     'fieldName' => (string) $embeddedMapping['name'],
                     'class' => (string) $embeddedMapping['class'],
-                    'columnPrefix' => $useColumnPrefix ? $columnPrefix : false
+                    'columnPrefix' => $useColumnPrefix ? $columnPrefix : false,
+                    'nullable' => $nullable,
                 ];
 
                 $metadata->mapEmbedded($mapping);

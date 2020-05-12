@@ -1,6 +1,8 @@
 <?php
 
 namespace Doctrine\Tests\ORM\Functional;
+
+use DateTime;
 use Doctrine\Common\Reflection\RuntimePublicReflectionProperty;
 use Doctrine\ORM\Mapping\MappingException;
 use Doctrine\ORM\Mapping\ReflectionEmbeddedProperty;
@@ -17,16 +19,15 @@ class ValueObjectsTest extends OrmFunctionalTestCase
         parent::setUp();
 
         try {
-            $this->_schemaTool->createSchema(
-                [
+            $this->_schemaTool->createSchema([
                 $this->_em->getClassMetadata(DDC93Person::class),
                 $this->_em->getClassMetadata(DDC93Address::class),
                 $this->_em->getClassMetadata(DDC93Vehicle::class),
                 $this->_em->getClassMetadata(DDC93Car::class),
                 $this->_em->getClassMetadata(DDC3027Animal::class),
                 $this->_em->getClassMetadata(DDC3027Dog::class),
-                ]
-            );
+                $this->_em->getClassMetadata(DDC3529Event::class),
+            ]);
         } catch(\Exception $e) {
         }
     }
@@ -332,6 +333,70 @@ class ValueObjectsTest extends OrmFunctionalTestCase
     public function testEmbeddableIsNotTransient()
     {
         $this->assertFalse($this->_em->getMetadataFactory()->isTransient(DDC93Address::class));
+    }
+
+    public function testNoErrorsShouldHappenWhenPersistingAnEntityWithNullableEmbedded()
+    {
+        $event         = new DDC3529Event();
+        $event->name   = 'PHP Conference';
+        $event->period = new DDC3529DateInterval(new DateTime('2015-01-20 08:00:00'), new DateTime('2015-01-23 19:00:00'));
+
+        $this->_em->persist($event);
+        $this->_em->flush();
+
+        $this->assertNull($event->submissions);
+
+        return $event;
+    }
+
+    /** @depends testNoErrorsShouldHappenWhenPersistingAnEntityWithNullableEmbedded */
+    public function testEmbeddedObjectShouldNotBeCreatedWhenIsNullableAndHaveNoData(DDC3529Event $event)
+    {
+        $this->_em->clear();
+
+        $event = $this->_em->find(DDC3529Event::class, $event->id);
+
+        $this->assertEquals('PHP Conference', $event->name);
+        $this->assertEquals('2015-01-20 08:00:00', $event->period->begin->format('Y-m-d H:i:s'));
+        $this->assertEquals('2015-01-23 19:00:00', $event->period->end->format('Y-m-d H:i:s'));
+        $this->assertNull($event->submissions);
+
+        return $event;
+    }
+
+    /** @depends testEmbeddedObjectShouldNotBeCreatedWhenIsNullableAndHaveNoData */
+    public function testEmbeddedObjectShouldBeCreatedWhenIsNullableButHaveData(DDC3529Event $event)
+    {
+        $this->_em->clear();
+
+        $event = $this->_em->find(DDC3529Event::class, $event->id);
+
+        $event->submissions = new DDC3529DateInterval(new DateTime('2014-11-20 08:00:00'), new DateTime('2014-12-23 19:00:00'));
+
+        $this->_em->persist($event);
+        $this->_em->flush();
+        $this->_em->clear();
+
+        $event = $this->_em->find(DDC3529Event::class, $event->id);
+
+        $this->assertEquals('2014-11-20 08:00:00', $event->submissions->begin->format('Y-m-d H:i:s'));
+        $this->assertEquals('2014-12-23 19:00:00', $event->submissions->end->format('Y-m-d H:i:s'));
+
+        return $event;
+    }
+
+    /** @depends testEmbeddedObjectShouldBeCreatedWhenIsNullableButHaveData */
+    public function testFindShouldReturnNullAfterTheObjectWasRemoved(DDC3529Event $event)
+    {
+        $this->_em->clear();
+
+        $eventId = $event->id;
+
+        $event = $this->_em->find(DDC3529Event::class, $eventId);
+        $this->_em->remove($event);
+        $this->_em->flush();
+
+        $this->assertNull($this->_em->find(DDC3529Event::class, $eventId));
     }
 }
 
@@ -648,4 +713,40 @@ class DDCNestingEmbeddable4
 
     /** @Embedded(class="DDCNestingEmbeddable1") */
     public $nested;
+}
+
+/**
+ * @Embeddable
+ */
+class DDC3529DateInterval
+{
+    /** @Column(type = "datetime") */
+    public $begin;
+
+    /** @Column(type = "datetime") */
+    public $end;
+
+    public function __construct(DateTime $begin, DateTime $end)
+    {
+        $this->begin = $begin;
+        $this->end   = $end;
+    }
+}
+
+/**
+ * @Entity
+ */
+class DDC3529Event
+{
+    /** @Id @GeneratedValue @Column(type="integer") */
+    public $id;
+
+    /** @Column(type = "string") */
+    public $name;
+
+    /** @Embedded(class = "DDC3529DateInterval") */
+    public $period;
+
+    /** @Embedded(class = "DDC3529DateInterval", nullable = true) */
+    public $submissions;
 }
