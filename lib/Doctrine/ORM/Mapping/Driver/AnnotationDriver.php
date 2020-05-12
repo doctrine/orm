@@ -45,7 +45,6 @@ class AnnotationDriver extends AbstractAnnotationDriver
     protected $entityAnnotationClasses = [
         Mapping\Entity::class => 1,
         Mapping\MappedSuperclass::class => 2,
-        Mapping\Embeddable::class => 3,
     ];
 
     /**
