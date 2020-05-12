@@ -279,8 +279,6 @@ class AnnotationDriver extends AbstractAnnotationDriver
         foreach ($class->getProperties() as $property) {
             if ($metadata->isMappedSuperclass && ! $property->isPrivate()
                 ||
-                $metadata->isEmbeddedClass && $property->getDeclaringClass()->getName() !== $class->getName()
-                ||
                 $metadata->isInheritedField($property->name)
                 ||
                 $metadata->isInheritedAssociation($property->name)

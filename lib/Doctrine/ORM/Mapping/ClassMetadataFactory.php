@@ -404,10 +404,10 @@ class ClassMetadataFactory extends AbstractClassMetadataFactory
     private function addInheritedFields(ClassMetadata $subClass, ClassMetadata $parentClass)
     {
         foreach ($parentClass->fieldMappings as $mapping) {
-            if (! isset($mapping['inherited']) && ! $parentClass->isMappedSuperclass && ! $parentClass->isEmbeddedClass) {
+            if ( ! isset($mapping['inherited']) && ! $parentClass->isMappedSuperclass) {
                 $mapping['inherited'] = $parentClass->name;
             }
-            if (! isset($mapping['declared'])) {
+            if ( ! isset($mapping['declared'])) {
                 $mapping['declared'] = $parentClass->name;
             }
             $subClass->addInheritedFieldMapping($mapping);
@@ -472,6 +472,10 @@ class ClassMetadataFactory extends AbstractClassMetadataFactory
     private function addNestedEmbeddedClasses(ClassMetadata $subClass, ClassMetadata $parentClass, $prefix)
     {
         foreach ($subClass->embeddedClasses as $property => $embeddableClass) {
+            if (isset($embeddableClass['inherited'])) {
+                continue;
+            }
+
             $embeddableMetadata = $this->getMetadataFor($embeddableClass['class']);
 
             $parentClass->mapEmbedded(
@@ -779,9 +783,7 @@ class ClassMetadataFactory extends AbstractClassMetadataFactory
      */
     protected function isEntity(ClassMetadataInterface $class)
     {
-        assert($class instanceof ClassMetadata);
-
-        return $class->isMappedSuperclass === false && $class->isEmbeddedClass === false;
+        return isset($class->isMappedSuperclass) && $class->isMappedSuperclass === false;
     }
 
     /**
