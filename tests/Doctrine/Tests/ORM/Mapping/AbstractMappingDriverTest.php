@@ -14,7 +14,7 @@ use Doctrine\ORM\Mapping\MappingException;
 use Doctrine\ORM\Mapping\UnderscoreNamingStrategy;
 use Doctrine\Persistence\Mapping\RuntimeReflectionService;
 use Doctrine\Tests\Models\Cache\City;
-use Doctrine\Tests\Models\CaseSensitiveDiscriminatorMap\Shape;
+use Doctrine\Tests\Models\CaseSensitiveDiscriminatorMap;
 use Doctrine\Tests\Models\CMS\CmsAddress;
 use Doctrine\Tests\Models\CMS\CmsAddressListener;
 use Doctrine\Tests\Models\CMS\CmsUser;
@@ -1082,9 +1082,14 @@ abstract class AbstractMappingDriverTest extends OrmTestCase
 
     public function testInvalidSubClassCase()
     {
+        class_exists(CaseSensitiveDiscriminatorMap\Cube::class);
+
         $this->expectException(MappingException::class);
         $this->expectExceptionMessage('Entity class \'Doctrine\Tests\Models\CaseSensitiveDiscriminatorMap\cube\' used in the discriminator map of class \'Doctrine\Tests\Models\CaseSensitiveDiscriminatorMap\Shape\' does not exist.');
-        $this->createClassMetadata(Shape::class);
+
+        $em = $this->_getTestEntityManager();
+        $factory = $this->createClassMetadataFactory($em);
+        $factory->getMetadataFor(CaseSensitiveDiscriminatorMap\Shape::class);
     }
 }
 
