@@ -2817,11 +2817,6 @@ class ClassMetadataInfo implements ClassMetadata
             throw MappingException::invalidClassInDiscriminatorMap($className, $this->name);
         }
 
-        $refl = new ReflectionClass($className);
-        if ($refl->name !== $className) {
-            throw MappingException::invalidClassInDiscriminatorMap($className, $this->name);
-        }
-
         if (is_subclass_of($className, $this->name) && ! in_array($className, $this->subClasses)) {
             $this->subClasses[] = $className;
         }
