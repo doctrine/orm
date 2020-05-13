@@ -38,6 +38,7 @@ use Doctrine\Tests\Models\DDC889\DDC889Entity;
 use Doctrine\Tests\Models\DDC964\DDC964Admin;
 use Doctrine\Tests\Models\DDC964\DDC964Guest;
 use Doctrine\Tests\OrmTestCase;
+use function class_exists;
 
 abstract class AbstractMappingDriverTest extends OrmTestCase
 {
@@ -1087,7 +1088,7 @@ abstract class AbstractMappingDriverTest extends OrmTestCase
         $this->expectException(MappingException::class);
         $this->expectExceptionMessage('Entity class \'Doctrine\Tests\Models\CaseSensitiveDiscriminatorMap\cube\' used in the discriminator map of class \'Doctrine\Tests\Models\CaseSensitiveDiscriminatorMap\Shape\' does not exist.');
 
-        $em = $this->_getTestEntityManager();
+        $em      = $this->_getTestEntityManager();
         $factory = $this->createClassMetadataFactory($em);
         $factory->getMetadataFor(CaseSensitiveDiscriminatorMap\Shape::class);
     }
