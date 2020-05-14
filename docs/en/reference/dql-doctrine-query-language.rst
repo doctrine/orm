@@ -649,6 +649,16 @@ The same restrictions apply for the reference of related entities.
     of the query. Additionally Deletes of specified entities are *NOT*
     cascaded to related entities even if specified in the metadata.
 
+Comments in queries
+-------------------
+
+We can use comments with the SQL syntax of comments.
+
+.. code-block:: sql
+
+    SELECT u FROM MyProject\Model\User u
+    -- my comment
+    WHERE u.age > 20 -- comment at the end of a line
 
 Functions, Operators, Aggregates
 --------------------------------
