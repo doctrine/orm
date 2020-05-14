@@ -6,6 +6,7 @@ use Doctrine\Tests\Models\Company\CompanyEmployee,
     Doctrine\Tests\Models\Company\CompanyManager,
     Doctrine\Tests\Models\Company\CompanyCar;
 use Doctrine\Tests\OrmFunctionalTestCase;
+use function count;
 
 /**
  * Functional Query tests.
