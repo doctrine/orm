@@ -36,8 +36,8 @@ class DDC1918Test extends OrmFunctionalTestCase
 
         for ($i = 0; $i < 10; $i++) {
             $user           = new CmsUser();
-            $user->username = "user$i";
-            $user->name     = "user$i";
+            $user->username = 'user' . $i;
+            $user->name     = 'user' . $i;
             $user->status   = 'active';
             $user->groups   = $groups;
 

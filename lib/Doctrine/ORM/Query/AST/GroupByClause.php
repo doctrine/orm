@@ -27,11 +27,11 @@ namespace Doctrine\ORM\Query\AST;
  */
 class GroupByClause extends Node
 {
-    /** @var array */
+    /** @var mixed[] */
     public $groupByItems = [];
 
     /**
-     * @param array $groupByItems
+     * @param mixed[] $groupByItems
      */
     public function __construct(array $groupByItems)
     {

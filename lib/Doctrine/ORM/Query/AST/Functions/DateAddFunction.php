@@ -20,6 +20,7 @@
 
 namespace Doctrine\ORM\Query\AST\Functions;
 
+use Doctrine\ORM\Query\AST\Node;
 use Doctrine\ORM\Query\Lexer;
 use Doctrine\ORM\Query\Parser;
 use Doctrine\ORM\Query\QueryException;
@@ -34,9 +35,14 @@ use function strtolower;
  */
 class DateAddFunction extends FunctionNode
 {
+    /** @var Node */
     public $firstDateExpression = null;
-    public $intervalExpression  = null;
-    public $unit                = null;
+
+    /** @var Node */
+    public $intervalExpression = null;
+
+    /** @var Node */
+    public $unit = null;
 
     /**
      * @override

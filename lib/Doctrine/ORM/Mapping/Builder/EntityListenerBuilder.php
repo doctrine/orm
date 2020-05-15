@@ -32,7 +32,7 @@ use function get_class_methods;
  */
 class EntityListenerBuilder
 {
-    /** @var array Hash-map to handle event names. */
+    /** @var array<string,bool> Hash-map to handle event names. */
     private static $events = [
         Events::preRemove   => true,
         Events::postRemove  => true,

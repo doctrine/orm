@@ -98,8 +98,11 @@ class PhpExporter extends AbstractExporter
             $lines[] = '$metadata->mapField(' . $this->_varExport($fieldMapping) . ');';
         }
 
-        if (! $metadata->isIdentifierComposite && $generatorType = $this->_getIdGeneratorTypeString($metadata->generatorType)) {
-            $lines[] = '$metadata->setIdGeneratorType(ClassMetadataInfo::GENERATOR_TYPE_' . $generatorType . ');';
+        if (! $metadata->isIdentifierComposite) {
+            $generatorType = $this->_getIdGeneratorTypeString($metadata->generatorType);
+            if ($generatorType) {
+                $lines[] = '$metadata->setIdGeneratorType(ClassMetadataInfo::GENERATOR_TYPE_' . $generatorType . ');';
+            }
         }
 
         foreach ($metadata->associationMappings as $associationMapping) {

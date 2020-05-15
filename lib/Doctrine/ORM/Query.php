@@ -247,8 +247,9 @@ final class Query extends AbstractQuery
         $this->_state       = self::STATE_CLEAN;
         $this->_parsedTypes = $types;
 
+        $queryCache = $this->getQueryCacheDriver();
         // Check query cache.
-        if (! ($this->_useQueryCache && ($queryCache = $this->getQueryCacheDriver()))) {
+        if (! ($this->_useQueryCache && $queryCache)) {
             $parser = new Parser($this);
 
             $this->_parserResult = $parser->parse();

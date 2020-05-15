@@ -124,28 +124,28 @@ class NotifyUser extends NotifyBaseEntity
     /** @ManyToMany(targetEntity="NotifyGroup") */
     private $groups;
 
-    function __construct()
+    public function __construct()
     {
         $this->groups = new ArrayCollection();
     }
 
-    function getId()
+    public function getId()
     {
         return $this->id;
     }
 
-    function getName()
+    public function getName()
     {
         return $this->name;
     }
 
-    function setName($name): void
+    public function setName($name): void
     {
         $this->onPropertyChanged('name', $this->name, $name);
         $this->name = $name;
     }
 
-    function getGroups()
+    public function getGroups()
     {
         return $this->groups;
     }
@@ -163,28 +163,28 @@ class NotifyGroup extends NotifyBaseEntity
     /** @ManyToMany(targetEntity="NotifyUser", mappedBy="groups") */
     private $users;
 
-    function __construct()
+    public function __construct()
     {
         $this->users = new ArrayCollection();
     }
 
-    function getId()
+    public function getId()
     {
         return $this->id;
     }
 
-    function getName()
+    public function getName()
     {
         return $this->name;
     }
 
-    function setName($name): void
+    public function setName($name): void
     {
         $this->onPropertyChanged('name', $this->name, $name);
         $this->name = $name;
     }
 
-    function getUsers()
+    public function getUsers()
     {
         return $this->users;
     }

@@ -68,7 +68,7 @@ class ClassMetadataFactory extends AbstractClassMetadataFactory
     /** @var EventManager */
     private $evm;
 
-    /** @var array */
+    /** @var mixed[] */
     private $embeddablesActiveNesting = [];
 
     /**

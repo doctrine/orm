@@ -99,7 +99,7 @@ use function trim;
  */
 class BasicEntityPersister implements EntityPersister
 {
-    /** @var array */
+    /** @var array<string,string> */
     private static $comparisonMap = [
         Comparison::EQ          => '= %s',
         Comparison::NEQ         => '!= %s',
@@ -156,7 +156,7 @@ class BasicEntityPersister implements EntityPersister
      * @see prepareInsertData($entity)
      * @see prepareUpdateData($entity)
      *
-     * @var array
+     * @var mixed[]
      */
     protected $columnTypes = [];
 
@@ -166,7 +166,7 @@ class BasicEntityPersister implements EntityPersister
      * @see prepareInsertData($entity)
      * @see prepareUpdateData($entity)
      *
-     * @var array
+     * @var mixed[]
      */
     protected $quotedColumns = [];
 
@@ -329,7 +329,7 @@ class BasicEntityPersister implements EntityPersister
      * Fetches the current version value of a versioned entity.
      *
      * @param ClassMetadata $versionedClass
-     * @param array         $id
+     * @param mixed[]       $id
      *
      * @return mixed
      */
@@ -382,7 +382,13 @@ class BasicEntityPersister implements EntityPersister
         $tableName  = $this->class->getTableName();
         $updateData = $this->prepareUpdateData($entity);
 
-        if (! isset($updateData[$tableName]) || ! ($data = $updateData[$tableName])) {
+        if (! isset($updateData[$tableName])) {
+            return;
+        }
+
+        $data = $updateData[$tableName];
+
+        if (! $data) {
             return;
         }
 
@@ -402,10 +408,10 @@ class BasicEntityPersister implements EntityPersister
      * Performs an UPDATE statement for an entity on a specific table.
      * The UPDATE can optionally be versioned, which requires the entity to have a version field.
      *
-     * @param object $entity          The entity object being updated.
-     * @param string $quotedTableName The quoted name of the table to apply the UPDATE on.
-     * @param array  $updateData      The map of columns to update (column => value).
-     * @param bool   $versioned       Whether the UPDATE should be versioned.
+     * @param object  $entity          The entity object being updated.
+     * @param string  $quotedTableName The quoted name of the table to apply the UPDATE on.
+     * @param mixed[] $updateData      The map of columns to update (column => value).
+     * @param bool    $versioned       Whether the UPDATE should be versioned.
      *
      * @return void
      *
@@ -613,7 +619,8 @@ class BasicEntityPersister implements EntityPersister
         $result       = [];
         $uow          = $this->em->getUnitOfWork();
 
-        if (($versioned = $this->class->isVersioned) !== false) {
+        $versioned = $this->class->isVersioned;
+        if ($versioned !== false) {
             $versionField = $this->class->versionField;
         }
 
@@ -746,7 +753,8 @@ class BasicEntityPersister implements EntityPersister
      */
     public function loadOneToOneEntity(array $assoc, $sourceEntity, array $identifier = [])
     {
-        if (($foundEntity = $this->em->getUnitOfWork()->tryGetById($identifier, $assoc['targetEntity'])) !== false) {
+        $foundEntity = $this->em->getUnitOfWork()->tryGetById($identifier, $assoc['targetEntity']);
+        if ($foundEntity !== false) {
             return $foundEntity;
         }
 
@@ -913,10 +921,10 @@ class BasicEntityPersister implements EntityPersister
     /**
      * Loads an array of entities from a given DBAL statement.
      *
-     * @param array     $assoc
+     * @param mixed[]   $assoc
      * @param Statement $stmt
      *
-     * @return array
+     * @return mixed[]
      */
     private function loadArrayFromStatement($assoc, $stmt)
     {
@@ -934,11 +942,11 @@ class BasicEntityPersister implements EntityPersister
     /**
      * Hydrates a collection from a given DBAL statement.
      *
-     * @param array                $assoc
+     * @param mixed[]              $assoc
      * @param Statement            $stmt
      * @param PersistentCollection $coll
      *
-     * @return array
+     * @return mixed[]
      */
     private function loadCollectionFromStatement($assoc, $stmt, $coll)
     {
@@ -1306,9 +1314,9 @@ class BasicEntityPersister implements EntityPersister
     /**
      * Gets the SQL join fragment used when selecting entities from an association.
      *
-     * @param string $field
-     * @param array  $assoc
-     * @param string $alias
+     * @param string  $field
+     * @param mixed[] $assoc
+     * @param string  $alias
      *
      * @return string
      */

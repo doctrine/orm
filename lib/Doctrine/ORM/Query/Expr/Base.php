@@ -27,6 +27,7 @@ use function get_class;
 use function implode;
 use function in_array;
 use function is_string;
+use function sprintf;
 
 /**
  * Abstract base Expr class for building DQL parts.
@@ -44,10 +45,10 @@ abstract class Base
     /** @var string */
     protected $postSeparator = ')';
 
-    /** @var array */
+    /** @var string[] */
     protected $allowedClasses = [];
 
-    /** @var array */
+    /** @var mixed[] */
     protected $parts = [];
 
     /**
@@ -87,7 +88,10 @@ abstract class Base
                 $class = get_class($arg);
 
                 if (! in_array($class, $this->allowedClasses)) {
-                    throw new InvalidArgumentException("Expression of type '$class' not allowed in this context.");
+                    throw new InvalidArgumentException(sprintf(
+                        "Expression of type '%s' not allowed in this context.",
+                        $class
+                    ));
                 }
             }
 

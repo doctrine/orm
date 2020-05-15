@@ -23,7 +23,7 @@ class DDC3597Dimension
      */
     private $height;
 
-    function __construct($width = 0, $height = 0)
+    public function __construct($width = 0, $height = 0)
     {
         $this->setWidth($width);
         $this->setHeight($height);

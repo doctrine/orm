@@ -30,7 +30,7 @@ class Andx extends Composite
     /** @var string */
     protected $separator = ' AND ';
 
-    /** @var array */
+    /** @var string[] */
     protected $allowedClasses = [
         Comparison::class,
         Func::class,

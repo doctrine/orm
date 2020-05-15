@@ -10,7 +10,7 @@ use function assert;
 
 class DDC3582Test extends OrmFunctionalTestCase
 {
-    function testNestedEmbeddablesAreHydratedWithProperClass(): void
+    public function testNestedEmbeddablesAreHydratedWithProperClass(): void
     {
         $this->_schemaTool->createSchema([$this->_em->getClassMetadata(DDC3582Entity::class)]);
         $this->_em->persist(new DDC3582Entity('foo'));

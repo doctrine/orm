@@ -134,7 +134,7 @@ class EntityGenerator
      */
     protected $isNew = true;
 
-    /** @var array */
+    /** @var mixed[] */
     protected $staticReflection = [];
 
     /**
@@ -1487,7 +1487,7 @@ public function __construct(<params>)
     }
 
     /**
-     * @param array $associationMapping
+     * @param mixed[] $associationMapping
      *
      * @return string
      */
@@ -1653,7 +1653,7 @@ public function __construct(<params>)
     }
 
     /**
-     * @param array $fieldMapping
+     * @param mixed[] $fieldMapping
      *
      * @return string
      */

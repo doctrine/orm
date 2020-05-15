@@ -27,11 +27,11 @@ namespace Doctrine\ORM\Query\AST;
  */
 class SimpleArithmeticExpression extends Node
 {
-    /** @var array */
+    /** @var mixed[] */
     public $arithmeticTerms = [];
 
     /**
-     * @param array $arithmeticTerms
+     * @param mixed[] $arithmeticTerms
      */
     public function __construct(array $arithmeticTerms)
     {

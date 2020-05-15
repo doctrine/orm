@@ -1007,8 +1007,8 @@ abstract class AbstractQuery
     /**
      * Executes the query.
      *
-     * @param ArrayCollection|array|null $parameters    Query parameters.
-     * @param string|int|null            $hydrationMode Processing mode to be used during the hydration process.
+     * @param ArrayCollection|mixed[]|null $parameters    Query parameters.
+     * @param string|int|null              $hydrationMode Processing mode to be used during the hydration process.
      *
      * @return mixed
      */

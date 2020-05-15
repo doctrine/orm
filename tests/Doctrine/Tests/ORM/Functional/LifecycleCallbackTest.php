@@ -562,7 +562,7 @@ class LifecycleCallbackCascader
 class LifecycleCallbackParentEntity
 {
     /** @PrePersist */
-    function doStuff(): void
+    public function doStuff(): void
     {
     }
 }

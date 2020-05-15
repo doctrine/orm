@@ -16,7 +16,7 @@ class CacheKeyMock extends CacheKey
     /**
      * @param string $hash The string hash that represend this cache key
      */
-    function __construct(string $hash)
+    public function __construct(string $hash)
     {
         $this->hash = $hash;
     }

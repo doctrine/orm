@@ -29,7 +29,7 @@ class TaskMock extends AbstractTask
      *
      * @param AbstractNamespace $namespace CLI Namespace, passed to parent constructor.
      */
-    function __construct(AbstractNamespace $namespace)
+    public function __construct(AbstractNamespace $namespace)
     {
         self::$instances[] = $this;
 

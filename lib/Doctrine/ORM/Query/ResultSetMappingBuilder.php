@@ -28,6 +28,7 @@ use InvalidArgumentException;
 
 use function explode;
 use function in_array;
+use function sprintf;
 use function strpos;
 use function strtolower;
 
@@ -146,7 +147,10 @@ class ResultSetMappingBuilder extends ResultSetMapping
             $columnAlias  = $platform->getSQLResultCasing($columnAliasMap[$columnName]);
 
             if (isset($this->fieldMappings[$columnAlias])) {
-                throw new InvalidArgumentException("The column '$columnName' conflicts with another column in the mapper.");
+                throw new InvalidArgumentException(sprintf(
+                    "The column '%s' conflicts with another column in the mapper.",
+                    $columnName
+                ));
             }
 
             $this->addFieldResult($alias, $columnAlias, $propertyName);
@@ -163,7 +167,10 @@ class ResultSetMappingBuilder extends ResultSetMapping
                     $columnType  = PersisterHelper::getTypeOfColumn($joinColumn['referencedColumnName'], $targetClass, $this->em);
 
                     if (isset($this->metaMappings[$columnAlias])) {
-                        throw new InvalidArgumentException("The column '$columnAlias' conflicts with another column in the mapper.");
+                        throw new InvalidArgumentException(sprintf(
+                            "The column '%s' conflicts with another column in the mapper.",
+                            $columnAlias
+                        ));
                     }
 
                     $this->addMetaResult($alias, $columnAlias, $columnName, $isIdentifier, $columnType);
@@ -248,7 +255,7 @@ class ResultSetMappingBuilder extends ResultSetMapping
     /**
      * Adds the mappings of the results of native SQL queries to the result set.
      *
-     * @param array $queryMapping
+     * @param mixed[] $queryMapping
      *
      * @return ResultSetMappingBuilder
      */
@@ -356,8 +363,8 @@ class ResultSetMappingBuilder extends ResultSetMapping
     /**
      * Adds the entity result mapping of the results of native SQL queries to the result set.
      *
-     * @param array  $entityMapping
-     * @param string $alias
+     * @param mixed[] $entityMapping
+     * @param string  $alias
      *
      * @return self
      *

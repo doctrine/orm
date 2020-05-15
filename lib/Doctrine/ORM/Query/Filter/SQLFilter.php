@@ -120,11 +120,7 @@ abstract class SQLFilter
      */
     final public function hasParameter($name)
     {
-        if (! isset($this->parameters[$name])) {
-            return false;
-        }
-
-        return true;
+        return isset($this->parameters[$name]);
     }
 
     /**

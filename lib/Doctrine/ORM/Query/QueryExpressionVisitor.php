@@ -37,7 +37,7 @@ use function strpos;
  */
 class QueryExpressionVisitor extends ExpressionVisitor
 {
-    /** @var array */
+    /** @var array<string,string> */
     private static $operatorMap = [
         Comparison::GT => Expr\Comparison::GT,
         Comparison::GTE => Expr\Comparison::GTE,
@@ -45,19 +45,19 @@ class QueryExpressionVisitor extends ExpressionVisitor
         Comparison::LTE => Expr\Comparison::LTE,
     ];
 
-    /** @var array */
+    /** @var mixed[] */
     private $queryAliases;
 
     /** @var Expr */
     private $expr;
 
-    /** @var array */
+    /** @var mixed[] */
     private $parameters = [];
 
     /**
      * Constructor
      *
-     * @param array $queryAliases
+     * @param mixed[] $queryAliases
      */
     public function __construct($queryAliases)
     {

@@ -32,6 +32,7 @@ use Doctrine\Persistence\ObjectRepository;
 
 use function array_slice;
 use function lcfirst;
+use function sprintf;
 use function strpos;
 use function substr;
 use function trigger_error;
@@ -238,7 +239,7 @@ class EntityRepository implements ObjectRepository, Selectable
      * @return mixed The returned value from the resolved method.
      *
      * @throws ORMException
-     * @throws BadMethodCallException If the method called is invalid
+     * @throws BadMethodCallException If the method called is invalid.
      */
     public function __call($method, $arguments)
     {
@@ -254,10 +255,11 @@ class EntityRepository implements ObjectRepository, Selectable
             return $this->resolveMagicCall('count', substr($method, 7), $arguments);
         }
 
-        throw new BadMethodCallException(
-            "Undefined method '$method'. The method name must start with " .
-            'either findBy, findOneBy or countBy!'
-        );
+        throw new BadMethodCallException(sprintf(
+            'Undefined method "%s". The method name must start with ' .
+            'either findBy, findOneBy or countBy!',
+            $method
+        ));
     }
 
     /**
@@ -316,7 +318,7 @@ class EntityRepository implements ObjectRepository, Selectable
      *
      * @return mixed
      *
-     * @throws ORMException If the method called is invalid or the requested field/association does not exist
+     * @throws ORMException If the method called is invalid or the requested field/association does not exist.
      */
     private function resolveMagicCall($method, $by, array $arguments)
     {

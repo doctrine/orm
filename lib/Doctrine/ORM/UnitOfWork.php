@@ -340,7 +340,7 @@ class UnitOfWork implements PropertyChangedListener
      * 4) All collection updates
      * 5) All entity deletions
      *
-     * @param object|array|null $entity
+     * @param object|mixed[]|null $entity
      *
      * @return void
      *
@@ -2118,9 +2118,9 @@ class UnitOfWork implements PropertyChangedListener
     /**
      * Executes a detach operation on the given entity.
      *
-     * @param object $entity
-     * @param array  $visited
-     * @param bool   $noCascade if true, don't cascade detach operation.
+     * @param object  $entity
+     * @param mixed[] $visited
+     * @param bool    $noCascade if true, don't cascade detach operation.
      *
      * @return void
      */
@@ -3653,7 +3653,7 @@ class UnitOfWork implements PropertyChangedListener
      *
      * @return mixed the identifier after type conversion
      *
-     * @throws MappingException if the entity has more than a single identifier
+     * @throws MappingException if the entity has more than a single identifier.
      */
     private function convertSingleFieldIdentifierToPHPValue(ClassMetadata $class, $identifierValue)
     {

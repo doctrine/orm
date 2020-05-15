@@ -25,12 +25,12 @@ class PartialObjectExpression extends Node
     /** @var string */
     public $identificationVariable;
 
-    /** @var array */
+    /** @var mixed[] */
     public $partialFieldSet;
 
     /**
-     * @param string $identificationVariable
-     * @param array  $partialFieldSet
+     * @param string  $identificationVariable
+     * @param mixed[] $partialFieldSet
      */
     public function __construct($identificationVariable, array $partialFieldSet)
     {

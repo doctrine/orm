@@ -60,7 +60,7 @@ final class IdentifierFlattener
     /**
      * convert foreign identifiers into scalar foreign key values to avoid object to string conversion failures.
      *
-     * @param array $id
+     * @param mixed[] $id
      *
      * @return array
      */

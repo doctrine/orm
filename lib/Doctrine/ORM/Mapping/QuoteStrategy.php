@@ -34,57 +34,57 @@ interface QuoteStrategy
      *
      * @return string
      */
-    function getColumnName($fieldName, ClassMetadata $class, AbstractPlatform $platform);
+    public function getColumnName($fieldName, ClassMetadata $class, AbstractPlatform $platform);
 
     /**
      * Gets the (possibly quoted) primary table name for safe use in an SQL statement.
      *
      * @return string
      */
-    function getTableName(ClassMetadata $class, AbstractPlatform $platform);
+    public function getTableName(ClassMetadata $class, AbstractPlatform $platform);
 
     /**
      * Gets the (possibly quoted) sequence name for safe use in an SQL statement.
      *
-     * @param array $definition
+     * @param mixed[] $definition
      *
      * @return string
      */
-    function getSequenceName(array $definition, ClassMetadata $class, AbstractPlatform $platform);
+    public function getSequenceName(array $definition, ClassMetadata $class, AbstractPlatform $platform);
 
     /**
      * Gets the (possibly quoted) name of the join table.
      *
-     * @param array $association
+     * @param mixed[] $association
      *
      * @return string
      */
-    function getJoinTableName(array $association, ClassMetadata $class, AbstractPlatform $platform);
+    public function getJoinTableName(array $association, ClassMetadata $class, AbstractPlatform $platform);
 
     /**
      * Gets the (possibly quoted) join column name.
      *
-     * @param array $joinColumn
+     * @param mixed[] $joinColumn
      *
      * @return string
      */
-    function getJoinColumnName(array $joinColumn, ClassMetadata $class, AbstractPlatform $platform);
+    public function getJoinColumnName(array $joinColumn, ClassMetadata $class, AbstractPlatform $platform);
 
     /**
      * Gets the (possibly quoted) join column name.
      *
-     * @param array $joinColumn
+     * @param mixed[] $joinColumn
      *
      * @return string
      */
-    function getReferencedJoinColumnName(array $joinColumn, ClassMetadata $class, AbstractPlatform $platform);
+    public function getReferencedJoinColumnName(array $joinColumn, ClassMetadata $class, AbstractPlatform $platform);
 
     /**
      * Gets the (possibly quoted) identifier column names for safe use in an SQL statement.
      *
      * @return array
      */
-    function getIdentifierColumnNames(ClassMetadata $class, AbstractPlatform $platform);
+    public function getIdentifierColumnNames(ClassMetadata $class, AbstractPlatform $platform);
 
     /**
      * Gets the column alias.
@@ -94,5 +94,5 @@ interface QuoteStrategy
      *
      * @return string
      */
-    function getColumnAlias($columnName, $counter, AbstractPlatform $platform, ?ClassMetadata $class = null);
+    public function getColumnAlias($columnName, $counter, AbstractPlatform $platform, ?ClassMetadata $class = null);
 }

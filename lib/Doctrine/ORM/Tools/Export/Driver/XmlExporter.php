@@ -151,8 +151,11 @@ class XmlExporter extends AbstractExporter
             }
         }
 
-        if (! $metadata->isIdentifierComposite && $idGeneratorType = $this->_getIdGeneratorTypeString($metadata->generatorType)) {
-            $id[$metadata->getSingleIdentifierFieldName()]['generator']['strategy'] = $idGeneratorType;
+        if (! $metadata->isIdentifierComposite) {
+            $idGeneratorType = $this->_getIdGeneratorTypeString($metadata->generatorType);
+            if ($idGeneratorType) {
+                $id[$metadata->getSingleIdentifierFieldName()]['generator']['strategy'] = $idGeneratorType;
+            }
         }
 
         if ($id) {
@@ -408,7 +411,7 @@ class XmlExporter extends AbstractExporter
     /**
      * Exports (nested) option elements.
      *
-     * @param array $options
+     * @param mixed[] $options
      */
     private function exportTableOptions(SimpleXMLElement $parentXml, array $options): void
     {
@@ -465,8 +468,14 @@ class XmlExporter extends AbstractExporter
         $this->generateEntityListenerXml($metadata, $entityListenersXmlMap, $entityListenersXml);
     }
 
-    private function generateEntityListenerXml(ClassMetadataInfo $metadata, array $entityListenersXmlMap, SimpleXMLElement $entityListenersXml): void
-    {
+    /**
+     * @param mixed[] $entityListenersXmlMap
+     */
+    private function generateEntityListenerXml(
+        ClassMetadataInfo $metadata,
+        array $entityListenersXmlMap,
+        SimpleXMLElement $entityListenersXml
+    ): void {
         foreach ($metadata->entityListeners as $event => $entityListenerConfig) {
             foreach ($entityListenerConfig as $entityListener) {
                 $entityListenerXml = $this->addClassToMapIfExists(
@@ -482,8 +491,15 @@ class XmlExporter extends AbstractExporter
         }
     }
 
-    private function addClassToMapIfExists(array $entityListenersXmlMap, array $entityListener, SimpleXMLElement $entityListenersXml): SimpleXMLElement
-    {
+    /**
+     * @param mixed[] $entityListenersXmlMap
+     * @param mixed[] $entityListener
+     */
+    private function addClassToMapIfExists(
+        array $entityListenersXmlMap,
+        array $entityListener,
+        SimpleXMLElement $entityListenersXml
+    ): SimpleXMLElement {
         if (isset($entityListenersXmlMap[$entityListener['class']])) {
             return $entityListenersXmlMap[$entityListener['class']];
         }

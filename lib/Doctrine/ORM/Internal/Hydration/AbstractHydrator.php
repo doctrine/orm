@@ -307,9 +307,9 @@ abstract class AbstractHydrator
      * field names during this procedure as well as any necessary conversions on
      * the values applied. Scalar values are kept in a specific key 'scalars'.
      *
-     * @param array $data                SQL Result Row.
-     * @param array &$id                 Dql-Alias => ID-Hash.
-     * @param array &$nonemptyComponents Does this DQL-Alias has at least one non NULL value?
+     * @param mixed[] $data                SQL Result Row.
+     * @param array   &$id                 Dql-Alias => ID-Hash.
+     * @param array   &$nonemptyComponents Does this DQL-Alias has at least one non NULL value?
      *
      * @return array<string, array<string, mixed>> An array with all the fields
      *                                             (name => value) of the data
@@ -560,8 +560,8 @@ abstract class AbstractHydrator
     /**
      * Register entity as managed in UnitOfWork.
      *
-     * @param object $entity
-     * @param array  $data
+     * @param object  $entity
+     * @param mixed[] $data
      *
      * @return void
      *

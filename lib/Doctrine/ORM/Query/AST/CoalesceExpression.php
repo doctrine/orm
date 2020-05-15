@@ -27,11 +27,11 @@ namespace Doctrine\ORM\Query\AST;
  */
 class CoalesceExpression extends Node
 {
-    /** @var array */
+    /** @var mixed[] */
     public $scalarExpressions = [];
 
     /**
-     * @param array $scalarExpressions
+     * @param mixed[] $scalarExpressions
      */
     public function __construct(array $scalarExpressions)
     {

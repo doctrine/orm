@@ -89,7 +89,7 @@ class DefaultQueryCacheTest extends OrmTestCase
         $rsm->addRootEntityFromClassMetadata(Country::class, 'c');
 
         for ($i = 0; $i < 4; $i++) {
-            $name     = "Country $i";
+            $name     = 'Country ' . $i;
             $entity   = new Country($name);
             $result[] = $entity;
 
@@ -168,9 +168,9 @@ class DefaultQueryCacheTest extends OrmTestCase
         $rsm->addJoinedEntityFromClassMetadata(Country::class, 'co', 's', 'country', ['id' => 'country_id', 'name' => 'country_name']);
 
         for ($i = 0; $i < 4; $i++) {
-            $country = new Country("Country $i");
-            $state   = new State("State $i", $country);
-            $city    = new City("City $i", $state);
+            $country = new Country('Country ' . $i);
+            $state   = new State('State ' . $i, $country);
+            $city    = new City('City ' . $i, $state);
 
             $result[] = $city;
 
@@ -384,7 +384,7 @@ class DefaultQueryCacheTest extends OrmTestCase
         $rsm->addRootEntityFromClassMetadata(Country::class, 'c');
 
         for ($i = 0; $i < 4; $i++) {
-            $name     = "Country $i";
+            $name     = 'Country ' . $i;
             $entity   = new Country($name);
             $result[] = $entity;
 
@@ -491,7 +491,7 @@ class DefaultQueryCacheTest extends OrmTestCase
         $rsm->addRootEntityFromClassMetadata(Country::class, 'c');
 
         for ($i = 0; $i < 4; $i++) {
-            $name     = "Country $i";
+            $name     = 'Country ' . $i;
             $entity   = new Country($name);
             $result[] = $entity;
 

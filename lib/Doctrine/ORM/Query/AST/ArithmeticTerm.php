@@ -27,11 +27,11 @@ namespace Doctrine\ORM\Query\AST;
  */
 class ArithmeticTerm extends Node
 {
-    /** @var array */
+    /** @var mixed[] */
     public $arithmeticFactors;
 
     /**
-     * @param array $arithmeticFactors
+     * @param mixed[] $arithmeticFactors
      */
     public function __construct(array $arithmeticFactors)
     {

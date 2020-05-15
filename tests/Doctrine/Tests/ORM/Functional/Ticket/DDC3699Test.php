@@ -2,16 +2,20 @@
 
 declare(strict_types=1);
 
+namespace Doctrine\Tests\ORM\Functional\Ticket;
+
 use Doctrine\Tests\Models\DDC3699\DDC3699Child;
 use Doctrine\Tests\Models\DDC3699\DDC3699RelationMany;
 use Doctrine\Tests\Models\DDC3699\DDC3699RelationOne;
 use Doctrine\Tests\OrmFunctionalTestCase;
 use Doctrine\Tests\VerifyDeprecations;
 
+use function assert;
+
 /**
  * @group DDC-3699
  */
-class DDC3597Test extends OrmFunctionalTestCase
+class DDC3699Test extends OrmFunctionalTestCase
 {
     use VerifyDeprecations;
 

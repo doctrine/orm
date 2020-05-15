@@ -57,7 +57,7 @@ abstract class AbstractEntityPersister implements CachedEntityPersister
     /** @var ClassMetadata */
     protected $class;
 
-     /** @var array */
+     /** @var mixed[] */
     protected $queuedCache = [];
 
     /** @var Region */

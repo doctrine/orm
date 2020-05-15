@@ -43,25 +43,25 @@ use function spl_object_hash;
  */
 class ObjectHydrator extends AbstractHydrator
 {
-    /** @var array */
+    /** @var mixed[] */
     private $identifierMap = [];
 
-    /** @var array */
+    /** @var mixed[] */
     private $resultPointers = [];
 
-    /** @var array */
+    /** @var mixed[] */
     private $idTemplate = [];
 
     /** @var int */
     private $resultCounter = 0;
 
-    /** @var array */
+    /** @var mixed[] */
     private $rootAliases = [];
 
-    /** @var array */
+    /** @var mixed[] */
     private $initializedCollections = [];
 
-    /** @var array */
+    /** @var mixed[] */
     private $existingCollections = [];
 
     /**

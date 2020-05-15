@@ -34,15 +34,15 @@ interface QueryCache
     public function clear();
 
     /**
-     * @param mixed $result
-     * @param array $hints
+     * @param mixed   $result
+     * @param mixed[] $hints
      *
      * @return bool
      */
     public function put(QueryCacheKey $key, ResultSetMapping $rsm, $result, array $hints = []);
 
     /**
-     * @param array $hints
+     * @param mixed[] $hints
      *
      * @return array|null
      */

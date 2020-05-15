@@ -116,7 +116,7 @@ class SqlWalker implements TreeWalker
     /** @var Query */
     private $query;
 
-    /** @var array */
+    /** @var mixed[] */
     private $tableAliasMap = [];
 
     /**
@@ -551,7 +551,8 @@ class SqlWalker implements TreeWalker
             $sql .= $this->walkOrderByClause($AST->orderByClause);
         }
 
-        if (! $AST->orderByClause && ($orderBySql = $this->_generateOrderedCollectionOrderByItems())) {
+        $orderBySql = $this->_generateOrderedCollectionOrderByItems();
+        if (! $AST->orderByClause && $orderBySql) {
             $sql .= ' ORDER BY ' . $orderBySql;
         }
 

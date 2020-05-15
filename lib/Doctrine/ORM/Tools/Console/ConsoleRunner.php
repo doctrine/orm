@@ -62,7 +62,7 @@ final class ConsoleRunner
      * Creates a console application with the given helperset and
      * optional commands.
      *
-     * @param array $commands
+     * @param SymfonyCommand[] $commands
      *
      * @throws OutOfBoundsException
      */

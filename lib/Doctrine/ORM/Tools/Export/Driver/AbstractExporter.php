@@ -44,7 +44,7 @@ use const E_USER_DEPRECATED;
  */
 abstract class AbstractExporter
 {
-    /** @var array */
+    /** @var mixed[] */
     protected $_metadata = [];
 
     /** @var string|null */

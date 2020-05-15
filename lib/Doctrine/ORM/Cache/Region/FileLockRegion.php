@@ -53,17 +53,13 @@ class FileLockRegion implements ConcurrentRegion
 {
     public const LOCK_EXTENSION = 'lock';
 
-    /**
-     * var \Doctrine\ORM\Cache\Region
-     */
+    /** @var Region */
     private $region;
 
     /** @var string */
     private $directory;
 
-    /**
-     * var integer
-     */
+    /** @var int */
     private $lockLifetime;
 
     /**
@@ -267,10 +263,6 @@ class FileLockRegion implements ConcurrentRegion
             return false;
         }
 
-        if (! @unlink($this->getLockFileName($key))) {
-            return false;
-        }
-
-        return true;
+        return @unlink($this->getLockFileName($key));
     }
 }

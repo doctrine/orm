@@ -37,7 +37,7 @@ class CountOutputWalkerTest extends PaginationTestCase
         );
     }
 
-    public function testCountQuery_GroupBy(): void
+    public function testCountQueryGroupBy(): void
     {
         $query = $this->entityManager->createQuery(
             'SELECT p.name FROM Doctrine\Tests\ORM\Tools\Pagination\Person p GROUP BY p.name'
@@ -51,7 +51,7 @@ class CountOutputWalkerTest extends PaginationTestCase
         );
     }
 
-    public function testCountQuery_Having(): void
+    public function testCountQueryHaving(): void
     {
         $query = $this->entityManager->createQuery(
             'SELECT g, u, count(u.id) AS userCount FROM Doctrine\Tests\ORM\Tools\Pagination\Group g LEFT JOIN g.users u GROUP BY g.id HAVING userCount > 0'

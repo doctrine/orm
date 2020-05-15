@@ -33,13 +33,13 @@ class IdentificationVariableDeclaration extends Node
     /** @var IndexBy|null */
     public $indexBy = null;
 
-    /** @var array */
+    /** @var mixed[] */
     public $joins = [];
 
     /**
      * @param RangeVariableDeclaration|null $rangeVariableDecl
      * @param IndexBy|null                  $indexBy
-     * @param array                         $joins
+     * @param mixed[]                       $joins
      */
     public function __construct($rangeVariableDecl, $indexBy, array $joins)
     {

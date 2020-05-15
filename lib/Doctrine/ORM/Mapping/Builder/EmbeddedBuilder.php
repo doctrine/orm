@@ -30,11 +30,11 @@ class EmbeddedBuilder
     /** @var ClassMetadataBuilder */
     private $builder;
 
-    /** @var array */
+    /** @var mixed[] */
     private $mapping;
 
     /**
-     * @param array $mapping
+     * @param mixed[] $mapping
      */
     public function __construct(ClassMetadataBuilder $builder, array $mapping)
     {

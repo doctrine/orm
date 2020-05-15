@@ -62,7 +62,7 @@ class DefaultQueryCache implements QueryCache
     /** @var CacheLogger */
     protected $cacheLogger;
 
-    /** @var array */
+    /** @var array<string,mixed> */
     private static $hints = [Query::HINT_CACHE_ENABLED => true];
 
     /**
@@ -304,7 +304,8 @@ class DefaultQueryCache implements QueryCache
                 // root entity association
                 if ($rootAlias === $parentAlias) {
                     // Cancel put result if association put fail
-                    if (($assocInfo = $this->storeAssociationCache($key, $assoc, $assocValue)) === null) {
+                    $assocInfo = $this->storeAssociationCache($key, $assoc, $assocValue);
+                    if ($assocInfo === null) {
                         return false;
                     }
 
@@ -337,8 +338,8 @@ class DefaultQueryCache implements QueryCache
     }
 
     /**
-     * @param array $assoc
-     * @param mixed $assocValue
+     * @param array<string,mixed> $assoc
+     * @param mixed               $assocValue
      *
      * @return mixed[]|null
      *

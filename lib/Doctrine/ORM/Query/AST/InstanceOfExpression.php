@@ -34,7 +34,7 @@ class InstanceOfExpression extends Node
     /** @var string */
     public $identificationVariable;
 
-    /** @var array */
+    /** @var mixed[] */
     public $value;
 
     /**

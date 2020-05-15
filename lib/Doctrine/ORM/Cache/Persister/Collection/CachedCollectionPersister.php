@@ -52,7 +52,7 @@ interface CachedCollectionPersister extends CachedPersister, CollectionPersister
     /**
      * Stores a collection into cache
      *
-     * @param array|Collection $elements
+     * @param mixed[]|Collection $elements
      *
      * @return void
      */

@@ -114,8 +114,11 @@ class YamlExporter extends AbstractExporter
             $fieldMappings[$name] = $fieldMapping;
         }
 
-        if (! $metadata->isIdentifierComposite && $idGeneratorType = $this->_getIdGeneratorTypeString($metadata->generatorType)) {
-            $ids[$metadata->getSingleIdentifierFieldName()]['generator']['strategy'] = $idGeneratorType;
+        if (! $metadata->isIdentifierComposite) {
+            $idGeneratorType = $this->_getIdGeneratorTypeString($metadata->generatorType);
+            if ($idGeneratorType) {
+                $ids[$metadata->getSingleIdentifierFieldName()]['generator']['strategy'] = $idGeneratorType;
+            }
         }
 
         $array['id'] = $ids;
@@ -228,8 +231,8 @@ class YamlExporter extends AbstractExporter
      * The yamlDump method, when supplied with an array, will do its best
      * to convert the array into friendly YAML.
      *
-     * @param array $array  PHP array
-     * @param int   $inline [optional] The level where you switch to inline YAML
+     * @param mixed[] $array  PHP array
+     * @param int     $inline [optional] The level where you switch to inline YAML
      *
      * @return string A YAML string representing the original PHP array
      */

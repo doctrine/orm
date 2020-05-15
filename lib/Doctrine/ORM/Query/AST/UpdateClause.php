@@ -33,12 +33,12 @@ class UpdateClause extends Node
     /** @var string */
     public $aliasIdentificationVariable;
 
-    /** @var array */
+    /** @var mixed[] */
     public $updateItems = [];
 
     /**
-     * @param string $abstractSchemaName
-     * @param array  $updateItems
+     * @param string  $abstractSchemaName
+     * @param mixed[] $updateItems
      */
     public function __construct($abstractSchemaName, array $updateItems)
     {

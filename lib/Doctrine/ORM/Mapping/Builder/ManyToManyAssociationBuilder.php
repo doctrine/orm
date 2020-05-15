@@ -30,7 +30,7 @@ class ManyToManyAssociationBuilder extends OneToManyAssociationBuilder
     /** @var string|null */
     private $joinTableName;
 
-    /** @var array */
+    /** @var mixed[] */
     private $inverseJoinColumns = [];
 
     /**

@@ -59,7 +59,7 @@ class ECommerceCustomer
         }
     }
 
-    /* Does not properly maintain the bidirectional association! */
+    /** Does not properly maintain the bidirectional association! */
     public function brokenSetCart(ECommerceCart $cart): void
     {
         $this->cart = $cart;

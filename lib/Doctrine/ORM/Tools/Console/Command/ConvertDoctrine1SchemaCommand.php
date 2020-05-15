@@ -137,7 +137,7 @@ class ConvertDoctrine1SchemaCommand extends Command
     }
 
     /**
-     * @param array       $fromPaths
+     * @param mixed[]     $fromPaths
      * @param string      $destPath
      * @param string      $toType
      * @param int         $numSpaces

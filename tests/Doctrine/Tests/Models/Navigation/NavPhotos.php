@@ -29,7 +29,7 @@ class NavPhotos
     /** @column(type="string", name="file_name") */
     private $file;
 
-    function __construct($poi, $file)
+    public function __construct($poi, $file)
     {
         $this->poi  = $poi;
         $this->file = $file;

@@ -121,7 +121,8 @@ EOT
         $metadata = MetadataFilter::filter($metadata, $input->getOption('filter'));
 
         // Process destination directory
-        if (! is_dir($destPath = $input->getArgument('dest-path'))) {
+        $destPath = $input->getArgument('dest-path');
+        if (! is_dir($destPath)) {
             mkdir($destPath, 0775, true);
         }
 

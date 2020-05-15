@@ -436,7 +436,7 @@ class ClassMetadataInfo implements ClassMetadata
      *
      * @deprecated 3.0 Remove this.
      *
-     * @var array
+     * @var mixed[]
      */
     public $columnNames = [];
 
@@ -629,7 +629,7 @@ class ClassMetadataInfo implements ClassMetadata
      */
     public $versionField;
 
-    /** @var array */
+    /** @var mixed[] */
     public $cache = null;
 
     /**
@@ -3273,7 +3273,7 @@ class ClassMetadataInfo implements ClassMetadata
      *
      * @deprecated Deprecated since version 2.3 in favor of \Doctrine\ORM\Mapping\QuoteStrategy
      *
-     * @param array            $assoc
+     * @param mixed[]          $assoc
      * @param AbstractPlatform $platform
      *
      * @return string

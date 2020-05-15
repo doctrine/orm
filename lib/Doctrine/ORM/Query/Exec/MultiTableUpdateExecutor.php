@@ -49,7 +49,7 @@ class MultiTableUpdateExecutor extends AbstractSqlExecutor
     /** @var string */
     private $_insertSql;
 
-    /** @var array */
+    /** @var mixed[] */
     private $_sqlParameters = [];
 
     /** @var int */

@@ -39,7 +39,7 @@ use function ltrim;
  */
 class ResolveTargetEntityListener implements EventSubscriber
 {
-    /** @var array[] indexed by original entity name */
+    /** @var mixed[][] indexed by original entity name */
     private $resolveTargetEntities = [];
 
     /**
@@ -110,7 +110,7 @@ class ResolveTargetEntityListener implements EventSubscriber
 
     /**
      * @param ClassMetadataInfo $classMetadata
-     * @param array             $mapping
+     * @param mixed[]           $mapping
      *
      * @return void
      */

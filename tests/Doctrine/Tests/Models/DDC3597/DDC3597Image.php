@@ -19,7 +19,7 @@ class DDC3597Image extends DDC3597Media
      */
     private $dimension;
 
-    function __construct(string $distributionHash)
+    public function __construct(string $distributionHash)
     {
         parent::__construct($distributionHash);
         $this->dimension = new DDC3597Dimension();

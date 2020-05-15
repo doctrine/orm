@@ -34,7 +34,7 @@ use const E_USER_DEPRECATED;
  */
 class ClassMetadataExporter
 {
-    /** @var array */
+    /** @var array<string,string> */
     private static $_exporterDrivers = [
         'xml' => Driver\XmlExporter::class,
         'yaml' => Driver\YamlExporter::class,

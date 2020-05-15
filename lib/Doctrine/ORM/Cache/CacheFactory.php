@@ -49,7 +49,7 @@ interface CacheFactory
      *
      * @param EntityManagerInterface $em        The entity manager.
      * @param CollectionPersister    $persister The collection persister that will be cached.
-     * @param array                  $mapping   The association mapping.
+     * @param mixed[]                $mapping   The association mapping.
      *
      * @return CachedCollectionPersister
      */
@@ -79,7 +79,7 @@ interface CacheFactory
      * Build a collection hydrator
      *
      * @param EntityManagerInterface $em      The Entity manager.
-     * @param array                  $mapping The association mapping.
+     * @param mixed[]                $mapping The association mapping.
      *
      * @return CollectionHydrator The built collection hydrator.
      */

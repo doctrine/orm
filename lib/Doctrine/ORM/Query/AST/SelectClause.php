@@ -30,12 +30,12 @@ class SelectClause extends Node
     /** @var bool */
     public $isDistinct;
 
-    /** @var array */
+    /** @var mixed[] */
     public $selectExpressions = [];
 
     /**
-     * @param array $selectExpressions
-     * @param bool  $isDistinct
+     * @param mixed[] $selectExpressions
+     * @param bool    $isDistinct
      */
     public function __construct(array $selectExpressions, $isDistinct)
     {

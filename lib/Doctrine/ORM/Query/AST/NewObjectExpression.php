@@ -30,12 +30,12 @@ class NewObjectExpression extends Node
     /** @var string */
     public $className;
 
-    /** @var array */
+    /** @var mixed[] */
     public $args;
 
     /**
-     * @param string $className
-     * @param array  $args
+     * @param string  $className
+     * @param mixed[] $args
      */
     public function __construct($className, array $args)
     {

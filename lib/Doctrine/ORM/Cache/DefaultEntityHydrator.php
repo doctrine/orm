@@ -50,7 +50,7 @@ class DefaultEntityHydrator implements EntityHydrator
      */
     private $identifierFlattener;
 
-    /** @var array */
+    /** @var array<string,mixed> */
     private static $hints = [Query::HINT_CACHE_ENABLED => true];
 
     /**

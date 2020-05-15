@@ -30,7 +30,7 @@ class Orx extends Composite
     /** @var string */
     protected $separator = ' OR ';
 
-    /** @var array */
+    /** @var string[] */
     protected $allowedClasses = [
         Comparison::class,
         Func::class,

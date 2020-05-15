@@ -28,18 +28,18 @@ class AssociationBuilder
     /** @var ClassMetadataBuilder */
     protected $builder;
 
-    /** @var array */
+    /** @var mixed[] */
     protected $mapping;
 
-    /** @var array|null */
+    /** @var mixed[]|null */
     protected $joinColumns;
 
     /** @var int */
     protected $type;
 
     /**
-     * @param array $mapping
-     * @param int   $type
+     * @param mixed[] $mapping
+     * @param int     $type
      */
     public function __construct(ClassMetadataBuilder $builder, array $mapping, $type)
     {

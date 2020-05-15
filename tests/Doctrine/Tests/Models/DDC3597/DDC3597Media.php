@@ -29,7 +29,7 @@ abstract class DDC3597Media extends DDC3597Root
      */
     private $format;
 
-    function __construct($distributionHash)
+    public function __construct($distributionHash)
     {
         $this->distributionHash = $distributionHash;
     }

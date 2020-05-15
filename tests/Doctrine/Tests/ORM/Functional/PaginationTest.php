@@ -139,7 +139,7 @@ class PaginationTest extends OrmFunctionalTestCase
     private function iterateWithOrderAsc($useOutputWalkers, $fetchJoinCollection, $baseDql, $checkField): void
     {
         // Ascending
-        $dql   = "$baseDql ASC";
+        $dql   = $baseDql . ' ASC';
         $query = $this->_em->createQuery($dql);
 
         $paginator = new Paginator($query, $fetchJoinCollection);
@@ -153,7 +153,7 @@ class PaginationTest extends OrmFunctionalTestCase
     private function iterateWithOrderAscWithLimit($useOutputWalkers, $fetchJoinCollection, $baseDql, $checkField): void
     {
         // Ascending
-        $dql   = "$baseDql ASC";
+        $dql   = $baseDql . ' ASC';
         $query = $this->_em->createQuery($dql);
 
         // With limit
@@ -169,7 +169,7 @@ class PaginationTest extends OrmFunctionalTestCase
     private function iterateWithOrderAscWithLimitAndOffset($useOutputWalkers, $fetchJoinCollection, $baseDql, $checkField): void
     {
         // Ascending
-        $dql   = "$baseDql ASC";
+        $dql   = $baseDql . ' ASC';
         $query = $this->_em->createQuery($dql);
 
         // With offset
@@ -184,7 +184,7 @@ class PaginationTest extends OrmFunctionalTestCase
 
     private function iterateWithOrderDesc($useOutputWalkers, $fetchJoinCollection, $baseDql, $checkField): void
     {
-        $dql   = "$baseDql DESC";
+        $dql   = $baseDql . ' DESC';
         $query = $this->_em->createQuery($dql);
 
         $paginator = new Paginator($query, $fetchJoinCollection);
@@ -197,7 +197,7 @@ class PaginationTest extends OrmFunctionalTestCase
 
     private function iterateWithOrderDescWithLimit($useOutputWalkers, $fetchJoinCollection, $baseDql, $checkField): void
     {
-        $dql   = "$baseDql DESC";
+        $dql   = $baseDql . ' DESC';
         $query = $this->_em->createQuery($dql);
 
         // With limit
@@ -212,7 +212,7 @@ class PaginationTest extends OrmFunctionalTestCase
 
     private function iterateWithOrderDescWithLimitAndOffset($useOutputWalkers, $fetchJoinCollection, $baseDql, $checkField): void
     {
-        $dql   = "$baseDql DESC";
+        $dql   = $baseDql . ' DESC';
         $query = $this->_em->createQuery($dql);
 
         // With offset
@@ -746,8 +746,8 @@ SQL
 
         for ($i = 0; $i < 9; $i++) {
             $user               = new CmsUser();
-            $user->name         = "Name$i";
-            $user->username     = "username$i";
+            $user->name         = 'Name' . $i;
+            $user->username     = 'username' . $i;
             $user->status       = 'active';
             $user->email        = new CmsEmail();
             $user->email->user  = $user;
@@ -759,8 +759,8 @@ SQL
             $this->_em->persist($user);
             for ($j = 0; $j < $i + 1; $j++) {
                 $article        = new CmsArticle();
-                $article->topic = "topic$i$j";
-                $article->text  = "text$i$j";
+                $article->topic = 'topic' . $i . $j;
+                $article->text  = 'text' . $i . $j;
                 $article->setAuthor($user);
                 $article->version = 0;
                 $this->_em->persist($article);
@@ -769,15 +769,15 @@ SQL
 
         for ($i = 0; $i < 9; $i++) {
             $company                     = new Company();
-            $company->name               = "name$i";
+            $company->name               = 'name' . $i;
             $company->logo               = new Logo();
-            $company->logo->image        = "image$i";
+            $company->logo->image        = 'image' . $i;
             $company->logo->image_width  = 100 + $i;
             $company->logo->image_height = 100 + $i;
             $company->logo->company      = $company;
             for ($j = 0; $j < 3; $j++) {
                 $department             = new Department();
-                $department->name       = "name$i$j";
+                $department->name       = 'name' . $i . $j;
                 $department->company    = $company;
                 $company->departments[] = $department;
             }
@@ -787,8 +787,8 @@ SQL
 
         for ($i = 0; $i < 9; $i++) {
             $user        = new User1();
-            $user->name  = "name$i";
-            $user->email = "email$i";
+            $user->name  = 'name' . $i;
+            $user->email = 'email' . $i;
             $this->_em->persist($user);
         }
 

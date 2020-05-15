@@ -39,10 +39,10 @@ class OrderBy
     /** @var string */
     protected $postSeparator = '';
 
-    /** @var array */
+    /** @var string[] */
     protected $allowedClasses = [];
 
-    /** @var array */
+    /** @var mixed[] */
     protected $parts = [];
 
     /**

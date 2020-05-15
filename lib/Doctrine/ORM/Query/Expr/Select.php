@@ -33,7 +33,7 @@ class Select extends Base
     /** @var string */
     protected $postSeparator = '';
 
-    /** @var array */
+    /** @var string[] */
     protected $allowedClasses = [Func::class];
 
     /**

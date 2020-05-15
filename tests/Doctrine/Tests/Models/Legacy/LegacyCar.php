@@ -22,7 +22,7 @@ class LegacyCar
     /** @Column(name="sDescription", type="string", length=255, unique=true) */
     public $_description;
 
-    function getDescription()
+    public function getDescription()
     {
         return $this->_description;
     }

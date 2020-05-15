@@ -37,8 +37,6 @@ class ConcurrentRegionMock implements ConcurrentRegion
     /**
      * Dequeue an exception for a specific method invocation
      *
-     * @param mixed $default
-     *
      * @return mixed
      */
     private function throwException(string $method)

@@ -31,12 +31,12 @@ use function sprintf;
  */
 class PreUpdateEventArgs extends LifecycleEventArgs
 {
-    /** @var array */
+    /** @var array<string,array<int,mixed>> */
     private $entityChangeSet;
 
     /**
-     * @param object $entity
-     * @param array  $changeSet
+     * @param object                         $entity
+     * @param array<string,array<int,mixed>> $changeSet
      */
     public function __construct($entity, EntityManagerInterface $em, array &$changeSet)
     {

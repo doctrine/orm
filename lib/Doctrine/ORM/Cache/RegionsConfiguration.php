@@ -25,10 +25,10 @@ namespace Doctrine\ORM\Cache;
  */
 class RegionsConfiguration
 {
-    /** @var array */
+    /** @var array<string,int> */
     private $lifetimes = [];
 
-    /** @var array */
+    /** @var array<string,int> */
     private $lockLifetimes = [];
 
     /** @var int */

@@ -39,6 +39,7 @@ use stdClass;
 use function array_search;
 use function assert;
 use function count;
+use function sprintf;
 
 class ClassMetadataFactoryTest extends OrmTestCase
 {
@@ -498,7 +499,10 @@ class ClassMetadataFactoryTestSubject extends ClassMetadataFactory
     {
         $this->requestedClasses[] = $className;
         if (! isset($this->mockMetadata[$className])) {
-            throw new InvalidArgumentException("No mock metadata found for class $className.");
+            throw new InvalidArgumentException(sprintf(
+                'No mock metadata found for class %s.',
+                $className
+            ));
         }
 
         return $this->mockMetadata[$className];

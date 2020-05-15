@@ -30,10 +30,10 @@ use Doctrine\Common\Collections\Expr\Value;
  */
 class SqlValueVisitor extends ExpressionVisitor
 {
-    /** @var array */
+    /** @var mixed[] */
     private $values = [];
 
-    /** @var array */
+    /** @var mixed[][] */
     private $types = [];
 
     /**

@@ -67,10 +67,10 @@ class Setup
     /**
      * Creates a configuration with an annotation metadata driver.
      *
-     * @param array  $paths
-     * @param bool   $isDevMode
-     * @param string $proxyDir
-     * @param bool   $useSimpleAnnotationReader
+     * @param mixed[] $paths
+     * @param bool    $isDevMode
+     * @param string  $proxyDir
+     * @param bool    $useSimpleAnnotationReader
      *
      * @return Configuration
      */
@@ -85,9 +85,9 @@ class Setup
     /**
      * Creates a configuration with a xml metadata driver.
      *
-     * @param array  $paths
-     * @param bool   $isDevMode
-     * @param string $proxyDir
+     * @param mixed[] $paths
+     * @param bool    $isDevMode
+     * @param string  $proxyDir
      *
      * @return Configuration
      */
@@ -102,9 +102,9 @@ class Setup
     /**
      * Creates a configuration with a yaml metadata driver.
      *
-     * @param array  $paths
-     * @param bool   $isDevMode
-     * @param string $proxyDir
+     * @param mixed[] $paths
+     * @param bool    $isDevMode
+     * @param string  $proxyDir
      *
      * @return Configuration
      */

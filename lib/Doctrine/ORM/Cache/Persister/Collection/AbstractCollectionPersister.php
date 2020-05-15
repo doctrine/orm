@@ -57,10 +57,10 @@ abstract class AbstractCollectionPersister implements CachedCollectionPersister
     /** @var ClassMetadata */
     protected $targetEntity;
 
-    /** @var array */
+    /** @var mixed[] */
     protected $association;
 
-     /** @var array */
+     /** @var mixed[] */
     protected $queuedCache = [];
 
     /** @var Region */
@@ -79,7 +79,7 @@ abstract class AbstractCollectionPersister implements CachedCollectionPersister
      * @param CollectionPersister    $persister   The collection persister that will be cached.
      * @param Region                 $region      The collection region.
      * @param EntityManagerInterface $em          The entity manager.
-     * @param array                  $association The association mapping.
+     * @param mixed[]                $association The association mapping.
      */
     public function __construct(CollectionPersister $persister, Region $region, EntityManagerInterface $em, array $association)
     {

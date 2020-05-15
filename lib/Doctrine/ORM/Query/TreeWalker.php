@@ -32,7 +32,7 @@ interface TreeWalker
      *
      * @param AbstractQuery $query           The parsed Query.
      * @param ParserResult  $parserResult    The result of the parsing process.
-     * @param array         $queryComponents The query components (symbol table).
+     * @param mixed[]       $queryComponents The query components (symbol table).
      */
     public function __construct($query, $parserResult, array $queryComponents);
 

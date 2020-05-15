@@ -32,7 +32,7 @@ class FieldBuilder
     /** @var ClassMetadataBuilder */
     private $builder;
 
-    /** @var array */
+    /** @var mixed[] */
     private $mapping;
 
     /** @var bool */
@@ -41,14 +41,14 @@ class FieldBuilder
     /** @var string */
     private $generatedValue;
 
-    /** @var array */
+    /** @var mixed[] */
     private $sequenceDef;
 
     /** @var string|null */
     private $customIdGenerator;
 
     /**
-     * @param array $mapping
+     * @param mixed[] $mapping
      */
     public function __construct(ClassMetadataBuilder $builder, array $mapping)
     {

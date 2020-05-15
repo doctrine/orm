@@ -32,7 +32,7 @@ class Func
     /** @var string */
     protected $name;
 
-    /** @var array */
+    /** @var mixed[] */
     protected $arguments;
 
     /**

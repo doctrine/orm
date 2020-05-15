@@ -33,7 +33,7 @@ class InExpression extends Node
     /** @var ArithmeticExpression */
     public $expression;
 
-    /** @var array */
+    /** @var mixed[] */
     public $literals = [];
 
     /** @var Subselect|null */

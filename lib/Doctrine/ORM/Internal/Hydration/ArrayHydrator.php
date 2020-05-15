@@ -35,19 +35,19 @@ use function reset;
  */
 class ArrayHydrator extends AbstractHydrator
 {
-    /** @var array */
+    /** @var array<string,bool> */
     private $_rootAliases = [];
 
     /** @var bool */
     private $_isSimpleQuery = false;
 
-    /** @var array */
+    /** @var mixed[] */
     private $_identifierMap = [];
 
-    /** @var array */
+    /** @var mixed[] */
     private $_resultPointers = [];
 
-    /** @var array */
+    /** @var array<string,string> */
     private $_idTemplate = [];
 
     /** @var int */
@@ -259,7 +259,7 @@ class ArrayHydrator extends AbstractHydrator
      * Updates the result pointer for an Entity. The result pointers point to the
      * last seen instance of each Entity type. This is used for graph construction.
      *
-     * @param array    $coll     The element.
+     * @param mixed[]  $coll     The element.
      * @param bool|int $index    Index of the element in the collection.
      * @param string   $dqlAlias
      * @param bool     $oneToOne Whether it is a single-valued association or not.

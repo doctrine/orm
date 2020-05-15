@@ -41,7 +41,7 @@ class DefaultCollectionHydrator implements CollectionHydrator
     /** @var UnitOfWork */
     private $uow;
 
-    /** @var array */
+    /** @var array<string,mixed> */
     private static $hints = [Query::HINT_CACHE_ENABLED => true];
 
     /**

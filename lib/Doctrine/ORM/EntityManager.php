@@ -354,7 +354,7 @@ use const E_USER_DEPRECATED;
      * If an entity is explicitly passed to this method only this entity and
      * the cascade-persist semantics + scheduled inserts/removals are synchronized.
      *
-     * @param object|array|null $entity
+     * @param object|mixed[]|null $entity
      *
      * @return void
      *

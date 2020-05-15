@@ -30,7 +30,7 @@ class SimpleCaseExpression extends Node
     /** @var PathExpression */
     public $caseOperand = null;
 
-    /** @var array */
+    /** @var mixed[] */
     public $simpleWhenClauses = [];
 
     /** @var mixed */
@@ -38,7 +38,7 @@ class SimpleCaseExpression extends Node
 
     /**
      * @param PathExpression $caseOperand
-     * @param array          $simpleWhenClauses
+     * @param mixed[]        $simpleWhenClauses
      * @param mixed          $elseScalarExpression
      */
     public function __construct($caseOperand, array $simpleWhenClauses, $elseScalarExpression)

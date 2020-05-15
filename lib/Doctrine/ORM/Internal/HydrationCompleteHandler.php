@@ -38,7 +38,7 @@ final class HydrationCompleteHandler
     /** @var EntityManagerInterface */
     private $em;
 
-    /** @var array[] */
+    /** @var mixed[][] */
     private $deferredPostLoadInvocations = [];
 
     /**

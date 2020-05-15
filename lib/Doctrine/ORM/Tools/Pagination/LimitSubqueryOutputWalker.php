@@ -72,7 +72,7 @@ class LimitSubqueryOutputWalker extends SqlWalker
     /** @var ResultSetMapping */
     private $rsm;
 
-    /** @var array */
+    /** @var mixed[] */
     private $queryComponents;
 
     /** @var int */
@@ -91,7 +91,7 @@ class LimitSubqueryOutputWalker extends SqlWalker
      */
     private $quoteStrategy;
 
-    /** @var array */
+    /** @var mixed[] */
     private $orderByPathExpressions = [];
 
     /**
@@ -107,7 +107,7 @@ class LimitSubqueryOutputWalker extends SqlWalker
      *
      * @param Query        $query
      * @param ParserResult $parserResult
-     * @param array        $queryComponents
+     * @param mixed[]      $queryComponents
      */
     public function __construct($query, $parserResult, array $queryComponents)
     {
@@ -361,7 +361,7 @@ class LimitSubqueryOutputWalker extends SqlWalker
     /**
      * Generates new SQL for statements with an order by clause
      *
-     * @param array $sqlIdentifier
+     * @param mixed[] $sqlIdentifier
      */
     private function preserveSqlOrdering(
         array $sqlIdentifier,
@@ -385,7 +385,7 @@ class LimitSubqueryOutputWalker extends SqlWalker
     /**
      * Generates a new SQL statement for the inner query to keep the correct sorting
      *
-     * @param array $identifiers
+     * @param mixed[] $identifiers
      */
     private function recreateInnerSql(
         OrderByClause $orderByClause,

@@ -27,11 +27,11 @@ namespace Doctrine\ORM\Query\AST;
  */
 class FromClause extends Node
 {
-    /** @var array */
+    /** @var mixed[] */
     public $identificationVariableDeclarations = [];
 
     /**
-     * @param array $identificationVariableDeclarations
+     * @param mixed[] $identificationVariableDeclarations
      */
     public function __construct(array $identificationVariableDeclarations)
     {

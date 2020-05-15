@@ -52,7 +52,7 @@ class CountOutputWalker extends SqlWalker
     /** @var ResultSetMapping */
     private $rsm;
 
-    /** @var array */
+    /** @var mixed[] */
     private $queryComponents;
 
     /**
@@ -62,7 +62,7 @@ class CountOutputWalker extends SqlWalker
      *
      * @param Query        $query
      * @param ParserResult $parserResult
-     * @param array        $queryComponents
+     * @param mixed[]      $queryComponents
      */
     public function __construct($query, $parserResult, array $queryComponents)
     {

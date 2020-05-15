@@ -44,10 +44,10 @@ use function strtolower;
  */
 class ConvertDoctrine1Schema
 {
-    /** @var array */
+    /** @var mixed[] */
     private $from;
 
-    /** @var array */
+    /** @var array<string,string> */
     private $legacyTypeMap = [
         // TODO: This list may need to be updated
         'clob' => 'text',
@@ -115,8 +115,8 @@ class ConvertDoctrine1Schema
     }
 
     /**
-     * @param string $className
-     * @param array  $model
+     * @param string  $className
+     * @param mixed[] $model
      *
      * @return void
      */
@@ -135,8 +135,8 @@ class ConvertDoctrine1Schema
     }
 
     /**
-     * @param string $className
-     * @param array  $model
+     * @param string  $className
+     * @param mixed[] $model
      *
      * @return void
      */
@@ -167,9 +167,9 @@ class ConvertDoctrine1Schema
     }
 
     /**
-     * @param string       $className
-     * @param string       $name
-     * @param string|array $column
+     * @param string         $className
+     * @param string         $name
+     * @param string|mixed[] $column
      *
      * @return mixed[]
      *
@@ -257,8 +257,8 @@ class ConvertDoctrine1Schema
     }
 
     /**
-     * @param string $className
-     * @param array  $model
+     * @param string  $className
+     * @param mixed[] $model
      *
      * @return void
      */
@@ -279,8 +279,8 @@ class ConvertDoctrine1Schema
     }
 
     /**
-     * @param string $className
-     * @param array  $model
+     * @param string  $className
+     * @param mixed[] $model
      *
      * @return void
      */

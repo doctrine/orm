@@ -32,7 +32,7 @@ interface CollectionHydrator
     /**
      * @param ClassMetadata      $metadata   The entity metadata.
      * @param CollectionCacheKey $key        The cached collection key.
-     * @param array|Collection   $collection The collection.
+     * @param mixed[]|Collection $collection The collection.
      *
      * @return CollectionCacheEntry
      */

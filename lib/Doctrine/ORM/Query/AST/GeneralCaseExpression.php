@@ -27,15 +27,15 @@ namespace Doctrine\ORM\Query\AST;
  */
 class GeneralCaseExpression extends Node
 {
-    /** @var array */
+    /** @var mixed[] */
     public $whenClauses = [];
 
     /** @var mixed */
     public $elseScalarExpression = null;
 
     /**
-     * @param array $whenClauses
-     * @param mixed $elseScalarExpression
+     * @param mixed[] $whenClauses
+     * @param mixed   $elseScalarExpression
      */
     public function __construct(array $whenClauses, $elseScalarExpression)
     {

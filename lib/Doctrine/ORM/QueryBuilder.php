@@ -580,7 +580,7 @@ class QueryBuilder
      *        )));
      * </code>
      *
-     * @param ArrayCollection|array $parameters The query parameters to set.
+     * @param ArrayCollection|mixed[] $parameters The query parameters to set.
      *
      * @return self
      */

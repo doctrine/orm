@@ -506,8 +506,8 @@ class Parser
         $tokenPos = $token['position'] ?? '-1';
 
         $message  = "line 0, col {$tokenPos}: Error: ";
-        $message .= $expected !== '' ? "Expected {$expected}, got " : 'Unexpected ';
-        $message .= $this->lexer->lookahead === null ? 'end of string.' : "'{$token['value']}'";
+        $message .= $expected !== '' ? sprintf('Expected %s, got ', $expected) : 'Unexpected ';
+        $message .= $this->lexer->lookahead === null ? 'end of string.' : sprintf("'%s'", $token['value']);
 
         throw QueryException::syntaxError($message, QueryException::dqlError($this->query->getDQL()));
     }
@@ -646,7 +646,7 @@ class Parser
             // Check if IdentificationVariable exists in queryComponents
             if (! isset($this->queryComponents[$identVariable])) {
                 $this->semanticalError(
-                    "'$identVariable' is not defined.",
+                    sprintf("'%s' is not defined.", $identVariable),
                     $deferredItem['token']
                 );
             }
@@ -656,7 +656,7 @@ class Parser
             // Check if queryComponent points to an AbstractSchemaName or a ResultVariable
             if (! isset($qComp['metadata'])) {
                 $this->semanticalError(
-                    "'$identVariable' does not point to a Class.",
+                    sprintf("'%s' does not point to a Class.", $identVariable),
                     $deferredItem['token']
                 );
             }
@@ -664,7 +664,7 @@ class Parser
             // Validate if identification variable nesting level is lower or equal than the current one
             if ($qComp['nestingLevel'] > $deferredItem['nestingLevel']) {
                 $this->semanticalError(
-                    "'$identVariable' is used outside the scope of its declaration.",
+                    sprintf("'%s' is used outside the scope of its declaration.", $identVariable),
                     $deferredItem['token']
                 );
             }
@@ -743,10 +743,11 @@ class Parser
                     continue;
                 }
 
-                $this->semanticalError(
-                    "There is no mapped field named '$field' on class " . $class->name . '.',
-                    $deferredItem['token']
-                );
+                $this->semanticalError(sprintf(
+                    "There is no mapped field named '%s' on class %s.",
+                    $field,
+                    $class->name
+                ), $deferredItem['token']);
             }
 
             if (array_intersect($class->identifier, $expr->partialFieldSet) !== $class->identifier) {
@@ -772,7 +773,7 @@ class Parser
             // Check if ResultVariable exists in queryComponents
             if (! isset($this->queryComponents[$resultVariable])) {
                 $this->semanticalError(
-                    "'$resultVariable' is not defined.",
+                    sprintf("'%s' is not defined.", $resultVariable),
                     $deferredItem['token']
                 );
             }
@@ -782,7 +783,7 @@ class Parser
             // Check if queryComponent points to an AbstractSchemaName or a ResultVariable
             if (! isset($qComp['resultVariable'])) {
                 $this->semanticalError(
-                    "'$resultVariable' does not point to a ResultVariable.",
+                    sprintf("'%s' does not point to a ResultVariable.", $resultVariable),
                     $deferredItem['token']
                 );
             }
@@ -790,7 +791,7 @@ class Parser
             // Validate if identification variable nesting level is lower or equal than the current one
             if ($qComp['nestingLevel'] > $deferredItem['nestingLevel']) {
                 $this->semanticalError(
-                    "'$resultVariable' is used outside the scope of its declaration.",
+                    sprintf("'%s' is used outside the scope of its declaration.", $resultVariable),
                     $deferredItem['token']
                 );
             }

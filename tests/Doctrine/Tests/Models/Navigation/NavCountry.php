@@ -23,7 +23,7 @@ class NavCountry
     /** @OneToMany(targetEntity="NavPointOfInterest", mappedBy="country") */
     private $pois;
 
-    function __construct($name)
+    public function __construct($name)
     {
         $this->name = $name;
     }

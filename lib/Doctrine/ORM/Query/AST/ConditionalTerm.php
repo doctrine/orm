@@ -27,11 +27,11 @@ namespace Doctrine\ORM\Query\AST;
  */
 class ConditionalTerm extends Node
 {
-    /** @var array */
+    /** @var mixed[] */
     public $conditionalFactors = [];
 
     /**
-     * @param array $conditionalFactors
+     * @param mixed[] $conditionalFactors
      */
     public function __construct(array $conditionalFactors)
     {

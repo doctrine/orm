@@ -51,7 +51,8 @@ class MappingException extends ORMException
      */
     public static function identifierRequired($entityName)
     {
-        if (($parent = get_parent_class($entityName)) !== false) {
+        $parent = get_parent_class($entityName);
+        if ($parent !== false) {
             return new self(sprintf(
                 'No identifier/primary key specified for Entity "%s" sub class of "%s". Every Entity must have an identifier/primary key.',
                 $entityName,
@@ -344,7 +345,8 @@ class MappingException extends ORMException
      */
     public static function classIsNotAValidEntityOrMappedSuperClass($className)
     {
-        if (($parent = get_parent_class($className)) !== false) {
+        $parent = get_parent_class($className);
+        if ($parent !== false) {
             return new self(sprintf(
                 'Class "%s" sub class of "%s" is not a valid entity or mapped super class.',
                 $className,
@@ -484,10 +486,12 @@ class MappingException extends ORMException
      */
     public static function invalidClassInDiscriminatorMap($className, $owningClass)
     {
-        return new self(
-            "Entity class '$className' used in the discriminator map of class '$owningClass' " .
-            'does not exist.'
-        );
+        return new self(sprintf(
+            "Entity class '%s' used in the discriminator map of class '%s' " .
+            'does not exist.',
+            $className,
+            $owningClass
+        ));
     }
 
     /**
@@ -504,7 +508,7 @@ class MappingException extends ORMException
             'If the discriminator map is automatically generated you have to convert it to an explicit discriminator map now. ' .
             'The entries of the current map are: @DiscriminatorMap({' . implode(', ', array_map(
                 static function ($a, $b) {
-                    return "'$a': '$b'";
+                    return sprintf("'%s': '%s'", $a, $b);
                 },
                 array_keys($map),
                 array_values($map)
@@ -630,8 +634,12 @@ class MappingException extends ORMException
      */
     public static function noFieldNameFoundForColumn($className, $column)
     {
-        return new self("Cannot find a field on '$className' that is mapped to column '$column'. Either the " .
-            'field does not exist or an association exists but it has multiple join columns.');
+        return new self(sprintf(
+            "Cannot find a field on '%s' that is mapped to column '%s'. Either the " .
+            'field does not exist or an association exists but it has multiple join columns.',
+            $className,
+            $column
+        ));
     }
 
     /**

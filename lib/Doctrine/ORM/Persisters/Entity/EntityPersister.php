@@ -64,12 +64,12 @@ interface EntityPersister
     /**
      * Gets the SELECT SQL to select one or more entities by a set of field criteria.
      *
-     * @param array|Criteria $criteria
-     * @param array|null     $assoc
-     * @param int|null       $lockMode
-     * @param int|null       $limit
-     * @param int|null       $offset
-     * @param array|null     $orderBy
+     * @param mixed[]|Criteria $criteria
+     * @param mixed[]|null     $assoc
+     * @param int|null         $lockMode
+     * @param int|null         $limit
+     * @param int|null         $offset
+     * @param mixed[]|null     $orderBy
      *
      * @return string
      */
@@ -78,7 +78,7 @@ interface EntityPersister
     /**
      * Get the COUNT SQL to count entities (optionally based on a criteria)
      *
-     * @param array|Criteria $criteria
+     * @param mixed[]|Criteria $criteria
      *
      * @return string
      */
@@ -160,7 +160,7 @@ interface EntityPersister
     /**
      * Count entities (optionally filtered by a criteria)
      *
-     * @param array|Criteria $criteria
+     * @param  mixed[]|Criteria $criteria
      *
      * @return int
      */

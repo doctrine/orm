@@ -37,7 +37,7 @@ use function assert;
 abstract class AbstractCommand extends Command
 {
     /**
-     * @param array $metadatas
+     * @param mixed[] $metadatas
      *
      * @return int|null Null or 0 if everything went fine, or an error code.
      */

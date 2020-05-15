@@ -38,7 +38,7 @@ use function sprintf;
  */
 class MetadataFilter extends FilterIterator implements Countable
 {
-    /** @var array */
+    /** @var mixed[] */
     private $filter = [];
 
     /**
@@ -57,7 +57,7 @@ class MetadataFilter extends FilterIterator implements Countable
     }
 
     /**
-     * @param array|string $filter
+     * @param mixed[]|string $filter
      */
     public function __construct(ArrayIterator $metadata, $filter)
     {

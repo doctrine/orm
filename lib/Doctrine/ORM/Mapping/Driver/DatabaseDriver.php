@@ -54,19 +54,19 @@ class DatabaseDriver implements MappingDriver
     /** @var AbstractSchemaManager */
     private $_sm;
 
-    /** @var array|null */
+    /** @var array<string,Table>|null */
     private $tables = null;
 
-    /** @var array */
+    /** @var mixed[] */
     private $classToTableNames = [];
 
-    /** @var array */
+    /** @var mixed[] */
     private $manyToManyTables = [];
 
-    /** @var array */
+    /** @var mixed[] */
     private $classNamesForTables = [];
 
-    /** @var array */
+    /** @var mixed[] */
     private $fieldNamesForColumns = [];
 
     /**
