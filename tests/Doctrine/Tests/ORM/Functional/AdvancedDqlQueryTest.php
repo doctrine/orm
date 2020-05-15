@@ -38,8 +38,7 @@ class AdvancedDqlQueryTest extends OrmFunctionalTestCase
         self::assertEquals(600000, $result[1]['avgSalary']);
     }
 
-
-    public function testCommentsInDQL()
+    public function testCommentsInDQL() : void
     {
         //same test than testAggregateWithHavingClause but with comments into the DQL
         $dql = "SELECT p.department, AVG(p.salary) AS avgSalary -- comment end of line
