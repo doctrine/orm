@@ -135,7 +135,7 @@ class Lexer extends AbstractLexer
      */
     protected function getNonCatchablePatterns()
     {
-        return ['\s+', '(.)'];
+        return ['\s+', '--.*', '(.)'];
     }
 
     /**

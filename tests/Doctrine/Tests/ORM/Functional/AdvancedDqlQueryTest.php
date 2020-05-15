@@ -38,6 +38,25 @@ class AdvancedDqlQueryTest extends OrmFunctionalTestCase
         self::assertEquals(600000, $result[1]['avgSalary']);
     }
 
+
+    public function testCommentsInDQL()
+    {
+        //same test than testAggregateWithHavingClause but with comments into the DQL
+        $dql = "SELECT p.department, AVG(p.salary) AS avgSalary -- comment end of line
+-- comment with 'strange chars', & $
+  FROM Doctrine\\Tests\\Models\\Company\\CompanyEmployee p
+  -- comment beginning of line GROUP BY
+GROUP BY p.department HAVING SUM(p.salary) > 200000 ORDER BY p.department -- comment end of line";
+
+        $result = $this->em->createQuery($dql)->getScalarResult();
+
+        self::assertCount(2, $result);
+        self::assertEquals('IT', $result[0]['department']);
+        self::assertEquals(150000, $result[0]['avgSalary']);
+        self::assertEquals('IT2', $result[1]['department']);
+        self::assertEquals(600000, $result[1]['avgSalary']);
+    }
+
     public function testUnnamedScalarResultsAreOneBased() : void
     {
         $dql = 'SELECT p.department, AVG(p.salary) ' .
