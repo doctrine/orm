@@ -6,6 +6,7 @@ use Doctrine\Tests\Models\Company\CompanyEmployee,
     Doctrine\Tests\Models\Company\CompanyManager,
     Doctrine\Tests\Models\Company\CompanyCar;
 use Doctrine\Tests\OrmFunctionalTestCase;
+use function count;
 
 /**
  * Functional Query tests.
@@ -27,6 +28,24 @@ class AdvancedDqlQueryTest extends OrmFunctionalTestCase
         $dql = 'SELECT p.department, AVG(p.salary) AS avgSalary '.
                'FROM Doctrine\Tests\Models\Company\CompanyEmployee p '.
                'GROUP BY p.department HAVING SUM(p.salary) > 200000 ORDER BY p.department';
+
+        $result = $this->_em->createQuery($dql)->getScalarResult();
+
+        $this->assertEquals(2, count($result));
+        $this->assertEquals('IT', $result[0]['department']);
+        $this->assertEquals(150000, $result[0]['avgSalary']);
+        $this->assertEquals('IT2', $result[1]['department']);
+        $this->assertEquals(600000, $result[1]['avgSalary']);
+    }
+
+    public function testCommentsInDQL()
+    {
+        //same test than testAggregateWithHavingClause but with comments into the DQL
+        $dql = "SELECT p.department, AVG(p.salary) AS avgSalary -- comment end of line
+-- comment with 'strange chars', & $
+  FROM Doctrine\\Tests\\Models\\Company\\CompanyEmployee p
+  -- comment beginning of line GROUP BY
+GROUP BY p.department HAVING SUM(p.salary) > 200000 ORDER BY p.department -- comment end of line";
 
         $result = $this->_em->createQuery($dql)->getScalarResult();
 
