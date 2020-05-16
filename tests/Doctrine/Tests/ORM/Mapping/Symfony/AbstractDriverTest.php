@@ -1,7 +1,8 @@
 <?php
 
 namespace Doctrine\Tests\ORM\Mapping\Symfony;
-use Doctrine\Common\Persistence\Mapping\MappingException;
+
+use Doctrine\Persistence\Mapping\MappingException;
 use PHPUnit\Framework\TestCase;
 
 /**

@@ -19,11 +19,11 @@
 
 namespace Doctrine\ORM;
 
+use Doctrine\Common\Collections\Criteria;
+use Doctrine\Common\Collections\Selectable;
 use Doctrine\Inflector\InflectorFactory;
 use Doctrine\ORM\Query\ResultSetMappingBuilder;
-use Doctrine\Common\Persistence\ObjectRepository;
-use Doctrine\Common\Collections\Selectable;
-use Doctrine\Common\Collections\Criteria;
+use Doctrine\Persistence\ObjectRepository;
 use const E_USER_DEPRECATED;
 use function trigger_error;
 

@@ -148,8 +148,8 @@ Hydration
 ~~~~~~~~~
 
 Responsible for creating a final result from a raw database statement and a
-result-set mapping object. The developer can choose which kind of result he
-wishes to be hydrated. Default result-types include:
+result-set mapping object. The developer can choose which kind of result they
+wish to be hydrated. Default result-types include:
 
 - SQL to Entities
 - SQL to structured Arrays

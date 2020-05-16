@@ -2,8 +2,12 @@ Implementing a NamingStrategy
 ==============================
 
 Using a naming strategy you can provide rules for generating database identifiers,
-column or table names when the column or table name is not given. This feature helps
+column or table names. This feature helps
 reduce the verbosity of the mapping document, eliminating repetitive noise (eg: ``TABLE_``).
+
+.. warning
+
+    The naming strategy is always overridden by entity mapping such as the `Table` annotation.
 
 Configuring a naming strategy
 -----------------------------

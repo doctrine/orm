@@ -19,9 +19,6 @@
 
 namespace Doctrine\ORM\Mapping;
 
-use Doctrine\Common\Persistence\Mapping\AbstractClassMetadataFactory;
-use Doctrine\Common\Persistence\Mapping\ClassMetadata as ClassMetadataInterface;
-use Doctrine\Common\Persistence\Mapping\ReflectionService;
 use Doctrine\DBAL\Platforms;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Event\LoadClassMetadataEventArgs;
@@ -30,7 +27,12 @@ use Doctrine\ORM\Events;
 use Doctrine\ORM\Id\BigIntegerIdentityGenerator;
 use Doctrine\ORM\Id\IdentityGenerator;
 use Doctrine\ORM\ORMException;
+use Doctrine\Persistence\Mapping\AbstractClassMetadataFactory;
+use Doctrine\Persistence\Mapping\ClassMetadata as ClassMetadataInterface;
+use Doctrine\Persistence\Mapping\Driver\MappingDriver;
+use Doctrine\Persistence\Mapping\ReflectionService;
 use ReflectionException;
+use function interface_exists;
 
 /**
  * The ClassMetadataFactory is used to create ClassMetadata objects that contain all the
@@ -56,7 +58,7 @@ class ClassMetadataFactory extends AbstractClassMetadataFactory
     private $targetPlatform;
 
     /**
-     * @var \Doctrine\Common\Persistence\Mapping\Driver\MappingDriver
+     * @var MappingDriver
      */
     private $driver;
 
@@ -401,10 +403,10 @@ class ClassMetadataFactory extends AbstractClassMetadataFactory
     private function addInheritedFields(ClassMetadata $subClass, ClassMetadata $parentClass)
     {
         foreach ($parentClass->fieldMappings as $mapping) {
-            if ( ! isset($mapping['inherited']) && ! $parentClass->isMappedSuperclass) {
+            if (! isset($mapping['inherited']) && ! $parentClass->isMappedSuperclass) {
                 $mapping['inherited'] = $parentClass->name;
             }
-            if ( ! isset($mapping['declared'])) {
+            if (! isset($mapping['declared'])) {
                 $mapping['declared'] = $parentClass->name;
             }
             $subClass->addInheritedFieldMapping($mapping);
@@ -795,3 +797,6 @@ class ClassMetadataFactory extends AbstractClassMetadataFactory
         return $this->targetPlatform;
     }
 }
+
+interface_exists(ClassMetadataInterface::class);
+interface_exists(ReflectionService::class);

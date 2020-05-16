@@ -3,10 +3,10 @@
 namespace Doctrine\Tests\ORM\Mapping;
 
 use Doctrine\Common\Collections\Criteria;
-use Doctrine\Common\Persistence\Mapping\RuntimeReflectionService;
 use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\Mapping\ClassMetadataFactory;
 use Doctrine\ORM\Mapping\Driver\XmlDriver;
+use Doctrine\Persistence\Mapping\RuntimeReflectionService;
 use Doctrine\Tests\Models\DDC117\DDC117Translation;
 use Doctrine\Tests\Models\DDC3293\DDC3293User;
 use Doctrine\Tests\Models\DDC3293\DDC3293UserPrefixed;
@@ -138,7 +138,7 @@ class XmlMappingDriverTest extends AbstractMappingDriverTest
      */
     public function testInvalidMappingFileException()
     {
-        $this->expectException('Doctrine\Common\Persistence\Mapping\MappingException');
+        $this->expectException('Doctrine\Persistence\Mapping\MappingException');
         $this->expectExceptionMessage('Invalid mapping file \'Doctrine.Tests.Models.Generic.SerializationModel.dcm.xml\' for class \'Doctrine\Tests\Models\Generic\SerializationModel\'.');
         $this->createClassMetadata(SerializationModel::class);
     }
@@ -211,7 +211,7 @@ class XmlMappingDriverTest extends AbstractMappingDriverTest
      */
     public function testinvalidEntityOrMappedSuperClassShouldMentionParentClasses()
     {
-        $this->expectException('Doctrine\Common\Persistence\Mapping\MappingException');
+        $this->expectException('Doctrine\Persistence\Mapping\MappingException');
         $this->expectExceptionMessage('Invalid mapping file \'Doctrine.Tests.Models.DDC889.DDC889Class.dcm.xml\' for class \'Doctrine\Tests\Models\DDC889\DDC889Class\'.');
         $this->createClassMetadata(DDC889Class::class);
     }

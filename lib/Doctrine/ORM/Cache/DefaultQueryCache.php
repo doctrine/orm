@@ -260,7 +260,7 @@ class DefaultQueryCache implements QueryCache
             throw new CacheException("Second-level cache query supports only select statements.");
         }
 
-        if (isset($hints[Query::HINT_FORCE_PARTIAL_LOAD]) && $hints[Query::HINT_FORCE_PARTIAL_LOAD]) {
+        if (($hints[Query\SqlWalker::HINT_PARTIAL] ?? false) === true || ($hints[Query::HINT_FORCE_PARTIAL_LOAD] ?? false) === true) {
             throw new CacheException("Second level cache does not support partial entities.");
         }
 
@@ -279,9 +279,12 @@ class DefaultQueryCache implements QueryCache
 
         $region = $persister->getCacheRegion();
 
+        $cm = $this->em->getClassMetadata($entityName);
+        assert($cm instanceof ClassMetadata);
+
         foreach ($result as $index => $entity) {
-            $identifier                     = $this->uow->getEntityIdentifier($entity);
-            $entityKey                      = new EntityCacheKey($entityName, $identifier);
+            $identifier = $this->uow->getEntityIdentifier($entity);
+            $entityKey  = new EntityCacheKey($cm->rootEntityName, $identifier);
 
             if (($key->cacheMode & Cache::MODE_REFRESH) || ! $region->contains($entityKey)) {
                 // Cancel put result if entity put fail

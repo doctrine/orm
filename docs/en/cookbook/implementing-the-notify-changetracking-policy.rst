@@ -22,8 +22,8 @@ implement the ``NotifyPropertyChanged`` interface from the
 .. code-block:: php
 
     <?php
-    use Doctrine\Common\NotifyPropertyChanged;
-    use Doctrine\Common\PropertyChangedListener;
+    use Doctrine\Persistence\NotifyPropertyChanged;
+    use Doctrine\Persistence\PropertyChangedListener;
     
     abstract class DomainObject implements NotifyPropertyChanged
     {

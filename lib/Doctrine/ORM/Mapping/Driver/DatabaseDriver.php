@@ -30,6 +30,9 @@ use Doctrine\Inflector\Inflector;
 use Doctrine\Inflector\InflectorFactory;
 use Doctrine\ORM\Mapping\ClassMetadataInfo;
 use Doctrine\ORM\Mapping\MappingException;
+use Doctrine\Persistence\Mapping\ClassMetadata;
+use Doctrine\Persistence\Mapping\Driver\MappingDriver;
+use function interface_exists;
 use function preg_replace;
 
 /**
@@ -567,3 +570,5 @@ class DatabaseDriver implements MappingDriver
         return $this->inflector->camelize($columnName);
     }
 }
+
+interface_exists(ClassMetadata::class);
