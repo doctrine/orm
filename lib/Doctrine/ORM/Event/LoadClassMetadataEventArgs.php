@@ -19,7 +19,7 @@
 
 namespace Doctrine\ORM\Event;
 
-use Doctrine\Common\Persistence\Event\LoadClassMetadataEventArgs as BaseLoadClassMetadataEventArgs;
+use Doctrine\Persistence\Event\LoadClassMetadataEventArgs as BaseLoadClassMetadataEventArgs;
 
 /**
  * Class that holds event arguments for a loadMetadata event.

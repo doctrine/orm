@@ -1093,8 +1093,20 @@ class SecondLevelCacheQueryCacheTest extends SecondLevelCacheAbstractTest
         $this->loadFixturesCountries();
 
         $this->_em->createQuery("SELECT PARTIAL c.{id} FROM Doctrine\Tests\Models\Cache\Country c")
-            ->setHint(Query::HINT_FORCE_PARTIAL_LOAD, true)
             ->setCacheable(true)
+            ->getResult();
+    }
+
+    public function testCacheableForcePartialLoadHintQueryException()
+    {
+        $this->expectException('Doctrine\ORM\Cache\CacheException');
+        $this->expectExceptionMessage('Second level cache does not support partial entities.');
+        $this->evictRegions();
+        $this->loadFixturesCountries();
+
+        $this->_em->createQuery('SELECT c FROM Doctrine\Tests\Models\Cache\Country c')
+            ->setCacheable(true)
+            ->setHint(Query::HINT_FORCE_PARTIAL_LOAD, true)
             ->getResult();
     }
 

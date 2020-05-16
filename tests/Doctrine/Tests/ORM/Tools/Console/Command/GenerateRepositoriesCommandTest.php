@@ -2,12 +2,12 @@
 
 namespace Doctrine\Tests\ORM\Tools\Console\Command;
 
-use Doctrine\Common\Persistence\Mapping\ClassMetadataFactory;
 use Doctrine\ORM\Configuration;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\EntityRepository;
 use Doctrine\ORM\Tools\Console\Command\GenerateRepositoriesCommand;
 use Doctrine\ORM\Tools\Console\Helper\EntityManagerHelper;
+use Doctrine\Persistence\Mapping\ClassMetadataFactory;
 use Doctrine\Tests\Models\DDC3231\DDC3231EntityRepository;
 use Doctrine\Tests\OrmFunctionalTestCase;
 use Doctrine\Tests\VerifyDeprecations;

@@ -20,12 +20,13 @@
 namespace Doctrine\ORM\Mapping\Driver;
 
 use Doctrine\Common\Annotations\AnnotationReader;
-use Doctrine\Common\Persistence\Mapping\ClassMetadata;
-use Doctrine\Common\Persistence\Mapping\Driver\AnnotationDriver as AbstractAnnotationDriver;
 use Doctrine\ORM\Events;
 use Doctrine\ORM\Mapping;
 use Doctrine\ORM\Mapping\Builder\EntityListenerBuilder;
 use Doctrine\ORM\Mapping\MappingException;
+use Doctrine\Persistence\Mapping\ClassMetadata;
+use Doctrine\Persistence\Mapping\Driver\AnnotationDriver as AbstractAnnotationDriver;
+use function interface_exists;
 
 /**
  * The AnnotationDriver reads the mapping metadata from docblock annotations.
@@ -44,7 +45,6 @@ class AnnotationDriver extends AbstractAnnotationDriver
     protected $entityAnnotationClasses = [
         Mapping\Entity::class => 1,
         Mapping\MappedSuperclass::class => 2,
-        Mapping\Embeddable::class => 3,
     ];
 
     /**
@@ -672,3 +672,5 @@ class AnnotationDriver extends AbstractAnnotationDriver
         return new self($reader, $paths);
     }
 }
+
+interface_exists(ClassMetadata::class);

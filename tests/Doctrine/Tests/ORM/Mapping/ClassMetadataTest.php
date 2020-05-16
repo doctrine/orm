@@ -2,13 +2,13 @@
 
 namespace Doctrine\Tests\ORM\Mapping;
 
-use Doctrine\Common\Persistence\Mapping\RuntimeReflectionService;
-use Doctrine\Common\Persistence\Mapping\StaticReflectionService;
 use Doctrine\ORM\Events;
 use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\Mapping\DefaultNamingStrategy;
 use Doctrine\ORM\Mapping\MappingException;
 use Doctrine\ORM\Mapping\UnderscoreNamingStrategy;
+use Doctrine\Persistence\Mapping\RuntimeReflectionService;
+use Doctrine\Persistence\Mapping\StaticReflectionService;
 use Doctrine\Tests\Models\CMS;
 use Doctrine\Tests\Models\Company\CompanyContract;
 use Doctrine\Tests\Models\CustomType\CustomTypeParent;

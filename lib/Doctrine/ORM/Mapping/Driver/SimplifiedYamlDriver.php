@@ -19,7 +19,7 @@
 
 namespace Doctrine\ORM\Mapping\Driver;
 
-use Doctrine\Common\Persistence\Mapping\Driver\SymfonyFileLocator;
+use Doctrine\Persistence\Mapping\Driver\SymfonyFileLocator;
 
 /**
  * YamlDriver that additionally looks for mapping information in a global file.

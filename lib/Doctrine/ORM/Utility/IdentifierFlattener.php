@@ -21,7 +21,7 @@ namespace Doctrine\ORM\Utility;
 
 use Doctrine\ORM\UnitOfWork;
 use Doctrine\ORM\Mapping\ClassMetadata;
-use Doctrine\Common\Persistence\Mapping\ClassMetadataFactory;
+use Doctrine\Persistence\Mapping\ClassMetadataFactory;
 
 /**
  * The IdentifierFlattener utility now houses some of the identifier manipulation logic from unit of work, so that it

@@ -624,7 +624,7 @@ final class Query extends AbstractQuery
     /**
      * Sets the position of the first result to retrieve (the "offset").
      *
-     * @param integer $firstResult The first result to return.
+     * @param int|null $firstResult The first result to return.
      *
      * @return Query This query object.
      */

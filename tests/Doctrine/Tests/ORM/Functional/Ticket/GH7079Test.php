@@ -4,10 +4,10 @@ declare(strict_types=1);
 
 namespace Doctrine\Tests\ORM\Functional\Ticket;
 
-use Doctrine\Common\Persistence\Mapping\RuntimeReflectionService;
 use Doctrine\DBAL\Platforms\AbstractPlatform;
 use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\Mapping\DefaultQuoteStrategy;
+use Doctrine\Persistence\Mapping\RuntimeReflectionService;
 use Doctrine\Tests\OrmFunctionalTestCase;
 
 /**

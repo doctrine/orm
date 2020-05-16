@@ -54,7 +54,7 @@ class YamlMappingDriverTest extends AbstractMappingDriverTest
      */
     public function testInvalidMappingFileException()
     {
-        $this->expectException('Doctrine\Common\Persistence\Mapping\MappingException');
+        $this->expectException('Doctrine\Persistence\Mapping\MappingException');
         $this->expectExceptionMessage('Invalid mapping file \'Doctrine.Tests.Models.Generic.SerializationModel.dcm.yml\' for class \'Doctrine\Tests\Models\Generic\SerializationModel\'.');
         $this->createClassMetadata(SerializationModel::class);
     }

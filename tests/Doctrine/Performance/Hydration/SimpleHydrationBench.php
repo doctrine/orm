@@ -2,9 +2,9 @@
 
 namespace Doctrine\Performance\Hydration;
 
-use Doctrine\Common\Persistence\ObjectRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\Performance\EntityManagerFactory;
+use Doctrine\Persistence\ObjectRepository;
 use Doctrine\Tests\Models\CMS;
 
 /**

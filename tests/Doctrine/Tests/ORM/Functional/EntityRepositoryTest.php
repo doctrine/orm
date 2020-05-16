@@ -645,7 +645,7 @@ class EntityRepositoryTest extends OrmFunctionalTestCase
     public function testSetDefaultRepositoryInvalidClassError()
     {
         $this->expectException('Doctrine\ORM\ORMException');
-        $this->expectExceptionMessage('Invalid repository class \'Doctrine\Tests\Models\DDC753\DDC753InvalidRepository\'. It must be a Doctrine\Common\Persistence\ObjectRepository.');
+        $this->expectExceptionMessage('Invalid repository class \'Doctrine\Tests\Models\DDC753\DDC753InvalidRepository\'. It must be a Doctrine\Persistence\ObjectRepository.');
         $this->assertEquals($this->_em->getConfiguration()->getDefaultRepositoryClassName(), EntityRepository::class);
         $this->_em->getConfiguration()->setDefaultRepositoryClassName(DDC753InvalidRepository::class);
     }

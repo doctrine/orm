@@ -33,29 +33,6 @@ jobs:
     - stage: Smoke Testing
       env: DB=sqlite
 
-    - stage: Smoke Testing
-      if: type = pull_request
-      env: DB=none PULL_REQUEST_CODING_STANDARDS
-      install: travis_retry composer install --prefer-dist
-      script:
-        - |
-          if [ $TRAVIS_BRANCH != "master" ]; then
-            git remote set-branches --add origin $TRAVIS_BRANCH;
-            git fetch origin $TRAVIS_BRANCH;
-          fi
-        - git merge-base origin/$TRAVIS_BRANCH $TRAVIS_PULL_REQUEST_SHA || git fetch origin +refs/pull/$TRAVIS_PULL_REQUEST/merge --unshallow
-        - wget https://github.com/diff-sniffer/git/releases/download/0.3.2/git-phpcs.phar
-        - php git-phpcs.phar origin/$TRAVIS_BRANCH...$TRAVIS_PULL_REQUEST_SHA
-
-    - stage: Smoke Testing
-      env: DB=none STATIC_ANALYSIS
-      install: travis_retry composer install --prefer-dist
-      before_script:
-        - echo "extension=memcached.so" >> ~/.phpenv/versions/$(phpenv version-name)/etc/php.ini
-        - echo "extension=redis.so" >> ~/.phpenv/versions/$(phpenv version-name)/etc/php.ini
-        - travis_retry composer require --dev --prefer-dist --prefer-stable phpstan/phpstan:^0.9
-      script: vendor/bin/phpstan analyse -l 1 -c phpstan.neon lib
-
     - stage: Test
       env: DB=mariadb
       addons:
