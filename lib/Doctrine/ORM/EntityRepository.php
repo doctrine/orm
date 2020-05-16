@@ -25,6 +25,7 @@ use Doctrine\Inflector\InflectorFactory;
 use Doctrine\ORM\Query\ResultSetMappingBuilder;
 use Doctrine\Persistence\ObjectRepository;
 use const E_USER_DEPRECATED;
+use function lcfirst;
 use function trigger_error;
 
 /**
@@ -57,10 +58,8 @@ class EntityRepository implements ObjectRepository, Selectable
      */
     protected $_class;
 
-    /**
-     * @var \Doctrine\Inflector\Inflector
-     */
-    static private $inflector;
+    /** @var Inflector */
+    private static $inflector;
 
     /**
      * Initializes a new <tt>EntityRepository</tt>.

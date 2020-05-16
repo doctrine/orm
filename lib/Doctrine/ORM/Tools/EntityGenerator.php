@@ -336,9 +336,7 @@ public function __construct(<params>)
 }
 ';
 
-    /**
-     * @var Inflector
-     */
+    /** @var Inflector */
     protected $inflector;
 
     /**
@@ -1390,10 +1388,11 @@ public function __construct(<params>)
      */
     protected function generateEntityStubMethod(ClassMetadataInfo $metadata, $type, $fieldName, $typeHint = null, $defaultValue = null)
     {
-        $methodName = $type . $this->inflector->classify($fieldName);
+        $methodName   = $type . $this->inflector->classify($fieldName);
         $variableName = $this->inflector->camelize($fieldName);
+
         if (in_array($type, ["add", "remove"])) {
-            $methodName = $this->inflector->singularize($methodName);
+            $methodName   = $this->inflector->singularize($methodName);
             $variableName = $this->inflector->singularize($variableName);
         }
 

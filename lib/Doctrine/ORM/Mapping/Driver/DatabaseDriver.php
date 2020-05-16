@@ -19,8 +19,6 @@
 
 namespace Doctrine\ORM\Mapping\Driver;
 
-use Doctrine\Common\Persistence\Mapping\Driver\MappingDriver;
-use Doctrine\Common\Persistence\Mapping\ClassMetadata;
 use Doctrine\DBAL\Schema\AbstractSchemaManager;
 use Doctrine\DBAL\Schema\SchemaException;
 use Doctrine\DBAL\Schema\Table;
@@ -34,6 +32,7 @@ use Doctrine\Persistence\Mapping\ClassMetadata;
 use Doctrine\Persistence\Mapping\Driver\MappingDriver;
 use function interface_exists;
 use function preg_replace;
+use function strtolower;
 
 /**
  * The DatabaseDriver reverse engineers the mapping metadata from a database.
@@ -83,9 +82,7 @@ class DatabaseDriver implements MappingDriver
      */
     private $namespace;
 
-    /**
-     * @var Inflector
-     */
+    /** @var Inflector */
     private $inflector;
 
     /**

@@ -291,6 +291,8 @@ class ConvertDoctrine1Schema
             return;
         }
 
+        $inflector = InflectorFactory::create()->build();
+
         foreach ($model['relations'] as $name => $relation) {
             if ( ! isset($relation['alias'])) {
                 $relation['alias'] = $name;
@@ -299,7 +301,6 @@ class ConvertDoctrine1Schema
                 $relation['class'] = $name;
             }
             if ( ! isset($relation['local'])) {
-                $inflector = InflectorFactory::create()->build();
                 $relation['local'] = $inflector->tableize($relation['class']);
             }
             if ( ! isset($relation['foreign'])) {
