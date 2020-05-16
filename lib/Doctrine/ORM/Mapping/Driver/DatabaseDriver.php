@@ -81,9 +81,9 @@ class DatabaseDriver implements MappingDriver
     private $namespace;
 
     /**
-     * @var \Doctrine\Inflector\Inflector
+     * @var Inflector
      */
-    protected $inflector;
+    private $inflector;
 
     /**
      * @param AbstractSchemaManager $schemaManager
@@ -178,11 +178,6 @@ class DatabaseDriver implements MappingDriver
     public function setInflector(Inflector $inflector) : void
     {
         $this->inflector = $inflector;
-    }
-
-    public function getInflector() : Inflector
-    {
-        return $this->Inflector;
     }
 
     /**

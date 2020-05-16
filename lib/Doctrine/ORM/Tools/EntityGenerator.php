@@ -337,7 +337,7 @@ public function __construct(<params>)
 ';
 
     /**
-     * @var \Doctrine\Inflector\Inflector
+     * @var Inflector
      */
     protected $inflector;
 
@@ -603,11 +603,6 @@ public function __construct(<params>)
     public function setInflector(Inflector $inflector) : void
     {
         $this->inflector = $inflector;
-    }
-
-    public function getInflector() : Inflector
-    {
-        return $this->Inflector;
     }
 
     /**
