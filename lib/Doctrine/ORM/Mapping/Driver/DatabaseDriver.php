@@ -82,7 +82,7 @@ class DatabaseDriver implements MappingDriver
      */
     private $namespace;
 
-    /** @var Inflector */
+    /** @var \Doctrine\Inflector\Inflector */
     private $inflector;
 
     /**

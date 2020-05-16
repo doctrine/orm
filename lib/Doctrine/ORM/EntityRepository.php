@@ -58,7 +58,7 @@ class EntityRepository implements ObjectRepository, Selectable
      */
     protected $_class;
 
-    /** @var Inflector */
+    /** @var \Doctrine\Inflector\Inflector */
     private static $inflector;
 
     /**
