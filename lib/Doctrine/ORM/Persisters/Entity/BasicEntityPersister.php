@@ -360,6 +360,11 @@ class BasicEntityPersister implements EntityPersister
         return Type::getType($fieldMapping['type'])->convertToPHPValue($value, $this->platform);
     }
 
+    /**
+     * @return Type[]
+     *
+     * @psalm-return list<Type>
+     */
     private function extractIdentifierTypes(array $id, ClassMetadata $versionedClass) : array
     {
         $types = [];
@@ -601,7 +606,9 @@ class BasicEntityPersister implements EntityPersister
      *
      * @param object $entity The entity for which to prepare the data.
      *
-     * @return array The prepared data.
+     * @return mixed[][] The prepared data.
+     *
+     * @psalm-return array<string, array<array-key, mixed|null>>
      */
     protected function prepareUpdateData($entity)
     {
@@ -688,9 +695,11 @@ class BasicEntityPersister implements EntityPersister
      *
      * @param object $entity The entity for which to prepare the data.
      *
-     * @return array The prepared data for the tables to update.
+     * @return mixed[][] The prepared data for the tables to update.
      *
      * @see prepareUpdateData
+     *
+     * @psalm-return array<string, mixed[]>
      */
     protected function prepareInsertData($entity)
     {
@@ -1133,7 +1142,7 @@ class BasicEntityPersister implements EntityPersister
      *
      * @throws \Doctrine\ORM\ORMException
      */
-    protected final function getOrderBySQL(array $orderBy, $baseTableAlias)
+    final protected function getOrderBySQL(array $orderBy, $baseTableAlias) : string
     {
         $orderByList = [];
 
@@ -1418,7 +1427,9 @@ class BasicEntityPersister implements EntityPersister
      * Subclasses should override this method to alter or change the list of
      * columns placed in the INSERT statements used by the persister.
      *
-     * @return array The list of columns.
+     * @return string[] The list of columns.
+     *
+     * @psalm-return list<string>
      */
     protected function getInsertColumnList()
     {
@@ -1655,6 +1666,8 @@ class BasicEntityPersister implements EntityPersister
      * @return string[]
      *
      * @throws \Doctrine\ORM\ORMException
+     *
+     * @psalm-return list<string>
      */
     private function getSelectConditionStatementColumnSQL($field, $assoc = null)
     {
@@ -1846,8 +1859,9 @@ class BasicEntityPersister implements EntityPersister
      *                             - value to be bound
      *                             - class to which the field belongs to
      *
+     * @return mixed[][]
      *
-     * @return array
+     * @psalm-return array{0: array, 1: list<mixed>}
      */
     private function expandToManyParameters($criteria)
     {
@@ -1873,9 +1887,11 @@ class BasicEntityPersister implements EntityPersister
      * @param mixed         $value
      * @param ClassMetadata $class
      *
-     * @return array
+     * @return Type[]
      *
      * @throws \Doctrine\ORM\Query\QueryException
+     *
+     * @psalm-return list<Type>
      */
     private function getTypes($field, $value, ClassMetadata $class)
     {

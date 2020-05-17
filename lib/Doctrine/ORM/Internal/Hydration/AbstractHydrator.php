@@ -260,8 +260,19 @@ abstract class AbstractHydrator
      * @param array &$id                 Dql-Alias => ID-Hash.
      * @param array &$nonemptyComponents Does this DQL-Alias has at least one non NULL value?
      *
-     * @return array  An array with all the fields (name => value) of the data row,
-     *                grouped by their component alias.
+     * @return array<string, array<string, mixed>> An array with all the fields
+     *                                             (name => value) of the data
+     *                                             row, grouped by their
+     *                                             component alias.
+     *
+     * @psalm-return array{
+     *                   data: array<array-key, array>,
+     *                   newObjects?: array<array-key, array{
+     *                       class: mixed,
+     *                       args?: array
+     *                   }>,
+     *                   scalars?: array
+     *               }
      */
     protected function gatherRowData(array $data, array &$id, array &$nonemptyComponents)
     {

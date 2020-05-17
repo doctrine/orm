@@ -12,4 +12,12 @@
             <directory name="vendor" />
         </ignoreFiles>
     </projectFiles>
+    <issueHandlers>
+        <ParadoxicalCondition>
+            <errorLevel type="suppress">
+                <!-- See https://github.com/vimeo/psalm/issues/3381 -->
+                <file name="lib/Doctrine/ORM/Mapping/ClassMetadataInfo.php"/>
+            </errorLevel>
+        </ParadoxicalCondition>
+    </issueHandlers>
 </psalm>

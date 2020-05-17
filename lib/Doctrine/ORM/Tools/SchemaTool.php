@@ -107,7 +107,7 @@ class SchemaTool
      *
      * @param array $classes
      *
-     * @return array The SQL statements needed to create the schema for the classes.
+     * @return string[] The SQL statements needed to create the schema for the classes.
      */
     public function getCreateSchemaSql(array $classes)
     {
@@ -794,7 +794,7 @@ class SchemaTool
     /**
      * Gets the SQL needed to drop the database schema for the connections database.
      *
-     * @return array
+     * @return string[]
      */
     public function getDropDatabaseSQL()
     {
@@ -812,7 +812,7 @@ class SchemaTool
      *
      * @param array $classes
      *
-     * @return array
+     * @return string[]
      */
     public function getDropSchemaSQL(array $classes)
     {
@@ -888,7 +888,7 @@ class SchemaTool
      * @param boolean $saveMode If TRUE, only generates SQL for a partial update
      *                          that does not include SQL for dropping assets which are scheduled for deletion.
      *
-     * @return array The sequence of SQL statements.
+     * @return string[] The sequence of SQL statements.
      */
     public function getUpdateSchemaSql(array $classes, $saveMode = false)
     {

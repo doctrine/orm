@@ -28,6 +28,7 @@ use Doctrine\Persistence\Mapping\ClassMetadata;
 use Doctrine\Persistence\Mapping\ReflectionService;
 use InvalidArgumentException;
 use ReflectionClass;
+use ReflectionProperty;
 use RuntimeException;
 
 /**
@@ -640,7 +641,7 @@ class ClassMetadataInfo implements ClassMetadata
     /**
      * The ReflectionProperty instances of the mapped class.
      *
-     * @var \ReflectionProperty[]
+     * @var ReflectionProperty[]
      */
     public $reflFields = [];
 
@@ -667,7 +668,7 @@ class ClassMetadataInfo implements ClassMetadata
     /**
      * Gets the ReflectionProperties of the mapped class.
      *
-     * @return array An array of ReflectionProperty instances.
+     * @return ReflectionProperty[] An array of ReflectionProperty instances.
      */
     public function getReflectionProperties()
     {
@@ -679,7 +680,7 @@ class ClassMetadataInfo implements ClassMetadata
      *
      * @param string $name
      *
-     * @return \ReflectionProperty
+     * @return ReflectionProperty
      */
     public function getReflectionProperty($name)
     {
@@ -689,7 +690,7 @@ class ClassMetadataInfo implements ClassMetadata
     /**
      * Gets the ReflectionProperty for the single identifier field.
      *
-     * @return \ReflectionProperty
+     * @return ReflectionProperty
      *
      * @throws BadMethodCallException If the class has a composite identifier.
      */
@@ -805,7 +806,7 @@ class ClassMetadataInfo implements ClassMetadata
      *      - reflClass (ReflectionClass)
      *      - reflFields (ReflectionProperty array)
      *
-     * @return array The names of all the fields that should be serialized.
+     * @return string[] The names of all the fields that should be serialized.
      */
     public function __sleep()
     {
@@ -1096,7 +1097,10 @@ class ClassMetadataInfo implements ClassMetadata
      * @param string $fieldName
      * @param array  $cache
      *
-     * @return array
+     * @return mixed[]
+     *
+     * @psalm-param array{usage: mixed, region: mixed} $cache
+     * @psalm-return array{usage: mixed, region: mixed}
      */
     public function getAssociationCacheDefaults($fieldName, array $cache)
     {
@@ -1445,9 +1449,25 @@ class ClassMetadataInfo implements ClassMetadata
      *
      * @param array $mapping The mapping.
      *
-     * @return array The updated mapping.
+     * @return mixed[] The updated mapping.
      *
      * @throws MappingException If something is wrong with the mapping.
+     *
+     * @psalm-return array{
+     *                   mappedBy: mixed,
+     *                   inversedBy: mixed,
+     *                   isOwningSide: bool,
+     *                   sourceEntity: string,
+     *                   targetEntity: string,
+     *                   fieldName: mixed,
+     *                   fetch: mixed,
+     *                   cascade: array<array-key,string>,
+     *                   isCascadeRemove: bool,
+     *                   isCascadePersist: bool,
+     *                   isCascadeRefresh: bool,
+     *                   isCascadeMerge: bool,
+     *                   isCascadeDetach: bool
+     *               }
      */
     protected function _validateAndCompleteAssociationMapping(array $mapping)
     {
@@ -1565,10 +1585,12 @@ class ClassMetadataInfo implements ClassMetadata
      *
      * @param array $mapping The mapping to validate & complete.
      *
-     * @return array The validated & completed mapping.
+     * @return mixed[] The validated & completed mapping.
      *
      * @throws RuntimeException
      * @throws MappingException
+     *
+     * @psalm-return array{isOwningSide: mixed, orphanRemoval: bool, isCascadeRemove: bool}
      */
     protected function _validateAndCompleteOneToOneMapping(array $mapping)
     {
@@ -1656,10 +1678,27 @@ class ClassMetadataInfo implements ClassMetadata
      *
      * @param array $mapping The mapping to validate and complete.
      *
-     * @return array The validated and completed mapping.
+     * @return mixed[] The validated and completed mapping.
      *
      * @throws MappingException
      * @throws InvalidArgumentException
+     *
+     * @psalm-return array{
+     *                   mappedBy: mixed,
+     *                   inversedBy: mixed,
+     *                   isOwningSide: bool,
+     *                   sourceEntity: string,
+     *                   targetEntity: string,
+     *                   fieldName: mixed,
+     *                   fetch: int|mixed,
+     *                   cascade: array<array-key,string>,
+     *                   isCascadeRemove: bool,
+     *                   isCascadePersist: bool,
+     *                   isCascadeRefresh: bool,
+     *                   isCascadeMerge: bool,
+     *                   isCascadeDetach: bool,
+     *                   orphanRemoval: bool
+     *               }
      */
     protected function _validateAndCompleteOneToManyMapping(array $mapping)
     {
@@ -1683,9 +1722,11 @@ class ClassMetadataInfo implements ClassMetadata
      *
      * @param array $mapping The mapping to validate & complete.
      *
-     * @return array The validated & completed mapping.
+     * @return mixed[] The validated & completed mapping.
      *
      * @throws \InvalidArgumentException
+     *
+     * @psalm-return array{isOwningSide: mixed, orphanRemoval: bool}
      */
     protected function _validateAndCompleteManyToManyMapping(array $mapping)
     {
@@ -1862,7 +1903,9 @@ class ClassMetadataInfo implements ClassMetadata
      *
      * @param array|null $fieldNames
      *
-     * @return array
+     * @return mixed[]
+     *
+     * @psalm-return list<string>
      */
     public function getColumnNames(array $fieldNames = null)
     {

@@ -93,7 +93,9 @@ class SqlValueVisitor extends ExpressionVisitor
     /**
      * Returns the Parameters and Types necessary for matching the last visited expression.
      *
-     * @return array
+     * @return mixed[][]
+     *
+     * @psalm-return array{0: array, 1: array}
      */
     public function getParamsAndTypes()
     {

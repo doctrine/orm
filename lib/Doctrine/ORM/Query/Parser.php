@@ -2683,7 +2683,7 @@ class Parser
     /**
      * InParameter ::= Literal | InputParameter
      *
-     * @return string | \Doctrine\ORM\Query\AST\InputParameter
+     * @return AST\InputParameter|AST\Literal
      */
     public function InParameter()
     {
@@ -2958,7 +2958,7 @@ class Parser
     /**
      * SimpleEntityExpression ::= IdentificationVariable | InputParameter
      *
-     * @return string | \Doctrine\ORM\Query\AST\InputParameter
+     * @return AST\InputParameter|AST\PathExpression
      */
     public function SimpleEntityExpression()
     {

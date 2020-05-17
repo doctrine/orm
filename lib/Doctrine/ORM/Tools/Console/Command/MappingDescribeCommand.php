@@ -135,7 +135,7 @@ EOT
      *
      * @return string[]
      */
-    private function getMappedEntities(EntityManagerInterface $entityManager)
+    private function getMappedEntities(EntityManagerInterface $entityManager) : array
     {
         $entityClassNames = $entityManager->getConfiguration()
                                           ->getMetadataDriverImpl()
@@ -237,9 +237,11 @@ EOT
      * @param string $label Label for the value
      * @param mixed  $value A Value to show
      *
-     * @return array
+     * @return string[]
+     *
+     * @psalm-return array{0: string, 1: string}
      */
-    private function formatField($label, $value)
+    private function formatField($label, $value) : array
     {
         if (null === $value) {
             $value = '<comment>None</comment>';
@@ -253,9 +255,11 @@ EOT
      *
      * @param array $propertyMappings
      *
-     * @return array
+     * @return string[][]
+     *
+     * @psalm-return list<array{0: string, 1: string}>
      */
-    private function formatMappings(array $propertyMappings)
+    private function formatMappings(array $propertyMappings) : array
     {
         $output = [];
 
@@ -275,9 +279,11 @@ EOT
      *
      * @param array $entityListeners
      *
-     * @return array
+     * @return string[]
+     *
+     * @psalm-return array{0: string, 1: string}
      */
-    private function formatEntityListeners(array $entityListeners)
+    private function formatEntityListeners(array $entityListeners) : array
     {
         return $this->formatField('Entity listeners', array_map('get_class', $entityListeners));
     }
