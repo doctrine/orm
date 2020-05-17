@@ -19,18 +19,20 @@
 
 namespace Doctrine\ORM\Mapping\Driver;
 
-use Doctrine\Common\Inflector\Inflector;
 use Doctrine\DBAL\Schema\AbstractSchemaManager;
 use Doctrine\DBAL\Schema\SchemaException;
 use Doctrine\DBAL\Schema\Table;
 use Doctrine\DBAL\Schema\Column;
 use Doctrine\DBAL\Types\Type;
+use Doctrine\Inflector\Inflector;
+use Doctrine\Inflector\InflectorFactory;
 use Doctrine\ORM\Mapping\ClassMetadataInfo;
 use Doctrine\ORM\Mapping\MappingException;
 use Doctrine\Persistence\Mapping\ClassMetadata;
 use Doctrine\Persistence\Mapping\Driver\MappingDriver;
 use function interface_exists;
 use function preg_replace;
+use function strtolower;
 
 /**
  * The DatabaseDriver reverse engineers the mapping metadata from a database.
@@ -80,12 +82,16 @@ class DatabaseDriver implements MappingDriver
      */
     private $namespace;
 
+    /** @var Inflector */
+    private $inflector;
+
     /**
      * @param AbstractSchemaManager $schemaManager
      */
     public function __construct(AbstractSchemaManager $schemaManager)
     {
         $this->_sm = $schemaManager;
+        $this->inflector = InflectorFactory::create()->build();
     }
 
     /**
@@ -167,6 +173,11 @@ class DatabaseDriver implements MappingDriver
         foreach ($manyToManyTables as $table) {
             $this->manyToManyTables[$table->getName()] = $table;
         }
+    }
+
+    public function setInflector(Inflector $inflector) : void
+    {
+        $this->inflector = $inflector;
     }
 
     /**
@@ -528,7 +539,7 @@ class DatabaseDriver implements MappingDriver
             return $this->namespace . $this->classNamesForTables[$tableName];
         }
 
-        return $this->namespace . Inflector::classify(strtolower($tableName));
+        return $this->namespace . $this->inflector->classify(strtolower($tableName));
     }
 
     /**
@@ -553,7 +564,7 @@ class DatabaseDriver implements MappingDriver
             $columnName = preg_replace('/_id$/', '', $columnName);
         }
 
-        return Inflector::camelize($columnName);
+        return $this->inflector->camelize($columnName);
     }
 }
 
