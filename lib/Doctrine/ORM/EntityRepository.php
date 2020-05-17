@@ -21,6 +21,7 @@ namespace Doctrine\ORM;
 
 use Doctrine\Common\Collections\Criteria;
 use Doctrine\Common\Collections\Selectable;
+use Doctrine\Inflector\Inflector;
 use Doctrine\Inflector\InflectorFactory;
 use Doctrine\ORM\Query\ResultSetMappingBuilder;
 use Doctrine\Persistence\ObjectRepository;
@@ -58,7 +59,7 @@ class EntityRepository implements ObjectRepository, Selectable
      */
     protected $_class;
 
-    /** @var \Doctrine\Inflector\Inflector */
+    /** @var Inflector */
     private static $inflector;
 
     /**

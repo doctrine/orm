@@ -336,7 +336,7 @@ public function __construct(<params>)
 }
 ';
 
-    /** @var \Doctrine\Inflector\Inflector */
+    /** @var Inflector */
     protected $inflector;
 
     /**
