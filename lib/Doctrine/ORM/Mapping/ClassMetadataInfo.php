@@ -252,7 +252,8 @@ class ClassMetadataInfo implements ClassMetadata
      * The name of the custom repository class used for the entity class.
      * (Optional).
      *
-     * @var string
+     * @var string|null
+     * @psalm-var ?class-string
      */
     public $customRepositoryClassName;
 
@@ -2626,6 +2627,8 @@ class ClassMetadataInfo implements ClassMetadata
      * @param string $repositoryClassName The class name of the custom mapper.
      *
      * @return void
+     *
+     * @psalm-param class-string $repositoryClassName
      */
     public function setCustomRepositoryClass($repositoryClassName)
     {
@@ -3254,6 +3257,8 @@ class ClassMetadataInfo implements ClassMetadata
      * @param  string|null $className
      *
      * @return string|null null if the input value is null
+     *
+     * @psalm-param ?class-string $className
      */
     public function fullyQualifiedClassName($className)
     {
