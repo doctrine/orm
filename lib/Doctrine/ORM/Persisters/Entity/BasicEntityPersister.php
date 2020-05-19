@@ -1554,7 +1554,7 @@ class BasicEntityPersister implements EntityPersister
     /**
      * Gets the FROM and optionally JOIN conditions to lock the entity managed by this persister.
      *
-     * @param integer $lockMode One of the Doctrine\DBAL\LockMode::* constants.
+     * @param int|null $lockMode One of the Doctrine\DBAL\LockMode::* constants.
      *
      * @return string
      */

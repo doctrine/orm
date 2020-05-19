@@ -52,9 +52,11 @@ final class ReflectionPropertiesGetter
     }
 
     /**
-     * @param $className
+     * @param string $className
      *
      * @return ReflectionProperty[] indexed by property internal name
+     *
+     * @psalm-param class-string $className
      */
     public function getProperties($className)
     {

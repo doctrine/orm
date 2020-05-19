@@ -3043,8 +3043,8 @@ class UnitOfWork implements PropertyChangedListener
      * @param mixed  $id            The entity identifier to look for.
      * @param string $rootClassName The name of the root class of the mapped entity hierarchy.
      *
-     * @return object|bool Returns the entity with the specified identifier if it exists in
-     *                     this UnitOfWork, FALSE otherwise.
+     * @return object|false Returns the entity with the specified identifier if it exists in
+     *                      this UnitOfWork, FALSE otherwise.
      */
     public function tryGetById($id, $rootClassName)
     {

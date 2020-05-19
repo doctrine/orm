@@ -19,6 +19,8 @@
 
 namespace Doctrine\ORM\Query;
 
+use Doctrine\ORM\AbstractQuery;
+
 /**
  *
  */
@@ -33,14 +35,18 @@ class TreeWalkerChainIterator implements \Iterator, \ArrayAccess
      */
     private $treeWalkerChain;
     /**
-     * @var
+     * @var AbstractQuery
      */
     private $query;
     /**
-     * @var
+     * @var ParserResult
      */
     private $parserResult;
 
+    /**
+     * @param AbstractQuery $query
+     * @param ParserResult  $parserResult
+     */
     public function __construct(TreeWalkerChain $treeWalkerChain, $query, $parserResult)
     {
         $this->treeWalkerChain = $treeWalkerChain;
