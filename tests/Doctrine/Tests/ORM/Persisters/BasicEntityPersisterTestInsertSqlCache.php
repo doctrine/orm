@@ -1,5 +1,6 @@
 <?php
 
+declare(strict_types=1);
 
 namespace Doctrine\Tests\ORM\Persisters;
 
@@ -14,19 +15,18 @@ use Doctrine\Tests\OrmTestCase;
 
 class BasicEntityPersisterTestInsertSqlCache extends OrmTestCase
 {
-
-    public function testGetInsetSqlCache(): void
+    public function testGetInsetSqlCache() : void
     {
         $em        = $this->getTestEntityManager();
         $metadata  = $em->getClassMetadata(GeneratorChanges::class);
         $persister = new BasicEntityPersister($em, $metadata);
-        $platform = $em->getConnection()->getDatabasePlatform();
+        $platform  = $em->getConnection()->getDatabasePlatform();
 
         /** @var LocalColumnMetadata $propertyId */
-        $propertyId = $metadata->getProperty('id');
+        $propertyId   = $metadata->getProperty('id');
         $propertyName = $metadata->getProperty('name');
 
-        $expectedIdentity = $this->getInsertSql($metadata, $platform, [$propertyName]);
+        $expectedIdentity    = $this->getInsertSql($metadata, $platform, [$propertyName]);
         $expectedNotIdentity = $this->getInsertSql($metadata, $platform, [$propertyId, $propertyName]);
 
         $valueGenerator = $propertyId->getValueGenerator();
@@ -39,22 +39,21 @@ class BasicEntityPersisterTestInsertSqlCache extends OrmTestCase
 
     /**
      * @param FieldMetadata[] $columns
-     * @return string
      */
-    public function getInsertSql(ClassMetadata $metadata, AbstractPlatform $platform, array $columnsMetadata): string
+    public function getInsertSql(ClassMetadata $metadata, AbstractPlatform $platform, array $columnsMetadata) : string
     {
         $tableName = $metadata->table->getQuotedQualifiedName($platform);
-        $columns = [];
-        $values = [];
+        $columns   = [];
+        $values    = [];
 
         /** @var ColumnMetadata $columnMetadata */
         foreach ($columnsMetadata as $columnMetadata){
             $columns[] = $platform->quoteIdentifier($columnMetadata->getColumnName());
-            $values[] = $columnMetadata->getType()->convertToDatabaseValueSQL('?', $platform);
+            $values[]  = $columnMetadata->getType()->convertToDatabaseValueSQL('?', $platform);
         }
 
         $columns = implode(', ', $columns);
-        $values = implode(', ', $values);
+        $values  = implode(', ', $values);
 
         return sprintf('INSERT INTO %s (%s) VALUES (%s)', $tableName, $columns, $values);
     }

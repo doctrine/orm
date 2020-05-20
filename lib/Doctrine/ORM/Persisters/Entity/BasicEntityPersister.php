@@ -1511,20 +1511,20 @@ class BasicEntityPersister implements EntityPersister
     {
         $identifier = $this->class->getIdentifier();
 
-        if(!array_key_exists(0, $identifier)){
+        if (!array_key_exists(0, $identifier)) {
             return;
         }
 
         $propertyName = $identifier[0];
         $identityColumn = $this->class->getProperty($propertyName);
 
-        if(!$identityColumn instanceof LocalColumnMetadata){
+        if (!$identityColumn instanceof LocalColumnMetadata) {
             return;
         }
 
         $valueGeneratorMetadata = $identityColumn->getValueGenerator();
 
-        if($valueGeneratorMetadata === null){
+        if ($valueGeneratorMetadata === null) {
             $generatorType = GeneratorType::NONE;
         } else if($valueGeneratorMetadata instanceof ValueGeneratorMetadata) {
             $generatorType = $valueGeneratorMetadata->getType();
@@ -1534,7 +1534,7 @@ class BasicEntityPersister implements EntityPersister
 
         $isIdentityGeneratorType = $generatorType === GeneratorType::IDENTITY;
 
-        if($isIdentityGeneratorType === $this->insertGeneratorTypeIsIdentity){
+        if ($isIdentityGeneratorType === $this->insertGeneratorTypeIsIdentity) {
             return;
         }
 
