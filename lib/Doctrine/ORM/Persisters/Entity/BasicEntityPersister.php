@@ -7,12 +7,14 @@ namespace Doctrine\ORM\Persisters\Entity;
 use Doctrine\Common\Collections\Criteria;
 use Doctrine\Common\Collections\Expr\Comparison;
 use Doctrine\DBAL\Connection;
+use Doctrine\DBAL\DBALException;
 use Doctrine\DBAL\Driver\Statement as DriverStatement;
 use Doctrine\DBAL\LockMode;
 use Doctrine\DBAL\Platforms\AbstractPlatform;
 use Doctrine\DBAL\Statement;
 use Doctrine\DBAL\Types\Type;
 use Doctrine\ORM\EntityManagerInterface;
+use Doctrine\ORM\Exception\ORMException;
 use Doctrine\ORM\Mapping\AssociationMetadata;
 use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\Mapping\ColumnMetadata;
@@ -441,14 +443,14 @@ class BasicEntityPersister implements EntityPersister
      * Performs an UPDATE statement for an entity on a specific table.
      * The UPDATE can optionally be versioned, which requires the entity to have a version field.
      *
-     * @param object $entity          The entity object being updated.
-     * @param string $quotedTableName The quoted name of the table to apply the UPDATE on.
-     * @param mixed[] $updateData     The map of columns to update (column => value).
-     * @param bool $versioned         Whether the UPDATE should be versioned.
+     * @param object  $entity          The entity object being updated.
+     * @param string  $quotedTableName The quoted name of the table to apply the UPDATE on.
+     * @param mixed[] $updateData      The map of columns to update (column => value).
+     * @param bool    $versioned       Whether the UPDATE should be versioned.
      *
      * @throws ORMException
      * @throws OptimisticLockException
-     * @throws \Doctrine\DBAL\DBALException
+     * @throws DBALException
      */
     final protected function updateTable($entity, $quotedTableName, array $updateData, $versioned = false)
     {
@@ -483,7 +485,6 @@ class BasicEntityPersister implements EntityPersister
                     $targetPersister = $this->em->getUnitOfWork()->getEntityPersister($property->getTargetEntity());
 
                     foreach ($property->getJoinColumns() as $joinColumn) {
-                        /** @var JoinColumnMetadata $joinColumn */
                         $quotedColumnName     = $this->platform->quoteIdentifier($joinColumn->getColumnName());
                         $referencedColumnName = $joinColumn->getReferencedColumnName();
                         $value                = $targetPersister->getColumnValue($identifier[$idField], $referencedColumnName);
