@@ -19,9 +19,7 @@ class GeneratorChanges
      */
     public $id;
 
-    /**
-     * @ORM\Column(type="string", length=255);
-     */
+    /** @ORM\Column(type="string", length=255); */
     public $name;
 
     public function __construct()
@@ -29,33 +27,21 @@ class GeneratorChanges
         $this->setName('');
     }
 
-    /**
-     * @return mixed
-     */
     public function getId(): int
     {
         return $this->id;
     }
 
-    /**
-     * @param mixed $id
-     */
     public function setId(?int $id):void
     {
         $this->id = $id;
     }
 
-    /**
-     * @return mixed
-     */
     public function getName()
     {
         return $this->name;
     }
 
-    /**
-     * @param mixed $name
-     */
     public function setName(string $name):void
     {
         $this->name = $name;
