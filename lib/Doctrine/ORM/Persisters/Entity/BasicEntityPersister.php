@@ -45,6 +45,7 @@ use Doctrine\ORM\UnitOfWork;
 use Doctrine\ORM\Utility\StaticClassNameConverter;
 use function array_combine;
 use function array_filter;
+use function array_key_exists;
 use function array_keys;
 use function array_map;
 use function array_merge;
@@ -166,7 +167,7 @@ class BasicEntityPersister implements EntityPersister
      */
     private $insertSql;
 
-    /** @var null|bool */
+    /** @var bool|null */
     private $insertGeneratorTypeIsIdentity;
 
     /** @var CachedPersisterContext */
@@ -1511,14 +1512,14 @@ class BasicEntityPersister implements EntityPersister
     {
         $identifier = $this->class->getIdentifier();
 
-        if (!array_key_exists(0, $identifier)) {
+        if (! array_key_exists(0, $identifier)) {
             return;
         }
 
-        $propertyName = $identifier[0];
+        $propertyName   = $identifier[0];
         $identityColumn = $this->class->getProperty($propertyName);
 
-        if (!$identityColumn instanceof LocalColumnMetadata) {
+        if (! $identityColumn instanceof LocalColumnMetadata) {
             return;
         }
 
@@ -1526,7 +1527,7 @@ class BasicEntityPersister implements EntityPersister
 
         if ($valueGeneratorMetadata === null) {
             $generatorType = GeneratorType::NONE;
-        } else if($valueGeneratorMetadata instanceof ValueGeneratorMetadata) {
+        } elseif ($valueGeneratorMetadata instanceof ValueGeneratorMetadata) {
             $generatorType = $valueGeneratorMetadata->getType();
         } else {
             return;

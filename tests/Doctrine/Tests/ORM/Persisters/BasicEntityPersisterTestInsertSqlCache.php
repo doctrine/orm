@@ -12,6 +12,8 @@ use Doctrine\ORM\Mapping\LocalColumnMetadata;
 use Doctrine\ORM\Persisters\Entity\BasicEntityPersister;
 use Doctrine\Tests\Models\GeneratorChanges\GeneratorChanges;
 use Doctrine\Tests\OrmTestCase;
+use function implode;
+use function sprintf;
 
 class BasicEntityPersisterTestInsertSqlCache extends OrmTestCase
 {
@@ -47,7 +49,7 @@ class BasicEntityPersisterTestInsertSqlCache extends OrmTestCase
         $values    = [];
 
         /** @var ColumnMetadata $columnMetadata */
-        foreach ($columnsMetadata as $columnMetadata){
+        foreach ($columnsMetadata as $columnMetadata) {
             $columns[] = $platform->quoteIdentifier($columnMetadata->getColumnName());
             $values[]  = $columnMetadata->getType()->convertToDatabaseValueSQL('?', $platform);
         }
