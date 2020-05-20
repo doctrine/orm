@@ -30,6 +30,7 @@ use Doctrine\ORM\Mapping\OneToManyAssociationMetadata;
 use Doctrine\ORM\Mapping\Property;
 use Doctrine\ORM\Mapping\ToManyAssociationMetadata;
 use Doctrine\ORM\Mapping\ToOneAssociationMetadata;
+use Doctrine\ORM\Mapping\ValueGeneratorMetadata;
 use Doctrine\ORM\OptimisticLockException;
 use Doctrine\ORM\PersistentCollection;
 use Doctrine\ORM\Persisters\Exception\CantUseInOperatorOnCompositeKeys;
@@ -164,6 +165,9 @@ class BasicEntityPersister implements EntityPersister
      * @var string
      */
     private $insertSql;
+
+    /** @var null|bool */
+    private $insertGeneratorTypeIsIdentity;
 
     /** @var CachedPersisterContext */
     protected $currentPersisterContext;
@@ -1501,10 +1505,51 @@ class BasicEntityPersister implements EntityPersister
     }
 
     /**
+     * Set $this->insertSql and $this->insertColumns to null if generator type is IDENTITY change.
+     */
+    private function cleanOutdatedInsertCache() : void
+    {
+        $identifier = $this->class->getIdentifier();
+
+        if(!array_key_exists(0, $identifier)){
+            return;
+        }
+
+        $propertyName = $identifier[0];
+        $identityColumn = $this->class->getProperty($propertyName);
+
+        if(!$identityColumn instanceof LocalColumnMetadata){
+            return;
+        }
+
+        $valueGeneratorMetadata = $identityColumn->getValueGenerator();
+
+        if($valueGeneratorMetadata === null){
+            $generatorType = GeneratorType::NONE;
+        } else if($valueGeneratorMetadata instanceof ValueGeneratorMetadata) {
+            $generatorType = $valueGeneratorMetadata->getType();
+        } else {
+            return;
+        }
+
+        $isIdentityGeneratorType = $generatorType === GeneratorType::IDENTITY;
+
+        if($isIdentityGeneratorType === $this->insertGeneratorTypeIsIdentity){
+            return;
+        }
+
+        $this->insertGeneratorTypeIsIdentity = $isIdentityGeneratorType;
+        $this->insertSql                     = null;
+        $this->insertColumns                 = null;
+    }
+
+    /**
      * {@inheritdoc}
      */
     public function getInsertSQL()
     {
+        $this->cleanOutdatedInsertCache();
+
         if ($this->insertSql !== null) {
             return $this->insertSql;
         }
