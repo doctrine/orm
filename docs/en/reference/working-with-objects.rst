@@ -315,7 +315,7 @@ in multiple ways with very different performance impacts.
 1. If an association is marked as ``CASCADE=REMOVE`` Doctrine 2
    will fetch this association. If its a Single association it will
    pass this entity to
-   ´EntityManager#remove()``. If the association is a collection, Doctrine will loop over all    its elements and pass them to``EntityManager#remove()\`.
+   ``EntityManager#remove()``. If the association is a collection, Doctrine will loop over all    its elements and pass them to``EntityManager#remove()``.
    In both cases the cascade remove semantics are applied recursively.
    For large object graphs this removal strategy can be very costly.
 2. Using a DQL ``DELETE`` statement allows you to delete multiple
