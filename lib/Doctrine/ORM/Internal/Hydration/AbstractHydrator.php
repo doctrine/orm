@@ -326,17 +326,13 @@ abstract class AbstractHydrator
             }
 
             $fieldName = $cacheKeyInfo['fieldName'];
-
-            // WARNING: BC break! We know this is the desired behavior to type convert values, but this
-            // erroneous behavior exists since 2.0 and we're forced to keep compatibility.
-            if (! isset($cacheKeyInfo['isScalar'])) {
+            if (isset($cacheKeyInfo['dqlAlias'])) {
                 $dqlAlias  = $cacheKeyInfo['dqlAlias'];
-                $type      = $cacheKeyInfo['type'];
                 $fieldName = $dqlAlias . '_' . $fieldName;
-                $value     = $type
-                    ? $type->convertToPHPValue($value, $this->platform)
-                    : $value;
             }
+
+            $type  = $cacheKeyInfo['type'];
+            $value = $type ? $type->convertToPHPValue($value, $this->platform) : $value;
 
             $rowData[$fieldName] = $value;
         }
