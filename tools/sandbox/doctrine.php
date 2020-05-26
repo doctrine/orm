@@ -1,8 +1,10 @@
 <?php
 
+use Symfony\Component\Console\Application;
+
 $em = require_once __DIR__.'/bootstrap.php';
 
-$cli = new \Symfony\Component\Console\Application('Doctrine Command Line Interface', Doctrine\Common\Version::VERSION);
+$cli = new Application('Doctrine Command Line Interface');
 $cli->setCatchExceptions(true);
 
 $cli->setHelperSet(new Symfony\Component\Console\Helper\HelperSet(
