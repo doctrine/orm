@@ -342,9 +342,7 @@ public function __construct(<params>)
     {
         @trigger_error(self::class . ' is deprecated and will be removed in Doctrine ORM 3.0', E_USER_DEPRECATED);
 
-        if (version_compare(\Doctrine\Common\Version::VERSION, '2.2.0-DEV', '>=')) {
-            $this->annotationsPrefix = 'ORM\\';
-        }
+        $this->annotationsPrefix = 'ORM\\';
     }
 
     /**

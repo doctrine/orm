@@ -19,7 +19,7 @@
 
 namespace Doctrine\ORM\Tools\Console;
 
-use Doctrine\Common\Persistence\Mapping\ClassMetadata;
+use Doctrine\Persistence\Mapping\ClassMetadata;
 
 /**
  * Used by CLI Tools to restrict entity-based commands to given patterns.
