@@ -5,6 +5,7 @@ namespace Doctrine\Tests\ORM\Query;
 use Doctrine\ORM\Query\Expr;
 use Doctrine\Tests\Models\Company\CompanyEmployee;
 use Doctrine\Tests\OrmTestCase;
+use Generator;
 
 /**
  * Test case for the DQL Expr class used for generating DQL snippets through
@@ -272,24 +273,56 @@ class ExprTest extends OrmTestCase
         $this->assertEquals(':groupId MEMBER OF u.groups', (string) $this->_expr->isMemberOf(':groupId', 'u.groups'));
     }
 
-    public function testInExpr()
+    public function provideIterableValue() : Generator
     {
-        $this->assertEquals('u.id IN(1, 2, 3)', (string) $this->_expr->in('u.id', [1, 2, 3]));
+        $gen = static function () {
+            yield from [1, 2, 3];
+        };
+
+        yield 'simple_array' => [[1, 2, 3]];
+        yield 'generator' => [$gen()];
     }
 
-    public function testInLiteralExpr()
+    public function provideLiteralIterableValue() : Generator
     {
-        $this->assertEquals("u.type IN('foo', 'bar')", (string) $this->_expr->in('u.type', ['foo', 'bar']));
+        $gen = static function () {
+            yield from ['foo', 'bar'];
+        };
+
+        yield 'simple_array' => [['foo', 'bar']];
+        yield 'generator' => [$gen()];
     }
 
-    public function testNotInExpr()
+    /**
+     * @dataProvider provideIterableValue
+     */
+    public function testInExpr(iterable $value) : void
     {
-        $this->assertEquals('u.id NOT IN(1, 2, 3)', (string) $this->_expr->notIn('u.id', [1, 2, 3]));
+        self::assertEquals('u.id IN(1, 2, 3)', (string) $this->_expr->in('u.id', $value));
     }
 
-    public function testNotInLiteralExpr()
+    /**
+     * @dataProvider provideLiteralIterableValue
+     */
+    public function testInLiteralExpr(iterable $value) : void
     {
-        $this->assertEquals("u.type NOT IN('foo', 'bar')", (string) $this->_expr->notIn('u.type', ['foo', 'bar']));
+        self::assertEquals("u.type IN('foo', 'bar')", (string) $this->_expr->in('u.type', $value));
+    }
+
+    /**
+     * @dataProvider provideIterableValue
+     */
+    public function testNotInExpr(iterable $value) : void
+    {
+        self::assertEquals('u.id NOT IN(1, 2, 3)', (string) $this->_expr->notIn('u.id', $value));
+    }
+
+    /**
+     * @dataProvider provideLiteralIterableValue
+     */
+    public function testNotInLiteralExpr(iterable $value) : void
+    {
+        self::assertEquals("u.type NOT IN('foo', 'bar')", (string) $this->_expr->notIn('u.type', $value));
     }
 
     public function testAndxOrxExpr()

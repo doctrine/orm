@@ -17,6 +17,7 @@ use Doctrine\Tests\Models\CMS\CmsAddress;
 use Doctrine\Tests\Models\CMS\CmsUser;
 use Doctrine\Tests\Models\Generic\DateTimeModel;
 use Doctrine\Tests\OrmTestCase;
+use Generator;
 
 class QueryTest extends OrmTestCase
 {
@@ -173,6 +174,39 @@ class QueryTest extends OrmTestCase
 
         $this->assertEquals('cities', $parameter->getName());
         $this->assertEquals($cities, $parameter->getValue());
+    }
+
+    public function provideProcessParameterValueIterable() : Generator
+    {
+        $baseArray = [
+            0 => 'Paris',
+            3 => 'Canne',
+            9 => 'St Julien',
+        ];
+
+        $gen = static function () use ($baseArray) {
+            yield from $baseArray;
+        };
+
+        yield 'simple_array' => [$baseArray];
+        yield 'doctrine_collection' => [new ArrayCollection($baseArray)];
+        yield 'generator' => [$gen()];
+    }
+
+    /**
+     * @dataProvider provideProcessParameterValueIterable
+     */
+    public function testProcessParameterValueIterable(iterable $cities) : void
+    {
+        $query = $this->_em->createQuery('SELECT a FROM Doctrine\Tests\Models\CMS\CmsAddress a WHERE a.city IN (:cities)');
+        self::assertEquals(
+            [
+                0 => 'Paris',
+                3 => 'Canne',
+                9 => 'St Julien',
+            ],
+            $query->processParameterValue($cities)
+        );
     }
 
     /**
