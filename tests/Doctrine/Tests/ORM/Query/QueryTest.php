@@ -160,9 +160,9 @@ class QueryTest extends OrmTestCase
     public function testCollectionParameters()
     {
         $cities = [
-            0 => "Paris",
-            3 => "Canne",
-            9 => "St Julien"
+            0 => 'Paris',
+            3 => 'Cannes',
+            9 => 'St Julien',
         ];
 
         $query  = $this->_em
@@ -180,7 +180,7 @@ class QueryTest extends OrmTestCase
     {
         $baseArray = [
             0 => 'Paris',
-            3 => 'Canne',
+            3 => 'Cannes',
             9 => 'St Julien',
         ];
 
@@ -202,7 +202,7 @@ class QueryTest extends OrmTestCase
         self::assertEquals(
             [
                 0 => 'Paris',
-                3 => 'Canne',
+                3 => 'Cannes',
                 9 => 'St Julien',
             ],
             $query->processParameterValue($cities)
