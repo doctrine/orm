@@ -880,5 +880,3 @@ class XmlDriver extends FileDriver
         return ($flag == "true" || $flag == "1");
     }
 }
-
-interface_exists(ClassMetadata::class);

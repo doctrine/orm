@@ -40,5 +40,3 @@ final class HierarchyDiscriminatorResolver
         return $discriminators;
     }
 }
-
-interface_exists(ClassMetadata::class);

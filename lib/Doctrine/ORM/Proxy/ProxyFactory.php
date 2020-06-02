@@ -206,5 +206,3 @@ class ProxyFactory extends AbstractProxyFactory
         };
     }
 }
-
-interface_exists(ClassMetadata::class);
