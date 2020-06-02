@@ -142,6 +142,8 @@ class SqlWalker implements TreeWalker
      * Map of all components/classes that appear in the DQL query.
      *
      * @var array
+     *
+     * @psalm-var array<string, array{metadata: ClassMetadata}>
      */
     private $queryComponents;
 
@@ -199,7 +201,7 @@ class SqlWalker implements TreeWalker
     /**
      * Gets the Query instance used by the walker.
      *
-     * @return Query.
+     * @return Query
      */
     public function getQuery()
     {
@@ -232,6 +234,8 @@ class SqlWalker implements TreeWalker
      * @param string $dqlAlias The DQL alias.
      *
      * @return array
+     *
+     * @psalm-return array{metadata: ClassMetadata}
      */
     public function getQueryComponent($dqlAlias)
     {
@@ -1532,7 +1536,7 @@ class SqlWalker implements TreeWalker
     /**
      * @param \Doctrine\ORM\Query\AST\ParenthesisExpression $parenthesisExpression
      *
-     * @return string.
+     * @return string
      */
     public function walkParenthesisExpression(AST\ParenthesisExpression $parenthesisExpression)
     {

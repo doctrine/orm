@@ -1902,7 +1902,7 @@ class UnitOfWork implements PropertyChangedListener
      * @param object      $entity
      * @param array       $visited
      * @param object|null $prevManagedCopy
-     * @param array|null  $assoc
+     * @param string[]    $assoc
      *
      * @return object The managed copy of the entity.
      *
