@@ -19,6 +19,10 @@
 
 namespace Doctrine\ORM\Query;
 
+use Traversable;
+use function is_iterable;
+use function iterator_to_array;
+
 /**
  * This class is used to generate DQL expressions via a set of PHP static functions.
  *
@@ -440,7 +444,11 @@ class Expr
      */
     public function in($x, $y)
     {
-        if (is_array($y)) {
+        if (is_iterable($y)) {
+            if ($y instanceof Traversable) {
+                $y = iterator_to_array($y);
+            }
+
             foreach ($y as &$literal) {
                 if ( ! ($literal instanceof Expr\Literal)) {
                     $literal = $this->_quoteLiteral($literal);
@@ -461,7 +469,11 @@ class Expr
      */
     public function notIn($x, $y)
     {
-        if (is_array($y)) {
+        if (is_iterable($y)) {
+            if ($y instanceof Traversable) {
+                $y = iterator_to_array($y);
+            }
+
             foreach ($y as &$literal) {
                 if ( ! ($literal instanceof Expr\Literal)) {
                     $literal = $this->_quoteLiteral($literal);
