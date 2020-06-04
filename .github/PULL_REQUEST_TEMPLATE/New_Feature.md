@@ -6,8 +6,8 @@ about: You have implemented some neat idea that you want to make part of Doctrin
 <!--
 Thank you for submitting new feature!
 Pick the target branch based according to these criteria:
-  * submitting a bugfix: target the lowest active stable branch: 2.6
-  * submitting a new feature: target the master branch.
+  * submitting a bugfix: target the lowest active stable branch: 2.7
+  * submitting a new feature: target the next minor branch: 2.8.x
   * submitting a BC-breaking change: target the master branch
 -->
 
