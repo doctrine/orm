@@ -37,7 +37,8 @@ class FieldMetadataTest extends TestCase
 
 class DummyEntityClass
 {
-    public string $property;
+    /** @var string */
+    public $property;
 
     public function __construct(string $property)
     {
