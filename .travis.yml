@@ -86,6 +86,7 @@ jobs:
 
     - stage: Code Quality
       env: DB=none BENCHMARK
+      php: 7.4
       before_script: wget https://phpbench.github.io/phpbench/phpbench.phar https://phpbench.github.io/phpbench/phpbench.phar.pubkey
       script: php phpbench.phar run -l dots --report=default
 
