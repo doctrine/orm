@@ -567,5 +567,3 @@ class DatabaseDriver implements MappingDriver
         return $this->inflector->camelize($columnName);
     }
 }
-
-interface_exists(ClassMetadata::class);

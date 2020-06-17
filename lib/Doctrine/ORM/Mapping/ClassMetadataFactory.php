@@ -797,6 +797,3 @@ class ClassMetadataFactory extends AbstractClassMetadataFactory
         return $this->targetPlatform;
     }
 }
-
-interface_exists(ClassMetadataInterface::class);
-interface_exists(ReflectionService::class);

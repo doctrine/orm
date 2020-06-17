@@ -937,5 +937,3 @@ class Configuration extends \Doctrine\DBAL\Configuration
         $this->_attributes['defaultQueryHints'][$name] = $value;
     }
 }
-
-interface_exists(MappingDriver::class);

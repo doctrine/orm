@@ -84,5 +84,3 @@ class OnClassMetadataNotFoundEventArgs extends ManagerEventArgs
         return $this->className;
     }
 }
-
-interface_exists(ClassMetadata::class);

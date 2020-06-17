@@ -672,5 +672,3 @@ class AnnotationDriver extends AbstractAnnotationDriver
         return new self($reader, $paths);
     }
 }
-
-interface_exists(ClassMetadata::class);
