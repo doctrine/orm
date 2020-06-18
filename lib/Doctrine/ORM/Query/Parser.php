@@ -1489,7 +1489,7 @@ class Parser
 
     /**
      * OrderByItem ::= (
-     *      SimpleArithmeticExpression | SingleValuedPathExpression |
+     *      SimpleArithmeticExpression | SingleValuedPathExpression | CaseExpression |
      *      ScalarExpression | ResultVariable | FunctionDeclaration
      * ) ["ASC" | "DESC"]
      *
@@ -1521,6 +1521,10 @@ class Parser
 
             case ($this->lexer->peek() && $this->isMathOperator($this->peekBeyondClosingParenthesis())):
                 $expr = $this->ScalarExpression();
+                break;
+
+            case $this->lexer->lookahead['type'] === Lexer::T_CASE:
+                $expr = $this->CaseExpression();
                 break;
 
             default:
