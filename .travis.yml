@@ -77,12 +77,12 @@ jobs:
         - if [[ ! $(php -m | grep -si xdebug) ]]; then echo "xdebug required for coverage"; exit 1; fi
       script:
         - ENABLE_SECOND_LEVEL_CACHE=0 ./vendor/bin/phpunit -v -c tests/travis/$DB.travis.xml --coverage-clover ./build/logs/clover.xml
-      after_script:
-        - wget https://scrutinizer-ci.com/ocular.phar
-        - php ocular.phar code-coverage:upload --format=php-clover build/logs/clover.xml
+      after_success:
+        - bash <(curl -s https://codecov.io/bash) -f ./build/logs/clover.xml
 
     - stage: Code Quality
       env: DB=none BENCHMARK
+      php: 7.4
       before_script: wget https://phpbench.github.io/phpbench/phpbench.phar https://phpbench.github.io/phpbench/phpbench.phar.pubkey
       script: php phpbench.phar run -l dots --report=default
 

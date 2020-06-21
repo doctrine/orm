@@ -485,7 +485,7 @@ where you can generate an arbitrary join with the following syntax:
 .. code-block:: php
 
     <?php
-    $query = $em->createQuery('SELECT u FROM User u JOIN Blacklist b WITH u.email = b.email');
+    $query = $em->createQuery('SELECT u FROM User u JOIN Banlist b WITH u.email = b.email');
 
 .. note::
     The differences between WHERE, WITH and HAVING clauses may be
