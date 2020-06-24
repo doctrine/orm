@@ -313,6 +313,10 @@ abstract class OrmFunctionalTestCase extends OrmTestCase
             Models\Issue5989\Issue5989Employee::class,
             Models\Issue5989\Issue5989Manager::class,
         ],
+        'GH8193' => [
+            Models\GH8193\User::class,
+            Models\GH8193\Event::class
+        ]
     ];
 
     /**
