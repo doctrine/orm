@@ -31,6 +31,7 @@ use Doctrine\Persistence\Mapping\AbstractClassMetadataFactory;
 use Doctrine\Persistence\Mapping\ClassMetadata as ClassMetadataInterface;
 use Doctrine\Persistence\Mapping\Driver\MappingDriver;
 use Doctrine\Persistence\Mapping\ReflectionService;
+use ReflectionClass;
 use ReflectionException;
 use function assert;
 use function interface_exists;
@@ -277,6 +278,11 @@ class ClassMetadataFactory extends AbstractClassMetadataFactory
                 }
                 if ( ! $class->discriminatorColumn) {
                     throw MappingException::missingDiscriminatorColumn($class->name);
+                }
+                foreach ($class->subClasses as $subClass) {
+                    if ((new ReflectionClass($subClass))->name !== $subClass) {
+                        throw MappingException::invalidClassInDiscriminatorMap($subClass, $class->name);
+                    }
                 }
             }
         } else if ($class->isMappedSuperclass && $class->name == $class->rootEntityName && (count($class->discriminatorMap) || $class->discriminatorColumn)) {

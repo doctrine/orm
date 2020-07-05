@@ -14,6 +14,7 @@ use Doctrine\ORM\Mapping\MappingException;
 use Doctrine\ORM\Mapping\UnderscoreNamingStrategy;
 use Doctrine\Persistence\Mapping\RuntimeReflectionService;
 use Doctrine\Tests\Models\Cache\City;
+use Doctrine\Tests\Models\CaseSensitiveDiscriminatorMap;
 use Doctrine\Tests\Models\CMS\CmsAddress;
 use Doctrine\Tests\Models\CMS\CmsAddressListener;
 use Doctrine\Tests\Models\CMS\CmsUser;
@@ -37,6 +38,7 @@ use Doctrine\Tests\Models\DDC889\DDC889Entity;
 use Doctrine\Tests\Models\DDC964\DDC964Admin;
 use Doctrine\Tests\Models\DDC964\DDC964Guest;
 use Doctrine\Tests\OrmTestCase;
+use function class_exists;
 
 abstract class AbstractMappingDriverTest extends OrmTestCase
 {
@@ -1079,6 +1081,17 @@ abstract class AbstractMappingDriverTest extends OrmTestCase
         $this->assertEquals('dtype', $class->discriminatorColumn['name']);
     }
 
+    public function testInvalidSubClassCase()
+    {
+        class_exists(CaseSensitiveDiscriminatorMap\Cube::class);
+
+        $this->expectException(MappingException::class);
+        $this->expectExceptionMessage('Entity class \'Doctrine\Tests\Models\CaseSensitiveDiscriminatorMap\cube\' used in the discriminator map of class \'Doctrine\Tests\Models\CaseSensitiveDiscriminatorMap\Shape\' does not exist.');
+
+        $em      = $this->_getTestEntityManager();
+        $factory = $this->createClassMetadataFactory($em);
+        $factory->getMetadataFor(CaseSensitiveDiscriminatorMap\Shape::class);
+    }
 }
 
 /**
@@ -1343,7 +1356,6 @@ class Dog extends Animal
 
     }
 }
-
 
 /**
  * @Entity
