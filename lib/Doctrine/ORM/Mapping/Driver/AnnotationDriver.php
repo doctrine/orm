@@ -558,7 +558,7 @@ class AnnotationDriver extends AbstractAnnotationDriver
      *
      * @param \ReflectionMethod $method
      *
-     * @return array
+     * @return callable[]
      */
     private function getMethodCallbacks(\ReflectionMethod $method)
     {
@@ -606,7 +606,17 @@ class AnnotationDriver extends AbstractAnnotationDriver
      * Parse the given JoinColumn as array
      *
      * @param Mapping\JoinColumn $joinColumn
-     * @return array
+     *
+     * @return mixed[]
+     *
+     * @psalm-return array{
+     *                   name: string,
+     *                   unique: bool,
+     *                   nullable: bool,
+     *                   onDelete: mixed,
+     *                   columnDefinition: string,
+     *                   referencedColumnName: string
+     *               }
      */
     private function joinColumnToArray(Mapping\JoinColumn $joinColumn)
     {
@@ -626,7 +636,20 @@ class AnnotationDriver extends AbstractAnnotationDriver
      * @param string $fieldName
      * @param Mapping\Column $column
      *
-     * @return array
+     * @return mixed[]
+     *
+     * @psalm-return array{
+     *                   fieldName: string,
+     *                   type: mixed,
+     *                   scale: int,
+     *                   length: int,
+     *                   unique: bool,
+     *                   nullable: bool,
+     *                   precision: int,
+     *                   options?: mixed[],
+     *                   columnName?: string,
+     *                   columnDefinition?: string
+     *               }
      */
     private function columnToArray($fieldName, Mapping\Column $column)
     {

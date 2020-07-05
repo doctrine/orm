@@ -38,7 +38,7 @@ class OnClearEventArgs extends \Doctrine\Common\EventArgs
     private $em;
 
     /**
-     * @var string
+     * @var string|null
      */
     private $entityClass;
 

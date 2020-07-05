@@ -184,7 +184,7 @@ class ResultSetMapping
      * @param string|null $resultAlias The result alias with which the entity result should be
      *                                 placed in the result structure.
      *
-     * @return ResultSetMapping This ResultSetMapping instance.
+     * @return static This ResultSetMapping instance.
      *
      * @todo Rename: addRootEntity
      */
@@ -209,7 +209,7 @@ class ResultSetMapping
      *                            column should be used for.
      * @param string $discrColumn The name of the discriminator column in the SQL result set.
      *
-     * @return ResultSetMapping This ResultSetMapping instance.
+     * @return static This ResultSetMapping instance.
      *
      * @todo Rename: addDiscriminatorColumn
      */
@@ -227,7 +227,7 @@ class ResultSetMapping
      * @param string $alias     The alias of an entity result or joined entity result.
      * @param string $fieldName The name of the field to use for indexing.
      *
-     * @return ResultSetMapping This ResultSetMapping instance.
+     * @return static This ResultSetMapping instance.
      */
     public function addIndexBy($alias, $fieldName)
     {
@@ -262,7 +262,7 @@ class ResultSetMapping
      *
      * @param string $resultColumnName
      *
-     * @return ResultSetMapping This ResultSetMapping instance.
+     * @return static This ResultSetMapping instance.
      */
     public function addIndexByScalar($resultColumnName)
     {
@@ -277,7 +277,7 @@ class ResultSetMapping
      * @param string $alias
      * @param string $resultColumnName
      *
-     * @return ResultSetMapping This ResultSetMapping instance.
+     * @return static This ResultSetMapping instance.
      */
     public function addIndexByColumn($alias, $resultColumnName)
     {
@@ -328,7 +328,7 @@ class ResultSetMapping
      *                                    If not specified, the field is assumed to belong to the class
      *                                    designated by $alias.
      *
-     * @return ResultSetMapping This ResultSetMapping instance.
+     * @return static This ResultSetMapping instance.
      *
      * @todo Rename: addField
      */
@@ -357,7 +357,7 @@ class ResultSetMapping
      * @param string $relation    The association field that connects the parent entity result
      *                            with the joined entity result.
      *
-     * @return ResultSetMapping This ResultSetMapping instance.
+     * @return static This ResultSetMapping instance.
      *
      * @todo Rename: addJoinedEntity
      */
@@ -377,7 +377,7 @@ class ResultSetMapping
      * @param string $alias      The result alias with which the scalar result should be placed in the result structure.
      * @param string $type       The column type
      *
-     * @return ResultSetMapping This ResultSetMapping instance.
+     * @return static This ResultSetMapping instance.
      *
      * @todo Rename: addScalar
      */
@@ -564,7 +564,7 @@ class ResultSetMapping
      * @param bool   $isIdentifierColumn
      * @param string $type               The column type
      *
-     * @return ResultSetMapping This ResultSetMapping instance.
+     * @return static This ResultSetMapping instance.
      *
      * @todo Make all methods of this class require all parameters and not infer anything
      */

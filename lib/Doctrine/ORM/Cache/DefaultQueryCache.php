@@ -348,7 +348,9 @@ class DefaultQueryCache implements QueryCache
      * @param array                             $assoc
      * @param mixed                             $assocValue
      *
-     * @return array|null
+     * @return mixed[]|null
+     *
+     * @psalm-return array{targetEntity: string, type: mixed, list?: array[], identifier?: array}|null
      */
     private function storeAssociationCache(QueryCacheKey $key, array $assoc, $assocValue)
     {

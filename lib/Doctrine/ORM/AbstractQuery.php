@@ -240,7 +240,7 @@ abstract class AbstractQuery
      *
      * @param integer $lifetime
      *
-     * @return \Doctrine\ORM\AbstractQuery This query instance.
+     * @return static This query instance.
      */
     public function setLifetime($lifetime)
     {
@@ -260,7 +260,7 @@ abstract class AbstractQuery
     /**
      * @param integer $cacheMode
      *
-     * @return \Doctrine\ORM\AbstractQuery This query instance.
+     * @return static This query instance.
      */
     public function setCacheMode($cacheMode)
     {
@@ -1068,7 +1068,7 @@ abstract class AbstractQuery
      * Will return the configured id if it exists otherwise a hash will be
      * automatically generated for you.
      *
-     * @return array ($key, $hash)
+     * @return array<string, string> ($key, $hash)
      */
     protected function getHydrationCacheId()
     {
