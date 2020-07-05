@@ -1080,18 +1080,6 @@ abstract class AbstractMappingDriverTest extends OrmTestCase
         $class = $this->createClassMetadata(SingleTableEntityIncompleteDiscriminatorColumnMapping::class);
         $this->assertEquals('dtype', $class->discriminatorColumn['name']);
     }
-
-    public function testInvalidSubClassCase()
-    {
-        class_exists(CaseSensitiveDiscriminatorMap\Cube::class);
-
-        $this->expectException(MappingException::class);
-        $this->expectExceptionMessage('Entity class \'Doctrine\Tests\Models\CaseSensitiveDiscriminatorMap\cube\' used in the discriminator map of class \'Doctrine\Tests\Models\CaseSensitiveDiscriminatorMap\Shape\' does not exist.');
-
-        $em      = $this->_getTestEntityManager();
-        $factory = $this->createClassMetadataFactory($em);
-        $factory->getMetadataFor(CaseSensitiveDiscriminatorMap\Shape::class);
-    }
 }
 
 /**
