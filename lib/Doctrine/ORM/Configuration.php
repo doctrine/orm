@@ -940,21 +940,17 @@ class Configuration extends \Doctrine\DBAL\Configuration
     /**
      * Gets a list of entity class names to be ignored by the SchemaTool
      *
-     * @since 2.8
-     *
-     * @return array
+     * @return string[]
      */
     public function getSchemaIgnoreClasses() : array
     {
-        return isset($this->_attributes['schemaIgnoreClasses']) ? $this->_attributes['schemaIgnoreClasses'] : [];
+        return isset($this->_attributes['schemaIgnoreClasses']) === true ? $this->_attributes['schemaIgnoreClasses'] : [];
     }
-    
+
     /**
      * Sets a list of entity class names to be ignored by the SchemaTool
      *
-     * @since 2.8
-     *
-     * @param array $schemaIgnoreClasses Array of entity class names
+     * @param string[] $schemaIgnoreClasses Array of entity class names
      */
     public function setSchemaIgnoreClasses(array $schemaIgnoreClasses)
     {
