@@ -22,7 +22,8 @@ namespace Doctrine\ORM\Query;
 use Doctrine\ORM\AbstractQuery;
 
 /**
- *
+ * @template-implements \Iterator<TreeWalker>
+ * @template-implements \ArrayAccess<int, TreeWalker>
  */
 class TreeWalkerChainIterator implements \Iterator, \ArrayAccess
 {

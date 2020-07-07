@@ -33,7 +33,7 @@ class TreeWalkerChain implements TreeWalker
      * The tree walkers.
      *
      * @var TreeWalker[]
-     * @psalm-var TreeWalkerChainIterator<TreeWalker>
+     * @psalm-var TreeWalkerChainIterator
      */
     private $_walkers;
 
