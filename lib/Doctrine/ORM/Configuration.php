@@ -99,6 +99,9 @@ class Configuration extends DBALConfiguration
     /** @var mixed[] indexed by hint name */
     private $defaultQueryHints = [];
 
+    /** @var array */
+    private $schemaIgnoreClasses = [];
+
     /**
      * Sets the directory where Doctrine generates any necessary proxy class files.
      */
@@ -583,6 +586,26 @@ class Configuration extends DBALConfiguration
         $this->defaultQueryHints[$hintName] = $value;
     }
 
+    /**
+     * Gets a list of entity class names to be ignored by the SchemaTool
+     *
+     * @return array
+     */
+    public function getSchemaIgnoreClasses() : array
+    {
+        return $this->schemaIgnoreClasses;
+    }
+    
+    /**
+     * Sets a list of entity class names to be ignored by the SchemaTool
+     *
+     * @param array $schemaIgnoreClasses Array of entity class names
+     */
+    public function setSchemaIgnoreClasses(array $schemaIgnoreClasses)
+    {
+        $this->schemaIgnoreClasses = $schemaIgnoreClasses;
+    }
+
     public function buildGhostObjectFactory() : LazyLoadingGhostFactory
     {
         return new LazyLoadingGhostFactory(clone $this->getProxyManagerConfiguration());
@@ -593,4 +616,5 @@ class Configuration extends DBALConfiguration
         return $this->proxyManagerConfiguration
             ?? $this->proxyManagerConfiguration = new ProxyManagerConfiguration();
     }
+
 }
