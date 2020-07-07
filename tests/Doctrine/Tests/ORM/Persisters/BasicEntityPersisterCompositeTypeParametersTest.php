@@ -43,7 +43,7 @@ class BasicEntityPersisterCompositeTypeParametersTest extends OrmTestCase
         $country = new Country("IT", "Italy");
         $admin1  = new Admin1(10, "Rome", $country);
 
-        list ($values, $types) = $this->_persister->expandParameters(['admin1' => $admin1]);
+        [$values, $types] = $this->_persister->expandParameters(['admin1' => $admin1]);
 
         $this->assertEquals(['integer', 'string'], $types);
         $this->assertEquals([10, 'IT'], $values);
@@ -57,7 +57,7 @@ class BasicEntityPersisterCompositeTypeParametersTest extends OrmTestCase
         $criteria = Criteria::create();
         $criteria->andWhere(Criteria::expr()->eq("admin1", $admin1));
 
-        list ($values, $types) = $this->_persister->expandCriteriaParameters($criteria);
+        [$values, $types] = $this->_persister->expandCriteriaParameters($criteria);
 
         $this->assertEquals(['integer', 'string'], $types);
         $this->assertEquals([10, 'IT'], $values);

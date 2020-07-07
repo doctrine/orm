@@ -23,6 +23,7 @@ use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Mapping\ClassMetadataInfo;
 use Doctrine\ORM\Mapping\MappingException;
 use Doctrine\ORM\Utility\PersisterHelper;
+use function explode;
 
 /**
  * A ResultSetMappingBuilder uses the EntityManager to automatically populate entity fields.
@@ -393,7 +394,7 @@ class ResultSetMappingBuilder extends ResultSetMapping
                 $relation  = null;
 
                 if (strpos($fieldName, '.') !== false) {
-                    list($relation, $fieldName) = explode('.', $fieldName);
+                    [$relation, $fieldName] = explode('.', $fieldName);
                 }
 
                 if (isset($classMetadata->associationMappings[$relation])) {

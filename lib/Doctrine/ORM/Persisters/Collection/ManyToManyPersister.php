@@ -68,8 +68,8 @@ class ManyToManyPersister extends AbstractCollectionPersister
             return; // ignore inverse side
         }
 
-        list($deleteSql, $deleteTypes) = $this->getDeleteRowSQL($collection);
-        list($insertSql, $insertTypes) = $this->getInsertRowSQL($collection);
+        [$deleteSql, $deleteTypes] = $this->getDeleteRowSQL($collection);
+        [$insertSql, $insertTypes] = $this->getInsertRowSQL($collection);
 
         foreach ($collection->getDeleteDiff() as $element) {
             $this->conn->executeUpdate(
@@ -136,7 +136,7 @@ class ManyToManyPersister extends AbstractCollectionPersister
             $types[]        = PersisterHelper::getTypeOfColumn($referencedName, $sourceClass, $this->em);
         }
 
-        list($joinTargetEntitySQL, $filterSql) = $this->getFilterSql($mapping);
+        [$joinTargetEntitySQL, $filterSql] = $this->getFilterSql($mapping);
 
         if ($filterSql) {
             $conditions[] = $filterSql;
@@ -188,7 +188,11 @@ class ManyToManyPersister extends AbstractCollectionPersister
             throw new \BadMethodCallException("Selecting a collection by index is only supported on indexed collections.");
         }
 
-        list($quotedJoinTable, $whereClauses, $params, $types) = $this->getJoinTableRestrictionsWithKey($collection, $key, true);
+        [$quotedJoinTable, $whereClauses, $params, $types] = $this->getJoinTableRestrictionsWithKey(
+            $collection,
+            $key,
+            true
+        );
 
         $sql = 'SELECT 1 FROM ' . $quotedJoinTable . ' WHERE ' . implode(' AND ', $whereClauses);
 
@@ -204,7 +208,11 @@ class ManyToManyPersister extends AbstractCollectionPersister
             return false;
         }
 
-        list($quotedJoinTable, $whereClauses, $params, $types) = $this->getJoinTableRestrictions($collection, $element, true);
+        [$quotedJoinTable, $whereClauses, $params, $types] = $this->getJoinTableRestrictions(
+            $collection,
+            $element,
+            true
+        );
 
         $sql = 'SELECT 1 FROM ' . $quotedJoinTable . ' WHERE ' . implode(' AND ', $whereClauses);
 
@@ -644,7 +652,7 @@ class ManyToManyPersister extends AbstractCollectionPersister
         }
 
         if ($addFilters) {
-            list($joinTargetEntitySQL, $filterSql) = $this->getFilterSql($filterMapping);
+            [$joinTargetEntitySQL, $filterSql] = $this->getFilterSql($filterMapping);
 
             if ($filterSql) {
                 $quotedJoinTable .= ' ' . $joinTargetEntitySQL;
@@ -712,7 +720,7 @@ class ManyToManyPersister extends AbstractCollectionPersister
         if ($addFilters) {
             $quotedJoinTable .= ' t';
 
-            list($joinTargetEntitySQL, $filterSql) = $this->getFilterSql($filterMapping);
+            [$joinTargetEntitySQL, $filterSql] = $this->getFilterSql($filterMapping);
 
             if ($filterSql) {
                 $quotedJoinTable .= ' ' . $joinTargetEntitySQL;
@@ -743,7 +751,7 @@ class ManyToManyPersister extends AbstractCollectionPersister
 
         $valueVisitor->dispatch($expression);
 
-        list(, $types) = $valueVisitor->getParamsAndTypes();
+        [, $types] = $valueVisitor->getParamsAndTypes();
 
         return $types;
     }
