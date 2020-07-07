@@ -18,7 +18,7 @@ class DDC1884Test extends \Doctrine\Tests\OrmFunctionalTestCase
         parent::setUp();
 
         [$bimmer, $crysler, $merc, $volvo] = $this->createCars(Car::class);
-        [$john, $foo] = $this->createDrivers(Driver::class);
+        [$john, $foo]                      = $this->createDrivers(Driver::class);
         $this->_em->flush();
 
         $ride1 = new Ride($john, $bimmer);

@@ -30,6 +30,7 @@ use InvalidArgumentException;
 use ReflectionClass;
 use ReflectionProperty;
 use RuntimeException;
+use function explode;
 
 /**
  * A <tt>ClassMetadata</tt> instance holds all the object-relational mapping metadata

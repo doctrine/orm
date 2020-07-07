@@ -828,7 +828,7 @@ class BasicEntityPersister implements EntityPersister
     {
         $sql = $this->getCountSQL($criteria);
 
-        [$params, $types] = ($criteria instanceof Criteria)
+        [$params, $types] = $criteria instanceof Criteria
             ? $this->expandCriteriaParameters($criteria)
             : $this->expandParameters($criteria);
 
