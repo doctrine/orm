@@ -639,7 +639,7 @@ class SchemaTool
 
         foreach ($joinColumns as $joinColumn) {
 
-            list($definingClass, $referencedFieldName) = $this->getDefiningClass(
+            [$definingClass, $referencedFieldName] = $this->getDefiningClass(
                 $class,
                 $joinColumn['referencedColumnName']
             );

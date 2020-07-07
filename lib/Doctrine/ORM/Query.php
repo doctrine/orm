@@ -325,7 +325,7 @@ final class Query extends AbstractQuery
             $this->evictEntityCacheRegion();
         }
 
-        list($sqlParams, $types) = $this->processParameterMappings($paramMappings);
+        [$sqlParams, $types] = $this->processParameterMappings($paramMappings);
 
         $this->evictResultSetCache(
             $executor,

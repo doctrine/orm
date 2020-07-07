@@ -969,7 +969,7 @@ abstract class AbstractQuery
         $setCacheEntry = function() {};
 
         if ($this->_hydrationCacheProfile !== null) {
-            list($cacheKey, $realCacheKey) = $this->getHydrationCacheId();
+            [$cacheKey, $realCacheKey] = $this->getHydrationCacheId();
 
             $queryCacheProfile = $this->getHydrationCacheProfile();
             $cache             = $queryCacheProfile->getResultCacheDriver();

@@ -327,7 +327,7 @@ use function trigger_error;
      */
     public function createNamedNativeQuery($name)
     {
-        list($sql, $rsm) = $this->config->getNamedNativeQuery($name);
+        [$sql, $rsm] = $this->config->getNamedNativeQuery($name);
 
         return $this->createNativeQuery($sql, $rsm);
     }

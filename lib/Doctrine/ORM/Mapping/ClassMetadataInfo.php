@@ -2342,7 +2342,7 @@ class ClassMetadataInfo implements ClassMetadata
         if (isset($table['name'])) {
             // Split schema and table name from a table name like "myschema.mytable"
             if (strpos($table['name'], '.') !== false) {
-                list($this->table['schema'], $table['name']) = explode('.', $table['name'], 2);
+                [$this->table['schema'], $table['name']] = explode('.', $table['name'], 2);
             }
 
             if ($table['name'][0] === '`') {
@@ -2568,7 +2568,7 @@ class ClassMetadataInfo implements ClassMetadata
                         if (!isset($field['column'])) {
                             $fieldName = $field['name'];
                             if (strpos($fieldName, '.')) {
-                                list(, $fieldName) = explode('.', $fieldName);
+                                [, $fieldName] = explode('.', $fieldName);
                             }
 
                             $resultMapping['entities'][$key]['fields'][$k]['column'] = $fieldName;

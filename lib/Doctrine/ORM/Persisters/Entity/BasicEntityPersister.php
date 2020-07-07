@@ -722,7 +722,7 @@ class BasicEntityPersister implements EntityPersister
         $this->switchPersisterContext(null, $limit);
 
         $sql = $this->getSelectSQL($criteria, $assoc, $lockMode, $limit, null, $orderBy);
-        list($params, $types) = $this->expandParameters($criteria);
+        [$params, $types] = $this->expandParameters($criteria);
         $stmt = $this->conn->executeQuery($sql, $params, $types);
 
         if ($entity !== null) {
@@ -814,7 +814,7 @@ class BasicEntityPersister implements EntityPersister
     public function refresh(array $id, $entity, $lockMode = null)
     {
         $sql = $this->getSelectSQL($id, null, $lockMode);
-        list($params, $types) = $this->expandParameters($id);
+        [$params, $types] = $this->expandParameters($id);
         $stmt = $this->conn->executeQuery($sql, $params, $types);
 
         $hydrator = $this->em->newHydrator(Query::HYDRATE_OBJECT);
@@ -828,7 +828,7 @@ class BasicEntityPersister implements EntityPersister
     {
         $sql = $this->getCountSQL($criteria);
 
-        list($params, $types) = ($criteria instanceof Criteria)
+        [$params, $types] = ($criteria instanceof Criteria)
             ? $this->expandCriteriaParameters($criteria)
             : $this->expandParameters($criteria);
 
@@ -845,7 +845,7 @@ class BasicEntityPersister implements EntityPersister
         $offset  = $criteria->getFirstResult();
         $query   = $this->getSelectSQL($criteria, null, null, $limit, $offset, $orderBy);
 
-        list($params, $types) = $this->expandCriteriaParameters($criteria);
+        [$params, $types] = $this->expandCriteriaParameters($criteria);
 
         $stmt       = $this->conn->executeQuery($query, $params, $types);
         $hydrator   = $this->em->newHydrator(($this->currentPersisterContext->selectJoinSql) ? Query::HYDRATE_OBJECT : Query::HYDRATE_SIMPLEOBJECT);
@@ -871,14 +871,14 @@ class BasicEntityPersister implements EntityPersister
 
         $valueVisitor->dispatch($expression);
 
-        list($params, $types) = $valueVisitor->getParamsAndTypes();
+        [$params, $types] = $valueVisitor->getParamsAndTypes();
 
         foreach ($params as $param) {
             $sqlParams = array_merge($sqlParams, $this->getValues($param));
         }
 
         foreach ($types as $type) {
-            list ($field, $value) = $type;
+            [$field, $value] = $type;
             $sqlTypes = array_merge($sqlTypes, $this->getTypes($field, $value, $this->class));
         }
 
@@ -893,7 +893,7 @@ class BasicEntityPersister implements EntityPersister
         $this->switchPersisterContext($offset, $limit);
 
         $sql = $this->getSelectSQL($criteria, null, null, $limit, $offset, $orderBy);
-        list($params, $types) = $this->expandParameters($criteria);
+        [$params, $types] = $this->expandParameters($criteria);
         $stmt = $this->conn->executeQuery($sql, $params, $types);
 
         $hydrator = $this->em->newHydrator(($this->currentPersisterContext->selectJoinSql) ? Query::HYDRATE_OBJECT : Query::HYDRATE_SIMPLEOBJECT);
@@ -1038,7 +1038,7 @@ class BasicEntityPersister implements EntityPersister
         }
 
         $sql = $this->getSelectSQL($criteria, $assoc, null, $limit, $offset);
-        list($params, $types) = $this->expandToManyParameters($parameters);
+        [$params, $types] = $this->expandToManyParameters($parameters);
 
         return $this->conn->executeQuery($sql, $params, $types);
     }
@@ -1546,7 +1546,7 @@ class BasicEntityPersister implements EntityPersister
              . $where
              . $lockSql;
 
-        list($params, $types) = $this->expandParameters($criteria);
+        [$params, $types] = $this->expandParameters($criteria);
 
         $this->conn->executeQuery($sql, $params, $types);
     }
@@ -1825,7 +1825,7 @@ class BasicEntityPersister implements EntityPersister
         }
 
         $sql                  = $this->getSelectSQL($criteria, $assoc, null, $limit, $offset);
-        list($params, $types) = $this->expandToManyParameters($parameters);
+        [$params, $types] = $this->expandToManyParameters($parameters);
 
         return $this->conn->executeQuery($sql, $params, $types);
     }
@@ -2004,11 +2004,11 @@ class BasicEntityPersister implements EntityPersister
              . $this->getLockTablesSql(null)
              . ' WHERE ' . $this->getSelectConditionSQL($criteria);
 
-        list($params, $types) = $this->expandParameters($criteria);
+        [$params, $types] = $this->expandParameters($criteria);
 
         if (null !== $extraConditions) {
             $sql                                 .= ' AND ' . $this->getSelectConditionCriteriaSQL($extraConditions);
-            list($criteriaParams, $criteriaTypes) = $this->expandCriteriaParameters($extraConditions);
+            [$criteriaParams, $criteriaTypes] = $this->expandCriteriaParameters($extraConditions);
 
             $params = array_merge($params, $criteriaParams);
             $types  = array_merge($types, $criteriaTypes);

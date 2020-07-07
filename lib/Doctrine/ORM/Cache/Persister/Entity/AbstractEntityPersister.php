@@ -293,7 +293,7 @@ abstract class AbstractEntityPersister implements CachedEntityPersister
      */
     protected function getHash($query, $criteria, array $orderBy = null, $limit = null, $offset = null)
     {
-        list($params) = ($criteria instanceof Criteria)
+        [$params] = ($criteria instanceof Criteria)
             ? $this->persister->expandCriteriaParameters($criteria)
             : $this->persister->expandParameters($criteria);
 
