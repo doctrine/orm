@@ -1012,4 +1012,24 @@ class Configuration extends \Doctrine\DBAL\Configuration
     {
         $this->_attributes['defaultQueryHints'][$name] = $value;
     }
+
+    /**
+     * Gets a list of entity class names to be ignored by the SchemaTool
+     *
+     * @return list<class-string>
+     */
+    public function getSchemaIgnoreClasses(): array
+    {
+        return $this->_attributes['schemaIgnoreClasses'] ?? [];
+    }
+
+    /**
+     * Sets a list of entity class names to be ignored by the SchemaTool
+     *
+     * @param list<class-string> $schemaIgnoreClasses List of entity class names
+     */
+    public function setSchemaIgnoreClasses(array $schemaIgnoreClasses): void
+    {
+        $this->_attributes['schemaIgnoreClasses'] = $schemaIgnoreClasses;
+    }
 }

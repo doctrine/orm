@@ -440,6 +440,19 @@ That will be available for all entities without a custom repository class.
 The default value is ``Doctrine\ORM\EntityRepository``.
 Any repository class must be a subclass of EntityRepository otherwise you got an ORMException
 
+Ignoring entities (***OPTIONAL***)
+-----------------------------------
+
+Specifies the Entity FQCNs to ignore.
+SchemaTool will then skip these (e.g. when comparing schemas).
+
+.. code-block:: php
+
+    <?php
+    $config->setSchemaIgnoreClasses([$fqcn]);
+    $config->getSchemaIgnoreClasses();
+
+
 Setting up the Console
 ----------------------
 
