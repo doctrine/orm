@@ -301,11 +301,11 @@ class SQLFilterTest extends OrmFunctionalTestCase
         $filter = new MySoftDeleteFilter($this->getMockEntityManager());
 
         // Test for an entity that gets extra filter data
-        $targetEntity->name = 'MyEntity\SoftDeleteNewsItem';
+        $targetEntity->method('getName')
+                     ->willReturn('MyEntity\SoftDeleteNewsItem', 'MyEntity\NoSoftDeleteNewsItem');
         $this->assertEquals('t1_.deleted = 0', $filter->addFilterConstraint($targetEntity, 't1_'));
 
         // Test for an entity that doesn't get extra filter data
-        $targetEntity->name = 'MyEntity\NoSoftDeleteNewsItem';
         $this->assertEquals('', $filter->addFilterConstraint($targetEntity, 't1_'));
 
     }
