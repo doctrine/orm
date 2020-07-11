@@ -338,11 +338,11 @@ abstract class AbstractQuery
     /**
      * Sets a collection of query parameters.
      *
-     * @param ArrayCollection|Parameter[] $parameters
+     * @param ArrayCollection|mixed[] $parameters
      *
      * @return static This query instance.
      *
-     * @psalm-param ArrayCollection<int, Parameter>|Parameter[] $parameters
+     * @psalm-param ArrayCollection<int, Parameter>|mixed[] $parameters
      */
     public function setParameters($parameters)
     {
