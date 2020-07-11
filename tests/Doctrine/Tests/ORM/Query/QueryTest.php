@@ -14,6 +14,7 @@ use Doctrine\Tests\Mocks\DriverConnectionMock;
 use Doctrine\Tests\Mocks\EntityManagerMock;
 use Doctrine\Tests\Mocks\StatementArrayMock;
 use Doctrine\Tests\Models\CMS\CmsAddress;
+use Doctrine\Tests\Models\CMS\CmsGroup;
 use Doctrine\Tests\Models\CMS\CmsUser;
 use Doctrine\Tests\Models\Generic\DateTimeModel;
 use Doctrine\Tests\OrmTestCase;
@@ -207,6 +208,15 @@ class QueryTest extends OrmTestCase
             ],
             $query->processParameterValue($cities)
         );
+    }
+
+    public function testProcessParameterValueWithIterableEntityShouldNotBeTreatedAsIterable() : void
+    {
+        $group     = new CmsGroup();
+        $group->id = 1;
+
+        $query = $this->_em->createQuery('SELECT u FROM Doctrine\Tests\Models\CMS\CmsUser u WHERE u.group IN (:group)');
+        self::assertEquals(1, $query->processParameterValue($group));
     }
 
     /**

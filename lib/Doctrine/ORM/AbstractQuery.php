@@ -19,6 +19,7 @@
 
 namespace Doctrine\ORM;
 
+use Doctrine\Common\Collections\Collection;
 use Doctrine\Common\Util\ClassUtils;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\DBAL\Cache\QueryCacheProfile;
@@ -27,7 +28,9 @@ use Doctrine\ORM\Query\Parameter;
 use Doctrine\ORM\Cache\QueryCacheKey;
 use Doctrine\Persistence\Mapping\MappingException;
 use Traversable;
+use function is_array;
 use function iterator_to_array;
+use function reset;
 
 /**
  * Base contract for ORM queries. Base class for Query and NativeQuery.
@@ -399,15 +402,12 @@ abstract class AbstractQuery
             return $value;
         }
 
-        if ($value instanceof Traversable) {
+        if ($value instanceof Collection) {
             $value = iterator_to_array($value);
         }
 
         if (is_array($value)) {
-            foreach ($value as $key => $paramValue) {
-                $paramValue  = $this->processParameterValue($paramValue);
-                $value[$key] = is_array($paramValue) ? reset($paramValue) : $paramValue;
-            }
+            $value = $this->processArrayParameterValue($value);
 
             return $value;
         }
@@ -430,6 +430,29 @@ abstract class AbstractQuery
             // Silence any mapping exceptions. These can occur if the object in
             // question is not a mapped entity, in which case we just don't do
             // any preparation on the value.
+
+            // If no mapping is detected, trying to resolve the value as a Traversable
+            if ($value instanceof Traversable) {
+                $value = iterator_to_array($value);
+                $value = $this->processArrayParameterValue($value);
+            }
+        }
+
+        return $value;
+    }
+
+    /**
+     * Process a parameter value which was previously identified as an array
+     *
+     * @param mixed[] $value
+     *
+     * @return mixed[]
+     */
+    private function processArrayParameterValue(array $value) : array
+    {
+        foreach ($value as $key => $paramValue) {
+            $paramValue  = $this->processParameterValue($paramValue);
+            $value[$key] = is_array($paramValue) ? reset($paramValue) : $paramValue;
         }
 
         return $value;
