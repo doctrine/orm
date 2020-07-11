@@ -26,6 +26,8 @@ use Doctrine\ORM\Mapping\Builder\EntityListenerBuilder;
 use Doctrine\ORM\Mapping\MappingException;
 use Doctrine\Persistence\Mapping\ClassMetadata;
 use Doctrine\Persistence\Mapping\Driver\AnnotationDriver as AbstractAnnotationDriver;
+use ReflectionClass;
+
 use function interface_exists;
 
 /**
@@ -58,7 +60,7 @@ class AnnotationDriver extends AbstractAnnotationDriver
         if ( ! $class) {
             // this happens when running annotation driver in combination with
             // static reflection services. This is not the nicest fix
-            $class = new \ReflectionClass($metadata->getName());
+            $class = new ReflectionClass($metadata->getName());
         }
 
         $classAnnotations = $this->reader->getClassAnnotations($class);
@@ -503,7 +505,7 @@ class AnnotationDriver extends AbstractAnnotationDriver
                 }
 
                 $hasMapping     = false;
-                $listenerClass  = new \ReflectionClass($listenerClassName);
+                $listenerClass  = new ReflectionClass($listenerClassName);
 
                 /* @var $method \ReflectionMethod */
                 foreach ($listenerClass->getMethods(\ReflectionMethod::IS_PUBLIC) as $method) {

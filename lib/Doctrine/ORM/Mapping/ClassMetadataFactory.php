@@ -34,6 +34,7 @@ use Doctrine\Persistence\Mapping\ReflectionService;
 use ReflectionClass;
 use ReflectionException;
 use function assert;
+use function count;
 use function interface_exists;
 
 /**
@@ -285,7 +286,7 @@ class ClassMetadataFactory extends AbstractClassMetadataFactory
                     }
                 }
             }
-        } else if ($class->isMappedSuperclass && $class->getName() == $class->rootEntityName && (count($class->discriminatorMap) || $class->discriminatorColumn)) {
+        } elseif ($class->isMappedSuperclass && $class->getName() === $class->rootEntityName && (count($class->discriminatorMap) || $class->discriminatorColumn)) {
             // second condition is necessary for mapped superclasses in the middle of an inheritance hierarchy
             throw MappingException::noInheritanceOnMappedSuperClass($class->getName());
         }
@@ -358,8 +359,8 @@ class ClassMetadataFactory extends AbstractClassMetadataFactory
     private function addDefaultDiscriminatorMap(ClassMetadata $class)
     {
         $allClasses = $this->driver->getAllClassNames();
-        $fqcn = $class->getName();
-        $map = [$this->getShortName($class->getName()) => $fqcn];
+        $fqcn       = $class->getName();
+        $map        = [$this->getShortName($class->getName()) => $fqcn];
 
         $duplicates = [];
         foreach ($allClasses as $subClassCandidate) {

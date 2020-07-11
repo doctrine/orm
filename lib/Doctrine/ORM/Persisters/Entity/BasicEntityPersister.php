@@ -791,7 +791,8 @@ class BasicEntityPersister implements EntityPersister
         foreach ($owningAssoc['targetToSourceKeyColumns'] as $sourceKeyColumn => $targetKeyColumn) {
             if ( ! isset($sourceClass->fieldNames[$sourceKeyColumn])) {
                 throw MappingException::joinColumnMustPointToMappedField(
-                    $sourceClass->getName(), $sourceKeyColumn
+                    $sourceClass->getName(),
+                    $sourceKeyColumn
                 );
             }
 
@@ -1025,7 +1026,8 @@ class BasicEntityPersister implements EntityPersister
 
                 default:
                     throw MappingException::joinColumnMustPointToMappedField(
-                        $sourceClass->getName(), $sourceKeyColumn
+                        $sourceClass->getName(),
+                        $sourceKeyColumn
                     );
             }
 

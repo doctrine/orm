@@ -31,6 +31,7 @@ use Doctrine\Common\Util\ClassUtils;
 use Doctrine\Persistence\Mapping\MappingException;
 use Doctrine\Persistence\ObjectRepository;
 use Throwable;
+use function array_keys;
 use const E_USER_DEPRECATED;
 use function trigger_error;
 

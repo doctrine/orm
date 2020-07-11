@@ -24,6 +24,8 @@ use Doctrine\DBAL\Types\Type;
 use Doctrine\ORM\PersistentCollection;
 use Doctrine\ORM\Utility\PersisterHelper;
 
+use function array_merge;
+
 /**
  * Persister for one-to-many collections.
  *
