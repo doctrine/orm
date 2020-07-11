@@ -81,7 +81,7 @@ class MultiTableDeleteExecutor extends AbstractSqlExecutor
         $this->_insertSql = 'INSERT INTO ' . $tempTable . ' (' . $idColumnList . ')'
                 . ' SELECT t0.' . implode(', t0.', $idColumnNames);
 
-        $rangeDecl = new AST\RangeVariableDeclaration($primaryClass->name, $primaryDqlAlias);
+        $rangeDecl = new AST\RangeVariableDeclaration($primaryClass->getName(), $primaryDqlAlias);
         $fromClause = new AST\FromClause([new AST\IdentificationVariableDeclaration($rangeDecl, null, [])]);
         $this->_insertSql .= $sqlWalker->walkFromClause($fromClause);
 
@@ -94,7 +94,7 @@ class MultiTableDeleteExecutor extends AbstractSqlExecutor
         $idSubselect = 'SELECT ' . $idColumnList . ' FROM ' . $tempTable;
 
         // 3. Create and store DELETE statements
-        $classNames = array_merge($primaryClass->parentClasses, [$primaryClass->name], $primaryClass->subClasses);
+        $classNames = array_merge($primaryClass->parentClasses, [$primaryClass->getName()], $primaryClass->subClasses);
         foreach (array_reverse($classNames) as $className) {
             $tableName = $quoteStrategy->getTableName($em->getClassMetadata($className), $platform);
             $this->_sqlStatements[] = 'DELETE FROM ' . $tableName

@@ -148,7 +148,7 @@ class DefaultEntityHydrator implements EntityHydrator
             $data[$name] = new AssociationCacheEntry($assoc['targetEntity'], $targetId);
         }
 
-        return new EntityCacheEntry($metadata->name, $data);
+        return new EntityCacheEntry($metadata->getName(), $data);
     }
 
     /**

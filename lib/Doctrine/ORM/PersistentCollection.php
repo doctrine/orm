@@ -424,7 +424,7 @@ final class PersistentCollection extends AbstractLazyCollection implements Selec
             && isset($this->association['indexBy'])
         ) {
             if (!$this->typeClass->isIdentifierComposite && $this->typeClass->isIdentifier($this->association['indexBy'])) {
-                return $this->em->find($this->typeClass->name, $key);
+                return $this->em->find($this->typeClass->getName(), $key);
             }
 
             return $this->em->getUnitOfWork()->getCollectionPersister($this->association)->get($this, $key);

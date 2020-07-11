@@ -58,7 +58,7 @@ class AnnotationDriver extends AbstractAnnotationDriver
         if ( ! $class) {
             // this happens when running annotation driver in combination with
             // static reflection services. This is not the nicest fix
-            $class = new \ReflectionClass($metadata->name);
+            $class = new \ReflectionClass($metadata->getName());
         }
 
         $classAnnotations = $this->reader->getClassAnnotations($class);

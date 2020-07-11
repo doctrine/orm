@@ -95,7 +95,7 @@ class GenerateProxiesCommand extends Command
         }
 
         foreach ($metadatas as $metadata) {
-            $ui->text(sprintf('Processing entity "<info>%s</info>"', $metadata->name));
+            $ui->text(sprintf('Processing entity "<info>%s</info>"', $metadata->getName()));
         }
 
         // Generating Proxies

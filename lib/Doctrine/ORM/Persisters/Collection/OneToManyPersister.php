@@ -241,7 +241,7 @@ class OneToManyPersister extends AbstractCollectionPersister
         // 2) Build insert table records into temporary table
         $query = $this->em->createQuery(
             ' SELECT t0.' . implode(', t0.', $rootClass->getIdentifierFieldNames())
-            . ' FROM ' . $targetClass->name . ' t0 WHERE t0.' . $mapping['mappedBy'] . ' = :owner'
+            . ' FROM ' . $targetClass->getName() . ' t0 WHERE t0.' . $mapping['mappedBy'] . ' = :owner'
         )->setParameter('owner', $collection->getOwner());
 
         $statement  = 'INSERT INTO ' . $tempTable . ' (' . $idColumnList . ') ' . $query->getSQL();
@@ -249,7 +249,7 @@ class OneToManyPersister extends AbstractCollectionPersister
         $numDeleted = $this->conn->executeUpdate($statement, $parameters);
 
         // 3) Delete records on each table in the hierarchy
-        $classNames = array_merge($targetClass->parentClasses, [$targetClass->name], $targetClass->subClasses);
+        $classNames = array_merge($targetClass->parentClasses, [$targetClass->getName()], $targetClass->subClasses);
 
         foreach (array_reverse($classNames) as $className) {
             $tableName = $this->quoteStrategy->getTableName($this->em->getClassMetadata($className), $this->platform);

@@ -67,14 +67,14 @@ class AttachEntityListenersListener
         /** @var ClassMetadata $metadata */
         $metadata = $event->getClassMetadata();
 
-        if ( ! isset($this->entityListeners[$metadata->name])) {
+        if ( ! isset($this->entityListeners[$metadata->getName()])) {
             return;
         }
 
-        foreach ($this->entityListeners[$metadata->name] as $listener) {
+        foreach ($this->entityListeners[$metadata->getName()] as $listener) {
             $metadata->addEntityListener($listener['event'], $listener['class'], $listener['method']);
         }
 
-        unset($this->entityListeners[$metadata->name]);
+        unset($this->entityListeners[$metadata->getName()]);
     }
 }

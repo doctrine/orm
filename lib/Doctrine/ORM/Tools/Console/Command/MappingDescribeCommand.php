@@ -90,7 +90,7 @@ EOT
             ['Field', 'Value'],
             array_merge(
                 [
-                    $this->formatField('Name', $metadata->name),
+                    $this->formatField('Name', $metadata->getName()),
                     $this->formatField('Root entity name', $metadata->rootEntityName),
                     $this->formatField('Custom generator definition', $metadata->customGeneratorDefinition),
                     $this->formatField('Custom repository class', $metadata->customRepositoryClassName),

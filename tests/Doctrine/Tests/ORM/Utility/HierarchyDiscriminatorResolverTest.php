@@ -17,15 +17,15 @@ class HierarchyDiscriminatorResolverTest extends TestCase
         $childClassMetadata->discriminatorValue = 'child-discriminator';
         
         $classMetadata = new ClassMetadata('Entity');
-        $classMetadata->subClasses = [$childClassMetadata->name];
+        $classMetadata->subClasses = [$childClassMetadata->getName()];
         $classMetadata->name = 'Some\Class\Name';
         $classMetadata->discriminatorValue = 'discriminator';
 
         $em = $this->prophesize(EntityManagerInterface::class);
-        $em->getClassMetadata($classMetadata->name)
+        $em->getClassMetadata($classMetadata->getName())
             ->shouldBeCalled()
             ->willReturn($classMetadata);
-        $em->getClassMetadata($childClassMetadata->name)
+        $em->getClassMetadata($childClassMetadata->getName())
             ->shouldBeCalled()
             ->willReturn($childClassMetadata);
 
@@ -44,7 +44,7 @@ class HierarchyDiscriminatorResolverTest extends TestCase
         $classMetadata->discriminatorValue = 'discriminator';
 
         $em = $this->prophesize(EntityManagerInterface::class);
-        $em->getClassMetadata($classMetadata->name)
+        $em->getClassMetadata($classMetadata->getName())
             ->shouldBeCalled()
             ->willReturn($classMetadata);
 

@@ -165,7 +165,7 @@ abstract class AbstractExporter
      */
     protected function _generateOutputPath(ClassMetadataInfo $metadata)
     {
-        return $this->_outputDir . '/' . str_replace('\\', '.', $metadata->name) . $this->_extension;
+        return $this->_outputDir . '/' . str_replace('\\', '.', $metadata->getName()) . $this->_extension;
     }
 
     /**

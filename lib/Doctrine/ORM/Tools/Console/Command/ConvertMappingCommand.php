@@ -153,7 +153,7 @@ EOT
         }
 
         foreach ($metadata as $class) {
-            $ui->text(sprintf('Processing entity "<info>%s</info>"', $class->name));
+            $ui->text(sprintf('Processing entity "<info>%s</info>"', $class->getName()));
         }
 
         $exporter->setMetadata($metadata);

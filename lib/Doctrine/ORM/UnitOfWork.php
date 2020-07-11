@@ -1061,7 +1061,7 @@ class UnitOfWork implements PropertyChangedListener
     private function executeInserts($class)
     {
         $entities   = [];
-        $className  = $class->name;
+        $className  = $class->getName();
         $persister  = $this->getEntityPersister($className);
         $invoke     = $this->listenersInvoker->getSubscribedSystems($class, Events::postPersist);
 
@@ -1069,7 +1069,7 @@ class UnitOfWork implements PropertyChangedListener
 
         foreach ($this->entityInsertions as $oid => $entity) {
 
-            if ($this->em->getClassMetadata(get_class($entity))->name !== $className) {
+            if ($this->em->getClassMetadata(get_class($entity))->getName() !== $className) {
                 continue;
             }
 
@@ -1151,13 +1151,13 @@ class UnitOfWork implements PropertyChangedListener
      */
     private function executeUpdates($class)
     {
-        $className          = $class->name;
+        $className          = $class->getName();
         $persister          = $this->getEntityPersister($className);
         $preUpdateInvoke    = $this->listenersInvoker->getSubscribedSystems($class, Events::preUpdate);
         $postUpdateInvoke   = $this->listenersInvoker->getSubscribedSystems($class, Events::postUpdate);
 
         foreach ($this->entityUpdates as $oid => $entity) {
-            if ($this->em->getClassMetadata(get_class($entity))->name !== $className) {
+            if ($this->em->getClassMetadata(get_class($entity))->getName() !== $className) {
                 continue;
             }
 
@@ -1188,12 +1188,12 @@ class UnitOfWork implements PropertyChangedListener
      */
     private function executeDeletions($class)
     {
-        $className  = $class->name;
+        $className  = $class->getName();
         $persister  = $this->getEntityPersister($className);
         $invoke     = $this->listenersInvoker->getSubscribedSystems($class, Events::postRemove);
 
         foreach ($this->entityDeletions as $oid => $entity) {
-            if ($this->em->getClassMetadata(get_class($entity))->name !== $className) {
+            if ($this->em->getClassMetadata(get_class($entity))->getName() !== $className) {
                 continue;
             }
 
@@ -1244,11 +1244,11 @@ class UnitOfWork implements PropertyChangedListener
         foreach ($entityChangeSet as $entity) {
             $class = $this->em->getClassMetadata(get_class($entity));
 
-            if ($calc->hasNode($class->name)) {
+            if ($calc->hasNode($class->getName())) {
                 continue;
             }
 
-            $calc->addNode($class->name, $class);
+            $calc->addNode($class->getName(), $class);
 
             $newNodes[] = $class;
         }
@@ -1262,15 +1262,15 @@ class UnitOfWork implements PropertyChangedListener
 
                 $targetClass = $this->em->getClassMetadata($assoc['targetEntity']);
 
-                if ( ! $calc->hasNode($targetClass->name)) {
-                    $calc->addNode($targetClass->name, $targetClass);
+                if ( ! $calc->hasNode($targetClass->getName())) {
+                    $calc->addNode($targetClass->getName(), $targetClass);
 
                     $newNodes[] = $targetClass;
                 }
 
                 $joinColumns = reset($assoc['joinColumns']);
 
-                $calc->addDependency($targetClass->name, $class->name, (int)empty($joinColumns['nullable']));
+                $calc->addDependency($targetClass->getName(), $class->name, (int)empty($joinColumns['nullable']));
 
                 // If the target class has mapped subclasses, these share the same dependency.
                 if ( ! $targetClass->subClasses) {
@@ -1281,12 +1281,12 @@ class UnitOfWork implements PropertyChangedListener
                     $targetSubClass = $this->em->getClassMetadata($subClassName);
 
                     if ( ! $calc->hasNode($subClassName)) {
-                        $calc->addNode($targetSubClass->name, $targetSubClass);
+                        $calc->addNode($targetSubClass->getName(), $targetSubClass);
 
                         $newNodes[] = $targetSubClass;
                     }
 
-                    $calc->addDependency($targetSubClass->name, $class->name, 1);
+                    $calc->addDependency($targetSubClass->getName(), $class->name, 1);
                 }
             }
         }
@@ -1515,7 +1515,7 @@ class UnitOfWork implements PropertyChangedListener
         $identifier    = $this->entityIdentifiers[spl_object_hash($entity)];
 
         if (empty($identifier) || in_array(null, $identifier, true)) {
-            throw ORMInvalidArgumentException::entityWithoutIdentity($classMetadata->name, $entity);
+            throw ORMInvalidArgumentException::entityWithoutIdentity($classMetadata->getName(), $entity);
         }
 
         $idHash    = implode(' ', $identifier);
@@ -1583,7 +1583,7 @@ class UnitOfWork implements PropertyChangedListener
                 }
 
                 // db lookup
-                if ($this->getEntityPersister($class->name)->exists($entity)) {
+                if ($this->getEntityPersister($class->getName())->exists($entity)) {
                     return self::STATE_DETACHED;
                 }
 
@@ -1600,7 +1600,7 @@ class UnitOfWork implements PropertyChangedListener
                 }
 
                 // db lookup
-                if ($this->getEntityPersister($class->name)->exists($entity)) {
+                if ($this->getEntityPersister($class->getName())->exists($entity)) {
                     return self::STATE_DETACHED;
                 }
 
@@ -1948,7 +1948,7 @@ class UnitOfWork implements PropertyChangedListener
                     }
                 } else {
                     // We need to fetch the managed copy in order to merge.
-                    $managedCopy = $this->em->find($class->name, $flatId);
+                    $managedCopy = $this->em->find($class->getName(), $flatId);
                 }
 
                 if ($managedCopy === null) {
@@ -2165,7 +2165,7 @@ class UnitOfWork implements PropertyChangedListener
             throw ORMInvalidArgumentException::entityNotManaged($entity);
         }
 
-        $this->getEntityPersister($class->name)->refresh(
+        $this->getEntityPersister($class->getName())->refresh(
             array_combine($class->getIdentifierFieldNames(), $this->entityIdentifiers[$oid]),
             $entity
         );
@@ -2436,7 +2436,7 @@ class UnitOfWork implements PropertyChangedListener
         switch (true) {
             case LockMode::OPTIMISTIC === $lockMode:
                 if ( ! $class->isVersioned) {
-                    throw OptimisticLockException::notVersioned($class->name);
+                    throw OptimisticLockException::notVersioned($class->getName());
                 }
 
                 if ($lockVersion === null) {
@@ -2464,7 +2464,7 @@ class UnitOfWork implements PropertyChangedListener
 
                 $oid = spl_object_hash($entity);
 
-                $this->getEntityPersister($class->name)->lock(
+                $this->getEntityPersister($class->getName())->lock(
                     array_combine($class->getIdentifierFieldNames(), $this->entityIdentifiers[$oid]),
                     $lockMode
                 );
@@ -2764,8 +2764,8 @@ class UnitOfWork implements PropertyChangedListener
                         break;
                     }
 
-                    if ( ! isset($hints['fetchMode'][$class->name][$field])) {
-                        $hints['fetchMode'][$class->name][$field] = $assoc['fetch'];
+                    if ( ! isset($hints['fetchMode'][$class->getName()][$field])) {
+                        $hints['fetchMode'][$class->getName()][$field] = $assoc['fetch'];
                     }
 
                     // Foreign key is set
@@ -2781,7 +2781,7 @@ class UnitOfWork implements PropertyChangedListener
                             // If this is an uninitialized proxy, we are deferring eager loads,
                             // this association is marked as eager fetch, and its an uninitialized proxy (wtf!)
                             // then we can append this entity for eager loading!
-                            if ($hints['fetchMode'][$class->name][$field] == ClassMetadata::FETCH_EAGER &&
+                            if ($hints['fetchMode'][$class->getName()][$field] == ClassMetadata::FETCH_EAGER &&
                                 isset($hints[self::HINT_DEFEREAGERLOAD]) &&
                                 !$targetClass->isIdentifierComposite &&
                                 $newValue instanceof Proxy &&
@@ -2802,7 +2802,7 @@ class UnitOfWork implements PropertyChangedListener
                         default:
                             switch (true) {
                                 // We are negating the condition here. Other cases will assume it is valid!
-                                case ($hints['fetchMode'][$class->name][$field] !== ClassMetadata::FETCH_EAGER):
+                                case ($hints['fetchMode'][$class->getName()][$field] !== ClassMetadata::FETCH_EAGER):
                                     $newValue = $this->em->getProxyFactory()->getProxy($assoc['targetEntity'], $associatedId);
                                     break;
 
@@ -3482,7 +3482,7 @@ class UnitOfWork implements PropertyChangedListener
 
         $class = $this->em->getClassMetadata(get_class($entity));
 
-        foreach ($this->reflectionPropertiesGetter->getProperties($class->name) as $prop) {
+        foreach ($this->reflectionPropertiesGetter->getProperties($class->getName()) as $prop) {
             $name = $prop->name;
 
             $prop->setAccessible(true);
@@ -3510,7 +3510,7 @@ class UnitOfWork implements PropertyChangedListener
                                 $relatedId   = $targetClass->getIdentifierValues($other);
 
                                 if ($targetClass->subClasses) {
-                                    $other = $this->em->find($targetClass->name, $relatedId);
+                                    $other = $this->em->find($targetClass->getName(), $relatedId);
                                 } else {
                                     $other = $this->em->getProxyFactory()->getProxy(
                                         $assoc2['targetEntity'],

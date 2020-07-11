@@ -79,7 +79,7 @@ class SimpleObjectHydrator extends AbstractHydrator
      */
     protected function hydrateRowData(array $sqlResult, array &$result)
     {
-        $entityName       = $this->class->name;
+        $entityName       = $this->class->getName();
         $data             = [];
         $discrColumnValue = null;
 

@@ -127,10 +127,10 @@ class SchemaTool
     private function processingNotRequired($class, array $processedClasses)
     {
         return (
-            isset($processedClasses[$class->name]) ||
+            isset($processedClasses[$class->getName()]) ||
             $class->isMappedSuperclass ||
             $class->isEmbeddedClass ||
-            ($class->isInheritanceTypeSingleTable() && $class->name != $class->rootEntityName)
+            ($class->isInheritanceTypeSingleTable() && $class->getName() != $class->rootEntityName)
         );
     }
 
@@ -195,7 +195,7 @@ class SchemaTool
                 $this->gatherRelationsSql($class, $table, $schema, $addedFks, $blacklistedFks);
 
                 // Add the discriminator column only to the root table
-                if ($class->name == $class->rootEntityName) {
+                if ($class->getName() == $class->rootEntityName) {
                     $this->addDiscriminatorColumnDefinition($class, $table);
                 } else {
                     // Add an ID FK column to child tables
@@ -227,7 +227,7 @@ class SchemaTool
                                 array_filter(
                                     $classes,
                                     function (ClassMetadata $class) use ($idMapping) : bool {
-                                        return $class->name === $idMapping['targetEntity'];
+                                        return $class->getName() === $idMapping['targetEntity'];
                                     }
                                 )
                             );
@@ -332,9 +332,9 @@ class SchemaTool
                 }
             }
 
-            $processedClasses[$class->name] = true;
+            $processedClasses[$class->getName()] = true;
 
-            if ($class->isIdGeneratorSequence() && $class->name == $class->rootEntityName) {
+            if ($class->isIdGeneratorSequence() && $class->getName() == $class->rootEntityName) {
                 $seqDef     = $class->sequenceGeneratorDefinition;
                 $quotedName = $this->quoteStrategy->getSequenceName($seqDef, $class, $this->platform);
                 if ( ! $schema->hasSequence($quotedName)) {
@@ -476,7 +476,7 @@ class SchemaTool
         if ($class->isIdGeneratorIdentity() && $class->getIdentifierFieldNames() == [$mapping['fieldName']]) {
             $options['autoincrement'] = true;
         }
-        if ($class->isInheritanceTypeJoined() && $class->name !== $class->rootEntityName) {
+        if ($class->isInheritanceTypeJoined() && $class->getName() !== $class->rootEntityName) {
             $options['autoincrement'] = false;
         }
 

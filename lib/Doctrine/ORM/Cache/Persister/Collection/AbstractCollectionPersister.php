@@ -186,7 +186,7 @@ abstract class AbstractCollectionPersister implements CachedCollectionPersister
             $class      = $this->targetEntity;
             $className  = ClassUtils::getClass($elements[$index]);
 
-            if ($className !== $this->targetEntity->name) {
+            if ($className !== $this->targetEntity->getName()) {
                 $class = $this->metadataFactory->getMetadataFor($className);
             }
 

@@ -28,7 +28,7 @@ final class HierarchyDiscriminatorResolver
         EntityManagerInterface $entityManager
     ): array {
         $hierarchyClasses = $rootClassMetadata->subClasses;
-        $hierarchyClasses[] = $rootClassMetadata->name;
+        $hierarchyClasses[] = $rootClassMetadata->getName();
 
         $discriminators = [];
 

@@ -65,11 +65,11 @@ abstract class AbstractEntityInheritancePersister extends BasicEntityPersister
         $columnAlias  = $this->getSQLColumnAlias($fieldMapping['columnName']);
         $sql          = sprintf(
             '%s.%s',
-            $this->getSQLTableAlias($class->name, $tableAlias),
+            $this->getSQLTableAlias($class->getName(), $tableAlias),
             $this->quoteStrategy->getColumnName($field, $class, $this->platform)
         );
 
-        $this->currentPersisterContext->rsm->addFieldResult($alias, $columnAlias, $field, $class->name);
+        $this->currentPersisterContext->rsm->addFieldResult($alias, $columnAlias, $field, $class->getName());
 
         if (isset($fieldMapping['requireSQLConversion'])) {
             $type   = Type::getType($fieldMapping['type']);

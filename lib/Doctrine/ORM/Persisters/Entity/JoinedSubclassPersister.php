@@ -59,7 +59,7 @@ class JoinedSubclassPersister extends AbstractEntityInheritancePersister
      */
     protected function getDiscriminatorColumnTableName()
     {
-        $class = ($this->class->name !== $this->class->rootEntityName)
+        $class = ($this->class->getName() !== $this->class->rootEntityName)
             ? $this->em->getClassMetadata($this->class->rootEntityName)
             : $this->class;
 
@@ -133,12 +133,12 @@ class JoinedSubclassPersister extends AbstractEntityInheritancePersister
         $postInsertIds  = [];
         $idGenerator    = $this->class->idGenerator;
         $isPostInsertId = $idGenerator->isPostInsertGenerator();
-        $rootClass      = ($this->class->name !== $this->class->rootEntityName)
+        $rootClass      = ($this->class->getName() !== $this->class->rootEntityName)
             ? $this->em->getClassMetadata($this->class->rootEntityName)
             : $this->class;
 
         // Prepare statement for the root table
-        $rootPersister = $this->em->getUnitOfWork()->getEntityPersister($rootClass->name);
+        $rootPersister = $this->em->getUnitOfWork()->getEntityPersister($rootClass->getName());
         $rootTableName = $rootClass->getTableName();
         $rootTableStmt = $this->conn->prepare($rootPersister->getInsertSQL());
 
@@ -309,7 +309,7 @@ class JoinedSubclassPersister extends AbstractEntityInheritancePersister
     {
         $this->switchPersisterContext($offset, $limit);
 
-        $baseTableAlias = $this->getSQLTableAlias($this->class->name);
+        $baseTableAlias = $this->getSQLTableAlias($this->class->getName());
         $joinSql        = $this->getJoinSql($baseTableAlias);
 
         if ($assoc != null && $assoc['type'] == ClassMetadata::MANY_TO_MANY) {
@@ -373,7 +373,7 @@ class JoinedSubclassPersister extends AbstractEntityInheritancePersister
     public function getCountSQL($criteria = [])
     {
         $tableName      = $this->quoteStrategy->getTableName($this->class, $this->platform);
-        $baseTableAlias = $this->getSQLTableAlias($this->class->name);
+        $baseTableAlias = $this->getSQLTableAlias($this->class->getName());
         $joinSql        = $this->getJoinSql($baseTableAlias);
 
         $conditionSql = ($criteria instanceof Criteria)
@@ -403,7 +403,7 @@ class JoinedSubclassPersister extends AbstractEntityInheritancePersister
     {
         $joinSql            = '';
         $identifierColumns  = $this->class->getIdentifierColumnNames();
-        $baseTableAlias     = $this->getSQLTableAlias($this->class->name);
+        $baseTableAlias     = $this->getSQLTableAlias($this->class->getName());
 
         // INNER JOIN parent tables
         foreach ($this->class->parentClasses as $parentClassName) {
@@ -437,10 +437,10 @@ class JoinedSubclassPersister extends AbstractEntityInheritancePersister
         $columnList         = [];
         $discrColumn        = $this->class->discriminatorColumn['name'];
         $discrColumnType    = $this->class->discriminatorColumn['type'];
-        $baseTableAlias     = $this->getSQLTableAlias($this->class->name);
+        $baseTableAlias     = $this->getSQLTableAlias($this->class->getName());
         $resultColumnName   = $this->platform->getSQLResultCasing($discrColumn);
 
-        $this->currentPersisterContext->rsm->addEntityResult($this->class->name, 'r');
+        $this->currentPersisterContext->rsm->addEntityResult($this->class->getName(), 'r');
         $this->currentPersisterContext->rsm->setDiscriminatorColumn('r', $resultColumnName);
         $this->currentPersisterContext->rsm->addMetaResult('r', $resultColumnName, $discrColumn, false, $discrColumnType);
 
@@ -476,7 +476,7 @@ class JoinedSubclassPersister extends AbstractEntityInheritancePersister
         }
 
         // Add discriminator column (DO NOT ALIAS, see AbstractEntityInheritancePersister#processSQLResult).
-        $tableAlias = ($this->class->rootEntityName == $this->class->name)
+        $tableAlias = ($this->class->rootEntityName == $this->class->getName())
             ? $baseTableAlias
             : $this->getSQLTableAlias($this->class->rootEntityName);
 
@@ -548,7 +548,7 @@ class JoinedSubclassPersister extends AbstractEntityInheritancePersister
                         $columns[] = $sourceCol;
                     }
                 }
-            } else if ($this->class->name != $this->class->rootEntityName ||
+            } else if ($this->class->getName() != $this->class->rootEntityName ||
                     ! $this->class->isIdGeneratorIdentity() || $this->class->identifier[0] != $name) {
                 $columns[]                  = $this->quoteStrategy->getColumnName($name, $this->class, $this->platform);
                 $this->columnTypes[$name]   = $this->class->fieldMappings[$name]['type'];
@@ -556,7 +556,7 @@ class JoinedSubclassPersister extends AbstractEntityInheritancePersister
         }
 
         // Add discriminator column if it is the topmost class.
-        if ($this->class->name == $this->class->rootEntityName) {
+        if ($this->class->getName() == $this->class->rootEntityName) {
             $columns[] = $this->class->discriminatorColumn['name'];
         }
 

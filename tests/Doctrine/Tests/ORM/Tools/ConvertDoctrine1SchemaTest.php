@@ -68,8 +68,8 @@ class ConvertDoctrine1SchemaTest extends OrmTestCase
         $userClass = $cmf->getMetadataFor('User');
 
         $this->assertEquals(2, count($metadata));
-        $this->assertEquals('Profile', $profileClass->name);
-        $this->assertEquals('User', $userClass->name);
+        $this->assertEquals('Profile', $profileClass->getName());
+        $this->assertEquals('User', $userClass->getName());
         $this->assertEquals(4, count($profileClass->fieldMappings));
         $this->assertEquals(5, count($userClass->fieldMappings));
         $this->assertEquals('text', $userClass->fieldMappings['clob']['type']);

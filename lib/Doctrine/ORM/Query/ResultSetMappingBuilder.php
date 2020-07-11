@@ -184,7 +184,7 @@ class ResultSetMappingBuilder extends ResultSetMapping
     private function isInheritanceSupported(ClassMetadataInfo $classMetadata)
     {
         if ($classMetadata->isInheritanceTypeSingleTable()
-            && in_array($classMetadata->name, $classMetadata->discriminatorMap, true)) {
+            && in_array($classMetadata->getName(), $classMetadata->discriminatorMap, true)) {
             return true;
         }
 
@@ -284,7 +284,7 @@ class ResultSetMappingBuilder extends ResultSetMapping
         $shortName      = $classMetadata->reflClass->getShortName();
         $alias          = strtolower($shortName[0]).'0';
 
-        $this->addEntityResult($class->name, $alias);
+        $this->addEntityResult($class->getName(), $alias);
 
         if ($classMetadata->discriminatorColumn) {
             $discrColumn = $classMetadata->discriminatorColumn;
@@ -336,12 +336,12 @@ class ResultSetMappingBuilder extends ResultSetMapping
                 $classMetadata  = $this->em->getClassMetadata($entityMapping['entityClass']);
 
                 if ($class->reflClass->name == $classMetadata->reflClass->name) {
-                    $this->addEntityResult($classMetadata->name, $rootAlias);
+                    $this->addEntityResult($classMetadata->getName(), $rootAlias);
                     $this->addNamedNativeQueryEntityResultMapping($classMetadata, $entityMapping, $rootAlias);
                 } else {
                     $shortName      = $classMetadata->reflClass->getShortName();
                     $joinAlias      = strtolower($shortName[0]) . ++ $counter;
-                    $associations   = $class->getAssociationsByTargetClass($classMetadata->name);
+                    $associations   = $class->getAssociationsByTargetClass($classMetadata->getName());
 
                     $this->addNamedNativeQueryEntityResultMapping($classMetadata, $entityMapping, $joinAlias);
 
@@ -406,14 +406,14 @@ class ResultSetMappingBuilder extends ResultSetMapping
                         $this->addJoinedEntityResult($associationMapping['targetEntity'], $joinAlias, $parentAlias, $relation);
                         $this->addFieldResult($joinAlias, $field['column'], $fieldName);
                     } else {
-                        $this->addFieldResult($alias, $field['column'], $fieldName, $classMetadata->name);
+                        $this->addFieldResult($alias, $field['column'], $fieldName, $classMetadata->getName());
                     }
                 } else {
                     if ( ! isset($classMetadata->fieldMappings[$fieldName])) {
-                        throw new \InvalidArgumentException("Entity '".$classMetadata->name."' has no field '".$fieldName."'. ");
+                        throw new \InvalidArgumentException("Entity '".$classMetadata->getName()."' has no field '".$fieldName."'. ");
                     }
 
-                    $this->addFieldResult($alias, $field['column'], $fieldName, $classMetadata->name);
+                    $this->addFieldResult($alias, $field['column'], $fieldName, $classMetadata->getName());
                 }
             }
 

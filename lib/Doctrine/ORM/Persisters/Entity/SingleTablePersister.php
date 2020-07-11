@@ -55,7 +55,7 @@ class SingleTablePersister extends AbstractEntityInheritancePersister
         $columnList[] = parent::getSelectColumnsSQL();
 
         $rootClass  = $this->em->getClassMetadata($this->class->rootEntityName);
-        $tableAlias = $this->getSQLTableAlias($rootClass->name);
+        $tableAlias = $this->getSQLTableAlias($rootClass->getName());
 
          // Append discriminator column
         $discrColumn     = $this->class->discriminatorColumn['name'];
@@ -173,7 +173,7 @@ class SingleTablePersister extends AbstractEntityInheritancePersister
 
         $values     = implode(', ', $values);
         $discColumn = $this->class->discriminatorColumn['name'];
-        $tableAlias = $this->getSQLTableAlias($this->class->name);
+        $tableAlias = $this->getSQLTableAlias($this->class->getName());
 
         return $tableAlias . '.' . $discColumn . ' IN (' . $values . ')';
     }

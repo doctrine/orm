@@ -499,7 +499,7 @@ class SqlWalker implements TreeWalker
             case ClassMetadata::INHERITANCE_TYPE_JOINED:
                 // The classes in the inheritance will be added to the query one by one,
                 // but only the root node is getting filtered
-                if ($targetEntity->name !== $targetEntity->rootEntityName) {
+                if ($targetEntity->getName() !== $targetEntity->rootEntityName) {
                     return '';
                 }
                 break;
@@ -2328,8 +2328,8 @@ class SqlWalker implements TreeWalker
 
             $metadata = $this->em->getClassMetadata($parameter);
 
-            if ($metadata->getName() !== $rootClass->name && ! $metadata->getReflectionClass()->isSubclassOf($rootClass->name)) {
-                throw QueryException::instanceOfUnrelatedClass($parameter, $rootClass->name);
+            if ($metadata->getName() !== $rootClass->getName() && ! $metadata->getReflectionClass()->isSubclassOf($rootClass->getName())) {
+                throw QueryException::instanceOfUnrelatedClass($parameter, $rootClass->getName());
             }
 
             $discriminators += HierarchyDiscriminatorResolver::resolveDiscriminatorsForClass($metadata, $this->em);

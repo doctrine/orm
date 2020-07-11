@@ -219,7 +219,7 @@ class YamlExporter extends AbstractExporter
 
         $array = $this->processEntityListeners($metadata, $array);
 
-        return $this->yamlDump([$metadata->name => $array], 10);
+        return $this->yamlDump([$metadata->getName() => $array], 10);
     }
 
     /**

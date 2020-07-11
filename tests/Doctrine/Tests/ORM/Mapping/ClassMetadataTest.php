@@ -33,7 +33,7 @@ class ClassMetadataTest extends OrmTestCase
         // Test initial state
         $this->assertTrue(count($cm->getReflectionProperties()) == 0);
         $this->assertInstanceOf('ReflectionClass', $cm->reflClass);
-        $this->assertEquals(CMS\CmsUser::class, $cm->name);
+        $this->assertEquals(CMS\CmsUser::class, $cm->getName());
         $this->assertEquals(CMS\CmsUser::class, $cm->rootEntityName);
         $this->assertEquals([], $cm->subClasses);
         $this->assertEquals([], $cm->parentClasses);
@@ -908,7 +908,7 @@ class ClassMetadataTest extends OrmTestCase
         $cm = new ClassMetadata(strtoupper(CMS\CmsUser::class));
         $cm->initializeReflection(new RuntimeReflectionService());
 
-        $this->assertEquals(CMS\CmsUser::class, $cm->name);
+        $this->assertEquals(CMS\CmsUser::class, $cm->getName());
     }
 
     /**

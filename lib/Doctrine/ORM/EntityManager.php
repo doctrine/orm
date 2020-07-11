@@ -418,7 +418,7 @@ use function trigger_error;
 
         foreach ($class->identifier as $identifier) {
             if ( ! isset($id[$identifier])) {
-                throw ORMException::missingIdentifierField($class->name, $identifier);
+                throw ORMException::missingIdentifierField($class->getName(), $identifier);
             }
 
             $sortedId[$identifier] = $id[$identifier];
@@ -426,7 +426,7 @@ use function trigger_error;
         }
 
         if ($id) {
-            throw ORMException::unrecognizedIdentifierFields($class->name, array_keys($id));
+            throw ORMException::unrecognizedIdentifierFields($class->getName(), array_keys($id));
         }
 
         $unitOfWork = $this->getUnitOfWork();
@@ -445,7 +445,7 @@ use function trigger_error;
                 case LockMode::NONE === $lockMode:
                 case LockMode::PESSIMISTIC_READ === $lockMode:
                 case LockMode::PESSIMISTIC_WRITE === $lockMode:
-                    $persister = $unitOfWork->getEntityPersister($class->name);
+                    $persister = $unitOfWork->getEntityPersister($class->getName());
                     $persister->refresh($sortedId, $entity, $lockMode);
                     break;
             }
@@ -453,7 +453,7 @@ use function trigger_error;
             return $entity; // Hit!
         }
 
-        $persister = $unitOfWork->getEntityPersister($class->name);
+        $persister = $unitOfWork->getEntityPersister($class->getName());
 
         switch (true) {
             case LockMode::OPTIMISTIC === $lockMode:
@@ -487,7 +487,7 @@ use function trigger_error;
 
         foreach ($class->identifier as $identifier) {
             if ( ! isset($id[$identifier])) {
-                throw ORMException::missingIdentifierField($class->name, $identifier);
+                throw ORMException::missingIdentifierField($class->getName(), $identifier);
             }
 
             $sortedId[$identifier] = $id[$identifier];
@@ -495,7 +495,7 @@ use function trigger_error;
         }
 
         if ($id) {
-            throw ORMException::unrecognizedIdentifierFields($class->name, array_keys($id));
+            throw ORMException::unrecognizedIdentifierFields($class->getName(), array_keys($id));
         }
 
         // Check identity map first, if its already in there just return it.
@@ -507,7 +507,7 @@ use function trigger_error;
             return $this->find($entityName, $sortedId);
         }
 
-        $entity = $this->proxyFactory->getProxy($class->name, $sortedId);
+        $entity = $this->proxyFactory->getProxy($class->getName(), $sortedId);
 
         $this->unitOfWork->registerManaged($entity, $sortedId, []);
 
@@ -949,7 +949,7 @@ use function trigger_error;
         switch ($lockMode) {
             case LockMode::OPTIMISTIC:
                 if (!$class->isVersioned) {
-                    throw OptimisticLockException::notVersioned($class->name);
+                    throw OptimisticLockException::notVersioned($class->getName());
                 }
                 break;
             case LockMode::PESSIMISTIC_READ:

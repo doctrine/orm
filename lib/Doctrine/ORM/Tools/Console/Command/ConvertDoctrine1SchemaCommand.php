@@ -198,7 +198,7 @@ class ConvertDoctrine1SchemaCommand extends Command
             $output->writeln('');
 
             foreach ($metadata as $class) {
-                $output->writeln(sprintf('Processing entity "<info>%s</info>"', $class->name));
+                $output->writeln(sprintf('Processing entity "<info>%s</info>"', $class->getName()));
             }
 
             $exporter->setMetadata($metadata);

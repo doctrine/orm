@@ -414,7 +414,7 @@ abstract class AbstractQuery
         }
 
         if ($value instanceof Mapping\ClassMetadata) {
-            return $value->name;
+            return $value->getName();
         }
 
         if (! is_object($value)) {

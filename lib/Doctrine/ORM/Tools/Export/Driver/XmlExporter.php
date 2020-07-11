@@ -58,7 +58,7 @@ class XmlExporter extends AbstractExporter
             $root->addAttribute('repository-class', $metadata->customRepositoryClassName);
         }
 
-        $root->addAttribute('name', $metadata->name);
+        $root->addAttribute('name', $metadata->getName());
 
         if (isset($metadata->table['name'])) {
             $root->addAttribute('table', $metadata->table['name']);

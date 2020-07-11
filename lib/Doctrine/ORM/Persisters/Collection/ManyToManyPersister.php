@@ -262,7 +262,7 @@ class ManyToManyPersister extends AbstractCollectionPersister
         $joinTable    = $this->quoteStrategy->getJoinTableName($mapping, $associationSourceClass, $this->platform);
 
         $rsm = new Query\ResultSetMappingBuilder($this->em);
-        $rsm->addRootEntityFromClassMetadata($targetClass->name, 'te');
+        $rsm->addRootEntityFromClassMetadata($targetClass->getName(), 'te');
 
         $sql = 'SELECT ' . $rsm->generateSelectClause()
             . ' FROM ' . $tableName . ' te'

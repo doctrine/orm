@@ -229,7 +229,7 @@ abstract class AbstractEntityPersister implements CachedEntityPersister
         $class      = $this->class;
         $className  = ClassUtils::getClass($entity);
 
-        if ($className !== $this->class->name) {
+        if ($className !== $this->class->getName()) {
             $class = $this->metadataFactory->getMetadataFor($className);
         }
 
@@ -448,7 +448,7 @@ abstract class AbstractEntityPersister implements CachedEntityPersister
         $class      = $this->class;
 
         if ($cacheEntry !== null) {
-            if ($cacheEntry->class !== $this->class->name) {
+            if ($cacheEntry->class !== $this->class->getName()) {
                 $class = $this->metadataFactory->getMetadataFor($cacheEntry->class);
             }
 
@@ -472,7 +472,7 @@ abstract class AbstractEntityPersister implements CachedEntityPersister
         $class      = $this->class;
         $className  = ClassUtils::getClass($entity);
 
-        if ($className !== $this->class->name) {
+        if ($className !== $this->class->getName()) {
             $class = $this->metadataFactory->getMetadataFor($className);
         }
 

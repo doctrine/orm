@@ -1094,7 +1094,7 @@ class MySoftDeleteFilter extends SQLFilter
 {
     public function addFilterConstraint(ClassMetadata $targetEntity, $targetTableAlias)
     {
-        if ($targetEntity->name != "MyEntity\SoftDeleteNewsItem") {
+        if ($targetEntity->getName() != "MyEntity\SoftDeleteNewsItem") {
             return "";
         }
 
@@ -1118,7 +1118,7 @@ class CMSCountryFilter extends SQLFilter
 {
     public function addFilterConstraint(ClassMetadata $targetEntity, $targetTableAlias)
     {
-        if ($targetEntity->name != CmsAddress::class) {
+        if ($targetEntity->getName() != CmsAddress::class) {
             return "";
         }
 
@@ -1130,7 +1130,7 @@ class CMSGroupPrefixFilter extends SQLFilter
 {
     public function addFilterConstraint(ClassMetadata $targetEntity, $targetTableAlias)
     {
-        if ($targetEntity->name != CmsGroup::class) {
+        if ($targetEntity->getName() != CmsGroup::class) {
             return "";
         }
 
@@ -1142,7 +1142,7 @@ class CMSArticleTopicFilter extends SQLFilter
 {
     public function addFilterConstraint(ClassMetadata $targetEntity, $targetTableAlias)
     {
-        if ($targetEntity->name != CmsArticle::class) {
+        if ($targetEntity->getName() != CmsArticle::class) {
             return "";
         }
 
@@ -1154,7 +1154,7 @@ class CompanyPersonNameFilter extends SQLFilter
 {
     public function addFilterConstraint(ClassMetadata $targetEntity, $targetTableAlias, $targetTable = '')
     {
-        if ($targetEntity->name != CompanyPerson::class) {
+        if ($targetEntity->getName() != CompanyPerson::class) {
             return "";
         }
 
@@ -1166,7 +1166,7 @@ class CompletedContractFilter extends SQLFilter
 {
     public function addFilterConstraint(ClassMetadata $targetEntity, $targetTableAlias, $targetTable = '')
     {
-        if ($targetEntity->name != CompanyContract::class) {
+        if ($targetEntity->getName() != CompanyContract::class) {
             return "";
         }
 
@@ -1178,7 +1178,7 @@ class CompanyEventFilter extends SQLFilter
 {
     public function addFilterConstraint(ClassMetadata $targetEntity, $targetTableAlias, $targetTable = '')
     {
-        if ($targetEntity->name != CompanyEvent::class) {
+        if ($targetEntity->getName() != CompanyEvent::class) {
             return "";
         }
 
