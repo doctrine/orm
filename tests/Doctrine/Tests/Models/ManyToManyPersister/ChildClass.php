@@ -40,6 +40,7 @@ class ChildClass
      * )
      *
      * @var Collection|ParentClass[]
+     * @psalm-var Collection<ParentClass>
      */
     public $parents;
 

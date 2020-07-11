@@ -825,7 +825,6 @@ class SchemaTool
         foreach ($fullSchema->getTables() as $table) {
             if ( ! $schema->hasTable($table->getName())) {
                 foreach ($table->getForeignKeys() as $foreignKey) {
-                    /* @var $foreignKey \Doctrine\DBAL\Schema\ForeignKeyConstraint */
                     if ($schema->hasTable($foreignKey->getForeignTableName())) {
                         $visitor->acceptForeignKey($table, $foreignKey);
                     }

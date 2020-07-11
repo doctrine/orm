@@ -274,7 +274,6 @@ class AnnotationDriver extends AbstractAnnotationDriver
         }
 
         // Evaluate annotations on properties/fields
-        /* @var $property \ReflectionProperty */
         foreach ($class->getProperties() as $property) {
             if ($metadata->isMappedSuperclass && ! $property->isPrivate()
                 ||
@@ -505,7 +504,6 @@ class AnnotationDriver extends AbstractAnnotationDriver
                 $hasMapping     = false;
                 $listenerClass  = new \ReflectionClass($listenerClassName);
 
-                /* @var $method \ReflectionMethod */
                 foreach ($listenerClass->getMethods(\ReflectionMethod::IS_PUBLIC) as $method) {
                     // find method callbacks.
                     $callbacks  = $this->getMethodCallbacks($method);
@@ -525,7 +523,6 @@ class AnnotationDriver extends AbstractAnnotationDriver
 
         // Evaluate @HasLifecycleCallbacks annotation
         if (isset($classAnnotations[Mapping\HasLifecycleCallbacks::class])) {
-            /* @var $method \ReflectionMethod */
             foreach ($class->getMethods(\ReflectionMethod::IS_PUBLIC) as $method) {
                 foreach ($this->getMethodCallbacks($method) as $value) {
                     $metadata->addLifecycleCallback($value[0], $value[1]);

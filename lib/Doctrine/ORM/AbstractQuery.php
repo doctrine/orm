@@ -72,6 +72,7 @@ abstract class AbstractQuery
      * The parameter map of this query.
      *
      * @var ArrayCollection|Parameter[]
+     * @psalm-var ArrayCollection<int, Parameter>
      */
     protected $parameters;
 
@@ -337,9 +338,11 @@ abstract class AbstractQuery
     /**
      * Sets a collection of query parameters.
      *
-     * @param ArrayCollection|mixed[] $parameters
+     * @param ArrayCollection|Parameter[] $parameters
      *
      * @return static This query instance.
+     *
+     * @psalm-param ArrayCollection<int, Parameter>|Parameter[] $parameters
      */
     public function setParameters($parameters)
     {
@@ -470,7 +473,7 @@ abstract class AbstractQuery
      */
     private function translateNamespaces(Query\ResultSetMapping $rsm)
     {
-        $translate = function ($alias) {
+        $translate = function ($alias) : string {
             return $this->_em->getClassMetadata($alias)->getName();
         };
 
@@ -631,7 +634,7 @@ abstract class AbstractQuery
     /**
      * Defines how long the result cache will be active before expire.
      *
-     * @param integer $lifetime How long the cache entry is valid.
+     * @param int|null $lifetime How long the cache entry is valid.
      *
      * @return static This query instance.
      */
@@ -966,7 +969,8 @@ abstract class AbstractQuery
             $this->setParameters($parameters);
         }
 
-        $setCacheEntry = function() {};
+        $setCacheEntry = static function () : void {
+        };
 
         if ($this->_hydrationCacheProfile !== null) {
             [$cacheKey, $realCacheKey] = $this->getHydrationCacheId();
@@ -983,7 +987,7 @@ abstract class AbstractQuery
                 $result = [];
             }
 
-            $setCacheEntry = function($data) use ($cache, $result, $cacheKey, $realCacheKey, $queryCacheProfile) {
+            $setCacheEntry = static function ($data) use ($cache, $result, $cacheKey, $realCacheKey, $queryCacheProfile) : void {
                 $result[$realCacheKey] = $data;
 
                 $cache->save($cacheKey, $result, $queryCacheProfile->getLifetime());

@@ -178,7 +178,7 @@ class DDC2138UserFollowedUser extends DDC2138UserFollowedObject
     }
 
     /**
-     * {@inheritdoc}
+     * @return User
      */
     public function getUser()
     {

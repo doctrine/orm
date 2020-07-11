@@ -144,7 +144,7 @@ abstract class AbstractCollectionPersister implements CachedCollectionPersister
      * @param \Doctrine\ORM\PersistentCollection     $collection
      * @param \Doctrine\ORM\Cache\CollectionCacheKey $key
      *
-     * @return \Doctrine\ORM\PersistentCollection|null
+     * @return object[]|null
      */
     public function loadCollectionCache(PersistentCollection $collection, CollectionCacheKey $key)
     {

@@ -373,9 +373,7 @@ class ManyToManyPersister extends AbstractCollectionPersister
     }
 
     /**
-     * {@inheritdoc}
-     *
-     * @override
+     * @return string
      */
     protected function getDeleteSQL(PersistentCollection $collection)
     {
@@ -393,10 +391,9 @@ class ManyToManyPersister extends AbstractCollectionPersister
     }
 
     /**
-     * {@inheritdoc}
-     *
      * Internal note: Order of the parameters must be the same as the order of the columns in getDeleteSql.
-     * @override
+     *
+     * @return mixed[]
      */
     protected function getDeleteSQLParameters(PersistentCollection $collection)
     {
