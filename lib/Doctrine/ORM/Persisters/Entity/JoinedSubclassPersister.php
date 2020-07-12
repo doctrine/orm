@@ -133,7 +133,7 @@ class JoinedSubclassPersister extends AbstractEntityInheritancePersister
         $postInsertIds  = [];
         $idGenerator    = $this->class->idGenerator;
         $isPostInsertId = $idGenerator->isPostInsertGenerator();
-        $rootClass      = ($this->class->getName() !== $this->class->rootEntityName)
+        $rootClass      = $this->class->getName() !== $this->class->rootEntityName
             ? $this->em->getClassMetadata($this->class->rootEntityName)
             : $this->class;
 
@@ -548,7 +548,7 @@ class JoinedSubclassPersister extends AbstractEntityInheritancePersister
                         $columns[] = $sourceCol;
                     }
                 }
-            } else if ($this->class->getName() != $this->class->rootEntityName ||
+            } elseif ($this->class->getName() !== $this->class->rootEntityName ||
                     ! $this->class->isIdGeneratorIdentity() || $this->class->identifier[0] != $name) {
                 $columns[]                  = $this->quoteStrategy->getColumnName($name, $this->class, $this->platform);
                 $this->columnTypes[$name]   = $this->class->fieldMappings[$name]['type'];
@@ -556,7 +556,7 @@ class JoinedSubclassPersister extends AbstractEntityInheritancePersister
         }
 
         // Add discriminator column if it is the topmost class.
-        if ($this->class->getName() == $this->class->rootEntityName) {
+        if ($this->class->getName() === $this->class->rootEntityName) {
             $columns[] = $this->class->discriminatorColumn['name'];
         }
 

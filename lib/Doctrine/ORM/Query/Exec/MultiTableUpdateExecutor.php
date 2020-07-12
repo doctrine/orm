@@ -25,6 +25,7 @@ use Doctrine\ORM\Query\ParameterTypeInferer;
 use Doctrine\ORM\Query\AST;
 use Doctrine\ORM\Utility\PersisterHelper;
 use Throwable;
+use function array_merge;
 
 /**
  * Executes the SQL statements for bulk DQL UPDATE statements on classes in
@@ -92,7 +93,7 @@ class MultiTableUpdateExecutor extends AbstractSqlExecutor
         $this->_insertSql = 'INSERT INTO ' . $tempTable . ' (' . $idColumnList . ')'
                 . ' SELECT t0.' . implode(', t0.', $idColumnNames);
 
-        $rangeDecl = new AST\RangeVariableDeclaration($primaryClass->getName(), $updateClause->aliasIdentificationVariable);
+        $rangeDecl  = new AST\RangeVariableDeclaration($primaryClass->getName(), $updateClause->aliasIdentificationVariable);
         $fromClause = new AST\FromClause([new AST\IdentificationVariableDeclaration($rangeDecl, null, [])]);
 
         $this->_insertSql .= $sqlWalker->walkFromClause($fromClause);

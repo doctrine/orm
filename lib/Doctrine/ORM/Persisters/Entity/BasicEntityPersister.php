@@ -1332,7 +1332,7 @@ class BasicEntityPersister implements EntityPersister
         $columnList    = [];
         $targetClass   = $this->em->getClassMetadata($assoc['targetEntity']);
         $isIdentifier  = isset($assoc['id']) && $assoc['id'] === true;
-        $sqlTableAlias = $this->getSQLTableAlias($class->getName(), ($alias == 'r' ? '' : $alias));
+        $sqlTableAlias = $this->getSQLTableAlias($class->getName(), ($alias === 'r' ? '' : $alias));
 
         foreach ($assoc['joinColumns'] as $joinColumn) {
             $quotedColumn     = $this->quoteStrategy->getJoinColumnName($joinColumn, $this->class, $this->platform);

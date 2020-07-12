@@ -24,6 +24,7 @@ use Doctrine\ORM\Mapping\ClassMetadataInfo;
 use Doctrine\ORM\Mapping\MappingException;
 use Doctrine\ORM\Utility\PersisterHelper;
 use function explode;
+use function in_array;
 
 /**
  * A ResultSetMappingBuilder uses the EntityManager to automatically populate entity fields.
