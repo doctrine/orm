@@ -23,7 +23,6 @@ use Doctrine\Common\Collections\Criteria;
 use Doctrine\DBAL\Types\Type;
 use Doctrine\ORM\PersistentCollection;
 use Doctrine\ORM\Utility\PersisterHelper;
-
 use function array_merge;
 
 /**

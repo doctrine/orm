@@ -504,8 +504,8 @@ class AnnotationDriver extends AbstractAnnotationDriver
                     throw MappingException::entityListenerClassNotFound($listenerClassName, $className);
                 }
 
-                $hasMapping     = false;
-                $listenerClass  = new ReflectionClass($listenerClassName);
+                $hasMapping    = false;
+                $listenerClass = new ReflectionClass($listenerClassName);
 
                 /* @var $method \ReflectionMethod */
                 foreach ($listenerClass->getMethods(\ReflectionMethod::IS_PUBLIC) as $method) {

@@ -59,7 +59,7 @@ class JoinedSubclassPersister extends AbstractEntityInheritancePersister
      */
     protected function getDiscriminatorColumnTableName()
     {
-        $class = ($this->class->getName() !== $this->class->rootEntityName)
+        $class = $this->class->getName() !== $this->class->rootEntityName
             ? $this->em->getClassMetadata($this->class->rootEntityName)
             : $this->class;
 
@@ -401,9 +401,9 @@ class JoinedSubclassPersister extends AbstractEntityInheritancePersister
      */
     protected function getLockTablesSql($lockMode)
     {
-        $joinSql            = '';
-        $identifierColumns  = $this->class->getIdentifierColumnNames();
-        $baseTableAlias     = $this->getSQLTableAlias($this->class->getName());
+        $joinSql           = '';
+        $identifierColumns = $this->class->getIdentifierColumnNames();
+        $baseTableAlias    = $this->getSQLTableAlias($this->class->getName());
 
         // INNER JOIN parent tables
         foreach ($this->class->parentClasses as $parentClassName) {
@@ -434,11 +434,11 @@ class JoinedSubclassPersister extends AbstractEntityInheritancePersister
             return $this->currentPersisterContext->selectColumnListSql;
         }
 
-        $columnList         = [];
-        $discrColumn        = $this->class->discriminatorColumn['name'];
-        $discrColumnType    = $this->class->discriminatorColumn['type'];
-        $baseTableAlias     = $this->getSQLTableAlias($this->class->getName());
-        $resultColumnName   = $this->platform->getSQLResultCasing($discrColumn);
+        $columnList       = [];
+        $discrColumn      = $this->class->discriminatorColumn['name'];
+        $discrColumnType  = $this->class->discriminatorColumn['type'];
+        $baseTableAlias   = $this->getSQLTableAlias($this->class->getName());
+        $resultColumnName = $this->platform->getSQLResultCasing($discrColumn);
 
         $this->currentPersisterContext->rsm->addEntityResult($this->class->getName(), 'r');
         $this->currentPersisterContext->rsm->setDiscriminatorColumn('r', $resultColumnName);
@@ -476,7 +476,7 @@ class JoinedSubclassPersister extends AbstractEntityInheritancePersister
         }
 
         // Add discriminator column (DO NOT ALIAS, see AbstractEntityInheritancePersister#processSQLResult).
-        $tableAlias = ($this->class->rootEntityName == $this->class->getName())
+        $tableAlias = $this->class->rootEntityName === $this->class->getName()
             ? $baseTableAlias
             : $this->getSQLTableAlias($this->class->rootEntityName);
 

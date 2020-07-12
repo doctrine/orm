@@ -1357,9 +1357,9 @@ class BasicEntityPersister implements EntityPersister
      */
     protected function getSelectManyToManyJoinSQL(array $manyToMany)
     {
-        $conditions         = [];
-        $association        = $manyToMany;
-        $sourceTableAlias   = $this->getSQLTableAlias($this->class->getName());
+        $conditions       = [];
+        $association      = $manyToMany;
+        $sourceTableAlias = $this->getSQLTableAlias($this->class->getName());
 
         if ( ! $manyToMany['isOwningSide']) {
             $targetEntity   = $this->em->getClassMetadata($manyToMany['targetEntity']);
