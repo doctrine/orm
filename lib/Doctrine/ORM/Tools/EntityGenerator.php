@@ -997,7 +997,7 @@ public function __construct(<params>)
      */
     protected function getClassName(ClassMetadataInfo $metadata)
     {
-        return $pos = strrpos($metadata->getName(), '\\')
+        return ($pos = strrpos($metadata->getName(), '\\'))
             ? substr($metadata->getName(), $pos + 1, strlen($metadata->getName())) : $metadata->getName();
     }
 
