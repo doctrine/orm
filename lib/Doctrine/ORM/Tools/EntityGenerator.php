@@ -24,9 +24,13 @@ use Doctrine\Common\Inflector\Inflector;
 use Doctrine\DBAL\Types\Type;
 use Doctrine\ORM\Mapping\ClassMetadataInfo;
 use ReflectionClass;
-use function class_exists;
+use function in_array;
+use function strlen;
+use function strpos;
+use function strtolower;
 use const DIRECTORY_SEPARATOR;
 use const E_USER_DEPRECATED;
+use function class_exists;
 use function str_replace;
 use function trigger_error;
 use function var_export;
@@ -900,7 +904,7 @@ public function __construct(<params>)
      */
     protected function hasMethod($method, ClassMetadataInfo $metadata)
     {
-        if ($this->extendsClass() || (!$this->isNew && class_exists($metadata->getName()))) {
+        if ($this->extendsClass() || (! $this->isNew && class_exists($metadata->getName()))) {
             // don't generate method if its already on the base class.
             $reflClass = new ReflectionClass($this->getClassToExtend() ?: $metadata->getName());
 
@@ -993,7 +997,7 @@ public function __construct(<params>)
      */
     protected function getClassName(ClassMetadataInfo $metadata)
     {
-        return ($pos = strrpos($metadata->getName(), '\\'))
+        return $pos = strrpos($metadata->getName(), '\\')
             ? substr($metadata->getName(), $pos + 1, strlen($metadata->getName())) : $metadata->getName();
     }
 
