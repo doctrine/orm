@@ -24,6 +24,8 @@ use Doctrine\Common\Inflector\Inflector;
 use Doctrine\DBAL\Types\Type;
 use Doctrine\ORM\Mapping\ClassMetadataInfo;
 use ReflectionClass;
+use function class_exists;
+use const DIRECTORY_SEPARATOR;
 use const E_USER_DEPRECATED;
 use function str_replace;
 use function trigger_error;
@@ -869,9 +871,9 @@ public function __construct(<params>)
      */
     protected function hasProperty($property, ClassMetadataInfo $metadata)
     {
-        if ($this->extendsClass() || (!$this->isNew && class_exists($metadata->getName()))) {
+        if ($this->extendsClass() || (! $this->isNew && class_exists($metadata->getName()))) {
             // don't generate property if its already on the base class.
-            $reflClass = new \ReflectionClass($this->getClassToExtend() ?: $metadata->getName());
+            $reflClass = new ReflectionClass($this->getClassToExtend() ?: $metadata->getName());
             if ($reflClass->hasProperty($property)) {
                 return true;
             }
@@ -900,7 +902,7 @@ public function __construct(<params>)
     {
         if ($this->extendsClass() || (!$this->isNew && class_exists($metadata->getName()))) {
             // don't generate method if its already on the base class.
-            $reflClass = new \ReflectionClass($this->getClassToExtend() ?: $metadata->getName());
+            $reflClass = new ReflectionClass($this->getClassToExtend() ?: $metadata->getName());
 
             if ($reflClass->hasMethod($method)) {
                 return true;
@@ -935,7 +937,7 @@ public function __construct(<params>)
             return [];
         }
 
-        $reflClass = $metadata->reflClass ?? new \ReflectionClass($metadata->getName());
+        $reflClass = $metadata->reflClass ?? new ReflectionClass($metadata->getName());
 
         $traits = [];
 
@@ -979,7 +981,7 @@ public function __construct(<params>)
      */
     protected function getClassToExtendName()
     {
-        $refl = new \ReflectionClass($this->getClassToExtend());
+        $refl = new ReflectionClass($this->getClassToExtend());
 
         return '\\' . $refl->getName();
     }

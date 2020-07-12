@@ -27,6 +27,7 @@ use InvalidArgumentException;
 
 use function explode;
 use function in_array;
+use function strtolower;
 
 /**
  * A ResultSetMappingBuilder uses the EntityManager to automatically populate entity fields.
@@ -158,7 +159,7 @@ class ResultSetMappingBuilder extends ResultSetMapping
             $columnAlias  = $platform->getSQLResultCasing($columnAliasMap[$columnName]);
 
             if (isset($this->fieldMappings[$columnAlias])) {
-                throw new InvalidArgumentException("The column '$columnName' conflicts with another column in the mapper.");
+                throw new InvalidArgumentException("The column '" . $columnName . "' conflicts with another column in the mapper.");
             }
 
             $this->addFieldResult($alias, $columnAlias, $propertyName);
@@ -175,7 +176,7 @@ class ResultSetMappingBuilder extends ResultSetMapping
                     $columnType = PersisterHelper::getTypeOfColumn($joinColumn['referencedColumnName'], $targetClass, $this->em);
 
                     if (isset($this->metaMappings[$columnAlias])) {
-                        throw new InvalidArgumentException("The column '$columnAlias' conflicts with another column in the mapper.");
+                        throw new InvalidArgumentException("The column '" . $columnAlias . "' conflicts with another column in the mapper.");
                     }
 
                     $this->addMetaResult($alias, $columnAlias, $columnName, $isIdentifier, $columnType);
