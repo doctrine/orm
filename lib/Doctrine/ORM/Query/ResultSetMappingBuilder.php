@@ -23,6 +23,8 @@ use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Mapping\ClassMetadataInfo;
 use Doctrine\ORM\Mapping\MappingException;
 use Doctrine\ORM\Utility\PersisterHelper;
+use InvalidArgumentException;
+
 use function explode;
 use function in_array;
 
@@ -139,7 +141,7 @@ class ResultSetMappingBuilder extends ResultSetMapping
      *
      * @return void
      *
-     * @throws \InvalidArgumentException
+     * @throws InvalidArgumentException
      */
     protected function addAllClassFields($class, $alias, $columnAliasMap = [])
     {
@@ -147,7 +149,7 @@ class ResultSetMappingBuilder extends ResultSetMapping
         $platform      = $this->em->getConnection()->getDatabasePlatform();
 
         if ( ! $this->isInheritanceSupported($classMetadata)) {
-            throw new \InvalidArgumentException('ResultSetMapping builder does not currently support your inheritance scheme.');
+            throw new InvalidArgumentException('ResultSetMapping builder does not currently support your inheritance scheme.');
         }
 
 
@@ -156,7 +158,7 @@ class ResultSetMappingBuilder extends ResultSetMapping
             $columnAlias  = $platform->getSQLResultCasing($columnAliasMap[$columnName]);
 
             if (isset($this->fieldMappings[$columnAlias])) {
-                throw new \InvalidArgumentException("The column '$columnName' conflicts with another column in the mapper.");
+                throw new InvalidArgumentException("The column '$columnName' conflicts with another column in the mapper.");
             }
 
             $this->addFieldResult($alias, $columnAlias, $propertyName);
@@ -173,7 +175,7 @@ class ResultSetMappingBuilder extends ResultSetMapping
                     $columnType = PersisterHelper::getTypeOfColumn($joinColumn['referencedColumnName'], $targetClass, $this->em);
 
                     if (isset($this->metaMappings[$columnAlias])) {
-                        throw new \InvalidArgumentException("The column '$columnAlias' conflicts with another column in the mapper.");
+                        throw new InvalidArgumentException("The column '$columnAlias' conflicts with another column in the mapper.");
                     }
 
                     $this->addMetaResult($alias, $columnAlias, $columnName, $isIdentifier, $columnType);
@@ -340,9 +342,9 @@ class ResultSetMappingBuilder extends ResultSetMapping
                     $this->addEntityResult($classMetadata->getName(), $rootAlias);
                     $this->addNamedNativeQueryEntityResultMapping($classMetadata, $entityMapping, $rootAlias);
                 } else {
-                    $shortName      = $classMetadata->reflClass->getShortName();
-                    $joinAlias      = strtolower($shortName[0]) . ++ $counter;
-                    $associations   = $class->getAssociationsByTargetClass($classMetadata->getName());
+                    $shortName    = $classMetadata->reflClass->getShortName();
+                    $joinAlias    = strtolower($shortName[0]) . ++ $counter;
+                    $associations = $class->getAssociationsByTargetClass($classMetadata->getName());
 
                     $this->addNamedNativeQueryEntityResultMapping($classMetadata, $entityMapping, $joinAlias);
 
@@ -377,7 +379,7 @@ class ResultSetMappingBuilder extends ResultSetMapping
      * @return self
      *
      * @throws MappingException
-     * @throws \InvalidArgumentException
+     * @throws InvalidArgumentException
      */
     public function addNamedNativeQueryEntityResultMapping(ClassMetadataInfo $classMetadata, array $entityMapping, $alias)
     {
@@ -411,7 +413,7 @@ class ResultSetMappingBuilder extends ResultSetMapping
                     }
                 } else {
                     if ( ! isset($classMetadata->fieldMappings[$fieldName])) {
-                        throw new \InvalidArgumentException("Entity '".$classMetadata->getName()."' has no field '".$fieldName."'. ");
+                        throw new InvalidArgumentException("Entity '" . $classMetadata->getName() . "' has no field '" . $fieldName . "'. ");
                     }
 
                     $this->addFieldResult($alias, $field['column'], $fieldName, $classMetadata->getName());
