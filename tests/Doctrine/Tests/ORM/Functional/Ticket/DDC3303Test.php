@@ -13,7 +13,9 @@ class DDC3303Test extends OrmFunctionalTestCase
     {
         parent::setUp();
 
-        $this->schemaTool->createSchema([$this->em->getClassMetadata(DDC3303Employee::class)]);
+        $this->schemaTool->createSchema([
+            $this->em->getClassMetadata(DDC3303Employee::class)
+        ]);
     }
 
     /**
@@ -46,7 +48,7 @@ abstract class DDC3303Person
     /** @ORM\Id @ORM\GeneratedValue(strategy="NONE") @ORM\Column(type="string") @var string */
     private $name;
 
-    /** @ORM\Embedded(class="DDC3303Address") @var DDC3303Address */
+    /** @ORM\Embedded(class=DDC3303Address::class) @var DDC3303Address */
     private $address;
 
     public function __construct($name, DDC3303Address $address)

@@ -30,8 +30,8 @@ class EmbeddedMetadata implements Property
     /** @var string */
     private $sourceEntity;
 
-    /** @var string|null */
-    private $columnPrefix;
+    /** @var string */
+    private $columnPrefix = '';
 
     public function __construct(string $name)
     {
@@ -97,7 +97,7 @@ class EmbeddedMetadata implements Property
         $this->sourceEntity = $sourceEntity;
     }
 
-    public function getColumnPrefix() : ?string
+    public function getColumnPrefix() : string
     {
         return $this->columnPrefix;
     }
