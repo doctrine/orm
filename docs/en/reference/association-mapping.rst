@@ -18,9 +18,9 @@ This chapter is split into three different sections.
 
 One tip for working with relations is to read the relation from left to right, where the left word refers to the current Entity. For example:
 
-- OneToMany - One instance of the current Entity has Many instances (references) to the refered Entity.
-- ManyToOne - Many instances of the current Entity refer to One instance of the refered Entity.
-- OneToOne - One instance of the current Entity refers to One instance of the refered Entity.
+- OneToMany - One instance of the current Entity has Many instances (references) to the referred Entity.
+- ManyToOne - Many instances of the current Entity refer to One instance of the referred Entity.
+- OneToOne - One instance of the current Entity refers to One instance of the referred Entity.
 
 See below for all the possible relations. 
 
