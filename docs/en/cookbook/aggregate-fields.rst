@@ -22,7 +22,7 @@ into the account can either be of positive or negative money
 values. Each account has a credit limit and the account is never
 allowed to have a balance below that value.
 
-For simplicity we live in a world were money is composed of
+For simplicity we live in a world where money is composed of
 integers only. Also we omit the receiver/sender name, stated reason
 for transfer and the execution date. These all would have to be
 added on the ``Entry`` object.
