@@ -942,18 +942,18 @@ class Configuration extends \Doctrine\DBAL\Configuration
      *
      * @return string[]
      */
-    public function getSchemaIgnoreClasses() : array
+    public function getEntitiesIgnoredDuringSchemaGeneration() : array
     {
-        return isset($this->_attributes['schemaIgnoreClasses']) === true ? $this->_attributes['schemaIgnoreClasses'] : [];
+        return isset($this->_attributes['entitiesIgnoredDuringSchemaGeneration']) === true ? $this->_attributes['entitiesIgnoredDuringSchemaGeneration'] : [];
     }
 
     /**
      * Sets a list of entity class names to be ignored by the SchemaTool
      *
-     * @param string[] $schemaIgnoreClasses Array of entity class names
+     * @param string[] $entitiesIgnoredDuringSchemaGeneration Array of entity class names
      */
-    public function setSchemaIgnoreClasses(array $schemaIgnoreClasses)
+    public function setEntitiesIgnoredDuringSchemaGeneration(array $entitiesIgnoredDuringSchemaGeneration)
     {
-        $this->_attributes['schemaIgnoreClasses'] = $schemaIgnoreClasses;
+        $this->_attributes['entitiesIgnoredDuringSchemaGeneration'] = $entitiesIgnoredDuringSchemaGeneration;
     }
 }

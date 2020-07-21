@@ -291,7 +291,7 @@ class SchemaToolTest extends OrmTestCase
         self::assertTrue($schema->hasTable('first_entity'), 'Table first_entity should exist.');
         self::assertTrue($schema->hasTable('second_entity'), 'Table second_entity should exist.');
 
-        $em->getConfiguration()->setSchemaIgnoreClasses([
+        $em->getConfiguration()->setEntitiesIgnoredDuringSchemaGeneration([
             SecondEntity::class,
         ]);
 
