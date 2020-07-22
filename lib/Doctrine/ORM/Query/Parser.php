@@ -437,6 +437,10 @@ class Parser
             $expr = $this->identVariableExpressions[$dqlAlias];
             $key  = array_search($expr, $AST->selectClause->selectExpressions);
 
+            if ($key === false) {
+                continue;
+            }
+
             unset($AST->selectClause->selectExpressions[$key]);
 
             $AST->selectClause->selectExpressions[] = $expr;
