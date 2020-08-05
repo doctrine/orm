@@ -93,6 +93,52 @@ GROUP BY p.department HAVING SUM(p.salary) > 200000 ORDER BY p.department -- com
         $this->assertEquals(1, $result[3]['friends']);
     }
 
+    public function testOrderBySimpleCaseExpression() : void
+    {
+        $dql = <<<'DQL'
+            SELECT p.name
+            FROM Doctrine\Tests\Models\Company\CompanyEmployee p
+            ORDER BY CASE p.name
+            WHEN 'Jonathan W.' THEN 1
+            WHEN 'Roman B.' THEN 2
+            WHEN 'Guilherme B.' THEN 3
+            ELSE 4
+            END DESC
+DQL;
+
+        $result = $this->_em->createQuery($dql)->getScalarResult();
+
+        self::assertCount(4, $result);
+
+        self::assertEquals('Benjamin E.', $result[0]['name']);
+        self::assertEquals('Guilherme B.', $result[1]['name']);
+        self::assertEquals('Roman B.', $result[2]['name']);
+        self::assertEquals('Jonathan W.', $result[3]['name']);
+    }
+
+    public function testOrderByGeneralCaseExpression() : void
+    {
+        $dql = <<<'DQL'
+            SELECT p.name
+            FROM Doctrine\Tests\Models\Company\CompanyEmployee p
+            ORDER BY CASE
+            WHEN p.name='Jonathan W.' THEN 1
+            WHEN p.name='Roman B.' THEN 2
+            WHEN p.name='Guilherme B.' THEN 3
+            ELSE 4
+            END DESC
+DQL;
+
+        $result = $this->_em->createQuery($dql)->getScalarResult();
+
+        self::assertCount(4, $result);
+
+        self::assertEquals('Benjamin E.', $result[0]['name']);
+        self::assertEquals('Guilherme B.', $result[1]['name']);
+        self::assertEquals('Roman B.', $result[2]['name']);
+        self::assertEquals('Jonathan W.', $result[3]['name']);
+    }
+
     public function testIsNullAssociation()
     {
         $dql = 'SELECT p FROM Doctrine\Tests\Models\Company\CompanyPerson p '.
