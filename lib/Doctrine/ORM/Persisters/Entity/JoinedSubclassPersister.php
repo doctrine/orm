@@ -296,7 +296,11 @@ class JoinedSubclassPersister extends AbstractEntityInheritancePersister
             $parentTable    = $this->quoteStrategy->getTableName($parentMetadata, $this->platform);
             $parentTypes    = $this->getClassIdentifiersTypes($parentMetadata);
 
-            $this->conn->delete($parentTable, $id, $parentTypes);
+            // Fix for bug GH-8229 (id column from parent class renamed in child class):
+            // Use the correct name for the id column as named in the parent class.
+            $parentId       = array_combine($parentMetadata->getIdentifierColumnNames(), $identifier);
+
+            $this->conn->delete($parentTable, $parentId, $parentTypes);
         }
 
         return (bool) $affectedRows;
@@ -589,9 +593,11 @@ class JoinedSubclassPersister extends AbstractEntityInheritancePersister
             $tableAlias   = $this->getSQLTableAlias($parentClassName);
             $joinSql     .= ' INNER JOIN ' . $this->quoteStrategy->getTableName($parentClass, $this->platform) . ' ' . $tableAlias . ' ON ';
 
-
-            foreach ($identifierColumn as $idColumn) {
-                $conditions[] = $baseTableAlias . '.' . $idColumn . ' = ' . $tableAlias . '.' . $idColumn;
+            // Fix for bug GH-8229 (id column from parent class renamed in child class):
+            // Use the correct name for the id column as named in the parent class.
+            $parentIdentifierColumn = $parentClass->getIdentifierColumnNames();
+            foreach ($identifierColumn as $index => $idColumn) {
+                $conditions[] = $baseTableAlias . '.' . $idColumn . ' = ' . $tableAlias . '.' . $parentIdentifierColumn[$index];
             }
 
             $joinSql .= implode(' AND ', $conditions);
@@ -604,8 +610,11 @@ class JoinedSubclassPersister extends AbstractEntityInheritancePersister
             $tableAlias  = $this->getSQLTableAlias($subClassName);
             $joinSql    .= ' LEFT JOIN ' . $this->quoteStrategy->getTableName($subClass, $this->platform) . ' ' . $tableAlias . ' ON ';
 
-            foreach ($identifierColumn as $idColumn) {
-                $conditions[] = $baseTableAlias . '.' . $idColumn . ' = ' . $tableAlias . '.' . $idColumn;
+            // Fix for bug GH-8229 (id column from parent class renamed in child class):
+            // Use the correct name for the id column as named in the parent class.
+            $subClassIdentifierColumn = $subClass->getIdentifierColumnNames();
+            foreach ($identifierColumn as $index => $idColumn) {
+                $conditions[] = $baseTableAlias . '.' . $idColumn . ' = ' . $tableAlias . '.' . $subClassIdentifierColumn[$index];
             }
 
             $joinSql .= implode(' AND ', $conditions);

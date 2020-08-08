@@ -625,12 +625,31 @@ class BasicEntityPersister implements EntityPersister
             $newVal = $change[1];
 
             if ( ! isset($this->class->associationMappings[$field])) {
-                $fieldMapping = $this->class->fieldMappings[$field];
+                $class = $this->class;
+
+                // Fix for bug GH-8229 (id column from parent class renamed in child class):
+                // Get the correct class metadata
+                foreach ($class->parentClasses as $parentClassName) {
+                    $parentClass = $this->em->getClassMetadata($parentClassName);
+                    if (\array_key_exists($field, $parentClass->fieldMappings)) {
+                        $class = $parentClass;
+                    }
+                }
+
+                $fieldMapping = $class->fieldMappings[$field];
                 $columnName   = $fieldMapping['columnName'];
 
                 $this->columnTypes[$columnName] = $fieldMapping['type'];
 
+                // Fix for bug GH-8229 (id column from parent class renamed in child class):
+                // The getOwningTable() method is overwritten in class JoinedSubclassPersister
+                // and there the wrong class metadata in property "class" is used.
+                // By temporarily overwriting it, we get the correct values (the property
+                // "owningTableMap" must be correctly initialized there for entity updates).
+                $previousClass = $this->class;
+                $this->class = $class;
                 $result[$this->getOwningTable($field)][$columnName] = $newVal;
+                $this->class = $previousClass;
 
                 continue;
             }
