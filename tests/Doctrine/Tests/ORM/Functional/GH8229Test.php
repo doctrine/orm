@@ -1,4 +1,6 @@
 <?php
+declare(strict_types=1);
+
 namespace Doctrine\Tests\ORM\Functional;
 
 use Doctrine\Tests\OrmFunctionalTestCase;
@@ -18,7 +20,7 @@ class GH8229Test extends OrmFunctionalTestCase
     public function testCorrectColumnNameInParentClassAfterAttributeOveride()
     {
         // Test creation
-        $entity = new GH8229User('foo');
+        $entity     = new GH8229User('foo');
         $identifier = $entity->id;
         $this->_em->persist($entity);
         $this->_em->flush();
@@ -77,6 +79,8 @@ abstract class GH8229Resource
 final class GH8229User extends GH8229Resource
 {
     /**
+     * Additional property to test update
+     *
      * @Column(type="string", name="username", length=191, nullable=false)
      */
     public $username;

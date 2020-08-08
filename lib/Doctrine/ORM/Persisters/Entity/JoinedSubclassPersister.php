@@ -27,6 +27,8 @@ use Doctrine\DBAL\Types\Type;
 use Doctrine\Common\Collections\Criteria;
 use Doctrine\ORM\Utility\PersisterHelper;
 
+use function array_combine;
+
 /**
  * The joined subclass persister maps a single entity instance to several tables in the
  * database as it is defined by the <tt>Class Table Inheritance</tt> strategy.
@@ -302,7 +304,7 @@ class JoinedSubclassPersister extends AbstractEntityInheritancePersister
 
             // Fix for bug GH-8229 (id column from parent class renamed in child class):
             // Use the correct name for the id column as named in the parent class.
-            $parentId       = array_combine($parentMetadata->getIdentifierColumnNames(), $identifier);
+            $parentId = array_combine($parentMetadata->getIdentifierColumnNames(), $identifier);
 
             $this->conn->delete($parentTable, $parentId, $parentTypes);
         }

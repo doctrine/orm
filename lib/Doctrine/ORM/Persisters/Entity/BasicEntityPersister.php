@@ -37,6 +37,7 @@ use Doctrine\ORM\Query;
 use Doctrine\ORM\UnitOfWork;
 use Doctrine\ORM\Utility\IdentifierFlattener;
 use Doctrine\ORM\Utility\PersisterHelper;
+use function array_key_exists;
 use function array_map;
 use function array_merge;
 use function assert;
@@ -631,7 +632,7 @@ class BasicEntityPersister implements EntityPersister
                 // Get the correct class metadata
                 foreach ($class->parentClasses as $parentClassName) {
                     $parentClass = $this->em->getClassMetadata($parentClassName);
-                    if (\array_key_exists($field, $parentClass->fieldMappings)) {
+                    if (array_key_exists($field, $parentClass->fieldMappings)) {
                         $class = $parentClass;
                     }
                 }
@@ -646,10 +647,10 @@ class BasicEntityPersister implements EntityPersister
                 // and there the wrong class metadata in property "class" is used.
                 // By temporarily overwriting it, we get the correct values (the property
                 // "owningTableMap" must be correctly initialized there for entity updates).
-                $previousClass = $this->class;
-                $this->class = $class;
+                $previousClass                                      = $this->class;
+                $this->class                                        = $class;
                 $result[$this->getOwningTable($field)][$columnName] = $newVal;
-                $this->class = $previousClass;
+                $this->class                                        = $previousClass;
 
                 continue;
             }
