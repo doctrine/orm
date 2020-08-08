@@ -186,7 +186,11 @@ class JoinedSubclassPersister extends AbstractEntityInheritancePersister
             $rootClass = $this->em->getClassMetadata($this->class->getRootClassName());
             $rootTable = $rootClass->table->getQuotedQualifiedName($this->platform);
 
-            return (bool) $this->conn->delete($rootTable, $id);
+            // Fix for bug GH-8229 (id column from parent class renamed in child class):
+            // Use the correct name for the id column as named in the root class.
+            $rootId = array_combine(array_keys($rootClass->getIdentifierColumns($this->em)), $identifier);
+
+            return (bool) $this->conn->delete($rootTable, $rootId);
         }
 
         // Delete from all tables individually, starting from this class' table up to the root table.
