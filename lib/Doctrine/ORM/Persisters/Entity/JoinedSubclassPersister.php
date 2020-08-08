@@ -26,7 +26,6 @@ use Doctrine\DBAL\Types\Type;
 
 use Doctrine\Common\Collections\Criteria;
 use Doctrine\ORM\Utility\PersisterHelper;
-
 use function array_combine;
 
 /**
