@@ -7,11 +7,9 @@ namespace Doctrine\ORM\Persisters\Entity;
 use Doctrine\Common\Collections\Criteria;
 use Doctrine\DBAL\LockMode;
 use Doctrine\DBAL\Statement;
-use Doctrine\DBAL\Types\Type;
 use Doctrine\ORM\Mapping\AssociationMetadata;
 use Doctrine\ORM\Mapping\ColumnMetadata;
 use Doctrine\ORM\Mapping\FieldMetadata;
-use Doctrine\ORM\Mapping\JoinColumnMetadata;
 use Doctrine\ORM\Mapping\ManyToManyAssociationMetadata;
 use Doctrine\ORM\Mapping\ToManyAssociationMetadata;
 use Doctrine\ORM\Mapping\ToOneAssociationMetadata;
@@ -20,8 +18,8 @@ use function array_combine;
 use function array_filter;
 use function array_keys;
 use function array_merge;
+use function array_values;
 use function implode;
-use function is_array;
 
 /**
  * The joined subclass persister maps a single entity instance to several tables in the
@@ -458,7 +456,7 @@ class JoinedSubclassPersister extends AbstractEntityInheritancePersister
     private function getJoinSql($baseTableAlias)
     {
         $joinSql           = '';
-        $identifierColumns = \array_values($this->class->getIdentifierColumns($this->em));
+        $identifierColumns = array_values($this->class->getIdentifierColumns($this->em));
 
         // INNER JOIN parent tables
         $parentClass = $this->class;
@@ -471,9 +469,9 @@ class JoinedSubclassPersister extends AbstractEntityInheritancePersister
 
             // Fix for bug GH-8229 (id column from parent class renamed in child class):
             // Use the correct name for the id column as named in the parent class.
-            $parentIdentifierColumns = \array_values($parentClass->getIdentifierColumns($this->em));
+            $parentIdentifierColumns = array_values($parentClass->getIdentifierColumns($this->em));
             foreach ($identifierColumns as $index => $idColumn) {
-                $quotedColumnName = $this->platform->quoteIdentifier($idColumn->getColumnName());
+                $quotedColumnName       = $this->platform->quoteIdentifier($idColumn->getColumnName());
                 $quotedParentColumnName = $this->platform->quoteIdentifier($parentIdentifierColumns[$index]->getColumnName());
 
                 $conditions[] = $baseTableAlias . '.' . $quotedColumnName . ' = ' . $tableAlias . '.' . $quotedParentColumnName;
@@ -492,9 +490,9 @@ class JoinedSubclassPersister extends AbstractEntityInheritancePersister
 
             // Fix for bug GH-8229 (id column from parent class renamed in child class):
             // Use the correct name for the id column as named in the parent class.
-            $subClassIdentifierColumns = \array_values($subClass->getIdentifierColumns($this->em));
+            $subClassIdentifierColumns = array_values($subClass->getIdentifierColumns($this->em));
             foreach ($identifierColumns as $index => $idColumn) {
-                $quotedColumnName = $this->platform->quoteIdentifier($idColumn->getColumnName());
+                $quotedColumnName         = $this->platform->quoteIdentifier($idColumn->getColumnName());
                 $quotedSubClassColumnName = $this->platform->quoteIdentifier($subClassIdentifierColumns[$index]->getColumnName());
 
                 $conditions[] = $baseTableAlias . '.' . $quotedColumnName . ' = ' . $tableAlias . '.' . $quotedSubClassColumnName;

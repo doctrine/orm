@@ -1,8 +1,10 @@
 <?php
+declare(strict_types=1);
+
 namespace Doctrine\Tests\ORM\Functional;
 
-use Doctrine\ORM\Annotation\AttributeOverrides;
 use Doctrine\ORM\Annotation\AttributeOverride;
+use Doctrine\ORM\Annotation\AttributeOverrides;
 use Doctrine\ORM\Annotation\Column;
 use Doctrine\ORM\Annotation\DiscriminatorColumn;
 use Doctrine\ORM\Annotation\DiscriminatorMap;
@@ -17,7 +19,7 @@ use Doctrine\Tests\OrmFunctionalTestCase;
  */
 class GH8229Test extends OrmFunctionalTestCase
 {
-    protected function setUp(): void
+    protected function setUp() : void
     {
         parent::setUp();
 
@@ -27,7 +29,7 @@ class GH8229Test extends OrmFunctionalTestCase
     public function testCorrectColumnNameInParentClassAfterAttributeOveride()
     {
         // Test creation
-        $entity = new GH8229User('foo');
+        $entity     = new GH8229User('foo');
         $identifier = $entity->id;
         $this->em->persist($entity);
         $this->em->flush();
@@ -86,6 +88,8 @@ abstract class GH8229Resource
 final class GH8229User extends GH8229Resource
 {
     /**
+     * Additional property to test update
+     *
      * @Column(type="string", name="username", length=191, nullable=false)
      */
     public $username;
