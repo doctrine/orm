@@ -366,8 +366,12 @@ class SqlWalker implements TreeWalker
 
             $sqlParts = [];
 
-            foreach ($this->quoteStrategy->getIdentifierColumnNames($class, $this->platform) as $columnName) {
-                $sqlParts[] = $baseTableAlias . '.' . $columnName . ' = ' . $tableAlias . '.' . $columnName;
+            // Fix for bug GH-8229 (id column from parent class renamed in child class):
+            // Use the correct name for the id column as named in the parent class.
+            $identifierColumn       = $this->quoteStrategy->getIdentifierColumnNames($class, $this->platform);
+            $parentIdentifierColumn = $this->quoteStrategy->getIdentifierColumnNames($parentClass, $this->platform);
+            foreach ($identifierColumn as $index => $idColumn) {
+                $sqlParts[] = $baseTableAlias . '.' . $idColumn . ' = ' . $tableAlias . '.' . $parentIdentifierColumn[$index];
             }
 
             // Add filters on the root class
@@ -661,11 +665,21 @@ class SqlWalker implements TreeWalker
                 $dqlAlias = $pathExpr->identificationVariable;
                 $class = $this->queryComponents[$dqlAlias]['metadata'];
 
+                // Fix for bug GH-8229 (id column from parent class renamed in child class):
+                // Use the correct name for the id column as named in the inherited class.
+                $mapping = $class->fieldMappings[$fieldName];
+                if (isset($mapping['inherited'])) {
+                    $inheritedClass   = $this->em->getClassMetadata($mapping['inherited']);
+                    $quotedColumnName = $this->quoteStrategy->getColumnName($fieldName, $inheritedClass, $this->platform);
+                } else {
+                    $quotedColumnName = $this->quoteStrategy->getColumnName($fieldName, $class, $this->platform);
+                }
+
                 if ($this->useSqlTableAliases) {
                     $sql .= $this->walkIdentificationVariable($dqlAlias, $fieldName) . '.';
                 }
 
-                $sql .= $this->quoteStrategy->getColumnName($fieldName, $class, $this->platform);
+                $sql .= $quotedColumnName;
                 break;
 
             case AST\PathExpression::TYPE_SINGLE_VALUED_ASSOCIATION:
@@ -1405,13 +1419,19 @@ class SqlWalker implements TreeWalker
                         continue;
                     }
 
-                    $tableName = (isset($mapping['inherited']))
-                        ? $this->em->getClassMetadata($mapping['inherited'])->getTableName()
-                        : $class->getTableName();
+                    // Fix for bug GH-8229 (id column from parent class renamed in child class):
+                    // Use the correct name for the id column as named in the inherited class.
+                    if (isset($mapping['inherited'])) {
+                        $inheritedClass   = $this->em->getClassMetadata($mapping['inherited']);
+                        $tableName        = $inheritedClass->getTableName();
+                        $quotedColumnName = $this->quoteStrategy->getColumnName($fieldName, $inheritedClass, $this->platform);
+                    } else {
+                        $tableName        = $class->getTableName();
+                        $quotedColumnName = $this->quoteStrategy->getColumnName($fieldName, $class, $this->platform);
+                    }
 
-                    $sqlTableAlias    = $this->getSQLTableAlias($tableName, $dqlAlias);
-                    $columnAlias      = $this->getSQLColumnAlias($mapping['columnName']);
-                    $quotedColumnName = $this->quoteStrategy->getColumnName($fieldName, $class, $this->platform);
+                    $sqlTableAlias = $this->getSQLTableAlias($tableName, $dqlAlias);
+                    $columnAlias   = $this->getSQLColumnAlias($mapping['columnName']);
 
                     $col = $sqlTableAlias . '.' . $quotedColumnName;
 
