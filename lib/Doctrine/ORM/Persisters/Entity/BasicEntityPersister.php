@@ -621,6 +621,15 @@ class BasicEntityPersister implements EntityPersister
                     break;
 
                 case $property instanceof LocalColumnMetadata:
+                    // Fix for bug GH-8229 (id column from parent class renamed in child class):
+                    // Get the correct class metadata
+                    $class = $this->class;
+                    while ($class = $class->getParent()) {
+                        if ($class->hasProperty($propertyName)) {
+                            $property = $class->getProperty($propertyName);
+                        }
+                    }
+
                     $columnTableName = $property->getTableName() ?? $tableName;
                     $columnName      = sprintf('%s%s', $columnPrefix, $property->getColumnName());
 

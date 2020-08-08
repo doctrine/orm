@@ -197,7 +197,11 @@ class JoinedSubclassPersister extends AbstractEntityInheritancePersister
         while (($parentClass = $parentClass->getParent()) !== null) {
             $parentTable = $parentClass->table->getQuotedQualifiedName($this->platform);
 
-            $this->conn->delete($parentTable, $id);
+            // Fix for bug GH-8229 (id column from parent class renamed in child class):
+            // Use the correct name for the id column as named in the parent class.
+            $parentId = array_combine(array_keys($parentClass->getIdentifierColumns($this->em)), $identifier);
+
+            $this->conn->delete($parentTable, $parentId);
         }
 
         return (bool) $affectedRows;
@@ -450,7 +454,7 @@ class JoinedSubclassPersister extends AbstractEntityInheritancePersister
     private function getJoinSql($baseTableAlias)
     {
         $joinSql           = '';
-        $identifierColumns = $this->class->getIdentifierColumns($this->em);
+        $identifierColumns = \array_values($this->class->getIdentifierColumns($this->em));
 
         // INNER JOIN parent tables
         $parentClass = $this->class;
@@ -461,10 +465,14 @@ class JoinedSubclassPersister extends AbstractEntityInheritancePersister
             $tableAlias = $this->getSQLTableAlias($parentClass->getTableName());
             $joinSql   .= ' INNER JOIN ' . $tableName . ' ' . $tableAlias . ' ON ';
 
-            foreach ($identifierColumns as $idColumn) {
+            // Fix for bug GH-8229 (id column from parent class renamed in child class):
+            // Use the correct name for the id column as named in the parent class.
+            $parentIdentifierColumns = \array_values($parentClass->getIdentifierColumns($this->em));
+            foreach ($identifierColumns as $index => $idColumn) {
                 $quotedColumnName = $this->platform->quoteIdentifier($idColumn->getColumnName());
+                $quotedParentColumnName = $this->platform->quoteIdentifier($parentIdentifierColumns[$index]->getColumnName());
 
-                $conditions[] = $baseTableAlias . '.' . $quotedColumnName . ' = ' . $tableAlias . '.' . $quotedColumnName;
+                $conditions[] = $baseTableAlias . '.' . $quotedColumnName . ' = ' . $tableAlias . '.' . $quotedParentColumnName;
             }
 
             $joinSql .= implode(' AND ', $conditions);
@@ -478,10 +486,14 @@ class JoinedSubclassPersister extends AbstractEntityInheritancePersister
             $tableAlias = $this->getSQLTableAlias($subClass->getTableName());
             $joinSql   .= ' LEFT JOIN ' . $tableName . ' ' . $tableAlias . ' ON ';
 
-            foreach ($identifierColumns as $idColumn) {
+            // Fix for bug GH-8229 (id column from parent class renamed in child class):
+            // Use the correct name for the id column as named in the parent class.
+            $subClassIdentifierColumns = \array_values($subClass->getIdentifierColumns($this->em));
+            foreach ($identifierColumns as $index => $idColumn) {
                 $quotedColumnName = $this->platform->quoteIdentifier($idColumn->getColumnName());
+                $quotedSubClassColumnName = $this->platform->quoteIdentifier($subClassIdentifierColumns[$index]->getColumnName());
 
-                $conditions[] = $baseTableAlias . '.' . $quotedColumnName . ' = ' . $tableAlias . '.' . $quotedColumnName;
+                $conditions[] = $baseTableAlias . '.' . $quotedColumnName . ' = ' . $tableAlias . '.' . $quotedSubClassColumnName;
             }
 
             $joinSql .= implode(' AND ', $conditions);
