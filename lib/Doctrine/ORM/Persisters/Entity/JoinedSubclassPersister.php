@@ -80,7 +80,7 @@ class JoinedSubclassPersister extends AbstractEntityInheritancePersister
         }
 
         // Collect identifier column values
-        $id = [];
+        $id           = [];
         $idParameters = [];
 
         foreach ($this->class->getIdentifier() as $propertyName) {
