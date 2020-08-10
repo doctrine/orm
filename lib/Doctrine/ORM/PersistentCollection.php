@@ -24,6 +24,7 @@ use Doctrine\Common\Collections\Collection;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Selectable;
 use Doctrine\Common\Collections\Criteria;
+use Doctrine\ORM\Event\InitializePersistentCollectionEventArgs;
 use Doctrine\ORM\Mapping\ClassMetadata;
 use function get_class;
 
@@ -696,6 +697,10 @@ final class PersistentCollection extends AbstractLazyCollection implements Selec
 
         if ($newlyAddedDirtyObjects) {
             $this->restoreNewObjectsInDirtyCollection($newlyAddedDirtyObjects);
+        }
+
+        if ($this->em->getEventManager()->hasListeners(Events::initializePersistentCollection)) {
+            $this->em->getEventManager()->dispatchEvent(Events::initializePersistentCollection, new InitializePersistentCollectionEventArgs($this));
         }
     }
 

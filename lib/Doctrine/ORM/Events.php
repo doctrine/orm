@@ -164,4 +164,14 @@ final class Events
      * @var string
      */
     const onClear = 'onClear';
+
+    /**
+     * The initializePersistentCollection event occurs after a PersistentCollection got initialized.
+     */
+    public const initializePersistentCollection = 'initializePersistentCollection';
+
+    /**
+     * The initializeProxy event occurs after a Proxy got initialized.
+     */
+    public const initializeProxy = 'initializeProxy';
 }

@@ -25,6 +25,8 @@ use Doctrine\Common\Proxy\ProxyDefinition;
 use Doctrine\Common\Proxy\ProxyGenerator;
 use Doctrine\Common\Util\ClassUtils;
 use Doctrine\ORM\EntityManagerInterface;
+use Doctrine\ORM\Event\InitializeProxyEventArgs;
+use Doctrine\ORM\Events;
 use Doctrine\ORM\Persisters\Entity\EntityPersister;
 use Doctrine\ORM\EntityNotFoundException;
 use Doctrine\ORM\Utility\IdentifierFlattener;
@@ -163,6 +165,10 @@ class ProxyFactory extends AbstractProxyFactory
                     $classMetadata->getName(),
                     $this->identifierFlattener->flattenIdentifier($classMetadata, $identifier)
                 );
+            }
+
+            if ($this->em->getEventManager()->hasListeners(Events::initializeProxy)) {
+                $this->em->getEventManager()->dispatchEvent(Events::initializeProxy, new InitializeProxyEventArgs($proxy));
             }
         };
     }
