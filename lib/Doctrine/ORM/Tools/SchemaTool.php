@@ -338,7 +338,7 @@ class SchemaTool
                 $seqDef     = $class->sequenceGeneratorDefinition;
                 $quotedName = $this->quoteStrategy->getSequenceName($seqDef, $class, $this->platform);
                 if(isset($class->table['schema'])) {
-                    $quotedName = class->table['schema'].'.'.$quotedName;
+                    $quotedName = $class->table['schema'].'.'.$quotedName;
                 }
                 if ( ! $schema->hasSequence($quotedName)) {
                     $schema->createSequence(
