@@ -20,6 +20,7 @@
 namespace Doctrine\ORM\Mapping\Driver;
 
 use Doctrine\DBAL\Schema\AbstractSchemaManager;
+use Doctrine\DBAL\Schema\ForeignKeyConstraint;
 use Doctrine\DBAL\Schema\SchemaException;
 use Doctrine\DBAL\Schema\Table;
 use Doctrine\DBAL\Schema\Column;
@@ -399,6 +400,22 @@ class DatabaseDriver implements MappingDriver
      * @param \Doctrine\DBAL\Schema\Column $column
      *
      * @return array
+     *
+     * @psalm-return array{
+     *                   fieldName: string,
+     *                   columnName: string,
+     *                   type: string,
+     *                   nullable: bool,
+     *                   options?: array{
+     *                       unsigned?: bool,
+     *                       fixed?: bool,
+     *                       comment?: string,
+     *                       default?: string
+     *                   },
+     *                   precision?: int,
+     *                   scale?: int,
+     *                   length?: int|null
+     *               }
      */
     private function buildFieldMapping($tableName, Column $column)
     {
@@ -499,7 +516,9 @@ class DatabaseDriver implements MappingDriver
      *
      * @param \Doctrine\DBAL\Schema\Table $table
      *
-     * @return array
+     * @return ForeignKeyConstraint[]
+     *
+     * @psalm-return array<string, ForeignKeyConstraint>
      */
     private function getTableForeignKeys(Table $table)
     {
@@ -513,7 +532,7 @@ class DatabaseDriver implements MappingDriver
      *
      * @param \Doctrine\DBAL\Schema\Table $table
      *
-     * @return array
+     * @return string[]
      */
     private function getTablePrimaryKeys(Table $table)
     {

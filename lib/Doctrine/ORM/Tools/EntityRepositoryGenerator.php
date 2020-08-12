@@ -170,7 +170,7 @@ class <className> extends <repositoryName>
     /**
      * @param string $repositoryName
      *
-     * @return \Doctrine\ORM\Tools\EntityRepositoryGenerator
+     * @return self
      */
     public function setDefaultRepositoryName($repositoryName)
     {

@@ -557,7 +557,7 @@ class UnitOfWork implements PropertyChangedListener
     private function executeExtraUpdates()
     {
         foreach ($this->extraUpdates as $oid => $update) {
-            list ($entity, $changeset) = $update;
+            [$entity, $changeset] = $update;
 
             $this->entityChangeSets[$oid] = $changeset;
             $this->getEntityPersister(get_class($entity))->update($entity);
@@ -1402,7 +1402,7 @@ class UnitOfWork implements PropertyChangedListener
         $extraUpdate = [$entity, $changeset];
 
         if (isset($this->extraUpdates[$oid])) {
-            list(, $changeset2) = $this->extraUpdates[$oid];
+            [, $changeset2] = $this->extraUpdates[$oid];
 
             $extraUpdate = [$entity, $changeset + $changeset2];
         }
@@ -3052,8 +3052,8 @@ class UnitOfWork implements PropertyChangedListener
      * @param mixed  $id            The entity identifier to look for.
      * @param string $rootClassName The name of the root class of the mapped entity hierarchy.
      *
-     * @return object|bool Returns the entity with the specified identifier if it exists in
-     *                     this UnitOfWork, FALSE otherwise.
+     * @return object|false Returns the entity with the specified identifier if it exists in
+     *                      this UnitOfWork, FALSE otherwise.
      */
     public function tryGetById($id, $rootClassName)
     {

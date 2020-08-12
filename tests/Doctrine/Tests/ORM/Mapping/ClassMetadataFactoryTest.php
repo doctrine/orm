@@ -453,6 +453,36 @@ class ClassMetadataFactoryTest extends OrmTestCase
 
         $this->assertTrue($userMetadata->isIdGeneratorIdentity());
     }
+
+    public function testInvalidSubClassCase()
+    {
+        $this->expectException(MappingException::class);
+        $this->expectExceptionMessage('Entity class \'Doctrine\Tests\ORM\Mapping\cube\' used in the discriminator map of class \'Doctrine\Tests\ORM\Mapping\Shape\' does not exist.');
+
+        $cmf    = new ClassMetadataFactory();
+        $driver = $this->createAnnotationDriver([__DIR__]);
+        $em     = $this->_createEntityManager($driver);
+        $cmf->setEntityManager($em);
+
+        $userMetadata = $cmf->getMetadataFor(Shape::class);
+    }
+}
+
+/**
+ * @Entity
+ * @InheritanceType("SINGLE_TABLE")
+ * @DiscriminatorMap({"cube" = cube::class})
+ * @DiscriminatorColumn(name="discr", length=32, type="string")
+ */
+abstract class Shape
+{
+    /** @Id @Column(type="string") @GeneratedValue(strategy="AUTO") */
+    public $id;
+}
+
+/** @Entity */
+final class Cube extends Shape
+{
 }
 
 /* Test subject class with overridden factory method for mocking purposes */

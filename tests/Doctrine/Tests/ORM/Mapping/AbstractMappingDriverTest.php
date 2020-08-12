@@ -1078,7 +1078,6 @@ abstract class AbstractMappingDriverTest extends OrmTestCase
         $class = $this->createClassMetadata(SingleTableEntityIncompleteDiscriminatorColumnMapping::class);
         $this->assertEquals('dtype', $class->discriminatorColumn['name']);
     }
-
 }
 
 /**
@@ -1343,7 +1342,6 @@ class Dog extends Animal
 
     }
 }
-
 
 /**
  * @Entity

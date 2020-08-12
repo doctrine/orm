@@ -36,7 +36,7 @@ class OptimisticLockException extends ORMException
 
     /**
      * @param string $msg
-     * @param object $entity
+     * @param object|null $entity
      */
     public function __construct($msg, $entity)
     {

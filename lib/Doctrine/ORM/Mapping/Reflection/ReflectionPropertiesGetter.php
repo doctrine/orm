@@ -52,9 +52,11 @@ final class ReflectionPropertiesGetter
     }
 
     /**
-     * @param $className
+     * @param string $className
      *
      * @return ReflectionProperty[] indexed by property internal name
+     *
+     * @psalm-param class-string $className
      */
     public function getProperties($className)
     {
@@ -79,8 +81,10 @@ final class ReflectionPropertiesGetter
      * @param string $className
      *
      * @return ReflectionClass[]
+     *
+     * @psalm-return list<ReflectionClass>
      */
-    private function getHierarchyClasses($className)
+    private function getHierarchyClasses($className) : array
     {
         $classes         = [];
         $parentClassName = $className;
@@ -97,13 +101,17 @@ final class ReflectionPropertiesGetter
         return $classes;
     }
 
+    //  phpcs:disable SlevomatCodingStandard.Classes.UnusedPrivateElements.UnusedMethod
     /**
      * @param ReflectionClass $reflectionClass
      *
      * @return ReflectionProperty[]
+     *
+     * @psalm-return array<string, ReflectionProperty>
      */
-    private function getClassProperties(ReflectionClass $reflectionClass)
+    private function getClassProperties(ReflectionClass $reflectionClass) : array
     {
+        //  phpcs:enable SlevomatCodingStandard.Classes.UnusedPrivateElements.UnusedMethod
         $properties = $reflectionClass->getProperties();
 
         return array_filter(

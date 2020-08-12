@@ -250,6 +250,12 @@ as follows:
 -  If X is a detached entity, an exception will be thrown on
    flush.
 
+.. caution::
+
+    Do not pass detached entities to the persist operation. The persist operation always
+    considers entities that are not yet known to the ``EntityManager`` as new entities
+    (refer to the ``STATE_NEW`` constant inside the ``UnitOfWork``).
+
 Removing entities
 -----------------
 

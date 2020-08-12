@@ -684,7 +684,17 @@ class YamlDriver extends FileDriver
      *
      * @param array $joinColumnElement The array join column element.
      *
-     * @return array The mapping array.
+     * @return mixed[] The mapping array.
+     *
+     * @psalm-return array{
+     *                   referencedColumnName?: string,
+     *                   name?: string,
+     *                   fieldName?: string,
+     *                   unique?: bool,
+     *                   nullable?: bool,
+     *                   onDelete?: mixed,
+     *                   columnDefinition?: mixed
+     *               }
      */
     private function joinColumnToArray($joinColumnElement)
     {
@@ -726,7 +736,21 @@ class YamlDriver extends FileDriver
      * @param string $fieldName
      * @param array  $column
      *
-     * @return  array
+     * @return mixed[]
+     *
+     * @psalm-return array{
+     *                   fieldName: string,
+     *                   type?: string,
+     *                   columnName?: mixed,
+     *                   length?: mixed,
+     *                   precision?: mixed,
+     *                   scale?: mixed,
+     *                   unique?: bool,
+     *                   options?: mixed,
+     *                   nullable?: mixed,
+     *                   version?: mixed,
+     *                   columnDefinition?: mixed
+     *               }
      */
     private function columnToArray($fieldName, $column)
     {
@@ -787,9 +811,12 @@ class YamlDriver extends FileDriver
     /**
      * Parse / Normalize the cache configuration
      *
-     * @param array $cacheMapping
+     * @param mixed[] $cacheMapping
      *
-     * @return array
+     * @return mixed[]
+     *
+     * @psalm-param array{usage: mixed, region: null|string} $cacheMapping
+     * @psalm-return array{usage: mixed, region: null|string}
      */
     private function cacheToArray($cacheMapping)
     {

@@ -40,7 +40,7 @@ abstract class AbstractIdGenerator
      * By default, this method returns FALSE. Generators that have this requirement
      * must override this method and return TRUE.
      *
-     * @return boolean
+     * @return bool
      */
     public function isPostInsertGenerator()
     {

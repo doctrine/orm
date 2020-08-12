@@ -459,4 +459,19 @@ class QueryTest extends OrmTestCase
 
         $query = $this->_em->createQuery('0')->execute();
     }
+
+    /**
+     * @group 8106
+     */
+    public function testGetParameterColonNormalize() : void
+    {
+        $query = $this->_em->createQuery('select u from ' . CmsUser::class . ' u where u.name = :name');
+
+        $query->setParameter(':name', 'Benjamin');
+        $query->setParameter('name', 'Benjamin');
+
+        self::assertCount(1, $query->getParameters());
+        self::assertSame('Benjamin', $query->getParameter(':name')->getValue());
+        self::assertSame('Benjamin', $query->getParameter('name')->getValue());
+    }
 }
