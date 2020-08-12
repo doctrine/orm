@@ -108,4 +108,4 @@ jobs:
         run: "git remote set-branches --add origin $GITHUB_BASE_REF && git fetch origin $GITHUB_BASE_REF"
 
       - name: "Run git-phpcs"
-        run: "php git-phpcs.phar origin/$GITHUB_BASE_REF...$GITHUB_SHA --report=checkstyle|cs2pr"
+        run: "php git-phpcs.phar origin/$GITHUB_BASE_REF...$GITHUB_SHA --report=checkstyle | cs2pr"
