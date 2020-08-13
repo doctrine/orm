@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "d30e93c917820c3097728e70f87cfea9",
+    "content-hash": "455196bc19a958fd632201f4e662fe56",
     "packages": [
         {
             "name": "composer/package-versions-deprecated",
@@ -1493,28 +1493,28 @@
         },
         {
             "name": "doctrine/coding-standard",
-            "version": "5.0.1",
+            "version": "6.0.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/doctrine/coding-standard.git",
-                "reference": "9017efe98b47329cbd895d43f596747c8ef27307"
+                "reference": "d33f69eb98b25aa51ffe3a909f0ec77000af4701"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/doctrine/coding-standard/zipball/9017efe98b47329cbd895d43f596747c8ef27307",
-                "reference": "9017efe98b47329cbd895d43f596747c8ef27307",
+                "url": "https://api.github.com/repos/doctrine/coding-standard/zipball/d33f69eb98b25aa51ffe3a909f0ec77000af4701",
+                "reference": "d33f69eb98b25aa51ffe3a909f0ec77000af4701",
                 "shasum": ""
             },
             "require": {
                 "dealerdirect/phpcodesniffer-composer-installer": "^0.5.0",
                 "php": "^7.1",
-                "slevomat/coding-standard": "^4.8.0",
-                "squizlabs/php_codesniffer": "^3.3.2"
+                "slevomat/coding-standard": "^5.0",
+                "squizlabs/php_codesniffer": "^3.4.0"
             },
             "type": "phpcodesniffer-standard",
             "extra": {
                 "branch-alias": {
-                    "dev-master": "5.0.x-dev"
+                    "dev-master": "6.0.x-dev"
                 }
             },
             "autoload": {
@@ -1550,7 +1550,7 @@
                 "standard",
                 "style"
             ],
-            "time": "2019-01-31T13:22:30+00:00"
+            "time": "2019-03-15T12:45:47+00:00"
         },
         {
             "name": "felixfbecker/advanced-json-rpc",
@@ -2151,6 +2151,53 @@
             "time": "2019-10-03T11:07:50+00:00"
         },
         {
+            "name": "phpstan/phpdoc-parser",
+            "version": "0.3.5",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/phpstan/phpdoc-parser.git",
+                "reference": "8c4ef2aefd9788238897b678a985e1d5c8df6db4"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/phpstan/phpdoc-parser/zipball/8c4ef2aefd9788238897b678a985e1d5c8df6db4",
+                "reference": "8c4ef2aefd9788238897b678a985e1d5c8df6db4",
+                "shasum": ""
+            },
+            "require": {
+                "php": "~7.1"
+            },
+            "require-dev": {
+                "consistence/coding-standard": "^3.5",
+                "jakub-onderka/php-parallel-lint": "^0.9.2",
+                "phing/phing": "^2.16.0",
+                "phpstan/phpstan": "^0.10",
+                "phpunit/phpunit": "^6.3",
+                "slevomat/coding-standard": "^4.7.2",
+                "squizlabs/php_codesniffer": "^3.3.2",
+                "symfony/process": "^3.4 || ^4.0"
+            },
+            "type": "library",
+            "extra": {
+                "branch-alias": {
+                    "dev-master": "0.3-dev"
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "PHPStan\\PhpDocParser\\": [
+                        "src/"
+                    ]
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "description": "PHPDoc parser with support for nullable, intersection and generic types",
+            "time": "2019-06-07T19:13:52+00:00"
+        },
+        {
             "name": "phpstan/phpstan",
             "version": "0.12.25",
             "source": {
@@ -2456,6 +2503,7 @@
             "keywords": [
                 "tokenizer"
             ],
+            "abandoned": true,
             "time": "2019-09-17T06:23:10+00:00"
         },
         {
@@ -3110,29 +3158,30 @@
         },
         {
             "name": "slevomat/coding-standard",
-            "version": "4.8.7",
+            "version": "5.0.4",
             "source": {
                 "type": "git",
                 "url": "https://github.com/slevomat/coding-standard.git",
-                "reference": "bff96313d8c7c2ba57a4edb13c1c141df8988c58"
+                "reference": "287ac3347c47918c0bf5e10335e36197ea10894c"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/slevomat/coding-standard/zipball/bff96313d8c7c2ba57a4edb13c1c141df8988c58",
-                "reference": "bff96313d8c7c2ba57a4edb13c1c141df8988c58",
+                "url": "https://api.github.com/repos/slevomat/coding-standard/zipball/287ac3347c47918c0bf5e10335e36197ea10894c",
+                "reference": "287ac3347c47918c0bf5e10335e36197ea10894c",
                 "shasum": ""
             },
             "require": {
                 "php": "^7.1",
-                "squizlabs/php_codesniffer": "^3.4.0"
+                "phpstan/phpdoc-parser": "^0.3.1",
+                "squizlabs/php_codesniffer": "^3.4.1"
             },
             "require-dev": {
                 "jakub-onderka/php-parallel-lint": "1.0.0",
                 "phing/phing": "2.16.1",
-                "phpstan/phpstan": "0.9.2",
-                "phpstan/phpstan-phpunit": "0.9.4",
-                "phpstan/phpstan-strict-rules": "0.9",
-                "phpunit/phpunit": "7.5.1"
+                "phpstan/phpstan": "0.11.4",
+                "phpstan/phpstan-phpunit": "0.11",
+                "phpstan/phpstan-strict-rules": "0.11",
+                "phpunit/phpunit": "8.0.5"
             },
             "type": "phpcodesniffer-standard",
             "autoload": {
@@ -3145,20 +3194,20 @@
                 "MIT"
             ],
             "description": "Slevomat Coding Standard for PHP_CodeSniffer complements Consistence Coding Standard by providing sniffs with additional checks.",
-            "time": "2019-01-03T13:15:50+00:00"
+            "time": "2019-03-22T19:10:53+00:00"
         },
         {
             "name": "squizlabs/php_codesniffer",
-            "version": "3.5.2",
+            "version": "3.5.6",
             "source": {
                 "type": "git",
                 "url": "https://github.com/squizlabs/PHP_CodeSniffer.git",
-                "reference": "65b12cdeaaa6cd276d4c3033a95b9b88b12701e7"
+                "reference": "e97627871a7eab2f70e59166072a6b767d5834e0"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/squizlabs/PHP_CodeSniffer/zipball/65b12cdeaaa6cd276d4c3033a95b9b88b12701e7",
-                "reference": "65b12cdeaaa6cd276d4c3033a95b9b88b12701e7",
+                "url": "https://api.github.com/repos/squizlabs/PHP_CodeSniffer/zipball/e97627871a7eab2f70e59166072a6b767d5834e0",
+                "reference": "e97627871a7eab2f70e59166072a6b767d5834e0",
                 "shasum": ""
             },
             "require": {
@@ -3196,7 +3245,7 @@
                 "phpcs",
                 "standards"
             ],
-            "time": "2019-10-28T04:36:32+00:00"
+            "time": "2020-08-10T04:50:15+00:00"
         },
         {
             "name": "symfony/polyfill-ctype",
