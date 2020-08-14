@@ -8,6 +8,7 @@ use Doctrine\ORM\Event\PreFlushEventArgs;
 use Doctrine\ORM\Event\PreUpdateEventArgs;
 use Doctrine\ORM\Query;
 use Doctrine\Tests\OrmFunctionalTestCase;
+use function sprintf;
 
 class LifecycleCallbackTest extends OrmFunctionalTestCase
 {
@@ -232,14 +233,22 @@ WHERE
     e.id IN (%s, %s)
 DQL;
 
-        $result = $this
-            ->_em
-            ->createQuery(sprintf($dql, $e1->getId(), $e2->getId()))
-            ->iterate();
+        $query = $this->_em->createQuery(sprintf($dql, $e1->getId(), $e2->getId()));
+
+        $result = $query->iterate();
 
         foreach ($result as $entity) {
             $this->assertTrue($entity[0]->postLoadCallbackInvoked);
             $this->assertFalse($entity[0]->postLoadCascaderNotNull);
+
+            break;
+        }
+
+        $iterableResult = $query->getIterable();
+
+        foreach ($iterableResult as $entity) {
+            self::assertTrue($entity->postLoadCallbackInvoked);
+            self::assertFalse($entity->postLoadCascaderNotNull);
 
             break;
         }
@@ -256,10 +265,11 @@ DQL;
         $this->_em->flush();
         $this->_em->clear();
 
-        $result = $this
-            ->_em
-            ->createQuery('SELECT e FROM Doctrine\Tests\ORM\Functional\LifecycleCallbackTestEntity AS e')
-            ->iterate(null, Query::HYDRATE_SIMPLEOBJECT);
+        $query = $this->_em->createQuery(
+            'SELECT e FROM Doctrine\Tests\ORM\Functional\LifecycleCallbackTestEntity AS e'
+        );
+
+        $result = $query->iterate(null, Query::HYDRATE_SIMPLEOBJECT);
 
         foreach ($result as $entity) {
             $this->assertTrue($entity[0]->postLoadCallbackInvoked);
@@ -267,8 +277,17 @@ DQL;
 
             break;
         }
+
+        $result = $query->getIterable([], Query::HYDRATE_SIMPLEOBJECT);
+
+        foreach ($result as $entity) {
+            self::assertTrue($entity->postLoadCallbackInvoked);
+            self::assertFalse($entity->postLoadCascaderNotNull);
+
+            break;
+        }
     }
-    
+
     /**
      * https://github.com/doctrine/orm/issues/6568
      */
@@ -276,7 +295,7 @@ DQL;
     {
         $entA = new LifecycleCallbackCascader();
         $this->_em->persist($entA);
-        
+
         $entB_1 = new LifecycleCallbackTestEntity();
         $entB_2 = new LifecycleCallbackTestEntity();
 
@@ -496,7 +515,7 @@ class LifecycleCallbackCascader
         $this->postLoadCallbackInvoked = true;
         $this->postLoadEntitiesCount = count($this->entities);
     }
-    
+
     public function getId() {
         return $this->id;
     }

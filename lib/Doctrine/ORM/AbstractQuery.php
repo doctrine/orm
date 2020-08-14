@@ -19,15 +19,28 @@
 
 namespace Doctrine\ORM;
 
-use Doctrine\Common\Util\ClassUtils;
+use Countable;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\DBAL\Cache\QueryCacheProfile;
 use Doctrine\ORM\Mapping\MappingException as ORMMappingException;
 use Doctrine\ORM\Query\Parameter;
 use Doctrine\ORM\Cache\QueryCacheKey;
-use Doctrine\Persistence\Mapping\MappingException;
 use Traversable;
+use function array_map;
+use function array_shift;
+use function count;
+use function is_array;
+use function is_numeric;
+use function is_object;
+use function is_scalar;
+use function iterator_count;
 use function iterator_to_array;
+use function ksort;
+use function reset;
+use function serialize;
+use function sha1;
+use function trigger_error;
+use const E_USER_DEPRECATED;
 
 /**
  * Base contract for ORM queries. Base class for Query and NativeQuery.
@@ -428,7 +441,7 @@ abstract class AbstractQuery
             if ($value === null) {
                 throw ORMInvalidArgumentException::invalidIdentifierBindingEntity();
             }
-        } catch (MappingException | ORMMappingException $e) {
+        } catch (ORMMappingException $e) {
             // Silence any mapping exceptions. These can occur if the object in
             // question is not a mapped entity, in which case we just don't do
             // any preparation on the value.
@@ -911,6 +924,8 @@ abstract class AbstractQuery
      * Executes the query and returns an IterableResult that can be used to incrementally
      * iterate over the result.
      *
+     * @deprecated
+     *
      * @param ArrayCollection|array|null $parameters    The query parameters.
      * @param string|int|null            $hydrationMode The hydration mode to use.
      *
@@ -918,6 +933,11 @@ abstract class AbstractQuery
      */
     public function iterate($parameters = null, $hydrationMode = null)
     {
+        @trigger_error(
+            'Method ' . __METHOD__ . '() is deprecated and will be removed in Doctrine ORM 3.0. Use getIterable() instead.',
+            E_USER_DEPRECATED
+        );
+
         if ($hydrationMode !== null) {
             $this->setHydrationMode($hydrationMode);
         }
@@ -930,6 +950,33 @@ abstract class AbstractQuery
         $stmt = $this->_doExecute();
 
         return $this->_em->newHydrator($this->_hydrationMode)->iterate($stmt, $rsm, $this->_hints);
+    }
+
+    /**
+     * Executes the query and returns an iterable that can be used to incrementally
+     * iterate over the result.
+     *
+     * @param ArrayCollection|mixed[] $parameters    The query parameters.
+     * @param string|int|null         $hydrationMode The hydration mode to use.
+     *
+     * @return iterable<mixed>
+     */
+    public function getIterable(iterable $parameters = [], $hydrationMode = null) : iterable
+    {
+        if ($hydrationMode !== null) {
+            $this->setHydrationMode($hydrationMode);
+        }
+
+        if (($this->isCountable($parameters) && count($parameters) !== 0)
+            || ($parameters instanceof Traversable && iterator_count($parameters) !== 0)
+        ) {
+            $this->setParameters($parameters);
+        }
+
+        $rsm  = $this->getResultSetMapping();
+        $stmt = $this->_doExecute();
+
+        return $this->_em->newHydrator($this->_hydrationMode)->getIterable($stmt, $rsm, $this->_hints);
     }
 
     /**
@@ -1163,5 +1210,11 @@ abstract class AbstractQuery
         ksort($hints);
 
         return sha1($query . '-' . serialize($params) . '-' . serialize($hints));
+    }
+
+    /** @param iterable<mixed> $subject */
+    private function isCountable(iterable $subject) : bool
+    {
+        return $subject instanceof Countable || is_array($subject);
     }
 }

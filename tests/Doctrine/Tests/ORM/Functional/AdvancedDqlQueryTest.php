@@ -2,6 +2,7 @@
 
 namespace Doctrine\Tests\ORM\Functional;
 
+use Doctrine\Tests\GetIterableTester;
 use Doctrine\Tests\Models\Company\CompanyEmployee,
     Doctrine\Tests\Models\Company\CompanyManager,
     Doctrine\Tests\Models\Company\CompanyCar;
@@ -141,9 +142,10 @@ DQL;
 
     public function testIsNullAssociation()
     {
-        $dql = 'SELECT p FROM Doctrine\Tests\Models\Company\CompanyPerson p '.
+        $dql    = 'SELECT p FROM Doctrine\Tests\Models\Company\CompanyPerson p ' .
                'WHERE p.spouse IS NULL';
-        $result = $this->_em->createQuery($dql)->getResult();
+        $query  = $this->_em->createQuery($dql);
+        $result = $query->getResult();
 
         $this->assertEquals(2, count($result));
         $this->assertTrue($result[0]->getId() > 0);
@@ -151,35 +153,56 @@ DQL;
 
         $this->assertTrue($result[1]->getId() > 0);
         $this->assertNull($result[1]->getSpouse());
+
+        $this->_em->clear();
+
+        GetIterableTester::assertResultsAreTheSame($query);
     }
 
     public function testSelectSubselect()
     {
-        $dql = 'SELECT p, (SELECT c.brand FROM Doctrine\Tests\Models\Company\CompanyCar c WHERE p.car = c) brandName '.
+        $dql    = 'SELECT p, (SELECT c.brand FROM Doctrine\Tests\Models\Company\CompanyCar c WHERE p.car = c) brandName ' .
                'FROM Doctrine\Tests\Models\Company\CompanyManager p';
-        $result = $this->_em->createQuery($dql)->getArrayResult();
+        $query  = $this->_em->createQuery($dql);
+        $result = $query->getArrayResult();
 
         $this->assertEquals(1, count($result));
         $this->assertEquals("Caramba", $result[0]['brandName']);
+
+        $this->_em->clear();
+
+        GetIterableTester::assertResultsAreTheSame($query);
     }
 
     public function testInSubselect()
     {
-        $dql = "SELECT p.name FROM Doctrine\Tests\Models\Company\CompanyPerson p ".
-               "WHERE p.name IN (SELECT n.name FROM Doctrine\Tests\Models\Company\CompanyPerson n WHERE n.name = 'Roman B.')";
-        $result = $this->_em->createQuery($dql)->getScalarResult();
+        $dql    = <<<DQL
+SELECT p.name FROM Doctrine\Tests\Models\Company\CompanyPerson p
+WHERE p.name IN (SELECT n.name FROM Doctrine\Tests\Models\Company\CompanyPerson n WHERE n.name = 'Roman B.')
+DQL;
+        $query  = $this->_em->createQuery($dql);
+        $result = $query->getScalarResult();
 
         $this->assertEquals(1, count($result));
         $this->assertEquals('Roman B.', $result[0]['name']);
+
+        $this->_em->clear();
+
+        GetIterableTester::assertResultsAreTheSame($query);
     }
 
     public function testGroupByMultipleFields()
     {
-        $dql = 'SELECT p.department, p.name, count(p.id) FROM Doctrine\Tests\Models\Company\CompanyEmployee p '.
+        $dql    = 'SELECT p.department, p.name, count(p.id) FROM Doctrine\Tests\Models\Company\CompanyEmployee p ' .
                'GROUP BY p.department, p.name';
-        $result = $this->_em->createQuery($dql)->getResult();
+        $query  = $this->_em->createQuery($dql);
+        $result = $query->getResult();
 
         $this->assertEquals(4, count($result));
+
+        $this->_em->clear();
+
+        GetIterableTester::assertResultsAreTheSame($query);
     }
 
     public function testUpdateAs()
@@ -187,8 +210,14 @@ DQL;
         $dql = 'UPDATE Doctrine\Tests\Models\Company\CompanyEmployee AS p SET p.salary = 1';
         $this->_em->createQuery($dql)->execute();
 
-        $this->assertTrue(count($this->_em->createQuery(
-            'SELECT count(p.id) FROM Doctrine\Tests\Models\Company\CompanyEmployee p WHERE p.salary = 1')->getResult()) > 0);
+        $query = $this->_em->createQuery(
+            'SELECT count(p.id) FROM Doctrine\Tests\Models\Company\CompanyEmployee p WHERE p.salary = 1'
+        );
+        self::assertGreaterThan(0, $query->getResult());
+
+        $this->_em->clear();
+
+        GetIterableTester::assertResultsAreTheSame($query);
     }
 
     public function testDeleteAs()

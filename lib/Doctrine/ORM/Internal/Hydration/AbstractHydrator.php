@@ -19,14 +19,20 @@
 
 namespace Doctrine\ORM\Internal\Hydration;
 
+use Doctrine\DBAL\Driver\Statement;
+use Doctrine\DBAL\FetchMode;
 use Doctrine\DBAL\Types\Type;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Events;
 use Doctrine\ORM\Mapping\ClassMetadata;
+use Doctrine\ORM\Query\ResultSetMapping;
 use Doctrine\ORM\Tools\Pagination\LimitSubqueryWalker;
 use PDO;
+use const E_USER_DEPRECATED;
 use function array_map;
+use function end;
 use function in_array;
+use function trigger_error;
 
 /**
  * Base class for all hydrators. A hydrator is a class that provides some form
@@ -110,6 +116,8 @@ abstract class AbstractHydrator
     /**
      * Initiates a row-by-row hydration.
      *
+     * @deprecated
+     *
      * @param object $stmt
      * @param object $resultSetMapping
      * @param array  $hints
@@ -118,6 +126,11 @@ abstract class AbstractHydrator
      */
     public function iterate($stmt, $resultSetMapping, array $hints = [])
     {
+        @trigger_error(
+            'Method ' . __METHOD__ . '() is deprecated and will be removed in Doctrine ORM 3.0. Use getIterable() instead.',
+            E_USER_DEPRECATED
+        );
+
         $this->_stmt  = $stmt;
         $this->_rsm   = $resultSetMapping;
         $this->_hints = $hints;
@@ -129,6 +142,42 @@ abstract class AbstractHydrator
         $this->prepare();
 
         return new IterableResult($this);
+    }
+
+    /**
+     * Initiates a row-by-row hydration.
+     *
+     * @param mixed[] $hints
+     *
+     * @return iterable<mixed>
+     */
+    public function getIterable(Statement $stmt, ResultSetMapping $resultSetMapping, array $hints = []) : iterable
+    {
+        $this->_stmt  = $stmt;
+        $this->_rsm   = $resultSetMapping;
+        $this->_hints = $hints;
+
+        $evm = $this->_em->getEventManager();
+
+        $evm->addEventListener([Events::onClear], $this);
+
+        $this->prepare();
+
+        $result = [];
+
+        while (true) {
+            $row = $this->_stmt->fetch(FetchMode::ASSOCIATIVE);
+
+            if ($row === false || $row === null) {
+                $this->cleanup();
+
+                break;
+            }
+
+            $this->hydrateRowData($row, $result);
+
+            yield end($result);
+        }
     }
 
     /**
@@ -159,7 +208,7 @@ abstract class AbstractHydrator
 
     /**
      * Hydrates a single row returned by the current statement instance during
-     * row-by-row hydration with {@link iterate()}.
+     * row-by-row hydration with {@link iterate()} or {@link getIterable()}.
      *
      * @return mixed
      */
@@ -167,7 +216,7 @@ abstract class AbstractHydrator
     {
         $row = $this->_stmt->fetch(PDO::FETCH_ASSOC);
 
-        if ( ! $row) {
+        if ($row === false || $row === null) {
             $this->cleanup();
 
             return false;

@@ -135,16 +135,34 @@ class QueryTest extends OrmTestCase
 
     public function testIterateWithNoDistinctAndWrongSelectClause()
     {
-        $this->expectException('Doctrine\ORM\Query\QueryException');
-        $q = $this->_em->createQuery("select u, a from Doctrine\Tests\Models\CMS\CmsUser u LEFT JOIN u.articles a");
+        $this->expectException(QueryException::class);
+
+        $q = $this->_em->createQuery('select u, a from Doctrine\Tests\Models\CMS\CmsUser u LEFT JOIN u.articles a');
         $q->iterate();
     }
 
-    public function testIterateWithNoDistinctAndWithValidSelectClause()
+    public function testGetIterableWithNoDistinctAndWrongSelectClause() : void
     {
-        $this->expectException('Doctrine\ORM\Query\QueryException');
-        $q = $this->_em->createQuery("select u from Doctrine\Tests\Models\CMS\CmsUser u LEFT JOIN u.articles a");
+        $this->expectException(QueryException::class);
+
+        $q = $this->_em->createQuery('select u, a from Doctrine\Tests\Models\CMS\CmsUser u LEFT JOIN u.articles a');
+        $q->getIterable();
+    }
+
+    public function testIterateWithNoDistinctAndWithValidSelectClause() : void
+    {
+        $this->expectException(QueryException::class);
+
+        $q = $this->_em->createQuery('select u from Doctrine\Tests\Models\CMS\CmsUser u LEFT JOIN u.articles a');
         $q->iterate();
+    }
+
+    public function testGetIterableWithNoDistinctAndWithValidSelectClause() : void
+    {
+        $this->expectException(QueryException::class);
+
+        $q = $this->_em->createQuery('select u from Doctrine\Tests\Models\CMS\CmsUser u LEFT JOIN u.articles a');
+        $q->getIterable();
     }
 
     public function testIterateWithDistinct()
@@ -152,6 +170,17 @@ class QueryTest extends OrmTestCase
         $q = $this->_em->createQuery("SELECT DISTINCT u from Doctrine\Tests\Models\CMS\CmsUser u LEFT JOIN u.articles a");
 
         self::assertInstanceOf(IterableResult::class, $q->iterate());
+    }
+
+    public function testIterateEmptyResult() : void
+    {
+        $q = $this->_em->createQuery('SELECT u from Doctrine\Tests\Models\CMS\CmsUser u');
+
+        // phpcs:ignore Generic.CodeAnalysis.EmptyStatement.DetectedForeach
+        foreach ($q->getIterable() as $item) {
+        }
+
+        self::assertTrue(true);
     }
 
     /**

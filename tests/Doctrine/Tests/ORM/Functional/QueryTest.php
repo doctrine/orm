@@ -8,6 +8,7 @@ use Doctrine\ORM\NonUniqueResultException;
 use Doctrine\ORM\Proxy\Proxy;
 use Doctrine\ORM\Query\QueryException;
 use Doctrine\ORM\UnexpectedResultException;
+use Doctrine\Tests\GetIterableTester;
 use Doctrine\Tests\Models\CMS\CmsUser,
     Doctrine\Tests\Models\CMS\CmsArticle,
     Doctrine\Tests\Models\CMS\CmsPhonenumber;
@@ -15,6 +16,8 @@ use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\Query;
 use Doctrine\ORM\Query\Parameter;
 use Doctrine\Tests\OrmFunctionalTestCase;
+use function count;
+use function iterator_to_array;
 
 /**
  * Functional Query tests.
@@ -217,26 +220,27 @@ class QueryTest extends OrmFunctionalTestCase
         $query = $this->_em->createQuery('select a from ' . CmsArticle::class . ' a WHERE a.topic = ?1');
         $articles = $query->iterate(new ArrayCollection([new Parameter(1, 'Doctrine 2')]), Query::HYDRATE_ARRAY);
 
-        $found = [];
+        $expectedArticle = [
+            'id'      => $articleId,
+            'topic'   => 'Doctrine 2',
+            'text'    => 'This is an introduction to Doctrine 2.',
+            'version' => 1,
+        ];
 
-        foreach ($articles AS $article) {
-            $found[] = $article;
-        }
+        $articles = iterator_to_array($articles, false);
 
-        $this->assertEquals(1, count($found));
-        $this->assertSame(
-            [
-                [
-                    [
-                        'id'      => $articleId,
-                        'topic'   => 'Doctrine 2',
-                        'text'    => 'This is an introduction to Doctrine 2.',
-                        'version' => 1,
-                    ],
-                ],
-            ],
-            $found
+        self::assertCount(1, $articles);
+        self::assertEquals([[$expectedArticle]], $articles);
+
+        $articles = $query->getIterable(
+            new ArrayCollection([new Parameter(1, 'Doctrine 2')]),
+            Query::HYDRATE_ARRAY
         );
+
+        $articles = GetIterableTester::iterableToArray($articles);
+
+        self::assertCount(1, $articles);
+        self::assertEquals([$expectedArticle], $articles);
     }
 
     public function testIterateResult_IterativelyBuildUpUnitOfWork()
@@ -275,8 +279,23 @@ class QueryTest extends OrmFunctionalTestCase
         $this->assertSame(["Doctrine 2", "Symfony 2"], $topics);
         $this->assertSame(2, $iteratedCount);
 
-        $this->_em->flush();
-        $this->_em->clear();
+        $articles = $query->getIterable();
+
+        $iteratedCount = 0;
+        $topics        = [];
+
+        foreach ($articles as $article) {
+            $topics[] = $article->topic;
+
+            $identityMap      = $this->_em->getUnitOfWork()->getIdentityMap();
+            $identityMapCount = count($identityMap[CmsArticle::class]);
+            self::assertGreaterThan($iteratedCount, $identityMapCount);
+
+            $iteratedCount++;
+        }
+
+        self::assertSame(['Doctrine 2', 'Symfony 2'], $topics);
+        self::assertSame(2, $iteratedCount);
     }
 
     public function testIterateResultClearEveryCycle()
@@ -295,13 +314,27 @@ class QueryTest extends OrmFunctionalTestCase
         $this->_em->flush();
         $this->_em->clear();
 
-        $query    = $this->_em->createQuery("select a from Doctrine\Tests\Models\CMS\CmsArticle a");
-        $articles = $query->iterate();
+        $query = $this->_em->createQuery('select a from Doctrine\Tests\Models\CMS\CmsArticle a');
 
+        $articles      = $query->iterate();
         $iteratedCount = 0;
         $topics = [];
         foreach($articles AS $row) {
             $article  = $row[0];
+            $topics[] = $article->topic;
+
+            $this->_em->clear();
+
+            $iteratedCount++;
+        }
+
+        self::assertSame(['Doctrine 2', 'Symfony 2'], $topics);
+        self::assertSame(2, $iteratedCount);
+
+        $articles      = $query->getIterable();
+        $iteratedCount = 0;
+        $topics        = [];
+        foreach ($articles as $article) {
             $topics[] = $article->topic;
 
             $this->_em->clear();
@@ -317,9 +350,18 @@ class QueryTest extends OrmFunctionalTestCase
 
     public function testIterateResult_FetchJoinedCollection_ThrowsException()
     {
-        $this->expectException('Doctrine\ORM\Query\QueryException');
+        $this->expectException(QueryException::class);
+
         $query = $this->_em->createQuery("SELECT u, a FROM ' . CmsUser::class . ' u JOIN u.articles a");
-        $articles = $query->iterate();
+        $query->iterate();
+    }
+
+    public function testGetIterableResultFetchJoinedCollectionThrowsException() : void
+    {
+        $this->expectException(QueryException::class);
+
+        $query = $this->_em->createQuery("SELECT u, a FROM ' . CmsUser::class . ' u JOIN u.articles a");
+        $query->getIterable();
     }
 
     public function testGetSingleResultThrowsExceptionOnNoResult()
