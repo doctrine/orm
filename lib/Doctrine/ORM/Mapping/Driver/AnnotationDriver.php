@@ -103,7 +103,7 @@ class AnnotationDriver extends AbstractAnnotationDriver
             else {
                 $primaryTable = [
                     'name'   => $tableAnnot->name,
-                    'schema' => $tableAnnot->schema
+                    'schema' => $tableAnnot->schema,
                 ];
             }
 
