@@ -97,10 +97,15 @@ class AnnotationDriver extends AbstractAnnotationDriver
         // Evaluate Table annotation
         if (isset($classAnnotations[Mapping\Table::class])) {
             $tableAnnot   = $classAnnotations[Mapping\Table::class];
-            $primaryTable = [
-                'name'   => $tableAnnot->name,
-                'schema' => $tableAnnot->schema
-            ];
+            if (strpos($tableAnnot->name, '.') !== false) {
+                [$primaryTable['schema'], $primaryTable['name']] = explode('.', $tableAnnot->name, 2);
+            }
+            else {
+                $primaryTable = [
+                    'name'   => $tableAnnot->name,
+                    'schema' => $tableAnnot->schema
+                ];
+            }
 
             if ($tableAnnot->indexes !== null) {
                 foreach ($tableAnnot->indexes as $indexAnnot) {
