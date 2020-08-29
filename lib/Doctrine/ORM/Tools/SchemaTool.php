@@ -31,6 +31,7 @@ use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\ORMException;
 use Doctrine\ORM\Tools\Event\GenerateSchemaTableEventArgs;
 use Doctrine\ORM\Tools\Event\GenerateSchemaEventArgs;
+use function array_intersect_key;
 
 /**
  * The SchemaTool is a tool to create/drop/update database schemas based on
@@ -248,14 +249,20 @@ class SchemaTool
                     }
 
                     if ( ! empty($inheritedKeyColumns)) {
+                        // Fix for bug GH-8229 (id column from parent class renamed in child class):
+                        // Use the correct name for the id columns as named in the parent class.
+                        $parentClass          = $this->em->getClassMetadata($class->rootEntityName);
+                        $parentKeyColumnNames = $parentClass->getIdentifierColumnNames();
+                        $parentKeyColumns     = array_intersect_key($parentKeyColumnNames, $inheritedKeyColumns);
+
                         // Add a FK constraint on the ID column
                         $table->addForeignKeyConstraint(
                             $this->quoteStrategy->getTableName(
-                                $this->em->getClassMetadata($class->rootEntityName),
+                                $parentClass,
                                 $this->platform
                             ),
                             $inheritedKeyColumns,
-                            $inheritedKeyColumns,
+                            $parentKeyColumns,
                             ['onDelete' => 'CASCADE']
                         );
                     }

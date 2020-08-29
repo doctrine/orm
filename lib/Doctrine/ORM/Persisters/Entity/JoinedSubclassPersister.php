@@ -26,6 +26,8 @@ use Doctrine\DBAL\Types\Type;
 
 use Doctrine\Common\Collections\Criteria;
 use Doctrine\ORM\Utility\PersisterHelper;
+use function array_combine;
+use function array_reverse;
 
 /**
  * The joined subclass persister maps a single entity instance to several tables in the
@@ -271,35 +273,42 @@ class JoinedSubclassPersister extends AbstractEntityInheritancePersister
     public function delete($entity)
     {
         $identifier = $this->em->getUnitOfWork()->getEntityIdentifier($entity);
-        $id         = array_combine($this->class->getIdentifierColumnNames(), $identifier);
 
         $this->deleteJoinTableRecords($identifier);
 
-        // If the database platform supports FKs, just
-        // delete the row from the root table. Cascades do the rest.
-        if ($this->platform->supportsForeignKeyConstraints()) {
-            $rootClass = $this->em->getClassMetadata($this->class->rootEntityName);
-            $rootTable = $this->quoteStrategy->getTableName($rootClass, $this->platform);
-            $rootTypes = $this->getClassIdentifiersTypes($rootClass);
-
-            return (bool) $this->conn->delete($rootTable, $id, $rootTypes);
-        }
-
-        // Delete from all tables individually, starting from this class' table up to the root table.
-        $rootTable = $this->quoteStrategy->getTableName($this->class, $this->platform);
-        $rootTypes = $this->getClassIdentifiersTypes($this->class);
-
-        $affectedRows = $this->conn->delete($rootTable, $id, $rootTypes);
-
-        foreach ($this->class->parentClasses as $parentClass) {
+        // Delete parent entries in reverse order (root first, until the direct parent of the current class).
+        //
+        // If foreign key are supported (and set as well as active), the first deletion will cascade and the
+        // following queries won't delete anything, but it's better not to rely on a possible foreign key
+        // functionality which cannot be checked here (foreign keys can be missing or disabled although
+        // supported in general).
+        //
+        // On the other hand the supportsForeignKeyConstraints() method of the platform is also not reliable
+        // when it returns false, because it only means that Doctrine\DBAL doesn't support foreign keys for
+        // this platform, but they may be set in an existing database structure or added manually, so the
+        // previous order of deletion (current class to root) would have failed - this could i.e. happen with
+        // SQLite where foreign keys are theoretically possible but not supported by DBAL.
+        $deleted = false;
+        foreach (array_reverse($this->class->parentClasses) as $parentClass) {
             $parentMetadata = $this->em->getClassMetadata($parentClass);
             $parentTable    = $this->quoteStrategy->getTableName($parentMetadata, $this->platform);
             $parentTypes    = $this->getClassIdentifiersTypes($parentMetadata);
+            $parentId       = array_combine($parentMetadata->getIdentifierColumnNames(), $identifier);
 
-            $this->conn->delete($parentTable, $id, $parentTypes);
+            $affectedRows = $this->conn->delete($parentTable, $parentId, $parentTypes);
+            $deleted      = $deleted ?: ($affectedRows > 0);
         }
 
-        return (bool) $affectedRows;
+        // Now delete the entries from the current class (if not deleted automatically
+        // because of a foreign key).
+        $currentTable = $this->quoteStrategy->getTableName($this->class, $this->platform);
+        $currentTypes = $this->getClassIdentifiersTypes($this->class);
+        $currentId    = array_combine($this->class->getIdentifierColumnNames(), $identifier);
+
+        $affectedRows = $this->conn->delete($currentTable, $currentId, $currentTypes);
+        $deleted      = $deleted ?: ($affectedRows > 0);
+
+        return $deleted;
     }
 
     /**
@@ -412,8 +421,11 @@ class JoinedSubclassPersister extends AbstractEntityInheritancePersister
             $parentClass    = $this->em->getClassMetadata($parentClassName);
             $joinSql       .= ' INNER JOIN ' . $this->quoteStrategy->getTableName($parentClass, $this->platform) . ' ' . $tableAlias . ' ON ';
 
-            foreach ($identifierColumns as $idColumn) {
-                $conditions[] = $baseTableAlias . '.' . $idColumn . ' = ' . $tableAlias . '.' . $idColumn;
+            // Fix for bug GH-8229 (id column from parent class renamed in child class):
+            // Use the correct name for the id column as named in the parent class.
+            $parentIdentifierColumns = $parentClass->getIdentifierColumnNames();
+            foreach ($identifierColumns as $index => $idColumn) {
+                $conditions[] = $baseTableAlias . '.' . $idColumn . ' = ' . $tableAlias . '.' . $parentIdentifierColumns[$index];
             }
 
             $joinSql .= implode(' AND ', $conditions);
@@ -589,9 +601,11 @@ class JoinedSubclassPersister extends AbstractEntityInheritancePersister
             $tableAlias   = $this->getSQLTableAlias($parentClassName);
             $joinSql     .= ' INNER JOIN ' . $this->quoteStrategy->getTableName($parentClass, $this->platform) . ' ' . $tableAlias . ' ON ';
 
-
-            foreach ($identifierColumn as $idColumn) {
-                $conditions[] = $baseTableAlias . '.' . $idColumn . ' = ' . $tableAlias . '.' . $idColumn;
+            // Fix for bug GH-8229 (id column from parent class renamed in child class):
+            // Use the correct name for the id column as named in the parent class.
+            $parentIdentifierColumn = $parentClass->getIdentifierColumnNames();
+            foreach ($identifierColumn as $index => $idColumn) {
+                $conditions[] = $baseTableAlias . '.' . $idColumn . ' = ' . $tableAlias . '.' . $parentIdentifierColumn[$index];
             }
 
             $joinSql .= implode(' AND ', $conditions);
@@ -604,8 +618,11 @@ class JoinedSubclassPersister extends AbstractEntityInheritancePersister
             $tableAlias  = $this->getSQLTableAlias($subClassName);
             $joinSql    .= ' LEFT JOIN ' . $this->quoteStrategy->getTableName($subClass, $this->platform) . ' ' . $tableAlias . ' ON ';
 
-            foreach ($identifierColumn as $idColumn) {
-                $conditions[] = $baseTableAlias . '.' . $idColumn . ' = ' . $tableAlias . '.' . $idColumn;
+            // Fix for bug GH-8229 (id column from parent class renamed in child class):
+            // Use the correct name for the id column as named in the parent class.
+            $subClassIdentifierColumn = $subClass->getIdentifierColumnNames();
+            foreach ($identifierColumn as $index => $idColumn) {
+                $conditions[] = $baseTableAlias . '.' . $idColumn . ' = ' . $tableAlias . '.' . $subClassIdentifierColumn[$index];
             }
 
             $joinSql .= implode(' AND ', $conditions);

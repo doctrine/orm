@@ -37,6 +37,7 @@ use Doctrine\ORM\Query;
 use Doctrine\ORM\UnitOfWork;
 use Doctrine\ORM\Utility\IdentifierFlattener;
 use Doctrine\ORM\Utility\PersisterHelper;
+use function array_key_exists;
 use function array_map;
 use function array_merge;
 use function assert;
@@ -447,14 +448,26 @@ class BasicEntityPersister implements EntityPersister
             $types[]    = $this->columnTypes[$columnName];
         }
 
-        $where      = [];
-        $identifier = $this->em->getUnitOfWork()->getEntityIdentifier($entity);
+        $where                = [];
+        $identifier           = $this->em->getUnitOfWork()->getEntityIdentifier($entity);
+        $quotedClassTableName = $this->quoteStrategy->getTableName($this->class, $this->platform);
 
         foreach ($this->class->identifier as $idField) {
             if ( ! isset($this->class->associationMappings[$idField])) {
-                $params[]   = $identifier[$idField];
-                $types[]    = $this->class->fieldMappings[$idField]['type'];
-                $where[]    = $this->quoteStrategy->getColumnName($idField, $this->class, $this->platform);
+                $params[] = $identifier[$idField];
+                $types[]  = $this->class->fieldMappings[$idField]['type'];
+
+                // Fix for bug GH-8229 (id column from parent class renamed in child class):
+                // This method is called with the updated entity, but with different table names
+                // (the entity table name or a table name of an inherited entity). In dependence
+                // of the used table, the identifier name must be adjusted.
+                $class = $this->class;
+                if (isset($class->fieldMappings[$idField]['inherited']) && $quotedTableName !== $quotedClassTableName) {
+                    $className = $this->class->fieldMappings[$idField]['inherited'];
+                    $class     = $this->em->getClassMetadata($className);
+                }
+
+                $where[] = $this->quoteStrategy->getColumnName($idField, $class, $this->platform);
 
                 continue;
             }
@@ -632,7 +645,18 @@ class BasicEntityPersister implements EntityPersister
             $newVal = $change[1];
 
             if ( ! isset($this->class->associationMappings[$field])) {
-                $fieldMapping = $this->class->fieldMappings[$field];
+                $class = $this->class;
+
+                // Fix for bug GH-8229 (id column from parent class renamed in child class):
+                // Get the correct class metadata
+                foreach ($class->parentClasses as $parentClassName) {
+                    $parentClass = $this->em->getClassMetadata($parentClassName);
+                    if (array_key_exists($field, $parentClass->fieldMappings)) {
+                        $class = $parentClass;
+                    }
+                }
+
+                $fieldMapping = $class->fieldMappings[$field];
                 $columnName   = $fieldMapping['columnName'];
 
                 $this->columnTypes[$columnName] = $fieldMapping['type'];
@@ -1672,11 +1696,17 @@ class BasicEntityPersister implements EntityPersister
     private function getSelectConditionStatementColumnSQL($field, $assoc = null)
     {
         if (isset($this->class->fieldMappings[$field])) {
-            $className = (isset($this->class->fieldMappings[$field]['inherited']))
-                ? $this->class->fieldMappings[$field]['inherited']
-                : $this->class->name;
+            // Fix for bug GH-8229 (id column from parent class renamed in child class):
+            // Use the correct metadata and name for the id column
+            if (isset($this->class->fieldMappings[$field]['inherited'])) {
+                $className = $this->class->fieldMappings[$field]['inherited'];
+                $class     = $this->em->getClassMetadata($className);
+            } else {
+                $className = $this->class->name;
+                $class     = $this->class;
+            }
 
-            return [$this->getSQLTableAlias($className) . '.' . $this->quoteStrategy->getColumnName($field, $this->class, $this->platform)];
+            return [$this->getSQLTableAlias($className) . '.' . $this->quoteStrategy->getColumnName($field, $class, $this->platform)];
         }
 
         if (isset($this->class->associationMappings[$field])) {
