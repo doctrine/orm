@@ -151,24 +151,24 @@ the life-time of their registered entities.
 
 -  preRemove - The preRemove event occurs for a given entity before
    the respective EntityManager remove operation for that entity is
-   executed.  It is not called for a DQL DELETE statement.
--  postRemove - The postRemove event occurs for an entity after the
+   executed.  It is not called for a DQL ``DELETE`` statement.
+-  postRemove - The postRemove event occurs after the
    entity has been deleted. It will be invoked after the database
-   delete operations. It is not called for a DQL DELETE statement.
--  prePersist - The prePersist event occurs for a given entity
-   before the respective EntityManager persist operation for that
-   entity is executed. It should be noted that this event is only triggered on
+   ``DELETE`` operation. It is not called for a DQL ``DELETE`` statement.
+-  prePersist - The prePersist event occurs
+   before the EntityManager persist operation for an
+   entity is executed. This event is only triggered on
    *initial* persist of an entity (i.e. it does not trigger on future updates).
--  postPersist - The postPersist event occurs for an entity after
-   the entity has been made persistent. It will be invoked after the
-   database insert operations. Generated primary key values are
+-  postPersist - The postPersist event occurs after
+   an entity has been made persistent. It will be invoked after the
+   database ``INSERT`` operations. Generated primary key values are
    available in the postPersist event.
 -  preUpdate - The preUpdate event occurs before the database
-   update operations to entity data. It is not called for a DQL UPDATE statement
+   ``UPDATE`` operation. It is not called for a DQL ``UPDATE`` statement
    nor when the computed changeset is empty.
 -  postUpdate - The postUpdate event occurs after the database
-   update operations to entity data. It is not called for a DQL UPDATE statement.
--  postLoad - The postLoad event occurs for an entity after the
+   ``UPDATE`` operation. It is not called for a DQL ``UPDATE`` statement.
+-  postLoad - The postLoad event occurs after an
    entity has been loaded into the current EntityManager from the
    database or after the refresh operation has been applied to it.
 -  loadClassMetadata - The loadClassMetadata event occurs after the
@@ -185,7 +185,7 @@ the life-time of their registered entities.
    callback.
 -  postFlush - The postFlush event occurs at the end of a flush operation. This
    event is not a lifecycle callback.
--  onClear - The onClear event occurs when the EntityManager#clear() operation is
+-  onClear - The onClear event occurs when the ``EntityManager#clear()`` operation is
    invoked, after all references to entities have been removed from the unit of
    work. This event is not a lifecycle callback.
 
