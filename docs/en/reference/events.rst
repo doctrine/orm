@@ -161,7 +161,7 @@ the life-time of their registered entities.
    *initial* persist of an entity (i.e. it does not trigger on future updates).
 -  postPersist - The postPersist event occurs after
    an entity has been made persistent. It will be invoked after the
-   database ``INSERT`` operations. Generated primary key values are
+   database ``INSERT`` operation. Generated primary key values are
    available in the postPersist event.
 -  preUpdate - The preUpdate event occurs before the database
    ``UPDATE`` operation. It is not called for a DQL ``UPDATE`` statement
