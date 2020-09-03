@@ -185,7 +185,7 @@ the life-time of their registered entities.
    callback.
 -  postFlush - The postFlush event occurs at the end of a flush operation. This
    event is not a lifecycle callback.
--  onClear - The onClear event occurs when the ``EntityManager#clear()`` operation is
+-  onClear - The onClear event occurs when the ``EntityManager::clear()`` operation is
    invoked, after all references to entities have been removed from the unit of
    work. This event is not a lifecycle callback.
 
@@ -990,5 +990,4 @@ process and manipulate the instance.
             $classMetadata->mapField($fieldMapping);
         }
     }
-
 
