@@ -271,9 +271,7 @@ class BasicEntityPersister implements EntityPersister
         $stmt       = $this->conn->prepare($this->getInsertSQL());
         $tableName  = $this->class->getTableName();
 
-        $canGroup = ! $isPostInsertId && ! $this->class->isVersioned;
-
-        foreach (array_chunk($this->queuedInserts, $canGroup ? 50 : 1) as $queuedInsertsChunk) {
+        foreach (array_chunk($this->queuedInserts, $this->getMaxBatchedInsertQueries()) as $queuedInsertsChunk) {
             $stmt = $this->conn->prepare($this->getInsertSQL(count($queuedInsertsChunk)));
 
             $paramIndex = 1;
@@ -1403,6 +1401,18 @@ class BasicEntityPersister implements EntityPersister
         }
 
         return ' INNER JOIN ' . $joinTableName . ' ON ' . implode(' AND ', $conditions);
+    }
+
+    public function getMaxBatchedInsertQueries()
+    {
+        $idGenerator    = $this->class->idGenerator;
+        $isPostInsertId = $idGenerator->isPostInsertGenerator();
+
+        if ($isPostInsertId || $this->class->isVersioned) {
+            return 1;
+        }
+
+        return 50;
     }
 
     /**
