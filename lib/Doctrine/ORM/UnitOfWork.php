@@ -45,6 +45,7 @@ use Doctrine\Persistence\ObjectManagerAware;
 use Doctrine\Persistence\PropertyChangedListener;
 use InvalidArgumentException;
 use Throwable;
+use Traversable;
 use UnexpectedValueException;
 use function get_class;
 
@@ -640,6 +641,11 @@ class UnitOfWork implements PropertyChangedListener
                     }
 
                     $value = new ArrayCollection($value->getValues());
+                }
+
+                // If $value is not a Collection and is a Traversable then use an ArrayCollection.
+                if ( ! $value instanceof Collection && $value instanceof \Traversable) {
+                    $value = new ArrayCollection(iterator_to_array($value));
                 }
 
                 // If $value is not a Collection then use an ArrayCollection.
@@ -2200,6 +2206,7 @@ class UnitOfWork implements PropertyChangedListener
                     // break; is commented intentionally!
 
                 case ($relatedEntities instanceof Collection):
+                case ($relatedEntities instanceof Traversable):
                 case (is_array($relatedEntities)):
                     foreach ($relatedEntities as $relatedEntity) {
                         $this->doRefresh($relatedEntity, $visited);
