@@ -37,11 +37,17 @@ use Doctrine\ORM\Query;
 use Doctrine\ORM\UnitOfWork;
 use Doctrine\ORM\Utility\IdentifierFlattener;
 use Doctrine\ORM\Utility\PersisterHelper;
+use function array_chunk;
+use function array_fill;
 use function array_key_exists;
 use function array_map;
 use function array_merge;
+use function array_unique;
 use function assert;
+use function count;
+use function implode;
 use function reset;
+use function sprintf;
 
 /**
  * A BasicEntityPersister maps an entity to a single table in a relational database.
@@ -162,14 +168,6 @@ class BasicEntityPersister implements EntityPersister
     protected $quotedColumns = [];
 
     /**
-     * The INSERT SQL statement used for entities handled by this persister.
-     * This SQL is only generated once per request, if at all.
-     *
-     * @var string
-     */
-    private $insertSql;
-
-    /**
      * The quote strategy.
      *
      * @var \Doctrine\ORM\Mapping\QuoteStrategy
@@ -273,38 +271,43 @@ class BasicEntityPersister implements EntityPersister
         $stmt       = $this->conn->prepare($this->getInsertSQL());
         $tableName  = $this->class->getTableName();
 
-        foreach ($this->queuedInserts as $entity) {
-            $insertData = $this->prepareInsertData($entity);
+        $canGroup = ! $isPostInsertId && ! $this->class->isVersioned;
 
-            if (isset($insertData[$tableName])) {
-                $paramIndex = 1;
+        foreach (array_chunk($this->queuedInserts, $canGroup ? 50 : 1) as $queuedInsertsChunk) {
+            $stmt = $this->conn->prepare($this->getInsertSQL(count($queuedInsertsChunk)));
 
-                foreach ($insertData[$tableName] as $column => $value) {
-                    $stmt->bindValue($paramIndex++, $value, $this->columnTypes[$column]);
+            $paramIndex = 1;
+            foreach ($queuedInsertsChunk as $entity) {
+                $insertData = $this->prepareInsertData($entity);
+
+                if (isset($insertData[$tableName])) {
+                    foreach ($insertData[$tableName] as $column => $value) {
+                        $stmt->bindValue($paramIndex++, $value, $this->columnTypes[$column]);
+                    }
                 }
             }
 
             $stmt->execute();
 
-            if ($isPostInsertId) {
-                $generatedId = $idGenerator->generate($this->em, $entity);
-                $id = [
-                    $this->class->identifier[0] => $generatedId
-                ];
-                $postInsertIds[] = [
-                    'generatedId' => $generatedId,
-                    'entity' => $entity,
-                ];
-            } else {
-                $id = $this->class->getIdentifierValues($entity);
+            foreach ($queuedInsertsChunk as $entity) {
+                if ($isPostInsertId) {
+                    $generatedId     = $idGenerator->generate($this->em, $entity);
+                    $id              = [$this->class->identifier[0] => $generatedId];
+                    $postInsertIds[] = [
+                        'generatedId' => $generatedId,
+                        'entity' => $entity,
+                    ];
+                } else {
+                    $id = $this->class->getIdentifierValues($entity);
+                }
+
+                if ($this->class->isVersioned) {
+                    $this->assignDefaultVersionValue($entity, $id);
+                }
             }
 
-            if ($this->class->isVersioned) {
-                $this->assignDefaultVersionValue($entity, $id);
-            }
+            $stmt->closeCursor();
         }
-
-        $stmt->closeCursor();
         $this->queuedInserts = [];
 
         return $postInsertIds;
@@ -1405,24 +1408,19 @@ class BasicEntityPersister implements EntityPersister
     /**
      * {@inheritdoc}
      */
-    public function getInsertSQL()
+    public function getInsertSQL(int $recordsCount = 1)
     {
-        if ($this->insertSql !== null) {
-            return $this->insertSql;
-        }
-
         $columns   = $this->getInsertColumnList();
         $tableName = $this->quoteStrategy->getTableName($this->class, $this->platform);
 
         if (empty($columns)) {
             $identityColumn  = $this->quoteStrategy->getColumnName($this->class->identifier[0], $this->class, $this->platform);
-            $this->insertSql = $this->platform->getEmptyIdentityInsertSQL($tableName, $identityColumn);
 
-            return $this->insertSql;
+            return $this->platform->getEmptyIdentityInsertSQL($tableName, $identityColumn);
         }
 
-        $values  = [];
-        $columns = array_unique($columns);
+        $placeholders = [];
+        $columns      = array_unique($columns);
 
         foreach ($columns as $column) {
             $placeholder = '?';
@@ -1434,15 +1432,14 @@ class BasicEntityPersister implements EntityPersister
                 $placeholder = $type->convertToDatabaseValueSQL('?', $this->platform);
             }
 
-            $values[] = $placeholder;
+            $placeholders[] = $placeholder;
         }
 
-        $columns = implode(', ', $columns);
-        $values  = implode(', ', $values);
+        $columns      = implode(', ', $columns);
+        $placeholders = implode(', ', $placeholders);
 
-        $this->insertSql = sprintf('INSERT INTO %s (%s) VALUES (%s)', $tableName, $columns, $values);
-
-        return $this->insertSql;
+        return sprintf('INSERT INTO %s (%s) VALUES ', $tableName, $columns)
+            . implode(', ', array_fill(0, $recordsCount, '(' . $placeholders . ')'));
     }
 
     /**
