@@ -644,7 +644,7 @@ class UnitOfWork implements PropertyChangedListener
                 }
 
                 // If $value is not a Collection and is a Traversable then use an ArrayCollection.
-                if ( ! $value instanceof Collection && $value instanceof \Traversable) {
+                if ( ! $value instanceof Collection && $value instanceof Traversable) {
                     $value = new ArrayCollection(iterator_to_array($value));
                 }
 
