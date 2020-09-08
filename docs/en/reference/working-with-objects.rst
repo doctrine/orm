@@ -250,6 +250,12 @@ as follows:
 -  If X is a detached entity, an exception will be thrown on
    flush.
 
+.. caution::
+
+    Do not pass detached entities to the persist operation. The persist operation always
+    considers entities that are not yet known to the ``EntityManager`` as new entities
+    (refer to the ``STATE_NEW`` constant inside the ``UnitOfWork``).
+
 Removing entities
 -----------------
 
@@ -315,7 +321,7 @@ in multiple ways with very different performance impacts.
 1. If an association is marked as ``CASCADE=REMOVE`` Doctrine 2
    will fetch this association. If its a Single association it will
    pass this entity to
-   ´EntityManager#remove()``. If the association is a collection, Doctrine will loop over all    its elements and pass them to``EntityManager#remove()\`.
+   ``EntityManager#remove()``. If the association is a collection, Doctrine will loop over all    its elements and pass them to``EntityManager#remove()``.
    In both cases the cascade remove semantics are applied recursively.
    For large object graphs this removal strategy can be very costly.
 2. Using a DQL ``DELETE`` statement allows you to delete multiple
@@ -329,6 +335,13 @@ in multiple ways with very different performance impacts.
    completely by-passes any foreign key ``onDelete=CASCADE`` option,
    because Doctrine will fetch and remove all associated entities
    explicitly nevertheless.
+
+.. note::
+
+    Calling ``remove`` on an entity will remove the object from the identiy
+    map and therefore detach it. Querying the same entity again, for example 
+    via a lazy loaded relation, will return a new object. 
+
 
 Detaching entities
 ------------------

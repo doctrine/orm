@@ -20,12 +20,13 @@
 namespace Doctrine\ORM\Mapping\Driver;
 
 use Doctrine\Common\Collections\Criteria;
-use SimpleXMLElement;
-use Doctrine\Common\Persistence\Mapping\Driver\FileDriver;
 use Doctrine\ORM\Mapping\Builder\EntityListenerBuilder;
-use Doctrine\Common\Persistence\Mapping\ClassMetadata;
 use Doctrine\ORM\Mapping\MappingException;
 use Doctrine\ORM\Mapping\ClassMetadata as Metadata;
+use Doctrine\Persistence\Mapping\ClassMetadata;
+use Doctrine\Persistence\Mapping\Driver\FileDriver;
+use SimpleXMLElement;
+use function interface_exists;
 
 /**
  * XmlDriver is a metadata driver that enables mapping through XML files.
@@ -670,7 +671,7 @@ class XmlDriver extends FileDriver
      *
      * @param SimpleXMLElement $options The XML element.
      *
-     * @return array The options array.
+     * @return mixed[] The options array.
      */
     private function _parseOptions(SimpleXMLElement $options)
     {
@@ -705,7 +706,16 @@ class XmlDriver extends FileDriver
      *
      * @param SimpleXMLElement $joinColumnElement The XML element.
      *
-     * @return array The mapping array.
+     * @return mixed[] The mapping array.
+     *
+     * @psalm-return array{
+     *                   name: string,
+     *                   referencedColumnName: string,
+     *                   unique?: bool,
+     *                   nullable?: bool,
+     *                   onDelete?: string,
+     *                   columnDefinition?: string
+     *               }
      */
     private function joinColumnToArray(SimpleXMLElement $joinColumnElement)
     {
@@ -734,12 +744,24 @@ class XmlDriver extends FileDriver
     }
 
      /**
-     * Parses the given field as array.
-     *
-     * @param SimpleXMLElement $fieldMapping
-     *
-     * @return array
-     */
+      * Parses the given field as array.
+      *
+      * @return mixed[]
+      *
+      * @psalm-return array{
+      *                   fieldName: string,
+      *                   type?: string,
+      *                   columnName?: string,
+      *                   length?: int,
+      *                   precision?: int,
+      *                   scale?: int,
+      *                   unique?: bool,
+      *                   nullable?: bool,
+      *                   version?: bool,
+      *                   columnDefinition?: string,
+      *                   options?: array
+      *               }
+      */
     private function columnToArray(SimpleXMLElement $fieldMapping)
     {
         $mapping = [
@@ -794,7 +816,9 @@ class XmlDriver extends FileDriver
      *
      * @param SimpleXMLElement $cacheMapping
      *
-     * @return array
+     * @return mixed[]
+     *
+     * @psalm-return array{usage: mixed, region: string|null}
      */
     private function cacheToArray(SimpleXMLElement $cacheMapping)
     {
@@ -820,7 +844,9 @@ class XmlDriver extends FileDriver
      *
      * @param SimpleXMLElement $cascadeElement The cascade element.
      *
-     * @return array The list of cascade options.
+     * @return string[] The list of cascade options.
+     *
+     * @psalm-return list<string>
      */
     private function _getCascadeMappings(SimpleXMLElement $cascadeElement)
     {
@@ -879,3 +905,5 @@ class XmlDriver extends FileDriver
         return ($flag == "true" || $flag == "1");
     }
 }
+
+interface_exists(ClassMetadata::class);

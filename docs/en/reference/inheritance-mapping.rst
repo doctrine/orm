@@ -584,7 +584,7 @@ Things to note:
 
 -  The "attribute override" specifies the overrides base on the property name.
 -  The column type *CANNOT* be changed. If the column type is not equal you get a ``MappingException``
--  The override can redefine all the columns except the type.
+-  The override can redefine all the attributes except the type.
 
 Query the Type
 --------------

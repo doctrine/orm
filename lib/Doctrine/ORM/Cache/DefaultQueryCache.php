@@ -260,7 +260,7 @@ class DefaultQueryCache implements QueryCache
             throw new CacheException("Second-level cache query supports only select statements.");
         }
 
-        if (isset($hints[Query::HINT_FORCE_PARTIAL_LOAD]) && $hints[Query::HINT_FORCE_PARTIAL_LOAD]) {
+        if (($hints[Query\SqlWalker::HINT_PARTIAL] ?? false) === true || ($hints[Query::HINT_FORCE_PARTIAL_LOAD] ?? false) === true) {
             throw new CacheException("Second level cache does not support partial entities.");
         }
 
@@ -348,7 +348,9 @@ class DefaultQueryCache implements QueryCache
      * @param array                             $assoc
      * @param mixed                             $assocValue
      *
-     * @return array|null
+     * @return mixed[]|null
+     *
+     * @psalm-return array{targetEntity: string, type: mixed, list?: array[], identifier?: array}|null
      */
     private function storeAssociationCache(QueryCacheKey $key, array $assoc, $assocValue)
     {

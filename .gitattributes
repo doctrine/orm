@@ -1,5 +1,6 @@
 /tests export-ignore
 /tools export-ignore
+/.github export-ignore
 .gitattributes export-ignore
 .gitignore export-ignore
 .gitmodules export-ignore
@@ -11,3 +12,6 @@ CONTRIBUTING.md export-ignore
 phpunit.xml.dist export-ignore
 run-all.sh export-ignore
 phpcs.xml.dist export-ignore
+phpbench.json export-ignore
+phpstan.neon export-ignore
+psalm.xml export-ignore

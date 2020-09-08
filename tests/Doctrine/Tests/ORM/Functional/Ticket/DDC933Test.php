@@ -3,6 +3,7 @@
 namespace Doctrine\Tests\ORM\Functional\Ticket;
 
 use Doctrine\DBAL\LockMode;
+use Doctrine\Persistence\Mapping\MappingException;
 use Doctrine\Tests\Models\Company\CompanyManager;
 use Doctrine\Tests\OrmFunctionalTestCase;
 use Doctrine\Tests\TestUtil;
@@ -48,7 +49,7 @@ class DDC933Test extends OrmFunctionalTestCase
      *
      * @return void
      *
-     * @throws \Doctrine\Common\Persistence\Mapping\MappingException
+     * @throws MappingException
      * @throws \Doctrine\ORM\ORMException
      * @throws \Doctrine\ORM\OptimisticLockException
      * @throws \Doctrine\ORM\TransactionRequiredException

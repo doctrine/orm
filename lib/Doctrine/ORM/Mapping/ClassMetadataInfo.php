@@ -20,14 +20,18 @@
 namespace Doctrine\ORM\Mapping;
 
 use BadMethodCallException;
-use Doctrine\Instantiator\Instantiator;
-use InvalidArgumentException;
-use RuntimeException;
 use Doctrine\DBAL\Types\Type;
 use Doctrine\DBAL\Platforms\AbstractPlatform;
-use ReflectionClass;
-use Doctrine\Common\Persistence\Mapping\ClassMetadata;
+use Doctrine\Instantiator\Instantiator;
 use Doctrine\ORM\Cache\CacheException;
+use Doctrine\Persistence\Mapping\ClassMetadata;
+use Doctrine\Persistence\Mapping\ReflectionService;
+use InvalidArgumentException;
+use ReflectionClass;
+use ReflectionProperty;
+use RuntimeException;
+use function array_key_exists;
+use function explode;
 
 /**
  * A <tt>ClassMetadata</tt> instance holds all the object-relational mapping metadata
@@ -251,7 +255,8 @@ class ClassMetadataInfo implements ClassMetadata
      * The name of the custom repository class used for the entity class.
      * (Optional).
      *
-     * @var string
+     * @var string|null
+     * @psalm-var ?class-string
      */
     public $customRepositoryClassName;
 
@@ -639,7 +644,7 @@ class ClassMetadataInfo implements ClassMetadata
     /**
      * The ReflectionProperty instances of the mapped class.
      *
-     * @var \ReflectionProperty[]
+     * @var ReflectionProperty[]
      */
     public $reflFields = [];
 
@@ -666,7 +671,7 @@ class ClassMetadataInfo implements ClassMetadata
     /**
      * Gets the ReflectionProperties of the mapped class.
      *
-     * @return array An array of ReflectionProperty instances.
+     * @return ReflectionProperty[] An array of ReflectionProperty instances.
      */
     public function getReflectionProperties()
     {
@@ -678,7 +683,7 @@ class ClassMetadataInfo implements ClassMetadata
      *
      * @param string $name
      *
-     * @return \ReflectionProperty
+     * @return ReflectionProperty
      */
     public function getReflectionProperty($name)
     {
@@ -688,7 +693,7 @@ class ClassMetadataInfo implements ClassMetadata
     /**
      * Gets the ReflectionProperty for the single identifier field.
      *
-     * @return \ReflectionProperty
+     * @return ReflectionProperty
      *
      * @throws BadMethodCallException If the class has a composite identifier.
      */
@@ -804,7 +809,7 @@ class ClassMetadataInfo implements ClassMetadata
      *      - reflClass (ReflectionClass)
      *      - reflFields (ReflectionProperty array)
      *
-     * @return array The names of all the fields that should be serialized.
+     * @return string[] The names of all the fields that should be serialized.
      */
     public function __sleep()
     {
@@ -914,7 +919,7 @@ class ClassMetadataInfo implements ClassMetadata
     /**
      * Restores some state that can not be serialized/unserialized.
      *
-     * @param \Doctrine\Common\Persistence\Mapping\ReflectionService $reflService
+     * @param ReflectionService $reflService
      *
      * @return void
      */
@@ -975,7 +980,7 @@ class ClassMetadataInfo implements ClassMetadata
      * Initializes a new ClassMetadata instance that will hold the object-relational mapping
      * metadata of the class with the given name.
      *
-     * @param \Doctrine\Common\Persistence\Mapping\ReflectionService $reflService The reflection service.
+     * @param ReflectionService $reflService The reflection service.
      *
      * @return void
      */
@@ -1037,7 +1042,7 @@ class ClassMetadataInfo implements ClassMetadata
     /**
      * Validates lifecycle callbacks.
      *
-     * @param \Doctrine\Common\Persistence\Mapping\ReflectionService $reflService
+     * @param ReflectionService $reflService
      *
      * @return void
      *
@@ -1095,7 +1100,10 @@ class ClassMetadataInfo implements ClassMetadata
      * @param string $fieldName
      * @param array  $cache
      *
-     * @return array
+     * @return mixed[]
+     *
+     * @psalm-param array{usage: mixed, region: mixed} $cache
+     * @psalm-return array{usage: mixed, region: mixed}
      */
     public function getAssociationCacheDefaults($fieldName, array $cache)
     {
@@ -1444,9 +1452,25 @@ class ClassMetadataInfo implements ClassMetadata
      *
      * @param array $mapping The mapping.
      *
-     * @return array The updated mapping.
+     * @return mixed[] The updated mapping.
      *
      * @throws MappingException If something is wrong with the mapping.
+     *
+     * @psalm-return array{
+     *                   mappedBy: mixed,
+     *                   inversedBy: mixed,
+     *                   isOwningSide: bool,
+     *                   sourceEntity: string,
+     *                   targetEntity: string,
+     *                   fieldName: mixed,
+     *                   fetch: mixed,
+     *                   cascade: array<array-key,string>,
+     *                   isCascadeRemove: bool,
+     *                   isCascadePersist: bool,
+     *                   isCascadeRefresh: bool,
+     *                   isCascadeMerge: bool,
+     *                   isCascadeDetach: bool
+     *               }
      */
     protected function _validateAndCompleteAssociationMapping(array $mapping)
     {
@@ -1564,10 +1588,12 @@ class ClassMetadataInfo implements ClassMetadata
      *
      * @param array $mapping The mapping to validate & complete.
      *
-     * @return array The validated & completed mapping.
+     * @return mixed[] The validated & completed mapping.
      *
      * @throws RuntimeException
      * @throws MappingException
+     *
+     * @psalm-return array{isOwningSide: mixed, orphanRemoval: bool, isCascadeRemove: bool}
      */
     protected function _validateAndCompleteOneToOneMapping(array $mapping)
     {
@@ -1655,10 +1681,27 @@ class ClassMetadataInfo implements ClassMetadata
      *
      * @param array $mapping The mapping to validate and complete.
      *
-     * @return array The validated and completed mapping.
+     * @return mixed[] The validated and completed mapping.
      *
      * @throws MappingException
      * @throws InvalidArgumentException
+     *
+     * @psalm-return array{
+     *                   mappedBy: mixed,
+     *                   inversedBy: mixed,
+     *                   isOwningSide: bool,
+     *                   sourceEntity: string,
+     *                   targetEntity: string,
+     *                   fieldName: mixed,
+     *                   fetch: int|mixed,
+     *                   cascade: array<array-key,string>,
+     *                   isCascadeRemove: bool,
+     *                   isCascadePersist: bool,
+     *                   isCascadeRefresh: bool,
+     *                   isCascadeMerge: bool,
+     *                   isCascadeDetach: bool,
+     *                   orphanRemoval: bool
+     *               }
      */
     protected function _validateAndCompleteOneToManyMapping(array $mapping)
     {
@@ -1682,9 +1725,11 @@ class ClassMetadataInfo implements ClassMetadata
      *
      * @param array $mapping The mapping to validate & complete.
      *
-     * @return array The validated & completed mapping.
+     * @return mixed[] The validated & completed mapping.
      *
      * @throws \InvalidArgumentException
+     *
+     * @psalm-return array{isOwningSide: mixed, orphanRemoval: bool}
      */
     protected function _validateAndCompleteManyToManyMapping(array $mapping)
     {
@@ -1861,7 +1906,9 @@ class ClassMetadataInfo implements ClassMetadata
      *
      * @param array|null $fieldNames
      *
-     * @return array
+     * @return mixed[]
+     *
+     * @psalm-return list<string>
      */
     public function getColumnNames(array $fieldNames = null)
     {
@@ -2216,6 +2263,12 @@ class ClassMetadataInfo implements ClassMetadata
             throw MappingException::invalidOverrideFieldType($this->name, $fieldName);
         }
 
+        // Fix for bug GH-8229 (id column from parent class renamed in child class):
+        // The contained 'inherited' information was accidentally deleted by the unset() call below.
+        if (array_key_exists('inherited', $this->fieldMappings[$fieldName])) {
+            $overrideMapping['inherited'] = $this->fieldMappings[$fieldName]['inherited'];
+        }
+
         unset($this->fieldMappings[$fieldName]);
         unset($this->fieldNames[$mapping['columnName']]);
         unset($this->columnNames[$mapping['fieldName']]);
@@ -2297,7 +2350,7 @@ class ClassMetadataInfo implements ClassMetadata
         if (isset($table['name'])) {
             // Split schema and table name from a table name like "myschema.mytable"
             if (strpos($table['name'], '.') !== false) {
-                list($this->table['schema'], $table['name']) = explode('.', $table['name'], 2);
+                [$this->table['schema'], $table['name']] = explode('.', $table['name'], 2);
             }
 
             if ($table['name'][0] === '`') {
@@ -2523,7 +2576,7 @@ class ClassMetadataInfo implements ClassMetadata
                         if (!isset($field['column'])) {
                             $fieldName = $field['name'];
                             if (strpos($fieldName, '.')) {
-                                list(, $fieldName) = explode('.', $fieldName);
+                                [, $fieldName] = explode('.', $fieldName);
                             }
 
                             $resultMapping['entities'][$key]['fields'][$k]['column'] = $fieldName;
@@ -2625,6 +2678,8 @@ class ClassMetadataInfo implements ClassMetadata
      * @param string $repositoryClassName The class name of the custom mapper.
      *
      * @return void
+     *
+     * @psalm-param class-string $repositoryClassName
      */
     public function setCustomRepositoryClass($repositoryClassName)
     {
@@ -3253,6 +3308,8 @@ class ClassMetadataInfo implements ClassMetadata
      * @param  string|null $className
      *
      * @return string|null null if the input value is null
+     *
+     * @psalm-param ?class-string $className
      */
     public function fullyQualifiedClassName($className)
     {

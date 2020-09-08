@@ -2,9 +2,9 @@
 
 namespace Doctrine\Tests\ORM\Functional\Ticket;
 
-use Doctrine\Common\NotifyPropertyChanged;
-use Doctrine\Common\PropertyChangedListener;
 use Doctrine\ORM\Proxy\Proxy;
+use Doctrine\Persistence\NotifyPropertyChanged;
+use Doctrine\Persistence\PropertyChangedListener;
 
 class DDC1690Test extends \Doctrine\Tests\OrmFunctionalTestCase
 {

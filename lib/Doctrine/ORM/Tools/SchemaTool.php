@@ -31,6 +31,7 @@ use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\ORMException;
 use Doctrine\ORM\Tools\Event\GenerateSchemaTableEventArgs;
 use Doctrine\ORM\Tools\Event\GenerateSchemaEventArgs;
+use function array_intersect_key;
 
 /**
  * The SchemaTool is a tool to create/drop/update database schemas based on
@@ -107,7 +108,7 @@ class SchemaTool
      *
      * @param array $classes
      *
-     * @return array The SQL statements needed to create the schema for the classes.
+     * @return string[] The SQL statements needed to create the schema for the classes.
      */
     public function getCreateSchemaSql(array $classes)
     {
@@ -248,14 +249,20 @@ class SchemaTool
                     }
 
                     if ( ! empty($inheritedKeyColumns)) {
+                        // Fix for bug GH-8229 (id column from parent class renamed in child class):
+                        // Use the correct name for the id columns as named in the parent class.
+                        $parentClass          = $this->em->getClassMetadata($class->rootEntityName);
+                        $parentKeyColumnNames = $parentClass->getIdentifierColumnNames();
+                        $parentKeyColumns     = array_intersect_key($parentKeyColumnNames, $inheritedKeyColumns);
+
                         // Add a FK constraint on the ID column
                         $table->addForeignKeyConstraint(
                             $this->quoteStrategy->getTableName(
-                                $this->em->getClassMetadata($class->rootEntityName),
+                                $parentClass,
                                 $this->platform
                             ),
                             $inheritedKeyColumns,
-                            $inheritedKeyColumns,
+                            $parentKeyColumns,
                             ['onDelete' => 'CASCADE']
                         );
                     }
@@ -639,7 +646,7 @@ class SchemaTool
 
         foreach ($joinColumns as $joinColumn) {
 
-            list($definingClass, $referencedFieldName) = $this->getDefiningClass(
+            [$definingClass, $referencedFieldName] = $this->getDefiningClass(
                 $class,
                 $joinColumn['referencedColumnName']
             );
@@ -794,7 +801,7 @@ class SchemaTool
     /**
      * Gets the SQL needed to drop the database schema for the connections database.
      *
-     * @return array
+     * @return string[]
      */
     public function getDropDatabaseSQL()
     {
@@ -812,7 +819,7 @@ class SchemaTool
      *
      * @param array $classes
      *
-     * @return array
+     * @return string[]
      */
     public function getDropSchemaSQL(array $classes)
     {
@@ -888,7 +895,7 @@ class SchemaTool
      * @param boolean $saveMode If TRUE, only generates SQL for a partial update
      *                          that does not include SQL for dropping assets which are scheduled for deletion.
      *
-     * @return array The sequence of SQL statements.
+     * @return string[] The sequence of SQL statements.
      */
     public function getUpdateSchemaSql(array $classes, $saveMode = false)
     {

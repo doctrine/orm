@@ -42,7 +42,7 @@ class ManyToManyAssociationBuilder extends OneToManyAssociationBuilder
     /**
      * @param string $name
      *
-     * @return ManyToManyAssociationBuilder
+     * @return static
      */
     public function setJoinTable($name)
     {
@@ -61,7 +61,7 @@ class ManyToManyAssociationBuilder extends OneToManyAssociationBuilder
      * @param string|null $onDelete
      * @param string|null $columnDef
      *
-     * @return ManyToManyAssociationBuilder
+     * @return static
      */
     public function addInverseJoinColumn($columnName, $referencedColumnName, $nullable = true, $unique = false, $onDelete = null, $columnDef = null)
     {

@@ -19,12 +19,13 @@
 
 namespace Doctrine\ORM\Mapping\Driver;
 
-use Doctrine\Common\Persistence\Mapping\ClassMetadata;
 use Doctrine\ORM\Mapping\Builder\EntityListenerBuilder;
-use Doctrine\Common\Persistence\Mapping\Driver\FileDriver;
 use Doctrine\ORM\Mapping\ClassMetadata as Metadata;
 use Doctrine\ORM\Mapping\MappingException;
+use Doctrine\Persistence\Mapping\ClassMetadata;
+use Doctrine\Persistence\Mapping\Driver\FileDriver;
 use Symfony\Component\Yaml\Yaml;
+use function interface_exists;
 use function trigger_error;
 
 /**
@@ -683,7 +684,17 @@ class YamlDriver extends FileDriver
      *
      * @param array $joinColumnElement The array join column element.
      *
-     * @return array The mapping array.
+     * @return mixed[] The mapping array.
+     *
+     * @psalm-return array{
+     *                   referencedColumnName?: string,
+     *                   name?: string,
+     *                   fieldName?: string,
+     *                   unique?: bool,
+     *                   nullable?: bool,
+     *                   onDelete?: mixed,
+     *                   columnDefinition?: mixed
+     *               }
      */
     private function joinColumnToArray($joinColumnElement)
     {
@@ -725,7 +736,21 @@ class YamlDriver extends FileDriver
      * @param string $fieldName
      * @param array  $column
      *
-     * @return  array
+     * @return mixed[]
+     *
+     * @psalm-return array{
+     *                   fieldName: string,
+     *                   type?: string,
+     *                   columnName?: mixed,
+     *                   length?: mixed,
+     *                   precision?: mixed,
+     *                   scale?: mixed,
+     *                   unique?: bool,
+     *                   options?: mixed,
+     *                   nullable?: mixed,
+     *                   version?: mixed,
+     *                   columnDefinition?: mixed
+     *               }
      */
     private function columnToArray($fieldName, $column)
     {
@@ -786,9 +811,12 @@ class YamlDriver extends FileDriver
     /**
      * Parse / Normalize the cache configuration
      *
-     * @param array $cacheMapping
+     * @param mixed[] $cacheMapping
      *
-     * @return array
+     * @return mixed[]
+     *
+     * @psalm-param array{usage: mixed, region: null|string} $cacheMapping
+     * @psalm-return array{usage: mixed, region: null|string}
      */
     private function cacheToArray($cacheMapping)
     {
@@ -817,3 +845,5 @@ class YamlDriver extends FileDriver
         return Yaml::parse(file_get_contents($file));
     }
 }
+
+interface_exists(ClassMetadata::class);

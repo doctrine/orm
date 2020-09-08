@@ -328,11 +328,6 @@ class ValueObjectsTest extends OrmFunctionalTestCase
             ['DDCNestingEmbeddable1', 'DDCNestingEmbeddable4'],
         ];
     }
-
-    public function testEmbeddableIsNotTransient()
-    {
-        $this->assertFalse($this->_em->getMetadataFactory()->isTransient(DDC93Address::class));
-    }
 }
 
 

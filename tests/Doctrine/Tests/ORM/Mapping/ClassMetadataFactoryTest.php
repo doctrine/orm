@@ -3,8 +3,6 @@
 namespace Doctrine\Tests\ORM\Mapping;
 
 use Doctrine\Common\EventManager;
-use Doctrine\Common\Persistence\Mapping\Driver\MappingDriver;
-use Doctrine\Common\Persistence\Mapping\RuntimeReflectionService;
 use Doctrine\DBAL\Connection;
 use Doctrine\ORM\Configuration;
 use Doctrine\ORM\EntityManager;
@@ -16,6 +14,8 @@ use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\Mapping\ClassMetadataFactory;
 use Doctrine\ORM\Mapping\MappingException;
 use Doctrine\ORM\ORMException;
+use Doctrine\Persistence\Mapping\Driver\MappingDriver;
+use Doctrine\Persistence\Mapping\RuntimeReflectionService;
 use Doctrine\Tests\Mocks\ConnectionMock;
 use Doctrine\Tests\Mocks\DriverMock;
 use Doctrine\Tests\Mocks\EntityManagerMock;
@@ -372,7 +372,7 @@ class ClassMetadataFactoryTest extends OrmTestCase
     public function testFallbackLoadingCausesEventTriggeringThatCanModifyFetchedMetadata()
     {
         $test          = $this;
-        /* @var $metadata \Doctrine\Common\Persistence\Mapping\ClassMetadata */
+        /** @var ClassMetadata $metadata */
         $metadata      = $this->createMock(ClassMetadata::class);
         $cmf           = new ClassMetadataFactory();
         $mockDriver    = new MetadataDriverMock();
@@ -453,6 +453,36 @@ class ClassMetadataFactoryTest extends OrmTestCase
 
         $this->assertTrue($userMetadata->isIdGeneratorIdentity());
     }
+
+    public function testInvalidSubClassCase()
+    {
+        $this->expectException(MappingException::class);
+        $this->expectExceptionMessage('Entity class \'Doctrine\Tests\ORM\Mapping\cube\' used in the discriminator map of class \'Doctrine\Tests\ORM\Mapping\Shape\' does not exist.');
+
+        $cmf = new ClassMetadataFactory();
+        $driver = $this->createAnnotationDriver([__DIR__]);
+        $em = $this->_createEntityManager($driver);
+        $cmf->setEntityManager($em);
+
+        $userMetadata = $cmf->getMetadataFor(Shape::class);
+    }
+}
+
+/**
+ * @Entity
+ * @InheritanceType("SINGLE_TABLE")
+ * @DiscriminatorMap({"cube" = cube::class})
+ * @DiscriminatorColumn(name="discr", length=32, type="string")
+ */
+abstract class Shape
+{
+    /** @Id @Column(type="string") @GeneratedValue(strategy="AUTO") */
+    public $id;
+}
+
+/** @Entity */
+final class Cube extends Shape
+{
 }
 
 /* Test subject class with overridden factory method for mocking purposes */

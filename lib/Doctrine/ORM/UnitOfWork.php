@@ -21,10 +21,6 @@ namespace Doctrine\ORM;
 
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
-use Doctrine\Common\NotifyPropertyChanged;
-use Doctrine\Common\Persistence\Mapping\RuntimeReflectionService;
-use Doctrine\Common\Persistence\ObjectManagerAware;
-use Doctrine\Common\PropertyChangedListener;
 use Doctrine\DBAL\LockMode;
 use Doctrine\ORM\Cache\Persister\CachedPersister;
 use Doctrine\ORM\Event\LifecycleEventArgs;
@@ -43,6 +39,10 @@ use Doctrine\ORM\Persisters\Entity\JoinedSubclassPersister;
 use Doctrine\ORM\Persisters\Entity\SingleTablePersister;
 use Doctrine\ORM\Proxy\Proxy;
 use Doctrine\ORM\Utility\IdentifierFlattener;
+use Doctrine\Persistence\Mapping\RuntimeReflectionService;
+use Doctrine\Persistence\NotifyPropertyChanged;
+use Doctrine\Persistence\ObjectManagerAware;
+use Doctrine\Persistence\PropertyChangedListener;
 use InvalidArgumentException;
 use Throwable;
 use UnexpectedValueException;
@@ -548,7 +548,7 @@ class UnitOfWork implements PropertyChangedListener
     private function executeExtraUpdates()
     {
         foreach ($this->extraUpdates as $oid => $update) {
-            list ($entity, $changeset) = $update;
+            [$entity, $changeset] = $update;
 
             $this->entityChangeSets[$oid] = $changeset;
             $this->getEntityPersister(get_class($entity))->update($entity);
@@ -1393,7 +1393,7 @@ class UnitOfWork implements PropertyChangedListener
         $extraUpdate = [$entity, $changeset];
 
         if (isset($this->extraUpdates[$oid])) {
-            list(, $changeset2) = $this->extraUpdates[$oid];
+            [, $changeset2] = $this->extraUpdates[$oid];
 
             $extraUpdate = [$entity, $changeset + $changeset2];
         }
@@ -1893,7 +1893,7 @@ class UnitOfWork implements PropertyChangedListener
      * @param object      $entity
      * @param array       $visited
      * @param object|null $prevManagedCopy
-     * @param array|null  $assoc
+     * @param string[]    $assoc
      *
      * @return object The managed copy of the entity.
      *
@@ -2588,13 +2588,13 @@ class UnitOfWork implements PropertyChangedListener
     /**
      * @param ClassMetadata $class
      *
-     * @return \Doctrine\Common\Persistence\ObjectManagerAware|object
+     * @return ObjectManagerAware|object
      */
     private function newInstance($class)
     {
         $entity = $class->newInstance();
 
-        if ($entity instanceof \Doctrine\Common\Persistence\ObjectManagerAware) {
+        if ($entity instanceof ObjectManagerAware) {
             $entity->injectObjectManager($this->em, $class);
         }
 
@@ -3043,8 +3043,8 @@ class UnitOfWork implements PropertyChangedListener
      * @param mixed  $id            The entity identifier to look for.
      * @param string $rootClassName The name of the root class of the mapped entity hierarchy.
      *
-     * @return object|bool Returns the entity with the specified identifier if it exists in
-     *                     this UnitOfWork, FALSE otherwise.
+     * @return object|false Returns the entity with the specified identifier if it exists in
+     *                      this UnitOfWork, FALSE otherwise.
      */
     public function tryGetById($id, $rootClassName)
     {

@@ -19,15 +19,14 @@
 
 namespace Doctrine\ORM;
 
-use Doctrine\Common\Persistence\Mapping\MappingException;
 use Doctrine\Common\Util\ClassUtils;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\Common\Collections\ArrayCollection;
-
+use Doctrine\DBAL\Cache\QueryCacheProfile;
 use Doctrine\ORM\Mapping\MappingException as ORMMappingException;
 use Doctrine\ORM\Query\Parameter;
 use Doctrine\ORM\Cache\QueryCacheKey;
-use Doctrine\DBAL\Cache\QueryCacheProfile;
+use Doctrine\Persistence\Mapping\MappingException;
 
 /**
  * Base contract for ORM queries. Base class for Query and NativeQuery.
@@ -241,7 +240,7 @@ abstract class AbstractQuery
      *
      * @param integer $lifetime
      *
-     * @return \Doctrine\ORM\AbstractQuery This query instance.
+     * @return static This query instance.
      */
     public function setLifetime($lifetime)
     {
@@ -261,7 +260,7 @@ abstract class AbstractQuery
     /**
      * @param integer $cacheMode
      *
-     * @return \Doctrine\ORM\AbstractQuery This query instance.
+     * @return static This query instance.
      */
     public function setCacheMode($cacheMode)
     {
@@ -322,11 +321,13 @@ abstract class AbstractQuery
      */
     public function getParameter($key)
     {
+        $key = Query\Parameter::normalizeName($key);
+
         $filteredParameters = $this->parameters->filter(
             function (Query\Parameter $parameter) use ($key) : bool {
                 $parameterName = $parameter->getName();
 
-                return $key === $parameterName || (string) $key === (string) $parameterName;
+                return $key === $parameterName;
             }
         );
 
@@ -968,7 +969,7 @@ abstract class AbstractQuery
         $setCacheEntry = function() {};
 
         if ($this->_hydrationCacheProfile !== null) {
-            list($cacheKey, $realCacheKey) = $this->getHydrationCacheId();
+            [$cacheKey, $realCacheKey] = $this->getHydrationCacheId();
 
             $queryCacheProfile = $this->getHydrationCacheProfile();
             $cache             = $queryCacheProfile->getResultCacheDriver();
@@ -1069,7 +1070,7 @@ abstract class AbstractQuery
      * Will return the configured id if it exists otherwise a hash will be
      * automatically generated for you.
      *
-     * @return array ($key, $hash)
+     * @return array<string, string> ($key, $hash)
      */
     protected function getHydrationCacheId()
     {
