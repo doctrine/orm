@@ -23,10 +23,10 @@ use Countable;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\DBAL\Cache\QueryCacheProfile;
-use Doctrine\ORM\Mapping\MappingException as ORMMappingException;
-use Doctrine\Persistence\Mapping\MappingException;
-use Doctrine\ORM\Query\Parameter;
 use Doctrine\ORM\Cache\QueryCacheKey;
+use Doctrine\ORM\Mapping\MappingException as ORMMappingException;
+use Doctrine\ORM\Query\Parameter;
+use Doctrine\Persistence\Mapping\MappingException;
 use Traversable;
 use function array_map;
 use function array_shift;
@@ -446,7 +446,7 @@ abstract class AbstractQuery
             if ($value === null) {
                 throw ORMInvalidArgumentException::invalidIdentifierBindingEntity();
             }
-        } catch (ORMMappingException $e) {
+        } catch (MappingException | ORMMappingException $e) {
             // Silence any mapping exceptions. These can occur if the object in
             // question is not a mapped entity, in which case we just don't do
             // any preparation on the value.
