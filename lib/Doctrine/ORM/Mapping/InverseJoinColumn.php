@@ -21,11 +21,43 @@ namespace Doctrine\ORM\Mapping;
 
 use Attribute;
 
-/**
- * @Annotation
- * @Target("PROPERTY")
- */
-#[Attribute(Attribute::TARGET_PROPERTY)]
-final class Id implements Annotation
+#[Attribute(Attribute::TARGET_PROPERTY | Attribute::IS_REPEATABLE)]
+final class InverseJoinColumn implements Annotation
 {
+    /**
+     * @var string
+     */
+    public $name;
+
+    /**
+     * @var string
+     */
+    public $referencedColumnName = 'id';
+
+    /**
+     * @var boolean
+     */
+    public $unique = false;
+
+    /**
+     * @var boolean
+     */
+    public $nullable = true;
+
+    /**
+     * @var mixed
+     */
+    public $onDelete;
+
+    /**
+     * @var string
+     */
+    public $columnDefinition;
+
+    /**
+     * Field name used in non-object hydration (array/scalar).
+     *
+     * @var string
+     */
+    public $fieldName;
 }

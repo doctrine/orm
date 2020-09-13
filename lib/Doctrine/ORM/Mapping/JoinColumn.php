@@ -23,6 +23,7 @@ namespace Doctrine\ORM\Mapping;
  * @Annotation
  * @Target({"PROPERTY","ANNOTATION"})
  */
+#[Attribute(Attribute::TARGET_PROPERTY | Attribute::IS_REPEATABLE)]
 final class JoinColumn implements Annotation
 {
     /**

@@ -19,10 +19,13 @@
 
 namespace Doctrine\ORM\Mapping;
 
+use Attribute;
+
 /**
  * @Annotation
  * @Target({"PROPERTY","ANNOTATION"})
  */
+#[Attribute(Attribute::TARGET_PROPERTY)]
 final class Column implements Annotation
 {
     /**

@@ -19,10 +19,13 @@
 
 namespace Doctrine\ORM\Mapping;
 
+use Attribute;
+
 /**
  * @Annotation
  * @Target("ANNOTATION")
  */
+#[Attribute(Attribute::TARGET_CLASS | Attribute::IS_REPEATABLE)]
 final class UniqueConstraint implements Annotation
 {
     /**

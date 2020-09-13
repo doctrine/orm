@@ -19,6 +19,8 @@
 
 namespace Doctrine\ORM\Mapping;
 
+use Attribute;
+
 /**
  * This annotation is used to override the mapping of a entity property.
  *
@@ -28,6 +30,7 @@ namespace Doctrine\ORM\Mapping;
  * @Annotation
  * @Target("ANNOTATION")
  */
+#[Attribute(Attribute::TARGET_CLASS | Attribute::IS_REPEATABLE)]
 final class AttributeOverride implements Annotation
 {
     /**

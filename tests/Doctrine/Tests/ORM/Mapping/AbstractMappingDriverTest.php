@@ -4,6 +4,7 @@ namespace Doctrine\Tests\ORM\Mapping;
 
 use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\Events;
+use Doctrine\ORM\Mapping as ORM;
 use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\Mapping\ClassMetadataFactory;
 use Doctrine\ORM\Mapping\ClassMetadataInfo;
@@ -1310,12 +1311,15 @@ class User
  * @DiscriminatorMap({"cat" = "Cat", "dog" = "Dog"})
  * @DiscriminatorColumn(name="discr", length=32, type="string")
  */
+#[ORM\Entity, ORM\InheritanceType("SINGLE_TABLE"), ORM\DiscriminatorColumn(name: "discr", length: 32, type: "string")]
+#[ORM\DiscriminatorMap(["cat" => "Cat", "dog" => "Dog"])]
 abstract class Animal
 {
     /**
      * @Id @Column(type="string") @GeneratedValue(strategy="CUSTOM")
      * @CustomIdGenerator(class="stdClass")
      */
+    #[ORM\Id, ORM\Column(type: "string"), ORM\GeneratedValue(strategy: "CUSTOM")]
     public $id;
 
     public static function loadMetadata(ClassMetadataInfo $metadata)
@@ -1326,6 +1330,7 @@ abstract class Animal
 }
 
 /** @Entity */
+#[ORM\Entity]
 class Cat extends Animal
 {
     public static function loadMetadata(ClassMetadataInfo $metadata)
@@ -1335,6 +1340,7 @@ class Cat extends Animal
 }
 
 /** @Entity */
+#[ORM\Entity]
 class Dog extends Animal
 {
     public static function loadMetadata(ClassMetadataInfo $metadata)
@@ -1346,6 +1352,7 @@ class Dog extends Animal
 /**
  * @Entity
  */
+#[ORM\Entity]
 class DDC1170Entity
 {
 
@@ -1362,11 +1369,13 @@ class DDC1170Entity
      * @GeneratedValue(strategy="NONE")
      * @Column(type="integer", columnDefinition = "INT unsigned NOT NULL")
      **/
+    #[ORM\Id, ORM\GeneratedValue(strategy: "NONE"), ORM\Column(type: "integer", columnDefinition: "INT UNSIGNED NOT NULL")]
     private $id;
 
     /**
      * @Column(columnDefinition = "VARCHAR(255) NOT NULL")
      */
+    #[ORM\Column(columnDefinition: "VARCHAR(255) NOT NULL")]
     private $value;
 
     /**
@@ -1413,6 +1422,9 @@ class DDC1170Entity
  * @DiscriminatorMap({"ONE" = "DDC807SubClasse1", "TWO" = "DDC807SubClasse2"})
  * @DiscriminatorColumn(name = "dtype", columnDefinition="ENUM('ONE','TWO')")
  */
+#[ORM\Entity, ORM\InheritanceType("SINGLE_TABLE")]
+#[ORM\DiscriminatorColumn(name: "dtype", columnDefinition: "ENUM('ONE','TWO')")]
+#[ORM\DiscriminatorMap(["ONE" => "DDC807SubClasse1", "TWO" => "DDC807SubClasse2"])]
 class DDC807Entity
 {
     /**
@@ -1420,6 +1432,7 @@ class DDC807Entity
      * @Column(type="integer")
      * @GeneratedValue(strategy="NONE")
      **/
+   #[ORM\Id, ORM\Column(type: "integer"), ORM\GeneratedValue(strategy: "NONE")]
    public $id;
 
    public static function loadMetadata(ClassMetadataInfo $metadata)
@@ -1454,11 +1467,14 @@ class Group {}
  * @Entity
  * @Table(indexes={@Index(columns={"content"}, flags={"fulltext"}, options={"where": "content IS NOT NULL"})})
  */
+#[ORM\Entity, ORM\Table(name: "Comment")]
+#[ORM\Index(columns: ["content"], flags: ["fulltext"], options: ["where": "content IS NOT NULL"])]
 class Comment
 {
     /**
      * @Column(type="text")
      */
+    #[ORM\Column(type: "text")]
     private $content;
 
     public static function loadMetadata(ClassMetadataInfo $metadata)
@@ -1495,6 +1511,8 @@ class Comment
  *     "TWO" = "SingleTableEntityNoDiscriminatorColumnMappingSub2"
  * })
  */
+#[ORM\Entity, ORM\InheritanceType("SINGLE_TABLE")]
+#[ORM\DiscriminatorMap(["ONE" => "SingleTableEntityNoDiscriminatorColumnMappingSub1", "TWO" => "SingleTableEntityNoDiscriminatorColumnMappingSub2"])]
 class SingleTableEntityNoDiscriminatorColumnMapping
 {
     /**
@@ -1502,6 +1520,7 @@ class SingleTableEntityNoDiscriminatorColumnMapping
      * @Column(type="integer")
      * @GeneratedValue(strategy="NONE")
      */
+    #[ORM\Id, ORM\Column(type: "integer"), ORM\GeneratedValue(strategy: "NONE")]
     public $id;
 
     public static function loadMetadata(ClassMetadataInfo $metadata)
@@ -1529,6 +1548,9 @@ class SingleTableEntityNoDiscriminatorColumnMappingSub2 extends SingleTableEntit
  * })
  * @DiscriminatorColumn(name="dtype")
  */
+#[ORM\Entity, ORM\InheritanceType("SINGLE_TABLE")]
+#[ORM\DiscriminatorMap(["ONE" => "SingleTableEntityNoDiscriminatorColumnMappingSub1", "TWO" => "SingleTableEntityNoDiscriminatorColumnMappingSub2"])]
+#[ORM\DiscriminatorColumn(name: "dtype")]
 class SingleTableEntityIncompleteDiscriminatorColumnMapping
 {
     /**
@@ -1536,6 +1558,7 @@ class SingleTableEntityIncompleteDiscriminatorColumnMapping
      * @Column(type="integer")
      * @GeneratedValue(strategy="NONE")
      */
+    #[ORM\Id, ORM\Column(type: "integer"), ORM\GeneratedValue(strategy: "NONE")]
     public $id;
 
     public static function loadMetadata(ClassMetadataInfo $metadata)

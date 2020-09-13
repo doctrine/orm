@@ -19,6 +19,8 @@
 
 namespace Doctrine\ORM\Mapping;
 
+use Attribute;
+
 /**
  * Caching to an entity or a collection.
  *
@@ -28,6 +30,7 @@ namespace Doctrine\ORM\Mapping;
  * @Annotation
  * @Target({"CLASS","PROPERTY"})
  */
+#[Attribute(Attribute::TARGET_CLASS | Attribute::TARGET_PROPERTY)]
 final class Cache implements Annotation
 {
     /**
