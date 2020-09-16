@@ -961,7 +961,7 @@ abstract class AbstractQuery
      *
      * @return iterable<mixed>
      */
-    public function getIterable(iterable $parameters = [], $hydrationMode = null) : iterable
+    public function toIterable(iterable $parameters = [], $hydrationMode = null) : iterable
     {
         if ($hydrationMode !== null) {
             $this->setHydrationMode($hydrationMode);
@@ -976,7 +976,7 @@ abstract class AbstractQuery
         $rsm  = $this->getResultSetMapping();
         $stmt = $this->_doExecute();
 
-        return $this->_em->newHydrator($this->_hydrationMode)->getIterable($stmt, $rsm, $this->_hints);
+        return $this->_em->newHydrator($this->_hydrationMode)->toIterable($stmt, $rsm, $this->_hints);
     }
 
     /**

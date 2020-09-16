@@ -151,7 +151,7 @@ abstract class AbstractHydrator
      *
      * @return iterable<mixed>
      */
-    public function getIterable(Statement $stmt, ResultSetMapping $resultSetMapping, array $hints = []) : iterable
+    public function toIterable(Statement $stmt, ResultSetMapping $resultSetMapping, array $hints = []) : iterable
     {
         $this->_stmt  = $stmt;
         $this->_rsm   = $resultSetMapping;
@@ -208,7 +208,7 @@ abstract class AbstractHydrator
 
     /**
      * Hydrates a single row returned by the current statement instance during
-     * row-by-row hydration with {@link iterate()} or {@link getIterable()}.
+     * row-by-row hydration with {@link iterate()} or {@link toIterable()}.
      *
      * @return mixed
      */

@@ -2,7 +2,7 @@
 
 namespace Doctrine\Tests\ORM\Functional;
 
-use Doctrine\Tests\GetIterableTester;
+use Doctrine\Tests\IterableTester;
 use Doctrine\Tests\Models\Company\CompanyEmployee,
     Doctrine\Tests\Models\Company\CompanyManager,
     Doctrine\Tests\Models\Company\CompanyCar;
@@ -156,7 +156,7 @@ DQL;
 
         $this->_em->clear();
 
-        GetIterableTester::assertResultsAreTheSame($query);
+        IterableTester::assertResultsAreTheSame($query);
     }
 
     public function testSelectSubselect()
@@ -171,7 +171,7 @@ DQL;
 
         $this->_em->clear();
 
-        GetIterableTester::assertResultsAreTheSame($query);
+        IterableTester::assertResultsAreTheSame($query);
     }
 
     public function testInSubselect()
@@ -188,7 +188,7 @@ DQL;
 
         $this->_em->clear();
 
-        GetIterableTester::assertResultsAreTheSame($query);
+        IterableTester::assertResultsAreTheSame($query);
     }
 
     public function testGroupByMultipleFields()
@@ -202,7 +202,7 @@ DQL;
 
         $this->_em->clear();
 
-        GetIterableTester::assertResultsAreTheSame($query);
+        IterableTester::assertResultsAreTheSame($query);
     }
 
     public function testUpdateAs()
@@ -217,7 +217,7 @@ DQL;
 
         $this->_em->clear();
 
-        GetIterableTester::assertResultsAreTheSame($query);
+        IterableTester::assertResultsAreTheSame($query);
     }
 
     public function testDeleteAs()

@@ -1273,7 +1273,7 @@ class ObjectHydratorTest extends HydrationTestCase
 
         self::assertSame(2, $rowNum);
 
-        $iterableResult = $hydrator->getIterable(
+        $iterableResult = $hydrator->toIterable(
             new HydratorMockStatement($resultSet),
             $rsm,
             [Query::HINT_FORCE_PARTIAL_LOAD => true]
@@ -1350,7 +1350,7 @@ class ObjectHydratorTest extends HydrationTestCase
         self::assertSame(2, $rowNum);
 
         $rowNum         = 0;
-        $iterableResult = $hydrator->getIterable(
+        $iterableResult = $hydrator->toIterable(
             new HydratorMockStatement($resultSet),
             $rsm,
             [Query::HINT_FORCE_PARTIAL_LOAD => true]
