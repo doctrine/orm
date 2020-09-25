@@ -2100,7 +2100,9 @@ class SqlWalker implements TreeWalker
     }
 
     /**
-     * {@inheritdoc}
+     * @param mixed $inParam
+     *
+     * @return string
      */
     public function walkInParameter($inParam)
     {

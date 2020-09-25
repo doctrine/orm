@@ -2071,7 +2071,9 @@ class BasicEntityPersister implements EntityPersister
     }
 
     /**
-     * {@inheritdoc}
+     * @param string $columnName
+     *
+     * @return string
      */
     public function getSQLColumnAlias($columnName)
     {

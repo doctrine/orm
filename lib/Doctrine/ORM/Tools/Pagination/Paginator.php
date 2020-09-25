@@ -190,7 +190,6 @@ class Paginator implements \Countable, \IteratorAggregate
      */
     private function cloneQuery(Query $query)
     {
-        /* @var $cloneQuery Query */
         $cloneQuery = clone $query;
 
         $cloneQuery->setParameters(clone $query->getParameters());
@@ -244,7 +243,6 @@ class Paginator implements \Countable, \IteratorAggregate
      */
     private function getCountQuery()
     {
-        /* @var $countQuery Query */
         $countQuery = $this->cloneQuery($this->query);
 
         if ( ! $countQuery->hasHint(CountWalker::HINT_DISTINCT)) {

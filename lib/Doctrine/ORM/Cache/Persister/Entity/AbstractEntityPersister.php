@@ -283,11 +283,11 @@ abstract class AbstractEntityPersister implements CachedEntityPersister
     /**
      * Generates a string of currently query
      *
-     * @param array   $query
-     * @param string  $criteria
-     * @param array   $orderBy
-     * @param integer $limit
-     * @param integer $offset
+     * @param string            $query
+     * @param string[]|Criteria $criteria
+     * @param string[]          $orderBy
+     * @param int               $limit
+     * @param int               $offset
      *
      * @return string
      */
@@ -548,7 +548,6 @@ abstract class AbstractEntityPersister implements CachedEntityPersister
     {
         $persister = $this->uow->getCollectionPersister($assoc);
         $hasCache  = ($persister instanceof CachedPersister);
-        $key       = null;
 
         if ( ! $hasCache) {
             return $this->persister->loadManyToManyCollection($assoc, $sourceEntity, $coll);

@@ -64,7 +64,6 @@ class AttachEntityListenersListener
      */
     public function loadClassMetadata(LoadClassMetadataEventArgs $event)
     {
-        /** @var ClassMetadata $metadata */
         $metadata = $event->getClassMetadata();
 
         if ( ! isset($this->entityListeners[$metadata->name])) {
