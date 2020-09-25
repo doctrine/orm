@@ -47,6 +47,7 @@ use InvalidArgumentException;
 use Throwable;
 use UnexpectedValueException;
 use function get_class;
+use function spl_object_hash;
 
 /**
  * The UnitOfWork is responsible for tracking changes to objects during an
@@ -472,7 +473,7 @@ class UnitOfWork implements PropertyChangedListener
             : $entity;
 
         foreach ($entities as $object) {
-            $oid = \spl_object_hash($object);
+            $oid = spl_object_hash($object);
 
             $this->clearEntityChangeSet($oid);
 
@@ -897,7 +898,7 @@ class UnitOfWork implements PropertyChangedListener
                          * through the object-graph where cascade-persistence
                          * is enabled for this object.
                          */
-                        $this->nonCascadedNewDetectedEntities[\spl_object_hash($entry)] = [$assoc, $entry];
+                        $this->nonCascadedNewDetectedEntities[spl_object_hash($entry)] = [$assoc, $entry];
 
                         break;
                     }

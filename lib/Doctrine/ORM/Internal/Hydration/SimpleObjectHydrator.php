@@ -22,6 +22,7 @@ namespace Doctrine\ORM\Internal\Hydration;
 use PDO;
 use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\Query;
+use function array_keys;
 use function in_array;
 
 class SimpleObjectHydrator extends AbstractHydrator
@@ -92,7 +93,7 @@ class SimpleObjectHydrator extends AbstractHydrator
                 $discrColumnName = $metaMappingDiscrColumnName;
             }
 
-            if ( ! isset($row[$discrColumnName])) {
+            if (! isset($row[$discrColumnName])) {
                 throw HydrationException::missingDiscriminatorColumn($entityName, $discrColumnName, key($this->_rsm->aliasMap));
             }
 
@@ -102,7 +103,7 @@ class SimpleObjectHydrator extends AbstractHydrator
 
             $discrMap = $this->class->discriminatorMap;
 
-            if ( ! isset($discrMap[$row[$discrColumnName]])) {
+            if (! isset($discrMap[$row[$discrColumnName]])) {
                 throw HydrationException::invalidDiscriminatorValue($row[$discrColumnName], array_keys($discrMap));
             }
 

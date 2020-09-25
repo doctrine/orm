@@ -228,8 +228,8 @@ abstract class AbstractHydrator
      *
      * Template method.
      *
-     * @param array $row    The row data.
-     * @param array $result The result to fill.
+     * @param mixed[] $row    The row data.
+     * @param mixed[] $result The result to fill.
      *
      * @return void
      *

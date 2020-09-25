@@ -31,6 +31,7 @@ use Doctrine\Common\Util\ClassUtils;
 use Doctrine\Persistence\Mapping\MappingException;
 use Doctrine\Persistence\ObjectRepository;
 use Throwable;
+use function ltrim;
 use const E_USER_DEPRECATED;
 use function trigger_error;
 
@@ -373,7 +374,7 @@ use function trigger_error;
     /**
      * Finds an Entity by its identifier.
      *
-     * @param string       $className  The class name of the entity to find.
+     * @param string       $className   The class name of the entity to find.
      * @param mixed        $id          The identity of the entity to find.
      * @param integer|null $lockMode    One of the \Doctrine\DBAL\LockMode::* constants
      *                                  or NULL if no specific lock mode should be used
