@@ -10,17 +10,17 @@ use PHPUnit\Framework\Assert;
 use function is_array;
 use function iterator_to_array;
 
-final class GetIterableTester
+final class IterableTester
 {
     public static function assertResultsAreTheSame(Query $query) : void
     {
         $result   = $query->getResult();
-        $iterable = $query->getIterable();
+        $iterable = $query->toIterable();
 
         Assert::assertSame($result, self::iterableToArray($iterable));
 
         $result   = $query->getResult(AbstractQuery::HYDRATE_ARRAY);
-        $iterable = $query->getIterable([], AbstractQuery::HYDRATE_ARRAY);
+        $iterable = $query->toIterable([], AbstractQuery::HYDRATE_ARRAY);
 
         Assert::assertSame($result, self::iterableToArray($iterable));
     }

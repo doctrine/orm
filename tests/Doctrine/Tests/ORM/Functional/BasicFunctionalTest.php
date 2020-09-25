@@ -10,7 +10,7 @@ use Doctrine\ORM\PersistentCollection;
 use Doctrine\ORM\Proxy\Proxy;
 use Doctrine\ORM\Query;
 use Doctrine\ORM\UnitOfWork;
-use Doctrine\Tests\GetIterableTester;
+use Doctrine\Tests\IterableTester;
 use Doctrine\Tests\Models\CMS\CmsAddress;
 use Doctrine\Tests\Models\CMS\CmsArticle;
 use Doctrine\Tests\Models\CMS\CmsComment;
@@ -233,7 +233,7 @@ class BasicFunctionalTest extends OrmFunctionalTestCase
 
         $this->_em->clear();
 
-        GetIterableTester::assertResultsAreTheSame($query);
+        IterableTester::assertResultsAreTheSame($query);
 
         $usersArray = $query->getArrayResult();
 

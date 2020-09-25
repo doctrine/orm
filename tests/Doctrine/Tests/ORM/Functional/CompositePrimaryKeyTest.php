@@ -3,7 +3,7 @@
 namespace Doctrine\Tests\ORM\Functional;
 use Doctrine\ORM\ORMException;
 use Doctrine\ORM\Query\QueryException;
-use Doctrine\Tests\GetIterableTester;
+use Doctrine\Tests\IterableTester;
 use Doctrine\Tests\Models\Navigation\NavCountry;
 use Doctrine\Tests\Models\Navigation\NavPointOfInterest;
 use Doctrine\Tests\Models\Navigation\NavTour;
@@ -96,7 +96,7 @@ class CompositePrimaryKeyTest extends OrmFunctionalTestCase
 
         $this->_em->clear();
 
-        GetIterableTester::assertResultsAreTheSame($query);
+        IterableTester::assertResultsAreTheSame($query);
     }
 
     public function testManyToManyCompositeRelation()
@@ -145,7 +145,7 @@ class CompositePrimaryKeyTest extends OrmFunctionalTestCase
 
         $this->_em->clear();
 
-        GetIterableTester::assertResultsAreTheSame($query);
+        IterableTester::assertResultsAreTheSame($query);
     }
 
     public function testSpecifyUnknownIdentifierPrimaryKeyFails()

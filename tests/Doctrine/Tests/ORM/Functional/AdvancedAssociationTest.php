@@ -4,7 +4,7 @@ namespace Doctrine\Tests\ORM\Functional;
 
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\PersistentCollection;
-use Doctrine\Tests\GetIterableTester;
+use Doctrine\Tests\IterableTester;
 use Doctrine\Tests\OrmFunctionalTestCase;
 
 /**
@@ -73,7 +73,7 @@ class AdvancedAssociationTest extends OrmFunctionalTestCase
 
         $this->_em->clear();
 
-        GetIterableTester::assertResultsAreTheSame($query);
+        IterableTester::assertResultsAreTheSame($query);
 
         $this->_em->clear();
 
@@ -107,7 +107,7 @@ class AdvancedAssociationTest extends OrmFunctionalTestCase
 
         $this->_em->clear();
 
-        GetIterableTester::assertResultsAreTheSame($query);
+        IterableTester::assertResultsAreTheSame($query);
     }
 
     public function testManyToMany()
@@ -134,7 +134,7 @@ class AdvancedAssociationTest extends OrmFunctionalTestCase
 
         $this->_em->clear();
 
-        GetIterableTester::assertResultsAreTheSame($query);
+        IterableTester::assertResultsAreTheSame($query);
     }
 }
 

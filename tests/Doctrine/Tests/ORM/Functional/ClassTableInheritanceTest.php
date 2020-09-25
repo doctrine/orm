@@ -5,7 +5,7 @@ namespace Doctrine\Tests\ORM\Functional;
 use Doctrine\Common\Collections\Criteria;
 use Doctrine\ORM\PersistentCollection;
 use Doctrine\ORM\Proxy\Proxy;
-use Doctrine\Tests\GetIterableTester;
+use Doctrine\Tests\IterableTester;
 use Doctrine\Tests\Models\Company\CompanyAuction;
 use Doctrine\Tests\Models\Company\CompanyEmployee;
 use Doctrine\Tests\Models\Company\CompanyEvent;
@@ -63,7 +63,7 @@ class ClassTableInheritanceTest extends OrmFunctionalTestCase
 
         $this->_em->clear();
 
-        GetIterableTester::assertResultsAreTheSame($query);
+        IterableTester::assertResultsAreTheSame($query);
 
         $this->_em->clear();
 
@@ -79,7 +79,7 @@ class ClassTableInheritanceTest extends OrmFunctionalTestCase
 
         $this->_em->clear();
 
-        GetIterableTester::assertResultsAreTheSame($query);
+        IterableTester::assertResultsAreTheSame($query);
 
         $this->_em->clear();
 
@@ -182,7 +182,7 @@ class ClassTableInheritanceTest extends OrmFunctionalTestCase
 
         $this->_em->clear();
 
-        GetIterableTester::assertResultsAreTheSame($query);
+        IterableTester::assertResultsAreTheSame($query);
     }
 
     public function testSelfReferencingManyToMany()
@@ -258,7 +258,7 @@ class ClassTableInheritanceTest extends OrmFunctionalTestCase
 
         $this->_em->clear();
 
-        GetIterableTester::assertResultsAreTheSame($q);
+        IterableTester::assertResultsAreTheSame($q);
     }
 
     public function testLazyLoading2()
@@ -281,7 +281,7 @@ class ClassTableInheritanceTest extends OrmFunctionalTestCase
 
         $this->_em->clear();
 
-        GetIterableTester::assertResultsAreTheSame($q);
+        IterableTester::assertResultsAreTheSame($q);
 
         $this->_em->clear();
 
@@ -300,7 +300,7 @@ class ClassTableInheritanceTest extends OrmFunctionalTestCase
 
         $this->_em->clear();
 
-        GetIterableTester::assertResultsAreTheSame($q);
+        IterableTester::assertResultsAreTheSame($q);
     }
 
     /**
@@ -318,7 +318,7 @@ class ClassTableInheritanceTest extends OrmFunctionalTestCase
 
         $this->_em->clear();
 
-        GetIterableTester::assertResultsAreTheSame($query);
+        IterableTester::assertResultsAreTheSame($query);
     }
 
     /**

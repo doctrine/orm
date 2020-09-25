@@ -5,10 +5,10 @@ declare(strict_types=1);
 namespace Doctrine\Tests\ORM\Functional\Ticket;
 
 use Doctrine\ORM\AbstractQuery;
-use Doctrine\Tests\GetIterableTester;
+use Doctrine\Tests\IterableTester;
 use Doctrine\Tests\OrmFunctionalTestCase;
 
-final class GH7496WithGetIterableTest extends OrmFunctionalTestCase
+final class GH7496WithToIterableTest extends OrmFunctionalTestCase
 {
     protected function setUp() : void
     {
@@ -38,8 +38,8 @@ final class GH7496WithGetIterableTest extends OrmFunctionalTestCase
             'SELECT b FROM ' . GH7496EntityAinB::class . ' aib JOIN ' . GH7496EntityB::class . ' b WITH aib.eB = b'
         );
 
-        $bs = GetIterableTester::iterableToArray(
-            $q->getIterable([], AbstractQuery::HYDRATE_OBJECT)
+        $bs = IterableTester::iterableToArray(
+            $q->toIterable([], AbstractQuery::HYDRATE_OBJECT)
         );
         $this->assertCount(2, $bs);
         $this->assertInstanceOf(GH7496EntityB::class, $bs[0]);

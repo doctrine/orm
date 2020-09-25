@@ -244,7 +244,7 @@ DQL;
             break;
         }
 
-        $iterableResult = $query->getIterable();
+        $iterableResult = $query->toIterable();
 
         foreach ($iterableResult as $entity) {
             self::assertTrue($entity->postLoadCallbackInvoked);
@@ -278,7 +278,7 @@ DQL;
             break;
         }
 
-        $result = $query->getIterable([], Query::HYDRATE_SIMPLEOBJECT);
+        $result = $query->toIterable([], Query::HYDRATE_SIMPLEOBJECT);
 
         foreach ($result as $entity) {
             self::assertTrue($entity->postLoadCallbackInvoked);

@@ -141,12 +141,12 @@ class QueryTest extends OrmTestCase
         $q->iterate();
     }
 
-    public function testGetIterableWithNoDistinctAndWrongSelectClause() : void
+    public function testToIterableWithNoDistinctAndWrongSelectClause() : void
     {
         $this->expectException(QueryException::class);
 
         $q = $this->_em->createQuery('select u, a from Doctrine\Tests\Models\CMS\CmsUser u LEFT JOIN u.articles a');
-        $q->getIterable();
+        $q->toIterable();
     }
 
     public function testIterateWithNoDistinctAndWithValidSelectClause() : void
@@ -157,12 +157,12 @@ class QueryTest extends OrmTestCase
         $q->iterate();
     }
 
-    public function testGetIterableWithNoDistinctAndWithValidSelectClause() : void
+    public function testToIterableWithNoDistinctAndWithValidSelectClause() : void
     {
         $this->expectException(QueryException::class);
 
         $q = $this->_em->createQuery('select u from Doctrine\Tests\Models\CMS\CmsUser u LEFT JOIN u.articles a');
-        $q->getIterable();
+        $q->toIterable();
     }
 
     public function testIterateWithDistinct()
@@ -177,7 +177,7 @@ class QueryTest extends OrmTestCase
         $q = $this->_em->createQuery('SELECT u from Doctrine\Tests\Models\CMS\CmsUser u');
 
         // phpcs:ignore Generic.CodeAnalysis.EmptyStatement.DetectedForeach
-        foreach ($q->getIterable() as $item) {
+        foreach ($q->toIterable() as $item) {
         }
 
         self::assertTrue(true);

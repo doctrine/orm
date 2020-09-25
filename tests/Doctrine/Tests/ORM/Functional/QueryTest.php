@@ -8,7 +8,7 @@ use Doctrine\ORM\NonUniqueResultException;
 use Doctrine\ORM\Proxy\Proxy;
 use Doctrine\ORM\Query\QueryException;
 use Doctrine\ORM\UnexpectedResultException;
-use Doctrine\Tests\GetIterableTester;
+use Doctrine\Tests\IterableTester;
 use Doctrine\Tests\Models\CMS\CmsUser,
     Doctrine\Tests\Models\CMS\CmsArticle,
     Doctrine\Tests\Models\CMS\CmsPhonenumber;
@@ -232,12 +232,12 @@ class QueryTest extends OrmFunctionalTestCase
         self::assertCount(1, $articles);
         self::assertEquals([[$expectedArticle]], $articles);
 
-        $articles = $query->getIterable(
+        $articles = $query->toIterable(
             new ArrayCollection([new Parameter(1, 'Doctrine 2')]),
             Query::HYDRATE_ARRAY
         );
 
-        $articles = GetIterableTester::iterableToArray($articles);
+        $articles = IterableTester::iterableToArray($articles);
 
         self::assertCount(1, $articles);
         self::assertEquals([$expectedArticle], $articles);
@@ -279,7 +279,7 @@ class QueryTest extends OrmFunctionalTestCase
         $this->assertSame(["Doctrine 2", "Symfony 2"], $topics);
         $this->assertSame(2, $iteratedCount);
 
-        $articles = $query->getIterable();
+        $articles = $query->toIterable();
 
         $iteratedCount = 0;
         $topics        = [];
@@ -331,7 +331,7 @@ class QueryTest extends OrmFunctionalTestCase
         self::assertSame(['Doctrine 2', 'Symfony 2'], $topics);
         self::assertSame(2, $iteratedCount);
 
-        $articles      = $query->getIterable();
+        $articles      = $query->toIterable();
         $iteratedCount = 0;
         $topics        = [];
         foreach ($articles as $article) {
@@ -356,12 +356,12 @@ class QueryTest extends OrmFunctionalTestCase
         $query->iterate();
     }
 
-    public function testGetIterableResultFetchJoinedCollectionThrowsException() : void
+    public function testToIterableResultFetchJoinedCollectionThrowsException() : void
     {
         $this->expectException(QueryException::class);
 
         $query = $this->_em->createQuery("SELECT u, a FROM ' . CmsUser::class . ' u JOIN u.articles a");
-        $query->getIterable();
+        $query->toIterable();
     }
 
     public function testGetSingleResultThrowsExceptionOnNoResult()
