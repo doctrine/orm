@@ -987,11 +987,11 @@ class BasicEntityPersister implements EntityPersister
     /**
      * {@inheritdoc}
      */
-    public function loadManyToManyCollection(array $assoc, $sourceEntity, PersistentCollection $coll)
+    public function loadManyToManyCollection(array $assoc, $sourceEntity, PersistentCollection $collection)
     {
         $stmt = $this->getManyToManyStatement($assoc, $sourceEntity);
 
-        return $this->loadCollectionFromStatement($assoc, $stmt, $coll);
+        return $this->loadCollectionFromStatement($assoc, $stmt, $collection);
     }
 
     /**
@@ -1795,11 +1795,11 @@ class BasicEntityPersister implements EntityPersister
     /**
      * {@inheritdoc}
      */
-    public function loadOneToManyCollection(array $assoc, $sourceEntity, PersistentCollection $coll)
+    public function loadOneToManyCollection(array $assoc, $sourceEntity, PersistentCollection $collection)
     {
         $stmt = $this->getOneToManyStatement($assoc, $sourceEntity);
 
-        return $this->loadCollectionFromStatement($assoc, $stmt, $coll);
+        return $this->loadCollectionFromStatement($assoc, $stmt, $collection);
     }
 
     /**
