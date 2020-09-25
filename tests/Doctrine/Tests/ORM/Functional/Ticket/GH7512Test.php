@@ -1,4 +1,6 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
 
 namespace Doctrine\Tests\ORM\Functional\Ticket;
 
@@ -6,14 +8,14 @@ use Doctrine\Tests\OrmFunctionalTestCase;
 
 class GH7512Test extends OrmFunctionalTestCase
 {
-    protected function setUp(): void
+    protected function setUp() : void
     {
         parent::setUp();
 
         $this->setUpEntitySchema([
             GH7512EntityA::class,
             GH7512EntityB::class,
-            GH7512EntityC::class
+            GH7512EntityC::class,
         ]);
 
         $this->_em->persist(new GH7512EntityA());
@@ -22,12 +24,12 @@ class GH7512Test extends OrmFunctionalTestCase
         $this->_em->clear();
     }
 
-    public function testFindEntityByAssociationPropertyJoinedChildWithClearMetadata(): void
+    public function testFindEntityByAssociationPropertyJoinedChildWithClearMetadata() : void
     {
         // unset metadata for entity B as though it hasn't been touched yet in application lifecycle.
         $this->_em->getMetadataFactory()->setMetadataFor(GH7512EntityB::class, null);
         $result = $this->_em->getRepository(GH7512EntityC::class)->findBy([
-            'entityA' => new GH7512EntityB()
+            'entityA' => new GH7512EntityB(),
         ]);
         $this->assertEmpty($result);
     }
@@ -50,9 +52,7 @@ class GH7512EntityA
      */
     private $id;
 
-    /**
-     * @OneToMany(targetEntity="Doctrine\Tests\ORM\Functional\Ticket\GH7512EntityC", mappedBy="entityA")
-     */
+    /** @OneToMany(targetEntity="Doctrine\Tests\ORM\Functional\Ticket\GH7512EntityC", mappedBy="entityA") */
     private $entityCs;
 }
 
@@ -61,7 +61,6 @@ class GH7512EntityA
  */
 class GH7512EntityB extends GH7512EntityA
 {
-
 }
 
 /**
@@ -76,8 +75,6 @@ class GH7512EntityC
      */
     private $id;
 
-    /**
-     * @ManyToOne(targetEntity="Doctrine\Tests\ORM\Functional\Ticket\GH7512EntityA", inversedBy="entityCs")
-     */
+    /** @ManyToOne(targetEntity="Doctrine\Tests\ORM\Functional\Ticket\GH7512EntityA", inversedBy="entityCs") */
     private $entityA;
 }
