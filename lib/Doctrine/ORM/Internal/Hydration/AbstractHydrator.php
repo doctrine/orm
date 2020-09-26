@@ -228,14 +228,14 @@ abstract class AbstractHydrator
      *
      * Template method.
      *
-     * @param array $data   The row data.
-     * @param array $result The result to fill.
+     * @param mixed[] $row    The row data.
+     * @param mixed[] $result The result to fill.
      *
      * @return void
      *
      * @throws HydrationException
      */
-    protected function hydrateRowData(array $data, array &$result)
+    protected function hydrateRowData(array $row, array &$result)
     {
         throw new HydrationException("hydrateRowData() not implemented by this hydrator.");
     }

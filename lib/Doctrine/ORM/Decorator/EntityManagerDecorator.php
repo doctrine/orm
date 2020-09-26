@@ -175,9 +175,9 @@ abstract class EntityManagerDecorator extends ObjectManagerDecorator implements 
     /**
      * {@inheritdoc}
      */
-    public function find($entityName, $id, $lockMode = null, $lockVersion = null)
+    public function find($className, $id, $lockMode = null, $lockVersion = null)
     {
-        return $this->wrapped->find($entityName, $id, $lockMode, $lockVersion);
+        return $this->wrapped->find($className, $id, $lockMode, $lockVersion);
     }
 
     /**
