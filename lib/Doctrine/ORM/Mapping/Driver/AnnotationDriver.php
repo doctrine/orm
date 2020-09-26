@@ -40,7 +40,8 @@ use function interface_exists;
 class AnnotationDriver extends AbstractAnnotationDriver
 {
     /**
-     * {@inheritDoc}
+     * @var int[]
+     * @psalm-var array<class-string, int>
      */
     protected $entityAnnotationClasses = [
         Mapping\Entity::class => 1,

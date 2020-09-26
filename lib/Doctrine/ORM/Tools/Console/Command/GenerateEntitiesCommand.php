@@ -124,7 +124,7 @@ EOT
         $entityGenerator->setGenerateStubMethods($input->getOption('generate-methods'));
         $entityGenerator->setRegenerateEntityIfExists($input->getOption('regenerate-entities'));
         $entityGenerator->setUpdateEntityIfExists($input->getOption('update-entities'));
-        $entityGenerator->setNumSpaces($input->getOption('num-spaces'));
+        $entityGenerator->setNumSpaces((int) $input->getOption('num-spaces'));
         $entityGenerator->setBackupExisting(!$input->getOption('no-backup'));
 
         if (($extend = $input->getOption('extend')) !== null) {

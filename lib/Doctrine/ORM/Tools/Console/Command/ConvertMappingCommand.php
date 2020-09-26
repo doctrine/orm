@@ -24,6 +24,7 @@ use Doctrine\ORM\Tools\Console\MetadataFilter;
 use Doctrine\ORM\Tools\DisconnectedClassMetadataFactory;
 use Doctrine\ORM\Tools\EntityGenerator;
 use Doctrine\ORM\Tools\Export\ClassMetadataExporter;
+use Doctrine\ORM\Tools\Export\Driver\AnnotationExporter;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
@@ -136,11 +137,11 @@ EOT
         $exporter = $this->getExporter($toType, $destPath);
         $exporter->setOverwriteExistingFiles($input->getOption('force'));
 
-        if ($toType == 'annotation') {
+        if ($exporter instanceof AnnotationExporter) {
             $entityGenerator = new EntityGenerator();
             $exporter->setEntityGenerator($entityGenerator);
 
-            $entityGenerator->setNumSpaces($input->getOption('num-spaces'));
+            $entityGenerator->setNumSpaces((int) $input->getOption('num-spaces'));
 
             if (($extend = $input->getOption('extend')) !== null) {
                 $entityGenerator->setClassToExtend($extend);

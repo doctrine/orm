@@ -337,6 +337,8 @@ final class PersistentCollection extends AbstractLazyCollection implements Selec
 
     /**
      * {@inheritdoc}
+     *
+     * @return object
      */
     public function remove($key)
     {
@@ -510,6 +512,8 @@ final class PersistentCollection extends AbstractLazyCollection implements Selec
 
     /**
      * {@inheritdoc}
+     *
+     * @return object
      */
     public function offsetUnset($offset)
     {

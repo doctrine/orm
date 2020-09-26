@@ -109,7 +109,7 @@ class RunDqlCommand extends Command
 
         $resultSet = $query->execute([], constant($hydrationMode));
 
-        $ui->text(Debug::dump($resultSet, $input->getOption('depth'), true, false));
+        $ui->text(Debug::dump($resultSet, (int) $input->getOption('depth'), true, false));
 
         return 0;
     }

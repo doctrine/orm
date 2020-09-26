@@ -249,6 +249,8 @@ class FileLockRegion implements ConcurrentRegion
 
     /**
      * {@inheritdoc}
+     *
+     * @return bool
      */
     public function unlock(CacheKey $key, Lock $lock)
     {
