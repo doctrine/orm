@@ -41,6 +41,10 @@ use function trigger_error;
  * @author  Guilherme Blanco <guilhermeblanco@hotmail.com>
  * @author  Jonathan Wage <jonwage@gmail.com>
  * @author  Roman Borschel <roman@code-factory.org>
+ *
+ * @template T
+ * @template-implements Selectable<int,T>
+ * @template-implements ObjectRepository<T>
  */
 class EntityRepository implements ObjectRepository, Selectable
 {
@@ -64,6 +68,8 @@ class EntityRepository implements ObjectRepository, Selectable
 
     /**
      * Initializes a new <tt>EntityRepository</tt>.
+     *
+     * @psalm-param Mapping\ClassMetadata<T>
      */
     public function __construct(EntityManagerInterface $em, Mapping\ClassMetadata $class)
     {
@@ -156,6 +162,8 @@ class EntityRepository implements ObjectRepository, Selectable
      * @param int|null $lockVersion The lock version.
      *
      * @return object|null The entity instance or NULL if the entity can not be found.
+     *
+     * @psalm-return ?T
      */
     public function find($id, $lockMode = null, $lockVersion = null)
     {
@@ -166,6 +174,8 @@ class EntityRepository implements ObjectRepository, Selectable
      * Finds all entities in the repository.
      *
      * @return array The entities.
+     *
+     * @psalm-return list<T>
      */
     public function findAll()
     {
@@ -181,6 +191,8 @@ class EntityRepository implements ObjectRepository, Selectable
      * @param int|null   $offset
      *
      * @return array The objects.
+     *
+     * @psalm-return list<T>
      */
     public function findBy(array $criteria, array $orderBy = null, $limit = null, $offset = null)
     {
@@ -196,6 +208,8 @@ class EntityRepository implements ObjectRepository, Selectable
      * @param array|null $orderBy
      *
      * @return object|null The entity instance or NULL if the entity can not be found.
+     *
+     * @psalm-return ?T
      */
     public function findOneBy(array $criteria, array $orderBy = null)
     {
@@ -288,6 +302,8 @@ class EntityRepository implements ObjectRepository, Selectable
      * @param \Doctrine\Common\Collections\Criteria $criteria
      *
      * @return \Doctrine\Common\Collections\Collection
+     *
+     * @psalm-return \Doctrine\Common\Collections\Collection<int, T>
      */
     public function matching(Criteria $criteria)
     {

@@ -387,6 +387,10 @@ use function trigger_error;
      * @throws ORMInvalidArgumentException
      * @throws TransactionRequiredException
      * @throws ORMException
+     *
+     * @template T
+     * @psalm-param class-string<T> $entityName
+     * @psalm-return ?T
      */
     public function find($entityName, $id, $lockMode = null, $lockVersion = null)
     {
@@ -732,6 +736,10 @@ use function trigger_error;
      * @param string $entityName The name of the entity.
      *
      * @return ObjectRepository|EntityRepository The repository class.
+     *
+     * @template T
+     * @psalm-param class-string<T> $entityName
+     * @psalm-return EntityRepository<T>
      */
     public function getRepository($entityName)
     {

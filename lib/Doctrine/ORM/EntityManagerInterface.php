@@ -153,6 +153,10 @@ interface EntityManagerInterface extends ObjectManager
      * @return object|null The entity reference.
      *
      * @throws ORMException
+     *
+     * @template T
+     * @psalm-param class-string<T> $entityName
+     * @psalm-return ?T
      */
     public function getReference($entityName, $id);
 
