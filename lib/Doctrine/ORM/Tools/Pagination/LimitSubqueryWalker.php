@@ -158,9 +158,7 @@ class LimitSubqueryWalker extends TreeWalkerAdapter
     /**
      * Retrieve either an IdentityFunction (IDENTITY(u.assoc)) or a state field (u.name).
      *
-     * @param \Doctrine\ORM\Query\AST\PathExpression $pathExpression
-     *
-     * @return \Doctrine\ORM\Query\AST\Functions\IdentityFunction
+     * @return IdentityFunction|PathExpression
      */
     private function createSelectExpressionItem(PathExpression $pathExpression)
     {

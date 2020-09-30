@@ -397,6 +397,8 @@ class ClassMetadataInfo implements ClassMetadata
      * Whether a unique constraint should be generated for the column.
      *
      * @var array
+     *
+     * @psalm-var array<string, array{type: string, fieldName: string, columnName: string, inherited: class-string}>
      */
     public $fieldMappings = [];
 
@@ -644,7 +646,7 @@ class ClassMetadataInfo implements ClassMetadata
     /**
      * The ReflectionProperty instances of the mapped class.
      *
-     * @var ReflectionProperty[]
+     * @var ReflectionProperty[]|null[]
      */
     public $reflFields = [];
 
@@ -671,7 +673,9 @@ class ClassMetadataInfo implements ClassMetadata
     /**
      * Gets the ReflectionProperties of the mapped class.
      *
-     * @return ReflectionProperty[] An array of ReflectionProperty instances.
+     * @return ReflectionProperty[]|null[] An array of ReflectionProperty instances.
+     *
+     * @psalm-return array<ReflectionProperty|null>
      */
     public function getReflectionProperties()
     {

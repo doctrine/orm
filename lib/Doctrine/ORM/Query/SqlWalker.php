@@ -108,7 +108,7 @@ class SqlWalker implements TreeWalker
     private $conn;
 
     /**
-     * @var \Doctrine\ORM\AbstractQuery
+     * @var Query
      */
     private $query;
 
@@ -143,7 +143,7 @@ class SqlWalker implements TreeWalker
      *
      * @var array
      *
-     * @psalm-var array<string, array{metadata: ClassMetadata}>
+     * @psalm-var array<string, array{metadata: ClassMetadata, token: array, relation: mixed[], parent: string}>
      */
     private $queryComponents;
 

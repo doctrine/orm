@@ -348,6 +348,7 @@ abstract class AbstractQuery
     {
         // BC compatibility with 2.3-
         if (is_array($parameters)) {
+            /** @psalm-var ArrayCollection<int, Parameter> $parameterCollection */
             $parameterCollection = new ArrayCollection();
 
             foreach ($parameters as $key => $value) {
@@ -393,9 +394,11 @@ abstract class AbstractQuery
      *
      * @param mixed $value
      *
-     * @return array|string
+     * @return mixed[]|string|int|float|bool
      *
      * @throws \Doctrine\ORM\ORMInvalidArgumentException
+     *
+     * @psalm-return array|scalar
      */
     public function processParameterValue($value)
     {

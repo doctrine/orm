@@ -574,6 +574,7 @@ class QueryBuilder
     {
         // BC compatibility with 2.3-
         if (is_array($parameters)) {
+            /** @psalm-var ArrayCollection<int, Query\Parameter> $parameterCollection */
             $parameterCollection = new ArrayCollection();
 
             foreach ($parameters as $key => $value) {

@@ -362,9 +362,9 @@ class BasicEntityPersister implements EntityPersister
     }
 
     /**
-     * @return Type[]
+     * @return int[]|null[]|string[]
      *
-     * @psalm-return list<Type>
+     * @psalm-return list<int|null|string>
      */
     private function extractIdentifierTypes(array $id, ClassMetadata $versionedClass) : array
     {
@@ -1917,11 +1917,11 @@ class BasicEntityPersister implements EntityPersister
      * @param mixed         $value
      * @param ClassMetadata $class
      *
-     * @return Type[]
+     * @return int[]|null[]|string[]
      *
      * @throws \Doctrine\ORM\Query\QueryException
      *
-     * @psalm-return list<Type>
+     * @psalm-return list<int|null|string>
      */
     private function getTypes($field, $value, ClassMetadata $class)
     {

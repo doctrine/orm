@@ -21,6 +21,11 @@ class EntityManagerDecoratorTest extends TestCase
         'refresh',
         'flush',
         'initializeObject',
+        'beginTransaction',
+        'commit',
+        'rollback',
+        'close',
+        'lock',
     ];
 
     /**
