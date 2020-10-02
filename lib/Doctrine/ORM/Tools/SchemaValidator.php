@@ -22,6 +22,7 @@ namespace Doctrine\ORM\Tools;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Mapping\ClassMetadataInfo;
 use Doctrine\DBAL\Types\Type;
+use function count;
 
 /**
  * Performs strict validation of the mapping schema
@@ -94,6 +95,12 @@ class SchemaValidator
             if (!Type::hasType($mapping['type'])) {
                 $ce[] = "The field '" . $class->name . "#" . $fieldName."' uses a non-existent type '" . $mapping['type'] . "'.";
             }
+        }
+
+        if ($class->isEmbeddedClass && count($class->associationMappings) > 0) {
+            $ce[] = "Embeddable '" . $class->name . "' does not support associations";
+
+            return $ce;
         }
 
         foreach ($class->associationMappings as $fieldName => $assoc) {
