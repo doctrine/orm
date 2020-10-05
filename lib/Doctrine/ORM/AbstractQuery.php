@@ -25,6 +25,7 @@ use Doctrine\DBAL\Cache\QueryCacheProfile;
 use Doctrine\ORM\Mapping\MappingException as ORMMappingException;
 use Doctrine\ORM\Query\Parameter;
 use Doctrine\ORM\Cache\QueryCacheKey;
+use Generator;
 use Traversable;
 use function array_map;
 use function array_shift;
@@ -963,6 +964,18 @@ abstract class AbstractQuery
      */
     public function toIterable(iterable $parameters = [], $hydrationMode = null) : iterable
     {
+        return $this->toGenerator($parameters, $hydrationMode);
+    }
+
+    /**
+     * Executes the query and returns an iterable that can be used to incrementally
+     * iterate over the result.
+     *
+     * @param ArrayCollection|mixed[] $parameters    The query parameters.
+     * @param string|int|null         $hydrationMode The hydration mode to use.
+     */
+    public function toGenerator(iterable $parameters = [], $hydrationMode = null) : Generator
+    {
         if ($hydrationMode !== null) {
             $this->setHydrationMode($hydrationMode);
         }
@@ -976,7 +989,7 @@ abstract class AbstractQuery
         $rsm  = $this->getResultSetMapping();
         $stmt = $this->_doExecute();
 
-        return $this->_em->newHydrator($this->_hydrationMode)->toIterable($stmt, $rsm, $this->_hints);
+        return $this->_em->newHydrator($this->_hydrationMode)->toGenerator($stmt, $rsm, $this->_hints);
     }
 
     /**

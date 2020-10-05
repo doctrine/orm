@@ -27,6 +27,7 @@ use Doctrine\ORM\Events;
 use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\Query\ResultSetMapping;
 use Doctrine\ORM\Tools\Pagination\LimitSubqueryWalker;
+use Generator;
 use PDO;
 use const E_USER_DEPRECATED;
 use function array_map;
@@ -152,6 +153,16 @@ abstract class AbstractHydrator
      * @return iterable<mixed>
      */
     public function toIterable(Statement $stmt, ResultSetMapping $resultSetMapping, array $hints = []) : iterable
+    {
+        yield from $this->toGenerator($stmt, $resultSetMapping, $hints);
+    }
+
+    /**
+     * Initiates a row-by-row hydration.
+     *
+     * @param mixed[] $hints
+     */
+    public function toGenerator(Statement $stmt, ResultSetMapping $resultSetMapping, array $hints = []) : Generator
     {
         $this->_stmt  = $stmt;
         $this->_rsm   = $resultSetMapping;

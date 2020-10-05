@@ -32,6 +32,7 @@ use Doctrine\ORM\Query\Parser;
 use Doctrine\ORM\Query\ParserResult;
 use Doctrine\ORM\Query\QueryException;
 use Doctrine\ORM\Utility\HierarchyDiscriminatorResolver;
+use Generator;
 use function array_keys;
 use function assert;
 
@@ -700,6 +701,14 @@ final class Query extends AbstractQuery
         $this->setHint(self::HINT_INTERNAL_ITERATION, true);
 
         return parent::toIterable($parameters, $hydrationMode);
+    }
+
+    /** {@inheritDoc} */
+    public function toGenerator(iterable $parameters = [], $hydrationMode = self::HYDRATE_OBJECT) : Generator
+    {
+        $this->setHint(self::HINT_INTERNAL_ITERATION, true);
+
+        return parent::toGenerator($parameters, $hydrationMode);
     }
 
     /**

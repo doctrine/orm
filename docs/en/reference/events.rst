@@ -191,10 +191,10 @@ the life-time of their registered entities.
 
 .. warning::
 
-    Note that, when using ``Doctrine\ORM\AbstractQuery#getIterable()``, ``postLoad``
+    Note that, when using ``Doctrine\ORM\AbstractQuery#getIterable()`` or ``Doctrine\ORM\AbstractQuery#toGenerator()``, ``postLoad``
     events will be executed immediately after objects are being hydrated, and therefore
     associations are not guaranteed to be initialized. It is not safe to combine
-    usage of ``Doctrine\ORM\AbstractQuery#getIterable()`` and ``postLoad`` event
+    usage of ``Doctrine\ORM\AbstractQuery#getIterable()`` or ``Doctrine\ORM\AbstractQuery#toGenerator()`` with ``postLoad`` event
     handlers.
 
 .. warning::

@@ -355,6 +355,7 @@ a querybuilder instance into a Query object:
     // Execute Query
     $result = $query->getResult();
     $iterableResult = $query->getIterable();
+    $generatorResult = $query->toGenerator();
     $single = $query->getSingleResult();
     $array = $query->getArrayResult();
     $scalar = $query->getScalarResult();

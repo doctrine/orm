@@ -75,7 +75,7 @@ Iterating results
 ~~~~~~~~~~~~~~~~~
 
 An alternative solution for bulk updates is to use the
-``Query#getIterable()`` facility to iterate over the query results step
+``Query#getIterable()`` or ``Query#toGenerator()`` facility to iterate over the query results step
 by step instead of loading the whole result into memory at once.
 The following example shows how to do this, combining the iteration
 with the batching strategy that was already used for bulk inserts:
@@ -135,7 +135,7 @@ Iterating results
 ~~~~~~~~~~~~~~~~~
 
 An alternative solution for bulk deletes is to use the
-``Query#getIterable()`` facility to iterate over the query results step
+``Query#getIterable()`` or ``Query#toGenerator()`` facility to iterate over the query results step
 by step instead of loading the whole result into memory at once.
 The following example shows how to do this:
 
@@ -165,7 +165,7 @@ The following example shows how to do this:
 Iterating Large Results for Data-Processing
 -------------------------------------------
 
-You can use the ``getIterable()`` method just to iterate over a large
+You can use the ``getIterable()`` method or ``toGenerator()`` to iterate over a large
 result and no UPDATE or DELETE intention. ``$query->getIterable()`` returns ``iterable``
 so you can process a large result without memory
 problems using the following approach:
