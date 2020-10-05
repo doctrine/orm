@@ -75,7 +75,7 @@ Iterating results
 ~~~~~~~~~~~~~~~~~
 
 An alternative solution for bulk updates is to use the
-``Query#getIterable()`` facility to iterate over the query results step
+``Query#toIterable()`` facility to iterate over the query results step
 by step instead of loading the whole result into memory at once.
 The following example shows how to do this, combining the iteration
 with the batching strategy that was already used for bulk inserts:
@@ -86,7 +86,7 @@ with the batching strategy that was already used for bulk inserts:
     $batchSize = 20;
     $i = 1;
     $q = $em->createQuery('select u from MyProject\Model\User u');
-    foreach ($q->getIterable() as $user) {
+    foreach ($q->toIterable() as $user) {
         $user->increaseCredit();
         $user->calculateNewBonuses();
         if (($i % $batchSize) === 0) {
@@ -135,7 +135,7 @@ Iterating results
 ~~~~~~~~~~~~~~~~~
 
 An alternative solution for bulk deletes is to use the
-``Query#getIterable()`` facility to iterate over the query results step
+``Query#toIterable()`` facility to iterate over the query results step
 by step instead of loading the whole result into memory at once.
 The following example shows how to do this:
 
@@ -145,7 +145,7 @@ The following example shows how to do this:
     $batchSize = 20;
     $i = 1;
     $q = $em->createQuery('select u from MyProject\Model\User u');
-    foreach($q->getIterable() as $row) {
+    foreach($q->toIterable() as $row) {
         $em->remove($row);
         if (($i % $batchSize) === 0) {
             $em->flush(); // Executes all deletions.
@@ -165,8 +165,8 @@ The following example shows how to do this:
 Iterating Large Results for Data-Processing
 -------------------------------------------
 
-You can use the ``getIterable()`` method just to iterate over a large
-result and no UPDATE or DELETE intention. ``$query->getIterable()`` returns ``iterable``
+You can use the ``toIterable()`` method just to iterate over a large
+result and no UPDATE or DELETE intention. ``$query->toIterable()`` returns ``iterable``
 so you can process a large result without memory
 problems using the following approach:
 
@@ -174,7 +174,7 @@ problems using the following approach:
 
     <?php
     $q = $this->_em->createQuery('select u from MyProject\Model\User u');
-    foreach ($q->getIterable() as $row) {
+    foreach ($q->toIterable() as $row) {
         // do stuff with the data in the row
 
         // detach from Doctrine, so that it can be Garbage-Collected immediately

@@ -127,7 +127,7 @@ abstract class AbstractHydrator
     public function iterate($stmt, $resultSetMapping, array $hints = [])
     {
         @trigger_error(
-            'Method ' . __METHOD__ . '() is deprecated and will be removed in Doctrine ORM 3.0. Use getIterable() instead.',
+            'Method ' . __METHOD__ . '() is deprecated and will be removed in Doctrine ORM 3.0. Use toIterable() instead.',
             E_USER_DEPRECATED
         );
 
