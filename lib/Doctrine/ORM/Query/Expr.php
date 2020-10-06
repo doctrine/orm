@@ -329,6 +329,17 @@ class Expr
     }
 
     /**
+     * Creates a MOD($x, $y) function expression to return the remainder of $x divided by $y.
+     *
+     * @param mixed $x
+     * @param mixed $y
+     */
+    public function mod($x, $y): Expr\Func
+    {
+        return new Expr\Func('MOD', array($x, $y));
+    }
+
+    /**
      * Creates a product mathematical expression with the given arguments.
      *
      * First argument is considered the left expression and the second is the right expression.
