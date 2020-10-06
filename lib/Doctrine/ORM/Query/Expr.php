@@ -334,9 +334,9 @@ class Expr
      * @param mixed $x
      * @param mixed $y
      */
-    public function mod($x, $y): Expr\Func
+    public function mod($x, $y) : Expr\Func
     {
-        return new Expr\Func('MOD', array($x, $y));
+        return new Expr\Func('MOD', [$x, $y]);
     }
 
     /**
