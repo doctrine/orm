@@ -232,6 +232,16 @@ class Parser
     }
 
     /**
+     * Gets the queryComponents of the parsed query
+     *
+     * @return array
+     */
+    public function getQueryComponents()
+    {
+        return $this->queryComponents;
+    }
+
+    /**
      * Gets the lexer used by the parser.
      *
      * @return \Doctrine\ORM\Query\Lexer
