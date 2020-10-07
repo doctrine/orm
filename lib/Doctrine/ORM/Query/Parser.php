@@ -234,7 +234,7 @@ class Parser
     /**
      * Gets the queryComponents of the parsed query
      *
-     * @return array
+     * @return mixed[]
      */
     public function getQueryComponents()
     {
