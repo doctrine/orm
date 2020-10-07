@@ -2354,7 +2354,7 @@ class ClassMetadataInfo implements ClassMetadata
     public function setPrimaryTable(array $table)
     {
         if (isset($table['name'])) {
-            if (false === is_string($table['name'])) {
+            if (is_string($table['name'])) {
                 throw MappingException::invalidTableName($this->name, gettype($table['name']));
             }
             // Split schema and table name from a table name like "myschema.mytable"
