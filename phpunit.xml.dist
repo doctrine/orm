@@ -14,7 +14,7 @@
 <phpunit xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:noNamespaceSchemaLocation="vendor/phpunit/phpunit/phpunit.xsd"
          colors="true"
-         verbose="true"
+         verbose="false"
          failOnRisky="true"
          bootstrap="./tests/Doctrine/Tests/TestInit.php"
 >
