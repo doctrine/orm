@@ -398,7 +398,7 @@ class ClassMetadataInfo implements ClassMetadata
      *
      * @var array
      *
-     * @psalm-var array<string, array{type: string, fieldName: string, columnName: string, inherited: class-string}>
+     * @psalm-var array<string, array{type: string, fieldName: string, columnName?: string, inherited?: class-string, nullable?: bool}>
      */
     public $fieldMappings = [];
 
