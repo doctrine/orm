@@ -49,7 +49,7 @@ class Composite extends Base
     }
 
     /**
-     * @param string $part
+     * @param string|object $part
      *
      * @return string
      */

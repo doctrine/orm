@@ -677,7 +677,6 @@ class XmlDriver extends FileDriver
     {
         $array = [];
 
-        /* @var $option SimpleXMLElement */
         foreach ($options as $option) {
             if ($option->count()) {
                 $value = $this->_parseOptions($option->children());
@@ -851,7 +850,6 @@ class XmlDriver extends FileDriver
     private function _getCascadeMappings(SimpleXMLElement $cascadeElement)
     {
         $cascades = [];
-        /* @var $action SimpleXmlElement */
         foreach ($cascadeElement->children() as $action) {
             // According to the JPA specifications, XML uses "cascade-persist"
             // instead of "persist". Here, both variations

@@ -31,7 +31,7 @@ namespace Doctrine\ORM\Query\AST;
 class WhereClause extends Node
 {
     /**
-     * @var ConditionalExpression
+     * @var ConditionalExpression|ConditionalTerm
      */
     public $conditionalExpression;
 

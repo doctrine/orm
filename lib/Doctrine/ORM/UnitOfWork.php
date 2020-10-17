@@ -48,6 +48,7 @@ use Throwable;
 use UnexpectedValueException;
 use function get_class;
 use function is_object;
+use function spl_object_hash;
 
 /**
  * The UnitOfWork is responsible for tracking changes to objects during an
@@ -481,7 +482,7 @@ class UnitOfWork implements PropertyChangedListener
             : $entity;
 
         foreach ($entities as $object) {
-            $oid = \spl_object_hash($object);
+            $oid = spl_object_hash($object);
 
             $this->clearEntityChangeSet($oid);
 
@@ -906,7 +907,7 @@ class UnitOfWork implements PropertyChangedListener
                          * through the object-graph where cascade-persistence
                          * is enabled for this object.
                          */
-                        $this->nonCascadedNewDetectedEntities[\spl_object_hash($entry)] = [$assoc, $entry];
+                        $this->nonCascadedNewDetectedEntities[spl_object_hash($entry)] = [$assoc, $entry];
 
                         break;
                     }
@@ -3223,17 +3224,17 @@ class UnitOfWork implements PropertyChangedListener
     /**
      * Notifies this UnitOfWork of a property change in an entity.
      *
-     * @param object $entity       The entity that owns the property.
+     * @param object $sender       The entity that owns the property.
      * @param string $propertyName The name of the property that changed.
      * @param mixed  $oldValue     The old value of the property.
      * @param mixed  $newValue     The new value of the property.
      *
      * @return void
      */
-    public function propertyChanged($entity, $propertyName, $oldValue, $newValue)
+    public function propertyChanged($sender, $propertyName, $oldValue, $newValue)
     {
-        $oid   = spl_object_hash($entity);
-        $class = $this->em->getClassMetadata(get_class($entity));
+        $oid   = spl_object_hash($sender);
+        $class = $this->em->getClassMetadata(get_class($sender));
 
         $isAssocField = isset($class->associationMappings[$propertyName]);
 
@@ -3245,7 +3246,7 @@ class UnitOfWork implements PropertyChangedListener
         $this->entityChangeSets[$oid][$propertyName] = [$oldValue, $newValue];
 
         if ( ! isset($this->scheduledForSynchronization[$class->rootEntityName][$oid])) {
-            $this->scheduleForDirtyCheck($entity);
+            $this->scheduleForDirtyCheck($sender);
         }
     }
 

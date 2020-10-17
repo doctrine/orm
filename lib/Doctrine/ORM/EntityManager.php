@@ -31,6 +31,7 @@ use Doctrine\Common\Util\ClassUtils;
 use Doctrine\Persistence\Mapping\MappingException;
 use Doctrine\Persistence\ObjectRepository;
 use Throwable;
+use function ltrim;
 use const E_USER_DEPRECATED;
 use function trigger_error;
 
@@ -373,7 +374,7 @@ use function trigger_error;
     /**
      * Finds an Entity by its identifier.
      *
-     * @param string       $entityName  The class name of the entity to find.
+     * @param string       $className   The class name of the entity to find.
      * @param mixed        $id          The identity of the entity to find.
      * @param integer|null $lockMode    One of the \Doctrine\DBAL\LockMode::* constants
      *                                  or NULL if no specific lock mode should be used
@@ -388,9 +389,9 @@ use function trigger_error;
      * @throws TransactionRequiredException
      * @throws ORMException
      */
-    public function find($entityName, $id, $lockMode = null, $lockVersion = null)
+    public function find($className, $id, $lockMode = null, $lockVersion = null)
     {
-        $class = $this->metadataFactory->getMetadataFor(ltrim($entityName, '\\'));
+        $class = $this->metadataFactory->getMetadataFor(ltrim($className, '\\'));
 
         if ($lockMode !== null) {
             $this->checkLockRequirements($lockMode, $class);

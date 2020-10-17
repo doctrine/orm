@@ -641,7 +641,7 @@ class Expr
      * @param integer|string $x   Starting range value to be used in BETWEEN() function.
      * @param integer|string $y   End point value to be used in BETWEEN() function.
      *
-     * @return Expr\Func A BETWEEN expression.
+     * @return string A BETWEEN expression.
      */
     public function between($val, $x, $y)
     {

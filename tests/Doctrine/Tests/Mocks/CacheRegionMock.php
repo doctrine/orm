@@ -115,9 +115,6 @@ class CacheRegionMock implements Region
         return $this->getReturn(__FUNCTION__, true);
     }
 
-    /**
-     * {@inheritdoc}
-     */
     public function clear()
     {
         $this->calls   = [];

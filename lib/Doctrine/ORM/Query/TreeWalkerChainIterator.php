@@ -56,7 +56,9 @@ class TreeWalkerChainIterator implements \Iterator, \ArrayAccess
     }
 
     /**
-     * {@inheritdoc}
+     * @return string|false
+     *
+     * @psalm-return class-string<TreeWalker>|false
      */
     public function rewind()
     {
@@ -64,7 +66,7 @@ class TreeWalkerChainIterator implements \Iterator, \ArrayAccess
     }
 
     /**
-     * {@inheritdoc}
+     * @return TreeWalker|null
      */
     public function current()
     {
@@ -72,7 +74,7 @@ class TreeWalkerChainIterator implements \Iterator, \ArrayAccess
     }
 
     /**
-     * {@inheritdoc}
+     * @return int
      */
     public function key()
     {
@@ -80,7 +82,7 @@ class TreeWalkerChainIterator implements \Iterator, \ArrayAccess
     }
 
     /**
-     * {@inheritdoc}
+     * @return TreeWalker|null
      */
     public function next()
     {
@@ -106,7 +108,7 @@ class TreeWalkerChainIterator implements \Iterator, \ArrayAccess
     }
 
     /**
-     * {@inheritdoc}
+     * @return TreeWalker|null
      */
     public function offsetGet($offset)
     {

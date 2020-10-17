@@ -30,6 +30,7 @@ use InvalidArgumentException;
 use ReflectionClass;
 use ReflectionProperty;
 use RuntimeException;
+use function array_key_exists;
 use function explode;
 
 /**
@@ -396,6 +397,8 @@ class ClassMetadataInfo implements ClassMetadata
      * Whether a unique constraint should be generated for the column.
      *
      * @var array
+     *
+     * @psalm-var array<string, array{type: string, fieldName: string, columnName: string, inherited: class-string}>
      */
     public $fieldMappings = [];
 
@@ -643,7 +646,7 @@ class ClassMetadataInfo implements ClassMetadata
     /**
      * The ReflectionProperty instances of the mapped class.
      *
-     * @var ReflectionProperty[]
+     * @var ReflectionProperty[]|null[]
      */
     public $reflFields = [];
 
@@ -670,7 +673,9 @@ class ClassMetadataInfo implements ClassMetadata
     /**
      * Gets the ReflectionProperties of the mapped class.
      *
-     * @return ReflectionProperty[] An array of ReflectionProperty instances.
+     * @return ReflectionProperty[]|null[] An array of ReflectionProperty instances.
+     *
+     * @psalm-return array<ReflectionProperty|null>
      */
     public function getReflectionProperties()
     {
@@ -2260,6 +2265,12 @@ class ClassMetadataInfo implements ClassMetadata
 
         if ($overrideMapping['type'] !== $mapping['type']) {
             throw MappingException::invalidOverrideFieldType($this->name, $fieldName);
+        }
+
+        // Fix for bug GH-8229 (id column from parent class renamed in child class):
+        // The contained 'inherited' information was accidentally deleted by the unset() call below.
+        if (array_key_exists('inherited', $this->fieldMappings[$fieldName])) {
+            $overrideMapping['inherited'] = $this->fieldMappings[$fieldName]['inherited'];
         }
 
         unset($this->fieldMappings[$fieldName]);

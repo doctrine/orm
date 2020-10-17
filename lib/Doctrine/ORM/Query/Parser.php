@@ -29,6 +29,7 @@ use Doctrine\ORM\Query\AST\SelectStatement;
 use Doctrine\ORM\Query\AST\Subselect;
 use Doctrine\ORM\Query\AST\SubselectIdentificationVariableDeclaration;
 use Doctrine\ORM\Query\AST\UpdateStatement;
+use function assert;
 use function in_array;
 use function strpos;
 
@@ -429,6 +430,8 @@ class Parser
             return;
         }
 
+        assert($AST instanceof AST\SelectStatement);
+
         foreach ($this->queryComponents as $dqlAlias => $qComp) {
             if ( ! isset($this->identVariableExpressions[$dqlAlias])) {
                 continue;
@@ -627,7 +630,7 @@ class Parser
     /**
      * Validates that the given <tt>NewObjectExpression</tt>.
      *
-     * @param \Doctrine\ORM\Query\AST\SelectClause $AST
+     * @param SelectStatement $AST
      *
      * @return void
      */
@@ -1510,10 +1513,6 @@ class Parser
         $glimpse = $this->lexer->glimpse();
 
         switch (true) {
-            case ($this->isFunction()):
-                $expr = $this->FunctionDeclaration();
-                break;
-
             case ($this->isMathOperator($peek)):
                 $expr = $this->SimpleArithmeticExpression();
                 break;
@@ -1528,6 +1527,10 @@ class Parser
 
             case $this->lexer->lookahead['type'] === Lexer::T_CASE:
                 $expr = $this->CaseExpression();
+                break;
+
+            case $this->isFunction():
+                $expr = $this->FunctionDeclaration();
                 break;
 
             default:
@@ -1568,7 +1571,7 @@ class Parser
      *
      * SimpleArithmeticExpression covers all *Primary grammar rules and also SimpleEntityExpression
      *
-     * @return AST\ArithmeticExpression
+     * @return AST\ArithmeticExpression|AST\InputParameter|null
      */
     public function NewValue()
     {
@@ -1772,7 +1775,7 @@ class Parser
     /**
      * JoinAssociationDeclaration ::= JoinAssociationPathExpression ["AS"] AliasIdentificationVariable [IndexBy]
      *
-     * @return \Doctrine\ORM\Query\AST\JoinAssociationPathExpression
+     * @return AST\JoinAssociationDeclaration
      */
     public function JoinAssociationDeclaration()
     {
@@ -2398,7 +2401,7 @@ class Parser
     /**
      * ConditionalExpression ::= ConditionalTerm {"OR" ConditionalTerm}*
      *
-     * @return \Doctrine\ORM\Query\AST\ConditionalExpression
+     * @return AST\ConditionalExpression|AST\ConditionalFactor|AST\ConditionalPrimary|AST\ConditionalTerm
      */
     public function ConditionalExpression()
     {
@@ -2423,7 +2426,7 @@ class Parser
     /**
      * ConditionalTerm ::= ConditionalFactor {"AND" ConditionalFactor}*
      *
-     * @return \Doctrine\ORM\Query\AST\ConditionalTerm
+     * @return AST\ConditionalFactor|AST\ConditionalPrimary|AST\ConditionalTerm
      */
     public function ConditionalTerm()
     {
@@ -2448,7 +2451,7 @@ class Parser
     /**
      * ConditionalFactor ::= ["NOT"] ConditionalPrimary
      *
-     * @return \Doctrine\ORM\Query\AST\ConditionalFactor
+     * @return AST\ConditionalFactor|AST\ConditionalPrimary
      */
     public function ConditionalFactor()
     {
@@ -2952,7 +2955,7 @@ class Parser
     /**
      * EntityExpression ::= SingleValuedAssociationPathExpression | SimpleEntityExpression
      *
-     * @return PathExpression
+     * @return AST\InputParameter|PathExpression
      */
     public function EntityExpression()
     {

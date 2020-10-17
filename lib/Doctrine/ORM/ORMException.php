@@ -110,7 +110,7 @@ class ORMException extends Exception
      * @param string $given
      * @param string $expected
      *
-     * @return \Doctrine\ORM\ORMInvalidArgumentException
+     * @return \Doctrine\ORM\ORMException
      */
     public static function unexpectedAssociationValue($class, $association, $given, $expected)
     {

@@ -145,49 +145,53 @@ An example for a correct notation can be found in the example
 Lifecycle Events
 ----------------
 
-The EntityManager and UnitOfWork trigger a bunch of events during
-the life-time of their registered entities.
+The ``EntityManager`` and ``UnitOfWork`` classes trigger a bunch of
+events during the life-time of their registered entities.
 
 
--  preRemove - The preRemove event occurs for a given entity before
-   the respective EntityManager remove operation for that entity is
-   executed.  It is not called for a DQL DELETE statement.
--  postRemove - The postRemove event occurs for an entity after the
+
+-  ``preRemove`` - The ``preRemove`` event occurs for a given entity
+   before the respective ``EntityManager`` remove operation for that
+   entity is executed.  It is not called for a DQL ``DELETE`` statement.
+-  ``postRemove`` - The ``postRemove`` event occurs for an entity after the
    entity has been deleted. It will be invoked after the database
-   delete operations. It is not called for a DQL DELETE statement.
--  prePersist - The prePersist event occurs for a given entity
-   before the respective EntityManager persist operation for that
+   delete operations. It is not called for a DQL ``DELETE`` statement.
+-  ``prePersist`` - The ``prePersist`` event occurs for a given entity
+   before the respective ``EntityManager`` persist operation for that
    entity is executed. It should be noted that this event is only triggered on
    *initial* persist of an entity (i.e. it does not trigger on future updates).
--  postPersist - The postPersist event occurs for an entity after
+-  ``postPersist`` - The ``postPersist`` event occurs for an entity after
    the entity has been made persistent. It will be invoked after the
    database insert operations. Generated primary key values are
    available in the postPersist event.
--  preUpdate - The preUpdate event occurs before the database
-   update operations to entity data. It is not called for a DQL UPDATE statement
-   nor when the computed changeset is empty.
--  postUpdate - The postUpdate event occurs after the database
-   update operations to entity data. It is not called for a DQL UPDATE statement.
--  postLoad - The postLoad event occurs for an entity after the
-   entity has been loaded into the current EntityManager from the
+-  ``preUpdate`` - The ``preUpdate`` event occurs before the database
+   update operations to entity data. It is not called for a DQL
+   ``UPDATE`` statement nor when the computed changeset is empty.
+-  ``postUpdate`` - The ``postUpdate`` event occurs after the database
+   update operations to entity data. It is not called for a DQL
+   ``UPDATE`` statement.
+-  ``postLoad`` - The postLoad event occurs for an entity after the
+   entity has been loaded into the current ``EntityManager`` from the
    database or after the refresh operation has been applied to it.
--  loadClassMetadata - The loadClassMetadata event occurs after the
+-  ``loadClassMetadata`` - The ``loadClassMetadata`` event occurs after the
    mapping metadata for a class has been loaded from a mapping source
    (annotations/xml/yaml). This event is not a lifecycle callback.
--  onClassMetadataNotFound - Loading class metadata for a particular
+-  ``onClassMetadataNotFound`` - Loading class metadata for a particular
    requested class name failed. Manipulating the given event args instance
    allows providing fallback metadata even when no actual metadata exists
    or could be found. This event is not a lifecycle callback.
--  preFlush - The preFlush event occurs at the very beginning of a flush
-   operation.
--  onFlush - The onFlush event occurs after the change-sets of all
+-  ``preFlush`` - The ``preFlush`` event occurs at the very beginning of
+   a flush operation.
+-  ``onFlush`` - The ``onFlush`` event occurs after the change-sets of all
    managed entities are computed. This event is not a lifecycle
    callback.
--  postFlush - The postFlush event occurs at the end of a flush operation. This
+-  ``postFlush`` - The ``postFlush`` event occurs at the end of a flush operation. This
    event is not a lifecycle callback.
--  onClear - The onClear event occurs when the EntityManager#clear() operation is
-   invoked, after all references to entities have been removed from the unit of
-   work. This event is not a lifecycle callback.
+-  ``onClear`` - The ``onClear`` event occurs when the
+   ``EntityManager#clear()`` operation is invoked, after all references
+   to entities have been removed from the unit of work. This event is not
+   a lifecycle callback.
+
 
 .. warning::
 
@@ -199,7 +203,7 @@ the life-time of their registered entities.
 
 .. warning::
 
-    Note that the postRemove event or any events triggered after an entity removal
+    Note that the ``postRemove`` event or any events triggered after an entity removal
     can receive an uninitializable proxy in case you have configured an entity to
     cascade remove relations. In this case, you should load yourself the proxy in
     the associated pre event.
@@ -222,13 +226,13 @@ listeners:
 -  Lifecycle Event Listeners and Subscribers are classes with specific callback
    methods that receives some kind of ``EventArgs`` instance.
 
-The EventArgs instance received by the listener gives access to the entity,
-EntityManager and other relevant data.
+The ``EventArgs`` instance received by the listener gives access to the entity,
+``EntityManager`` instance and other relevant data.
 
 .. note::
 
     All Lifecycle events that happen during the ``flush()`` of
-    an EntityManager have very specific constraints on the allowed
+    an ``EntityManager`` have very specific constraints on the allowed
     operations that can be executed. Please read the
     :ref:`reference-events-implementing-listeners` section very carefully
     to understand which operations are allowed in which lifecycle event.
@@ -408,9 +412,9 @@ sit at a level above the entities and allow you to implement re-usable
 behaviors across different entity classes.
 
 Note that they require much more detailed knowledge about the inner
-workings of the EntityManager and UnitOfWork. Please read the
-:ref:`reference-events-implementing-listeners` section carefully if you
-are trying to write your own listener.
+workings of the ``EntityManager`` and ``UnitOfWork`` classes. Please
+read the :ref:`reference-events-implementing-listeners` section
+carefully if you are trying to write your own listener.
 
 For event subscribers, there are no surprises. They declare the
 lifecycle events in their ``getSubscribedEvents`` method and provide
@@ -499,16 +503,16 @@ Implementing Event Listeners
 ----------------------------
 
 This section explains what is and what is not allowed during
-specific lifecycle events of the UnitOfWork. Although you get
-passed the EntityManager in all of these events, you have to follow
-these restrictions very carefully since operations in the wrong
-event may produce lots of different errors, such as inconsistent
+specific lifecycle events of the ``UnitOfWork`` class. Although you get
+passed the ``EntityManager`` instance in all of these events, you have
+to follow these restrictions very carefully since operations in the
+wrong event may produce lots of different errors, such as inconsistent
 data and lost updates/persists/removes.
 
 For the described events that are also lifecycle callback events
 the restrictions apply as well, with the additional restriction
 that (prior to version 2.4) you do not have access to the
-EntityManager or UnitOfWork APIs inside these events.
+``EntityManager`` or ``UnitOfWork`` APIs inside these events.
 
 prePersist
 ~~~~~~~~~~
@@ -584,8 +588,8 @@ entities and their associations have been computed. This means, the
 -  Collections scheduled for update
 -  Collections scheduled for removal
 
-To make use of the onFlush event you have to be familiar with the
-internal UnitOfWork API, which grants you access to the previously
+To make use of the ``onFlush`` event you have to be familiar with the
+internal ``UnitOfWork`` API, which grants you access to the previously
 mentioned sets. See this example:
 
 .. code-block:: php
@@ -733,7 +737,7 @@ Restrictions for this event:
    the event to modify primitive field values, e.g. use
    ``$eventArgs->setNewValue($field, $value);`` as in the Alice to Bob example above.
 -  Any calls to ``EntityManager#persist()`` or
-   ``EntityManager#remove()``, even in combination with the UnitOfWork
+   ``EntityManager#remove()``, even in combination with the ``UnitOfWork``
    API are strongly discouraged and don't work as expected outside the
    flush operation.
 
@@ -986,5 +990,4 @@ process and manipulate the instance.
             $classMetadata->mapField($fieldMapping);
         }
     }
-
 

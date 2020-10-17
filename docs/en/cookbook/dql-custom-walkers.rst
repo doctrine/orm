@@ -167,7 +167,7 @@ can be set via ``Query::setHint($name, $value)`` as shown in the
 previous example with the ``HINT_CUSTOM_TREE_WALKERS`` query hint.
 
 We will implement a custom Output Walker that allows to specify the
-SQL\_NO\_CACHE query hint.
+``SQL_NO_CACHE`` query hint.
 
 .. code-block:: php
 
@@ -180,7 +180,7 @@ SQL\_NO\_CACHE query hint.
 
 Our ``MysqlWalker`` will extend the default ``SqlWalker``. We will
 modify the generation of the SELECT clause, adding the
-SQL\_NO\_CACHE on those queries that need it:
+``SQL_NO_CACHE`` on those queries that need it:
 
 .. code-block:: php
 

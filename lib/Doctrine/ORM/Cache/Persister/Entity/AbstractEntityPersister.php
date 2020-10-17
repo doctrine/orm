@@ -283,11 +283,11 @@ abstract class AbstractEntityPersister implements CachedEntityPersister
     /**
      * Generates a string of currently query
      *
-     * @param array   $query
-     * @param string  $criteria
-     * @param array   $orderBy
-     * @param integer $limit
-     * @param integer $offset
+     * @param string            $query
+     * @param string[]|Criteria $criteria
+     * @param string[]          $orderBy
+     * @param int               $limit
+     * @param int               $offset
      *
      * @return string
      */
@@ -544,19 +544,18 @@ abstract class AbstractEntityPersister implements CachedEntityPersister
     /**
      * {@inheritdoc}
      */
-    public function loadManyToManyCollection(array $assoc, $sourceEntity, PersistentCollection $coll)
+    public function loadManyToManyCollection(array $assoc, $sourceEntity, PersistentCollection $collection)
     {
         $persister = $this->uow->getCollectionPersister($assoc);
         $hasCache  = ($persister instanceof CachedPersister);
-        $key       = null;
 
         if ( ! $hasCache) {
-            return $this->persister->loadManyToManyCollection($assoc, $sourceEntity, $coll);
+            return $this->persister->loadManyToManyCollection($assoc, $sourceEntity, $collection);
         }
 
-        $ownerId = $this->uow->getEntityIdentifier($coll->getOwner());
+        $ownerId = $this->uow->getEntityIdentifier($collection->getOwner());
         $key     = $this->buildCollectionCacheKey($assoc, $ownerId);
-        $list    = $persister->loadCollectionCache($coll, $key);
+        $list    = $persister->loadCollectionCache($collection, $key);
 
         if ($list !== null) {
             if ($this->cacheLogger) {
@@ -566,7 +565,7 @@ abstract class AbstractEntityPersister implements CachedEntityPersister
             return $list;
         }
 
-        $list = $this->persister->loadManyToManyCollection($assoc, $sourceEntity, $coll);
+        $list = $this->persister->loadManyToManyCollection($assoc, $sourceEntity, $collection);
 
         $persister->storeCollectionCache($key, $list);
 
@@ -580,18 +579,18 @@ abstract class AbstractEntityPersister implements CachedEntityPersister
     /**
      * {@inheritdoc}
      */
-    public function loadOneToManyCollection(array $assoc, $sourceEntity, PersistentCollection $coll)
+    public function loadOneToManyCollection(array $assoc, $sourceEntity, PersistentCollection $collection)
     {
         $persister = $this->uow->getCollectionPersister($assoc);
         $hasCache  = ($persister instanceof CachedPersister);
 
         if ( ! $hasCache) {
-            return $this->persister->loadOneToManyCollection($assoc, $sourceEntity, $coll);
+            return $this->persister->loadOneToManyCollection($assoc, $sourceEntity, $collection);
         }
 
-        $ownerId = $this->uow->getEntityIdentifier($coll->getOwner());
+        $ownerId = $this->uow->getEntityIdentifier($collection->getOwner());
         $key     = $this->buildCollectionCacheKey($assoc, $ownerId);
-        $list    = $persister->loadCollectionCache($coll, $key);
+        $list    = $persister->loadCollectionCache($collection, $key);
 
         if ($list !== null) {
             if ($this->cacheLogger) {
@@ -601,7 +600,7 @@ abstract class AbstractEntityPersister implements CachedEntityPersister
             return $list;
         }
 
-        $list = $this->persister->loadOneToManyCollection($assoc, $sourceEntity, $coll);
+        $list = $this->persister->loadOneToManyCollection($assoc, $sourceEntity, $collection);
 
         $persister->storeCollectionCache($key, $list);
 

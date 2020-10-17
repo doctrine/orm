@@ -189,6 +189,8 @@ abstract class AbstractExporter
      * @param int $type
      *
      * @return string
+     *
+     * @psalm-param ClassMetadataInfo::INHERITANCE_TYPE_* $type
      */
     protected function _getInheritanceTypeString($type)
     {
@@ -211,6 +213,8 @@ abstract class AbstractExporter
      * @param int $mode
      *
      * @return string
+     *
+     * @psalm-param ClassMetadataInfo::FETCH_* $mode
      */
     protected function _getFetchModeString($mode)
     {
@@ -230,6 +234,8 @@ abstract class AbstractExporter
      * @param int $policy
      *
      * @return string
+     *
+     * @psalm-param ClassMetadataInfo::CHANGETRACKING_* $policy
      */
     protected function _getChangeTrackingPolicyString($policy)
     {
@@ -249,6 +255,8 @@ abstract class AbstractExporter
      * @param int $type
      *
      * @return string
+     *
+     * @psalm-param ClassMetadataInfo::GENERATOR_TYPE_* $type
      */
     protected function _getIdGeneratorTypeString($type)
     {
