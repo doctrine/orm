@@ -2803,8 +2803,6 @@ class ClassMetadataInfo implements ClassMetadata
      * @return void
      *
      * @throws MappingException
-     *
-     * @see getDiscriminatorColumn()
      */
     public function setDiscriminatorColumn($columnDef)
     {
