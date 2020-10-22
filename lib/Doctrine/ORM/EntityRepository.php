@@ -50,6 +50,8 @@ class EntityRepository implements ObjectRepository, Selectable
 {
     /**
      * @var string
+     *
+     * @psalm-var class-string<T>
      */
     protected $_entityName;
 
@@ -60,6 +62,8 @@ class EntityRepository implements ObjectRepository, Selectable
 
     /**
      * @var \Doctrine\ORM\Mapping\ClassMetadata
+     *
+     * @psalm-var \Doctrine\ORM\Mapping\ClassMetadata<T>
      */
     protected $_class;
 
@@ -265,6 +269,8 @@ class EntityRepository implements ObjectRepository, Selectable
 
     /**
      * @return string
+     *
+     * @psalm-return class-string<T>
      */
     protected function getEntityName()
     {
@@ -273,6 +279,8 @@ class EntityRepository implements ObjectRepository, Selectable
 
     /**
      * @return string
+     *
+     * @psalm-return class-string<T>
      */
     public function getClassName()
     {
@@ -289,6 +297,8 @@ class EntityRepository implements ObjectRepository, Selectable
 
     /**
      * @return Mapping\ClassMetadata
+     *
+     * @psalm-return Mapping\ClassMetadata<T>
      */
     protected function getClassMetadata()
     {
