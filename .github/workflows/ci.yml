@@ -101,11 +101,11 @@ jobs:
       - name: "Install dependencies with composer"
         run: "composer install --no-interaction --no-progress --no-suggest"
 
-      - name: "Install git-phpcs"
-        run: "wget https://github.com/diff-sniffer/git/releases/download/0.3.2/git-phpcs.phar"
+      - name: "Install diff-sniffer"
+        run: "wget https://github.com/diff-sniffer/diff-sniffer/releases/download/0.5.1/diff-sniffer.phar"
 
       - name: "Fetch head branch"
         run: "git remote set-branches --add origin $GITHUB_BASE_REF && git fetch origin $GITHUB_BASE_REF"
 
-      - name: "Run git-phpcs"
-        run: "php git-phpcs.phar origin/$GITHUB_BASE_REF...$GITHUB_SHA --report=checkstyle | cs2pr"
+      - name: "Run diff-sniffer"
+        run: "php diff-sniffer.phar origin/$GITHUB_BASE_REF...$GITHUB_SHA --report=checkstyle | cs2pr"
