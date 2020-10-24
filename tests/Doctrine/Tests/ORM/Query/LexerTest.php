@@ -9,10 +9,6 @@ class LexerTest extends OrmTestCase
 {
     private $_lexer;
 
-    protected function setUp() : void
-    {
-    }
-
     /**
      * @dataProvider provideTokens
      */
