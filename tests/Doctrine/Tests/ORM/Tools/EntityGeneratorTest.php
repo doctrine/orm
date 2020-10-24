@@ -673,7 +673,6 @@ class EntityGeneratorTest extends OrmTestCase
             '@JoinColumn(name="idpais", referencedColumnName="idpais")',
             $docComment
         );
-
     }
 
      /**

@@ -461,10 +461,7 @@ class QueryTest extends OrmTestCase
         $query->enableResultCache();
         $query->setResultCacheProfile();
 
-        $class    = new ReflectionClass(Query::class);
-        $property = $class->getProperty('_queryCacheProfile');
-        $property->setAccessible(true);
-        self::assertNull($property->getValue($query));
+        self::assertNull($query->getQueryCacheProfile());
     }
 
     /** @group 7527 */
