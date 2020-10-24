@@ -5,7 +5,7 @@ namespace Doctrine\Tests\ORM\Functional\Ticket;
 use Doctrine\ORM\Events;
 use Doctrine\ORM\UnitOfWork;
 use Doctrine\Tests\Models\CMS\CmsUser;
-use ReflectionClass;
+use ReflectionObject;
 
 /**
  * @group DDC-3123
@@ -38,8 +38,9 @@ class DDC3123Test extends \Doctrine\Tests\OrmFunctionalTestCase
             ->expects($this->once())
             ->method(Events::postFlush)
             ->will($this->returnCallback(function () use ($uow, $test) {
-                $class    = new ReflectionClass(UnitOfWork::class);
-                $property = $class->getProperty('extraUpdates');
+                $reflection = new ReflectionObject($uow);
+                $property   = $reflection->getProperty('extraUpdates');
+
                 $property->setAccessible(true);
                 $test->assertEmpty(
                     $property->getValue($uow),
