@@ -54,13 +54,13 @@ class BitOrFunction extends FunctionNode
      */
     public function parse(\Doctrine\ORM\Query\Parser $parser)
     {
-        $parser->match(Lexer::T_IDENTIFIER);
-        $parser->match(Lexer::T_OPEN_PARENTHESIS);
+        $parser->matchToken(Lexer::T_IDENTIFIER);
+        $parser->matchToken(Lexer::T_OPEN_PARENTHESIS);
 
         $this->firstArithmetic = $parser->ArithmeticPrimary();
-        $parser->match(Lexer::T_COMMA);
+        $parser->matchToken(Lexer::T_COMMA);
         $this->secondArithmetic = $parser->ArithmeticPrimary();
 
-        $parser->match(Lexer::T_CLOSE_PARENTHESIS);
+        $parser->matchToken(Lexer::T_CLOSE_PARENTHESIS);
     }
 }

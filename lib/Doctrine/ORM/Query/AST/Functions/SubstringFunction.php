@@ -70,22 +70,22 @@ class SubstringFunction extends FunctionNode
      */
     public function parse(\Doctrine\ORM\Query\Parser $parser)
     {
-        $parser->match(Lexer::T_IDENTIFIER);
-        $parser->match(Lexer::T_OPEN_PARENTHESIS);
+        $parser->matchToken(Lexer::T_IDENTIFIER);
+        $parser->matchToken(Lexer::T_OPEN_PARENTHESIS);
 
         $this->stringPrimary = $parser->StringPrimary();
 
-        $parser->match(Lexer::T_COMMA);
+        $parser->matchToken(Lexer::T_COMMA);
 
         $this->firstSimpleArithmeticExpression = $parser->SimpleArithmeticExpression();
 
         $lexer = $parser->getLexer();
         if ($lexer->isNextToken(Lexer::T_COMMA)) {
-            $parser->match(Lexer::T_COMMA);
+            $parser->matchToken(Lexer::T_COMMA);
 
             $this->secondSimpleArithmeticExpression = $parser->SimpleArithmeticExpression();
         }
 
-        $parser->match(Lexer::T_CLOSE_PARENTHESIS);
+        $parser->matchToken(Lexer::T_CLOSE_PARENTHESIS);
     }
 }

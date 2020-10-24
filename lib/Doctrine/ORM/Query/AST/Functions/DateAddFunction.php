@@ -95,15 +95,15 @@ class DateAddFunction extends FunctionNode
      */
     public function parse(Parser $parser)
     {
-        $parser->match(Lexer::T_IDENTIFIER);
-        $parser->match(Lexer::T_OPEN_PARENTHESIS);
+        $parser->matchToken(Lexer::T_IDENTIFIER);
+        $parser->matchToken(Lexer::T_OPEN_PARENTHESIS);
 
         $this->firstDateExpression = $parser->ArithmeticPrimary();
-        $parser->match(Lexer::T_COMMA);
+        $parser->matchToken(Lexer::T_COMMA);
         $this->intervalExpression = $parser->ArithmeticPrimary();
-        $parser->match(Lexer::T_COMMA);
+        $parser->matchToken(Lexer::T_COMMA);
         $this->unit = $parser->StringPrimary();
 
-        $parser->match(Lexer::T_CLOSE_PARENTHESIS);
+        $parser->matchToken(Lexer::T_CLOSE_PARENTHESIS);
     }
 }

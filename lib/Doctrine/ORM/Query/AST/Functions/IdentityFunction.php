@@ -96,18 +96,18 @@ class IdentityFunction extends FunctionNode
      */
     public function parse(Parser $parser)
     {
-        $parser->match(Lexer::T_IDENTIFIER);
-        $parser->match(Lexer::T_OPEN_PARENTHESIS);
+        $parser->matchToken(Lexer::T_IDENTIFIER);
+        $parser->matchToken(Lexer::T_OPEN_PARENTHESIS);
 
         $this->pathExpression = $parser->SingleValuedAssociationPathExpression();
 
         if ($parser->getLexer()->isNextToken(Lexer::T_COMMA)) {
-            $parser->match(Lexer::T_COMMA);
-            $parser->match(Lexer::T_STRING);
+            $parser->matchToken(Lexer::T_COMMA);
+            $parser->matchToken(Lexer::T_STRING);
 
             $this->fieldMapping = $parser->getLexer()->token['value'];
         }
 
-        $parser->match(Lexer::T_CLOSE_PARENTHESIS);
+        $parser->matchToken(Lexer::T_CLOSE_PARENTHESIS);
     }
 }

@@ -84,24 +84,24 @@ class TrimFunction extends FunctionNode
     {
         $lexer = $parser->getLexer();
 
-        $parser->match(Lexer::T_IDENTIFIER);
-        $parser->match(Lexer::T_OPEN_PARENTHESIS);
+        $parser->matchToken(Lexer::T_IDENTIFIER);
+        $parser->matchToken(Lexer::T_OPEN_PARENTHESIS);
 
         $this->parseTrimMode($parser);
 
         if ($lexer->isNextToken(Lexer::T_STRING)) {
-            $parser->match(Lexer::T_STRING);
+            $parser->matchToken(Lexer::T_STRING);
 
             $this->trimChar = $lexer->token['value'];
         }
 
         if ($this->leading || $this->trailing || $this->both || $this->trimChar) {
-            $parser->match(Lexer::T_FROM);
+            $parser->matchToken(Lexer::T_FROM);
         }
 
         $this->stringPrimary = $parser->StringPrimary();
 
-        $parser->match(Lexer::T_CLOSE_PARENTHESIS);
+        $parser->matchToken(Lexer::T_CLOSE_PARENTHESIS);
     }
 
     /**
@@ -135,7 +135,7 @@ class TrimFunction extends FunctionNode
         $value = $lexer->lookahead['value'];
 
         if (strcasecmp('leading', $value) === 0) {
-            $parser->match(Lexer::T_LEADING);
+            $parser->matchToken(Lexer::T_LEADING);
 
             $this->leading = true;
 
@@ -143,7 +143,7 @@ class TrimFunction extends FunctionNode
         }
 
         if (strcasecmp('trailing', $value) === 0) {
-            $parser->match(Lexer::T_TRAILING);
+            $parser->matchToken(Lexer::T_TRAILING);
 
             $this->trailing = true;
 
@@ -151,7 +151,7 @@ class TrimFunction extends FunctionNode
         }
 
         if (strcasecmp('both', $value) === 0) {
-            $parser->match(Lexer::T_BOTH);
+            $parser->matchToken(Lexer::T_BOTH);
 
             $this->both = true;
 
