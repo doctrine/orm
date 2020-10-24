@@ -80,7 +80,7 @@ class ParserTest extends OrmTestCase
     {
         $parser = $this->createParser($inputString);
 
-        $parser->match($expectedToken); // throws exception if not matched
+        $parser->matchToken($expectedToken); // throws exception if not matched
 
         $this->addToAssertionCount(1);
     }
@@ -96,7 +96,7 @@ class ParserTest extends OrmTestCase
 
         $parser = $this->createParser($inputString);
 
-        $parser->match($expectedToken);
+        $parser->matchToken($expectedToken);
     }
 
     public function validMatches()
@@ -149,7 +149,7 @@ class ParserTest extends OrmTestCase
         $parser = new Parser($query);
 
         $this->expectException(QueryException::class);
-        $parser->match(Lexer::T_SELECT);
+        $parser->matchToken(Lexer::T_SELECT);
     }
 
     private function createParser($dql)

@@ -6,7 +6,7 @@ use Doctrine\ORM\AbstractQuery;
 use Doctrine\Tests\OrmFunctionalTestCase;
 
 /**
- * @group 6937
+ * @group GH-6937
  */
 final class GH6937Test extends OrmFunctionalTestCase
 {

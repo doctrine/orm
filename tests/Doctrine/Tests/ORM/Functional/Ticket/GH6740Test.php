@@ -52,7 +52,7 @@ final class GH6740Test extends OrmFunctionalTestCase
     }
 
     /**
-     * @group 6740
+     * @group GH-6740
      */
     public function testCollectionFilteringLteOperator() : void
     {
@@ -63,7 +63,7 @@ final class GH6740Test extends OrmFunctionalTestCase
     }
 
     /**
-     * @group 6740
+     * @group GH-6740
      */
     public function testCollectionFilteringLtOperator() : void
     {
@@ -74,7 +74,7 @@ final class GH6740Test extends OrmFunctionalTestCase
     }
 
     /**
-     * @group 6740
+     * @group GH-6740
      */
     public function testCollectionFilteringGteOperator() : void
     {
@@ -85,7 +85,7 @@ final class GH6740Test extends OrmFunctionalTestCase
     }
 
     /**
-     * @group 6740
+     * @group GH-6740
      */
     public function testCollectionFilteringGtOperator() : void
     {
@@ -96,7 +96,7 @@ final class GH6740Test extends OrmFunctionalTestCase
     }
 
     /**
-     * @group 6740
+     * @group GH-6740
      */
     public function testCollectionFilteringEqualsOperator() : void
     {

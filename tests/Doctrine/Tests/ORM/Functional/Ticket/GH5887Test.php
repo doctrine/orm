@@ -8,7 +8,7 @@ use Doctrine\DBAL\Platforms\AbstractPlatform;
 use Doctrine\Tests\OrmFunctionalTestCase;
 
 /**
- * @group 5887
+ * @group GH-5887
  */
 class GH5887Test extends OrmFunctionalTestCase
 {

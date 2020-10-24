@@ -9,7 +9,7 @@ use Doctrine\ORM\Id\AbstractIdGenerator;
 use Doctrine\Tests\OrmFunctionalTestCase;
 
 /**
- * @group 5804
+ * @group GH-5804
  */
 final class GH5804Test extends OrmFunctionalTestCase
 {

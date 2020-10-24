@@ -115,14 +115,14 @@ class GH7286CustomConcat extends FunctionNode
 
     public function parse(Parser $parser) : void
     {
-        $parser->match(Lexer::T_IDENTIFIER);
-        $parser->match(Lexer::T_OPEN_PARENTHESIS);
+        $parser->matchToken(Lexer::T_IDENTIFIER);
+        $parser->matchToken(Lexer::T_OPEN_PARENTHESIS);
 
         $this->first = $parser->StringPrimary();
-        $parser->match(Lexer::T_COMMA);
+        $parser->matchToken(Lexer::T_COMMA);
         $this->second = $parser->StringPrimary();
 
-        $parser->match(Lexer::T_CLOSE_PARENTHESIS);
+        $parser->matchToken(Lexer::T_CLOSE_PARENTHESIS);
     }
 
     public function getSql(SqlWalker $walker) : string

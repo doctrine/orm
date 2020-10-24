@@ -25,7 +25,7 @@ final class GH5562Test extends OrmFunctionalTestCase
     }
 
     /**
-     * @group 5562
+     * @group GH-5562
      */
     public function testCacheShouldBeUpdatedWhenAssociationChanges()
     {

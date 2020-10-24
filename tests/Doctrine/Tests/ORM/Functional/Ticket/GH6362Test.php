@@ -24,7 +24,7 @@ final class GH6362Test extends OrmFunctionalTestCase
     }
 
     /**
-     * @group 6362
+     * @group GH-6362
      *
      * SELECT a as base, b, c, d
      * FROM Start a

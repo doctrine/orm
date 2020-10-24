@@ -29,7 +29,7 @@ class GH6141Test extends OrmFunctionalTestCase
      * of using objects as discriminators (which makes things a bit
      * more dynamic as you can see on the mapping of `GH6141Person`)
      *
-     * @group 6141
+     * @group GH-6141
      */
     public function testEnumDiscriminatorsShouldBeConvertedToString()
     {

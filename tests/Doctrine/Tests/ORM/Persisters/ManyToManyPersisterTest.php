@@ -15,7 +15,7 @@ use Doctrine\Tests\OrmTestCase;
 final class ManyToManyPersisterTest extends OrmTestCase
 {
     /**
-     * @group 6991
+     * @group GH-6991
      * @group ManyToManyPersister
      *
      * @throws \Doctrine\ORM\ORMException
