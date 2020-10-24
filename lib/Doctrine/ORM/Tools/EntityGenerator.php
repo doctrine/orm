@@ -842,6 +842,8 @@ public function __construct(<params>)
             if ($inNamespace) {
                 if (in_array($token[0], [T_NS_SEPARATOR, T_STRING], true)) {
                     $lastSeenNamespace .= $token[1];
+                } else if (\PHP_VERSION_ID >= 80000 && ($token[0] === T_NAME_QUALIFIED || $token[0] === T_NAME_FULLY_QUALIFIED)) {
+                    $lastSeenNamespace .= $token[1];
                 } elseif (is_string($token) && in_array($token, [';', '{'], true)) {
                     $inNamespace = false;
                 }
