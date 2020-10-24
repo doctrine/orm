@@ -107,6 +107,11 @@ class CommitOrderCalculator
     public function addDependency($fromHash, $toHash, $weight)
     {
         $vertex = $this->nodeList[$fromHash];
+
+        if (isset($vertex->dependencyList[$toHash]) && $vertex->dependencyList[$toHash]->weight >= $weight) {
+            return;
+        }
+            
         $edge   = new \stdClass();
 
         $edge->from   = $fromHash;

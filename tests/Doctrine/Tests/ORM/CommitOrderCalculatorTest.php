@@ -17,7 +17,7 @@ class CommitOrderCalculatorTest extends OrmTestCase
 {
     private $_calc;
 
-    protected function setUp()
+    protected function setUp() : void
     {
         $this->_calc = new CommitOrderCalculator();
     }
@@ -148,6 +148,44 @@ class CommitOrderCalculatorTest extends OrmTestCase
         $index4 = array_search($class4, $sorted, true);
 
         $this->assertLessThan($index1, $index4);
+
+    }
+
+    public function testCommitOrdering5()
+    {
+        // testing Fixed commit order with multiple edges of different priority
+        // between two certain nodes
+        $class1 = new ClassMetadata(NodeClass1::class);
+        $class2 = new ClassMetadata(NodeClass2::class);
+
+
+        $this->_calc->addNode($class1->name, $class1);
+        $this->_calc->addNode($class2->name, $class2);
+
+
+        $this->_calc->addDependency($class1->name, $class2->name, 0);
+        $this->_calc->addDependency($class2->name, $class1->name, 1);
+        $this->_calc->addDependency($class2->name, $class1->name, 0);
+
+        /*
+                     1
+            +----------------+
+            v                |
+        +---+-----+    +-----+---+
+        |         |    |         |
+        | Class 1 +--->+ Class 2 |
+        |         | 0  |         |
+        +---+-----+    +-----+---+
+            ^                |
+            +----------------+
+                     0
+        */
+
+        $sorted = $this->_calc->sort();
+        $index1 = array_search($class1, $sorted, true);
+        $index2 = array_search($class2, $sorted, true);
+
+        $this->assertLessThan($index1, $index2);
 
     }
 }
