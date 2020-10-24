@@ -17,8 +17,6 @@ final class ManyToManyPersisterTest extends OrmTestCase
     /**
      * @group GH-6991
      * @group ManyToManyPersister
-     *
-     * @throws \Doctrine\ORM\ORMException
      */
     public function testDeleteManyToManyCollection(): void
     {
