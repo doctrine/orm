@@ -31,16 +31,13 @@ class Expr
      *     // (u.type = ?1) AND (u.role = ?2)
      *     $expr->andX($expr->eq('u.type', ':1'), $expr->eq('u.role', ':2'));
      *
-     * @param Expr\Comparison|Expr\Func|Expr\Andx|Expr\Orx|string $x Optional clause. Defaults to null,
-     *                                                               but requires at least one defined
-     *                                                               when converting to string.
-     * @psalm-param Expr\Comparison|Expr\Func|Expr\Andx|Expr\Orx|string ...$x
-     *
-     * @return Expr\Andx
+     * @param Expr\Comparison|Expr\Func|Expr\Andx|Expr\Orx|string ...$x Optional clause. Defaults to null,
+     *                                                                  but requires at least one defined
+     *                                                                  when converting to string.
      */
-    public function andX($x = null)
+    public function andX(...$x): Expr\Andx
     {
-        return new Expr\Andx(func_get_args());
+        return new Expr\Andx($x);
     }
 
     /**
@@ -52,16 +49,13 @@ class Expr
      *     // (u.type = ?1) OR (u.role = ?2)
      *     $q->where($q->expr()->orX('u.type = ?1', 'u.role = ?2'));
      *
-     * @param Expr\Comparison|Expr\Func|Expr\Andx|Expr\Orx|string $x Optional clause. Defaults to null,
-     *                                                               but requires at least one defined
-     *                                                               when converting to string.
-     * @psalm-param Expr\Comparison|Expr\Func|Expr\Andx|Expr\Orx|string ...$x
-     *
-     * @return Expr\Orx
+     * @param Expr\Comparison|Expr\Func|Expr\Andx|Expr\Orx|string ...$x Optional clause. Defaults to null,
+     *                                                                  but requires at least one defined
+     *                                                                  when converting to string.
      */
-    public function orX($x = null)
+    public function orX(...$x): Expr\Orx
     {
-        return new Expr\Orx(func_get_args());
+        return new Expr\Orx($x);
     }
 
     /**
