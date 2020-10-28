@@ -22,7 +22,7 @@
         "php": "^7.1",
         "ext-pdo": "*",
         "composer/package-versions-deprecated": "^1.8",
-        "doctrine/annotations": "^1.8",
+        "doctrine/annotations": "^1.11.1",
         "doctrine/cache": "^1.9.1",
         "doctrine/collections": "^1.5",
         "doctrine/common": "^2.11 || ^3.0",
@@ -35,7 +35,7 @@
         "symfony/console": "^3.0|^4.0|^5.0"
     },
     "require-dev": {
-        "doctrine/coding-standard": "^5.0",
+        "doctrine/coding-standard": "^6.0",
         "phpstan/phpstan": "^0.12.18",
         "phpunit/phpunit": "^7.5",
         "symfony/yaml": "^3.4|^4.0|^5.0",

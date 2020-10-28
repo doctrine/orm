@@ -1,11 +1,14 @@
 <?php
 
 namespace Doctrine\Tests\ORM\Functional;
-use Doctrine\Common\Reflection\RuntimePublicReflectionProperty;
+
+use Doctrine\Common\Reflection\RuntimePublicReflectionProperty as LegacyRuntimePublicReflectionProperty;
 use Doctrine\ORM\Mapping\MappingException;
 use Doctrine\ORM\Mapping\ReflectionEmbeddedProperty;
 use Doctrine\ORM\Query\QueryException;
+use Doctrine\Persistence\Reflection\RuntimePublicReflectionProperty;
 use Doctrine\Tests\OrmFunctionalTestCase;
+use function class_exists;
 
 /**
  * @group DDC-93
@@ -35,7 +38,12 @@ class ValueObjectsTest extends OrmFunctionalTestCase
     {
         $classMetadata = $this->_em->getClassMetadata(DDC93Person::class);
 
-        $this->assertInstanceOf(RuntimePublicReflectionProperty::class, $classMetadata->getReflectionProperty('address'));
+        $this->assertInstanceOf(
+            class_exists(RuntimePublicReflectionProperty::class) ?
+            RuntimePublicReflectionProperty::class :
+            LegacyRuntimePublicReflectionProperty::class,
+            $classMetadata->getReflectionProperty('address')
+        );
         $this->assertInstanceOf(ReflectionEmbeddedProperty::class, $classMetadata->getReflectionProperty('address.street'));
     }
 
