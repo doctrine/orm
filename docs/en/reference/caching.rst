@@ -1,8 +1,8 @@
 Caching
 =======
 
-Doctrine provides cache drivers in the ``Common`` package for some
-of the most popular caching implementations such as APC, Memcache
+Doctrine provides cache drivers in the ``doctrine/cache`` package for some
+of the most popular caching implementations such as APCu, Memcache
 and Xcache. We also provide an ``ArrayCache`` driver which stores
 the data in a PHP array. Obviously, when using ``ArrayCache``, the 
 cache does not persist between requests, but this is useful for 
@@ -306,7 +306,7 @@ the result cache.
 
     <?php
     $query = $em->createQuery('select u from \Entities\User u');
-    $query->useResultCache(true);
+    $query->enableResultCache(true);
 
 You can also configure an individual query to use a different
 result cache driver.
@@ -324,12 +324,12 @@ result cache driver.
 
     Setting the result cache driver on the query will
     automatically enable the result cache for the query. If you want to
-    disable it pass false to ``useResultCache()``.
+    disable it use ``disableResultCache()``.
 
     ::
 
         <?php
-        $query->useResultCache(false);
+        $query->disableResultCache();
 
 
 If you want to set the time the cache has to live you can use the
@@ -350,12 +350,12 @@ yourself with the ``setResultCacheId()`` method.
     $query->setResultCacheId('my_custom_id');
 
 You can also set the lifetime and cache ID by passing the values as
-the second and third argument to ``useResultCache()``.
+the second and third argument to ``enableResultCache()``.
 
 .. code-block:: php
 
     <?php
-    $query->useResultCache(true, 3600, 'my_custom_id');
+    $query->enableResultCache(3600, 'my_custom_id');
 
 Metadata Cache
 ~~~~~~~~~~~~~~
