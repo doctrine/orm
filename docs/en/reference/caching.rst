@@ -306,7 +306,7 @@ the result cache.
 
     <?php
     $query = $em->createQuery('select u from \Entities\User u');
-    $query->enableResultCache(true);
+    $query->enableResultCache();
 
 You can also configure an individual query to use a different
 result cache driver.
