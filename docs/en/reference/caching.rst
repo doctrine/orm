@@ -317,7 +317,6 @@ result cache driver.
     $cacheDriver = new \Doctrine\Common\Cache\PhpFileCache(
         '/path/to/writable/directory'
     );
-    $config = new \Doctrine\ORM\Configuration();
     $query->setResultCacheDriver($cacheDriver);
 
 .. note::
@@ -350,7 +349,7 @@ yourself with the ``setResultCacheId()`` method.
     $query->setResultCacheId('my_custom_id');
 
 You can also set the lifetime and cache ID by passing the values as
-the second and third argument to ``enableResultCache()``.
+the first and second argument to ``enableResultCache()``.
 
 .. code-block:: php
 
