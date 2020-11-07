@@ -18,7 +18,7 @@ class FilterCollectionTest extends OrmTestCase
      */
     private $em;
 
-    protected function setUp()
+    protected function setUp() : void
     {
         $this->em = $this->_getTestEntityManager();
         $this->em->getConfiguration()->addFilter('testFilter', MyFilter::class);

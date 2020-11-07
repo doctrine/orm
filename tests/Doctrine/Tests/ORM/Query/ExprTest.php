@@ -26,7 +26,7 @@ class ExprTest extends OrmTestCase
      */
     private $_expr;
 
-    protected function setUp()
+    protected function setUp() : void
     {
         $this->_em = $this->_getTestEntityManager();
         $this->_expr = new Expr;

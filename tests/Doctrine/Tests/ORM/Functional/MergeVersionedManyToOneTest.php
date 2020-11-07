@@ -14,7 +14,7 @@ class MergeVersionedManyToOneTest extends OrmFunctionalTestCase
 {
     use VerifyDeprecations;
 
-    protected function setUp()
+    protected function setUp() : void
     {
         $this->useModelSet('versioned_many_to_one');
 

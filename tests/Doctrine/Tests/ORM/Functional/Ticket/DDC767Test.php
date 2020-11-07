@@ -7,7 +7,7 @@ use Doctrine\Tests\Models\CMS\CmsGroup;
 
 class DDC767Test extends \Doctrine\Tests\OrmFunctionalTestCase
 {
-    protected function setUp()
+    protected function setUp() : void
     {
         $this->useModelSet('cms');
         parent::setUp();

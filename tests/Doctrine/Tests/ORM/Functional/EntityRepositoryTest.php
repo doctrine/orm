@@ -29,13 +29,13 @@ class EntityRepositoryTest extends OrmFunctionalTestCase
 {
     use VerifyDeprecations;
 
-    protected function setUp()
+    protected function setUp() : void
     {
         $this->useModelSet('cms');
         parent::setUp();
     }
 
-    public function tearDown()
+    public function tearDown() : void
     {
         if ($this->_em) {
             $this->_em->getConfiguration()->setEntityNamespaces([]);
@@ -1123,8 +1123,12 @@ class EntityRepositoryTest extends OrmFunctionalTestCase
     {
         $repository = $this->_em->getRepository(CmsAddress::class);
 
-        $this->expectDeprecationMessage('Method Doctrine\ORM\EntityRepository::clear() is deprecated and will be removed in Doctrine ORM 3.0.');
-        $this->expectDeprecationMessage('Calling Doctrine\ORM\EntityManager::clear() with any arguments to clear specific entities is deprecated and will not be supported in Doctrine ORM 3.0.');
+        $this->expectDeprecationMessageSame(
+            'Method Doctrine\ORM\EntityRepository::clear() is deprecated and will be removed in Doctrine ORM 3.0.'
+        );
+        $this->expectDeprecationMessageSame(
+            'Calling Doctrine\ORM\EntityManager::clear() with any arguments to clear specific entities is deprecated and will not be supported in Doctrine ORM 3.0.'
+        );
         $repository->clear();
     }
 }

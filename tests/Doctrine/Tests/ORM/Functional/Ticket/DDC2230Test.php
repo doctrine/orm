@@ -16,7 +16,7 @@ class DDC2230Test extends OrmFunctionalTestCase
 {
     use VerifyDeprecations;
 
-    protected function setUp()
+    protected function setUp() : void
     {
         parent::setUp();
 

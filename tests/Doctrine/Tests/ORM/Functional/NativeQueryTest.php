@@ -30,7 +30,7 @@ class NativeQueryTest extends OrmFunctionalTestCase
 {
     private $platform = null;
 
-    protected function setUp()
+    protected function setUp() : void
     {
         $this->useModelSet('cms');
         $this->useModelSet('company');

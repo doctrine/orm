@@ -20,7 +20,7 @@ class OneToOneSelfReferentialAssociationTest extends OrmFunctionalTestCase
     private $customer;
     private $mentor;
 
-    protected function setUp()
+    protected function setUp() : void
     {
         $this->useModelSet('ecommerce');
         parent::setUp();

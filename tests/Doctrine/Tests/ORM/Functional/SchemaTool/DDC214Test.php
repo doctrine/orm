@@ -15,7 +15,7 @@ class DDC214Test extends OrmFunctionalTestCase
     private $classes = [];
     private $schemaTool = null;
 
-    public function setUp()
+    protected function setUp() : void
     {
         parent::setUp();
 

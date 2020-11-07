@@ -7,6 +7,7 @@ use Doctrine\Common\Cache\ArrayCache;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\DBAL\Types\Type;
 use Doctrine\ORM\Internal\Hydration\IterableResult;
+use Doctrine\ORM\Query;
 use Doctrine\ORM\Query\Parameter;
 use Doctrine\ORM\Query\QueryException;
 use Doctrine\ORM\UnitOfWork;
@@ -18,13 +19,14 @@ use Doctrine\Tests\Models\CMS\CmsUser;
 use Doctrine\Tests\Models\Generic\DateTimeModel;
 use Doctrine\Tests\OrmTestCase;
 use Generator;
+use ReflectionClass;
 
 class QueryTest extends OrmTestCase
 {
     /** @var EntityManagerMock */
     protected $_em;
 
-    protected function setUp()
+    protected function setUp() : void
     {
         $this->_em = $this->_getTestEntityManager();
     }
@@ -459,7 +461,10 @@ class QueryTest extends OrmTestCase
         $query->enableResultCache();
         $query->setResultCacheProfile();
 
-        self::assertAttributeSame(null, '_queryCacheProfile', $query);
+        $class    = new ReflectionClass(Query::class);
+        $property = $class->getProperty('_queryCacheProfile');
+        $property->setAccessible(true);
+        self::assertNull($property->getValue($query));
     }
 
     /** @group 7527 */

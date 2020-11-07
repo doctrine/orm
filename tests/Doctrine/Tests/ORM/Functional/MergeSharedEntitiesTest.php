@@ -13,7 +13,7 @@ class MergeSharedEntitiesTest extends OrmFunctionalTestCase
     /**
      * {@inheritDoc}
      */
-    protected function setUp()
+    protected function setUp() : void
     {
         parent::setUp();
 

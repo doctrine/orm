@@ -10,7 +10,8 @@ use function sprintf;
 
 class MySqlSchemaToolTest extends OrmFunctionalTestCase
 {
-    protected function setUp() {
+    protected function setUp() : void
+    {
         parent::setUp();
         if ($this->_em->getConnection()->getDatabasePlatform()->getName() !== 'mysql') {
             $this->markTestSkipped('The ' . __CLASS__ .' requires the use of mysql.');

@@ -26,7 +26,7 @@ use function iterator_to_array;
  */
 class QueryTest extends OrmFunctionalTestCase
 {
-    protected function setUp()
+    protected function setUp() : void
     {
         $this->useModelSet('cms');
 
@@ -351,7 +351,6 @@ class QueryTest extends OrmFunctionalTestCase
     public function testIterateResult_FetchJoinedCollection_ThrowsException()
     {
         $this->expectException(QueryException::class);
-
         $query = $this->_em->createQuery("SELECT u, a FROM ' . CmsUser::class . ' u JOIN u.articles a");
         $query->iterate();
     }

@@ -7,7 +7,7 @@ use Doctrine\Tests\ORM\Functional\SecondLevelCacheAbstractTest;
 
 class DDC3967Test extends SecondLevelCacheAbstractTest
 {
-    protected function setUp()
+    protected function setUp() : void
     {
         parent::setUp();
 

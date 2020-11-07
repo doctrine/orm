@@ -8,7 +8,8 @@ use Doctrine\Persistence\PropertyChangedListener;
 
 class DDC1690Test extends \Doctrine\Tests\OrmFunctionalTestCase
 {
-    protected function setUp() {
+    protected function setUp() : void
+    {
         parent::setUp();
         try {
             $this->_schemaTool->createSchema(

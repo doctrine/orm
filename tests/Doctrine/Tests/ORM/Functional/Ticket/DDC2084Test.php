@@ -7,7 +7,7 @@ namespace Doctrine\Tests\ORM\Functional\Ticket;
  */
 class DDC2084Test extends \Doctrine\Tests\OrmFunctionalTestCase
 {
-    public function setUp()
+    protected function setUp() : void
     {
         parent::setUp();
 

@@ -408,9 +408,9 @@ class ObjectHydratorTest extends HydrationTestCase
 
         $this->assertEquals(2, count($result));
 
-        $this->assertInternalType('array', $result);
-        $this->assertInternalType('array', $result[0]);
-        $this->assertInternalType('array', $result[1]);
+        $this->assertIsArray($result);
+        $this->assertIsArray($result[0]);
+        $this->assertIsArray($result[1]);
 
         // first user => 2 phonenumbers
         $this->assertEquals(2, $result[0]['numPhones']);
@@ -472,9 +472,9 @@ class ObjectHydratorTest extends HydrationTestCase
 
         $this->assertEquals(2, count($result));
 
-        $this->assertInternalType('array', $result);
-        $this->assertInternalType('array', $result[0]);
-        $this->assertInternalType('array', $result[1]);
+        $this->assertIsArray($result);
+        $this->assertIsArray($result[0]);
+        $this->assertIsArray($result[1]);
 
         $this->assertInstanceOf(CmsUser::class, $result[0][$userEntityKey]);
         $this->assertInstanceOf(PersistentCollection::class, $result[0][$userEntityKey]->phonenumbers);
@@ -553,9 +553,9 @@ class ObjectHydratorTest extends HydrationTestCase
 
         $this->assertEquals(2, count($result));
 
-        $this->assertInternalType('array', $result);
-        $this->assertInternalType('array', $result[1]);
-        $this->assertInternalType('array', $result[2]);
+        $this->assertIsArray($result);
+        $this->assertIsArray($result[1]);
+        $this->assertIsArray($result[2]);
 
         // test the scalar values
         $this->assertEquals('ROMANB', $result[1]['nameUpper']);
@@ -986,8 +986,8 @@ class ObjectHydratorTest extends HydrationTestCase
 
         $this->assertEquals(2, count($result));
 
-        $this->assertInternalType('array', $result[0]);
-        $this->assertInternalType('array', $result[1]);
+        $this->assertIsArray($result[0]);
+        $this->assertIsArray($result[1]);
 
         $this->assertEquals(1, $result[0]['id']);
         $this->assertEquals('romanb', $result[0]['name']);
@@ -1091,7 +1091,7 @@ class ObjectHydratorTest extends HydrationTestCase
 
         $this->assertEquals(1, count($result));
 
-        $this->assertInternalType('array', $result[0]);
+        $this->assertIsArray($result[0]);
         $this->assertInstanceOf(ECommerceProduct::class, $result[0]['product']);
     }
 
@@ -1214,10 +1214,10 @@ class ObjectHydratorTest extends HydrationTestCase
 
         $this->assertEquals(2, count($result));
 
-        $this->assertInternalType('array', $result[0]);
+        $this->assertIsArray($result[0]);
         $this->assertInstanceOf(CmsUser::class, $result[0]['user']);
 
-        $this->assertInternalType('array', $result[1]);
+        $this->assertIsArray($result[1]);
         $this->assertInstanceOf(CmsUser::class, $result[1]['user']);
 
         $this->assertEquals(0, $result[0]['user']->articles->count());
@@ -1614,9 +1614,9 @@ class ObjectHydratorTest extends HydrationTestCase
 
         $this->assertEquals(2, count($result));
 
-        $this->assertInternalType('array', $result[0]);
+        $this->assertIsArray($result[0]);
         $this->assertInstanceOf(CmsUser::class, $result[0]['user']);
-        $this->assertInternalType('array', $result[1]);
+        $this->assertIsArray($result[1]);
         $this->assertInstanceOf(CmsUser::class, $result[1]['user']);
 
         $this->assertEquals(2, count($result[0]['user']->groups));

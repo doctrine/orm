@@ -14,14 +14,14 @@ use Doctrine\Tests\OrmFunctionalTestCase;
  */
 class EntityRepositoryCriteriaTest extends OrmFunctionalTestCase
 {
-    protected function setUp()
+    protected function setUp() : void
     {
         $this->useModelSet('generic');
         $this->useModelSet('tweet');
         parent::setUp();
     }
 
-    public function tearDown()
+    public function tearDown() : void
     {
         if ($this->_em) {
             $this->_em->getConfiguration()->setEntityNamespaces([]);

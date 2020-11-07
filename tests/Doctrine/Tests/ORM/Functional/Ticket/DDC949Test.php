@@ -7,7 +7,7 @@ use Doctrine\Tests\OrmFunctionalTestCase;
 
 class DDC949Test extends OrmFunctionalTestCase
 {
-    public function setUp()
+    protected function setUp() : void
     {
         $this->useModelSet('generic');
         parent::setUp();

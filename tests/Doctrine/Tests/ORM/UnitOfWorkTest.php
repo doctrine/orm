@@ -57,7 +57,7 @@ class UnitOfWorkTest extends OrmTestCase
      */
     private $eventManager;
 
-    protected function setUp()
+    protected function setUp() : void
     {
         parent::setUp();
         $this->_connectionMock = new ConnectionMock([], new DriverMock());

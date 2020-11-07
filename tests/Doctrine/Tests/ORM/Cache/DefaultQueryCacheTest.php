@@ -46,7 +46,7 @@ class DefaultQueryCacheTest extends OrmTestCase
      */
     private $cacheFactory;
 
-    protected function setUp()
+    protected function setUp() : void
     {
         parent::setUp();
 

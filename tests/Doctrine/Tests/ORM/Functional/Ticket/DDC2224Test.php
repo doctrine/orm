@@ -12,7 +12,7 @@ use Doctrine\ORM\Query;
  */
 class DDC2224Test extends \Doctrine\Tests\OrmFunctionalTestCase
 {
-    public static function setUpBeforeClass()
+    public static function setUpBeforeClass() : void
     {
         \Doctrine\DBAL\Types\Type::addType('DDC2224Type', DDC2224Type::class);
     }

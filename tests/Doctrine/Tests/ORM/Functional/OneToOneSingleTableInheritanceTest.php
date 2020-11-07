@@ -10,7 +10,7 @@ use Doctrine\Tests\OrmFunctionalTestCase;
 
 class OneToOneSingleTableInheritanceTest extends OrmFunctionalTestCase
 {
-    protected function setUp()
+    protected function setUp() : void
     {
         parent::setUp();
 

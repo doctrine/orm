@@ -11,7 +11,7 @@ use Doctrine\DBAL\Platforms\AbstractPlatform;
  */
 class DDC2494Test extends \Doctrine\Tests\OrmFunctionalTestCase
 {
-    protected function setUp()
+    protected function setUp() : void
     {
         parent::setUp();
 
@@ -56,13 +56,13 @@ class DDC2494Test extends \Doctrine\Tests\OrmFunctionalTestCase
         $this->assertArrayHasKey('convertToPHPValue', DDC2494TinyIntType::$calls);
         $this->assertCount(1, DDC2494TinyIntType::$calls['convertToPHPValue']);
 
-        $this->assertInternalType('integer', $item->getCurrency()->getId());
+        $this->assertIsInt($item->getCurrency()->getId());
         $this->assertCount(1, DDC2494TinyIntType::$calls['convertToPHPValue']);
         $this->assertFalse($item->getCurrency()->__isInitialized());
 
         $this->assertEquals($queryCount, $this->getCurrentQueryCount());
 
-        $this->assertInternalType('integer', $item->getCurrency()->getTemp());
+        $this->assertIsInt($item->getCurrency()->getTemp());
         $this->assertCount(3, DDC2494TinyIntType::$calls['convertToPHPValue']);
         $this->assertTrue($item->getCurrency()->__isInitialized());
 

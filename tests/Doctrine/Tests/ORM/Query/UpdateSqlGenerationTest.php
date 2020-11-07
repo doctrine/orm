@@ -24,7 +24,8 @@ class UpdateSqlGenerationTest extends OrmTestCase
 {
     private $_em;
 
-    protected function setUp() {
+    protected function setUp() : void
+    {
         if (DBALType::hasType('negative_to_positive')) {
             DBALType::overrideType('negative_to_positive', NegativeToPositiveType::class);
         } else {

@@ -21,7 +21,7 @@ class ManyToManyBidirectionalAssociationTest extends AbstractManyToManyAssociati
     private $firstCategory;
     private $secondCategory;
 
-    protected function setUp()
+    protected function setUp() : void
     {
         $this->useModelSet('ecommerce');
         parent::setUp();

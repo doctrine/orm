@@ -35,7 +35,7 @@ class DefaultRepositoryFactoryTest extends TestCase
     /**
      * {@inheritDoc}
      */
-    protected function setUp()
+    protected function setUp() : void
     {
         $this->configuration     = $this->createMock(Configuration::class);
         $this->entityManager     = $this->createEntityManager();

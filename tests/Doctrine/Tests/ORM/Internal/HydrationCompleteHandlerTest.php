@@ -53,7 +53,7 @@ class HydrationCompleteHandlerTest extends TestCase
     /**
      * {@inheritDoc}
      */
-    protected function setUp()
+    protected function setUp() : void
     {
         $this->listenersInvoker = $this->createMock(ListenersInvoker::class);
         $this->entityManager    = $this->createMock(EntityManagerInterface::class);

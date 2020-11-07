@@ -14,7 +14,8 @@ use Doctrine\Tests\OrmFunctionalTestCase;
  */
 class DDC3160Test extends OrmFunctionalTestCase
 {
-    protected function setUp() {
+    protected function setUp() : void
+    {
         $this->useModelSet('cms');
         parent::setUp();
     }

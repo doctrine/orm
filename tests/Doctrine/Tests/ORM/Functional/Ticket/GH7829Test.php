@@ -17,7 +17,7 @@ final class GH7829Test extends OrmFunctionalTestCase
     /** @var DebugStack */
     private $logger;
 
-    protected function setUp()
+    protected function setUp() : void
     {
         $this->useModelSet('cms');
         parent::setUp();

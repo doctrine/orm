@@ -32,7 +32,7 @@ class MappingDescribeCommandTest extends OrmFunctionalTestCase
      */
     private $tester;
 
-    protected function setUp()
+    protected function setUp() : void
     {
         parent::setUp();
 
@@ -55,8 +55,8 @@ class MappingDescribeCommandTest extends OrmFunctionalTestCase
 
         $display = $this->tester->getDisplay();
 
-        self::assertContains(AttractionInfo::class, $display);
-        self::assertContains('Root entity name', $display);
+        self::assertStringContainsString(AttractionInfo::class, $display);
+        self::assertStringContainsString('Root entity name', $display);
     }
 
     public function testShowSpecificFuzzyAmbiguous()

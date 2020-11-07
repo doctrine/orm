@@ -16,7 +16,7 @@ use function count;
  */
 class AdvancedDqlQueryTest extends OrmFunctionalTestCase
 {
-    protected function setUp()
+    protected function setUp() : void
     {
         $this->useModelSet('company');
         parent::setUp();

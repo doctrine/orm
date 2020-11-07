@@ -21,7 +21,7 @@ use function sprintf;
  */
 class ValueObjectsTest extends OrmFunctionalTestCase
 {
-    public function setUp()
+    protected function setUp() : void
     {
         parent::setUp();
 

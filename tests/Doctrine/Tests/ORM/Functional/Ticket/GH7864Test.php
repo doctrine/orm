@@ -15,7 +15,7 @@ class GH7864Test extends OrmFunctionalTestCase
 {
     protected function setUp() : void
     {
-        parent::setup();
+        parent::setUp();
 
         $this->setUpEntitySchema(
             [

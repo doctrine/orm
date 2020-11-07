@@ -12,7 +12,7 @@ use Doctrine\Tests\OrmFunctionalTestCase;
 
 class TypeValueSqlTest extends OrmFunctionalTestCase
 {
-    protected function setUp()
+    protected function setUp() : void
     {
         if (DBALType::hasType(UpperCaseStringType::NAME)) {
             DBALType::overrideType(UpperCaseStringType::NAME, UpperCaseStringType::class);

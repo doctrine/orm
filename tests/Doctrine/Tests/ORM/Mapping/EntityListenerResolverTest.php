@@ -16,7 +16,7 @@ class EntityListenerResolverTest extends OrmTestCase
      */
     private $resolver;
 
-    protected function setUp()
+    protected function setUp() : void
     {
         parent::setUp();
         $this->resolver  = new DefaultEntityListenerResolver();
@@ -74,7 +74,7 @@ class EntityListenerResolverTest extends OrmTestCase
 
         $this->assertInstanceOf($className1, $obj1);
         $this->assertInstanceOf($className2, $obj2);
-        
+
         $this->assertSame($obj1, $this->resolver->resolve($className1));
         $this->assertSame($obj2, $this->resolver->resolve($className2));
 
@@ -82,7 +82,7 @@ class EntityListenerResolverTest extends OrmTestCase
 
         $this->assertInstanceOf($className1, $this->resolver->resolve($className1));
         $this->assertInstanceOf($className2, $this->resolver->resolve($className2));
-        
+
         $this->assertNotSame($obj1, $this->resolver->resolve($className1));
         $this->assertNotSame($obj2, $this->resolver->resolve($className2));
     }

@@ -19,7 +19,7 @@ use Doctrine\Tests\OrmFunctionalTestCase;
  */
 class ManyToManyBasicAssociationTest extends OrmFunctionalTestCase
 {
-    protected function setUp()
+    protected function setUp() : void
     {
         $this->useModelSet('cms');
         parent::setUp();
@@ -268,7 +268,7 @@ class ManyToManyBasicAssociationTest extends OrmFunctionalTestCase
                              ->setParameter(1, $user->getId())
                              ->getSingleResult();
         $this->assertEquals(0, count($newUser->groups));
-        $this->assertInternalType('array', $newUser->groups->getMapping());
+        $this->assertIsArray($newUser->groups->getMapping());
 
         $newUser->addGroup($group);
 

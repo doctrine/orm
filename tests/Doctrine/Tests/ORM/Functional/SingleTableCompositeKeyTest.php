@@ -7,17 +7,12 @@ use Doctrine\Tests\OrmFunctionalTestCase;
 
 class SingleTableCompositeKeyTest extends OrmFunctionalTestCase
 {
-
-    public function setUp()
+    protected function setUp() : void
     {
         $this->useModelSet('compositekeyinheritance');
         parent::setUp();
-
     }
 
-    /**
-     *
-     */
     public function testInsertWithCompositeKey()
     {
         $childEntity = new SingleChildClass();

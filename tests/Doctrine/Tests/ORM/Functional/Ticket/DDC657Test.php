@@ -9,7 +9,7 @@ use Doctrine\Tests\Models\Generic\DateTimeModel;
  */
 class DDC657Test extends \Doctrine\Tests\OrmFunctionalTestCase
 {
-    protected function setUp()
+    protected function setUp() : void
     {
         $this->useModelSet('generic');
         parent::setUp();
@@ -36,13 +36,13 @@ class DDC657Test extends \Doctrine\Tests\OrmFunctionalTestCase
 
         $this->assertCount(2,$result);
 
-        $this->assertContains('11:11:11', $result[0]['time']);
-        $this->assertContains('2010-01-01', $result[0]['date']);
-        $this->assertContains('2010-01-01 11:11:11', $result[0]['datetime']);
+        $this->assertStringContainsString('11:11:11', $result[0]['time']);
+        $this->assertStringContainsString('2010-01-01', $result[0]['date']);
+        $this->assertStringContainsString('2010-01-01 11:11:11', $result[0]['datetime']);
 
-        $this->assertContains('12:12:12', $result[1]['time']);
-        $this->assertContains('2010-02-02', $result[1]['date']);
-        $this->assertContains('2010-02-02 12:12:12', $result[1]['datetime']);
+        $this->assertStringContainsString('12:12:12', $result[1]['time']);
+        $this->assertStringContainsString('2010-02-02', $result[1]['date']);
+        $this->assertStringContainsString('2010-02-02 12:12:12', $result[1]['datetime']);
     }
 
     public function testaTicketEntityArrayResult()

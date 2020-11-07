@@ -9,7 +9,7 @@ use Doctrine\Tests\Mocks\HydratorMockStatement;
 
 final class GH6362Test extends OrmFunctionalTestCase
 {
-    protected function setUp()
+    protected function setUp() : void
     {
         parent::setUp();
 

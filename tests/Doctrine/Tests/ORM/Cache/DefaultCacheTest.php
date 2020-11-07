@@ -28,7 +28,7 @@ class DefaultCacheTest extends OrmTestCase
      */
     private $em;
 
-    protected function setUp()
+    protected function setUp() : void
     {
         parent::enableSecondLevelCache();
         parent::setUp();

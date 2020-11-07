@@ -21,7 +21,7 @@ class NewOperatorTest extends OrmFunctionalTestCase
      */
     private $fixtures;
 
-    protected function setUp()
+    protected function setUp() : void
     {
         $this->useModelSet('cms');
         parent::setUp();
@@ -189,7 +189,7 @@ class NewOperatorTest extends OrmFunctionalTestCase
         $dql = "
             SELECT
                 new CmsUserDTO(u.name, e.email, a.city)
-            FROM 
+            FROM
                 Doctrine\Tests\Models\CMS\CmsUser u
             JOIN
                 u.email e

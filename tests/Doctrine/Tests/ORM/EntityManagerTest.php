@@ -31,7 +31,7 @@ class EntityManagerTest extends OrmTestCase
      */
     private $_em;
 
-    function setUp()
+    protected function setUp() : void
     {
         parent::setUp();
         $this->_em = $this->_getTestEntityManager();
@@ -314,7 +314,7 @@ class EntityManagerTest extends OrmTestCase
         $entity = new Country(456, 'United Kingdom');
         $this->_em->persist($entity);
 
-        $this->expectDeprecationMessage('Calling Doctrine\ORM\EntityManager::clear() with any arguments to clear specific entities is deprecated and will not be supported in Doctrine ORM 3.0.');
+        $this->expectDeprecationMessageSame('Calling Doctrine\ORM\EntityManager::clear() with any arguments to clear specific entities is deprecated and will not be supported in Doctrine ORM 3.0.');
         $this->_em->clear(Country::class);
     }
 
@@ -323,7 +323,7 @@ class EntityManagerTest extends OrmTestCase
         $entity = new Country(456, 'United Kingdom');
         $this->_em->persist($entity);
 
-        $this->expectDeprecationMessage('Calling Doctrine\ORM\EntityManager::flush() with any arguments to flush specific entities is deprecated and will not be supported in Doctrine ORM 3.0.');
+        $this->expectDeprecationMessageSame('Calling Doctrine\ORM\EntityManager::flush() with any arguments to flush specific entities is deprecated and will not be supported in Doctrine ORM 3.0.');
         $this->_em->flush($entity);
     }
 
@@ -332,7 +332,7 @@ class EntityManagerTest extends OrmTestCase
         $entity = new Country(456, 'United Kingdom');
         $this->_em->persist($entity);
 
-        $this->expectDeprecationMessage('Method Doctrine\ORM\EntityManager::merge() is deprecated and will be removed in Doctrine ORM 3.0.');
+        $this->expectDeprecationMessageSame('Method Doctrine\ORM\EntityManager::merge() is deprecated and will be removed in Doctrine ORM 3.0.');
         $this->_em->merge($entity);
     }
 
@@ -341,7 +341,7 @@ class EntityManagerTest extends OrmTestCase
         $entity = new Country(456, 'United Kingdom');
         $this->_em->persist($entity);
 
-        $this->expectDeprecationMessage('Method Doctrine\ORM\EntityManager::detach() is deprecated and will be removed in Doctrine ORM 3.0.');
+        $this->expectDeprecationMessageSame('Method Doctrine\ORM\EntityManager::detach() is deprecated and will be removed in Doctrine ORM 3.0.');
         $this->_em->detach($entity);
     }
 
@@ -351,7 +351,7 @@ class EntityManagerTest extends OrmTestCase
         $this->_em->persist($entity);
 
         try {
-            $this->expectDeprecationMessage('Method Doctrine\ORM\EntityManager::copy() is deprecated and will be removed in Doctrine ORM 3.0.');
+            $this->expectDeprecationMessageSame('Method Doctrine\ORM\EntityManager::copy() is deprecated and will be removed in Doctrine ORM 3.0.');
             $this->_em->copy($entity);
         } catch (\BadMethodCallException $e) {
             // do nothing
