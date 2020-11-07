@@ -36,7 +36,7 @@
         "phpstan/phpstan": "^0.12.18",
         "phpunit/phpunit": "^8.0",
         "symfony/yaml": "^3.4|^4.0|^5.0",
-        "vimeo/psalm": "^3.11"
+        "vimeo/psalm": "4.1.1"
     },
     "suggest": {
         "symfony/yaml": "If you want to use YAML Metadata Mapping Driver"
