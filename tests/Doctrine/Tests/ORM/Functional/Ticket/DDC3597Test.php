@@ -27,7 +27,7 @@ class DDC3597Test extends OrmFunctionalTestCase
     /**
      * @group DDC-3597
      */
-    public function testSaveImageEntity()
+    public function testSaveImageEntity() : void
     {
         $imageEntity = new DDC3597Image('foobar');
         $imageEntity->setFormat('JPG');
