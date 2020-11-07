@@ -24,7 +24,8 @@ class BasicInheritanceMappingTest extends OrmTestCase
     /**
      * {@inheritDoc}
      */
-    protected function setUp() {
+    protected function setUp() : void
+    {
         $this->cmf = new ClassMetadataFactory();
 
         $this->cmf->setEntityManager($this->_getTestEntityManager());

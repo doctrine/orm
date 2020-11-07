@@ -18,7 +18,7 @@ use Doctrine\Tests\OrmFunctionalTestCase;
  */
 class IdentityMapTest extends OrmFunctionalTestCase
 {
-    protected function setUp()
+    protected function setUp() : void
     {
         $this->useModelSet('cms');
         parent::setUp();

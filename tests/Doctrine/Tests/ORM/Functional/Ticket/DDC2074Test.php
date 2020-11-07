@@ -16,7 +16,7 @@ use function count;
  */
 class DDC2074Test extends OrmFunctionalTestCase
 {
-    public function setUp()
+    protected function setUp() : void
     {
         $this->useModelSet('ecommerce');
         parent::setUp();

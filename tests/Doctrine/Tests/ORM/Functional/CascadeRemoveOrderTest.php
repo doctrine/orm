@@ -10,7 +10,7 @@ use Doctrine\Tests\OrmFunctionalTestCase;
  */
 class CascadeRemoveOrderTest extends OrmFunctionalTestCase
 {
-    protected function setUp()
+    protected function setUp() : void
     {
         parent::setUp();
 
@@ -22,7 +22,7 @@ class CascadeRemoveOrderTest extends OrmFunctionalTestCase
         );
     }
 
-    protected function tearDown()
+    protected function tearDown() : void
     {
         parent::tearDown();
 

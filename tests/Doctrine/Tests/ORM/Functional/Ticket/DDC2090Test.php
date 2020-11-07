@@ -10,7 +10,7 @@ use Doctrine\Tests\Models\Company\CompanyEmployee;
  */
 class DDC2090Test extends \Doctrine\Tests\OrmFunctionalTestCase
 {
-    public function setUp()
+    protected function setUp() : void
     {
         $this->useModelSet('company');
         parent::setUp();

@@ -12,9 +12,9 @@ class DDC2780Test extends \Doctrine\Tests\OrmFunctionalTestCase
     /**
      * {@inheritDoc}
      */
-    protected function setup()
+    protected function setUp() : void
     {
-        parent::setup();
+        parent::setUp();
 
         $this->_schemaTool->createSchema(
             [

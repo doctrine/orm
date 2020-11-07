@@ -10,7 +10,7 @@ use Doctrine\ORM\Query\AST;
 
 class DDC736Test extends \Doctrine\Tests\OrmFunctionalTestCase
 {
-    protected function setUp()
+    protected function setUp() : void
     {
         $this->useModelSet('ecommerce');
         parent::setUp();

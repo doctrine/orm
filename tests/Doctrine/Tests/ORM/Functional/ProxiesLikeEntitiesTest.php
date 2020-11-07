@@ -27,7 +27,7 @@ class ProxiesLikeEntitiesTest extends OrmFunctionalTestCase
      */
     protected $user;
 
-    protected function setUp()
+    protected function setUp() : void
     {
         parent::setUp();
         try {
@@ -134,7 +134,7 @@ class ProxiesLikeEntitiesTest extends OrmFunctionalTestCase
         $this->_em->clear();
     }
 
-    protected function tearDown()
+    protected function tearDown() : void
     {
         $this->_em->createQuery('DELETE FROM Doctrine\Tests\Models\CMS\CmsUser u')->execute();
     }

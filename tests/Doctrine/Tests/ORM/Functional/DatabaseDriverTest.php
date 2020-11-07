@@ -14,7 +14,7 @@ class DatabaseDriverTest extends DatabaseDriverTestCase
      */
     protected $_sm = null;
 
-    public function setUp()
+    protected function setUp() : void
     {
         $this->useModelSet('cms');
         parent::setUp();

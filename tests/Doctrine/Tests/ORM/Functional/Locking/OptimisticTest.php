@@ -9,7 +9,7 @@ use Doctrine\Tests\OrmFunctionalTestCase;
 
 class OptimisticTest extends OrmFunctionalTestCase
 {
-    protected function setUp()
+    protected function setUp() : void
     {
         parent::setUp();
 
@@ -120,7 +120,7 @@ class OptimisticTest extends OrmFunctionalTestCase
             $this->_em->persist($test);
             $this->_em->flush();
 
-            $this->assertInternalType('int', $test->getVersion());
+            $this->assertIsInt($test->getVersion());
             $this->assertEquals($i + 1, $test->getVersion());
         }
     }
@@ -134,7 +134,7 @@ class OptimisticTest extends OrmFunctionalTestCase
         $this->_em->persist($test);
         $this->_em->flush();
 
-        $this->assertInternalType('int', $test->getVersion());
+        $this->assertIsInt($test->getVersion());
         $this->assertEquals(1, $test->getVersion());
 
         return $test;

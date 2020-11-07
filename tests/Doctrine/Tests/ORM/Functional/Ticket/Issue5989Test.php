@@ -11,7 +11,7 @@ use Doctrine\Tests\Models\Issue5989\Issue5989Person;
  */
 class Issue5989Test extends \Doctrine\Tests\OrmFunctionalTestCase
 {
-    public function setUp()
+    protected function setUp() : void
     {
         $this->useModelSet('issue5989');
         parent::setUp();

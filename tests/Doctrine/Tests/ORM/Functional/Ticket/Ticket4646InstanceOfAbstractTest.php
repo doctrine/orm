@@ -6,7 +6,7 @@ use Doctrine\Tests\OrmFunctionalTestCase;
 
 class Ticket4646InstanceOfAbstractTest extends OrmFunctionalTestCase
 {
-    protected function setUp(): void
+    protected function setUp() : void
     {
         parent::setUp();
 

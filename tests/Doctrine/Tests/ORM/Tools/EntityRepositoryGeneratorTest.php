@@ -32,7 +32,7 @@ class EntityRepositoryGeneratorTest extends OrmTestCase
     /**
      * @inheritdoc
      */
-    public function setUp()
+    protected function setUp() : void
     {
         $this->_namespace   = uniqid('doctrine_');
         $this->_tmpDir      = \sys_get_temp_dir() . DIRECTORY_SEPARATOR . $this->_namespace;
@@ -52,7 +52,7 @@ class EntityRepositoryGeneratorTest extends OrmTestCase
     /**
      * @inheritdoc
      */
-    public function tearDown()
+    public function tearDown() : void
     {
         $dirs = [];
 

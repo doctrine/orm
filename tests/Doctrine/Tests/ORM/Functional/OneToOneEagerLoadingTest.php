@@ -11,7 +11,7 @@ use Doctrine\Tests\OrmFunctionalTestCase;
  */
 class OneToOneEagerLoadingTest extends OrmFunctionalTestCase
 {
-    protected function setUp()
+    protected function setUp() : void
     {
         parent::setUp();
         $schemaTool = new SchemaTool($this->_em);

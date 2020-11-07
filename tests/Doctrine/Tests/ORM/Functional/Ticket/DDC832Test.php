@@ -4,7 +4,7 @@ namespace Doctrine\Tests\ORM\Functional\Ticket;
 
 class DDC832Test extends \Doctrine\Tests\OrmFunctionalTestCase
 {
-    public function setUp()
+    protected function setUp() : void
     {
         parent::setUp();
 
@@ -28,7 +28,7 @@ class DDC832Test extends \Doctrine\Tests\OrmFunctionalTestCase
         }
     }
 
-    public function tearDown()
+    public function tearDown() : void
     {
         /* @var $sm \Doctrine\DBAL\Schema\AbstractSchemaManager */
         $platform = $this->_em->getConnection()->getDatabasePlatform();

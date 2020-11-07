@@ -11,7 +11,7 @@ final class GH7068Test extends OrmFunctionalTestCase
     /**
      * {@inheritDoc}
      */
-    protected function setUp()
+    protected function setUp() : void
     {
         parent::setUp();
 

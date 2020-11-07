@@ -26,7 +26,7 @@ class ClassMetadataBuilderTest extends OrmTestCase
      */
     private $builder;
 
-    public function setUp()
+    protected function setUp() : void
     {
         $this->cm = new ClassMetadata(CmsUser::class);
         $this->cm->initializeReflection(new RuntimeReflectionService());

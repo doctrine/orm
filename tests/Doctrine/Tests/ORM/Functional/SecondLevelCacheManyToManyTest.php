@@ -186,12 +186,10 @@ class SecondLevelCacheManyToManyTest extends SecondLevelCacheAbstractTest
         $this->assertEquals($queryCount1, $this->getCurrentQueryCount());
     }
 
-    /**
-     * @expectedException \Doctrine\ORM\Cache\CacheException
-     * @expectedExceptionMessage Cannot update a readonly collection "Doctrine\Tests\Models\Cache\Travel#visitedCities
-     */
     public function testReadOnlyCollection()
     {
+        $this->expectException('Doctrine\ORM\Cache\CacheException');
+        $this->expectExceptionMessage('Cannot update a readonly collection "Doctrine\Tests\Models\Cache\Travel#visitedCities');
         $this->evictRegions();
 
         $this->loadFixturesCountries();

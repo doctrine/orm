@@ -16,7 +16,7 @@ class DDC1545Test extends \Doctrine\Tests\OrmFunctionalTestCase
 
     private $user2Id;
 
-    public function setUp()
+    protected function setUp() : void
     {
         $this->useModelSet('cms');
         parent::setUp();

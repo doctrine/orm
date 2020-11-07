@@ -14,7 +14,7 @@ use Doctrine\DBAL\Types as DBALTypes;
  */
 class DDC5684Test extends \Doctrine\Tests\OrmFunctionalTestCase
 {
-    protected function setUp()
+    protected function setUp() : void
     {
         parent::setUp();
 
@@ -27,7 +27,7 @@ class DDC5684Test extends \Doctrine\Tests\OrmFunctionalTestCase
         $this->_schemaTool->createSchema([$this->_em->getClassMetadata(DDC5684Object::class)]);
     }
 
-    protected function tearDown()
+    protected function tearDown() : void
     {
         $this->_schemaTool->dropSchema([$this->_em->getClassMetadata(DDC5684Object::class)]);
 

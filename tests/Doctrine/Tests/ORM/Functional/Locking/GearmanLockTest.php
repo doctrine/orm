@@ -15,7 +15,7 @@ class GearmanLockTest extends OrmFunctionalTestCase
     private $maxRunTime = 0;
     private $articleId;
 
-    protected function setUp()
+    protected function setUp() : void
     {
         if (!class_exists('GearmanClient', false)) {
             $this->markTestSkipped('pecl/gearman is required for this test to run.');

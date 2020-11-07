@@ -43,7 +43,7 @@ abstract class SecondLevelCacheAbstractTest extends OrmFunctionalTestCase
      */
     protected $cache;
 
-    protected function setUp()
+    protected function setUp() : void
     {
         $this->enableSecondLevelCache();
 

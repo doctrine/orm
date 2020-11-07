@@ -14,7 +14,8 @@ use Doctrine\Tests\OrmFunctionalTestCase;
  */
 class MappedSuperclassTest extends OrmFunctionalTestCase
 {
-    protected function setUp() {
+    protected function setUp() : void
+    {
         $this->useModelSet('directorytree');
         parent::setUp();
     }

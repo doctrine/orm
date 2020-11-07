@@ -9,7 +9,8 @@ namespace Doctrine\Tests\ORM\Functional\Ticket;
  */
 class DDC331Test extends \Doctrine\Tests\OrmFunctionalTestCase
 {
-    protected function setUp() {
+    protected function setUp() : void
+    {
         $this->useModelSet('company');
         parent::setUp();
     }

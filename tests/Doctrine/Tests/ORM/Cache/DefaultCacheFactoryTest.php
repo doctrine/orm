@@ -47,7 +47,7 @@ class DefaultCacheFactoryTest extends OrmTestCase
      */
     private $regionsConfig;
 
-    protected function setUp()
+    protected function setUp() : void
     {
         $this->enableSecondLevelCache();
         parent::setUp();

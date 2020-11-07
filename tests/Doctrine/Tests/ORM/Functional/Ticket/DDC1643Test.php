@@ -12,7 +12,7 @@ class DDC1643Test extends \Doctrine\Tests\OrmFunctionalTestCase
     private $user1;
     private $user2;
 
-    public function setUp()
+    protected function setUp() : void
     {
         $this->useModelSet('cms');
         parent::setUp();

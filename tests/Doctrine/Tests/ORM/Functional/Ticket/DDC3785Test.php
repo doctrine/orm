@@ -8,7 +8,7 @@ use Doctrine\DBAL\Types\Type;
 
 class DDC3785Test extends \Doctrine\Tests\OrmFunctionalTestCase
 {
-    protected function setUp()
+    protected function setUp() : void
     {
         parent::setUp();
 

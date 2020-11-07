@@ -17,7 +17,7 @@ class CommitOrderCalculatorTest extends OrmTestCase
 {
     private $_calc;
 
-    protected function setUp()
+    protected function setUp() : void
     {
         $this->_calc = new CommitOrderCalculator();
     }
@@ -98,7 +98,7 @@ class CommitOrderCalculatorTest extends OrmTestCase
         ];
 
         // We want to perform a strict comparison of the array
-        $this->assertContains($sorted, $correctOrders, '', false, true, true);
+        $this->assertContains($sorted, $correctOrders, '', false, true);
     }
 }
 

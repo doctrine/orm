@@ -10,7 +10,7 @@ class DDC729Test extends \Doctrine\Tests\OrmFunctionalTestCase
 {
     use VerifyDeprecations;
 
-    public function setUp()
+    protected function setUp() : void
     {
         parent::setUp();
 

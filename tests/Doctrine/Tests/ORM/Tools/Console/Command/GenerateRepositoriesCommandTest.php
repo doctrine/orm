@@ -28,7 +28,7 @@ class GenerateRepositoriesCommandTest extends OrmFunctionalTestCase
     /**
      * @inheritdoc
      */
-    protected function setUp()
+    protected function setUp() : void
     {
         parent::setUp();
 
@@ -47,7 +47,7 @@ class GenerateRepositoriesCommandTest extends OrmFunctionalTestCase
     /**
      * @inheritdoc
      */
-    public function tearDown()
+    public function tearDown() : void
     {
         $dirs = [];
 
@@ -172,7 +172,7 @@ class GenerateRepositoriesCommandTest extends OrmFunctionalTestCase
             ]
         );
 
-        self::assertContains('Command orm:generate-repositories is deprecated and will be removed in Doctrine ORM 3.0.', $tester->getDisplay());
-        self::assertContains('[OK] No Metadata Classes to process.', $tester->getDisplay());
+        self::assertStringContainsString('Command orm:generate-repositories is deprecated and will be removed in Doctrine ORM 3.0.', $tester->getDisplay());
+        self::assertStringContainsString('[OK] No Metadata Classes to process.', $tester->getDisplay());
     }
 }

@@ -54,14 +54,21 @@ jobs:
         if: "${{ matrix.deps == 'low' }}"
 
       - name: "Run PHPUnit"
-        run: "vendor/bin/phpunit -c ci/github/phpunit/sqlite.xml"
+        run: "vendor/bin/phpunit -c ci/github/phpunit/sqlite.xml --coverage-clover=coverage-no-cache.xml"
         env:
             ENABLE_SECOND_LEVEL_CACHE: 0
 
       - name: "Run PHPUnit with Second Level Cache"
-        run: "vendor/bin/phpunit -c ci/github/phpunit/sqlite.xml --exclude-group performance,non-cacheable,locking_functional"
+        run: "vendor/bin/phpunit -c ci/github/phpunit/sqlite.xml --exclude-group performance,non-cacheable,locking_functional --coverage-clover=coverage-cache.xml"
         env:
             ENABLE_SECOND_LEVEL_CACHE: 1
+
+      - name: "Upload coverage file"
+        uses: "actions/upload-artifact@v2"
+        with:
+          name: "phpunit-sqlite-${{ matrix.deps }}-${{ matrix.php-version }}-coverage"
+          path: "coverage*.xml"
+
 
   phpunit-postgres:
     name: "PHPUnit with PostgreSQL"
@@ -112,7 +119,14 @@ jobs:
         run: "composer update --no-interaction --no-progress --no-suggest"
 
       - name: "Run PHPUnit"
-        run: "vendor/bin/phpunit -c ci/github/phpunit/pdo_pgsql.xml"
+        run: "vendor/bin/phpunit -c ci/github/phpunit/pdo_pgsql.xml --coverage-clover=coverage.xml"
+
+      - name: "Upload coverage file"
+        uses: "actions/upload-artifact@v2"
+        with:
+          name: "${{ github.job }}-${{ matrix.postgres-version }}-${{ matrix.php-version }}-coverage"
+          path: "coverage.xml"
+
 
   phpunit-mariadb:
     name: "PHPUnit with MariaDB"
@@ -167,7 +181,14 @@ jobs:
         run: "composer update --no-interaction --no-progress --no-suggest"
 
       - name: "Run PHPUnit"
-        run: "vendor/bin/phpunit -c ci/github/phpunit/${{ matrix.extension }}.xml"
+        run: "vendor/bin/phpunit -c ci/github/phpunit/${{ matrix.extension }}.xml --coverage-clover=coverage.xml"
+
+      - name: "Upload coverage file"
+        uses: "actions/upload-artifact@v2"
+        with:
+          name: "${{ github.job }}-${{ matrix.mariadb-version }}-${{ matrix.extension }}-${{ matrix.php-version }}-coverage"
+          path: "coverage.xml"
+
 
   phpunit-mysql:
     name: "PHPUnit with MySQL"
@@ -222,11 +243,42 @@ jobs:
         run: "composer update --no-interaction --no-progress --no-suggest"
 
       - name: "Run PHPUnit"
-        run: "vendor/bin/phpunit -c ci/github/phpunit/${{ matrix.extension }}.xml"
+        run: "vendor/bin/phpunit -c ci/github/phpunit/${{ matrix.extension }}.xml --coverage-clover=coverage-no-cache.xml"
         env:
             ENABLE_SECOND_LEVEL_CACHE: 0
 
       - name: "Run PHPUnit with Second Level Cache"
-        run: "vendor/bin/phpunit -c ci/github/phpunit/${{ matrix.extension }}.xml --exclude-group performance,non-cacheable,locking_functional"
+        run: "vendor/bin/phpunit -c ci/github/phpunit/${{ matrix.extension }}.xml --exclude-group performance,non-cacheable,locking_functional --coverage-clover=coverage-no-cache.xml"
         env:
             ENABLE_SECOND_LEVEL_CACHE: 1
+
+      - name: "Upload coverage files"
+        uses: "actions/upload-artifact@v2"
+        with:
+          name: "${{ github.job }}-${{ matrix.mysql-version }}-${{ matrix.extension }}-${{ matrix.php-version }}-coverage"
+          path: "coverage*.xml"
+
+  upload_coverage:
+    name: "Upload coverage to Codecov"
+    runs-on: "ubuntu-20.04"
+    needs:
+      - "phpunit-smoke-check"
+      - "phpunit-postgres"
+      - "phpunit-mariadb"
+      - "phpunit-mysql"
+
+    steps:
+      - name: "Checkout"
+        uses: "actions/checkout@v2"
+        with:
+          fetch-depth: 2
+
+      - name: "Download coverage files"
+        uses: "actions/download-artifact@v2"
+        with:
+          path: "reports"
+
+      - name: "Upload to Codecov"
+        uses: "codecov/codecov-action@v1"
+        with:
+          directory: reports

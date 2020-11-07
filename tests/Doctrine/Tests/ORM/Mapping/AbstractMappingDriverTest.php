@@ -149,7 +149,7 @@ abstract class AbstractMappingDriverTest extends OrmTestCase
      */
     public function testEntitySequence($class)
     {
-        $this->assertInternalType('array', $class->sequenceGeneratorDefinition, 'No Sequence Definition set on this driver.');
+        $this->assertIsArray($class->sequenceGeneratorDefinition, 'No Sequence Definition set on this driver.');
         $this->assertEquals(
             [
                 'sequenceName' => 'tablename_seq',
@@ -275,10 +275,10 @@ abstract class AbstractMappingDriverTest extends OrmTestCase
     {
         $class = $this->createClassMetadata(User::class);
 
-        $this->assertInternalType('bool', $class->fieldMappings['id']['options']['unsigned']);
+        $this->assertIsBool($class->fieldMappings['id']['options']['unsigned']);
         $this->assertFalse($class->fieldMappings['id']['options']['unsigned']);
 
-        $this->assertInternalType('bool', $class->fieldMappings['name']['options']['fixed']);
+        $this->assertIsBool($class->fieldMappings['name']['options']['fixed']);
         $this->assertFalse($class->fieldMappings['name']['options']['fixed']);
 
         return $class;

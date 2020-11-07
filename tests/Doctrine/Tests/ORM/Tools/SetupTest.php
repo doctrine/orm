@@ -19,13 +19,13 @@ class SetupTest extends OrmTestCase
     private $originalAutoloaderCount;
     private $originalIncludePath;
 
-    public function setUp()
+    protected function setUp() : void
     {
         $this->originalAutoloaderCount = count(spl_autoload_functions());
         $this->originalIncludePath = get_include_path();
     }
 
-    public function tearDown()
+    public function tearDown() : void
     {
         if ( ! $this->originalIncludePath) {
             return;

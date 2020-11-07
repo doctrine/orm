@@ -12,7 +12,7 @@ use Doctrine\Tests\OrmFunctionalTestCase;
  */
 class DDC6303Test extends OrmFunctionalTestCase
 {
-    public function setUp() : void
+    protected function setUp() : void
     {
         parent::setUp();
 

@@ -19,7 +19,7 @@ class IndexByAssociationTest extends OrmFunctionalTestCase
 
     private $bond;
 
-    public function setUp()
+    protected function setUp() : void
     {
         $this->useModelSet('stockexchange');
         parent::setUp();

@@ -21,7 +21,7 @@ use Doctrine\Tests\OrmFunctionalTestCase;
  */
 class ClassTableInheritanceTest extends OrmFunctionalTestCase
 {
-    protected function setUp()
+    protected function setUp() : void
     {
         $this->useModelSet('company');
 

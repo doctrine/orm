@@ -42,12 +42,10 @@ class XmlMappingDriverTest extends AbstractMappingDriverTest
         $this->assertEquals($expectedMap, $class->discriminatorMap);
     }
 
-    /**
-     * @expectedException \Doctrine\ORM\Cache\CacheException
-     * @expectedExceptionMessage Entity association field "Doctrine\Tests\ORM\Mapping\XMLSLC#foo" not configured as part of the second-level cache.
-     */
     public function testFailingSecondLevelCacheAssociation()
     {
+        $this->expectException('Doctrine\ORM\Cache\CacheException');
+        $this->expectExceptionMessage('Entity association field "Doctrine\Tests\ORM\Mapping\XMLSLC#foo" not configured as part of the second-level cache.');
         $mappingDriver = $this->_loadDriver();
 
         $class = new ClassMetadata(XMLSLC::class);
@@ -137,12 +135,11 @@ class XmlMappingDriverTest extends AbstractMappingDriverTest
 
     /**
      * @group DDC-1468
-     *
-     * @expectedException \Doctrine\Persistence\Mapping\MappingException
-     * @expectedExceptionMessage Invalid mapping file 'Doctrine.Tests.Models.Generic.SerializationModel.dcm.xml' for class 'Doctrine\Tests\Models\Generic\SerializationModel'.
      */
     public function testInvalidMappingFileException()
     {
+        $this->expectException('Doctrine\Persistence\Mapping\MappingException');
+        $this->expectExceptionMessage('Invalid mapping file \'Doctrine.Tests.Models.Generic.SerializationModel.dcm.xml\' for class \'Doctrine\Tests\Models\Generic\SerializationModel\'.');
         $this->createClassMetadata(SerializationModel::class);
     }
 
@@ -211,11 +208,11 @@ class XmlMappingDriverTest extends AbstractMappingDriverTest
 
     /**
      * @group DDC-889
-     * @expectedException \Doctrine\Persistence\Mapping\MappingException
-     * @expectedExceptionMessage Invalid mapping file 'Doctrine.Tests.Models.DDC889.DDC889Class.dcm.xml' for class 'Doctrine\Tests\Models\DDC889\DDC889Class'.
      */
     public function testinvalidEntityOrMappedSuperClassShouldMentionParentClasses()
     {
+        $this->expectException('Doctrine\Persistence\Mapping\MappingException');
+        $this->expectExceptionMessage('Invalid mapping file \'Doctrine.Tests.Models.DDC889.DDC889Class.dcm.xml\' for class \'Doctrine\Tests\Models\DDC889\DDC889Class\'.');
         $this->createClassMetadata(DDC889Class::class);
     }
 }

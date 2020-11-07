@@ -14,7 +14,7 @@ use Doctrine\Tests\OrmFunctionalTestCase;
  */
 class AdvancedDqlQueryTest extends OrmFunctionalTestCase
 {
-    protected function setUp()
+    protected function setUp() : void
     {
         $this->useModelSet('company');
         parent::setUp();

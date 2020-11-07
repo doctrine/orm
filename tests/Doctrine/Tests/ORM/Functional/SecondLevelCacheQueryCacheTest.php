@@ -1085,12 +1085,10 @@ class SecondLevelCacheQueryCacheTest extends SecondLevelCacheAbstractTest
         $this->assertFalse($this->cache->containsEntity(Country::class, $this->countries[1]->getId()));
     }
 
-    /**
-     * @expectedException \Doctrine\ORM\Cache\CacheException
-     * @expectedExceptionMessage Second level cache does not support partial entities.
-     */
     public function testCacheablePartialQueryException()
     {
+        $this->expectException('Doctrine\ORM\Cache\CacheException');
+        $this->expectExceptionMessage('Second level cache does not support partial entities.');
         $this->evictRegions();
         $this->loadFixturesCountries();
 
@@ -1099,12 +1097,10 @@ class SecondLevelCacheQueryCacheTest extends SecondLevelCacheAbstractTest
             ->getResult();
     }
 
-    /**
-     * @expectedException \Doctrine\ORM\Cache\CacheException
-     * @expectedExceptionMessage Second level cache does not support partial entities.
-     */
     public function testCacheableForcePartialLoadHintQueryException()
     {
+        $this->expectException('Doctrine\ORM\Cache\CacheException');
+        $this->expectExceptionMessage('Second level cache does not support partial entities.');
         $this->evictRegions();
         $this->loadFixturesCountries();
 
@@ -1114,23 +1110,19 @@ class SecondLevelCacheQueryCacheTest extends SecondLevelCacheAbstractTest
             ->getResult();
     }
 
-    /**
-     * @expectedException \Doctrine\ORM\Cache\CacheException
-     * @expectedExceptionMessage Second-level cache query supports only select statements.
-     */
     public function testNonCacheableQueryDeleteStatementException()
     {
+        $this->expectException('Doctrine\ORM\Cache\CacheException');
+        $this->expectExceptionMessage('Second-level cache query supports only select statements.');
         $this->_em->createQuery("DELETE Doctrine\Tests\Models\Cache\Country u WHERE u.id = 4")
             ->setCacheable(true)
             ->getResult();
     }
 
-    /**
-     * @expectedException \Doctrine\ORM\Cache\CacheException
-     * @expectedExceptionMessage Second-level cache query supports only select statements.
-     */
     public function testNonCacheableQueryUpdateStatementException()
     {
+        $this->expectException('Doctrine\ORM\Cache\CacheException');
+        $this->expectExceptionMessage('Second-level cache query supports only select statements.');
         $this->_em->createQuery("UPDATE Doctrine\Tests\Models\Cache\Country u SET u.name = 'foo' WHERE u.id = 4")
             ->setCacheable(true)
             ->getResult();

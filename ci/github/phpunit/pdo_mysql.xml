@@ -24,11 +24,12 @@
         </testsuite>
     </testsuites>
 
-    <coverage>
-        <include>
+    <filter>
+        <whitelist>
             <directory suffix=".php">../../../lib/Doctrine</directory>
-        </include>
-    </coverage>
+        </whitelist>
+    </filter>
+
 
     <groups>
         <exclude>

@@ -20,7 +20,7 @@ class YamlDriverTest extends AbstractDriverTest
     protected function getDriver(array $paths = [])
     {
         $driver = new SimplifiedYamlDriver(array_flip($paths));
-        $this->expectDeprecationMessage('YAML mapping driver is deprecated and will be removed in Doctrine ORM 3.0, please migrate to annotation or XML driver.');
+        $this->expectDeprecationMessageSame('YAML mapping driver is deprecated and will be removed in Doctrine ORM 3.0, please migrate to annotation or XML driver.');
 
         return $driver;
     }

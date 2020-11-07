@@ -9,7 +9,7 @@ use function assert;
 
 final class GH7735Test extends OrmFunctionalTestCase
 {
-    public function setUp() : void
+    protected function setUp() : void
     {
         $this->enableSecondLevelCache();
         parent::setUp();

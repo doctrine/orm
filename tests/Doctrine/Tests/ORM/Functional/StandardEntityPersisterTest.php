@@ -15,7 +15,7 @@ use Doctrine\Tests\OrmFunctionalTestCase;
  */
 class StandardEntityPersisterTest extends OrmFunctionalTestCase
 {
-    protected function setUp()
+    protected function setUp() : void
     {
         $this->useModelSet('ecommerce');
         parent::setUp();
