@@ -5,7 +5,6 @@
          beStrictAboutOutputDuringTests="true"
          beStrictAboutTodoAnnotatedTests="true"
          failOnRisky="true"
-         failOnWarning="true"
 >
     <php>
         <!-- necessary change for some CLI/console output test assertions -->
