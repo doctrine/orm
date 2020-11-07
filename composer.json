@@ -13,9 +13,6 @@
         {"name": "Marco Pivetta", "email": "ocramius@gmail.com"}
     ],
     "config": {
-        "platform": {
-            "php": "7.1.3"
-        },
         "sort-packages": true
     },
     "require": {

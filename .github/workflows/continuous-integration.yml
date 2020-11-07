@@ -1,0 +1,232 @@
+name: "Continuous Integration"
+
+on:
+  pull_request:
+  push:
+
+env:
+  fail-fast: true
+
+jobs:
+  phpunit-smoke-check:
+    name: "PHPUnit with SQLite"
+    runs-on: "ubuntu-20.04"
+
+    strategy:
+      matrix:
+        php-version:
+          - "7.2"
+          - "7.3"
+          - "7.4"
+        deps:
+          - "normal"
+        include:
+          - deps: "low"
+            php-version: "7.3"
+
+    steps:
+      - name: "Checkout"
+        uses: "actions/checkout@v2"
+        with:
+          fetch-depth: 2
+
+      - name: "Install PHP"
+        uses: "shivammathur/setup-php@v2"
+        with:
+          php-version: "${{ matrix.php-version }}"
+          extensions: "pdo, pdo_sqlite"
+          coverage: "pcov"
+          ini-values: "zend.assertions=1"
+
+      - name: "Cache dependencies installed with composer"
+        uses: "actions/cache@v2"
+        with:
+          path: "~/.composer/cache"
+          key: "php-${{ matrix.php-version }}-composer-locked-${{ hashFiles('composer.lock') }}"
+          restore-keys: "php-${{ matrix.php-version }}-composer-locked-"
+
+      - name: "Install dependencies with composer"
+        run: "composer update --no-interaction --no-progress --no-suggest"
+        if: "${{ matrix.deps == 'normal' }}"
+
+      - name: "Install lowest possible dependencies with composer"
+        run: "composer update --no-interaction --no-progress --no-suggest --prefer-dist --prefer-lowest"
+        if: "${{ matrix.deps == 'low' }}"
+
+      - name: "Run PHPUnit"
+        run: "vendor/bin/phpunit -c ci/github/phpunit/sqlite.xml"
+        env:
+            ENABLE_SECOND_LEVEL_CACHE: 0
+
+      - name: "Run PHPUnit with Second Level Cache"
+        run: "vendor/bin/phpunit -c ci/github/phpunit/sqlite.xml --exclude-group performance,non-cacheable,locking_functional"
+        env:
+            ENABLE_SECOND_LEVEL_CACHE: 1
+
+  phpunit-postgres:
+    name: "PHPUnit with PostgreSQL"
+    runs-on: "ubuntu-20.04"
+    needs: "phpunit-smoke-check"
+
+    strategy:
+      matrix:
+        php-version:
+          - "7.4"
+        postgres-version:
+          - "9.6"
+          - "13"
+
+    services:
+      postgres:
+        image: "postgres:${{ matrix.postgres-version }}"
+        env:
+          POSTGRES_PASSWORD: "postgres"
+
+        options: >-
+          --health-cmd "pg_isready"
+
+        ports:
+          - "5432:5432"
+
+    steps:
+      - name: "Checkout"
+        uses: "actions/checkout@v2"
+        with:
+          fetch-depth: 2
+
+      - name: "Install PHP"
+        uses: "shivammathur/setup-php@v2"
+        with:
+          php-version: "${{ matrix.php-version }}"
+          coverage: "pcov"
+          ini-values: "zend.assertions=1"
+
+      - name: "Cache dependencies installed with composer"
+        uses: "actions/cache@v2"
+        with:
+          path: "~/.composer/cache"
+          key: "php-${{ matrix.php-version }}-composer-locked-${{ hashFiles('composer.lock') }}"
+          restore-keys: "php-${{ matrix.php-version }}-composer-locked-"
+
+      - name: "Install dependencies with composer"
+        run: "composer update --no-interaction --no-progress --no-suggest"
+
+      - name: "Run PHPUnit"
+        run: "vendor/bin/phpunit -c ci/github/phpunit/pdo_pgsql.xml"
+
+  phpunit-mariadb:
+    name: "PHPUnit with MariaDB"
+    runs-on: "ubuntu-20.04"
+    needs: "phpunit-smoke-check"
+
+    strategy:
+      matrix:
+        php-version:
+          - "7.4"
+        mariadb-version:
+          - "10.5"
+        extension:
+          - "mysqli"
+          - "pdo_mysql"
+
+    services:
+      mariadb:
+        image: "mariadb:${{ matrix.mariadb-version }}"
+        env:
+          MYSQL_ALLOW_EMPTY_PASSWORD: yes
+          MYSQL_DATABASE: "doctrine_tests"
+
+        options: >-
+          --health-cmd "mysqladmin ping --silent"
+
+        ports:
+          - "3306:3306"
+
+    steps:
+      - name: "Checkout"
+        uses: "actions/checkout@v2"
+        with:
+          fetch-depth: 2
+
+      - name: "Install PHP"
+        uses: "shivammathur/setup-php@v2"
+        with:
+          php-version: "${{ matrix.php-version }}"
+          coverage: "pcov"
+          ini-values: "zend.assertions=1"
+          extensions: "${{ matrix.extension }}"
+
+      - name: "Cache dependencies installed with composer"
+        uses: "actions/cache@v2"
+        with:
+          path: "~/.composer/cache"
+          key: "php-${{ matrix.php-version }}-composer-locked-${{ hashFiles('composer.lock') }}"
+          restore-keys: "php-${{ matrix.php-version }}-composer-locked-"
+
+      - name: "Install dependencies with composer"
+        run: "composer update --no-interaction --no-progress --no-suggest"
+
+      - name: "Run PHPUnit"
+        run: "vendor/bin/phpunit -c ci/github/phpunit/${{ matrix.extension }}.xml"
+
+  phpunit-mysql:
+    name: "PHPUnit with MySQL"
+    runs-on: "ubuntu-20.04"
+    needs: "phpunit-smoke-check"
+
+    strategy:
+      matrix:
+        php-version:
+          - "7.4"
+        mysql-version:
+          - "5.7"
+          - "8.0"
+        extension:
+          - "mysqli"
+          - "pdo_mysql"
+
+    services:
+      mysql:
+        image: "mysql:${{ matrix.mysql-version }}"
+
+        options: >-
+          --health-cmd "mysqladmin ping --silent"
+          -e MYSQL_ALLOW_EMPTY_PASSWORD=yes
+          -e MYSQL_DATABASE=doctrine_tests
+
+        ports:
+          - "3306:3306"
+
+    steps:
+      - name: "Checkout"
+        uses: "actions/checkout@v2"
+        with:
+          fetch-depth: 2
+
+      - name: "Install PHP"
+        uses: "shivammathur/setup-php@v2"
+        with:
+          php-version: "${{ matrix.php-version }}"
+          coverage: "pcov"
+          ini-values: "zend.assertions=1"
+          extensions: "${{ matrix.extension }}"
+
+      - name: "Cache dependencies installed with composer"
+        uses: "actions/cache@v2"
+        with:
+          path: "~/.composer/cache"
+          key: "php-${{ matrix.php-version }}-composer-locked-${{ hashFiles('composer.lock') }}"
+          restore-keys: "php-${{ matrix.php-version }}-composer-locked-"
+
+      - name: "Install dependencies with composer"
+        run: "composer update --no-interaction --no-progress --no-suggest"
+
+      - name: "Run PHPUnit"
+        run: "vendor/bin/phpunit -c ci/github/phpunit/${{ matrix.extension }}.xml"
+        env:
+            ENABLE_SECOND_LEVEL_CACHE: 0
+
+      - name: "Run PHPUnit with Second Level Cache"
+        run: "vendor/bin/phpunit -c ci/github/phpunit/${{ matrix.extension }}.xml --exclude-group performance,non-cacheable,locking_functional"
+        env:
+            ENABLE_SECOND_LEVEL_CACHE: 1
