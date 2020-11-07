@@ -787,7 +787,7 @@ abstract class OrmFunctionalTestCase extends OrmTestCase
      */
     protected function onNotSuccessfulTest(Throwable $e) : void
     {
-        if ($e instanceof AssertionFailedError) {
+        if ($e instanceof AssertionFailedError || $e instanceof Warning) {
             throw $e;
         }
 
