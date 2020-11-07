@@ -19,7 +19,7 @@ jobs:
           - "7.3"
           - "7.4"
         deps:
-          - "fixed"
+          - "normal"
         include:
           - deps: "low"
             php-version: "7.3"
@@ -47,7 +47,7 @@ jobs:
 
       - name: "Install dependencies with composer"
         run: "composer update --no-interaction --no-progress --no-suggest"
-        if: "${{ matrix.deps == 'fixed' }}"
+        if: "${{ matrix.deps == 'normal' }}"
 
       - name: "Install lowest possible dependencies with composer"
         run: "composer update --no-interaction --no-progress --no-suggest --prefer-dist --prefer-lowest"
