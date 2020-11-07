@@ -45,7 +45,7 @@ abstract class AbstractEntityPersisterTest extends OrmTestCase
      */
     abstract protected function createPersister(EntityManager $em, EntityPersister $persister, Region $region, ClassMetadata $metadata);
 
-    protected function setUp()
+    protected function setUp() : void
     {
         $this->getSharedSecondLevelCacheDriverImpl()->flushAll();
         $this->enableSecondLevelCache();

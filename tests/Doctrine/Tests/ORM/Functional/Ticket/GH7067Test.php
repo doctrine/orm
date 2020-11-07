@@ -5,7 +5,7 @@ namespace Doctrine\Tests\ORM\Functional\Ticket;
 
 final class GH7067Test extends \Doctrine\Tests\OrmFunctionalTestCase
 {
-    public function setUp() : void
+    protected function setUp() : void
     {
         $this->enableSecondLevelCache();
         parent::setUp();

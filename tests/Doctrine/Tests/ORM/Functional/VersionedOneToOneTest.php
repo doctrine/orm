@@ -16,7 +16,7 @@ use Doctrine\Tests\OrmFunctionalTestCase;
  */
 class VersionedOneToOneTest extends OrmFunctionalTestCase
 {
-    protected function setUp()
+    protected function setUp() : void
     {
         parent::setUp();
 

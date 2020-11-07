@@ -30,7 +30,7 @@ class NativeQueryTest extends OrmFunctionalTestCase
 {
     private $platform = null;
 
-    protected function setUp()
+    protected function setUp() : void
     {
         $this->useModelSet('cms');
         $this->useModelSet('company');
@@ -341,11 +341,9 @@ class NativeQueryTest extends OrmFunctionalTestCase
         $rsm->addRootEntityFromClassMetadata(CompanyContract::class, 'c');
     }
 
-    /**
-     * @expectedException \InvalidArgumentException
-     */
     public function testRSMBuilderThrowsExceptionOnColumnConflict()
     {
+        $this->expectException('InvalidArgumentException');
         $rsm = new ResultSetMappingBuilder($this->_em);
         $rsm->addRootEntityFromClassMetadata(CmsUser::class, 'u');
         $rsm->addJoinedEntityFromClassMetadata(CmsAddress::class, 'a', 'u', 'address');

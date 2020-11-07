@@ -22,7 +22,7 @@ class SqlWalkerTest extends OrmTestCase
     /**
      * {@inheritDoc}
      */
-    protected function setUp()
+    protected function setUp() : void
     {
         $this->sqlWalker = new SqlWalker(new Query($this->_getTestEntityManager()), new ParserResult(), []);
     }

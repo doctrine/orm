@@ -7,17 +7,12 @@ use Doctrine\Tests\Models\CompositeKeyInheritance\JoinedChildClass;
 
 class JoinedTableCompositeKeyTest extends OrmFunctionalTestCase
 {
-
-    public function setUp()
+    protected function setUp() : void
     {
         $this->useModelSet('compositekeyinheritance');
         parent::setUp();
-
     }
 
-    /**
-     *
-     */
     public function testInsertWithCompositeKey()
     {
         $childEntity = new JoinedChildClass();

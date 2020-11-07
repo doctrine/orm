@@ -14,7 +14,7 @@ class DDC2252Test extends \Doctrine\Tests\OrmFunctionalTestCase
     private $membership;
     private $privileges = [];
 
-    protected function setUp()
+    protected function setUp() : void
     {
         parent::setUp();
 

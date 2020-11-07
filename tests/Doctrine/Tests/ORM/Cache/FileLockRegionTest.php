@@ -30,7 +30,7 @@ class FileLockRegionTest extends AbstractRegionTest
     /**
      * {@inheritDoc}
      */
-    public function tearDown()
+    public function tearDown() : void
     {
         $this->cleanTestDirectory($this->directory);
     }

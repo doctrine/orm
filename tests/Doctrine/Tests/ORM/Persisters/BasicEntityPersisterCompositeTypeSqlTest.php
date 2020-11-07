@@ -22,7 +22,7 @@ class BasicEntityPersisterCompositeTypeSqlTest extends OrmTestCase
     /**
      * {@inheritDoc}
      */
-    protected function setUp()
+    protected function setUp() : void
     {
         parent::setUp();
 
@@ -48,11 +48,9 @@ class BasicEntityPersisterCompositeTypeSqlTest extends OrmTestCase
         $this->assertEquals('t0.admin1 IS NOT NULL AND t0.country IS NOT NULL', $statement);
     }
 
-    /**
-     * @expectedException Doctrine\ORM\ORMException
-     */
     public function testSelectConditionStatementIn()
     {
+        $this->expectException('Doctrine\ORM\ORMException');
         $this->_persister->getSelectConditionStatementSQL('admin1', [], [], Comparison::IN);
     }
 }

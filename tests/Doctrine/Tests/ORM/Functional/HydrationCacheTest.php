@@ -12,7 +12,7 @@ use Doctrine\Common\Cache\ArrayCache;
  */
 class HydrationCacheTest extends OrmFunctionalTestCase
 {
-    public function setUp()
+    protected function setUp() : void
     {
         $this->useModelSet('cms');
 

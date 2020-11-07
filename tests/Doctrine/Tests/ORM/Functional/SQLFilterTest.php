@@ -39,14 +39,14 @@ class SQLFilterTest extends OrmFunctionalTestCase
     private $managerId, $managerId2, $contractId1, $contractId2;
     private $organizationId, $eventId1, $eventId2;
 
-    public function setUp()
+    protected function setUp() : void
     {
         $this->useModelSet('cms');
         $this->useModelSet('company');
         parent::setUp();
     }
 
-    public function tearDown()
+    public function tearDown() : void
     {
         parent::tearDown();
 

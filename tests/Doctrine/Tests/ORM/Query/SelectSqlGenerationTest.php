@@ -26,7 +26,7 @@ class SelectSqlGenerationTest extends OrmTestCase
 {
     private $_em;
 
-    protected function setUp()
+    protected function setUp() : void
     {
         $this->_em = $this->_getTestEntityManager();
     }
@@ -910,11 +910,9 @@ class SelectSqlGenerationTest extends OrmTestCase
         );
     }
 
-    /**
-     * @expectedException \Doctrine\ORM\Query\QueryException
-     */
     public function testOrderBySupportsSingleValuedPathExpressionInverseSide()
     {
+        $this->expectException('Doctrine\ORM\Query\QueryException');
         $q = $this->_em->createQuery("select u from Doctrine\Tests\Models\CMS\CmsUser u order by u.address");
         $q->getSQL();
     }

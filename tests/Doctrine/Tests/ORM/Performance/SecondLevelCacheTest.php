@@ -15,7 +15,7 @@ use Doctrine\ORM\EntityManagerInterface;
  */
 class SecondLevelCacheTest extends OrmFunctionalTestCase
 {
-    protected function setUp()
+    protected function setUp() : void
     {
         parent::useModelSet('cache');
         parent::setUp();

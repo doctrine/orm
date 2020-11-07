@@ -7,7 +7,7 @@ namespace Doctrine\Tests\ORM\Functional\Ticket;
  */
 class DDC1719Test extends \Doctrine\Tests\OrmFunctionalTestCase
 {
-    protected function setUp()
+    protected function setUp() : void
     {
         parent::setUp();
 
@@ -18,7 +18,7 @@ class DDC1719Test extends \Doctrine\Tests\OrmFunctionalTestCase
         );
     }
 
-    protected function tearDown()
+    protected function tearDown() : void
     {
         parent::tearDown();
 

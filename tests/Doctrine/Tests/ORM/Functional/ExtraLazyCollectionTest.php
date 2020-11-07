@@ -35,7 +35,7 @@ class ExtraLazyCollectionTest extends OrmFunctionalTestCase
     private $topic;
     private $phonenumber;
 
-    public function setUp()
+    protected function setUp() : void
     {
         $this->useModelSet('tweet');
         $this->useModelSet('cms');
@@ -61,7 +61,7 @@ class ExtraLazyCollectionTest extends OrmFunctionalTestCase
         $this->loadFixture();
     }
 
-    public function tearDown()
+    public function tearDown() : void
     {
         parent::tearDown();
 

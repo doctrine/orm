@@ -7,7 +7,7 @@ namespace Doctrine\Tests\ORM\Functional\Ticket;
  */
 class DDC2175Test extends \Doctrine\Tests\OrmFunctionalTestCase
 {
-    protected function setUp()
+    protected function setUp() : void
     {
         parent::setUp();
         $this->_schemaTool->createSchema(

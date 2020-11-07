@@ -24,7 +24,7 @@ class DefaultCollectionHydratorTest extends OrmFunctionalTestCase
      */
     private $structure;
 
-    protected function setUp()
+    protected function setUp() : void
     {
         $this->enableSecondLevelCache();
         parent::setUp();

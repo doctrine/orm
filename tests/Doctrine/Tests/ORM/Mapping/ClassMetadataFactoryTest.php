@@ -29,6 +29,7 @@ use Doctrine\Tests\Models\JoinedInheritanceType\RootClass;
 use Doctrine\Tests\Models\Quote;
 use Doctrine\Tests\OrmTestCase;
 use DoctrineGlobal_Article;
+use ReflectionClass;
 
 class ClassMetadataFactoryTest extends OrmTestCase
 {
@@ -411,7 +412,10 @@ class ClassMetadataFactoryTest extends OrmTestCase
         $classMetadataFactory->setEntityManager($entityManager);
 
         // not really the cleanest way to check it, but we won't add a getter to the CMF just for the sake of testing.
-        $this->assertAttributeSame($entityManager, 'em', $classMetadataFactory);
+        $class    = new ReflectionClass(ClassMetadataFactory::class);
+        $property = $class->getProperty('em');
+        $property->setAccessible(true);
+        $this->assertSame($entityManager, $property->getValue($classMetadataFactory));
     }
 
     /**

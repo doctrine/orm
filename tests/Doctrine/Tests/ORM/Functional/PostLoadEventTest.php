@@ -25,7 +25,7 @@ class PostLoadEventTest extends OrmFunctionalTestCase
     /**
      * {@inheritdoc}
      */
-    protected function setUp()
+    protected function setUp() : void
     {
         $this->useModelSet('cms');
 

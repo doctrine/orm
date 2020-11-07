@@ -21,7 +21,7 @@ class QueryCacheTest extends OrmFunctionalTestCase
      */
     private $cacheDataReflection;
 
-    protected function setUp()
+    protected function setUp() : void
     {
         $this->cacheDataReflection = new \ReflectionProperty(ArrayCache::class, "data");
         $this->cacheDataReflection->setAccessible(true);

@@ -21,7 +21,7 @@ class SingleTableInheritanceTest extends OrmFunctionalTestCase
     private $flex;
     private $ultra;
 
-    public function setUp()
+    protected function setUp() : void
     {
         $this->useModelSet('company');
         parent::setUp();

@@ -12,7 +12,7 @@ use Doctrine\ORM\Mapping\Driver\StaticPHPDriver;
  */
 class DDC2415Test extends \Doctrine\Tests\OrmFunctionalTestCase
 {
-    protected function setUp()
+    protected function setUp() : void
     {
         parent::setUp();
 

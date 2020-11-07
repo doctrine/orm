@@ -11,7 +11,7 @@ class DDC1509Test extends \Doctrine\Tests\OrmFunctionalTestCase
 {
     use VerifyDeprecations;
 
-    protected function setUp()
+    protected function setUp() : void
     {
         parent::setUp();
 

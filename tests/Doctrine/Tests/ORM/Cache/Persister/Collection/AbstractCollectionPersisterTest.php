@@ -74,7 +74,7 @@ abstract class AbstractCollectionPersisterTest extends OrmTestCase
      */
     abstract protected function createPersister(EntityManager $em, CollectionPersister $persister, Region $region, array $mapping);
 
-    protected function setUp()
+    protected function setUp() : void
     {
         $this->getSharedSecondLevelCacheDriverImpl()->flushAll();
         $this->enableSecondLevelCache();

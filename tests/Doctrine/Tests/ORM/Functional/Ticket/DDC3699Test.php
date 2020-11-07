@@ -12,7 +12,7 @@ class DDC3597Test extends \Doctrine\Tests\OrmFunctionalTestCase
 {
     use VerifyDeprecations;
 
-    protected function setUp()
+    protected function setUp() : void
     {
         $this->useModelSet('ddc3699');
 

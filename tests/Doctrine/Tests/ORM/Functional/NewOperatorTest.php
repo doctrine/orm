@@ -21,7 +21,7 @@ class NewOperatorTest extends OrmFunctionalTestCase
      */
     private $fixtures;
 
-    protected function setUp()
+    protected function setUp() : void
     {
         $this->useModelSet('cms');
         parent::setUp();
@@ -189,7 +189,7 @@ class NewOperatorTest extends OrmFunctionalTestCase
         $dql = "
             SELECT
                 new CmsUserDTO(u.name, e.email, a.city)
-            FROM 
+            FROM
                 Doctrine\Tests\Models\CMS\CmsUser u
             JOIN
                 u.email e
@@ -1047,42 +1047,34 @@ class NewOperatorTest extends OrmFunctionalTestCase
         $this->assertEquals($this->fixtures[2]->username,$result[2]['cmsUserUsername']);
     }
 
-    /**
-     * @expectedException Doctrine\ORM\Query\QueryException
-     * @expectedExceptionMessage [Semantical Error] line 0, col 11 near '\InvalidClass(u.name)': Error: Class "\InvalidClass" is not defined.
-     */
     public function testInvalidClassException()
     {
+        $this->expectException('Doctrine\ORM\Query\QueryException');
+        $this->expectExceptionMessage('[Semantical Error] line 0, col 11 near \'\InvalidClass(u.name)\': Error: Class "\InvalidClass" is not defined.');
         $dql = "SELECT new \InvalidClass(u.name) FROM Doctrine\Tests\Models\CMS\CmsUser u";
         $this->_em->createQuery($dql)->getResult();
     }
 
-    /**
-     * @expectedException Doctrine\ORM\Query\QueryException
-     * @expectedExceptionMessage [Semantical Error] line 0, col 11 near '\stdClass(u.name)': Error: Class "\stdClass" has not a valid constructor.
-     */
     public function testInvalidClassConstructorException()
     {
+        $this->expectException('Doctrine\ORM\Query\QueryException');
+        $this->expectExceptionMessage('[Semantical Error] line 0, col 11 near \'\stdClass(u.name)\': Error: Class "\stdClass" has not a valid constructor.');
         $dql = "SELECT new \stdClass(u.name) FROM Doctrine\Tests\Models\CMS\CmsUser u";
         $this->_em->createQuery($dql)->getResult();
     }
 
-    /**
-     * @expectedException Doctrine\ORM\Query\QueryException
-     * @expectedExceptionMessage [Semantical Error] line 0, col 11 near 'Doctrine\Tests\ORM\Functional\ClassWithTooMuchArgs(u.name)': Error: Number of arguments does not match with "Doctrine\Tests\ORM\Functional\ClassWithTooMuchArgs" constructor declaration.
-     */
     public function testInvalidClassWithoutConstructorException()
     {
+        $this->expectException('Doctrine\ORM\Query\QueryException');
+        $this->expectExceptionMessage('[Semantical Error] line 0, col 11 near \'Doctrine\Tests\ORM\Functional\ClassWithTooMuchArgs(u.name)\': Error: Number of arguments does not match with "Doctrine\Tests\ORM\Functional\ClassWithTooMuchArgs" constructor declaration.');
         $dql = "SELECT new Doctrine\Tests\ORM\Functional\ClassWithTooMuchArgs(u.name) FROM Doctrine\Tests\Models\CMS\CmsUser u";
         $this->_em->createQuery($dql)->getResult();
     }
 
-    /**
-     * @expectedException Doctrine\ORM\Query\QueryException
-     * @expectedExceptionMessage [Semantical Error] line 0, col 11 near 'Doctrine\Tests\ORM\Functional\ClassWithPrivateConstructor(u.name)': Error: Class "Doctrine\Tests\ORM\Functional\ClassWithPrivateConstructor" can not be instantiated.
-     */
     public function testClassCantBeInstantiatedException()
     {
+        $this->expectException('Doctrine\ORM\Query\QueryException');
+        $this->expectExceptionMessage('[Semantical Error] line 0, col 11 near \'Doctrine\Tests\ORM\Functional\ClassWithPrivateConstructor(u.name)\': Error: Class "Doctrine\Tests\ORM\Functional\ClassWithPrivateConstructor" can not be instantiated.');
         $dql = "SELECT new Doctrine\Tests\ORM\Functional\ClassWithPrivateConstructor(u.name) FROM Doctrine\Tests\Models\CMS\CmsUser u";
         $this->_em->createQuery($dql)->getResult();
     }

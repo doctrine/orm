@@ -11,7 +11,7 @@ class DDC849Test extends \Doctrine\Tests\OrmFunctionalTestCase
     private $group1;
     private $group2;
 
-    public function setUp()
+    protected function setUp() : void
     {
         $this->useModelSet('cms');
         parent::setUp();

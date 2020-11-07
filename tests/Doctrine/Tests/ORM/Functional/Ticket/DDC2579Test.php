@@ -11,7 +11,7 @@ use Doctrine\DBAL\Platforms\AbstractPlatform;
  */
 class DDC2579Test extends \Doctrine\Tests\OrmFunctionalTestCase
 {
-    protected function setUp()
+    protected function setUp() : void
     {
         parent::setUp();
 

@@ -3,14 +3,16 @@
 namespace Doctrine\Tests\ORM\Functional\Ticket;
 
 use Doctrine\ORM\Events;
+use Doctrine\ORM\UnitOfWork;
 use Doctrine\Tests\Models\CMS\CmsUser;
+use ReflectionClass;
 
 /**
  * @group DDC-3123
  */
 class DDC3123Test extends \Doctrine\Tests\OrmFunctionalTestCase
 {
-    protected function setUp()
+    protected function setUp() : void
     {
         $this->useModelSet('cms');
         parent::setUp();
@@ -36,7 +38,13 @@ class DDC3123Test extends \Doctrine\Tests\OrmFunctionalTestCase
             ->expects($this->once())
             ->method(Events::postFlush)
             ->will($this->returnCallback(function () use ($uow, $test) {
-                $test->assertAttributeEmpty('extraUpdates', $uow, 'ExtraUpdates are reset before postFlush');
+                $class    = new ReflectionClass(UnitOfWork::class);
+                $property = $class->getProperty('extraUpdates');
+                $property->setAccessible(true);
+                $test->assertEmpty(
+                    $property->getValue($uow),
+                    'ExtraUpdates are reset before postFlush'
+                );
             }));
 
         $this->_em->getEventManager()->addEventListener(Events::postFlush, $listener);

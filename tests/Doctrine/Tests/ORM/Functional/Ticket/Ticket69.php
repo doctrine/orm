@@ -8,7 +8,7 @@ namespace Doctrine\Tests\ORM\Functional\Ticket;
  * @author robo
  */
 class AdvancedAssociationTest extends \Doctrine\Tests\OrmFunctionalTestCase {
-    protected function setUp()
+    protected function setUp() : void
     {
         parent::setUp();
         try {

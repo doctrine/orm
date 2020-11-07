@@ -15,7 +15,7 @@ use function count;
  */
 class GH8229Test extends OrmFunctionalTestCase
 {
-    protected function setUp()
+    protected function setUp() : void
     {
         parent::setUp();
 

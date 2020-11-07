@@ -17,7 +17,7 @@ use function str_replace;
  */
 final class GH5988Test extends OrmFunctionalTestCase
 {
-    protected function setUp()
+    protected function setUp() : void
     {
         parent::setUp();
 

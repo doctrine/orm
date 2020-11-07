@@ -13,7 +13,7 @@ class DDC1778Test extends \Doctrine\Tests\OrmFunctionalTestCase
     private $user;
     private $phone;
 
-    public function setUp()
+    protected function setUp() : void
     {
         $this->useModelSet('cms');
         parent::setUp();

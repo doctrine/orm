@@ -12,7 +12,7 @@ use Doctrine\DBAL\Types\Type;
  */
 class DDC2984Test extends \Doctrine\Tests\OrmFunctionalTestCase
 {
-    public function setUp()
+    protected function setUp() : void
     {
         parent::setUp();
 

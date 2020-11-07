@@ -30,7 +30,7 @@ class PersistentCollectionTest extends OrmTestCase
      */
     private $_emMock;
 
-    protected function setUp()
+    protected function setUp() : void
     {
         parent::setUp();
 

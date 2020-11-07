@@ -11,7 +11,7 @@ class ParserResultTest extends TestCase
 {
     public $parserResult;
 
-    public function setUp()
+    protected function setUp() : void
     {
         $this->parserResult = new ParserResult();
     }
@@ -39,7 +39,7 @@ class ParserResultTest extends TestCase
 
     public function testGetParameterMappings()
     {
-        $this->assertInternalType('array', $this->parserResult->getParameterMappings());
+        $this->assertIsArray($this->parserResult->getParameterMappings());
 
         $this->parserResult->addParameterMapping(1, 1);
         $this->parserResult->addParameterMapping(1, 2);

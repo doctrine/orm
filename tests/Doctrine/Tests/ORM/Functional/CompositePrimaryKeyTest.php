@@ -12,7 +12,7 @@ use Doctrine\Tests\OrmFunctionalTestCase;
 
 class CompositePrimaryKeyTest extends OrmFunctionalTestCase
 {
-    public function setUp()
+    protected function setUp() : void
     {
         $this->useModelSet('navigation');
         parent::setUp();

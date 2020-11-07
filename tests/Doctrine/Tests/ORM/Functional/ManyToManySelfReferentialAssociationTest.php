@@ -21,7 +21,7 @@ class ManyToManySelfReferentialAssociationTest extends AbstractManyToManyAssocia
     private $firstRelated;
     private $secondRelated;
 
-    protected function setUp()
+    protected function setUp() : void
     {
         $this->useModelSet('ecommerce');
         parent::setUp();

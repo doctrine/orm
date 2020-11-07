@@ -28,7 +28,7 @@ class QuoteStrategyTest extends OrmTestCase
      */
     private $platform;
 
-    protected function setUp()
+    protected function setUp() : void
     {
         parent::setUp();
         $em = $this->_getTestEntityManager();

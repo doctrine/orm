@@ -20,7 +20,7 @@ class MergeProxiesTest extends OrmFunctionalTestCase
     /**
      * {@inheritDoc}
      */
-    protected function setUp()
+    protected function setUp() : void
     {
         $this->useModelSet('generic');
 

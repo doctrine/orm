@@ -17,7 +17,7 @@ use Doctrine\Tests\OrmFunctionalTestCase;
  */
 class ManyToManyExtraLazyTest extends OrmFunctionalTestCase
 {
-    public function setUp()
+    protected function setUp() : void
     {
         $this->useModelSet('vct_manytomany_extralazy');
         parent::setUp();
@@ -53,7 +53,7 @@ class ManyToManyExtraLazyTest extends OrmFunctionalTestCase
         $this->_em->clear();
     }
 
-    public static function tearDownAfterClass()
+    public static function tearDownAfterClass() : void
     {
         $conn = static::$_sharedConn;
 

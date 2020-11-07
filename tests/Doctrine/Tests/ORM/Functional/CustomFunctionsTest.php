@@ -15,7 +15,7 @@ require_once __DIR__ . '/../../TestInit.php';
 
 class CustomFunctionsTest extends OrmFunctionalTestCase
 {
-    protected function setUp()
+    protected function setUp() : void
     {
         $this->useModelSet('cms');
 

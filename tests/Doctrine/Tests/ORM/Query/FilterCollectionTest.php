@@ -18,7 +18,7 @@ class FilterCollectionTest extends OrmTestCase
      */
     private $em;
 
-    protected function setUp()
+    protected function setUp() : void
     {
         $this->em = $this->_getTestEntityManager();
         $this->em->getConfiguration()->addFilter('testFilter', MyFilter::class);
@@ -63,11 +63,9 @@ class FilterCollectionTest extends OrmTestCase
         $this->assertTrue($filterCollection->isEnabled('testFilter'));
     }
 
-    /**
-     * @expectedException InvalidArgumentException
-     */
     public function testGetFilterInvalidArgument()
     {
+        $this->expectException('InvalidArgumentException');
         $filterCollection = $this->em->getFilters();
         $filterCollection->getFilter('testFilter');
     }

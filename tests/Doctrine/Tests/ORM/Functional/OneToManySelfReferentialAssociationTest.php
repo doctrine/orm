@@ -16,7 +16,7 @@ class OneToManySelfReferentialAssociationTest extends OrmFunctionalTestCase
     private $firstChild;
     private $secondChild;
 
-    protected function setUp()
+    protected function setUp() : void
     {
         $this->useModelSet('ecommerce');
         parent::setUp();

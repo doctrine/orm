@@ -10,7 +10,7 @@ use Doctrine\ORM\Tools\ToolsException;
  */
 class DDC2862Test extends \Doctrine\Tests\OrmFunctionalTestCase
 {
-    public function setUp()
+    protected function setUp() : void
     {
         $this->enableSecondLevelCache();
         parent::setUp();

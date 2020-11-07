@@ -13,7 +13,8 @@ use Doctrine\Tests\OrmFunctionalTestCase;
  */
 class AdvancedAssociationTest extends OrmFunctionalTestCase
 {
-    protected function setUp() {
+    protected function setUp() : void
+    {
         parent::setUp();
         try {
             $this->_schemaTool->createSchema(

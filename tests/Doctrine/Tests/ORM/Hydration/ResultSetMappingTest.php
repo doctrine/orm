@@ -28,7 +28,8 @@ class ResultSetMappingTest extends \Doctrine\Tests\OrmTestCase
      */
     private $_em;
 
-    protected function setUp() {
+    protected function setUp() : void
+    {
         parent::setUp();
         $this->_rsm = new ResultSetMapping;
         $this->_em = $this->_getTestEntityManager();

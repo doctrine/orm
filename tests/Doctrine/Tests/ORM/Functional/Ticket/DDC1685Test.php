@@ -12,7 +12,7 @@ class DDC1685Test extends \Doctrine\Tests\OrmFunctionalTestCase
 {
     private $paginator;
 
-    protected function setUp()
+    protected function setUp() : void
     {
         $this->useModelSet('ddc117');
         parent::setUp();

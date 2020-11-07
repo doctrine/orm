@@ -34,7 +34,7 @@ class LazyCriteriaCollectionTest extends TestCase
     /**
      * {@inheritDoc}
      */
-    protected function setUp()
+    protected function setUp() : void
     {
         $this->persister              = $this->createMock(EntityPersister::class);
         $this->criteria               = new Criteria();

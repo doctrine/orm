@@ -23,7 +23,7 @@ class ManyToOneOrphanRemovalTest extends OrmFunctionalTestCase
         ]
     ];
 
-    protected function setUp()
+    protected function setUp() : void
     {
         $this->useModelSet('ornemental_orphan_removal');
 

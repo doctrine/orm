@@ -16,7 +16,7 @@ use Doctrine\Tests\OrmFunctionalTestCase;
  */
 class OneToOneCompositeIdTest extends OrmFunctionalTestCase
 {
-    public function setUp()
+    protected function setUp() : void
     {
         $this->useModelSet('vct_onetoone_compositeid');
         parent::setUp();
@@ -39,7 +39,7 @@ class OneToOneCompositeIdTest extends OrmFunctionalTestCase
         $this->_em->clear();
     }
 
-    public static function tearDownAfterClass()
+    public static function tearDownAfterClass() : void
     {
         $conn = static::$_sharedConn;
 

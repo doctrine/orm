@@ -8,7 +8,8 @@ class DDC168Test extends \Doctrine\Tests\OrmFunctionalTestCase
 {
     protected $oldMetadata;
 
-    protected function setUp() {
+    protected function setUp() : void
+    {
         $this->useModelSet('company');
         parent::setUp();
 
@@ -19,7 +20,7 @@ class DDC168Test extends \Doctrine\Tests\OrmFunctionalTestCase
         $this->_em->getMetadataFactory()->setMetadataFor(CompanyEmployee::class, $metadata);
     }
 
-    public function tearDown()
+    public function tearDown() : void
     {
         $this->_em->getMetadataFactory()->setMetadataFor(CompanyEmployee::class, $this->oldMetadata);
         parent::tearDown();

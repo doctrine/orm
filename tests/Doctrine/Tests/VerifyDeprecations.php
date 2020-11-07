@@ -67,7 +67,7 @@ trait VerifyDeprecations
         $this->ignoredDeprecations[] = $message;
     }
 
-    protected function expectDeprecationMessage(string $message) : void
+    protected function expectDeprecationMessageSame(string $message) : void
     {
         $this->expectedDeprecations[] = $message;
     }

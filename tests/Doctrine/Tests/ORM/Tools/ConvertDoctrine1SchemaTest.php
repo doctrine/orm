@@ -83,7 +83,7 @@ class ConvertDoctrine1SchemaTest extends OrmTestCase
         $this->assertHasDeprecationMessages();
     }
 
-    public function tearDown()
+    public function tearDown() : void
     {
         @unlink(__DIR__ . '/convert/User.dcm.yml');
         @unlink(__DIR__ . '/convert/Profile.dcm.yml');
