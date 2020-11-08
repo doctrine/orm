@@ -2,6 +2,7 @@
 
 namespace Doctrine\Tests\ORM\Query;
 
+use DateTimeImmutable;
 use Doctrine\ORM\Query\ParameterTypeInferer;
 use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\Types\Type;
@@ -18,7 +19,7 @@ class ParameterTypeInfererTest extends OrmTestCase
             ["bar",             PDO::PARAM_STR],
             ["1",               PDO::PARAM_STR],
             [new \DateTime,     Type::DATETIME],
-            [new \DateTimeImmutable(), Type::DATETIME_IMMUTABLE],
+            [new DateTimeImmutable(), Type::DATETIME_IMMUTABLE],
             [new \DateInterval('P1D'), Type::DATEINTERVAL],
             [[2],          Connection::PARAM_INT_ARRAY],
             [["foo"],      Connection::PARAM_STR_ARRAY],
