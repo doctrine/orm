@@ -27,6 +27,7 @@ use Doctrine\ORM\OptimisticLockException;
 use Doctrine\ORM\Query;
 use Doctrine\ORM\Utility\HierarchyDiscriminatorResolver;
 use Doctrine\ORM\Utility\PersisterHelper;
+use function is_string;
 
 /**
  * The SqlWalker is a TreeWalker that walks over a DQL AST and constructs
@@ -1872,6 +1873,40 @@ class SqlWalker implements TreeWalker
         $sql = ($existsExpr->not) ? 'NOT ' : '';
 
         $sql .= 'EXISTS (' . $this->walkSubselect($existsExpr->subselect) . ')';
+
+        return $sql;
+    }
+
+    /**
+     * @param Query\AST\CollectionMemberTempExpression $collMemberTempExpr
+     */
+    public function walkCollectionMemberTempExpression($collMemberTempExpr)
+    {
+        $sql = $collMemberTempExpr->not ? ' NOT ' : '';
+
+        $entityExpr = $collMemberTempExpr->entityExpr;
+        $tableNameExpr = $collMemberTempExpr->tableNameExpr;
+
+        switch (true) {
+            // InputParameter
+            case ($entityExpr instanceof AST\InputParameter):
+                $dqlParamKey = $entityExpr->name;
+                $entitySql   = '?';
+                break;
+
+            // SingleValuedAssociationPathExpression | IdentificationVariable
+            case ($entityExpr instanceof AST\PathExpression):
+                $entitySql = $this->walkPathExpression($entityExpr);
+                break;
+
+            default:
+                throw new \BadMethodCallException("Not implemented");
+        }
+
+        $tableName = is_string($tableNameExpr) ? $tempTableExpr : $tableNameExpr->value;
+        $tempTableAlias = $this->getSQLTableAlias($tableName);
+
+        $sql .= $entitySql . ' IN (SELECT ' . $tempTableAlias . '.id FROM ' . $tableName . ' AS ' . $tempTableAlias . ')';
 
         return $sql;
     }

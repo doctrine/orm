@@ -115,6 +115,7 @@ class Lexer extends AbstractLexer
     const T_WHEN                 = 254;
     const T_WHERE                = 255;
     const T_WITH                 = 256;
+    const T_MEMBERTEMP           = 257;
 
     /**
      * Creates a new query scanner object.
