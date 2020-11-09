@@ -2583,6 +2583,10 @@ class Parser
             return $this->CollectionMemberExpression();
         }
 
+        if ($token['type'] === Lexer::T_MEMBERTEMP) {
+            return $this->CollectionMemberTempExpression();
+        }
+
         if ($token['type'] === Lexer::T_IS && $lookahead['type'] === Lexer::T_NULL) {
             return $this->NullComparisonExpression();
         }
@@ -2614,6 +2618,31 @@ class Parser
         $this->match(Lexer::T_EMPTY);
 
         return $emptyCollectionCompExpr;
+    }
+
+    public function CollectionMemberTempExpression(): AST\CollectionMemberTempExpression
+    {
+        $not        = false;
+        $entityExpr = $this->SimpleEntityExpression();
+
+        if ($this->lexer->isNextToken(Lexer::T_NOT)) {
+            $this->match(Lexer::T_NOT);
+
+            $not = true;
+        }
+
+        $this->match(Lexer::T_MEMBERTEMP);
+
+        if ($this->lexer->isNextToken(Lexer::T_OF)) {
+            $this->match(Lexer::T_OF);
+        }
+
+        $collMemberExpr = new AST\CollectionMemberTempExpression(
+            $entityExpr, $this->StringPrimary()
+        );
+        $collMemberExpr->not = $not;
+
+        return $collMemberExpr;
     }
 
     /**
