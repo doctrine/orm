@@ -1698,7 +1698,7 @@ class BasicEntityPersister implements EntityPersister
         if (isset($this->class->fieldMappings[$field])) {
             // Fix for bug GH-8229 (id column from parent class renamed in child class):
             // Use the correct metadata and name for the id column
-            if (isset($this->class->fieldMappings[$field]['inherited'])) {
+            if (isset($this->class->fieldMappings[$field]['inherited']) && $this->class->inheritanceType !== ClassMetadata::INHERITANCE_TYPE_NONE) {
                 $className = $this->class->fieldMappings[$field]['inherited'];
                 $class     = $this->em->getClassMetadata($className);
             } else {
