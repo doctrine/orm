@@ -64,7 +64,7 @@ class SingleScalarHydratorTest extends HydrationTestCase
      */
     public function testHydrateSingleScalar($name, $resultSet)
     {
-        $rsm = new ResultSetMapping;
+        $rsm = new ResultSetMapping();
         $rsm->addEntityResult(CmsUser::class, 'u');
         $rsm->addFieldResult('u', 'u__id', 'id');
         $rsm->addFieldResult('u', 'u__name', 'name');
@@ -124,21 +124,20 @@ class SingleScalarHydratorTest extends HydrationTestCase
     }
 
     /**
-     *
      * @dataProvider singleScalarResultSetWithHiddenFieldProvider
      */
     public function testHydrateSingleScalarWithHiddenField($name, $resultSet)
     {
-        $rsm = new ResultSetMapping;
+        $rsm = new ResultSetMapping();
         $rsm->addScalarResult('u__id', 'id', 'string');
 
-        $stmt = new HydratorMockStatement($resultSet);
+        $stmt     = new HydratorMockStatement($resultSet);
         $hydrator = new SingleScalarHydrator($this->_em);
 
         if ($name === 'result1') {
             $result = $hydrator->hydrateAll($stmt, $rsm);
             $this->assertEquals('1', $result);
-            
+
             return;
         }
 
@@ -156,5 +155,4 @@ class SingleScalarHydratorTest extends HydrationTestCase
             return;
         }
     }
-
 }
