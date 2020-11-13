@@ -90,4 +90,79 @@ class SingleScalarHydratorTest extends HydrationTestCase
             $hydrator->hydrateAll($stmt, $rsm);
         }
     }
+    
+    
+    
+    
+    public static function singleScalarResultSetWithHiddenFieldProvider(): array
+    {
+        return [
+            // valid
+            [
+                'name'      => 'result1',
+                'resultSet' => [
+                    [
+                        'u__id'   => '1',
+                        'u__name' => 'romanb',
+                    ],
+                ],
+            ],
+            // valid
+            [
+                'name'      => 'result2',
+                'resultSet' => [
+                    [
+                        'u__name' => 'romanb',
+                    ],
+                ],
+            ],
+            // invalid
+            [
+                'name'      => 'result3',
+                'resultSet' => [
+                    [
+                        'u__id' => '1',
+                    ],
+                    [
+                        'u__id' => '2',
+                    ],
+                ],
+            ],
+        ];
+    }
+    
+    /**
+     *
+     * @dataProvider singleScalarResultSetWithHiddenFieldProvider
+     */
+    public function testHydrateSingleScalarWithHiddenField($name, $resultSet)
+    {
+        $rsm = new ResultSetMapping;
+        $rsm->addScalarResult('u__id', 'id', 'string');
+        
+        $stmt = new HydratorMockStatement($resultSet);
+        $hydrator = new SingleScalarHydrator($this->_em);
+    
+        if ($name === 'result1') {
+            $result = $hydrator->hydrateAll($stmt, $rsm);
+            $this->assertEquals('1', $result);
+            
+            return;
+        }
+    
+        if ($name === 'result2') {
+            $result = $hydrator->hydrateAll($stmt, $rsm);
+            $this->assertEquals(null, $result);
+            
+            return;
+        }
+        
+        if ($name === 'result3') {
+            $this->expectException(NonUniqueResultException::class);
+            $hydrator->hydrateAll($stmt, $rsm);
+            
+            return;
+        }
+    }
+    
 }
