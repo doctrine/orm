@@ -21,6 +21,9 @@ namespace Doctrine\ORM\Internal\Hydration;
 
 use Doctrine\ORM\NoResultException;
 use Doctrine\ORM\NonUniqueResultException;
+use function count;
+use function key;
+
 
 /**
  * Hydrator that hydrates a single scalar value from the result set.
