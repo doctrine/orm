@@ -209,7 +209,7 @@ class JoinedSubclassPersister extends AbstractEntityInheritancePersister
     public function getSelectSQL(
         $criteria,
         ?AssociationMetadata $association = null,
-        $lockMode = null,
+        $lockMode = LockMode::NONE,
         $limit = null,
         $offset = null,
         array $orderBy = []

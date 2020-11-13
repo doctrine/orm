@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Doctrine\ORM\Persisters\Entity;
 
 use Doctrine\Common\Collections\Criteria;
+use Doctrine\DBAL\LockMode;
 use Doctrine\ORM\Mapping\AssociationMetadata;
 use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\Mapping\ManyToManyAssociationMetadata;
@@ -63,7 +64,7 @@ interface EntityPersister
      * Gets the SELECT SQL to select one or more entities by a set of field criteria.
      *
      * @param Criteria|Criteria[] $criteria
-     * @param int|null            $lockMode
+     * @param int                 $lockMode
      * @param int|null            $limit
      * @param int|null            $offset
      * @param mixed[]             $orderBy
@@ -73,7 +74,7 @@ interface EntityPersister
     public function getSelectSQL(
         $criteria,
         ?AssociationMetadata $association = null,
-        $lockMode = null,
+        $lockMode = LockMode::NONE,
         $limit = null,
         $offset = null,
         array $orderBy = []
@@ -186,16 +187,14 @@ interface EntityPersister
     /**
      * Refreshes a managed entity.
      *
-     * @param mixed[]  $id       The identifier of the entity as an associative array from
+     * @param mixed[] $id       The identifier of the entity as an associative array from
      *                           column or field names to values.
-     * @param object   $entity   The entity to refresh.
-     * @param int|null $lockMode One of the \Doctrine\DBAL\LockMode::* constants
-     *                           or NULL if no specific lock mode should be used
-     *                           for refreshing the managed entity.
+     * @param object  $entity   The entity to refresh.
+     * @param int     $lockMode One of the \Doctrine\DBAL\LockMode::* constants.
      *
      * @return void
      */
-    public function refresh(array $id, $entity, $lockMode = null);
+    public function refresh(array $id, $entity, $lockMode = LockMode::NONE);
 
     /**
      * Loads an entity by a list of field criteria.
@@ -204,8 +203,7 @@ interface EntityPersister
      * @param object|null              $entity      The entity to load the data into. If not specified, a new entity is created.
      * @param AssociationMetadata|null $association The association that connects the entity to load to another entity, if any.
      * @param mixed[]                  $hints       Hints for entity creation.
-     * @param int|null                 $lockMode    One of the \Doctrine\DBAL\LockMode::* constants or NULL if no specific lock mode
-     *                                              should be used for loading the entity.
+     * @param int                      $lockMode    One of the \Doctrine\DBAL\LockMode::* constants.
      * @param int|null                 $limit       Limit number of results.
      * @param mixed[]                  $orderBy     Criteria to order by.
      *
@@ -218,7 +216,7 @@ interface EntityPersister
         $entity = null,
         ?AssociationMetadata $association = null,
         array $hints = [],
-        $lockMode = null,
+        $lockMode = LockMode::NONE,
         $limit = null,
         array $orderBy = []
     );

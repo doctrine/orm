@@ -792,7 +792,7 @@ class BasicEntityPersister implements EntityPersister
         $entity = null,
         ?AssociationMetadata $association = null,
         array $hints = [],
-        $lockMode = null,
+        $lockMode = LockMode::NONE,
         $limit = null,
         array $orderBy = []
     ) {
@@ -905,7 +905,7 @@ class BasicEntityPersister implements EntityPersister
     /**
      * {@inheritdoc}
      */
-    public function refresh(array $id, $entity, $lockMode = null)
+    public function refresh(array $id, $entity, $lockMode = LockMode::NONE)
     {
         $sql              = $this->getSelectSQL($id, null, $lockMode);
         [$params, $types] = $this->expandParameters($id);
@@ -1151,7 +1151,7 @@ class BasicEntityPersister implements EntityPersister
     public function getSelectSQL(
         $criteria,
         ?AssociationMetadata $association = null,
-        $lockMode = null,
+        $lockMode = LockMode::NONE,
         $limit = null,
         $offset = null,
         array $orderBy = []
@@ -2179,7 +2179,7 @@ class BasicEntityPersister implements EntityPersister
         $alias = $this->getSQLTableAlias($this->class->getTableName());
 
         $sql = 'SELECT 1 '
-             . $this->getLockTablesSql(null)
+             . $this->getLockTablesSql(LockMode::NONE)
              . ' WHERE ' . $this->getSelectConditionSQL($criteria);
 
         [$params, $types] = $this->expandParameters($criteria);

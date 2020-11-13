@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Doctrine\ORM\Cache\Persister\Entity;
 
 use Doctrine\Common\Collections\Criteria;
+use Doctrine\DBAL\LockMode;
 use Doctrine\ORM\Cache;
 use Doctrine\ORM\Cache\CollectionCacheKey;
 use Doctrine\ORM\Cache\EntityCacheKey;
@@ -105,7 +106,7 @@ abstract class AbstractEntityPersister implements CachedEntityPersister
     public function getSelectSQL(
         $criteria,
         ?AssociationMetadata $association = null,
-        $lockMode = null,
+        $lockMode = LockMode::NONE,
         $limit = null,
         $offset = null,
         array $orderBy = []
@@ -360,11 +361,11 @@ abstract class AbstractEntityPersister implements CachedEntityPersister
         $entity = null,
         ?AssociationMetadata $association = null,
         array $hints = [],
-        $lockMode = null,
+        $lockMode = LockMode::NONE,
         $limit = null,
         ?array $orderBy = null
     ) {
-        if ($entity !== null || $association !== null || ! empty($hints) || $lockMode !== null) {
+        if ($entity !== null || $association !== null || ! empty($hints)) {
             return $this->persister->load($criteria, $entity, $association, $hints, $lockMode, $limit, $orderBy);
         }
 
@@ -642,7 +643,7 @@ abstract class AbstractEntityPersister implements CachedEntityPersister
     /**
      * {@inheritdoc}
      */
-    public function refresh(array $id, $entity, $lockMode = null)
+    public function refresh(array $id, $entity, $lockMode = LockMode::NONE)
     {
         $this->persister->refresh($id, $entity, $lockMode);
     }
