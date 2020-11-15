@@ -6,6 +6,7 @@ namespace Doctrine\Tests\ORM\Mapping;
 
 use Doctrine\ORM\Mapping\Driver\AttributesDriver;
 use Doctrine\Persistence\Mapping\Driver\MappingDriver;
+
 use const PHP_VERSION_ID;
 
 class AttributeDriverTest extends AbstractMappingDriverTest
