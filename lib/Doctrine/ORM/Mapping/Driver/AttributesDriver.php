@@ -182,8 +182,10 @@ class AttributesDriver extends AnnotationDriver
             // Check for JoinColumn/JoinColumns annotations
             $joinColumns = [];
 
-            if ($joinColumnAttribute = $this->reader->getPropertyAnnotation($property, Mapping\JoinColumn::class)) {
-                $joinColumns[] = $this->joinColumnToArray($joinColumnAttribute);
+            if ($joinColumnAttributes = $this->reader->getPropertyAnnotation($property, Mapping\JoinColumn::class)) {
+                foreach ($joinColumnAttributes as $joinColumnAttribute) {
+                    $joinColumns[] = $this->joinColumnToArray($joinColumnAttribute);
+                }
             }
 
             // Field can only be annotated with one of:
@@ -218,8 +220,6 @@ class AttributesDriver extends AnnotationDriver
                             'initialValue' => $seqGeneratorAttribute->initialValue
                         ]
                     );
-                } else if ($this->reader->getPropertyAnnotation($property, 'Doctrine\ORM\Mapping\TableGenerator')) {
-                    throw MappingException::tableIdGeneratorNotImplemented($className);
                 } else if ($customGeneratorAttribute = $this->reader->getPropertyAnnotation($property, Mapping\CustomIdGenerator::class)) {
                     $metadata->setCustomGeneratorDefinition(
                         [
@@ -428,7 +428,7 @@ class AttributesDriver extends AnnotationDriver
     /**
      * Parse the given JoinColumn as array
      *
-     * @param Mapping\JoinColumn $joinColumn
+     * @param Mapping\JoinColumn|Mapping\InverseJoinColumn $joinColumn
      *
      * @return mixed[]
      *
@@ -441,7 +441,7 @@ class AttributesDriver extends AnnotationDriver
      *                   referencedColumnName: string
      *               }
      */
-    private function joinColumnToArray(Mapping\JoinColumn $joinColumn)
+    private function joinColumnToArray(object $joinColumn)
     {
         return [
             'name' => $joinColumn->name,

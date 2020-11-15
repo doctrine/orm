@@ -48,7 +48,8 @@ class AttributeReader implements Reader
         foreach ($attributes as $attribute) {
             // Make sure we only get Doctrine Annotations
             if (is_subclass_of($attribute->getName(), Annotation::class)) {
-                $instance = new $attribute->getName();
+                $attributeClassName = $attribute->getName();
+                $instance = new $attributeClassName;
                 $arguments = $attribute->getArguments();
 
                 // unnamed argument is automatically "value" in Doctrine Annotations
@@ -80,8 +81,8 @@ class AttributeReader implements Reader
         }
 
         $reflectionClass = new \ReflectionClass($attributeClassName);
-        $attribute = $reflectionClass->getAttributes()[0];
+        $attribute = $reflectionClass->getAttributes()[0]->newInstance();
 
-        return $this->isRepeatableAttribute[$attributeClassName] = $attribute->flags && Attribute::IS_REPEATABLE;
+        return $this->isRepeatableAttribute[$attributeClassName] = $attribute->flags & \Attribute::IS_REPEATABLE;
     }
 }

@@ -1092,6 +1092,10 @@ abstract class AbstractMappingDriverTest extends OrmTestCase
  * )
  * @NamedQueries({@NamedQuery(name="all", query="SELECT u FROM __CLASS__ u")})
  */
+#[ORM\Entity(), ORM\HasLifecycleCallbacks()]
+#[ORM\Table(name: "cms_users", options: ["foo" => "bar", "baz" => ["key" => "val"]])]
+#[ORM\Index(name: "name_idx", columns: ["name"]), ORM\Index(name: "0", columns: ["user_email"])]
+#[ORM\UniqueConstraint(name: "search_idx", columns: ["name", "user_email"], options: ["where" => "name IS NOT NULL"])]
 class User
 {
     /**
@@ -1100,28 +1104,37 @@ class User
      * @generatedValue(strategy="AUTO")
      * @SequenceGenerator(sequenceName="tablename_seq", initialValue=1, allocationSize=100)
      **/
+    #[ORM\Id, ORM\Column(type: "integer", options: ["foo" => "bar", "unsigned" => false])]
+    #[ORM\GeneratedValue(strategy: "AUTO")]
+    #[ORM\SequenceGenerator(sequenceName: "tablename_seq", initialValue: 1, allocationSize: 100)]
     public $id;
 
     /**
      * @Column(length=50, nullable=true, unique=true, options={"foo": "bar", "baz": {"key": "val"}, "fixed": false})
      */
+    #[ORM\Column(length: 50, nullable: true, unique: true, options: ["foo" => "bar", "baz" => ["key" => "val"], "fixed" => false])]
     public $name;
 
     /**
      * @Column(name="user_email", columnDefinition="CHAR(32) NOT NULL")
      */
+    #[ORM\Column(name: "user_email", columnDefinition: "CHAR(32) NOT NULL")]
     public $email;
 
     /**
      * @OneToOne(targetEntity="Address", cascade={"remove"}, inversedBy="user")
      * @JoinColumn(onDelete="CASCADE")
      */
+    #[ORM\OneToOne(targetEntity: "Address", cascade: ["remove"], inverstedBy: "user")]
+    #[ORM\JoinColumn(onDelete: "CASCADE")]
     public $address;
 
     /**
      * @OneToMany(targetEntity="Phonenumber", mappedBy="user", cascade={"persist"}, orphanRemoval=true)
      * @OrderBy({"number"="ASC"})
      */
+    #[ORM\OneToMany(targetEntity: "Phonenumber", mappedBy: "user", cascade: ["persist"], orphanRemoval: true)]
+    #[ORM\OrderBy(["number" => "ASC"])]
     public $phonenumbers;
 
     /**
@@ -1131,18 +1144,24 @@ class User
      *    inverseJoinColumns={@JoinColumn(name="group_id", referencedColumnName="id", columnDefinition="INT NULL")}
      * )
      */
+    #[ORM\ManyToMany(targetEntity: "Group", cascade: ["all"])]
+    #[ORM\JoinTable(name: "cms_user_groups")]
+    #[ORM\JoinColumn(name: "user_id", referencedColumnName: "id", nullable: false, unique: false)]
+    #[ORM\InverseJoinColumn(name: "group_id", referencedColumnName: "id", columnDefinition: "INT NULL")]
     public $groups;
 
     /**
      * @Column(type="integer")
      * @Version
      */
+    #[ORM\Column(type: "integer"), ORM\Version]
     public $version;
 
 
     /**
      * @PrePersist
      */
+    #[ORM\PrePersist]
     public function doStuffOnPrePersist()
     {
     }
@@ -1150,12 +1169,14 @@ class User
     /**
      * @PrePersist
      */
+    #[ORM\PrePersist]
     public function doOtherStuffOnPrePersistToo() {
     }
 
     /**
      * @PostPersist
      */
+    #[ORM\PostPersist]
     public function doStuffOnPostPersist()
     {
 
@@ -1468,7 +1489,7 @@ class Group {}
  * @Table(indexes={@Index(columns={"content"}, flags={"fulltext"}, options={"where": "content IS NOT NULL"})})
  */
 #[ORM\Entity, ORM\Table(name: "Comment")]
-#[ORM\Index(columns: ["content"], flags: ["fulltext"], options: ["where": "content IS NOT NULL"])]
+#[ORM\Index(columns: ["content"], flags: ["fulltext"], options: ["where" => "content IS NOT NULL"])]
 class Comment
 {
     /**

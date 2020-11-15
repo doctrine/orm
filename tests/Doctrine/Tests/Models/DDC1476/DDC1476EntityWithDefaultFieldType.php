@@ -2,20 +2,24 @@
 
 namespace Doctrine\Tests\Models\DDC1476;
 
+use Doctrine\ORM\Mapping as ORM;
+
 /**
  * @Entity()
  */
+#[ORM\Entity]
 class DDC1476EntityWithDefaultFieldType
 {
-
     /**
      * @Id
      * @Column()
      * @GeneratedValue("NONE")
      */
+    #[ORM\Id, ORM\Column, ORM\GeneratedValue("NONE")]
     protected $id;
 
     /** @column() */
+    #[ORM\Column]
     protected $name;
 
     /**

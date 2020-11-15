@@ -19,6 +19,8 @@
 
 namespace Doctrine\ORM\Mapping;
 
+use Attribute;
+
 /**
  * @Annotation
  * @Target({"PROPERTY","ANNOTATION"})
