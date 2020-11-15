@@ -514,8 +514,8 @@ abstract class AbstractMappingDriverTest extends OrmTestCase
         $this->assertArrayHasKey('columnDefinition', $class->fieldMappings['id']);
         $this->assertArrayHasKey('columnDefinition', $class->fieldMappings['value']);
 
-        $this->assertEquals("INT unsigned NOT NULL", $class->fieldMappings['id']['columnDefinition']);
-        $this->assertEquals("VARCHAR(255) NOT NULL", $class->fieldMappings['value']['columnDefinition']);
+        $this->assertEquals("int unsigned not null", strtolower($class->fieldMappings['id']['columnDefinition']));
+        $this->assertEquals("varchar(255) not null", strtolower($class->fieldMappings['value']['columnDefinition']));
     }
 
     /**

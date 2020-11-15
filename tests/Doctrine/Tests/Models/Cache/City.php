@@ -24,6 +24,7 @@ class City
     /**
      * @Column(unique=true)
      */
+    #[ORM\Column(unique: true)]
     protected $name;
 
     /**
@@ -31,18 +32,24 @@ class City
      * @ManyToOne(targetEntity="State", inversedBy="cities")
      * @JoinColumn(name="state_id", referencedColumnName="id")
      */
+    #[ORM\Cache]
+    #[ORM\ManyToOne(targetEntity: "State", inversedBy: "citities")]
+    #[ORM\JoinColumn(name: "state_id", referencedColumnName: "id")]
     protected $state;
 
-     /**
+    /**
      * @ManyToMany(targetEntity="Travel", mappedBy="visitedCities")
      */
+    #[ORM\ManyToMany(targetEntity: "Travel", mappedBy: "visitedCities")]
     public $travels;
 
-     /**
+    /**
      * @Cache
      * @OrderBy({"name" = "ASC"})
      * @OneToMany(targetEntity="Attraction", mappedBy="city")
      */
+    #[ORM\Cache, ORM\OrderBy(["name" => "ASC"])]
+    #[ORM\OneToMany(targetEntity: "Attraction", mappedBy: "city")]
     public $attractions;
 
     public function __construct($name, State $state = null)

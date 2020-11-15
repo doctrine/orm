@@ -2,6 +2,8 @@
 
 namespace Doctrine\Tests\Models\Company;
 
+use Doctrine\ORM\Mapping as ORM;
+
 class CompanyContractListener
 {
     public $postPersistCalls;
@@ -20,6 +22,7 @@ class CompanyContractListener
     /**
      * @PostPersist
      */
+    #[ORM\PostPersist]
     public function postPersistHandler(CompanyContract $contract)
     {
         $this->postPersistCalls[] = func_get_args();
@@ -28,6 +31,7 @@ class CompanyContractListener
     /**
      * @PrePersist
      */
+    #[ORM\PrePersist]
     public function prePersistHandler(CompanyContract $contract)
     {
         $this->prePersistCalls[] = func_get_args();
@@ -36,6 +40,7 @@ class CompanyContractListener
     /**
      * @PostUpdate
      */
+    #[ORM\PostUpdate]
     public function postUpdateHandler(CompanyContract $contract)
     {
         $this->postUpdateCalls[] = func_get_args();
@@ -44,6 +49,7 @@ class CompanyContractListener
     /**
      * @PreUpdate
      */
+    #[ORM\PreUpdate]
     public function preUpdateHandler(CompanyContract $contract)
     {
         $this->preUpdateCalls[] = func_get_args();
@@ -52,6 +58,7 @@ class CompanyContractListener
     /**
      * @PostRemove
      */
+    #[ORM\PostRemove]
     public function postRemoveHandler(CompanyContract $contract)
     {
         $this->postRemoveCalls[] = func_get_args();
@@ -60,6 +67,7 @@ class CompanyContractListener
     /**
      * @PreRemove
      */
+    #[ORM\PreRemove]
     public function preRemoveHandler(CompanyContract $contract)
     {
         $this->preRemoveCalls[] = func_get_args();
@@ -68,6 +76,7 @@ class CompanyContractListener
     /**
      * @PreFlush
      */
+    #[ORM\PreFlush]
     public function preFlushHandler(CompanyContract $contract)
     {
         $this->preFlushCalls[] = func_get_args();
@@ -76,6 +85,7 @@ class CompanyContractListener
     /**
      * @PostLoad
      */
+    #[ORM\PostLoad]
     public function postLoadHandler(CompanyContract $contract)
     {
         $this->postLoadCalls[] = func_get_args();

@@ -65,7 +65,7 @@ use Doctrine\ORM\Mapping as ORM;
  */
 #[ORM\Entity]
 #[ORM\Table(name: "cms_addresses")]
-#[ORM\Entitylisteners(["CmsAddressListener"])]
+#[ORM\EntityListeners(["CmsAddressListener"])]
 class CmsAddress
 {
     /**
