@@ -26,8 +26,7 @@ class AttributeReader
         return $this->convertToAttributeInstances($class->getAttributes());
     }
 
-    /** @return array<object>|?object */
-    // phpcs:ignore
+    /** @return array<object>|object|null */
     public function getClassAnnotation(ReflectionClass $class, $annotationName)
     {
         return $this->getClassAnnotations($class)[$annotationName] ?? ($this->isRepeatable($annotationName) ? [] : null);
@@ -39,8 +38,7 @@ class AttributeReader
         return $this->convertToAttributeInstances($method->getAttributes());
     }
 
-    /** @return array<object>|?object */
-    // phpcs:ignore
+    /** @return array<object>|object|null */
     public function getMethodAnnotation(ReflectionMethod $method, $annotationName)
     {
         return $this->getMethodAnnotations($method)[$annotationName] ?? ($this->isRepeatable($annotationName) ? [] : null);
@@ -52,8 +50,7 @@ class AttributeReader
         return $this->convertToAttributeInstances($property->getAttributes());
     }
 
-    /** @return array<object>|?object */
-    // phpcs:ignore
+    /** @return array<object>|object|null */
     public function getPropertyAnnotation(ReflectionProperty $property, $annotationName)
     {
         return $this->getPropertyAnnotations($property)[$annotationName] ?? ($this->isRepeatable($annotationName) ? [] : null);
