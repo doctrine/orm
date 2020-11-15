@@ -22,6 +22,12 @@
         <exclude name="SlevomatCodingStandard.ControlStructures.EarlyExit"/>
         <exclude name="SlevomatCodingStandard.Classes.SuperfluousAbstractClassNaming"/>
         <exclude name="SlevomatCodingStandard.Classes.SuperfluousExceptionNaming"/>
+
+        <!-- necessary until Attributes are supported -->
+        <exclude name="PEAR.Commenting.InlineComment.WrongStyle" />
+
+        <!-- quite overkill to ignore this, but its necessary since Attributes are not detected yet -->
+        <exclude name="SlevomatCodingStandard.Namespaces.UnusedUses.UnusedUse" />
     </rule>
 
     <rule ref="PSR1.Classes.ClassDeclaration.MultipleClasses">
