@@ -1,4 +1,7 @@
 <?php
+
+declare(strict_types=1);
+
 /*
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
  * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
@@ -24,40 +27,21 @@ use Attribute;
 #[Attribute(Attribute::TARGET_PROPERTY | Attribute::IS_REPEATABLE)]
 final class InverseJoinColumn implements Annotation
 {
-    /**
-     * @var string
-     */
-    public $name;
+    public string $name;
 
-    /**
-     * @var string
-     */
-    public $referencedColumnName = 'id';
+    public string $referencedColumnName = 'id';
 
-    /**
-     * @var boolean
-     */
-    public $unique = false;
+    public bool $unique = false;
 
-    /**
-     * @var boolean
-     */
-    public $nullable = true;
+    public bool $nullable = true;
 
-    /**
-     * @var mixed
-     */
+    /** @var mixed */
     public $onDelete;
 
-    /**
-     * @var string
-     */
-    public $columnDefinition;
+    public string $columnDefinition;
 
     /**
      * Field name used in non-object hydration (array/scalar).
-     *
-     * @var string
      */
-    public $fieldName;
+    public string $fieldName;
 }
