@@ -24,7 +24,7 @@ final class GH6531Test extends \Doctrine\Tests\OrmFunctionalTestCase
     }
 
     /**
-     * @group 6531
+     * @group GH-6531
      */
     public function testSimpleDerivedIdentity() : void
     {
@@ -41,7 +41,7 @@ final class GH6531Test extends \Doctrine\Tests\OrmFunctionalTestCase
     }
 
     /**
-     * @group 6531
+     * @group GH-6531
      */
     public function testDynamicAttributes() : void
     {
@@ -58,7 +58,7 @@ final class GH6531Test extends \Doctrine\Tests\OrmFunctionalTestCase
     }
 
     /**
-     * @group 6531
+     * @group GH-6531
      */
     public function testJoinTableWithMetadata() : void
     {

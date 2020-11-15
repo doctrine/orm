@@ -26,6 +26,7 @@ use Doctrine\Inflector\InflectorFactory;
 use Doctrine\ORM\Mapping\ClassMetadataInfo;
 use ReflectionClass;
 use const E_USER_DEPRECATED;
+use const PHP_VERSION_ID;
 use function str_replace;
 use function trigger_error;
 use function var_export;
@@ -819,6 +820,8 @@ public function __construct(<params>)
     /**
      * @todo this won't work if there is a namespace in brackets and a class outside of it.
      *
+     * @psalm-suppress UndefinedConstant
+     *
      * @param string $src
      *
      * @return void
@@ -841,6 +844,8 @@ public function __construct(<params>)
 
             if ($inNamespace) {
                 if (in_array($token[0], [T_NS_SEPARATOR, T_STRING], true)) {
+                    $lastSeenNamespace .= $token[1];
+                } elseif (PHP_VERSION_ID >= 80000 && ($token[0] === T_NAME_QUALIFIED || $token[0] === T_NAME_FULLY_QUALIFIED)) {
                     $lastSeenNamespace .= $token[1];
                 } elseif (is_string($token) && in_array($token, [';', '{'], true)) {
                     $inNamespace = false;

@@ -6,7 +6,7 @@ use Doctrine\Tests\Models\CMS\CmsUser;
 use Doctrine\Tests\OrmFunctionalTestCase;
 
 /**
- * @group 6699
+ * @group GH-6699
  */
 final class GH6699Test extends OrmFunctionalTestCase
 {

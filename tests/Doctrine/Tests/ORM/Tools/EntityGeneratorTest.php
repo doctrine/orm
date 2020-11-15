@@ -325,7 +325,7 @@ class EntityGeneratorTest extends OrmTestCase
 
         $reflMethod = new \ReflectionMethod($metadata->name, 'setIsbn');
         $reflParameters = $reflMethod->getParameters();
-        $this->assertEquals($isbnMetadata->name, $reflParameters[0]->getClass()->name);
+        $this->assertEquals($isbnMetadata->name, $reflParameters[0]->getType()->getName());
     }
 
     public function testBooleanDefaultValue()
@@ -673,7 +673,6 @@ class EntityGeneratorTest extends OrmTestCase
             '@JoinColumn(name="idpais", referencedColumnName="idpais")',
             $docComment
         );
-
     }
 
      /**
@@ -954,7 +953,7 @@ class EntityGeneratorTest extends OrmTestCase
 
         $reflMethod = new \ReflectionMethod($metadata->name, 'setTest');
         $reflParameters = $reflMethod->getParameters();
-        $this->assertEquals($embeddedMetadata->name, $reflParameters[0]->getClass()->name);
+        $this->assertEquals($embeddedMetadata->name, $reflParameters[0]->getType()->getName());
     }
 
     /**
@@ -992,7 +991,7 @@ class EntityGeneratorTest extends OrmTestCase
 
         $this->assertCount(6, $reflParameters);
 
-        $this->assertSame($embeddedMetadata->name, $reflParameters[0]->getClass()->name);
+        $this->assertSame($embeddedMetadata->name, $reflParameters[0]->getType()->getName());
         $this->assertSame('test', $reflParameters[0]->getName());
         $this->assertFalse($reflParameters[0]->isOptional());
 
@@ -1019,14 +1018,14 @@ class EntityGeneratorTest extends OrmTestCase
         $this->assertSame('field1', $reflParameters[0]->getName());
         $this->assertFalse($reflParameters[0]->isOptional());
 
-        $this->assertSame('DateTime', $reflParameters[1]->getClass()->name);
+        $this->assertSame('DateTime', $reflParameters[1]->getType()->getName());
         $this->assertSame('field3', $reflParameters[1]->getName());
         $this->assertFalse($reflParameters[1]->isOptional());
 
         $this->assertSame('field2', $reflParameters[2]->getName());
         $this->assertTrue($reflParameters[2]->isOptional());
 
-        $this->assertSame('DateTime', $reflParameters[3]->getClass()->name);
+        $this->assertSame('DateTime', $reflParameters[3]->getType()->getName());
         $this->assertSame('field4', $reflParameters[3]->getName());
         $this->assertTrue($reflParameters[3]->isOptional());
     }

@@ -9,7 +9,7 @@ use Doctrine\Tests\Models\Quote\User;
 use Doctrine\Tests\OrmFunctionalTestCase;
 
 /**
- * @group 6402
+ * @group GH-6402
  */
 class GH6402Test extends OrmFunctionalTestCase
 {

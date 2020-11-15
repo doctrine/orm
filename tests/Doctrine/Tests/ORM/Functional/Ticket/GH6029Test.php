@@ -30,7 +30,7 @@ final class GH6029Test extends OrmFunctionalTestCase
      * Verifies that when wrong entity is persisted via relationship field, the error message does not correctly state
      * the expected class name.
      *
-     * @group 6029
+     * @group GH-6029
      */
     public function testManyToManyAssociation() : void
     {
@@ -55,7 +55,7 @@ final class GH6029Test extends OrmFunctionalTestCase
      * Verifies that when wrong entity is persisted via relationship field, the error message does not correctly state
      * the expected class name.
      *
-     * @group 6029
+     * @group GH-6029
      */
     public function testOneToManyAssociation() : void
     {

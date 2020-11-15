@@ -14,7 +14,7 @@ final class GH7067Test extends \Doctrine\Tests\OrmFunctionalTestCase
     }
 
     /**
-     * @group 7067
+     * @group GH-7067
      */
     public function testSLCWithVersion() : void
     {

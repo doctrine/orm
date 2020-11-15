@@ -4,7 +4,6 @@ namespace Doctrine\Tests;
 
 use Doctrine\Common\Cache\ArrayCache;
 use Doctrine\DBAL\Driver\Connection;
-use Doctrine\DBAL\Driver\PDOSqlite\Driver as SqliteDriver;
 use Doctrine\DBAL\Logging\DebugStack;
 use Doctrine\DBAL\Types\Type;
 use Doctrine\ORM\Cache\CacheConfiguration;
@@ -19,6 +18,7 @@ use Doctrine\Tests\DbalTypes\Rot13Type;
 use Doctrine\Tests\EventListener\CacheMetadataListener;
 use Doctrine\Tests\Models;
 use PHPUnit\Framework\AssertionFailedError;
+use PHPUnit\Framework\Warning;
 use Throwable;
 
 /**
@@ -787,7 +787,7 @@ abstract class OrmFunctionalTestCase extends OrmTestCase
      */
     protected function onNotSuccessfulTest(Throwable $e) : void
     {
-        if ($e instanceof AssertionFailedError) {
+        if ($e instanceof AssertionFailedError || $e instanceof Warning) {
             throw $e;
         }
 

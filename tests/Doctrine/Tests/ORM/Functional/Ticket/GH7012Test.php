@@ -19,7 +19,7 @@ final class GH7012Test extends OrmFunctionalTestCase
     }
 
     /**
-     * @group 7012
+     * @group GH-7012
      */
     public function testUpdateEntityWithIdentifierAssociationWithQuotedJoinColumn() : void
     {

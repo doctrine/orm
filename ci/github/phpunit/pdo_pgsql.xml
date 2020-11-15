@@ -5,7 +5,6 @@
          beStrictAboutOutputDuringTests="true"
          beStrictAboutTodoAnnotatedTests="true"
          failOnRisky="true"
-         failOnWarning="true"
 >
     <php>
         <var name="db_driver" value="pdo_pgsql"/>

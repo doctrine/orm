@@ -16,7 +16,6 @@ class DDC144Test extends OrmFunctionalTestCase
                 $this->_em->getClassMetadata(DDC144Operand::class),
             ]
         );
-
     }
 
     /**

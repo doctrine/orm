@@ -15,7 +15,7 @@ final class GH7259Test extends OrmFunctionalTestCase
     }
 
     /**
-     * @group 7259
+     * @group GH-7259
      */
     public function testPersistFileBeforeVersion() : void
     {
@@ -42,7 +42,7 @@ final class GH7259Test extends OrmFunctionalTestCase
     }
 
     /**
-     * @group 7259
+     * @group GH-7259
      */
     public function testPersistFileAfterVersion() : void
     {

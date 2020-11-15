@@ -13,9 +13,9 @@ class DDC3303Test extends OrmFunctionalTestCase
     }
 
     /**
-     * @group 4097
-     * @group 4277
-     * @group 5867
+     * @group GH-4097
+     * @group GH-4277
+     * @group GH-5867
      *
      * When using an embedded field in an inheritance, private properties should also be inherited.
      */

@@ -6,7 +6,7 @@ use Doctrine\Common\Cache\ArrayCache;
 use Doctrine\Tests\OrmFunctionalTestCase;
 
 /**
- * @group 2947
+ * @group GH-2947
  */
 class GH2947Test extends OrmFunctionalTestCase
 {

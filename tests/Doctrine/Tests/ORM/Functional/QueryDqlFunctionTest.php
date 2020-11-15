@@ -312,8 +312,7 @@ class QueryDqlFunctionTest extends OrmFunctionalTestCase
         self::assertEqualsWithDelta(
             (new \DateTimeImmutable($result['now']))->modify(sprintf('+%d %s', $amount, $unit)),
             new \DateTimeImmutable($result['add']),
-            $delta,
-            ''
+            $delta
         );
     }
 
@@ -342,8 +341,7 @@ class QueryDqlFunctionTest extends OrmFunctionalTestCase
         self::assertEqualsWithDelta(
             (new \DateTimeImmutable($result['now']))->modify(sprintf('-%d %s', $amount, $unit)),
             new \DateTimeImmutable($result['sub']),
-            $delta,
-            ''
+            $delta
         );
     }
 

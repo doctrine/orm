@@ -27,7 +27,7 @@ class GH7062Test extends OrmFunctionalTestCase
     }
 
     /**
-     * @group 7062
+     * @group GH-7062
      */
     public function testEntityWithAssociationKeyIdentityCanBeUpdated() : void
     {
