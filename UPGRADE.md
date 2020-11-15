@@ -45,6 +45,11 @@ declaration for parameters and return (as much as possible).
 
 If you want to extend it now you have to provide your own validation schema.
 
+## BC Break: Entity Listeners no long support naming convention methods
+
+If you want their behavior to be kept, please add the necessary Annotation methods (in case XML driver is used,
+no changes are necessary).
+
 ## BC Break: Removed `Doctrine\ORM\Mapping\Exporter\VariableExporter` constants
 
 This constant has been removed
@@ -330,6 +335,13 @@ Every field, association join column or inline embedded field/association holds 
 
 
 # Upgrade to 2.6
+
+## Added `Doctrine\ORM\EntityRepository::count()` method
+
+`Doctrine\ORM\EntityRepository::count()` has been added. This new method has different
+signature than `Countable::count()` (required parameter) and therefore are not compatible.
+If your repository implemented the `Countable` interface, you will have to use
+`$repository->count([])` instead and not implement `Countable` interface anymore.
 
 ## Minor BC BREAK: `Doctrine\ORM\Tools\Console\ConsoleRunner` is now final
 

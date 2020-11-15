@@ -4,10 +4,9 @@ declare(strict_types=1);
 
 namespace Doctrine\ORM\Mapping;
 
-use ArrayIterator;
+use Doctrine\ORM\Reflection\ReflectionService;
 use ReflectionClass;
 use ReflectionException;
-use ReflectionProperty;
 
 /**
  * A <tt>ComponentMetadata</tt> instance holds object-relational property mapping.
@@ -31,14 +30,11 @@ abstract class ComponentMetadata
     protected $cache;
 
     /** @var Property[] */
-    protected $declaredProperties = [];
+    protected $properties = [];
 
-    public function __construct(string $className, ClassMetadataBuildingContext $metadataBuildingContext)
+    public function __construct(string $className)
     {
-        $reflectionService = $metadataBuildingContext->getReflectionService();
-
-        $this->reflectionClass = $reflectionService->getClass($className);
-        $this->className       = $this->reflectionClass ? $this->reflectionClass->getName() : $className;
+        $this->className = $className;
     }
 
     public function getClassName() : string
@@ -54,6 +50,23 @@ abstract class ComponentMetadata
     public function getParent() : ?ComponentMetadata
     {
         return $this->parent;
+    }
+
+    public function wakeupReflection(ReflectionService $reflectionService) : void
+    {
+        // Restore ReflectionClass and properties
+        $this->reflectionClass = $reflectionService->getClass($this->className);
+
+        if (! $this->reflectionClass) {
+            return;
+        }
+
+        $this->className = $this->reflectionClass->getName();
+
+        foreach ($this->properties as $property) {
+            /** @var Property $property */
+            $property->wakeupReflection($reflectionService);
+        }
     }
 
     public function getReflectionClass() : ?ReflectionClass
@@ -74,9 +87,9 @@ abstract class ComponentMetadata
     /**
      * @return iterable|Property[]
      */
-    public function getDeclaredPropertiesIterator() : iterable
+    public function getPropertiesIterator() : iterable
     {
-        foreach ($this->declaredProperties as $name => $property) {
+        foreach ($this->properties as $name => $property) {
             yield $name => $property;
         }
     }
@@ -85,92 +98,27 @@ abstract class ComponentMetadata
      * @throws ReflectionException
      * @throws MappingException
      */
-    public function addDeclaredProperty(Property $property) : void
+    public function addProperty(Property $property) : void
     {
         $className    = $this->getClassName();
         $propertyName = $property->getName();
 
-        // @todo guilhermeblanco Switch to hasProperty once inherited properties are not being mapped on child classes
-        if ($this->hasDeclaredProperty($propertyName)) {
+        if ($this->hasProperty($propertyName)) {
             throw MappingException::duplicateProperty($className, $this->getProperty($propertyName));
         }
 
         $property->setDeclaringClass($this);
 
-        if ($this->reflectionClass) {
-            $reflectionProperty = new ReflectionProperty($className, $propertyName);
-
-            $reflectionProperty->setAccessible(true);
-
-            $property->setReflectionProperty($reflectionProperty);
-        }
-
-        $this->declaredProperties[$propertyName] = $property;
-    }
-
-    public function hasDeclaredProperty(string $propertyName) : bool
-    {
-        return isset($this->declaredProperties[$propertyName]);
-    }
-
-    /**
-     * @return iterable|Property[]
-     */
-    public function getPropertiesIterator() : iterable
-    {
-        if ($this->parent) {
-            yield from $this->parent->getPropertiesIterator();
-        }
-
-        yield from $this->getDeclaredPropertiesIterator();
-    }
-
-    public function getProperty(string $propertyName) : ?Property
-    {
-        if (isset($this->declaredProperties[$propertyName])) {
-            return $this->declaredProperties[$propertyName];
-        }
-
-        if ($this->parent) {
-            return $this->parent->getProperty($propertyName);
-        }
-
-        return null;
+        $this->properties[$propertyName] = $property;
     }
 
     public function hasProperty(string $propertyName) : bool
     {
-        if (isset($this->declaredProperties[$propertyName])) {
-            return true;
-        }
-
-        return $this->parent && $this->parent->hasProperty($propertyName);
+        return isset($this->properties[$propertyName]);
     }
 
-    /**
-     * @return ArrayIterator|ColumnMetadata[]
-     */
-    public function getColumnsIterator() : ArrayIterator
+    public function getProperty(string $propertyName) : ?Property
     {
-        $iterator = new ArrayIterator();
-
-        // @todo guilhermeblanco Must be switched to getPropertiesIterator once class only has its declared properties
-        foreach ($this->getDeclaredPropertiesIterator() as $property) {
-            switch (true) {
-                case $property instanceof FieldMetadata:
-                    $iterator->offsetSet($property->getColumnName(), $property);
-                    break;
-
-                case $property instanceof ToOneAssociationMetadata && $property->isOwningSide():
-                    foreach ($property->getJoinColumns() as $joinColumn) {
-                        /** @var JoinColumnMetadata $joinColumn */
-                        $iterator->offsetSet($joinColumn->getColumnName(), $joinColumn);
-                    }
-
-                    break;
-            }
-        }
-
-        return $iterator;
+        return $this->properties[$propertyName] ?? null;
     }
 }

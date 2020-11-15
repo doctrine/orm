@@ -366,16 +366,6 @@ class MappingException extends LogicException implements ORMException
      *
      * @return MappingException
      */
-    public static function tableIdGeneratorNotImplemented($className)
-    {
-        return new self('TableIdGenerator is not yet implemented for use with class ' . $className);
-    }
-
-    /**
-     * @param string $className
-     *
-     * @return MappingException
-     */
     public static function duplicateProperty($className, Property $property)
     {
         return new self(sprintf(
@@ -429,11 +419,9 @@ class MappingException extends LogicException implements ORMException
     }
 
     /**
-     * @param Type $unsupportedType
-     *
      * @return MappingException
      */
-    public static function unsupportedOptimisticLockingType($unsupportedType)
+    public static function unsupportedOptimisticLockingType(Type $unsupportedType)
     {
         return new self('Locking type "' . $unsupportedType->getName() . '" is not supported by Doctrine.');
     }
@@ -530,15 +518,15 @@ class MappingException extends LogicException implements ORMException
      *
      * @return MappingException
      */
-    public static function sqlConversionNotAllowedForPrimaryKeyProperties($className, Property $property)
+    public static function sqlConversionNotAllowedForPrimaryKeyProperties($className, $fieldName, $type)
     {
         return new self(sprintf(
             'It is not possible to set id field "%s" to type "%s" in entity class "%s". ' .
             'The type "%s" requires conversion SQL which is not allowed for identifiers.',
-            $property->getName(),
-            $property->getTypeName(),
+            $fieldName,
+            $type,
             $className,
-            $property->getTypeName()
+            $type
         ));
     }
 
@@ -706,7 +694,7 @@ class MappingException extends LogicException implements ORMException
      */
     public static function lifecycleCallbackMethodNotFound($className, $methodName)
     {
-        return new self("Entity '" . $className . "' has no method '" . $methodName . "' to be registered as lifecycle callback.");
+        return new self("Entity '" . $className . "' has no public method '" . $methodName . "' to be registered as lifecycle callback.");
     }
 
     /**
@@ -730,18 +718,6 @@ class MappingException extends LogicException implements ORMException
     public static function entityListenerMethodNotFound($listenerName, $methodName, $className)
     {
         return new self(sprintf('Entity Listener "%s" declared on "%s" has no method "%s".', $listenerName, $className, $methodName));
-    }
-
-    /**
-     * @param string $listenerName
-     * @param string $methodName
-     * @param string $className
-     *
-     * @return \Doctrine\ORM\Mapping\MappingException
-     */
-    public static function duplicateEntityListener($listenerName, $methodName, $className)
-    {
-        return new self(sprintf('Entity Listener "%s#%s()" in "%s" was already declared, but it must be declared only once.', $listenerName, $methodName, $className));
     }
 
     /**
@@ -775,6 +751,18 @@ class MappingException extends LogicException implements ORMException
     public static function invalidTargetEntityClass($targetEntity, $sourceEntity, $associationName)
     {
         return new self("The target-entity '" . $targetEntity . "' cannot be found in '" . $sourceEntity . '#' . $associationName . "'.");
+    }
+
+    /**
+     * @param string $targetEmbedded
+     * @param string $sourceEntity
+     * @param string $associationName
+     *
+     * @return MappingException
+     */
+    public static function invalidTargetEmbeddedClass($targetEmbedded, $sourceEntity, $associationName)
+    {
+        return new self("The target embedded '" . $targetEmbedded . "' cannot be found in '" . $sourceEntity . '#' . $associationName . "'.");
     }
 
     /**

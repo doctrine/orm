@@ -53,11 +53,11 @@ class MappedSuperClassMetadata extends ComponentMetadata
     /**
      * {@inheritdoc}
      */
-    public function addDeclaredProperty(Property $property) : void
+    public function addProperty(Property $property) : void
     {
-        parent::addDeclaredProperty($property);
+        parent::addProperty($property);
 
-        if ($property instanceof VersionFieldMetadata) {
+        if ($property->isVersioned()) {
             $this->setDeclaredVersion($property);
         }
     }

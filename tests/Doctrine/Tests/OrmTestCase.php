@@ -15,7 +15,6 @@ use Doctrine\ORM\Cache\CacheFactory;
 use Doctrine\ORM\Cache\DefaultCacheFactory;
 use Doctrine\ORM\Cache\Logging\StatisticsCacheLogger;
 use Doctrine\ORM\Configuration;
-use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Mapping\Driver\AnnotationDriver;
 use Doctrine\ORM\Proxy\Factory\ProxyFactory;
 use function is_array;
@@ -78,17 +77,16 @@ abstract class OrmTestCase extends DoctrineTestCase
      * for a particular test,
      *
      * @param Connection|array  $conn
+     * @param mixed             $conf
      * @param EventManager|null $eventManager
      * @param bool              $withSharedMetadata
-     *
-     * @return EntityManagerInterface
      */
     protected function getTestEntityManager(
         $conn = null,
         $conf = null,
         $eventManager = null,
         $withSharedMetadata = true
-    ) {
+    ) : Mocks\EntityManagerMock {
         $metadataCache = $withSharedMetadata
             ? self::getSharedMetadataCacheImpl()
             : new ArrayCache();
@@ -129,7 +127,7 @@ abstract class OrmTestCase extends DoctrineTestCase
             $conn = DriverManager::getConnection($conn, $config, $eventManager);
         }
 
-        return Mocks\EntityManagerMock::create($conn, $config, $eventManager)->getWrappedEntityManager();
+        return Mocks\EntityManagerMock::create($conn, $config, $eventManager);
     }
 
     protected function enableSecondLevelCache($log = true)

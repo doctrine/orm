@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Doctrine\Tests\Mocks;
 
 use Doctrine\DBAL\Driver\Statement;
+use Doctrine\DBAL\ParameterType;
 use IteratorAggregate;
 
 /**
@@ -15,14 +16,14 @@ class StatementMock implements IteratorAggregate, Statement
     /**
      * {@inheritdoc}
      */
-    public function bindValue($param, $value, $type = null)
+    public function bindValue($param, $value, $type = ParameterType::STRING) : void
     {
     }
 
     /**
      * {@inheritdoc}
      */
-    public function bindParam($column, &$variable, $type = null, $length = null)
+    public function bindParam($column, &$variable, $type = ParameterType::STRING, $length = null) : void
     {
     }
 
@@ -43,7 +44,7 @@ class StatementMock implements IteratorAggregate, Statement
     /**
      * {@inheritdoc}
      */
-    public function execute($params = null)
+    public function execute($params = null) : void
     {
     }
 
@@ -57,21 +58,22 @@ class StatementMock implements IteratorAggregate, Statement
     /**
      * {@inheritdoc}
      */
-    public function closeCursor()
+    public function closeCursor() : void
     {
     }
 
     /**
      * {@inheritdoc}
      */
-    public function columnCount()
+    public function columnCount() : int
     {
+        return 0;
     }
 
     /**
      * {@inheritdoc}
      */
-    public function setFetchMode($fetchMode = null, ...$args)
+    public function setFetchMode($fetchMode, ...$args) : void
     {
     }
 
@@ -85,7 +87,7 @@ class StatementMock implements IteratorAggregate, Statement
     /**
      * {@inheritdoc}
      */
-    public function fetchAll($fetchMode = null, ...$args)
+    public function fetchAll($fetchMode = null, ...$args) : array
     {
     }
 

@@ -160,7 +160,7 @@ class DDC2984DomainUserId
 
 class DDC2984UserIdCustomDbalType extends StringType
 {
-    public function getName()
+    public function getName() : string
     {
         return 'ddc2984_domain_user_id';
     }

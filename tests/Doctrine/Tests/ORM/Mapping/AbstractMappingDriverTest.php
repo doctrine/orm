@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Doctrine\Tests\ORM\Mapping;
 
+use Doctrine\DBAL\Platforms\AbstractPlatform;
 use Doctrine\DBAL\Types\Type;
 use Doctrine\ORM\Annotation as ORM;
 use Doctrine\ORM\EntityManagerInterface;
@@ -14,10 +15,10 @@ use Doctrine\ORM\Mapping\ClassMetadataFactory;
 use Doctrine\ORM\Mapping\Factory\DefaultNamingStrategy;
 use Doctrine\ORM\Mapping\Factory\UnderscoreNamingStrategy;
 use Doctrine\ORM\Mapping\MappingException;
-use Doctrine\ORM\Reflection\RuntimeReflectionService;
+use Doctrine\ORM\Reflection\ReflectionService;
+use Doctrine\ORM\Sequencing\Generator\Generator;
+use Doctrine\ORM\Sequencing\Generator\SequenceGenerator;
 use Doctrine\Tests\Models\Cache\City;
-use Doctrine\Tests\Models\CMS\CmsAddress;
-use Doctrine\Tests\Models\CMS\CmsAddressListener;
 use Doctrine\Tests\Models\Company\CompanyContract;
 use Doctrine\Tests\Models\Company\CompanyContractListener;
 use Doctrine\Tests\Models\Company\CompanyFixContract;
@@ -46,6 +47,9 @@ use function strpos;
 
 abstract class AbstractMappingDriverTest extends OrmTestCase
 {
+    /** @var AbstractPlatform */
+    protected $targetPlatform;
+
     /** @var Mapping\ClassMetadataBuildingContext */
     protected $metadataBuildingContext;
 
@@ -53,9 +57,27 @@ abstract class AbstractMappingDriverTest extends OrmTestCase
     {
         parent::setUp();
 
+        $this->targetPlatform = $this->createMock(AbstractPlatform::class);
+
+        $this->targetPlatform
+            ->expects($this->any())
+            ->method('prefersSequences')
+            ->will($this->returnValue(true));
+
+        $this->targetPlatform
+            ->expects($this->any())
+            ->method('usesSequenceEmulatedIdentityColumns')
+            ->will($this->returnValue(true));
+
+        $this->targetPlatform
+            ->expects($this->any())
+            ->method('fixSchemaElementName')
+            ->will($this->returnArgument(0));
+
         $this->metadataBuildingContext = new Mapping\ClassMetadataBuildingContext(
             $this->createMock(ClassMetadataFactory::class),
-            new RuntimeReflectionService()
+            $this->createMock(ReflectionService::class),
+            $this->targetPlatform
         );
     }
 
@@ -65,11 +87,7 @@ abstract class AbstractMappingDriverTest extends OrmTestCase
     {
         $mappingDriver = $this->loadDriver();
 
-        $class = new ClassMetadata($entityClassName, $this->metadataBuildingContext);
-
-        $mappingDriver->loadMetadataForClass($entityClassName, $class, $this->metadataBuildingContext);
-
-        return $class;
+        return $mappingDriver->loadMetadataForClass($entityClassName, null, $this->metadataBuildingContext);
     }
 
     protected function createClassMetadataFactory(?EntityManagerInterface $em = null) : ClassMetadataFactory
@@ -189,33 +207,25 @@ abstract class AbstractMappingDriverTest extends OrmTestCase
      */
     public function testEntitySequence($class) : void
     {
-        self::assertInternalType(
-            'array',
-            $class->getProperty('id')->getValueGenerator()->getDefinition(),
-            'No Sequence Definition set on this driver.'
-        );
-        self::assertEquals(
-            [
-                'sequenceName'   => 'tablename_seq',
-                'allocationSize' => 100,
-            ],
-            $class->getProperty('id')->getValueGenerator()->getDefinition()
-        );
+        $valueGenerator = $class->getProperty('id')->getValueGenerator();
+
+        self::assertEquals(Mapping\GeneratorType::SEQUENCE, $valueGenerator->getType(), 'Generator Type');
+        self::assertInstanceOf(SequenceGenerator::class, $valueGenerator->getGenerator(), 'No Sequence Definition set on this driver.');
+
+        /** @var SequenceGenerator $generator */
+        $generator = $valueGenerator->getGenerator();
+
+        self::assertEquals('tablename_seq', $generator->getSequenceName());
+        self::assertEquals(100, $generator->getAllocationSize());
     }
 
     public function testEntityCustomGenerator() : void
     {
-        $class = $this->createClassMetadata(Animal::class);
+        $class          = $this->createClassMetadata(Animal::class);
+        $valueGenerator = $class->getProperty('id')->getValueGenerator();
 
-        self::assertEquals(Mapping\GeneratorType::CUSTOM, $class->getProperty('id')->getValueGenerator()->getType(), 'Generator Type');
-        self::assertEquals(
-            [
-                'class'     => 'stdClass',
-                'arguments' => [],
-            ],
-            $class->getProperty('id')->getValueGenerator()->getDefinition(),
-            'Generator Definition'
-        );
+        self::assertEquals(Mapping\GeneratorType::CUSTOM, $valueGenerator->getType(), 'Generator Type');
+        self::assertInstanceOf(CustomGenerator::class, $valueGenerator->getGenerator(), 'Generator Definition');
     }
 
     /**
@@ -225,7 +235,7 @@ abstract class AbstractMappingDriverTest extends OrmTestCase
      */
     public function testProperties($class) : ClassMetadata
     {
-        self::assertCount(7, $class->getDeclaredPropertiesIterator());
+        self::assertCount(7, $class->getPropertiesIterator());
 
         self::assertNotNull($class->getProperty('id'));
         self::assertNotNull($class->getProperty('name'));
@@ -334,7 +344,11 @@ abstract class AbstractMappingDriverTest extends OrmTestCase
 
         self::assertEquals('integer', $property->getTypeName());
         self::assertEquals(['id'], $class->identifier);
-        self::assertEquals(Mapping\GeneratorType::AUTO, $property->getValueGenerator()->getType(), 'ID-Generator is not GeneratorType::AUTO');
+        self::assertEquals(
+            Mapping\GeneratorType::SEQUENCE,
+            $property->getValueGenerator()->getType(),
+            'ID-Generator is not GeneratorType::AUTO'
+        );
 
         return $class;
     }
@@ -432,7 +446,7 @@ abstract class AbstractMappingDriverTest extends OrmTestCase
      */
     public function testOwningOneToOneAssociation($class) : ClassMetadata
     {
-        self::assertArrayHasKey('address', iterator_to_array($class->getDeclaredPropertiesIterator()));
+        self::assertArrayHasKey('address', iterator_to_array($class->getPropertiesIterator()));
 
         $association = $class->getProperty('address');
 
@@ -451,7 +465,7 @@ abstract class AbstractMappingDriverTest extends OrmTestCase
      */
     public function testInverseOneToManyAssociation($class) : ClassMetadata
     {
-        self::assertArrayHasKey('phonenumbers', iterator_to_array($class->getDeclaredPropertiesIterator()));
+        self::assertArrayHasKey('phonenumbers', iterator_to_array($class->getPropertiesIterator()));
 
         $association = $class->getProperty('phonenumbers');
 
@@ -474,7 +488,7 @@ abstract class AbstractMappingDriverTest extends OrmTestCase
      */
     public function testManyToManyAssociationWithCascadeAll($class) : ClassMetadata
     {
-        self::assertArrayHasKey('groups', iterator_to_array($class->getDeclaredPropertiesIterator()));
+        self::assertArrayHasKey('groups', iterator_to_array($class->getPropertiesIterator()));
 
         $association = $class->getProperty('groups');
 
@@ -734,8 +748,8 @@ abstract class AbstractMappingDriverTest extends OrmTestCase
         $guestMetadata = $factory->getMetadataFor(DDC964Guest::class);
 
         // assert groups association mappings
-        self::assertArrayHasKey('groups', iterator_to_array($guestMetadata->getDeclaredPropertiesIterator()));
-        self::assertArrayHasKey('groups', iterator_to_array($adminMetadata->getDeclaredPropertiesIterator()));
+        self::assertArrayHasKey('groups', iterator_to_array($guestMetadata->getPropertiesIterator()));
+        self::assertArrayHasKey('groups', iterator_to_array($adminMetadata->getPropertiesIterator()));
 
         $guestGroups = $guestMetadata->getProperty('groups');
         $adminGroups = $adminMetadata->getProperty('groups');
@@ -771,8 +785,8 @@ abstract class AbstractMappingDriverTest extends OrmTestCase
         self::assertEquals('admingroup_id', $adminGroupsInverseJoinColumn->getColumnName());
 
         // assert address association mappings
-        self::assertArrayHasKey('address', iterator_to_array($guestMetadata->getDeclaredPropertiesIterator()));
-        self::assertArrayHasKey('address', iterator_to_array($adminMetadata->getDeclaredPropertiesIterator()));
+        self::assertArrayHasKey('address', iterator_to_array($guestMetadata->getPropertiesIterator()));
+        self::assertArrayHasKey('address', iterator_to_array($adminMetadata->getPropertiesIterator()));
 
         $guestAddress = $guestMetadata->getProperty('address');
         $adminAddress = $adminMetadata->getProperty('address');
@@ -807,7 +821,7 @@ abstract class AbstractMappingDriverTest extends OrmTestCase
         $adminMetadata = $factory->getMetadataFor(DDC3579Admin::class);
 
         // assert groups association mappings
-        self::assertArrayHasKey('groups', iterator_to_array($adminMetadata->getDeclaredPropertiesIterator()));
+        self::assertArrayHasKey('groups', iterator_to_array($adminMetadata->getPropertiesIterator()));
 
         $adminGroups = $adminMetadata->getProperty('groups');
 
@@ -823,7 +837,7 @@ abstract class AbstractMappingDriverTest extends OrmTestCase
         // check override metadata
         $contractMetadata = $this->createClassMetadataFactory()->getMetadataFor(DDC5934Contract::class);
 
-        self::assertArrayHasKey('members', iterator_to_array($contractMetadata->getDeclaredPropertiesIterator()));
+        self::assertArrayHasKey('members', iterator_to_array($contractMetadata->getPropertiesIterator()));
 
         $contractMembers = $contractMetadata->getProperty('members');
 
@@ -957,60 +971,6 @@ abstract class AbstractMappingDriverTest extends OrmTestCase
     }
 
     /**
-     * @group DDC-1955
-     */
-    public function testEntityListenersNamingConvention() : void
-    {
-        $factory  = $this->createClassMetadataFactory();
-        $metadata = $factory->getMetadataFor(CmsAddress::class);
-
-        self::assertArrayHasKey(Events::postPersist, $metadata->entityListeners);
-        self::assertArrayHasKey(Events::prePersist, $metadata->entityListeners);
-        self::assertArrayHasKey(Events::postUpdate, $metadata->entityListeners);
-        self::assertArrayHasKey(Events::preUpdate, $metadata->entityListeners);
-        self::assertArrayHasKey(Events::postRemove, $metadata->entityListeners);
-        self::assertArrayHasKey(Events::preRemove, $metadata->entityListeners);
-        self::assertArrayHasKey(Events::postLoad, $metadata->entityListeners);
-        self::assertArrayHasKey(Events::preFlush, $metadata->entityListeners);
-
-        self::assertCount(1, $metadata->entityListeners[Events::postPersist]);
-        self::assertCount(1, $metadata->entityListeners[Events::prePersist]);
-        self::assertCount(1, $metadata->entityListeners[Events::postUpdate]);
-        self::assertCount(1, $metadata->entityListeners[Events::preUpdate]);
-        self::assertCount(1, $metadata->entityListeners[Events::postRemove]);
-        self::assertCount(1, $metadata->entityListeners[Events::preRemove]);
-        self::assertCount(1, $metadata->entityListeners[Events::postLoad]);
-        self::assertCount(1, $metadata->entityListeners[Events::preFlush]);
-
-        $postPersist = $metadata->entityListeners[Events::postPersist][0];
-        $prePersist  = $metadata->entityListeners[Events::prePersist][0];
-        $postUpdate  = $metadata->entityListeners[Events::postUpdate][0];
-        $preUpdate   = $metadata->entityListeners[Events::preUpdate][0];
-        $postRemove  = $metadata->entityListeners[Events::postRemove][0];
-        $preRemove   = $metadata->entityListeners[Events::preRemove][0];
-        $postLoad    = $metadata->entityListeners[Events::postLoad][0];
-        $preFlush    = $metadata->entityListeners[Events::preFlush][0];
-
-        self::assertEquals(CmsAddressListener::class, $postPersist['class']);
-        self::assertEquals(CmsAddressListener::class, $prePersist['class']);
-        self::assertEquals(CmsAddressListener::class, $postUpdate['class']);
-        self::assertEquals(CmsAddressListener::class, $preUpdate['class']);
-        self::assertEquals(CmsAddressListener::class, $postRemove['class']);
-        self::assertEquals(CmsAddressListener::class, $preRemove['class']);
-        self::assertEquals(CmsAddressListener::class, $postLoad['class']);
-        self::assertEquals(CmsAddressListener::class, $preFlush['class']);
-
-        self::assertEquals(Events::postPersist, $postPersist['method']);
-        self::assertEquals(Events::prePersist, $prePersist['method']);
-        self::assertEquals(Events::postUpdate, $postUpdate['method']);
-        self::assertEquals(Events::preUpdate, $preUpdate['method']);
-        self::assertEquals(Events::postRemove, $postRemove['method']);
-        self::assertEquals(Events::preRemove, $preRemove['method']);
-        self::assertEquals(Events::postLoad, $postLoad['method']);
-        self::assertEquals(Events::preFlush, $preFlush['method']);
-    }
-
-    /**
      * @group DDC-2183
      */
     public function testSecondLevelCacheMapping() : void
@@ -1022,7 +982,7 @@ abstract class AbstractMappingDriverTest extends OrmTestCase
         self::assertEquals(Mapping\CacheUsage::READ_ONLY, $class->getCache()->getUsage());
         self::assertEquals('doctrine_tests_models_cache_city', $class->getCache()->getRegion());
 
-        self::assertArrayHasKey('state', iterator_to_array($class->getDeclaredPropertiesIterator()));
+        self::assertArrayHasKey('state', iterator_to_array($class->getPropertiesIterator()));
 
         $stateAssociation = $class->getProperty('state');
 
@@ -1030,7 +990,7 @@ abstract class AbstractMappingDriverTest extends OrmTestCase
         self::assertEquals(Mapping\CacheUsage::READ_ONLY, $stateAssociation->getCache()->getUsage());
         self::assertEquals('doctrine_tests_models_cache_city__state', $stateAssociation->getCache()->getRegion());
 
-        self::assertArrayHasKey('attractions', iterator_to_array($class->getDeclaredPropertiesIterator()));
+        self::assertArrayHasKey('attractions', iterator_to_array($class->getPropertiesIterator()));
 
         $attractionsAssociation = $class->getProperty('attractions');
 
@@ -1237,9 +1197,9 @@ class User
         $metadata->setInheritanceType(Mapping\InheritanceType::NONE);
         $metadata->setChangeTrackingPolicy(Mapping\ChangeTrackingPolicy::DEFERRED_IMPLICIT);
 
-        $metadata->addLifecycleCallback('doStuffOnPrePersist', 'prePersist');
-        $metadata->addLifecycleCallback('doOtherStuffOnPrePersistToo', 'prePersist');
-        $metadata->addLifecycleCallback('doStuffOnPostPersist', 'postPersist');
+        $metadata->addLifecycleCallback('prePersist', 'doStuffOnPrePersist');
+        $metadata->addLifecycleCallback('prePersist', 'doOtherStuffOnPrePersistToo');
+        $metadata->addLifecycleCallback('postPersist', 'doStuffOnPostPersist');
 
         $metadata->setGeneratorDefinition(
             [
@@ -1278,9 +1238,10 @@ class User
 
         $metadata->addProperty($fieldMetadata);
 
-        $fieldMetadata = new Mapping\VersionFieldMetadata('version');
+        $fieldMetadata = new Mapping\FieldMetadata('version');
 
         $fieldMetadata->setType(Type::getType('integer'));
+        $fieldMetadata->setVersioned(true);
 
         $metadata->addProperty($fieldMetadata);
         $metadata->setIdGeneratorType(Mapping\GeneratorType::AUTO);
@@ -1345,6 +1306,19 @@ class User
     }
 }
 
+class CustomGenerator implements Generator
+{
+    public function generate(EntityManagerInterface $em, ?object $entity)
+    {
+        // TODO: Implement generate() method.
+    }
+
+    public function isPostInsertGenerator() : bool
+    {
+        return false;
+    }
+}
+
 /**
  * @ORM\Entity
  * @ORM\InheritanceType("SINGLE_TABLE")
@@ -1355,7 +1329,7 @@ abstract class Animal
 {
     /**
      * @ORM\Id @ORM\Column(type="string") @ORM\GeneratedValue(strategy="CUSTOM")
-     * @ORM\CustomIdGenerator(class=stdClass::class)
+     * @ORM\CustomIdGenerator(class=CustomGenerator::class)
      */
     public $id;
 }

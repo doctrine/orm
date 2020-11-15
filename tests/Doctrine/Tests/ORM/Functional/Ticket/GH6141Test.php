@@ -98,7 +98,7 @@ class GH6141PeopleType extends StringType
     /**
      * {@inheritdoc}
      */
-    public function getName()
+    public function getName() : string
     {
         return self::NAME;
     }

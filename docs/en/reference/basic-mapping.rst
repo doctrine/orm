@@ -75,7 +75,7 @@ Marking our ``Message`` class as an entity for Doctrine is straightforward:
         /** @Entity */
         class Message
         {
-            //...
+            // ...
         }
 
     .. code-block:: xml
@@ -101,7 +101,7 @@ You can change this by configuring information about the table:
          */
         class Message
         {
-            //...
+            // ...
         }
 
     .. code-block:: xml
@@ -285,7 +285,7 @@ annotation.
              * @GeneratedValue
              */
             private $id;
-            //...
+            // ...
         }
 
     .. code-block:: xml
@@ -360,7 +360,7 @@ besides specifying the sequence's name:
              * @SequenceGenerator(sequenceName="message_seq", initialValue=1, allocationSize=100)
              */
             protected $id = null;
-            //...
+            // ...
         }
 
     .. code-block:: xml

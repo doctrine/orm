@@ -26,6 +26,7 @@ use Doctrine\Tests\Models\Forum\ForumAvatar;
 use Doctrine\Tests\Models\Forum\ForumUser;
 use Doctrine\Tests\Models\NullDefault\NullDefaultColumn;
 use Doctrine\Tests\OrmTestCase;
+use function array_merge;
 use function count;
 use function current;
 
@@ -64,9 +65,19 @@ class SchemaToolTest extends OrmTestCase
         $schema = $schemaTool->getSchemaFromMetadata($classes);
 
         $expected = ['foo' => 'bar', 'baz' => ['key' => 'val']];
+        $table    = $schema->getTable('TestEntityWithAnnotationOptionsAttribute');
 
-        self::assertEquals($expected, $schema->getTable('TestEntityWithAnnotationOptionsAttribute')->getOptions(), 'options annotation are passed to the tables options');
-        self::assertEquals($expected, $schema->getTable('TestEntityWithAnnotationOptionsAttribute')->getColumn('test')->getCustomSchemaOptions(), 'options annotation are passed to the columns customSchemaOptions');
+        self::assertEquals(
+            array_merge($expected, ['create_options' => []]),
+            $table->getOptions(),
+            'options annotation are passed to the tables options'
+        );
+
+        self::assertEquals(
+            $expected,
+            $table->getColumn('test')->getCustomSchemaOptions(),
+            'options annotation are passed to the columns customSchemaOptions'
+        );
     }
 
     /**
@@ -94,6 +105,44 @@ class SchemaToolTest extends OrmTestCase
 
         self::assertTrue($table->hasColumn('avatar_id'));
         self::assertEquals($customColumnDef, $table->getColumn('avatar_id')->getColumnDefinition());
+    }
+
+    /**
+     * @group 6830
+     */
+    public function testPassColumnOptionsToJoinColumn() : void
+    {
+        $em       = $this->getTestEntityManager();
+        $category = $em->getClassMetadata(GH6830Category::class);
+        $board    = $em->getClassMetadata(GH6830Board::class);
+
+        $schemaTool = new SchemaTool($em);
+        $schema     = $schemaTool->getSchemaFromMetadata([$category, $board]);
+
+        self::assertTrue($schema->hasTable('GH6830Category'));
+        self::assertTrue($schema->hasTable('GH6830Board'));
+
+        $tableCategory = $schema->getTable('GH6830Category');
+        $tableBoard    = $schema->getTable('GH6830Board');
+
+        self::assertTrue($tableBoard->hasColumn('category_id'));
+
+        self::assertSame(
+            $tableCategory->getColumn('id')->getFixed(),
+            $tableBoard->getColumn('category_id')->getFixed(),
+            'Foreign key/join column should have the same value of option `fixed` as the referenced column'
+        );
+
+        self::assertEquals(
+            $tableCategory->getColumn('id')->getCustomSchemaOptions(),
+            $tableBoard->getColumn('category_id')->getCustomSchemaOptions(),
+            'Foreign key/join column should have the same custom options as the referenced column'
+        );
+
+        self::assertEquals(
+            ['collation' => 'latin1_bin', 'foo' => 'bar'],
+            $tableBoard->getColumn('category_id')->getCustomSchemaOptions()
+        );
     }
 
     /**
@@ -317,7 +366,7 @@ class FirstEntity
 
     /**
      * @ORM\OneToOne(targetEntity=SecondEntity::class)
-     * @ORM\JoinColumn(name="id", referencedColumnName="fist_entity_id")
+     * @ORM\JoinColumn(name="id", referencedColumnName="first_entity_id")
      */
     public $secondEntity;
 
@@ -333,10 +382,45 @@ class SecondEntity
 {
     /**
      * @ORM\Id
-     * @ORM\Column(name="fist_entity_id")
+     * @ORM\Column(name="first_entity_id")
      */
     public $fist_entity_id;
 
     /** @ORM\Column(name="name") */
     public $name;
+}
+
+/**
+ * @ORM\Entity
+ */
+class GH6830Board
+{
+    /**
+     * @ORM\Id
+     * @ORM\Column(type="integer")
+     */
+    public $id;
+
+    /**
+     * @ORM\ManyToOne(targetEntity=GH6830Category::class, inversedBy="boards")
+     * @ORM\JoinColumn(name="category_id", referencedColumnName="id")
+     */
+    public $category;
+}
+
+/**
+ * @ORM\Entity
+ */
+class GH6830Category
+{
+    /**
+     * @ORM\Id
+     * @ORM\Column(type="string", length=8, options={"fixed":true, "collation":"latin1_bin", "foo":"bar"})
+     *
+     * @var string
+     */
+    public $id;
+
+    /** @ORM\OneToMany(targetEntity=GH6830Board::class, mappedBy="category") */
+    public $boards;
 }

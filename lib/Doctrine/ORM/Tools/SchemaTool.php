@@ -15,6 +15,7 @@ use Doctrine\DBAL\Schema\Visitor\RemoveNamespacedAssets;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Mapping\AssociationMetadata;
 use Doctrine\ORM\Mapping\ClassMetadata;
+use Doctrine\ORM\Mapping\EmbeddedMetadata;
 use Doctrine\ORM\Mapping\FieldMetadata;
 use Doctrine\ORM\Mapping\GeneratorType;
 use Doctrine\ORM\Mapping\InheritanceType;
@@ -29,7 +30,9 @@ use Doctrine\ORM\Tools\Exception\MissingColumnException;
 use Doctrine\ORM\Tools\Exception\NotSupported;
 use Throwable;
 use function array_diff;
-use function array_key_exists;
+use function array_diff_key;
+use function array_flip;
+use function array_intersect_key;
 use function array_keys;
 use function count;
 use function implode;
@@ -37,6 +40,7 @@ use function in_array;
 use function is_int;
 use function is_numeric;
 use function reset;
+use function sprintf;
 use function strtolower;
 
 /**
@@ -45,6 +49,8 @@ use function strtolower;
  */
 class SchemaTool
 {
+    private const KNOWN_COLUMN_OPTIONS = ['comment', 'unsigned', 'fixed', 'default'];
+
     /** @var EntityManagerInterface */
     private $em;
 
@@ -175,7 +181,7 @@ class SchemaTool
                     // Add all non-inherited fields as columns
                     $pkColumns = [];
 
-                    foreach ($class->getDeclaredPropertiesIterator() as $fieldName => $property) {
+                    foreach ($class->getPropertiesIterator() as $fieldName => $property) {
                         if (! ($property instanceof FieldMetadata)) {
                             continue;
                         }
@@ -278,7 +284,7 @@ class SchemaTool
             if ($class->table->getIndexes()) {
                 foreach ($class->table->getIndexes() as $indexName => $indexData) {
                     $indexName = is_numeric($indexName) ? null : $indexName;
-                    $index     = new Index($indexName, $indexData['columns'], $indexData['unique'], $indexData['flags'], $indexData['options']);
+                    $index     = new Index($indexName, $indexData['columns'], $indexData['unique'], false, $indexData['flags'], $indexData['options']);
 
                     foreach ($table->getIndexes() as $tableIndexName => $tableIndex) {
                         if ($tableIndex->isFullfilledBy($index)) {
@@ -319,7 +325,7 @@ class SchemaTool
 
             $processedClasses[$class->getClassName()] = true;
 
-            foreach ($class->getDeclaredPropertiesIterator() as $property) {
+            foreach ($class->getPropertiesIterator() as $property) {
                 if (! $property instanceof FieldMetadata
                     || ! $property->hasValueGenerator()
                     || $property->getValueGenerator()->getType() !== GeneratorType::SEQUENCE
@@ -327,10 +333,11 @@ class SchemaTool
                     continue;
                 }
 
-                $quotedName = $this->platform->quoteIdentifier($property->getValueGenerator()->getDefinition()['sequenceName']);
+                $generator  = $property->getValueGenerator()->getGenerator();
+                $quotedName = $generator->getSequenceName();
 
                 if (! $schema->hasSequence($quotedName)) {
-                    $schema->createSequence($quotedName, $property->getValueGenerator()->getDefinition()['allocationSize']);
+                    $schema->createSequence($quotedName, $generator->getAllocationSize());
                 }
             }
 
@@ -391,26 +398,32 @@ class SchemaTool
     /**
      * Gathers the column definitions as required by the DBAL of all field mappings
      * found in the given class.
-     *
-     * @param ClassMetadata $class
      */
-    private function gatherColumns($class, Table $table)
+    private function gatherColumns(ClassMetadata $class, Table $table, ?string $columnPrefix = null)
     {
         $pkColumns = [];
 
-        foreach ($class->getDeclaredPropertiesIterator() as $fieldName => $property) {
-            if (! ($property instanceof FieldMetadata)) {
-                continue;
-            }
-
+        foreach ($class->getPropertiesIterator() as $fieldName => $property) {
             if ($class->inheritanceType === InheritanceType::SINGLE_TABLE && $class->isInheritedProperty($fieldName)) {
                 continue;
             }
 
-            $this->gatherColumn($class, $property, $table);
+            switch (true) {
+                case $property instanceof FieldMetadata:
+                    $this->gatherColumn($class, $property, $table, $columnPrefix);
 
-            if ($property->isPrimaryKey()) {
-                $pkColumns[] = $this->platform->quoteIdentifier($property->getColumnName());
+                    if ($property->isPrimaryKey()) {
+                        $pkColumns[] = $this->platform->quoteIdentifier($property->getColumnName());
+                    }
+
+                    break;
+
+                case $property instanceof EmbeddedMetadata:
+                    $foreignClass = $this->em->getClassMetadata($property->getTargetEntity());
+
+                    $this->gatherColumns($foreignClass, $table, $property->getColumnPrefix());
+
+                    break;
             }
         }
     }
@@ -418,15 +431,16 @@ class SchemaTool
     /**
      * Creates a column definition as required by the DBAL from an ORM field mapping definition.
      *
-     * @param ClassMetadata $classMetadata The class that owns the field mapping.
-     * @param FieldMetadata $fieldMetadata The field mapping.
-     *
      * @return Column The portable column definition as required by the DBAL.
      */
-    private function gatherColumn($classMetadata, FieldMetadata $fieldMetadata, Table $table)
-    {
+    private function gatherColumn(
+        ClassMetadata $classMetadata,
+        FieldMetadata $fieldMetadata,
+        Table $table,
+        ?string $columnPrefix = null
+    ) {
         $fieldName  = $fieldMetadata->getName();
-        $columnName = $fieldMetadata->getColumnName();
+        $columnName = sprintf('%s%s', $columnPrefix, $fieldMetadata->getColumnName());
         $columnType = $fieldMetadata->getTypeName();
 
         $options = [
@@ -459,19 +473,8 @@ class SchemaTool
 
         $fieldOptions = $fieldMetadata->getOptions();
 
-        if ($fieldOptions) {
-            $knownOptions = ['comment', 'unsigned', 'fixed', 'default'];
-
-            foreach ($knownOptions as $knownOption) {
-                if (array_key_exists($knownOption, $fieldOptions)) {
-                    $options[$knownOption] = $fieldOptions[$knownOption];
-
-                    unset($fieldOptions[$knownOption]);
-                }
-            }
-
-            $options['customSchemaOptions'] = $fieldOptions;
-        }
+        // the 'default' option can be overwritten here
+        $options = $this->gatherColumnOptions($fieldOptions) + $options;
 
         if ($fieldMetadata->hasValueGenerator() && $fieldMetadata->getValueGenerator()->getType() === GeneratorType::IDENTITY && $classMetadata->getIdentifierFieldNames() === [$fieldName]) {
             $options['autoincrement'] = true;
@@ -481,7 +484,7 @@ class SchemaTool
             $options['autoincrement'] = false;
         }
 
-        $quotedColumnName = $this->platform->quoteIdentifier($fieldMetadata->getColumnName());
+        $quotedColumnName = $this->platform->quoteIdentifier($columnName);
 
         if ($table->hasColumn($quotedColumnName)) {
             // required in some inheritance scenarios
@@ -513,7 +516,7 @@ class SchemaTool
      */
     private function gatherRelationsSql($class, $table, $schema, &$addedFks, &$blacklistedFks)
     {
-        foreach ($class->getDeclaredPropertiesIterator() as $fieldName => $property) {
+        foreach ($class->getPropertiesIterator() as $fieldName => $property) {
             if (! ($property instanceof AssociationMetadata)) {
                 continue;
             }
@@ -695,24 +698,18 @@ class SchemaTool
                 // Only add the column to the table if it does not exist already.
                 // It might exist already if the foreign key is mapped into a regular
                 // property as well.
-                $property  = $definingClass->getProperty($referencedFieldName);
-                $columnDef = null;
+                $property      = $definingClass->getProperty($referencedFieldName);
+                $columnOptions = [
+                    'notnull' => ! $joinColumn->isNullable(),
+                ] + $this->gatherColumnOptions($property->getOptions());
 
                 if (! empty($joinColumn->getColumnDefinition())) {
-                    $columnDef = $joinColumn->getColumnDefinition();
+                    $columnOptions['columnDefinition'] = $joinColumn->getColumnDefinition();
                 } elseif ($property->getColumnDefinition()) {
-                    $columnDef = $property->getColumnDefinition();
+                    $columnOptions['columnDefinition'] = $property->getColumnDefinition();
                 }
 
-                $columnType    = $property->getTypeName();
-                $columnOptions = [
-                    'notnull'          => ! $joinColumn->isNullable(),
-                    'columnDefinition' => $columnDef,
-                ];
-
-                if ($property->getOptions()) {
-                    $columnOptions['options'] = $property->getOptions();
-                }
+                $columnType = $property->getTypeName();
 
                 switch ($columnType) {
                     case 'string':
@@ -773,6 +770,23 @@ class SchemaTool
                 $fkOptions
             );
         }
+    }
+
+    /**
+     * @param mixed[] $mapping
+     *
+     * @return mixed[]
+     */
+    private function gatherColumnOptions(array $mapping) : array
+    {
+        if ($mapping === []) {
+            return [];
+        }
+
+        $options                        = array_intersect_key($mapping, array_flip(self::KNOWN_COLUMN_OPTIONS));
+        $options['customSchemaOptions'] = array_diff_key($mapping, $options);
+
+        return $options;
     }
 
     /**
@@ -844,7 +858,7 @@ class SchemaTool
         foreach ($fullSchema->getTables() as $table) {
             if (! $schema->hasTable($table->getName())) {
                 foreach ($table->getForeignKeys() as $foreignKey) {
-                    /** @var $foreignKey \Doctrine\DBAL\Schema\ForeignKeyConstraint */
+                    /** @var $foreignKey ForeignKeyConstraint */
                     if ($schema->hasTable($foreignKey->getForeignTableName())) {
                         $visitor->acceptForeignKey($table, $foreignKey);
                     }

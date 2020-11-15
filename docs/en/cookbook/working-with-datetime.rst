@@ -113,7 +113,7 @@ the UTC time at the time of the booking and the timezone the event happened in.
             $converted = \DateTime::createFromFormat(
                 $platform->getDateTimeFormatString(),
                 $value,
-                self::$utc ? self::$utc : self::$utc = new \DateTimeZone('UTC')
+                self::getUtc()
             );
 
             if (! $converted) {
@@ -125,6 +125,11 @@ the UTC time at the time of the booking and the timezone the event happened in.
             }
 
             return $converted;
+        }
+        
+        private static function getUtc()
+        {
+            return self::$utc ? self::$utc : self::$utc = new \DateTimeZone('UTC');
         }
     }
 

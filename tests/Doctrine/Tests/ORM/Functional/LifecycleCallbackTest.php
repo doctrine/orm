@@ -558,6 +558,9 @@ class LifecycleCallbackChildEntity extends LifecycleCallbackParentEntity
 
 class LifecycleListenerPreUpdate
 {
+    /**
+     * @ORM\PreUpdate
+     */
     public function preUpdate(PreUpdateEventArgs $eventArgs)
     {
         $eventArgs->setNewValue('name', 'Bob');

@@ -8,9 +8,7 @@ use Doctrine\Common\Collections\Criteria;
 use Doctrine\ORM\Mapping\AssociationMetadata;
 use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\Mapping\FieldMetadata;
-use Doctrine\ORM\Mapping\JoinColumnMetadata;
 use Doctrine\ORM\Mapping\ToOneAssociationMetadata;
-use Doctrine\ORM\Utility\PersisterHelper;
 use function array_flip;
 use function implode;
 use function sprintf;
@@ -52,7 +50,7 @@ class SingleTablePersister extends AbstractEntityInheritancePersister
             $subClass = $this->em->getClassMetadata($subClassName);
 
             // Subclass columns
-            foreach ($subClass->getDeclaredPropertiesIterator() as $fieldName => $property) {
+            foreach ($subClass->getPropertiesIterator() as $fieldName => $property) {
                 if ($subClass->isInheritedProperty($fieldName)) {
                     continue;
                 }
@@ -63,16 +61,7 @@ class SingleTablePersister extends AbstractEntityInheritancePersister
                         break;
 
                     case $property instanceof ToOneAssociationMetadata && $property->isOwningSide():
-                        $targetClass = $this->em->getClassMetadata($property->getTargetEntity());
-
                         foreach ($property->getJoinColumns() as $joinColumn) {
-                            /** @var JoinColumnMetadata $joinColumn */
-                            $referencedColumnName = $joinColumn->getReferencedColumnName();
-
-                            if (! $joinColumn->getType()) {
-                                $joinColumn->setType(PersisterHelper::getTypeOfColumn($referencedColumnName, $targetClass, $this->em));
-                            }
-
                             $columnList[] = $this->getSelectJoinColumnSQL($joinColumn);
                         }
 
@@ -84,24 +73,6 @@ class SingleTablePersister extends AbstractEntityInheritancePersister
         $this->currentPersisterContext->selectColumnListSql = implode(', ', $columnList);
 
         return $this->currentPersisterContext->selectColumnListSql;
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    protected function getInsertColumnList()
-    {
-        $columns = parent::getInsertColumnList();
-
-        // Add discriminator column to the INSERT SQL
-        $discrColumn     = $this->class->discriminatorColumn;
-        $discrColumnName = $discrColumn->getColumnName();
-
-        $columns[] = $discrColumnName;
-
-        $this->columns[$discrColumnName] = $discrColumn;
-
-        return $columns;
     }
 
     /**

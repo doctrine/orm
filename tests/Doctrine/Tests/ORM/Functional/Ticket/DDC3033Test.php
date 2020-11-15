@@ -8,6 +8,7 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\Annotation as ORM;
 use Doctrine\ORM\Event\LifecycleEventArgs;
 use Doctrine\Tests\OrmFunctionalTestCase;
+use SplFixedArray;
 use function get_class;
 
 /**
@@ -46,10 +47,10 @@ class DDC3033Test extends OrmFunctionalTestCase
         $this->em->flush();
 
         $expect = [
-            'title' => [
+            'title' => SplFixedArray::fromArray([
                 0 => 'Test product',
                 1 => 'Test Change title',
-            ],
+            ]),
         ];
 
         self::assertEquals($expect, $product->changeSet);

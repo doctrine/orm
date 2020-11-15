@@ -5,16 +5,14 @@ declare(strict_types=1);
 namespace Doctrine\Tests\ORM\Functional\Ticket;
 
 use Doctrine\ORM\Annotation as ORM;
-use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\Mapping\ClassMetadataBuildingContext;
-use Doctrine\ORM\Mapping\ClassMetadataFactory;
-use Doctrine\ORM\Reflection\ReflectionService;
 use Doctrine\Tests\OrmFunctionalTestCase;
 use function serialize;
 use function unserialize;
 
 /**
  * @group DDC-3103
+ * @group embedded
  */
 class DDC3103Test extends OrmFunctionalTestCase
 {
@@ -23,18 +21,15 @@ class DDC3103Test extends OrmFunctionalTestCase
      */
     public function testIssue() : void
     {
-        $this->markTestSkipped('Embeddables are ommitted for now');
-
         $driver = $this->createAnnotationDriver();
 
         $metadataBuildingContext = new ClassMetadataBuildingContext(
-            $this->createMock(ClassMetadataFactory::class),
-            $this->createMock(ReflectionService::class)
+            $this->em->getMetadataFactory(),
+            $this->em->getMetadataFactory()->getReflectionService(),
+            $this->em->getConnection()->getDatabasePlatform()
         );
 
-        $classMetadata = new ClassMetadata(DDC3103ArticleId::class, $metadataBuildingContext);
-
-        $driver->loadMetadataForClass(DDC3103ArticleId::class, $classMetadata, $metadataBuildingContext);
+        $classMetadata = $driver->loadMetadataForClass(DDC3103ArticleId::class, null, $metadataBuildingContext);
 
         self::assertTrue(
             $classMetadata->isEmbeddedClass,

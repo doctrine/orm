@@ -5,10 +5,17 @@ declare(strict_types=1);
 namespace Doctrine\Tests\ORM\Functional\Ticket;
 
 use Closure;
+use Doctrine\Common\EventManager;
 use Doctrine\DBAL\Cache\QueryCacheProfile;
+use Doctrine\DBAL\Configuration;
 use Doctrine\DBAL\Connection;
+use Doctrine\DBAL\Driver;
 use Doctrine\DBAL\Driver\ResultStatement;
 use Doctrine\DBAL\Driver\Statement;
+use Doctrine\DBAL\Platforms\AbstractPlatform;
+use Doctrine\DBAL\Query\Expression\ExpressionBuilder;
+use Doctrine\DBAL\Query\QueryBuilder;
+use Doctrine\DBAL\Schema\AbstractSchemaManager;
 use Doctrine\ORM\Annotation as ORM;
 use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\Tools\ToolsException;
@@ -112,11 +119,11 @@ class DDC3634LastInsertIdMockingConnection extends Connection
     /** @var Connection */
     private $realConnection;
 
-    /** @var int */
+    /** @var string */
     private $identifier;
 
     /**
-     * @param int $identifier
+     * @param string $identifier
      */
     public function __construct($identifier, Connection $realConnection)
     {
@@ -131,12 +138,12 @@ class DDC3634LastInsertIdMockingConnection extends Connection
         return call_user_func_array([$this->realConnection, $trace['function']], $trace['args']);
     }
 
-    public function getParams()
+    public function getParams() : array
     {
         return $this->forwardCall();
     }
 
-    public function getDatabase()
+    public function getDatabase() : string
     {
         return $this->forwardCall();
     }
@@ -161,49 +168,49 @@ class DDC3634LastInsertIdMockingConnection extends Connection
         return $this->forwardCall();
     }
 
-    public function getDriver()
+    public function getDriver() : Driver
     {
         return $this->forwardCall();
     }
 
-    public function getConfiguration()
+    public function getConfiguration() : Configuration
     {
         return $this->forwardCall();
     }
 
-    public function getEventManager()
+    public function getEventManager() : EventManager
     {
         return $this->forwardCall();
     }
 
-    public function getDatabasePlatform()
+    public function getDatabasePlatform() : AbstractPlatform
     {
         return $this->forwardCall();
     }
 
-    public function getExpressionBuilder()
+    public function getExpressionBuilder() : ExpressionBuilder
     {
         return $this->forwardCall();
     }
 
-    public function connect()
+    public function connect() : void
+    {
+        $this->forwardCall();
+    }
+
+    public function isAutoCommit() : bool
     {
         return $this->forwardCall();
     }
 
-    public function isAutoCommit()
+    public function setAutoCommit($autoCommit) : void
     {
-        return $this->forwardCall();
+        $this->forwardCall();
     }
 
-    public function setAutoCommit($autoCommit)
+    public function setFetchMode($fetchMode) : void
     {
-        return $this->forwardCall();
-    }
-
-    public function setFetchMode($fetchMode)
-    {
-        return $this->forwardCall();
+        $this->forwardCall();
     }
 
     public function fetchAssoc($statement, array $params = [], array $types = [])
@@ -221,57 +228,57 @@ class DDC3634LastInsertIdMockingConnection extends Connection
         return $this->forwardCall();
     }
 
-    public function isConnected()
+    public function isConnected() : bool
     {
         return $this->forwardCall();
     }
 
-    public function isTransactionActive()
+    public function isTransactionActive() : bool
     {
         return $this->forwardCall();
     }
 
-    public function delete($tableExpression, array $identifier, array $types = [])
+    public function delete($tableExpression, array $identifier, array $types = []) : int
     {
         return $this->forwardCall();
     }
 
-    public function close()
+    public function close() : void
+    {
+        $this->forwardCall();
+    }
+
+    public function setTransactionIsolation($level) : void
+    {
+        $this->forwardCall();
+    }
+
+    public function getTransactionIsolation() : int
     {
         return $this->forwardCall();
     }
 
-    public function setTransactionIsolation($level)
+    public function update($tableExpression, array $data, array $identifier, array $types = []) : int
     {
         return $this->forwardCall();
     }
 
-    public function getTransactionIsolation()
+    public function insert($tableExpression, array $data, array $types = []) : int
     {
         return $this->forwardCall();
     }
 
-    public function update($tableExpression, array $data, array $identifier, array $types = [])
+    public function quoteIdentifier($str) : string
     {
         return $this->forwardCall();
     }
 
-    public function insert($tableExpression, array $data, array $types = [])
+    public function quote($input, $type = null) : string
     {
         return $this->forwardCall();
     }
 
-    public function quoteIdentifier($str)
-    {
-        return $this->forwardCall();
-    }
-
-    public function quote($input, $type = null)
-    {
-        return $this->forwardCall();
-    }
-
-    public function fetchAll($sql, array $params = [], $types = [])
+    public function fetchAll($sql, array $params = [], $types = []) : array
     {
         return $this->forwardCall();
     }
@@ -291,7 +298,7 @@ class DDC3634LastInsertIdMockingConnection extends Connection
         return $this->forwardCall();
     }
 
-    public function project($query, array $params, Closure $function)
+    public function project($query, array $params, Closure $function) : array
     {
         return $this->forwardCall();
     }
@@ -311,7 +318,7 @@ class DDC3634LastInsertIdMockingConnection extends Connection
         return $this->forwardCall();
     }
 
-    public function getTransactionNestingLevel()
+    public function getTransactionNestingLevel() : int
     {
         return $this->forwardCall();
     }
@@ -326,7 +333,7 @@ class DDC3634LastInsertIdMockingConnection extends Connection
         return $this->forwardCall();
     }
 
-    public function lastInsertId($seqName = null)
+    public function lastInsertId($seqName = null) : string
     {
         return $this->identifier;
     }
@@ -336,12 +343,12 @@ class DDC3634LastInsertIdMockingConnection extends Connection
         return $this->forwardCall();
     }
 
-    public function setNestTransactionsWithSavepoints($nestTransactionsWithSavepoints)
+    public function setNestTransactionsWithSavepoints($nestTransactionsWithSavepoints) : void
     {
-        return $this->forwardCall();
+        $this->forwardCall();
     }
 
-    public function getNestTransactionsWithSavepoints()
+    public function getNestTransactionsWithSavepoints() : bool
     {
         return $this->forwardCall();
     }
@@ -351,52 +358,52 @@ class DDC3634LastInsertIdMockingConnection extends Connection
         return $this->forwardCall();
     }
 
-    public function beginTransaction()
+    public function beginTransaction() : void
+    {
+        $this->forwardCall();
+    }
+
+    public function commit() : void
+    {
+        $this->forwardCall();
+    }
+
+    public function rollBack() : void
+    {
+        $this->forwardCall();
+    }
+
+    public function createSavepoint($savepoint) : void
+    {
+        $this->forwardCall();
+    }
+
+    public function releaseSavepoint($savepoint) : void
+    {
+        $this->forwardCall();
+    }
+
+    public function rollbackSavepoint($savepoint) : void
+    {
+        $this->forwardCall();
+    }
+
+    public function getWrappedConnection() : \Doctrine\DBAL\Driver\Connection
     {
         return $this->forwardCall();
     }
 
-    public function commit()
+    public function getSchemaManager() : AbstractSchemaManager
     {
         return $this->forwardCall();
     }
 
-    public function rollBack()
+    public function setRollbackOnly() : void
     {
-        return $this->forwardCall();
+        $this->forwardCall();
     }
 
-    public function createSavepoint($savepoint)
-    {
-        return $this->forwardCall();
-    }
-
-    public function releaseSavepoint($savepoint)
-    {
-        return $this->forwardCall();
-    }
-
-    public function rollbackSavepoint($savepoint)
-    {
-        return $this->forwardCall();
-    }
-
-    public function getWrappedConnection()
-    {
-        return $this->forwardCall();
-    }
-
-    public function getSchemaManager()
-    {
-        return $this->forwardCall();
-    }
-
-    public function setRollbackOnly()
-    {
-        return $this->forwardCall();
-    }
-
-    public function isRollbackOnly()
+    public function isRollbackOnly() : bool
     {
         return $this->forwardCall();
     }
@@ -411,18 +418,18 @@ class DDC3634LastInsertIdMockingConnection extends Connection
         return $this->forwardCall();
     }
 
-    public function resolveParams(array $params, array $types)
+    public function resolveParams(array $params, array $types) : array
     {
         return $this->forwardCall();
     }
 
-    public function createQueryBuilder()
+    public function createQueryBuilder() : QueryBuilder
     {
         return $this->forwardCall();
     }
 
-    public function ping()
+    public function ping() : void
     {
-        return $this->forwardCall();
+        $this->forwardCall();
     }
 }

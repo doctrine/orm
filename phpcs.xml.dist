@@ -124,4 +124,10 @@
         <exclude-pattern>tests/Doctrine/Tests/ORM/Functional/Ticket/DDC1301Test.php</exclude-pattern>
         <exclude-pattern>tests/Doctrine/Tests/ORM/Functional/ExtraLazyCollectionTest.php</exclude-pattern>
     </rule>
+    <rule ref="Generic.CodeAnalysis.EmptyStatement.DetectedIf">
+        <exclude-pattern>lib/Doctrine/ORM/Sequencing/Generator/TableGenerator.php</exclude-pattern>
+    </rule>
+    <rule ref="Generic.CodeAnalysis.EmptyStatement.DetectedElse">
+        <exclude-pattern>lib/Doctrine/ORM/Sequencing/Generator/TableGenerator.php</exclude-pattern>
+    </rule>
 </ruleset>

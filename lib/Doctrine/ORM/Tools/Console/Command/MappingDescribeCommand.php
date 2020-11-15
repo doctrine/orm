@@ -13,6 +13,8 @@ use Doctrine\ORM\Mapping\ComponentMetadata;
 use Doctrine\ORM\Mapping\FieldMetadata;
 use Doctrine\ORM\Mapping\Property;
 use Doctrine\ORM\Mapping\TableMetadata;
+use Doctrine\ORM\Mapping\ValueGeneratorMetadata;
+use Doctrine\ORM\Sequencing\Generator;
 use InvalidArgumentException;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
@@ -126,7 +128,7 @@ EOT
                     $this->formatEntityListeners($metadata->entityListeners),
                 ],
                 [$this->formatField('Property mappings:', '')],
-                $this->formatPropertyMappings($metadata->getDeclaredPropertiesIterator())
+                $this->formatPropertyMappings($metadata->getPropertiesIterator())
             )
         );
     }
@@ -340,8 +342,29 @@ EOT
         $output[] = $this->formatField('    options', $this->formatValue($columnMetadata->getOptions()));
 
         if ($columnMetadata instanceof FieldMetadata) {
-            $output[] = $this->formatField('    Generator type', $this->formatValue($columnMetadata->getValueGenerator()->getType()));
-            $output[] = $this->formatField('    Generator definition', $this->formatValue($columnMetadata->getValueGenerator()->getDefinition()));
+            $output = array_merge($output, $this->formatValueGenerator($columnMetadata->getValueGenerator()));
+        }
+
+        return $output;
+    }
+
+    private function formatValueGenerator(?ValueGeneratorMetadata $valueGeneratorMetadata = null)
+    {
+        $output = [];
+
+        if ($valueGeneratorMetadata === null) {
+            $output[] = $this->formatField('    Generator', '<comment>None</comment>');
+
+            return $output;
+        }
+
+        $output[] = $this->formatField('    Generator type', $this->formatValue($valueGeneratorMetadata->getType()));
+
+        $generator = $valueGeneratorMetadata->getGenerator();
+
+        if ($generator instanceof Generator\SequenceGenerator) {
+            $output[] = $this->formatField('    Sequence name', $this->formatValue($generator->getSequenceName()));
+            $output[] = $this->formatField('    Allocation size', $this->formatValue($generator->getAllocationSize()));
         }
 
         return $output;

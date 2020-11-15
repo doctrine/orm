@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Doctrine\ORM\Mapping\Factory;
 
+use Doctrine\ORM\Reflection\ReflectionService;
 use Doctrine\ORM\Reflection\RuntimeReflectionService;
 
 /**
@@ -15,7 +16,7 @@ class RuntimeClassMetadataFactory extends AbstractClassMetadataFactory
     /** @var RuntimeReflectionService */
     private $reflectionService;
 
-    protected function getReflectionService() : RuntimeReflectionService
+    protected function getReflectionService() : ReflectionService
     {
         if (! $this->reflectionService) {
             $this->reflectionService = new RuntimeReflectionService();

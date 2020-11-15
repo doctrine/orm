@@ -16,6 +16,6 @@ final class Embedded implements Annotation
      */
     public $class;
 
-    /** @var mixed */
-    public $columnPrefix;
+    /** @var string */
+    public $columnPrefix = '';
 }

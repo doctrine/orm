@@ -67,9 +67,9 @@ abstract class EntityClassMetadata extends ComponentMetadata
      */
     protected $table;
 
-    public function __construct(string $className, ClassMetadataBuildingContext $metadataBuildingContext)
+    public function __construct(string $className)
     {
-        parent::__construct($className, $metadataBuildingContext);
+        parent::__construct($className);
 
         $this->entityName = $className;
     }
@@ -180,11 +180,11 @@ abstract class EntityClassMetadata extends ComponentMetadata
     /**
      * {@inheritdoc}
      */
-    public function addDeclaredProperty(Property $property) : void
+    public function addProperty(Property $property) : void
     {
-        parent::addDeclaredProperty($property);
+        parent::addProperty($property);
 
-        if ($property instanceof VersionFieldMetadata) {
+        if ($property->isVersioned()) {
             $this->setDeclaredVersion($property);
         }
     }

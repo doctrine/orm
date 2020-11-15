@@ -6,27 +6,20 @@ namespace Doctrine\ORM\Mapping;
 
 use ArrayIterator;
 use Doctrine\ORM\Cache\Exception\CacheException;
-use Doctrine\ORM\Cache\Exception\NonCacheableEntityAssociation;
 use Doctrine\ORM\EntityManagerInterface;
-use Doctrine\ORM\Mapping\Factory\NamingStrategy;
 use Doctrine\ORM\Reflection\ReflectionService;
 use Doctrine\ORM\Sequencing\Planning\ValueGenerationPlan;
-use Doctrine\ORM\Utility\PersisterHelper;
+use ReflectionException;
 use RuntimeException;
-use function array_diff;
 use function array_filter;
-use function array_intersect;
-use function array_map;
 use function array_merge;
 use function class_exists;
-use function count;
 use function get_class;
 use function in_array;
 use function interface_exists;
 use function is_subclass_of;
 use function method_exists;
 use function spl_object_id;
-use function sprintf;
 
 /**
  * A <tt>ClassMetadata</tt> instance holds all the object-relational mapping metadata
@@ -172,13 +165,6 @@ class ClassMetadata extends ComponentMetadata implements TableOwner
     public $versionProperty;
 
     /**
-     * NamingStrategy determining the default column and table names.
-     *
-     * @var NamingStrategy
-     */
-    protected $namingStrategy;
-
-    /**
      * Value generation plan is responsible for generating values for auto-generated fields.
      *
      * @var ValueGenerationPlan
@@ -189,31 +175,62 @@ class ClassMetadata extends ComponentMetadata implements TableOwner
      * Initializes a new ClassMetadata instance that will hold the object-relational mapping
      * metadata of the class with the given name.
      *
-     * @param string $entityName The name of the entity class.
+     * @param string             $entityName The name of the entity class.
+     * @param ClassMetadata|null $parent     Optional parent class metadata.
      */
-    public function __construct(
-        string $entityName,
-        ClassMetadataBuildingContext $metadataBuildingContext
-    ) {
-        parent::__construct($entityName, $metadataBuildingContext);
+    public function __construct(string $entityName, ?ComponentMetadata $parent)
+    {
+        parent::__construct($entityName);
 
-        $this->namingStrategy = $metadataBuildingContext->getNamingStrategy();
+        if ($parent) {
+            $this->setParent($parent);
+        }
+    }
+
+    /**
+     * {@inheritdoc}
+     *
+     * @throws MappingException
+     */
+    public function setParent(ComponentMetadata $parent) : void
+    {
+        parent::setParent($parent);
+
+        foreach ($parent->getPropertiesIterator() as $fieldName => $property) {
+            $this->addInheritedProperty($property);
+        }
+
+        // @todo guilhermeblanco Assume to be a ClassMetadata temporarily until ClassMetadata split is complete.
+        /** @var ClassMetadata $parent */
+        $this->setInheritanceType($parent->inheritanceType);
+        $this->setIdentifier($parent->identifier);
+        $this->setChangeTrackingPolicy($parent->changeTrackingPolicy);
+
+        if ($parent->discriminatorColumn) {
+            $this->setDiscriminatorColumn($parent->discriminatorColumn);
+            $this->setDiscriminatorMap($parent->discriminatorMap);
+        }
+
+        if ($parent->isMappedSuperclass) {
+            $this->setCustomRepositoryClassName($parent->getCustomRepositoryClassName());
+        }
+
+        if ($parent->cache) {
+            $this->setCache(clone $parent->cache);
+        }
+
+        if (! empty($parent->lifecycleCallbacks)) {
+            $this->lifecycleCallbacks = $parent->lifecycleCallbacks;
+        }
+
+        if (! empty($parent->entityListeners)) {
+            $this->entityListeners = $parent->entityListeners;
+        }
     }
 
     public function setClassName(string $className)
     {
         $this->className = $className;
-    }
-
-    public function getColumnsIterator() : ArrayIterator
-    {
-        $iterator = parent::getColumnsIterator();
-
-        if ($this->discriminatorColumn) {
-            $iterator->offsetSet($this->discriminatorColumn->getColumnName(), $this->discriminatorColumn);
-        }
-
-        return $iterator;
     }
 
     public function getAncestorsIterator() : ArrayIterator
@@ -248,8 +265,8 @@ class ClassMetadata extends ComponentMetadata implements TableOwner
             $this->cache = clone $this->cache;
         }
 
-        foreach ($this->declaredProperties as $name => $property) {
-            $this->declaredProperties[$name] = clone $property;
+        foreach ($this->properties as $name => $property) {
+            $this->properties[$name] = clone $property;
         }
     }
 
@@ -283,7 +300,7 @@ class ClassMetadata extends ComponentMetadata implements TableOwner
 
         // This metadata is always serialized/cached.
         $serialized = array_merge($serialized, [
-            'declaredProperties',
+            'properties',
             'fieldNames',
             //'embeddedClasses',
             'identifier',
@@ -342,93 +359,6 @@ class ClassMetadata extends ComponentMetadata implements TableOwner
     }
 
     /**
-     * Restores some state that can not be serialized/unserialized.
-     */
-    public function wakeupReflection(ReflectionService $reflectionService) : void
-    {
-        // Restore ReflectionClass and properties
-        $this->reflectionClass = $reflectionService->getClass($this->className);
-
-        if (! $this->reflectionClass) {
-            return;
-        }
-
-        $this->className = $this->reflectionClass->getName();
-
-        foreach ($this->declaredProperties as $property) {
-            /** @var Property $property */
-            $property->wakeupReflection($reflectionService);
-        }
-    }
-
-    /**
-     * Validates Identifier.
-     *
-     * @throws MappingException
-     */
-    public function validateIdentifier() : void
-    {
-        if ($this->isMappedSuperclass || $this->isEmbeddedClass) {
-            return;
-        }
-
-        // Verify & complete identifier mapping
-        if (! $this->identifier) {
-            throw MappingException::identifierRequired($this->className);
-        }
-
-        $explicitlyGeneratedProperties = array_filter($this->declaredProperties, static function (Property $property) : bool {
-            return $property instanceof FieldMetadata
-                && $property->isPrimaryKey()
-                && $property->hasValueGenerator();
-        });
-
-        if ($explicitlyGeneratedProperties && $this->isIdentifierComposite()) {
-            throw MappingException::compositeKeyAssignedIdGeneratorRequired($this->className);
-        }
-    }
-
-    /**
-     * Validates association targets actually exist.
-     *
-     * @throws MappingException
-     */
-    public function validateAssociations() : void
-    {
-        array_map(
-            function (Property $property) {
-                if (! ($property instanceof AssociationMetadata)) {
-                    return;
-                }
-
-                $targetEntity = $property->getTargetEntity();
-
-                if (! class_exists($targetEntity)) {
-                    throw MappingException::invalidTargetEntityClass($targetEntity, $this->className, $property->getName());
-                }
-            },
-            $this->declaredProperties
-        );
-    }
-
-    /**
-     * Validates lifecycle callbacks.
-     *
-     * @throws MappingException
-     */
-    public function validateLifecycleCallbacks(ReflectionService $reflectionService) : void
-    {
-        foreach ($this->lifecycleCallbacks as $callbacks) {
-            /** @var array $callbacks */
-            foreach ($callbacks as $callbackFuncName) {
-                if (! $reflectionService->hasPublicMethod($this->className, $callbackFuncName)) {
-                    throw MappingException::lifecycleCallbackMethodNotFound($this->className, $callbackFuncName);
-                }
-            }
-        }
-    }
-
-    /**
      * Sets the change tracking policy used by this class.
      */
     public function setChangeTrackingPolicy(string $policy) : void
@@ -462,372 +392,44 @@ class ClassMetadata extends ComponentMetadata implements TableOwner
     }
 
     /**
-     * Validates & completes the basic mapping information for field mapping.
+     * Validates Identifier.
      *
-     * @throws MappingException If something is wrong with the mapping.
+     * @throws MappingException
      */
-    protected function validateAndCompleteFieldMapping(FieldMetadata $property)
+    public function validateIdentifier() : void
     {
-        $fieldName  = $property->getName();
-        $columnName = $property->getColumnName();
-
-        if (empty($columnName)) {
-            $columnName = $this->namingStrategy->propertyToColumnName($fieldName, $this->className);
-
-            $property->setColumnName($columnName);
-        }
-
-        if (! $this->isMappedSuperclass) {
-            $property->setTableName($this->getTableName());
-        }
-
-        // Check for already declared column
-        if (isset($this->fieldNames[$columnName]) ||
-            ($this->discriminatorColumn !== null && $this->discriminatorColumn->getColumnName() === $columnName)) {
-            throw MappingException::duplicateColumnName($this->className, $columnName);
-        }
-
-        // Complete id mapping
-        if ($property->isPrimaryKey()) {
-            if ($this->versionProperty !== null && $this->versionProperty->getName() === $fieldName) {
-                throw MappingException::cannotVersionIdField($this->className, $fieldName);
-            }
-
-            if ($property->getType()->canRequireSQLConversion()) {
-                throw MappingException::sqlConversionNotAllowedForPrimaryKeyProperties($this->className, $property);
-            }
-
-            if (! in_array($fieldName, $this->identifier, true)) {
-                $this->identifier[] = $fieldName;
-            }
-        }
-
-        $this->fieldNames[$columnName] = $fieldName;
-    }
-
-    /**
-     * Validates & completes the basic mapping information for field mapping.
-     *
-     * @throws MappingException If something is wrong with the mapping.
-     */
-    protected function validateAndCompleteVersionFieldMapping(VersionFieldMetadata $property)
-    {
-        $this->versionProperty = $property;
-
-        $options = $property->getOptions();
-
-        if (isset($options['default'])) {
+        if ($this->isMappedSuperclass || $this->isEmbeddedClass) {
             return;
         }
 
-        if (in_array($property->getTypeName(), ['integer', 'bigint', 'smallint'], true)) {
-            $property->setOptions(array_merge($options, ['default' => 1]));
-
-            return;
+        // Verify & complete identifier mapping
+        if (! $this->identifier) {
+            throw MappingException::identifierRequired($this->className);
         }
 
-        if (in_array($property->getTypeName(), ['datetime', 'datetime_immutable', 'datetimetz', 'datetimetz_immutable'], true)) {
-            $property->setOptions(array_merge($options, ['default' => 'CURRENT_TIMESTAMP']));
+        $explicitlyGeneratedProperties = array_filter($this->properties, static function (Property $property) : bool {
+            return $property instanceof FieldMetadata
+                && $property->isPrimaryKey()
+                && $property->hasValueGenerator();
+        });
 
-            return;
-        }
-
-        throw MappingException::unsupportedOptimisticLockingType($property->getType());
-    }
-
-    /**
-     * Validates & completes the basic mapping information that is common to all
-     * association mappings (one-to-one, many-ot-one, one-to-many, many-to-many).
-     *
-     * @throws MappingException If something is wrong with the mapping.
-     * @throws CacheException   If entity is not cacheable.
-     */
-    protected function validateAndCompleteAssociationMapping(AssociationMetadata $property)
-    {
-        $fieldName    = $property->getName();
-        $targetEntity = $property->getTargetEntity();
-
-        if (! $targetEntity) {
-            throw MappingException::missingTargetEntity($fieldName);
-        }
-
-        $property->setSourceEntity($this->className);
-        $property->setTargetEntity($targetEntity);
-
-        // Complete id mapping
-        if ($property->isPrimaryKey()) {
-            if ($property->isOrphanRemoval()) {
-                throw MappingException::illegalOrphanRemovalOnIdentifierAssociation($this->className, $fieldName);
-            }
-
-            if (! in_array($property->getName(), $this->identifier, true)) {
-                if ($property instanceof ToOneAssociationMetadata && count($property->getJoinColumns()) >= 2) {
-                    throw MappingException::cannotMapCompositePrimaryKeyEntitiesAsForeignId(
-                        $property->getTargetEntity(),
-                        $this->className,
-                        $fieldName
-                    );
-                }
-
-                $this->identifier[] = $property->getName();
-            }
-
-            if ($this->cache && ! $property->getCache()) {
-                throw NonCacheableEntityAssociation::fromEntityAndField($this->className, $fieldName);
-            }
-
-            if ($property instanceof ToManyAssociationMetadata) {
-                throw MappingException::illegalToManyIdentifierAssociation($this->className, $property->getName());
-            }
-        }
-
-        // Cascades
-        $cascadeTypes = ['remove', 'persist', 'refresh'];
-        $cascades     = array_map('strtolower', $property->getCascade());
-
-        if (in_array('all', $cascades, true)) {
-            $cascades = $cascadeTypes;
-        }
-
-        if (count($cascades) !== count(array_intersect($cascades, $cascadeTypes))) {
-            $diffCascades = array_diff($cascades, array_intersect($cascades, $cascadeTypes));
-
-            throw MappingException::invalidCascadeOption($diffCascades, $this->className, $fieldName);
-        }
-
-        $property->setCascade($cascades);
-    }
-
-    /**
-     * Validates & completes a to-one association mapping.
-     *
-     * @param ToOneAssociationMetadata $property The association mapping to validate & complete.
-     *
-     * @throws RuntimeException
-     * @throws MappingException
-     */
-    protected function validateAndCompleteToOneAssociationMetadata(ToOneAssociationMetadata $property)
-    {
-        $fieldName = $property->getName();
-
-        if ($property->isOwningSide()) {
-            if (empty($property->getJoinColumns())) {
-                // Apply default join column
-                $property->addJoinColumn(new JoinColumnMetadata());
-            }
-
-            $uniqueConstraintColumns = [];
-
-            foreach ($property->getJoinColumns() as $joinColumn) {
-                /** @var JoinColumnMetadata $joinColumn */
-                if ($property instanceof OneToOneAssociationMetadata && $this->inheritanceType !== InheritanceType::SINGLE_TABLE) {
-                    if (count($property->getJoinColumns()) === 1) {
-                        if (! $property->isPrimaryKey()) {
-                            $joinColumn->setUnique(true);
-                        }
-                    } else {
-                        $uniqueConstraintColumns[] = $joinColumn->getColumnName();
-                    }
-                }
-
-                $joinColumn->setTableName(! $this->isMappedSuperclass ? $this->getTableName() : null);
-
-                if (! $joinColumn->getColumnName()) {
-                    $joinColumn->setColumnName($this->namingStrategy->joinColumnName($fieldName, $this->className));
-                }
-
-                if (! $joinColumn->getReferencedColumnName()) {
-                    $joinColumn->setReferencedColumnName($this->namingStrategy->referenceColumnName());
-                }
-
-                $this->fieldNames[$joinColumn->getColumnName()] = $fieldName;
-            }
-
-            if ($uniqueConstraintColumns) {
-                if (! $this->table) {
-                    throw new RuntimeException(
-                        'ClassMetadata::setTable() has to be called before defining a one to one relationship.'
-                    );
-                }
-
-                $this->table->addUniqueConstraint(
-                    [
-                        'name'    => sprintf('%s_uniq', $fieldName),
-                        'columns' => $uniqueConstraintColumns,
-                        'options' => [],
-                        'flags'   => [],
-                    ]
-                );
-            }
-        }
-
-        if ($property->isOrphanRemoval()) {
-            $cascades = $property->getCascade();
-
-            if (! in_array('remove', $cascades, true)) {
-                $cascades[] = 'remove';
-
-                $property->setCascade($cascades);
-            }
-
-            // @todo guilhermeblanco where is this used?
-            // @todo guilhermeblanco Shouldn￿'t we iterate through JoinColumns to set non-uniqueness?
-            //$property->setUnique(false);
-        }
-
-        if ($property->isPrimaryKey() && ! $property->isOwningSide()) {
-            throw MappingException::illegalInverseIdentifierAssociation($this->className, $fieldName);
+        if ($explicitlyGeneratedProperties && $this->isIdentifierComposite()) {
+            throw MappingException::compositeKeyAssignedIdGeneratorRequired($this->className);
         }
     }
 
     /**
-     * Validates & completes a to-many association mapping.
-     *
-     * @param ToManyAssociationMetadata $property The association mapping to validate & complete.
+     * Validates lifecycle callbacks.
      *
      * @throws MappingException
      */
-    protected function validateAndCompleteToManyAssociationMetadata(ToManyAssociationMetadata $property)
+    public function validateLifecycleCallbacks(ReflectionService $reflectionService) : void
     {
-        // Do nothing
-    }
-
-    /**
-     * Validates & completes a one-to-one association mapping.
-     *
-     * @param OneToOneAssociationMetadata $property The association mapping to validate & complete.
-     */
-    protected function validateAndCompleteOneToOneMapping(OneToOneAssociationMetadata $property)
-    {
-        // Do nothing
-    }
-
-    /**
-     * Validates & completes a many-to-one association mapping.
-     *
-     * @param ManyToOneAssociationMetadata $property The association mapping to validate & complete.
-     *
-     * @throws MappingException
-     */
-    protected function validateAndCompleteManyToOneMapping(ManyToOneAssociationMetadata $property)
-    {
-        // A many-to-one mapping is essentially a one-one backreference
-        if ($property->isOrphanRemoval()) {
-            throw MappingException::illegalOrphanRemoval($this->className, $property->getName());
-        }
-    }
-
-    /**
-     * Validates & completes a one-to-many association mapping.
-     *
-     * @param OneToManyAssociationMetadata $property The association mapping to validate & complete.
-     *
-     * @throws MappingException
-     */
-    protected function validateAndCompleteOneToManyMapping(OneToManyAssociationMetadata $property)
-    {
-        // OneToMany MUST have mappedBy
-        if (! $property->getMappedBy()) {
-            throw MappingException::oneToManyRequiresMappedBy($property->getName());
-        }
-
-        if ($property->isOrphanRemoval()) {
-            $cascades = $property->getCascade();
-
-            if (! in_array('remove', $cascades, true)) {
-                $cascades[] = 'remove';
-
-                $property->setCascade($cascades);
-            }
-        }
-    }
-
-    /**
-     * Validates & completes a many-to-many association mapping.
-     *
-     * @param ManyToManyAssociationMetadata $property The association mapping to validate & complete.
-     *
-     * @throws MappingException
-     */
-    protected function validateAndCompleteManyToManyMapping(ManyToManyAssociationMetadata $property)
-    {
-        if ($property->isOwningSide()) {
-            // owning side MUST have a join table
-            $joinTable = $property->getJoinTable() ?: new JoinTableMetadata();
-
-            $property->setJoinTable($joinTable);
-
-            if (! $joinTable->getName()) {
-                $joinTableName = $this->namingStrategy->joinTableName(
-                    $property->getSourceEntity(),
-                    $property->getTargetEntity(),
-                    $property->getName()
-                );
-
-                $joinTable->setName($joinTableName);
-            }
-
-            $selfReferencingEntityWithoutJoinColumns = $property->getSourceEntity() === $property->getTargetEntity() && ! $joinTable->hasColumns();
-
-            if (! $joinTable->getJoinColumns()) {
-                $referencedColumnName = $this->namingStrategy->referenceColumnName();
-                $sourceReferenceName  = $selfReferencingEntityWithoutJoinColumns ? 'source' : $referencedColumnName;
-                $columnName           = $this->namingStrategy->joinKeyColumnName($property->getSourceEntity(), $sourceReferenceName);
-                $joinColumn           = new JoinColumnMetadata();
-
-                $joinColumn->setColumnName($columnName);
-                $joinColumn->setReferencedColumnName($referencedColumnName);
-                $joinColumn->setOnDelete('CASCADE');
-
-                $joinTable->addJoinColumn($joinColumn);
-            }
-
-            if (! $joinTable->getInverseJoinColumns()) {
-                $referencedColumnName = $this->namingStrategy->referenceColumnName();
-                $targetReferenceName  = $selfReferencingEntityWithoutJoinColumns ? 'target' : $referencedColumnName;
-                $columnName           = $this->namingStrategy->joinKeyColumnName($property->getTargetEntity(), $targetReferenceName);
-                $joinColumn           = new JoinColumnMetadata();
-
-                $joinColumn->setColumnName($columnName);
-                $joinColumn->setReferencedColumnName($referencedColumnName);
-                $joinColumn->setOnDelete('CASCADE');
-
-                $joinTable->addInverseJoinColumn($joinColumn);
-            }
-
-            foreach ($joinTable->getJoinColumns() as $joinColumn) {
-                /** @var JoinColumnMetadata $joinColumn */
-                if (! $joinColumn->getReferencedColumnName()) {
-                    $joinColumn->setReferencedColumnName($this->namingStrategy->referenceColumnName());
-                }
-
-                $referencedColumnName = $joinColumn->getReferencedColumnName();
-
-                if (! $joinColumn->getColumnName()) {
-                    $columnName = $this->namingStrategy->joinKeyColumnName(
-                        $property->getSourceEntity(),
-                        $referencedColumnName
-                    );
-
-                    $joinColumn->setColumnName($columnName);
-                }
-            }
-
-            foreach ($joinTable->getInverseJoinColumns() as $inverseJoinColumn) {
-                /** @var JoinColumnMetadata $inverseJoinColumn */
-                if (! $inverseJoinColumn->getReferencedColumnName()) {
-                    $inverseJoinColumn->setReferencedColumnName($this->namingStrategy->referenceColumnName());
-                }
-
-                $referencedColumnName = $inverseJoinColumn->getReferencedColumnName();
-
-                if (! $inverseJoinColumn->getColumnName()) {
-                    $columnName = $this->namingStrategy->joinKeyColumnName(
-                        $property->getTargetEntity(),
-                        $referencedColumnName
-                    );
-
-                    $inverseJoinColumn->setColumnName($columnName);
+        foreach ($this->lifecycleCallbacks as $callbacks) {
+            /** @var array $callbacks */
+            foreach ($callbacks as $callbackFuncName) {
+                if (! $reflectionService->hasPublicMethod($this->className, $callbackFuncName)) {
+                    throw MappingException::lifecycleCallbackMethodNotFound($this->className, $callbackFuncName);
                 }
             }
         }
@@ -887,8 +489,8 @@ class ClassMetadata extends ComponentMetadata implements TableOwner
      */
     public function hasField($fieldName)
     {
-        return isset($this->declaredProperties[$fieldName])
-            && $this->declaredProperties[$fieldName] instanceof FieldMetadata;
+        return isset($this->properties[$fieldName])
+            && $this->properties[$fieldName] instanceof FieldMetadata;
     }
 
     /**
@@ -915,8 +517,7 @@ class ClassMetadata extends ComponentMetadata implements TableOwner
             $targetClass = $em->getClassMetadata($property->getTargetEntity());
 
             if (! $property->isOwningSide()) {
-                $property    = $targetClass->getProperty($property->getMappedBy());
-                $targetClass = $em->getClassMetadata($property->getTargetEntity());
+                $property = $targetClass->getProperty($property->getMappedBy());
             }
 
             $joinColumns = $property instanceof ManyToManyAssociationMetadata
@@ -924,15 +525,7 @@ class ClassMetadata extends ComponentMetadata implements TableOwner
                 : $property->getJoinColumns();
 
             foreach ($joinColumns as $joinColumn) {
-                /** @var JoinColumnMetadata $joinColumn */
-                $columnName           = $joinColumn->getColumnName();
-                $referencedColumnName = $joinColumn->getReferencedColumnName();
-
-                if (! $joinColumn->getType()) {
-                    $joinColumn->setType(PersisterHelper::getTypeOfColumn($referencedColumnName, $targetClass, $em));
-                }
-
-                $columns[$columnName] = $joinColumn;
+                $columns[$joinColumn->getColumnName()] = $joinColumn;
             }
         }
 
@@ -1017,7 +610,7 @@ class ClassMetadata extends ComponentMetadata implements TableOwner
     {
         $fieldName = $property->getName();
 
-        if (! isset($this->declaredProperties[$fieldName])) {
+        if (! isset($this->properties[$fieldName])) {
             throw MappingException::invalidOverrideFieldName($this->className, $fieldName);
         }
 
@@ -1026,7 +619,7 @@ class ClassMetadata extends ComponentMetadata implements TableOwner
 
         // If moving from transient to persistent, assume it's a new property
         if ($originalPropertyClassName === TransientMetadata::class) {
-            unset($this->declaredProperties[$fieldName]);
+            unset($this->properties[$fieldName]);
 
             $this->addProperty($property);
 
@@ -1039,11 +632,11 @@ class ClassMetadata extends ComponentMetadata implements TableOwner
         }
 
         // Do not allow to change version property
-        if ($originalProperty instanceof VersionFieldMetadata) {
+        if ($originalProperty instanceof FieldMetadata && $originalProperty->isVersioned()) {
             throw MappingException::invalidOverrideVersionField($this->className, $fieldName);
         }
 
-        unset($this->declaredProperties[$fieldName]);
+        unset($this->properties[$fieldName]);
 
         if ($property instanceof FieldMetadata) {
             // Unset defined fieldName prior to override
@@ -1100,7 +693,7 @@ class ClassMetadata extends ComponentMetadata implements TableOwner
      */
     public function isInheritedProperty($fieldName)
     {
-        $declaringClass = $this->declaredProperties[$fieldName]->getDeclaringClass();
+        $declaringClass = $this->properties[$fieldName]->getDeclaringClass();
 
         return $declaringClass->className !== $this->className;
     }
@@ -1112,8 +705,22 @@ class ClassMetadata extends ComponentMetadata implements TableOwner
     {
         $this->table = $table;
 
-        if (empty($table->getName())) {
-            $table->setName($this->namingStrategy->classToTableName($this->className));
+        // Make sure inherited and declared properties reflect newly defined table
+        foreach ($this->properties as $property) {
+            switch (true) {
+                case $property instanceof FieldMetadata:
+                    $property->setTableName($property->getTableName() ?? $table->getName());
+                    break;
+
+                case $property instanceof ToOneAssociationMetadata:
+                    // Resolve association join column table names
+                    foreach ($property->getJoinColumns() as $joinColumn) {
+                        /** @var JoinColumnMetadata $joinColumn */
+                        $joinColumn->setTableName($joinColumn->getTableName() ?? $table->getName());
+                    }
+
+                    break;
+            }
         }
     }
 
@@ -1132,11 +739,25 @@ class ClassMetadata extends ComponentMetadata implements TableOwner
             || $type === InheritanceType::TABLE_PER_CLASS;
     }
 
-    public function getColumn(string $columnName) : ?LocalColumnMetadata
+    public function getColumn(string $columnName) : ?ColumnMetadata
     {
-        foreach ($this->declaredProperties as $property) {
-            if ($property instanceof LocalColumnMetadata && $property->getColumnName() === $columnName) {
-                return $property;
+        foreach ($this->properties as $property) {
+            switch (true) {
+                case $property instanceof FieldMetadata:
+                    if ($property->getColumnName() === $columnName) {
+                        return $property;
+                    }
+
+                    break;
+
+                case $property instanceof ToOneAssociationMetadata:
+                    foreach ($property->getJoinColumns() as $joinColumn) {
+                        if ($joinColumn->getColumnName() === $columnName) {
+                            return $joinColumn;
+                        }
+                    }
+
+                    break;
             }
         }
 
@@ -1149,8 +770,9 @@ class ClassMetadata extends ComponentMetadata implements TableOwner
      * @throws RuntimeException
      * @throws MappingException
      * @throws CacheException
+     * @throws ReflectionException
      */
-    public function addProperty(Property $property)
+    public function addProperty(Property $property) : void
     {
         $fieldName = $property->getName();
 
@@ -1162,37 +784,19 @@ class ClassMetadata extends ComponentMetadata implements TableOwner
         $property->setDeclaringClass($this);
 
         switch (true) {
-            case $property instanceof VersionFieldMetadata:
-                $this->validateAndCompleteFieldMapping($property);
-                $this->validateAndCompleteVersionFieldMapping($property);
-                break;
-
             case $property instanceof FieldMetadata:
-                $this->validateAndCompleteFieldMapping($property);
+                if ($property->isVersioned()) {
+                    $this->versionProperty = $property;
+                }
+
+                $this->fieldNames[$property->getColumnName()] = $property->getName();
                 break;
 
-            case $property instanceof OneToOneAssociationMetadata:
-                $this->validateAndCompleteAssociationMapping($property);
-                $this->validateAndCompleteToOneAssociationMetadata($property);
-                $this->validateAndCompleteOneToOneMapping($property);
-                break;
+            case $property instanceof ToOneAssociationMetadata:
+                foreach ($property->getJoinColumns() as $joinColumnMetadata) {
+                    $this->fieldNames[$joinColumnMetadata->getColumnName()] = $property->getName();
+                }
 
-            case $property instanceof OneToManyAssociationMetadata:
-                $this->validateAndCompleteAssociationMapping($property);
-                $this->validateAndCompleteToManyAssociationMetadata($property);
-                $this->validateAndCompleteOneToManyMapping($property);
-                break;
-
-            case $property instanceof ManyToOneAssociationMetadata:
-                $this->validateAndCompleteAssociationMapping($property);
-                $this->validateAndCompleteToOneAssociationMetadata($property);
-                $this->validateAndCompleteManyToOneMapping($property);
-                break;
-
-            case $property instanceof ManyToManyAssociationMetadata:
-                $this->validateAndCompleteAssociationMapping($property);
-                $this->validateAndCompleteToManyAssociationMetadata($property);
-                $this->validateAndCompleteManyToManyMapping($property);
                 break;
 
             default:
@@ -1200,7 +804,11 @@ class ClassMetadata extends ComponentMetadata implements TableOwner
                 break;
         }
 
-        $this->addDeclaredProperty($property);
+        if ($property->isPrimaryKey() && ! in_array($fieldName, $this->identifier, true)) {
+            $this->identifier[] = $fieldName;
+        }
+
+        parent::addProperty($property);
     }
 
     /**
@@ -1210,12 +818,20 @@ class ClassMetadata extends ComponentMetadata implements TableOwner
      */
     public function addInheritedProperty(Property $property)
     {
-        $inheritedProperty = clone $property;
+        if (isset($this->properties[$property->getName()])) {
+            throw MappingException::duplicateProperty($this->className, $this->getProperty($property->getName()));
+        }
+
         $declaringClass    = $property->getDeclaringClass();
+        $inheritedProperty = $declaringClass->isMappedSuperclass ? clone $property : $property;
 
         if ($inheritedProperty instanceof FieldMetadata) {
             if (! $declaringClass->isMappedSuperclass) {
                 $inheritedProperty->setTableName($property->getTableName());
+            }
+
+            if ($inheritedProperty->isVersioned()) {
+                $this->versionProperty = $inheritedProperty;
             }
 
             $this->fieldNames[$property->getColumnName()] = $property->getName();
@@ -1233,15 +849,7 @@ class ClassMetadata extends ComponentMetadata implements TableOwner
             }
         }
 
-        if (isset($this->declaredProperties[$property->getName()])) {
-            throw MappingException::duplicateProperty($this->className, $this->getProperty($property->getName()));
-        }
-
-        $this->declaredProperties[$property->getName()] = $inheritedProperty;
-
-        if ($inheritedProperty instanceof VersionFieldMetadata) {
-            $this->versionProperty = $inheritedProperty;
-        }
+        $this->properties[$property->getName()] = $inheritedProperty;
     }
 
     /**
@@ -1278,35 +886,21 @@ class ClassMetadata extends ComponentMetadata implements TableOwner
      *
      * @return string[]
      */
-    public function getLifecycleCallbacks($event)
+    public function getLifecycleCallbacks($event) : array
     {
         return $this->lifecycleCallbacks[$event] ?? [];
     }
 
     /**
      * Adds a lifecycle callback for entities of this class.
-     *
-     * @param string $callback
-     * @param string $event
      */
-    public function addLifecycleCallback($callback, $event)
+    public function addLifecycleCallback(string $eventName, string $methodName)
     {
-        if (isset($this->lifecycleCallbacks[$event]) && in_array($callback, $this->lifecycleCallbacks[$event], true)) {
+        if (in_array($methodName, $this->lifecycleCallbacks[$eventName] ?? [], true)) {
             return;
         }
 
-        $this->lifecycleCallbacks[$event][] = $callback;
-    }
-
-    /**
-     * Sets the lifecycle callbacks for entities of this class.
-     * Any previously registered callbacks are overwritten.
-     *
-     * @param string[][] $callbacks
-     */
-    public function setLifecycleCallbacks(array $callbacks) : void
-    {
-        $this->lifecycleCallbacks = $callbacks;
+        $this->lifecycleCallbacks[$eventName][] = $methodName;
     }
 
     /**
@@ -1318,23 +912,24 @@ class ClassMetadata extends ComponentMetadata implements TableOwner
      *
      * @throws MappingException
      */
-    public function addEntityListener(string $eventName, string $class, string $method) : void
+    public function addEntityListener(string $eventName, string $class, string $methodName) : void
     {
         $listener = [
             'class'  => $class,
-            'method' => $method,
+            'method' => $methodName,
         ];
 
         if (! class_exists($class)) {
             throw MappingException::entityListenerClassNotFound($class, $this->className);
         }
 
-        if (! method_exists($class, $method)) {
-            throw MappingException::entityListenerMethodNotFound($class, $method, $this->className);
+        if (! method_exists($class, $methodName)) {
+            throw MappingException::entityListenerMethodNotFound($class, $methodName, $this->className);
         }
 
-        if (isset($this->entityListeners[$eventName]) && in_array($listener, $this->entityListeners[$eventName], true)) {
-            throw MappingException::duplicateEntityListener($class, $method, $this->className);
+        // Check if entity listener already got registered and ignore it if positive
+        if (in_array($listener, $this->entityListeners[$eventName] ?? [], true)) {
+            return;
         }
 
         $this->entityListeners[$eventName][] = $listener;
@@ -1415,6 +1010,12 @@ class ClassMetadata extends ComponentMetadata implements TableOwner
         $this->valueGenerationPlan = $valueGenerationPlan;
     }
 
+    public function checkPropertyDuplication(string $columnName) : bool
+    {
+        return isset($this->fieldNames[$columnName])
+            || ($this->discriminatorColumn !== null && $this->discriminatorColumn->getColumnName() === $columnName);
+    }
+
     /**
      * Marks this class as read only, no change tracking is applied to it.
      */
@@ -1445,7 +1046,7 @@ class ClassMetadata extends ComponentMetadata implements TableOwner
      */
     public function mapEmbedded(array $mapping) : void
     {
-        /*if (isset($this->declaredProperties[$mapping['fieldName']])) {
+        /*if (isset($this->properties[$mapping['fieldName']])) {
             throw MappingException::duplicateProperty($this->className, $this->getProperty($mapping['fieldName']));
         }
 

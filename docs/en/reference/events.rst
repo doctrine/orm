@@ -302,7 +302,7 @@ something like this:
     <doctrine-mapping xmlns="http://doctrine-project.org/schemas/orm/doctrine-mapping"
           xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
           xsi:schemaLocation="http://doctrine-project.org/schemas/orm/doctrine-mapping
-                              /Users/robo/dev/php/Doctrine/doctrine-mapping.xsd">
+                              https://www.doctrine-project.org/schemas/orm/doctrine-mapping.xsd">
 
         <entity name="User">
 

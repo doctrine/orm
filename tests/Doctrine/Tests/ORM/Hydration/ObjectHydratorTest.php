@@ -29,7 +29,6 @@ use Doctrine\Tests\Models\Hydration\EntityWithArrayDefaultArrayValueM2M;
 use Doctrine\Tests\Models\Hydration\SimpleEntity;
 use ProxyManager\Configuration;
 use ProxyManager\Factory\LazyLoadingGhostFactory;
-use ReflectionClass;
 
 class ObjectHydratorTest extends HydrationTestCase
 {
@@ -1037,8 +1036,7 @@ class ObjectHydratorTest extends HydrationTestCase
             ->with($this->em->getClassMetadata(ECommerceShipping::class), ['id' => 42])
             ->willReturn($proxyInstance);
 
-        // @todo guilhermeblanco This should never have happened... replace this Reflection injection with proper API.
-        $this->swapPrivateProperty($this->em, 'proxyFactory', $proxyFactory);
+        $this->em->setProxyFactory($proxyFactory);
 
         // configuring lazy loading
         $metadata = $this->em->getClassMetadata(ECommerceProduct::class);
@@ -1091,8 +1089,7 @@ class ObjectHydratorTest extends HydrationTestCase
             ->with($this->em->getClassMetadata(ECommerceShipping::class), ['id' => 42])
             ->willReturn($proxyInstance);
 
-        // @todo guilhermeblanco This should never have happened... replace this Reflection injection with proper API.
-        $this->swapPrivateProperty($this->em, 'proxyFactory', $proxyFactory);
+        $this->em->setProxyFactory($proxyFactory);
 
         // configuring lazy loading
         $metadata = $this->em->getClassMetadata(ECommerceProduct::class);
@@ -2010,19 +2007,5 @@ class ObjectHydratorTest extends HydrationTestCase
         self::assertInstanceOf(PersistentCollection::class, $result[0]->collection);
         self::assertCount(1, $result[0]->collection);
         self::assertInstanceOf(SimpleEntity::class, $result[0]->collection[0]);
-    }
-
-    /**
-     * @param object $object
-     * @param mixed  $newValue
-     */
-    private function swapPrivateProperty($object, string $propertyName, $newValue)
-    {
-        $reflectionClass    = new ReflectionClass($object);
-        $reflectionProperty = $reflectionClass->getProperty($propertyName);
-
-        $reflectionProperty->setAccessible(true);
-
-        $reflectionProperty->setValue($object, $newValue);
     }
 }

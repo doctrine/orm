@@ -5,35 +5,23 @@ declare(strict_types=1);
 namespace Doctrine\Tests\ORM\Utility;
 
 use Doctrine\ORM\EntityManagerInterface;
-use Doctrine\ORM\Mapping;
 use Doctrine\ORM\Mapping\ClassMetadata;
-use Doctrine\ORM\Reflection\StaticReflectionService;
 use Doctrine\ORM\Utility\HierarchyDiscriminatorResolver;
 use PHPUnit\Framework\TestCase;
 
 class HierarchyDiscriminatorResolverTest extends TestCase
 {
-    /** @var Mapping\ClassMetadataBuildingContext */
-    private $staticMetadataBuildingContext;
-
-    public function setUp() : void
-    {
-        $this->staticMetadataBuildingContext = new Mapping\ClassMetadataBuildingContext(
-            $this->createMock(Mapping\ClassMetadataFactory::class),
-            new StaticReflectionService()
-        );
-    }
-
     public function testResolveDiscriminatorsForClass() : void
     {
-        $childClassMetadata                     = new ClassMetadata('ChildEntity', $this->staticMetadataBuildingContext);
+        $classMetadata                     = new ClassMetadata('Entity', null);
+        $classMetadata->name               = 'Some\Class\Name';
+        $classMetadata->discriminatorValue = 'discriminator';
+
+        $childClassMetadata                     = new ClassMetadata('ChildEntity', $classMetadata);
         $childClassMetadata->name               = 'Some\Class\Child\Name';
         $childClassMetadata->discriminatorValue = 'child-discriminator';
 
-        $classMetadata = new ClassMetadata('Entity', $this->staticMetadataBuildingContext);
         $classMetadata->setSubclasses([$childClassMetadata->getClassName()]);
-        $classMetadata->name               = 'Some\Class\Name';
-        $classMetadata->discriminatorValue = 'discriminator';
 
         $em = $this->prophesize(EntityManagerInterface::class);
         $em->getClassMetadata($classMetadata->getClassName())
@@ -52,7 +40,7 @@ class HierarchyDiscriminatorResolverTest extends TestCase
 
     public function testResolveDiscriminatorsForClassWithNoSubclasses() : void
     {
-        $classMetadata = new ClassMetadata('Entity', $this->staticMetadataBuildingContext);
+        $classMetadata = new ClassMetadata('Entity', null);
         $classMetadata->setSubclasses([]);
         $classMetadata->name               = 'Some\Class\Name';
         $classMetadata->discriminatorValue = 'discriminator';

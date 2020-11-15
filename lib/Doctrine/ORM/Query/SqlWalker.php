@@ -22,7 +22,6 @@ use Doctrine\ORM\Mapping\ToOneAssociationMetadata;
 use Doctrine\ORM\OptimisticLockException;
 use Doctrine\ORM\Query;
 use Doctrine\ORM\Utility\HierarchyDiscriminatorResolver;
-use Doctrine\ORM\Utility\PersisterHelper;
 use function array_diff;
 use function array_filter;
 use function array_keys;
@@ -759,7 +758,7 @@ class SqlWalker implements TreeWalker
             }
 
             // Add foreign key columns of class and also parent classes
-            foreach ($class->getDeclaredPropertiesIterator() as $association) {
+            foreach ($class->getPropertiesIterator() as $association) {
                 if (! ($association instanceof ToOneAssociationMetadata && $association->isOwningSide())
                     || ( ! $addMetaColumns && ! $association->isPrimaryKey())) {
                     continue;
@@ -774,10 +773,6 @@ class SqlWalker implements TreeWalker
                     $quotedColumnName     = $this->platform->quoteIdentifier($columnName);
                     $columnAlias          = $this->getSQLColumnAlias();
                     $sqlTableAlias        = $this->getSQLTableAlias($joinColumn->getTableName(), $dqlAlias);
-
-                    if (! $joinColumn->getType()) {
-                        $joinColumn->setType(PersisterHelper::getTypeOfColumn($referencedColumnName, $targetClass, $this->em));
-                    }
 
                     $sqlSelectExpressions[] = sprintf(
                         '%s.%s AS %s',
@@ -799,7 +794,7 @@ class SqlWalker implements TreeWalker
             foreach ($class->getSubClasses() as $subClassName) {
                 $subClass = $this->em->getClassMetadata($subClassName);
 
-                foreach ($subClass->getDeclaredPropertiesIterator() as $association) {
+                foreach ($subClass->getPropertiesIterator() as $association) {
                     // Skip if association is inherited
                     if ($subClass->isInheritedProperty($association->getName())) {
                         continue;
@@ -813,15 +808,10 @@ class SqlWalker implements TreeWalker
 
                     foreach ($association->getJoinColumns() as $joinColumn) {
                         /** @var JoinColumnMetadata $joinColumn */
-                        $columnName           = $joinColumn->getColumnName();
-                        $referencedColumnName = $joinColumn->getReferencedColumnName();
-                        $quotedColumnName     = $this->platform->quoteIdentifier($columnName);
-                        $columnAlias          = $this->getSQLColumnAlias();
-                        $sqlTableAlias        = $this->getSQLTableAlias($joinColumn->getTableName(), $dqlAlias);
-
-                        if (! $joinColumn->getType()) {
-                            $joinColumn->setType(PersisterHelper::getTypeOfColumn($referencedColumnName, $targetClass, $this->em));
-                        }
+                        $columnName       = $joinColumn->getColumnName();
+                        $quotedColumnName = $this->platform->quoteIdentifier($columnName);
+                        $columnAlias      = $this->getSQLColumnAlias();
+                        $sqlTableAlias    = $this->getSQLTableAlias($joinColumn->getTableName(), $dqlAlias);
 
                         $sqlSelectExpressions[] = sprintf(
                             '%s.%s AS %s',
@@ -924,11 +914,10 @@ class SqlWalker implements TreeWalker
 
         $tableName  = $class->table->getQuotedQualifiedName($this->platform);
         $tableAlias = $this->getSQLTableAlias($class->getTableName(), $dqlAlias);
-
-        $sql = $this->platform->appendLockHint(
-            $tableName . ' ' . $tableAlias,
-            $this->query->getHint(Query::HINT_LOCK_MODE)
-        );
+        $lockMode   = $this->query->getHint(Query::HINT_LOCK_MODE);
+        $sql        = $lockMode !== false
+            ? $this->platform->appendLockHint($tableName . ' ' . $tableAlias, $lockMode)
+            : $tableName . ' ' . $tableAlias;
 
         if ($class->inheritanceType !== InheritanceType::JOINED) {
             return $sql;
@@ -1433,7 +1422,7 @@ class SqlWalker implements TreeWalker
                 $sqlParts = [];
 
                 // Select all fields from the queried class
-                foreach ($class->getDeclaredPropertiesIterator() as $fieldName => $property) {
+                foreach ($class->getPropertiesIterator() as $fieldName => $property) {
                     if (! ($property instanceof FieldMetadata)) {
                         continue;
                     }
@@ -1468,7 +1457,7 @@ class SqlWalker implements TreeWalker
                     foreach ($class->getSubClasses() as $subClassName) {
                         $subClass = $this->em->getClassMetadata($subClassName);
 
-                        foreach ($subClass->getDeclaredPropertiesIterator() as $fieldName => $property) {
+                        foreach ($subClass->getPropertiesIterator() as $fieldName => $property) {
                             if (! ($property instanceof FieldMetadata)) {
                                 continue;
                             }
@@ -1738,7 +1727,7 @@ class SqlWalker implements TreeWalker
         $classMetadata = $this->queryComponents[$groupByItem]['metadata'];
         $sqlParts      = [];
 
-        foreach ($classMetadata->getDeclaredPropertiesIterator() as $property) {
+        foreach ($classMetadata->getPropertiesIterator() as $property) {
             switch (true) {
                 case $property instanceof FieldMetadata:
                     $type       = AST\PathExpression::TYPE_STATE_FIELD;
@@ -1916,6 +1905,8 @@ class SqlWalker implements TreeWalker
 
             return '(' . $this->walkConditionalExpression($condExpr) . ')';
         }
+
+        return '';
     }
 
     /**

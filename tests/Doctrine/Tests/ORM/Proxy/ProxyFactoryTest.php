@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Doctrine\Tests\ORM\Proxy;
 
+use Doctrine\DBAL\Platforms\AbstractPlatform;
 use Doctrine\ORM\EntityNotFoundException;
 use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\Mapping\ClassMetadataBuildingContext;
@@ -20,7 +21,7 @@ use Doctrine\Tests\Models\ECommerce\ECommerceFeature;
 use Doctrine\Tests\Models\FriendObject\ComparableObject;
 use Doctrine\Tests\Models\ProxySpecifics\FuncGetArgs;
 use Doctrine\Tests\OrmTestCase;
-use PHPUnit_Framework_MockObject_MockObject;
+use PHPUnit\Framework\MockObject\MockObject;
 use ProxyManager\Proxy\GhostObjectInterface;
 use stdClass;
 use function json_encode;
@@ -54,7 +55,8 @@ class ProxyFactoryTest extends OrmTestCase
 
         $this->metadataBuildingContext = new ClassMetadataBuildingContext(
             $this->createMock(ClassMetadataFactory::class),
-            new RuntimeReflectionService()
+            new RuntimeReflectionService(),
+            $this->createMock(AbstractPlatform::class)
         );
         $this->connectionMock          = new ConnectionMock([], new DriverMock());
         $this->emMock                  = EntityManagerMock::create($this->connectionMock);
@@ -101,8 +103,10 @@ class ProxyFactoryTest extends OrmTestCase
 
     public function testSkipMappedSuperClassesOnGeneration() : void
     {
-        $cm                     = new ClassMetadata(stdClass::class, $this->metadataBuildingContext);
+        $cm                     = new ClassMetadata(stdClass::class, null);
         $cm->isMappedSuperclass = true;
+
+        $cm->wakeupReflection($this->metadataBuildingContext->getReflectionService());
 
         self::assertSame(
             0,
@@ -117,8 +121,10 @@ class ProxyFactoryTest extends OrmTestCase
      */
     public function testSkipEmbeddableClassesOnGeneration() : void
     {
-        $cm                  = new ClassMetadata(stdClass::class, $this->metadataBuildingContext);
+        $cm                  = new ClassMetadata(stdClass::class, null);
         $cm->isEmbeddedClass = true;
+
+        $cm->wakeupReflection($this->metadataBuildingContext->getReflectionService());
 
         self::assertSame(
             0,
@@ -132,7 +138,9 @@ class ProxyFactoryTest extends OrmTestCase
      */
     public function testSkipAbstractClassesOnGeneration() : void
     {
-        $cm = new ClassMetadata(AbstractClass::class, $this->metadataBuildingContext);
+        $cm = new ClassMetadata(AbstractClass::class, null);
+
+        $cm->wakeupReflection($this->metadataBuildingContext->getReflectionService());
 
         self::assertNotNull($cm->getReflectionClass());
 
@@ -247,7 +255,7 @@ class ProxyFactoryTest extends OrmTestCase
 
     public function testFriendObjectsDoNotLazyLoadIfNotAccessingLazyState() : void
     {
-        /** @var BasicEntityPersister|PHPUnit_Framework_MockObject_MockObject $persister */
+        /** @var BasicEntityPersister|MockObject $persister */
         $persister = $this->createMock(BasicEntityPersister::class);
         $persister->expects(self::never())->method('loadById');
 
@@ -271,7 +279,7 @@ class ProxyFactoryTest extends OrmTestCase
 
     public function testFriendObjectsLazyLoadWhenAccessingLazyState() : void
     {
-        /** @var BasicEntityPersister|PHPUnit_Framework_MockObject_MockObject $persister */
+        /** @var BasicEntityPersister|MockObject $persister */
         $persister = $this
             ->getMockBuilder(BasicEntityPersister::class)
             ->setConstructorArgs([$this->emMock, $this->emMock->getClassMetadata(ComparableObject::class)])
@@ -322,7 +330,7 @@ class ProxyFactoryTest extends OrmTestCase
 
     public function testProxyMethodsSupportFuncGetArgsLogic() : void
     {
-        /** @var BasicEntityPersister|PHPUnit_Framework_MockObject_MockObject $persister */
+        /** @var BasicEntityPersister|MockObject $persister */
         $persister = $this->createMock(BasicEntityPersister::class);
         $persister->expects(self::never())->method('loadById');
 

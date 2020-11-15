@@ -19,9 +19,7 @@ use Doctrine\ORM\Annotation as ORM;
  *      ),
  *      @ORM\AssociationOverride(
  *          name="address",
- *          joinColumns=@ORM\JoinColumn(
- *              name="adminaddress_id", referencedColumnName="id"
- *          )
+ *          joinColumns=@ORM\JoinColumn(name="adminaddress_id", referencedColumnName="id")
  *      )
  * })
  */

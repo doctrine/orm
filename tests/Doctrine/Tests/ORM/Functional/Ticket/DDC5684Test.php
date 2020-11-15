@@ -74,12 +74,12 @@ class DDC5684ObjectIdType extends DBALTypes\IntegerType
         return $value->value;
     }
 
-    public function getName()
+    public function getName() : string
     {
         return self::class;
     }
 
-    public function requiresSQLCommentHint(AbstractPlatform $platform)
+    public function requiresSQLCommentHint(AbstractPlatform $platform) : bool
     {
         return true;
     }

@@ -41,7 +41,7 @@ internally but also mean more work during ``flush``.
             $em->clear(); // Detaches all objects from Doctrine!
         }
     }
-    $em->flush(); //Persist objects that did not make up an entire batch
+    $em->flush(); // Persist objects that did not make up an entire batch
     $em->clear();
 
 Bulk Updates
@@ -74,7 +74,7 @@ with the batching strategy that was already used for bulk inserts:
 
     <?php
     $batchSize = 20;
-    $i = 0;
+    $i = 1;
     $q = $em->createQuery('select u from MyProject\Model\User u');
     $iterableResult = $q->iterate();
     foreach ($iterableResult as $row) {
@@ -134,7 +134,7 @@ The following example shows how to do this:
 
     <?php
     $batchSize = 20;
-    $i = 0;
+    $i = 1;
     $q = $em->createQuery('select u from MyProject\Model\User u');
     $iterableResult = $q->iterate();
     while (($row = $iterableResult->next()) !== false) {

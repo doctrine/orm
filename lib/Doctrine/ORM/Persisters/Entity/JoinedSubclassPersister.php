@@ -9,16 +9,17 @@ use Doctrine\DBAL\LockMode;
 use Doctrine\DBAL\Statement;
 use Doctrine\DBAL\Types\Type;
 use Doctrine\ORM\Mapping\AssociationMetadata;
+use Doctrine\ORM\Mapping\ColumnMetadata;
 use Doctrine\ORM\Mapping\FieldMetadata;
-use Doctrine\ORM\Mapping\GeneratorType;
 use Doctrine\ORM\Mapping\JoinColumnMetadata;
 use Doctrine\ORM\Mapping\ManyToManyAssociationMetadata;
 use Doctrine\ORM\Mapping\ToManyAssociationMetadata;
 use Doctrine\ORM\Mapping\ToOneAssociationMetadata;
-use Doctrine\ORM\Mapping\VersionFieldMetadata;
-use Doctrine\ORM\Utility\PersisterHelper;
+use Doctrine\ORM\Query\Parameter;
 use function array_combine;
+use function array_filter;
 use function array_keys;
+use function array_merge;
 use function implode;
 use function is_array;
 
@@ -70,21 +71,46 @@ class JoinedSubclassPersister extends AbstractEntityInheritancePersister
         $insertData = $this->prepareInsertData($entity);
 
         // Execute insert on root table
-        $paramIndex = 1;
-
-        foreach ($insertData[$rootTableName] as $columnName => $value) {
-            $type = $this->columns[$columnName]->getType();
-
-            $rootTableStmt->bindValue($paramIndex++, $value, $type);
+        foreach ($insertData[$rootTableName] as $paramIndex => $parameter) {
+            $rootTableStmt->bindValue($paramIndex + 1, $parameter->getValue(), $parameter->getType());
         }
 
         $rootTableStmt->execute();
 
         if ($generationPlan->containsDeferred()) {
             $generationPlan->executeDeferred($this->em, $entity);
-            $id = $this->getIdentifier($entity);
-        } else {
-            $id = $this->em->getUnitOfWork()->getEntityIdentifier($entity);
+        }
+
+        // Collect identifier column values
+        $id = [];
+        $idParameters = [];
+
+        foreach ($this->class->getIdentifier() as $propertyName) {
+            $property      = $this->class->getProperty($propertyName);
+            $propertyValue = $property->getValue($entity);
+
+            $id[$propertyName] = $propertyValue;
+
+            switch (true) {
+                case $property instanceof FieldMetadata:
+                    $columnName = $property->getColumnName();
+
+                    $idParameters[$columnName] = new Parameter($columnName, $propertyValue, $property->getType());
+                    break;
+
+                case $property instanceof ToOneAssociationMetadata:
+                    $targetPersister = $this->em->getUnitOfWork()->getEntityPersister($property->getTargetEntity());
+
+                    foreach ($property->getJoinColumns() as $joinColumn) {
+                        $columnName           = $joinColumn->getColumnName();
+                        $referencedColumnName = $joinColumn->getReferencedColumnName();
+                        $columnValue          = $targetPersister->getColumnValue($propertyValue, $referencedColumnName);
+
+                        $idParameters[$columnName] = new Parameter($columnName, $columnValue, $joinColumn->getType());
+                    }
+
+                    break;
+            }
         }
 
         if ($this->class->isVersioned()) {
@@ -96,23 +122,15 @@ class JoinedSubclassPersister extends AbstractEntityInheritancePersister
         foreach ($subTableStmts as $tableName => $stmt) {
             /** @var Statement $stmt */
             $paramIndex = 1;
-            $data       = $insertData[$tableName] ?? [];
+            $tableData  = $insertData[$tableName] ?? [];
 
-            foreach ((array) $id as $idName => $idVal) {
-                $type = Type::getType('string');
-
-                if (isset($this->columns[$idName])) {
-                    $type = $this->columns[$idName]->getType();
-                }
-
-                $stmt->bindValue($paramIndex++, $idVal, $type);
+            foreach ($idParameters as $parameter) {
+                $stmt->bindValue($paramIndex++, $parameter->getValue(), $parameter->getType());
             }
 
-            foreach ($data as $columnName => $value) {
-                if (! is_array($id) || ! isset($id[$columnName])) {
-                    $type = $this->columns[$columnName]->getType();
-
-                    $stmt->bindValue($paramIndex++, $value, $type);
+            foreach ($tableData as $parameter) {
+                if (! isset($idParameters[$parameter->getName()])) {
+                    $stmt->bindValue($paramIndex++, $parameter->getValue(), $parameter->getType());
                 }
             }
 
@@ -139,24 +157,13 @@ class JoinedSubclassPersister extends AbstractEntityInheritancePersister
 
         $isVersioned = $this->class->isVersioned();
 
-        foreach ($updateData as $tableName => $data) {
-            $versioned = $isVersioned && $this->class->versionProperty->getTableName() === $tableName;
+        foreach ($updateData as $tableName => $tableData) {
+            $isTableVersioned = $isVersioned && $this->class->versionProperty->getTableName() === $tableName;
 
-            $this->updateTable($entity, $this->platform->quoteIdentifier($tableName), $data, $versioned);
+            $this->updateTable($entity, $this->platform->quoteIdentifier($tableName), $tableData, $isTableVersioned);
         }
 
-        // Make sure the table with the version column is updated even if no columns on that
-        // table were affected.
         if ($isVersioned) {
-            $versionedClass = $this->class->versionProperty->getDeclaringClass();
-            $versionedTable = $versionedClass->getTableName();
-
-            if (! isset($updateData[$versionedTable])) {
-                $tableName = $versionedClass->table->getQuotedQualifiedName($this->platform);
-
-                $this->updateTable($entity, $tableName, [], true);
-            }
-
             $identifiers = $this->em->getUnitOfWork()->getEntityIdentifier($entity);
 
             $this->assignDefaultVersionValue($entity, $identifiers);
@@ -253,11 +260,7 @@ class JoinedSubclassPersister extends AbstractEntityInheritancePersister
         $where      = $conditionSql !== '' ? ' WHERE ' . $conditionSql : '';
         $lock       = $this->platform->appendLockHint($from, $lockMode);
         $columnList = $this->getSelectColumnsSQL();
-        $query      = 'SELECT ' . $columnList
-                    . $lock
-                    . $joinSql
-                    . $where
-                    . $orderBySql;
+        $query      = 'SELECT ' . $columnList . $lock . $joinSql . $where . $orderBySql;
 
         return $this->platform->modifyLimitQuery($query, $limit, $offset ?? 0) . $lockSql;
     }
@@ -270,8 +273,7 @@ class JoinedSubclassPersister extends AbstractEntityInheritancePersister
         $tableName      = $this->class->table->getQuotedQualifiedName($this->platform);
         $baseTableAlias = $this->getSQLTableAlias($this->class->getTableName());
         $joinSql        = $this->getJoinSql($baseTableAlias);
-
-        $conditionSql = $criteria instanceof Criteria
+        $conditionSql   = $criteria instanceof Criteria
             ? $this->getSelectConditionCriteriaSQL($criteria)
             : $this->getSelectConditionSQL($criteria);
 
@@ -338,7 +340,7 @@ class JoinedSubclassPersister extends AbstractEntityInheritancePersister
         $columnList = [];
 
         // Add columns
-        foreach ($this->class->getDeclaredPropertiesIterator() as $fieldName => $property) {
+        foreach ($this->class->getPropertiesIterator() as $fieldName => $property) {
             if ($property instanceof FieldMetadata) {
                 $columnList[] = $this->getSelectColumnSQL($fieldName, $property->getDeclaringClass());
 
@@ -349,16 +351,7 @@ class JoinedSubclassPersister extends AbstractEntityInheritancePersister
                 continue;
             }
 
-            $targetClass = $this->em->getClassMetadata($property->getTargetEntity());
-
             foreach ($property->getJoinColumns() as $joinColumn) {
-                /** @var JoinColumnMetadata $joinColumn */
-                $referencedColumnName = $joinColumn->getReferencedColumnName();
-
-                if (! $joinColumn->getType()) {
-                    $joinColumn->setType(PersisterHelper::getTypeOfColumn($referencedColumnName, $targetClass, $this->em));
-                }
-
                 $columnList[] = $this->getSelectJoinColumnSQL($joinColumn);
             }
         }
@@ -381,7 +374,7 @@ class JoinedSubclassPersister extends AbstractEntityInheritancePersister
             $subClass = $this->em->getClassMetadata($subClassName);
 
             // Add columns
-            foreach ($subClass->getDeclaredPropertiesIterator() as $fieldName => $property) {
+            foreach ($subClass->getPropertiesIterator() as $fieldName => $property) {
                 if ($subClass->isInheritedProperty($fieldName)) {
                     continue;
                 }
@@ -392,16 +385,7 @@ class JoinedSubclassPersister extends AbstractEntityInheritancePersister
                         break;
 
                     case $property instanceof ToOneAssociationMetadata && $property->isOwningSide():
-                        $targetClass = $this->em->getClassMetadata($property->getTargetEntity());
-
                         foreach ($property->getJoinColumns() as $joinColumn) {
-                            /** @var JoinColumnMetadata $joinColumn */
-                            $referencedColumnName = $joinColumn->getReferencedColumnName();
-
-                            if (! $joinColumn->getType()) {
-                                $joinColumn->setType(PersisterHelper::getTypeOfColumn($referencedColumnName, $targetClass, $this->em));
-                            }
-
                             $columnList[] = $this->getSelectJoinColumnSQL($joinColumn);
                         }
 
@@ -418,73 +402,44 @@ class JoinedSubclassPersister extends AbstractEntityInheritancePersister
     /**
      * {@inheritdoc}
      */
-    protected function getInsertColumnList()
+    protected function getInsertColumnList() : array
     {
+        if ($this->insertColumns !== null) {
+            return $this->insertColumns;
+        }
+
         // Identifier columns must always come first in the column list of subclasses.
-        $columns       = [];
         $parentColumns = $this->class->getParent()
             ? $this->class->getIdentifierColumns($this->em)
             : [];
 
-        foreach ($parentColumns as $columnName => $column) {
-            $columns[] = $columnName;
+        $classColumns = [];
 
-            $this->columns[$columnName] = $column;
-        }
-
-        foreach ($this->class->getDeclaredPropertiesIterator() as $name => $property) {
-            if (($property instanceof FieldMetadata && ($property instanceof VersionFieldMetadata || $this->class->isInheritedProperty($name)))
-                || ($property instanceof AssociationMetadata && $this->class->isInheritedProperty($name))
-                /*|| isset($this->class->embeddedClasses[$name])*/) {
+        foreach ($this->class->getPropertiesIterator() as $name => $property) {
+            if ($this->class->isInheritedProperty($name)) {
                 continue;
             }
 
-            if ($property instanceof AssociationMetadata) {
-                if ($property->isOwningSide() && $property instanceof ToOneAssociationMetadata) {
-                    $targetClass = $this->em->getClassMetadata($property->getTargetEntity());
-
-                    foreach ($property->getJoinColumns() as $joinColumn) {
-                        /** @var JoinColumnMetadata $joinColumn */
-                        $columnName           = $joinColumn->getColumnName();
-                        $referencedColumnName = $joinColumn->getReferencedColumnName();
-
-                        if (! $joinColumn->getType()) {
-                            $joinColumn->setType(PersisterHelper::getTypeOfColumn($referencedColumnName, $targetClass, $this->em));
-                        }
-
-                        $columns[] = $columnName;
-
-                        $this->columns[$columnName] = $joinColumn;
-                    }
-                }
-
-                continue;
-            }
-
-            if ($this->class->getClassName() !== $this->class->getRootClassName()
-                || ! $this->class->getProperty($name)->hasValueGenerator()
-                || $this->class->getProperty($name)->getValueGenerator()->getType() !== GeneratorType::IDENTITY
-                || $this->class->identifier[0] !== $name
-            ) {
-                $columnName = $property->getColumnName();
-
-                $columns[] = $columnName;
-
-                $this->columns[$columnName] = $property;
-            }
+            $classColumns[] = $this->getPropertyColumnList($property);
         }
+
+        $columns = array_merge($parentColumns, ...$classColumns);
 
         // Add discriminator column if it is the topmost class.
         if ($this->class->isRootEntity()) {
             $discrColumn     = $this->class->discriminatorColumn;
             $discrColumnName = $discrColumn->getColumnName();
 
-            $columns[] = $discrColumnName;
-
-            $this->columns[$discrColumnName] = $discrColumn;
+            $columns[$discrColumnName] = $discrColumn;
         }
 
-        return $columns;
+        return $this->insertColumns = array_filter(
+            $columns,
+            static function (ColumnMetadata $columnMetadata) {
+                // Check for Column insertability
+                return true;
+            }
+        );
     }
 
     /**

@@ -7,12 +7,11 @@ namespace Doctrine\Tests\ORM\Query;
 use Doctrine\ORM\Query\Expr;
 use Doctrine\Tests\Models\Company\CompanyEmployee;
 use Doctrine\Tests\OrmTestCase;
+use InvalidArgumentException;
 
 /**
  * Test case for the DQL Expr class used for generating DQL snippets through
  * a programmatic interface
- *
- * @link        http://www.phpdoctrine.org
  */
 class ExprTest extends OrmTestCase
 {
@@ -118,6 +117,11 @@ class ExprTest extends OrmTestCase
     public function testAbsExpr() : void
     {
         self::assertEquals('ABS(1)', (string) $this->expr->abs(1));
+    }
+
+    public function testModExpr() : void
+    {
+        self::assertEquals('MOD(10, 1)', (string) $this->expr->mod(10, 1));
     }
 
     public function testProdExpr() : void
@@ -333,7 +337,7 @@ class ExprTest extends OrmTestCase
     }
 
     /**
-     * @expectedException \InvalidArgumentException
+     * @expectedException InvalidArgumentException
      */
     public function testAddThrowsException() : void
     {

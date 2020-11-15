@@ -167,7 +167,7 @@ class DDC2494TinyIntType extends Type
     /**
      * {@inheritdoc}
      */
-    public function getSQLDeclaration(array $fieldDeclaration, AbstractPlatform $platform)
+    public function getSQLDeclaration(array $fieldDeclaration, AbstractPlatform $platform) : string
     {
         return $platform->getSmallIntTypeDeclarationSQL($fieldDeclaration);
     }
@@ -207,7 +207,7 @@ class DDC2494TinyIntType extends Type
     /**
      * {@inheritdoc}
      */
-    public function getName()
+    public function getName() : string
     {
         return 'ddc2494_tinyint';
     }

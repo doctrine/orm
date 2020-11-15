@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Doctrine\ORM\Persisters\Entity;
 
 use Doctrine\ORM\Mapping\JoinColumnMetadata;
+use Doctrine\ORM\Query\Parameter;
 use function sprintf;
 
 /**
@@ -14,6 +15,26 @@ use function sprintf;
  */
 abstract class AbstractEntityInheritancePersister extends BasicEntityPersister
 {
+    /**
+     * {@inheritdoc}
+     */
+    protected function getInsertColumnList() : array
+    {
+        if ($this->insertColumns !== null) {
+            return $this->insertColumns;
+        }
+
+        parent::getInsertColumnList();
+
+        // Add discriminator column to the INSERT SQL
+        $discrColumn     = $this->class->discriminatorColumn;
+        $discrColumnName = $discrColumn->getColumnName();
+
+        $this->insertColumns[$discrColumnName] = $discrColumn;
+
+        return $this->insertColumns;
+    }
+
     /**
      * {@inheritdoc}
      *
@@ -30,9 +51,7 @@ abstract class AbstractEntityInheritancePersister extends BasicEntityPersister
         $tableName  = $discColumn->getTableName();
         $columnName = $discColumn->getColumnName();
 
-        $this->columns[$columnName] = $discColumn;
-
-        $data[$tableName][$columnName] = $this->class->discriminatorValue;
+        $data[$tableName][] = new Parameter($columnName, $this->class->discriminatorValue, $discColumn->getType());
 
         return $data;
     }

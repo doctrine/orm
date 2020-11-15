@@ -164,7 +164,7 @@ SQL Schema considerations
 For Single-Table-Inheritance to work in scenarios where you are
 using either a legacy database schema or a self-written database
 schema you have to make sure that all columns that are not in the
-root entity but in any of the different sub-entities has to allows
+root entity but in any of the different sub-entities has to allow
 null values. Columns that have NOT NULL constraints have to be on
 the root entity of the single-table inheritance hierarchy.
 
@@ -300,7 +300,7 @@ Example:
          */
         class User
         {
-            //other fields mapping
+            // other fields mapping
 
             /**
              * @ManyToMany(targetEntity="Group", inversedBy="users")

@@ -7,6 +7,7 @@ namespace Doctrine\ORM\Sequencing\Planning;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\Mapping\FieldMetadata;
+use Doctrine\ORM\Sequencing\Executor\ValueGenerationExecutor;
 
 class CompositeValueGenerationPlan implements ValueGenerationPlan
 {

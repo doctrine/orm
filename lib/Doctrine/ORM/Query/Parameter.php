@@ -28,18 +28,26 @@ class Parameter
     /**
      * The parameter type.
      *
-     * @var mixed
+     * @var int|string|null
      */
     private $type;
 
     /**
-     * @param string $name  Parameter name
-     * @param mixed  $value Parameter value
-     * @param mixed  $type  Parameter type
+     * Whether the parameter type was explicitly specified or not
+     *
+     * @var bool
+     */
+    private $typeSpecified;
+
+    /**
+     * @param string          $name  Parameter name
+     * @param mixed           $value Parameter value
+     * @param int|string|null $type  Parameter type
      */
     public function __construct($name, $value, $type = null)
     {
-        $this->name = trim((string) $name, ':');
+        $this->name          = trim((string) $name, ':');
+        $this->typeSpecified = $type !== null;
 
         $this->setValue($value, $type);
     }
@@ -84,5 +92,10 @@ class Parameter
     {
         $this->value = $value;
         $this->type  = $type ?: ParameterTypeInferer::inferType($value);
+    }
+
+    public function typeWasSpecified() : bool
+    {
+        return $this->typeSpecified;
     }
 }

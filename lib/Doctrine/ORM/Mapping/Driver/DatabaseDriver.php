@@ -12,8 +12,9 @@ use Doctrine\DBAL\Schema\Identifier;
 use Doctrine\DBAL\Schema\Index;
 use Doctrine\DBAL\Schema\SchemaException;
 use Doctrine\DBAL\Schema\Table;
-use Doctrine\DBAL\Types\Type;
+use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping;
+use Doctrine\ORM\Sequencing\Generator;
 use InvalidArgumentException;
 use function array_diff;
 use function array_keys;
@@ -21,6 +22,7 @@ use function array_merge;
 use function count;
 use function current;
 use function in_array;
+use function reset;
 use function sort;
 use function str_replace;
 use function strtolower;
@@ -73,7 +75,7 @@ class DatabaseDriver implements MappingDriver
     /**
      * {@inheritDoc}
      */
-    public function isTransient($className)
+    public function isTransient($className) : bool
     {
         return true;
     }
@@ -81,7 +83,7 @@ class DatabaseDriver implements MappingDriver
     /**
      * {@inheritDoc}
      */
-    public function getAllClassNames()
+    public function getAllClassNames() : array
     {
         $this->reverseEngineerMappingFromDatabase();
 
@@ -138,17 +140,16 @@ class DatabaseDriver implements MappingDriver
      */
     public function loadMetadataForClass(
         string $className,
-        Mapping\ClassMetadata $metadata,
+        ?Mapping\ComponentMetadata $parent,
         Mapping\ClassMetadataBuildingContext $metadataBuildingContext
-    ) {
+    ) : Mapping\ComponentMetadata {
         $this->reverseEngineerMappingFromDatabase();
 
         if (! isset($this->classToTableNames[$className])) {
             throw new InvalidArgumentException('Unknown class ' . $className);
         }
 
-        // @todo guilhermeblanco This should somehow disappear... =)
-        $metadata->setClassName($className);
+        $metadata = new Mapping\ClassMetadata($className, $parent);
 
         $this->buildTable($metadata);
         $this->buildFieldMappings($metadata);
@@ -225,6 +226,8 @@ class DatabaseDriver implements MappingDriver
                 break;
             }
         }
+
+        return $metadata;
     }
 
     /**
@@ -345,7 +348,14 @@ class DatabaseDriver implements MappingDriver
 
         // We need to check for the columns here, because we might have associations as id as well.
         if ($ids && count($primaryKeys) === 1) {
-            $ids[0]->setValueGenerator(new Mapping\ValueGeneratorMetadata(Mapping\GeneratorType::AUTO));
+            $fieldMetadata = reset($ids);
+            $generator     = $fieldMetadata->getTypeName() === 'bigint'
+                ? new Generator\BigIntegerIdentityGenerator()
+                : new Generator\IdentityGenerator();
+
+            $valueGenerator = new Mapping\ValueGeneratorMetadata(Mapping\GeneratorType::IDENTITY, $generator);
+
+            $ids[0]->setValueGenerator($valueGenerator);
         }
     }
 
@@ -365,14 +375,14 @@ class DatabaseDriver implements MappingDriver
 
         // Type specific elements
         switch ($column->getType()->getName()) {
-            case Type::TARRAY:
-            case Type::BLOB:
-            case Type::GUID:
-            case Type::JSON_ARRAY:
-            case Type::OBJECT:
-            case Type::SIMPLE_ARRAY:
-            case Type::STRING:
-            case Type::TEXT:
+            case Types::ARRAY:
+            case Types::BLOB:
+            case Types::GUID:
+            case Types::JSON:
+            case Types::OBJECT:
+            case Types::SIMPLE_ARRAY:
+            case Types::STRING:
+            case Types::TEXT:
                 if ($column->getLength()) {
                     $fieldMetadata->setLength($column->getLength());
                 }
@@ -380,15 +390,15 @@ class DatabaseDriver implements MappingDriver
                 $options['fixed'] = $column->getFixed();
                 break;
 
-            case Type::DECIMAL:
-            case Type::FLOAT:
+            case Types::DECIMAL:
+            case Types::FLOAT:
                 $fieldMetadata->setScale($column->getScale());
                 $fieldMetadata->setPrecision($column->getPrecision());
                 break;
 
-            case Type::INTEGER:
-            case Type::BIGINT:
-            case Type::SMALLINT:
+            case Types::INTEGER:
+            case Types::BIGINT:
+            case Types::SMALLINT:
                 $options['unsigned'] = $column->getUnsigned();
                 break;
         }

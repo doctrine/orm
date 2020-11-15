@@ -7,9 +7,10 @@ namespace Doctrine\Tests\ORM\Query;
 use Doctrine\DBAL\LockMode;
 use Doctrine\DBAL\Platforms\MySqlPlatform;
 use Doctrine\DBAL\Platforms\OraclePlatform;
-use Doctrine\DBAL\Platforms\PostgreSqlPlatform;
+use Doctrine\DBAL\Platforms\PostgreSQL100Platform;
+use Doctrine\DBAL\Platforms\PostgreSQL94Platform;
 use Doctrine\DBAL\Platforms\SqlitePlatform;
-use Doctrine\DBAL\Platforms\SQLServerPlatform;
+use Doctrine\DBAL\Platforms\SQLServer2012Platform;
 use Doctrine\DBAL\Types\Type as DBALType;
 use Doctrine\ORM\Annotation as ORM;
 use Doctrine\ORM\Query as ORMQuery;
@@ -643,9 +644,24 @@ class SelectSqlGenerationTest extends OrmTestCase
         );
     }
 
-    public function testSupportsConcatFunctionPgSql() : void
+    public function testSupportsConcatFunctionPgSql94() : void
     {
-        $this->em->getConnection()->setDatabasePlatform(new PostgreSqlPlatform());
+        $this->em->getConnection()->setDatabasePlatform(new PostgreSQL94Platform());
+
+        $this->assertSqlGeneration(
+            'SELECT u.id FROM Doctrine\Tests\Models\CMS\CmsUser u WHERE CONCAT(u.name, \'s\') = ?1',
+            'SELECT t0."id" AS c0 FROM "cms_users" t0 WHERE t0."name" || \'s\' = ?'
+        );
+
+        $this->assertSqlGeneration(
+            'SELECT CONCAT(u.id, u.name) FROM Doctrine\Tests\Models\CMS\CmsUser u WHERE u.id = ?1',
+            'SELECT t0."id" || t0."name" AS c0 FROM "cms_users" t0 WHERE t0."id" = ?'
+        );
+    }
+
+    public function testSupportsConcatFunctionPgSql100() : void
+    {
+        $this->em->getConnection()->setDatabasePlatform(new PostgreSQL100Platform());
 
         $this->assertSqlGeneration(
             'SELECT u.id FROM Doctrine\Tests\Models\CMS\CmsUser u WHERE CONCAT(u.name, \'s\') = ?1',
@@ -952,9 +968,24 @@ class SelectSqlGenerationTest extends OrmTestCase
         );
     }
 
-    public function testBooleanLiteralInWhereOnPostgres() : void
+    public function testBooleanLiteralInWhereOnPostgres94() : void
     {
-        $this->em->getConnection()->setDatabasePlatform(new PostgreSqlPlatform());
+        $this->em->getConnection()->setDatabasePlatform(new PostgreSQL94Platform());
+
+        $this->assertSqlGeneration(
+            'SELECT b FROM Doctrine\Tests\Models\Generic\BooleanModel b WHERE b.booleanField = true',
+            'SELECT t0."id" AS c0, t0."booleanField" AS c1 FROM "boolean_model" t0 WHERE t0."booleanField" = true'
+        );
+
+        $this->assertSqlGeneration(
+            'SELECT b FROM Doctrine\Tests\Models\Generic\BooleanModel b WHERE b.booleanField = false',
+            'SELECT t0."id" AS c0, t0."booleanField" AS c1 FROM "boolean_model" t0 WHERE t0."booleanField" = false'
+        );
+    }
+
+    public function testBooleanLiteralInWhereOnPostgres100() : void
+    {
+        $this->em->getConnection()->setDatabasePlatform(new PostgreSQL100Platform());
 
         $this->assertSqlGeneration(
             'SELECT b FROM Doctrine\Tests\Models\Generic\BooleanModel b WHERE b.booleanField = true',
@@ -1090,9 +1121,24 @@ class SelectSqlGenerationTest extends OrmTestCase
      * @group locking
      * @group DDC-178
      */
-    public function testPessimisticReadLockQueryHintPostgreSql() : void
+    public function testPessimisticReadLockQueryHintPostgreSql94() : void
     {
-        $this->em->getConnection()->setDatabasePlatform(new PostgreSqlPlatform());
+        $this->em->getConnection()->setDatabasePlatform(new PostgreSQL94Platform());
+
+        $this->assertSqlGeneration(
+            'SELECT u FROM Doctrine\Tests\Models\CMS\CmsUser u WHERE u.username = \'gblanco\'',
+            'SELECT t0."id" AS c0, t0."status" AS c1, t0."username" AS c2, t0."name" AS c3 FROM "cms_users" t0 WHERE t0."username" = \'gblanco\' FOR SHARE',
+            [ORMQuery::HINT_LOCK_MODE => LockMode::PESSIMISTIC_READ]
+        );
+    }
+
+    /**
+     * @group locking
+     * @group DDC-178
+     */
+    public function testPessimisticReadLockQueryHintPostgreSql100() : void
+    {
+        $this->em->getConnection()->setDatabasePlatform(new PostgreSQL100Platform());
 
         $this->assertSqlGeneration(
             'SELECT u FROM Doctrine\Tests\Models\CMS\CmsUser u WHERE u.username = \'gblanco\'',
@@ -2112,9 +2158,9 @@ class SelectSqlGenerationTest extends OrmTestCase
     /**
      * @group DDC-2268
      */
-    public function testSupportsMoreThanTwoParametersInConcatFunctionPgSql() : void
+    public function testSupportsMoreThanTwoParametersInConcatFunctionPgSql94() : void
     {
-        $this->em->getConnection()->setDatabasePlatform(new PostgreSqlPlatform());
+        $this->em->getConnection()->setDatabasePlatform(new PostgreSQL94Platform());
 
         $this->assertSqlGeneration(
             'SELECT u.id FROM Doctrine\Tests\Models\CMS\CmsUser u WHERE CONCAT(u.name, u.status, \'s\') = ?1',
@@ -2130,9 +2176,27 @@ class SelectSqlGenerationTest extends OrmTestCase
     /**
      * @group DDC-2268
      */
-    public function testSupportsMoreThanTwoParametersInConcatFunctionSqlServer() : void
+    public function testSupportsMoreThanTwoParametersInConcatFunctionPgSql100() : void
     {
-        $this->em->getConnection()->setDatabasePlatform(new SQLServerPlatform());
+        $this->em->getConnection()->setDatabasePlatform(new PostgreSQL100Platform());
+
+        $this->assertSqlGeneration(
+            'SELECT u.id FROM Doctrine\Tests\Models\CMS\CmsUser u WHERE CONCAT(u.name, u.status, \'s\') = ?1',
+            'SELECT t0."id" AS c0 FROM "cms_users" t0 WHERE t0."name" || t0."status" || \'s\' = ?'
+        );
+
+        $this->assertSqlGeneration(
+            'SELECT CONCAT(u.id, u.name, u.status) FROM Doctrine\Tests\Models\CMS\CmsUser u WHERE u.id = ?1',
+            'SELECT t0."id" || t0."name" || t0."status" AS c0 FROM "cms_users" t0 WHERE t0."id" = ?'
+        );
+    }
+
+    /**
+     * @group DDC-2268
+     */
+    public function testSupportsMoreThanTwoParametersInConcatFunctionSqlServer2012() : void
+    {
+        $this->em->getConnection()->setDatabasePlatform(new SQLServer2012Platform());
 
         $this->assertSqlGeneration(
             'SELECT u.id FROM Doctrine\Tests\Models\CMS\CmsUser u WHERE CONCAT(u.name, u.status, \'s\') = ?1',

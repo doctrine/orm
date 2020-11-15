@@ -51,12 +51,12 @@ class DDC2224Type extends Type
     /**
      * {@inheritdoc}
      */
-    public function getSQLDeclaration(array $fieldDeclaration, AbstractPlatform $platform)
+    public function getSQLDeclaration(array $fieldDeclaration, AbstractPlatform $platform) : string
     {
         return $platform->getVarcharTypeDeclarationSQL($fieldDeclaration);
     }
 
-    public function getName()
+    public function getName() : string
     {
         return 'DDC2224Type';
     }
@@ -64,7 +64,7 @@ class DDC2224Type extends Type
     /**
      * {@inheritdoc}
      */
-    public function canRequireSQLConversion()
+    public function canRequireSQLConversion() : bool
     {
         return true;
     }
@@ -72,7 +72,7 @@ class DDC2224Type extends Type
     /**
      * {@inheritdoc}
      */
-    public function convertToDatabaseValueSQL($sqlExpr, AbstractPlatform $platform)
+    public function convertToDatabaseValueSQL($sqlExpr, AbstractPlatform $platform) : string
     {
         return sprintf('FUNCTION(%s)', $sqlExpr);
     }

@@ -1,4 +1,0 @@
-parameters:
-    earlyTerminatingMethodCalls:
-        Doctrine\ORM\Query\Parser:
-            - syntaxError

@@ -16,6 +16,8 @@ use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Mapping\AssociationMetadata;
 use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\Mapping\ColumnMetadata;
+use Doctrine\ORM\Mapping\ComponentMetadata;
+use Doctrine\ORM\Mapping\EmbeddedMetadata;
 use Doctrine\ORM\Mapping\FetchMode;
 use Doctrine\ORM\Mapping\FieldMetadata;
 use Doctrine\ORM\Mapping\GeneratorType;
@@ -25,9 +27,9 @@ use Doctrine\ORM\Mapping\LocalColumnMetadata;
 use Doctrine\ORM\Mapping\ManyToManyAssociationMetadata;
 use Doctrine\ORM\Mapping\MappingException;
 use Doctrine\ORM\Mapping\OneToManyAssociationMetadata;
+use Doctrine\ORM\Mapping\Property;
 use Doctrine\ORM\Mapping\ToManyAssociationMetadata;
 use Doctrine\ORM\Mapping\ToOneAssociationMetadata;
-use Doctrine\ORM\Mapping\VersionFieldMetadata;
 use Doctrine\ORM\OptimisticLockException;
 use Doctrine\ORM\PersistentCollection;
 use Doctrine\ORM\Persisters\Exception\CantUseInOperatorOnCompositeKeys;
@@ -39,9 +41,9 @@ use Doctrine\ORM\Query;
 use Doctrine\ORM\Query\QueryException;
 use Doctrine\ORM\Repository\Exception\InvalidFindByCall;
 use Doctrine\ORM\UnitOfWork;
-use Doctrine\ORM\Utility\PersisterHelper;
 use Doctrine\ORM\Utility\StaticClassNameConverter;
 use function array_combine;
+use function array_filter;
 use function array_keys;
 use function array_map;
 use function array_merge;
@@ -94,7 +96,6 @@ class BasicEntityPersister implements EntityPersister
 {
     /** @var string[] */
     private static $comparisonMap = [
-        Comparison::EQ          => '= %s',
         Comparison::IS          => '= %s',
         Comparison::NEQ         => '!= %s',
         Comparison::GT          => '> %s',
@@ -137,14 +138,24 @@ class BasicEntityPersister implements EntityPersister
     protected $em;
 
     /**
-     * The map of column names to DBAL columns used when INSERTing or UPDATEing an entity.
+     * The map of column names to DBAL columns used when INSERTing an entity.
      *
+     * @see getColumnList($class, $columnPrefix = '')
      * @see prepareInsertData($entity)
+     *
+     * @var ColumnMetadata[]
+     */
+    protected $insertColumns = null;
+
+    /**
+     * The map of column names to DBAL columns used when UPDATEing an entity.
+     *
+     * @see getColumnList($class, $columnPrefix = '')
      * @see prepareUpdateData($entity)
      *
      * @var ColumnMetadata[]
      */
-    protected $columns = [];
+    protected $updateColumns = null;
 
     /**
      * The INSERT SQL statement used for entities handled by this persister.
@@ -246,12 +257,8 @@ class BasicEntityPersister implements EntityPersister
         $generationPlan = $this->class->getValueGenerationPlan();
 
         if (isset($insertData[$tableName])) {
-            $paramIndex = 1;
-
-            foreach ($insertData[$tableName] as $columnName => $value) {
-                $type = $this->columns[$columnName]->getType();
-
-                $stmt->bindValue($paramIndex++, $value, $type);
+            foreach ($insertData[$tableName] as $paramIndex => $parameter) {
+                $stmt->bindValue($paramIndex + 1, $parameter->getValue(), $parameter->getType());
             }
         }
 
@@ -291,7 +298,7 @@ class BasicEntityPersister implements EntityPersister
      *
      * @return mixed
      */
-    protected function fetchVersionValue(VersionFieldMetadata $versionProperty, array $id)
+    protected function fetchVersionValue(FieldMetadata $versionProperty, array $id)
     {
         $versionedClass = $versionProperty->getDeclaringClass();
         $tableName      = $versionedClass->table->getQuotedQualifiedName($this->platform);
@@ -314,7 +321,6 @@ class BasicEntityPersister implements EntityPersister
         $value = $this->conn->fetchColumn(
             $sql,
             array_values($flattenedId),
-            0,
             $this->extractIdentifierTypes($id, $versionedClass)
         );
 
@@ -416,10 +422,6 @@ class BasicEntityPersister implements EntityPersister
                 $referencedColumnName = $joinColumn->getReferencedColumnName();
                 $targetField          = $targetClass->fieldNames[$referencedColumnName];
 
-                if (! $joinColumn->getType()) {
-                    $joinColumn->setType(PersisterHelper::getTypeOfColumn($referencedColumnName, $targetClass, $this->em));
-                }
-
                 $id[$quotedColumnName] = $associationValue ? $associationValue[$targetField] : null;
                 $types[]               = $joinColumn->getType();
             }
@@ -434,13 +436,14 @@ class BasicEntityPersister implements EntityPersister
      * Performs an UPDATE statement for an entity on a specific table.
      * The UPDATE can optionally be versioned, which requires the entity to have a version field.
      *
-     * @param object  $entity          The entity object being updated.
-     * @param string  $quotedTableName The quoted name of the table to apply the UPDATE on.
-     * @param mixed[] $updateData      The map of columns to update (column => value).
-     * @param bool    $versioned       Whether the UPDATE should be versioned.
+     * @param object $entity          The entity object being updated.
+     * @param string $quotedTableName The quoted name of the table to apply the UPDATE on.
+     * @param mixed[] $updateData     The map of columns to update (column => value).
+     * @param bool $versioned         Whether the UPDATE should be versioned.
      *
      * @throws ORMException
      * @throws OptimisticLockException
+     * @throws \Doctrine\DBAL\DBALException
      */
     final protected function updateTable($entity, $quotedTableName, array $updateData, $versioned = false)
     {
@@ -448,15 +451,13 @@ class BasicEntityPersister implements EntityPersister
         $types  = [];
         $params = [];
 
-        foreach ($updateData as $columnName => $value) {
-            $column           = $this->columns[$columnName];
-            $quotedColumnName = $this->platform->quoteIdentifier($column->getColumnName());
-            $type             = $column->getType();
-            $placeholder      = $type->convertToDatabaseValueSQL('?', $this->platform);
+        foreach ($updateData as $parameter) {
+            $type        = $parameter->getType();
+            $placeholder = $type->convertToDatabaseValueSQL('?', $this->platform);
 
-            $set[]    = sprintf('%s = %s', $quotedColumnName, $placeholder);
-            $params[] = $value;
-            $types[]  = $column->getType();
+            $set[]    = sprintf('%s = %s', $this->platform->quoteIdentifier($parameter->getName()), $placeholder);
+            $params[] = $parameter->getValue();
+            $types[]  = $type;
         }
 
         // @todo guilhermeblanco Bring this back: $this->em->getUnitOfWork()->getEntityIdentifier($entity);
@@ -474,19 +475,13 @@ class BasicEntityPersister implements EntityPersister
                     break;
 
                 case $property instanceof ToOneAssociationMetadata:
-                    $targetClass     = $this->em->getClassMetadata($property->getTargetEntity());
                     $targetPersister = $this->em->getUnitOfWork()->getEntityPersister($property->getTargetEntity());
 
                     foreach ($property->getJoinColumns() as $joinColumn) {
                         /** @var JoinColumnMetadata $joinColumn */
                         $quotedColumnName     = $this->platform->quoteIdentifier($joinColumn->getColumnName());
                         $referencedColumnName = $joinColumn->getReferencedColumnName();
-
-                        if (! $joinColumn->getType()) {
-                            $joinColumn->setType(PersisterHelper::getTypeOfColumn($referencedColumnName, $targetClass, $this->em));
-                        }
-
-                        $value = $targetPersister->getColumnValue($identifier[$idField], $referencedColumnName);
+                        $value                = $targetPersister->getColumnValue($identifier[$idField], $referencedColumnName);
 
                         $where[]  = $quotedColumnName;
                         $params[] = $value;
@@ -536,7 +531,7 @@ class BasicEntityPersister implements EntityPersister
      */
     protected function deleteJoinTableRecords($identifier)
     {
-        foreach ($this->class->getDeclaredPropertiesIterator() as $association) {
+        foreach ($this->class->getPropertiesIterator() as $association) {
             if (! ($association instanceof ManyToManyAssociationMetadata)) {
                 continue;
             }
@@ -600,15 +595,69 @@ class BasicEntityPersister implements EntityPersister
      * Prepares the data changeset of a managed entity for database insertion (initial INSERT).
      * The changeset of the entity is obtained from the currently running UnitOfWork.
      *
-     * The default insert data preparation is the same as for updates.
-     *
      * @param object $entity The entity for which to prepare the data.
      *
-     * @return mixed[] The prepared data for the tables to update.
+     * @return Query\Parameter[][] The prepared data for the tables to update.
      */
     protected function prepareInsertData($entity) : array
     {
-        return $this->prepareUpdateData($entity);
+        $unitOfWork = $this->em->getUnitOfWork();
+        $changeSet  = $unitOfWork->getEntityChangeSet($entity);
+        $result     = [];
+
+        $tableName    = $this->class->getTableName();
+        $columnPrefix = '';
+
+        foreach ($changeSet as $propertyName => $propertyChangeSet) {
+            $property = $this->class->getProperty($propertyName);
+            $newValue = $propertyChangeSet[1];
+
+            // @todo guilhermeblanco Check if property is insertable here
+            // Refactor to pull column values from properties $property->getColumValues();
+
+            switch (true) {
+                case $property instanceof FieldMetadata && $property->isVersioned():
+                    // Do nothing
+                    break;
+
+                case $property instanceof LocalColumnMetadata:
+                    $columnTableName = $property->getTableName() ?? $tableName;
+                    $columnName      = sprintf('%s%s', $columnPrefix, $property->getColumnName());
+
+                    $result[$columnTableName][] = new Query\Parameter($columnName, $newValue, $property->getType());
+                    break;
+
+                case $property instanceof AssociationMetadata:
+                    if ($property instanceof ToOneAssociationMetadata && $property->isOwningSide()) {
+                        // The associated entity $newVal is not yet persisted, so we must
+                        // set $newVal = null, in order to insert a null value and schedule an
+                        // extra update on the UnitOfWork.
+                        if ($newValue !== null && $unitOfWork->isScheduledForInsert($newValue)) {
+                            $unitOfWork->scheduleExtraUpdate($entity, [$propertyName => [null, $newValue]]);
+
+                            $newValue = null;
+                        }
+
+                        $targetClass     = $this->em->getClassMetadata($property->getTargetEntity());
+                        $targetPersister = $unitOfWork->getEntityPersister($targetClass->getClassName());
+
+                        foreach ($property->getJoinColumns() as $joinColumn) {
+                            $columnTableName = $joinColumn->getTableName() ?? $tableName;
+                            $columnName      = sprintf('%s%s', $columnPrefix, $joinColumn->getColumnName());
+
+                            $columnValue = $newValue !== null
+                                ? $targetPersister->getColumnValue($newValue, $joinColumn->getReferencedColumnName())
+                                : null;
+
+                            $result[$columnTableName][] = new Query\Parameter($columnName, $columnValue, $joinColumn->getType());
+                        }
+                    }
+
+                    break;
+            }
+        }
+
+        return $result;
     }
 
     /**
@@ -634,61 +683,66 @@ class BasicEntityPersister implements EntityPersister
      */
     protected function prepareUpdateData($entity)
     {
-        $uow                 = $this->em->getUnitOfWork();
-        $result              = [];
-        $versionPropertyName = $this->class->isVersioned()
-            ? $this->class->versionProperty->getName()
-            : null;
+        $unitOfWork = $this->em->getUnitOfWork();
+        $changeSet  = $unitOfWork->getEntityChangeSet($entity);
+        $result     = [];
 
-        // @todo guilhermeblanco This should check column insertability/updateability instead of field changeset
-        foreach ($uow->getEntityChangeSet($entity) as $propertyName => $propertyChangeSet) {
-            if ($versionPropertyName === $propertyName) {
-                continue;
-            }
+        $tableName    = $this->class->getTableName();
+        $columnPrefix = '';
 
+        // Make sure the table with version column is updated even if no columns on table were affected.
+        if ($this->class->isVersioned()) {
+            $columnTableName = $this->class->versionProperty->getTableName() ?? $tableName;
+
+            $result[$columnTableName] = [];
+        }
+
+        foreach ($changeSet as $propertyName => $propertyChangeSet) {
             $property = $this->class->getProperty($propertyName);
             $newValue = $propertyChangeSet[1];
 
-            if ($property instanceof FieldMetadata) {
-                // @todo guilhermeblanco Please remove this in the future for good...
-                $this->columns[$property->getColumnName()] = $property;
+            // @todo guilhermeblanco Check if property is updatable here
+            // Refactor to pull column values from properties $property->getColumValues();
 
-                $result[$property->getTableName()][$property->getColumnName()] = $newValue;
+            switch (true) {
+                case $property instanceof FieldMetadata && $property->isVersioned():
+                    // Do nothing
+                    break;
 
-                continue;
-            }
+                case $property instanceof LocalColumnMetadata:
+                    $columnTableName = $property->getTableName() ?? $tableName;
+                    $columnName      = sprintf('%s%s', $columnPrefix, $property->getColumnName());
 
-            // Only owning side of x-1 associations can have a FK column.
-            if (! $property instanceof ToOneAssociationMetadata || ! $property->isOwningSide()) {
-                continue;
-            }
+                    $result[$columnTableName][] = new Query\Parameter($columnName, $newValue, $property->getType());
+                    break;
 
-            // The associated entity $newVal is not yet persisted, so we must
-            // set $newVal = null, in order to insert a null value and schedule an
-            // extra update on the UnitOfWork.
-            if ($newValue !== null && $uow->isScheduledForInsert($newValue)) {
-                $uow->scheduleExtraUpdate($entity, [$propertyName => [null, $newValue]]);
+                case $property instanceof AssociationMetadata:
+                    if ($property instanceof ToOneAssociationMetadata && $property->isOwningSide()) {
+                        // The associated entity $newVal is not yet persisted, so we must
+                        // set $newVal = null, in order to insert a null value and schedule an
+                        // extra update on the UnitOfWork.
+                        if ($newValue !== null && $unitOfWork->isScheduledForInsert($newValue)) {
+                            $unitOfWork->scheduleExtraUpdate($entity, [$property->getName() => [null, $newValue]]);
 
-                $newValue = null;
-            }
+                            $newValue = null;
+                        }
 
-            $targetClass     = $this->em->getClassMetadata($property->getTargetEntity());
-            $targetPersister = $uow->getEntityPersister($targetClass->getClassName());
+                        $targetClass     = $this->em->getClassMetadata($property->getTargetEntity());
+                        $targetPersister = $unitOfWork->getEntityPersister($targetClass->getClassName());
 
-            foreach ($property->getJoinColumns() as $joinColumn) {
-                /** @var JoinColumnMetadata $joinColumn */
-                $referencedColumnName = $joinColumn->getReferencedColumnName();
+                        foreach ($property->getJoinColumns() as $joinColumn) {
+                            $columnTableName = $joinColumn->getTableName() ?? $tableName;
+                            $columnName      = sprintf('%s%s', $columnPrefix, $joinColumn->getColumnName());
 
-                if (! $joinColumn->getType()) {
-                    $joinColumn->setType(PersisterHelper::getTypeOfColumn($referencedColumnName, $targetClass, $this->em));
-                }
+                            $columnValue = $newValue !== null
+                                ? $targetPersister->getColumnValue($newValue, $joinColumn->getReferencedColumnName())
+                                : null;
 
-                // @todo guilhermeblanco Please remove this in the future for good...
-                $this->columns[$joinColumn->getColumnName()] = $joinColumn;
+                            $result[$columnTableName][] = new Query\Parameter($columnName, $columnValue, $joinColumn->getType());
+                        }
+                    }
 
-                $result[$joinColumn->getTableName()][$joinColumn->getColumnName()] = $newValue !== null
-                    ? $targetPersister->getColumnValue($newValue, $referencedColumnName)
-                    : null;
+                    break;
             }
         }
 
@@ -703,8 +757,7 @@ class BasicEntityPersister implements EntityPersister
     public function getColumnValue($entity, string $columnName)
     {
         // Looking for fields by column is the easiest way to look at local columns or x-1 owning side associations
-        $propertyName = $this->class->fieldNames[$columnName];
-        $property     = $this->class->getProperty($propertyName);
+        $property = $this->class->getProperty($this->class->fieldNames[$columnName]);
 
         if (! $property) {
             return null;
@@ -718,22 +771,14 @@ class BasicEntityPersister implements EntityPersister
 
         /** @var ToOneAssociationMetadata $property */
         $unitOfWork      = $this->em->getUnitOfWork();
-        $targetClass     = $this->em->getClassMetadata($property->getTargetEntity());
         $targetPersister = $unitOfWork->getEntityPersister($property->getTargetEntity());
 
         foreach ($property->getJoinColumns() as $joinColumn) {
-            /** @var JoinColumnMetadata $joinColumn */
-            $referencedColumnName = $joinColumn->getReferencedColumnName();
-
-            if (! $joinColumn->getType()) {
-                $joinColumn->setType(PersisterHelper::getTypeOfColumn($referencedColumnName, $targetClass, $this->em));
-            }
-
             if ($joinColumn->getColumnName() !== $columnName) {
                 continue;
             }
 
-            return $targetPersister->getColumnValue($propertyValue, $referencedColumnName);
+            return $targetPersister->getColumnValue($propertyValue, $joinColumn->getReferencedColumnName());
         }
 
         return null;
@@ -1279,7 +1324,7 @@ class BasicEntityPersister implements EntityPersister
         $eagerAliasCounter = 0;
         $columnList        = [];
 
-        foreach ($this->class->getDeclaredPropertiesIterator() as $fieldName => $property) {
+        foreach ($this->class->getPropertiesIterator() as $fieldName => $property) {
             switch (true) {
                 case $property instanceof FieldMetadata:
                     $columnList[] = $this->getSelectColumnSQL($fieldName, $this->class);
@@ -1314,7 +1359,7 @@ class BasicEntityPersister implements EntityPersister
 
                     $this->currentPersisterContext->rsm->addJoinedEntityResult($targetEntity, $assocAlias, 'r', $fieldName);
 
-                    foreach ($eagerEntity->getDeclaredPropertiesIterator() as $eagerProperty) {
+                    foreach ($eagerEntity->getPropertiesIterator() as $eagerProperty) {
                         switch (true) {
                             case $eagerProperty instanceof FieldMetadata:
                                 $columnList[] = $this->getSelectColumnSQL($eagerProperty->getName(), $eagerEntity, $assocAlias);
@@ -1401,14 +1446,9 @@ class BasicEntityPersister implements EntityPersister
 
         foreach ($association->getJoinColumns() as $joinColumn) {
             /** @var JoinColumnMetadata $joinColumn */
-            $columnName           = $joinColumn->getColumnName();
-            $quotedColumnName     = $this->platform->quoteIdentifier($columnName);
-            $referencedColumnName = $joinColumn->getReferencedColumnName();
-            $resultColumnName     = $this->getSQLColumnAlias();
-
-            if (! $joinColumn->getType()) {
-                $joinColumn->setType(PersisterHelper::getTypeOfColumn($referencedColumnName, $targetClass, $this->em));
-            }
+            $columnName       = $joinColumn->getColumnName();
+            $quotedColumnName = $this->platform->quoteIdentifier($columnName);
+            $resultColumnName = $this->getSQLColumnAlias();
 
             $this->currentPersisterContext->rsm->addMetaResult(
                 $alias,
@@ -1484,11 +1524,14 @@ class BasicEntityPersister implements EntityPersister
         $quotedColumns = [];
         $values        = [];
 
-        foreach ($columns as $columnName) {
-            $column = $this->columns[$columnName];
-
-            $quotedColumns[] = $this->platform->quoteIdentifier($column->getColumnName());
-            $values[]        = $column->getType()->convertToDatabaseValueSQL('?', $this->platform);
+        foreach ($columns as $columnName => $columnMetadata) {
+            // @todo guilhermeblanco Introduce @ColumnTransformer->write value here
+            // A ColumnTransformer mapping applies conversion read and write SQL when reading and writing data into DB.
+            // We should better manage this decoupling. An AttributeConverter is what our current DBAL\Type refers:
+            // - convertToDatabaseColumn(mixed)
+            // - convertToEntityAttribute(string)
+            $quotedColumns[] = $this->platform->quoteIdentifier($columnMetadata->getColumnName());
+            $values[]        = $columnMetadata->getType()->convertToDatabaseValueSQL('?', $this->platform);
         }
 
         $quotedColumns = implode(', ', $quotedColumns);
@@ -1505,64 +1548,99 @@ class BasicEntityPersister implements EntityPersister
      * Subclasses should override this method to alter or change the list of
      * columns placed in the INSERT statements used by the persister.
      *
-     * @return string[] The list of columns.
+     * @return ColumnMetadata[] The list of insert columns.
      */
     protected function getInsertColumnList()
     {
-        $columns             = [];
-        $versionPropertyName = $this->class->isVersioned()
-            ? $this->class->versionProperty->getName()
-            : null;
+        if ($this->insertColumns !== null) {
+            return $this->insertColumns;
+        }
 
-        foreach ($this->class->getDeclaredPropertiesIterator() as $name => $property) {
-            /*if (isset($this->class->embeddedClasses[$name])) {
-                continue;
-            }*/
-
-            switch (true) {
-                case $property instanceof VersionFieldMetadata:
-                    // Do nothing
-                    break;
-
-                case $property instanceof LocalColumnMetadata:
-                    if (($property instanceof FieldMetadata
-                            && (
-                                ! $property->hasValueGenerator()
-                                || $property->getValueGenerator()->getType() !== GeneratorType::IDENTITY
-                            )
-                        )
-                        || $this->class->identifier[0] !== $name
-                    ) {
-                        $columnName = $property->getColumnName();
-
-                        $columns[] = $columnName;
-
-                        $this->columns[$columnName] = $property;
-                    }
-
-                    break;
-
-                case $property instanceof AssociationMetadata:
-                    if ($property->isOwningSide() && $property instanceof ToOneAssociationMetadata) {
-                        $targetClass = $this->em->getClassMetadata($property->getTargetEntity());
-
-                        foreach ($property->getJoinColumns() as $joinColumn) {
-                            /** @var JoinColumnMetadata $joinColumn */
-                            $columnName           = $joinColumn->getColumnName();
-                            $referencedColumnName = $joinColumn->getReferencedColumnName();
-
-                            if (! $joinColumn->getType()) {
-                                $joinColumn->setType(PersisterHelper::getTypeOfColumn($referencedColumnName, $targetClass, $this->em));
-                            }
-
-                            $columns[] = $columnName;
-
-                            $this->columns[$columnName] = $joinColumn;
-                        }
-                    }
-
-                    break;
+        return $this->insertColumns = array_filter(
+            $this->getColumnList($this->class),
+            static function (ColumnMetadata $columnMetadata) {
+                // Check for Column insertability
+                return true;
             }
+        );
+    }
+
+    /**
+     * Gets the list of columns to be evaluated in the UPDATE SQL statement.
+     *
+     * Subclasses should override this method to alter or change the list of
+     * columns placed in the UPDATE statements used by the persister.
+     *
+     * @return ColumnMetadata[] The list of update columns.
+     */
+    protected function getUpdateColumnList()
+    {
+        if ($this->updateColumns !== null) {
+            return $this->updateColumns;
+        }
+
+        return $this->updateColumns = array_filter(
+            $this->getColumnList($this->class),
+            static function (ColumnMetadata $columnMetadata) {
+                // Check for Column updatability
+                return true;
+            }
+        );
+    }
+
+    /**
+     * @return array<string, ColumnMetadata>
+     */
+    protected function getColumnList(ComponentMetadata $class, string $columnPrefix = '') : array
+    {
+        $columns = [];
+
+        foreach ($class->getPropertiesIterator() as $name => $property) {
+            $columns[] = $this->getPropertyColumnList($property, $columnPrefix);
+        }
+
+        return array_merge(...$columns);
+    }
+
+    /**
+     * @return array<string, ColumnMetadata>
+     */
+    protected function getPropertyColumnList(Property $property, string $columnPrefix = '') : array
+    {
+        $columns = [];
+
+        switch (true) {
+            case $property instanceof FieldMetadata && $property->isVersioned():
+                // Do nothing
+                break;
+
+            case $property instanceof LocalColumnMetadata:
+                if (! $property->hasValueGenerator() || $property->getValueGenerator()->getType() !== GeneratorType::IDENTITY) {
+                    $columns[sprintf('%s%s', $columnPrefix, $property->getColumnName())] = $property;
+                }
+
+                break;
+
+            case $property instanceof EmbeddedMetadata:
+                $targetClass = $this->em->getClassMetadata($property->getTargetEntity());
+                $columns     = array_merge(
+                    $columns,
+                    $this->getColumnList(
+                        $targetClass,
+                        sprintf('%s%s', $columnPrefix, $property->getColumnPrefix())
+                    )
+                );
+
+                break;
+
+            case $property instanceof AssociationMetadata:
+                if ($property->isOwningSide() && $property instanceof ToOneAssociationMetadata) {
+                    foreach ($property->getJoinColumns() as $joinColumn) {
+                        $columns[sprintf('%s%s', $columnPrefix, $joinColumn->getColumnName())] = $joinColumn;
+                    }
+                }
+
+                break;
         }
 
         return $columns;
@@ -2005,7 +2083,6 @@ class BasicEntityPersister implements EntityPersister
 
                 if (! $property->isOwningSide()) {
                     $property = $class->getProperty($property->getMappedBy());
-                    $class    = $this->em->getClassMetadata($property->getTargetEntity());
                 }
 
                 $joinColumns = $property instanceof ManyToManyAssociationMetadata
@@ -2013,13 +2090,6 @@ class BasicEntityPersister implements EntityPersister
                     : $property->getJoinColumns();
 
                 foreach ($joinColumns as $joinColumn) {
-                    /** @var JoinColumnMetadata $joinColumn */
-                    $referencedColumnName = $joinColumn->getReferencedColumnName();
-
-                    if (! $joinColumn->getType()) {
-                        $joinColumn->setType(PersisterHelper::getTypeOfColumn($referencedColumnName, $class, $this->em));
-                    }
-
                     $types[] = $joinColumn->getType();
                 }
 
@@ -2128,7 +2198,7 @@ class BasicEntityPersister implements EntityPersister
             $sql .= ' AND ' . $filterSql;
         }
 
-        return (bool) $this->conn->fetchColumn($sql, $params, 0, $types);
+        return (bool) $this->conn->fetchColumn($sql, $params, $types);
     }
 
     /**

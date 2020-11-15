@@ -72,7 +72,7 @@ class ClassMetadataExporter implements Exporter
         $lines[] = $bodyIndentation . '?ClassMetadata $parent = null';
         $lines[] = $indentation . ')';
         $lines[] = $indentation . '{';
-        $lines[] = $bodyIndentation . 'parent::__construct("' . $metadata->getClassName() . '", $parent);';
+        $lines[] = $bodyIndentation . 'parent::__construct("' . $metadata->getClassName() . '", $parent, $metadataBuildingContext);';
 
         if ($metadata->getCustomRepositoryClassName()) {
             $lines[] = null;
@@ -132,7 +132,7 @@ class ClassMetadataExporter implements Exporter
         $bodyIndentation = str_repeat(self::INDENTATION, $indentationLevel + 1);
         $lines           = [];
 
-        foreach ($metadata->getDeclaredPropertiesIterator() as $name => $property) {
+        foreach ($metadata->getPropertiesIterator() as $name => $property) {
             $lines[] = null;
             $lines[] = $bodyIndentation . '// Property: ' . $name;
             $lines[] = $this->exportProperty($property, $indentationLevel + 1);
@@ -203,10 +203,6 @@ class ClassMetadataExporter implements Exporter
         $lines           = [];
 
         switch (true) {
-            case $property instanceof Mapping\VersionFieldMetadata:
-                $propertyExporter = new VersionFieldMetadataExporter();
-                break;
-
             case $property instanceof Mapping\FieldMetadata:
                 $propertyExporter = new FieldMetadataExporter();
                 break;

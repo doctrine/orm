@@ -7,8 +7,7 @@ namespace Doctrine\ORM\Query;
 use DateInterval;
 use DateTimeInterface;
 use Doctrine\DBAL\Connection;
-use Doctrine\DBAL\ParameterType;
-use Doctrine\DBAL\Types\Type;
+use Doctrine\DBAL\Types\Types;
 use function current;
 use function is_array;
 use function is_bool;
@@ -31,19 +30,19 @@ class ParameterTypeInferer
     public static function inferType($value)
     {
         if (is_int($value)) {
-            return Type::INTEGER;
+            return Types::INTEGER;
         }
 
         if (is_bool($value)) {
-            return Type::BOOLEAN;
+            return Types::BOOLEAN;
         }
 
         if ($value instanceof DateTimeInterface) {
-            return Type::DATETIME;
+            return Types::DATETIME_MUTABLE;
         }
 
         if ($value instanceof DateInterval) {
-            return Type::DATEINTERVAL;
+            return Types::DATEINTERVAL;
         }
 
         if (is_array($value)) {
@@ -52,6 +51,6 @@ class ParameterTypeInferer
                 : Connection::PARAM_STR_ARRAY;
         }
 
-        return ParameterType::STRING;
+        return Types::STRING;
     }
 }

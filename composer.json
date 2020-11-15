@@ -34,12 +34,12 @@
         "sort-packages": true
     },
     "require": {
-        "php": "^7.2",
+        "php": "^7.3",
         "ext-ctype": "*",
-        "doctrine/annotations": "~1.5",
+        "doctrine/annotations": "~1.7",
         "doctrine/cache": "~1.6",
         "doctrine/collections": "^1.4",
-        "doctrine/dbal": "dev-snapshot/develop/2018-11-26 as 3.x-dev",
+        "doctrine/dbal": "dev-missed-commits",
         "doctrine/event-manager": "^1.0",
         "doctrine/inflector": "~1.0",
         "doctrine/instantiator": "~1.1",
@@ -47,13 +47,12 @@
         "doctrine/reflection": "^1.0",
         "ocramius/package-versions": "^1.1.2",
         "ocramius/proxy-manager": "^2.1.1",
-        "symfony/console": "~3.2|~4.0",
+        "symfony/console": "~4.0|~5.0",
         "symfony/var-dumper": "^4.1"
     },
     "require-dev": {
-        "ext-pdo": "*",
         "doctrine/coding-standard": "^6.0",
-        "phpstan/phpstan-shim": "^0.9.2",
+        "phpstan/phpstan": "^0.11",
         "phpunit/phpunit": "^7.0"
     },
     "autoload": {

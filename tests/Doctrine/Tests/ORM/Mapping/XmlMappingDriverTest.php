@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Doctrine\Tests\ORM\Mapping;
 
-use Doctrine\ORM\Mapping\ClassMetadata;
+use Doctrine\Common\Collections\Criteria;
 use Doctrine\ORM\Mapping\ClassMetadataFactory;
 use Doctrine\ORM\Mapping\Driver\XmlDriver;
 use Doctrine\Tests\Models\DDC117\DDC117Translation;
@@ -12,9 +12,12 @@ use Doctrine\Tests\Models\DDC3293\DDC3293User;
 use Doctrine\Tests\Models\DDC3293\DDC3293UserPrefixed;
 use Doctrine\Tests\Models\DDC889\DDC889Class;
 use Doctrine\Tests\Models\Generic\SerializationModel;
+use Doctrine\Tests\Models\GH7141\GH7141Article;
+use Doctrine\Tests\Models\GH7316\GH7316Article;
 use Doctrine\Tests\Models\ValueObjects\Name;
 use Doctrine\Tests\Models\ValueObjects\Person;
 use DOMDocument;
+use const ARRAY_FILTER_USE_KEY;
 use const DIRECTORY_SEPARATOR;
 use const PATHINFO_FILENAME;
 use function array_filter;
@@ -34,12 +37,8 @@ class XmlMappingDriverTest extends AbstractMappingDriverTest
     public function testClassTableInheritanceDiscriminatorMap() : void
     {
         $mappingDriver = $this->loadDriver();
-
-        $class = new ClassMetadata(CTI::class, $this->metadataBuildingContext);
-
-        $mappingDriver->loadMetadataForClass(CTI::class, $class, $this->metadataBuildingContext);
-
-        $expectedMap = [
+        $class         = $mappingDriver->loadMetadataForClass(CTI::class, null, $this->metadataBuildingContext);
+        $expectedMap   = [
             'foo' => CTIFoo::class,
             'bar' => CTIBar::class,
             'baz' => CTIBaz::class,
@@ -57,9 +56,7 @@ class XmlMappingDriverTest extends AbstractMappingDriverTest
     {
         $mappingDriver = $this->loadDriver();
 
-        $class = new ClassMetadata(XMLSLC::class, $this->metadataBuildingContext);
-
-        $mappingDriver->loadMetadataForClass(XMLSLC::class, $class, $this->metadataBuildingContext);
+        $mappingDriver->loadMetadataForClass(XMLSLC::class, null, $this->metadataBuildingContext);
     }
 
     public function testIdentifierWithAssociationKey() : void
@@ -74,7 +71,7 @@ class XmlMappingDriverTest extends AbstractMappingDriverTest
         $class = $factory->getMetadataFor(DDC117Translation::class);
 
         self::assertEquals(['language', 'article'], $class->identifier);
-        self::assertArrayHasKey('article', iterator_to_array($class->getDeclaredPropertiesIterator()));
+        self::assertArrayHasKey('article', iterator_to_array($class->getPropertiesIterator()));
 
         $association = $class->getProperty('article');
 
@@ -181,16 +178,43 @@ class XmlMappingDriverTest extends AbstractMappingDriverTest
 
     public static function dataValidSchema()
     {
-        $list    = glob(__DIR__ . '/xml/*.xml');
+        $list = [];
+        foreach (glob(__DIR__ . '/xml/*.xml') as $item) {
+            $list[pathinfo($item, PATHINFO_FILENAME)] = $item;
+        }
+
         $invalid = ['Doctrine.Tests.Models.DDC889.DDC889Class.dcm'];
 
-        $list = array_filter($list, static function ($item) use ($invalid) {
-            return ! in_array(pathinfo($item, PATHINFO_FILENAME), $invalid, true);
-        });
+        $list = array_filter($list, static function ($filename) use ($invalid) {
+            return ! in_array($filename, $invalid, true);
+        }, ARRAY_FILTER_USE_KEY);
 
         return array_map(static function ($item) {
             return [$item];
         }, $list);
+    }
+
+    /**
+     * @group GH-7141
+     */
+    public function testOneToManyDefaultOrderByAsc()
+    {
+        $class = $this->createClassMetadata(GH7141Article::class);
+
+        $this->assertEquals(
+            Criteria::ASC,
+            $class->getProperty('tags')->getOrderBy()['position']
+        );
+    }
+
+    public function testManyToManyDefaultOrderByAsc() : void
+    {
+        $class = $this->createClassMetadata(GH7316Article::class);
+
+        self::assertEquals(
+            Criteria::ASC,
+            $class->getProperty('tags')->getOrderBy()['position']
+        );
     }
 
     /**

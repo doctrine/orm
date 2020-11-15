@@ -133,7 +133,7 @@ step:
     $isDevMode = true;
     $config = Setup::createAnnotationMetadataConfiguration(array(__DIR__."/src"), $isDevMode);
     // or if you prefer XML
-    //$config = Setup::createXMLMetadataConfiguration(array(__DIR__."/config"), $isDevMode);
+    // $config = Setup::createXMLMetadataConfiguration(array(__DIR__."/config"), $isDevMode);
     // database configuration parameters
     $conn = array(
         'driver' => 'pdo_sqlite',
@@ -437,12 +437,16 @@ There are several advantages to using such a model:
 
 * **Entity state is always valid.** Since no setters exist, this means that we
 only update portions of the entity that should already be valid.
+
 * Instead of having plain getters and setters, our entity now has
 **real behavior**: it is much easier to determine the logic in the domain.
+
 * DTOs can be reused in other components, for example deserializing mixed
 content, using forms...
+
 * Classic and static constructors can be used to manage different ways to
 create our objects, and they can also use DTOs.
+
 * Anemic entities tend to isolate the entity from logic, whereas rich
 entities allow putting the logic in the object itself, including data
 validation.
@@ -486,7 +490,7 @@ but you only need to choose one.
         <doctrine-mapping xmlns="http://doctrine-project.org/schemas/orm/doctrine-mapping"
               xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
               xsi:schemaLocation="http://doctrine-project.org/schemas/orm/doctrine-mapping
-                            http://raw.github.com/doctrine/doctrine2/master/doctrine-mapping.xsd">
+                                  https://www.doctrine-project.org/schemas/orm/doctrine-mapping.xsd">
 
               <entity name="Product" table="products">
                   <id name="id" type="integer">
@@ -1026,7 +1030,7 @@ the ``Product`` before:
         <doctrine-mapping xmlns="http://doctrine-project.org/schemas/orm/doctrine-mapping"
               xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
               xsi:schemaLocation="http://doctrine-project.org/schemas/orm/doctrine-mapping
-                            http://raw.github.com/doctrine/doctrine2/master/doctrine-mapping.xsd">
+                                  https://www.doctrine-project.org/schemas/orm/doctrine-mapping.xsd">
 
             <entity name="Bug" table="bugs">
                 <id name="id" type="integer">
@@ -1116,7 +1120,7 @@ Finally, we'll add metadata mappings for the ``User`` entity.
         <doctrine-mapping xmlns="http://doctrine-project.org/schemas/orm/doctrine-mapping"
               xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
               xsi:schemaLocation="http://doctrine-project.org/schemas/orm/doctrine-mapping
-                            http://raw.github.com/doctrine/doctrine2/master/doctrine-mapping.xsd">
+                                  https://www.doctrine-project.org/schemas/orm/doctrine-mapping.xsd">
 
              <entity name="User" table="users">
                  <id name="id" type="integer">
@@ -1614,7 +1618,7 @@ we have to adjust the metadata slightly.
          **/
         class Bug
         {
-            //...
+            // ...
         }
 
     .. code-block:: xml
@@ -1622,7 +1626,7 @@ we have to adjust the metadata slightly.
         <doctrine-mapping xmlns="http://doctrine-project.org/schemas/orm/doctrine-mapping"
               xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
               xsi:schemaLocation="http://doctrine-project.org/schemas/orm/doctrine-mapping
-                            http://raw.github.com/doctrine/doctrine2/master/doctrine-mapping.xsd">
+                                  https://www.doctrine-project.org/schemas/orm/doctrine-mapping.xsd">
 
               <entity name="Bug" table="bugs" repository-class="BugRepository">
 

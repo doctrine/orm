@@ -7,14 +7,11 @@ namespace Doctrine\Tests\ORM\Repository;
 use Doctrine\ORM\Configuration;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Mapping\ClassMetadata;
-use Doctrine\ORM\Mapping\ClassMetadataBuildingContext;
-use Doctrine\ORM\Mapping\ClassMetadataFactory;
-use Doctrine\ORM\Reflection\ReflectionService;
 use Doctrine\ORM\Repository\DefaultRepositoryFactory;
 use Doctrine\Tests\DoctrineTestCase;
 use Doctrine\Tests\Models\DDC753\DDC753DefaultRepository;
 use Doctrine\Tests\Models\DDC869\DDC869PaymentRepository;
-use PHPUnit_Framework_MockObject_MockObject;
+use PHPUnit\Framework\MockObject\MockObject;
 
 /**
  * Tests for {@see \Doctrine\ORM\Repository\DefaultRepositoryFactory}
@@ -23,30 +20,23 @@ use PHPUnit_Framework_MockObject_MockObject;
  */
 class DefaultRepositoryFactoryTest extends DoctrineTestCase
 {
-    /** @var EntityManagerInterface|PHPUnit_Framework_MockObject_MockObject */
+    /** @var EntityManagerInterface|MockObject */
     private $entityManager;
 
-    /** @var Configuration|PHPUnit_Framework_MockObject_MockObject */
+    /** @var Configuration|MockObject */
     private $configuration;
 
     /** @var DefaultRepositoryFactory */
     private $repositoryFactory;
-
-    /** @var ClassMetadataBuildingContext|PHPUnit_Framework_MockObject_MockObject */
-    private $metadataBuildingContext;
 
     /**
      * {@inheritDoc}
      */
     protected function setUp() : void
     {
-        $this->metadataBuildingContext = new ClassMetadataBuildingContext(
-            $this->createMock(ClassMetadataFactory::class),
-            $this->createMock(ReflectionService::class)
-        );
-        $this->configuration           = $this->createMock(Configuration::class);
-        $this->entityManager           = $this->createEntityManager();
-        $this->repositoryFactory       = new DefaultRepositoryFactory();
+        $this->configuration     = $this->createMock(Configuration::class);
+        $this->entityManager     = $this->createEntityManager();
+        $this->repositoryFactory = new DefaultRepositoryFactory();
 
         $this->configuration
             ->expects($this->any())
@@ -128,7 +118,7 @@ class DefaultRepositoryFactoryTest extends DoctrineTestCase
      */
     public function buildClassMetadata($className)
     {
-        $metadata = new ClassMetadata($className, $this->metadataBuildingContext);
+        $metadata = new ClassMetadata($className, null);
 
         $metadata->setCustomRepositoryClassName(null);
 
