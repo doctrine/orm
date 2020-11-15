@@ -3,13 +3,14 @@
 namespace Doctrine\Tests\ORM\Mapping;
 
 use Doctrine\ORM\Mapping\ClassMetadata;
+use Doctrine\Persistence\Mapping\Driver\MappingDriver;
 use Doctrine\Persistence\Mapping\Driver\PHPDriver;
 use Doctrine\Tests\Models\DDC889\DDC889Class;
 use Doctrine\Tests\ORM\Mapping;
 
 class PHPMappingDriverTest extends AbstractMappingDriverTest
 {
-    protected function _loadDriver()
+    protected function loadDriver(): MappingDriver
     {
         $path = __DIR__ . DIRECTORY_SEPARATOR . 'php';
 
@@ -39,7 +40,7 @@ class PHPMappingDriverTest extends AbstractMappingDriverTest
     {
         $this->expectException('Doctrine\ORM\Cache\CacheException');
         $this->expectExceptionMessage('Entity association field "Doctrine\Tests\ORM\Mapping\PHPSLC#foo" not configured as part of the second-level cache.');
-        $mappingDriver = $this->_loadDriver();
+        $mappingDriver = $this->loadDriver();
 
         $class = new ClassMetadata(Mapping\PHPSLC::class);
         $mappingDriver->loadMetadataForClass(Mapping\PHPSLC::class, $class);

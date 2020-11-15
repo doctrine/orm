@@ -13,6 +13,7 @@ use Doctrine\ORM\Mapping\DiscriminatorColumn;
 use Doctrine\ORM\Mapping\Id;
 use Doctrine\ORM\Mapping\MappingException;
 use Doctrine\ORM\Mapping\UnderscoreNamingStrategy;
+use Doctrine\Persistence\Mapping\Driver\MappingDriver;
 use Doctrine\Persistence\Mapping\RuntimeReflectionService;
 use Doctrine\Tests\Models\Cache\City;
 use Doctrine\Tests\Models\CMS\CmsAddress;
@@ -39,13 +40,15 @@ use Doctrine\Tests\Models\DDC964\DDC964Admin;
 use Doctrine\Tests\Models\DDC964\DDC964Guest;
 use Doctrine\Tests\OrmTestCase;
 
+use function strtolower;
+
 abstract class AbstractMappingDriverTest extends OrmTestCase
 {
-    abstract protected function _loadDriver();
+    abstract protected function loadDriver(): MappingDriver;
 
     public function createClassMetadata($entityClassName)
     {
-        $mappingDriver = $this->_loadDriver();
+        $mappingDriver = $this->loadDriver();
 
         $class = new ClassMetadata($entityClassName);
         $class->initializeReflection(new RuntimeReflectionService());
@@ -60,7 +63,7 @@ abstract class AbstractMappingDriverTest extends OrmTestCase
      */
     protected function createClassMetadataFactory(EntityManager $em = null)
     {
-        $driver     = $this->_loadDriver();
+        $driver     = $this->loadDriver();
         $em         = $em ?: $this->_getTestEntityManager();
         $factory    = new ClassMetadataFactory();
         $em->getConfiguration()->setMetadataDriverImpl($driver);
@@ -514,8 +517,8 @@ abstract class AbstractMappingDriverTest extends OrmTestCase
         $this->assertArrayHasKey('columnDefinition', $class->fieldMappings['id']);
         $this->assertArrayHasKey('columnDefinition', $class->fieldMappings['value']);
 
-        $this->assertEquals("int unsigned not null", strtolower($class->fieldMappings['id']['columnDefinition']));
-        $this->assertEquals("varchar(255) not null", strtolower($class->fieldMappings['value']['columnDefinition']));
+        $this->assertEquals('int unsigned not null', strtolower($class->fieldMappings['id']['columnDefinition']));
+        $this->assertEquals('varchar(255) not null', strtolower($class->fieldMappings['value']['columnDefinition']));
     }
 
     /**
@@ -579,7 +582,7 @@ abstract class AbstractMappingDriverTest extends OrmTestCase
 
     public function testNamedQuery()
     {
-        $driver = $this->_loadDriver();
+        $driver = $this->loadDriver();
         $class = $this->createClassMetadata(User::class);
 
         $this->assertCount(1, $class->getNamedQueries(), sprintf("Named queries not processed correctly by driver %s", get_class($driver)));

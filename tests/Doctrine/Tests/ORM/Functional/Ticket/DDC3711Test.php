@@ -17,7 +17,7 @@ class DDC3711Test extends YamlMappingDriverTest
 
     public function testCompositeKeyForJoinTableInManyToManyCreation()
     {
-        $yamlDriver = $this->_loadDriver();
+        $yamlDriver = $this->loadDriver();
 
         $em = $this->_getTestEntityManager();
         $em->getConfiguration()->setMetadataDriverImpl($yamlDriver);

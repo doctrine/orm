@@ -11,6 +11,7 @@ use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\Mapping\ClassMetadataFactory;
 use Doctrine\ORM\Mapping\Driver\AnnotationDriver;
 use Doctrine\ORM\Mapping\MappingException;
+use Doctrine\Persistence\Mapping\Driver\MappingDriver;
 use Doctrine\Persistence\Mapping\RuntimeReflectionService;
 use Doctrine\Tests\Models\CMS\CmsUser;
 use Doctrine\Tests\Models\DDC1872\DDC1872ExampleEntityWithoutOverride;
@@ -39,7 +40,7 @@ class AnnotationDriverTest extends AbstractMappingDriverTest
     {
         $this->expectException('Doctrine\ORM\Cache\CacheException');
         $this->expectExceptionMessage('Entity association field "Doctrine\Tests\ORM\Mapping\AnnotationSLC#foo" not configured as part of the second-level cache.');
-        $mappingDriver = $this->_loadDriver();
+        $mappingDriver = $this->loadDriver();
 
         $class = new ClassMetadata(AnnotationSLC::class);
         $mappingDriver->loadMetadataForClass(AnnotationSLC::class, $class);
@@ -52,7 +53,7 @@ class AnnotationDriverTest extends AbstractMappingDriverTest
     {
         $cm = new ClassMetadata(ColumnWithoutType::class);
         $cm->initializeReflection(new RuntimeReflectionService());
-        $annotationDriver = $this->_loadDriver();
+        $annotationDriver = $this->loadDriver();
 
         $annotationDriver->loadMetadataForClass(Mapping\InvalidColumn::class, $cm);
         $this->assertEquals('string', $cm->fieldMappings['id']['type']);
@@ -114,13 +115,13 @@ class AnnotationDriverTest extends AbstractMappingDriverTest
 
     protected function _loadDriverForCMSModels()
     {
-        $annotationDriver = $this->_loadDriver();
+        $annotationDriver = $this->loadDriver();
         $annotationDriver->addPaths([__DIR__ . '/../../Models/CMS/']);
 
         return $annotationDriver;
     }
 
-    protected function _loadDriver()
+    protected function loadDriver(): MappingDriver
     {
         return $this->createAnnotationDriver();
     }
@@ -137,7 +138,7 @@ class AnnotationDriverTest extends AbstractMappingDriverTest
      */
     public function testJoinTablesWithMappedSuperclassForAnnotationDriver()
     {
-        $annotationDriver = $this->_loadDriver();
+        $annotationDriver = $this->loadDriver();
         $annotationDriver->addPaths([__DIR__ . '/../../Models/DirectoryTree/']);
 
         $em = $this->_getTestEntityManager();
@@ -157,7 +158,7 @@ class AnnotationDriverTest extends AbstractMappingDriverTest
      */
     public function testInvalidMappedSuperClassWithManyToManyAssociation()
     {
-        $annotationDriver = $this->_loadDriver();
+        $annotationDriver = $this->loadDriver();
 
         $em = $this->_getTestEntityManager();
         $em->getConfiguration()->setMetadataDriverImpl($annotationDriver);
@@ -178,7 +179,7 @@ class AnnotationDriverTest extends AbstractMappingDriverTest
      */
     public function testInvalidMappedSuperClassWithInheritanceInformation()
     {
-        $annotationDriver = $this->_loadDriver();
+        $annotationDriver = $this->loadDriver();
 
         $em = $this->_getTestEntityManager();
         $em->getConfiguration()->setMetadataDriverImpl($annotationDriver);
@@ -199,7 +200,7 @@ class AnnotationDriverTest extends AbstractMappingDriverTest
      */
     public function testInheritanceSkipsParentLifecycleCallbacks()
     {
-        $annotationDriver = $this->_loadDriver();
+        $annotationDriver = $this->loadDriver();
 
         $em = $this->_getTestEntityManager();
         $em->getConfiguration()->setMetadataDriverImpl($annotationDriver);
@@ -218,7 +219,7 @@ class AnnotationDriverTest extends AbstractMappingDriverTest
      */
     public function testMappedSuperclassInMiddleOfInheritanceHierarchy()
     {
-        $annotationDriver = $this->_loadDriver();
+        $annotationDriver = $this->loadDriver();
 
         $em = $this->_getTestEntityManager();
         $em->getConfiguration()->setMetadataDriverImpl($annotationDriver);
@@ -231,7 +232,7 @@ class AnnotationDriverTest extends AbstractMappingDriverTest
 
     public function testInvalidFetchOptionThrowsException()
     {
-        $annotationDriver = $this->_loadDriver();
+        $annotationDriver = $this->loadDriver();
 
         $em = $this->_getTestEntityManager();
         $em->getConfiguration()->setMetadataDriverImpl($annotationDriver);

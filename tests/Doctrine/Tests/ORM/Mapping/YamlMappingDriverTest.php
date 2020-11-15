@@ -5,6 +5,7 @@ namespace Doctrine\Tests\ORM\Mapping;
 use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\Mapping\ClassMetadataFactory;
 use Doctrine\ORM\Mapping\Driver\YamlDriver;
+use Doctrine\Persistence\Mapping\Driver\MappingDriver;
 use Doctrine\Tests\Models\DirectoryTree\Directory;
 use Doctrine\Tests\Models\DirectoryTree\File;
 use Doctrine\Tests\Models\Generic\SerializationModel;
@@ -15,7 +16,7 @@ class YamlMappingDriverTest extends AbstractMappingDriverTest
 {
     use VerifyDeprecations;
 
-    protected function _loadDriver()
+    protected function loadDriver(): MappingDriver
     {
         if (!class_exists(Yaml::class, true)) {
             $this->markTestSkipped('Please install Symfony YAML Component into the include path of your PHP installation.');
@@ -31,7 +32,7 @@ class YamlMappingDriverTest extends AbstractMappingDriverTest
      */
     public function testJoinTablesWithMappedSuperclassForYamlDriver()
     {
-        $yamlDriver = $this->_loadDriver();
+        $yamlDriver = $this->loadDriver();
         $yamlDriver->getLocator()->addPaths([__DIR__ . DIRECTORY_SEPARATOR . 'yaml']);
 
         $em = $this->_getTestEntityManager();

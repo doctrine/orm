@@ -3,12 +3,13 @@
 namespace Doctrine\Tests\ORM\Mapping;
 
 use Doctrine\ORM\Mapping\ClassMetadata;
+use Doctrine\Persistence\Mapping\Driver\MappingDriver;
 use Doctrine\Persistence\Mapping\Driver\StaticPHPDriver;
 use Doctrine\Tests\Models\DDC889\DDC889Class;
 
 class StaticPHPMappingDriverTest extends AbstractMappingDriverTest
 {
-    protected function _loadDriver()
+    protected function loadDriver(): MappingDriver
     {
         return new StaticPHPDriver(__DIR__ . DIRECTORY_SEPARATOR . 'php');
     }
