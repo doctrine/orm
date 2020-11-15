@@ -23,7 +23,8 @@ use function defined;
 class AttributesDriver extends AnnotationDriver
 {
     /** @var array<string,int> */
-    protected array $entityAnnotationClasses = [
+    // @phpcs:ignore
+    protected $entityAnnotationClasses = [
         Mapping\Entity::class => 1,
         Mapping\MappedSuperclass::class => 2,
     ];

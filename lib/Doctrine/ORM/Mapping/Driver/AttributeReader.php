@@ -72,13 +72,13 @@ class AttributeReader
             }
 
             $attributeClassName = $attribute->getName();
-            $instance           = new $attributeClassName();
+            $instance           = new $attributeClassName(); // @phpstan-ignore-line
             $arguments          = $attribute->getArguments();
 
             // unnamed argument is automatically "value" in Doctrine Annotations
             if (count($arguments) >= 1 && isset($arguments[0])) {
                 $arguments['value'] = $arguments[0];
-                unset($arguments[0]);
+                unset($arguments[0]); // @phpstan-ignore-line
             }
 
             // This works using the old Annotation, but will probably break Attribute IDE autocomplete support
