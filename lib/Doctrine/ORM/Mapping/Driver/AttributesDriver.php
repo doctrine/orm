@@ -22,11 +22,15 @@ use function defined;
 
 class AttributesDriver extends AnnotationDriver
 {
-    protected $entityAnnotationClasses = [
+    /** @var array<string,int> */
+    protected array $entityAnnotationClasses = [
         Mapping\Entity::class => 1,
         Mapping\MappedSuperclass::class => 2,
     ];
 
+    /**
+     * @param array<string> $paths
+     */
     public function __construct(array $paths)
     {
         parent::__construct(new AttributeReader(), $paths);
@@ -34,7 +38,8 @@ class AttributesDriver extends AnnotationDriver
 
     public function loadMetadataForClass($className, ClassMetadata $metadata): void
     {
-        /** @var ClassMetadataInfo $metadata */
+        assert($metadata instanceof ClassMetadataInfo);
+
         $reflectionClass = $metadata->getReflectionClass();
 
         $classAttributes = $this->reader->getClassAnnotations($reflectionClass);
@@ -179,7 +184,8 @@ class AttributesDriver extends AnnotationDriver
             $mapping['fieldName'] = $property->getName();
 
             // Evaluate @Cache annotation
-            if (($cacheAttribute = $this->reader->getPropertyAnnotation($property, Mapping\Cache::class)) !== null) {
+            $cacheAttribute = $this->reader->getPropertyAnnotation($property, Mapping\Cache::class);
+            if ($cacheAttribute !== null) {
                 $mapping['cache'] = $metadata->getAssociationCacheDefaults(
                     $mapping['fieldName'],
                     [
@@ -192,15 +198,22 @@ class AttributesDriver extends AnnotationDriver
             // Check for JoinColumn/JoinColumns annotations
             $joinColumns = [];
 
-            if ($joinColumnAttributes = $this->reader->getPropertyAnnotation($property, Mapping\JoinColumn::class)) {
-                foreach ($joinColumnAttributes as $joinColumnAttribute) {
-                    $joinColumns[] = $this->joinColumnToArray($joinColumnAttribute);
-                }
+            $joinColumnAttributes = $this->reader->getPropertyAnnotation($property, Mapping\JoinColumn::class);
+
+            foreach ($joinColumnAttributes as $joinColumnAttribute) {
+                $joinColumns[] = $this->joinColumnToArray($joinColumnAttribute);
             }
 
-            // Field can only be annotated with one of:
-            // @Column, @OneToOne, @OneToMany, @ManyToOne, @ManyToMany
-            if ($columnAttribute = $this->reader->getPropertyAnnotation($property, Mapping\Column::class)) {
+            // Field can only be attributed with one of:
+            // Column, OneToOne, OneToMany, ManyToOne, ManyToMany, Embedded
+            $columnAttribute     = $this->reader->getPropertyAnnotation($property, Mapping\Column::class);
+            $oneToOneAttribute   = $this->reader->getPropertyAnnotation($property, Mapping\OneToOne::class);
+            $oneToManyAttribute  = $this->reader->getPropertyAnnotation($property, Mapping\OneToMany::class);
+            $manyToOneAttribute  = $this->reader->getPropertyAnnotation($property, Mapping\ManyToOne::class);
+            $manyToManyAttribute = $this->reader->getPropertyAnnotation($property, Mapping\ManyToMany::class);
+            $embeddedAttribute   = $this->reader->getPropertyAnnotation($property, Mapping\Embedded::class);
+
+            if ($columnAttribute !== null) {
                 if ($columnAttribute->type === null) {
                     throw MappingException::propertyTypeIsRequired($className, $property->getName());
                 }
@@ -211,7 +224,9 @@ class AttributesDriver extends AnnotationDriver
                     $mapping['id'] = true;
                 }
 
-                if ($generatedValueAttribute = $this->reader->getPropertyAnnotation($property, Mapping\GeneratedValue::class)) {
+                $generatedValueAttribute = $this->reader->getPropertyAnnotation($property, Mapping\GeneratedValue::class);
+
+                if ($generatedValueAttribute !== null) {
                     $metadata->setIdGeneratorType(constant('Doctrine\ORM\Mapping\ClassMetadata::GENERATOR_TYPE_' . $generatedValueAttribute->strategy));
                 }
 
@@ -222,7 +237,10 @@ class AttributesDriver extends AnnotationDriver
                 $metadata->mapField($mapping);
 
                 // Check for SequenceGenerator/TableGenerator definition
-                if ($seqGeneratorAttribute = $this->reader->getPropertyAnnotation($property, Mapping\SequenceGenerator::class)) {
+                $seqGeneratorAttribute    = $this->reader->getPropertyAnnotation($property, Mapping\SequenceGenerator::class);
+                $customGeneratorAttribute = $this->reader->getPropertyAnnotation($property, Mapping\CustomIdGenerator::class);
+
+                if ($seqGeneratorAttribute !== null) {
                     $metadata->setSequenceGeneratorDefinition(
                         [
                             'sequenceName' => $seqGeneratorAttribute->sequenceName,
@@ -230,14 +248,14 @@ class AttributesDriver extends AnnotationDriver
                             'initialValue' => $seqGeneratorAttribute->initialValue,
                         ]
                     );
-                } elseif ($customGeneratorAttribute = $this->reader->getPropertyAnnotation($property, Mapping\CustomIdGenerator::class)) {
+                } elseif ($customGeneratorAttribute !== null) {
                     $metadata->setCustomGeneratorDefinition(
                         [
                             'class' => $customGeneratorAttribute->class,
                         ]
                     );
                 }
-            } elseif ($oneToOneAttribute = $this->reader->getPropertyAnnotation($property, Mapping\OneToOne::class)) {
+            } elseif ($oneToOneAttribute !== null) {
                 if ($this->reader->getPropertyAnnotation($property, Mapping\Id::class)) {
                     $mapping['id'] = true;
                 }
@@ -250,7 +268,7 @@ class AttributesDriver extends AnnotationDriver
                 $mapping['orphanRemoval'] = $oneToOneAttribute->orphanRemoval;
                 $mapping['fetch']         = $this->getFetchMode($className, $oneToOneAttribute->fetch);
                 $metadata->mapOneToOne($mapping);
-            } elseif ($oneToManyAttribute = $this->reader->getPropertyAnnotation($property, Mapping\OneToMany::class)) {
+            } elseif ($oneToManyAttribute !== null) {
                 $mapping['mappedBy']      = $oneToManyAttribute->mappedBy;
                 $mapping['targetEntity']  = $oneToManyAttribute->targetEntity;
                 $mapping['cascade']       = $oneToManyAttribute->cascade;
@@ -258,13 +276,17 @@ class AttributesDriver extends AnnotationDriver
                 $mapping['orphanRemoval'] = $oneToManyAttribute->orphanRemoval;
                 $mapping['fetch']         = $this->getFetchMode($className, $oneToManyAttribute->fetch);
 
-                if ($orderByAttribute = $this->reader->getPropertyAnnotation($property, Mapping\OrderBy::class)) {
+                $orderByAttribute = $this->reader->getPropertyAnnotation($property, Mapping\OrderBy::class);
+
+                if ($orderByAttribute !== null) {
                     $mapping['orderBy'] = $orderByAttribute->value;
                 }
 
                 $metadata->mapOneToMany($mapping);
-            } elseif ($manyToOneAttribute = $this->reader->getPropertyAnnotation($property, Mapping\ManyToOne::class)) {
-                if ($idAttribute = $this->reader->getPropertyAnnotation($property, Mapping\Id::class)) {
+            } elseif ($manyToOneAttribute !== null) {
+                $idAttribute = $this->reader->getPropertyAnnotation($property, Mapping\Id::class);
+
+                if ($idAttribute !== null) {
                     $mapping['id'] = true;
                 }
 
@@ -274,10 +296,11 @@ class AttributesDriver extends AnnotationDriver
                 $mapping['targetEntity'] = $manyToOneAttribute->targetEntity;
                 $mapping['fetch']        = $this->getFetchMode($className, $manyToOneAttribute->fetch);
                 $metadata->mapManyToOne($mapping);
-            } elseif ($manyToManyAttribute = $this->reader->getPropertyAnnotation($property, Mapping\ManyToMany::class)) {
-                $joinTable = [];
+            } elseif ($manyToManyAttribute !== null) {
+                $joinTable          = [];
+                $joinTableAttribute = $this->reader->getPropertyAnnotation($property, Mapping\JoinTable::class);
 
-                if ($joinTableAttribute = $this->reader->getPropertyAnnotation($property, Mapping\JoinTable::class)) {
+                if ($joinTableAttribute !== null) {
                     $joinTable = [
                         'name' => $joinTableAttribute->name,
                         'schema' => $joinTableAttribute->schema,
@@ -301,12 +324,14 @@ class AttributesDriver extends AnnotationDriver
                 $mapping['orphanRemoval'] = $manyToManyAttribute->orphanRemoval;
                 $mapping['fetch']         = $this->getFetchMode($className, $manyToManyAttribute->fetch);
 
-                if ($orderByAttribute = $this->reader->getPropertyAnnotation($property, Mapping\OrderBy::class)) {
+                $orderByAttribute = $this->reader->getPropertyAnnotation($property, Mapping\OrderBy::class);
+
+                if ($orderByAttribute !== null) {
                     $mapping['orderBy'] = $orderByAttribute->value;
                 }
 
                 $metadata->mapManyToMany($mapping);
-            } elseif ($embeddedAttribute = $this->reader->getPropertyAnnotation($property, Mapping\Embedded::class)) {
+            } elseif ($embeddedAttribute !== null) {
                 $mapping['class']        = $embeddedAttribute->class;
                 $mapping['columnPrefix'] = $embeddedAttribute->columnPrefix;
 
