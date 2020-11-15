@@ -1125,7 +1125,7 @@ class User
      * @OneToOne(targetEntity="Address", cascade={"remove"}, inversedBy="user")
      * @JoinColumn(onDelete="CASCADE")
      */
-    #[ORM\OneToOne(targetEntity: "Address", cascade: ["remove"], inverstedBy: "user")]
+    #[ORM\OneToOne(targetEntity: "Address", cascade: ["remove"], inversedBy: "user")]
     #[ORM\JoinColumn(onDelete: "CASCADE")]
     public $address;
 
@@ -1341,6 +1341,7 @@ abstract class Animal
      * @CustomIdGenerator(class="stdClass")
      */
     #[ORM\Id, ORM\Column(type: "string"), ORM\GeneratedValue(strategy: "CUSTOM")]
+    #[ORM\CustomIdGenerator(class: "stdClass")]
     public $id;
 
     public static function loadMetadata(ClassMetadataInfo $metadata)

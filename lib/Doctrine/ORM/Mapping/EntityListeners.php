@@ -20,6 +20,8 @@
 
 namespace Doctrine\ORM\Mapping;
 
+use Attribute;
+
 /**
  * The EntityListeners annotation specifies the callback listener classes to be used for an entity or mapped superclass.
  * The EntityListeners annotation may be applied to an entity class or mapped superclass.
@@ -30,6 +32,7 @@ namespace Doctrine\ORM\Mapping;
  * @Annotation
  * @Target("CLASS")
  */
+#[Attribute(Attribute::TARGET_CLASS)]
 final class EntityListeners implements Annotation
 {
     /**

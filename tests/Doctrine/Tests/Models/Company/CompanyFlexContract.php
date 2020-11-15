@@ -1,6 +1,8 @@
 <?php
 namespace Doctrine\Tests\Models\Company;
 
+use Doctrine\ORM\Mapping as ORM;
+
 /**
  * @Entity
  *
@@ -46,6 +48,7 @@ namespace Doctrine\Tests\Models\Company;
  *      ),
  * })
  */
+#[ORM\Entity]
 class CompanyFlexContract extends CompanyContract
 {
     /**

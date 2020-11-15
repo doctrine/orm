@@ -2,6 +2,8 @@
 
 namespace Doctrine\Tests\Models\CMS;
 
+use Doctrine\ORM\Mapping as ORM;
+
 /**
  * CmsAddress
  *
@@ -61,12 +63,16 @@ namespace Doctrine\Tests\Models\CMS;
  *
  * @EntityListeners({"CmsAddressListener"})
  */
+#[ORM\Entity]
+#[ORM\Table(name: "cms_addresses")]
+#[ORM\Entitylisteners(["CmsAddressListener"])]
 class CmsAddress
 {
     /**
      * @Column(type="integer")
      * @Id @GeneratedValue
      */
+    #[ORM\Id, ORM\GeneratedValue, ORM\Column(type: "integer")]
     public $id;
 
     /**

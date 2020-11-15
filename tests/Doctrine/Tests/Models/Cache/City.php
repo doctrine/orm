@@ -3,12 +3,14 @@
 namespace Doctrine\Tests\Models\Cache;
 
 use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\ORM\Mapping as ORM;
 
 /**
  * @Cache
  * @Entity
  * @Table("cache_city")
  */
+#[ORM\Entity, ORM\Table(name: "cache_city"), ORM\Cache]
 class City
 {
     /**
@@ -16,6 +18,7 @@ class City
      * @GeneratedValue
      * @Column(type="integer")
      */
+    #[ORM\Id, ORM\GeneratedValue, ORM\Column(type: "integer")]
     protected $id;
 
     /**

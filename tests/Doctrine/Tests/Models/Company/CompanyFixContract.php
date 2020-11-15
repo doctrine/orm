@@ -2,9 +2,12 @@
 
 namespace Doctrine\Tests\Models\Company;
 
+use Doctrine\ORM\Mapping as ORM;
+
 /**
  * @Entity
  */
+#[ORM\Entity]
 class CompanyFixContract extends CompanyContract
 {
     /**

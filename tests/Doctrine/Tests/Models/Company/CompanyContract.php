@@ -2,6 +2,8 @@
 
 namespace Doctrine\Tests\Models\Company;
 
+use Doctrine\ORM\Mapping as ORM;
+
 /**
  * @Entity
  * @Table(name="company_contracts")
@@ -56,11 +58,17 @@ namespace Doctrine\Tests\Models\Company;
  *      ),
  * })
  */
+#[ORM\Entity, ORM\Table(name: "company_contracts")]
+#[ORM\InheritanceType("SINGLE_TABLE")]
+#[ORM\DiscriminatorColumn(name: "discr", type: "string")]
+#[ORM\DiscriminatorMap(["fix" => "CompanyFixContract", "flexible" => "CompanyFlexContract", "flexultra" => "CompanyFlexUltraContract"])]
+#[ORM\EntityListeners(["CompanyContractListener"])]
 abstract class CompanyContract
 {
     /**
      * @Id @column(type="integer") @GeneratedValue
      */
+    #[ORM\Id, ORM\Column(type: "integer"), ORM\GeneratedValue]
     private $id;
 
     /**

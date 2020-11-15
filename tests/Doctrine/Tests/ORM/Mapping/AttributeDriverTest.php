@@ -20,4 +20,39 @@ class AttributeDriverTest extends AbstractMappingDriverTest
 
         return new AttributesDriver($paths);
     }
+
+    public function testNamedQuery()
+    {
+        $this->markTestSkipped('AttributeDriver does not support named queries.');
+    }
+
+    public function testNamedNativeQuery()
+    {
+        $this->markTestSkipped('AttributeDriver does not support named native queries.');
+    }
+
+    public function testSqlResultSetMapping()
+    {
+        $this->markTestSkipped('AttributeDriver does not support named sql resultset mapping.');
+    }
+
+    public function testAssociationOverridesMapping()
+    {
+        $this->markTestSkipped('AttributeDriver does not support association overrides.');
+    }
+
+    public function testInversedByOverrideMapping()
+    {
+        $this->markTestSkipped('AttributeDriver does not support association overrides.');
+    }
+
+    public function testFetchOverrideMapping()
+    {
+        $this->markTestSkipped('AttributeDriver does not support association overrides.');
+    }
+
+    public function testAttributeOverridesMapping()
+    {
+        $this->markTestSkipped('AttributeDriver does not support association overrides.');
+    }
 }

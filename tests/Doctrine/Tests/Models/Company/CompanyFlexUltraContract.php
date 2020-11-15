@@ -2,10 +2,14 @@
 
 namespace Doctrine\Tests\Models\Company;
 
+use Doctrine\ORM\Mapping as ORM;
+
 /**
  * @Entity
  * @EntityListeners({"CompanyContractListener","CompanyFlexUltraContractListener"})
  */
+#[ORM\Entity]
+#[ORM\EntityListeners(["CompanyContractListener", "CompanyFlexUltraContractListener"])]
 class CompanyFlexUltraContract extends CompanyFlexContract
 {
     /**
