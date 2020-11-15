@@ -27,6 +27,7 @@ class AttributeReader
     }
 
     /** @return array<object>|?object */
+    // phpcs:ignore
     public function getClassAnnotation(ReflectionClass $class, $annotationName)
     {
         return $this->getClassAnnotations($class)[$annotationName] ?? ($this->isRepeatable($annotationName) ? [] : null);
@@ -39,6 +40,7 @@ class AttributeReader
     }
 
     /** @return array<object>|?object */
+    // phpcs:ignore
     public function getMethodAnnotation(ReflectionMethod $method, $annotationName)
     {
         return $this->getMethodAnnotations($method)[$annotationName] ?? ($this->isRepeatable($annotationName) ? [] : null);
@@ -51,13 +53,14 @@ class AttributeReader
     }
 
     /** @return array<object>|?object */
+    // phpcs:ignore
     public function getPropertyAnnotation(ReflectionProperty $property, $annotationName)
     {
         return $this->getPropertyAnnotations($property)[$annotationName] ?? ($this->isRepeatable($annotationName) ? [] : null);
     }
 
     /**
-     * @param array<ReflectionAttribute> $attributes
+     * @param array<object> $attributes
      *
      * @return array<Annotation>
      */
@@ -67,27 +70,29 @@ class AttributeReader
 
         foreach ($attributes as $attribute) {
             // Make sure we only get Doctrine Annotations
-            if (is_subclass_of($attribute->getName(), Annotation::class)) {
-                $attributeClassName = $attribute->getName();
-                $instance           = new $attributeClassName();
-                $arguments          = $attribute->getArguments();
+            if (! is_subclass_of($attribute->getName(), Annotation::class)) {
+                continue;
+            }
 
-                // unnamed argument is automatically "value" in Doctrine Annotations
-                if (count($arguments) >= 1 && isset($arguments[0])) {
-                    $arguments['value'] = $arguments[0];
-                    unset($arguments[0]);
-                }
+            $attributeClassName = $attribute->getName();
+            $instance           = new $attributeClassName();
+            $arguments          = $attribute->getArguments();
 
-                // This works using the old Annotation, but will probably break Attribute IDE autocomplete support
-                foreach ($arguments as $name => $value) {
-                    $instance->$name = $value;
-                }
+            // unnamed argument is automatically "value" in Doctrine Annotations
+            if (count($arguments) >= 1 && isset($arguments[0])) {
+                $arguments['value'] = $arguments[0];
+                unset($arguments[0]);
+            }
 
-                if ($this->isRepeatable($attribute->getName())) {
-                    $instances[$attribute->getName()][] = $instance;
-                } else {
-                    $instances[$attribute->getName()] = $instance;
-                }
+            // This works using the old Annotation, but will probably break Attribute IDE autocomplete support
+            foreach ($arguments as $name => $value) {
+                $instance->$name = $value;
+            }
+
+            if ($this->isRepeatable($attribute->getName())) {
+                $instances[$attribute->getName()][] = $instance;
+            } else {
+                $instances[$attribute->getName()] = $instance;
             }
         }
 
