@@ -720,8 +720,8 @@ class UnitOfWorkTest extends OrmTestCase
             }
         };
 
-        $this->expectException(CommitInsideCommit::class);
         $this->eventManager->addEventListener(Events::preFlush, $listener);
+        $this->expectException(CommitInsideCommit::class);
         $this->unitOfWork->commit();
     }
 
