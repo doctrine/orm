@@ -36,16 +36,16 @@
     "require": {
         "php": "^7.3",
         "ext-ctype": "*",
+        "composer/package-versions-deprecated": "^1.8",
         "doctrine/annotations": "~1.7",
         "doctrine/cache": "~1.6",
         "doctrine/collections": "^1.4",
-        "doctrine/dbal": "dev-missed-commits",
+        "doctrine/dbal": "^3.0",
         "doctrine/event-manager": "^1.0",
         "doctrine/inflector": "~1.0",
         "doctrine/instantiator": "~1.1",
         "doctrine/persistence": "^1.1",
         "doctrine/reflection": "^1.0",
-        "ocramius/package-versions": "^1.1.2",
         "ocramius/proxy-manager": "^2.1.1",
         "symfony/console": "~4.0|~5.0",
         "symfony/var-dumper": "^4.1"
