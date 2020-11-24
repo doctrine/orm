@@ -452,9 +452,9 @@ class BasicEntityPersister implements EntityPersister
 
         foreach ($this->class->identifier as $idField) {
             if ( ! isset($this->class->associationMappings[$idField])) {
-                $params[]   = $identifier[$idField];
-                $types[]    = $this->class->fieldMappings[$idField]['type'];
-                $where[]    = $this->quoteStrategy->getColumnName($idField, $this->class, $this->platform);
+                $params[] = $identifier[$idField];
+                $types[]  = $this->class->fieldMappings[$idField]['type'];
+                $where[]  = $this->quoteStrategy->getColumnName($idField, $this->class, $this->platform);
 
                 continue;
             }
@@ -1672,7 +1672,7 @@ class BasicEntityPersister implements EntityPersister
     private function getSelectConditionStatementColumnSQL($field, $assoc = null)
     {
         if (isset($this->class->fieldMappings[$field])) {
-            $className = (isset($this->class->fieldMappings[$field]['inherited']))
+            $className = isset($this->class->fieldMappings[$field]['inherited'])
                 ? $this->class->fieldMappings[$field]['inherited']
                 : $this->class->name;
 

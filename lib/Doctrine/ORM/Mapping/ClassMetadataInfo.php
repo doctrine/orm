@@ -30,6 +30,7 @@ use InvalidArgumentException;
 use ReflectionClass;
 use ReflectionProperty;
 use RuntimeException;
+use function count;
 use function explode;
 
 /**
@@ -2192,7 +2193,7 @@ class ClassMetadataInfo implements ClassMetadata
 
         $mapping = $this->associationMappings[$fieldName];
 
-        if (isset($mapping['inherited']) && (count($overrideMapping) !== 1 || !isset($overrideMapping['fetch']))) {
+        if (isset($mapping['inherited']) && (count($overrideMapping) !== 1 || ! isset($overrideMapping['fetch']))) {
             // TODO: Deprecate overriding the fetch mode via association override for 3.0,
             // users should do this with a listener and a custom attribute/annotation
             throw MappingException::illegalOverrideOfInheritedProperty($this->name, $fieldName);

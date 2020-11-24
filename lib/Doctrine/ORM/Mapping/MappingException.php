@@ -19,6 +19,8 @@
 
 namespace Doctrine\ORM\Mapping;
 
+use function sprintf;
+
 /**
  * A MappingException indicates that something is wrong with the mapping setup.
  *
