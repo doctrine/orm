@@ -74,6 +74,7 @@ class GH8229Test extends OrmFunctionalTestCase
         $this->_em->clear();
     }
 
+
     /**
      * This test checks if foreign keys are generated for the schema, when a joined
      * table inheritance is used and the identifier columns in the inheriting class

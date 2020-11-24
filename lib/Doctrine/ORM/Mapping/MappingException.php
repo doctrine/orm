@@ -826,7 +826,7 @@ class MappingException extends \Doctrine\ORM\ORMException
         return new self(
             sprintf(
                 'Override for %s::%s is only allowed for attributes/associations ' .
-                'declared on a mapped superclass.',
+                'declared on a mapped superclass or a trait.',
                 $className,
                 $propertyName
             )
