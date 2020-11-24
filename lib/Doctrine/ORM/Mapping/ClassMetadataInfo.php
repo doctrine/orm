@@ -30,7 +30,6 @@ use InvalidArgumentException;
 use ReflectionClass;
 use ReflectionProperty;
 use RuntimeException;
-use function array_key_exists;
 use function explode;
 
 /**
@@ -2275,12 +2274,6 @@ class ClassMetadataInfo implements ClassMetadata
 
         if ($overrideMapping['type'] !== $mapping['type']) {
             throw MappingException::invalidOverrideFieldType($this->name, $fieldName);
-        }
-
-        // Fix for bug GH-8229 (id column from parent class renamed in child class):
-        // The contained 'inherited' information was accidentally deleted by the unset() call below.
-        if (array_key_exists('inherited', $this->fieldMappings[$fieldName])) {
-            $overrideMapping['inherited'] = $this->fieldMappings[$fieldName]['inherited'];
         }
 
         unset($this->fieldMappings[$fieldName]);
