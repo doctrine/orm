@@ -2193,6 +2193,10 @@ class ClassMetadataInfo implements ClassMetadata
 
         $mapping = $this->associationMappings[$fieldName];
 
+        if (isset($fieldMappings[$fieldName]['inherited'])) {
+            throw MappingException::illegalOverrideOfInheritedProperty($this->name, $fieldName);
+        }
+
         if (isset($overrideMapping['joinColumns'])) {
             $mapping['joinColumns'] = $overrideMapping['joinColumns'];
         }
@@ -2252,7 +2256,7 @@ class ClassMetadataInfo implements ClassMetadata
         $mapping = $this->fieldMappings[$fieldName];
 
         if (isset($fieldMappings[$fieldName]['inherited'])) {
-            throw MappingException::illegalOverrideOfInheritedColumn($this->name, $fieldName);
+            throw MappingException::illegalOverrideOfInheritedProperty($this->name, $fieldName);
         }
 
         if (isset($mapping['id'])) {
