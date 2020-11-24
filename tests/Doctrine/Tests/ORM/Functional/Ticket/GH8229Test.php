@@ -23,8 +23,6 @@ class GH8229Test extends OrmFunctionalTestCase
             [
                 GH8229Resource::class,
                 GH8229User::class,
-                GH8229EntityWithoutDiscriminator::class,
-                EntityExtendingGH8229EntityWithoutDiscriminator::class,
             ]
         );
     }
@@ -185,19 +183,6 @@ class GH8229Test extends OrmFunctionalTestCase
 
         self::assertEquals($identifier, $entity->id);
     }
-
-    /** this test check alias generation not altered by inheritance in ResolvedTargetEntities mapped classes
-     */
-    public function testBasicEntityPersisterAliasGenerationWithSimpleInheritance()
-    {
-        $this->expectNotToPerformAssertions();
-
-        $entity = new EntityExtendingGH8229EntityWithoutDiscriminator();
-        $this->_em->persist($entity);
-        $this->_em->flush();
-
-        $this->_em->getRepository(EntityExtendingGH8229EntityWithoutDiscriminator::class)->findOneBy(['id' => $entity->getId()]);
-    }
 }
 
 
@@ -258,30 +243,4 @@ final class GH8229User extends GH8229Resource
 
         $this->username = $username;
     }
-}
-
-/**
- * @Entity
- * @Table(name="gh8229_replacedentity")
- */
-class GH8229EntityWithoutDiscriminator
-{
-    /**
-     * @Id
-     * @GeneratedValue
-     * @Column(type="integer")
-     */
-    public $id;
-
-    public function getId()
-    {
-        return $this->id;
-    }
-}
-
-/**
- * @Entity
- */
-final class EntityExtendingGH8229EntityWithoutDiscriminator extends GH8229EntityWithoutDiscriminator
-{
 }
