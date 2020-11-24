@@ -109,6 +109,8 @@ class DDC964User
 
     public static function loadMetadata(\Doctrine\ORM\Mapping\ClassMetadataInfo $metadata)
     {
+        $metadata->isMappedSuperclass = true;
+
         $metadata->mapField(
             [
            'id'         => true,

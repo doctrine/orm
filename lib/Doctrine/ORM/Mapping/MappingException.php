@@ -820,4 +820,16 @@ class MappingException extends \Doctrine\ORM\ORMException
             )
         );
     }
+
+    public static function illegalOverrideOfInheritedColumn($className, $propertyName)
+    {
+        return new self(
+            sprintf(
+                'Attribute Overrides in %s::%s is only allowed for attributes declared on ' .
+                'a mapped superclass.',
+                $className,
+                $propertyName
+            )
+        );
+    }
 }

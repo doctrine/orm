@@ -2251,6 +2251,10 @@ class ClassMetadataInfo implements ClassMetadata
 
         $mapping = $this->fieldMappings[$fieldName];
 
+        if (isset($fieldMappings[$fieldName]['inherited'])) {
+            throw MappingException::illegalOverrideOfInheritedColumn($this->name, $fieldName);
+        }
+
         if (isset($mapping['id'])) {
             $overrideMapping['id'] = $mapping['id'];
         }
