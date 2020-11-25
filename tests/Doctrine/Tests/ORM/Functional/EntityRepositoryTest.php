@@ -20,19 +20,22 @@ use Doctrine\Tests\Models\DDC753\DDC753EntityWithCustomRepository;
 use Doctrine\Tests\Models\DDC753\DDC753EntityWithDefaultCustomRepository;
 use Doctrine\Tests\Models\DDC753\DDC753InvalidRepository;
 use Doctrine\Tests\OrmFunctionalTestCase;
+use Doctrine\Tests\VerifyDeprecations;
 
 /**
  * @author robo
  */
 class EntityRepositoryTest extends OrmFunctionalTestCase
 {
-    protected function setUp()
+    use VerifyDeprecations;
+
+    protected function setUp() : void
     {
         $this->useModelSet('cms');
         parent::setUp();
     }
 
-    public function tearDown()
+    public function tearDown() : void
     {
         if ($this->_em) {
             $this->_em->getConfiguration()->setEntityNamespaces([]);
@@ -303,18 +306,14 @@ class EntityRepositoryTest extends OrmFunctionalTestCase
         $this->assertSame(2, $userCount);
     }
 
-    /**
-     * @expectedException \Doctrine\ORM\ORMException
-     */
     public function testExceptionIsThrownWhenCallingFindByWithoutParameter() {
+        $this->expectException('Doctrine\ORM\ORMException');
         $this->_em->getRepository(CmsUser::class)
                   ->findByStatus();
     }
 
-    /**
-     * @expectedException \Doctrine\ORM\ORMException
-     */
     public function testExceptionIsThrownWhenUsingInvalidFieldName() {
+        $this->expectException('Doctrine\ORM\ORMException');
         $this->_em->getRepository(CmsUser::class)
                   ->findByThisFieldDoesNotExist('testvalue');
     }
@@ -406,7 +405,7 @@ class EntityRepositoryTest extends OrmFunctionalTestCase
      */
     public function testFindByAssociationKey_ExceptionOnInverseSide()
     {
-        list($userId, $addressId) = $this->loadAssociatedFixture();
+        [$userId, $addressId] = $this->loadAssociatedFixture();
         $repos = $this->_em->getRepository(CmsUser::class);
 
         $this->expectException(ORMException::class);
@@ -420,7 +419,7 @@ class EntityRepositoryTest extends OrmFunctionalTestCase
      */
     public function testFindOneByAssociationKey()
     {
-        list($userId, $addressId) = $this->loadAssociatedFixture();
+        [$userId, $addressId] = $this->loadAssociatedFixture();
         $repos = $this->_em->getRepository(CmsAddress::class);
         $address = $repos->findOneBy(['user' => $userId]);
 
@@ -447,7 +446,7 @@ class EntityRepositoryTest extends OrmFunctionalTestCase
      */
     public function testFindByAssociationKey()
     {
-        list($userId, $addressId) = $this->loadAssociatedFixture();
+        [$userId, $addressId] = $this->loadAssociatedFixture();
         $repos = $this->_em->getRepository(CmsAddress::class);
         $addresses = $repos->findBy(['user' => $userId]);
 
@@ -461,7 +460,7 @@ class EntityRepositoryTest extends OrmFunctionalTestCase
      */
     public function testFindAssociationByMagicCall()
     {
-        list($userId, $addressId) = $this->loadAssociatedFixture();
+        [$userId, $addressId] = $this->loadAssociatedFixture();
         $repos = $this->_em->getRepository(CmsAddress::class);
         $addresses = $repos->findByUser($userId);
 
@@ -475,7 +474,7 @@ class EntityRepositoryTest extends OrmFunctionalTestCase
      */
     public function testFindOneAssociationByMagicCall()
     {
-        list($userId, $addressId) = $this->loadAssociatedFixture();
+        [$userId, $addressId] = $this->loadAssociatedFixture();
         $repos = $this->_em->getRepository(CmsAddress::class);
         $address = $repos->findOneByUser($userId);
 
@@ -642,11 +641,11 @@ class EntityRepositoryTest extends OrmFunctionalTestCase
 
     /**
      * @group DDC-753
-     * @expectedException Doctrine\ORM\ORMException
-     * @expectedExceptionMessage Invalid repository class 'Doctrine\Tests\Models\DDC753\DDC753InvalidRepository'. It must be a Doctrine\Common\Persistence\ObjectRepository.
      */
     public function testSetDefaultRepositoryInvalidClassError()
     {
+        $this->expectException('Doctrine\ORM\ORMException');
+        $this->expectExceptionMessage('Invalid repository class \'Doctrine\Tests\Models\DDC753\DDC753InvalidRepository\'. It must be a Doctrine\Persistence\ObjectRepository.');
         $this->assertEquals($this->_em->getConfiguration()->getDefaultRepositoryClassName(), EntityRepository::class);
         $this->_em->getConfiguration()->setDefaultRepositoryClassName(DDC753InvalidRepository::class);
     }
@@ -680,12 +679,11 @@ class EntityRepositoryTest extends OrmFunctionalTestCase
 
     /**
      * @group DDC-1376
-     *
-     * @expectedException Doctrine\ORM\ORMException
-     * @expectedExceptionMessage You cannot search for the association field 'Doctrine\Tests\Models\CMS\CmsUser#address', because it is the inverse side of an association.
      */
     public function testInvalidOrderByAssociation()
     {
+        $this->expectException('Doctrine\ORM\ORMException');
+        $this->expectExceptionMessage('You cannot search for the association field \'Doctrine\Tests\Models\CMS\CmsUser#address\', because it is the inverse side of an association.');
         $this->_em->getRepository(CmsUser::class)
             ->findBy(['status' => 'test'], ['address' => 'ASC']);
     }
@@ -853,7 +851,7 @@ class EntityRepositoryTest extends OrmFunctionalTestCase
      */
     public function testMatchingCriteriaAssocationByObjectInMemory()
     {
-        list($userId, $addressId) = $this->loadAssociatedFixture();
+        [$userId, $addressId] = $this->loadAssociatedFixture();
 
         $user = $this->_em->find(CmsUser::class, $userId);
 
@@ -876,7 +874,7 @@ class EntityRepositoryTest extends OrmFunctionalTestCase
      */
     public function testMatchingCriteriaAssocationInWithArray()
     {
-        list($userId, $addressId) = $this->loadAssociatedFixture();
+        [$userId, $addressId] = $this->loadAssociatedFixture();
 
         $user = $this->_em->find(CmsUser::class, $userId);
 
@@ -969,6 +967,7 @@ class EntityRepositoryTest extends OrmFunctionalTestCase
 
         $this->assertNull($usersIsNull[0]->getEmail());
         $this->assertNull($usersEqNull[0]->getEmail());
+        $this->assertHasDeprecationMessages();
     }
 
     /**

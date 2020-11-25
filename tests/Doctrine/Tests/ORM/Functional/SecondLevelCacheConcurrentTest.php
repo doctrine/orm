@@ -26,7 +26,7 @@ class SecondLevelCacheConcurrentTest extends SecondLevelCacheAbstractTest
 
     private $countryMetadata;
 
-    protected function setUp()
+    protected function setUp() : void
     {
         $this->enableSecondLevelCache();
         parent::setUp();
@@ -45,7 +45,7 @@ class SecondLevelCacheConcurrentTest extends SecondLevelCacheAbstractTest
         $this->_em->getMetadataFactory()->setMetadataFor(Country::class, $countryMetadata);
     }
 
-    protected function tearDown()
+    protected function tearDown() : void
     {
         parent::tearDown();
 

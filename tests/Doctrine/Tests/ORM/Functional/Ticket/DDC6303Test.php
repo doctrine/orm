@@ -4,6 +4,7 @@ declare(strict_types=1);
 namespace Doctrine\Tests\ORM\Functional\Ticket;
 
 use Doctrine\ORM\Tools\ToolsException;
+use Doctrine\Persistence\Mapping\MappingException;
 use Doctrine\Tests\OrmFunctionalTestCase;
 
 /**
@@ -11,7 +12,7 @@ use Doctrine\Tests\OrmFunctionalTestCase;
  */
 class DDC6303Test extends OrmFunctionalTestCase
 {
-    public function setUp() : void
+    protected function setUp() : void
     {
         parent::setUp();
 
@@ -49,7 +50,7 @@ class DDC6303Test extends OrmFunctionalTestCase
     /**
      * @param DDC6303BaseClass[] $persistedEntities indexed by identifier
      *
-     * @throws \Doctrine\Common\Persistence\Mapping\MappingException
+     * @throws MappingException
      * @throws \Doctrine\ORM\ORMException
      * @throws \Doctrine\ORM\OptimisticLockException
      */

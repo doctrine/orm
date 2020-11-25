@@ -13,7 +13,7 @@ class DDC2519Test extends \Doctrine\Tests\OrmFunctionalTestCase
 {
     private $userId;
 
-    public function setUp()
+    protected function setUp() : void
     {
         $this->useModelSet('legacy');
         parent::setUp();

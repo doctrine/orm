@@ -22,7 +22,7 @@ abstract class AbstractRegionTest extends OrmFunctionalTestCase
      */
     protected $cache;
 
-    protected function setUp()
+    protected function setUp() : void
     {
         parent::setUp();
 

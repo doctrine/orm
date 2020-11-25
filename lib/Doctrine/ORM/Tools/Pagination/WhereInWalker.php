@@ -19,19 +19,24 @@
 
 namespace Doctrine\ORM\Tools\Pagination;
 
+use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\Query\AST\ArithmeticExpression;
-use Doctrine\ORM\Query\AST\SimpleArithmeticExpression;
-use Doctrine\ORM\Query\TreeWalkerAdapter;
-use Doctrine\ORM\Query\AST\SelectStatement;
-use Doctrine\ORM\Query\AST\PathExpression;
-use Doctrine\ORM\Query\AST\InExpression;
-use Doctrine\ORM\Query\AST\NullComparisonExpression;
-use Doctrine\ORM\Query\AST\InputParameter;
-use Doctrine\ORM\Query\AST\ConditionalPrimary;
-use Doctrine\ORM\Query\AST\ConditionalTerm;
 use Doctrine\ORM\Query\AST\ConditionalExpression;
 use Doctrine\ORM\Query\AST\ConditionalFactor;
+use Doctrine\ORM\Query\AST\ConditionalPrimary;
+use Doctrine\ORM\Query\AST\ConditionalTerm;
+use Doctrine\ORM\Query\AST\InExpression;
+use Doctrine\ORM\Query\AST\InputParameter;
+use Doctrine\ORM\Query\AST\NullComparisonExpression;
+use Doctrine\ORM\Query\AST\PathExpression;
+use Doctrine\ORM\Query\AST\SelectStatement;
+use Doctrine\ORM\Query\AST\SimpleArithmeticExpression;
 use Doctrine\ORM\Query\AST\WhereClause;
+use Doctrine\ORM\Query\TreeWalkerAdapter;
+use Doctrine\ORM\Utility\PersisterHelper;
+use function array_map;
+use function assert;
+use function is_array;
 
 /**
  * Replaces the whereClause of the AST with a WHERE id IN (:foo_1, :foo_2) equivalent.
@@ -83,6 +88,7 @@ class WhereInWalker extends TreeWalkerAdapter
 
         $fromRoot            = reset($from);
         $rootAlias           = $fromRoot->rangeVariableDeclaration->aliasIdentificationVariable;
+        /** @var ClassMetadata $rootClass */
         $rootClass           = $queryComponents[$rootAlias]['metadata'];
         $identifierFieldName = $rootClass->getSingleIdentifierFieldName();
 
@@ -104,6 +110,14 @@ class WhereInWalker extends TreeWalkerAdapter
             $expression = new InExpression($arithmeticExpression);
             $expression->literals[] = new InputParameter(":" . self::PAGINATOR_ID_ALIAS);
 
+            $this->convertWhereInIdentifiersToDatabaseValue(
+                PersisterHelper::getTypeOfField(
+                    $identifierFieldName,
+                    $rootClass,
+                    $this->_getQuery()
+                        ->getEntityManager()
+                )[0]
+            );
         } else {
             $expression = new NullComparisonExpression($pathExpression);
             $expression->not = false;
@@ -146,5 +160,25 @@ class WhereInWalker extends TreeWalkerAdapter
                 )
             );
         }
+    }
+
+    private function convertWhereInIdentifiersToDatabaseValue(string $type) : void
+    {
+        $query                = $this->_getQuery();
+        $identifiersParameter = $query->getParameter(self::PAGINATOR_ID_ALIAS);
+
+        assert($identifiersParameter !== null);
+
+        $identifiers = $identifiersParameter->getValue();
+
+        assert(is_array($identifiers));
+
+        $connection = $this->_getQuery()
+            ->getEntityManager()
+            ->getConnection();
+
+        $query->setParameter(self::PAGINATOR_ID_ALIAS, array_map(static function ($id) use ($connection, $type) {
+            return $connection->convertToDatabaseValue($id, $type);
+        }, $identifiers));
     }
 }

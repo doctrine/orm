@@ -2,7 +2,6 @@
 
 namespace Doctrine\Tests\ORM\Mapping;
 
-use Doctrine\Common\Persistence\Mapping\RuntimeReflectionService;
 use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\Events;
 use Doctrine\ORM\Mapping\ClassMetadata;
@@ -13,7 +12,9 @@ use Doctrine\ORM\Mapping\DiscriminatorColumn;
 use Doctrine\ORM\Mapping\Id;
 use Doctrine\ORM\Mapping\MappingException;
 use Doctrine\ORM\Mapping\UnderscoreNamingStrategy;
+use Doctrine\Persistence\Mapping\RuntimeReflectionService;
 use Doctrine\Tests\Models\Cache\City;
+use Doctrine\Tests\Models\CaseSensitiveDiscriminatorMap;
 use Doctrine\Tests\Models\CMS\CmsAddress;
 use Doctrine\Tests\Models\CMS\CmsAddressListener;
 use Doctrine\Tests\Models\CMS\CmsUser;
@@ -37,6 +38,7 @@ use Doctrine\Tests\Models\DDC889\DDC889Entity;
 use Doctrine\Tests\Models\DDC964\DDC964Admin;
 use Doctrine\Tests\Models\DDC964\DDC964Guest;
 use Doctrine\Tests\OrmTestCase;
+use function class_exists;
 
 abstract class AbstractMappingDriverTest extends OrmTestCase
 {
@@ -147,7 +149,7 @@ abstract class AbstractMappingDriverTest extends OrmTestCase
      */
     public function testEntitySequence($class)
     {
-        $this->assertInternalType('array', $class->sequenceGeneratorDefinition, 'No Sequence Definition set on this driver.');
+        $this->assertIsArray($class->sequenceGeneratorDefinition, 'No Sequence Definition set on this driver.');
         $this->assertEquals(
             [
                 'sequenceName' => 'tablename_seq',
@@ -273,10 +275,10 @@ abstract class AbstractMappingDriverTest extends OrmTestCase
     {
         $class = $this->createClassMetadata(User::class);
 
-        $this->assertInternalType('bool', $class->fieldMappings['id']['options']['unsigned']);
+        $this->assertIsBool($class->fieldMappings['id']['options']['unsigned']);
         $this->assertFalse($class->fieldMappings['id']['options']['unsigned']);
 
-        $this->assertInternalType('bool', $class->fieldMappings['name']['options']['fixed']);
+        $this->assertIsBool($class->fieldMappings['name']['options']['fixed']);
         $this->assertFalse($class->fieldMappings['name']['options']['fixed']);
 
         return $class;
@@ -1078,7 +1080,6 @@ abstract class AbstractMappingDriverTest extends OrmTestCase
         $class = $this->createClassMetadata(SingleTableEntityIncompleteDiscriminatorColumnMapping::class);
         $this->assertEquals('dtype', $class->discriminatorColumn['name']);
     }
-
 }
 
 /**
@@ -1343,7 +1344,6 @@ class Dog extends Animal
 
     }
 }
-
 
 /**
  * @Entity

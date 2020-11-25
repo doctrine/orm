@@ -16,7 +16,7 @@ use Doctrine\DBAL\Types\Type as DBALType;
  */
 class SchemaValidatorTest extends OrmFunctionalTestCase
 {
-    protected function setUp()
+    protected function setUp() : void
     {
         $this->registerType(CustomIdObjectType::class);
         $this->registerType(UpperCaseStringType::class);

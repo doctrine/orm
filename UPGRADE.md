@@ -1,3 +1,145 @@
+# Upgrade to 2.7
+
+## Added `Doctrine\ORM\AbstractQuery#enableResultCache()` and `Doctrine\ORM\AbstractQuery#disableResultCache()` methods	
+
+Method `Doctrine\ORM\AbstractQuery#useResultCache()` which could be used for both enabling and disabling the cache
+(depending on passed flag) was split into two.	
+
+## Minor BC BREAK: paginator output walkers aren't be called anymore on sub-queries for queries without max results  
+
+To optimize DB interaction, `Doctrine\ORM\Tools\Pagination\Paginator` no longer fetches identifiers to be able to
+perform the pagination with join collections when max results isn't set in the query.
+
+## Minor BC BREAK: tables filtered with `schema_filter` are no longer created
+
+When generating schema diffs, if a source table is filtered out by a `schema_filter` expression, then a `CREATE TABLE` was
+always generated, even if the table already existed. This has been changed in this release and the table will no longer
+be created.
+
+## Deprecated number unaware `Doctrine\ORM\Mapping\UnderscoreNamingStrategy`
+
+In the last patch of the `v2.6.x` series, we fixed a bug that was not converting names properly when they had numbers
+(e.g.: `base64Encoded` was wrongly converted to `base64encoded` instead of `base64_encoded`).
+
+In order to not break BC we've introduced a way to enable the fixed behavior using a boolean constructor argument. This
+argument will be removed in 3.0 and the default behavior will be the fixed one.
+
+## Deprecated: `Doctrine\ORM\AbstractQuery#useResultCache()`	
+
+Method `Doctrine\ORM\AbstractQuery#useResultCache()` is deprecated because it is split into `enableResultCache()`
+and `disableResultCache()`. It will be removed in 3.0.
+
+## Deprecated code generators and related console commands
+ 
+These console commands have been deprecated:
+
+ * `orm:convert-mapping`
+ * `orm:generate:entities`
+ * `orm:generate-repositories`
+
+These classes have been deprecated:
+
+ * `Doctrine\ORM\Tools\EntityGenerator`
+ * `Doctrine\ORM\Tools\EntityRepositoryGenerator`
+
+Whole Doctrine\ORM\Tools\Export namespace with all its members have been deprecated as well.
+
+## Deprecated `Doctrine\ORM\Proxy\Proxy` marker interface
+
+Proxy objects in Doctrine ORM 3.0 will no longer implement `Doctrine\ORM\Proxy\Proxy` nor
+`Doctrine\Persistence\Proxy`: instead, they implement
+`ProxyManager\Proxy\GhostObjectInterface`.
+
+These related classes have been deprecated:
+
+ * `Doctrine\ORM\Proxy\ProxyFactory`
+ * `Doctrine\ORM\Proxy\Autoloader` - we suggest using the composer autoloader instead
+ 
+These methods have been deprecated:
+
+ * `Doctrine\ORM\Configuration#getAutoGenerateProxyClasses()`
+ * `Doctrine\ORM\Configuration#getProxyDir()`
+ * `Doctrine\ORM\Configuration#getProxyNamespace()`
+
+## Deprecated `Doctrine\ORM\Version`
+
+The `Doctrine\ORM\Version` class is now deprecated and will be removed in Doctrine ORM 3.0:
+please refrain from checking the ORM version at runtime or use
+[ocramius/package-versions](https://github.com/Ocramius/PackageVersions/).
+
+## Deprecated `EntityManager#merge()` and `EntityManager#detach()` methods
+
+Merge and detach semantics were a poor fit for the PHP "share-nothing" architecture.
+In addition to that, merging/detaching caused multiple issues with data integrity
+in the managed entity graph, which was constantly spawning more edge-case bugs/scenarios.
+
+The following API methods were therefore deprecated:
+
+* `EntityManager#merge()`
+* `EntityManager#detach()`
+* `UnitOfWork#merge()`
+* `UnitOfWork#detach()`
+
+Users are encouraged to migrate `EntityManager#detach()` calls to `EntityManager#clear()`.
+
+In order to maintain performance on batch processing jobs, it is endorsed to enable
+the second level cache (http://docs.doctrine-project.org/projects/doctrine-orm/en/latest/reference/second-level-cache.html)
+on entities that are frequently reused across multiple `EntityManager#clear()` calls.
+
+An alternative to `EntityManager#merge()` will not be provided by ORM 3.0, since the merging
+semantics should be part of the business domain rather than the persistence domain of an
+application. If your application relies heavily on CRUD-alike interactions and/or `PATCH`
+restful operations, you should look at alternatives such as [JMSSerializer](https://github.com/schmittjoh/serializer).
+
+## Extending `EntityManager` is deprecated
+
+Final keyword will be added to the `EntityManager::class` in Doctrine ORM 3.0 in order to ensure that EntityManager
+ is not used as valid extension point. Valid extension point should be EntityManagerInterface.
+
+## Deprecated `EntityManager#clear($entityName)`
+
+If your code relies on clearing a single entity type via `EntityManager#clear($entityName)`,
+the signature has been changed to `EntityManager#clear()`.
+
+The main reason is that partial clears caused multiple issues with data integrity
+in the managed entity graph, which was constantly spawning more edge-case bugs/scenarios.
+
+## Deprecated `EntityManager#flush($entity)` and `EntityManager#flush($entities)`
+
+If your code relies on single entity flushing optimisations via
+`EntityManager#flush($entity)`, the signature has been changed to
+`EntityManager#flush()`.
+
+Said API was affected by multiple data integrity bugs due to the fact
+that change tracking was being restricted upon a subset of the managed
+entities. The ORM cannot support committing subsets of the managed 
+entities while also guaranteeing data integrity, therefore this
+utility was removed.
+
+The `flush()` semantics will remain the same, but the change tracking will be performed
+on all entities managed by the unit of work, and not just on the provided
+`$entity` or `$entities`, as the parameter is now completely ignored.
+
+The same applies to `UnitOfWork#commit($entity)`, which will simply be
+`UnitOfWork#commit()`.
+
+If you would still like to perform batching operations over small `UnitOfWork`
+instances, it is suggested to follow these paths instead:
+
+ * eagerly use `EntityManager#clear()` in conjunction with a specific second level
+   cache configuration (see http://docs.doctrine-project.org/projects/doctrine-orm/en/latest/reference/second-level-cache.html)
+ * use an explicit change tracking policy (see http://docs.doctrine-project.org/projects/doctrine-orm/en/latest/reference/change-tracking-policies.html)
+
+## Deprecated `YAML` mapping drivers.
+
+If your code relies on `YamlDriver`  or `SimpleYamlDriver`, you **MUST** change to
+annotation or XML drivers instead.
+
+## Deprecated: `Doctrine\ORM\EntityManagerInterface#copy()`
+
+Method `Doctrine\ORM\EntityManagerInterface#copy()` never got its implementation and is deprecated.
+It will be removed in 3.0.
+
 # Upgrade to 2.6
 
 ## Added `Doctrine\ORM\EntityRepository::count()` method
@@ -297,17 +439,17 @@ above you must implement these new methods.
 
 ## Metadata Drivers
 
-Metadata drivers have been rewritten to reuse code from Doctrine\Common. Anyone who is using the
+Metadata drivers have been rewritten to reuse code from `Doctrine\Persistence`. Anyone who is using the
 `Doctrine\ORM\Mapping\Driver\Driver` interface should instead refer to
-`Doctrine\Common\Persistence\Mapping\Driver\MappingDriver`. Same applies to
+`Doctrine\Persistence\Mapping\Driver\MappingDriver`. Same applies to
 `Doctrine\ORM\Mapping\Driver\AbstractFileDriver`: you should now refer to
-`Doctrine\Common\Persistence\Mapping\Driver\FileDriver`.
+`Doctrine\Persistence\Mapping\Driver\FileDriver`.
 
 Also, following mapping drivers have been deprecated, please use their replacements in Doctrine\Common as listed:
 
- *  `Doctrine\ORM\Mapping\Driver\DriverChain`       => `Doctrine\Common\Persistence\Mapping\Driver\MappingDriverChain`
- *  `Doctrine\ORM\Mapping\Driver\PHPDriver`         => `Doctrine\Common\Persistence\Mapping\Driver\PHPDriver`
- *  `Doctrine\ORM\Mapping\Driver\StaticPHPDriver`   => `Doctrine\Common\Persistence\Mapping\Driver\StaticPHPDriver`
+ *  `Doctrine\ORM\Mapping\Driver\DriverChain`       => `Doctrine\Persistence\Mapping\Driver\MappingDriverChain`
+ *  `Doctrine\ORM\Mapping\Driver\PHPDriver`         => `Doctrine\Persistence\Mapping\Driver\PHPDriver`
+ *  `Doctrine\ORM\Mapping\Driver\StaticPHPDriver`   => `Doctrine\Persistence\Mapping\Driver\StaticPHPDriver`
 
 # Upgrade to 2.2
 
@@ -396,7 +538,7 @@ Previously EntityManager#find(null) returned null. It now throws an exception.
 
 ## Interface for EntityRepository
 
-The EntityRepository now has an interface Doctrine\Common\Persistence\ObjectRepository. This means that your classes that override EntityRepository and extend find(), findOneBy() or findBy() must be adjusted to follow this interface.
+The EntityRepository now has an interface Doctrine\Persistence\ObjectRepository. This means that your classes that override EntityRepository and extend find(), findOneBy() or findBy() must be adjusted to follow this interface.
 
 ## AnnotationReader changes
 

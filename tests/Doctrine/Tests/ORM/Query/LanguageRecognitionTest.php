@@ -15,7 +15,7 @@ class LanguageRecognitionTest extends OrmTestCase
      */
     private $_em;
 
-    protected function setUp()
+    protected function setUp() : void
     {
         $this->_em = $this->_getTestEntityManager();
     }
@@ -134,6 +134,8 @@ class LanguageRecognitionTest extends OrmTestCase
             ['SELECT \'foo\' AS foo\\\\bar FROM Doctrine\Tests\Models\CMS\CmsUser u'],
             ['SELECT \'foo\' AS foo: FROM Doctrine\Tests\Models\CMS\CmsUser u'],
             ['SELECT \'foo\' AS foo:bar FROM Doctrine\Tests\Models\CMS\CmsUser u'],
+
+            ['0'],
         ];
     }
 

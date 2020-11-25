@@ -8,7 +8,7 @@ use Doctrine\Tests\OrmFunctionalTestCase;
  */
 final class GH6217Test extends OrmFunctionalTestCase
 {
-    public function setUp() : void
+    protected function setUp() : void
     {
         $this->enableSecondLevelCache();
 

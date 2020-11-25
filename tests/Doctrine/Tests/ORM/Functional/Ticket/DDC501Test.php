@@ -5,6 +5,7 @@ use Doctrine\Tests\OrmFunctionalTestCase;
 use Doctrine\Tests\Models\CMS\CmsUser;
 use Doctrine\Tests\Models\CMS\CmsGroup;
 use Doctrine\Tests\Models\CMS\CmsPhonenumber;
+use Doctrine\Tests\VerifyDeprecations;
 
 /**
  * ----------------- !! NOTE !! --------------------
@@ -19,7 +20,9 @@ use Doctrine\Tests\Models\CMS\CmsPhonenumber;
  */
 class DDC501Test extends OrmFunctionalTestCase
 {
-    protected function setUp()
+    use VerifyDeprecations;
+
+    protected function setUp() : void
     {
         $this->useModelSet('cms');
         parent::setUp();
@@ -80,6 +83,7 @@ class DDC501Test extends OrmFunctionalTestCase
         // This works fine as long as cmUser::groups doesn't cascade "merge"
         // Otherwise group memberships are physically deleted now!
         $this->assertEquals(2, count($userClone->getGroups()));
+        $this->assertHasDeprecationMessages();
     }
 
     protected function createAndPersistUser()

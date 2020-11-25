@@ -4,6 +4,7 @@ namespace Doctrine\Tests\ORM\Hydration;
 
 use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\Query\ResultSetMapping;
+use Doctrine\Persistence\Mapping\RuntimeReflectionService;
 use Doctrine\Tests\Models\CMS\CmsEmail;
 use Doctrine\Tests\Models\CMS\CmsPhonenumber;
 use Doctrine\Tests\Models\CMS\CmsUser;
@@ -27,7 +28,8 @@ class ResultSetMappingTest extends \Doctrine\Tests\OrmTestCase
      */
     private $_em;
 
-    protected function setUp() {
+    protected function setUp() : void
+    {
         parent::setUp();
         $this->_rsm = new ResultSetMapping;
         $this->_em = $this->_getTestEntityManager();
@@ -102,7 +104,7 @@ class ResultSetMappingTest extends \Doctrine\Tests\OrmTestCase
     public function testAddNamedNativeQueryResultSetMapping()
     {
         $cm = new ClassMetadata(CmsUser::class);
-        $cm->initializeReflection(new \Doctrine\Common\Persistence\Mapping\RuntimeReflectionService);
+        $cm->initializeReflection(new RuntimeReflectionService());
 
         $cm->mapOneToOne(
             [
@@ -194,7 +196,7 @@ class ResultSetMappingTest extends \Doctrine\Tests\OrmTestCase
     public function testAddNamedNativeQueryResultSetMappingWithoutFields()
     {
         $cm = new ClassMetadata(CmsUser::class);
-        $cm->initializeReflection(new \Doctrine\Common\Persistence\Mapping\RuntimeReflectionService);
+        $cm->initializeReflection(new RuntimeReflectionService());
 
         $cm->addNamedNativeQuery(
             [
@@ -244,7 +246,7 @@ class ResultSetMappingTest extends \Doctrine\Tests\OrmTestCase
     {
         $cm = new ClassMetadata(CmsUser::class);
 
-        $cm->initializeReflection(new \Doctrine\Common\Persistence\Mapping\RuntimeReflectionService);
+        $cm->initializeReflection(new RuntimeReflectionService());
 
         $cm->addNamedNativeQuery(
             [
@@ -269,6 +271,7 @@ class ResultSetMappingTest extends \Doctrine\Tests\OrmTestCase
         $this->assertEquals(CmsUser::class, $rsm->getDeclaringClass('status'));
         $this->assertEquals(CmsUser::class, $rsm->getDeclaringClass('username'));
     }
+
     /**
      * @group DDC-117
      */

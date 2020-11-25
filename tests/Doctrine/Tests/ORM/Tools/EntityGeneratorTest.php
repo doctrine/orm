@@ -4,17 +4,20 @@ namespace Doctrine\Tests\ORM\Tools;
 
 use Doctrine\Common\Annotations\AnnotationReader;
 use Doctrine\Common\Collections\ArrayCollection;
-use Doctrine\Common\Persistence\Mapping\RuntimeReflectionService;
 use Doctrine\ORM\Mapping\ClassMetadataFactory;
 use Doctrine\ORM\Mapping\ClassMetadataInfo;
 use Doctrine\ORM\Mapping\Driver\AnnotationDriver;
 use Doctrine\ORM\Tools\EntityGenerator;
+use Doctrine\Persistence\Mapping\RuntimeReflectionService;
 use Doctrine\Tests\Models\DDC2372\DDC2372Admin;
 use Doctrine\Tests\Models\DDC2372\DDC2372User;
 use Doctrine\Tests\OrmTestCase;
+use Doctrine\Tests\VerifyDeprecations;
+use ReflectionClass;
 
 class EntityGeneratorTest extends OrmTestCase
 {
+    use VerifyDeprecations;
 
     /**
      * @var EntityGenerator
@@ -23,7 +26,7 @@ class EntityGeneratorTest extends OrmTestCase
     private $_tmpDir;
     private $_namespace;
 
-    public function setUp()
+    protected function setUp() : void
     {
         $this->_namespace = uniqid("doctrine_");
         $this->_tmpDir = \sys_get_temp_dir();
@@ -37,7 +40,7 @@ class EntityGeneratorTest extends OrmTestCase
         $this->_generator->setFieldVisibility(EntityGenerator::FIELD_VISIBLE_PROTECTED);
     }
 
-    public function tearDown()
+    public function tearDown() : void
     {
         $ri = new \RecursiveIteratorIterator(new \RecursiveDirectoryIterator($this->_tmpDir . '/' . $this->_namespace));
         foreach ($ri AS $file) {
@@ -47,6 +50,12 @@ class EntityGeneratorTest extends OrmTestCase
             }
         }
         rmdir($this->_tmpDir . '/' . $this->_namespace);
+    }
+
+    /** @after */
+    public function ensureTestGeneratedDeprecationMessages() : void
+    {
+        $this->assertHasDeprecationMessages();
     }
 
     /**
@@ -238,7 +247,7 @@ class EntityGeneratorTest extends OrmTestCase
 
         $docComment = $refClass->getProperty('testEmbedded')->getDocComment();
         $needle = sprintf('@Embedded(class="%s", columnPrefix="%s")', $testMetadata->name, $columnPrefix);
-        self::assertContains($needle, $docComment);
+        self::assertStringContainsString($needle, $docComment);
     }
 
     /**
@@ -254,7 +263,7 @@ class EntityGeneratorTest extends OrmTestCase
 
         $docComment = $refClass->getProperty('testEmbedded')->getDocComment();
         $needle = sprintf('@Embedded(class="%s", columnPrefix=false)', $testMetadata->name);
-        self::assertContains($needle, $docComment);
+        self::assertStringContainsString($needle, $docComment);
     }
 
     public function testGeneratedEntityClass()
@@ -305,7 +314,7 @@ class EntityGeneratorTest extends OrmTestCase
         $this->assertInstanceOf($metadata->name, $book->addComment($comment));
         $this->assertInstanceOf(ArrayCollection::class, $book->getComments());
         $this->assertEquals(new ArrayCollection([$comment]), $book->getComments());
-        $this->assertInternalType('boolean', $book->removeComment($comment));
+        $this->assertIsBool($book->removeComment($comment));
         $this->assertEquals(new ArrayCollection([]), $book->getComments());
 
         $this->newInstance($isbnMetadata);
@@ -317,6 +326,25 @@ class EntityGeneratorTest extends OrmTestCase
         $reflMethod = new \ReflectionMethod($metadata->name, 'setIsbn');
         $reflParameters = $reflMethod->getParameters();
         $this->assertEquals($isbnMetadata->name, $reflParameters[0]->getClass()->name);
+    }
+
+    public function testBooleanDefaultValue()
+    {
+        $metadata = $this->generateBookEntityFixture(['isbn' => $this->generateIsbnEmbeddableFixture()]);
+
+        $metadata->mapField(['fieldName' => 'foo', 'type' => 'boolean', 'options' => ['default' => '1']]);
+
+        $testEmbeddableMetadata = $this->generateTestEmbeddableFixture();
+        $this->mapEmbedded('testEmbedded', $metadata, $testEmbeddableMetadata);
+
+        $this->_generator->writeEntityClass($metadata, $this->_tmpDir);
+
+        $this->assertFileExists($this->_tmpDir . '/' . $this->_namespace . '/EntityGeneratorBook.php~');
+
+        $book      = $this->newInstance($metadata);
+        $reflClass = new ReflectionClass($metadata->name);
+
+        $this->assertTrue($book->getfoo());
     }
 
     public function testEntityUpdatingWorks()
@@ -581,10 +609,13 @@ class EntityGeneratorTest extends OrmTestCase
         $reflection = new \ReflectionProperty($metadata->name, 'id');
         $docComment = $reflection->getDocComment();
 
-        $this->assertContains('@Id', $docComment);
-        $this->assertContains('@Column(name="id", type="integer")', $docComment);
-        $this->assertContains('@GeneratedValue(strategy="SEQUENCE")', $docComment);
-        $this->assertContains('@SequenceGenerator(sequenceName="DDC1784_ID_SEQ", allocationSize=1, initialValue=2)', $docComment);
+        $this->assertStringContainsString('@Id', $docComment);
+        $this->assertStringContainsString('@Column(name="id", type="integer")', $docComment);
+        $this->assertStringContainsString('@GeneratedValue(strategy="SEQUENCE")', $docComment);
+        $this->assertStringContainsString(
+            '@SequenceGenerator(sequenceName="DDC1784_ID_SEQ", allocationSize=1, initialValue=2)',
+            $docComment
+        );
     }
 
     /**
@@ -625,11 +656,23 @@ class EntityGeneratorTest extends OrmTestCase
         $docComment = $property->getDocComment();
 
         //joinColumns
-        $this->assertContains('@JoinColumn(name="idorcamento", referencedColumnName="idorcamento"),', $docComment);
-        $this->assertContains('@JoinColumn(name="idunidade", referencedColumnName="idunidade")', $docComment);
+        $this->assertStringContainsString(
+            '@JoinColumn(name="idorcamento", referencedColumnName="idorcamento"),',
+            $docComment
+        );
+        $this->assertStringContainsString(
+            '@JoinColumn(name="idunidade", referencedColumnName="idunidade")',
+            $docComment
+        );
         //inverseJoinColumns
-        $this->assertContains('@JoinColumn(name="idcentrocusto", referencedColumnName="idcentrocusto"),', $docComment);
-        $this->assertContains('@JoinColumn(name="idpais", referencedColumnName="idpais")', $docComment);
+        $this->assertStringContainsString(
+            '@JoinColumn(name="idcentrocusto", referencedColumnName="idcentrocusto"),',
+            $docComment
+        );
+        $this->assertStringContainsString(
+            '@JoinColumn(name="idpais", referencedColumnName="idpais")',
+            $docComment
+        );
 
     }
 
@@ -1205,7 +1248,7 @@ class
         $property   = new \ReflectionProperty($metadata->name, 'test');
         $docComment = $property->getDocComment();
 
-        self::assertContains($expectedAnnotation, $docComment);
+        self::assertStringContainsString($expectedAnnotation, $docComment);
     }
 
     public function columnOptionsProvider() : array
@@ -1222,6 +1265,10 @@ class
             'string-comment'   => [
                 '@Column(name="test", type="string", length=10, options={"comment"="testing"})',
                 ['type' => 'string', 'length' => 10, 'options' => ['comment' => 'testing']],
+            ],
+            'string-comment-quote'   => [
+                '@Column(name="test", type="string", length=10, options={"comment"="testing ""quotes"""})',
+                ['type' => 'string', 'length' => 10, 'options' => ['comment' => 'testing "quotes"']],
             ],
             'string-collation' => [
                 '@Column(name="test", type="string", length=10, options={"collation"="utf8mb4_general_ci"})',

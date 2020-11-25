@@ -3,13 +3,16 @@
 namespace Doctrine\Tests\ORM\Functional\Ticket;
 
 use Doctrine\Tests\Models\CMS\CmsUser;
+use Doctrine\Tests\VerifyDeprecations;
 
 /**
  * @group DDC-1594
  */
 class DDC1594Test extends \Doctrine\Tests\OrmFunctionalTestCase
 {
-    public function setUp()
+    use VerifyDeprecations;
+
+    protected function setUp() : void
     {
         $this->useModelSet('cms');
         parent::setUp();
@@ -37,5 +40,6 @@ class DDC1594Test extends \Doctrine\Tests\OrmFunctionalTestCase
         $this->assertNotSame($mergedUser, $detachedUser);
         $this->assertEquals('bar', $detachedUser->getName());
         $this->assertEquals('bar', $mergedUser->getName());
+        $this->assertHasDeprecationMessages();
     }
 }

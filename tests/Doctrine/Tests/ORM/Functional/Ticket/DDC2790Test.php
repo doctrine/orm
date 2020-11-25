@@ -14,7 +14,7 @@ class DDC2790Test extends \Doctrine\Tests\OrmFunctionalTestCase
     /**
      * {@inheritDoc}
      */
-    protected function setUp()
+    protected function setUp() : void
     {
         $this->useModelSet('cms');
         parent::setUp();
@@ -45,7 +45,7 @@ class DDC2790Test extends \Doctrine\Tests\OrmFunctionalTestCase
         // (and consequently also triggers preUpdate/postUpdate for the entity in question)
         $entity->name = 'Robin';
 
-        $this->_em->flush($entity);
+        $this->_em->flush();
 
         $qb = $this->_em->createQueryBuilder();
         $qb->from(get_class($entity), 'c');

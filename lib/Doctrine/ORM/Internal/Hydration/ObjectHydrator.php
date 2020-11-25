@@ -422,7 +422,7 @@ class ObjectHydrator extends AbstractHydrator
                             $this->resultPointers[$dqlAlias] = $reflFieldValue[$index];
                         }
                     } else if ( ! $reflFieldValue) {
-                        $reflFieldValue = $this->initRelatedCollection($parentObject, $parentClass, $relationField, $parentAlias);
+                        $this->initRelatedCollection($parentObject, $parentClass, $relationField, $parentAlias);
                     } else if ($reflFieldValue instanceof PersistentCollection && $reflFieldValue->isInitialized() === false) {
                         $reflFieldValue->setInitialized(true);
                     }

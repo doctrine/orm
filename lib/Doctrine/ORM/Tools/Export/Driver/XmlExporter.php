@@ -28,6 +28,8 @@ use SimpleXMLElement;
  * @link    www.doctrine-project.org
  * @since   2.0
  * @author  Jonathan Wage <jonwage@gmail.com>
+ *
+ * @deprecated 2.7 This class is being removed from the ORM and won't have any replacement
  */
 class XmlExporter extends AbstractExporter
 {
@@ -201,7 +203,7 @@ class XmlExporter extends AbstractExporter
                 }
 
                 if (isset($field['unique']) && $field['unique']) {
-                    $fieldXml->addAttribute('unique', $field['unique'] ? 'true' : 'false');
+                    $fieldXml->addAttribute('unique', 'true');
                 }
 
                 if (isset($field['options'])) {

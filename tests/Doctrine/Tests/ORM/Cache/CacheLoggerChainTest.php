@@ -25,7 +25,7 @@ class CacheLoggerChainTest extends DoctrineTestCase
      */
     private $mock;
 
-    protected function setUp()
+    protected function setUp() : void
     {
         parent::setUp();
 

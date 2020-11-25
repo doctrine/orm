@@ -72,7 +72,7 @@ requirements:
 -  Bug reporters and engineers are both Users of the system.
 -  A User can create new Bugs.
 -  The assigned engineer can close a Bug.
--  A User can see all his reported or assigned Bugs.
+-  A User can see all their reported or assigned Bugs.
 -  Bugs can be paginated through a list-view.
 
 Project Setup
@@ -138,7 +138,10 @@ step:
     
     // Create a simple "default" Doctrine ORM configuration for Annotations
     $isDevMode = true;
-    $config = Setup::createAnnotationMetadataConfiguration(array(__DIR__."/src"), $isDevMode);
+    $proxyDir = null;
+    $cache = null;
+    $useSimpleAnnotationReader = false;
+    $config = Setup::createAnnotationMetadataConfiguration(array(__DIR__."/src"), $isDevMode, $proxyDir, $cache, $useSimpleAnnotationReader);
     // or if you prefer yaml or XML
     //$config = Setup::createXMLMetadataConfiguration(array(__DIR__."/config/xml"), $isDevMode);
     //$config = Setup::createYAMLMetadataConfiguration(array(__DIR__."/config/yaml"), $isDevMode);
@@ -155,6 +158,10 @@ step:
 .. note::
     The YAML driver is deprecated and will be removed in version 3.0.
     It is strongly recommended to switch to one of the other mappings.
+
+.. note::
+    It is recommended not to use the SimpleAnnotationReader because its
+    usage will be removed for version 3.0.
 
 The ``require_once`` statement sets up the class autoloading for Doctrine and
 its dependencies using Composer's autoloader.
@@ -283,14 +290,24 @@ but you only need to choose one.
 
         <?php
         // src/Product.php
+
+        use Doctrine\ORM\Mapping as ORM;
+
         /**
-         * @Entity @Table(name="products")
-         **/
+         * @ORM\Entity
+         * @ORM\Table(name="products")
+         */
         class Product
         {
-            /** @Id @Column(type="integer") @GeneratedValue **/
+            /** 
+             * @ORM\Id
+             * @ORM\Column(type="integer")
+             * @ORM\GeneratedValue
+             */
             protected $id;
-            /** @Column(type="string") **/
+            /** 
+             * @ORM\Column(type="string") 
+             */
             protected $name;
 
             // .. (other code)
@@ -467,28 +484,36 @@ classes. We'll store them in ``src/Bug.php`` and ``src/User.php``, respectively.
 
     <?php
     // src/Bug.php
+
+    use Doctrine\ORM\Mapping as ORM;
+
     /**
-     * @Entity(repositoryClass="BugRepository") @Table(name="bugs")
+     * @ORM\Table(name="bugs")
      */
     class Bug
     {
         /**
-         * @Id @Column(type="integer") @GeneratedValue
+         * @ORM\Id
+         * @ORM\Column(type="integer")
+         * @ORM\GeneratedValue
          * @var int
          */
         protected $id;
+
         /**
-         * @Column(type="string")
+         * @ORM\Column(type="string")
          * @var string
          */
         protected $description;
+
         /**
-         * @Column(type="datetime")
+         * @ORM\Column(type="datetime")
          * @var DateTime
          */
         protected $created;
+
         /**
-         * @Column(type="string")
+         * @ORM\Column(type="string")
          * @var string
          */
         protected $status;
@@ -533,18 +558,25 @@ classes. We'll store them in ``src/Bug.php`` and ``src/User.php``, respectively.
 
     <?php
     // src/User.php
+
+    use Doctrine\ORM\Mapping as ORM;
+
     /**
-     * @Entity @Table(name="users")
+     * @ORM\Entity 
+     * @ORM\Table(name="users")
      */
     class User
     {
         /**
-         * @Id @GeneratedValue @Column(type="integer")
+         * @ORM\Id
+         * @ORM\GeneratedValue
+         * @ORM\Column(type="integer")
          * @var int
          */
         protected $id;
+
         /**
-         * @Column(type="string")
+         * @ORM\Column(type="string")
          * @var string
          */
         protected $name;
@@ -774,7 +806,7 @@ the database that points from Bugs to Products.
     {
         // ... (previous code)
 
-        protected $products = null;
+        protected $products;
 
         public function assignToProduct(Product $product)
         {
@@ -796,41 +828,50 @@ the ``Product`` before:
 
         <?php
         // src/Bug.php
+
+        use Doctrine\ORM\Mapping as ORM;
+
         /**
-         * @Entity @Table(name="bugs")
-         **/
+         * @ORM\Entity 
+         * @ORM\Table(name="bugs")
+         */
         class Bug
         {
             /**
-             * @Id @Column(type="integer") @GeneratedValue
-             **/
+             * @ORM\Id 
+             * @ORM\Column(type="integer") 
+             * @ORM\GeneratedValue
+             */
             protected $id;
+
             /**
-             * @Column(type="string")
-             **/
+             * @ORM\Column(type="string")
+             */
             protected $description;
+
             /**
-             * @Column(type="datetime")
-             **/
+             * @ORM\Column(type="datetime")
+             */
             protected $created;
+
             /**
-             * @Column(type="string")
-             **/
+             * @ORM\Column(type="string")
+             */
             protected $status;
 
             /**
-             * @ManyToOne(targetEntity="User", inversedBy="assignedBugs")
-             **/
+             * @ORM\ManyToOne(targetEntity="User", inversedBy="assignedBugs")
+             */
             protected $engineer;
 
             /**
-             * @ManyToOne(targetEntity="User", inversedBy="reportedBugs")
-             **/
+             * @ORM\ManyToOne(targetEntity="User", inversedBy="reportedBugs")
+             */
             protected $reporter;
 
             /**
-             * @ManyToMany(targetEntity="Product")
-             **/
+             * @ORM\ManyToMany(targetEntity="Product")
+             */
             protected $products;
 
             // ... (other code)
@@ -924,34 +965,40 @@ Finally, we'll add metadata mappings for the ``User`` entity.
 
         <?php
         // src/User.php
+
+        use Doctrine\ORM\Mapping as ORM;
+
         /**
-         * @Entity @Table(name="users")
-         **/
+         * @ORM\Entity
+         * @ORM\Table(name="users")
+         */
         class User
         {
             /**
-             * @Id @GeneratedValue @Column(type="integer")
+             * @ORM\Id 
+             * @ORM\GeneratedValue 
+             * @ORM\Column(type="integer")
              * @var int
-             **/
+             */
             protected $id;
 
             /**
-             * @Column(type="string")
+             * @ORM\Column(type="string")
              * @var string
-             **/
+             */
             protected $name;
 
             /**
-             * @OneToMany(targetEntity="Bug", mappedBy="reporter")
+             * @ORM\OneToMany(targetEntity="Bug", mappedBy="reporter")
              * @var Bug[] An ArrayCollection of Bug objects.
-             **/
-            protected $reportedBugs = null;
+             */
+            protected $reportedBugs;
 
             /**
-             * @OneToMany(targetEntity="Bug", mappedBy="engineer")
+             * @ORM\OneToMany(targetEntity="Bug", mappedBy="engineer")
              * @var Bug[] An ArrayCollection of Bug objects.
-             **/
-            protected $assignedBugs = null;
+             */
+            protected $assignedBugs;
 
             // .. (other code)
         }
@@ -1162,8 +1209,7 @@ The console output of this script is then:
     throw your ORM into the dumpster, because it doesn't support some
     the more powerful SQL concepts.
 
-
-    Instead of handwriting DQL you can use the ``QueryBuilder`` retrieved
+    If you need to build your query dynamically, you can use the ``QueryBuilder`` retrieved
     by calling ``$entityManager->createQueryBuilder()``. There are more
     details about this in the relevant part of the documentation.
 
@@ -1489,9 +1535,12 @@ we have to adjust the metadata slightly.
     .. code-block:: php
 
         <?php
+
+        use Doctrine\ORM\Mapping as ORM;
+
         /**
-         * @Entity(repositoryClass="BugRepository")
-         * @Table(name="bugs")
+         * @ORM\Entity(repositoryClass="BugRepository")
+         * @ORM\Table(name="bugs")
          **/
         class Bug
         {

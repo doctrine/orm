@@ -20,30 +20,55 @@
 
 namespace Doctrine\ORM\Mapping;
 
+use const CASE_LOWER;
+use const CASE_UPPER;
+use const E_USER_DEPRECATED;
+use function preg_replace;
+use function strpos;
+use function strrpos;
+use function strtolower;
+use function strtoupper;
+use function substr;
+use function trigger_error;
+
 /**
  * Naming strategy implementing the underscore naming convention.
  * Converts 'MyEntity' to 'my_entity' or 'MY_ENTITY'.
  *
- * 
+ *
  * @link    www.doctrine-project.org
  * @since   2.3
  * @author  Fabio B. Silva <fabio.bat.silva@gmail.com>
  */
 class UnderscoreNamingStrategy implements NamingStrategy
 {
+    private const DEFAULT_PATTERN      = '/(?<=[a-z])([A-Z])/';
+    private const NUMBER_AWARE_PATTERN = '/(?<=[a-z0-9])([A-Z])/';
+
     /**
      * @var integer
      */
     private $case;
 
+    /** @var string */
+    private $pattern;
+
     /**
      * Underscore naming strategy construct.
      *
-     * @param integer $case CASE_LOWER | CASE_UPPER
+     * @param int $case CASE_LOWER | CASE_UPPER
      */
-    public function __construct($case = CASE_LOWER)
+    public function __construct($case = CASE_LOWER, bool $numberAware = false)
     {
-        $this->case = $case;
+        if (! $numberAware) {
+            @trigger_error(
+                'Creating ' . self::class . ' without making it number aware is deprecated and will be removed in Doctrine ORM 3.0.',
+                E_USER_DEPRECATED
+            );
+        }
+
+        $this->case    = $case;
+        $this->pattern = $numberAware ? self::NUMBER_AWARE_PATTERN : self::DEFAULT_PATTERN;
     }
 
     /**
@@ -57,7 +82,7 @@ class UnderscoreNamingStrategy implements NamingStrategy
     /**
      * Sets string case CASE_LOWER | CASE_UPPER.
      * Alphabetic characters converted to lowercase or uppercase.
-     * 
+     *
      * @param integer $case
      *
      * @return void
@@ -118,7 +143,7 @@ class UnderscoreNamingStrategy implements NamingStrategy
     {
         return $this->classToTableName($sourceEntity) . '_' . $this->classToTableName($targetEntity);
     }
-    
+
     /**
      * {@inheritdoc}
      */
@@ -127,15 +152,10 @@ class UnderscoreNamingStrategy implements NamingStrategy
         return $this->classToTableName($entityName) . '_' .
                 ($referencedColumnName ?: $this->referenceColumnName());
     }
-    
-    /**
-     * @param string $string
-     *
-     * @return string
-     */
-    private function underscore($string)
+
+    private function underscore(string $string) : string
     {
-        $string = preg_replace('/(?<=[a-z])([A-Z])/', '_$1', $string);
+        $string = preg_replace($this->pattern, '_$1', $string);
 
         if ($this->case === CASE_UPPER) {
             return strtoupper($string);

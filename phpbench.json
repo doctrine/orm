@@ -3,13 +3,6 @@
     "path": "tests/Doctrine/Performance",
 
     "extensions": [
-        "PhpBench\\Extensions\\Dbal\\DbalExtension",
         "PhpBench\\Extensions\\XDebug\\XDebugExtension"
-    ],
-
-    "storage": "dbal",
-    "storage.dbal.connection": {
-        "driver": "pdo_sqlite",
-        "path": "tests/Doctrine/Performance/history.db"
-    }
+    ]
 }

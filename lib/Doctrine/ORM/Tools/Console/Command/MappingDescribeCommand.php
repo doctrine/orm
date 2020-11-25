@@ -19,13 +19,17 @@
 
 namespace Doctrine\ORM\Tools\Console\Command;
 
-use Doctrine\Common\Persistence\Mapping\MappingException;
 use Doctrine\ORM\EntityManagerInterface;
+use Doctrine\Persistence\Mapping\MappingException;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
+use const JSON_PRETTY_PRINT;
+use const JSON_UNESCAPED_SLASHES;
+use const JSON_UNESCAPED_UNICODE;
+use function json_encode;
 
 /**
  * Show information about mapped entities.
@@ -131,7 +135,7 @@ EOT
      *
      * @return string[]
      */
-    private function getMappedEntities(EntityManagerInterface $entityManager)
+    private function getMappedEntities(EntityManagerInterface $entityManager) : array
     {
         $entityClassNames = $entityManager->getConfiguration()
                                           ->getMetadataDriverImpl()
@@ -213,7 +217,7 @@ EOT
         }
 
         if (is_array($value)) {
-            return json_encode($value, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
+            return json_encode($value, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT);
         }
 
         if (is_object($value)) {
@@ -221,7 +225,7 @@ EOT
         }
 
         if (is_scalar($value)) {
-            return $value;
+            return (string) $value;
         }
 
         throw new \InvalidArgumentException(sprintf('Do not know how to format value "%s"', print_r($value, true)));
@@ -233,9 +237,11 @@ EOT
      * @param string $label Label for the value
      * @param mixed  $value A Value to show
      *
-     * @return array
+     * @return string[]
+     *
+     * @psalm-return array{0: string, 1: string}
      */
-    private function formatField($label, $value)
+    private function formatField($label, $value) : array
     {
         if (null === $value) {
             $value = '<comment>None</comment>';
@@ -249,9 +255,11 @@ EOT
      *
      * @param array $propertyMappings
      *
-     * @return array
+     * @return string[][]
+     *
+     * @psalm-return list<array{0: string, 1: string}>
      */
-    private function formatMappings(array $propertyMappings)
+    private function formatMappings(array $propertyMappings) : array
     {
         $output = [];
 
@@ -271,9 +279,11 @@ EOT
      *
      * @param array $entityListeners
      *
-     * @return array
+     * @return string[]
+     *
+     * @psalm-return array{0: string, 1: string}
      */
-    private function formatEntityListeners(array $entityListeners)
+    private function formatEntityListeners(array $entityListeners) : array
     {
         return $this->formatField('Entity listeners', array_map('get_class', $entityListeners));
     }

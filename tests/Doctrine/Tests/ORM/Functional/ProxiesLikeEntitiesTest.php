@@ -27,7 +27,7 @@ class ProxiesLikeEntitiesTest extends OrmFunctionalTestCase
      */
     protected $user;
 
-    protected function setUp()
+    protected function setUp() : void
     {
         parent::setUp();
         try {
@@ -83,7 +83,7 @@ class ProxiesLikeEntitiesTest extends OrmFunctionalTestCase
         $this->assertInstanceOf(CmsUserProxy::class, $uninitializedProxy);
 
         $this->_em->persist($uninitializedProxy);
-        $this->_em->flush($uninitializedProxy);
+        $this->_em->flush();
         $this->assertFalse($uninitializedProxy->__isInitialized(), 'Proxy didn\'t get initialized during flush operations');
         $this->assertEquals($userId, $uninitializedProxy->getId());
         $this->_em->remove($uninitializedProxy);
@@ -134,7 +134,7 @@ class ProxiesLikeEntitiesTest extends OrmFunctionalTestCase
         $this->_em->clear();
     }
 
-    protected function tearDown()
+    protected function tearDown() : void
     {
         $this->_em->createQuery('DELETE FROM Doctrine\Tests\Models\CMS\CmsUser u')->execute();
     }

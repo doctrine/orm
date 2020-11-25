@@ -2,12 +2,12 @@
 
 namespace Doctrine\Tests\ORM\Mapping;
 
-use Doctrine\Common\Persistence\Mapping\RuntimeReflectionService;
 use Doctrine\ORM\EntityRepository;
 use Doctrine\ORM\Id\SequenceGenerator;
 use Doctrine\ORM\Mapping\ClassMetadataFactory;
 use Doctrine\ORM\Mapping\ClassMetadataInfo;
 use Doctrine\ORM\Mapping\MappingException;
+use Doctrine\Persistence\Mapping\RuntimeReflectionService;
 use Doctrine\Tests\Models\DDC869\DDC869ChequePayment;
 use Doctrine\Tests\Models\DDC869\DDC869CreditCardPayment;
 use Doctrine\Tests\Models\DDC869\DDC869Payment;
@@ -24,7 +24,8 @@ class BasicInheritanceMappingTest extends OrmTestCase
     /**
      * {@inheritDoc}
      */
-    protected function setUp() {
+    protected function setUp() : void
+    {
         $this->cmf = new ClassMetadataFactory();
 
         $this->cmf->setEntityManager($this->_getTestEntityManager());

@@ -6,7 +6,7 @@ use Doctrine\ORM\Proxy\Proxy;
 
 class DDC237Test extends \Doctrine\Tests\OrmFunctionalTestCase
 {
-    protected function setUp()
+    protected function setUp() : void
     {
         parent::setUp();
         $this->_schemaTool->createSchema(

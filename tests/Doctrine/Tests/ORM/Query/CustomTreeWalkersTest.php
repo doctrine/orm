@@ -20,7 +20,7 @@ class CustomTreeWalkersTest extends OrmTestCase
 {
     private $_em;
 
-    protected function setUp()
+    protected function setUp() : void
     {
         $this->_em = $this->_getTestEntityManager();
     }

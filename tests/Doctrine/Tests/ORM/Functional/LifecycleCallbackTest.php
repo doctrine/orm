@@ -11,7 +11,7 @@ use Doctrine\Tests\OrmFunctionalTestCase;
 
 class LifecycleCallbackTest extends OrmFunctionalTestCase
 {
-    protected function setUp()
+    protected function setUp() : void
     {
         parent::setUp();
         try {
@@ -268,7 +268,7 @@ DQL;
             break;
         }
     }
-    
+
     /**
      * https://github.com/doctrine/orm/issues/6568
      */
@@ -276,7 +276,7 @@ DQL;
     {
         $entA = new LifecycleCallbackCascader();
         $this->_em->persist($entA);
-        
+
         $entB_1 = new LifecycleCallbackTestEntity();
         $entB_2 = new LifecycleCallbackTestEntity();
 
@@ -496,7 +496,7 @@ class LifecycleCallbackCascader
         $this->postLoadCallbackInvoked = true;
         $this->postLoadEntitiesCount = count($this->entities);
     }
-    
+
     public function getId() {
         return $this->id;
     }

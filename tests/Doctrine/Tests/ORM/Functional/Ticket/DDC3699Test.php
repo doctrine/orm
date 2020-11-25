@@ -3,17 +3,26 @@
 use Doctrine\Tests\Models\DDC3699\DDC3699RelationOne;
 use Doctrine\Tests\Models\DDC3699\DDC3699RelationMany;
 use Doctrine\Tests\Models\DDC3699\DDC3699Child;
+use Doctrine\Tests\VerifyDeprecations;
 
 /**
  * @group DDC-3699
  */
 class DDC3597Test extends \Doctrine\Tests\OrmFunctionalTestCase
 {
-    protected function setUp()
+    use VerifyDeprecations;
+
+    protected function setUp() : void
     {
         $this->useModelSet('ddc3699');
 
         parent::setUp();
+    }
+
+    /** @after */
+    public function ensureTestGeneratedDeprecationMessages() : void
+    {
+        $this->assertHasDeprecationMessages();
     }
 
     /**

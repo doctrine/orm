@@ -3,7 +3,6 @@
 namespace Doctrine\Tests\ORM;
 
 use Doctrine\Common\Cache\Cache;
-use Doctrine\Common\Persistence\Mapping\Driver\MappingDriver;
 use Doctrine\Common\Proxy\AbstractProxyFactory;
 use Doctrine\Common\Cache\ArrayCache;
 use Doctrine\ORM\Cache\CacheConfiguration;
@@ -15,6 +14,7 @@ use Doctrine\ORM\Mapping\NamingStrategy;
 use Doctrine\ORM\Mapping\QuoteStrategy;
 use Doctrine\ORM\ORMException;
 use Doctrine\ORM\Query\ResultSetMapping;
+use Doctrine\Persistence\Mapping\Driver\MappingDriver;
 use Doctrine\Tests\Models\DDC753\DDC753CustomRepository;
 use ReflectionClass;
 use PHPUnit\Framework\TestCase;
@@ -30,7 +30,7 @@ class ConfigurationTest extends TestCase
      */
     private $configuration;
 
-    protected function setUp()
+    protected function setUp() : void
     {
         parent::setUp();
         $this->configuration = new Configuration();

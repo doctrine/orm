@@ -11,7 +11,7 @@ class DDC2575Test extends \Doctrine\Tests\OrmFunctionalTestCase
     private $aEntities = [];
     private $bEntities = [];
 
-    protected function setUp()
+    protected function setUp() : void
     {
         parent::setUp();
 

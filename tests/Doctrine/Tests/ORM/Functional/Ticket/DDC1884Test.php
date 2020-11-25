@@ -12,13 +12,13 @@ use Doctrine\Tests\Models\Taxi\PaidRide;
  */
 class DDC1884Test extends \Doctrine\Tests\OrmFunctionalTestCase
 {
-    protected function setUp()
+    protected function setUp() : void
     {
         $this->useModelSet('taxi');
         parent::setUp();
 
-        list($bimmer, $crysler, $merc, $volvo) = $this->createCars(Car::class);
-        list($john, $foo) = $this->createDrivers(Driver::class);
+        [$bimmer, $crysler, $merc, $volvo] = $this->createCars(Car::class);
+        [$john, $foo]                      = $this->createDrivers(Driver::class);
         $this->_em->flush();
 
         $ride1 = new Ride($john, $bimmer);

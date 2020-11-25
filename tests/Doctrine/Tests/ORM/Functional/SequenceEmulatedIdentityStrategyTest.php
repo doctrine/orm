@@ -10,7 +10,7 @@ class SequenceEmulatedIdentityStrategyTest extends OrmFunctionalTestCase
     /**
      * {@inheritdoc}
      */
-    protected function setUp()
+    protected function setUp() : void
     {
         parent::setUp();
 
@@ -32,7 +32,7 @@ class SequenceEmulatedIdentityStrategyTest extends OrmFunctionalTestCase
     /**
      * {@inheritdoc}
      */
-    protected function tearDown()
+    protected function tearDown() : void
     {
         parent::tearDown();
 

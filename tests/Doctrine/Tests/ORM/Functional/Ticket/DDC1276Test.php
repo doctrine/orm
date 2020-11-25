@@ -4,13 +4,16 @@ namespace Doctrine\Tests\ORM\Functional\Ticket;
 
 use Doctrine\Tests\Models\CMS\CmsGroup;
 use Doctrine\Tests\Models\CMS\CmsUser;
+use Doctrine\Tests\VerifyDeprecations;
 
 /**
  * @group DDC-1276
  */
 class DDC1276Test extends \Doctrine\Tests\OrmFunctionalTestCase
 {
-    public function setUp()
+    use VerifyDeprecations;
+
+    protected function setUp() : void
     {
         $this->useModelSet('cms');
         parent::setUp();
@@ -43,5 +46,6 @@ class DDC1276Test extends \Doctrine\Tests\OrmFunctionalTestCase
         $this->assertEquals(2, count($user->groups));
 
         $this->_em->flush();
+        $this->assertHasDeprecationMessages();
     }
 }

@@ -7,6 +7,7 @@ use Doctrine\Common\Cache\ArrayCache;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\DBAL\Types\Type;
 use Doctrine\ORM\Internal\Hydration\IterableResult;
+use Doctrine\ORM\Query;
 use Doctrine\ORM\Query\Parameter;
 use Doctrine\ORM\Query\QueryException;
 use Doctrine\ORM\UnitOfWork;
@@ -17,13 +18,14 @@ use Doctrine\Tests\Models\CMS\CmsAddress;
 use Doctrine\Tests\Models\CMS\CmsUser;
 use Doctrine\Tests\Models\Generic\DateTimeModel;
 use Doctrine\Tests\OrmTestCase;
+use ReflectionClass;
 
 class QueryTest extends OrmTestCase
 {
     /** @var EntityManagerMock */
     protected $_em;
 
-    protected function setUp()
+    protected function setUp() : void
     {
         $this->_em = $this->_getTestEntityManager();
     }
@@ -128,24 +130,20 @@ class QueryTest extends OrmTestCase
     {
         $this->_em->getConfiguration()->setResultCacheImpl(new ArrayCache());
         $q = $this->_em->createQuery("select a from Doctrine\Tests\Models\CMS\CmsArticle a");
-        $q->useResultCache(true);
+        $q->enableResultCache();
         $this->assertSame($this->_em->getConfiguration()->getResultCacheImpl(), $q->getQueryCacheProfile()->getResultCacheDriver());
     }
 
-    /**
-     * @expectedException Doctrine\ORM\Query\QueryException
-     **/
     public function testIterateWithNoDistinctAndWrongSelectClause()
     {
+        $this->expectException('Doctrine\ORM\Query\QueryException');
         $q = $this->_em->createQuery("select u, a from Doctrine\Tests\Models\CMS\CmsUser u LEFT JOIN u.articles a");
         $q->iterate();
     }
 
-    /**
-     * @expectedException Doctrine\ORM\Query\QueryException
-     **/
     public function testIterateWithNoDistinctAndWithValidSelectClause()
     {
+        $this->expectException('Doctrine\ORM\Query\QueryException');
         $q = $this->_em->createQuery("select u from Doctrine\Tests\Models\CMS\CmsUser u LEFT JOIN u.articles a");
         $q->iterate();
     }
@@ -245,7 +243,7 @@ class QueryTest extends OrmTestCase
         $driverConnectionMock->setStatementMock($stmt);
         $res = $this->_em->createQuery("select u from Doctrine\Tests\Models\CMS\CmsUser u")
             ->useQueryCache(true)
-            ->useResultCache(true, 60)
+            ->enableResultCache(60)
             //let it cache
             ->getResult();
 
@@ -255,7 +253,7 @@ class QueryTest extends OrmTestCase
 
         $res = $this->_em->createQuery("select u from Doctrine\Tests\Models\CMS\CmsUser u")
             ->useQueryCache(true)
-            ->useResultCache(false)
+            ->disableResultCache()
             ->getResult();
         $this->assertCount(0, $res);
     }
@@ -278,7 +276,7 @@ class QueryTest extends OrmTestCase
         $this->_em->getConfiguration()->setResultCacheImpl(new ArrayCache());
 
         $query = $this->_em->createQuery("SELECT u FROM Doctrine\Tests\Models\CMS\CmsUser u")
-                           ->useResultCache(true);
+                           ->enableResultCache();
 
         /** @var DriverConnectionMock $driverConnectionMock */
         $driverConnectionMock = $this->_em->getConnection()
@@ -397,10 +395,13 @@ class QueryTest extends OrmTestCase
         $this->_em->getConfiguration()->setResultCacheImpl(new ArrayCache());
 
         $query = $this->_em->createQuery('SELECT u FROM ' . CmsUser::class . ' u');
-        $query->useResultCache(true);
+        $query->enableResultCache();
         $query->setResultCacheProfile();
 
-        self::assertAttributeSame(null, '_queryCacheProfile', $query);
+        $class    = new ReflectionClass(Query::class);
+        $property = $class->getProperty('_queryCacheProfile');
+        $property->setAccessible(true);
+        self::assertNull($property->getValue($query));
     }
 
     /** @group 7527 */
@@ -419,5 +420,29 @@ class QueryTest extends OrmTestCase
         $query->setParameter('value', new DateTime(), Type::DATETIME);
 
         self::assertEmpty($query->getResult());
+    }
+
+    /** @group 7982 */
+    public function testNonExistentExecutor()
+    {
+        $this->expectException(QueryException::class);
+        $this->expectExceptionMessage('[Syntax Error] line 0, col -1: Error: Expected SELECT, UPDATE or DELETE, got end of string.');
+
+        $query = $this->_em->createQuery('0')->execute();
+    }
+
+    /**
+     * @group 8106
+     */
+    public function testGetParameterColonNormalize() : void
+    {
+        $query = $this->_em->createQuery('select u from ' . CmsUser::class . ' u where u.name = :name');
+
+        $query->setParameter(':name', 'Benjamin');
+        $query->setParameter('name', 'Benjamin');
+
+        self::assertCount(1, $query->getParameters());
+        self::assertSame('Benjamin', $query->getParameter(':name')->getValue());
+        self::assertSame('Benjamin', $query->getParameter('name')->getValue());
     }
 }

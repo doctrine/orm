@@ -23,6 +23,7 @@ use Doctrine\DBAL\Types\Type;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Events;
 use Doctrine\ORM\Mapping\ClassMetadata;
+use Doctrine\ORM\Tools\Pagination\LimitSubqueryWalker;
 use PDO;
 use function array_map;
 use function in_array;
@@ -227,14 +228,14 @@ abstract class AbstractHydrator
      *
      * Template method.
      *
-     * @param array $data   The row data.
-     * @param array $result The result to fill.
+     * @param mixed[] $row    The row data.
+     * @param mixed[] $result The result to fill.
      *
      * @return void
      *
      * @throws HydrationException
      */
-    protected function hydrateRowData(array $data, array &$result)
+    protected function hydrateRowData(array $row, array &$result)
     {
         throw new HydrationException("hydrateRowData() not implemented by this hydrator.");
     }
@@ -259,8 +260,19 @@ abstract class AbstractHydrator
      * @param array &$id                 Dql-Alias => ID-Hash.
      * @param array &$nonemptyComponents Does this DQL-Alias has at least one non NULL value?
      *
-     * @return array  An array with all the fields (name => value) of the data row,
-     *                grouped by their component alias.
+     * @return array<string, array<string, mixed>> An array with all the fields
+     *                                             (name => value) of the data
+     *                                             row, grouped by their
+     *                                             component alias.
+     *
+     * @psalm-return array{
+     *                   data: array<array-key, array>,
+     *                   newObjects?: array<array-key, array{
+     *                       class: mixed,
+     *                       args?: array
+     *                   }>,
+     *                   scalars?: array
+     *               }
      */
     protected function gatherRowData(array $data, array &$id, array &$nonemptyComponents)
     {
@@ -351,13 +363,11 @@ abstract class AbstractHydrator
 
             // WARNING: BC break! We know this is the desired behavior to type convert values, but this
             // erroneous behavior exists since 2.0 and we're forced to keep compatibility.
-            if ( ! isset($cacheKeyInfo['isScalar'])) {
-                $dqlAlias  = $cacheKeyInfo['dqlAlias'];
-                $type      = $cacheKeyInfo['type'];
-                $fieldName = $dqlAlias . '_' . $fieldName;
-                $value     = $type
-                    ? $type->convertToPHPValue($value, $this->_platform)
-                    : $value;
+            if (! isset($cacheKeyInfo['isScalar'])) {
+                $type  = $cacheKeyInfo['type'];
+                $value = $type ? $type->convertToPHPValue($value, $this->_platform) : $value;
+
+                $fieldName = $cacheKeyInfo['dqlAlias'] . '_' . $fieldName;
             }
 
             $rowData[$fieldName] = $value;
@@ -422,6 +432,12 @@ abstract class AbstractHydrator
                     'class'                => new \ReflectionClass($mapping['className']),
                 ];
 
+            case isset($this->_rsm->scalarMappings[$key], $this->_hints[LimitSubqueryWalker::FORCE_DBAL_TYPE_CONVERSION]):
+                return $this->_cache[$key] = [
+                    'fieldName' => $this->_rsm->scalarMappings[$key],
+                    'type'      => Type::getType($this->_rsm->typeMappings[$key]),
+                    'dqlAlias'  => '',
+                ];
             case (isset($this->_rsm->scalarMappings[$key])):
                 return $this->_cache[$key] = [
                     'isScalar'  => true,

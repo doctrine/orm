@@ -1,15 +1,17 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\Tests\ORM\Mapping;
 
 use Doctrine\Common\Annotations\AnnotationException;
 use Doctrine\Common\Annotations\AnnotationReader;
-use Doctrine\Common\Persistence\Mapping\RuntimeReflectionService;
 use Doctrine\ORM\Mapping;
 use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\Mapping\ClassMetadataFactory;
 use Doctrine\ORM\Mapping\Driver\AnnotationDriver;
 use Doctrine\ORM\Mapping\MappingException;
+use Doctrine\Persistence\Mapping\RuntimeReflectionService;
 use Doctrine\Tests\Models\CMS\CmsUser;
 use Doctrine\Tests\Models\DDC1872\DDC1872ExampleEntityWithoutOverride;
 use Doctrine\Tests\Models\DDC1872\DDC1872ExampleEntityWithOverride;
@@ -26,19 +28,17 @@ class AnnotationDriverTest extends AbstractMappingDriverTest
     {
         $cm = new ClassMetadata('stdClass');
         $cm->initializeReflection(new RuntimeReflectionService());
-        $reader = new AnnotationReader();
+        $reader           = new AnnotationReader();
         $annotationDriver = new AnnotationDriver($reader);
 
-        $this->expectException(\Doctrine\ORM\Mapping\MappingException::class);
+        $this->expectException(MappingException::class);
         $annotationDriver->loadMetadataForClass('stdClass', $cm);
     }
 
-    /**
-     * @expectedException Doctrine\ORM\Cache\CacheException
-     * @expectedExceptionMessage Entity association field "Doctrine\Tests\ORM\Mapping\AnnotationSLC#foo" not configured as part of the second-level cache.
-     */
     public function testFailingSecondLevelCacheAssociation()
     {
+        $this->expectException('Doctrine\ORM\Cache\CacheException');
+        $this->expectExceptionMessage('Entity association field "Doctrine\Tests\ORM\Mapping\AnnotationSLC#foo" not configured as part of the second-level cache.');
         $mappingDriver = $this->_loadDriver();
 
         $class = new ClassMetadata(AnnotationSLC::class);
@@ -64,10 +64,10 @@ class AnnotationDriverTest extends AbstractMappingDriverTest
     public function testGetAllClassNamesIsIdempotent()
     {
         $annotationDriver = $this->_loadDriverForCMSModels();
-        $original = $annotationDriver->getAllClassNames();
+        $original         = $annotationDriver->getAllClassNames();
 
         $annotationDriver = $this->_loadDriverForCMSModels();
-        $afterTestReset = $annotationDriver->getAllClassNames();
+        $afterTestReset   = $annotationDriver->getAllClassNames();
 
         $this->assertEquals($original, $afterTestReset);
     }
@@ -78,10 +78,10 @@ class AnnotationDriverTest extends AbstractMappingDriverTest
     public function testGetAllClassNamesIsIdempotentEvenWithDifferentDriverInstances()
     {
         $annotationDriver = $this->_loadDriverForCMSModels();
-        $original = $annotationDriver->getAllClassNames();
+        $original         = $annotationDriver->getAllClassNames();
 
         $annotationDriver = $this->_loadDriverForCMSModels();
-        $afterTestReset = $annotationDriver->getAllClassNames();
+        $afterTestReset   = $annotationDriver->getAllClassNames();
 
         $this->assertEquals($original, $afterTestReset);
     }
@@ -94,7 +94,7 @@ class AnnotationDriverTest extends AbstractMappingDriverTest
         $this->_ensureIsLoaded(CmsUser::class);
 
         $annotationDriver = $this->_loadDriverForCMSModels();
-        $classes = $annotationDriver->getAllClassNames();
+        $classes          = $annotationDriver->getAllClassNames();
 
         $this->assertContains(CmsUser::class, $classes);
     }
@@ -107,7 +107,7 @@ class AnnotationDriverTest extends AbstractMappingDriverTest
         $this->_ensureIsLoaded(ECommerceCart::class);
 
         $annotationDriver = $this->_loadDriverForCMSModels();
-        $classes = $annotationDriver->getAllClassNames();
+        $classes          = $annotationDriver->getAllClassNames();
 
         $this->assertNotContains(ECommerceCart::class, $classes);
     }
@@ -116,6 +116,7 @@ class AnnotationDriverTest extends AbstractMappingDriverTest
     {
         $annotationDriver = $this->_loadDriver();
         $annotationDriver->addPaths([__DIR__ . '/../../Models/CMS/']);
+
         return $annotationDriver;
     }
 
@@ -126,7 +127,7 @@ class AnnotationDriverTest extends AbstractMappingDriverTest
 
     protected function _ensureIsLoaded($entityClassName)
     {
-        new $entityClassName;
+        new $entityClassName();
     }
 
     /**
@@ -165,7 +166,7 @@ class AnnotationDriverTest extends AbstractMappingDriverTest
 
         $this->expectException(MappingException::class);
         $this->expectExceptionMessage(
-            "It is illegal to put an inverse side one-to-many or many-to-many association on " .
+            'It is illegal to put an inverse side one-to-many or many-to-many association on ' .
             "mapped superclass 'Doctrine\Tests\ORM\Mapping\InvalidMappedSuperClass#users'"
         );
 
@@ -186,7 +187,7 @@ class AnnotationDriverTest extends AbstractMappingDriverTest
 
         $this->expectException(MappingException::class);
         $this->expectExceptionMessage(
-            "It is not supported to define inheritance information on a mapped " .
+            'It is not supported to define inheritance information on a mapped ' .
             "superclass '" . MappedSuperClassInheritence::class . "'."
         );
 
@@ -206,10 +207,10 @@ class AnnotationDriverTest extends AbstractMappingDriverTest
         $factory->setEntityManager($em);
 
         $cm = $factory->getMetadataFor(AnnotationChild::class);
-        $this->assertEquals(["postLoad" => ["postLoad"], "preUpdate" => ["preUpdate"]], $cm->lifecycleCallbacks);
+        $this->assertEquals(['postLoad' => ['postLoad'], 'preUpdate' => ['preUpdate']], $cm->lifecycleCallbacks);
 
         $cm = $factory->getMetadataFor(AnnotationParent::class);
-        $this->assertEquals(["postLoad" => ["postLoad"], "preUpdate" => ["preUpdate"]], $cm->lifecycleCallbacks);
+        $this->assertEquals(['postLoad' => ['postLoad'], 'preUpdate' => ['preUpdate']], $cm->lifecycleCallbacks);
     }
 
     /**
@@ -238,17 +239,17 @@ class AnnotationDriverTest extends AbstractMappingDriverTest
         $factory->setEntityManager($em);
 
         $this->expectException(AnnotationException::class);
-        $this->expectExceptionMessage('[Enum Error] Attribute "fetch" of @Doctrine\ORM\Mapping\OneToMany declared on property Doctrine\Tests\ORM\Mapping\InvalidFetchOption::$collection accept only [LAZY, EAGER, EXTRA_LAZY], but got eager.');
+        $this->expectExceptionMessage('[Enum Error] Attribute "fetch" of @Doctrine\ORM\Mapping\OneToMany declared on property Doctrine\Tests\ORM\Mapping\InvalidFetchOption::$collection accept');
 
         $factory->getMetadataFor(InvalidFetchOption::class);
     }
 
     public function testAttributeOverridesMappingWithTrait()
     {
-        $factory       = $this->createClassMetadataFactory();
+        $factory = $this->createClassMetadataFactory();
 
         $metadataWithoutOverride = $factory->getMetadataFor(DDC1872ExampleEntityWithoutOverride::class);
-        $metadataWithOverride = $factory->getMetadataFor(DDC1872ExampleEntityWithOverride::class);
+        $metadataWithOverride    = $factory->getMetadataFor(DDC1872ExampleEntityWithOverride::class);
 
         $this->assertEquals('trait_foo', $metadataWithoutOverride->fieldMappings['foo']['columnName']);
         $this->assertEquals('foo_overridden', $metadataWithOverride->fieldMappings['foo']['columnName']);
@@ -271,9 +272,7 @@ class ColumnWithoutType
  */
 class InvalidMappedSuperClass
 {
-    /**
-     * @ManyToMany(targetEntity="Doctrine\Tests\Models\CMS\CmsUser", mappedBy="invalid")
-     */
+    /** @ManyToMany(targetEntity="Doctrine\Tests\Models\CMS\CmsUser", mappedBy="invalid") */
     private $users;
 }
 
@@ -282,9 +281,7 @@ class InvalidMappedSuperClass
  */
 class UsingInvalidMappedSuperClass extends InvalidMappedSuperClass
 {
-    /**
-     * @Id @Column(type="integer") @GeneratedValue
-     */
+    /** @Id @Column(type="integer") @GeneratedValue */
     private $id;
 }
 
@@ -295,7 +292,6 @@ class UsingInvalidMappedSuperClass extends InvalidMappedSuperClass
  */
 class MappedSuperClassInheritence
 {
-
 }
 
 /**
@@ -306,9 +302,7 @@ class MappedSuperClassInheritence
  */
 class AnnotationParent
 {
-    /**
-     * @Id @Column(type="integer") @GeneratedValue
-     */
+    /** @Id @Column(type="integer") @GeneratedValue */
     private $id;
 
     /**
@@ -316,7 +310,6 @@ class AnnotationParent
      */
     public function postLoad()
     {
-
     }
 
     /**
@@ -324,7 +317,6 @@ class AnnotationParent
      */
     public function preUpdate()
     {
-
     }
 }
 
@@ -334,7 +326,6 @@ class AnnotationParent
  */
 class AnnotationChild extends AnnotationParent
 {
-
 }
 
 /**
@@ -362,9 +353,7 @@ class MiddleMappedSuperclass extends SuperEntity
  */
 class ChildEntity extends MiddleMappedSuperclass
 {
-    /**
-     * @Column(type="string")
-     */
+    /** @Column(type="string") */
     private $text;
 }
 
@@ -373,9 +362,7 @@ class ChildEntity extends MiddleMappedSuperclass
  */
 class InvalidFetchOption
 {
-    /**
-     * @OneToMany(targetEntity="Doctrine\Tests\Models\CMS\CmsUser", fetch="eager")
-     */
+    /** @OneToMany(targetEntity="Doctrine\Tests\Models\CMS\CmsUser", fetch="eager") */
     private $collection;
 }
 
@@ -396,8 +383,6 @@ class AnnotationSLC
  */
 class AnnotationSLCFoo
 {
-    /**
-     * @Column(type="string")
-     */
+    /** @Column(type="string") */
     public $id;
 }

@@ -9,25 +9,23 @@ use Doctrine\ORM\Mapping\Driver\AnnotationDriver;
 use Doctrine\ORM\Mapping\Driver\XmlDriver;
 use Doctrine\ORM\Mapping\Driver\YamlDriver;
 use Doctrine\ORM\Tools\Setup;
-use Doctrine\ORM\Version;
 use Doctrine\Tests\OrmTestCase;
+use Doctrine\Tests\VerifyDeprecations;
 
 class SetupTest extends OrmTestCase
 {
+    use VerifyDeprecations;
+
     private $originalAutoloaderCount;
     private $originalIncludePath;
 
-    public function setUp()
+    protected function setUp() : void
     {
-        if (strpos(Version::VERSION, "DEV") === false) {
-            $this->markTestSkipped("Test only runs in a dev-installation from Github");
-        }
-
         $this->originalAutoloaderCount = count(spl_autoload_functions());
         $this->originalIncludePath = get_include_path();
     }
 
-    public function tearDown()
+    public function tearDown() : void
     {
         if ( ! $this->originalIncludePath) {
             return;
@@ -74,6 +72,7 @@ class SetupTest extends OrmTestCase
 
         $this->assertInstanceOf(Configuration::class, $config);
         $this->assertInstanceOf(YamlDriver::class, $config->getMetadataDriverImpl());
+        $this->assertHasDeprecationMessages();
     }
 
     /**

@@ -186,6 +186,8 @@ class QueryExpressionVisitor extends ExpressionVisitor
                 $this->parameters[] = $parameter;
 
                 return $this->expr->like($field, $placeholder);
+            case Comparison::MEMBER_OF:
+                return $this->expr->isMemberOf($comparison->getField(), $comparison->getValue()->getValue());
             case Comparison::STARTS_WITH:
                 $parameter->setValue($parameter->getValue() . '%', $parameter->getType());
                 $this->parameters[] = $parameter;

@@ -12,7 +12,7 @@ use Doctrine\ORM\Mapping\ClassMetadata;
  */
 class SecondLevelCacheExtraLazyCollectionTest extends SecondLevelCacheAbstractTest
 {
-    public function setUp()
+    protected function setUp() : void
     {
         parent::setUp();
 
@@ -23,7 +23,7 @@ class SecondLevelCacheExtraLazyCollectionTest extends SecondLevelCacheAbstractTe
         $targetEntity->associationMappings['travels']['fetch']       = ClassMetadata::FETCH_EXTRA_LAZY;
     }
 
-    public function tearDown()
+    public function tearDown() : void
     {
         parent::tearDown();
 

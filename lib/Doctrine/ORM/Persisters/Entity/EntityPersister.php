@@ -86,7 +86,7 @@ interface EntityPersister
     /**
      * Expands the parameters from the given criteria and use the correct binding types if found.
      *
-     * @param $criteria
+     * @param string[] $criteria
      *
      * @return array
      */

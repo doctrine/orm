@@ -61,6 +61,7 @@ class PaginatorTest extends OrmTestCase
             WHERE u.id = :paramInWhere'
         );
         $query->setParameters(['paramInWhere' => $paramInWhere, 'paramInSubSelect' => $paramInSubSelect]);
+        $query->setMaxResults(1);
         $paginator = (new Paginator($query, true))->setUseOutputWalkers(false);
 
         $this->connection->expects($this->exactly(3))->method('executeQuery');
@@ -113,6 +114,7 @@ class PaginatorTest extends OrmTestCase
         $query = new Query($this->em);
         $query->setDQL('SELECT u FROM Doctrine\\Tests\\Models\\CMS\\CmsUser u');
         $query->setParameters(['paramInWhere' => 1]);
+        $query->setMaxResults(1);
 
         return (new Paginator($query, true))->setUseOutputWalkers(false);
     }

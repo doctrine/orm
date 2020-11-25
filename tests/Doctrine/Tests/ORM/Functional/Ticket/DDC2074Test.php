@@ -1,18 +1,22 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\Tests\ORM\Functional\Ticket;
 
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\PersistentCollection;
 use Doctrine\Tests\Models\ECommerce\ECommerceCategory;
 use Doctrine\Tests\Models\ECommerce\ECommerceProduct;
+use Doctrine\Tests\OrmFunctionalTestCase;
+use function count;
 
 /**
  * @group DDC-2074
  */
-class DDC2074Test extends \Doctrine\Tests\OrmFunctionalTestCase
+class DDC2074Test extends OrmFunctionalTestCase
 {
-    public function setUp()
+    protected function setUp() : void
     {
         $this->useModelSet('ecommerce');
         parent::setUp();
@@ -20,13 +24,13 @@ class DDC2074Test extends \Doctrine\Tests\OrmFunctionalTestCase
 
     public function testShouldNotScheduleDeletionOnClonedInstances()
     {
-        $class = $this->_em->getClassMetadata(ECommerceProduct::class);
-        $product = new ECommerceProduct();
-        $category = new ECommerceCategory();
+        $class      = $this->_em->getClassMetadata(ECommerceProduct::class);
+        $product    = new ECommerceProduct();
+        $category   = new ECommerceCategory();
         $collection = new PersistentCollection($this->_em, $class, new ArrayCollection([$category]));
         $collection->setOwner($product, $class->associationMappings['categories']);
 
-        $uow = $this->_em->getUnitOfWork();
+        $uow              = $this->_em->getUnitOfWork();
         $clonedCollection = clone $collection;
         $clonedCollection->clear();
 
@@ -35,7 +39,7 @@ class DDC2074Test extends \Doctrine\Tests\OrmFunctionalTestCase
 
     public function testSavingClonedPersistentCollection()
     {
-        $product = new ECommerceProduct();
+        $product  = new ECommerceProduct();
         $category = new ECommerceCategory();
         $category->setName('foo');
         $product->addCategory($category);

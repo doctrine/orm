@@ -21,7 +21,7 @@ class ManyToManyUnidirectionalAssociationTest extends AbstractManyToManyAssociat
     private $firstCart;
     private $secondCart;
 
-    protected function setUp()
+    protected function setUp() : void
     {
         $this->useModelSet('ecommerce');
         parent::setUp();

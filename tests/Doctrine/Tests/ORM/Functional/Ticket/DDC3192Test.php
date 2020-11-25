@@ -12,7 +12,7 @@ use Doctrine\ORM\Query;
  */
 class DDC3192Test extends \Doctrine\Tests\OrmFunctionalTestCase
 {
-    protected function setUp()
+    protected function setUp() : void
     {
         parent::setUp();
 

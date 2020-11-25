@@ -9,7 +9,7 @@ use Doctrine\Common\Collections\Criteria;
  */
 class DDC2106Test extends \Doctrine\Tests\OrmFunctionalTestCase
 {
-    protected function setUp()
+    protected function setUp() : void
     {
         parent::setUp();
 
@@ -26,7 +26,7 @@ class DDC2106Test extends \Doctrine\Tests\OrmFunctionalTestCase
         $entity = new DDC2106Entity();
         $this->_em->persist($entity);
         $this->_em->flush();
-        $this->_em->detach($entity);
+        $this->_em->clear(DDC2106Entity::class);
         $entity = $this->_em->getRepository(DDC2106Entity::class)->findOneBy([]);
 
         // ... and a managed entity without id

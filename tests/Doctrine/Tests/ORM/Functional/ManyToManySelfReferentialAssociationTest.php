@@ -21,7 +21,7 @@ class ManyToManySelfReferentialAssociationTest extends AbstractManyToManyAssocia
     private $firstRelated;
     private $secondRelated;
 
-    protected function setUp()
+    protected function setUp() : void
     {
         $this->useModelSet('ecommerce');
         parent::setUp();
@@ -82,7 +82,7 @@ class ManyToManySelfReferentialAssociationTest extends AbstractManyToManyAssocia
 
     public function assertLoadingOfOwningSide($products)
     {
-        list ($firstProduct, $secondProduct) = $products;
+        [$firstProduct, $secondProduct] = $products;
         $this->assertEquals(2, count($firstProduct->getRelated()));
         $this->assertEquals(2, count($secondProduct->getRelated()));
 

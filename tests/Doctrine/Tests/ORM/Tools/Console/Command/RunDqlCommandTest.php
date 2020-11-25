@@ -32,7 +32,7 @@ class RunDqlCommandTest extends OrmFunctionalTestCase
      */
     private $tester;
 
-    protected function setUp()
+    protected function setUp() : void
     {
         $this->useModelSet('generic');
 
@@ -67,7 +67,7 @@ class RunDqlCommandTest extends OrmFunctionalTestCase
             )
         );
 
-        self::assertContains(DateTimeModel::class, $this->tester->getDisplay());
+        self::assertStringContainsString(DateTimeModel::class, $this->tester->getDisplay());
     }
 
     public function testWillShowQuery()

@@ -1,7 +1,8 @@
 <?php
 
 namespace Doctrine\Tests\ORM\Mapping\Symfony;
-use Doctrine\Common\Persistence\Mapping\MappingException;
+
+use Doctrine\Persistence\Mapping\MappingException;
 use PHPUnit\Framework\TestCase;
 
 /**
@@ -62,13 +63,13 @@ abstract class AbstractDriverTest extends TestCase
         $driver->getLocator()->findMappingFile('MyOtherNamespace\MySubnamespace\Entity\Foo');
     }
 
-    protected function setUp()
+    protected function setUp() : void
     {
         $this->dir = sys_get_temp_dir().'/abstract_driver_test';
         @mkdir($this->dir, 0777, true);
     }
 
-    protected function tearDown()
+    protected function tearDown() : void
     {
         $iterator = new \RecursiveIteratorIterator(new \RecursiveDirectoryIterator($this->dir), \RecursiveIteratorIterator::CHILD_FIRST);
 

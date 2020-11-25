@@ -12,7 +12,7 @@ use Doctrine\DBAL\Types\Type;
  */
 class DDC2984Test extends \Doctrine\Tests\OrmFunctionalTestCase
 {
-    public function setUp()
+    protected function setUp() : void
     {
         parent::setUp();
 
@@ -40,7 +40,7 @@ class DDC2984Test extends \Doctrine\Tests\OrmFunctionalTestCase
         $user->applyName('Alex');
 
         $this->_em->persist($user);
-        $this->_em->flush($user);
+        $this->_em->flush();
 
         $repository = $this->_em->getRepository(__NAMESPACE__ . "\DDC2984User");
 

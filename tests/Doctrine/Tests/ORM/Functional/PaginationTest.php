@@ -2,30 +2,43 @@
 
 namespace Doctrine\Tests\ORM\Functional;
 
+use Doctrine\DBAL\Types\Type as DBALType;
 use Doctrine\ORM\Query;
 use Doctrine\ORM\Tools\Pagination\Paginator;
+use Doctrine\Tests\DbalTypes\CustomIdObject;
+use Doctrine\Tests\DbalTypes\CustomIdObjectType;
 use Doctrine\Tests\Models\CMS\CmsArticle;
 use Doctrine\Tests\Models\CMS\CmsEmail;
 use Doctrine\Tests\Models\CMS\CmsGroup;
 use Doctrine\Tests\Models\CMS\CmsUser;
 use Doctrine\Tests\Models\Company\CompanyManager;
+use Doctrine\Tests\Models\CustomType\CustomIdObjectTypeParent;
 use Doctrine\Tests\Models\Pagination\Company;
 use Doctrine\Tests\Models\Pagination\Department;
 use Doctrine\Tests\Models\Pagination\Logo;
 use Doctrine\Tests\Models\Pagination\User1;
 use Doctrine\Tests\OrmFunctionalTestCase;
 use ReflectionMethod;
+use function iterator_to_array;
 
 /**
  * @group DDC-1613
  */
 class PaginationTest extends OrmFunctionalTestCase
 {
-    protected function setUp()
+    protected function setUp() : void
     {
         $this->useModelSet('cms');
         $this->useModelSet('pagination');
         $this->useModelSet('company');
+        $this->useModelSet('custom_id_object_type');
+
+        if (DBALType::hasType(CustomIdObjectType::NAME)) {
+            DBALType::overrideType(CustomIdObjectType::NAME, CustomIdObjectType::class);
+        } else {
+            DBALType::addType(CustomIdObjectType::NAME, CustomIdObjectType::class);
+        }
+
         parent::setUp();
         $this->populate();
     }
@@ -641,6 +654,27 @@ class PaginationTest extends OrmFunctionalTestCase
         $this->assertEquals(1, $paginator->count());
     }
 
+    /**
+     * @group GH-7890
+     */
+    public function testCustomIdTypeWithoutOutputWalker()
+    {
+        $this->_em->persist(new CustomIdObjectTypeParent(new CustomIdObject('foo')));
+        $this->_em->flush();
+
+        $dql   = 'SELECT p FROM Doctrine\Tests\Models\CustomType\CustomIdObjectTypeParent p';
+        $query = $this->_em->createQuery($dql);
+
+        $paginator = new Paginator($query, true);
+        $paginator->setUseOutputWalkers(false);
+
+        $matchedItems = iterator_to_array($paginator->getIterator());
+
+        self::assertCount(1, $matchedItems);
+        self::assertInstanceOf(CustomIdObjectTypeParent::class, $matchedItems[0]);
+        self::assertSame('foo', (string) $matchedItems[0]->id);
+    }
+
     public function testCountQueryStripsParametersInSelect()
     {
         $query = $this->_em->createQuery(
@@ -677,14 +711,16 @@ class PaginationTest extends OrmFunctionalTestCase
     public function testPaginationWithSubSelectOrderByExpression($useOutputWalker, $fetchJoinCollection)
     {
         $query = $this->_em->createQuery(
-            "SELECT u, 
+            <<<'SQL'
+            SELECT u,
                 (
                     SELECT MAX(a.version)
-                    FROM Doctrine\\Tests\\Models\\CMS\\CmsArticle a
+                    FROM Doctrine\Tests\Models\CMS\CmsArticle a
                     WHERE a.user = u
                 ) AS HIDDEN max_version
-            FROM Doctrine\\Tests\\Models\\CMS\\CmsUser u
-            ORDER BY max_version DESC"
+            FROM Doctrine\Tests\Models\CMS\CmsUser u
+            ORDER BY max_version DESC
+SQL
         );
 
         $paginator = new Paginator($query, $fetchJoinCollection);

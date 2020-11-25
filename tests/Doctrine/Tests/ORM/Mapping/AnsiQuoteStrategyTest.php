@@ -2,9 +2,9 @@
 
 namespace Doctrine\Tests\ORM\Mapping;
 
-use Doctrine\Common\Persistence\Mapping\RuntimeReflectionService;
 use Doctrine\ORM\Mapping\AnsiQuoteStrategy;
 use Doctrine\ORM\Mapping\ClassMetadata;
+use Doctrine\Persistence\Mapping\RuntimeReflectionService;
 use Doctrine\Tests\Models\CMS\CmsAddress;
 use Doctrine\Tests\Models\CMS\CmsUser;
 use Doctrine\Tests\Models\DDC117\DDC117Article;
@@ -28,7 +28,7 @@ class AnsiQuoteStrategyTest extends OrmTestCase
      */
     private $platform;
 
-    protected function setUp()
+    protected function setUp() : void
     {
         parent::setUp();
 

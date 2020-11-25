@@ -4,10 +4,13 @@ namespace Doctrine\Tests\ORM\Functional\Ticket;
 
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\PersistentCollection;
+use Doctrine\Tests\VerifyDeprecations;
 
 class DDC729Test extends \Doctrine\Tests\OrmFunctionalTestCase
 {
-    public function setUp()
+    use VerifyDeprecations;
+
+    protected function setUp() : void
     {
         parent::setUp();
 
@@ -22,6 +25,12 @@ class DDC729Test extends \Doctrine\Tests\OrmFunctionalTestCase
         } catch(\Exception $e) {
 
         }
+    }
+
+    /** @after */
+    public function ensureTestGeneratedDeprecationMessages() : void
+    {
+        $this->assertHasDeprecationMessages();
     }
 
     public function testMergeManyToMany()

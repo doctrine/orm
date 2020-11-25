@@ -10,7 +10,7 @@ use Doctrine\Tests\Models\DDC3346\DDC3346Author;
  */
 class DDC3346Test extends \Doctrine\Tests\OrmFunctionalTestCase
 {
-    public function setUp()
+    protected function setUp() : void
     {
         $this->useModelSet('ddc3346');
 

@@ -10,9 +10,12 @@ use Doctrine\Tests\Models\DDC3231\DDC3231EntityRepository;
 use Doctrine\Tests\Models\DDC3231\DDC3231User1;
 use Doctrine\Tests\Models\DDC3231\DDC3231User2;
 use Doctrine\Tests\OrmTestCase;
+use Doctrine\Tests\VerifyDeprecations;
 
 class EntityRepositoryGeneratorTest extends OrmTestCase
 {
+    use VerifyDeprecations;
+
     /**
      * @var EntityGenerator
      */
@@ -29,7 +32,7 @@ class EntityRepositoryGeneratorTest extends OrmTestCase
     /**
      * @inheritdoc
      */
-    public function setUp()
+    protected function setUp() : void
     {
         $this->_namespace   = uniqid('doctrine_');
         $this->_tmpDir      = \sys_get_temp_dir() . DIRECTORY_SEPARATOR . $this->_namespace;
@@ -49,7 +52,7 @@ class EntityRepositoryGeneratorTest extends OrmTestCase
     /**
      * @inheritdoc
      */
-    public function tearDown()
+    public function tearDown() : void
     {
         $dirs = [];
 
@@ -68,6 +71,12 @@ class EntityRepositoryGeneratorTest extends OrmTestCase
         foreach ($dirs as $dir) {
             \rmdir($dir);
         }
+    }
+
+    /** @after */
+    public function ensureTestGeneratedDeprecationMessages() : void
+    {
+        $this->assertHasDeprecationMessages();
     }
 
     /**

@@ -3,7 +3,6 @@
 namespace Doctrine\Tests;
 
 use Doctrine\Common\Cache\ArrayCache;
-use Doctrine\Common\Persistence\Mapping\Driver\MappingDriver;
 use Doctrine\DBAL\Driver\Connection;
 use Doctrine\DBAL\Driver\PDOSqlite\Driver as SqliteDriver;
 use Doctrine\DBAL\Logging\DebugStack;
@@ -15,10 +14,12 @@ use Doctrine\ORM\Configuration;
 use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\Tools\DebugUnitOfWorkListener;
 use Doctrine\ORM\Tools\SchemaTool;
+use Doctrine\Persistence\Mapping\Driver\MappingDriver;
 use Doctrine\Tests\DbalTypes\Rot13Type;
 use Doctrine\Tests\EventListener\CacheMetadataListener;
 use Doctrine\Tests\Models;
 use PHPUnit\Framework\AssertionFailedError;
+use Throwable;
 
 /**
  * Base testcase class for all functional ORM testcases.
@@ -330,7 +331,7 @@ abstract class OrmFunctionalTestCase extends OrmTestCase
      *
      * @return void
      */
-    protected function tearDown()
+    protected function tearDown() : void
     {
         $conn = static::$_sharedConn;
 
@@ -341,7 +342,9 @@ abstract class OrmFunctionalTestCase extends OrmTestCase
 
         $platform = $conn->getDatabasePlatform();
 
-        $this->_sqlLoggerStack->enabled = false;
+        if ($this->_sqlLoggerStack instanceof DebugStack) {
+            $this->_sqlLoggerStack->enabled = false;
+        }
 
         if (isset($this->_usedModelSets['cms'])) {
             $conn->executeUpdate('DELETE FROM cms_users_groups');
@@ -637,7 +640,7 @@ abstract class OrmFunctionalTestCase extends OrmTestCase
      *
      * @return void
      */
-    protected function setUp()
+    protected function setUp() : void
     {
         $this->setUpDBALTypes();
 
@@ -780,13 +783,9 @@ abstract class OrmFunctionalTestCase extends OrmTestCase
     }
 
     /**
-     * @param \Throwable $e
-     *
-     * @return void
-     *
      * @throws \Throwable
      */
-    protected function onNotSuccessfulTest(\Throwable $e)
+    protected function onNotSuccessfulTest(Throwable $e) : void
     {
         if ($e instanceof AssertionFailedError) {
             throw $e;

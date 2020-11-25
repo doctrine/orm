@@ -36,6 +36,8 @@ class OneToManyPersister extends AbstractCollectionPersister
 {
     /**
      * {@inheritdoc}
+     *
+     * @return int|null
      */
     public function delete(PersistentCollection $collection)
     {
@@ -164,28 +166,6 @@ class OneToManyPersister extends AbstractCollectionPersister
         $criteria = new Criteria(Criteria::expr()->eq($mapping['mappedBy'], $collection->getOwner()));
 
         return $persister->exists($element, $criteria);
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function removeElement(PersistentCollection $collection, $element)
-    {
-        $mapping = $collection->getMapping();
-
-        if ( ! $mapping['orphanRemoval']) {
-            // no-op: this is not the owning side, therefore no operations should be applied
-            return false;
-        }
-
-        if ( ! $this->isValidEntityState($element)) {
-            return false;
-        }
-
-        return $this
-            ->uow
-            ->getEntityPersister($mapping['targetEntity'])
-            ->delete($element);
     }
 
     /**

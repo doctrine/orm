@@ -11,7 +11,7 @@ use Doctrine\DBAL\Types\Type as DBALType;
 
 class CustomIdObjectTypeTest extends OrmFunctionalTestCase
 {
-    protected function setUp()
+    protected function setUp() : void
     {
         if (DBALType::hasType(CustomIdObjectType::NAME)) {
             DBALType::overrideType(CustomIdObjectType::NAME, CustomIdObjectType::class);

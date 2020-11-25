@@ -27,6 +27,8 @@ use Doctrine\ORM\Mapping\ClassMetadataInfo;
  * @link    www.doctrine-project.org
  * @since   2.0
  * @author  Jonathan Wage <jonwage@gmail.com>
+ *
+ * @deprecated 2.7 This class is being removed from the ORM and won't have any replacement
  */
 class PhpExporter extends AbstractExporter
 {
@@ -180,6 +182,11 @@ class PhpExporter extends AbstractExporter
         return $export;
     }
 
+    /**
+     * @return string[]
+     *
+     * @psalm-return list<string>
+     */
     private function processEntityListeners(ClassMetadataInfo $metadata) : array
     {
         $lines = [];

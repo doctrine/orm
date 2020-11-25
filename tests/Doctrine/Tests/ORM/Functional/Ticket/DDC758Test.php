@@ -5,16 +5,24 @@ namespace Doctrine\Tests\ORM\Functional\Ticket;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Tests\Models\CMS\CmsUser;
 use Doctrine\Tests\Models\CMS\CmsGroup;
+use Doctrine\Tests\VerifyDeprecations;
 
 class DDC758Test extends \Doctrine\Tests\OrmFunctionalTestCase
 {
+    use VerifyDeprecations;
 
-    public function setUp()
+    protected function setUp() : void
     {
         $this->markTestSkipped('Destroys testsuite');
         $this->useModelSet("cms");
 
         parent::setUp();
+    }
+
+    /** @after */
+    public function ensureTestGeneratedDeprecationMessages() : void
+    {
+        $this->assertHasDeprecationMessages();
     }
 
     /**

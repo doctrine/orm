@@ -9,19 +9,22 @@ use Doctrine\Tests\Models\DDC117\DDC117Translation;
 use Doctrine\Tests\Models\DDC117\DDC117ApproveChanges;
 use Doctrine\Tests\Models\DDC117\DDC117Editor;
 use Doctrine\Tests\Models\DDC117\DDC117Link;
+use Doctrine\Tests\VerifyDeprecations;
 
 /**
  * @group DDC-117
  */
 class DDC117Test extends \Doctrine\Tests\OrmFunctionalTestCase
 {
+    use VerifyDeprecations;
+
     private $article1;
     private $article2;
     private $reference;
     private $translation;
     private $articleDetails;
 
-    protected function setUp()
+    protected function setUp() : void
     {
         $this->useModelSet('ddc117');
         parent::setUp();
@@ -435,11 +438,12 @@ class DDC117Test extends \Doctrine\Tests\OrmFunctionalTestCase
 
         $refRep = $this->_em->find(DDC117Reference::class, $idCriteria);
 
-        $this->_em->detach($refRep);
+        $this->_em->clear(DDC117Reference::class);
         $refRep = $this->_em->merge($refRep);
 
         $this->assertEquals($this->article1->id(), $refRep->source()->id());
         $this->assertEquals($this->article2->id(), $refRep->target()->id());
+        $this->assertHasDeprecationMessages();
     }
 
     /**

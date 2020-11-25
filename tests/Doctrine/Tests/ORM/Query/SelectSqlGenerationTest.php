@@ -26,7 +26,7 @@ class SelectSqlGenerationTest extends OrmTestCase
 {
     private $_em;
 
-    protected function setUp()
+    protected function setUp() : void
     {
         $this->_em = $this->_getTestEntityManager();
     }
@@ -281,11 +281,20 @@ class SelectSqlGenerationTest extends OrmTestCase
             'SELECT f0_.id AS id_0, f0_.username AS username_1 FROM forum_users f0_ ORDER BY f0_.id ASC'
         );
     }
+
     public function testSupportsOrderByDesc()
     {
         $this->assertSqlGeneration(
             'SELECT u FROM Doctrine\Tests\Models\Forum\ForumUser u ORDER BY u.id desc',
             'SELECT f0_.id AS id_0, f0_.username AS username_1 FROM forum_users f0_ ORDER BY f0_.id DESC'
+        );
+    }
+
+    public function testSupportsOrderByWithSimpleArithmeticExpression() : void
+    {
+        $this->assertSqlGeneration(
+            'SELECT u FROM Doctrine\Tests\Models\Forum\ForumUser u ORDER BY LENGTH(u.username) + LENGTH(u.username) asc',
+            'SELECT f0_.id AS id_0, f0_.username AS username_1 FROM forum_users f0_ ORDER BY LENGTH(f0_.username) + LENGTH(f0_.username) ASC'
         );
     }
 
@@ -901,11 +910,9 @@ class SelectSqlGenerationTest extends OrmTestCase
         );
     }
 
-    /**
-     * @expectedException \Doctrine\ORM\Query\QueryException
-     */
     public function testOrderBySupportsSingleValuedPathExpressionInverseSide()
     {
+        $this->expectException('Doctrine\ORM\Query\QueryException');
         $q = $this->_em->createQuery("select u from Doctrine\Tests\Models\CMS\CmsUser u order by u.address");
         $q->getSQL();
     }

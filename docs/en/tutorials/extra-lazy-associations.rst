@@ -3,7 +3,7 @@ Extra Lazy Associations
 
 .. versionadded:: 2.1
 
-In many cases associations between entities can get pretty large. Even in a simple scenario like a blog.
+In many cases associations between entities can get pretty large. Even in a simple scenario like a blog
 where posts can be commented, you always have to assume that a post draws hundreds of comments.
 In Doctrine 2.0 if you accessed an association it would always get loaded completely into memory. This
 can lead to pretty serious performance problems, if your associations contain several hundreds or thousands
@@ -33,6 +33,15 @@ Additionally even with Doctrine 2.0 the following methods do not trigger the col
 
 With extra lazy collections you can now not only add entities to large collections but also paginate them
 easily using a combination of ``count`` and ``slice``.
+
+
+.. warning::
+
+   ``removeElement`` directly issued DELETE queries to the database from
+   version 2.4.0 to 2.7.0.  This circumvents the flush operation and might run
+   outside a transactional boundary if you don't create one yourself. We
+   consider this a critical bug in the assumptio of how the ORM works and
+   reverted ``removeElement`` EXTRA_LAZY behavior in 2.7.1.
 
 
 Enabling Extra-Lazy Associations

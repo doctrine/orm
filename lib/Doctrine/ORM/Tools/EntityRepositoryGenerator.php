@@ -20,6 +20,8 @@
 namespace Doctrine\ORM\Tools;
 
 use Doctrine\ORM\EntityRepository;
+use const E_USER_DEPRECATED;
+use function trigger_error;
 
 /**
  * Class to generate entity repository classes
@@ -31,6 +33,8 @@ use Doctrine\ORM\EntityRepository;
  * @author  Guilherme Blanco <guilhermeblanco@hotmail.com>
  * @author  Jonathan Wage <jonwage@gmail.com>
  * @author  Roman Borschel <roman@code-factory.org>
+ *
+ * @deprecated 2.7 This class is being removed from the ORM and won't have any replacement
  */
 class EntityRepositoryGenerator
 {
@@ -51,6 +55,11 @@ class <className> extends <repositoryName>
 {
 }
 ';
+
+    public function __construct()
+    {
+        @trigger_error(self::class . ' is deprecated and will be removed in Doctrine ORM 3.0', E_USER_DEPRECATED);
+    }
 
     /**
      * @param string $fullClassName
@@ -161,7 +170,7 @@ class <className> extends <repositoryName>
     /**
      * @param string $repositoryName
      *
-     * @return \Doctrine\ORM\Tools\EntityRepositoryGenerator
+     * @return self
      */
     public function setDefaultRepositoryName($repositoryName)
     {

@@ -6,7 +6,7 @@ use Doctrine\Tests\Models\Company\CompanyPerson;
 
 class DDC163Test extends \Doctrine\Tests\OrmFunctionalTestCase
 {
-    protected function setUp()
+    protected function setUp() : void
     {
         $this->useModelSet('company');
         parent::setUp();

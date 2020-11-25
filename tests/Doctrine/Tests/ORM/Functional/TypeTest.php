@@ -12,7 +12,7 @@ use Doctrine\Tests\OrmFunctionalTestCase;
 
 class TypeTest extends OrmFunctionalTestCase
 {
-    protected function setUp()
+    protected function setUp() : void
     {
         $this->useModelSet('generic');
 

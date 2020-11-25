@@ -2,8 +2,8 @@
 
 namespace Doctrine\Tests\ORM\Mapping;
 
-use Doctrine\Common\Persistence\Mapping\Driver\PHPDriver;
 use Doctrine\ORM\Mapping\ClassMetadata;
+use Doctrine\Persistence\Mapping\Driver\PHPDriver;
 use Doctrine\Tests\Models\DDC889\DDC889Class;
 use Doctrine\Tests\ORM\Mapping;
 
@@ -35,12 +35,10 @@ class PHPMappingDriverTest extends AbstractMappingDriverTest
         self::assertInstanceOf(ClassMetadata::class, $this->createClassMetadata(DDC889Class::class));
     }
 
-    /**
-     * @expectedException Doctrine\ORM\Cache\CacheException
-     * @expectedExceptionMessage Entity association field "Doctrine\Tests\ORM\Mapping\PHPSLC#foo" not configured as part of the second-level cache.
-     */
     public function testFailingSecondLevelCacheAssociation()
     {
+        $this->expectException('Doctrine\ORM\Cache\CacheException');
+        $this->expectExceptionMessage('Entity association field "Doctrine\Tests\ORM\Mapping\PHPSLC#foo" not configured as part of the second-level cache.');
         $mappingDriver = $this->_loadDriver();
 
         $class = new ClassMetadata(Mapping\PHPSLC::class);

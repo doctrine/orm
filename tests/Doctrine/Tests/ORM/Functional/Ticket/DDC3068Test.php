@@ -16,7 +16,7 @@ class DDC3068Test extends \Doctrine\Tests\OrmFunctionalTestCase
     private $foo;
     private $merc;
 
-    protected function setUp()
+    protected function setUp() : void
     {
         $this->useModelSet('taxi');
         parent::setUp();

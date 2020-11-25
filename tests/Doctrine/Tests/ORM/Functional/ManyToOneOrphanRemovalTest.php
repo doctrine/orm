@@ -2,9 +2,9 @@
 
 namespace Doctrine\Tests\ORM\Functional;
 
-use Doctrine\Common\Persistence\Mapping\Driver\MappingDriver;
 use Doctrine\DBAL\Driver\Connection;
 use Doctrine\ORM\Mapping\Driver\XmlDriver;
+use Doctrine\Persistence\Mapping\Driver\MappingDriver;
 use Doctrine\Tests\Models\OrnementalOrphanRemoval\PhoneNumber;
 use Doctrine\Tests\Models\OrnementalOrphanRemoval\Person;
 use Doctrine\Tests\OrmFunctionalTestCase;
@@ -23,7 +23,7 @@ class ManyToOneOrphanRemovalTest extends OrmFunctionalTestCase
         ]
     ];
 
-    protected function setUp()
+    protected function setUp() : void
     {
         $this->useModelSet('ornemental_orphan_removal');
 

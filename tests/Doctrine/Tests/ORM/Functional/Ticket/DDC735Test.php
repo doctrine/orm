@@ -6,7 +6,7 @@ use Doctrine\Common\Collections\ArrayCollection;
 
 class DDC735Test extends \Doctrine\Tests\OrmFunctionalTestCase
 {
-    protected function setUp()
+    protected function setUp() : void
     {
         parent::setUp();
         try {

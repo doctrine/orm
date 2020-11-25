@@ -96,7 +96,6 @@ class ResolveTargetEntityListener implements EventSubscriber
      */
     public function loadClassMetadata(LoadClassMetadataEventArgs $args)
     {
-        /* @var $cm \Doctrine\ORM\Mapping\ClassMetadata */
         $cm = $args->getClassMetadata();
 
         foreach ($cm->associationMappings as $mapping) {

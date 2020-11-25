@@ -46,7 +46,7 @@ class DefaultQueryCacheTest extends OrmTestCase
      */
     private $cacheFactory;
 
-    protected function setUp()
+    protected function setUp() : void
     {
         parent::setUp();
 
@@ -354,6 +354,34 @@ class DefaultQueryCacheTest extends OrmTestCase
         $this->assertEquals('Bar', $result[1]->getName());
     }
 
+    public function testGetWithAssociationCacheMiss() : void
+    {
+        $rsm   = new ResultSetMappingBuilder($this->em);
+        $key   = new QueryCacheKey('query.key1', 0);
+        $entry = new QueryCacheEntry(
+            [
+                ['identifier' => ['id' => 1]],
+                ['identifier' => ['id' => 2]],
+            ]
+        );
+
+        $this->region->addReturn('get', $entry);
+
+        $this->region->addReturn(
+            'getMultiple',
+            [
+                new EntityCacheEntry(Country::class, ['id' => 1, 'name' => 'Foo']),
+                false,
+            ]
+        );
+
+        $rsm->addRootEntityFromClassMetadata(Country::class, 'c');
+
+        $result = $this->queryCache->get($key, $rsm);
+
+        self::assertNull($result);
+    }
+
     public function testCancelPutResultIfEntityPutFails()
     {
         $result   = [];
@@ -612,12 +640,10 @@ class DefaultQueryCacheTest extends OrmTestCase
         $this->assertCount(1, $attractions[1]);
     }
 
-    /**
-     * @expectedException Doctrine\ORM\Cache\CacheException
-     * @expectedExceptionMessage Second level cache does not support scalar results.
-     */
     public function testScalarResultException()
     {
+        $this->expectException('Doctrine\ORM\Cache\CacheException');
+        $this->expectExceptionMessage('Second level cache does not support scalar results.');
         $result   = [];
         $key      = new QueryCacheKey('query.key1', 0);
         $rsm      = new ResultSetMappingBuilder($this->em);
@@ -627,12 +653,10 @@ class DefaultQueryCacheTest extends OrmTestCase
         $this->queryCache->put($key, $rsm, $result);
     }
 
-    /**
-     * @expectedException Doctrine\ORM\Cache\CacheException
-     * @expectedExceptionMessage Second level cache does not support multiple root entities.
-     */
     public function testSupportMultipleRootEntitiesException()
     {
+        $this->expectException('Doctrine\ORM\Cache\CacheException');
+        $this->expectExceptionMessage('Second level cache does not support multiple root entities.');
         $result   = [];
         $key      = new QueryCacheKey('query.key1', 0);
         $rsm      = new ResultSetMappingBuilder($this->em);
@@ -643,12 +667,10 @@ class DefaultQueryCacheTest extends OrmTestCase
         $this->queryCache->put($key, $rsm, $result);
     }
 
-    /**
-     * @expectedException Doctrine\ORM\Cache\CacheException
-     * @expectedExceptionMessage Entity "Doctrine\Tests\Models\Generic\BooleanModel" not configured as part of the second-level cache.
-     */
     public function testNotCacheableEntityException()
     {
+        $this->expectException('Doctrine\ORM\Cache\CacheException');
+        $this->expectExceptionMessage('Entity "Doctrine\Tests\Models\Generic\BooleanModel" not configured as part of the second-level cache.');
         $result    = [];
         $key       = new QueryCacheKey('query.key1', 0);
         $rsm       = new ResultSetMappingBuilder($this->em);

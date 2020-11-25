@@ -8,7 +8,7 @@ final class GH6531Test extends \Doctrine\Tests\OrmFunctionalTestCase
 {
     protected function setUp() : void
     {
-        parent::setup();
+        parent::setUp();
 
         $this->setUpEntitySchema(
             [

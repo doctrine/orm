@@ -328,8 +328,8 @@ annotation.
 
 In most cases using the automatic generator strategy (``@GeneratedValue``) is
 what you want. It defaults to the identifier generation mechanism your current
-database vendor prefers: AUTO_INCREMENT with MySQL, SERIAL with PostgreSQL,
-Sequences with Oracle and so on.
+database vendor prefers: AUTO_INCREMENT with MySQL, sequences with PostgreSQL 
+and Oracle and so on.
 
 Identifier Generation Strategies
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~

@@ -41,10 +41,6 @@
         <exclude-pattern>lib/Doctrine/ORM/Annotation/*</exclude-pattern>
     </rule>
 
-    <rule ref="SlevomatCodingStandard.ControlStructures.DisallowEqualOperators.DisallowedNotEqualOperator">
-        <exclude-pattern>lib/Doctrine/ORM/Internal/Hydration/AbstractHydrator.php</exclude-pattern>
-    </rule>
-
     <rule ref="PSR1.Methods.CamelCapsMethodName.NotCamelCaps">
         <exclude-pattern>lib/Doctrine/ORM/Query/Parser.php</exclude-pattern>
     </rule>

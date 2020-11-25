@@ -7,7 +7,7 @@ namespace Doctrine\Tests\ORM\Functional\Ticket;
  */
 class DDC1654Test extends \Doctrine\Tests\OrmFunctionalTestCase
 {
-    public function setUp()
+    protected function setUp() : void
     {
         parent::setUp();
         $this->setUpEntitySchema(
@@ -18,7 +18,7 @@ class DDC1654Test extends \Doctrine\Tests\OrmFunctionalTestCase
         );
     }
 
-    public function tearDown()
+    public function tearDown() : void
     {
         $conn = static::$_sharedConn;
         $conn->executeUpdate('DELETE FROM ddc1654post_ddc1654comment');

@@ -5,13 +5,16 @@ namespace Doctrine\Tests\ORM\Functional;
 use Doctrine\Tests\Models\MixedToOneIdentity\CompositeToOneKeyState;
 use Doctrine\Tests\Models\MixedToOneIdentity\Country;
 use Doctrine\Tests\OrmFunctionalTestCase;
+use Doctrine\Tests\VerifyDeprecations;
 
 class MergeCompositeToOneKeyTest extends OrmFunctionalTestCase
 {
+    use VerifyDeprecations;
+
     /**
      * {@inheritDoc}
      */
-    protected function setUp()
+    protected function setUp() : void
     {
         parent::setUp();
 
@@ -43,5 +46,6 @@ class MergeCompositeToOneKeyTest extends OrmFunctionalTestCase
         $this->assertNotSame($state, $merged);
         $this->assertInstanceOf(Country::class, $merged->country);
         $this->assertNotSame($country, $merged->country);
+        $this->assertHasDeprecationMessages();
     }
 }

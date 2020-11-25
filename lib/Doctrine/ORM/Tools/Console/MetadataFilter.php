@@ -19,6 +19,8 @@
 
 namespace Doctrine\ORM\Tools\Console;
 
+use Doctrine\Persistence\Mapping\ClassMetadata;
+
 /**
  * Used by CLI Tools to restrict entity-based commands to given patterns.
  *
@@ -40,10 +42,10 @@ class MetadataFilter extends \FilterIterator implements \Countable
     /**
      * Filter Metadatas by one or more filter options.
      *
-     * @param array        $metadatas
-     * @param array|string $filter
+     * @param ClassMetadata[] $metadatas
+     * @param string[]|string $filter
      *
-     * @return array
+     * @return ClassMetadata[]
      */
     static public function filter(array $metadatas, $filter)
     {

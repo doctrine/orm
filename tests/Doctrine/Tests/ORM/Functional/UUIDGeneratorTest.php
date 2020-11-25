@@ -7,7 +7,7 @@ use Doctrine\Tests\OrmFunctionalTestCase;
  */
 class UUIDGeneratorTest extends OrmFunctionalTestCase
 {
-    public function setUp()
+    protected function setUp() : void
     {
         parent::setUp();
 

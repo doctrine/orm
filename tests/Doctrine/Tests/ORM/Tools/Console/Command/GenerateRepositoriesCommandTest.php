@@ -2,20 +2,22 @@
 
 namespace Doctrine\Tests\ORM\Tools\Console\Command;
 
-use Doctrine\Common\Persistence\Mapping\ClassMetadataFactory;
 use Doctrine\ORM\Configuration;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\EntityRepository;
 use Doctrine\ORM\Tools\Console\Command\GenerateRepositoriesCommand;
 use Doctrine\ORM\Tools\Console\Helper\EntityManagerHelper;
+use Doctrine\Persistence\Mapping\ClassMetadataFactory;
 use Doctrine\Tests\Models\DDC3231\DDC3231EntityRepository;
 use Doctrine\Tests\OrmFunctionalTestCase;
+use Doctrine\Tests\VerifyDeprecations;
 use Symfony\Component\Console\Application;
 use Symfony\Component\Console\Helper\HelperSet;
 use Symfony\Component\Console\Tester\CommandTester;
 
 class GenerateRepositoriesCommandTest extends OrmFunctionalTestCase
 {
+    use VerifyDeprecations;
     /**
      * @var \Symfony\Component\Console\Application
      */
@@ -26,7 +28,7 @@ class GenerateRepositoriesCommandTest extends OrmFunctionalTestCase
     /**
      * @inheritdoc
      */
-    protected function setUp()
+    protected function setUp() : void
     {
         parent::setUp();
 
@@ -45,7 +47,7 @@ class GenerateRepositoriesCommandTest extends OrmFunctionalTestCase
     /**
      * @inheritdoc
      */
-    public function tearDown()
+    public function tearDown() : void
     {
         $dirs = [];
 
@@ -89,6 +91,7 @@ class GenerateRepositoriesCommandTest extends OrmFunctionalTestCase
 
         self::assertSame(EntityRepository::class, $repo1->getParentClass()->getName());
         self::assertSame(EntityRepository::class, $repo2->getParentClass()->getName());
+        $this->assertHasDeprecationMessages();
     }
 
     public function testGenerateRepositoriesCustomDefaultRepository()
@@ -112,6 +115,7 @@ class GenerateRepositoriesCommandTest extends OrmFunctionalTestCase
 
         self::assertSame(DDC3231EntityRepository::class, $repo1->getParentClass()->getName());
         self::assertSame(DDC3231EntityRepository::class, $repo2->getParentClass()->getName());
+        $this->assertHasDeprecationMessages();
     }
 
     /**
@@ -168,6 +172,7 @@ class GenerateRepositoriesCommandTest extends OrmFunctionalTestCase
             ]
         );
 
-        self::assertContains('[OK] No Metadata Classes to process.', $tester->getDisplay());
+        self::assertStringContainsString('Command orm:generate-repositories is deprecated and will be removed in Doctrine ORM 3.0.', $tester->getDisplay());
+        self::assertStringContainsString('[OK] No Metadata Classes to process.', $tester->getDisplay());
     }
 }

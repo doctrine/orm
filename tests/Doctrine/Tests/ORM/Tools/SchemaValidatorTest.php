@@ -18,7 +18,7 @@ class SchemaValidatorTest extends OrmTestCase
      */
     private $validator = null;
 
-    public function setUp()
+    protected function setUp() : void
     {
         $this->em = $this->_getTestEntityManager();
         $this->validator = new SchemaValidator($this->em);

@@ -38,6 +38,8 @@ use Symfony\Component\Console\Style\SymfonyStyle;
  * @author  Guilherme Blanco <guilhermeblanco@hotmail.com>
  * @author  Jonathan Wage <jonwage@gmail.com>
  * @author  Roman Borschel <roman@code-factory.org>
+ *
+ * @deprecated 2.7 This class is being removed from the ORM and won't have any replacement
  */
 class GenerateEntitiesCommand extends Command
 {
@@ -87,6 +89,7 @@ EOT
     protected function execute(InputInterface $input, OutputInterface $output)
     {
         $ui = new SymfonyStyle($input, $output);
+        $ui->warning('Command ' . $this->getName() . ' is deprecated and will be removed in Doctrine ORM 3.0.');
 
         $em = $this->getHelper('em')->getEntityManager();
 
@@ -112,7 +115,7 @@ EOT
 
         if (empty($metadatas)) {
             $ui->success('No Metadata Classes to process.');
-            return;
+            return 0;
         }
 
         $entityGenerator = new EntityGenerator();
@@ -121,7 +124,7 @@ EOT
         $entityGenerator->setGenerateStubMethods($input->getOption('generate-methods'));
         $entityGenerator->setRegenerateEntityIfExists($input->getOption('regenerate-entities'));
         $entityGenerator->setUpdateEntityIfExists($input->getOption('update-entities'));
-        $entityGenerator->setNumSpaces($input->getOption('num-spaces'));
+        $entityGenerator->setNumSpaces((int) $input->getOption('num-spaces'));
         $entityGenerator->setBackupExisting(!$input->getOption('no-backup'));
 
         if (($extend = $input->getOption('extend')) !== null) {
@@ -138,5 +141,7 @@ EOT
         // Outputting information message
         $ui->newLine();
         $ui->success(sprintf('Entity classes generated to "%s"', $destPath));
+
+        return 0;
     }
 }

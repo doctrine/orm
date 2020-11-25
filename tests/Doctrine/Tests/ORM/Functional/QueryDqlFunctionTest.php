@@ -14,7 +14,7 @@ use function sprintf;
  */
 class QueryDqlFunctionTest extends OrmFunctionalTestCase
 {
-    protected function setUp()
+    protected function setUp() : void
     {
         $this->useModelSet('company');
         parent::setUp();
@@ -279,12 +279,12 @@ class QueryDqlFunctionTest extends OrmFunctionalTestCase
         $query = $this->_em->createQuery("SELECT DATE_DIFF(CURRENT_TIMESTAMP(), DATE_ADD(CURRENT_TIMESTAMP(), 10, 'day')) AS diff FROM Doctrine\Tests\Models\Company\CompanyManager m");
         $arg = $query->getArrayResult();
 
-        $this->assertEquals(-10, $arg[0]['diff'], "Should be roughly -10 (or -9)", 1);
+        $this->assertEqualsWithDelta(-10, $arg[0]['diff'], 1, 'Should be roughly -10 (or -9)');
 
         $query = $this->_em->createQuery("SELECT DATE_DIFF(DATE_ADD(CURRENT_TIMESTAMP(), 10, 'day'), CURRENT_TIMESTAMP()) AS diff FROM Doctrine\Tests\Models\Company\CompanyManager m");
         $arg = $query->getArrayResult();
 
-        $this->assertEquals(10, $arg[0]['diff'], "Should be roughly 10 (or 9)", 1);
+        $this->assertEqualsWithDelta(10, $arg[0]['diff'], 1, 'Should be roughly 10 (or 9)');
     }
 
     /**
@@ -309,11 +309,11 @@ class QueryDqlFunctionTest extends OrmFunctionalTestCase
         self::assertArrayHasKey('now', $result);
         self::assertArrayHasKey('add', $result);
 
-        self::assertEquals(
+        self::assertEqualsWithDelta(
             (new \DateTimeImmutable($result['now']))->modify(sprintf('+%d %s', $amount, $unit)),
             new \DateTimeImmutable($result['add']),
-            '',
-            $delta
+            $delta,
+            ''
         );
     }
 
@@ -339,11 +339,11 @@ class QueryDqlFunctionTest extends OrmFunctionalTestCase
         self::assertArrayHasKey('now', $result);
         self::assertArrayHasKey('sub', $result);
 
-        self::assertEquals(
+        self::assertEqualsWithDelta(
             (new \DateTimeImmutable($result['now']))->modify(sprintf('-%d %s', $amount, $unit)),
             new \DateTimeImmutable($result['sub']),
-            '',
-            $delta
+            $delta,
+            ''
         );
     }
 

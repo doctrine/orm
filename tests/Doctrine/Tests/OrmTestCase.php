@@ -4,7 +4,6 @@ namespace Doctrine\Tests;
 
 use Doctrine\Common\Annotations;
 use Doctrine\Common\Cache\ArrayCache;
-use Doctrine\Common\Version;
 use Doctrine\DBAL\DriverManager;
 use Doctrine\ORM\Cache\CacheConfiguration;
 use Doctrine\ORM\Cache\DefaultCacheFactory;
@@ -65,37 +64,12 @@ abstract class OrmTestCase extends DoctrineTestCase
      */
     protected function createAnnotationDriver($paths = [], $alias = null)
     {
-        if (version_compare(Version::VERSION, '3.0.0', '>=')) {
-            $reader = new Annotations\CachedReader(new Annotations\AnnotationReader(), new ArrayCache());
-        } else if (version_compare(Version::VERSION, '2.2.0-DEV', '>=')) {
-            // Register the ORM Annotations in the AnnotationRegistry
-            $reader = new Annotations\SimpleAnnotationReader();
+        // Register the ORM Annotations in the AnnotationRegistry
+        $reader = new Annotations\SimpleAnnotationReader();
 
-            $reader->addNamespace('Doctrine\ORM\Mapping');
+        $reader->addNamespace('Doctrine\ORM\Mapping');
 
-            $reader = new Annotations\CachedReader($reader, new ArrayCache());
-        } else if (version_compare(Version::VERSION, '2.1.0-BETA3-DEV', '>=')) {
-            $reader = new Annotations\AnnotationReader();
-
-            $reader->setIgnoreNotImportedAnnotations(true);
-            $reader->setEnableParsePhpImports(false);
-
-            if ($alias) {
-                $reader->setAnnotationNamespaceAlias('Doctrine\ORM\Mapping\\', $alias);
-            } else {
-                $reader->setDefaultAnnotationNamespace('Doctrine\ORM\Mapping\\');
-            }
-
-            $reader = new Annotations\CachedReader(new Annotations\IndexedReader($reader), new ArrayCache());
-        } else {
-            $reader = new Annotations\AnnotationReader();
-
-            if ($alias) {
-                $reader->setAnnotationNamespaceAlias('Doctrine\ORM\Mapping\\', $alias);
-            } else {
-                $reader->setDefaultAnnotationNamespace('Doctrine\ORM\Mapping\\');
-            }
-        }
+        $reader = new Annotations\CachedReader($reader, new ArrayCache());
 
         Annotations\AnnotationRegistry::registerFile(__DIR__ . "/../../../lib/Doctrine/ORM/Mapping/Driver/DoctrineAnnotations.php");
 

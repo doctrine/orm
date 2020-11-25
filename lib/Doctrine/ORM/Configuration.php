@@ -25,8 +25,6 @@ use Doctrine\Common\Annotations\CachedReader;
 use Doctrine\Common\Annotations\SimpleAnnotationReader;
 use Doctrine\Common\Cache\ArrayCache;
 use Doctrine\Common\Cache\Cache as CacheDriver;
-use Doctrine\Common\Persistence\Mapping\Driver\MappingDriver;
-use Doctrine\Common\Persistence\ObjectRepository;
 use Doctrine\Common\Proxy\AbstractProxyFactory;
 use Doctrine\ORM\Cache\CacheConfiguration;
 use Doctrine\ORM\Mapping\ClassMetadataFactory;
@@ -39,6 +37,9 @@ use Doctrine\ORM\Mapping\NamingStrategy;
 use Doctrine\ORM\Mapping\QuoteStrategy;
 use Doctrine\ORM\Repository\DefaultRepositoryFactory;
 use Doctrine\ORM\Repository\RepositoryFactory;
+use Doctrine\Persistence\Mapping\Driver\MappingDriver;
+use Doctrine\Persistence\ObjectRepository;
+use function interface_exists;
 
 /**
  * Configuration container for all configuration options of Doctrine.
@@ -70,6 +71,9 @@ class Configuration extends \Doctrine\DBAL\Configuration
      * Gets the directory where Doctrine generates any necessary proxy class files.
      *
      * @return string|null
+     *
+     * @deprecated 2.7 We're switch to `ocramius/proxy-manager` and this method isn't applicable any longer
+     * @see https://github.com/Ocramius/ProxyManager
      */
     public function getProxyDir()
     {
@@ -82,6 +86,9 @@ class Configuration extends \Doctrine\DBAL\Configuration
      * Gets the strategy for automatically generating proxy classes.
      *
      * @return int Possible values are constants of Doctrine\Common\Proxy\AbstractProxyFactory.
+     *
+     * @deprecated 2.7 We're switch to `ocramius/proxy-manager` and this method isn't applicable any longer
+     * @see https://github.com/Ocramius/ProxyManager
      */
     public function getAutoGenerateProxyClasses()
     {
@@ -107,6 +114,9 @@ class Configuration extends \Doctrine\DBAL\Configuration
      * Gets the namespace where proxy classes reside.
      *
      * @return string|null
+     *
+     * @deprecated 2.7 We're switch to `ocramius/proxy-manager` and this method isn't applicable any longer
+     * @see https://github.com/Ocramius/ProxyManager
      */
     public function getProxyNamespace()
     {
@@ -432,6 +442,7 @@ class Configuration extends \Doctrine\DBAL\Configuration
      * @param string $name
      *
      * @return string|null
+     * @psalm-return ?class-string
      */
     public function getCustomStringFunction($name)
     {
@@ -484,6 +495,7 @@ class Configuration extends \Doctrine\DBAL\Configuration
      * @param string $name
      *
      * @return string|null
+     * @psalm-return ?class-string
      */
     public function getCustomNumericFunction($name)
     {
@@ -524,6 +536,8 @@ class Configuration extends \Doctrine\DBAL\Configuration
      * @param string|callable $className Class name or a callable that returns the function.
      *
      * @return void
+     *
+     * @psalm-param class-string|callable $className
      */
     public function addCustomDatetimeFunction($name, $className)
     {
@@ -536,6 +550,8 @@ class Configuration extends \Doctrine\DBAL\Configuration
      * @param string $name
      *
      * @return string|null
+     *
+     * @psalm-return ?class-string $name
      */
     public function getCustomDatetimeFunction($name)
     {
@@ -557,6 +573,8 @@ class Configuration extends \Doctrine\DBAL\Configuration
      * @param array $functions The map of custom DQL date/time functions.
      *
      * @return void
+     *
+     * @psalm-param array<string, string> $functions
      */
     public function setCustomDatetimeFunctions(array $functions)
     {
@@ -587,6 +605,8 @@ class Configuration extends \Doctrine\DBAL\Configuration
      * @param string $modeName The hydration mode name.
      *
      * @return string|null The hydrator class name.
+     *
+     * @psalm-return ?class-string
      */
     public function getCustomHydrationMode($modeName)
     {
@@ -614,6 +634,8 @@ class Configuration extends \Doctrine\DBAL\Configuration
      * @param string $cmfName
      *
      * @return void
+     *
+     * @psalm-param class-string $cmfName
      */
     public function setClassMetadataFactoryName($cmfName)
     {
@@ -622,6 +644,8 @@ class Configuration extends \Doctrine\DBAL\Configuration
 
     /**
      * @return string
+     *
+     * @psalm-return class-string
      */
     public function getClassMetadataFactoryName()
     {
@@ -648,8 +672,10 @@ class Configuration extends \Doctrine\DBAL\Configuration
      *
      * @param string $name The name of the filter.
      *
-     * @return string The class name of the filter, or null if it is not
+     * @return string|null The class name of the filter, or null if it is not
      *  defined.
+     *
+     * @psalm-return ?class-string
      */
     public function getFilterClassName($name)
     {
@@ -667,7 +693,7 @@ class Configuration extends \Doctrine\DBAL\Configuration
      *
      * @return void
      *
-     * @throws ORMException If not is a \Doctrine\Common\Persistence\ObjectRepository
+     * @throws ORMException If $classname is not an ObjectRepository.
      */
     public function setDefaultRepositoryClassName($className)
     {
@@ -686,6 +712,8 @@ class Configuration extends \Doctrine\DBAL\Configuration
      * @since 2.2
      *
      * @return string
+     *
+     * @psalm-return class-string
      */
     public function getDefaultRepositoryClassName()
     {
@@ -909,3 +937,5 @@ class Configuration extends \Doctrine\DBAL\Configuration
         $this->_attributes['defaultQueryHints'][$name] = $value;
     }
 }
+
+interface_exists(MappingDriver::class);

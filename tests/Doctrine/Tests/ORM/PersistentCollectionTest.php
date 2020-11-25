@@ -3,6 +3,7 @@
 namespace Doctrine\Tests\ORM;
 
 use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\ORM\Mapping\ClassMetadataInfo;
 use Doctrine\ORM\PersistentCollection;
 use Doctrine\ORM\UnitOfWork;
 use Doctrine\Tests\Mocks\ConnectionMock;
@@ -29,7 +30,7 @@ class PersistentCollectionTest extends OrmTestCase
      */
     private $_emMock;
 
-    protected function setUp()
+    protected function setUp() : void
     {
         parent::setUp();
 
@@ -263,5 +264,14 @@ class PersistentCollectionTest extends OrmTestCase
         );
         self::assertTrue($this->collection->isInitialized());
         self::assertFalse($this->collection->isDirty());
+    }
+
+    public function testModifyUOWForDeferredImplicitOwnerOnClear() : void
+    {
+        $unitOfWork = $this->createMock(UnitOfWork::class);
+        $unitOfWork->expects(self::once())->method('scheduleCollectionDeletion');
+        $this->_emMock->setUnitOfWork($unitOfWork);
+
+        $this->collection->clear();
     }
 }

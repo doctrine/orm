@@ -16,7 +16,7 @@ class AssignedGeneratorTest extends OrmTestCase
     private $_em;
     private $_assignedGen;
 
-    protected function setUp()
+    protected function setUp() : void
     {
         $this->_em = $this->_getTestEntityManager();
         $this->_assignedGen = new AssignedGenerator;

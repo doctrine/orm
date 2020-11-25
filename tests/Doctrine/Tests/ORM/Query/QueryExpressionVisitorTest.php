@@ -26,7 +26,7 @@ class QueryExpressionVisitorTest extends TestCase
     /**
      * {@inheritDoc}
      */
-    protected function setUp()
+    protected function setUp() : void
     {
         $this->visitor = new QueryExpressionVisitor(['o','p']);
     }
@@ -67,6 +67,7 @@ class QueryExpressionVisitorTest extends TestCase
             [$cb->notIn('field', ['value']), $qb->notIn('o.field', ':field'), new Parameter('field', ['value'])],
 
             [$cb->contains('field', 'value'), $qb->like('o.field', ':field'), new Parameter('field', '%value%')],
+            [$cb->memberOf(':field', 'o.field'), $qb->isMemberOf(':field', 'o.field')],
 
             [$cb->startsWith('field', 'value'), $qb->like('o.field', ':field'), new Parameter('field', 'value%')],
             [$cb->endsWith('field', 'value'), $qb->like('o.field', ':field'), new Parameter('field', '%value')],

@@ -39,7 +39,7 @@ side of the association and these 2 references both represent the
 same association but can change independently of one another. Of
 course, in a correct application the semantics of the bidirectional
 association are properly maintained by the application developer
-(that's his responsibility). Doctrine needs to know which of these
+(that's their responsibility). Doctrine needs to know which of these
 two in-memory references is the one that should be persisted and
 which not. This is what the owning/inverse concept is mainly used
 for.

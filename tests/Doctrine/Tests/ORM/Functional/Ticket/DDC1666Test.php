@@ -10,7 +10,7 @@ use Doctrine\Tests\Models\CMS\CmsEmail;
  */
 class DDC1666Test extends \Doctrine\Tests\OrmFunctionalTestCase
 {
-    public function setUp()
+    protected function setUp() : void
     {
         $this->useModelSet('cms');
         parent::setUp();

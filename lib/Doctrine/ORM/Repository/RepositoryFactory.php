@@ -20,6 +20,7 @@
 namespace Doctrine\ORM\Repository;
 
 use Doctrine\ORM\EntityManagerInterface;
+use Doctrine\Persistence\ObjectRepository;
 
 /**
  * Interface for entity repository factory.
@@ -35,7 +36,7 @@ interface RepositoryFactory
      * @param \Doctrine\ORM\EntityManagerInterface $entityManager The EntityManager instance.
      * @param string                               $entityName    The name of the entity.
      *
-     * @return \Doctrine\Common\Persistence\ObjectRepository
+     * @return ObjectRepository
      */
     public function getRepository(EntityManagerInterface $entityManager, $entityName);
 }

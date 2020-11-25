@@ -25,7 +25,7 @@ class IdentifierFlattenerTest extends OrmFunctionalTestCase
      */
     private $identifierFlattener;
 
-    protected function setUp()
+    protected function setUp() : void
     {
         parent::setUp();
 

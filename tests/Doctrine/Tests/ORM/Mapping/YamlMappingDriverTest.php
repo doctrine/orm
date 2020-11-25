@@ -8,10 +8,13 @@ use Doctrine\ORM\Mapping\Driver\YamlDriver;
 use Doctrine\Tests\Models\DirectoryTree\Directory;
 use Doctrine\Tests\Models\DirectoryTree\File;
 use Doctrine\Tests\Models\Generic\SerializationModel;
+use Doctrine\Tests\VerifyDeprecations;
 use Symfony\Component\Yaml\Yaml;
 
 class YamlMappingDriverTest extends AbstractMappingDriverTest
 {
+    use VerifyDeprecations;
+
     protected function _loadDriver()
     {
         if (!class_exists(Yaml::class, true)) {
@@ -43,16 +46,16 @@ class YamlMappingDriverTest extends AbstractMappingDriverTest
         $classDirectory = new ClassMetadata(Directory::class);
         $classDirectory = $factory->getMetadataFor(Directory::class);
         $this->assertEquals(Directory::class, $classDirectory->associationMappings['parentDirectory']['sourceEntity']);
+        $this->assertHasDeprecationMessages();
     }
 
     /**
      * @group DDC-1468
-     *
-     * @expectedException Doctrine\Common\Persistence\Mapping\MappingException
-     * @expectedExceptionMessage Invalid mapping file 'Doctrine.Tests.Models.Generic.SerializationModel.dcm.yml' for class 'Doctrine\Tests\Models\Generic\SerializationModel'.
      */
     public function testInvalidMappingFileException()
     {
+        $this->expectException('Doctrine\Persistence\Mapping\MappingException');
+        $this->expectExceptionMessage('Invalid mapping file \'Doctrine.Tests.Models.Generic.SerializationModel.dcm.yml\' for class \'Doctrine\Tests\Models\Generic\SerializationModel\'.');
         $this->createClassMetadata(SerializationModel::class);
     }
 
@@ -76,8 +79,14 @@ class YamlMappingDriverTest extends AbstractMappingDriverTest
 
         $this->assertEquals(255, $nameField['length']);
         $this->assertEquals(255, $valueField['length']);
+        $this->assertHasDeprecationMessages();
     }
 
+    public function testDeprecation() : void
+    {
+        $this->createClassMetadata(DDC2069Entity::class);
+        $this->expectDeprecationMessageSame('YAML mapping driver is deprecated and will be removed in Doctrine ORM 3.0, please migrate to annotation or XML driver.');
+    }
 }
 
 class DDC2069Entity

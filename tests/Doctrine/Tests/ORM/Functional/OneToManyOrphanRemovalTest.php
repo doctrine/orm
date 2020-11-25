@@ -13,7 +13,7 @@ class OneToManyOrphanRemovalTest extends OrmFunctionalTestCase
 {
     protected $userId;
 
-    protected function setUp()
+    protected function setUp() : void
     {
         $this->useModelSet('cms');
 

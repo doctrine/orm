@@ -19,15 +19,14 @@
 
 namespace Doctrine\ORM;
 
-use Doctrine\Common\Persistence\Mapping\MappingException;
 use Doctrine\Common\Util\ClassUtils;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\Common\Collections\ArrayCollection;
-
+use Doctrine\DBAL\Cache\QueryCacheProfile;
 use Doctrine\ORM\Mapping\MappingException as ORMMappingException;
 use Doctrine\ORM\Query\Parameter;
 use Doctrine\ORM\Cache\QueryCacheKey;
-use Doctrine\DBAL\Cache\QueryCacheProfile;
+use Doctrine\Persistence\Mapping\MappingException;
 
 /**
  * Base contract for ORM queries. Base class for Query and NativeQuery.
@@ -73,6 +72,7 @@ abstract class AbstractQuery
      * The parameter map of this query.
      *
      * @var ArrayCollection|Parameter[]
+     * @psalm-var ArrayCollection<int, Parameter>
      */
     protected $parameters;
 
@@ -241,7 +241,7 @@ abstract class AbstractQuery
      *
      * @param integer $lifetime
      *
-     * @return \Doctrine\ORM\AbstractQuery This query instance.
+     * @return static This query instance.
      */
     public function setLifetime($lifetime)
     {
@@ -261,7 +261,7 @@ abstract class AbstractQuery
     /**
      * @param integer $cacheMode
      *
-     * @return \Doctrine\ORM\AbstractQuery This query instance.
+     * @return static This query instance.
      */
     public function setCacheMode($cacheMode)
     {
@@ -322,11 +322,13 @@ abstract class AbstractQuery
      */
     public function getParameter($key)
     {
+        $key = Query\Parameter::normalizeName($key);
+
         $filteredParameters = $this->parameters->filter(
             function (Query\Parameter $parameter) use ($key) : bool {
                 $parameterName = $parameter->getName();
 
-                return $key === $parameterName || (string) $key === (string) $parameterName;
+                return $key === $parameterName;
             }
         );
 
@@ -339,11 +341,14 @@ abstract class AbstractQuery
      * @param ArrayCollection|mixed[] $parameters
      *
      * @return static This query instance.
+     *
+     * @psalm-param ArrayCollection<int, Parameter>|mixed[] $parameters
      */
     public function setParameters($parameters)
     {
         // BC compatibility with 2.3-
         if (is_array($parameters)) {
+            /** @psalm-var ArrayCollection<int, Parameter> $parameterCollection */
             $parameterCollection = new ArrayCollection();
 
             foreach ($parameters as $key => $value) {
@@ -389,9 +394,11 @@ abstract class AbstractQuery
      *
      * @param mixed $value
      *
-     * @return array|string
+     * @return mixed[]|string|int|float|bool
      *
      * @throws \Doctrine\ORM\ORMInvalidArgumentException
+     *
+     * @psalm-return array|scalar
      */
     public function processParameterValue($value)
     {
@@ -469,7 +476,7 @@ abstract class AbstractQuery
      */
     private function translateNamespaces(Query\ResultSetMapping $rsm)
     {
-        $translate = function ($alias) {
+        $translate = function ($alias) : string {
             return $this->_em->getClassMetadata($alias)->getName();
         };
 
@@ -583,21 +590,45 @@ abstract class AbstractQuery
      * Set whether or not to cache the results of this query and if so, for
      * how long and which ID to use for the cache entry.
      *
-     * @param boolean $bool
-     * @param integer $lifetime
-     * @param string  $resultCacheId
+     * @deprecated 2.7 Use {@see enableResultCache} and {@see disableResultCache} instead.
+     *
+     * @param bool   $useCache
+     * @param int    $lifetime
+     * @param string $resultCacheId
      *
      * @return static This query instance.
      */
-    public function useResultCache($bool, $lifetime = null, $resultCacheId = null)
+    public function useResultCache($useCache, $lifetime = null, $resultCacheId = null)
     {
-        if ($bool) {
-            $this->setResultCacheLifetime($lifetime);
-            $this->setResultCacheId($resultCacheId);
+        return $useCache
+            ? $this->enableResultCache($lifetime, $resultCacheId)
+            : $this->disableResultCache();
+    }
 
-            return $this;
-        }
+    /**
+     * Enables caching of the results of this query, for given or default amount of seconds
+     * and optionally specifies which ID to use for the cache entry.
+     *
+     * @param int|null    $lifetime      How long the cache entry is valid, in seconds.
+     * @param string|null $resultCacheId ID to use for the cache entry.
+     *
+     * @return static This query instance.
+     */
+    public function enableResultCache(?int $lifetime = null, ?string $resultCacheId = null) : self
+    {
+        $this->setResultCacheLifetime($lifetime);
+        $this->setResultCacheId($resultCacheId);
 
+        return $this;
+    }
+
+    /**
+     * Disables caching of the results of this query.
+     *
+     * @return static This query instance.
+     */
+    public function disableResultCache() : self
+    {
         $this->_queryCacheProfile = null;
 
         return $this;
@@ -606,7 +637,7 @@ abstract class AbstractQuery
     /**
      * Defines how long the result cache will be active before expire.
      *
-     * @param integer $lifetime How long the cache entry is valid.
+     * @param int|null $lifetime How long the cache entry is valid.
      *
      * @return static This query instance.
      */
@@ -822,8 +853,9 @@ abstract class AbstractQuery
      *
      * Alias for getSingleResult(HYDRATE_SINGLE_SCALAR).
      *
-     * @return mixed The scalar result, or NULL if the query returned no result.
+     * @return mixed The scalar result.
      *
+     * @throws NoResultException        If the query returned no result.
      * @throws NonUniqueResultException If the query result is not unique.
      */
     public function getSingleScalarResult()
@@ -940,10 +972,11 @@ abstract class AbstractQuery
             $this->setParameters($parameters);
         }
 
-        $setCacheEntry = function() {};
+        $setCacheEntry = static function () : void {
+        };
 
         if ($this->_hydrationCacheProfile !== null) {
-            list($cacheKey, $realCacheKey) = $this->getHydrationCacheId();
+            [$cacheKey, $realCacheKey] = $this->getHydrationCacheId();
 
             $queryCacheProfile = $this->getHydrationCacheProfile();
             $cache             = $queryCacheProfile->getResultCacheDriver();
@@ -957,7 +990,7 @@ abstract class AbstractQuery
                 $result = [];
             }
 
-            $setCacheEntry = function($data) use ($cache, $result, $cacheKey, $realCacheKey, $queryCacheProfile) {
+            $setCacheEntry = static function ($data) use ($cache, $result, $cacheKey, $realCacheKey, $queryCacheProfile) : void {
                 $result[$realCacheKey] = $data;
 
                 $cache->save($cacheKey, $result, $queryCacheProfile->getLifetime());
@@ -1044,7 +1077,7 @@ abstract class AbstractQuery
      * Will return the configured id if it exists otherwise a hash will be
      * automatically generated for you.
      *
-     * @return array ($key, $hash)
+     * @return array<string, string> ($key, $hash)
      */
     protected function getHydrationCacheId()
     {

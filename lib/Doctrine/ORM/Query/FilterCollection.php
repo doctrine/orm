@@ -20,6 +20,7 @@
 namespace Doctrine\ORM\Query;
 
 use Doctrine\ORM\EntityManagerInterface;
+use function assert;
 
 /**
  * Collection class for all the query filters.
@@ -109,6 +110,8 @@ class FilterCollection
 
         if ( ! $this->isEnabled($name)) {
             $filterClass = $this->config->getFilterClassName($name);
+
+            assert($filterClass !== null);
 
             $this->enabledFilters[$name] = new $filterClass($this->em);
 

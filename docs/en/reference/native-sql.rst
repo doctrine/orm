@@ -92,7 +92,7 @@ a mapping from DQL alias (key) to SQL alias (value)
 
     <?php
 
-    $selectClause = $builder->generateSelectClause(array(
+    $selectClause = $rsm->generateSelectClause(array(
         'u' => 't1',
         'g' => 't2'
     ));

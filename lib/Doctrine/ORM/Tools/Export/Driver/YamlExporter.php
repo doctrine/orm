@@ -28,6 +28,8 @@ use Doctrine\ORM\Mapping\ClassMetadataInfo;
  * @link    www.doctrine-project.org
  * @since   2.0
  * @author  Jonathan Wage <jonwage@gmail.com>
+ *
+ * @deprecated 2.7 This class is being removed from the ORM and won't have any replacement
  */
 class YamlExporter extends AbstractExporter
 {
@@ -48,11 +50,12 @@ class YamlExporter extends AbstractExporter
         } else {
             $array['type'] = 'entity';
         }
+        $metadataTable = $metadata->table ?? ['name' => null];
 
-        $array['table'] = $metadata->table['name'];
+        $array['table'] = $metadataTable['name'];
 
-        if (isset($metadata->table['schema'])) {
-            $array['schema'] = $metadata->table['schema'];
+        if (isset($metadataTable['schema'])) {
+            $array['schema'] = $metadataTable['schema'];
         }
 
         $inheritanceType = $metadata->inheritanceType;
@@ -73,20 +76,20 @@ class YamlExporter extends AbstractExporter
             $array['changeTrackingPolicy'] = $this->_getChangeTrackingPolicyString($metadata->changeTrackingPolicy);
         }
 
-        if (isset($metadata->table['indexes'])) {
-            $array['indexes'] = $metadata->table['indexes'];
+        if (isset($metadataTable['indexes'])) {
+            $array['indexes'] = $metadataTable['indexes'];
         }
 
         if ($metadata->customRepositoryClassName) {
             $array['repositoryClass'] = $metadata->customRepositoryClassName;
         }
 
-        if (isset($metadata->table['uniqueConstraints'])) {
-            $array['uniqueConstraints'] = $metadata->table['uniqueConstraints'];
+        if (isset($metadataTable['uniqueConstraints'])) {
+            $array['uniqueConstraints'] = $metadataTable['uniqueConstraints'];
         }
 
-        if (isset($metadata->table['options'])) {
-            $array['options'] = $metadata->table['options'];
+        if (isset($metadataTable['options'])) {
+            $array['options'] = $metadataTable['options'];
         }
 
         $fieldMappings = $metadata->fieldMappings;
@@ -117,10 +120,7 @@ class YamlExporter extends AbstractExporter
         $array['id'] = $ids;
 
         if ($fieldMappings) {
-            if ( ! isset($array['fields'])) {
-                $array['fields'] = [];
-            }
-            $array['fields'] = array_merge($array['fields'], $fieldMappings);
+            $array['fields'] = $fieldMappings;
         }
 
         foreach ($metadata->associationMappings as $name => $associationMapping) {

@@ -11,7 +11,7 @@ use Doctrine\ORM\Tools\Pagination\Paginator;
  */
 class DDC1918Test extends \Doctrine\Tests\OrmFunctionalTestCase
 {
-    protected function setUp()
+    protected function setUp() : void
     {
         $this->useModelSet('cms');
         parent::setUp();

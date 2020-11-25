@@ -90,7 +90,10 @@ the UTC time at the time of the booking and the timezone the event happened in.
 
     class UTCDateTimeType extends DateTimeType
     {
-        static private $utc;
+        /**
+         * @var \DateTimeZone
+         */
+        private static $utc;
 
         public function convertToDatabaseValue($value, AbstractPlatform $platform)
         {
@@ -110,7 +113,7 @@ the UTC time at the time of the booking and the timezone the event happened in.
             $converted = \DateTime::createFromFormat(
                 $platform->getDateTimeFormatString(),
                 $value,
-                self::$utc ? self::$utc : self::$utc = new \DateTimeZone('UTC')
+                self::getUtc()
             );
 
             if (! $converted) {
@@ -122,6 +125,11 @@ the UTC time at the time of the booking and the timezone the event happened in.
             }
 
             return $converted;
+        }
+        
+        private static function getUtc(): \DateTimeZone
+        {
+            return self::$utc ?: self::$utc = new \DateTimeZone('UTC');
         }
     }
 

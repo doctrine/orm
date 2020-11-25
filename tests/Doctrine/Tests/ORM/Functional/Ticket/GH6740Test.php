@@ -24,7 +24,7 @@ final class GH6740Test extends OrmFunctionalTestCase
      */
     private $secondCategoryId;
 
-    public function setUp() : void
+    protected function setUp() : void
     {
         $this->useModelSet('ecommerce');
 

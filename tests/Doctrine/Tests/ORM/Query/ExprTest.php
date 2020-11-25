@@ -25,7 +25,7 @@ class ExprTest extends OrmTestCase
      */
     private $_expr;
 
-    protected function setUp()
+    protected function setUp() : void
     {
         $this->_em = $this->_getTestEntityManager();
         $this->_expr = new Expr;
@@ -334,11 +334,9 @@ class ExprTest extends OrmTestCase
         $this->assertEquals('u.username ASC', (string) $orderExpr);
     }
 
-    /**
-     * @expectedException \InvalidArgumentException
-     */
     public function testAddThrowsException()
     {
+        $this->expectException('InvalidArgumentException');
         $orExpr = $this->_expr->orX();
         $orExpr->add($this->_expr->quot(5, 2));
     }

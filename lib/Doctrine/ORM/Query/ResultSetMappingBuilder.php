@@ -23,6 +23,7 @@ use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Mapping\ClassMetadataInfo;
 use Doctrine\ORM\Mapping\MappingException;
 use Doctrine\ORM\Utility\PersisterHelper;
+use function explode;
 
 /**
  * A ResultSetMappingBuilder uses the EntityManager to automatically populate entity fields.
@@ -223,7 +224,9 @@ class ResultSetMappingBuilder extends ResultSetMapping
      * @param int    $mode
      * @param array  $customRenameColumns
      *
-     * @return array
+     * @return string[]
+     *
+     * @psalm-return array<array-key, string>
      */
     private function getColumnAliasMap($className, $mode, array $customRenameColumns)
     {
@@ -273,7 +276,7 @@ class ResultSetMappingBuilder extends ResultSetMapping
      * @param ClassMetadataInfo $class
      * @param string            $resultClassName
      *
-     * @return  ResultSetMappingBuilder
+     * @return self
      */
     public function addNamedNativeQueryResultClassMapping(ClassMetadataInfo $class, $resultClassName)
     {
@@ -318,7 +321,7 @@ class ResultSetMappingBuilder extends ResultSetMapping
      * @param ClassMetadataInfo $class
      * @param string            $resultSetMappingName
      *
-     * @return ResultSetMappingBuilder
+     * @return self
      */
     public function addNamedNativeQueryResultSetMapping(ClassMetadataInfo $class, $resultSetMappingName)
     {
@@ -370,7 +373,7 @@ class ResultSetMappingBuilder extends ResultSetMapping
      * @param array             $entityMapping
      * @param string            $alias
      *
-     * @return ResultSetMappingBuilder
+     * @return self
      *
      * @throws MappingException
      * @throws \InvalidArgumentException
@@ -391,7 +394,7 @@ class ResultSetMappingBuilder extends ResultSetMapping
                 $relation  = null;
 
                 if (strpos($fieldName, '.') !== false) {
-                    list($relation, $fieldName) = explode('.', $fieldName);
+                    [$relation, $fieldName] = explode('.', $fieldName);
                 }
 
                 if (isset($classMetadata->associationMappings[$relation])) {

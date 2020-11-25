@@ -144,7 +144,7 @@ abstract class AbstractCollectionPersister implements CachedCollectionPersister
      * @param \Doctrine\ORM\PersistentCollection     $collection
      * @param \Doctrine\ORM\Cache\CollectionCacheKey $key
      *
-     * @return \Doctrine\ORM\PersistentCollection|null
+     * @return object[]|null
      */
     public function loadCollectionCache(PersistentCollection $collection, CollectionCacheKey $key)
     {
@@ -241,20 +241,6 @@ abstract class AbstractCollectionPersister implements CachedCollectionPersister
     public function get(PersistentCollection $collection, $index)
     {
         return $this->persister->get($collection, $index);
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function removeElement(PersistentCollection $collection, $element)
-    {
-        if ($persisterResult = $this->persister->removeElement($collection, $element)) {
-            $this->evictCollectionCache($collection);
-            $this->evictElementCache($this->sourceEntity->rootEntityName, $collection->getOwner());
-            $this->evictElementCache($this->targetEntity->rootEntityName, $element);
-        }
-
-        return $persisterResult;
     }
 
     /**

@@ -20,6 +20,7 @@
 namespace Doctrine\ORM\Tools;
 
 use Doctrine\ORM\Event\LoadClassMetadataEventArgs;
+use Doctrine\ORM\Mapping\ClassMetadata;
 
 /**
  * Mechanism to programmatically attach entity listeners.
@@ -63,7 +64,6 @@ class AttachEntityListenersListener
      */
     public function loadClassMetadata(LoadClassMetadataEventArgs $event)
     {
-        /** @var $metadata \Doctrine\ORM\Mapping\ClassMetadata */
         $metadata = $event->getClassMetadata();
 
         if ( ! isset($this->entityListeners[$metadata->name])) {
