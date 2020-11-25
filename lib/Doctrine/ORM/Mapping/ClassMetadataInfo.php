@@ -30,7 +30,7 @@ use InvalidArgumentException;
 use ReflectionClass;
 use ReflectionProperty;
 use RuntimeException;
-use function array_key_exists;
+use function count;
 use function explode;
 
 /**
@@ -2193,6 +2193,13 @@ class ClassMetadataInfo implements ClassMetadata
 
         $mapping = $this->associationMappings[$fieldName];
 
+        //if (isset($mapping['inherited']) && (count($overrideMapping) !== 1 || ! isset($overrideMapping['fetch']))) {
+            // TODO: Deprecate overriding the fetch mode via association override for 3.0,
+            // users should do this with a listener and a custom attribute/annotation
+            // TODO: Enable this exception in 2.8
+            //throw MappingException::illegalOverrideOfInheritedProperty($this->name, $fieldName);
+        //}
+
         if (isset($overrideMapping['joinColumns'])) {
             $mapping['joinColumns'] = $overrideMapping['joinColumns'];
         }
@@ -2251,6 +2258,11 @@ class ClassMetadataInfo implements ClassMetadata
 
         $mapping = $this->fieldMappings[$fieldName];
 
+        //if (isset($mapping['inherited'])) {
+            // TODO: Enable this exception in 2.8
+            //throw MappingException::illegalOverrideOfInheritedProperty($this->name, $fieldName);
+        //}
+
         if (isset($mapping['id'])) {
             $overrideMapping['id'] = $mapping['id'];
         }
@@ -2265,12 +2277,6 @@ class ClassMetadataInfo implements ClassMetadata
 
         if ($overrideMapping['type'] !== $mapping['type']) {
             throw MappingException::invalidOverrideFieldType($this->name, $fieldName);
-        }
-
-        // Fix for bug GH-8229 (id column from parent class renamed in child class):
-        // The contained 'inherited' information was accidentally deleted by the unset() call below.
-        if (array_key_exists('inherited', $this->fieldMappings[$fieldName])) {
-            $overrideMapping['inherited'] = $this->fieldMappings[$fieldName]['inherited'];
         }
 
         unset($this->fieldMappings[$fieldName]);
