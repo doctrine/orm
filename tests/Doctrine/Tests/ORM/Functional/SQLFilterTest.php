@@ -191,6 +191,32 @@ class SQLFilterTest extends OrmFunctionalTestCase
         self::assertFalse($em->getFilters()->isEnabled('foo_filter'));
     }
 
+    public function testGetHash() : void
+    {
+        $em = $this->getEntityManager();
+        $this->configureFilters($em);
+
+        // Check the filter hash without parameters
+        $em->getFilters()->enable("locale");
+        $filter = $em->getFilters()->getFilter("locale");
+        self::assertEquals('Doctrine\Tests\ORM\Functional\MyLocaleFilter0',$filter->getHash());
+
+        // Check the filter hash with one parameters
+        $filter->setParameter('test','string');
+        self::assertEquals('Doctrine\Tests\ORM\Functional\MyLocaleFilter1test2string',$filter->getHash());
+
+        // Check the filter hash with two parameters
+        $filter->setParameter('test2','string2');
+        self::assertEquals('Doctrine\Tests\ORM\Functional\MyLocaleFilter2test2stringtest22string2',$filter->getHash());
+
+       // Check the filter hash with three parameters one being an object
+        $stdClass = new \stdClass();
+        $splHash  = spl_object_hash($stdClass);
+        $filter->setParameter('test3', $stdClass);
+        self::assertEquals('Doctrine\Tests\ORM\Functional\MyLocaleFilter3test2stringtest22string2test32'.$splHash,$filter->getHash());
+    }
+
+
     protected function configureFilters($em)
     {
         // Add filters to the configuration of the EM
@@ -248,9 +274,7 @@ class SQLFilterTest extends OrmFunctionalTestCase
             ->method('setFiltersStateDirty');
 
         $filter = new MyLocaleFilter($em);
-
         $filter->setParameter('locale', 'en', DBALType::STRING);
-
         self::assertEquals("'en'", $filter->getParameter('locale'));
     }
 
