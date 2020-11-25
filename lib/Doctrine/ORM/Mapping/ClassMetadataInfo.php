@@ -2193,12 +2193,12 @@ class ClassMetadataInfo implements ClassMetadata
 
         $mapping = $this->associationMappings[$fieldName];
 
-        if (isset($mapping['inherited']) && (count($overrideMapping) !== 1 || ! isset($overrideMapping['fetch']))) {
+        //if (isset($mapping['inherited']) && (count($overrideMapping) !== 1 || ! isset($overrideMapping['fetch']))) {
             // TODO: Deprecate overriding the fetch mode via association override for 3.0,
             // users should do this with a listener and a custom attribute/annotation
             // TODO: Enable this exception in 2.8
             //throw MappingException::illegalOverrideOfInheritedProperty($this->name, $fieldName);
-        }
+        //}
 
         if (isset($overrideMapping['joinColumns'])) {
             $mapping['joinColumns'] = $overrideMapping['joinColumns'];
@@ -2258,10 +2258,10 @@ class ClassMetadataInfo implements ClassMetadata
 
         $mapping = $this->fieldMappings[$fieldName];
 
-        if (isset($mapping['inherited'])) {
+        //if (isset($mapping['inherited'])) {
             // TODO: Enable this exception in 2.8
             //throw MappingException::illegalOverrideOfInheritedProperty($this->name, $fieldName);
-        }
+        //}
 
         if (isset($mapping['id'])) {
             $overrideMapping['id'] = $mapping['id'];
