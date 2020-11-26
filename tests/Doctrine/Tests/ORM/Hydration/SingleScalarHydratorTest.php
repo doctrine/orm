@@ -52,7 +52,7 @@ class SingleScalarHydratorTest extends HydrationTestCase
         $rsm->addFieldResult('u', 'u__id', 'id');
         $rsm->addFieldResult('u', 'u__name', 'name');
 
-        $stmt = new HydratorMockStatement($resultSet);
+        $stmt     = new HydratorMockStatement($resultSet);
         $hydrator = new SingleScalarHydrator($this->_em);
 
         $result = $hydrator->hydrateAll($stmt, $rsm);
@@ -132,7 +132,7 @@ class SingleScalarHydratorTest extends HydrationTestCase
         $rsm->addFieldResult('u', 'u__id', 'id');
         $rsm->addFieldResult('u', 'u__name', 'name');
 
-        $stmt = new HydratorMockStatement($resultSet);
+        $stmt     = new HydratorMockStatement($resultSet);
         $hydrator = new SingleScalarHydrator($this->_em);
 
         $this->expectException(NonUniqueResultException::class);
