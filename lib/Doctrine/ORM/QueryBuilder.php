@@ -583,6 +583,8 @@ class QueryBuilder
      * @param ArrayCollection|mixed[] $parameters The query parameters to set.
      *
      * @return self
+     *
+     * @psalm-param ArrayCollection<int, Parameter>|array<string, mixed> $parameters
      */
     public function setParameters($parameters)
     {
