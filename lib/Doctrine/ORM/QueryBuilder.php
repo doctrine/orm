@@ -23,6 +23,7 @@ namespace Doctrine\ORM;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Criteria;
 use Doctrine\ORM\Query\Expr;
+use Doctrine\ORM\Query\Parameter;
 use Doctrine\ORM\Query\QueryExpressionVisitor;
 use InvalidArgumentException;
 use RuntimeException;
@@ -110,6 +111,7 @@ class QueryBuilder
      * The query parameters.
      *
      * @var ArrayCollection
+     * @psalm-var ArrayCollection<int, Parameter>
      */
     private $parameters;
 
@@ -561,7 +563,7 @@ class QueryBuilder
             return $this;
         }
 
-        $this->parameters->add(new Query\Parameter($key, $value, $type));
+        $this->parameters->add(new Parameter($key, $value, $type));
 
         return $this;
     }
@@ -584,17 +586,17 @@ class QueryBuilder
      *
      * @return self
      *
-     * @psalm-param ArrayCollection<int, Parameter>|array<string, mixed> $parameters
+     * @psalm-param ArrayCollection<int, Parameter>|mixed[] $parameters
      */
     public function setParameters($parameters)
     {
         // BC compatibility with 2.3-
         if (is_array($parameters)) {
-            /** @psalm-var ArrayCollection<int, Query\Parameter> $parameterCollection */
+            /** @psalm-var ArrayCollection<int, Parameter> $parameterCollection */
             $parameterCollection = new ArrayCollection();
 
             foreach ($parameters as $key => $value) {
-                $parameter = new Query\Parameter($key, $value);
+                $parameter = new Parameter($key, $value);
 
                 $parameterCollection->add($parameter);
             }
@@ -611,6 +613,8 @@ class QueryBuilder
      * Gets all defined query parameters for the query being constructed.
      *
      * @return ArrayCollection The currently defined query parameters.
+     *
+     * @psalm-return ArrayCollection<int, Parameter>
      */
     public function getParameters()
     {
@@ -622,14 +626,14 @@ class QueryBuilder
      *
      * @param mixed $key The key (index or name) of the bound parameter.
      *
-     * @return Query\Parameter|null The value of the bound parameter.
+     * @return Parameter|null The value of the bound parameter.
      */
     public function getParameter($key)
     {
-        $key = Query\Parameter::normalizeName($key);
+        $key = Parameter::normalizeName($key);
 
         $filteredParameters = $this->parameters->filter(
-            static function (Query\Parameter $parameter) use ($key): bool {
+            static function (Parameter $parameter) use ($key): bool {
                 $parameterName = $parameter->getName();
 
                 return $key === $parameterName;

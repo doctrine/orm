@@ -348,7 +348,7 @@ abstract class AbstractQuery
      *
      * @return static This query instance.
      *
-     * @psalm-param ArrayCollection<int, Parameter>|array<string, mixed> $parameters
+     * @psalm-param ArrayCollection<int, Parameter>|mixed[] $parameters
      */
     public function setParameters($parameters)
     {
@@ -985,7 +985,7 @@ abstract class AbstractQuery
      *
      * @return iterable<mixed>
      *
-     * @psalm-param ArrayCollection<int, Parameter>|array<string, mixed> $parameters
+     * @psalm-param ArrayCollection<int, Parameter>|mixed[] $parameters
      */
     public function toIterable(iterable $parameters = [], $hydrationMode = null): iterable
     {

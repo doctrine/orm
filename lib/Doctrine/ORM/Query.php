@@ -673,7 +673,7 @@ final class Query extends AbstractQuery
      *
      * @return IterableResult
      *
-     * @psalm-param ArrayCollection<int, Parameter>|array<string, mixed> $parameters
+     * @psalm-param ArrayCollection<int, Parameter>|array<string, mixed>|null $parameters
      */
     public function iterate($parameters = null, $hydrationMode = self::HYDRATE_OBJECT)
     {
