@@ -289,9 +289,15 @@ column and cascading on delete.
 
 Overrides
 ---------
-Used to override a mapping for an entity field or relationship.
-May be applied to an entity that extends a mapped superclass
-to override a relationship or field mapping defined by the mapped superclass.
+
+Used to override a mapping for an entity field or relationship.  Can only be
+applied to an entity that extends a mapped superclass or uses a trait to
+override a relationship or field mapping defined by the mapped superclass or
+trait.
+
+It is not possible to override attributes or associations in entity to entity
+inheritance scenarios, because this can cause unforseen edge case behavior and
+increases complexity in ORM internal classes.
 
 
 Association Override
