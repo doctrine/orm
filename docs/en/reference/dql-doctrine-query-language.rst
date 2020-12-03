@@ -671,29 +671,29 @@ The following functions are supported in SELECT, WHERE and HAVING
 clauses:
 
 
--  IDENTITY(single\_association\_path\_expression [, fieldMapping]) - Retrieve the foreign key column of association of the owning side
--  ABS(arithmetic\_expression)
--  CONCAT(str1, str2)
--  CURRENT\_DATE() - Return the current date
--  CURRENT\_TIME() - Returns the current time
--  CURRENT\_TIMESTAMP() - Returns a timestamp of the current date
-   and time.
--  LENGTH(str) - Returns the length of the given string
--  LOCATE(needle, haystack [, offset]) - Locate the first
-   occurrence of the substring in the string.
--  LOWER(str) - returns the string lowercased.
--  MOD(a, b) - Return a MOD b.
--  SIZE(collection) - Return the number of elements in the
-   specified collection
--  SQRT(q) - Return the square-root of q.
--  SUBSTRING(str, start [, length]) - Return substring of given
-   string.
--  TRIM([LEADING \| TRAILING \| BOTH] ['trchar' FROM] str) - Trim
-   the string by the given trim char, defaults to whitespaces.
--  UPPER(str) - Return the upper-case of the given string.
--  DATE_ADD(date, value, unit) - Add the given time to a given date. (Supported units are SECOND, MINUTE, HOUR, DAY, WEEK, MONTH, YEAR)
--  DATE_SUB(date, value, unit) - Subtract the given time from a given date. (Supported units are SECOND, MINUTE, HOUR, DAY, WEEK, MONTH, YEAR)
--  DATE_DIFF(date1, date2) - Calculate the difference in days between date1-date2.
+-  ``IDENTITY(single_association_path_expression [, fieldMapping])`` - Retrieve the foreign key column of association of the owning side
+-  ``ABS(arithmetic_expression)``
+-  ``CONCAT(str1, str2)``
+-  ``CURRENT_DATE()`` - Return the current date
+-  ``CURRENT_TIME()`` - Returns the current time
+-  ``CURRENT_TIMESTAMP()`` - Returns a timestamp of the current date
+     and time.
+-  ``LENGTH(str)`` - Returns the length of the given string
+-  ``LOCATE(needle, haystack [, offset])`` - Locate the first
+     occurrence of the substring in the string.
+-  ``LOWER(str)`` - returns the string lowercased.
+-  ``MOD(a, b)`` - Return a MOD b.
+-  ``SIZE(collection)`` - Return the number of elements in the
+     specified collection
+-  ``SQRT(q)`` - Return the square-root of q.
+-  ``SUBSTRING(str, start [, length])`` - Return substring of given
+     string.
+-  ``TRIM([LEADING | TRAILING | BOTH] ['trchar' FROM] str)`` - Trim
+     the string by the given trim char, defaults to whitespaces.
+-  ``UPPER(str)`` - Return the upper-case of the given string.
+-  ``DATE_ADD(date, value, unit)`` - Add the given time to a given date. (Supported units are SECOND, MINUTE, HOUR, DAY, WEEK, MONTH, YEAR)
+-  ``DATE_SUB(date, value, unit)`` - Subtract the given time from a given date. (Supported units are SECOND, MINUTE, HOUR, DAY, WEEK, MONTH, YEAR)
+-  ``DATE_DIFF(date1, date2)`` - Calculate the difference in days between date1-date2.
 
 Arithmetic operators
 ~~~~~~~~~~~~~~~~~~~~
