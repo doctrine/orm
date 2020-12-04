@@ -241,7 +241,7 @@ class QueryTest extends OrmTestCase
         );
     }
 
-    public function testProcessParameterValueWithIterableEntityShouldNotBeTreatedAsIterable() : void
+    public function testProcessParameterValueWithIterableEntityShouldNotBeTreatedAsIterable(): void
     {
         $group     = new CmsGroup();
         $group->id = 1;
