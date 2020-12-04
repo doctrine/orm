@@ -62,7 +62,7 @@ final class GH8365Test extends OrmFunctionalTestCase
          * 'SELECT g0_.id AS id_0 FROM GH8365Entity g0_ WHERE g0_.parent_id = ?, ?, ?'
          * with params [false, false, false]:
          */
-        try{
+        try {
             $result = $query->getScalarResult();
         } catch (SyntaxErrorException $e) {
             $this->fail(sprintf("SyntaxErrorException: \n\"%s\" \nthrows: \n\"%s\"",

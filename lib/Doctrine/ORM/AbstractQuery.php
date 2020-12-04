@@ -420,37 +420,58 @@ abstract class AbstractQuery
             return $value;
         }
 
-        if ($value instanceof Traversable) {
-            $value = iterator_to_array($value);
+        if (is_object($value)) {
+            try {
+                /*
+                 * Need to check if object is a valid Entity before a Traversable object:
+                 * GH8365
+                 */
+                $value = $this->_em->getUnitOfWork()->getSingleIdentifierValue($value);
+
+                if ($value === null) {
+                    throw ORMInvalidArgumentException::invalidIdentifierBindingEntity();
+                }
+            } catch (ORMMappingException $e) {
+                // Silence any mapping exceptions. These can occur if the object in
+                // question is not a mapped entity, in which case we just don't do
+                // any preparation on the value.
+            }
+
+            if ($value instanceof Traversable) {
+                return $this->processArrayParameterValue(iterator_to_array($value));
+            }
+
+            if ($value instanceof Mapping\ClassMetadata) {
+                return $value->name;
+            }
         }
 
         if (is_array($value)) {
-            foreach ($value as $key => $paramValue) {
-                $paramValue  = $this->processParameterValue($paramValue);
-                $value[$key] = is_array($paramValue) ? reset($paramValue) : $paramValue;
-            }
-
-            return $value;
-        }
-
-        if ($value instanceof Mapping\ClassMetadata) {
-            return $value->name;
+            return $this->processArrayParameterValue($value);
         }
 
         if (! is_object($value)) {
             return $value;
         }
 
-        try {
-            $value = $this->_em->getUnitOfWork()->getSingleIdentifierValue($value);
+        return $value;
+    }
 
-            if ($value === null) {
-                throw ORMInvalidArgumentException::invalidIdentifierBindingEntity();
-            }
-        } catch (ORMMappingException $e) {
-            // Silence any mapping exceptions. These can occur if the object in
-            // question is not a mapped entity, in which case we just don't do
-            // any preparation on the value.
+    /**
+     * Processes an individual array parameter value.
+     *
+     * @param array $value
+     * @return array
+     *
+     * @throws \Doctrine\ORM\ORMInvalidArgumentException
+     *
+     * @psalm-return array
+     */
+    private function processArrayParameterValue(array $value)
+    {
+        foreach ($value as $key => $paramValue) {
+            $paramValue  = $this->processParameterValue($paramValue);
+            $value[$key] = is_array($paramValue) ? reset($paramValue) : $paramValue;
         }
 
         return $value;
