@@ -4,6 +4,7 @@ namespace Doctrine\Tests\Models\CMS;
 
 use Doctrine\Common\Collections\ArrayCollection;
 use IteratorAggregate;
+use Traversable;
 
 /**
  * Description of CmsGroup
@@ -51,7 +52,7 @@ class CmsGroup implements IteratorAggregate
     }
 
     /**
-     * @return ArrayCollection|\Traversable
+     * @return ArrayCollection|Traversable
      */
     public function getIterator()
     {
