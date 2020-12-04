@@ -23,6 +23,7 @@ use Countable;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\DBAL\Cache\QueryCacheProfile;
 use Doctrine\ORM\Mapping\MappingException as ORMMappingException;
+use Doctrine\Persistence\Mapping\MappingException;
 use Doctrine\ORM\Query\Parameter;
 use Doctrine\ORM\Cache\QueryCacheKey;
 use Traversable;
@@ -451,6 +452,9 @@ abstract class AbstractQuery
             // Silence any mapping exceptions. These can occur if the object in
             // question is not a mapped entity, in which case we just don't do
             // any preparation on the value.
+        } catch (MappingException $e) {
+            // as previous, but depending on MappingDriver this exception from Persistence
+            // is thrown and not the ORM one.
         }
 
         return $value;
