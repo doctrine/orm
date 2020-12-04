@@ -355,7 +355,7 @@ class QueryTest extends OrmFunctionalTestCase
         $query->iterate();
     }
 
-    public function testToIterableResultFetchJoinedCollectionThrowsException() : void
+    public function testToIterableResultFetchJoinedCollectionThrowsException(): void
     {
         $this->expectException(QueryException::class);
 

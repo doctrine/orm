@@ -50,6 +50,9 @@ class CmsGroup implements IteratorAggregate
         return $this->users;
     }
 
+    /**
+     * @return ArrayCollection|\Traversable
+     */
     public function getIterator()
     {
         return $this->getUsers();
