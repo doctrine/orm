@@ -2,6 +2,10 @@
 
 namespace Doctrine\Tests\Models\CMS;
 
+use Doctrine\Common\Collections\ArrayCollection;
+use IteratorAggregate;
+use Traversable;
+
 /**
  * Description of CmsGroup
  *
@@ -9,7 +13,7 @@ namespace Doctrine\Tests\Models\CMS;
  * @Entity
  * @Table(name="cms_groups")
  */
-class CmsGroup
+class CmsGroup implements IteratorAggregate
 {
     /**
      * @Id
@@ -26,6 +30,11 @@ class CmsGroup
      */
     public $users;
 
+    public function __construct()
+    {
+        $this->users = new ArrayCollection();
+    }
+
     public function setName($name) {
         $this->name = $name;
     }
@@ -40,6 +49,14 @@ class CmsGroup
 
     public function getUsers() {
         return $this->users;
+    }
+
+    /**
+     * @return ArrayCollection|Traversable
+     */
+    public function getIterator()
+    {
+        return $this->getUsers();
     }
 }
 

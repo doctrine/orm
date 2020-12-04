@@ -20,6 +20,7 @@
 namespace Doctrine\ORM;
 
 use Countable;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\DBAL\Cache\QueryCacheProfile;
 use Doctrine\ORM\Mapping\MappingException as ORMMappingException;
@@ -421,15 +422,12 @@ abstract class AbstractQuery
             return $value;
         }
 
-        if ($value instanceof Traversable) {
+        if ($value instanceof Collection) {
             $value = iterator_to_array($value);
         }
 
         if (is_array($value)) {
-            foreach ($value as $key => $paramValue) {
-                $paramValue  = $this->processParameterValue($paramValue);
-                $value[$key] = is_array($paramValue) ? reset($paramValue) : $paramValue;
-            }
+            $value = $this->processArrayParameterValue($value);
 
             return $value;
         }
@@ -452,9 +450,47 @@ abstract class AbstractQuery
             // Silence any mapping exceptions. These can occur if the object in
             // question is not a mapped entity, in which case we just don't do
             // any preparation on the value.
+
+            $value = $this->potentiallyProcessIterable($value);
         } catch (MappingException $e) {
             // as previous, but depending on MappingDriver this exception from Persistence
             // is thrown and not the ORM one.
+
+            $value = $this->potentiallyProcessIterable($value);
+        }
+
+        return $value;
+    }
+
+    /**
+     * If no mapping is detected, trying to resolve the value as a Traversable
+     *
+     * @param mixed $value
+     *
+     * @return mixed
+     */
+    private function potentiallyProcessIterable($value)
+    {
+        if ($value instanceof Traversable) {
+            $value = iterator_to_array($value);
+            $value = $this->processArrayParameterValue($value);
+        }
+
+        return $value;
+    }
+
+    /**
+     * Process a parameter value which was previously identified as an array
+     *
+     * @param mixed[] $value
+     *
+     * @return mixed[]
+     */
+    private function processArrayParameterValue(array $value): array
+    {
+        foreach ($value as $key => $paramValue) {
+            $paramValue  = $this->processParameterValue($paramValue);
+            $value[$key] = is_array($paramValue) ? reset($paramValue) : $paramValue;
         }
 
         return $value;
