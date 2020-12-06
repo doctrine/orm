@@ -513,6 +513,9 @@ complete list of supported helper methods available:
         // Example - $qb->expr()->sqrt('u.currentBalance')
         public function sqrt($x); // Returns Expr\Func
 
+        // Example - $qb->expr()->mod('u.currentBalance', '10')
+        public function mod($x); // Returns Expr\Func
+
         // Example - $qb->expr()->count('u.firstname')
         public function count($x); // Returns Expr\Func
 
