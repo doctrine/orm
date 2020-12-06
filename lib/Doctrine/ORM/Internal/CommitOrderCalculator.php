@@ -111,7 +111,7 @@ class CommitOrderCalculator
         if (isset($vertex->dependencyList[$toHash]) && $vertex->dependencyList[$toHash]->weight >= $weight) {
             return;
         }
-            
+
         $edge   = new \stdClass();
 
         $edge->from   = $fromHash;
