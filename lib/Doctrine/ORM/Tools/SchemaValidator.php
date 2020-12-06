@@ -22,6 +22,8 @@ namespace Doctrine\ORM\Tools;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Mapping\ClassMetadataInfo;
 use Doctrine\DBAL\Types\Type;
+
+use function array_search;
 use function count;
 
 /**
@@ -254,6 +256,12 @@ class SchemaValidator
                     }
                 }
             }
+        }
+
+        if (! $class->isInheritanceTypeNone() && ! $class->isRootEntity() && array_search($class->name, $class->discriminatorMap) === false) {
+            $ce[] = "Entity class '" . $class->name . "' is part of inheritance hierarchy, but is " .
+                "not mapped in the root entity '" . $class->rootEntityName . "' discriminator map. " .
+                'All subclasses must be listed in the discriminator map.';
         }
 
         foreach ($class->subClasses as $subClass) {
