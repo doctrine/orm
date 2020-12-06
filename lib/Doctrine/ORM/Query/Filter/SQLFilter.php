@@ -21,12 +21,15 @@
 namespace Doctrine\ORM\Query\Filter;
 
 use Doctrine\DBAL\Connection;
-use Doctrine\DBAL\Types\Type;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\Query\ParameterTypeInferer;
 use InvalidArgumentException;
+use RuntimeException;
 
+use function array_map;
+use function implode;
+use function is_array;
 use function ksort;
 use function serialize;
 
@@ -49,7 +52,7 @@ abstract class SQLFilter
     /**
      * Parameters for the filter.
      *
-     * @var array
+     * @psalm-var array<string,array{type: string, value: mixed}>
      */
     private $parameters = [];
 
@@ -67,7 +70,7 @@ abstract class SQLFilter
      * Sets a parameter that can be used by the filter.
      *
      * @param string      $name  Name of the parameter.
-     * @param string      $value Value of the parameter.
+     * @param mixed       $value Value of the parameter.
      * @param string|null $type  The parameter type. If specified, the given value will be run through
      *                           the type conversion of this type. This is usually not needed for
      *                           strings and numeric types.
@@ -76,12 +79,8 @@ abstract class SQLFilter
      */
     final public function setParameter($name, $value, $type = null): self
     {
-        if (null === $type) {
-            if (is_array($type)) {
-                $type = ParameterTypeInferer::inferType(current($value));
-            } else {
-                $type = ParameterTypeInferer::inferType($value);
-            }
+        if ($type === null) {
+            $type = ParameterTypeInferer::inferType($value);
         }
 
         $this->parameters[$name] = ['value' => $value, 'type' => $type];
@@ -113,18 +112,41 @@ abstract class SQLFilter
             throw new InvalidArgumentException("Parameter '" . $name . "' does not exist.");
         }
 
-        $param = $this->parameters[$name];
-        $isTraversable = is_array($param['value']) || $param['value'] instanceof \Traversable;
-        if ($isTraversable && !in_array($param['type'], array(Type::TARRAY, Type::SIMPLE_ARRAY, Type::JSON_ARRAY))) {
-            $connection = $this->em->getConnection();
-            $quoted = array_map(function ($value) use ($connection, $param) {
-                return $connection->quote($value, $param['type']);
-            }, $param['value']);
+        return $this->em->getConnection()->quote($this->parameters[$name]['value'], $this->parameters[$name]['type']);
+    }
 
-            return implode(',', $quoted);
+    /**
+     * Gets a parameter to use in a query assuming its a list of entries.
+     *
+     * The function is responsible for the right output escaping to use the
+     * value in a query, seperating each entry by comma to inline it into
+     * an IN() query part.
+     *
+     * @param string $name Name of the parameter.
+     *
+     * @return string The SQL escaped parameter to use in a query.
+     *
+     * @throws InvalidArgumentException
+     */
+    final public function getParameterList(string $name): string
+    {
+        if (! isset($this->parameters[$name])) {
+            throw new InvalidArgumentException("Parameter '" . $name . "' does not exist.");
         }
 
-        return $this->em->getConnection()->quote($param['value'], $param['type']);
+        $param         = $this->parameters[$name];
+        $isTraversable = is_array($param['value']); // WARNING: no Traversable support, because it might break on hashing
+
+        if (! $isTraversable) {
+            throw new RuntimeException('Can only call SQLFilter::getParameterList on array values.');
+        }
+
+        $connection = $this->em->getConnection();
+        $quoted     = array_map(static function ($value) use ($connection, $param) {
+            return $connection->quote($value, $param['type']);
+        }, $param['value']);
+
+        return implode(',', $quoted);
     }
 
     /**

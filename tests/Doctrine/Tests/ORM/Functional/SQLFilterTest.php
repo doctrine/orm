@@ -355,7 +355,7 @@ class SQLFilterTest extends OrmFunctionalTestCase
 
         $filter->setParameter('locale', ['en', 'es']);
 
-        $this->assertEquals("'en','es'", $filter->getParameter('locale'));
+        $this->assertEquals("'en','es'", $filter->getParameterList('locale'));
     }
 
     public function testSQLFilterAddConstraint(): void
@@ -431,7 +431,7 @@ class SQLFilterTest extends OrmFunctionalTestCase
         $conf = $this->_em->getConfiguration();
         $conf->addFilter('country', '\Doctrine\Tests\ORM\Functional\CMSCountryFilter');
         $this->_em->getFilters()->enable('country')
-            ->setParameter('country', 'en', DBALType::STRING);
+            ->setParameter('country', ['en'], DBALType::STRING);
 
         $this->assertNotEquals($firstSQLQuery, $query->getSQL());
     }
@@ -530,10 +530,14 @@ class SQLFilterTest extends OrmFunctionalTestCase
 
         $conf = $this->_em->getConfiguration();
         $conf->addFilter('country', '\Doctrine\Tests\ORM\Functional\CMSCountryFilter');
-        $this->_em->getFilters()->enable('country')->setParameter('country', 'Germany', DBALType::STRING);
+        $this->_em->getFilters()->enable('country')->setParameter('country', ['Germany'], DBALType::STRING);
 
         // We get one user after enabling the filter
         $this->assertEquals(1, count($query->getResult()));
+
+        $this->_em->getFilters()->enable('country')->setParameter('country', ['Germany', 'France'], DBALType::STRING);
+
+        $this->assertEquals(2, count($query->getResult()));
     }
 
     public function testManyToManyFilter(): void
@@ -1188,7 +1192,7 @@ class CMSCountryFilter extends SQLFilter
             return '';
         }
 
-        return $targetTableAlias . '.country = ' . $this->getParameter('country'); // getParam uses connection to quote the value.
+        return $targetTableAlias . '.country IN (' . $this->getParameterList('country') . ')'; // getParam uses connection to quote the value.
     }
 }
 
