@@ -40,6 +40,7 @@ use Doctrine\ORM\Utility\PersisterHelper;
 use function array_map;
 use function array_merge;
 use function assert;
+use function is_object;
 use function reset;
 
 /**
@@ -1953,20 +1954,7 @@ class BasicEntityPersister implements EntityPersister
             return [$newValue];
         }
 
-        if (is_object($value) && $this->em->getMetadataFactory()->hasMetadataFor(ClassUtils::getClass($value))) {
-            $class = $this->em->getClassMetadata(get_class($value));
-            if ($class->isIdentifierComposite) {
-                $newValue = [];
-
-                foreach ($class->getIdentifierValues($value) as $innerValue) {
-                    $newValue = array_merge($newValue, $this->getValues($innerValue));
-                }
-
-                return $newValue;
-            }
-        }
-
-        return [$this->getIndividualValue($value)];
+        return $this->getIndividualValue($value);
     }
 
     /**
@@ -1974,15 +1962,35 @@ class BasicEntityPersister implements EntityPersister
      *
      * @param mixed $value
      *
-     * @return mixed
+     * @return       array<mixed>
+     *
+     * @psalm-return list<mixed>
      */
     private function getIndividualValue($value)
     {
-        if ( ! is_object($value) || ! $this->em->getMetadataFactory()->hasMetadataFor(ClassUtils::getClass($value))) {
-            return $value;
+        if (! is_object($value)) {
+            return [$value];
         }
 
-        return $this->em->getUnitOfWork()->getSingleIdentifierValue($value);
+        $valueClass = ClassUtils::getClass($value);
+
+        if ($this->em->getMetadataFactory()->isTransient($valueClass)) {
+            return [$value];
+        }
+
+        $class = $this->em->getClassMetadata($valueClass);
+
+        if ($class->isIdentifierComposite) {
+            $newValue = [];
+
+            foreach ($class->getIdentifierValues($value) as $innerValue) {
+                $newValue = array_merge($newValue, $this->getValues($innerValue));
+            }
+
+            return $newValue;
+        }
+
+        return [$this->em->getUnitOfWork()->getSingleIdentifierValue($value)];
     }
 
     /**
