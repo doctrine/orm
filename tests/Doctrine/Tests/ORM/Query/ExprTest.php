@@ -182,6 +182,11 @@ class ExprTest extends OrmTestCase
         $this->assertEquals('SUBSTRING(a.title, 0, 25)', (string) $this->_expr->substring('a.title', 0, 25));
     }
 
+    public function testModExpr(): void
+    {
+        self::assertEquals('MOD(10, 1)', (string) $this->_expr->mod(10, 1));
+    }
+
     /**
      * @group regression
      * @group DDC-612
