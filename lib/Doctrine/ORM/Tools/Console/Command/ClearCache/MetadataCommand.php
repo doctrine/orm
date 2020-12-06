@@ -99,12 +99,6 @@ EOT
             $message = ($result) ? 'Successfully flushed cache entries.' : $message;
         }
 
-        if ( ! $result) {
-            $ui->error($message);
-
-            return 1;
-        }
-
         $ui->success($message);
 
         return 0;
