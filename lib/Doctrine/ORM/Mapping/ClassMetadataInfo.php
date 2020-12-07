@@ -2748,6 +2748,10 @@ class ClassMetadataInfo implements ClassMetadata
      */
     public function addLifecycleCallback($callback, $event)
     {
+        if ($this->isEmbeddedClass) {
+            throw MappingException::embeddedClassesDontSupportLifecycleCallbacks($this->name);
+        }
+
         if (isset($this->lifecycleCallbacks[$event]) && in_array($callback, $this->lifecycleCallbacks[$event])) {
             return;
         }
