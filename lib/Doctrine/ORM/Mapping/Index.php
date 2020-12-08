@@ -41,7 +41,7 @@ final class Index implements Annotation, NamedArgumentConstructorAnnotation
     /** @var array<string> */
     public $flags;
 
-    /** @var array */
+    /** @var array<string,mixed> */
     public $options;
 
     /**

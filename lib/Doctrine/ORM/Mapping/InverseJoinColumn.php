@@ -28,22 +28,22 @@ use Attribute;
 final class InverseJoinColumn implements Annotation
 {
     public function __construct(
-        public ?string $name = null,
+    public ?string $name = null,
 
-        public string $referencedColumnName = 'id',
+    public string $referencedColumnName = 'id',
 
-        public bool $unique = false,
+    public bool $unique = false,
 
-        public bool $nullable = true,
+    public bool $nullable = true,
 
-        /** @var mixed */
-        public $onDelete = null,
+    /** @var mixed */
+    public $onDelete = null,
 
-        public ?string $columnDefinition = null,
+    public ?string $columnDefinition = null,
 
-        /**
-         * Field name used in non-object hydration (array/scalar).
-         */
-        public ?string $fieldName = null,
+    /**
+     * Field name used in non-object hydration (array/scalar).
+     */
+    public ?string $fieldName = null,
     ) {}
 }

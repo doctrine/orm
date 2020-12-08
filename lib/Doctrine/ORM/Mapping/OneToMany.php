@@ -55,6 +55,9 @@ final class OneToMany implements Annotation, NamedArgumentConstructorAnnotation
     /** @var string */
     public $indexBy;
 
+    /**
+     * @param array<string> $cascade
+     */
     public function __construct(
         ?string $mappedBy = null,
         ?string $targetEntity = null,

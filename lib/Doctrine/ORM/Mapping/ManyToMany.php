@@ -58,6 +58,9 @@ final class ManyToMany implements Annotation, NamedArgumentConstructorAnnotation
     /** @var string */
     public $indexBy;
 
+    /**
+     * @param array<string> $cascade
+     */
     public function __construct(
         string $targetEntity,
         ?string $mappedBy = null,

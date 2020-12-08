@@ -49,6 +49,9 @@ final class ManyToOne implements Annotation, NamedArgumentConstructorAnnotation
     /** @var string */
     public $inversedBy;
 
+    /**
+     * @param array<string> $cascade
+     */
     public function __construct(
         string $targetEntity,
         ?array $cascade = null,

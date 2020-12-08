@@ -55,6 +55,9 @@ final class OneToOne implements Annotation, NamedArgumentConstructorAnnotation
     /** @var bool */
     public $orphanRemoval = false;
 
+    /**
+     * @param array<string> $cascade
+     */
     public function __construct(
         ?string $mappedBy = null,
         ?string $inversedBy = null,

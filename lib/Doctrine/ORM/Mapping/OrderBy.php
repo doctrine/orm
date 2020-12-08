@@ -35,6 +35,9 @@ final class OrderBy implements Annotation, NamedArgumentConstructorAnnotation
     /** @var array<string> */
     public $value;
 
+    /**
+     * @param array<string> $value
+     */
     public function __construct(array $value)
     {
         $this->value = $value;
