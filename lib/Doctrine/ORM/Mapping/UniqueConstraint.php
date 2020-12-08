@@ -38,11 +38,12 @@ final class UniqueConstraint implements Annotation, NamedArgumentConstructorAnno
     /** @var array<string> */
     public $columns;
 
-    /** @var array */
+    /** @var array<string,mixed> */
     public $options;
 
     /**
      * @param array<string> $columns
+     * @param array<string,mixed> $options
      */
     public function __construct(
         ?string $name = null,
