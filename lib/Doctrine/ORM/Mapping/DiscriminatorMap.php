@@ -35,6 +35,7 @@ final class DiscriminatorMap implements Annotation, NamedArgumentConstructorAnno
     /** @var array<string> */
     public $value;
 
+    /** @param array<string> $value */
     public function __construct(array $value)
     {
         $this->value = $value;

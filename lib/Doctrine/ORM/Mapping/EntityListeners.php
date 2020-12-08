@@ -43,6 +43,9 @@ final class EntityListeners implements Annotation, NamedArgumentConstructorAnnot
      */
     public $value = [];
 
+    /**
+     * @param array<string> $value
+     */
     public function __construct(array $value = [])
     {
         $this->value = $value;

@@ -61,12 +61,15 @@ final class Column implements Annotation, NamedArgumentConstructorAnnotation
     /** @var bool */
     public $nullable = false;
 
-    /** @var array */
+    /** @var array<string,mixed> */
     public $options = [];
 
     /** @var string */
     public $columnDefinition;
 
+    /**
+     * @param array<string,mixed> $options
+     */
     public function __construct(
         ?string $name = null,
         string $type = 'string',

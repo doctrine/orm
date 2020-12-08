@@ -44,6 +44,11 @@ final class Index implements Annotation, NamedArgumentConstructorAnnotation
     /** @var array */
     public $options;
 
+    /**
+     * @param array<string> $columns
+     * @param array<string> $flags
+     * @param array<string> $options
+     */
     public function __construct(
         array $columns,
         ?string $name = null,
