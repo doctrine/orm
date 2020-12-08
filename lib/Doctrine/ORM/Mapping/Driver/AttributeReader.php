@@ -14,7 +14,6 @@ use ReflectionProperty;
 use function count;
 use function is_subclass_of;
 
-// TODO: Should we move this to doctrine/annotations?
 class AttributeReader
 {
     /** @var array<string,bool> */
@@ -71,20 +70,7 @@ class AttributeReader
                 continue;
             }
 
-            $attributeClassName = $attribute->getName();
-            $instance           = new $attributeClassName(); // @phpstan-ignore-line
-            $arguments          = $attribute->getArguments();
-
-            // unnamed argument is automatically "value" in Doctrine Annotations
-            if (count($arguments) >= 1 && isset($arguments[0])) {
-                $arguments['value'] = $arguments[0];
-                unset($arguments[0]); // @phpstan-ignore-line
-            }
-
-            // This works using the old Annotation, but will probably break Attribute IDE autocomplete support
-            foreach ($arguments as $name => $value) {
-                $instance->$name = $value;
-            }
+            $instance = $attribute->newInstance();
 
             if ($this->isRepeatable($attribute->getName())) {
                 $instances[$attribute->getName()][] = $instance;
