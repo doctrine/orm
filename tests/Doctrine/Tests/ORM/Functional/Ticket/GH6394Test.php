@@ -1,10 +1,13 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\Tests\ORM\Functional\Ticket;
 
-class GH6394Test extends \Doctrine\Tests\OrmFunctionalTestCase
-{
+use Doctrine\Tests\OrmFunctionalTestCase;
 
+class GH6394Test extends OrmFunctionalTestCase
+{
     protected function setUp(): void
     {
         parent::setUp();
@@ -12,7 +15,7 @@ class GH6394Test extends \Doctrine\Tests\OrmFunctionalTestCase
         $this->_schemaTool->createSchema(
             [
                 $this->_em->getClassMetadata(A::class),
-                $this->_em->getClassMetadata(B::class)
+                $this->_em->getClassMetadata(B::class),
             ]
         );
     }
@@ -20,6 +23,7 @@ class GH6394Test extends \Doctrine\Tests\OrmFunctionalTestCase
     /**
      * Test the the version of an entity can be fetched, when the id field and
      * the id column are different.
+     *
      * @group 6393
      */
     public function testFetchVersionValueForDifferentIdFieldAndColumn(): void
@@ -38,7 +42,6 @@ class GH6394Test extends \Doctrine\Tests\OrmFunctionalTestCase
 
         self::assertSame(2, $b->version);
     }
-
 }
 
 /**
@@ -46,16 +49,17 @@ class GH6394Test extends \Doctrine\Tests\OrmFunctionalTestCase
  */
 class A
 {
-
     /**
      * @Id
      * @Column(type="integer")
+     * @var int
      */
     public $id;
 
     /**
      * @Version
      * @Column(type="integer")
+     * @var int
      */
     public $version;
 
@@ -63,7 +67,6 @@ class A
     {
         $this->id = $id;
     }
-
 }
 
 /**
@@ -71,29 +74,30 @@ class A
  */
 class B
 {
-
     /**
      * @Id
      * @ManyToOne(targetEntity="A")
      * @JoinColumn(name="aid", referencedColumnName="id")
+     * @var A
      */
     public $a;
 
     /**
      * @Column(type="string")
+     * @var string
      */
     public $something;
 
     /**
      * @Version
      * @Column(type="integer")
+     * @var int
      */
     public $version;
 
     public function __construct(A $a, string $something)
     {
-        $this->a = $a;
+        $this->a         = $a;
         $this->something = $something;
     }
-
 }

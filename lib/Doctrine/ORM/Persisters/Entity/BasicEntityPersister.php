@@ -394,7 +394,7 @@ class BasicEntityPersister implements EntityPersister
         $this->updateTable($entity, $quotedTableName, $data, $isVersioned);
 
         if ($isVersioned) {
-            $id = $this->em->getUnitOfWork()->getEntityIdentifier($entity);
+            $id = $this->class->getIdentifierValues($entity);
 
             $this->assignDefaultVersionValue($entity, $id);
         }
