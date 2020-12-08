@@ -48,9 +48,9 @@ final class Table implements Annotation, NamedArgumentConstructorAnnotation
     public $options = [];
 
     /**
-     * @param array<\Doctrine\ORM\Mapping\Index> $indexes
+     * @param array<\Doctrine\ORM\Mapping\Index>            $indexes
      * @param array<\Doctrine\ORM\Mapping\UniqueConstraint> $uniqueConstraints
-     * @param array<string,mixed> $options
+     * @param array<string,mixed>                           $options
      */
     public function __construct(
         ?string $name = null,
