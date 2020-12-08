@@ -27,23 +27,46 @@ use Attribute;
 #[Attribute(Attribute::TARGET_PROPERTY | Attribute::IS_REPEATABLE)]
 final class InverseJoinColumn implements Annotation
 {
+    /** @var string */
+    public $name;
+
+    /** @var string */
+    public $referencedColumnName = 'id';
+
+    /** @var bool */
+    public $unique = false;
+
+    /** @var bool */
+    public $nullable = true;
+
+    /** @var mixed */
+    public $onDelete;
+
+    /** @var string */
+    public $columnDefinition;
+
+    /**
+     * Field name used in non-object hydration (array/scalar).
+     *
+     * @var string
+     */
+    public $fieldName;
+
     public function __construct(
-        public ?string $name = null,
-
-        public string $referencedColumnName = 'id',
-
-        public bool $unique = false,
-
-        public bool $nullable = true,
-    
-        /** @var mixed */
-        public $onDelete = null,
-
-        public ?string $columnDefinition = null,
-
-        /**
-         * Field name used in non-object hydration (array/scalar).
-         */
-        public ?string $fieldName = null,
-    ) {}
+        ?string $name = null,
+        string $referencedColumnName = 'id',
+        bool $unique = false,
+        bool $nullable = true,
+        $onDelete = null,
+        ?string $columnDefinition = null,
+        ?string $fieldName = null
+    ) {
+        $this->name                 = $name;
+        $this->referencedColumnName = $referencedColumnName;
+        $this->unique               = $unique;
+        $this->nullable             = $nullable;
+        $this->onDelete             = $onDelete;
+        $this->columnDefinition     = $columnDefinition;
+        $this->fieldName            = $fieldName;
+    }
 }
