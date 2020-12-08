@@ -1,4 +1,7 @@
 <?php
+
+declare(strict_types=1);
+
 /*
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
  * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
@@ -29,29 +32,19 @@ use Doctrine\Common\Annotations\NamedArgumentConstructorAnnotation;
 #[Attribute(Attribute::TARGET_CLASS)]
 final class Table implements Annotation, NamedArgumentConstructorAnnotation
 {
-    /**
-     * @var string
-     */
+    /** @var string */
     public $name;
 
-    /**
-     * @var string
-     */
+    /** @var string */
     public $schema;
 
-    /**
-     * @var array<\Doctrine\ORM\Mapping\Index>
-     */
+    /** @var array<\Doctrine\ORM\Mapping\Index> */
     public $indexes;
 
-    /**
-     * @var array<\Doctrine\ORM\Mapping\UniqueConstraint>
-     */
+    /** @var array<\Doctrine\ORM\Mapping\UniqueConstraint> */
     public $uniqueConstraints;
 
-    /**
-     * @var array
-     */
+    /** @var array */
     public $options = [];
 
     public function __construct(
@@ -62,10 +55,10 @@ final class Table implements Annotation, NamedArgumentConstructorAnnotation
         array $options = [],
         ?string $value = null
     ) {
-        $this->name = $value ?: $name;
-        $this->schema = $schema;
-        $this->indexes = $indexes;
+        $this->name              = $value ?: $name;
+        $this->schema            = $schema;
+        $this->indexes           = $indexes;
         $this->uniqueConstraints = $uniqueConstraints;
-        $this->options = $options;
+        $this->options           = $options;
     }
 }

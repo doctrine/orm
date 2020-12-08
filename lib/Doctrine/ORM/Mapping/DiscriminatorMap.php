@@ -1,4 +1,7 @@
 <?php
+
+declare(strict_types=1);
+
 /*
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
  * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
@@ -29,9 +32,7 @@ use Doctrine\Common\Annotations\NamedArgumentConstructorAnnotation;
 #[Attribute(Attribute::TARGET_CLASS)]
 final class DiscriminatorMap implements Annotation, NamedArgumentConstructorAnnotation
 {
-    /**
-     * @var array<string>
-     */
+    /** @var array<string> */
     public $value;
 
     public function __construct(array $value)

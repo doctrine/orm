@@ -1,4 +1,7 @@
 <?php
+
+declare(strict_types=1);
+
 /*
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
  * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
@@ -29,34 +32,22 @@ use Doctrine\Common\Annotations\NamedArgumentConstructorAnnotation;
 #[Attribute(Attribute::TARGET_PROPERTY | Attribute::IS_REPEATABLE)]
 final class JoinColumn implements Annotation, NamedArgumentConstructorAnnotation
 {
-    /**
-     * @var string
-     */
+    /** @var string */
     public $name;
 
-    /**
-     * @var string
-     */
+    /** @var string */
     public $referencedColumnName = 'id';
 
-    /**
-     * @var boolean
-     */
+    /** @var bool */
     public $unique = false;
 
-    /**
-     * @var boolean
-     */
+    /** @var bool */
     public $nullable = true;
 
-    /**
-     * @var mixed
-     */
+    /** @var mixed */
     public $onDelete;
 
-    /**
-     * @var string
-     */
+    /** @var string */
     public $columnDefinition;
 
     /**
@@ -75,12 +66,12 @@ final class JoinColumn implements Annotation, NamedArgumentConstructorAnnotation
         ?string $columnDefinition = null,
         ?string $fieldName = null
     ) {
-        $this->name = $name;
+        $this->name                 = $name;
         $this->referencedColumnName = $referencedColumnName;
-        $this->unique = $unique;
-        $this->nullable = $nullable;
-        $this->onDelete = $onDelete;
-        $this->columnDefinition = $columnDefinition;
-        $this->fieldName = $fieldName;
+        $this->unique               = $unique;
+        $this->nullable             = $nullable;
+        $this->onDelete             = $onDelete;
+        $this->columnDefinition     = $columnDefinition;
+        $this->fieldName            = $fieldName;
     }
 }

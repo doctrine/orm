@@ -1,4 +1,7 @@
 <?php
+
+declare(strict_types=1);
+
 /*
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
  * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
@@ -29,27 +32,21 @@ use Doctrine\Common\Annotations\NamedArgumentConstructorAnnotation;
 #[Attribute(Attribute::TARGET_CLASS | Attribute::IS_REPEATABLE)]
 final class UniqueConstraint implements Annotation, NamedArgumentConstructorAnnotation
 {
-    /**
-     * @var string
-     */
+    /** @var string */
     public $name;
 
-    /**
-     * @var array<string>
-     */
+    /** @var array<string> */
     public $columns;
 
-    /**
-     * @var array
-     */
+    /** @var array */
     public $options;
 
     public function __construct(
         ?string $name = null,
-        array $columns = null,
-        array $options = null
+        ?array $columns = null,
+        ?array $options = null
     ) {
-        $this->name = $name;
+        $this->name    = $name;
         $this->columns = $columns;
         $this->options = $options;
     }

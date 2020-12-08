@@ -1,4 +1,7 @@
 <?php
+
+declare(strict_types=1);
+
 /*
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
  * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
@@ -29,19 +32,13 @@ use Doctrine\Common\Annotations\NamedArgumentConstructorAnnotation;
 #[Attribute(Attribute::TARGET_CLASS)]
 final class DiscriminatorColumn implements Annotation, NamedArgumentConstructorAnnotation
 {
-    /**
-     * @var string
-     */
+    /** @var string */
     public $name;
 
-    /**
-     * @var string
-     */
+    /** @var string */
     public $type;
 
-    /**
-     * @var integer
-     */
+    /** @var int */
     public $length;
 
     /**
@@ -51,9 +48,7 @@ final class DiscriminatorColumn implements Annotation, NamedArgumentConstructorA
      */
     public $fieldName;
 
-    /**
-     * @var string
-     */
+    /** @var string */
     public $columnDefinition;
 
     public function __construct(
@@ -61,11 +56,10 @@ final class DiscriminatorColumn implements Annotation, NamedArgumentConstructorA
         ?string $type = null,
         ?int $length = null,
         ?string $columnDefinition = null
-    )
-    {
-        $this->name = $name;
-        $this->type = $type;
-        $this->length = $length;
+    ) {
+        $this->name             = $name;
+        $this->type             = $type;
+        $this->length           = $length;
         $this->columnDefinition = $columnDefinition;
     }
 }

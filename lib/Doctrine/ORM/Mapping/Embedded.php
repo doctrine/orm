@@ -1,4 +1,7 @@
 <?php
+
+declare(strict_types=1);
+
 /*
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
  * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
@@ -35,14 +38,12 @@ final class Embedded implements Annotation, NamedArgumentConstructorAnnotation
      */
     public $class;
 
-    /**
-     * @var string|bool|null
-     */
+    /** @var string|bool|null */
     public $columnPrefix;
 
     public function __construct(string $class, $columnPrefix = null)
     {
-        $this->class = $class;
+        $this->class        = $class;
         $this->columnPrefix = $columnPrefix;
     }
 }

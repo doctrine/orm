@@ -1,4 +1,7 @@
 <?php
+
+declare(strict_types=1);
+
 /*
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
  * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
@@ -29,24 +32,16 @@ use Doctrine\Common\Annotations\NamedArgumentConstructorAnnotation;
 #[Attribute(Attribute::TARGET_PROPERTY)]
 final class JoinTable implements Annotation, NamedArgumentConstructorAnnotation
 {
-    /**
-     * @var string
-     */
+    /** @var string */
     public $name;
 
-    /**
-     * @var string
-     */
+    /** @var string */
     public $schema;
 
-    /**
-     * @var array<\Doctrine\ORM\Mapping\JoinColumn>
-     */
+    /** @var array<\Doctrine\ORM\Mapping\JoinColumn> */
     public $joinColumns = [];
 
-    /**
-     * @var array<\Doctrine\ORM\Mapping\JoinColumn>
-     */
+    /** @var array<\Doctrine\ORM\Mapping\JoinColumn> */
     public $inverseJoinColumns = [];
 
     public function __construct(
@@ -55,9 +50,9 @@ final class JoinTable implements Annotation, NamedArgumentConstructorAnnotation
         $joinColumns = [],
         $inverseJoinColumns = []
     ) {
-        $this->name = $name;
-        $this->schema = $schema;
-        $this->joinColumns = $joinColumns instanceof JoinColumn ? [$joinColumns] : $joinColumns;
+        $this->name               = $name;
+        $this->schema             = $schema;
+        $this->joinColumns        = $joinColumns instanceof JoinColumn ? [$joinColumns] : $joinColumns;
         $this->inverseJoinColumns = $inverseJoinColumns instanceof JoinColumn
             ? [$inverseJoinColumns]
             : $inverseJoinColumns;

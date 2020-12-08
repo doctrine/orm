@@ -1,4 +1,7 @@
 <?php
+
+declare(strict_types=1);
+
 /*
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
  * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
@@ -29,38 +32,27 @@ use Doctrine\Common\Annotations\NamedArgumentConstructorAnnotation;
 #[Attribute(Attribute::TARGET_PROPERTY)]
 final class OneToMany implements Annotation, NamedArgumentConstructorAnnotation
 {
-    /**
-     * @var string
-     */
+    /** @var string */
     public $mappedBy;
 
-    /**
-     * @var string
-     */
+    /** @var string */
     public $targetEntity;
 
-    /**
-     * @var array<string>
-     */
+    /** @var array<string> */
     public $cascade;
 
     /**
      * The fetching strategy to use for the association.
      *
      * @var string
-     *
      * @Enum({"LAZY", "EAGER", "EXTRA_LAZY"})
      */
     public $fetch = 'LAZY';
 
-    /**
-     * @var boolean
-     */
+    /** @var bool */
     public $orphanRemoval = false;
 
-    /**
-     * @var string
-     */
+    /** @var string */
     public $indexBy;
 
     public function __construct(
@@ -71,11 +63,11 @@ final class OneToMany implements Annotation, NamedArgumentConstructorAnnotation
         bool $orphanRemoval = false,
         ?string $indexBy = null
     ) {
-        $this->mappedBy = $mappedBy;
-        $this->targetEntity = $targetEntity;
-        $this->cascade = $cascade;
-        $this->fetch = $fetch;
+        $this->mappedBy      = $mappedBy;
+        $this->targetEntity  = $targetEntity;
+        $this->cascade       = $cascade;
+        $this->fetch         = $fetch;
         $this->orphanRemoval = $orphanRemoval;
-        $this->indexBy = $indexBy;
+        $this->indexBy       = $indexBy;
     }
 }

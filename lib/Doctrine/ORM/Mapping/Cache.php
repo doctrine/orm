@@ -1,4 +1,7 @@
 <?php
+
+declare(strict_types=1);
+
 /*
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
  * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
@@ -25,9 +28,6 @@ use Doctrine\Common\Annotations\NamedArgumentConstructorAnnotation;
 /**
  * Caching to an entity or a collection.
  *
- * @author  Fabio B. Silva <fabio.bat.silva@gmail.com>
- * @since   2.5
- *
  * @Annotation
  * @Target({"CLASS","PROPERTY"})
  */
@@ -36,19 +36,16 @@ final class Cache implements Annotation, NamedArgumentConstructorAnnotation
 {
     /**
      * @Enum({"READ_ONLY", "NONSTRICT_READ_WRITE", "READ_WRITE"})
-     * 
      * @var string The concurrency strategy.
      */
     public $usage = 'READ_ONLY';
 
-    /**
-     * @var string Cache region name.
-     */
+    /** @var string Cache region name. */
     public $region;
 
     public function __construct(string $usage = 'READ_ONLY', ?string $region = null, $value = null)
     {
-        $this->usage = $value ?: $usage;
+        $this->usage  = $value ?: $usage;
         $this->region = $region;
     }
 }

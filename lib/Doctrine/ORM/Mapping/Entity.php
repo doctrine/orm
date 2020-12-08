@@ -1,4 +1,7 @@
 <?php
+
+declare(strict_types=1);
+
 /*
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
  * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
@@ -29,19 +32,15 @@ use Doctrine\Common\Annotations\NamedArgumentConstructorAnnotation;
 #[Attribute(Attribute::TARGET_CLASS)]
 final class Entity implements Annotation, NamedArgumentConstructorAnnotation
 {
-    /**
-     * @var string
-     */
+    /** @var string */
     public $repositoryClass;
 
-    /**
-     * @var boolean
-     */
+    /** @var bool */
     public $readOnly = false;
 
     public function __construct(?string $repositoryClass = null, bool $readOnly = false)
     {
         $this->repositoryClass = $repositoryClass;
-        $this->readOnly = $readOnly;
+        $this->readOnly        = $readOnly;
     }
 }

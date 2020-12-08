@@ -1,4 +1,7 @@
 <?php
+
+declare(strict_types=1);
+
 /*
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
  * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
@@ -29,24 +32,16 @@ use Doctrine\Common\Annotations\NamedArgumentConstructorAnnotation;
 #[Attribute(Attribute::TARGET_CLASS | Attribute::IS_REPEATABLE)]
 final class Index implements Annotation, NamedArgumentConstructorAnnotation
 {
-    /**
-     * @var string
-     */
+    /** @var string */
     public $name;
 
-    /**
-     * @var array<string>
-     */
+    /** @var array<string> */
     public $columns;
 
-    /**
-     * @var array<string>
-     */
+    /** @var array<string> */
     public $flags;
 
-    /**
-     * @var array
-     */
+    /** @var array */
     public $options;
 
     public function __construct(
@@ -56,8 +51,8 @@ final class Index implements Annotation, NamedArgumentConstructorAnnotation
         ?array $options = null
     ) {
         $this->columns = $columns;
-        $this->name = $name;
-        $this->flags = $flags;
+        $this->name    = $name;
+        $this->flags   = $flags;
         $this->options = $options;
     }
 }

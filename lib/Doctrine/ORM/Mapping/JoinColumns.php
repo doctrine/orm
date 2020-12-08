@@ -1,4 +1,7 @@
 <?php
+
+declare(strict_types=1);
+
 /*
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
  * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
@@ -25,8 +28,6 @@ namespace Doctrine\ORM\Mapping;
  */
 final class JoinColumns implements Annotation
 {
-    /**
-     * @var array<\Doctrine\ORM\Mapping\JoinColumn>
-     */
+    /** @var array<\Doctrine\ORM\Mapping\JoinColumn> */
     public $value;
 }
