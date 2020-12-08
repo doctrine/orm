@@ -19,6 +19,8 @@
 
 namespace Doctrine\ORM\Mapping;
 
+use function sprintf;
+
 /**
  * A MappingException indicates that something is wrong with the mapping setup.
  *
@@ -815,6 +817,18 @@ class MappingException extends \Doctrine\ORM\ORMException
             sprintf(
                 'Infinite nesting detected for embedded property %s::%s. ' .
                 'You cannot embed an embeddable from the same type inside an embeddable.',
+                $className,
+                $propertyName
+            )
+        );
+    }
+
+    public static function illegalOverrideOfInheritedProperty($className, $propertyName)
+    {
+        return new self(
+            sprintf(
+                'Override for %s::%s is only allowed for attributes/associations ' .
+                'declared on a mapped superclass or a trait.',
                 $className,
                 $propertyName
             )

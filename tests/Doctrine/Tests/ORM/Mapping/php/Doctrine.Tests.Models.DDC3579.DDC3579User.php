@@ -2,6 +2,8 @@
 
 use Doctrine\ORM\Mapping\ClassMetadataInfo;
 
+$metadata->isMappedSuperclass = true;
+
 $metadata->mapField(
     [
    'id'         => true,

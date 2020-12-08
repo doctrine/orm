@@ -81,6 +81,8 @@ class DDC3579User
 
     public static function loadMetadata($metadata)
     {
+        $metadata->isMappedSuperclass = true;
+
         $metadata->mapField(
             [
            'id'         => true,

@@ -278,7 +278,7 @@ Entity cache definition
 * Entity cache configuration allows you to define the caching strategy and region for an entity.
 
   * ``usage`` specifies the caching strategy: ``READ_ONLY``,
-`NONSTRICT_READ_WRITE``, ``READ_WRITE``.
+``NONSTRICT_READ_WRITE``, ``READ_WRITE``.
 See :ref:`reference-second-level-cache-mode`.
   * ``region`` is an optional value that specifies the name of the second
 level cache region.
