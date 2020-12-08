@@ -20,13 +20,14 @@
 namespace Doctrine\ORM\Mapping;
 
 use Attribute;
+use Doctrine\Common\Annotations\NamedArgumentConstructorAnnotation;
 
 /**
  * @Annotation
  * @Target("PROPERTY")
  */
 #[Attribute(Attribute::TARGET_PROPERTY)]
-final class Embedded implements Annotation
+final class Embedded implements Annotation, NamedArgumentConstructorAnnotation
 {
     /**
      * @Required
@@ -35,7 +36,13 @@ final class Embedded implements Annotation
     public $class;
 
     /**
-     * @var mixed
+     * @var string|bool|null
      */
     public $columnPrefix;
+
+    public function __construct(string $class, $columnPrefix = null)
+    {
+        $this->class = $class;
+        $this->columnPrefix = $columnPrefix;
+    }
 }

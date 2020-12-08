@@ -20,13 +20,14 @@
 namespace Doctrine\ORM\Mapping;
 
 use Attribute;
+use Doctrine\Common\Annotations\NamedArgumentConstructorAnnotation;
 
 /**
  * @Annotation
  * @Target("PROPERTY")
  */
 #[Attribute(Attribute::TARGET_PROPERTY)]
-final class ManyToOne implements Annotation
+final class ManyToOne implements Annotation, NamedArgumentConstructorAnnotation
 {
     /**
      * @var string
@@ -51,4 +52,16 @@ final class ManyToOne implements Annotation
      * @var string
      */
     public $inversedBy;
+
+    public function __construct(
+        string $targetEntity,
+        ?array $cascade = null,
+        string $fetch = 'LAZY',
+        ?string $inversedBy = null
+    ) {
+        $this->targetEntity = $targetEntity;
+        $this->cascade = $cascade;
+        $this->fetch = $fetch;
+        $this->inversedBy = $inversedBy;
+    }
 }

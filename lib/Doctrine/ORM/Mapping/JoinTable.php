@@ -20,13 +20,14 @@
 namespace Doctrine\ORM\Mapping;
 
 use Attribute;
+use Doctrine\Common\Annotations\NamedArgumentConstructorAnnotation;
 
 /**
  * @Annotation
  * @Target({"PROPERTY","ANNOTATION"})
  */
 #[Attribute(Attribute::TARGET_PROPERTY)]
-final class JoinTable implements Annotation
+final class JoinTable implements Annotation, NamedArgumentConstructorAnnotation
 {
     /**
      * @var string
@@ -47,4 +48,18 @@ final class JoinTable implements Annotation
      * @var array<\Doctrine\ORM\Mapping\JoinColumn>
      */
     public $inverseJoinColumns = [];
+
+    public function __construct(
+        ?string $name = null,
+        ?string $schema = null,
+        $joinColumns = [],
+        $inverseJoinColumns = []
+    ) {
+        $this->name = $name;
+        $this->schema = $schema;
+        $this->joinColumns = $joinColumns instanceof JoinColumn ? [$joinColumns] : $joinColumns;
+        $this->inverseJoinColumns = $inverseJoinColumns instanceof JoinColumn
+            ? [$inverseJoinColumns]
+            : $inverseJoinColumns;
+    }
 }

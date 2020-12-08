@@ -21,6 +21,7 @@
 namespace Doctrine\ORM\Mapping;
 
 use Attribute;
+use Doctrine\Common\Annotations\NamedArgumentConstructorAnnotation;
 
 /**
  * The EntityListeners annotation specifies the callback listener classes to be used for an entity or mapped superclass.
@@ -33,7 +34,7 @@ use Attribute;
  * @Target("CLASS")
  */
 #[Attribute(Attribute::TARGET_CLASS)]
-final class EntityListeners implements Annotation
+final class EntityListeners implements Annotation, NamedArgumentConstructorAnnotation
 {
     /**
      * Specifies the names of the entity listeners.
@@ -41,4 +42,9 @@ final class EntityListeners implements Annotation
      * @var array<string>
      */
     public $value = [];
+
+    public function __construct(array $value = [])
+    {
+        $this->value = $value;
+    }
 }

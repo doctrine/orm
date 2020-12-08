@@ -20,13 +20,14 @@
 namespace Doctrine\ORM\Mapping;
 
 use Attribute;
+use Doctrine\Common\Annotations\NamedArgumentConstructorAnnotation;
 
 /**
  * @Annotation
  * @Target("CLASS")
  */
 #[Attribute(Attribute::TARGET_CLASS)]
-final class Entity implements Annotation
+final class Entity implements Annotation, NamedArgumentConstructorAnnotation
 {
     /**
      * @var string
@@ -37,4 +38,10 @@ final class Entity implements Annotation
      * @var boolean
      */
     public $readOnly = false;
+
+    public function __construct(?string $repositoryClass = null, bool $readOnly = false)
+    {
+        $this->repositoryClass = $repositoryClass;
+        $this->readOnly = $readOnly;
+    }
 }

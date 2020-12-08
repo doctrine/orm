@@ -20,16 +20,22 @@
 namespace Doctrine\ORM\Mapping;
 
 use Attribute;
+use Doctrine\Common\Annotations\NamedArgumentConstructorAnnotation;
 
 /**
  * @Annotation
  * @Target("PROPERTY")
  */
 #[Attribute(Attribute::TARGET_PROPERTY)]
-final class OrderBy implements Annotation
+final class OrderBy implements Annotation, NamedArgumentConstructorAnnotation
 {
     /**
      * @var array<string>
      */
     public $value;
+
+    public function __construct(array $value)
+    {
+        $this->value = $value;
+    }
 }

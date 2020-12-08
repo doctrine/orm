@@ -20,13 +20,14 @@
 namespace Doctrine\ORM\Mapping;
 
 use Attribute;
+use Doctrine\Common\Annotations\NamedArgumentConstructorAnnotation;
 
 /**
  * @Annotation
  * @Target("ANNOTATION")
  */
 #[Attribute(Attribute::TARGET_CLASS | Attribute::IS_REPEATABLE)]
-final class Index implements Annotation
+final class Index implements Annotation, NamedArgumentConstructorAnnotation
 {
     /**
      * @var string
@@ -47,4 +48,16 @@ final class Index implements Annotation
      * @var array
      */
     public $options;
+
+    public function __construct(
+        array $columns,
+        ?string $name = null,
+        ?array $flags = null,
+        ?array $options = null
+    ) {
+        $this->columns = $columns;
+        $this->name = $name;
+        $this->flags = $flags;
+        $this->options = $options;
+    }
 }

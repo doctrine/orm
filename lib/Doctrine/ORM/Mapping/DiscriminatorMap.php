@@ -20,16 +20,22 @@
 namespace Doctrine\ORM\Mapping;
 
 use Attribute;
+use Doctrine\Common\Annotations\NamedArgumentConstructorAnnotation;
 
 /**
  * @Annotation
  * @Target("CLASS")
  */
 #[Attribute(Attribute::TARGET_CLASS)]
-final class DiscriminatorMap implements Annotation
+final class DiscriminatorMap implements Annotation, NamedArgumentConstructorAnnotation
 {
     /**
      * @var array<string>
      */
     public $value;
+
+    public function __construct(array $value)
+    {
+        $this->value = $value;
+    }
 }

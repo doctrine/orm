@@ -20,13 +20,14 @@
 namespace Doctrine\ORM\Mapping;
 
 use Attribute;
+use Doctrine\Common\Annotations\NamedArgumentConstructorAnnotation;
 
 /**
  * @Annotation
  * @Target("PROPERTY")
  */
 #[Attribute(Attribute::TARGET_PROPERTY)]
-final class GeneratedValue implements Annotation
+final class GeneratedValue implements Annotation, NamedArgumentConstructorAnnotation
 {
     /**
      * The type of Id generator.
@@ -36,4 +37,9 @@ final class GeneratedValue implements Annotation
      * @Enum({"AUTO", "SEQUENCE", "TABLE", "IDENTITY", "NONE", "UUID", "CUSTOM"})
      */
     public $strategy = 'AUTO';
+
+    public function __construct(string $strategy = 'AUTO', ?string $value = null)
+    {
+        $this->strategy = $value ?: $strategy;
+    }
 }

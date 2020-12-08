@@ -20,13 +20,14 @@
 namespace Doctrine\ORM\Mapping;
 
 use Attribute;
+use Doctrine\Common\Annotations\NamedArgumentConstructorAnnotation;
 
 /**
  * @Annotation
  * @Target("PROPERTY")
  */
 #[Attribute(Attribute::TARGET_PROPERTY)]
-final class OneToOne implements Annotation
+final class OneToOne implements Annotation, NamedArgumentConstructorAnnotation
 {
     /**
      * @var string
@@ -61,4 +62,20 @@ final class OneToOne implements Annotation
      * @var boolean
      */
     public $orphanRemoval = false;
+
+    public function __construct(
+        ?string $mappedBy = null,
+        ?string $inversedBy = null,
+        ?string $targetEntity = null,
+        ?array $cascade = null,
+        string $fetch = 'LAZY',
+        bool $orphanRemoval = false
+    ) {
+        $this->mappedBy = $mappedBy;
+        $this->inversedBy = $inversedBy;
+        $this->targetEntity = $targetEntity;
+        $this->cascade = $cascade;
+        $this->fetch = $fetch;
+        $this->orphanRemoval = $orphanRemoval;
+    }
 }
