@@ -20,13 +20,14 @@
 namespace Doctrine\ORM\Mapping;
 
 use Attribute;
+use Doctrine\Common\Annotations\NamedArgumentConstructorAnnotation;
 
 /**
  * @Annotation
  * @Target({"PROPERTY","ANNOTATION"})
  */
 #[Attribute(Attribute::TARGET_PROPERTY)]
-final class Column implements Annotation
+final class Column implements Annotation, NamedArgumentConstructorAnnotation
 {
     /**
      * @var string
@@ -76,4 +77,27 @@ final class Column implements Annotation
      * @var string
      */
     public $columnDefinition;
+
+    public function __construct(
+        ?string $name = null,
+        string $type = 'string',
+        ?int $length = null,
+        ?int $precision = null,
+        ?int $scale = null,
+        bool $unique = false,
+        bool $nullable = false,
+        array $options = [],
+        ?string $columnDefinition = null
+    )
+    {
+        $this->name = $name;
+        $this->type = $type;
+        $this->length = $length;
+        $this->precision = $precision;
+        $this->scale = $scale;
+        $this->unique = $unique;
+        $this->nullable = $nullable;
+        $this->options = $options;
+        $this->columnDefinition = $columnDefinition;
+    }
 }

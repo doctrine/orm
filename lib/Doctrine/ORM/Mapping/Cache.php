@@ -20,6 +20,7 @@
 namespace Doctrine\ORM\Mapping;
 
 use Attribute;
+use Doctrine\Common\Annotations\NamedArgumentConstructorAnnotation;
 
 /**
  * Caching to an entity or a collection.
@@ -31,7 +32,7 @@ use Attribute;
  * @Target({"CLASS","PROPERTY"})
  */
 #[Attribute(Attribute::TARGET_CLASS | Attribute::TARGET_PROPERTY)]
-final class Cache implements Annotation
+final class Cache implements Annotation, NamedArgumentConstructorAnnotation
 {
     /**
      * @Enum({"READ_ONLY", "NONSTRICT_READ_WRITE", "READ_WRITE"})
@@ -44,4 +45,10 @@ final class Cache implements Annotation
      * @var string Cache region name.
      */
     public $region;
+
+    public function __construct(string $usage = 'READ_ONLY', ?string $region = null, $value = null)
+    {
+        $this->usage = $value ?: $usage;
+        $this->region = $region;
+    }
 }
