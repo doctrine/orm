@@ -390,7 +390,7 @@ use function trigger_error;
      * @throws ORMException
      *
      * @template T
-     * @psalm-param class-string<T> $entityName
+     * @psalm-param class-string<T> $className
      * @psalm-return ?T
      */
     public function find($className, $id, $lockMode = null, $lockVersion = null)
