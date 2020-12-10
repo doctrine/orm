@@ -19,7 +19,7 @@
 
 namespace Doctrine\ORM\Id;
 
-use Doctrine\ORM\EntityManager;
+use Doctrine\ORM\EntityManagerInterface;
 
 /**
  * Id generator that uses a single-row database table and a hi/lo algorithm.
@@ -72,8 +72,7 @@ class TableGenerator extends AbstractIdGenerator
     /**
      * {@inheritDoc}
      */
-    public function generate(
-        EntityManager $em, $entity)
+    public function generate(EntityManagerInterface $em, $entity)
     {
         if ($this->_maxValue === null || $this->_nextValue == $this->_maxValue) {
             // Allocate new values
