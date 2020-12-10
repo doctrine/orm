@@ -673,7 +673,7 @@ class XmlDriver extends FileDriver
      *
      * @return mixed[] The options array.
      */
-    private function _parseOptions(SimpleXMLElement $options)
+    protected function _parseOptions(SimpleXMLElement $options)
     {
         $array = [];
 
