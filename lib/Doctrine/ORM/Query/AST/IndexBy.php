@@ -36,11 +36,18 @@ class IndexBy extends Node
     public $singleValuedPathExpression = null;
 
     /**
+     * @deprecated
+     *
+     * @var PathExpression
+     */
+    public $simpleStateFieldPathExpression = null;
+
+    /**
      * @param PathExpression $singleValuedPathExpression
      */
     public function __construct($singleValuedPathExpression)
     {
-        $this->singleValuedPathExpression = $singleValuedPathExpression;
+        $this->singleValuedPathExpression = $this->simpleStateFieldPathExpression = $singleValuedPathExpression;
     }
 
     /**
