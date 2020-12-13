@@ -39,7 +39,7 @@ final class OneToMany implements MappingAttribute
      * @var string
      * @psalm-var 'LAZY'|'EAGER'|'EXTRA_LAZY'
      * @readonly
-     * @Enum({"LAZY", "EAGER", "EXTRA_LAZY"})
+     * @Enum({"LAZY", "EAGER", "EXTRA_LAZY", "SUBSELECT"})
      */
     public $fetch = 'LAZY';
 

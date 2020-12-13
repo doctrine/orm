@@ -315,6 +315,9 @@ class UnitOfWork implements PropertyChangedListener
      */
     private $eagerLoadingEntities = [];
 
+    /** @var array */
+    private $subselectLoadingEntities = [];
+
     /** @var bool */
     protected $hasCache = false;
 
@@ -3112,6 +3115,8 @@ EXCEPTION
                     if ($assoc['fetch'] === ClassMetadata::FETCH_EAGER) {
                         $this->loadCollection($pColl);
                         $pColl->takeSnapshot();
+                    } elseif ($assoc['fetch'] == ClassMetadata::FETCH_SUBSELECT) {
+                        $this->scheduleCollectionForBatchLoading($pColl, $class);
                     }
 
                     $this->originalEntityData[$oid][$field] = $pColl;
@@ -3128,7 +3133,7 @@ EXCEPTION
     /** @return void */
     public function triggerEagerLoads()
     {
-        if (! $this->eagerLoadingEntities) {
+        if (! $this->eagerLoadingEntities && ! $this->subselectLoadingEntities) {
             return;
         }
 
@@ -3146,6 +3151,55 @@ EXCEPTION
             $this->getEntityPersister($entityName)->loadAll(
                 array_combine($class->identifier, [array_values($ids)])
             );
+        }
+
+        $subselectLoadingEntities = $this->subselectLoadingEntities; // avoid recursion
+        $this->subselectLoadingEntities = [];
+
+        foreach($subselectLoadingEntities as $group) {
+            $this->subselectLoadCollection($group['items'], $group['mapping']);
+        }
+    }
+
+    /**
+     * Load all data into the given collections, according to the specified mapping
+     *
+     * @param PersistentCollection[] $collections
+     * @param array $mapping
+     */
+    private function subselectLoadCollection(array $collections, array $mapping) : void
+    {
+        $targetEntity = $mapping['targetEntity'];
+        $class        = $this->em->getClassMetadata($mapping['sourceEntity']);
+        $mappedBy     = $mapping['mappedBy'];
+
+        $entities = [];
+        $index    = [];
+
+        foreach ($collections as $idHash => $collection) {
+            $index[$idHash] = $collection;
+            $entities[]     = $collection->getOwner();
+        }
+
+        $found = $this->em->getRepository($targetEntity)->findBy([
+            $mappedBy => $entities
+        ]);
+
+        $targetClass    = $this->em->getClassMetadata($targetEntity);
+        $targetProperty = $targetClass->getReflectionProperty($mappedBy);
+
+        foreach ($found as $targetValue) {
+            $sourceEntity = $targetProperty->getValue($targetValue);
+
+            $id     = $this->identifierFlattener->flattenIdentifier($class, $class->getIdentifierValues($sourceEntity));
+            $idHash = implode(' ', $id);
+
+            $index[$idHash]->add($targetValue);
+        }
+
+        foreach ($index as $association) {
+            $association->setInitialized(true);
+            $association->takeSnapshot();
         }
     }
 
@@ -3174,6 +3228,30 @@ EXCEPTION
         }
 
         $collection->setInitialized(true);
+    }
+
+    /**
+     * Schedule this collection for batch loading at the end of the UnitOfWork
+     */
+    private function scheduleCollectionForBatchLoading(PersistentCollection $collection, ClassMetadata $sourceClass) : void
+    {
+        $mapping = $collection->getMapping();
+        $name    = $mapping['sourceEntity'] . '#' . $mapping['fieldName'];
+
+        if (! isset($this->subselectLoadingEntities[$name])) {
+            $this->subselectLoadingEntities[$name] = [
+                'items'   => [],
+                'mapping' => $mapping,
+            ];
+        }
+
+        $id = $this->identifierFlattener->flattenIdentifier(
+            $sourceClass,
+            $sourceClass->getIdentifierValues($collection->getOwner())
+        );
+        $idHash = implode(' ', $id);
+
+        $this->subselectLoadingEntities[$name]['items'][$idHash] = $collection;
     }
 
     /**
