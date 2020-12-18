@@ -2,6 +2,7 @@
 
 namespace Doctrine\Tests\ORM\Functional;
 
+use Doctrine\ORM\PersistentCollection;
 use Doctrine\Tests\Models\ECommerce\ECommerceCart;
 use Doctrine\Tests\Models\ECommerce\ECommerceProduct;
 use Doctrine\ORM\Mapping\AssociationMapping;
@@ -39,6 +40,15 @@ class ManyToManyUnidirectionalAssociationTest extends AbstractManyToManyAssociat
         $this->firstCart->addProduct($this->secondProduct);
         $this->_em->persist($this->firstCart);
         $this->_em->flush();
+
+        $products = $this->firstCart->getProducts();
+        if ($products instanceof PersistentCollection) {
+            // hack to force the collection to be reinitialized
+            $products->setInitialized(false);
+        }
+
+        $firstProduct = $products['Doctrine 1.x Manual'];
+        self::assertNotNull($firstProduct);
 
         $this->assertForeignKeysContain($this->firstCart->getId(), $this->firstProduct->getId());
         $this->assertForeignKeysContain($this->firstCart->getId(), $this->secondProduct->getId());
