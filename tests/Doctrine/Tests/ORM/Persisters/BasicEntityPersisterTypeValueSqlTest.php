@@ -15,6 +15,8 @@ use Doctrine\Tests\Models\Generic\NonAlphaColumnsEntity;
 use Doctrine\Tests\OrmTestCase;
 use ReflectionMethod;
 
+use function array_shift;
+
 class BasicEntityPersisterTypeValueSqlTest extends OrmTestCase
 {
     /** @var BasicEntityPersister */
@@ -156,5 +158,30 @@ class BasicEntityPersisterTypeValueSqlTest extends OrmTestCase
     public function testCountEntities(): void
     {
         $this->assertEquals(0, $this->_persister->count());
+    }
+
+    public function testDeleteManyToManyUsesTypeValuesSQL(): void
+    {
+        $friend = new CustomTypeParent();
+        $parent = new CustomTypeParent();
+        $parent->addMyFriend($friend);
+
+        $this->_em->getUnitOfWork()->registerManaged($parent, ['id' => 1], []);
+        $this->_em->getUnitOfWork()->registerManaged($friend, ['id' => 2], []);
+
+        $this->_persister->delete($parent);
+
+        $deletes = $this->_em->getConnection()->getDeletes();
+
+        self::assertEquals([
+            'table' => 'customtype_parent_friends',
+            'criteria' => ['friend_customtypeparent_id' => 1],
+            'types' => ['integer'],
+        ], array_shift($deletes));
+        self::assertEquals([
+            'table' => 'customtype_parent_friends',
+            'criteria' => ['customtypeparent_id' => 1],
+            'types' => ['integer'],
+        ], array_shift($deletes));
     }
 }
