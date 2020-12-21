@@ -329,24 +329,26 @@ class ClassMetadataFactory extends AbstractClassMetadataFactory
         }
 
         // minor optimization: avoid loading related metadata when not needed
-        foreach ($metadata->discriminatorMap as $discriminatorValue => $discriminatorClass) {
-            if ($discriminatorClass === $metadata->name) {
-                $metadata->discriminatorValue = $discriminatorValue;
+//        foreach ($metadata->discriminatorMap as $discriminatorValue => $discriminatorClass) {
+//            if ($discriminatorClass === $metadata->name) {
+//                $metadata->discriminatorValue = $discriminatorValue;
+//
+//                return;
+//            }
+//        }
+//
+//        // iterate over discriminator mappings and resolve actual referenced classes according to existing metadata
+//        foreach ($metadata->discriminatorMap as $discriminatorValue => $discriminatorClass) {
+//            if ($metadata->name === $this->getMetadataFor($discriminatorClass)->getName()) {
+//                $metadata->discriminatorValue = $discriminatorValue;
+//
+//                return;
+//            }
+//        }
 
-                return;
-            }
+        if (! in_array($metadata->name, $metadata->discriminatorMap)) {
+            throw MappingException::mappedClassNotPartOfDiscriminatorMap($metadata->name, $metadata->rootEntityName);
         }
-
-        // iterate over discriminator mappings and resolve actual referenced classes according to existing metadata
-        foreach ($metadata->discriminatorMap as $discriminatorValue => $discriminatorClass) {
-            if ($metadata->name === $this->getMetadataFor($discriminatorClass)->getName()) {
-                $metadata->discriminatorValue = $discriminatorValue;
-
-                return;
-            }
-        }
-
-        throw MappingException::mappedClassNotPartOfDiscriminatorMap($metadata->name, $metadata->rootEntityName);
     }
 
     /**
