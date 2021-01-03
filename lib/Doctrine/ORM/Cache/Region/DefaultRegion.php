@@ -135,6 +135,8 @@ class DefaultRegion implements Region
 
     /**
      * {@inheritdoc}
+     *
+     * @return bool
      */
     public function put(CacheKey $key, CacheEntry $entry, Lock $lock = null)
     {
@@ -143,6 +145,8 @@ class DefaultRegion implements Region
 
     /**
      * {@inheritdoc}
+     *
+     * @return bool
      */
     public function evict(CacheKey $key)
     {
@@ -151,6 +155,8 @@ class DefaultRegion implements Region
 
     /**
      * {@inheritdoc}
+     *
+     * @return bool
      */
     public function evictAll()
     {

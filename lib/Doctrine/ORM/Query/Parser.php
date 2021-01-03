@@ -29,6 +29,7 @@ use Doctrine\ORM\Query\AST\SelectStatement;
 use Doctrine\ORM\Query\AST\Subselect;
 use Doctrine\ORM\Query\AST\SubselectIdentificationVariableDeclaration;
 use Doctrine\ORM\Query\AST\UpdateStatement;
+use Webmozart\Assert\Assert;
 use function assert;
 use function in_array;
 use function strpos;
@@ -453,6 +454,7 @@ class Parser
      * @param array|null $token    Got token.
      *
      * @return void
+     * @psalm-return no-return
      *
      * @throws \Doctrine\ORM\Query\QueryException
      */
@@ -2518,6 +2520,16 @@ class Parser
      *      InExpression | NullComparisonExpression | ExistsExpression |
      *      EmptyCollectionComparisonExpression | CollectionMemberExpression |
      *      InstanceOfExpression
+     *
+     * @return AST\BetweenExpression|
+     *         AST\CollectionMemberExpression|
+     *         AST\ComparisonExpression|
+     *         AST\EmptyCollectionComparisonExpression|
+     *         AST\ExistsExpression|
+     *         AST\InExpression|
+     *         AST\InstanceOfExpression|
+     *         AST\LikeExpression|
+     *         AST\NullComparisonExpression
      */
     public function SimpleConditionalExpression()
     {
@@ -3462,6 +3474,8 @@ class Parser
         $functionName  = strtolower($this->lexer->lookahead['value']);
         $functionClass = $this->em->getConfiguration()->getCustomNumericFunction($functionName);
 
+        Assert::notNull($functionClass);
+
         $function = is_string($functionClass)
             ? new $functionClass($functionName)
             : call_user_func($functionClass, $functionName);
@@ -3500,6 +3514,8 @@ class Parser
         // getCustomDatetimeFunction is case-insensitive
         $functionName  = $this->lexer->lookahead['value'];
         $functionClass = $this->em->getConfiguration()->getCustomDatetimeFunction($functionName);
+
+        Assert::notNull($functionClass);
 
         $function = is_string($functionClass)
             ? new $functionClass($functionName)
@@ -3540,6 +3556,8 @@ class Parser
         // getCustomStringFunction is case-insensitive
         $functionName  = $this->lexer->lookahead['value'];
         $functionClass = $this->em->getConfiguration()->getCustomStringFunction($functionName);
+
+        Assert::notNull($functionClass);
 
         $function = is_string($functionClass)
             ? new $functionClass($functionName)
