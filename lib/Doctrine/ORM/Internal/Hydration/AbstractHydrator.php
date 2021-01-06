@@ -163,8 +163,6 @@ abstract class AbstractHydrator
 
         $this->prepare();
 
-        $result = [];
-
         while (true) {
             $row = $this->_stmt->fetch(FetchMode::ASSOCIATIVE);
 
@@ -173,6 +171,8 @@ abstract class AbstractHydrator
 
                 break;
             }
+
+            $result = [];
 
             $this->hydrateRowData($row, $result);
 
