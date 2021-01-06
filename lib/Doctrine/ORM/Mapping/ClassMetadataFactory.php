@@ -384,20 +384,26 @@ class ClassMetadataFactory extends AbstractClassMetadataFactory
     private function addInheritedRelations(ClassMetadata $subClass, ClassMetadata $parentClass): void
     {
         foreach ($parentClass->associationMappings as $field => $mapping) {
-            if ($parentClass->isMappedSuperclass) {
-                if ($mapping['type'] & ClassMetadata::TO_MANY && ! $mapping['isOwningSide']) {
-                    throw MappingException::illegalToManyAssociationOnMappedSuperclass($parentClass->name, $field);
-                }
-
-                $mapping['sourceEntity'] = $subClass->name;
-            }
-
             if (! isset($mapping['inherited']) && ! $parentClass->isMappedSuperclass) {
                 $mapping['inherited'] = $parentClass->name;
             }
 
             if (! isset($mapping['declared'])) {
                 $mapping['declared'] = $parentClass->name;
+            }
+
+            // When the class inheriting the relation ($subClass) is the first entity class since the
+            // relation has been defined in a mapped superclass (or in a chain
+            // of mapped superclasses) above, then declare this current entity class as the source of
+            // the relationship.
+            // According to the definitions given in https://github.com/doctrine/orm/pull/10396/,
+            // this is the case <=> ! isset($mapping['inherited']).
+            if (! isset($mapping['inherited'])) {
+                if ($mapping['type'] & ClassMetadata::TO_MANY && ! $mapping['isOwningSide']) {
+                    throw MappingException::illegalToManyAssociationOnMappedSuperclass($parentClass->name, $field);
+                }
+
+                $mapping['sourceEntity'] = $subClass->name;
             }
 
             $subClass->addInheritedAssociationMapping($mapping);
