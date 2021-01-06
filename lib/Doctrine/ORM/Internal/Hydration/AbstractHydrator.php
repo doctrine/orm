@@ -176,7 +176,7 @@ abstract class AbstractHydrator
 
             $this->hydrateRowData($row, $result);
 
-            yield end($result);
+            yield $result;
         }
     }
 
