@@ -557,6 +557,8 @@ class AnnotationDriver extends AbstractAnnotationDriver
      * @param \ReflectionMethod $method
      *
      * @return callable[]
+     *
+     * @psalm-return list<callable-array>
      */
     private function getMethodCallbacks(\ReflectionMethod $method)
     {

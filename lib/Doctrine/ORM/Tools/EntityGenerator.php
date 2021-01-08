@@ -1411,7 +1411,7 @@ public function __construct(<params>)
         $var = sprintf('%sMethodTemplate', $type);
         $template = static::$$var;
 
-        $methodTypeHint = null;
+        $methodTypeHint = '';
         $types          = Type::getTypesMap();
         $variableType   = $typeHint ? $this->getType($typeHint) : null;
 

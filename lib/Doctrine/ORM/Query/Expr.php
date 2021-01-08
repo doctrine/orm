@@ -50,6 +50,8 @@ class Expr
      *                                                               when converting to string.
      *
      * @return Expr\Andx
+     *
+     * @psalm-param Expr\Comparison|Expr\Func|Expr\Andx|Expr\Orx|string ...$x
      */
     public function andX($x = null)
     {
@@ -70,6 +72,8 @@ class Expr
      *                                                               when converting to string.
      *
      * @return Expr\Orx
+     *
+     * @psalm-param Expr\Comparison|Expr\Func|Expr\Andx|Expr\Orx|string ...$x
      */
     public function orX($x = null)
     {

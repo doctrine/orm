@@ -104,6 +104,7 @@ class UnitOfWork implements PropertyChangedListener
      * we always take the root class name of the hierarchy.
      *
      * @var array
+     * @psalm-var array<class-string, array<string, object|null>>
      */
     private $identityMap = [];
 
@@ -112,6 +113,7 @@ class UnitOfWork implements PropertyChangedListener
      * Keys are object ids (spl_object_hash).
      *
      * @var array
+     * @psalm-var array<string, array<string, mixed>>
      */
     private $entityIdentifiers = [];
 
@@ -125,6 +127,7 @@ class UnitOfWork implements PropertyChangedListener
      *                by the user.
      *
      * @var array
+     * @psalm-var array<string, array<string, mixed>>
      */
     private $originalEntityData = [];
 
@@ -133,6 +136,7 @@ class UnitOfWork implements PropertyChangedListener
      * Filled at the beginning of a commit of the UnitOfWork and cleaned at the end.
      *
      * @var array
+     * @psalm-var array<string, array<string, mixed>>
      */
     private $entityChangeSets = [];
 
@@ -141,6 +145,7 @@ class UnitOfWork implements PropertyChangedListener
      * Keys are object ids (spl_object_hash).
      *
      * @var array
+     * @psalm-var array<string, self::STATE_*>
      */
     private $entityStates = [];
 
@@ -150,6 +155,7 @@ class UnitOfWork implements PropertyChangedListener
      * Keys are object ids (spl_object_hash).
      *
      * @var array
+     * @psalm-var array<class-string, array<string, mixed>>
      */
     private $scheduledForSynchronization = [];
 
@@ -157,6 +163,7 @@ class UnitOfWork implements PropertyChangedListener
      * A list of all pending entity insertions.
      *
      * @var array
+     * @psalm-var array<string, object>
      */
     private $entityInsertions = [];
 
@@ -164,6 +171,7 @@ class UnitOfWork implements PropertyChangedListener
      * A list of all pending entity updates.
      *
      * @var array
+     * @psalm-var array<string, object>
      */
     private $entityUpdates = [];
 
@@ -171,6 +179,7 @@ class UnitOfWork implements PropertyChangedListener
      * Any pending extra updates that have been scheduled by persisters.
      *
      * @var array
+     * @psalm-var array<string, array<string, array<object, array>>
      */
     private $extraUpdates = [];
 
@@ -178,6 +187,7 @@ class UnitOfWork implements PropertyChangedListener
      * A list of all pending entity deletions.
      *
      * @var array
+     * @psalm-var array<string, mixed>
      */
     private $entityDeletions = [];
 
@@ -3055,6 +3065,8 @@ class UnitOfWork implements PropertyChangedListener
      *
      * @return object|false Returns the entity with the specified identifier if it exists in
      *                      this UnitOfWork, FALSE otherwise.
+     *
+     * @psalm-param class-string $rootClassName
      */
     public function tryGetById($id, $rootClassName)
     {
@@ -3108,6 +3120,7 @@ class UnitOfWork implements PropertyChangedListener
      * Gets the EntityPersister for an Entity.
      *
      * @param string $entityName The name of the Entity.
+     * @psalm-param class-string $entityName
      *
      * @return \Doctrine\ORM\Persisters\Entity\EntityPersister
      */

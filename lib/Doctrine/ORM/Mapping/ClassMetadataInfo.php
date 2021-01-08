@@ -213,6 +213,7 @@ class ClassMetadataInfo implements ClassMetadata
      * READ-ONLY: The name of the entity class.
      *
      * @var string
+     * @psalm-var class-string
      */
     public $name;
 
@@ -231,6 +232,7 @@ class ClassMetadataInfo implements ClassMetadata
      * as {@link $name}.
      *
      * @var string
+     * @psalm-var class-string
      */
     public $rootEntityName;
 
@@ -398,7 +400,15 @@ class ClassMetadataInfo implements ClassMetadata
      *
      * @var array
      *
-     * @psalm-var array<string, array{type: string, fieldName: string, columnName: string, inherited: class-string}>
+     * @psalm-var array<string, array{
+     *      type: string,
+     *      fieldName: string,
+     *      columnName?: string,
+     *      inherited?: class-string,
+     *      nullable?: bool,
+     *      originalClass?: class-string,
+     *      originalField?: string
+     * }>
      */
     public $fieldMappings = [];
 
@@ -463,6 +473,7 @@ class ClassMetadataInfo implements ClassMetadata
      * uniqueConstraints => array
      *
      * @var array
+     * @psalm-var array{name: string, schema: string, indexes: array, uniqueConstraints: array}
      */
     public $table;
 
@@ -576,6 +587,7 @@ class ClassMetadataInfo implements ClassMetadata
      * </code>
      *
      * @var array
+     * @psalm-var array{sequenceName: string, allocationSize: int, initialValue: int}
      *
      * @todo Merge with tableGeneratorDefinition into generic generatorDefinition
      */
@@ -1461,10 +1473,10 @@ class ClassMetadataInfo implements ClassMetadata
      * @throws MappingException If something is wrong with the mapping.
      *
      * @psalm-return array{
-     *                   mappedBy: mixed,
-     *                   inversedBy: mixed,
+     *                   mappedBy: mixed|null,
+     *                   inversedBy: mixed|null,
      *                   isOwningSide: bool,
-     *                   sourceEntity: string,
+     *                   sourceEntity: class-string,
      *                   targetEntity: string,
      *                   fieldName: mixed,
      *                   fetch: mixed,
@@ -1474,6 +1486,9 @@ class ClassMetadataInfo implements ClassMetadata
      *                   isCascadeRefresh: bool,
      *                   isCascadeMerge: bool,
      *                   isCascadeDetach: bool
+     *                   type: int
+     *                   originalField: string
+     *                   originalClass: class-string
      *               }
      */
     protected function _validateAndCompleteAssociationMapping(array $mapping)
@@ -2322,6 +2337,9 @@ class ClassMetadataInfo implements ClassMetadata
         return isset($this->associationMappings[$fieldName]['inherited']);
     }
 
+    /**
+     * @return bool
+     */
     public function isInheritedEmbeddedClass($fieldName)
     {
         return isset($this->embeddedClasses[$fieldName]['inherited']);

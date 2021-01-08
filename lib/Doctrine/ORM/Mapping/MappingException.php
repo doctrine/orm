@@ -823,6 +823,9 @@ class MappingException extends \Doctrine\ORM\ORMException
         );
     }
 
+    /**
+     * @return self
+     */
     public static function illegalOverrideOfInheritedProperty($className, $propertyName)
     {
         return new self(

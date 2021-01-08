@@ -389,7 +389,7 @@ use function trigger_error;
      * @throws TransactionRequiredException
      * @throws ORMException
      *
-     * @template T
+     * @template T of object
      * @psalm-param class-string<T> $entityName
      * @psalm-return ?T
      */
