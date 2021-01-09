@@ -447,9 +447,11 @@ abstract class AbstractQuery
                 throw ORMInvalidArgumentException::invalidIdentifierBindingEntity();
             }
         } catch (MappingException | ORMMappingException $e) {
-            // Silence any mapping exceptions. These can occur if the object in
-            // question is not a mapped entity, in which case we just don't do
-            // any preparation on the value.
+            /* Silence any mapping exceptions. These can occur if the object in
+               question is not a mapped entity, in which case we just don't do
+               any preparation on the value.
+               Depending on MappingDriver, either MappingException or
+               ORMMappingException is thrown. */
 
             $value = $this->potentiallyProcessIterable($value);
         }
