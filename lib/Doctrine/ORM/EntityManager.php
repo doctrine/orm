@@ -237,7 +237,7 @@ use function sprintf;
             $this->flush();
             $this->conn->commit();
 
-            return $return ?: true;
+            return $return;
         } catch (Throwable $e) {
             $this->close();
             $this->conn->rollBack();

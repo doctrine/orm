@@ -3,6 +3,7 @@
 ## Minor BC BREAK: removed `Doctrine\ORM\EntityManagerInterface#copy()`
 
 Method `Doctrine\ORM\EntityManagerInterface#copy()` never got its implementation and is removed in 3.0.
+Method `Doctrine\ORM\EntityManagerInterface#transactional($func)` returns return value from `$func` closure instead of only non-empty ones in 3.0.
 
 # Upgrade to 2.10
 

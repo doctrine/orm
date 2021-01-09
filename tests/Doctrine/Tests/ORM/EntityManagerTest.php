@@ -9,6 +9,7 @@ use Doctrine\DBAL\Connection;
 use Doctrine\Deprecations\PHPUnit\VerifyDeprecations;
 use Doctrine\ORM\Configuration;
 use Doctrine\ORM\EntityManager;
+use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Exception\EntityManagerClosed;
 use Doctrine\ORM\Mapping\ClassMetadataFactory;
 use Doctrine\ORM\NativeQuery;
@@ -24,6 +25,7 @@ use Doctrine\Persistence\Mapping\MappingException;
 use Doctrine\Tests\Models\CMS\CmsUser;
 use Doctrine\Tests\Models\GeoNames\Country;
 use Doctrine\Tests\OrmTestCase;
+use Generator;
 use InvalidArgumentException;
 use stdClass;
 use TypeError;
@@ -208,16 +210,35 @@ class EntityManagerTest extends OrmTestCase
         $this->entityManager->$methodName(new stdClass());
     }
 
+    /** @return Generator<array{mixed}> */
+    public function dataToBeReturnedByTransactional(): Generator
+    {
+        yield [[]];
+        yield [[1]];
+        yield [0];
+        yield [100.5];
+        yield [null];
+        yield [true];
+        yield [false];
+        yield ['foo'];
+    }
+
     /**
+     * @param mixed $expectedValue
+     *
+     * @dataProvider dataToBeReturnedByTransactional
      * @group DDC-1125
      */
-    public function testTransactionalAcceptsReturn(): void
+    public function testTransactionalAcceptsReturn($expectedValue): void
     {
-        $return = $this->entityManager->transactional(static function ($em) {
-            return 'foo';
-        });
+        $return = $this->entityManager->transactional(
+            /** @return mixed */
+            static function (EntityManagerInterface $em) use ($expectedValue) {
+                return $expectedValue;
+            }
+        );
 
-        $this->assertEquals('foo', $return);
+        $this->assertSame($expectedValue, $return);
     }
 
     public function testTransactionalAcceptsVariousCallables(): void
