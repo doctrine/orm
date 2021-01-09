@@ -432,15 +432,20 @@
     </RedundantCastGivenDocblockType>
   </file>
   <file src="lib/Doctrine/ORM/Decorator/EntityManagerDecorator.php">
-    <DeprecatedMethod occurrences="2">
+    <DeprecatedMethod occurrences="4">
       <code>copy</code>
       <code>getHydrator</code>
+      <code>transactional</code>
+      <code>transactional</code>
     </DeprecatedMethod>
     <MissingParamType occurrences="3">
       <code>$entity</code>
       <code>$lockMode</code>
       <code>$lockVersion</code>
     </MissingParamType>
+    <MissingReturnType occurrences="1">
+      <code>wrapInTransaction</code>
+    </MissingReturnType>
     <NonInvariantDocblockPropertyType occurrences="1">
       <code>$wrapped</code>
     </NonInvariantDocblockPropertyType>
@@ -498,6 +503,9 @@
       <code>$this-&gt;repositoryFactory-&gt;getRepository($this, $entityName)</code>
       <code>new $class($this)</code>
     </LessSpecificReturnStatement>
+    <MissingReturnType occurrences="1">
+      <code>wrapInTransaction</code>
+    </MissingReturnType>
     <MoreSpecificReturnType occurrences="2">
       <code>EntityRepository&lt;T&gt;</code>
       <code>newHydrator</code>

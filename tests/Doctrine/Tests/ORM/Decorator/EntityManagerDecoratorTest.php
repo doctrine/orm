@@ -68,6 +68,16 @@ class EntityManagerDecoratorTest extends TestCase
             return [$method->getName(), ['name', new ResultSetMapping()]];
         }
 
+        if ($method->getName() === 'wrapInTransaction') {
+            return [
+                $method->getName(),
+                [
+                    static function (): void {
+                    },
+                ],
+            ];
+        }
+
         if ($method->getNumberOfRequiredParameters() === 0) {
             return [$method->getName(), []];
         }
