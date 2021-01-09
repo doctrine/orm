@@ -452,11 +452,6 @@ abstract class AbstractQuery
             // any preparation on the value.
 
             $value = $this->potentiallyProcessIterable($value);
-        } catch (MappingException $e) {
-            // as previous, but depending on MappingDriver this exception from Persistence
-            // is thrown and not the ORM one.
-
-            $value = $this->potentiallyProcessIterable($value);
         }
 
         return $value;
