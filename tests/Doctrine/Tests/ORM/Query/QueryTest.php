@@ -3,6 +3,7 @@
 namespace Doctrine\Tests\ORM\Query;
 
 use DateTime;
+use DateTimeImmutable;
 use Doctrine\Common\Cache\ArrayCache;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\DBAL\Types\Type;
@@ -11,6 +12,7 @@ use Doctrine\ORM\Query;
 use Doctrine\ORM\Query\Parameter;
 use Doctrine\ORM\Query\QueryException;
 use Doctrine\ORM\UnitOfWork;
+use Doctrine\Persistence\Mapping\Driver\MappingDriverChain;
 use Doctrine\Tests\Mocks\DriverConnectionMock;
 use Doctrine\Tests\Mocks\EntityManagerMock;
 use Doctrine\Tests\Mocks\StatementArrayMock;
@@ -228,7 +230,7 @@ class QueryTest extends OrmTestCase
     /**
      * @dataProvider provideProcessParameterValueIterable
      */
-    public function testProcessParameterValueIterable(iterable $cities) : void
+    public function testProcessParameterValueIterable(iterable $cities): void
     {
         $query = $this->_em->createQuery('SELECT a FROM Doctrine\Tests\Models\CMS\CmsAddress a WHERE a.city IN (:cities)');
         self::assertEquals(
@@ -272,6 +274,19 @@ class QueryTest extends OrmTestCase
             12345,
             $query->processParameterValue($user)
         );
+    }
+
+    public function testProcessParameterValueValueObjectWithDriverChain(): void
+    {
+        $driverChain = new MappingDriverChain();
+        $driverChain->addDriver($this->createAnnotationDriver(), 'Foo');
+        $this->_em->getConfiguration()->setMetadataDriverImpl($driverChain);
+
+        $query = $this->_em->createQuery();
+
+        $vo = new DateTimeImmutable('2020-09-01 00:00:00');
+
+        self::assertSame($vo, $query->processParameterValue($vo));
     }
 
     public function testProcessParameterValueNull() : void
