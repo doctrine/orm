@@ -10,20 +10,17 @@ namespace Doctrine\Tests\Models\CompositeKeyRelations;
 class CustomerClass
 {
     /**
-     * @var string
      * @Id @Column(type="string")
      */
-    public $companyCode;
+    public string $companyCode;
 
     /**
-     * @var string
      * @Id @Column(type="string")
      */
-    public $code;
+    public string $code;
 
     /**
-     * @var string
      * @Column(type="string")
      */
-    public $name;
+    public string $name;
 }

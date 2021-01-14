@@ -10,30 +10,26 @@ namespace Doctrine\Tests\Models\CompositeKeyRelations;
 class InvoiceClass
 {
     /**
-     * @var string
      * @Id @Column(type="string")
      */
-    public $companyCode;
+    public string $companyCode;
 
     /**
-     * @var string
      * @Id @Column(type="string")
      */
-    public $invoiceNumber;
+    public string $invoiceNumber;
 
     /**
-     * @var CustomerClass|null
      * @ManyToOne(targetEntity="CustomerClass")
      * @JoinColumns({
      *     @JoinColumn(name="companyCode", referencedColumnName="companyCode"),
      *     @JoinColumn(name="customerCode", referencedColumnName="code")
      * })
      */
-    public $customer;
+    public ?CustomerClass $customer;
 
     /**
-     * @var string|null
      * @Column(type="string", nullable=true)
      */
-    public $customerCode;
+    public ?string $customerCode;
 }
