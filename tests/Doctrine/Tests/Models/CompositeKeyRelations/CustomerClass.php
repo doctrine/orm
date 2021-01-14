@@ -1,4 +1,7 @@
 <?php
+
+declare(strict_types=1);
+
 namespace Doctrine\Tests\Models\CompositeKeyRelations;
 
 /**
@@ -6,12 +9,21 @@ namespace Doctrine\Tests\Models\CompositeKeyRelations;
  */
 class CustomerClass
 {
-    /** @Id @Column(type="string") */
+    /**
+     * @var string
+     * @Id @Column(type="string")
+     */
     public $companyCode;
 
-    /** @Id @Column(type="string") */
+    /**
+     * @var string
+     * @Id @Column(type="string")
+     */
     public $code;
 
-    /** @Column(type="string") */
+    /**
+     * @var string
+     * @Column(type="string")
+     */
     public $name;
 }

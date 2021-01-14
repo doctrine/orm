@@ -47,6 +47,7 @@ use InvalidArgumentException;
 use Throwable;
 use UnexpectedValueException;
 use function get_class;
+use function in_array;
 use function is_object;
 use function spl_object_hash;
 
