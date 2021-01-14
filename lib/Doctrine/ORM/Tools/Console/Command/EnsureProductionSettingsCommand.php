@@ -62,7 +62,7 @@ class EnsureProductionSettingsCommand extends Command
         try {
             $em->getConfiguration()->ensureProductionSettings();
 
-            if ($input->getOption('complete') !== false) {
+            if (!$input->getOption('complete')) {
                 $em->getConnection()->connect();
             }
         } catch (Throwable $e) {
