@@ -100,9 +100,22 @@ class ManyToManyPersister extends AbstractCollectionPersister
         }
 
         $persister = $this->uow->getEntityPersister($mapping['targetEntity']);
-        $mappedKey = $mapping['isOwningSide']
-            ? $mapping['inversedBy']
-            : $mapping['mappedBy'];
+        if ($mapping['isOwningSide']) {
+            if ($mapping['inversedBy'] === null) {
+                foreach ($mapping['joinTableColumns'] as $columnName) {
+                    $targetColumn = $mapping['relationToTargetKeyColumns'][$columnName] ?? null;
+                    if ($targetColumn !== null) {
+                        $mappedKey = $targetColumn;
+                        break;
+                    }
+                }
+
+            } else {
+                $mappedKey = $mapping['inversedBy'];
+            }
+        } else {
+            $mappedKey = $mapping['mappedBy'];
+        }
 
         return $persister->load([$mappedKey => $collection->getOwner(), $mapping['indexBy'] => $index], null, $mapping, [], 0, 1);
     }

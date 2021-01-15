@@ -33,7 +33,7 @@ class ECommerceCart
     private $customer;
 
     /**
-     * @ManyToMany(targetEntity="ECommerceProduct", cascade={"persist"})
+     * @ManyToMany(targetEntity="ECommerceProduct", cascade={"persist"}, fetch="EXTRA_LAZY", indexBy="name")
      * @JoinTable(name="ecommerce_carts_products",
             joinColumns={@JoinColumn(name="cart_id", referencedColumnName="id")},
             inverseJoinColumns={@JoinColumn(name="product_id", referencedColumnName="id")})
@@ -81,8 +81,13 @@ class ECommerceCart
         return $this->products;
     }
 
+    public function getProduct(string $name): ?ECommerceProduct
+    {
+        return $this->products[$name] ?? null;
+    }
+
     public function addProduct(ECommerceProduct $product) {
-        $this->products[] = $product;
+        $this->products[$product->getName()] = $product;
     }
 
     public function removeProduct(ECommerceProduct $product) {
