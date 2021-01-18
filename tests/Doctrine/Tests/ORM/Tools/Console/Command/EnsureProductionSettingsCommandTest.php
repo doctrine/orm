@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\Tests\ORM\Tools\Console\Command;
 
 use Doctrine\DBAL\Connection;
@@ -8,13 +10,16 @@ use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Tools\Console\Command\EnsureProductionSettingsCommand;
 use Doctrine\ORM\Tools\Console\Helper\EntityManagerHelper;
 use Doctrine\Tests\OrmTestCase;
+use RuntimeException;
 use Symfony\Component\Console\Application;
 use Symfony\Component\Console\Helper\HelperSet;
 use Symfony\Component\Console\Tester\CommandTester;
 
+use function array_merge;
+
 class EnsureProductionSettingsCommandTest extends OrmTestCase
 {
-    public function testExecute()
+    public function testExecute(): void
     {
         $em = $this->createMock(EntityManagerInterface::class);
 
@@ -31,14 +36,14 @@ class EnsureProductionSettingsCommandTest extends OrmTestCase
         $this->assertSame(0, $this->executeCommand($em));
     }
 
-    public function testExecuteFailed()
+    public function testExecuteFailed(): void
     {
         $em = $this->createMock(EntityManagerInterface::class);
 
         $configuration = $this->createMock(Configuration::class);
         $configuration->expects($this->once())
             ->method('ensureProductionSettings')
-            ->willThrowException(new \RuntimeException());
+            ->willThrowException(new RuntimeException());
 
         $em->method('getConfiguration')
             ->willReturn($configuration);
@@ -49,7 +54,7 @@ class EnsureProductionSettingsCommandTest extends OrmTestCase
         $this->assertSame(1, $this->executeCommand($em));
     }
 
-    public function testExecuteWithComplete()
+    public function testExecuteWithComplete(): void
     {
         $em = $this->createMock(EntityManagerInterface::class);
 
@@ -71,6 +76,29 @@ class EnsureProductionSettingsCommandTest extends OrmTestCase
         $this->assertSame(0, $this->executeCommand($em, ['--complete' => true]));
     }
 
+    public function testExecuteWithCompleteFailed(): void
+    {
+        $em = $this->createMock(EntityManagerInterface::class);
+
+        $configuration = $this->createMock(Configuration::class);
+        $configuration->expects($this->once())
+            ->method('ensureProductionSettings');
+
+        $em->method('getConfiguration')
+            ->willReturn($configuration);
+
+        $connection = $this->createMock(Connection::class);
+
+        $connection->expects($this->once())
+            ->method('connect')
+            ->willThrowException(new RuntimeException());
+
+        $em->method('getConnection')
+            ->willReturn($connection);
+
+        $this->assertSame(1, $this->executeCommand($em, ['--complete' => true]));
+    }
+
     /**
      * @param mixed[] $options
      */
@@ -86,9 +114,9 @@ class EnsureProductionSettingsCommandTest extends OrmTestCase
         $tester  = new CommandTester($command);
 
         return $tester->execute(
-            \array_merge([
+            array_merge([
                 'command'   => $command->getName(),
-            ], $input),
+            ], $input)
         );
     }
 }
