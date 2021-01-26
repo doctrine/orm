@@ -126,10 +126,6 @@ class ClassMetadataTest extends OrmTestCase
         $cm->mapField(['fieldName' => 'username', 'length' => 50]);
         $this->assertFalse($cm->isNullable('username'));
 
-        // Implicit Not Nullable
-        $cm->mapField(['fieldName' => 'name', 'type' => 'string', 'length' => 50]);
-        $this->assertFalse($cm->isNullable('name'), 'By default a field should not be nullable.');
-
         // Join table Nullable
         $cm->mapOneToOne(['fieldName' => 'email', 'joinColumns' => [[]]]);
         $this->assertFalse($cm->getAssociationMapping('email')['joinColumns'][0]['nullable']);
@@ -152,31 +148,27 @@ class ClassMetadataTest extends OrmTestCase
         $cm->mapField(['fieldName' => 'username', 'length' => 50]);
         $this->assertEquals('string', $cm->getTypeOfField('username'));
 
-        // Default string fallback
-        $cm->mapField(['fieldName' => 'name', 'type' => 'string', 'length' => 50]);
-        $this->assertEquals('string', $cm->getTypeOfField('name'), 'By default a field should be string.');
-
-        // String
+        // DateInterval object
         $cm->mapField(['fieldName' => 'dateInterval']);
         $this->assertEquals('dateinterval', $cm->getTypeOfField('dateInterval'));
 
-        // String
+        // DateTime object
         $cm->mapField(['fieldName' => 'dateTime']);
         $this->assertEquals('datetime', $cm->getTypeOfField('dateTime'));
 
-        // String
+        // DateTimeImmutable object
         $cm->mapField(['fieldName' => 'dateTimeImmutable']);
         $this->assertEquals('datetime_immutable', $cm->getTypeOfField('dateTimeImmutable'));
 
-        // String
+        // array as JSON
         $cm->mapField(['fieldName' => 'array']);
         $this->assertEquals('json', $cm->getTypeOfField('array'));
 
-        // String
+        // bool
         $cm->mapField(['fieldName' => 'boolean']);
         $this->assertEquals('boolean', $cm->getTypeOfField('boolean'));
 
-        // String
+        // float
         $cm->mapField(['fieldName' => 'float']);
         $this->assertEquals('float', $cm->getTypeOfField('float'));
     }

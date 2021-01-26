@@ -30,12 +30,6 @@ class CmsUserTyped
     public string $username;
 
     /**
-     * @Column(type="string", length=255)
-     * @var string
-     */
-    public $name;
-
-    /**
      * @Column
      */
     public DateInterval $dateInterval;
