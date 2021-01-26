@@ -36,6 +36,8 @@ use function unserialize;
 
 use const CASE_UPPER;
 
+use const PHP_VERSION_ID;
+
 require_once __DIR__ . '/../../Models/Global/GlobalNamespaceModel.php';
 
 class ClassMetadataTest extends OrmTestCase
@@ -105,6 +107,78 @@ class ClassMetadataTest extends OrmTestCase
         // Implicit Not Nullable
         $cm->mapField(['fieldName' => 'name', 'type' => 'string', 'length' => 50]);
         $this->assertFalse($cm->isNullable('name'), 'By default a field should not be nullable.');
+    }
+
+    public function testFieldIsNullableByType()
+    {
+        if (PHP_VERSION_ID < 70400) {
+            $this->markTestSkipped('requies PHP 7.4');
+        }
+
+        $cm = new ClassMetadata(CMS\CmsUserTyped::class);
+        $cm->initializeReflection(new RuntimeReflectionService());
+
+        // Explicit Nullable
+        $cm->mapField(['fieldName' => 'status', 'length' => 50]);
+        $this->assertTrue($cm->isNullable('status'));
+
+        // Explicit Not Nullable
+        $cm->mapField(['fieldName' => 'username', 'length' => 50]);
+        $this->assertFalse($cm->isNullable('username'));
+
+        // Implicit Not Nullable
+        $cm->mapField(['fieldName' => 'name', 'type' => 'string', 'length' => 50]);
+        $this->assertFalse($cm->isNullable('name'), "By default a field should not be nullable.");
+
+        // Join table Nullable
+        $cm->mapOneToOne(['fieldName' => 'email', 'joinColumns' => [[]]]);
+        $this->assertFalse($cm->getAssociationMapping('email')['joinColumns'][0]['nullable']);
+    }
+
+    public function testFieldTypeFromReflection()
+    {
+        if (PHP_VERSION_ID < 70400) {
+            $this->markTestSkipped('requies PHP 7.4');
+        }
+
+        $cm = new ClassMetadata(CMS\CmsUserTyped::class);
+        $cm->initializeReflection(new RuntimeReflectionService());
+
+        // Integer
+        $cm->mapField(['fieldName' => 'id']);
+        $this->assertEquals('integer', $cm->getTypeOfField('id'));
+
+        // String
+        $cm->mapField(['fieldName' => 'username', 'length' => 50]);
+        $this->assertEquals('string', $cm->getTypeOfField('username'));
+
+        // Default string fallback
+        $cm->mapField(['fieldName' => 'name', 'type' => 'string', 'length' => 50]);
+        $this->assertEquals('string', $cm->getTypeOfField('name'), "By default a field should be string.");
+
+        // String
+        $cm->mapField(['fieldName' => 'dateInterval']);
+        $this->assertEquals('dateinterval', $cm->getTypeOfField('dateInterval'));
+
+        // String
+        $cm->mapField(['fieldName' => 'dateTime']);
+        $this->assertEquals('datetime', $cm->getTypeOfField('dateTime'));
+
+        // String
+        $cm->mapField(['fieldName' => 'dateTimeImmutable']);
+        $this->assertEquals('datetime_immutable', $cm->getTypeOfField('dateTimeImmutable'));
+
+        // String
+        $cm->mapField(['fieldName' => 'array']);
+        $this->assertEquals('json', $cm->getTypeOfField('array'));
+
+        // String
+        $cm->mapField(['fieldName' => 'boolean']);
+        $this->assertEquals('boolean', $cm->getTypeOfField('boolean'));
+
+        // String
+        $cm->mapField(['fieldName' => 'float']);
+        $this->assertEquals('float', $cm->getTypeOfField('float'));
     }
 
     /**

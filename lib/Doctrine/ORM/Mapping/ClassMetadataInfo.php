@@ -21,6 +21,9 @@
 namespace Doctrine\ORM\Mapping;
 
 use BadMethodCallException;
+use DateInterval;
+use DateTime;
+use DateTimeImmutable;
 use Doctrine\DBAL\Platforms\AbstractPlatform;
 use Doctrine\DBAL\Types\Type;
 use Doctrine\Instantiator\Instantiator;
@@ -31,6 +34,7 @@ use Doctrine\Persistence\Mapping\ClassMetadata;
 use Doctrine\Persistence\Mapping\ReflectionService;
 use InvalidArgumentException;
 use ReflectionClass;
+use ReflectionNamedType;
 use ReflectionProperty;
 use RuntimeException;
 
@@ -58,6 +62,8 @@ use function strpos;
 use function strtolower;
 use function trait_exists;
 use function trim;
+
+use const PHP_VERSION_ID;
 
 /**
  * A <tt>ClassMetadata</tt> instance holds all the object-relational mapping metadata
@@ -1419,6 +1425,53 @@ class ClassMetadataInfo implements ClassMetadata
             throw MappingException::missingFieldName($this->name);
         }
 
+        if (
+            PHP_VERSION_ID >= 70400
+            && isset($this->reflClass)
+            && $this->reflClass->hasProperty($mapping['fieldName'])
+        ) {
+            $property = $this->reflClass->getProperty($mapping['fieldName']);
+            $type = $property->getType();
+
+            if ($type) {
+                if (!isset($mapping['nullable'])) {
+                    $mapping['nullable'] = $type->allowsNull();
+                }
+
+                if (
+                    !isset($mapping['type'])
+                    && ($type instanceof ReflectionNamedType)
+                ) {
+                    switch($type->getName()) {
+                        case DateInterval::class:
+                            $mapping['type'] = 'dateinterval';
+                            break;
+                        case DateTime::class:
+                            $mapping['type'] = 'datetime';
+                            break;
+                        case DateTimeImmutable::class:
+                            $mapping['type'] = 'datetime_immutable';
+                            break;
+                        case 'array':
+                            $mapping['type'] = 'json';
+                            break;
+                        case 'bool':
+                            $mapping['type'] = 'boolean';
+                            break;
+                        case 'float':
+                            $mapping['type'] = 'float';
+                            break;
+                        case 'int':
+                            $mapping['type'] = 'integer';
+                            break;
+                        case 'string':
+                            $mapping['type'] = 'string';
+                            break;
+                    }
+                }
+            }
+        }
+
         if (! isset($mapping['type'])) {
             // Default to string
             $mapping['type'] = 'string';
@@ -1515,6 +1568,31 @@ class ClassMetadataInfo implements ClassMetadata
         // If targetEntity is unqualified, assume it is in the same namespace as
         // the sourceEntity.
         $mapping['sourceEntity'] = $this->name;
+
+        if (
+            PHP_VERSION_ID >= 70400
+            && isset($this->reflClass)
+            && $this->reflClass->hasProperty($mapping['fieldName'])
+        ) {
+            $property = $this->reflClass->getProperty($mapping['fieldName']);
+            $type = $property->getType();
+
+            if (
+                ! isset($mapping['targetEntity'])
+                && ($mapping['type'] & self::TO_ONE) > 0
+                && $type instanceof ReflectionNamedType
+            ) {
+                $mapping['targetEntity'] = $type->getName();
+            }
+
+            if ($type !== null && isset($mapping['joinColumns'])) {
+                foreach ($mapping['joinColumns'] as &$joinColumn) {
+                    if (!isset($joinColumn['nullable'])) {
+                        $joinColumn['nullable'] = $type->allowsNull();
+                    }
+                }
+            }
+        }
 
         if (isset($mapping['targetEntity'])) {
             $mapping['targetEntity'] = $this->fullyQualifiedClassName($mapping['targetEntity']);
