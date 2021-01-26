@@ -109,7 +109,7 @@ class ClassMetadataTest extends OrmTestCase
         $this->assertFalse($cm->isNullable('name'), 'By default a field should not be nullable.');
     }
 
-    public function testFieldIsNullableByType()
+    public function testFieldIsNullableByType(): void
     {
         if (PHP_VERSION_ID < 70400) {
             $this->markTestSkipped('requies PHP 7.4');
@@ -128,14 +128,14 @@ class ClassMetadataTest extends OrmTestCase
 
         // Implicit Not Nullable
         $cm->mapField(['fieldName' => 'name', 'type' => 'string', 'length' => 50]);
-        $this->assertFalse($cm->isNullable('name'), "By default a field should not be nullable.");
+        $this->assertFalse($cm->isNullable('name'), 'By default a field should not be nullable.');
 
         // Join table Nullable
         $cm->mapOneToOne(['fieldName' => 'email', 'joinColumns' => [[]]]);
         $this->assertFalse($cm->getAssociationMapping('email')['joinColumns'][0]['nullable']);
     }
 
-    public function testFieldTypeFromReflection()
+    public function testFieldTypeFromReflection(): void
     {
         if (PHP_VERSION_ID < 70400) {
             $this->markTestSkipped('requies PHP 7.4');
@@ -154,7 +154,7 @@ class ClassMetadataTest extends OrmTestCase
 
         // Default string fallback
         $cm->mapField(['fieldName' => 'name', 'type' => 'string', 'length' => 50]);
-        $this->assertEquals('string', $cm->getTypeOfField('name'), "By default a field should be string.");
+        $this->assertEquals('string', $cm->getTypeOfField('name'), 'By default a field should be string.');
 
         // String
         $cm->mapField(['fieldName' => 'dateInterval']);

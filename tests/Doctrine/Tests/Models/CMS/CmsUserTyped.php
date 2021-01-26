@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace Doctrine\Tests\Models\CMS;
@@ -30,6 +31,7 @@ class CmsUserTyped
 
     /**
      * @Column(type="string", length=255)
+     * @var string
      */
     public $name;
 

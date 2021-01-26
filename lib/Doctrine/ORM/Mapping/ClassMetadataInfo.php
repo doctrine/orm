@@ -1431,18 +1431,18 @@ class ClassMetadataInfo implements ClassMetadata
             && $this->reflClass->hasProperty($mapping['fieldName'])
         ) {
             $property = $this->reflClass->getProperty($mapping['fieldName']);
-            $type = $property->getType();
+            $type     = $property->getType();
 
             if ($type) {
-                if (!isset($mapping['nullable'])) {
+                if (! isset($mapping['nullable'])) {
                     $mapping['nullable'] = $type->allowsNull();
                 }
 
                 if (
-                    !isset($mapping['type'])
+                    ! isset($mapping['type'])
                     && ($type instanceof ReflectionNamedType)
                 ) {
-                    switch($type->getName()) {
+                    switch ($type->getName()) {
                         case DateInterval::class:
                             $mapping['type'] = 'dateinterval';
                             break;
@@ -1575,7 +1575,7 @@ class ClassMetadataInfo implements ClassMetadata
             && $this->reflClass->hasProperty($mapping['fieldName'])
         ) {
             $property = $this->reflClass->getProperty($mapping['fieldName']);
-            $type = $property->getType();
+            $type     = $property->getType();
 
             if (
                 ! isset($mapping['targetEntity'])
@@ -1587,7 +1587,7 @@ class ClassMetadataInfo implements ClassMetadata
 
             if ($type !== null && isset($mapping['joinColumns'])) {
                 foreach ($mapping['joinColumns'] as &$joinColumn) {
-                    if (!isset($joinColumn['nullable'])) {
+                    if (! isset($joinColumn['nullable'])) {
                         $joinColumn['nullable'] = $type->allowsNull();
                     }
                 }
