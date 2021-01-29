@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Doctrine\Tests\ORM\Functional;
 
 use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\PersistentCollection;
 use Doctrine\Tests\IterableTester;
 use Doctrine\Tests\OrmFunctionalTestCase;
@@ -214,7 +215,7 @@ class Lemma
         }
     }
 
-    public function getTypes(): kateglo\application\helpers\collections\ArrayCollection
+    public function getTypes(): Collection
     {
         return $this->types;
     }
@@ -380,7 +381,7 @@ class Phrase
         return $this->type;
     }
 
-    public function getDefinitions(): ArrayCollection
+    public function getDefinitions(): Collection
     {
         return $this->definitions;
     }
@@ -445,7 +446,7 @@ class PhraseType
         $this->phrases = $phrases;
     }
 
-    public function getPhrases(): ArrayCollection
+    public function getPhrases(): Collection
     {
         return $this->phrases;
     }

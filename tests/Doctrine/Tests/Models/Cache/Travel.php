@@ -6,6 +6,7 @@ namespace Doctrine\Tests\Models\Cache;
 
 use DateTime;
 use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 
 /**
  * @Cache
@@ -67,7 +68,7 @@ class Travel
         $this->traveler = $traveler;
     }
 
-    public function getVisitedCities(): ArrayCollection
+    public function getVisitedCities(): Collection
     {
         return $this->visitedCities;
     }
