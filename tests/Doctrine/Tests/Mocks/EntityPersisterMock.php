@@ -39,7 +39,7 @@ class EntityPersisterMock extends BasicEntityPersister
     /**
      * @return mixed
      */
-    public function addInsert(object $entity)
+    public function addInsert($entity)
     {
         $this->inserts[] = $entity;
         if (

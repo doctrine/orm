@@ -90,8 +90,12 @@ class DisableFetchJoinTreeWalker extends TreeWalkerAdapter
         $this->walkSelectClause($AST->selectClause);
     }
 
-    public function walkSelectClause(SelectClause $selectClause): void
+    /**
+     * {@inheritdoc}
+     */
+    public function walkSelectClause($selectClause): void
     {
+        assert($selectClause instanceof SelectClause);
         foreach ($selectClause->selectExpressions as $key => $selectExpr) {
             assert($selectExpr instanceof SelectExpression);
             if ($selectExpr->expression === 'c') {

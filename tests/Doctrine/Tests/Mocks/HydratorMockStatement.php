@@ -39,7 +39,7 @@ class HydratorMockStatement implements IteratorAggregate, Statement
      *
      * @return array
      */
-    public function fetchAll(?int $fetchMode = null, ?int $fetchArgument = null, ?array $ctorArgs = null): array
+    public function fetchAll($fetchMode = null, $fetchArgument = null, $ctorArgs = null): array
     {
         return $this->_resultSet;
     }
