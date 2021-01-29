@@ -13,7 +13,7 @@ use const DIRECTORY_SEPARATOR;
 
 class PHPMappingDriverTest extends AbstractMappingDriverTest
 {
-    protected function _loadDriver()
+    protected function _loadDriver(): PHPDriver
     {
         $path = __DIR__ . DIRECTORY_SEPARATOR . 'php';
 

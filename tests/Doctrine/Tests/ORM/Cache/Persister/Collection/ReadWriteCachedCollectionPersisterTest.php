@@ -31,10 +31,7 @@ class ReadWriteCachedCollectionPersisterTest extends AbstractCollectionPersister
         'unlock',
     ];
 
-    /**
-     * {@inheritdoc}
-     */
-    protected function createPersister(EntityManager $em, CollectionPersister $persister, Region $region, array $mapping)
+    protected function createPersister(EntityManager $em, CollectionPersister $persister, Region $region, array $mapping): ReadWriteCachedCollectionPersister
     {
         return new ReadWriteCachedCollectionPersister($persister, $region, $em, $mapping);
     }

@@ -49,7 +49,7 @@ abstract class AbstractClassMetadataExporterTest extends OrmTestCase
 
     protected $_extension;
 
-    abstract protected function _getType(): void;
+    abstract protected function _getType(): string;
 
     protected function _createEntityManager($metadataDriver)
     {

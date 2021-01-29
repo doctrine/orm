@@ -120,7 +120,7 @@ class AnnotationDriverTest extends AbstractMappingDriverTest
         return $annotationDriver;
     }
 
-    protected function _loadDriver()
+    protected function _loadDriver(): AnnotationDriver
     {
         return $this->createAnnotationDriver();
     }

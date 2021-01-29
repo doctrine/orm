@@ -21,7 +21,7 @@ class CompanyFlexUltraContract extends CompanyFlexContract
      */
     private $maxPrice = 0;
 
-    public function calculatePrice()
+    public function calculatePrice(): int
     {
         return max($this->maxPrice, parent::calculatePrice());
     }

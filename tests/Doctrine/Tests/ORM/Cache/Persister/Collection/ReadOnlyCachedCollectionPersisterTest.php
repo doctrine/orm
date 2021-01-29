@@ -14,10 +14,7 @@ use Doctrine\ORM\Persisters\Collection\CollectionPersister;
  */
 class ReadOnlyCachedCollectionPersisterTest extends AbstractCollectionPersisterTest
 {
-    /**
-     * {@inheritdoc}
-     */
-    protected function createPersister(EntityManager $em, CollectionPersister $persister, Region $region, array $mapping)
+    protected function createPersister(EntityManager $em, CollectionPersister $persister, Region $region, array $mapping): ReadOnlyCachedCollectionPersister
     {
         return new ReadOnlyCachedCollectionPersister($persister, $region, $em, $mapping);
     }

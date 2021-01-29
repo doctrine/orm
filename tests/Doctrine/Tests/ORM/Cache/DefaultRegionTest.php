@@ -20,7 +20,7 @@ use function assert;
  */
 class DefaultRegionTest extends AbstractRegionTest
 {
-    protected function createRegion()
+    protected function createRegion(): DefaultRegion
     {
         return new DefaultRegion('default.region.test', $this->cache);
     }

@@ -17,7 +17,7 @@ class CompanyFixContract extends CompanyContract
      */
     private $fixPrice = 0;
 
-    public function calculatePrice()
+    public function calculatePrice(): int
     {
         return $this->fixPrice;
     }

@@ -109,7 +109,7 @@ class ResolveTargetEntityListenerTest extends OrmTestCase
 
 interface ResolveTargetInterface
 {
-    public function getId(): void;
+    public function getId(): int;
 }
 
 interface TargetInterface extends ResolveTargetInterface
@@ -122,6 +122,7 @@ interface TargetInterface extends ResolveTargetInterface
 class ResolveTargetEntity implements ResolveTargetInterface
 {
     /**
+     * @var int
      * @Id
      * @Column(type="integer")
      * @GeneratedValue(strategy="AUTO")
@@ -143,7 +144,7 @@ class ResolveTargetEntity implements ResolveTargetInterface
      */
     private $oneToOne;
 
-    public function getId()
+    public function getId(): int
     {
         return $this->id;
     }
@@ -161,7 +162,7 @@ class TargetEntity implements TargetInterface
      */
     private $id;
 
-    public function getId()
+    public function getId(): int
     {
         return $this->id;
     }

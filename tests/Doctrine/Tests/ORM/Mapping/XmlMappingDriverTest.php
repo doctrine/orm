@@ -32,7 +32,7 @@ use const PATHINFO_FILENAME;
 
 class XmlMappingDriverTest extends AbstractMappingDriverTest
 {
-    protected function _loadDriver()
+    protected function _loadDriver(): XmlDriver
     {
         return new XmlDriver(__DIR__ . DIRECTORY_SEPARATOR . 'xml');
     }

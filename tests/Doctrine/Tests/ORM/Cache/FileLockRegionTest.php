@@ -7,6 +7,7 @@ namespace Doctrine\Tests\ORM\Cache;
 use Doctrine\ORM\Cache\CacheKey;
 use Doctrine\ORM\Cache\ConcurrentRegion;
 use Doctrine\ORM\Cache\Lock;
+use Doctrine\ORM\Cache\Region;
 use Doctrine\ORM\Cache\Region\DefaultRegion;
 use Doctrine\ORM\Cache\Region\FileLockRegion;
 use Doctrine\Tests\Mocks\CacheEntryMock;
@@ -54,7 +55,7 @@ class FileLockRegionTest extends AbstractRegionTest
         return $reflection->invoke($region, $key);
     }
 
-    protected function createRegion()
+    protected function createRegion(): Region
     {
         $this->directory = sys_get_temp_dir() . '/doctrine_lock_' . uniqid();
 

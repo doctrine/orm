@@ -17,7 +17,7 @@ class NonStrictReadWriteCachedCollectionPersisterTest extends AbstractCollection
     /**
      * {@inheritdoc}
      */
-    protected function createPersister(EntityManager $em, CollectionPersister $persister, Region $region, array $mapping)
+    protected function createPersister(EntityManager $em, CollectionPersister $persister, Region $region, array $mapping): NonStrictReadWriteCachedCollectionPersister
     {
         return new NonStrictReadWriteCachedCollectionPersister($persister, $region, $em, $mapping);
     }

@@ -12,7 +12,7 @@ use const DIRECTORY_SEPARATOR;
 
 class StaticPHPMappingDriverTest extends AbstractMappingDriverTest
 {
-    protected function _loadDriver()
+    protected function _loadDriver(): StaticPHPDriver
     {
         return new StaticPHPDriver(__DIR__ . DIRECTORY_SEPARATOR . 'php');
     }

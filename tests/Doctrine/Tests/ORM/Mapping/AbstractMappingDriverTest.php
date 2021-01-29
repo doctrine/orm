@@ -14,6 +14,7 @@ use Doctrine\ORM\Mapping\DiscriminatorColumn;
 use Doctrine\ORM\Mapping\Id;
 use Doctrine\ORM\Mapping\MappingException;
 use Doctrine\ORM\Mapping\UnderscoreNamingStrategy;
+use Doctrine\Persistence\Mapping\Driver\MappingDriver;
 use Doctrine\Persistence\Mapping\RuntimeReflectionService;
 use Doctrine\Tests\Models\Cache\City;
 use Doctrine\Tests\Models\CMS\CmsAddress;
@@ -50,7 +51,7 @@ use const CASE_UPPER;
 
 abstract class AbstractMappingDriverTest extends OrmTestCase
 {
-    abstract protected function _loadDriver(): void;
+    abstract protected function _loadDriver(): MappingDriver;
 
     public function createClassMetadata($entityClassName)
     {

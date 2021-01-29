@@ -19,10 +19,7 @@ use ReflectionProperty;
  */
 class NonStrictReadWriteCachedEntityPersisterTest extends AbstractEntityPersisterTest
 {
-    /**
-     * {@inheritdoc}
-     */
-    protected function createPersister(EntityManager $em, EntityPersister $persister, Region $region, ClassMetadata $metadata)
+    protected function createPersister(EntityManager $em, EntityPersister $persister, Region $region, ClassMetadata $metadata): NonStrictReadWriteCachedEntityPersister
     {
         return new NonStrictReadWriteCachedEntityPersister($persister, $region, $em, $metadata);
     }

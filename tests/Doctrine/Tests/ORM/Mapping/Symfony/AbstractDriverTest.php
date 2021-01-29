@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Doctrine\Tests\ORM\Mapping\Symfony;
 
+use Doctrine\Persistence\Mapping\Driver\FileDriver;
 use Doctrine\Persistence\Mapping\MappingException;
 use PHPUnit\Framework\TestCase;
 use RecursiveDirectoryIterator;
@@ -94,7 +95,7 @@ abstract class AbstractDriverTest extends TestCase
         @rmdir($this->dir);
     }
 
-    abstract protected function getFileExtension(): void;
+    abstract protected function getFileExtension(): string;
 
-    abstract protected function getDriver(array $paths = []): void;
+    abstract protected function getDriver(array $paths = []): FileDriver;
 }

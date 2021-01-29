@@ -21,7 +21,7 @@ class YamlMappingDriverTest extends AbstractMappingDriverTest
 {
     use VerifyDeprecations;
 
-    protected function _loadDriver()
+    protected function _loadDriver(): YamlDriver
     {
         if (! class_exists(Yaml::class, true)) {
             $this->markTestSkipped('Please install Symfony YAML Component into the include path of your PHP installation.');

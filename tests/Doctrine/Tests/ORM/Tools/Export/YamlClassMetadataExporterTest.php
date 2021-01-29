@@ -13,7 +13,7 @@ use function class_exists;
  */
 class YamlClassMetadataExporterTest extends AbstractClassMetadataExporterTest
 {
-    protected function _getType()
+    protected function _getType(): string
     {
         if (! class_exists('Symfony\Component\Yaml\Yaml', true)) {
             $this->markTestSkipped('Please install Symfony YAML Component into the include path of your PHP installation.');

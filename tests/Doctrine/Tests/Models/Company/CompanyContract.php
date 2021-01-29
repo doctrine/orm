@@ -129,7 +129,7 @@ abstract class CompanyContract
         $this->engineers->removeElement($engineer);
     }
 
-    abstract public function calculatePrice(): void;
+    abstract public function calculatePrice(): int;
 
     public static function loadMetadata(ClassMetadataInfo $metadata): void
     {

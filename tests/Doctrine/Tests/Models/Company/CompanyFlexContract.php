@@ -72,7 +72,7 @@ class CompanyFlexContract extends CompanyContract
      */
     public $managers;
 
-    public function calculatePrice()
+    public function calculatePrice(): int
     {
         return $this->hoursWorked * $this->pricePerHour;
     }
