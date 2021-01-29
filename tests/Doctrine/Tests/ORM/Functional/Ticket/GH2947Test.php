@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\Tests\ORM\Functional\Ticket;
 
 use Doctrine\Common\Cache\ArrayCache;
@@ -10,7 +12,7 @@ use Doctrine\Tests\OrmFunctionalTestCase;
  */
 class GH2947Test extends OrmFunctionalTestCase
 {
-    protected function setUp() : void
+    protected function setUp(): void
     {
         $this->resultCacheImpl = new ArrayCache();
 
@@ -19,7 +21,7 @@ class GH2947Test extends OrmFunctionalTestCase
         $this->_schemaTool->createSchema([$this->_em->getClassMetadata(GH2947Car::class)]);
     }
 
-    public function testIssue()
+    public function testIssue(): void
     {
         $this->createData();
         $initialQueryCount = $this->getCurrentQueryCount();
@@ -50,14 +52,14 @@ class GH2947Test extends OrmFunctionalTestCase
                          ->useResultCache(true, 3600, 'foo-cache-id');
     }
 
-    private function createData()
+    private function createData(): void
     {
         $this->_em->persist(new GH2947Car('BMW'));
         $this->_em->flush();
         $this->_em->clear();
     }
 
-    private function updateData()
+    private function updateData(): void
     {
         $this->_em->createQueryBuilder()
                   ->update(GH2947Car::class, 'car')

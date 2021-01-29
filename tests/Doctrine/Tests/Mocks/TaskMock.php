@@ -1,15 +1,16 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\Tests\Mocks;
 
 use Doctrine\Common\Cli\AbstractNamespace;
+use Doctrine\Common\Cli\Tasks\AbstractTask;
 
 /**
  * TaskMock used for testing the CLI interface.
- *
- * @author Nils Adermann <naderman@naderman.de>
  */
-class TaskMock extends \Doctrine\Common\Cli\Tasks\AbstractTask
+class TaskMock extends AbstractTask
 {
     /**
      * Since instances of this class can be created elsewhere all instances
@@ -17,11 +18,9 @@ class TaskMock extends \Doctrine\Common\Cli\Tasks\AbstractTask
      *
      * @var array (TaskMock)
      */
-    static public $instances = [];
+    public static $instances = [];
 
-    /**
-     * @var int
-     */
+    /** @var int */
     private $runCounter = 0;
 
     /**
@@ -39,10 +38,8 @@ class TaskMock extends \Doctrine\Common\Cli\Tasks\AbstractTask
 
     /**
      * Returns the number of times run() was called on this object.
-     *
-     * @return int
      */
-    public function getRunCounter()
+    public function getRunCounter(): int
     {
         return $this->runCounter;
     }
@@ -51,20 +48,16 @@ class TaskMock extends \Doctrine\Common\Cli\Tasks\AbstractTask
 
     /**
      * Method invoked by CLI to run task.
-     *
-     * @return void
      */
-    public function run()
+    public function run(): void
     {
         $this->runCounter++;
     }
 
     /**
      * Method supposed to generate the CLI Task Documentation.
-     *
-     * @return void
      */
-    public function buildDocumentation()
+    public function buildDocumentation(): void
     {
     }
 }

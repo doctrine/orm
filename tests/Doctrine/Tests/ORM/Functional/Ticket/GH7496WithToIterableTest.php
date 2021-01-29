@@ -10,7 +10,7 @@ use Doctrine\Tests\OrmFunctionalTestCase;
 
 final class GH7496WithToIterableTest extends OrmFunctionalTestCase
 {
-    protected function setUp() : void
+    protected function setUp(): void
     {
         parent::setUp();
 
@@ -32,7 +32,7 @@ final class GH7496WithToIterableTest extends OrmFunctionalTestCase
         $this->_em->clear();
     }
 
-    public function testNonUniqueObjectHydrationDuringIteration() : void
+    public function testNonUniqueObjectHydrationDuringIteration(): void
     {
         $q = $this->_em->createQuery(
             'SELECT b FROM ' . GH7496EntityAinB::class . ' aib JOIN ' . GH7496EntityB::class . ' b WITH aib.eB = b'

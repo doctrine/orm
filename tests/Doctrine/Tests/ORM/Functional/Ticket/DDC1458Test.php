@@ -1,23 +1,25 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\Tests\ORM\Functional\Ticket;
 
 use Doctrine\Tests\OrmFunctionalTestCase;
 
 class DDC1258Test extends OrmFunctionalTestCase
 {
-    protected function setUp() : void
+    protected function setUp(): void
     {
         parent::setUp();
         $this->_schemaTool->createSchema(
             [
-            $this->_em->getClassMetadata(TestEntity::class),
-            $this->_em->getClassMetadata(TestAdditionalEntity::class)
+                $this->_em->getClassMetadata(TestEntity::class),
+                $this->_em->getClassMetadata(TestAdditionalEntity::class),
             ]
         );
     }
 
-    public function testIssue()
+    public function testIssue(): void
     {
         $testEntity = new TestEntity();
         $testEntity->setValue(3);
@@ -63,13 +65,9 @@ class TestEntity
      * @GeneratedValue(strategy="AUTO")
      */
     protected $id;
-    /**
-     * @Column(type="integer")
-     */
+    /** @Column(type="integer") */
     protected $value;
-    /**
-     * @OneToOne(targetEntity="TestAdditionalEntity", inversedBy="entity", orphanRemoval=true, cascade={"persist", "remove"})
-     */
+    /** @OneToOne(targetEntity="TestAdditionalEntity", inversedBy="entity", orphanRemoval=true, cascade={"persist", "remove"}) */
     protected $additional;
 
     public function getValue()
@@ -77,7 +75,7 @@ class TestEntity
         return $this->value;
     }
 
-    public function setValue($value)
+    public function setValue($value): void
     {
         $this->value = $value;
     }
@@ -87,7 +85,7 @@ class TestEntity
         return $this->additional;
     }
 
-    public function setAdditional($additional)
+    public function setAdditional($additional): void
     {
         $this->additional = $additional;
     }
@@ -103,13 +101,9 @@ class TestAdditionalEntity
      * @GeneratedValue(strategy="AUTO")
      */
     protected $id;
-    /**
-     * @OneToOne(targetEntity="TestEntity", mappedBy="additional")
-     */
+    /** @OneToOne(targetEntity="TestEntity", mappedBy="additional") */
     protected $entity;
-    /**
-     * @Column(type="boolean")
-     */
+    /** @Column(type="boolean") */
     protected $bool;
 
     public function __construct()
@@ -122,7 +116,7 @@ class TestAdditionalEntity
         return $this->bool;
     }
 
-    public function setBool($bool)
+    public function setBool($bool): void
     {
         $this->bool = $bool;
     }

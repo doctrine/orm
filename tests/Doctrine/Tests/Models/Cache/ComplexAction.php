@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\Tests\Models\Cache;
 
 use Doctrine\Common\Collections\ArrayCollection;
@@ -10,9 +12,7 @@ use Doctrine\Common\Collections\ArrayCollection;
  */
 class ComplexAction
 {
-    /**
-     * @Column
-     */
+    /** @Column */
     public $name;
 
     /**
@@ -29,37 +29,29 @@ class ComplexAction
      */
     public $action2;
 
-    /**
-     * @OneToMany(targetEntity="Token", cascade={"persist", "remove"}, mappedBy="complexAction")
-     */
+    /** @OneToMany(targetEntity="Token", cascade={"persist", "remove"}, mappedBy="complexAction") */
     public $tokens;
 
     public function __construct(Action $action1, Action $action2, $name)
     {
-        $this->name = $name;
+        $this->name    = $name;
         $this->action1 = $action1;
         $this->action2 = $action2;
-        $this->tokens = new ArrayCollection();
+        $this->tokens  = new ArrayCollection();
     }
 
-    public function addToken(Token $token)
+    public function addToken(Token $token): void
     {
-        $this->tokens[] = $token;
+        $this->tokens[]       = $token;
         $token->complexAction = $this;
     }
 
-    /**
-     * @return Action
-     */
-    public function getAction1()
+    public function getAction1(): Action
     {
         return $this->action1;
     }
 
-    /**
-     * @return Action
-     */
-    public function getAction2()
+    public function getAction2(): Action
     {
         return $this->action2;
     }

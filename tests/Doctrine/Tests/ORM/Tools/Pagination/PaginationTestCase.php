@@ -1,17 +1,18 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\Tests\ORM\Tools\Pagination;
 
+use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\Tests\OrmTestCase;
 
 abstract class PaginationTestCase extends OrmTestCase
 {
-    /**
-     * @var \Doctrine\ORM\EntityManagerInterface
-     */
+    /** @var EntityManagerInterface */
     public $entityManager;
 
-    protected function setUp() : void
+    protected function setUp(): void
     {
         $this->entityManager = $this->_getTestEntityManager();
     }
@@ -19,20 +20,15 @@ abstract class PaginationTestCase extends OrmTestCase
 
 
 /**
-* @Entity
-*/
+ * @Entity
+ */
 class MyBlogPost
 {
-
     /** @Id @Column(type="integer") @GeneratedValue */
     public $id;
-    /**
-     * @ManyToOne(targetEntity="Author")
-     */
+    /** @ManyToOne(targetEntity="Author") */
     public $author;
-    /**
-     * @ManyToOne(targetEntity="Category")
-     */
+    /** @ManyToOne(targetEntity="Category") */
     public $category;
     /** @Column(type="string") */
     public $title;
@@ -43,21 +39,17 @@ class MyBlogPost
  */
 class MyAuthor
 {
-
     /** @Id @Column(type="integer") @GeneratedValue */
     public $id;
-
 }
 
 /**
-* @Entity
-*/
+ * @Entity
+ */
 class MyCategory
 {
-
     /** @Id @Column(type="integer") @GeneratedValue */
     public $id;
-
 }
 
 
@@ -66,16 +58,11 @@ class MyCategory
  */
 class BlogPost
 {
-
     /** @Id @Column(type="integer") @GeneratedValue */
     public $id;
-    /**
-     * @ManyToOne(targetEntity="Author")
-     */
+    /** @ManyToOne(targetEntity="Author") */
     public $author;
-    /**
-     * @ManyToOne(targetEntity="Category")
-     */
+    /** @ManyToOne(targetEntity="Category") */
     public $category;
 }
 
@@ -84,12 +71,10 @@ class BlogPost
  */
 class Author
 {
-
     /** @Id @Column(type="integer") @GeneratedValue */
     public $id;
     /** @Column(type="string") */
     public $name;
-
 }
 
 /**
@@ -97,14 +82,12 @@ class Author
  */
 class Person
 {
-
     /** @Id @Column(type="integer") @GeneratedValue */
     public $id;
     /** @Column(type="string") */
     public $name;
     /** @Column(type="string") */
     public $biography;
-
 }
 
 /**
@@ -112,17 +95,14 @@ class Person
  */
 class Category
 {
-
     /** @Id @Column(type="integer") @GeneratedValue */
     public $id;
-
 }
 
 
 /** @Entity @Table(name="groups") */
 class Group
 {
-
     /** @Id @Column(type="integer") @GeneratedValue */
     public $id;
     /** @ManyToMany(targetEntity="User", mappedBy="groups") */
@@ -132,7 +112,6 @@ class Group
 /** @Entity */
 class User
 {
-
     /** @Id @Column(type="integer") @GeneratedValue */
     public $id;
     /**
@@ -144,9 +123,7 @@ class User
      * )
      */
     public $groups;
-    /**
-     * @OneToOne(targetEntity="Avatar", mappedBy="user")
-     */
+    /** @OneToOne(targetEntity="Avatar", mappedBy="user") */
     public $avatar;
 }
 

@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\Tests\Models\Generic;
 
 /**
@@ -13,8 +15,6 @@ class BooleanModel
      * @GeneratedValue(strategy="AUTO")
      */
     public $id;
-    /**
-     * @Column(type="boolean")
-     */
+    /** @Column(type="boolean") */
     public $booleanField;
 }

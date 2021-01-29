@@ -1,4 +1,5 @@
 <?php
+
 /*
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
  * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
@@ -19,36 +20,30 @@
 
 namespace Doctrine\ORM\Internal\Hydration;
 
+use Iterator;
+
 /**
  * Represents a result structure that can be iterated over, hydrating row-by-row
  * during the iteration. An IterableResult is obtained by AbstractHydrator#iterate().
  *
  * @deprecated
  */
-class IterableResult implements \Iterator
+class IterableResult implements Iterator
 {
-    /**
-     * @var \Doctrine\ORM\Internal\Hydration\AbstractHydrator
-     */
+    /** @var AbstractHydrator */
     private $_hydrator;
 
-    /**
-     * @var boolean
-     */
+    /** @var bool */
     private $_rewinded = false;
 
-    /**
-     * @var integer
-     */
+    /** @var int */
     private $_key = -1;
 
-    /**
-     * @var object|null
-     */
+    /** @var object|null */
     private $_current = null;
 
     /**
-     * @param \Doctrine\ORM\Internal\Hydration\AbstractHydrator $hydrator
+     * @param AbstractHydrator $hydrator
      */
     public function __construct($hydrator)
     {
@@ -62,10 +57,10 @@ class IterableResult implements \Iterator
      */
     public function rewind()
     {
-        if ($this->_rewinded == true) {
-            throw new HydrationException("Can only iterate a Result once.");
+        if ($this->_rewinded === true) {
+            throw new HydrationException('Can only iterate a Result once.');
         } else {
-            $this->_current = $this->next();
+            $this->_current  = $this->next();
             $this->_rewinded = true;
         }
     }
@@ -104,6 +99,6 @@ class IterableResult implements \Iterator
      */
     public function valid()
     {
-        return ($this->_current!=false);
+        return $this->_current !== false;
     }
 }

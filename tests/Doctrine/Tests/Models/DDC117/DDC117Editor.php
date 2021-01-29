@@ -1,20 +1,20 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\Tests\Models\DDC117;
+
+use Doctrine\Common\Collections\ArrayCollection;
 
 /**
  * @Entity
  */
 class DDC117Editor
 {
-    /**
-     * @Id @Column(type="integer") @GeneratedValue
-     */
+    /** @Id @Column(type="integer") @GeneratedValue */
     public $id;
 
-    /**
-     * @Column(type="string")
-     */
+    /** @Column(type="string") */
     public $name;
 
     /**
@@ -40,13 +40,13 @@ class DDC117Editor
      */
     public $lastTranslation;
 
-    public function __construct($name = "")
+    public function __construct($name = '')
     {
-        $this->name = $name;
-        $this->reviewingTranslations = new \Doctrine\Common\Collections\ArrayCollection();
+        $this->name                  = $name;
+        $this->reviewingTranslations = new ArrayCollection();
     }
 
-    public function addLastTranslation(DDC117Translation $t)
+    public function addLastTranslation(DDC117Translation $t): void
     {
         $this->lastTranslation = $t;
         $t->lastTranslatedBy[] = $this;

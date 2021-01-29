@@ -1,37 +1,43 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\Tests\ORM\Functional\Ticket;
 
-class DDC345Test extends \Doctrine\Tests\OrmFunctionalTestCase
+use DateTime;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Tests\OrmFunctionalTestCase;
+
+class DDC345Test extends OrmFunctionalTestCase
 {
-    protected function setUp() : void
+    protected function setUp(): void
     {
         parent::setUp();
         //$this->_em->getConnection()->getConfiguration()->setSQLLogger(new \Doctrine\DBAL\Logging\EchoSQLLogger);
         $this->_schemaTool->createSchema(
             [
-            $this->_em->getClassMetadata(DDC345User::class),
-            $this->_em->getClassMetadata(DDC345Group::class),
-            $this->_em->getClassMetadata(DDC345Membership::class),
+                $this->_em->getClassMetadata(DDC345User::class),
+                $this->_em->getClassMetadata(DDC345Group::class),
+                $this->_em->getClassMetadata(DDC345Membership::class),
             ]
         );
     }
 
-    public function testTwoIterateHydrations()
+    public function testTwoIterateHydrations(): void
     {
         // Create User
-        $user = new DDC345User;
+        $user       = new DDC345User();
         $user->name = 'Test User';
         $this->_em->persist($user); // $em->flush() does not change much here
 
         // Create Group
-        $group = new DDC345Group;
+        $group       = new DDC345Group();
         $group->name = 'Test Group';
         $this->_em->persist($group); // $em->flush() does not change much here
 
-        $membership = new DDC345Membership;
+        $membership        = new DDC345Membership();
         $membership->group = $group;
-        $membership->user = $user;
+        $membership->user  = $user;
         $membership->state = 'active';
 
         //$this->_em->persist($membership); // COMMENT OUT TO SEE BUG
@@ -72,7 +78,7 @@ class DDC345User
 
     public function __construct()
     {
-        $this->Memberships = new \Doctrine\Common\Collections\ArrayCollection;
+        $this->Memberships = new ArrayCollection();
     }
 }
 
@@ -94,10 +100,9 @@ class DDC345Group
     /** @OneToMany(targetEntity="DDC345Membership", mappedBy="group", cascade={"persist"}) */
     public $Memberships;
 
-
     public function __construct()
     {
-        $this->Memberships = new \Doctrine\Common\Collections\ArrayCollection;
+        $this->Memberships = new ArrayCollection();
     }
 }
 
@@ -136,22 +141,21 @@ class DDC345Membership
     public $updated;
 
     public $prePersistCallCount = 0;
-    public $preUpdateCallCount = 0;
+    public $preUpdateCallCount  = 0;
 
     /** @PrePersist */
-    public function doStuffOnPrePersist()
+    public function doStuffOnPrePersist(): void
     {
         //echo "***** PrePersist\n";
         ++$this->prePersistCallCount;
-        $this->updated = new \DateTime;
+        $this->updated = new DateTime();
     }
 
     /** @PreUpdate */
-    public function doStuffOnPreUpdate()
+    public function doStuffOnPreUpdate(): void
     {
         //echo "***** PreUpdate\n";
         ++$this->preUpdateCallCount;
-        $this->updated = new \DateTime;
+        $this->updated = new DateTime();
     }
 }
-

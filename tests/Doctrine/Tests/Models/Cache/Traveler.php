@@ -1,8 +1,11 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\Tests\Models\Cache;
 
 use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 
 /**
  * @Cache
@@ -18,16 +21,13 @@ class Traveler
      */
     protected $id;
 
-    /**
-     * @Column
-     */
+    /** @Column */
     protected $name;
 
     /**
      * @Cache("NONSTRICT_READ_WRITE")
      * @OneToMany(targetEntity="Travel", mappedBy="traveler", cascade={"persist", "remove"}, orphanRemoval=true)
-     *
-     * @var \Doctrine\Common\Collections\Collection
+     * @var Collection
      */
     public $travels;
 
@@ -37,13 +37,10 @@ class Traveler
      */
      protected $profile;
 
-    /**
-     * @param string $name
-     */
-    public function __construct($name)
+    public function __construct(string $name)
     {
-        $this->name     = $name;
-        $this->travels  = new ArrayCollection();
+        $this->name    = $name;
+        $this->travels = new ArrayCollection();
     }
 
     public function getId()
@@ -51,7 +48,7 @@ class Traveler
         return $this->id;
     }
 
-    public function setId($id)
+    public function setId($id): void
     {
         $this->id = $id;
     }
@@ -61,23 +58,17 @@ class Traveler
         return $this->name;
     }
 
-    public function setName($name)
+    public function setName($name): void
     {
         $this->name = $name;
     }
 
-    /**
-     * @return \Doctrine\Tests\Models\Cache\TravelerProfile
-     */
-    public function getProfile()
+    public function getProfile(): TravelerProfile
     {
         return $this->profile;
     }
 
-    /**
-     * @param \Doctrine\Tests\Models\Cache\TravelerProfile $profile
-     */
-    public function setProfile(TravelerProfile $profile)
+    public function setProfile(TravelerProfile $profile): void
     {
         $this->profile = $profile;
     }
@@ -87,12 +78,9 @@ class Traveler
         return $this->travels;
     }
 
-    /**
-     * @param \Doctrine\Tests\Models\Cache\Travel $item
-     */
-    public function addTravel(Travel $item)
+    public function addTravel(Travel $item): void
     {
-        if ( ! $this->travels->contains($item)) {
+        if (! $this->travels->contains($item)) {
             $this->travels->add($item);
         }
 
@@ -101,10 +89,7 @@ class Traveler
         }
     }
 
-    /**
-     * @param \Doctrine\Tests\Models\Cache\Travel $item
-     */
-    public function removeTravel(Travel $item)
+    public function removeTravel(Travel $item): void
     {
         $this->travels->removeElement($item);
     }

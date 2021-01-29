@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\Tests\ORM\Functional\Ticket;
 
 use Doctrine\Common\Proxy\Proxy;
@@ -9,6 +11,8 @@ use Doctrine\Persistence\PropertyChangedListener;
 use Doctrine\Tests\OrmFunctionalTestCase;
 use Doctrine\Tests\VerifyDeprecations;
 
+use function assert;
+
 /**
  * @group DDC-2230
  */
@@ -16,21 +20,22 @@ class DDC2230Test extends OrmFunctionalTestCase
 {
     use VerifyDeprecations;
 
-    protected function setUp() : void
+    protected function setUp(): void
     {
         parent::setUp();
 
         try {
             $this->_schemaTool->createSchema(
                 [
-                $this->_em->getClassMetadata(DDC2230User::class),
-                $this->_em->getClassMetadata(DDC2230Address::class),
+                    $this->_em->getClassMetadata(DDC2230User::class),
+                    $this->_em->getClassMetadata(DDC2230Address::class),
                 ]
             );
-        } catch (ToolsException $e) {}
+        } catch (ToolsException $e) {
+        }
     }
 
-    public function testNotifyTrackingNotCalledOnUninitializedProxies()
+    public function testNotifyTrackingNotCalledOnUninitializedProxies(): void
     {
         $insertedUser          = new DDC2230User();
         $insertedUser->address = new DDC2230Address();
@@ -46,15 +51,15 @@ class DDC2230Test extends OrmFunctionalTestCase
 
         $mergedUser = $this->_em->merge($user);
 
-        /* @var $address Proxy */
         $address = $mergedUser->address;
+        assert($address instanceof Proxy);
 
         $this->assertInstanceOf(Proxy::class, $address);
         $this->assertFalse($address->__isInitialized());
         $this->assertHasDeprecationMessages();
     }
 
-    public function testNotifyTrackingCalledOnProxyInitialization()
+    public function testNotifyTrackingCalledOnProxyInitialization(): void
     {
         $insertedAddress = new DDC2230Address();
 
@@ -64,7 +69,7 @@ class DDC2230Test extends OrmFunctionalTestCase
 
         $addressProxy = $this->_em->getReference(DDC2230Address::class, $insertedAddress->id);
 
-        /* @var $addressProxy Proxy|\Doctrine\Tests\ORM\Functional\Ticket\DDC2230Address */
+        /** @var Proxy|DDC2230Address $addressProxy */
         $this->assertFalse($addressProxy->__isInitialized());
         $this->assertNull($addressProxy->listener);
 
@@ -81,9 +86,7 @@ class DDC2230User
     /** @Id @Column(type="integer") @GeneratedValue(strategy="AUTO") */
     public $id;
 
-    /**
-     * @OneToOne(targetEntity="DDC2230Address")
-     */
+    /** @OneToOne(targetEntity="DDC2230Address") */
     public $address;
 }
 
@@ -96,9 +99,7 @@ class DDC2230Address implements NotifyPropertyChanged
     /** @Id @Column(type="integer") @GeneratedValue(strategy="AUTO") */
     public $id;
 
-    /**
-     * @var \Doctrine\Common\PropertyChangedListener
-     */
+    /** @var \Doctrine\Common\PropertyChangedListener */
     public $listener;
 
     /** {@inheritDoc} */
@@ -107,4 +108,3 @@ class DDC2230Address implements NotifyPropertyChanged
         $this->listener = $listener;
     }
 }
-

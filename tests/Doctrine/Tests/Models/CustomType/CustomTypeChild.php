@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\Tests\Models\CustomType;
 
 /**
@@ -14,8 +16,6 @@ class CustomTypeChild
      */
     public $id;
 
-    /**
-     * @Column(type="upper_case_string")
-     */
+    /** @Column(type="upper_case_string") */
     public $lowerCaseString = 'foo';
 }

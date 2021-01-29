@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\Tests\Models\Forum;
 
 /**
@@ -13,9 +15,7 @@ class ForumUser
      * @Id @GeneratedValue
      */
     public $id;
-    /**
-     * @Column(type="string", length=50)
-     */
+    /** @Column(type="string", length=50) */
     public $username;
     /**
      * @OneToOne(targetEntity="ForumAvatar", cascade={"persist"})
@@ -23,19 +23,23 @@ class ForumUser
      */
     public $avatar;
 
-    public function getId() {
-    	return $this->id;
+    public function getId()
+    {
+        return $this->id;
     }
 
-    public function getUsername() {
-    	return $this->username;
+    public function getUsername()
+    {
+        return $this->username;
     }
 
-    public function getAvatar() {
-    	return $this->avatar;
+    public function getAvatar()
+    {
+        return $this->avatar;
     }
 
-    public function setAvatar(ForumAvatar $avatar) {
-    	$this->avatar = $avatar;
+    public function setAvatar(ForumAvatar $avatar): void
+    {
+        $this->avatar = $avatar;
     }
 }

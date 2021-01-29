@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\Tests\Models\Company;
 
 /**
@@ -8,9 +10,7 @@ namespace Doctrine\Tests\Models\Company;
  */
 class CompanyManager extends CompanyEmployee
 {
-    /**
-     * @Column(type="string", length=250)
-     */
+    /** @Column(type="string", length=250) */
     private $title;
 
     /**
@@ -19,24 +19,26 @@ class CompanyManager extends CompanyEmployee
      */
     private $car;
 
-    /**
-     * @ManyToMany(targetEntity="CompanyFlexContract", mappedBy="managers", fetch="EXTRA_LAZY")
-     */
+    /** @ManyToMany(targetEntity="CompanyFlexContract", mappedBy="managers", fetch="EXTRA_LAZY") */
     public $managedContracts;
 
-    public function getTitle() {
+    public function getTitle()
+    {
         return $this->title;
     }
 
-    public function setTitle($title) {
+    public function setTitle($title): void
+    {
         $this->title = $title;
     }
 
-    public function getCar() {
+    public function getCar()
+    {
         return $this->car;
     }
 
-    public function setCar(CompanyCar $car) {
+    public function setCar(CompanyCar $car): void
+    {
         $this->car = $car;
     }
 }

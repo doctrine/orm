@@ -1,4 +1,5 @@
 <?php
+
 /*
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
  * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
@@ -25,42 +26,29 @@ namespace Doctrine\ORM\Mapping;
  */
 final class ManyToMany implements Annotation
 {
-    /**
-     * @var string
-     */
+    /** @var string */
     public $targetEntity;
 
-    /**
-     * @var string
-     */
+    /** @var string */
     public $mappedBy;
 
-    /**
-     * @var string
-     */
+    /** @var string */
     public $inversedBy;
 
-    /**
-     * @var array<string>
-     */
+    /** @var array<string> */
     public $cascade;
 
     /**
      * The fetching strategy to use for the association.
      *
      * @var string
-     *
      * @Enum({"LAZY", "EAGER", "EXTRA_LAZY"})
      */
     public $fetch = 'LAZY';
 
-    /**
-     * @var boolean
-     */
+    /** @var bool */
     public $orphanRemoval = false;
 
-    /**
-     * @var string
-     */
+    /** @var string */
     public $indexBy;
 }

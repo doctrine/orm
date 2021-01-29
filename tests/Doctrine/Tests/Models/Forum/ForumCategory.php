@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\Tests\Models\Forum;
 
 /**
@@ -13,20 +15,15 @@ class ForumCategory
      * @Id
      */
     private $id;
-    /**
-     * @Column(type="integer")
-     */
+    /** @Column(type="integer") */
     public $position;
-    /**
-     * @Column(type="string", length=255)
-     */
+    /** @Column(type="string", length=255) */
     public $name;
-    /**
-     * @OneToMany(targetEntity="ForumBoard", mappedBy="category")
-     */
+    /** @OneToMany(targetEntity="ForumBoard", mappedBy="category") */
     public $boards;
 
-    public function getId() {
+    public function getId()
+    {
         return $this->id;
     }
 }

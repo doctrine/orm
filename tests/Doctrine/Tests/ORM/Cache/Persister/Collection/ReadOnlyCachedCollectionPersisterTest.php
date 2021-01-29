@@ -1,11 +1,13 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\Tests\ORM\Cache\Persister\Collection;
 
+use Doctrine\ORM\Cache\Persister\Collection\ReadOnlyCachedCollectionPersister;
 use Doctrine\ORM\Cache\Region;
 use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\Persisters\Collection\CollectionPersister;
-use Doctrine\ORM\Cache\Persister\Collection\ReadOnlyCachedCollectionPersister;
 
 /**
  * @group DDC-2183

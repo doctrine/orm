@@ -1,4 +1,5 @@
 <?php
+
 /*
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
  * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
@@ -21,14 +22,10 @@ namespace Doctrine\ORM\Query\AST;
 
 class PartialObjectExpression extends Node
 {
-    /**
-     * @var string
-     */
+    /** @var string */
     public $identificationVariable;
 
-    /**
-     * @var array
-     */
+    /** @var array */
     public $partialFieldSet;
 
     /**
@@ -38,6 +35,6 @@ class PartialObjectExpression extends Node
     public function __construct($identificationVariable, array $partialFieldSet)
     {
         $this->identificationVariable = $identificationVariable;
-        $this->partialFieldSet = $partialFieldSet;
+        $this->partialFieldSet        = $partialFieldSet;
     }
 }

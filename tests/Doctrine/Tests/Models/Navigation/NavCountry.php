@@ -1,10 +1,12 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\Tests\Models\Navigation;
 
 /**
  * @Entity
-* @Table(name="navigation_countries")
+ * @Table(name="navigation_countries")
  */
 class NavCountry
 {
@@ -15,25 +17,24 @@ class NavCountry
      */
     private $id;
 
-    /**
-     * @Column(type="string")
-     */
+    /** @Column(type="string") */
     private $name;
 
-    /**
-     * @OneToMany(targetEntity="NavPointOfInterest", mappedBy="country")
-     */
+    /** @OneToMany(targetEntity="NavPointOfInterest", mappedBy="country") */
     private $pois;
 
-    function __construct($name) {
+    function __construct($name)
+    {
         $this->name = $name;
     }
 
-    public function getId() {
+    public function getId()
+    {
         return $this->id;
     }
 
-    public function getName() {
+    public function getName()
+    {
         return $this->name;
     }
 }

@@ -1,4 +1,5 @@
 <?php
+
 /*
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
  * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
@@ -20,22 +21,26 @@
 namespace Doctrine\ORM\Tools\Export\Driver;
 
 use Doctrine\ORM\Mapping\ClassMetadataInfo;
+use DOMDocument;
 use SimpleXMLElement;
+
+use function array_search;
+use function count;
+use function implode;
+use function is_array;
+use function strcmp;
+use function uasort;
 
 /**
  * ClassMetadata exporter for Doctrine XML mapping files.
  *
- * @link    www.doctrine-project.org
- * @since   2.0
- * @author  Jonathan Wage <jonwage@gmail.com>
- *
  * @deprecated 2.7 This class is being removed from the ORM and won't have any replacement
+ *
+ * @link    www.doctrine-project.org
  */
 class XmlExporter extends AbstractExporter
 {
-    /**
-     * @var string
-     */
+    /** @var string */
     protected $_extension = '.dcm.xml';
 
     /**
@@ -100,7 +105,7 @@ class XmlExporter extends AbstractExporter
 
         $trackingPolicy = $this->_getChangeTrackingPolicyString($metadata->changeTrackingPolicy);
 
-        if ( $trackingPolicy != 'DEFERRED_IMPLICIT') {
+        if ($trackingPolicy !== 'DEFERRED_IMPLICIT') {
             $root->addChild('change-tracking-policy', $trackingPolicy);
         }
 
@@ -141,12 +146,12 @@ class XmlExporter extends AbstractExporter
             if (isset($assoc['id']) && $assoc['id']) {
                 $id[$name] = [
                     'fieldName' => $name,
-                    'associationKey' => true
+                    'associationKey' => true,
                 ];
             }
         }
 
-        if ( ! $metadata->isIdentifierComposite && $idGeneratorType = $this->_getIdGeneratorTypeString($metadata->generatorType)) {
+        if (! $metadata->isIdentifierComposite && $idGeneratorType = $this->_getIdGeneratorTypeString($metadata->generatorType)) {
             $id[$metadata->getSingleIdentifierFieldName()]['generator']['strategy'] = $idGeneratorType;
         }
 
@@ -235,7 +240,7 @@ class XmlExporter extends AbstractExporter
             ClassMetadataInfo::MANY_TO_MANY,
         ];
 
-        uasort($metadata->associationMappings, function($m1, $m2) use (&$orderMap){
+        uasort($metadata->associationMappings, static function ($m1, $m2) use (&$orderMap) {
             $a1 = array_search($m1['type'], $orderMap);
             $a2 = array_search($m2['type'], $orderMap);
 
@@ -244,13 +249,13 @@ class XmlExporter extends AbstractExporter
 
         foreach ($metadata->associationMappings as $associationMapping) {
             $associationMappingXml = null;
-            if ($associationMapping['type'] == ClassMetadataInfo::ONE_TO_ONE) {
+            if ($associationMapping['type'] === ClassMetadataInfo::ONE_TO_ONE) {
                 $associationMappingXml = $root->addChild('one-to-one');
-            } elseif ($associationMapping['type'] == ClassMetadataInfo::MANY_TO_ONE) {
+            } elseif ($associationMapping['type'] === ClassMetadataInfo::MANY_TO_ONE) {
                 $associationMappingXml = $root->addChild('many-to-one');
-            } elseif ($associationMapping['type'] == ClassMetadataInfo::ONE_TO_MANY) {
+            } elseif ($associationMapping['type'] === ClassMetadataInfo::ONE_TO_MANY) {
                 $associationMappingXml = $root->addChild('one-to-many');
-            } elseif ($associationMapping['type'] == ClassMetadataInfo::MANY_TO_MANY) {
+            } elseif ($associationMapping['type'] === ClassMetadataInfo::MANY_TO_MANY) {
                 $associationMappingXml = $root->addChild('many-to-many');
             }
 
@@ -299,7 +304,7 @@ class XmlExporter extends AbstractExporter
             }
 
             if (count($cascade) === 5) {
-                $cascade  = ['cascade-all'];
+                $cascade = ['cascade-all'];
             }
 
             if ($cascade) {
@@ -349,6 +354,7 @@ class XmlExporter extends AbstractExporter
                     }
                 }
             }
+
             if (isset($associationMapping['joinColumns'])) {
                 $joinColumnsXml = $associationMappingXml->addChild('join-columns');
 
@@ -370,6 +376,7 @@ class XmlExporter extends AbstractExporter
                     }
                 }
             }
+
             if (isset($associationMapping['orderBy'])) {
                 $orderByXml = $associationMappingXml->addChild('order-by');
 
@@ -381,7 +388,7 @@ class XmlExporter extends AbstractExporter
             }
         }
 
-        if (isset($metadata->lifecycleCallbacks) && count($metadata->lifecycleCallbacks)>0) {
+        if (isset($metadata->lifecycleCallbacks) && count($metadata->lifecycleCallbacks) > 0) {
             $lifecycleCallbacksXml = $root->addChild('lifecycle-callbacks');
 
             foreach ($metadata->lifecycleCallbacks as $name => $methods) {
@@ -401,10 +408,9 @@ class XmlExporter extends AbstractExporter
     /**
      * Exports (nested) option elements.
      *
-     * @param SimpleXMLElement $parentXml
-     * @param array            $options
+     * @param array $options
      */
-    private function exportTableOptions(SimpleXMLElement $parentXml, array $options) : void
+    private function exportTableOptions(SimpleXMLElement $parentXml, array $options): void
     {
         foreach ($options as $name => $option) {
             $isArray   = is_array($option);
@@ -422,13 +428,8 @@ class XmlExporter extends AbstractExporter
 
     /**
      * Export sequence information (if available/configured) into the current identifier XML node
-     *
-     * @param SimpleXMLElement  $identifierXmlNode
-     * @param ClassMetadataInfo $metadata
-     *
-     * @return void
      */
-    private function exportSequenceInformation(SimpleXMLElement $identifierXmlNode, ClassMetadataInfo $metadata) : void
+    private function exportSequenceInformation(SimpleXMLElement $identifierXmlNode, ClassMetadataInfo $metadata): void
     {
         $sequenceDefinition = $metadata->sequenceGeneratorDefinition;
 
@@ -443,9 +444,9 @@ class XmlExporter extends AbstractExporter
         $sequenceGeneratorXml->addAttribute('initial-value', $sequenceDefinition['initialValue']);
     }
 
-    private function _asXml(SimpleXMLElement $simpleXml) : string
+    private function _asXml(SimpleXMLElement $simpleXml): string
     {
-        $dom = new \DOMDocument('1.0', 'UTF-8');
+        $dom = new DOMDocument('1.0', 'UTF-8');
         $dom->loadXML($simpleXml->asXML());
         $dom->formatOutput = true;
 
@@ -454,11 +455,11 @@ class XmlExporter extends AbstractExporter
 
     private function processEntityListeners(ClassMetadataInfo $metadata, SimpleXMLElement $root): void
     {
-        if (0 === \count($metadata->entityListeners)) {
+        if (count($metadata->entityListeners) === 0) {
             return;
         }
 
-        $entityListenersXml = $root->addChild('entity-listeners');
+        $entityListenersXml    = $root->addChild('entity-listeners');
         $entityListenersXmlMap = [];
 
         $this->generateEntityListenerXml($metadata, $entityListenersXmlMap, $entityListenersXml);

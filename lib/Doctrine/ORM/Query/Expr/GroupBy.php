@@ -1,4 +1,5 @@
 <?php
+
 /*
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
  * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
@@ -23,21 +24,13 @@ namespace Doctrine\ORM\Query\Expr;
  * Expression class for building DQL Group By parts.
  *
  * @link    www.doctrine-project.org
- * @since   2.0
- * @author  Guilherme Blanco <guilhermeblanco@hotmail.com>
- * @author  Jonathan Wage <jonwage@gmail.com>
- * @author  Roman Borschel <roman@code-factory.org>
  */
 class GroupBy extends Base
 {
-    /**
-     * @var string
-     */
-    protected $preSeparator  = '';
+    /** @var string */
+    protected $preSeparator = '';
 
-    /**
-     * @var string
-     */
+    /** @var string */
     protected $postSeparator = '';
 
     /**

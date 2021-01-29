@@ -1,36 +1,38 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\Tests\ORM\Functional\Ticket;
 
 use Doctrine\Tests\OrmFunctionalTestCase;
+use Exception;
 
 class DDC960Test extends OrmFunctionalTestCase
 {
-    protected function setUp() : void
+    protected function setUp(): void
     {
         parent::setUp();
         try {
             $this->_schemaTool->createSchema(
                 [
-                $this->_em->getClassMetadata(DDC960Root::class),
-                $this->_em->getClassMetadata(DDC960Child::class)
+                    $this->_em->getClassMetadata(DDC960Root::class),
+                    $this->_em->getClassMetadata(DDC960Child::class),
                 ]
             );
-        } catch(\Exception $e) {
-
+        } catch (Exception $e) {
         }
     }
 
     /**
      * @group DDC-960
      */
-    public function testUpdateRootVersion()
+    public function testUpdateRootVersion(): void
     {
         $child = new DDC960Child('Test');
         $this->_em->persist($child);
         $this->_em->flush();
 
-        $child->setName("Test2");
+        $child->setName('Test2');
 
         $this->_em->flush();
 
@@ -48,14 +50,10 @@ class DDC960Test extends OrmFunctionalTestCase
  */
 class DDC960Root
 {
-    /**
-     * @Id @GeneratedValue @Column(type="integer")
-     */
+    /** @Id @GeneratedValue @Column(type="integer") */
     private $id;
 
-    /**
-     * @Column(type="integer") @Version
-     */
+    /** @Column(type="integer") @Version */
     private $version;
 
     public function getId()
@@ -85,7 +83,7 @@ class DDC960Child extends DDC960Root
         $this->name = $name;
     }
 
-    public function setName($name)
+    public function setName($name): void
     {
         $this->name = $name;
     }

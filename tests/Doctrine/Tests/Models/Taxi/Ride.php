@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\Tests\Models\Taxi;
 
 /**
@@ -27,6 +29,6 @@ class Ride
     public function __construct(Driver $driver, Car $car)
     {
         $this->driver = $driver;
-        $this->car = $car;
+        $this->car    = $car;
     }
 }

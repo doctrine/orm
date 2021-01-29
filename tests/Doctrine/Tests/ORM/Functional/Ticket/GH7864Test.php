@@ -6,6 +6,7 @@ namespace Doctrine\Tests\ORM\Functional\Ticket;
 
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Tests\OrmFunctionalTestCase;
+
 use function array_values;
 
 /**
@@ -13,7 +14,7 @@ use function array_values;
  */
 class GH7864Test extends OrmFunctionalTestCase
 {
-    protected function setUp() : void
+    protected function setUp(): void
     {
         parent::setUp();
 
@@ -25,7 +26,7 @@ class GH7864Test extends OrmFunctionalTestCase
         );
     }
 
-    public function testExtraLazyRemoveElement()
+    public function testExtraLazyRemoveElement(): void
     {
         $user       = new GH7864User();
         $user->name = 'test';
@@ -76,7 +77,7 @@ class GH7864User
         $this->tweets = new ArrayCollection();
     }
 
-    public function addTweet(GH7864Tweet $tweet)
+    public function addTweet(GH7864Tweet $tweet): void
     {
         $tweet->user = $this;
         $this->tweets->add($tweet);

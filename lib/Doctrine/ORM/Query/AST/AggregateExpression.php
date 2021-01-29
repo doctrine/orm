@@ -1,4 +1,5 @@
 <?php
+
 /*
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
  * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
@@ -23,21 +24,13 @@ namespace Doctrine\ORM\Query\AST;
  * Description of AggregateExpression.
  *
  * @link    www.doctrine-project.org
- * @since   2.0
- * @author  Guilherme Blanco <guilhermeblanco@hotmail.com>
- * @author  Jonathan Wage <jonwage@gmail.com>
- * @author  Roman Borschel <roman@code-factory.org>
  */
 class AggregateExpression extends Node
 {
-    /**
-     * @var string
-     */
+    /** @var string */
     public $functionName;
 
-    /**
-     * @var PathExpression|SimpleArithmeticExpression
-     */
+    /** @var PathExpression|SimpleArithmeticExpression */
     public $pathExpression;
 
     /**
@@ -54,9 +47,9 @@ class AggregateExpression extends Node
      */
     public function __construct($functionName, $pathExpression, $isDistinct)
     {
-        $this->functionName = $functionName;
+        $this->functionName   = $functionName;
         $this->pathExpression = $pathExpression;
-        $this->isDistinct = $isDistinct;
+        $this->isDistinct     = $isDistinct;
     }
 
     /**

@@ -22,9 +22,6 @@ namespace Doctrine\ORM\Cache;
 
 /**
  * Association cache entry
- *
- * @since   2.5
- * @author  Fabio B. Silva <fabio.bat.silva@gmail.com>
  */
 class AssociationCacheEntry implements CacheEntry
 {
@@ -48,8 +45,8 @@ class AssociationCacheEntry implements CacheEntry
      */
     public function __construct($class, array $identifier)
     {
-        $this->class       = $class;
-        $this->identifier  = $identifier;
+        $this->class      = $class;
+        $this->identifier = $identifier;
     }
 
     /**

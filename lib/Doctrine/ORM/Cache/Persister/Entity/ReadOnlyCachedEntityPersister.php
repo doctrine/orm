@@ -20,14 +20,11 @@
 
 namespace Doctrine\ORM\Cache\Persister\Entity;
 
-use Doctrine\ORM\Cache\CacheException;
 use Doctrine\Common\Util\ClassUtils;
+use Doctrine\ORM\Cache\CacheException;
 
 /**
  * Specific read-only region entity persister
- *
- * @author Fabio B. Silva <fabio.bat.silva@gmail.com>
- * @since 2.5
  */
 class ReadOnlyCachedEntityPersister extends NonStrictReadWriteCachedEntityPersister
 {

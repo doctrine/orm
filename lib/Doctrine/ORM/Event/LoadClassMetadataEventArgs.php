@@ -1,4 +1,5 @@
 <?php
+
 /*
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
  * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
@@ -19,25 +20,22 @@
 
 namespace Doctrine\ORM\Event;
 
+use Doctrine\ORM\EntityManager;
+use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\Persistence\Event\LoadClassMetadataEventArgs as BaseLoadClassMetadataEventArgs;
 
 /**
  * Class that holds event arguments for a loadMetadata event.
  *
- * @author Jonathan H. Wage <jonwage@gmail.com>
- * @since  2.0
- *
- * Note: method annotations are used instead of method overrides (due to BC policy)
- *
- * @method __construct(\Doctrine\ORM\Mapping\ClassMetadata $classMetadata, \Doctrine\ORM\EntityManager $objectManager)
- * @method \Doctrine\ORM\Mapping\ClassMetadata getClassMetadata()
+ * @method __construct(ClassMetadata $classMetadata, EntityManager $objectManager)
+ * @method ClassMetadata getClassMetadata()
  */
 class LoadClassMetadataEventArgs extends BaseLoadClassMetadataEventArgs
 {
     /**
      * Retrieve associated EntityManager.
      *
-     * @return \Doctrine\ORM\EntityManager
+     * @return EntityManager
      */
     public function getEntityManager()
     {

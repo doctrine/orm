@@ -1,6 +1,13 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\Tests\Models\Company;
+
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\ORM\Events;
+use Doctrine\ORM\Mapping\ClassMetadata;
+use Doctrine\ORM\Mapping\ClassMetadataInfo;
 
 /**
  * @Entity
@@ -13,7 +20,6 @@ namespace Doctrine\Tests\Models\Company;
  *     "flexible"  = "CompanyFlexContract",
  *     "flexultra" = "CompanyFlexUltraContract"
  * })
- *
  * @NamedNativeQueries({
  *      @NamedNativeQuery(
  *          name           = "all-contracts",
@@ -26,7 +32,6 @@ namespace Doctrine\Tests\Models\Company;
  *          query          = "SELECT id, completed, discr FROM company_contracts"
  *      ),
  * })
- *
  * @SqlResultSetMappings({
  *      @SqlResultSetMapping(
  *          name    = "mapping-all-contracts",
@@ -58,14 +63,10 @@ namespace Doctrine\Tests\Models\Company;
  */
 abstract class CompanyContract
 {
-    /**
-     * @Id @column(type="integer") @GeneratedValue
-     */
+    /** @Id @column(type="integer") @GeneratedValue */
     private $id;
 
-    /**
-     * @ManyToOne(targetEntity="CompanyEmployee", inversedBy="soldContracts")
-     */
+    /** @ManyToOne(targetEntity="CompanyEmployee", inversedBy="soldContracts") */
     private $salesPerson;
 
     /**
@@ -85,7 +86,7 @@ abstract class CompanyContract
 
     public function __construct()
     {
-        $this->engineers = new \Doctrine\Common\Collections\ArrayCollection;
+        $this->engineers = new ArrayCollection();
     }
 
     public function getId()
@@ -93,7 +94,7 @@ abstract class CompanyContract
         return $this->id;
     }
 
-    public function markCompleted()
+    public function markCompleted(): void
     {
         $this->completed = true;
     }
@@ -108,7 +109,7 @@ abstract class CompanyContract
         return $this->salesPerson;
     }
 
-    public function setSalesPerson(CompanyEmployee $salesPerson)
+    public function setSalesPerson(CompanyEmployee $salesPerson): void
     {
         $this->salesPerson = $salesPerson;
     }
@@ -118,63 +119,63 @@ abstract class CompanyContract
         return $this->engineers;
     }
 
-    public function addEngineer(CompanyEmployee $engineer)
+    public function addEngineer(CompanyEmployee $engineer): void
     {
         $this->engineers[] = $engineer;
     }
 
-    public function removeEngineer(CompanyEmployee $engineer)
+    public function removeEngineer(CompanyEmployee $engineer): void
     {
         $this->engineers->removeElement($engineer);
     }
 
-    abstract public function calculatePrice();
+    abstract public function calculatePrice(): void;
 
-    static public function loadMetadata(\Doctrine\ORM\Mapping\ClassMetadataInfo $metadata)
+    public static function loadMetadata(ClassMetadataInfo $metadata): void
     {
-        $metadata->setInheritanceType(\Doctrine\ORM\Mapping\ClassMetadata::INHERITANCE_TYPE_JOINED);
-        $metadata->setTableName( 'company_contracts');
+        $metadata->setInheritanceType(ClassMetadata::INHERITANCE_TYPE_JOINED);
+        $metadata->setTableName('company_contracts');
         $metadata->setDiscriminatorColumn(
             [
-            'name' => 'discr',
-            'type' => 'string',
+                'name' => 'discr',
+                'type' => 'string',
             ]
         );
 
         $metadata->mapField(
             [
-            'id'        => true,
-            'name'      => 'id',
-            'fieldName' => 'id',
+                'id'        => true,
+                'name'      => 'id',
+                'fieldName' => 'id',
             ]
         );
 
         $metadata->mapField(
             [
-            'type'      => 'boolean',
-            'name'      => 'completed',
-            'fieldName' => 'completed',
+                'type'      => 'boolean',
+                'name'      => 'completed',
+                'fieldName' => 'completed',
             ]
         );
 
         $metadata->setDiscriminatorMap(
             [
-            "fix"       => "CompanyFixContract",
-            "flexible"  => "CompanyFlexContract",
-            "flexultra" => "CompanyFlexUltraContract"
+                'fix'       => 'CompanyFixContract',
+                'flexible'  => 'CompanyFlexContract',
+                'flexultra' => 'CompanyFlexUltraContract',
             ]
         );
 
-        $metadata->addEntityListener(\Doctrine\ORM\Events::postPersist, 'CompanyContractListener', 'postPersistHandler');
-        $metadata->addEntityListener(\Doctrine\ORM\Events::prePersist, 'CompanyContractListener', 'prePersistHandler');
+        $metadata->addEntityListener(Events::postPersist, 'CompanyContractListener', 'postPersistHandler');
+        $metadata->addEntityListener(Events::prePersist, 'CompanyContractListener', 'prePersistHandler');
 
-        $metadata->addEntityListener(\Doctrine\ORM\Events::postUpdate, 'CompanyContractListener', 'postUpdateHandler');
-        $metadata->addEntityListener(\Doctrine\ORM\Events::preUpdate, 'CompanyContractListener', 'preUpdateHandler');
+        $metadata->addEntityListener(Events::postUpdate, 'CompanyContractListener', 'postUpdateHandler');
+        $metadata->addEntityListener(Events::preUpdate, 'CompanyContractListener', 'preUpdateHandler');
 
-        $metadata->addEntityListener(\Doctrine\ORM\Events::postRemove, 'CompanyContractListener', 'postRemoveHandler');
-        $metadata->addEntityListener(\Doctrine\ORM\Events::preRemove, 'CompanyContractListener', 'preRemoveHandler');
+        $metadata->addEntityListener(Events::postRemove, 'CompanyContractListener', 'postRemoveHandler');
+        $metadata->addEntityListener(Events::preRemove, 'CompanyContractListener', 'preRemoveHandler');
 
-        $metadata->addEntityListener(\Doctrine\ORM\Events::preFlush, 'CompanyContractListener', 'preFlushHandler');
-        $metadata->addEntityListener(\Doctrine\ORM\Events::postLoad, 'CompanyContractListener', 'postLoadHandler');
+        $metadata->addEntityListener(Events::preFlush, 'CompanyContractListener', 'preFlushHandler');
+        $metadata->addEntityListener(Events::postLoad, 'CompanyContractListener', 'postLoadHandler');
     }
 }

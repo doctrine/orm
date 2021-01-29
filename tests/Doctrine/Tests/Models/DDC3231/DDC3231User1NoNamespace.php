@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 /**
  * @Entity(repositoryClass="DDC3231User1NoNamespaceRepository")
  * @Table(name="no_namespace_users")
@@ -13,9 +15,6 @@ class DDC3231User1NoNamespace
      */
     protected $id;
 
-    /**
-     * @Column(type="string", length=255)
-     */
+    /** @Column(type="string", length=255) */
     protected $name;
-
 }

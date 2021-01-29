@@ -1,4 +1,5 @@
 <?php
+
 /*
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
  * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
@@ -22,29 +23,17 @@ namespace Doctrine\ORM\Query\AST;
 /**
  * SimpleCaseExpression ::= "CASE" CaseOperand SimpleWhenClause {SimpleWhenClause}* "ELSE" ScalarExpression "END"
  *
- * @since   2.2
- *
  * @link    www.doctrine-project.org
- * @author  Benjamin Eberlei <kontakt@beberlei.de>
- * @author  Guilherme Blanco <guilhermeblanco@hotmail.com>
- * @author  Jonathan Wage <jonwage@gmail.com>
- * @author  Roman Borschel <roman@code-factory.org>
  */
 class SimpleCaseExpression extends Node
 {
-    /**
-     * @var PathExpression
-     */
+    /** @var PathExpression */
     public $caseOperand = null;
 
-    /**
-     * @var array
-     */
+    /** @var array */
     public $simpleWhenClauses = [];
 
-    /**
-     * @var mixed
-     */
+    /** @var mixed */
     public $elseScalarExpression = null;
 
     /**
@@ -54,8 +43,8 @@ class SimpleCaseExpression extends Node
      */
     public function __construct($caseOperand, array $simpleWhenClauses, $elseScalarExpression)
     {
-        $this->caseOperand = $caseOperand;
-        $this->simpleWhenClauses = $simpleWhenClauses;
+        $this->caseOperand          = $caseOperand;
+        $this->simpleWhenClauses    = $simpleWhenClauses;
         $this->elseScalarExpression = $elseScalarExpression;
     }
 

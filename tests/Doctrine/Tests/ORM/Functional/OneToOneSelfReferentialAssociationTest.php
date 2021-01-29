@@ -1,12 +1,16 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\Tests\ORM\Functional;
 
-use Doctrine\ORM\Mapping\AssociationMapping;
 use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\Proxy\Proxy;
 use Doctrine\Tests\Models\ECommerce\ECommerceCustomer;
 use Doctrine\Tests\OrmFunctionalTestCase;
+use Exception;
+
+use function get_class;
 
 /**
  * Tests a self referential one-to-one association mapping (without inheritance).
@@ -20,7 +24,7 @@ class OneToOneSelfReferentialAssociationTest extends OrmFunctionalTestCase
     private $customer;
     private $mentor;
 
-    protected function setUp() : void
+    protected function setUp(): void
     {
         $this->useModelSet('ecommerce');
         parent::setUp();
@@ -30,7 +34,8 @@ class OneToOneSelfReferentialAssociationTest extends OrmFunctionalTestCase
         $this->mentor->setName('Obi-wan Kenobi');
     }
 
-    public function testSavesAOneToOneAssociationWithCascadeSaveSet() {
+    public function testSavesAOneToOneAssociationWithCascadeSaveSet(): void
+    {
         $this->customer->setMentor($this->mentor);
         $this->_em->persist($this->customer);
         $this->_em->flush();
@@ -38,7 +43,7 @@ class OneToOneSelfReferentialAssociationTest extends OrmFunctionalTestCase
         $this->assertForeignKeyIs($this->mentor->getId());
     }
 
-    public function testRemovesOneToOneAssociation()
+    public function testRemovesOneToOneAssociation(): void
     {
         $this->customer->setMentor($this->mentor);
         $this->_em->persist($this->customer);
@@ -49,7 +54,7 @@ class OneToOneSelfReferentialAssociationTest extends OrmFunctionalTestCase
         $this->assertForeignKeyIs(null);
     }
 
-    public function testFind()
+    public function testFind(): void
     {
         $id = $this->_createFixture();
 
@@ -57,49 +62,48 @@ class OneToOneSelfReferentialAssociationTest extends OrmFunctionalTestCase
         $this->assertNotInstanceOf(Proxy::class, $customer->getMentor());
     }
 
-    public function testEagerLoadsAssociation()
+    public function testEagerLoadsAssociation(): void
     {
         $this->_createFixture();
 
-        $query = $this->_em->createQuery('select c, m from Doctrine\Tests\Models\ECommerce\ECommerceCustomer c left join c.mentor m order by c.id asc');
-        $result = $query->getResult();
+        $query    = $this->_em->createQuery('select c, m from Doctrine\Tests\Models\ECommerce\ECommerceCustomer c left join c.mentor m order by c.id asc');
+        $result   = $query->getResult();
         $customer = $result[0];
         $this->assertLoadingOfAssociation($customer);
     }
 
     /**
      * @group mine
-     * @return unknown_type
      */
-    public function testLazyLoadsAssociation()
+    public function testLazyLoadsAssociation(): unknown_type
     {
         $this->_createFixture();
 
-        $metadata = $this->_em->getClassMetadata(ECommerceCustomer::class);
+        $metadata                                         = $this->_em->getClassMetadata(ECommerceCustomer::class);
         $metadata->associationMappings['mentor']['fetch'] = ClassMetadata::FETCH_LAZY;
 
-        $query = $this->_em->createQuery("select c from Doctrine\Tests\Models\ECommerce\ECommerceCustomer c where c.name='Luke Skywalker'");
-        $result = $query->getResult();
+        $query    = $this->_em->createQuery("select c from Doctrine\Tests\Models\ECommerce\ECommerceCustomer c where c.name='Luke Skywalker'");
+        $result   = $query->getResult();
         $customer = $result[0];
         $this->assertLoadingOfAssociation($customer);
     }
 
-    public function testMultiSelfReference()
+    public function testMultiSelfReference(): void
     {
         try {
             $this->_schemaTool->createSchema(
                 [
-                $this->_em->getClassMetadata(MultiSelfReference::class)
+                    $this->_em->getClassMetadata(MultiSelfReference::class),
                 ]
             );
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             // Swallow all exceptions. We do not test the schema tool here.
         }
 
         $entity1 = new MultiSelfReference();
         $this->_em->persist($entity1);
-        $entity1->setOther1($entity2 = new MultiSelfReference);
-        $entity1->setOther2($entity3 = new MultiSelfReference);
+        $entity1->setOther1($entity2 = new MultiSelfReference());
+        $entity1->setOther2($entity3 = new MultiSelfReference());
         $this->_em->flush();
 
         $this->_em->clear();
@@ -114,23 +118,23 @@ class OneToOneSelfReferentialAssociationTest extends OrmFunctionalTestCase
         $this->assertNull($entity2->getOther2()->getOther2());
     }
 
-    public function assertLoadingOfAssociation($customer)
+    public function assertLoadingOfAssociation($customer): void
     {
         $this->assertInstanceOf(ECommerceCustomer::class, $customer->getMentor());
         $this->assertEquals('Obi-wan Kenobi', $customer->getMentor()->getName());
     }
 
-    public function assertForeignKeyIs($value) {
-        $foreignKey = $this->_em->getConnection()->executeQuery('SELECT mentor_id FROM ecommerce_customers WHERE id=?', [$this->customer->getId()]
-        )->fetchColumn();
+    public function assertForeignKeyIs($value): void
+    {
+        $foreignKey = $this->_em->getConnection()->executeQuery('SELECT mentor_id FROM ecommerce_customers WHERE id=?', [$this->customer->getId()])->fetchColumn();
         $this->assertEquals($value, $foreignKey);
     }
 
     private function _createFixture()
     {
-        $customer = new ECommerceCustomer;
+        $customer = new ECommerceCustomer();
         $customer->setName('Luke Skywalker');
-        $mentor = new ECommerceCustomer;
+        $mentor = new ECommerceCustomer();
         $mentor->setName('Obi-wan Kenobi');
         $customer->setMentor($mentor);
 
@@ -146,7 +150,8 @@ class OneToOneSelfReferentialAssociationTest extends OrmFunctionalTestCase
 /**
  * @Entity
  */
-class MultiSelfReference {
+class MultiSelfReference
+{
     /** @Id @GeneratedValue(strategy="AUTO") @Column(type="integer") */
     private $id;
     /**
@@ -160,9 +165,28 @@ class MultiSelfReference {
      */
     private $other2;
 
-    public function getId() {return $this->id;}
-    public function setOther1($other1) {$this->other1 = $other1;}
-    public function getOther1() {return $this->other1;}
-    public function setOther2($other2) {$this->other2 = $other2;}
-    public function getOther2() {return $this->other2;}
+    public function getId()
+    {
+        return $this->id;
+    }
+
+    public function setOther1($other1): void
+    {
+        $this->other1 = $other1;
+    }
+
+    public function getOther1()
+    {
+        return $this->other1;
+    }
+
+    public function setOther2($other2): void
+    {
+        $this->other2 = $other2;
+    }
+
+    public function getOther2()
+    {
+        return $this->other2;
+    }
 }

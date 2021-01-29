@@ -1,6 +1,10 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\Tests\Models\Navigation;
+
+use Doctrine\Common\Collections\ArrayCollection;
 
 /**
  * @Entity
@@ -15,9 +19,7 @@ class NavTour
      */
     private $id;
 
-    /**
-     * @column(type="string")
-     */
+    /** @column(type="string") */
     private $name;
 
     /**
@@ -29,17 +31,16 @@ class NavTour
      *          @JoinColumn(name="poi_lat", referencedColumnName="nav_lat")
      *      }
      * )
-     *
      */
     private $pois;
 
     public function __construct($name)
     {
         $this->name = $name;
-        $this->pois = new \Doctrine\Common\Collections\ArrayCollection;
+        $this->pois = new ArrayCollection();
     }
 
-    public function addPointOfInterest(NavPointOfInterest $poi)
+    public function addPointOfInterest(NavPointOfInterest $poi): void
     {
         $this->pois[] = $poi;
     }

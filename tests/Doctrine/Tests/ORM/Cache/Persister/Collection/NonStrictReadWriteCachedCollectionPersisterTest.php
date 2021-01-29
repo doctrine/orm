@@ -1,11 +1,13 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\Tests\ORM\Cache\Persister\Collection;
 
+use Doctrine\ORM\Cache\Persister\Collection\NonStrictReadWriteCachedCollectionPersister;
 use Doctrine\ORM\Cache\Region;
 use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\Persisters\Collection\CollectionPersister;
-use Doctrine\ORM\Cache\Persister\Collection\NonStrictReadWriteCachedCollectionPersister;
 
 /**
  * @group DDC-2183
@@ -19,5 +21,4 @@ class NonStrictReadWriteCachedCollectionPersisterTest extends AbstractCollection
     {
         return new NonStrictReadWriteCachedCollectionPersister($persister, $region, $em, $mapping);
     }
-
 }

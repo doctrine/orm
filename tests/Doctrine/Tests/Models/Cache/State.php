@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\Tests\Models\Cache;
 
 use Doctrine\Common\Collections\ArrayCollection;
@@ -18,9 +20,7 @@ class State
      */
     protected $id;
 
-    /**
-     * @Column(unique=true)
-     */
+    /** @Column(unique=true) */
     protected $name;
 
     /**
@@ -36,11 +36,11 @@ class State
      */
     protected $cities;
 
-    public function __construct($name, Country $country = null)
+    public function __construct($name, ?Country $country = null)
     {
-        $this->name     = $name;
-        $this->country  = $country;
-        $this->cities   = new ArrayCollection();
+        $this->name    = $name;
+        $this->country = $country;
+        $this->cities  = new ArrayCollection();
     }
 
     public function getId()
@@ -48,7 +48,7 @@ class State
         return $this->id;
     }
 
-    public function setId($id)
+    public function setId($id): void
     {
         $this->id = $id;
     }
@@ -58,7 +58,7 @@ class State
         return $this->name;
     }
 
-    public function setName($name)
+    public function setName($name): void
     {
         $this->name = $name;
     }
@@ -68,7 +68,7 @@ class State
         return $this->country;
     }
 
-    public function setCountry(Country $country)
+    public function setCountry(Country $country): void
     {
         $this->country = $country;
     }
@@ -78,12 +78,12 @@ class State
         return $this->cities;
     }
 
-    public function setCities(ArrayCollection $cities)
+    public function setCities(ArrayCollection $cities): void
     {
         $this->cities = $cities;
     }
 
-    public function addCity(City $city)
+    public function addCity(City $city): void
     {
         $this->cities[] = $city;
     }

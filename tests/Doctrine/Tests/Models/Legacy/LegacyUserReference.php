@@ -1,6 +1,10 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\Tests\Models\Legacy;
+
+use DateTime;
 
 /**
  * @Entity
@@ -22,14 +26,10 @@ class LegacyUserReference
      */
     private $_target;
 
-    /**
-     * @column(type="string", name="description")
-     */
+    /** @column(type="string", name="description") */
     private $_description;
 
-    /**
-     * @column(type="datetime", name="created")
-     */
+    /** @column(type="datetime", name="created") */
     private $_created;
 
     public function __construct($source, $target, $description)
@@ -37,10 +37,10 @@ class LegacyUserReference
         $source->addReference($this);
         $target->addReference($this);
 
-        $this->_source = $source;
-        $this->_target = $target;
+        $this->_source      = $source;
+        $this->_target      = $target;
         $this->_description = $description;
-        $this->_created = new \DateTime("now");
+        $this->_created     = new DateTime('now');
     }
 
     public function source()
@@ -53,7 +53,7 @@ class LegacyUserReference
         return $this->_target;
     }
 
-    public function setDescription($desc)
+    public function setDescription($desc): void
     {
         $this->_description = $desc;
     }

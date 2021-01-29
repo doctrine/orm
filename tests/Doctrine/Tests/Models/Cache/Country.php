@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\Tests\Models\Cache;
 
 /**
@@ -16,9 +18,7 @@ class Country
      */
     protected $id;
 
-    /**
-     * @Column(unique=true)
-     */
+    /** @Column(unique=true) */
     protected $name;
 
     public function __construct($name)
@@ -31,7 +31,7 @@ class Country
         return $this->id;
     }
 
-    public function setId($id)
+    public function setId($id): void
     {
         $this->id = $id;
     }
@@ -41,7 +41,7 @@ class Country
         return $this->name;
     }
 
-    public function setName($name)
+    public function setName($name): void
     {
         $this->name = $name;
     }

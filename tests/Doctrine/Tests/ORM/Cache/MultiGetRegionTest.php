@@ -1,15 +1,14 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\Tests\ORM\Cache;
 
+use Doctrine\ORM\Cache\CollectionCacheEntry;
+use Doctrine\ORM\Cache\Region\DefaultMultiGetRegion;
 use Doctrine\Tests\Mocks\CacheEntryMock;
 use Doctrine\Tests\Mocks\CacheKeyMock;
-use Doctrine\ORM\Cache\Region\DefaultMultiGetRegion;
-use Doctrine\ORM\Cache\CollectionCacheEntry;
 
-/**
- * @author  Asmir Mustafic <goetas@gmail.com>
- */
 class MultiGetRegionTest extends AbstractRegionTest
 {
     protected function createRegion()
@@ -17,12 +16,12 @@ class MultiGetRegionTest extends AbstractRegionTest
         return new DefaultMultiGetRegion('default.region.test', $this->cache);
     }
 
-    public function testGetMulti()
+    public function testGetMulti(): void
     {
-        $key1 = new CacheKeyMock('key.1');
+        $key1   = new CacheKeyMock('key.1');
         $value1 = new CacheEntryMock(['id' => 1, 'name' => 'bar']);
 
-        $key2 = new CacheKeyMock('key.2');
+        $key2   = new CacheKeyMock('key.2');
         $value2 = new CacheEntryMock(['id' => 2, 'name' => 'bar']);
 
         $this->assertFalse($this->region->contains($key1));
@@ -44,7 +43,7 @@ class MultiGetRegionTest extends AbstractRegionTest
      * @test
      * @group GH7266
      */
-    public function corruptedDataDoesNotLeakIntoApplication() : void
+    public function corruptedDataDoesNotLeakIntoApplication(): void
     {
         $key1 = new CacheKeyMock('key.1');
         $this->cache->save($this->region->getName() . '_' . $key1->hash, 'a-very-invalid-value');

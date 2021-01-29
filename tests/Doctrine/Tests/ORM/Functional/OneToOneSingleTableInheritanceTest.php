@@ -1,16 +1,19 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\Tests\ORM\Functional;
 
-use Doctrine\ORM\Query;
 use Doctrine\Tests\Models\OneToOneSingleTableInheritance\Cat;
 use Doctrine\Tests\Models\OneToOneSingleTableInheritance\LitterBox;
 use Doctrine\Tests\Models\OneToOneSingleTableInheritance\Pet;
 use Doctrine\Tests\OrmFunctionalTestCase;
 
+use function assert;
+
 class OneToOneSingleTableInheritanceTest extends OrmFunctionalTestCase
 {
-    protected function setUp() : void
+    protected function setUp(): void
     {
         parent::setUp();
 
@@ -27,7 +30,7 @@ class OneToOneSingleTableInheritanceTest extends OrmFunctionalTestCase
      * @group DDC-3517
      * @group #1265
      */
-    public function testFindFromOneToOneOwningSideJoinedTableInheritance()
+    public function testFindFromOneToOneOwningSideJoinedTableInheritance(): void
     {
         $cat            = new Cat();
         $cat->litterBox = new LitterBox();
@@ -37,8 +40,8 @@ class OneToOneSingleTableInheritanceTest extends OrmFunctionalTestCase
         $this->_em->flush();
         $this->_em->clear();
 
-        /* @var $foundCat Cat */
         $foundCat = $this->_em->find(Pet::class, $cat->id);
+        assert($foundCat instanceof Cat);
 
         $this->assertInstanceOf(Cat::class, $foundCat);
         $this->assertSame($cat->id, $foundCat->id);

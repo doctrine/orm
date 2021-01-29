@@ -1,12 +1,14 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\Tests\ORM\Functional\Ticket;
 
 use Doctrine\Tests\OrmFunctionalTestCase;
 
 class Ticket4646InstanceOfParametricTest extends OrmFunctionalTestCase
 {
-    protected function setUp() : void
+    protected function setUp(): void
     {
         parent::setUp();
         $this->_schemaTool->createSchema([
@@ -20,7 +22,7 @@ class Ticket4646InstanceOfParametricTest extends OrmFunctionalTestCase
         $this->_em->persist(new PersonTicket4646Parametric());
         $this->_em->persist(new EmployeeTicket4646Parametric());
         $this->_em->flush();
-        $dql = 'SELECT p FROM Doctrine\Tests\ORM\Functional\Ticket\PersonTicket4646Parametric p
+        $dql   = 'SELECT p FROM Doctrine\Tests\ORM\Functional\Ticket\PersonTicket4646Parametric p
                 WHERE p INSTANCE OF :parameter';
         $query = $this->_em->createQuery($dql);
         $query->setParameter(

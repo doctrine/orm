@@ -17,7 +17,7 @@ use Doctrine\Tests\OrmTestCase;
  */
 class GH7869Test extends OrmTestCase
 {
-    public function testDQLDeferredEagerLoad()
+    public function testDQLDeferredEagerLoad(): void
     {
         $decoratedEm = EntityManagerMock::create(new ConnectionMock([], new DriverMock()));
 

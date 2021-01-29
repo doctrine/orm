@@ -1,16 +1,24 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\Tests\ORM\Functional\Ticket;
 
 use Doctrine\ORM\Proxy\Proxy;
-use Doctrine\Tests\Models\ECommerce\ECommerceCart;
-use Doctrine\Tests\Models\ECommerce\ECommerceCustomer;
 use Doctrine\ORM\Query;
 use Doctrine\ORM\Query\AST;
+use Doctrine\ORM\Query\AST\SelectClause;
+use Doctrine\ORM\Query\AST\SelectExpression;
+use Doctrine\ORM\Query\TreeWalkerAdapter;
+use Doctrine\Tests\Models\ECommerce\ECommerceCart;
+use Doctrine\Tests\Models\ECommerce\ECommerceCustomer;
+use Doctrine\Tests\OrmFunctionalTestCase;
 
-class DDC736Test extends \Doctrine\Tests\OrmFunctionalTestCase
+use function assert;
+
+class DDC736Test extends OrmFunctionalTestCase
 {
-    protected function setUp() : void
+    protected function setUp(): void
     {
         $this->useModelSet('ecommerce');
         parent::setUp();
@@ -19,12 +27,12 @@ class DDC736Test extends \Doctrine\Tests\OrmFunctionalTestCase
     /**
      * @group DDC-736
      */
-    public function testReorderEntityFetchJoinForHydration()
+    public function testReorderEntityFetchJoinForHydration(): void
     {
-        $cust = new ECommerceCustomer;
+        $cust = new ECommerceCustomer();
         $cust->setName('roman');
 
-        $cart = new ECommerceCart;
+        $cart = new ECommerceCart();
         $cart->setPayment('cash');
         $cart->setCustomer($cust);
 
@@ -33,7 +41,7 @@ class DDC736Test extends \Doctrine\Tests\OrmFunctionalTestCase
         $this->_em->flush();
         $this->_em->clear();
 
-        $result = $this->_em->createQuery("select c, c.name, ca, ca.payment from Doctrine\Tests\Models\ECommerce\ECommerceCart ca join ca.customer c")
+        $result = $this->_em->createQuery('select c, c.name, ca, ca.payment from Doctrine\Tests\Models\ECommerce\ECommerceCart ca join ca.customer c')
             ->getSingleResult(/*\Doctrine\ORM\Query::HYDRATE_ARRAY*/);
 
         $cart2 = $result[0];
@@ -50,12 +58,12 @@ class DDC736Test extends \Doctrine\Tests\OrmFunctionalTestCase
      * @group DDC-925
      * @group DDC-915
      */
-    public function testDqlTreeWalkerReordering()
+    public function testDqlTreeWalkerReordering(): void
     {
-        $cust = new ECommerceCustomer;
+        $cust = new ECommerceCustomer();
         $cust->setName('roman');
 
-        $cart = new ECommerceCart;
+        $cart = new ECommerceCart();
         $cart->setPayment('cash');
         $cart->setCustomer($cust);
 
@@ -64,36 +72,32 @@ class DDC736Test extends \Doctrine\Tests\OrmFunctionalTestCase
         $this->_em->flush();
         $this->_em->clear();
 
-        $dql = "select c, c.name, ca, ca.payment from Doctrine\Tests\Models\ECommerce\ECommerceCart ca join ca.customer c";
+        $dql    = 'select c, c.name, ca, ca.payment from Doctrine\Tests\Models\ECommerce\ECommerceCart ca join ca.customer c';
         $result = $this->_em->createQuery($dql)
                             ->setHint(Query::HINT_CUSTOM_TREE_WALKERS, [DisableFetchJoinTreeWalker::class])
                             ->getResult();
 
-        /* @var $cart2 ECommerceCart */
         $cart2 = $result[0][0];
+        assert($cart2 instanceof ECommerceCart);
         $this->assertInstanceOf(Proxy::class, $cart2->getCustomer());
     }
 }
 
-class DisableFetchJoinTreeWalker extends \Doctrine\ORM\Query\TreeWalkerAdapter
+class DisableFetchJoinTreeWalker extends TreeWalkerAdapter
 {
-    public function walkSelectStatement(AST\SelectStatement $AST)
+    public function walkSelectStatement(AST\SelectStatement $AST): void
     {
         $this->walkSelectClause($AST->selectClause);
     }
 
-    /**
-     * @param \Doctrine\ORM\Query\AST\SelectClause $selectClause
-     */
-    public function walkSelectClause($selectClause)
+    public function walkSelectClause(SelectClause $selectClause): void
     {
-        foreach ($selectClause->selectExpressions AS $key => $selectExpr) {
-            /* @var $selectExpr \Doctrine\ORM\Query\AST\SelectExpression */
-            if ($selectExpr->expression == "c") {
+        foreach ($selectClause->selectExpressions as $key => $selectExpr) {
+            assert($selectExpr instanceof SelectExpression);
+            if ($selectExpr->expression === 'c') {
                 unset($selectClause->selectExpressions[$key]);
                 break;
             }
         }
     }
 }
-

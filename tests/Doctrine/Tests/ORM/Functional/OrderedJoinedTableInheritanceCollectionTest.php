@@ -1,39 +1,41 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\Tests\ORM\Functional;
 
-use Doctrine\ORM\Query;
 use Doctrine\Tests\OrmFunctionalTestCase;
+use Exception;
+
+use function count;
 
 /**
  * Functional tests for the Single Table Inheritance mapping strategy.
- *
- * @author Benjamin Eberlei <kontakt@beberlei.de>
  */
 class OrderedJoinedTableInheritanceCollectionTest extends OrmFunctionalTestCase
 {
-    protected function setUp() : void
+    protected function setUp(): void
     {
         parent::setUp();
         try {
             $this->_schemaTool->createSchema(
                 [
-                $this->_em->getClassMetadata(OJTIC_Pet::class),
-                $this->_em->getClassMetadata(OJTIC_Cat::class),
-                $this->_em->getClassMetadata(OJTIC_Dog::class),
+                    $this->_em->getClassMetadata(OJTIC_Pet::class),
+                    $this->_em->getClassMetadata(OJTIC_Cat::class),
+                    $this->_em->getClassMetadata(OJTIC_Dog::class),
                 ]
             );
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             // Swallow all exceptions. We do not test the schema tool here.
         }
 
-        $dog = new OJTIC_Dog();
-        $dog->name = "Poofy";
+        $dog       = new OJTIC_Dog();
+        $dog->name = 'Poofy';
 
-        $dog1 = new OJTIC_Dog();
-        $dog1->name = "Zampa";
-        $dog2 = new OJTIC_Dog();
-        $dog2->name = "Aari";
+        $dog1       = new OJTIC_Dog();
+        $dog1->name = 'Zampa';
+        $dog2       = new OJTIC_Dog();
+        $dog2->name = 'Aari';
 
         $dog1->mother = $dog;
         $dog2->mother = $dog;
@@ -48,7 +50,7 @@ class OrderedJoinedTableInheritanceCollectionTest extends OrmFunctionalTestCase
         $this->_em->clear();
     }
 
-    public function testOrderdOneToManyCollection()
+    public function testOrderdOneToManyCollection(): void
     {
         $poofy = $this->_em->createQuery("SELECT p FROM Doctrine\Tests\ORM\Functional\OJTIC_Pet p WHERE p.name = 'Poofy'")->getSingleResult();
 
@@ -58,7 +60,8 @@ class OrderedJoinedTableInheritanceCollectionTest extends OrmFunctionalTestCase
         $this->_em->clear();
 
         $result = $this->_em->createQuery(
-            "SELECT p, c FROM Doctrine\Tests\ORM\Functional\OJTIC_Pet p JOIN p.children c WHERE p.name = 'Poofy'")
+            "SELECT p, c FROM Doctrine\Tests\ORM\Functional\OJTIC_Pet p JOIN p.children c WHERE p.name = 'Poofy'"
+        )
                 ->getResult();
 
         $this->assertEquals(1, count($result));
@@ -86,15 +89,10 @@ abstract class OJTIC_Pet
      */
     public $id;
 
-    /**
-     *
-     * @Column
-     */
+    /** @Column */
     public $name;
 
-    /**
-     * @ManyToOne(targetEntity="OJTIC_PET")
-     */
+    /** @ManyToOne(targetEntity="OJTIC_PET") */
     public $mother;
 
     /**
@@ -123,7 +121,6 @@ abstract class OJTIC_Pet
  */
 class OJTIC_Cat extends OJTIC_Pet
 {
-
 }
 
 /**
@@ -131,5 +128,4 @@ class OJTIC_Cat extends OJTIC_Pet
  */
 class OJTIC_Dog extends OJTIC_Pet
 {
-
 }

@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\Tests\Models\StockExchange;
 
 /**
@@ -40,7 +42,7 @@ class Bond
         return $this->id;
     }
 
-    public function addStock(Stock $stock)
+    public function addStock(Stock $stock): void
     {
         $this->stocks[$stock->getSymbol()] = $stock;
     }

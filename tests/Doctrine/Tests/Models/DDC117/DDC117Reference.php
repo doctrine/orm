@@ -1,6 +1,10 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\Tests\Models\DDC117;
+
+use DateTime;
 
 /**
  * @Entity
@@ -21,14 +25,10 @@ class DDC117Reference
      */
     private $target;
 
-    /**
-     * @column(type="string")
-     */
+    /** @column(type="string") */
     private $description;
 
-    /**
-     * @column(type="datetime")
-     */
+    /** @column(type="datetime") */
     private $created;
 
     public function __construct($source, $target, $description)
@@ -36,10 +36,10 @@ class DDC117Reference
         $source->addReference($this);
         $target->addReference($this);
 
-        $this->source = $source;
-        $this->target = $target;
+        $this->source      = $source;
+        $this->target      = $target;
         $this->description = $description;
-        $this->created = new \DateTime("now");
+        $this->created     = new DateTime('now');
     }
 
     public function source()
@@ -52,7 +52,7 @@ class DDC117Reference
         return $this->target;
     }
 
-    public function setDescription($desc)
+    public function setDescription($desc): void
     {
         $this->description = $desc;
     }

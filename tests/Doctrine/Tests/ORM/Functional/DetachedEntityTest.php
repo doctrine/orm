@@ -1,38 +1,43 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\Tests\ORM\Functional;
 
 use Doctrine\DBAL\Exception\UniqueConstraintViolationException;
 use Doctrine\ORM\OptimisticLockException;
 use Doctrine\ORM\Proxy\Proxy;
-use Doctrine\Tests\Models\CMS\CmsUser;
-use Doctrine\Tests\Models\CMS\CmsPhonenumber;
 use Doctrine\Tests\Models\CMS\CmsAddress;
 use Doctrine\Tests\Models\CMS\CmsArticle;
+use Doctrine\Tests\Models\CMS\CmsPhonenumber;
+use Doctrine\Tests\Models\CMS\CmsUser;
 use Doctrine\Tests\OrmFunctionalTestCase;
 use Doctrine\Tests\VerifyDeprecations;
 
+use function count;
+use function get_class;
+use function serialize;
+use function unserialize;
+
 /**
  * Description of DetachedEntityTest
- *
- * @author robo
  */
 class DetachedEntityTest extends OrmFunctionalTestCase
 {
     use VerifyDeprecations;
 
-    protected function setUp() : void
+    protected function setUp(): void
     {
         $this->useModelSet('cms');
         parent::setUp();
     }
 
-    public function testSimpleDetachMerge()
+    public function testSimpleDetachMerge(): void
     {
-        $user = new CmsUser;
-        $user->name = 'Roman';
+        $user           = new CmsUser();
+        $user->name     = 'Roman';
         $user->username = 'romanb';
-        $user->status = 'dev';
+        $user->status   = 'dev';
         $this->_em->persist($user);
         $this->_em->flush();
         $this->_em->clear();
@@ -50,15 +55,15 @@ class DetachedEntityTest extends OrmFunctionalTestCase
         $this->assertHasDeprecationMessages();
     }
 
-    public function testSerializeUnserializeModifyMerge()
+    public function testSerializeUnserializeModifyMerge(): void
     {
-        $user = new CmsUser;
-        $user->name = 'Guilherme';
+        $user           = new CmsUser();
+        $user->name     = 'Guilherme';
         $user->username = 'gblanco';
-        $user->status = 'developer';
+        $user->status   = 'developer';
 
-        $ph1 = new CmsPhonenumber;
-        $ph1->phonenumber = "1234";
+        $ph1              = new CmsPhonenumber();
+        $ph1->phonenumber = '1234';
         $user->addPhonenumber($ph1);
 
         $this->_em->persist($user);
@@ -77,16 +82,16 @@ class DetachedEntityTest extends OrmFunctionalTestCase
 
         $user = unserialize($serialized);
 
-        $this->assertEquals(1, count($user->getPhonenumbers()), "Pre-Condition: 1 Phonenumber");
+        $this->assertEquals(1, count($user->getPhonenumbers()), 'Pre-Condition: 1 Phonenumber');
 
-        $ph2 = new CmsPhonenumber;
+        $ph2 = new CmsPhonenumber();
 
-        $ph2->phonenumber = "56789";
+        $ph2->phonenumber = '56789';
         $user->addPhonenumber($ph2);
 
         $oldPhonenumbers = $user->getPhonenumbers();
 
-        $this->assertEquals(2, count($oldPhonenumbers), "Pre-Condition: 2 Phonenumbers");
+        $this->assertEquals(2, count($oldPhonenumbers), 'Pre-Condition: 2 Phonenumbers');
         $this->assertFalse($this->_em->contains($user));
 
         $this->_em->persist($ph2);
@@ -98,26 +103,26 @@ class DetachedEntityTest extends OrmFunctionalTestCase
         $im = $this->_em->getUnitOfWork()->getIdentityMap();
         $this->_em->flush();
 
-        $this->assertTrue($this->_em->contains($user), "Failed to assert that merged user is contained inside EntityManager persistence context.");
+        $this->assertTrue($this->_em->contains($user), 'Failed to assert that merged user is contained inside EntityManager persistence context.');
         $phonenumbers = $user->getPhonenumbers();
-        $this->assertNotSame($oldPhonenumbers, $phonenumbers, "Merge should replace the Detached Collection with a new PersistentCollection.");
-        $this->assertEquals(2, count($phonenumbers), "Failed to assert that two phonenumbers are contained in the merged users phonenumber collection.");
+        $this->assertNotSame($oldPhonenumbers, $phonenumbers, 'Merge should replace the Detached Collection with a new PersistentCollection.');
+        $this->assertEquals(2, count($phonenumbers), 'Failed to assert that two phonenumbers are contained in the merged users phonenumber collection.');
 
         $this->assertInstanceOf(CmsPhonenumber::class, $phonenumbers[1]);
-        $this->assertTrue($this->_em->contains($phonenumbers[1]), "Failed to assert that second phonenumber in collection is contained inside EntityManager persistence context.");
+        $this->assertTrue($this->_em->contains($phonenumbers[1]), 'Failed to assert that second phonenumber in collection is contained inside EntityManager persistence context.');
 
         $this->assertInstanceOf(CmsPhonenumber::class, $phonenumbers[0]);
         $this->assertTrue($this->_em->getUnitOfWork()->isInIdentityMap($phonenumbers[0]));
-        $this->assertTrue($this->_em->contains($phonenumbers[0]), "Failed to assert that first phonenumber in collection is contained inside EntityManager persistence context.");
+        $this->assertTrue($this->_em->contains($phonenumbers[0]), 'Failed to assert that first phonenumber in collection is contained inside EntityManager persistence context.');
         $this->assertHasDeprecationMessages();
     }
 
     /**
      * @group DDC-203
      */
-    public function testDetachedEntityThrowsExceptionOnFlush()
+    public function testDetachedEntityThrowsExceptionOnFlush(): void
     {
-        $ph = new CmsPhonenumber();
+        $ph              = new CmsPhonenumber();
         $ph->phonenumber = '12345';
 
         $this->_em->persist($ph);
@@ -131,18 +136,18 @@ class DetachedEntityTest extends OrmFunctionalTestCase
         $this->_em->flush();
     }
 
-    public function testUninitializedLazyAssociationsAreIgnoredOnMerge()
+    public function testUninitializedLazyAssociationsAreIgnoredOnMerge(): void
     {
-        $user = new CmsUser;
-        $user->name = 'Guilherme';
+        $user           = new CmsUser();
+        $user->name     = 'Guilherme';
         $user->username = 'gblanco';
-        $user->status = 'developer';
+        $user->status   = 'developer';
 
-        $address = new CmsAddress;
-        $address->city = 'Berlin';
+        $address          = new CmsAddress();
+        $address->city    = 'Berlin';
         $address->country = 'Germany';
-        $address->street = 'Sesamestreet';
-        $address->zip = 12345;
+        $address->street  = 'Sesamestreet';
+        $address->zip     = 12345;
         $address->setUser($user);
         $this->_em->persist($address);
         $this->_em->persist($user);
@@ -167,19 +172,19 @@ class DetachedEntityTest extends OrmFunctionalTestCase
     /**
      * @group DDC-822
      */
-    public function testUseDetachedEntityAsQueryParameter()
+    public function testUseDetachedEntityAsQueryParameter(): void
     {
-        $user = new CmsUser;
-        $user->name = 'Guilherme';
+        $user           = new CmsUser();
+        $user->name     = 'Guilherme';
         $user->username = 'gblanco';
-        $user->status = 'developer';
+        $user->status   = 'developer';
 
         $this->_em->persist($user);
 
         $this->_em->flush();
         $this->_em->detach($user);
 
-        $dql = 'SELECT u FROM ' . CmsUser::class . ' u WHERE u.id = ?1';
+        $dql   = 'SELECT u FROM ' . CmsUser::class . ' u WHERE u.id = ?1';
         $query = $this->_em->createQuery($dql);
         $query->setParameter(1, $user);
 
@@ -193,12 +198,12 @@ class DetachedEntityTest extends OrmFunctionalTestCase
     /**
      * @group DDC-920
      */
-    public function testDetachManagedUnpersistedEntity()
+    public function testDetachManagedUnpersistedEntity(): void
     {
-        $user = new CmsUser;
-        $user->name = 'Guilherme';
+        $user           = new CmsUser();
+        $user->name     = 'Guilherme';
         $user->username = 'gblanco';
-        $user->status = 'developer';
+        $user->status   = 'developer';
 
         $this->_em->persist($user);
         $this->_em->detach($user);
@@ -213,11 +218,11 @@ class DetachedEntityTest extends OrmFunctionalTestCase
     /**
      * @group DDC-1340
      */
-    public function testMergeArticleWrongVersion()
+    public function testMergeArticleWrongVersion(): void
     {
-        $article = new CmsArticle();
-        $article->topic = "test";
-        $article->text = "test";
+        $article        = new CmsArticle();
+        $article->topic = 'test';
+        $article->text  = 'test';
 
         $this->_em->persist($article);
         $this->_em->flush();
@@ -234,4 +239,3 @@ class DetachedEntityTest extends OrmFunctionalTestCase
         $this->assertHasDeprecationMessages();
     }
 }
-

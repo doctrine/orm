@@ -1,4 +1,5 @@
 <?php
+
 /*
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
  * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
@@ -23,26 +24,16 @@ namespace Doctrine\ORM\Query\AST;
  * IdentificationVariableDeclaration ::= RangeVariableDeclaration [IndexBy] {JoinVariableDeclaration}*
  *
  * @link    www.doctrine-project.org
- * @since   2.0
- * @author  Guilherme Blanco <guilhermeblanco@hotmail.com>
- * @author  Jonathan Wage <jonwage@gmail.com>
- * @author  Roman Borschel <roman@code-factory.org>
  */
 class IdentificationVariableDeclaration extends Node
 {
-    /**
-     * @var RangeVariableDeclaration|null
-     */
+    /** @var RangeVariableDeclaration|null */
     public $rangeVariableDeclaration = null;
 
-    /**
-     * @var IndexBy|null
-     */
+    /** @var IndexBy|null */
     public $indexBy = null;
 
-    /**
-     * @var array
-     */
+    /** @var array */
     public $joins = [];
 
     /**
@@ -53,8 +44,8 @@ class IdentificationVariableDeclaration extends Node
     public function __construct($rangeVariableDecl, $indexBy, array $joins)
     {
         $this->rangeVariableDeclaration = $rangeVariableDecl;
-        $this->indexBy = $indexBy;
-        $this->joins = $joins;
+        $this->indexBy                  = $indexBy;
+        $this->joins                    = $joins;
     }
 
     /**

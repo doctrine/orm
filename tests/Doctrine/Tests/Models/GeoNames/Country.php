@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\Tests\Models\GeoNames;
 
 /**
@@ -16,9 +18,7 @@ class Country
      */
     public $id;
 
-    /**
-     * @Column(type="string", length=255);
-     */
+    /** @Column(type="string", length=255); */
     public $name;
 
     public function __construct($id, $name)

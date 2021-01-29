@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\Tests\Models\Legacy;
 
 /**
@@ -14,14 +16,10 @@ class LegacyCar
      * @Column(name="iCarId", type="integer", nullable=false)
      */
     public $_id;
-    /**
-     * @ManyToMany(targetEntity="LegacyUser", mappedBy="_cars")
-     */
+    /** @ManyToMany(targetEntity="LegacyUser", mappedBy="_cars") */
     public $_users;
 
-    /**
-     * @Column(name="sDescription", type="string", length=255, unique=true)
-     */
+    /** @Column(name="sDescription", type="string", length=255, unique=true) */
     public $_description;
 
     function getDescription()
@@ -29,11 +27,13 @@ class LegacyCar
         return $this->_description;
     }
 
-    public function addUser(LegacyUser $user) {
+    public function addUser(LegacyUser $user): void
+    {
         $this->_users[] = $user;
     }
 
-    public function getUsers() {
+    public function getUsers()
+    {
         return $this->_users;
     }
 }

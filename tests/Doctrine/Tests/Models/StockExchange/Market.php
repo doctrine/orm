@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\Tests\Models\StockExchange;
 
 use Doctrine\Common\Collections\ArrayCollection;
@@ -30,7 +32,7 @@ class Market
 
     public function __construct($name)
     {
-        $this->name = $name;
+        $this->name   = $name;
         $this->stocks = new ArrayCollection();
     }
 
@@ -44,7 +46,7 @@ class Market
         return $this->name;
     }
 
-    public function addStock(Stock $stock)
+    public function addStock(Stock $stock): void
     {
         $this->stocks[$stock->getSymbol()] = $stock;
     }

@@ -20,20 +20,13 @@
 
 namespace Doctrine\ORM\Cache;
 
-/**
- * @since   2.5
- * @author  Fabio B. Silva <fabio.bat.silva@gmail.com>
- */
+use function microtime;
+
 class TimestampQueryCacheValidator implements QueryCacheValidator
 {
-    /**
-     * @var TimestampRegion
-     */
+    /** @var TimestampRegion */
     private $timestampRegion;
 
-    /**
-     * @param TimestampRegion $timestampRegion
-     */
     public function __construct(TimestampRegion $timestampRegion)
     {
         $this->timestampRegion = $timestampRegion;
@@ -48,17 +41,14 @@ class TimestampQueryCacheValidator implements QueryCacheValidator
             return false;
         }
 
-        if ($key->lifetime == 0) {
+        if ($key->lifetime === 0) {
             return true;
         }
 
-        return ($entry->time + $key->lifetime) > microtime(true);
+        return $entry->time + $key->lifetime > microtime(true);
     }
 
     /**
-     * @param QueryCacheKey   $key
-     * @param QueryCacheEntry $entry
-     *
      * @return bool
      */
     private function regionUpdated(QueryCacheKey $key, QueryCacheEntry $entry)

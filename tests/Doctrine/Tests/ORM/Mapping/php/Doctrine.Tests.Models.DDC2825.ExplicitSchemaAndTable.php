@@ -1,20 +1,22 @@
 <?php
 
+declare(strict_types=1);
+
 use Doctrine\ORM\Mapping\ClassMetadata;
 
-/* @var $metadata ClassMetadata */
+/** @var ClassMetadata $metadata */
 
 $metadata->setPrimaryTable(
     [
-    'name'   => 'explicit_table',
-    'schema' => 'explicit_schema',
+        'name'   => 'explicit_table',
+        'schema' => 'explicit_schema',
     ]
 );
 
 $metadata->mapField(
     [
-    'id'         => true,
-    'fieldName'  => 'id',
+        'id'         => true,
+        'fieldName'  => 'id',
     ]
 );
 

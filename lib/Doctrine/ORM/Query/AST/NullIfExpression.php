@@ -1,4 +1,5 @@
 <?php
+
 /*
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
  * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
@@ -22,24 +23,14 @@ namespace Doctrine\ORM\Query\AST;
 /**
  * NullIfExpression ::= "NULLIF" "(" ScalarExpression "," ScalarExpression ")"
  *
- * @since   2.1
- * 
  * @link    www.doctrine-project.org
- * @author  Benjamin Eberlei <kontakt@beberlei.de>
- * @author  Guilherme Blanco <guilhermeblanco@hotmail.com>
- * @author  Jonathan Wage <jonwage@gmail.com>
- * @author  Roman Borschel <roman@code-factory.org>
  */
 class NullIfExpression extends Node
 {
-    /**
-     * @var mixed
-     */
+    /** @var mixed */
     public $firstExpression;
 
-    /**
-     * @var mixed
-     */
+    /** @var mixed */
     public $secondExpression;
 
     /**

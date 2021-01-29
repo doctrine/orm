@@ -1,4 +1,5 @@
 <?php
+
 /*
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
  * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
@@ -20,24 +21,22 @@
 namespace Doctrine\ORM\Query\AST\Functions;
 
 use Doctrine\ORM\Query\Lexer;
-use Doctrine\ORM\Query\SqlWalker;
 use Doctrine\ORM\Query\Parser;
 use Doctrine\ORM\Query\QueryException;
+use Doctrine\ORM\Query\SqlWalker;
+
+use function strtolower;
 
 /**
  * "DATE_ADD" "(" ArithmeticPrimary "," ArithmeticPrimary "," StringPrimary ")"
  *
- *
  * @link    www.doctrine-project.org
- * @since   2.0
- * @author  Guilherme Blanco <guilhermeblanco@hotmail.com>
- * @author  Benjamin Eberlei <kontakt@beberlei.de>
  */
 class DateAddFunction extends FunctionNode
 {
     public $firstDateExpression = null;
-    public $intervalExpression = null;
-    public $unit = null;
+    public $intervalExpression  = null;
+    public $unit                = null;
 
     /**
      * @override
@@ -51,31 +50,37 @@ class DateAddFunction extends FunctionNode
                     $this->firstDateExpression->dispatch($sqlWalker),
                     $this->intervalExpression->dispatch($sqlWalker)
                 );
+
             case 'minute':
                 return $sqlWalker->getConnection()->getDatabasePlatform()->getDateAddMinutesExpression(
                     $this->firstDateExpression->dispatch($sqlWalker),
                     $this->intervalExpression->dispatch($sqlWalker)
                 );
+
             case 'hour':
                 return $sqlWalker->getConnection()->getDatabasePlatform()->getDateAddHourExpression(
                     $this->firstDateExpression->dispatch($sqlWalker),
                     $this->intervalExpression->dispatch($sqlWalker)
                 );
+
             case 'day':
                 return $sqlWalker->getConnection()->getDatabasePlatform()->getDateAddDaysExpression(
                     $this->firstDateExpression->dispatch($sqlWalker),
                     $this->intervalExpression->dispatch($sqlWalker)
                 );
+
             case 'week':
                 return $sqlWalker->getConnection()->getDatabasePlatform()->getDateAddWeeksExpression(
                     $this->firstDateExpression->dispatch($sqlWalker),
                     $this->intervalExpression->dispatch($sqlWalker)
                 );
+
             case 'month':
                 return $sqlWalker->getConnection()->getDatabasePlatform()->getDateAddMonthExpression(
                     $this->firstDateExpression->dispatch($sqlWalker),
                     $this->intervalExpression->dispatch($sqlWalker)
                 );
+
             case 'year':
                 return $sqlWalker->getConnection()->getDatabasePlatform()->getDateAddYearsExpression(
                     $this->firstDateExpression->dispatch($sqlWalker),

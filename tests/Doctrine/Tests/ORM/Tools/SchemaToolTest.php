@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\Tests\ORM\Tools;
 
 use Doctrine\ORM\Mapping\ClassMetadata;
@@ -18,17 +20,18 @@ use Doctrine\Tests\Models\CompositeKeyInheritance\JoinedDerivedChildClass;
 use Doctrine\Tests\Models\CompositeKeyInheritance\JoinedDerivedIdentityClass;
 use Doctrine\Tests\Models\CompositeKeyInheritance\JoinedDerivedRootClass;
 use Doctrine\Tests\Models\Forum\ForumAvatar;
-use Doctrine\Tests\Models\Forum\ForumBoard;
-use Doctrine\Tests\Models\Forum\ForumCategory;
 use Doctrine\Tests\Models\Forum\ForumUser;
 use Doctrine\Tests\Models\NullDefault\NullDefaultColumn;
 use Doctrine\Tests\OrmTestCase;
 
+use function count;
+use function current;
+
 class SchemaToolTest extends OrmTestCase
 {
-    public function testAddUniqueIndexForUniqueFieldAnnotation()
+    public function testAddUniqueIndexForUniqueFieldAnnotation(): void
     {
-        $em = $this->_getTestEntityManager();
+        $em         = $this->_getTestEntityManager();
         $schemaTool = new SchemaTool($em);
 
         $classes = [
@@ -43,13 +46,13 @@ class SchemaToolTest extends OrmTestCase
 
         $schema = $schemaTool->getSchemaFromMetadata($classes);
 
-        $this->assertTrue($schema->hasTable('cms_users'), "Table cms_users should exist.");
-        $this->assertTrue($schema->getTable('cms_users')->columnsAreIndexed(['username']), "username column should be indexed.");
+        $this->assertTrue($schema->hasTable('cms_users'), 'Table cms_users should exist.');
+        $this->assertTrue($schema->getTable('cms_users')->columnsAreIndexed(['username']), 'username column should be indexed.');
     }
 
-    public function testAnnotationOptionsAttribute() : void
+    public function testAnnotationOptionsAttribute(): void
     {
-        $em = $this->_getTestEntityManager();
+        $em         = $this->_getTestEntityManager();
         $schemaTool = new SchemaTool($em);
 
         $schema = $schemaTool->getSchemaFromMetadata(
@@ -68,23 +71,23 @@ class SchemaToolTest extends OrmTestCase
     /**
      * @group DDC-200
      */
-    public function testPassColumnDefinitionToJoinColumn()
+    public function testPassColumnDefinitionToJoinColumn(): void
     {
-        $customColumnDef = "MEDIUMINT(6) UNSIGNED NOT NULL";
+        $customColumnDef = 'MEDIUMINT(6) UNSIGNED NOT NULL';
 
-        $em = $this->_getTestEntityManager();
+        $em         = $this->_getTestEntityManager();
         $schemaTool = new SchemaTool($em);
 
-        $avatar = $em->getClassMetadata(ForumAvatar::class);
+        $avatar                                          = $em->getClassMetadata(ForumAvatar::class);
         $avatar->fieldMappings['id']['columnDefinition'] = $customColumnDef;
-        $user = $em->getClassMetadata(ForumUser::class);
+        $user                                            = $em->getClassMetadata(ForumUser::class);
 
         $classes = [$avatar, $user];
 
         $schema = $schemaTool->getSchemaFromMetadata($classes);
 
         $this->assertTrue($schema->hasTable('forum_users'));
-        $table = $schema->getTable("forum_users");
+        $table = $schema->getTable('forum_users');
         $this->assertTrue($table->hasColumn('avatar_id'));
         $this->assertEquals($customColumnDef, $table->getColumn('avatar_id')->getColumnDefinition());
     }
@@ -92,20 +95,20 @@ class SchemaToolTest extends OrmTestCase
     /**
      * @group 6830
      */
-    public function testPassColumnOptionsToJoinColumn() : void
+    public function testPassColumnOptionsToJoinColumn(): void
     {
-        $em = $this->_getTestEntityManager();
+        $em       = $this->_getTestEntityManager();
         $category = $em->getClassMetadata(GH6830Category::class);
-        $board = $em->getClassMetadata(GH6830Board::class);
+        $board    = $em->getClassMetadata(GH6830Board::class);
 
         $schemaTool = new SchemaTool($em);
-        $schema = $schemaTool->getSchemaFromMetadata([$category, $board]);
+        $schema     = $schemaTool->getSchemaFromMetadata([$category, $board]);
 
         self::assertTrue($schema->hasTable('GH6830Category'));
         self::assertTrue($schema->hasTable('GH6830Board'));
 
         $tableCategory = $schema->getTable('GH6830Category');
-        $tableBoard = $schema->getTable('GH6830Board');
+        $tableBoard    = $schema->getTable('GH6830Board');
 
         self::assertTrue($tableBoard->hasColumn('category_id'));
 
@@ -130,13 +133,14 @@ class SchemaToolTest extends OrmTestCase
     /**
      * @group DDC-283
      */
-    public function testPostGenerateEvents()
+    public function testPostGenerateEvents(): void
     {
         $listener = new GenerateSchemaEventListener();
 
         $em = $this->_getTestEntityManager();
         $em->getEventManager()->addEventListener(
-            [ToolEvents::postGenerateSchemaTable, ToolEvents::postGenerateSchema], $listener
+            [ToolEvents::postGenerateSchemaTable, ToolEvents::postGenerateSchema],
+            $listener
         );
         $schemaTool = new SchemaTool($em);
 
@@ -156,9 +160,9 @@ class SchemaToolTest extends OrmTestCase
         $this->assertTrue($listener->schemaCalled);
     }
 
-    public function testNullDefaultNotAddedToCustomSchemaOptions()
+    public function testNullDefaultNotAddedToCustomSchemaOptions(): void
     {
-        $em = $this->_getTestEntityManager();
+        $em         = $this->_getTestEntityManager();
         $schemaTool = new SchemaTool($em);
 
         $customSchemaOptions = $schemaTool->getSchemaFromMetadata([$em->getClassMetadata(NullDefaultColumn::class)])
@@ -172,7 +176,7 @@ class SchemaToolTest extends OrmTestCase
     /**
      * @group DDC-3671
      */
-    public function testSchemaHasProperIndexesFromUniqueConstraintAnnotation()
+    public function testSchemaHasProperIndexesFromUniqueConstraintAnnotation(): void
     {
         $em         = $this->_getTestEntityManager();
         $schemaTool = new SchemaTool($em);
@@ -190,26 +194,26 @@ class SchemaToolTest extends OrmTestCase
         $this->assertTrue($table->hasIndex('uniq_hash'));
     }
 
-    public function testRemoveUniqueIndexOverruledByPrimaryKey()
+    public function testRemoveUniqueIndexOverruledByPrimaryKey(): void
     {
         $em         = $this->_getTestEntityManager();
         $schemaTool = new SchemaTool($em);
         $classes    = [
             $em->getClassMetadata(FirstEntity::class),
-            $em->getClassMetadata(SecondEntity::class)
+            $em->getClassMetadata(SecondEntity::class),
         ];
 
         $schema = $schemaTool->getSchemaFromMetadata($classes);
 
-        $this->assertTrue($schema->hasTable('first_entity'), "Table first_entity should exist.");
+        $this->assertTrue($schema->hasTable('first_entity'), 'Table first_entity should exist.');
 
         $indexes = $schema->getTable('first_entity')->getIndexes();
 
-        $this->assertCount(1, $indexes, "there should be only one index");
-        $this->assertTrue(current($indexes)->isPrimary(), "index should be primary");
+        $this->assertCount(1, $indexes, 'there should be only one index');
+        $this->assertTrue(current($indexes)->isPrimary(), 'index should be primary');
     }
 
-    public function testSetDiscriminatorColumnWithoutLength() : void
+    public function testSetDiscriminatorColumnWithoutLength(): void
     {
         $em         = $this->_getTestEntityManager();
         $schemaTool = new SchemaTool($em);
@@ -229,7 +233,7 @@ class SchemaToolTest extends OrmTestCase
         $this->assertEquals(255, $column->getLength());
     }
 
-    public function testDerivedCompositeKey() : void
+    public function testDerivedCompositeKey(): void
     {
         $em         = $this->_getTestEntityManager();
         $schemaTool = new SchemaTool($em);
@@ -283,23 +287,21 @@ class TestEntityWithAnnotationOptionsAttribute
     /** @Id @Column */
     private $id;
 
-    /**
-     * @Column(type="string", options={"foo": "bar", "baz": {"key": "val"}})
-     */
+    /** @Column(type="string", options={"foo": "bar", "baz": {"key": "val"}}) */
     private $test;
 }
 
 class GenerateSchemaEventListener
 {
-    public $tableCalls = 0;
+    public $tableCalls   = 0;
     public $schemaCalled = false;
 
-    public function postGenerateSchemaTable(GenerateSchemaTableEventArgs $eventArgs)
+    public function postGenerateSchemaTable(GenerateSchemaTableEventArgs $eventArgs): void
     {
         $this->tableCalls++;
     }
 
-    public function postGenerateSchema(GenerateSchemaEventArgs $eventArgs)
+    public function postGenerateSchema(GenerateSchemaEventArgs $eventArgs): void
     {
         $this->schemaCalled = true;
     }
@@ -316,9 +318,7 @@ class UniqueConstraintAnnotationModel
     /** @Id @Column */
     private $id;
 
-    /**
-     * @Column(name="hash", type="string", length=8, nullable=false, unique=true)
-     */
+    /** @Column(name="hash", type="string", length=8, nullable=false, unique=true) */
     private $hash;
 }
 
@@ -340,9 +340,7 @@ class FirstEntity
      */
     public $secondEntity;
 
-    /**
-     * @Column(name="name")
-     */
+    /** @Column(name="name") */
     public $name;
 }
 
@@ -358,9 +356,7 @@ class SecondEntity
      */
     public $fist_entity_id;
 
-    /**
-     * @Column(name="name")
-     */
+    /** @Column(name="name") */
     public $name;
 }
 
@@ -390,13 +386,10 @@ class GH6830Category
     /**
      * @Id
      * @Column(type="string", length=8, options={"fixed":true, "collation":"latin1_bin", "foo":"bar"})
-     *
      * @var string
      */
     public $id;
 
-    /**
-     * @OneToMany(targetEntity=GH6830Board::class, mappedBy="category")
-     */
+    /** @OneToMany(targetEntity=GH6830Board::class, mappedBy="category") */
     public $boards;
 }

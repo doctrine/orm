@@ -1,19 +1,17 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\Tests\ORM\Tools\Export;
-use Doctrine\ORM\Mapping\ClassMetadataInfo;
+
 use Doctrine\ORM\Mapping\ClassMetadata;
+use Doctrine\ORM\Mapping\ClassMetadataInfo;
 use Doctrine\ORM\Tools\Export\Driver\XmlExporter;
 
 /**
  * Test case for XmlClassMetadataExporterTest
  *
- * @author      Jonathan H. Wage <jonwage@gmail.com>
- * @author      Roman Borschel <roman@code-factory.org
- * @license     http://www.opensource.org/licenses/lgpl-license.php LGPL
  * @link        http://www.phpdoctrine.org
- * @since       2.0
- * @version     $Revision$
  */
 class XmlClassMetadataExporterTest extends AbstractClassMetadataExporterTest
 {
@@ -25,25 +23,26 @@ class XmlClassMetadataExporterTest extends AbstractClassMetadataExporterTest
     /**
      * @group DDC-3428
      */
-    public function testSequenceGenerator() {
+    public function testSequenceGenerator(): void
+    {
         $exporter = new XmlExporter();
         $metadata = new ClassMetadata('entityTest');
 
         $metadata->mapField(
             [
-            "fieldName" => 'id',
-            "type" => 'integer',
-            "columnName" => 'id',
-            "id" => true,
+                'fieldName' => 'id',
+                'type' => 'integer',
+                'columnName' => 'id',
+                'id' => true,
             ]
         );
 
         $metadata->setIdGeneratorType(ClassMetadataInfo::GENERATOR_TYPE_SEQUENCE);
         $metadata->setSequenceGeneratorDefinition(
             [
-            'sequenceName' => 'seq_entity_test_id',
-            'allocationSize' => 5,
-            'initialValue' => 1
+                'sequenceName' => 'seq_entity_test_id',
+                'allocationSize' => 5,
+                'initialValue' => 1,
             ]
         );
 
@@ -71,19 +70,20 @@ XML;
      * @group 1216
      * @group DDC-3439
      */
-    public function testFieldOptionsExport() {
+    public function testFieldOptionsExport(): void
+    {
         $exporter = new XmlExporter();
         $metadata = new ClassMetadata('entityTest');
 
         $metadata->mapField(
             [
-            "fieldName" => 'myField',
-            "type" => 'string',
-            "columnName" => 'my_field',
-            "options" => [
-                "default" => "default_string",
-                "comment" => "The comment for the field",
-            ],
+                'fieldName' => 'myField',
+                'type' => 'string',
+                'columnName' => 'my_field',
+                'options' => [
+                    'default' => 'default_string',
+                    'comment' => 'The comment for the field',
+                ],
             ]
         );
 

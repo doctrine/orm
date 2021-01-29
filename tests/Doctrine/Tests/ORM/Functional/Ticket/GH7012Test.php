@@ -7,9 +7,11 @@ namespace Doctrine\Tests\ORM\Functional\Ticket;
 use Doctrine\Tests\Models\Quote\User as QuotedUser;
 use Doctrine\Tests\OrmFunctionalTestCase;
 
+use function sprintf;
+
 final class GH7012Test extends OrmFunctionalTestCase
 {
-    protected function setUp() : void
+    protected function setUp(): void
     {
         $this->useModelSet('quote');
 
@@ -21,7 +23,7 @@ final class GH7012Test extends OrmFunctionalTestCase
     /**
      * @group GH-7012
      */
-    public function testUpdateEntityWithIdentifierAssociationWithQuotedJoinColumn() : void
+    public function testUpdateEntityWithIdentifierAssociationWithQuotedJoinColumn(): void
     {
         $user       = new QuotedUser();
         $user->name = 'John Doe';
@@ -69,9 +71,7 @@ class GH7012UserData
      */
     public $user;
 
-    /**
-     * @Column(type="string", name="`name`")
-     */
+    /** @Column(type="string", name="`name`") */
     public $name;
 
     public function __construct(QuotedUser $user, string $name)

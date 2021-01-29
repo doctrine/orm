@@ -1,12 +1,14 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\Tests\ORM\Functional\Ticket;
 
 use Doctrine\Tests\OrmFunctionalTestCase;
 
 class Ticket4646MultipleInstanceOfWithMultipleParametersTest extends OrmFunctionalTestCase
 {
-    protected function setUp() : void
+    protected function setUp(): void
     {
         parent::setUp();
 
@@ -26,9 +28,9 @@ class Ticket4646MultipleInstanceOfWithMultipleParametersTest extends OrmFunction
         $this->_em->persist(new InternTicket4646Multiple());
         $this->_em->flush();
 
-        $dql = 'SELECT p FROM Doctrine\Tests\ORM\Functional\Ticket\PersonTicket4646Multiple p
+        $dql    = 'SELECT p FROM Doctrine\Tests\ORM\Functional\Ticket\PersonTicket4646Multiple p
                 WHERE p INSTANCE OF (Doctrine\Tests\ORM\Functional\Ticket\EmployeeTicket4646Multiple, Doctrine\Tests\ORM\Functional\Ticket\InternTicket4646Multiple)';
-        $query = $this->_em->createQuery($dql);
+        $query  = $this->_em->createQuery($dql);
         $result = $query->getResult();
 
         self::assertCount(2, $result);

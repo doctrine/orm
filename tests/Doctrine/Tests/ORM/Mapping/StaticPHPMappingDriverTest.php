@@ -1,10 +1,14 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\Tests\ORM\Mapping;
 
 use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\Persistence\Mapping\Driver\StaticPHPDriver;
 use Doctrine\Tests\Models\DDC889\DDC889Class;
+
+use const DIRECTORY_SEPARATOR;
 
 class StaticPHPMappingDriverTest extends AbstractMappingDriverTest
 {
@@ -18,7 +22,7 @@ class StaticPHPMappingDriverTest extends AbstractMappingDriverTest
      *
      * @group DDC-889
      */
-    public function testinvalidEntityOrMappedSuperClassShouldMentionParentClasses()
+    public function testinvalidEntityOrMappedSuperClassShouldMentionParentClasses(): void
     {
         self::assertInstanceOf(ClassMetadata::class, $this->createClassMetadata(DDC889Class::class));
     }
@@ -27,7 +31,7 @@ class StaticPHPMappingDriverTest extends AbstractMappingDriverTest
      * @group DDC-2825
      * @group 881
      */
-    public function testSchemaDefinitionViaExplicitTableSchemaAnnotationProperty()
+    public function testSchemaDefinitionViaExplicitTableSchemaAnnotationProperty(): void
     {
         $this->markTestIncomplete();
     }
@@ -36,7 +40,7 @@ class StaticPHPMappingDriverTest extends AbstractMappingDriverTest
      * @group DDC-2825
      * @group 881
      */
-    public function testSchemaDefinitionViaSchemaDefinedInTableNameInTableAnnotationProperty()
+    public function testSchemaDefinitionViaSchemaDefinedInTableNameInTableAnnotationProperty(): void
     {
         $this->markTestIncomplete();
     }

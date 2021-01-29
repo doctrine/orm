@@ -1,6 +1,10 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\Tests\Models\Navigation;
+
+use Doctrine\Common\Collections\ArrayCollection;
 
 /**
  * @Entity
@@ -20,14 +24,10 @@ class NavPointOfInterest
      */
     private $lat;
 
-    /**
-     * @Column(type="string")
-     */
+    /** @Column(type="string") */
     private $name;
 
-    /**
-     * @ManyToOne(targetEntity="NavCountry", inversedBy="pois")
-     */
+    /** @ManyToOne(targetEntity="NavCountry", inversedBy="pois") */
     private $country;
 
      /**
@@ -44,30 +44,34 @@ class NavPointOfInterest
 
     public function __construct($lat, $long, $name, $country)
     {
-        $this->lat = $lat;
-        $this->long = $long;
-        $this->name = $name;
-        $this->country = $country;
-        $this->visitors = new \Doctrine\Common\Collections\ArrayCollection;
+        $this->lat      = $lat;
+        $this->long     = $long;
+        $this->name     = $name;
+        $this->country  = $country;
+        $this->visitors = new ArrayCollection();
     }
 
-    public function getLong() {
+    public function getLong()
+    {
         return $this->long;
     }
 
-    public function getLat() {
+    public function getLat()
+    {
         return $this->lat;
     }
 
-    public function getName() {
+    public function getName()
+    {
         return $this->name;
     }
 
-    public function getCountry() {
+    public function getCountry()
+    {
         return $this->country;
     }
 
-    public function addVisitor(NavUser $user)
+    public function addVisitor(NavUser $user): void
     {
         $this->visitors[] = $user;
     }

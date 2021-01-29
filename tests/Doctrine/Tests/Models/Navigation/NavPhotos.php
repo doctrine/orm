@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\Tests\Models\Navigation;
 
 /**
@@ -24,25 +26,27 @@ class NavPhotos
      */
     private $poi;
 
-    /**
-     * @column(type="string", name="file_name")
-     */
+    /** @column(type="string", name="file_name") */
     private $file;
 
-    function __construct($poi, $file) {
-        $this->poi = $poi;
+    function __construct($poi, $file)
+    {
+        $this->poi  = $poi;
         $this->file = $file;
     }
 
-    public function getId() {
+    public function getId()
+    {
         return $this->id;
     }
 
-    public function getPointOfInterest() {
+    public function getPointOfInterest()
+    {
         return $this->poi;
     }
 
-    public function getFile() {
+    public function getFile()
+    {
         return $this->file;
     }
 }

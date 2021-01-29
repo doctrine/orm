@@ -1,31 +1,27 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\Tests\Mocks;
 
 use Doctrine\DBAL\Driver\Connection;
+use Doctrine\DBAL\Driver\Statement;
+use PDO;
 
 /**
  * Mock class for DriverConnection.
  */
 class DriverConnectionMock implements Connection
 {
-    /**
-     * @var \Doctrine\DBAL\Driver\Statement
-     */
+    /** @var Statement */
     private $statementMock;
 
-    /**
-     * @return \Doctrine\DBAL\Driver\Statement
-     */
-    public function getStatementMock()
+    public function getStatementMock(): Statement
     {
         return $this->statementMock;
     }
 
-    /**
-     * @param \Doctrine\DBAL\Driver\Statement $statementMock
-     */
-    public function setStatementMock($statementMock)
+    public function setStatementMock(Statement $statementMock): void
     {
         $this->statementMock = $statementMock;
     }
@@ -49,7 +45,7 @@ class DriverConnectionMock implements Connection
     /**
      * {@inheritdoc}
      */
-    public function quote($input, $type=\PDO::PARAM_STR)
+    public function quote($input, $type = PDO::PARAM_STR)
     {
     }
 

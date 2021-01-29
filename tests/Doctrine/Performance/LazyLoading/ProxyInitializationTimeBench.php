@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\Performance\LazyLoading;
 
 use Doctrine\ORM\Proxy\Proxy;
@@ -14,27 +16,19 @@ use PhpBench\Benchmark\Metadata\Annotations\BeforeMethods;
  */
 final class ProxyInitializationTimeBench
 {
-    /**
-     * @var Proxy[]
-     */
+    /** @var Proxy[] */
     private $cmsUsers;
 
-    /**
-     * @var Proxy[]
-     */
+    /** @var Proxy[] */
     private $cmsEmployees;
 
-    /**
-     * @var Proxy[]
-     */
+    /** @var Proxy[] */
     private $initializedUsers;
 
-    /**
-     * @var Proxy[]
-     */
+    /** @var Proxy[] */
     private $initializedEmployees;
 
-    public function init()
+    public function init(): void
     {
         $proxyFactory = (new NonProxyLoadingEntityManager(EntityManagerFactory::getEntityManager([])))
             ->getProxyFactory();
@@ -50,32 +44,31 @@ final class ProxyInitializationTimeBench
         }
     }
 
-    public function benchCmsUserInitialization()
+    public function benchCmsUserInitialization(): void
     {
         foreach ($this->cmsUsers as $proxy) {
             $proxy->__load();
         }
     }
 
-    public function benchCmsEmployeeInitialization()
+    public function benchCmsEmployeeInitialization(): void
     {
         foreach ($this->cmsEmployees as $proxy) {
             $proxy->__load();
         }
     }
 
-    public function benchInitializationOfAlreadyInitializedCmsUsers()
+    public function benchInitializationOfAlreadyInitializedCmsUsers(): void
     {
         foreach ($this->initializedUsers as $proxy) {
             $proxy->__load();
         }
     }
 
-    public function benchInitializationOfAlreadyInitializedCmsEmployees()
+    public function benchInitializationOfAlreadyInitializedCmsEmployees(): void
     {
         foreach ($this->initializedEmployees as $proxy) {
             $proxy->__load();
         }
     }
 }
-

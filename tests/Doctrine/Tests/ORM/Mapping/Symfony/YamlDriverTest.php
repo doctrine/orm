@@ -1,9 +1,13 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\Tests\ORM\Mapping\Symfony;
 
-use \Doctrine\ORM\Mapping\Driver\SimplifiedYamlDriver;
+use Doctrine\ORM\Mapping\Driver\SimplifiedYamlDriver;
 use Doctrine\Tests\VerifyDeprecations;
+
+use function array_flip;
 
 /**
  * @group DDC-1418
