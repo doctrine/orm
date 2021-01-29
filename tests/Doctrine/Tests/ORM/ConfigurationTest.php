@@ -157,9 +157,9 @@ class ConfigurationTest extends TestCase
     /**
      * Configures $this->configuration to use production settings.
      *
-     * @param string $skipCache Do not configure a cache of this type, either "query" or "metadata".
+     * @param string|null $skipCache Do not configure a cache of this type, either "query" or "metadata".
      */
-    protected function setProductionSettings(string $skipCache = false): void
+    protected function setProductionSettings(?string $skipCache = null): void
     {
         $this->configuration->setAutoGenerateProxyClasses(AbstractProxyFactory::AUTOGENERATE_NEVER);
 

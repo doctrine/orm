@@ -193,7 +193,7 @@ class EntityGeneratorTest extends OrmTestCase
         string $fieldName,
         ClassMetadataInfo $classMetadata,
         ClassMetadataInfo $embeddableMetadata,
-        ?string $columnPrefix = false
+        ?string $columnPrefix = null
     ): void {
         $classMetadata->mapEmbedded(
             ['fieldName' => $fieldName, 'class' => $embeddableMetadata->name, 'columnPrefix' => $columnPrefix]
