@@ -260,7 +260,7 @@ class CmsUser
         }
     }
 
-    public function getEmail(): CmsEmail
+    public function getEmail(): ?CmsEmail
     {
         return $this->email;
     }

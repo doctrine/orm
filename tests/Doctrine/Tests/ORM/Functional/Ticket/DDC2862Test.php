@@ -6,7 +6,6 @@ namespace Doctrine\Tests\ORM\Functional\Ticket;
 
 use Doctrine\ORM\Tools\ToolsException;
 use Doctrine\Tests\OrmFunctionalTestCase;
-use Entities\User;
 
 /**
  * @group DDC-2862
@@ -139,7 +138,7 @@ class DDC2862Driver
     /**
      * @Cache()
      * @OneToOne(targetEntity="DDC2862User")
-     * @var User
+     * @var DDC2862User
      */
     protected $userProfile;
 
@@ -164,12 +163,12 @@ class DDC2862Driver
         return $this->name;
     }
 
-    public function setUserProfile(User $userProfile): void
+    public function setUserProfile(DDC2862User $userProfile): void
     {
         $this->userProfile = $userProfile;
     }
 
-    public function getUserProfile(): User
+    public function getUserProfile(): DDC2862User
     {
         return $this->userProfile;
     }

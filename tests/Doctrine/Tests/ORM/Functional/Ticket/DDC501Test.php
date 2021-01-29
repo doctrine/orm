@@ -115,7 +115,7 @@ class DDC501Test extends OrmFunctionalTestCase
         return $user;
     }
 
-    protected function loadUserFromEntityManager(): Doctrine\Tests\Models\CMS\CmsUser
+    protected function loadUserFromEntityManager(): CmsUser
     {
         return $this->_em
                 ->createQuery('SELECT u FROM Doctrine\Tests\Models\CMS\CmsUser u WHERE u.name like :name')

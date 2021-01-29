@@ -75,7 +75,7 @@ class OneToOneSelfReferentialAssociationTest extends OrmFunctionalTestCase
     /**
      * @group mine
      */
-    public function testLazyLoadsAssociation(): unknown_type
+    public function testLazyLoadsAssociation(): void
     {
         $this->_createFixture();
 

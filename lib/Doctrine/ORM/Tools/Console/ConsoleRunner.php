@@ -26,7 +26,6 @@ use Doctrine\ORM\Tools\Console\Helper\EntityManagerHelper;
 use OutOfBoundsException;
 use PackageVersions\Versions;
 use Symfony\Component\Console\Application;
-use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Helper\HelperSet;
 
 /**

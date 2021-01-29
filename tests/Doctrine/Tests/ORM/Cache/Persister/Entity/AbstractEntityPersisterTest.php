@@ -50,7 +50,7 @@ abstract class AbstractEntityPersisterTest extends OrmTestCase
         return $this->createMock(Region::class);
     }
 
-    protected function createPersisterDefault(): \Doctrine\ORM\Cache\Persister\AbstractEntityPersister
+    protected function createPersisterDefault(): AbstractEntityPersister
     {
         return $this->createPersister($this->em, $this->entityPersister, $this->region, $this->em->getClassMetadata(Country::class));
     }

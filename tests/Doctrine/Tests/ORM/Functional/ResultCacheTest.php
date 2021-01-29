@@ -3,6 +3,7 @@
 namespace Doctrine\Tests\ORM\Functional;
 
 use Doctrine\Common\Cache\ArrayCache;
+use Doctrine\ORM\NativeQuery;
 use Doctrine\ORM\Query;
 use Doctrine\ORM\Query\ResultSetMapping;
 use Doctrine\Tests\Models\CMS\CmsArticle;
@@ -244,7 +245,7 @@ class ResultCacheTest extends OrmFunctionalTestCase
     /**
      * @depends testNativeQueryResultCaching
      */
-    public function testResultCacheNotDependsOnQueryHints(string $query): void
+    public function testResultCacheNotDependsOnQueryHints(NativeQuery $query): void
     {
         $cache      = $query->getResultCacheDriver();
         $cacheCount = $this->getCacheSize($cache);
@@ -256,11 +257,9 @@ class ResultCacheTest extends OrmFunctionalTestCase
     }
 
     /**
-     * @param <type> $query
-     *
      * @depends testNativeQueryResultCaching
      */
-    public function testResultCacheDependsOnParameters($query): void
+    public function testResultCacheDependsOnParameters(NativeQuery $query): void
     {
         $cache      = $query->getResultCacheDriver();
         $cacheCount = $this->getCacheSize($cache);
@@ -272,11 +271,9 @@ class ResultCacheTest extends OrmFunctionalTestCase
     }
 
     /**
-     * @param <type> $query
-     *
      * @depends testNativeQueryResultCaching
      */
-    public function testResultCacheNotDependsOnHydrationMode($query): void
+    public function testResultCacheNotDependsOnHydrationMode(NativeQuery $query): void
     {
         $cache      = $query->getResultCacheDriver();
         $cacheCount = $this->getCacheSize($cache);

@@ -111,10 +111,13 @@ class DDC3634LastInsertIdMockingConnection extends Connection
     /** @var Connection */
     private $realConnection;
 
-    /** @var int */
+    /** @var int|string */
     private $identifier;
 
-    public function __construct(int $identifier, Connection $realConnection)
+    /**
+     * @param int|string $identifier
+     */
+    public function __construct($identifier, Connection $realConnection)
     {
         $this->realConnection = $realConnection;
         $this->identifier     = $identifier;

@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Doctrine\Tests\ORM\Functional;
 
-use Doctrine\Tests\Models\CompositeKeyInheritance\JoinedChildClass;
 use Doctrine\Tests\Models\CompositeKeyInheritance\SingleChildClass;
 use Doctrine\Tests\Models\CompositeKeyInheritance\SingleRootClass;
 use Doctrine\Tests\OrmFunctionalTestCase;
@@ -51,7 +50,7 @@ class SingleTableCompositeKeyTest extends OrmFunctionalTestCase
         $this->assertEquals($entity, $persistedEntity);
     }
 
-    private function findEntity(): JoinedChildClass
+    private function findEntity(): SingleChildClass
     {
         return $this->_em->find(SingleRootClass::class, ['keyPart1' => 'part-1', 'keyPart2' => 'part-2']);
     }

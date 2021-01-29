@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Doctrine\Tests\ORM\Functional\Ticket;
 
 use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\Tests\OrmFunctionalTestCase;
 
 use function count;
@@ -79,14 +80,21 @@ class DDC1080Test extends OrmFunctionalTestCase
 class DDC1080Foo
 {
     /**
+     * @var int
      * @Id
      * @Column(name="fooID", type="integer")
      * @GeneratedValue(strategy="AUTO")
      */
     protected $_fooID;
-    /** @Column(name="fooTitle", type="string") */
-    protected $_fooTitle;
+
     /**
+     * @var string
+     * @Column(name="fooTitle", type="string")
+     */
+    protected $_fooTitle;
+
+    /**
+     * @psalm-var Collection<DDC1080FooBar>
      * @OneToMany(targetEntity="DDC1080FooBar", mappedBy="_foo",
      * cascade={"persist"})
      * @OrderBy({"_orderNr"="ASC"})
@@ -98,41 +106,35 @@ class DDC1080Foo
         $this->_fooBars = new ArrayCollection();
     }
 
-    /**
-     * @return the $fooID
-     */
-    public function getFooID(): the
+    public function getFooID(): int
     {
         return $this->_fooID;
     }
 
-    /**
-     * @return the $fooTitle
-     */
-    public function getFooTitle(): the
+    public function getFooTitle(): string
     {
         return $this->_fooTitle;
     }
 
     /**
-     * @return the $fooBars
+     * @psalm-return Collection<DDC1080FooBar>
      */
-    public function getFooBars(): the
+    public function getFooBars(): Collection
     {
         return $this->_fooBars;
     }
 
-    public function setFooID(field_type $fooID): void
+    public function setFooID(int $fooID): void
     {
         $this->_fooID = $fooID;
     }
 
-    public function setFooTitle(field_type $fooTitle): void
+    public function setFooTitle(string $fooTitle): void
     {
         $this->_fooTitle = $fooTitle;
     }
 
-    public function setFooBars(field_type $fooBars): void
+    public function setFooBars(array $fooBars): void
     {
         $this->_fooBars = $fooBars;
     }
@@ -144,14 +146,21 @@ class DDC1080Foo
 class DDC1080Bar
 {
     /**
+     * @var int
      * @Id
      * @Column(name="barID", type="integer")
      * @GeneratedValue(strategy="AUTO")
      */
     protected $_barID;
-    /** @Column(name="barTitle", type="string") */
-    protected $_barTitle;
+
     /**
+     * @var string
+     * @Column(name="barTitle", type="string")
+     */
+    protected $_barTitle;
+
+    /**
+     * @psalm-var Collection<DDC1080FooBar>
      * @OneToMany(targetEntity="DDC1080FooBar", mappedBy="_bar",
      * cascade={"persist"})
      * @OrderBy({"_orderNr"="ASC"})
@@ -163,41 +172,35 @@ class DDC1080Bar
         $this->_fooBars = new ArrayCollection();
     }
 
-    /**
-     * @return the $barID
-     */
-    public function getBarID(): the
+    public function getBarID(): int
     {
         return $this->_barID;
     }
 
-    /**
-     * @return the $barTitle
-     */
-    public function getBarTitle(): the
+    public function getBarTitle(): string
     {
         return $this->_barTitle;
     }
 
     /**
-     * @return the $fooBars
+     * @psalm-return Collection<DDC1080FooBar>
      */
-    public function getFooBars(): the
+    public function getFooBars(): Collection
     {
         return $this->_fooBars;
     }
 
-    public function setBarID(field_type $barID): void
+    public function setBarID(int $barID): void
     {
         $this->_barID = $barID;
     }
 
-    public function setBarTitle(field_type $barTitle): void
+    public function setBarTitle(string $barTitle): void
     {
         $this->_barTitle = $barTitle;
     }
 
-    public function setFooBars(field_type $fooBars): void
+    public function setFooBars(array $fooBars): void
     {
         $this->_fooBars = $fooBars;
     }

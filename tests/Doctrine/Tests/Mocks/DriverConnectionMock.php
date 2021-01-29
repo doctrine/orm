@@ -13,15 +13,15 @@ use PDO;
  */
 class DriverConnectionMock implements Connection
 {
-    /** @var Statement */
+    /** @var Statement|null */
     private $statementMock;
 
-    public function getStatementMock(): Statement
+    public function getStatementMock(): ?Statement
     {
         return $this->statementMock;
     }
 
-    public function setStatementMock(Statement $statementMock): void
+    public function setStatementMock(?Statement $statementMock): void
     {
         $this->statementMock = $statementMock;
     }
