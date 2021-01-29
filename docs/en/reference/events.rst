@@ -121,25 +121,6 @@ Now you can test the ``$eventSubscriber`` instance to see if the
         echo 'pre foo invoked!';
     }
 
-Naming convention
-~~~~~~~~~~~~~~~~~
-
-Events being used with the Doctrine ORM EventManager are best named
-with camelcase and the value of the corresponding constant should
-be the name of the constant itself, even with spelling. This has
-several reasons:
-
-
--  It is easy to read.
--  Simplicity.
--  Each method within an EventSubscriber is named after the
-   corresponding constant's value. If the constant's name and value differ
-   it contradicts the intention of using the constant and makes your code
-   harder to maintain.
-
-An example for a correct notation can be found in the example
-``TestEvent`` above.
-
 .. _reference-events-lifecycle-events:
 
 Lifecycle Events
