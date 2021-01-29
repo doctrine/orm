@@ -35,5 +35,8 @@ jobs:
       - name: "Fetch head branch"
         run: "git remote set-branches --add origin $GITHUB_BASE_REF && git fetch origin $GITHUB_BASE_REF"
 
+      - name: "Run phpcbf"
+        run: "vendor/bin/phpcbf"
+
       - name: "Run git-phpcs"
         run: "php git-phpcs.phar origin/$GITHUB_BASE_REF...$GITHUB_SHA --report=checkstyle | cs2pr"
