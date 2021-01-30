@@ -161,7 +161,10 @@ class DDC832Like
     /** @Column(type="string") */
     public $word;
 
-    /** @Column(type="integer") */
+    /**
+     * @Version
+     * @Column(type="integer")
+     */
     public $version;
 
     public function __construct($word)
@@ -185,7 +188,10 @@ class DDC832JoinedIndex
     /** @Column(type="string") */
     public $name;
 
-    /** @Column(type="integer") */
+    /**
+     * @Version
+     * @Column(type="integer")
+     */
     public $version;
 
     public function __construct($name)
