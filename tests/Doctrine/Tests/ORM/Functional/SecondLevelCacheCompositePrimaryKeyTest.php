@@ -1,7 +1,5 @@
 <?php
 
-declare(strict_types=1);
-
 namespace Doctrine\Tests\ORM\Functional;
 
 use DateTime;
