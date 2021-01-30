@@ -5,13 +5,14 @@ declare(strict_types=1);
 namespace Doctrine\Tests\ORM\Cache;
 
 use Doctrine\ORM\Cache\CollectionCacheEntry;
+use Doctrine\ORM\Cache\Region;
 use Doctrine\ORM\Cache\Region\DefaultMultiGetRegion;
 use Doctrine\Tests\Mocks\CacheEntryMock;
 use Doctrine\Tests\Mocks\CacheKeyMock;
 
 class MultiGetRegionTest extends AbstractRegionTest
 {
-    protected function createRegion(): DefaultMultiGetRegion
+    protected function createRegion(): Region
     {
         return new DefaultMultiGetRegion('default.region.test', $this->cache);
     }

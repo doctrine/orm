@@ -7,6 +7,7 @@ namespace Doctrine\Tests\ORM\Cache\Persister\Collection;
 use Doctrine\ORM\Cache\CollectionCacheKey;
 use Doctrine\ORM\Cache\ConcurrentRegion;
 use Doctrine\ORM\Cache\Lock;
+use Doctrine\ORM\Cache\Persister\Collection\AbstractCollectionPersister;
 use Doctrine\ORM\Cache\Persister\Collection\ReadWriteCachedCollectionPersister;
 use Doctrine\ORM\Cache\Region;
 use Doctrine\ORM\EntityManager;
@@ -31,7 +32,7 @@ class ReadWriteCachedCollectionPersisterTest extends AbstractCollectionPersister
         'unlock',
     ];
 
-    protected function createPersister(EntityManager $em, CollectionPersister $persister, Region $region, array $mapping): ReadWriteCachedCollectionPersister
+    protected function createPersister(EntityManager $em, CollectionPersister $persister, Region $region, array $mapping): AbstractCollectionPersister
     {
         return new ReadWriteCachedCollectionPersister($persister, $region, $em, $mapping);
     }

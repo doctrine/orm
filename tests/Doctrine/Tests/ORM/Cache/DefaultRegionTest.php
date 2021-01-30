@@ -9,6 +9,7 @@ use Doctrine\Common\Cache\ArrayCache;
 use Doctrine\Common\Cache\Cache;
 use Doctrine\Common\Cache\CacheProvider;
 use Doctrine\ORM\Cache\CollectionCacheEntry;
+use Doctrine\ORM\Cache\Region;
 use Doctrine\ORM\Cache\Region\DefaultRegion;
 use Doctrine\Tests\Mocks\CacheEntryMock;
 use Doctrine\Tests\Mocks\CacheKeyMock;
@@ -20,7 +21,7 @@ use function assert;
  */
 class DefaultRegionTest extends AbstractRegionTest
 {
-    protected function createRegion(): DefaultRegion
+    protected function createRegion(): Region
     {
         return new DefaultRegion('default.region.test', $this->cache);
     }

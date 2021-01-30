@@ -7,6 +7,7 @@ namespace Doctrine\Tests\ORM\Mapping;
 use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\Mapping\ClassMetadataFactory;
 use Doctrine\ORM\Mapping\Driver\YamlDriver;
+use Doctrine\Persistence\Mapping\Driver\MappingDriver;
 use Doctrine\Tests\Models\DirectoryTree\Directory;
 use Doctrine\Tests\Models\DirectoryTree\File;
 use Doctrine\Tests\Models\Generic\SerializationModel;
@@ -21,7 +22,7 @@ class YamlMappingDriverTest extends AbstractMappingDriverTest
 {
     use VerifyDeprecations;
 
-    protected function _loadDriver(): YamlDriver
+    protected function _loadDriver(): MappingDriver
     {
         if (! class_exists(Yaml::class, true)) {
             $this->markTestSkipped('Please install Symfony YAML Component into the include path of your PHP installation.');

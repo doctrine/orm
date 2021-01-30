@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Doctrine\Tests\ORM\Mapping;
 
 use Doctrine\ORM\Mapping\ClassMetadata;
+use Doctrine\Persistence\Mapping\Driver\MappingDriver;
 use Doctrine\Persistence\Mapping\Driver\PHPDriver;
 use Doctrine\Tests\Models\DDC889\DDC889Class;
 use Doctrine\Tests\ORM\Mapping;
@@ -13,7 +14,7 @@ use const DIRECTORY_SEPARATOR;
 
 class PHPMappingDriverTest extends AbstractMappingDriverTest
 {
-    protected function _loadDriver(): PHPDriver
+    protected function _loadDriver(): MappingDriver
     {
         $path = __DIR__ . DIRECTORY_SEPARATOR . 'php';
 

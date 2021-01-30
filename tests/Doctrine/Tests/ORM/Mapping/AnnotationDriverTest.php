@@ -11,6 +11,7 @@ use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\Mapping\ClassMetadataFactory;
 use Doctrine\ORM\Mapping\Driver\AnnotationDriver;
 use Doctrine\ORM\Mapping\MappingException;
+use Doctrine\Persistence\Mapping\Driver\MappingDriver;
 use Doctrine\Persistence\Mapping\RuntimeReflectionService;
 use Doctrine\Tests\Models\CMS\CmsUser;
 use Doctrine\Tests\Models\DDC1872\DDC1872ExampleEntityWithoutOverride;
@@ -120,7 +121,7 @@ class AnnotationDriverTest extends AbstractMappingDriverTest
         return $annotationDriver;
     }
 
-    protected function _loadDriver(): AnnotationDriver
+    protected function _loadDriver(): MappingDriver
     {
         return $this->createAnnotationDriver();
     }
