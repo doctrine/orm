@@ -407,8 +407,6 @@ class ClassMetadataFactoryTest extends OrmTestCase
         $classMetadataFactory = new ClassMetadataFactory();
 
         $entityManager = $this->createMock(EntityManagerInterface::class);
-        assert($entityManager instanceof EntityManager);
-
         $classMetadataFactory->setEntityManager($entityManager);
 
         // not really the cleanest way to check it, but we won't add a getter to the CMF just for the sake of testing.

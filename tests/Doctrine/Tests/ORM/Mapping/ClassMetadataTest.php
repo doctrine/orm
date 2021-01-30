@@ -8,7 +8,6 @@ use ArrayObject;
 use Doctrine\ORM\Events;
 use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\Mapping\DefaultNamingStrategy;
-use Doctrine\ORM\Mapping\ManyToMany;
 use Doctrine\ORM\Mapping\MappingException;
 use Doctrine\ORM\Mapping\UnderscoreNamingStrategy;
 use Doctrine\Persistence\Mapping\RuntimeReflectionService;
@@ -167,7 +166,6 @@ class ClassMetadataTest extends OrmTestCase
         );
 
         $assoc = $cm->associationMappings['groups'];
-        assert($assoc instanceof ManyToMany);
         $assoc = unserialize(serialize($assoc));
 
         $this->assertTrue($assoc['isOnDeleteCascade']);

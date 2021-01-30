@@ -30,7 +30,6 @@ use Doctrine\DBAL\Schema\Visitor\DropSchemaSqlCollector;
 use Doctrine\DBAL\Schema\Visitor\RemoveNamespacedAssets;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Mapping\ClassMetadata;
-use Doctrine\ORM\Mapping\OneToOne;
 use Doctrine\ORM\Mapping\QuoteStrategy;
 use Doctrine\ORM\ORMException;
 use Doctrine\ORM\Tools\Event\GenerateSchemaEventArgs;
@@ -47,6 +46,7 @@ use function count;
 use function current;
 use function implode;
 use function in_array;
+use function is_array;
 use function is_numeric;
 use function strtolower;
 
@@ -282,7 +282,7 @@ class SchemaTool
                     $pkColumns[] = $this->quoteStrategy->getColumnName($identifierField, $class, $this->platform);
                 } elseif (isset($class->associationMappings[$identifierField])) {
                     $assoc = $class->associationMappings[$identifierField];
-                    assert($assoc instanceof OneToOne);
+                    assert(is_array($assoc));
 
                     foreach ($assoc['joinColumns'] as $joinColumn) {
                         $pkColumns[] = $this->quoteStrategy->getJoinColumnName($joinColumn, $class, $this->platform);

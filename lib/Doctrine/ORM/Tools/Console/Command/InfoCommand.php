@@ -20,7 +20,7 @@
 
 namespace Doctrine\ORM\Tools\Console\Command;
 
-use Doctrine\ORM\EntityManager;
+use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Mapping\MappingException;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
@@ -61,7 +61,7 @@ EOT
         $ui = new SymfonyStyle($input, $output);
 
         $entityManager = $this->getHelper('em')->getEntityManager();
-        assert($entityManager instanceof EntityManager);
+        assert($entityManager instanceof EntityManagerInterface);
 
         $entityClassNames = $entityManager->getConfiguration()
                                           ->getMetadataDriverImpl()

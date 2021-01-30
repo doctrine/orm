@@ -6,6 +6,7 @@ namespace Doctrine\Tests\ORM\Mapping;
 
 use Doctrine\ORM\EntityRepository;
 use Doctrine\ORM\Id\SequenceGenerator;
+use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\Mapping\ClassMetadataFactory;
 use Doctrine\ORM\Mapping\MappingException;
 use Doctrine\Persistence\Mapping\RuntimeReflectionService;
@@ -155,7 +156,7 @@ class BasicInheritanceMappingTest extends OrmTestCase
     public function testGeneratedValueFromMappedSuperclass(): void
     {
         $class = $this->cmf->getMetadataFor(SuperclassEntity::class);
-        assert($class instanceof ClassMetadataInfo);
+        assert($class instanceof ClassMetadata);
 
         $this->assertInstanceOf(SequenceGenerator::class, $class->idGenerator);
         $this->assertEquals(
@@ -171,7 +172,7 @@ class BasicInheritanceMappingTest extends OrmTestCase
     public function testSequenceDefinitionInHierarchyWithSandwichMappedSuperclass(): void
     {
         $class = $this->cmf->getMetadataFor(HierarchyD::class);
-        assert($class instanceof ClassMetadataInfo);
+        assert($class instanceof ClassMetadata);
 
         $this->assertInstanceOf(SequenceGenerator::class, $class->idGenerator);
         $this->assertEquals(
@@ -187,7 +188,7 @@ class BasicInheritanceMappingTest extends OrmTestCase
     public function testMultipleMappedSuperclasses(): void
     {
         $class = $this->cmf->getMetadataFor(MediumSuperclassEntity::class);
-        assert($class instanceof ClassMetadataInfo);
+        assert($class instanceof ClassMetadata);
 
         $this->assertInstanceOf(SequenceGenerator::class, $class->idGenerator);
         $this->assertEquals(
@@ -204,7 +205,7 @@ class BasicInheritanceMappingTest extends OrmTestCase
     public function testMappedSuperclassIndex(): void
     {
         $class = $this->cmf->getMetadataFor(EntityIndexSubClass::class);
-        assert($class instanceof ClassMetadataInfo);
+        assert($class instanceof ClassMetadata);
 
         $this->assertArrayHasKey('mapped1', $class->fieldMappings);
         $this->assertArrayHasKey('IDX_NAME_INDEX', $class->table['uniqueConstraints']);
