@@ -29,6 +29,12 @@
 
     <rule ref="SlevomatCodingStandard.TypeHints.ParameterTypeHint.MissingNativeTypeHint">
         <exclude-pattern>*/lib/*</exclude-pattern>
+        <!--
+            that class extends another one inside lib/ and can therefore not
+            have more native typehints since its parent cannot have them: that
+            would break signature compatibility.
+        -->
+        <exclude-pattern>tests/Doctrine/Tests/Mocks/HydratorMockStatement.php</exclude-pattern>
     </rule>
 
     <rule ref="SlevomatCodingStandard.TypeHints.ReturnTypeHint.MissingNativeTypeHint">
@@ -165,5 +171,13 @@
     <rule ref="Generic.CodeAnalysis.EmptyStatement.DetectedForeach">
         <exclude-pattern>tests/Doctrine/Tests/ORM/Functional/Ticket/DDC1301Test.php</exclude-pattern>
         <exclude-pattern>tests/Doctrine/Tests/ORM/Functional/ExtraLazyCollectionTest.php</exclude-pattern>
+    </rule>
+
+    <!--
+        That file is used in a test as a template to create another one with a
+        different namespace. The use statement has to stay.
+    -->
+    <rule ref="SlevomatCodingStandard.Namespaces.UseFromSameNamespace.UseFromSameNamespace">
+        <exclude-pattern>tests/Doctrine/Tests/Models/DDC1590/DDC1590User.php</exclude-pattern>
     </rule>
 </ruleset>
