@@ -16,6 +16,7 @@
     <file>tools</file>
 
     <exclude-pattern>*/tests/Doctrine/Tests/Proxies/__CG__*</exclude-pattern>
+    <exclude-pattern>*/tests/Doctrine/Tests/ORM/Tools/Export/export/*</exclude-pattern>
 
     <rule ref="Doctrine">
         <exclude name="SlevomatCodingStandard.TypeHints.DeclareStrictTypes"/>
