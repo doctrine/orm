@@ -389,8 +389,8 @@ use function trigger_error;
      * @throws TransactionRequiredException
      * @throws ORMException
      *
-     * @template T of object
-     * @psalm-param class-string<T> $entityName
+     * @template T
+     * @psalm-param class-string<T> $className
      * @psalm-return ?T
      */
     public function find($className, $id, $lockMode = null, $lockVersion = null)

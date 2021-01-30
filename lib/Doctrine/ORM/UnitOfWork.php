@@ -1806,6 +1806,10 @@ class UnitOfWork implements PropertyChangedListener
                 $this->addToIdentityMap($entity);
 
                 $this->entityStates[$oid] = self::STATE_MANAGED;
+
+                if ($class->isChangeTrackingDeferredExplicit()) {
+                    $this->scheduleForDirtyCheck($entity);
+                }
                 break;
 
             case self::STATE_DETACHED:

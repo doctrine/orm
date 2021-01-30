@@ -24,15 +24,8 @@ jobs:
           php-version: "${{ matrix.php-version }}"
           tools: cs2pr
 
-      - name: "Cache dependencies installed with composer"
-        uses: "actions/cache@v1"
-        with:
-          path: "~/.composer/cache"
-          key: "php-${{ matrix.php-version }}-composer-locked-${{ hashFiles('composer.lock') }}"
-          restore-keys: "php-${{ matrix.php-version }}-composer-locked-"
-
-      - name: "Install dependencies with composer"
-        run: "composer update --no-progress --no-suggest --no-interaction --prefer-dist"
+      - name: "Install dependencies with Composer"
+        uses: "ramsey/composer-install@v1"
 
       - name: "Run a static analysis with phpstan/phpstan"
         run: "php vendor/bin/phpstan analyse --error-format=checkstyle | cs2pr"
@@ -56,15 +49,8 @@ jobs:
           coverage: "none"
           php-version: "${{ matrix.php-version }}"
 
-      - name: "Cache dependencies installed with composer"
-        uses: "actions/cache@v1"
-        with:
-          path: "~/.composer/cache"
-          key: "php-${{ matrix.php-version }}-composer-locked-${{ hashFiles('composer.lock') }}"
-          restore-keys: "php-${{ matrix.php-version }}-composer-locked-"
-
-      - name: "Install dependencies with composer"
-        run: "composer update --no-interaction --no-progress --no-suggest"
+      - name: "Install dependencies with Composer"
+        uses: "ramsey/composer-install@v1"
 
       - name: "Run a static analysis with vimeo/psalm"
         run: "vendor/bin/psalm --show-info=false --stats --output-format=github --threads=$(nproc)"
