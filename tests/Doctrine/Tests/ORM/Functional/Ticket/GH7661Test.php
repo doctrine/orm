@@ -53,6 +53,7 @@ class GH7661Test extends OrmFunctionalTestCase
 class GH7661User
 {
     /**
+     * @var int
      * @Id
      * @Column(type="integer")
      * @GeneratedValue
@@ -66,12 +67,16 @@ class GH7661User
 class GH7661Event
 {
     /**
+     * @var int
      * @Id
      * @Column(type="integer")
      * @GeneratedValue
      */
     public $id;
-    /** @OneToMany(targetEntity=GH7661Participant::class, mappedBy="event", indexBy="user_id") */
+    /**
+     * @var GH7661Participant[]
+     * @OneToMany(targetEntity=GH7661Participant::class, mappedBy="event", indexBy="user_id")
+     */
     public $participants;
 }
 
@@ -81,14 +86,21 @@ class GH7661Event
 class GH7661Participant
 {
     /**
+     * @var int
      * @Id
      * @Column(type="integer")
      * @GeneratedValue
      */
     public $id;
-    /** @ManyToOne(targetEntity=GH7661User::class) */
+    /**
+     * @var GH7661User
+     * @ManyToOne(targetEntity=GH7661User::class)
+     */
     public $user;
-    /** @ManyToOne(targetEntity=GH7661Event::class) */
+    /**
+     * @var GH7661Event
+     * @ManyToOne(targetEntity=GH7661Event::class)
+     */
     public $event;
 
     public function __construct(GH7661User $user, GH7661Event $event)
