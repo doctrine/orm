@@ -6,6 +6,8 @@ use Doctrine\ORM\Events;
 use Doctrine\ORM\Mapping as ORM;
 use Doctrine\ORM\Mapping\ClassMetadataInfo;
 
+use function max;
+
 /**
  * @Entity
  * @EntityListeners({"CompanyContractListener","CompanyFlexUltraContractListener"})

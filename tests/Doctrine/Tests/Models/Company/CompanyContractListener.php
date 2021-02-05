@@ -3,6 +3,7 @@
 namespace Doctrine\Tests\Models\Company;
 
 use Doctrine\ORM\Mapping as ORM;
+
 use function func_get_args;
 
 class CompanyContractListener
