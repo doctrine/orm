@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Doctrine\Tests\Models\DDC117;
 
 use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 
 /**
  * @Entity
@@ -12,25 +13,38 @@ use Doctrine\Common\Collections\ArrayCollection;
 class DDC117Translation
 {
     /**
+     * @var DDC117Article
      * @Id
      * @ManyToOne(targetEntity="DDC117Article", inversedBy="translations")
      * @JoinColumn(name="article_id", referencedColumnName="article_id")
      */
     private $article;
 
-    /** @Id @column(type="string") */
+    /**
+     * @var string
+     * @Id @column(type="string")
+     */
     private $language;
 
-    /** @column(type="string") */
+    /**
+     * @var string
+     * @column(type="string")
+     */
     private $title;
 
-    /** @ManyToMany(targetEntity="DDC117Editor", mappedBy="reviewingTranslations") */
+    /**
+     * @var Collection<int, DDC117Editor>
+     * @ManyToMany(targetEntity="DDC117Editor", mappedBy="reviewingTranslations")
+     */
     public $reviewedByEditors;
 
-    /** @OneToMany(targetEntity="DDC117Editor", mappedBy="lastTranslation") */
+    /**
+     * @var Collection<int, DDC117Editor>
+     * @OneToMany(targetEntity="DDC117Editor", mappedBy="lastTranslation")
+     */
     public $lastTranslatedBy;
 
-    public function __construct($article, $language, $title)
+    public function __construct(DDC117Article $article, string $language, string $title)
     {
         $this->article           = $article;
         $this->language          = $language;
@@ -39,22 +53,22 @@ class DDC117Translation
         $this->lastTranslatedBy  = new ArrayCollection();
     }
 
-    public function getArticleId()
+    public function getArticleId(): int
     {
         return $this->article->id();
     }
 
-    public function getLanguage()
+    public function getLanguage(): string
     {
         return $this->language;
     }
 
-    public function getLastTranslatedBy()
+    public function getLastTranslatedBy(): Collection
     {
         return $this->lastTranslatedBy;
     }
 
-    public function getReviewedByEditors()
+    public function getReviewedByEditors(): Collection
     {
         return $this->reviewedByEditors;
     }

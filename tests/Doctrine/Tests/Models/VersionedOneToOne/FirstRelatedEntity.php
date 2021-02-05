@@ -11,18 +11,22 @@ namespace Doctrine\Tests\Models\VersionedOneToOne;
 class FirstRelatedEntity
 {
     /**
+     * @var SecondRelatedEntity
      * @Id
      * @OneToOne(targetEntity="SecondRelatedEntity", fetch="EAGER")
      * @JoinColumn(name="second_entity_id", referencedColumnName="id")
      */
     public $secondEntity;
 
-    /** @Column(name="name") */
+    /**
+     * @var string
+     * @Column(name="name")
+     */
     public $name;
 
     /**
+     * @var int
      * Version column
-     *
      * @Column(type="integer", name="version")
      * @Version
      */
