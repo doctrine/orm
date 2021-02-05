@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Doctrine\Tests\Models\Navigation;
 
 use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 
 /**
  * @Entity
@@ -13,16 +14,21 @@ use Doctrine\Common\Collections\ArrayCollection;
 class NavTour
 {
     /**
+     * @var int
      * @Id
      * @Column(type="integer")
      * @generatedValue
      */
     private $id;
 
-    /** @column(type="string") */
+    /**
+     * @var string
+     * @column(type="string")
+     */
     private $name;
 
     /**
+     * @var Collection<int, NavPointOfInterest>
      * @ManyToMany(targetEntity="NavPointOfInterest")
      * @JoinTable(name="navigation_tour_pois",
      *      joinColumns={@JoinColumn(name="tour_id", referencedColumnName="id")},
@@ -34,7 +40,7 @@ class NavTour
      */
     private $pois;
 
-    public function __construct($name)
+    public function __construct(string $name)
     {
         $this->name = $name;
         $this->pois = new ArrayCollection();
@@ -45,17 +51,17 @@ class NavTour
         $this->pois[] = $poi;
     }
 
-    public function getPointOfInterests()
+    public function getPointOfInterests(): Collection
     {
         return $this->pois;
     }
 
-    public function getName()
+    public function getName(): string
     {
         return $this->name;
     }
 
-    public function getId()
+    public function getId(): int
     {
         return $this->id;
     }

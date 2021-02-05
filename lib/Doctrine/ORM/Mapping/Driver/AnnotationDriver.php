@@ -22,6 +22,7 @@ namespace Doctrine\ORM\Mapping\Driver;
 
 use Doctrine\Common\Annotations\AnnotationReader;
 use Doctrine\ORM\Events;
+use Doctrine\ORM\Id\TableGenerator;
 use Doctrine\ORM\Mapping;
 use Doctrine\ORM\Mapping\Builder\EntityListenerBuilder;
 use Doctrine\ORM\Mapping\ClassMetadataInfo;
@@ -354,7 +355,7 @@ class AnnotationDriver extends AbstractAnnotationDriver
                             'initialValue' => $seqGeneratorAnnot->initialValue,
                         ]
                     );
-                } elseif ($this->reader->getPropertyAnnotation($property, 'Doctrine\ORM\Id\TableGenerator')) {
+                } elseif ($this->reader->getPropertyAnnotation($property, TableGenerator::class)) {
                     throw MappingException::tableIdGeneratorNotImplemented($className);
                 } else {
                     $customGeneratorAnnot = $this->reader->getPropertyAnnotation($property, Mapping\CustomIdGenerator::class);

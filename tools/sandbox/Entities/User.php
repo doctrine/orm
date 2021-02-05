@@ -8,24 +8,31 @@ namespace Entities;
 class User
 {
     /**
+     * @var int
      * @Id @Column(type="integer")
      * @GeneratedValue(strategy="AUTO")
      */
     private $id;
-    /** @Column(type="string", length=50) */
-    private $name;
+
     /**
+     * @var string
+     * @Column(type="string", length=50)
+     */
+    private $name;
+
+    /**
+     * @var Address
      * @OneToOne(targetEntity="Address", inversedBy="user")
      * @JoinColumn(name="address_id", referencedColumnName="id")
      */
     private $address;
 
-    public function getId()
+    public function getId(): int
     {
         return $this->id;
     }
 
-    public function getName()
+    public function getName(): string
     {
         return $this->name;
     }
@@ -35,7 +42,7 @@ class User
         $this->name = $name;
     }
 
-    public function getAddress()
+    public function getAddress(): Address
     {
         return $this->address;
     }
