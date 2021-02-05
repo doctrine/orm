@@ -1,4 +1,5 @@
 <?php
+
 /*
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
  * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
@@ -24,26 +25,16 @@ namespace Doctrine\ORM\Query\AST;
  * InstanceOfParameter  ::= AbstractSchemaName | InputParameter
  *
  * @link    www.doctrine-project.org
- * @since   2.0
- * @author  Guilherme Blanco <guilhermeblanco@hotmail.com>
- * @author  Jonathan Wage <jonwage@gmail.com>
- * @author  Roman Borschel <roman@code-factory.org>
  */
 class InstanceOfExpression extends Node
 {
-    /**
-     * @var bool
-     */
+    /** @var bool */
     public $not;
 
-    /**
-     * @var string
-     */
+    /** @var string */
     public $identificationVariable;
 
-    /**
-     * @var array
-     */
+    /** @var mixed[] */
     public $value;
 
     /**

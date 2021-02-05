@@ -1,4 +1,5 @@
 <?php
+
 /*
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
  * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
@@ -16,31 +17,23 @@
  * and is licensed under the MIT license. For more information, see
  * <http://www.doctrine-project.org>.
  */
+
 namespace Doctrine\ORM\Event;
 
 use Doctrine\Common\EventArgs;
+use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\EntityManagerInterface;
 
 /**
  * Provides event arguments for the postFlush event.
  *
- * @license     http://www.opensource.org/licenses/mit-license.php MIT
  * @link        www.doctrine-project.org
- * @since       2.0
- * @author      Daniel Freudenberger <df@rebuy.de>
  */
 class PostFlushEventArgs extends EventArgs
 {
-    /**
-     * @var \Doctrine\ORM\EntityManager
-     */
+    /** @var EntityManager */
     private $em;
 
-    /**
-     * Constructor.
-     *
-     * @param EntityManagerInterface $em
-     */
     public function __construct(EntityManagerInterface $em)
     {
         $this->em = $em;
@@ -49,7 +42,7 @@ class PostFlushEventArgs extends EventArgs
     /**
      * Retrieves associated EntityManager.
      *
-     * @return \Doctrine\ORM\EntityManager
+     * @return EntityManager
      */
     public function getEntityManager()
     {

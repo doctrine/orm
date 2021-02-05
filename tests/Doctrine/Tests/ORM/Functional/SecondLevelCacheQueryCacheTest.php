@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\Tests\ORM\Functional;
 
 use Doctrine\ORM\AbstractQuery;
@@ -14,13 +16,14 @@ use Doctrine\Tests\Models\Cache\Attraction;
 use Doctrine\Tests\Models\Cache\City;
 use Doctrine\Tests\Models\Cache\Country;
 use Doctrine\Tests\Models\Cache\State;
+use ReflectionMethod;
 
 /**
  * @group DDC-2183
  */
 class SecondLevelCacheQueryCacheTest extends SecondLevelCacheAbstractTest
 {
-    public function testBasicQueryCache()
+    public function testBasicQueryCache(): void
     {
         $this->evictRegions();
         $this->loadFixturesCountries();
@@ -49,7 +52,7 @@ class SecondLevelCacheQueryCacheTest extends SecondLevelCacheAbstractTest
 
         $this->_em->clear();
 
-        $result2  = $this->_em->createQuery($dql)
+        $result2 = $this->_em->createQuery($dql)
             ->setCacheable(true)
             ->getResult();
 
@@ -82,7 +85,7 @@ class SecondLevelCacheQueryCacheTest extends SecondLevelCacheAbstractTest
         $this->assertEquals(1, $this->secondLevelCacheLogger->getRegionMissCount($this->getDefaultQueryRegionName()));
     }
 
-    public function testQueryCacheModeGet()
+    public function testQueryCacheModeGet(): void
     {
         $this->evictRegions();
         $this->loadFixturesCountries();
@@ -122,7 +125,7 @@ class SecondLevelCacheQueryCacheTest extends SecondLevelCacheAbstractTest
         $this->assertEquals($queryCount + 3, $this->getCurrentQueryCount());
     }
 
-    public function testQueryCacheModePut()
+    public function testQueryCacheModePut(): void
     {
         $this->evictRegions();
         $this->loadFixturesCountries();
@@ -162,7 +165,7 @@ class SecondLevelCacheQueryCacheTest extends SecondLevelCacheAbstractTest
         $this->assertTrue($this->cache->containsEntity(Country::class, $this->countries[1]->getId()));
     }
 
-    public function testQueryCacheModeRefresh()
+    public function testQueryCacheModeRefresh(): void
     {
         $this->evictRegions();
         $this->loadFixturesCountries();
@@ -187,15 +190,15 @@ class SecondLevelCacheQueryCacheTest extends SecondLevelCacheAbstractTest
         $this->assertCount(2, $result);
         $this->assertEquals($queryCount + 1, $this->getCurrentQueryCount());
 
-        $countryId1     = $this->countries[0]->getId();
-        $countryId2     = $this->countries[1]->getId();
-        $countryName1   = $this->countries[0]->getName();
-        $countryName2   = $this->countries[1]->getName();
+        $countryId1   = $this->countries[0]->getId();
+        $countryId2   = $this->countries[1]->getId();
+        $countryName1 = $this->countries[0]->getName();
+        $countryName2 = $this->countries[1]->getName();
 
-        $key1           = new EntityCacheKey(Country::class, ['id'=>$countryId1]);
-        $key2           = new EntityCacheKey(Country::class, ['id'=>$countryId2]);
-        $entry1         = new EntityCacheEntry(Country::class, ['id'=>$countryId1, 'name'=>'outdated']);
-        $entry2         = new EntityCacheEntry(Country::class, ['id'=>$countryId2, 'name'=>'outdated']);
+        $key1   = new EntityCacheKey(Country::class, ['id' => $countryId1]);
+        $key2   = new EntityCacheKey(Country::class, ['id' => $countryId2]);
+        $entry1 = new EntityCacheEntry(Country::class, ['id' => $countryId1, 'name' => 'outdated']);
+        $entry2 = new EntityCacheEntry(Country::class, ['id' => $countryId2, 'name' => 'outdated']);
 
         $region->put($key1, $entry1);
         $region->put($key2, $entry2);
@@ -221,7 +224,7 @@ class SecondLevelCacheQueryCacheTest extends SecondLevelCacheAbstractTest
         $this->assertEquals($queryCount + 3, $this->getCurrentQueryCount());
     }
 
-    public function testBasicQueryCachePutEntityCache()
+    public function testBasicQueryCachePutEntityCache(): void
     {
         $this->evictRegions();
         $this->loadFixturesCountries();
@@ -252,7 +255,7 @@ class SecondLevelCacheQueryCacheTest extends SecondLevelCacheAbstractTest
 
         $this->_em->clear();
 
-        $result2  = $this->_em->createQuery($dql)
+        $result2 = $this->_em->createQuery($dql)
             ->setCacheable(true)
             ->getResult();
 
@@ -288,7 +291,7 @@ class SecondLevelCacheQueryCacheTest extends SecondLevelCacheAbstractTest
     /**
      * @group 5854
      */
-    public function testMultipleNestedDQLAliases()
+    public function testMultipleNestedDQLAliases(): void
     {
         $this->loadFixturesCountries();
         $this->loadFixturesStates();
@@ -344,7 +347,7 @@ class SecondLevelCacheQueryCacheTest extends SecondLevelCacheAbstractTest
 
         $this->_em->clear();
 
-        $result2  = $this->_em->createQuery($dql)
+        $result2 = $this->_em->createQuery($dql)
             ->setCacheable(true)
             ->getResult();
 
@@ -368,7 +371,7 @@ class SecondLevelCacheQueryCacheTest extends SecondLevelCacheAbstractTest
         $this->assertCount(1, $result2[1]->getCities()->get(1)->getAttractions());
     }
 
-    public function testBasicQueryParams()
+    public function testBasicQueryParams(): void
     {
         $this->evictRegions();
 
@@ -392,7 +395,7 @@ class SecondLevelCacheQueryCacheTest extends SecondLevelCacheAbstractTest
 
         $this->_em->clear();
 
-        $result2  = $this->_em->createQuery($dql)->setCacheable(true)
+        $result2 = $this->_em->createQuery($dql)->setCacheable(true)
                 ->setParameter('name', $name)
                 ->getResult();
 
@@ -405,7 +408,7 @@ class SecondLevelCacheQueryCacheTest extends SecondLevelCacheAbstractTest
         $this->assertEquals($result1[0]->getName(), $result2[0]->getName());
     }
 
-    public function testLoadFromDatabaseWhenEntityMissing()
+    public function testLoadFromDatabaseWhenEntityMissing(): void
     {
         $this->evictRegions();
 
@@ -420,7 +423,7 @@ class SecondLevelCacheQueryCacheTest extends SecondLevelCacheAbstractTest
         $result1    = $this->_em->createQuery($dql)->setCacheable(true)->getResult();
 
         $this->assertCount(2, $result1);
-        $this->assertEquals($queryCount + 1 , $this->getCurrentQueryCount());
+        $this->assertEquals($queryCount + 1, $this->getCurrentQueryCount());
         $this->assertEquals($this->countries[0]->getId(), $result1[0]->getId());
         $this->assertEquals($this->countries[1]->getId(), $result1[1]->getId());
         $this->assertEquals($this->countries[0]->getName(), $result1[0]->getName());
@@ -436,11 +439,11 @@ class SecondLevelCacheQueryCacheTest extends SecondLevelCacheAbstractTest
 
         $this->_em->clear();
 
-        $result2  = $this->_em->createQuery($dql)
+        $result2 = $this->_em->createQuery($dql)
             ->setCacheable(true)
             ->getResult();
 
-        $this->assertEquals($queryCount + 2 , $this->getCurrentQueryCount());
+        $this->assertEquals($queryCount + 2, $this->getCurrentQueryCount());
         $this->assertCount(2, $result2);
 
         $this->assertEquals(5, $this->secondLevelCacheLogger->getPutCount());
@@ -457,10 +460,10 @@ class SecondLevelCacheQueryCacheTest extends SecondLevelCacheAbstractTest
         $this->assertEquals($result1[0]->getName(), $result2[0]->getName());
         $this->assertEquals($result1[1]->getName(), $result2[1]->getName());
 
-        $this->assertEquals($queryCount + 2 , $this->getCurrentQueryCount());
+        $this->assertEquals($queryCount + 2, $this->getCurrentQueryCount());
     }
 
-    public function testBasicQueryFetchJoinsOneToMany()
+    public function testBasicQueryFetchJoinsOneToMany(): void
     {
         $this->loadFixturesCountries();
         $this->loadFixturesStates();
@@ -498,7 +501,7 @@ class SecondLevelCacheQueryCacheTest extends SecondLevelCacheAbstractTest
 
         $this->_em->clear();
 
-        $result2  = $this->_em->createQuery($dql)
+        $result2 = $this->_em->createQuery($dql)
                 ->setCacheable(true)
                 ->getResult();
 
@@ -525,7 +528,7 @@ class SecondLevelCacheQueryCacheTest extends SecondLevelCacheAbstractTest
         $this->assertEquals($queryCount + 1, $this->getCurrentQueryCount());
     }
 
-    public function testBasicQueryFetchJoinsManyToOne()
+    public function testBasicQueryFetchJoinsManyToOne(): void
     {
         $this->loadFixturesCountries();
         $this->loadFixturesStates();
@@ -564,7 +567,7 @@ class SecondLevelCacheQueryCacheTest extends SecondLevelCacheAbstractTest
         $this->_em->clear();
         $this->secondLevelCacheLogger->clearStats();
 
-        $result2  = $this->_em->createQuery($dql)
+        $result2 = $this->_em->createQuery($dql)
                 ->setCacheable(true)
                 ->getResult();
 
@@ -592,7 +595,7 @@ class SecondLevelCacheQueryCacheTest extends SecondLevelCacheAbstractTest
         $this->assertEquals($queryCount + 1, $this->getCurrentQueryCount());
     }
 
-    public function testReloadQueryIfToOneIsNotFound()
+    public function testReloadQueryIfToOneIsNotFound(): void
     {
         $this->loadFixturesCountries();
         $this->loadFixturesStates();
@@ -624,7 +627,7 @@ class SecondLevelCacheQueryCacheTest extends SecondLevelCacheAbstractTest
 
         $this->cache->evictEntityRegion(State::class);
 
-        $result2  = $this->_em->createQuery($dql)
+        $result2 = $this->_em->createQuery($dql)
                 ->setCacheable(true)
                 ->getResult();
 
@@ -637,7 +640,7 @@ class SecondLevelCacheQueryCacheTest extends SecondLevelCacheAbstractTest
         $this->assertEquals($queryCount + 2, $this->getCurrentQueryCount());
     }
 
-    public function testReloadQueryIfToManyAssociationItemIsNotFound()
+    public function testReloadQueryIfToManyAssociationItemIsNotFound(): void
     {
         $this->loadFixturesCountries();
         $this->loadFixturesStates();
@@ -667,7 +670,7 @@ class SecondLevelCacheQueryCacheTest extends SecondLevelCacheAbstractTest
 
         $this->cache->evictEntityRegion(City::class);
 
-        $result2  = $this->_em->createQuery($dql)
+        $result2 = $this->_em->createQuery($dql)
                 ->setCacheable(true)
                 ->getResult();
 
@@ -684,7 +687,7 @@ class SecondLevelCacheQueryCacheTest extends SecondLevelCacheAbstractTest
         $this->assertEquals($queryCount + 2, $this->getCurrentQueryCount());
     }
 
-    public function testBasicNativeQueryCache()
+    public function testBasicNativeQueryCache(): void
     {
         $this->evictRegions();
         $this->loadFixturesCountries();
@@ -695,7 +698,7 @@ class SecondLevelCacheQueryCacheTest extends SecondLevelCacheAbstractTest
         $this->assertTrue($this->cache->containsEntity(Country::class, $this->countries[0]->getId()));
         $this->assertTrue($this->cache->containsEntity(Country::class, $this->countries[1]->getId()));
 
-        $rsm = new ResultSetMapping;
+        $rsm = new ResultSetMapping();
         $rsm->addEntityResult(Country::class, 'c');
         $rsm->addFieldResult('c', 'name', 'name');
         $rsm->addFieldResult('c', 'id', 'id');
@@ -718,7 +721,7 @@ class SecondLevelCacheQueryCacheTest extends SecondLevelCacheAbstractTest
 
         $this->_em->clear();
 
-        $result2  = $this->_em->createNativeQuery($sql, $rsm)
+        $result2 = $this->_em->createNativeQuery($sql, $rsm)
             ->setCacheable(true)
             ->getResult();
 
@@ -751,7 +754,7 @@ class SecondLevelCacheQueryCacheTest extends SecondLevelCacheAbstractTest
         $this->assertEquals(1, $this->secondLevelCacheLogger->getRegionMissCount($this->getDefaultQueryRegionName()));
     }
 
-    public function testQueryDependsOnFirstAndMaxResultResult()
+    public function testQueryDependsOnFirstAndMaxResultResult(): void
     {
         $this->evictRegions();
         $this->loadFixturesCountries();
@@ -773,7 +776,7 @@ class SecondLevelCacheQueryCacheTest extends SecondLevelCacheAbstractTest
 
         $this->_em->clear();
 
-        $result2  = $this->_em->createQuery($dql)
+        $result2 = $this->_em->createQuery($dql)
             ->setCacheable(true)
             ->setFirstResult(2)
             ->setMaxResults(1)
@@ -785,7 +788,7 @@ class SecondLevelCacheQueryCacheTest extends SecondLevelCacheAbstractTest
 
         $this->_em->clear();
 
-        $result3  = $this->_em->createQuery($dql)
+        $result3 = $this->_em->createQuery($dql)
             ->setCacheable(true)
             ->getResult();
 
@@ -794,7 +797,7 @@ class SecondLevelCacheQueryCacheTest extends SecondLevelCacheAbstractTest
         $this->assertEquals(3, $this->secondLevelCacheLogger->getMissCount());
     }
 
-    public function testQueryCacheLifetime()
+    public function testQueryCacheLifetime(): void
     {
         $this->evictRegions();
         $this->loadFixturesCountries();
@@ -802,8 +805,8 @@ class SecondLevelCacheQueryCacheTest extends SecondLevelCacheAbstractTest
         $this->secondLevelCacheLogger->clearStats();
         $this->_em->clear();
 
-        $getHash = function(AbstractQuery $query){
-            $method = new \ReflectionMethod($query, 'getHash');
+        $getHash = static function (AbstractQuery $query) {
+            $method = new ReflectionMethod($query, 'getHash');
             $method->setAccessible(true);
 
             return $method->invoke($query);
@@ -829,13 +832,13 @@ class SecondLevelCacheQueryCacheTest extends SecondLevelCacheAbstractTest
             ->get($key);
 
         $this->assertInstanceOf(Cache\QueryCacheEntry::class, $entry);
-        $entry->time = $entry->time / 2;
+        $entry->time /= 2;
 
         $this->cache->getQueryCache()
             ->getRegion()
             ->put($key, $entry);
 
-        $result2  = $this->_em->createQuery($dql)
+        $result2 = $this->_em->createQuery($dql)
             ->setCacheable(true)
             ->setLifetime(3600)
             ->getResult();
@@ -846,7 +849,7 @@ class SecondLevelCacheQueryCacheTest extends SecondLevelCacheAbstractTest
         $this->assertEquals(2, $this->secondLevelCacheLogger->getMissCount());
     }
 
-    public function testQueryCacheRegion()
+    public function testQueryCacheRegion(): void
     {
         $this->evictRegions();
         $this->loadFixturesCountries();
@@ -858,8 +861,8 @@ class SecondLevelCacheQueryCacheTest extends SecondLevelCacheAbstractTest
         $dql        = 'SELECT c FROM Doctrine\Tests\Models\Cache\Country c';
         $query      = $this->_em->createQuery($dql);
 
-        $query1     = clone $query;
-        $result1    = $query1->setCacheable(true)
+        $query1  = clone $query;
+        $result1 = $query1->setCacheable(true)
             ->setCacheRegion('foo_region')
             ->getResult();
 
@@ -871,8 +874,8 @@ class SecondLevelCacheQueryCacheTest extends SecondLevelCacheAbstractTest
         $this->assertEquals(1, $this->secondLevelCacheLogger->getRegionPutCount('foo_region'));
         $this->assertEquals(1, $this->secondLevelCacheLogger->getRegionMissCount('foo_region'));
 
-        $query2     = clone $query;
-        $result2    = $query2->setCacheable(true)
+        $query2  = clone $query;
+        $result2 = $query2->setCacheable(true)
             ->setCacheRegion('bar_region')
             ->getResult();
 
@@ -884,8 +887,8 @@ class SecondLevelCacheQueryCacheTest extends SecondLevelCacheAbstractTest
         $this->assertEquals(1, $this->secondLevelCacheLogger->getRegionPutCount('bar_region'));
         $this->assertEquals(1, $this->secondLevelCacheLogger->getRegionMissCount('bar_region'));
 
-        $query3     = clone $query;
-        $result3    = $query3->setCacheable(true)
+        $query3  = clone $query;
+        $result3 = $query3->setCacheable(true)
             ->setCacheRegion('foo_region')
             ->getResult();
 
@@ -898,8 +901,8 @@ class SecondLevelCacheQueryCacheTest extends SecondLevelCacheAbstractTest
         $this->assertEquals(1, $this->secondLevelCacheLogger->getRegionPutCount('foo_region'));
         $this->assertEquals(1, $this->secondLevelCacheLogger->getRegionMissCount('foo_region'));
 
-        $query4     = clone $query;
-        $result4    = $query4->setCacheable(true)
+        $query4  = clone $query;
+        $result4 = $query4->setCacheable(true)
             ->setCacheRegion('bar_region')
             ->getResult();
 
@@ -913,7 +916,7 @@ class SecondLevelCacheQueryCacheTest extends SecondLevelCacheAbstractTest
         $this->assertEquals(1, $this->secondLevelCacheLogger->getRegionMissCount('bar_region'));
     }
 
-    public function testResolveAssociationCacheEntry()
+    public function testResolveAssociationCacheEntry(): void
     {
         $this->evictRegions();
         $this->loadFixturesCountries();
@@ -961,7 +964,7 @@ class SecondLevelCacheQueryCacheTest extends SecondLevelCacheAbstractTest
         $this->assertEquals($stateId, $state2->getId());
     }
 
-    public function testResolveToOneAssociationCacheEntry()
+    public function testResolveToOneAssociationCacheEntry(): void
     {
         $this->evictRegions();
         $this->loadFixturesCountries();
@@ -971,13 +974,13 @@ class SecondLevelCacheQueryCacheTest extends SecondLevelCacheAbstractTest
 
         $this->_em->clear();
 
-        $cityId      = $this->cities[0]->getId();
-        $dql         = 'SELECT c, s FROM Doctrine\Tests\Models\Cache\City c JOIN c.state s WHERE c.id = :id';
-        $query       = $this->_em->createQuery($dql);
-        $queryCount  = $this->getCurrentQueryCount();
+        $cityId     = $this->cities[0]->getId();
+        $dql        = 'SELECT c, s FROM Doctrine\Tests\Models\Cache\City c JOIN c.state s WHERE c.id = :id';
+        $query      = $this->_em->createQuery($dql);
+        $queryCount = $this->getCurrentQueryCount();
 
         $query1 = clone $query;
-        $city1 = $query1
+        $city1  = $query1
             ->setParameter('id', $cityId)
             ->setCacheable(true)
             ->setMaxResults(1)
@@ -1006,7 +1009,7 @@ class SecondLevelCacheQueryCacheTest extends SecondLevelCacheAbstractTest
         $this->assertInstanceOf(State::class, $city2->getState()->getCities()->get(0)->getState());
     }
 
-    public function testResolveToManyAssociationCacheEntry()
+    public function testResolveToManyAssociationCacheEntry(): void
     {
         $this->evictRegions();
         $this->loadFixturesCountries();
@@ -1016,10 +1019,10 @@ class SecondLevelCacheQueryCacheTest extends SecondLevelCacheAbstractTest
 
         $this->_em->clear();
 
-        $stateId     = $this->states[0]->getId();
-        $dql         = 'SELECT s, c FROM Doctrine\Tests\Models\Cache\State s JOIN s.cities c WHERE s.id = :id';
-        $query       = $this->_em->createQuery($dql);
-        $queryCount  = $this->getCurrentQueryCount();
+        $stateId    = $this->states[0]->getId();
+        $dql        = 'SELECT s, c FROM Doctrine\Tests\Models\Cache\State s JOIN s.cities c WHERE s.id = :id';
+        $query      = $this->_em->createQuery($dql);
+        $queryCount = $this->getCurrentQueryCount();
 
         $query1 = clone $query;
         $state1 = $query1
@@ -1053,7 +1056,7 @@ class SecondLevelCacheQueryCacheTest extends SecondLevelCacheAbstractTest
         $this->assertSame($state2, $state2->getCities()->get(0)->getState());
     }
 
-    public function testHintClearEntityRegionUpdateStatement()
+    public function testHintClearEntityRegionUpdateStatement(): void
     {
         $this->evictRegions();
         $this->loadFixturesCountries();
@@ -1069,7 +1072,7 @@ class SecondLevelCacheQueryCacheTest extends SecondLevelCacheAbstractTest
         $this->assertFalse($this->cache->containsEntity(Country::class, $this->countries[1]->getId()));
     }
 
-    public function testHintClearEntityRegionDeleteStatement()
+    public function testHintClearEntityRegionDeleteStatement(): void
     {
         $this->evictRegions();
         $this->loadFixturesCountries();
@@ -1085,19 +1088,19 @@ class SecondLevelCacheQueryCacheTest extends SecondLevelCacheAbstractTest
         $this->assertFalse($this->cache->containsEntity(Country::class, $this->countries[1]->getId()));
     }
 
-    public function testCacheablePartialQueryException()
+    public function testCacheablePartialQueryException(): void
     {
         $this->expectException('Doctrine\ORM\Cache\CacheException');
         $this->expectExceptionMessage('Second level cache does not support partial entities.');
         $this->evictRegions();
         $this->loadFixturesCountries();
 
-        $this->_em->createQuery("SELECT PARTIAL c.{id} FROM Doctrine\Tests\Models\Cache\Country c")
+        $this->_em->createQuery('SELECT PARTIAL c.{id} FROM Doctrine\Tests\Models\Cache\Country c')
             ->setCacheable(true)
             ->getResult();
     }
 
-    public function testCacheableForcePartialLoadHintQueryException()
+    public function testCacheableForcePartialLoadHintQueryException(): void
     {
         $this->expectException('Doctrine\ORM\Cache\CacheException');
         $this->expectExceptionMessage('Second level cache does not support partial entities.');
@@ -1110,16 +1113,16 @@ class SecondLevelCacheQueryCacheTest extends SecondLevelCacheAbstractTest
             ->getResult();
     }
 
-    public function testNonCacheableQueryDeleteStatementException()
+    public function testNonCacheableQueryDeleteStatementException(): void
     {
         $this->expectException('Doctrine\ORM\Cache\CacheException');
         $this->expectExceptionMessage('Second-level cache query supports only select statements.');
-        $this->_em->createQuery("DELETE Doctrine\Tests\Models\Cache\Country u WHERE u.id = 4")
+        $this->_em->createQuery('DELETE Doctrine\Tests\Models\Cache\Country u WHERE u.id = 4')
             ->setCacheable(true)
             ->getResult();
     }
 
-    public function testNonCacheableQueryUpdateStatementException()
+    public function testNonCacheableQueryUpdateStatementException(): void
     {
         $this->expectException('Doctrine\ORM\Cache\CacheException');
         $this->expectExceptionMessage('Second-level cache query supports only select statements.');
@@ -1128,7 +1131,7 @@ class SecondLevelCacheQueryCacheTest extends SecondLevelCacheAbstractTest
             ->getResult();
     }
 
-    public function testQueryCacheShouldBeEvictedOnTimestampUpdate()
+    public function testQueryCacheShouldBeEvictedOnTimestampUpdate(): void
     {
         $this->loadFixturesCountries();
         $this->_em->clear();
@@ -1136,7 +1139,7 @@ class SecondLevelCacheQueryCacheTest extends SecondLevelCacheAbstractTest
         $queryCount = $this->getCurrentQueryCount();
         $dql        = 'SELECT country FROM Doctrine\Tests\Models\Cache\Country country';
 
-        $result1    = $this->_em->createQuery($dql)
+        $result1 = $this->_em->createQuery($dql)
             ->setCacheable(true)
             ->getResult();
 

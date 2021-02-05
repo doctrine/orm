@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\Tests\ORM\Functional\Ticket;
 
 use Doctrine\Tests\Models\DDC3597\DDC3597Image;
@@ -12,14 +14,14 @@ use Doctrine\Tests\OrmFunctionalTestCase;
  */
 class DDC3597Test extends OrmFunctionalTestCase
 {
-    protected function setUp() : void
+    protected function setUp(): void
     {
         parent::setUp();
         $this->_schemaTool->createSchema(
             [
-            $this->_em->getClassMetadata(DDC3597Root::class),
-            $this->_em->getClassMetadata(DDC3597Media::class),
-            $this->_em->getClassMetadata(DDC3597Image::class)
+                $this->_em->getClassMetadata(DDC3597Root::class),
+                $this->_em->getClassMetadata(DDC3597Media::class),
+                $this->_em->getClassMetadata(DDC3597Image::class),
             ]
         );
     }

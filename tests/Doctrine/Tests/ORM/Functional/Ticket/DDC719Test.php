@@ -1,21 +1,27 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\Tests\ORM\Functional\Ticket;
 
-class DDC719Test extends \Doctrine\Tests\OrmFunctionalTestCase
+use Doctrine\Tests\OrmFunctionalTestCase;
+
+use function strtolower;
+
+class DDC719Test extends OrmFunctionalTestCase
 {
-    protected function setUp() : void
+    protected function setUp(): void
     {
         parent::setUp();
         //$this->_em->getConnection()->getConfiguration()->setSQLLogger(new \Doctrine\DBAL\Logging\EchoSQLLogger);
         $this->_schemaTool->createSchema(
             [
-            $this->_em->getClassMetadata(DDC719Group::class),
+                $this->_em->getClassMetadata(DDC719Group::class),
             ]
         );
     }
 
-    public function testIsEmptySqlGeneration()
+    public function testIsEmptySqlGeneration(): void
     {
         $q = $this->_em->createQuery('SELECT g, c FROM Doctrine\Tests\ORM\Functional\Ticket\DDC719Group g LEFT JOIN g.children c  WHERE g.parents IS EMPTY');
 
@@ -39,76 +45,104 @@ class Entity
      */
     protected $id;
 
-    public function getId() { return $this->id; }
+    public function getId()
+    {
+        return $this->id;
+    }
 }
 
 /**
  * @Entity
  * @Table(name="groups")
  */
-class DDC719Group extends Entity {
+class DDC719Group extends Entity
+{
     /** @Column(type="string", nullable=false) */
     protected $name;
 
-	/** @Column(type="string", nullable=true) */
-	protected $description;
+    /** @Column(type="string", nullable=true) */
+    protected $description;
 
-	/**
-	 * @ManyToMany(targetEntity="DDC719Group", inversedBy="parents")
-	 * @JoinTable(name="groups_groups",
-	 * 		joinColumns={@JoinColumn(name="parent_id", referencedColumnName="id")},
-	 * 		inverseJoinColumns={@JoinColumn(name="child_id", referencedColumnName="id")}
-	 * )
-	 */
-	protected $children = NULL;
+    /**
+     * @ManyToMany(targetEntity="DDC719Group", inversedBy="parents")
+     * @JoinTable(name="groups_groups",
+     *      joinColumns={@JoinColumn(name="parent_id", referencedColumnName="id")},
+     *      inverseJoinColumns={@JoinColumn(name="child_id", referencedColumnName="id")}
+     * )
+     */
+    protected $children = null;
 
-	/**
-	 * @ManyToMany(targetEntity="DDC719Group", mappedBy="children")
-	 */
-	protected $parents = NULL;
+    /** @ManyToMany(targetEntity="DDC719Group", mappedBy="children") */
+    protected $parents = null;
 
-	/**
-	 * construct
-	 */
-	public function __construct() {
-		parent::__construct();
+    /**
+     * construct
+     */
+    public function __construct()
+    {
+        parent::__construct();
 
-		$this->channels = new ArrayCollection();
-		$this->children = new ArrayCollection();
-		$this->parents = new ArrayCollection();
-	}
+        $this->channels = new ArrayCollection();
+        $this->children = new ArrayCollection();
+        $this->parents  = new ArrayCollection();
+    }
 
-	/**
-	 * adds group as new child
-	 *
-	 * @param Group $child
-	 */
-	public function addGroup(Group $child) {
-        if ( ! $this->children->contains($child)) {
+    /**
+     * adds group as new child
+     */
+    public function addGroup(Group $child): void
+    {
+        if (! $this->children->contains($child)) {
             $this->children->add($child);
             $child->addGroup($this);
         }
-	}
+    }
 
-	/**
-	 * adds channel as new child
-	 *
-	 * @param Channel $child
-	 */
-	public function addChannel(Channel $child) {
-        if ( ! $this->channels->contains($child)) {
+    /**
+     * adds channel as new child
+     */
+    public function addChannel(Channel $child): void
+    {
+        if (! $this->channels->contains($child)) {
             $this->channels->add($child);
         }
-	}
+    }
 
-	/**
-	 * getter & setter
-	 */
-	public function getName() { return $this->name; }
-	public function setName($name) { $this->name = $name; }
-	public function getDescription() { return $this->description; }
-	public function setDescription($description) { $this->description = $description; }
-	public function getChildren() { return $this->children; }
-	public function getParents() { return $this->parents; }
-	public function getChannels() { return $this->channels; }
+    /**
+     * getter & setter
+     */
+    public function getName()
+    {
+        return $this->name;
+    }
+
+    public function setName($name): void
+    {
+        $this->name = $name;
+    }
+
+    public function getDescription()
+    {
+        return $this->description;
+    }
+
+    public function setDescription($description): void
+    {
+        $this->description = $description;
+    }
+
+    public function getChildren()
+    {
+        return $this->children;
+    }
+
+    public function getParents()
+    {
+        return $this->parents;
+    }
+
+    public function getChannels()
+    {
+        return $this->channels;
+    }
 }

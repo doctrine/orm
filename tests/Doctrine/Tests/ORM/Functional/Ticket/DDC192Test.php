@@ -1,16 +1,20 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\Tests\ORM\Functional\Ticket;
 
 use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\Tests\OrmFunctionalTestCase;
+
+use function assert;
 
 /**
  * @group DDC-192
  */
 class DDC192Test extends OrmFunctionalTestCase
 {
-    public function testSchemaCreation()
+    public function testSchemaCreation(): void
     {
         $classes = [
             $this->_em->getClassMetadata(DDC192User::class),
@@ -23,8 +27,8 @@ class DDC192Test extends OrmFunctionalTestCase
                             ->getSchemaManager()
                             ->listTableNames();
 
-        /** @var ClassMetadata $class */
         foreach ($classes as $class) {
+            assert($class instanceof ClassMetadata);
             self::assertContains($class->getTableName(), $tables);
         }
     }
@@ -43,9 +47,7 @@ class DDC192User
      */
     public $id;
 
-    /**
-     * @Column(name="name", type="string")
-     */
+    /** @Column(name="name", type="string") */
     public $name;
 }
 
@@ -69,8 +71,7 @@ class DDC192Phonenumber
      */
     protected $User;
 
-
-    public function setPhone($value)
+    public function setPhone($value): void
     {
         $this->phone = $value;
     }
@@ -80,7 +81,7 @@ class DDC192Phonenumber
         return $this->phone;
     }
 
-    public function setUser(User $user)
+    public function setUser(User $user): void
     {
         $this->User = $user;
     }

@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\Tests\Models\DDC3231;
 
 /**
@@ -15,9 +17,6 @@ class DDC3231User2
      */
     protected $id;
 
-    /**
-     * @Column(type="string", length=255)
-     */
+    /** @Column(type="string", length=255) */
     protected $name;
-
 }

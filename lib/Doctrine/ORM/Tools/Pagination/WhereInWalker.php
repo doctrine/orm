@@ -1,4 +1,5 @@
 <?php
+
 /*
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
  * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
@@ -34,30 +35,28 @@ use Doctrine\ORM\Query\AST\SimpleArithmeticExpression;
 use Doctrine\ORM\Query\AST\WhereClause;
 use Doctrine\ORM\Query\TreeWalkerAdapter;
 use Doctrine\ORM\Utility\PersisterHelper;
+use RuntimeException;
+
 use function array_map;
 use function assert;
+use function count;
 use function is_array;
+use function reset;
 
 /**
  * Replaces the whereClause of the AST with a WHERE id IN (:foo_1, :foo_2) equivalent.
- *
- * @category    DoctrineExtensions
- * @package     DoctrineExtensions\Paginate
- * @author      David Abdemoulaie <dave@hobodave.com>
- * @copyright   Copyright (c) 2010 David Abdemoulaie (http://hobodave.com/)
- * @license     http://hobodave.com/license.txt New BSD License
  */
 class WhereInWalker extends TreeWalkerAdapter
 {
     /**
      * ID Count hint name.
      */
-    const HINT_PAGINATOR_ID_COUNT = 'doctrine.id.count';
+    public const HINT_PAGINATOR_ID_COUNT = 'doctrine.id.count';
 
     /**
      * Primary key alias for query.
      */
-    const PAGINATOR_ID_ALIAS = 'dpid';
+    public const PAGINATOR_ID_ALIAS = 'dpid';
 
     /**
      * Replaces the whereClause in the AST.
@@ -70,11 +69,9 @@ class WhereInWalker extends TreeWalkerAdapter
      * The total number of parameters is retrieved from
      * the HINT_PAGINATOR_ID_COUNT query hint.
      *
-     * @param SelectStatement $AST
-     *
      * @return void
      *
-     * @throws \RuntimeException
+     * @throws RuntimeException
      */
     public function walkSelectStatement(SelectStatement $AST)
     {
@@ -83,13 +80,13 @@ class WhereInWalker extends TreeWalkerAdapter
         $from = $AST->fromClause->identificationVariableDeclarations;
 
         if (count($from) > 1) {
-            throw new \RuntimeException("Cannot count query which selects two FROM components, cannot make distinction");
+            throw new RuntimeException('Cannot count query which selects two FROM components, cannot make distinction');
         }
 
-        $fromRoot            = reset($from);
-        $rootAlias           = $fromRoot->rangeVariableDeclaration->aliasIdentificationVariable;
-        /** @var ClassMetadata $rootClass */
-        $rootClass           = $queryComponents[$rootAlias]['metadata'];
+        $fromRoot  = reset($from);
+        $rootAlias = $fromRoot->rangeVariableDeclaration->aliasIdentificationVariable;
+        $rootClass = $queryComponents[$rootAlias]['metadata'];
+        assert($rootClass instanceof ClassMetadata);
         $identifierFieldName = $rootClass->getSingleIdentifierFieldName();
 
         $pathType = PathExpression::TYPE_STATE_FIELD;
@@ -103,12 +100,12 @@ class WhereInWalker extends TreeWalkerAdapter
         $count = $this->_getQuery()->getHint(self::HINT_PAGINATOR_ID_COUNT);
 
         if ($count > 0) {
-            $arithmeticExpression = new ArithmeticExpression();
+            $arithmeticExpression                             = new ArithmeticExpression();
             $arithmeticExpression->simpleArithmeticExpression = new SimpleArithmeticExpression(
                 [$pathExpression]
             );
-            $expression = new InExpression($arithmeticExpression);
-            $expression->literals[] = new InputParameter(":" . self::PAGINATOR_ID_ALIAS);
+            $expression                                       = new InExpression($arithmeticExpression);
+            $expression->literals[]                           = new InputParameter(':' . self::PAGINATOR_ID_ALIAS);
 
             $this->convertWhereInIdentifiersToDatabaseValue(
                 PersisterHelper::getTypeOfField(
@@ -119,11 +116,11 @@ class WhereInWalker extends TreeWalkerAdapter
                 )[0]
             );
         } else {
-            $expression = new NullComparisonExpression($pathExpression);
+            $expression      = new NullComparisonExpression($pathExpression);
             $expression->not = false;
         }
 
-        $conditionalPrimary = new ConditionalPrimary;
+        $conditionalPrimary                              = new ConditionalPrimary();
         $conditionalPrimary->simpleConditionalExpression = $expression;
         if ($AST->whereClause) {
             if ($AST->whereClause->conditionalExpression instanceof ConditionalTerm) {
@@ -134,35 +131,34 @@ class WhereInWalker extends TreeWalkerAdapter
                         new ConditionalTerm(
                             [
                                 $AST->whereClause->conditionalExpression,
-                                $conditionalPrimary
+                                $conditionalPrimary,
                             ]
-                        )
+                        ),
                     ]
                 );
-            } elseif ($AST->whereClause->conditionalExpression instanceof ConditionalExpression
+            } elseif (
+                $AST->whereClause->conditionalExpression instanceof ConditionalExpression
                 || $AST->whereClause->conditionalExpression instanceof ConditionalFactor
             ) {
-                $tmpPrimary = new ConditionalPrimary;
-                $tmpPrimary->conditionalExpression = $AST->whereClause->conditionalExpression;
+                $tmpPrimary                              = new ConditionalPrimary();
+                $tmpPrimary->conditionalExpression       = $AST->whereClause->conditionalExpression;
                 $AST->whereClause->conditionalExpression = new ConditionalTerm(
                     [
                         $tmpPrimary,
-                        $conditionalPrimary
+                        $conditionalPrimary,
                     ]
                 );
             }
         } else {
             $AST->whereClause = new WhereClause(
                 new ConditionalExpression(
-                    [
-                        new ConditionalTerm([$conditionalPrimary])
-                    ]
+                    [new ConditionalTerm([$conditionalPrimary])]
                 )
             );
         }
     }
 
-    private function convertWhereInIdentifiersToDatabaseValue(string $type) : void
+    private function convertWhereInIdentifiersToDatabaseValue(string $type): void
     {
         $query                = $this->_getQuery();
         $identifiersParameter = $query->getParameter(self::PAGINATOR_ID_ALIAS);

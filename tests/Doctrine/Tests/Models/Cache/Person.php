@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\Tests\Models\Cache;
 
 /**
@@ -16,14 +18,10 @@ class Person
      */
     public $id;
 
-    /**
-     * @Column(unique=true)
-     */
+    /** @Column(unique=true) */
     public $name;
 
-    /**
-     * @OneToOne(targetEntity="Address", mappedBy="person")
-     */
+    /** @OneToOne(targetEntity="Address", mappedBy="person") */
     public $address;
 
     public function __construct($name)

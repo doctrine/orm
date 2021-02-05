@@ -1,7 +1,14 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\Tests\Models\Cache;
+
+use DateTime;
 use Doctrine\Common\Collections\ArrayCollection;
+
+use function date;
+use function strtotime;
 
 /**
  * @Entity
@@ -16,14 +23,10 @@ class Token
      */
     public $token;
 
-    /**
-     * @Column(type="date")
-     */
+    /** @Column(type="date") */
     public $expiresAt;
 
-    /**
-     * @OneToOne(targetEntity="Client")
-     */
+    /** @OneToOne(targetEntity="Client") */
     public $client;
 
     /**
@@ -49,45 +52,32 @@ class Token
      */
     public $complexAction;
 
-    public function __construct($token, Client $client = null)
+    public function __construct($token, ?Client $client = null)
     {
         $this->logins    = new ArrayCollection();
         $this->token     = $token;
         $this->client    = $client;
-        $this->expiresAt = new \DateTime(date('Y-m-d H:i:s', strtotime("+7 day")));
+        $this->expiresAt = new DateTime(date('Y-m-d H:i:s', strtotime('+7 day')));
     }
 
-    /**
-     * @param Login $login
-     */
-    public function addLogin(Login $login)
+    public function addLogin(Login $login): void
     {
         $this->logins[] = $login;
-        $login->token = $this;
+        $login->token   = $this;
     }
 
-    /**
-     * @return Client
-     */
-    public function getClient()
+    public function getClient(): Client
     {
         return $this->client;
     }
 
-    /**
-     * @return Action
-     */
-    public function getAction()
+    public function getAction(): Action
     {
         return $this->action;
     }
 
-    /**
-     * @return ComplexAction
-     */
-    public function getComplexAction()
+    public function getComplexAction(): ComplexAction
     {
         return $this->complexAction;
     }
-
 }

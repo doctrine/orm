@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\Tests\Models\VersionedManyToOne;
 
 /**
@@ -15,14 +17,10 @@ class Article
      */
     public $id;
 
-    /**
-     * @Column(name="name")
-     */
+    /** @Column(name="name") */
     public $name;
 
-    /**
-     * @ManyToOne(targetEntity="Category", cascade={"merge", "persist"})
-     */
+    /** @ManyToOne(targetEntity="Category", cascade={"merge", "persist"}) */
     public $category;
 
     /**

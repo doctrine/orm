@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\Tests\Models\Forum;
 
 /**
@@ -7,8 +9,6 @@ namespace Doctrine\Tests\Models\Forum;
  */
 class ForumAdministrator extends ForumUser
 {
-    /**
-     * @Column(type="integer", name="access_level")
-     */
+    /** @Column(type="integer", name="access_level") */
     public $accessLevel;
 }

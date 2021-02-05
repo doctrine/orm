@@ -1,4 +1,5 @@
 <?php
+
 /*
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
  * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
@@ -25,18 +26,12 @@ namespace Doctrine\ORM\Mapping;
  */
 final class UniqueConstraint implements Annotation
 {
-    /**
-     * @var string
-     */
+    /** @var string */
     public $name;
 
-    /**
-     * @var array<string>
-     */
+    /** @var array<string> */
     public $columns;
 
-    /**
-     * @var array
-     */
+    /** @var array */
     public $options;
 }

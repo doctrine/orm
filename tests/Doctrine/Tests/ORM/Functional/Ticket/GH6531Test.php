@@ -3,10 +3,11 @@
 namespace Doctrine\Tests\ORM\Functional\Ticket;
 
 use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Tests\OrmFunctionalTestCase;
 
-final class GH6531Test extends \Doctrine\Tests\OrmFunctionalTestCase
+final class GH6531Test extends OrmFunctionalTestCase
 {
-    protected function setUp() : void
+    protected function setUp(): void
     {
         parent::setUp();
 
@@ -26,7 +27,7 @@ final class GH6531Test extends \Doctrine\Tests\OrmFunctionalTestCase
     /**
      * @group GH-6531
      */
-    public function testSimpleDerivedIdentity() : void
+    public function testSimpleDerivedIdentity(): void
     {
         $user          = new GH6531User();
         $address       = new GH6531Address();
@@ -43,7 +44,7 @@ final class GH6531Test extends \Doctrine\Tests\OrmFunctionalTestCase
     /**
      * @group GH-6531
      */
-    public function testDynamicAttributes() : void
+    public function testDynamicAttributes(): void
     {
         $article = new GH6531Article();
         $article->addAttribute('name', 'value');
@@ -60,7 +61,7 @@ final class GH6531Test extends \Doctrine\Tests\OrmFunctionalTestCase
     /**
      * @group GH-6531
      */
-    public function testJoinTableWithMetadata() : void
+    public function testJoinTableWithMetadata(): void
     {
         $product = new GH6531Product();
         $this->_em->persist($product);
@@ -108,7 +109,7 @@ class GH6531Article
     /** @OneToMany(targetEntity=GH6531ArticleAttribute::class, mappedBy="article", cascade={"ALL"}, indexBy="attribute") */
     public $attributes;
 
-    public function addAttribute(string $name, string $value)
+    public function addAttribute(string $name, string $value): void
     {
         $this->attributes[$name] = new GH6531ArticleAttribute($name, $value, $this);
     }
@@ -152,7 +153,7 @@ class GH6531Order
         $this->items = new ArrayCollection();
     }
 
-    public function addItem(GH6531Product $product, int $amount) : void
+    public function addItem(GH6531Product $product, int $amount): void
     {
         $this->items->add(new GH6531OrderItem($this, $product, $amount));
     }

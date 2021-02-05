@@ -1,4 +1,5 @@
 <?php
+
 /*
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
  * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
@@ -19,26 +20,18 @@
 
 namespace Doctrine\ORM\Decorator;
 
-use Doctrine\ORM\Query\ResultSetMapping;
 use Doctrine\ORM\EntityManagerInterface;
+use Doctrine\ORM\Query\ResultSetMapping;
 use Doctrine\Persistence\ObjectManagerDecorator;
 
 /**
  * Base class for EntityManager decorators
- *
- * @since   2.4
- * @author  Lars Strojny <lars@strojny.net
  */
 abstract class EntityManagerDecorator extends ObjectManagerDecorator implements EntityManagerInterface
 {
-    /**
-     * @var EntityManagerInterface
-     */
+    /** @var EntityManagerInterface */
     protected $wrapped;
 
-    /**
-     * @param EntityManagerInterface $wrapped
-     */
     public function __construct(EntityManagerInterface $wrapped)
     {
         $this->wrapped = $wrapped;

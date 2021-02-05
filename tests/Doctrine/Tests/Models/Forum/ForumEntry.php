@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\Tests\Models\Forum;
 
 /**
@@ -14,13 +16,11 @@ class ForumEntry
      * @GeneratedValue(strategy="AUTO")
      */
     public $id;
-    /**
-     * @Column(type="string", length=50)
-     */
+    /** @Column(type="string", length=50) */
     public $topic;
 
-    public function &getTopicByReference() {
+    public function &getTopicByReference()
+    {
         return $this->topic;
     }
 }
-

@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\Tests\Models\DDC753;
 
 /**
@@ -7,7 +9,6 @@ namespace Doctrine\Tests\Models\DDC753;
  */
 class DDC753EntityWithInvalidRepository
 {
-
     /**
      * @Id
      * @Column(type="integer")
@@ -17,5 +18,4 @@ class DDC753EntityWithInvalidRepository
 
     /** @column(type="string") */
     protected $name;
-
 }

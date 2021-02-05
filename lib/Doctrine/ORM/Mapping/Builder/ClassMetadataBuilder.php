@@ -1,4 +1,5 @@
 <?php
+
 /*
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
  * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
@@ -25,22 +26,13 @@ use Doctrine\ORM\Mapping\ClassMetadataInfo;
 /**
  * Builder Object for ClassMetadata
  *
- * @license     http://www.opensource.org/licenses/mit-license.php MIT
  * @link        www.doctrine-project.com
- * @since       2.2
- * @author      Benjamin Eberlei <kontakt@beberlei.de>
- * @author      Guilherme Blanco <guilhermeblanco@hotmail.com>
  */
 class ClassMetadataBuilder
 {
-    /**
-     * @var \Doctrine\ORM\Mapping\ClassMetadataInfo
-     */
+    /** @var ClassMetadataInfo */
     private $cm;
 
-    /**
-     * @param \Doctrine\ORM\Mapping\ClassMetadataInfo $cm
-     */
     public function __construct(ClassMetadataInfo $cm)
     {
         $this->cm = $cm;
@@ -62,7 +54,7 @@ class ClassMetadataBuilder
     public function setMappedSuperClass()
     {
         $this->cm->isMappedSuperclass = true;
-        $this->cm->isEmbeddedClass = false;
+        $this->cm->isEmbeddedClass    = false;
 
         return $this;
     }
@@ -74,7 +66,7 @@ class ClassMetadataBuilder
      */
     public function setEmbeddable()
     {
-        $this->cm->isEmbeddedClass = true;
+        $this->cm->isEmbeddedClass    = true;
         $this->cm->isMappedSuperclass = false;
 
         return $this;
@@ -95,7 +87,7 @@ class ClassMetadataBuilder
             [
                 'fieldName'    => $fieldName,
                 'class'        => $class,
-                'columnPrefix' => $columnPrefix
+                'columnPrefix' => $columnPrefix,
             ]
         );
 
@@ -152,7 +144,7 @@ class ClassMetadataBuilder
      */
     public function addIndex(array $columns, $name)
     {
-        if (!isset($this->cm->table['indexes'])) {
+        if (! isset($this->cm->table['indexes'])) {
             $this->cm->table['indexes'] = [];
         }
 
@@ -171,7 +163,7 @@ class ClassMetadataBuilder
      */
     public function addUniqueConstraint(array $columns, $name)
     {
-        if ( ! isset($this->cm->table['uniqueConstraints'])) {
+        if (! isset($this->cm->table['uniqueConstraints'])) {
             $this->cm->table['uniqueConstraints'] = [];
         }
 
@@ -312,7 +304,7 @@ class ClassMetadataBuilder
     public function addField($name, $type, array $mapping = [])
     {
         $mapping['fieldName'] = $name;
-        $mapping['type'] = $type;
+        $mapping['type']      = $type;
 
         $this->cm->mapField($mapping);
 
@@ -333,7 +325,7 @@ class ClassMetadataBuilder
             $this,
             [
                 'fieldName' => $name,
-                'type'      => $type
+                'type'      => $type,
             ]
         );
     }
@@ -353,7 +345,7 @@ class ClassMetadataBuilder
             [
                 'fieldName'    => $fieldName,
                 'class'        => $class,
-                'columnPrefix' => null
+                'columnPrefix' => null,
             ]
         );
     }
@@ -394,7 +386,7 @@ class ClassMetadataBuilder
             $this,
             [
                 'fieldName'    => $name,
-                'targetEntity' => $targetEntity
+                'targetEntity' => $targetEntity,
             ],
             ClassMetadata::MANY_TO_ONE
         );
@@ -414,7 +406,7 @@ class ClassMetadataBuilder
             $this,
             [
                 'fieldName'    => $name,
-                'targetEntity' => $targetEntity
+                'targetEntity' => $targetEntity,
             ],
             ClassMetadata::ONE_TO_ONE
         );
@@ -471,7 +463,7 @@ class ClassMetadataBuilder
             $this,
             [
                 'fieldName'    => $name,
-                'targetEntity' => $targetEntity
+                'targetEntity' => $targetEntity,
             ],
             ClassMetadata::MANY_TO_MANY
         );
@@ -528,7 +520,7 @@ class ClassMetadataBuilder
             $this,
             [
                 'fieldName'    => $name,
-                'targetEntity' => $targetEntity
+                'targetEntity' => $targetEntity,
             ],
             ClassMetadata::ONE_TO_MANY
         );

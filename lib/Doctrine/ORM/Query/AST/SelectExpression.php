@@ -1,4 +1,5 @@
 <?php
+
 /*
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
  * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
@@ -21,29 +22,19 @@ namespace Doctrine\ORM\Query\AST;
 
 /**
  * SelectExpression ::= IdentificationVariable ["." "*"] | StateFieldPathExpression |
- *	                    (AggregateExpression | "(" Subselect ")") [["AS"] ["HIDDEN"] FieldAliasIdentificationVariable]
+ *                      (AggregateExpression | "(" Subselect ")") [["AS"] ["HIDDEN"] FieldAliasIdentificationVariable]
  *
  * @link    www.doctrine-project.org
- * @since   2.0
- * @author  Guilherme Blanco <guilhermeblanco@hotmail.com>
- * @author  Jonathan Wage <jonwage@gmail.com>
- * @author  Roman Borschel <roman@code-factory.org>
  */
 class SelectExpression extends Node
 {
-    /**
-     * @var mixed
-     */
+    /** @var mixed */
     public $expression;
 
-    /**
-     * @var string|null
-     */
+    /** @var string|null */
     public $fieldIdentificationVariable;
 
-    /**
-     * @var bool
-     */
+    /** @var bool */
     public $hiddenAliasResultVariable;
 
     /**
@@ -53,9 +44,9 @@ class SelectExpression extends Node
      */
     public function __construct($expression, $fieldIdentificationVariable, $hiddenAliasResultVariable = false)
     {
-        $this->expression = $expression;
+        $this->expression                  = $expression;
         $this->fieldIdentificationVariable = $fieldIdentificationVariable;
-        $this->hiddenAliasResultVariable = $hiddenAliasResultVariable;
+        $this->hiddenAliasResultVariable   = $hiddenAliasResultVariable;
     }
 
     /**

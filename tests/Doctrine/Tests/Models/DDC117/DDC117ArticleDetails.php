@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\Tests\Models\DDC117;
 
 /**
@@ -14,9 +16,7 @@ class DDC117ArticleDetails
      */
     private $article;
 
-    /**
-     * @Column(type="text")
-     */
+    /** @Column(type="text") */
     private $text;
 
     public function __construct($article, $text)
@@ -27,7 +27,7 @@ class DDC117ArticleDetails
         $this->update($text);
     }
 
-    public function update($text)
+    public function update($text): void
     {
         $this->text = $text;
     }

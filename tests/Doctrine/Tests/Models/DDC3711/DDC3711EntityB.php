@@ -1,76 +1,49 @@
 <?php
 
+declare(strict_types=1);
 
 namespace Doctrine\Tests\Models\DDC3711;
 
 use Doctrine\Common\Collections\ArrayCollection;
 
-/**
- * @author Marc Pantel <pantel.m@gmail.com>
- */
 class DDC3711EntityB
 {
-    /**
-     * @var int
-     */
+    /** @var int */
     private $id1;
 
-    /**
-     * @var int
-     */
+    /** @var int */
     private $id2;
 
-    /**
-     * @var ArrayCollection
-     */
+    /** @var ArrayCollection */
     private $entityA;
 
-    /**
-     * @return int
-     */
-    public function getId1()
+    public function getId1(): int
     {
         return $this->id1;
     }
 
-    /**
-     * @param int $id1
-     */
-    public function setId1($id1)
+    public function setId1(int $id1): void
     {
         $this->id1 = $id1;
     }
 
-    /**
-     * @return int
-     */
-    public function getId2()
+    public function getId2(): int
     {
         return $this->id2;
     }
 
-    /**
-     * @param int $id2
-     */
-    public function setId2($id2)
+    public function setId2(int $id2): void
     {
         $this->id2 = $id2;
     }
 
-    /**
-     * @return ArrayCollection
-     */
-    public function getEntityA()
+    public function getEntityA(): ArrayCollection
     {
         return $this->entityA;
     }
 
-    /**
-     * @param ArrayCollection $entityA
-     */
-    public function addEntityA($entityA)
+    public function addEntityA(ArrayCollection $entityA): void
     {
         $this->entityA[] = $entityA;
     }
-
 }

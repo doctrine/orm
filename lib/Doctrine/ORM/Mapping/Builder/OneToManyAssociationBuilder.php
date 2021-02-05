@@ -1,4 +1,5 @@
 <?php
+
 /*
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
  * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
@@ -22,10 +23,7 @@ namespace Doctrine\ORM\Mapping\Builder;
 /**
  * OneToMany Association Builder
  *
- * @license     http://www.opensource.org/licenses/mit-license.php MIT
  * @link        www.doctrine-project.com
- * @since       2.0
- * @author      Benjamin Eberlei <kontakt@beberlei.de>
  */
 class OneToManyAssociationBuilder extends AssociationBuilder
 {
@@ -62,6 +60,7 @@ class OneToManyAssociationBuilder extends AssociationBuilder
         if ($this->joinColumns) {
             $mapping['joinColumns'] = $this->joinColumns;
         }
+
         $cm = $this->builder->getClassMetadata();
         $cm->mapOneToMany($mapping);
 

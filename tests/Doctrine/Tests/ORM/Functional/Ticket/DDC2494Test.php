@@ -1,17 +1,21 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\Tests\ORM\Functional\Ticket;
 
-use Doctrine\DBAL\Types\Type;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Platforms\AbstractPlatform;
+use Doctrine\DBAL\Types\Type;
+use Doctrine\Tests\OrmFunctionalTestCase;
 
 /**
  * @group DDC-2494
  * @group non-cacheable
  */
-class DDC2494Test extends \Doctrine\Tests\OrmFunctionalTestCase
+class DDC2494Test extends OrmFunctionalTestCase
 {
-    protected function setUp() : void
+    protected function setUp(): void
     {
         parent::setUp();
 
@@ -21,13 +25,13 @@ class DDC2494Test extends \Doctrine\Tests\OrmFunctionalTestCase
 
         $this->_schemaTool->createSchema(
             [
-            $this->_em->getClassMetadata(DDC2494Currency::class),
-            $this->_em->getClassMetadata(DDC2494Campaign::class),
+                $this->_em->getClassMetadata(DDC2494Currency::class),
+                $this->_em->getClassMetadata(DDC2494Campaign::class),
             ]
         );
     }
 
-    public function testIssue()
+    public function testIssue(): void
     {
         $currency = new DDC2494Currency(1, 2);
 
@@ -82,14 +86,11 @@ class DDC2494Currency
      */
     protected $id;
 
-    /**
-     * @Column(name="temp", type="ddc2494_tinyint", nullable=false)
-     */
+    /** @Column(name="temp", type="ddc2494_tinyint", nullable=false) */
     protected $temp;
 
     /**
-     * @var \Doctrine\Common\Collections\Collection
-     *
+     * @var Collection
      * @OneToMany(targetEntity="DDC2494Campaign", mappedBy="currency")
      */
     protected $campaigns;
@@ -130,8 +131,7 @@ class DDC2494Campaign
     protected $id;
 
     /**
-     * @var \Doctrine\Tests\ORM\Functional\Ticket\DDC2494Currency
-     *
+     * @var DDC2494Currency
      * @ManyToOne(targetEntity="DDC2494Currency", inversedBy="campaigns")
      * @JoinColumn(name="currency_id", referencedColumnName="id", nullable=false)
      */
@@ -147,10 +147,7 @@ class DDC2494Campaign
         return $this->id;
     }
 
-    /**
-     * @return \Doctrine\Tests\ORM\Functional\Ticket\DDC2494Currency
-     */
-    public function getCurrency()
+    public function getCurrency(): DDC2494Currency
     {
         return $this->currency;
     }
@@ -189,7 +186,7 @@ class DDC2494TinyIntType extends Type
      */
     public function convertToPHPValue($value, AbstractPlatform $platform)
     {
-        $return = (integer) $value;
+        $return = (int) $value;
 
         self::$calls[__FUNCTION__][] = [
             'value'     => $value,

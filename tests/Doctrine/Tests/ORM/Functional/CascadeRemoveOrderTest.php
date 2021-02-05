@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\Tests\ORM\Functional;
 
 use Doctrine\Common\Collections\ArrayCollection;
@@ -10,7 +12,7 @@ use Doctrine\Tests\OrmFunctionalTestCase;
  */
 class CascadeRemoveOrderTest extends OrmFunctionalTestCase
 {
-    protected function setUp() : void
+    protected function setUp(): void
     {
         parent::setUp();
 
@@ -22,7 +24,7 @@ class CascadeRemoveOrderTest extends OrmFunctionalTestCase
         );
     }
 
-    protected function tearDown() : void
+    protected function tearDown(): void
     {
         parent::tearDown();
 
@@ -34,7 +36,7 @@ class CascadeRemoveOrderTest extends OrmFunctionalTestCase
         );
     }
 
-    public function testSingle()
+    public function testSingle(): void
     {
         $eO = new CascadeRemoveOrderEntityO();
         $eG = new CascadeRemoveOrderEntityG($eO);
@@ -51,7 +53,7 @@ class CascadeRemoveOrderTest extends OrmFunctionalTestCase
         self::assertNull($this->_em->find(CascadeRemoveOrderEntityG::class, $eG->getId()));
     }
 
-    public function testMany()
+    public function testMany(): void
     {
         $eO  = new CascadeRemoveOrderEntityO();
         $eG1 = new CascadeRemoveOrderEntityG($eO);
@@ -101,7 +103,6 @@ class CascadeRemoveOrderEntityO
      */
     private $oneToManyG;
 
-
     public function __construct()
     {
         $this->oneToManyG = new ArrayCollection();
@@ -112,7 +113,7 @@ class CascadeRemoveOrderEntityO
         return $this->id;
     }
 
-    public function setOneToOneG(CascadeRemoveOrderEntityG $eG)
+    public function setOneToOneG(CascadeRemoveOrderEntityG $eG): void
     {
         $this->oneToOneG = $eG;
     }
@@ -122,7 +123,7 @@ class CascadeRemoveOrderEntityO
         return $this->oneToOneG;
     }
 
-    public function addOneToManyG(CascadeRemoveOrderEntityG $eG)
+    public function addOneToManyG(CascadeRemoveOrderEntityG $eG): void
     {
         $this->oneToManyG->add($eG);
     }
@@ -152,10 +153,10 @@ class CascadeRemoveOrderEntityG
      */
     private $ownerO;
 
-    public function __construct(CascadeRemoveOrderEntityO $eO, $position=1)
+    public function __construct(CascadeRemoveOrderEntityO $eO, $position = 1)
     {
         $this->position = $position;
-        $this->ownerO= $eO;
+        $this->ownerO   = $eO;
         $this->ownerO->addOneToManyG($this);
     }
 

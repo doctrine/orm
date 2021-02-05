@@ -1,4 +1,5 @@
 <?php
+
 /*
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
  * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
@@ -26,17 +27,10 @@ use Doctrine\ORM\Query\SqlWalker;
 /**
  * Executor that executes the SQL statement for simple DQL SELECT statements.
  *
- * @license     http://www.opensource.org/licenses/mit-license.php MIT
- * @author      Roman Borschel <roman@code-factory.org>
  * @link        www.doctrine-project.org
- * @since       2.0
  */
 class SingleSelectExecutor extends AbstractSqlExecutor
 {
-    /**
-     * @param \Doctrine\ORM\Query\AST\SelectStatement $AST
-     * @param \Doctrine\ORM\Query\SqlWalker           $sqlWalker
-     */
     public function __construct(SelectStatement $AST, SqlWalker $sqlWalker)
     {
         $this->_sqlStatements = $sqlWalker->walkSelectStatement($AST);

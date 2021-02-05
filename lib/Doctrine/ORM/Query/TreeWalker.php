@@ -1,4 +1,5 @@
 <?php
+
 /*
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
  * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
@@ -19,20 +20,19 @@
 
 namespace Doctrine\ORM\Query;
 
+use Doctrine\ORM\AbstractQuery;
+
 /**
  * Interface for walkers of DQL ASTs (abstract syntax trees).
- *
- * @author Roman Borschel <roman@code-factory.org>
- * @since 2.0
  */
 interface TreeWalker
 {
     /**
      * Initializes TreeWalker with important information about the ASTs to be walked.
      *
-     * @param \Doctrine\ORM\AbstractQuery      $query           The parsed Query.
-     * @param \Doctrine\ORM\Query\ParserResult $parserResult    The result of the parsing process.
-     * @param array                            $queryComponents The query components (symbol table).
+     * @param AbstractQuery $query           The parsed Query.
+     * @param ParserResult  $parserResult    The result of the parsing process.
+     * @param mixed[]       $queryComponents The query components (symbol table).
      */
     public function __construct($query, $parserResult, array $queryComponents);
 
@@ -55,8 +55,6 @@ interface TreeWalker
 
     /**
      * Walks down a SelectStatement AST node, thereby generating the appropriate SQL.
-     *
-     * @param AST\SelectStatement $AST
      *
      * @return string The SQL.
      */
@@ -209,8 +207,6 @@ interface TreeWalker
     /**
      * Walks down an UpdateStatement AST node, thereby generating the appropriate SQL.
      *
-     * @param AST\UpdateStatement $AST
-     *
      * @return string The SQL.
      */
     function walkUpdateStatement(AST\UpdateStatement $AST);
@@ -218,16 +214,12 @@ interface TreeWalker
     /**
      * Walks down a DeleteStatement AST node, thereby generating the appropriate SQL.
      *
-     * @param AST\DeleteStatement $AST
-     *
      * @return string The SQL.
      */
     function walkDeleteStatement(AST\DeleteStatement $AST);
 
     /**
      * Walks down a DeleteClause AST node, thereby generating the appropriate SQL.
-     *
-     * @param AST\DeleteClause $deleteClause
      *
      * @return string The SQL.
      */

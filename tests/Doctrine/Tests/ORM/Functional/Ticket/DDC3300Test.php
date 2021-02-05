@@ -1,15 +1,18 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\Tests\ORM\Functional\Ticket;
 
 use Doctrine\ORM\Tools\ResolveTargetEntityListener;
+use Doctrine\Tests\OrmFunctionalTestCase;
 
 /**
  * @group DDC-3300
  */
-class DDC3300Test extends \Doctrine\Tests\OrmFunctionalTestCase
+class DDC3300Test extends OrmFunctionalTestCase
 {
-    public function testResolveTargetEntitiesChangesDiscriminatorMapValues()
+    public function testResolveTargetEntitiesChangesDiscriminatorMapValues(): void
     {
         $resolveTargetEntity = new ResolveTargetEntityListener();
 
@@ -29,7 +32,7 @@ class DDC3300Test extends \Doctrine\Tests\OrmFunctionalTestCase
 
         $this->_schemaTool->createSchema(
             [
-            $this->_em->getClassMetadata(DDC3300Person::class),
+                $this->_em->getClassMetadata(DDC3300Person::class),
             ]
         );
 

@@ -1,36 +1,39 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\Tests\ORM\Functional\Ticket;
 
-/**
- * Class DDC2895Test
- * @package Doctrine\Tests\ORM\Functional\Ticket
- * @author http://github.com/gwagner
- */
-class DDC2895Test extends \Doctrine\Tests\OrmFunctionalTestCase
+use DateTime;
+use Doctrine\Tests\OrmFunctionalTestCase;
+use Exception;
+
+use function assert;
+use function get_class;
+
+class DDC2895Test extends OrmFunctionalTestCase
 {
-    protected function setUp() : void
+    protected function setUp(): void
     {
         parent::setUp();
         try {
             $this->_schemaTool->createSchema(
                 [
-                $this->_em->getClassMetadata(DDC2895::class),
+                    $this->_em->getClassMetadata(DDC2895::class),
                 ]
             );
-        } catch(\Exception $e) {
-
+        } catch (Exception $e) {
         }
     }
 
-    public function testPostLoadOneToManyInheritance()
+    public function testPostLoadOneToManyInheritance(): void
     {
         $cm = $this->_em->getClassMetadata(DDC2895::class);
 
         $this->assertEquals(
             [
-                "prePersist" => ["setLastModifiedPreUpdate"],
-                "preUpdate" => ["setLastModifiedPreUpdate"],
+                'prePersist' => ['setLastModifiedPreUpdate'],
+                'preUpdate' => ['setLastModifiedPreUpdate'],
             ],
             $cm->lifecycleCallbacks
         );
@@ -41,11 +44,10 @@ class DDC2895Test extends \Doctrine\Tests\OrmFunctionalTestCase
         $this->_em->flush();
         $this->_em->clear();
 
-        /** @var DDC2895 $ddc2895 */
         $ddc2895 = $this->_em->find(get_class($ddc2895), $ddc2895->id);
+        assert($ddc2895 instanceof DDC2895);
 
         $this->assertNotNull($ddc2895->getLastModified());
-
     }
 }
 
@@ -57,7 +59,7 @@ abstract class AbstractDDC2895
 {
     /**
      * @Column(name="last_modified", type="datetimetz", nullable=false)
-     * @var \DateTime
+     * @var DateTime
      */
     protected $lastModified;
 
@@ -65,23 +67,17 @@ abstract class AbstractDDC2895
      * @PrePersist
      * @PreUpdate
      */
-    public function setLastModifiedPreUpdate()
+    public function setLastModifiedPreUpdate(): void
     {
-        $this->setLastModified(new \DateTime());
+        $this->setLastModified(new DateTime());
     }
 
-    /**
-     * @param \DateTime $lastModified
-     */
-    public function setLastModified( $lastModified )
+    public function setLastModified(DateTime $lastModified): void
     {
         $this->lastModified = $lastModified;
     }
 
-    /**
-     * @return \DateTime
-     */
-    public function getLastModified()
+    public function getLastModified(): DateTime
     {
         return $this->lastModified;
     }
@@ -99,7 +95,7 @@ class DDC2895 extends AbstractDDC2895
     /**
      * @param mixed $id
      */
-    public function setId( $id )
+    public function setId($id): void
     {
         $this->id = $id;
     }

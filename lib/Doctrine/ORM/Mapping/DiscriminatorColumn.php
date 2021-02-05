@@ -1,4 +1,5 @@
 <?php
+
 /*
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
  * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
@@ -25,19 +26,13 @@ namespace Doctrine\ORM\Mapping;
  */
 final class DiscriminatorColumn implements Annotation
 {
-    /**
-     * @var string
-     */
+    /** @var string */
     public $name;
 
-    /**
-     * @var string
-     */
+    /** @var string */
     public $type;
 
-    /**
-     * @var integer
-     */
+    /** @var int */
     public $length;
 
     /**
@@ -47,8 +42,6 @@ final class DiscriminatorColumn implements Annotation
      */
     public $fieldName;
 
-    /**
-     * @var string
-     */
+    /** @var string */
     public $columnDefinition;
 }

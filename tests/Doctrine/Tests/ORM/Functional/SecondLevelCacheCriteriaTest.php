@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\Tests\ORM\Functional;
 
 use Doctrine\Common\Collections\Collection;
@@ -12,7 +14,7 @@ use Doctrine\Tests\Models\Cache\State;
  */
 class SecondLevelCacheCriteriaTest extends SecondLevelCacheAbstractTest
 {
-    public function testMatchingPut()
+    public function testMatchingPut(): void
     {
         $this->evictRegions();
 
@@ -53,7 +55,7 @@ class SecondLevelCacheCriteriaTest extends SecondLevelCacheAbstractTest
         $this->assertEquals($result1[0]->getName(), $result2[0]->getName());
     }
 
-    public function testRepositoryMatching()
+    public function testRepositoryMatching(): void
     {
         $this->evictRegions();
 
@@ -121,7 +123,7 @@ class SecondLevelCacheCriteriaTest extends SecondLevelCacheAbstractTest
         $this->assertEquals($this->countries[1]->getName(), $result4[0]->getName());
     }
 
-    public function testCollectionMatching()
+    public function testCollectionMatching(): void
     {
         $this->loadFixturesCountries();
         $this->loadFixturesStates();
@@ -154,5 +156,4 @@ class SecondLevelCacheCriteriaTest extends SecondLevelCacheAbstractTest
         $this->assertInstanceOf(Collection::class, $matching);
         $this->assertCount(1, $matching);
     }
-
 }

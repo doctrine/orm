@@ -1,35 +1,39 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\Tests\ORM\Functional\Ticket;
 
+use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\Query\ResultSetMapping;
 use Doctrine\ORM\Query\ResultSetMappingBuilder;
+use Doctrine\Tests\OrmFunctionalTestCase;
 
 /**
  * @group DDC-2256
  */
-class DDC2256Test extends \Doctrine\Tests\OrmFunctionalTestCase
+class DDC2256Test extends OrmFunctionalTestCase
 {
-    protected function setUp() : void
+    protected function setUp(): void
     {
         parent::setUp();
 
         $this->_schemaTool->createSchema(
             [
                 $this->_em->getClassMetadata(DDC2256User::class),
-                $this->_em->getClassMetadata(DDC2256Group::class)
+                $this->_em->getClassMetadata(DDC2256Group::class),
             ]
         );
     }
 
-    public function testIssue()
+    public function testIssue(): void
     {
         $config = $this->_em->getConfiguration();
         $config->addEntityNamespace('MyNamespace', __NAMESPACE__);
 
-        $user = new DDC2256User();
-        $user->name = 'user';
-        $group = new DDC2256Group();
+        $user        = new DDC2256User();
+        $user->name  = 'user';
+        $group       = new DDC2256Group();
         $group->name = 'group';
         $user->group = $group;
 
@@ -75,9 +79,7 @@ class DDC2256User
      */
     public $id;
 
-    /**
-     * @Column(type="string")
-     */
+    /** @Column(type="string") */
     public $name;
 
     /**
@@ -100,19 +102,14 @@ class DDC2256Group
      */
     public $id;
 
-    /**
-     * @Column(type="string")
-     */
+    /** @Column(type="string") */
     public $name;
 
-    /**
-     * @OneToMany(targetEntity="DDC2256User", mappedBy="group")
-     */
+    /** @OneToMany(targetEntity="DDC2256User", mappedBy="group") */
     public $users;
 
     public function __construct()
     {
-        $this->users = new \Doctrine\Common\Collections\ArrayCollection();
+        $this->users = new ArrayCollection();
     }
 }
-

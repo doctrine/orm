@@ -1,11 +1,14 @@
 <?php
+
+declare(strict_types=1);
+
 namespace Doctrine\Tests\ORM\Functional\Ticket;
 
 use Doctrine\Tests\OrmFunctionalTestCase;
 
 class DDC3303Test extends OrmFunctionalTestCase
 {
-    protected function setUp() : void
+    protected function setUp(): void
     {
         parent::setUp();
 
@@ -19,7 +22,7 @@ class DDC3303Test extends OrmFunctionalTestCase
      *
      * When using an embedded field in an inheritance, private properties should also be inherited.
      */
-    public function testEmbeddedObjectsAreAlsoInherited()
+    public function testEmbeddedObjectsAreAlsoInherited(): void
     {
         $employee = new DDC3303Employee(
             'John Doe',

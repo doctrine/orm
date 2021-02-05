@@ -1,25 +1,27 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\Tests\ORM\Functional\Ticket;
 
 use Doctrine\Tests\Models\Quote\Group;
+use Doctrine\Tests\OrmFunctionalTestCase;
 
 /**
  * @group DDC-1845
  * @group DDC-1843
  */
-class DDC1843Test extends \Doctrine\Tests\OrmFunctionalTestCase
+class DDC1843Test extends OrmFunctionalTestCase
 {
-    protected function setUp() : void
+    protected function setUp(): void
     {
         $this->useModelSet('quote');
 
         parent::setUp();
     }
 
-    public function testCreateRetrieveUpdateDelete()
+    public function testCreateRetrieveUpdateDelete(): void
     {
-
         $e1 = new Group('Parent Bar 1');
         $e2 = new Group('Parent Foo 2');
 
@@ -36,16 +38,16 @@ class DDC1843Test extends \Doctrine\Tests\OrmFunctionalTestCase
         $this->_em->flush();
         $this->_em->clear();
 
-        $e1Id   = $e1->id;
-        $e2Id   = $e2->id;
-        $e3Id   = $e3->id;
-        $e4Id   = $e4->id;
+        $e1Id = $e1->id;
+        $e2Id = $e2->id;
+        $e3Id = $e3->id;
+        $e4Id = $e4->id;
 
         // Retrieve
-        $e1     = $this->_em->find(Group::class, $e1Id);
-        $e2     = $this->_em->find(Group::class, $e2Id);
-        $e3     = $this->_em->find(Group::class, $e3Id);
-        $e4     = $this->_em->find(Group::class, $e4Id);
+        $e1 = $this->_em->find(Group::class, $e1Id);
+        $e2 = $this->_em->find(Group::class, $e2Id);
+        $e3 = $this->_em->find(Group::class, $e3Id);
+        $e4 = $this->_em->find(Group::class, $e4Id);
 
         $this->assertInstanceOf(Group::class, $e1);
         $this->assertInstanceOf(Group::class, $e2);
@@ -56,7 +58,6 @@ class DDC1843Test extends \Doctrine\Tests\OrmFunctionalTestCase
         $this->assertEquals($e2Id, $e2->id);
         $this->assertEquals($e3Id, $e3->id);
         $this->assertEquals($e4Id, $e4->id);
-
 
         $this->assertEquals('Parent Bar 1', $e1->name);
         $this->assertEquals('Parent Foo 2', $e2->name);
@@ -104,22 +105,20 @@ class DDC1843Test extends \Doctrine\Tests\OrmFunctionalTestCase
         $this->_em->flush();
         $this->_em->clear();
 
-
         $this->assertInstanceOf(Group::class, $e1);
         $this->assertInstanceOf(Group::class, $e2);
         $this->assertInstanceOf(Group::class, $e3);
         $this->assertInstanceOf(Group::class, $e4);
 
         // Retrieve
-        $e1     = $this->_em->find(Group::class, $e1Id);
-        $e2     = $this->_em->find(Group::class, $e2Id);
-        $e3     = $this->_em->find(Group::class, $e3Id);
-        $e4     = $this->_em->find(Group::class, $e4Id);
+        $e1 = $this->_em->find(Group::class, $e1Id);
+        $e2 = $this->_em->find(Group::class, $e2Id);
+        $e3 = $this->_em->find(Group::class, $e3Id);
+        $e4 = $this->_em->find(Group::class, $e4Id);
 
         $this->assertNull($e1);
         $this->assertNull($e2);
         $this->assertNull($e3);
         $this->assertNull($e4);
     }
-
 }

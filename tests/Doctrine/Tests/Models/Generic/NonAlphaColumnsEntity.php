@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\Tests\Models\Generic;
 
 /**
@@ -15,15 +17,10 @@ class NonAlphaColumnsEntity
      */
     public $id;
 
-    /**
-     * @Column(type="string", name="`simple-entity-value`")
-     */
+    /** @Column(type="string", name="`simple-entity-value`") */
     public $value;
 
-    /**
-     * @param string $value
-     */
-    public function __construct($value)
+    public function __construct(string $value)
     {
         $this->value = $value;
     }

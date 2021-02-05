@@ -1,7 +1,10 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\Tests\ORM\Tools;
 
+use DateTime;
 use Doctrine\Common\Annotations\AnnotationReader;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\Mapping\ClassMetadataFactory;
@@ -13,26 +16,53 @@ use Doctrine\Tests\Models\DDC2372\DDC2372Admin;
 use Doctrine\Tests\Models\DDC2372\DDC2372User;
 use Doctrine\Tests\OrmTestCase;
 use Doctrine\Tests\VerifyDeprecations;
+use InvalidArgumentException;
+use RecursiveDirectoryIterator;
+use RecursiveIteratorIterator;
 use ReflectionClass;
+use ReflectionMethod;
+use ReflectionObject;
+use ReflectionProperty;
+use SplFileInfo;
+use stdClass;
+
+use function array_keys;
+use function assert;
+use function basename;
+use function class_exists;
+use function file_get_contents;
+use function file_put_contents;
+use function get_class;
+use function method_exists;
+use function mkdir;
+use function preg_match;
+use function preg_replace;
+use function rmdir;
+use function sprintf;
+use function str_replace;
+use function sys_get_temp_dir;
+use function ucfirst;
+use function uniqid;
+use function unlink;
+
+use const DIRECTORY_SEPARATOR;
 
 class EntityGeneratorTest extends OrmTestCase
 {
     use VerifyDeprecations;
 
-    /**
-     * @var EntityGenerator
-     */
+    /** @var EntityGenerator */
     private $_generator;
     private $_tmpDir;
     private $_namespace;
 
-    protected function setUp() : void
+    protected function setUp(): void
     {
-        $this->_namespace = uniqid("doctrine_");
-        $this->_tmpDir = \sys_get_temp_dir();
-        \mkdir($this->_tmpDir . \DIRECTORY_SEPARATOR . $this->_namespace);
+        $this->_namespace = uniqid('doctrine_');
+        $this->_tmpDir    = sys_get_temp_dir();
+        mkdir($this->_tmpDir . DIRECTORY_SEPARATOR . $this->_namespace);
         $this->_generator = new EntityGenerator();
-        $this->_generator->setAnnotationPrefix("");
+        $this->_generator->setAnnotationPrefix('');
         $this->_generator->setGenerateAnnotations(true);
         $this->_generator->setGenerateStubMethods(true);
         $this->_generator->setRegenerateEntityIfExists(false);
@@ -40,38 +70,37 @@ class EntityGeneratorTest extends OrmTestCase
         $this->_generator->setFieldVisibility(EntityGenerator::FIELD_VISIBLE_PROTECTED);
     }
 
-    public function tearDown() : void
+    public function tearDown(): void
     {
-        $ri = new \RecursiveIteratorIterator(new \RecursiveDirectoryIterator($this->_tmpDir . '/' . $this->_namespace));
-        foreach ($ri AS $file) {
-            /* @var $file \SplFileInfo */
+        $ri = new RecursiveIteratorIterator(new RecursiveDirectoryIterator($this->_tmpDir . '/' . $this->_namespace));
+        foreach ($ri as $file) {
+            assert($file instanceof SplFileInfo);
             if ($file->isFile()) {
-                \unlink($file->getPathname());
+                unlink($file->getPathname());
             }
         }
+
         rmdir($this->_tmpDir . '/' . $this->_namespace);
     }
 
     /** @after */
-    public function ensureTestGeneratedDeprecationMessages() : void
+    public function ensureTestGeneratedDeprecationMessages(): void
     {
         $this->assertHasDeprecationMessages();
     }
 
     /**
      * @param ClassMetadataInfo[] $embeddedClasses
-     *
-     * @return ClassMetadataInfo
      */
-    public function generateBookEntityFixture(array $embeddedClasses = [])
+    public function generateBookEntityFixture(array $embeddedClasses = []): ClassMetadataInfo
     {
-        $metadata = new ClassMetadataInfo($this->_namespace . '\EntityGeneratorBook');
-        $metadata->namespace = $this->_namespace;
-        $metadata->customRepositoryClassName = $this->_namespace  . '\EntityGeneratorBookRepository';
+        $metadata                            = new ClassMetadataInfo($this->_namespace . '\EntityGeneratorBook');
+        $metadata->namespace                 = $this->_namespace;
+        $metadata->customRepositoryClassName = $this->_namespace . '\EntityGeneratorBookRepository';
 
-        $metadata->table['name'] = 'book';
+        $metadata->table['name']                           = 'book';
         $metadata->table['uniqueConstraints']['name_uniq'] = ['columns' => ['name']];
-        $metadata->table['indexes']['status_idx'] = ['columns' => ['status']];
+        $metadata->table['indexes']['status_idx']          = ['columns' => ['status']];
         $metadata->mapField(['fieldName' => 'name', 'type' => 'string']);
         $metadata->mapField(['fieldName' => 'status', 'type' => 'string', 'options' => ['default' => 'published']]);
         $metadata->mapField(['fieldName' => 'id', 'type' => 'integer', 'id' => true]);
@@ -79,18 +108,18 @@ class EntityGeneratorTest extends OrmTestCase
             ['fieldName' => 'author', 'targetEntity' => EntityGeneratorAuthor::class, 'mappedBy' => 'book']
         );
         $joinColumns = [
-            ['name' => 'author_id', 'referencedColumnName' => 'id']
+            ['name' => 'author_id', 'referencedColumnName' => 'id'],
         ];
         $metadata->mapManyToMany(
             [
-            'fieldName' => 'comments',
-            'targetEntity' => EntityGeneratorComment::class,
-            'fetch' => ClassMetadataInfo::FETCH_EXTRA_LAZY,
-            'joinTable' => [
-                'name' => 'book_comment',
-                'joinColumns' => [['name' => 'book_id', 'referencedColumnName' => 'id']],
-                'inverseJoinColumns' => [['name' => 'comment_id', 'referencedColumnName' => 'id']],
-            ],
+                'fieldName' => 'comments',
+                'targetEntity' => EntityGeneratorComment::class,
+                'fetch' => ClassMetadataInfo::FETCH_EXTRA_LAZY,
+                'joinTable' => [
+                    'name' => 'book_comment',
+                    'joinColumns' => [['name' => 'book_id', 'referencedColumnName' => 'id']],
+                    'inverseJoinColumns' => [['name' => 'comment_id', 'referencedColumnName' => 'id']],
+                ],
             ]
         );
         $metadata->addLifecycleCallback('loading', 'postLoad');
@@ -109,15 +138,15 @@ class EntityGeneratorTest extends OrmTestCase
 
     private function generateEntityTypeFixture(array $field)
     {
-        $metadata = new ClassMetadataInfo($this->_namespace . '\EntityType');
+        $metadata            = new ClassMetadataInfo($this->_namespace . '\EntityType');
         $metadata->namespace = $this->_namespace;
 
         $metadata->table['name'] = 'entity_type';
         $metadata->mapField(['fieldName' => 'id', 'type' => 'integer', 'id' => true]);
         $metadata->setIdGeneratorType(ClassMetadataInfo::GENERATOR_TYPE_AUTO);
 
-        $name  = $field['fieldName'];
-        $type  = $field['dbType'];
+        $name = $field['fieldName'];
+        $type = $field['dbType'];
         $metadata->mapField(['fieldName' => $name, 'type' => $type]);
 
         $this->_generator->writeEntityClass($metadata, $this->_tmpDir);
@@ -125,13 +154,10 @@ class EntityGeneratorTest extends OrmTestCase
         return $metadata;
     }
 
-    /**
-     * @return ClassMetadataInfo
-     */
-    private function generateIsbnEmbeddableFixture(array $embeddedClasses = [], $columnPrefix = null)
+    private function generateIsbnEmbeddableFixture(array $embeddedClasses = [], $columnPrefix = null): ClassMetadataInfo
     {
-        $metadata = new ClassMetadataInfo($this->_namespace . '\EntityGeneratorIsbn');
-        $metadata->namespace = $this->_namespace;
+        $metadata                  = new ClassMetadataInfo($this->_namespace . '\EntityGeneratorIsbn');
+        $metadata->namespace       = $this->_namespace;
         $metadata->isEmbeddedClass = true;
         $metadata->mapField(['fieldName' => 'prefix', 'type' => 'integer']);
         $metadata->mapField(['fieldName' => 'groupNumber', 'type' => 'integer']);
@@ -148,13 +174,10 @@ class EntityGeneratorTest extends OrmTestCase
         return $metadata;
     }
 
-    /**
-     * @return ClassMetadataInfo
-     */
-    private function generateTestEmbeddableFixture()
+    private function generateTestEmbeddableFixture(): ClassMetadataInfo
     {
-        $metadata = new ClassMetadataInfo($this->_namespace . '\EntityGeneratorTestEmbeddable');
-        $metadata->namespace = $this->_namespace;
+        $metadata                  = new ClassMetadataInfo($this->_namespace . '\EntityGeneratorTestEmbeddable');
+        $metadata->namespace       = $this->_namespace;
         $metadata->isEmbeddedClass = true;
         $metadata->mapField(['fieldName' => 'field1', 'type' => 'integer']);
         $metadata->mapField(['fieldName' => 'field2', 'type' => 'integer', 'nullable' => true]);
@@ -167,54 +190,43 @@ class EntityGeneratorTest extends OrmTestCase
     }
 
     /**
-     * @param string            $fieldName
-     * @param ClassMetadataInfo $classMetadata
-     * @param ClassMetadataInfo $embeddableMetadata
-     * @param string|null       $columnPrefix
+     * @param string|bool $columnPrefix
      */
     private function mapEmbedded(
-        $fieldName,
+        string $fieldName,
         ClassMetadataInfo $classMetadata,
         ClassMetadataInfo $embeddableMetadata,
         $columnPrefix = false
-    ) {
+    ): void {
         $classMetadata->mapEmbedded(
             ['fieldName' => $fieldName, 'class' => $embeddableMetadata->name, 'columnPrefix' => $columnPrefix]
         );
     }
 
-    /**
-     * @param string            $fieldName
-     * @param ClassMetadataInfo $classMetadata
-     * @param ClassMetadataInfo $embeddableMetadata
-     */
     private function mapNestedEmbedded(
-        $fieldName,
+        string $fieldName,
         ClassMetadataInfo $classMetadata,
         ClassMetadataInfo $embeddableMetadata
-    ) {
+    ): void {
         foreach ($embeddableMetadata->embeddedClasses as $property => $embeddableClass) {
             $classMetadata->mapEmbedded(
                 [
-                'fieldName' => $fieldName . '.' . $property,
-                'class' => $embeddableClass['class'],
-                'columnPrefix' => $embeddableClass['columnPrefix'],
-                'declaredField' => $embeddableClass['declaredField']
+                    'fieldName' => $fieldName . '.' . $property,
+                    'class' => $embeddableClass['class'],
+                    'columnPrefix' => $embeddableClass['columnPrefix'],
+                    'declaredField' => $embeddableClass['declaredField']
                         ? $fieldName . '.' . $embeddableClass['declaredField']
                         : $fieldName,
-                'originalField' => $embeddableClass['originalField'] ?: $property,
+                    'originalField' => $embeddableClass['originalField'] ?: $property,
                 ]
             );
         }
     }
 
-    /**
-     * @param ClassMetadataInfo $metadata
-     */
-    private function loadEntityClass(ClassMetadataInfo $metadata)
+    private function loadEntityClass(ClassMetadataInfo $metadata): void
     {
         $className = basename(str_replace('\\', '/', $metadata->name));
-        $path = $this->_tmpDir . '/' . $this->_namespace . '/' . $className . '.php';
+        $path      = $this->_tmpDir . '/' . $this->_namespace . '/' . $className . '.php';
 
         $this->assertFileExists($path);
 
@@ -222,73 +234,71 @@ class EntityGeneratorTest extends OrmTestCase
     }
 
     /**
-     * @param  ClassMetadataInfo $metadata
-     *
      * @return mixed An instance of the given metadata's class.
      */
-    public function newInstance($metadata)
+    public function newInstance(ClassMetadataInfo $metadata)
     {
         $this->loadEntityClass($metadata);
 
-        return new $metadata->name;
+        return new $metadata->name();
     }
 
     /**
      * @group GH-6314
      */
-    public function testEmbeddedEntityWithNamedColumnPrefix()
+    public function testEmbeddedEntityWithNamedColumnPrefix(): void
     {
         $columnPrefix = 'GH6314Prefix_';
         $testMetadata = $this->generateTestEmbeddableFixture();
         $isbnMetadata = $this->generateIsbnEmbeddableFixture(['testEmbedded' => $testMetadata], $columnPrefix);
-        $isbnEntity = $this->newInstance($isbnMetadata);
-        $refClass = new \ReflectionClass($isbnEntity);
+        $isbnEntity   = $this->newInstance($isbnMetadata);
+        $refClass     = new ReflectionClass($isbnEntity);
         self::assertTrue($refClass->hasProperty('testEmbedded'));
 
         $docComment = $refClass->getProperty('testEmbedded')->getDocComment();
-        $needle = sprintf('@Embedded(class="%s", columnPrefix="%s")', $testMetadata->name, $columnPrefix);
+        $needle     = sprintf('@Embedded(class="%s", columnPrefix="%s")', $testMetadata->name, $columnPrefix);
         self::assertStringContainsString($needle, $docComment);
     }
 
     /**
      * @group GH-6314
      */
-    public function testEmbeddedEntityWithoutColumnPrefix()
+    public function testEmbeddedEntityWithoutColumnPrefix(): void
     {
         $testMetadata = $this->generateTestEmbeddableFixture();
         $isbnMetadata = $this->generateIsbnEmbeddableFixture(['testEmbedded' => $testMetadata], false);
-        $isbnEntity = $this->newInstance($isbnMetadata);
-        $refClass = new \ReflectionClass($isbnEntity);
+        $isbnEntity   = $this->newInstance($isbnMetadata);
+        $refClass     = new ReflectionClass($isbnEntity);
         self::assertTrue($refClass->hasProperty('testEmbedded'));
 
         $docComment = $refClass->getProperty('testEmbedded')->getDocComment();
-        $needle = sprintf('@Embedded(class="%s", columnPrefix=false)', $testMetadata->name);
+        $needle     = sprintf('@Embedded(class="%s", columnPrefix=false)', $testMetadata->name);
         self::assertStringContainsString($needle, $docComment);
     }
 
-    public function testGeneratedEntityClass()
+    public function testGeneratedEntityClass(): void
     {
         $testMetadata = $this->generateTestEmbeddableFixture();
         $isbnMetadata = $this->generateIsbnEmbeddableFixture(['test' => $testMetadata]);
-        $metadata = $this->generateBookEntityFixture(['isbn' => $isbnMetadata]);
+        $metadata     = $this->generateBookEntityFixture(['isbn' => $isbnMetadata]);
 
         $book = $this->newInstance($metadata);
-        $this->assertTrue(class_exists($metadata->name), "Class does not exist.");
-        $this->assertTrue(method_exists($metadata->namespace . '\EntityGeneratorBook', '__construct'), "EntityGeneratorBook::__construct() missing.");
-        $this->assertTrue(method_exists($metadata->namespace . '\EntityGeneratorBook', 'getId'), "EntityGeneratorBook::getId() missing.");
-        $this->assertTrue(method_exists($metadata->namespace . '\EntityGeneratorBook', 'setName'), "EntityGeneratorBook::setName() missing.");
-        $this->assertTrue(method_exists($metadata->namespace . '\EntityGeneratorBook', 'getName'), "EntityGeneratorBook::getName() missing.");
-        $this->assertTrue(method_exists($metadata->namespace . '\EntityGeneratorBook', 'setStatus'), "EntityGeneratorBook::setStatus() missing.");
-        $this->assertTrue(method_exists($metadata->namespace . '\EntityGeneratorBook', 'getStatus'), "EntityGeneratorBook::getStatus() missing.");
-        $this->assertTrue(method_exists($metadata->namespace . '\EntityGeneratorBook', 'setAuthor'), "EntityGeneratorBook::setAuthor() missing.");
-        $this->assertTrue(method_exists($metadata->namespace . '\EntityGeneratorBook', 'getAuthor'), "EntityGeneratorBook::getAuthor() missing.");
-        $this->assertTrue(method_exists($metadata->namespace . '\EntityGeneratorBook', 'getComments'), "EntityGeneratorBook::getComments() missing.");
-        $this->assertTrue(method_exists($metadata->namespace . '\EntityGeneratorBook', 'addComment'), "EntityGeneratorBook::addComment() missing.");
-        $this->assertTrue(method_exists($metadata->namespace . '\EntityGeneratorBook', 'removeComment'), "EntityGeneratorBook::removeComment() missing.");
-        $this->assertTrue(method_exists($metadata->namespace . '\EntityGeneratorBook', 'setIsbn'), "EntityGeneratorBook::setIsbn() missing.");
-        $this->assertTrue(method_exists($metadata->namespace . '\EntityGeneratorBook', 'getIsbn'), "EntityGeneratorBook::getIsbn() missing.");
+        $this->assertTrue(class_exists($metadata->name), 'Class does not exist.');
+        $this->assertTrue(method_exists($metadata->namespace . '\EntityGeneratorBook', '__construct'), 'EntityGeneratorBook::__construct() missing.');
+        $this->assertTrue(method_exists($metadata->namespace . '\EntityGeneratorBook', 'getId'), 'EntityGeneratorBook::getId() missing.');
+        $this->assertTrue(method_exists($metadata->namespace . '\EntityGeneratorBook', 'setName'), 'EntityGeneratorBook::setName() missing.');
+        $this->assertTrue(method_exists($metadata->namespace . '\EntityGeneratorBook', 'getName'), 'EntityGeneratorBook::getName() missing.');
+        $this->assertTrue(method_exists($metadata->namespace . '\EntityGeneratorBook', 'setStatus'), 'EntityGeneratorBook::setStatus() missing.');
+        $this->assertTrue(method_exists($metadata->namespace . '\EntityGeneratorBook', 'getStatus'), 'EntityGeneratorBook::getStatus() missing.');
+        $this->assertTrue(method_exists($metadata->namespace . '\EntityGeneratorBook', 'setAuthor'), 'EntityGeneratorBook::setAuthor() missing.');
+        $this->assertTrue(method_exists($metadata->namespace . '\EntityGeneratorBook', 'getAuthor'), 'EntityGeneratorBook::getAuthor() missing.');
+        $this->assertTrue(method_exists($metadata->namespace . '\EntityGeneratorBook', 'getComments'), 'EntityGeneratorBook::getComments() missing.');
+        $this->assertTrue(method_exists($metadata->namespace . '\EntityGeneratorBook', 'addComment'), 'EntityGeneratorBook::addComment() missing.');
+        $this->assertTrue(method_exists($metadata->namespace . '\EntityGeneratorBook', 'removeComment'), 'EntityGeneratorBook::removeComment() missing.');
+        $this->assertTrue(method_exists($metadata->namespace . '\EntityGeneratorBook', 'setIsbn'), 'EntityGeneratorBook::setIsbn() missing.');
+        $this->assertTrue(method_exists($metadata->namespace . '\EntityGeneratorBook', 'getIsbn'), 'EntityGeneratorBook::getIsbn() missing.');
 
-        $reflClass = new \ReflectionClass($metadata->name);
+        $reflClass = new ReflectionClass($metadata->name);
 
         $this->assertCount(6, $reflClass->getProperties());
         $this->assertCount(15, $reflClass->getMethods());
@@ -298,11 +308,11 @@ class EntityGeneratorTest extends OrmTestCase
         $book->setName('Jonathan H. Wage');
         $this->assertEquals('Jonathan H. Wage', $book->getName());
 
-        $reflMethod = new \ReflectionMethod($metadata->name, 'addComment');
+        $reflMethod           = new ReflectionMethod($metadata->name, 'addComment');
         $addCommentParameters = $reflMethod->getParameters();
         $this->assertEquals('comment', $addCommentParameters[0]->getName());
 
-        $reflMethod = new \ReflectionMethod($metadata->name, 'removeComment');
+        $reflMethod              = new ReflectionMethod($metadata->name, 'removeComment');
         $removeCommentParameters = $reflMethod->getParameters();
         $this->assertEquals('comment', $removeCommentParameters[0]->getName());
 
@@ -323,12 +333,12 @@ class EntityGeneratorTest extends OrmTestCase
         $book->setIsbn($isbn);
         $this->assertSame($isbn, $book->getIsbn());
 
-        $reflMethod = new \ReflectionMethod($metadata->name, 'setIsbn');
+        $reflMethod     = new ReflectionMethod($metadata->name, 'setIsbn');
         $reflParameters = $reflMethod->getParameters();
         $this->assertEquals($isbnMetadata->name, $reflParameters[0]->getType()->getName());
     }
 
-    public function testBooleanDefaultValue()
+    public function testBooleanDefaultValue(): void
     {
         $metadata = $this->generateBookEntityFixture(['isbn' => $this->generateIsbnEmbeddableFixture()]);
 
@@ -347,7 +357,7 @@ class EntityGeneratorTest extends OrmTestCase
         $this->assertTrue($book->getfoo());
     }
 
-    public function testEntityUpdatingWorks()
+    public function testEntityUpdatingWorks(): void
     {
         $metadata = $this->generateBookEntityFixture(['isbn' => $this->generateIsbnEmbeddableFixture()]);
 
@@ -358,20 +368,20 @@ class EntityGeneratorTest extends OrmTestCase
 
         $this->_generator->writeEntityClass($metadata, $this->_tmpDir);
 
-        $this->assertFileExists($this->_tmpDir . "/" . $this->_namespace . "/EntityGeneratorBook.php~");
+        $this->assertFileExists($this->_tmpDir . '/' . $this->_namespace . '/EntityGeneratorBook.php~');
 
-        $book = $this->newInstance($metadata);
-        $reflClass = new \ReflectionClass($metadata->name);
+        $book      = $this->newInstance($metadata);
+        $reflClass = new ReflectionClass($metadata->name);
 
         $this->assertTrue($reflClass->hasProperty('name'), "Regenerating keeps property 'name'.");
         $this->assertTrue($reflClass->hasProperty('status'), "Regenerating keeps property 'status'.");
         $this->assertTrue($reflClass->hasProperty('id'), "Regenerating keeps property 'id'.");
         $this->assertTrue($reflClass->hasProperty('isbn'), "Regenerating keeps property 'isbn'.");
 
-        $this->assertTrue($reflClass->hasProperty('test'), "Check for property test failed.");
-        $this->assertTrue($reflClass->getProperty('test')->isProtected(), "Check for protected property test failed.");
-        $this->assertTrue($reflClass->hasProperty('testEmbedded'), "Check for property testEmbedded failed.");
-        $this->assertTrue($reflClass->getProperty('testEmbedded')->isProtected(), "Check for protected property testEmbedded failed.");
+        $this->assertTrue($reflClass->hasProperty('test'), 'Check for property test failed.');
+        $this->assertTrue($reflClass->getProperty('test')->isProtected(), 'Check for protected property test failed.');
+        $this->assertTrue($reflClass->hasProperty('testEmbedded'), 'Check for property testEmbedded failed.');
+        $this->assertTrue($reflClass->getProperty('testEmbedded')->isProtected(), 'Check for protected property testEmbedded failed.');
         $this->assertTrue($reflClass->hasMethod('getTest'), "Check for method 'getTest' failed.");
         $this->assertTrue($reflClass->getMethod('getTest')->isPublic(), "Check for public visibility of method 'getTest' failed.");
         $this->assertTrue($reflClass->hasMethod('setTest'), "Check for method 'setTest' failed.");
@@ -391,22 +401,22 @@ class EntityGeneratorTest extends OrmTestCase
     /**
      * @group DDC-3152
      */
-    public function testDoesNotRegenerateExistingMethodsWithDifferentCase()
+    public function testDoesNotRegenerateExistingMethodsWithDifferentCase(): void
     {
         $metadata = $this->generateBookEntityFixture(['isbn' => $this->generateIsbnEmbeddableFixture()]);
 
         // Workaround to change existing fields case (just to simulate the use case)
         $metadata->fieldMappings['status']['fieldName'] = 'STATUS';
-        $metadata->embeddedClasses['ISBN'] = $metadata->embeddedClasses['isbn'];
+        $metadata->embeddedClasses['ISBN']              = $metadata->embeddedClasses['isbn'];
         unset($metadata->embeddedClasses['isbn']);
 
         // Should not throw a PHP fatal error
         $this->_generator->writeEntityClass($metadata, $this->_tmpDir);
 
-        $this->assertFileExists($this->_tmpDir . "/" . $this->_namespace . "/EntityGeneratorBook.php~");
+        $this->assertFileExists($this->_tmpDir . '/' . $this->_namespace . '/EntityGeneratorBook.php~');
 
         $this->newInstance($metadata);
-        $reflClass = new \ReflectionClass($metadata->name);
+        $reflClass = new ReflectionClass($metadata->name);
 
         $this->assertTrue($reflClass->hasProperty('status'));
         $this->assertTrue($reflClass->hasProperty('STATUS'));
@@ -421,30 +431,30 @@ class EntityGeneratorTest extends OrmTestCase
     /**
      * @group DDC-2121
      */
-    public function testMethodDocBlockShouldStartWithBackSlash()
+    public function testMethodDocBlockShouldStartWithBackSlash(): void
     {
         $embeddedMetadata = $this->generateIsbnEmbeddableFixture();
-        $metadata = $this->generateBookEntityFixture(['isbn' => $embeddedMetadata]);
-        $book     = $this->newInstance($metadata);
+        $metadata         = $this->generateBookEntityFixture(['isbn' => $embeddedMetadata]);
+        $book             = $this->newInstance($metadata);
 
-        $this->assertPhpDocVarType('\Doctrine\Common\Collections\Collection', new \ReflectionProperty($book, 'comments'));
-        $this->assertPhpDocReturnType('\Doctrine\Common\Collections\Collection', new \ReflectionMethod($book, 'getComments'));
-        $this->assertPhpDocParamType('\Doctrine\Tests\ORM\Tools\EntityGeneratorComment', new \ReflectionMethod($book, 'addComment'));
-        $this->assertPhpDocReturnType('EntityGeneratorBook', new \ReflectionMethod($book, 'addComment'));
-        $this->assertPhpDocParamType('\Doctrine\Tests\ORM\Tools\EntityGeneratorComment', new \ReflectionMethod($book, 'removeComment'));
-        $this->assertPhpDocReturnType('boolean', new \ReflectionMethod($book, 'removeComment'));
+        $this->assertPhpDocVarType('\Doctrine\Common\Collections\Collection', new ReflectionProperty($book, 'comments'));
+        $this->assertPhpDocReturnType('\Doctrine\Common\Collections\Collection', new ReflectionMethod($book, 'getComments'));
+        $this->assertPhpDocParamType('\Doctrine\Tests\ORM\Tools\EntityGeneratorComment', new ReflectionMethod($book, 'addComment'));
+        $this->assertPhpDocReturnType('EntityGeneratorBook', new ReflectionMethod($book, 'addComment'));
+        $this->assertPhpDocParamType('\Doctrine\Tests\ORM\Tools\EntityGeneratorComment', new ReflectionMethod($book, 'removeComment'));
+        $this->assertPhpDocReturnType('boolean', new ReflectionMethod($book, 'removeComment'));
 
-        $this->assertPhpDocVarType('\Doctrine\Tests\ORM\Tools\EntityGeneratorAuthor', new \ReflectionProperty($book, 'author'));
-        $this->assertPhpDocReturnType('\Doctrine\Tests\ORM\Tools\EntityGeneratorAuthor|null', new \ReflectionMethod($book, 'getAuthor'));
-        $this->assertPhpDocParamType('\Doctrine\Tests\ORM\Tools\EntityGeneratorAuthor|null', new \ReflectionMethod($book, 'setAuthor'));
+        $this->assertPhpDocVarType('\Doctrine\Tests\ORM\Tools\EntityGeneratorAuthor', new ReflectionProperty($book, 'author'));
+        $this->assertPhpDocReturnType('\Doctrine\Tests\ORM\Tools\EntityGeneratorAuthor|null', new ReflectionMethod($book, 'getAuthor'));
+        $this->assertPhpDocParamType('\Doctrine\Tests\ORM\Tools\EntityGeneratorAuthor|null', new ReflectionMethod($book, 'setAuthor'));
 
         $expectedClassName = '\\' . $embeddedMetadata->name;
-        $this->assertPhpDocVarType($expectedClassName, new \ReflectionProperty($book, 'isbn'));
-        $this->assertPhpDocReturnType($expectedClassName, new \ReflectionMethod($book, 'getIsbn'));
-        $this->assertPhpDocParamType($expectedClassName, new \ReflectionMethod($book, 'setIsbn'));
+        $this->assertPhpDocVarType($expectedClassName, new ReflectionProperty($book, 'isbn'));
+        $this->assertPhpDocReturnType($expectedClassName, new ReflectionMethod($book, 'getIsbn'));
+        $this->assertPhpDocParamType($expectedClassName, new ReflectionMethod($book, 'setIsbn'));
     }
 
-    public function testEntityExtendsStdClass()
+    public function testEntityExtendsStdClass(): void
     {
         $this->_generator->setClassToExtend('stdClass');
         $metadata = $this->generateBookEntityFixture();
@@ -453,25 +463,25 @@ class EntityGeneratorTest extends OrmTestCase
         $this->assertInstanceOf('stdClass', $book);
 
         $metadata = $this->generateIsbnEmbeddableFixture();
-        $isbn = $this->newInstance($metadata);
+        $isbn     = $this->newInstance($metadata);
         $this->assertInstanceOf('stdClass', $isbn);
     }
 
-    public function testLifecycleCallbacks()
+    public function testLifecycleCallbacks(): void
     {
         $metadata = $this->generateBookEntityFixture();
 
-        $book = $this->newInstance($metadata);
-        $reflClass = new \ReflectionClass($metadata->name);
+        $book      = $this->newInstance($metadata);
+        $reflClass = new ReflectionClass($metadata->name);
 
-        $this->assertTrue($reflClass->hasMethod('loading'), "Check for postLoad lifecycle callback.");
-        $this->assertTrue($reflClass->hasMethod('willBeRemoved'), "Check for preRemove lifecycle callback.");
+        $this->assertTrue($reflClass->hasMethod('loading'), 'Check for postLoad lifecycle callback.');
+        $this->assertTrue($reflClass->hasMethod('willBeRemoved'), 'Check for preRemove lifecycle callback.');
     }
 
-    public function testLoadMetadata()
+    public function testLoadMetadata(): void
     {
         $embeddedMetadata = $this->generateIsbnEmbeddableFixture();
-        $metadata = $this->generateBookEntityFixture(['isbn' => $embeddedMetadata]);
+        $metadata         = $this->generateBookEntityFixture(['isbn' => $embeddedMetadata]);
 
         $book = $this->newInstance($metadata);
 
@@ -506,11 +516,11 @@ class EntityGeneratorTest extends OrmTestCase
         $this->assertEquals($cm->isEmbeddedClass, $embeddedMetadata->isEmbeddedClass);
     }
 
-    public function testLoadPrefixedMetadata()
+    public function testLoadPrefixedMetadata(): void
     {
         $this->_generator->setAnnotationPrefix('ORM\\');
         $embeddedMetadata = $this->generateIsbnEmbeddableFixture();
-        $metadata = $this->generateBookEntityFixture(['isbn' => $embeddedMetadata]);
+        $metadata         = $this->generateBookEntityFixture(['isbn' => $embeddedMetadata]);
 
         $reader = new AnnotationReader();
         $driver = new AnnotationDriver($reader, []);
@@ -546,7 +556,7 @@ class EntityGeneratorTest extends OrmTestCase
     /**
      * @group DDC-3272
      */
-    public function testMappedSuperclassAnnotationGeneration()
+    public function testMappedSuperclassAnnotationGeneration(): void
     {
         $metadata                     = new ClassMetadataInfo($this->_namespace . '\EntityGeneratorBook');
         $metadata->namespace          = $this->_namespace;
@@ -559,7 +569,7 @@ class EntityGeneratorTest extends OrmTestCase
         $driver = new AnnotationDriver(new AnnotationReader(), []);
         $cm     = new ClassMetadataInfo($metadata->name);
 
-        $cm->initializeReflection(new RuntimeReflectionService);
+        $cm->initializeReflection(new RuntimeReflectionService());
         $driver->loadMetadataForClass($cm->name, $cm);
 
         $this->assertTrue($cm->isMappedSuperclass);
@@ -568,9 +578,9 @@ class EntityGeneratorTest extends OrmTestCase
     /**
      * @dataProvider getParseTokensInEntityFileData
      */
-    public function testParseTokensInEntityFile($php, $classes)
+    public function testParseTokensInEntityFile($php, $classes): void
     {
-        $r = new \ReflectionObject($this->_generator);
+        $r = new ReflectionObject($this->_generator);
         $m = $r->getMethod('parseTokensInEntityFile');
         $m->setAccessible(true);
 
@@ -584,17 +594,17 @@ class EntityGeneratorTest extends OrmTestCase
     /**
      * @group DDC-1784
      */
-    public function testGenerateEntityWithSequenceGenerator()
+    public function testGenerateEntityWithSequenceGenerator(): void
     {
-        $metadata               = new ClassMetadataInfo($this->_namespace . '\DDC1784Entity');
-        $metadata->namespace    = $this->_namespace;
+        $metadata            = new ClassMetadataInfo($this->_namespace . '\DDC1784Entity');
+        $metadata->namespace = $this->_namespace;
         $metadata->mapField(['fieldName' => 'id', 'type' => 'integer', 'id' => true]);
         $metadata->setIdGeneratorType(ClassMetadataInfo::GENERATOR_TYPE_SEQUENCE);
         $metadata->setSequenceGeneratorDefinition(
             [
-            'sequenceName'      => 'DDC1784_ID_SEQ',
-            'allocationSize'    => 1,
-            'initialValue'      => 2
+                'sequenceName'      => 'DDC1784_ID_SEQ',
+                'allocationSize'    => 1,
+                'initialValue'      => 2,
             ]
         );
         $this->_generator->writeEntityClass($metadata, $this->_tmpDir);
@@ -605,8 +615,7 @@ class EntityGeneratorTest extends OrmTestCase
         $this->assertFileExists($filename);
         require_once $filename;
 
-
-        $reflection = new \ReflectionProperty($metadata->name, 'id');
+        $reflection = new ReflectionProperty($metadata->name, 'id');
         $docComment = $reflection->getDocComment();
 
         $this->assertStringContainsString('@Id', $docComment);
@@ -621,27 +630,27 @@ class EntityGeneratorTest extends OrmTestCase
     /**
      * @group DDC-2079
      */
-    public function testGenerateEntityWithMultipleInverseJoinColumns()
+    public function testGenerateEntityWithMultipleInverseJoinColumns(): void
     {
-        $metadata               = new ClassMetadataInfo($this->_namespace . '\DDC2079Entity');
-        $metadata->namespace    = $this->_namespace;
+        $metadata            = new ClassMetadataInfo($this->_namespace . '\DDC2079Entity');
+        $metadata->namespace = $this->_namespace;
         $metadata->mapField(['fieldName' => 'id', 'type' => 'integer', 'id' => true]);
         $metadata->setIdGeneratorType(ClassMetadataInfo::GENERATOR_TYPE_SEQUENCE);
         $metadata->mapManyToMany(
             [
-            'fieldName'     => 'centroCustos',
-            'targetEntity'  => 'DDC2079CentroCusto',
-            'joinTable'     => [
-                'name'                  => 'unidade_centro_custo',
-                'joinColumns'           => [
-                    ['name' => 'idorcamento',      'referencedColumnName' => 'idorcamento'],
-                    ['name' => 'idunidade',        'referencedColumnName' => 'idunidade']
+                'fieldName'     => 'centroCustos',
+                'targetEntity'  => 'DDC2079CentroCusto',
+                'joinTable'     => [
+                    'name'                  => 'unidade_centro_custo',
+                    'joinColumns'           => [
+                        ['name' => 'idorcamento',      'referencedColumnName' => 'idorcamento'],
+                        ['name' => 'idunidade',        'referencedColumnName' => 'idunidade'],
+                    ],
+                    'inverseJoinColumns'    => [
+                        ['name' => 'idcentrocusto',    'referencedColumnName' => 'idcentrocusto'],
+                        ['name' => 'idpais',           'referencedColumnName' => 'idpais'],
+                    ],
                 ],
-                'inverseJoinColumns'    => [
-                    ['name' => 'idcentrocusto',    'referencedColumnName' => 'idcentrocusto'],
-                    ['name' => 'idpais',           'referencedColumnName' => 'idpais'],
-                ],
-            ],
             ]
         );
         $this->_generator->writeEntityClass($metadata, $this->_tmpDir);
@@ -652,7 +661,7 @@ class EntityGeneratorTest extends OrmTestCase
         $this->assertFileExists($filename);
         require_once $filename;
 
-        $property   = new \ReflectionProperty($metadata->name, 'centroCustos');
+        $property   = new ReflectionProperty($metadata->name, 'centroCustos');
         $docComment = $property->getDocComment();
 
         //joinColumns
@@ -676,19 +685,19 @@ class EntityGeneratorTest extends OrmTestCase
     }
 
      /**
-     * @group DDC-2172
-     */
-    public function testGetInheritanceTypeString()
+      * @group DDC-2172
+      */
+    public function testGetInheritanceTypeString(): void
     {
-        $reflection = new \ReflectionClass('\Doctrine\ORM\Mapping\ClassMetadataInfo');
-        $method     = new \ReflectionMethod($this->_generator, 'getInheritanceTypeString');
+        $reflection = new ReflectionClass('\Doctrine\ORM\Mapping\ClassMetadataInfo');
+        $method     = new ReflectionMethod($this->_generator, 'getInheritanceTypeString');
         $constants  = $reflection->getConstants();
         $pattern    = '/^INHERITANCE_TYPE_/';
 
         $method->setAccessible(true);
 
         foreach ($constants as $name => $value) {
-            if( ! preg_match($pattern, $name)) {
+            if (! preg_match($pattern, $name)) {
                 continue;
             }
 
@@ -698,26 +707,26 @@ class EntityGeneratorTest extends OrmTestCase
             $this->assertEquals($expected, $actual);
         }
 
-        $this->expectException(\InvalidArgumentException::class);
+        $this->expectException(InvalidArgumentException::class);
         $this->expectExceptionMessage('Invalid provided InheritanceType: INVALID');
 
         $method->invoke($this->_generator, 'INVALID');
     }
 
     /**
-    * @group DDC-2172
-    */
-    public function testGetChangeTrackingPolicyString()
+     * @group DDC-2172
+     */
+    public function testGetChangeTrackingPolicyString(): void
     {
-        $reflection = new \ReflectionClass('\Doctrine\ORM\Mapping\ClassMetadata');
-        $method     = new \ReflectionMethod($this->_generator, 'getChangeTrackingPolicyString');
+        $reflection = new ReflectionClass('\Doctrine\ORM\Mapping\ClassMetadata');
+        $method     = new ReflectionMethod($this->_generator, 'getChangeTrackingPolicyString');
         $constants  = $reflection->getConstants();
         $pattern    = '/^CHANGETRACKING_/';
 
         $method->setAccessible(true);
 
         foreach ($constants as $name => $value) {
-            if( ! preg_match($pattern, $name)) {
+            if (! preg_match($pattern, $name)) {
                 continue;
             }
 
@@ -727,7 +736,7 @@ class EntityGeneratorTest extends OrmTestCase
             $this->assertEquals($expected, $actual);
         }
 
-        $this->expectException(\InvalidArgumentException::class);
+        $this->expectException(InvalidArgumentException::class);
         $this->expectExceptionMessage('Invalid provided ChangeTrackingPolicy: INVALID');
 
         $method->invoke($this->_generator, 'INVALID');
@@ -736,17 +745,17 @@ class EntityGeneratorTest extends OrmTestCase
     /**
      * @group DDC-2172
      */
-    public function testGetIdGeneratorTypeString()
+    public function testGetIdGeneratorTypeString(): void
     {
-        $reflection = new \ReflectionClass('\Doctrine\ORM\Mapping\ClassMetadataInfo');
-        $method     = new \ReflectionMethod($this->_generator, 'getIdGeneratorTypeString');
+        $reflection = new ReflectionClass('\Doctrine\ORM\Mapping\ClassMetadataInfo');
+        $method     = new ReflectionMethod($this->_generator, 'getIdGeneratorTypeString');
         $constants  = $reflection->getConstants();
         $pattern    = '/^GENERATOR_TYPE_/';
 
         $method->setAccessible(true);
 
         foreach ($constants as $name => $value) {
-            if( ! preg_match($pattern, $name)) {
+            if (! preg_match($pattern, $name)) {
                 continue;
             }
 
@@ -756,7 +765,7 @@ class EntityGeneratorTest extends OrmTestCase
             $this->assertEquals($expected, $actual);
         }
 
-        $this->expectException(\InvalidArgumentException::class);
+        $this->expectException(InvalidArgumentException::class);
         $this->expectExceptionMessage('Invalid provided IdGeneratorType: INVALID');
 
         $method->invoke($this->_generator, 'INVALID');
@@ -764,25 +773,24 @@ class EntityGeneratorTest extends OrmTestCase
 
     /**
      * @dataProvider getEntityTypeAliasDataProvider
-     *
      * @group DDC-1694
      */
-    public function testEntityTypeAlias(array $field)
+    public function testEntityTypeAlias(array $field): void
     {
-        $metadata   = $this->generateEntityTypeFixture($field);
-        $path       = $this->_tmpDir . '/'. $this->_namespace . '/EntityType.php';
+        $metadata = $this->generateEntityTypeFixture($field);
+        $path     = $this->_tmpDir . '/' . $this->_namespace . '/EntityType.php';
 
         $this->assertFileExists($path);
         require_once $path;
 
-        $entity     = new $metadata->name;
-        $reflClass  = new \ReflectionClass($metadata->name);
+        $entity    = new $metadata->name();
+        $reflClass = new ReflectionClass($metadata->name);
 
         $type   = $field['phpType'];
         $name   = $field['fieldName'];
         $value  = $field['value'];
-        $getter = "get" . ucfirst($name);
-        $setter = "set" . ucfirst($name);
+        $getter = 'get' . ucfirst($name);
+        $setter = 'set' . ucfirst($name);
 
         $this->assertPhpDocVarType($type, $reflClass->getProperty($name));
         $this->assertPhpDocParamType($type, $reflClass->getMethod($setter));
@@ -795,23 +803,23 @@ class EntityGeneratorTest extends OrmTestCase
     /**
      * @group DDC-2372
      */
-    public function testTraitPropertiesAndMethodsAreNotDuplicated()
+    public function testTraitPropertiesAndMethodsAreNotDuplicated(): void
     {
         $cmf = new ClassMetadataFactory();
-        $em = $this->_getTestEntityManager();
+        $em  = $this->_getTestEntityManager();
         $cmf->setEntityManager($em);
 
-        $user = new DDC2372User();
-        $metadata = $cmf->getMetadataFor(get_class($user));
-        $metadata->name = $this->_namespace . "\DDC2372User";
+        $user                = new DDC2372User();
+        $metadata            = $cmf->getMetadataFor(get_class($user));
+        $metadata->name      = $this->_namespace . '\DDC2372User';
         $metadata->namespace = $this->_namespace;
 
         $this->_generator->writeEntityClass($metadata, $this->_tmpDir);
 
-        $this->assertFileExists($this->_tmpDir . "/" . $this->_namespace . "/DDC2372User.php");
-        require $this->_tmpDir . "/" . $this->_namespace . "/DDC2372User.php";
+        $this->assertFileExists($this->_tmpDir . '/' . $this->_namespace . '/DDC2372User.php');
+        require $this->_tmpDir . '/' . $this->_namespace . '/DDC2372User.php';
 
-        $reflClass = new \ReflectionClass($metadata->name);
+        $reflClass = new ReflectionClass($metadata->name);
 
         $this->assertSame($reflClass->hasProperty('address'), false);
         $this->assertSame($reflClass->hasMethod('setAddress'), false);
@@ -821,23 +829,23 @@ class EntityGeneratorTest extends OrmTestCase
     /**
      * @group DDC-2372
      */
-    public function testTraitPropertiesAndMethodsAreNotDuplicatedInChildClasses()
+    public function testTraitPropertiesAndMethodsAreNotDuplicatedInChildClasses(): void
     {
         $cmf = new ClassMetadataFactory();
-        $em = $this->_getTestEntityManager();
+        $em  = $this->_getTestEntityManager();
         $cmf->setEntityManager($em);
 
-        $user = new DDC2372Admin();
-        $metadata = $cmf->getMetadataFor(get_class($user));
-        $metadata->name = $this->_namespace . "\DDC2372Admin";
+        $user                = new DDC2372Admin();
+        $metadata            = $cmf->getMetadataFor(get_class($user));
+        $metadata->name      = $this->_namespace . '\DDC2372Admin';
         $metadata->namespace = $this->_namespace;
 
         $this->_generator->writeEntityClass($metadata, $this->_tmpDir);
 
-        $this->assertFileExists($this->_tmpDir . "/" . $this->_namespace . "/DDC2372Admin.php");
-        require $this->_tmpDir . "/" . $this->_namespace . "/DDC2372Admin.php";
+        $this->assertFileExists($this->_tmpDir . '/' . $this->_namespace . '/DDC2372Admin.php');
+        require $this->_tmpDir . '/' . $this->_namespace . '/DDC2372Admin.php';
 
-        $reflClass = new \ReflectionClass($metadata->name);
+        $reflClass = new ReflectionClass($metadata->name);
 
         $this->assertSame($reflClass->hasProperty('address'), false);
         $this->assertSame($reflClass->hasMethod('setAddress'), false);
@@ -847,15 +855,15 @@ class EntityGeneratorTest extends OrmTestCase
     /**
      * @group DDC-1590
      */
-    public function testMethodsAndPropertiesAreNotDuplicatedInChildClasses()
+    public function testMethodsAndPropertiesAreNotDuplicatedInChildClasses(): void
     {
-        $cmf    = new ClassMetadataFactory();
-        $em     = $this->_getTestEntityManager();
+        $cmf = new ClassMetadataFactory();
+        $em  = $this->_getTestEntityManager();
 
         $cmf->setEntityManager($em);
 
-        $ns     = $this->_namespace;
-        $nsdir  = $this->_tmpDir . '/' . $ns;
+        $ns    = $this->_namespace;
+        $nsdir = $this->_tmpDir . '/' . $ns;
 
         $content = str_replace(
             'namespace Doctrine\Tests\Models\DDC1590',
@@ -863,10 +871,9 @@ class EntityGeneratorTest extends OrmTestCase
             file_get_contents(__DIR__ . '/../../Models/DDC1590/DDC1590User.php')
         );
 
-        $fname = $nsdir . "/DDC1590User.php";
+        $fname = $nsdir . '/DDC1590User.php';
         file_put_contents($fname, $content);
         require $fname;
-
 
         $metadata = $cmf->getMetadataFor($ns . '\DDC1590User');
         $this->_generator->writeEntityClass($metadata, $this->_tmpDir);
@@ -875,20 +882,19 @@ class EntityGeneratorTest extends OrmTestCase
         $source = file_get_contents($fname);
 
         // class _DDC1590User extends DDC1590Entity { ... }
-        $source2    = str_replace('class DDC1590User', 'class _DDC1590User', $source);
-        $fname2     = $nsdir . "/_DDC1590User.php";
+        $source2 = str_replace('class DDC1590User', 'class _DDC1590User', $source);
+        $fname2  = $nsdir . '/_DDC1590User.php';
         file_put_contents($fname2, $source2);
         require $fname2;
 
         // class __DDC1590User { ... }
-        $source3    = str_replace('class DDC1590User extends DDC1590Entity', 'class __DDC1590User', $source);
-        $fname3     = $nsdir . "/__DDC1590User.php";
+        $source3 = str_replace('class DDC1590User extends DDC1590Entity', 'class __DDC1590User', $source);
+        $fname3  = $nsdir . '/__DDC1590User.php';
         file_put_contents($fname3, $source3);
         require $fname3;
 
-
         // class _DDC1590User extends DDC1590Entity { ... }
-        $rc2 = new \ReflectionClass($ns.'\_DDC1590User');
+        $rc2 = new ReflectionClass($ns . '\_DDC1590User');
 
         $this->assertTrue($rc2->hasProperty('name'));
         $this->assertTrue($rc2->hasProperty('id'));
@@ -901,9 +907,8 @@ class EntityGeneratorTest extends OrmTestCase
         $this->assertTrue($rc2->hasMethod('getCreatedAt'));
         $this->assertTrue($rc2->hasMethod('setCreatedAt'));
 
-
         // class __DDC1590User { ... }
-        $rc3 = new \ReflectionClass($ns.'\__DDC1590User');
+        $rc3 = new ReflectionClass($ns . '\__DDC1590User');
 
         $this->assertTrue($rc3->hasProperty('name'));
         $this->assertFalse($rc3->hasProperty('id'));
@@ -920,27 +925,27 @@ class EntityGeneratorTest extends OrmTestCase
     /**
      * @group DDC-3304
      */
-    public function testGeneratedMutableEmbeddablesClass()
+    public function testGeneratedMutableEmbeddablesClass(): void
     {
         $embeddedMetadata = $this->generateTestEmbeddableFixture();
-        $metadata = $this->generateIsbnEmbeddableFixture(['test' => $embeddedMetadata]);
+        $metadata         = $this->generateIsbnEmbeddableFixture(['test' => $embeddedMetadata]);
 
         $isbn = $this->newInstance($metadata);
 
-        $this->assertTrue(class_exists($metadata->name), "Class does not exist.");
-        $this->assertFalse(method_exists($metadata->name, '__construct'), "EntityGeneratorIsbn::__construct present.");
-        $this->assertTrue(method_exists($metadata->name, 'getPrefix'), "EntityGeneratorIsbn::getPrefix() missing.");
-        $this->assertTrue(method_exists($metadata->name, 'setPrefix'), "EntityGeneratorIsbn::setPrefix() missing.");
-        $this->assertTrue(method_exists($metadata->name, 'getGroupNumber'), "EntityGeneratorIsbn::getGroupNumber() missing.");
-        $this->assertTrue(method_exists($metadata->name, 'setGroupNumber'), "EntityGeneratorIsbn::setGroupNumber() missing.");
-        $this->assertTrue(method_exists($metadata->name, 'getPublisherNumber'), "EntityGeneratorIsbn::getPublisherNumber() missing.");
-        $this->assertTrue(method_exists($metadata->name, 'setPublisherNumber'), "EntityGeneratorIsbn::setPublisherNumber() missing.");
-        $this->assertTrue(method_exists($metadata->name, 'getTitleNumber'), "EntityGeneratorIsbn::getTitleNumber() missing.");
-        $this->assertTrue(method_exists($metadata->name, 'setTitleNumber'), "EntityGeneratorIsbn::setTitleNumber() missing.");
-        $this->assertTrue(method_exists($metadata->name, 'getCheckDigit'), "EntityGeneratorIsbn::getCheckDigit() missing.");
-        $this->assertTrue(method_exists($metadata->name, 'setCheckDigit'), "EntityGeneratorIsbn::setCheckDigit() missing.");
-        $this->assertTrue(method_exists($metadata->name, 'getTest'), "EntityGeneratorIsbn::getTest() missing.");
-        $this->assertTrue(method_exists($metadata->name, 'setTest'), "EntityGeneratorIsbn::setTest() missing.");
+        $this->assertTrue(class_exists($metadata->name), 'Class does not exist.');
+        $this->assertFalse(method_exists($metadata->name, '__construct'), 'EntityGeneratorIsbn::__construct present.');
+        $this->assertTrue(method_exists($metadata->name, 'getPrefix'), 'EntityGeneratorIsbn::getPrefix() missing.');
+        $this->assertTrue(method_exists($metadata->name, 'setPrefix'), 'EntityGeneratorIsbn::setPrefix() missing.');
+        $this->assertTrue(method_exists($metadata->name, 'getGroupNumber'), 'EntityGeneratorIsbn::getGroupNumber() missing.');
+        $this->assertTrue(method_exists($metadata->name, 'setGroupNumber'), 'EntityGeneratorIsbn::setGroupNumber() missing.');
+        $this->assertTrue(method_exists($metadata->name, 'getPublisherNumber'), 'EntityGeneratorIsbn::getPublisherNumber() missing.');
+        $this->assertTrue(method_exists($metadata->name, 'setPublisherNumber'), 'EntityGeneratorIsbn::setPublisherNumber() missing.');
+        $this->assertTrue(method_exists($metadata->name, 'getTitleNumber'), 'EntityGeneratorIsbn::getTitleNumber() missing.');
+        $this->assertTrue(method_exists($metadata->name, 'setTitleNumber'), 'EntityGeneratorIsbn::setTitleNumber() missing.');
+        $this->assertTrue(method_exists($metadata->name, 'getCheckDigit'), 'EntityGeneratorIsbn::getCheckDigit() missing.');
+        $this->assertTrue(method_exists($metadata->name, 'setCheckDigit'), 'EntityGeneratorIsbn::setCheckDigit() missing.');
+        $this->assertTrue(method_exists($metadata->name, 'getTest'), 'EntityGeneratorIsbn::getTest() missing.');
+        $this->assertTrue(method_exists($metadata->name, 'setTest'), 'EntityGeneratorIsbn::setTest() missing.');
 
         $isbn->setPrefix(978);
         $this->assertSame(978, $isbn->getPrefix());
@@ -951,7 +956,7 @@ class EntityGeneratorTest extends OrmTestCase
         $isbn->setTest($test);
         $this->assertSame($test, $isbn->getTest());
 
-        $reflMethod = new \ReflectionMethod($metadata->name, 'setTest');
+        $reflMethod     = new ReflectionMethod($metadata->name, 'setTest');
         $reflParameters = $reflMethod->getParameters();
         $this->assertEquals($embeddedMetadata->name, $reflParameters[0]->getType()->getName());
     }
@@ -959,34 +964,34 @@ class EntityGeneratorTest extends OrmTestCase
     /**
      * @group DDC-3304
      */
-    public function testGeneratedImmutableEmbeddablesClass()
+    public function testGeneratedImmutableEmbeddablesClass(): void
     {
         $this->_generator->setEmbeddablesImmutable(true);
         $embeddedMetadata = $this->generateTestEmbeddableFixture();
-        $metadata = $this->generateIsbnEmbeddableFixture(['test' => $embeddedMetadata]);
+        $metadata         = $this->generateIsbnEmbeddableFixture(['test' => $embeddedMetadata]);
 
         $this->loadEntityClass($embeddedMetadata);
         $this->loadEntityClass($metadata);
 
-        $this->assertTrue(class_exists($metadata->name), "Class does not exist.");
-        $this->assertTrue(method_exists($metadata->name, '__construct'), "EntityGeneratorIsbn::__construct missing.");
-        $this->assertTrue(method_exists($metadata->name, 'getPrefix'), "EntityGeneratorIsbn::getPrefix() missing.");
-        $this->assertFalse(method_exists($metadata->name, 'setPrefix'), "EntityGeneratorIsbn::setPrefix() present.");
-        $this->assertTrue(method_exists($metadata->name, 'getGroupNumber'), "EntityGeneratorIsbn::getGroupNumber() missing.");
-        $this->assertFalse(method_exists($metadata->name, 'setGroupNumber'), "EntityGeneratorIsbn::setGroupNumber() present.");
-        $this->assertTrue(method_exists($metadata->name, 'getPublisherNumber'), "EntityGeneratorIsbn::getPublisherNumber() missing.");
-        $this->assertFalse(method_exists($metadata->name, 'setPublisherNumber'), "EntityGeneratorIsbn::setPublisherNumber() present.");
-        $this->assertTrue(method_exists($metadata->name, 'getTitleNumber'), "EntityGeneratorIsbn::getTitleNumber() missing.");
-        $this->assertFalse(method_exists($metadata->name, 'setTitleNumber'), "EntityGeneratorIsbn::setTitleNumber() present.");
-        $this->assertTrue(method_exists($metadata->name, 'getCheckDigit'), "EntityGeneratorIsbn::getCheckDigit() missing.");
-        $this->assertFalse(method_exists($metadata->name, 'setCheckDigit'), "EntityGeneratorIsbn::setCheckDigit() present.");
-        $this->assertTrue(method_exists($metadata->name, 'getTest'), "EntityGeneratorIsbn::getTest() missing.");
-        $this->assertFalse(method_exists($metadata->name, 'setTest'), "EntityGeneratorIsbn::setTest() present.");
+        $this->assertTrue(class_exists($metadata->name), 'Class does not exist.');
+        $this->assertTrue(method_exists($metadata->name, '__construct'), 'EntityGeneratorIsbn::__construct missing.');
+        $this->assertTrue(method_exists($metadata->name, 'getPrefix'), 'EntityGeneratorIsbn::getPrefix() missing.');
+        $this->assertFalse(method_exists($metadata->name, 'setPrefix'), 'EntityGeneratorIsbn::setPrefix() present.');
+        $this->assertTrue(method_exists($metadata->name, 'getGroupNumber'), 'EntityGeneratorIsbn::getGroupNumber() missing.');
+        $this->assertFalse(method_exists($metadata->name, 'setGroupNumber'), 'EntityGeneratorIsbn::setGroupNumber() present.');
+        $this->assertTrue(method_exists($metadata->name, 'getPublisherNumber'), 'EntityGeneratorIsbn::getPublisherNumber() missing.');
+        $this->assertFalse(method_exists($metadata->name, 'setPublisherNumber'), 'EntityGeneratorIsbn::setPublisherNumber() present.');
+        $this->assertTrue(method_exists($metadata->name, 'getTitleNumber'), 'EntityGeneratorIsbn::getTitleNumber() missing.');
+        $this->assertFalse(method_exists($metadata->name, 'setTitleNumber'), 'EntityGeneratorIsbn::setTitleNumber() present.');
+        $this->assertTrue(method_exists($metadata->name, 'getCheckDigit'), 'EntityGeneratorIsbn::getCheckDigit() missing.');
+        $this->assertFalse(method_exists($metadata->name, 'setCheckDigit'), 'EntityGeneratorIsbn::setCheckDigit() present.');
+        $this->assertTrue(method_exists($metadata->name, 'getTest'), 'EntityGeneratorIsbn::getTest() missing.');
+        $this->assertFalse(method_exists($metadata->name, 'setTest'), 'EntityGeneratorIsbn::setTest() present.');
 
-        $test = new $embeddedMetadata->name(1, new \DateTime());
+        $test = new $embeddedMetadata->name(1, new DateTime());
         $isbn = new $metadata->name($test, 978, 3, 12, 732320, 83);
 
-        $reflMethod = new \ReflectionMethod($isbn, '__construct');
+        $reflMethod     = new ReflectionMethod($isbn, '__construct');
         $reflParameters = $reflMethod->getParameters();
 
         $this->assertCount(6, $reflParameters);
@@ -1010,7 +1015,7 @@ class EntityGeneratorTest extends OrmTestCase
         $this->assertSame('checkDigit', $reflParameters[5]->getName());
         $this->assertFalse($reflParameters[5]->isOptional());
 
-        $reflMethod = new \ReflectionMethod($test, '__construct');
+        $reflMethod     = new ReflectionMethod($test, '__construct');
         $reflParameters = $reflMethod->getParameters();
 
         $this->assertCount(4, $reflParameters);
@@ -1030,13 +1035,13 @@ class EntityGeneratorTest extends OrmTestCase
         $this->assertTrue($reflParameters[3]->isOptional());
     }
 
-    public function testRegenerateEntityClass()
+    public function testRegenerateEntityClass(): void
     {
         $metadata = $this->generateBookEntityFixture();
         $this->loadEntityClass($metadata);
 
         $className = basename(str_replace('\\', '/', $metadata->name));
-        $path = $this->_tmpDir . '/' . $this->_namespace . '/' . $className . '.php';
+        $path      = $this->_tmpDir . '/' . $this->_namespace . '/' . $className . '.php';
         $classTest = file_get_contents($path);
 
         $this->_generator->setRegenerateEntityIfExists(true);
@@ -1045,103 +1050,103 @@ class EntityGeneratorTest extends OrmTestCase
         $this->_generator->writeEntityClass($metadata, $this->_tmpDir);
         $classNew = file_get_contents($path);
 
-        $this->assertSame($classTest,$classNew);
+        $this->assertSame($classTest, $classNew);
     }
 
     /**
      * @return array
      */
-    public function getEntityTypeAliasDataProvider()
+    public function getEntityTypeAliasDataProvider(): array
     {
         return [
             [
                 [
-                'fieldName' => 'datetimetz',
-                'phpType' => '\\DateTime',
-                'dbType' => 'datetimetz',
-                'value' => new \DateTime
-                ]
+                    'fieldName' => 'datetimetz',
+                    'phpType' => '\\DateTime',
+                    'dbType' => 'datetimetz',
+                    'value' => new DateTime(),
+                ],
             ],
             [
                 [
-                'fieldName' => 'datetime',
-                'phpType' => '\\DateTime',
-                'dbType' => 'datetime',
-                'value' => new \DateTime
-                ]
+                    'fieldName' => 'datetime',
+                    'phpType' => '\\DateTime',
+                    'dbType' => 'datetime',
+                    'value' => new DateTime(),
+                ],
             ],
             [
                 [
-                'fieldName' => 'date',
-                'phpType' => '\\DateTime',
-                'dbType' => 'date',
-                'value' => new \DateTime
-                ]
+                    'fieldName' => 'date',
+                    'phpType' => '\\DateTime',
+                    'dbType' => 'date',
+                    'value' => new DateTime(),
+                ],
             ],
             [
                 [
-                'fieldName' => 'time',
-                'phpType' => '\DateTime',
-                'dbType' => 'time',
-                'value' => new \DateTime
-                ]
+                    'fieldName' => 'time',
+                    'phpType' => '\DateTime',
+                    'dbType' => 'time',
+                    'value' => new DateTime(),
+                ],
             ],
             [
                 [
-                'fieldName' => 'object',
-                'phpType' => '\stdClass',
-                'dbType' => 'object',
-                'value' => new \stdClass()
-                ]
+                    'fieldName' => 'object',
+                    'phpType' => '\stdClass',
+                    'dbType' => 'object',
+                    'value' => new stdClass(),
+                ],
             ],
             [
                 [
-                'fieldName' => 'bigint',
-                'phpType' => 'int',
-                'dbType' => 'bigint',
-                'value' => 11
-                ]
+                    'fieldName' => 'bigint',
+                    'phpType' => 'int',
+                    'dbType' => 'bigint',
+                    'value' => 11,
+                ],
             ],
             [
                 [
-                'fieldName' => 'smallint',
-                'phpType' => 'int',
-                'dbType' => 'smallint',
-                'value' => 22
-                ]
+                    'fieldName' => 'smallint',
+                    'phpType' => 'int',
+                    'dbType' => 'smallint',
+                    'value' => 22,
+                ],
             ],
             [
                 [
-                'fieldName' => 'text',
-                'phpType' => 'string',
-                'dbType' => 'text',
-                'value' => 'text'
-                ]
+                    'fieldName' => 'text',
+                    'phpType' => 'string',
+                    'dbType' => 'text',
+                    'value' => 'text',
+                ],
             ],
             [
                 [
-                'fieldName' => 'blob',
-                'phpType' => 'string',
-                'dbType' => 'blob',
-                'value' => 'blob'
-                ]
+                    'fieldName' => 'blob',
+                    'phpType' => 'string',
+                    'dbType' => 'blob',
+                    'value' => 'blob',
+                ],
             ],
             [
                 [
                     'fieldName' => 'guid',
                     'phpType' => 'string',
                     'dbType' => 'guid',
-                    'value' => '00000000-0000-0000-0000-000000000001'
-                ]
+                    'value' => '00000000-0000-0000-0000-000000000001',
+                ],
             ],
             [
                 [
-                'fieldName' => 'decimal',
-                'phpType' => 'string',
-                'dbType' => 'decimal',
-                'value' => '12.34'
+                    'fieldName' => 'decimal',
+                    'phpType' => 'string',
+                    'dbType' => 'decimal',
+                    'value' => '12.34',
                 ],
-            ]
+            ],
         ];
     }
 
@@ -1187,11 +1192,7 @@ class
         ];
     }
 
-    /**
-     * @param string $type
-     * @param \ReflectionProperty $property
-     */
-    private function assertPhpDocVarType($type, \ReflectionProperty $property)
+    private function assertPhpDocVarType(string $type, ReflectionProperty $property): void
     {
         $docComment = $property->getDocComment();
         $regex      = '/@var\s+([\S]+)$/m';
@@ -1201,11 +1202,7 @@ class
         $this->assertEquals($type, $matches[1]);
     }
 
-    /**
-     * @param string $type
-     * @param \ReflectionMethod $method
-     */
-    private function assertPhpDocReturnType($type, \ReflectionMethod $method)
+    private function assertPhpDocReturnType(string $type, ReflectionMethod $method): void
     {
         $docComment = $method->getDocComment();
         $regex      = '/@return\s+([\S]+)(\s+.*)$/m';
@@ -1216,10 +1213,9 @@ class
     }
 
     /**
-     * @param string $type
-     * @param \ReflectionProperty $method
+     * @param ReflectionProperty $method
      */
-    private function assertPhpDocParamType($type, \ReflectionMethod $method)
+    private function assertPhpDocParamType(string $type, ReflectionMethod $method): void
     {
         $this->assertEquals(1, preg_match('/@param\s+([^\s]+)/', $method->getDocComment(), $matches));
         $this->assertEquals($type, $matches[1]);
@@ -1227,13 +1223,12 @@ class
 
     /**
      * @group 6703
-     *
      * @dataProvider columnOptionsProvider
      */
-    public function testOptionsAreGeneratedProperly(string $expectedAnnotation, array $fieldConfiguration) : void
+    public function testOptionsAreGeneratedProperly(string $expectedAnnotation, array $fieldConfiguration): void
     {
-        $metadata               = new ClassMetadataInfo($this->_namespace . '\GH6703Options');
-        $metadata->namespace    = $this->_namespace;
+        $metadata            = new ClassMetadataInfo($this->_namespace . '\GH6703Options');
+        $metadata->namespace = $this->_namespace;
         $metadata->mapField(['fieldName' => 'id', 'type' => 'integer', 'id' => true]);
         $metadata->mapField(['fieldName' => 'test'] + $fieldConfiguration);
         $metadata->setIdGeneratorType(ClassMetadataInfo::GENERATOR_TYPE_SEQUENCE);
@@ -1244,13 +1239,13 @@ class
         self::assertFileExists($filename);
         require_once $filename;
 
-        $property   = new \ReflectionProperty($metadata->name, 'test');
+        $property   = new ReflectionProperty($metadata->name, 'test');
         $docComment = $property->getDocComment();
 
         self::assertStringContainsString($expectedAnnotation, $docComment);
     }
 
-    public function columnOptionsProvider() : array
+    public function columnOptionsProvider(): array
     {
         return [
             'string-default'   => [
@@ -1287,8 +1282,8 @@ class
                         'fixed' => true,
                         'comment' => 'testing',
                         'collation' => 'utf8mb4_general_ci',
-                        'check' => 'CHECK (test IN (""test""))'
-                    ]
+                        'check' => 'CHECK (test IN (""test""))',
+                    ],
                 ],
             ],
             'int-default'      => [
@@ -1316,12 +1311,16 @@ class
                         'unsigned' => true,
                         'comment' => 'testing',
                         'check' => 'CHECK (test > 5)',
-                    ]
+                    ],
                 ],
             ],
         ];
     }
 }
 
-class EntityGeneratorAuthor {}
-class EntityGeneratorComment {}
+class EntityGeneratorAuthor
+{
+}
+class EntityGeneratorComment
+{
+}

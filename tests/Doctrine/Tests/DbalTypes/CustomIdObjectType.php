@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\Tests\DbalTypes;
 
 use Doctrine\DBAL\Platforms\AbstractPlatform;
@@ -7,7 +9,7 @@ use Doctrine\DBAL\Types\Type;
 
 class CustomIdObjectType extends Type
 {
-    const NAME      = 'CustomIdObject';
+    public const NAME = 'CustomIdObject';
 
     /**
      * {@inheritdoc}
@@ -22,9 +24,7 @@ class CustomIdObjectType extends Type
      */
     public function convertToPHPValue($value, AbstractPlatform $platform)
     {
-        $idObject = new CustomIdObject($value);
-
-        return $idObject;
+        return new CustomIdObject($value);
     }
 
     /**

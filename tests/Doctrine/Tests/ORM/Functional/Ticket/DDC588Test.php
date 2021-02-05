@@ -1,10 +1,14 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\Tests\ORM\Functional\Ticket;
 
-class DDC588Test extends \Doctrine\Tests\OrmFunctionalTestCase
+use Doctrine\Tests\OrmFunctionalTestCase;
+
+class DDC588Test extends OrmFunctionalTestCase
 {
-    protected function setUp() : void
+    protected function setUp(): void
     {
         parent::setUp();
 
@@ -15,7 +19,7 @@ class DDC588Test extends \Doctrine\Tests\OrmFunctionalTestCase
         );
     }
 
-    public function testIssue()
+    public function testIssue(): void
     {
         $site = new DDC588Site('Foo');
 
@@ -40,9 +44,7 @@ class DDC588Site
      */
     public $id;
 
-    /**
-     * @Column(type="string", length=45)
-     */
+    /** @Column(type="string", length=45) */
     protected $name = null;
 
     public function __construct($name = '')

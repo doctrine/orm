@@ -1,4 +1,5 @@
 <?php
+
 /*
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
  * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
@@ -22,26 +23,18 @@ namespace Doctrine\ORM\Mapping\Builder;
 /**
  * Embedded Builder
  *
- * @license     http://www.opensource.org/licenses/mit-license.php MIT
  * @link        www.doctrine-project.com
- * @since       2.5
- * @author      Guido Contreras Woda <guiwoda@gmail.com>
  */
 class EmbeddedBuilder
 {
-    /**
-     * @var ClassMetadataBuilder
-     */
+    /** @var ClassMetadataBuilder */
     private $builder;
 
-    /**
-     * @var array
-     */
+    /** @var mixed[] */
     private $mapping;
 
     /**
-     * @param ClassMetadataBuilder $builder
-     * @param array                $mapping
+     * @param mixed[] $mapping
      */
     public function __construct(ClassMetadataBuilder $builder, array $mapping)
     {
@@ -53,6 +46,7 @@ class EmbeddedBuilder
      * Sets the column prefix for all of the embedded columns.
      *
      * @param string $columnPrefix
+     *
      * @return $this
      */
     public function setColumnPrefix($columnPrefix)

@@ -23,10 +23,7 @@ namespace Doctrine\ORM\Mapping;
 /**
  * A set of rules for determining the physical column and table names
  *
- * 
  * @link    www.doctrine-project.org
- * @since   2.3
- * @author  Fabio B. Silva <fabio.bat.silva@gmail.com>
  */
 interface NamingStrategy
 {
@@ -52,10 +49,10 @@ interface NamingStrategy
     /**
      * Returns a column name for an embedded property.
      *
-     * @param string    $propertyName
-     * @param string    $embeddedColumnName
-     * @param string    $className
-     * @param string    $embeddedClassName
+     * @param string $propertyName
+     * @param string $embeddedColumnName
+     * @param string $className
+     * @param string $embeddedClassName
      *
      * @return string
      */

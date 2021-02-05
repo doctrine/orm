@@ -1,19 +1,25 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\Tests\ORM\Functional\Ticket;
 
 use Doctrine\Common\Cache\FilesystemCache;
 use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\ORM\PersistentCollection;
+use Doctrine\Tests\OrmFunctionalTestCase;
+use Exception;
+
+use function mkdir;
+use function sys_get_temp_dir;
+use function uniqid;
 
 /**
  * @group non-cacheable
  */
-class DDC742Test extends \Doctrine\Tests\OrmFunctionalTestCase
+class DDC742Test extends OrmFunctionalTestCase
 {
-    /**
-     * {@inheritDoc}
-     */
-    protected function setUp() : void
+    protected function setUp(): void
     {
         parent::setUp();
 
@@ -28,10 +34,10 @@ class DDC742Test extends \Doctrine\Tests\OrmFunctionalTestCase
             $this->_schemaTool->createSchema(
                 [
                     $this->_em->getClassMetadata(DDC742User::class),
-                    $this->_em->getClassMetadata(DDC742Comment::class)
+                    $this->_em->getClassMetadata(DDC742Comment::class),
                 ]
             );
-        } catch(\Exception $e) {
+        } catch (Exception $e) {
         }
 
         // make sure classes will be deserialized from caches
@@ -39,20 +45,20 @@ class DDC742Test extends \Doctrine\Tests\OrmFunctionalTestCase
         $this->_em->getMetadataFactory()->setMetadataFor(DDC742Comment::class, null);
     }
 
-    public function testIssue()
+    public function testIssue(): void
     {
-        $user = new DDC742User();
-        $user->title = "Foo";
+        $user                   = new DDC742User();
+        $user->title            = 'Foo';
         $user->favoriteComments = new ArrayCollection();
 
-        $comment1 = new DDC742Comment();
-        $comment1->content = "foo";
+        $comment1          = new DDC742Comment();
+        $comment1->content = 'foo';
 
-        $comment2 = new DDC742Comment();
-        $comment2->content = "bar";
+        $comment2          = new DDC742Comment();
+        $comment2->content = 'bar';
 
-        $comment3 = new DDC742Comment();
-        $comment3->content = "baz";
+        $comment3          = new DDC742Comment();
+        $comment3->content = 'baz';
 
         $user->favoriteComments->add($comment1);
         $user->favoriteComments->add($comment2);
@@ -101,8 +107,7 @@ class DDC742User
      *  joinColumns={@JoinColumn(name="user_id",referencedColumnName="id")},
      *  inverseJoinColumns={@JoinColumn(name="comment_id", referencedColumnName="id")}
      * )
-     *
-     * @var \Doctrine\ORM\PersistentCollection
+     * @var PersistentCollection
      */
     public $favoriteComments;
 }

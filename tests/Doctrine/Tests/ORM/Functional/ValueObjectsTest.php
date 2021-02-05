@@ -21,7 +21,7 @@ use function sprintf;
  */
 class ValueObjectsTest extends OrmFunctionalTestCase
 {
-    protected function setUp() : void
+    protected function setUp(): void
     {
         parent::setUp();
 
@@ -40,7 +40,7 @@ class ValueObjectsTest extends OrmFunctionalTestCase
         }
     }
 
-    public function testMetadataHasReflectionEmbeddablesAccessible()
+    public function testMetadataHasReflectionEmbeddablesAccessible(): void
     {
         $classMetadata = $this->_em->getClassMetadata(DDC93Person::class);
 
@@ -55,10 +55,11 @@ class ValueObjectsTest extends OrmFunctionalTestCase
                 $classMetadata->getReflectionProperty('address')
             );
         }
+
         $this->assertInstanceOf(ReflectionEmbeddedProperty::class, $classMetadata->getReflectionProperty('address.street'));
     }
 
-    public function testCRUD()
+    public function testCRUD(): void
     {
         $person                   = new DDC93Person();
         $person->name             = 'Tara';
@@ -109,7 +110,7 @@ class ValueObjectsTest extends OrmFunctionalTestCase
         $this->assertNull($this->_em->find(DDC93Person::class, $personId));
     }
 
-    public function testLoadDql()
+    public function testLoadDql(): void
     {
         for ($i = 0; $i < 3; $i++) {
             $person                   = new DDC93Person();
@@ -153,7 +154,7 @@ class ValueObjectsTest extends OrmFunctionalTestCase
     /**
      * @group dql
      */
-    public function testDqlOnEmbeddedObjectsField()
+    public function testDqlOnEmbeddedObjectsField(): void
     {
         if ($this->isSecondLevelCacheEnabled) {
             $this->markTestSkipped('SLC does not work with UPDATE/DELETE queries through EM.');
@@ -200,7 +201,7 @@ class ValueObjectsTest extends OrmFunctionalTestCase
         $this->assertNull($this->_em->find(DDC93Person::class, $person->id));
     }
 
-    public function testPartialDqlOnEmbeddedObjectsField()
+    public function testPartialDqlOnEmbeddedObjectsField(): void
     {
         $person = new DDC93Person('Karl', new DDC93Address('Foo', '12345', 'Gosport', new DDC93Country('England')));
         $this->_em->persist($person);
@@ -252,7 +253,7 @@ class ValueObjectsTest extends OrmFunctionalTestCase
         $this->assertNull($person->name);
     }
 
-    public function testDqlWithNonExistentEmbeddableField()
+    public function testDqlWithNonExistentEmbeddableField(): void
     {
         $this->expectException(QueryException::class);
         $this->expectExceptionMessage('no field or association named address.asdfasdf');
@@ -261,7 +262,7 @@ class ValueObjectsTest extends OrmFunctionalTestCase
             ->execute();
     }
 
-    public function testPartialDqlWithNonExistentEmbeddableField()
+    public function testPartialDqlWithNonExistentEmbeddableField(): void
     {
         $this->expectException(QueryException::class);
         $this->expectExceptionMessage("no mapped field named 'address.asdfasdf'");
@@ -270,7 +271,7 @@ class ValueObjectsTest extends OrmFunctionalTestCase
             ->execute();
     }
 
-    public function testEmbeddableWithInheritance()
+    public function testEmbeddableWithInheritance(): void
     {
         $car = new DDC93Car(new DDC93Address('Foo', '12345', 'Asdf'));
         $this->_em->persist($car);
@@ -280,7 +281,7 @@ class ValueObjectsTest extends OrmFunctionalTestCase
         $this->assertEquals($car, $reloadedCar);
     }
 
-    public function testInlineEmbeddableWithPrefix()
+    public function testInlineEmbeddableWithPrefix(): void
     {
         $metadata = $this->_em->getClassMetadata(DDC3028PersonWithPrefix::class);
 
@@ -290,7 +291,7 @@ class ValueObjectsTest extends OrmFunctionalTestCase
         $this->assertEquals('bloo_id', $metadata->getColumnName('nested.nestedWithPrefixFalse.id'));
     }
 
-    public function testInlineEmbeddableEmptyPrefix()
+    public function testInlineEmbeddableEmptyPrefix(): void
     {
         $metadata = $this->_em->getClassMetadata(DDC3028PersonEmptyPrefix::class);
 
@@ -300,7 +301,7 @@ class ValueObjectsTest extends OrmFunctionalTestCase
         $this->assertEquals('nested_id', $metadata->getColumnName('nested.nestedWithPrefixFalse.id'));
     }
 
-    public function testInlineEmbeddablePrefixFalse()
+    public function testInlineEmbeddablePrefixFalse(): void
     {
         $expectedColumnName = 'id';
 
@@ -311,7 +312,7 @@ class ValueObjectsTest extends OrmFunctionalTestCase
         $this->assertEquals($expectedColumnName, $actualColumnName);
     }
 
-    public function testInlineEmbeddableInMappedSuperClass()
+    public function testInlineEmbeddableInMappedSuperClass(): void
     {
         $isFieldMapped = $this->_em
             ->getClassMetadata(DDC3027Dog::class)
@@ -323,7 +324,7 @@ class ValueObjectsTest extends OrmFunctionalTestCase
     /**
      * @dataProvider getInfiniteEmbeddableNestingData
      */
-    public function testThrowsExceptionOnInfiniteEmbeddableNesting($embeddableClassName, $declaredEmbeddableClassName)
+    public function testThrowsExceptionOnInfiniteEmbeddableNesting($embeddableClassName, $declaredEmbeddableClassName): void
     {
         $this->expectException(MappingException::class);
         $this->expectExceptionMessage(

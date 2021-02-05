@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\Tests\Models\Cache;
 
 /**
@@ -8,9 +10,7 @@ namespace Doctrine\Tests\Models\Cache;
  */
 class AttractionContactInfo extends AttractionInfo
 {
-    /**
-     * @Column(unique=true)
-     */
+    /** @Column(unique=true) */
     protected $fone;
 
     public function __construct($fone, Attraction $attraction)
@@ -24,7 +24,7 @@ class AttractionContactInfo extends AttractionInfo
         return $this->fone;
     }
 
-    public function setFone($fone)
+    public function setFone($fone): void
     {
         $this->fone = $fone;
     }

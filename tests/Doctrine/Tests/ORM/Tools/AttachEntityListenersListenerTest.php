@@ -1,43 +1,42 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\Tests\ORM\Tools;
 
+use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\Events;
-use Doctrine\Tests\OrmTestCase;
 use Doctrine\ORM\Mapping\ClassMetadataFactory;
 use Doctrine\ORM\Tools\AttachEntityListenersListener;
+use Doctrine\Tests\OrmTestCase;
+
+use function func_get_args;
 
 class AttachEntityListenersListenerTest extends OrmTestCase
 {
-    /**
-     * @var \Doctrine\ORM\EntityManager
-     */
+    /** @var EntityManager */
     private $em;
 
-    /**
-     * @var \Doctrine\ORM\Tools\AttachEntityListenersListener
-     */
+    /** @var AttachEntityListenersListener */
     private $listener;
 
-    /**
-     * @var \Doctrine\ORM\Mapping\ClassMetadataFactory
-     */
+    /** @var ClassMetadataFactory */
     private $factory;
 
-    protected function setUp() : void
+    protected function setUp(): void
     {
         $this->listener = new AttachEntityListenersListener();
         $driver         = $this->createAnnotationDriver();
         $this->em       = $this->_getTestEntityManager();
         $evm            = $this->em->getEventManager();
-        $this->factory  = new ClassMetadataFactory;
+        $this->factory  = new ClassMetadataFactory();
 
         $evm->addEventListener(Events::loadClassMetadata, $this->listener);
         $this->em->getConfiguration()->setMetadataDriverImpl($driver);
         $this->factory->setEntityManager($this->em);
     }
 
-    public function testAttachEntityListeners()
+    public function testAttachEntityListeners(): void
     {
         $this->listener->addEntityListener(
             AttachEntityListenersListenerTestFooEntity::class,
@@ -54,7 +53,7 @@ class AttachEntityListenersListenerTest extends OrmTestCase
         $this->assertEquals(AttachEntityListenersListenerTestListener::class, $metadata->entityListeners['postLoad'][0]['class']);
     }
 
-    public function testAttachToExistingEntityListeners()
+    public function testAttachToExistingEntityListeners(): void
     {
         $this->listener->addEntityListener(
             AttachEntityListenersListenerTestBarEntity::class,
@@ -90,7 +89,7 @@ class AttachEntityListenersListenerTest extends OrmTestCase
         $this->assertEquals(AttachEntityListenersListenerTestListener2::class, $metadata->entityListeners['postPersist'][1]['class']);
     }
 
-    public function testDuplicateEntityListenerException()
+    public function testDuplicateEntityListenerException(): void
     {
         $this->expectException('Doctrine\ORM\Mapping\MappingException');
         $this->expectExceptionMessage('Entity Listener "Doctrine\Tests\ORM\Tools\AttachEntityListenersListenerTestListener#postPersist()" in "Doctrine\Tests\ORM\Tools\AttachEntityListenersListenerTestFooEntity" was already declared, but it must be declared only once.');
@@ -141,17 +140,17 @@ class AttachEntityListenersListenerTestListener
 {
     public $calls;
 
-    public function prePersist()
+    public function prePersist(): void
     {
         $this->calls[__FUNCTION__][] = func_get_args();
     }
 
-    public function postLoadHandler()
+    public function postLoadHandler(): void
     {
         $this->calls[__FUNCTION__][] = func_get_args();
     }
 
-    public function postPersist()
+    public function postPersist(): void
     {
         $this->calls[__FUNCTION__][] = func_get_args();
     }
@@ -161,12 +160,12 @@ class AttachEntityListenersListenerTestListener2
 {
     public $calls;
 
-    public function prePersist()
+    public function prePersist(): void
     {
         $this->calls[__FUNCTION__][] = func_get_args();
     }
 
-    public function postPersistHandler()
+    public function postPersistHandler(): void
     {
         $this->calls[__FUNCTION__][] = func_get_args();
     }

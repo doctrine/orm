@@ -1,33 +1,35 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\Tests\ORM\Functional\Ticket;
+
+use Doctrine\Tests\OrmFunctionalTestCase;
+use Exception;
 
 /**
  * @group DDC-2759
  */
-class DDC2759Test extends \Doctrine\Tests\OrmFunctionalTestCase
+class DDC2759Test extends OrmFunctionalTestCase
 {
-    /**
-     * {@inheritDoc}
-     */
-    protected function setUp() : void
+    protected function setUp(): void
     {
         parent::setUp();
 
         try {
             $this->_schemaTool->createSchema(
                 [
-                $this->_em->getClassMetadata(DDC2759Qualification::class),
-                $this->_em->getClassMetadata(DDC2759Category::class),
-                $this->_em->getClassMetadata(DDC2759QualificationMetadata::class),
-                $this->_em->getClassMetadata(DDC2759MetadataCategory::class),
+                    $this->_em->getClassMetadata(DDC2759Qualification::class),
+                    $this->_em->getClassMetadata(DDC2759Category::class),
+                    $this->_em->getClassMetadata(DDC2759QualificationMetadata::class),
+                    $this->_em->getClassMetadata(DDC2759MetadataCategory::class),
                 ]
             );
-        } catch(\Exception $e) {
+        } catch (Exception $e) {
             return;
         }
 
-        $qualification = new DDC2759Qualification();
+        $qualification         = new DDC2759Qualification();
         $qualificationMetadata = new DDC2759QualificationMetadata($qualification);
 
         $category1 = new DDC2759Category();
@@ -49,7 +51,7 @@ class DDC2759Test extends \Doctrine\Tests\OrmFunctionalTestCase
         $this->_em->clear();
     }
 
-    public function testCorrectNumberOfAssociationsIsReturned()
+    public function testCorrectNumberOfAssociationsIsReturned(): void
     {
         $repository = $this->_em->getRepository(DDC2759Qualification::class);
 

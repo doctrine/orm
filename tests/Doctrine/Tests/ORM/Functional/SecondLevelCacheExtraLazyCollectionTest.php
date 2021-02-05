@@ -1,18 +1,20 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\Tests\ORM\Functional;
 
+use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\Tests\Models\Cache\City;
 use Doctrine\Tests\Models\Cache\State;
 use Doctrine\Tests\Models\Cache\Travel;
-use Doctrine\ORM\Mapping\ClassMetadata;
 
 /**
  * @group DDC-2183
  */
 class SecondLevelCacheExtraLazyCollectionTest extends SecondLevelCacheAbstractTest
 {
-    protected function setUp() : void
+    protected function setUp(): void
     {
         parent::setUp();
 
@@ -23,7 +25,7 @@ class SecondLevelCacheExtraLazyCollectionTest extends SecondLevelCacheAbstractTe
         $targetEntity->associationMappings['travels']['fetch']       = ClassMetadata::FETCH_EXTRA_LAZY;
     }
 
-    public function tearDown() : void
+    public function tearDown(): void
     {
         parent::tearDown();
 
@@ -34,7 +36,7 @@ class SecondLevelCacheExtraLazyCollectionTest extends SecondLevelCacheAbstractTe
         $targetEntity->associationMappings['travels']['fetch']       = ClassMetadata::FETCH_LAZY;
     }
 
-    public function testCacheCountAfterAddThenFlush()
+    public function testCacheCountAfterAddThenFlush(): void
     {
         $this->loadFixturesCountries();
         $this->loadFixturesStates();
@@ -44,14 +46,14 @@ class SecondLevelCacheExtraLazyCollectionTest extends SecondLevelCacheAbstractTe
 
         $this->_em->clear();
 
-        $ownerId    = $this->travels[0]->getId();
-        $owner      = $this->_em->find(Travel::class, $ownerId);
-        $ref        = $this->_em->find(State::class, $this->states[1]->getId());
+        $ownerId = $this->travels[0]->getId();
+        $owner   = $this->_em->find(Travel::class, $ownerId);
+        $ref     = $this->_em->find(State::class, $this->states[1]->getId());
 
         $this->assertTrue($this->cache->containsEntity(Travel::class, $ownerId));
         $this->assertTrue($this->cache->containsCollection(Travel::class, 'visitedCities', $ownerId));
 
-        $newItem = new City("New City", $ref);
+        $newItem = new City('New City', $ref);
         $owner->getVisitedCities()->add($newItem);
 
         $this->_em->persist($newItem);

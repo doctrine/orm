@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\Tests\Models\Cache;
 
 /**
@@ -15,9 +17,7 @@ class Login
      */
     public $id;
 
-    /**
-     * @Column
-     */
+    /** @Column */
     public $name;
 
     /**
@@ -31,10 +31,7 @@ class Login
         $this->name = $name;
     }
 
-    /**
-     * @return Token
-     */
-    public function getToken()
+    public function getToken(): Token
     {
         return $this->token;
     }

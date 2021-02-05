@@ -4,9 +4,10 @@ declare(strict_types=1);
 
 namespace Doctrine\Tests;
 
-use const E_USER_DEPRECATED;
 use function in_array;
 use function set_error_handler;
+
+use const E_USER_DEPRECATED;
 
 trait VerifyDeprecations
 {
@@ -23,14 +24,14 @@ trait VerifyDeprecations
     private $originalHandler;
 
     /** @before */
-    public function resetDeprecations() : void
+    public function resetDeprecations(): void
     {
         $this->actualDeprecations   = [];
         $this->expectedDeprecations = [];
         $this->ignoredDeprecations  = [];
 
         $this->originalHandler = set_error_handler(
-            function (int $errorNumber, string $errorMessage) : void {
+            function (int $errorNumber, string $errorMessage): void {
                 if (in_array($errorMessage, $this->ignoredDeprecations, true)) {
                     return;
                 }
@@ -42,14 +43,14 @@ trait VerifyDeprecations
     }
 
     /** @after */
-    public function resetErrorHandler() : void
+    public function resetErrorHandler(): void
     {
         set_error_handler($this->originalHandler, E_USER_DEPRECATED);
         $this->originalHandler = null;
     }
 
     /** @after */
-    public function validateDeprecationExpectations() : void
+    public function validateDeprecationExpectations(): void
     {
         if ($this->expectedDeprecations === []) {
             return;
@@ -62,22 +63,22 @@ trait VerifyDeprecations
         );
     }
 
-    protected function ignoreDeprecationMessage(string $message) : void
+    protected function ignoreDeprecationMessage(string $message): void
     {
         $this->ignoredDeprecations[] = $message;
     }
 
-    protected function expectDeprecationMessageSame(string $message) : void
+    protected function expectDeprecationMessageSame(string $message): void
     {
         $this->expectedDeprecations[] = $message;
     }
 
-    protected function assertHasDeprecationMessages() : void
+    protected function assertHasDeprecationMessages(): void
     {
         self::assertNotSame([], $this->actualDeprecations, 'Failed asserting that test has triggered deprecation messages.');
     }
 
-    protected function assertNotHasDeprecationMessages() : void
+    protected function assertNotHasDeprecationMessages(): void
     {
         self::assertSame([], $this->actualDeprecations, 'Failed asserting that test has not triggered deprecation messages.');
     }

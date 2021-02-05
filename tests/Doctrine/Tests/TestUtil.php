@@ -1,20 +1,21 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\Tests;
 
 use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\DriverManager;
 
+use function explode;
+use function unlink;
+
 /**
  * TestUtil is a class with static utility methods used during tests.
- *
- * @author robo
  */
 class TestUtil
 {
-    /**
-     * @var bool Whether the database schema is initialized.
-     */
+    /** @var bool Whether the database schema is initialized. */
     private static $initialized = false;
 
     /**
@@ -40,7 +41,7 @@ class TestUtil
      *
      * @return Connection The database connection instance.
      */
-    public static function getConnection()
+    public static function getConnection(): Connection
     {
         $conn = DriverManager::getConnection(self::getConnectionParams());
 
@@ -49,10 +50,7 @@ class TestUtil
         return $conn;
     }
 
-    /**
-     * @return Connection
-     */
-    public static function getTempConnection()
+    public static function getTempConnection(): Connection
     {
         return DriverManager::getConnection(self::getParamsForTemporaryConnection());
     }
@@ -97,7 +95,7 @@ class TestUtil
             // Connect to tmpdb in order to drop and create the real test db.
             $tmpConn = DriverManager::getConnection($tmpDbParams);
 
-            $platform  = $tmpConn->getDatabasePlatform();
+            $platform = $tmpConn->getDatabasePlatform();
 
             if ($platform->supportsCreateDropDatabase()) {
                 $dbname = $realConn->getDatabase();
@@ -110,7 +108,7 @@ class TestUtil
                 $sm = $realConn->getSchemaManager();
 
                 $schema = $sm->createSchema();
-                $stmts = $schema->toDropSql($realConn->getDatabasePlatform());
+                $stmts  = $schema->toDropSql($realConn->getDatabasePlatform());
 
                 foreach ($stmts as $stmt) {
                     $realConn->exec($stmt);
@@ -127,7 +125,7 @@ class TestUtil
     {
         $params = [
             'driver' => 'pdo_sqlite',
-            'memory' => true
+            'memory' => true,
         ];
 
         if (isset($GLOBALS['db_path'])) {
@@ -138,11 +136,11 @@ class TestUtil
         return $params;
     }
 
-    private static function addDbEventSubscribers(Connection $conn)
+    private static function addDbEventSubscribers(Connection $conn): void
     {
         if (isset($GLOBALS['db_event_subscribers'])) {
             $evm = $conn->getEventManager();
-            foreach (explode(",", $GLOBALS['db_event_subscribers']) as $subscriberClass) {
+            foreach (explode(',', $GLOBALS['db_event_subscribers']) as $subscriberClass) {
                 $subscriberInstance = new $subscriberClass();
                 $evm->addEventSubscriber($subscriberInstance);
             }
@@ -157,7 +155,7 @@ class TestUtil
             'password' => $GLOBALS['tmpdb_password'],
             'host' => $GLOBALS['tmpdb_host'],
             'dbname' => null,
-            'port' => $GLOBALS['tmpdb_port']
+            'port' => $GLOBALS['tmpdb_port'],
         ];
 
         if (isset($GLOBALS['tmpdb_name'])) {
@@ -183,7 +181,7 @@ class TestUtil
             'password' => $GLOBALS['db_password'],
             'host' => $GLOBALS['db_host'],
             'dbname' => $GLOBALS['db_name'],
-            'port' => $GLOBALS['db_port']
+            'port' => $GLOBALS['db_port'],
         ];
 
         if (isset($GLOBALS['db_server'])) {

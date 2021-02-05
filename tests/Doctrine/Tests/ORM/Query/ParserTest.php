@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\Tests\ORM\Query;
 
 use Doctrine\ORM\Query;
@@ -8,15 +10,15 @@ use Doctrine\ORM\Query\Parser;
 use Doctrine\ORM\Query\QueryException;
 use Doctrine\Tests\Models\CMS\CmsUser;
 use Doctrine\Tests\OrmTestCase;
+use stdClass;
 
 class ParserTest extends OrmTestCase
 {
-
     /**
      * @covers \Doctrine\ORM\Query\Parser::AbstractSchemaName
      * @group DDC-3715
      */
-    public function testAbstractSchemaNameSupportsFQCN()
+    public function testAbstractSchemaNameSupportsFQCN(): void
     {
         $parser = $this->createParser(CmsUser::class);
 
@@ -27,7 +29,7 @@ class ParserTest extends OrmTestCase
      * @covers Doctrine\ORM\Query\Parser::AbstractSchemaName
      * @group DDC-3715
      */
-    public function testAbstractSchemaNameSupportsClassnamesWithLeadingBackslash()
+    public function testAbstractSchemaNameSupportsClassnamesWithLeadingBackslash(): void
     {
         $parser = $this->createParser('\\' . CmsUser::class);
 
@@ -38,18 +40,18 @@ class ParserTest extends OrmTestCase
      * @covers \Doctrine\ORM\Query\Parser::AbstractSchemaName
      * @group DDC-3715
      */
-    public function testAbstractSchemaNameSupportsIdentifier()
+    public function testAbstractSchemaNameSupportsIdentifier(): void
     {
-        $parser = $this->createParser(\stdClass::class);
+        $parser = $this->createParser(stdClass::class);
 
-        $this->assertEquals(\stdClass::class, $parser->AbstractSchemaName());
+        $this->assertEquals(stdClass::class, $parser->AbstractSchemaName());
     }
 
     /**
      * @covers \Doctrine\ORM\Query\Parser::AbstractSchemaName
      * @group DDC-3715
      */
-    public function testAbstractSchemaNameSupportsNamespaceAlias()
+    public function testAbstractSchemaNameSupportsNamespaceAlias(): void
     {
         $parser = $this->createParser('CMS:CmsUser');
 
@@ -62,7 +64,7 @@ class ParserTest extends OrmTestCase
      * @covers \Doctrine\ORM\Query\Parser::AbstractSchemaName
      * @group DDC-3715
      */
-    public function testAbstractSchemaNameSupportsNamespaceAliasWithRelativeClassname()
+    public function testAbstractSchemaNameSupportsNamespaceAliasWithRelativeClassname(): void
     {
         $parser = $this->createParser('Model:CMS\CmsUser');
 
@@ -76,7 +78,7 @@ class ParserTest extends OrmTestCase
      * @covers Doctrine\ORM\Query\Parser::match
      * @group DDC-3701
      */
-    public function testMatch($expectedToken, $inputString)
+    public function testMatch($expectedToken, $inputString): void
     {
         $parser = $this->createParser($inputString);
 
@@ -90,7 +92,7 @@ class ParserTest extends OrmTestCase
      * @covers Doctrine\ORM\Query\Parser::match
      * @group DDC-3701
      */
-    public function testMatchFailure($expectedToken, $inputString)
+    public function testMatchFailure($expectedToken, $inputString): void
     {
         $this->expectException(QueryException::class);
 
@@ -114,7 +116,7 @@ class ParserTest extends OrmTestCase
             [Lexer::T_DOT, '.'], // token that cannot be an identifier
             [Lexer::T_IDENTIFIER, 'someIdentifier'],
             [Lexer::T_IDENTIFIER, 'from'], // also a terminal string (the "FROM" keyword) as in DDC-505
-            [Lexer::T_IDENTIFIER, 'comma']
+            [Lexer::T_IDENTIFIER, 'comma'],
             // not even a terminal string, but the name of a constant in the Lexer (whitebox test)
         ];
     }
@@ -141,7 +143,7 @@ class ParserTest extends OrmTestCase
      *
      * @group GH7934
      */
-    public function testNullLookahead() : void
+    public function testNullLookahead(): void
     {
         $query = new Query($this->_getTestEntityManager());
         $query->setDQL('SELECT CURRENT_TIMESTAMP()');

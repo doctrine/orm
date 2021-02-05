@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\Tests\ORM\Functional\Ticket;
 
 use Doctrine\Common\Collections\ArrayCollection;
@@ -12,16 +14,16 @@ use Doctrine\Tests\OrmFunctionalTestCase;
  */
 class DDC3644Test extends OrmFunctionalTestCase
 {
-    protected function setUp() : void
+    protected function setUp(): void
     {
         parent::setUp();
 
         $this->setUpEntitySchema(
             [
-            DDC3644User::class,
-            DDC3644Address::class,
-            DDC3644Animal::class,
-            DDC3644Pet::class,
+                DDC3644User::class,
+                DDC3644Address::class,
+                DDC3644Animal::class,
+                DDC3644Pet::class,
             ]
         );
     }
@@ -29,7 +31,7 @@ class DDC3644Test extends OrmFunctionalTestCase
     /**
      * @group DDC-3644
      */
-    public function testIssueWithRegularEntity()
+    public function testIssueWithRegularEntity(): void
     {
         // Define initial dataset
         $current   = new DDC3644Address('Sao Paulo, SP, Brazil');
@@ -81,7 +83,7 @@ class DDC3644Test extends OrmFunctionalTestCase
     /**
      * @group DDC-3644
      */
-    public function testIssueWithJoinedEntity()
+    public function testIssueWithJoinedEntity(): void
     {
         // Define initial dataset
         $actual = new DDC3644Pet('Catharina');
@@ -141,39 +143,33 @@ class DDC3644User
      */
     public $id;
 
-    /**
-     * @Column(type="string")
-     */
+    /** @Column(type="string") */
     public $name;
 
-    /**
-     * @OneToMany(targetEntity="DDC3644Address", mappedBy="user", orphanRemoval=true)
-     */
+    /** @OneToMany(targetEntity="DDC3644Address", mappedBy="user", orphanRemoval=true) */
     public $addresses = [];
 
-    /**
-     * @OneToMany(targetEntity="DDC3644Pet", mappedBy="owner", orphanRemoval=true)
-     */
+    /** @OneToMany(targetEntity="DDC3644Pet", mappedBy="owner", orphanRemoval=true) */
     public $pets = [];
 
-    public function setAddresses(Collection $addresses)
+    public function setAddresses(Collection $addresses): void
     {
         $self = $this;
 
         $this->addresses = $addresses;
 
-        $addresses->map(function ($address) use ($self) {
+        $addresses->map(static function ($address) use ($self): void {
             $address->user = $self;
         });
     }
 
-    public function setPets(Collection $pets)
+    public function setPets(Collection $pets): void
     {
         $self = $this;
 
         $this->pets = $pets;
 
-        $pets->map(function ($pet) use ($self) {
+        $pets->map(static function ($pet) use ($self): void {
             $pet->owner = $self;
         });
     }
@@ -197,9 +193,7 @@ class DDC3644Address
      */
     public $user;
 
-    /**
-     * @Column(type="string")
-     */
+    /** @Column(type="string") */
     public $address;
 
     public function __construct($address)
@@ -223,9 +217,7 @@ abstract class DDC3644Animal
      */
     public $id;
 
-    /**
-     * @Column(type="string")
-     */
+    /** @Column(type="string") */
     public $name;
 
     public function __construct($name)

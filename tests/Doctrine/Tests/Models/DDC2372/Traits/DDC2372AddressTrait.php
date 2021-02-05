@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\Tests\Models\DDC2372\Traits;
 
 trait DDC2372AddressTrait
@@ -15,7 +17,7 @@ trait DDC2372AddressTrait
         return $this->address;
     }
 
-    public function setAddress(Address $address)
+    public function setAddress(Address $address): void
     {
         if ($this->address !== $address) {
             $this->address = $address;

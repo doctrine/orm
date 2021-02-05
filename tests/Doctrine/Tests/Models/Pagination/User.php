@@ -1,11 +1,10 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\Tests\Models\Pagination;
 
-
 /**
- * @package Doctrine\Tests\Models\Pagination
- *
  * @Entity
  * @Table(name="pagination_user")
  * @InheritanceType("SINGLE_TABLE")
@@ -20,8 +19,6 @@ abstract class User
      */
     private $id;
 
-    /**
-     * @Column(type="string")
-     */
+    /** @Column(type="string") */
     public $name;
 }

@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\Tests\Models\Quote;
 
 /**
@@ -11,7 +13,6 @@ namespace Doctrine\Tests\Models\Quote;
  */
 class Address
 {
-
     /**
      * @Id
      * @GeneratedValue
@@ -19,9 +20,7 @@ class Address
      */
     public $id;
 
-    /**
-     * @Column(name="`address-zip`")
-     */
+    /** @Column(name="`address-zip`") */
     public $zip;
 
     /**
@@ -30,14 +29,13 @@ class Address
      */
     public $user;
 
-
-    public function setUser(User $user) {
+    public function setUser(User $user): void
+    {
         if ($this->user !== $user) {
             $this->user = $user;
             $user->setAddress($this);
         }
     }
-
 
     public function getId()
     {
@@ -53,5 +51,4 @@ class Address
     {
         return $this->user;
     }
-
 }

@@ -7,6 +7,7 @@ namespace Doctrine\Tests\ORM\Functional\Ticket;
 use Doctrine\Common\Collections\Criteria;
 use Doctrine\ORM\PersistentCollection;
 use Doctrine\Tests\OrmFunctionalTestCase;
+
 use function assert;
 
 /**
@@ -14,7 +15,7 @@ use function assert;
  */
 class GH7836Test extends OrmFunctionalTestCase
 {
-    protected function setUp() : void
+    protected function setUp(): void
     {
         parent::setUp();
 
@@ -30,7 +31,7 @@ class GH7836Test extends OrmFunctionalTestCase
         $this->_em->clear();
     }
 
-    public function testMatchingRespectsCollectionOrdering() : void
+    public function testMatchingRespectsCollectionOrdering(): void
     {
         $parent = $this->_em->find(GH7836ParentEntity::class, 1);
         assert($parent instanceof GH7836ParentEntity);
@@ -45,7 +46,7 @@ class GH7836Test extends OrmFunctionalTestCase
         self::assertSame('baz', $children[2]->name);
     }
 
-    public function testMatchingOverrulesCollectionOrdering() : void
+    public function testMatchingOverrulesCollectionOrdering(): void
     {
         $parent = $this->_em->find(GH7836ParentEntity::class, 1);
         assert($parent instanceof GH7836ParentEntity);
@@ -60,7 +61,7 @@ class GH7836Test extends OrmFunctionalTestCase
         self::assertSame('foo', $children[2]->name);
     }
 
-    public function testMatchingKeepsOrderOfCriteriaOrderingKeys() : void
+    public function testMatchingKeepsOrderOfCriteriaOrderingKeys(): void
     {
         $parent = $this->_em->find(GH7836ParentEntity::class, 1);
         assert($parent instanceof GH7836ParentEntity);
@@ -94,12 +95,12 @@ class GH7836ParentEntity
      */
     private $children;
 
-    public function addChild(int $position, string $name) : void
+    public function addChild(int $position, string $name): void
     {
         $this->children[] = new GH7836ChildEntity($this, $position, $name);
     }
 
-    public function getChildren() : PersistentCollection
+    public function getChildren(): PersistentCollection
     {
         return $this->children;
     }

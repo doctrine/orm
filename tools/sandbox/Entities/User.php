@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Entities;
 
 /** @Entity @Table(name="users") */
@@ -28,7 +30,7 @@ class User
         return $this->name;
     }
 
-    public function setName($name)
+    public function setName($name): void
     {
         $this->name = $name;
     }
@@ -38,7 +40,7 @@ class User
         return $this->address;
     }
 
-    public function setAddress(Address $address)
+    public function setAddress(Address $address): void
     {
         if ($this->address !== $address) {
             $this->address = $address;

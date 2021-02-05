@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\Tests\Models\Navigation;
 
 /**
@@ -15,9 +17,7 @@ class NavUser
      */
     private $id;
 
-    /**
-     * @column(type="string")
-     */
+    /** @column(type="string") */
     private $name;
 
     public function __construct($name)
@@ -25,4 +25,3 @@ class NavUser
         $this->name = $name;
     }
 }
-
