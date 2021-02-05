@@ -10,16 +10,20 @@ namespace Doctrine\Tests\Models\DDC117;
 class DDC117ArticleDetails
 {
     /**
+     * @var DDC117Article
      * @Id
      * @OneToOne(targetEntity="DDC117Article", inversedBy="details")
      * @JoinColumn(name="article_id", referencedColumnName="article_id")
      */
     private $article;
 
-    /** @Column(type="text") */
+    /**
+     * @var string
+     * @Column(type="text")
+     */
     private $text;
 
-    public function __construct($article, $text)
+    public function __construct(DDC117Article $article, string $text)
     {
         $this->article = $article;
         $article->setDetails($this);
@@ -27,12 +31,12 @@ class DDC117ArticleDetails
         $this->update($text);
     }
 
-    public function update($text): void
+    public function update(string $text): void
     {
         $this->text = $text;
     }
 
-    public function getText()
+    public function getText(): string
     {
         return $this->text;
     }

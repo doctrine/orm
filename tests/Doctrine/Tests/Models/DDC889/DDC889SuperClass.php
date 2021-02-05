@@ -11,7 +11,10 @@ use Doctrine\ORM\Mapping\ClassMetadataInfo;
 #[ORM\MappedSuperclass]
 class DDC889SuperClass
 {
-    /** @Column() */
+    /**
+     * @var string
+     * @Column()
+     */
     #[ORM\Column]
     protected $name;
 

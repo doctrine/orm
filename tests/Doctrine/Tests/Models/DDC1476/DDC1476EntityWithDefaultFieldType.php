@@ -14,6 +14,7 @@ use Doctrine\ORM\Mapping\ClassMetadataInfo;
 class DDC1476EntityWithDefaultFieldType
 {
     /**
+     * @var int
      * @Id
      * @Column()
      * @GeneratedValue("NONE")
@@ -21,7 +22,10 @@ class DDC1476EntityWithDefaultFieldType
     #[ORM\Id, ORM\Column, ORM\GeneratedValue(strategy: "NONE")]
     protected $id;
 
-    /** @column() */
+    /**
+     * @var string
+     * @Column()
+     */
     #[ORM\Column]
     protected $name;
 

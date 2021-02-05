@@ -17,13 +17,16 @@ class Stock
     private $id;
 
     /**
+     * @var string
      * For real this column would have to be unique=true. But I want to test behavior of non-unique overrides.
-     *
      * @Column(type="string")
      */
     private $symbol;
 
-    /** @Column(type="decimal") */
+    /**
+     * @var float
+     * @Column(type="decimal")
+     */
     private $price;
 
     /**
@@ -32,7 +35,7 @@ class Stock
      */
     private $market;
 
-    public function __construct($symbol, $initialOfferingPrice, Market $market)
+    public function __construct(string $symbol, float $initialOfferingPrice, Market $market)
     {
         $this->symbol = $symbol;
         $this->price  = $initialOfferingPrice;
@@ -40,7 +43,7 @@ class Stock
         $market->addStock($this);
     }
 
-    public function getSymbol()
+    public function getSymbol(): string
     {
         return $this->symbol;
     }
