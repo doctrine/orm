@@ -1,7 +1,16 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\Tests\Mocks;
 
+use ArrayIterator;
+use PDO;
+
+use function count;
+use function current;
+use function next;
+use function reset;
 
 /**
  * Simple statement mock that returns result based on array.
@@ -9,9 +18,7 @@ namespace Doctrine\Tests\Mocks;
  */
 class StatementArrayMock extends StatementMock
 {
-    /**
-     * @var array
-     */
+    /** @var array */
     private $_result;
 
     public function __construct($result)
@@ -21,7 +28,7 @@ class StatementArrayMock extends StatementMock
 
     public function getIterator()
     {
-        return new \ArrayIterator($this->_result);
+        return new ArrayIterator($this->_result);
     }
 
     public function columnCount()
@@ -39,7 +46,7 @@ class StatementArrayMock extends StatementMock
         return $this->_result;
     }
 
-    public function fetch($fetchMode = null, $cursorOrientation = \PDO::FETCH_ORI_NEXT, $cursorOffset = 0)
+    public function fetch($fetchMode = null, $cursorOrientation = PDO::FETCH_ORI_NEXT, $cursorOffset = 0)
     {
         $current = current($this->_result);
         next($this->_result);
@@ -52,6 +59,7 @@ class StatementArrayMock extends StatementMock
         $current = current($this->_result);
         if ($current) {
             next($this->_result);
+
             return reset($current);
         }
 

@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\Tests\ORM\Hydration;
 
 use Doctrine\ORM\Internal\Hydration\AbstractHydrator;
@@ -7,9 +9,9 @@ use PDO;
 
 class CustomHydratorTest extends HydrationTestCase
 {
-    public function testCustomHydrator()
+    public function testCustomHydrator(): void
     {
-        $em = $this->_getTestEntityManager();
+        $em     = $this->_getTestEntityManager();
         $config = $em->getConfiguration();
         $config->addCustomHydrationMode('CustomHydrator', CustomHydrator::class);
 

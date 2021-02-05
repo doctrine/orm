@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace Doctrine\Tests\ORM\Functional\Ticket;
@@ -7,12 +8,14 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\Tests\OrmFunctionalTestCase;
 
+use function assert;
+
 class GH7062Test extends OrmFunctionalTestCase
 {
     private const SEASON_ID = 'season_18';
     private const TEAM_ID   = 'team_A';
 
-    protected function setUp() : void
+    protected function setUp(): void
     {
         parent::setUp();
 
@@ -21,7 +24,7 @@ class GH7062Test extends OrmFunctionalTestCase
                 GH7062Team::class,
                 GH7062Season::class,
                 GH7062Ranking::class,
-                GH7062RankingPosition::class
+                GH7062RankingPosition::class,
             ]
         );
     }
@@ -29,17 +32,17 @@ class GH7062Test extends OrmFunctionalTestCase
     /**
      * @group GH-7062
      */
-    public function testEntityWithAssociationKeyIdentityCanBeUpdated() : void
+    public function testEntityWithAssociationKeyIdentityCanBeUpdated(): void
     {
         $this->createInitialRankingWithRelatedEntities();
         $this->modifyRanking();
         $this->verifyRanking();
     }
 
-    private function createInitialRankingWithRelatedEntities() : void
+    private function createInitialRankingWithRelatedEntities(): void
     {
-        $team    = new GH7062Team(self::TEAM_ID);
-        $season  = new GH7062Season(self::SEASON_ID);
+        $team   = new GH7062Team(self::TEAM_ID);
+        $season = new GH7062Season(self::SEASON_ID);
 
         $season->ranking = new GH7062Ranking($season, [$team]);
 
@@ -53,10 +56,10 @@ class GH7062Test extends OrmFunctionalTestCase
         }
     }
 
-    private function modifyRanking() : void
+    private function modifyRanking(): void
     {
-        /** @var GH7062Ranking $ranking */
         $ranking = $this->_em->find(GH7062Ranking::class, self::SEASON_ID);
+        assert($ranking instanceof GH7062Ranking);
 
         foreach ($ranking->positions as $position) {
             $position->points += 3;
@@ -66,10 +69,10 @@ class GH7062Test extends OrmFunctionalTestCase
         $this->_em->clear();
     }
 
-    private function verifyRanking() : void
+    private function verifyRanking(): void
     {
-        /** @var GH7062Season $season */
         $season = $this->_em->find(GH7062Season::class, self::SEASON_ID);
+        assert($season instanceof GH7062Season);
         self::assertInstanceOf(GH7062Season::class, $season);
 
         $ranking = $season->ranking;
@@ -93,14 +96,12 @@ class GH7062Ranking
      * @Id
      * @OneToOne(targetEntity=GH7062Season::class, inversedBy="ranking")
      * @JoinColumn(name="season", referencedColumnName="id")
-     *
      * @var GH7062Season
      */
     public $season;
 
     /**
      * @OneToMany(targetEntity=GH7062RankingPosition::class, mappedBy="ranking", cascade={"all"})
-     *
      * @var Collection|GH7062RankingPosition[]
      * @psalm-var Collection<GH7062RankingPosition>
      */
@@ -131,14 +132,12 @@ class GH7062Season
     /**
      * @Id
      * @Column(type="string")
-     *
      * @var string
      */
     public $id;
 
     /**
      * @OneToOne(targetEntity=GH7062Ranking::class, mappedBy="season", cascade={"all"})
-     *
      * @var GH7062Ranking|null
      */
     public $ranking;
@@ -160,7 +159,6 @@ class GH7062Team
     /**
      * @Id
      * @Column(type="string")
-     *
      * @var string
      */
     public $id;
@@ -183,7 +181,6 @@ class GH7062RankingPosition
      * @Id
      * @ManyToOne(targetEntity=GH7062Ranking::class, inversedBy="positions")
      * @JoinColumn(name="season", referencedColumnName="season")
-     *
      * @var GH7062Ranking
      */
     public $ranking;
@@ -192,14 +189,12 @@ class GH7062RankingPosition
      * @Id
      * @ManyToOne(targetEntity=GH7062Team::class)
      * @JoinColumn(name="team_id", referencedColumnName="id")
-     *
      * @var GH7062Team
      */
     public $team;
 
     /**
      * @Column(type="integer")
-     *
      * @var int
      */
     public $points;

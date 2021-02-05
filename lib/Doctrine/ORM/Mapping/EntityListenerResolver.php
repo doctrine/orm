@@ -22,31 +22,24 @@ namespace Doctrine\ORM\Mapping;
 
 /**
  * A resolver is used to instantiate an entity listener.
- *
- * @since   2.4
- * @author  Fabio B. Silva <fabio.bat.silva@gmail.com>
  */
 interface EntityListenerResolver
 {
     /**
-     * Clear all instances from the set, or a specific class when given.
+     * Clear all instances from the set, or a specific instance when given its identifier.
      *
-     * @param string $className The fully-qualified class name
+     * @param string $className May be any arbitrary string. Name kept for BC only.
      *
      * @return void
-     *
-     * @psalm-param class-string $className
      */
     function clear($className = null);
 
     /**
-     * Returns a entity listener instance for the given class name.
+     * Returns a entity listener instance for the given identifier.
      *
-     * @param string $className The fully-qualified class name
+     * @param string $className May be any arbitrary string. Name kept for BC only.
      *
      * @return object An entity listener
-     *
-     * @psalm-param class-string $className
      */
     function resolve($className);
 

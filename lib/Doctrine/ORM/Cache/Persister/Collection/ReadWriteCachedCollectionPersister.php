@@ -20,23 +20,21 @@
 
 namespace Doctrine\ORM\Cache\Persister\Collection;
 
-use Doctrine\ORM\Persisters\Collection\CollectionPersister;
-use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Cache\CollectionCacheKey;
 use Doctrine\ORM\Cache\ConcurrentRegion;
+use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\PersistentCollection;
+use Doctrine\ORM\Persisters\Collection\CollectionPersister;
 
-/**
- * @author Fabio B. Silva <fabio.bat.silva@gmail.com>
- * @since 2.5
- */
+use function spl_object_hash;
+
 class ReadWriteCachedCollectionPersister extends AbstractCollectionPersister
 {
     /**
-     * @param \Doctrine\ORM\Persisters\Collection\CollectionPersister $persister   The collection persister that will be cached.
-     * @param \Doctrine\ORM\Cache\ConcurrentRegion                    $region      The collection region.
-     * @param \Doctrine\ORM\EntityManagerInterface                    $em          The entity manager.
-     * @param array                                                   $association The association mapping.
+     * @param CollectionPersister    $persister   The collection persister that will be cached.
+     * @param ConcurrentRegion       $region      The collection region.
+     * @param EntityManagerInterface $em          The entity manager.
+     * @param mixed[]                $association The association mapping.
      */
     public function __construct(CollectionPersister $persister, ConcurrentRegion $region, EntityManagerInterface $em, array $association)
     {
@@ -100,7 +98,7 @@ class ReadWriteCachedCollectionPersister extends AbstractCollectionPersister
 
         $this->queuedCache['delete'][spl_object_hash($collection)] = [
             'key'   => $key,
-            'lock'  => $lock
+            'lock'  => $lock,
         ];
     }
 
@@ -112,7 +110,7 @@ class ReadWriteCachedCollectionPersister extends AbstractCollectionPersister
         $isInitialized = $collection->isInitialized();
         $isDirty       = $collection->isDirty();
 
-        if ( ! $isInitialized && ! $isDirty) {
+        if (! $isInitialized && ! $isDirty) {
             return;
         }
 
@@ -128,7 +126,7 @@ class ReadWriteCachedCollectionPersister extends AbstractCollectionPersister
 
         $this->queuedCache['update'][spl_object_hash($collection)] = [
             'key'   => $key,
-            'lock'  => $lock
+            'lock'  => $lock,
         ];
     }
 }

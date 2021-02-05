@@ -1,30 +1,35 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\Tests\ORM\Functional\Ticket;
 
 use Doctrine\ORM\Proxy\Proxy;
 use Doctrine\Persistence\Mapping\ClassMetadata;
 use Doctrine\Persistence\ObjectManager;
 use Doctrine\Persistence\ObjectManagerAware;
+use Doctrine\Tests\OrmFunctionalTestCase;
+
+use function get_class;
 
 /**
  * @group DDC-2231
  */
-class DDC2231Test extends \Doctrine\Tests\OrmFunctionalTestCase
+class DDC2231Test extends OrmFunctionalTestCase
 {
-    protected function setUp() : void
+    protected function setUp(): void
     {
         parent::setUp();
         $this->_schemaTool->createSchema(
             [
-            $this->_em->getClassMetadata(DDC2231EntityY::class),
+                $this->_em->getClassMetadata(DDC2231EntityY::class),
             ]
         );
     }
 
-    public function testInjectObjectManagerInProxyIfInitializedInUow()
+    public function testInjectObjectManagerInProxyIfInitializedInUow(): void
     {
-        $y1 = new DDC2231EntityY;
+        $y1 = new DDC2231EntityY();
 
         $this->_em->persist($y1);
 
@@ -47,14 +52,12 @@ class DDC2231Test extends \Doctrine\Tests\OrmFunctionalTestCase
 /** @Entity @Table(name="ddc2231_y") */
 class DDC2231EntityY implements ObjectManagerAware
 {
-    /**
-     * @Id @Column(type="integer") @GeneratedValue
-     */
+    /** @Id @Column(type="integer") @GeneratedValue */
     public $id;
 
     public $om;
 
-    public function injectObjectManager(ObjectManager $objectManager, ClassMetadata $classMetadata)
+    public function injectObjectManager(ObjectManager $objectManager, ClassMetadata $classMetadata): void
     {
         $this->om = $objectManager;
     }
@@ -64,7 +67,7 @@ class DDC2231EntityY implements ObjectManagerAware
         return $this->id;
     }
 
-    public function doSomething()
+    public function doSomething(): void
     {
     }
 }

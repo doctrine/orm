@@ -20,19 +20,20 @@
 
 namespace Doctrine\ORM\Mapping;
 
+use InvalidArgumentException;
+
+use function get_class;
+use function gettype;
+use function is_object;
+use function sprintf;
+use function trim;
+
 /**
  * The default DefaultEntityListener
- *
- * @since   2.4
- * @author  Fabio B. Silva <fabio.bat.silva@gmail.com>
  */
 class DefaultEntityListenerResolver implements EntityListenerResolver
 {
-    /**
-     * @var array Map to store entity listener instances.
-     *
-     * @psalm-var array<class-string, object>
-     */
+    /** @psalm-var array<class-string, object> Map to store entity listener instances. */
     private $instances = [];
 
     /**
@@ -46,7 +47,8 @@ class DefaultEntityListenerResolver implements EntityListenerResolver
             return;
         }
 
-        if (isset($this->instances[$className = trim($className, '\\')])) {
+        $className = trim($className, '\\');
+        if (isset($this->instances[$className])) {
             unset($this->instances[$className]);
         }
     }
@@ -56,8 +58,8 @@ class DefaultEntityListenerResolver implements EntityListenerResolver
      */
     public function register($object)
     {
-        if ( ! is_object($object)) {
-            throw new \InvalidArgumentException(sprintf('An object was expected, but got "%s".', gettype($object)));
+        if (! is_object($object)) {
+            throw new InvalidArgumentException(sprintf('An object was expected, but got "%s".', gettype($object)));
         }
 
         $this->instances[get_class($object)] = $object;
@@ -68,8 +70,9 @@ class DefaultEntityListenerResolver implements EntityListenerResolver
      */
     public function resolve($className)
     {
-        if (isset($this->instances[$className = trim($className, '\\')])) {
-           return $this->instances[$className];
+        $className = trim($className, '\\');
+        if (isset($this->instances[$className])) {
+            return $this->instances[$className];
         }
 
         return $this->instances[$className] = new $className();

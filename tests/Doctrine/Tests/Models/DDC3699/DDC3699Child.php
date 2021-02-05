@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\Tests\Models\DDC3699;
 
 /** @Entity @Table(name="ddc3699_child") */

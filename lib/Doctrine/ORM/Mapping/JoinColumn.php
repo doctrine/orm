@@ -1,4 +1,5 @@
 <?php
+
 /*
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
  * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
@@ -25,34 +26,22 @@ namespace Doctrine\ORM\Mapping;
  */
 final class JoinColumn implements Annotation
 {
-    /**
-     * @var string
-     */
+    /** @var string */
     public $name;
 
-    /**
-     * @var string
-     */
+    /** @var string */
     public $referencedColumnName = 'id';
 
-    /**
-     * @var boolean
-     */
+    /** @var bool */
     public $unique = false;
 
-    /**
-     * @var boolean
-     */
+    /** @var bool */
     public $nullable = true;
 
-    /**
-     * @var mixed
-     */
+    /** @var mixed */
     public $onDelete;
 
-    /**
-     * @var string
-     */
+    /** @var string */
     public $columnDefinition;
 
     /**

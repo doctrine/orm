@@ -1,4 +1,5 @@
 <?php
+
 /*
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
  * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
@@ -23,21 +24,13 @@ namespace Doctrine\ORM\Query\AST;
  * DeleteStatement = DeleteClause [WhereClause]
  *
  * @link    www.doctrine-project.org
- * @since   2.0
- * @author  Guilherme Blanco <guilhermeblanco@hotmail.com>
- * @author  Jonathan Wage <jonwage@gmail.com>
- * @author  Roman Borschel <roman@code-factory.org>
  */
 class DeleteStatement extends Node
 {
-    /**
-     * @var DeleteClause
-     */
+    /** @var DeleteClause */
     public $deleteClause;
 
-    /**
-     * @var WhereClause|null
-     */
+    /** @var WhereClause|null */
     public $whereClause;
 
     /**

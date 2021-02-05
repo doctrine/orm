@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Doctrine\Tests\Functional\Ticket;
 
 use Doctrine\Tests\OrmFunctionalTestCase;
+
 use function array_keys;
 
 /**
@@ -12,10 +13,7 @@ use function array_keys;
  */
 class GH7661Test extends OrmFunctionalTestCase
 {
-    /**
-     * {@inheritDoc}
-     */
-    protected function setUp() : void
+    protected function setUp(): void
     {
         parent::setUp();
 
@@ -37,7 +35,7 @@ class GH7661Test extends OrmFunctionalTestCase
         $this->_em->clear();
     }
 
-    public function testIndexByAssociation() : void
+    public function testIndexByAssociation(): void
     {
         $e    = $this->_em->find(GH7661Event::class, 1);
         $keys = $e->participants->getKeys();

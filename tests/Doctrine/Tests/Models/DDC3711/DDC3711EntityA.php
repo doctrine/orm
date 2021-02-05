@@ -1,28 +1,20 @@
 <?php
 
+declare(strict_types=1);
 
 namespace Doctrine\Tests\Models\DDC3711;
 
 use Doctrine\Common\Collections\ArrayCollection;
 
-/**
- * @author Marc Pantel <pantel.m@gmail.com>
- */
 class DDC3711EntityA
 {
-    /**
-     * @var int
-     */
+    /** @var int */
     private $id1;
 
-    /**
-     * @var int
-     */
+    /** @var int */
     private $id2;
 
-    /**
-     * @var ArrayCollection
-     */
+    /** @var ArrayCollection */
     private $entityB;
 
     /**
@@ -36,7 +28,7 @@ class DDC3711EntityA
     /**
      * @param mixed $id1
      */
-    public function setId1($id1)
+    public function setId1($id1): void
     {
         $this->id1 = $id1;
     }
@@ -52,25 +44,17 @@ class DDC3711EntityA
     /**
      * @param mixed $id2
      */
-    public function setId2($id2)
+    public function setId2($id2): void
     {
         $this->id2 = $id2;
     }
 
-    /**
-     * @return ArrayCollection
-     */
-    public function getEntityB()
+    public function getEntityB(): ArrayCollection
     {
         return $this->entityB;
     }
 
-    /**
-     * @param ArrayCollection $entityB
-     *
-     * @return DDC3711EntityA
-     */
-    public function addEntityB($entityB)
+    public function addEntityB(ArrayCollection $entityB): DDC3711EntityA
     {
         $this->entityB[] = $entityB;
 

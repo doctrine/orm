@@ -1,19 +1,26 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\Tests\ORM\Functional\Ticket;
 
 use Doctrine\Common\Collections\ArrayCollection;
-use Doctrine\Tests\OrmFunctionalTestCase;
+use Doctrine\DBAL\Schema\ForeignKeyConstraint;
+use Doctrine\DBAL\Schema\Table;
 use Doctrine\ORM\Tools\SchemaTool;
+use Doctrine\Tests\OrmFunctionalTestCase;
+
+use function assert;
+use function reset;
 
 class DDC2138Test extends OrmFunctionalTestCase
 {
     /**
      * @group DDC-2138
      */
-    public function testForeignKeyOnSTIWithMultipleMapping()
+    public function testForeignKeyOnSTIWithMultipleMapping(): void
     {
-        $em = $this->_em;
+        $em         = $this->_em;
         $schemaTool = new SchemaTool($em);
 
         $classes = [
@@ -21,21 +28,21 @@ class DDC2138Test extends OrmFunctionalTestCase
             $em->getClassMetadata(DDC2138Structure::class),
             $em->getClassMetadata(DDC2138UserFollowedObject::class),
             $em->getClassMetadata(DDC2138UserFollowedStructure::class),
-            $em->getClassMetadata(DDC2138UserFollowedUser::class)
+            $em->getClassMetadata(DDC2138UserFollowedUser::class),
         ];
 
         $schema = $schemaTool->getSchemaFromMetadata($classes);
-        $this->assertTrue($schema->hasTable('users_followed_objects'), "Table users_followed_objects should exist.");
+        $this->assertTrue($schema->hasTable('users_followed_objects'), 'Table users_followed_objects should exist.');
 
-        /* @var $table \Doctrine\DBAL\Schema\Table */
-        $table = ($schema->getTable('users_followed_objects'));
+        $table = $schema->getTable('users_followed_objects');
+        assert($table instanceof Table);
         $this->assertTrue($table->columnsAreIndexed(['object_id']));
         $this->assertTrue($table->columnsAreIndexed(['user_id']));
         $foreignKeys = $table->getForeignKeys();
         $this->assertCount(1, $foreignKeys, 'user_id column has to have FK, but not object_id');
 
-        /* @var $fk \Doctrine\DBAL\Schema\ForeignKeyConstraint */
         $fk = reset($foreignKeys);
+        assert($fk instanceof ForeignKeyConstraint);
         $this->assertEquals('users', $fk->getForeignTableName());
 
         $localColumns = $fk->getLocalColumns();
@@ -59,9 +66,7 @@ class DDC2138Structure
      */
     protected $id;
 
-    /**
-     * @Column(type="string", length=32, nullable=true)
-     */
+    /** @Column(type="string", length=32, nullable=true) */
     protected $name;
 }
 
@@ -76,7 +81,6 @@ abstract class DDC2138UserFollowedObject
 {
     /**
      * @var int $id
-     *
      * @Column(name="id", type="integer")
      * @Id
      * @GeneratedValue(strategy="AUTO")
@@ -85,10 +89,8 @@ abstract class DDC2138UserFollowedObject
 
     /**
      * Get id
-     *
-     * @return int
      */
-    public function getId()
+    public function getId(): int
     {
         return $this->id;
     }
@@ -115,31 +117,22 @@ class DDC2138UserFollowedStructure extends DDC2138UserFollowedObject
 
     /**
      * Construct a UserFollowedStructure entity
-     *
-     * @param User      $user
-     * @param Structure $followedStructure
      */
     public function __construct(User $user, Structure $followedStructure)
     {
-        $this->user = $user;
+        $this->user              = $user;
         $this->followedStructure = $followedStructure;
     }
 
-    /**
-     *
-     * @return User
-     */
-    public function getUser()
+    public function getUser(): User
     {
         return $this->user;
     }
 
     /**
      * Gets followed structure
-     *
-     * @return Structure
      */
-    public function getFollowedStructure()
+    public function getFollowedStructure(): Structure
     {
         return $this->followedStructure;
     }
@@ -167,34 +160,26 @@ class DDC2138UserFollowedUser extends DDC2138UserFollowedObject
     /**
      * Construct a UserFollowedUser entity
      *
-     * @param User $user
-     * @param User $followedUser
      * @param bool $giveAgency
      */
     public function __construct(User $user, User $followedUser)
     {
-        $this->user = $user;
+        $this->user         = $user;
         $this->followedUser = $followedUser;
     }
 
-    /**
-     * @return User
-     */
-    public function getUser()
+    public function getUser(): User
     {
         return $this->user;
     }
 
     /**
      * Gets followed user
-     *
-     * @return User
      */
-    public function getFollowedUser()
+    public function getFollowedUser(): User
     {
         return $this->followedUser;
     }
-
 }
 
 /**
@@ -210,9 +195,7 @@ class DDC2138User
      */
     protected $id;
 
-    /**
-     * @Column(type="string", length=32, nullable=true)
-     */
+    /** @Column(type="string", length=32, nullable=true) */
     protected $name;
 
     /**
@@ -229,7 +212,7 @@ class DDC2138User
 
     public function __construct()
     {
-        $this->followedUsers = new ArrayCollection();
+        $this->followedUsers      = new ArrayCollection();
         $this->followedStructures = new ArrayCollection();
     }
 
@@ -238,18 +221,15 @@ class DDC2138User
      *
      * @param UserFollowedUser $followers
      */
-    private function removeFollower(UserFollowedUser $followers)
+    private function removeFollower(UserFollowedUser $followers): void
     {
         $this->followers->removeElement($followers);
     }
 
     /**
      * Add followedUsers
-     *
-     * @param  UserFollowedUser $followedUsers
-     * @return User
      */
-    public function addFollowedUser(UserFollowedUser $followedUsers)
+    public function addFollowedUser(UserFollowedUser $followedUsers): User
     {
         $this->followedUsers[] = $followedUsers;
 
@@ -258,11 +238,8 @@ class DDC2138User
 
     /**
      * Remove followedUsers
-     *
-     * @param  UserFollowedUser $followedUsers
-     * @return User
      */
-    public function removeFollowedUser(UserFollowedUser $followedUsers)
+    public function removeFollowedUser(UserFollowedUser $followedUsers): User
     {
         $this->followedUsers->removeElement($followedUsers);
 
@@ -271,21 +248,16 @@ class DDC2138User
 
     /**
      * Get followedUsers
-     *
-     * @return Doctrine\Common\Collections\Collection
      */
-    public function getFollowedUsers()
+    public function getFollowedUsers(): Doctrine\Common\Collections\Collection
     {
         return $this->followedUsers;
     }
 
     /**
      * Add followedStructures
-     *
-     * @param  UserFollowedStructure $followedStructures
-     * @return User
      */
-    public function addFollowedStructure(UserFollowedStructure $followedStructures)
+    public function addFollowedStructure(UserFollowedStructure $followedStructures): User
     {
         $this->followedStructures[] = $followedStructures;
 
@@ -294,11 +266,8 @@ class DDC2138User
 
     /**
      * Remove followedStructures
-     *
-     * @param  UserFollowedStructure $followedStructures
-     * @return User
      */
-    public function removeFollowedStructure(UserFollowedStructure $followedStructures)
+    public function removeFollowedStructure(UserFollowedStructure $followedStructures): User
     {
         $this->followedStructures->removeElement($followedStructures);
 
@@ -307,10 +276,8 @@ class DDC2138User
 
     /**
      * Get followedStructures
-     *
-     * @return Doctrine\Common\Collections\Collection
      */
-    public function getFollowedStructures()
+    public function getFollowedStructures(): Doctrine\Common\Collections\Collection
     {
         return $this->followedStructures;
     }

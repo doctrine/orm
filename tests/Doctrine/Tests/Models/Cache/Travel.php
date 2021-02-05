@@ -1,8 +1,12 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\Tests\Models\Cache;
 
+use DateTime;
 use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 
 /**
  * @Cache
@@ -18,9 +22,7 @@ class Travel
      */
     protected $id;
 
-    /**
-     * @Column(type="date")
-     */
+    /** @Column(type="date") */
     protected $createdAt;
 
     /**
@@ -32,7 +34,6 @@ class Travel
 
     /**
      * @Cache
-     *
      * @ManyToMany(targetEntity="City", inversedBy="travels", cascade={"persist", "remove"})
      * @JoinTable(name="cache_visited_cities",
      *  joinColumns={
@@ -48,62 +49,41 @@ class Travel
     public function __construct(Traveler $traveler)
     {
         $this->traveler      = $traveler;
-        $this->createdAt     = new \DateTime('now');
+        $this->createdAt     = new DateTime('now');
         $this->visitedCities = new ArrayCollection();
     }
 
-    /**
-     * @return integer
-     */
-    public function getId()
+    public function getId(): int
     {
         return $this->id;
     }
 
-    /**
-     * @return \Doctrine\Tests\Models\Cache\Traveler
-     */
-    public function getTraveler()
+    public function getTraveler(): Traveler
     {
         return $this->traveler;
     }
 
-    /**
-     * @param \Doctrine\Tests\Models\Cache\Traveler $traveler
-     */
-    public function setTraveler(Traveler $traveler)
+    public function setTraveler(Traveler $traveler): void
     {
         $this->traveler = $traveler;
     }
 
-    /**
-     * @return \Doctrine\Common\Collections\ArrayCollection
-     */
-    public function getVisitedCities()
+    public function getVisitedCities(): Collection
     {
         return $this->visitedCities;
     }
 
-    /**
-     * @param \Doctrine\Tests\Models\Cache\City $city
-     */
-    public function addVisitedCity(City $city)
+    public function addVisitedCity(City $city): void
     {
         $this->visitedCities->add($city);
     }
 
-    /**
-     * @param \Doctrine\Tests\Models\Cache\City $city
-     */
-    public function removeVisitedCity(City $city)
+    public function removeVisitedCity(City $city): void
     {
         $this->visitedCities->removeElement($city);
     }
 
-    /**
-     * @return \DateTime
-     */
-    public function getCreatedAt()
+    public function getCreatedAt(): DateTime
     {
         return $this->createdAt;
     }

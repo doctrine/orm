@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\Tests\Models\DDC2372;
 
 /** @Entity @Table(name="addresses") */
@@ -25,7 +27,7 @@ class DDC2372Address
         return $this->street;
     }
 
-    public function setStreet($street)
+    public function setStreet($street): void
     {
         $this->street = $street;
     }
@@ -35,7 +37,7 @@ class DDC2372Address
         return $this->user;
     }
 
-    public function setUser(User $user)
+    public function setUser(User $user): void
     {
         if ($this->user !== $user) {
             $this->user = $user;

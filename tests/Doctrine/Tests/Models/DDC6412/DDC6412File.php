@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\Tests\Models\DDC6412;
 
 /**
@@ -12,10 +14,7 @@ class DDC6412File
      * @GeneratedValue
      */
     public $id;
-    
-    /**
-     * @Column(length=50, name="file_name")
-     */
+
+    /** @Column(length=50, name="file_name") */
     public $name;
 }
-

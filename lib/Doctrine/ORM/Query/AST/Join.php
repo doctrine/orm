@@ -1,4 +1,5 @@
 <?php
+
 /*
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
  * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
@@ -24,30 +25,20 @@ namespace Doctrine\ORM\Query\AST;
  *          ["AS"] AliasIdentificationVariable [("ON" | "WITH") ConditionalExpression]
  *
  * @link    www.doctrine-project.org
- * @since   2.0
- * @author  Guilherme Blanco <guilhermeblanco@hotmail.com>
- * @author  Jonathan Wage <jonwage@gmail.com>
- * @author  Roman Borschel <roman@code-factory.org>
  */
 class Join extends Node
 {
-    const JOIN_TYPE_LEFT      = 1;
-    const JOIN_TYPE_LEFTOUTER = 2;
-    const JOIN_TYPE_INNER     = 3;
+    public const JOIN_TYPE_LEFT      = 1;
+    public const JOIN_TYPE_LEFTOUTER = 2;
+    public const JOIN_TYPE_INNER     = 3;
 
-    /**
-     * @var int
-     */
+    /** @var int */
     public $joinType = self::JOIN_TYPE_INNER;
 
-    /**
-     * @var Node|null
-     */
+    /** @var Node|null */
     public $joinAssociationDeclaration = null;
 
-    /**
-     * @var ConditionalExpression|null
-     */
+    /** @var ConditionalExpression|null */
     public $conditionalExpression = null;
 
     /**
@@ -56,7 +47,7 @@ class Join extends Node
      */
     public function __construct($joinType, $joinAssociationDeclaration)
     {
-        $this->joinType = $joinType;
+        $this->joinType                   = $joinType;
         $this->joinAssociationDeclaration = $joinAssociationDeclaration;
     }
 

@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\Tests\Models\Routing;
 
 /**
@@ -20,9 +22,7 @@ class RoutingRouteBooking
      */
     public $route;
 
-    /**
-     * @Column(type="string")
-     */
+    /** @Column(type="string") */
     public $passengerName = null;
 
     public function getPassengerName()

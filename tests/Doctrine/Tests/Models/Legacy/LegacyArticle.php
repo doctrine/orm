@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\Tests\Models\Legacy;
 
 /**
@@ -14,20 +16,18 @@ class LegacyArticle
      * @GeneratedValue(strategy="AUTO")
      */
     public $_id;
-    /**
-     * @Column(name="sTopic", type="string", length=255)
-     */
+    /** @Column(name="sTopic", type="string", length=255) */
     public $_topic;
-    /**
-     * @Column(name="sText", type="text")
-     */
+    /** @Column(name="sText", type="text") */
     public $_text;
     /**
      * @ManyToOne(targetEntity="LegacyUser", inversedBy="_articles")
      * @JoinColumn(name="iUserId", referencedColumnName="iUserId")
      */
     public $_user;
-    public function setAuthor(LegacyUser $author) {
+
+    public function setAuthor(LegacyUser $author): void
+    {
         $this->_user = $author;
     }
 }

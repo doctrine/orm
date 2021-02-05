@@ -9,6 +9,7 @@ use Doctrine\DBAL\Types\DateTimeType;
 use Doctrine\ORM\Query;
 use Doctrine\Performance\EntityManagerFactory;
 use PhpBench\Benchmark\Metadata\Annotations\BeforeMethods;
+
 use function range;
 
 /**
@@ -22,7 +23,7 @@ final class QueryBoundParameterProcessingBench
     /** @var Query */
     private $parsedQueryWithDeclaredParameterType;
 
-    public function init() : void
+    public function init(): void
     {
         $entityManager = EntityManagerFactory::makeEntityManagerWithNoResultsConnection();
 
@@ -66,12 +67,12 @@ DQL;
         $this->parsedQueryWithDeclaredParameterType->getSQL();
     }
 
-    public function benchExecuteParsedQueryWithInferredParameterType() : void
+    public function benchExecuteParsedQueryWithInferredParameterType(): void
     {
         $this->parsedQueryWithInferredParameterType->execute();
     }
 
-    public function benchExecuteParsedQueryWithDeclaredParameterType() : void
+    public function benchExecuteParsedQueryWithDeclaredParameterType(): void
     {
         $this->parsedQueryWithDeclaredParameterType->execute();
     }

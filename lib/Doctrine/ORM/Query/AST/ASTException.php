@@ -1,4 +1,5 @@
 <?php
+
 /*
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
  * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
@@ -21,6 +22,8 @@ namespace Doctrine\ORM\Query\AST;
 
 use Doctrine\ORM\Query\QueryException;
 
+use function get_class;
+
 /**
  * Base exception class for AST exceptions.
  */
@@ -33,6 +36,6 @@ class ASTException extends QueryException
      */
     public static function noDispatchForNode($node)
     {
-        return new self("Double-dispatch for node " . get_class($node) . " is not supported.");
+        return new self('Double-dispatch for node ' . get_class($node) . ' is not supported.');
     }
 }

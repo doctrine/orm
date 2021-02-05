@@ -1,22 +1,23 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\Tests\ORM\Functional\Ticket;
 
 use Doctrine\Tests\Models\Taxi\Car;
 use Doctrine\Tests\Models\Taxi\Driver;
 use Doctrine\Tests\Models\Taxi\Ride;
+use Doctrine\Tests\OrmFunctionalTestCase;
 
 /**
  * @group DDC-3068
- *
- * @author Giorgio Premi <giosh94mhz@gmail.com>
  */
-class DDC3068Test extends \Doctrine\Tests\OrmFunctionalTestCase
+class DDC3068Test extends OrmFunctionalTestCase
 {
     private $foo;
     private $merc;
 
-    protected function setUp() : void
+    protected function setUp(): void
     {
         $this->useModelSet('taxi');
         parent::setUp();
@@ -38,21 +39,19 @@ class DDC3068Test extends \Doctrine\Tests\OrmFunctionalTestCase
         $this->_em->flush();
     }
 
-    public function testFindUsingAnArrayOfObjectAsPrimaryKey()
+    public function testFindUsingAnArrayOfObjectAsPrimaryKey(): void
     {
         $ride1 = $this->_em->find(Ride::class, [
             'driver' => $this->foo->getId(),
-            'car'    => $this->merc->getBrand()
-            ]
-        );
+            'car'    => $this->merc->getBrand(),
+        ]);
 
         $this->assertInstanceOf(Ride::class, $ride1);
 
         $ride2 = $this->_em->find(Ride::class, [
             'driver' => $this->foo,
-            'car'    => $this->merc
-        ]
-        );
+            'car'    => $this->merc,
+        ]);
 
         $this->assertInstanceOf(Ride::class, $ride2);
         $this->assertSame($ride1, $ride2);

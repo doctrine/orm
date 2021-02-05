@@ -1,17 +1,24 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\Tests\ORM\Functional;
 
+use Doctrine\ORM\Events;
 use Doctrine\Tests\Models\Cache\Country;
 use Doctrine\Tests\Models\Cache\State;
-use Doctrine\ORM\Events;
+use Exception;
+use RuntimeException;
+
+use function call_user_func;
+use function uniqid;
 
 /**
  * @group DDC-2183
  */
 class SecondLevelCacheTest extends SecondLevelCacheAbstractTest
 {
-    public function testPutOnPersist()
+    public function testPutOnPersist(): void
     {
         $this->loadFixturesCountries();
         $this->_em->clear();
@@ -22,7 +29,7 @@ class SecondLevelCacheTest extends SecondLevelCacheAbstractTest
         $this->assertEquals(2, $this->secondLevelCacheLogger->getRegionPutCount($this->getEntityRegion(Country::class)));
     }
 
-    public function testPutAndLoadEntities()
+    public function testPutAndLoadEntities(): void
     {
         $this->loadFixturesCountries();
         $this->_em->clear();
@@ -71,7 +78,7 @@ class SecondLevelCacheTest extends SecondLevelCacheAbstractTest
         $this->assertEquals($c2->getName(), $c4->getName());
     }
 
-    public function testRemoveEntities()
+    public function testRemoveEntities(): void
     {
         $this->loadFixturesCountries();
         $this->_em->clear();
@@ -117,7 +124,7 @@ class SecondLevelCacheTest extends SecondLevelCacheAbstractTest
         $this->assertEquals(2, $this->secondLevelCacheLogger->getMissCount());
     }
 
-    public function testUpdateEntities()
+    public function testUpdateEntities(): void
     {
         $this->loadFixturesCountries();
         $this->loadFixturesStates();
@@ -152,8 +159,8 @@ class SecondLevelCacheTest extends SecondLevelCacheAbstractTest
         $this->assertEquals($this->states[1]->getId(), $s2->getId());
         $this->assertEquals($this->states[1]->getName(), $s2->getName());
 
-        $s1->setName("NEW NAME 1");
-        $s2->setName("NEW NAME 2");
+        $s1->setName('NEW NAME 1');
+        $s2->setName('NEW NAME 2');
 
         $this->_em->persist($s1);
         $this->_em->persist($s2);
@@ -184,46 +191,44 @@ class SecondLevelCacheTest extends SecondLevelCacheAbstractTest
         $this->assertInstanceOf(State::class, $c4);
 
         $this->assertEquals($s1->getId(), $c3->getId());
-        $this->assertEquals("NEW NAME 1", $c3->getName());
+        $this->assertEquals('NEW NAME 1', $c3->getName());
 
         $this->assertEquals($s2->getId(), $c4->getId());
-        $this->assertEquals("NEW NAME 2", $c4->getName());
+        $this->assertEquals('NEW NAME 2', $c4->getName());
 
         $this->assertEquals(2, $this->secondLevelCacheLogger->getHitCount());
         $this->assertEquals(2, $this->secondLevelCacheLogger->getRegionHitCount($this->getEntityRegion(State::class)));
     }
 
-    public function testPostFlushFailure()
+    public function testPostFlushFailure(): void
     {
         $listener = new ListenerSecondLevelCacheTest(
             [
-                Events::postFlush => function(){
-            throw new \RuntimeException('post flush failure');
-        }
+                Events::postFlush => static function (): void {
+                    throw new RuntimeException('post flush failure');
+                },
             ]
         );
 
         $this->_em->getEventManager()
             ->addEventListener(Events::postFlush, $listener);
 
-        $country = new Country("Brazil");
+        $country = new Country('Brazil');
 
         $this->cache->evictEntityRegion(Country::class);
 
         try {
-
             $this->_em->persist($country);
             $this->_em->flush();
             $this->fail('Should throw exception');
-
-        } catch (\RuntimeException $exc) {
+        } catch (RuntimeException $exc) {
             $this->assertNotNull($country->getId());
             $this->assertEquals('post flush failure', $exc->getMessage());
             $this->assertTrue($this->cache->containsEntity(Country::class, $country->getId()));
         }
     }
 
-    public function testPostUpdateFailure()
+    public function testPostUpdateFailure(): void
     {
         $this->loadFixturesCountries();
         $this->loadFixturesStates();
@@ -231,9 +236,9 @@ class SecondLevelCacheTest extends SecondLevelCacheAbstractTest
 
         $listener = new ListenerSecondLevelCacheTest(
             [
-                Events::postUpdate => function(){
-            throw new \RuntimeException('post update failure');
-        }
+                Events::postUpdate => static function (): void {
+                    throw new RuntimeException('post update failure');
+                },
             ]
         );
 
@@ -242,9 +247,9 @@ class SecondLevelCacheTest extends SecondLevelCacheAbstractTest
 
         $this->cache->evictEntityRegion(State::class);
 
-        $stateId    = $this->states[0]->getId();
-        $stateName  = $this->states[0]->getName();
-        $state      = $this->_em->find(State::class, $stateId);
+        $stateId   = $this->states[0]->getId();
+        $stateName = $this->states[0]->getName();
+        $state     = $this->_em->find(State::class, $stateId);
 
         $this->assertTrue($this->cache->containsEntity(State::class, $stateId));
         $this->assertInstanceOf(State::class, $state);
@@ -257,8 +262,7 @@ class SecondLevelCacheTest extends SecondLevelCacheAbstractTest
         try {
             $this->_em->flush();
             $this->fail('Should throw exception');
-
-        } catch (\Exception $exc) {
+        } catch (Exception $exc) {
             $this->assertEquals('post update failure', $exc->getMessage());
         }
 
@@ -272,16 +276,16 @@ class SecondLevelCacheTest extends SecondLevelCacheAbstractTest
         $this->assertEquals($stateName, $state->getName());
     }
 
-    public function testPostRemoveFailure()
+    public function testPostRemoveFailure(): void
     {
         $this->loadFixturesCountries();
         $this->_em->clear();
 
         $listener = new ListenerSecondLevelCacheTest(
             [
-                Events::postRemove => function(){
-            throw new \RuntimeException('post remove failure');
-        }
+                Events::postRemove => static function (): void {
+                    throw new RuntimeException('post remove failure');
+                },
             ]
         );
 
@@ -290,8 +294,8 @@ class SecondLevelCacheTest extends SecondLevelCacheAbstractTest
 
         $this->cache->evictEntityRegion(Country::class);
 
-        $countryId  = $this->countries[0]->getId();
-        $country    = $this->_em->find(Country::class, $countryId);
+        $countryId = $this->countries[0]->getId();
+        $country   = $this->_em->find(Country::class, $countryId);
 
         $this->assertTrue($this->cache->containsEntity(Country::class, $countryId));
         $this->assertInstanceOf(Country::class, $country);
@@ -301,8 +305,7 @@ class SecondLevelCacheTest extends SecondLevelCacheAbstractTest
         try {
             $this->_em->flush();
             $this->fail('Should throw exception');
-
-        } catch (\Exception $exc) {
+        } catch (Exception $exc) {
             $this->assertEquals('post remove failure', $exc->getMessage());
         }
 
@@ -316,7 +319,7 @@ class SecondLevelCacheTest extends SecondLevelCacheAbstractTest
         $this->assertInstanceOf(Country::class, $this->_em->find(Country::class, $countryId));
     }
 
-    public function testCachedNewEntityExists()
+    public function testCachedNewEntityExists(): void
     {
         $this->loadFixturesCountries();
 
@@ -341,24 +344,24 @@ class ListenerSecondLevelCacheTest
         $this->callbacks = $callbacks;
     }
 
-    private function dispatch($eventName, $args)
+    private function dispatch($eventName, $args): void
     {
         if (isset($this->callbacks[$eventName])) {
             call_user_func($this->callbacks[$eventName], $args);
         }
     }
 
-    public function postFlush($args)
+    public function postFlush($args): void
     {
         $this->dispatch(__FUNCTION__, $args);
     }
 
-    public function postUpdate($args)
+    public function postUpdate($args): void
     {
         $this->dispatch(__FUNCTION__, $args);
     }
 
-    public function postRemove($args)
+    public function postRemove($args): void
     {
         $this->dispatch(__FUNCTION__, $args);
     }

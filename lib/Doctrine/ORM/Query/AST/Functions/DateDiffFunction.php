@@ -1,4 +1,5 @@
 <?php
+
 /*
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
  * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
@@ -20,16 +21,13 @@
 namespace Doctrine\ORM\Query\AST\Functions;
 
 use Doctrine\ORM\Query\Lexer;
-use Doctrine\ORM\Query\SqlWalker;
 use Doctrine\ORM\Query\Parser;
+use Doctrine\ORM\Query\SqlWalker;
 
 /**
  * "DATE_DIFF" "(" ArithmeticPrimary "," ArithmeticPrimary ")"
  *
- * 
  * @link    www.doctrine-project.org
- * @since   2.0
- * @author  Benjamin Eberlei <kontakt@beberlei.de>
  */
 class DateDiffFunction extends FunctionNode
 {

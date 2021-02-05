@@ -1,4 +1,5 @@
 <?php
+
 /*
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
  * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
@@ -22,11 +23,10 @@ namespace Doctrine\ORM\Repository;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\Persistence\ObjectRepository;
 
+use function spl_object_hash;
+
 /**
  * This factory is used to create default repository objects for entities at runtime.
- *
- * @author Guilherme Blanco <guilhermeblanco@hotmail.com>
- * @since 2.4
  */
 final class DefaultRepositoryFactory implements RepositoryFactory
 {
@@ -54,8 +54,8 @@ final class DefaultRepositoryFactory implements RepositoryFactory
     /**
      * Create a new repository instance for an entity class.
      *
-     * @param \Doctrine\ORM\EntityManagerInterface $entityManager The EntityManager instance.
-     * @param string                               $entityName    The name of the entity.
+     * @param EntityManagerInterface $entityManager The EntityManager instance.
+     * @param string                 $entityName    The name of the entity.
      *
      * @return ObjectRepository
      */

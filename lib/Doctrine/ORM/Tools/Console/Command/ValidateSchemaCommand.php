@@ -1,4 +1,5 @@
 <?php
+
 /*
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
  * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
@@ -26,16 +27,12 @@ use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
 
+use function sprintf;
+
 /**
  * Command to validate that the current mapping is valid.
  *
- * @license     http://www.opensource.org/licenses/mit-license.php MIT
  * @link        www.doctrine-project.com
- * @since       1.0
- * @author      Benjamin Eberlei <kontakt@beberlei.de>
- * @author      Guilherme Blanco <guilhermeblanco@hotmail.com>
- * @author      Jonathan Wage <jonwage@gmail.com>
- * @author      Roman Borschel <roman@code-factory.org>
  */
 class ValidateSchemaCommand extends Command
 {
@@ -58,9 +55,9 @@ class ValidateSchemaCommand extends Command
     {
         $ui = new SymfonyStyle($input, $output);
 
-        $em = $this->getHelper('em')->getEntityManager();
+        $em        = $this->getHelper('em')->getEntityManager();
         $validator = new SchemaValidator($em);
-        $exit = 0;
+        $exit      = 0;
 
         $ui->section('Mapping');
 
@@ -88,7 +85,7 @@ class ValidateSchemaCommand extends Command
 
         if ($input->getOption('skip-sync')) {
             $ui->text('<comment>[SKIPPED] The database was not checked for synchronicity.</comment>');
-        } elseif ( ! $validator->schemaInSyncWithMetadata()) {
+        } elseif (! $validator->schemaInSyncWithMetadata()) {
             $ui->error('The database schema is not in sync with the current mapping file.');
             $exit += 2;
         } else {

@@ -1,11 +1,17 @@
 <?php
+
 declare(strict_types=1);
 
 namespace Doctrine\Tests\ORM\Functional\Ticket;
 
-final class GH7067Test extends \Doctrine\Tests\OrmFunctionalTestCase
+use DateTime;
+use Doctrine\Tests\OrmFunctionalTestCase;
+
+use function assert;
+
+final class GH7067Test extends OrmFunctionalTestCase
 {
-    protected function setUp() : void
+    protected function setUp(): void
     {
         $this->enableSecondLevelCache();
         parent::setUp();
@@ -16,21 +22,21 @@ final class GH7067Test extends \Doctrine\Tests\OrmFunctionalTestCase
     /**
      * @group GH-7067
      */
-    public function testSLCWithVersion() : void
+    public function testSLCWithVersion(): void
     {
         $entity             = new GH7067Entity();
-        $entity->lastUpdate = new \DateTime();
+        $entity->lastUpdate = new DateTime();
 
         $this->_em->persist($entity);
         $this->_em->flush();
         $this->_em->clear();
 
-        /** @var GH7067Entity $notCached */
         $notCached = $this->_em->find(GH7067Entity::class, $entity->id);
+        assert($notCached instanceof GH7067Entity);
 
         self::assertNotNull($notCached->version, 'Version already cached by persister above, it must be not null');
 
-        $notCached->lastUpdate = new \DateTime('+1 seconds');
+        $notCached->lastUpdate = new DateTime('+1 seconds');
 
         $this->_em->flush();
         $this->_em->clear();
@@ -47,23 +53,20 @@ class GH7067Entity
      * @Id
      * @GeneratedValue
      * @Column(type="integer")
-     *
      * @var int
      */
     public $id;
 
     /**
      * @Column(type="datetime")
-     *
-     * @var \DateTime
+     * @var DateTime
      */
     public $lastUpdate;
 
     /**
      * @Column(type="datetime")
      * @Version
-     *
-     * @var \DateTime
+     * @var DateTime
      */
     public $version;
 }

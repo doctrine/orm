@@ -1,28 +1,33 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\Tests\ORM\Functional\Ticket;
 
 use Doctrine\ORM\Proxy\Proxy;
+use Doctrine\Tests\OrmFunctionalTestCase;
 
-class DDC237Test extends \Doctrine\Tests\OrmFunctionalTestCase
+use function get_class;
+
+class DDC237Test extends OrmFunctionalTestCase
 {
-    protected function setUp() : void
+    protected function setUp(): void
     {
         parent::setUp();
         $this->_schemaTool->createSchema(
             [
-            $this->_em->getClassMetadata(DDC237EntityX::class),
-            $this->_em->getClassMetadata(DDC237EntityY::class),
-            $this->_em->getClassMetadata(DDC237EntityZ::class)
+                $this->_em->getClassMetadata(DDC237EntityX::class),
+                $this->_em->getClassMetadata(DDC237EntityY::class),
+                $this->_em->getClassMetadata(DDC237EntityZ::class),
             ]
         );
     }
 
-    public function testUninitializedProxyIsInitializedOnFetchJoin()
+    public function testUninitializedProxyIsInitializedOnFetchJoin(): void
     {
-        $x = new DDC237EntityX;
-        $y = new DDC237EntityY;
-        $z = new DDC237EntityZ;
+        $x = new DDC237EntityX();
+        $y = new DDC237EntityY();
+        $z = new DDC237EntityZ();
 
         $x->data = 'X';
         $y->data = 'Y';
@@ -59,7 +64,6 @@ class DDC237Test extends \Doctrine\Tests\OrmFunctionalTestCase
         $this->assertNotSame($z, $z2);
         $this->assertSame($z2->y, $x2->y);
         $this->assertInstanceOf(Proxy::class, $z2->y);
-
     }
 }
 
@@ -69,13 +73,9 @@ class DDC237Test extends \Doctrine\Tests\OrmFunctionalTestCase
  */
 class DDC237EntityX
 {
-    /**
-     * @Id @Column(type="integer") @GeneratedValue
-     */
+    /** @Id @Column(type="integer") @GeneratedValue */
     public $id;
-    /**
-     * @Column(type="string")
-     */
+    /** @Column(type="string") */
     public $data;
     /**
      * @OneToOne(targetEntity="DDC237EntityY")
@@ -88,13 +88,9 @@ class DDC237EntityX
 /** @Entity @Table(name="ddc237_y") */
 class DDC237EntityY
 {
-    /**
-     * @Id @Column(type="integer") @GeneratedValue
-     */
+    /** @Id @Column(type="integer") @GeneratedValue */
     public $id;
-    /**
-     * @Column(type="string")
-     */
+    /** @Column(type="string") */
     public $data;
 }
 

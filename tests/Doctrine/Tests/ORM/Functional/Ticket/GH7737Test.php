@@ -13,7 +13,7 @@ use Doctrine\Tests\OrmFunctionalTestCase;
  */
 class GH7737Test extends OrmFunctionalTestCase
 {
-    protected function setUp() : void
+    protected function setUp(): void
     {
         parent::setUp();
 
@@ -33,7 +33,7 @@ class GH7737Test extends OrmFunctionalTestCase
     /**
      * @test
      */
-    public function memberOfCriteriaShouldBeCompatibleWithQueryBuilder() : void
+    public function memberOfCriteriaShouldBeCompatibleWithQueryBuilder(): void
     {
         $query = $this->_em->createQueryBuilder()
             ->select('person')

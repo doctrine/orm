@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\Tests\ORM\Functional;
 
 use Doctrine\Common\Cache\ArrayCache;
@@ -8,22 +10,21 @@ use Doctrine\Common\Cache\CacheProvider;
 use Doctrine\ORM\Query\Exec\AbstractSqlExecutor;
 use Doctrine\ORM\Query\ParserResult;
 use Doctrine\Tests\OrmFunctionalTestCase;
+use ReflectionProperty;
+
+use function sizeof;
 
 /**
  * QueryCacheTest
- *
- * @author robo
  */
 class QueryCacheTest extends OrmFunctionalTestCase
 {
-    /**
-     * @var \ReflectionProperty
-     */
+    /** @var ReflectionProperty */
     private $cacheDataReflection;
 
-    protected function setUp() : void
+    protected function setUp(): void
     {
-        $this->cacheDataReflection = new \ReflectionProperty(ArrayCache::class, "data");
+        $this->cacheDataReflection = new ReflectionProperty(ArrayCache::class, 'data');
         $this->cacheDataReflection->setAccessible(true);
 
         $this->useModelSet('cms');
@@ -31,15 +32,10 @@ class QueryCacheTest extends OrmFunctionalTestCase
         parent::setUp();
     }
 
-    /**
-     * @param   ArrayCache $cache
-     * @return  integer
-     */
-    private function getCacheSize(ArrayCache $cache)
+    private function getCacheSize(ArrayCache $cache): int
     {
         return sizeof($this->cacheDataReflection->getValue($cache));
     }
-
 
     public function testQueryCache_DependsOnHints()
     {
@@ -61,11 +57,12 @@ class QueryCacheTest extends OrmFunctionalTestCase
 
     /**
      * @param <type> $query
+     *
      * @depends testQueryCache_DependsOnHints
      */
-    public function testQueryCache_DependsOnFirstResult($query)
+    public function testQueryCache_DependsOnFirstResult($query): void
     {
-        $cache = $query->getQueryCacheDriver();
+        $cache      = $query->getQueryCacheDriver();
         $cacheCount = $this->getCacheSize($cache);
 
         $query->setFirstResult(10);
@@ -77,11 +74,12 @@ class QueryCacheTest extends OrmFunctionalTestCase
 
     /**
      * @param <type> $query
+     *
      * @depends testQueryCache_DependsOnHints
      */
-    public function testQueryCache_DependsOnMaxResults($query)
+    public function testQueryCache_DependsOnMaxResults($query): void
     {
-        $cache = $query->getQueryCacheDriver();
+        $cache      = $query->getQueryCacheDriver();
         $cacheCount = $this->getCacheSize($cache);
 
         $query->setMaxResults(10);
@@ -92,18 +90,19 @@ class QueryCacheTest extends OrmFunctionalTestCase
 
     /**
      * @param <type> $query
+     *
      * @depends testQueryCache_DependsOnHints
      */
-    public function testQueryCache_DependsOnHydrationMode($query)
+    public function testQueryCache_DependsOnHydrationMode($query): void
     {
-        $cache = $query->getQueryCacheDriver();
+        $cache      = $query->getQueryCacheDriver();
         $cacheCount = $this->getCacheSize($cache);
 
         $query->getArrayResult();
         $this->assertEquals($cacheCount + 1, $this->getCacheSize($cache));
     }
 
-    public function testQueryCache_NoHitSaveParserResult()
+    public function testQueryCache_NoHitSaveParserResult(): void
     {
         $this->_em->getConfiguration()->setQueryCacheImpl(new ArrayCache());
 
@@ -121,7 +120,7 @@ class QueryCacheTest extends OrmFunctionalTestCase
         $query->getResult();
     }
 
-    public function testQueryCache_HitDoesNotSaveParserResult()
+    public function testQueryCache_HitDoesNotSaveParserResult(): void
     {
         $this->_em->getConfiguration()->setQueryCacheImpl(new ArrayCache());
 
@@ -133,7 +132,7 @@ class QueryCacheTest extends OrmFunctionalTestCase
 
         $sqlExecMock->expects($this->once())
                     ->method('execute')
-                    ->will($this->returnValue( 10 ));
+                    ->will($this->returnValue(10));
 
         $parserResultMock = $this->getMockBuilder(ParserResult::class)
                                  ->setMethods(['getSqlExecutor'])
@@ -160,4 +159,3 @@ class QueryCacheTest extends OrmFunctionalTestCase
         $users = $query->getResult();
     }
 }
-

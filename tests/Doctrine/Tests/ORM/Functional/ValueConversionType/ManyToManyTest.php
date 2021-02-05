@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\Tests\ORM\Functional\ValueConversionType;
 
 use Doctrine\Tests\Models;
@@ -16,16 +18,16 @@ use Doctrine\Tests\OrmFunctionalTestCase;
  */
 class ManyToManyTest extends OrmFunctionalTestCase
 {
-    protected function setUp() : void
+    protected function setUp(): void
     {
         $this->useModelSet('vct_manytomany');
 
         parent::setUp();
 
-        $inversed = new Entity\InversedManyToManyEntity();
+        $inversed      = new Entity\InversedManyToManyEntity();
         $inversed->id1 = 'abc';
 
-        $owning = new Entity\OwningManyToManyEntity();
+        $owning      = new Entity\OwningManyToManyEntity();
         $owning->id2 = 'def';
 
         $inversed->associatedEntities->add($owning);
@@ -38,7 +40,7 @@ class ManyToManyTest extends OrmFunctionalTestCase
         $this->_em->clear();
     }
 
-    public static function tearDownAfterClass() : void
+    public static function tearDownAfterClass(): void
     {
         $conn = static::$_sharedConn;
 
@@ -47,7 +49,7 @@ class ManyToManyTest extends OrmFunctionalTestCase
         $conn->executeUpdate('DROP TABLE vct_inversed_manytomany');
     }
 
-    public function testThatTheValueOfIdentifiersAreConvertedInTheDatabase()
+    public function testThatTheValueOfIdentifiersAreConvertedInTheDatabase(): void
     {
         $conn = $this->_em->getConnection();
 
@@ -62,7 +64,7 @@ class ManyToManyTest extends OrmFunctionalTestCase
     /**
      * @depends testThatTheValueOfIdentifiersAreConvertedInTheDatabase
      */
-    public function testThatEntitiesAreFetchedFromTheDatabase()
+    public function testThatEntitiesAreFetchedFromTheDatabase(): void
     {
         $inversed = $this->_em->find(
             Models\ValueConversionType\InversedManyToManyEntity::class,
@@ -81,7 +83,7 @@ class ManyToManyTest extends OrmFunctionalTestCase
     /**
      * @depends testThatEntitiesAreFetchedFromTheDatabase
      */
-    public function testThatTheValueOfIdentifiersAreConvertedBackAfterBeingFetchedFromTheDatabase()
+    public function testThatTheValueOfIdentifiersAreConvertedBackAfterBeingFetchedFromTheDatabase(): void
     {
         $inversed = $this->_em->find(
             Models\ValueConversionType\InversedManyToManyEntity::class,
@@ -100,7 +102,7 @@ class ManyToManyTest extends OrmFunctionalTestCase
     /**
      * @depends testThatEntitiesAreFetchedFromTheDatabase
      */
-    public function testThatTheCollectionFromOwningToInversedIsLoaded()
+    public function testThatTheCollectionFromOwningToInversedIsLoaded(): void
     {
         $owning = $this->_em->find(
             Models\ValueConversionType\OwningManyToManyEntity::class,
@@ -113,7 +115,7 @@ class ManyToManyTest extends OrmFunctionalTestCase
     /**
      * @depends testThatEntitiesAreFetchedFromTheDatabase
      */
-    public function testThatTheCollectionFromInversedToOwningIsLoaded()
+    public function testThatTheCollectionFromInversedToOwningIsLoaded(): void
     {
         $inversed = $this->_em->find(
             Models\ValueConversionType\InversedManyToManyEntity::class,
@@ -127,7 +129,7 @@ class ManyToManyTest extends OrmFunctionalTestCase
      * @depends testThatTheCollectionFromOwningToInversedIsLoaded
      * @depends testThatTheCollectionFromInversedToOwningIsLoaded
      */
-    public function testThatTheJoinTableRowsAreRemovedWhenRemovingTheAssociation()
+    public function testThatTheJoinTableRowsAreRemovedWhenRemovingTheAssociation(): void
     {
         $conn = $this->_em->getConnection();
 

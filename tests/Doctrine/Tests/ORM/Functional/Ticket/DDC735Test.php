@@ -1,30 +1,35 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\Tests\ORM\Functional\Ticket;
 
 use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Tests\OrmFunctionalTestCase;
+use Exception;
 
-class DDC735Test extends \Doctrine\Tests\OrmFunctionalTestCase
+use function count;
+
+class DDC735Test extends OrmFunctionalTestCase
 {
-    protected function setUp() : void
+    protected function setUp(): void
     {
         parent::setUp();
         try {
             $this->_schemaTool->createSchema(
                 [
-                $this->_em->getClassMetadata(DDC735Product::class),
-                $this->_em->getClassMetadata(DDC735Review::class)
+                    $this->_em->getClassMetadata(DDC735Product::class),
+                    $this->_em->getClassMetadata(DDC735Review::class),
                 ]
             );
-        } catch(\Exception $e) {
-
+        } catch (Exception $e) {
         }
     }
 
-    public function testRemoveElement_AppliesOrphanRemoval()
+    public function testRemoveElement_AppliesOrphanRemoval(): void
     {
         // Create a product and its first review
-        $product = new DDC735Product;
+        $product = new DDC735Product();
         $review  = new DDC735Review($product);
 
         // Persist and flush
@@ -58,9 +63,7 @@ class DDC735Test extends \Doctrine\Tests\OrmFunctionalTestCase
  */
 class DDC735Product
 {
-    /**
-     * @Id @Column(type="integer") @GeneratedValue
-     */
+    /** @Id @Column(type="integer") @GeneratedValue */
     protected $id;
 
     /**
@@ -75,7 +78,7 @@ class DDC735Product
 
     public function __construct()
     {
-        $this->reviews = new ArrayCollection;
+        $this->reviews = new ArrayCollection();
     }
 
     public function getReviews()
@@ -83,12 +86,12 @@ class DDC735Product
         return $this->reviews;
     }
 
-    public function addReview(DDC735Review $review)
+    public function addReview(DDC735Review $review): void
     {
         $this->reviews->add($review);
     }
 
-    public function removeReview(DDC735Review $review)
+    public function removeReview(DDC735Review $review): void
     {
         $this->reviews->removeElement($review);
     }
@@ -99,14 +102,10 @@ class DDC735Product
  */
 class DDC735Review
 {
-    /**
-     * @Id @Column(type="integer") @GeneratedValue
-     */
+    /** @Id @Column(type="integer") @GeneratedValue */
     protected $id;
 
-    /**
-     * @ManyToOne(targetEntity="DDC735Product", inversedBy="reviews")
-     */
+    /** @ManyToOne(targetEntity="DDC735Product", inversedBy="reviews") */
     protected $product;
 
     public function __construct(DDC735Product $product)

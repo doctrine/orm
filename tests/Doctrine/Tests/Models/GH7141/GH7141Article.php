@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\Tests\Models\GH7141;
 
 use Doctrine\Common\Collections\ArrayCollection;

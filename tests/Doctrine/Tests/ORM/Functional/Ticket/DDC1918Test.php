@@ -1,39 +1,45 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\Tests\ORM\Functional\Ticket;
 
-use Doctrine\Tests\Models\CMS\CmsUser;
-use Doctrine\Tests\Models\CMS\CmsGroup;
 use Doctrine\ORM\Tools\Pagination\Paginator;
+use Doctrine\Tests\Models\CMS\CmsGroup;
+use Doctrine\Tests\Models\CMS\CmsUser;
+use Doctrine\Tests\OrmFunctionalTestCase;
+
+use function count;
+use function iterator_to_array;
 
 /**
  * @group DDC-1918
  */
-class DDC1918Test extends \Doctrine\Tests\OrmFunctionalTestCase
+class DDC1918Test extends OrmFunctionalTestCase
 {
-    protected function setUp() : void
+    protected function setUp(): void
     {
         $this->useModelSet('cms');
         parent::setUp();
     }
 
-    public function testLastPageCorrect()
+    public function testLastPageCorrect(): void
     {
         $groups = [];
         for ($i = 0; $i < 3; $i++) {
-            $group = new CmsGroup();
-            $group->name = "test";
+            $group       = new CmsGroup();
+            $group->name = 'test';
             $this->_em->persist($group);
 
             $groups[] = $group;
         }
 
         for ($i = 0; $i < 10; $i++) {
-            $user = new CmsUser();
-            $user->username = "user$i";
-            $user->name = "user$i";
-            $user->status = "active";
-            $user->groups = $groups;
+            $user           = new CmsUser();
+            $user->username = 'user' . $i;
+            $user->name     = 'user' . $i;
+            $user->status   = 'active';
+            $user->groups   = $groups;
 
             $this->_em->persist($user);
         }

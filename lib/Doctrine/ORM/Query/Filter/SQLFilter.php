@@ -1,4 +1,5 @@
 <?php
+
 /*
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
  * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
@@ -19,17 +20,20 @@
 
 namespace Doctrine\ORM\Query\Filter;
 
+use Doctrine\DBAL\Connection;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\Query\ParameterTypeInferer;
+use InvalidArgumentException;
+
+use function ksort;
+use function serialize;
 
 /**
  * The base class that user defined filters should extend.
  *
  * Handles the setting and escaping of parameters.
  *
- * @author Alexander <iam.asm89@gmail.com>
- * @author Benjamin Eberlei <kontakt@beberlei.de>
  * @abstract
  */
 abstract class SQLFilter
@@ -69,9 +73,9 @@ abstract class SQLFilter
      *
      * @return self The current SQL filter.
      */
-    final public function setParameter($name, $value, $type = null) : self
+    final public function setParameter($name, $value, $type = null): self
     {
-        if (null === $type) {
+        if ($type === null) {
             $type = ParameterTypeInferer::inferType($value);
         }
 
@@ -96,12 +100,12 @@ abstract class SQLFilter
      *
      * @return string The SQL escaped parameter to use in a query.
      *
-     * @throws \InvalidArgumentException
+     * @throws InvalidArgumentException
      */
     final public function getParameter($name)
     {
-        if (!isset($this->parameters[$name])) {
-            throw new \InvalidArgumentException("Parameter '" . $name . "' does not exist.");
+        if (! isset($this->parameters[$name])) {
+            throw new InvalidArgumentException("Parameter '" . $name . "' does not exist.");
         }
 
         return $this->em->getConnection()->quote($this->parameters[$name]['value'], $this->parameters[$name]['type']);
@@ -112,15 +116,11 @@ abstract class SQLFilter
      *
      * @param string $name Name of the parameter.
      *
-     * @return boolean
+     * @return bool
      */
     final public function hasParameter($name)
     {
-        if (!isset($this->parameters[$name])) {
-            return false;
-        }
-
-        return true;
+        return isset($this->parameters[$name]);
     }
 
     /**
@@ -136,7 +136,7 @@ abstract class SQLFilter
     /**
      * Returns the database connection used by the entity manager
      *
-     * @return \Doctrine\DBAL\Connection
+     * @return Connection
      */
     final protected function getConnection()
     {
@@ -146,8 +146,7 @@ abstract class SQLFilter
     /**
      * Gets the SQL query part to add to a query.
      *
-     * @param ClassMetaData $targetEntity
-     * @param string        $targetTableAlias
+     * @param string $targetTableAlias
      *
      * @return string The constraint SQL if there is available, empty string otherwise.
      */

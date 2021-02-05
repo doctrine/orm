@@ -1,12 +1,16 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\Tests\ORM\Functional\Ticket;
 
+use DateTime;
 use Doctrine\Tests\OrmFunctionalTestCase;
+use Exception;
 
 class DDC1209Test extends OrmFunctionalTestCase
 {
-    protected function setUp() : void
+    protected function setUp(): void
     {
         parent::setUp();
         try {
@@ -14,17 +18,17 @@ class DDC1209Test extends OrmFunctionalTestCase
                 [
                     $this->_em->getClassMetadata(DDC1209_1::class),
                     $this->_em->getClassMetadata(DDC1209_2::class),
-                    $this->_em->getClassMetadata(DDC1209_3::class)
+                    $this->_em->getClassMetadata(DDC1209_3::class),
                 ]
             );
-        } catch(\Exception $e) {
+        } catch (Exception $e) {
         }
     }
 
     /**
      * @group DDC-1209
      */
-    public function testIdentifierCanHaveCustomType()
+    public function testIdentifierCanHaveCustomType(): void
     {
         $entity = new DDC1209_3();
 
@@ -37,7 +41,7 @@ class DDC1209Test extends OrmFunctionalTestCase
     /**
      * @group DDC-1209
      */
-    public function testCompositeIdentifierCanHaveCustomType()
+    public function testCompositeIdentifierCanHaveCustomType(): void
     {
         $future1 = new DDC1209_1();
 
@@ -69,9 +73,7 @@ class DDC1209Test extends OrmFunctionalTestCase
  */
 class DDC1209_1
 {
-    /**
-     * @Id @GeneratedValue @Column(type="integer")
-     */
+    /** @Id @GeneratedValue @Column(type="integer") */
     private $id;
 
     public function getId()
@@ -111,10 +113,10 @@ class DDC1209_2
 
     public function __construct(DDC1209_1 $future1)
     {
-        $this->future1 = $future1;
+        $this->future1           = $future1;
         $this->starting_datetime = new DateTime2();
-        $this->during_datetime = new DateTime2();
-        $this->ending_datetime = new DateTime2();
+        $this->during_datetime   = new DateTime2();
+        $this->ending_datetime   = new DateTime2();
     }
 }
 
@@ -135,7 +137,7 @@ class DDC1209_3
     }
 }
 
-class DateTime2 extends \DateTime
+class DateTime2 extends DateTime
 {
     public function __toString()
     {

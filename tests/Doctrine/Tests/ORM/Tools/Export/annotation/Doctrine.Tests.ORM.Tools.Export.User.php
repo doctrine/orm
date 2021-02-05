@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\Tests\ORM\Tools\Export;
 
 /**
@@ -17,19 +19,13 @@ class User
     /** @Id @Column(type="integer") @generatedValue(strategy="AUTO") */
     public $id;
 
-    /**
-     * @Column(length=50, nullable=true, unique=true)
-     */
+    /** @Column(length=50, nullable=true, unique=true) */
     public $name;
 
-    /**
-     * @Column(name="user_email", columnDefinition="CHAR(32) NOT NULL")
-     */
+    /** @Column(name="user_email", columnDefinition="CHAR(32) NOT NULL") */
     public $email;
 
-    /**
-     * @Column(type="integer", options={"unsigned"=true})
-     */
+    /** @Column(type="integer", options={"unsigned"=true}) */
     public $age;
 
     /**
@@ -38,13 +34,10 @@ class User
      */
     public $address;
 
-    /**
-     * @ManyToOne(targetEntity="Doctrine\Tests\ORM\Tools\Export\Group")
-     */
+    /** @ManyToOne(targetEntity="Doctrine\Tests\ORM\Tools\Export\Group") */
     public $mainGroup;
 
     /**
-     *
      * @OneToMany(targetEntity="Doctrine\Tests\ORM\Tools\Export\Phonenumber", mappedBy="user", cascade={"persist", "merge"}, orphanRemoval=true)
      * @OrderBy({"number"="ASC"})
      */

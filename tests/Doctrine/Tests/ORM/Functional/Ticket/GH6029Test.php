@@ -1,17 +1,18 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\Tests\ORM\Functional\Ticket;
 
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\ORMInvalidArgumentException;
 use Doctrine\Tests\OrmFunctionalTestCase;
 
+use function sprintf;
+
 final class GH6029Test extends OrmFunctionalTestCase
 {
-    /**
-     * {@inheritDoc}
-     */
-    protected function setUp() : void
+    protected function setUp(): void
     {
         parent::setUp();
 
@@ -32,7 +33,7 @@ final class GH6029Test extends OrmFunctionalTestCase
      *
      * @group GH-6029
      */
-    public function testManyToManyAssociation() : void
+    public function testManyToManyAssociation(): void
     {
         $user = new GH6029User();
         $user->groups->add(new GH6029Group2());
@@ -57,7 +58,7 @@ final class GH6029Test extends OrmFunctionalTestCase
      *
      * @group GH-6029
      */
-    public function testOneToManyAssociation() : void
+    public function testOneToManyAssociation(): void
     {
         $product = new GH6029Product();
         $product->features->add(new GH6029Group2());
@@ -112,9 +113,7 @@ class GH6029Product
     /** @Id @Column(type="integer") @GeneratedValue */
     public $id;
 
-    /**
-     * @OneToMany(targetEntity=GH6029Feature::class, mappedBy="product", cascade={"all"})
-     */
+    /** @OneToMany(targetEntity=GH6029Feature::class, mappedBy="product", cascade={"all"}) */
     public $features;
 
     public function __construct()

@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\Tests\ORM\Hydration;
 
 use Doctrine\ORM\Internal\Hydration\ObjectHydrator;
@@ -24,6 +26,9 @@ use Doctrine\Tests\Models\Forum\ForumBoard;
 use Doctrine\Tests\Models\Forum\ForumCategory;
 use Doctrine\Tests\Models\Hydration\EntityWithArrayDefaultArrayValueM2M;
 use Doctrine\Tests\Models\Hydration\SimpleEntity;
+
+use function count;
+use function is_array;
 
 class ObjectHydratorTest extends HydrationTestCase
 {
@@ -57,9 +62,9 @@ class ObjectHydratorTest extends HydrationTestCase
      * SELECT PARTIAL u.{id,name}
      *   FROM Doctrine\Tests\Models\CMS\CmsUser u
      */
-    public function testSimpleEntityQuery()
+    public function testSimpleEntityQuery(): void
     {
-        $rsm = new ResultSetMapping;
+        $rsm = new ResultSetMapping();
         $rsm->addEntityResult(CmsUser::class, 'u');
         $rsm->addFieldResult('u', 'u__id', 'id');
         $rsm->addFieldResult('u', 'u__name', 'name');
@@ -68,12 +73,12 @@ class ObjectHydratorTest extends HydrationTestCase
         $resultSet = [
             [
                 'u__id' => '1',
-                'u__name' => 'romanb'
+                'u__name' => 'romanb',
             ],
             [
                 'u__id' => '2',
-                'u__name' => 'jwage'
-            ]
+                'u__name' => 'jwage',
+            ],
         ];
 
         $stmt     = new HydratorMockStatement($resultSet);
@@ -96,9 +101,9 @@ class ObjectHydratorTest extends HydrationTestCase
      * SELECT PARTIAL u.{id,name} AS user
      *   FROM Doctrine\Tests\Models\CMS\CmsUser u
      */
-    public function testSimpleEntityQueryWithAliasedUserEntity()
+    public function testSimpleEntityQueryWithAliasedUserEntity(): void
     {
-        $rsm = new ResultSetMapping;
+        $rsm = new ResultSetMapping();
         $rsm->addEntityResult(CmsUser::class, 'u', 'user');
         $rsm->addFieldResult('u', 'u__id', 'id');
         $rsm->addFieldResult('u', 'u__name', 'name');
@@ -107,12 +112,12 @@ class ObjectHydratorTest extends HydrationTestCase
         $resultSet = [
             [
                 'u__id' => '1',
-                'u__name' => 'romanb'
+                'u__name' => 'romanb',
             ],
             [
                 'u__id' => '2',
-                'u__name' => 'jwage'
-            ]
+                'u__name' => 'jwage',
+            ],
         ];
 
         $stmt     = new HydratorMockStatement($resultSet);
@@ -138,9 +143,9 @@ class ObjectHydratorTest extends HydrationTestCase
      * SELECT PARTIAL u.{id, name}, PARTIAL a.{id, topic}
      *   FROM Doctrine\Tests\Models\CMS\CmsUser u, Doctrine\Tests\Models\CMS\CmsArticle a
      */
-    public function testSimpleMultipleRootEntityQuery()
+    public function testSimpleMultipleRootEntityQuery(): void
     {
-        $rsm = new ResultSetMapping;
+        $rsm = new ResultSetMapping();
         $rsm->addEntityResult(CmsUser::class, 'u');
         $rsm->addEntityResult(CmsArticle::class, 'a');
         $rsm->addFieldResult('u', 'u__id', 'id');
@@ -154,14 +159,14 @@ class ObjectHydratorTest extends HydrationTestCase
                 'u__id' => '1',
                 'u__name' => 'romanb',
                 'a__id' => '1',
-                'a__topic' => 'Cool things.'
+                'a__topic' => 'Cool things.',
             ],
             [
                 'u__id' => '2',
                 'u__name' => 'jwage',
                 'a__id' => '2',
-                'a__topic' => 'Cool things II.'
-            ]
+                'a__topic' => 'Cool things II.',
+            ],
         ];
 
         $stmt     = new HydratorMockStatement($resultSet);
@@ -192,9 +197,9 @@ class ObjectHydratorTest extends HydrationTestCase
      * SELECT PARTIAL u.{id, name} AS user, PARTIAL a.{id, topic}
      *   FROM Doctrine\Tests\Models\CMS\CmsUser u, Doctrine\Tests\Models\CMS\CmsArticle a
      */
-    public function testSimpleMultipleRootEntityQueryWithAliasedUserEntity()
+    public function testSimpleMultipleRootEntityQueryWithAliasedUserEntity(): void
     {
-        $rsm = new ResultSetMapping;
+        $rsm = new ResultSetMapping();
         $rsm->addEntityResult(CmsUser::class, 'u', 'user');
         $rsm->addEntityResult(CmsArticle::class, 'a');
         $rsm->addFieldResult('u', 'u__id', 'id');
@@ -208,14 +213,14 @@ class ObjectHydratorTest extends HydrationTestCase
                 'u__id' => '1',
                 'u__name' => 'romanb',
                 'a__id' => '1',
-                'a__topic' => 'Cool things.'
+                'a__topic' => 'Cool things.',
             ],
             [
                 'u__id' => '2',
                 'u__name' => 'jwage',
                 'a__id' => '2',
-                'a__topic' => 'Cool things II.'
-            ]
+                'a__topic' => 'Cool things II.',
+            ],
         ];
 
         $stmt     = new HydratorMockStatement($resultSet);
@@ -253,9 +258,9 @@ class ObjectHydratorTest extends HydrationTestCase
      * SELECT PARTIAL u.{id, name}, PARTIAL a.{id, topic} AS article
      *   FROM Doctrine\Tests\Models\CMS\CmsUser u, Doctrine\Tests\Models\CMS\CmsArticle a
      */
-    public function testSimpleMultipleRootEntityQueryWithAliasedArticleEntity()
+    public function testSimpleMultipleRootEntityQueryWithAliasedArticleEntity(): void
     {
-        $rsm = new ResultSetMapping;
+        $rsm = new ResultSetMapping();
         $rsm->addEntityResult(CmsUser::class, 'u');
         $rsm->addEntityResult(CmsArticle::class, 'a', 'article');
         $rsm->addFieldResult('u', 'u__id', 'id');
@@ -269,14 +274,14 @@ class ObjectHydratorTest extends HydrationTestCase
                 'u__id' => '1',
                 'u__name' => 'romanb',
                 'a__id' => '1',
-                'a__topic' => 'Cool things.'
+                'a__topic' => 'Cool things.',
             ],
             [
                 'u__id' => '2',
                 'u__name' => 'jwage',
                 'a__id' => '2',
-                'a__topic' => 'Cool things II.'
-            ]
+                'a__topic' => 'Cool things II.',
+            ],
         ];
 
         $stmt     = new HydratorMockStatement($resultSet);
@@ -314,9 +319,9 @@ class ObjectHydratorTest extends HydrationTestCase
      * SELECT PARTIAL u.{id, name} AS user, PARTIAL a.{id, topic} AS article
      *   FROM Doctrine\Tests\Models\CMS\CmsUser u, Doctrine\Tests\Models\CMS\CmsArticle a
      */
-    public function testSimpleMultipleRootEntityQueryWithAliasedEntities()
+    public function testSimpleMultipleRootEntityQueryWithAliasedEntities(): void
     {
-        $rsm = new ResultSetMapping;
+        $rsm = new ResultSetMapping();
         $rsm->addEntityResult(CmsUser::class, 'u', 'user');
         $rsm->addEntityResult(CmsArticle::class, 'a', 'article');
         $rsm->addFieldResult('u', 'u__id', 'id');
@@ -330,14 +335,14 @@ class ObjectHydratorTest extends HydrationTestCase
                 'u__id' => '1',
                 'u__name' => 'romanb',
                 'a__id' => '1',
-                'a__topic' => 'Cool things.'
+                'a__topic' => 'Cool things.',
             ],
             [
                 'u__id' => '2',
                 'u__name' => 'jwage',
                 'a__id' => '2',
-                'a__topic' => 'Cool things II.'
-            ]
+                'a__topic' => 'Cool things II.',
+            ],
         ];
 
         $stmt     = new HydratorMockStatement($resultSet);
@@ -379,9 +384,9 @@ class ObjectHydratorTest extends HydrationTestCase
      *
      * @dataProvider provideDataForUserEntityResult
      */
-    public function testMixedQueryNormalJoin($userEntityKey)
+    public function testMixedQueryNormalJoin($userEntityKey): void
     {
-        $rsm = new ResultSetMapping;
+        $rsm = new ResultSetMapping();
         $rsm->addEntityResult(CmsUser::class, 'u', $userEntityKey ?: null);
         $rsm->addFieldResult('u', 'u__id', 'id');
         $rsm->addFieldResult('u', 'u__status', 'status');
@@ -399,7 +404,7 @@ class ObjectHydratorTest extends HydrationTestCase
                 'u__id' => '2',
                 'u__status' => 'developer',
                 'sclr0' => '1',
-            ]
+            ],
         ];
 
         $stmt     = new HydratorMockStatement($resultSet);
@@ -428,9 +433,9 @@ class ObjectHydratorTest extends HydrationTestCase
      *
      * @dataProvider provideDataForUserEntityResult
      */
-    public function testMixedQueryFetchJoin($userEntityKey)
+    public function testMixedQueryFetchJoin($userEntityKey): void
     {
-        $rsm = new ResultSetMapping;
+        $rsm = new ResultSetMapping();
         $rsm->addEntityResult(CmsUser::class, 'u', $userEntityKey ?: null);
         $rsm->addJoinedEntityResult(
             CmsPhonenumber::class,
@@ -463,7 +468,7 @@ class ObjectHydratorTest extends HydrationTestCase
                 'u__status' => 'developer',
                 'p__phonenumber' => '91',
                 'sclr0' => 'JWAGE',
-            ]
+            ],
         ];
 
         $stmt     = new HydratorMockStatement($resultSet);
@@ -506,9 +511,9 @@ class ObjectHydratorTest extends HydrationTestCase
      *
      * @dataProvider provideDataForUserEntityResult
      */
-    public function testMixedQueryFetchJoinCustomIndex($userEntityKey)
+    public function testMixedQueryFetchJoinCustomIndex($userEntityKey): void
     {
-        $rsm = new ResultSetMapping;
+        $rsm = new ResultSetMapping();
         $rsm->addEntityResult(CmsUser::class, 'u', $userEntityKey ?: null);
         $rsm->addJoinedEntityResult(
             CmsPhonenumber::class,
@@ -542,10 +547,9 @@ class ObjectHydratorTest extends HydrationTestCase
                 'u__id' => '2',
                 'u__status' => 'developer',
                 'sclr0' => 'JWAGE',
-                'p__phonenumber' => '91'
-            ]
+                'p__phonenumber' => '91',
+            ],
         ];
-
 
         $stmt     = new HydratorMockStatement($resultSet);
         $hydrator = new ObjectHydrator($this->_em);
@@ -585,9 +589,9 @@ class ObjectHydratorTest extends HydrationTestCase
      *
      * @dataProvider provideDataForUserEntityResult
      */
-    public function testMixedQueryMultipleFetchJoin($userEntityKey)
+    public function testMixedQueryMultipleFetchJoin($userEntityKey): void
     {
-        $rsm = new ResultSetMapping;
+        $rsm = new ResultSetMapping();
         $rsm->addEntityResult(CmsUser::class, 'u', $userEntityKey ?: null);
         $rsm->addJoinedEntityResult(
             CmsPhonenumber::class,
@@ -617,7 +621,7 @@ class ObjectHydratorTest extends HydrationTestCase
                 'sclr0' => 'ROMANB',
                 'p__phonenumber' => '42',
                 'a__id' => '1',
-                'a__topic' => 'Getting things done!'
+                'a__topic' => 'Getting things done!',
             ],
             [
                 'u__id' => '1',
@@ -625,7 +629,7 @@ class ObjectHydratorTest extends HydrationTestCase
                 'sclr0' => 'ROMANB',
                 'p__phonenumber' => '43',
                 'a__id' => '1',
-                'a__topic' => 'Getting things done!'
+                'a__topic' => 'Getting things done!',
             ],
             [
                 'u__id' => '1',
@@ -633,7 +637,7 @@ class ObjectHydratorTest extends HydrationTestCase
                 'sclr0' => 'ROMANB',
                 'p__phonenumber' => '42',
                 'a__id' => '2',
-                'a__topic' => 'ZendCon'
+                'a__topic' => 'ZendCon',
             ],
             [
                 'u__id' => '1',
@@ -641,7 +645,7 @@ class ObjectHydratorTest extends HydrationTestCase
                 'sclr0' => 'ROMANB',
                 'p__phonenumber' => '43',
                 'a__id' => '2',
-                'a__topic' => 'ZendCon'
+                'a__topic' => 'ZendCon',
             ],
             [
                 'u__id' => '2',
@@ -649,7 +653,7 @@ class ObjectHydratorTest extends HydrationTestCase
                 'sclr0' => 'JWAGE',
                 'p__phonenumber' => '91',
                 'a__id' => '3',
-                'a__topic' => 'LINQ'
+                'a__topic' => 'LINQ',
             ],
             [
                 'u__id' => '2',
@@ -657,7 +661,7 @@ class ObjectHydratorTest extends HydrationTestCase
                 'sclr0' => 'JWAGE',
                 'p__phonenumber' => '91',
                 'a__id' => '4',
-                'a__topic' => 'PHP7'
+                'a__topic' => 'PHP7',
             ],
         ];
 
@@ -695,9 +699,9 @@ class ObjectHydratorTest extends HydrationTestCase
      *
      * @dataProvider provideDataForUserEntityResult
      */
-    public function testMixedQueryMultipleDeepMixedFetchJoin($userEntityKey)
+    public function testMixedQueryMultipleDeepMixedFetchJoin($userEntityKey): void
     {
-        $rsm = new ResultSetMapping;
+        $rsm = new ResultSetMapping();
         $rsm->addEntityResult(CmsUser::class, 'u', $userEntityKey ?: null);
         $rsm->addJoinedEntityResult(
             CmsPhonenumber::class,
@@ -737,7 +741,7 @@ class ObjectHydratorTest extends HydrationTestCase
                 'a__id' => '1',
                 'a__topic' => 'Getting things done!',
                 'c__id' => '1',
-                'c__topic' => 'First!'
+                'c__topic' => 'First!',
             ],
             [
                 'u__id' => '1',
@@ -747,7 +751,7 @@ class ObjectHydratorTest extends HydrationTestCase
                 'a__id' => '1',
                 'a__topic' => 'Getting things done!',
                 'c__id' => '1',
-                'c__topic' => 'First!'
+                'c__topic' => 'First!',
             ],
             [
                 'u__id' => '1',
@@ -757,7 +761,7 @@ class ObjectHydratorTest extends HydrationTestCase
                 'a__id' => '2',
                 'a__topic' => 'ZendCon',
                 'c__id' => null,
-                'c__topic' => null
+                'c__topic' => null,
             ],
             [
                 'u__id' => '1',
@@ -767,7 +771,7 @@ class ObjectHydratorTest extends HydrationTestCase
                 'a__id' => '2',
                 'a__topic' => 'ZendCon',
                 'c__id' => null,
-                'c__topic' => null
+                'c__topic' => null,
             ],
             [
                 'u__id' => '2',
@@ -777,7 +781,7 @@ class ObjectHydratorTest extends HydrationTestCase
                 'a__id' => '3',
                 'a__topic' => 'LINQ',
                 'c__id' => null,
-                'c__topic' => null
+                'c__topic' => null,
             ],
             [
                 'u__id' => '2',
@@ -787,7 +791,7 @@ class ObjectHydratorTest extends HydrationTestCase
                 'a__id' => '4',
                 'a__topic' => 'PHP7',
                 'c__id' => null,
-                'c__topic' => null
+                'c__topic' => null,
             ],
         ];
 
@@ -852,9 +856,9 @@ class ObjectHydratorTest extends HydrationTestCase
      *  1    | 0          | First    | 1        |   3  | 1
      *  1    | 0          | First    | 2        |   4  | 1
      */
-    public function testEntityQueryCustomResultSetOrder()
+    public function testEntityQueryCustomResultSetOrder(): void
     {
-        $rsm = new ResultSetMapping;
+        $rsm = new ResultSetMapping();
         $rsm->addEntityResult(ForumCategory::class, 'c');
         $rsm->addJoinedEntityResult(
             ForumBoard::class,
@@ -901,7 +905,7 @@ class ObjectHydratorTest extends HydrationTestCase
                 'b__id' => '4',
                 'b__position' => '2',
                 //'b__category_id' => '1'
-            ]
+            ],
         ];
 
         $stmt     = new HydratorMockStatement($resultSet);
@@ -931,9 +935,9 @@ class ObjectHydratorTest extends HydrationTestCase
      *
      * @group DDC-644
      */
-    public function testSkipUnknownColumns()
+    public function testSkipUnknownColumns(): void
     {
-        $rsm = new ResultSetMapping;
+        $rsm = new ResultSetMapping();
         $rsm->addEntityResult(CmsUser::class, 'u');
         $rsm->addFieldResult('u', 'u__id', 'id');
         $rsm->addFieldResult('u', 'u__name', 'name');
@@ -961,9 +965,9 @@ class ObjectHydratorTest extends HydrationTestCase
      *
      * @dataProvider provideDataForUserEntityResult
      */
-    public function testScalarQueryWithoutResultVariables($userEntityKey)
+    public function testScalarQueryWithoutResultVariables($userEntityKey): void
     {
-        $rsm = new ResultSetMapping;
+        $rsm = new ResultSetMapping();
         $rsm->addEntityResult(CmsUser::class, 'u', $userEntityKey ?: null);
         $rsm->addScalarResult('sclr0', 'id', 'integer');
         $rsm->addScalarResult('sclr1', 'name', 'string');
@@ -972,12 +976,12 @@ class ObjectHydratorTest extends HydrationTestCase
         $resultSet = [
             [
                 'sclr0' => '1',
-                'sclr1' => 'romanb'
+                'sclr1' => 'romanb',
             ],
             [
                 'sclr0' => '2',
-                'sclr1' => 'jwage'
-            ]
+                'sclr1' => 'jwage',
+            ],
         ];
 
         $stmt     = new HydratorMockStatement($resultSet);
@@ -1000,9 +1004,9 @@ class ObjectHydratorTest extends HydrationTestCase
      * SELECT p
      *   FROM Doctrine\Tests\Models\ECommerce\ECommerceProduct p
      */
-    public function testCreatesProxyForLazyLoadingWithForeignKeys()
+    public function testCreatesProxyForLazyLoadingWithForeignKeys(): void
     {
-        $rsm = new ResultSetMapping;
+        $rsm = new ResultSetMapping();
         $rsm->addEntityResult(ECommerceProduct::class, 'p');
         $rsm->addFieldResult('p', 'p__id', 'id');
         $rsm->addFieldResult('p', 'p__name', 'name');
@@ -1013,11 +1017,11 @@ class ObjectHydratorTest extends HydrationTestCase
             [
                 'p__id' => '1',
                 'p__name' => 'Doctrine Book',
-                'p__shipping_id' => 42
-            ]
+                'p__shipping_id' => 42,
+            ],
         ];
 
-        $proxyInstance = new \Doctrine\Tests\Models\ECommerce\ECommerceShipping();
+        $proxyInstance = new ECommerceShipping();
 
         // mocking the proxy factory
         $proxyFactory = $this->getMockBuilder(ProxyFactory::class)
@@ -1033,7 +1037,7 @@ class ObjectHydratorTest extends HydrationTestCase
         $this->_em->setProxyFactory($proxyFactory);
 
         // configuring lazy loading
-        $metadata = $this->_em->getClassMetadata(ECommerceProduct::class);
+        $metadata                                           = $this->_em->getClassMetadata(ECommerceProduct::class);
         $metadata->associationMappings['shipping']['fetch'] = ClassMetadata::FETCH_LAZY;
 
         $stmt     = new HydratorMockStatement($resultSet);
@@ -1049,9 +1053,9 @@ class ObjectHydratorTest extends HydrationTestCase
      * SELECT p AS product
      *   FROM Doctrine\Tests\Models\ECommerce\ECommerceProduct p
      */
-    public function testCreatesProxyForLazyLoadingWithForeignKeysWithAliasedProductEntity()
+    public function testCreatesProxyForLazyLoadingWithForeignKeysWithAliasedProductEntity(): void
     {
-        $rsm = new ResultSetMapping;
+        $rsm = new ResultSetMapping();
         $rsm->addEntityResult(ECommerceProduct::class, 'p', 'product');
         $rsm->addFieldResult('p', 'p__id', 'id');
         $rsm->addFieldResult('p', 'p__name', 'name');
@@ -1062,11 +1066,11 @@ class ObjectHydratorTest extends HydrationTestCase
             [
                 'p__id' => '1',
                 'p__name' => 'Doctrine Book',
-                'p__shipping_id' => 42
-            ]
+                'p__shipping_id' => 42,
+            ],
         ];
 
-        $proxyInstance = new \Doctrine\Tests\Models\ECommerce\ECommerceShipping();
+        $proxyInstance = new ECommerceShipping();
 
         // mocking the proxy factory
         $proxyFactory = $this->getMockBuilder(ProxyFactory::class)
@@ -1082,7 +1086,7 @@ class ObjectHydratorTest extends HydrationTestCase
         $this->_em->setProxyFactory($proxyFactory);
 
         // configuring lazy loading
-        $metadata = $this->_em->getClassMetadata(ECommerceProduct::class);
+        $metadata                                           = $this->_em->getClassMetadata(ECommerceProduct::class);
         $metadata->associationMappings['shipping']['fetch'] = ClassMetadata::FETCH_LAZY;
 
         $stmt     = new HydratorMockStatement($resultSet);
@@ -1101,9 +1105,9 @@ class ObjectHydratorTest extends HydrationTestCase
      *   LEFT JOIN u.articles a
      *   LEFT JOIN a.comments c
      */
-    public function testChainedJoinWithEmptyCollections()
+    public function testChainedJoinWithEmptyCollections(): void
     {
-        $rsm = new ResultSetMapping;
+        $rsm = new ResultSetMapping();
         $rsm->addEntityResult(CmsUser::class, 'u');
         $rsm->addJoinedEntityResult(
             CmsArticle::class,
@@ -1133,7 +1137,7 @@ class ObjectHydratorTest extends HydrationTestCase
                 'a__id' => null,
                 'a__topic' => null,
                 'c__id' => null,
-                'c__topic' => null
+                'c__topic' => null,
             ],
             [
                 'u__id' => '2',
@@ -1141,7 +1145,7 @@ class ObjectHydratorTest extends HydrationTestCase
                 'a__id' => null,
                 'a__topic' => null,
                 'c__id' => null,
-                'c__topic' => null
+                'c__topic' => null,
             ],
         ];
 
@@ -1164,9 +1168,9 @@ class ObjectHydratorTest extends HydrationTestCase
      *   LEFT JOIN u.articles a
      *   LEFT JOIN a.comments c
      */
-    public function testChainedJoinWithEmptyCollectionsWithAliasedUserEntity()
+    public function testChainedJoinWithEmptyCollectionsWithAliasedUserEntity(): void
     {
-        $rsm = new ResultSetMapping;
+        $rsm = new ResultSetMapping();
         $rsm->addEntityResult(CmsUser::class, 'u', 'user');
         $rsm->addJoinedEntityResult(
             CmsArticle::class,
@@ -1196,7 +1200,7 @@ class ObjectHydratorTest extends HydrationTestCase
                 'a__id' => null,
                 'a__topic' => null,
                 'c__id' => null,
-                'c__topic' => null
+                'c__topic' => null,
             ],
             [
                 'u__id' => '2',
@@ -1204,7 +1208,7 @@ class ObjectHydratorTest extends HydrationTestCase
                 'a__id' => null,
                 'a__topic' => null,
                 'c__id' => null,
-                'c__topic' => null
+                'c__topic' => null,
             ],
         ];
 
@@ -1228,9 +1232,9 @@ class ObjectHydratorTest extends HydrationTestCase
      * SELECT PARTIAL u.{id, name}
      *   FROM Doctrine\Tests\Models\CMS\CmsUser u
      */
-    public function testResultIteration()
+    public function testResultIteration(): void
     {
-        $rsm = new ResultSetMapping;
+        $rsm = new ResultSetMapping();
         $rsm->addEntityResult(CmsUser::class, 'u');
         $rsm->addFieldResult('u', 'u__id', 'id');
         $rsm->addFieldResult('u', 'u__name', 'name');
@@ -1239,12 +1243,12 @@ class ObjectHydratorTest extends HydrationTestCase
         $resultSet = [
             [
                 'u__id' => '1',
-                'u__name' => 'romanb'
+                'u__name' => 'romanb',
             ],
             [
                 'u__id' => '2',
-                'u__name' => 'jwage'
-            ]
+                'u__name' => 'jwage',
+            ],
         ];
 
         $hydrator = new ObjectHydrator($this->_em);
@@ -1260,10 +1264,10 @@ class ObjectHydratorTest extends HydrationTestCase
             $this->assertEquals(1, count($row));
             $this->assertInstanceOf(CmsUser::class, $row[0]);
 
-            if ($rowNum == 0) {
+            if ($rowNum === 0) {
                 $this->assertEquals(1, $row[0]->id);
                 $this->assertEquals('romanb', $row[0]->name);
-            } else if ($rowNum == 1) {
+            } elseif ($rowNum === 1) {
                 $this->assertEquals(2, $row[0]->id);
                 $this->assertEquals('jwage', $row[0]->name);
             }
@@ -1303,9 +1307,9 @@ class ObjectHydratorTest extends HydrationTestCase
      * SELECT PARTIAL u.{id, name}
      *   FROM Doctrine\Tests\Models\CMS\CmsUser u
      */
-    public function testResultIterationWithAliasedUserEntity()
+    public function testResultIterationWithAliasedUserEntity(): void
     {
-        $rsm = new ResultSetMapping;
+        $rsm = new ResultSetMapping();
         $rsm->addEntityResult(CmsUser::class, 'u', 'user');
         $rsm->addFieldResult('u', 'u__id', 'id');
         $rsm->addFieldResult('u', 'u__name', 'name');
@@ -1314,12 +1318,12 @@ class ObjectHydratorTest extends HydrationTestCase
         $resultSet = [
             [
                 'u__id' => '1',
-                'u__name' => 'romanb'
+                'u__name' => 'romanb',
             ],
             [
                 'u__id' => '2',
-                'u__name' => 'jwage'
-            ]
+                'u__name' => 'jwage',
+            ],
         ];
 
         $hydrator       = new ObjectHydrator($this->_em);
@@ -1336,10 +1340,10 @@ class ObjectHydratorTest extends HydrationTestCase
             $this->assertArrayHasKey('user', $row[0]);
             $this->assertInstanceOf(CmsUser::class, $row[0]['user']);
 
-            if ($rowNum == 0) {
+            if ($rowNum === 0) {
                 $this->assertEquals(1, $row[0]['user']->id);
                 $this->assertEquals('romanb', $row[0]['user']->name);
-            } else if ($rowNum == 1) {
+            } elseif ($rowNum === 1) {
                 $this->assertEquals(2, $row[0]['user']->id);
                 $this->assertEquals('jwage', $row[0]['user']->name);
             }
@@ -1385,9 +1389,9 @@ class ObjectHydratorTest extends HydrationTestCase
      *
      * @group DDC-809
      */
-    public function testManyToManyHydration()
+    public function testManyToManyHydration(): void
     {
-        $rsm = new ResultSetMapping;
+        $rsm = new ResultSetMapping();
         $rsm->addEntityResult(CmsUser::class, 'u');
         $rsm->addFieldResult('u', 'u__id', 'id');
         $rsm->addFieldResult('u', 'u__name', 'name');
@@ -1508,9 +1512,9 @@ class ObjectHydratorTest extends HydrationTestCase
      *
      * @group DDC-809
      */
-    public function testManyToManyHydrationWithAliasedUserEntity()
+    public function testManyToManyHydrationWithAliasedUserEntity(): void
     {
-        $rsm = new ResultSetMapping;
+        $rsm = new ResultSetMapping();
         $rsm->addEntityResult(CmsUser::class, 'u', 'user');
         $rsm->addFieldResult('u', 'u__id', 'id');
         $rsm->addFieldResult('u', 'u__name', 'name');
@@ -1633,9 +1637,9 @@ class ObjectHydratorTest extends HydrationTestCase
      * @group DDC-1358
      * @dataProvider provideDataForUserEntityResult
      */
-    public function testMissingIdForRootEntity($userEntityKey)
+    public function testMissingIdForRootEntity($userEntityKey): void
     {
-        $rsm = new ResultSetMapping;
+        $rsm = new ResultSetMapping();
         $rsm->addEntityResult(CmsUser::class, 'u', $userEntityKey ?: null);
         $rsm->addFieldResult('u', 'u__id', 'id');
         $rsm->addFieldResult('u', 'u__status', 'status');
@@ -1670,7 +1674,7 @@ class ObjectHydratorTest extends HydrationTestCase
         $hydrator = new ObjectHydrator($this->_em);
         $result   = $hydrator->hydrateAll($stmt, $rsm, [Query::HINT_FORCE_PARTIAL_LOAD => true]);
 
-        $this->assertEquals(4, count($result), "Should hydrate four results.");
+        $this->assertEquals(4, count($result), 'Should hydrate four results.');
 
         $this->assertEquals('ROMANB', $result[0]['nameUpper']);
         $this->assertEquals('ROMANB', $result[1]['nameUpper']);
@@ -1692,9 +1696,9 @@ class ObjectHydratorTest extends HydrationTestCase
      * @group DDC-1358
      * @dataProvider provideDataForUserEntityResult
      */
-    public function testMissingIdForCollectionValuedChildEntity($userEntityKey)
+    public function testMissingIdForCollectionValuedChildEntity($userEntityKey): void
     {
-        $rsm = new ResultSetMapping;
+        $rsm = new ResultSetMapping();
         $rsm->addEntityResult(CmsUser::class, 'u', $userEntityKey ?: null);
         $rsm->addJoinedEntityResult(
             CmsPhonenumber::class,
@@ -1720,20 +1724,20 @@ class ObjectHydratorTest extends HydrationTestCase
                 'u__id' => '1',
                 'u__status' => 'developer',
                 'sclr0' => 'ROMANB',
-                'p__phonenumber' => null
+                'p__phonenumber' => null,
             ],
             [
                 'u__id' => '2',
                 'u__status' => 'developer',
                 'sclr0' => 'JWAGE',
-                'p__phonenumber' => '91'
+                'p__phonenumber' => '91',
             ],
             [
                 'u__id' => '2',
                 'u__status' => 'developer',
                 'sclr0' => 'JWAGE',
-                'p__phonenumber' => null
-            ]
+                'p__phonenumber' => null,
+            ],
         ];
 
         $stmt     = new HydratorMockStatement($resultSet);
@@ -1754,9 +1758,9 @@ class ObjectHydratorTest extends HydrationTestCase
      * @group DDC-1358
      * @dataProvider provideDataForUserEntityResult
      */
-    public function testMissingIdForSingleValuedChildEntity($userEntityKey)
+    public function testMissingIdForSingleValuedChildEntity($userEntityKey): void
     {
-        $rsm = new ResultSetMapping;
+        $rsm = new ResultSetMapping();
         $rsm->addEntityResult(CmsUser::class, 'u', $userEntityKey ?: null);
         $rsm->addJoinedEntityResult(
             CmsAddress::class,
@@ -1808,9 +1812,9 @@ class ObjectHydratorTest extends HydrationTestCase
      * @group DDC-1385
      * @dataProvider provideDataForUserEntityResult
      */
-    public function testIndexByAndMixedResult($userEntityKey)
+    public function testIndexByAndMixedResult($userEntityKey): void
     {
-        $rsm = new ResultSetMapping;
+        $rsm = new ResultSetMapping();
         $rsm->addEntityResult(CmsUser::class, 'u', $userEntityKey ?: null);
         $rsm->addFieldResult('u', 'u__id', 'id');
         $rsm->addFieldResult('u', 'u__status', 'status');
@@ -1852,9 +1856,9 @@ class ObjectHydratorTest extends HydrationTestCase
      * @group DDC-1385
      * @dataProvider provideDataForUserEntityResult
      */
-    public function testIndexByScalarsOnly($userEntityKey)
+    public function testIndexByScalarsOnly($userEntityKey): void
     {
-        $rsm = new ResultSetMapping;
+        $rsm = new ResultSetMapping();
         $rsm->addEntityResult(CmsUser::class, 'u', $userEntityKey ?: null);
         $rsm->addScalarResult('sclr0', 'nameUpper', 'string');
         $rsm->addIndexByScalar('sclr0');
@@ -1862,12 +1866,8 @@ class ObjectHydratorTest extends HydrationTestCase
         // Faked result set
         $resultSet = [
             //row1
-            [
-                'sclr0' => 'ROMANB',
-            ],
-            [
-                'sclr0' => 'JWAGE',
-            ],
+            ['sclr0' => 'ROMANB'],
+            ['sclr0' => 'JWAGE'],
         ];
 
         $stmt     = new HydratorMockStatement($resultSet);
@@ -1877,21 +1877,20 @@ class ObjectHydratorTest extends HydrationTestCase
         $this->assertEquals(
             [
                 'ROMANB' => ['nameUpper' => 'ROMANB'],
-                'JWAGE'  => ['nameUpper' => 'JWAGE']
+                'JWAGE'  => ['nameUpper' => 'JWAGE'],
             ],
             $result
         );
     }
 
-
     /**
      * @group DDC-1470
      */
-    public function testMissingMetaMappingException()
+    public function testMissingMetaMappingException(): void
     {
         $this->expectException('Doctrine\ORM\Internal\Hydration\HydrationException');
         $this->expectExceptionMessage('The meta mapping for the discriminator column "c_discr" is missing for "Doctrine\Tests\Models\Company\CompanyFixContract" using the DQL alias "c".');
-        $rsm = new ResultSetMapping;
+        $rsm = new ResultSetMapping();
 
         $rsm->addEntityResult(CompanyFixContract::class, 'c');
         $rsm->addJoinedEntityResult(CompanyEmployee::class, 'e', 'c', 'salesPerson');
@@ -1899,10 +1898,10 @@ class ObjectHydratorTest extends HydrationTestCase
         $rsm->setDiscriminatorColumn('c', 'c_discr');
 
         $resultSet = [
-              [
-                  'c__id'   => '1',
-                  'c_discr' => 'fix',
-              ],
+            [
+                'c__id'   => '1',
+                'c_discr' => 'fix',
+            ],
         ];
 
         $stmt     = new HydratorMockStatement($resultSet);
@@ -1913,11 +1912,11 @@ class ObjectHydratorTest extends HydrationTestCase
     /**
      * @group DDC-1470
      */
-    public function testMissingDiscriminatorColumnException()
+    public function testMissingDiscriminatorColumnException(): void
     {
         $this->expectException('Doctrine\ORM\Internal\Hydration\HydrationException');
         $this->expectExceptionMessage('The discriminator column "discr" is missing for "Doctrine\Tests\Models\Company\CompanyEmployee" using the DQL alias "e".');
-        $rsm = new ResultSetMapping;
+        $rsm = new ResultSetMapping();
 
         $rsm->addEntityResult(CompanyFixContract::class, 'c');
         $rsm->addJoinedEntityResult(CompanyEmployee::class, 'e', 'c', 'salesPerson');
@@ -1930,12 +1929,12 @@ class ObjectHydratorTest extends HydrationTestCase
         $rsm->setDiscriminatorColumn('e', 'e_discr');
 
         $resultSet = [
-              [
-                  'c__id'   => '1',
-                  'c_discr' => 'fix',
-                  'e__id'   => '1',
-                  'e__name' => 'Fabio B. Silva'
-              ],
+            [
+                'c__id'   => '1',
+                'c_discr' => 'fix',
+                'e__id'   => '1',
+                'e__name' => 'Fabio B. Silva',
+            ],
         ];
 
         $stmt     = new HydratorMockStatement($resultSet);
@@ -1946,11 +1945,11 @@ class ObjectHydratorTest extends HydrationTestCase
     /**
      * @group DDC-3076
      */
-    public function testInvalidDiscriminatorValueException()
+    public function testInvalidDiscriminatorValueException(): void
     {
         $this->expectException('Doctrine\ORM\Internal\Hydration\HydrationException');
         $this->expectExceptionMessage('The discriminator value "subworker" is invalid. It must be one of "person", "manager", "employee".');
-        $rsm = new ResultSetMapping;
+        $rsm = new ResultSetMapping();
 
         $rsm->addEntityResult(CompanyPerson::class, 'p');
         $rsm->addFieldResult('p', 'p__id', 'id');
@@ -1959,11 +1958,11 @@ class ObjectHydratorTest extends HydrationTestCase
         $rsm->setDiscriminatorColumn('p', 'discr');
 
         $resultSet = [
-              [
-                  'p__id'   => '1',
-                  'p__name' => 'Fabio B. Silva',
-                  'discr'   => 'subworker'
-              ],
+            [
+                'p__id'   => '1',
+                'p__name' => 'Fabio B. Silva',
+                'discr'   => 'subworker',
+            ],
         ];
 
         $stmt     = new HydratorMockStatement($resultSet);
@@ -1971,9 +1970,9 @@ class ObjectHydratorTest extends HydrationTestCase
         $hydrator->hydrateAll($stmt, $rsm);
     }
 
-    public function testFetchJoinCollectionValuedAssociationWithDefaultArrayValue()
+    public function testFetchJoinCollectionValuedAssociationWithDefaultArrayValue(): void
     {
-        $rsm = new ResultSetMapping;
+        $rsm = new ResultSetMapping();
 
         $rsm->addEntityResult(EntityWithArrayDefaultArrayValueM2M::class, 'e1', null);
         $rsm->addJoinedEntityResult(SimpleEntity::class, 'e2', 'e1', 'collection');
@@ -1984,7 +1983,7 @@ class ObjectHydratorTest extends HydrationTestCase
             [
                 'a1__id' => '1',
                 'e2__id' => '1',
-            ]
+            ],
         ];
 
         $stmt     = new HydratorMockStatement($resultSet);

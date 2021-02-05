@@ -9,19 +9,37 @@
     <!-- Ignore warnings, show progress of the run and show sniff names -->
     <arg value="nps"/>
 
+    <config name="php_version" value="70200"/>
+
     <file>lib</file>
     <file>tests</file>
     <file>tools</file>
 
-    <exclude-pattern>*/tests/Doctrine/Tests/Proxies/__CG__/*</exclude-pattern>
+    <exclude-pattern>*/tests/Doctrine/Tests/Proxies/__CG__*</exclude-pattern>
+    <exclude-pattern>*/tests/Doctrine/Tests/ORM/Tools/Export/export/*</exclude-pattern>
 
     <rule ref="Doctrine">
+        <exclude name="SlevomatCodingStandard.TypeHints.DeclareStrictTypes"/>
         <exclude name="SlevomatCodingStandard.TypeHints.ParameterTypeHint.MissingAnyTypeHint" />
         <exclude name="SlevomatCodingStandard.TypeHints.TypeHintDeclaration.MissingReturnTypeHint"/>
         <exclude name="SlevomatCodingStandard.Exceptions.ReferenceThrowableOnly.ReferencedGeneralException"/>
         <exclude name="SlevomatCodingStandard.ControlStructures.EarlyExit"/>
         <exclude name="SlevomatCodingStandard.Classes.SuperfluousAbstractClassNaming"/>
         <exclude name="SlevomatCodingStandard.Classes.SuperfluousExceptionNaming"/>
+    </rule>
+
+    <rule ref="SlevomatCodingStandard.TypeHints.ParameterTypeHint.MissingNativeTypeHint">
+        <exclude-pattern>*/lib/*</exclude-pattern>
+        <!--
+            that class extends another one inside lib/ and can therefore not
+            have more native typehints since its parent cannot have them: that
+            would break signature compatibility.
+        -->
+        <exclude-pattern>tests/Doctrine/Tests/Mocks/HydratorMockStatement.php</exclude-pattern>
+    </rule>
+
+    <rule ref="SlevomatCodingStandard.TypeHints.ReturnTypeHint.MissingNativeTypeHint">
+        <exclude-pattern>*/lib/*</exclude-pattern>
     </rule>
 
     <rule ref="PSR1.Classes.ClassDeclaration.MultipleClasses">
@@ -154,5 +172,21 @@
     <rule ref="Generic.CodeAnalysis.EmptyStatement.DetectedForeach">
         <exclude-pattern>tests/Doctrine/Tests/ORM/Functional/Ticket/DDC1301Test.php</exclude-pattern>
         <exclude-pattern>tests/Doctrine/Tests/ORM/Functional/ExtraLazyCollectionTest.php</exclude-pattern>
+    </rule>
+
+    <!--
+        That file is used in a test as a template to create another one with a
+        different namespace. The use statement has to stay.
+    -->
+    <rule ref="SlevomatCodingStandard.Namespaces.UseFromSameNamespace.UseFromSameNamespace">
+        <exclude-pattern>tests/Doctrine/Tests/Models/DDC1590/DDC1590User.php</exclude-pattern>
+    </rule>
+
+    <rule ref="SlevomatCodingStandard.Commenting.ForbiddenAnnotations.AnnotationForbidden">
+        <exclude-pattern>tests/Doctrine/Tests/ORM/Functional/Ticket/DDC832Test.php</exclude-pattern>
+    </rule>
+
+    <rule ref="SlevomatCodingStandard.Classes.UnusedPrivateElements.UnusedMethod">
+        <exclude-pattern>lib/Doctrine/ORM/Tools/EntityGenerator.php</exclude-pattern>
     </rule>
 </ruleset>

@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\Tests\Models\ECommerce;
 
 use Doctrine\Common\Collections\ArrayCollection;
@@ -8,7 +10,6 @@ use Doctrine\Common\Collections\ArrayCollection;
  * ECommerceCart
  * Represents a typical cart of a shopping application.
  *
- * @author Giorgio Sironi
  * @Entity
  * @Table(name="ecommerce_carts")
  */
@@ -21,9 +22,7 @@ class ECommerceCart
      */
     private $id;
 
-    /**
-     * @Column(length=50, nullable=true)
-     */
+    /** @Column(length=50, nullable=true) */
     private $payment;
 
     /**
@@ -42,37 +41,43 @@ class ECommerceCart
 
     public function __construct()
     {
-        $this->products = new ArrayCollection;
+        $this->products = new ArrayCollection();
     }
 
-    public function getId() {
+    public function getId()
+    {
         return $this->id;
     }
 
-    public function getPayment() {
+    public function getPayment()
+    {
         return $this->payment;
     }
 
-    public function setPayment($payment) {
+    public function setPayment($payment): void
+    {
         $this->payment = $payment;
     }
 
-    public function setCustomer(ECommerceCustomer $customer) {
+    public function setCustomer(ECommerceCustomer $customer): void
+    {
         if ($this->customer !== $customer) {
             $this->customer = $customer;
             $customer->setCart($this);
         }
     }
 
-    public function removeCustomer() {
+    public function removeCustomer(): void
+    {
         if ($this->customer !== null) {
-            $customer = $this->customer;
+            $customer       = $this->customer;
             $this->customer = null;
             $customer->removeCart();
         }
     }
 
-    public function getCustomer() {
+    public function getCustomer()
+    {
         return $this->customer;
     }
 
@@ -81,11 +86,13 @@ class ECommerceCart
         return $this->products;
     }
 
-    public function addProduct(ECommerceProduct $product) {
+    public function addProduct(ECommerceProduct $product): void
+    {
         $this->products[] = $product;
     }
 
-    public function removeProduct(ECommerceProduct $product) {
+    public function removeProduct(ECommerceProduct $product)
+    {
         return $this->products->removeElement($product);
     }
 }

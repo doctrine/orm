@@ -1,23 +1,30 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\Tests\ORM\Mapping;
 
 use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\Mapping\ClassMetadataFactory;
 use Doctrine\ORM\Mapping\Driver\YamlDriver;
+use Doctrine\Persistence\Mapping\Driver\MappingDriver;
 use Doctrine\Tests\Models\DirectoryTree\Directory;
 use Doctrine\Tests\Models\DirectoryTree\File;
 use Doctrine\Tests\Models\Generic\SerializationModel;
 use Doctrine\Tests\VerifyDeprecations;
 use Symfony\Component\Yaml\Yaml;
 
+use function class_exists;
+
+use const DIRECTORY_SEPARATOR;
+
 class YamlMappingDriverTest extends AbstractMappingDriverTest
 {
     use VerifyDeprecations;
 
-    protected function _loadDriver()
+    protected function _loadDriver(): MappingDriver
     {
-        if (!class_exists(Yaml::class, true)) {
+        if (! class_exists(Yaml::class, true)) {
             $this->markTestSkipped('Please install Symfony YAML Component into the include path of your PHP installation.');
         }
 
@@ -29,7 +36,7 @@ class YamlMappingDriverTest extends AbstractMappingDriverTest
      *
      * Entities for this test are in AbstractMappingDriverTest
      */
-    public function testJoinTablesWithMappedSuperclassForYamlDriver()
+    public function testJoinTablesWithMappedSuperclassForYamlDriver(): void
     {
         $yamlDriver = $this->_loadDriver();
         $yamlDriver->getLocator()->addPaths([__DIR__ . DIRECTORY_SEPARATOR . 'yaml']);
@@ -52,7 +59,7 @@ class YamlMappingDriverTest extends AbstractMappingDriverTest
     /**
      * @group DDC-1468
      */
-    public function testInvalidMappingFileException()
+    public function testInvalidMappingFileException(): void
     {
         $this->expectException('Doctrine\Persistence\Mapping\MappingException');
         $this->expectExceptionMessage('Invalid mapping file \'Doctrine.Tests.Models.Generic.SerializationModel.dcm.yml\' for class \'Doctrine\Tests\Models\Generic\SerializationModel\'.');
@@ -62,7 +69,7 @@ class YamlMappingDriverTest extends AbstractMappingDriverTest
     /**
      * @group DDC-2069
      */
-    public function testSpacesShouldBeIgnoredWhenUseExplode()
+    public function testSpacesShouldBeIgnoredWhenUseExplode(): void
     {
         $metadata = $this->createClassMetadata(DDC2069Entity::class);
         $unique   = $metadata->table['uniqueConstraints'][0]['columns'];
@@ -82,7 +89,7 @@ class YamlMappingDriverTest extends AbstractMappingDriverTest
         $this->assertHasDeprecationMessages();
     }
 
-    public function testDeprecation() : void
+    public function testDeprecation(): void
     {
         $this->createClassMetadata(DDC2069Entity::class);
         $this->expectDeprecationMessageSame('YAML mapping driver is deprecated and will be removed in Doctrine ORM 3.0, please migrate to annotation or XML driver.');

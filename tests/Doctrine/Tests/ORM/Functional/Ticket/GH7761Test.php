@@ -7,12 +7,11 @@ namespace Doctrine\Tests\ORM\Functional\Ticket;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Tests\OrmFunctionalTestCase;
 
+use function assert;
+
 final class GH7761Test extends OrmFunctionalTestCase
 {
-    /**
-     * {@inheritDoc}
-     */
-    protected function setUp() : void
+    protected function setUp(): void
     {
         parent::setUp();
 
@@ -31,10 +30,10 @@ final class GH7761Test extends OrmFunctionalTestCase
         $this->_em->clear();
     }
 
-    public function testCollectionClearDoesNotClearIfNotPersisted() : void
+    public function testCollectionClearDoesNotClearIfNotPersisted(): void
     {
-        /** @var GH7761Entity $entity */
         $entity = $this->_em->find(GH7761Entity::class, 1);
+        assert($entity instanceof GH7761Entity);
         $entity->children->clear();
         $this->_em->persist(new GH7761Entity());
         $this->_em->flush();
@@ -48,10 +47,10 @@ final class GH7761Test extends OrmFunctionalTestCase
     /**
      * @group GH-7862
      */
-    public function testCollectionClearDoesClearIfPersisted() : void
+    public function testCollectionClearDoesClearIfPersisted(): void
     {
-        /** @var GH7761Entity $entity */
         $entity = $this->_em->find(GH7761Entity::class, 1);
+        assert($entity instanceof GH7761Entity);
         $entity->children->clear();
         $this->_em->persist($entity);
         $this->_em->flush();

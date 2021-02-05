@@ -1,30 +1,35 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\Tests\ORM\Functional\Ticket;
 
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\PersistentCollection;
 use Doctrine\Tests\OrmFunctionalTestCase;
 
+use function array_unique;
+use function count;
+
 /**
  * @group GH-5762
  */
 class GH5762Test extends OrmFunctionalTestCase
 {
-    protected function setUp() : void
+    protected function setUp(): void
     {
         parent::setUp();
 
         $this->_schemaTool->createSchema(
             [
-            $this->_em->getClassMetadata(GH5762Driver::class),
-            $this->_em->getClassMetadata(GH5762DriverRide::class),
-            $this->_em->getClassMetadata(GH5762Car::class),
+                $this->_em->getClassMetadata(GH5762Driver::class),
+                $this->_em->getClassMetadata(GH5762DriverRide::class),
+                $this->_em->getClassMetadata(GH5762Car::class),
             ]
         );
     }
 
-    public function testIssue()
+    public function testIssue(): void
     {
         $result = $this->fetchData();
 
@@ -61,7 +66,7 @@ class GH5762Test extends OrmFunctionalTestCase
         return $qb->getQuery()->getSingleResult();
     }
 
-    private function createData()
+    private function createData(): void
     {
         $car1 = new GH5762Car('BMW', '7 Series');
         $car2 = new GH5762Car('Crysler', '300');
@@ -109,21 +114,17 @@ class GH5762Driver
      */
     public $id;
 
-    /**
-     * @Column(type="string", length=255);
-     */
+    /** @Column(type="string", length=255); */
     public $name;
 
-    /**
-     * @OneToMany(targetEntity="GH5762DriverRide", mappedBy="driver")
-     */
+    /** @OneToMany(targetEntity="GH5762DriverRide", mappedBy="driver") */
     public $driverRides;
 
     public function __construct($id, $name)
     {
         $this->driverRides = new ArrayCollection();
-        $this->id = $id;
-        $this->name = $name;
+        $this->id          = $id;
+        $this->name        = $name;
     }
 }
 
@@ -147,10 +148,10 @@ class GH5762DriverRide
      */
     public $car;
 
-    function __construct(GH5762Driver $driver, GH5762Car $car)
+    public function __construct(GH5762Driver $driver, GH5762Car $car)
     {
         $this->driver = $driver;
-        $this->car = $car;
+        $this->car    = $car;
 
         $this->driver->driverRides->add($this);
         $this->car->carRides->add($this);
@@ -163,7 +164,6 @@ class GH5762DriverRide
  */
 class GH5762Car
 {
-
     /**
      * @Id
      * @Column(type="string", length=25)
@@ -171,20 +171,16 @@ class GH5762Car
      */
     public $brand;
 
-    /**
-     * @Column(type="string", length=255);
-     */
+    /** @Column(type="string", length=255); */
     public $model;
 
-    /**
-     * @OneToMany(targetEntity="GH5762DriverRide", mappedBy="car")
-     */
+    /** @OneToMany(targetEntity="GH5762DriverRide", mappedBy="car") */
     public $carRides;
 
     public function __construct($brand, $model)
     {
         $this->carRides = new ArrayCollection();
-        $this->brand = $brand;
-        $this->model = $model;
+        $this->brand    = $brand;
+        $this->model    = $model;
     }
 }

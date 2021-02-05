@@ -1,40 +1,45 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\Tests\ORM\Functional\Ticket;
 
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\Event\LifecycleEventArgs;
+use Doctrine\Tests\OrmFunctionalTestCase;
+
+use function get_class;
 
 /**
  * @group DDC-3033
  */
-class DDC3033Test extends \Doctrine\Tests\OrmFunctionalTestCase
+class DDC3033Test extends OrmFunctionalTestCase
 {
-    public function testIssue()
+    public function testIssue(): void
     {
         $this->_schemaTool->createSchema(
             [
-            $this->_em->getClassMetadata(DDC3033User::class),
-            $this->_em->getClassMetadata(DDC3033Product::class),
+                $this->_em->getClassMetadata(DDC3033User::class),
+                $this->_em->getClassMetadata(DDC3033Product::class),
             ]
         );
 
-        $user = new DDC3033User();
-        $user->name = "Test User";
+        $user       = new DDC3033User();
+        $user->name = 'Test User';
         $this->_em->persist($user);
 
-        $user2 = new DDC3033User();
-        $user2->name = "Test User 2";
+        $user2       = new DDC3033User();
+        $user2->name = 'Test User 2';
         $this->_em->persist($user2);
 
-        $product = new DDC3033Product();
-        $product->title = "Test product";
+        $product           = new DDC3033Product();
+        $product->title    = 'Test product';
         $product->buyers[] = $user;
 
         $this->_em->persist($product);
         $this->_em->flush();
 
-        $product->title = "Test Change title";
+        $product->title    = 'Test Change title';
         $product->buyers[] = $user2;
 
         $this->_em->persist($product);
@@ -61,7 +66,6 @@ class DDC3033Product
 
     /**
      * @var int $id
-     *
      * @Column(name="id", type="integer")
      * @Id
      * @GeneratedValue(strategy="AUTO")
@@ -70,7 +74,6 @@ class DDC3033Product
 
     /**
      * @var string $title
-     *
      * @Column(name="title", type="string", length=255)
      */
     public $title;
@@ -96,14 +99,14 @@ class DDC3033Product
     /**
      * @PreUpdate
      */
-    public function preUpdate(LifecycleEventArgs $eventArgs)
+    public function preUpdate(LifecycleEventArgs $eventArgs): void
     {
     }
 
     /**
      * @PostUpdate
      */
-    public function postUpdate(LifecycleEventArgs $eventArgs)
+    public function postUpdate(LifecycleEventArgs $eventArgs): void
     {
         $em            = $eventArgs->getEntityManager();
         $uow           = $em->getUnitOfWork();
@@ -123,7 +126,6 @@ class DDC3033User
 {
     /**
      * @var int
-     *
      * @Column(name="id", type="integer")
      * @Id
      * @GeneratedValue(strategy="AUTO")
@@ -132,7 +134,6 @@ class DDC3033User
 
     /**
      * @var string
-     *
      * @Column(name="title", type="string", length=255)
      */
     public $name;

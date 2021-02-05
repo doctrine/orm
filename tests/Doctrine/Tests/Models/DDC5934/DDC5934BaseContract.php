@@ -1,10 +1,12 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\Tests\Models\DDC5934;
 
 use Doctrine\Common\Collections\ArrayCollection;
-use Doctrine\ORM\Mapping\Column;
 use Doctrine\ORM\Mapping\ClassMetadata;
+use Doctrine\ORM\Mapping\Column;
 use Doctrine\ORM\Mapping\Entity;
 use Doctrine\ORM\Mapping\GeneratedValue;
 use Doctrine\ORM\Mapping\Id;
@@ -24,7 +26,6 @@ class DDC5934BaseContract
 
     /**
      * @var ArrayCollection
-     *
      * @ManyToMany(targetEntity="DDC5934Member", fetch="LAZY", inversedBy="contracts")
      */
     public $members;
@@ -34,7 +35,7 @@ class DDC5934BaseContract
         $this->members = new ArrayCollection();
     }
 
-    public static function loadMetadata(ClassMetadata $metadata)
+    public static function loadMetadata(ClassMetadata $metadata): void
     {
         $metadata->mapField([
             'id'         => true,
