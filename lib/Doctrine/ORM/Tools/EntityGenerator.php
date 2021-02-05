@@ -1335,6 +1335,8 @@ public function __construct(<params>)
             if (isset($fieldMapping['options']['default'])) {
                 if ($fieldMapping['type'] === 'boolean' && $fieldMapping['options']['default'] === '1') {
                     $defaultValue = ' = true';
+                } elseif (($fieldMapping['type'] === 'integer' || $fieldMapping['type'] === 'float') && ! empty($fieldMapping['options']['default'])) {
+                    $defaultValue = ' = ' . (string) $fieldMapping['options']['default'];
                 } else {
                     $defaultValue = ' = ' . var_export($fieldMapping['options']['default'], true);
                 }
