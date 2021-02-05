@@ -1,4 +1,5 @@
 <?php
+
 /*
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
  * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
@@ -36,8 +37,6 @@ class BigIntegerIdentityGenerator extends AbstractIdGenerator
     private $sequenceName;
 
     /**
-     * Constructor.
-     *
      * @param string|null $sequenceName The name of the sequence to pass to lastInsertId()
      *                                  to obtain the last generated identifier within the current
      *                                  database session/connection, if any.
@@ -63,4 +62,3 @@ class BigIntegerIdentityGenerator extends AbstractIdGenerator
         return true;
     }
 }
-

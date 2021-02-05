@@ -1,4 +1,5 @@
 <?php
+
 /*
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
  * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
@@ -20,29 +21,19 @@
 namespace Doctrine\ORM\Event;
 
 use Doctrine\Common\EventArgs;
+use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\EntityManagerInterface;
 
 /**
  * Provides event arguments for the preFlush event.
  *
- * @license     http://www.opensource.org/licenses/mit-license.php MIT
  * @link        www.doctrine-project.org
- * @since       2.0
- * @author      Roman Borschel <roman@code-factory.de>
- * @author      Benjamin Eberlei <kontakt@beberlei.de>
  */
 class OnFlushEventArgs extends EventArgs
 {
-    /**
-     * @var EntityManagerInterface
-     */
+    /** @var EntityManagerInterface */
     private $em;
 
-    /**
-     * Constructor.
-     *
-     * @param EntityManagerInterface $em
-     */
     public function __construct(EntityManagerInterface $em)
     {
         $this->em = $em;
@@ -51,11 +42,10 @@ class OnFlushEventArgs extends EventArgs
     /**
      * Retrieve associated EntityManager.
      *
-     * @return \Doctrine\ORM\EntityManager
+     * @return EntityManager
      */
     public function getEntityManager()
     {
         return $this->em;
     }
-
 }

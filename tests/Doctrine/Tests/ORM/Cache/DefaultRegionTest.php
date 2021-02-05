@@ -1,32 +1,38 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\Tests\ORM\Cache;
 
+use BadMethodCallException;
 use Doctrine\Common\Cache\ArrayCache;
 use Doctrine\Common\Cache\Cache;
 use Doctrine\Common\Cache\CacheProvider;
 use Doctrine\ORM\Cache\CollectionCacheEntry;
+use Doctrine\ORM\Cache\Region;
 use Doctrine\ORM\Cache\Region\DefaultRegion;
 use Doctrine\Tests\Mocks\CacheEntryMock;
 use Doctrine\Tests\Mocks\CacheKeyMock;
+
+use function assert;
 
 /**
  * @group DDC-2183
  */
 class DefaultRegionTest extends AbstractRegionTest
 {
-    protected function createRegion()
+    protected function createRegion(): Region
     {
         return new DefaultRegion('default.region.test', $this->cache);
     }
 
-    public function testGetters()
+    public function testGetters(): void
     {
         $this->assertEquals('default.region.test', $this->region->getName());
         $this->assertSame($this->cache, $this->region->getCache());
     }
 
-    public function testSharedRegion()
+    public function testSharedRegion(): void
     {
         $cache   = new SharedArrayCache();
         $key     = new CacheKeyMock('key');
@@ -49,7 +55,7 @@ class DefaultRegionTest extends AbstractRegionTest
         $this->assertTrue($region2->contains($key));
     }
 
-    public function testDoesNotModifyCacheNamespace()
+    public function testDoesNotModifyCacheNamespace(): void
     {
         $cache = new ArrayCache();
 
@@ -61,24 +67,24 @@ class DefaultRegionTest extends AbstractRegionTest
         $this->assertSame('foo', $cache->getNamespace());
     }
 
-    public function testEvictAllWithGenericCacheThrowsUnsupportedException()
+    public function testEvictAllWithGenericCacheThrowsUnsupportedException(): void
     {
-        /* @var $cache \Doctrine\Common\Cache\Cache */
         $cache = $this->createMock(Cache::class);
+        assert($cache instanceof Cache);
 
         $region = new DefaultRegion('foo', $cache);
 
-        $this->expectException(\BadMethodCallException::class);
+        $this->expectException(BadMethodCallException::class);
 
         $region->evictAll();
     }
 
-    public function testGetMulti()
+    public function testGetMulti(): void
     {
-        $key1 = new CacheKeyMock('key.1');
+        $key1   = new CacheKeyMock('key.1');
         $value1 = new CacheEntryMock(['id' => 1, 'name' => 'bar']);
 
-        $key2 = new CacheKeyMock('key.2');
+        $key2   = new CacheKeyMock('key.2');
         $value2 = new CacheEntryMock(['id' => 2, 'name' => 'bar']);
 
         $this->assertFalse($this->region->contains($key1));
@@ -100,7 +106,7 @@ class DefaultRegionTest extends AbstractRegionTest
      * @test
      * @group GH7266
      */
-    public function corruptedDataDoesNotLeakIntoApplicationWhenGettingSingleEntry() : void
+    public function corruptedDataDoesNotLeakIntoApplicationWhenGettingSingleEntry(): void
     {
         $key1 = new CacheKeyMock('key.1');
         $this->cache->save($this->region->getName() . '_' . $key1->hash, 'a-very-invalid-value');
@@ -113,7 +119,7 @@ class DefaultRegionTest extends AbstractRegionTest
      * @test
      * @group GH7266
      */
-    public function corruptedDataDoesNotLeakIntoApplicationWhenGettingMultipleEntries() : void
+    public function corruptedDataDoesNotLeakIntoApplicationWhenGettingMultipleEntries(): void
     {
         $key1 = new CacheKeyMock('key.1');
         $this->cache->save($this->region->getName() . '_' . $key1->hash, 'a-very-invalid-value');
@@ -137,9 +143,7 @@ final class SharedArrayCache extends ArrayCache
     {
         return new class ($this) extends CacheProvider
         {
-            /**
-             * @var ArrayCache
-             */
+            /** @var ArrayCache */
             private $parent;
 
             public function __construct(ArrayCache $parent)

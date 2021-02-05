@@ -1,11 +1,12 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\Tests\Models\CMS;
 
 /**
  * Description of CmsEmployee
  *
- * @author robo
  * @Entity
  * @Table(name="cms_employees")
  */
@@ -18,9 +19,7 @@ class CmsEmployee
      */
     private $id;
 
-    /**
-     * @Column
-     */
+    /** @Column */
     private $name;
 
     /**
@@ -29,16 +28,18 @@ class CmsEmployee
      */
     private $spouse;
 
-    public function getId() {
+    public function getId()
+    {
         return $this->id;
     }
 
-    public function getName() {
+    public function getName()
+    {
         return $this->name;
     }
 
-    public function getSpouse() {
+    public function getSpouse()
+    {
         return $this->spouse;
     }
 }
-

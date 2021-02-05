@@ -1,12 +1,13 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\Tests\Models\ECommerce;
 
 /**
  * ECommerceShipping
  * Represents a shipping method.
  *
- * @author Giorgio Sironi
  * @Entity
  * @Table(name="ecommerce_shippings")
  */
@@ -18,9 +19,7 @@ class ECommerceShipping
      */
     private $id;
 
-    /**
-     * @Column(type="integer")
-     */
+    /** @Column(type="integer") */
     private $days;
 
     public function getId()
@@ -33,7 +32,7 @@ class ECommerceShipping
         return $this->days;
     }
 
-    public function setDays($days)
+    public function setDays($days): void
     {
         $this->days = $days;
     }

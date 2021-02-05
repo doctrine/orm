@@ -1,19 +1,22 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\Tests\ORM\Functional\Ticket;
 
 use Doctrine\DBAL\Schema\SchemaException;
 use Doctrine\ORM\Mapping\Column;
 use Doctrine\ORM\Mapping\Embeddable;
 use Doctrine\ORM\Mapping\Entity;
-use Doctrine\ORM\Mapping\Id;
 use Doctrine\ORM\Mapping\GeneratedValue;
+use Doctrine\ORM\Mapping\Id;
 use Doctrine\ORM\Mapping\ManyToOne;
 use Doctrine\ORM\Proxy\Proxy;
+use Doctrine\Tests\OrmFunctionalTestCase;
 
-class DDC6460Test extends \Doctrine\Tests\OrmFunctionalTestCase
+class DDC6460Test extends OrmFunctionalTestCase
 {
-    protected function setUp() : void
+    protected function setUp(): void
     {
         parent::setUp();
 
@@ -31,7 +34,7 @@ class DDC6460Test extends \Doctrine\Tests\OrmFunctionalTestCase
     /**
      * @group DDC-6460
      */
-    public function testInlineEmbeddable()
+    public function testInlineEmbeddable(): void
     {
         $isFieldMapped = $this->_em
             ->getClassMetadata(DDC6460Entity::class)
@@ -43,16 +46,16 @@ class DDC6460Test extends \Doctrine\Tests\OrmFunctionalTestCase
     /**
      * @group DDC-6460
      */
-    public function testInlineEmbeddableProxyInitialization()
+    public function testInlineEmbeddableProxyInitialization(): void
     {
-        $entity = new DDC6460Entity();
-        $entity->id = 1;
-        $entity->embedded = new DDC6460Embeddable();
+        $entity                  = new DDC6460Entity();
+        $entity->id              = 1;
+        $entity->embedded        = new DDC6460Embeddable();
         $entity->embedded->field = 'test';
         $this->_em->persist($entity);
 
-        $second = new DDC6460ParentEntity();
-        $second->id = 1;
+        $second             = new DDC6460ParentEntity();
+        $second->id         = 1;
         $second->lazyLoaded = $entity;
         $this->_em->persist($second);
         $this->_em->flush();

@@ -1,31 +1,34 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\Tests\ORM\Functional\Ticket;
 
+use Doctrine\Tests\OrmFunctionalTestCase;
 
 /**
  * @group DDC-1515
  */
-class DDC1515Test extends \Doctrine\Tests\OrmFunctionalTestCase
+class DDC1515Test extends OrmFunctionalTestCase
 {
-    protected function setUp() : void
+    protected function setUp(): void
     {
         parent::setUp();
         $this->_schemaTool->createSchema(
             [
-            $this->_em->getClassMetadata(DDC1515Foo::class),
-            $this->_em->getClassMetadata(DDC1515Bar::class),
+                $this->_em->getClassMetadata(DDC1515Foo::class),
+                $this->_em->getClassMetadata(DDC1515Bar::class),
             ]
         );
     }
 
-    public function testIssue()
+    public function testIssue(): void
     {
         $bar = new DDC1515Bar();
         $this->_em->persist($bar);
         $this->_em->flush();
 
-        $foo = new DDC1515Foo();
+        $foo      = new DDC1515Foo();
         $foo->bar = $bar;
         $this->_em->persist($foo);
         $this->_em->flush();
@@ -41,9 +44,7 @@ class DDC1515Test extends \Doctrine\Tests\OrmFunctionalTestCase
  */
 class DDC1515Foo
 {
-    /**
-     * @OneToOne(targetEntity="DDC1515Bar", inversedBy="foo") @Id
-     */
+    /** @OneToOne(targetEntity="DDC1515Bar", inversedBy="foo") @Id */
     public $bar;
 }
 
@@ -52,13 +53,9 @@ class DDC1515Foo
  */
 class DDC1515Bar
 {
-    /**
-     * @Id @Column(type="integer") @GeneratedValue
-     */
+    /** @Id @Column(type="integer") @GeneratedValue */
     public $id;
 
-    /**
-     * @OneToOne(targetEntity="DDC1515Foo", mappedBy="bar")
-     */
+    /** @OneToOne(targetEntity="DDC1515Foo", mappedBy="bar") */
     public $foo;
 }

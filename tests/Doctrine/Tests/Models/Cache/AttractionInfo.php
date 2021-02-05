@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\Tests\Models\Cache;
 
 /**
@@ -33,7 +35,7 @@ abstract class AttractionInfo
         return $this->id;
     }
 
-    public function setId($id)
+    public function setId($id): void
     {
         $this->id = $id;
     }
@@ -43,7 +45,7 @@ abstract class AttractionInfo
         return $this->attraction;
     }
 
-    public function setAttraction(Attraction $attraction)
+    public function setAttraction(Attraction $attraction): void
     {
         $this->attraction = $attraction;
 

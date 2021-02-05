@@ -1,27 +1,32 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\Tests\ORM\Functional\Ticket;
+
+use Doctrine\Tests\OrmFunctionalTestCase;
+use Exception;
 
 /**
  * @group DDC-1436
  */
-class DDC1436Test extends \Doctrine\Tests\OrmFunctionalTestCase
+class DDC1436Test extends OrmFunctionalTestCase
 {
-    protected function setUp() : void
+    protected function setUp(): void
     {
         parent::setUp();
 
         try {
             $this->_schemaTool->createSchema(
                 [
-                $this->_em->getClassMetadata(DDC1436Page::class),
+                    $this->_em->getClassMetadata(DDC1436Page::class),
                 ]
             );
-        } catch (\Exception $ignored) {
+        } catch (Exception $ignored) {
         }
     }
 
-    public function testIdentityMap()
+    public function testIdentityMap(): void
     {
         // fixtures
         $parent = null;
@@ -31,6 +36,7 @@ class DDC1436Test extends \Doctrine\Tests\OrmFunctionalTestCase
             $this->_em->persist($page);
             $parent = $page;
         }
+
         $this->_em->flush();
         $this->_em->clear();
 
@@ -74,17 +80,13 @@ class DDC1436Page
         return $this->id;
     }
 
-    /**
-     * @return DDC1436Page
-     */
-    public function getParent()
+    public function getParent(): DDC1436Page
     {
         return $this->parent;
     }
 
-    public function setParent($parent)
+    public function setParent($parent): void
     {
         $this->parent = $parent;
     }
 }
-

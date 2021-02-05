@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\Tests\Models\ValueConversionType;
 
 use Doctrine\Common\Collections\ArrayCollection;
@@ -16,9 +18,7 @@ class InversedManyToManyEntity
      */
     public $id1;
 
-    /**
-     * @ManyToMany(targetEntity="OwningManyToManyEntity", mappedBy="associatedEntities")
-     */
+    /** @ManyToMany(targetEntity="OwningManyToManyEntity", mappedBy="associatedEntities") */
     public $associatedEntities;
 
     public function __construct()

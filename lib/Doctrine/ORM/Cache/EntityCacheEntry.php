@@ -22,11 +22,10 @@ namespace Doctrine\ORM\Cache;
 
 use Doctrine\ORM\EntityManagerInterface;
 
+use function array_map;
+
 /**
  * Entity cache entry
- *
- * @since   2.5
- * @author  Fabio B. Silva <fabio.bat.silva@gmail.com>
  */
 class EntityCacheEntry implements CacheEntry
 {
@@ -71,14 +70,12 @@ class EntityCacheEntry implements CacheEntry
     /**
      * Retrieves the entity data resolving cache entries
      *
-     * @param \Doctrine\ORM\EntityManagerInterface $em
-     *
      * @return array
      */
     public function resolveAssociationEntries(EntityManagerInterface $em)
     {
-        return array_map(function($value) use ($em) {
-            if ( ! ($value instanceof AssociationCacheEntry)) {
+        return array_map(static function ($value) use ($em) {
+            if (! ($value instanceof AssociationCacheEntry)) {
                 return $value;
             }
 

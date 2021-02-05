@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\Tests\Models\CMS;
 
 class CmsUserDTO
@@ -11,9 +13,9 @@ class CmsUserDTO
 
     public function __construct($name = null, $email = null, $address = null, $phonenumbers = null)
     {
-        $this->name          = $name;
-        $this->email         = $email;
-        $this->address       = $address;
-        $this->phonenumbers  = $phonenumbers;
+        $this->name         = $name;
+        $this->email        = $email;
+        $this->address      = $address;
+        $this->phonenumbers = $phonenumbers;
     }
 }

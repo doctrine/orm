@@ -1,4 +1,5 @@
 <?php
+
 /*
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
  * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
@@ -22,26 +23,17 @@ namespace Doctrine\ORM\Query\AST;
 /**
  * JoinVariableDeclaration ::= Join [IndexBy]
  *
- * @license http://www.opensource.org/licenses/mit-license.php MIT
  * @link    www.doctrine-project.org
- * @since   2.5
- * @author  Guilherme Blanco <guilhermeblanco@hotmail.com>
  */
 class JoinVariableDeclaration extends Node
 {
-    /**
-     * @var Join 
-     */
+    /** @var Join */
     public $join;
-    
-    /**
-     * @var IndexBy|null 
-     */
+
+    /** @var IndexBy|null */
     public $indexBy;
-    
+
     /**
-     * Constructor.
-     * 
      * @param Join         $join
      * @param IndexBy|null $indexBy
      */

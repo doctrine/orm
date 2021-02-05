@@ -9,6 +9,7 @@ use Doctrine\ORM\Mapping\NamingStrategy;
 use Doctrine\ORM\Mapping\UnderscoreNamingStrategy;
 use Doctrine\Tests\ORM\Mapping\NamingStrategy\JoinColumnClassNamingStrategy;
 use Doctrine\Tests\OrmTestCase;
+
 use const CASE_LOWER;
 use const CASE_UPPER;
 
@@ -17,27 +18,27 @@ use const CASE_UPPER;
  */
 class NamingStrategyTest extends OrmTestCase
 {
-    private static function defaultNaming() : DefaultNamingStrategy
+    private static function defaultNaming(): DefaultNamingStrategy
     {
         return new DefaultNamingStrategy();
     }
 
-    private static function underscoreNamingLower() : UnderscoreNamingStrategy
+    private static function underscoreNamingLower(): UnderscoreNamingStrategy
     {
         return new UnderscoreNamingStrategy(CASE_LOWER);
     }
 
-    private static function underscoreNamingUpper() : UnderscoreNamingStrategy
+    private static function underscoreNamingUpper(): UnderscoreNamingStrategy
     {
         return new UnderscoreNamingStrategy(CASE_UPPER);
     }
 
-    private static function numberAwareUnderscoreNamingLower() : UnderscoreNamingStrategy
+    private static function numberAwareUnderscoreNamingLower(): UnderscoreNamingStrategy
     {
         return new UnderscoreNamingStrategy(CASE_LOWER, true);
     }
 
-    private static function numberAwareUnderscoreNamingUpper() : UnderscoreNamingStrategy
+    private static function numberAwareUnderscoreNamingUpper(): UnderscoreNamingStrategy
     {
         return new UnderscoreNamingStrategy(CASE_UPPER, true);
     }
@@ -47,7 +48,7 @@ class NamingStrategyTest extends OrmTestCase
      *
      * @return array<NamingStrategy|string>
      */
-    public static function dataClassToTableName() : array
+    public static function dataClassToTableName(): array
     {
         return [
             // DefaultNamingStrategy
@@ -79,7 +80,7 @@ class NamingStrategyTest extends OrmTestCase
     /**
      * @dataProvider dataClassToTableName
      */
-    public function testClassToTableName(NamingStrategy $strategy, string $expected, string $className) : void
+    public function testClassToTableName(NamingStrategy $strategy, string $expected, string $className): void
     {
         self::assertSame($expected, $strategy->classToTableName($className));
     }
@@ -89,7 +90,7 @@ class NamingStrategyTest extends OrmTestCase
      *
      * @return array<NamingStrategy|string>
      */
-    public static function dataPropertyToColumnName() : array
+    public static function dataPropertyToColumnName(): array
     {
         return [
             // DefaultNamingStrategy
@@ -124,7 +125,7 @@ class NamingStrategyTest extends OrmTestCase
     /**
      * @dataProvider dataPropertyToColumnName
      */
-    public function testPropertyToColumnName(NamingStrategy $strategy, string $expected, string $propertyName) : void
+    public function testPropertyToColumnName(NamingStrategy $strategy, string $expected, string $propertyName): void
     {
         self::assertSame($expected, $strategy->propertyToColumnName($propertyName));
     }
@@ -134,7 +135,7 @@ class NamingStrategyTest extends OrmTestCase
      *
      * @return array<NamingStrategy|string>
      */
-    public static function dataReferenceColumnName() : array
+    public static function dataReferenceColumnName(): array
     {
         return [
             // DefaultNamingStrategy
@@ -153,7 +154,7 @@ class NamingStrategyTest extends OrmTestCase
     /**
      * @dataProvider dataReferenceColumnName
      */
-    public function testReferenceColumnName(NamingStrategy $strategy, string $expected) : void
+    public function testReferenceColumnName(NamingStrategy $strategy, string $expected): void
     {
         self::assertSame($expected, $strategy->referenceColumnName());
     }
@@ -163,7 +164,7 @@ class NamingStrategyTest extends OrmTestCase
      *
      * @return array<NamingStrategy|string|null>
      */
-    public static function dataJoinColumnName() : array
+    public static function dataJoinColumnName(): array
     {
         return [
             // DefaultNamingStrategy
@@ -200,7 +201,7 @@ class NamingStrategyTest extends OrmTestCase
         string $expected,
         string $propertyName,
         ?string $className = null
-    ) : void {
+    ): void {
         self::assertSame($expected, $strategy->joinColumnName($propertyName, $className));
     }
 
@@ -209,7 +210,7 @@ class NamingStrategyTest extends OrmTestCase
      *
      * @return array<NamingStrategy|string|null>
      */
-    public static function dataJoinTableName() : array
+    public static function dataJoinTableName(): array
     {
         return [
             // DefaultNamingStrategy
@@ -248,7 +249,7 @@ class NamingStrategyTest extends OrmTestCase
         string $ownerEntity,
         string $associatedEntity,
         ?string $propertyName = null
-    ) : void {
+    ): void {
         self::assertSame($expected, $strategy->joinTableName($ownerEntity, $associatedEntity, $propertyName));
     }
 
@@ -257,7 +258,7 @@ class NamingStrategyTest extends OrmTestCase
      *
      * @return array<NamingStrategy|string|null>
      */
-    public static function dataJoinKeyColumnName() : array
+    public static function dataJoinKeyColumnName(): array
     {
         return [
             // DefaultNamingStrategy
@@ -295,7 +296,7 @@ class NamingStrategyTest extends OrmTestCase
         string $propertyEntityName,
         ?string $referencedColumnName = null,
         ?string $propertyName = null
-    ) : void {
+    ): void {
         self::assertSame($expected, $strategy->joinKeyColumnName($propertyEntityName, $referencedColumnName, $propertyName));
     }
 }

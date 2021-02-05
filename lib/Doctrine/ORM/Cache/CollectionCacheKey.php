@@ -20,11 +20,13 @@
 
 namespace Doctrine\ORM\Cache;
 
+use function implode;
+use function ksort;
+use function str_replace;
+use function strtolower;
+
 /**
  * Defines entity collection roles to be stored in the cache region.
- *
- * @since   2.5
- * @author  Fabio B. Silva <fabio.bat.silva@gmail.com>
  */
 class CollectionCacheKey extends CacheKey
 {
@@ -58,9 +60,9 @@ class CollectionCacheKey extends CacheKey
     {
         ksort($ownerIdentifier);
 
-        $this->ownerIdentifier  = $ownerIdentifier;
-        $this->entityClass      = (string) $entityClass;
-        $this->association      = (string) $association;
-        $this->hash             = str_replace('\\', '.', strtolower($entityClass)) . '_' . implode(' ', $ownerIdentifier) . '__' .  $association;
+        $this->ownerIdentifier = $ownerIdentifier;
+        $this->entityClass     = (string) $entityClass;
+        $this->association     = (string) $association;
+        $this->hash            = str_replace('\\', '.', strtolower($entityClass)) . '_' . implode(' ', $ownerIdentifier) . '__' . $association;
     }
 }

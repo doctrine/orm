@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\Tests\Models\GeoNames;
 
 /**
@@ -26,11 +28,8 @@ class Admin1AlternateName
      */
     public $admin1;
 
-    /**
-     * @Column(type="string", length=255);
-     */
+    /** @Column(type="string", length=255); */
     public $name;
-
 
     public function __construct($id, $name, Admin1 $admin1)
     {

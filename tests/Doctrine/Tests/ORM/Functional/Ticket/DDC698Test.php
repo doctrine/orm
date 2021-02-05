@@ -1,30 +1,36 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\Tests\ORM\Functional\Ticket;
 
-class DDC698Test extends \Doctrine\Tests\OrmFunctionalTestCase
+use Doctrine\Tests\OrmFunctionalTestCase;
+use Exception;
+
+use function strtolower;
+
+class DDC698Test extends OrmFunctionalTestCase
 {
-    protected function setUp() : void
+    protected function setUp(): void
     {
         parent::setUp();
         try {
             $this->_schemaTool->createSchema(
                 [
-                $this->_em->getClassMetadata(DDC698Role::class),
-                $this->_em->getClassMetadata(DDC698Privilege::class)
+                    $this->_em->getClassMetadata(DDC698Role::class),
+                    $this->_em->getClassMetadata(DDC698Privilege::class),
                 ]
             );
-        } catch(\Exception $e) {
-
+        } catch (Exception $e) {
         }
     }
 
-    public function testTicket()
+    public function testTicket(): void
     {
         $qb = $this->_em->createQueryBuilder();
         $qb->select('p', 'r')
-		   ->from(__NAMESPACE__ .  '\DDC698Privilege', 'p')
-		   ->leftJoin('p.roles', 'r');
+           ->from(__NAMESPACE__ . '\DDC698Privilege', 'p')
+           ->leftJoin('p.roles', 'r');
 
         $sql = $qb->getQuery()->getSQL();
 
@@ -36,70 +42,51 @@ class DDC698Test extends \Doctrine\Tests\OrmFunctionalTestCase
 }
 
 /**
- *
  * @Table(name="Roles")
  * @Entity
  */
 class DDC698Role
 {
-	/**
-	 *  @Id @Column(name="roleID", type="integer")
-	 *  @GeneratedValue(strategy="AUTO")
-	 *
-	 */
-	protected $roleID;
+    /**
+     *  @Id @Column(name="roleID", type="integer")
+     *  @GeneratedValue(strategy="AUTO")
+     */
+    protected $roleID;
 
-	/**
-	 * @Column(name="name", type="string", length=45)
-	 *
-	 *
-	 */
-	protected $name;
+    /** @Column(name="name", type="string", length=45) */
+    protected $name;
 
-	/**
-	 * @Column(name="shortName", type="string", length=45)
-	 *
-	 *
-	 */
-	protected $shortName;
+    /** @Column(name="shortName", type="string", length=45) */
+    protected $shortName;
 
 
 
-	/**
-	 * @ManyToMany(targetEntity="DDC698Privilege", inversedBy="roles")
-	 * @JoinTable(name="RolePrivileges",
-	 *     joinColumns={@JoinColumn(name="roleID", referencedColumnName="roleID")},
-	 *     inverseJoinColumns={@JoinColumn(name="privilegeID", referencedColumnName="privilegeID")}
-	 * )
-	 */
-	protected $privilege;
-
+    /**
+     * @ManyToMany(targetEntity="DDC698Privilege", inversedBy="roles")
+     * @JoinTable(name="RolePrivileges",
+     *     joinColumns={@JoinColumn(name="roleID", referencedColumnName="roleID")},
+     *     inverseJoinColumns={@JoinColumn(name="privilegeID", referencedColumnName="privilegeID")}
+     * )
+     */
+    protected $privilege;
 }
 
 
 /**
- *
  * @Table(name="Privileges")
  * @Entity()
  */
 class DDC698Privilege
 {
-	/**
-	 *  @Id  @Column(name="privilegeID", type="integer")
-	 *  @GeneratedValue(strategy="AUTO")
-	 *
-	 */
-	protected $privilegeID;
-
-	/**
-	 * @Column(name="name", type="string", length=45)
-	 *
-	 *
-	 */
-	protected $name;
-
-	/**
-     * @ManyToMany(targetEntity="DDC698Role", mappedBy="privilege")
+    /**
+     *  @Id  @Column(name="privilegeID", type="integer")
+     *  @GeneratedValue(strategy="AUTO")
      */
-	protected $roles;
+    protected $privilegeID;
+
+    /** @Column(name="name", type="string", length=45) */
+    protected $name;
+
+    /** @ManyToMany(targetEntity="DDC698Role", mappedBy="privilege") */
+    protected $roles;
 }

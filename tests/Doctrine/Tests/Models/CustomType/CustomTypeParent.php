@@ -1,6 +1,10 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\Tests\Models\CustomType;
+
+use Doctrine\Common\Collections\ArrayCollection;
 
 /**
  * @Entity
@@ -14,19 +18,13 @@ class CustomTypeParent
      */
     public $id;
 
-    /**
-     * @Column(type="negative_to_positive", nullable=true)
-     */
+    /** @Column(type="negative_to_positive", nullable=true) */
     public $customInteger;
 
-    /**
-     * @OneToOne(targetEntity="Doctrine\Tests\Models\CustomType\CustomTypeChild", cascade={"persist", "remove"})
-     */
+    /** @OneToOne(targetEntity="Doctrine\Tests\Models\CustomType\CustomTypeChild", cascade={"persist", "remove"}) */
     public $child;
 
-    /**
-     * @ManyToMany(targetEntity="Doctrine\Tests\Models\CustomType\CustomTypeParent", mappedBy="myFriends")
-     */
+    /** @ManyToMany(targetEntity="Doctrine\Tests\Models\CustomType\CustomTypeParent", mappedBy="myFriends") */
     private $friendsWithMe;
 
     /**
@@ -41,11 +39,11 @@ class CustomTypeParent
 
     public function __construct()
     {
-        $this->friendsWithMe = new \Doctrine\Common\Collections\ArrayCollection();
-        $this->myFriends = new \Doctrine\Common\Collections\ArrayCollection();
+        $this->friendsWithMe = new ArrayCollection();
+        $this->myFriends     = new ArrayCollection();
     }
 
-    public function addMyFriend(CustomTypeParent $friend)
+    public function addMyFriend(CustomTypeParent $friend): void
     {
         $this->getMyFriends()->add($friend);
         $friend->addFriendWithMe($this);
@@ -56,7 +54,7 @@ class CustomTypeParent
         return $this->myFriends;
     }
 
-    public function addFriendWithMe(CustomTypeParent $friend)
+    public function addFriendWithMe(CustomTypeParent $friend): void
     {
         $this->getFriendsWithMe()->add($friend);
     }

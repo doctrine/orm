@@ -1,4 +1,5 @@
 <?php
+
 /*
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
  * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
@@ -19,6 +20,9 @@
 
 namespace Doctrine\ORM\Query;
 
+use function array_merge;
+use function count;
+
 /**
  * A ResultSetMapping describes how a result set of an SQL query maps to a Doctrine result.
  *
@@ -29,8 +33,6 @@ namespace Doctrine\ORM\Query;
  *
  * <b>Users should use the public methods.</b>
  *
- * @author Roman Borschel <roman@code-factory.org>
- * @since 2.0
  * @todo Think about whether the number of lookup maps can be reduced.
  */
 class ResultSetMapping
@@ -39,7 +41,7 @@ class ResultSetMapping
      * Whether the result is mixed (contains scalar values together with field values).
      *
      * @ignore
-     * @var boolean
+     * @var bool
      */
     public $isMixed = false;
 
@@ -47,7 +49,7 @@ class ResultSetMapping
      * Whether the result is a select statement.
      *
      * @ignore
-     * @var boolean
+     * @var bool
      */
     public $isSelect = true;
 
@@ -190,7 +192,7 @@ class ResultSetMapping
      */
     public function addEntityResult($class, $alias, $resultAlias = null)
     {
-        $this->aliasMap[$alias] = $class;
+        $this->aliasMap[$alias]       = $class;
         $this->entityMappings[$alias] = $resultAlias;
 
         if ($resultAlias !== null) {
@@ -234,7 +236,9 @@ class ResultSetMapping
         $found = false;
 
         foreach (array_merge($this->metaMappings, $this->fieldMappings) as $columnName => $columnFieldName) {
-            if ( ! ($columnFieldName === $fieldName && $this->columnOwnerMap[$columnName] === $alias)) continue;
+            if (! ($columnFieldName === $fieldName && $this->columnOwnerMap[$columnName] === $alias)) {
+                continue;
+            }
 
             $this->addIndexByColumn($alias, $columnName);
             $found = true;
@@ -292,7 +296,7 @@ class ResultSetMapping
      *
      * @param string $alias
      *
-     * @return boolean
+     * @return bool
      *
      * @todo Rename: isIndexed($alias)
      */
@@ -307,7 +311,7 @@ class ResultSetMapping
      *
      * @param string $columnName The name of the column in the SQL result set.
      *
-     * @return boolean
+     * @return bool
      *
      * @todo Rename: isField
      */
@@ -341,7 +345,7 @@ class ResultSetMapping
         // field name => class name of declaring class
         $this->declaringClasses[$columnName] = $declaringClass ?: $this->aliasMap[$alias];
 
-        if ( ! $this->isMixed && $this->scalarMappings) {
+        if (! $this->isMixed && $this->scalarMappings) {
             $this->isMixed = true;
         }
 
@@ -386,7 +390,7 @@ class ResultSetMapping
         $this->scalarMappings[$columnName] = $alias;
         $this->typeMappings[$columnName]   = $type;
 
-        if ( ! $this->isMixed && $this->fieldMappings) {
+        if (! $this->isMixed && $this->fieldMappings) {
             $this->isMixed = true;
         }
 
@@ -409,7 +413,7 @@ class ResultSetMapping
      *
      * @param string $columnName The name of the column in the SQL result set.
      *
-     * @return boolean
+     * @return bool
      *
      * @todo Rename: isScalar
      */
@@ -468,7 +472,7 @@ class ResultSetMapping
     /**
      * @param string $alias
      *
-     * @return boolean
+     * @return bool
      */
     public function isRelation($alias)
     {
@@ -504,7 +508,7 @@ class ResultSetMapping
      *
      * @param string $alias
      *
-     * @return boolean
+     * @return bool
      */
     public function hasParentAlias($alias)
     {
@@ -534,7 +538,7 @@ class ResultSetMapping
     /**
      * Gets the number of different entities that appear in the mapped result.
      *
-     * @return integer
+     * @return int
      */
     public function getEntityResultCount()
     {
@@ -548,7 +552,7 @@ class ResultSetMapping
      * case a mixed result means that scalar values are mixed with objects/array in
      * the result.
      *
-     * @return boolean
+     * @return bool
      */
     public function isMixedResult()
     {
@@ -570,7 +574,7 @@ class ResultSetMapping
      */
     public function addMetaResult($alias, $columnName, $fieldName, $isIdentifierColumn = false, $type = null)
     {
-        $this->metaMappings[$columnName] = $fieldName;
+        $this->metaMappings[$columnName]   = $fieldName;
         $this->columnOwnerMap[$columnName] = $alias;
 
         if ($isIdentifierColumn) {

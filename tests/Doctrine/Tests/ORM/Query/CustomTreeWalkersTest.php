@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\Tests\ORM\Functional;
 
 use Doctrine\ORM\Query;
@@ -7,20 +9,21 @@ use Doctrine\ORM\Query\QueryException;
 use Doctrine\Tests\Models\CMS\CmsAddress;
 use Doctrine\Tests\Models\CMS\CmsUser;
 use Doctrine\Tests\OrmTestCase;
+use Exception;
+
+use function array_merge;
+use function count;
 
 /**
  * Test case for custom AST walking and modification.
  *
- * @author      Roman Borschel <roman@code-factory.org>
- * @license     http://www.opensource.org/licenses/lgpl-license.php LGPL
  * @link        http://www.doctrine-project.org
- * @since       2.0
  */
 class CustomTreeWalkersTest extends OrmTestCase
 {
     private $_em;
 
-    protected function setUp() : void
+    protected function setUp(): void
     {
         $this->_em = $this->_getTestEntityManager();
     }
@@ -38,43 +41,43 @@ class CustomTreeWalkersTest extends OrmTestCase
         return $query->getSql();
     }
 
-    public function assertSqlGeneration($dqlToBeTested, $sqlToBeConfirmed, $treeWalkers = [], $outputWalker = null)
+    public function assertSqlGeneration($dqlToBeTested, $sqlToBeConfirmed, $treeWalkers = [], $outputWalker = null): void
     {
         try {
             $this->assertEquals($sqlToBeConfirmed, $this->generateSql($dqlToBeTested, $treeWalkers, $outputWalker));
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             $this->fail($e->getMessage() . ' at "' . $e->getFile() . '" on line ' . $e->getLine());
         }
     }
 
-    public function testSupportsQueriesWithoutWhere()
+    public function testSupportsQueriesWithoutWhere(): void
     {
         $this->assertSqlGeneration(
             'select u from Doctrine\Tests\Models\CMS\CmsUser u',
-            "SELECT c0_.id AS id_0, c0_.status AS status_1, c0_.username AS username_2, c0_.name AS name_3, c0_.email_id AS email_id_4 FROM cms_users c0_ WHERE c0_.id = 1",
+            'SELECT c0_.id AS id_0, c0_.status AS status_1, c0_.username AS username_2, c0_.name AS name_3, c0_.email_id AS email_id_4 FROM cms_users c0_ WHERE c0_.id = 1',
             [CustomTreeWalker::class]
         );
     }
 
-    public function testSupportsQueriesWithMultipleConditionalExpressions()
+    public function testSupportsQueriesWithMultipleConditionalExpressions(): void
     {
         $this->assertSqlGeneration(
             'select u from Doctrine\Tests\Models\CMS\CmsUser u where u.name = :name or u.name = :otherName',
-            "SELECT c0_.id AS id_0, c0_.status AS status_1, c0_.username AS username_2, c0_.name AS name_3, c0_.email_id AS email_id_4 FROM cms_users c0_ WHERE (c0_.name = ? OR c0_.name = ?) AND c0_.id = 1",
+            'SELECT c0_.id AS id_0, c0_.status AS status_1, c0_.username AS username_2, c0_.name AS name_3, c0_.email_id AS email_id_4 FROM cms_users c0_ WHERE (c0_.name = ? OR c0_.name = ?) AND c0_.id = 1',
             [CustomTreeWalker::class]
         );
     }
 
-    public function testSupportsQueriesWithSimpleConditionalExpression()
+    public function testSupportsQueriesWithSimpleConditionalExpression(): void
     {
         $this->assertSqlGeneration(
             'select u from Doctrine\Tests\Models\CMS\CmsUser u where u.name = :name',
-            "SELECT c0_.id AS id_0, c0_.status AS status_1, c0_.username AS username_2, c0_.name AS name_3, c0_.email_id AS email_id_4 FROM cms_users c0_ WHERE c0_.name = ? AND c0_.id = 1",
+            'SELECT c0_.id AS id_0, c0_.status AS status_1, c0_.username AS username_2, c0_.name AS name_3, c0_.email_id AS email_id_4 FROM cms_users c0_ WHERE c0_.name = ? AND c0_.id = 1',
             [CustomTreeWalker::class]
         );
     }
 
-    public function testSetUnknownQueryComponentThrowsException()
+    public function testSetUnknownQueryComponentThrowsException(): void
     {
         $this->expectException(QueryException::class);
         $this->expectExceptionMessage("Invalid query component given for DQL alias 'x', requires 'metadata', 'parent', 'relation', 'map', 'nestingLevel' and 'token' keys.");
@@ -86,11 +89,11 @@ class CustomTreeWalkersTest extends OrmTestCase
         );
     }
 
-    public function testSupportsSeveralHintsQueries()
+    public function testSupportsSeveralHintsQueries(): void
     {
         $this->assertSqlGeneration(
             'select u from Doctrine\Tests\Models\CMS\CmsUser u',
-            "SELECT c0_.id AS id_0, c0_.status AS status_1, c0_.username AS username_2, c0_.name AS name_3, c1_.id AS id_4, c1_.country AS country_5, c1_.zip AS zip_6, c1_.city AS city_7, c0_.email_id AS email_id_8, c1_.user_id AS user_id_9 FROM cms_users c0_ LEFT JOIN cms_addresses c1_ ON c0_.id = c1_.user_id WHERE c0_.id = 1",
+            'SELECT c0_.id AS id_0, c0_.status AS status_1, c0_.username AS username_2, c0_.name AS name_3, c1_.id AS id_4, c1_.country AS country_5, c1_.zip AS zip_6, c1_.city AS city_7, c0_.email_id AS email_id_8, c1_.user_id AS user_id_9 FROM cms_users c0_ LEFT JOIN cms_addresses c1_ ON c0_.id = c1_.user_id WHERE c0_.id = 1',
             [CustomTreeWalkerJoin::class, CustomTreeWalker::class]
         );
     }
@@ -98,7 +101,7 @@ class CustomTreeWalkersTest extends OrmTestCase
 
 class AddUnknownQueryComponentWalker extends Query\SqlWalker
 {
-    public function walkSelectStatement(Query\AST\SelectStatement $selectStatement)
+    public function walkSelectStatement(Query\AST\SelectStatement $selectStatement): void
     {
         parent::walkSelectStatement($selectStatement);
 
@@ -108,7 +111,7 @@ class AddUnknownQueryComponentWalker extends Query\SqlWalker
 
 class CustomTreeWalker extends Query\TreeWalkerAdapter
 {
-    public function walkSelectStatement(Query\AST\SelectStatement $selectStatement)
+    public function walkSelectStatement(Query\AST\SelectStatement $selectStatement): void
     {
         // Get the DQL aliases of all the classes we want to modify
         $dqlAliases = [];
@@ -116,7 +119,7 @@ class CustomTreeWalker extends Query\TreeWalkerAdapter
         foreach ($this->_getQueryComponents() as $dqlAlias => $comp) {
             // Hard-coded check just for demonstration: We want to modify the query if
             // it involves the CmsUser class.
-            if ($comp['metadata']->name == CmsUser::class) {
+            if ($comp['metadata']->name === CmsUser::class) {
                 $dqlAliases[] = $dqlAlias;
             }
         }
@@ -124,14 +127,14 @@ class CustomTreeWalker extends Query\TreeWalkerAdapter
         // Create our conditions for all involved classes
         $factors = [];
         foreach ($dqlAliases as $alias) {
-            $pathExpr = new Query\AST\PathExpression(Query\AST\PathExpression::TYPE_STATE_FIELD, $alias, 'id');
+            $pathExpr       = new Query\AST\PathExpression(Query\AST\PathExpression::TYPE_STATE_FIELD, $alias, 'id');
             $pathExpr->type = Query\AST\PathExpression::TYPE_STATE_FIELD;
             $comparisonExpr = new Query\AST\ComparisonExpression($pathExpr, '=', 1);
 
-            $condPrimary = new Query\AST\ConditionalPrimary;
+            $condPrimary                              = new Query\AST\ConditionalPrimary();
             $condPrimary->simpleConditionalExpression = $comparisonExpr;
 
-            $factor = new Query\AST\ConditionalFactor($condPrimary);
+            $factor    = new Query\AST\ConditionalFactor($condPrimary);
             $factors[] = $factor;
         }
 
@@ -140,7 +143,7 @@ class CustomTreeWalker extends Query\TreeWalkerAdapter
             $condExpr = $whereClause->conditionalExpression;
 
             // Since Phase 1 AST optimizations were included, we need to re-add the ConditionalExpression
-            if ( ! ($condExpr instanceof Query\AST\ConditionalExpression)) {
+            if (! ($condExpr instanceof Query\AST\ConditionalExpression)) {
                 $condExpr = new Query\AST\ConditionalExpression([$condExpr]);
 
                 $whereClause->conditionalExpression = $condExpr;
@@ -152,10 +155,10 @@ class CustomTreeWalker extends Query\TreeWalkerAdapter
                 // More than one term, so we need to wrap all these terms in a single root term
                 // i.e: "WHERE u.name = :foo or u.other = :bar" => "WHERE (u.name = :foo or u.other = :bar) AND <our condition>"
 
-                $primary = new Query\AST\ConditionalPrimary;
+                $primary                        = new Query\AST\ConditionalPrimary();
                 $primary->conditionalExpression = new Query\AST\ConditionalExpression($existingTerms);
-                $existingFactor = new Query\AST\ConditionalFactor($primary);
-                $term = new Query\AST\ConditionalTerm(array_merge([$existingFactor], $factors));
+                $existingFactor                 = new Query\AST\ConditionalFactor($primary);
+                $term                           = new Query\AST\ConditionalTerm(array_merge([$existingFactor], $factors));
 
                 $selectStatement->whereClause->conditionalExpression->conditionalTerms = [$term];
             } else {
@@ -163,20 +166,20 @@ class CustomTreeWalker extends Query\TreeWalkerAdapter
                 $singleTerm = $selectStatement->whereClause->conditionalExpression->conditionalTerms[0];
 
                 // Since Phase 1 AST optimizations were included, we need to re-add the ConditionalExpression
-                if ( ! ($singleTerm instanceof Query\AST\ConditionalTerm)) {
+                if (! ($singleTerm instanceof Query\AST\ConditionalTerm)) {
                     $singleTerm = new Query\AST\ConditionalTerm([$singleTerm]);
 
                     $selectStatement->whereClause->conditionalExpression->conditionalTerms[0] = $singleTerm;
                 }
 
-                $singleTerm->conditionalFactors = array_merge($singleTerm->conditionalFactors, $factors);
+                $singleTerm->conditionalFactors                                        = array_merge($singleTerm->conditionalFactors, $factors);
                 $selectStatement->whereClause->conditionalExpression->conditionalTerms = [$singleTerm];
             }
         } else {
             // Create a new WHERE clause with our factors
-            $term = new Query\AST\ConditionalTerm($factors);
-            $condExpr = new Query\AST\ConditionalExpression([$term]);
-            $whereClause = new Query\AST\WhereClause($condExpr);
+            $term                         = new Query\AST\ConditionalTerm($factors);
+            $condExpr                     = new Query\AST\ConditionalExpression([$term]);
+            $whereClause                  = new Query\AST\WhereClause($condExpr);
             $selectStatement->whereClause = $whereClause;
         }
     }
@@ -184,7 +187,7 @@ class CustomTreeWalker extends Query\TreeWalkerAdapter
 
 class CustomTreeWalkerJoin extends Query\TreeWalkerAdapter
 {
-    public function walkSelectStatement(Query\AST\SelectStatement $selectStatement)
+    public function walkSelectStatement(Query\AST\SelectStatement $selectStatement): void
     {
         foreach ($selectStatement->fromClause->identificationVariableDeclarations as $identificationVariableDeclaration) {
             $rangeVariableDecl = $identificationVariableDeclaration->rangeVariableDeclaration;
@@ -197,7 +200,7 @@ class CustomTreeWalkerJoin extends Query\TreeWalkerAdapter
         }
     }
 
-    private function modifySelectStatement(Query\AST\SelectStatement $selectStatement, $identificationVariableDecl)
+    private function modifySelectStatement(Query\AST\SelectStatement $selectStatement, $identificationVariableDecl): void
     {
         $rangeVariableDecl       = $identificationVariableDecl->rangeVariableDeclaration;
         $joinAssocPathExpression = new Query\AST\JoinAssociationPathExpression($rangeVariableDecl->aliasIdentificationVariable, 'address');
@@ -212,7 +215,8 @@ class CustomTreeWalkerJoin extends Query\TreeWalkerAdapter
         $userMetadata    = $entityManager->getClassMetadata(CmsUser::class);
         $addressMetadata = $entityManager->getClassMetadata(CmsAddress::class);
 
-        $this->setQueryComponent($rangeVariableDecl->aliasIdentificationVariable . 'a',
+        $this->setQueryComponent(
+            $rangeVariableDecl->aliasIdentificationVariable . 'a',
             [
                 'metadata'     => $addressMetadata,
                 'parent'       => $rangeVariableDecl->aliasIdentificationVariable,

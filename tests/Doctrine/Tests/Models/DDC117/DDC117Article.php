@@ -1,6 +1,10 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\Tests\Models\DDC117;
+
+use Doctrine\Common\Collections\ArrayCollection;
 
 /**
  * @Entity
@@ -13,34 +17,26 @@ class DDC117Article
     /** @Column */
     private $title;
 
-    /**
-     * @OneToMany(targetEntity="DDC117Reference", mappedBy="source", cascade={"remove"})
-     */
+    /** @OneToMany(targetEntity="DDC117Reference", mappedBy="source", cascade={"remove"}) */
     private $references;
 
-    /**
-     * @OneToOne(targetEntity="DDC117ArticleDetails", mappedBy="article", cascade={"persist", "remove"})
-     */
+    /** @OneToOne(targetEntity="DDC117ArticleDetails", mappedBy="article", cascade={"persist", "remove"}) */
     private $details;
 
-    /**
-     * @OneToMany(targetEntity="DDC117Translation", mappedBy="article", cascade={"persist", "remove"})
-     */
+    /** @OneToMany(targetEntity="DDC117Translation", mappedBy="article", cascade={"persist", "remove"}) */
     private $translations;
 
-    /**
-     * @OneToMany(targetEntity="DDC117Link", mappedBy="source", indexBy="target_id", cascade={"persist", "remove"})
-     */
+    /** @OneToMany(targetEntity="DDC117Link", mappedBy="source", indexBy="target_id", cascade={"persist", "remove"}) */
     private $links;
 
     public function __construct($title)
     {
-        $this->title = $title;
-        $this->references = new \Doctrine\Common\Collections\ArrayCollection();
-        $this->translations = new \Doctrine\Common\Collections\ArrayCollection();
+        $this->title        = $title;
+        $this->references   = new ArrayCollection();
+        $this->translations = new ArrayCollection();
     }
 
-    public function setDetails($details)
+    public function setDetails($details): void
     {
         $this->details = $details;
     }
@@ -50,7 +46,7 @@ class DDC117Article
         return $this->id;
     }
 
-    public function addReference($reference)
+    public function addReference($reference): void
     {
         $this->references[] = $reference;
     }
@@ -60,7 +56,7 @@ class DDC117Article
         return $this->references;
     }
 
-    public function addTranslation($language, $title)
+    public function addTranslation($language, $title): void
     {
         $this->translations[] = new DDC117Translation($this, $language, $title);
     }
@@ -79,7 +75,8 @@ class DDC117Article
     {
         return $this->links;
     }
-    public function resetText()
+
+    public function resetText(): void
     {
         $this->details = null;
     }

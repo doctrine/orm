@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\Tests\Models\Cache;
 
 /**
@@ -21,9 +23,7 @@ class Address
      */
     public $person;
 
-    /**
-     * @Column
-     */
+    /** @Column */
     public $location;
 
     public function __construct($location)

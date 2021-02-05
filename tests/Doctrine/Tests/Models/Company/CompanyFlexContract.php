@@ -1,9 +1,13 @@
 <?php
+
+declare(strict_types=1);
+
 namespace Doctrine\Tests\Models\Company;
+
+use Doctrine\ORM\Mapping\ClassMetadataInfo;
 
 /**
  * @Entity
- *
  * @NamedNativeQueries({
  *      @NamedNativeQuery(
  *          name           = "all",
@@ -16,7 +20,6 @@ namespace Doctrine\Tests\Models\Company;
  *          query          = "SELECT id, hoursWorked, discr FROM company_contracts"
  *      ),
  * })
- *
  * @SqlResultSetMappings({
  *      @SqlResultSetMapping(
  *          name    = "mapping-all-flex",
@@ -69,7 +72,7 @@ class CompanyFlexContract extends CompanyContract
      */
     public $managers;
 
-    public function calculatePrice()
+    public function calculatePrice(): int
     {
         return $this->hoursWorked * $this->pricePerHour;
     }
@@ -79,7 +82,7 @@ class CompanyFlexContract extends CompanyContract
         return $this->hoursWorked;
     }
 
-    public function setHoursWorked($hoursWorked)
+    public function setHoursWorked($hoursWorked): void
     {
         $this->hoursWorked = $hoursWorked;
     }
@@ -89,40 +92,41 @@ class CompanyFlexContract extends CompanyContract
         return $this->pricePerHour;
     }
 
-    public function setPricePerHour($pricePerHour)
+    public function setPricePerHour($pricePerHour): void
     {
         $this->pricePerHour = $pricePerHour;
     }
+
     public function getManagers()
     {
         return $this->managers;
     }
 
-    public function addManager(CompanyManager $manager)
+    public function addManager(CompanyManager $manager): void
     {
         $this->managers[] = $manager;
     }
 
-    public function removeManager(CompanyManager $manager)
+    public function removeManager(CompanyManager $manager): void
     {
         $this->managers->removeElement($manager);
     }
 
-    static public function loadMetadata(\Doctrine\ORM\Mapping\ClassMetadataInfo $metadata)
+    public static function loadMetadata(ClassMetadataInfo $metadata): void
     {
         $metadata->mapField(
             [
-            'type'      => 'integer',
-            'name'      => 'hoursWorked',
-            'fieldName' => 'hoursWorked',
+                'type'      => 'integer',
+                'name'      => 'hoursWorked',
+                'fieldName' => 'hoursWorked',
             ]
         );
 
         $metadata->mapField(
             [
-            'type'      => 'integer',
-            'name'      => 'pricePerHour',
-            'fieldName' => 'pricePerHour',
+                'type'      => 'integer',
+                'name'      => 'pricePerHour',
+                'fieldName' => 'pricePerHour',
             ]
         );
     }

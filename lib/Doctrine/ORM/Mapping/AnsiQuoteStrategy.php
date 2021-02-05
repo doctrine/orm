@@ -1,4 +1,5 @@
 <?php
+
 /*
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
  * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
@@ -24,9 +25,6 @@ use Doctrine\DBAL\Platforms\AbstractPlatform;
 /**
  * ANSI compliant quote strategy, this strategy does not apply any quote.
  * To use this strategy all mapped tables and columns should be ANSI compliant.
- * 
- * @since   2.5
- * @author  Fabio B. Silva <fabio.bat.silva@gmail.com>
  */
 class AnsiQuoteStrategy implements QuoteStrategy
 {
@@ -89,7 +87,7 @@ class AnsiQuoteStrategy implements QuoteStrategy
     /**
      * {@inheritdoc}
      */
-    public function getColumnAlias($columnName, $counter, AbstractPlatform $platform, ClassMetadata $class = null)
+    public function getColumnAlias($columnName, $counter, AbstractPlatform $platform, ?ClassMetadata $class = null)
     {
         return $platform->getSQLResultCasing($columnName . '_' . $counter);
     }

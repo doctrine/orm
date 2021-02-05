@@ -14,7 +14,7 @@ use Doctrine\Tests\ORM\Functional\DatabaseDriverTestCase;
  */
 class GH7684 extends DatabaseDriverTestCase
 {
-    public function testIssue() : void
+    public function testIssue(): void
     {
         if (! $this->_em->getConnection()->getDatabasePlatform()->supportsForeignKeyConstraints()) {
             $this->markTestSkipped('Platform does not support foreign keys.');

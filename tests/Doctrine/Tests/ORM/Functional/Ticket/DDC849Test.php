@@ -1,30 +1,35 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\Tests\ORM\Functional\Ticket;
 
-use Doctrine\Tests\Models\CMS\CmsUser;
 use Doctrine\Tests\Models\CMS\CmsGroup;
+use Doctrine\Tests\Models\CMS\CmsUser;
+use Doctrine\Tests\OrmFunctionalTestCase;
 
-class DDC849Test extends \Doctrine\Tests\OrmFunctionalTestCase
+use function count;
+
+class DDC849Test extends OrmFunctionalTestCase
 {
     private $user;
     private $group1;
     private $group2;
 
-    protected function setUp() : void
+    protected function setUp(): void
     {
         $this->useModelSet('cms');
         parent::setUp();
 
-        $this->user = new CmsUser();
-        $this->user->username = "beberlei";
-        $this->user->name = "Benjamin";
-        $this->user->status = "active";
+        $this->user           = new CmsUser();
+        $this->user->username = 'beberlei';
+        $this->user->name     = 'Benjamin';
+        $this->user->status   = 'active';
 
-        $this->group1 = new CmsGroup();
-        $this->group1->name = "Group 1";
-        $this->group2 = new CmsGroup();
-        $this->group2->name = "Group 2";
+        $this->group1       = new CmsGroup();
+        $this->group1->name = 'Group 1';
+        $this->group2       = new CmsGroup();
+        $this->group2->name = 'Group 2';
 
         $this->user->addGroup($this->group1);
         $this->user->addGroup($this->group2);
@@ -39,7 +44,7 @@ class DDC849Test extends \Doctrine\Tests\OrmFunctionalTestCase
         $this->user = $this->_em->find(CmsUser::class, $this->user->getId());
     }
 
-    public function testRemoveContains()
+    public function testRemoveContains(): void
     {
         $group1 = $this->user->groups[0];
         $group2 = $this->user->groups[1];
@@ -54,9 +59,9 @@ class DDC849Test extends \Doctrine\Tests\OrmFunctionalTestCase
         $this->assertFalse($this->user->groups->contains($group2));
     }
 
-    public function testClearCount()
+    public function testClearCount(): void
     {
-        $this->user->addGroup(new CmsGroup);
+        $this->user->addGroup(new CmsGroup());
         $this->assertEquals(3, count($this->user->groups));
 
         $this->user->groups->clear();
@@ -65,7 +70,7 @@ class DDC849Test extends \Doctrine\Tests\OrmFunctionalTestCase
         $this->assertEquals(0, count($this->user->groups));
     }
 
-    public function testClearContains()
+    public function testClearContains(): void
     {
         $group1 = $this->user->groups[0];
         $group2 = $this->user->groups[1];

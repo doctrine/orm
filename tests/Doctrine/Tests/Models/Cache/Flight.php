@@ -1,6 +1,10 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\Tests\Models\Cache;
+
+use DateTime;
 
 /**
  * @Entity
@@ -25,20 +29,14 @@ class Flight
      */
     protected $goingTo;
 
-    /**
-     * @Column(type="date")
-     */
+    /** @Column(type="date") */
     protected $departure;
 
-    /**
-     * @param \Doctrine\Tests\Models\Cache\City $leavingFrom
-     * @param \Doctrine\Tests\Models\Cache\City $goingTo
-     */
     public function __construct(City $leavingFrom, City $goingTo)
     {
-        $this->goingTo      = $goingTo;
-        $this->leavingFrom  = $leavingFrom;
-        $this->departure    = new \DateTime();
+        $this->goingTo     = $goingTo;
+        $this->leavingFrom = $leavingFrom;
+        $this->departure   = new DateTime();
     }
 
     public function getLeavingFrom()
@@ -56,7 +54,7 @@ class Flight
         return $this->departure;
     }
 
-    public function setDeparture($departure)
+    public function setDeparture($departure): void
     {
         $this->departure = $departure;
     }

@@ -22,7 +22,7 @@
         "doctrine/annotations": "^1.11.1",
         "doctrine/cache": "^1.9.1",
         "doctrine/collections": "^1.5",
-        "doctrine/common": "^3.0",
+        "doctrine/common": "^3.0.3",
         "doctrine/dbal": "^2.10.0",
         "doctrine/event-manager": "^1.1",
         "doctrine/inflector": "^1.4|^2.0",

@@ -1,20 +1,22 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\Tests\ORM\Functional;
+
 use Doctrine\Tests\OrmFunctionalTestCase;
+use Exception;
 
 /**
  * Description of SequenceGeneratorTest
- *
- * @author robo
  */
 class SequenceGeneratorTest extends OrmFunctionalTestCase
 {
-    protected function setUp() : void
+    protected function setUp(): void
     {
         parent::setUp();
 
-        if ( ! $this->_em->getConnection()->getDatabasePlatform()->supportsSequences()) {
+        if (! $this->_em->getConnection()->getDatabasePlatform()->supportsSequences()) {
             $this->markTestSkipped('Only working for Databases that support sequences.');
         }
 
@@ -24,11 +26,11 @@ class SequenceGeneratorTest extends OrmFunctionalTestCase
                     $this->_em->getClassMetadata(SequenceEntity::class),
                 ]
             );
-        } catch(\Exception $e) {
+        } catch (Exception $e) {
         }
     }
 
-    public function testHighAllocationSizeSequence()
+    public function testHighAllocationSizeSequence(): void
     {
         for ($i = 0; $i < 11; ++$i) {
             $this->_em->persist(new SequenceEntity());

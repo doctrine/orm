@@ -22,9 +22,6 @@ namespace Doctrine\ORM\Cache;
 
 /**
  * Collection cache entry
- *
- * @since   2.5
- * @author  Fabio B. Silva <fabio.bat.silva@gmail.com>
  */
 class CollectionCacheEntry implements CacheEntry
 {

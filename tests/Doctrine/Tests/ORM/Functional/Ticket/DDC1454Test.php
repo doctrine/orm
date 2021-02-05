@@ -1,15 +1,22 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\Tests\ORM\Functional\Ticket;
 
 use Doctrine\ORM\UnitOfWork;
+use Doctrine\Tests\OrmFunctionalTestCase;
+use Exception;
+
+use function getrandmax;
+use function random_int;
 
 /**
  * @group DDC-1454
  */
-class DDC1454Test extends \Doctrine\Tests\OrmFunctionalTestCase
+class DDC1454Test extends OrmFunctionalTestCase
 {
-    protected function setUp() : void
+    protected function setUp(): void
     {
         parent::setUp();
 
@@ -20,11 +27,11 @@ class DDC1454Test extends \Doctrine\Tests\OrmFunctionalTestCase
                     $this->_em->getClassMetadata(DDC1454Picture::class),
                 ]
             );
-        } catch (\Exception $ignored) {
+        } catch (Exception $ignored) {
         }
     }
 
-    public function testFailingCase()
+    public function testFailingCase(): void
     {
         $pic = new DDC1454Picture();
 
@@ -65,5 +72,4 @@ class DDC1454File
     {
         return $this->fileId;
     }
-
 }

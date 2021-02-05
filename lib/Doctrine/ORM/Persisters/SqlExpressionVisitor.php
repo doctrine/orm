@@ -1,4 +1,5 @@
 <?php
+
 /*
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
  * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
@@ -19,46 +20,37 @@
 
 namespace Doctrine\ORM\Persisters;
 
-use Doctrine\ORM\Mapping\ClassMetadata;
-
-use Doctrine\Common\Collections\Expr\ExpressionVisitor;
 use Doctrine\Common\Collections\Expr\Comparison;
-use Doctrine\Common\Collections\Expr\Value;
 use Doctrine\Common\Collections\Expr\CompositeExpression;
+use Doctrine\Common\Collections\Expr\ExpressionVisitor;
+use Doctrine\Common\Collections\Expr\Value;
+use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\Persisters\Entity\BasicEntityPersister;
+use RuntimeException;
+
+use function implode;
+use function in_array;
+use function is_object;
 
 /**
  * Visit Expressions and generate SQL WHERE conditions from them.
- *
- * @author Benjamin Eberlei <kontakt@beberlei.de>
- * @since 2.3
  */
 class SqlExpressionVisitor extends ExpressionVisitor
 {
-    /**
-     * @var \Doctrine\ORM\Persisters\Entity\BasicEntityPersister
-     */
+    /** @var BasicEntityPersister */
     private $persister;
 
-    /**
-     * @var \Doctrine\ORM\Mapping\ClassMetadata
-     */
+    /** @var ClassMetadata */
     private $classMetadata;
 
-    /**
-     * @param \Doctrine\ORM\Persisters\Entity\BasicEntityPersister $persister
-     * @param \Doctrine\ORM\Mapping\ClassMetadata                  $classMetadata
-     */
     public function __construct(BasicEntityPersister $persister, ClassMetadata $classMetadata)
     {
-        $this->persister = $persister;
+        $this->persister     = $persister;
         $this->classMetadata = $classMetadata;
     }
 
     /**
      * Converts a comparison expression into the target query language output.
-     *
-     * @param \Doctrine\Common\Collections\Expr\Comparison $comparison
      *
      * @return mixed
      */
@@ -67,11 +59,12 @@ class SqlExpressionVisitor extends ExpressionVisitor
         $field = $comparison->getField();
         $value = $comparison->getValue()->getValue(); // shortcut for walkValue()
 
-        if (isset($this->classMetadata->associationMappings[$field]) &&
+        if (
+            isset($this->classMetadata->associationMappings[$field]) &&
             $value !== null &&
             ! is_object($value) &&
-            ! in_array($comparison->getOperator(), [Comparison::IN, Comparison::NIN])) {
-
+            ! in_array($comparison->getOperator(), [Comparison::IN, Comparison::NIN])
+        ) {
             throw PersisterException::matchingAssocationFieldRequiresObject($this->classMetadata->name, $field);
         }
 
@@ -81,11 +74,9 @@ class SqlExpressionVisitor extends ExpressionVisitor
     /**
      * Converts a composite expression into the target query language output.
      *
-     * @param \Doctrine\Common\Collections\Expr\CompositeExpression $expr
-     *
      * @return mixed
      *
-     * @throws \RuntimeException
+     * @throws RuntimeException
      */
     public function walkCompositeExpression(CompositeExpression $expr)
     {
@@ -95,7 +86,7 @@ class SqlExpressionVisitor extends ExpressionVisitor
             $expressionList[] = $this->dispatch($child);
         }
 
-        switch($expr->getType()) {
+        switch ($expr->getType()) {
             case CompositeExpression::TYPE_AND:
                 return '(' . implode(' AND ', $expressionList) . ')';
 
@@ -103,14 +94,12 @@ class SqlExpressionVisitor extends ExpressionVisitor
                 return '(' . implode(' OR ', $expressionList) . ')';
 
             default:
-                throw new \RuntimeException("Unknown composite " . $expr->getType());
+                throw new RuntimeException('Unknown composite ' . $expr->getType());
         }
     }
 
     /**
      * Converts a value expression into the target query language part.
-     *
-     * @param \Doctrine\Common\Collections\Expr\Value $value
      *
      * @return mixed
      */
@@ -119,4 +108,3 @@ class SqlExpressionVisitor extends ExpressionVisitor
         return '?';
     }
 }
-

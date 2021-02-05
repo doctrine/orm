@@ -1,48 +1,52 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\Tests\ORM\Functional\Ticket;
 
 use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Tests\OrmFunctionalTestCase;
+use Exception;
 
 /**
  * @group DDC-1514
  */
-class DDC1514Test extends \Doctrine\Tests\OrmFunctionalTestCase
+class DDC1514Test extends OrmFunctionalTestCase
 {
-    protected function setUp() : void
+    protected function setUp(): void
     {
         parent::setUp();
 
         try {
             $this->_schemaTool->createSchema(
                 [
-                $this->_em->getClassMetadata(DDC1514EntityA::class),
-                $this->_em->getClassMetadata(DDC1514EntityB::class),
-                $this->_em->getClassMetadata(DDC1514EntityC::class),
+                    $this->_em->getClassMetadata(DDC1514EntityA::class),
+                    $this->_em->getClassMetadata(DDC1514EntityB::class),
+                    $this->_em->getClassMetadata(DDC1514EntityC::class),
                 ]
             );
-        } catch (\Exception $ignored) {
+        } catch (Exception $ignored) {
         }
     }
 
-    public function testIssue()
+    public function testIssue(): void
     {
-        $a1 = new DDC1514EntityA();
-        $a1->title = "1foo";
+        $a1        = new DDC1514EntityA();
+        $a1->title = '1foo';
 
-        $a2 = new DDC1514EntityA();
-        $a2->title = "2bar";
+        $a2        = new DDC1514EntityA();
+        $a2->title = '2bar';
 
-        $b1 = new DDC1514EntityB();
+        $b1              = new DDC1514EntityB();
         $b1->entityAFrom = $a1;
-        $b1->entityATo = $a2;
+        $b1->entityATo   = $a2;
 
-        $b2 = new DDC1514EntityB();
+        $b2              = new DDC1514EntityB();
         $b2->entityAFrom = $a2;
-        $b2->entityATo = $a1;
+        $b2->entityATo   = $a1;
 
-        $c = new DDC1514EntityC();
-        $c->title = "baz";
+        $c           = new DDC1514EntityC();
+        $c->title    = 'baz';
         $a2->entityC = $c;
 
         $this->_em->persist($a1);
@@ -53,7 +57,7 @@ class DDC1514Test extends \Doctrine\Tests\OrmFunctionalTestCase
         $this->_em->flush();
         $this->_em->clear();
 
-        $dql = "SELECT a, b, ba, c FROM " . __NAMESPACE__ . "\DDC1514EntityA AS a LEFT JOIN a.entitiesB AS b LEFT JOIN b.entityATo AS ba LEFT JOIN a.entityC AS c ORDER BY a.title";
+        $dql     = 'SELECT a, b, ba, c FROM ' . __NAMESPACE__ . '\DDC1514EntityA AS a LEFT JOIN a.entitiesB AS b LEFT JOIN b.entityATo AS ba LEFT JOIN a.entityC AS c ORDER BY a.title';
         $results = $this->_em->createQuery($dql)->getResult();
 
         $this->assertEquals($a1->id, $results[0]->id);
@@ -92,13 +96,9 @@ class DDC1514EntityB
     /** @Id @Column(type="integer") @GeneratedValue */
     public $id;
 
-    /**
-     * @ManyToOne(targetEntity="DDC1514EntityA", inversedBy="entitiesB")
-     */
+    /** @ManyToOne(targetEntity="DDC1514EntityA", inversedBy="entitiesB") */
     public $entityAFrom;
-    /**
-     * @ManyToOne(targetEntity="DDC1514EntityA")
-     */
+    /** @ManyToOne(targetEntity="DDC1514EntityA") */
     public $entityATo;
 }
 

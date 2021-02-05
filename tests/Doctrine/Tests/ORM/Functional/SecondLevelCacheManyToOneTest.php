@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\Tests\ORM\Functional;
 
 use Doctrine\ORM\Cache\Region;
@@ -15,7 +17,7 @@ use Doctrine\Tests\Models\Cache\Token;
  */
 class SecondLevelCacheManyToOneTest extends SecondLevelCacheAbstractTest
 {
-    public function testPutOnPersist()
+    public function testPutOnPersist(): void
     {
         $this->loadFixturesCountries();
         $this->loadFixturesStates();
@@ -27,7 +29,7 @@ class SecondLevelCacheManyToOneTest extends SecondLevelCacheAbstractTest
         $this->assertTrue($this->cache->containsEntity(State::class, $this->states[1]->getId()));
     }
 
-    public function testPutAndLoadManyToOneRelation()
+    public function testPutAndLoadManyToOneRelation(): void
     {
         $this->loadFixturesCountries();
         $this->loadFixturesStates();
@@ -99,7 +101,7 @@ class SecondLevelCacheManyToOneTest extends SecondLevelCacheAbstractTest
         $this->assertEquals($this->states[1]->getCountry()->getName(), $c4->getCountry()->getName());
     }
 
-    public function testInverseSidePutShouldEvictCollection()
+    public function testInverseSidePutShouldEvictCollection(): void
     {
         $this->loadFixturesCountries();
         $this->loadFixturesStates();
@@ -113,7 +115,7 @@ class SecondLevelCacheManyToOneTest extends SecondLevelCacheAbstractTest
         $c3    = $this->_em->find(State::class, $this->states[0]->getId());
         $prev  = $c3->getCities();
         $count = $prev->count();
-        $city  = new City("Buenos Aires", $c3);
+        $city  = new City('Buenos Aires', $c3);
 
         $c3->addCity($city);
 
@@ -133,7 +135,7 @@ class SecondLevelCacheManyToOneTest extends SecondLevelCacheAbstractTest
         $this->assertEquals($queryCount, $this->getCurrentQueryCount());
     }
 
-    public function testShouldNotReloadWhenAssociationIsMissing()
+    public function testShouldNotReloadWhenAssociationIsMissing(): void
     {
         $this->loadFixturesCountries();
         $this->loadFixturesStates();
@@ -179,7 +181,7 @@ class SecondLevelCacheManyToOneTest extends SecondLevelCacheAbstractTest
         $this->assertEquals($queryCount + 2, $this->getCurrentQueryCount());
     }
 
-    public function testPutAndLoadNonCacheableManyToOne()
+    public function testPutAndLoadNonCacheableManyToOne(): void
     {
         $this->assertNull($this->cache->getEntityCacheRegion(Action::class));
         $this->assertInstanceOf(Region::class, $this->cache->getEntityCacheRegion(Token::class));
@@ -197,7 +199,7 @@ class SecondLevelCacheManyToOneTest extends SecondLevelCacheAbstractTest
         $this->assertFalse($this->cache->containsEntity(Token::class, $action->name));
 
         $queryCount = $this->getCurrentQueryCount();
-        $entity = $this->_em->find(Token::class, $token->token);
+        $entity     = $this->_em->find(Token::class, $token->token);
 
         $this->assertInstanceOf(Token::class, $entity);
         $this->assertEquals('token-hash', $entity->token);
@@ -208,13 +210,13 @@ class SecondLevelCacheManyToOneTest extends SecondLevelCacheAbstractTest
         $this->assertEquals($queryCount, $this->getCurrentQueryCount());
     }
 
-    public function testPutAndLoadNonCacheableCompositeManyToOne()
+    public function testPutAndLoadNonCacheableCompositeManyToOne(): void
     {
         $this->assertNull($this->cache->getEntityCacheRegion(Action::class));
         $this->assertNull($this->cache->getEntityCacheRegion(ComplexAction::class));
         $this->assertInstanceOf(Region::class, $this->cache->getEntityCacheRegion(Token::class));
 
-        $token  = new Token('token-hash');
+        $token = new Token('token-hash');
 
         $action1 = new Action('login');
         $action2 = new Action('logout');

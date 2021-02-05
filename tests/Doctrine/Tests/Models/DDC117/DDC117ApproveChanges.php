@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\Tests\Models\DDC117;
 
 /**
@@ -7,9 +9,7 @@ namespace Doctrine\Tests\Models\DDC117;
  */
 class DDC117ApproveChanges
 {
-    /**
-     * @Id @Column(type="integer") @GeneratedValue
-     */
+    /** @Id @Column(type="integer") @GeneratedValue */
     private $id;
 
     /**
@@ -39,8 +39,8 @@ class DDC117ApproveChanges
     public function __construct($details, $reference, $translation)
     {
         $this->articleDetails = $details;
-        $this->reference = $reference;
-        $this->translation = $translation;
+        $this->reference      = $reference;
+        $this->translation    = $translation;
     }
 
     public function getId()

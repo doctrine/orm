@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\Tests\ORM\Functional;
 
 use Doctrine\ORM\Proxy\Proxy;
@@ -11,7 +13,7 @@ use Doctrine\Tests\Models\Cache\State;
  */
 class SecondLevelCacheRepositoryTest extends SecondLevelCacheAbstractTest
 {
-    public function testRepositoryCacheFind()
+    public function testRepositoryCacheFind(): void
     {
         $this->evictRegions();
         $this->loadFixturesCountries();
@@ -35,10 +37,9 @@ class SecondLevelCacheRepositoryTest extends SecondLevelCacheAbstractTest
         $this->assertEquals(2, $this->secondLevelCacheLogger->getHitCount());
         $this->assertEquals(0, $this->secondLevelCacheLogger->getMissCount());
         $this->assertEquals(2, $this->secondLevelCacheLogger->getRegionHitCount($this->getEntityRegion(Country::class)));
-
     }
 
-    public function testRepositoryCacheFindAll()
+    public function testRepositoryCacheFindAll(): void
     {
         $this->loadFixturesCountries();
         $this->evictRegions();
@@ -69,7 +70,7 @@ class SecondLevelCacheRepositoryTest extends SecondLevelCacheAbstractTest
         $this->assertTrue($this->cache->containsEntity(Country::class, $this->countries[1]->getId()));
     }
 
-    public function testRepositoryCacheFindAllInvalidation()
+    public function testRepositoryCacheFindAllInvalidation(): void
     {
         $this->loadFixturesCountries();
         $this->evictRegions();
@@ -117,7 +118,7 @@ class SecondLevelCacheRepositoryTest extends SecondLevelCacheAbstractTest
         $this->assertEquals($queryCount + 1, $this->getCurrentQueryCount());
     }
 
-    public function testRepositoryCacheFindBy()
+    public function testRepositoryCacheFindBy(): void
     {
         $this->loadFixturesCountries();
         $this->evictRegions();
@@ -126,7 +127,7 @@ class SecondLevelCacheRepositoryTest extends SecondLevelCacheAbstractTest
 
         $this->assertFalse($this->cache->containsEntity(Country::class, $this->countries[0]->getId()));
 
-        $criteria   = ['name'=>$this->countries[0]->getName()];
+        $criteria   = ['name' => $this->countries[0]->getName()];
         $repository = $this->_em->getRepository(Country::class);
         $queryCount = $this->getCurrentQueryCount();
 
@@ -147,7 +148,7 @@ class SecondLevelCacheRepositoryTest extends SecondLevelCacheAbstractTest
         $this->assertTrue($this->cache->containsEntity(Country::class, $this->countries[0]->getId()));
     }
 
-    public function testRepositoryCacheFindOneBy()
+    public function testRepositoryCacheFindOneBy(): void
     {
         $this->loadFixturesCountries();
         $this->evictRegions();
@@ -156,7 +157,7 @@ class SecondLevelCacheRepositoryTest extends SecondLevelCacheAbstractTest
 
         $this->assertFalse($this->cache->containsEntity(Country::class, $this->countries[0]->getId()));
 
-        $criteria   = ['name'=>$this->countries[0]->getName()];
+        $criteria   = ['name' => $this->countries[0]->getName()];
         $repository = $this->_em->getRepository(Country::class);
         $queryCount = $this->getCurrentQueryCount();
 
@@ -176,7 +177,7 @@ class SecondLevelCacheRepositoryTest extends SecondLevelCacheAbstractTest
         $this->assertTrue($this->cache->containsEntity(Country::class, $this->countries[0]->getId()));
     }
 
-    public function testRepositoryCacheFindAllToOneAssociation()
+    public function testRepositoryCacheFindAllToOneAssociation(): void
     {
         $this->loadFixturesCountries();
         $this->loadFixturesStates();

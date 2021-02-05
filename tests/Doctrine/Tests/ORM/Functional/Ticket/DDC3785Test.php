@@ -1,14 +1,18 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\Tests\ORM\Functional\Ticket;
 
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\DBAL\Platforms\AbstractPlatform;
 use Doctrine\DBAL\Types\Type;
+use Doctrine\Tests\OrmFunctionalTestCase;
+use Exception;
 
-class DDC3785Test extends \Doctrine\Tests\OrmFunctionalTestCase
+class DDC3785Test extends OrmFunctionalTestCase
 {
-    protected function setUp() : void
+    protected function setUp(): void
     {
         parent::setUp();
 
@@ -19,23 +23,23 @@ class DDC3785Test extends \Doctrine\Tests\OrmFunctionalTestCase
                 [
                     $this->_em->getClassMetadata(DDC3785_Asset::class),
                     $this->_em->getClassMetadata(DDC3785_AssetId::class),
-                    $this->_em->getClassMetadata(DDC3785_Attribute::class)
+                    $this->_em->getClassMetadata(DDC3785_Attribute::class),
                 ]
             );
-        } catch(\Exception $e) {
+        } catch (Exception $e) {
         }
     }
 
     /**
      * @group DDC-3785
      */
-    public function testOwningValueObjectIdIsCorrectlyTransformedWhenRemovingOrphanedChildEntities()
+    public function testOwningValueObjectIdIsCorrectlyTransformedWhenRemovingOrphanedChildEntities(): void
     {
         $id = new DDC3785_AssetId('919609ba-57d9-4a13-be1d-d202521e858a');
 
         $attributes = [
             $attribute1 = new DDC3785_Attribute('foo1', 'bar1'),
-            $attribute2 = new DDC3785_Attribute('foo2', 'bar2')
+            $attribute2 = new DDC3785_Attribute('foo2', 'bar2'),
         ];
 
         $this->_em->persist($asset = new DDC3785_Asset($id, $attributes));
@@ -60,9 +64,7 @@ class DDC3785Test extends \Doctrine\Tests\OrmFunctionalTestCase
  */
 class DDC3785_Asset
 {
-    /**
-     * @Id @GeneratedValue(strategy="NONE") @Column(type="ddc3785_asset_id")
-     */
+    /** @Id @GeneratedValue(strategy="NONE") @Column(type="ddc3785_asset_id") */
     private $id;
 
     /**
@@ -76,7 +78,7 @@ class DDC3785_Asset
 
     public function __construct(DDC3785_AssetId $id, $attributes = [])
     {
-        $this->id = $id;
+        $this->id         = $id;
         $this->attributes = new ArrayCollection();
 
         foreach ($attributes as $attribute) {
@@ -115,7 +117,7 @@ class DDC3785_Attribute
 
     public function __construct($name, $value)
     {
-        $this->name = $name;
+        $this->name  = $name;
         $this->value = $value;
     }
 }
@@ -152,7 +154,7 @@ class DDC3785_AssetIdType extends Type
      */
     public function convertToDatabaseValue($value, AbstractPlatform $platform)
     {
-        return (string)$value;
+        return (string) $value;
     }
 
     /**

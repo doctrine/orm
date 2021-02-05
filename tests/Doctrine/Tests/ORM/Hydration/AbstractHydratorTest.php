@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\Tests\ORM\Functional\Ticket;
 
 use Doctrine\Common\EventManager;
@@ -10,33 +12,28 @@ use Doctrine\ORM\Events;
 use Doctrine\ORM\Internal\Hydration\AbstractHydrator;
 use Doctrine\ORM\Query\ResultSetMapping;
 use Doctrine\Tests\OrmFunctionalTestCase;
+use PHPUnit_Framework_MockObject_MockObject;
+
+use function iterator_to_array;
 
 /**
  * @covers \Doctrine\ORM\Internal\Hydration\AbstractHydrator
  */
 class AbstractHydratorTest extends OrmFunctionalTestCase
 {
-    /**
-     * @var EventManager|\PHPUnit_Framework_MockObject_MockObject
-     */
+    /** @var EventManager|PHPUnit_Framework_MockObject_MockObject */
     private $mockEventManager;
 
-    /**
-     * @var Statement|\PHPUnit_Framework_MockObject_MockObject
-     */
+    /** @var Statement|PHPUnit_Framework_MockObject_MockObject */
     private $mockStatement;
 
-    /**
-     * @var ResultSetMapping|\PHPUnit_Framework_MockObject_MockObject
-     */
+    /** @var ResultSetMapping|PHPUnit_Framework_MockObject_MockObject */
     private $mockResultMapping;
 
-    /**
-     * @var AbstractHydrator
-     */
+    /** @var AbstractHydrator */
     private $hydrator;
 
-    protected function setUp() : void
+    protected function setUp(): void
     {
         parent::setUp();
 
@@ -73,7 +70,7 @@ class AbstractHydratorTest extends OrmFunctionalTestCase
      * Verify that the number of added events to the event listener from the abstract hydrator class is equal to the
      * number of removed events
      */
-    public function testOnClearEventListenerIsDetachedOnCleanup() : void
+    public function testOnClearEventListenerIsDetachedOnCleanup(): void
     {
         $this
             ->mockEventManager
@@ -93,7 +90,7 @@ class AbstractHydratorTest extends OrmFunctionalTestCase
     /**
      * @group #6623
      */
-    public function testHydrateAllRegistersAndClearsAllAttachedListeners() : void
+    public function testHydrateAllRegistersAndClearsAllAttachedListeners(): void
     {
         $this
             ->mockEventManager

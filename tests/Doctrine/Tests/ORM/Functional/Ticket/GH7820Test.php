@@ -11,6 +11,7 @@ use Doctrine\DBAL\Types\StringType;
 use Doctrine\DBAL\Types\Type;
 use Doctrine\ORM\Tools\Pagination\Paginator;
 use Doctrine\Tests\OrmFunctionalTestCase;
+
 use function array_map;
 use function assert;
 use function is_string;
@@ -45,7 +46,7 @@ class GH7820Test extends OrmFunctionalTestCase
         'Don\'t know, don\'t know, don\'t know...',
     ];
 
-    protected function setUp() : void
+    protected function setUp(): void
     {
         parent::setUp();
 
@@ -65,7 +66,7 @@ class GH7820Test extends OrmFunctionalTestCase
         $this->_em->flush();
     }
 
-    public function testWillFindSongsInPaginator() : void
+    public function testWillFindSongsInPaginator(): void
     {
         $query = $this->_em->getRepository(GH7820Line::class)
             ->createQueryBuilder('l')
@@ -73,14 +74,14 @@ class GH7820Test extends OrmFunctionalTestCase
 
         self::assertSame(
             self::SONG,
-            array_map(static function (GH7820Line $line) : string {
+            array_map(static function (GH7820Line $line): string {
                 return $line->toString();
             }, iterator_to_array(new Paginator($query)))
         );
     }
 
     /** @group GH7837 */
-    public function testWillFindSongsInPaginatorEvenWithCachedQueryParsing() : void
+    public function testWillFindSongsInPaginatorEvenWithCachedQueryParsing(): void
     {
         $cache = $this->_em->getConfiguration()
             ->getQueryCacheImpl();
@@ -95,7 +96,7 @@ class GH7820Test extends OrmFunctionalTestCase
 
         self::assertSame(
             self::SONG,
-            array_map(static function (GH7820Line $line) : string {
+            array_map(static function (GH7820Line $line): string {
                 return $line->toString();
             }, iterator_to_array(new Paginator($query))),
             'Expected to return expected data before query cache is populated with DQL -> SQL translation. Were SQL parameters translated?'
@@ -107,7 +108,7 @@ class GH7820Test extends OrmFunctionalTestCase
 
         self::assertSame(
             self::SONG,
-            array_map(static function (GH7820Line $line) : string {
+            array_map(static function (GH7820Line $line): string {
                 return $line->toString();
             }, iterator_to_array(new Paginator($query))),
             'Expected to return expected data even when DQL -> SQL translation is present in cache. Were SQL parameters translated again?'
@@ -137,7 +138,7 @@ class GH7820Line
         $this->lineNumber = $index;
     }
 
-    public function toString() : string
+    public function toString(): string
     {
         return $this->text->getText();
     }
@@ -153,17 +154,17 @@ final class GH7820LineText
         $this->text = $text;
     }
 
-    public static function fromText(string $text) : self
+    public static function fromText(string $text): self
     {
         return new self($text);
     }
 
-    public function getText() : string
+    public function getText(): string
     {
         return $this->text;
     }
 
-    public function __toString() : string
+    public function __toString(): string
     {
         return 'Line: ' . $this->text;
     }
@@ -192,7 +193,7 @@ final class GH7820LineTextType extends StringType
     }
 
     /** {@inheritdoc} */
-    public function getName() : string
+    public function getName(): string
     {
         return self::class;
     }

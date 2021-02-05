@@ -1,32 +1,34 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\Tests\ORM\Functional\Ticket;
 
 use Doctrine\ORM\Events;
 use Doctrine\Tests\OrmFunctionalTestCase;
+use Exception;
 
 /**
  * @group DDC-1707
  */
 class DDC1707Test extends OrmFunctionalTestCase
 {
-    protected function setUp() : void
+    protected function setUp(): void
     {
         parent::setUp();
 
         try {
             $this->_schemaTool->createSchema(
                 [
-                $this->_em->getClassMetadata(DDC1509File::class),
-                $this->_em->getClassMetadata(DDC1509Picture::class),
+                    $this->_em->getClassMetadata(DDC1509File::class),
+                    $this->_em->getClassMetadata(DDC1509Picture::class),
                 ]
             );
-        } catch (\Exception $ignored) {
-
+        } catch (Exception $ignored) {
         }
     }
 
-    public function testPostLoadOnChild()
+    public function testPostLoadOnChild(): void
     {
         $class  = $this->_em->getClassMetadata(DDC1707Child::class);
         $entity = new DDC1707Child();
@@ -45,9 +47,7 @@ class DDC1707Test extends OrmFunctionalTestCase
  */
 abstract class DDC1707Base
 {
-    /**
-     * @Id @Column(type="integer") @GeneratedValue
-     */
+    /** @Id @Column(type="integer") @GeneratedValue */
     protected $id;
 
     public $postLoad = false;
@@ -55,7 +55,7 @@ abstract class DDC1707Base
     /**
      * @PostLoad
      */
-    public function onPostLoad()
+    public function onPostLoad(): void
     {
         $this->postLoad = true;
     }

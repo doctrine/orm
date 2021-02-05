@@ -1,10 +1,10 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\Tests\Models\VersionedOneToOne;
 
 /**
- * @author Rob Caiger <rob@clocal.co.uk>
- *
  * @Entity
  * @Table(name="first_entity")
  */
@@ -17,9 +17,7 @@ class FirstRelatedEntity
      */
     public $secondEntity;
 
-    /**
-     * @Column(name="name")
-     */
+    /** @Column(name="name") */
     public $name;
 
     /**

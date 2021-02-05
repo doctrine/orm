@@ -1,58 +1,64 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\Tests\Models\CMS;
+
+use BadMethodCallException;
+
+use function func_get_args;
 
 class CmsAddressListener
 {
     public $calls;
 
-    public function prePersist()
+    public function prePersist(): void
     {
         $this->calls[__FUNCTION__][] = func_get_args();
     }
 
-    public function postPersist()
-    {
-        $this->calls[__FUNCTION__][] = func_get_args();
-    }
-    
-    public function preUpdate()
+    public function postPersist(): void
     {
         $this->calls[__FUNCTION__][] = func_get_args();
     }
 
-    public function postUpdate()
+    public function preUpdate(): void
     {
         $this->calls[__FUNCTION__][] = func_get_args();
     }
 
-    public function preRemove()
+    public function postUpdate(): void
     {
         $this->calls[__FUNCTION__][] = func_get_args();
     }
 
-    public function postRemove()
+    public function preRemove(): void
     {
         $this->calls[__FUNCTION__][] = func_get_args();
     }
 
-    public function postLoad()
+    public function postRemove(): void
     {
         $this->calls[__FUNCTION__][] = func_get_args();
     }
 
-    public function preFlush()
+    public function postLoad(): void
     {
         $this->calls[__FUNCTION__][] = func_get_args();
     }
 
-    protected function postPersistHandler()
+    public function preFlush(): void
     {
-        throw new \BadMethodCallException("This is not a valid callback");
+        $this->calls[__FUNCTION__][] = func_get_args();
     }
 
-    protected function prePersistHandler()
+    protected function postPersistHandler(): void
     {
-        throw new \BadMethodCallException("This is not a valid callback");
+        throw new BadMethodCallException('This is not a valid callback');
+    }
+
+    protected function prePersistHandler(): void
+    {
+        throw new BadMethodCallException('This is not a valid callback');
     }
 }

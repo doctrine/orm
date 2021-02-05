@@ -7,6 +7,7 @@ namespace Doctrine\Tests\ORM\Functional\Ticket;
 use Doctrine\Common\Collections\Criteria;
 use Doctrine\ORM\PersistentCollection;
 use Doctrine\Tests\OrmFunctionalTestCase;
+
 use function assert;
 
 /**
@@ -14,7 +15,7 @@ use function assert;
  */
 class GH7767Test extends OrmFunctionalTestCase
 {
-    protected function setUp() : void
+    protected function setUp(): void
     {
         parent::setUp();
 
@@ -30,7 +31,7 @@ class GH7767Test extends OrmFunctionalTestCase
         $this->_em->clear();
     }
 
-    public function testMatchingRespectsCollectionOrdering() : void
+    public function testMatchingRespectsCollectionOrdering(): void
     {
         $parent = $this->_em->find(GH7767ParentEntity::class, 1);
         assert($parent instanceof GH7767ParentEntity);
@@ -42,7 +43,7 @@ class GH7767Test extends OrmFunctionalTestCase
         self::assertEquals(300, $children[2]->position);
     }
 
-    public function testMatchingOverrulesCollectionOrdering() : void
+    public function testMatchingOverrulesCollectionOrdering(): void
     {
         $parent = $this->_em->find(GH7767ParentEntity::class, 1);
         assert($parent instanceof GH7767ParentEntity);
@@ -73,12 +74,12 @@ class GH7767ParentEntity
      */
     private $children;
 
-    public function addChild(int $position) : void
+    public function addChild(int $position): void
     {
         $this->children[] = new GH7767ChildEntity($this, $position);
     }
 
-    public function getChildren() : PersistentCollection
+    public function getChildren(): PersistentCollection
     {
         return $this->children;
     }

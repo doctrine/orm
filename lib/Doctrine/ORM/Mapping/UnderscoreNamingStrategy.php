@@ -20,9 +20,6 @@
 
 namespace Doctrine\ORM\Mapping;
 
-use const CASE_LOWER;
-use const CASE_UPPER;
-use const E_USER_DEPRECATED;
 use function preg_replace;
 use function strpos;
 use function strrpos;
@@ -31,23 +28,22 @@ use function strtoupper;
 use function substr;
 use function trigger_error;
 
+use const CASE_LOWER;
+use const CASE_UPPER;
+use const E_USER_DEPRECATED;
+
 /**
  * Naming strategy implementing the underscore naming convention.
  * Converts 'MyEntity' to 'my_entity' or 'MY_ENTITY'.
  *
- *
  * @link    www.doctrine-project.org
- * @since   2.3
- * @author  Fabio B. Silva <fabio.bat.silva@gmail.com>
  */
 class UnderscoreNamingStrategy implements NamingStrategy
 {
     private const DEFAULT_PATTERN      = '/(?<=[a-z])([A-Z])/';
     private const NUMBER_AWARE_PATTERN = '/(?<=[a-z0-9])([A-Z])/';
 
-    /**
-     * @var integer
-     */
+    /** @var int */
     private $case;
 
     /** @var string */
@@ -72,7 +68,7 @@ class UnderscoreNamingStrategy implements NamingStrategy
     }
 
     /**
-     * @return integer CASE_LOWER | CASE_UPPER
+     * @return int CASE_LOWER | CASE_UPPER
      */
     public function getCase()
     {
@@ -83,7 +79,7 @@ class UnderscoreNamingStrategy implements NamingStrategy
      * Sets string case CASE_LOWER | CASE_UPPER.
      * Alphabetic characters converted to lowercase or uppercase.
      *
-     * @param integer $case
+     * @param int $case
      *
      * @return void
      */
@@ -117,7 +113,7 @@ class UnderscoreNamingStrategy implements NamingStrategy
      */
     public function embeddedFieldToColumnName($propertyName, $embeddedColumnName, $className = null, $embeddedClassName = null)
     {
-        return $this->underscore($propertyName).'_'.$embeddedColumnName;
+        return $this->underscore($propertyName) . '_' . $embeddedColumnName;
     }
 
     /**
@@ -153,7 +149,7 @@ class UnderscoreNamingStrategy implements NamingStrategy
                 ($referencedColumnName ?: $this->referenceColumnName());
     }
 
-    private function underscore(string $string) : string
+    private function underscore(string $string): string
     {
         $string = preg_replace($this->pattern, '_$1', $string);
 

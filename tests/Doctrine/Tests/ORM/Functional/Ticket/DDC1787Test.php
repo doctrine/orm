@@ -1,27 +1,31 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\Tests\ORM\Functional\Ticket;
+
+use Doctrine\Tests\OrmFunctionalTestCase;
 
 /**
  * @group DDC-1787
  */
-class DDC1787Test extends \Doctrine\Tests\OrmFunctionalTestCase
+class DDC1787Test extends OrmFunctionalTestCase
 {
-    protected function setUp() : void
+    protected function setUp(): void
     {
         parent::setUp();
         $this->_schemaTool->createSchema(
             [
-            $this->_em->getClassMetadata(DDC1787Foo::class),
-            $this->_em->getClassMetadata(DDC1787Bar::class),
+                $this->_em->getClassMetadata(DDC1787Foo::class),
+                $this->_em->getClassMetadata(DDC1787Bar::class),
             ]
         );
     }
 
-    public function testIssue()
+    public function testIssue(): void
     {
-        $bar = new DDC1787Bar;
-        $bar2 = new DDC1787Bar;
+        $bar  = new DDC1787Bar();
+        $bar2 = new DDC1787Bar();
 
         $this->_em->persist($bar);
         $this->_em->persist($bar2);
@@ -39,14 +43,10 @@ class DDC1787Test extends \Doctrine\Tests\OrmFunctionalTestCase
  */
 class DDC1787Foo
 {
-    /**
-     * @Id @Column(type="integer") @GeneratedValue(strategy="AUTO")
-     */
+    /** @Id @Column(type="integer") @GeneratedValue(strategy="AUTO") */
     private $id;
 
-    /**
-     * @Version @Column(type="integer")
-     */
+    /** @Version @Column(type="integer") */
     private $version;
 
     public function getVersion()

@@ -1,32 +1,36 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\Tests\ORM\Functional\Ticket;
+
+use Doctrine\Tests\OrmFunctionalTestCase;
 
 use function method_exists;
 use function sprintf;
 
-class DDC2182Test extends \Doctrine\Tests\OrmFunctionalTestCase
+class DDC2182Test extends OrmFunctionalTestCase
 {
-    public function testPassColumnOptionsToJoinColumns()
+    public function testPassColumnOptionsToJoinColumns(): void
     {
-        if ($this->_em->getConnection()->getDatabasePlatform()->getName() != 'mysql') {
-            $this->markTestSkipped("This test is useful for all databases, but designed only for mysql.");
+        if ($this->_em->getConnection()->getDatabasePlatform()->getName() !== 'mysql') {
+            $this->markTestSkipped('This test is useful for all databases, but designed only for mysql.');
         }
 
-        $sql = $this->_schemaTool->getCreateSchemaSql(
+        $sql       = $this->_schemaTool->getCreateSchemaSql(
             [
-            $this->_em->getClassMetadata(DDC2182OptionParent::class),
-            $this->_em->getClassMetadata(DDC2182OptionChild::class),
+                $this->_em->getClassMetadata(DDC2182OptionParent::class),
+                $this->_em->getClassMetadata(DDC2182OptionChild::class),
             ]
         );
         $collation = $this->getColumnCollationDeclarationSQL('utf8_unicode_ci');
 
         $this->assertEquals('CREATE TABLE DDC2182OptionParent (id INT UNSIGNED NOT NULL, PRIMARY KEY(id)) DEFAULT CHARACTER SET utf8 ' . $collation . ' ENGINE = InnoDB', $sql[0]);
         $this->assertEquals('CREATE TABLE DDC2182OptionChild (id VARCHAR(255) NOT NULL, parent_id INT UNSIGNED DEFAULT NULL, INDEX IDX_B314D4AD727ACA70 (parent_id), PRIMARY KEY(id)) DEFAULT CHARACTER SET utf8 ' . $collation . ' ENGINE = InnoDB', $sql[1]);
-        $this->assertEquals("ALTER TABLE DDC2182OptionChild ADD CONSTRAINT FK_B314D4AD727ACA70 FOREIGN KEY (parent_id) REFERENCES DDC2182OptionParent (id)", $sql[2]);
+        $this->assertEquals('ALTER TABLE DDC2182OptionChild ADD CONSTRAINT FK_B314D4AD727ACA70 FOREIGN KEY (parent_id) REFERENCES DDC2182OptionParent (id)', $sql[2]);
     }
 
-    private function getColumnCollationDeclarationSQL(string $collation) : string
+    private function getColumnCollationDeclarationSQL(string $collation): string
     {
         if (method_exists($this->_em->getConnection()->getDatabasePlatform(), 'getColumnCollationDeclarationSQL')) {
             return $this->_em->getConnection()->getDatabasePlatform()->getColumnCollationDeclarationSQL($collation);

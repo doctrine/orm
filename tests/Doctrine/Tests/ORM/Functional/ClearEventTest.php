@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\Tests\ORM\Functional;
 
 use Doctrine\ORM\Event\OnClearEventArgs;
@@ -8,14 +10,12 @@ use Doctrine\Tests\OrmFunctionalTestCase;
 
 /**
  * ClearEventTest
- *
- * @author Michael Ridgway <mcridgway@gmail.com>
  */
 class ClearEventTest extends OrmFunctionalTestCase
 {
-    public function testEventIsCalledOnClear()
+    public function testEventIsCalledOnClear(): void
     {
-        $listener = new OnClearListener;
+        $listener = new OnClearListener();
         $this->_em->getEventManager()->addEventListener(Events::onClear, $listener);
 
         $this->_em->clear();
@@ -28,7 +28,7 @@ class OnClearListener
 {
     public $called = false;
 
-    public function onClear(OnClearEventArgs $args)
+    public function onClear(OnClearEventArgs $args): void
     {
         $this->called = true;
     }

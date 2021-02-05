@@ -1,25 +1,30 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\Tests\ORM\Functional\Ticket;
 
 use Doctrine\Common\Cache\ArrayCache;
-use Doctrine\DBAL\Types\Type;
 use Doctrine\DBAL\Platforms\AbstractPlatform;
+use Doctrine\DBAL\Types\Type;
 use Doctrine\ORM\Query;
+use Doctrine\Tests\OrmFunctionalTestCase;
+
+use function sprintf;
 
 /**
  * @group DDC-2224
  */
-class DDC2224Test extends \Doctrine\Tests\OrmFunctionalTestCase
+class DDC2224Test extends OrmFunctionalTestCase
 {
-    public static function setUpBeforeClass() : void
+    public static function setUpBeforeClass(): void
     {
-        \Doctrine\DBAL\Types\Type::addType('DDC2224Type', DDC2224Type::class);
+        Type::addType('DDC2224Type', DDC2224Type::class);
     }
 
     public function testIssue()
     {
-        $dql = 'SELECT e FROM ' . __NAMESPACE__ . '\DDC2224Entity e WHERE e.field = :field';
+        $dql   = 'SELECT e FROM ' . __NAMESPACE__ . '\DDC2224Entity e WHERE e.field = :field';
         $query = $this->_em->createQuery($dql);
         $query->setQueryCacheDriver(new ArrayCache());
 
@@ -32,7 +37,7 @@ class DDC2224Test extends \Doctrine\Tests\OrmFunctionalTestCase
     /**
      * @depends testIssue
      */
-    public function testCacheMissWhenTypeChanges(Query $query)
+    public function testCacheMissWhenTypeChanges(Query $query): void
     {
         $query->setParameter('field', 'test', 'string');
         $this->assertStringEndsWith('.field = ?', $query->getSQL());
@@ -76,13 +81,9 @@ class DDC2224Type extends Type
  */
 class DDC2224Entity
 {
-    /**
-     * @Id @GeneratedValue @Column(type="integer")
-     */
+    /** @Id @GeneratedValue @Column(type="integer") */
     public $id;
 
-    /**
-     * @Column(type="DDC2224Type")
-     */
+    /** @Column(type="DDC2224Type") */
     public $field;
 }

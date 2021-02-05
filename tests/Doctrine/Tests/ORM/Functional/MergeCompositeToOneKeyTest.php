@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\Tests\ORM\Functional;
 
 use Doctrine\Tests\Models\MixedToOneIdentity\CompositeToOneKeyState;
@@ -7,21 +9,20 @@ use Doctrine\Tests\Models\MixedToOneIdentity\Country;
 use Doctrine\Tests\OrmFunctionalTestCase;
 use Doctrine\Tests\VerifyDeprecations;
 
+use function assert;
+
 class MergeCompositeToOneKeyTest extends OrmFunctionalTestCase
 {
     use VerifyDeprecations;
 
-    /**
-     * {@inheritDoc}
-     */
-    protected function setUp() : void
+    protected function setUp(): void
     {
         parent::setUp();
 
         $this->_schemaTool->createSchema(
             [
-            $this->_em->getClassMetadata(Country::class),
-            $this->_em->getClassMetadata(CompositeToOneKeyState::class),
+                $this->_em->getClassMetadata(Country::class),
+                $this->_em->getClassMetadata(CompositeToOneKeyState::class),
             ]
         );
     }
@@ -30,17 +31,17 @@ class MergeCompositeToOneKeyTest extends OrmFunctionalTestCase
      * @group DDC-3378
      * @group 1176
      */
-    public function testMergingOfEntityWithCompositeIdentifierContainingToOneAssociation()
+    public function testMergingOfEntityWithCompositeIdentifierContainingToOneAssociation(): void
     {
-        $country = new Country();
+        $country          = new Country();
         $country->country = 'US';
 
-        $state = new CompositeToOneKeyState();
+        $state          = new CompositeToOneKeyState();
         $state->state   = 'CA';
         $state->country = $country;
 
-        /* @var $merged CompositeToOneKeyState */
         $merged = $this->_em->merge($state);
+        assert($merged instanceof CompositeToOneKeyState);
 
         $this->assertInstanceOf(CompositeToOneKeyState::class, $state);
         $this->assertNotSame($state, $merged);

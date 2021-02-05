@@ -1,4 +1,5 @@
 <?php
+
 /*
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
  * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
@@ -19,32 +20,24 @@
 
 namespace Doctrine\ORM\Persisters;
 
-use Doctrine\Common\Collections\Expr\ExpressionVisitor;
 use Doctrine\Common\Collections\Expr\Comparison;
-use Doctrine\Common\Collections\Expr\Value;
 use Doctrine\Common\Collections\Expr\CompositeExpression;
+use Doctrine\Common\Collections\Expr\ExpressionVisitor;
+use Doctrine\Common\Collections\Expr\Value;
 
 /**
  * Extract the values from a criteria/expression
- *
- * @author Benjamin Eberlei <kontakt@beberlei.de>
  */
 class SqlValueVisitor extends ExpressionVisitor
 {
-    /**
-     * @var array
-     */
+    /** @var mixed[] */
     private $values = [];
 
-    /**
-     * @var array
-     */
-    private $types  = [];
+    /** @var mixed[][] */
+    private $types = [];
 
     /**
      * Converts a comparison expression into the target query language output.
-     *
-     * @param \Doctrine\Common\Collections\Expr\Comparison $comparison
      *
      * @return void
      */
@@ -56,7 +49,7 @@ class SqlValueVisitor extends ExpressionVisitor
 
         if (($operator === Comparison::EQ || $operator === Comparison::IS) && $value === null) {
             return;
-        } else if ($operator === Comparison::NEQ && $value === null) {
+        } elseif ($operator === Comparison::NEQ && $value === null) {
             return;
         }
 
@@ -66,8 +59,6 @@ class SqlValueVisitor extends ExpressionVisitor
 
     /**
      * Converts a composite expression into the target query language output.
-     *
-     * @param \Doctrine\Common\Collections\Expr\CompositeExpression $expr
      *
      * @return void
      */
@@ -80,8 +71,6 @@ class SqlValueVisitor extends ExpressionVisitor
 
     /**
      * Converts a value expression into the target query language part.
-     *
-     * @param \Doctrine\Common\Collections\Expr\Value $value
      *
      * @return mixed
      */
@@ -106,7 +95,6 @@ class SqlValueVisitor extends ExpressionVisitor
      * Returns the value from a Comparison. In case of a CONTAINS comparison,
      * the value is wrapped in %-signs, because it will be used in a LIKE clause.
      *
-     * @param \Doctrine\Common\Collections\Expr\Comparison $comparison
      * @return mixed
      */
     protected function getValueFromComparison(Comparison $comparison)

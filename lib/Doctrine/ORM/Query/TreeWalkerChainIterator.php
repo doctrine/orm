@@ -1,4 +1,5 @@
 <?php
+
 /*
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
  * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
@@ -19,29 +20,27 @@
 
 namespace Doctrine\ORM\Query;
 
+use ArrayAccess;
 use Doctrine\ORM\AbstractQuery;
+use Iterator;
+
+use function key;
+use function next;
+use function reset;
 
 /**
- * @template-implements \Iterator<TreeWalker>
- * @template-implements \ArrayAccess<int, TreeWalker>
+ * @template-implements Iterator<TreeWalker>
+ * @template-implements ArrayAccess<int, TreeWalker>
  */
-class TreeWalkerChainIterator implements \Iterator, \ArrayAccess
+class TreeWalkerChainIterator implements Iterator, ArrayAccess
 {
-    /**
-     * @var class-string<TreeWalker>[]
-     */
+    /** @var class-string<TreeWalker>[] */
     private $walkers = [];
-    /**
-     * @var TreeWalkerChain
-     */
+    /** @var TreeWalkerChain */
     private $treeWalkerChain;
-    /**
-     * @var AbstractQuery
-     */
+    /** @var AbstractQuery */
     private $query;
-    /**
-     * @var ParserResult
-     */
+    /** @var ParserResult */
     private $parserResult;
 
     /**
@@ -51,8 +50,8 @@ class TreeWalkerChainIterator implements \Iterator, \ArrayAccess
     public function __construct(TreeWalkerChain $treeWalkerChain, $query, $parserResult)
     {
         $this->treeWalkerChain = $treeWalkerChain;
-        $this->query = $query;
-        $this->parserResult = $parserResult;
+        $this->query           = $query;
+        $this->parserResult    = $parserResult;
     }
 
     /**
@@ -128,7 +127,7 @@ class TreeWalkerChainIterator implements \Iterator, \ArrayAccess
      */
     public function offsetSet($offset, $value)
     {
-        if (null === $offset) {
+        if ($offset === null) {
             $this->walkers[] = $value;
         } else {
             $this->walkers[$offset] = $value;

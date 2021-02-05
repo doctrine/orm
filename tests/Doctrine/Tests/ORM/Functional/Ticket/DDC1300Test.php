@@ -1,40 +1,47 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\Tests\ORM\Functional\Ticket;
+
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Tests\OrmFunctionalTestCase;
+
+use function count;
 
 /**
  * @group DDC-1300
  */
-class DDC1300Test extends \Doctrine\Tests\OrmFunctionalTestCase
+class DDC1300Test extends OrmFunctionalTestCase
 {
-    protected function setUp() : void
+    protected function setUp(): void
     {
         parent::setUp();
         $this->_schemaTool->createSchema(
             [
-            $this->_em->getClassMetadata(DDC1300Foo::class),
-            $this->_em->getClassMetadata(DDC1300FooLocale::class),
+                $this->_em->getClassMetadata(DDC1300Foo::class),
+                $this->_em->getClassMetadata(DDC1300FooLocale::class),
             ]
         );
     }
 
-    public function testIssue()
+    public function testIssue(): void
     {
-        $foo = new DDC1300Foo();
-        $foo->_fooReference = "foo";
+        $foo                = new DDC1300Foo();
+        $foo->_fooReference = 'foo';
 
         $this->_em->persist($foo);
         $this->_em->flush();
 
-        $locale = new DDC1300FooLocale();
-        $locale->_foo = $foo;
-        $locale->_locale = "en";
-        $locale->_title = "blub";
+        $locale          = new DDC1300FooLocale();
+        $locale->_foo    = $foo;
+        $locale->_locale = 'en';
+        $locale->_title  = 'blub';
 
         $this->_em->persist($locale);
         $this->_em->flush();
 
-        $query = $this->_em->createQuery('SELECT f, fl FROM Doctrine\Tests\ORM\Functional\Ticket\DDC1300Foo f JOIN f._fooLocaleRefFoo fl');
+        $query  = $this->_em->createQuery('SELECT f, fl FROM Doctrine\Tests\ORM\Functional\Ticket\DDC1300Foo f JOIN f._fooLocaleRefFoo fl');
         $result =  $query->getResult();
 
         $this->assertEquals(1, count($result));
@@ -70,13 +77,13 @@ class DDC1300Foo
      * Constructor
      *
      * @param array|Zend_Config|null $options
+     *
      * @return Bug_Model_Foo
      */
     public function __construct($options = null)
     {
-        $this->_fooLocaleRefFoo = new \Doctrine\Common\Collections\ArrayCollection();
+        $this->_fooLocaleRefFoo = new ArrayCollection();
     }
-
 }
 
 /**
@@ -84,7 +91,6 @@ class DDC1300Foo
  */
 class DDC1300FooLocale
 {
-
     /**
      * @ManyToOne(targetEntity="DDC1300Foo")
      * @JoinColumn(name="fooID", referencedColumnName="fooID")
@@ -104,5 +110,4 @@ class DDC1300FooLocale
      * @Column(name="title", type="string", nullable=true, length=150)
      */
     public $_title = null;
-
 }

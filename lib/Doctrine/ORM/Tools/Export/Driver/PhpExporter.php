@@ -1,4 +1,5 @@
 <?php
+
 /*
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
  * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
@@ -21,20 +22,27 @@ namespace Doctrine\ORM\Tools\Export\Driver;
 
 use Doctrine\ORM\Mapping\ClassMetadataInfo;
 
+use function array_merge;
+use function count;
+use function implode;
+use function sprintf;
+use function str_repeat;
+use function str_replace;
+use function ucfirst;
+use function var_export;
+
+use const PHP_EOL;
+
 /**
  * ClassMetadata exporter for PHP code.
  *
- * @link    www.doctrine-project.org
- * @since   2.0
- * @author  Jonathan Wage <jonwage@gmail.com>
- *
  * @deprecated 2.7 This class is being removed from the ORM and won't have any replacement
+ *
+ * @link    www.doctrine-project.org
  */
 class PhpExporter extends AbstractExporter
 {
-    /**
-     * @var string
-     */
+    /** @var string */
     protected $_extension = '.php';
 
     /**
@@ -42,7 +50,7 @@ class PhpExporter extends AbstractExporter
      */
     public function exportClassMetadata(ClassMetadataInfo $metadata)
     {
-        $lines = [];
+        $lines   = [];
         $lines[] = '<?php';
         $lines[] = null;
         $lines[] = 'use Doctrine\ORM\Mapping\ClassMetadataInfo;';
@@ -90,14 +98,17 @@ class PhpExporter extends AbstractExporter
             $lines[] = '$metadata->mapField(' . $this->_varExport($fieldMapping) . ');';
         }
 
-        if ( ! $metadata->isIdentifierComposite && $generatorType = $this->_getIdGeneratorTypeString($metadata->generatorType)) {
-            $lines[] = '$metadata->setIdGeneratorType(ClassMetadataInfo::GENERATOR_TYPE_' . $generatorType . ');';
+        if (! $metadata->isIdentifierComposite) {
+            $generatorType = $this->_getIdGeneratorTypeString($metadata->generatorType);
+            if ($generatorType) {
+                $lines[] = '$metadata->setIdGeneratorType(ClassMetadataInfo::GENERATOR_TYPE_' . $generatorType . ');';
+            }
         }
 
         foreach ($metadata->associationMappings as $associationMapping) {
             $cascade = ['remove', 'persist', 'refresh', 'merge', 'detach'];
             foreach ($cascade as $key => $value) {
-                if ( ! $associationMapping['isCascade'.ucfirst($value)]) {
+                if (! $associationMapping['isCascade' . ucfirst($value)]) {
                     unset($cascade[$key]);
                 }
             }
@@ -106,7 +117,7 @@ class PhpExporter extends AbstractExporter
                 $cascade = ['all'];
             }
 
-            $method = null;
+            $method                  = null;
             $associationMappingArray = [
                 'fieldName'    => $associationMapping['fieldName'],
                 'targetEntity' => $associationMapping['targetEntity'],
@@ -118,7 +129,7 @@ class PhpExporter extends AbstractExporter
             }
 
             if ($associationMapping['type'] & ClassMetadataInfo::TO_ONE) {
-                $method = 'mapOneToOne';
+                $method               = 'mapOneToOne';
                 $oneToOneMappingArray = [
                     'mappedBy'      => $associationMapping['mappedBy'],
                     'inversedBy'    => $associationMapping['inversedBy'],
@@ -127,33 +138,35 @@ class PhpExporter extends AbstractExporter
                 ];
 
                 $associationMappingArray = array_merge($associationMappingArray, $oneToOneMappingArray);
-            } elseif ($associationMapping['type'] == ClassMetadataInfo::ONE_TO_MANY) {
-                $method = 'mapOneToMany';
+            } elseif ($associationMapping['type'] === ClassMetadataInfo::ONE_TO_MANY) {
+                $method                             = 'mapOneToMany';
                 $potentialAssociationMappingIndexes = [
                     'mappedBy',
                     'orphanRemoval',
                     'orderBy',
                 ];
-                $oneToManyMappingArray = [];
+                $oneToManyMappingArray              = [];
                 foreach ($potentialAssociationMappingIndexes as $index) {
                     if (isset($associationMapping[$index])) {
                         $oneToManyMappingArray[$index] = $associationMapping[$index];
                     }
                 }
+
                 $associationMappingArray = array_merge($associationMappingArray, $oneToManyMappingArray);
-            } elseif ($associationMapping['type'] == ClassMetadataInfo::MANY_TO_MANY) {
-                $method = 'mapManyToMany';
+            } elseif ($associationMapping['type'] === ClassMetadataInfo::MANY_TO_MANY) {
+                $method                             = 'mapManyToMany';
                 $potentialAssociationMappingIndexes = [
                     'mappedBy',
                     'joinTable',
                     'orderBy',
                 ];
-                $manyToManyMappingArray = [];
+                $manyToManyMappingArray             = [];
                 foreach ($potentialAssociationMappingIndexes as $index) {
                     if (isset($associationMapping[$index])) {
                         $manyToManyMappingArray[$index] = $associationMapping[$index];
                     }
                 }
+
                 $associationMappingArray = array_merge($associationMappingArray, $manyToManyMappingArray);
             }
 
@@ -187,17 +200,17 @@ class PhpExporter extends AbstractExporter
      *
      * @psalm-return list<string>
      */
-    private function processEntityListeners(ClassMetadataInfo $metadata) : array
+    private function processEntityListeners(ClassMetadataInfo $metadata): array
     {
         $lines = [];
 
         foreach ($metadata->entityListeners as $event => $entityListenerConfig) {
             foreach ($entityListenerConfig as $entityListener) {
-                $lines[] = \sprintf(
+                $lines[] = sprintf(
                     '$metadata->addEntityListener(%s, %s, %s);',
-                    \var_export($event, true),
-                    \var_export($entityListener['class'], true),
-                    \var_export($entityListener['method'], true)
+                    var_export($event, true),
+                    var_export($entityListener['class'], true),
+                    var_export($entityListener['method'], true)
                 );
             }
         }

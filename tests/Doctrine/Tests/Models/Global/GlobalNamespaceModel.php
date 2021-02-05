@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 /**
  * @Entity
  * @Table(name="articles")
@@ -12,14 +14,10 @@ class DoctrineGlobal_Article
      */
     protected $id;
 
-    /**
-     * @Column(type="string")
-     */
+    /** @Column(type="string") */
     protected $headline;
 
-    /**
-     * @column(type="text")
-     */
+    /** @column(type="text") */
     protected $text;
 
     /**
@@ -50,21 +48,18 @@ class DoctrineGlobal_User
     /**
      * @Id
      * @Column(type="integer")
-     *
      * @var int
      */
     private $id;
 
     /**
      * @Column(type="string", length=64)
-     *
      * @var string
      */
     private $username;
 
     /**
      * @Column(type="string", length=128)
-     *
      * @var string
      */
     private $email;

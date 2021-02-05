@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\Tests\Models\Routing;
 
 /**
@@ -25,13 +27,9 @@ class RoutingLeg
      */
     public $toLocation;
 
-    /**
-     * @Column(type="datetime")
-     */
+    /** @Column(type="datetime") */
     public $departureDate;
 
-    /**
-     * @Column(type="datetime")
-     */
+    /** @Column(type="datetime") */
     public $arrivalDate;
 }

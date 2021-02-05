@@ -1,10 +1,11 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\Tests\Models\DDC1872;
 
 /**
  * @Entity
- *
  * @AttributeOverrides({
  * @AttributeOverride(name="foo",
  *          column=@Column(
@@ -16,7 +17,6 @@ namespace Doctrine\Tests\Models\DDC1872;
  *          )
  *      )
  * })
- *
  * @AssociationOverrides({
  * @AssociationOverride(name="bar",
  *          joinColumns=@JoinColumn(
