@@ -24,7 +24,6 @@ use Doctrine\Common\Collections\AbstractLazyCollection;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Criteria;
 use Doctrine\Common\Collections\Selectable;
-use Doctrine\ORM\Persisters\Entity\BasicEntityPersister;
 use Doctrine\ORM\Persisters\Entity\EntityPersister;
 
 /**
@@ -35,7 +34,7 @@ use Doctrine\ORM\Persisters\Entity\EntityPersister;
  */
 class LazyCriteriaCollection extends AbstractLazyCollection implements Selectable
 {
-    /** @var BasicEntityPersister */
+    /** @var EntityPersister */
     protected $entityPersister;
 
     /** @var Criteria */
