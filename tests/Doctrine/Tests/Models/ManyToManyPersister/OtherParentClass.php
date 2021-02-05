@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\Tests\Models\ManyToManyPersister;
 
 /**
@@ -11,8 +13,7 @@ class OtherParentClass
     /**
      * @Id
      * @Column(name="id", type="integer")
-     *
-     * @var integer
+     * @var int
      */
     public $id;
 

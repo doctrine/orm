@@ -1,4 +1,5 @@
 <?php
+
 /*
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
  * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
@@ -24,17 +25,14 @@ use Doctrine\Persistence\ObjectRepository;
 
 /**
  * Interface for entity repository factory.
- *
- * @author Guilherme Blanco <guilhermeblanco@hotmail.com>
- * @since 2.4
  */
 interface RepositoryFactory
 {
     /**
      * Gets the repository for an entity class.
      *
-     * @param \Doctrine\ORM\EntityManagerInterface $entityManager The EntityManager instance.
-     * @param string                               $entityName    The name of the entity.
+     * @param EntityManagerInterface $entityManager The EntityManager instance.
+     * @param string                 $entityName    The name of the entity.
      *
      * @return ObjectRepository
      */

@@ -1,22 +1,22 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\Tests\ORM\Functional;
 
+use Doctrine\ORM\ORMException;
 use Doctrine\Tests\Models\VersionedOneToOne\FirstRelatedEntity;
 use Doctrine\Tests\Models\VersionedOneToOne\SecondRelatedEntity;
-use Doctrine\ORM\ORMException;
 use Doctrine\Tests\OrmFunctionalTestCase;
 
 /**
  * Tests that an entity with a OneToOne relationship defined as the id, with a version field can be created.
  *
- * @author Rob Caiger <rob@clocal.co.uk>
- *
  * @group VersionedOneToOne
  */
 class VersionedOneToOneTest extends OrmFunctionalTestCase
 {
-    protected function setUp() : void
+    protected function setUp(): void
     {
         parent::setUp();
 
@@ -24,7 +24,7 @@ class VersionedOneToOneTest extends OrmFunctionalTestCase
             $this->_schemaTool->createSchema(
                 [
                     $this->_em->getClassMetadata(FirstRelatedEntity::class),
-                    $this->_em->getClassMetadata(SecondRelatedEntity::class)
+                    $this->_em->getClassMetadata(SecondRelatedEntity::class),
                 ]
             );
         } catch (ORMException $e) {
@@ -35,16 +35,16 @@ class VersionedOneToOneTest extends OrmFunctionalTestCase
      * This test case tests that a versionable entity, that has a oneToOne relationship as it's id can be created
      *  without this bug fix (DDC-3318), you could not do this
      */
-    public function testSetVersionOnCreate()
+    public function testSetVersionOnCreate(): void
     {
-        $secondRelatedEntity = new SecondRelatedEntity();
+        $secondRelatedEntity       = new SecondRelatedEntity();
         $secondRelatedEntity->name = 'Bob';
 
         $this->_em->persist($secondRelatedEntity);
         $this->_em->flush();
 
-        $firstRelatedEntity = new FirstRelatedEntity();
-        $firstRelatedEntity->name = 'Fred';
+        $firstRelatedEntity               = new FirstRelatedEntity();
+        $firstRelatedEntity->name         = 'Fred';
         $firstRelatedEntity->secondEntity = $secondRelatedEntity;
 
         $this->_em->persist($firstRelatedEntity);

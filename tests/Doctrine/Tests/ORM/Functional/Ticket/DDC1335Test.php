@@ -1,42 +1,49 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\Tests\ORM\Functional\Ticket;
+
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Tests\OrmFunctionalTestCase;
+use Exception;
+
+use function sizeof;
 
 /**
  * @group DDC-1335
  */
-class DDC1335Test extends \Doctrine\Tests\OrmFunctionalTestCase
+class DDC1335Test extends OrmFunctionalTestCase
 {
-    protected function setUp() : void
+    protected function setUp(): void
     {
         parent::setUp();
         try {
             $this->_schemaTool->createSchema(
                 [
-                $this->_em->getClassMetadata(DDC1335User::class),
-                $this->_em->getClassMetadata(DDC1335Phone::class),
+                    $this->_em->getClassMetadata(DDC1335User::class),
+                    $this->_em->getClassMetadata(DDC1335Phone::class),
                 ]
             );
             $this->loadFixture();
-        } catch(\Exception $e) {
+        } catch (Exception $e) {
         }
     }
 
-
-    public function testDql()
+    public function testDql(): void
     {
-        $dql      = 'SELECT u FROM ' . __NAMESPACE__ . '\DDC1335User u INDEX BY u.id';
-        $query    = $this->_em->createQuery($dql);
-        $result   = $query->getResult();
+        $dql    = 'SELECT u FROM ' . __NAMESPACE__ . '\DDC1335User u INDEX BY u.id';
+        $query  = $this->_em->createQuery($dql);
+        $result = $query->getResult();
 
         $this->assertEquals(sizeof($result), 3);
         $this->assertArrayHasKey(1, $result);
         $this->assertArrayHasKey(2, $result);
         $this->assertArrayHasKey(3, $result);
 
-        $dql      = 'SELECT u, p FROM '.__NAMESPACE__ . '\DDC1335User u INDEX BY u.email INNER JOIN u.phones p INDEX BY p.id';
-        $query    = $this->_em->createQuery($dql);
-        $result   = $query->getResult();
+        $dql    = 'SELECT u, p FROM ' . __NAMESPACE__ . '\DDC1335User u INDEX BY u.email INNER JOIN u.phones p INDEX BY p.id';
+        $query  = $this->_em->createQuery($dql);
+        $result = $query->getResult();
 
         $this->assertEquals(sizeof($result), 3);
         $this->assertArrayHasKey('foo@foo.com', $result);
@@ -47,8 +54,8 @@ class DDC1335Test extends \Doctrine\Tests\OrmFunctionalTestCase
         $this->assertEquals(sizeof($result['bar@bar.com']->phones), 3);
         $this->assertEquals(sizeof($result['foobar@foobar.com']->phones), 3);
 
-        $foo = $result['foo@foo.com']->phones->toArray();
-        $bar = $result['bar@bar.com']->phones->toArray();
+        $foo    = $result['foo@foo.com']->phones->toArray();
+        $bar    = $result['bar@bar.com']->phones->toArray();
         $foobar = $result['foobar@foobar.com']->phones->toArray();
 
         $this->assertArrayHasKey(1, $foo);
@@ -64,7 +71,7 @@ class DDC1335Test extends \Doctrine\Tests\OrmFunctionalTestCase
         $this->assertArrayHasKey(9, $foobar);
     }
 
-    public function testTicket()
+    public function testTicket(): void
     {
         $builder = $this->_em->createQueryBuilder();
         $builder->select('u')->from(DDC1335User::class, 'u', 'u.id');
@@ -79,7 +86,7 @@ class DDC1335Test extends \Doctrine\Tests\OrmFunctionalTestCase
         $this->assertEquals('SELECT u FROM ' . __NAMESPACE__ . '\DDC1335User u INDEX BY u.id', $dql);
     }
 
-    public function testIndexByUnique()
+    public function testIndexByUnique(): void
     {
         $builder = $this->_em->createQueryBuilder();
         $builder->select('u')->from(DDC1335User::class, 'u', 'u.email');
@@ -94,10 +101,10 @@ class DDC1335Test extends \Doctrine\Tests\OrmFunctionalTestCase
         $this->assertEquals('SELECT u FROM ' . __NAMESPACE__ . '\DDC1335User u INDEX BY u.email', $dql);
     }
 
-    public function  testIndexWithJoin()
+    public function testIndexWithJoin(): void
     {
         $builder = $this->_em->createQueryBuilder();
-        $builder->select('u','p')
+        $builder->select('u', 'p')
                 ->from(DDC1335User::class, 'u', 'u.email')
                 ->join('u.phones', 'p', null, null, 'p.id');
 
@@ -125,18 +132,18 @@ class DDC1335Test extends \Doctrine\Tests\OrmFunctionalTestCase
         $this->assertArrayHasKey(8, $result['foobar@foobar.com']->phones->toArray());
         $this->assertArrayHasKey(9, $result['foobar@foobar.com']->phones->toArray());
 
-        $this->assertEquals('SELECT u, p FROM '.__NAMESPACE__ . '\DDC1335User u INDEX BY u.email INNER JOIN u.phones p INDEX BY p.id', $dql);
+        $this->assertEquals('SELECT u, p FROM ' . __NAMESPACE__ . '\DDC1335User u INDEX BY u.email INNER JOIN u.phones p INDEX BY p.id', $dql);
     }
 
-    private function loadFixture()
+    private function loadFixture(): void
     {
-        $p1 = ['11 xxxx-xxxx','11 yyyy-yyyy','11 zzzz-zzzz'];
-        $p2 = ['22 xxxx-xxxx','22 yyyy-yyyy','22 zzzz-zzzz'];
-        $p3 = ['33 xxxx-xxxx','33 yyyy-yyyy','33 zzzz-zzzz'];
+        $p1 = ['11 xxxx-xxxx', '11 yyyy-yyyy', '11 zzzz-zzzz'];
+        $p2 = ['22 xxxx-xxxx', '22 yyyy-yyyy', '22 zzzz-zzzz'];
+        $p3 = ['33 xxxx-xxxx', '33 yyyy-yyyy', '33 zzzz-zzzz'];
 
-        $u1 = new DDC1335User("foo@foo.com", "Foo",$p1);
-        $u2 = new DDC1335User("bar@bar.com", "Bar",$p2);
-        $u3 = new DDC1335User("foobar@foobar.com", "Foo Bar",$p3);
+        $u1 = new DDC1335User('foo@foo.com', 'Foo', $p1);
+        $u2 = new DDC1335User('bar@bar.com', 'Bar', $p2);
+        $u3 = new DDC1335User('foobar@foobar.com', 'Foo Bar', $p3);
 
         $this->_em->persist($u1);
         $this->_em->persist($u2);
@@ -144,7 +151,6 @@ class DDC1335Test extends \Doctrine\Tests\OrmFunctionalTestCase
         $this->_em->flush();
         $this->_em->clear();
     }
-
 }
 
 /**
@@ -158,29 +164,23 @@ class DDC1335User
      */
     public $id;
 
-    /**
-     * @Column(type="string", unique=true)
-     */
+    /** @Column(type="string", unique=true) */
     public $email;
 
-    /**
-     * @Column(type="string")
-     */
+    /** @Column(type="string") */
     public $name;
 
-    /**
-     * @OneToMany(targetEntity="DDC1335Phone", mappedBy="user", cascade={"persist", "remove"})
-     */
+    /** @OneToMany(targetEntity="DDC1335Phone", mappedBy="user", cascade={"persist", "remove"}) */
     public $phones;
 
     public function __construct($email, $name, array $numbers = [])
     {
         $this->name   = $name;
         $this->email  = $email;
-        $this->phones = new \Doctrine\Common\Collections\ArrayCollection();
+        $this->phones = new ArrayCollection();
 
         foreach ($numbers as $number) {
-            $this->phones->add(new DDC1335Phone($this,$number));
+            $this->phones->add(new DDC1335Phone($this, $number));
         }
     }
 }
@@ -197,9 +197,7 @@ class DDC1335Phone
      */
     public $id;
 
-    /**
-     * @Column(name="numericalValue", type="string", nullable = false)
-     */
+    /** @Column(name="numericalValue", type="string", nullable = false) */
     public $numericalValue;
 
     /**
@@ -210,7 +208,7 @@ class DDC1335Phone
 
     public function __construct($user, $number)
     {
-        $this->user     = $user;
-        $this->numericalValue   = $number;
+        $this->user           = $user;
+        $this->numericalValue = $number;
     }
 }

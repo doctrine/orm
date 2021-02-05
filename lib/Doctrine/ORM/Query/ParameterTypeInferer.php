@@ -1,4 +1,5 @@
 <?php
+
 /*
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
  * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
@@ -19,18 +20,22 @@
 
 namespace Doctrine\ORM\Query;
 
+use DateInterval;
+use DateTimeImmutable;
+use DateTimeInterface;
 use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\Types\Type;
+use PDO;
+
+use function current;
+use function is_array;
+use function is_bool;
+use function is_int;
 
 /**
  * Provides an enclosed support for parameter inferring.
  *
  * @link    www.doctrine-project.org
- * @since   2.0
- * @author  Benjamin Eberlei <kontakt@beberlei.de>
- * @author  Guilherme Blanco <guilhermeblanco@hotmail.com>
- * @author  Jonathan Wage <jonwage@gmail.com>
- * @author  Roman Borschel <roman@code-factory.org>
  */
 class ParameterTypeInferer
 {
@@ -53,11 +58,15 @@ class ParameterTypeInferer
             return Type::BOOLEAN;
         }
 
-        if ($value instanceof \DateTime || $value instanceof \DateTimeInterface) {
+        if ($value instanceof DateTimeImmutable) {
+            return Type::DATETIME_IMMUTABLE;
+        }
+
+        if ($value instanceof DateTimeInterface) {
             return Type::DATETIME;
         }
 
-        if ($value instanceof \DateInterval) {
+        if ($value instanceof DateInterval) {
             return Type::DATEINTERVAL;
         }
 
@@ -67,6 +76,6 @@ class ParameterTypeInferer
                 : Connection::PARAM_STR_ARRAY;
         }
 
-        return \PDO::PARAM_STR;
+        return PDO::PARAM_STR;
     }
 }

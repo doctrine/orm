@@ -1,18 +1,23 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\Tests\ORM\Functional\Ticket;
 
 use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\Id\AbstractIdGenerator;
 use Doctrine\ORM\Mapping\ClassMetadataInfo;
 use Doctrine\ORM\Mapping\Driver\StaticPHPDriver;
+use Doctrine\Tests\OrmFunctionalTestCase;
+
+use function md5;
 
 /**
  * @group DDC-2415
  */
-class DDC2415Test extends \Doctrine\Tests\OrmFunctionalTestCase
+class DDC2415Test extends OrmFunctionalTestCase
 {
-    protected function setUp() : void
+    protected function setUp(): void
     {
         parent::setUp();
 
@@ -20,23 +25,23 @@ class DDC2415Test extends \Doctrine\Tests\OrmFunctionalTestCase
 
         $this->_schemaTool->createSchema(
             [
-            $this->_em->getClassMetadata(DDC2415ParentEntity::class),
-            $this->_em->getClassMetadata(DDC2415ChildEntity::class),
+                $this->_em->getClassMetadata(DDC2415ParentEntity::class),
+                $this->_em->getClassMetadata(DDC2415ChildEntity::class),
             ]
         );
     }
 
-    public function testTicket()
+    public function testTicket(): void
     {
-        $parentMetadata  = $this->_em->getClassMetadata(DDC2415ParentEntity::class);
-        $childMetadata   = $this->_em->getClassMetadata(DDC2415ChildEntity::class);
+        $parentMetadata = $this->_em->getClassMetadata(DDC2415ParentEntity::class);
+        $childMetadata  = $this->_em->getClassMetadata(DDC2415ChildEntity::class);
 
         $this->assertEquals($parentMetadata->generatorType, $childMetadata->generatorType);
         $this->assertEquals($parentMetadata->customGeneratorDefinition, $childMetadata->customGeneratorDefinition);
         $this->assertEquals(DDC2415Generator::class, $parentMetadata->customGeneratorDefinition['class']);
 
-        $e1 = new DDC2415ChildEntity("ChildEntity 1");
-        $e2 = new DDC2415ChildEntity("ChildEntity 2");
+        $e1 = new DDC2415ChildEntity('ChildEntity 1');
+        $e2 = new DDC2415ChildEntity('ChildEntity 2');
 
         $this->_em->persist($e1);
         $this->_em->persist($e2);
@@ -57,13 +62,13 @@ class DDC2415ParentEntity
         return $this->id;
     }
 
-    public static function loadMetadata(ClassMetadataInfo $metadata)
+    public static function loadMetadata(ClassMetadataInfo $metadata): void
     {
         $metadata->mapField(
             [
-            'id'        => true,
-            'fieldName' => 'id',
-            'type'      => 'string',
+                'id'        => true,
+                'fieldName' => 'id',
+                'type'      => 'string',
             ]
         );
 
@@ -88,12 +93,12 @@ class DDC2415ChildEntity extends DDC2415ParentEntity
         return $this->name;
     }
 
-    public static function loadMetadata(ClassMetadataInfo $metadata)
+    public static function loadMetadata(ClassMetadataInfo $metadata): void
     {
         $metadata->mapField(
             [
-            'fieldName' => 'name',
-            'type'      => 'string',
+                'fieldName' => 'name',
+                'type'      => 'string',
             ]
         );
     }

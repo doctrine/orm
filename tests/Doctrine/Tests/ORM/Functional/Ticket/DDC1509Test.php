@@ -1,45 +1,50 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\Tests\ORM\Functional\Ticket;
 
+use Doctrine\ORM\EntityManager;
+use Doctrine\Tests\OrmFunctionalTestCase;
 use Doctrine\Tests\VerifyDeprecations;
+use Exception;
+
+use function assert;
 
 /**
  * @group DDC-1509
  */
-class DDC1509Test extends \Doctrine\Tests\OrmFunctionalTestCase
+class DDC1509Test extends OrmFunctionalTestCase
 {
     use VerifyDeprecations;
 
-    protected function setUp() : void
+    protected function setUp(): void
     {
         parent::setUp();
 
         try {
             $this->_schemaTool->createSchema(
                 [
-                $this->_em->getClassMetadata(DDC1509AbstractFile::class),
-                $this->_em->getClassMetadata(DDC1509File::class),
-                $this->_em->getClassMetadata(DDC1509Picture::class),
+                    $this->_em->getClassMetadata(DDC1509AbstractFile::class),
+                    $this->_em->getClassMetadata(DDC1509File::class),
+                    $this->_em->getClassMetadata(DDC1509Picture::class),
                 ]
             );
-        } catch (\Exception $ignored) {
-
+        } catch (Exception $ignored) {
         }
     }
 
-    public function testFailingCase()
+    public function testFailingCase(): void
     {
-        $file = new DDC1509File;
-        $thumbnail = new DDC1509File;
+        $file      = new DDC1509File();
+        $thumbnail = new DDC1509File();
 
-        $picture = new DDC1509Picture;
+        $picture = new DDC1509Picture();
         $picture->setFile($file);
         $picture->setThumbnail($thumbnail);
 
-
-        /* @var $em \Doctrine\ORM\EntityManager */
         $em = $this->_em;
+        assert($em instanceof EntityManager);
         $em->persist($picture);
         $em->flush();
         $em->clear();
@@ -47,13 +52,12 @@ class DDC1509Test extends \Doctrine\Tests\OrmFunctionalTestCase
         $id = $picture->getPictureId();
 
         $pic = $em->merge($picture);
-        /* @var $pic DDC1509Picture */
+        assert($pic instanceof DDC1509Picture);
 
         $this->assertNotNull($pic->getThumbnail());
         $this->assertNotNull($pic->getFile());
         $this->assertHasDeprecationMessages();
     }
-
 }
 
 /**
@@ -61,7 +65,6 @@ class DDC1509Test extends \Doctrine\Tests\OrmFunctionalTestCase
  */
 class DDC1509Picture
 {
-
     /**
      * @Column(type="integer")
      * @Id
@@ -69,14 +72,10 @@ class DDC1509Picture
      */
     private $id;
 
-    /**
-     * @ManyToOne(targetEntity="DDC1509AbstractFile", cascade={"persist", "remove"})
-     */
+    /** @ManyToOne(targetEntity="DDC1509AbstractFile", cascade={"persist", "remove"}) */
     private $thumbnail;
 
-    /**
-     * @ManyToOne(targetEntity="DDC1509AbstractFile", cascade={"persist", "remove"})
-     */
+    /** @ManyToOne(targetEntity="DDC1509AbstractFile", cascade={"persist", "remove"}) */
     private $file;
 
     /**
@@ -90,7 +89,7 @@ class DDC1509Picture
     /**
      * Set file
      */
-    public function setFile($value = null)
+    public function setFile($value = null): void
     {
         $this->file = $value;
     }
@@ -108,11 +107,10 @@ class DDC1509Picture
         return $this->thumbnail;
     }
 
-    public function setThumbnail($thumbnail)
+    public function setThumbnail($thumbnail): void
     {
         $this->thumbnail = $thumbnail;
     }
-
 }
 
 /**
@@ -123,7 +121,6 @@ class DDC1509Picture
  */
 class DDC1509AbstractFile
 {
-
     /**
      * @Column(type="integer")
      * @Id
@@ -138,7 +135,6 @@ class DDC1509AbstractFile
     {
         return $this->id;
     }
-
 }
 
 /**
@@ -146,5 +142,4 @@ class DDC1509AbstractFile
  */
 class DDC1509File extends DDC1509AbstractFile
 {
-
 }

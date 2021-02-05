@@ -1,9 +1,12 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\Tests\Models\Cache;
 
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\Mapping as ORM;
+use Doctrine\ORM\Mapping\ClassMetadataInfo;
 
 /**
  * @Cache
@@ -21,9 +24,7 @@ class City
     #[ORM\Id, ORM\GeneratedValue, ORM\Column(type: "integer")]
     protected $id;
 
-    /**
-     * @Column(unique=true)
-     */
+    /** @Column(unique=true) */
     #[ORM\Column(unique: true)]
     protected $name;
 
@@ -37,9 +38,7 @@ class City
     #[ORM\JoinColumn(name: "state_id", referencedColumnName: "id")]
     protected $state;
 
-    /**
-     * @ManyToMany(targetEntity="Travel", mappedBy="visitedCities")
-     */
+    /** @ManyToMany(targetEntity="Travel", mappedBy="visitedCities") */
     #[ORM\ManyToMany(targetEntity: "Travel", mappedBy: "visitedCities")]
     public $travels;
 
@@ -52,12 +51,12 @@ class City
     #[ORM\OneToMany(targetEntity: "Attraction", mappedBy: "city")]
     public $attractions;
 
-    public function __construct($name, State $state = null)
+    public function __construct($name, ?State $state = null)
     {
-        $this->name         = $name;
-        $this->state        = $state;
-        $this->travels      = new ArrayCollection();
-        $this->attractions  = new ArrayCollection();
+        $this->name        = $name;
+        $this->state       = $state;
+        $this->travels     = new ArrayCollection();
+        $this->attractions = new ArrayCollection();
     }
 
     public function getId()
@@ -65,7 +64,7 @@ class City
         return $this->id;
     }
 
-    public function setId($id)
+    public function setId($id): void
     {
         $this->id = $id;
     }
@@ -75,7 +74,7 @@ class City
         return $this->name;
     }
 
-    public function setName($name)
+    public function setName($name): void
     {
         $this->name = $name;
     }
@@ -85,12 +84,12 @@ class City
         return $this->state;
     }
 
-    public function setState(State $state)
+    public function setState(State $state): void
     {
         $this->state = $state;
     }
 
-    public function addTravel(Travel $travel)
+    public function addTravel(Travel $travel): void
     {
         $this->travels[] = $travel;
     }
@@ -100,7 +99,7 @@ class City
         return $this->travels;
     }
 
-    public function addAttraction(Attraction $attraction)
+    public function addAttraction(Attraction $attraction): void
     {
         $this->attractions[] = $attraction;
     }
@@ -110,7 +109,7 @@ class City
         return $this->attractions;
     }
 
-    public static function loadMetadata(\Doctrine\ORM\Mapping\ClassMetadataInfo $metadata)
+    public static function loadMetadata(ClassMetadataInfo $metadata): void
     {
         include __DIR__ . '/../../ORM/Mapping/php/Doctrine.Tests.Models.Cache.City.php';
     }

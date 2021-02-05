@@ -1,4 +1,5 @@
 <?php
+
 /*
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
  * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
@@ -19,41 +20,39 @@
 
 namespace Doctrine\ORM\Query\AST;
 
+use Doctrine\ORM\Query\QueryException;
+
+use function is_numeric;
+use function strlen;
+use function substr;
+
 /**
  * Description of InputParameter.
  *
  * @link    www.doctrine-project.org
- * @since   2.0
- * @author  Guilherme Blanco <guilhermeblanco@hotmail.com>
- * @author  Jonathan Wage <jonwage@gmail.com>
- * @author  Roman Borschel <roman@code-factory.org>
  */
 class InputParameter extends Node
 {
-    /**
-     * @var bool
-     */
+    /** @var bool */
     public $isNamed;
 
-    /**
-     * @var string
-     */
+    /** @var string */
     public $name;
 
     /**
      * @param string $value
      *
-     * @throws \Doctrine\ORM\Query\QueryException
+     * @throws QueryException
      */
     public function __construct($value)
     {
         if (strlen($value) === 1) {
-            throw \Doctrine\ORM\Query\QueryException::invalidParameterFormat($value);
+            throw QueryException::invalidParameterFormat($value);
         }
 
-        $param = substr($value, 1);
+        $param         = substr($value, 1);
         $this->isNamed = ! is_numeric($param);
-        $this->name = $param;
+        $this->name    = $param;
     }
 
     /**

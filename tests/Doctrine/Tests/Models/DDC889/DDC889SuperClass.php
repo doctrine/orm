@@ -3,6 +3,7 @@
 namespace Doctrine\Tests\Models\DDC889;
 
 use Doctrine\ORM\Mapping as ORM;
+use Doctrine\ORM\Mapping\ClassMetadataInfo;
 
 /**
  * @MappedSuperclass
@@ -14,15 +15,13 @@ class DDC889SuperClass
     #[ORM\Column]
     protected $name;
 
-    public static function loadMetadata(\Doctrine\ORM\Mapping\ClassMetadataInfo $metadata)
+    public static function loadMetadata(ClassMetadataInfo $metadata): void
     {
         $metadata->mapField(
-            [
-           'fieldName'  => 'name',
-            ]
+            ['fieldName' => 'name']
         );
 
         $metadata->isMappedSuperclass = true;
-        $metadata->setIdGeneratorType(\Doctrine\ORM\Mapping\ClassMetadataInfo::GENERATOR_TYPE_NONE);
+        $metadata->setIdGeneratorType(ClassMetadataInfo::GENERATOR_TYPE_NONE);
     }
 }

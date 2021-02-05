@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\Tests\Models\ECommerce;
 
 use Doctrine\Common\Collections\ArrayCollection;
@@ -8,7 +10,6 @@ use Doctrine\Common\Collections\ArrayCollection;
  * ECommerceCategory
  * Represents a tag applied on particular products.
  *
- * @author Giorgio Sironi
  * @Entity
  * @Table(name="ecommerce_categories")
  */
@@ -20,19 +21,13 @@ class ECommerceCategory
      */
     private $id;
 
-    /**
-     * @Column(type="string", length=50)
-     */
+    /** @Column(type="string", length=50) */
     private $name;
 
-    /**
-     * @ManyToMany(targetEntity="ECommerceProduct", mappedBy="categories")
-     */
+    /** @ManyToMany(targetEntity="ECommerceProduct", mappedBy="categories") */
     private $products;
 
-    /**
-     * @OneToMany(targetEntity="ECommerceCategory", mappedBy="parent", cascade={"persist"})
-     */
+    /** @OneToMany(targetEntity="ECommerceCategory", mappedBy="parent", cascade={"persist"}) */
     private $children;
 
     /**
@@ -57,20 +52,20 @@ class ECommerceCategory
         return $this->name;
     }
 
-    public function setName($name)
+    public function setName($name): void
     {
         $this->name = $name;
     }
 
-    public function addProduct(ECommerceProduct $product)
+    public function addProduct(ECommerceProduct $product): void
     {
-        if (!$this->products->contains($product)) {
+        if (! $this->products->contains($product)) {
             $this->products[] = $product;
             $product->addCategory($this);
         }
     }
 
-    public function removeProduct(ECommerceProduct $product)
+    public function removeProduct(ECommerceProduct $product): void
     {
         $removed = $this->products->removeElement($product);
         if ($removed) {
@@ -83,7 +78,7 @@ class ECommerceCategory
         return $this->products;
     }
 
-    private function setParent(ECommerceCategory $parent)
+    private function setParent(ECommerceCategory $parent): void
     {
         $this->parent = $parent;
     }
@@ -98,20 +93,19 @@ class ECommerceCategory
         return $this->parent;
     }
 
-    public function addChild(ECommerceCategory $child)
+    public function addChild(ECommerceCategory $child): void
     {
         $this->children[] = $child;
         $child->setParent($this);
     }
 
     /** does not set the owning side. */
-    public function brokenAddChild(ECommerceCategory $child)
+    public function brokenAddChild(ECommerceCategory $child): void
     {
         $this->children[] = $child;
     }
 
-
-    public function removeChild(ECommerceCategory $child)
+    public function removeChild(ECommerceCategory $child): void
     {
         $removed = $this->children->removeElement($child);
         if ($removed) {
@@ -119,7 +113,7 @@ class ECommerceCategory
         }
     }
 
-    private function removeParent()
+    private function removeParent(): void
     {
         $this->parent = null;
     }

@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\Tests\Models\Taxi;
 
 /**
@@ -24,18 +26,16 @@ class PaidRide
      */
     private $car;
 
-    /**
-     * @Column(type="decimal", precision=6, scale=2)
-     */
+    /** @Column(type="decimal", precision=6, scale=2) */
     private $fare;
 
     public function __construct(Driver $driver, Car $car)
     {
         $this->driver = $driver;
-        $this->car = $car;
+        $this->car    = $car;
     }
 
-    public function setFare($fare)
+    public function setFare($fare): void
     {
         $this->fare = $fare;
     }

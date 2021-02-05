@@ -1,38 +1,45 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\Tests\ORM\Functional\Ticket;
+
+use Doctrine\ORM\UnitOfWork;
+use Doctrine\Tests\OrmFunctionalTestCase;
+use Exception;
+
+use function get_class;
 
 /**
  * @group DDC-1461
  */
-class DDC1461Test extends \Doctrine\Tests\OrmFunctionalTestCase
+class DDC1461Test extends OrmFunctionalTestCase
 {
-    protected function setUp() : void
+    protected function setUp(): void
     {
         parent::setUp();
 
         try {
             $this->_schemaTool->createSchema(
                 [
-                $this->_em->getClassMetadata(DDC1461TwitterAccount::class),
-                $this->_em->getClassMetadata(DDC1461User::class)
+                    $this->_em->getClassMetadata(DDC1461TwitterAccount::class),
+                    $this->_em->getClassMetadata(DDC1461User::class),
                 ]
             );
-        } catch(\Exception $e) {
-
+        } catch (Exception $e) {
         }
     }
 
-    public function testChangeDetectionDeferredExplicit()
+    public function testChangeDetectionDeferredExplicit(): void
     {
-        $user = new DDC1461User;
+        $user = new DDC1461User();
         $this->_em->persist($user);
         $this->_em->flush();
 
-        $this->assertEquals(\Doctrine\ORM\UnitOfWork::STATE_MANAGED, $this->_em->getUnitOfWork()->getEntityState($user, \Doctrine\ORM\UnitOfWork::STATE_NEW), "Entity should be managed.");
-        $this->assertEquals(\Doctrine\ORM\UnitOfWork::STATE_MANAGED, $this->_em->getUnitOfWork()->getEntityState($user), "Entity should be managed.");
+        $this->assertEquals(UnitOfWork::STATE_MANAGED, $this->_em->getUnitOfWork()->getEntityState($user, UnitOfWork::STATE_NEW), 'Entity should be managed.');
+        $this->assertEquals(UnitOfWork::STATE_MANAGED, $this->_em->getUnitOfWork()->getEntityState($user), 'Entity should be managed.');
 
-        $acc = new DDC1461TwitterAccount;
+        $acc                  = new DDC1461TwitterAccount();
         $user->twitterAccount = $acc;
 
         $this->_em->persist($user);
@@ -76,8 +83,6 @@ class DDC1461TwitterAccount
      */
     public $id;
 
-    /**
-     * @OneToOne(targetEntity="DDC1461User", fetch="EAGER")
-     */
+    /** @OneToOne(targetEntity="DDC1461User", fetch="EAGER") */
     public $user;
 }

@@ -1,15 +1,17 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\Tests\Models\DDC3579;
 
 use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\ORM\Mapping\ClassMetadataInfo;
 
 /**
  * @MappedSuperclass
  */
 class DDC3579User
 {
-
     /**
      * @Id
      * @GeneratedValue
@@ -17,100 +19,79 @@ class DDC3579User
      */
     protected $id;
 
-    /**
-     * @Column(name="user_name", nullable=true, unique=false, length=250)
-     */
+    /** @Column(name="user_name", nullable=true, unique=false, length=250) */
     protected $name;
 
     /**
      * @var ArrayCollection
-     *
      * @ManyToMany(targetEntity="DDC3579Group")
      */
     protected $groups;
 
-    /**
-     * @param string $name
-     */
-    public function __construct($name = null)
+    public function __construct(?string $name = null)
     {
-        $this->name     = $name;
-        $this->groups   = new ArrayCollection;
+        $this->name   = $name;
+        $this->groups = new ArrayCollection();
     }
 
-    /**
-     * @return integer
-     */
-    public function getId()
+    public function getId(): int
     {
         return $this->id;
     }
 
-    /**
-     * @return string
-     */
-    public function getName()
+    public function getName(): string
     {
         return $this->name;
     }
 
-    /**
-     * @param string $name
-     */
-    public function setName($name)
+    public function setName(string $name): void
     {
         $this->name = $name;
     }
 
-    /**
-     * @param DDC3579Group $group
-     */
-    public function addGroup(DDC3579Group $group)
+    public function addGroup(DDC3579Group $group): void
     {
         $this->groups->add($group);
         $group->addUser($this);
     }
 
-    /**
-     * @return ArrayCollection
-     */
-    public function getGroups()
+    public function getGroups(): ArrayCollection
     {
         return $this->groups;
     }
 
-    public static function loadMetadata($metadata)
+    public static function loadMetadata($metadata): void
     {
         $metadata->isMappedSuperclass = true;
 
         $metadata->mapField(
             [
-           'id'         => true,
-           'fieldName'  => 'id',
-           'type'       => 'integer',
-           'columnName' => 'user_id',
-           'length'     => 150,
+                'id'         => true,
+                'fieldName'  => 'id',
+                'type'       => 'integer',
+                'columnName' => 'user_id',
+                'length'     => 150,
             ]
         );
 
         $metadata->mapField(
             [
-            'fieldName' => 'name',
-            'type'      => 'string',
-            'columnName'=> 'user_name',
-            'nullable'  => true,
-            'unique'    => false,
-            'length'    => 250,
+                'fieldName' => 'name',
+                'type'      => 'string',
+                'columnName' => 'user_name',
+                'nullable'  => true,
+                'unique'    => false,
+                'length'    => 250,
             ]
         );
 
         $metadata->mapManyToMany(
             [
-           'fieldName'      => 'groups',
-           'targetEntity'   => 'DDC3579Group'
+                'fieldName'      => 'groups',
+                'targetEntity'   => 'DDC3579Group',
             ]
         );
 
-        $metadata->setIdGeneratorType(\Doctrine\ORM\Mapping\ClassMetadataInfo::GENERATOR_TYPE_AUTO);
+        $metadata->setIdGeneratorType(ClassMetadataInfo::GENERATOR_TYPE_AUTO);
     }
 }

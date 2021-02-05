@@ -1,4 +1,5 @@
 <?php
+
 /*
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
  * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
@@ -26,30 +27,19 @@ use Doctrine\ORM\EntityManagerInterface;
 /**
  * Event Args used for the Events::postGenerateSchema event.
  *
- * @license     http://www.opensource.org/licenses/mit-license.php MIT
  * @link        www.doctrine-project.com
- * @since       1.0
- * @author      Benjamin Eberlei <kontakt@beberlei.de>
  */
 class GenerateSchemaEventArgs extends EventArgs
 {
-    /**
-     * @var \Doctrine\ORM\EntityManagerInterface
-     */
+    /** @var EntityManagerInterface */
     private $em;
 
-    /**
-     * @var \Doctrine\DBAL\Schema\Schema
-     */
+    /** @var Schema */
     private $schema;
 
-    /**
-     * @param EntityManagerInterface $em
-     * @param Schema                 $schema
-     */
     public function __construct(EntityManagerInterface $em, Schema $schema)
     {
-        $this->em = $em;
+        $this->em     = $em;
         $this->schema = $schema;
     }
 

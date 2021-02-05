@@ -1,18 +1,25 @@
 <?php
+
 declare(strict_types=1);
 
 namespace Doctrine\Tests\ORM\Functional\Ticket;
 
+use Doctrine\ORM\OptimisticLockException;
+use Doctrine\ORM\ORMException;
 use Doctrine\ORM\Tools\ToolsException;
 use Doctrine\Persistence\Mapping\MappingException;
 use Doctrine\Tests\OrmFunctionalTestCase;
+
+use function array_keys;
+use function array_walk;
+use function count;
 
 /**
  * @group #6303
  */
 class DDC6303Test extends OrmFunctionalTestCase
 {
-    protected function setUp() : void
+    protected function setUp(): void
     {
         parent::setUp();
 
@@ -26,7 +33,7 @@ class DDC6303Test extends OrmFunctionalTestCase
         }
     }
 
-    public function testMixedTypeHydratedCorrectlyInJoinedInheritance() : void
+    public function testMixedTypeHydratedCorrectlyInJoinedInheritance(): void
     {
         // DDC6303ChildA and DDC6303ChildB have an inheritance from DDC6303BaseClass,
         // but one has a string originalData and the second has an array, since the fields
@@ -35,10 +42,9 @@ class DDC6303Test extends OrmFunctionalTestCase
             'a' => new DDC6303ChildA('a', 'authorized'),
             'b' => new DDC6303ChildB('b', ['accepted', 'authorized']),
         ]);
-
     }
 
-    public function testEmptyValuesInJoinedInheritance() : void
+    public function testEmptyValuesInJoinedInheritance(): void
     {
         $this->assertHydratedEntitiesSameToPersistedOnes([
             'stringEmpty' => new DDC6303ChildA('stringEmpty', ''),
@@ -51,16 +57,16 @@ class DDC6303Test extends OrmFunctionalTestCase
      * @param DDC6303BaseClass[] $persistedEntities indexed by identifier
      *
      * @throws MappingException
-     * @throws \Doctrine\ORM\ORMException
-     * @throws \Doctrine\ORM\OptimisticLockException
+     * @throws ORMException
+     * @throws OptimisticLockException
      */
-    private function assertHydratedEntitiesSameToPersistedOnes(array $persistedEntities) : void
+    private function assertHydratedEntitiesSameToPersistedOnes(array $persistedEntities): void
     {
         array_walk($persistedEntities, [$this->_em, 'persist']);
         $this->_em->flush();
         $this->_em->clear();
 
-        /* @var $entities DDC6303BaseClass[] */
+        /** @var DDC6303BaseClass[] $entities */
         $entities = $this
             ->_em
             ->getRepository(DDC6303BaseClass::class)

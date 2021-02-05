@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\Tests\Models\Quote;
 
 /**
@@ -15,9 +17,7 @@ class City
      */
     public $id;
 
-    /**
-     * @Column(name="`city-name`")
-     */
+    /** @Column(name="`city-name`") */
     public $name;
 
     public function __construct(string $name)

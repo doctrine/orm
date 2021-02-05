@@ -11,10 +11,7 @@ use Doctrine\Tests\OrmFunctionalTestCase;
  */
 final class GH8055Test extends OrmFunctionalTestCase
 {
-    /**
-     * {@inheritDoc}
-     */
-    protected function setUp() : void
+    protected function setUp(): void
     {
         parent::setUp();
 
@@ -24,7 +21,7 @@ final class GH8055Test extends OrmFunctionalTestCase
         ]);
     }
 
-    public function testNumericDescriminatorColumn() : void
+    public function testNumericDescriminatorColumn(): void
     {
         $entity        = new GH8055SubClass();
         $entity->value = 'test';

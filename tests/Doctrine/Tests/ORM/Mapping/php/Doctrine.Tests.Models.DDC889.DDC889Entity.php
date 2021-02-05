@@ -1,3 +1,3 @@
 <?php
 
-use Doctrine\ORM\Mapping\ClassMetadataInfo;
+declare(strict_types=1);

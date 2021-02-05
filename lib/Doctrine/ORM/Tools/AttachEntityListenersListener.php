@@ -1,4 +1,5 @@
 <?php
+
 /*
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
  * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
@@ -20,20 +21,15 @@
 namespace Doctrine\ORM\Tools;
 
 use Doctrine\ORM\Event\LoadClassMetadataEventArgs;
-use Doctrine\ORM\Mapping\ClassMetadata;
+
+use function ltrim;
 
 /**
  * Mechanism to programmatically attach entity listeners.
- *
- * @author Fabio B. SIlva <fabio.bat.silva@gmail.com>
- *
- * @since 2.5
  */
 class AttachEntityListenersListener
 {
-    /**
-     * @var array[]
-     */
+    /** @var mixed[][] */
     private $entityListeners = [];
 
     /**
@@ -51,14 +47,12 @@ class AttachEntityListenersListener
         $this->entityListeners[ltrim($entityClass, '\\')][] = [
             'event'  => $eventName,
             'class'  => $listenerClass,
-            'method' => $listenerCallback ?: $eventName
+            'method' => $listenerCallback ?: $eventName,
         ];
     }
 
     /**
      * Processes event and attach the entity listener.
-     *
-     * @param \Doctrine\ORM\Event\LoadClassMetadataEventArgs $event
      *
      * @return void
      */
@@ -66,7 +60,7 @@ class AttachEntityListenersListener
     {
         $metadata = $event->getClassMetadata();
 
-        if ( ! isset($this->entityListeners[$metadata->name])) {
+        if (! isset($this->entityListeners[$metadata->name])) {
             return;
         }
 

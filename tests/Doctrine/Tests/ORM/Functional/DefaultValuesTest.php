@@ -1,27 +1,30 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\Tests\ORM\Functional;
 
 use Doctrine\Tests\OrmFunctionalTestCase;
+use Exception;
+
+use function get_class;
 
 /**
  * Tests basic operations on entities with default values.
- *
- * @author robo
  */
 class DefaultValuesTest extends OrmFunctionalTestCase
 {
-    protected function setUp() : void
+    protected function setUp(): void
     {
         parent::setUp();
         try {
             $this->_schemaTool->createSchema(
                 [
-                $this->_em->getClassMetadata(DefaultValueUser::class),
-                $this->_em->getClassMetadata(DefaultValueAddress::class)
+                    $this->_em->getClassMetadata(DefaultValueUser::class),
+                    $this->_em->getClassMetadata(DefaultValueAddress::class),
                 ]
             );
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             // Swallow all exceptions. We do not test the schema tool here.
         }
     }
@@ -29,24 +32,25 @@ class DefaultValuesTest extends OrmFunctionalTestCase
     /**
      * @group non-cacheable
      */
-    public function testSimpleDetachMerge() {
-        $user = new DefaultValueUser;
+    public function testSimpleDetachMerge(): void
+    {
+        $user       = new DefaultValueUser();
         $user->name = 'romanb';
         $this->_em->persist($user);
         $this->_em->flush();
         $this->_em->clear();
 
         $userId = $user->id; // e.g. from $_REQUEST
-        $user2 = $this->_em->getReference(get_class($user), $userId);
+        $user2  = $this->_em->getReference(get_class($user), $userId);
 
         $this->_em->flush();
         $this->assertFalse($user2->__isInitialized__);
 
-        $a = new DefaultValueAddress;
+        $a          = new DefaultValueAddress();
         $a->country = 'de';
-        $a->zip = '12345';
-        $a->city = 'Berlin';
-        $a->street = 'Sesamestreet';
+        $a->zip     = '12345';
+        $a->city    = 'Berlin';
+        $a->street  = 'Sesamestreet';
 
         $a->user = $user2;
         $this->_em->persist($a);
@@ -64,9 +68,9 @@ class DefaultValuesTest extends OrmFunctionalTestCase
     /**
      * @group DDC-1386
      */
-    public function testGetPartialReferenceWithDefaultValueNotEvaluatedInFlush()
+    public function testGetPartialReferenceWithDefaultValueNotEvaluatedInFlush(): void
     {
-        $user = new DefaultValueUser;
+        $user       = new DefaultValueUser();
         $user->name = 'romanb';
         $user->type = 'Normaluser';
 
@@ -97,20 +101,17 @@ class DefaultValueUser
      * @GeneratedValue(strategy="AUTO")
      */
     public $id;
-    /**
-     * @Column(type="string")
-     */
+    /** @Column(type="string") */
     public $name = '';
-    /**
-     * @Column(type="string")
-     */
+    /** @Column(type="string") */
     public $type = 'Poweruser';
-    /**
-     * @OneToOne(targetEntity="DefaultValueAddress", mappedBy="user", cascade={"persist"})
-     */
+    /** @OneToOne(targetEntity="DefaultValueAddress", mappedBy="user", cascade={"persist"}) */
     public $address;
 
-    public function getId() {return $this->id;}
+    public function getId()
+    {
+        return $this->id;
+    }
 }
 
 /**
@@ -126,19 +127,13 @@ class DefaultValueAddress
      */
     public $id;
 
-    /**
-     * @Column(type="string", length=50)
-     */
+    /** @Column(type="string", length=50) */
     public $country;
 
-    /**
-     * @Column(type="string", length=50)
-     */
+    /** @Column(type="string", length=50) */
     public $zip;
 
-    /**
-     * @Column(type="string", length=50)
-     */
+    /** @Column(type="string", length=50) */
     public $city;
 
     /**
@@ -152,5 +147,8 @@ class DefaultValueAddress
      */
     public $user;
 
-    public function getUser() {return $this->user;}
+    public function getUser()
+    {
+        return $this->user;
+    }
 }

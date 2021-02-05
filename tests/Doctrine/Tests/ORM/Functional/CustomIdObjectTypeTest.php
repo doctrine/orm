@@ -1,17 +1,19 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\Tests\ORM\Functional;
 
+use Doctrine\DBAL\Types\Type as DBALType;
 use Doctrine\Tests\DbalTypes\CustomIdObject;
 use Doctrine\Tests\DbalTypes\CustomIdObjectType;
 use Doctrine\Tests\Models\CustomType\CustomIdObjectTypeChild;
 use Doctrine\Tests\Models\CustomType\CustomIdObjectTypeParent;
 use Doctrine\Tests\OrmFunctionalTestCase;
-use Doctrine\DBAL\Types\Type as DBALType;
 
 class CustomIdObjectTypeTest extends OrmFunctionalTestCase
 {
-    protected function setUp() : void
+    protected function setUp(): void
     {
         if (DBALType::hasType(CustomIdObjectType::NAME)) {
             DBALType::overrideType(CustomIdObjectType::NAME, CustomIdObjectType::class);
@@ -24,7 +26,7 @@ class CustomIdObjectTypeTest extends OrmFunctionalTestCase
         parent::setUp();
     }
 
-    public function testFindByCustomIdObject()
+    public function testFindByCustomIdObject(): void
     {
         $parent = new CustomIdObjectTypeParent(new CustomIdObject('foo'));
 
@@ -40,7 +42,7 @@ class CustomIdObjectTypeTest extends OrmFunctionalTestCase
      * @group DDC-3622
      * @group 1336
      */
-    public function testFetchJoinCustomIdObject()
+    public function testFetchJoinCustomIdObject(): void
     {
         $parent = new CustomIdObjectTypeParent(new CustomIdObject('foo'));
 
@@ -66,7 +68,7 @@ class CustomIdObjectTypeTest extends OrmFunctionalTestCase
      * @group DDC-3622
      * @group 1336
      */
-    public function testFetchJoinWhereCustomIdObject()
+    public function testFetchJoinWhereCustomIdObject(): void
     {
         $parent = new CustomIdObjectTypeParent(new CustomIdObject('foo'));
 

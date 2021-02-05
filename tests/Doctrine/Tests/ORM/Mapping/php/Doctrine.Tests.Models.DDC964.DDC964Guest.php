@@ -1,16 +1,19 @@
 <?php
+
+declare(strict_types=1);
+
 $metadata->setAttributeOverride('id', [
     'columnName'    => 'guest_id',
     'type'          => 'integer',
     'length'        => 140,
-]
-);
+]);
 
-$metadata->setAttributeOverride('name',
+$metadata->setAttributeOverride(
+    'name',
     [
-    'columnName'    => 'guest_name',
-    'nullable'      => false,
-    'unique'        => true,
-    'length'        => 240,
+        'columnName'    => 'guest_name',
+        'nullable'      => false,
+        'unique'        => true,
+        'length'        => 240,
     ]
 );

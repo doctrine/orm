@@ -483,6 +483,7 @@ classes. We'll store them in ``src/Bug.php`` and ``src/User.php``, respectively.
     use Doctrine\ORM\Mapping as ORM;
 
     /**
+     * @ORM\Entity
      * @ORM\Table(name="bugs")
      */
     class Bug
@@ -661,12 +662,12 @@ domain model to match the requirements:
 
     Lazy load proxies always contain an instance of
     Doctrine's EntityManager and all its dependencies. Therefore a
-    var\_dump() will possibly dump a very large recursive structure
+    ``var_dump()`` will possibly dump a very large recursive structure
     which is impossible to render and read. You have to use
     ``Doctrine\Common\Util\Debug::dump()`` to restrict the dumping to a
     human readable level. Additionally you should be aware that dumping
     the EntityManager to a Browser may take several minutes, and the
-    Debug::dump() method just ignores any occurrences of it in Proxy
+    ``Debug::dump()`` method just ignores any occurrences of it in Proxy
     instances.
 
 Because we only work with collections for the references we must be

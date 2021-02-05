@@ -1,10 +1,14 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\Tests\ORM\Functional;
 
 use Doctrine\Tests\Models\CMS\CmsPhonenumber;
 use Doctrine\Tests\Models\CMS\CmsUser;
 use Doctrine\Tests\OrmFunctionalTestCase;
+
+use function count;
 
 /**
  * Tests a bidirectional one-to-many association mapping with orphan removal.
@@ -13,21 +17,21 @@ class OneToManyOrphanRemovalTest extends OrmFunctionalTestCase
 {
     protected $userId;
 
-    protected function setUp() : void
+    protected function setUp(): void
     {
         $this->useModelSet('cms');
 
         parent::setUp();
 
-        $user = new CmsUser;
-        $user->status = 'dev';
+        $user           = new CmsUser();
+        $user->status   = 'dev';
         $user->username = 'romanb';
-        $user->name = 'Roman B.';
+        $user->name     = 'Roman B.';
 
-        $phone1 = new CmsPhonenumber;
+        $phone1              = new CmsPhonenumber();
         $phone1->phonenumber = '123456';
 
-        $phone2 = new CmsPhonenumber;
+        $phone2              = new CmsPhonenumber();
         $phone2->phonenumber = '234567';
 
         $user->addPhonenumber($phone1);
@@ -40,7 +44,7 @@ class OneToManyOrphanRemovalTest extends OrmFunctionalTestCase
         $this->_em->clear();
     }
 
-    public function testOrphanRemoval()
+    public function testOrphanRemoval(): void
     {
         $userProxy = $this->_em->getReference(CmsUser::class, $this->userId);
 
@@ -62,7 +66,7 @@ class OneToManyOrphanRemovalTest extends OrmFunctionalTestCase
     /**
      * @group DDC-3382
      */
-    public function testOrphanRemovalRemoveFromCollection()
+    public function testOrphanRemovalRemoveFromCollection(): void
     {
         $user = $this->_em->find(CmsUser::class, $this->userId);
 
@@ -80,7 +84,7 @@ class OneToManyOrphanRemovalTest extends OrmFunctionalTestCase
     /**
      * @group DDC-3382
      */
-    public function testOrphanRemovalClearCollectionAndReAdd()
+    public function testOrphanRemovalClearCollectionAndReAdd(): void
     {
         $user = $this->_em->find(CmsUser::class, $this->userId);
 
@@ -100,7 +104,7 @@ class OneToManyOrphanRemovalTest extends OrmFunctionalTestCase
     /**
      * @group DDC-2524
      */
-    public function testOrphanRemovalClearCollectionAndAddNew()
+    public function testOrphanRemovalClearCollectionAndAddNew(): void
     {
         $user     = $this->_em->find(CmsUser::class, $this->userId);
         $newPhone = new CmsPhonenumber();
@@ -121,7 +125,7 @@ class OneToManyOrphanRemovalTest extends OrmFunctionalTestCase
     /**
      * @group DDC-1496
      */
-    public function testOrphanRemovalUnitializedCollection()
+    public function testOrphanRemovalUnitializedCollection(): void
     {
         $user = $this->_em->find(CmsUser::class, $this->userId);
 

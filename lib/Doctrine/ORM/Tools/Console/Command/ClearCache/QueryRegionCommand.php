@@ -1,4 +1,5 @@
 <?php
+
 /*
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
  * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
@@ -21,6 +22,7 @@ namespace Doctrine\ORM\Tools\Console\Command\ClearCache;
 
 use Doctrine\ORM\Cache;
 use Doctrine\ORM\Cache\Region\DefaultRegion;
+use InvalidArgumentException;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
@@ -28,11 +30,13 @@ use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
 
+use function get_class;
+use function gettype;
+use function is_object;
+use function sprintf;
+
 /**
  * Command to clear a query cache region.
- *
- * @since   2.5
- * @author  Fabio B. Silva <fabio.bat.silva@gmail.com>
  */
 class QueryRegionCommand extends Command
 {
@@ -88,16 +92,16 @@ EOT
             $name = Cache::DEFAULT_QUERY_REGION_NAME;
         }
 
-        if ( ! $cache instanceof Cache) {
-            throw new \InvalidArgumentException('No second-level cache is configured on the given EntityManager.');
+        if (! $cache instanceof Cache) {
+            throw new InvalidArgumentException('No second-level cache is configured on the given EntityManager.');
         }
 
         if ($input->getOption('flush')) {
             $queryCache  = $cache->getQueryCache($name);
             $queryRegion = $queryCache->getRegion();
 
-            if ( ! $queryRegion instanceof DefaultRegion) {
-                throw new \InvalidArgumentException(sprintf(
+            if (! $queryRegion instanceof DefaultRegion) {
+                throw new InvalidArgumentException(sprintf(
                     'The option "--flush" expects a "Doctrine\ORM\Cache\Region\DefaultRegion", but got "%s".',
                     is_object($queryRegion) ? get_class($queryRegion) : gettype($queryRegion)
                 ));

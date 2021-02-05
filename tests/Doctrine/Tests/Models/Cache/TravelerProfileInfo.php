@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\Tests\Models\Cache;
 
 /**
@@ -16,9 +18,7 @@ class TravelerProfileInfo
      */
     protected $id;
 
-    /**
-     * @Column(unique=true)
-     */
+    /** @Column(unique=true) */
     private $description;
 
     /**
@@ -39,7 +39,7 @@ class TravelerProfileInfo
         return $this->id;
     }
 
-    public function setId($id)
+    public function setId($id): void
     {
         $this->id = $id;
     }
@@ -49,7 +49,7 @@ class TravelerProfileInfo
         return $this->description;
     }
 
-    public function setDescription($description)
+    public function setDescription($description): void
     {
         $this->description = $description;
     }
@@ -59,7 +59,7 @@ class TravelerProfileInfo
         return $this->profile;
     }
 
-    public function setProfile(TravelerProfile $profile)
+    public function setProfile(TravelerProfile $profile): void
     {
         $this->profile = $profile;
     }

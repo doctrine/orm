@@ -1,4 +1,5 @@
 <?php
+
 /*
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
  * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
@@ -22,9 +23,6 @@ namespace Doctrine\ORM\Mapping;
 /**
  * This annotation is used to override association mapping of property for an entity relationship.
  *
- * @author  Fabio B. Silva <fabio.bat.silva@gmail.com>
- * @since   2.3
- *
  * @Annotation
  * @Target("ANNOTATION")
  */
@@ -32,8 +30,8 @@ final class AssociationOverride implements Annotation
 {
     /**
      * The name of the relationship property whose mapping is being overridden.
-     * 
-     * @var string 
+     *
+     * @var string
      */
     public $name;
 
@@ -62,7 +60,6 @@ final class AssociationOverride implements Annotation
      * The fetching strategy to use for the association.
      *
      * @var string
-     *
      * @Enum({"LAZY", "EAGER", "EXTRA_LAZY"})
      */
     public $fetch;

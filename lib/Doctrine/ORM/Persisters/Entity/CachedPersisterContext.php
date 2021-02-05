@@ -1,4 +1,5 @@
 <?php
+
 /*
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
  * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
@@ -30,8 +31,6 @@ use Doctrine\Persistence\Mapping\ClassMetadata;
  *
  * This object is highly mutable due to performance reasons. Same reasoning
  * behind its properties being public.
- *
- * @author Marco Pivetta <ocramius@gmail.com>
  */
 class CachedPersisterContext
 {
@@ -45,7 +44,7 @@ class CachedPersisterContext
     /**
      * ResultSetMapping that is used for all queries. Is generated lazily once per request.
      *
-     * @var \Doctrine\ORM\Query\ResultSetMapping
+     * @var ResultSetMapping
      */
     public $rsm;
 
@@ -68,7 +67,7 @@ class CachedPersisterContext
     /**
      * Counter for creating unique SQL table and column aliases.
      *
-     * @var integer
+     * @var int
      */
     public $sqlAliasCounter = 0;
 
@@ -87,9 +86,7 @@ class CachedPersisterContext
     public $handlesLimits;
 
     /**
-     * @param ClassMetadata    $class
-     * @param ResultSetMapping $rsm
-     * @param bool             $handlesLimits
+     * @param bool $handlesLimits
      */
     public function __construct(
         ClassMetadata $class,

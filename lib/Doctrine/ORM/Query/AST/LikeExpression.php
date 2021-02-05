@@ -1,4 +1,5 @@
 <?php
+
 /*
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
  * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
@@ -16,37 +17,26 @@
  * and is licensed under the MIT license. For more information, see
  * <http://www.doctrine-project.org>.
  */
+
 namespace Doctrine\ORM\Query\AST;
 
 /**
  * LikeExpression ::= StringExpression ["NOT"] "LIKE" string ["ESCAPE" char]
  *
  * @link    www.doctrine-project.org
- * @since   2.0
- * @author  Guilherme Blanco <guilhermeblanco@hotmail.com>
- * @author  Jonathan Wage <jonwage@gmail.com>
- * @author  Roman Borschel <roman@code-factory.org>
  */
 class LikeExpression extends Node
 {
-    /**
-     * @var bool
-     */
+    /** @var bool */
     public $not;
 
-    /**
-     * @var Node
-     */
+    /** @var Node */
     public $stringExpression;
 
-    /**
-     * @var InputParameter
-     */
+    /** @var InputParameter */
     public $stringPattern;
 
-    /**
-     * @var Literal|null
-     */
+    /** @var Literal|null */
     public $escapeChar;
 
     /**
@@ -57,8 +47,8 @@ class LikeExpression extends Node
     public function __construct($stringExpression, $stringPattern, $escapeChar = null)
     {
         $this->stringExpression = $stringExpression;
-        $this->stringPattern = $stringPattern;
-        $this->escapeChar = $escapeChar;
+        $this->stringPattern    = $stringPattern;
+        $this->escapeChar       = $escapeChar;
     }
 
     /**

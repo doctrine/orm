@@ -1,4 +1,5 @@
 <?php
+
 /*
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
  * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
@@ -19,13 +20,15 @@
 
 namespace Doctrine\ORM\Query;
 
+use Doctrine\ORM\AbstractQuery;
+
+use function array_diff;
+use function array_keys;
+
 /**
  * Represents a chain of tree walkers that modify an AST and finally emit output.
  * Only the last walker in the chain can emit output. Any previous walkers can modify
  * the AST to influence the final output produced by the last walker.
- *
- * @author Roman Borschel <roman@code-factory.org>
- * @since  2.0
  */
 class TreeWalkerChain implements TreeWalker
 {
@@ -40,14 +43,14 @@ class TreeWalkerChain implements TreeWalker
     /**
      * The original Query.
      *
-     * @var \Doctrine\ORM\AbstractQuery
+     * @var AbstractQuery
      */
     private $_query;
 
     /**
      * The ParserResult of the original query that was produced by the Parser.
      *
-     * @var \Doctrine\ORM\Query\ParserResult
+     * @var ParserResult
      */
     private $_parserResult;
 
@@ -89,10 +92,10 @@ class TreeWalkerChain implements TreeWalker
      */
     public function __construct($query, $parserResult, array $queryComponents)
     {
-        $this->_query = $query;
-        $this->_parserResult = $parserResult;
+        $this->_query           = $query;
+        $this->_parserResult    = $parserResult;
         $this->_queryComponents = $queryComponents;
-        $this->_walkers = new TreeWalkerChainIterator($this, $query, $parserResult);
+        $this->_walkers         = new TreeWalkerChainIterator($this, $query, $parserResult);
     }
 
     /**

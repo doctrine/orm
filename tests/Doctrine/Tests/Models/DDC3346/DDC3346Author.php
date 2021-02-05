@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\Tests\Models\DDC3346;
 
 /**
@@ -14,13 +16,9 @@ class DDC3346Author
      */
     public $id;
 
-    /**
-     * @Column(type="string", length=255, unique=true)
-     */
+    /** @Column(type="string", length=255, unique=true) */
     public $username;
 
-    /**
-     * @OneToMany(targetEntity="DDC3346Article", mappedBy="user", fetch="EAGER", cascade={"detach"})
-     */
+    /** @OneToMany(targetEntity="DDC3346Article", mappedBy="user", fetch="EAGER", cascade={"detach"}) */
     public $articles = [];
 }

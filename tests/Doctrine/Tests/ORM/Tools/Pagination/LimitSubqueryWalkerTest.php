@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\Tests\ORM\Tools\Pagination;
 
 use Doctrine\ORM\Query;
@@ -10,7 +12,7 @@ use Doctrine\ORM\Tools\Pagination\LimitSubqueryWalker;
  */
 class LimitSubqueryWalkerTest extends PaginationTestCase
 {
-    public function testLimitSubquery()
+    public function testLimitSubquery(): void
     {
         $dql        = 'SELECT p, c, a FROM Doctrine\Tests\ORM\Tools\Pagination\MyBlogPost p JOIN p.category c JOIN p.author a';
         $query      = $this->entityManager->createQuery($dql);
@@ -19,12 +21,12 @@ class LimitSubqueryWalkerTest extends PaginationTestCase
         $limitQuery->setHint(Query::HINT_CUSTOM_TREE_WALKERS, [LimitSubqueryWalker::class]);
 
         $this->assertEquals(
-            "SELECT DISTINCT m0_.id AS id_0 FROM MyBlogPost m0_ INNER JOIN Category c1_ ON m0_.category_id = c1_.id INNER JOIN Author a2_ ON m0_.author_id = a2_.id",
+            'SELECT DISTINCT m0_.id AS id_0 FROM MyBlogPost m0_ INNER JOIN Category c1_ ON m0_.category_id = c1_.id INNER JOIN Author a2_ ON m0_.author_id = a2_.id',
             $limitQuery->getSQL()
         );
     }
 
-    public function testLimitSubqueryWithSort()
+    public function testLimitSubqueryWithSort(): void
     {
         $dql        = 'SELECT p, c, a FROM Doctrine\Tests\ORM\Tools\Pagination\MyBlogPost p JOIN p.category c JOIN p.author a ORDER BY p.title';
         $query      = $this->entityManager->createQuery($dql);
@@ -33,12 +35,12 @@ class LimitSubqueryWalkerTest extends PaginationTestCase
         $limitQuery->setHint(Query::HINT_CUSTOM_TREE_WALKERS, [LimitSubqueryWalker::class]);
 
         $this->assertEquals(
-            "SELECT DISTINCT m0_.id AS id_0, m0_.title AS title_1 FROM MyBlogPost m0_ INNER JOIN Category c1_ ON m0_.category_id = c1_.id INNER JOIN Author a2_ ON m0_.author_id = a2_.id ORDER BY m0_.title ASC",
+            'SELECT DISTINCT m0_.id AS id_0, m0_.title AS title_1 FROM MyBlogPost m0_ INNER JOIN Category c1_ ON m0_.category_id = c1_.id INNER JOIN Author a2_ ON m0_.author_id = a2_.id ORDER BY m0_.title ASC',
             $limitQuery->getSQL()
         );
     }
 
-    public function testLimitSubqueryWithSortFunction() : void
+    public function testLimitSubqueryWithSortFunction(): void
     {
         $dql   = 'SELECT p FROM Doctrine\Tests\ORM\Tools\Pagination\MyBlogPost p JOIN p.category c GROUP BY p.id ORDER BY COUNT(c.id)';
         $query = $this->entityManager->createQuery($dql);
@@ -52,7 +54,7 @@ class LimitSubqueryWalkerTest extends PaginationTestCase
         );
     }
 
-    public function testCountQuery_MixedResultsWithName()
+    public function testCountQuery_MixedResultsWithName(): void
     {
         $dql        = 'SELECT a, sum(a.name) as foo FROM Doctrine\Tests\ORM\Tools\Pagination\Author a';
         $query      = $this->entityManager->createQuery($dql);
@@ -61,12 +63,12 @@ class LimitSubqueryWalkerTest extends PaginationTestCase
         $limitQuery->setHint(Query::HINT_CUSTOM_TREE_WALKERS, [LimitSubqueryWalker::class]);
 
         $this->assertEquals(
-            "SELECT DISTINCT a0_.id AS id_0 FROM Author a0_",
+            'SELECT DISTINCT a0_.id AS id_0 FROM Author a0_',
             $limitQuery->getSQL()
         );
     }
 
-    public function testAggQuery_MixedResultsWithNameAndSort() : void
+    public function testAggQuery_MixedResultsWithNameAndSort(): void
     {
         $dql   = 'SELECT a, sum(a.name) as foo FROM Doctrine\Tests\ORM\Tools\Pagination\Author a ORDER BY foo DESC';
         $query = $this->entityManager->createQuery($dql);
@@ -80,7 +82,7 @@ class LimitSubqueryWalkerTest extends PaginationTestCase
         );
     }
 
-    public function testAggQuery_MultipleMixedResultsWithSort() : void
+    public function testAggQuery_MultipleMixedResultsWithSort(): void
     {
         $dql   = 'SELECT a, sum(a.name) as foo, (SELECT count(subA.id) FROM Doctrine\Tests\ORM\Tools\Pagination\Author subA WHERE subA.id = a.id ) as bar FROM Doctrine\Tests\ORM\Tools\Pagination\Author a ORDER BY foo DESC, bar ASC';
         $query = $this->entityManager->createQuery($dql);
@@ -97,7 +99,7 @@ class LimitSubqueryWalkerTest extends PaginationTestCase
     /**
      * @group DDC-2890
      */
-    public function testLimitSubqueryWithSortOnAssociation()
+    public function testLimitSubqueryWithSortOnAssociation(): void
     {
         $dql        = 'SELECT p FROM Doctrine\Tests\ORM\Tools\Pagination\MyBlogPost p ORDER BY p.author';
         $query      = $this->entityManager->createQuery($dql);
@@ -106,7 +108,7 @@ class LimitSubqueryWalkerTest extends PaginationTestCase
         $limitQuery->setHint(Query::HINT_CUSTOM_TREE_WALKERS, [LimitSubqueryWalker::class]);
 
         $this->assertEquals(
-            "SELECT DISTINCT m0_.id AS id_0, m0_.author_id AS sclr_1 FROM MyBlogPost m0_ ORDER BY m0_.author_id ASC",
+            'SELECT DISTINCT m0_.id AS id_0, m0_.author_id AS sclr_1 FROM MyBlogPost m0_ ORDER BY m0_.author_id ASC',
             $limitQuery->getSQL()
         );
     }
@@ -114,7 +116,7 @@ class LimitSubqueryWalkerTest extends PaginationTestCase
     /**
      * Arbitrary Join
      */
-     public function testLimitSubqueryWithArbitraryJoin()
+    public function testLimitSubqueryWithArbitraryJoin(): void
     {
         $dql        = 'SELECT p, c FROM Doctrine\Tests\ORM\Tools\Pagination\MyBlogPost p JOIN Doctrine\Tests\ORM\Tools\Pagination\Category c WITH p.category = c';
         $query      = $this->entityManager->createQuery($dql);
@@ -123,12 +125,12 @@ class LimitSubqueryWalkerTest extends PaginationTestCase
         $limitQuery->setHint(Query::HINT_CUSTOM_TREE_WALKERS, [LimitSubqueryWalker::class]);
 
         $this->assertEquals(
-            "SELECT DISTINCT m0_.id AS id_0 FROM MyBlogPost m0_ INNER JOIN Category c1_ ON (m0_.category_id = c1_.id)",
+            'SELECT DISTINCT m0_.id AS id_0 FROM MyBlogPost m0_ INNER JOIN Category c1_ ON (m0_.category_id = c1_.id)',
             $limitQuery->getSQL()
         );
     }
 
-    public function testLimitSubqueryWithSortWithArbitraryJoin()
+    public function testLimitSubqueryWithSortWithArbitraryJoin(): void
     {
         $dql        = 'SELECT p, c FROM Doctrine\Tests\ORM\Tools\Pagination\MyBlogPost p JOIN Doctrine\Tests\ORM\Tools\Pagination\Category c WITH p.category = c ORDER BY p.title';
         $query      = $this->entityManager->createQuery($dql);
@@ -137,9 +139,8 @@ class LimitSubqueryWalkerTest extends PaginationTestCase
         $limitQuery->setHint(Query::HINT_CUSTOM_TREE_WALKERS, [LimitSubqueryWalker::class]);
 
         $this->assertEquals(
-            "SELECT DISTINCT m0_.id AS id_0, m0_.title AS title_1 FROM MyBlogPost m0_ INNER JOIN Category c1_ ON (m0_.category_id = c1_.id) ORDER BY m0_.title ASC",
+            'SELECT DISTINCT m0_.id AS id_0, m0_.title AS title_1 FROM MyBlogPost m0_ INNER JOIN Category c1_ ON (m0_.category_id = c1_.id) ORDER BY m0_.title ASC',
             $limitQuery->getSQL()
         );
     }
 }
-

@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\Tests\Models\Quote;
 
 /**
@@ -8,7 +10,6 @@ namespace Doctrine\Tests\Models\Quote;
  */
 class Group
 {
-
     /**
      * @Id
      * @GeneratedValue
@@ -16,27 +17,22 @@ class Group
      */
     public $id;
 
-    /**
-     * @Column(name="`group-name`")
-     */
+    /** @Column(name="`group-name`") */
     public $name;
 
     /**
      * @var Group
-     *
      * @ManyToOne(targetEntity="Group", cascade={"persist"})
      * @JoinColumn(name="`parent-id`", referencedColumnName="`group-id`")
      */
     public $parent;
 
-    /**
-     * @ManyToMany(targetEntity="User", mappedBy="groups")
-     */
+    /** @ManyToMany(targetEntity="User", mappedBy="groups") */
     public $users;
 
-    public function __construct($name = null, Group $parent =  null)
+    public function __construct($name = null, ?Group $parent = null)
     {
-        $this->name     = $name;
-        $this->parent   = $parent;
+        $this->name   = $name;
+        $this->parent = $parent;
     }
 }

@@ -1,15 +1,19 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\Tests\ORM\Functional\Ticket;
 
+use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Criteria;
+use Doctrine\Tests\OrmFunctionalTestCase;
 
 /**
  * @group DDC-2106
  */
-class DDC2106Test extends \Doctrine\Tests\OrmFunctionalTestCase
+class DDC2106Test extends OrmFunctionalTestCase
 {
-    protected function setUp() : void
+    protected function setUp(): void
     {
         parent::setUp();
 
@@ -20,7 +24,7 @@ class DDC2106Test extends \Doctrine\Tests\OrmFunctionalTestCase
         );
     }
 
-    public function testDetachedEntityAsId()
+    public function testDetachedEntityAsId(): void
     {
         // We want an uninitialized PersistentCollection $entity->children
         $entity = new DDC2106Entity();
@@ -54,14 +58,11 @@ class DDC2106Entity
     /** @ManyToOne(targetEntity="DDC2106Entity", inversedBy="children") */
     public $parent;
 
-    /**
-     * @OneToMany(targetEntity="DDC2106Entity", mappedBy="parent", cascade={"persist"})
-     */
+    /** @OneToMany(targetEntity="DDC2106Entity", mappedBy="parent", cascade={"persist"}) */
     public $children;
 
     public function __construct()
     {
-        $this->children = new \Doctrine\Common\Collections\ArrayCollection;
+        $this->children = new ArrayCollection();
     }
 }
-

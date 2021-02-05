@@ -1,30 +1,34 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\Tests\ORM\Functional\Ticket;
 
 use Doctrine\ORM\Query;
+use Doctrine\Tests\OrmFunctionalTestCase;
+use Exception;
 
 /**
  * @group DDC-2931
  */
-class DDC2931Test extends \Doctrine\Tests\OrmFunctionalTestCase
+class DDC2931Test extends OrmFunctionalTestCase
 {
-    protected function setUp() : void
+    protected function setUp(): void
     {
         parent::setUp();
 
         try {
             $this->_schemaTool->createSchema(
                 [
-                $this->_em->getClassMetadata(DDC2931User::class),
+                    $this->_em->getClassMetadata(DDC2931User::class),
                 ]
             );
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             // no action needed - schema seems to be already in place
         }
     }
 
-    public function testIssue()
+    public function testIssue(): void
     {
         $first  = new DDC2931User();
         $second = new DDC2931User();
@@ -45,7 +49,7 @@ class DDC2931Test extends \Doctrine\Tests\OrmFunctionalTestCase
         $this->assertSame(2, $second->getRank());
     }
 
-    public function testFetchJoinedEntitiesCanBeRefreshed()
+    public function testFetchJoinedEntitiesCanBeRefreshed(): void
     {
         $first  = new DDC2931User();
         $second = new DDC2931User();
@@ -89,7 +93,6 @@ class DDC2931Test extends \Doctrine\Tests\OrmFunctionalTestCase
 /** @Entity */
 class DDC2931User
 {
-
     /** @Id @Column(type="integer") @GeneratedValue(strategy="AUTO") */
     public $id;
 
@@ -105,14 +108,13 @@ class DDC2931User
     /**
      * Return Rank recursively
      * My rank is 1 + rank of my parent
-     * @return int
      */
-    public function getRank()
+    public function getRank(): int
     {
         return 1 + ($this->parent ? $this->parent->getRank() : 0);
     }
 
-    public function __wakeup()
+    public function __wakeup(): void
     {
     }
 }

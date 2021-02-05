@@ -1,4 +1,5 @@
 <?php
+
 /*
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
  * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
@@ -28,26 +29,16 @@ namespace Doctrine\ORM\Query\AST;
  *                          EntityExpression ("=" | "<>") (EntityExpression | QuantifiedExpression)
  *
  * @link    www.doctrine-project.org
- * @since   2.0
- * @author  Guilherme Blanco <guilhermeblanco@hotmail.com>
- * @author  Jonathan Wage <jonwage@gmail.com>
- * @author  Roman Borschel <roman@code-factory.org>
  */
 class ComparisonExpression extends Node
 {
-    /**
-     * @var Node
-     */
+    /** @var Node */
     public $leftExpression;
 
-    /**
-     * @var Node
-     */
+    /** @var Node */
     public $rightExpression;
 
-    /**
-     * @var string
-     */
+    /** @var string */
     public $operator;
 
     /**
@@ -57,9 +48,9 @@ class ComparisonExpression extends Node
      */
     public function __construct($leftExpr, $operator, $rightExpr)
     {
-        $this->leftExpression = $leftExpr;
+        $this->leftExpression  = $leftExpr;
         $this->rightExpression = $rightExpr;
-        $this->operator = $operator;
+        $this->operator        = $operator;
     }
 
     /**

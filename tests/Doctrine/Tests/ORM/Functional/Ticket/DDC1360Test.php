@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\Tests\ORM\Functional\Ticket;
 
 use Doctrine\Tests\OrmFunctionalTestCase;
@@ -9,24 +11,26 @@ use Doctrine\Tests\OrmFunctionalTestCase;
  */
 class DDC1360Test extends OrmFunctionalTestCase
 {
-    public function testSchemaDoubleQuotedCreate()
+    public function testSchemaDoubleQuotedCreate(): void
     {
-        if ($this->_em->getConnection()->getDatabasePlatform()->getName() != "postgresql") {
-            $this->markTestSkipped("PostgreSQL only test.");
+        if ($this->_em->getConnection()->getDatabasePlatform()->getName() !== 'postgresql') {
+            $this->markTestSkipped('PostgreSQL only test.');
         }
 
         $sql = $this->_schemaTool->getCreateSchemaSql(
             [
-            $this->_em->getClassMetadata(DDC1360DoubleQuote::class)
+                $this->_em->getClassMetadata(DDC1360DoubleQuote::class),
             ]
         );
 
         $this->assertEquals(
             [
-            'CREATE SCHEMA user',
-            'CREATE TABLE "user"."user" (id INT NOT NULL, PRIMARY KEY(id))',
-            'CREATE SEQUENCE "user"."user_id_seq" INCREMENT BY 1 MINVALUE 1 START 1',
-            ], $sql);
+                'CREATE SCHEMA user',
+                'CREATE TABLE "user"."user" (id INT NOT NULL, PRIMARY KEY(id))',
+                'CREATE SEQUENCE "user"."user_id_seq" INCREMENT BY 1 MINVALUE 1 START 1',
+            ],
+            $sql
+        );
     }
 }
 
@@ -38,4 +42,3 @@ class DDC1360DoubleQuote
     /** @Id @GeneratedValue @Column(type="integer") */
     public $id;
 }
-

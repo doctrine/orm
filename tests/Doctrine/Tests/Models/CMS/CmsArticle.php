@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\Tests\Models\CMS;
 
 /**
@@ -14,34 +16,28 @@ class CmsArticle
      * @GeneratedValue(strategy="AUTO")
      */
     public $id;
-    /**
-     * @Column(type="string", length=255)
-     */
+    /** @Column(type="string", length=255) */
     public $topic;
-    /**
-     * @Column(type="text")
-     */
+    /** @Column(type="text") */
     public $text;
     /**
      * @ManyToOne(targetEntity="CmsUser", inversedBy="articles")
      * @JoinColumn(name="user_id", referencedColumnName="id")
      */
     public $user;
-    /**
-     * @OneToMany(targetEntity="CmsComment", mappedBy="article")
-     */
+    /** @OneToMany(targetEntity="CmsComment", mappedBy="article") */
     public $comments;
 
-    /**
-     * @Version @column(type="integer")
-     */
+    /** @Version @column(type="integer") */
     public $version;
 
-    public function setAuthor(CmsUser $author) {
+    public function setAuthor(CmsUser $author): void
+    {
         $this->user = $author;
     }
 
-    public function addComment(CmsComment $comment) {
+    public function addComment(CmsComment $comment): void
+    {
         $this->comments[] = $comment;
         $comment->setArticle($this);
     }

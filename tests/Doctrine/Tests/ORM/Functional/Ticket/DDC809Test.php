@@ -1,16 +1,22 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\Tests\ORM\Functional\Ticket;
 
-class DDC809Test extends \Doctrine\Tests\OrmFunctionalTestCase
+use Doctrine\Tests\OrmFunctionalTestCase;
+
+use function count;
+
+class DDC809Test extends OrmFunctionalTestCase
 {
-    protected function setUp() : void
+    protected function setUp(): void
     {
         parent::setUp();
         $this->_schemaTool->createSchema(
             [
-            $this->_em->getClassMetadata(DDC809Variant::class),
-            $this->_em->getClassMetadata(DDC809SpecificationValue::class)
+                $this->_em->getClassMetadata(DDC809Variant::class),
+                $this->_em->getClassMetadata(DDC809SpecificationValue::class),
             ]
         );
 
@@ -39,7 +45,7 @@ class DDC809Test extends \Doctrine\Tests\OrmFunctionalTestCase
     /**
      * @group DDC-809
      */
-    public function testIssue()
+    public function testIssue(): void
     {
         $result = $this->_em->createQueryBuilder()
                         ->select('Variant, SpecificationValue')
@@ -48,8 +54,8 @@ class DDC809Test extends \Doctrine\Tests\OrmFunctionalTestCase
                         ->getQuery()
                         ->getResult();
 
-        $this->assertEquals(4, count($result[0]->getSpecificationValues()), "Works in test-setup.");
-        $this->assertEquals(4, count($result[1]->getSpecificationValues()), "Only returns 2 in the case of the hydration bug.");
+        $this->assertEquals(4, count($result[0]->getSpecificationValues()), 'Works in test-setup.');
+        $this->assertEquals(4, count($result[1]->getSpecificationValues()), 'Only returns 2 in the case of the hydration bug.');
     }
 }
 
@@ -98,7 +104,6 @@ class DDC809SpecificationValue
 
     /**
      * @var Variant
-     *
      * @ManyToMany(targetEntity="DDC809Variant", mappedBy="SpecificationValues")
      */
     protected $Variants;

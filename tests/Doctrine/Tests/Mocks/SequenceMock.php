@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\Tests\Mocks;
 
 use Doctrine\ORM\EntityManager;
@@ -10,9 +12,7 @@ use Doctrine\ORM\Id\SequenceGenerator;
  */
 class SequenceMock extends SequenceGenerator
 {
-    /**
-     * @var int
-     */
+    /** @var int */
     private $_sequenceNumber = 0;
 
     /**
@@ -25,10 +25,7 @@ class SequenceMock extends SequenceGenerator
 
     /* Mock API */
 
-    /**
-     * @return void
-     */
-    public function reset()
+    public function reset(): void
     {
         $this->_sequenceNumber = 0;
     }

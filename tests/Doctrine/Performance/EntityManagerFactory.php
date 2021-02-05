@@ -14,12 +14,13 @@ use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Proxy\ProxyFactory;
 use Doctrine\ORM\Tools\SchemaTool;
+
 use function array_map;
 use function realpath;
 
 final class EntityManagerFactory
 {
-    public static function getEntityManager(array $schemaClassNames) : EntityManagerInterface
+    public static function getEntityManager(array $schemaClassNames): EntityManagerInterface
     {
         $config = new Configuration();
 
@@ -45,7 +46,7 @@ final class EntityManagerFactory
         return $entityManager;
     }
 
-    public static function makeEntityManagerWithNoResultsConnection() : EntityManagerInterface
+    public static function makeEntityManagerWithNoResultsConnection(): EntityManagerInterface
     {
         $config = new Configuration();
 

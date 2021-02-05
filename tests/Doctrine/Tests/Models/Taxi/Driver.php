@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\Tests\Models\Taxi;
 
 /**
@@ -15,27 +17,21 @@ class Driver
      */
     private $id;
 
-    /**
-     * @Column(type="string", length=255);
-     */
+    /** @Column(type="string", length=255); */
     private $name;
 
-    /**
-     * @OneToMany(targetEntity="Ride", mappedBy="driver")
-     */
+    /** @OneToMany(targetEntity="Ride", mappedBy="driver") */
     private $freeDriverRides;
 
-    /**
-     * @OneToMany(targetEntity="PaidRide", mappedBy="driver")
-     */
+    /** @OneToMany(targetEntity="PaidRide", mappedBy="driver") */
     private $driverRides;
-    
+
     public function getId()
     {
         return $this->id;
     }
 
-    public function setName($name)
+    public function setName($name): void
     {
         $this->name = $name;
     }

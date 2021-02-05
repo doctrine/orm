@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\Tests\Models\Quote;
 
 /**
@@ -8,7 +10,6 @@ namespace Doctrine\Tests\Models\Quote;
  */
 class Phone
 {
-
     /**
      * @Id
      * @Column(name="`phone-number`")
@@ -20,5 +21,4 @@ class Phone
      * @JoinColumn(name="`user-id`", referencedColumnName="`user-id`")
      */
     public $user;
-
 }

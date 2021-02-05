@@ -6,6 +6,7 @@ namespace Doctrine\Tests\ORM\Functional\Ticket;
 
 use DateTimeImmutable;
 use Doctrine\Tests\OrmFunctionalTestCase;
+
 use function ltrim;
 use function strlen;
 
@@ -21,7 +22,7 @@ final class GH7941Test extends OrmFunctionalTestCase
         ['name' => 'Test 6', 'price' => '-25', 'square_root' => '/^5(\.0+)?$/'],
     ];
 
-    protected function setUp() : void
+    protected function setUp(): void
     {
         parent::setUp();
 
@@ -36,7 +37,7 @@ final class GH7941Test extends OrmFunctionalTestCase
     }
 
     /** @test */
-    public function typesShouldBeConvertedForDQLFunctions() : void
+    public function typesShouldBeConvertedForDQLFunctions(): void
     {
         $query = $this->_em->createQuery(
             'SELECT

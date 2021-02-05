@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\Tests\ORM\Mapping;
 
 use Doctrine\ORM\Mapping\Builder\ClassMetadataBuilder;
@@ -9,7 +11,7 @@ use Doctrine\Tests\OrmTestCase;
 
 class FieldBuilderTest extends OrmTestCase
 {
-    public function testCustomIdGeneratorCanBeSet()
+    public function testCustomIdGeneratorCanBeSet(): void
     {
         $cmBuilder = new ClassMetadataBuilder(new ClassMetadataInfo(CmsUser::class));
 

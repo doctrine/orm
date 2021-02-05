@@ -26,20 +26,14 @@ use Doctrine\ORM\Cache\QueryCacheKey;
 
 /**
  * Cache logger chain
- *
- * @since   2.5
- * @author  Fabio B. Silva <fabio.bat.silva@gmail.com>
  */
 class CacheLoggerChain implements CacheLogger
 {
-    /**
-     * @var array<\Doctrine\ORM\Cache\Logging\CacheLogger>
-     */
+    /** @var array<CacheLogger> */
     private $loggers = [];
 
     /**
-     * @param string                                  $name
-     * @param \Doctrine\ORM\Cache\Logging\CacheLogger $logger
+     * @param string $name
      */
     public function setLogger($name, CacheLogger $logger)
     {
@@ -49,15 +43,15 @@ class CacheLoggerChain implements CacheLogger
     /**
      * @param string $name
      *
-     * @return \Doctrine\ORM\Cache\Logging\CacheLogger|null
+     * @return CacheLogger|null
      */
     public function getLogger($name)
     {
-        return isset($this->loggers[$name]) ? $this->loggers[$name] : null;
+        return $this->loggers[$name] ?? null;
     }
 
     /**
-     * @return array<\Doctrine\ORM\Cache\Logging\CacheLogger>
+     * @return array<CacheLogger>
      */
     public function getLoggers()
     {

@@ -20,11 +20,10 @@
 
 namespace Doctrine\ORM\Cache;
 
+use function microtime;
+
 /**
  * Timestamp cache entry
- *
- * @since   2.5
- * @author  Fabio B. Silva <fabio.bat.silva@gmail.com>
  */
 class TimestampCacheEntry implements CacheEntry
 {

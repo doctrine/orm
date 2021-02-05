@@ -1,16 +1,22 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\Tests\ORM\Functional\Ticket;
 
 use Doctrine\ORM\Proxy\Proxy;
+use Doctrine\Tests\OrmFunctionalTestCase;
+use Exception;
+
+use function get_class;
 
 /**
  * Tests that join columns (foreign keys) can be named the same as the association
  * fields they're used on without causing issues.
  */
-class DDC522Test extends \Doctrine\Tests\OrmFunctionalTestCase
+class DDC522Test extends OrmFunctionalTestCase
 {
-    protected function setUp() : void
+    protected function setUp(): void
     {
         parent::setUp();
 
@@ -19,23 +25,23 @@ class DDC522Test extends \Doctrine\Tests\OrmFunctionalTestCase
                 [
                     $this->_em->getClassMetadata(DDC522Customer::class),
                     $this->_em->getClassMetadata(DDC522Cart::class),
-                    $this->_em->getClassMetadata(DDC522ForeignKeyTest::class)
+                    $this->_em->getClassMetadata(DDC522ForeignKeyTest::class),
                 ]
             );
-        } catch(\Exception $e) {
+        } catch (Exception $e) {
         }
     }
 
     /**
      * @group DDC-522
      */
-    public function testJoinColumnWithSameNameAsAssociationField()
+    public function testJoinColumnWithSameNameAsAssociationField(): void
     {
-        $cust = new DDC522Customer;
-        $cust->name = "name";
-        $cart = new DDC522Cart;
-        $cart->total = 0;
-        $cust->cart = $cart;
+        $cust           = new DDC522Customer();
+        $cust->name     = 'name';
+        $cart           = new DDC522Cart();
+        $cart->total    = 0;
+        $cust->cart     = $cart;
         $cart->customer = $cust;
         $this->_em->persist($cust);
         $this->_em->persist($cart);
@@ -51,9 +57,9 @@ class DDC522Test extends \Doctrine\Tests\OrmFunctionalTestCase
         $this->assertNotInstanceOf(Proxy::class, $r[0]->customer);
         $this->assertEquals('name', $r[0]->customer->name);
 
-        $fkt = new DDC522ForeignKeyTest();
+        $fkt         = new DDC522ForeignKeyTest();
         $fkt->cartId = $r[0]->id; // ignored for persistence
-        $fkt->cart = $r[0]; // must be set properly
+        $fkt->cart   = $r[0]; // must be set properly
         $this->_em->persist($fkt);
         $this->_em->flush();
         $this->_em->clear();
@@ -68,9 +74,9 @@ class DDC522Test extends \Doctrine\Tests\OrmFunctionalTestCase
      * @group DDC-522
      * @group DDC-762
      */
-    public function testJoinColumnWithNullSameNameAssociationField()
+    public function testJoinColumnWithNullSameNameAssociationField(): void
     {
-        $fkCust = new DDC522ForeignKeyTest;
+        $fkCust       = new DDC522ForeignKeyTest();
         $fkCust->name = 'name';
         $fkCust->cart = null;
 

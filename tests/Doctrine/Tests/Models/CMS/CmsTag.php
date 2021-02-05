@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\Tests\Models\CMS;
 
 /**
@@ -16,29 +18,28 @@ class CmsTag
      * @GeneratedValue
      */
     public $id;
-    /**
-     * @Column(length=50, name="tag_name", nullable=true)
-     */
+    /** @Column(length=50, name="tag_name", nullable=true) */
     public $name;
-    /**
-     * @ManyToMany(targetEntity="CmsUser", mappedBy="tags")
-     */
+    /** @ManyToMany(targetEntity="CmsUser", mappedBy="tags") */
     public $users;
 
-    public function setName($name) {
+    public function setName($name): void
+    {
         $this->name = $name;
     }
 
-    public function getName() {
+    public function getName()
+    {
         return $this->name;
     }
 
-    public function addUser(CmsUser $user) {
+    public function addUser(CmsUser $user): void
+    {
         $this->users[] = $user;
     }
 
-    public function getUsers() {
+    public function getUsers()
+    {
         return $this->users;
     }
 }
-

@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\Tests\Models\Tweet;
 
 /**
@@ -15,13 +17,9 @@ class UserList
      */
     public $id;
 
-    /**
-     * @Column(type="string")
-     */
+    /** @Column(type="string") */
     public $listName;
 
-    /**
-     * @ManyToOne(targetEntity="User", inversedBy="userLists")
-     */
+    /** @ManyToOne(targetEntity="User", inversedBy="userLists") */
     public $owner;
 }

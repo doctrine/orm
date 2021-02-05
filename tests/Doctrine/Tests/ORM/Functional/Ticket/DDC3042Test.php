@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\Tests\ORM\Functional\Ticket;
 
 use Doctrine\Tests\OrmFunctionalTestCase;
@@ -9,19 +11,19 @@ use Doctrine\Tests\OrmFunctionalTestCase;
  */
 class DDC3042Test extends OrmFunctionalTestCase
 {
-    protected function setUp() : void
+    protected function setUp(): void
     {
         parent::setUp();
 
         $this->_schemaTool->createSchema(
             [
-            $this->_em->getClassMetadata(DDC3042Foo::class),
-            $this->_em->getClassMetadata(DDC3042Bar::class),
+                $this->_em->getClassMetadata(DDC3042Foo::class),
+                $this->_em->getClassMetadata(DDC3042Bar::class),
             ]
         );
     }
 
-    public function testSQLGenerationDoesNotProvokeAliasCollisions()
+    public function testSQLGenerationDoesNotProvokeAliasCollisions(): void
     {
         $this->assertStringNotMatchesFormat(
             '%sfield11%sfield11%s',

@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\Tests\Models\ValueConversionType;
 
 /**
@@ -21,13 +23,9 @@ class InversedOneToOneCompositeIdForeignKeyEntity
      */
     public $foreignEntity;
 
-    /**
-     * @Column(type="string", name="some_property")
-     */
+    /** @Column(type="string", name="some_property") */
     public $someProperty;
 
-    /**
-     * @OneToOne(targetEntity="OwningOneToOneCompositeIdForeignKeyEntity", mappedBy="associatedEntity")
-     */
+    /** @OneToOne(targetEntity="OwningOneToOneCompositeIdForeignKeyEntity", mappedBy="associatedEntity") */
     public $associatedEntity;
 }

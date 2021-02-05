@@ -1,19 +1,21 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\Tests\ORM\Functional\SchemaTool;
 
 use Doctrine\DBAL\Schema\Schema;
 use Doctrine\Tests\Models\Company\CompanyManager;
 use Doctrine\Tests\OrmFunctionalTestCase;
 
+use function count;
+
 /**
  * Functional tests for the Class Table Inheritance mapping strategy.
- *
- * @author robo
  */
 class CompanySchemaTest extends OrmFunctionalTestCase
 {
-    protected function setUp() : void
+    protected function setUp(): void
     {
         $this->useModelSet('company');
         parent::setUp();
@@ -21,9 +23,8 @@ class CompanySchemaTest extends OrmFunctionalTestCase
 
     /**
      * @group DDC-966
-     * @return Schema
      */
-    public function testGeneratedSchema()
+    public function testGeneratedSchema(): Schema
     {
         $schema = $this->_em->getConnection()->getSchemaManager()->createSchema();
 
@@ -36,7 +37,7 @@ class CompanySchemaTest extends OrmFunctionalTestCase
      * @group DDC-966
      * @depends testGeneratedSchema
      */
-    public function testSingleTableInheritance(Schema $schema)
+    public function testSingleTableInheritance(Schema $schema): void
     {
         $table = $schema->getTable('company_contracts');
 
@@ -54,15 +55,15 @@ class CompanySchemaTest extends OrmFunctionalTestCase
     /**
      * @group DBAL-115
      */
-    public function testDropPartSchemaWithForeignKeys()
+    public function testDropPartSchemaWithForeignKeys(): void
     {
-        if (!$this->_em->getConnection()->getDatabasePlatform()->supportsForeignKeyConstraints()) {
-            $this->markTestSkipped("Foreign Key test");
+        if (! $this->_em->getConnection()->getDatabasePlatform()->supportsForeignKeyConstraints()) {
+            $this->markTestSkipped('Foreign Key test');
         }
 
         $sql = $this->_schemaTool->getDropSchemaSQL(
             [
-            $this->_em->getClassMetadata(CompanyManager::class),
+                $this->_em->getClassMetadata(CompanyManager::class),
             ]
         );
         $this->assertEquals(4, count($sql));

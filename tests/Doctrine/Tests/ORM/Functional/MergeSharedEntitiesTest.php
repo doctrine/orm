@@ -1,27 +1,29 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\Tests\ORM\Functional;
 
 use Doctrine\ORM\Tools\ToolsException;
 use Doctrine\Tests\OrmFunctionalTestCase;
 use Doctrine\Tests\VerifyDeprecations;
 
+use function serialize;
+use function unserialize;
+
 class MergeSharedEntitiesTest extends OrmFunctionalTestCase
 {
     use VerifyDeprecations;
 
-    /**
-     * {@inheritDoc}
-     */
-    protected function setUp() : void
+    protected function setUp(): void
     {
         parent::setUp();
 
         try {
             $this->_schemaTool->createSchema(
                 [
-                $this->_em->getClassMetadata(MSEFile::class),
-                $this->_em->getClassMetadata(MSEPicture::class),
+                    $this->_em->getClassMetadata(MSEFile::class),
+                    $this->_em->getClassMetadata(MSEPicture::class),
                 ]
             );
         } catch (ToolsException $ignored) {
@@ -29,15 +31,15 @@ class MergeSharedEntitiesTest extends OrmFunctionalTestCase
     }
 
     /** @after */
-    public function ensureTestGeneratedDeprecationMessages() : void
+    public function ensureTestGeneratedDeprecationMessages(): void
     {
         $this->assertHasDeprecationMessages();
     }
 
-    public function testMergeSharedNewEntities()
+    public function testMergeSharedNewEntities(): void
     {
-        $file    = new MSEFile;
-        $picture = new MSEPicture;
+        $file    = new MSEFile();
+        $picture = new MSEPicture();
 
         $picture->file      = $file;
         $picture->otherFile = $file;
@@ -47,10 +49,10 @@ class MergeSharedEntitiesTest extends OrmFunctionalTestCase
         $this->assertEquals($picture->file, $picture->otherFile, 'Identical entities must remain identical');
     }
 
-    public function testMergeSharedManagedEntities()
+    public function testMergeSharedManagedEntities(): void
     {
-        $file    = new MSEFile;
-        $picture = new MSEPicture;
+        $file    = new MSEFile();
+        $picture = new MSEPicture();
 
         $picture->file      = $file;
         $picture->otherFile = $file;
@@ -65,10 +67,10 @@ class MergeSharedEntitiesTest extends OrmFunctionalTestCase
         $this->assertEquals($picture->file, $picture->otherFile, 'Identical entities must remain identical');
     }
 
-    public function testMergeSharedDetachedSerializedEntities()
+    public function testMergeSharedDetachedSerializedEntities(): void
     {
-        $file    = new MSEFile;
-        $picture = new MSEPicture;
+        $file    = new MSEFile();
+        $picture = new MSEPicture();
 
         $picture->file      = $file;
         $picture->otherFile = $file;
@@ -88,7 +90,7 @@ class MergeSharedEntitiesTest extends OrmFunctionalTestCase
     /**
      * @group DDC-2704
      */
-    public function testMergeInheritedTransientPrivateProperties()
+    public function testMergeInheritedTransientPrivateProperties(): void
     {
         $admin1 = new MSEAdmin();
         $admin2 = new MSEAdmin();
@@ -135,7 +137,7 @@ abstract class MSEUser
         return $this->session;
     }
 
-    public function setSession($session)
+    public function setSession($session): void
     {
         $this->session = $session;
     }

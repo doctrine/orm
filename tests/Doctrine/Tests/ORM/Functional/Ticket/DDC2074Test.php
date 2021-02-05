@@ -9,6 +9,7 @@ use Doctrine\ORM\PersistentCollection;
 use Doctrine\Tests\Models\ECommerce\ECommerceCategory;
 use Doctrine\Tests\Models\ECommerce\ECommerceProduct;
 use Doctrine\Tests\OrmFunctionalTestCase;
+
 use function count;
 
 /**
@@ -16,13 +17,13 @@ use function count;
  */
 class DDC2074Test extends OrmFunctionalTestCase
 {
-    protected function setUp() : void
+    protected function setUp(): void
     {
         $this->useModelSet('ecommerce');
         parent::setUp();
     }
 
-    public function testShouldNotScheduleDeletionOnClonedInstances()
+    public function testShouldNotScheduleDeletionOnClonedInstances(): void
     {
         $class      = $this->_em->getClassMetadata(ECommerceProduct::class);
         $product    = new ECommerceProduct();
@@ -37,7 +38,7 @@ class DDC2074Test extends OrmFunctionalTestCase
         $this->assertEquals(0, count($uow->getScheduledCollectionDeletions()));
     }
 
-    public function testSavingClonedPersistentCollection()
+    public function testSavingClonedPersistentCollection(): void
     {
         $product  = new ECommerceProduct();
         $category = new ECommerceCategory();

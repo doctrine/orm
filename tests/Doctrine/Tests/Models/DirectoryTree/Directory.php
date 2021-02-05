@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\Tests\Models\DirectoryTree;
 
 /**
@@ -7,12 +9,10 @@ namespace Doctrine\Tests\Models\DirectoryTree;
  */
 class Directory extends AbstractContentItem
 {
-    /**
-     * @Column(type="string")
-     */
+    /** @Column(type="string") */
     protected $path;
 
-    public function setPath($path)
+    public function setPath($path): void
     {
         $this->path = $path;
     }

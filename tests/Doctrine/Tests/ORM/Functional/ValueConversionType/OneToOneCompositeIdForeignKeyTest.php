@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\Tests\ORM\Functional\ValueConversionType;
 
 use Doctrine\Tests\Models;
@@ -17,24 +19,24 @@ use Doctrine\Tests\OrmFunctionalTestCase;
  */
 class OneToOneCompositeIdForeignKeyTest extends OrmFunctionalTestCase
 {
-    protected function setUp() : void
+    protected function setUp(): void
     {
         $this->useModelSet('vct_onetoone_compositeid_foreignkey');
         parent::setUp();
 
-        $auxiliary = new Entity\AuxiliaryEntity();
+        $auxiliary      = new Entity\AuxiliaryEntity();
         $auxiliary->id4 = 'abc';
 
-        $inversed = new Entity\InversedOneToOneCompositeIdForeignKeyEntity();
-        $inversed->id1 = 'def';
+        $inversed                = new Entity\InversedOneToOneCompositeIdForeignKeyEntity();
+        $inversed->id1           = 'def';
         $inversed->foreignEntity = $auxiliary;
-        $inversed->someProperty = 'some value to be loaded';
+        $inversed->someProperty  = 'some value to be loaded';
 
-        $owning = new Entity\OwningOneToOneCompositeIdForeignKeyEntity();
+        $owning      = new Entity\OwningOneToOneCompositeIdForeignKeyEntity();
         $owning->id2 = 'ghi';
 
         $inversed->associatedEntity = $owning;
-        $owning->associatedEntity = $inversed;
+        $owning->associatedEntity   = $inversed;
 
         $this->_em->persist($auxiliary);
         $this->_em->persist($inversed);
@@ -44,7 +46,7 @@ class OneToOneCompositeIdForeignKeyTest extends OrmFunctionalTestCase
         $this->_em->clear();
     }
 
-    public static function tearDownAfterClass() : void
+    public static function tearDownAfterClass(): void
     {
         $conn = static::$_sharedConn;
 
@@ -53,7 +55,7 @@ class OneToOneCompositeIdForeignKeyTest extends OrmFunctionalTestCase
         $conn->executeUpdate('DROP TABLE vct_auxiliary');
     }
 
-    public function testThatTheValueOfIdentifiersAreConvertedInTheDatabase()
+    public function testThatTheValueOfIdentifiersAreConvertedInTheDatabase(): void
     {
         $conn = $this->_em->getConnection();
 
@@ -70,7 +72,7 @@ class OneToOneCompositeIdForeignKeyTest extends OrmFunctionalTestCase
     /**
      * @depends testThatTheValueOfIdentifiersAreConvertedInTheDatabase
      */
-    public function testThatEntitiesAreFetchedFromTheDatabase()
+    public function testThatEntitiesAreFetchedFromTheDatabase(): void
     {
         $auxiliary = $this->_em->find(
             Models\ValueConversionType\AuxiliaryEntity::class,
@@ -95,7 +97,7 @@ class OneToOneCompositeIdForeignKeyTest extends OrmFunctionalTestCase
     /**
      * @depends testThatEntitiesAreFetchedFromTheDatabase
      */
-    public function testThatTheValueOfIdentifiersAreConvertedBackAfterBeingFetchedFromTheDatabase()
+    public function testThatTheValueOfIdentifiersAreConvertedBackAfterBeingFetchedFromTheDatabase(): void
     {
         $auxiliary = $this->_em->find(
             Models\ValueConversionType\AuxiliaryEntity::class,
@@ -121,7 +123,7 @@ class OneToOneCompositeIdForeignKeyTest extends OrmFunctionalTestCase
     /**
      * @depends testThatTheValueOfIdentifiersAreConvertedBackAfterBeingFetchedFromTheDatabase
      */
-    public function testThatInversedEntityIsFetchedFromTheDatabaseUsingAuxiliaryEntityAsId()
+    public function testThatInversedEntityIsFetchedFromTheDatabaseUsingAuxiliaryEntityAsId(): void
     {
         $auxiliary = $this->_em->find(
             Models\ValueConversionType\AuxiliaryEntity::class,
@@ -139,7 +141,7 @@ class OneToOneCompositeIdForeignKeyTest extends OrmFunctionalTestCase
     /**
      * @depends testThatEntitiesAreFetchedFromTheDatabase
      */
-    public function testThatTheProxyFromOwningToInversedIsLoaded()
+    public function testThatTheProxyFromOwningToInversedIsLoaded(): void
     {
         $owning = $this->_em->find(
             Models\ValueConversionType\OwningOneToOneCompositeIdForeignKeyEntity::class,
@@ -154,7 +156,7 @@ class OneToOneCompositeIdForeignKeyTest extends OrmFunctionalTestCase
     /**
      * @depends testThatEntitiesAreFetchedFromTheDatabase
      */
-    public function testThatTheEntityFromInversedToOwningIsEagerLoaded()
+    public function testThatTheEntityFromInversedToOwningIsEagerLoaded(): void
     {
         $inversed = $this->_em->find(
             Models\ValueConversionType\InversedOneToOneCompositeIdForeignKeyEntity::class,

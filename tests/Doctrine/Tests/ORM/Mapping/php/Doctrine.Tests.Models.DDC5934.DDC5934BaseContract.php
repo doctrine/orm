@@ -1,12 +1,14 @@
 <?php
 
+declare(strict_types=1);
+
 use Doctrine\ORM\Mapping\ClassMetadata;
 
 $metadata->mapField([
-   'id'         => true,
-   'fieldName'  => 'id',
-   'type'       => 'integer',
-   'columnName' => 'id',
+    'id'         => true,
+    'fieldName'  => 'id',
+    'type'       => 'integer',
+    'columnName' => 'id',
 ]);
 
 $metadata->mapManyToMany([

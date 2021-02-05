@@ -26,11 +26,7 @@ namespace Doctrine\ORM\Cache;
  * <b>IMPORTANT NOTE:</b>
  *
  * Fields of classes that implement CacheEntry are public for performance reason.
- *
- * @since   2.5
- * @author  Fabio B. Silva <fabio.bat.silva@gmail.com>
  */
 interface CacheEntry
 {
-
 }
