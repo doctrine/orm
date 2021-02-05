@@ -11,7 +11,10 @@ use Doctrine\ORM\Mapping\ClassMetadataInfo;
  */
 class DDC889SuperClass
 {
-    /** @Column() */
+    /**
+     * @var string
+     * @Column()
+     */
     protected $name;
 
     public static function loadMetadata(ClassMetadataInfo $metadata): void

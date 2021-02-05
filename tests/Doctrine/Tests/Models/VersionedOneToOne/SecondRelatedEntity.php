@@ -11,18 +11,22 @@ namespace Doctrine\Tests\Models\VersionedOneToOne;
 class SecondRelatedEntity
 {
     /**
+     * @var int
      * @Id
      * @Column(name="id", type="integer")
      * @GeneratedValue(strategy="AUTO")
      */
     public $id;
 
-    /** @Column(name="name") */
+    /**
+     * @var string
+     * @Column(name="name")
+     */
     public $name;
 
     /**
+     * @var int
      * Version column
-     *
      * @Column(type="integer", name="version")
      * @Version
      */

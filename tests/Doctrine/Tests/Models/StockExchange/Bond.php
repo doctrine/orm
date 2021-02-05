@@ -32,12 +32,12 @@ class Bond
      */
     public $stocks;
 
-    public function __construct($name)
+    public function __construct(string $name)
     {
         $this->name = $name;
     }
 
-    public function getId()
+    public function getId(): int
     {
         return $this->id;
     }

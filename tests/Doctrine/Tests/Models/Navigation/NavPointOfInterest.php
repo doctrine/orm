@@ -13,24 +13,33 @@ use Doctrine\Common\Collections\ArrayCollection;
 class NavPointOfInterest
 {
     /**
+     * @var int
      * @Id
      * @Column(type="integer", name="nav_long")
      */
     private $long;
 
     /**
+     * @var int
      * @Id
      * @Column(type="integer", name="nav_lat")
      */
     private $lat;
 
-    /** @Column(type="string") */
+    /**
+     * @var string
+     * @Column(type="string")
+     */
     private $name;
 
-    /** @ManyToOne(targetEntity="NavCountry", inversedBy="pois") */
+    /**
+     * @var NavCountry
+     * @ManyToOne(targetEntity="NavCountry", inversedBy="pois")
+     */
     private $country;
 
      /**
+      * @var Collection<NavUser>
       * @ManyToMany(targetEntity="NavUser", cascade={"persist"})
       * @JoinTable(name="navigation_pois_visitors",
       *      inverseJoinColumns={@JoinColumn(name="user_id", referencedColumnName="id")},
@@ -42,7 +51,7 @@ class NavPointOfInterest
       */
     private $visitors;
 
-    public function __construct($lat, $long, $name, $country)
+    public function __construct(int $lat, int $long, string $name, NavCountry $country)
     {
         $this->lat      = $lat;
         $this->long     = $long;
@@ -51,22 +60,22 @@ class NavPointOfInterest
         $this->visitors = new ArrayCollection();
     }
 
-    public function getLong()
+    public function getLong(): int
     {
         return $this->long;
     }
 
-    public function getLat()
+    public function getLat(): int
     {
         return $this->lat;
     }
 
-    public function getName()
+    public function getName(): string
     {
         return $this->name;
     }
 
-    public function getCountry()
+    public function getCountry(): NavCountry
     {
         return $this->country;
     }

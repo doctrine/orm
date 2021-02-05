@@ -33,10 +33,7 @@ use function trim;
  */
 class DefaultEntityListenerResolver implements EntityListenerResolver
 {
-    /**
-     * @var array Map to store entity listener instances.
-     * @psalm-var array<class-string, object>
-     */
+    /** @psalm-var array<class-string, object> Map to store entity listener instances. */
     private $instances = [];
 
     /**
@@ -50,7 +47,8 @@ class DefaultEntityListenerResolver implements EntityListenerResolver
             return;
         }
 
-        if (isset($this->instances[$className = trim($className, '\\')])) {
+        $className = trim($className, '\\');
+        if (isset($this->instances[$className])) {
             unset($this->instances[$className]);
         }
     }
@@ -72,7 +70,8 @@ class DefaultEntityListenerResolver implements EntityListenerResolver
      */
     public function resolve($className)
     {
-        if (isset($this->instances[$className = trim($className, '\\')])) {
+        $className = trim($className, '\\');
+        if (isset($this->instances[$className])) {
             return $this->instances[$className];
         }
 

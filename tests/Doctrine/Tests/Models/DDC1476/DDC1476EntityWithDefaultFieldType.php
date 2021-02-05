@@ -12,13 +12,17 @@ use Doctrine\ORM\Mapping\ClassMetadataInfo;
 class DDC1476EntityWithDefaultFieldType
 {
     /**
+     * @var int
      * @Id
      * @Column()
      * @GeneratedValue("NONE")
      */
     protected $id;
 
-    /** @column() */
+    /**
+     * @var string
+     * @column()
+     */
     protected $name;
 
     public function getId(): int

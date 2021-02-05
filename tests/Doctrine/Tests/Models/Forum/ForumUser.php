@@ -11,29 +11,36 @@ namespace Doctrine\Tests\Models\Forum;
 class ForumUser
 {
     /**
+     * @var int
      * @Column(type="integer")
      * @Id @GeneratedValue
      */
     public $id;
-    /** @Column(type="string", length=50) */
-    public $username;
+
     /**
+     * @var string
+     * @Column(type="string", length=50)
+     */
+    public $username;
+
+    /**
+     * @var ForumAvatar
      * @OneToOne(targetEntity="ForumAvatar", cascade={"persist"})
      * @JoinColumn(name="avatar_id", referencedColumnName="id")
      */
     public $avatar;
 
-    public function getId()
+    public function getId(): int
     {
         return $this->id;
     }
 
-    public function getUsername()
+    public function getUsername(): string
     {
         return $this->username;
     }
 
-    public function getAvatar()
+    public function getAvatar(): ForumAvatar
     {
         return $this->avatar;
     }
