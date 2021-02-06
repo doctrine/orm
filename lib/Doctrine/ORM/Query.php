@@ -110,7 +110,12 @@ final class Query extends AbstractQuery
      */
     public const HINT_CUSTOM_OUTPUT_WALKER = 'doctrine.customOutputWalker';
 
-    //const HINT_READ_ONLY = 'doctrine.readOnly';
+    /**
+     * Marks queries as creating only read only objects.
+     *
+     * @var string
+     */
+    const HINT_READ_ONLY = 'doctrine.readOnly';
 
     public const HINT_INTERNAL_ITERATION = 'doctrine.internal.iteration';
 
