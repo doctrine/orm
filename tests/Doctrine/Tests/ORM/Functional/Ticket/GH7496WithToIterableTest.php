@@ -58,7 +58,10 @@ class GH7496EntityA
      */
     public $id;
 
-    /** @Column(type="string") */
+    /**
+     * @var string
+     * @Column(type="string")
+     */
     public $name;
 
     public function __construct(int $id, string $name)
@@ -79,7 +82,10 @@ class GH7496EntityB
      */
     public $id;
 
-    /** @Column(type="string") */
+    /**
+     * @var string
+     * @Column(type="string")
+     */
     public $name;
 
     public function __construct(int $id, $name)

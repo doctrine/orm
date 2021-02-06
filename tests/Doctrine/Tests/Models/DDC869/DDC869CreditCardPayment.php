@@ -11,7 +11,10 @@ use Doctrine\ORM\Mapping\ClassMetadataInfo;
  */
 class DDC869CreditCardPayment extends DDC869Payment
 {
-    /** @Column(type="string") */
+    /**
+     * @var string
+     * @Column(type="string")
+     */
     protected $creditCardNumber;
 
     public static function loadMetadata(ClassMetadataInfo $metadata): void

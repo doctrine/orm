@@ -14,7 +14,10 @@ class DoctrineGlobal_Article
      */
     protected $id;
 
-    /** @Column(type="string") */
+    /**
+     * @var string
+     * @Column(type="string")
+     */
     protected $headline;
 
     /** @column(type="text") */

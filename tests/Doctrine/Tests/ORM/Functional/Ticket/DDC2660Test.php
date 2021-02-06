@@ -106,7 +106,10 @@ class DDC2660CustomerOrder
     /** @Id @ManyToOne(targetEntity="DDC2660Customer") */
     public $customer;
 
-    /** @Column(type="string") */
+    /**
+     * @var string
+     * @Column(type="string")
+     */
     public $name;
 
     public function __construct(DDC2660Product $product, DDC2660Customer $customer, $name)

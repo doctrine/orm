@@ -70,7 +70,10 @@ class DDC345User
      */
     public $id;
 
-    /** @Column(type="string") */
+    /**
+     * @var string
+     * @Column(type="string")
+     */
     public $name;
 
     /** @OneToMany(targetEntity="DDC345Membership", mappedBy="user", cascade={"persist"}) */
@@ -94,7 +97,10 @@ class DDC345Group
      */
     public $id;
 
-    /** @Column(type="string") */
+    /**
+     * @var string
+     * @Column(type="string")
+     */
     public $name;
 
     /** @OneToMany(targetEntity="DDC345Membership", mappedBy="group", cascade={"persist"}) */
@@ -134,7 +140,10 @@ class DDC345Membership
      */
     public $group;
 
-    /** @Column(type="string") */
+    /**
+     * @var string
+     * @Column(type="string")
+     */
     public $state;
 
     /** @Column(type="datetime") */

@@ -829,7 +829,10 @@ class NotifyChangedEntity implements NotifyPropertyChanged
      * @GeneratedValue
      */
     private $id;
-    /** @Column(type="string") */
+    /**
+     * @var string
+     * @Column(type="string")
+     */
     private $data;
 
     private $transient; // not persisted

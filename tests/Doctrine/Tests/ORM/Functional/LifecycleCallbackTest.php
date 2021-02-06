@@ -414,9 +414,15 @@ class LifecycleCallbackTestUser
 {
     /** @Id @Column(type="integer") @GeneratedValue */
     private $id;
-    /** @Column(type="string") */
+    /**
+     * @var string
+     * @Column(type="string")
+     */
     private $value;
-    /** @Column(type="string") */
+    /**
+     * @var string
+     * @Column(type="string")
+     */
     private $name;
 
     public function getId()

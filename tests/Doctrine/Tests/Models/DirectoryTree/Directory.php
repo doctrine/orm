@@ -9,7 +9,10 @@ namespace Doctrine\Tests\Models\DirectoryTree;
  */
 class Directory extends AbstractContentItem
 {
-    /** @Column(type="string") */
+    /**
+     * @var string
+     * @Column(type="string")
+     */
     protected $path;
 
     public function setPath($path): void

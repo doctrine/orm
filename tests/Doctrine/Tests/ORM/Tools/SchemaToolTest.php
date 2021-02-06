@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Doctrine\Tests\ORM\Tools;
 
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\Tools\Event\GenerateSchemaEventArgs;
 use Doctrine\ORM\Tools\Event\GenerateSchemaTableEventArgs;
@@ -284,16 +285,26 @@ class SchemaToolTest extends OrmTestCase
  */
 class TestEntityWithAnnotationOptionsAttribute
 {
-    /** @Id @Column */
+    /**
+     * @var int
+     * @Id
+     * @Column
+     */
     private $id;
 
-    /** @Column(type="string", options={"foo": "bar", "baz": {"key": "val"}}) */
+    /**
+     * @var string
+     * @Column(type="string", options={"foo": "bar", "baz": {"key": "val"}})
+     */
     private $test;
 }
 
 class GenerateSchemaEventListener
 {
-    public $tableCalls   = 0;
+    /** @var int */
+    public $tableCalls = 0;
+
+    /** @var bool */
     public $schemaCalled = false;
 
     public function postGenerateSchemaTable(GenerateSchemaTableEventArgs $eventArgs): void
@@ -315,10 +326,17 @@ class GenerateSchemaEventListener
  */
 class UniqueConstraintAnnotationModel
 {
-    /** @Id @Column */
+    /**
+     * @var int
+     * @Id
+     * @Column
+     */
     private $id;
 
-    /** @Column(name="hash", type="string", length=8, nullable=false, unique=true) */
+    /**
+     * @var string
+     * @Column(name="hash", type="string", length=8, nullable=false, unique=true)
+     */
     private $hash;
 }
 
@@ -329,18 +347,23 @@ class UniqueConstraintAnnotationModel
 class FirstEntity
 {
     /**
+     * @var int
      * @Id
      * @Column(name="id")
      */
     public $id;
 
     /**
+     * @var SecondEntity
      * @OneToOne(targetEntity="SecondEntity")
      * @JoinColumn(name="id", referencedColumnName="fist_entity_id")
      */
     public $secondEntity;
 
-    /** @Column(name="name") */
+    /**
+     * @var string
+     * @Column(name="name")
+     */
     public $name;
 }
 
@@ -351,12 +374,16 @@ class FirstEntity
 class SecondEntity
 {
     /**
+     * @var int
      * @Id
      * @Column(name="fist_entity_id")
      */
     public $fist_entity_id;
 
-    /** @Column(name="name") */
+    /**
+     * @var string
+     * @Column(name="name")
+     */
     public $name;
 }
 
@@ -366,12 +393,14 @@ class SecondEntity
 class GH6830Board
 {
     /**
+     * @var int
      * @Id
      * @Column(type="integer")
      */
     public $id;
 
     /**
+     * @var GH6830Category
      * @ManyToOne(targetEntity=GH6830Category::class, inversedBy="boards")
      * @JoinColumn(name="category_id", referencedColumnName="id")
      */
@@ -390,6 +419,9 @@ class GH6830Category
      */
     public $id;
 
-    /** @OneToMany(targetEntity=GH6830Board::class, mappedBy="category") */
+    /**
+     * @psalm-var Collection<int, GH6830Board>
+     * @OneToMany(targetEntity=GH6830Board::class, mappedBy="category")
+     */
     public $boards;
 }

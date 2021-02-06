@@ -143,7 +143,10 @@ class DDC3644User
      */
     public $id;
 
-    /** @Column(type="string") */
+    /**
+     * @var string
+     * @Column(type="string")
+     */
     public $name;
 
     /** @OneToMany(targetEntity="DDC3644Address", mappedBy="user", orphanRemoval=true) */
@@ -193,7 +196,10 @@ class DDC3644Address
      */
     public $user;
 
-    /** @Column(type="string") */
+    /**
+     * @var string
+     * @Column(type="string")
+     */
     public $address;
 
     public function __construct($address)
@@ -217,7 +223,10 @@ abstract class DDC3644Animal
      */
     public $id;
 
-    /** @Column(type="string") */
+    /**
+     * @var string
+     * @Column(type="string")
+     */
     public $name;
 
     public function __construct($name)

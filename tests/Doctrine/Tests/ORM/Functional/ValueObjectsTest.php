@@ -360,7 +360,10 @@ class DDC93Person
     /** @Id @GeneratedValue @Column(type="integer") */
     public $id;
 
-    /** @Column(type="string") */
+    /**
+     * @var string
+     * @Column(type="string")
+     */
     public $name;
 
     /** @Embedded(class="DDC93Address") */
@@ -439,11 +442,20 @@ class DDC93Country
  */
 class DDC93Address
 {
-    /** @Column(type="string") */
+    /**
+     * @var string
+     * @Column(type="string")
+     */
     public $street;
-    /** @Column(type="string") */
+    /**
+     * @var string
+     * @Column(type="string")
+     */
     public $zip;
-    /** @Column(type="string") */
+    /**
+     * @var string
+     * @Column(type="string")
+     */
     public $city;
     /** @Embedded(class = "DDC93Country") */
     public $country;
@@ -470,7 +482,10 @@ class DDC93Customer
 /** @Embeddable */
 class DDC93ContactInfo
 {
-    /** @Column(type="string") */
+    /**
+     * @var string
+     * @Column(type="string")
+     */
     public $email;
     /** @Embedded(class = "DDC93Address") */
     public $address;

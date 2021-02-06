@@ -19,7 +19,10 @@ class Logo
      */
     public $id;
 
-    /** @Column(type="string") */
+    /**
+     * @var string
+     * @Column(type="string")
+     */
     public $image;
 
     /** @Column(type="integer") */

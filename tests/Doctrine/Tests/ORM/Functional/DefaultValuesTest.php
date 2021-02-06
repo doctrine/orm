@@ -101,9 +101,15 @@ class DefaultValueUser
      * @GeneratedValue(strategy="AUTO")
      */
     public $id;
-    /** @Column(type="string") */
+    /**
+     * @var string
+     * @Column(type="string")
+     */
     public $name = '';
-    /** @Column(type="string") */
+    /**
+     * @var string
+     * @Column(type="string")
+     */
     public $type = 'Poweruser';
     /** @OneToOne(targetEntity="DefaultValueAddress", mappedBy="user", cascade={"persist"}) */
     public $address;

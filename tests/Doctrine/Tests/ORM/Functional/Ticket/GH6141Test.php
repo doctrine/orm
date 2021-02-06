@@ -163,7 +163,10 @@ abstract class GH6141Person
      */
     public $id;
 
-    /** @Column(type="string") */
+    /**
+     * @var string
+     * @Column(type="string")
+     */
     public $name;
 
     public function __construct(string $name)

@@ -264,7 +264,10 @@ class AnnotationDriverTest extends AbstractMappingDriverTest
  */
 class ColumnWithoutType
 {
-    /** @Id @Column */
+    /**
+     * @Id
+     * @Column
+     */
     public $id;
 }
 
@@ -345,7 +348,10 @@ class SuperEntity
  */
 class MiddleMappedSuperclass extends SuperEntity
 {
-    /** @Column(type="string") */
+    /**
+     * @var string
+     * @Column(type="string")
+     */
     private $name;
 }
 
@@ -354,7 +360,10 @@ class MiddleMappedSuperclass extends SuperEntity
  */
 class ChildEntity extends MiddleMappedSuperclass
 {
-    /** @Column(type="string") */
+    /**
+     * @var string
+     * @Column(type="string")
+     */
     private $text;
 }
 
@@ -384,6 +393,9 @@ class AnnotationSLC
  */
 class AnnotationSLCFoo
 {
-    /** @Column(type="string") */
+    /**
+     * @var string
+     * @Column(type="string")
+     */
     public $id;
 }

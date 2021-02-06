@@ -18,7 +18,10 @@ class Company
      */
     public $id;
 
-    /** @Column(type="string") */
+    /**
+     * @var string
+     * @Column(type="string")
+     */
     public $name;
 
     /** @Column(type="string", name="jurisdiction_code", nullable=true) */

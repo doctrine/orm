@@ -17,7 +17,10 @@ class UserList
      */
     public $id;
 
-    /** @Column(type="string") */
+    /**
+     * @var string
+     * @Column(type="string")
+     */
     public $listName;
 
     /** @ManyToOne(targetEntity="User", inversedBy="userLists") */

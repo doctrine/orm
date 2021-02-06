@@ -54,10 +54,16 @@ class DDC656Test extends OrmFunctionalTestCase
  */
 class DDC656Entity
 {
-    /** @Column(type="string") */
+    /**
+     * @var string
+     * @Column(type="string")
+     */
     public $name;
 
-    /** @Column(type="string") */
+    /**
+     * @var string
+     * @Column(type="string")
+     */
     public $type;
 
     /** @Id @Column(type="integer") @GeneratedValue */

@@ -79,7 +79,10 @@ class DDC2256User
      */
     public $id;
 
-    /** @Column(type="string") */
+    /**
+     * @var string
+     * @Column(type="string")
+     */
     public $name;
 
     /**
@@ -102,7 +105,10 @@ class DDC2256Group
      */
     public $id;
 
-    /** @Column(type="string") */
+    /**
+     * @var string
+     * @Column(type="string")
+     */
     public $name;
 
     /** @OneToMany(targetEntity="DDC2256User", mappedBy="group") */

@@ -7,7 +7,10 @@ namespace Doctrine\Tests\Models\Company;
 /** @Entity @Table(name="company_auctions") */
 class CompanyAuction extends CompanyEvent
 {
-    /** @Column(type="string") */
+    /**
+     * @var string
+     * @Column(type="string")
+     */
     private $data;
 
     public function setData($data): void
