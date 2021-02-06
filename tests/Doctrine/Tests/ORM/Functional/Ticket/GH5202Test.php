@@ -2,30 +2,31 @@
 
 namespace Doctrine\Tests\ORM\Functional\Ticket;
 
-use Doctrine\Tests\Models\CMS\CmsUser;
 use Doctrine\ORM\Query;
+use Doctrine\Tests\Models\CMS\CmsUser;
+use Doctrine\Tests\OrmFunctionalTestCase;
 
-class GH5202Test extends \Doctrine\Tests\OrmFunctionalTestCase
+class GH5202Test extends OrmFunctionalTestCase
 {
-    protected function setUp()
+    protected function setUp(): void
     {
         $this->useModelSet('cms');
         parent::setUp();
     }
 
-    public function testReadOnlyQueryHint()
+    public function testReadOnlyQueryHint(): void
     {
-        $user = new CmsUser();
-        $user->name = "beberlei";
-        $user->status = "active";
-        $user->username = "beberlei";
+        $user           = new CmsUser();
+        $user->name     = 'beberlei';
+        $user->status   = 'active';
+        $user->username = 'beberlei';
 
         $this->_em->persist($user);
 
         $this->_em->flush();
         $this->_em->clear();
 
-        $dql = "SELECT u FROM Doctrine\\Tests\Models\CMS\CmsUser u";
+        $dql = 'SELECT u FROM Doctrine\\Tests\Models\CMS\CmsUser u';
 
         $query = $this->_em->createQuery($dql);
         $query->setHint(Query::HINT_READ_ONLY, true);
@@ -35,12 +36,12 @@ class GH5202Test extends \Doctrine\Tests\OrmFunctionalTestCase
         $this->assertTrue($this->_em->getUnitOfWork()->isReadOnly($user));
     }
 
-    public function testOnlyQueryHintForProxy()
+    public function testOnlyQueryHintForProxy(): void
     {
-        $user = new CmsUser();
-        $user->name = "beberlei";
-        $user->status = "active";
-        $user->username = "beberlei";
+        $user           = new CmsUser();
+        $user->name     = 'beberlei';
+        $user->status   = 'active';
+        $user->username = 'beberlei';
 
         $this->_em->persist($user);
 
@@ -49,7 +50,7 @@ class GH5202Test extends \Doctrine\Tests\OrmFunctionalTestCase
 
         $user = $this->_em->getReference(CmsUser::class, $user->id);
 
-        $dql = "SELECT u FROM Doctrine\\Tests\Models\CMS\CmsUser u";
+        $dql = 'SELECT u FROM Doctrine\\Tests\Models\CMS\CmsUser u';
 
         $query = $this->_em->createQuery($dql);
         $query->setHint(Query::HINT_READ_ONLY, true);
