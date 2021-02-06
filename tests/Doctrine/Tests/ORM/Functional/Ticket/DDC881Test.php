@@ -112,7 +112,10 @@ class DDC881User
      * @GeneratedValue(strategy="AUTO")
      */
     private $id;
-    /** @Column(type="string") */
+    /**
+     * @var string
+     * @Column(type="string")
+     */
     private $name;
     /** @OneToMany(targetEntity="DDC881PhoneNumber",mappedBy="id") */
     private $phoneNumbers;
@@ -143,7 +146,10 @@ class DDC881PhoneNumber
      * @ManyToOne(targetEntity="DDC881User",cascade={"all"})
      */
     private $user;
-    /** @Column(type="string") */
+    /**
+     * @var string
+     * @Column(type="string")
+     */
     private $phonenumber;
 
     /** @OneToMany(targetEntity="DDC881PhoneCall", mappedBy="phonenumber") */

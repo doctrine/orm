@@ -167,7 +167,10 @@ class DDC1335User
     /** @Column(type="string", unique=true) */
     public $email;
 
-    /** @Column(type="string") */
+    /**
+     * @var string
+     * @Column(type="string")
+     */
     public $name;
 
     /** @OneToMany(targetEntity="DDC1335Phone", mappedBy="user", cascade={"persist", "remove"}) */

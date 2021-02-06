@@ -8,6 +8,7 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\Mapping\OneToOne;
 use Doctrine\ORM\Tools\SchemaValidator;
+use Doctrine\Tests\Models\ECommerce\ECommerceCart;
 use Doctrine\Tests\OrmTestCase;
 
 class SchemaValidatorTest extends OrmTestCase
@@ -456,19 +457,36 @@ class DDC3322ValidEntity1
  */
 class DDC3322ValidEntity2
 {
-    /** @Id @Column @GeneratedValue */
+    /**
+     * @var int
+     * @Id
+     * @Column
+     * @GeneratedValue
+     */
     private $id;
 
-    /** @ManyToOne(targetEntity="DDC3322ValidEntity1", inversedBy="oneToMany") */
+    /**
+     * @var DDC3322ValidEntity1
+     * @ManyToOne(targetEntity="DDC3322ValidEntity1", inversedBy="oneToMany")
+     */
     private $manyToOne;
 
-    /** @OneToMany(targetEntity="DDC3322ValidEntity1", mappedBy="manyToOne") */
+    /**
+     * @var DDC3322ValidEntity1
+     * @OneToMany(targetEntity="DDC3322ValidEntity1", mappedBy="manyToOne")
+     */
     private $oneToMany;
 
-    /** @OneToOne(targetEntity="DDC3322ValidEntity1", inversedBy="oneToOneInverse") */
+    /**
+     * @var DDC3322ValidEntity1
+     * @OneToOne(targetEntity="DDC3322ValidEntity1", inversedBy="oneToOneInverse")
+     */
     private $oneToOneOwning;
 
-    /** @OneToOne(targetEntity="DDC3322ValidEntity1", mappedBy="oneToOneOwning") */
+    /**
+     * @var DDC3322ValidEntity1
+     * @OneToOne(targetEntity="DDC3322ValidEntity1", mappedBy="oneToOneOwning")
+     */
     private $oneToOneInverse;
 }
 
@@ -477,16 +495,23 @@ class DDC3322ValidEntity2
  */
 class DDC3322One
 {
-    /** @Id @Column @GeneratedValue */
+    /**
+     * @var int
+     * @Id
+     * @Column
+     * @GeneratedValue
+     */
     private $id;
 
     /**
+     * @psalm-var Collection<int, DDC3322ValidEntity1>
      * @OneToMany(targetEntity="DDC3322ValidEntity1", mappedBy="oneValid")
      * @OrderBy({"id" = "ASC"})
      */
     private $validAssoc;
 
     /**
+     * @psalm-var Collection<int, DDC3322ValidEntity1>
      * @OneToMany(targetEntity="DDC3322ValidEntity1", mappedBy="oneInvalid")
      * @OrderBy({"invalidField" = "ASC"})
      */
@@ -498,16 +523,23 @@ class DDC3322One
  */
 class DDC3322Two
 {
-    /** @Id @Column @GeneratedValue */
+    /**
+     * @var int
+     * @Id
+     * @Column
+     * @GeneratedValue
+     */
     private $id;
 
     /**
+     * @psalm-var Collection<int, DDC3322ValidEntity1>
      * @OneToMany(targetEntity="DDC3322ValidEntity1", mappedBy="twoValid")
      * @OrderBy({"manyToOne" = "ASC"})
      */
     private $validAssoc;
 
     /**
+     * @psalm-var Collection<int, DDC3322ValidEntity1>
      * @OneToMany(targetEntity="DDC3322ValidEntity1", mappedBy="twoInvalid")
      * @OrderBy({"oneToMany" = "ASC"})
      */
@@ -519,16 +551,23 @@ class DDC3322Two
  */
 class DDC3322Three
 {
-    /** @Id @Column @GeneratedValue */
+    /**
+     * @var int
+     * @Id
+     * @Column
+     * @GeneratedValue
+     */
     private $id;
 
     /**
+     * @var DDC3322ValidEntity1
      * @OneToMany(targetEntity="DDC3322ValidEntity1", mappedBy="threeValid")
      * @OrderBy({"oneToOneOwning" = "ASC"})
      */
     private $validAssoc;
 
     /**
+     * @psalm-var Collection<int, DDC3322ValidEntity1>
      * @OneToMany(targetEntity="DDC3322ValidEntity1", mappedBy="threeInvalid")
      * @OrderBy({"oneToOneInverse" = "ASC"})
      */
@@ -540,6 +579,9 @@ class DDC3322Three
  */
 class EmbeddableWithAssociation
 {
-    /** @OneToOne(targetEntity="Doctrine\Tests\Models\ECommerce\ECommerceCart") */
+    /**
+     * @var ECommerceCart
+     * @OneToOne(targetEntity="Doctrine\Tests\Models\ECommerce\ECommerceCart")
+     */
     private $cart;
 }

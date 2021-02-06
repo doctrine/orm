@@ -147,41 +147,59 @@ class MetadataFilterTest extends OrmTestCase
 /** @Entity */
 class MetadataFilterTestEntityAaa
 {
-    /** @Id @Column */
+    /**
+     * @Id
+     * @Column
+     */
     protected $id;
 }
 
 /** @Entity */
 class MetadataFilterTestEntityBbb
 {
-    /** @Id @Column */
+    /**
+     * @Id
+     * @Column
+     */
     protected $id;
 }
 
 /** @Entity */
 class MetadataFilterTestEntityCcc
 {
-    /** @Id @Column */
+    /**
+     * @Id
+     * @Column
+     */
     protected $id;
 }
 
 /** @Entity */
 class MetadataFilterTestEntityFoo
 {
-    /** @Id @Column */
+    /**
+     * @Id
+     * @Column
+     */
     protected $id;
 }
 
 /** @Entity */
 class MetadataFilterTestEntityBar
 {
-    /** @Id @Column */
+    /**
+     * @Id
+     * @Column
+     */
     protected $id;
 }
 
 /** @Entity */
 class MetadataFilterTestEntityFooBar
 {
-    /** @Id @Column */
+    /**
+     * @Id
+     * @Column
+     */
     protected $id;
 }

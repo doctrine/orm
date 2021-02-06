@@ -22,7 +22,10 @@ class RoutingRouteBooking
      */
     public $route;
 
-    /** @Column(type="string") */
+    /**
+     * @var string
+     * @Column(type="string")
+     */
     public $passengerName = null;
 
     public function getPassengerName()

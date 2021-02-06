@@ -84,7 +84,10 @@ class GH7941Product
      */
     public $id;
 
-    /** @Column(type="string") */
+    /**
+     * @var string
+     * @Column(type="string")
+     */
     public $name;
 
     /** @Column(type="decimal") */

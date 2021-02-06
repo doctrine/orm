@@ -69,7 +69,10 @@ class DDC199ParentClass
      */
     public $id;
 
-    /** @Column(type="string") */
+    /**
+     * @var string
+     * @Column(type="string")
+     */
     public $parentData;
 
     /** @OneToMany(targetEntity="DDC199RelatedClass", mappedBy="parent") */

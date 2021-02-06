@@ -121,7 +121,10 @@ class CTIParent
  */
 class CTIChild extends CTIParent
 {
-   /** @Column(type="string") */
+    /**
+     * @var string
+     * @Column(type="string")
+     */
     private $data;
 
     public function getData()

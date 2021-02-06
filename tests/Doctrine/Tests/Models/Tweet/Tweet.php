@@ -17,7 +17,10 @@ class Tweet
      */
     public $id;
 
-    /** @Column(type="string") */
+    /**
+     * @var string
+     * @Column(type="string")
+     */
     public $content;
 
     /** @ManyToOne(targetEntity="User", inversedBy="tweets") */

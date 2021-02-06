@@ -127,7 +127,7 @@ class DefaultRepositoryFactoryTest extends TestCase
     /**
      * @return EntityManagerInterface|PHPUnit_Framework_MockObject_MockObject
      */
-    private function createEntityManager()
+    private function createEntityManager(): EntityManagerInterface
     {
         $entityManager = $this->createMock(EntityManagerInterface::class);
 

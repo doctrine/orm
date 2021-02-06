@@ -216,16 +216,27 @@ class BasicInheritanceMappingTest extends OrmTestCase
 
 class TransientBaseClass
 {
+    /** @var mixed */
     private $transient1;
+
+    /** @var mixed */
     private $transient2;
 }
 
 /** @Entity */
 class EntitySubClass extends TransientBaseClass
 {
-    /** @Id @Column(type="integer") */
+    /**
+     * @var int
+     * @Id
+     * @Column(type="integer")
+     */
     private $id;
-    /** @Column(type="string") */
+
+    /**
+     * @var string
+     * @Column(type="string")
+     */
     private $name;
 }
 
@@ -234,7 +245,10 @@ class MappedSuperclassBase
 {
     /** @Column(type="integer") */
     private $mapped1;
-    /** @Column(type="string") */
+    /**
+     * @var string
+     * @Column(type="string")
+     */
     private $mapped2;
     /**
      * @OneToOne(targetEntity="MappedSuperclassRelated1")
@@ -252,7 +266,10 @@ class EntitySubClass2 extends MappedSuperclassBase
 {
     /** @Id @Column(type="integer") */
     private $id;
-    /** @Column(type="string") */
+    /**
+     * @var string
+     * @Column(type="string")
+     */
     private $name;
 }
 
@@ -265,9 +282,15 @@ class EntitySubClass2 extends MappedSuperclassBase
  */
 class MappedSuperclassBaseIndex
 {
-    /** @Column(type="string") */
+    /**
+     * @var string
+     * @Column(type="string")
+     */
     private $mapped1;
-    /** @Column(type="string") */
+    /**
+     * @var string
+     * @Column(type="string")
+     */
     private $mapped2;
 }
 
@@ -276,7 +299,10 @@ class EntityIndexSubClass extends MappedSuperclassBaseIndex
 {
     /** @Id @Column(type="integer") */
     private $id;
-    /** @Column(type="string") */
+    /**
+     * @var string
+     * @Column(type="string")
+     */
     private $name;
 }
 
@@ -303,35 +329,50 @@ abstract class HierarchyBase
 /** @MappedSuperclass */
 abstract class HierarchyASuperclass extends HierarchyBase
 {
-    /** @Column(type="string") */
+    /**
+     * @var string
+     * @Column(type="string")
+     */
     public $a;
 }
 
 /** @Entity */
 class HierarchyBEntity extends HierarchyBase
 {
-    /** @Column(type="string") */
+    /**
+     * @var string
+     * @Column(type="string")
+     */
     public $b;
 }
 
 /** @Entity */
 class HierarchyC extends HierarchyBase
 {
-    /** @Column(type="string") */
+    /**
+     * @var string
+     * @Column(type="string")
+     */
     public $c;
 }
 
 /** @Entity */
 class HierarchyD extends HierarchyASuperclass
 {
-    /** @Column(type="string") */
+    /**
+     * @var string
+     * @Column(type="string")
+     */
     public $d;
 }
 
 /** @Entity */
 class HierarchyE extends HierarchyBEntity
 {
-    /** @Column(type="string") */
+    /**
+     * @var string
+     * @Column(type="string")
+     */
     public $e;
 }
 

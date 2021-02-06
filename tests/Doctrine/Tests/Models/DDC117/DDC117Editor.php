@@ -14,7 +14,10 @@ class DDC117Editor
     /** @Id @Column(type="integer") @GeneratedValue */
     public $id;
 
-    /** @Column(type="string") */
+    /**
+     * @var string
+     * @Column(type="string")
+     */
     public $name;
 
     /**

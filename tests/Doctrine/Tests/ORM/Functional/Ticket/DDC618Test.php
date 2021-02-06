@@ -146,7 +146,10 @@ class DDC618Author
      */
     public $id;
 
-    /** @Column(type="string") */
+    /**
+     * @var string
+     * @Column(type="string")
+     */
     public $name;
 
     /** @OneToMany(targetEntity="DDC618Book", mappedBy="author", cascade={"persist"}) */

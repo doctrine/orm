@@ -77,7 +77,10 @@ class DDC6460Test extends OrmFunctionalTestCase
  */
 class DDC6460Embeddable
 {
-    /** @Column(type="string") */
+    /**
+     * @var string
+     * @Column(type="string")
+     */
     public $field;
 }
 

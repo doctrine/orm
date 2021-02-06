@@ -56,7 +56,10 @@ class DDC2182OptionParent
  */
 class DDC2182OptionChild
 {
-    /** @Id @Column */
+    /**
+     * @Id
+     * @Column
+     */
     private $id;
 
     /**

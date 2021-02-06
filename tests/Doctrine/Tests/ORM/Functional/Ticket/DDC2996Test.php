@@ -60,7 +60,10 @@ class DDC2996UserPreference
 {
     /** @Id @GeneratedValue @Column(type="integer") */
     public $id;
-    /** @Column(type="string") */
+    /**
+     * @var string
+     * @Column(type="string")
+     */
     public $value;
 
     /** @ManyToOne(targetEntity="DDC2996User") */

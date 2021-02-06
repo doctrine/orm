@@ -19,6 +19,9 @@ abstract class User
      */
     private $id;
 
-    /** @Column(type="string") */
+    /**
+     * @var string
+     * @Column(type="string")
+     */
     public $name;
 }

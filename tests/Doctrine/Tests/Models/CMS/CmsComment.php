@@ -18,7 +18,10 @@ class CmsComment
     public $id;
     /** @Column(type="string", length=255) */
     public $topic;
-    /** @Column(type="string") */
+    /**
+     * @var string
+     * @Column(type="string")
+     */
     public $text;
     /**
      * @ManyToOne(targetEntity="CmsArticle", inversedBy="comments")

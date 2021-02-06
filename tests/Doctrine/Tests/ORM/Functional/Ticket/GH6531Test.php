@@ -126,7 +126,10 @@ class GH6531ArticleAttribute
     /** @Id @Column(type="string") */
     public $attribute;
 
-    /** @Column(type="string") */
+    /**
+     * @var string
+     * @Column(type="string")
+     */
     public $value;
 
     public function __construct(string $name, string $value, GH6531Article $article)

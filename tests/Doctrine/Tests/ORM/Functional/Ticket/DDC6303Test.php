@@ -104,7 +104,10 @@ abstract class DDC6303BaseClass
 /** @Entity @Table */
 class DDC6303ChildA extends DDC6303BaseClass
 {
-    /** @Column(type="string") */
+    /**
+     * @var string
+     * @Column(type="string")
+     */
     private $originalData;
 
     public function __construct(string $id, $originalData)

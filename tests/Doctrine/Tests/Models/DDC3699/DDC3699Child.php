@@ -10,7 +10,10 @@ class DDC3699Child extends DDC3699Parent
     /** @Id @Column(type="integer") */
     public $id;
 
-    /** @Column(type="string") */
+    /**
+     * @var string
+     * @Column(type="string")
+     */
     public $childField;
 
     /** @OneToOne(targetEntity="DDC3699RelationOne", inversedBy="child") */

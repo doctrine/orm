@@ -121,7 +121,10 @@ class GH7836ChildEntity
     /** @Column(type="integer") */
     public $position;
 
-    /** @Column(type="string") */
+    /**
+     * @var string
+     * @Column(type="string")
+     */
     public $name;
 
     /** @ManyToOne(targetEntity=GH7836ParentEntity::class, inversedBy="children") */

@@ -75,7 +75,10 @@ class DDC237EntityX
 {
     /** @Id @Column(type="integer") @GeneratedValue */
     public $id;
-    /** @Column(type="string") */
+    /**
+     * @var string
+     * @Column(type="string")
+     */
     public $data;
     /**
      * @OneToOne(targetEntity="DDC237EntityY")
@@ -90,7 +93,10 @@ class DDC237EntityY
 {
     /** @Id @Column(type="integer") @GeneratedValue */
     public $id;
-    /** @Column(type="string") */
+    /**
+     * @var string
+     * @Column(type="string")
+     */
     public $data;
 }
 
@@ -99,7 +105,10 @@ class DDC237EntityZ
 {
     /** @Id @Column(type="integer") @GeneratedValue */
     public $id;
-    /** @Column(type="string") */
+    /**
+     * @var string
+     * @Column(type="string")
+     */
     public $data;
 
     /**

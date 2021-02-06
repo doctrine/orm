@@ -18,7 +18,10 @@ class Department
      */
     public $id;
 
-    /** @Column(type="string") */
+    /**
+     * @var string
+     * @Column(type="string")
+     */
     public $name;
 
     /** @ManyToOne(targetEntity="Company", inversedBy="departments", cascade={"persist"}) */

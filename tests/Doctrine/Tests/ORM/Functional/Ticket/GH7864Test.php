@@ -66,7 +66,10 @@ class GH7864User
     /** @Id @Column(type="integer") @GeneratedValue */
     public $id;
 
-    /** @Column(type="string") */
+    /**
+     * @var string
+     * @Column(type="string")
+     */
     public $name;
 
     /** @OneToMany(targetEntity="GH7864Tweet", mappedBy="user", fetch="EXTRA_LAZY") */
@@ -92,7 +95,10 @@ class GH7864Tweet
     /** @Id @Column(type="integer") @GeneratedValue */
     public $id;
 
-    /** @Column(type="string") */
+    /**
+     * @var string
+     * @Column(type="string")
+     */
     public $content;
 
     /** @ManyToOne(targetEntity="GH7864User", inversedBy="tweets") */

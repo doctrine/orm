@@ -71,6 +71,9 @@ class DDC493Contact
      * @GeneratedValue(strategy="AUTO")
      */
     public $id;
-    /** @Column(type="string") */
+    /**
+     * @var string
+     * @Column(type="string")
+     */
     public $data;
 }
