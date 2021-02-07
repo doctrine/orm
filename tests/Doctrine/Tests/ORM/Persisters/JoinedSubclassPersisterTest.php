@@ -26,7 +26,7 @@ class JoinedSubClassPersisterTest extends OrmTestCase
     {
         parent::setUp();
 
-        $this->em        = $this->_getTestEntityManager();
+        $this->em        = $this->getTestEntityManager();
         $this->persister = new JoinedSubclassPersister($this->em, $this->em->getClassMetadata(RootClass::class));
     }
 

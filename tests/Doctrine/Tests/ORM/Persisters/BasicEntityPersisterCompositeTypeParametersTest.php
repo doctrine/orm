@@ -24,7 +24,7 @@ class BasicEntityPersisterCompositeTypeParametersTest extends OrmTestCase
     {
         parent::setUp();
 
-        $this->_em = $this->_getTestEntityManager();
+        $this->_em = $this->getTestEntityManager();
 
         $this->_em->getClassMetadata(Country::class);
         $this->_em->getClassMetadata(Admin1::class);

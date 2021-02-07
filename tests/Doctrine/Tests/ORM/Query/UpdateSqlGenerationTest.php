@@ -30,7 +30,7 @@ class UpdateSqlGenerationTest extends OrmTestCase
             DBALType::addType('negative_to_positive', NegativeToPositiveType::class);
         }
 
-        $this->_em = $this->_getTestEntityManager();
+        $this->_em = $this->getTestEntityManager();
     }
 
     public function assertSqlGeneration($dqlToBeTested, $sqlToBeConfirmed): void

@@ -103,6 +103,9 @@ class GH5804Article
      */
     public $version;
 
-    /** @Column(type="text") */
+    /**
+     * @var string
+     * @Column(type="text")
+     */
     public $text;
 }

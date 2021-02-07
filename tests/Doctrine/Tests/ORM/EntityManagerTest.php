@@ -42,7 +42,7 @@ class EntityManagerTest extends OrmTestCase
     protected function setUp(): void
     {
         parent::setUp();
-        $this->_em = $this->_getTestEntityManager();
+        $this->_em = $this->getTestEntityManager();
     }
 
     /**

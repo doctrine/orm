@@ -31,7 +31,7 @@ class ResultSetMappingTest extends OrmTestCase
     {
         parent::setUp();
         $this->_rsm = new ResultSetMapping();
-        $this->_em  = $this->_getTestEntityManager();
+        $this->_em  = $this->getTestEntityManager();
     }
 
     /**

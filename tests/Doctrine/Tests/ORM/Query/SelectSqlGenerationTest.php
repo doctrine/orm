@@ -11,8 +11,10 @@ use Doctrine\DBAL\Platforms\PostgreSqlPlatform;
 use Doctrine\DBAL\Platforms\SqlitePlatform;
 use Doctrine\DBAL\Platforms\SQLServerPlatform;
 use Doctrine\DBAL\Types\Type as DBALType;
+use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Query as ORMQuery;
 use Doctrine\ORM\Query\AST\Functions\FunctionNode;
+use Doctrine\ORM\Query\AST\SimpleArithmeticExpression;
 use Doctrine\ORM\Query\Lexer;
 use Doctrine\ORM\Query\Parser;
 use Doctrine\ORM\Query\QueryException;
@@ -30,11 +32,12 @@ use function sprintf;
 
 class SelectSqlGenerationTest extends OrmTestCase
 {
+    /** @var EntityManagerInterface */
     private $_em;
 
     protected function setUp(): void
     {
-        $this->_em = $this->_getTestEntityManager();
+        $this->_em = $this->getTestEntityManager();
     }
 
     /**
@@ -43,8 +46,12 @@ class SelectSqlGenerationTest extends OrmTestCase
      * @param array $queryHints
      * @param array $queryParams
      */
-    public function assertSqlGeneration(string $dqlToBeTested, string $sqlToBeConfirmed, array $queryHints = [], array $queryParams = []): void
-    {
+    public function assertSqlGeneration(
+        string $dqlToBeTested,
+        string $sqlToBeConfirmed,
+        array $queryHints = [],
+        array $queryParams = []
+    ): void {
         try {
             $query = $this->_em->createQuery($dqlToBeTested);
 
@@ -79,8 +86,12 @@ class SelectSqlGenerationTest extends OrmTestCase
      * @param array $queryHints
      * @param array $queryParams
      */
-    public function assertInvalidSqlGeneration(string $dqlToBeTested, string $expectedException, array $queryHints = [], array $queryParams = []): void
-    {
+    public function assertInvalidSqlGeneration(
+        string $dqlToBeTested,
+        string $expectedException,
+        array $queryHints = [],
+        array $queryParams = []
+    ): void {
         $this->expectException($expectedException);
 
         $query = $this->_em->createQuery($dqlToBeTested);
@@ -382,7 +393,7 @@ class SelectSqlGenerationTest extends OrmTestCase
         );
     }
 
-    // Ticket #668
+    /** Ticket #668 */
     public function testSupportsASqlKeywordInAStringLiteralParam(): void
     {
         $this->assertSqlGeneration(
@@ -446,7 +457,7 @@ class SelectSqlGenerationTest extends OrmTestCase
      * @group DDC-135
      * @group DDC-177
      */
-    public function testJoinOnClause_NotYetSupported_ThrowsException(): void
+    public function testJoinOnClauseNotYetSupportedThrowsException(): void
     {
         $this->expectException(QueryException::class);
 
@@ -482,7 +493,7 @@ class SelectSqlGenerationTest extends OrmTestCase
         );
     }
 
-    // Ticket 894
+    /** Ticket 894 */
     public function testSupportsBetweenClauseWithPositionalParameters(): void
     {
         $this->assertSqlGeneration(
@@ -577,7 +588,7 @@ class SelectSqlGenerationTest extends OrmTestCase
         );
     }
 
-    // Ticket #973
+    /** Ticket #973 */
     public function testSupportsSingleValuedInExpressionWithoutSpacesInWherePart(): void
     {
         $this->assertSqlGeneration(
@@ -972,9 +983,11 @@ class SelectSqlGenerationTest extends OrmTestCase
         );
     }
 
-    // Null check on inverse side has to happen through explicit JOIN.
-    // "SELECT u FROM Doctrine\Tests\Models\CMS\CmsUser u WHERE u.address IS NULL"
-    // where the CmsUser is the inverse side is not supported.
+    /**
+     * Null check on inverse side has to happen through explicit JOIN.
+     * "SELECT u FROM Doctrine\Tests\Models\CMS\CmsUser u WHERE u.address IS NULL"
+     * where the CmsUser is the inverse side is not supported.
+     */
     public function testSingleValuedAssociationNullCheckOnInverseSide(): void
     {
         $this->assertSqlGeneration(
@@ -1619,7 +1632,7 @@ class SelectSqlGenerationTest extends OrmTestCase
     {
         $this->assertSqlGeneration(
             'SELECT m FROM ' . __NAMESPACE__ . '\\DDC1384Model m',
-            'SELECT d0_.aVeryLongIdentifierThatShouldBeShortenedByTheSQLWalker_fooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooo AS ooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooo_0 FROM DDC1384Model d0_'
+            'SELECT d0_.aVeryLongIdentifierThatShouldBeShortenedByTheSQLWalkerFooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooo AS ooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooo_0 FROM DDC1384Model d0_'
         );
     }
 
@@ -2327,7 +2340,7 @@ class SelectSqlGenerationTest extends OrmTestCase
     }
 
     /**
-     * @return array
+     * @psalm-return list<array{string}>
      */
     public function mathematicOperatorsProvider(): array
     {
@@ -2337,12 +2350,13 @@ class SelectSqlGenerationTest extends OrmTestCase
 
 class MyAbsFunction extends FunctionNode
 {
+    /** @var SimpleArithmeticExpression */
     public $simpleArithmeticExpression;
 
     /**
      * @override
      */
-    public function getSql(SqlWalker $sqlWalker)
+    public function getSql(SqlWalker $sqlWalker): string
     {
         return 'ABS(' . $sqlWalker->walkSimpleArithmeticExpression($this->simpleArithmeticExpression) . ')';
     }
@@ -2368,11 +2382,12 @@ class MyAbsFunction extends FunctionNode
 class DDC1384Model
 {
     /**
+     * @var int
      * @Id
      * @Column(type="integer")
      * @GeneratedValue
      */
-    protected $aVeryLongIdentifierThatShouldBeShortenedByTheSQLWalker_fooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooo;
+    protected $aVeryLongIdentifierThatShouldBeShortenedByTheSQLWalkerFooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooo;
 }
 
 
@@ -2382,13 +2397,17 @@ class DDC1384Model
 class DDC1474Entity
 {
     /**
+     * @var int
      * @Id
      * @Column(type="integer")
      * @GeneratedValue()
      */
     protected $id;
 
-    /** @column(type="float") */
+    /**
+     * @var float
+     * @column(type="float")
+     */
     private $value;
 
     public function __construct(string $float)

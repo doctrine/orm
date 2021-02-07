@@ -145,7 +145,7 @@ class ParserTest extends OrmTestCase
      */
     public function testNullLookahead(): void
     {
-        $query = new Query($this->_getTestEntityManager());
+        $query = new Query($this->getTestEntityManager());
         $query->setDQL('SELECT CURRENT_TIMESTAMP()');
 
         $parser = new Parser($query);
@@ -156,7 +156,7 @@ class ParserTest extends OrmTestCase
 
     private function createParser($dql)
     {
-        $query = new Query($this->_getTestEntityManager());
+        $query = new Query($this->getTestEntityManager());
         $query->setDQL($dql);
 
         $parser = new Parser($query);
