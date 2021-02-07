@@ -8,15 +8,12 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\PersistentCollection;
 use Doctrine\ORM\Tools\SchemaTool;
 use Doctrine\Tests\OrmFunctionalTestCase;
-use Doctrine\Tests\VerifyDeprecations;
 use Exception;
 
 use function count;
 
 class DDC729Test extends OrmFunctionalTestCase
 {
-    use VerifyDeprecations;
-
     protected function setUp(): void
     {
         parent::setUp();
@@ -31,12 +28,6 @@ class DDC729Test extends OrmFunctionalTestCase
             );
         } catch (Exception $e) {
         }
-    }
-
-    /** @after */
-    public function ensureTestGeneratedDeprecationMessages(): void
-    {
-        $this->assertHasDeprecationMessages();
     }
 
     public function testMergeManyToMany(): void

@@ -6,7 +6,6 @@ namespace Doctrine\Tests\ORM\Functional\Ticket;
 
 use Doctrine\ORM\UnitOfWork;
 use Doctrine\Tests\OrmFunctionalTestCase;
-use Doctrine\Tests\VerifyDeprecations;
 use Exception;
 
 /**
@@ -14,8 +13,6 @@ use Exception;
  */
 class DDC1392Test extends OrmFunctionalTestCase
 {
-    use VerifyDeprecations;
-
     protected function setUp(): void
     {
         parent::setUp();
@@ -68,7 +65,6 @@ class DDC1392Test extends OrmFunctionalTestCase
         $result = $q->getSingleScalarResult();
 
         self::assertEquals(1, $result);
-        $this->assertHasDeprecationMessages();
     }
 }
 

@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace Doctrine\Tests\ORM\Functional\Ticket;
 
 use Doctrine\Tests\OrmFunctionalTestCase;
-use Doctrine\Tests\VerifyDeprecations;
 use Exception;
 
 use function get_class;
@@ -15,8 +14,6 @@ use function get_class;
  */
 class DDC1383Test extends OrmFunctionalTestCase
 {
-    use VerifyDeprecations;
-
     protected function setUp(): void
     {
         parent::setUp();
@@ -62,7 +59,6 @@ class DDC1383Test extends OrmFunctionalTestCase
             $parent instanceof DDC1383Entity,
             'Entity class is ' . get_class($parent) . ', "DDC1383Entity" was expected'
         );
-        $this->assertHasDeprecationMessages();
     }
 }
 

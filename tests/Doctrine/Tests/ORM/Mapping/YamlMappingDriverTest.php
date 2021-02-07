@@ -11,7 +11,6 @@ use Doctrine\Persistence\Mapping\Driver\MappingDriver;
 use Doctrine\Tests\Models\DirectoryTree\Directory;
 use Doctrine\Tests\Models\DirectoryTree\File;
 use Doctrine\Tests\Models\Generic\SerializationModel;
-use Doctrine\Tests\VerifyDeprecations;
 use Symfony\Component\Yaml\Yaml;
 
 use function class_exists;
@@ -20,8 +19,6 @@ use const DIRECTORY_SEPARATOR;
 
 class YamlMappingDriverTest extends AbstractMappingDriverTest
 {
-    use VerifyDeprecations;
-
     protected function _loadDriver(): MappingDriver
     {
         if (! class_exists(Yaml::class, true)) {
@@ -53,7 +50,6 @@ class YamlMappingDriverTest extends AbstractMappingDriverTest
         $classDirectory = new ClassMetadata(Directory::class);
         $classDirectory = $factory->getMetadataFor(Directory::class);
         $this->assertEquals(Directory::class, $classDirectory->associationMappings['parentDirectory']['sourceEntity']);
-        $this->assertHasDeprecationMessages();
     }
 
     /**
@@ -86,13 +82,6 @@ class YamlMappingDriverTest extends AbstractMappingDriverTest
 
         $this->assertEquals(255, $nameField['length']);
         $this->assertEquals(255, $valueField['length']);
-        $this->assertHasDeprecationMessages();
-    }
-
-    public function testDeprecation(): void
-    {
-        $this->createClassMetadata(DDC2069Entity::class);
-        $this->expectDeprecationMessageSame('YAML mapping driver is deprecated and will be removed in Doctrine ORM 3.0, please migrate to annotation or XML driver.');
     }
 }
 
