@@ -24,6 +24,7 @@ use BadMethodCallException;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\Common\Collections\Criteria;
 use Doctrine\Common\Collections\Selectable;
+use Doctrine\Deprecations\Deprecation;
 use Doctrine\Inflector\Inflector;
 use Doctrine\Inflector\InflectorFactory;
 use Doctrine\ORM\Mapping\ClassMetadata;
@@ -35,9 +36,6 @@ use function lcfirst;
 use function sprintf;
 use function strpos;
 use function substr;
-use function trigger_error;
-
-use const E_USER_DEPRECATED;
 
 /**
  * An EntityRepository serves as a repository for entities with generic as well as
@@ -145,7 +143,13 @@ class EntityRepository implements ObjectRepository, Selectable
      */
     public function clear()
     {
-        @trigger_error('Method ' . __METHOD__ . '() is deprecated and will be removed in Doctrine ORM 3.0.', E_USER_DEPRECATED);
+        Deprecation::trigger(
+            'doctrine/orm',
+            '2.8',
+            'https://github.com/doctrine/orm/issues/8460',
+            'Calling EntityRepository::clear() is deprecated and will not be supported in Doctrine ORM 3.0.',
+            __METHOD__
+        );
 
         $this->_em->clear($this->_class->rootEntityName);
     }

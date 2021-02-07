@@ -20,6 +20,7 @@
 
 namespace Doctrine\ORM\Tools\Export\Driver;
 
+use Doctrine\Deprecations\Deprecation;
 use Doctrine\ORM\Mapping\ClassMetadataInfo;
 use Doctrine\ORM\Tools\Export\ExportException;
 
@@ -30,9 +31,6 @@ use function file_put_contents;
 use function is_dir;
 use function mkdir;
 use function str_replace;
-use function trigger_error;
-
-use const E_USER_DEPRECATED;
 
 /**
  * Abstract base class which is to be used for the Exporter drivers
@@ -61,7 +59,13 @@ abstract class AbstractExporter
      */
     public function __construct($dir = null)
     {
-        @trigger_error(static::class . ' is deprecated and will be removed in Doctrine ORM 3.0', E_USER_DEPRECATED);
+        Deprecation::trigger(
+            'doctrine/orm',
+            '2.7',
+            'https://github.com/doctrine/orm/issues/8458',
+            '%s is deprecated with no replacement',
+            self::class
+        );
 
         $this->_outputDir = $dir;
     }

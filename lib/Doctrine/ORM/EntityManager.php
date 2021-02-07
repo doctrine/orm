@@ -26,6 +26,7 @@ use Doctrine\Common\Util\ClassUtils;
 use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\DriverManager;
 use Doctrine\DBAL\LockMode;
+use Doctrine\Deprecations\Deprecation;
 use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\Mapping\ClassMetadataFactory;
 use Doctrine\ORM\Proxy\ProxyFactory;
@@ -48,9 +49,6 @@ use function is_object;
 use function is_string;
 use function ltrim;
 use function sprintf;
-use function trigger_error;
-
-use const E_USER_DEPRECATED;
 
 /**
  * The EntityManager is the central access point to ORM functionality.
@@ -365,9 +363,12 @@ use const E_USER_DEPRECATED;
     public function flush($entity = null)
     {
         if ($entity !== null) {
-            @trigger_error(
-                'Calling ' . __METHOD__ . '() with any arguments to flush specific entities is deprecated and will not be supported in Doctrine ORM 3.0.',
-                E_USER_DEPRECATED
+            Deprecation::trigger(
+                'doctrine/orm',
+                '2.7',
+                'https://github.com/doctrine/orm/issues/8459',
+                'Calling %s() with any arguments to flush specific entities is deprecated and will not be supported in Doctrine ORM 3.0.',
+                __METHOD__
             );
         }
 
@@ -569,9 +570,12 @@ use const E_USER_DEPRECATED;
         }
 
         if ($entityName !== null) {
-            @trigger_error(
-                'Calling ' . __METHOD__ . '() with any arguments to clear specific entities is deprecated and will not be supported in Doctrine ORM 3.0.',
-                E_USER_DEPRECATED
+            Deprecation::trigger(
+                'doctrine/orm',
+                '2.7',
+                'https://github.com/doctrine/orm/issues/8460',
+                'Calling %s() with any arguments to clear specific entities is deprecated and will not be supported in Doctrine ORM 3.0.',
+                __METHOD__
             );
         }
 
@@ -672,8 +676,6 @@ use const E_USER_DEPRECATED;
      * Entities which previously referenced the detached entity will continue to
      * reference it.
      *
-     * @deprecated 2.7 This method is being removed from the ORM and won't have any replacement
-     *
      * @param object $entity The entity to detach.
      *
      * @return void
@@ -682,8 +684,6 @@ use const E_USER_DEPRECATED;
      */
     public function detach($entity)
     {
-        @trigger_error('Method ' . __METHOD__ . '() is deprecated and will be removed in Doctrine ORM 3.0.', E_USER_DEPRECATED);
-
         if (! is_object($entity)) {
             throw ORMInvalidArgumentException::invalidObject('EntityManager#detach()', $entity);
         }
@@ -707,7 +707,12 @@ use const E_USER_DEPRECATED;
      */
     public function merge($entity)
     {
-        @trigger_error('Method ' . __METHOD__ . '() is deprecated and will be removed in Doctrine ORM 3.0.', E_USER_DEPRECATED);
+        Deprecation::trigger(
+            'doctrine/orm',
+            '2.7',
+            'https://github.com/doctrine/orm/issues/8461',
+            'Method EntityManager::merge() is deprecated and will be removed in Doctrine ORM 3.0.'
+        );
 
         if (! is_object($entity)) {
             throw ORMInvalidArgumentException::invalidObject('EntityManager#merge()', $entity);
@@ -723,7 +728,12 @@ use const E_USER_DEPRECATED;
      */
     public function copy($entity, $deep = false)
     {
-        @trigger_error('Method ' . __METHOD__ . '() is deprecated and will be removed in Doctrine ORM 3.0.', E_USER_DEPRECATED);
+        Deprecation::trigger(
+            'doctrine/orm',
+            '2.7',
+            'https://github.com/doctrine/orm/issues/8462',
+            'Method EntityManager::copy() is deprecated and will be removed in Doctrine ORM 3.0.'
+        );
 
         throw new BadMethodCallException('Not implemented.');
     }

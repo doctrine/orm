@@ -20,6 +20,7 @@
 
 namespace Doctrine\ORM\Mapping\Driver;
 
+use Doctrine\Deprecations\Deprecation;
 use Doctrine\ORM\Mapping\Builder\EntityListenerBuilder;
 use Doctrine\ORM\Mapping\ClassMetadata as Metadata;
 use Doctrine\ORM\Mapping\ClassMetadataInfo;
@@ -40,9 +41,6 @@ use function sprintf;
 use function strlen;
 use function strtoupper;
 use function substr;
-use function trigger_error;
-
-use const E_USER_DEPRECATED;
 
 /**
  * The YamlDriver reads the mapping metadata from yaml schema files.
@@ -58,9 +56,11 @@ class YamlDriver extends FileDriver
      */
     public function __construct($locator, $fileExtension = self::DEFAULT_FILE_EXTENSION)
     {
-        @trigger_error(
-            'YAML mapping driver is deprecated and will be removed in Doctrine ORM 3.0, please migrate to annotation or XML driver.',
-            E_USER_DEPRECATED
+        Deprecation::trigger(
+            'doctrine/orm',
+            '2.7',
+            '',
+            'YAML mapping driver is deprecated and will be removed in Doctrine ORM 3.0, please migrate to annotation or XML driver.'
         );
 
         parent::__construct($locator, $fileExtension);

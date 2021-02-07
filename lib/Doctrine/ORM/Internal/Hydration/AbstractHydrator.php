@@ -24,6 +24,7 @@ use Doctrine\DBAL\Driver\Statement;
 use Doctrine\DBAL\FetchMode;
 use Doctrine\DBAL\Platforms\AbstractPlatform;
 use Doctrine\DBAL\Types\Type;
+use Doctrine\Deprecations\Deprecation;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Events;
 use Doctrine\ORM\Mapping\ClassMetadata;
@@ -37,9 +38,6 @@ use function array_map;
 use function array_merge;
 use function end;
 use function in_array;
-use function trigger_error;
-
-use const E_USER_DEPRECATED;
 
 /**
  * Base class for all hydrators. A hydrator is a class that provides some form
@@ -128,9 +126,12 @@ abstract class AbstractHydrator
      */
     public function iterate($stmt, $resultSetMapping, array $hints = [])
     {
-        @trigger_error(
-            'Method ' . __METHOD__ . '() is deprecated and will be removed in Doctrine ORM 3.0. Use toIterable() instead.',
-            E_USER_DEPRECATED
+        Deprecation::trigger(
+            'doctrine/orm',
+            '2.8',
+            '',
+            'Method %s() is deprecated and will be removed in Doctrine ORM 3.0. Use toIterable() instead.',
+            __METHOD__
         );
 
         $this->_stmt  = $stmt;

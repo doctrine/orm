@@ -83,12 +83,6 @@ class EntityGeneratorTest extends OrmTestCase
         rmdir($this->_tmpDir . '/' . $this->_namespace);
     }
 
-    /** @after */
-    public function ensureTestGeneratedDeprecationMessages(): void
-    {
-        $this->assertHasDeprecationMessages();
-    }
-
     /**
      * @param ClassMetadataInfo[] $embeddedClasses
      */
