@@ -22,7 +22,7 @@ class YamlMappingDriverTest extends AbstractMappingDriverTest
 {
     use VerifyDeprecations;
 
-    protected function _loadDriver(): MappingDriver
+    protected function loadDriver(): MappingDriver
     {
         if (! class_exists(Yaml::class, true)) {
             $this->markTestSkipped('Please install Symfony YAML Component into the include path of your PHP installation.');
@@ -38,10 +38,10 @@ class YamlMappingDriverTest extends AbstractMappingDriverTest
      */
     public function testJoinTablesWithMappedSuperclassForYamlDriver(): void
     {
-        $yamlDriver = $this->_loadDriver();
+        $yamlDriver = $this->loadDriver();
         $yamlDriver->getLocator()->addPaths([__DIR__ . DIRECTORY_SEPARATOR . 'yaml']);
 
-        $em = $this->_getTestEntityManager();
+        $em = $this->getTestEntityManager();
         $em->getConfiguration()->setMetadataDriverImpl($yamlDriver);
         $factory = new ClassMetadataFactory();
         $factory->setEntityManager($em);

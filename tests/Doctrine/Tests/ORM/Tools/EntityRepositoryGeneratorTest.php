@@ -92,7 +92,7 @@ class EntityRepositoryGeneratorTest extends OrmTestCase
      */
     public function testGeneratedEntityRepositoryClass(): void
     {
-        $em = $this->_getTestEntityManager();
+        $em = $this->getTestEntityManager();
         $ns = $this->_namespace;
 
         $className = $ns . '\DDC3231User1Tmp';
@@ -133,7 +133,7 @@ class EntityRepositoryGeneratorTest extends OrmTestCase
      */
     public function testGeneratedEntityRepositoryClassCustomDefaultRepository(): void
     {
-        $em = $this->_getTestEntityManager();
+        $em = $this->getTestEntityManager();
         $ns = $this->_namespace;
 
         $className = $ns . '\DDC3231User2Tmp';
@@ -174,7 +174,7 @@ class EntityRepositoryGeneratorTest extends OrmTestCase
     private function writeEntityClass(string $className, string $newClassName): void
     {
         $cmf = new ClassMetadataFactory();
-        $em  = $this->_getTestEntityManager();
+        $em  = $this->getTestEntityManager();
 
         $cmf->setEntityManager($em);
 

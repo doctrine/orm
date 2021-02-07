@@ -84,8 +84,12 @@ abstract class OrmTestCase extends DoctrineTestCase
      * @param Connection|array $conn
      * @param mixed            $conf
      */
-    protected function _getTestEntityManager($conn = null, $conf = null, ?EventManager $eventManager = null, bool $withSharedMetadata = true): EntityManagerMock
-    {
+    protected function getTestEntityManager(
+        $conn = null,
+        $conf = null,
+        ?EventManager $eventManager = null,
+        bool $withSharedMetadata = true
+    ): EntityManagerMock {
         $metadataCache = $withSharedMetadata
             ? self::getSharedMetadataCacheImpl()
             : new ArrayCache();

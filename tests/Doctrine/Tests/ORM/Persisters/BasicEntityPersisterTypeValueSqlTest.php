@@ -39,7 +39,7 @@ class BasicEntityPersisterTypeValueSqlTest extends OrmTestCase
             DBALType::addType('upper_case_string', '\Doctrine\Tests\DbalTypes\UpperCaseStringType');
         }
 
-        $this->_em = $this->_getTestEntityManager();
+        $this->_em = $this->getTestEntityManager();
 
         $this->_persister = new BasicEntityPersister($this->_em, $this->_em->getClassMetadata(CustomTypeParent::class));
     }

@@ -806,7 +806,7 @@ class EntityGeneratorTest extends OrmTestCase
     public function testTraitPropertiesAndMethodsAreNotDuplicated(): void
     {
         $cmf = new ClassMetadataFactory();
-        $em  = $this->_getTestEntityManager();
+        $em  = $this->getTestEntityManager();
         $cmf->setEntityManager($em);
 
         $user                = new DDC2372User();
@@ -832,7 +832,7 @@ class EntityGeneratorTest extends OrmTestCase
     public function testTraitPropertiesAndMethodsAreNotDuplicatedInChildClasses(): void
     {
         $cmf = new ClassMetadataFactory();
-        $em  = $this->_getTestEntityManager();
+        $em  = $this->getTestEntityManager();
         $cmf->setEntityManager($em);
 
         $user                = new DDC2372Admin();
@@ -858,7 +858,7 @@ class EntityGeneratorTest extends OrmTestCase
     public function testMethodsAndPropertiesAreNotDuplicatedInChildClasses(): void
     {
         $cmf = new ClassMetadataFactory();
-        $em  = $this->_getTestEntityManager();
+        $em  = $this->getTestEntityManager();
 
         $cmf->setEntityManager($em);
 

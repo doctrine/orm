@@ -22,7 +22,7 @@ class BasicEntityPersisterCompositeTypeSqlTest extends OrmTestCase
     {
         parent::setUp();
 
-        $this->_em        = $this->_getTestEntityManager();
+        $this->_em        = $this->getTestEntityManager();
         $this->_persister = new BasicEntityPersister($this->_em, $this->_em->getClassMetadata(Admin1AlternateName::class));
     }
 

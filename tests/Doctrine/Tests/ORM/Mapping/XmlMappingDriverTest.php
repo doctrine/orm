@@ -33,14 +33,14 @@ use const PATHINFO_FILENAME;
 
 class XmlMappingDriverTest extends AbstractMappingDriverTest
 {
-    protected function _loadDriver(): MappingDriver
+    protected function loadDriver(): MappingDriver
     {
         return new XmlDriver(__DIR__ . DIRECTORY_SEPARATOR . 'xml');
     }
 
     public function testClassTableInheritanceDiscriminatorMap(): void
     {
-        $mappingDriver = $this->_loadDriver();
+        $mappingDriver = $this->loadDriver();
 
         $class = new ClassMetadata(CTI::class);
         $class->initializeReflection(new RuntimeReflectionService());
@@ -60,7 +60,7 @@ class XmlMappingDriverTest extends AbstractMappingDriverTest
     {
         $this->expectException('Doctrine\ORM\Cache\CacheException');
         $this->expectExceptionMessage('Entity association field "Doctrine\Tests\ORM\Mapping\XMLSLC#foo" not configured as part of the second-level cache.');
-        $mappingDriver = $this->_loadDriver();
+        $mappingDriver = $this->loadDriver();
 
         $class = new ClassMetadata(XMLSLC::class);
         $mappingDriver->loadMetadataForClass(XMLSLC::class, $class);
@@ -68,8 +68,8 @@ class XmlMappingDriverTest extends AbstractMappingDriverTest
 
     public function testIdentifierWithAssociationKey(): void
     {
-        $driver  = $this->_loadDriver();
-        $em      = $this->_getTestEntityManager();
+        $driver  = $this->loadDriver();
+        $em      = $this->getTestEntityManager();
         $factory = new ClassMetadataFactory();
 
         $em->getConfiguration()->setMetadataDriverImpl($driver);
@@ -99,9 +99,9 @@ class XmlMappingDriverTest extends AbstractMappingDriverTest
     public function testEmbeddedMappingsWithUseColumnPrefix(): void
     {
         $factory = new ClassMetadataFactory();
-        $em      = $this->_getTestEntityManager();
+        $em      = $this->getTestEntityManager();
 
-        $em->getConfiguration()->setMetadataDriverImpl($this->_loadDriver());
+        $em->getConfiguration()->setMetadataDriverImpl($this->loadDriver());
         $factory->setEntityManager($em);
 
         $this->assertEquals(
@@ -119,9 +119,9 @@ class XmlMappingDriverTest extends AbstractMappingDriverTest
     public function testEmbeddedMappingsWithFalseUseColumnPrefix(): void
     {
         $factory = new ClassMetadataFactory();
-        $em      = $this->_getTestEntityManager();
+        $em      = $this->getTestEntityManager();
 
-        $em->getConfiguration()->setMetadataDriverImpl($this->_loadDriver());
+        $em->getConfiguration()->setMetadataDriverImpl($this->loadDriver());
         $factory->setEntityManager($em);
 
         $this->assertFalse(
@@ -190,7 +190,7 @@ class XmlMappingDriverTest extends AbstractMappingDriverTest
      */
     public function testOneToManyDefaultOrderByAsc(): void
     {
-        $driver = $this->_loadDriver();
+        $driver = $this->loadDriver();
         $class  = new ClassMetadata(GH7141Article::class);
 
         $class->initializeReflection(new RuntimeReflectionService());
@@ -207,7 +207,7 @@ class XmlMappingDriverTest extends AbstractMappingDriverTest
         $class = new ClassMetadata(GH7316Article::class);
         $class->initializeReflection(new RuntimeReflectionService());
 
-        $driver = $this->_loadDriver();
+        $driver = $this->loadDriver();
         $driver->loadMetadataForClass(GH7316Article::class, $class);
 
         self::assertEquals(

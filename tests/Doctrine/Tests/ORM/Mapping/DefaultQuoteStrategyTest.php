@@ -22,7 +22,7 @@ class DefaultQuoteStrategyTest extends OrmTestCase
      */
     public function testGetJoinTableName(): void
     {
-        $em       = $this->_getTestEntityManager();
+        $em       = $this->getTestEntityManager();
         $metadata = $em->getClassMetadata(NonPublicSchemaUser::class);
         $strategy = new DefaultQuoteStrategy();
         $platform = $this->getMockForAbstractClass(AbstractPlatform::class);

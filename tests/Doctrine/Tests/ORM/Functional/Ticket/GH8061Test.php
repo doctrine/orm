@@ -23,7 +23,7 @@ final class GH8061Test extends OrmTestCase
     public function testConvertToPHPValueSQLForNewObjectExpression(): void
     {
         $dql           = 'SELECT NEW ' . GH8061Class::class . '(e.field) FROM ' . GH8061Entity::class . ' e';
-        $entityManager = $this->_getTestEntityManager();
+        $entityManager = $this->getTestEntityManager();
         $query         = $entityManager->createQuery($dql);
 
         self::assertRegExp('/SELECT DatabaseFunction\(\w+\.field\) AS /', $query->getSQL());

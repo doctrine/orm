@@ -21,7 +21,7 @@ class CustomTreeWalkersJoinTest extends OrmTestCase
 
     protected function setUp(): void
     {
-        $this->em = $this->_getTestEntityManager();
+        $this->em = $this->getTestEntityManager();
     }
 
     public function assertSqlGeneration($dqlToBeTested, $sqlToBeConfirmed): void

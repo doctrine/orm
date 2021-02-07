@@ -29,7 +29,7 @@ class BasicInheritanceMappingTest extends OrmTestCase
     {
         $this->cmf = new ClassMetadataFactory();
 
-        $this->cmf->setEntityManager($this->_getTestEntityManager());
+        $this->cmf->setEntityManager($this->getTestEntityManager());
     }
 
     public function testGetMetadataForTransientClassThrowsException(): void

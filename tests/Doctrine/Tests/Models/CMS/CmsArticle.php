@@ -18,7 +18,11 @@ class CmsArticle
     public $id;
     /** @Column(type="string", length=255) */
     public $topic;
-    /** @Column(type="text") */
+
+    /**
+     * @var string
+     * @Column(type="text")
+     */
     public $text;
     /**
      * @ManyToOne(targetEntity="CmsUser", inversedBy="articles")

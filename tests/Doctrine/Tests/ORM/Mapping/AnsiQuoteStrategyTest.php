@@ -31,7 +31,7 @@ class AnsiQuoteStrategyTest extends OrmTestCase
     {
         parent::setUp();
 
-        $em             = $this->_getTestEntityManager();
+        $em             = $this->getTestEntityManager();
         $this->platform = $em->getConnection()->getDatabasePlatform();
         $this->strategy = new AnsiQuoteStrategy();
     }

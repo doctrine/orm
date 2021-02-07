@@ -35,7 +35,7 @@ class QueryTest extends OrmTestCase
 
     protected function setUp(): void
     {
-        $this->_em = $this->_getTestEntityManager();
+        $this->_em = $this->getTestEntityManager();
     }
 
     public function testGetParameters(): void
