@@ -4,10 +4,10 @@ declare(strict_types=1);
 
 namespace Doctrine\Tests\ORM;
 
-use BadMethodCallException;
 use Doctrine\Common\EventManager;
 use Doctrine\DBAL\Connection;
 use Doctrine\Deprecations\Deprecation;
+use Doctrine\Deprecations\PHPUnit\VerifyDeprecations;
 use Doctrine\ORM\Configuration;
 use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\Mapping\ClassMetadataFactory;
@@ -34,6 +34,8 @@ use function uniqid;
 
 class EntityManagerTest extends OrmTestCase
 {
+    use VerifyDeprecations;
+
     /** @var EntityManager */
     private $_em;
 
@@ -321,13 +323,9 @@ class EntityManagerTest extends OrmTestCase
         $entity = new Country(456, 'United Kingdom');
         $this->_em->persist($entity);
 
-        $before = Deprecation::getTriggeredDeprecations()['https://github.com/doctrine/orm/issues/8460'] ?? 0;
+        $this->expectDeprecationWithIdentifier('https://github.com/doctrine/orm/issues/8460');
 
         $this->_em->clear(Country::class);
-
-        $after = Deprecation::getTriggeredDeprecations()['https://github.com/doctrine/orm/issues/8460'] ?? 0;
-
-        $this->assertSame($before + 1, $after);
     }
 
     public function testDeprecatedFlushWithArguments(): void
@@ -335,12 +333,8 @@ class EntityManagerTest extends OrmTestCase
         $entity = new Country(456, 'United Kingdom');
         $this->_em->persist($entity);
 
-        $before = Deprecation::getTriggeredDeprecations()['https://github.com/doctrine/orm/issues/8459'] ?? 0;
+        $this->expectDeprecationWithIdentifier('https://github.com/doctrine/orm/issues/8459');
 
         $this->_em->flush($entity);
-
-        $after = Deprecation::getTriggeredDeprecations()['https://github.com/doctrine/orm/issues/8459'] ?? 0;
-
-        $this->assertSame($before + 1, $after);
     }
 }

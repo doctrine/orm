@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Doctrine\Tests\Mapping;
 
 use Doctrine\Deprecations\Deprecation;
+use Doctrine\Deprecations\PHPUnit\VerifyDeprecations;
 use Doctrine\ORM\Mapping\UnderscoreNamingStrategy;
 use PHPUnit\Framework\TestCase;
 
@@ -12,20 +13,18 @@ use const CASE_LOWER;
 
 final class UnderscoreNamingStrategyTest extends TestCase
 {
+    use VerifyDeprecations;
+
     /** @test */
     public function checkDeprecationMessage(): void
     {
-        $before = Deprecation::getTriggeredDeprecations()['https://github.com/doctrine/orm/pull/7908'] ?? 0;
+        $this->expectDeprecationWithIdentifier('https://github.com/doctrine/orm/pull/7908');
 
         new UnderscoreNamingStrategy(CASE_LOWER, false);
-
-        $after = Deprecation::getTriggeredDeprecations()['https://github.com/doctrine/orm/pull/7908'] ?? 0;
-
-        $this->assertSame($before + 1, $after);
     }
 
     /** @test */
-    public function checNoDeprecationMessageWhenNumberAwareEnabled(): void
+    public function checkNoDeprecationMessageWhenNumberAwareEnabled(): void
     {
         $before = Deprecation::getTriggeredDeprecations()['https://github.com/doctrine/orm/pull/7908'] ?? 0;
 
