@@ -957,7 +957,6 @@ abstract class AbstractQuery
     {
         Deprecation::trigger(
             'doctrine/orm',
-            '2.8',
             'https://github.com/doctrine/orm/issues/8463',
             'Method %s() is deprecated and will be removed in Doctrine ORM 3.0. Use toIterable() instead.',
             __METHOD__

@@ -365,7 +365,6 @@ use function sprintf;
         if ($entity !== null) {
             Deprecation::trigger(
                 'doctrine/orm',
-                '2.7',
                 'https://github.com/doctrine/orm/issues/8459',
                 'Calling %s() with any arguments to flush specific entities is deprecated and will not be supported in Doctrine ORM 3.0.',
                 __METHOD__
@@ -572,7 +571,6 @@ use function sprintf;
         if ($entityName !== null) {
             Deprecation::trigger(
                 'doctrine/orm',
-                '2.7',
                 'https://github.com/doctrine/orm/issues/8460',
                 'Calling %s() with any arguments to clear specific entities is deprecated and will not be supported in Doctrine ORM 3.0.',
                 __METHOD__
@@ -709,9 +707,9 @@ use function sprintf;
     {
         Deprecation::trigger(
             'doctrine/orm',
-            '2.7',
             'https://github.com/doctrine/orm/issues/8461',
-            'Method EntityManager::merge() is deprecated and will be removed in Doctrine ORM 3.0.'
+            'Method %s() is deprecated and will be removed in Doctrine ORM 3.0.',
+            __METHOD__
         );
 
         if (! is_object($entity)) {
@@ -730,9 +728,9 @@ use function sprintf;
     {
         Deprecation::trigger(
             'doctrine/orm',
-            '2.7',
             'https://github.com/doctrine/orm/issues/8462',
-            'Method EntityManager::copy() is deprecated and will be removed in Doctrine ORM 3.0.'
+            'Method %s() is deprecated and will be removed in Doctrine ORM 3.0.',
+            __METHOD__
         );
 
         throw new BadMethodCallException('Not implemented.');

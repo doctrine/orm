@@ -59,7 +59,6 @@ class UnderscoreNamingStrategy implements NamingStrategy
         if (! $numberAware) {
             Deprecation::trigger(
                 'doctrine/orm',
-                '2.6.6',
                 'https://github.com/doctrine/orm/pull/7908',
                 'Creating %s without setting second argument $numberAware=true is deprecated and will be removed in Doctrine ORM 3.0.',
                 self::class

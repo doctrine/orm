@@ -69,7 +69,7 @@ class <className> extends <repositoryName>
     {
         Deprecation::trigger(
             'doctrine/orm',
-            '2.7',
+            'https://github.com/doctrine/orm/issues/8458',
             '%s is deprecated and will be removed in Doctrine ORM 3.0',
             self::class
         );

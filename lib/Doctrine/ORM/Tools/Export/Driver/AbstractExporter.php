@@ -61,7 +61,6 @@ abstract class AbstractExporter
     {
         Deprecation::trigger(
             'doctrine/orm',
-            '2.7',
             'https://github.com/doctrine/orm/issues/8458',
             '%s is deprecated with no replacement',
             self::class

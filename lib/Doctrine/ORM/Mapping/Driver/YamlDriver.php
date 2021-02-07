@@ -58,7 +58,6 @@ class YamlDriver extends FileDriver
     {
         Deprecation::trigger(
             'doctrine/orm',
-            '2.7',
             'https://github.com/doctrine/orm/issues/8465',
             'YAML mapping driver is deprecated and will be removed in Doctrine ORM 3.0, please migrate to annotation or XML driver.'
         );

@@ -145,9 +145,8 @@ class EntityRepository implements ObjectRepository, Selectable
     {
         Deprecation::trigger(
             'doctrine/orm',
-            '2.8',
             'https://github.com/doctrine/orm/issues/8460',
-            'Calling EntityRepository::clear() is deprecated and will not be supported in Doctrine ORM 3.0.',
+            'Calling %s() is deprecated and will not be supported in Doctrine ORM 3.0.',
             __METHOD__
         );
 

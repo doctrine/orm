@@ -373,9 +373,9 @@ public function __construct(<params>)
     {
         Deprecation::trigger(
             'doctrine/orm',
-            '2.7',
             'https://github.com/doctrine/orm/issues/8458',
-            self::class . ' is deprecated with no replacement'
+            '%s is deprecated with no replacement',
+            self::class
         );
 
         $this->annotationsPrefix = 'ORM\\';
