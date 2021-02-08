@@ -672,6 +672,8 @@ final class Query extends AbstractQuery
      * @param string|int                 $hydrationMode The hydration mode to use.
      *
      * @return IterableResult
+     *
+     * @psalm-param ArrayCollection<int, Parameter>|array<string, mixed>|null $parameters
      */
     public function iterate($parameters = null, $hydrationMode = self::HYDRATE_OBJECT)
     {

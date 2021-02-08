@@ -984,6 +984,8 @@ abstract class AbstractQuery
      * @param string|int|null         $hydrationMode The hydration mode to use.
      *
      * @return iterable<mixed>
+     *
+     * @psalm-param ArrayCollection<int, Parameter>|mixed[] $parameters
      */
     public function toIterable(iterable $parameters = [], $hydrationMode = null): iterable
     {
@@ -1011,6 +1013,8 @@ abstract class AbstractQuery
      * @param string|int|null              $hydrationMode Processing mode to be used during the hydration process.
      *
      * @return mixed
+     *
+     * @psalm-param ArrayCollection<int, Parameter>|mixed[]|null $parameters
      */
     public function execute($parameters = null, $hydrationMode = null)
     {
@@ -1028,6 +1032,8 @@ abstract class AbstractQuery
      * @param string|int|null            $hydrationMode
      *
      * @return mixed
+     *
+     * @psalm-param ArrayCollection<int, Parameter>|mixed[]|null $parameters
      */
     private function executeIgnoreQueryCache($parameters = null, $hydrationMode = null)
     {
@@ -1087,6 +1093,8 @@ abstract class AbstractQuery
      * @param string|int|null            $hydrationMode
      *
      * @return mixed
+     *
+     * @psalm-param ArrayCollection<int, Parameter>|mixed[]|null $parameters
      */
     private function executeUsingQueryCache($parameters = null, $hydrationMode = null)
     {
