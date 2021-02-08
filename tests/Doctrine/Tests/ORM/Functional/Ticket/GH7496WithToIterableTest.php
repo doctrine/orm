@@ -41,9 +41,20 @@ final class GH7496WithToIterableTest extends OrmFunctionalTestCase
         $bs = IterableTester::iterableToArray(
             $q->toIterable([], AbstractQuery::HYDRATE_OBJECT)
         );
+
         $this->assertCount(2, $bs);
         $this->assertInstanceOf(GH7496EntityB::class, $bs[0]);
         $this->assertInstanceOf(GH7496EntityB::class, $bs[1]);
+        $this->assertEquals(1, $bs[0]->id);
+        $this->assertEquals(1, $bs[1]->id);
+
+        $bs = IterableTester::iterableToArray(
+            $q->toIterable([], AbstractQuery::HYDRATE_ARRAY)
+        );
+
+        $this->assertCount(2, $bs);
+        $this->assertEquals(1, $bs[0]['id']);
+        $this->assertEquals(1, $bs[1]['id']);
     }
 }
 

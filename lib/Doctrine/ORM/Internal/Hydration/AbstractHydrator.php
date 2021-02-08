@@ -165,8 +165,6 @@ abstract class AbstractHydrator
 
         $this->prepare();
 
-        $result = [];
-
         while (true) {
             $row = $this->_stmt->fetch(FetchMode::ASSOCIATIVE);
 
@@ -176,7 +174,11 @@ abstract class AbstractHydrator
                 break;
             }
 
+            $result = [];
+
             $this->hydrateRowData($row, $result);
+
+            $this->cleanupAfterRowIteration();
 
             yield end($result);
         }
@@ -272,6 +274,10 @@ abstract class AbstractHydrator
             ->_em
             ->getEventManager()
             ->removeEventListener([Events::onClear], $this);
+    }
+
+    protected function cleanupAfterRowIteration(): void
+    {
     }
 
     /**
