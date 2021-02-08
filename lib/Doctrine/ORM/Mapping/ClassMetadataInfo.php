@@ -1425,6 +1425,84 @@ class ClassMetadataInfo implements ClassMetadata
     }
 
     /**
+     * Validates & completes the given field mapping based on typed property.
+     *
+     * @param  array  $mapping The field mapping to validate & complete.
+     *
+     * @return void
+     */
+    private function _validateAndCompleteTypedFieldMapping(array &$mapping)
+    {
+        $type     = $this->reflClass->getProperty($mapping['fieldName'])->getType();
+
+        if ($type) {
+            if (! isset($mapping['nullable'])) {
+                $mapping['nullable'] = $type->allowsNull();
+            }
+
+            if (
+                ! isset($mapping['type'])
+                && ($type instanceof ReflectionNamedType)
+            ) {
+                switch ($type->getName()) {
+                    case DateInterval::class:
+                        $mapping['type'] = 'dateinterval';
+                        break;
+                    case DateTime::class:
+                        $mapping['type'] = 'datetime';
+                        break;
+                    case DateTimeImmutable::class:
+                        $mapping['type'] = 'datetime_immutable';
+                        break;
+                    case 'array':
+                        $mapping['type'] = 'json';
+                        break;
+                    case 'bool':
+                        $mapping['type'] = 'boolean';
+                        break;
+                    case 'float':
+                        $mapping['type'] = 'float';
+                        break;
+                    case 'int':
+                        $mapping['type'] = 'integer';
+                        break;
+                    case 'string':
+                        $mapping['type'] = 'string';
+                        break;
+                }
+            }
+        }
+    }
+
+    /**
+     * Validates & completes the basic mapping information based on typed property.
+     *
+     * @param array $mapping The mapping.
+     *
+     * @return void
+     */
+    private function _validateAndCompleteTypedAssociationMapping(array &$mapping)
+    {
+        $type = $this->reflClass->getProperty($mapping['fieldName'])->getType();
+
+        if (
+            ! isset($mapping['targetEntity'])
+            && ($mapping['type'] & self::TO_ONE) > 0
+            && $type instanceof ReflectionNamedType
+        ) {
+            $mapping['targetEntity'] = $type->getName();
+        }
+
+        if ($type !== null && isset($mapping['joinColumns'])) {
+            foreach ($mapping['joinColumns'] as &$joinColumn) {
+                if (! isset($joinColumn['nullable'])) {
+                    $joinColumn['nullable'] = $type->allowsNull();
+                }
+            }
+        }
+    }
+
+    /**
      * Validates & completes the given field mapping.
      *
      * @param array $mapping The field mapping to validate & complete.
@@ -1441,45 +1519,7 @@ class ClassMetadataInfo implements ClassMetadata
         }
 
         if ($this->isTypedProperty($mapping['fieldName'])) {
-            $type     = $this->reflClass->getProperty($mapping['fieldName'])->getType();
-
-            if ($type) {
-                if (! isset($mapping['nullable'])) {
-                    $mapping['nullable'] = $type->allowsNull();
-                }
-
-                if (
-                    ! isset($mapping['type'])
-                    && ($type instanceof ReflectionNamedType)
-                ) {
-                    switch ($type->getName()) {
-                        case DateInterval::class:
-                            $mapping['type'] = 'dateinterval';
-                            break;
-                        case DateTime::class:
-                            $mapping['type'] = 'datetime';
-                            break;
-                        case DateTimeImmutable::class:
-                            $mapping['type'] = 'datetime_immutable';
-                            break;
-                        case 'array':
-                            $mapping['type'] = 'json';
-                            break;
-                        case 'bool':
-                            $mapping['type'] = 'boolean';
-                            break;
-                        case 'float':
-                            $mapping['type'] = 'float';
-                            break;
-                        case 'int':
-                            $mapping['type'] = 'integer';
-                            break;
-                        case 'string':
-                            $mapping['type'] = 'string';
-                            break;
-                    }
-                }
-            }
+            $this->_validateAndCompleteTypedFieldMapping($mapping);
         }
 
         if (! isset($mapping['type'])) {
@@ -1580,23 +1620,7 @@ class ClassMetadataInfo implements ClassMetadata
         $mapping['sourceEntity'] = $this->name;
 
         if ($this->isTypedProperty($mapping['fieldName'])) {
-            $type     = $this->reflClass->getProperty($mapping['fieldName'])->getType();
-
-            if (
-                ! isset($mapping['targetEntity'])
-                && ($mapping['type'] & self::TO_ONE) > 0
-                && $type instanceof ReflectionNamedType
-            ) {
-                $mapping['targetEntity'] = $type->getName();
-            }
-
-            if ($type !== null && isset($mapping['joinColumns'])) {
-                foreach ($mapping['joinColumns'] as &$joinColumn) {
-                    if (! isset($joinColumn['nullable'])) {
-                        $joinColumn['nullable'] = $type->allowsNull();
-                    }
-                }
-            }
+            $this->_validateAndCompleteTypedAssociationMapping($mapping);
         }
 
         if (isset($mapping['targetEntity'])) {
