@@ -674,6 +674,8 @@ final class Query extends AbstractQuery
      * Executes the query and returns an IterableResult that can be used to incrementally
      * iterated over the result.
      *
+     * @deprecated
+     *
      * @param ArrayCollection|mixed[]|null $parameters    The query parameters.
      * @param string|int                   $hydrationMode The hydration mode to use.
      *
