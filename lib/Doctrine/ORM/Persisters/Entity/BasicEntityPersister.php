@@ -514,14 +514,12 @@ class BasicEntityPersister implements EntityPersister
     }
 
     /**
-     * @param array $identifier
-     * @param array $types
-     *
-     * @return void
+     * @param array<mixed> $identifier
+     * @param string[] $types
      *
      * @todo Add check for platform if it supports foreign keys/cascading.
      */
-    protected function deleteJoinTableRecords($identifier, $types)
+    protected function deleteJoinTableRecords(array $identifier, array $types): void
     {
         foreach ($this->class->associationMappings as $mapping) {
             if ($mapping['type'] !== ClassMetadata::MANY_TO_MANY) {
