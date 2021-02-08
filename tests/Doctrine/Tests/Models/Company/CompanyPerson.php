@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Doctrine\Tests\Models\Company;
 
 use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping\ClassMetadataInfo;
 
 /**
@@ -50,22 +51,28 @@ use Doctrine\ORM\Mapping\ClassMetadataInfo;
 class CompanyPerson
 {
     /**
+     * @var int
      * @Id
      * @Column(type="integer")
      * @GeneratedValue
      */
     private $id;
 
-    /** @Column */
+    /**
+     * @var string
+     * @Column
+     */
     private $name;
 
     /**
+     * @var CompanyPerson|null
      * @OneToOne(targetEntity="CompanyPerson")
      * @JoinColumn(name="spouse_id", referencedColumnName="id", onDelete="CASCADE")
      */
     private $spouse;
 
     /**
+     * @psalm-var Collection<int, CompanyPerson>
      * @ManyToMany(targetEntity="CompanyPerson")
      * @JoinTable(
      *     name="company_persons_friends",
@@ -84,27 +91,30 @@ class CompanyPerson
         $this->friends = new ArrayCollection();
     }
 
-    public function getId()
+    public function getId(): int
     {
         return $this->id;
     }
 
-    public function getName()
+    public function getName(): string
     {
         return $this->name;
     }
 
-    public function setName($name): void
+    public function setName(string $name): void
     {
         $this->name = $name;
     }
 
-    public function getSpouse()
+    public function getSpouse(): ?CompanyPerson
     {
         return $this->spouse;
     }
 
-    public function getFriends()
+    /**
+     * @psalm-return Collection<int, CompanyPerson>
+     */
+    public function getFriends(): Collection
     {
         return $this->friends;
     }
