@@ -1410,6 +1410,21 @@ class ClassMetadataInfo implements ClassMetadata
     }
 
     /**
+     * Checks whether given property has type
+     *
+     * @param string $name Property name
+     *
+     * @return bool
+     */
+    private function isTypedProperty($name): bool
+    {
+        return PHP_VERSION_ID >= 70400
+               && isset($this->reflClass)
+               && $this->reflClass->hasProperty($name)
+               && $this->reflClass->getProperty($name)->hasType();
+    }
+
+    /**
      * Validates & completes the given field mapping.
      *
      * @param array $mapping The field mapping to validate & complete.
@@ -1425,13 +1440,8 @@ class ClassMetadataInfo implements ClassMetadata
             throw MappingException::missingFieldName($this->name);
         }
 
-        if (
-            PHP_VERSION_ID >= 70400
-            && isset($this->reflClass)
-            && $this->reflClass->hasProperty($mapping['fieldName'])
-        ) {
-            $property = $this->reflClass->getProperty($mapping['fieldName']);
-            $type     = $property->getType();
+        if ($this->isTypedProperty($mapping['fieldName'])) {
+            $type     = $this->reflClass->getProperty($mapping['fieldName'])->getType();
 
             if ($type) {
                 if (! isset($mapping['nullable'])) {
@@ -1569,13 +1579,8 @@ class ClassMetadataInfo implements ClassMetadata
         // the sourceEntity.
         $mapping['sourceEntity'] = $this->name;
 
-        if (
-            PHP_VERSION_ID >= 70400
-            && isset($this->reflClass)
-            && $this->reflClass->hasProperty($mapping['fieldName'])
-        ) {
-            $property = $this->reflClass->getProperty($mapping['fieldName']);
-            $type     = $property->getType();
+        if ($this->isTypedProperty($mapping['fieldName'])) {
+            $type     = $this->reflClass->getProperty($mapping['fieldName'])->getType();
 
             if (
                 ! isset($mapping['targetEntity'])
