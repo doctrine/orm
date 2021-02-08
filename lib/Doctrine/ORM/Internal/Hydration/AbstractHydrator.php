@@ -35,6 +35,7 @@ use ReflectionClass;
 
 use function array_map;
 use function array_merge;
+use function count;
 use function end;
 use function in_array;
 use function trigger_error;

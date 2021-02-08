@@ -303,18 +303,18 @@ class QueryTest extends OrmFunctionalTestCase
 
     public function testToIterableWithMultipleSelectElements(): void
     {
-        $author = new CmsUser();
-        $author->name = 'Ben';
+        $author           = new CmsUser();
+        $author->name     = 'Ben';
         $author->username = 'beberlei';
 
-        $article1 = new CmsArticle();
+        $article1        = new CmsArticle();
         $article1->topic = 'Doctrine 2';
-        $article1->text = 'This is an introduction to Doctrine 2.';
+        $article1->text  = 'This is an introduction to Doctrine 2.';
         $article1->setAuthor($author);
 
-        $article2 = new CmsArticle();
+        $article2        = new CmsArticle();
         $article2->topic = 'Symfony 2';
-        $article2->text = 'This is an introduction to Symfony 2.';
+        $article2->text  = 'This is an introduction to Symfony 2.';
         $article2->setAuthor($author);
 
         $this->_em->persist($article1);

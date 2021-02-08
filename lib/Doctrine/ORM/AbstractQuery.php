@@ -999,7 +999,7 @@ abstract class AbstractQuery
             $this->setParameters($parameters);
         }
 
-        $rsm  = $this->getResultSetMapping();
+        $rsm = $this->getResultSetMapping();
 
         if ($rsm->isMixed && count($rsm->scalarMappings) > 0) {
             throw QueryException::iterateWithMixedResultNotAllowed();
