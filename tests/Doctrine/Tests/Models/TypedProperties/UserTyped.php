@@ -2,17 +2,18 @@
 
 declare(strict_types=1);
 
-namespace Doctrine\Tests\Models\CMS;
+namespace Doctrine\Tests\Models\TypedProperties;
 
 use DateInterval;
 use DateTime;
 use DateTimeImmutable;
+use Doctrine\Tests\Models\CMS\CmsEmail;
 
 /**
  * @Entity
  * @Table(name="cms_users_typed")
  */
-class CmsUserTyped
+class UserTyped
 {
     /**
      * @Id @Column

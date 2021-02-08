@@ -21,6 +21,7 @@ use Doctrine\Tests\Models\DDC6412\DDC6412File;
 use Doctrine\Tests\Models\DDC964\DDC964Admin;
 use Doctrine\Tests\Models\DDC964\DDC964Guest;
 use Doctrine\Tests\Models\Routing\RoutingLeg;
+use Doctrine\Tests\Models\TypedProperties;
 use Doctrine\Tests\OrmTestCase;
 use DoctrineGlobal_Article;
 use ReflectionClass;
@@ -115,7 +116,7 @@ class ClassMetadataTest extends OrmTestCase
             $this->markTestSkipped('requies PHP 7.4');
         }
 
-        $cm = new ClassMetadata(CMS\CmsUserTyped::class);
+        $cm = new ClassMetadata(TypedProperties\UserTyped::class);
         $cm->initializeReflection(new RuntimeReflectionService());
 
         // Explicit Nullable
@@ -137,7 +138,7 @@ class ClassMetadataTest extends OrmTestCase
             $this->markTestSkipped('requies PHP 7.4');
         }
 
-        $cm = new ClassMetadata(CMS\CmsUserTyped::class);
+        $cm = new ClassMetadata(TypedProperties\UserTyped::class);
         $cm->initializeReflection(new RuntimeReflectionService());
 
         // Integer
