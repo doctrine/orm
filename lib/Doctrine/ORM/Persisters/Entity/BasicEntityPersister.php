@@ -515,7 +515,7 @@ class BasicEntityPersister implements EntityPersister
 
     /**
      * @param array<mixed> $identifier
-     * @param string[] $types
+     * @param string[]     $types
      *
      * @todo Add check for platform if it supports foreign keys/cascading.
      */
