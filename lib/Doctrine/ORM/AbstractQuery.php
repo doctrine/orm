@@ -31,6 +31,7 @@ use Doctrine\ORM\Cache\TimestampCacheKey;
 use Doctrine\ORM\Internal\Hydration\IterableResult;
 use Doctrine\ORM\Mapping\MappingException as ORMMappingException;
 use Doctrine\ORM\Query\Parameter;
+use Doctrine\ORM\Query\QueryException;
 use Doctrine\ORM\Query\ResultSetMapping;
 use Doctrine\Persistence\Mapping\MappingException;
 use Traversable;
@@ -999,6 +1000,11 @@ abstract class AbstractQuery
         }
 
         $rsm  = $this->getResultSetMapping();
+
+        if ($rsm->isMixed && count($rsm->scalarMappings) > 0) {
+            throw QueryException::iterateWithMixedResultNotAllowed();
+        }
+
         $stmt = $this->_doExecute();
 
         return $this->_em->newHydrator($this->_hydrationMode)->toIterable($stmt, $rsm, $this->_hints);

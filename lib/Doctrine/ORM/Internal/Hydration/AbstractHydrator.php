@@ -180,7 +180,11 @@ abstract class AbstractHydrator
 
             $this->cleanupAfterRowIteration();
 
-            yield end($result);
+            if (count($result) === 1) {
+                yield end($result);
+            } else {
+                yield $result;
+            }
         }
     }
 

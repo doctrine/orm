@@ -301,6 +301,51 @@ class QueryTest extends OrmFunctionalTestCase
         self::assertSame(2, $iteratedCount);
     }
 
+    public function testToIterableWithMultipleSelectElements(): void
+    {
+        $author = new CmsUser();
+        $author->name = 'Ben';
+        $author->username = 'beberlei';
+
+        $article1 = new CmsArticle();
+        $article1->topic = 'Doctrine 2';
+        $article1->text = 'This is an introduction to Doctrine 2.';
+        $article1->setAuthor($author);
+
+        $article2 = new CmsArticle();
+        $article2->topic = 'Symfony 2';
+        $article2->text = 'This is an introduction to Symfony 2.';
+        $article2->setAuthor($author);
+
+        $this->_em->persist($article1);
+        $this->_em->persist($article2);
+        $this->_em->persist($author);
+
+        $this->_em->flush();
+        $this->_em->clear();
+
+        $query = $this->_em->createQuery('select a, u from ' . CmsArticle::class . ' a JOIN ' . CmsUser::class . ' u WITH a.user = u');
+
+        $result = iterator_to_array($query->toIterable());
+
+        $this->assertCount(2, $result);
+
+        foreach ($result as $row) {
+            $this->assertCount(2, $row);
+            $this->assertInstanceOf(CmsArticle::class, $row[0]);
+            $this->assertInstanceOf(CmsUser::class, $row[1]);
+        }
+    }
+
+    public function testToIterableWithMixedResultIsNotAllowed(): void
+    {
+        $this->expectException(QueryException::class);
+        $this->expectExceptionMessage('Iterating a query with mixed results (using scalars) is not supported.');
+
+        $query = $this->_em->createQuery('select a, a.topic from ' . CmsArticle::class . ' a');
+        $query->toIterable();
+    }
+
     public function testIterateResultClearEveryCycle(): void
     {
         $article1        = new CmsArticle();
