@@ -87,50 +87,57 @@ class DDC440Test extends OrmFunctionalTestCase
 class DDC440Phone
 {
     /**
+     * @var int
      * @Column(name="id", type="integer")
      * @Id
      * @GeneratedValue(strategy="AUTO")
      */
     protected $id;
+
     /**
+     * @var DDC440Client
      * @ManyToOne(targetEntity="DDC440Client",inversedBy="phones")
      * @JoinColumns({
      *   @JoinColumn(name="client_id", referencedColumnName="id")
      * })
      */
     protected $client;
-    /** @Column(name="phonenumber", type="string") */
+
+    /**
+     * @var string
+     * @Column(name="phonenumber", type="string")
+     */
     protected $number;
 
-    public function setNumber($value): void
+    public function setNumber(string $value): void
     {
         $this->number = $value;
     }
 
-    public function getNumber()
+    public function getNumber(): string
     {
         return $this->number;
     }
 
-    public function setClient(DDC440Client $value, $update_inverse = true): void
+    public function setClient(DDC440Client $value, bool $updateInverse = true): void
     {
         $this->client = $value;
-        if ($update_inverse) {
+        if ($updateInverse) {
             $value->addPhone($this);
         }
     }
 
-    public function getClient()
+    public function getClient(): DDC440Client
     {
         return $this->client;
     }
 
-    public function getId()
+    public function getId(): int
     {
         return $this->id;
     }
 
-    public function setId($value): void
+    public function setId(int $value): void
     {
         $this->id = $value;
     }

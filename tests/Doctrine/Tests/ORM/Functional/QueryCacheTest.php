@@ -12,7 +12,7 @@ use Doctrine\ORM\Query\ParserResult;
 use Doctrine\Tests\OrmFunctionalTestCase;
 use ReflectionProperty;
 
-use function sizeof;
+use function count;
 
 /**
  * QueryCacheTest
@@ -34,7 +34,7 @@ class QueryCacheTest extends OrmFunctionalTestCase
 
     private function getCacheSize(ArrayCache $cache): int
     {
-        return sizeof($this->cacheDataReflection->getValue($cache));
+        return count($this->cacheDataReflection->getValue($cache));
     }
 
     public function testQueryCache_DependsOnHints()

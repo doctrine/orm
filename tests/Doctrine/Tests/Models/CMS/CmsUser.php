@@ -122,10 +122,13 @@ use Doctrine\ORM\Mapping\ClassMetadataInfo;
 class CmsUser
 {
     /**
-     * @Id @Column(type="integer")
+     * @var int
+     * @Id
+     * @Column(type="integer")
      * @GeneratedValue
      */
     public $id;
+
     /** @Column(type="string", length=50, nullable=true) */
     public $status;
     /** @Column(type="string", length=255, unique=true) */
