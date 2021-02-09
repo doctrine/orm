@@ -89,7 +89,7 @@ as part of the lifecycle of the instance variables entity-class.
 Required attributes:
 
 -  **type**: Name of the Doctrine Type which is converted between PHP
-   and Database representation.
+   and Database representation. Default to ``string`` or :ref:`Type from PHP property type <reference-php-mapping-types>`
 
 Optional attributes:
 
@@ -113,7 +113,7 @@ Optional attributes:
 -  **unique**: Boolean value to determine if the value of the column
    should be unique across all rows of the underlying entities table.
 
--  **nullable**: Determines if NULL values allowed for this column. If not specified, default value is false.
+-  **nullable**: Determines if NULL values allowed for this column. If not specified, default value is false. When using typed properties on entity class defaults to true when property is nullable.
 
 -  **options**: Array of additional options:
 
@@ -635,6 +635,8 @@ Optional attributes:
    constraint level. Defaults to false.
 -  **nullable**: Determine whether the related entity is required, or if
    null is an allowed state for the relation. Defaults to true.
+   When using typed properties on entity class defaults to false when
+   property is not nullable.
 -  **onDelete**: Cascade Action (Database-level)
 -  **columnDefinition**: DDL SQL snippet that starts after the column
    name and specifies the complete (non-portable!) column definition.
@@ -715,6 +717,7 @@ Required attributes:
 
 -  **targetEntity**: FQCN of the referenced target entity. Can be the
    unqualified class name if both classes are in the same namespace.
+   When typed properties are used it is inherited from PHP type.
    *IMPORTANT:* No leading backslash!
 
 Optional attributes:
@@ -923,6 +926,7 @@ Required attributes:
 
 -  **targetEntity**: FQCN of the referenced target entity. Can be the
    unqualified class name if both classes are in the same namespace.
+   When typed properties are used it is inherited from PHP type.
    *IMPORTANT:* No leading backslash!
 
 Optional attributes:
