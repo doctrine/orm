@@ -1429,9 +1429,9 @@ class ClassMetadataInfo implements ClassMetadata
      *
      * @param  array  $mapping The field mapping to validate & complete.
      *
-     * @return void
+     * @return mixed[] The updated mapping.
      */
-    private function _validateAndCompleteTypedFieldMapping(array &$mapping)
+    private function _validateAndCompleteTypedFieldMapping(array $mapping)
     {
         $type     = $this->reflClass->getProperty($mapping['fieldName'])->getType();
 
@@ -1472,6 +1472,8 @@ class ClassMetadataInfo implements ClassMetadata
                 }
             }
         }
+
+        return $mapping;
     }
 
     /**
@@ -1479,9 +1481,9 @@ class ClassMetadataInfo implements ClassMetadata
      *
      * @param array $mapping The mapping.
      *
-     * @return void
+     * @return mixed[] The updated mapping.
      */
-    private function _validateAndCompleteTypedAssociationMapping(array &$mapping)
+    private function _validateAndCompleteTypedAssociationMapping(array $mapping)
     {
         $type = $this->reflClass->getProperty($mapping['fieldName'])->getType();
 
@@ -1500,6 +1502,8 @@ class ClassMetadataInfo implements ClassMetadata
                 }
             }
         }
+
+        return $mapping;
     }
 
     /**
@@ -1507,11 +1511,11 @@ class ClassMetadataInfo implements ClassMetadata
      *
      * @param array $mapping The field mapping to validate & complete.
      *
-     * @return void
+     * @return mixed[] The updated mapping.
      *
      * @throws MappingException
      */
-    protected function _validateAndCompleteFieldMapping(array &$mapping)
+    protected function _validateAndCompleteFieldMapping(array $mapping)
     {
         // Check mandatory fields
         if (! isset($mapping['fieldName']) || ! $mapping['fieldName']) {
@@ -1519,7 +1523,7 @@ class ClassMetadataInfo implements ClassMetadata
         }
 
         if ($this->isTypedProperty($mapping['fieldName'])) {
-            $this->_validateAndCompleteTypedFieldMapping($mapping);
+            $mapping = $this->_validateAndCompleteTypedFieldMapping($mapping);
         }
 
         if (! isset($mapping['type'])) {
@@ -1568,6 +1572,8 @@ class ClassMetadataInfo implements ClassMetadata
 
             $mapping['requireSQLConversion'] = true;
         }
+
+        return $mapping;
     }
 
     /**
@@ -1620,7 +1626,7 @@ class ClassMetadataInfo implements ClassMetadata
         $mapping['sourceEntity'] = $this->name;
 
         if ($this->isTypedProperty($mapping['fieldName'])) {
-            $this->_validateAndCompleteTypedAssociationMapping($mapping);
+            $mapping = $this->_validateAndCompleteTypedAssociationMapping($mapping);
         }
 
         if (isset($mapping['targetEntity'])) {
@@ -2412,7 +2418,7 @@ class ClassMetadataInfo implements ClassMetadata
         unset($this->fieldNames[$mapping['columnName']]);
         unset($this->columnNames[$mapping['fieldName']]);
 
-        $this->_validateAndCompleteFieldMapping($overrideMapping);
+        $overrideMapping = $this->_validateAndCompleteFieldMapping($overrideMapping);
 
         $this->fieldMappings[$fieldName] = $overrideMapping;
     }
@@ -2550,7 +2556,7 @@ class ClassMetadataInfo implements ClassMetadata
      */
     public function mapField(array $mapping)
     {
-        $this->_validateAndCompleteFieldMapping($mapping);
+        $mapping = $this->_validateAndCompleteFieldMapping($mapping);
         $this->assertFieldNotMapped($mapping['fieldName']);
 
         $this->fieldMappings[$mapping['fieldName']] = $mapping;
