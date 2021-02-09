@@ -243,19 +243,19 @@ class Avatar
      * @var int
      * @Column(type="integer")
      */
-    public $image_height;
+    public $imageHeight;
 
     /**
      * @var int
      * @Column(type="integer")
      */
-    public $image_width;
+    public $imageWidth;
 
     /**
      * @var string
      * @Column(type="string", length=255)
      */
-    public $image_alt_desc;
+    public $imageAltDesc;
 }
 
 /** @MappedSuperclass */

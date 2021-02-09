@@ -47,7 +47,7 @@ class QueryTest extends OrmTestCase
         $this->assertEquals($parameters, $query->getParameters());
     }
 
-    public function testGetParameters_HasSomeAlready(): void
+    public function testGetParametersHasSomeAlready(): void
     {
         $query = $this->_em->createQuery('select u from Doctrine\Tests\Models\CMS\CmsUser u where u.username = ?1');
         $query->setParameter(2, 84);

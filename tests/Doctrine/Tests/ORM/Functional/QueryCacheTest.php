@@ -7,6 +7,7 @@ namespace Doctrine\Tests\ORM\Functional;
 use Doctrine\Common\Cache\ArrayCache;
 use Doctrine\Common\Cache\Cache;
 use Doctrine\Common\Cache\CacheProvider;
+use Doctrine\ORM\Query;
 use Doctrine\ORM\Query\Exec\AbstractSqlExecutor;
 use Doctrine\ORM\Query\ParserResult;
 use Doctrine\Tests\OrmFunctionalTestCase;
@@ -37,7 +38,7 @@ class QueryCacheTest extends OrmFunctionalTestCase
         return count($this->cacheDataReflection->getValue($cache));
     }
 
-    public function testQueryCache_DependsOnHints()
+    public function testQueryCacheDependsOnHints(): Query
     {
         $query = $this->_em->createQuery('select ux from Doctrine\Tests\Models\CMS\CmsUser ux');
 
@@ -60,7 +61,7 @@ class QueryCacheTest extends OrmFunctionalTestCase
      *
      * @depends testQueryCache_DependsOnHints
      */
-    public function testQueryCache_DependsOnFirstResult($query): void
+    public function testQueryCacheDependsOnFirstResult($query): void
     {
         $cache      = $query->getQueryCacheDriver();
         $cacheCount = $this->getCacheSize($cache);
@@ -77,7 +78,7 @@ class QueryCacheTest extends OrmFunctionalTestCase
      *
      * @depends testQueryCache_DependsOnHints
      */
-    public function testQueryCache_DependsOnMaxResults($query): void
+    public function testQueryCacheDependsOnMaxResults($query): void
     {
         $cache      = $query->getQueryCacheDriver();
         $cacheCount = $this->getCacheSize($cache);
@@ -93,7 +94,7 @@ class QueryCacheTest extends OrmFunctionalTestCase
      *
      * @depends testQueryCache_DependsOnHints
      */
-    public function testQueryCache_DependsOnHydrationMode($query): void
+    public function testQueryCacheDependsOnHydrationMode($query): void
     {
         $cache      = $query->getQueryCacheDriver();
         $cacheCount = $this->getCacheSize($cache);
@@ -102,7 +103,7 @@ class QueryCacheTest extends OrmFunctionalTestCase
         $this->assertEquals($cacheCount + 1, $this->getCacheSize($cache));
     }
 
-    public function testQueryCache_NoHitSaveParserResult(): void
+    public function testQueryCacheNoHitSaveParserResult(): void
     {
         $this->_em->getConfiguration()->setQueryCacheImpl(new ArrayCache());
 
@@ -120,7 +121,7 @@ class QueryCacheTest extends OrmFunctionalTestCase
         $query->getResult();
     }
 
-    public function testQueryCache_HitDoesNotSaveParserResult(): void
+    public function testQueryCacheHitDoesNotSaveParserResult(): void
     {
         $this->_em->getConfiguration()->setQueryCacheImpl(new ArrayCache());
 

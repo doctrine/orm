@@ -246,7 +246,7 @@ class QueryTest extends OrmFunctionalTestCase
         self::assertEquals([$expectedArticle], $articles);
     }
 
-    public function testIterateResult_IterativelyBuildUpUnitOfWork(): void
+    public function testIterateResultIterativelyBuildUpUnitOfWork(): void
     {
         $article1        = new CmsArticle();
         $article1->topic = 'Doctrine 2';
@@ -351,7 +351,7 @@ class QueryTest extends OrmFunctionalTestCase
         $this->_em->flush();
     }
 
-    public function testIterateResult_FetchJoinedCollection_ThrowsException(): void
+    public function testIterateResultFetchJoinedCollectionThrowsException(): void
     {
         $this->expectException(QueryException::class);
         $query = $this->_em->createQuery("SELECT u, a FROM ' . CmsUser::class . ' u JOIN u.articles a");
