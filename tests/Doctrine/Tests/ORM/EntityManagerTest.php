@@ -125,7 +125,7 @@ class EntityManagerTest extends OrmTestCase
         $this->assertEquals('SELECT u FROM Doctrine\Tests\Models\CMS\CmsUser u', $q3->getQuery()->getDql());
     }
 
-    public function testCreateQuery_DqlIsOptional(): void
+    public function testCreateQueryDqlIsOptional(): void
     {
         $this->assertInstanceOf(Query::class, $this->_em->createQuery());
     }

@@ -28,7 +28,7 @@ class CountWalkerTest extends PaginationTestCase
         );
     }
 
-    public function testCountQuery_MixedResultsWithName(): void
+    public function testCountQueryMixedResultsWithName(): void
     {
         $query = $this->entityManager->createQuery(
             'SELECT a, sum(a.name) as foo FROM Doctrine\Tests\ORM\Tools\Pagination\Author a'
@@ -43,7 +43,7 @@ class CountWalkerTest extends PaginationTestCase
         );
     }
 
-    public function testCountQuery_KeepsGroupBy(): void
+    public function testCountQueryKeepsGroupBy(): void
     {
         $query = $this->entityManager->createQuery(
             'SELECT b FROM Doctrine\Tests\ORM\Tools\Pagination\BlogPost b GROUP BY b.id'
@@ -58,7 +58,7 @@ class CountWalkerTest extends PaginationTestCase
         );
     }
 
-    public function testCountQuery_RemovesOrderBy(): void
+    public function testCountQueryRemovesOrderBy(): void
     {
         $query = $this->entityManager->createQuery(
             'SELECT p, c, a FROM Doctrine\Tests\ORM\Tools\Pagination\BlogPost p JOIN p.category c JOIN p.author a ORDER BY a.name'
@@ -73,7 +73,7 @@ class CountWalkerTest extends PaginationTestCase
         );
     }
 
-    public function testCountQuery_RemovesLimits(): void
+    public function testCountQueryRemovesLimits(): void
     {
         $query = $this->entityManager->createQuery(
             'SELECT p, c, a FROM Doctrine\Tests\ORM\Tools\Pagination\BlogPost p JOIN p.category c JOIN p.author a'
@@ -88,7 +88,7 @@ class CountWalkerTest extends PaginationTestCase
         );
     }
 
-    public function testCountQuery_HavingException(): void
+    public function testCountQueryHavingException(): void
     {
         $query = $this->entityManager->createQuery(
             'SELECT g, COUNT(u.id) AS userCount FROM Doctrine\Tests\Models\CMS\CmsGroup g LEFT JOIN g.users u GROUP BY g.id HAVING userCount > 0'

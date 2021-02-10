@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Doctrine\Tests\ORM\Functional;
 
 use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Event\LifecycleEventArgs;
 use Doctrine\ORM\Event\PreFlushEventArgs;
 use Doctrine\ORM\Event\PreUpdateEventArgs;
@@ -304,13 +305,13 @@ DQL;
         $entA = new LifecycleCallbackCascader();
         $this->_em->persist($entA);
 
-        $entB_1 = new LifecycleCallbackTestEntity();
-        $entB_2 = new LifecycleCallbackTestEntity();
+        $entB1 = new LifecycleCallbackTestEntity();
+        $entB2 = new LifecycleCallbackTestEntity();
 
-        $entA->entities[] = $entB_1;
-        $entA->entities[] = $entB_2;
-        $entB_1->cascader = $entA;
-        $entB_2->cascader = $entA;
+        $entA->entities[] = $entB1;
+        $entA->entities[] = $entB2;
+        $entB1->cascader  = $entA;
+        $entB2->cascader  = $entA;
 
         $this->_em->flush();
         $this->_em->clear();
@@ -343,7 +344,7 @@ DQL;
         $this->assertEquals(['prePersist' => [0 => 'doStuff']], $childMeta->lifecycleCallbacks);
     }
 
-    public function testLifecycleListener_ChangeUpdateChangeSet(): void
+    public function testLifecycleListenerChangeUpdateChangeSet(): void
     {
         $listener = new LifecycleListenerPreUpdate();
         $this->_em->getEventManager()->addEventListener(['preUpdate'], $listener);
@@ -412,40 +413,47 @@ DQL;
 /** @Entity @HasLifecycleCallbacks */
 class LifecycleCallbackTestUser
 {
-    /** @Id @Column(type="integer") @GeneratedValue */
+    /**
+     * @var int
+     * @Id
+     * @Column(type="integer")
+     * @GeneratedValue
+     */
     private $id;
+
     /**
      * @var string
      * @Column(type="string")
      */
     private $value;
+
     /**
      * @var string
      * @Column(type="string")
      */
     private $name;
 
-    public function getId()
+    public function getId(): int
     {
         return $this->id;
     }
 
-    public function getValue()
+    public function getValue(): string
     {
         return $this->value;
     }
 
-    public function setValue($value): void
+    public function setValue(string $value): void
     {
         $this->value = $value;
     }
 
-    public function getName()
+    public function getName(): string
     {
         return $this->name;
     }
 
-    public function setName($name): void
+    public function setName(string $name): void
     {
         $this->name = $name;
     }
@@ -465,32 +473,49 @@ class LifecycleCallbackTestUser
 class LifecycleCallbackTestEntity
 {
     /* test stuff */
-    public $prePersistCallbackInvoked  = false;
+
+    /** @var bool */
+    public $prePersistCallbackInvoked = false;
+
+    /** @var bool */
     public $postPersistCallbackInvoked = false;
-    public $postLoadCallbackInvoked    = false;
-    public $postLoadCascaderNotNull    = false;
-    public $preFlushCallbackInvoked    = false;
+
+    /** @var bool */
+    public $postLoadCallbackInvoked = false;
+
+    /** @var bool */
+    public $postLoadCascaderNotNull = false;
+
+    /** @var bool */
+    public $preFlushCallbackInvoked = false;
 
     /**
-     * @Id @Column(type="integer")
+     * @var int
+     * @Id
+     * @Column(type="integer")
      * @GeneratedValue(strategy="AUTO")
      */
     private $id;
-    /** @Column(type="string", nullable=true) */
+
+    /**
+     * @var string
+     * @Column(type="string", nullable=true)
+     */
     public $value;
 
     /**
+     * @var LifecycleCallbackCascader
      * @ManyToOne(targetEntity="LifecycleCallbackCascader")
      * @JoinColumn(name="cascader_id", referencedColumnName="id")
      */
     public $cascader;
 
-    public function getId()
+    public function getId(): int
     {
         return $this->id;
     }
 
-    public function getValue()
+    public function getValue(): string
     {
         return $this->value;
     }
@@ -534,16 +559,24 @@ class LifecycleCallbackTestEntity
 class LifecycleCallbackCascader
 {
     /* test stuff */
+    /** @var bool */
     public $postLoadCallbackInvoked = false;
-    public $postLoadEntitiesCount   = 0;
+
+    /** @var int */
+    public $postLoadEntitiesCount = 0;
 
     /**
-     * @Id @Column(type="integer")
+     * @var int
+     * @Id
+     * @Column(type="integer")
      * @GeneratedValue(strategy="AUTO")
      */
     private $id;
 
-    /** @OneToMany(targetEntity="LifecycleCallbackTestEntity", mappedBy="cascader", cascade={"persist"}) */
+    /**
+     * @psalm-var Collection<int, LifecycleCallbackTestEntity>
+     * @OneToMany(targetEntity="LifecycleCallbackTestEntity", mappedBy="cascader", cascade={"persist"})
+     */
     public $entities;
 
     public function __construct()
@@ -558,7 +591,7 @@ class LifecycleCallbackCascader
         $this->postLoadEntitiesCount   = count($this->entities);
     }
 
-    public function getId()
+    public function getId(): int
     {
         return $this->id;
     }
@@ -576,7 +609,12 @@ class LifecycleCallbackParentEntity
 /** @Entity @Table(name="lc_cb_childentity") */
 class LifecycleCallbackChildEntity extends LifecycleCallbackParentEntity
 {
-    /** @Id @Column(type="integer") @GeneratedValue */
+    /**
+     * @var int
+     * @Id
+     * @Column(type="integer")
+     * @GeneratedValue
+     */
     private $id;
 }
 
@@ -591,12 +629,19 @@ class LifecycleListenerPreUpdate
 /** @Entity @HasLifecycleCallbacks */
 class LifecycleCallbackEventArgEntity
 {
-    /** @Id @Column(type="integer") @GeneratedValue */
+    /**
+     * @var int
+     * @Id @Column(type="integer") @GeneratedValue
+     */
     public $id;
 
-    /** @Column() */
+    /**
+     * @var string
+     * @Column()
+     */
     public $value;
 
+    /** @var array<string, BaseLifecycleEventArgs> */
     public $calls = [];
 
     /**
