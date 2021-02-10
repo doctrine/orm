@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Doctrine\Tests\ORM\Query;
 
 use Doctrine\DBAL\Types\Type as DBALType;
+use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\Tests\DbalTypes\NegativeToPositiveType;
 use Doctrine\Tests\OrmTestCase;
 use Exception;
@@ -20,7 +21,8 @@ use Exception;
  */
 class UpdateSqlGenerationTest extends OrmTestCase
 {
-    private $_em;
+    /** @var EntityManagerInterface */
+    private $entityManager;
 
     protected function setUp(): void
     {
@@ -30,13 +32,13 @@ class UpdateSqlGenerationTest extends OrmTestCase
             DBALType::addType('negative_to_positive', NegativeToPositiveType::class);
         }
 
-        $this->_em = $this->getTestEntityManager();
+        $this->entityManager = $this->getTestEntityManager();
     }
 
     public function assertSqlGeneration($dqlToBeTested, $sqlToBeConfirmed): void
     {
         try {
-            $query = $this->_em->createQuery($dqlToBeTested);
+            $query = $this->entityManager->createQuery($dqlToBeTested);
             parent::assertEquals($sqlToBeConfirmed, $query->getSql());
             $query->free();
         } catch (Exception $e) {

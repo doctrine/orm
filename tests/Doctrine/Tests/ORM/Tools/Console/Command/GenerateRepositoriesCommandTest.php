@@ -40,6 +40,7 @@ class GenerateRepositoriesCommandTest extends OrmFunctionalTestCase
     /** @var Application */
     private $application;
 
+    /** @var string */
     private $path;
 
     protected function setUp(): void

@@ -22,7 +22,7 @@ class LegacyUser
     public $_username;
     /** @Column(type="string", length=255, name="name") */
     public $_name;
-    /** @OneToMany(targetEntity="LegacyArticle", mappedBy="_user") */
+    /** @OneToMany(targetEntity="LegacyArticle", mappedBy="user") */
     public $_articles;
     /** @OneToMany(targetEntity="LegacyUserReference", mappedBy="_source", cascade={"remove"}) */
     public $_references;

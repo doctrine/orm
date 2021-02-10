@@ -378,7 +378,7 @@ class SecondEntity
      * @Id
      * @Column(name="first_entity_id")
      */
-    public $first_entity_id;
+    public $firstEntityId;
 
     /**
      * @var string

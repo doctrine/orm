@@ -80,7 +80,10 @@ class FilterCollectionTest extends OrmTestCase
 
 class MyFilter extends SQLFilter
 {
-    public function addFilterConstraint(ClassMetadata $targetEntity, $targetTableAlias)
+    /**
+     * {@inheritDoc}
+     */
+    public function addFilterConstraint(ClassMetadata $targetEntity, $targetTableAlias): string
     {
         // getParameter applies quoting automatically
         return $targetTableAlias . '.id = ' . $this->getParameter('id');

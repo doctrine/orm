@@ -6,6 +6,7 @@ namespace Doctrine\Tests\ORM\Query;
 
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Query;
+use Doctrine\ORM\Query\ParserResult;
 use Doctrine\ORM\Query\QueryException;
 use Doctrine\Tests\Mocks\MockTreeWalker;
 use Doctrine\Tests\OrmTestCase;
@@ -15,11 +16,11 @@ use const PHP_EOL;
 class LanguageRecognitionTest extends OrmTestCase
 {
     /** @var EntityManagerInterface */
-    private $_em;
+    private $entityManager;
 
     protected function setUp(): void
     {
-        $this->_em = $this->getTestEntityManager();
+        $this->entityManager = $this->getTestEntityManager();
     }
 
     public function assertValidDQL($dql, $debug = false): void
@@ -52,9 +53,12 @@ class LanguageRecognitionTest extends OrmTestCase
         }
     }
 
-    public function parseDql($dql, $hints = [])
+    /**
+     * @psalm-param array<string, mixed> $hints
+     */
+    public function parseDql(string $dql, array $hints = []): ParserResult
     {
-        $query = $this->_em->createQuery($dql);
+        $query = $this->entityManager->createQuery($dql);
         $query->setHint(Query::HINT_FORCE_PARTIAL_LOAD, true);
         $query->setDQL($dql);
 
@@ -88,11 +92,11 @@ class LanguageRecognitionTest extends OrmTestCase
     /**
      * @dataProvider invalidDQL
      */
-    public function testRejectsInvalidDQL($dql): void
+    public function testRejectsInvalidDQL(string $dql): void
     {
         $this->expectException(QueryException::class);
 
-        $this->_em->getConfiguration()->setEntityNamespaces(
+        $this->entityManager->getConfiguration()->setEntityNamespaces(
             [
                 'Unknown' => 'Unknown',
                 'CMS' => 'Doctrine\Tests\Models\CMS',
@@ -102,7 +106,10 @@ class LanguageRecognitionTest extends OrmTestCase
         $this->parseDql($dql);
     }
 
-    public function invalidDQL()
+    /**
+     * @psalm-return list<array{string}>
+     */
+    public function invalidDQL(): array
     {
         return [
 
@@ -580,7 +587,7 @@ class LanguageRecognitionTest extends OrmTestCase
      */
     public function testCustomFunctionsReturningStringInStringPrimary(): void
     {
-        $this->_em->getConfiguration()->addCustomStringFunction('CC', Query\AST\Functions\ConcatFunction::class);
+        $this->entityManager->getConfiguration()->addCustomStringFunction('CC', Query\AST\Functions\ConcatFunction::class);
 
         $this->assertValidDQL("SELECT u FROM Doctrine\Tests\Models\CMS\CmsUser u WHERE CC('%', u.name) LIKE '%foo%'", true);
     }
@@ -725,18 +732,36 @@ class LanguageRecognitionTest extends OrmTestCase
 /** @Entity */
 class DQLKeywordsModelUser
 {
-    /** @Id @Column(type="integer") @GeneratedValue */
+    /**
+     * @var int
+     * @Id
+     * @Column(type="integer")
+     * @GeneratedValue
+     */
     private $id;
-    /** @OneToOne(targetEntity="DQLKeywordsModelGroup") */
+
+    /**
+     * @var DQLKeywordsModelGroup
+     * @OneToOne(targetEntity="DQLKeywordsModelGroup")
+     */
     private $group;
 }
 
 /** @Entity */
 class DQLKeywordsModelGroup
 {
-    /** @Id @Column(type="integer") @GeneratedValue */
+    /**
+     * @var int
+     * @Id
+     * @Column(type="integer")
+     * @GeneratedValue
+     */
     private $id;
-    /** @Column */
+
+    /**
+     * @var string
+     * @Column
+     */
     private $from;
 }
 

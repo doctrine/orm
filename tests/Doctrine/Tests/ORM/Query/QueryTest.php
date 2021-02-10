@@ -31,16 +31,16 @@ use function count;
 class QueryTest extends OrmTestCase
 {
     /** @var EntityManagerMock */
-    protected $_em;
+    protected $entityManager;
 
     protected function setUp(): void
     {
-        $this->_em = $this->getTestEntityManager();
+        $this->entityManager = $this->getTestEntityManager();
     }
 
     public function testGetParameters(): void
     {
-        $query = $this->_em->createQuery('select u from Doctrine\Tests\Models\CMS\CmsUser u where u.username = ?1');
+        $query = $this->entityManager->createQuery('select u from Doctrine\Tests\Models\CMS\CmsUser u where u.username = ?1');
 
         $parameters = new ArrayCollection();
 
@@ -49,7 +49,7 @@ class QueryTest extends OrmTestCase
 
     public function testGetParametersHasSomeAlready(): void
     {
-        $query = $this->_em->createQuery('select u from Doctrine\Tests\Models\CMS\CmsUser u where u.username = ?1');
+        $query = $this->entityManager->createQuery('select u from Doctrine\Tests\Models\CMS\CmsUser u where u.username = ?1');
         $query->setParameter(2, 84);
 
         $parameters = new ArrayCollection();
@@ -60,7 +60,7 @@ class QueryTest extends OrmTestCase
 
     public function testSetParameters(): void
     {
-        $query = $this->_em->createQuery('select u from Doctrine\Tests\Models\CMS\CmsUser u where u.username = ?1');
+        $query = $this->entityManager->createQuery('select u from Doctrine\Tests\Models\CMS\CmsUser u where u.username = ?1');
 
         $parameters = new ArrayCollection();
         $parameters->add(new Parameter(1, 'foo'));
@@ -73,7 +73,7 @@ class QueryTest extends OrmTestCase
 
     public function testFree(): void
     {
-        $query = $this->_em->createQuery('select u from Doctrine\Tests\Models\CMS\CmsUser u where u.username = ?1');
+        $query = $this->entityManager->createQuery('select u from Doctrine\Tests\Models\CMS\CmsUser u where u.username = ?1');
         $query->setParameter(2, 84, PDO::PARAM_INT);
 
         $query->free();
@@ -85,7 +85,7 @@ class QueryTest extends OrmTestCase
     {
         $dql = 'select u from Doctrine\Tests\Models\CMS\CmsUser u where u.username = ?1';
 
-        $query = $this->_em->createQuery($dql);
+        $query = $this->entityManager->createQuery($dql);
         $query->setParameter(2, 84, PDO::PARAM_INT);
         $query->setHint('foo', 'bar');
 
@@ -98,7 +98,7 @@ class QueryTest extends OrmTestCase
 
     public function testFluentQueryInterface(): void
     {
-        $q  = $this->_em->createQuery('select a from Doctrine\Tests\Models\CMS\CmsArticle a');
+        $q  = $this->entityManager->createQuery('select a from Doctrine\Tests\Models\CMS\CmsArticle a');
         $q2 = $q->expireQueryCache(true)
           ->setQueryCacheLifetime(3600)
           ->setQueryCacheDriver(null)
@@ -121,7 +121,7 @@ class QueryTest extends OrmTestCase
      */
     public function testHints(): void
     {
-        $q = $this->_em->createQuery('select a from Doctrine\Tests\Models\CMS\CmsArticle a');
+        $q = $this->entityManager->createQuery('select a from Doctrine\Tests\Models\CMS\CmsArticle a');
         $q->setHint('foo', 'bar')->setHint('bar', 'baz');
 
         $this->assertEquals('bar', $q->getHint('foo'));
@@ -136,17 +136,17 @@ class QueryTest extends OrmTestCase
      */
     public function testQueryDefaultResultCache(): void
     {
-        $this->_em->getConfiguration()->setResultCacheImpl(new ArrayCache());
-        $q = $this->_em->createQuery('select a from Doctrine\Tests\Models\CMS\CmsArticle a');
+        $this->entityManager->getConfiguration()->setResultCacheImpl(new ArrayCache());
+        $q = $this->entityManager->createQuery('select a from Doctrine\Tests\Models\CMS\CmsArticle a');
         $q->enableResultCache();
-        $this->assertSame($this->_em->getConfiguration()->getResultCacheImpl(), $q->getQueryCacheProfile()->getResultCacheDriver());
+        $this->assertSame($this->entityManager->getConfiguration()->getResultCacheImpl(), $q->getQueryCacheProfile()->getResultCacheDriver());
     }
 
     public function testIterateWithNoDistinctAndWrongSelectClause(): void
     {
         $this->expectException(QueryException::class);
 
-        $q = $this->_em->createQuery('select u, a from Doctrine\Tests\Models\CMS\CmsUser u LEFT JOIN u.articles a');
+        $q = $this->entityManager->createQuery('select u, a from Doctrine\Tests\Models\CMS\CmsUser u LEFT JOIN u.articles a');
         $q->iterate();
     }
 
@@ -154,7 +154,7 @@ class QueryTest extends OrmTestCase
     {
         $this->expectException(QueryException::class);
 
-        $q = $this->_em->createQuery('select u, a from Doctrine\Tests\Models\CMS\CmsUser u LEFT JOIN u.articles a');
+        $q = $this->entityManager->createQuery('select u, a from Doctrine\Tests\Models\CMS\CmsUser u LEFT JOIN u.articles a');
         $q->toIterable();
     }
 
@@ -162,7 +162,7 @@ class QueryTest extends OrmTestCase
     {
         $this->expectException(QueryException::class);
 
-        $q = $this->_em->createQuery('select u from Doctrine\Tests\Models\CMS\CmsUser u LEFT JOIN u.articles a');
+        $q = $this->entityManager->createQuery('select u from Doctrine\Tests\Models\CMS\CmsUser u LEFT JOIN u.articles a');
         $q->iterate();
     }
 
@@ -170,20 +170,20 @@ class QueryTest extends OrmTestCase
     {
         $this->expectException(QueryException::class);
 
-        $q = $this->_em->createQuery('select u from Doctrine\Tests\Models\CMS\CmsUser u LEFT JOIN u.articles a');
+        $q = $this->entityManager->createQuery('select u from Doctrine\Tests\Models\CMS\CmsUser u LEFT JOIN u.articles a');
         $q->toIterable();
     }
 
     public function testIterateWithDistinct(): void
     {
-        $q = $this->_em->createQuery('SELECT DISTINCT u from Doctrine\Tests\Models\CMS\CmsUser u LEFT JOIN u.articles a');
+        $q = $this->entityManager->createQuery('SELECT DISTINCT u from Doctrine\Tests\Models\CMS\CmsUser u LEFT JOIN u.articles a');
 
         self::assertInstanceOf(IterableResult::class, $q->iterate());
     }
 
     public function testIterateEmptyResult(): void
     {
-        $q = $this->_em->createQuery('SELECT u from Doctrine\Tests\Models\CMS\CmsUser u');
+        $q = $this->entityManager->createQuery('SELECT u from Doctrine\Tests\Models\CMS\CmsUser u');
 
         // phpcs:ignore Generic.CodeAnalysis.EmptyStatement.DetectedForeach
         foreach ($q->toIterable() as $item) {
@@ -203,7 +203,7 @@ class QueryTest extends OrmTestCase
             9 => 'St Julien',
         ];
 
-        $query = $this->_em
+        $query = $this->entityManager
                 ->createQuery('SELECT a FROM Doctrine\Tests\Models\CMS\CmsAddress a WHERE a.city IN (:cities)')
                 ->setParameter('cities', $cities);
 
@@ -236,7 +236,7 @@ class QueryTest extends OrmTestCase
      */
     public function testProcessParameterValueIterable(iterable $cities): void
     {
-        $query = $this->_em->createQuery('SELECT a FROM Doctrine\Tests\Models\CMS\CmsAddress a WHERE a.city IN (:cities)');
+        $query = $this->entityManager->createQuery('SELECT a FROM Doctrine\Tests\Models\CMS\CmsAddress a WHERE a.city IN (:cities)');
         self::assertEquals(
             [
                 0 => 'Paris',
@@ -252,7 +252,7 @@ class QueryTest extends OrmTestCase
         $group     = new CmsGroup();
         $group->id = 1;
 
-        $query = $this->_em->createQuery('SELECT u FROM Doctrine\Tests\Models\CMS\CmsUser u WHERE u.group IN (:group)');
+        $query = $this->entityManager->createQuery('SELECT u FROM Doctrine\Tests\Models\CMS\CmsUser u WHERE u.group IN (:group)');
         self::assertEquals(1, $query->processParameterValue($group));
     }
 
@@ -261,16 +261,16 @@ class QueryTest extends OrmTestCase
      */
     public function testProcessParameterValueClassMetadata(): void
     {
-        $query = $this->_em->createQuery('SELECT a FROM Doctrine\Tests\Models\CMS\CmsAddress a WHERE a.city IN (:cities)');
+        $query = $this->entityManager->createQuery('SELECT a FROM Doctrine\Tests\Models\CMS\CmsAddress a WHERE a.city IN (:cities)');
         $this->assertEquals(
             CmsAddress::class,
-            $query->processParameterValue($this->_em->getClassMetadata(CmsAddress::class))
+            $query->processParameterValue($this->entityManager->getClassMetadata(CmsAddress::class))
         );
     }
 
     public function testProcessParameterValueObject(): void
     {
-        $query    = $this->_em->createQuery('SELECT a FROM Doctrine\Tests\Models\CMS\CmsAddress a WHERE a.user = :user');
+        $query    = $this->entityManager->createQuery('SELECT a FROM Doctrine\Tests\Models\CMS\CmsAddress a WHERE a.user = :user');
         $user     = new CmsUser();
         $user->id = 12345;
 
@@ -284,9 +284,9 @@ class QueryTest extends OrmTestCase
     {
         $driverChain = new MappingDriverChain();
         $driverChain->addDriver($this->createAnnotationDriver(), 'Foo');
-        $this->_em->getConfiguration()->setMetadataDriverImpl($driverChain);
+        $this->entityManager->getConfiguration()->setMetadataDriverImpl($driverChain);
 
-        $query = $this->_em->createQuery();
+        $query = $this->entityManager->createQuery();
 
         $vo = new DateTimeImmutable('2020-09-01 00:00:00');
 
@@ -295,14 +295,14 @@ class QueryTest extends OrmTestCase
 
     public function testProcessParameterValueNull(): void
     {
-        $query = $this->_em->createQuery('SELECT a FROM Doctrine\Tests\Models\CMS\CmsAddress a WHERE a.user = :user');
+        $query = $this->entityManager->createQuery('SELECT a FROM Doctrine\Tests\Models\CMS\CmsAddress a WHERE a.user = :user');
 
         self::assertNull($query->processParameterValue(null));
     }
 
     public function testDefaultQueryHints(): void
     {
-        $config       = $this->_em->getConfiguration();
+        $config       = $this->entityManager->getConfiguration();
         $defaultHints = [
             'hint_name_1' => 'hint_value_1',
             'hint_name_2' => 'hint_value_2',
@@ -310,9 +310,9 @@ class QueryTest extends OrmTestCase
         ];
 
         $config->setDefaultQueryHints($defaultHints);
-        $query = $this->_em->createQuery();
+        $query = $this->entityManager->createQuery();
         $this->assertSame($config->getDefaultQueryHints(), $query->getHints());
-        $this->_em->getConfiguration()->setDefaultQueryHint('hint_name_1', 'hint_another_value_1');
+        $this->entityManager->getConfiguration()->setDefaultQueryHint('hint_name_1', 'hint_another_value_1');
         $this->assertNotSame($config->getDefaultQueryHints(), $query->getHints());
         $q2 = clone $query;
         $this->assertSame($config->getDefaultQueryHints(), $q2->getHints());
@@ -323,15 +323,15 @@ class QueryTest extends OrmTestCase
      */
     public function testResultCacheCaching(): void
     {
-        $this->_em->getConfiguration()->setResultCacheImpl(new ArrayCache());
-        $this->_em->getConfiguration()->setQueryCacheImpl(new ArrayCache());
-        $driverConnectionMock = $this->_em->getConnection()->getWrappedConnection();
+        $this->entityManager->getConfiguration()->setResultCacheImpl(new ArrayCache());
+        $this->entityManager->getConfiguration()->setQueryCacheImpl(new ArrayCache());
+        $driverConnectionMock = $this->entityManager->getConnection()->getWrappedConnection();
         assert($driverConnectionMock instanceof DriverConnectionMock);
         $stmt = new StatementArrayMock([
             ['id_0' => 1],
         ]);
         $driverConnectionMock->setStatementMock($stmt);
-        $res = $this->_em->createQuery('select u from Doctrine\Tests\Models\CMS\CmsUser u')
+        $res = $this->entityManager->createQuery('select u from Doctrine\Tests\Models\CMS\CmsUser u')
             ->useQueryCache(true)
             ->enableResultCache(60)
             //let it cache
@@ -341,7 +341,7 @@ class QueryTest extends OrmTestCase
 
         $driverConnectionMock->setStatementMock(null);
 
-        $res = $this->_em->createQuery('select u from Doctrine\Tests\Models\CMS\CmsUser u')
+        $res = $this->entityManager->createQuery('select u from Doctrine\Tests\Models\CMS\CmsUser u')
             ->useQueryCache(true)
             ->disableResultCache()
             ->getResult();
@@ -353,7 +353,7 @@ class QueryTest extends OrmTestCase
      */
     public function testSetHydrationCacheProfileNull(): void
     {
-        $query = $this->_em->createQuery();
+        $query = $this->entityManager->createQuery();
         $query->setHydrationCacheProfile(null);
         $this->assertNull($query->getHydrationCacheProfile());
     }
@@ -363,12 +363,12 @@ class QueryTest extends OrmTestCase
      */
     public function testResultCacheEviction(): void
     {
-        $this->_em->getConfiguration()->setResultCacheImpl(new ArrayCache());
+        $this->entityManager->getConfiguration()->setResultCacheImpl(new ArrayCache());
 
-        $query = $this->_em->createQuery('SELECT u FROM Doctrine\Tests\Models\CMS\CmsUser u')
+        $query = $this->entityManager->createQuery('SELECT u FROM Doctrine\Tests\Models\CMS\CmsUser u')
                            ->enableResultCache();
 
-        $driverConnectionMock = $this->_em->getConnection()
+        $driverConnectionMock = $this->entityManager->getConnection()
                                           ->getWrappedConnection();
         assert($driverConnectionMock instanceof DriverConnectionMock);
 
@@ -396,7 +396,7 @@ class QueryTest extends OrmTestCase
      */
     public function testSelectJoinSubquery(): void
     {
-        $query = $this->_em->createQuery('select u from Doctrine\Tests\Models\CMS\CmsUser u JOIN (SELECT )');
+        $query = $this->entityManager->createQuery('select u from Doctrine\Tests\Models\CMS\CmsUser u JOIN (SELECT )');
 
         $this->expectException(QueryException::class);
         $this->expectExceptionMessage('Subquery');
@@ -408,7 +408,7 @@ class QueryTest extends OrmTestCase
      */
     public function testSelectFromSubquery(): void
     {
-        $query = $this->_em->createQuery('select u from (select Doctrine\Tests\Models\CMS\CmsUser c) as u');
+        $query = $this->entityManager->createQuery('select u from (select Doctrine\Tests\Models\CMS\CmsUser c) as u');
 
         $this->expectException(QueryException::class);
         $this->expectExceptionMessage('Subquery');
@@ -420,7 +420,7 @@ class QueryTest extends OrmTestCase
      */
     public function testGetParameterTypeJuggling(): void
     {
-        $query = $this->_em->createQuery('select u from ' . CmsUser::class . ' u where u.id = ?0');
+        $query = $this->entityManager->createQuery('select u from ' . CmsUser::class . ' u where u.id = ?0');
 
         $query->setParameter(0, 0);
 
@@ -434,7 +434,7 @@ class QueryTest extends OrmTestCase
      */
     public function testSetParameterWithNameZeroIsNotOverridden(): void
     {
-        $query = $this->_em->createQuery('select u from ' . CmsUser::class . ' u where u.id != ?0 and u.username = :name');
+        $query = $this->entityManager->createQuery('select u from ' . CmsUser::class . ' u where u.id != ?0 and u.username = :name');
 
         $query->setParameter(0, 0);
         $query->setParameter('name', 'Doctrine');
@@ -449,7 +449,7 @@ class QueryTest extends OrmTestCase
      */
     public function testSetParameterWithNameZeroDoesNotOverrideAnotherParameter(): void
     {
-        $query = $this->_em->createQuery('select u from ' . CmsUser::class . ' u where u.id != ?0 and u.username = :name');
+        $query = $this->entityManager->createQuery('select u from ' . CmsUser::class . ' u where u.id != ?0 and u.username = :name');
 
         $query->setParameter('name', 'Doctrine');
         $query->setParameter(0, 0);
@@ -464,7 +464,7 @@ class QueryTest extends OrmTestCase
      */
     public function testSetParameterWithTypeJugglingWorks(): void
     {
-        $query = $this->_em->createQuery('select u from ' . CmsUser::class . ' u where u.id != ?0 and u.username = :name');
+        $query = $this->entityManager->createQuery('select u from ' . CmsUser::class . ' u where u.id != ?0 and u.username = :name');
 
         $query->setParameter('0', 1);
         $query->setParameter('name', 'Doctrine');
@@ -482,9 +482,9 @@ class QueryTest extends OrmTestCase
      */
     public function testResultCacheProfileCanBeRemovedViaSetter(): void
     {
-        $this->_em->getConfiguration()->setResultCacheImpl(new ArrayCache());
+        $this->entityManager->getConfiguration()->setResultCacheImpl(new ArrayCache());
 
-        $query = $this->_em->createQuery('SELECT u FROM ' . CmsUser::class . ' u');
+        $query = $this->entityManager->createQuery('SELECT u FROM ' . CmsUser::class . ' u');
         $query->enableResultCache();
         $query->setResultCacheProfile();
 
@@ -496,13 +496,13 @@ class QueryTest extends OrmTestCase
     {
         $unitOfWork = $this->createMock(UnitOfWork::class);
 
-        $this->_em->setUnitOfWork($unitOfWork);
+        $this->entityManager->setUnitOfWork($unitOfWork);
 
         $unitOfWork
             ->expects(self::never())
             ->method('getSingleIdentifierValue');
 
-        $query = $this->_em->createQuery('SELECT d FROM ' . DateTimeModel::class . ' d WHERE d.datetime = :value');
+        $query = $this->entityManager->createQuery('SELECT d FROM ' . DateTimeModel::class . ' d WHERE d.datetime = :value');
 
         $query->setParameter('value', new DateTime(), Type::DATETIME);
 
@@ -515,7 +515,7 @@ class QueryTest extends OrmTestCase
         $this->expectException(QueryException::class);
         $this->expectExceptionMessage('[Syntax Error] line 0, col -1: Error: Expected SELECT, UPDATE or DELETE, got end of string.');
 
-        $query = $this->_em->createQuery('0')->execute();
+        $query = $this->entityManager->createQuery('0')->execute();
     }
 
     /**
@@ -523,7 +523,7 @@ class QueryTest extends OrmTestCase
      */
     public function testGetParameterColonNormalize(): void
     {
-        $query = $this->_em->createQuery('select u from ' . CmsUser::class . ' u where u.name = :name');
+        $query = $this->entityManager->createQuery('select u from ' . CmsUser::class . ' u where u.name = :name');
 
         $query->setParameter(':name', 'Benjamin');
         $query->setParameter('name', 'Benjamin');

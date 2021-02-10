@@ -15,7 +15,7 @@ use Doctrine\ORM\Tools\Export\Driver\XmlExporter;
  */
 class XmlClassMetadataExporterTest extends AbstractClassMetadataExporterTest
 {
-    protected function _getType(): string
+    protected function getType(): string
     {
         return 'xml';
     }
