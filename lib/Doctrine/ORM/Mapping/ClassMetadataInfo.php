@@ -1413,10 +1413,8 @@ class ClassMetadataInfo implements ClassMetadata
      * Checks whether given property has type
      *
      * @param string $name Property name
-     *
-     * @return bool
      */
-    private function isTypedProperty($name): bool
+    private function isTypedProperty(string $name): bool
     {
         return PHP_VERSION_ID >= 70400
                && isset($this->reflClass)
@@ -1427,13 +1425,13 @@ class ClassMetadataInfo implements ClassMetadata
     /**
      * Validates & completes the given field mapping based on typed property.
      *
-     * @param  array  $mapping The field mapping to validate & complete.
+     * @param  mixed[] $mapping The field mapping to validate & complete.
      *
      * @return mixed[] The updated mapping.
      */
-    private function _validateAndCompleteTypedFieldMapping(array $mapping)
+    private function _validateAndCompleteTypedFieldMapping(array $mapping): array
     {
-        $type     = $this->reflClass->getProperty($mapping['fieldName'])->getType();
+        $type = $this->reflClass->getProperty($mapping['fieldName'])->getType();
 
         if ($type) {
             if (! isset($mapping['nullable'])) {
@@ -1479,11 +1477,11 @@ class ClassMetadataInfo implements ClassMetadata
     /**
      * Validates & completes the basic mapping information based on typed property.
      *
-     * @param array $mapping The mapping.
+     * @param mixed[] $mapping The mapping.
      *
      * @return mixed[] The updated mapping.
      */
-    private function _validateAndCompleteTypedAssociationMapping(array $mapping)
+    private function _validateAndCompleteTypedAssociationMapping(array $mapping): array
     {
         $type = $this->reflClass->getProperty($mapping['fieldName'])->getType();
 
@@ -1515,7 +1513,7 @@ class ClassMetadataInfo implements ClassMetadata
      *
      * @throws MappingException
      */
-    protected function _validateAndCompleteFieldMapping(array $mapping)
+    protected function _validateAndCompleteFieldMapping(array $mapping): array
     {
         // Check mandatory fields
         if (! isset($mapping['fieldName']) || ! $mapping['fieldName']) {
