@@ -717,7 +717,7 @@ Required attributes:
 
 -  **targetEntity**: FQCN of the referenced target entity. Can be the
    unqualified class name if both classes are in the same namespace.
-   When typed properties are used it is inherited from PHP type.
+   You can omit this value if you use a PHP property type instead.
    *IMPORTANT:* No leading backslash!
 
 Optional attributes:
