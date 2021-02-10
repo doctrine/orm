@@ -13,6 +13,7 @@ use Doctrine\ORM\Mapping\UnderscoreNamingStrategy;
 use Doctrine\Persistence\Mapping\RuntimeReflectionService;
 use Doctrine\Persistence\Mapping\StaticReflectionService;
 use Doctrine\Tests\Models\CMS;
+use Doctrine\Tests\Models\CMS\CmsEmail;
 use Doctrine\Tests\Models\Company\CompanyContract;
 use Doctrine\Tests\Models\CustomType\CustomTypeParent;
 use Doctrine\Tests\Models\DDC117\DDC117Article;
@@ -130,6 +131,7 @@ class ClassMetadataTest extends OrmTestCase
         // Join table Nullable
         $cm->mapOneToOne(['fieldName' => 'email', 'joinColumns' => [[]]]);
         $this->assertFalse($cm->getAssociationMapping('email')['joinColumns'][0]['nullable']);
+        $this->assertEquals(CmsEmail::class, $cm->getAssociationMapping('email')['targetEntity']);
     }
 
     public function testFieldTypeFromReflection(): void
