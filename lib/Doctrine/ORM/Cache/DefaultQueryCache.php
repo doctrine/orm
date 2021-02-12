@@ -151,7 +151,10 @@ class DefaultQueryCache implements QueryCache
                 $assocMetadata = $this->em->getClassMetadata($assoc['targetEntity']);
 
                 if ($assoc['type'] & ClassMetadata::TO_ONE) {
-                    if (($assocEntry = $assocRegion->get($assocKey = new EntityCacheKey($assocMetadata->rootEntityName, $assoc['identifier']))) === null) {
+                    $assocKey   = new EntityCacheKey($assocMetadata->rootEntityName, $assoc['identifier']);
+                    $assocEntry = $assocRegion->get($assocKey);
+
+                    if ($assocEntry === null) {
                         if ($this->cacheLogger !== null) {
                             $this->cacheLogger->entityCacheMiss($assocRegion->getName(), $assocKey);
                         }
@@ -398,7 +401,7 @@ class DefaultQueryCache implements QueryCache
      * @param string $assocAlias
      * @param object $entity
      *
-     * @return array|object
+     * @return array<object>|object
      */
     private function getAssociationValue(ResultSetMapping $rsm, $assocAlias, $entity)
     {
@@ -422,10 +425,10 @@ class DefaultQueryCache implements QueryCache
     }
 
     /**
-     * @param mixed $value
-     * @param array $path
+     * @param mixed        $value
+     * @param array<mixed> $path
      *
-     * @return array|object|null
+     * @return array<object>|object|null
      */
     private function getAssociationPathValue($value, array $path)
     {

@@ -88,7 +88,7 @@ interface CacheFactory
     /**
      * Build a cache region
      *
-     * @param array $cache The cache configuration.
+     * @param array<string,mixed> $cache The cache configuration.
      *
      * @return Region The cache region.
      */

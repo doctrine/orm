@@ -44,7 +44,7 @@ interface CollectionHydrator
      * @param CollectionCacheEntry $entry      The cached collection entry.
      * @param PersistentCollection $collection The collection to load the cache into.
      *
-     * @return array
+     * @return mixed[]
      */
     public function loadCacheEntry(ClassMetadata $metadata, CollectionCacheKey $key, CollectionCacheEntry $entry, PersistentCollection $collection);
 }
