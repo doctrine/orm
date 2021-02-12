@@ -441,8 +441,10 @@ use const E_USER_DEPRECATED;
 
         $unitOfWork = $this->getUnitOfWork();
 
+        $entity = $unitOfWork->tryGetById($sortedId, $class->rootEntityName);
+
         // Check identity map first
-        if (($entity = $unitOfWork->tryGetById($sortedId, $class->rootEntityName)) !== false) {
+        if ($entity !== false) {
             if (! ($entity instanceof $class->name)) {
                 return null;
             }
@@ -508,8 +510,10 @@ use const E_USER_DEPRECATED;
             throw ORMException::unrecognizedIdentifierFields($class->name, array_keys($id));
         }
 
+        $entity = $this->unitOfWork->tryGetById($sortedId, $class->rootEntityName);
+
         // Check identity map first, if its already in there just return it.
-        if (($entity = $this->unitOfWork->tryGetById($sortedId, $class->rootEntityName)) !== false) {
+        if ($entity !== false) {
             return $entity instanceof $class->name ? $entity : null;
         }
 
@@ -531,8 +535,10 @@ use const E_USER_DEPRECATED;
     {
         $class = $this->metadataFactory->getMetadataFor(ltrim($entityName, '\\'));
 
+        $entity = $this->unitOfWork->tryGetById($identifier, $class->rootEntityName);
+
         // Check identity map first, if its already in there just return it.
-        if (($entity = $this->unitOfWork->tryGetById($identifier, $class->rootEntityName)) !== false) {
+        if ($entity !== false) {
             return $entity instanceof $class->name ? $entity : null;
         }
 
@@ -842,7 +848,9 @@ use const E_USER_DEPRECATED;
                 return new Internal\Hydration\SimpleObjectHydrator($this);
 
             default:
-                if (($class = $this->config->getCustomHydrationMode($hydrationMode)) !== null) {
+                $class = $this->config->getCustomHydrationMode($hydrationMode);
+
+                if ($class !== null) {
                     return new $class($this);
                 }
         }
@@ -869,9 +877,9 @@ use const E_USER_DEPRECATED;
     /**
      * Factory method to create EntityManager instances.
      *
-     * @param array|Connection $connection   An array with the connection parameters or an existing Connection instance.
-     * @param Configuration    $config       The Configuration instance to use.
-     * @param EventManager     $eventManager The EventManager instance to use.
+     * @param array<string, mixed>|Connection $connection   An array with the connection parameters or an existing Connection instance.
+     * @param Configuration                   $config       The Configuration instance to use.
+     * @param EventManager                    $eventManager The EventManager instance to use.
      *
      * @return EntityManager The created EntityManager.
      *
@@ -892,9 +900,9 @@ use const E_USER_DEPRECATED;
     /**
      * Factory method to create Connection instances.
      *
-     * @param array|Connection $connection   An array with the connection parameters or an existing Connection instance.
-     * @param Configuration    $config       The Configuration instance to use.
-     * @param EventManager     $eventManager The EventManager instance to use.
+     * @param array<string, mixed>|Connection $connection   An array with the connection parameters or an existing Connection instance.
+     * @param Configuration                   $config       The Configuration instance to use.
+     * @param EventManager                    $eventManager The EventManager instance to use.
      *
      * @return Connection
      *
