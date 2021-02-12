@@ -31,7 +31,7 @@ use function ksort;
 final class NativeQuery extends AbstractQuery
 {
     /** @var string */
-    private $_sql;
+    private $sql;
 
     /**
      * Sets the SQL of the query.
@@ -42,7 +42,7 @@ final class NativeQuery extends AbstractQuery
      */
     public function setSQL($sql): self
     {
-        $this->_sql = $sql;
+        $this->sql = $sql;
 
         return $this;
     }
@@ -56,7 +56,7 @@ final class NativeQuery extends AbstractQuery
      */
     public function getSQL()
     {
-        return $this->_sql;
+        return $this->sql;
     }
 
     /**
@@ -87,7 +87,7 @@ final class NativeQuery extends AbstractQuery
         }
 
         return $this->_em->getConnection()->executeQuery(
-            $this->_sql,
+            $this->sql,
             $parameters,
             $types,
             $this->_queryCacheProfile
