@@ -73,7 +73,12 @@ class DDC1514Test extends OrmFunctionalTestCase
  */
 class DDC1514EntityA
 {
-    /** @Id @Column(type="integer") @GeneratedValue */
+    /**
+     * @var int
+     * @Id
+     * @Column(type="integer")
+     * @GeneratedValue
+     */
     public $id;
     /** @Column */
     public $title;
@@ -93,7 +98,12 @@ class DDC1514EntityA
  */
 class DDC1514EntityB
 {
-    /** @Id @Column(type="integer") @GeneratedValue */
+    /**
+     * @var int
+     * @Id
+     * @Column(type="integer")
+     * @GeneratedValue
+     */
     public $id;
 
     /** @ManyToOne(targetEntity="DDC1514EntityA", inversedBy="entitiesB") */
@@ -107,7 +117,12 @@ class DDC1514EntityB
  */
 class DDC1514EntityC
 {
-    /** @Id @Column(type="integer") @GeneratedValue */
+    /**
+     * @var int
+     * @Id
+     * @Column(type="integer")
+     * @GeneratedValue
+     */
     public $id;
     /** @Column */
     public $title;

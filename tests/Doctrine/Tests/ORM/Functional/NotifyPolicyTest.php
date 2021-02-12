@@ -115,7 +115,12 @@ class NotifyBaseEntity implements NotifyPropertyChanged
 /** @Entity @ChangeTrackingPolicy("NOTIFY") */
 class NotifyUser extends NotifyBaseEntity
 {
-    /** @Id @Column(type="integer") @GeneratedValue */
+    /**
+     * @var int
+     * @Id
+     * @Column(type="integer")
+     * @GeneratedValue
+     */
     private $id;
 
     /** @Column */
@@ -154,7 +159,12 @@ class NotifyUser extends NotifyBaseEntity
 /** @Entity */
 class NotifyGroup extends NotifyBaseEntity
 {
-    /** @Id @Column(type="integer") @GeneratedValue */
+    /**
+     * @var int
+     * @Id
+     * @Column(type="integer")
+     * @GeneratedValue
+     */
     private $id;
 
     /** @Column */

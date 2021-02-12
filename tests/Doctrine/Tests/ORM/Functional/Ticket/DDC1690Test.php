@@ -105,7 +105,12 @@ class NotifyBaseEntity implements NotifyPropertyChanged
 /** @Entity @ChangeTrackingPolicy("NOTIFY") */
 class DDC1690Parent extends NotifyBaseEntity
 {
-    /** @Id @Column(type="integer") @GeneratedValue */
+    /**
+     * @var int
+     * @Id
+     * @Column(type="integer")
+     * @GeneratedValue
+     */
     private $id;
 
     /** @Column */
@@ -144,7 +149,12 @@ class DDC1690Parent extends NotifyBaseEntity
 /** @Entity */
 class DDC1690Child extends NotifyBaseEntity
 {
-    /** @Id @Column(type="integer") @GeneratedValue */
+    /**
+     * @var int
+     * @Id
+     * @Column(type="integer")
+     * @GeneratedValue
+     */
     private $id;
 
     /** @Column */

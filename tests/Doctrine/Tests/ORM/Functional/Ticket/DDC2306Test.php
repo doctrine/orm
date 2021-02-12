@@ -83,7 +83,12 @@ class DDC2306Test extends OrmFunctionalTestCase
 /** @Entity */
 class DDC2306Zone
 {
-    /** @Id @Column(type="integer") @GeneratedValue */
+    /**
+     * @var int
+     * @Id
+     * @Column(type="integer")
+     * @GeneratedValue
+     */
     public $id;
 }
 
@@ -92,7 +97,12 @@ class DDC2306Zone
  */
 class DDC2306User
 {
-    /** @Id @Column(type="integer") @GeneratedValue */
+    /**
+     * @var int
+     * @Id
+     * @Column(type="integer")
+     * @GeneratedValue
+     */
     public $id;
 
     /**
@@ -114,7 +124,12 @@ class DDC2306User
 /** @Entity */
 class DDC2306Address
 {
-    /** @Id @Column(type="integer") @GeneratedValue */
+    /**
+     * @var int
+     * @Id
+     * @Column(type="integer")
+     * @GeneratedValue
+     */
     public $id;
 
     /**
@@ -136,7 +151,12 @@ class DDC2306Address
 /** @Entity */
 class DDC2306UserAddress
 {
-    /** @Id @Column(type="integer") @GeneratedValue */
+    /**
+     * @var int
+     * @Id
+     * @Column(type="integer")
+     * @GeneratedValue
+     */
     public $id;
 
     /** @ManyToOne(targetEntity="DDC2306User") */

@@ -172,7 +172,12 @@ class CTIRelated
 /** @Entity */
 class CTIRelated2
 {
-    /** @Id @Column(type="integer") @GeneratedValue */
+    /**
+     * @var int
+     * @Id
+     * @Column(type="integer")
+     * @GeneratedValue
+     */
     private $id;
     /** @ManyToMany(targetEntity="CTIChild") */
     private $ctiChildren;

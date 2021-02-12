@@ -62,7 +62,7 @@ class GH6402Test extends OrmFunctionalTestCase
         self::assertNotNull($addresses[0]->user);
     }
 
-    private function createAddress()
+    private function createAddress(): int
     {
         $address      = new Address();
         $address->zip = 'bar';
@@ -72,7 +72,7 @@ class GH6402Test extends OrmFunctionalTestCase
         return $address->id;
     }
 
-    private function createFullAddress()
+    private function createFullAddress(): int
     {
         $address       = new FullAddress();
         $address->zip  = 'bar';

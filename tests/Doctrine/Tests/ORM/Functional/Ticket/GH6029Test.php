@@ -81,7 +81,12 @@ final class GH6029Test extends OrmFunctionalTestCase
 /** @Entity */
 class GH6029User
 {
-    /** @Id @Column(type="integer") @GeneratedValue */
+    /**
+     * @var int
+     * @Id
+     * @Column(type="integer")
+     * @GeneratedValue
+     */
     public $id;
 
     /** @ManyToMany(targetEntity=GH6029Group::class, cascade={"all"}) */
@@ -96,21 +101,36 @@ class GH6029User
 /** @Entity */
 class GH6029Group
 {
-    /** @Id @Column(type="integer") @GeneratedValue */
+    /**
+     * @var int
+     * @Id
+     * @Column(type="integer")
+     * @GeneratedValue
+     */
     public $id;
 }
 
 /** @Entity */
 class GH6029Group2
 {
-    /** @Id @Column(type="integer") @GeneratedValue */
+    /**
+     * @var int
+     * @Id
+     * @Column(type="integer")
+     * @GeneratedValue
+     */
     public $id;
 }
 
 /** @Entity */
 class GH6029Product
 {
-    /** @Id @Column(type="integer") @GeneratedValue */
+    /**
+     * @var int
+     * @Id
+     * @Column(type="integer")
+     * @GeneratedValue
+     */
     public $id;
 
     /** @OneToMany(targetEntity=GH6029Feature::class, mappedBy="product", cascade={"all"}) */
@@ -125,7 +145,12 @@ class GH6029Product
 /** @Entity */
 class GH6029Feature
 {
-    /** @Id @Column(type="integer") @GeneratedValue */
+    /**
+     * @var int
+     * @Id
+     * @Column(type="integer")
+     * @GeneratedValue
+     */
     public $id;
 
     /**

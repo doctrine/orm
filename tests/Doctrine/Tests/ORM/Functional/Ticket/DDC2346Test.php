@@ -69,7 +69,12 @@ class DDC2346Test extends OrmFunctionalTestCase
 /** @Entity */
 class DDC2346Foo
 {
-    /** @Id @Column(type="integer") @GeneratedValue */
+    /**
+     * @var int
+     * @Id
+     * @Column(type="integer")
+     * @GeneratedValue
+     */
     public $id;
 
     /**
@@ -93,7 +98,12 @@ class DDC2346Foo
  */
 class DDC2346Bar
 {
-    /** @Id @Column(type="integer") @GeneratedValue */
+    /**
+     * @var int
+     * @Id
+     * @Column(type="integer")
+     * @GeneratedValue
+     */
     public $id;
 
     /** @ManyToOne(targetEntity="DDC2346Foo", inversedBy="bars", fetch="EAGER") */

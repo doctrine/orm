@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Doctrine\Tests\ORM\Functional\Ticket;
 
 use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\Tests\OrmFunctionalTestCase;
 
 use function assert;
@@ -69,6 +70,7 @@ final class GH7761Test extends OrmFunctionalTestCase
 class GH7761Entity
 {
     /**
+     * @var int
      * @Id
      * @Column(type="integer")
      * @GeneratedValue
@@ -76,6 +78,7 @@ class GH7761Entity
     public $id;
 
     /**
+     * @var Collection<int, GH7761ChildEntity>
      * @ManyToMany(targetEntity="Doctrine\Tests\ORM\Functional\Ticket\GH7761ChildEntity", cascade={"all"})
      * @JoinTable(name="gh7761_to_child",
      *     joinColumns={@JoinColumn(name="entity_id")},
@@ -97,6 +100,7 @@ class GH7761Entity
 class GH7761ChildEntity
 {
     /**
+     * @var int
      * @Id
      * @Column(type="integer")
      * @GeneratedValue

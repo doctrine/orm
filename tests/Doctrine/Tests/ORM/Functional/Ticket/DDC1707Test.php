@@ -47,7 +47,12 @@ class DDC1707Test extends OrmFunctionalTestCase
  */
 abstract class DDC1707Base
 {
-    /** @Id @Column(type="integer") @GeneratedValue */
+    /**
+     * @var int
+     * @Id
+     * @Column(type="integer")
+     * @GeneratedValue
+     */
     protected $id;
 
     public $postLoad = false;

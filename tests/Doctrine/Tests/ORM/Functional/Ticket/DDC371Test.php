@@ -61,7 +61,12 @@ class DDC371Test extends OrmFunctionalTestCase
 /** @Entity */
 class DDC371Child
 {
-    /** @Id @Column(type="integer") @GeneratedValue */
+    /**
+     * @var int
+     * @Id
+     * @Column(type="integer")
+     * @GeneratedValue
+     */
     private $id;
     /**
      * @var string
@@ -75,7 +80,12 @@ class DDC371Child
 /** @Entity */
 class DDC371Parent
 {
-    /** @Id @Column(type="integer") @GeneratedValue */
+    /**
+     * @var int
+     * @Id
+     * @Column(type="integer")
+     * @GeneratedValue
+     */
     private $id;
     /**
      * @var string

@@ -9,7 +9,12 @@ namespace Doctrine\Tests\Models\DirectoryTree;
  */
 abstract class AbstractContentItem
 {
-    /** @Id @Column(type="integer") @GeneratedValue */
+    /**
+     * @var int
+     * @Id
+     * @Column(type="integer")
+     * @GeneratedValue
+     */
     private $id;
 
     /** @ManyToOne(targetEntity="Directory") */

@@ -42,7 +42,12 @@ class DDC3042Test extends OrmFunctionalTestCase
  */
 class DDC3042Foo
 {
-    /** @Id @Column(type="integer") @GeneratedValue */
+    /**
+     * @var int
+     * @Id
+     * @Column(type="integer")
+     * @GeneratedValue
+     */
     public $field;
     /** @Column(type="integer") */
     public $field1;
@@ -71,6 +76,11 @@ class DDC3042Foo
  */
 class DDC3042Bar
 {
-    /** @Id @Column(type="integer") @GeneratedValue */
+    /**
+     * @var int
+     * @Id
+     * @Column(type="integer")
+     * @GeneratedValue
+     */
     public $field;
 }

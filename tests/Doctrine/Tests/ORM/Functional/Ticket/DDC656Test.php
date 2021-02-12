@@ -66,7 +66,12 @@ class DDC656Entity
      */
     public $type;
 
-    /** @Id @Column(type="integer") @GeneratedValue */
+    /**
+     * @var int
+     * @Id
+     * @Column(type="integer")
+     * @GeneratedValue
+     */
     public $specificationId;
 
     public function getName()

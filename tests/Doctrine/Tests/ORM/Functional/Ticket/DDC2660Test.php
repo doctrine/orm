@@ -86,14 +86,24 @@ class DDC2660Test extends OrmFunctionalTestCase
  */
 class DDC2660Product
 {
-    /** @Id @Column(type="integer") @GeneratedValue */
+    /**
+     * @var int
+     * @Id
+     * @Column(type="integer")
+     * @GeneratedValue
+     */
     public $id;
 }
 
 /** @Entity  @Table(name="ddc_2660_customer") */
 class DDC2660Customer
 {
-    /** @Id @Column(type="integer") @GeneratedValue */
+    /**
+     * @var int
+     * @Id
+     * @Column(type="integer")
+     * @GeneratedValue
+     */
     public $id;
 }
 
