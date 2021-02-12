@@ -19,7 +19,10 @@ use function is_array;
 
 class ArrayHydratorTest extends HydrationTestCase
 {
-    public function provideDataForUserEntityResult()
+    /**
+     * @psalm-return list<array{mixed}>
+     */
+    public function provideDataForUserEntityResult(): array
     {
         return [
             [0],
@@ -54,7 +57,7 @@ class ArrayHydratorTest extends HydrationTestCase
         ];
 
         $stmt     = new HydratorMockStatement($resultSet);
-        $hydrator = new ArrayHydrator($this->_em);
+        $hydrator = new ArrayHydrator($this->entityManager);
         $result   = $hydrator->hydrateAll($stmt, $rsm);
 
         $this->assertEquals(2, count($result));
@@ -98,7 +101,7 @@ class ArrayHydratorTest extends HydrationTestCase
         ];
 
         $stmt     = new HydratorMockStatement($resultSet);
-        $hydrator = new ArrayHydrator($this->_em);
+        $hydrator = new ArrayHydrator($this->entityManager);
         $result   = $hydrator->hydrateAll($stmt, $rsm);
 
         $this->assertEquals(2, count($result));
@@ -146,7 +149,7 @@ class ArrayHydratorTest extends HydrationTestCase
         ];
 
         $stmt     = new HydratorMockStatement($resultSet);
-        $hydrator = new ArrayHydrator($this->_em);
+        $hydrator = new ArrayHydrator($this->entityManager);
         $result   = $hydrator->hydrateAll($stmt, $rsm);
 
         $this->assertEquals(2, count($result));
@@ -193,7 +196,7 @@ class ArrayHydratorTest extends HydrationTestCase
         ];
 
         $stmt     = new HydratorMockStatement($resultSet);
-        $hydrator = new ArrayHydrator($this->_em);
+        $hydrator = new ArrayHydrator($this->entityManager);
         $result   = $hydrator->hydrateAll($stmt, $rsm);
 
         $this->assertEquals(4, count($result));
@@ -243,7 +246,7 @@ class ArrayHydratorTest extends HydrationTestCase
         ];
 
         $stmt     = new HydratorMockStatement($resultSet);
-        $hydrator = new ArrayHydrator($this->_em);
+        $hydrator = new ArrayHydrator($this->entityManager);
         $result   = $hydrator->hydrateAll($stmt, $rsm);
 
         $this->assertEquals(4, count($result));
@@ -297,7 +300,7 @@ class ArrayHydratorTest extends HydrationTestCase
         ];
 
         $stmt     = new HydratorMockStatement($resultSet);
-        $hydrator = new ArrayHydrator($this->_em);
+        $hydrator = new ArrayHydrator($this->entityManager);
         $result   = $hydrator->hydrateAll($stmt, $rsm);
 
         $this->assertEquals(4, count($result));
@@ -351,7 +354,7 @@ class ArrayHydratorTest extends HydrationTestCase
         ];
 
         $stmt     = new HydratorMockStatement($resultSet);
-        $hydrator = new ArrayHydrator($this->_em);
+        $hydrator = new ArrayHydrator($this->entityManager);
         $result   = $hydrator->hydrateAll($stmt, $rsm);
 
         $this->assertEquals(4, count($result));
@@ -406,7 +409,7 @@ class ArrayHydratorTest extends HydrationTestCase
         ];
 
         $stmt     = new HydratorMockStatement($resultSet);
-        $hydrator = new ArrayHydrator($this->_em);
+        $hydrator = new ArrayHydrator($this->entityManager);
         $result   = $hydrator->hydrateAll($stmt, $rsm);
 
         $this->assertEquals(2, count($result));
@@ -470,7 +473,7 @@ class ArrayHydratorTest extends HydrationTestCase
         ];
 
         $stmt     = new HydratorMockStatement($resultSet);
-        $hydrator = new ArrayHydrator($this->_em);
+        $hydrator = new ArrayHydrator($this->entityManager);
         $result   = $hydrator->hydrateAll($stmt, $rsm);
 
         $this->assertEquals(2, count($result));
@@ -543,7 +546,7 @@ class ArrayHydratorTest extends HydrationTestCase
         ];
 
         $stmt     = new HydratorMockStatement($resultSet);
-        $hydrator = new ArrayHydrator($this->_em);
+        $hydrator = new ArrayHydrator($this->entityManager);
         $result   = $hydrator->hydrateAll($stmt, $rsm);
 
         $this->assertEquals(2, count($result));
@@ -657,7 +660,7 @@ class ArrayHydratorTest extends HydrationTestCase
         ];
 
         $stmt     = new HydratorMockStatement($resultSet);
-        $hydrator = new ArrayHydrator($this->_em);
+        $hydrator = new ArrayHydrator($this->entityManager);
         $result   = $hydrator->hydrateAll($stmt, $rsm);
 
         $this->assertEquals(2, count($result));
@@ -796,7 +799,7 @@ class ArrayHydratorTest extends HydrationTestCase
         ];
 
         $stmt     = new HydratorMockStatement($resultSet);
-        $hydrator = new ArrayHydrator($this->_em);
+        $hydrator = new ArrayHydrator($this->entityManager);
         $result   = $hydrator->hydrateAll($stmt, $rsm);
 
         $this->assertEquals(2, count($result));
@@ -910,7 +913,7 @@ class ArrayHydratorTest extends HydrationTestCase
         ];
 
         $stmt     = new HydratorMockStatement($resultSet);
-        $hydrator = new ArrayHydrator($this->_em);
+        $hydrator = new ArrayHydrator($this->entityManager);
         $result   = $hydrator->hydrateAll($stmt, $rsm);
 
         $this->assertEquals(2, count($result));
@@ -973,7 +976,7 @@ class ArrayHydratorTest extends HydrationTestCase
         ];
 
         $stmt     = new HydratorMockStatement($resultSet);
-        $hydrator = new ArrayHydrator($this->_em);
+        $hydrator = new ArrayHydrator($this->entityManager);
         $result   = $hydrator->hydrateAll($stmt, $rsm);
 
         $this->assertEquals(3, count($result));
@@ -1022,7 +1025,7 @@ class ArrayHydratorTest extends HydrationTestCase
         ];
 
         $stmt     = new HydratorMockStatement($resultSet);
-        $hydrator = new ArrayHydrator($this->_em);
+        $hydrator = new ArrayHydrator($this->entityManager);
         $iterator = $hydrator->iterate($stmt, $rsm);
         $rowNum   = 0;
 
@@ -1067,7 +1070,7 @@ class ArrayHydratorTest extends HydrationTestCase
         ];
 
         $stmt     = new HydratorMockStatement($resultSet);
-        $hydrator = new ArrayHydrator($this->_em);
+        $hydrator = new ArrayHydrator($this->entityManager);
         $iterator = $hydrator->iterate($stmt, $rsm);
         $rowNum   = 0;
 
@@ -1112,7 +1115,7 @@ class ArrayHydratorTest extends HydrationTestCase
         ];
 
         $stmt     = new HydratorMockStatement($resultSet);
-        $hydrator = new ArrayHydrator($this->_em);
+        $hydrator = new ArrayHydrator($this->entityManager);
         $result   = $hydrator->hydrateAll($stmt, $rsm);
 
         $this->assertEquals(1, count($result));
@@ -1163,7 +1166,7 @@ class ArrayHydratorTest extends HydrationTestCase
         ];
 
         $stmt     = new HydratorMockStatement($resultSet);
-        $hydrator = new ArrayHydrator($this->_em);
+        $hydrator = new ArrayHydrator($this->entityManager);
         $result   = $hydrator->hydrateAll($stmt, $rsm);
 
         $this->assertEquals(4, count($result), 'Should hydrate four results.');
@@ -1213,7 +1216,7 @@ class ArrayHydratorTest extends HydrationTestCase
         ];
 
         $stmt     = new HydratorMockStatement($resultSet);
-        $hydrator = new ArrayHydrator($this->_em);
+        $hydrator = new ArrayHydrator($this->entityManager);
         $result   = $hydrator->hydrateAll($stmt, $rsm);
 
         $this->assertEquals(2, count($result));

@@ -44,12 +44,18 @@ class ClassMetadataLoadEventTest extends OrmTestCase
 class LoadEventTestEntity
 {
     /**
+     * @var int
      * @Id @Column(type="integer")
      * @GeneratedValue(strategy="AUTO")
      */
     private $id;
-    /** @Column(type="string", length=255) */
+
+    /**
+     * @var string
+     * @Column(type="string", length=255)
+     */
     private $name;
 
+    /** @var mixed */
     private $about;
 }

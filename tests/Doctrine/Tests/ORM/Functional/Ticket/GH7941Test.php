@@ -78,6 +78,7 @@ final class GH7941Test extends OrmFunctionalTestCase
 class GH7941Product
 {
     /**
+     * @var int
      * @Id
      * @GeneratedValue
      * @Column(type="integer")
@@ -90,10 +91,16 @@ class GH7941Product
      */
     public $name;
 
-    /** @Column(type="decimal") */
+    /**
+     * @var string
+     * @Column(type="decimal")
+     */
     public $price;
 
-    /** @Column(type="datetime_immutable") */
+    /**
+     * @var DateTimeImmutable
+     * @Column(type="datetime_immutable")
+     */
     public $createdAt;
 
     public function __construct(string $name, string $price)

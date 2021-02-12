@@ -98,9 +98,12 @@ class YamlMappingDriverTest extends AbstractMappingDriverTest
 
 class DDC2069Entity
 {
+    /** @var int */
     public $id;
 
+    /** @var string */
     public $name;
 
+    /** @var mixed */
     public $value;
 }

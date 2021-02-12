@@ -4,15 +4,17 @@ declare(strict_types=1);
 
 namespace Doctrine\Tests\ORM\Hydration;
 
+use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\Tests\OrmTestCase;
 
 class HydrationTestCase extends OrmTestCase
 {
-    protected $_em;
+    /** @var EntityManagerInterface */
+    protected $entityManager;
 
     protected function setUp(): void
     {
         parent::setUp();
-        $this->_em = $this->getTestEntityManager();
+        $this->entityManager = $this->getTestEntityManager();
     }
 }

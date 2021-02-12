@@ -18,10 +18,10 @@ use ReflectionMethod;
 class BasicEntityPersisterTypeValueSqlTest extends OrmTestCase
 {
     /** @var BasicEntityPersister */
-    protected $_persister;
+    protected $persister;
 
     /** @var EntityManager */
-    protected $_em;
+    protected $entityManager;
 
     protected function setUp(): void
     {
@@ -39,17 +39,17 @@ class BasicEntityPersisterTypeValueSqlTest extends OrmTestCase
             DBALType::addType('upper_case_string', '\Doctrine\Tests\DbalTypes\UpperCaseStringType');
         }
 
-        $this->_em = $this->getTestEntityManager();
+        $this->entityManager = $this->getTestEntityManager();
 
-        $this->_persister = new BasicEntityPersister($this->_em, $this->_em->getClassMetadata(CustomTypeParent::class));
+        $this->persister = new BasicEntityPersister($this->entityManager, $this->entityManager->getClassMetadata(CustomTypeParent::class));
     }
 
     public function testGetInsertSQLUsesTypeValuesSQL(): void
     {
-        $method = new ReflectionMethod($this->_persister, 'getInsertSQL');
+        $method = new ReflectionMethod($this->persister, 'getInsertSQL');
         $method->setAccessible(true);
 
-        $sql = $method->invoke($this->_persister);
+        $sql = $method->invoke($this->persister);
 
         $this->assertEquals('INSERT INTO customtype_parents (customInteger, child_id) VALUES (ABS(?), ?)', $sql);
     }
@@ -62,25 +62,25 @@ class BasicEntityPersisterTypeValueSqlTest extends OrmTestCase
         $parent->customInteger = 1;
         $parent->child         = $child;
 
-        $this->_em->getUnitOfWork()->registerManaged($parent, ['id' => 1], ['customInteger' => 0, 'child' => null]);
-        $this->_em->getUnitOfWork()->registerManaged($child, ['id' => 1], []);
+        $this->entityManager->getUnitOfWork()->registerManaged($parent, ['id' => 1], ['customInteger' => 0, 'child' => null]);
+        $this->entityManager->getUnitOfWork()->registerManaged($child, ['id' => 1], []);
 
-        $this->_em->getUnitOfWork()->propertyChanged($parent, 'customInteger', 0, 1);
-        $this->_em->getUnitOfWork()->propertyChanged($parent, 'child', null, $child);
+        $this->entityManager->getUnitOfWork()->propertyChanged($parent, 'customInteger', 0, 1);
+        $this->entityManager->getUnitOfWork()->propertyChanged($parent, 'child', null, $child);
 
-        $this->_persister->update($parent);
+        $this->persister->update($parent);
 
-        $executeUpdates = $this->_em->getConnection()->getExecuteUpdates();
+        $executeUpdates = $this->entityManager->getConnection()->getExecuteUpdates();
 
         $this->assertEquals('UPDATE customtype_parents SET customInteger = ABS(?), child_id = ? WHERE id = ?', $executeUpdates[0]['query']);
     }
 
     public function testGetSelectConditionSQLUsesTypeValuesSQL(): void
     {
-        $method = new ReflectionMethod($this->_persister, 'getSelectConditionSQL');
+        $method = new ReflectionMethod($this->persister, 'getSelectConditionSQL');
         $method->setAccessible(true);
 
-        $sql = $method->invoke($this->_persister, ['customInteger' => 1, 'child' => 1]);
+        $sql = $method->invoke($this->persister, ['customInteger' => 1, 'child' => 1]);
 
         $this->assertEquals('t0.customInteger = ABS(?) AND t0.child_id = ?', $sql);
     }
@@ -90,7 +90,7 @@ class BasicEntityPersisterTypeValueSqlTest extends OrmTestCase
      */
     public function testStripNonAlphanumericCharactersFromSelectColumnListSQL(): void
     {
-        $persister = new BasicEntityPersister($this->_em, $this->_em->getClassMetadata(NonAlphaColumnsEntity::class));
+        $persister = new BasicEntityPersister($this->entityManager, $this->entityManager->getClassMetadata(NonAlphaColumnsEntity::class));
         $method    = new ReflectionMethod($persister, 'getSelectColumnsSQL');
         $method->setAccessible(true);
 
@@ -102,19 +102,19 @@ class BasicEntityPersisterTypeValueSqlTest extends OrmTestCase
      */
     public function testSelectConditionStatementIsNull(): void
     {
-        $statement = $this->_persister->getSelectConditionStatementSQL('test', null, [], Comparison::IS);
+        $statement = $this->persister->getSelectConditionStatementSQL('test', null, [], Comparison::IS);
         $this->assertEquals('test IS NULL', $statement);
     }
 
     public function testSelectConditionStatementEqNull(): void
     {
-        $statement = $this->_persister->getSelectConditionStatementSQL('test', null, [], Comparison::EQ);
+        $statement = $this->persister->getSelectConditionStatementSQL('test', null, [], Comparison::EQ);
         $this->assertEquals('test IS NULL', $statement);
     }
 
     public function testSelectConditionStatementNeqNull(): void
     {
-        $statement = $this->_persister->getSelectConditionStatementSQL('test', null, [], Comparison::NEQ);
+        $statement = $this->persister->getSelectConditionStatementSQL('test', null, [], Comparison::NEQ);
         $this->assertEquals('test IS NOT NULL', $statement);
     }
 
@@ -125,23 +125,23 @@ class BasicEntityPersisterTypeValueSqlTest extends OrmTestCase
     {
         $this->assertEquals(
             '(t0.id IN (?) OR t0.id IS NULL)',
-            $this->_persister->getSelectConditionStatementSQL('id', [null])
+            $this->persister->getSelectConditionStatementSQL('id', [null])
         );
 
         $this->assertEquals(
             '(t0.id IN (?) OR t0.id IS NULL)',
-            $this->_persister->getSelectConditionStatementSQL('id', [null, 123])
+            $this->persister->getSelectConditionStatementSQL('id', [null, 123])
         );
 
         $this->assertEquals(
             '(t0.id IN (?) OR t0.id IS NULL)',
-            $this->_persister->getSelectConditionStatementSQL('id', [123, null])
+            $this->persister->getSelectConditionStatementSQL('id', [123, null])
         );
     }
 
     public function testCountCondition(): void
     {
-        $persister = new BasicEntityPersister($this->_em, $this->_em->getClassMetadata(NonAlphaColumnsEntity::class));
+        $persister = new BasicEntityPersister($this->entityManager, $this->entityManager->getClassMetadata(NonAlphaColumnsEntity::class));
 
         // Using a criteria as array
         $statement = $persister->getCountSQL(['value' => 'bar']);
@@ -155,6 +155,6 @@ class BasicEntityPersisterTypeValueSqlTest extends OrmTestCase
 
     public function testCountEntities(): void
     {
-        $this->assertEquals(0, $this->_persister->count());
+        $this->assertEquals(0, $this->persister->count());
     }
 }

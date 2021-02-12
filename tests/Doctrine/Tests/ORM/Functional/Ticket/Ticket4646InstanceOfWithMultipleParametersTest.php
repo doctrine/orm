@@ -53,13 +53,14 @@ class Ticket4646MultipleInstanceOfWithMultipleParametersTest extends OrmFunction
 class PersonTicket4646Multiple
 {
     /**
+     * @var int
      * @Id()
      * @GeneratedValue()
      * @Column(type="integer")
      */
     private $id;
 
-    public function getId()
+    public function getId(): int
     {
         return $this->id;
     }

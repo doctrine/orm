@@ -15,22 +15,22 @@ use Doctrine\Tests\OrmTestCase;
 class BasicEntityPersisterCompositeTypeParametersTest extends OrmTestCase
 {
     /** @var BasicEntityPersister */
-    protected $_persister;
+    protected $persister;
 
     /** @var EntityManager */
-    protected $_em;
+    protected $entityManager;
 
     protected function setUp(): void
     {
         parent::setUp();
 
-        $this->_em = $this->getTestEntityManager();
+        $this->entityManager = $this->getTestEntityManager();
 
-        $this->_em->getClassMetadata(Country::class);
-        $this->_em->getClassMetadata(Admin1::class);
-        $this->_em->getClassMetadata(Admin1AlternateName::class);
+        $this->entityManager->getClassMetadata(Country::class);
+        $this->entityManager->getClassMetadata(Admin1::class);
+        $this->entityManager->getClassMetadata(Admin1AlternateName::class);
 
-        $this->_persister = new BasicEntityPersister($this->_em, $this->_em->getClassMetadata(Admin1AlternateName::class));
+        $this->persister = new BasicEntityPersister($this->entityManager, $this->entityManager->getClassMetadata(Admin1AlternateName::class));
     }
 
     public function testExpandParametersWillExpandCompositeEntityKeys(): void
@@ -38,7 +38,7 @@ class BasicEntityPersisterCompositeTypeParametersTest extends OrmTestCase
         $country = new Country('IT', 'Italy');
         $admin1  = new Admin1(10, 'Rome', $country);
 
-        [$values, $types] = $this->_persister->expandParameters(['admin1' => $admin1]);
+        [$values, $types] = $this->persister->expandParameters(['admin1' => $admin1]);
 
         $this->assertEquals(['integer', 'string'], $types);
         $this->assertEquals([10, 'IT'], $values);
@@ -52,7 +52,7 @@ class BasicEntityPersisterCompositeTypeParametersTest extends OrmTestCase
         $criteria = Criteria::create();
         $criteria->andWhere(Criteria::expr()->eq('admin1', $admin1));
 
-        [$values, $types] = $this->_persister->expandCriteriaParameters($criteria);
+        [$values, $types] = $this->persister->expandCriteriaParameters($criteria);
 
         $this->assertEquals(['integer', 'string'], $types);
         $this->assertEquals([10, 'IT'], $values);
