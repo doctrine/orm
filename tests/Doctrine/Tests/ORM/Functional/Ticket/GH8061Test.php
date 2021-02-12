@@ -35,10 +35,18 @@ final class GH8061Test extends OrmTestCase
  */
 final class GH8061Entity
 {
-    /** @Id @Column(type="integer") @GeneratedValue */
+    /**
+     * @var int
+     * @Id
+     * @Column(type="integer")
+     * @GeneratedValue
+     */
     public $id;
 
-    /** @Column(type="GH8061Type") */
+    /**
+     * @var mixed
+     * @Column(type="GH8061Type")
+     */
     public $field;
 }
 

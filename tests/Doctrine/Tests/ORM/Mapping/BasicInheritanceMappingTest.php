@@ -243,18 +243,26 @@ class EntitySubClass extends TransientBaseClass
 /** @MappedSuperclass */
 class MappedSuperclassBase
 {
-    /** @Column(type="integer") */
+    /**
+     * @var int
+     * @Column(type="integer")
+     */
     private $mapped1;
+
     /**
      * @var string
      * @Column(type="string")
      */
     private $mapped2;
+
     /**
+     * @var MappedSuperclassRelated1
      * @OneToOne(targetEntity="MappedSuperclassRelated1")
      * @JoinColumn(name="related1_id", referencedColumnName="id")
      */
     private $mappedRelated1;
+
+    /** @var mixed */
     private $transient;
 }
 class MappedSuperclassRelated1
@@ -264,8 +272,13 @@ class MappedSuperclassRelated1
 /** @Entity */
 class EntitySubClass2 extends MappedSuperclassBase
 {
-    /** @Id @Column(type="integer") */
+    /**
+     * @var int
+     * @Id
+     * @Column(type="integer")
+     */
     private $id;
+
     /**
      * @var string
      * @Column(type="string")
@@ -297,8 +310,13 @@ class MappedSuperclassBaseIndex
 /** @Entity @Table(uniqueConstraints={@UniqueConstraint(name="IDX_NAME_INDEX",columns={"name"})}) */
 class EntityIndexSubClass extends MappedSuperclassBaseIndex
 {
-    /** @Id @Column(type="integer") */
+    /**
+     * @var int
+     * @Id
+     * @Column(type="integer")
+     */
     private $id;
+
     /**
      * @var string
      * @Column(type="string")
@@ -385,7 +403,10 @@ class SuperclassEntity extends SuperclassBase
 abstract class SuperclassBase
 {
     /**
-     * @Column(type="integer") @Id @GeneratedValue(strategy="SEQUENCE")
+     * @var int
+     * @Column(type="integer")
+     * @Id
+     * @GeneratedValue(strategy="SEQUENCE")
      * @SequenceGenerator(sequenceName="foo", initialValue=10)
      */
     public $id;

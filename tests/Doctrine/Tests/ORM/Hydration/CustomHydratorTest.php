@@ -23,6 +23,9 @@ class CustomHydratorTest extends HydrationTestCase
 
 class CustomHydrator extends AbstractHydrator
 {
+    /**
+     * {@inheritDoc}
+     */
     protected function hydrateAllData()
     {
         return $this->_stmt->fetchAll(PDO::FETCH_ASSOC);

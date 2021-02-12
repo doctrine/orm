@@ -43,6 +43,7 @@ class Ticket2481Test extends OrmFunctionalTestCase
 class Ticket2481Product
 {
   /**
+   * @var int
    * @Id @Column(type="integer")
    * @GeneratedValue(strategy="AUTO")
    */

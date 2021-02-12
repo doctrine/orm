@@ -3,6 +3,7 @@
 namespace Doctrine\Tests\ORM\Functional\Ticket;
 
 use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\Tests\OrmFunctionalTestCase;
 
 final class GH6531Test extends OrmFunctionalTestCase
@@ -85,7 +86,12 @@ final class GH6531Test extends OrmFunctionalTestCase
  */
 class GH6531User
 {
-    /** @Id @Column(type="integer") @GeneratedValue */
+    /**
+     * @var int
+     * @Id
+     * @Column(type="integer")
+     * @GeneratedValue
+     */
     public $id;
 }
 
@@ -94,7 +100,11 @@ class GH6531User
  */
 class GH6531Address
 {
-    /** @Id @OneToOne(targetEntity=GH6531User::class) */
+    /**
+     * @var GH6531User
+     * @Id
+     * @OneToOne(targetEntity=GH6531User::class)
+     */
     public $user;
 }
 
@@ -103,10 +113,18 @@ class GH6531Address
  */
 class GH6531Article
 {
-    /** @Id @Column(type="integer") @GeneratedValue */
+    /**
+     * @var int
+     * @Id
+     * @Column(type="integer")
+     * @GeneratedValue
+     */
     public $id;
 
-    /** @OneToMany(targetEntity=GH6531ArticleAttribute::class, mappedBy="article", cascade={"ALL"}, indexBy="attribute") */
+    /**
+     * @psalm-var Collection<string, GH6531ArticleAttribute>
+     * @OneToMany(targetEntity=GH6531ArticleAttribute::class, mappedBy="article", cascade={"ALL"}, indexBy="attribute")
+     * */
     public $attributes;
 
     public function addAttribute(string $name, string $value): void
@@ -120,10 +138,18 @@ class GH6531Article
  */
 class GH6531ArticleAttribute
 {
-    /** @Id @ManyToOne(targetEntity=GH6531Article::class, inversedBy="attributes") */
+    /**
+     * @var GH6531Article
+     * @Id
+     * @ManyToOne(targetEntity=GH6531Article::class, inversedBy="attributes")
+     */
     public $article;
 
-    /** @Id @Column(type="string") */
+    /**
+     * @var string
+     * @Id
+     * @Column(type="string")
+     */
     public $attribute;
 
     /**
@@ -145,10 +171,18 @@ class GH6531ArticleAttribute
  */
 class GH6531Order
 {
-    /** @Id @Column(type="integer") @GeneratedValue */
+    /**
+     * @var int
+     * @Id
+     * @Column(type="integer")
+     * @GeneratedValue
+     */
     public $id;
 
-    /** @OneToMany(targetEntity=GH6531OrderItem::class, mappedBy="order", cascade={"ALL"}) */
+    /**
+     * @psalm-var Collection<int, GH6531OrderItem>
+     * @OneToMany(targetEntity=GH6531OrderItem::class, mappedBy="order", cascade={"ALL"})
+     */
     public $items;
 
     public function __construct()
@@ -167,7 +201,12 @@ class GH6531Order
  */
 class GH6531Product
 {
-    /** @Id @Column(type="integer") @GeneratedValue */
+    /**
+     * @var int
+     * @Id
+     * @Column(type="integer")
+     * @GeneratedValue
+     */
     public $id;
 }
 
@@ -176,13 +215,23 @@ class GH6531Product
  */
 class GH6531OrderItem
 {
-    /** @Id @ManyToOne(targetEntity=GH6531Order::class) */
+    /**
+     * @var GH6531Order
+     * @Id
+     * @ManyToOne(targetEntity=GH6531Order::class)
+     */
     public $order;
 
-    /** @Id @ManyToOne(targetEntity=GH6531Product::class) */
+    /**
+     * @var GH6531Product
+     * @Id @ManyToOne(targetEntity=GH6531Product::class)
+     */
     public $product;
 
-    /** @Column(type="integer") */
+    /**
+     * @var int
+     * @Column(type="integer")
+     */
     public $amount = 1;
 
     public function __construct(GH6531Order $order, GH6531Product $product, int $amount = 1)

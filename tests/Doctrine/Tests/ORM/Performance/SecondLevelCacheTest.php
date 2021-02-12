@@ -15,6 +15,7 @@ use function count;
 use function microtime;
 use function number_format;
 use function printf;
+use function sprintf;
 use function str_repeat;
 
 use const PHP_EOL;
@@ -127,7 +128,7 @@ class SecondLevelCacheTest extends OrmFunctionalTestCase
         $this->assertEquals(503, $this->countQuery($em));
     }
 
-    private function queryEntity(EntityManagerInterface $em, $label): void
+    private function queryEntity(EntityManagerInterface $em, string $label): void
     {
         $times        = 100;
         $size         = 500;
@@ -136,7 +137,7 @@ class SecondLevelCacheTest extends OrmFunctionalTestCase
         echo PHP_EOL . $label;
 
         for ($i = 0; $i < $size; $i++) {
-            $em->persist(new Country("Country $i"));
+            $em->persist(new Country(sprintf('Country %d', $i)));
         }
 
         $em->flush();
@@ -158,7 +159,7 @@ class SecondLevelCacheTest extends OrmFunctionalTestCase
         printf("\n%s\n", str_repeat('-', 50));
     }
 
-    public function findEntityOneToMany(EntityManagerInterface $em, $label): void
+    public function findEntityOneToMany(EntityManagerInterface $em, string $label): void
     {
         $times        = 50;
         $size         = 30;
@@ -173,7 +174,7 @@ class SecondLevelCacheTest extends OrmFunctionalTestCase
         $em->flush();
 
         for ($i = 0; $i < $size / 2; $i++) {
-            $state = new State("State $i", $country);
+            $state = new State(sprintf('State %d', $i), $country);
 
             $em->persist($state);
 
@@ -184,7 +185,7 @@ class SecondLevelCacheTest extends OrmFunctionalTestCase
 
         foreach ($states as $key => $state) {
             for ($i = 0; $i < $size; $i++) {
-                $city = new City("City $key - $i", $state);
+                $city = new City(sprintf('City %s - %d', $key, $i), $state);
 
                 $em->persist($city);
 
@@ -225,7 +226,7 @@ class SecondLevelCacheTest extends OrmFunctionalTestCase
         echo PHP_EOL . $label;
 
         for ($i = 0; $i < $size; $i++) {
-            $country = new Country("Country $i");
+            $country = new Country(sprintf('Country %d', $i));
 
             $em->persist($country);
 
@@ -250,7 +251,7 @@ class SecondLevelCacheTest extends OrmFunctionalTestCase
         printf("\n%s\n", str_repeat('-', 50));
     }
 
-    private function findAllEntity(EntityManagerInterface $em, $label): void
+    private function findAllEntity(EntityManagerInterface $em, string $label): void
     {
         $times        = 100;
         $size         = 50;
@@ -260,7 +261,7 @@ class SecondLevelCacheTest extends OrmFunctionalTestCase
         echo PHP_EOL . $label;
 
         for ($i = 0; $i < $size; $i++) {
-            $em->persist(new Country("Country $i"));
+            $em->persist(new Country(sprintf('Country %d', $i)));
         }
 
         $em->flush();

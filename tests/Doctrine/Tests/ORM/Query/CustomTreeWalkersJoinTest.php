@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Doctrine\Tests\ORM\Query;
 
+use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Query;
 use Doctrine\Tests\Models\CMS\CmsAddress;
 use Doctrine\Tests\Models\CMS\CmsUser;
@@ -17,6 +18,7 @@ use Exception;
  */
 class CustomTreeWalkersJoinTest extends OrmTestCase
 {
+    /** @var EntityManagerInterface */
     private $em;
 
     protected function setUp(): void
@@ -24,7 +26,7 @@ class CustomTreeWalkersJoinTest extends OrmTestCase
         $this->em = $this->getTestEntityManager();
     }
 
-    public function assertSqlGeneration($dqlToBeTested, $sqlToBeConfirmed): void
+    public function assertSqlGeneration(string $dqlToBeTested, string $sqlToBeConfirmed): void
     {
         try {
             $query = $this->em->createQuery($dqlToBeTested);

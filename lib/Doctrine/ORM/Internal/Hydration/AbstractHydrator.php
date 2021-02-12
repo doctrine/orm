@@ -294,7 +294,7 @@ abstract class AbstractHydrator
     /**
      * Hydrates all rows from the current statement instance at once.
      *
-     * @return array
+     * @return mixed[]
      */
     abstract protected function hydrateAllData();
 
