@@ -14,7 +14,6 @@ use Doctrine\Tests\Mocks\ConnectionMock;
 use Doctrine\Tests\Mocks\DriverMock;
 use Doctrine\Tests\Mocks\EntityManagerMock;
 use Doctrine\Tests\OrmTestCase;
-use Doctrine\Tests\VerifyDeprecations;
 
 use function class_exists;
 use function count;
@@ -29,8 +28,6 @@ use function unlink;
  */
 class ConvertDoctrine1SchemaTest extends OrmTestCase
 {
-    use VerifyDeprecations;
-
     protected function _createEntityManager($metadataDriver)
     {
         $driverMock = new DriverMock();
@@ -82,7 +79,6 @@ class ConvertDoctrine1SchemaTest extends OrmTestCase
         $this->assertEquals('User', $profileClass->associationMappings['User']['targetEntity']);
 
         $this->assertEquals('username', $userClass->table['uniqueConstraints']['username']['columns'][0]);
-        $this->assertHasDeprecationMessages();
     }
 
     public function tearDown(): void

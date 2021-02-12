@@ -5,15 +5,12 @@ declare(strict_types=1);
 namespace Doctrine\Tests\ORM\Functional\Ticket;
 
 use Doctrine\Tests\OrmFunctionalTestCase;
-use Doctrine\Tests\VerifyDeprecations;
 
 /**
  * @group DDC-2645
  */
 class DDC2645Test extends OrmFunctionalTestCase
 {
-    use VerifyDeprecations;
-
     public function testIssue(): void
     {
         $bar     = new DDC2645Bar();
@@ -29,7 +26,6 @@ class DDC2645Test extends OrmFunctionalTestCase
 
         $this->assertSame($foo, $foo3);
         $this->assertEquals('Bar', $foo->name);
-        $this->assertHasDeprecationMessages();
     }
 }
 

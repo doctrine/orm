@@ -2112,8 +2112,6 @@ class UnitOfWork implements PropertyChangedListener
      * Detaches an entity from the persistence management. It's persistence will
      * no longer be managed by Doctrine.
      *
-     * @deprecated 2.7 This method is being removed from the ORM and won't have any replacement
-     *
      * @param object $entity The entity to detach.
      *
      * @return void

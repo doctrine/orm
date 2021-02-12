@@ -7,7 +7,6 @@ namespace Doctrine\Tests\ORM\Functional\Ticket;
 use Doctrine\ORM\Proxy\Proxy;
 use Doctrine\Tests\Models\CMS\CmsGroup;
 use Doctrine\Tests\OrmFunctionalTestCase;
-use Doctrine\Tests\VerifyDeprecations;
 
 use function get_class;
 use function serialize;
@@ -15,18 +14,10 @@ use function unserialize;
 
 class DDC1734Test extends OrmFunctionalTestCase
 {
-    use VerifyDeprecations;
-
     protected function setUp(): void
     {
         $this->useModelSet('cms');
         parent::setUp();
-    }
-
-    /** @after */
-    public function ensureTestGeneratedDeprecationMessages(): void
-    {
-        $this->assertHasDeprecationMessages();
     }
 
     /**

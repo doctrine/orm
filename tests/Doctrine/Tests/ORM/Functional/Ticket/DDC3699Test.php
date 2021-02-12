@@ -8,7 +8,6 @@ use Doctrine\Tests\Models\DDC3699\DDC3699Child;
 use Doctrine\Tests\Models\DDC3699\DDC3699RelationMany;
 use Doctrine\Tests\Models\DDC3699\DDC3699RelationOne;
 use Doctrine\Tests\OrmFunctionalTestCase;
-use Doctrine\Tests\VerifyDeprecations;
 
 use function assert;
 
@@ -17,19 +16,11 @@ use function assert;
  */
 class DDC3699Test extends OrmFunctionalTestCase
 {
-    use VerifyDeprecations;
-
     protected function setUp(): void
     {
         $this->useModelSet('ddc3699');
 
         parent::setUp();
-    }
-
-    /** @after */
-    public function ensureTestGeneratedDeprecationMessages(): void
-    {
-        $this->assertHasDeprecationMessages();
     }
 
     /**

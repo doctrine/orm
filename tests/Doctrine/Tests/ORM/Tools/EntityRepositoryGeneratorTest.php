@@ -13,7 +13,6 @@ use Doctrine\Tests\Models\DDC3231\DDC3231EntityRepository;
 use Doctrine\Tests\Models\DDC3231\DDC3231User1;
 use Doctrine\Tests\Models\DDC3231\DDC3231User2;
 use Doctrine\Tests\OrmTestCase;
-use Doctrine\Tests\VerifyDeprecations;
 use RecursiveDirectoryIterator;
 use RecursiveIteratorIterator;
 use ReflectionClass;
@@ -32,8 +31,6 @@ use const DIRECTORY_SEPARATOR;
 
 class EntityRepositoryGeneratorTest extends OrmTestCase
 {
-    use VerifyDeprecations;
-
     /** @var EntityGenerator */
     private $_generator;
 
@@ -79,12 +76,6 @@ class EntityRepositoryGeneratorTest extends OrmTestCase
         foreach ($dirs as $dir) {
             rmdir($dir);
         }
-    }
-
-    /** @after */
-    public function ensureTestGeneratedDeprecationMessages(): void
-    {
-        $this->assertHasDeprecationMessages();
     }
 
     /**

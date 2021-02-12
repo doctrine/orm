@@ -15,7 +15,6 @@ use Doctrine\Persistence\Mapping\RuntimeReflectionService;
 use Doctrine\Tests\Models\DDC2372\DDC2372Admin;
 use Doctrine\Tests\Models\DDC2372\DDC2372User;
 use Doctrine\Tests\OrmTestCase;
-use Doctrine\Tests\VerifyDeprecations;
 use InvalidArgumentException;
 use RecursiveDirectoryIterator;
 use RecursiveIteratorIterator;
@@ -49,8 +48,6 @@ use const DIRECTORY_SEPARATOR;
 
 class EntityGeneratorTest extends OrmTestCase
 {
-    use VerifyDeprecations;
-
     /** @var EntityGenerator */
     private $_generator;
     private $_tmpDir;
@@ -81,12 +78,6 @@ class EntityGeneratorTest extends OrmTestCase
         }
 
         rmdir($this->_tmpDir . '/' . $this->_namespace);
-    }
-
-    /** @after */
-    public function ensureTestGeneratedDeprecationMessages(): void
-    {
-        $this->assertHasDeprecationMessages();
     }
 
     /**

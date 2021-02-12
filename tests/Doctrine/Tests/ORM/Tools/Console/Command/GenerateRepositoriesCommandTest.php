@@ -12,7 +12,6 @@ use Doctrine\ORM\Tools\Console\Helper\EntityManagerHelper;
 use Doctrine\Persistence\Mapping\ClassMetadataFactory;
 use Doctrine\Tests\Models\DDC3231\DDC3231EntityRepository;
 use Doctrine\Tests\OrmFunctionalTestCase;
-use Doctrine\Tests\VerifyDeprecations;
 use RecursiveDirectoryIterator;
 use RecursiveIteratorIterator;
 use ReflectionClass;
@@ -35,8 +34,6 @@ use const DIRECTORY_SEPARATOR;
 
 class GenerateRepositoriesCommandTest extends OrmFunctionalTestCase
 {
-    use VerifyDeprecations;
-
     /** @var Application */
     private $application;
 
@@ -102,7 +99,6 @@ class GenerateRepositoriesCommandTest extends OrmFunctionalTestCase
 
         self::assertSame(EntityRepository::class, $repo1->getParentClass()->getName());
         self::assertSame(EntityRepository::class, $repo2->getParentClass()->getName());
-        $this->assertHasDeprecationMessages();
     }
 
     public function testGenerateRepositoriesCustomDefaultRepository(): void
@@ -126,7 +122,6 @@ class GenerateRepositoriesCommandTest extends OrmFunctionalTestCase
 
         self::assertSame(DDC3231EntityRepository::class, $repo1->getParentClass()->getName());
         self::assertSame(DDC3231EntityRepository::class, $repo2->getParentClass()->getName());
-        $this->assertHasDeprecationMessages();
     }
 
     private function generateRepositories(string $filter, ?string $defaultRepository = null): void

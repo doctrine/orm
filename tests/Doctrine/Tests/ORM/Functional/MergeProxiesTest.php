@@ -14,7 +14,6 @@ use Doctrine\ORM\Proxy\Proxy;
 use Doctrine\ORM\Tools\SchemaTool;
 use Doctrine\Tests\Models\Generic\DateTimeModel;
 use Doctrine\Tests\OrmFunctionalTestCase;
-use Doctrine\Tests\VerifyDeprecations;
 
 use function count;
 use function realpath;
@@ -23,19 +22,11 @@ use function unserialize;
 
 class MergeProxiesTest extends OrmFunctionalTestCase
 {
-    use VerifyDeprecations;
-
     protected function setUp(): void
     {
         $this->useModelSet('generic');
 
         parent::setUp();
-    }
-
-    /** @after */
-    public function ensureTestGeneratedDeprecationMessages(): void
-    {
-        $this->assertHasDeprecationMessages();
     }
 
     /**

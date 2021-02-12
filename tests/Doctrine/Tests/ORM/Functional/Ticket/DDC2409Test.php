@@ -8,15 +8,12 @@ use Doctrine\ORM\UnitOfWork;
 use Doctrine\Tests\Models\CMS\CmsArticle;
 use Doctrine\Tests\Models\CMS\CmsUser;
 use Doctrine\Tests\OrmFunctionalTestCase;
-use Doctrine\Tests\VerifyDeprecations;
 
 /**
  * @group DDC-2409
  */
 class DDC2409Test extends OrmFunctionalTestCase
 {
-    use VerifyDeprecations;
-
     protected function setUp(): void
     {
         $this->useModelSet('cms');
@@ -74,6 +71,5 @@ class DDC2409Test extends OrmFunctionalTestCase
         $this->assertNotSame($article, $articleMerged);
         $this->assertNotSame($userMerged, $articleMerged->user);
         $this->assertSame($user, $articleMerged->user);
-        $this->assertHasDeprecationMessages();
     }
 }

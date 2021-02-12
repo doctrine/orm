@@ -22,6 +22,7 @@ namespace Doctrine\ORM\Tools;
 
 use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Type;
+use Doctrine\Deprecations\Deprecation;
 use Doctrine\Inflector\Inflector;
 use Doctrine\Inflector\InflectorFactory;
 use Doctrine\ORM\Mapping\ClassMetadataInfo;
@@ -64,12 +65,10 @@ use function strrpos;
 use function strtolower;
 use function substr;
 use function token_get_all;
-use function trigger_error;
 use function ucfirst;
 use function var_export;
 
 use const DIRECTORY_SEPARATOR;
-use const E_USER_DEPRECATED;
 use const PHP_EOL;
 use const PHP_VERSION_ID;
 use const T_CLASS;
@@ -372,7 +371,12 @@ public function __construct(<params>)
 
     public function __construct()
     {
-        @trigger_error(self::class . ' is deprecated and will be removed in Doctrine ORM 3.0', E_USER_DEPRECATED);
+        Deprecation::trigger(
+            'doctrine/orm',
+            'https://github.com/doctrine/orm/issues/8458',
+            '%s is deprecated with no replacement',
+            self::class
+        );
 
         $this->annotationsPrefix = 'ORM\\';
         $this->inflector         = InflectorFactory::create()->build();

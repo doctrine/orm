@@ -21,7 +21,6 @@ use Doctrine\Tests\Mocks\ConnectionMock;
 use Doctrine\Tests\Mocks\DriverMock;
 use Doctrine\Tests\Mocks\EntityManagerMock;
 use Doctrine\Tests\OrmTestCase;
-use Doctrine\Tests\VerifyDeprecations;
 use Symfony\Component\Yaml\Parser;
 
 use function count;
@@ -45,8 +44,6 @@ use function unlink;
  */
 abstract class AbstractClassMetadataExporterTest extends OrmTestCase
 {
-    use VerifyDeprecations;
-
     protected $_extension;
 
     abstract protected function _getType(): string;
@@ -128,8 +125,6 @@ abstract class AbstractClassMetadataExporterTest extends OrmTestCase
         } else {
             $this->assertTrue(file_exists(__DIR__ . '/export/' . $type . '/Doctrine.Tests.ORM.Tools.Export.ExportedUser' . $this->_extension));
         }
-
-        $this->assertHasDeprecationMessages();
     }
 
     /**

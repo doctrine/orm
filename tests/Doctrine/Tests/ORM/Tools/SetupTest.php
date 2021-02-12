@@ -12,7 +12,6 @@ use Doctrine\ORM\Mapping\Driver\XmlDriver;
 use Doctrine\ORM\Mapping\Driver\YamlDriver;
 use Doctrine\ORM\Tools\Setup;
 use Doctrine\Tests\OrmTestCase;
-use Doctrine\Tests\VerifyDeprecations;
 
 use function count;
 use function get_include_path;
@@ -23,8 +22,6 @@ use function sys_get_temp_dir;
 
 class SetupTest extends OrmTestCase
 {
-    use VerifyDeprecations;
-
     private $originalAutoloaderCount;
     private $originalIncludePath;
 
@@ -81,7 +78,6 @@ class SetupTest extends OrmTestCase
 
         $this->assertInstanceOf(Configuration::class, $config);
         $this->assertInstanceOf(YamlDriver::class, $config->getMetadataDriverImpl());
-        $this->assertHasDeprecationMessages();
     }
 
     /**

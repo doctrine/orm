@@ -25,6 +25,7 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Cache\QueryCacheProfile;
 use Doctrine\DBAL\Driver\Statement;
+use Doctrine\Deprecations\Deprecation;
 use Doctrine\ORM\Cache\Logging\CacheLogger;
 use Doctrine\ORM\Cache\QueryCacheKey;
 use Doctrine\ORM\Cache\TimestampCacheKey;
@@ -48,9 +49,6 @@ use function ksort;
 use function reset;
 use function serialize;
 use function sha1;
-use function trigger_error;
-
-use const E_USER_DEPRECATED;
 
 /**
  * Base contract for ORM queries. Base class for Query and NativeQuery.
@@ -957,9 +955,11 @@ abstract class AbstractQuery
      */
     public function iterate($parameters = null, $hydrationMode = null)
     {
-        @trigger_error(
-            'Method ' . __METHOD__ . '() is deprecated and will be removed in Doctrine ORM 3.0. Use toIterable() instead.',
-            E_USER_DEPRECATED
+        Deprecation::trigger(
+            'doctrine/orm',
+            'https://github.com/doctrine/orm/issues/8463',
+            'Method %s() is deprecated and will be removed in Doctrine ORM 3.0. Use toIterable() instead.',
+            __METHOD__
         );
 
         if ($hydrationMode !== null) {

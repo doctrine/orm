@@ -6,7 +6,6 @@ namespace Doctrine\Tests\ORM\Functional\Ticket;
 
 use Doctrine\ORM\EntityManager;
 use Doctrine\Tests\OrmFunctionalTestCase;
-use Doctrine\Tests\VerifyDeprecations;
 use Exception;
 
 use function assert;
@@ -16,8 +15,6 @@ use function assert;
  */
 class DDC1509Test extends OrmFunctionalTestCase
 {
-    use VerifyDeprecations;
-
     protected function setUp(): void
     {
         parent::setUp();
@@ -56,7 +53,6 @@ class DDC1509Test extends OrmFunctionalTestCase
 
         $this->assertNotNull($pic->getThumbnail());
         $this->assertNotNull($pic->getFile());
-        $this->assertHasDeprecationMessages();
     }
 }
 
