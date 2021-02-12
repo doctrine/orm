@@ -24,6 +24,7 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\Common\EventManager;
 use Doctrine\DBAL\LockMode;
+use Doctrine\Deprecations\Deprecation;
 use Doctrine\ORM\Cache\Persister\CachedPersister;
 use Doctrine\ORM\Event\LifecycleEventArgs;
 use Doctrine\ORM\Event\ListenersInvoker;
@@ -2750,6 +2751,13 @@ class UnitOfWork implements PropertyChangedListener
 
         // Properly initialize any unfetched associations, if partial objects are not allowed.
         if (isset($hints[Query::HINT_FORCE_PARTIAL_LOAD])) {
+            Deprecation::trigger(
+                'doctrine/orm',
+                'https://github.com/doctrine/orm/issues/8471',
+                'Partial Objects are deprecated (here entity %s)',
+                $className
+            );
+
             return $entity;
         }
 
