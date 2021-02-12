@@ -33,11 +33,11 @@ use function sprintf;
 class SelectSqlGenerationTest extends OrmTestCase
 {
     /** @var EntityManagerInterface */
-    private $_em;
+    private $entityManager;
 
     protected function setUp(): void
     {
-        $this->_em = $this->getTestEntityManager();
+        $this->entityManager = $this->getTestEntityManager();
     }
 
     /**
@@ -53,7 +53,7 @@ class SelectSqlGenerationTest extends OrmTestCase
         array $queryParams = []
     ): void {
         try {
-            $query = $this->_em->createQuery($dqlToBeTested);
+            $query = $this->entityManager->createQuery($dqlToBeTested);
 
             foreach ($queryParams as $name => $value) {
                 $query->setParameter($name, $value);
@@ -94,7 +94,7 @@ class SelectSqlGenerationTest extends OrmTestCase
     ): void {
         $this->expectException($expectedException);
 
-        $query = $this->_em->createQuery($dqlToBeTested);
+        $query = $this->entityManager->createQuery($dqlToBeTested);
 
         foreach ($queryParams as $name => $value) {
             $query->setParameter($name, $value);
@@ -340,7 +340,7 @@ class SelectSqlGenerationTest extends OrmTestCase
      */
     public function testSupportsAggregateCountFunctionWithSimpleArithmetic(): void
     {
-        $connMock    = $this->_em->getConnection();
+        $connMock    = $this->entityManager->getConnection();
         $orgPlatform = $connMock->getDatabasePlatform();
 
         $connMock->setDatabasePlatform(new MySqlPlatform());
@@ -461,7 +461,7 @@ class SelectSqlGenerationTest extends OrmTestCase
     {
         $this->expectException(QueryException::class);
 
-        $sql = $this->_em->createQuery(
+        $sql = $this->entityManager->createQuery(
             "SELECT u, a FROM Doctrine\Tests\Models\CMS\CmsUser u LEFT JOIN u.articles a ON a.topic LIKE '%foo%'"
         )->getSql();
     }
@@ -584,7 +584,7 @@ class SelectSqlGenerationTest extends OrmTestCase
             'SELECT u FROM Doctrine\Tests\Models\Company\CompanyPerson u WHERE u INSTANCE OF ?1',
             'SELECT c0_.id AS id_0, c0_.name AS name_1, c0_.discr AS discr_2 FROM company_persons c0_ WHERE c0_.discr IN (?)',
             [],
-            [1 => $this->_em->getClassMetadata(CompanyEmployee::class)]
+            [1 => $this->entityManager->getClassMetadata(CompanyEmployee::class)]
         );
     }
 
@@ -643,7 +643,7 @@ class SelectSqlGenerationTest extends OrmTestCase
 
     public function testSupportsConcatFunctionForMysqlAndPostgresql(): void
     {
-        $connMock    = $this->_em->getConnection();
+        $connMock    = $this->entityManager->getConnection();
         $orgPlatform = $connMock->getDatabasePlatform();
 
         $connMock->setDatabasePlatform(new MySqlPlatform());
@@ -691,7 +691,7 @@ class SelectSqlGenerationTest extends OrmTestCase
     public function testSupportsMemberOfExpressionOneToMany(): void
     {
         // "Get all users who have $phone as a phonenumber." (*cough* doesnt really make sense...)
-        $q = $this->_em->createQuery('SELECT u.id FROM Doctrine\Tests\Models\CMS\CmsUser u WHERE :param MEMBER OF u.phonenumbers');
+        $q = $this->entityManager->createQuery('SELECT u.id FROM Doctrine\Tests\Models\CMS\CmsUser u WHERE :param MEMBER OF u.phonenumbers');
         $q->setHint(ORMQuery::HINT_FORCE_PARTIAL_LOAD, true);
 
         $phone              = new CmsPhonenumber();
@@ -707,7 +707,7 @@ class SelectSqlGenerationTest extends OrmTestCase
     public function testSupportsMemberOfExpressionManyToMany(): void
     {
         // "Get all users who are members of $group."
-        $q = $this->_em->createQuery('SELECT u.id FROM Doctrine\Tests\Models\CMS\CmsUser u WHERE :param MEMBER OF u.groups');
+        $q = $this->entityManager->createQuery('SELECT u.id FROM Doctrine\Tests\Models\CMS\CmsUser u WHERE :param MEMBER OF u.groups');
         $q->setHint(ORMQuery::HINT_FORCE_PARTIAL_LOAD, true);
 
         $group     = new CmsGroup();
@@ -722,7 +722,7 @@ class SelectSqlGenerationTest extends OrmTestCase
 
     public function testSupportsMemberOfExpressionManyToManyParameterArray(): void
     {
-        $q = $this->_em->createQuery('SELECT u.id FROM Doctrine\Tests\Models\CMS\CmsUser u WHERE :param MEMBER OF u.groups');
+        $q = $this->entityManager->createQuery('SELECT u.id FROM Doctrine\Tests\Models\CMS\CmsUser u WHERE :param MEMBER OF u.groups');
         $q->setHint(ORMQuery::HINT_FORCE_PARTIAL_LOAD, true);
 
         $group      = new CmsGroup();
@@ -741,9 +741,9 @@ class SelectSqlGenerationTest extends OrmTestCase
     {
         // "Get all persons who have $person as a friend."
         // Tough one: Many-many self-referencing ("friends") with class table inheritance
-        $q      = $this->_em->createQuery('SELECT p FROM Doctrine\Tests\Models\Company\CompanyPerson p WHERE :param MEMBER OF p.friends');
+        $q      = $this->entityManager->createQuery('SELECT p FROM Doctrine\Tests\Models\Company\CompanyPerson p WHERE :param MEMBER OF p.friends');
         $person = new CompanyPerson();
-        $this->_em->getClassMetadata(get_class($person))->setIdentifierValues($person, ['id' => 101]);
+        $this->entityManager->getClassMetadata(get_class($person))->setIdentifierValues($person, ['id' => 101]);
         $q->setParameter('param', $person);
         $this->assertEquals(
             'SELECT c0_.id AS id_0, c0_.name AS name_1, c1_.title AS title_2, c2_.salary AS salary_3, c2_.department AS department_4, c2_.startDate AS startDate_5, c0_.discr AS discr_6, c0_.spouse_id AS spouse_id_7, c1_.car_id AS car_id_8 FROM company_persons c0_ LEFT JOIN company_managers c1_ ON c0_.id = c1_.id LEFT JOIN company_employees c2_ ON c0_.id = c2_.id WHERE EXISTS (SELECT 1 FROM company_persons_friends c3_ INNER JOIN company_persons c4_ ON c3_.friend_id = c4_.id WHERE c3_.person_id = c0_.id AND c4_.id IN (?))',
@@ -754,7 +754,7 @@ class SelectSqlGenerationTest extends OrmTestCase
     public function testSupportsMemberOfWithSingleValuedAssociation(): void
     {
         // Impossible example, but it illustrates the purpose
-        $q = $this->_em->createQuery('SELECT u.id FROM Doctrine\Tests\Models\CMS\CmsUser u WHERE u.email MEMBER OF u.groups');
+        $q = $this->entityManager->createQuery('SELECT u.id FROM Doctrine\Tests\Models\CMS\CmsUser u WHERE u.email MEMBER OF u.groups');
 
         $this->assertEquals(
             'SELECT c0_.id AS id_0 FROM cms_users c0_ WHERE EXISTS (SELECT 1 FROM cms_users_groups c1_ INNER JOIN cms_groups c2_ ON c1_.group_id = c2_.id WHERE c1_.user_id = c0_.id AND c2_.id IN (c0_.email_id))',
@@ -765,7 +765,7 @@ class SelectSqlGenerationTest extends OrmTestCase
     public function testSupportsMemberOfWithIdentificationVariable(): void
     {
         // Impossible example, but it illustrates the purpose
-        $q = $this->_em->createQuery('SELECT u.id FROM Doctrine\Tests\Models\CMS\CmsUser u WHERE u MEMBER OF u.groups');
+        $q = $this->entityManager->createQuery('SELECT u.id FROM Doctrine\Tests\Models\CMS\CmsUser u WHERE u MEMBER OF u.groups');
 
         $this->assertEquals(
             'SELECT c0_.id AS id_0 FROM cms_users c0_ WHERE EXISTS (SELECT 1 FROM cms_users_groups c1_ INNER JOIN cms_groups c2_ ON c1_.group_id = c2_.id WHERE c1_.user_id = c0_.id AND c2_.id IN (c0_.id))',
@@ -775,21 +775,21 @@ class SelectSqlGenerationTest extends OrmTestCase
 
     public function testSupportsCurrentDateFunction(): void
     {
-        $q = $this->_em->createQuery('SELECT d.id FROM Doctrine\Tests\Models\Generic\DateTimeModel d WHERE d.datetime > current_date()');
+        $q = $this->entityManager->createQuery('SELECT d.id FROM Doctrine\Tests\Models\Generic\DateTimeModel d WHERE d.datetime > current_date()');
         $q->setHint(ORMQuery::HINT_FORCE_PARTIAL_LOAD, true);
         $this->assertEquals('SELECT d0_.id AS id_0 FROM date_time_model d0_ WHERE d0_.col_datetime > CURRENT_DATE', $q->getSql());
     }
 
     public function testSupportsCurrentTimeFunction(): void
     {
-        $q = $this->_em->createQuery('SELECT d.id FROM Doctrine\Tests\Models\Generic\DateTimeModel d WHERE d.time > current_time()');
+        $q = $this->entityManager->createQuery('SELECT d.id FROM Doctrine\Tests\Models\Generic\DateTimeModel d WHERE d.time > current_time()');
         $q->setHint(ORMQuery::HINT_FORCE_PARTIAL_LOAD, true);
         $this->assertEquals('SELECT d0_.id AS id_0 FROM date_time_model d0_ WHERE d0_.col_time > CURRENT_TIME', $q->getSql());
     }
 
     public function testSupportsCurrentTimestampFunction(): void
     {
-        $q = $this->_em->createQuery('SELECT d.id FROM Doctrine\Tests\Models\Generic\DateTimeModel d WHERE d.datetime > current_timestamp()');
+        $q = $this->entityManager->createQuery('SELECT d.id FROM Doctrine\Tests\Models\Generic\DateTimeModel d WHERE d.datetime > current_timestamp()');
         $q->setHint(ORMQuery::HINT_FORCE_PARTIAL_LOAD, true);
         $this->assertEquals('SELECT d0_.id AS id_0 FROM date_time_model d0_ WHERE d0_.col_datetime > CURRENT_TIMESTAMP', $q->getSql());
     }
@@ -832,7 +832,7 @@ class SelectSqlGenerationTest extends OrmTestCase
 
     public function testLimitFromQueryClass(): void
     {
-        $q = $this->_em
+        $q = $this->entityManager
             ->createQuery('SELECT u FROM Doctrine\Tests\Models\CMS\CmsUser u')
             ->setMaxResults(10);
 
@@ -841,7 +841,7 @@ class SelectSqlGenerationTest extends OrmTestCase
 
     public function testLimitAndOffsetFromQueryClass(): void
     {
-        $q = $this->_em
+        $q = $this->entityManager
             ->createQuery('SELECT u FROM Doctrine\Tests\Models\CMS\CmsUser u')
             ->setMaxResults(10)
             ->setFirstResult(0);
@@ -927,14 +927,14 @@ class SelectSqlGenerationTest extends OrmTestCase
     public function testOrderBySupportsSingleValuedPathExpressionInverseSide(): void
     {
         $this->expectException('\Doctrine\ORM\Query\QueryException');
-        $q = $this->_em->createQuery('select u from Doctrine\Tests\Models\CMS\CmsUser u order by u.address');
+        $q = $this->entityManager->createQuery('select u from Doctrine\Tests\Models\CMS\CmsUser u order by u.address');
         $q->getSQL();
     }
 
     public function testBooleanLiteralInWhereOnSqlite(): void
     {
-        $oldPlat = $this->_em->getConnection()->getDatabasePlatform();
-        $this->_em->getConnection()->setDatabasePlatform(new SqlitePlatform());
+        $oldPlat = $this->entityManager->getConnection()->getDatabasePlatform();
+        $this->entityManager->getConnection()->setDatabasePlatform(new SqlitePlatform());
 
         $this->assertSqlGeneration(
             'SELECT b FROM Doctrine\Tests\Models\Generic\BooleanModel b WHERE b.booleanField = true',
@@ -946,13 +946,13 @@ class SelectSqlGenerationTest extends OrmTestCase
             'SELECT b0_.id AS id_0, b0_.booleanField AS booleanField_1 FROM boolean_model b0_ WHERE b0_.booleanField = 0'
         );
 
-        $this->_em->getConnection()->setDatabasePlatform($oldPlat);
+        $this->entityManager->getConnection()->setDatabasePlatform($oldPlat);
     }
 
     public function testBooleanLiteralInWhereOnPostgres(): void
     {
-        $oldPlat = $this->_em->getConnection()->getDatabasePlatform();
-        $this->_em->getConnection()->setDatabasePlatform(new PostgreSqlPlatform());
+        $oldPlat = $this->entityManager->getConnection()->getDatabasePlatform();
+        $this->entityManager->getConnection()->setDatabasePlatform(new PostgreSqlPlatform());
 
         $this->assertSqlGeneration(
             'SELECT b FROM Doctrine\Tests\Models\Generic\BooleanModel b WHERE b.booleanField = true',
@@ -964,7 +964,7 @@ class SelectSqlGenerationTest extends OrmTestCase
             'SELECT b0_.id AS id_0, b0_.booleanField AS booleanfield_1 FROM boolean_model b0_ WHERE b0_.booleanField = false'
         );
 
-        $this->_em->getConnection()->setDatabasePlatform($oldPlat);
+        $this->entityManager->getConnection()->setDatabasePlatform($oldPlat);
     }
 
     public function testSingleValuedAssociationFieldInWhere(): void
@@ -1076,7 +1076,7 @@ class SelectSqlGenerationTest extends OrmTestCase
      */
     public function testPessimisticWriteLockQueryHint(): void
     {
-        if ($this->_em->getConnection()->getDatabasePlatform() instanceof SqlitePlatform) {
+        if ($this->entityManager->getConnection()->getDatabasePlatform() instanceof SqlitePlatform) {
             $this->markTestSkipped('SqLite does not support Row locking at all.');
         }
 
@@ -1094,7 +1094,7 @@ class SelectSqlGenerationTest extends OrmTestCase
      */
     public function testPessimisticReadLockQueryHintPostgreSql(): void
     {
-        $this->_em->getConnection()->setDatabasePlatform(new PostgreSqlPlatform());
+        $this->entityManager->getConnection()->setDatabasePlatform(new PostgreSqlPlatform());
 
         $this->assertSqlGeneration(
             "SELECT u FROM Doctrine\Tests\Models\CMS\CmsUser u WHERE u.username = 'gblanco'",
@@ -1135,7 +1135,7 @@ class SelectSqlGenerationTest extends OrmTestCase
      */
     public function testPessimisticReadLockQueryHintMySql(): void
     {
-        $this->_em->getConnection()->setDatabasePlatform(new MySqlPlatform());
+        $this->entityManager->getConnection()->setDatabasePlatform(new MySqlPlatform());
 
         $this->assertSqlGeneration(
             "SELECT u FROM Doctrine\Tests\Models\CMS\CmsUser u WHERE u.username = 'gblanco'",
@@ -1151,7 +1151,7 @@ class SelectSqlGenerationTest extends OrmTestCase
      */
     public function testPessimisticReadLockQueryHintOracle(): void
     {
-        $this->_em->getConnection()->setDatabasePlatform(new OraclePlatform());
+        $this->entityManager->getConnection()->setDatabasePlatform(new OraclePlatform());
 
         $this->assertSqlGeneration(
             "SELECT u FROM Doctrine\Tests\Models\CMS\CmsUser u WHERE u.username = 'gblanco'",
@@ -1166,7 +1166,7 @@ class SelectSqlGenerationTest extends OrmTestCase
      */
     public function testSupportToCustomDQLFunctions(): void
     {
-        $config = $this->_em->getConfiguration();
+        $config = $this->entityManager->getConfiguration();
         $config->addCustomNumericFunction('MYABS', MyAbsFunction::class);
 
         $this->assertSqlGeneration(
@@ -1241,7 +1241,7 @@ class SelectSqlGenerationTest extends OrmTestCase
     {
         $exceptionThrown = false;
         try {
-            $query = $this->_em->createQuery('SELECT u.name FROM Doctrine\Tests\Models\CMS\CmsUser u WHERE u.name IN (SELECT u.name FROM Doctrine\Tests\Models\CMS\CmsUser u)');
+            $query = $this->entityManager->createQuery('SELECT u.name FROM Doctrine\Tests\Models\CMS\CmsUser u WHERE u.name IN (SELECT u.name FROM Doctrine\Tests\Models\CMS\CmsUser u)');
 
             $query->getSql();
             $query->free();
@@ -2101,7 +2101,7 @@ class SelectSqlGenerationTest extends OrmTestCase
      */
     public function testSupportsMoreThanTwoParametersInConcatFunction(): void
     {
-        $connMock    = $this->_em->getConnection();
+        $connMock    = $this->entityManager->getConnection();
         $orgPlatform = $connMock->getDatabasePlatform();
 
         $connMock->setDatabasePlatform(new MySqlPlatform());

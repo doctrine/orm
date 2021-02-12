@@ -25,7 +25,10 @@ class SetupTest extends OrmTestCase
 {
     use VerifyDeprecations;
 
+    /** @var int */
     private $originalAutoloaderCount;
+
+    /** @var string */
     private $originalIncludePath;
 
     protected function setUp(): void

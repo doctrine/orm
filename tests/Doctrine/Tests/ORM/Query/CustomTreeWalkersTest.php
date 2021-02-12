@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Doctrine\Tests\ORM\Functional;
 
+use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Query;
 use Doctrine\ORM\Query\QueryException;
 use Doctrine\Tests\Models\CMS\CmsAddress;
@@ -21,16 +22,17 @@ use function count;
  */
 class CustomTreeWalkersTest extends OrmTestCase
 {
-    private $_em;
+    /** @var EntityManagerInterface */
+    private $entityManager;
 
     protected function setUp(): void
     {
-        $this->_em = $this->getTestEntityManager();
+        $this->entityManager = $this->getTestEntityManager();
     }
 
     public function generateSql($dqlToBeTested, $treeWalkers, $outputWalker)
     {
-        $query = $this->_em->createQuery($dqlToBeTested);
+        $query = $this->entityManager->createQuery($dqlToBeTested);
         $query->setHint(Query::HINT_CUSTOM_TREE_WALKERS, $treeWalkers)
             ->useQueryCache(false);
 

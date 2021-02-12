@@ -25,13 +25,13 @@ class ResultSetMappingTest extends OrmTestCase
     private $_rsm;
 
     /** @var EntityManager */
-    private $_em;
+    private $entityManager;
 
     protected function setUp(): void
     {
         parent::setUp();
-        $this->_rsm = new ResultSetMapping();
-        $this->_em  = $this->getTestEntityManager();
+        $this->_rsm          = new ResultSetMapping();
+        $this->entityManager = $this->getTestEntityManager();
     }
 
     /**
@@ -168,7 +168,7 @@ class ResultSetMappingTest extends OrmTestCase
 
         $queryMapping = $cm->getNamedNativeQuery('find-all');
 
-        $rsm = new ResultSetMappingBuilder($this->_em);
+        $rsm = new ResultSetMappingBuilder($this->entityManager);
         $rsm->addNamedNativeQueryMapping($cm, $queryMapping);
 
         $this->assertEquals('scalarColumn', $rsm->getScalarAlias('scalarColumn'));
@@ -215,7 +215,7 @@ class ResultSetMappingTest extends OrmTestCase
         );
 
         $queryMapping = $cm->getNamedNativeQuery('find-all');
-        $rsm          = new ResultSetMappingBuilder($this->_em);
+        $rsm          = new ResultSetMappingBuilder($this->entityManager);
 
         $rsm->addNamedNativeQueryMapping($cm, $queryMapping);
 
@@ -249,7 +249,7 @@ class ResultSetMappingTest extends OrmTestCase
         );
 
         $queryMapping = $cm->getNamedNativeQuery('find-all');
-        $rsm          = new ResultSetMappingBuilder($this->_em);
+        $rsm          = new ResultSetMappingBuilder($this->entityManager);
 
         $rsm->addNamedNativeQueryMapping($cm, $queryMapping);
 

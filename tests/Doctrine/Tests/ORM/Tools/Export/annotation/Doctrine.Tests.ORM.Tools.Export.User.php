@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Doctrine\Tests\ORM\Tools\Export;
 
+use Doctrine\Common\Collections\Collection;
+
 /**
  * @Entity
  * @HasLifecycleCallbacks
@@ -16,34 +18,53 @@ namespace Doctrine\Tests\ORM\Tools\Export;
  */
 class User
 {
-    /** @Id @Column(type="integer") @generatedValue(strategy="AUTO") */
+    /**
+     * @var int
+     * @Id
+     * @Column(type="integer") @generatedValue(strategy="AUTO")
+     */
     public $id;
 
-    /** @Column(length=50, nullable=true, unique=true) */
+    /**
+     * @var string
+     * @Column(length=50, nullable=true, unique=true)
+     */
     public $name;
 
-    /** @Column(name="user_email", columnDefinition="CHAR(32) NOT NULL") */
+    /**
+     * @var string
+     * @Column(name="user_email", columnDefinition="CHAR(32) NOT NULL")
+     */
     public $email;
 
-    /** @Column(type="integer", options={"unsigned"=true}) */
+    /**
+     * @var int
+     * @Column(type="integer", options={"unsigned"=true})
+     */
     public $age;
 
     /**
+     * @var Address
      * @OneToOne(targetEntity="Doctrine\Tests\ORM\Tools\Export\Address", inversedBy="user", cascade={"persist"}, orphanRemoval=true, fetch="EAGER")
      * @JoinColumn(name="address_id", onDelete="CASCADE")
      */
     public $address;
 
-    /** @ManyToOne(targetEntity="Doctrine\Tests\ORM\Tools\Export\Group") */
+    /**
+     * @var Group
+     * @ManyToOne(targetEntity="Doctrine\Tests\ORM\Tools\Export\Group")
+     */
     public $mainGroup;
 
     /**
+     * @psalm-var Collection<int, Phonenumber>
      * @OneToMany(targetEntity="Doctrine\Tests\ORM\Tools\Export\Phonenumber", mappedBy="user", cascade={"persist", "merge"}, orphanRemoval=true)
      * @OrderBy({"number"="ASC"})
      */
     public $phonenumbers;
 
     /**
+     * @psalm-var Collection<int, Group>
      * @ManyToMany(targetEntity="Doctrine\Tests\ORM\Tools\Export\Group", cascade={"all"}, fetch="EXTRA_LAZY")
      * @JoinTable(name="cms_users_groups",
      *    joinColumns={@JoinColumn(name="user_id", referencedColumnName="id", nullable=false, unique=false)},

@@ -356,7 +356,7 @@ class FirstEntity
     /**
      * @var SecondEntity
      * @OneToOne(targetEntity="SecondEntity")
-     * @JoinColumn(name="id", referencedColumnName="fist_entity_id")
+     * @JoinColumn(name="id", referencedColumnName="first_entity_id")
      */
     public $secondEntity;
 
@@ -376,9 +376,9 @@ class SecondEntity
     /**
      * @var int
      * @Id
-     * @Column(name="fist_entity_id")
+     * @Column(name="first_entity_id")
      */
-    public $fist_entity_id;
+    public $firstEntityId;
 
     /**
      * @var string
