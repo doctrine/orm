@@ -61,6 +61,11 @@ This policy can be configured as follows:
 Notify
 ~~~~~~
 
+.. warning::
+
+    The notify change tracking policy is deprecated and will be removed in ORM 3.0.
+    (`Details <https://github.com/doctrine/orm/issues/8383>`_)
+
 This policy is based on the assumption that the entities notify
 interested listeners of changes to their properties. For that
 purpose, a class that wants to use this policy needs to implement
