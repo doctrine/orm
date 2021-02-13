@@ -90,7 +90,7 @@ class GH6141PeopleType extends StringType
     /**
      * {@inheritdoc}
      */
-    public function convertToPhpValue($value, AbstractPlatform $platform)
+    public function convertToPHPValue($value, AbstractPlatform $platform)
     {
         return GH6141People::get($value);
     }
@@ -157,6 +157,7 @@ class GH6141People
 abstract class GH6141Person
 {
     /**
+     * @var int
      * @Id
      * @Column(type="integer")
      * @GeneratedValue(strategy="AUTO")

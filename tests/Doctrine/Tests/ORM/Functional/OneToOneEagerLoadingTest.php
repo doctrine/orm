@@ -290,7 +290,12 @@ class Train
  */
 class TrainDriver
 {
-    /** @Id @Column(type="integer") @GeneratedValue */
+    /**
+     * @var int
+     * @Id
+     * @Column(type="integer")
+     * @GeneratedValue
+     */
     public $id;
     /** @column(type="string") */
     public $name;
@@ -317,7 +322,12 @@ class TrainDriver
  */
 class TrainOwner
 {
-    /** @Id @Column(type="integer") @GeneratedValue */
+    /**
+     * @var int
+     * @Id
+     * @Column(type="integer")
+     * @GeneratedValue
+     */
     public $id;
     /** @column(type="string") */
     public $name;

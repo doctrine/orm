@@ -57,7 +57,12 @@ class DDC422Test extends OrmFunctionalTestCase
  */
 class DDC422Guest
 {
-    /** @Id @Column(type="integer") @GeneratedValue */
+    /**
+     * @var int
+     * @Id
+     * @Column(type="integer")
+     * @GeneratedValue
+     */
     public $id;
 }
 
@@ -82,6 +87,11 @@ class DDC422Customer extends DDC422Guest
 /** @Entity */
 class DDC422Contact
 {
-    /** @Id @Column(type="integer") @GeneratedValue */
+    /**
+     * @var int
+     * @Id
+     * @Column(type="integer")
+     * @GeneratedValue
+     */
     public $id;
 }

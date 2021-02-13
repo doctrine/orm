@@ -70,7 +70,12 @@ class DDC2759Test extends OrmFunctionalTestCase
 /** @Entity  @Table(name="ddc_2759_qualification") */
 class DDC2759Qualification
 {
-    /** @Id @Column(type="integer") @GeneratedValue */
+    /**
+     * @var int
+     * @Id
+     * @Column(type="integer")
+     * @GeneratedValue
+     */
     public $id;
 
     /** @OneToOne(targetEntity="DDC2759QualificationMetadata", mappedBy="content") */
@@ -80,7 +85,12 @@ class DDC2759Qualification
 /** @Entity  @Table(name="ddc_2759_category") */
 class DDC2759Category
 {
-    /** @Id @Column(type="integer") @GeneratedValue */
+    /**
+     * @var int
+     * @Id
+     * @Column(type="integer")
+     * @GeneratedValue
+     */
     public $id;
 
     /** @OneToMany(targetEntity="DDC2759MetadataCategory", mappedBy="category") */
@@ -90,7 +100,12 @@ class DDC2759Category
 /** @Entity  @Table(name="ddc_2759_qualification_metadata") */
 class DDC2759QualificationMetadata
 {
-    /** @Id @Column(type="integer") @GeneratedValue */
+    /**
+     * @var int
+     * @Id
+     * @Column(type="integer")
+     * @GeneratedValue
+     */
     public $id;
 
     /** @OneToOne(targetEntity="DDC2759Qualification", inversedBy="metadata") */
@@ -108,7 +123,12 @@ class DDC2759QualificationMetadata
 /** @Entity  @Table(name="ddc_2759_metadata_category") */
 class DDC2759MetadataCategory
 {
-    /** @Id @Column(type="integer") @GeneratedValue */
+    /**
+     * @var int
+     * @Id
+     * @Column(type="integer")
+     * @GeneratedValue
+     */
     public $id;
 
     /** @ManyToOne(targetEntity="DDC2759QualificationMetadata", inversedBy="metadataCategories") */

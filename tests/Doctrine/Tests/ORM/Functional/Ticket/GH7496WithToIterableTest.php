@@ -53,6 +53,7 @@ final class GH7496WithToIterableTest extends OrmFunctionalTestCase
 class GH7496EntityA
 {
     /**
+     * @var int
      * @Id
      * @Column(type="integer", name="a_id")
      */
@@ -77,6 +78,7 @@ class GH7496EntityA
 class GH7496EntityB
 {
     /**
+     * @var int
      * @Id
      * @Column(type="integer", name="b_id")
      */
@@ -101,18 +103,21 @@ class GH7496EntityB
 class GH7496EntityAinB
 {
     /**
+     * @var int
      * @Id
      * @Column(type="integer")
      */
     public $id;
 
     /**
+     * @var GH7496EntityA
      * @ManyToOne(targetEntity=GH7496EntityA::class)
      * @JoinColumn(name="a_id", referencedColumnName="a_id", nullable=false)
      */
     public $eA;
 
     /**
+     * @var GH7496EntityB
      * @ManyToOne(targetEntity=GH7496EntityB::class)
      * @JoinColumn(name="b_id", referencedColumnName="b_id", nullable=false)
      */

@@ -66,6 +66,11 @@ class DDC2359Test extends TestCase
 /** @Entity */
 class DDC2359Foo
 {
-    /** @Id @Column(type="integer") @GeneratedValue */
+    /**
+     * @var int
+     * @Id
+     * @Column(type="integer")
+     * @GeneratedValue
+     */
     public $id;
 }

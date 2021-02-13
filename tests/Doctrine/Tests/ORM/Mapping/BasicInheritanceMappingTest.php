@@ -265,6 +265,7 @@ class MappedSuperclassBase
     /** @var mixed */
     private $transient;
 }
+
 class MappedSuperclassRelated1
 {
 }

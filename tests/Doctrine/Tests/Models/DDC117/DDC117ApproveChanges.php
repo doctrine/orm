@@ -9,7 +9,12 @@ namespace Doctrine\Tests\Models\DDC117;
  */
 class DDC117ApproveChanges
 {
-    /** @Id @Column(type="integer") @GeneratedValue */
+    /**
+     * @var int
+     * @Id
+     * @Column(type="integer")
+     * @GeneratedValue
+     */
     private $id;
 
     /**

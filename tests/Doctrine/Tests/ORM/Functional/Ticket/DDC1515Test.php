@@ -53,7 +53,12 @@ class DDC1515Foo
  */
 class DDC1515Bar
 {
-    /** @Id @Column(type="integer") @GeneratedValue */
+    /**
+     * @var int
+     * @Id
+     * @Column(type="integer")
+     * @GeneratedValue
+     */
     public $id;
 
     /** @OneToOne(targetEntity="DDC1515Foo", mappedBy="bar") */

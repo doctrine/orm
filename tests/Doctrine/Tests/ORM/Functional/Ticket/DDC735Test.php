@@ -63,7 +63,12 @@ class DDC735Test extends OrmFunctionalTestCase
  */
 class DDC735Product
 {
-    /** @Id @Column(type="integer") @GeneratedValue */
+    /**
+     * @var int
+     * @Id
+     * @Column(type="integer")
+     * @GeneratedValue
+     */
     protected $id;
 
     /**
@@ -102,7 +107,12 @@ class DDC735Product
  */
 class DDC735Review
 {
-    /** @Id @Column(type="integer") @GeneratedValue */
+    /**
+     * @var int
+     * @Id
+     * @Column(type="integer")
+     * @GeneratedValue
+     */
     protected $id;
 
     /** @ManyToOne(targetEntity="DDC735Product", inversedBy="reviews") */

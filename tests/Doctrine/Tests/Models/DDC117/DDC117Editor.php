@@ -11,7 +11,12 @@ use Doctrine\Common\Collections\ArrayCollection;
  */
 class DDC117Editor
 {
-    /** @Id @Column(type="integer") @GeneratedValue */
+    /**
+     * @var int
+     * @Id
+     * @Column(type="integer")
+     * @GeneratedValue
+     */
     public $id;
 
     /**

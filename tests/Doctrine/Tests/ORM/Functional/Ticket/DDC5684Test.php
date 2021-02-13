@@ -63,11 +63,17 @@ class DDC5684Test extends OrmFunctionalTestCase
 
 class DDC5684ObjectIdType extends DBALTypes\IntegerType
 {
+    /**
+     * {@inheritDoc}
+     */
     public function convertToPHPValue($value, AbstractPlatform $platform)
     {
         return new DDC5684ObjectId($value);
     }
 
+    /**
+     * {@inheritDoc}
+     */
     public function convertToDatabaseValue($value, AbstractPlatform $platform)
     {
         return $value->value;

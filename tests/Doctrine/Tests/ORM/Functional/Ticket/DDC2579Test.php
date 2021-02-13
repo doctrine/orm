@@ -142,7 +142,10 @@ class DDC2579Type extends StringType
         return (string) $value;
     }
 
-    public function convertToPhpValue($value, AbstractPlatform $platform)
+    /**
+     * {@inheritDoc}
+     */
+    public function convertToPHPValue($value, AbstractPlatform $platform)
     {
         return new DDC2579Id($value);
     }

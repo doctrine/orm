@@ -42,7 +42,12 @@ class DDC1151Test extends OrmFunctionalTestCase
  */
 class DDC1151User
 {
-    /** @Id @Column(type="integer") @GeneratedValue */
+    /**
+     * @var int
+     * @Id
+     * @Column(type="integer")
+     * @GeneratedValue
+     */
     public $id;
 
     /** @ManyToMany(targetEntity="DDC1151Group") */
@@ -55,6 +60,11 @@ class DDC1151User
  */
 class DDC1151Group
 {
-    /** @Id @Column(type="integer") @GeneratedValue */
+    /**
+     * @var int
+     * @Id
+     * @Column(type="integer")
+     * @GeneratedValue
+     */
     public $id;
 }

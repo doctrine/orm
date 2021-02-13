@@ -92,7 +92,12 @@ final class GH6937Test extends OrmFunctionalTestCase
  */
 abstract class GH6937Person
 {
-    /** @Id @Column(type="integer") @GeneratedValue */
+    /**
+     * @var int
+     * @Id
+     * @Column(type="integer")
+     * @GeneratedValue
+     */
     public $id;
 
     /**
