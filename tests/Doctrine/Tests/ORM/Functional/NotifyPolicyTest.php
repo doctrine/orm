@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Doctrine\Tests\ORM\Functional;
 
 use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Deprecations\PHPUnit\VerifyDeprecations;
 use Doctrine\Persistence\NotifyPropertyChanged;
 use Doctrine\Persistence\PropertyChangedListener;
 use Doctrine\Tests\OrmFunctionalTestCase;
@@ -17,9 +18,14 @@ use function count;
  */
 class NotifyPolicyTest extends OrmFunctionalTestCase
 {
+    use VerifyDeprecations;
+
     protected function setUp(): void
     {
         parent::setUp();
+
+        $this->expectDeprecationWithIdentifier('https://github.com/doctrine/orm/issues/8383');
+
         try {
             $this->_schemaTool->createSchema(
                 [
