@@ -1255,7 +1255,7 @@ class UnitOfWork implements PropertyChangedListener
     /**
      * Gets the commit order.
      *
-     * @return array
+     * @return list<object>
      */
     private function getCommitOrder(): array
     {
