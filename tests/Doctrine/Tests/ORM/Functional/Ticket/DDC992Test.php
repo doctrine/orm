@@ -95,9 +95,17 @@ class DDC992Test extends OrmFunctionalTestCase
  */
 class DDC992Parent
 {
-    /** @Id @GeneratedValue @Column(type="integer") */
+    /**
+     * @var int
+     * @Id
+     * @GeneratedValue
+     * @Column(type="integer")
+     */
     public $id;
-    /** @ManyToOne(targetEntity="DDC992Parent", inversedBy="childs") */
+    /**
+     * @var DDC992Parent
+     * @ManyToOne(targetEntity="DDC992Parent", inversedBy="childs")
+     */
     public $parent;
     /** @OneToMany(targetEntity="DDC992Child", mappedBy="parent") */
     public $childs;

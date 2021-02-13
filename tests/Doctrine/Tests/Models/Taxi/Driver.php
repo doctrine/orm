@@ -11,6 +11,7 @@ namespace Doctrine\Tests\Models\Taxi;
 class Driver
 {
     /**
+     * @var int
      * @Id
      * @Column(type="integer")
      * @GeneratedValue(strategy="AUTO")

@@ -50,7 +50,12 @@ class DDC2175Test extends OrmFunctionalTestCase
  */
 class DDC2175Entity
 {
-    /** @Id @GeneratedValue @Column(type="integer") */
+    /**
+     * @var int
+     * @Id
+     * @GeneratedValue
+     * @Column(type="integer")
+     */
     public $id;
 
     /**

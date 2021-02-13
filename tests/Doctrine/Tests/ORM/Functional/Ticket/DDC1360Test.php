@@ -39,6 +39,11 @@ class DDC1360Test extends OrmFunctionalTestCase
  */
 class DDC1360DoubleQuote
 {
-    /** @Id @GeneratedValue @Column(type="integer") */
+    /**
+     * @var int
+     * @Id
+     * @GeneratedValue
+     * @Column(type="integer")
+     */
     public $id;
 }

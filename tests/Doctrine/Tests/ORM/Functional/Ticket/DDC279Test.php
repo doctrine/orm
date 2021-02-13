@@ -73,6 +73,7 @@ class DDC279Test extends OrmFunctionalTestCase
 abstract class DDC279EntityXAbstract
 {
     /**
+     * @var int
      * @Id
      * @GeneratedValue
      * @Column(name="id", type="integer")

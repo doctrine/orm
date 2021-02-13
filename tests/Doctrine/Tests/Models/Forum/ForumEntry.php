@@ -11,12 +11,16 @@ namespace Doctrine\Tests\Models\Forum;
 class ForumEntry
 {
     /**
+     * @var int
      * @Id
      * @Column(type="integer")
      * @GeneratedValue(strategy="AUTO")
      */
     public $id;
-    /** @Column(type="string", length=50) */
+    /**
+     * @var string
+     * @Column(type="string", length=50)
+     */
     public $topic;
 
     public function &getTopicByReference()

@@ -11,6 +11,7 @@ namespace Doctrine\Tests\Models\Cache;
 class Login
 {
     /**
+     * @var int
      * @Id
      * @GeneratedValue
      * @Column(type="integer")

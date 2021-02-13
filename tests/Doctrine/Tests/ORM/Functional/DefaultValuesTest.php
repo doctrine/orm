@@ -133,13 +133,22 @@ class DefaultValueAddress
      */
     public $id;
 
-    /** @Column(type="string", length=50) */
+    /**
+     * @var string
+     * @Column(type="string", length=50)
+     */
     public $country;
 
-    /** @Column(type="string", length=50) */
+    /**
+     * @var string
+     * @Column(type="string", length=50)
+     */
     public $zip;
 
-    /** @Column(type="string", length=50) */
+    /**
+     * @var string
+     * @Column(type="string", length=50)
+     */
     public $city;
 
     /**

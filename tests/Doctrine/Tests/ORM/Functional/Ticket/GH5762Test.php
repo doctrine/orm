@@ -108,6 +108,7 @@ class GH5762Test extends OrmFunctionalTestCase
 class GH5762Driver
 {
     /**
+     * @var int
      * @Id
      * @Column(type="integer")
      * @GeneratedValue(strategy="NONE")
@@ -171,7 +172,10 @@ class GH5762Car
      */
     public $brand;
 
-    /** @Column(type="string", length=255); */
+    /**
+     * @var string
+     * @Column(type="string", length=255)
+     */
     public $model;
 
     /** @OneToMany(targetEntity="GH5762DriverRide", mappedBy="car") */

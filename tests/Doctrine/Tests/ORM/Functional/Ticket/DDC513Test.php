@@ -48,6 +48,7 @@ class DDC513OfferItem extends DDC513Item
 class DDC513Item
 {
     /**
+     * @var int
      * @Id
      * @Column(type="integer")
      * @GeneratedValue(strategy="AUTO")
@@ -67,6 +68,7 @@ class DDC513Item
 class DDC513Price
 {
     /**
+     * @var int
      * @Id
      * @Column(type="integer")
      * @GeneratedValue(strategy="AUTO")

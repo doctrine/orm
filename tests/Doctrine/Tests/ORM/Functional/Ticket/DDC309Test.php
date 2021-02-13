@@ -57,6 +57,7 @@ class DDC309Test extends OrmFunctionalTestCase
 class DDC309Country
 {
     /**
+     * @var int
      * @Id
      * @Column(name="id", type="integer")
      * @GeneratedValue
@@ -70,6 +71,7 @@ class DDC309Country
 class DDC309User
 {
     /**
+     * @var int
      * @Id
      * @Column(name="id", type="integer")
      * @GeneratedValue

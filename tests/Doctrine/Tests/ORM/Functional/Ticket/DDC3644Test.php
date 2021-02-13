@@ -137,6 +137,7 @@ class DDC3644Test extends OrmFunctionalTestCase
 class DDC3644User
 {
     /**
+     * @var int
      * @Id
      * @GeneratedValue
      * @Column(type="integer", name="hash_id")
@@ -184,6 +185,7 @@ class DDC3644User
 class DDC3644Address
 {
     /**
+     * @var int
      * @Id
      * @GeneratedValue
      * @Column(type="integer")
@@ -217,6 +219,7 @@ class DDC3644Address
 abstract class DDC3644Animal
 {
     /**
+     * @var int
      * @Id
      * @GeneratedValue
      * @Column(type="integer")

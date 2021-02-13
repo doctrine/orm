@@ -13,7 +13,10 @@ class CompanyEmployee extends CompanyPerson
     /** @Column(type="integer") */
     private $salary;
 
-    /** @Column(type="string", length=255) */
+    /**
+     * @var string
+     * @Column(type="string", length=255)
+     */
     private $department;
 
     /** @Column(type="datetime", nullable=true) */

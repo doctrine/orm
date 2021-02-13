@@ -41,13 +41,17 @@ class DDC192Test extends OrmFunctionalTestCase
 class DDC192User
 {
     /**
+     * @var int
      * @Id
      * @Column(name="id", type="integer")
      * @GeneratedValue(strategy="AUTO")
      */
     public $id;
 
-    /** @Column(name="name", type="string") */
+    /**
+     * @var string
+     * @Column(name="name", type="string")
+     */
     public $name;
 }
 

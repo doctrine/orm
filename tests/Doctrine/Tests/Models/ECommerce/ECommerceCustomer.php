@@ -20,7 +20,10 @@ class ECommerceCustomer
      */
     private $id;
 
-    /** @Column(type="string", length=50) */
+    /**
+     * @var string
+     * @Column(type="string", length=50)
+     */
     private $name;
 
     /** @OneToOne(targetEntity="ECommerceCart", mappedBy="customer", cascade={"persist"}) */

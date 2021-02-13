@@ -70,6 +70,9 @@ class DDC444User
      */
     public $id;
 
-    /** @Column(name="name", type="string") */
+    /**
+     * @var string
+     * @Column(name="name", type="string")
+     */
     public $name;
 }

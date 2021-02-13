@@ -41,6 +41,7 @@ class DDC493Test extends OrmFunctionalTestCase
 class DDC493Customer
 {
     /**
+     * @var int
      * @Id
      * @Column(type="integer")
      * @GeneratedValue(strategy="AUTO")
@@ -66,6 +67,7 @@ class DDC493Distributor extends DDC493Customer
 class DDC493Contact
 {
     /**
+     * @var int
      * @Id
      * @Column(type="integer")
      * @GeneratedValue(strategy="AUTO")

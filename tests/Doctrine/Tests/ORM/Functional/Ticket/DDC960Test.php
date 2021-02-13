@@ -50,7 +50,12 @@ class DDC960Test extends OrmFunctionalTestCase
  */
 class DDC960Root
 {
-    /** @Id @GeneratedValue @Column(type="integer") */
+    /**
+     * @var int
+     * @Id
+     * @GeneratedValue
+     * @Column(type="integer")
+     */
     private $id;
 
     /** @Column(type="integer") @Version */

@@ -80,6 +80,9 @@ class DDC2350Bug
      * @GeneratedValue
      */
     public $id;
-    /** @ManyToOne(targetEntity="DDC2350User", inversedBy="reportedBugs") */
+    /**
+     * @var DDC2350User
+     * @ManyToOne(targetEntity="DDC2350User", inversedBy="reportedBugs")
+     */
     public $user;
 }

@@ -69,7 +69,10 @@ class Participant
      */
     public $id;
 
-    /** @ManyToOne(targetEntity="ProfileStatus") */
+    /**
+     * @var ProfileStatus
+     * @ManyToOne(targetEntity="ProfileStatus")
+     */
     public $profileStatus;
 }
 

@@ -9,6 +9,7 @@ declare(strict_types=1);
 class DoctrineGlobal_Article
 {
     /**
+     * @var int
      * @Id
      * @Column(type="integer")
      */

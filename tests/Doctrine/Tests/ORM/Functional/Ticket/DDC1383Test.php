@@ -75,6 +75,7 @@ class DDC1383Test extends OrmFunctionalTestCase
 abstract class DDC1383AbstractEntity
 {
     /**
+     * @var int
      * @Id
      * @Column(type="integer")
      * @GeneratedValue
@@ -97,7 +98,10 @@ abstract class DDC1383AbstractEntity
  */
 class DDC1383Entity extends DDC1383AbstractEntity
 {
-    /** @ManyToOne(targetEntity="DDC1383AbstractEntity") */
+    /**
+     * @var DDC1383AbstractEntity
+     * @ManyToOne(targetEntity="DDC1383AbstractEntity")
+     */
     protected $reference;
 
     public function getReference()

@@ -84,7 +84,10 @@ class DDC1514EntityA
     public $title;
     /** @ManyToMany(targetEntity="DDC1514EntityB", mappedBy="entityAFrom") */
     public $entitiesB;
-    /** @ManyToOne(targetEntity="DDC1514EntityC") */
+    /**
+     * @var DDC1514EntityC
+     * @ManyToOne(targetEntity="DDC1514EntityC")
+     */
     public $entityC;
 
     public function __construct()
@@ -106,9 +109,15 @@ class DDC1514EntityB
      */
     public $id;
 
-    /** @ManyToOne(targetEntity="DDC1514EntityA", inversedBy="entitiesB") */
+    /**
+     * @var DDC1514EntityA
+     * @ManyToOne(targetEntity="DDC1514EntityA", inversedBy="entitiesB")
+     */
     public $entityAFrom;
-    /** @ManyToOne(targetEntity="DDC1514EntityA") */
+    /**
+     * @var DDC1514EntityA
+     * @ManyToOne(targetEntity="DDC1514EntityA")
+     */
     public $entityATo;
 }
 

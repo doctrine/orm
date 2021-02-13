@@ -13,6 +13,7 @@ namespace Doctrine\Tests\Models\Forum;
 class ForumBoard
 {
     /**
+     * @var int
      * @Id
      * @Column(type="integer")
      */

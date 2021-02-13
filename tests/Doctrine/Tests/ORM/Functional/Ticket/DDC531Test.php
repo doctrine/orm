@@ -53,6 +53,7 @@ class DDC531Test extends OrmFunctionalTestCase
 class DDC531Item
 {
     /**
+     * @var int
      * @Id
      * @Column(type="integer")
      * @GeneratedValue(strategy="AUTO")

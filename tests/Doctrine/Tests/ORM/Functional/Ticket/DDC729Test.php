@@ -170,7 +170,12 @@ class DDC729Test extends OrmFunctionalTestCase
  */
 class DDC729A
 {
-    /** @Id @GeneratedValue @Column(type="integer") */
+    /**
+     * @var int
+     * @Id
+     * @GeneratedValue
+     * @Column(type="integer")
+     */
     public $id;
 
     /** @ManyToMany(targetEntity="DDC729B", inversedBy="related") */
@@ -187,7 +192,12 @@ class DDC729A
  */
 class DDC729B
 {
-    /** @Id @GeneratedValue @Column(type="integer") */
+    /**
+     * @var int
+     * @Id
+     * @GeneratedValue
+     * @Column(type="integer")
+     */
     public $id;
 
     /** @ManyToMany(targetEntity="DDC729B", mappedBy="related") */

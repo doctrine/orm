@@ -44,7 +44,10 @@ class DDC588Site
      */
     public $id;
 
-    /** @Column(type="string", length=45) */
+    /**
+     * @var string
+     * @Column(type="string", length=45)
+     */
     protected $name = null;
 
     public function __construct($name = '')

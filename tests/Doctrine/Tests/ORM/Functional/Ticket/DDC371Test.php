@@ -73,7 +73,10 @@ class DDC371Child
      * @Column(type="string")
      */
     public $data;
-    /** @ManyToOne(targetEntity="DDC371Parent", inversedBy="children") @JoinColumn(name="parentId") */
+    /**
+     * @var DDC371Parent
+     * @ManyToOne(targetEntity="DDC371Parent", inversedBy="children") @JoinColumn(name="parentId")
+     */
     public $parent;
 }
 

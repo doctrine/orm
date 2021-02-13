@@ -44,6 +44,7 @@ class DDC448Test extends OrmFunctionalTestCase
 class DDC448MainTable
 {
     /**
+     * @var int
      * @Id
      * @Column(name="id", type="integer")
      * @GeneratedValue(strategy="AUTO")
@@ -65,6 +66,7 @@ class DDC448MainTable
 class DDC448ConnectedClass
 {
     /**
+     * @var int
      * @Id
      * @Column(name="id", type="integer")
      * @GeneratedValue(strategy="AUTO")

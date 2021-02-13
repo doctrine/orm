@@ -17,7 +17,10 @@ abstract class AbstractContentItem
      */
     private $id;
 
-    /** @ManyToOne(targetEntity="Directory") */
+    /**
+     * @var Directory
+     * @ManyToOne(targetEntity="Directory")
+     */
     protected $parentDirectory;
 
     /** @column(type="string") */

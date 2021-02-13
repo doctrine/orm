@@ -89,7 +89,12 @@ abstract class AbstractDDC2895
  */
 class DDC2895 extends AbstractDDC2895
 {
-    /** @Id @GeneratedValue @Column(type="integer") */
+    /**
+     * @var int
+     * @Id
+     * @GeneratedValue
+     * @Column(type="integer")
+     */
     public $id;
 
     /**

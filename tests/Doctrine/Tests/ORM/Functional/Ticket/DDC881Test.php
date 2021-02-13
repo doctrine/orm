@@ -107,6 +107,7 @@ class DDC881Test extends OrmFunctionalTestCase
 class DDC881User
 {
     /**
+     * @var int
      * @Id
      * @Column(type="integer")
      * @GeneratedValue(strategy="AUTO")
@@ -137,6 +138,7 @@ class DDC881User
 class DDC881PhoneNumber
 {
     /**
+     * @var int
      * @Id
      * @Column(type="integer")
      */
@@ -187,6 +189,7 @@ class DDC881PhoneNumber
 class DDC881PhoneCall
 {
     /**
+     * @var int
      * @Id
      * @Column(type="integer")
      * @GeneratedValue(strategy="AUTO")
@@ -200,7 +203,10 @@ class DDC881PhoneCall
      * })
      */
     private $phonenumber;
-    /** @Column(type="string",nullable=true) */
+    /**
+     * @var string
+     * @Column(type="string",nullable=true)
+     */
     private $callDate;
 
     public function setPhoneNumber(DDC881PhoneNumber $phoneNumber): void

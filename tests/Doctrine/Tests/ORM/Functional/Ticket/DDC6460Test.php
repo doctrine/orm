@@ -90,6 +90,7 @@ class DDC6460Embeddable
 class DDC6460Entity
 {
     /**
+     * @var int
      * @Id
      * @GeneratedValue(strategy = "NONE")
      * @Column(type = "integer")
@@ -106,6 +107,7 @@ class DDC6460Entity
 class DDC6460ParentEntity
 {
     /**
+     * @var int
      * @Id
      * @GeneratedValue(strategy = "NONE")
      * @Column(type = "integer")

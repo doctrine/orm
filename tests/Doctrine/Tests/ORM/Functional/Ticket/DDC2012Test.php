@@ -88,6 +88,7 @@ class DDC2012Test extends OrmFunctionalTestCase
 class DDC2012Item
 {
     /**
+     * @var int
      * @Id
      * @GeneratedValue
      * @Column(type="integer")

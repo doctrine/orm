@@ -73,6 +73,7 @@ class DDC2256Test extends OrmFunctionalTestCase
 class DDC2256User
 {
     /**
+     * @var int
      * @Id
      * @Column(type="integer")
      * @GeneratedValue(strategy="AUTO")
@@ -99,6 +100,7 @@ class DDC2256User
 class DDC2256Group
 {
     /**
+     * @var int
      * @Id
      * @Column(type="integer")
      * @GeneratedValue(strategy="AUTO")

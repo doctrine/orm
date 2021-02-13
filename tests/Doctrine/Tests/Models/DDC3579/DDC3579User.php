@@ -13,6 +13,7 @@ use Doctrine\ORM\Mapping\ClassMetadataInfo;
 class DDC3579User
 {
     /**
+     * @var int
      * @Id
      * @GeneratedValue
      * @Column(type="integer", name="user_id", length=150)

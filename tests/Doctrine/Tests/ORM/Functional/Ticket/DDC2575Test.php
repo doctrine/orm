@@ -94,6 +94,7 @@ class DDC2575Test extends OrmFunctionalTestCase
 class DDC2575Root
 {
     /**
+     * @var int
      * @Id
      * @Column(type="integer")
      */
@@ -143,6 +144,7 @@ class DDC2575A
 class DDC2575B
 {
     /**
+     * @var int
      * @Id
      * @Column(type="integer")
      */

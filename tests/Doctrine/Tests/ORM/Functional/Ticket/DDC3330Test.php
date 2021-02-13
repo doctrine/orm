@@ -98,9 +98,15 @@ class DDC3330_Hall
      */
     public $id;
 
-    /** @ManyToOne(targetEntity="DDC3330_Building", inversedBy="halls") */
+    /**
+     * @var DDC3330_Building
+     * @ManyToOne(targetEntity="DDC3330_Building", inversedBy="halls")
+     */
     public $building;
 
-    /** @Column(type="string", length=100) */
+    /**
+     * @var string
+     * @Column(type="string", length=100)
+     */
     public $name;
 }

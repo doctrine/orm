@@ -9,12 +9,16 @@ declare(strict_types=1);
 class DDC3231User1NoNamespace
 {
     /**
+     * @var int
      * @Id
      * @Column(type="integer")
      * @GeneratedValue(strategy="AUTO")
      */
     protected $id;
 
-    /** @Column(type="string", length=255) */
+    /**
+     * @var string
+     * @Column(type="string", length=255)
+     */
     protected $name;
 }

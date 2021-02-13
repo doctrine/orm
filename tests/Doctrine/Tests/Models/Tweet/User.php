@@ -13,6 +13,7 @@ use Doctrine\Common\Collections\ArrayCollection;
 class User
 {
     /**
+     * @var int
      * @Id
      * @GeneratedValue
      * @Column(type="integer")

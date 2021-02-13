@@ -10,6 +10,7 @@ namespace Doctrine\Tests\Models\Routing;
 class RoutingRouteBooking
 {
     /**
+     * @var int
      * @Id
      * @Column(type="integer")
      * @GeneratedValue

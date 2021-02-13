@@ -131,10 +131,16 @@ class DDC2759MetadataCategory
      */
     public $id;
 
-    /** @ManyToOne(targetEntity="DDC2759QualificationMetadata", inversedBy="metadataCategories") */
+    /**
+     * @var DDC2759QualificationMetadata
+     * @ManyToOne(targetEntity="DDC2759QualificationMetadata", inversedBy="metadataCategories")
+     */
     public $metadata;
 
-    /** @ManyToOne(targetEntity="DDC2759Category", inversedBy="metadataCategories") */
+    /**
+     * @var DDC2759Category
+     * @ManyToOne(targetEntity="DDC2759Category", inversedBy="metadataCategories")
+     */
     public $category;
 
     public function __construct(DDC2759QualificationMetadata $metadata, DDC2759Category $category)

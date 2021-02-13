@@ -12,6 +12,7 @@ namespace Doctrine\Tests\Models\Cache;
 class Person
 {
     /**
+     * @var int
      * @Id
      * @GeneratedValue
      * @Column(type="integer")

@@ -13,14 +13,21 @@ use Doctrine\Common\Collections\ArrayCollection;
 class LegacyUser
 {
     /**
+     * @var int
      * @Id
      * @GeneratedValue
      * @Column(name="iUserId", type="integer", nullable=false)
      */
     public $_id;
-    /** @Column(name="sUsername", type="string", length=255, unique=true) */
+    /**
+     * @var string
+     * @Column(name="sUsername", type="string", length=255, unique=true)
+     */
     public $_username;
-    /** @Column(type="string", length=255, name="name") */
+    /**
+     * @var string
+     * @Column(type="string", length=255, name="name")
+     */
     public $_name;
     /** @OneToMany(targetEntity="LegacyArticle", mappedBy="user") */
     public $_articles;

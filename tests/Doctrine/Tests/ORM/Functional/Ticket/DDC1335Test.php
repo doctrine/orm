@@ -164,7 +164,10 @@ class DDC1335User
      */
     public $id;
 
-    /** @Column(type="string", unique=true) */
+    /**
+     * @var string
+     * @Column(type="string", unique=true)
+     */
     public $email;
 
     /**
@@ -194,13 +197,17 @@ class DDC1335User
 class DDC1335Phone
 {
     /**
+     * @var int
      * @Id
      * @Column(name="id", type="integer")
      * @GeneratedValue
      */
     public $id;
 
-    /** @Column(name="numericalValue", type="string", nullable = false) */
+    /**
+     * @var string
+     * @Column(name="numericalValue", type="string", nullable = false)
+     */
     public $numericalValue;
 
     /**

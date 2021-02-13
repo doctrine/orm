@@ -68,6 +68,7 @@ class DDC1404Test extends OrmFunctionalTestCase
 class DDC1404ParentEntity
 {
     /**
+     * @var int
      * @Id
      * @Column(type="integer")
      * @GeneratedValue()

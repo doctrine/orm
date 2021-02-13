@@ -10,6 +10,7 @@ namespace Doctrine\Tests\Models\DDC4006;
 class DDC4006UserId
 {
     /**
+     * @var int
      * @Id
      * @GeneratedValue("IDENTITY")
      * @Column(type="integer")

@@ -12,6 +12,7 @@ namespace Doctrine\Tests\Models\Cache;
 class TravelerProfile
 {
     /**
+     * @var int
      * @Id
      * @GeneratedValue
      * @Column(type="integer")

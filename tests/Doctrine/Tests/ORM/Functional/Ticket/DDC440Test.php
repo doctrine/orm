@@ -167,7 +167,10 @@ class DDC440Client
      * @OrderBy({"number"="ASC"})
      */
     protected $phones;
-    /** @Column(name="name", type="string") */
+    /**
+     * @var string
+     * @Column(name="name", type="string")
+     */
     protected $name;
 
     public function __construct()
