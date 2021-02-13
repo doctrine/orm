@@ -8,6 +8,7 @@ namespace Doctrine\Tests\Models\MixedToOneIdentity;
 class CompositeToOneKeyState
 {
     /**
+     * @var string
      * @Id
      * @Column(type="string")
      * @GeneratedValue(strategy="NONE")

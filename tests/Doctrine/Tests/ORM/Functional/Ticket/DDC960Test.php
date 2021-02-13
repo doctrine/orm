@@ -58,15 +58,19 @@ class DDC960Root
      */
     private $id;
 
-    /** @Column(type="integer") @Version */
+    /**
+     * @var int
+     * @Column(type="integer")
+     * @Version
+     */
     private $version;
 
-    public function getId()
+    public function getId(): int
     {
         return $this->id;
     }
 
-    public function getVersion()
+    public function getVersion(): int
     {
         return $this->version;
     }

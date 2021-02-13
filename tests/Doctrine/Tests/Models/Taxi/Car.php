@@ -11,6 +11,7 @@ namespace Doctrine\Tests\Models\Taxi;
 class Car
 {
     /**
+     * @var string
      * @Id
      * @Column(type="string", length=25)
      * @GeneratedValue(strategy="NONE")

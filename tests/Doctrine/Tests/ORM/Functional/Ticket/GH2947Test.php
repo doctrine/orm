@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Doctrine\Tests\ORM\Functional\Ticket;
 
 use Doctrine\Common\Cache\ArrayCache;
+use Doctrine\ORM\Query;
 use Doctrine\Tests\OrmFunctionalTestCase;
 
 /**
@@ -43,7 +44,7 @@ class GH2947Test extends OrmFunctionalTestCase
         self::assertEquals($initialQueryCount + 3, $this->getCurrentQueryCount());
     }
 
-    private function createQuery()
+    private function createQuery(): Query
     {
         return $this->_em->createQueryBuilder()
                          ->select('car')
@@ -79,6 +80,7 @@ class GH2947Test extends OrmFunctionalTestCase
 class GH2947Car
 {
     /**
+     * @var string
      * @Id
      * @Column(type="string", length=25)
      * @GeneratedValue(strategy="NONE")

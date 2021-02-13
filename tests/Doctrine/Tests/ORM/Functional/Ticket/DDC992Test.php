@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Doctrine\Tests\ORM\Functional\Ticket;
 
 use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\Tests\OrmFunctionalTestCase;
 use Exception;
 
@@ -102,12 +103,17 @@ class DDC992Parent
      * @Column(type="integer")
      */
     public $id;
+
     /**
      * @var DDC992Parent
      * @ManyToOne(targetEntity="DDC992Parent", inversedBy="childs")
      */
     public $parent;
-    /** @OneToMany(targetEntity="DDC992Child", mappedBy="parent") */
+
+    /**
+     * @var Collection<int, DDC992Child>
+     * @OneToMany(targetEntity="DDC992Child", mappedBy="parent")
+     */
     public $childs;
 }
 
@@ -116,7 +122,7 @@ class DDC992Parent
  */
 class DDC992Child extends DDC992Parent
 {
-    public function childs()
+    public function childs(): Collection
     {
         return $this->childs;
     }
@@ -127,21 +133,33 @@ class DDC992Child extends DDC992Parent
  */
 class DDC992Role
 {
-    public function getRoleID()
+    public function getRoleID(): int
     {
         return $this->roleID;
     }
 
     /**
-     *  @Id  @Column(name="roleID", type="integer")
-     *  @GeneratedValue(strategy="AUTO")
+     * @var int
+     * @Id
+     * @Column(name="roleID", type="integer")
+     * @GeneratedValue(strategy="AUTO")
      */
     public $roleID;
-    /** @Column (name="name", type="string", length=45) */
-    public $name;
-    /** @ManyToMany (targetEntity="DDC992Role", mappedBy="extends") */
-    public $extendedBy;
+
     /**
+     * @var string
+     * @Column(name="name", type="string", length=45)
+     */
+    public $name;
+
+    /**
+     * @psalm-var Collection<int, DDC992Role>
+     * @ManyToMany (targetEntity="DDC992Role", mappedBy="extends")
+     */
+    public $extendedBy;
+
+    /**
+     * @psalm-var Collection<int, DDC992Role>
      * @ManyToMany (targetEntity="DDC992Role", inversedBy="extendedBy")
      * @JoinTable (name="RoleRelations",
      *      joinColumns={@JoinColumn(name="roleID", referencedColumnName="roleID")},
