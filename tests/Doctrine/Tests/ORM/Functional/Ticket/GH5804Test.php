@@ -58,6 +58,9 @@ final class GH5804Type extends Type
 {
     public const NAME = 'GH5804Type';
 
+    /**
+     * {@inheritdoc}
+     */
     public function getName()
     {
         return self::NAME;
@@ -90,6 +93,7 @@ final class GH5804Type extends Type
 class GH5804Article
 {
     /**
+     * @var string
      * @Id
      * @Column(type="GH5804Type")
      * @GeneratedValue(strategy="CUSTOM")
@@ -98,6 +102,7 @@ class GH5804Article
     public $id;
 
     /**
+     * @var int
      * @Version
      * @Column(type="integer")
      */

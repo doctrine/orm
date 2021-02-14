@@ -57,10 +57,16 @@ class Entity
  */
 class DDC719Group extends Entity
 {
-    /** @Column(type="string", nullable=false) */
+    /**
+     * @var string
+     * @Column(type="string", nullable=false)
+     */
     protected $name;
 
-    /** @Column(type="string", nullable=true) */
+    /**
+     * @var string
+     * @Column(type="string", nullable=true)
+     */
     protected $description;
 
     /**

@@ -16,7 +16,10 @@ class CompanyCar
      */
     private $id;
 
-    /** @Column(type="string", length=50) */
+    /**
+     * @var string
+     * @Column(type="string", length=50)
+     */
     private $brand;
 
     public function __construct($brand = null)

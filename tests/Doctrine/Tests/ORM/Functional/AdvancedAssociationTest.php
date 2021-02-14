@@ -333,7 +333,10 @@ class Phrase
      */
     private $id;
 
-    /** @Column(type="string", name="phrase_name", unique=true, length=255) */
+    /**
+     * @var string
+     * @Column(type="string", name="phrase_name", unique=true, length=255)
+     */
     private $phrase;
 
     /**
@@ -402,10 +405,16 @@ class PhraseType
      */
     private $id;
 
-    /** @Column(type="string", name="phrase_type_name", unique=true) */
+    /**
+     * @var string
+     * @Column(type="string", name="phrase_type_name", unique=true)
+     */
     private $type;
 
-    /** @Column(type="string", name="phrase_type_abbreviation", unique=true) */
+    /**
+     * @var string
+     * @Column(type="string", name="phrase_type_abbreviation", unique=true)
+     */
     private $abbreviation;
 
     /** @OneToMany(targetEntity="Phrase", mappedBy="type") */

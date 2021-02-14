@@ -11,6 +11,7 @@ namespace Doctrine\Tests\Models\Quote;
 class Group
 {
     /**
+     * @var int
      * @Id
      * @GeneratedValue
      * @Column(type="integer", name="`group-id`")

@@ -57,6 +57,9 @@ class DBAL483Default
     /** @Column(type="integer", options={"default": 0}) */
     public $num;
 
-    /** @Column(type="string", options={"default": "foo"}) */
+    /**
+     * @var string
+     * @Column(type="string", options={"default": "foo"})
+     */
     public $str = 'foo';
 }

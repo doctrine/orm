@@ -56,13 +56,17 @@ class DDC211Test extends OrmFunctionalTestCase
 class DDC211User
 {
     /**
+     * @var int
      * @Id
      * @Column(name="id", type="integer")
      * @GeneratedValue(strategy="AUTO")
      */
     protected $id;
 
-    /** @Column(name="name", type="string") */
+    /**
+     * @var string
+     * @Column(name="name", type="string")
+     */
     protected $name;
 
     /**
@@ -97,13 +101,17 @@ class DDC211User
 class DDC211Group
 {
     /**
+     * @var int
      * @Id
      * @Column(name="id", type="integer")
      * @GeneratedValue(strategy="AUTO")
      */
     protected $id;
 
-    /** @Column(name="name", type="string") */
+    /**
+     * @var string
+     * @Column(name="name", type="string")
+     */
     protected $name;
 
     /** @ManyToMany(targetEntity="DDC211User", mappedBy="groups") */

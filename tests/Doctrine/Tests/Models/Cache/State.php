@@ -14,6 +14,7 @@ use Doctrine\Common\Collections\ArrayCollection;
 class State
 {
     /**
+     * @var int
      * @Id
      * @GeneratedValue
      * @Column(type="integer")

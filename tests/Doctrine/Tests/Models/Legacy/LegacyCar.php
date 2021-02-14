@@ -11,6 +11,7 @@ namespace Doctrine\Tests\Models\Legacy;
 class LegacyCar
 {
     /**
+     * @var int
      * @Id
      * @GeneratedValue
      * @Column(name="iCarId", type="integer", nullable=false)
@@ -19,7 +20,10 @@ class LegacyCar
     /** @ManyToMany(targetEntity="LegacyUser", mappedBy="_cars") */
     public $_users;
 
-    /** @Column(name="sDescription", type="string", length=255, unique=true) */
+    /**
+     * @var string
+     * @Column(name="sDescription", type="string", length=255, unique=true)
+     */
     public $_description;
 
     public function getDescription()

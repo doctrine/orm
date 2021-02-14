@@ -61,7 +61,10 @@ class DDC1526Menu
      * @GeneratedValue
      */
     public $id;
-    /** @ManyToOne(targetEntity="DDC1526Menu", inversedBy="children") */
+    /**
+     * @var DDC1526Menu
+     * @ManyToOne(targetEntity="DDC1526Menu", inversedBy="children")
+     */
     public $parent;
 
     /** @OneToMany(targetEntity="DDC1526Menu", mappedBy="parent") */

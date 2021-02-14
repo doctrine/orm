@@ -12,6 +12,7 @@ namespace Doctrine\Tests\Models\GeoNames;
 class Country
 {
     /**
+     * @var string
      * @Id
      * @Column(type="string", length=2)
      * @GeneratedValue(strategy="NONE")

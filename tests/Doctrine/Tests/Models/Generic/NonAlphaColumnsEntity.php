@@ -17,7 +17,10 @@ class NonAlphaColumnsEntity
      */
     public $id;
 
-    /** @Column(type="string", name="`simple-entity-value`") */
+    /**
+     * @var string
+     * @Column(type="string", name="`simple-entity-value`")
+     */
     public $value;
 
     public function __construct(string $value)

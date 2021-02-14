@@ -10,7 +10,10 @@ namespace Doctrine\Tests\Models\Company;
  */
 class CompanyManager extends CompanyEmployee
 {
-    /** @Column(type="string", length=250) */
+    /**
+     * @var string
+     * @Column(type="string", length=250)
+     */
     private $title;
 
     /**

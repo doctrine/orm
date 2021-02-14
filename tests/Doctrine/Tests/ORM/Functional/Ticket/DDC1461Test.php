@@ -57,6 +57,7 @@ class DDC1461Test extends OrmFunctionalTestCase
 class DDC1461User
 {
     /**
+     * @var int
      * @Id
      * @GeneratedValue(strategy="AUTO")
      * @Column(type="integer")
@@ -77,6 +78,7 @@ class DDC1461User
 class DDC1461TwitterAccount
 {
     /**
+     * @var int
      * @Id
      * @GeneratedValue(strategy="AUTO")
      * @Column(type="integer")

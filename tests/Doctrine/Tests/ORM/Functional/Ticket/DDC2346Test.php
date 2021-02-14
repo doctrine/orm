@@ -106,7 +106,10 @@ class DDC2346Bar
      */
     public $id;
 
-    /** @ManyToOne(targetEntity="DDC2346Foo", inversedBy="bars", fetch="EAGER") */
+    /**
+     * @var DDC2346Foo
+     * @ManyToOne(targetEntity="DDC2346Foo", inversedBy="bars", fetch="EAGER")
+     */
     public $foo;
 }
 

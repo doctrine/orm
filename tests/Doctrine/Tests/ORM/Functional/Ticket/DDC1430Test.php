@@ -141,6 +141,7 @@ class DDC1430Test extends OrmFunctionalTestCase
 class DDC1430Order
 {
     /**
+     * @var int
      * @Id
      * @Column(name="order_id", type="integer")
      * @GeneratedValue()
@@ -150,7 +151,10 @@ class DDC1430Order
     /** @Column(name="created_at", type="datetime") */
     private $date;
 
-    /** @Column(name="order_status", type="string") */
+    /**
+     * @var string
+     * @Column(name="order_status", type="string")
+     */
     private $status;
 
     /**

@@ -53,10 +53,16 @@ class DDC698Role
      */
     protected $roleID;
 
-    /** @Column(name="name", type="string", length=45) */
+    /**
+     * @var string
+     * @Column(name="name", type="string", length=45)
+     */
     protected $name;
 
-    /** @Column(name="shortName", type="string", length=45) */
+    /**
+     * @var string
+     * @Column(name="shortName", type="string", length=45)
+     */
     protected $shortName;
 
 
@@ -84,7 +90,10 @@ class DDC698Privilege
      */
     protected $privilegeID;
 
-    /** @Column(name="name", type="string", length=45) */
+    /**
+     * @var string
+     * @Column(name="name", type="string", length=45)
+     */
     protected $name;
 
     /** @ManyToMany(targetEntity="DDC698Role", mappedBy="privilege") */

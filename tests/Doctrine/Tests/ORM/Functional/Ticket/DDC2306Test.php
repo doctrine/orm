@@ -111,7 +111,10 @@ class DDC2306User
      */
     public $addresses;
 
-    /** @ManyToOne(targetEntity="DDC2306Zone", fetch="EAGER") */
+    /**
+     * @var DDC2306Zone
+     * @ManyToOne(targetEntity="DDC2306Zone", fetch="EAGER")
+     */
     public $zone;
 
     /** Constructor */
@@ -138,7 +141,10 @@ class DDC2306Address
      */
     public $users;
 
-    /** @ManyToOne(targetEntity="DDC2306Zone", fetch="EAGER") */
+    /**
+     * @var DDC2306Zone
+     * @ManyToOne(targetEntity="DDC2306Zone", fetch="EAGER")
+     */
     public $zone;
 
     /** Constructor */
@@ -159,10 +165,16 @@ class DDC2306UserAddress
      */
     public $id;
 
-    /** @ManyToOne(targetEntity="DDC2306User") */
+    /**
+     * @var DDC2306User
+     * @ManyToOne(targetEntity="DDC2306User")
+     */
     public $user;
 
-    /** @ManyToOne(targetEntity="DDC2306Address", fetch="LAZY") */
+    /**
+     * @var DDC2306Address
+     * @ManyToOne(targetEntity="DDC2306Address", fetch="LAZY")
+     */
     public $address;
 
     /** Constructor */

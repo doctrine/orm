@@ -100,6 +100,7 @@ class MyEntity1
 class MyEntity2
 {
     /**
+     * @var int
      * @Id
      * @Column(type="integer")
      * @GeneratedValue(strategy="AUTO")

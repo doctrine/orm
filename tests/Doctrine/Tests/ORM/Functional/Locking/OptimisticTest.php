@@ -278,7 +278,10 @@ class OptimisticJoinedParent
      */
     public $id;
 
-    /** @Column(type="string", length=255) */
+    /**
+     * @var string
+     * @Column(type="string", length=255)
+     */
     public $name;
 
     /** @Version @Column(type="integer") */
@@ -291,7 +294,10 @@ class OptimisticJoinedParent
  */
 class OptimisticJoinedChild extends OptimisticJoinedParent
 {
-    /** @Column(type="string", length=255) */
+    /**
+     * @var string
+     * @Column(type="string", length=255)
+     */
     public $whatever;
 }
 
@@ -307,7 +313,10 @@ class OptimisticStandard
      */
     public $id;
 
-    /** @Column(type="string", length=255) */
+    /**
+     * @var string
+     * @Column(type="string", length=255)
+     */
     public $name;
 
     /** @Version @Column(type="integer") */
@@ -331,7 +340,10 @@ class OptimisticTimestamp
      */
     public $id;
 
-    /** @Column(type="string", length=255) */
+    /**
+     * @var string
+     * @Column(type="string", length=255)
+     */
     public $name;
 
     /** @Version @Column(type="datetime") */

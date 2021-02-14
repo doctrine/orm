@@ -115,7 +115,10 @@ class DDC735Review
      */
     protected $id;
 
-    /** @ManyToOne(targetEntity="DDC735Product", inversedBy="reviews") */
+    /**
+     * @var DDC735Product
+     * @ManyToOne(targetEntity="DDC735Product", inversedBy="reviews")
+     */
     protected $product;
 
     public function __construct(DDC735Product $product)

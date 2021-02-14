@@ -64,6 +64,7 @@ class DDC345Test extends OrmFunctionalTestCase
 class DDC345User
 {
     /**
+     * @var int
      * @Id
      * @Column(type="integer")
      * @GeneratedValue
@@ -91,6 +92,7 @@ class DDC345User
 class DDC345Group
 {
     /**
+     * @var int
      * @Id
      * @Column(type="integer")
      * @GeneratedValue
@@ -122,6 +124,7 @@ class DDC345Group
 class DDC345Membership
 {
     /**
+     * @var int
      * @Id
      * @Column(type="integer")
      * @GeneratedValue

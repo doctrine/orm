@@ -141,6 +141,7 @@ class DDC618Test extends OrmFunctionalTestCase
 class DDC618Author
 {
     /**
+     * @var int
      * @Id
      * @Column(type="integer")
      */
@@ -181,7 +182,10 @@ class DDC618Book
     /** @column(type="string") */
     public $title;
 
-    /** @ManyToOne(targetEntity="DDC618Author", inversedBy="books") */
+    /**
+     * @var DDC618Author
+     * @ManyToOne(targetEntity="DDC618Author", inversedBy="books")
+     */
     public $author;
 
     public function __construct($title, $author)

@@ -24,6 +24,9 @@ class Department
      */
     public $name;
 
-    /** @ManyToOne(targetEntity="Company", inversedBy="departments", cascade={"persist"}) */
+    /**
+     * @var Company
+     * @ManyToOne(targetEntity="Company", inversedBy="departments", cascade={"persist"})
+     */
     public $company;
 }

@@ -15,6 +15,7 @@ use Doctrine\ORM\Mapping\ClassMetadataInfo;
 class City
 {
     /**
+     * @var int
      * @Id
      * @GeneratedValue
      * @Column(type="integer")

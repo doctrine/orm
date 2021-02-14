@@ -72,10 +72,16 @@ class DDC1509Picture
      */
     private $id;
 
-    /** @ManyToOne(targetEntity="DDC1509AbstractFile", cascade={"persist", "remove"}) */
+    /**
+     * @var DDC1509AbstractFile
+     * @ManyToOne(targetEntity="DDC1509AbstractFile", cascade={"persist", "remove"})
+     */
     private $thumbnail;
 
-    /** @ManyToOne(targetEntity="DDC1509AbstractFile", cascade={"persist", "remove"}) */
+    /**
+     * @var DDC1509AbstractFile
+     * @ManyToOne(targetEntity="DDC1509AbstractFile", cascade={"persist", "remove"})
+     */
     private $file;
 
     /**

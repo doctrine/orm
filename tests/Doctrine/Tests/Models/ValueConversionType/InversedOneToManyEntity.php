@@ -21,7 +21,10 @@ class InversedOneToManyEntity
     /** @OneToMany(targetEntity="OwningManyToOneEntity", mappedBy="associatedEntity") */
     public $associatedEntities;
 
-    /** @Column(type="string", name="some_property") */
+    /**
+     * @var string
+     * @Column(type="string", name="some_property")
+     */
     public $someProperty;
 
     public function __construct()

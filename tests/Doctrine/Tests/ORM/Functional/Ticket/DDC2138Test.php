@@ -60,13 +60,17 @@ class DDC2138Test extends OrmFunctionalTestCase
 class DDC2138Structure
 {
     /**
+     * @var int
      * @Id
      * @Column(type="integer")
      * @GeneratedValue(strategy="AUTO")
      */
     protected $id;
 
-    /** @Column(type="string", length=32, nullable=true) */
+    /**
+     * @var string
+     * @Column(type="string", length=32, nullable=true)
+     */
     protected $name;
 }
 
@@ -189,13 +193,17 @@ class DDC2138UserFollowedUser extends DDC2138UserFollowedObject
 class DDC2138User
 {
     /**
+     * @var int
      * @Id
      * @Column(type="integer")
      * @GeneratedValue(strategy="AUTO")
      */
     protected $id;
 
-    /** @Column(type="string", length=32, nullable=true) */
+    /**
+     * @var string
+     * @Column(type="string", length=32, nullable=true)
+     */
     protected $name;
 
     /**

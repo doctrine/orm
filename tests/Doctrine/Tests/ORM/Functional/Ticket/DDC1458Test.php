@@ -60,6 +60,7 @@ class DDC1258Test extends OrmFunctionalTestCase
 class TestEntity
 {
     /**
+     * @var int
      * @Id
      * @Column(type="integer")
      * @GeneratedValue(strategy="AUTO")
@@ -96,6 +97,7 @@ class TestEntity
 class TestAdditionalEntity
 {
     /**
+     * @var int
      * @Id
      * @Column(type="integer")
      * @GeneratedValue(strategy="AUTO")

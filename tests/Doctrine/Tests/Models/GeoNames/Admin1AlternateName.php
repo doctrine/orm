@@ -12,6 +12,7 @@ namespace Doctrine\Tests\Models\GeoNames;
 class Admin1AlternateName
 {
     /**
+     * @var string
      * @Id
      * @Column(type="string", length=25)
      * @GeneratedValue(strategy="NONE")

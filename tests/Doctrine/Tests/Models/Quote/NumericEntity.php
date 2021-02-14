@@ -17,7 +17,10 @@ class NumericEntity
      */
     public $id;
 
-    /** @Column(type="string", name="`2:2`") */
+    /**
+     * @var string
+     * @Column(type="string", name="`2:2`")
+     */
     public $value;
 
     public function __construct(string $value)

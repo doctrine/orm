@@ -18,6 +18,7 @@ namespace Doctrine\Tests\Models\Issue5989;
 class Issue5989Person
 {
     /**
+     * @var int
      * @Id
      * @Column(type="integer")
      * @GeneratedValue

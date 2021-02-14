@@ -22,7 +22,10 @@ class InversedOneToOneCompositeIdEntity
      */
     public $id2;
 
-    /** @Column(type="string", name="some_property") */
+    /**
+     * @var string
+     * @Column(type="string", name="some_property")
+     */
     public $someProperty;
 
     /** @OneToOne(targetEntity="OwningOneToOneCompositeIdEntity", mappedBy="associatedEntity") */

@@ -113,10 +113,16 @@ class MSEPicture
     /** @Column(type="integer") @Id @GeneratedValue */
     public $id;
 
-    /** @ManyToOne(targetEntity="MSEFile", cascade={"merge"}) */
+    /**
+     * @var MSEFile
+     * @ManyToOne(targetEntity="MSEFile", cascade={"merge"})
+     */
     public $file;
 
-    /** @ManyToOne(targetEntity="MSEFile", cascade={"merge"}) */
+    /**
+     * @var MSEFile
+     * @ManyToOne(targetEntity="MSEFile", cascade={"merge"})
+     */
     public $otherFile;
 }
 

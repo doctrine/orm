@@ -12,7 +12,10 @@ class DDC2372Address
      * @GeneratedValue(strategy="AUTO")
      */
     private $id;
-    /** @Column(type="string", length=255) */
+    /**
+     * @var string
+     * @Column(type="string", length=255)
+     */
     private $street;
     /** @OneToOne(targetEntity="User", mappedBy="address") */
     private $user;

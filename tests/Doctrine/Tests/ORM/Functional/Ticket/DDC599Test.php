@@ -86,6 +86,7 @@ class DDC599Test extends OrmFunctionalTestCase
 class DDC599Item
 {
     /**
+     * @var int
      * @Id
      * @Column(type="integer")
      * @GeneratedValue(strategy="AUTO")
@@ -124,6 +125,7 @@ class DDC599Subitem extends DDC599Item
 class DDC599Child
 {
     /**
+     * @var int
      * @Id
      * @Column(type="integer")
      * @GeneratedValue(strategy="AUTO")

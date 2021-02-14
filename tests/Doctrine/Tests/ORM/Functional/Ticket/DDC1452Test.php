@@ -133,8 +133,14 @@ class DDC1452EntityB
      */
     public $id;
 
-    /** @ManyToOne(targetEntity="DDC1452EntityA", inversedBy="entitiesB") */
+    /**
+     * @var DDC1452EntityA
+     * @ManyToOne(targetEntity="DDC1452EntityA", inversedBy="entitiesB")
+     */
     public $entityAFrom;
-    /** @ManyToOne(targetEntity="DDC1452EntityA") */
+    /**
+     * @var DDC1452EntityA
+     * @ManyToOne(targetEntity="DDC1452EntityA")
+     */
     public $entityATo;
 }

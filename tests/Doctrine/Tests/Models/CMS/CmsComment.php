@@ -16,7 +16,10 @@ class CmsComment
      * @GeneratedValue(strategy="AUTO")
      */
     public $id;
-    /** @Column(type="string", length=255) */
+    /**
+     * @var string
+     * @Column(type="string", length=255)
+     */
     public $topic;
     /**
      * @var string

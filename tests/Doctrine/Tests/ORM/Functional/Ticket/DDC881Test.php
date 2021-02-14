@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Doctrine\Tests\ORM\Functional\Ticket;
 
 use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\PersistentCollection;
 use Doctrine\ORM\Proxy\Proxy;
 use Doctrine\Tests\OrmFunctionalTestCase;
@@ -107,6 +108,7 @@ class DDC881Test extends OrmFunctionalTestCase
 class DDC881User
 {
     /**
+     * @var int
      * @Id
      * @Column(type="integer")
      * @GeneratedValue(strategy="AUTO")
@@ -137,22 +139,29 @@ class DDC881User
 class DDC881PhoneNumber
 {
     /**
+     * @var int
      * @Id
      * @Column(type="integer")
      */
     private $id;
+
     /**
+     * @var DDC881User
      * @Id
      * @ManyToOne(targetEntity="DDC881User",cascade={"all"})
      */
     private $user;
+
     /**
      * @var string
      * @Column(type="string")
      */
     private $phonenumber;
 
-    /** @OneToMany(targetEntity="DDC881PhoneCall", mappedBy="phonenumber") */
+    /**
+     * @var Collection<int, DDC881PhoneCall>
+     * @OneToMany(targetEntity="DDC881PhoneCall", mappedBy="phonenumber")
+     */
     private $calls;
 
     public function __construct()
@@ -187,12 +196,15 @@ class DDC881PhoneNumber
 class DDC881PhoneCall
 {
     /**
+     * @var int
      * @Id
      * @Column(type="integer")
      * @GeneratedValue(strategy="AUTO")
      */
     private $id;
+
     /**
+     * @var DDC881PhoneNumber
      * @ManyToOne(targetEntity="DDC881PhoneNumber", inversedBy="calls", cascade={"all"})
      * @JoinColumns({
      *  @JoinColumn(name="phonenumber_id", referencedColumnName="id"),
@@ -200,7 +212,11 @@ class DDC881PhoneCall
      * })
      */
     private $phonenumber;
-    /** @Column(type="string",nullable=true) */
+
+    /**
+     * @var string
+     * @Column(type="string",nullable=true)
+     */
     private $callDate;
 
     public function setPhoneNumber(DDC881PhoneNumber $phoneNumber): void
@@ -208,7 +224,7 @@ class DDC881PhoneCall
         $this->phonenumber = $phoneNumber;
     }
 
-    public function getPhoneNumber()
+    public function getPhoneNumber(): DDC881PhoneNumber
     {
         return $this->phonenumber;
     }

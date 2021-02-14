@@ -13,6 +13,7 @@ namespace Doctrine\Tests\Models\CMS;
 class CmsTag
 {
     /**
+     * @var int
      * @Id
      * @Column(type="integer")
      * @GeneratedValue

@@ -115,10 +115,16 @@ abstract class DDC837Super
  */
 class DDC837Class1 extends DDC837Super
 {
-    /** @Column(name="title", type="string", length=150) */
+    /**
+     * @var string
+     * @Column(name="title", type="string", length=150)
+     */
     public $title;
 
-    /** @Column(name="content", type="string", length=500) */
+    /**
+     * @var string
+     * @Column(name="content", type="string", length=500)
+     */
     public $description;
 
     /** @OneToOne(targetEntity="DDC837Aggregate") */
@@ -130,10 +136,16 @@ class DDC837Class1 extends DDC837Super
  */
 class DDC837Class2 extends DDC837Super
 {
-    /** @Column(name="title", type="string", length=150) */
+    /**
+     * @var string
+     * @Column(name="title", type="string", length=150)
+     */
     public $title;
 
-    /** @Column(name="content", type="string", length=500) */
+    /**
+     * @var string
+     * @Column(name="content", type="string", length=500)
+     */
     public $description;
 
     /** @Column(name="text", type="text") */
@@ -150,10 +162,16 @@ class DDC837Class2 extends DDC837Super
  */
 class DDC837Class3 extends DDC837Super
 {
-    /** @Column(name="title", type="string", length=150) */
+    /**
+     * @var string
+     * @Column(name="title", type="string", length=150)
+     */
     public $apples;
 
-    /** @Column(name="content", type="string", length=500) */
+    /**
+     * @var string
+     * @Column(name="content", type="string", length=500)
+     */
     public $bananas;
 }
 
@@ -168,7 +186,10 @@ class DDC837Aggregate
      */
     public $id;
 
-    /** @Column(name="sysname", type="string") */
+    /**
+     * @var string
+     * @Column(name="sysname", type="string")
+     */
     protected $sysname;
 
     public function __construct($sysname)

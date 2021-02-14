@@ -11,6 +11,7 @@ namespace Doctrine\Tests\Models\Cache;
 class Address
 {
     /**
+     * @var int
      * @Id
      * @GeneratedValue
      * @Column(type="integer")
