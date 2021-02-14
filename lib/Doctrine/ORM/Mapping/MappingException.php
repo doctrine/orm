@@ -74,7 +74,7 @@ class MappingException extends ORMException
      */
     public static function invalidInheritanceType($entityName, $type)
     {
-        return new self("The inheritance type '$type' specified for '$entityName' does not exist.");
+        return new self(sprintf("The inheritance type '%s' specified for '%s' does not exist.", $type, $entityName));
     }
 
     /**
@@ -92,7 +92,10 @@ class MappingException extends ORMException
      */
     public static function missingFieldName($entity)
     {
-        return new self("The field or association mapping misses the 'fieldName' attribute in entity '$entity'.");
+        return new self(sprintf(
+            "The field or association mapping misses the 'fieldName' attribute in entity '%s'.",
+            $entity
+        ));
     }
 
     /**
@@ -102,7 +105,7 @@ class MappingException extends ORMException
      */
     public static function missingTargetEntity($fieldName)
     {
-        return new self("The association mapping '$fieldName' misses the 'targetEntity' attribute.");
+        return new self(sprintf("The association mapping '%s' misses the 'targetEntity' attribute.", $fieldName));
     }
 
     /**
@@ -112,7 +115,7 @@ class MappingException extends ORMException
      */
     public static function missingSourceEntity($fieldName)
     {
-        return new self("The association mapping '$fieldName' misses the 'sourceEntity' attribute.");
+        return new self(sprintf("The association mapping '%s' misses the 'sourceEntity' attribute.", $fieldName));
     }
 
     /**
@@ -122,7 +125,7 @@ class MappingException extends ORMException
      */
     public static function missingEmbeddedClass($fieldName)
     {
-        return new self("The embed mapping '$fieldName' misses the 'class' attribute.");
+        return new self(sprintf("The embed mapping '%s' misses the 'class' attribute.", $fieldName));
     }
 
     /**
@@ -133,7 +136,7 @@ class MappingException extends ORMException
      */
     public static function mappingFileNotFound($entityName, $fileName)
     {
-        return new self("No mapping file found named '$fileName' for class '$entityName'.");
+        return new self(sprintf("No mapping file found named '%s' for class '%s'.", $fileName, $entityName));
     }
 
     /**
@@ -146,7 +149,7 @@ class MappingException extends ORMException
      */
     public static function invalidOverrideFieldName($className, $fieldName)
     {
-        return new self("Invalid field override named '$fieldName' for class '$className'.");
+        return new self(sprintf("Invalid field override named '%s' for class '%s'.", $fieldName, $className));
     }
 
     /**
@@ -159,7 +162,11 @@ class MappingException extends ORMException
      */
     public static function invalidOverrideFieldType($className, $fieldName)
     {
-        return new self("The column type of attribute '$fieldName' on class '$className' could not be changed.");
+        return new self(sprintf(
+            "The column type of attribute '%s' on class '%s' could not be changed.",
+            $fieldName,
+            $className
+        ));
     }
 
     /**
@@ -170,7 +177,7 @@ class MappingException extends ORMException
      */
     public static function mappingNotFound($className, $fieldName)
     {
-        return new self("No mapping found for field '$fieldName' on class '$className'.");
+        return new self(sprintf("No mapping found for field '%s' on class '%s'.", $fieldName, $className));
     }
 
     /**
@@ -181,7 +188,7 @@ class MappingException extends ORMException
      */
     public static function queryNotFound($className, $queryName)
     {
-        return new self("No query found named '$queryName' on class '$className'.");
+        return new self(sprintf("No query found named '%s' on class '%s'.", $queryName, $className));
     }
 
     /**
@@ -192,7 +199,7 @@ class MappingException extends ORMException
      */
     public static function resultMappingNotFound($className, $resultName)
     {
-        return new self("No result set mapping found named '$resultName' on class '$className'.");
+        return new self(sprintf("No result set mapping found named '%s' on class '%s'.", $resultName, $className));
     }
 
     /**
@@ -203,7 +210,7 @@ class MappingException extends ORMException
      */
     public static function emptyQueryMapping($entity, $queryName)
     {
-        return new self('Query named "' . $queryName . '" in "' . $entity . '" could not be empty.');
+        return new self(sprintf('Query named "%s" in "%s" could not be empty.', $queryName, $entity));
     }
 
     /**
@@ -213,7 +220,7 @@ class MappingException extends ORMException
      */
     public static function nameIsMandatoryForQueryMapping($className)
     {
-        return new self("Query name on entity class '$className' is not defined.");
+        return new self(sprintf("Query name on entity class '%s' is not defined.", $className));
     }
 
     /**
@@ -224,7 +231,11 @@ class MappingException extends ORMException
      */
     public static function missingQueryMapping($entity, $queryName)
     {
-        return new self('Query named "' . $queryName . '" in "' . $entity . ' requires a result class or result set mapping.');
+        return new self(sprintf(
+            'Query named "%s" in "%s requires a result class or result set mapping.',
+            $queryName,
+            $entity
+        ));
     }
 
     /**
@@ -235,7 +246,11 @@ class MappingException extends ORMException
      */
     public static function missingResultSetMappingEntity($entity, $resultName)
     {
-        return new self('Result set mapping named "' . $resultName . '" in "' . $entity . ' requires a entity class name.');
+        return new self(sprintf(
+            'Result set mapping named "%s" in "%s requires a entity class name.',
+            $resultName,
+            $entity
+        ));
     }
 
     /**
@@ -246,7 +261,11 @@ class MappingException extends ORMException
      */
     public static function missingResultSetMappingFieldName($entity, $resultName)
     {
-        return new self('Result set mapping named "' . $resultName . '" in "' . $entity . ' requires a field name.');
+        return new self(sprintf(
+            'Result set mapping named "%s" in "%s requires a field name.',
+            $resultName,
+            $entity
+        ));
     }
 
     /**
@@ -256,7 +275,7 @@ class MappingException extends ORMException
      */
     public static function nameIsMandatoryForSqlResultSetMapping($className)
     {
-        return new self("Result set mapping name on entity class '$className' is not defined.");
+        return new self(sprintf("Result set mapping name on entity class '%s' is not defined.", $className));
     }
 
     /**
@@ -266,7 +285,7 @@ class MappingException extends ORMException
      */
     public static function oneToManyRequiresMappedBy($fieldName)
     {
-        return new self("OneToMany mapping on field '$fieldName' requires the 'mappedBy' attribute.");
+        return new self(sprintf("OneToMany mapping on field '%s' requires the 'mappedBy' attribute.", $fieldName));
     }
 
     /**
@@ -276,7 +295,7 @@ class MappingException extends ORMException
      */
     public static function joinTableRequired($fieldName)
     {
-        return new self("The mapping of field '$fieldName' requires an the 'joinTable' attribute.");
+        return new self(sprintf("The mapping of field '%s' requires an the 'joinTable' attribute.", $fieldName));
     }
 
     /**
@@ -289,9 +308,9 @@ class MappingException extends ORMException
      *
      * @return MappingException
      */
-    static function missingRequiredOption($field, $expectedOption, $hint = '')
+    public static function missingRequiredOption($field, $expectedOption, $hint = '')
     {
-        $message = "The mapping of field '{$field}' is invalid: The option '{$expectedOption}' is required.";
+        $message = "The mapping of field '" . $field . "' is invalid: The option '" . $expectedOption . "' is required.";
 
         if (! empty($hint)) {
             $message .= ' (Hint: ' . $hint . ')';
@@ -309,7 +328,7 @@ class MappingException extends ORMException
      */
     public static function invalidMapping($fieldName)
     {
-        return new self("The mapping of field '$fieldName' is invalid.");
+        return new self(sprintf("The mapping of field '%s' is invalid.", $fieldName));
     }
 
     /**
@@ -323,7 +342,7 @@ class MappingException extends ORMException
      */
     public static function reflectionFailure($entity, ReflectionException $previousException)
     {
-        return new self('An error occurred in ' . $entity, 0, $previousException);
+        return new self(sprintf('An error occurred in %s', $entity), 0, $previousException);
     }
 
     /**
@@ -334,8 +353,11 @@ class MappingException extends ORMException
      */
     public static function joinColumnMustPointToMappedField($className, $joinColumn)
     {
-        return new self('The column ' . $joinColumn . ' must be mapped to a field in class '
-            . $className . ' since it is referenced by a join column of another class.');
+        return new self(sprintf(
+            'The column %s must be mapped to a field in class %s since it is referenced by a join column of another class.',
+            $joinColumn,
+            $className
+        ));
     }
 
     /**
@@ -368,7 +390,11 @@ class MappingException extends ORMException
      */
     public static function propertyTypeIsRequired($className, $propertyName)
     {
-        return new self("The attribute 'type' is required for the column description of property " . $className . '::$' . $propertyName . '.');
+        return new self(sprintf(
+            "The attribute 'type' is required for the column description of property %s::\$%s.",
+            $className,
+            $propertyName
+        ));
     }
 
     /**
@@ -378,7 +404,7 @@ class MappingException extends ORMException
      */
     public static function tableIdGeneratorNotImplemented($className)
     {
-        return new self('TableIdGenerator is not yet implemented for use with class ' . $className);
+        return new self(sprintf('TableIdGenerator is not yet implemented for use with class %s', $className));
     }
 
     /**
@@ -389,7 +415,11 @@ class MappingException extends ORMException
      */
     public static function duplicateFieldMapping($entity, $fieldName)
     {
-        return new self('Property "' . $fieldName . '" in "' . $entity . '" was already declared, but it must be declared only once');
+        return new self(sprintf(
+            'Property "%s" in "%s" was already declared, but it must be declared only once',
+            $fieldName,
+            $entity
+        ));
     }
 
     /**
@@ -400,7 +430,11 @@ class MappingException extends ORMException
      */
     public static function duplicateAssociationMapping($entity, $fieldName)
     {
-        return new self('Property "' . $fieldName . '" in "' . $entity . '" was already declared, but it must be declared only once');
+        return new self(sprintf(
+            'Property "%s" in "%s" was already declared, but it must be declared only once',
+            $fieldName,
+            $entity
+        ));
     }
 
     /**
@@ -411,7 +445,11 @@ class MappingException extends ORMException
      */
     public static function duplicateQueryMapping($entity, $queryName)
     {
-        return new self('Query named "' . $queryName . '" in "' . $entity . '" was already declared, but it must be declared only once');
+        return new self(sprintf(
+            'Query named "%s" in "%s" was already declared, but it must be declared only once',
+            $queryName,
+            $entity
+        ));
     }
 
     /**
@@ -422,7 +460,11 @@ class MappingException extends ORMException
      */
     public static function duplicateResultSetMapping($entity, $resultName)
     {
-        return new self('Result set mapping named "' . $resultName . '" in "' . $entity . '" was already declared, but it must be declared only once');
+        return new self(sprintf(
+            'Result set mapping named "%s" in "%s" was already declared, but it must be declared only once',
+            $resultName,
+            $entity
+        ));
     }
 
     /**
@@ -454,8 +496,12 @@ class MappingException extends ORMException
      */
     public static function unsupportedOptimisticLockingType($entity, $fieldName, $unsupportedType)
     {
-        return new self('Locking type "' . $unsupportedType . '" (specified in "' . $entity . '", field "' . $fieldName . '") '
-            . 'is not supported by Doctrine.');
+        return new self(sprintf(
+            'Locking type "%s" (specified in "%s", field "%s") is not supported by Doctrine.',
+            $unsupportedType,
+            $entity,
+            $fieldName
+        ));
     }
 
     /**
@@ -495,9 +541,9 @@ class MappingException extends ORMException
     }
 
     /**
-     * @param string $className
-     * @param array  $entries
-     * @param array  $map
+     * @param string               $className
+     * @param string[]             $entries
+     * @param array<string,string> $map
      *
      * @return MappingException
      */
@@ -523,7 +569,10 @@ class MappingException extends ORMException
      */
     public static function missingDiscriminatorMap($className)
     {
-        return new self("Entity class '$className' is using inheritance but no discriminator map was defined.");
+        return new self(sprintf(
+            "Entity class '%s' is using inheritance but no discriminator map was defined.",
+            $className
+        ));
     }
 
     /**
@@ -533,7 +582,10 @@ class MappingException extends ORMException
      */
     public static function missingDiscriminatorColumn($className)
     {
-        return new self("Entity class '$className' is using inheritance but no discriminator column was defined.");
+        return new self(sprintf(
+            "Entity class '%s' is using inheritance but no discriminator column was defined.",
+            $className
+        ));
     }
 
     /**
@@ -544,7 +596,11 @@ class MappingException extends ORMException
      */
     public static function invalidDiscriminatorColumnType($className, $type)
     {
-        return new self("Discriminator column type on entity class '$className' is not allowed to be '$type'. 'string' or 'integer' type variables are suggested!");
+        return new self(sprintf(
+            "Discriminator column type on entity class '%s' is not allowed to be '%s'. 'string' or 'integer' type variables are suggested!",
+            $className,
+            $type
+        ));
     }
 
     /**
@@ -554,7 +610,7 @@ class MappingException extends ORMException
      */
     public static function nameIsMandatoryForDiscriminatorColumns($className)
     {
-        return new self("Discriminator column name on entity class '$className' is not defined.");
+        return new self(sprintf("Discriminator column name on entity class '%s' is not defined.", $className));
     }
 
     /**
@@ -565,7 +621,11 @@ class MappingException extends ORMException
      */
     public static function cannotVersionIdField($className, $fieldName)
     {
-        return new self("Setting Id field '$fieldName' as versionable in entity class '$className' is not supported.");
+        return new self(sprintf(
+            "Setting Id field '%s' as versionable in entity class '%s' is not supported.",
+            $fieldName,
+            $className
+        ));
     }
 
     /**
@@ -577,7 +637,13 @@ class MappingException extends ORMException
      */
     public static function sqlConversionNotAllowedForIdentifiers($className, $fieldName, $type)
     {
-        return new self("It is not possible to set id field '$fieldName' to type '$type' in entity class '$className'. The type '$type' requires conversion SQL which is not allowed for identifiers.");
+        return new self(sprintf(
+            "It is not possible to set id field '%s' to type '%s' in entity class '%s'. The type '%s' requires conversion SQL which is not allowed for identifiers.",
+            $fieldName,
+            $type,
+            $className,
+            $type
+        ));
     }
 
     /**
@@ -623,7 +689,7 @@ class MappingException extends ORMException
      */
     public static function noSingleAssociationJoinColumnFound($className, $field)
     {
-        return new self("'$className#$field' is not an association with a single join column.");
+        return new self(sprintf("'%s#%s' is not an association with a single join column.", $className, $field));
     }
 
     /**
@@ -650,8 +716,11 @@ class MappingException extends ORMException
      */
     public static function illegalOrphanRemovalOnIdentifierAssociation($className, $field)
     {
-        return new self('The orphan removal option is not allowed on an association that is ' .
-            "part of the identifier in '$className#$field'.");
+        return new self(sprintf(
+            "The orphan removal option is not allowed on an association that is part of the identifier in '%s#%s'.",
+            $className,
+            $field
+        ));
     }
 
     /**
@@ -674,7 +743,11 @@ class MappingException extends ORMException
      */
     public static function illegalInverseIdentifierAssociation($className, $field)
     {
-        return new self("An inverse association is not allowed to be identifier in '$className#$field'.");
+        return new self(sprintf(
+            "An inverse association is not allowed to be identifier in '%s#%s'.",
+            $className,
+            $field
+        ));
     }
 
     /**
@@ -685,7 +758,11 @@ class MappingException extends ORMException
      */
     public static function illegalToManyIdentifierAssociation($className, $field)
     {
-        return new self("Many-to-many or one-to-many associations are not allowed to be identifier in '$className#$field'.");
+        return new self(sprintf(
+            "Many-to-many or one-to-many associations are not allowed to be identifier in '%s#%s'.",
+            $className,
+            $field
+        ));
     }
 
     /**
@@ -793,9 +870,9 @@ class MappingException extends ORMException
     }
 
     /**
-     * @param array  $cascades
-     * @param string $className
-     * @param string $propertyName
+     * @param string[] $cascades
+     * @param string   $className
+     * @param string   $propertyName
      *
      * @return MappingException
      */
@@ -843,7 +920,7 @@ class MappingException extends ORMException
         );
     }
 
-    public static function illegalOverrideOfInheritedProperty($className, $propertyName)
+    public static function illegalOverrideOfInheritedProperty($className, $propertyName): MappingException
     {
         return new self(
             sprintf(
