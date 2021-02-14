@@ -45,7 +45,7 @@ class CollectionCacheEntry implements CacheEntry
      *
      * This method allows for Doctrine\Common\Cache\PhpFileCache compatibility
      *
-     * @param array $values array containing property values
+     * @param array<string, mixed> $values array containing property values
      *
      * @return CollectionCacheEntry
      */

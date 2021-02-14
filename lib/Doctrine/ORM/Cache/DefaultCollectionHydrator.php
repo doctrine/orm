@@ -78,13 +78,13 @@ class DefaultCollectionHydrator implements CollectionHydrator
         $targetRegion = $targetPersister->getCacheRegion();
         $list         = [];
 
+        /** @var EntityCacheEntry[]|null $entityEntries */
         $entityEntries = $targetRegion->getMultiple($entry);
 
         if ($entityEntries === null) {
             return null;
         }
 
-        /** @var EntityCacheEntry[] $entityEntries */
         foreach ($entityEntries as $index => $entityEntry) {
             $list[$index] = $this->uow->createEntity($entityEntry->class, $entityEntry->resolveAssociationEntries($this->em), self::$hints);
         }

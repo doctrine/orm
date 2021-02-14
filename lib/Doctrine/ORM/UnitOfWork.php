@@ -1255,17 +1255,12 @@ class UnitOfWork implements PropertyChangedListener
     /**
      * Gets the commit order.
      *
-     * @param array|null $entityChangeSet
-     *
-     * @return array
+     * @return list<object>
      */
-    private function getCommitOrder(?array $entityChangeSet = null)
+    private function getCommitOrder(): array
     {
-        if ($entityChangeSet === null) {
-            $entityChangeSet = array_merge($this->entityInsertions, $this->entityUpdates, $this->entityDeletions);
-        }
-
-        $calc = $this->getCommitOrderCalculator();
+        $entityChangeSet = array_merge($this->entityInsertions, $this->entityUpdates, $this->entityDeletions);
+        $calc            = $this->getCommitOrderCalculator();
 
         // See if there are any new classes in the changeset, that are not in the
         // commit order graph yet (don't have a node).
