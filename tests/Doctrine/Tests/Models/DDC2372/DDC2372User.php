@@ -12,6 +12,7 @@ class DDC2372User
     use DDC2372AddressTrait;
 
     /**
+     * @var int
      * @Id @Column(type="integer")
      * @GeneratedValue(strategy="AUTO")
      */

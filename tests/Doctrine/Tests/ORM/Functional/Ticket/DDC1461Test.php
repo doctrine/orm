@@ -85,6 +85,9 @@ class DDC1461TwitterAccount
      */
     public $id;
 
-    /** @OneToOne(targetEntity="DDC1461User", fetch="EAGER") */
+    /**
+     * @var DDC1461User
+     * @OneToOne(targetEntity="DDC1461User", fetch="EAGER")
+     */
     public $user;
 }

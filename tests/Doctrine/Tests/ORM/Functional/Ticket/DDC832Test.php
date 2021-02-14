@@ -222,10 +222,16 @@ class DDC832JoinedIndex
  */
 class DDC832JoinedTreeIndex extends DDC832JoinedIndex
 {
-    /** @Column(type="integer") */
+    /**
+     * @var int
+     * @Column(type="integer")
+     */
     public $lft;
 
-    /** @Column(type="integer") */
+    /**
+     * @var int
+     * @Column(type="integer")
+     */
     public $rgt;
 
     public function __construct($name, $lft, $rgt)

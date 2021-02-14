@@ -96,13 +96,22 @@ class DDC2931User
     /** @Id @Column(type="integer") @GeneratedValue(strategy="AUTO") */
     public $id;
 
-    /** @OneToOne(targetEntity="DDC2931User", inversedBy="child") */
+    /**
+     * @var DDC2931User
+     * @OneToOne(targetEntity="DDC2931User", inversedBy="child")
+     */
     public $parent;
 
-    /** @OneToOne(targetEntity="DDC2931User", mappedBy="parent") */
+    /**
+     * @var DDC2931User
+     * @OneToOne(targetEntity="DDC2931User", mappedBy="parent")
+     */
     public $child;
 
-    /** @Column(type="integer") */
+    /**
+     * @var int
+     * @Column(type="integer")
+     */
     public $value = 0;
 
     /**

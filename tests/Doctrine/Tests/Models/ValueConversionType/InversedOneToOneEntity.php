@@ -22,6 +22,9 @@ class InversedOneToOneEntity
      */
     public $someProperty;
 
-    /** @OneToOne(targetEntity="OwningOneToOneEntity", mappedBy="associatedEntity") */
+    /**
+     * @var OwningOneToOneEntity
+     * @OneToOne(targetEntity="OwningOneToOneEntity", mappedBy="associatedEntity")
+     */
     public $associatedEntity;
 }

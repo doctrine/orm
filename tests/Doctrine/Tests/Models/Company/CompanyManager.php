@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Doctrine\Tests\Models\Company;
 
+use Doctrine\Common\Collections\Collection;
+
 /**
  * @Entity
  * @Table(name="company_managers")
@@ -22,7 +24,10 @@ class CompanyManager extends CompanyEmployee
      */
     private $car;
 
-    /** @ManyToMany(targetEntity="CompanyFlexContract", mappedBy="managers", fetch="EXTRA_LAZY") */
+    /**
+     * @psalm-var Collection<int, CompanyFlexContract>
+     * @ManyToMany(targetEntity="CompanyFlexContract", mappedBy="managers", fetch="EXTRA_LAZY")
+     */
     public $managedContracts;
 
     public function getTitle()

@@ -65,6 +65,7 @@ class DDC444Test extends OrmFunctionalTestCase
 class DDC444User
 {
     /**
+     * @var int
      * @Id @Column(name="id", type="integer")
      * @GeneratedValue(strategy="AUTO")
      */

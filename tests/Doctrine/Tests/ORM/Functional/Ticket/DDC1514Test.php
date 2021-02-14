@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Doctrine\Tests\ORM\Functional\Ticket;
 
 use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\Tests\OrmFunctionalTestCase;
 use Exception;
 
@@ -82,7 +83,10 @@ class DDC1514EntityA
     public $id;
     /** @Column */
     public $title;
-    /** @ManyToMany(targetEntity="DDC1514EntityB", mappedBy="entityAFrom") */
+    /**
+     * @psalm-var Collection<int, DDC1514EntityB>
+     * @ManyToMany(targetEntity="DDC1514EntityB", mappedBy="entityAFrom")
+     */
     public $entitiesB;
     /**
      * @var DDC1514EntityC

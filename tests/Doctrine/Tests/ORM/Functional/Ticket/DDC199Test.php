@@ -64,6 +64,7 @@ class DDC199Test extends OrmFunctionalTestCase
 class DDC199ParentClass
 {
     /**
+     * @var int
      * @Id @Column(type="integer")
      * @GeneratedValue(strategy="AUTO")
      */

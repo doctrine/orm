@@ -97,6 +97,7 @@ class DefaultValuesTest extends OrmFunctionalTestCase
 class DefaultValueUser
 {
     /**
+     * @var int
      * @Id @Column(type="integer")
      * @GeneratedValue(strategy="AUTO")
      */
@@ -111,7 +112,10 @@ class DefaultValueUser
      * @Column(type="string")
      */
     public $type = 'Poweruser';
-    /** @OneToOne(targetEntity="DefaultValueAddress", mappedBy="user", cascade={"persist"}) */
+    /**
+     * @var DefaultValueAddress
+     * @OneToOne(targetEntity="DefaultValueAddress", mappedBy="user", cascade={"persist"})
+     */
     public $address;
 
     public function getId()

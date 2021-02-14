@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Doctrine\Tests\ORM\Functional\Ticket;
 
+use Doctrine\Common\Collections\Collection;
 use Doctrine\Tests\OrmFunctionalTestCase;
 use Exception;
 
@@ -96,6 +97,9 @@ class DDC698Privilege
      */
     protected $name;
 
-    /** @ManyToMany(targetEntity="DDC698Role", mappedBy="privilege") */
+    /**
+     * @psalm-var Collection<int, DDC698Role>
+     * @ManyToMany(targetEntity="DDC698Role", mappedBy="privilege")
+     */
     protected $roles;
 }

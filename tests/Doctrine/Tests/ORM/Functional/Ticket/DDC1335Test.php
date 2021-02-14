@@ -159,6 +159,7 @@ class DDC1335Test extends OrmFunctionalTestCase
 class DDC1335User
 {
     /**
+     * @var int
      * @Id @Column(type="integer")
      * @GeneratedValue
      */

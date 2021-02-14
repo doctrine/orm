@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Doctrine\Tests\ORM\Functional\Ticket;
 
 use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\Tests\OrmFunctionalTestCase;
 
 class DDC211Test extends OrmFunctionalTestCase
@@ -114,7 +115,10 @@ class DDC211Group
      */
     protected $name;
 
-    /** @ManyToMany(targetEntity="DDC211User", mappedBy="groups") */
+    /**
+     * @psalm-var Collection<int, DDC211User>
+     * @ManyToMany(targetEntity="DDC211User", mappedBy="groups")
+     */
     protected $users;
 
     public function __construct()

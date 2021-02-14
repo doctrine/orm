@@ -100,7 +100,10 @@ class DDC2575Root
      */
     public $id;
 
-    /** @Column(type="integer") */
+    /**
+     * @var int
+     * @Column(type="integer")
+     */
     public $sampleField;
 
     /** @OneToOne(targetEntity="DDC2575A", mappedBy="rootRelation") **/
@@ -150,7 +153,10 @@ class DDC2575B
      */
     public $id;
 
-    /** @Column(type="integer") */
+    /**
+     * @var int
+     * @Column(type="integer")
+     */
     public $sampleField;
 
     public function __construct($id, $value = 0)

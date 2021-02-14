@@ -65,6 +65,7 @@ class DDC2775Test extends OrmFunctionalTestCase
 abstract class Role
 {
     /**
+     * @var int
      * @Id @Column(type="integer")
      * @GeneratedValue
      */
@@ -97,6 +98,7 @@ class AdminRole extends Role
 class Authorization
 {
     /**
+     * @var int
      * @Id @Column(type="integer")
      * @GeneratedValue
      */
@@ -121,6 +123,7 @@ class Authorization
 class User
 {
     /**
+     * @var int
      * @Id @Column(type="integer")
      * @GeneratedValue(strategy="AUTO")
      */

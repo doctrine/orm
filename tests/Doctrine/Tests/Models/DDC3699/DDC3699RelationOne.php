@@ -13,6 +13,9 @@ class DDC3699RelationOne
     /** @Id @Column(type="integer") */
     public $id;
 
-    /** @OneToOne(targetEntity="DDC3699Child", mappedBy="oneRelation") */
+    /**
+     * @var DDC3699Child
+     * @OneToOne(targetEntity="DDC3699Child", mappedBy="oneRelation")
+     */
     public $child;
 }

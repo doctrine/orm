@@ -273,6 +273,7 @@ class OptimisticTest extends OrmFunctionalTestCase
 class OptimisticJoinedParent
 {
     /**
+     * @var int
      * @Id @Column(type="integer")
      * @GeneratedValue(strategy="AUTO")
      */
@@ -308,6 +309,7 @@ class OptimisticJoinedChild extends OptimisticJoinedParent
 class OptimisticStandard
 {
     /**
+     * @var int
      * @Id @Column(type="integer")
      * @GeneratedValue(strategy="AUTO")
      */
@@ -335,6 +337,7 @@ class OptimisticStandard
 class OptimisticTimestamp
 {
     /**
+     * @var int
      * @Id @Column(type="integer")
      * @GeneratedValue(strategy="AUTO")
      */

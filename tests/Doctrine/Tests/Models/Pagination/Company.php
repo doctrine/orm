@@ -13,6 +13,7 @@ namespace Doctrine\Tests\Models\Pagination;
 class Company
 {
     /**
+     * @var int
      * @Id @Column(type="integer")
      * @GeneratedValue
      */
@@ -30,7 +31,10 @@ class Company
      */
     public $jurisdiction;
 
-    /** @OneToOne(targetEntity="Logo", mappedBy="company", cascade={"persist"}, orphanRemoval=true) */
+    /**
+     * @var Logo
+     * @OneToOne(targetEntity="Logo", mappedBy="company", cascade={"persist"}, orphanRemoval=true)
+     */
     public $logo;
 
     /** @OneToMany(targetEntity="Department", mappedBy="company", cascade={"persist"}, orphanRemoval=true) */

@@ -127,7 +127,10 @@ class DDC837Class1 extends DDC837Super
      */
     public $description;
 
-    /** @OneToOne(targetEntity="DDC837Aggregate") */
+    /**
+     * @var DDC837Aggregate
+     * @OneToOne(targetEntity="DDC837Aggregate")
+     */
     public $aggregate;
 }
 
@@ -151,7 +154,10 @@ class DDC837Class2 extends DDC837Super
     /** @Column(name="text", type="text") */
     public $text;
 
-    /** @OneToOne(targetEntity="DDC837Aggregate") */
+    /**
+     * @var DDC837Aggregate
+     * @OneToOne(targetEntity="DDC837Aggregate")
+     */
     public $aggregate;
 }
 

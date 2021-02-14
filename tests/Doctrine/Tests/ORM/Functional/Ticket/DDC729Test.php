@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Doctrine\Tests\ORM\Functional\Ticket;
 
 use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\PersistentCollection;
 use Doctrine\ORM\Tools\SchemaTool;
 use Doctrine\Tests\OrmFunctionalTestCase;
@@ -178,7 +179,10 @@ class DDC729A
      */
     public $id;
 
-    /** @ManyToMany(targetEntity="DDC729B", inversedBy="related") */
+    /**
+     * @psalm-var Collection<int, DDC729B>
+     * @ManyToMany(targetEntity="DDC729B", inversedBy="related")
+     */
     public $related;
 
     public function __construct()
@@ -200,7 +204,10 @@ class DDC729B
      */
     public $id;
 
-    /** @ManyToMany(targetEntity="DDC729B", mappedBy="related") */
+    /**
+     * @psalm-var Collection<int, DDC729B>
+     * @ManyToMany(targetEntity="DDC729B", mappedBy="related")
+     */
     public $related;
 
     public function __construct()

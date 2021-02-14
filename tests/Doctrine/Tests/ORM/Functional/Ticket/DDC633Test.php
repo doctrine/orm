@@ -89,7 +89,10 @@ class DDC633Appointment
      */
     public $id;
 
-    /** @OneToOne(targetEntity="DDC633Patient", inversedBy="appointment", fetch="EAGER") */
+    /**
+     * @var DDC633Patient
+     * @OneToOne(targetEntity="DDC633Patient", inversedBy="appointment", fetch="EAGER")
+     */
     public $patient;
 }
 
@@ -106,6 +109,9 @@ class DDC633Patient
      */
     public $id;
 
-    /** @OneToOne(targetEntity="DDC633Appointment", mappedBy="patient") */
+    /**
+     * @var DDC633Appointment
+     * @OneToOne(targetEntity="DDC633Appointment", mappedBy="patient")
+     */
     public $appointment;
 }

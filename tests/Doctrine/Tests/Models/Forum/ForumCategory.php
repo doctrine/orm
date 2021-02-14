@@ -15,7 +15,10 @@ class ForumCategory
      * @Id
      */
     private $id;
-    /** @Column(type="integer") */
+    /**
+     * @var int
+     * @Column(type="integer")
+     */
     public $position;
     /**
      * @var string

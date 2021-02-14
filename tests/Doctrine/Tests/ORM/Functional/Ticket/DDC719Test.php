@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Doctrine\Tests\ORM\Functional\Ticket;
 
+use Doctrine\Common\Collections\Collection;
 use Doctrine\Tests\OrmFunctionalTestCase;
 
 use function strtolower;
@@ -78,7 +79,10 @@ class DDC719Group extends Entity
      */
     protected $children = null;
 
-    /** @ManyToMany(targetEntity="DDC719Group", mappedBy="children") */
+    /**
+     * @psalm-var Collection<int, DDC719Group>
+     * @ManyToMany(targetEntity="DDC719Group", mappedBy="children")
+     */
     protected $parents = null;
 
     /**

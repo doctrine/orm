@@ -54,7 +54,10 @@ class DDC2996User
      * @Column(type="integer")
      */
     public $id;
-    /** @Column(type="integer") */
+    /**
+     * @var int
+     * @Column(type="integer")
+     */
     public $counter = 0;
 }
 
