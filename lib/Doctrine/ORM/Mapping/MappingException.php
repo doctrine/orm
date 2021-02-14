@@ -920,7 +920,10 @@ class MappingException extends ORMException
         );
     }
 
-    public static function illegalOverrideOfInheritedProperty($className, $propertyName): MappingException
+    /**
+     * @return MappingException
+     */
+    public static function illegalOverrideOfInheritedProperty($className, $propertyName)
     {
         return new self(
             sprintf(
