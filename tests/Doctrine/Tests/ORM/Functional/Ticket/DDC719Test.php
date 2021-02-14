@@ -41,12 +41,14 @@ class DDC719Test extends OrmFunctionalTestCase
 class Entity
 {
     /**
-     * @Id @GeneratedValue
+     * @var int
+     * @Id
+     * @GeneratedValue
      * @Column(type="integer")
      */
     protected $id;
 
-    public function getId()
+    public function getId(): int
     {
         return $this->id;
     }
@@ -71,6 +73,7 @@ class DDC719Group extends Entity
     protected $description;
 
     /**
+     * @psalm-var Collection<int, DDC719Group>
      * @ManyToMany(targetEntity="DDC719Group", inversedBy="parents")
      * @JoinTable(name="groups_groups",
      *      joinColumns={@JoinColumn(name="parent_id", referencedColumnName="id")},
@@ -85,9 +88,6 @@ class DDC719Group extends Entity
      */
     protected $parents = null;
 
-    /**
-     * construct
-     */
     public function __construct()
     {
         parent::__construct();
@@ -118,40 +118,46 @@ class DDC719Group extends Entity
         }
     }
 
-    /**
-     * getter & setter
-     */
-    public function getName()
+    public function getName(): string
     {
         return $this->name;
     }
 
-    public function setName($name): void
+    public function setName(string $name): void
     {
         $this->name = $name;
     }
 
-    public function getDescription()
+    public function getDescription(): string
     {
         return $this->description;
     }
 
-    public function setDescription($description): void
+    public function setDescription(string $description): void
     {
         $this->description = $description;
     }
 
-    public function getChildren()
+    /**
+     * @psalm-return Collection<int, DDC719Group>
+     */
+    public function getChildren(): Collection
     {
         return $this->children;
     }
 
-    public function getParents()
+    /**
+     * @psalm-return Collection<int, DDC719Group>
+     */
+    public function getParents(): Collection
     {
         return $this->parents;
     }
 
-    public function getChannels()
+    /**
+     * @psalm-return Collection<int, Channel>
+     */
+    public function getChannels(): Collection
     {
         return $this->channels;
     }

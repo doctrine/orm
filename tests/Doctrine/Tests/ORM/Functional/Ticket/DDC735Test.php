@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Doctrine\Tests\ORM\Functional\Ticket;
 
 use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\Tests\OrmFunctionalTestCase;
 use Exception;
 
@@ -72,6 +73,7 @@ class DDC735Product
     protected $id;
 
     /**
+     * @psalm-var Collection<int, DDC735Review>
      * @OneToMany(
      *   targetEntity="DDC735Review",
      *   mappedBy="product",
@@ -86,7 +88,10 @@ class DDC735Product
         $this->reviews = new ArrayCollection();
     }
 
-    public function getReviews()
+    /**
+     * @psalm-return Collection<int, DDC735Review>
+     */
+    public function getReviews(): Collection
     {
         return $this->reviews;
     }
@@ -127,7 +132,7 @@ class DDC735Review
         $product->addReview($this);
     }
 
-    public function getId()
+    public function getId(): int
     {
         return $this->id;
     }

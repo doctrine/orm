@@ -97,7 +97,10 @@ class DDC6460Entity
      */
     public $id;
 
-    /** @Embedded(class = "DDC6460Embeddable") */
+    /**
+     * @var DDC6460Embeddable
+     * @Embedded(class = "DDC6460Embeddable")
+     */
     public $embedded;
 }
 
@@ -114,6 +117,9 @@ class DDC6460ParentEntity
      */
     public $id;
 
-    /** @ManyToOne(targetEntity = "DDC6460Entity", fetch="EXTRA_LAZY", cascade={"persist"}) */
+    /**
+     * @var DDC6460Entity
+     * @ManyToOne(targetEntity="DDC6460Entity", fetch="EXTRA_LAZY", cascade={"persist"})
+     */
     public $lazyLoaded;
 }

@@ -104,7 +104,9 @@ class DDC837Test extends OrmFunctionalTestCase
 abstract class DDC837Super
 {
     /**
-     * @Id @Column(name="id", type="integer")
+     * @var int
+     * @Id
+     * @Column(name="id", type="integer")
      * @GeneratedValue(strategy="AUTO")
      */
     public $id;
@@ -151,7 +153,10 @@ class DDC837Class2 extends DDC837Super
      */
     public $description;
 
-    /** @Column(name="text", type="text") */
+    /**
+     * @var string
+     * @Column(name="text", type="text")
+     */
     public $text;
 
     /**
@@ -187,7 +192,9 @@ class DDC837Class3 extends DDC837Super
 class DDC837Aggregate
 {
     /**
-     * @Id @Column(name="id", type="integer")
+     * @var int
+     * @Id
+     * @Column(name="id", type="integer")
      * @GeneratedValue
      */
     public $id;
@@ -198,12 +205,12 @@ class DDC837Aggregate
      */
     protected $sysname;
 
-    public function __construct($sysname)
+    public function __construct(string $sysname)
     {
         $this->sysname = $sysname;
     }
 
-    public function getSysname()
+    public function getSysname(): string
     {
         return $this->sysname;
     }

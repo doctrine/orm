@@ -49,8 +49,10 @@ class DDC698Test extends OrmFunctionalTestCase
 class DDC698Role
 {
     /**
-     *  @Id @Column(name="roleID", type="integer")
-     *  @GeneratedValue(strategy="AUTO")
+     * @var int
+     * @Id
+     * @Column(name="roleID", type="integer")
+     * @GeneratedValue(strategy="AUTO")
      */
     protected $roleID;
 
@@ -69,6 +71,7 @@ class DDC698Role
 
 
     /**
+     * @var Collection<int, DDC698Privilege>
      * @ManyToMany(targetEntity="DDC698Privilege", inversedBy="roles")
      * @JoinTable(name="RolePrivileges",
      *     joinColumns={@JoinColumn(name="roleID", referencedColumnName="roleID")},
@@ -86,8 +89,10 @@ class DDC698Role
 class DDC698Privilege
 {
     /**
-     *  @Id  @Column(name="privilegeID", type="integer")
-     *  @GeneratedValue(strategy="AUTO")
+     * @var int
+     * @Id
+     * @Column(name="privilegeID", type="integer")
+     * @GeneratedValue(strategy="AUTO")
      */
     protected $privilegeID;
 

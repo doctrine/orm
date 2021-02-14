@@ -74,22 +74,22 @@ class DDC656Entity
      */
     public $specificationId;
 
-    public function getName()
+    public function getName(): string
     {
         return $this->name;
     }
 
-    public function setName($name): void
+    public function setName(string $name): void
     {
         $this->name = $name;
     }
 
-    public function getType()
+    public function getType(): string
     {
         return $this->type;
     }
 
-    public function setType($type): void
+    public function setType(string $type): void
     {
         $this->type = $type;
     }
