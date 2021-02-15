@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace Doctrine\Tests\ORM\Functional\Ticket;
 
 use Doctrine\DBAL\Logging\EchoSQLLogger;
-use Doctrine\DBAL\Schema\AbstractSchemaManager;
 use Doctrine\Tests\OrmFunctionalTestCase;
 use Exception;
 
@@ -37,7 +36,6 @@ class DDC832Test extends OrmFunctionalTestCase
 
     public function tearDown(): void
     {
-        /** @var AbstractSchemaManager $sm */
         $platform = $this->_em->getConnection()->getDatabasePlatform();
 
         $sm = $this->_em->getConnection()->getSchemaManager();
@@ -170,12 +168,13 @@ class DDC832Like
     public $word;
 
     /**
+     * @var int
      * @Version
      * @Column(type="integer")
      */
     public $version;
 
-    public function __construct($word)
+    public function __construct(string $word)
     {
         $this->word = $word;
     }
@@ -205,12 +204,13 @@ class DDC832JoinedIndex
     public $name;
 
     /**
+     * @var int
      * @Version
      * @Column(type="integer")
      */
     public $version;
 
-    public function __construct($name)
+    public function __construct(string $name)
     {
         $this->name = $name;
     }
@@ -222,13 +222,19 @@ class DDC832JoinedIndex
  */
 class DDC832JoinedTreeIndex extends DDC832JoinedIndex
 {
-    /** @Column(type="integer") */
+    /**
+     * @var int
+     * @Column(type="integer")
+     */
     public $lft;
 
-    /** @Column(type="integer") */
+    /**
+     * @var int
+     * @Column(type="integer")
+     */
     public $rgt;
 
-    public function __construct($name, $lft, $rgt)
+    public function __construct(string $name, int $lft, int $rgt)
     {
         $this->name = $name;
         $this->lft  = $lft;

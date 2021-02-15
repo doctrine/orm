@@ -21,7 +21,10 @@ class CmsEmail
     /** @Column(length=250) */
     public $email;
 
-    /** @OneToOne(targetEntity="CmsUser", mappedBy="email") */
+    /**
+     * @var CmsUser
+     * @OneToOne(targetEntity="CmsUser", mappedBy="email")
+     */
     public $user;
 
     public function getId()

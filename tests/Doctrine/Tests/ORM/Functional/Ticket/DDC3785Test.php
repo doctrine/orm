@@ -104,6 +104,7 @@ class DDC3785_Asset
 class DDC3785_Attribute
 {
     /**
+     * @var int
      * @Id @Column(type="integer")
      * @GeneratedValue
      */

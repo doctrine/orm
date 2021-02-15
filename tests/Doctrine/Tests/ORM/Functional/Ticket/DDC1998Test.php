@@ -58,7 +58,10 @@ class DDC1998Entity
     /** @Id @Column(type="ddc1998") */
     public $id;
 
-    /** @Column(type="integer") */
+    /**
+     * @var int
+     * @Column(type="integer")
+     */
     public $num = 0;
 }
 

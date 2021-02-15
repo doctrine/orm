@@ -18,7 +18,10 @@ class ForumBoard
      * @Column(type="integer")
      */
     public $id;
-    /** @Column(type="integer") */
+    /**
+     * @var int
+     * @Column(type="integer")
+     */
     public $position;
     /**
      * @ManyToOne(targetEntity="ForumCategory", inversedBy="boards")

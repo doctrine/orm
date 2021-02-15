@@ -78,7 +78,10 @@ class DDC2759Qualification
      */
     public $id;
 
-    /** @OneToOne(targetEntity="DDC2759QualificationMetadata", mappedBy="content") */
+    /**
+     * @var DDC2759QualificationMetadata
+     * @OneToOne(targetEntity="DDC2759QualificationMetadata", mappedBy="content")
+     */
     public $metadata;
 }
 
@@ -108,7 +111,10 @@ class DDC2759QualificationMetadata
      */
     public $id;
 
-    /** @OneToOne(targetEntity="DDC2759Qualification", inversedBy="metadata") */
+    /**
+     * @var DDC2759Qualification
+     * @OneToOne(targetEntity="DDC2759Qualification", inversedBy="metadata")
+     */
     public $content;
 
     /** @OneToMany(targetEntity="DDC2759MetadataCategory", mappedBy="metadata") */

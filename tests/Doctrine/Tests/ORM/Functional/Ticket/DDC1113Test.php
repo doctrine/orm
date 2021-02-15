@@ -75,7 +75,10 @@ class DDC1113Vehicle
      */
     public $parent;
 
-    /** @OneToOne(targetEntity="DDC1113Engine", cascade={"persist", "remove"}) */
+    /**
+     * @var DDC1113Engine
+     * @OneToOne(targetEntity="DDC1113Engine", cascade={"persist", "remove"})
+     */
     public $engine;
 }
 

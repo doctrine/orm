@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Doctrine\Tests\ORM\Functional;
 
 use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\Persistence\NotifyPropertyChanged;
 use Doctrine\Persistence\PropertyChangedListener;
 use Doctrine\Tests\OrmFunctionalTestCase;
@@ -126,7 +127,10 @@ class NotifyUser extends NotifyBaseEntity
     /** @Column */
     private $name;
 
-    /** @ManyToMany(targetEntity="NotifyGroup") */
+    /**
+     * @psalm-var Collection<int, NotifyGroup>
+     * @ManyToMany(targetEntity="NotifyGroup")
+     */
     private $groups;
 
     public function __construct()
@@ -170,7 +174,10 @@ class NotifyGroup extends NotifyBaseEntity
     /** @Column */
     private $name;
 
-    /** @ManyToMany(targetEntity="NotifyUser", mappedBy="groups") */
+    /**
+     * @psalm-var Collection<int, NotifyUser>
+     * @ManyToMany(targetEntity="NotifyUser", mappedBy="groups")
+     */
     private $users;
 
     public function __construct()

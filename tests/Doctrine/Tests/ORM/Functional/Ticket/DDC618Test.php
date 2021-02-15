@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Doctrine\Tests\ORM\Functional\Ticket;
 
 use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Query;
 use Doctrine\Tests\OrmFunctionalTestCase;
 use Exception;
@@ -153,7 +154,10 @@ class DDC618Author
      */
     public $name;
 
-    /** @OneToMany(targetEntity="DDC618Book", mappedBy="author", cascade={"persist"}) */
+    /**
+     * @psalm-var Collection<int, DDC618Book>
+     * @OneToMany(targetEntity="DDC618Book", mappedBy="author", cascade={"persist"})
+     */
     public $books;
 
     public function __construct()
@@ -161,7 +165,7 @@ class DDC618Author
         $this->books = new ArrayCollection();
     }
 
-    public function addBook($title): void
+    public function addBook(string $title): void
     {
         $book          = new DDC618Book($title, $this);
         $this->books[] = $book;
@@ -174,12 +178,17 @@ class DDC618Author
 class DDC618Book
 {
     /**
-     * @Id @GeneratedValue
+     * @var int
+     * @Id
+     * @GeneratedValue
      * @Column(type="integer")
      */
     public $id;
 
-    /** @column(type="string") */
+    /**
+     * @var string
+     * @Column(type="string")
+     */
     public $title;
 
     /**

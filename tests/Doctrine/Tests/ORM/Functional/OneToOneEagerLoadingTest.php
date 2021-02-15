@@ -376,7 +376,10 @@ class TrainOrder
     /** @id @generatedValue @column(type="integer") */
     public $id;
 
-    /** @OneToOne(targetEntity = "Train", fetch = "EAGER") */
+    /**
+     * @var Train
+     * @OneToOne(targetEntity="Train", fetch="EAGER")
+     */
     public $train;
 
     public function __construct(Train $train)

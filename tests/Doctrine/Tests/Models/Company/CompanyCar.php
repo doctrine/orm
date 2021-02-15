@@ -11,6 +11,7 @@ namespace Doctrine\Tests\Models\Company;
 class CompanyCar
 {
     /**
+     * @var int
      * @Id @Column(type="integer")
      * @GeneratedValue(strategy="AUTO")
      */

@@ -59,7 +59,10 @@ class DDC1757B
      */
     private $id;
 
-    /** @OneToOne(targetEntity="DDC1757C") */
+    /**
+     * @var DDC1757C
+     * @OneToOne(targetEntity="DDC1757C")
+     */
     private $c;
 }
 
@@ -75,7 +78,10 @@ class DDC1757C
      */
     public $id;
 
-    /** @OneToOne(targetEntity="DDC1757D") */
+    /**
+     * @var DDC1757D
+     * @OneToOne(targetEntity="DDC1757D")
+     */
     private $d;
 }
 

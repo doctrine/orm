@@ -37,6 +37,7 @@ class DDC425Test extends OrmFunctionalTestCase
 class DDC425Entity
 {
     /**
+     * @var int
      * @Id @Column(type="integer")
      * @GeneratedValue
      */

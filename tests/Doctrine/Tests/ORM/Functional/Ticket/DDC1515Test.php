@@ -44,7 +44,10 @@ class DDC1515Test extends OrmFunctionalTestCase
  */
 class DDC1515Foo
 {
-    /** @OneToOne(targetEntity="DDC1515Bar", inversedBy="foo") @Id */
+    /**
+     * @var DDC1515Bar
+     * @OneToOne(targetEntity="DDC1515Bar", inversedBy="foo") @Id
+     */
     public $bar;
 }
 
@@ -61,6 +64,9 @@ class DDC1515Bar
      */
     public $id;
 
-    /** @OneToOne(targetEntity="DDC1515Foo", mappedBy="bar") */
+    /**
+     * @var DDC1515Foo
+     * @OneToOne(targetEntity="DDC1515Foo", mappedBy="bar")
+     */
     public $foo;
 }

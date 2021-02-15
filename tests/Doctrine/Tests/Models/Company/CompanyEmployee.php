@@ -4,13 +4,18 @@ declare(strict_types=1);
 
 namespace Doctrine\Tests\Models\Company;
 
+use Doctrine\Common\Collections\Collection;
+
 /**
  * @Entity
  * @Table(name="company_employees")
  */
 class CompanyEmployee extends CompanyPerson
 {
-    /** @Column(type="integer") */
+    /**
+     * @var int
+     * @Column(type="integer")
+     */
     private $salary;
 
     /**
@@ -22,7 +27,10 @@ class CompanyEmployee extends CompanyPerson
     /** @Column(type="datetime", nullable=true) */
     private $startDate;
 
-    /** @ManyToMany(targetEntity="CompanyContract", mappedBy="engineers", fetch="EXTRA_LAZY") */
+    /**
+     * @psalm-var Collection<int, CompanyContract>
+     * @ManyToMany(targetEntity="CompanyContract", mappedBy="engineers", fetch="EXTRA_LAZY")
+     */
     public $contracts;
 
     /** @OneToMany(targetEntity="CompanyFlexUltraContract", mappedBy="salesPerson", fetch="EXTRA_LAZY") */

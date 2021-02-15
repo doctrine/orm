@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Doctrine\Tests\ORM\Functional\Ticket;
 
+use Doctrine\Common\Collections\Collection;
 use Doctrine\Tests\OrmFunctionalTestCase;
 
 /**
@@ -50,7 +51,10 @@ class DDC1151User
      */
     public $id;
 
-    /** @ManyToMany(targetEntity="DDC1151Group") */
+    /**
+     * @psalm-var Collection<int, DDC1151Group>
+     * @ManyToMany(targetEntity="DDC1151Group")
+     */
     public $groups;
 }
 

@@ -72,6 +72,7 @@ class DDC3330Test extends OrmFunctionalTestCase
 class DDC3330_Building
 {
     /**
+     * @var int
      * @Id @Column(type="integer")
      * @GeneratedValue
      */
@@ -93,6 +94,7 @@ class DDC3330_Building
 class DDC3330_Hall
 {
     /**
+     * @var int
      * @Id @Column(type="integer")
      * @GeneratedValue(strategy="AUTO")
      */

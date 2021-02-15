@@ -16,7 +16,10 @@ class DDC3699Child extends DDC3699Parent
      */
     public $childField;
 
-    /** @OneToOne(targetEntity="DDC3699RelationOne", inversedBy="child") */
+    /**
+     * @var DDC3699RelationOne
+     * @OneToOne(targetEntity="DDC3699RelationOne", inversedBy="child")
+     */
     public $oneRelation;
 
     /** @OneToMany(targetEntity="DDC3699RelationMany", mappedBy="child") */

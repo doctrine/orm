@@ -106,7 +106,10 @@ class DDC522Customer
     /** @Column */
     public $name;
 
-    /** @OneToOne(targetEntity="DDC522Cart", mappedBy="customer") */
+    /**
+     * @var DDC522Cart
+     * @OneToOne(targetEntity="DDC522Cart", mappedBy="customer")
+     */
     public $cart;
 }
 
@@ -121,7 +124,10 @@ class DDC522Cart
      */
     public $id;
 
-    /** @Column(type="integer") */
+    /**
+     * @var int
+     * @Column(type="integer")
+     */
     public $total;
 
     /**

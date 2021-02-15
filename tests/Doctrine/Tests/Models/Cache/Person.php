@@ -22,7 +22,10 @@ class Person
     /** @Column(unique=true) */
     public $name;
 
-    /** @OneToOne(targetEntity="Address", mappedBy="person") */
+    /**
+     * @var Address
+     * @OneToOne(targetEntity="Address", mappedBy="person")
+     */
     public $address;
 
     public function __construct($name)

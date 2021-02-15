@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Doctrine\Tests\ORM\Functional;
 
 use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Proxy\Proxy;
 use Doctrine\Tests\OrmFunctionalTestCase;
 use Exception;
@@ -96,7 +97,10 @@ class CTIParent
     */
     private $id;
 
-    /** @OneToOne(targetEntity="CTIRelated", mappedBy="ctiParent") */
+    /**
+     * @var CTIRelated
+     * @OneToOne(targetEntity="CTIRelated", mappedBy="ctiParent")
+     */
     private $related;
 
     public function getId()
@@ -142,6 +146,7 @@ class CTIChild extends CTIParent
 class CTIRelated
 {
     /**
+     * @var int
      * @Id @Column(type="integer")
      * @GeneratedValue(strategy="AUTO")
      */
@@ -179,7 +184,10 @@ class CTIRelated2
      * @GeneratedValue
      */
     private $id;
-    /** @ManyToMany(targetEntity="CTIChild") */
+    /**
+     * @psalm-var Collection<int, CTIChild>
+     * @ManyToMany(targetEntity="CTIChild")
+     */
     private $ctiChildren;
 
     public function __construct()

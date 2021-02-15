@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Doctrine\Tests\Models\Quote;
 
+use Doctrine\Common\Collections\Collection;
+
 /**
  * @Entity
  * @Table(name="`quote-group`")
@@ -28,7 +30,10 @@ class Group
      */
     public $parent;
 
-    /** @ManyToMany(targetEntity="User", mappedBy="groups") */
+    /**
+     * @psalm-var Collection<int, User>
+     * @ManyToMany(targetEntity="User", mappedBy="groups")
+     */
     public $users;
 
     public function __construct($name = null, ?Group $parent = null)

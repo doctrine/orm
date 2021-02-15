@@ -114,20 +114,25 @@ class DDC881User
      * @GeneratedValue(strategy="AUTO")
      */
     private $id;
+
     /**
      * @var string
      * @Column(type="string")
      */
     private $name;
-    /** @OneToMany(targetEntity="DDC881PhoneNumber",mappedBy="id") */
+
+    /**
+     * @psalm-var Collection<int, DDC881PhoneNumber>
+     * @OneToMany(targetEntity="DDC881PhoneNumber",mappedBy="id")
+     */
     private $phoneNumbers;
 
-    public function getName()
+    public function getName(): string
     {
         return $this->name;
     }
 
-    public function setName($name): void
+    public function setName(string $name): void
     {
         $this->name = $name;
     }
@@ -159,7 +164,7 @@ class DDC881PhoneNumber
     private $phonenumber;
 
     /**
-     * @var Collection<int, DDC881PhoneCall>
+     * @psalm-var Collection<int, DDC881PhoneCall>
      * @OneToMany(targetEntity="DDC881PhoneCall", mappedBy="phonenumber")
      */
     private $calls;
@@ -169,7 +174,7 @@ class DDC881PhoneNumber
         $this->calls = new ArrayCollection();
     }
 
-    public function setId($id): void
+    public function setId(int $id): void
     {
         $this->id = $id;
     }
@@ -179,12 +184,15 @@ class DDC881PhoneNumber
         $this->user = $user;
     }
 
-    public function setPhoneNumber($phoneNumber): void
+    public function setPhoneNumber(string $phoneNumber): void
     {
         $this->phonenumber = $phoneNumber;
     }
 
-    public function getCalls()
+    /**
+     * @psalm-var Collection<int, DDC881PhoneCall>
+     */
+    public function getCalls(): Collection
     {
         return $this->calls;
     }

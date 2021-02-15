@@ -13,6 +13,7 @@ namespace Doctrine\Tests\Models\Pagination;
 class Department
 {
     /**
+     * @var int
      * @Id @Column(type="integer")
      * @GeneratedValue
      */

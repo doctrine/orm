@@ -28,6 +28,9 @@ class InversedOneToOneCompositeIdEntity
      */
     public $someProperty;
 
-    /** @OneToOne(targetEntity="OwningOneToOneCompositeIdEntity", mappedBy="associatedEntity") */
+    /**
+     * @var OwningOneToOneCompositeIdEntity
+     * @OneToOne(targetEntity="OwningOneToOneCompositeIdEntity", mappedBy="associatedEntity")
+     */
     public $associatedEntity;
 }
