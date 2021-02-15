@@ -52,6 +52,7 @@ class DDC448MainTable
     private $id;
 
     /**
+     * @var DDC448ConnectedClass
      * @ManyToOne(targetEntity="DDC448ConnectedClass",  cascade={"all"}, fetch="EAGER")
      * @JoinColumn(name="connectedClassId", referencedColumnName="id", onDelete="CASCADE", nullable=true)
      */

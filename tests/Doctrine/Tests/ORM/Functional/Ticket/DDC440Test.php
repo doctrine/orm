@@ -150,6 +150,7 @@ class DDC440Phone
 class DDC440Client
 {
     /**
+     * @var int
      * @Column(name="id", type="integer")
      * @Id
      * @GeneratedValue(strategy="AUTO")

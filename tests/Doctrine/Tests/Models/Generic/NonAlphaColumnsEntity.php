@@ -11,6 +11,7 @@ namespace Doctrine\Tests\Models\Generic;
 class NonAlphaColumnsEntity
 {
     /**
+     * @var int
      * @Id
      * @Column(type="integer", name="`simple-entity-id`")
      * @GeneratedValue(strategy="AUTO")

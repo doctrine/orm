@@ -102,6 +102,7 @@ class DDC199RelatedClass
     public $relatedData;
 
     /**
+     * @var DDC199ParentClass
      * @ManyToOne(targetEntity="DDC199ParentClass", inversedBy="relatedEntities")
      * @JoinColumn(name="parent_id", referencedColumnName="id")
      */

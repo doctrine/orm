@@ -56,6 +56,7 @@ class DDC513Item
     public $id;
 
     /**
+     * @var DDC513Price
      * @OneToOne(targetEntity="DDC513Price", cascade={"remove","persist"})
      * @JoinColumn(name="price", referencedColumnName="id")
      */

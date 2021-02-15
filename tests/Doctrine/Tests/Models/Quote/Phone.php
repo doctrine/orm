@@ -17,6 +17,7 @@ class Phone
     public $number;
 
     /**
+     * @var User
      * @ManyToOne(targetEntity="User", inversedBy="phones")
      * @JoinColumn(name="`user-id`", referencedColumnName="`user-id`")
      */

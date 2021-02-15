@@ -131,6 +131,7 @@ class DDC522Cart
     public $total;
 
     /**
+     * @var DDC522Customer
      * @OneToOne(targetEntity="DDC522Customer", inversedBy="cart")
      * @JoinColumn(name="customer", referencedColumnName="id")
      */
@@ -152,6 +153,7 @@ class DDC522ForeignKeyTest
     public $cartId;
 
     /**
+     * @var DDC522Cart
      * @OneToOne(targetEntity="DDC522Cart")
      * @JoinColumn(name="cart_id", referencedColumnName="id")
      */

@@ -18,6 +18,7 @@ class RoutingRouteBooking
     public $id;
 
     /**
+     * @var RoutingRoute
      * @ManyToOne(targetEntity="RoutingRoute", inversedBy="bookings")
      * @JoinColumn(name="route_id", referencedColumnName="id")
      */

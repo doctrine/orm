@@ -16,6 +16,7 @@ use Doctrine\Common\Collections\ArrayCollection;
 class ECommerceProduct
 {
     /**
+     * @var int
      * @Column(type="integer")
      * @Id
      * @GeneratedValue
@@ -29,6 +30,7 @@ class ECommerceProduct
     private $name;
 
     /**
+     * @var ECommerceShipping
      * @OneToOne(targetEntity="ECommerceShipping", cascade={"persist"})
      * @JoinColumn(name="shipping_id", referencedColumnName="id")
      */

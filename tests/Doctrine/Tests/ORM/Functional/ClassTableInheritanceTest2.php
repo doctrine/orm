@@ -153,6 +153,7 @@ class CTIRelated
     private $id;
 
     /**
+     * @var CTIParent
      * @OneToOne(targetEntity="CTIParent")
      * @JoinColumn(name="ctiparent_id", referencedColumnName="id")
      */

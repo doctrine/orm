@@ -100,6 +100,7 @@ class DDC1719Test extends OrmFunctionalTestCase
 class DDC1719SimpleEntity
 {
     /**
+     * @var int
      * @Id
      * @Column(type="integer", name="`simple-entity-id`")
      * @GeneratedValue(strategy="AUTO")

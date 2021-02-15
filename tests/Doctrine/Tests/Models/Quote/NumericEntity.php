@@ -11,6 +11,7 @@ namespace Doctrine\Tests\Models\Quote;
 class NumericEntity
 {
     /**
+     * @var int
      * @Id
      * @Column(type="integer", name="`1:1`")
      * @GeneratedValue(strategy="AUTO")

@@ -11,6 +11,7 @@ namespace Doctrine\Tests\Models\CMS;
 class CmsComment
 {
     /**
+     * @var int
      * @Column(type="integer")
      * @Id
      * @GeneratedValue(strategy="AUTO")
@@ -27,6 +28,7 @@ class CmsComment
      */
     public $text;
     /**
+     * @var CmsArticle
      * @ManyToOne(targetEntity="CmsArticle", inversedBy="comments")
      * @JoinColumn(name="article_id", referencedColumnName="id")
      */

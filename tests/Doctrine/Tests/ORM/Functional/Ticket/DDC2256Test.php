@@ -87,6 +87,7 @@ class DDC2256User
     public $name;
 
     /**
+     * @var DDC2256Group
      * @ManyToOne(targetEntity="DDC2256Group", inversedBy="users")A
      * @JoinColumn(name="group_id")
      */

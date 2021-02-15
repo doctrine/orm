@@ -14,6 +14,7 @@ namespace Doctrine\Tests\Models\ECommerce;
 class ECommerceCustomer
 {
     /**
+     * @var int
      * @Column(type="integer")
      * @Id
      * @GeneratedValue(strategy="AUTO")

@@ -129,6 +129,7 @@ class DDC2575A
     public $rootRelation;
 
     /**
+     * @var DDC2575B
      * @ManyToOne(targetEntity="DDC2575B")
      * @JoinColumn(name="b_id", referencedColumnName="id", nullable=FALSE, onDelete="CASCADE")
      */

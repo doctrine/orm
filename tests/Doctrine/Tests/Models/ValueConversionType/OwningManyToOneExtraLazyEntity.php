@@ -17,6 +17,7 @@ class OwningManyToOneExtraLazyEntity
     public $id2;
 
     /**
+     * @var InversedOneToManyExtraLazyEntity
      * @ManyToOne(targetEntity="InversedOneToManyExtraLazyEntity", inversedBy="associatedEntities")
      * @JoinColumn(name="associated_id", referencedColumnName="id1")
      */

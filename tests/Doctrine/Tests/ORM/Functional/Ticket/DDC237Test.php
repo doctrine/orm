@@ -86,6 +86,7 @@ class DDC237EntityX
      */
     public $data;
     /**
+     * @var DDC237EntityY
      * @OneToOne(targetEntity="DDC237EntityY")
      * @JoinColumn(name="y_id", referencedColumnName="id")
      */
@@ -127,6 +128,7 @@ class DDC237EntityZ
     public $data;
 
     /**
+     * @var DDC237EntityY
      * @OneToOne(targetEntity="DDC237EntityY")
      * @JoinColumn(name="y_id", referencedColumnName="id")
      */

@@ -19,6 +19,7 @@ class CompanyManager extends CompanyEmployee
     private $title;
 
     /**
+     * @var CompanyCar
      * @OneToOne(targetEntity="CompanyCar", cascade={"persist"})
      * @JoinColumn(name="car_id", referencedColumnName="id")
      */

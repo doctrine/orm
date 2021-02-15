@@ -161,6 +161,7 @@ class DefaultValueAddress
     public $street;
 
     /**
+     * @var DefaultValueUser
      * @OneToOne(targetEntity="DefaultValueUser")
      * @JoinColumn(name="user_id", referencedColumnName="id")
      */

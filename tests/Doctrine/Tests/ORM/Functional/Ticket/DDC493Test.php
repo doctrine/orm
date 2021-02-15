@@ -48,6 +48,7 @@ class DDC493Customer
      */
     public $id;
     /**
+     * @var DDC493Contact
      * @OneToOne(targetEntity="DDC493Contact", cascade={"remove","persist"})
      * @JoinColumn(name="contact", referencedColumnName="id")
      */
