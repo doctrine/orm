@@ -35,6 +35,7 @@ use ReflectionClass;
 
 use function array_map;
 use function array_merge;
+use function count;
 use function end;
 use function in_array;
 use function trigger_error;
@@ -165,8 +166,6 @@ abstract class AbstractHydrator
 
         $this->prepare();
 
-        $result = [];
-
         while (true) {
             $row = $this->_stmt->fetch(FetchMode::ASSOCIATIVE);
 
@@ -176,9 +175,17 @@ abstract class AbstractHydrator
                 break;
             }
 
+            $result = [];
+
             $this->hydrateRowData($row, $result);
 
-            yield end($result);
+            $this->cleanupAfterRowIteration();
+
+            if (count($result) === 1) {
+                yield end($result);
+            } else {
+                yield $result;
+            }
         }
     }
 
@@ -272,6 +279,10 @@ abstract class AbstractHydrator
             ->_em
             ->getEventManager()
             ->removeEventListener([Events::onClear], $this);
+    }
+
+    protected function cleanupAfterRowIteration(): void
+    {
     }
 
     /**
