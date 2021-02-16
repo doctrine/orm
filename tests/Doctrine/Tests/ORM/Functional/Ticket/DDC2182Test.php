@@ -63,6 +63,7 @@ class DDC2182OptionChild
     private $id;
 
     /**
+     * @var DDC2182OptionParent
      * @ManyToOne(targetEntity="DDC2182OptionParent")
      * @JoinColumn(referencedColumnName="id")
      */

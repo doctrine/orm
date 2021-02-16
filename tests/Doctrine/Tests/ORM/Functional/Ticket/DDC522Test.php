@@ -103,7 +103,10 @@ class DDC522Customer
      */
     public $id;
 
-    /** @Column */
+    /**
+     * @var mixed
+     * @Column
+     */
     public $name;
 
     /**
@@ -131,6 +134,7 @@ class DDC522Cart
     public $total;
 
     /**
+     * @var DDC522Customer
      * @OneToOne(targetEntity="DDC522Customer", inversedBy="cart")
      * @JoinColumn(name="customer", referencedColumnName="id")
      */
@@ -148,10 +152,14 @@ class DDC522ForeignKeyTest
      */
     public $id;
 
-    /** @Column(type="integer", name="cart_id", nullable=true) */
+    /**
+     * @var int
+     * @Column(type="integer", name="cart_id", nullable=true)
+     */
     public $cartId;
 
     /**
+     * @var DDC522Cart
      * @OneToOne(targetEntity="DDC522Cart")
      * @JoinColumn(name="cart_id", referencedColumnName="id")
      */

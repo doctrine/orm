@@ -71,6 +71,7 @@ class DDC1436Page
      */
     protected $id;
     /**
+     * @var DDC1436Page
      * @ManyToOne(targetEntity="DDC1436Page")
      * @JoinColumn(name="pid", referencedColumnName="id")
      */

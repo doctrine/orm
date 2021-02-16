@@ -193,6 +193,7 @@ class DDC3644Address
     public $id;
 
     /**
+     * @var DDC3644User
      * @ManyToOne(targetEntity="DDC3644User", inversedBy="addresses")
      * @JoinColumn(referencedColumnName="hash_id")
      */
@@ -244,6 +245,7 @@ abstract class DDC3644Animal
 class DDC3644Pet extends DDC3644Animal
 {
     /**
+     * @var DDC3644User
      * @ManyToOne(targetEntity="DDC3644User", inversedBy="pets")
      * @JoinColumn(referencedColumnName="hash_id")
      */

@@ -24,6 +24,7 @@ class CmsEmployee
     private $name;
 
     /**
+     * @var CmsEmployee
      * @OneToOne(targetEntity="CmsEmployee")
      * @JoinColumn(name="spouse_id", referencedColumnName="id")
      */

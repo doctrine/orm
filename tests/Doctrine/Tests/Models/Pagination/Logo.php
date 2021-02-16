@@ -38,6 +38,7 @@ class Logo
     public $image_width;
 
     /**
+     * @var Company
      * @OneToOne(targetEntity="Company", inversedBy="logo", cascade={"persist"})
      * @JoinColumn(name="company_id")
      */

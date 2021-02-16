@@ -54,7 +54,10 @@ class DBAL483Default
      */
     public $id;
 
-    /** @Column(type="integer", options={"default": 0}) */
+    /**
+     * @var int
+     * @Column(type="integer", options={"default": 0})
+     */
     public $num;
 
     /**

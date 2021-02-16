@@ -16,12 +16,14 @@ class RoutingLeg
     public $id;
 
     /**
+     * @var RoutingLocation
      * @ManyToOne(targetEntity="RoutingLocation")
      * @JoinColumn(name="from_id", referencedColumnName="id")
      */
     public $fromLocation;
 
     /**
+     * @var RoutingLocation
      * @ManyToOne(targetEntity="RoutingLocation")
      * @JoinColumn(name="to_id", referencedColumnName="id")
      */

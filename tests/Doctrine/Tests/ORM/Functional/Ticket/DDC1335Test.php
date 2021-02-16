@@ -212,6 +212,7 @@ class DDC1335Phone
     public $numericalValue;
 
     /**
+     * @var DDC1335User
      * @ManyToOne(targetEntity="DDC1335User", inversedBy="phones")
      * @JoinColumn(name="user_id", referencedColumnName="id", nullable = false)
      */

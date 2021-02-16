@@ -126,15 +126,18 @@ class DDC3785_Attribute
 /** @Embeddable */
 class DDC3785_AssetId
 {
-    /** @Column(type = "guid") */
+    /**
+     * @var string
+     * @Column(type = "guid")
+     */
     private $id;
 
-    public function __construct($id)
+    public function __construct(string $id)
     {
         $this->id = $id;
     }
 
-    public function __toString()
+    public function __toString(): string
     {
         return $this->id;
     }

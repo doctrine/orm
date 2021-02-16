@@ -38,6 +38,7 @@ class DDC588Test extends OrmFunctionalTestCase
 class DDC588Site
 {
     /**
+     * @var int
      * @Id
      * @Column(type="integer", name="site_id")
      * @GeneratedValue

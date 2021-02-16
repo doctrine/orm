@@ -18,7 +18,10 @@ class CustomIdObjectTypeChild
      */
     public $id;
 
-    /** @ManyToOne(targetEntity="Doctrine\Tests\Models\CustomType\CustomIdObjectTypeParent", inversedBy="children") */
+    /**
+     * @var CustomIdObjectTypeParent
+     * @ManyToOne(targetEntity="Doctrine\Tests\Models\CustomType\CustomIdObjectTypeParent", inversedBy="children")
+     */
     public $parent;
 
     public function __construct(CustomIdObject $id, CustomIdObjectTypeParent $parent)

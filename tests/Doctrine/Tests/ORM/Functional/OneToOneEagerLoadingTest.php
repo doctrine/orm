@@ -357,6 +357,7 @@ class Waggon
     /** @id @generatedValue @column(type="integer") */
     public $id;
     /**
+     * @var Train
      * @ManyToOne(targetEntity="Train", inversedBy="waggons", fetch="EAGER")
      * @JoinColumn(nullable=false)
      */

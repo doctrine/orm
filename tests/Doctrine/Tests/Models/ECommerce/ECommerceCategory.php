@@ -39,6 +39,7 @@ class ECommerceCategory
     private $children;
 
     /**
+     * @var ECommerceCategory
      * @ManyToOne(targetEntity="ECommerceCategory", inversedBy="children")
      * @JoinColumn(name="parent_id", referencedColumnName="id")
      */

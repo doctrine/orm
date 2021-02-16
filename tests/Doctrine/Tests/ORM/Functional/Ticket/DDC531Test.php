@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Doctrine\Tests\ORM\Functional\Ticket;
 
 use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Proxy\Proxy;
 use Doctrine\Tests\OrmFunctionalTestCase;
 
@@ -60,10 +61,14 @@ class DDC531Item
      */
     public $id;
 
-    /** @OneToMany(targetEntity="DDC531Item", mappedBy="parent") */
+    /**
+     * @psalm-var Collection<int, DDC531Item>
+     * @OneToMany(targetEntity="DDC531Item", mappedBy="parent")
+     */
     protected $children;
 
     /**
+     * @var DDC531Item
      * @ManyToOne(targetEntity="DDC531Item", inversedBy="children")
      * @JoinColumn(name="parentId", referencedColumnName="id")
      */
@@ -74,12 +79,15 @@ class DDC531Item
         $this->children = new ArrayCollection();
     }
 
-    public function getParent()
+    public function getParent(): DDC531Item
     {
         return $this->parent;
     }
 
-    public function getChildren()
+    /**
+     * @psalm-return Collection<int, DDC531Item>
+     */
+    public function getChildren(): Collection
     {
         return $this->children;
     }

@@ -16,6 +16,7 @@ use Doctrine\Common\Collections\ArrayCollection;
 class ECommerceCart
 {
     /**
+     * @var int
      * @Column(type="integer")
      * @Id
      * @GeneratedValue
@@ -26,6 +27,7 @@ class ECommerceCart
     private $payment;
 
     /**
+     * @var ECommerceCustomer
      * @OneToOne(targetEntity="ECommerceCustomer", inversedBy="cart")
      * @JoinColumn(name="customer_id", referencedColumnName="id")
      */

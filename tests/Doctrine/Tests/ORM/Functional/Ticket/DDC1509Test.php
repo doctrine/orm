@@ -66,6 +66,7 @@ class DDC1509Test extends OrmFunctionalTestCase
 class DDC1509Picture
 {
     /**
+     * @var int
      * @Column(type="integer")
      * @Id
      * @GeneratedValue(strategy="AUTO")
@@ -128,6 +129,7 @@ class DDC1509Picture
 class DDC1509AbstractFile
 {
     /**
+     * @var int
      * @Column(type="integer")
      * @Id
      * @GeneratedValue(strategy="AUTO")

@@ -22,6 +22,7 @@ class Login
     public $name;
 
     /**
+     * @var Token
      * @ManyToOne(targetEntity="Token", cascade={"persist", "remove"}, inversedBy="logins")
      * @JoinColumn(name="token_id", referencedColumnName="token")
      */

@@ -59,16 +59,25 @@ abstract class DDC3303Person
  */
 class DDC3303Address
 {
-    /** @Column(type="string") @var string */
+    /**
+     * @var string
+     * @Column(type="string")
+     */
     private $street;
 
-    /** @Column(type="integer") @var int */
+    /**
+     * @var int
+     * @Column(type="integer")
+     */
     private $number;
 
-    /** @Column(type="string") @var string */
+    /**
+     * @var string
+     * @Column(type="string")
+     */
     private $city;
 
-    public function __construct($street, $number, $city)
+    public function __construct(string $street, int $number, string $city)
     {
         $this->street = $street;
         $this->number = $number;
@@ -82,7 +91,10 @@ class DDC3303Address
  */
 class DDC3303Employee extends DDC3303Person
 {
-    /** @Column(type="string") @var string */
+    /**
+     * @var string
+     * @Column(type="string")
+     */
     private $company;
 
     public function __construct($name, DDC3303Address $address, $company)

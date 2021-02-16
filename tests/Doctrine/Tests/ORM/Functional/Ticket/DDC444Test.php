@@ -6,6 +6,8 @@ namespace Doctrine\Tests\ORM\Functional\Ticket;
 
 use Doctrine\Tests\OrmFunctionalTestCase;
 
+use function sprintf;
+
 class DDC444Test extends OrmFunctionalTestCase
 {
     protected function setUp(): void
@@ -30,7 +32,7 @@ class DDC444Test extends OrmFunctionalTestCase
         $this->_em->flush();
         $this->_em->clear();
 
-        $q = $this->_em->createQuery("SELECT u FROM $classname u");
+        $q = $this->_em->createQuery(sprintf('SELECT u FROM %s u', $classname));
         $u = $q->getSingleResult();
         $this->assertEquals('Initial value', $u->name);
 
@@ -40,7 +42,7 @@ class DDC444Test extends OrmFunctionalTestCase
         $this->_em->flush();
         $this->_em->clear();
 
-        $u = $this->_em->createQuery("SELECT u FROM $classname u");
+        $u = $this->_em->createQuery(sprintf('SELECT u FROM %s u', $classname));
         $u = $q->getSingleResult();
 
         $this->assertEquals('Initial value', $u->name);
@@ -50,7 +52,7 @@ class DDC444Test extends OrmFunctionalTestCase
         // Now we however persisted it, and this should have updated our friend
         $this->_em->flush();
 
-        $q = $this->_em->createQuery("SELECT u FROM $classname u");
+        $q = $this->_em->createQuery(sprintf('SELECT u FROM %s u', $classname));
         $u = $q->getSingleResult();
 
         $this->assertEquals('Modified value', $u->name);

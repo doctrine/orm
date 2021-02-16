@@ -56,6 +56,7 @@ class DDC1526Test extends OrmFunctionalTestCase
 class DDC1526Menu
 {
     /**
+     * @var int
      * @Column(type="integer")
      * @Id
      * @GeneratedValue

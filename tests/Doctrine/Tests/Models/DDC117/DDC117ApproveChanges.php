@@ -18,6 +18,7 @@ class DDC117ApproveChanges
     private $id;
 
     /**
+     * @var DDC117ArticleDetails
      * @ManyToOne(targetEntity="DDC117ArticleDetails")
      * @JoinColumn(name="details_id", referencedColumnName="article_id")
      */
