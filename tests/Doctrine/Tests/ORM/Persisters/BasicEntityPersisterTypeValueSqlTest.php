@@ -166,12 +166,12 @@ class BasicEntityPersisterTypeValueSqlTest extends OrmTestCase
         $parent = new CustomTypeParent();
         $parent->addMyFriend($friend);
 
-        $this->_em->getUnitOfWork()->registerManaged($parent, ['id' => 1], []);
-        $this->_em->getUnitOfWork()->registerManaged($friend, ['id' => 2], []);
+        $this->entityManager->getUnitOfWork()->registerManaged($parent, ['id' => 1], []);
+        $this->entityManager->getUnitOfWork()->registerManaged($friend, ['id' => 2], []);
 
-        $this->_persister->delete($parent);
+        $this->persister->delete($parent);
 
-        $deletes = $this->_em->getConnection()->getDeletes();
+        $deletes = $this->entityManager->getConnection()->getDeletes();
 
         self::assertEquals([
             'table' => 'customtype_parent_friends',
