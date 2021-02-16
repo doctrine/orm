@@ -13,6 +13,7 @@ use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\EntityManagerInterface;
 use GearmanWorker;
 use InvalidArgumentException;
+use Symfony\Component\Cache\Adapter\ArrayAdapter;
 
 use function assert;
 use function is_array;
@@ -121,9 +122,9 @@ class LockAgentWorker
 
         $annotDriver = $config->newDefaultAnnotationDriver([__DIR__ . '/../../../Models/'], true);
         $config->setMetadataDriverImpl($annotDriver);
+        $config->setMetadataCache(new ArrayAdapter());
 
         $cache = new ArrayCache();
-        $config->setMetadataCacheImpl($cache);
         $config->setQueryCacheImpl($cache);
         $config->setSQLLogger(new EchoSQLLogger());
 

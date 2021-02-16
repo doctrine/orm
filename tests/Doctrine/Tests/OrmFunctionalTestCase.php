@@ -21,7 +21,9 @@ use Doctrine\Tests\EventListener\CacheMetadataListener;
 use Exception;
 use PHPUnit\Framework\AssertionFailedError;
 use PHPUnit\Framework\Warning;
+use Psr\Cache\CacheItemPoolInterface;
 use RuntimeException;
+use Symfony\Component\Cache\Adapter\ArrayAdapter;
 use Throwable;
 
 use function array_map;
@@ -50,9 +52,9 @@ abstract class OrmFunctionalTestCase extends OrmTestCase
     /**
      * The metadata cache shared between all functional tests.
      *
-     * @var Cache|null
+     * @var Cache|CacheItemPoolInterface|null
      */
-    private static $_metadataCacheImpl = null;
+    private static $_metadataCache = null;
 
     /**
      * The query cache shared between all functional tests.
@@ -699,11 +701,11 @@ abstract class OrmFunctionalTestCase extends OrmTestCase
         // NOTE: Functional tests use their own shared metadata cache, because
         // the actual database platform used during execution has effect on some
         // metadata mapping behaviors (like the choice of the ID generation).
-        if (self::$_metadataCacheImpl === null) {
+        if (self::$_metadataCache === null) {
             if (isset($GLOBALS['DOCTRINE_CACHE_IMPL'])) {
-                self::$_metadataCacheImpl = new $GLOBALS['DOCTRINE_CACHE_IMPL']();
+                self::$_metadataCache = new $GLOBALS['DOCTRINE_CACHE_IMPL']();
             } else {
-                self::$_metadataCacheImpl = new ArrayCache();
+                self::$_metadataCache = new ArrayAdapter();
             }
         }
 
@@ -717,7 +719,12 @@ abstract class OrmFunctionalTestCase extends OrmTestCase
         //FIXME: two different configs! $conn and the created entity manager have
         // different configs.
         $config = new Configuration();
-        $config->setMetadataCacheImpl(self::$_metadataCacheImpl);
+        if (self::$_metadataCache instanceof CacheItemPoolInterface) {
+            $config->setMetadataCache(self::$_metadataCache);
+        } else {
+            $config->setMetadataCacheImpl(self::$_metadataCache);
+        }
+
         $config->setQueryCacheImpl(self::$_queryCacheImpl);
         $config->setProxyDir(__DIR__ . '/Proxies');
         $config->setProxyNamespace('Doctrine\Tests\Proxies');

@@ -19,7 +19,9 @@ use Doctrine\ORM\Query\ResultSetMapping;
 use Doctrine\Persistence\Mapping\Driver\MappingDriver;
 use Doctrine\Tests\Models\DDC753\DDC753CustomRepository;
 use PHPUnit\Framework\TestCase;
+use Psr\Cache\CacheItemPoolInterface;
 use ReflectionClass;
+use Symfony\Component\Cache\Adapter\ArrayAdapter;
 
 /**
  * Tests for the Configuration object
@@ -131,6 +133,14 @@ class ConfigurationTest extends TestCase
         $this->assertSame($queryCacheImpl, $this->configuration->getMetadataCacheImpl());
     }
 
+    public function testSetGetMetadataCache(): void
+    {
+        $this->assertNull($this->configuration->getMetadataCache());
+        $cache = $this->createMock(CacheItemPoolInterface::class);
+        $this->configuration->setMetadataCache($cache);
+        $this->assertSame($cache, $this->configuration->getMetadataCache());
+    }
+
     public function testAddGetNamedQuery(): void
     {
         $dql = 'SELECT u FROM User u';
@@ -182,7 +192,17 @@ class ConfigurationTest extends TestCase
         $this->addToAssertionCount(1);
     }
 
-    public function testEnsureProductionSettingsQueryCache(): void
+    public function testEnsureProductionSettingsWithNewMetadataCache(): void
+    {
+        $this->setProductionSettings('metadata');
+        $this->configuration->setMetadataCache(new ArrayAdapter());
+
+        $this->configuration->ensureProductionSettings();
+
+        $this->addToAssertionCount(1);
+    }
+
+    public function testEnsureProductionSettingsMissingQueryCache(): void
     {
         $this->setProductionSettings('query');
 
@@ -192,7 +212,7 @@ class ConfigurationTest extends TestCase
         $this->configuration->ensureProductionSettings();
     }
 
-    public function testEnsureProductionSettingsMetadataCache(): void
+    public function testEnsureProductionSettingsMissingMetadataCache(): void
     {
         $this->setProductionSettings('metadata');
 
@@ -213,7 +233,7 @@ class ConfigurationTest extends TestCase
         $this->configuration->ensureProductionSettings();
     }
 
-    public function testEnsureProductionSettingsMetadataArrayCache(): void
+    public function testEnsureProductionSettingsLegacyLegacyMetadataArrayCache(): void
     {
         $this->setProductionSettings();
         $this->configuration->setMetadataCacheImpl(new ArrayCache());
