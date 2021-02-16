@@ -18,7 +18,10 @@ class Car
      */
     private $brand;
 
-    /** @Column(type="string", length=255); */
+    /**
+     * @var string
+     * @Column(type="string", length=255);
+     */
     private $model;
 
     /** @OneToMany(targetEntity="Ride", mappedBy="car") */

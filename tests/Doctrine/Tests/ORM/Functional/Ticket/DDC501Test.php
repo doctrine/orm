@@ -91,7 +91,7 @@ class DDC501Test extends OrmFunctionalTestCase
         $this->assertHasDeprecationMessages();
     }
 
-    protected function createAndPersistUser()
+    protected function createAndPersistUser(): CmsUser
     {
         $user           = new CmsUser();
         $user->name     = 'Luka';

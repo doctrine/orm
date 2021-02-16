@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Doctrine\Tests\ORM\Functional\Ticket;
 
+use Doctrine\Common\Collections\Collection;
 use Doctrine\Tests\OrmFunctionalTestCase;
 use Exception;
 
@@ -29,12 +30,12 @@ class DDC440Test extends OrmFunctionalTestCase
      */
     public function testOriginalEntityDataEmptyWhenProxyLoadedFromTwoAssociations(): void
     {
-        /* The key of the problem is that the first phone is fetched via two association, main_phone and phones.
+        /* The key of the problem is that the first phone is fetched via two association, mainPhone and phones.
          *
          * You will notice that the original_entity_datas are not loaded for the first phone. (They are for the second)
          *
-         * In the Client entity definition, if you define the main_phone relation after the phones relation, both assertions pass.
-         * (for the sake or this test, I defined the main_phone relation before the phones relation)
+         * In the Client entity definition, if you define the mainPhone relation after the phones relation, both assertions pass.
+         * (for the sake or this test, I defined the mainPhone relation before the phones relation)
          *
          */
 
@@ -156,18 +157,23 @@ class DDC440Client
      * @GeneratedValue(strategy="AUTO")
      */
     protected $id;
+
     /**
+     * @var DDC440Phone
      * @OneToOne(targetEntity="DDC440Phone", fetch="EAGER")
      * @JoinColumns({
      *   @JoinColumn(name="main_phone_id", referencedColumnName="id",onDelete="SET NULL")
      * })
      */
-    protected $main_phone;
+    protected $mainPhone;
+
     /**
+     * @psalm-var Collection<int, DDC440Phone>
      * @OneToMany(targetEntity="DDC440Phone", mappedBy="client", cascade={"persist", "remove"}, fetch="EAGER", indexBy="id")
      * @OrderBy({"number"="ASC"})
      */
     protected $phones;
+
     /**
      * @var string
      * @Column(name="name", type="string")
@@ -178,12 +184,12 @@ class DDC440Client
     {
     }
 
-    public function setName($value): void
+    public function setName(string $value): void
     {
         $this->name = $value;
     }
 
-    public function getName()
+    public function getName(): string
     {
         return $this->name;
     }
@@ -194,22 +200,25 @@ class DDC440Client
         $value->setClient($this, false);
     }
 
-    public function getPhones()
+    /**
+     * @psalm-return Collection<int, DDC440Phone>
+     */
+    public function getPhones(): Collection
     {
         return $this->phones;
     }
 
     public function setMainPhone(DDC440Phone $value): void
     {
-        $this->main_phone = $value;
+        $this->mainPhone = $value;
     }
 
-    public function getMainPhone()
+    public function getMainPhone(): DDC440Phone
     {
-        return $this->main_phone;
+        return $this->mainPhone;
     }
 
-    public function getId()
+    public function getId(): int
     {
         return $this->id;
     }

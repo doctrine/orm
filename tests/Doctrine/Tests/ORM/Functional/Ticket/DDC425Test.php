@@ -4,7 +4,8 @@ declare(strict_types=1);
 
 namespace Doctrine\Tests\ORM\Functional\Ticket;
 
-use DateTime, Doctrine\DBAL\Types\Type;
+use DateTime;
+use Doctrine\DBAL\Types\Type;
 use Doctrine\Tests\OrmFunctionalTestCase;
 
 class DDC425Test extends OrmFunctionalTestCase
@@ -43,6 +44,9 @@ class DDC425Entity
      */
     public $id;
 
-    /** @Column(type="datetime") */
+    /**
+     * @var DateTime
+     * @Column(type="datetime")
+     */
     public $someDatetimeField;
 }

@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Doctrine\Tests\ORM\Functional\Ticket;
 
 use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\PersistentCollection;
 use Doctrine\Tests\OrmFunctionalTestCase;
 
@@ -70,11 +71,12 @@ class DDC422Guest
 class DDC422Customer extends DDC422Guest
 {
     /**
+     * @var Collection<int, DDC422Contact>
      * @ManyToMany(targetEntity="DDC422Contact", cascade={"persist","remove"})
      * @JoinTable(name="ddc422_customers_contacts",
      *      joinColumns={@JoinColumn(name="customer_id", referencedColumnName="id", onDelete="cascade" )},
      *      inverseJoinColumns={@JoinColumn(name="contact_id", referencedColumnName="id", onDelete="cascade" )}
-     *      )
+     *  )
      */
     public $contacts;
 

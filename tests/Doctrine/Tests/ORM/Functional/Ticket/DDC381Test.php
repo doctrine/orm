@@ -60,7 +60,7 @@ class DDC381Entity
      */
     protected $id;
 
-    public function getId()
+    public function getId(): int
     {
         return $this->id;
     }

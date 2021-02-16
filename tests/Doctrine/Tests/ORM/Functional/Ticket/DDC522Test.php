@@ -103,7 +103,10 @@ class DDC522Customer
      */
     public $id;
 
-    /** @Column */
+    /**
+     * @var mixed
+     * @Column
+     */
     public $name;
 
     /**
@@ -149,7 +152,10 @@ class DDC522ForeignKeyTest
      */
     public $id;
 
-    /** @Column(type="integer", name="cart_id", nullable=true) */
+    /**
+     * @var int
+     * @Column(type="integer", name="cart_id", nullable=true)
+     */
     public $cartId;
 
     /**
