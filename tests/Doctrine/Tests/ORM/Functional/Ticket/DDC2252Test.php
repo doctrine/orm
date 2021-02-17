@@ -111,6 +111,7 @@ class DDC2252Test extends OrmFunctionalTestCase
 class DDC2252Privilege
 {
     /**
+     * @var int
      * @Id
      * @GeneratedValue
      * @Column(type="integer")
@@ -130,6 +131,7 @@ class DDC2252Privilege
 class DDC2252MerchantAccount
 {
     /**
+     * @var int
      * @Id
      * @Column(type="integer")
      */
@@ -148,6 +150,7 @@ class DDC2252MerchantAccount
 class DDC2252User
 {
     /**
+     * @var int
      * @Id
      * @Column(type="integer")
      */

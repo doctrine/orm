@@ -9,8 +9,6 @@ use Doctrine\Tests\OrmTestCase;
 
 class LexerTest extends OrmTestCase
 {
-    private $_lexer;
-
     /**
      * @dataProvider provideTokens
      */
@@ -229,7 +227,8 @@ class LexerTest extends OrmTestCase
         $this->assertFalse($lexer->moveNext());
     }
 
-    public function provideTokens()
+    /** @psalm-return list<array{int, string}> */
+    public function provideTokens(): array
     {
         return [
             [Lexer::T_IDENTIFIER, 'u'], // one char

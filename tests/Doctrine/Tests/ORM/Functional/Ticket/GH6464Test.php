@@ -50,10 +50,18 @@ class GH6464Test extends OrmFunctionalTestCase
 /** @Entity */
 class GH6464Post
 {
-    /** @Id @Column(type="integer") @GeneratedValue */
+    /**
+     * @var int
+     * @Id
+     * @Column(type="integer")
+     * @GeneratedValue
+     */
     public $id;
 
-    /** @Column(type="integer") */
+    /**
+     * @var int
+     * @Column(type="integer")
+     */
     public $authorId;
 }
 
@@ -65,7 +73,12 @@ class GH6464Post
  */
 abstract class GH6464User
 {
-    /** @Id @Column(type="integer") @GeneratedValue */
+    /**
+     * @var int
+     * @Id
+     * @Column(type="integer")
+     * @GeneratedValue
+     */
     public $id;
 }
 

@@ -123,6 +123,7 @@ class DDC2862Test extends OrmFunctionalTestCase
 class DDC2862Driver
 {
     /**
+     * @var int
      * @Id
      * @GeneratedValue
      * @Column(type="integer")
@@ -182,6 +183,7 @@ class DDC2862Driver
 class DDC2862User
 {
     /**
+     * @var int
      * @Id
      * @GeneratedValue
      * @Column(type="integer")

@@ -102,12 +102,20 @@ class DDC1655Test extends OrmFunctionalTestCase
  */
 class DDC1655Foo
 {
-    /** @Id @GeneratedValue @Column(type="integer") */
+    /**
+     * @var int
+     * @Id
+     * @GeneratedValue
+     * @Column(type="integer")
+     */
     public $id;
 
     public $loaded = 0;
 
-    /** @ManyToOne(targetEntity="DDC1655Baz", inversedBy="foos") */
+    /**
+     * @var DDC1655Baz
+     * @ManyToOne(targetEntity="DDC1655Baz", inversedBy="foos")
+     */
     public $baz;
 
     /**
@@ -141,7 +149,12 @@ class DDC1655Bar extends DDC1655Foo
  */
 class DDC1655Baz
 {
-    /** @Id @GeneratedValue @Column(type="integer") */
+    /**
+     * @var int
+     * @Id
+     * @GeneratedValue
+     * @Column(type="integer")
+     */
     public $id;
 
     /** @OneToMany(targetEntity="DDC1655Foo", mappedBy="baz") */

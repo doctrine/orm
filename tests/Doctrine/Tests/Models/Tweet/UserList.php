@@ -11,15 +11,22 @@ namespace Doctrine\Tests\Models\Tweet;
 class UserList
 {
     /**
+     * @var int
      * @Id
      * @GeneratedValue
      * @Column(type="integer")
      */
     public $id;
 
-    /** @Column(type="string") */
+    /**
+     * @var string
+     * @Column(type="string")
+     */
     public $listName;
 
-    /** @ManyToOne(targetEntity="User", inversedBy="userLists") */
+    /**
+     * @var User
+     * @ManyToOne(targetEntity="User", inversedBy="userLists")
+     */
     public $owner;
 }

@@ -81,10 +81,18 @@ class DDC633Test extends OrmFunctionalTestCase
  */
 class DDC633Appointment
 {
-    /** @Id @Column(type="integer") @GeneratedValue */
+    /**
+     * @var int
+     * @Id
+     * @Column(type="integer")
+     * @GeneratedValue
+     */
     public $id;
 
-    /** @OneToOne(targetEntity="DDC633Patient", inversedBy="appointment", fetch="EAGER") */
+    /**
+     * @var DDC633Patient
+     * @OneToOne(targetEntity="DDC633Patient", inversedBy="appointment", fetch="EAGER")
+     */
     public $patient;
 }
 
@@ -93,9 +101,17 @@ class DDC633Appointment
  */
 class DDC633Patient
 {
-    /** @Id @Column(type="integer") @GeneratedValue */
+    /**
+     * @var int
+     * @Id
+     * @Column(type="integer")
+     * @GeneratedValue
+     */
     public $id;
 
-    /** @OneToOne(targetEntity="DDC633Appointment", mappedBy="patient") */
+    /**
+     * @var DDC633Appointment
+     * @OneToOne(targetEntity="DDC633Appointment", mappedBy="patient")
+     */
     public $appointment;
 }

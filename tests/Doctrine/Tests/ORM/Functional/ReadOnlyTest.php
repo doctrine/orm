@@ -90,7 +90,10 @@ class ReadOnlyEntity
     public $id;
     /** @column(type="string") */
     public $name;
-    /** @Column(type="integer") */
+    /**
+     * @var int
+     * @Column(type="integer")
+     */
     public $numericValue;
 
     public function __construct($name, $number)

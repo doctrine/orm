@@ -273,12 +273,16 @@ class OptimisticTest extends OrmFunctionalTestCase
 class OptimisticJoinedParent
 {
     /**
+     * @var int
      * @Id @Column(type="integer")
      * @GeneratedValue(strategy="AUTO")
      */
     public $id;
 
-    /** @Column(type="string", length=255) */
+    /**
+     * @var string
+     * @Column(type="string", length=255)
+     */
     public $name;
 
     /** @Version @Column(type="integer") */
@@ -291,7 +295,10 @@ class OptimisticJoinedParent
  */
 class OptimisticJoinedChild extends OptimisticJoinedParent
 {
-    /** @Column(type="string", length=255) */
+    /**
+     * @var string
+     * @Column(type="string", length=255)
+     */
     public $whatever;
 }
 
@@ -302,12 +309,16 @@ class OptimisticJoinedChild extends OptimisticJoinedParent
 class OptimisticStandard
 {
     /**
+     * @var int
      * @Id @Column(type="integer")
      * @GeneratedValue(strategy="AUTO")
      */
     public $id;
 
-    /** @Column(type="string", length=255) */
+    /**
+     * @var string
+     * @Column(type="string", length=255)
+     */
     public $name;
 
     /** @Version @Column(type="integer") */
@@ -326,12 +337,16 @@ class OptimisticStandard
 class OptimisticTimestamp
 {
     /**
+     * @var int
      * @Id @Column(type="integer")
      * @GeneratedValue(strategy="AUTO")
      */
     public $id;
 
-    /** @Column(type="string", length=255) */
+    /**
+     * @var string
+     * @Column(type="string", length=255)
+     */
     public $name;
 
     /** @Version @Column(type="datetime") */

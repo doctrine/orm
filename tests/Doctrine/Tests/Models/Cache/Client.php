@@ -11,6 +11,7 @@ namespace Doctrine\Tests\Models\Cache;
 class Client
 {
     /**
+     * @var int
      * @Id
      * @GeneratedValue
      * @Column(type="integer")

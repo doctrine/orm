@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Doctrine\Tests\Models\Cache;
 
 use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping\ClassMetadataInfo;
 
 /**
@@ -15,6 +16,7 @@ use Doctrine\ORM\Mapping\ClassMetadataInfo;
 class City
 {
     /**
+     * @var int
      * @Id
      * @GeneratedValue
      * @Column(type="integer")
@@ -31,7 +33,10 @@ class City
      */
     protected $state;
 
-     /** @ManyToMany(targetEntity="Travel", mappedBy="visitedCities") */
+    /**
+     * @var Collection<int, Travel>
+     * @ManyToMany(targetEntity="Travel", mappedBy="visitedCities")
+     */
     public $travels;
 
      /**

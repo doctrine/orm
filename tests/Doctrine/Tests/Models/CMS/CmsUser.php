@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Doctrine\Tests\Models\CMS;
 
 use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping\ClassMetadataInfo;
 
 /**
@@ -122,28 +123,58 @@ use Doctrine\ORM\Mapping\ClassMetadataInfo;
 class CmsUser
 {
     /**
-     * @Id @Column(type="integer")
+     * @var int
+     * @Id
+     * @Column(type="integer")
      * @GeneratedValue
      */
     public $id;
-    /** @Column(type="string", length=50, nullable=true) */
-    public $status;
-    /** @Column(type="string", length=255, unique=true) */
-    public $username;
-    /** @Column(type="string", length=255) */
-    public $name;
-    /** @OneToMany(targetEntity="CmsPhonenumber", mappedBy="user", cascade={"persist", "merge"}, orphanRemoval=true) */
-    public $phonenumbers;
-    /** @OneToMany(targetEntity="CmsArticle", mappedBy="user", cascade={"detach"}) */
-    public $articles;
-    /** @OneToOne(targetEntity="CmsAddress", mappedBy="user", cascade={"persist"}, orphanRemoval=true) */
-    public $address;
+
     /**
+     * @var string
+     * @Column(type="string", length=50, nullable=true)
+     */
+    public $status;
+
+    /**
+     * @var string
+     * @Column(type="string", length=255, unique=true)
+     */
+    public $username;
+
+    /**
+     * @psalm-var string|null
+     * @Column(type="string", length=255)
+     */
+    public $name;
+
+    /**
+     * @psalm-var Collection<int, CmsPhonenumber>
+     * @OneToMany(targetEntity="CmsPhonenumber", mappedBy="user", cascade={"persist", "merge"}, orphanRemoval=true)
+     */
+    public $phonenumbers;
+
+    /**
+     * @psalm-var Collection<int, CmsArticle>
+     * @OneToMany(targetEntity="CmsArticle", mappedBy="user", cascade={"detach"})
+     */
+    public $articles;
+
+    /**
+     * @var CmsAddress
+     * @OneToOne(targetEntity="CmsAddress", mappedBy="user", cascade={"persist"}, orphanRemoval=true)
+     */
+    public $address;
+
+    /**
+     * @var CmsEmail
      * @OneToOne(targetEntity="CmsEmail", inversedBy="user", cascade={"persist"}, orphanRemoval=true)
      * @JoinColumn(referencedColumnName="id", nullable=true)
      */
     public $email;
+
     /**
+     * @psalm-var Collection<int, CmsGroup>
      * @ManyToMany(targetEntity="CmsGroup", inversedBy="users", cascade={"persist", "merge", "detach"})
      * @JoinTable(name="cms_users_groups",
      *      joinColumns={@JoinColumn(name="user_id", referencedColumnName="id")},
@@ -151,7 +182,9 @@ class CmsUser
      *      )
      */
     public $groups;
+
     /**
+     * @var Collection<int, CmsTag>
      * @ManyToMany(targetEntity="CmsTag", inversedBy="users", cascade={"all"})
      * @JoinTable(name="cms_users_tags",
      *      joinColumns={@JoinColumn(name="user_id", referencedColumnName="id")},
@@ -160,8 +193,10 @@ class CmsUser
      */
     public $tags;
 
+    /** @var mixed */
     public $nonPersistedProperty;
 
+    /** @var mixed */
     public $nonPersistedPropertyObject;
 
     public function __construct()
@@ -172,22 +207,22 @@ class CmsUser
         $this->tags         = new ArrayCollection();
     }
 
-    public function getId()
+    public function getId(): int
     {
         return $this->id;
     }
 
-    public function getStatus()
+    public function getStatus(): string
     {
         return $this->status;
     }
 
-    public function getUsername()
+    public function getUsername(): string
     {
         return $this->username;
     }
 
-    public function getName()
+    public function getName(): ?string
     {
         return $this->name;
     }
@@ -201,7 +236,10 @@ class CmsUser
         $phone->setUser($this);
     }
 
-    public function getPhonenumbers()
+    /**
+     * @psalm-return Collection<int, CmsPhonenumber>
+     */
+    public function getPhonenumbers(): Collection
     {
         return $this->phonenumbers;
     }
@@ -218,7 +256,10 @@ class CmsUser
         $group->addUser($this);
     }
 
-    public function getGroups()
+    /**
+     * @psalm-return Collection<int, CmsGroup>
+     */
+    public function getGroups(): Collection
     {
         return $this->groups;
     }
@@ -229,12 +270,12 @@ class CmsUser
         $tag->addUser($this);
     }
 
-    public function getTags()
+    public function getTags(): Collection
     {
         return $this->tags;
     }
 
-    public function removePhonenumber($index)
+    public function removePhonenumber($index): bool
     {
         if (isset($this->phonenumbers[$index])) {
             $ph = $this->phonenumbers[$index];
@@ -247,7 +288,7 @@ class CmsUser
         return false;
     }
 
-    public function getAddress()
+    public function getAddress(): CmsAddress
     {
         return $this->address;
     }

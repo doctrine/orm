@@ -12,6 +12,7 @@ namespace Doctrine\Tests\Models\GeoNames;
 class Admin1AlternateName
 {
     /**
+     * @var string
      * @Id
      * @Column(type="string", length=25)
      * @GeneratedValue(strategy="NONE")
@@ -28,7 +29,10 @@ class Admin1AlternateName
      */
     public $admin1;
 
-    /** @Column(type="string", length=255); */
+    /**
+     * @var string
+     * @Column(type="string", length=255);
+     */
     public $name;
 
     public function __construct($id, $name, Admin1 $admin1)

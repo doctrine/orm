@@ -101,20 +101,36 @@ class MergeSharedEntitiesTest extends OrmFunctionalTestCase
 /** @Entity */
 class MSEPicture
 {
-    /** @Column(type="integer") @Id @GeneratedValue */
+    /**
+     * @var int
+     * @Column(type="integer")
+     * @Id
+     * @GeneratedValue
+     */
     public $id;
 
-    /** @ManyToOne(targetEntity="MSEFile", cascade={"merge"}) */
+    /**
+     * @var MSEFile
+     * @ManyToOne(targetEntity="MSEFile", cascade={"merge"})
+     */
     public $file;
 
-    /** @ManyToOne(targetEntity="MSEFile", cascade={"merge"}) */
+    /**
+     * @var MSEFile
+     * @ManyToOne(targetEntity="MSEFile", cascade={"merge"})
+     */
     public $otherFile;
 }
 
 /** @Entity */
 class MSEFile
 {
-    /** @Column(type="integer") @Id @GeneratedValue(strategy="AUTO") */
+    /**
+     * @var int
+     * @Column(type="integer")
+     * @Id
+     * @GeneratedValue(strategy="AUTO")
+     */
     public $id;
 }
 
@@ -137,6 +153,11 @@ abstract class MSEUser
 /** @Entity */
 class MSEAdmin extends MSEUser
 {
-    /** @Column(type="integer") @Id @GeneratedValue(strategy="NONE") */
+    /**
+     * @var int
+     * @Column(type="integer")
+     * @Id
+     * @GeneratedValue(strategy="NONE")
+     */
     public $id;
 }

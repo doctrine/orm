@@ -4,22 +4,31 @@ declare(strict_types=1);
 
 namespace Doctrine\Tests\Models\Company;
 
+use Doctrine\Common\Collections\Collection;
+
 /**
  * @Entity
  * @Table(name="company_managers")
  */
 class CompanyManager extends CompanyEmployee
 {
-    /** @Column(type="string", length=250) */
+    /**
+     * @var string
+     * @Column(type="string", length=250)
+     */
     private $title;
 
     /**
+     * @var CompanyCar
      * @OneToOne(targetEntity="CompanyCar", cascade={"persist"})
      * @JoinColumn(name="car_id", referencedColumnName="id")
      */
     private $car;
 
-    /** @ManyToMany(targetEntity="CompanyFlexContract", mappedBy="managers", fetch="EXTRA_LAZY") */
+    /**
+     * @psalm-var Collection<int, CompanyFlexContract>
+     * @ManyToMany(targetEntity="CompanyFlexContract", mappedBy="managers", fetch="EXTRA_LAZY")
+     */
     public $managedContracts;
 
     public function getTitle()

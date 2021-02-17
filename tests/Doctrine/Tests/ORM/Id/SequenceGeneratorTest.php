@@ -26,7 +26,7 @@ class SequenceGeneratorTest extends OrmTestCase
     {
         parent::setUp();
 
-        $this->entityManager     = $this->_getTestEntityManager();
+        $this->entityManager     = $this->getTestEntityManager();
         $this->sequenceGenerator = new SequenceGenerator('seq', 10);
         $this->connection        = $this->entityManager->getConnection();
 

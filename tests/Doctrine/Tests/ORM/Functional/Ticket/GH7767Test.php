@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace Doctrine\Tests\ORM\Functional\Ticket;
 
+use Doctrine\Common\Collections\Collection;
 use Doctrine\Common\Collections\Criteria;
-use Doctrine\ORM\PersistentCollection;
 use Doctrine\Tests\OrmFunctionalTestCase;
 
 use function assert;
@@ -62,6 +62,7 @@ class GH7767Test extends OrmFunctionalTestCase
 class GH7767ParentEntity
 {
     /**
+     * @var int
      * @Id
      * @Column(type="integer")
      * @GeneratedValue
@@ -69,6 +70,7 @@ class GH7767ParentEntity
     private $id;
 
     /**
+     * @psalm-var Collection<int, GH7767ChildEntity>
      * @OneToMany(targetEntity=GH7767ChildEntity::class, mappedBy="parent", fetch="EXTRA_LAZY", cascade={"persist"})
      * @OrderBy({"position" = "ASC"})
      */
@@ -79,7 +81,10 @@ class GH7767ParentEntity
         $this->children[] = new GH7767ChildEntity($this, $position);
     }
 
-    public function getChildren(): PersistentCollection
+    /**
+     * @psalm-return Collection<int, GH7767ChildEntity>
+     */
+    public function getChildren(): Collection
     {
         return $this->children;
     }
@@ -91,16 +96,23 @@ class GH7767ParentEntity
 class GH7767ChildEntity
 {
     /**
+     * @var int
      * @Id
      * @Column(type="integer")
      * @GeneratedValue
      */
     private $id;
 
-    /** @Column(type="integer") */
+    /**
+     * @var int
+     * @Column(type="integer")
+     */
     public $position;
 
-    /** @ManyToOne(targetEntity=GH7767ParentEntity::class, inversedBy="children") */
+    /**
+     * @var GH7767ParentEntity
+     * @ManyToOne(targetEntity=GH7767ParentEntity::class, inversedBy="children")
+     */
     private $parent;
 
     public function __construct(GH7767ParentEntity $parent, int $position)

@@ -81,7 +81,10 @@ class DDC2230User
     /** @Id @Column(type="integer") @GeneratedValue(strategy="AUTO") */
     public $id;
 
-    /** @OneToOne(targetEntity="DDC2230Address") */
+    /**
+     * @var DDC2230Address
+     * @OneToOne(targetEntity="DDC2230Address")
+     */
     public $address;
 }
 

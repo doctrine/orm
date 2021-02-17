@@ -11,13 +11,17 @@ namespace Doctrine\Tests\Models\Taxi;
 class Driver
 {
     /**
+     * @var int
      * @Id
      * @Column(type="integer")
      * @GeneratedValue(strategy="AUTO")
      */
     private $id;
 
-    /** @Column(type="string", length=255); */
+    /**
+     * @var string
+     * @Column(type="string", length=255);
+     */
     private $name;
 
     /** @OneToMany(targetEntity="Ride", mappedBy="driver") */

@@ -104,7 +104,9 @@ class DDC837Test extends OrmFunctionalTestCase
 abstract class DDC837Super
 {
     /**
-     * @Id @Column(name="id", type="integer")
+     * @var int
+     * @Id
+     * @Column(name="id", type="integer")
      * @GeneratedValue(strategy="AUTO")
      */
     public $id;
@@ -115,13 +117,22 @@ abstract class DDC837Super
  */
 class DDC837Class1 extends DDC837Super
 {
-    /** @Column(name="title", type="string", length=150) */
+    /**
+     * @var string
+     * @Column(name="title", type="string", length=150)
+     */
     public $title;
 
-    /** @Column(name="content", type="string", length=500) */
+    /**
+     * @var string
+     * @Column(name="content", type="string", length=500)
+     */
     public $description;
 
-    /** @OneToOne(targetEntity="DDC837Aggregate") */
+    /**
+     * @var DDC837Aggregate
+     * @OneToOne(targetEntity="DDC837Aggregate")
+     */
     public $aggregate;
 }
 
@@ -130,16 +141,28 @@ class DDC837Class1 extends DDC837Super
  */
 class DDC837Class2 extends DDC837Super
 {
-    /** @Column(name="title", type="string", length=150) */
+    /**
+     * @var string
+     * @Column(name="title", type="string", length=150)
+     */
     public $title;
 
-    /** @Column(name="content", type="string", length=500) */
+    /**
+     * @var string
+     * @Column(name="content", type="string", length=500)
+     */
     public $description;
 
-    /** @Column(name="text", type="text") */
+    /**
+     * @var string
+     * @Column(name="text", type="text")
+     */
     public $text;
 
-    /** @OneToOne(targetEntity="DDC837Aggregate") */
+    /**
+     * @var DDC837Aggregate
+     * @OneToOne(targetEntity="DDC837Aggregate")
+     */
     public $aggregate;
 }
 
@@ -150,10 +173,16 @@ class DDC837Class2 extends DDC837Super
  */
 class DDC837Class3 extends DDC837Super
 {
-    /** @Column(name="title", type="string", length=150) */
+    /**
+     * @var string
+     * @Column(name="title", type="string", length=150)
+     */
     public $apples;
 
-    /** @Column(name="content", type="string", length=500) */
+    /**
+     * @var string
+     * @Column(name="content", type="string", length=500)
+     */
     public $bananas;
 }
 
@@ -163,20 +192,25 @@ class DDC837Class3 extends DDC837Super
 class DDC837Aggregate
 {
     /**
-     * @Id @Column(name="id", type="integer")
+     * @var int
+     * @Id
+     * @Column(name="id", type="integer")
      * @GeneratedValue
      */
     public $id;
 
-    /** @Column(name="sysname", type="string") */
+    /**
+     * @var string
+     * @Column(name="sysname", type="string")
+     */
     protected $sysname;
 
-    public function __construct($sysname)
+    public function __construct(string $sysname)
     {
         $this->sysname = $sysname;
     }
 
-    public function getSysname()
+    public function getSysname(): string
     {
         return $this->sysname;
     }

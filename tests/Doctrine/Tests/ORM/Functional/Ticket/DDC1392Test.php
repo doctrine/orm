@@ -80,6 +80,7 @@ class DDC1392Picture
     private $pictureId;
 
     /**
+     * @var DDC1392File
      * @ManyToOne(targetEntity="DDC1392File", cascade={"persist", "remove"})
      * @JoinColumn(name="file_id", referencedColumnName="file_id")
      */
@@ -116,6 +117,7 @@ class DDC1392Picture
 class DDC1392File
 {
     /**
+     * @var int
      * @Column(name="file_id", type="integer")
      * @Id
      * @GeneratedValue(strategy="AUTO")

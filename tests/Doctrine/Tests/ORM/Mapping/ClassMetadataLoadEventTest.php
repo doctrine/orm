@@ -15,7 +15,7 @@ class ClassMetadataLoadEventTest extends OrmTestCase
      */
     public function testEvent(): void
     {
-        $em              = $this->_getTestEntityManager();
+        $em              = $this->getTestEntityManager();
         $metadataFactory = $em->getMetadataFactory();
         $evm             = $em->getEventManager();
         $evm->addEventListener(Events::loadClassMetadata, $this);
@@ -44,12 +44,18 @@ class ClassMetadataLoadEventTest extends OrmTestCase
 class LoadEventTestEntity
 {
     /**
+     * @var int
      * @Id @Column(type="integer")
      * @GeneratedValue(strategy="AUTO")
      */
     private $id;
-    /** @Column(type="string", length=255) */
+
+    /**
+     * @var string
+     * @Column(type="string", length=255)
+     */
     private $name;
 
+    /** @var mixed */
     private $about;
 }

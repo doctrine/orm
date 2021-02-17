@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Doctrine\Tests\ORM\Functional\Ticket;
 
+use Doctrine\Common\Collections\Collection;
 use Doctrine\Tests\OrmFunctionalTestCase;
 use Exception;
 
@@ -29,12 +30,12 @@ class DDC440Test extends OrmFunctionalTestCase
      */
     public function testOriginalEntityDataEmptyWhenProxyLoadedFromTwoAssociations(): void
     {
-        /* The key of the problem is that the first phone is fetched via two association, main_phone and phones.
+        /* The key of the problem is that the first phone is fetched via two association, mainPhone and phones.
          *
          * You will notice that the original_entity_datas are not loaded for the first phone. (They are for the second)
          *
-         * In the Client entity definition, if you define the main_phone relation after the phones relation, both assertions pass.
-         * (for the sake or this test, I defined the main_phone relation before the phones relation)
+         * In the Client entity definition, if you define the mainPhone relation after the phones relation, both assertions pass.
+         * (for the sake or this test, I defined the mainPhone relation before the phones relation)
          *
          */
 
@@ -87,50 +88,57 @@ class DDC440Test extends OrmFunctionalTestCase
 class DDC440Phone
 {
     /**
+     * @var int
      * @Column(name="id", type="integer")
      * @Id
      * @GeneratedValue(strategy="AUTO")
      */
     protected $id;
+
     /**
+     * @var DDC440Client
      * @ManyToOne(targetEntity="DDC440Client",inversedBy="phones")
      * @JoinColumns({
      *   @JoinColumn(name="client_id", referencedColumnName="id")
      * })
      */
     protected $client;
-    /** @Column(name="phonenumber", type="string") */
+
+    /**
+     * @var string
+     * @Column(name="phonenumber", type="string")
+     */
     protected $number;
 
-    public function setNumber($value): void
+    public function setNumber(string $value): void
     {
         $this->number = $value;
     }
 
-    public function getNumber()
+    public function getNumber(): string
     {
         return $this->number;
     }
 
-    public function setClient(DDC440Client $value, $update_inverse = true): void
+    public function setClient(DDC440Client $value, bool $updateInverse = true): void
     {
         $this->client = $value;
-        if ($update_inverse) {
+        if ($updateInverse) {
             $value->addPhone($this);
         }
     }
 
-    public function getClient()
+    public function getClient(): DDC440Client
     {
         return $this->client;
     }
 
-    public function getId()
+    public function getId(): int
     {
         return $this->id;
     }
 
-    public function setId($value): void
+    public function setId(int $value): void
     {
         $this->id = $value;
     }
@@ -143,36 +151,45 @@ class DDC440Phone
 class DDC440Client
 {
     /**
+     * @var int
      * @Column(name="id", type="integer")
      * @Id
      * @GeneratedValue(strategy="AUTO")
      */
     protected $id;
+
     /**
+     * @var DDC440Phone
      * @OneToOne(targetEntity="DDC440Phone", fetch="EAGER")
      * @JoinColumns({
      *   @JoinColumn(name="main_phone_id", referencedColumnName="id",onDelete="SET NULL")
      * })
      */
-    protected $main_phone;
+    protected $mainPhone;
+
     /**
+     * @psalm-var Collection<int, DDC440Phone>
      * @OneToMany(targetEntity="DDC440Phone", mappedBy="client", cascade={"persist", "remove"}, fetch="EAGER", indexBy="id")
      * @OrderBy({"number"="ASC"})
      */
     protected $phones;
-    /** @Column(name="name", type="string") */
+
+    /**
+     * @var string
+     * @Column(name="name", type="string")
+     */
     protected $name;
 
     public function __construct()
     {
     }
 
-    public function setName($value): void
+    public function setName(string $value): void
     {
         $this->name = $value;
     }
 
-    public function getName()
+    public function getName(): string
     {
         return $this->name;
     }
@@ -183,22 +200,25 @@ class DDC440Client
         $value->setClient($this, false);
     }
 
-    public function getPhones()
+    /**
+     * @psalm-return Collection<int, DDC440Phone>
+     */
+    public function getPhones(): Collection
     {
         return $this->phones;
     }
 
     public function setMainPhone(DDC440Phone $value): void
     {
-        $this->main_phone = $value;
+        $this->mainPhone = $value;
     }
 
-    public function getMainPhone()
+    public function getMainPhone(): DDC440Phone
     {
-        return $this->main_phone;
+        return $this->mainPhone;
     }
 
-    public function getId()
+    public function getId(): int
     {
         return $this->id;
     }

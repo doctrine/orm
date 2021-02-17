@@ -13,6 +13,7 @@ use DateTime;
 abstract class DDC1590Entity
 {
     /**
+     * @var int
      * @Id
      * @Column(type="integer")
      * @GeneratedValue(strategy="AUTO")

@@ -4,24 +4,34 @@ declare(strict_types=1);
 
 namespace Doctrine\Tests\Models\Company;
 
+use Doctrine\Common\Collections\Collection;
+
 /** @Entity @Table(name="company_organizations") */
 class CompanyOrganization
 {
-   /**
-    * @Id @Column(type="integer")
-    * @GeneratedValue(strategy="AUTO")
-    */
+    /**
+     * @var int
+     * @Id
+     * @Column(type="integer")
+     * @GeneratedValue(strategy="AUTO")
+     */
     private $id;
 
-    /** @OneToMany(targetEntity="CompanyEvent", mappedBy="organization", cascade={"persist"}, fetch="EXTRA_LAZY") */
+    /**
+     * @psalm-var Collection<int, CompanyEvent>
+     * @OneToMany(targetEntity="CompanyEvent", mappedBy="organization", cascade={"persist"}, fetch="EXTRA_LAZY")
+     */
     public $events;
 
-    public function getId()
+    public function getId(): int
     {
         return $this->id;
     }
 
-    public function getEvents()
+    /**
+     * @psalm-return Collection<int, CompanyEvent>
+     */
+    public function getEvents(): Collection
     {
         return $this->events;
     }
@@ -33,17 +43,18 @@ class CompanyOrganization
     }
 
     /**
+     * @var CompanyEvent|null
      * @OneToOne(targetEntity="CompanyEvent", cascade={"persist"})
      * @JoinColumn(name="main_event_id", referencedColumnName="id", nullable=true)
      */
     private $mainevent;
 
-    public function getMainEvent()
+    public function getMainEvent(): ?CompanyEvent
     {
         return $this->mainevent;
     }
 
-    public function setMainEvent($event): void
+    public function setMainEvent(CompanyEvent $event): void
     {
         $this->mainevent = $event;
     }

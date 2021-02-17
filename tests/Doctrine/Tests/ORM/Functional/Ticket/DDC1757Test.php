@@ -40,6 +40,7 @@ class DDC1757Test extends OrmFunctionalTestCase
 class DDC1757A
 {
     /**
+     * @var int
      * @Column(type="integer")
      * @Id
      * @GeneratedValue(strategy="AUTO")
@@ -53,13 +54,17 @@ class DDC1757A
 class DDC1757B
 {
     /**
+     * @var int
      * @Column(type="integer")
      * @Id
      * @GeneratedValue(strategy="AUTO")
      */
     private $id;
 
-    /** @OneToOne(targetEntity="DDC1757C") */
+    /**
+     * @var DDC1757C
+     * @OneToOne(targetEntity="DDC1757C")
+     */
     private $c;
 }
 
@@ -69,13 +74,17 @@ class DDC1757B
 class DDC1757C
 {
     /**
+     * @var int
      * @Column(type="integer")
      * @Id
      * @GeneratedValue(strategy="AUTO")
      */
     public $id;
 
-    /** @OneToOne(targetEntity="DDC1757D") */
+    /**
+     * @var DDC1757D
+     * @OneToOne(targetEntity="DDC1757D")
+     */
     private $d;
 }
 
@@ -85,6 +94,7 @@ class DDC1757C
 class DDC1757D
 {
     /**
+     * @var int
      * @Column(type="integer")
      * @Id
      * @GeneratedValue(strategy="AUTO")

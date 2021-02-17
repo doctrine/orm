@@ -26,7 +26,10 @@ class Token
     /** @Column(type="date") */
     public $expiresAt;
 
-    /** @OneToOne(targetEntity="Client") */
+    /**
+     * @var Client
+     * @OneToOne(targetEntity="Client")
+     */
     public $client;
 
     /**

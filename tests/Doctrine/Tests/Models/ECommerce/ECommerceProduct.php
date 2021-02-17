@@ -16,16 +16,21 @@ use Doctrine\Common\Collections\ArrayCollection;
 class ECommerceProduct
 {
     /**
+     * @var int
      * @Column(type="integer")
      * @Id
      * @GeneratedValue
      */
     private $id;
 
-    /** @Column(type="string", length=50, nullable=true) */
+    /**
+     * @var string
+     * @Column(type="string", length=50, nullable=true)
+     */
     private $name;
 
     /**
+     * @var ECommerceShipping
      * @OneToOne(targetEntity="ECommerceShipping", cascade={"persist"})
      * @JoinColumn(name="shipping_id", referencedColumnName="id")
      */

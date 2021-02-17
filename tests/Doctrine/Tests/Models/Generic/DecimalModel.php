@@ -11,6 +11,7 @@ namespace Doctrine\Tests\Models\Generic;
 class DecimalModel
 {
     /**
+     * @var int
      * @Id @Column(type="integer")
      * @GeneratedValue(strategy="AUTO")
      */

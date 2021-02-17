@@ -85,6 +85,7 @@ class DDC258Test extends OrmFunctionalTestCase
 abstract class DDC258Super
 {
     /**
+     * @var int
      * @Id @Column(name="id", type="integer")
      * @GeneratedValue(strategy="AUTO")
      */
@@ -96,10 +97,16 @@ abstract class DDC258Super
  */
 class DDC258Class1 extends DDC258Super
 {
-    /** @Column(name="title", type="string", length=150) */
+    /**
+     * @var string
+     * @Column(name="title", type="string", length=150)
+     */
     public $title;
 
-    /** @Column(name="content", type="string", length=500) */
+    /**
+     * @var string
+     * @Column(name="content", type="string", length=500)
+     */
     public $description;
 }
 
@@ -108,10 +115,16 @@ class DDC258Class1 extends DDC258Super
  */
 class DDC258Class2 extends DDC258Super
 {
-    /** @Column(name="title", type="string", length=150) */
+    /**
+     * @var string
+     * @Column(name="title", type="string", length=150)
+     */
     public $title;
 
-    /** @Column(name="content", type="string", length=500) */
+    /**
+     * @var string
+     * @Column(name="content", type="string", length=500)
+     */
     public $description;
 
     /** @Column(name="text", type="text") */
@@ -125,9 +138,15 @@ class DDC258Class2 extends DDC258Super
  */
 class DDC258Class3 extends DDC258Super
 {
-    /** @Column(name="title", type="string", length=150) */
+    /**
+     * @var string
+     * @Column(name="title", type="string", length=150)
+     */
     public $apples;
 
-    /** @Column(name="content", type="string", length=500) */
+    /**
+     * @var string
+     * @Column(name="content", type="string", length=500)
+     */
     public $bananas;
 }

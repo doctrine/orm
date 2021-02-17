@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Doctrine\Tests\ORM\Mapping;
 
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\Events;
 use Doctrine\ORM\Mapping\ClassMetadata;
@@ -51,11 +52,14 @@ use const CASE_UPPER;
 
 abstract class AbstractMappingDriverTest extends OrmTestCase
 {
-    abstract protected function _loadDriver(): MappingDriver;
+    abstract protected function loadDriver(): MappingDriver;
 
-    public function createClassMetadata($entityClassName)
+    /**
+     * @psalm-param class-string<object> $entityClassName
+     */
+    public function createClassMetadata(string $entityClassName): ClassMetadata
     {
-        $mappingDriver = $this->_loadDriver();
+        $mappingDriver = $this->loadDriver();
 
         $class = new ClassMetadata($entityClassName);
         $class->initializeReflection(new RuntimeReflectionService());
@@ -69,8 +73,8 @@ abstract class AbstractMappingDriverTest extends OrmTestCase
      */
     protected function createClassMetadataFactory(?EntityManager $em = null): ClassMetadataFactory
     {
-        $driver  = $this->_loadDriver();
-        $em      = $em ?: $this->_getTestEntityManager();
+        $driver  = $this->loadDriver();
+        $em      = $em ?: $this->getTestEntityManager();
         $factory = new ClassMetadataFactory();
         $em->getConfiguration()->setMetadataDriverImpl($driver);
         $factory->setEntityManager($em);
@@ -78,7 +82,7 @@ abstract class AbstractMappingDriverTest extends OrmTestCase
         return $factory;
     }
 
-    public function testEntityTableNameAndInheritance()
+    public function testEntityTableNameAndInheritance(): ClassMetadata
     {
         $class = $this->createClassMetadata(User::class);
 
@@ -91,7 +95,7 @@ abstract class AbstractMappingDriverTest extends OrmTestCase
     /**
      * @depends testEntityTableNameAndInheritance
      */
-    public function testEntityIndexes(ClassMetadata $class)
+    public function testEntityIndexes(ClassMetadata $class): ClassMetadata
     {
         $this->assertArrayHasKey('indexes', $class->table, 'ClassMetadata should have indexes key in table property.');
         $this->assertEquals(
@@ -124,7 +128,7 @@ abstract class AbstractMappingDriverTest extends OrmTestCase
     /**
      * @depends testEntityTableNameAndInheritance
      */
-    public function testEntityUniqueConstraints(ClassMetadata $class)
+    public function testEntityUniqueConstraints(ClassMetadata $class): ClassMetadata
     {
         $this->assertArrayHasKey(
             'uniqueConstraints',
@@ -145,7 +149,7 @@ abstract class AbstractMappingDriverTest extends OrmTestCase
     /**
      * @depends testEntityTableNameAndInheritance
      */
-    public function testEntityOptions(ClassMetadata $class)
+    public function testEntityOptions(ClassMetadata $class): ClassMetadata
     {
         $this->assertArrayHasKey('options', $class->table, 'ClassMetadata should have options key in table property.');
 
@@ -195,7 +199,7 @@ abstract class AbstractMappingDriverTest extends OrmTestCase
     /**
      * @depends testEntityTableNameAndInheritance
      */
-    public function testFieldMappings(ClassMetadata $class)
+    public function testFieldMappings(ClassMetadata $class): ClassMetadata
     {
         $this->assertEquals(4, count($class->fieldMappings));
         $this->assertTrue(isset($class->fieldMappings['id']));
@@ -220,7 +224,7 @@ abstract class AbstractMappingDriverTest extends OrmTestCase
     /**
      * @depends testEntityTableNameAndInheritance
      */
-    public function testFieldMappingsColumnNames(ClassMetadata $class)
+    public function testFieldMappingsColumnNames(ClassMetadata $class): ClassMetadata
     {
         $this->assertEquals('id', $class->fieldMappings['id']['columnName']);
         $this->assertEquals('name', $class->fieldMappings['name']['columnName']);
@@ -232,7 +236,7 @@ abstract class AbstractMappingDriverTest extends OrmTestCase
     /**
      * @depends testEntityTableNameAndInheritance
      */
-    public function testStringFieldMappings(ClassMetadata $class)
+    public function testStringFieldMappings(ClassMetadata $class): ClassMetadata
     {
         $this->assertEquals('string', $class->fieldMappings['name']['type']);
         $this->assertEquals(50, $class->fieldMappings['name']['length']);
@@ -256,7 +260,7 @@ abstract class AbstractMappingDriverTest extends OrmTestCase
     /**
      * @depends testEntityTableNameAndInheritance
      */
-    public function testIdFieldOptions(ClassMetadata $class)
+    public function testIdFieldOptions(ClassMetadata $class): ClassMetadata
     {
         $this->assertEquals(['foo' => 'bar', 'unsigned' => false], $class->fieldMappings['id']['options']);
 
@@ -266,7 +270,7 @@ abstract class AbstractMappingDriverTest extends OrmTestCase
     /**
      * @depends testFieldMappings
      */
-    public function testIdentifier(ClassMetadata $class)
+    public function testIdentifier(ClassMetadata $class): ClassMetadata
     {
         $this->assertEquals(['id'], $class->identifier);
         $this->assertEquals('integer', $class->fieldMappings['id']['type']);
@@ -294,7 +298,7 @@ abstract class AbstractMappingDriverTest extends OrmTestCase
     /**
      * @depends testIdentifier
      */
-    public function testAssociations(ClassMetadata $class)
+    public function testAssociations(ClassMetadata $class): ClassMetadata
     {
         $this->assertEquals(3, count($class->associationMappings));
 
@@ -304,7 +308,7 @@ abstract class AbstractMappingDriverTest extends OrmTestCase
     /**
      * @depends testAssociations
      */
-    public function testOwningOneToOneAssociation(ClassMetadata $class)
+    public function testOwningOneToOneAssociation(ClassMetadata $class): ClassMetadata
     {
         $this->assertTrue(isset($class->associationMappings['address']));
         $this->assertTrue($class->associationMappings['address']['isOwningSide']);
@@ -322,7 +326,7 @@ abstract class AbstractMappingDriverTest extends OrmTestCase
     /**
      * @depends testOwningOneToOneAssociation
      */
-    public function testInverseOneToManyAssociation(ClassMetadata $class)
+    public function testInverseOneToManyAssociation(ClassMetadata $class): ClassMetadata
     {
         $this->assertTrue(isset($class->associationMappings['phonenumbers']));
         $this->assertFalse($class->associationMappings['phonenumbers']['isOwningSide']);
@@ -342,7 +346,7 @@ abstract class AbstractMappingDriverTest extends OrmTestCase
     /**
      * @depends testInverseOneToManyAssociation
      */
-    public function testManyToManyAssociationWithCascadeAll(ClassMetadata $class)
+    public function testManyToManyAssociationWithCascadeAll(ClassMetadata $class): ClassMetadata
     {
         $this->assertTrue(isset($class->associationMappings['groups']));
         $this->assertTrue($class->associationMappings['groups']['isOwningSide']);
@@ -361,7 +365,7 @@ abstract class AbstractMappingDriverTest extends OrmTestCase
     /**
      * @depends testManyToManyAssociationWithCascadeAll
      */
-    public function testLifecycleCallbacks(ClassMetadata $class)
+    public function testLifecycleCallbacks(ClassMetadata $class): ClassMetadata
     {
         $this->assertEquals(count($class->lifecycleCallbacks), 2);
         $this->assertEquals($class->lifecycleCallbacks['prePersist'][0], 'doStuffOnPrePersist');
@@ -373,7 +377,7 @@ abstract class AbstractMappingDriverTest extends OrmTestCase
     /**
      * @depends testManyToManyAssociationWithCascadeAll
      */
-    public function testLifecycleCallbacksSupportMultipleMethodNames(ClassMetadata $class)
+    public function testLifecycleCallbacksSupportMultipleMethodNames(ClassMetadata $class): ClassMetadata
     {
         $this->assertEquals(count($class->lifecycleCallbacks['prePersist']), 2);
         $this->assertEquals($class->lifecycleCallbacks['prePersist'][1], 'doOtherStuffOnPrePersistToo');
@@ -384,7 +388,7 @@ abstract class AbstractMappingDriverTest extends OrmTestCase
     /**
      * @depends testLifecycleCallbacksSupportMultipleMethodNames
      */
-    public function testJoinColumnUniqueAndNullable(ClassMetadata $class)
+    public function testJoinColumnUniqueAndNullable(ClassMetadata $class): ClassMetadata
     {
         // Non-Nullability of Join Column
         $this->assertFalse($class->associationMappings['groups']['joinTable']['joinColumns'][0]['nullable']);
@@ -396,7 +400,7 @@ abstract class AbstractMappingDriverTest extends OrmTestCase
     /**
      * @depends testJoinColumnUniqueAndNullable
      */
-    public function testColumnDefinition(ClassMetadata $class)
+    public function testColumnDefinition(ClassMetadata $class): ClassMetadata
     {
         $this->assertEquals('CHAR(32) NOT NULL', $class->fieldMappings['email']['columnDefinition']);
         $this->assertEquals('INT NULL', $class->associationMappings['groups']['joinTable']['inverseJoinColumns'][0]['columnDefinition']);
@@ -407,7 +411,7 @@ abstract class AbstractMappingDriverTest extends OrmTestCase
     /**
      * @depends testColumnDefinition
      */
-    public function testJoinColumnOnDelete(ClassMetadata $class)
+    public function testJoinColumnOnDelete(ClassMetadata $class): ClassMetadata
     {
         $this->assertEquals('CASCADE', $class->associationMappings['address']['joinColumns'][0]['onDelete']);
 
@@ -436,7 +440,7 @@ abstract class AbstractMappingDriverTest extends OrmTestCase
      */
     public function testMappedSuperclassWithRepository(): void
     {
-        $em      = $this->_getTestEntityManager();
+        $em      = $this->getTestEntityManager();
         $factory = $this->createClassMetadataFactory($em);
 
         $class = $factory->getMetadataFor(DDC869CreditCardPayment::class);
@@ -512,7 +516,7 @@ abstract class AbstractMappingDriverTest extends OrmTestCase
      */
     public function testNamingStrategy(): void
     {
-        $em      = $this->_getTestEntityManager();
+        $em      = $this->getTestEntityManager();
         $factory = $this->createClassMetadataFactory($em);
 
         $this->assertInstanceOf(DefaultNamingStrategy::class, $em->getConfiguration()->getNamingStrategy());
@@ -567,7 +571,7 @@ abstract class AbstractMappingDriverTest extends OrmTestCase
 
     public function testNamedQuery(): void
     {
-        $driver = $this->_loadDriver();
+        $driver = $this->loadDriver();
         $class  = $this->createClassMetadata(User::class);
 
         $this->assertCount(1, $class->getNamedQueries(), sprintf('Named queries not processed correctly by driver %s', get_class($driver)));
@@ -692,7 +696,7 @@ abstract class AbstractMappingDriverTest extends OrmTestCase
         $this->assertEquals($personMetadata->name, $mapping['entities'][0]['entityClass']);
     }
 
-    /*
+    /**
      * @group DDC-964
      */
     public function testAssociationOverridesMapping(): void
@@ -770,7 +774,7 @@ abstract class AbstractMappingDriverTest extends OrmTestCase
         $this->assertEquals(['id' => 'adminaddress_id'], $adminAddress['targetToSourceKeyColumns']);
     }
 
-    /*
+    /**
      * @group DDC-3579
      */
     public function testInversedByOverrideMapping(): void
@@ -839,7 +843,7 @@ abstract class AbstractMappingDriverTest extends OrmTestCase
      */
     public function testEntityListeners(): void
     {
-        $em         = $this->_getTestEntityManager();
+        $em         = $this->getTestEntityManager();
         $factory    = $this->createClassMetadataFactory($em);
         $superClass = $factory->getMetadataFor(CompanyContract::class);
         $flexClass  = $factory->getMetadataFor(CompanyFixContract::class);
@@ -870,7 +874,7 @@ abstract class AbstractMappingDriverTest extends OrmTestCase
      */
     public function testEntityListenersOverride(): void
     {
-        $em         = $this->_getTestEntityManager();
+        $em         = $this->getTestEntityManager();
         $factory    = $this->createClassMetadataFactory($em);
         $ultraClass = $factory->getMetadataFor(CompanyFlexUltraContract::class);
 
@@ -903,7 +907,7 @@ abstract class AbstractMappingDriverTest extends OrmTestCase
      */
     public function testEntityListenersNamingConvention(): void
     {
-        $em       = $this->_getTestEntityManager();
+        $em       = $this->getTestEntityManager();
         $factory  = $this->createClassMetadataFactory($em);
         $metadata = $factory->getMetadataFor(CmsAddress::class);
 
@@ -958,7 +962,7 @@ abstract class AbstractMappingDriverTest extends OrmTestCase
      */
     public function testSecondLevelCacheMapping(): void
     {
-        $em      = $this->_getTestEntityManager();
+        $em      = $this->getTestEntityManager();
         $factory = $this->createClassMetadataFactory($em);
         $class   = $factory->getMetadataFor(City::class);
         $this->assertArrayHasKey('usage', $class->cache);
@@ -1070,6 +1074,7 @@ abstract class AbstractMappingDriverTest extends OrmTestCase
 class User
 {
     /**
+     * @var int
      * @Id
      * @Column(type="integer", options={"foo": "bar", "unsigned": false})
      * @generatedValue(strategy="AUTO")
@@ -1077,25 +1082,34 @@ class User
      **/
     public $id;
 
-    /** @Column(length=50, nullable=true, unique=true, options={"foo": "bar", "baz": {"key": "val"}, "fixed": false}) */
+    /**
+     * @var string
+     * @Column(length=50, nullable=true, unique=true, options={"foo": "bar", "baz": {"key": "val"}, "fixed": false})
+     */
     public $name;
 
-    /** @Column(name="user_email", columnDefinition="CHAR(32) NOT NULL") */
+    /**
+     * @var string
+     * @Column(name="user_email", columnDefinition="CHAR(32) NOT NULL")
+     */
     public $email;
 
     /**
+     * @var Address
      * @OneToOne(targetEntity="Address", cascade={"remove"}, inversedBy="user")
      * @JoinColumn(onDelete="CASCADE")
      */
     public $address;
 
     /**
+     * @var Collection<int, Phonenumber>
      * @OneToMany(targetEntity="Phonenumber", mappedBy="user", cascade={"persist"}, orphanRemoval=true)
      * @OrderBy({"number"="ASC"})
      */
     public $phonenumbers;
 
     /**
+     * @var Collection<int, Group>
      * @ManyToMany(targetEntity="Group", cascade={"all"})
      * @JoinTable(name="cms_user_groups",
      *    joinColumns={@JoinColumn(name="user_id", referencedColumnName="id", nullable=false, unique=false)},
@@ -1105,6 +1119,7 @@ class User
     public $groups;
 
     /**
+     * @var int
      * @Column(type="integer")
      * @Version
      */
@@ -1279,7 +1294,10 @@ class User
 abstract class Animal
 {
     /**
-     * @Id @Column(type="string") @GeneratedValue(strategy="CUSTOM")
+     * @var string
+     * @Id
+     * @Column(type="string")
+     * @GeneratedValue(strategy="CUSTOM")
      * @CustomIdGenerator(class="stdClass")
      */
     public $id;
@@ -1312,19 +1330,23 @@ class Dog extends Animal
  */
 class DDC1170Entity
 {
-    function __construct(?string $value = null)
+    public function __construct(?string $value = null)
     {
         $this->value = $value;
     }
 
     /**
+     * @var int
      * @Id
      * @GeneratedValue(strategy="NONE")
      * @Column(type="integer", columnDefinition = "INT unsigned NOT NULL")
-     **/
+     */
     private $id;
 
-    /** @Column(columnDefinition = "VARCHAR(255) NOT NULL") */
+    /**
+     * @var string|null
+     * @Column(columnDefinition = "VARCHAR(255) NOT NULL")
+     */
     private $value;
 
     public function getId(): int
@@ -1332,7 +1354,7 @@ class DDC1170Entity
         return $this->id;
     }
 
-    public function getValue(): string
+    public function getValue(): ?string
     {
         return $this->value;
     }
@@ -1367,6 +1389,7 @@ class DDC1170Entity
 class DDC807Entity
 {
     /**
+     * @var int
      * @Id
      * @Column(type="integer")
      * @GeneratedValue(strategy="NONE")
@@ -1417,7 +1440,10 @@ class Group
  */
 class Comment
 {
-    /** @Column(type="text") */
+    /**
+     * @var string
+     * @Column(type="text")
+     */
     private $content;
 
     public static function loadMetadata(ClassMetadataInfo $metadata): void
@@ -1457,6 +1483,7 @@ class Comment
 class SingleTableEntityNoDiscriminatorColumnMapping
 {
     /**
+     * @var int
      * @Id
      * @Column(type="integer")
      * @GeneratedValue(strategy="NONE")
@@ -1495,6 +1522,7 @@ class SingleTableEntityNoDiscriminatorColumnMappingSub2 extends SingleTableEntit
 class SingleTableEntityIncompleteDiscriminatorColumnMapping
 {
     /**
+     * @var int
      * @Id
      * @Column(type="integer")
      * @GeneratedValue(strategy="NONE")

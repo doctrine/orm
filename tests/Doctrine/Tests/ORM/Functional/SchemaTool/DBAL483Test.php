@@ -46,12 +46,23 @@ class DBAL483Test extends OrmFunctionalTestCase
  */
 class DBAL483Default
 {
-    /** @Id @Column(type="integer") @GeneratedValue */
+    /**
+     * @var int
+     * @Id
+     * @Column(type="integer")
+     * @GeneratedValue
+     */
     public $id;
 
-    /** @Column(type="integer", options={"default": 0}) */
+    /**
+     * @var int
+     * @Column(type="integer", options={"default": 0})
+     */
     public $num;
 
-    /** @Column(type="string", options={"default": "foo"}) */
+    /**
+     * @var string
+     * @Column(type="string", options={"default": "foo"})
+     */
     public $str = 'foo';
 }

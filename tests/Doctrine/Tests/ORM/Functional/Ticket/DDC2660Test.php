@@ -86,14 +86,24 @@ class DDC2660Test extends OrmFunctionalTestCase
  */
 class DDC2660Product
 {
-    /** @Id @Column(type="integer") @GeneratedValue */
+    /**
+     * @var int
+     * @Id
+     * @Column(type="integer")
+     * @GeneratedValue
+     */
     public $id;
 }
 
 /** @Entity  @Table(name="ddc_2660_customer") */
 class DDC2660Customer
 {
-    /** @Id @Column(type="integer") @GeneratedValue */
+    /**
+     * @var int
+     * @Id
+     * @Column(type="integer")
+     * @GeneratedValue
+     */
     public $id;
 }
 
@@ -106,7 +116,10 @@ class DDC2660CustomerOrder
     /** @Id @ManyToOne(targetEntity="DDC2660Customer") */
     public $customer;
 
-    /** @Column(type="string") */
+    /**
+     * @var string
+     * @Column(type="string")
+     */
     public $name;
 
     public function __construct(DDC2660Product $product, DDC2660Customer $customer, $name)

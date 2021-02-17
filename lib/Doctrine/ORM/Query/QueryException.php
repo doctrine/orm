@@ -227,6 +227,11 @@ class QueryException extends ORMException
         );
     }
 
+    public static function iterateWithMixedResultNotAllowed(): QueryException
+    {
+        return new self('Iterating a query with mixed results (using scalars) is not supported.');
+    }
+
     /**
      * @return QueryException
      */

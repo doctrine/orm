@@ -48,7 +48,7 @@ class PreUpdateEventArgs extends LifecycleEventArgs
     /**
      * Retrieves entity changeset.
      *
-     * @return array
+     * @return array<string,array<int,mixed>>
      */
     public function getEntityChangeSet()
     {

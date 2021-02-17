@@ -6,6 +6,7 @@ namespace Doctrine\Tests\ORM\Tools\Export;
 
 use Doctrine\Common\EventManager;
 use Doctrine\ORM\Configuration;
+use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Events;
 use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\Mapping\ClassMetadataFactory;
@@ -16,6 +17,7 @@ use Doctrine\ORM\Mapping\Driver\YamlDriver;
 use Doctrine\ORM\Tools\DisconnectedClassMetadataFactory;
 use Doctrine\ORM\Tools\EntityGenerator;
 use Doctrine\ORM\Tools\Export\ClassMetadataExporter;
+use Doctrine\Persistence\Mapping\Driver\MappingDriver;
 use Doctrine\Persistence\Mapping\Driver\PHPDriver;
 use Doctrine\Tests\Mocks\ConnectionMock;
 use Doctrine\Tests\Mocks\DriverMock;
@@ -44,11 +46,12 @@ use function unlink;
  */
 abstract class AbstractClassMetadataExporterTest extends OrmTestCase
 {
-    protected $_extension;
+    /** @var string|null */
+    protected $extension;
 
-    abstract protected function _getType(): string;
+    abstract protected function getType(): string;
 
-    protected function _createEntityManager($metadataDriver)
+    protected function createEntityManager($metadataDriver): EntityManagerMock
     {
         $driverMock = new DriverMock();
         $config     = new Configuration();
@@ -61,7 +64,7 @@ abstract class AbstractClassMetadataExporterTest extends OrmTestCase
         return EntityManagerMock::create($conn, $config, $eventManager);
     }
 
-    protected function _createMetadataDriver($type, $path)
+    protected function createMetadataDriver(string $type, string $path): MappingDriver
     {
         $mappingDriver = [
             'php'        => PHPDriver::class,
@@ -79,7 +82,7 @@ abstract class AbstractClassMetadataExporterTest extends OrmTestCase
             : new $class($path);
     }
 
-    protected function _createClassMetadataFactory($em, $type)
+    protected function createClassMetadataFactory(EntityManagerInterface $em, string $type): ClassMetadataFactory
     {
         $factory = $type === 'annotation'
             ? new ClassMetadataFactory()
@@ -92,19 +95,19 @@ abstract class AbstractClassMetadataExporterTest extends OrmTestCase
 
     public function testExportDirectoryAndFilesAreCreated(): void
     {
-        $this->_deleteDirectory(__DIR__ . '/export/' . $this->_getType());
+        $this->deleteDirectory(__DIR__ . '/export/' . $this->getType());
 
-        $type           = $this->_getType();
-        $metadataDriver = $this->_createMetadataDriver($type, __DIR__ . '/' . $type);
-        $em             = $this->_createEntityManager($metadataDriver);
-        $cmf            = $this->_createClassMetadataFactory($em, $type);
+        $type           = $this->getType();
+        $metadataDriver = $this->createMetadataDriver($type, __DIR__ . '/' . $type);
+        $em             = $this->createEntityManager($metadataDriver);
+        $cmf            = $this->createClassMetadataFactory($em, $type);
         $metadata       = $cmf->getAllMetadata();
 
         $metadata[0]->name = ExportedUser::class;
 
         $this->assertEquals(ExportedUser::class, $metadata[0]->name);
 
-        $type     = $this->_getType();
+        $type     = $this->getType();
         $cme      = new ClassMetadataExporter();
         $exporter = $cme->getExporter($type, __DIR__ . '/export/' . $type);
 
@@ -115,28 +118,28 @@ abstract class AbstractClassMetadataExporterTest extends OrmTestCase
             $exporter->setEntityGenerator($entityGenerator);
         }
 
-        $this->_extension = $exporter->getExtension();
+        $this->extension = $exporter->getExtension();
 
         $exporter->setMetadata($metadata);
         $exporter->export();
 
         if ($type === 'annotation') {
-            $this->assertTrue(file_exists(__DIR__ . '/export/' . $type . '/' . str_replace('\\', '/', ExportedUser::class) . $this->_extension));
+            $this->assertTrue(file_exists(__DIR__ . '/export/' . $type . '/' . str_replace('\\', '/', ExportedUser::class) . $this->extension));
         } else {
-            $this->assertTrue(file_exists(__DIR__ . '/export/' . $type . '/Doctrine.Tests.ORM.Tools.Export.ExportedUser' . $this->_extension));
+            $this->assertTrue(file_exists(__DIR__ . '/export/' . $type . '/Doctrine.Tests.ORM.Tools.Export.ExportedUser' . $this->extension));
         }
     }
 
     /**
      * @depends testExportDirectoryAndFilesAreCreated
      */
-    public function testExportedMetadataCanBeReadBackIn()
+    public function testExportedMetadataCanBeReadBackIn(): ClassMetadataInfo
     {
-        $type = $this->_getType();
+        $type = $this->getType();
 
-        $metadataDriver = $this->_createMetadataDriver($type, __DIR__ . '/export/' . $type);
-        $em             = $this->_createEntityManager($metadataDriver);
-        $cmf            = $this->_createClassMetadataFactory($em, $type);
+        $metadataDriver = $this->createMetadataDriver($type, __DIR__ . '/export/' . $type);
+        $em             = $this->createEntityManager($metadataDriver);
+        $cmf            = $this->createClassMetadataFactory($em, $type);
         $metadata       = $cmf->getAllMetadata();
 
         $this->assertEquals(1, count($metadata));
@@ -151,7 +154,7 @@ abstract class AbstractClassMetadataExporterTest extends OrmTestCase
     /**
      * @depends testExportedMetadataCanBeReadBackIn
      */
-    public function testTableIsExported(ClassMetadataInfo $class)
+    public function testTableIsExported(ClassMetadataInfo $class): ClassMetadataInfo
     {
         $this->assertEquals('cms_users', $class->table['name']);
         $this->assertEquals(
@@ -165,7 +168,7 @@ abstract class AbstractClassMetadataExporterTest extends OrmTestCase
     /**
      * @depends testTableIsExported
      */
-    public function testTypeIsExported(ClassMetadataInfo $class)
+    public function testTypeIsExported(ClassMetadataInfo $class): ClassMetadataInfo
     {
         $this->assertFalse($class->isMappedSuperclass);
 
@@ -175,7 +178,7 @@ abstract class AbstractClassMetadataExporterTest extends OrmTestCase
     /**
      * @depends testTypeIsExported
      */
-    public function testIdentifierIsExported(ClassMetadataInfo $class)
+    public function testIdentifierIsExported(ClassMetadataInfo $class): ClassMetadataInfo
     {
         $this->assertEquals(ClassMetadataInfo::GENERATOR_TYPE_IDENTITY, $class->generatorType, 'Generator Type wrong');
         $this->assertEquals(['id'], $class->identifier);
@@ -187,7 +190,7 @@ abstract class AbstractClassMetadataExporterTest extends OrmTestCase
     /**
      * @depends testIdentifierIsExported
      */
-    public function testFieldsAreExported(ClassMetadataInfo $class)
+    public function testFieldsAreExported(ClassMetadataInfo $class): ClassMetadataInfo
     {
         $this->assertTrue(isset($class->fieldMappings['id']['id']) && $class->fieldMappings['id']['id'] === true);
         $this->assertEquals('id', $class->fieldMappings['id']['fieldName']);
@@ -214,7 +217,7 @@ abstract class AbstractClassMetadataExporterTest extends OrmTestCase
      */
     public function testFieldsAreProperlySerialized(): void
     {
-        $type = $this->_getType();
+        $type = $this->getType();
 
         if ($type === 'xml') {
             $xml = simplexml_load_file(__DIR__ . '/export/' . $type . '/Doctrine.Tests.ORM.Tools.Export.ExportedUser.dcm.xml');
@@ -233,7 +236,7 @@ abstract class AbstractClassMetadataExporterTest extends OrmTestCase
     /**
      * @depends testFieldsAreExported
      */
-    public function testOneToOneAssociationsAreExported(ClassMetadataInfo $class)
+    public function testOneToOneAssociationsAreExported(ClassMetadataInfo $class): ClassMetadataInfo
     {
         $this->assertTrue(isset($class->associationMappings['address']));
         $this->assertEquals(Address::class, $class->associationMappings['address']['targetEntity']);
@@ -264,7 +267,7 @@ abstract class AbstractClassMetadataExporterTest extends OrmTestCase
     /**
      * @depends testOneToOneAssociationsAreExported
      */
-    public function testOneToManyAssociationsAreExported(ClassMetadataInfo $class)
+    public function testOneToManyAssociationsAreExported(ClassMetadataInfo $class): ClassMetadataInfo
     {
         $this->assertTrue(isset($class->associationMappings['phonenumbers']));
         $this->assertEquals(Phonenumber::class, $class->associationMappings['phonenumbers']['targetEntity']);
@@ -283,11 +286,9 @@ abstract class AbstractClassMetadataExporterTest extends OrmTestCase
     }
 
     /**
-     * @param ClassMetadataInfo $metadata
-     *
      * @depends testOneToManyAssociationsAreExported
      */
-    public function testManyToManyAssociationsAreExported($class)
+    public function testManyToManyAssociationsAreExported(ClassMetadataInfo $class): ClassMetadataInfo
     {
         $this->assertTrue(isset($class->associationMappings['groups']));
         $this->assertEquals(Group::class, $class->associationMappings['groups']['targetEntity']);
@@ -313,7 +314,7 @@ abstract class AbstractClassMetadataExporterTest extends OrmTestCase
     /**
      * @depends testManyToManyAssociationsAreExported
      */
-    public function testLifecycleCallbacksAreExported(ClassMetadataInfo $class)
+    public function testLifecycleCallbacksAreExported(ClassMetadataInfo $class): ClassMetadataInfo
     {
         $this->assertTrue(isset($class->lifecycleCallbacks['prePersist']));
         $this->assertEquals(2, count($class->lifecycleCallbacks['prePersist']));
@@ -330,7 +331,7 @@ abstract class AbstractClassMetadataExporterTest extends OrmTestCase
     /**
      * @depends testLifecycleCallbacksAreExported
      */
-    public function testCascadeIsExported(ClassMetadataInfo $class)
+    public function testCascadeIsExported(ClassMetadataInfo $class): ClassMetadataInfo
     {
         $this->assertTrue($class->associationMappings['phonenumbers']['isCascadePersist']);
         $this->assertTrue($class->associationMappings['phonenumbers']['isCascadeMerge']);
@@ -355,7 +356,7 @@ abstract class AbstractClassMetadataExporterTest extends OrmTestCase
      */
     public function testCascadeAllCollapsed(): void
     {
-        $type = $this->_getType();
+        $type = $this->getType();
 
         if ($type === 'xml') {
             $xml = simplexml_load_file(__DIR__ . '/export/' . $type . '/Doctrine.Tests.ORM.Tools.Export.ExportedUser.dcm.xml');
@@ -395,25 +396,20 @@ abstract class AbstractClassMetadataExporterTest extends OrmTestCase
         $this->assertEquals('customPostPersist', $class->entityListeners[Events::postPersist][1]['method']);
     }
 
-    public function __destruct()
-    {
-// $this->_deleteDirectory(__DIR__ . '/export/'.$this->_getType());
-    }
-
-    protected function _deleteDirectory($path)
+    protected function deleteDirectory(string $path): void
     {
         if (is_file($path)) {
-            return unlink($path);
+            unlink($path);
         } elseif (is_dir($path)) {
             $files = glob(rtrim($path, '/') . '/*');
 
             if (is_array($files)) {
                 foreach ($files as $file) {
-                    $this->_deleteDirectory($file);
+                    $this->deleteDirectory($file);
                 }
             }
 
-            return rmdir($path);
+            rmdir($path);
         }
     }
 }

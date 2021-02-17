@@ -4,8 +4,11 @@ declare(strict_types=1);
 
 namespace Doctrine\Tests\ORM\Functional;
 
+use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Query;
 use Doctrine\ORM\Query\QueryException;
+use Doctrine\ORM\Query\SqlWalker;
+use Doctrine\ORM\Query\TreeWalker;
 use Doctrine\Tests\Models\CMS\CmsAddress;
 use Doctrine\Tests\Models\CMS\CmsUser;
 use Doctrine\Tests\OrmTestCase;
@@ -21,16 +24,21 @@ use function count;
  */
 class CustomTreeWalkersTest extends OrmTestCase
 {
-    private $_em;
+    /** @var EntityManagerInterface */
+    private $entityManager;
 
     protected function setUp(): void
     {
-        $this->_em = $this->_getTestEntityManager();
+        $this->entityManager = $this->getTestEntityManager();
     }
 
-    public function generateSql($dqlToBeTested, $treeWalkers, $outputWalker)
+    /**
+     * @param list<class-string<TreeWalker>> $treeWalkers
+     * @param class-string<SqlWalker>|null   $outputWalker
+     */
+    public function generateSql(string $dqlToBeTested, array $treeWalkers, ?string $outputWalker): string
     {
-        $query = $this->_em->createQuery($dqlToBeTested);
+        $query = $this->entityManager->createQuery($dqlToBeTested);
         $query->setHint(Query::HINT_CUSTOM_TREE_WALKERS, $treeWalkers)
             ->useQueryCache(false);
 
@@ -41,8 +49,16 @@ class CustomTreeWalkersTest extends OrmTestCase
         return $query->getSql();
     }
 
-    public function assertSqlGeneration($dqlToBeTested, $sqlToBeConfirmed, $treeWalkers = [], $outputWalker = null): void
-    {
+    /**
+     * @param list<class-string<TreeWalker>> $treeWalkers
+     * @param class-string<SqlWalker>|null   $outputWalker
+     */
+    public function assertSqlGeneration(
+        string $dqlToBeTested,
+        string $sqlToBeConfirmed,
+        array $treeWalkers = [],
+        ?string $outputWalker = null
+    ): void {
         try {
             $this->assertEquals($sqlToBeConfirmed, $this->generateSql($dqlToBeTested, $treeWalkers, $outputWalker));
         } catch (Exception $e) {
@@ -138,7 +154,8 @@ class CustomTreeWalker extends Query\TreeWalkerAdapter
             $factors[] = $factor;
         }
 
-        if (($whereClause = $selectStatement->whereClause) !== null) {
+        $whereClause = $selectStatement->whereClause;
+        if ($whereClause !== null) {
             // There is already a WHERE clause, so append the conditions
             $condExpr = $whereClause->conditionalExpression;
 

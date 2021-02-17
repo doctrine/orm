@@ -10,6 +10,7 @@ use Doctrine\ORM\Mapping\Driver\YamlDriver;
 use Doctrine\ORM\Tools\ConvertDoctrine1Schema;
 use Doctrine\ORM\Tools\DisconnectedClassMetadataFactory;
 use Doctrine\ORM\Tools\Export\ClassMetadataExporter;
+use Doctrine\Persistence\Mapping\Driver\MappingDriver;
 use Doctrine\Tests\Mocks\ConnectionMock;
 use Doctrine\Tests\Mocks\DriverMock;
 use Doctrine\Tests\Mocks\EntityManagerMock;
@@ -28,7 +29,7 @@ use function unlink;
  */
 class ConvertDoctrine1SchemaTest extends OrmTestCase
 {
-    protected function _createEntityManager($metadataDriver)
+    protected function createEntityManager(MappingDriver $metadataDriver): EntityManagerMock
     {
         $driverMock = new DriverMock();
         $config     = new Configuration();
@@ -59,7 +60,7 @@ class ConvertDoctrine1SchemaTest extends OrmTestCase
         $this->assertTrue(file_exists(__DIR__ . '/convert/Profile.dcm.yml'));
 
         $metadataDriver = new YamlDriver(__DIR__ . '/convert');
-        $em             = $this->_createEntityManager($metadataDriver);
+        $em             = $this->createEntityManager($metadataDriver);
         $cmf            = new DisconnectedClassMetadataFactory();
         $cmf->setEntityManager($em);
         $metadata     = $cmf->getAllMetadata();

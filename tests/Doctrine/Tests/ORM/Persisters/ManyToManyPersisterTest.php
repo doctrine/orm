@@ -32,7 +32,7 @@ final class ManyToManyPersisterTest extends OrmTestCase
         $parent->children->add($child);
         $child->parents->add($parent);
 
-        $em = $this->_getTestEntityManager();
+        $em = $this->getTestEntityManager();
         $em->persist($parent);
         $em->flush();
 

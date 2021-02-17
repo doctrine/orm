@@ -12,7 +12,6 @@ use Doctrine\Tests\OrmFunctionalTestCase;
 use ReflectionProperty;
 
 use function count;
-use function sizeof;
 
 /**
  * ResultCacheTest
@@ -32,7 +31,7 @@ class ResultCacheTest extends OrmFunctionalTestCase
 
     private function getCacheSize(ArrayCache $cache): int
     {
-        return sizeof($this->cacheDataReflection->getValue($cache));
+        return count($this->cacheDataReflection->getValue($cache));
     }
 
     public function testResultCache(): void

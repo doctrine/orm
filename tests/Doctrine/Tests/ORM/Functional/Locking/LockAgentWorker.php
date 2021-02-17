@@ -6,9 +6,11 @@ namespace Doctrine\Tests\ORM\Functional\Locking;
 
 use Closure;
 use Doctrine\Common\Cache\ArrayCache;
+use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\Logging\EchoSQLLogger;
 use Doctrine\ORM\Configuration;
 use Doctrine\ORM\EntityManager;
+use Doctrine\ORM\EntityManagerInterface;
 use GearmanWorker;
 use InvalidArgumentException;
 
@@ -106,7 +108,7 @@ class LockAgentWorker
         return $workload['fixture'];
     }
 
-    protected function createEntityManager($conn)
+    protected function createEntityManager(Connection $conn): EntityManagerInterface
     {
         $config = new Configuration();
         $config->setProxyDir(__DIR__ . '/../../../Proxies');

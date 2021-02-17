@@ -48,6 +48,7 @@ class DDC513OfferItem extends DDC513Item
 class DDC513Item
 {
     /**
+     * @var int
      * @Id
      * @Column(type="integer")
      * @GeneratedValue(strategy="AUTO")
@@ -55,6 +56,7 @@ class DDC513Item
     public $id;
 
     /**
+     * @var DDC513Price
      * @OneToOne(targetEntity="DDC513Price", cascade={"remove","persist"})
      * @JoinColumn(name="price", referencedColumnName="id")
      */
@@ -67,12 +69,16 @@ class DDC513Item
 class DDC513Price
 {
     /**
+     * @var int
      * @Id
      * @Column(type="integer")
      * @GeneratedValue(strategy="AUTO")
      */
     public $id;
 
-    /** @Column(type="string") */
+    /**
+     * @var string
+     * @Column(type="string")
+     */
     public $data;
 }

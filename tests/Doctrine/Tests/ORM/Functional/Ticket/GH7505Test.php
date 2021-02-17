@@ -60,7 +60,9 @@ final class GH7505Test extends OrmFunctionalTestCase
 abstract class GH7505AbstractResponse
 {
     /**
-     * @Id @GeneratedValue
+     * @var int
+     * @Id
+     * @GeneratedValue
      * @Column(type="integer")
      */
     public $id;
@@ -72,8 +74,8 @@ abstract class GH7505AbstractResponse
 class GH7505ArrayResponse extends GH7505AbstractResponse
 {
     /**
+     * @var mixed[]
      * @Column(name="value_array", type="simple_array")
-     * @var array
      */
     public $value = [];
 }

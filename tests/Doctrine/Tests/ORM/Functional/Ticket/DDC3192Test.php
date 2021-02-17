@@ -102,6 +102,7 @@ class DDC3192Currency
 class DDC3192Transaction
 {
     /**
+     * @var int
      * @Id
      * @GeneratedValue
      * @Column(type="integer")

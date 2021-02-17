@@ -52,7 +52,12 @@ class DDC2231Test extends OrmFunctionalTestCase
 /** @Entity @Table(name="ddc2231_y") */
 class DDC2231EntityY implements ObjectManagerAware
 {
-    /** @Id @Column(type="integer") @GeneratedValue */
+    /**
+     * @var int
+     * @Id
+     * @Column(type="integer")
+     * @GeneratedValue
+     */
     public $id;
 
     public $om;

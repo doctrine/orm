@@ -32,6 +32,7 @@ use Doctrine\ORM\Cache\TimestampCacheKey;
 use Doctrine\ORM\Internal\Hydration\IterableResult;
 use Doctrine\ORM\Mapping\MappingException as ORMMappingException;
 use Doctrine\ORM\Query\Parameter;
+use Doctrine\ORM\Query\QueryException;
 use Doctrine\ORM\Query\ResultSetMapping;
 use Doctrine\Persistence\Mapping\MappingException;
 use Traversable;
@@ -793,7 +794,7 @@ abstract class AbstractQuery
      *
      * Alias for execute(null, HYDRATE_ARRAY).
      *
-     * @return array
+     * @return array<int,mixed>
      */
     public function getArrayResult()
     {
@@ -805,7 +806,7 @@ abstract class AbstractQuery
      *
      * Alias for execute(null, HYDRATE_SCALAR).
      *
-     * @return array
+     * @return array<int,mixed>
      */
     public function getScalarResult()
     {
@@ -935,7 +936,7 @@ abstract class AbstractQuery
     /**
      * Return the key value map of query hints that are currently set.
      *
-     * @return array
+     * @return array<string,mixed>
      */
     public function getHints()
     {
@@ -948,8 +949,8 @@ abstract class AbstractQuery
      *
      * @deprecated
      *
-     * @param ArrayCollection|array|null $parameters    The query parameters.
-     * @param string|int|null            $hydrationMode The hydration mode to use.
+     * @param ArrayCollection|mixed[]|null $parameters    The query parameters.
+     * @param string|int|null              $hydrationMode The hydration mode to use.
      *
      * @return IterableResult
      */
@@ -1000,7 +1001,12 @@ abstract class AbstractQuery
             $this->setParameters($parameters);
         }
 
-        $rsm  = $this->getResultSetMapping();
+        $rsm = $this->getResultSetMapping();
+
+        if ($rsm->isMixed && count($rsm->scalarMappings) > 0) {
+            throw QueryException::iterateWithMixedResultNotAllowed();
+        }
+
         $stmt = $this->_doExecute();
 
         return $this->_em->newHydrator($this->_hydrationMode)->toIterable($stmt, $rsm, $this->_hints);
@@ -1028,8 +1034,8 @@ abstract class AbstractQuery
     /**
      * Execute query ignoring second level cache.
      *
-     * @param ArrayCollection|array|null $parameters
-     * @param string|int|null            $hydrationMode
+     * @param ArrayCollection|mixed[]|null $parameters
+     * @param string|int|null              $hydrationMode
      *
      * @return mixed
      *
@@ -1089,8 +1095,8 @@ abstract class AbstractQuery
     /**
      * Load from second level cache or executes the query and put into cache.
      *
-     * @param ArrayCollection|array|null $parameters
-     * @param string|int|null            $hydrationMode
+     * @param ArrayCollection|mixed[]|null $parameters
+     * @param string|int|null              $hydrationMode
      *
      * @return mixed
      *
@@ -1232,9 +1238,11 @@ abstract class AbstractQuery
         $query  = $this->getSQL();
         $hints  = $this->getHints();
         $params = array_map(function (Parameter $parameter) {
+            $value = $parameter->getValue();
+
             // Small optimization
-            // Does not invoke processParameterValue for scalar values
-            if (is_scalar($value = $parameter->getValue())) {
+            // Does not invoke processParameterValue for scalar value
+            if (is_scalar($value)) {
                 return $value;
             }
 

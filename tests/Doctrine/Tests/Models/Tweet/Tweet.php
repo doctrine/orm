@@ -11,16 +11,23 @@ namespace Doctrine\Tests\Models\Tweet;
 class Tweet
 {
     /**
+     * @var int
      * @Id
      * @GeneratedValue
      * @Column(type="integer")
      */
     public $id;
 
-    /** @Column(type="string") */
+    /**
+     * @var string
+     * @Column(type="string")
+     */
     public $content;
 
-    /** @ManyToOne(targetEntity="User", inversedBy="tweets") */
+    /**
+     * @var User
+     * @ManyToOne(targetEntity="User", inversedBy="tweets")
+     */
     public $author;
 
     public function setAuthor(User $user): void

@@ -73,11 +73,20 @@ class DDC237Test extends OrmFunctionalTestCase
  */
 class DDC237EntityX
 {
-    /** @Id @Column(type="integer") @GeneratedValue */
+    /**
+     * @var int
+     * @Id
+     * @Column(type="integer")
+     * @GeneratedValue
+     */
     public $id;
-    /** @Column(type="string") */
+    /**
+     * @var string
+     * @Column(type="string")
+     */
     public $data;
     /**
+     * @var DDC237EntityY
      * @OneToOne(targetEntity="DDC237EntityY")
      * @JoinColumn(name="y_id", referencedColumnName="id")
      */
@@ -88,21 +97,38 @@ class DDC237EntityX
 /** @Entity @Table(name="ddc237_y") */
 class DDC237EntityY
 {
-    /** @Id @Column(type="integer") @GeneratedValue */
+    /**
+     * @var int
+     * @Id
+     * @Column(type="integer")
+     * @GeneratedValue
+     */
     public $id;
-    /** @Column(type="string") */
+    /**
+     * @var string
+     * @Column(type="string")
+     */
     public $data;
 }
 
 /** @Entity @Table(name="ddc237_z") */
 class DDC237EntityZ
 {
-    /** @Id @Column(type="integer") @GeneratedValue */
+    /**
+     * @var int
+     * @Id
+     * @Column(type="integer")
+     * @GeneratedValue
+     */
     public $id;
-    /** @Column(type="string") */
+    /**
+     * @var string
+     * @Column(type="string")
+     */
     public $data;
 
     /**
+     * @var DDC237EntityY
      * @OneToOne(targetEntity="DDC237EntityY")
      * @JoinColumn(name="y_id", referencedColumnName="id")
      */

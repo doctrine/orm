@@ -62,16 +62,23 @@ class DDC1509Test extends OrmFunctionalTestCase
 class DDC1509Picture
 {
     /**
+     * @var int
      * @Column(type="integer")
      * @Id
      * @GeneratedValue(strategy="AUTO")
      */
     private $id;
 
-    /** @ManyToOne(targetEntity="DDC1509AbstractFile", cascade={"persist", "remove"}) */
+    /**
+     * @var DDC1509AbstractFile
+     * @ManyToOne(targetEntity="DDC1509AbstractFile", cascade={"persist", "remove"})
+     */
     private $thumbnail;
 
-    /** @ManyToOne(targetEntity="DDC1509AbstractFile", cascade={"persist", "remove"}) */
+    /**
+     * @var DDC1509AbstractFile
+     * @ManyToOne(targetEntity="DDC1509AbstractFile", cascade={"persist", "remove"})
+     */
     private $file;
 
     /**
@@ -118,6 +125,7 @@ class DDC1509Picture
 class DDC1509AbstractFile
 {
     /**
+     * @var int
      * @Column(type="integer")
      * @Id
      * @GeneratedValue(strategy="AUTO")

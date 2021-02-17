@@ -19,7 +19,7 @@ class FilterCollectionTest extends OrmTestCase
 
     protected function setUp(): void
     {
-        $this->em = $this->_getTestEntityManager();
+        $this->em = $this->getTestEntityManager();
         $this->em->getConfiguration()->addFilter('testFilter', MyFilter::class);
     }
 
@@ -80,7 +80,10 @@ class FilterCollectionTest extends OrmTestCase
 
 class MyFilter extends SQLFilter
 {
-    public function addFilterConstraint(ClassMetadata $targetEntity, $targetTableAlias)
+    /**
+     * {@inheritDoc}
+     */
+    public function addFilterConstraint(ClassMetadata $targetEntity, $targetTableAlias): string
     {
         // getParameter applies quoting automatically
         return $targetTableAlias . '.id = ' . $this->getParameter('id');
