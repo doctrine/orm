@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Doctrine\Tests\ORM\Functional\Ticket;
 
+use Doctrine\Common\Collections\Collection;
 use Doctrine\Tests\OrmFunctionalTestCase;
 use Exception;
 
@@ -83,7 +84,10 @@ class DDC1400Article
      */
     public $id;
 
-    /** @OneToMany(targetEntity="DDC1400UserState", mappedBy="article", indexBy="userId", fetch="EXTRA_LAZY") */
+    /**
+     * @psalm-var Collection<int, DDC1400UserState>
+     * @OneToMany(targetEntity="DDC1400UserState", mappedBy="article", indexBy="userId", fetch="EXTRA_LAZY")
+     */
     public $userStates;
 }
 
@@ -100,7 +104,10 @@ class DDC1400User
      */
     public $id;
 
-    /** @OneToMany(targetEntity="DDC1400UserState", mappedBy="user", indexBy="articleId", fetch="EXTRA_LAZY") */
+    /**
+     * @psalm-var Collection<int, DDC1400UserState>
+     * @OneToMany(targetEntity="DDC1400UserState", mappedBy="user", indexBy="articleId", fetch="EXTRA_LAZY")
+     */
     public $userStates;
 }
 
@@ -121,9 +128,15 @@ class DDC1400UserState
      */
     public $user;
 
-    /** @Column(name="user_id", type="integer") */
+    /**
+     * @var int
+     * @Column(name="user_id", type="integer")
+     */
     public $userId;
 
-    /** @Column(name="article_id", type="integer") */
+    /**
+     * @var int
+     * @Column(name="article_id", type="integer")
+     */
     public $articleId;
 }

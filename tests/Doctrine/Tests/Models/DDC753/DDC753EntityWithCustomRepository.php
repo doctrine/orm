@@ -17,6 +17,9 @@ class DDC753EntityWithCustomRepository
      */
     protected $id;
 
-    /** @column(type="string") */
+    /**
+     * @var string
+     * @column(type="string")
+     */
     protected $name;
 }

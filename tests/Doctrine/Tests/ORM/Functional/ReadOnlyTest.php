@@ -88,7 +88,10 @@ class ReadOnlyEntity
      * @var int
      */
     public $id;
-    /** @column(type="string") */
+    /**
+     * @var string
+     * @column(type="string")
+     */
     public $name;
     /**
      * @var int

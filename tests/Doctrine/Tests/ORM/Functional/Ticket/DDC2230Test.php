@@ -83,7 +83,12 @@ class DDC2230Test extends OrmFunctionalTestCase
 /** @Entity */
 class DDC2230User
 {
-    /** @Id @Column(type="integer") @GeneratedValue(strategy="AUTO") */
+    /**
+     * @var int
+     * @Id
+     * @Column(type="integer")
+     * @GeneratedValue(strategy="AUTO")
+     */
     public $id;
 
     /**
@@ -99,7 +104,12 @@ class DDC2230User
  */
 class DDC2230Address implements NotifyPropertyChanged
 {
-    /** @Id @Column(type="integer") @GeneratedValue(strategy="AUTO") */
+    /**
+     * @var int
+     * @Id
+     * @Column(type="integer")
+     * @GeneratedValue(strategy="AUTO")
+     */
     public $id;
 
     /** @var \Doctrine\Common\PropertyChangedListener */

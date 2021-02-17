@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Doctrine\Tests\ORM\Functional\Ticket;
 
+use Doctrine\Common\Collections\Collection;
 use Doctrine\Tests\OrmFunctionalTestCase;
 use Exception;
 
@@ -157,6 +158,9 @@ class DDC1655Baz
      */
     public $id;
 
-    /** @OneToMany(targetEntity="DDC1655Foo", mappedBy="baz") */
+    /**
+     * @psalm-var Collection<int, DDC1655Foo>
+     * @OneToMany(targetEntity="DDC1655Foo", mappedBy="baz")
+     */
     public $foos = [];
 }

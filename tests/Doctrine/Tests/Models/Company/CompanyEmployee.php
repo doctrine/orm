@@ -33,7 +33,10 @@ class CompanyEmployee extends CompanyPerson
      */
     public $contracts;
 
-    /** @OneToMany(targetEntity="CompanyFlexUltraContract", mappedBy="salesPerson", fetch="EXTRA_LAZY") */
+    /**
+     * @psalm-var Collection<int, CompanyFlexUltraContract>
+     * @OneToMany(targetEntity="CompanyFlexUltraContract", mappedBy="salesPerson", fetch="EXTRA_LAZY")
+     */
     public $soldContracts;
 
     public function getSalary()

@@ -6,6 +6,7 @@ namespace Doctrine\Tests\ORM\Functional\Ticket;
 
 use DateTime;
 use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\Tests\OrmFunctionalTestCase;
 
 class DDC345Test extends OrmFunctionalTestCase
@@ -77,7 +78,10 @@ class DDC345User
      */
     public $name;
 
-    /** @OneToMany(targetEntity="DDC345Membership", mappedBy="user", cascade={"persist"}) */
+    /**
+     * @psalm-var Collection<int, DDC345Membership>
+     * @OneToMany(targetEntity="DDC345Membership", mappedBy="user", cascade={"persist"})
+     */
     public $Memberships;
 
     public function __construct()
@@ -105,7 +109,10 @@ class DDC345Group
      */
     public $name;
 
-    /** @OneToMany(targetEntity="DDC345Membership", mappedBy="group", cascade={"persist"}) */
+    /**
+     * @psalm-var Collection<int, DDC345Membership>
+     * @OneToMany(targetEntity="DDC345Membership", mappedBy="group", cascade={"persist"})
+     */
     public $Memberships;
 
     public function __construct()

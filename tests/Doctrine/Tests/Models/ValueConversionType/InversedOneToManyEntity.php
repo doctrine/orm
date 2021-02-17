@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Doctrine\Tests\Models\ValueConversionType;
 
 use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 
 /**
  * @Entity
@@ -18,7 +19,10 @@ class InversedOneToManyEntity
      */
     public $id1;
 
-    /** @OneToMany(targetEntity="OwningManyToOneEntity", mappedBy="associatedEntity") */
+    /**
+     * @psalm-var Collection<int, OwningManyToOneEntity>
+     * @OneToMany(targetEntity="OwningManyToOneEntity", mappedBy="associatedEntity")
+     */
     public $associatedEntities;
 
     /**

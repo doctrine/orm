@@ -297,7 +297,10 @@ class TrainDriver
      * @GeneratedValue
      */
     public $id;
-    /** @column(type="string") */
+    /**
+     * @var string
+     * @column(type="string")
+     */
     public $name;
     /**
      * Inverse side
@@ -329,7 +332,10 @@ class TrainOwner
      * @GeneratedValue
      */
     public $id;
-    /** @column(type="string") */
+    /**
+     * @var string
+     * @column(type="string")
+     */
     public $name;
     /**
      * Inverse side
@@ -354,7 +360,12 @@ class TrainOwner
  */
 class Waggon
 {
-    /** @id @generatedValue @column(type="integer") */
+    /**
+     * @var int
+     * @id
+     * @generatedValue
+     * @column(type="integer")
+     */
     public $id;
     /**
      * @var Train
@@ -374,7 +385,12 @@ class Waggon
  */
 class TrainOrder
 {
-    /** @id @generatedValue @column(type="integer") */
+    /**
+     * @var int
+     * @id
+     * @generatedValue
+     * @column(type="integer")
+     */
     public $id;
 
     /**

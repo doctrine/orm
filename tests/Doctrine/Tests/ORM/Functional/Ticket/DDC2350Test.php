@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Doctrine\Tests\ORM\Functional\Ticket;
 
+use Doctrine\Common\Collections\Collection;
 use Doctrine\Tests\OrmFunctionalTestCase;
 
 use function count;
@@ -64,7 +65,11 @@ class DDC2350User
      * @GeneratedValue
      */
     public $id;
-    /** @OneToMany(targetEntity="DDC2350Bug", mappedBy="user", fetch="EAGER") */
+
+    /**
+     * @psalm-var Collection<int, DDC2350Bug>
+     * @OneToMany(targetEntity="DDC2350Bug", mappedBy="user", fetch="EAGER")
+     */
     public $reportedBugs;
 }
 

@@ -347,7 +347,10 @@ class Phrase
      */
     private $type;
 
-    /** @OneToMany(targetEntity="Definition", mappedBy="phrase", cascade={"persist"}) */
+    /**
+     * @psalm-var Collection<int, Definition>
+     * @OneToMany(targetEntity="Definition", mappedBy="phrase", cascade={"persist"})
+     */
     private $definitions;
 
     public function __construct()
@@ -420,7 +423,10 @@ class PhraseType
      */
     private $abbreviation;
 
-    /** @OneToMany(targetEntity="Phrase", mappedBy="type") */
+    /**
+     * @psalm-var Collection<int, Phrase>
+     * @OneToMany(targetEntity="Phrase", mappedBy="type")
+     */
     private $phrases;
 
     public function __construct()

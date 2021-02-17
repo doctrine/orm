@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Doctrine\Tests\ORM\Functional\Ticket;
 
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Tools\Pagination\Paginator;
 use Doctrine\Tests\OrmFunctionalTestCase;
 
@@ -78,7 +79,10 @@ class DDC3330_Building
      */
     public $id;
 
-    /** @OneToMany(targetEntity="DDC3330_Hall", mappedBy="building", cascade={"persist"}) */
+    /**
+     * @psalm-var Collection<int, DDC3330_Hall>
+     * @OneToMany(targetEntity="DDC3330_Hall", mappedBy="building", cascade={"persist"})
+     */
     public $halls;
 
     public function addHall(DDC3330_Hall $hall): void

@@ -46,7 +46,11 @@ class DDC2182Test extends OrmFunctionalTestCase
  */
 class DDC2182OptionParent
 {
-    /** @Id @Column(type="integer", options={"unsigned": true}) */
+    /**
+     * @var int
+     * @Id
+     * @Column(type="integer", options={"unsigned": true})
+     */
     private $id;
 }
 

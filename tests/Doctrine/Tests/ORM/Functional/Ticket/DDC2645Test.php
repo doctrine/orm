@@ -36,7 +36,11 @@ class DDC2645Test extends OrmFunctionalTestCase
 /** @Entity */
 class DDC2645Foo
 {
-    /** @Id @Column(type="integer") */
+    /**
+     * @var int
+     * @Id
+     * @Column(type="integer")
+     */
     private $id;
 
     /** @Id @ManyToOne(targetEntity="DDC2645Bar") */
@@ -56,6 +60,11 @@ class DDC2645Foo
 /** @Entity */
 class DDC2645Bar
 {
-    /** @Id @Column(type="integer") @GeneratedValue(strategy="NONE") */
+    /**
+     * @var int
+     * @Id
+     * @Column(type="integer")
+     * @GeneratedValue(strategy="NONE")
+     */
     public $id;
 }

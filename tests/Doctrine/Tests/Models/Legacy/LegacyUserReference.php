@@ -26,7 +26,10 @@ class LegacyUserReference
      */
     private $_target;
 
-    /** @column(type="string", name="description") */
+    /**
+     * @var string
+     * @column(type="string", name="description")
+     */
     private $_description;
 
     /** @column(type="datetime", name="created") */

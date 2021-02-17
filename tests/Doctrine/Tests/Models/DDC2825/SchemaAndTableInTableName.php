@@ -12,6 +12,11 @@ namespace Doctrine\Tests\Models\DDC2825;
  */
 class SchemaAndTableInTableName
 {
-    /** @Id @Column(type="integer") @GeneratedValue(strategy="AUTO") */
+    /**
+     * @var int
+     * @Id
+     * @Column(type="integer")
+     * @GeneratedValue(strategy="AUTO")
+     */
     public $id;
 }

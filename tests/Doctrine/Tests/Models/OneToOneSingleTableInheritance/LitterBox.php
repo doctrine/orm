@@ -10,6 +10,11 @@ namespace Doctrine\Tests\Models\OneToOneSingleTableInheritance;
  */
 class LitterBox
 {
-    /** @Id @Column(type="integer") @GeneratedValue(strategy="AUTO") */
+    /**
+     * @var int
+     * @Id
+     * @Column(type="integer")
+     * @GeneratedValue(strategy="AUTO")
+     */
     public $id;
 }

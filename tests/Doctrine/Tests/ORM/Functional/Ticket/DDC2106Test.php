@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Doctrine\Tests\ORM\Functional\Ticket;
 
 use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\Common\Collections\Criteria;
 use Doctrine\Tests\OrmFunctionalTestCase;
 
@@ -62,7 +63,10 @@ class DDC2106Entity
      */
     public $parent;
 
-    /** @OneToMany(targetEntity="DDC2106Entity", mappedBy="parent", cascade={"persist"}) */
+    /**
+     * @psalm-var Collection<int, DDC2106Entity>
+     * @OneToMany(targetEntity="DDC2106Entity", mappedBy="parent", cascade={"persist"})
+     */
     public $children;
 
     public function __construct()

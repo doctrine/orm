@@ -285,7 +285,11 @@ class OptimisticJoinedParent
      */
     public $name;
 
-    /** @Version @Column(type="integer") */
+    /**
+     * @var int
+     * @Version
+     * @Column(type="integer")
+     */
     public $version;
 }
 
@@ -321,7 +325,11 @@ class OptimisticStandard
      */
     public $name;
 
-    /** @Version @Column(type="integer") */
+    /**
+     * @var int
+     * @Version
+     * @Column(type="integer")
+     */
     private $version;
 
     public function getVersion()

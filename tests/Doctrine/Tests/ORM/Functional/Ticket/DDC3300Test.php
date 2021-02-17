@@ -61,7 +61,12 @@ class DDC3300Test extends OrmFunctionalTestCase
  */
 abstract class DDC3300Person
 {
-    /** @Id @Column(type="integer") @GeneratedValue(strategy="AUTO") */
+    /**
+     * @var int
+     * @Id
+     * @Column(type="integer")
+     * @GeneratedValue(strategy="AUTO")
+     */
     public $id;
 }
 

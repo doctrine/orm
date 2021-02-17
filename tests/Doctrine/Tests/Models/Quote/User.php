@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Doctrine\Tests\Models\Quote;
 
 use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 
 /**
  * @Entity
@@ -26,7 +27,10 @@ class User
      */
     public $name;
 
-    /** @OneToMany(targetEntity="Phone", mappedBy="user", cascade={"persist"}) */
+    /**
+     * @psalm-var Collection<int, Phone>
+     * @OneToMany(targetEntity="Phone", mappedBy="user", cascade={"persist"})
+     */
     public $phones;
 
     /**
