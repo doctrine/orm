@@ -14,12 +14,16 @@ namespace Doctrine\Tests\Models\ECommerce;
 class ECommerceShipping
 {
     /**
+     * @var int
      * @Id @Column(type="integer")
      * @GeneratedValue
      */
     private $id;
 
-    /** @Column(type="integer") */
+    /**
+     * @var int
+     * @Column(type="integer")
+     */
     private $days;
 
     public function getId()

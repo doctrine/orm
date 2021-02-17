@@ -128,15 +128,13 @@ abstract class AbstractCollectionPersister implements CachedCollectionPersister
      */
     public function loadCollectionCache(PersistentCollection $collection, CollectionCacheKey $key)
     {
-        if (($cache = $this->region->get($key)) === null) {
+        $cache = $this->region->get($key);
+
+        if ($cache === null) {
             return null;
         }
 
-        if (($cache = $this->hydrator->loadCacheEntry($this->sourceEntity, $key, $cache, $collection)) === null) {
-            return null;
-        }
-
-        return $cache;
+        return $this->hydrator->loadCacheEntry($this->sourceEntity, $key, $cache, $collection);
     }
 
     /**
@@ -144,11 +142,11 @@ abstract class AbstractCollectionPersister implements CachedCollectionPersister
      */
     public function storeCollectionCache(CollectionCacheKey $key, $elements)
     {
-        /** @var CachedEntityPersister $targetPersister */
         $associationMapping = $this->sourceEntity->associationMappings[$key->association];
         $targetPersister    = $this->uow->getEntityPersister($this->targetEntity->rootEntityName);
-        $targetRegion       = $targetPersister->getCacheRegion();
-        $targetHydrator     = $targetPersister->getEntityHydrator();
+        assert($targetPersister instanceof CachedEntityPersister);
+        $targetRegion   = $targetPersister->getCacheRegion();
+        $targetHydrator = $targetPersister->getEntityHydrator();
 
         // Only preserve ordering if association configured it
         if (! (isset($associationMapping['indexBy']) && $associationMapping['indexBy'])) {

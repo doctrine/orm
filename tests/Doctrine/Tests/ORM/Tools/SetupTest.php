@@ -22,7 +22,10 @@ use function sys_get_temp_dir;
 
 class SetupTest extends OrmTestCase
 {
+    /** @var int */
     private $originalAutoloaderCount;
+
+    /** @var string */
     private $originalIncludePath;
 
     protected function setUp(): void

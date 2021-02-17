@@ -11,6 +11,7 @@ namespace Doctrine\Tests\Models\Quote;
 class City
 {
     /**
+     * @var int
      * @Id
      * @GeneratedValue
      * @Column(type="integer", name="`city-id`")

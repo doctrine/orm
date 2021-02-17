@@ -13,13 +13,18 @@ namespace Doctrine\Tests\Models\Forum;
 class ForumBoard
 {
     /**
+     * @var int
      * @Id
      * @Column(type="integer")
      */
     public $id;
-    /** @Column(type="integer") */
+    /**
+     * @var int
+     * @Column(type="integer")
+     */
     public $position;
     /**
+     * @var ForumCategory
      * @ManyToOne(targetEntity="ForumCategory", inversedBy="boards")
      * @JoinColumn(name="category_id", referencedColumnName="id")
      */

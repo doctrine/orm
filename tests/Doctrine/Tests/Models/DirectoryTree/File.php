@@ -10,7 +10,10 @@ namespace Doctrine\Tests\Models\DirectoryTree;
  */
 class File extends AbstractContentItem
 {
-    /** @Column(type="string") */
+    /**
+     * @var string
+     * @Column(type="string")
+     */
     protected $extension = 'html';
 
     public function __construct(?Directory $parent = null)

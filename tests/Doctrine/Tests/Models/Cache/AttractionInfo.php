@@ -17,6 +17,7 @@ namespace Doctrine\Tests\Models\Cache;
 abstract class AttractionInfo
 {
     /**
+     * @var int
      * @Id
      * @GeneratedValue
      * @Column(type="integer")

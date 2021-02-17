@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Doctrine\Tests\Models\CMS;
 
+use Doctrine\Common\Collections\Collection;
+
 /**
  * Description of CmsTag
  *
@@ -13,6 +15,7 @@ namespace Doctrine\Tests\Models\CMS;
 class CmsTag
 {
     /**
+     * @var int
      * @Id
      * @Column(type="integer")
      * @GeneratedValue
@@ -20,7 +23,11 @@ class CmsTag
     public $id;
     /** @Column(length=50, name="tag_name", nullable=true) */
     public $name;
-    /** @ManyToMany(targetEntity="CmsUser", mappedBy="tags") */
+
+    /**
+     * @psalm-var Collection<int, CmsUser>
+     * @ManyToMany(targetEntity="CmsUser", mappedBy="tags")
+     */
     public $users;
 
     public function setName($name): void

@@ -38,13 +38,17 @@ class DDC588Test extends OrmFunctionalTestCase
 class DDC588Site
 {
     /**
+     * @var int
      * @Id
      * @Column(type="integer", name="site_id")
      * @GeneratedValue
      */
     public $id;
 
-    /** @Column(type="string", length=45) */
+    /**
+     * @var string
+     * @Column(type="string", length=45)
+     */
     protected $name = null;
 
     public function __construct($name = '')

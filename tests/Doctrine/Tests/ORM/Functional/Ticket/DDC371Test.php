@@ -61,20 +61,39 @@ class DDC371Test extends OrmFunctionalTestCase
 /** @Entity */
 class DDC371Child
 {
-    /** @Id @Column(type="integer") @GeneratedValue */
+    /**
+     * @var int
+     * @Id
+     * @Column(type="integer")
+     * @GeneratedValue
+     */
     private $id;
-    /** @Column(type="string") */
+    /**
+     * @var string
+     * @Column(type="string")
+     */
     public $data;
-    /** @ManyToOne(targetEntity="DDC371Parent", inversedBy="children") @JoinColumn(name="parentId") */
+    /**
+     * @var DDC371Parent
+     * @ManyToOne(targetEntity="DDC371Parent", inversedBy="children") @JoinColumn(name="parentId")
+     */
     public $parent;
 }
 
 /** @Entity */
 class DDC371Parent
 {
-    /** @Id @Column(type="integer") @GeneratedValue */
+    /**
+     * @var int
+     * @Id
+     * @Column(type="integer")
+     * @GeneratedValue
+     */
     private $id;
-    /** @Column(type="string") */
+    /**
+     * @var string
+     * @Column(type="string")
+     */
     public $data;
     /** @OneToMany(targetEntity="DDC371Child", mappedBy="parent") */
     public $children;

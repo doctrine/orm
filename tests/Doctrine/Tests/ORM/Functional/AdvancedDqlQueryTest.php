@@ -171,8 +171,6 @@ DQL;
         $this->assertEquals('Caramba', $result[0]['brandName']);
 
         $this->_em->clear();
-
-        IterableTester::assertResultsAreTheSame($query);
     }
 
     public function testInSubselect(): void

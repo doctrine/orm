@@ -56,10 +56,14 @@ class DDC2182OptionParent
  */
 class DDC2182OptionChild
 {
-    /** @Id @Column */
+    /**
+     * @Id
+     * @Column
+     */
     private $id;
 
     /**
+     * @var DDC2182OptionParent
      * @ManyToOne(targetEntity="DDC2182OptionParent")
      * @JoinColumn(referencedColumnName="id")
      */

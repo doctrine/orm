@@ -11,16 +11,24 @@ namespace Doctrine\Tests\Models\CMS;
 class CmsComment
 {
     /**
+     * @var int
      * @Column(type="integer")
      * @Id
      * @GeneratedValue(strategy="AUTO")
      */
     public $id;
-    /** @Column(type="string", length=255) */
+    /**
+     * @var string
+     * @Column(type="string", length=255)
+     */
     public $topic;
-    /** @Column(type="string") */
+    /**
+     * @var string
+     * @Column(type="string")
+     */
     public $text;
     /**
+     * @var CmsArticle
      * @ManyToOne(targetEntity="CmsArticle", inversedBy="comments")
      * @JoinColumn(name="article_id", referencedColumnName="id")
      */

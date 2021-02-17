@@ -25,7 +25,7 @@ class MetadataFilterTest extends OrmTestCase
         parent::setUp();
 
         $driver = $this->createAnnotationDriver();
-        $em     = $this->_getTestEntityManager();
+        $em     = $this->getTestEntityManager();
 
         $em->getConfiguration()->setMetadataDriverImpl($driver);
 
@@ -147,41 +147,65 @@ class MetadataFilterTest extends OrmTestCase
 /** @Entity */
 class MetadataFilterTestEntityAaa
 {
-    /** @Id @Column */
+    /**
+     * @var int
+     * @Id
+     * @Column
+     */
     protected $id;
 }
 
 /** @Entity */
 class MetadataFilterTestEntityBbb
 {
-    /** @Id @Column */
+    /**
+     * @var int
+     * @Id
+     * @Column
+     */
     protected $id;
 }
 
 /** @Entity */
 class MetadataFilterTestEntityCcc
 {
-    /** @Id @Column */
+    /**
+     * @var int
+     * @Id
+     * @Column
+     */
     protected $id;
 }
 
 /** @Entity */
 class MetadataFilterTestEntityFoo
 {
-    /** @Id @Column */
+    /**
+     * @var int
+     * @Id
+     * @Column
+     */
     protected $id;
 }
 
 /** @Entity */
 class MetadataFilterTestEntityBar
 {
-    /** @Id @Column */
+    /**
+     * @var int
+     * @Id
+     * @Column
+     */
     protected $id;
 }
 
 /** @Entity */
 class MetadataFilterTestEntityFooBar
 {
-    /** @Id @Column */
+    /**
+     * @var int
+     * @Id
+     * @Column
+     */
     protected $id;
 }

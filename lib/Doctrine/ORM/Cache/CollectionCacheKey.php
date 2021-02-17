@@ -33,7 +33,7 @@ class CollectionCacheKey extends CacheKey
     /**
      * READ-ONLY: Public only for performance reasons, it should be considered immutable.
      *
-     * @var array The owner entity identifier
+     * @var array<string, mixed> The owner entity identifier
      */
     public $ownerIdentifier;
 
@@ -52,9 +52,9 @@ class CollectionCacheKey extends CacheKey
     public $association;
 
     /**
-     * @param string $entityClass     The entity class.
-     * @param string $association     The field name that represents the association.
-     * @param array  $ownerIdentifier The identifier of the owning entity.
+     * @param string               $entityClass     The entity class.
+     * @param string               $association     The field name that represents the association.
+     * @param array<string, mixed> $ownerIdentifier The identifier of the owning entity.
      */
     public function __construct($entityClass, $association, array $ownerIdentifier)
     {

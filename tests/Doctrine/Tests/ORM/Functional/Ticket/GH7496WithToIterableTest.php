@@ -41,9 +41,20 @@ final class GH7496WithToIterableTest extends OrmFunctionalTestCase
         $bs = IterableTester::iterableToArray(
             $q->toIterable([], AbstractQuery::HYDRATE_OBJECT)
         );
+
         $this->assertCount(2, $bs);
         $this->assertInstanceOf(GH7496EntityB::class, $bs[0]);
         $this->assertInstanceOf(GH7496EntityB::class, $bs[1]);
+        $this->assertEquals(1, $bs[0]->id);
+        $this->assertEquals(1, $bs[1]->id);
+
+        $bs = IterableTester::iterableToArray(
+            $q->toIterable([], AbstractQuery::HYDRATE_ARRAY)
+        );
+
+        $this->assertCount(2, $bs);
+        $this->assertEquals(1, $bs[0]['id']);
+        $this->assertEquals(1, $bs[1]['id']);
     }
 }
 
@@ -53,12 +64,16 @@ final class GH7496WithToIterableTest extends OrmFunctionalTestCase
 class GH7496EntityA
 {
     /**
+     * @var int
      * @Id
      * @Column(type="integer", name="a_id")
      */
     public $id;
 
-    /** @Column(type="string") */
+    /**
+     * @var string
+     * @Column(type="string")
+     */
     public $name;
 
     public function __construct(int $id, string $name)
@@ -74,12 +89,16 @@ class GH7496EntityA
 class GH7496EntityB
 {
     /**
+     * @var int
      * @Id
      * @Column(type="integer", name="b_id")
      */
     public $id;
 
-    /** @Column(type="string") */
+    /**
+     * @var string
+     * @Column(type="string")
+     */
     public $name;
 
     public function __construct(int $id, $name)
@@ -95,18 +114,21 @@ class GH7496EntityB
 class GH7496EntityAinB
 {
     /**
+     * @var int
      * @Id
      * @Column(type="integer")
      */
     public $id;
 
     /**
+     * @var GH7496EntityA
      * @ManyToOne(targetEntity=GH7496EntityA::class)
      * @JoinColumn(name="a_id", referencedColumnName="a_id", nullable=false)
      */
     public $eA;
 
     /**
+     * @var GH7496EntityB
      * @ManyToOne(targetEntity=GH7496EntityB::class)
      * @JoinColumn(name="b_id", referencedColumnName="b_id", nullable=false)
      */

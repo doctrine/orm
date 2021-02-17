@@ -30,7 +30,7 @@ class QueryCacheEntry implements CacheEntry
     /**
      * READ-ONLY: Public only for performance reasons, it should be considered immutable.
      *
-     * @var array List of entity identifiers
+     * @var array<string, mixed> List of entity identifiers
      */
     public $result;
 
@@ -42,8 +42,8 @@ class QueryCacheEntry implements CacheEntry
     public $time;
 
     /**
-     * @param array $result
-     * @param float $time
+     * @param array<string, mixed> $result
+     * @param float                $time
      */
     public function __construct($result, $time = null)
     {
@@ -52,7 +52,7 @@ class QueryCacheEntry implements CacheEntry
     }
 
     /**
-     * @param array $values
+     * @param array<string, mixed> $values
      *
      * @return QueryCacheEntry
      */

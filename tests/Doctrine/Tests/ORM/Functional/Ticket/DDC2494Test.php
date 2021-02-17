@@ -81,6 +81,7 @@ class DDC2494Test extends OrmFunctionalTestCase
 class DDC2494Currency
 {
     /**
+     * @var int
      * @Id
      * @Column(type="integer", type="ddc2494_tinyint")
      */
@@ -124,6 +125,7 @@ class DDC2494Currency
 class DDC2494Campaign
 {
     /**
+     * @var int
      * @Id
      * @GeneratedValue
      * @Column(type="integer")

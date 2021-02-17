@@ -13,23 +13,26 @@ namespace Doctrine\Tests\Models\Company;
 abstract class CompanyEvent
 {
    /**
-    * @Id @Column(type="integer")
+    * @var int
+    * @Id
+    * @Column(type="integer")
     * @GeneratedValue
     */
     private $id;
 
     /**
+     * @var CompanyOrganization
      * @ManyToOne(targetEntity="CompanyOrganization", inversedBy="events", cascade={"persist"})
      * @JoinColumn(name="org_id", referencedColumnName="id")
      */
      private $organization;
 
-    public function getId()
+    public function getId(): int
     {
         return $this->id;
     }
 
-    public function getOrganization()
+    public function getOrganization(): CompanyOrganization
     {
         return $this->organization;
     }

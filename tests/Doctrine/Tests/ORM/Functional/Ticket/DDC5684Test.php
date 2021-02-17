@@ -63,21 +63,33 @@ class DDC5684Test extends OrmFunctionalTestCase
 
 class DDC5684ObjectIdType extends DBALTypes\IntegerType
 {
+    /**
+     * {@inheritDoc}
+     */
     public function convertToPHPValue($value, AbstractPlatform $platform)
     {
         return new DDC5684ObjectId($value);
     }
 
+    /**
+     * {@inheritDoc}
+     */
     public function convertToDatabaseValue($value, AbstractPlatform $platform)
     {
         return $value->value;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     public function getName()
     {
         return self::class;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     public function requiresSQLCommentHint(AbstractPlatform $platform)
     {
         return true;
@@ -86,14 +98,16 @@ class DDC5684ObjectIdType extends DBALTypes\IntegerType
 
 class DDC5684ObjectId
 {
+    /** @var mixed */
     public $value;
 
+    /** @param mixed $value */
     public function __construct($value)
     {
         $this->value = $value;
     }
 
-    public function __toString()
+    public function __toString(): string
     {
         return (string) $this->value;
     }
@@ -106,6 +120,7 @@ class DDC5684ObjectId
 class DDC5684Object
 {
     /**
+     * @var DDC5684ObjectIdType
      * @Id
      * @Column(type=Doctrine\Tests\ORM\Functional\Ticket\DDC5684ObjectIdType::class)
      * @GeneratedValue(strategy="AUTO")

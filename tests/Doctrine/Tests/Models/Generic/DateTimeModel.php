@@ -11,6 +11,7 @@ namespace Doctrine\Tests\Models\Generic;
 class DateTimeModel
 {
     /**
+     * @var int
      * @Id @Column(type="integer")
      * @GeneratedValue
      */

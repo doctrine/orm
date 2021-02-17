@@ -15,7 +15,10 @@ class RoutingLocation
      */
     public $id;
 
-    /** @Column(type="string") */
+    /**
+     * @var string
+     * @Column(type="string")
+     */
     public $name;
 
     public function getName()

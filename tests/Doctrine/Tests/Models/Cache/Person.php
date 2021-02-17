@@ -12,6 +12,7 @@ namespace Doctrine\Tests\Models\Cache;
 class Person
 {
     /**
+     * @var int
      * @Id
      * @GeneratedValue
      * @Column(type="integer")
@@ -21,7 +22,10 @@ class Person
     /** @Column(unique=true) */
     public $name;
 
-    /** @OneToOne(targetEntity="Address", mappedBy="person") */
+    /**
+     * @var Address
+     * @OneToOne(targetEntity="Address", mappedBy="person")
+     */
     public $address;
 
     public function __construct($name)

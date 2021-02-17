@@ -25,7 +25,7 @@ class DDC117Article
     private $title;
 
     /**
-     * @psalm-var ArrayCollection<int, DDC117Reference>
+     * @psalm-var Collection<int, DDC117Reference>
      * @OneToMany(targetEntity="DDC117Reference", mappedBy="source", cascade={"remove"})
      */
     private $references;
@@ -37,7 +37,7 @@ class DDC117Article
     private $details;
 
     /**
-     * @psalm-var ArrayCollection<int, DDC117Translation>
+     * @psalm-var Collection<int, DDC117Translation>
      * @OneToMany(targetEntity="DDC117Translation", mappedBy="article", cascade={"persist", "remove"})
      */
     private $translations;
@@ -80,17 +80,17 @@ class DDC117Article
         $this->translations[] = new DDC117Translation($this, $language, $title);
     }
 
-    public function getText()
+    public function getText(): string
     {
         return $this->details->getText();
     }
 
-    public function getDetails()
+    public function getDetails(): DDC117ArticleDetails
     {
         return $this->details;
     }
 
-    public function getLinks()
+    public function getLinks(): Collection
     {
         return $this->links;
     }
@@ -100,7 +100,7 @@ class DDC117Article
         $this->details = null;
     }
 
-    public function getTranslations()
+    public function getTranslations(): Collection
     {
         return $this->translations;
     }

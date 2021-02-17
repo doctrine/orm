@@ -51,6 +51,7 @@ class GH7366Entity
     public $id;
 
     /**
+     * @var int
      * @Column(type="integer")
      * @Version
      */

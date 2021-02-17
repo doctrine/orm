@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Doctrine\Tests\ORM\Functional\Ticket;
 
+use Doctrine\Common\Collections\Collection;
 use Doctrine\Tests\OrmFunctionalTestCase;
 use Exception;
 
@@ -48,20 +49,29 @@ class DDC698Test extends OrmFunctionalTestCase
 class DDC698Role
 {
     /**
-     *  @Id @Column(name="roleID", type="integer")
-     *  @GeneratedValue(strategy="AUTO")
+     * @var int
+     * @Id
+     * @Column(name="roleID", type="integer")
+     * @GeneratedValue(strategy="AUTO")
      */
     protected $roleID;
 
-    /** @Column(name="name", type="string", length=45) */
+    /**
+     * @var string
+     * @Column(name="name", type="string", length=45)
+     */
     protected $name;
 
-    /** @Column(name="shortName", type="string", length=45) */
+    /**
+     * @var string
+     * @Column(name="shortName", type="string", length=45)
+     */
     protected $shortName;
 
 
 
     /**
+     * @var Collection<int, DDC698Privilege>
      * @ManyToMany(targetEntity="DDC698Privilege", inversedBy="roles")
      * @JoinTable(name="RolePrivileges",
      *     joinColumns={@JoinColumn(name="roleID", referencedColumnName="roleID")},
@@ -79,14 +89,22 @@ class DDC698Role
 class DDC698Privilege
 {
     /**
-     *  @Id  @Column(name="privilegeID", type="integer")
-     *  @GeneratedValue(strategy="AUTO")
+     * @var int
+     * @Id
+     * @Column(name="privilegeID", type="integer")
+     * @GeneratedValue(strategy="AUTO")
      */
     protected $privilegeID;
 
-    /** @Column(name="name", type="string", length=45) */
+    /**
+     * @var string
+     * @Column(name="name", type="string", length=45)
+     */
     protected $name;
 
-    /** @ManyToMany(targetEntity="DDC698Role", mappedBy="privilege") */
+    /**
+     * @psalm-var Collection<int, DDC698Role>
+     * @ManyToMany(targetEntity="DDC698Role", mappedBy="privilege")
+     */
     protected $roles;
 }

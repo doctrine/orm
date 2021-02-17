@@ -23,7 +23,7 @@ class CountOutputWalkerTest extends PaginationTestCase
         );
     }
 
-    public function testCountQuery_MixedResultsWithName(): void
+    public function testCountQueryMixedResultsWithName(): void
     {
         $query = $this->entityManager->createQuery(
             'SELECT a, sum(a.name) as foo FROM Doctrine\Tests\ORM\Tools\Pagination\Author a'

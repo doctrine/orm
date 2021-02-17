@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Doctrine\Tests\ORM\Functional\Ticket;
 
+use Doctrine\Common\Collections\Collection;
 use Doctrine\Tests\OrmFunctionalTestCase;
 
 /**
@@ -42,10 +43,18 @@ class DDC1151Test extends OrmFunctionalTestCase
  */
 class DDC1151User
 {
-    /** @Id @Column(type="integer") @GeneratedValue */
+    /**
+     * @var int
+     * @Id
+     * @Column(type="integer")
+     * @GeneratedValue
+     */
     public $id;
 
-    /** @ManyToMany(targetEntity="DDC1151Group") */
+    /**
+     * @psalm-var Collection<int, DDC1151Group>
+     * @ManyToMany(targetEntity="DDC1151Group")
+     */
     public $groups;
 }
 
@@ -55,6 +64,11 @@ class DDC1151User
  */
 class DDC1151Group
 {
-    /** @Id @Column(type="integer") @GeneratedValue */
+    /**
+     * @var int
+     * @Id
+     * @Column(type="integer")
+     * @GeneratedValue
+     */
     public $id;
 }

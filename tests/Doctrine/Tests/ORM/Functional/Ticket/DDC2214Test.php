@@ -67,7 +67,10 @@ class DDC2214Foo
     /** @Id @Column(type="integer") @GeneratedValue(strategy="AUTO") */
     public $id;
 
-    /** @ManyToOne(targetEntity="DDC2214Bar") */
+    /**
+     * @var DDC2214Bar
+     * @ManyToOne(targetEntity="DDC2214Bar")
+     */
     public $bar;
 }
 

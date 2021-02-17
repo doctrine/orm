@@ -16,9 +16,15 @@ class InversedOneToOneEntity
      */
     public $id1;
 
-    /** @Column(type="string", name="some_property") */
+    /**
+     * @var string
+     * @Column(type="string", name="some_property")
+     */
     public $someProperty;
 
-    /** @OneToOne(targetEntity="OwningOneToOneEntity", mappedBy="associatedEntity") */
+    /**
+     * @var OwningOneToOneEntity
+     * @OneToOne(targetEntity="OwningOneToOneEntity", mappedBy="associatedEntity")
+     */
     public $associatedEntity;
 }

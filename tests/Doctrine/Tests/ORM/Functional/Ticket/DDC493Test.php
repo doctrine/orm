@@ -41,12 +41,14 @@ class DDC493Test extends OrmFunctionalTestCase
 class DDC493Customer
 {
     /**
+     * @var int
      * @Id
      * @Column(type="integer")
      * @GeneratedValue(strategy="AUTO")
      */
     public $id;
     /**
+     * @var DDC493Contact
      * @OneToOne(targetEntity="DDC493Contact", cascade={"remove","persist"})
      * @JoinColumn(name="contact", referencedColumnName="id")
      */
@@ -66,11 +68,15 @@ class DDC493Distributor extends DDC493Customer
 class DDC493Contact
 {
     /**
+     * @var int
      * @Id
      * @Column(type="integer")
      * @GeneratedValue(strategy="AUTO")
      */
     public $id;
-    /** @Column(type="string") */
+    /**
+     * @var string
+     * @Column(type="string")
+     */
     public $data;
 }

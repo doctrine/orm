@@ -11,6 +11,7 @@ namespace Doctrine\Tests\Models\CustomType;
 class CustomTypeChild
 {
     /**
+     * @var int
      * @Id @Column(type="integer")
      * @GeneratedValue(strategy="AUTO")
      */

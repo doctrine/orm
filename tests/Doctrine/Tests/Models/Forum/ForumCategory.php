@@ -15,9 +15,15 @@ class ForumCategory
      * @Id
      */
     private $id;
-    /** @Column(type="integer") */
+    /**
+     * @var int
+     * @Column(type="integer")
+     */
     public $position;
-    /** @Column(type="string", length=255) */
+    /**
+     * @var string
+     * @Column(type="string", length=255)
+     */
     public $name;
     /** @OneToMany(targetEntity="ForumBoard", mappedBy="category") */
     public $boards;

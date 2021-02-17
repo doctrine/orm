@@ -13,6 +13,7 @@ use Doctrine\Common\Collections\ArrayCollection;
 class Action
 {
     /**
+     * @var string
      * @Id
      * @Column(type="string")
      * @GeneratedValue(strategy="NONE")

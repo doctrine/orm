@@ -65,12 +65,16 @@ class DDC2775Test extends OrmFunctionalTestCase
 abstract class Role
 {
     /**
+     * @var int
      * @Id @Column(type="integer")
      * @GeneratedValue
      */
     public $id;
 
-    /** @ManyToOne(targetEntity="User", inversedBy="roles") */
+    /**
+     * @var User
+     * @ManyToOne(targetEntity="User", inversedBy="roles")
+     */
     public $user;
 
     /** @OneToMany(targetEntity="Authorization", mappedBy="role", cascade={"all"}, orphanRemoval=true) */
@@ -94,15 +98,22 @@ class AdminRole extends Role
 class Authorization
 {
     /**
+     * @var int
      * @Id @Column(type="integer")
      * @GeneratedValue
      */
     public $id;
 
-    /** @ManyToOne(targetEntity="User", inversedBy="authorizations") */
+    /**
+     * @var User
+     * @ManyToOne(targetEntity="User", inversedBy="authorizations")
+     */
     public $user;
 
-    /** @ManyToOne(targetEntity="Role", inversedBy="authorizations") */
+    /**
+     * @var Role
+     * @ManyToOne(targetEntity="Role", inversedBy="authorizations")
+     */
     public $role;
 }
 
@@ -112,6 +123,7 @@ class Authorization
 class User
 {
     /**
+     * @var int
      * @Id @Column(type="integer")
      * @GeneratedValue(strategy="AUTO")
      */

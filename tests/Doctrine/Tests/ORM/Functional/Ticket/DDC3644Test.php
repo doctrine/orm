@@ -137,13 +137,17 @@ class DDC3644Test extends OrmFunctionalTestCase
 class DDC3644User
 {
     /**
+     * @var int
      * @Id
      * @GeneratedValue
      * @Column(type="integer", name="hash_id")
      */
     public $id;
 
-    /** @Column(type="string") */
+    /**
+     * @var string
+     * @Column(type="string")
+     */
     public $name;
 
     /** @OneToMany(targetEntity="DDC3644Address", mappedBy="user", orphanRemoval=true) */
@@ -181,6 +185,7 @@ class DDC3644User
 class DDC3644Address
 {
     /**
+     * @var int
      * @Id
      * @GeneratedValue
      * @Column(type="integer")
@@ -188,12 +193,16 @@ class DDC3644Address
     public $id;
 
     /**
+     * @var DDC3644User
      * @ManyToOne(targetEntity="DDC3644User", inversedBy="addresses")
      * @JoinColumn(referencedColumnName="hash_id")
      */
     public $user;
 
-    /** @Column(type="string") */
+    /**
+     * @var string
+     * @Column(type="string")
+     */
     public $address;
 
     public function __construct($address)
@@ -211,13 +220,17 @@ class DDC3644Address
 abstract class DDC3644Animal
 {
     /**
+     * @var int
      * @Id
      * @GeneratedValue
      * @Column(type="integer")
      */
     public $id;
 
-    /** @Column(type="string") */
+    /**
+     * @var string
+     * @Column(type="string")
+     */
     public $name;
 
     public function __construct($name)
@@ -232,6 +245,7 @@ abstract class DDC3644Animal
 class DDC3644Pet extends DDC3644Animal
 {
     /**
+     * @var DDC3644User
      * @ManyToOne(targetEntity="DDC3644User", inversedBy="pets")
      * @JoinColumn(referencedColumnName="hash_id")
      */

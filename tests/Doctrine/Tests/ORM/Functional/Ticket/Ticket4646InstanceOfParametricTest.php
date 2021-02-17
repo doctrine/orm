@@ -48,6 +48,7 @@ class Ticket4646InstanceOfParametricTest extends OrmFunctionalTestCase
 class PersonTicket4646Parametric
 {
     /**
+     * @var int
      * @Id()
      * @GeneratedValue()
      * @Column(type="integer")

@@ -74,6 +74,7 @@ class DDC1225_TestEntity1
 class DDC1225_TestEntity2
 {
     /**
+     * @var int
      * @Id
      * @GeneratedValue(strategy="AUTO")
      * @Column(type="integer")

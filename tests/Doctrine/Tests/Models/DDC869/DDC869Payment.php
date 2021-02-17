@@ -12,6 +12,7 @@ use Doctrine\ORM\Mapping\ClassMetadataInfo;
 class DDC869Payment
 {
     /**
+     * @var int
      * @Id
      * @Column(type="integer")
      * @GeneratedValue

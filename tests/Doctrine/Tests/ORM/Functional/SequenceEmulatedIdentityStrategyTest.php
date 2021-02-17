@@ -64,7 +64,10 @@ class SequenceEmulatedIdentityEntity
     /** @Id @Column(type="integer") @GeneratedValue(strategy="IDENTITY") */
     private $id;
 
-    /** @Column(type="string") */
+    /**
+     * @var string
+     * @Column(type="string")
+     */
     private $value;
 
     public function getId()

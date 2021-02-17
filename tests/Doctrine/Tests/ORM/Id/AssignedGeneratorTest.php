@@ -13,13 +13,16 @@ use Doctrine\Tests\OrmTestCase;
  */
 class AssignedGeneratorTest extends OrmTestCase
 {
-    private $_em;
-    private $_assignedGen;
+    /** @var EntityManagerInterface */
+    private $entityManager;
+
+    /** @var AssignedGenerator */
+    private $assignedGen;
 
     protected function setUp(): void
     {
-        $this->_em          = $this->_getTestEntityManager();
-        $this->_assignedGen = new AssignedGenerator();
+        $this->entityManager = $this->getTestEntityManager();
+        $this->assignedGen   = new AssignedGenerator();
     }
 
     /**
@@ -29,7 +32,7 @@ class AssignedGeneratorTest extends OrmTestCase
     {
         $this->expectException(ORMException::class);
 
-        $this->_assignedGen->generate($this->_em, $entity);
+        $this->assignedGen->generate($this->entityManager, $entity);
     }
 
     public function entitiesWithoutId(): array
@@ -44,13 +47,13 @@ class AssignedGeneratorTest extends OrmTestCase
     {
         $entity       = new AssignedSingleIdEntity();
         $entity->myId = 1;
-        $id           = $this->_assignedGen->generate($this->_em, $entity);
+        $id           = $this->assignedGen->generate($this->entityManager, $entity);
         $this->assertEquals(['myId' => 1], $id);
 
         $entity        = new AssignedCompositeIdEntity();
         $entity->myId2 = 2;
         $entity->myId1 = 4;
-        $id            = $this->_assignedGen->generate($this->_em, $entity);
+        $id            = $this->assignedGen->generate($this->entityManager, $entity);
         $this->assertEquals(['myId1' => 4, 'myId2' => 2], $id);
     }
 }
@@ -58,15 +61,28 @@ class AssignedGeneratorTest extends OrmTestCase
 /** @Entity */
 class AssignedSingleIdEntity
 {
-    /** @Id @Column(type="integer") */
+    /**
+     * @var int
+     * @Id
+     * @Column(type="integer")
+     */
     public $myId;
 }
 
 /** @Entity */
 class AssignedCompositeIdEntity
 {
-    /** @Id @Column(type="integer") */
+    /**
+     * @var int
+     * @Id
+     * @Column(type="integer")
+     */
     public $myId1;
-    /** @Id @Column(type="integer") */
+
+    /**
+     * @var int
+     * @Id
+     * @Column(type="integer")
+     */
     public $myId2;
 }

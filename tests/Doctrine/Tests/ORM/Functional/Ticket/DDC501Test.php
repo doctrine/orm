@@ -78,7 +78,7 @@ class DDC501Test extends OrmFunctionalTestCase
         $this->assertEquals(2, count($userClone->getGroups()));
     }
 
-    protected function createAndPersistUser()
+    protected function createAndPersistUser(): CmsUser
     {
         $user           = new CmsUser();
         $user->name     = 'Luka';

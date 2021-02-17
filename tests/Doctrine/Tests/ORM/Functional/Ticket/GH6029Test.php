@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Doctrine\Tests\ORM\Functional\Ticket;
 
 use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\ORMInvalidArgumentException;
 use Doctrine\Tests\OrmFunctionalTestCase;
 
@@ -81,10 +82,18 @@ final class GH6029Test extends OrmFunctionalTestCase
 /** @Entity */
 class GH6029User
 {
-    /** @Id @Column(type="integer") @GeneratedValue */
+    /**
+     * @var int
+     * @Id
+     * @Column(type="integer")
+     * @GeneratedValue
+     */
     public $id;
 
-    /** @ManyToMany(targetEntity=GH6029Group::class, cascade={"all"}) */
+    /**
+     * @psalm-var Collection<int, GH6029Group>
+     * @ManyToMany(targetEntity=GH6029Group::class, cascade={"all"})
+     */
     public $groups;
 
     public function __construct()
@@ -96,24 +105,42 @@ class GH6029User
 /** @Entity */
 class GH6029Group
 {
-    /** @Id @Column(type="integer") @GeneratedValue */
+    /**
+     * @var int
+     * @Id
+     * @Column(type="integer")
+     * @GeneratedValue
+     */
     public $id;
 }
 
 /** @Entity */
 class GH6029Group2
 {
-    /** @Id @Column(type="integer") @GeneratedValue */
+    /**
+     * @var int
+     * @Id
+     * @Column(type="integer")
+     * @GeneratedValue
+     */
     public $id;
 }
 
 /** @Entity */
 class GH6029Product
 {
-    /** @Id @Column(type="integer") @GeneratedValue */
+    /**
+     * @var int
+     * @Id
+     * @Column(type="integer")
+     * @GeneratedValue
+     */
     public $id;
 
-    /** @OneToMany(targetEntity=GH6029Feature::class, mappedBy="product", cascade={"all"}) */
+    /**
+     * @psalm-var Collection<int,GH6029Feature>
+     * @OneToMany(targetEntity=GH6029Feature::class, mappedBy="product", cascade={"all"})
+     */
     public $features;
 
     public function __construct()
@@ -125,10 +152,16 @@ class GH6029Product
 /** @Entity */
 class GH6029Feature
 {
-    /** @Id @Column(type="integer") @GeneratedValue */
+    /**
+     * @var int
+     * @Id
+     * @Column(type="integer")
+     * @GeneratedValue
+     */
     public $id;
 
     /**
+     * @var GH6029Product
      * @ManyToOne(targetEntity=GH6029Product::class, inversedBy="features")
      * @JoinColumn(name="product_id", referencedColumnName="id")
      */

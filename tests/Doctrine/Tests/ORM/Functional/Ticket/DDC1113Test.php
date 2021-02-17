@@ -61,13 +61,24 @@ class DDC1113Test extends OrmFunctionalTestCase
  */
 class DDC1113Vehicle
 {
-    /** @Id @GeneratedValue @Column(type="integer") */
+    /**
+     * @var int
+     * @Id
+     * @GeneratedValue
+     * @Column(type="integer")
+     */
     public $id;
 
-    /** @ManyToOne(targetEntity="DDC1113Vehicle") */
+    /**
+     * @var DDC1113Vehicle
+     * @ManyToOne(targetEntity="DDC1113Vehicle")
+     */
     public $parent;
 
-    /** @OneToOne(targetEntity="DDC1113Engine", cascade={"persist", "remove"}) */
+    /**
+     * @var DDC1113Engine
+     * @OneToOne(targetEntity="DDC1113Engine", cascade={"persist", "remove"})
+     */
     public $engine;
 }
 
@@ -90,6 +101,11 @@ class DDC1113Bus extends DDC1113Vehicle
  */
 class DDC1113Engine
 {
-    /** @Id @GeneratedValue @Column(type="integer") */
+    /**
+     * @var int
+     * @Id
+     * @GeneratedValue
+     * @Column(type="integer")
+     */
     public $id;
 }

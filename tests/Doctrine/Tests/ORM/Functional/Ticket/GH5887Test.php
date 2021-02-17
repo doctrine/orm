@@ -164,7 +164,7 @@ class GH5887CustomIdObject
         return $this->id;
     }
 
-    public function __toString()
+    public function __toString(): string
     {
         return 'non existing id';
     }

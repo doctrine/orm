@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Doctrine\Tests\ORM\Functional\Ticket;
 
 use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\PersistentCollection;
 use Doctrine\Tests\OrmFunctionalTestCase;
 
@@ -52,6 +53,9 @@ class GH5762Test extends OrmFunctionalTestCase
         self::assertContains('Volvo', $cars);
     }
 
+    /**
+     * @return mixed
+     */
     private function fetchData()
     {
         $this->createData();
@@ -108,19 +112,26 @@ class GH5762Test extends OrmFunctionalTestCase
 class GH5762Driver
 {
     /**
+     * @var int
      * @Id
      * @Column(type="integer")
      * @GeneratedValue(strategy="NONE")
      */
     public $id;
 
-    /** @Column(type="string", length=255); */
+    /**
+     * @var string
+     * @Column(type="string", length=255)
+     */
     public $name;
 
-    /** @OneToMany(targetEntity="GH5762DriverRide", mappedBy="driver") */
+    /**
+     * @psalm-var Collection<int, GH5762DriverRide>
+     * @OneToMany(targetEntity="GH5762DriverRide", mappedBy="driver")
+     */
     public $driverRides;
 
-    public function __construct($id, $name)
+    public function __construct(int $id, string $name)
     {
         $this->driverRides = new ArrayCollection();
         $this->id          = $id;
@@ -135,6 +146,7 @@ class GH5762Driver
 class GH5762DriverRide
 {
     /**
+     * @var GH5762Driver
      * @Id
      * @ManyToOne(targetEntity="GH5762Driver", inversedBy="driverRides")
      * @JoinColumn(name="driver_id", referencedColumnName="id")
@@ -142,6 +154,7 @@ class GH5762DriverRide
     public $driver;
 
     /**
+     * @var GH5762Car
      * @Id
      * @ManyToOne(targetEntity="GH5762Car", inversedBy="carRides")
      * @JoinColumn(name="car", referencedColumnName="brand")
@@ -165,16 +178,23 @@ class GH5762DriverRide
 class GH5762Car
 {
     /**
+     * @var string
      * @Id
      * @Column(type="string", length=25)
      * @GeneratedValue(strategy="NONE")
      */
     public $brand;
 
-    /** @Column(type="string", length=255); */
+    /**
+     * @var string
+     * @Column(type="string", length=255)
+     */
     public $model;
 
-    /** @OneToMany(targetEntity="GH5762DriverRide", mappedBy="car") */
+    /**
+     * @psalm-var Collection<int, GH5762DriverRide>
+     * @OneToMany(targetEntity="GH5762DriverRide", mappedBy="car")
+     */
     public $carRides;
 
     public function __construct($brand, $model)

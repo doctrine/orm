@@ -97,7 +97,12 @@ class DDC1452Test extends OrmFunctionalTestCase
  */
 class DDC1452EntityA
 {
-    /** @Id @Column(type="integer") @GeneratedValue */
+    /**
+     * @var int
+     * @Id
+     * @Column(type="integer")
+     * @GeneratedValue
+     */
     public $id;
     /** @Column */
     public $title;
@@ -120,11 +125,22 @@ class DDC1452EntityA
  */
 class DDC1452EntityB
 {
-    /** @Id @Column(type="integer") @GeneratedValue */
+    /**
+     * @var int
+     * @Id
+     * @Column(type="integer")
+     * @GeneratedValue
+     */
     public $id;
 
-    /** @ManyToOne(targetEntity="DDC1452EntityA", inversedBy="entitiesB") */
+    /**
+     * @var DDC1452EntityA
+     * @ManyToOne(targetEntity="DDC1452EntityA", inversedBy="entitiesB")
+     */
     public $entityAFrom;
-    /** @ManyToOne(targetEntity="DDC1452EntityA") */
+    /**
+     * @var DDC1452EntityA
+     * @ManyToOne(targetEntity="DDC1452EntityA")
+     */
     public $entityATo;
 }

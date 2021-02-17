@@ -109,6 +109,11 @@ class MySqlSchemaToolTest extends OrmFunctionalTestCase
  */
 class MysqlSchemaNamespacedEntity
 {
-    /** @Column(type="integer") @Id @GeneratedValue */
+    /**
+     * @var int
+     * @Column(type="integer")
+     * @Id
+     * @GeneratedValue
+     */
     public $id;
 }

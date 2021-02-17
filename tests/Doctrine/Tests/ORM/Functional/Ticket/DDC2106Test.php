@@ -49,13 +49,17 @@ class DDC2106Test extends OrmFunctionalTestCase
 class DDC2106Entity
 {
     /**
+     * @var int
      * @Id
      * @GeneratedValue(strategy="IDENTITY")
      * @Column(type="integer")
      */
     public $id;
 
-    /** @ManyToOne(targetEntity="DDC2106Entity", inversedBy="children") */
+    /**
+     * @var DDC2106Entity
+     * @ManyToOne(targetEntity="DDC2106Entity", inversedBy="children")
+     */
     public $parent;
 
     /** @OneToMany(targetEntity="DDC2106Entity", mappedBy="parent", cascade={"persist"}) */

@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Doctrine\Tests\ORM\Functional\Ticket;
 
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Internal\Hydration\ObjectHydrator;
 use Doctrine\ORM\Query;
 use Doctrine\ORM\Query\ResultSetMapping;
@@ -84,13 +85,17 @@ final class GH6362Test extends OrmFunctionalTestCase
 class GH6362Start
 {
     /**
+     * @var int
      * @Column(type="integer")
      * @Id
      * @GeneratedValue
      */
     protected $id;
 
-    /** @ManyToOne(targetEntity="GH6362Base", inversedBy="starts") */
+    /**
+     * @var GH6362Base
+     * @ManyToOne(targetEntity="GH6362Base", inversedBy="starts")
+     */
     private $bases;
 }
 
@@ -103,13 +108,17 @@ class GH6362Start
 abstract class GH6362Base
 {
     /**
+     * @var int
      * @Column(type="integer")
      * @Id
      * @GeneratedValue
      */
     protected $id;
 
-    /** @OneToMany(targetEntity="GH6362Start", mappedBy="bases") */
+    /**
+     * @psalm-var Collection<int, GH6362Start>
+     * @OneToMany(targetEntity="GH6362Start", mappedBy="bases")
+     */
     private $starts;
 }
 
@@ -118,7 +127,10 @@ abstract class GH6362Base
  */
 class GH6362Child extends GH6362Base
 {
-    /** @OneToMany(targetEntity="GH6362Join", mappedBy="child") */
+    /**
+     * @psalm-var Collection<int, GH6362Join>
+     * @OneToMany(targetEntity="GH6362Join", mappedBy="child")
+     */
     private $joins;
 }
 
@@ -128,12 +140,16 @@ class GH6362Child extends GH6362Base
 class GH6362Join
 {
     /**
+     * @var int
      * @Column(type="integer")
      * @Id
      * @GeneratedValue
      */
     private $id;
 
-    /** @ManyToOne(targetEntity="GH6362Child", inversedBy="joins") */
+    /**
+     * @var GH6362Child
+     * @ManyToOne(targetEntity="GH6362Child", inversedBy="joins")
+     */
     private $child;
 }

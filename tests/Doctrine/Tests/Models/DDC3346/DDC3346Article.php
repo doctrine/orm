@@ -11,6 +11,7 @@ namespace Doctrine\Tests\Models\DDC3346;
 class DDC3346Article
 {
     /**
+     * @var int
      * @Id
      * @Column(type="integer")
      * @GeneratedValue(strategy="AUTO")

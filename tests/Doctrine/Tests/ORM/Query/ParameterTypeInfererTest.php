@@ -15,7 +15,8 @@ use PDO;
 
 class ParameterTypeInfererTest extends OrmTestCase
 {
-    public function providerParameterTypeInferer()
+    /** @psalm-return list<array{mixed, int|string}> */
+    public function providerParameterTypeInferer(): array
     {
         return [
             [1,                 Type::INTEGER],
@@ -33,9 +34,11 @@ class ParameterTypeInfererTest extends OrmTestCase
     }
 
     /**
+     * @param mixed      $value
+     * @param int|string $expected
+     *
      * @dataProvider providerParameterTypeInferer
      */
-
     public function testParameterTypeInferer($value, $expected): void
     {
         $this->assertEquals($expected, ParameterTypeInferer::inferType($value));

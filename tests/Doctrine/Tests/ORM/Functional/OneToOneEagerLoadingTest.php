@@ -290,7 +290,12 @@ class Train
  */
 class TrainDriver
 {
-    /** @Id @Column(type="integer") @GeneratedValue */
+    /**
+     * @var int
+     * @Id
+     * @Column(type="integer")
+     * @GeneratedValue
+     */
     public $id;
     /** @column(type="string") */
     public $name;
@@ -317,7 +322,12 @@ class TrainDriver
  */
 class TrainOwner
 {
-    /** @Id @Column(type="integer") @GeneratedValue */
+    /**
+     * @var int
+     * @Id
+     * @Column(type="integer")
+     * @GeneratedValue
+     */
     public $id;
     /** @column(type="string") */
     public $name;
@@ -347,6 +357,7 @@ class Waggon
     /** @id @generatedValue @column(type="integer") */
     public $id;
     /**
+     * @var Train
      * @ManyToOne(targetEntity="Train", inversedBy="waggons", fetch="EAGER")
      * @JoinColumn(nullable=false)
      */
@@ -366,7 +377,10 @@ class TrainOrder
     /** @id @generatedValue @column(type="integer") */
     public $id;
 
-    /** @OneToOne(targetEntity = "Train", fetch = "EAGER") */
+    /**
+     * @var Train
+     * @OneToOne(targetEntity="Train", fetch="EAGER")
+     */
     public $train;
 
     public function __construct(Train $train)

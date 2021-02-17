@@ -327,16 +327,21 @@ class Phrase
     public const CLASS_NAME = self::class;
 
     /**
+     * @var int
      * @Id
      * @Column(type="integer", name="phrase_id")
      * @GeneratedValue(strategy="AUTO")
      */
     private $id;
 
-    /** @Column(type="string", name="phrase_name", unique=true, length=255) */
+    /**
+     * @var string
+     * @Column(type="string", name="phrase_name", unique=true, length=255)
+     */
     private $phrase;
 
     /**
+     * @var PhraseType
      * @ManyToOne(targetEntity="PhraseType")
      * @JoinColumn(name="phrase_type_id", referencedColumnName="phrase_type_id")
      */
@@ -396,16 +401,23 @@ class PhraseType
     public const CLASS_NAME = self::class;
 
     /**
+     * @var int
      * @Id
      * @Column(type="integer", name="phrase_type_id")
      * @GeneratedValue(strategy="AUTO")
      */
     private $id;
 
-    /** @Column(type="string", name="phrase_type_name", unique=true) */
+    /**
+     * @var string
+     * @Column(type="string", name="phrase_type_name", unique=true)
+     */
     private $type;
 
-    /** @Column(type="string", name="phrase_type_abbreviation", unique=true) */
+    /**
+     * @var string
+     * @Column(type="string", name="phrase_type_abbreviation", unique=true)
+     */
     private $abbreviation;
 
     /** @OneToMany(targetEntity="Phrase", mappedBy="type") */
@@ -461,6 +473,7 @@ class Definition
     public const CLASS_NAME = self::class;
 
     /**
+     * @var int
      * @Id
      * @Column(type="integer", name="definition_id")
      * @GeneratedValue(strategy="AUTO")
@@ -468,6 +481,7 @@ class Definition
     private $id;
 
     /**
+     * @var Phrase
      * @ManyToOne(targetEntity="Phrase")
      * @JoinColumn(name="definition_phrase_id", referencedColumnName="phrase_id")
      */

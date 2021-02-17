@@ -123,8 +123,6 @@ class HydrationCompleteHandlerTest extends TestCase
      */
     public function testDefersMultiplePostLoadOfEntity(int $listenersFlag): void
     {
-        /** @var ClassMetadata $metadata1 */
-        /** @var ClassMetadata $metadata2 */
         $metadata1     = $this->createMock(ClassMetadata::class);
         $metadata2     = $this->createMock(ClassMetadata::class);
         $entity1       = new stdClass();
@@ -179,7 +177,10 @@ class HydrationCompleteHandlerTest extends TestCase
         $this->handler->hydrationComplete();
     }
 
-    public function invocationFlagProvider()
+    /**
+     * @psalm-return list<array{int}>
+     */
+    public function invocationFlagProvider(): array
     {
         return [
             [ListenersInvoker::INVOKE_LISTENERS],

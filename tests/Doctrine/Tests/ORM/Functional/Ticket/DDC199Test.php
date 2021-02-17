@@ -64,12 +64,16 @@ class DDC199Test extends OrmFunctionalTestCase
 class DDC199ParentClass
 {
     /**
+     * @var int
      * @Id @Column(type="integer")
      * @GeneratedValue(strategy="AUTO")
      */
     public $id;
 
-    /** @Column(type="string") */
+    /**
+     * @var string
+     * @Column(type="string")
+     */
     public $parentData;
 
     /** @OneToMany(targetEntity="DDC199RelatedClass", mappedBy="parent") */
@@ -87,12 +91,18 @@ class DDC199ChildClass extends DDC199ParentClass
 /** @Entity @Table(name="ddc199_relatedclass") */
 class DDC199RelatedClass
 {
-    /** @Id @Column(type="integer") @GeneratedValue */
+    /**
+     * @var int
+     * @Id
+     * @Column(type="integer")
+     * @GeneratedValue
+     */
     public $id;
     /** @Column */
     public $relatedData;
 
     /**
+     * @var DDC199ParentClass
      * @ManyToOne(targetEntity="DDC199ParentClass", inversedBy="relatedEntities")
      * @JoinColumn(name="parent_id", referencedColumnName="id")
      */
