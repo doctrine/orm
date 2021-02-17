@@ -224,13 +224,13 @@ class DDC3634LastInsertIdMockingConnection extends Connection
     /** {@inheritDoc} */
     public function setAutoCommit($autoCommit)
     {
-        return $this->forwardCall();
+        $this->forwardCall();
     }
 
     /** {@inheritDoc} */
     public function setFetchMode($fetchMode)
     {
-        return $this->forwardCall();
+        $this->forwardCall();
     }
 
     /** {@inheritDoc} */
@@ -272,7 +272,7 @@ class DDC3634LastInsertIdMockingConnection extends Connection
     /** {@inheritDoc} */
     public function close()
     {
-        return $this->forwardCall();
+        $this->forwardCall();
     }
 
     /** {@inheritDoc} */
@@ -458,7 +458,7 @@ class DDC3634LastInsertIdMockingConnection extends Connection
     /** {@inheritDoc} */
     public function setRollbackOnly()
     {
-        return $this->forwardCall();
+        $this->forwardCall();
     }
 
     /** {@inheritDoc} */

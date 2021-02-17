@@ -48,8 +48,8 @@ class DDC345Test extends OrmFunctionalTestCase
         ones set by LifecycleCallbacks are deleted.
         */
 
-        $user->Memberships->add($membership);
-        $group->Memberships->add($membership);
+        $user->memberships->add($membership);
+        $group->memberships->add($membership);
 
         $this->_em->flush();
 
@@ -82,11 +82,11 @@ class DDC345User
      * @psalm-var Collection<int, DDC345Membership>
      * @OneToMany(targetEntity="DDC345Membership", mappedBy="user", cascade={"persist"})
      */
-    public $Memberships;
+    public $memberships;
 
     public function __construct()
     {
-        $this->Memberships = new ArrayCollection();
+        $this->memberships = new ArrayCollection();
     }
 }
 
@@ -113,11 +113,11 @@ class DDC345Group
      * @psalm-var Collection<int, DDC345Membership>
      * @OneToMany(targetEntity="DDC345Membership", mappedBy="group", cascade={"persist"})
      */
-    public $Memberships;
+    public $memberships;
 
     public function __construct()
     {
-        $this->Memberships = new ArrayCollection();
+        $this->memberships = new ArrayCollection();
     }
 }
 
@@ -140,14 +140,14 @@ class DDC345Membership
 
     /**
      * @var DDC345User
-     * @OneToOne(targetEntity="DDC345User", inversedBy="Memberships")
+     * @OneToOne(targetEntity="DDC345User", inversedBy="memberships")
      * @JoinColumn(name="user_id", referencedColumnName="id", nullable=false)
      */
     public $user;
 
     /**
      * @var DDC345Group
-     * @OneToOne(targetEntity="DDC345Group", inversedBy="Memberships")
+     * @OneToOne(targetEntity="DDC345Group", inversedBy="memberships")
      * @JoinColumn(name="group_id", referencedColumnName="id", nullable=false)
      */
     public $group;
@@ -158,11 +158,17 @@ class DDC345Membership
      */
     public $state;
 
-    /** @Column(type="datetime") */
+    /**
+     * @var DateTime
+     * @Column(type="datetime")
+     */
     public $updated;
 
+    /** @var int */
     public $prePersistCallCount = 0;
-    public $preUpdateCallCount  = 0;
+
+    /** @var int */
+    public $preUpdateCallCount = 0;
 
     /** @PrePersist */
     public function doStuffOnPrePersist(): void

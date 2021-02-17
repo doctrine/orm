@@ -152,7 +152,7 @@ class UnitOfWork implements PropertyChangedListener
      * Map of entity changes. Keys are object ids (spl_object_hash).
      * Filled at the beginning of a commit of the UnitOfWork and cleaned at the end.
      *
-     * @var array
+     * @psalm-var array<string, array<string, array{mixed, mixed}>>
      */
     private $entityChangeSets = [];
 
@@ -169,35 +169,35 @@ class UnitOfWork implements PropertyChangedListener
      * This is only used for entities with a change tracking policy of DEFERRED_EXPLICIT.
      * Keys are object ids (spl_object_hash).
      *
-     * @var array
+     * @psalm-var array<string, array<string, object>>
      */
     private $scheduledForSynchronization = [];
 
     /**
      * A list of all pending entity insertions.
      *
-     * @var array
+     * @psalm-var array<string, object>
      */
     private $entityInsertions = [];
 
     /**
      * A list of all pending entity updates.
      *
-     * @var array
+     * @psalm-var array<string, object>
      */
     private $entityUpdates = [];
 
     /**
      * Any pending extra updates that have been scheduled by persisters.
      *
-     * @var array
+     * @psalm-var array<string, array{object, array<string, array{mixed, mixed}>}>
      */
     private $extraUpdates = [];
 
     /**
      * A list of all pending entity deletions.
      *
-     * @var array
+     * @psalm-var array<string, object>
      */
     private $entityDeletions = [];
 
@@ -571,7 +571,7 @@ class UnitOfWork implements PropertyChangedListener
     /**
      * Executes any extra updates that have been scheduled.
      */
-    private function executeExtraUpdates()
+    private function executeExtraUpdates(): void
     {
         foreach ($this->extraUpdates as $oid => $update) {
             [$entity, $changeset] = $update;
@@ -588,7 +588,7 @@ class UnitOfWork implements PropertyChangedListener
      *
      * @param object $entity
      *
-     * @return array
+     * @psalm-return array<string, array{mixed, mixed}>
      */
     public function & getEntityChangeSet($entity)
     {
@@ -1409,11 +1409,11 @@ class UnitOfWork implements PropertyChangedListener
      *
      * Extra updates for entities are stored as (entity, changeset) tuples.
      *
-     * @param object $entity    The entity for which to schedule an extra update.
-     * @param array  $changeset The changeset of the entity (what to update).
+     * @param object $entity The entity for which to schedule an extra update.
      *
      * @return void
      *
+     * @psalm-param array<string, array{mixed, mixed}>  $changeset The changeset of the entity (what to update).
      * @ignore
      */
     public function scheduleExtraUpdate($entity, array $changeset)

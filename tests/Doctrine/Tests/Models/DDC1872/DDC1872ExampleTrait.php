@@ -6,7 +6,11 @@ namespace Doctrine\Tests\Models\DDC1872;
 
 trait DDC1872ExampleTrait
 {
-    /** @Id @Column(type="string") */
+    /**
+     * @var string
+     * @Id
+     * @Column(type="string")
+     */
     private $id;
 
     /**
