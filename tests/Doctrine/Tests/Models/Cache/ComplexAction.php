@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Doctrine\Tests\Models\Cache;
 
 use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 
 /**
  * @Entity
@@ -29,7 +30,10 @@ class ComplexAction
      */
     public $action2;
 
-    /** @OneToMany(targetEntity="Token", cascade={"persist", "remove"}, mappedBy="complexAction") */
+    /**
+     * @psalm-var Collection<int, Token>
+     * @OneToMany(targetEntity="Token", cascade={"persist", "remove"}, mappedBy="complexAction")
+     */
     public $tokens;
 
     public function __construct(Action $action1, Action $action2, $name)

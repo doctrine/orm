@@ -198,4 +198,9 @@
     <rule ref="SlevomatCodingStandard.Commenting.InlineDocCommentDeclaration.NoAssignment">
         <exclude-pattern>tests/Doctrine/Tests/ORM/Mapping/php/Doctrine.Tests*</exclude-pattern>
     </rule>
+
+    <rule ref="PSR2.Methods.MethodDeclaration.Underscore">
+        <!-- extending a class from another package -->
+        <exclude-pattern>tests/Doctrine/Tests/ORM/Functional/Ticket/DDC3634Test.php</exclude-pattern>
+    </rule>
 </ruleset>

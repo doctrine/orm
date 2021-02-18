@@ -106,7 +106,10 @@ class DDC1452EntityA
     public $id;
     /** @Column */
     public $title;
-    /** @OneToMany(targetEntity="DDC1452EntityB", mappedBy="entityAFrom") */
+    /**
+     * @psalm-var Collection<int, DDC1452EntityB>
+     * @OneToMany(targetEntity="DDC1452EntityB", mappedBy="entityAFrom")
+     */
     public $entitiesB;
 
     public function __construct()

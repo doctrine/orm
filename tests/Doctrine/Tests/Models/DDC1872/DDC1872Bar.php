@@ -9,6 +9,10 @@ namespace Doctrine\Tests\Models\DDC1872;
  */
 class DDC1872Bar
 {
-    /** @Id @Column(type="string") */
+    /**
+     * @var string
+     * @Id
+     * @Column(type="string")
+     */
     private $id;
 }

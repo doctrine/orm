@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Doctrine\Tests\ORM\Functional\Ticket;
 
+use Doctrine\Common\Collections\Collection;
 use Doctrine\Tests\OrmFunctionalTestCase;
 
 use function count;
@@ -76,7 +77,10 @@ class DDC199ParentClass
      */
     public $parentData;
 
-    /** @OneToMany(targetEntity="DDC199RelatedClass", mappedBy="parent") */
+    /**
+     * @psalm-var Collection<int, DDC199RelatedClass>
+     * @OneToMany(targetEntity="DDC199RelatedClass", mappedBy="parent")
+     */
     public $relatedEntities;
 }
 

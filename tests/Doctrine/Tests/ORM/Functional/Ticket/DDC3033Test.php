@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Doctrine\Tests\ORM\Functional\Ticket;
 
 use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Event\LifecycleEventArgs;
 use Doctrine\Tests\OrmFunctionalTestCase;
 
@@ -62,6 +63,7 @@ class DDC3033Test extends OrmFunctionalTestCase
  */
 class DDC3033Product
 {
+    /** @psalm-var array<string, array{mixed, mixed}> */
     public $changeSet = [];
 
     /**
@@ -79,6 +81,7 @@ class DDC3033Product
     public $title;
 
     /**
+     * @var Collection<int, DDC3033User>
      * @ManyToMany(targetEntity="DDC3033User")
      * @JoinTable(
      *   name="user_purchases_3033",

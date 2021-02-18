@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Doctrine\Tests\Models\Taxi;
 
+use Doctrine\Common\Collections\Collection;
+
 /**
  * @Entity
  * @Table(name="taxi_driver")
@@ -24,10 +26,16 @@ class Driver
      */
     private $name;
 
-    /** @OneToMany(targetEntity="Ride", mappedBy="driver") */
+    /**
+     * @psalm-var Collection<int, Ride>
+     * @OneToMany(targetEntity="Ride", mappedBy="driver")
+     */
     private $freeDriverRides;
 
-    /** @OneToMany(targetEntity="PaidRide", mappedBy="driver") */
+    /**
+     * @psalm-var Collection<int, PaidRide>
+     * @OneToMany(targetEntity="PaidRide", mappedBy="driver")
+     */
     private $driverRides;
 
     public function getId()

@@ -23,7 +23,10 @@ abstract class AbstractContentItem
      */
     protected $parentDirectory;
 
-    /** @column(type="string") */
+    /**
+     * @var string
+     * @column(type="string")
+     */
     protected $name;
 
     /**

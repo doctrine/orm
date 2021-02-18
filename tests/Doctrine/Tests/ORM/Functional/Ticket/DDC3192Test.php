@@ -78,18 +78,19 @@ class DDC3192Test extends OrmFunctionalTestCase
 class DDC3192Currency
 {
     /**
+     * @var string
      * @Id
      * @Column(type="ddc3192_currency_code")
      */
     public $code;
 
     /**
-     * @var Collection
+     * @var Collection<int, DDC3192Transaction>
      * @OneToMany(targetEntity="DDC3192Transaction", mappedBy="currency")
      */
     public $transactions;
 
-    public function __construct($code)
+    public function __construct(string $code)
     {
         $this->code = $code;
     }
@@ -122,7 +123,7 @@ class DDC3192Transaction
      */
     public $currency;
 
-    public function __construct($amount, DDC3192Currency $currency)
+    public function __construct(int $amount, DDC3192Currency $currency)
     {
         $this->amount   = $amount;
         $this->currency = $currency;
@@ -131,6 +132,7 @@ class DDC3192Transaction
 
 class DDC3192CurrencyCode extends Type
 {
+    /** @psalm-var array<string, int> */
     private static $map = ['BYR' => 974];
 
     /**

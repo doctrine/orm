@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Doctrine\Tests\Models\ECommerce;
 
 use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 
 /**
  * ECommerceProduct
@@ -36,7 +37,10 @@ class ECommerceProduct
      */
     private $shipping;
 
-    /** @OneToMany(targetEntity="ECommerceFeature", mappedBy="product", cascade={"persist"}) */
+    /**
+     * @psalm-var Collection<int, ECommerceFeature>
+     * @OneToMany(targetEntity="ECommerceFeature", mappedBy="product", cascade={"persist"})
+     */
     private $features;
 
     /**

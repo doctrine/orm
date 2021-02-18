@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Doctrine\Tests\ORM\Functional\Ticket;
 
+use Doctrine\Common\Collections\Collection;
 use Doctrine\Tests\OrmFunctionalTestCase;
 
 /**
@@ -77,7 +78,10 @@ abstract class Role
      */
     public $user;
 
-    /** @OneToMany(targetEntity="Authorization", mappedBy="role", cascade={"all"}, orphanRemoval=true) */
+    /**
+     * @psalm-var Collection<int, Authorization>
+     * @OneToMany(targetEntity="Authorization", mappedBy="role", cascade={"all"}, orphanRemoval=true)
+     */
     public $authorizations;
 
     public function addAuthorization(Authorization $authorization): void
@@ -129,10 +133,16 @@ class User
      */
     public $id;
 
-    /** @OneToMany(targetEntity="Role", mappedBy="user", cascade={"all"}, orphanRemoval=true) */
+    /**
+     * @psalm-var Collection<int, Role>
+     * @OneToMany(targetEntity="Role", mappedBy="user", cascade={"all"}, orphanRemoval=true)
+     */
     public $roles;
 
-    /** @OneToMany(targetEntity="Authorization", mappedBy="user", cascade={"all"}, orphanRemoval=true) */
+    /**
+     * @psalm-var Collection<int, Authorization>
+     * @OneToMany(targetEntity="Authorization", mappedBy="user", cascade={"all"}, orphanRemoval=true)
+     */
     public $authorizations;
 
     public function addRole(Role $role): void

@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Doctrine\Tests\Models\Navigation;
 
+use Doctrine\Common\Collections\Collection;
+
 /**
  * @Entity
  * @Table(name="navigation_countries")
@@ -23,7 +25,10 @@ class NavCountry
      */
     private $name;
 
-    /** @OneToMany(targetEntity="NavPointOfInterest", mappedBy="country") */
+    /**
+     * @psalm-var Collection<int, NavPointOfInterest>
+     * @OneToMany(targetEntity="NavPointOfInterest", mappedBy="country")
+     */
     private $pois;
 
     public function __construct($name)

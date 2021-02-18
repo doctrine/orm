@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Doctrine\Tests\Models\Legacy;
 
 use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 
 /**
  * @Entity
@@ -29,9 +30,15 @@ class LegacyUser
      * @Column(type="string", length=255, name="name")
      */
     public $_name;
-    /** @OneToMany(targetEntity="LegacyArticle", mappedBy="user") */
+    /**
+     * @psalm-var Collection<int, LegacyArticle>
+     * @OneToMany(targetEntity="LegacyArticle", mappedBy="user")
+     */
     public $_articles;
-    /** @OneToMany(targetEntity="LegacyUserReference", mappedBy="_source", cascade={"remove"}) */
+    /**
+     * @psalm-var Collection<int, LegacyUserReference>
+     * @OneToMany(targetEntity="LegacyUserReference", mappedBy="_source", cascade={"remove"})
+     */
     public $_references;
     /**
      * @ManyToMany(targetEntity="LegacyCar", inversedBy="_users", cascade={"persist", "merge"})

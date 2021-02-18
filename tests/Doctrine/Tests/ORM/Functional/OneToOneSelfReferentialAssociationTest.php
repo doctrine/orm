@@ -152,7 +152,12 @@ class OneToOneSelfReferentialAssociationTest extends OrmFunctionalTestCase
  */
 class MultiSelfReference
 {
-    /** @Id @GeneratedValue(strategy="AUTO") @Column(type="integer") */
+    /**
+     * @var int
+     * @Id
+     * @GeneratedValue(strategy="AUTO")
+     * @Column(type="integer")
+     */
     private $id;
     /**
      * @var MultiSelfReference

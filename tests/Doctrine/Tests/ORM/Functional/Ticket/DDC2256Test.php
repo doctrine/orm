@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Doctrine\Tests\ORM\Functional\Ticket;
 
 use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Query\ResultSetMapping;
 use Doctrine\ORM\Query\ResultSetMappingBuilder;
 use Doctrine\Tests\OrmFunctionalTestCase;
@@ -114,7 +115,10 @@ class DDC2256Group
      */
     public $name;
 
-    /** @OneToMany(targetEntity="DDC2256User", mappedBy="group") */
+    /**
+     * @psalm-var Collection<int, DDC2256User>
+     * @OneToMany(targetEntity="DDC2256User", mappedBy="group")
+     */
     public $users;
 
     public function __construct()
