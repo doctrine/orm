@@ -50,6 +50,7 @@ class JoinedTableWithPropertyAsDiscriminatorColumn extends OrmFunctionalTestCase
 abstract class JoinedTableWithPropertyAsDiscriminatorColumnRoot
 {
     /**
+     * @var int|null
      * @Column(type="integer")
      * @Id
      * @GeneratedValue
@@ -63,6 +64,7 @@ abstract class JoinedTableWithPropertyAsDiscriminatorColumnRoot
 class JoinedTableWithPropertyAsDiscriminatorColumnChild extends JoinedTableWithPropertyAsDiscriminatorColumnRoot
 {
     /**
+     * @var string|null
      * @Column(type="string", name="type_not_discriminator")
      */
     public $type;
