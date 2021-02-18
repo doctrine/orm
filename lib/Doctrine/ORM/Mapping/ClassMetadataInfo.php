@@ -26,6 +26,7 @@ use DateTime;
 use DateTimeImmutable;
 use Doctrine\DBAL\Platforms\AbstractPlatform;
 use Doctrine\DBAL\Types\Type;
+use Doctrine\DBAL\Types\Types;
 use Doctrine\Instantiator\Instantiator;
 use Doctrine\Instantiator\InstantiatorInterface;
 use Doctrine\ORM\Cache\CacheException;
@@ -1444,28 +1445,28 @@ class ClassMetadataInfo implements ClassMetadata
             ) {
                 switch ($type->getName()) {
                     case DateInterval::class:
-                        $mapping['type'] = 'dateinterval';
+                        $mapping['type'] = Types::DATEINTERVAL;
                         break;
                     case DateTime::class:
-                        $mapping['type'] = 'datetime';
+                        $mapping['type'] = Types::DATETIME_MUTABLE;
                         break;
                     case DateTimeImmutable::class:
-                        $mapping['type'] = 'datetime_immutable';
+                        $mapping['type'] = Types::DATETIME_IMMUTABLE;
                         break;
                     case 'array':
-                        $mapping['type'] = 'json';
+                        $mapping['type'] = Types::JSON;
                         break;
                     case 'bool':
-                        $mapping['type'] = 'boolean';
+                        $mapping['type'] = Types::BOOLEAN;
                         break;
                     case 'float':
-                        $mapping['type'] = 'float';
+                        $mapping['type'] = Types::FLOAT;
                         break;
                     case 'int':
-                        $mapping['type'] = 'integer';
+                        $mapping['type'] = Types::INTEGER;
                         break;
                     case 'string':
-                        $mapping['type'] = 'string';
+                        $mapping['type'] = Types::STRING;
                         break;
                 }
             }
