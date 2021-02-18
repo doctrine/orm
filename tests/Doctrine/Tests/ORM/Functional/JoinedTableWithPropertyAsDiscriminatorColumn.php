@@ -23,14 +23,14 @@ class JoinedTableWithPropertyAsDiscriminatorColumn extends OrmFunctionalTestCase
 
     public function testExplicitPolicy(): void
     {
-        $child = new JoinedTableWithPropertyAsDiscriminatorColumnChild();
+        $child       = new JoinedTableWithPropertyAsDiscriminatorColumnChild();
         $child->type = 'child2';
 
         $this->_em->persist($child);
         $this->_em->flush();
         $this->_em->clear();
 
-        $q = $this->_em->createQuery('SELECT o FROM '.JoinedTableWithPropertyAsDiscriminatorColumnRoot::class.' o');
+        $q      = $this->_em->createQuery('SELECT o FROM ' . JoinedTableWithPropertyAsDiscriminatorColumnRoot::class . ' o');
         $object = $q->getSingleResult();
 
         $this->assertInstanceOf(JoinedTableWithPropertyAsDiscriminatorColumnChild::class, $object);
