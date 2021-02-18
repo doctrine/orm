@@ -20,44 +20,28 @@ class UserTyped
      * @GeneratedValue
      */
     public int $id;
-    /**
-     * @Column(length=50)
-     */
+    /** @Column(length=50) */
     public ?string $status;
 
-    /**
-     * @Column(length=255, unique=true)
-     */
+    /** @Column(length=255, unique=true) */
     public string $username;
 
-    /**
-     * @Column
-     */
+    /** @Column */
     public DateInterval $dateInterval;
 
-    /**
-     * @Column
-     */
+    /** @Column */
     public DateTime $dateTime;
 
-    /**
-     * @Column
-     */
+    /** @Column */
     public DateTimeImmutable $dateTimeImmutable;
 
-    /**
-     * @Column
-     */
+    /** @Column */
     public array $array;
 
-    /**
-     * @Column
-     */
+    /** @Column */
     public bool $boolean;
 
-    /**
-     * @Column
-     */
+    /** @Column */
     public float $float;
 
     /**
