@@ -213,17 +213,21 @@ class DDC1080Bar
 class DDC1080FooBar
 {
     /**
+     * @var DDC1080Foo
      * @ManyToOne(targetEntity="DDC1080Foo")
      * @JoinColumn(name="fooID", referencedColumnName="fooID")
      * @Id
      */
     protected $_foo = null;
+
     /**
+     * @var DDC1080Bar
      * @ManyToOne(targetEntity="DDC1080Bar")
      * @JoinColumn(name="barID", referencedColumnName="barID")
      * @Id
      */
     protected $_bar = null;
+
     /**
      * @var int orderNr
      * @Column(name="orderNr", type="integer", nullable=false)

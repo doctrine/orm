@@ -11,6 +11,7 @@ namespace Doctrine\Tests\Models\ValueConversionType;
 class OwningManyToOneIdForeignKeyEntity
 {
     /**
+     * @var associatedEntities
      * @Id
      * @ManyToOne(targetEntity=AuxiliaryEntity::class, inversedBy="associatedEntities")
      * @JoinColumn(name="associated_id", referencedColumnName="id4")

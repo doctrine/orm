@@ -14,8 +14,6 @@ use Doctrine\Tests\OrmFunctionalTestCase;
  */
 class DDC2519Test extends OrmFunctionalTestCase
 {
-    private $userId;
-
     protected function setUp(): void
     {
         $this->useModelSet('legacy');

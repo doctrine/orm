@@ -13,6 +13,7 @@ namespace Doctrine\Tests\Models\Taxi;
 class PaidRide
 {
     /**
+     * @var Driver
      * @Id
      * @ManyToOne(targetEntity="Driver", inversedBy="driverRides")
      * @JoinColumn(name="driver_id", referencedColumnName="id")
@@ -20,6 +21,7 @@ class PaidRide
     private $driver;
 
     /**
+     * @var Car
      * @Id
      * @ManyToOne(targetEntity="Car", inversedBy="carRides")
      * @JoinColumn(name="car", referencedColumnName="brand")

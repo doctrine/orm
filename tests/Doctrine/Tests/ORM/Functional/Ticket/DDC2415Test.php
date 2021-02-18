@@ -55,9 +55,10 @@ class DDC2415Test extends OrmFunctionalTestCase
 
 class DDC2415ParentEntity
 {
+    /** @var string */
     protected $id;
 
-    public function getId()
+    public function getId(): string
     {
         return $this->id;
     }
@@ -81,14 +82,15 @@ class DDC2415ParentEntity
 
 class DDC2415ChildEntity extends DDC2415ParentEntity
 {
+    /** @var string */
     protected $name;
 
-    public function __construct($name)
+    public function __construct(string $name)
     {
         $this->name = $name;
     }
 
-    public function getName()
+    public function getName(): string
     {
         return $this->name;
     }
@@ -106,7 +108,7 @@ class DDC2415ChildEntity extends DDC2415ParentEntity
 
 class DDC2415Generator extends AbstractIdGenerator
 {
-    public function generate(EntityManager $em, $entity)
+    public function generate(EntityManager $em, $entity): string
     {
         return md5($entity->getName());
     }

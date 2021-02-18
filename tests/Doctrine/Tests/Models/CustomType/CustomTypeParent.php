@@ -23,7 +23,10 @@ class CustomTypeParent
     /** @Column(type="negative_to_positive", nullable=true) */
     public $customInteger;
 
-    /** @OneToOne(targetEntity="Doctrine\Tests\Models\CustomType\CustomTypeChild", cascade={"persist", "remove"}) */
+    /**
+     * @var CustomTypeChild
+     * @OneToOne(targetEntity="Doctrine\Tests\Models\CustomType\CustomTypeChild", cascade={"persist", "remove"})
+     */
     public $child;
 
     /**

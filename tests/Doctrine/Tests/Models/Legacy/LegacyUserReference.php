@@ -13,6 +13,7 @@ use DateTime;
 class LegacyUserReference
 {
     /**
+     * @var LegacyUser
      * @Id
      * @ManyToOne(targetEntity="LegacyUser", inversedBy="_references")
      * @JoinColumn(name="iUserIdSource", referencedColumnName="iUserId")
@@ -20,6 +21,7 @@ class LegacyUserReference
     private $_source;
 
     /**
+     * @var LegacyUser
      * @Id
      * @ManyToOne(targetEntity="LegacyUser")
      * @JoinColumn(name="iUserIdTarget", referencedColumnName="iUserId")

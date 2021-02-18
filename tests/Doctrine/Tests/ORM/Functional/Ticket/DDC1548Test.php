@@ -71,6 +71,7 @@ class DDC1548E2
 class DDC1548Rel
 {
     /**
+     * @var int
      * @Id @GeneratedValue
      * @Column(type="integer")
      */
