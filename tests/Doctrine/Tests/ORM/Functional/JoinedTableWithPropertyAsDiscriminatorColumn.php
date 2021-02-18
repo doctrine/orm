@@ -21,7 +21,7 @@ class JoinedTableWithPropertyAsDiscriminatorColumn extends OrmFunctionalTestCase
         );
     }
 
-    public function testExplicitPolicy(): void
+    public function testIfQueryReturnsCorrectInstance(): void
     {
         $child       = new JoinedTableWithPropertyAsDiscriminatorColumnChild();
         $child->type = 'child2';
