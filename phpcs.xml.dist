@@ -208,4 +208,10 @@
         <!-- accessing public property __isInitialized__ of a proxy -->
         <exclude-pattern>tests/Doctrine/Tests/ORM/Functional/Ticket/DDC2231Test.php</exclude-pattern>
     </rule>
+
+    <rule ref="SlevomatCodingStandard.Namespaces.UnusedUses.MismatchingCaseSensitivity">
+        <!-- Using @group and Group entity in the same file -->
+        <exclude-pattern>tests/Doctrine/Tests/ORM/Functional/Ticket/DDC1885Test.php</exclude-pattern>
+        <exclude-pattern>tests/Doctrine/Tests/ORM/Functional/Ticket/DDC1843Test.php</exclude-pattern>
+    </rule>
 </ruleset>
