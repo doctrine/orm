@@ -16,6 +16,7 @@ namespace Doctrine\Tests\Models\ValueConversionType;
 class OwningOneToOneCompositeIdForeignKeyEntity
 {
     /**
+     * @var string
      * @Column(type="rot13")
      * @Id
      */

@@ -13,6 +13,7 @@ namespace Doctrine\Tests\Models\NonPublicSchemaJoins;
 class User
 {
     /**
+     * @var int
      * @Column(type="integer")
      * @Id
      */

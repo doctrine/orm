@@ -14,12 +14,14 @@ use Doctrine\Common\Collections\Collection;
 class InversedOneToManyCompositeIdEntity
 {
     /**
+     * @var string
      * @Column(type="rot13")
      * @Id
      */
     public $id1;
 
     /**
+     * @var string
      * @Column(type="rot13")
      * @Id
      */

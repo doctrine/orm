@@ -104,8 +104,13 @@ class DDC1452EntityA
      * @GeneratedValue
      */
     public $id;
-    /** @Column */
+
+    /**
+     * @var string
+     * @Column
+     */
     public $title;
+
     /**
      * @psalm-var Collection<int, DDC1452EntityB>
      * @OneToMany(targetEntity="DDC1452EntityB", mappedBy="entityAFrom")
@@ -117,7 +122,10 @@ class DDC1452EntityA
         $this->entitiesB = new ArrayCollection();
     }
 
-    public function getEntitiesB()
+    /**
+     * @psalm-return Collection<int, DDC1452EntityB>
+     */
+    public function getEntitiesB(): Collection
     {
         return $this->entitiesB;
     }

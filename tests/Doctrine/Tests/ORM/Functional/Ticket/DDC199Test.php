@@ -88,7 +88,10 @@ class DDC199ParentClass
 /** @Entity */
 class DDC199ChildClass extends DDC199ParentClass
 {
-    /** @Column */
+    /**
+     * @var string
+     * @Column
+     */
     public $childData;
 }
 
@@ -102,7 +105,11 @@ class DDC199RelatedClass
      * @GeneratedValue
      */
     public $id;
-    /** @Column */
+
+    /**
+     * @var string
+     * @Column
+     */
     public $relatedData;
 
     /**

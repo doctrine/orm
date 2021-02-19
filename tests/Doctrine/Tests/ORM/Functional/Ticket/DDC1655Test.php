@@ -111,6 +111,7 @@ class DDC1655Foo
      */
     public $id;
 
+    /** @var int */
     public $loaded = 0;
 
     /**
@@ -134,6 +135,7 @@ class DDC1655Foo
  */
 class DDC1655Bar extends DDC1655Foo
 {
+    /** @var int */
     public $subLoaded;
 
     /**

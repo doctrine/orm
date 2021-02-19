@@ -61,6 +61,7 @@ class DDC2182OptionParent
 class DDC2182OptionChild
 {
     /**
+     * @var string
      * @Id
      * @Column
      */

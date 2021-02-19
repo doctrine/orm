@@ -13,6 +13,7 @@ use Doctrine\Common\Collections\ArrayCollection;
 class InversedOneToManyExtraLazyEntity
 {
     /**
+     * @var string
      * @Column(type="rot13")
      * @Id
      */

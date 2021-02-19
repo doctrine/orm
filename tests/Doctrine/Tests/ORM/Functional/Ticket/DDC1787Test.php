@@ -58,7 +58,7 @@ class DDC1787Foo
      */
     private $version;
 
-    public function getVersion()
+    public function getVersion(): int
     {
         return $this->version;
     }

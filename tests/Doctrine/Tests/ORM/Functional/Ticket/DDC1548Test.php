@@ -47,6 +47,7 @@ class DDC1548Test extends OrmFunctionalTestCase
 class DDC1548E1
 {
     /**
+     * @var DDC1548Rel
      * @Id
      * @OneToOne(targetEntity="DDC1548Rel", inversedBy="e1")
      */
@@ -59,6 +60,7 @@ class DDC1548E1
 class DDC1548E2
 {
     /**
+     * @var DDC1548Rel
      * @Id
      * @OneToOne(targetEntity="DDC1548Rel", inversedBy="e2")
      */

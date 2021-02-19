@@ -16,7 +16,10 @@ use function get_class;
  */
 class DDC1643Test extends OrmFunctionalTestCase
 {
+    /** @var CmsUser */
     private $user1;
+
+    /** @var CmsUser */
     private $user2;
 
     protected function setUp(): void

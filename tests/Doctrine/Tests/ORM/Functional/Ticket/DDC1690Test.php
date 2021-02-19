@@ -83,6 +83,7 @@ class DDC1690Test extends OrmFunctionalTestCase
 
 class NotifyBaseEntity implements NotifyPropertyChanged
 {
+    /** @psalm-var list<PropertyChangedListener> */
     public $listeners = [];
 
     public function addPropertyChangedListener(PropertyChangedListener $listener): void
@@ -113,7 +114,10 @@ class DDC1690Parent extends NotifyBaseEntity
      */
     private $id;
 
-    /** @Column */
+    /**
+     * @var string
+     * @Column
+     */
     private $name;
 
     /**
@@ -122,28 +126,28 @@ class DDC1690Parent extends NotifyBaseEntity
      */
     private $child;
 
-    public function getId()
+    public function getId(): int
     {
         return $this->id;
     }
 
-    public function getName()
+    public function getName(): string
     {
         return $this->name;
     }
 
-    public function setName($name): void
+    public function setName(string $name): void
     {
         $this->onPropertyChanged('name', $this->name, $name);
         $this->name = $name;
     }
 
-    public function setChild($child): void
+    public function setChild(DDC1690Child $child): void
     {
         $this->child = $child;
     }
 
-    public function getChild()
+    public function getChild(): DDC1690Child
     {
         return $this->child;
     }
@@ -160,7 +164,10 @@ class DDC1690Child extends NotifyBaseEntity
      */
     private $id;
 
-    /** @Column */
+    /**
+     * @var string
+     * @Column
+     */
     private $name;
 
     /**
@@ -169,28 +176,28 @@ class DDC1690Child extends NotifyBaseEntity
      */
     private $parent;
 
-    public function getId()
+    public function getId(): int
     {
         return $this->id;
     }
 
-    public function getName()
+    public function getName(): string
     {
         return $this->name;
     }
 
-    public function setName($name): void
+    public function setName(string $name): void
     {
         $this->onPropertyChanged('name', $this->name, $name);
         $this->name = $name;
     }
 
-    public function setParent($parent): void
+    public function setParent(DDC1690Parent $parent): void
     {
         $this->parent = $parent;
     }
 
-    public function getParent()
+    public function getParent(): DDC1690Parent
     {
         return $this->parent;
     }
