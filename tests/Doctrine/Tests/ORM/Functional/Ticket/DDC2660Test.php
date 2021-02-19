@@ -110,10 +110,18 @@ class DDC2660Customer
 /** @Entity @Table(name="ddc_2660_customer_order") */
 class DDC2660CustomerOrder
 {
-    /** @Id @ManyToOne(targetEntity="DDC2660Product") */
+    /**
+     * @var DDC2660Product
+     * @Id
+     * @ManyToOne(targetEntity="DDC2660Product")
+     */
     public $product;
 
-    /** @Id @ManyToOne(targetEntity="DDC2660Customer") */
+    /**
+     * @var DDC2660Customer
+     * @Id
+     * @ManyToOne(targetEntity="DDC2660Customer")
+     */
     public $customer;
 
     /**

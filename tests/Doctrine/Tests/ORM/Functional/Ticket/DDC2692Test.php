@@ -65,7 +65,10 @@ class DDC2692Foo
 
 class DDC2692Listener implements EventSubscriber
 {
-    public function getSubscribedEvents()
+    /**
+     * {@inheritDoc}
+     */
+    public function getSubscribedEvents(): array
     {
         return [Events::preFlush];
     }

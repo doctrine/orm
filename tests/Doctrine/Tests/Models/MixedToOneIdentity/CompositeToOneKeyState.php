@@ -16,6 +16,7 @@ class CompositeToOneKeyState
     public $state;
 
     /**
+     * @var Country
      * @Id
      * @ManyToOne(targetEntity="Country", cascade={"MERGE"})
      * @JoinColumn(referencedColumnName="country")

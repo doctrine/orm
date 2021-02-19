@@ -43,13 +43,20 @@ class DDC2645Foo
      */
     private $id;
 
-    /** @Id @ManyToOne(targetEntity="DDC2645Bar") */
+    /**
+     * @var DDC2645Bar
+     * @Id
+     * @ManyToOne(targetEntity="DDC2645Bar")
+     */
     private $bar;
 
-    /** @Column */
+    /**
+     * @var string
+     * @Column
+     */
     public $name;
 
-    public function __construct($id, $bar, $name)
+    public function __construct(int $id, DDC2645Bar $bar, string $name)
     {
         $this->id   = $id;
         $this->bar  = $bar;

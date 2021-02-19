@@ -493,7 +493,10 @@ class Definition
      */
     private $phrase;
 
-    /** @Column(type="text", name="definition_text") */
+    /**
+     * @var string
+     * @Column(type="text", name="definition_text")
+     */
     private $definition;
 
     public function getId(): int

@@ -17,6 +17,9 @@ class InverseSide
      */
     public $id;
 
-    /** @OneToOne(targetEntity=OwningSide::class, mappedBy="inverse") */
+    /**
+     * @var OwningSide
+     * @OneToOne(targetEntity=OwningSide::class, mappedBy="inverse")
+     */
     public $owning;
 }

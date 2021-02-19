@@ -106,6 +106,7 @@ class DDC279EntityX extends DDC279EntityXAbstract
 class DDC279EntityY
 {
     /**
+     * @var int
      * @Id @GeneratedValue
      * @Column(name="id", type="integer")
      */
@@ -131,6 +132,7 @@ class DDC279EntityY
 class DDC279EntityZ
 {
     /**
+     * @var int
      * @Id @GeneratedValue
      * @Column(name="id", type="integer")
      */

@@ -50,6 +50,7 @@ class DDC1225Test extends OrmFunctionalTestCase
 class DDC1225_TestEntity1
 {
     /**
+     * @var DDC1225_TestEntity2
      * @Id
      * @ManyToOne(targetEntity="Doctrine\Tests\ORM\Functional\Ticket\DDC1225_TestEntity2")
      * @JoinColumn(name="test_entity2_id", referencedColumnName="id", nullable=false)

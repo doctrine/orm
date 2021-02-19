@@ -71,6 +71,7 @@ namespace Doctrine\Tests\ORM\Functional\Ticket\DDC2084;
 class MyEntity1
 {
     /**
+     * @var MyEntity2
      * @Id
      * @OneToOne(targetEntity="MyEntity2")
      * @JoinColumn(name="entity2_id", referencedColumnName="id", nullable=false)
