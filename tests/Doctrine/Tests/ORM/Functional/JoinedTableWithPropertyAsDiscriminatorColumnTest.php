@@ -43,7 +43,8 @@ class JoinedTableWithPropertyAsDiscriminatorColumnTest extends OrmFunctionalTest
         $this->_em->flush();
         $this->_em->clear();
 
-        $q      = $this->_em->createQuery('SELECT o FROM ' . JoinedTableWithPropertyAsDiscriminatorColumnRoot::class . ' o');
+        $q      = $this->_em->createQuery('SELECT o FROM ' . JoinedTableWithPropertyAsDiscriminatorColumnRoot::class . ' o WHERE o.id = :id');
+        $q->setParameter('id', $child->id);
         $object = $q->getSingleResult();
 
         $this->assertInstanceOf(JoinedTableWithPropertyAsDiscriminatorColumnChild::class, $object);
