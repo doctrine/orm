@@ -55,7 +55,11 @@ class DDC1998Test extends OrmFunctionalTestCase
  */
 class DDC1998Entity
 {
-    /** @Id @Column(type="ddc1998") */
+    /**
+     * @var string
+     * @Id
+     * @Column(type="ddc1998")
+     */
     public $id;
 
     /**
@@ -96,14 +100,15 @@ class DDC1998Type extends StringType
 
 class DDC1998Id
 {
+    /** @var string */
     private $val;
 
-    public function __construct($val)
+    public function __construct(string $val)
     {
         $this->val = $val;
     }
 
-    public function __toString()
+    public function __toString(): string
     {
         return $this->val;
     }

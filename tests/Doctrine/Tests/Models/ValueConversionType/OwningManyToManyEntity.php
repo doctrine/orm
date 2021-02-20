@@ -13,6 +13,7 @@ use Doctrine\Common\Collections\ArrayCollection;
 class OwningManyToManyEntity
 {
     /**
+     * @var string
      * @Column(type="rot13")
      * @Id
      */

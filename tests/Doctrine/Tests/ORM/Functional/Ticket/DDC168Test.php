@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Doctrine\Tests\ORM\Functional\Ticket;
 
+use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\Tests\Models\Company\CompanyEmployee;
 use Doctrine\Tests\OrmFunctionalTestCase;
 
@@ -11,6 +12,7 @@ use function ksort;
 
 class DDC168Test extends OrmFunctionalTestCase
 {
+    /** @var ClassMetadata */
     protected $oldMetadata;
 
     protected function setUp(): void

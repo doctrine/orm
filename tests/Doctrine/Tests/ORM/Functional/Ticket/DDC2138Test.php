@@ -224,19 +224,6 @@ class DDC2138User
         $this->followedStructures = new ArrayCollection();
     }
 
-    /*
-     * Remove followers
-     *
-     * @param UserFollowedUser $followers
-     */
-    private function removeFollower(UserFollowedUser $followers): void
-    {
-        $this->followers->removeElement($followers);
-    }
-
-    /**
-     * Add followedUsers
-     */
     public function addFollowedUser(UserFollowedUser $followedUsers): User
     {
         $this->followedUsers[] = $followedUsers;
@@ -244,9 +231,6 @@ class DDC2138User
         return $this;
     }
 
-    /**
-     * Remove followedUsers
-     */
     public function removeFollowedUser(UserFollowedUser $followedUsers): User
     {
         $this->followedUsers->removeElement($followedUsers);
@@ -254,17 +238,11 @@ class DDC2138User
         return $this;
     }
 
-    /**
-     * Get followedUsers
-     */
     public function getFollowedUsers(): Doctrine\Common\Collections\Collection
     {
         return $this->followedUsers;
     }
 
-    /**
-     * Add followedStructures
-     */
     public function addFollowedStructure(UserFollowedStructure $followedStructures): User
     {
         $this->followedStructures[] = $followedStructures;
@@ -272,9 +250,6 @@ class DDC2138User
         return $this;
     }
 
-    /**
-     * Remove followedStructures
-     */
     public function removeFollowedStructure(UserFollowedStructure $followedStructures): User
     {
         $this->followedStructures->removeElement($followedStructures);
@@ -282,9 +257,6 @@ class DDC2138User
         return $this;
     }
 
-    /**
-     * Get followedStructures
-     */
     public function getFollowedStructures(): Doctrine\Common\Collections\Collection
     {
         return $this->followedStructures;

@@ -13,20 +13,24 @@ use Doctrine\Common\Collections\Collection;
 class ForumCategory
 {
     /**
+     * @var int
      * @Column(type="integer")
      * @Id
      */
     private $id;
+
     /**
      * @var int
      * @Column(type="integer")
      */
     public $position;
+
     /**
      * @var string
      * @Column(type="string", length=255)
      */
     public $name;
+
     /**
      * @psalm-var Collection<int, ForumBoard>
      * @OneToMany(targetEntity="ForumBoard", mappedBy="category")

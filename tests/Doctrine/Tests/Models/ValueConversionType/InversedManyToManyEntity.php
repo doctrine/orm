@@ -14,6 +14,7 @@ use Doctrine\Common\Collections\Collection;
 class InversedManyToManyEntity
 {
     /**
+     * @var string
      * @Column(type="rot13")
      * @Id
      */
