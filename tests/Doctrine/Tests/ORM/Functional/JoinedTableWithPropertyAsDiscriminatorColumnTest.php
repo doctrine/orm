@@ -8,7 +8,8 @@ use Doctrine\Tests\OrmFunctionalTestCase;
 
 class JoinedTableWithPropertyAsDiscriminatorColumnTest extends OrmFunctionalTestCase
 {
-    private function dropSchema() {
+    private function dropSchema(): void
+    {
         $this->_schemaTool->dropSchema(
             [
                 $this->_em->getClassMetadata(JoinedTableWithPropertyAsDiscriminatorColumnRoot::class),
