@@ -21,6 +21,19 @@ class JoinedTableWithPropertyAsDiscriminatorColumnTest extends OrmFunctionalTest
         );
     }
 
+    protected function tearDown(): void
+    {
+        parent::tearDown();
+
+        $this->_schemaTool->dropSchema(
+            [
+                $this->_em->getClassMetadata(JoinedTableWithPropertyAsDiscriminatorColumnRoot::class),
+                $this->_em->getClassMetadata(JoinedTableWithPropertyAsDiscriminatorColumnChild::class),
+                $this->_em->getClassMetadata(JoinedTableWithPropertyAsDiscriminatorColumnChild2::class),
+            ]
+        );
+    }
+
     public function testIfQueryReturnsCorrectInstance(): void
     {
         $child       = new JoinedTableWithPropertyAsDiscriminatorColumnChild();
@@ -33,6 +46,19 @@ class JoinedTableWithPropertyAsDiscriminatorColumnTest extends OrmFunctionalTest
         $q      = $this->_em->createQuery('SELECT o FROM ' . JoinedTableWithPropertyAsDiscriminatorColumnRoot::class . ' o');
         $object = $q->getSingleResult();
 
+        $this->assertInstanceOf(JoinedTableWithPropertyAsDiscriminatorColumnChild::class, $object);
+    }
+
+    public function testIfRepositoryReturnsCorrectInstance(): void
+    {
+        $child = new JoinedTableWithPropertyAsDiscriminatorColumnChild();
+        $child->type = 'child2';
+
+        $this->_em->persist($child);
+        $this->_em->flush();
+        $this->_em->clear();
+
+        $object = $this->_em->getRepository(JoinedTableWithPropertyAsDiscriminatorColumnRoot::class)->find($child->id);
         $this->assertInstanceOf(JoinedTableWithPropertyAsDiscriminatorColumnChild::class, $object);
     }
 }
