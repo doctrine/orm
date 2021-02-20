@@ -8,10 +8,21 @@ use Doctrine\Tests\OrmFunctionalTestCase;
 
 class JoinedTableWithPropertyAsDiscriminatorColumnTest extends OrmFunctionalTestCase
 {
+    private function dropSchema() {
+        $this->_schemaTool->dropSchema(
+            [
+                $this->_em->getClassMetadata(JoinedTableWithPropertyAsDiscriminatorColumnRoot::class),
+                $this->_em->getClassMetadata(JoinedTableWithPropertyAsDiscriminatorColumnChild::class),
+                $this->_em->getClassMetadata(JoinedTableWithPropertyAsDiscriminatorColumnChild2::class),
+            ]
+        );
+    }
+
     protected function setUp(): void
     {
         parent::setUp();
         //$this->_em->getConnection()->getConfiguration()->setSQLLogger(new \Doctrine\DBAL\Logging\EchoSQLLogger);
+        $this->dropSchema();
         $this->_schemaTool->createSchema(
             [
                 $this->_em->getClassMetadata(JoinedTableWithPropertyAsDiscriminatorColumnRoot::class),
@@ -24,14 +35,7 @@ class JoinedTableWithPropertyAsDiscriminatorColumnTest extends OrmFunctionalTest
     protected function tearDown(): void
     {
         parent::tearDown();
-
-        $this->_schemaTool->dropSchema(
-            [
-                $this->_em->getClassMetadata(JoinedTableWithPropertyAsDiscriminatorColumnRoot::class),
-                $this->_em->getClassMetadata(JoinedTableWithPropertyAsDiscriminatorColumnChild::class),
-                $this->_em->getClassMetadata(JoinedTableWithPropertyAsDiscriminatorColumnChild2::class),
-            ]
-        );
+        $this->dropSchema();
     }
 
     public function testIfQueryReturnsCorrectInstance(): void

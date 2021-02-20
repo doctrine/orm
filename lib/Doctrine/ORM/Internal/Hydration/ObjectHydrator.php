@@ -229,37 +229,29 @@ class ObjectHydrator extends AbstractHydrator
      *
      * @throws HydrationException
      */
-    private function getEntity(array $data, $dqlAlias)
+    private function getEntity(array $data, $dqlAlias, array $rawData = [])
     {
         $className = $this->_rsm->aliasMap[$dqlAlias];
 
         if (isset($this->_rsm->discriminatorColumns[$dqlAlias])) {
             $fieldName = $this->_rsm->discriminatorColumns[$dqlAlias];
 
-            if (! isset($this->_rsm->metaMappings[$fieldName])) {
-                throw HydrationException::missingDiscriminatorMetaMappingColumn($className, $fieldName, $dqlAlias);
+            if (! isset($rawData[$fieldName])) {
+                throw HydrationException::missingDiscriminatorColumn($className, $fieldName, $dqlAlias);
             }
 
-            $discrColumn = $this->_rsm->metaMappings[$fieldName];
-
-            if (! isset($data[$discrColumn])) {
-                throw HydrationException::missingDiscriminatorColumn($className, $discrColumn, $dqlAlias);
-            }
-
-            if ($data[$discrColumn] === '') {
+            if ($rawData[$fieldName] === '') {
                 throw HydrationException::emptyDiscriminatorValue($dqlAlias);
             }
 
             $discrMap           = $this->_metadataCache[$className]->discriminatorMap;
-            $discriminatorValue = (string) $data[$discrColumn];
+            $discriminatorValue = (string) $rawData[$fieldName];
 
             if (! isset($discrMap[$discriminatorValue])) {
                 throw HydrationException::invalidDiscriminatorValue($discriminatorValue, array_keys($discrMap));
             }
 
             $className = $discrMap[$discriminatorValue];
-
-            unset($data[$discrColumn]);
         }
 
         if (isset($this->_hints[Query::HINT_REFRESH_ENTITY]) && isset($this->rootAliases[$dqlAlias])) {
@@ -364,7 +356,7 @@ class ObjectHydrator extends AbstractHydrator
                     $parentObject = $this->resultPointers[$parentAlias];
                 } else {
                     // Parent object of relation not found, mark as not-fetched again
-                    $element = $this->getEntity($data, $dqlAlias);
+                    $element = $this->getEntity($data, $dqlAlias, $row);
 
                     // Update result pointer and provide initial fetch data for parent
                     $this->resultPointers[$dqlAlias]               = $element;
@@ -403,7 +395,7 @@ class ObjectHydrator extends AbstractHydrator
                                     unset($this->resultPointers[$dqlAlias]);
                                 }
                             } else {
-                                $element = $this->getEntity($data, $dqlAlias);
+                                $element = $this->getEntity($data, $dqlAlias, $row);
 
                                 if (isset($this->_rsm->indexByMap[$dqlAlias])) {
                                     $indexValue = $row[$this->_rsm->indexByMap[$dqlAlias]];
@@ -435,7 +427,7 @@ class ObjectHydrator extends AbstractHydrator
                         // we only need to take action if this value is null,
                         // we refresh the entity or its an uninitialized proxy.
                         if (isset($nonemptyComponents[$dqlAlias])) {
-                            $element = $this->getEntity($data, $dqlAlias);
+                            $element = $this->getEntity($data, $dqlAlias, $row);
                             $reflField->setValue($parentObject, $element);
                             $this->_uow->setOriginalEntityProperty($oid, $relationField, $element);
                             $targetClass = $this->_metadataCache[$relation['targetEntity']];
@@ -491,7 +483,7 @@ class ObjectHydrator extends AbstractHydrator
 
                 // check for existing result from the iterations before
                 if (! isset($this->identifierMap[$dqlAlias][$id[$dqlAlias]])) {
-                    $element = $this->getEntity($data, $dqlAlias);
+                    $element = $this->getEntity($data, $dqlAlias, $row);
 
                     if ($this->_rsm->isMixed) {
                         $element = [$entityKey => $element];
