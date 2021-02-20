@@ -18,6 +18,7 @@ use function count;
  */
 class OneToManyUnidirectionalAssociationTest extends OrmFunctionalTestCase
 {
+    /** @psalm-var array<string, RoutingLocation> */
     protected $locations = [];
 
     protected function setUp(): void

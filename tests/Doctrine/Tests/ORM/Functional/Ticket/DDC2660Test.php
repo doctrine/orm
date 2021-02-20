@@ -49,7 +49,7 @@ class DDC2660Test extends OrmFunctionalTestCase
     {
         $sql = 'SELECT o.product_id, o.customer_id, o.name FROM ddc_2660_customer_order o';
 
-        $rsm = new ResultSetMappingBuilder($this->_getEntityManager());
+        $rsm = new ResultSetMappingBuilder($this->getEntityManager());
         $rsm->addRootEntityFromClassMetadata(DDC2660CustomerOrder::class, 'c');
 
         $query  = $this->_em->createNativeQuery($sql, $rsm);
@@ -67,7 +67,7 @@ class DDC2660Test extends OrmFunctionalTestCase
     {
         $sql = 'SELECT o.product_id, o.customer_id FROM ddc_2660_customer_order o';
 
-        $rsm = new ResultSetMappingBuilder($this->_getEntityManager());
+        $rsm = new ResultSetMappingBuilder($this->getEntityManager());
         $rsm->addRootEntityFromClassMetadata(DDC2660CustomerOrder::class, 'c');
 
         $query  = $this->_em->createNativeQuery($sql, $rsm);

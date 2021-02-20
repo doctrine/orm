@@ -146,14 +146,15 @@ class MSEFile
 /** @MappedSuperclass */
 abstract class MSEUser
 {
+    /** @var string */
     private $session; // intentionally transient property
 
-    public function getSession()
+    public function getSession(): string
     {
         return $this->session;
     }
 
-    public function setSession($session): void
+    public function setSession(string $session): void
     {
         $this->session = $session;
     }

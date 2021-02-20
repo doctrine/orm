@@ -21,7 +21,10 @@ use function get_class;
  */
 class OneToOneSelfReferentialAssociationTest extends OrmFunctionalTestCase
 {
+    /** @var ECommerceCustomer */
     private $customer;
+
+    /** @var ECommerceCustomer */
     private $mentor;
 
     protected function setUp(): void
@@ -56,7 +59,7 @@ class OneToOneSelfReferentialAssociationTest extends OrmFunctionalTestCase
 
     public function testFind(): void
     {
-        $id = $this->_createFixture();
+        $id = $this->createFixture();
 
         $customer = $this->_em->find(ECommerceCustomer::class, $id);
         $this->assertNotInstanceOf(Proxy::class, $customer->getMentor());
@@ -64,7 +67,7 @@ class OneToOneSelfReferentialAssociationTest extends OrmFunctionalTestCase
 
     public function testEagerLoadsAssociation(): void
     {
-        $this->_createFixture();
+        $this->createFixture();
 
         $query    = $this->_em->createQuery('select c, m from Doctrine\Tests\Models\ECommerce\ECommerceCustomer c left join c.mentor m order by c.id asc');
         $result   = $query->getResult();
@@ -77,7 +80,7 @@ class OneToOneSelfReferentialAssociationTest extends OrmFunctionalTestCase
      */
     public function testLazyLoadsAssociation(): void
     {
-        $this->_createFixture();
+        $this->createFixture();
 
         $metadata                                         = $this->_em->getClassMetadata(ECommerceCustomer::class);
         $metadata->associationMappings['mentor']['fetch'] = ClassMetadata::FETCH_LAZY;
@@ -130,7 +133,7 @@ class OneToOneSelfReferentialAssociationTest extends OrmFunctionalTestCase
         $this->assertEquals($value, $foreignKey);
     }
 
-    private function _createFixture()
+    private function createFixture(): int
     {
         $customer = new ECommerceCustomer();
         $customer->setName('Luke Skywalker');
@@ -159,40 +162,42 @@ class MultiSelfReference
      * @Column(type="integer")
      */
     private $id;
+
     /**
-     * @var MultiSelfReference
+     * @var MultiSelfReference|null
      * @OneToOne(targetEntity="MultiSelfReference", cascade={"persist"})
      * @JoinColumn(name="other1", referencedColumnName="id")
      */
     private $other1;
+
     /**
-     * @var MultiSelfReference
+     * @var MultiSelfReference|null
      * @OneToOne(targetEntity="MultiSelfReference", cascade={"persist"})
      * @JoinColumn(name="other2", referencedColumnName="id")
      */
     private $other2;
 
-    public function getId()
+    public function getId(): int
     {
         return $this->id;
     }
 
-    public function setOther1($other1): void
+    public function setOther1(MultiSelfReference $other1): void
     {
         $this->other1 = $other1;
     }
 
-    public function getOther1()
+    public function getOther1(): ?MultiSelfReference
     {
         return $this->other1;
     }
 
-    public function setOther2($other2): void
+    public function setOther2(MultiSelfReference $other2): void
     {
         $this->other2 = $other2;
     }
 
-    public function getOther2()
+    public function getOther2(): ?MultiSelfReference
     {
         return $this->other2;
     }

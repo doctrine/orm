@@ -97,7 +97,7 @@ abstract class OrmFunctionalTestCase extends OrmTestCase
      *
      * @var array
      */
-    protected static $_tablesCreated = [];
+    protected static $tablesCreated = [];
 
     /**
      * Array of entity class name to their tables that were created.
@@ -111,7 +111,7 @@ abstract class OrmFunctionalTestCase extends OrmTestCase
      *
      * @var array
      */
-    protected static $_modelSets = [
+    protected static $modelSets = [
         'cms' => [
             Models\CMS\CmsUser::class,
             Models\CMS\CmsPhonenumber::class,
@@ -665,19 +665,19 @@ abstract class OrmFunctionalTestCase extends OrmTestCase
         }
 
         if (! $this->_em) {
-            $this->_em         = $this->_getEntityManager();
+            $this->_em         = $this->getEntityManager();
             $this->_schemaTool = new SchemaTool($this->_em);
         }
 
         $classes = [];
 
         foreach ($this->_usedModelSets as $setName => $bool) {
-            if (! isset(static::$_tablesCreated[$setName])) {
-                foreach (static::$_modelSets[$setName] as $className) {
+            if (! isset(static::$tablesCreated[$setName])) {
+                foreach (static::$modelSets[$setName] as $className) {
                     $classes[] = $this->_em->getClassMetadata($className);
                 }
 
-                static::$_tablesCreated[$setName] = true;
+                static::$tablesCreated[$setName] = true;
             }
         }
 
@@ -693,7 +693,7 @@ abstract class OrmFunctionalTestCase extends OrmTestCase
      *
      * @throws ORMException
      */
-    protected function _getEntityManager(
+    protected function getEntityManager(
         ?Connection $connection = null,
         ?MappingDriver $mappingDriver = null
     ): EntityManager {

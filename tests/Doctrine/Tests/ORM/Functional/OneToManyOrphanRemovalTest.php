@@ -15,6 +15,7 @@ use function count;
  */
 class OneToManyOrphanRemovalTest extends OrmFunctionalTestCase
 {
+    /** @var int */
     protected $userId;
 
     protected function setUp(): void

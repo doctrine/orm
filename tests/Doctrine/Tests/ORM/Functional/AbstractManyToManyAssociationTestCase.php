@@ -14,9 +14,14 @@ use function count;
  */
 class AbstractManyToManyAssociationTestCase extends OrmFunctionalTestCase
 {
-    protected $_firstField;
-    protected $_secondField;
-    protected $_table;
+    /** @var string */
+    protected $firstField;
+
+    /** @var string */
+    protected $secondField;
+
+    /** @var string */
+    protected $table;
 
     public function assertForeignKeysContain($firstId, $secondId): void
     {
@@ -31,10 +36,10 @@ class AbstractManyToManyAssociationTestCase extends OrmFunctionalTestCase
     protected function _countForeignKeys($firstId, $secondId)
     {
         return count($this->_em->getConnection()->executeQuery("
-            SELECT {$this->_firstField}
-              FROM {$this->_table}
-             WHERE {$this->_firstField} = ?
-               AND {$this->_secondField} = ?
+            SELECT {$this->firstField}
+              FROM {$this->table}
+             WHERE {$this->firstField} = ?
+               AND {$this->secondField} = ?
         ", [$firstId, $secondId])->fetchAll());
     }
 
