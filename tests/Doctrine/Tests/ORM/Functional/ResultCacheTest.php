@@ -18,7 +18,7 @@ use function count;
  */
 class ResultCacheTest extends OrmFunctionalTestCase
 {
-   /** @var ReflectionProperty */
+    /** @var ReflectionProperty */
     private $cacheDataReflection;
 
     protected function setUp(): void
@@ -220,7 +220,7 @@ class ResultCacheTest extends OrmFunctionalTestCase
         $this->_em->getConfiguration()->setResultCacheImpl(new ArrayCache());
     }
 
-    public function testNativeQueryResultCaching()
+    public function testNativeQueryResultCaching(): NativeQuery
     {
         $cache = new ArrayCache();
         $rsm   = new ResultSetMapping();

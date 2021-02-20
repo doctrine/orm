@@ -82,12 +82,12 @@ abstract class DDC1383AbstractEntity
      */
     protected $id;
 
-    public function getId()
+    public function getId(): ?int
     {
         return $this->id;
     }
 
-    public function setId($id): void
+    public function setId(int $id): void
     {
         $this->id = $id;
     }
@@ -104,7 +104,7 @@ class DDC1383Entity extends DDC1383AbstractEntity
      */
     protected $reference;
 
-    public function getReference()
+    public function getReference(): DDC1383AbstractEntity
     {
         return $this->reference;
     }

@@ -85,35 +85,35 @@ class DDC1080Foo
      * @Column(name="fooID", type="integer")
      * @GeneratedValue(strategy="AUTO")
      */
-    protected $_fooID;
+    protected $fooID;
 
     /**
      * @var string
      * @Column(name="fooTitle", type="string")
      */
-    protected $_fooTitle;
+    protected $fooTitle;
 
     /**
      * @psalm-var Collection<DDC1080FooBar>
-     * @OneToMany(targetEntity="DDC1080FooBar", mappedBy="_foo",
+     * @OneToMany(targetEntity="DDC1080FooBar", mappedBy="foo",
      * cascade={"persist"})
-     * @OrderBy({"_orderNr"="ASC"})
+     * @OrderBy({"orderNr"="ASC"})
      */
-    protected $_fooBars;
+    protected $fooBars;
 
     public function __construct()
     {
-        $this->_fooBars = new ArrayCollection();
+        $this->fooBars = new ArrayCollection();
     }
 
     public function getFooID(): int
     {
-        return $this->_fooID;
+        return $this->fooID;
     }
 
     public function getFooTitle(): string
     {
-        return $this->_fooTitle;
+        return $this->fooTitle;
     }
 
     /**
@@ -121,22 +121,22 @@ class DDC1080Foo
      */
     public function getFooBars(): Collection
     {
-        return $this->_fooBars;
+        return $this->fooBars;
     }
 
     public function setFooID(int $fooID): void
     {
-        $this->_fooID = $fooID;
+        $this->fooID = $fooID;
     }
 
     public function setFooTitle(string $fooTitle): void
     {
-        $this->_fooTitle = $fooTitle;
+        $this->fooTitle = $fooTitle;
     }
 
     public function setFooBars(array $fooBars): void
     {
-        $this->_fooBars = $fooBars;
+        $this->fooBars = $fooBars;
     }
 }
 /**
@@ -151,35 +151,35 @@ class DDC1080Bar
      * @Column(name="barID", type="integer")
      * @GeneratedValue(strategy="AUTO")
      */
-    protected $_barID;
+    protected $barID;
 
     /**
      * @var string
      * @Column(name="barTitle", type="string")
      */
-    protected $_barTitle;
+    protected $barTitle;
 
     /**
      * @psalm-var Collection<DDC1080FooBar>
-     * @OneToMany(targetEntity="DDC1080FooBar", mappedBy="_bar",
+     * @OneToMany(targetEntity="DDC1080FooBar", mappedBy="bar",
      * cascade={"persist"})
-     * @OrderBy({"_orderNr"="ASC"})
+     * @OrderBy({"orderNr"="ASC"})
      */
-    protected $_fooBars;
+    protected $fooBars;
 
     public function __construct()
     {
-        $this->_fooBars = new ArrayCollection();
+        $this->fooBars = new ArrayCollection();
     }
 
     public function getBarID(): int
     {
-        return $this->_barID;
+        return $this->barID;
     }
 
     public function getBarTitle(): string
     {
-        return $this->_barTitle;
+        return $this->barTitle;
     }
 
     /**
@@ -187,22 +187,22 @@ class DDC1080Bar
      */
     public function getFooBars(): Collection
     {
-        return $this->_fooBars;
+        return $this->fooBars;
     }
 
     public function setBarID(int $barID): void
     {
-        $this->_barID = $barID;
+        $this->barID = $barID;
     }
 
     public function setBarTitle(string $barTitle): void
     {
-        $this->_barTitle = $barTitle;
+        $this->barTitle = $barTitle;
     }
 
     public function setFooBars(array $fooBars): void
     {
-        $this->_fooBars = $fooBars;
+        $this->fooBars = $fooBars;
     }
 }
 
@@ -218,7 +218,7 @@ class DDC1080FooBar
      * @JoinColumn(name="fooID", referencedColumnName="fooID")
      * @Id
      */
-    protected $_foo = null;
+    protected $foo = null;
 
     /**
      * @var DDC1080Bar
@@ -226,64 +226,46 @@ class DDC1080FooBar
      * @JoinColumn(name="barID", referencedColumnName="barID")
      * @Id
      */
-    protected $_bar = null;
+    protected $bar = null;
 
     /**
      * @var int orderNr
      * @Column(name="orderNr", type="integer", nullable=false)
      */
-    protected $_orderNr = null;
+    protected $orderNr = null;
 
-    /**
-     * Retrieve the foo property
-     */
     public function getFoo(): DDC1080Foo
     {
-        return $this->_foo;
+        return $this->foo;
     }
 
-    /**
-     * Set the foo property
-     */
     public function setFoo(DDC1080Foo $foo): DDC1080FooBar
     {
-        $this->_foo = $foo;
+        $this->foo = $foo;
 
         return $this;
     }
 
-    /**
-     * Retrieve the bar property
-     */
     public function getBar(): DDC1080Bar
     {
-        return $this->_bar;
+        return $this->bar;
     }
 
-    /**
-     * Set the bar property
-     */
     public function setBar(DDC1080Bar $bar): DDC1080FooBar
     {
-        $this->_bar = $bar;
+        $this->bar = $bar;
 
         return $this;
     }
 
-    /**
-     * Retrieve the orderNr property
-     */
     public function getOrderNr(): ?int
     {
-        return $this->_orderNr;
+        return $this->orderNr;
     }
 
-    /**
-     * Set the orderNr property
-     */
     public function setOrderNr(?int $orderNr): DDC1080FooBar
     {
-        $this->_orderNr = $orderNr;
+        $this->orderNr = $orderNr;
 
         return $this;
     }

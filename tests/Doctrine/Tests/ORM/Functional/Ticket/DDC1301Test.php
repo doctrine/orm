@@ -16,6 +16,7 @@ use function count;
  */
 class DDC1301Test extends OrmFunctionalTestCase
 {
+    /** @var int */
     private $userId;
 
     protected function setUp(): void

@@ -117,14 +117,16 @@ class DDC1400User
 class DDC1400UserState
 {
     /**
+     * @var DDC1400Article
      * @Id
-     *  @ManyToOne(targetEntity="DDC1400Article", inversedBy="userStates")
+     * @ManyToOne(targetEntity="DDC1400Article", inversedBy="userStates")
      */
     public $article;
 
     /**
+     * @var DDC1400User
      * @Id
-     *  @ManyToOne(targetEntity="DDC1400User", inversedBy="userStates")
+     * @ManyToOne(targetEntity="DDC1400User", inversedBy="userStates")
      */
     public $user;
 
