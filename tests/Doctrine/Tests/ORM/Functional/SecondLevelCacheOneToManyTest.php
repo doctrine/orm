@@ -12,6 +12,8 @@ use Doctrine\Tests\Models\Cache\Token;
 use Doctrine\Tests\Models\Cache\Travel;
 use Doctrine\Tests\Models\Cache\Traveler;
 
+use function sprintf;
+
 /**
  * @group DDC-2183
  */
@@ -381,7 +383,10 @@ class SecondLevelCacheOneToManyTest extends SecondLevelCacheAbstractTest
         $this->_em->flush();
         $this->_em->clear();
 
-        $query  = "SELECT t, tt FROM Doctrine\Tests\Models\Cache\Traveler t JOIN t.travels tt WHERE t.id = $travelerId";
+        $query  = sprintf(
+            'SELECT t, tt FROM Doctrine\Tests\Models\Cache\Traveler t JOIN t.travels tt WHERE t.id = %s',
+            $travelerId
+        );
         $result = $this->_em->createQuery($query)->getSingleResult();
 
         $this->assertEquals(4, $result->getTravels()->count());

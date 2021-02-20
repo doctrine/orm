@@ -15,6 +15,7 @@ use function count;
 
 class OrderedCollectionTest extends OrmFunctionalTestCase
 {
+    /** @psalm-var array<string, RoutingLocation> */
     protected $locations = [];
 
     protected function setUp(): void
@@ -34,7 +35,7 @@ class OrderedCollectionTest extends OrmFunctionalTestCase
         $this->_em->flush();
     }
 
-    public function createPersistedRouteWithLegs()
+    public function createPersistedRouteWithLegs(): int
     {
         $route = new RoutingRoute();
 

@@ -98,11 +98,11 @@ class DDC1228User
 
     /**
      * @OneToOne(targetEntity="DDC1228Profile")
-     * @var Profile
+     * @var DDC1228Profile
      */
     public $profile;
 
-    public function getProfile()
+    public function getProfile(): DDC1228Profile
     {
         return $this->profile;
     }
@@ -114,8 +114,10 @@ class DDC1228User
 class DDC1228Profile
 {
     /**
-     * @Id @Column(type="integer") @GeneratedValue
      * @var int
+     * @Id
+     * @Column(type="integer")
+     * @GeneratedValue
      */
     public $id;
 
@@ -125,12 +127,12 @@ class DDC1228Profile
      */
     public $name;
 
-    public function getName()
+    public function getName(): string
     {
         return $this->name;
     }
 
-    public function setName($name): void
+    public function setName(string $name): void
     {
         $this->name = $name;
     }

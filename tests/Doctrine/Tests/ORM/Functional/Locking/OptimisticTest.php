@@ -33,7 +33,7 @@ class OptimisticTest extends OrmFunctionalTestCase
         $this->_conn = $this->_em->getConnection();
     }
 
-    public function testJoinedChildInsertSetsInitialVersionValue()
+    public function testJoinedChildInsertSetsInitialVersionValue(): OptimisticJoinedChild
     {
         $test = new OptimisticJoinedChild();
 
@@ -74,7 +74,7 @@ class OptimisticTest extends OrmFunctionalTestCase
         }
     }
 
-    public function testJoinedParentInsertSetsInitialVersionValue()
+    public function testJoinedParentInsertSetsInitialVersionValue(): OptimisticJoinedParent
     {
         $test = new OptimisticJoinedParent();
 
@@ -129,7 +129,7 @@ class OptimisticTest extends OrmFunctionalTestCase
         }
     }
 
-    public function testStandardInsertSetsInitialVersionValue()
+    public function testStandardInsertSetsInitialVersionValue(): OptimisticStandard
     {
         $test = new OptimisticStandard();
 
@@ -186,7 +186,7 @@ class OptimisticTest extends OrmFunctionalTestCase
         $this->addToAssertionCount(1);
     }
 
-    public function testOptimisticTimestampSetsDefaultValue()
+    public function testOptimisticTimestampSetsDefaultValue(): OptimisticTimestamp
     {
         $test = new OptimisticTimestamp();
 
@@ -332,7 +332,7 @@ class OptimisticStandard
      */
     private $version;
 
-    public function getVersion()
+    public function getVersion(): int
     {
         return $this->version;
     }
@@ -357,6 +357,10 @@ class OptimisticTimestamp
      */
     public $name;
 
-    /** @Version @Column(type="datetime") */
+    /**
+     * @var DateTime
+     * @Version
+     * @Column(type="datetime")
+     */
     public $version;
 }

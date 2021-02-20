@@ -78,8 +78,10 @@ class DDC1392Test extends OrmFunctionalTestCase
 class DDC1392Picture
 {
     /**
+     * @var int
      * @Column(name="picture_id", type="integer")
-     * @Id @GeneratedValue
+     * @Id
+     * @GeneratedValue
      */
     private $pictureId;
 
@@ -90,26 +92,17 @@ class DDC1392Picture
      */
     private $file;
 
-    /**
-     * Get pictureId
-     */
-    public function getPictureId()
+    public function getPictureId(): int
     {
         return $this->pictureId;
     }
 
-    /**
-     * Set file
-     */
-    public function setFile($value = null): void
+    public function setFile(?DDC1392File $value = null): void
     {
         $this->file = $value;
     }
 
-    /**
-     * Get file
-     */
-    public function getFile()
+    public function getFile(): ?DDC1392File
     {
         return $this->file;
     }
@@ -128,10 +121,7 @@ class DDC1392File
      */
     public $fileId;
 
-    /**
-     * Get fileId
-     */
-    public function getFileId()
+    public function getFileId(): int
     {
         return $this->fileId;
     }

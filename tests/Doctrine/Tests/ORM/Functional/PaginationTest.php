@@ -25,6 +25,7 @@ use RuntimeException;
 
 use function count;
 use function iterator_to_array;
+use function sprintf;
 
 /**
  * @group DDC-1613
@@ -739,7 +740,7 @@ SQL
         $groups = [];
         for ($j = 0; $j < 3; $j++) {
             $group       = new CmsGroup();
-            $group->name = "group$j";
+            $group->name = sprintf('group%d', $j);
             $groups[]    = $group;
             $this->_em->persist($group);
         }
@@ -751,7 +752,7 @@ SQL
             $user->status       = 'active';
             $user->email        = new CmsEmail();
             $user->email->user  = $user;
-            $user->email->email = "email$i";
+            $user->email->email = sprintf('email%d', $i);
             for ($j = 0; $j < 3; $j++) {
                 $user->addGroup($groups[$j]);
             }
@@ -803,7 +804,8 @@ SQL
         $this->_em->flush();
     }
 
-    public function useOutputWalkers()
+    /** @psalm-return list<array{bool, bool}> */
+    public function useOutputWalkers(): array
     {
         return [
             [true],
@@ -811,7 +813,8 @@ SQL
         ];
     }
 
-    public function fetchJoinCollection()
+    /** @psalm-return list<array{bool, bool}> */
+    public function fetchJoinCollection(): array
     {
         return [
             [true],
@@ -819,7 +822,8 @@ SQL
         ];
     }
 
-    public function useOutputWalkersAndFetchJoinCollection()
+    /** @psalm-return list<array{bool, bool}> */
+    public function useOutputWalkersAndFetchJoinCollection(): array
     {
         return [
             [true, false],

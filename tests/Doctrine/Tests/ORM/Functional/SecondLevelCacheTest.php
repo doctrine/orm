@@ -4,6 +4,9 @@ declare(strict_types=1);
 
 namespace Doctrine\Tests\ORM\Functional;
 
+use Doctrine\Common\EventArgs;
+use Doctrine\ORM\Event\LifecycleEventArgs;
+use Doctrine\ORM\Event\PostFlushEventArgs;
 use Doctrine\ORM\Events;
 use Doctrine\Tests\Models\Cache\Country;
 use Doctrine\Tests\Models\Cache\State;
@@ -337,31 +340,35 @@ class SecondLevelCacheTest extends SecondLevelCacheAbstractTest
 
 class ListenerSecondLevelCacheTest
 {
+    /** @var array<string, callable> */
     public $callbacks;
 
+    /**
+     * @psalm-param array<string, callable> $callbacks
+     */
     public function __construct(array $callbacks = [])
     {
         $this->callbacks = $callbacks;
     }
 
-    private function dispatch($eventName, $args): void
+    private function dispatch(string $eventName, EventArgs $args): void
     {
         if (isset($this->callbacks[$eventName])) {
             call_user_func($this->callbacks[$eventName], $args);
         }
     }
 
-    public function postFlush($args): void
+    public function postFlush(PostFlushEventArgs $args): void
     {
         $this->dispatch(__FUNCTION__, $args);
     }
 
-    public function postUpdate($args): void
+    public function postUpdate(LifecycleEventArgs $args): void
     {
         $this->dispatch(__FUNCTION__, $args);
     }
 
-    public function postRemove($args): void
+    public function postRemove(LifecycleEventArgs $args): void
     {
         $this->dispatch(__FUNCTION__, $args);
     }
