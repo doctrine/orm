@@ -6,7 +6,7 @@ namespace Doctrine\Tests\ORM\Functional;
 
 use Doctrine\Tests\OrmFunctionalTestCase;
 
-class JoinedTableWithPropertyAsDiscriminatorColumn extends OrmFunctionalTestCase
+class JoinedTableWithPropertyAsDiscriminatorColumnTest extends OrmFunctionalTestCase
 {
     protected function setUp(): void
     {
