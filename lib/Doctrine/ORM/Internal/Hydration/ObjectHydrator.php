@@ -224,6 +224,7 @@ class ObjectHydrator extends AbstractHydrator
      *
      * @param array  $data     The instance data.
      * @param string $dqlAlias The DQL alias of the entity's class.
+     * @param array  $rawData  Raw data directly from query.
      *
      * @return object The entity.
      *
