@@ -230,7 +230,7 @@ class ObjectHydrator extends AbstractHydrator
      *
      * @throws HydrationException
      */
-    private function getEntity(array $data, $dqlAlias, array $rawData = [])
+    private function getEntity(array $data, $dqlAlias, array $rawData): object
     {
         $className = $this->_rsm->aliasMap[$dqlAlias];
 
