@@ -20,7 +20,7 @@
 
 namespace Doctrine\ORM\Internal\Hydration;
 
-use Doctrine\DBAL\Driver\Statement;
+use Doctrine\DBAL\Driver\ResultStatement;
 use Doctrine\DBAL\FetchMode;
 use Doctrine\DBAL\Platforms\AbstractPlatform;
 use Doctrine\DBAL\Types\Type;
@@ -93,7 +93,7 @@ abstract class AbstractHydrator
     /**
      * The statement that provides the data to hydrate.
      *
-     * @var Statement
+     * @var ResultStatement
      */
     protected $_stmt;
 
@@ -154,7 +154,7 @@ abstract class AbstractHydrator
      *
      * @return iterable<mixed>
      */
-    public function toIterable(Statement $stmt, ResultSetMapping $resultSetMapping, array $hints = []): iterable
+    public function toIterable(ResultStatement $stmt, ResultSetMapping $resultSetMapping, array $hints = []): iterable
     {
         $this->_stmt  = $stmt;
         $this->_rsm   = $resultSetMapping;
