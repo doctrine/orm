@@ -62,6 +62,7 @@ class JoinedTableWithPropertyAsDiscriminatorColumnTest extends OrmFunctionalTest
         $object = $q->getSingleResult();
 
         $this->assertInstanceOf(Apartment::class, $object);
+        $this->assertSame($object->type, 'penthouse');
     }
 
     public function testIfRepositoryReturnsCorrectInstance(): void
@@ -75,6 +76,7 @@ class JoinedTableWithPropertyAsDiscriminatorColumnTest extends OrmFunctionalTest
 
         $object = $this->_em->getRepository(Property::class)->find($child->id);
         $this->assertInstanceOf(Apartment::class, $object);
+        $this->assertSame($object->type, 'penthouse');
     }
 
     public function testIfAssociationWithRepositoryReturnsCorrectInstance(): void
@@ -94,6 +96,7 @@ class JoinedTableWithPropertyAsDiscriminatorColumnTest extends OrmFunctionalTest
         $object = $this->_em->getRepository(ReferencedProperty::class)->find($referenced->id);
         $this->assertInstanceOf(ReferencedProperty::class, $object);
         $this->assertInstanceOf(Apartment::class, $object->property);
+        $this->assertSame($object->property->type, 'penthouse');
     }
 
     public function testIfAssociationWithQueryReturnsCorrectInstance(): void
@@ -116,6 +119,7 @@ class JoinedTableWithPropertyAsDiscriminatorColumnTest extends OrmFunctionalTest
 
         $this->assertInstanceOf(ReferencedProperty::class, $object);
         $this->assertInstanceOf(Apartment::class, $object->property);
+        $this->assertSame($object->property->type, 'penthouse');
     }
 
     public function testIfAssociationWithQueryJoinedReturnsCorrectInstance(): void
@@ -140,6 +144,7 @@ class JoinedTableWithPropertyAsDiscriminatorColumnTest extends OrmFunctionalTest
 
         $this->assertInstanceOf(ReferencedProperty::class, $object);
         $this->assertInstanceOf(Apartment::class, $object->property);
+        $this->assertSame($object->property->type, 'penthouse');
     }
 }
 
