@@ -96,7 +96,7 @@ class JoinedTableWithPropertyAsDiscriminatorColumnTest extends OrmFunctionalTest
 
         $this->_em->persist($child);
 
-        $referenced = new JoinedTableWithPropertyAsDiscriminatorColumnReferenced();
+        $referenced              = new JoinedTableWithPropertyAsDiscriminatorColumnReferenced();
         $referenced->association = $child;
         $this->_em->persist($referenced);
 
@@ -118,7 +118,7 @@ class JoinedTableWithPropertyAsDiscriminatorColumnTest extends OrmFunctionalTest
 
         $this->_em->persist($child);
 
-        $referenced = new JoinedTableWithPropertyAsDiscriminatorColumnReferenced();
+        $referenced              = new JoinedTableWithPropertyAsDiscriminatorColumnReferenced();
         $referenced->association = $child;
         $this->_em->persist($referenced);
 
