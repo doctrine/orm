@@ -205,12 +205,13 @@ abstract class AbstractHydrator
         $this->_hints = $hints;
 
         $this->_em->getEventManager()->addEventListener([Events::onClear], $this);
-
         $this->prepare();
 
-        $result = $this->hydrateAllData();
-
-        $this->cleanup();
+        try {
+            $result = $this->hydrateAllData();
+        } finally {
+            $this->cleanup();
+        }
 
         return $result;
     }
