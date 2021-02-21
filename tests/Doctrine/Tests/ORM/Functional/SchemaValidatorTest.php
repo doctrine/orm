@@ -52,7 +52,7 @@ class SchemaValidatorTest extends OrmFunctionalTestCase
     {
         $modelSets = [];
 
-        foreach (array_keys(self::$_modelSets) as $modelSet) {
+        foreach (array_keys(self::$modelSets) as $modelSet) {
             $modelSets[$modelSet] = [$modelSet];
         }
 
@@ -67,7 +67,7 @@ class SchemaValidatorTest extends OrmFunctionalTestCase
         $validator = new SchemaValidator($this->_em);
         $classes   = [];
 
-        foreach (self::$_modelSets[$modelSet] as $className) {
+        foreach (self::$modelSets[$modelSet] as $className) {
             $classes[] = $this->_em->getClassMetadata($className);
         }
 

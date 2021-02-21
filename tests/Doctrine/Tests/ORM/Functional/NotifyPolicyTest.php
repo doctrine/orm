@@ -96,6 +96,7 @@ class NotifyPolicyTest extends OrmFunctionalTestCase
 
 class NotifyBaseEntity implements NotifyPropertyChanged
 {
+    /** @psalm-var list<PropertyChangedListener> */
     public $listeners = [];
 
     public function addPropertyChangedListener(PropertyChangedListener $listener): void
@@ -124,7 +125,10 @@ class NotifyUser extends NotifyBaseEntity
      */
     private $id;
 
-    /** @Column */
+    /**
+     * @var string
+     * @Column
+     */
     private $name;
 
     /**
@@ -138,23 +142,26 @@ class NotifyUser extends NotifyBaseEntity
         $this->groups = new ArrayCollection();
     }
 
-    public function getId()
+    public function getId(): int
     {
         return $this->id;
     }
 
-    public function getName()
+    public function getName(): string
     {
         return $this->name;
     }
 
-    public function setName($name): void
+    public function setName(string $name): void
     {
         $this->onPropertyChanged('name', $this->name, $name);
         $this->name = $name;
     }
 
-    public function getGroups()
+    /**
+     * @psalm-return Collection<int, NotifyGroup>
+     */
+    public function getGroups(): Collection
     {
         return $this->groups;
     }
@@ -171,7 +178,10 @@ class NotifyGroup extends NotifyBaseEntity
      */
     private $id;
 
-    /** @Column */
+    /**
+     * @var string
+     * @Column
+     */
     private $name;
 
     /**
@@ -185,23 +195,26 @@ class NotifyGroup extends NotifyBaseEntity
         $this->users = new ArrayCollection();
     }
 
-    public function getId()
+    public function getId(): int
     {
         return $this->id;
     }
 
-    public function getName()
+    public function getName(): string
     {
         return $this->name;
     }
 
-    public function setName($name): void
+    public function setName(string $name): void
     {
         $this->onPropertyChanged('name', $this->name, $name);
         $this->name = $name;
     }
 
-    public function getUsers()
+    /**
+     * @psalm-return Collection<int, NotifyUser>
+     */
+    public function getUsers(): Collection
     {
         return $this->users;
     }

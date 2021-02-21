@@ -33,6 +33,7 @@ use function is_numeric;
  */
 class NativeQueryTest extends OrmFunctionalTestCase
 {
+    /** @var AbstractPlatform */
     private $platform = null;
 
     protected function setUp(): void

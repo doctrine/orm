@@ -18,7 +18,10 @@ use function get_class;
  */
 class OneToOneUnidirectionalAssociationTest extends OrmFunctionalTestCase
 {
+    /** @var ECommerceProduct */
     private $product;
+
+    /** @var ECommerceShipping */
     private $shipping;
 
     protected function setUp(): void
@@ -51,9 +54,9 @@ class OneToOneUnidirectionalAssociationTest extends OrmFunctionalTestCase
         $this->assertForeignKeyIs(null);
     }
 
-    public function _testEagerLoad(): void
+    public function testEagerLoad(): void
     {
-        $this->_createFixture();
+        $this->createFixture();
 
         $query   = $this->_em->createQuery('select p, s from Doctrine\Tests\Models\ECommerce\ECommerceProduct p left join p.shipping s');
         $result  = $query->getResult();
@@ -65,7 +68,7 @@ class OneToOneUnidirectionalAssociationTest extends OrmFunctionalTestCase
 
     public function testLazyLoadsObjects(): void
     {
-        $this->_createFixture();
+        $this->createFixture();
         $metadata                                           = $this->_em->getClassMetadata(ECommerceProduct::class);
         $metadata->associationMappings['shipping']['fetch'] = ClassMetadata::FETCH_LAZY;
 
@@ -79,7 +82,7 @@ class OneToOneUnidirectionalAssociationTest extends OrmFunctionalTestCase
 
     public function testDoesNotLazyLoadObjectsIfConfigurationDoesNotAllowIt(): void
     {
-        $this->_createFixture();
+        $this->createFixture();
 
         $query = $this->_em->createQuery('select p from Doctrine\Tests\Models\ECommerce\ECommerceProduct p');
         $query->setHint(Query::HINT_FORCE_PARTIAL_LOAD, true);
@@ -90,7 +93,7 @@ class OneToOneUnidirectionalAssociationTest extends OrmFunctionalTestCase
         $this->assertNull($product->getShipping());
     }
 
-    protected function _createFixture(): void
+    protected function createFixture(): void
     {
         $product = new ECommerceProduct();
         $product->setName('Php manual');

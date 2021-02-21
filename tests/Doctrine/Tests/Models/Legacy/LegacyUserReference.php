@@ -34,8 +34,11 @@ class LegacyUserReference
      */
     private $_description;
 
-    /** @column(type="datetime", name="created") */
-    private $_created;
+    /**
+     * @var DateTime
+     * @Column(type="datetime", name="created")
+     */
+    private $created;
 
     public function __construct($source, $target, $description)
     {
@@ -45,7 +48,7 @@ class LegacyUserReference
         $this->_source      = $source;
         $this->_target      = $target;
         $this->_description = $description;
-        $this->_created     = new DateTime('now');
+        $this->created      = new DateTime('now');
     }
 
     public function source()
