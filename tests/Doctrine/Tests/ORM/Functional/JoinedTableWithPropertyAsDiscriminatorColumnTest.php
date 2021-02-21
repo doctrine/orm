@@ -15,6 +15,7 @@ class JoinedTableWithPropertyAsDiscriminatorColumnTest extends OrmFunctionalTest
                 $this->_em->getClassMetadata(JoinedTableWithPropertyAsDiscriminatorColumnRoot::class),
                 $this->_em->getClassMetadata(JoinedTableWithPropertyAsDiscriminatorColumnChild::class),
                 $this->_em->getClassMetadata(JoinedTableWithPropertyAsDiscriminatorColumnChild2::class),
+                $this->_em->getClassMetadata(JoinedTableWithPropertyAsDiscriminatorColumnReferenced::class),
             ]
         );
     }
@@ -29,6 +30,7 @@ class JoinedTableWithPropertyAsDiscriminatorColumnTest extends OrmFunctionalTest
                 $this->_em->getClassMetadata(JoinedTableWithPropertyAsDiscriminatorColumnRoot::class),
                 $this->_em->getClassMetadata(JoinedTableWithPropertyAsDiscriminatorColumnChild::class),
                 $this->_em->getClassMetadata(JoinedTableWithPropertyAsDiscriminatorColumnChild2::class),
+                $this->_em->getClassMetadata(JoinedTableWithPropertyAsDiscriminatorColumnReferenced::class),
             ]
         );
     }
@@ -66,6 +68,69 @@ class JoinedTableWithPropertyAsDiscriminatorColumnTest extends OrmFunctionalTest
 
         $object = $this->_em->getRepository(JoinedTableWithPropertyAsDiscriminatorColumnRoot::class)->find($child->id);
         $this->assertInstanceOf(JoinedTableWithPropertyAsDiscriminatorColumnChild::class, $object);
+    }
+
+    public function testIfAssociationWithRepositoryReturnsCorrectInstance(): void
+    {
+        $child       = new JoinedTableWithPropertyAsDiscriminatorColumnChild();
+        $child->type = 'child2';
+
+        $this->_em->persist($child);
+
+        $referenced = new JoinedTableWithPropertyAsDiscriminatorColumnReferenced();
+        $referenced->association = $child;
+        $this->_em->persist($referenced);
+
+        $this->_em->flush();
+        $this->_em->clear();
+
+        $object = $this->_em->getRepository(JoinedTableWithPropertyAsDiscriminatorColumnReferenced::class)->find($referenced->id);
+        $this->assertInstanceOf(JoinedTableWithPropertyAsDiscriminatorColumnReferenced::class, $object);
+        $this->assertInstanceOf(JoinedTableWithPropertyAsDiscriminatorColumnChild::class, $object->association);
+    }
+
+    public function testIfAssociationWithQueryReturnsCorrectInstance(): void
+    {
+        $child       = new JoinedTableWithPropertyAsDiscriminatorColumnChild();
+        $child->type = 'child2';
+
+        $this->_em->persist($child);
+
+        $referenced = new JoinedTableWithPropertyAsDiscriminatorColumnReferenced();
+        $referenced->association = $child;
+        $this->_em->persist($referenced);
+
+        $this->_em->flush();
+        $this->_em->clear();
+
+        $q = $this->_em->createQuery('SELECT o FROM ' . JoinedTableWithPropertyAsDiscriminatorColumnReferenced::class . ' o WHERE o.id = :id');
+        $q->setParameter('id', $referenced->id);
+        $object = $q->getSingleResult();
+
+        $this->assertInstanceOf(JoinedTableWithPropertyAsDiscriminatorColumnReferenced::class, $object);
+        $this->assertInstanceOf(JoinedTableWithPropertyAsDiscriminatorColumnChild::class, $object->association);
+    }
+
+    public function testIfAssociationWithQueryJoinedReturnsCorrectInstance(): void
+    {
+        $child       = new JoinedTableWithPropertyAsDiscriminatorColumnChild();
+        $child->type = 'child2';
+
+        $this->_em->persist($child);
+
+        $referenced = new JoinedTableWithPropertyAsDiscriminatorColumnReferenced();
+        $referenced->association = $child;
+        $this->_em->persist($referenced);
+
+        $this->_em->flush();
+        $this->_em->clear();
+
+        $q = $this->_em->createQuery('SELECT o, association FROM ' . JoinedTableWithPropertyAsDiscriminatorColumnReferenced::class . ' o JOIN o.association association WHERE o.id = :id');
+        $q->setParameter('id', $referenced->id);
+        $object = $q->getSingleResult();
+
+        $this->assertInstanceOf(JoinedTableWithPropertyAsDiscriminatorColumnReferenced::class, $object);
+        $this->assertInstanceOf(JoinedTableWithPropertyAsDiscriminatorColumnChild::class, $object->association);
     }
 }
 
@@ -109,3 +174,25 @@ class JoinedTableWithPropertyAsDiscriminatorColumnChild extends JoinedTableWithP
 class JoinedTableWithPropertyAsDiscriminatorColumnChild2 extends JoinedTableWithPropertyAsDiscriminatorColumnRoot
 {
 }
+
+/**
+ * @Entity
+ */
+class JoinedTableWithPropertyAsDiscriminatorColumnReferenced
+{
+
+    /**
+     * @var int|null
+     * @Column(type="integer")
+     * @Id
+     * @GeneratedValue
+     */
+    public $id;
+
+    /**
+     * @var JoinedTableWithPropertyAsDiscriminatorColumnRoot|null
+     * @ManyToOne(targetEntity="JoinedTableWithPropertyAsDiscriminatorColumnRoot")
+     */
+    public $association;
+}
+
