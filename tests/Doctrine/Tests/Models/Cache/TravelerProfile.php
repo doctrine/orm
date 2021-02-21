@@ -23,6 +23,7 @@ class TravelerProfile
     private $name;
 
     /**
+     * @var TravelerProfileInfo
      * @OneToOne(targetEntity="TravelerProfileInfo", mappedBy="profile")
      * @Cache()
      */

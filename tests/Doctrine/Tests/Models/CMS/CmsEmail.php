@@ -13,6 +13,7 @@ namespace Doctrine\Tests\Models\CMS;
 class CmsEmail
 {
     /**
+     * @var int
      * @Column(type="integer")
      * @Id @GeneratedValue
      */

@@ -21,6 +21,7 @@ class Category
     /**
      * Version column
      *
+     * @var int
      * @Column(type="integer", name="version")
      * @Version
      */

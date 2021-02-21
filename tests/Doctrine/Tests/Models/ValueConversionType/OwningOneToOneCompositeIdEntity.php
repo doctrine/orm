@@ -18,6 +18,7 @@ class OwningOneToOneCompositeIdEntity
     public $id3;
 
     /**
+     * @var InversedOneToOneCompositeIdEntity
      * @OneToOne(targetEntity="InversedOneToOneCompositeIdEntity", inversedBy="associatedEntity")
      * @JoinColumns({
      *     @JoinColumn(name="associated_id1", referencedColumnName="id1"),

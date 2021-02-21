@@ -49,7 +49,8 @@ class EntityManagerDecoratorTest extends TestCase
         $this->wrapped = $this->createMock(EntityManagerInterface::class);
     }
 
-    public function getMethodParameters()
+    /** @psalm-return array<string, mixed[]> */
+    public function getMethodParameters(): array
     {
         $class   = new ReflectionClass(EntityManagerInterface::class);
         $methods = [];
@@ -65,7 +66,10 @@ class EntityManagerDecoratorTest extends TestCase
         return $methods;
     }
 
-    private function getParameters(ReflectionMethod $method)
+    /**
+     * @return mixed[]
+     */
+    private function getParameters(ReflectionMethod $method): array
     {
         /** Special case EntityManager::createNativeQuery() */
         if ($method->getName() === 'createNativeQuery') {

@@ -97,8 +97,8 @@ class DDC1228User
     public $name = 'Bar';
 
     /**
-     * @OneToOne(targetEntity="DDC1228Profile")
      * @var DDC1228Profile
+     * @OneToOne(targetEntity="DDC1228Profile")
      */
     public $profile;
 
