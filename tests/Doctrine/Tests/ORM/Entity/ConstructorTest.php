@@ -17,10 +17,13 @@ class ConstructorTest extends OrmTestCase
 
 class ConstructorTestEntity1
 {
+    /** @var int */
     private $id;
+
+    /** @var string|null */
     public $username;
 
-    public function __construct($username = null)
+    public function __construct(?string $username = null)
     {
         if ($username !== null) {
             $this->username = $username;

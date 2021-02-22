@@ -151,31 +151,49 @@ final class SharedArrayCache extends ArrayCache
                 $this->parent = $parent;
             }
 
+            /**
+             * {@inheritDoc}
+             */
             protected function doFetch($id)
             {
                 return $this->parent->doFetch($id);
             }
 
+            /**
+             * {@inheritDoc}
+             */
             protected function doContains($id)
             {
                 return $this->parent->doContains($id);
             }
 
+            /**
+             * {@inheritDoc}
+             */
             protected function doSave($id, $data, $lifeTime = 0)
             {
                 return $this->parent->doSave($id, $data, $lifeTime);
             }
 
+            /**
+             * {@inheritDoc}
+             */
             protected function doDelete($id)
             {
                 return $this->parent->doDelete($id);
             }
 
+            /**
+             * {@inheritDoc}
+             */
             protected function doFlush()
             {
                 return $this->parent->doFlush();
             }
 
+            /**
+             * {@inheritDoc}
+             */
             protected function doGetStats()
             {
                 return $this->parent->doGetStats();

@@ -65,6 +65,7 @@ use Doctrine\ORM\Mapping\ClassMetadataInfo;
 class CmsAddress
 {
     /**
+     * @var int
      * @Column(type="integer")
      * @Id @GeneratedValue
      */

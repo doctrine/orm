@@ -114,8 +114,13 @@ class OnFlushListener
 
 class OnFlushCalledListener
 {
-    public $preFlush  = 0;
-    public $onFlush   = 0;
+    /** @var int */
+    public $preFlush = 0;
+
+    /** @var int */
+    public $onFlush = 0;
+
+    /** @var int */
     public $postFlush = 0;
 
     public function preFlush($args): void

@@ -192,6 +192,7 @@
 
     <rule ref="Squiz.Commenting.FunctionComment.WrongStyle">
         <!-- https://github.com/squizlabs/PHP_CodeSniffer/issues/1961 -->
+        <exclude-pattern>tests/Doctrine/Tests/ORM/UnitOfWorkTest.php</exclude-pattern>
         <exclude-pattern>tests/Doctrine/Tests/ORM/Query/DeleteSqlGenerationTest.php</exclude-pattern>
     </rule>
 
@@ -206,6 +207,8 @@
 
     <rule ref="Squiz.NamingConventions.ValidVariableName.NotCamelCaps">
         <!-- accessing public property __isInitialized__ of a proxy -->
+        <exclude-pattern>tests/Doctrine/Tests/ORM/Functional/BasicFunctionalTest.php</exclude-pattern>
+        <exclude-pattern>tests/Doctrine/Tests/ORM/Functional/DefaultValuesTest.php</exclude-pattern>
         <exclude-pattern>tests/Doctrine/Tests/ORM/Functional/OneToManyBidirectionalAssociationTest.php</exclude-pattern>
         <exclude-pattern>tests/Doctrine/Tests/ORM/Functional/ProxiesLikeEntitiesTest.php</exclude-pattern>
         <exclude-pattern>tests/Doctrine/Tests/ORM/Functional/ReferenceProxyTest.php</exclude-pattern>

@@ -17,6 +17,7 @@ use Doctrine\Tests\OrmTestCase;
  */
 class CommitOrderCalculatorTest extends OrmTestCase
 {
+    /** @var CommitOrderCalculator */
     private $_calc;
 
     protected function setUp(): void

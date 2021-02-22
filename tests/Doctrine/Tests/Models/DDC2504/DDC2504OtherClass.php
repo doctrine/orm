@@ -13,6 +13,7 @@ use Doctrine\ORM\PersistentCollection;
 class DDC2504OtherClass
 {
     /**
+     * @var int
      * @Column(type="integer")
      * @Id @GeneratedValue
      */

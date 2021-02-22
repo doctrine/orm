@@ -8,8 +8,8 @@ namespace Doctrine\Tests\Models\OneToOneSingleTableInheritance;
 class Cat extends Pet
 {
     /**
-     * @OneToOne(targetEntity="LitterBox")
      * @var LitterBox
+     * @OneToOne(targetEntity="LitterBox")
      */
     public $litterBox;
 }
