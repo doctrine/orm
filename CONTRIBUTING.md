@@ -46,7 +46,7 @@ to for example ``mysql.phpunit.xml`` and edit the parameters. You can
 take a look at the ``tests/travis`` folder for some examples. Then run:
 
     vendor/bin/phpunit -c mysql.phpunit.xml
-    
+
 If you do not provide these parameters, the test suite will use an in-memory
 sqlite database.
 
