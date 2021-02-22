@@ -2494,7 +2494,11 @@ class UnitOfWork implements PropertyChangedListener
 
                 $entityVersion = $class->reflFields[$class->versionField]->getValue($entity);
 
-                if ($entityVersion !== $lockVersion) {
+                if ($entityVersion instanceof \DateTime && $lockVersion instanceof \DateTime) {
+                    if ($entityVersion->getTimestamp() !== $lockVersion->getTimestamp()) {
+                        throw OptimisticLockException::lockFailedVersionMismatch($entity, $lockVersion, $entityVersion);
+                    }
+                } else if ($entityVersion !== $lockVersion) {
                     throw OptimisticLockException::lockFailedVersionMismatch($entity, $lockVersion, $entityVersion);
                 }
 
