@@ -5,6 +5,10 @@
 Method `Doctrine\ORM\UnitOfWork#commit()` can throw an OptimisticLockException when a commit silently fails and returns false
 since `Doctrine\DBAL\Connection#commit()` signature changed from returning void to boolean
 
+## Deprecated: `Doctrine\ORM\AbstractQuery#iterator()`
+
+The method `Doctrine\ORM\AbstractQuery#iterator()` is deprecated in favor of `Doctrine\ORM\AbstractQuery#toIterate()`.
+
 # Upgrade to 2.7
 
 ## Added `Doctrine\ORM\AbstractQuery#enableResultCache()` and `Doctrine\ORM\AbstractQuery#disableResultCache()` methods	
