@@ -11,6 +11,7 @@ namespace Doctrine\Tests\Models\Quote;
 class Phone
 {
     /**
+     * @var string
      * @Id
      * @Column(name="`phone-number`")
      */

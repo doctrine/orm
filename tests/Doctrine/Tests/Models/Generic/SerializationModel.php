@@ -16,9 +16,16 @@ class SerializationModel
      * @GeneratedValue(strategy="AUTO")
      */
     public $id;
-    /** @Column(name="the_array", type="array", nullable=true) */
+
+    /**
+     * @var mixed[]
+     * @Column(name="the_array", type="array", nullable=true)
+     */
     public $array;
 
-    /** @Column(name="the_obj", type="object", nullable=true) */
+    /**
+     * @var object
+     * @Column(name="the_obj", type="object", nullable=true)
+     */
     public $object;
 }

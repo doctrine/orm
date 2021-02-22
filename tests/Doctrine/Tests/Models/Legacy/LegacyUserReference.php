@@ -15,7 +15,7 @@ class LegacyUserReference
     /**
      * @var LegacyUser
      * @Id
-     * @ManyToOne(targetEntity="LegacyUser", inversedBy="_references")
+     * @ManyToOne(targetEntity="LegacyUser", inversedBy="references")
      * @JoinColumn(name="iUserIdSource", referencedColumnName="iUserId")
      */
     private $_source;
@@ -40,7 +40,7 @@ class LegacyUserReference
      */
     private $created;
 
-    public function __construct($source, $target, $description)
+    public function __construct(LegacyUser $source, LegacyUser $target, string $description)
     {
         $source->addReference($this);
         $target->addReference($this);
@@ -51,22 +51,22 @@ class LegacyUserReference
         $this->created      = new DateTime('now');
     }
 
-    public function source()
+    public function source(): LegacyUser
     {
         return $this->_source;
     }
 
-    public function target()
+    public function target(): LegacyUser
     {
         return $this->_target;
     }
 
-    public function setDescription($desc): void
+    public function setDescription(string $desc): void
     {
         $this->_description = $desc;
     }
 
-    public function getDescription()
+    public function getDescription(): string
     {
         return $this->_description;
     }

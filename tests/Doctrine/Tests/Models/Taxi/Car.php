@@ -38,17 +38,17 @@ class Car
      */
     private $carRides;
 
-    public function getBrand()
+    public function getBrand(): string
     {
         return $this->brand;
     }
 
-    public function setBrand($brand): void
+    public function setBrand(string $brand): void
     {
         $this->brand = $brand;
     }
 
-    public function setModel($model): void
+    public function setModel(string $model): void
     {
         $this->model = $model;
     }

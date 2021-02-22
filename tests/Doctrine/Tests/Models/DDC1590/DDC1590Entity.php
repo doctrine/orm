@@ -20,7 +20,10 @@ abstract class DDC1590Entity
      */
     protected $id;
 
-    /** @Column(type="datetime") */
+    /**
+     * @var DateTime
+     * @Column(type="datetime")
+     */
     protected $created_at;
 
     /**
