@@ -1970,7 +1970,7 @@ class UnitOfWork implements PropertyChangedListener
 
                 $entityVersion = $class->versionProperty->getValue($entity);
 
-                if ($lockVersion instanceof \DateTime && $entityVersion instanceof \DateTime) {
+                if ($lockVersion instanceof \DateTimeInterface && $entityVersion instanceof \DateTimeInterface) {
                     if ($entityVersion->getTimestamp() !== $lockVersion->getTimestamp()) {
                         throw OptimisticLockException::lockFailedVersionMismatch($entity, $lockVersion, $entityVersion);
                     }
