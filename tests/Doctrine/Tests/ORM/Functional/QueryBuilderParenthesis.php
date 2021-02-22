@@ -40,7 +40,7 @@ class QueryBuilderParenthesis extends OrmFunctionalTestCase
         $queryBuilder->setParameter('value2', 'x');
 
         $query   = $queryBuilder->getQuery();
-        $results = $queryBuilder->getQuery()->getResult();
+        $results = $query->getResult();
         $this->assertCount(0, $results);
 
         $dql = $query->getDQL();
@@ -65,7 +65,7 @@ OR o.property2 = :value2'
         $queryBuilder->setParameter('value2', 'x');
 
         $query   = $queryBuilder->getQuery();
-        $results = $queryBuilder->getQuery()->getResult();
+        $results = $query->getResult();
         $this->assertCount(0, $results);
 
         $dql = $query->getDQL();
