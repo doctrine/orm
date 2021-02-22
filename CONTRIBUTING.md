@@ -13,18 +13,10 @@ sure you follow them.
 
 ## Coding Standard
 
-We use PSR-1 and PSR-2:
+This project follows [`doctrine/coding-standard`][coding standard homepage].
+You may fix many some of the issues with `vendor/bin/phpcbf`.
 
-* https://github.com/php-fig/fig-standards/blob/master/accepted/PSR-1-basic-coding-standard.md
-* https://github.com/php-fig/fig-standards/blob/master/accepted/PSR-2-coding-style-guide.md
-
-with some exceptions/differences:
-
-* Keep the nesting of control structures per method as small as possible
-* Align equals (=) signs
-* Add spaces between assignment, control and return statements
-* Prefer early exit over nesting conditions
-* Add spaces around a negation if condition ``if ( ! $cond)``
+[coding standard homepage]: https://github.com/doctrine/coding-standard
 
 ## Unit-Tests
 
