@@ -6,15 +6,10 @@ Before we can merge your Pull-Request here are some guidelines that you need to 
 These guidelines exist not to annoy you, but to keep the code base clean,
 unified and future proof.
 
-## We only accept PRs  to "master"
+Doctrine has [general contributing guidelines][contributor workflow], make
+sure you follow them.
 
-Our branching strategy is "everything to master first", even
-bugfixes and we then merge them into the stable branches. You should only 
-open pull requests against the master branch. Otherwise we cannot accept the PR.
-
-There is one exception to the rule, when we merged a bug into some stable branches
-we do occasionally accept pull requests that merge the same bug fix into earlier
-branches.
+[contributor workflow]: https://www.doctrine-project.org/contribute/index.html
 
 ## Coding Standard
 
