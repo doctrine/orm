@@ -43,7 +43,7 @@ curl -sS https://getcomposer.org/installer | php --
 
 To run the testsuite against another database, copy the ``phpunit.xml.dist``
 to for example ``mysql.phpunit.xml`` and edit the parameters. You can
-take a look at the ``tests/travis`` folder for some examples. Then run:
+take a look at the ``ci/github/phpunit`` directory for some examples. Then run:
 
     vendor/bin/phpunit -c mysql.phpunit.xml
 
@@ -55,12 +55,6 @@ Tips for creating unit tests:
 1. If you put a test into the `Ticket` namespace as described above, put the testcase and all entities into the same class.
    See `https://github.com/doctrine/orm/tree/2.8.x/tests/Doctrine/Tests/ORM/Functional/Ticket/DDC2306Test.php` for an
    example.
-
-## Travis
-
-We automatically run your pull request through [Travis CI](http://www.travis-ci.org)
-against SQLite, MySQL and PostgreSQL. If you break the tests, we cannot merge your code,
-so please make sure that your code is working before opening up a Pull-Request.
 
 ## Getting merged
 

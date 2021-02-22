@@ -16,11 +16,11 @@ without requiring unnecessary code duplication.
 * [Documentation](https://www.doctrine-project.org/projects/doctrine-orm/en/latest/index.html)
 
 
-  [3.0 image]: https://codecov.io/gh/doctrine/orm/branch/3.0/graph/badge.svg
+  [3.0 image]: https://github.com/doctrine/orm/workflows/Continuous%20Integration/badge.svg
   [3.0]: https://github.com/doctrine/orm/tree/3.0.x
   [3.0 coverage image]: https://codecov.io/gh/doctrine/orm/branch/3.0.x/graph/badge.svg
   [3.0 coverage]: https://codecov.io/gh/doctrine/orm/branch/3.0.x
-  [2.8 image]: https://img.shields.io/travis/doctrine/orm/2.8.svg?style=flat-square
+  [2.8 image]: https://github.com/doctrine/orm/workflows/Continuous%20Integration/badge.svg
   [2.8]: https://github.com/doctrine/orm/tree/2.8
   [2.8 coverage image]: https://codecov.io/gh/doctrine/orm/branch/2.8/graph/badge.svg
   [2.8 coverage]: https://codecov.io/gh/doctrine/orm/branch/2.8
