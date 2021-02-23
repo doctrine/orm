@@ -30,10 +30,6 @@ steps of configuration.
     $config->setProxyNamespace('MyProject\Proxies');
     $config->setAutoGenerateProxyClasses($applicationMode === 'development')
 
-    if ('development' === $applicationMode) {
-        $config->setAutoGenerateProxyClasses(ProxyFactory::AUTOGENERATE_EVAL);
-    }
-
     $connectionOptions = [
         'driver' => 'pdo_sqlite',
         'path' => 'database.sqlite'
