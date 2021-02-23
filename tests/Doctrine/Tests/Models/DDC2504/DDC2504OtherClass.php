@@ -5,22 +5,23 @@ declare(strict_types=1);
 namespace Doctrine\Tests\Models\DDC2504;
 
 use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\ORM\Annotation as ORM;
 use Doctrine\ORM\PersistentCollection;
 
 /**
- * @Entity
+ * @ORM\Entity
  */
 class DDC2504OtherClass
 {
     /**
-     * @Column(type="integer")
-     * @Id @GeneratedValue
+     * @ORM\Column(type="integer")
+     * @ORM\Id @ORM\GeneratedValue
      */
     public $id;
 
     /**
-     * @var DDC2504ChildClass
-     * @OneToMany(targetEntity="DDC2504ChildClass", mappedBy="other", fetch="EXTRA_LAZY")
+     * @ORM\OneToMany(targetEntity=DDC2504ChildClass::class, mappedBy="other", fetch="EXTRA_LAZY")
+     *
      * @var ArrayCollection|PersistentCollection
      */
     public $childClasses;

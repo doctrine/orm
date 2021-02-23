@@ -12,7 +12,6 @@ use Doctrine\ORM\Cache\Lock;
 use Doctrine\ORM\Cache\LockException;
 use Doctrine\ORM\Cache\Region;
 use Exception;
-
 use function array_shift;
 
 /**
@@ -37,9 +36,9 @@ class ConcurrentRegionMock implements ConcurrentRegion
     /**
      * Dequeue an exception for a specific method invocation
      *
-     * @return mixed
+     * @param string $method
      */
-    private function throwException(string $method)
+    private function throwException($method)
     {
         if (isset($this->exceptions[$method]) && ! empty($this->exceptions[$method])) {
             $exception = array_shift($this->exceptions[$method]);
@@ -52,8 +51,10 @@ class ConcurrentRegionMock implements ConcurrentRegion
 
     /**
      * Queue an exception for the next method invocation
+     *
+     * @param string $method
      */
-    public function addException(string $method, Exception $e): void
+    public function addException($method, Exception $e)
     {
         $this->exceptions[$method][] = $e;
     }
@@ -61,7 +62,7 @@ class ConcurrentRegionMock implements ConcurrentRegion
     /**
      * Locks a specific cache entry
      */
-    public function setLock(CacheKey $key, Lock $lock): void
+    public function setLock(CacheKey $key, Lock $lock)
     {
         $this->locks[$key->hash] = $lock;
     }

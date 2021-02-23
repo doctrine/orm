@@ -53,7 +53,7 @@ headline "Hello World" with the ID 1234:
     echo $article2->getHeadline();
 
 In this case the Article is accessed from the entity manager twice,
-but modified in between. Doctrine ORM realizes this and will only
+but modified in between. Doctrine 2 realizes this and will only
 ever give you access to one instance of the Article with ID 1234,
 no matter how often do you retrieve it from the EntityManager and
 even no matter what kind of Query method you are using (find,
@@ -162,25 +162,28 @@ your code. See the following code:
     }
 
 A slice of the generated proxy classes code looks like the
-following piece of code. A real proxy class override ALL public
-methods along the lines of the ``getName()`` method shown below:
+following piece of code. A real proxy class override all non-identity
+non-transient object state at instantiation time in order to
+enable lazy-loading mechanisms:
 
 .. code-block:: php
 
     <?php
-    class UserProxy extends User implements Proxy
+    class UserProxyHASH extends User implements GhostObjectInterface
     {
-        private function _load()
+        // ... generated code
+
+        public static function staticProxyConstructor($initializer)
         {
-            // lazy loading code
+            // ... generated code
         }
 
-        public function getName()
+        private function callInitializerHASH($methodName, array $parameters)
         {
-            $this->_load();
-            return parent::getName();
+            // ... generated code
         }
-        // .. other public methods of User
+
+        // ... generated code
     }
 
 .. warning::
@@ -189,7 +192,6 @@ methods along the lines of the ``getName()`` method shown below:
     easily trigger lots of SQL queries and will perform badly if used
     to heavily. Make sure to use DQL to fetch-join all the parts of the
     object-graph that you need as efficiently as possible.
-
 
 Persisting entities
 -------------------
@@ -213,7 +215,6 @@ be properly synchronized with the database when
     database in the most efficient way and a single, short transaction,
     taking care of maintaining referential integrity.
 
-
 Example:
 
 .. code-block:: php
@@ -234,10 +235,8 @@ Example:
     generated identifier being not available after a failed flush
     operation.
 
-
 The semantics of the persist operation, applied on an entity X, are
 as follows:
-
 
 -  If X is a new entity, it becomes managed. The entity X will be
    entered into the database as a result of the flush operation.
@@ -249,12 +248,6 @@ as follows:
 -  If X is a removed entity, it becomes managed.
 -  If X is a detached entity, an exception will be thrown on
    flush.
-
-.. caution::
-
-    Do not pass detached entities to the persist operation. The persist operation always
-    considers entities that are not yet known to the ``EntityManager`` as new entities
-    (refer to the ``STATE_NEW`` constant inside the ``UnitOfWork``).
 
 Removing entities
 -----------------
@@ -276,7 +269,6 @@ which means that its persistent state will be deleted once
     the section on :ref:`Database and UnitOfWork Out-Of-Sync <workingobjects_database_uow_outofsync>`
     for more information.
 
-
 Example:
 
 .. code-block:: php
@@ -287,7 +279,6 @@ Example:
 
 The semantics of the remove operation, applied to an entity X are
 as follows:
-
 
 -  If X is a new entity, it is ignored by the remove operation.
    However, the remove operation is cascaded to entities referenced by
@@ -317,11 +308,10 @@ foreign key semantics of onDelete="CASCADE".
 Deleting an object with all its associated objects can be achieved
 in multiple ways with very different performance impacts.
 
-
-1. If an association is marked as ``CASCADE=REMOVE`` Doctrine ORM
-   will fetch this association. If its a Single association it will
+1. If an association is marked as ``CASCADE=REMOVE`` Doctrine 2
+   will fetch this association. If it is a Single association it will
    pass this entity to
-   ``EntityManager#remove()``. If the association is a collection, Doctrine will loop over all    its elements and pass them to``EntityManager#remove()``.
+   ´EntityManager#remove()``. If the association is a collection, Doctrine will loop over all    its elements and pass them to ``EntityManager#remove()\`.
    In both cases the cascade remove semantics are applied recursively.
    For large object graphs this removal strategy can be very costly.
 2. Using a DQL ``DELETE`` statement allows you to delete multiple
@@ -336,143 +326,42 @@ in multiple ways with very different performance impacts.
    because Doctrine will fetch and remove all associated entities
    explicitly nevertheless.
 
-.. note::
-
-    Calling ``remove`` on an entity will remove the object from the identiy
-    map and therefore detach it. Querying the same entity again, for example 
-    via a lazy loaded relation, will return a new object. 
-
-
 Detaching entities
 ------------------
 
-An entity is detached from an EntityManager and thus no longer
-managed by invoking the ``EntityManager#detach($entity)`` method on
-it or by cascading the detach operation to it. Changes made to the
-detached entity, if any (including removal of the entity), will not
-be synchronized to the database after the entity has been
+All entities are detached from an EntityManager and thus no longer
+managed by it after invoking the ``EntityManager#clear()`` method.
+Changes made to the detached entities, if any (including their removal),
+will not be synchronized to the database after they have been
 detached.
 
-Doctrine will not hold on to any references to a detached entity.
+Doctrine will not hold on to any references to detached entities.
 
 Example:
 
 .. code-block:: php
 
     <?php
-    $em->detach($entity);
+    $em->clear();
 
 The semantics of the detach operation, applied to an entity X are
 as follows:
 
-
--  If X is a managed entity, the detach operation causes it to
-   become detached. The detach operation is cascaded to entities
-   referenced by X, if the relationships from X to these other
-   entities is mapped with cascade=DETACH or cascade=ALL (see
-   ":ref:`transitive-persistence`"). Entities which previously referenced X
+-  If X is a managed entity, the ``clear`` operation causes it to
+   become detached. Entities which previously referenced X
    will continue to reference X.
 -  If X is a new or detached entity, it is ignored by the detach
    operation.
--  If X is a removed entity, the detach operation is cascaded to
-   entities referenced by X, if the relationships from X to these
-   other entities is mapped with cascade=DETACH or cascade=ALL (see
-   ":ref:`transitive-persistence`"). Entities which previously referenced X
-   will continue to reference X.
+-  If X is a removed entity, it will become detached, and therefore
+   no longer scheduled to be removed. Entities which previously
+   referenced X will continue to reference X.
 
 There are several situations in which an entity is detached
-automatically without invoking the ``detach`` method:
+automatically:
 
-
--  When ``EntityManager#clear()`` is invoked, all entities that are
-   currently managed by the EntityManager instance become detached.
 -  When serializing an entity. The entity retrieved upon subsequent
-   unserialization will be detached (This is the case for all entities
-   that are serialized and stored in some cache, i.e. when using the
-   Query Result Cache).
-
-The ``detach`` operation is usually not as frequently needed and
-used as ``persist`` and ``remove``.
-
-Merging entities
-----------------
-
-Merging entities refers to the merging of (usually detached)
-entities into the context of an EntityManager so that they become
-managed again. To merge the state of an entity into an
-EntityManager use the ``EntityManager#merge($entity)`` method. The
-state of the passed entity will be merged into a managed copy of
-this entity and this copy will subsequently be returned.
-
-Example:
-
-.. code-block:: php
-
-    <?php
-    $detachedEntity = unserialize($serializedEntity); // some detached entity
-    $entity = $em->merge($detachedEntity);
-    // $entity now refers to the fully managed copy returned by the merge operation.
-    // The EntityManager $em now manages the persistence of $entity as usual.
-
-.. note::
-
-    When you want to serialize/unserialize entities you
-    have to make all entity properties protected, never private. The
-    reason for this is, if you serialize a class that was a proxy
-    instance before, the private variables won't be serialized and a
-    PHP Notice is thrown.
-
-
-The semantics of the merge operation, applied to an entity X, are
-as follows:
-
-
--  If X is a detached entity, the state of X is copied onto a
-   pre-existing managed entity instance X' of the same identity.
--  If X is a new entity instance, a new managed copy X' will be
-   created and the state of X is copied onto this managed instance.
--  If X is a removed entity instance, an InvalidArgumentException
-   will be thrown.
--  If X is a managed entity, it is ignored by the merge operation,
-   however, the merge operation is cascaded to entities referenced by
-   relationships from X if these relationships have been mapped with
-   the cascade element value MERGE or ALL (see ":ref:`transitive-persistence`").
--  For all entities Y referenced by relationships from X having the
-   cascade element value MERGE or ALL, Y is merged recursively as Y'.
-   For all such Y referenced by X, X' is set to reference Y'. (Note
-   that if X is managed then X is the same object as X'.)
--  If X is an entity merged to X', with a reference to another
-   entity Y, where cascade=MERGE or cascade=ALL is not specified, then
-   navigation of the same association from X' yields a reference to a
-   managed object Y' with the same persistent identity as Y.
-
-The ``merge`` operation will throw an ``OptimisticLockException``
-if the entity being merged uses optimistic locking through a
-version field and the versions of the entity being merged and the
-managed copy don't match. This usually means that the entity has
-been modified while being detached.
-
-The ``merge`` operation is usually not as frequently needed and
-used as ``persist`` and ``remove``. The most common scenario for
-the ``merge`` operation is to reattach entities to an EntityManager
-that come from some cache (and are therefore detached) and you want
-to modify and persist such an entity.
-
-.. warning::
-
-    If you need to perform multiple merges of entities that share certain subparts
-    of their object-graphs and cascade merge, then you have to call ``EntityManager#clear()`` between the
-    successive calls to ``EntityManager#merge()``. Otherwise you might end up with
-    multiple copies of the "same" object in the database, however with different ids.
-
-.. note::
-
-    If you load some detached entities from a cache and you do
-    not need to persist or delete them or otherwise make use of them
-    without the need for persistence services there is no need to use
-    ``merge``. I.e. you can simply pass detached objects from a cache
-    directly to the view.
-
+   unserialization will be detached (this is the case for all entities
+   that are serialized and stored in some cache).
 
 Synchronization with the Database
 ---------------------------------
@@ -515,7 +404,6 @@ Synchronizing New and Managed Entities
 The flush operation applies to a managed entity with the following
 semantics:
 
-
 -  The entity itself is synchronized to the database using a SQL
    UPDATE statement, only if at least one persistent field has
    changed.
@@ -524,13 +412,11 @@ semantics:
 The flush operation applies to a new entity with the following
 semantics:
 
-
 -  The entity itself is synchronized to the database using a SQL
    INSERT statement.
 
 For all (initialized) relationships of the new or managed entity
 the following semantics apply to each associated entity X:
-
 
 -  If X is new and persist operations are configured to cascade on
    the relationship, X will be persisted.
@@ -563,7 +449,6 @@ The cost of flushing
 
 How costly a flush operation is, mainly depends on two factors:
 
-
 -  The size of the EntityManager's current UnitOfWork.
 -  The configured change tracking policies
 
@@ -583,13 +468,12 @@ during development.
 .. note::
 
     Do not invoke ``flush`` after every change to an entity
-    or every single invocation of persist/remove/merge/... This is an
+    or every single invocation of persist/remove/refresh/... This is an
     anti-pattern and unnecessarily reduces the performance of your
     application. Instead, form units of work that operate on your
     objects and call ``flush`` when you are done. While serving a
     single HTTP request there should be usually no need for invoking
     ``flush`` more than 0-2 times.
-
 
 Direct access to a Unit of Work
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -609,7 +493,6 @@ instance the EntityManager is currently using.
     When working directly with the UnitOfWork API, respect methods
     marked as INTERNAL by not using them and carefully read the API
     documentation.
-
 
 Entity State
 ~~~~~~~~~~~~
@@ -646,14 +529,14 @@ An entity is in DETACHED state if it has persistent state and
 identity but is currently not associated with an
 ``EntityManager``.
 
-An entity is in NEW state if has no persistent state and identity
+An entity is in NEW state if it has no persistent state and identity
 and is not associated with an ``EntityManager`` (for example those
 just created via the "new" operator).
 
 Querying
 --------
 
-Doctrine ORM provides the following ways, in increasing level of
+Doctrine 2 provides the following ways, in increasing level of
 power and flexibility, to query for persistent objects. You should
 always start with the simplest one that suits your needs.
 
@@ -757,8 +640,10 @@ Additionally, you can just count the result of the provided conditions when you 
 By Criteria
 ~~~~~~~~~~~
 
-The Repository implement the ``Doctrine\Common\Collections\Selectable``
-interface. That means you can build ``Doctrine\Common\Collections\Criteria``
+.. versionadded:: 2.3
+
+The Repository implements the ``Doctrine\Common\Collections\Selectable``
+interface. It means you can build ``Doctrine\Common\Collections\Criteria``
 and pass them to the ``matching($criteria)`` method.
 
 See section `Filtering collections` of chapter :doc:`Working with Associations <working-with-associations>`
@@ -768,7 +653,7 @@ By Eager Loading
 
 Whenever you query for an entity that has persistent associations
 and these associations are mapped as EAGER, they will automatically
-be loaded together with the entity being queried and is thus
+be loaded together with the entity being queried and are thus
 immediately available to your application.
 
 By Lazy Loading
@@ -811,9 +696,7 @@ DQL and its syntax as well as the Doctrine class can be found in
 :doc:`the dedicated chapter <dql-doctrine-query-language>`.
 For programmatically building up queries based on conditions that
 are only known at runtime, Doctrine provides the special
-``Doctrine\ORM\QueryBuilder`` class. While this a powerful tool,
-it also brings more complexity to your code compared to plain DQL,
-so you should only use it when you need it. More information on
+``Doctrine\ORM\QueryBuilder`` class. More information on
 constructing queries with a QueryBuilder can be found
 :doc:`in Query Builder chapter <query-builder>`.
 
@@ -834,7 +717,7 @@ By default the EntityManager returns a default implementation of
 ``Doctrine\ORM\EntityRepository`` when you call
 ``EntityManager#getRepository($entityClass)``. You can overwrite
 this behaviour by specifying the class name of your own Entity
-Repository in the Annotation, XML or YAML metadata. In large
+Repository in the Annotation or XML metadata. In large
 applications that require lots of specialized DQL queries using a
 custom repository is one recommended way of grouping these queries
 in a central location.
@@ -859,7 +742,7 @@ in a central location.
     {
         public function getAllAdminUsers()
         {
-            return $this->_em->createQuery('SELECT u FROM MyDomain\Model\User u WHERE u.status = "admin"')
+            return $this->em->createQuery('SELECT u FROM MyDomain\Model\User u WHERE u.status = "admin"')
                              ->getResult();
         }
     }
@@ -872,5 +755,4 @@ You can access your repository now by calling:
     // $em instanceof EntityManager
 
     $admins = $em->getRepository('MyDomain\Model\User')->getAllAdminUsers();
-
 

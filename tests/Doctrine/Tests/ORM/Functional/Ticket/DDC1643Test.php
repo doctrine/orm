@@ -7,8 +7,6 @@ namespace Doctrine\Tests\ORM\Functional\Ticket;
 use Doctrine\Tests\Models\CMS\CmsGroup;
 use Doctrine\Tests\Models\CMS\CmsUser;
 use Doctrine\Tests\OrmFunctionalTestCase;
-
-use function count;
 use function get_class;
 
 /**
@@ -16,15 +14,13 @@ use function get_class;
  */
 class DDC1643Test extends OrmFunctionalTestCase
 {
-    /** @var CmsUser */
     private $user1;
-
-    /** @var CmsUser */
     private $user2;
 
-    protected function setUp(): void
+    public function setUp() : void
     {
         $this->useModelSet('cms');
+
         parent::setUp();
 
         $user1           = new CmsUser();
@@ -42,49 +38,49 @@ class DDC1643Test extends OrmFunctionalTestCase
         $user2->name     = 'Roman';
         $user2->status   = 'active';
 
-        $this->_em->persist($user1);
-        $this->_em->persist($user2);
-        $this->_em->persist($group1);
-        $this->_em->persist($group2);
-        $this->_em->flush();
-        $this->_em->clear();
+        $this->em->persist($user1);
+        $this->em->persist($user2);
+        $this->em->persist($group1);
+        $this->em->persist($group2);
+        $this->em->flush();
+        $this->em->clear();
 
-        $this->user1 = $this->_em->find(get_class($user1), $user1->id);
-        $this->user2 = $this->_em->find(get_class($user1), $user2->id);
+        $this->user1 = $this->em->find(get_class($user1), $user1->id);
+        $this->user2 = $this->em->find(get_class($user1), $user2->id);
     }
 
-    public function testClonePersistentCollectionAndReuse(): void
+    public function testClonePersistentCollectionAndReuse() : void
     {
         $user1 = $this->user1;
 
         $user1->groups = clone $user1->groups;
 
-        $this->_em->flush();
-        $this->_em->clear();
+        $this->em->flush();
+        $this->em->clear();
 
-        $user1 = $this->_em->find(get_class($user1), $user1->id);
+        $user1 = $this->em->find(get_class($user1), $user1->id);
 
-        $this->assertEquals(2, count($user1->groups));
+        self::assertCount(2, $user1->groups);
     }
 
-    public function testClonePersistentCollectionAndShare(): void
+    public function testClonePersistentCollectionAndShare() : void
     {
         $user1 = $this->user1;
         $user2 = $this->user2;
 
         $user2->groups = clone $user1->groups;
 
-        $this->_em->flush();
-        $this->_em->clear();
+        $this->em->flush();
+        $this->em->clear();
 
-        $user1 = $this->_em->find(get_class($user1), $user1->id);
-        $user2 = $this->_em->find(get_class($user1), $user2->id);
+        $user1 = $this->em->find(get_class($user1), $user1->id);
+        $user2 = $this->em->find(get_class($user1), $user2->id);
 
-        $this->assertEquals(2, count($user1->groups));
-        $this->assertEquals(2, count($user2->groups));
+        self::assertCount(2, $user1->groups);
+        self::assertCount(2, $user2->groups);
     }
 
-    public function testCloneThenDirtyPersistentCollection(): void
+    public function testCloneThenDirtyPersistentCollection() : void
     {
         $user1 = $this->user1;
         $user2 = $this->user2;
@@ -94,18 +90,18 @@ class DDC1643Test extends OrmFunctionalTestCase
         $user2->groups = clone $user1->groups;
         $user2->groups->add($group3);
 
-        $this->_em->persist($group3);
-        $this->_em->flush();
-        $this->_em->clear();
+        $this->em->persist($group3);
+        $this->em->flush();
+        $this->em->clear();
 
-        $user1 = $this->_em->find(get_class($user1), $user1->id);
-        $user2 = $this->_em->find(get_class($user1), $user2->id);
+        $user1 = $this->em->find(get_class($user1), $user1->id);
+        $user2 = $this->em->find(get_class($user1), $user2->id);
 
-        $this->assertEquals(3, count($user2->groups));
-        $this->assertEquals(2, count($user1->groups));
+        self::assertCount(3, $user2->groups);
+        self::assertCount(2, $user1->groups);
     }
 
-    public function testNotCloneAndPassAroundFlush(): void
+    public function testNotCloneAndPassAroundFlush() : void
     {
         $user1 = $this->user1;
         $user2 = $this->user2;
@@ -115,16 +111,16 @@ class DDC1643Test extends OrmFunctionalTestCase
         $user2->groups = $user1->groups;
         $user2->groups->add($group3);
 
-        $this->assertCount(1, $user1->groups->getInsertDiff());
+        self::assertCount(1, $user1->groups->getInsertDiff());
 
-        $this->_em->persist($group3);
-        $this->_em->flush();
-        $this->_em->clear();
+        $this->em->persist($group3);
+        $this->em->flush();
+        $this->em->clear();
 
-        $user1 = $this->_em->find(get_class($user1), $user1->id);
-        $user2 = $this->_em->find(get_class($user1), $user2->id);
+        $user1 = $this->em->find(get_class($user1), $user1->id);
+        $user2 = $this->em->find(get_class($user1), $user2->id);
 
-        $this->assertEquals(3, count($user2->groups));
-        $this->assertEquals(3, count($user1->groups));
+        self::assertCount(3, $user2->groups);
+        self::assertCount(3, $user1->groups);
     }
 }

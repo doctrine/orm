@@ -1,34 +1,20 @@
 <?php
 
-/*
- * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
- * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
- * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
- * A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT
- * OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
- * SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
- * LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
- * DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
- * THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
- * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
- * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- *
- * This software consists of voluntary contributions made by many individuals
- * and is licensed under the MIT license. For more information, see
- * <http://www.doctrine-project.org>.
- */
+declare(strict_types=1);
 
 namespace Doctrine\ORM;
 
-use BadMethodCallException;
 use Doctrine\Common\EventManager;
+use Doctrine\Common\Persistence\ObjectManager;
 use Doctrine\DBAL\Connection;
 use Doctrine\ORM\Internal\Hydration\AbstractHydrator;
-use Doctrine\ORM\Proxy\ProxyFactory;
+use Doctrine\ORM\Proxy\Factory\ProxyFactory;
 use Doctrine\ORM\Query\Expr;
 use Doctrine\ORM\Query\FilterCollection;
 use Doctrine\ORM\Query\ResultSetMapping;
-use Doctrine\Persistence\ObjectManager;
+use Doctrine\ORM\Utility\IdentifierFlattener;
+use ProxyManager\Proxy\GhostObjectInterface;
+use Throwable;
 
 /**
  * EntityManager interface
@@ -68,6 +54,13 @@ interface EntityManagerInterface extends ObjectManager
     public function getExpressionBuilder();
 
     /**
+     * Gets an IdentifierFlattener used for converting Entities into an array of identifier values.
+     *
+     * @return IdentifierFlattener
+     */
+    public function getIdentifierFlattener();
+
+    /**
      * Starts a transaction on the underlying database connection.
      *
      * @return void
@@ -86,9 +79,11 @@ interface EntityManagerInterface extends ObjectManager
      *
      * @param callable $func The function to execute transactionally.
      *
-     * @return mixed The non-empty value returned from the closure or true instead.
+     * @return mixed The value returned from the closure.
+     *
+     * @throws Throwable
      */
-    public function transactional($func);
+    public function transactional(callable $func);
 
     /**
      * Commits a transaction on the underlying database connection.
@@ -114,15 +109,6 @@ interface EntityManagerInterface extends ObjectManager
     public function createQuery($dql = '');
 
     /**
-     * Creates a Query from a named query.
-     *
-     * @param string $name
-     *
-     * @return Query
-     */
-    public function createNamedQuery($name);
-
-    /**
      * Creates a native SQL query.
      *
      * @param string           $sql
@@ -131,15 +117,6 @@ interface EntityManagerInterface extends ObjectManager
      * @return NativeQuery
      */
     public function createNativeQuery($sql, ResultSetMapping $rsm);
-
-    /**
-     * Creates a NativeQuery from a named native query.
-     *
-     * @param string $name
-     *
-     * @return NativeQuery
-     */
-    public function createNamedNativeQuery($name);
 
     /**
      * Create a QueryBuilder instance
@@ -155,13 +132,9 @@ interface EntityManagerInterface extends ObjectManager
      * @param string $entityName The name of the entity type.
      * @param mixed  $id         The entity identifier.
      *
-     * @return object|null The entity reference.
+     * @return object|GhostObjectInterface|null The entity reference.
      *
      * @throws ORMException
-     *
-     * @template T
-     * @psalm-param class-string<T> $entityName
-     * @psalm-return ?T
      */
     public function getReference($entityName, $id);
 
@@ -184,6 +157,8 @@ interface EntityManagerInterface extends ObjectManager
      * @param mixed  $identifier The entity identifier.
      *
      * @return object|null The (partial) entity reference.
+     *
+     * @throws ORMInvalidArgumentException
      */
     public function getPartialReference($entityName, $identifier);
 
@@ -195,20 +170,6 @@ interface EntityManagerInterface extends ObjectManager
      * @return void
      */
     public function close();
-
-    /**
-     * Creates a copy of the given entity. Can create a shallow or a deep copy.
-     *
-     * @deprecated 2.7 This method is being removed from the ORM and won't have any replacement
-     *
-     * @param object $entity The entity to copy.
-     * @param bool   $deep   FALSE for a shallow copy, TRUE for a deep copy.
-     *
-     * @return object The new entity.
-     *
-     * @throws BadMethodCallException
-     */
-    public function copy($entity, $deep = false);
 
     /**
      * Acquire a lock on the given entity.

@@ -4,10 +4,8 @@ declare(strict_types=1);
 
 namespace Doctrine\Tests\ORM\Functional;
 
-use Doctrine\ORM\Mapping\ClassMetadata;
+use Doctrine\ORM\Mapping\FetchMode;
 use Doctrine\Tests\Models\ECommerce\ECommerceProduct;
-
-use function count;
 
 /**
  * Tests a self referential many-to-many association mapping (from a model to the same model, without inheritance).
@@ -16,137 +14,117 @@ use function count;
  */
 class ManyToManySelfReferentialAssociationTest extends AbstractManyToManyAssociationTestCase
 {
-    /** @var string */
-    protected $firstField = 'product_id';
-
-    /** @var string */
+    protected $firstField  = 'product_id';
     protected $secondField = 'related_id';
-
-    /** @var string */
-    protected $table = 'ecommerce_products_related';
-
-    /** @var ECommerceProduct */
+    protected $table       = 'ecommerce_products_related';
     private $firstProduct;
-
-    /** @var ECommerceProduct */
     private $secondProduct;
-
-    /** @var ECommerceProduct */
     private $firstRelated;
-
-    /** @var ECommerceProduct */
     private $secondRelated;
 
-    protected function setUp(): void
+    protected function setUp() : void
     {
         $this->useModelSet('ecommerce');
+
         parent::setUp();
+
         $this->firstProduct  = new ECommerceProduct();
         $this->secondProduct = new ECommerceProduct();
         $this->firstRelated  = new ECommerceProduct();
+
         $this->firstRelated->setName('Business');
+
         $this->secondRelated = new ECommerceProduct();
+
         $this->secondRelated->setName('Home');
     }
 
-    public function testSavesAManyToManyAssociationWithCascadeSaveSet(): void
+    public function testSavesAManyToManyAssociationWithCascadeSaveSet() : void
     {
         $this->firstProduct->addRelated($this->firstRelated);
         $this->firstProduct->addRelated($this->secondRelated);
-        $this->_em->persist($this->firstProduct);
-        $this->_em->flush();
 
-        $this->assertForeignKeysContain(
-            $this->firstProduct->getId(),
-            $this->firstRelated->getId()
-        );
-        $this->assertForeignKeysContain(
-            $this->firstProduct->getId(),
-            $this->secondRelated->getId()
-        );
+        $this->em->persist($this->firstProduct);
+        $this->em->flush();
+
+        self::assertForeignKeysContain($this->firstProduct->getId(), $this->firstRelated->getId());
+        self::assertForeignKeysContain($this->firstProduct->getId(), $this->secondRelated->getId());
     }
 
-    public function testRemovesAManyToManyAssociation(): void
+    public function testRemovesAManyToManyAssociation() : void
     {
         $this->firstProduct->addRelated($this->firstRelated);
         $this->firstProduct->addRelated($this->secondRelated);
-        $this->_em->persist($this->firstProduct);
+
+        $this->em->persist($this->firstProduct);
+
         $this->firstProduct->removeRelated($this->firstRelated);
 
-        $this->_em->flush();
+        $this->em->flush();
 
-        $this->assertForeignKeysNotContain(
-            $this->firstProduct->getId(),
-            $this->firstRelated->getId()
-        );
-        $this->assertForeignKeysContain(
-            $this->firstProduct->getId(),
-            $this->secondRelated->getId()
-        );
+        self::assertForeignKeysNotContain($this->firstProduct->getId(), $this->firstRelated->getId());
+        self::assertForeignKeysContain($this->firstProduct->getId(), $this->secondRelated->getId());
     }
 
-    public function testEagerLoadsOwningSide(): void
+    public function testEagerLoadsOwningSide() : void
     {
         $this->createLoadingFixture();
+
         $products = $this->findProducts();
-        $this->assertLoadingOfOwningSide($products);
+
+        self::assertLoadingOfOwningSide($products);
     }
 
-    public function testLazyLoadsOwningSide(): void
+    public function testLazyLoadsOwningSide() : void
     {
         $this->createLoadingFixture();
 
-        $metadata                                          = $this->_em->getClassMetadata(ECommerceProduct::class);
-        $metadata->associationMappings['related']['fetch'] = ClassMetadata::FETCH_LAZY;
+        $metadata = $this->em->getClassMetadata(ECommerceProduct::class);
+        $metadata->getProperty('related')->setFetchMode(FetchMode::LAZY);
 
-        $query    = $this->_em->createQuery('SELECT p FROM Doctrine\Tests\Models\ECommerce\ECommerceProduct p');
+        $query    = $this->em->createQuery('SELECT p FROM Doctrine\Tests\Models\ECommerce\ECommerceProduct p');
         $products = $query->getResult();
-        $this->assertLoadingOfOwningSide($products);
+
+        self::assertLoadingOfOwningSide($products);
     }
 
-    /**
-     * @psalm-param list<ECommerceProduct> $products
-     */
-    public function assertLoadingOfOwningSide(array $products): void
+    public function assertLoadingOfOwningSide($products)
     {
         [$firstProduct, $secondProduct] = $products;
-        $this->assertEquals(2, count($firstProduct->getRelated()));
-        $this->assertEquals(2, count($secondProduct->getRelated()));
+        self::assertCount(2, $firstProduct->getRelated());
+        self::assertCount(2, $secondProduct->getRelated());
 
         $categories      = $firstProduct->getRelated();
         $firstRelatedBy  = $categories[0]->getRelated();
         $secondRelatedBy = $categories[1]->getRelated();
 
-        $this->assertEquals(2, count($firstRelatedBy));
-        $this->assertEquals(2, count($secondRelatedBy));
+        self::assertCount(2, $firstRelatedBy);
+        self::assertCount(2, $secondRelatedBy);
 
-        $this->assertInstanceOf(ECommerceProduct::class, $firstRelatedBy[0]);
-        $this->assertInstanceOf(ECommerceProduct::class, $firstRelatedBy[1]);
-        $this->assertInstanceOf(ECommerceProduct::class, $secondRelatedBy[0]);
-        $this->assertInstanceOf(ECommerceProduct::class, $secondRelatedBy[1]);
+        self::assertInstanceOf(ECommerceProduct::class, $firstRelatedBy[0]);
+        self::assertInstanceOf(ECommerceProduct::class, $firstRelatedBy[1]);
+        self::assertInstanceOf(ECommerceProduct::class, $secondRelatedBy[0]);
+        self::assertInstanceOf(ECommerceProduct::class, $secondRelatedBy[1]);
 
-        $this->assertCollectionEquals($firstRelatedBy, $secondRelatedBy);
+        self::assertCollectionEquals($firstRelatedBy, $secondRelatedBy);
     }
 
-    protected function createLoadingFixture(): void
+    protected function createLoadingFixture()
     {
         $this->firstProduct->addRelated($this->firstRelated);
         $this->firstProduct->addRelated($this->secondRelated);
         $this->secondProduct->addRelated($this->firstRelated);
         $this->secondProduct->addRelated($this->secondRelated);
-        $this->_em->persist($this->firstProduct);
-        $this->_em->persist($this->secondProduct);
+        $this->em->persist($this->firstProduct);
+        $this->em->persist($this->secondProduct);
 
-        $this->_em->flush();
-        $this->_em->clear();
+        $this->em->flush();
+        $this->em->clear();
     }
 
-    /**
-     * @psalm-return list<ECommerceProduct>
-     */
-    protected function findProducts(): array
+    protected function findProducts()
     {
-        $query = $this->_em->createQuery('SELECT p, r FROM Doctrine\Tests\Models\ECommerce\ECommerceProduct p LEFT JOIN p.related r ORDER BY p.id, r.id');
+        $query = $this->em->createQuery('SELECT p, r FROM Doctrine\Tests\Models\ECommerce\ECommerceProduct p LEFT JOIN p.related r ORDER BY p.id, r.id');
 
         return $query->getResult();
     }

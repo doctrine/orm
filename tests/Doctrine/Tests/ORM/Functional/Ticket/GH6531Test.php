@@ -1,16 +1,18 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\Tests\ORM\Functional\Ticket;
 
 use Doctrine\Common\Collections\ArrayCollection;
-use Doctrine\Common\Collections\Collection;
+use Doctrine\ORM\Annotation as ORM;
 use Doctrine\Tests\OrmFunctionalTestCase;
 
 final class GH6531Test extends OrmFunctionalTestCase
 {
-    protected function setUp(): void
+    protected function setUp() : void
     {
-        parent::setUp();
+        parent::setup();
 
         $this->setUpEntitySchema(
             [
@@ -26,136 +28,108 @@ final class GH6531Test extends OrmFunctionalTestCase
     }
 
     /**
-     * @group GH-6531
+     * @group 6531
      */
-    public function testSimpleDerivedIdentity(): void
+    public function testSimpleDerivedIdentity() : void
     {
         $user          = new GH6531User();
         $address       = new GH6531Address();
         $address->user = $user;
 
-        $this->_em->persist($user);
-        $this->_em->persist($address);
-        $this->_em->flush();
+        $this->em->persist($user);
+        $this->em->persist($address);
+        $this->em->flush();
 
-        self::assertSame($user, $this->_em->find(GH6531User::class, $user->id));
-        self::assertSame($address, $this->_em->find(GH6531Address::class, $user));
+        self::assertSame($user, $this->em->find(GH6531User::class, $user->id));
+        self::assertSame($address, $this->em->find(GH6531Address::class, $user));
     }
 
     /**
-     * @group GH-6531
+     * @group 6531
      */
-    public function testDynamicAttributes(): void
+    public function testDynamicAttributes() : void
     {
         $article = new GH6531Article();
         $article->addAttribute('name', 'value');
 
-        $this->_em->persist($article);
-        $this->_em->flush();
+        $this->em->persist($article);
+        $this->em->flush();
 
         self::assertSame(
             $article->attributes['name'],
-            $this->_em->find(GH6531ArticleAttribute::class, ['article' => $article, 'attribute' => 'name'])
+            $this->em->find(GH6531ArticleAttribute::class, ['article' => $article, 'attribute' => 'name'])
         );
     }
 
     /**
-     * @group GH-6531
+     * @group 6531
      */
-    public function testJoinTableWithMetadata(): void
+    public function testJoinTableWithMetadata() : void
     {
         $product = new GH6531Product();
-        $this->_em->persist($product);
-        $this->_em->flush();
+        $this->em->persist($product);
+        $this->em->flush();
 
         $order = new GH6531Order();
         $order->addItem($product, 2);
 
-        $this->_em->persist($order);
-        $this->_em->flush();
+        $this->em->persist($order);
+        $this->em->flush();
 
         self::assertSame(
             $order->items->first(),
-            $this->_em->find(GH6531OrderItem::class, ['product' => $product, 'order' => $order])
+            $this->em->find(GH6531OrderItem::class, ['product' => $product, 'order' => $order])
         );
     }
 }
 
 /**
- * @Entity
+ * @ORM\Entity
  */
 class GH6531User
 {
-    /**
-     * @var int
-     * @Id
-     * @Column(type="integer")
-     * @GeneratedValue
-     */
+    /** @ORM\Id @ORM\Column(type="integer") @ORM\GeneratedValue */
     public $id;
 }
 
 /**
- * @Entity
+ * @ORM\Entity
  */
 class GH6531Address
 {
-    /**
-     * @var GH6531User
-     * @Id
-     * @OneToOne(targetEntity=GH6531User::class)
-     */
+    /** @ORM\Id @ORM\OneToOne(targetEntity=GH6531User::class) */
     public $user;
 }
 
 /**
- * @Entity
+ * @ORM\Entity
  */
 class GH6531Article
 {
-    /**
-     * @var int
-     * @Id
-     * @Column(type="integer")
-     * @GeneratedValue
-     */
+    /** @ORM\Id @ORM\Column(type="integer") @ORM\GeneratedValue */
     public $id;
 
-    /**
-     * @psalm-var Collection<string, GH6531ArticleAttribute>
-     * @OneToMany(targetEntity=GH6531ArticleAttribute::class, mappedBy="article", cascade={"ALL"}, indexBy="attribute")
-     * */
+    /** @ORM\OneToMany(targetEntity=GH6531ArticleAttribute::class, mappedBy="article", cascade={"ALL"}, indexBy="attribute") */
     public $attributes;
 
-    public function addAttribute(string $name, string $value): void
+    public function addAttribute(string $name, string $value)
     {
         $this->attributes[$name] = new GH6531ArticleAttribute($name, $value, $this);
     }
 }
 
 /**
- * @Entity
+ * @ORM\Entity
  */
 class GH6531ArticleAttribute
 {
-    /**
-     * @var GH6531Article
-     * @Id
-     * @ManyToOne(targetEntity=GH6531Article::class, inversedBy="attributes")
-     */
+    /** @ORM\Id @ORM\ManyToOne(targetEntity=GH6531Article::class, inversedBy="attributes") */
     public $article;
 
-    /**
-     * @var string
-     * @Id
-     * @Column(type="string")
-     */
+    /** @ORM\Id @ORM\Column(type="string") */
     public $attribute;
 
-    /**
-     * @var string
-     * @Column(type="string")
-     */
+    /** @ORM\Column(type="string") */
     public $value;
 
     public function __construct(string $name, string $value, GH6531Article $article)
@@ -167,22 +141,14 @@ class GH6531ArticleAttribute
 }
 
 /**
- * @Entity
+ * @ORM\Entity
  */
 class GH6531Order
 {
-    /**
-     * @var int
-     * @Id
-     * @Column(type="integer")
-     * @GeneratedValue
-     */
+    /** @ORM\Id @ORM\Column(type="integer") @ORM\GeneratedValue */
     public $id;
 
-    /**
-     * @psalm-var Collection<int, GH6531OrderItem>
-     * @OneToMany(targetEntity=GH6531OrderItem::class, mappedBy="order", cascade={"ALL"})
-     */
+    /** @ORM\OneToMany(targetEntity=GH6531OrderItem::class, mappedBy="order", cascade={"ALL"}) */
     public $items;
 
     public function __construct()
@@ -190,48 +156,33 @@ class GH6531Order
         $this->items = new ArrayCollection();
     }
 
-    public function addItem(GH6531Product $product, int $amount): void
+    public function addItem(GH6531Product $product, int $amount) : void
     {
         $this->items->add(new GH6531OrderItem($this, $product, $amount));
     }
 }
 
 /**
- * @Entity
+ * @ORM\Entity
  */
 class GH6531Product
 {
-    /**
-     * @var int
-     * @Id
-     * @Column(type="integer")
-     * @GeneratedValue
-     */
+    /** @ORM\Id @ORM\Column(type="integer") @ORM\GeneratedValue */
     public $id;
 }
 
 /**
- * @Entity
+ * @ORM\Entity
  */
 class GH6531OrderItem
 {
-    /**
-     * @var GH6531Order
-     * @Id
-     * @ManyToOne(targetEntity=GH6531Order::class)
-     */
+    /** @ORM\Id @ORM\ManyToOne(targetEntity=GH6531Order::class) */
     public $order;
 
-    /**
-     * @var GH6531Product
-     * @Id @ManyToOne(targetEntity=GH6531Product::class)
-     */
+    /** @ORM\Id @ORM\ManyToOne(targetEntity=GH6531Product::class) */
     public $product;
 
-    /**
-     * @var int
-     * @Column(type="integer")
-     */
+    /** @ORM\Column(type="integer") */
     public $amount = 1;
 
     public function __construct(GH6531Order $order, GH6531Product $product, int $amount = 1)

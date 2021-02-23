@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Doctrine\Tests\ORM\Functional\Ticket;
 
 use Doctrine\Common\EventSubscriber;
+use Doctrine\ORM\Annotation as ORM;
 use Doctrine\ORM\Event\PreFlushEventArgs;
 use Doctrine\ORM\Events;
 use Doctrine\Tests\OrmFunctionalTestCase;
@@ -15,24 +16,26 @@ use Exception;
  */
 class DDC2692Test extends OrmFunctionalTestCase
 {
-    protected function setUp(): void
+    /**
+     * {@inheritDoc}
+     */
+    protected function setUp() : void
     {
         parent::setUp();
 
         try {
-            $this->_schemaTool->createSchema(
+            $this->schemaTool->createSchema(
                 [
-                    $this->_em->getClassMetadata(DDC2692Foo::class),
+                    $this->em->getClassMetadata(DDC2692Foo::class),
                 ]
             );
         } catch (Exception $e) {
             return;
         }
-
-        $this->_em->clear();
+        $this->em->clear();
     }
 
-    public function testIsListenerCalledOnlyOnceOnPreFlush(): void
+    public function testIsListenerCalledOnlyOnceOnPreFlush() : void
     {
         $listener = $this->getMockBuilder(DDC2692Listener::class)
                          ->setMethods(['preFlush'])
@@ -40,40 +43,32 @@ class DDC2692Test extends OrmFunctionalTestCase
 
         $listener->expects($this->once())->method('preFlush');
 
-        $this->_em->getEventManager()->addEventSubscriber($listener);
+        $this->em->getEventManager()->addEventSubscriber($listener);
 
-        $this->_em->persist(new DDC2692Foo());
-        $this->_em->persist(new DDC2692Foo());
+        $this->em->persist(new DDC2692Foo());
+        $this->em->persist(new DDC2692Foo());
 
-        $this->_em->flush();
-        $this->_em->clear();
+        $this->em->flush();
+        $this->em->clear();
     }
 }
 /**
- * @Entity @Table(name="ddc_2692_foo")
+ * @ORM\Entity @ORM\Table(name="ddc_2692_foo")
  */
 class DDC2692Foo
 {
-    /**
-     * @var int
-     * @Id
-     * @Column(type="integer")
-     * @GeneratedValue
-     */
+    /** @ORM\Id @ORM\Column(type="integer") @ORM\GeneratedValue */
     public $id;
 }
 
 class DDC2692Listener implements EventSubscriber
 {
-    /**
-     * {@inheritDoc}
-     */
-    public function getSubscribedEvents(): array
+    public function getSubscribedEvents()
     {
         return [Events::preFlush];
     }
 
-    public function preFlush(PreFlushEventArgs $args): void
+    public function preFlush(PreFlushEventArgs $args)
     {
     }
 }

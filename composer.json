@@ -1,8 +1,18 @@
 {
     "name": "doctrine/orm",
     "type": "library",
-    "description": "Object-Relational-Mapper for PHP",
-    "keywords": ["orm", "database"],
+    "description": "PHP object relational mapper (ORM) that sits on top of a powerful database abstraction layer (DBAL). One of its key features is the option to write database queries in a proprietary object oriented SQL dialect called Doctrine Query Language (DQL). This provides developers with a powerful alternative to SQL that maintains flexibility without requiring unnecessary code duplication.",
+    "keywords": [
+        "php",
+        "orm",
+        "mysql",
+        "object",
+        "data",
+        "mapper",
+        "mapping",
+        "query",
+        "dql"
+    ],
     "homepage": "https://www.doctrine-project.org/projects/orm.html",
     "license": "MIT",
     "authors": [
@@ -12,34 +22,38 @@
         {"name": "Jonathan Wage", "email": "jonwage@gmail.com"},
         {"name": "Marco Pivetta", "email": "ocramius@gmail.com"}
     ],
+    "support": {
+        "chat": "https://www.doctrine-project.org/slack",
+        "docs": "https://www.doctrine-project.org/projects/orm.html",
+        "email": "doctrine-user@googlegroups.com",
+        "issues": "https://github.com/doctrine/orm/issues",
+        "rss": "https://github.com/doctrine/orm/releases.atom",
+        "source": "https://github.com/doctrine/orm"
+    },
     "config": {
         "sort-packages": true
     },
     "require": {
-        "php": "^7.2|^8.0",
-        "ext-pdo": "*",
-        "composer/package-versions-deprecated": "^1.8",
-        "doctrine/annotations": "^1.11.1",
-        "doctrine/cache": "^1.9.1",
-        "doctrine/collections": "^1.5",
-        "doctrine/common": "^3.0.3",
-        "doctrine/dbal": "^2.10.0",
-        "doctrine/event-manager": "^1.1",
-        "doctrine/inflector": "^1.4|^2.0",
-        "doctrine/instantiator": "^1.3",
-        "doctrine/lexer": "^1.0",
-        "doctrine/persistence": "^2.0",
-        "symfony/console": "^3.0|^4.0|^5.0"
+        "php": "^7.3",
+        "ext-ctype": "*",
+        "doctrine/annotations": "~1.7",
+        "doctrine/cache": "~1.6",
+        "doctrine/collections": "^1.4",
+        "doctrine/dbal": "dev-missed-commits",
+        "doctrine/event-manager": "^1.0",
+        "doctrine/inflector": "~1.0",
+        "doctrine/instantiator": "~1.1",
+        "doctrine/persistence": "^1.1",
+        "doctrine/reflection": "^1.0",
+        "ocramius/package-versions": "^1.1.2",
+        "ocramius/proxy-manager": "^2.1.1",
+        "symfony/console": "~4.0|~5.0",
+        "symfony/var-dumper": "^4.1"
     },
     "require-dev": {
-        "doctrine/coding-standard": "^8.0",
-        "phpstan/phpstan": "^0.12.18",
-        "phpunit/phpunit": "^8.5|^9.4",
-        "symfony/yaml": "^3.4|^4.0|^5.0",
-        "vimeo/psalm": "4.1.1"
-    },
-    "suggest": {
-        "symfony/yaml": "If you want to use YAML Metadata Mapping Driver"
+        "doctrine/coding-standard": "^6.0",
+        "phpstan/phpstan": "^0.11",
+        "phpunit/phpunit": "^7.0"
     },
     "autoload": {
         "psr-4": { "Doctrine\\ORM\\": "lib/Doctrine/ORM" }
@@ -53,7 +67,7 @@
     "bin": ["bin/doctrine"],
     "extra": {
         "branch-alias": {
-            "dev-master": "2.7.x-dev"
+            "dev-master": "3.0.x-dev"
         }
     },
     "archive": {

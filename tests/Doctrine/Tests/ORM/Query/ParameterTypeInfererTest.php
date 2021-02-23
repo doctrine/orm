@@ -11,36 +11,37 @@ use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\Types\Type;
 use Doctrine\ORM\Query\ParameterTypeInferer;
 use Doctrine\Tests\OrmTestCase;
-use PDO;
+use const PHP_VERSION_ID;
 
 class ParameterTypeInfererTest extends OrmTestCase
 {
-    /** @psalm-return list<array{mixed, int|string}> */
-    public function providerParameterTypeInferer(): array
+    public function providerParameterTypeInferer()
     {
-        return [
+        $data = [
             [1,                 Type::INTEGER],
-            ['bar',             PDO::PARAM_STR],
-            ['1',               PDO::PARAM_STR],
-            [new DateTime(),     Type::DATETIME],
-            [new DateTimeImmutable(), Type::DATETIME_IMMUTABLE],
+            ['bar',             Type::STRING],
+            ['1',               Type::STRING],
+            [new DateTime(),    Type::DATETIME],
             [new DateInterval('P1D'), Type::DATEINTERVAL],
-            [[2],          Connection::PARAM_INT_ARRAY],
-            [['foo'],      Connection::PARAM_STR_ARRAY],
-            [['1','2'],    Connection::PARAM_STR_ARRAY],
-            [[],           Connection::PARAM_STR_ARRAY],
+            [[2],               Connection::PARAM_INT_ARRAY],
+            [['foo'],           Connection::PARAM_STR_ARRAY],
+            [['1','2'],         Connection::PARAM_STR_ARRAY],
+            [[],                Connection::PARAM_STR_ARRAY],
             [true,              Type::BOOLEAN],
         ];
+
+        if (PHP_VERSION_ID >= 50500) {
+            $data[] = [new DateTimeImmutable(), Type::DATETIME];
+        }
+
+        return $data;
     }
 
     /**
-     * @param mixed      $value
-     * @param int|string $expected
-     *
      * @dataProvider providerParameterTypeInferer
      */
-    public function testParameterTypeInferer($value, $expected): void
+    public function testParameterTypeInferer($value, $expected) : void
     {
-        $this->assertEquals($expected, ParameterTypeInferer::inferType($value));
+        self::assertEquals($expected, ParameterTypeInferer::inferType($value));
     }
 }

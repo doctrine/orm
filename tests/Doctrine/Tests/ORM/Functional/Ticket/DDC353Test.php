@@ -4,59 +4,60 @@ declare(strict_types=1);
 
 namespace Doctrine\Tests\ORM\Functional\Ticket;
 
+use Doctrine\ORM\Annotation as ORM;
 use Doctrine\ORM\UnitOfWork;
 use Doctrine\Tests\OrmFunctionalTestCase;
 use Exception;
 
 class DDC353Test extends OrmFunctionalTestCase
 {
-    protected function setUp(): void
+    protected function setUp() : void
     {
         parent::setUp();
         try {
-            $this->_schemaTool->createSchema(
+            $this->schemaTool->createSchema(
                 [
-                    $this->_em->getClassMetadata(DDC353File::class),
-                    $this->_em->getClassMetadata(DDC353Picture::class),
+                    $this->em->getClassMetadata(DDC353File::class),
+                    $this->em->getClassMetadata(DDC353Picture::class),
                 ]
             );
         } catch (Exception $ignored) {
         }
     }
 
-    public function testWorkingCase(): void
+    public function testWorkingCase() : void
     {
         $file = new DDC353File();
 
         $picture = new DDC353Picture();
         $picture->setFile($file);
 
-        $em = $this->_em;
+        $em = $this->em;
         $em->persist($picture);
         $em->flush();
         $em->clear();
 
         $fileId = $file->getFileId();
-        $this->assertTrue($fileId > 0);
+        self::assertGreaterThan(0, $fileId);
 
         $file = $em->getReference(DDC353File::class, $fileId);
-        $this->assertEquals(UnitOfWork::STATE_MANAGED, $em->getUnitOfWork()->getEntityState($file), 'Reference Proxy should be marked MANAGED.');
+        self::assertEquals(UnitOfWork::STATE_MANAGED, $em->getUnitOfWork()->getEntityState($file), 'Reference Proxy should be marked MANAGED.');
 
         $picture = $em->find(DDC353Picture::class, $picture->getPictureId());
-        $this->assertEquals(UnitOfWork::STATE_MANAGED, $em->getUnitOfWork()->getEntityState($picture->getFile()), 'Lazy Proxy should be marked MANAGED.');
+        self::assertEquals(UnitOfWork::STATE_MANAGED, $em->getUnitOfWork()->getEntityState($picture->getFile()), 'Lazy Proxy should be marked MANAGED.');
 
         $em->remove($picture);
         $em->flush();
     }
 
-    public function testFailingCase(): void
+    public function testFailingCase() : void
     {
         $file = new DDC353File();
 
         $picture = new DDC353Picture();
         $picture->setFile($file);
 
-        $em = $this->_em;
+        $em = $this->em;
         $em->persist($picture);
         $em->flush();
         $em->clear();
@@ -64,10 +65,10 @@ class DDC353Test extends OrmFunctionalTestCase
         $fileId    = $file->getFileId();
         $pictureId = $picture->getPictureId();
 
-        $this->assertTrue($fileId > 0);
+        self::assertGreaterThan(0, $fileId);
 
         $picture = $em->find(DDC353Picture::class, $pictureId);
-        $this->assertEquals(UnitOfWork::STATE_MANAGED, $em->getUnitOfWork()->getEntityState($picture->getFile()), 'Lazy Proxy should be marked MANAGED.');
+        self::assertEquals(UnitOfWork::STATE_MANAGED, $em->getUnitOfWork()->getEntityState($picture->getFile()), 'Lazy Proxy should be marked MANAGED.');
 
         $em->remove($picture);
         $em->flush();
@@ -75,60 +76,81 @@ class DDC353Test extends OrmFunctionalTestCase
 }
 
 /**
- * @Entity
+ * @ORM\Entity
  */
 class DDC353Picture
 {
     /**
-     * @var int
-     * @Column(name="picture_id", type="integer")
-     * @Id
-     * @GeneratedValue
+     * @ORM\Column(name="picture_id", type="integer")
+     * @ORM\Id @ORM\GeneratedValue
      */
     private $pictureId;
 
     /**
-     * @var DDC353File
-     * @ManyToOne(targetEntity="DDC353File", cascade={"persist", "remove"})
-     * @JoinColumns({
-     *   @JoinColumn(name="file_id", referencedColumnName="file_id")
+     * @ORM\ManyToOne(targetEntity=DDC353File::class, cascade={"persist", "remove"})
+     * @ORM\JoinColumns({
+     *   @ORM\JoinColumn(name="file_id", referencedColumnName="file_id")
      * })
      */
     private $file;
 
-    public function getPictureId(): int
+    /**
+     * Get pictureId
+     */
+    public function getPictureId()
     {
         return $this->pictureId;
     }
 
-    public function setFile(DDC353File $value): void
+    /**
+     * Set product
+     */
+    public function setProduct($value)
+    {
+        $this->product = $value;
+    }
+
+    /**
+     * Get product
+     */
+    public function getProduct()
+    {
+        return $this->product;
+    }
+
+    /**
+     * Set file
+     */
+    public function setFile($value)
     {
         $this->file = $value;
     }
 
-    public function getFile(): DDC353File
+    /**
+     * Get file
+     */
+    public function getFile()
     {
         return $this->file;
     }
 }
 
 /**
- * @Entity
+ * @ORM\Entity
  */
 class DDC353File
 {
     /**
-     * @var int
-     * @Column(name="file_id", type="integer")
-     * @Id
-     * @GeneratedValue(strategy="AUTO")
+     * @ORM\Column(name="file_id", type="integer")
+     * @ORM\Id
+     * @ORM\GeneratedValue(strategy="AUTO")
      */
     public $fileId;
 
     /**
      * Get fileId
      */
-    public function getFileId(): int
+    public function getFileId()
     {
         return $this->fileId;
     }

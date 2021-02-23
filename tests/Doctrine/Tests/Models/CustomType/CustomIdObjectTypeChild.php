@@ -4,24 +4,23 @@ declare(strict_types=1);
 
 namespace Doctrine\Tests\Models\CustomType;
 
+use Doctrine\ORM\Annotation as ORM;
 use Doctrine\Tests\DbalTypes\CustomIdObject;
 
 /**
- * @Entity
- * @Table(name="custom_id_type_child")
+ * @ORM\Entity
+ * @ORM\Table(name="custom_id_type_child")
  */
 class CustomIdObjectTypeChild
 {
     /**
-     * @Id @Column(type="CustomIdObject")
+     * @ORM\Id @ORM\Column(type="CustomIdObject")
+     *
      * @var CustomIdObject
      */
     public $id;
 
-    /**
-     * @var CustomIdObjectTypeParent
-     * @ManyToOne(targetEntity="Doctrine\Tests\Models\CustomType\CustomIdObjectTypeParent", inversedBy="children")
-     */
+    /** @ORM\ManyToOne(targetEntity=CustomIdObjectTypeParent::class, inversedBy="children") */
     public $parent;
 
     public function __construct(CustomIdObject $id, CustomIdObjectTypeParent $parent)

@@ -4,90 +4,79 @@ declare(strict_types=1);
 
 namespace Doctrine\Tests\ORM\Functional\Ticket;
 
-use Doctrine\Common\Collections\Collection;
+use Doctrine\ORM\Annotation as ORM;
 use Doctrine\Tests\OrmFunctionalTestCase;
-
-use function strtolower;
 
 class DDC719Test extends OrmFunctionalTestCase
 {
-    protected function setUp(): void
+    protected function setUp() : void
     {
         parent::setUp();
-        //$this->_em->getConnection()->getConfiguration()->setSQLLogger(new \Doctrine\DBAL\Logging\EchoSQLLogger);
-        $this->_schemaTool->createSchema(
+        //$this->em->getConnection()->getConfiguration()->setSQLLogger(new \Doctrine\DBAL\Logging\EchoSQLLogger);
+        $this->schemaTool->createSchema(
             [
-                $this->_em->getClassMetadata(DDC719Group::class),
+                $this->em->getClassMetadata(DDC719Group::class),
             ]
         );
     }
 
-    public function testIsEmptySqlGeneration(): void
+    public function testIsEmptySqlGeneration() : void
     {
-        $q = $this->_em->createQuery('SELECT g, c FROM Doctrine\Tests\ORM\Functional\Ticket\DDC719Group g LEFT JOIN g.children c  WHERE g.parents IS EMPTY');
+        $q = $this->em->createQuery(
+            'SELECT g, c FROM Doctrine\Tests\ORM\Functional\Ticket\DDC719Group g LEFT JOIN g.children c  WHERE g.parents IS EMPTY'
+        );
 
-        $referenceSQL = 'SELECT g0_.name AS name_0, g0_.description AS description_1, g0_.id AS id_2, g1_.name AS name_3, g1_.description AS description_4, g1_.id AS id_5 FROM groups g0_ LEFT JOIN groups_groups g2_ ON g0_.id = g2_.parent_id LEFT JOIN groups g1_ ON g1_.id = g2_.child_id WHERE (SELECT COUNT(*) FROM groups_groups g3_ WHERE g3_.child_id = g0_.id) = 0';
-
-        $this->assertEquals(
-            strtolower($referenceSQL),
-            strtolower($q->getSQL())
+        self::assertSQLEquals(
+            'SELECT t0."id" AS c0, t0."name" AS c1, t0."description" AS c2, t1."id" AS c3, t1."name" AS c4, t1."description" AS c5 FROM "groups" t0 LEFT JOIN "groups_groups" t2 ON t0."id" = t2."parent_id" LEFT JOIN "groups" t1 ON t1."id" = t2."child_id" WHERE (SELECT COUNT(*) FROM "groups_groups" t3 WHERE t3."child_id" = t0."id") = 0',
+            $q->getSQL()
         );
     }
 }
 
 /**
- * @MappedSuperclass
+ * @ORM\MappedSuperclass
  */
 class Entity
 {
     /**
-     * @var int
-     * @Id
-     * @GeneratedValue
-     * @Column(type="integer")
+     * @ORM\Id @ORM\GeneratedValue
+     * @ORM\Column(type="integer")
      */
     protected $id;
 
-    public function getId(): int
+    public function getId()
     {
         return $this->id;
     }
 }
 
 /**
- * @Entity
- * @Table(name="groups")
+ * @ORM\Entity
+ * @ORM\Table(name="groups")
  */
 class DDC719Group extends Entity
 {
-    /**
-     * @var string
-     * @Column(type="string", nullable=false)
-     */
+    /** @ORM\Column(type="string", nullable=false) */
     protected $name;
 
-    /**
-     * @var string
-     * @Column(type="string", nullable=true)
-     */
+    /** @ORM\Column(type="string", nullable=true) */
     protected $description;
 
     /**
-     * @psalm-var Collection<int, DDC719Group>
-     * @ManyToMany(targetEntity="DDC719Group", inversedBy="parents")
-     * @JoinTable(name="groups_groups",
-     *      joinColumns={@JoinColumn(name="parent_id", referencedColumnName="id")},
-     *      inverseJoinColumns={@JoinColumn(name="child_id", referencedColumnName="id")}
+     * @ORM\ManyToMany(targetEntity=DDC719Group::class, inversedBy="parents")
+     * @ORM\JoinTable(name="groups_groups",
+     *      joinColumns={@ORM\JoinColumn(name="parent_id", referencedColumnName="id")},
+     *      inverseJoinColumns={@ORM\JoinColumn(name="child_id", referencedColumnName="id")}
      * )
      */
-    protected $children = null;
+    protected $children;
+
+    /** @ORM\ManyToMany(targetEntity=DDC719Group::class, mappedBy="children") */
+    protected $parents;
 
     /**
-     * @psalm-var Collection<int, DDC719Group>
-     * @ManyToMany(targetEntity="DDC719Group", mappedBy="children")
+     * construct
      */
-    protected $parents = null;
-
     public function __construct()
     {
         parent::__construct();
@@ -100,7 +89,7 @@ class DDC719Group extends Entity
     /**
      * adds group as new child
      */
-    public function addGroup(Group $child): void
+    public function addGroup(Group $child)
     {
         if (! $this->children->contains($child)) {
             $this->children->add($child);
@@ -111,53 +100,47 @@ class DDC719Group extends Entity
     /**
      * adds channel as new child
      */
-    public function addChannel(Channel $child): void
+    public function addChannel(Channel $child)
     {
         if (! $this->channels->contains($child)) {
             $this->channels->add($child);
         }
     }
 
-    public function getName(): string
+    /**
+     * getter & setter
+     */
+    public function getName()
     {
         return $this->name;
     }
 
-    public function setName(string $name): void
+    public function setName($name)
     {
         $this->name = $name;
     }
 
-    public function getDescription(): string
+    public function getDescription()
     {
         return $this->description;
     }
 
-    public function setDescription(string $description): void
+    public function setDescription($description)
     {
         $this->description = $description;
     }
 
-    /**
-     * @psalm-return Collection<int, DDC719Group>
-     */
-    public function getChildren(): Collection
+    public function getChildren()
     {
         return $this->children;
     }
 
-    /**
-     * @psalm-return Collection<int, DDC719Group>
-     */
-    public function getParents(): Collection
+    public function getParents()
     {
         return $this->parents;
     }
 
-    /**
-     * @psalm-return Collection<int, Channel>
-     */
-    public function getChannels(): Collection
+    public function getChannels()
     {
         return $this->channels;
     }

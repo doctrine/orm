@@ -4,38 +4,38 @@ declare(strict_types=1);
 
 namespace Doctrine\Tests\Models\Company;
 
-use Doctrine\Common\Collections\Collection;
+use Doctrine\ORM\Annotation as ORM;
 
 /**
- * @Entity
- * @Table(name="company_employees")
+ * @ORM\Entity
+ * @ORM\Table(name="company_employees")
  */
 class CompanyEmployee extends CompanyPerson
 {
-    /**
-     * @var int
-     * @Column(type="integer")
-     */
+    /** @ORM\Column(type="integer") */
     private $salary;
 
-    /**
-     * @var string
-     * @Column(type="string", length=255)
-     */
+    /** @ORM\Column(type="string", length=255) */
     private $department;
 
-    /** @Column(type="datetime", nullable=true) */
+    /** @ORM\Column(type="datetime", nullable=true) */
     private $startDate;
 
     /**
-     * @psalm-var Collection<int, CompanyContract>
-     * @ManyToMany(targetEntity="CompanyContract", mappedBy="engineers", fetch="EXTRA_LAZY")
+     * @ORM\ManyToMany(
+     *     targetEntity=CompanyContract::class,
+     *     mappedBy="engineers",
+     *     fetch="EXTRA_LAZY"
+     * )
      */
     public $contracts;
 
     /**
-     * @psalm-var Collection<int, CompanyFlexUltraContract>
-     * @OneToMany(targetEntity="CompanyFlexUltraContract", mappedBy="salesPerson", fetch="EXTRA_LAZY")
+     * @ORM\OneToMany(
+     *     targetEntity=CompanyFlexUltraContract::class,
+     *     mappedBy="salesPerson",
+     *     fetch="EXTRA_LAZY"
+     * )
      */
     public $soldContracts;
 
@@ -44,7 +44,7 @@ class CompanyEmployee extends CompanyPerson
         return $this->salary;
     }
 
-    public function setSalary($salary): void
+    public function setSalary($salary)
     {
         $this->salary = $salary;
     }
@@ -54,7 +54,7 @@ class CompanyEmployee extends CompanyPerson
         return $this->department;
     }
 
-    public function setDepartment($dep): void
+    public function setDepartment($dep)
     {
         $this->department = $dep;
     }
@@ -64,7 +64,7 @@ class CompanyEmployee extends CompanyPerson
         return $this->startDate;
     }
 
-    public function setStartDate($date): void
+    public function setStartDate($date)
     {
         $this->startDate = $date;
     }

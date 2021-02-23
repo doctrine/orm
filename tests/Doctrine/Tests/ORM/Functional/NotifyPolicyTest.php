@@ -5,27 +5,25 @@ declare(strict_types=1);
 namespace Doctrine\Tests\ORM\Functional;
 
 use Doctrine\Common\Collections\ArrayCollection;
-use Doctrine\Common\Collections\Collection;
-use Doctrine\Persistence\NotifyPropertyChanged;
-use Doctrine\Persistence\PropertyChangedListener;
+use Doctrine\Common\NotifyPropertyChanged;
+use Doctrine\Common\PropertyChangedListener;
+use Doctrine\ORM\Annotation as ORM;
 use Doctrine\Tests\OrmFunctionalTestCase;
 use Exception;
-
-use function count;
 
 /**
  * NativeQueryTest
  */
 class NotifyPolicyTest extends OrmFunctionalTestCase
 {
-    protected function setUp(): void
+    protected function setUp() : void
     {
         parent::setUp();
         try {
-            $this->_schemaTool->createSchema(
+            $this->schemaTool->createSchema(
                 [
-                    $this->_em->getClassMetadata(NotifyUser::class),
-                    $this->_em->getClassMetadata(NotifyGroup::class),
+                    $this->em->getClassMetadata(NotifyUser::class),
+                    $this->em->getClassMetadata(NotifyGroup::class),
                 ]
             );
         } catch (Exception $e) {
@@ -33,7 +31,7 @@ class NotifyPolicyTest extends OrmFunctionalTestCase
         }
     }
 
-    public function testChangeTracking(): void
+    public function testChangeTracking() : void
     {
         $user  = new NotifyUser();
         $group = new NotifyGroup();
@@ -43,68 +41,67 @@ class NotifyPolicyTest extends OrmFunctionalTestCase
         $user->getGroups()->add($group);
         $group->getUsers()->add($user);
 
-        $this->_em->persist($user);
-        $this->_em->persist($group);
+        $this->em->persist($user);
+        $this->em->persist($group);
 
-        $this->assertEquals(1, count($user->listeners));
-        $this->assertEquals(1, count($group->listeners));
+        self::assertCount(1, $user->listeners);
+        self::assertCount(1, $group->listeners);
 
-        $this->_em->flush();
-        $this->_em->clear();
+        $this->em->flush();
+        $this->em->clear();
 
-        $this->assertEquals(1, count($user->listeners));
-        $this->assertEquals(1, count($group->listeners));
+        self::assertCount(1, $user->listeners);
+        self::assertCount(1, $group->listeners);
 
         $userId  = $user->getId();
         $groupId = $group->getId();
         unset($user, $group);
 
-        $user = $this->_em->find(NotifyUser::class, $userId);
-        $this->assertEquals(1, $user->getGroups()->count());
-        $group = $this->_em->find(NotifyGroup::class, $groupId);
-        $this->assertEquals(1, $group->getUsers()->count());
+        $user = $this->em->find(NotifyUser::class, $userId);
+        self::assertEquals(1, $user->getGroups()->count());
+        $group = $this->em->find(NotifyGroup::class, $groupId);
+        self::assertEquals(1, $group->getUsers()->count());
 
-        $this->assertEquals(1, count($user->listeners));
-        $this->assertEquals(1, count($group->listeners));
+        self::assertCount(1, $user->listeners);
+        self::assertCount(1, $group->listeners);
 
         $group2 = new NotifyGroup();
         $group2->setName('nerds');
-        $this->_em->persist($group2);
+        $this->em->persist($group2);
         $user->getGroups()->add($group2);
         $group2->getUsers()->add($user);
 
         $group->setName('geeks');
 
-        $this->_em->flush();
-        $this->_em->clear();
+        $this->em->flush();
+        $this->em->clear();
 
-        $this->assertEquals(1, count($user->listeners));
-        $this->assertEquals(1, count($group->listeners));
+        self::assertCount(1, $user->listeners);
+        self::assertCount(1, $group->listeners);
 
         $group2Id = $group2->getId();
         unset($group2, $user);
 
-        $user = $this->_em->find(NotifyUser::class, $userId);
-        $this->assertEquals(2, $user->getGroups()->count());
-        $group2 = $this->_em->find(NotifyGroup::class, $group2Id);
-        $this->assertEquals(1, $group2->getUsers()->count());
-        $group = $this->_em->find(NotifyGroup::class, $groupId);
-        $this->assertEquals(1, $group->getUsers()->count());
-        $this->assertEquals('geeks', $group->getName());
+        $user = $this->em->find(NotifyUser::class, $userId);
+        self::assertEquals(2, $user->getGroups()->count());
+        $group2 = $this->em->find(NotifyGroup::class, $group2Id);
+        self::assertEquals(1, $group2->getUsers()->count());
+        $group = $this->em->find(NotifyGroup::class, $groupId);
+        self::assertEquals(1, $group->getUsers()->count());
+        self::assertEquals('geeks', $group->getName());
     }
 }
 
 class NotifyBaseEntity implements NotifyPropertyChanged
 {
-    /** @psalm-var list<PropertyChangedListener> */
     public $listeners = [];
 
-    public function addPropertyChangedListener(PropertyChangedListener $listener): void
+    public function addPropertyChangedListener(PropertyChangedListener $listener)
     {
         $this->listeners[] = $listener;
     }
 
-    protected function onPropertyChanged($propName, $oldValue, $newValue): void
+    protected function onPropertyChanged($propName, $oldValue, $newValue)
     {
         if ($this->listeners) {
             foreach ($this->listeners as $listener) {
@@ -114,27 +111,16 @@ class NotifyBaseEntity implements NotifyPropertyChanged
     }
 }
 
-/** @Entity @ChangeTrackingPolicy("NOTIFY") */
+/** @ORM\Entity @ORM\ChangeTrackingPolicy("NOTIFY") */
 class NotifyUser extends NotifyBaseEntity
 {
-    /**
-     * @var int
-     * @Id
-     * @Column(type="integer")
-     * @GeneratedValue
-     */
+    /** @ORM\Id @ORM\Column(type="integer") @ORM\GeneratedValue */
     private $id;
 
-    /**
-     * @var string
-     * @Column
-     */
+    /** @ORM\Column */
     private $name;
 
-    /**
-     * @psalm-var Collection<int, NotifyGroup>
-     * @ManyToMany(targetEntity="NotifyGroup")
-     */
+    /** @ORM\ManyToMany(targetEntity=NotifyGroup::class) */
     private $groups;
 
     public function __construct()
@@ -142,52 +128,38 @@ class NotifyUser extends NotifyBaseEntity
         $this->groups = new ArrayCollection();
     }
 
-    public function getId(): int
+    public function getId()
     {
         return $this->id;
     }
 
-    public function getName(): string
+    public function getName()
     {
         return $this->name;
     }
 
-    public function setName(string $name): void
+    public function setName($name)
     {
         $this->onPropertyChanged('name', $this->name, $name);
         $this->name = $name;
     }
 
-    /**
-     * @psalm-return Collection<int, NotifyGroup>
-     */
-    public function getGroups(): Collection
+    public function getGroups()
     {
         return $this->groups;
     }
 }
 
-/** @Entity */
+/** @ORM\Entity */
 class NotifyGroup extends NotifyBaseEntity
 {
-    /**
-     * @var int
-     * @Id
-     * @Column(type="integer")
-     * @GeneratedValue
-     */
+    /** @ORM\Id @ORM\Column(type="integer") @ORM\GeneratedValue */
     private $id;
 
-    /**
-     * @var string
-     * @Column
-     */
+    /** @ORM\Column */
     private $name;
 
-    /**
-     * @psalm-var Collection<int, NotifyUser>
-     * @ManyToMany(targetEntity="NotifyUser", mappedBy="groups")
-     */
+    /** @ORM\ManyToMany(targetEntity=NotifyUser::class, mappedBy="groups") */
     private $users;
 
     public function __construct()
@@ -195,26 +167,23 @@ class NotifyGroup extends NotifyBaseEntity
         $this->users = new ArrayCollection();
     }
 
-    public function getId(): int
+    public function getId()
     {
         return $this->id;
     }
 
-    public function getName(): string
+    public function getName()
     {
         return $this->name;
     }
 
-    public function setName(string $name): void
+    public function setName($name)
     {
         $this->onPropertyChanged('name', $this->name, $name);
         $this->name = $name;
     }
 
-    /**
-     * @psalm-return Collection<int, NotifyUser>
-     */
-    public function getUsers(): Collection
+    public function getUsers()
     {
         return $this->users;
     }

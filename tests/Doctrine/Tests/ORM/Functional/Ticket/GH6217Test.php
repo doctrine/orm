@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace Doctrine\Tests\Functional\Ticket;
 
+use Doctrine\ORM\Annotation as ORM;
 use Doctrine\Tests\OrmFunctionalTestCase;
-
 use function uniqid;
 
 /**
@@ -13,31 +13,31 @@ use function uniqid;
  */
 final class GH6217Test extends OrmFunctionalTestCase
 {
-    protected function setUp(): void
+    public function setUp() : void
     {
         $this->enableSecondLevelCache();
 
         parent::setUp();
 
-        $this->_schemaTool->createSchema([
-            $this->_em->getClassMetadata(GH6217AssociatedEntity::class),
-            $this->_em->getClassMetadata(GH6217FetchedEntity::class),
+        $this->schemaTool->createSchema([
+            $this->em->getClassMetadata(GH6217AssociatedEntity::class),
+            $this->em->getClassMetadata(GH6217FetchedEntity::class),
         ]);
     }
 
-    public function testLoadingOfSecondLevelCacheOnEagerAssociations(): void
+    public function testLoadingOfSecondLevelCacheOnEagerAssociations() : void
     {
         $lazy    = new GH6217AssociatedEntity();
         $eager   = new GH6217AssociatedEntity();
         $fetched = new GH6217FetchedEntity($lazy, $eager);
 
-        $this->_em->persist($eager);
-        $this->_em->persist($lazy);
-        $this->_em->persist($fetched);
-        $this->_em->flush();
-        $this->_em->clear();
+        $this->em->persist($eager);
+        $this->em->persist($lazy);
+        $this->em->persist($fetched);
+        $this->em->flush();
+        $this->em->clear();
 
-        $repository = $this->_em->getRepository(GH6217FetchedEntity::class);
+        $repository = $this->em->getRepository(GH6217FetchedEntity::class);
         $filters    = ['eager' => $eager->id];
 
         self::assertCount(1, $repository->findBy($filters));
@@ -54,15 +54,10 @@ final class GH6217Test extends OrmFunctionalTestCase
     }
 }
 
-/** @Entity @Cache(usage="NONSTRICT_READ_WRITE") */
+/** @ORM\Entity @ORM\Cache(usage="NONSTRICT_READ_WRITE") */
 class GH6217AssociatedEntity
 {
-    /**
-     * @var string
-     * @Id
-     * @Column(type="string")
-     * @GeneratedValue(strategy="NONE")
-     */
+    /** @ORM\Id @ORM\Column(type="string") @ORM\GeneratedValue(strategy="NONE") */
     public $id;
 
     public function __construct()
@@ -71,23 +66,13 @@ class GH6217AssociatedEntity
     }
 }
 
-/** @Entity @Cache(usage="NONSTRICT_READ_WRITE") */
+/** @ORM\Entity @ORM\Cache(usage="NONSTRICT_READ_WRITE") */
 class GH6217FetchedEntity
 {
-    /**
-     * @var GH6217AssociatedEntity
-     * @Id
-     * @Cache("NONSTRICT_READ_WRITE")
-     * @ManyToOne(targetEntity=GH6217AssociatedEntity::class)
-     */
+    /** @ORM\Id @ORM\Cache("NONSTRICT_READ_WRITE") @ORM\ManyToOne(targetEntity=GH6217AssociatedEntity::class) */
     public $lazy;
 
-    /**
-     * @var GH6217AssociatedEntity
-     * @Id
-     * @Cache("NONSTRICT_READ_WRITE")
-     * @ManyToOne(targetEntity=GH6217AssociatedEntity::class, fetch="EAGER")
-     */
+    /** @ORM\Id @ORM\Cache("NONSTRICT_READ_WRITE") @ORM\ManyToOne(targetEntity=GH6217AssociatedEntity::class, fetch="EAGER") */
     public $eager;
 
     public function __construct(GH6217AssociatedEntity $lazy, GH6217AssociatedEntity $eager)

@@ -6,6 +6,7 @@ namespace Doctrine\Tests\ORM\Functional\Ticket;
 
 use Doctrine\DBAL\Platforms\AbstractPlatform;
 use Doctrine\DBAL\Types as DBALTypes;
+use Doctrine\ORM\Annotation as ORM;
 use Doctrine\Tests\OrmFunctionalTestCase;
 
 /**
@@ -17,7 +18,7 @@ use Doctrine\Tests\OrmFunctionalTestCase;
  */
 class DDC5684Test extends OrmFunctionalTestCase
 {
-    protected function setUp(): void
+    protected function setUp() : void
     {
         parent::setUp();
 
@@ -27,70 +28,58 @@ class DDC5684Test extends OrmFunctionalTestCase
             DBALTypes\Type::addType(DDC5684ObjectIdType::class, DDC5684ObjectIdType::class);
         }
 
-        $this->_schemaTool->createSchema([$this->_em->getClassMetadata(DDC5684Object::class)]);
+        $this->schemaTool->createSchema([$this->em->getClassMetadata(DDC5684Object::class)]);
     }
 
-    protected function tearDown(): void
+    protected function tearDown() : void
     {
-        $this->_schemaTool->dropSchema([$this->_em->getClassMetadata(DDC5684Object::class)]);
+        $this->schemaTool->dropSchema([$this->em->getClassMetadata(DDC5684Object::class)]);
 
         parent::tearDown();
     }
 
-    public function testAutoIncrementIdWithCustomType(): void
+    public function testAutoIncrementIdWithCustomType() : void
     {
         $object = new DDC5684Object();
-        $this->_em->persist($object);
-        $this->_em->flush();
+        $this->em->persist($object);
+        $this->em->flush();
 
-        $this->assertInstanceOf(DDC5684ObjectId::class, $object->id);
+        self::assertInstanceOf(DDC5684ObjectId::class, $object->id);
     }
 
-    public function testFetchObjectWithAutoIncrementedCustomType(): void
+    public function testFetchObjectWithAutoIncrementedCustomType() : void
     {
         $object = new DDC5684Object();
-        $this->_em->persist($object);
-        $this->_em->flush();
-        $this->_em->clear();
+        $this->em->persist($object);
+        $this->em->flush();
+        $this->em->clear();
 
         $rawId  = $object->id->value;
-        $object = $this->_em->find(DDC5684Object::class, new DDC5684ObjectId($rawId));
+        $object = $this->em->find(DDC5684Object::class, new DDC5684ObjectId($rawId));
 
-        $this->assertInstanceOf(DDC5684ObjectId::class, $object->id);
-        $this->assertEquals($rawId, $object->id->value);
+        self::assertInstanceOf(DDC5684ObjectId::class, $object->id);
+        self::assertEquals($rawId, $object->id->value);
     }
 }
 
 class DDC5684ObjectIdType extends DBALTypes\IntegerType
 {
-    /**
-     * {@inheritDoc}
-     */
     public function convertToPHPValue($value, AbstractPlatform $platform)
     {
         return new DDC5684ObjectId($value);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     public function convertToDatabaseValue($value, AbstractPlatform $platform)
     {
         return $value->value;
     }
 
-    /**
-     * {@inheritDoc}
-     */
-    public function getName()
+    public function getName() : string
     {
         return self::class;
     }
 
-    /**
-     * {@inheritDoc}
-     */
-    public function requiresSQLCommentHint(AbstractPlatform $platform)
+    public function requiresSQLCommentHint(AbstractPlatform $platform) : bool
     {
         return true;
     }
@@ -98,32 +87,29 @@ class DDC5684ObjectIdType extends DBALTypes\IntegerType
 
 class DDC5684ObjectId
 {
-    /** @var mixed */
     public $value;
 
-    /** @param mixed $value */
     public function __construct($value)
     {
         $this->value = $value;
     }
 
-    public function __toString(): string
+    public function __toString()
     {
         return (string) $this->value;
     }
 }
 
 /**
- * @Entity
- * @Table(name="ticket_5684_objects")
+ * @ORM\Entity
+ * @ORM\Table(name="ticket_5684_objects")
  */
 class DDC5684Object
 {
     /**
-     * @var DDC5684ObjectIdType
-     * @Id
-     * @Column(type=Doctrine\Tests\ORM\Functional\Ticket\DDC5684ObjectIdType::class)
-     * @GeneratedValue(strategy="AUTO")
+     * @ORM\Id
+     * @ORM\Column(type=Doctrine\Tests\ORM\Functional\Ticket\DDC5684ObjectIdType::class)
+     * @ORM\GeneratedValue(strategy="AUTO")
      */
     public $id;
 }

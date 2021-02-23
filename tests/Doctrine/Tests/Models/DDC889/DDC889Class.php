@@ -4,29 +4,14 @@ declare(strict_types=1);
 
 namespace Doctrine\Tests\Models\DDC889;
 
-use Doctrine\ORM\Mapping\ClassMetadataInfo;
+use Doctrine\ORM\Annotation as ORM;
 
 class DDC889Class extends DDC889SuperClass
 {
     /**
-     * @var int
-     * @Id
-     * @Column(type="integer")
-     * @GeneratedValue
+     * @ORM\Id
+     * @ORM\Column(type="integer")
+     * @ORM\GeneratedValue
      */
     protected $id;
-
-    public static function loadMetadata(ClassMetadataInfo $metadata): void
-    {
-        $metadata->mapField(
-            [
-                'id'         => true,
-                'fieldName'  => 'id',
-                'type'       => 'integer',
-                'columnName' => 'id',
-            ]
-        );
-
-        $metadata->setIdGeneratorType(ClassMetadataInfo::GENERATOR_TYPE_AUTO);
-    }
 }

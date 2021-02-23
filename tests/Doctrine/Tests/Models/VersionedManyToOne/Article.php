@@ -4,34 +4,32 @@ declare(strict_types=1);
 
 namespace Doctrine\Tests\Models\VersionedManyToOne;
 
+use Doctrine\ORM\Annotation as ORM;
+
 /**
- * @Entity
- * @Table(name="versioned_many_to_one_article")
+ * @ORM\Entity
+ * @ORM\Table(name="versioned_many_to_one_article")
  */
 class Article
 {
     /**
-     * @var int
-     * @Id
-     * @Column(name="id", type="integer")
-     * @GeneratedValue(strategy="AUTO")
+     * @ORM\Id
+     * @ORM\Column(name="id", type="integer")
+     * @ORM\GeneratedValue(strategy="AUTO")
      */
     public $id;
 
-    /** @Column(name="name") */
+    /** @ORM\Column(name="name") */
     public $name;
 
-    /**
-     * @var Category
-     * @ManyToOne(targetEntity="Category", cascade={"merge", "persist"})
-     */
+    /** @ORM\ManyToOne(targetEntity=Category::class, cascade={"persist"}) */
     public $category;
 
     /**
      * Version column
      *
-     * @Column(type="integer", name="version")
-     * @Version
+     * @ORM\Column(type="integer", name="version")
+     * @ORM\Version
      */
     public $version;
 }

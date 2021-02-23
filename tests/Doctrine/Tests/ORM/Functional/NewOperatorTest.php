@@ -12,7 +12,6 @@ use Doctrine\Tests\Models\CMS\CmsPhonenumber;
 use Doctrine\Tests\Models\CMS\CmsUser;
 use Doctrine\Tests\Models\CMS\CmsUserDTO;
 use Doctrine\Tests\OrmFunctionalTestCase;
-
 use function count;
 
 /**
@@ -20,10 +19,10 @@ use function count;
  */
 class NewOperatorTest extends OrmFunctionalTestCase
 {
-    /** @var list<CmsUser> */
+    /** @var array */
     private $fixtures;
 
-    protected function setUp(): void
+    protected function setUp() : void
     {
         $this->useModelSet('cms');
         parent::setUp();
@@ -31,10 +30,7 @@ class NewOperatorTest extends OrmFunctionalTestCase
         $this->loadFixtures();
     }
 
-    /**
-     * @psalm-return list<array{int}>
-     */
-    public function provideDataForHydrationMode(): array
+    public function provideDataForHydrationMode()
     {
         return [
             [Query::HYDRATE_ARRAY],
@@ -42,7 +38,7 @@ class NewOperatorTest extends OrmFunctionalTestCase
         ];
     }
 
-    private function loadFixtures(): void
+    private function loadFixtures()
     {
         $u1 = new CmsUser();
         $u2 = new CmsUser();
@@ -93,12 +89,12 @@ class NewOperatorTest extends OrmFunctionalTestCase
         $u3->phonenumbers[1]->phonenumber = '(33) 2222-2222';
         $u3->phonenumbers[2]->phonenumber = '(33) 3333-3333';
 
-        $this->_em->persist($u1);
-        $this->_em->persist($u2);
-        $this->_em->persist($u3);
+        $this->em->persist($u1);
+        $this->em->persist($u2);
+        $this->em->persist($u3);
 
-        $this->_em->flush();
-        $this->_em->clear();
+        $this->em->flush();
+        $this->em->clear();
 
         $this->fixtures = [$u1, $u2, $u3];
     }
@@ -106,7 +102,7 @@ class NewOperatorTest extends OrmFunctionalTestCase
     /**
      * @dataProvider provideDataForHydrationMode
      */
-    public function testShouldSupportsBasicUsage($hydrationMode): void
+    public function testShouldSupportsBasicUsage($hydrationMode) : void
     {
         $dql = '
             SELECT
@@ -124,32 +120,32 @@ class NewOperatorTest extends OrmFunctionalTestCase
             ORDER BY
                 u.name';
 
-        $query  = $this->_em->createQuery($dql);
+        $query  = $this->em->createQuery($dql);
         $result = $query->getResult($hydrationMode);
 
-        $this->assertCount(3, $result);
+        self::assertCount(3, $result);
 
-        $this->assertInstanceOf(CmsUserDTO::class, $result[0]);
-        $this->assertInstanceOf(CmsUserDTO::class, $result[1]);
-        $this->assertInstanceOf(CmsUserDTO::class, $result[2]);
+        self::assertInstanceOf(CmsUserDTO::class, $result[0]);
+        self::assertInstanceOf(CmsUserDTO::class, $result[1]);
+        self::assertInstanceOf(CmsUserDTO::class, $result[2]);
 
-        $this->assertEquals($this->fixtures[0]->name, $result[0]->name);
-        $this->assertEquals($this->fixtures[1]->name, $result[1]->name);
-        $this->assertEquals($this->fixtures[2]->name, $result[2]->name);
+        self::assertEquals($this->fixtures[0]->name, $result[0]->name);
+        self::assertEquals($this->fixtures[1]->name, $result[1]->name);
+        self::assertEquals($this->fixtures[2]->name, $result[2]->name);
 
-        $this->assertEquals($this->fixtures[0]->email->email, $result[0]->email);
-        $this->assertEquals($this->fixtures[1]->email->email, $result[1]->email);
-        $this->assertEquals($this->fixtures[2]->email->email, $result[2]->email);
+        self::assertEquals($this->fixtures[0]->email->email, $result[0]->email);
+        self::assertEquals($this->fixtures[1]->email->email, $result[1]->email);
+        self::assertEquals($this->fixtures[2]->email->email, $result[2]->email);
 
-        $this->assertEquals($this->fixtures[0]->address->city, $result[0]->address);
-        $this->assertEquals($this->fixtures[1]->address->city, $result[1]->address);
-        $this->assertEquals($this->fixtures[2]->address->city, $result[2]->address);
+        self::assertEquals($this->fixtures[0]->address->city, $result[0]->address);
+        self::assertEquals($this->fixtures[1]->address->city, $result[1]->address);
+        self::assertEquals($this->fixtures[2]->address->city, $result[2]->address);
     }
 
     /**
      * @dataProvider provideDataForHydrationMode
      */
-    public function testShouldIgnoreAliasesForSingleObject($hydrationMode): void
+    public function testShouldIgnoreAliasesForSingleObject($hydrationMode) : void
     {
         $dql = '
             SELECT
@@ -167,29 +163,29 @@ class NewOperatorTest extends OrmFunctionalTestCase
             ORDER BY
                 u.name';
 
-        $query  = $this->_em->createQuery($dql);
+        $query  = $this->em->createQuery($dql);
         $result = $query->getResult($hydrationMode);
 
-        $this->assertCount(3, $result);
+        self::assertCount(3, $result);
 
-        $this->assertInstanceOf(CmsUserDTO::class, $result[0]);
-        $this->assertInstanceOf(CmsUserDTO::class, $result[1]);
-        $this->assertInstanceOf(CmsUserDTO::class, $result[2]);
+        self::assertInstanceOf(CmsUserDTO::class, $result[0]);
+        self::assertInstanceOf(CmsUserDTO::class, $result[1]);
+        self::assertInstanceOf(CmsUserDTO::class, $result[2]);
 
-        $this->assertEquals($this->fixtures[0]->name, $result[0]->name);
-        $this->assertEquals($this->fixtures[1]->name, $result[1]->name);
-        $this->assertEquals($this->fixtures[2]->name, $result[2]->name);
+        self::assertEquals($this->fixtures[0]->name, $result[0]->name);
+        self::assertEquals($this->fixtures[1]->name, $result[1]->name);
+        self::assertEquals($this->fixtures[2]->name, $result[2]->name);
 
-        $this->assertEquals($this->fixtures[0]->email->email, $result[0]->email);
-        $this->assertEquals($this->fixtures[1]->email->email, $result[1]->email);
-        $this->assertEquals($this->fixtures[2]->email->email, $result[2]->email);
+        self::assertEquals($this->fixtures[0]->email->email, $result[0]->email);
+        self::assertEquals($this->fixtures[1]->email->email, $result[1]->email);
+        self::assertEquals($this->fixtures[2]->email->email, $result[2]->email);
 
-        $this->assertEquals($this->fixtures[0]->address->city, $result[0]->address);
-        $this->assertEquals($this->fixtures[1]->address->city, $result[1]->address);
-        $this->assertEquals($this->fixtures[2]->address->city, $result[2]->address);
+        self::assertEquals($this->fixtures[0]->address->city, $result[0]->address);
+        self::assertEquals($this->fixtures[1]->address->city, $result[1]->address);
+        self::assertEquals($this->fixtures[2]->address->city, $result[2]->address);
     }
 
-    public function testShouldAssumeFromEntityNamespaceWhenNotGiven(): void
+    public function testShouldAssumeFromEntityNamespaceWhenNotGiven() : void
     {
         $dql = '
             SELECT
@@ -203,71 +199,17 @@ class NewOperatorTest extends OrmFunctionalTestCase
             ORDER BY
                 u.name';
 
-        $query  = $this->_em->createQuery($dql);
+        $query  = $this->em->createQuery($dql);
         $result = $query->getResult();
 
-        $this->assertCount(3, $result);
+        self::assertCount(3, $result);
 
-        $this->assertInstanceOf(CmsUserDTO::class, $result[0]);
-        $this->assertInstanceOf(CmsUserDTO::class, $result[1]);
-        $this->assertInstanceOf(CmsUserDTO::class, $result[2]);
+        self::assertInstanceOf(CmsUserDTO::class, $result[0]);
+        self::assertInstanceOf(CmsUserDTO::class, $result[1]);
+        self::assertInstanceOf(CmsUserDTO::class, $result[2]);
     }
 
-    public function testShouldSupportFromEntityNamespaceAlias(): void
-    {
-        $dql = '
-            SELECT
-                new CmsUserDTO(u.name, e.email, a.city)
-            FROM
-                cms:CmsUser u
-            JOIN
-                u.email e
-            JOIN
-                u.address a
-            ORDER BY
-                u.name';
-
-        $this->_em->getConfiguration()
-            ->addEntityNamespace('cms', 'Doctrine\Tests\Models\CMS');
-
-        $query  = $this->_em->createQuery($dql);
-        $result = $query->getResult();
-
-        $this->assertCount(3, $result);
-
-        $this->assertInstanceOf(CmsUserDTO::class, $result[0]);
-        $this->assertInstanceOf(CmsUserDTO::class, $result[1]);
-        $this->assertInstanceOf(CmsUserDTO::class, $result[2]);
-    }
-
-    public function testShouldSupportValueObjectNamespaceAlias(): void
-    {
-        $dql = '
-            SELECT
-                new cms:CmsUserDTO(u.name, e.email, a.city)
-            FROM
-                cms:CmsUser u
-            JOIN
-                u.email e
-            JOIN
-                u.address a
-            ORDER BY
-                u.name';
-
-        $this->_em->getConfiguration()
-            ->addEntityNamespace('cms', 'Doctrine\Tests\Models\CMS');
-
-        $query  = $this->_em->createQuery($dql);
-        $result = $query->getResult();
-
-        $this->assertCount(3, $result);
-
-        $this->assertInstanceOf(CmsUserDTO::class, $result[0]);
-        $this->assertInstanceOf(CmsUserDTO::class, $result[1]);
-        $this->assertInstanceOf(CmsUserDTO::class, $result[2]);
-    }
-
-    public function testShouldSupportLiteralExpression(): void
+    public function testShouldSupportLiteralExpression() : void
     {
         $dql = "
             SELECT
@@ -290,33 +232,33 @@ class NewOperatorTest extends OrmFunctionalTestCase
             ORDER BY
                 u.name";
 
-        $query  = $this->_em->createQuery($dql);
+        $query  = $this->em->createQuery($dql);
         $result = $query->getResult();
 
-        $this->assertCount(3, $result);
+        self::assertCount(3, $result);
 
-        $this->assertInstanceOf(CmsUserDTO::class, $result[0]);
-        $this->assertInstanceOf(CmsUserDTO::class, $result[1]);
-        $this->assertInstanceOf(CmsUserDTO::class, $result[2]);
+        self::assertInstanceOf(CmsUserDTO::class, $result[0]);
+        self::assertInstanceOf(CmsUserDTO::class, $result[1]);
+        self::assertInstanceOf(CmsUserDTO::class, $result[2]);
 
-        $this->assertEquals($this->fixtures[0]->name, $result[0]->name);
-        $this->assertEquals($this->fixtures[1]->name, $result[1]->name);
-        $this->assertEquals($this->fixtures[2]->name, $result[2]->name);
+        self::assertEquals($this->fixtures[0]->name, $result[0]->name);
+        self::assertEquals($this->fixtures[1]->name, $result[1]->name);
+        self::assertEquals($this->fixtures[2]->name, $result[2]->name);
 
-        $this->assertEquals('fabio.bat.silva@gmail.com', $result[0]->email);
-        $this->assertEquals('fabio.bat.silva@gmail.com', $result[1]->email);
-        $this->assertEquals('fabio.bat.silva@gmail.com', $result[2]->email);
+        self::assertEquals('fabio.bat.silva@gmail.com', $result[0]->email);
+        self::assertEquals('fabio.bat.silva@gmail.com', $result[1]->email);
+        self::assertEquals('fabio.bat.silva@gmail.com', $result[2]->email);
 
-        $this->assertEquals(false, $result[0]->address);
-        $this->assertEquals(false, $result[1]->address);
-        $this->assertEquals(false, $result[2]->address);
+        self::assertFalse($result[0]->address);
+        self::assertFalse($result[1]->address);
+        self::assertFalse($result[2]->address);
 
-        $this->assertEquals(123, $result[0]->phonenumbers);
-        $this->assertEquals(123, $result[1]->phonenumbers);
-        $this->assertEquals(123, $result[2]->phonenumbers);
+        self::assertEquals(123, $result[0]->phonenumbers);
+        self::assertEquals(123, $result[1]->phonenumbers);
+        self::assertEquals(123, $result[2]->phonenumbers);
     }
 
-    public function testShouldSupportCaseExpression(): void
+    public function testShouldSupportCaseExpression() : void
     {
         $dql = "
             SELECT
@@ -337,25 +279,25 @@ class NewOperatorTest extends OrmFunctionalTestCase
             ORDER BY
                 u.name";
 
-        $query  = $this->_em->createQuery($dql);
+        $query  = $this->em->createQuery($dql);
         $result = $query->getResult();
 
-        $this->assertCount(3, $result);
+        self::assertCount(3, $result);
 
-        $this->assertInstanceOf(CmsUserDTO::class, $result[0]);
-        $this->assertInstanceOf(CmsUserDTO::class, $result[1]);
-        $this->assertInstanceOf(CmsUserDTO::class, $result[2]);
+        self::assertInstanceOf(CmsUserDTO::class, $result[0]);
+        self::assertInstanceOf(CmsUserDTO::class, $result[1]);
+        self::assertInstanceOf(CmsUserDTO::class, $result[2]);
 
-        $this->assertEquals($this->fixtures[0]->name, $result[0]->name);
-        $this->assertEquals($this->fixtures[1]->name, $result[1]->name);
-        $this->assertEquals($this->fixtures[2]->name, $result[2]->name);
+        self::assertEquals($this->fixtures[0]->name, $result[0]->name);
+        self::assertEquals($this->fixtures[1]->name, $result[1]->name);
+        self::assertEquals($this->fixtures[2]->name, $result[2]->name);
 
-        $this->assertEquals('TEST1', $result[0]->email);
-        $this->assertEquals('OTHER_TEST', $result[1]->email);
-        $this->assertEquals('OTHER_TEST', $result[2]->email);
+        self::assertEquals('TEST1', $result[0]->email);
+        self::assertEquals('OTHER_TEST', $result[1]->email);
+        self::assertEquals('OTHER_TEST', $result[2]->email);
     }
 
-    public function testShouldSupportSimpleArithmeticExpression(): void
+    public function testShouldSupportSimpleArithmeticExpression() : void
     {
         $dql = '
             SELECT
@@ -378,44 +320,44 @@ class NewOperatorTest extends OrmFunctionalTestCase
             ORDER BY
                 u.name';
 
-        $query  = $this->_em->createQuery($dql);
+        $query  = $this->em->createQuery($dql);
         $result = $query->getResult();
 
-        $this->assertCount(3, $result);
+        self::assertCount(3, $result);
 
-        $this->assertInstanceOf(CmsUserDTO::class, $result[0]);
-        $this->assertInstanceOf(CmsUserDTO::class, $result[1]);
-        $this->assertInstanceOf(CmsUserDTO::class, $result[2]);
+        self::assertInstanceOf(CmsUserDTO::class, $result[0]);
+        self::assertInstanceOf(CmsUserDTO::class, $result[1]);
+        self::assertInstanceOf(CmsUserDTO::class, $result[2]);
 
-        $this->assertEquals($this->fixtures[0]->name, $result[0]->name);
-        $this->assertEquals($this->fixtures[1]->name, $result[1]->name);
-        $this->assertEquals($this->fixtures[2]->name, $result[2]->name);
+        self::assertEquals($this->fixtures[0]->name, $result[0]->name);
+        self::assertEquals($this->fixtures[1]->name, $result[1]->name);
+        self::assertEquals($this->fixtures[2]->name, $result[2]->name);
 
-        $this->assertEquals($this->fixtures[0]->email->email, $result[0]->email);
-        $this->assertEquals($this->fixtures[1]->email->email, $result[1]->email);
-        $this->assertEquals($this->fixtures[2]->email->email, $result[2]->email);
+        self::assertEquals($this->fixtures[0]->email->email, $result[0]->email);
+        self::assertEquals($this->fixtures[1]->email->email, $result[1]->email);
+        self::assertEquals($this->fixtures[2]->email->email, $result[2]->email);
 
-        $this->assertEquals($this->fixtures[0]->address->city, $result[0]->address);
-        $this->assertEquals($this->fixtures[1]->address->city, $result[1]->address);
-        $this->assertEquals($this->fixtures[2]->address->city, $result[2]->address);
+        self::assertEquals($this->fixtures[0]->address->city, $result[0]->address);
+        self::assertEquals($this->fixtures[1]->address->city, $result[1]->address);
+        self::assertEquals($this->fixtures[2]->address->city, $result[2]->address);
 
-        $this->assertEquals(
-            $this->fixtures[0]->address->id + $this->fixtures[0]->id,
+        self::assertEquals(
+            ($this->fixtures[0]->address->id + $this->fixtures[0]->id),
             $result[0]->phonenumbers
         );
 
-        $this->assertEquals(
-            $this->fixtures[1]->address->id + $this->fixtures[1]->id,
+        self::assertEquals(
+            ($this->fixtures[1]->address->id + $this->fixtures[1]->id),
             $result[1]->phonenumbers
         );
 
-        $this->assertEquals(
-            $this->fixtures[2]->address->id + $this->fixtures[2]->id,
+        self::assertEquals(
+            ($this->fixtures[2]->address->id + $this->fixtures[2]->id),
             $result[2]->phonenumbers
         );
     }
 
-    public function testShouldSupportAggregateFunctions(): void
+    public function testShouldSupportAggregateFunctions() : void
     {
         $dql = '
             SELECT
@@ -438,44 +380,44 @@ class NewOperatorTest extends OrmFunctionalTestCase
             ORDER BY
                 u.name';
 
-        $query  = $this->_em->createQuery($dql);
+        $query  = $this->em->createQuery($dql);
         $result = $query->getResult();
 
-        $this->assertCount(3, $result);
+        self::assertCount(3, $result);
 
-        $this->assertInstanceOf(CmsUserDTO::class, $result[0]);
-        $this->assertInstanceOf(CmsUserDTO::class, $result[1]);
-        $this->assertInstanceOf(CmsUserDTO::class, $result[2]);
+        self::assertInstanceOf(CmsUserDTO::class, $result[0]);
+        self::assertInstanceOf(CmsUserDTO::class, $result[1]);
+        self::assertInstanceOf(CmsUserDTO::class, $result[2]);
 
-        $this->assertEquals($this->fixtures[0]->name, $result[0]->name);
-        $this->assertEquals($this->fixtures[1]->name, $result[1]->name);
-        $this->assertEquals($this->fixtures[2]->name, $result[2]->name);
+        self::assertEquals($this->fixtures[0]->name, $result[0]->name);
+        self::assertEquals($this->fixtures[1]->name, $result[1]->name);
+        self::assertEquals($this->fixtures[2]->name, $result[2]->name);
 
-        $this->assertEquals($this->fixtures[0]->email->email, $result[0]->email);
-        $this->assertEquals($this->fixtures[1]->email->email, $result[1]->email);
-        $this->assertEquals($this->fixtures[2]->email->email, $result[2]->email);
+        self::assertEquals($this->fixtures[0]->email->email, $result[0]->email);
+        self::assertEquals($this->fixtures[1]->email->email, $result[1]->email);
+        self::assertEquals($this->fixtures[2]->email->email, $result[2]->email);
 
-        $this->assertEquals($this->fixtures[0]->address->city, $result[0]->address);
-        $this->assertEquals($this->fixtures[1]->address->city, $result[1]->address);
-        $this->assertEquals($this->fixtures[2]->address->city, $result[2]->address);
+        self::assertEquals($this->fixtures[0]->address->city, $result[0]->address);
+        self::assertEquals($this->fixtures[1]->address->city, $result[1]->address);
+        self::assertEquals($this->fixtures[2]->address->city, $result[2]->address);
 
-        $this->assertEquals(
+        self::assertEquals(
             count($this->fixtures[0]->phonenumbers),
             $result[0]->phonenumbers
         );
 
-        $this->assertEquals(
+        self::assertEquals(
             count($this->fixtures[1]->phonenumbers),
             $result[1]->phonenumbers
         );
 
-        $this->assertEquals(
+        self::assertEquals(
             count($this->fixtures[2]->phonenumbers),
             $result[2]->phonenumbers
         );
     }
 
-    public function testShouldSupportArithmeticExpression(): void
+    public function testShouldSupportArithmeticExpression() : void
     {
         $dql = '
             SELECT
@@ -498,44 +440,44 @@ class NewOperatorTest extends OrmFunctionalTestCase
             ORDER BY
                 u.name';
 
-        $query  = $this->_em->createQuery($dql);
+        $query  = $this->em->createQuery($dql);
         $result = $query->getResult();
 
-        $this->assertCount(3, $result);
+        self::assertCount(3, $result);
 
-        $this->assertInstanceOf(CmsUserDTO::class, $result[0]);
-        $this->assertInstanceOf(CmsUserDTO::class, $result[1]);
-        $this->assertInstanceOf(CmsUserDTO::class, $result[2]);
+        self::assertInstanceOf(CmsUserDTO::class, $result[0]);
+        self::assertInstanceOf(CmsUserDTO::class, $result[1]);
+        self::assertInstanceOf(CmsUserDTO::class, $result[2]);
 
-        $this->assertEquals($this->fixtures[0]->name, $result[0]->name);
-        $this->assertEquals($this->fixtures[1]->name, $result[1]->name);
-        $this->assertEquals($this->fixtures[2]->name, $result[2]->name);
+        self::assertEquals($this->fixtures[0]->name, $result[0]->name);
+        self::assertEquals($this->fixtures[1]->name, $result[1]->name);
+        self::assertEquals($this->fixtures[2]->name, $result[2]->name);
 
-        $this->assertEquals($this->fixtures[0]->email->email, $result[0]->email);
-        $this->assertEquals($this->fixtures[1]->email->email, $result[1]->email);
-        $this->assertEquals($this->fixtures[2]->email->email, $result[2]->email);
+        self::assertEquals($this->fixtures[0]->email->email, $result[0]->email);
+        self::assertEquals($this->fixtures[1]->email->email, $result[1]->email);
+        self::assertEquals($this->fixtures[2]->email->email, $result[2]->email);
 
-        $this->assertEquals($this->fixtures[0]->address->city, $result[0]->address);
-        $this->assertEquals($this->fixtures[1]->address->city, $result[1]->address);
-        $this->assertEquals($this->fixtures[2]->address->city, $result[2]->address);
+        self::assertEquals($this->fixtures[0]->address->city, $result[0]->address);
+        self::assertEquals($this->fixtures[1]->address->city, $result[1]->address);
+        self::assertEquals($this->fixtures[2]->address->city, $result[2]->address);
 
-        $this->assertEquals(
-            count($this->fixtures[0]->phonenumbers) + $this->fixtures[0]->id,
+        self::assertEquals(
+            (count($this->fixtures[0]->phonenumbers) + $this->fixtures[0]->id),
             $result[0]->phonenumbers
         );
 
-        $this->assertEquals(
-            count($this->fixtures[1]->phonenumbers) + $this->fixtures[1]->id,
+        self::assertEquals(
+            (count($this->fixtures[1]->phonenumbers) + $this->fixtures[1]->id),
             $result[1]->phonenumbers
         );
 
-        $this->assertEquals(
-            count($this->fixtures[2]->phonenumbers) + $this->fixtures[2]->id,
+        self::assertEquals(
+            (count($this->fixtures[2]->phonenumbers) + $this->fixtures[2]->id),
             $result[2]->phonenumbers
         );
     }
 
-    public function testShouldSupportMultipleNewOperators(): void
+    public function testShouldSupportMultipleNewOperators() : void
     {
         $dql = '
             SELECT
@@ -556,37 +498,37 @@ class NewOperatorTest extends OrmFunctionalTestCase
             ORDER BY
                 u.name';
 
-        $query  = $this->_em->createQuery($dql);
+        $query  = $this->em->createQuery($dql);
         $result = $query->getResult();
 
-        $this->assertCount(3, $result);
+        self::assertCount(3, $result);
 
-        $this->assertInstanceOf(CmsUserDTO::class, $result[0][0]);
-        $this->assertInstanceOf(CmsUserDTO::class, $result[1][0]);
-        $this->assertInstanceOf(CmsUserDTO::class, $result[2][0]);
+        self::assertInstanceOf(CmsUserDTO::class, $result[0][0]);
+        self::assertInstanceOf(CmsUserDTO::class, $result[1][0]);
+        self::assertInstanceOf(CmsUserDTO::class, $result[2][0]);
 
-        $this->assertInstanceOf(CmsAddressDTO::class, $result[0][1]);
-        $this->assertInstanceOf(CmsAddressDTO::class, $result[1][1]);
-        $this->assertInstanceOf(CmsAddressDTO::class, $result[2][1]);
+        self::assertInstanceOf(CmsAddressDTO::class, $result[0][1]);
+        self::assertInstanceOf(CmsAddressDTO::class, $result[1][1]);
+        self::assertInstanceOf(CmsAddressDTO::class, $result[2][1]);
 
-        $this->assertEquals($this->fixtures[0]->name, $result[0][0]->name);
-        $this->assertEquals($this->fixtures[1]->name, $result[1][0]->name);
-        $this->assertEquals($this->fixtures[2]->name, $result[2][0]->name);
+        self::assertEquals($this->fixtures[0]->name, $result[0][0]->name);
+        self::assertEquals($this->fixtures[1]->name, $result[1][0]->name);
+        self::assertEquals($this->fixtures[2]->name, $result[2][0]->name);
 
-        $this->assertEquals($this->fixtures[0]->email->email, $result[0][0]->email);
-        $this->assertEquals($this->fixtures[1]->email->email, $result[1][0]->email);
-        $this->assertEquals($this->fixtures[2]->email->email, $result[2][0]->email);
+        self::assertEquals($this->fixtures[0]->email->email, $result[0][0]->email);
+        self::assertEquals($this->fixtures[1]->email->email, $result[1][0]->email);
+        self::assertEquals($this->fixtures[2]->email->email, $result[2][0]->email);
 
-        $this->assertEquals($this->fixtures[0]->address->city, $result[0][1]->city);
-        $this->assertEquals($this->fixtures[1]->address->city, $result[1][1]->city);
-        $this->assertEquals($this->fixtures[2]->address->city, $result[2][1]->city);
+        self::assertEquals($this->fixtures[0]->address->city, $result[0][1]->city);
+        self::assertEquals($this->fixtures[1]->address->city, $result[1][1]->city);
+        self::assertEquals($this->fixtures[2]->address->city, $result[2][1]->city);
 
-        $this->assertEquals($this->fixtures[0]->address->country, $result[0][1]->country);
-        $this->assertEquals($this->fixtures[1]->address->country, $result[1][1]->country);
-        $this->assertEquals($this->fixtures[2]->address->country, $result[2][1]->country);
+        self::assertEquals($this->fixtures[0]->address->country, $result[0][1]->country);
+        self::assertEquals($this->fixtures[1]->address->country, $result[1][1]->country);
+        self::assertEquals($this->fixtures[2]->address->country, $result[2][1]->country);
     }
 
-    public function testShouldSupportMultipleNewOperatorsWithAliases(): void
+    public function testShouldSupportMultipleNewOperatorsWithAliases() : void
     {
         $dql = '
             SELECT
@@ -607,37 +549,37 @@ class NewOperatorTest extends OrmFunctionalTestCase
             ORDER BY
                 u.name';
 
-        $query  = $this->_em->createQuery($dql);
+        $query  = $this->em->createQuery($dql);
         $result = $query->getResult();
 
-        $this->assertCount(3, $result);
+        self::assertCount(3, $result);
 
-        $this->assertInstanceOf(CmsUserDTO::class, $result[0]['cmsUser']);
-        $this->assertInstanceOf(CmsUserDTO::class, $result[1]['cmsUser']);
-        $this->assertInstanceOf(CmsUserDTO::class, $result[2]['cmsUser']);
+        self::assertInstanceOf(CmsUserDTO::class, $result[0]['cmsUser']);
+        self::assertInstanceOf(CmsUserDTO::class, $result[1]['cmsUser']);
+        self::assertInstanceOf(CmsUserDTO::class, $result[2]['cmsUser']);
 
-        $this->assertInstanceOf(CmsAddressDTO::class, $result[0]['cmsAddress']);
-        $this->assertInstanceOf(CmsAddressDTO::class, $result[1]['cmsAddress']);
-        $this->assertInstanceOf(CmsAddressDTO::class, $result[2]['cmsAddress']);
+        self::assertInstanceOf(CmsAddressDTO::class, $result[0]['cmsAddress']);
+        self::assertInstanceOf(CmsAddressDTO::class, $result[1]['cmsAddress']);
+        self::assertInstanceOf(CmsAddressDTO::class, $result[2]['cmsAddress']);
 
-        $this->assertEquals($this->fixtures[0]->name, $result[0]['cmsUser']->name);
-        $this->assertEquals($this->fixtures[1]->name, $result[1]['cmsUser']->name);
-        $this->assertEquals($this->fixtures[2]->name, $result[2]['cmsUser']->name);
+        self::assertEquals($this->fixtures[0]->name, $result[0]['cmsUser']->name);
+        self::assertEquals($this->fixtures[1]->name, $result[1]['cmsUser']->name);
+        self::assertEquals($this->fixtures[2]->name, $result[2]['cmsUser']->name);
 
-        $this->assertEquals($this->fixtures[0]->email->email, $result[0]['cmsUser']->email);
-        $this->assertEquals($this->fixtures[1]->email->email, $result[1]['cmsUser']->email);
-        $this->assertEquals($this->fixtures[2]->email->email, $result[2]['cmsUser']->email);
+        self::assertEquals($this->fixtures[0]->email->email, $result[0]['cmsUser']->email);
+        self::assertEquals($this->fixtures[1]->email->email, $result[1]['cmsUser']->email);
+        self::assertEquals($this->fixtures[2]->email->email, $result[2]['cmsUser']->email);
 
-        $this->assertEquals($this->fixtures[0]->address->city, $result[0]['cmsAddress']->city);
-        $this->assertEquals($this->fixtures[1]->address->city, $result[1]['cmsAddress']->city);
-        $this->assertEquals($this->fixtures[2]->address->city, $result[2]['cmsAddress']->city);
+        self::assertEquals($this->fixtures[0]->address->city, $result[0]['cmsAddress']->city);
+        self::assertEquals($this->fixtures[1]->address->city, $result[1]['cmsAddress']->city);
+        self::assertEquals($this->fixtures[2]->address->city, $result[2]['cmsAddress']->city);
 
-        $this->assertEquals($this->fixtures[0]->address->country, $result[0]['cmsAddress']->country);
-        $this->assertEquals($this->fixtures[1]->address->country, $result[1]['cmsAddress']->country);
-        $this->assertEquals($this->fixtures[2]->address->country, $result[2]['cmsAddress']->country);
+        self::assertEquals($this->fixtures[0]->address->country, $result[0]['cmsAddress']->country);
+        self::assertEquals($this->fixtures[1]->address->country, $result[1]['cmsAddress']->country);
+        self::assertEquals($this->fixtures[2]->address->country, $result[2]['cmsAddress']->country);
     }
 
-    public function testShouldSupportMultipleNewOperatorsWithAndWithoutAliases(): void
+    public function testShouldSupportMultipleNewOperatorsWithAndWithoutAliases() : void
     {
         $dql = '
             SELECT
@@ -658,37 +600,37 @@ class NewOperatorTest extends OrmFunctionalTestCase
             ORDER BY
                 u.name';
 
-        $query  = $this->_em->createQuery($dql);
+        $query  = $this->em->createQuery($dql);
         $result = $query->getResult();
 
-        $this->assertCount(3, $result);
+        self::assertCount(3, $result);
 
-        $this->assertInstanceOf(CmsUserDTO::class, $result[0]['cmsUser']);
-        $this->assertInstanceOf(CmsUserDTO::class, $result[1]['cmsUser']);
-        $this->assertInstanceOf(CmsUserDTO::class, $result[2]['cmsUser']);
+        self::assertInstanceOf(CmsUserDTO::class, $result[0]['cmsUser']);
+        self::assertInstanceOf(CmsUserDTO::class, $result[1]['cmsUser']);
+        self::assertInstanceOf(CmsUserDTO::class, $result[2]['cmsUser']);
 
-        $this->assertInstanceOf(CmsAddressDTO::class, $result[0][0]);
-        $this->assertInstanceOf(CmsAddressDTO::class, $result[1][0]);
-        $this->assertInstanceOf(CmsAddressDTO::class, $result[2][0]);
+        self::assertInstanceOf(CmsAddressDTO::class, $result[0][0]);
+        self::assertInstanceOf(CmsAddressDTO::class, $result[1][0]);
+        self::assertInstanceOf(CmsAddressDTO::class, $result[2][0]);
 
-        $this->assertEquals($this->fixtures[0]->name, $result[0]['cmsUser']->name);
-        $this->assertEquals($this->fixtures[1]->name, $result[1]['cmsUser']->name);
-        $this->assertEquals($this->fixtures[2]->name, $result[2]['cmsUser']->name);
+        self::assertEquals($this->fixtures[0]->name, $result[0]['cmsUser']->name);
+        self::assertEquals($this->fixtures[1]->name, $result[1]['cmsUser']->name);
+        self::assertEquals($this->fixtures[2]->name, $result[2]['cmsUser']->name);
 
-        $this->assertEquals($this->fixtures[0]->email->email, $result[0]['cmsUser']->email);
-        $this->assertEquals($this->fixtures[1]->email->email, $result[1]['cmsUser']->email);
-        $this->assertEquals($this->fixtures[2]->email->email, $result[2]['cmsUser']->email);
+        self::assertEquals($this->fixtures[0]->email->email, $result[0]['cmsUser']->email);
+        self::assertEquals($this->fixtures[1]->email->email, $result[1]['cmsUser']->email);
+        self::assertEquals($this->fixtures[2]->email->email, $result[2]['cmsUser']->email);
 
-        $this->assertEquals($this->fixtures[0]->address->city, $result[0][0]->city);
-        $this->assertEquals($this->fixtures[1]->address->city, $result[1][0]->city);
-        $this->assertEquals($this->fixtures[2]->address->city, $result[2][0]->city);
+        self::assertEquals($this->fixtures[0]->address->city, $result[0][0]->city);
+        self::assertEquals($this->fixtures[1]->address->city, $result[1][0]->city);
+        self::assertEquals($this->fixtures[2]->address->city, $result[2][0]->city);
 
-        $this->assertEquals($this->fixtures[0]->address->country, $result[0][0]->country);
-        $this->assertEquals($this->fixtures[1]->address->country, $result[1][0]->country);
-        $this->assertEquals($this->fixtures[2]->address->country, $result[2][0]->country);
+        self::assertEquals($this->fixtures[0]->address->country, $result[0][0]->country);
+        self::assertEquals($this->fixtures[1]->address->country, $result[1][0]->country);
+        self::assertEquals($this->fixtures[2]->address->country, $result[2][0]->country);
     }
 
-    public function testShouldSupportMultipleNewOperatorsAndSingleScalar(): void
+    public function testShouldSupportMultipleNewOperatorsAndSingleScalar() : void
     {
         $dql = '
             SELECT
@@ -710,41 +652,41 @@ class NewOperatorTest extends OrmFunctionalTestCase
             ORDER BY
                 u.name';
 
-        $query  = $this->_em->createQuery($dql);
+        $query  = $this->em->createQuery($dql);
         $result = $query->getResult();
 
-        $this->assertCount(3, $result);
+        self::assertCount(3, $result);
 
-        $this->assertInstanceOf(CmsUserDTO::class, $result[0][0]);
-        $this->assertInstanceOf(CmsUserDTO::class, $result[1][0]);
-        $this->assertInstanceOf(CmsUserDTO::class, $result[2][0]);
+        self::assertInstanceOf(CmsUserDTO::class, $result[0][0]);
+        self::assertInstanceOf(CmsUserDTO::class, $result[1][0]);
+        self::assertInstanceOf(CmsUserDTO::class, $result[2][0]);
 
-        $this->assertInstanceOf(CmsAddressDTO::class, $result[0][1]);
-        $this->assertInstanceOf(CmsAddressDTO::class, $result[1][1]);
-        $this->assertInstanceOf(CmsAddressDTO::class, $result[2][1]);
+        self::assertInstanceOf(CmsAddressDTO::class, $result[0][1]);
+        self::assertInstanceOf(CmsAddressDTO::class, $result[1][1]);
+        self::assertInstanceOf(CmsAddressDTO::class, $result[2][1]);
 
-        $this->assertEquals($this->fixtures[0]->name, $result[0][0]->name);
-        $this->assertEquals($this->fixtures[1]->name, $result[1][0]->name);
-        $this->assertEquals($this->fixtures[2]->name, $result[2][0]->name);
+        self::assertEquals($this->fixtures[0]->name, $result[0][0]->name);
+        self::assertEquals($this->fixtures[1]->name, $result[1][0]->name);
+        self::assertEquals($this->fixtures[2]->name, $result[2][0]->name);
 
-        $this->assertEquals($this->fixtures[0]->email->email, $result[0][0]->email);
-        $this->assertEquals($this->fixtures[1]->email->email, $result[1][0]->email);
-        $this->assertEquals($this->fixtures[2]->email->email, $result[2][0]->email);
+        self::assertEquals($this->fixtures[0]->email->email, $result[0][0]->email);
+        self::assertEquals($this->fixtures[1]->email->email, $result[1][0]->email);
+        self::assertEquals($this->fixtures[2]->email->email, $result[2][0]->email);
 
-        $this->assertEquals($this->fixtures[0]->address->city, $result[0][1]->city);
-        $this->assertEquals($this->fixtures[1]->address->city, $result[1][1]->city);
-        $this->assertEquals($this->fixtures[2]->address->city, $result[2][1]->city);
+        self::assertEquals($this->fixtures[0]->address->city, $result[0][1]->city);
+        self::assertEquals($this->fixtures[1]->address->city, $result[1][1]->city);
+        self::assertEquals($this->fixtures[2]->address->city, $result[2][1]->city);
 
-        $this->assertEquals($this->fixtures[0]->address->country, $result[0][1]->country);
-        $this->assertEquals($this->fixtures[1]->address->country, $result[1][1]->country);
-        $this->assertEquals($this->fixtures[2]->address->country, $result[2][1]->country);
+        self::assertEquals($this->fixtures[0]->address->country, $result[0][1]->country);
+        self::assertEquals($this->fixtures[1]->address->country, $result[1][1]->country);
+        self::assertEquals($this->fixtures[2]->address->country, $result[2][1]->country);
 
-        $this->assertEquals($this->fixtures[0]->status, $result[0]['status']);
-        $this->assertEquals($this->fixtures[1]->status, $result[1]['status']);
-        $this->assertEquals($this->fixtures[2]->status, $result[2]['status']);
+        self::assertEquals($this->fixtures[0]->status, $result[0]['status']);
+        self::assertEquals($this->fixtures[1]->status, $result[1]['status']);
+        self::assertEquals($this->fixtures[2]->status, $result[2]['status']);
     }
 
-    public function testShouldSupportMultipleNewOperatorsAndSingleScalarWithAliases(): void
+    public function testShouldSupportMultipleNewOperatorsAndSingleScalarWithAliases() : void
     {
         $dql = '
             SELECT
@@ -766,41 +708,41 @@ class NewOperatorTest extends OrmFunctionalTestCase
             ORDER BY
                 u.name';
 
-        $query  = $this->_em->createQuery($dql);
+        $query  = $this->em->createQuery($dql);
         $result = $query->getResult();
 
-        $this->assertCount(3, $result);
+        self::assertCount(3, $result);
 
-        $this->assertInstanceOf(CmsUserDTO::class, $result[0]['cmsUser']);
-        $this->assertInstanceOf(CmsUserDTO::class, $result[1]['cmsUser']);
-        $this->assertInstanceOf(CmsUserDTO::class, $result[2]['cmsUser']);
+        self::assertInstanceOf(CmsUserDTO::class, $result[0]['cmsUser']);
+        self::assertInstanceOf(CmsUserDTO::class, $result[1]['cmsUser']);
+        self::assertInstanceOf(CmsUserDTO::class, $result[2]['cmsUser']);
 
-        $this->assertInstanceOf(CmsAddressDTO::class, $result[0]['cmsAddress']);
-        $this->assertInstanceOf(CmsAddressDTO::class, $result[1]['cmsAddress']);
-        $this->assertInstanceOf(CmsAddressDTO::class, $result[2]['cmsAddress']);
+        self::assertInstanceOf(CmsAddressDTO::class, $result[0]['cmsAddress']);
+        self::assertInstanceOf(CmsAddressDTO::class, $result[1]['cmsAddress']);
+        self::assertInstanceOf(CmsAddressDTO::class, $result[2]['cmsAddress']);
 
-        $this->assertEquals($this->fixtures[0]->name, $result[0]['cmsUser']->name);
-        $this->assertEquals($this->fixtures[1]->name, $result[1]['cmsUser']->name);
-        $this->assertEquals($this->fixtures[2]->name, $result[2]['cmsUser']->name);
+        self::assertEquals($this->fixtures[0]->name, $result[0]['cmsUser']->name);
+        self::assertEquals($this->fixtures[1]->name, $result[1]['cmsUser']->name);
+        self::assertEquals($this->fixtures[2]->name, $result[2]['cmsUser']->name);
 
-        $this->assertEquals($this->fixtures[0]->email->email, $result[0]['cmsUser']->email);
-        $this->assertEquals($this->fixtures[1]->email->email, $result[1]['cmsUser']->email);
-        $this->assertEquals($this->fixtures[2]->email->email, $result[2]['cmsUser']->email);
+        self::assertEquals($this->fixtures[0]->email->email, $result[0]['cmsUser']->email);
+        self::assertEquals($this->fixtures[1]->email->email, $result[1]['cmsUser']->email);
+        self::assertEquals($this->fixtures[2]->email->email, $result[2]['cmsUser']->email);
 
-        $this->assertEquals($this->fixtures[0]->address->city, $result[0]['cmsAddress']->city);
-        $this->assertEquals($this->fixtures[1]->address->city, $result[1]['cmsAddress']->city);
-        $this->assertEquals($this->fixtures[2]->address->city, $result[2]['cmsAddress']->city);
+        self::assertEquals($this->fixtures[0]->address->city, $result[0]['cmsAddress']->city);
+        self::assertEquals($this->fixtures[1]->address->city, $result[1]['cmsAddress']->city);
+        self::assertEquals($this->fixtures[2]->address->city, $result[2]['cmsAddress']->city);
 
-        $this->assertEquals($this->fixtures[0]->address->country, $result[0]['cmsAddress']->country);
-        $this->assertEquals($this->fixtures[1]->address->country, $result[1]['cmsAddress']->country);
-        $this->assertEquals($this->fixtures[2]->address->country, $result[2]['cmsAddress']->country);
+        self::assertEquals($this->fixtures[0]->address->country, $result[0]['cmsAddress']->country);
+        self::assertEquals($this->fixtures[1]->address->country, $result[1]['cmsAddress']->country);
+        self::assertEquals($this->fixtures[2]->address->country, $result[2]['cmsAddress']->country);
 
-        $this->assertEquals($this->fixtures[0]->status, $result[0]['cmsUserStatus']);
-        $this->assertEquals($this->fixtures[1]->status, $result[1]['cmsUserStatus']);
-        $this->assertEquals($this->fixtures[2]->status, $result[2]['cmsUserStatus']);
+        self::assertEquals($this->fixtures[0]->status, $result[0]['cmsUserStatus']);
+        self::assertEquals($this->fixtures[1]->status, $result[1]['cmsUserStatus']);
+        self::assertEquals($this->fixtures[2]->status, $result[2]['cmsUserStatus']);
     }
 
-    public function testShouldSupportMultipleNewOperatorsAndSingleScalarWithAndWithoutAliases(): void
+    public function testShouldSupportMultipleNewOperatorsAndSingleScalarWithAndWithoutAliases() : void
     {
         $dql = '
             SELECT
@@ -822,41 +764,41 @@ class NewOperatorTest extends OrmFunctionalTestCase
             ORDER BY
                 u.name';
 
-        $query  = $this->_em->createQuery($dql);
+        $query  = $this->em->createQuery($dql);
         $result = $query->getResult();
 
-        $this->assertCount(3, $result);
+        self::assertCount(3, $result);
 
-        $this->assertInstanceOf(CmsUserDTO::class, $result[0]['cmsUser']);
-        $this->assertInstanceOf(CmsUserDTO::class, $result[1]['cmsUser']);
-        $this->assertInstanceOf(CmsUserDTO::class, $result[2]['cmsUser']);
+        self::assertInstanceOf(CmsUserDTO::class, $result[0]['cmsUser']);
+        self::assertInstanceOf(CmsUserDTO::class, $result[1]['cmsUser']);
+        self::assertInstanceOf(CmsUserDTO::class, $result[2]['cmsUser']);
 
-        $this->assertInstanceOf(CmsAddressDTO::class, $result[0][0]);
-        $this->assertInstanceOf(CmsAddressDTO::class, $result[1][0]);
-        $this->assertInstanceOf(CmsAddressDTO::class, $result[2][0]);
+        self::assertInstanceOf(CmsAddressDTO::class, $result[0][0]);
+        self::assertInstanceOf(CmsAddressDTO::class, $result[1][0]);
+        self::assertInstanceOf(CmsAddressDTO::class, $result[2][0]);
 
-        $this->assertEquals($this->fixtures[0]->name, $result[0]['cmsUser']->name);
-        $this->assertEquals($this->fixtures[1]->name, $result[1]['cmsUser']->name);
-        $this->assertEquals($this->fixtures[2]->name, $result[2]['cmsUser']->name);
+        self::assertEquals($this->fixtures[0]->name, $result[0]['cmsUser']->name);
+        self::assertEquals($this->fixtures[1]->name, $result[1]['cmsUser']->name);
+        self::assertEquals($this->fixtures[2]->name, $result[2]['cmsUser']->name);
 
-        $this->assertEquals($this->fixtures[0]->email->email, $result[0]['cmsUser']->email);
-        $this->assertEquals($this->fixtures[1]->email->email, $result[1]['cmsUser']->email);
-        $this->assertEquals($this->fixtures[2]->email->email, $result[2]['cmsUser']->email);
+        self::assertEquals($this->fixtures[0]->email->email, $result[0]['cmsUser']->email);
+        self::assertEquals($this->fixtures[1]->email->email, $result[1]['cmsUser']->email);
+        self::assertEquals($this->fixtures[2]->email->email, $result[2]['cmsUser']->email);
 
-        $this->assertEquals($this->fixtures[0]->address->city, $result[0][0]->city);
-        $this->assertEquals($this->fixtures[1]->address->city, $result[1][0]->city);
-        $this->assertEquals($this->fixtures[2]->address->city, $result[2][0]->city);
+        self::assertEquals($this->fixtures[0]->address->city, $result[0][0]->city);
+        self::assertEquals($this->fixtures[1]->address->city, $result[1][0]->city);
+        self::assertEquals($this->fixtures[2]->address->city, $result[2][0]->city);
 
-        $this->assertEquals($this->fixtures[0]->address->country, $result[0][0]->country);
-        $this->assertEquals($this->fixtures[1]->address->country, $result[1][0]->country);
-        $this->assertEquals($this->fixtures[2]->address->country, $result[2][0]->country);
+        self::assertEquals($this->fixtures[0]->address->country, $result[0][0]->country);
+        self::assertEquals($this->fixtures[1]->address->country, $result[1][0]->country);
+        self::assertEquals($this->fixtures[2]->address->country, $result[2][0]->country);
 
-        $this->assertEquals($this->fixtures[0]->status, $result[0]['status']);
-        $this->assertEquals($this->fixtures[1]->status, $result[1]['status']);
-        $this->assertEquals($this->fixtures[2]->status, $result[2]['status']);
+        self::assertEquals($this->fixtures[0]->status, $result[0]['status']);
+        self::assertEquals($this->fixtures[1]->status, $result[1]['status']);
+        self::assertEquals($this->fixtures[2]->status, $result[2]['status']);
     }
 
-    public function testShouldSupportMultipleNewOperatorsAndMultipleScalars(): void
+    public function testShouldSupportMultipleNewOperatorsAndMultipleScalars() : void
     {
         $dql = '
             SELECT
@@ -879,45 +821,45 @@ class NewOperatorTest extends OrmFunctionalTestCase
             ORDER BY
                 u.name';
 
-        $query  = $this->_em->createQuery($dql);
+        $query  = $this->em->createQuery($dql);
         $result = $query->getResult();
 
-        $this->assertCount(3, $result);
+        self::assertCount(3, $result);
 
-        $this->assertInstanceOf(CmsUserDTO::class, $result[0][0]);
-        $this->assertInstanceOf(CmsUserDTO::class, $result[1][0]);
-        $this->assertInstanceOf(CmsUserDTO::class, $result[2][0]);
+        self::assertInstanceOf(CmsUserDTO::class, $result[0][0]);
+        self::assertInstanceOf(CmsUserDTO::class, $result[1][0]);
+        self::assertInstanceOf(CmsUserDTO::class, $result[2][0]);
 
-        $this->assertInstanceOf(CmsAddressDTO::class, $result[0][1]);
-        $this->assertInstanceOf(CmsAddressDTO::class, $result[1][1]);
-        $this->assertInstanceOf(CmsAddressDTO::class, $result[2][1]);
+        self::assertInstanceOf(CmsAddressDTO::class, $result[0][1]);
+        self::assertInstanceOf(CmsAddressDTO::class, $result[1][1]);
+        self::assertInstanceOf(CmsAddressDTO::class, $result[2][1]);
 
-        $this->assertEquals($this->fixtures[0]->name, $result[0][0]->name);
-        $this->assertEquals($this->fixtures[1]->name, $result[1][0]->name);
-        $this->assertEquals($this->fixtures[2]->name, $result[2][0]->name);
+        self::assertEquals($this->fixtures[0]->name, $result[0][0]->name);
+        self::assertEquals($this->fixtures[1]->name, $result[1][0]->name);
+        self::assertEquals($this->fixtures[2]->name, $result[2][0]->name);
 
-        $this->assertEquals($this->fixtures[0]->email->email, $result[0][0]->email);
-        $this->assertEquals($this->fixtures[1]->email->email, $result[1][0]->email);
-        $this->assertEquals($this->fixtures[2]->email->email, $result[2][0]->email);
+        self::assertEquals($this->fixtures[0]->email->email, $result[0][0]->email);
+        self::assertEquals($this->fixtures[1]->email->email, $result[1][0]->email);
+        self::assertEquals($this->fixtures[2]->email->email, $result[2][0]->email);
 
-        $this->assertEquals($this->fixtures[0]->address->city, $result[0][1]->city);
-        $this->assertEquals($this->fixtures[1]->address->city, $result[1][1]->city);
-        $this->assertEquals($this->fixtures[2]->address->city, $result[2][1]->city);
+        self::assertEquals($this->fixtures[0]->address->city, $result[0][1]->city);
+        self::assertEquals($this->fixtures[1]->address->city, $result[1][1]->city);
+        self::assertEquals($this->fixtures[2]->address->city, $result[2][1]->city);
 
-        $this->assertEquals($this->fixtures[0]->address->country, $result[0][1]->country);
-        $this->assertEquals($this->fixtures[1]->address->country, $result[1][1]->country);
-        $this->assertEquals($this->fixtures[2]->address->country, $result[2][1]->country);
+        self::assertEquals($this->fixtures[0]->address->country, $result[0][1]->country);
+        self::assertEquals($this->fixtures[1]->address->country, $result[1][1]->country);
+        self::assertEquals($this->fixtures[2]->address->country, $result[2][1]->country);
 
-        $this->assertEquals($this->fixtures[0]->status, $result[0]['status']);
-        $this->assertEquals($this->fixtures[1]->status, $result[1]['status']);
-        $this->assertEquals($this->fixtures[2]->status, $result[2]['status']);
+        self::assertEquals($this->fixtures[0]->status, $result[0]['status']);
+        self::assertEquals($this->fixtures[1]->status, $result[1]['status']);
+        self::assertEquals($this->fixtures[2]->status, $result[2]['status']);
 
-        $this->assertEquals($this->fixtures[0]->username, $result[0]['username']);
-        $this->assertEquals($this->fixtures[1]->username, $result[1]['username']);
-        $this->assertEquals($this->fixtures[2]->username, $result[2]['username']);
+        self::assertEquals($this->fixtures[0]->username, $result[0]['username']);
+        self::assertEquals($this->fixtures[1]->username, $result[1]['username']);
+        self::assertEquals($this->fixtures[2]->username, $result[2]['username']);
     }
 
-    public function testShouldSupportMultipleNewOperatorsAndMultipleScalarsWithAliases(): void
+    public function testShouldSupportMultipleNewOperatorsAndMultipleScalarsWithAliases() : void
     {
         $dql = '
             SELECT
@@ -940,45 +882,45 @@ class NewOperatorTest extends OrmFunctionalTestCase
             ORDER BY
                 u.name';
 
-        $query  = $this->_em->createQuery($dql);
+        $query  = $this->em->createQuery($dql);
         $result = $query->getResult();
 
-        $this->assertCount(3, $result);
+        self::assertCount(3, $result);
 
-        $this->assertInstanceOf(CmsUserDTO::class, $result[0]['cmsUser']);
-        $this->assertInstanceOf(CmsUserDTO::class, $result[1]['cmsUser']);
-        $this->assertInstanceOf(CmsUserDTO::class, $result[2]['cmsUser']);
+        self::assertInstanceOf(CmsUserDTO::class, $result[0]['cmsUser']);
+        self::assertInstanceOf(CmsUserDTO::class, $result[1]['cmsUser']);
+        self::assertInstanceOf(CmsUserDTO::class, $result[2]['cmsUser']);
 
-        $this->assertInstanceOf(CmsAddressDTO::class, $result[0]['cmsAddress']);
-        $this->assertInstanceOf(CmsAddressDTO::class, $result[1]['cmsAddress']);
-        $this->assertInstanceOf(CmsAddressDTO::class, $result[2]['cmsAddress']);
+        self::assertInstanceOf(CmsAddressDTO::class, $result[0]['cmsAddress']);
+        self::assertInstanceOf(CmsAddressDTO::class, $result[1]['cmsAddress']);
+        self::assertInstanceOf(CmsAddressDTO::class, $result[2]['cmsAddress']);
 
-        $this->assertEquals($this->fixtures[0]->name, $result[0]['cmsUser']->name);
-        $this->assertEquals($this->fixtures[1]->name, $result[1]['cmsUser']->name);
-        $this->assertEquals($this->fixtures[2]->name, $result[2]['cmsUser']->name);
+        self::assertEquals($this->fixtures[0]->name, $result[0]['cmsUser']->name);
+        self::assertEquals($this->fixtures[1]->name, $result[1]['cmsUser']->name);
+        self::assertEquals($this->fixtures[2]->name, $result[2]['cmsUser']->name);
 
-        $this->assertEquals($this->fixtures[0]->email->email, $result[0]['cmsUser']->email);
-        $this->assertEquals($this->fixtures[1]->email->email, $result[1]['cmsUser']->email);
-        $this->assertEquals($this->fixtures[2]->email->email, $result[2]['cmsUser']->email);
+        self::assertEquals($this->fixtures[0]->email->email, $result[0]['cmsUser']->email);
+        self::assertEquals($this->fixtures[1]->email->email, $result[1]['cmsUser']->email);
+        self::assertEquals($this->fixtures[2]->email->email, $result[2]['cmsUser']->email);
 
-        $this->assertEquals($this->fixtures[0]->address->city, $result[0]['cmsAddress']->city);
-        $this->assertEquals($this->fixtures[1]->address->city, $result[1]['cmsAddress']->city);
-        $this->assertEquals($this->fixtures[2]->address->city, $result[2]['cmsAddress']->city);
+        self::assertEquals($this->fixtures[0]->address->city, $result[0]['cmsAddress']->city);
+        self::assertEquals($this->fixtures[1]->address->city, $result[1]['cmsAddress']->city);
+        self::assertEquals($this->fixtures[2]->address->city, $result[2]['cmsAddress']->city);
 
-        $this->assertEquals($this->fixtures[0]->address->country, $result[0]['cmsAddress']->country);
-        $this->assertEquals($this->fixtures[1]->address->country, $result[1]['cmsAddress']->country);
-        $this->assertEquals($this->fixtures[2]->address->country, $result[2]['cmsAddress']->country);
+        self::assertEquals($this->fixtures[0]->address->country, $result[0]['cmsAddress']->country);
+        self::assertEquals($this->fixtures[1]->address->country, $result[1]['cmsAddress']->country);
+        self::assertEquals($this->fixtures[2]->address->country, $result[2]['cmsAddress']->country);
 
-        $this->assertEquals($this->fixtures[0]->status, $result[0]['cmsUserStatus']);
-        $this->assertEquals($this->fixtures[1]->status, $result[1]['cmsUserStatus']);
-        $this->assertEquals($this->fixtures[2]->status, $result[2]['cmsUserStatus']);
+        self::assertEquals($this->fixtures[0]->status, $result[0]['cmsUserStatus']);
+        self::assertEquals($this->fixtures[1]->status, $result[1]['cmsUserStatus']);
+        self::assertEquals($this->fixtures[2]->status, $result[2]['cmsUserStatus']);
 
-        $this->assertEquals($this->fixtures[0]->username, $result[0]['cmsUserUsername']);
-        $this->assertEquals($this->fixtures[1]->username, $result[1]['cmsUserUsername']);
-        $this->assertEquals($this->fixtures[2]->username, $result[2]['cmsUserUsername']);
+        self::assertEquals($this->fixtures[0]->username, $result[0]['cmsUserUsername']);
+        self::assertEquals($this->fixtures[1]->username, $result[1]['cmsUserUsername']);
+        self::assertEquals($this->fixtures[2]->username, $result[2]['cmsUserUsername']);
     }
 
-    public function testShouldSupportMultipleNewOperatorsAndMultipleScalarsWithAndWithoutAliases(): void
+    public function testShouldSupportMultipleNewOperatorsAndMultipleScalarsWithAndWithoutAliases() : void
     {
         $dql = '
             SELECT
@@ -1001,74 +943,82 @@ class NewOperatorTest extends OrmFunctionalTestCase
             ORDER BY
                 u.name';
 
-        $query  = $this->_em->createQuery($dql);
+        $query  = $this->em->createQuery($dql);
         $result = $query->getResult();
 
-        $this->assertCount(3, $result);
+        self::assertCount(3, $result);
 
-        $this->assertInstanceOf(CmsUserDTO::class, $result[0]['cmsUser']);
-        $this->assertInstanceOf(CmsUserDTO::class, $result[1]['cmsUser']);
-        $this->assertInstanceOf(CmsUserDTO::class, $result[2]['cmsUser']);
+        self::assertInstanceOf(CmsUserDTO::class, $result[0]['cmsUser']);
+        self::assertInstanceOf(CmsUserDTO::class, $result[1]['cmsUser']);
+        self::assertInstanceOf(CmsUserDTO::class, $result[2]['cmsUser']);
 
-        $this->assertInstanceOf(CmsAddressDTO::class, $result[0][0]);
-        $this->assertInstanceOf(CmsAddressDTO::class, $result[1][0]);
-        $this->assertInstanceOf(CmsAddressDTO::class, $result[2][0]);
+        self::assertInstanceOf(CmsAddressDTO::class, $result[0][0]);
+        self::assertInstanceOf(CmsAddressDTO::class, $result[1][0]);
+        self::assertInstanceOf(CmsAddressDTO::class, $result[2][0]);
 
-        $this->assertEquals($this->fixtures[0]->name, $result[0]['cmsUser']->name);
-        $this->assertEquals($this->fixtures[1]->name, $result[1]['cmsUser']->name);
-        $this->assertEquals($this->fixtures[2]->name, $result[2]['cmsUser']->name);
+        self::assertEquals($this->fixtures[0]->name, $result[0]['cmsUser']->name);
+        self::assertEquals($this->fixtures[1]->name, $result[1]['cmsUser']->name);
+        self::assertEquals($this->fixtures[2]->name, $result[2]['cmsUser']->name);
 
-        $this->assertEquals($this->fixtures[0]->email->email, $result[0]['cmsUser']->email);
-        $this->assertEquals($this->fixtures[1]->email->email, $result[1]['cmsUser']->email);
-        $this->assertEquals($this->fixtures[2]->email->email, $result[2]['cmsUser']->email);
+        self::assertEquals($this->fixtures[0]->email->email, $result[0]['cmsUser']->email);
+        self::assertEquals($this->fixtures[1]->email->email, $result[1]['cmsUser']->email);
+        self::assertEquals($this->fixtures[2]->email->email, $result[2]['cmsUser']->email);
 
-        $this->assertEquals($this->fixtures[0]->address->city, $result[0][0]->city);
-        $this->assertEquals($this->fixtures[1]->address->city, $result[1][0]->city);
-        $this->assertEquals($this->fixtures[2]->address->city, $result[2][0]->city);
+        self::assertEquals($this->fixtures[0]->address->city, $result[0][0]->city);
+        self::assertEquals($this->fixtures[1]->address->city, $result[1][0]->city);
+        self::assertEquals($this->fixtures[2]->address->city, $result[2][0]->city);
 
-        $this->assertEquals($this->fixtures[0]->address->country, $result[0][0]->country);
-        $this->assertEquals($this->fixtures[1]->address->country, $result[1][0]->country);
-        $this->assertEquals($this->fixtures[2]->address->country, $result[2][0]->country);
+        self::assertEquals($this->fixtures[0]->address->country, $result[0][0]->country);
+        self::assertEquals($this->fixtures[1]->address->country, $result[1][0]->country);
+        self::assertEquals($this->fixtures[2]->address->country, $result[2][0]->country);
 
-        $this->assertEquals($this->fixtures[0]->status, $result[0]['status']);
-        $this->assertEquals($this->fixtures[1]->status, $result[1]['status']);
-        $this->assertEquals($this->fixtures[2]->status, $result[2]['status']);
+        self::assertEquals($this->fixtures[0]->status, $result[0]['status']);
+        self::assertEquals($this->fixtures[1]->status, $result[1]['status']);
+        self::assertEquals($this->fixtures[2]->status, $result[2]['status']);
 
-        $this->assertEquals($this->fixtures[0]->username, $result[0]['cmsUserUsername']);
-        $this->assertEquals($this->fixtures[1]->username, $result[1]['cmsUserUsername']);
-        $this->assertEquals($this->fixtures[2]->username, $result[2]['cmsUserUsername']);
+        self::assertEquals($this->fixtures[0]->username, $result[0]['cmsUserUsername']);
+        self::assertEquals($this->fixtures[1]->username, $result[1]['cmsUserUsername']);
+        self::assertEquals($this->fixtures[2]->username, $result[2]['cmsUserUsername']);
     }
 
-    public function testInvalidClassException(): void
+    /**
+     * @expectedException Doctrine\ORM\Query\QueryException
+     * @expectedExceptionMessage [Semantical Error] line 0, col 11 near '\InvalidClass(u.name)': Error: Class "\InvalidClass" is not defined.
+     */
+    public function testInvalidClassException() : void
     {
-        $this->expectException('Doctrine\ORM\Query\QueryException');
-        $this->expectExceptionMessage('[Semantical Error] line 0, col 11 near \'\InvalidClass(u.name)\': Error: Class "\InvalidClass" is not defined.');
         $dql = 'SELECT new \InvalidClass(u.name) FROM Doctrine\Tests\Models\CMS\CmsUser u';
-        $this->_em->createQuery($dql)->getResult();
+        $this->em->createQuery($dql)->getResult();
     }
 
-    public function testInvalidClassConstructorException(): void
+    /**
+     * @expectedException Doctrine\ORM\Query\QueryException
+     * @expectedExceptionMessage [Semantical Error] line 0, col 11 near '\stdClass(u.name)': Error: Class "\stdClass" has not a valid constructor.
+     */
+    public function testInvalidClassConstructorException() : void
     {
-        $this->expectException('Doctrine\ORM\Query\QueryException');
-        $this->expectExceptionMessage('[Semantical Error] line 0, col 11 near \'\stdClass(u.name)\': Error: Class "\stdClass" has not a valid constructor.');
         $dql = 'SELECT new \stdClass(u.name) FROM Doctrine\Tests\Models\CMS\CmsUser u';
-        $this->_em->createQuery($dql)->getResult();
+        $this->em->createQuery($dql)->getResult();
     }
 
-    public function testInvalidClassWithoutConstructorException(): void
+    /**
+     * @expectedException Doctrine\ORM\Query\QueryException
+     * @expectedExceptionMessage [Semantical Error] line 0, col 11 near 'Doctrine\Tests\ORM\Functional\ClassWithTooMuchArgs(u.name)': Error: Number of arguments does not match with "Doctrine\Tests\ORM\Functional\ClassWithTooMuchArgs" constructor declaration.
+     */
+    public function testInvalidClassWithoutConstructorException() : void
     {
-        $this->expectException('Doctrine\ORM\Query\QueryException');
-        $this->expectExceptionMessage('[Semantical Error] line 0, col 11 near \'Doctrine\Tests\ORM\Functional\ClassWithTooMuchArgs(u.name)\': Error: Number of arguments does not match with "Doctrine\Tests\ORM\Functional\ClassWithTooMuchArgs" constructor declaration.');
         $dql = 'SELECT new Doctrine\Tests\ORM\Functional\ClassWithTooMuchArgs(u.name) FROM Doctrine\Tests\Models\CMS\CmsUser u';
-        $this->_em->createQuery($dql)->getResult();
+        $this->em->createQuery($dql)->getResult();
     }
 
-    public function testClassCantBeInstantiatedException(): void
+    /**
+     * @expectedException Doctrine\ORM\Query\QueryException
+     * @expectedExceptionMessage [Semantical Error] line 0, col 11 near 'Doctrine\Tests\ORM\Functional\ClassWithPrivateConstructor(u.name)': Error: Class "Doctrine\Tests\ORM\Functional\ClassWithPrivateConstructor" can not be instantiated.
+     */
+    public function testClassCantBeInstantiatedException() : void
     {
-        $this->expectException('Doctrine\ORM\Query\QueryException');
-        $this->expectExceptionMessage('[Semantical Error] line 0, col 11 near \'Doctrine\Tests\ORM\Functional\ClassWithPrivateConstructor(u.name)\': Error: Class "Doctrine\Tests\ORM\Functional\ClassWithPrivateConstructor" can not be instantiated.');
         $dql = 'SELECT new Doctrine\Tests\ORM\Functional\ClassWithPrivateConstructor(u.name) FROM Doctrine\Tests\Models\CMS\CmsUser u';
-        $this->_em->createQuery($dql)->getResult();
+        $this->em->createQuery($dql)->getResult();
     }
 }
 

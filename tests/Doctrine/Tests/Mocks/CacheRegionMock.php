@@ -9,7 +9,6 @@ use Doctrine\ORM\Cache\CacheKey;
 use Doctrine\ORM\Cache\CollectionCacheEntry;
 use Doctrine\ORM\Cache\Lock;
 use Doctrine\ORM\Cache\Region;
-
 use function array_shift;
 
 /**
@@ -24,9 +23,10 @@ class CacheRegionMock implements Region
     /**
      * Queue a return value for a specific method invocation
      *
-     * @param mixed $value
+     * @param string $method
+     * @param mixed  $value
      */
-    public function addReturn(string $method, $value): void
+    public function addReturn($method, $value)
     {
         $this->returns[$method][] = $value;
     }
@@ -34,11 +34,12 @@ class CacheRegionMock implements Region
     /**
      * Dequeue a value for a specific method invocation
      *
-     * @param mixed $default
+     * @param string $method
+     * @param mixed  $default
      *
      * @return mixed
      */
-    private function getReturn(string $method, $default)
+    private function getReturn($method, $default)
     {
         if (isset($this->returns[$method]) && ! empty($this->returns[$method])) {
             return array_shift($this->returns[$method]);
@@ -117,7 +118,10 @@ class CacheRegionMock implements Region
         return $this->getReturn(__FUNCTION__, true);
     }
 
-    public function clear(): void
+    /**
+     * {@inheritdoc}
+     */
+    public function clear()
     {
         $this->calls   = [];
         $this->returns = [];

@@ -29,19 +29,19 @@ class MappingDescribeCommandTest extends OrmFunctionalTestCase
     /** @var CommandTester */
     private $tester;
 
-    protected function setUp(): void
+    protected function setUp() : void
     {
         parent::setUp();
 
         $this->application = new Application();
-        $this->application->setHelperSet(new HelperSet(['em' => new EntityManagerHelper($this->_em)]));
+        $this->application->setHelperSet(new HelperSet(['em' => new EntityManagerHelper($this->em)]));
         $this->application->add(new MappingDescribeCommand());
 
         $this->command = $this->application->find('orm:mapping:describe');
         $this->tester  = new CommandTester($this->command);
     }
 
-    public function testShowSpecificFuzzySingle(): void
+    public function testShowSpecificFuzzySingle() : void
     {
         $this->tester->execute(
             [
@@ -52,14 +52,16 @@ class MappingDescribeCommandTest extends OrmFunctionalTestCase
 
         $display = $this->tester->getDisplay();
 
-        self::assertStringContainsString(AttractionInfo::class, $display);
-        self::assertStringContainsString('Root entity name', $display);
+        self::assertContains(AttractionInfo::class, $display);
+        self::assertContains('Root entity name', $display);
     }
 
-    public function testShowSpecificFuzzyAmbiguous(): void
+    /**
+     * @expectedException \InvalidArgumentException
+     * @expectedExceptionMessage possible matches
+     */
+    public function testShowSpecificFuzzyAmbiguous() : void
     {
-        $this->expectException('InvalidArgumentException');
-        $this->expectExceptionMessage('possible matches');
         $this->tester->execute(
             [
                 'command'    => $this->command->getName(),
@@ -68,10 +70,12 @@ class MappingDescribeCommandTest extends OrmFunctionalTestCase
         );
     }
 
-    public function testShowSpecificNotFound(): void
+    /**
+     * @expectedException \InvalidArgumentException
+     * @expectedExceptionMessage Could not find any mapped Entity classes matching "AttractionFooBar"
+     */
+    public function testShowSpecificNotFound() : void
     {
-        $this->expectException('InvalidArgumentException');
-        $this->expectExceptionMessage('Could not find any mapped Entity classes matching "AttractionFooBar"');
         $this->tester->execute(
             [
                 'command'    => $this->command->getName(),

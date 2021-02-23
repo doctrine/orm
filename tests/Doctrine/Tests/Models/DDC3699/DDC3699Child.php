@@ -4,33 +4,20 @@ declare(strict_types=1);
 
 namespace Doctrine\Tests\Models\DDC3699;
 
-use Doctrine\Common\Collections\Collection;
+use Doctrine\ORM\Annotation as ORM;
 
-/** @Entity @Table(name="ddc3699_child") */
+/** @ORM\Entity @ORM\Table(name="ddc3699_child") */
 class DDC3699Child extends DDC3699Parent
 {
-    /**
-     * @var int
-     * @Id
-     * @Column(type="integer")
-     */
+    /** @ORM\Id @ORM\Column(type="integer") */
     public $id;
 
-    /**
-     * @var string
-     * @Column(type="string")
-     */
+    /** @ORM\Column(type="string") */
     public $childField;
 
-    /**
-     * @var DDC3699RelationOne
-     * @OneToOne(targetEntity="DDC3699RelationOne", inversedBy="child")
-     */
+    /** @ORM\OneToOne(targetEntity=DDC3699RelationOne::class, inversedBy="child") */
     public $oneRelation;
 
-    /**
-     * @psalm-var Collection<int, DDC3699RelationMany>
-     * @OneToMany(targetEntity="DDC3699RelationMany", mappedBy="child")
-     */
+    /** @ORM\OneToMany(targetEntity=DDC3699RelationMany::class, mappedBy="child") */
     public $relations;
 }

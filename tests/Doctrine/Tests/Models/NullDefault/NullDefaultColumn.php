@@ -4,17 +4,14 @@ declare(strict_types=1);
 
 namespace Doctrine\Tests\Models\NullDefault;
 
-/** @Entity */
+use Doctrine\ORM\Annotation as ORM;
+
+/** @ORM\Entity */
 class NullDefaultColumn
 {
-    /**
-     * @var int
-     * @Id
-     * @GeneratedValue
-     * @Column(type="integer")
-     */
+    /** @ORM\Id @ORM\GeneratedValue @ORM\Column(type="integer") */
     public $id;
 
-    /** @Column(options={"default":NULL}) */
+    /** @ORM\Column(options={"default":NULL}) */
     public $nullDefault;
 }

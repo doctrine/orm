@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Doctrine\Tests\Models\Company;
 
+use Doctrine\ORM\Annotation as ORM;
 use function func_get_args;
 
 class CompanyContractListener
@@ -22,65 +23,65 @@ class CompanyContractListener
     public $postLoadCalls;
 
     /**
-     * @PostPersist
+     * @ORM\PostPersist
      */
-    public function postPersistHandler(CompanyContract $contract): void
+    public function postPersistHandler(CompanyContract $contract)
     {
         $this->postPersistCalls[] = func_get_args();
     }
 
     /**
-     * @PrePersist
+     * @ORM\PrePersist
      */
-    public function prePersistHandler(CompanyContract $contract): void
+    public function prePersistHandler(CompanyContract $contract)
     {
         $this->prePersistCalls[] = func_get_args();
     }
 
     /**
-     * @PostUpdate
+     * @ORM\PostUpdate
      */
-    public function postUpdateHandler(CompanyContract $contract): void
+    public function postUpdateHandler(CompanyContract $contract)
     {
         $this->postUpdateCalls[] = func_get_args();
     }
 
     /**
-     * @PreUpdate
+     * @ORM\PreUpdate
      */
-    public function preUpdateHandler(CompanyContract $contract): void
+    public function preUpdateHandler(CompanyContract $contract)
     {
         $this->preUpdateCalls[] = func_get_args();
     }
 
     /**
-     * @PostRemove
+     * @ORM\PostRemove
      */
-    public function postRemoveHandler(CompanyContract $contract): void
+    public function postRemoveHandler(CompanyContract $contract)
     {
         $this->postRemoveCalls[] = func_get_args();
     }
 
     /**
-     * @PreRemove
+     * @ORM\PreRemove
      */
-    public function preRemoveHandler(CompanyContract $contract): void
+    public function preRemoveHandler(CompanyContract $contract)
     {
         $this->preRemoveCalls[] = func_get_args();
     }
 
     /**
-     * @PreFlush
+     * @ORM\PreFlush
      */
-    public function preFlushHandler(CompanyContract $contract): void
+    public function preFlushHandler(CompanyContract $contract)
     {
         $this->preFlushCalls[] = func_get_args();
     }
 
     /**
-     * @PostLoad
+     * @ORM\PostLoad
      */
-    public function postLoadHandler(CompanyContract $contract): void
+    public function postLoadHandler(CompanyContract $contract)
     {
         $this->postLoadCalls[] = func_get_args();
     }

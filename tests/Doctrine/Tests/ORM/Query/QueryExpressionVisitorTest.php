@@ -11,17 +11,20 @@ use Doctrine\Common\Collections\ExpressionBuilder as CriteriaBuilder;
 use Doctrine\ORM\Query\Expr as QueryBuilder;
 use Doctrine\ORM\Query\Parameter;
 use Doctrine\ORM\Query\QueryExpressionVisitor;
-use PHPUnit\Framework\TestCase;
+use Doctrine\Tests\DoctrineTestCase;
 
 /**
  * Test for QueryExpressionVisitor
  */
-class QueryExpressionVisitorTest extends TestCase
+class QueryExpressionVisitorTest extends DoctrineTestCase
 {
     /** @var QueryExpressionVisitor */
     private $visitor;
 
-    protected function setUp(): void
+    /**
+     * {@inheritDoc}
+     */
+    protected function setUp() : void
     {
         $this->visitor = new QueryExpressionVisitor(['o', 'p']);
     }
@@ -31,16 +34,15 @@ class QueryExpressionVisitorTest extends TestCase
      *
      * @dataProvider comparisonData
      */
-    public function testWalkComparison(CriteriaComparison $criteriaExpr, $queryExpr, ?Parameter $parameter = null): void
+    public function testWalkComparison(CriteriaComparison $criteriaExpr, $queryExpr, ?Parameter $parameter = null) : void
     {
-        $this->assertEquals($queryExpr, $this->visitor->walkComparison($criteriaExpr));
+        self::assertEquals($queryExpr, $this->visitor->walkComparison($criteriaExpr));
         if ($parameter) {
-            $this->assertEquals(new ArrayCollection([$parameter]), $this->visitor->getParameters());
+            self::assertEquals(new ArrayCollection([$parameter]), $this->visitor->getParameters());
         }
     }
 
-    /** @psalm-return list<array{CriteriaComparison, QueryBuilder\Comparison|string, ?Parameter} */
-    public function comparisonData(): array
+    public function comparisonData()
     {
         $cb = new CriteriaBuilder();
         $qb = new QueryBuilder();
@@ -61,7 +63,6 @@ class QueryExpressionVisitorTest extends TestCase
             [$cb->notIn('field', ['value']), $qb->notIn('o.field', ':field'), new Parameter('field', ['value'])],
 
             [$cb->contains('field', 'value'), $qb->like('o.field', ':field'), new Parameter('field', '%value%')],
-            [$cb->memberOf(':field', 'o.field'), $qb->isMemberOf(':field', 'o.field')],
 
             [$cb->startsWith('field', 'value'), $qb->like('o.field', ':field'), new Parameter('field', 'value%')],
             [$cb->endsWith('field', 'value'), $qb->like('o.field', ':field'), new Parameter('field', '%value')],
@@ -75,7 +76,7 @@ class QueryExpressionVisitorTest extends TestCase
         ];
     }
 
-    public function testWalkAndCompositeExpression(): void
+    public function testWalkAndCompositeExpression() : void
     {
         $cb   = new CriteriaBuilder();
         $expr = $this->visitor->walkCompositeExpression(
@@ -85,11 +86,11 @@ class QueryExpressionVisitorTest extends TestCase
             )
         );
 
-        $this->assertInstanceOf(QueryBuilder\Andx::class, $expr);
-        $this->assertCount(2, $expr->getParts());
+        self::assertInstanceOf(QueryBuilder\Andx::class, $expr);
+        self::assertCount(2, $expr->getParts());
     }
 
-    public function testWalkOrCompositeExpression(): void
+    public function testWalkOrCompositeExpression() : void
     {
         $cb   = new CriteriaBuilder();
         $expr = $this->visitor->walkCompositeExpression(
@@ -99,21 +100,21 @@ class QueryExpressionVisitorTest extends TestCase
             )
         );
 
-        $this->assertInstanceOf(QueryBuilder\Orx::class, $expr);
-        $this->assertCount(2, $expr->getParts());
+        self::assertInstanceOf(QueryBuilder\Orx::class, $expr);
+        self::assertCount(2, $expr->getParts());
     }
 
-    public function testWalkValue(): void
+    public function testWalkValue() : void
     {
-        $this->assertEquals('value', $this->visitor->walkValue(new Value('value')));
+        self::assertEquals('value', $this->visitor->walkValue(new Value('value')));
     }
 
-    public function testClearParameters(): void
+    public function testClearParameters() : void
     {
         $this->visitor->getParameters()->add(new Parameter('field', 'value'));
 
         $this->visitor->clearParameters();
 
-        $this->assertCount(0, $this->visitor->getParameters());
+        self::assertCount(0, $this->visitor->getParameters());
     }
 }

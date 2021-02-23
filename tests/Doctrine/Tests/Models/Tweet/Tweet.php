@@ -4,33 +4,28 @@ declare(strict_types=1);
 
 namespace Doctrine\Tests\Models\Tweet;
 
+use Doctrine\ORM\Annotation as ORM;
+
 /**
- * @Entity
- * @Table(name="tweet_tweet")
+ * @ORM\Entity
+ * @ORM\Table(name="tweet_tweet")
  */
 class Tweet
 {
     /**
-     * @var int
-     * @Id
-     * @GeneratedValue
-     * @Column(type="integer")
+     * @ORM\Id
+     * @ORM\GeneratedValue
+     * @ORM\Column(type="integer")
      */
     public $id;
 
-    /**
-     * @var string
-     * @Column(type="string")
-     */
+    /** @ORM\Column(type="string") */
     public $content;
 
-    /**
-     * @var User
-     * @ManyToOne(targetEntity="User", inversedBy="tweets")
-     */
+    /** @ORM\ManyToOne(targetEntity=User::class, inversedBy="tweets") */
     public $author;
 
-    public function setAuthor(User $user): void
+    public function setAuthor(User $user)
     {
         $this->author = $user;
     }

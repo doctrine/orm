@@ -4,31 +4,28 @@ declare(strict_types=1);
 
 namespace Doctrine\Tests\Models\Routing;
 
+use Doctrine\ORM\Annotation as ORM;
+
 /**
- * @Entity
+ * @ORM\Entity
  */
 class RoutingRouteBooking
 {
     /**
-     * @var int
-     * @Id
-     * @Column(type="integer")
-     * @GeneratedValue
+     * @ORM\Id
+     * @ORM\Column(type="integer")
+     * @ORM\GeneratedValue
      */
     public $id;
 
     /**
-     * @var RoutingRoute
-     * @ManyToOne(targetEntity="RoutingRoute", inversedBy="bookings")
-     * @JoinColumn(name="route_id", referencedColumnName="id")
+     * @ORM\ManyToOne(targetEntity=RoutingRoute::class, inversedBy="bookings")
+     * @ORM\JoinColumn(name="route_id", referencedColumnName="id")
      */
     public $route;
 
-    /**
-     * @var string
-     * @Column(type="string")
-     */
-    public $passengerName = null;
+    /** @ORM\Column(type="string") */
+    public $passengerName;
 
     public function getPassengerName()
     {

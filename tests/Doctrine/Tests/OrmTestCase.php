@@ -16,8 +16,7 @@ use Doctrine\ORM\Cache\DefaultCacheFactory;
 use Doctrine\ORM\Cache\Logging\StatisticsCacheLogger;
 use Doctrine\ORM\Configuration;
 use Doctrine\ORM\Mapping\Driver\AnnotationDriver;
-use Doctrine\Tests\Mocks\EntityManagerMock;
-
+use Doctrine\ORM\Proxy\Factory\ProxyFactory;
 use function is_array;
 use function realpath;
 
@@ -31,14 +30,14 @@ abstract class OrmTestCase extends DoctrineTestCase
      *
      * @var Cache|null
      */
-    private static $_metadataCacheImpl = null;
+    private static $metadataCacheImpl = null;
 
     /**
      * The query cache that is shared between all ORM tests (except functional tests).
      *
      * @var Cache|null
      */
-    private static $_queryCacheImpl = null;
+    private static $queryCacheImpl = null;
 
     /** @var bool */
     protected $isSecondLevelCacheEnabled = false;
@@ -53,22 +52,18 @@ abstract class OrmTestCase extends DoctrineTestCase
     protected $secondLevelCacheLogger;
 
     /** @var Cache|null */
-    protected $secondLevelCacheDriverImpl = null;
+    protected $secondLevelCacheDriverImpl;
 
     /**
      * @param array $paths
-     * @param mixed $alias
+     *
+     * @return AnnotationDriver
      */
-    protected function createAnnotationDriver(array $paths = [], $alias = null): AnnotationDriver
+    protected function createAnnotationDriver($paths = [])
     {
-        // Register the ORM Annotations in the AnnotationRegistry
-        $reader = new Annotations\SimpleAnnotationReader();
+        $reader = new Annotations\CachedReader(new Annotations\AnnotationReader(), new ArrayCache());
 
-        $reader->addNamespace('Doctrine\ORM\Mapping');
-
-        $reader = new Annotations\CachedReader($reader, new ArrayCache());
-
-        Annotations\AnnotationRegistry::registerFile(__DIR__ . '/../../../lib/Doctrine/ORM/Mapping/Driver/DoctrineAnnotations.php');
+        Annotations\AnnotationRegistry::registerFile(__DIR__ . '/../../../lib/Doctrine/ORM/Annotation/DoctrineAnnotations.php');
 
         return new AnnotationDriver($reader, (array) $paths);
     }
@@ -81,15 +76,17 @@ abstract class OrmTestCase extends DoctrineTestCase
      * be configured in the tests to simulate the DBAL behavior that is desired
      * for a particular test,
      *
-     * @param Connection|array $conn
-     * @param mixed            $conf
+     * @param Connection|array  $conn
+     * @param mixed             $conf
+     * @param EventManager|null $eventManager
+     * @param bool              $withSharedMetadata
      */
     protected function getTestEntityManager(
         $conn = null,
         $conf = null,
-        ?EventManager $eventManager = null,
-        bool $withSharedMetadata = true
-    ): EntityManagerMock {
+        $eventManager = null,
+        $withSharedMetadata = true
+    ) : Mocks\EntityManagerMock {
         $metadataCache = $withSharedMetadata
             ? self::getSharedMetadataCacheImpl()
             : new ArrayCache();
@@ -97,16 +94,13 @@ abstract class OrmTestCase extends DoctrineTestCase
         $config = new Configuration();
 
         $config->setMetadataCacheImpl($metadataCache);
-        $config->setMetadataDriverImpl($config->newDefaultAnnotationDriver([], true));
+        $config->setMetadataDriverImpl($config->newDefaultAnnotationDriver([]));
         $config->setQueryCacheImpl(self::getSharedQueryCacheImpl());
-        $config->setProxyDir(__DIR__ . '/Proxies');
         $config->setProxyNamespace('Doctrine\Tests\Proxies');
-        $config->setMetadataDriverImpl($config->newDefaultAnnotationDriver(
-            [
-                realpath(__DIR__ . '/Models/Cache'),
-            ],
-            true
-        ));
+        $config->setAutoGenerateProxyClasses(ProxyFactory::AUTOGENERATE_EVAL);
+        $config->setMetadataDriverImpl(
+            $config->newDefaultAnnotationDriver([realpath(__DIR__ . '/Models/Cache')])
+        );
 
         if ($this->isSecondLevelCacheEnabled) {
             $cacheConfig = new CacheConfiguration();
@@ -133,34 +127,43 @@ abstract class OrmTestCase extends DoctrineTestCase
             $conn = DriverManager::getConnection($conn, $config, $eventManager);
         }
 
-        return EntityManagerMock::create($conn, $config, $eventManager);
+        return Mocks\EntityManagerMock::create($conn, $config, $eventManager);
     }
 
-    protected function enableSecondLevelCache($log = true): void
+    protected function enableSecondLevelCache($log = true)
     {
         $this->isSecondLevelCacheEnabled    = true;
         $this->isSecondLevelCacheLogEnabled = $log;
     }
 
-    private static function getSharedMetadataCacheImpl(): Cache
+    /**
+     * @return Cache
+     */
+    private static function getSharedMetadataCacheImpl()
     {
-        if (self::$_metadataCacheImpl === null) {
-            self::$_metadataCacheImpl = new ArrayCache();
+        if (self::$metadataCacheImpl === null) {
+            self::$metadataCacheImpl = new ArrayCache();
         }
 
-        return self::$_metadataCacheImpl;
+        return self::$metadataCacheImpl;
     }
 
-    private static function getSharedQueryCacheImpl(): Cache
+    /**
+     * @return Cache
+     */
+    private static function getSharedQueryCacheImpl()
     {
-        if (self::$_queryCacheImpl === null) {
-            self::$_queryCacheImpl = new ArrayCache();
+        if (self::$queryCacheImpl === null) {
+            self::$queryCacheImpl = new ArrayCache();
         }
 
-        return self::$_queryCacheImpl;
+        return self::$queryCacheImpl;
     }
 
-    protected function getSharedSecondLevelCacheDriverImpl(): Cache
+    /**
+     * @return Cache
+     */
+    protected function getSharedSecondLevelCacheDriverImpl()
     {
         if ($this->secondLevelCacheDriverImpl === null) {
             $this->secondLevelCacheDriverImpl = new ArrayCache();

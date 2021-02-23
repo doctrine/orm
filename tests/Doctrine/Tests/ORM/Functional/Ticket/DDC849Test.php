@@ -8,20 +8,13 @@ use Doctrine\Tests\Models\CMS\CmsGroup;
 use Doctrine\Tests\Models\CMS\CmsUser;
 use Doctrine\Tests\OrmFunctionalTestCase;
 
-use function count;
-
 class DDC849Test extends OrmFunctionalTestCase
 {
-    /** @var CmsUser */
     private $user;
-
-    /** @var CmsGroup */
     private $group1;
-
-    /** @var CmsGroup */
     private $group2;
 
-    protected function setUp(): void
+    public function setUp() : void
     {
         $this->useModelSet('cms');
         parent::setUp();
@@ -39,53 +32,53 @@ class DDC849Test extends OrmFunctionalTestCase
         $this->user->addGroup($this->group1);
         $this->user->addGroup($this->group2);
 
-        $this->_em->persist($this->user);
-        $this->_em->persist($this->group1);
-        $this->_em->persist($this->group2);
+        $this->em->persist($this->user);
+        $this->em->persist($this->group1);
+        $this->em->persist($this->group2);
 
-        $this->_em->flush();
-        $this->_em->clear();
+        $this->em->flush();
+        $this->em->clear();
 
-        $this->user = $this->_em->find(CmsUser::class, $this->user->getId());
+        $this->user = $this->em->find(CmsUser::class, $this->user->getId());
     }
 
-    public function testRemoveContains(): void
+    public function testRemoveContains() : void
     {
         $group1 = $this->user->groups[0];
         $group2 = $this->user->groups[1];
 
-        $this->assertTrue($this->user->groups->contains($group1));
-        $this->assertTrue($this->user->groups->contains($group2));
+        self::assertTrue($this->user->groups->contains($group1));
+        self::assertTrue($this->user->groups->contains($group2));
 
         $this->user->groups->removeElement($group1);
         $this->user->groups->remove(1);
 
-        $this->assertFalse($this->user->groups->contains($group1));
-        $this->assertFalse($this->user->groups->contains($group2));
+        self::assertFalse($this->user->groups->contains($group1));
+        self::assertFalse($this->user->groups->contains($group2));
     }
 
-    public function testClearCount(): void
+    public function testClearCount() : void
     {
         $this->user->addGroup(new CmsGroup());
-        $this->assertEquals(3, count($this->user->groups));
+        self::assertCount(3, $this->user->groups);
 
         $this->user->groups->clear();
 
-        $this->assertEquals(0, $this->user->groups->count());
-        $this->assertEquals(0, count($this->user->groups));
+        self::assertEquals(0, $this->user->groups->count());
+        self::assertCount(0, $this->user->groups);
     }
 
-    public function testClearContains(): void
+    public function testClearContains() : void
     {
         $group1 = $this->user->groups[0];
         $group2 = $this->user->groups[1];
 
-        $this->assertTrue($this->user->groups->contains($group1));
-        $this->assertTrue($this->user->groups->contains($group2));
+        self::assertTrue($this->user->groups->contains($group1));
+        self::assertTrue($this->user->groups->contains($group2));
 
         $this->user->groups->clear();
 
-        $this->assertFalse($this->user->groups->contains($group1));
-        $this->assertFalse($this->user->groups->contains($group2));
+        self::assertFalse($this->user->groups->contains($group1));
+        self::assertFalse($this->user->groups->contains($group2));
     }
 }

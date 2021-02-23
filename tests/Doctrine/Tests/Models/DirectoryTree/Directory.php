@@ -4,18 +4,17 @@ declare(strict_types=1);
 
 namespace Doctrine\Tests\Models\DirectoryTree;
 
+use Doctrine\ORM\Annotation as ORM;
+
 /**
- * @Entity
+ * @ORM\Entity
  */
 class Directory extends AbstractContentItem
 {
-    /**
-     * @var string
-     * @Column(type="string")
-     */
+    /** @ORM\Column(type="string") */
     protected $path;
 
-    public function setPath($path): void
+    public function setPath($path)
     {
         $this->path = $path;
     }

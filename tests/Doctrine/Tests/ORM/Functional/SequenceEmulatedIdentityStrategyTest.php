@@ -5,25 +5,27 @@ declare(strict_types=1);
 namespace Doctrine\Tests\ORM\Functional;
 
 use Doctrine\DBAL\Schema\Sequence;
+use Doctrine\ORM\Annotation as ORM;
 use Doctrine\Tests\OrmFunctionalTestCase;
 use Exception;
 
-use function is_numeric;
-
 class SequenceEmulatedIdentityStrategyTest extends OrmFunctionalTestCase
 {
-    protected function setUp(): void
+    /**
+     * {@inheritdoc}
+     */
+    protected function setUp() : void
     {
         parent::setUp();
 
-        if (! $this->_em->getConnection()->getDatabasePlatform()->usesSequenceEmulatedIdentityColumns()) {
+        if (! $this->em->getConnection()->getDatabasePlatform()->usesSequenceEmulatedIdentityColumns()) {
             $this->markTestSkipped(
                 'This test is special to platforms emulating IDENTITY key generation strategy through sequences.'
             );
         } else {
             try {
-                $this->_schemaTool->createSchema(
-                    [$this->_em->getClassMetadata(SequenceEmulatedIdentityEntity::class)]
+                $this->schemaTool->createSchema(
+                    [$this->em->getClassMetadata(SequenceEmulatedIdentityEntity::class)]
                 );
             } catch (Exception $e) {
                 // Swallow all exceptions. We do not test the schema tool here.
@@ -31,11 +33,14 @@ class SequenceEmulatedIdentityStrategyTest extends OrmFunctionalTestCase
         }
     }
 
-    protected function tearDown(): void
+    /**
+     * {@inheritdoc}
+     */
+    protected function tearDown() : void
     {
         parent::tearDown();
 
-        $connection = $this->_em->getConnection();
+        $connection = $this->em->getConnection();
         $platform   = $connection->getDatabasePlatform();
 
         // drop sequence manually due to dependency
@@ -46,46 +51,38 @@ class SequenceEmulatedIdentityStrategyTest extends OrmFunctionalTestCase
         );
     }
 
-    public function testPreSavePostSaveCallbacksAreInvoked(): void
+    public function testPreSavePostSaveCallbacksAreInvoked() : void
     {
         $entity = new SequenceEmulatedIdentityEntity();
         $entity->setValue('hello');
-        $this->_em->persist($entity);
-        $this->_em->flush();
-        $this->assertTrue(is_numeric($entity->getId()));
-        $this->assertTrue($entity->getId() > 0);
-        $this->assertTrue($this->_em->contains($entity));
+        $this->em->persist($entity);
+        $this->em->flush();
+        self::assertInternalType('numeric', $entity->getId());
+        self::assertGreaterThan(0, $entity->getId());
+        self::assertTrue($this->em->contains($entity));
     }
 }
 
-/** @Entity @Table(name="seq_identity") */
+/** @ORM\Entity @ORM\Table(name="seq_identity") */
 class SequenceEmulatedIdentityEntity
 {
-    /**
-     * @var int
-     * @Id
-     * @Column(type="integer")
-     * @GeneratedValue(strategy="IDENTITY")
-     */
+    /** @ORM\Id @ORM\Column(type="integer") @ORM\GeneratedValue(strategy="IDENTITY") */
     private $id;
 
-    /**
-     * @var string
-     * @Column(type="string")
-     */
+    /** @ORM\Column(type="string") */
     private $value;
 
-    public function getId(): int
+    public function getId()
     {
         return $this->id;
     }
 
-    public function getValue(): string
+    public function getValue()
     {
         return $this->value;
     }
 
-    public function setValue(string $value): void
+    public function setValue($value)
     {
         $this->value = $value;
     }

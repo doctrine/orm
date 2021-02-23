@@ -6,51 +6,51 @@ namespace Doctrine\Tests\Models\Cache;
 
 use DateTime;
 use Doctrine\Common\Collections\ArrayCollection;
-
+use Doctrine\ORM\Annotation as ORM;
 use function date;
 use function strtotime;
 
 /**
- * @Entity
- * @Cache("READ_ONLY")
- * @Table("cache_token")
+ * @ORM\Entity
+ * @ORM\Cache("READ_ONLY")
+ * @ORM\Table("cache_token")
  */
 class Token
 {
     /**
-     * @Id
-     * @Column(type="string")
+     * @ORM\Id
+     * @ORM\Column(type="string")
      */
     public $token;
 
-    /** @Column(type="date") */
+    /** @ORM\Column(type="date") */
     public $expiresAt;
 
-    /**
-     * @var Client
-     * @OneToOne(targetEntity="Client")
-     */
+    /** @ORM\OneToOne(targetEntity=Client::class) */
     public $client;
 
     /**
-     * @OneToMany(targetEntity="Login", cascade={"persist", "remove"}, mappedBy="token")
+     * @ORM\OneToMany(targetEntity=Login::class, cascade={"persist", "remove"}, mappedBy="token")
+     *
      * @var array
      */
     public $logins;
 
     /**
-     * @ManyToOne(targetEntity="Action", cascade={"persist", "remove"}, inversedBy="tokens")
-     * @JoinColumn(name="action_name", referencedColumnName="name")
+     * @ORM\ManyToOne(targetEntity=Action::class, cascade={"persist", "remove"}, inversedBy="tokens")
+     * @ORM\JoinColumn(name="action_name", referencedColumnName="name")
+     *
      * @var array
      */
     public $action;
 
     /**
-     * @ManyToOne(targetEntity="ComplexAction", cascade={"persist", "remove"}, inversedBy="tokens")
-     * @JoinColumns({
-     *   @JoinColumn(name="complex_action1_name", referencedColumnName="action1_name"),
-     *   @JoinColumn(name="complex_action2_name", referencedColumnName="action2_name")
+     * @ORM\ManyToOne(targetEntity=ComplexAction::class, cascade={"persist", "remove"}, inversedBy="tokens")
+     * @ORM\JoinColumns({
+     *   @ORM\JoinColumn(name="complex_action1_name", referencedColumnName="action1_name"),
+     *   @ORM\JoinColumn(name="complex_action2_name", referencedColumnName="action2_name")
      * })
+     *
      * @var ComplexAction
      */
     public $complexAction;
@@ -63,23 +63,32 @@ class Token
         $this->expiresAt = new DateTime(date('Y-m-d H:i:s', strtotime('+7 day')));
     }
 
-    public function addLogin(Login $login): void
+    public function addLogin(Login $login)
     {
         $this->logins[] = $login;
         $login->token   = $this;
     }
 
-    public function getClient(): Client
+    /**
+     * @return Client
+     */
+    public function getClient()
     {
         return $this->client;
     }
 
-    public function getAction(): Action
+    /**
+     * @return Action
+     */
+    public function getAction()
     {
         return $this->action;
     }
 
-    public function getComplexAction(): ComplexAction
+    /**
+     * @return ComplexAction
+     */
+    public function getComplexAction()
     {
         return $this->complexAction;
     }

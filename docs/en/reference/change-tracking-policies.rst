@@ -30,7 +30,7 @@ Deferred Explicit
 
 The deferred explicit policy is similar to the deferred implicit
 policy in that it detects changes through a property-by-property
-comparison at commit time. The difference is that Doctrine ORM only
+comparison at commit time. The difference is that Doctrine 2 only
 considers entities that have been explicitly marked for change detection
 through a call to EntityManager#persist(entity) or through a save
 cascade. All other entities are skipped. This policy therefore
@@ -71,9 +71,9 @@ follows:
 .. code-block:: php
 
     <?php
-    use Doctrine\Persistence\NotifyPropertyChanged,
-        Doctrine\Persistence\PropertyChangedListener;
-    
+    use Doctrine\Common\NotifyPropertyChanged,
+        Doctrine\Common\PropertyChangedListener;
+
     /**
      * @Entity
      * @ChangeTrackingPolicy("NOTIFY")
@@ -81,12 +81,12 @@ follows:
     class MyEntity implements NotifyPropertyChanged
     {
         // ...
-    
-        private $_listeners = array();
-    
+
+        private $listeners = array();
+
         public function addPropertyChangedListener(PropertyChangedListener $listener)
         {
-            $this->_listeners[] = $listener;
+            $this->listeners[] = $listener;
         }
     }
 
@@ -99,30 +99,30 @@ behaviour:
 
     <?php
     // ...
-    
+
     class MyEntity implements NotifyPropertyChanged
     {
         // ...
-    
-        protected function _onPropertyChanged($propName, $oldValue, $newValue)
+
+        protected function onPropertyChanged($propName, $oldValue, $newValue)
         {
-            if ($this->_listeners) {
-                foreach ($this->_listeners as $listener) {
+            if ($this->listeners) {
+                foreach ($this->listeners as $listener) {
                     $listener->propertyChanged($this, $propName, $oldValue, $newValue);
                 }
             }
         }
-    
+
         public function setData($data)
         {
             if ($data != $this->data) {
-                $this->_onPropertyChanged('data', $this->data, $data);
+                $this->onPropertyChanged('data', $this->data, $data);
                 $this->data = $data;
             }
         }
     }
 
-You have to invoke ``_onPropertyChanged`` inside every method that
+You have to invoke ``onPropertyChanged`` inside every method that
 changes the persistent state of ``MyEntity``.
 
 The check whether the new value is different from the old one is
@@ -147,5 +147,4 @@ The positive point and main advantage of this policy is its
 effectiveness. It has the best performance characteristics of the 3
 policies with larger units of work and a flush() operation is very
 cheap when nothing has changed.
-
 

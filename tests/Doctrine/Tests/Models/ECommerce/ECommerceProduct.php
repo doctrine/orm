@@ -5,49 +5,51 @@ declare(strict_types=1);
 namespace Doctrine\Tests\Models\ECommerce;
 
 use Doctrine\Common\Collections\ArrayCollection;
-use Doctrine\Common\Collections\Collection;
+use Doctrine\ORM\Annotation as ORM;
 
 /**
  * ECommerceProduct
  * Represents a type of product of a shopping application.
  *
- * @Entity
- * @Table(name="ecommerce_products",indexes={@Index(name="name_idx", columns={"name"})})
+ * @ORM\Entity
+ * @ORM\Table(name="ecommerce_products",indexes={@ORM\Index(name="name_idx", columns={"name"})})
  */
 class ECommerceProduct
 {
     /**
-     * @var int
-     * @Column(type="integer")
-     * @Id
-     * @GeneratedValue
+     * @ORM\Column(type="integer")
+     * @ORM\Id
+     * @ORM\GeneratedValue
      */
     private $id;
 
-    /**
-     * @var string
-     * @Column(type="string", length=50, nullable=true)
-     */
+    /** @ORM\Column(type="string", length=50, nullable=true) */
     private $name;
 
     /**
-     * @var ECommerceShipping
-     * @OneToOne(targetEntity="ECommerceShipping", cascade={"persist"})
-     * @JoinColumn(name="shipping_id", referencedColumnName="id")
+     * @ORM\OneToOne(targetEntity=ECommerceShipping::class, cascade={"persist"})
+     * @ORM\JoinColumn(name="shipping_id", referencedColumnName="id")
      */
     private $shipping;
 
     /**
-     * @psalm-var Collection<int, ECommerceFeature>
-     * @OneToMany(targetEntity="ECommerceFeature", mappedBy="product", cascade={"persist"})
+     * @ORM\OneToMany(
+     *     targetEntity=ECommerceFeature::class,
+     *     mappedBy="product",
+     *     cascade={"persist"}
+     * )
      */
     private $features;
 
     /**
-     * @ManyToMany(targetEntity="ECommerceCategory", cascade={"persist"}, inversedBy="products")
-     * @JoinTable(name="ecommerce_products_categories",
-     *      joinColumns={@JoinColumn(name="product_id", referencedColumnName="id")},
-     *      inverseJoinColumns={@JoinColumn(name="category_id", referencedColumnName="id")})
+     * @ORM\ManyToMany(
+     *     targetEntity=ECommerceCategory::class,
+     *     cascade={"persist"},
+     *     inversedBy="products"
+     * )
+     * @ORM\JoinTable(name="ecommerce_products_categories",
+     *      joinColumns={@ORM\JoinColumn(name="product_id", referencedColumnName="id")},
+     *      inverseJoinColumns={@ORM\JoinColumn(name="category_id", referencedColumnName="id")})
      */
     private $categories;
 
@@ -55,10 +57,10 @@ class ECommerceProduct
      * This relation is saved with two records in the association table for
      * simplicity.
      *
-     * @ManyToMany(targetEntity="ECommerceProduct", cascade={"persist"})
-     * @JoinTable(name="ecommerce_products_related",
-     *      joinColumns={@JoinColumn(name="product_id", referencedColumnName="id")},
-     *      inverseJoinColumns={@JoinColumn(name="related_id", referencedColumnName="id")})
+     * @ORM\ManyToMany(targetEntity=ECommerceProduct::class, cascade={"persist"})
+     * @ORM\JoinTable(name="ecommerce_products_related",
+     *      joinColumns={@ORM\JoinColumn(name="product_id", referencedColumnName="id")},
+     *      inverseJoinColumns={@ORM\JoinColumn(name="related_id", referencedColumnName="id")})
      */
     private $related;
 
@@ -82,7 +84,7 @@ class ECommerceProduct
         return $this->name;
     }
 
-    public function setName($name): void
+    public function setName($name)
     {
         $this->name = $name;
     }
@@ -92,12 +94,12 @@ class ECommerceProduct
         return $this->shipping;
     }
 
-    public function setShipping(ECommerceShipping $shipping): void
+    public function setShipping(ECommerceShipping $shipping)
     {
         $this->shipping = $shipping;
     }
 
-    public function removeShipping(): void
+    public function removeShipping()
     {
         $this->shipping = null;
     }
@@ -107,14 +109,14 @@ class ECommerceProduct
         return $this->features;
     }
 
-    public function addFeature(ECommerceFeature $feature): void
+    public function addFeature(ECommerceFeature $feature)
     {
         $this->features[] = $feature;
         $feature->setProduct($this);
     }
 
     /** does not set the owning side */
-    public function brokenAddFeature(ECommerceFeature $feature): void
+    public function brokenAddFeature(ECommerceFeature $feature)
     {
         $this->features[] = $feature;
     }
@@ -129,7 +131,7 @@ class ECommerceProduct
         return $removed;
     }
 
-    public function addCategory(ECommerceCategory $category): void
+    public function addCategory(ECommerceCategory $category)
     {
         if (! $this->categories->contains($category)) {
             $this->categories[] = $category;
@@ -137,7 +139,7 @@ class ECommerceProduct
         }
     }
 
-    public function removeCategory(ECommerceCategory $category): void
+    public function removeCategory(ECommerceCategory $category)
     {
         $removed = $this->categories->removeElement($category);
         if ($removed) {
@@ -145,7 +147,7 @@ class ECommerceProduct
         }
     }
 
-    public function setCategories($categories): void
+    public function setCategories($categories)
     {
         $this->categories = $categories;
     }
@@ -160,7 +162,7 @@ class ECommerceProduct
         return $this->related;
     }
 
-    public function addRelated(ECommerceProduct $related): void
+    public function addRelated(ECommerceProduct $related)
     {
         if (! $this->related->contains($related)) {
             $this->related[] = $related;
@@ -168,7 +170,7 @@ class ECommerceProduct
         }
     }
 
-    public function removeRelated(ECommerceProduct $related): void
+    public function removeRelated(ECommerceProduct $related)
     {
         $removed = $this->related->removeElement($related);
         if ($removed) {
@@ -187,7 +189,7 @@ class ECommerceProduct
     /**
      * Testing docblock contents here
      */
-    public function __wakeup(): void
+    public function __wakeup()
     {
         $this->wakeUp = true;
     }

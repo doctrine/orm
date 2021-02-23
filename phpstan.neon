@@ -1,7 +1,0 @@
-parameters:
-    level: 1
-    paths:
-        - %currentWorkingDirectory%/lib
-    earlyTerminatingMethodCalls:
-        Doctrine\ORM\Query\Parser:
-            - syntaxError

@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace Doctrine\Tests\Mocks;
 
-use Doctrine\ORM\EntityManager;
-use Doctrine\ORM\Id\SequenceGenerator;
+use Doctrine\ORM\EntityManagerInterface;
+use Doctrine\ORM\Sequencing\SequenceGenerator;
 
 /**
  * Mock class for SequenceGenerator.
@@ -13,20 +13,21 @@ use Doctrine\ORM\Id\SequenceGenerator;
 class SequenceMock extends SequenceGenerator
 {
     /** @var int */
-    private $_sequenceNumber = 0;
+    private $sequenceNumber = 0;
 
     /**
      * {@inheritdoc}
      */
-    public function generate(EntityManager $em, $entity)
+    public function generate(EntityManagerInterface $em, ?object $entity)
     {
-        return $this->_sequenceNumber++;
+        return $this->sequenceNumber++;
     }
 
-    /* Mock API */
-
-    public function reset(): void
+    /**
+     * Mock API
+     */
+    public function reset()
     {
-        $this->_sequenceNumber = 0;
+        $this->sequenceNumber = 0;
     }
 }

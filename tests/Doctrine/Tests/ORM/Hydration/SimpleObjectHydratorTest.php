@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Doctrine\Tests\ORM\Hydration;
 
+use Doctrine\DBAL\Types\Type;
 use Doctrine\ORM\Internal\Hydration\SimpleObjectHydrator;
 use Doctrine\ORM\Query\ResultSetMapping;
 use Doctrine\Tests\Mocks\HydratorMockStatement;
@@ -17,17 +18,19 @@ class SimpleObjectHydratorTest extends HydrationTestCase
 {
     /**
      * @group DDC-1470
+     * @expectedException \Doctrine\ORM\Internal\Hydration\HydrationException
+     * @expectedExceptionMessage The discriminator column "discr" is missing for "Doctrine\Tests\Models\Company\CompanyPerson" using the DQL alias "p".
      */
-    public function testMissingDiscriminatorColumnException(): void
+    public function testMissingDiscriminatorColumnException() : void
     {
-        $this->expectException('Doctrine\ORM\Internal\Hydration\HydrationException');
-        $this->expectExceptionMessage('The discriminator column "discr" is missing for "Doctrine\Tests\Models\Company\CompanyPerson" using the DQL alias "p".');
         $rsm = new ResultSetMapping();
+
         $rsm->addEntityResult(CompanyPerson::class, 'p');
         $rsm->addFieldResult('p', 'p__id', 'id');
         $rsm->addFieldResult('p', 'p__name', 'name');
-        $rsm->addMetaResult('p ', 'discr', 'discr', false, 'string');
+        $rsm->addMetaResult('p ', 'discr', 'discr', false, Type::getType('string'));
         $rsm->setDiscriminatorColumn('p', 'discr');
+
         $resultSet = [
             [
                 'u__id'   => '1',
@@ -36,13 +39,15 @@ class SimpleObjectHydratorTest extends HydrationTestCase
         ];
 
         $stmt     = new HydratorMockStatement($resultSet);
-        $hydrator = new SimpleObjectHydrator($this->entityManager);
+        $hydrator = new SimpleObjectHydrator($this->em);
+
         $hydrator->hydrateAll($stmt, $rsm);
     }
 
-    public function testExtraFieldInResultSetShouldBeIgnore(): void
+    public function testExtraFieldInResultSetShouldBeIgnore() : void
     {
         $rsm = new ResultSetMapping();
+
         $rsm->addEntityResult(CmsAddress::class, 'a');
         $rsm->addFieldResult('a', 'a__id', 'id');
         $rsm->addFieldResult('a', 'a__city', 'city');
@@ -54,30 +59,31 @@ class SimpleObjectHydratorTest extends HydrationTestCase
             ],
         ];
 
-        $expectedEntity       = new CmsAddress();
+        $expectedEntity = new CmsAddress();
+
         $expectedEntity->id   = 1;
         $expectedEntity->city = 'Cracow';
 
         $stmt     = new HydratorMockStatement($resultSet);
-        $hydrator = new SimpleObjectHydrator($this->entityManager);
+        $hydrator = new SimpleObjectHydrator($this->em);
         $result   = $hydrator->hydrateAll($stmt, $rsm);
-        $this->assertEquals($result[0], $expectedEntity);
+
+        self::assertEquals($result[0], $expectedEntity);
     }
 
     /**
      * @group DDC-3076
+     * @expectedException \Doctrine\ORM\Internal\Hydration\HydrationException
+     * @expectedExceptionMessage The discriminator value "subworker" is invalid. It must be one of "person", "manager", "employee".
      */
-    public function testInvalidDiscriminatorValueException(): void
+    public function testInvalidDiscriminatorValueException() : void
     {
-        $this->expectException('Doctrine\ORM\Internal\Hydration\HydrationException');
-        $this->expectExceptionMessage('The discriminator value "subworker" is invalid. It must be one of "person", "manager", "employee".');
         $rsm = new ResultSetMapping();
 
         $rsm->addEntityResult(CompanyPerson::class, 'p');
-
         $rsm->addFieldResult('p', 'p__id', 'id');
         $rsm->addFieldResult('p', 'p__name', 'name');
-        $rsm->addMetaResult('p', 'discr', 'discr', false, 'string');
+        $rsm->addMetaResult('p', 'discr', 'discr', false, Type::getType('string'));
         $rsm->setDiscriminatorColumn('p', 'discr');
 
         $resultSet = [
@@ -89,21 +95,22 @@ class SimpleObjectHydratorTest extends HydrationTestCase
         ];
 
         $stmt     = new HydratorMockStatement($resultSet);
-        $hydrator = new SimpleObjectHydrator($this->entityManager);
+        $hydrator = new SimpleObjectHydrator($this->em);
+
         $hydrator->hydrateAll($stmt, $rsm);
     }
 
     /**
      * @group issue-5989
      */
-    public function testNullValueShouldNotOverwriteFieldWithSameNameInJoinedInheritance(): void
+    public function testNullValueShouldNotOverwriteFieldWithSameNameInJoinedInheritance() : void
     {
         $rsm = new ResultSetMapping();
         $rsm->addEntityResult(Issue5989Person::class, 'p');
         $rsm->addFieldResult('p', 'p__id', 'id');
         $rsm->addFieldResult('p', 'm__tags', 'tags', Issue5989Manager::class);
         $rsm->addFieldResult('p', 'e__tags', 'tags', Issue5989Employee::class);
-        $rsm->addMetaResult('p', 'discr', 'discr', false, 'string');
+        $rsm->addMetaResult('p', 'discr', 'discr', false, Type::getType('string'));
         $resultSet = [
             [
                 'p__id'   => '1',
@@ -118,8 +125,9 @@ class SimpleObjectHydratorTest extends HydrationTestCase
         $expectedEntity->tags = ['tag1', 'tag2'];
 
         $stmt     = new HydratorMockStatement($resultSet);
-        $hydrator = new SimpleObjectHydrator($this->entityManager);
+        $hydrator = new SimpleObjectHydrator($this->em);
         $result   = $hydrator->hydrateAll($stmt, $rsm);
-        $this->assertEquals($result[0], $expectedEntity);
+
+        self::assertEquals($result[0], $expectedEntity);
     }
 }

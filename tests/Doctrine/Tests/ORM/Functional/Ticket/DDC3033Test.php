@@ -5,10 +5,10 @@ declare(strict_types=1);
 namespace Doctrine\Tests\ORM\Functional\Ticket;
 
 use Doctrine\Common\Collections\ArrayCollection;
-use Doctrine\Common\Collections\Collection;
+use Doctrine\ORM\Annotation as ORM;
 use Doctrine\ORM\Event\LifecycleEventArgs;
 use Doctrine\Tests\OrmFunctionalTestCase;
-
+use SplFixedArray;
 use function get_class;
 
 /**
@@ -16,77 +16,77 @@ use function get_class;
  */
 class DDC3033Test extends OrmFunctionalTestCase
 {
-    public function testIssue(): void
+    public function testIssue() : void
     {
-        $this->_schemaTool->createSchema(
+        $this->schemaTool->createSchema(
             [
-                $this->_em->getClassMetadata(DDC3033User::class),
-                $this->_em->getClassMetadata(DDC3033Product::class),
+                $this->em->getClassMetadata(DDC3033User::class),
+                $this->em->getClassMetadata(DDC3033Product::class),
             ]
         );
 
         $user       = new DDC3033User();
         $user->name = 'Test User';
-        $this->_em->persist($user);
+        $this->em->persist($user);
 
         $user2       = new DDC3033User();
         $user2->name = 'Test User 2';
-        $this->_em->persist($user2);
+        $this->em->persist($user2);
 
         $product           = new DDC3033Product();
         $product->title    = 'Test product';
         $product->buyers[] = $user;
 
-        $this->_em->persist($product);
-        $this->_em->flush();
+        $this->em->persist($product);
+        $this->em->flush();
 
         $product->title    = 'Test Change title';
         $product->buyers[] = $user2;
 
-        $this->_em->persist($product);
-        $this->_em->flush();
+        $this->em->persist($product);
+        $this->em->flush();
 
         $expect = [
-            'title' => [
+            'title' => SplFixedArray::fromArray([
                 0 => 'Test product',
                 1 => 'Test Change title',
-            ],
+            ]),
         ];
 
-        $this->assertEquals($expect, $product->changeSet);
+        self::assertEquals($expect, $product->changeSet);
     }
 }
 
 /**
- * @Table
- * @Entity @HasLifecycleCallbacks
+ * @ORM\Table
+ * @ORM\Entity @ORM\HasLifecycleCallbacks
  */
 class DDC3033Product
 {
-    /** @psalm-var array<string, array{mixed, mixed}> */
     public $changeSet = [];
 
     /**
+     * @ORM\Column(name="id", type="integer")
+     * @ORM\Id
+     * @ORM\GeneratedValue(strategy="AUTO")
+     *
      * @var int $id
-     * @Column(name="id", type="integer")
-     * @Id
-     * @GeneratedValue(strategy="AUTO")
      */
     public $id;
 
     /**
+     * @ORM\Column(name="title", type="string", length=255)
+     *
      * @var string $title
-     * @Column(name="title", type="string", length=255)
      */
     public $title;
 
     /**
-     * @var Collection<int, DDC3033User>
-     * @ManyToMany(targetEntity="DDC3033User")
-     * @JoinTable(
+     * @ORM\ManyToMany(targetEntity=DDC3033User::class)
+     * @ORM\JoinTable(
      *   name="user_purchases_3033",
-     *   joinColumns={@JoinColumn(name="product_id", referencedColumnName="id")},
-     *   inverseJoinColumns={@JoinColumn(name="user_id", referencedColumnName="id")}
+     *   joinColumns={@ORM\JoinColumn(name="product_id", referencedColumnName="id")},
+     *   inverseJoinColumns={@ORM\JoinColumn(name="user_id", referencedColumnName="id")}
      * )
      */
     public $buyers;
@@ -100,16 +100,16 @@ class DDC3033Product
     }
 
     /**
-     * @PreUpdate
+     * @ORM\PreUpdate
      */
-    public function preUpdate(LifecycleEventArgs $eventArgs): void
+    public function preUpdate(LifecycleEventArgs $eventArgs)
     {
     }
 
     /**
-     * @PostUpdate
+     * @ORM\PostUpdate
      */
-    public function postUpdate(LifecycleEventArgs $eventArgs): void
+    public function postUpdate(LifecycleEventArgs $eventArgs)
     {
         $em            = $eventArgs->getEntityManager();
         $uow           = $em->getUnitOfWork();
@@ -122,22 +122,24 @@ class DDC3033Product
 }
 
 /**
- * @Table
- * @Entity @HasLifecycleCallbacks
+ * @ORM\Table
+ * @ORM\Entity @ORM\HasLifecycleCallbacks
  */
 class DDC3033User
 {
     /**
+     * @ORM\Column(name="id", type="integer")
+     * @ORM\Id
+     * @ORM\GeneratedValue(strategy="AUTO")
+     *
      * @var int
-     * @Column(name="id", type="integer")
-     * @Id
-     * @GeneratedValue(strategy="AUTO")
      */
     public $id;
 
     /**
+     * @ORM\Column(name="title", type="string", length=255)
+     *
      * @var string
-     * @Column(name="title", type="string", length=255)
      */
     public $name;
 }

@@ -5,10 +5,9 @@ declare(strict_types=1);
 namespace Doctrine\Tests\ORM\Functional\Ticket;
 
 use Doctrine\Common\Collections\ArrayCollection;
-use Doctrine\Common\Collections\Collection;
+use Doctrine\ORM\Annotation as ORM;
 use Doctrine\ORM\PersistentCollection;
 use Doctrine\Tests\OrmFunctionalTestCase;
-
 use function array_unique;
 use function count;
 
@@ -17,20 +16,20 @@ use function count;
  */
 class GH5762Test extends OrmFunctionalTestCase
 {
-    protected function setUp(): void
+    protected function setUp() : void
     {
         parent::setUp();
 
-        $this->_schemaTool->createSchema(
+        $this->schemaTool->createSchema(
             [
-                $this->_em->getClassMetadata(GH5762Driver::class),
-                $this->_em->getClassMetadata(GH5762DriverRide::class),
-                $this->_em->getClassMetadata(GH5762Car::class),
+                $this->em->getClassMetadata(GH5762Driver::class),
+                $this->em->getClassMetadata(GH5762DriverRide::class),
+                $this->em->getClassMetadata(GH5762Car::class),
             ]
         );
     }
 
-    public function testIssue(): void
+    public function testIssue() : void
     {
         $result = $this->fetchData();
 
@@ -53,14 +52,11 @@ class GH5762Test extends OrmFunctionalTestCase
         self::assertContains('Volvo', $cars);
     }
 
-    /**
-     * @return mixed
-     */
     private function fetchData()
     {
         $this->createData();
 
-        $qb = $this->_em->createQueryBuilder();
+        $qb = $this->em->createQueryBuilder();
         $qb->select('d, dr, c')
             ->from(GH5762Driver::class, 'd')
             ->leftJoin('d.driverRides', 'dr')
@@ -70,7 +66,7 @@ class GH5762Test extends OrmFunctionalTestCase
         return $qb->getQuery()->getSingleResult();
     }
 
-    private function createData(): void
+    private function createData()
     {
         $car1 = new GH5762Car('BMW', '7 Series');
         $car2 = new GH5762Car('Crysler', '300');
@@ -86,52 +82,45 @@ class GH5762Test extends OrmFunctionalTestCase
         $ride4 = new GH5762DriverRide($driver, $car4);
         $ride5 = new GH5762DriverRide($driver, $car5);
 
-        $this->_em->persist($car1);
-        $this->_em->persist($car2);
-        $this->_em->persist($car3);
-        $this->_em->persist($car4);
-        $this->_em->persist($car5);
+        $this->em->persist($car1);
+        $this->em->persist($car2);
+        $this->em->persist($car3);
+        $this->em->persist($car4);
+        $this->em->persist($car5);
 
-        $this->_em->persist($driver);
+        $this->em->persist($driver);
 
-        $this->_em->persist($ride1);
-        $this->_em->persist($ride2);
-        $this->_em->persist($ride3);
-        $this->_em->persist($ride4);
-        $this->_em->persist($ride5);
+        $this->em->persist($ride1);
+        $this->em->persist($ride2);
+        $this->em->persist($ride3);
+        $this->em->persist($ride4);
+        $this->em->persist($ride5);
 
-        $this->_em->flush();
-        $this->_em->clear();
+        $this->em->flush();
+        $this->em->clear();
     }
 }
 
 /**
- * @Entity
- * @Table(name="driver")
+ * @ORM\Entity
+ * @ORM\Table(name="driver")
  */
 class GH5762Driver
 {
     /**
-     * @var int
-     * @Id
-     * @Column(type="integer")
-     * @GeneratedValue(strategy="NONE")
+     * @ORM\Id
+     * @ORM\Column(type="integer")
+     * @ORM\GeneratedValue(strategy="NONE")
      */
     public $id;
 
-    /**
-     * @var string
-     * @Column(type="string", length=255)
-     */
+    /** @ORM\Column(type="string", length=255); */
     public $name;
 
-    /**
-     * @psalm-var Collection<int, GH5762DriverRide>
-     * @OneToMany(targetEntity="GH5762DriverRide", mappedBy="driver")
-     */
+    /** @ORM\OneToMany(targetEntity=GH5762DriverRide::class, mappedBy="driver") */
     public $driverRides;
 
-    public function __construct(int $id, string $name)
+    public function __construct($id, $name)
     {
         $this->driverRides = new ArrayCollection();
         $this->id          = $id;
@@ -140,24 +129,22 @@ class GH5762Driver
 }
 
 /**
- * @Entity
- * @Table(name="driver_ride")
+ * @ORM\Entity
+ * @ORM\Table(name="driver_ride")
  */
 class GH5762DriverRide
 {
     /**
-     * @var GH5762Driver
-     * @Id
-     * @ManyToOne(targetEntity="GH5762Driver", inversedBy="driverRides")
-     * @JoinColumn(name="driver_id", referencedColumnName="id")
+     * @ORM\Id
+     * @ORM\ManyToOne(targetEntity=GH5762Driver::class, inversedBy="driverRides")
+     * @ORM\JoinColumn(name="driver_id", referencedColumnName="id")
      */
     public $driver;
 
     /**
-     * @var GH5762Car
-     * @Id
-     * @ManyToOne(targetEntity="GH5762Car", inversedBy="carRides")
-     * @JoinColumn(name="car", referencedColumnName="brand")
+     * @ORM\Id
+     * @ORM\ManyToOne(targetEntity=GH5762Car::class, inversedBy="carRides")
+     * @ORM\JoinColumn(name="car", referencedColumnName="brand")
      */
     public $car;
 
@@ -172,29 +159,22 @@ class GH5762DriverRide
 }
 
 /**
- * @Entity
- * @Table(name="car")
+ * @ORM\Entity
+ * @ORM\Table(name="car")
  */
 class GH5762Car
 {
     /**
-     * @var string
-     * @Id
-     * @Column(type="string", length=25)
-     * @GeneratedValue(strategy="NONE")
+     * @ORM\Id
+     * @ORM\Column(type="string", length=25)
+     * @ORM\GeneratedValue(strategy="NONE")
      */
     public $brand;
 
-    /**
-     * @var string
-     * @Column(type="string", length=255)
-     */
+    /** @ORM\Column(type="string", length=255); */
     public $model;
 
-    /**
-     * @psalm-var Collection<int, GH5762DriverRide>
-     * @OneToMany(targetEntity="GH5762DriverRide", mappedBy="car")
-     */
+    /** @ORM\OneToMany(targetEntity=GH5762DriverRide::class, mappedBy="car") */
     public $carRides;
 
     public function __construct($brand, $model)

@@ -5,63 +5,58 @@ declare(strict_types=1);
 namespace Doctrine\Tests\Models\Navigation;
 
 use Doctrine\Common\Collections\ArrayCollection;
-use Doctrine\Common\Collections\Collection;
+use Doctrine\ORM\Annotation as ORM;
 
 /**
- * @Entity
- * @Table(name="navigation_tours")
+ * @ORM\Entity
+ * @ORM\Table(name="navigation_tours")
  */
 class NavTour
 {
     /**
-     * @var int
-     * @Id
-     * @Column(type="integer")
-     * @generatedValue
+     * @ORM\Id
+     * @ORM\Column(type="integer")
+     * @ORM\GeneratedValue
      */
     private $id;
 
-    /**
-     * @var string
-     * @column(type="string")
-     */
+    /** @ORM\Column(type="string") */
     private $name;
 
     /**
-     * @var Collection<int, NavPointOfInterest>
-     * @ManyToMany(targetEntity="NavPointOfInterest")
-     * @JoinTable(name="navigation_tour_pois",
-     *      joinColumns={@JoinColumn(name="tour_id", referencedColumnName="id")},
+     * @ORM\ManyToMany(targetEntity=NavPointOfInterest::class)
+     * @ORM\JoinTable(name="navigation_tour_pois",
+     *      joinColumns={@ORM\JoinColumn(name="tour_id", referencedColumnName="id")},
      *      inverseJoinColumns={
-     *          @JoinColumn(name="poi_long", referencedColumnName="nav_long"),
-     *          @JoinColumn(name="poi_lat", referencedColumnName="nav_lat")
+     *          @ORM\JoinColumn(name="poi_long", referencedColumnName="nav_long"),
+     *          @ORM\JoinColumn(name="poi_lat", referencedColumnName="nav_lat")
      *      }
      * )
      */
     private $pois;
 
-    public function __construct(string $name)
+    public function __construct($name)
     {
         $this->name = $name;
         $this->pois = new ArrayCollection();
     }
 
-    public function addPointOfInterest(NavPointOfInterest $poi): void
+    public function addPointOfInterest(NavPointOfInterest $poi)
     {
         $this->pois[] = $poi;
     }
 
-    public function getPointOfInterests(): Collection
+    public function getPointOfInterests()
     {
         return $this->pois;
     }
 
-    public function getName(): string
+    public function getName()
     {
         return $this->name;
     }
 
-    public function getId(): int
+    public function getId()
     {
         return $this->id;
     }

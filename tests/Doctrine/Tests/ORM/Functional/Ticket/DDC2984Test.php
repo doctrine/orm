@@ -8,9 +8,9 @@ use Doctrine\DBAL\Platforms\AbstractPlatform;
 use Doctrine\DBAL\Types\ConversionException;
 use Doctrine\DBAL\Types\StringType;
 use Doctrine\DBAL\Types\Type;
+use Doctrine\ORM\Annotation as ORM;
 use Doctrine\Tests\OrmFunctionalTestCase;
 use Exception;
-
 use function is_string;
 
 /**
@@ -18,7 +18,7 @@ use function is_string;
  */
 class DDC2984Test extends OrmFunctionalTestCase
 {
-    protected function setUp(): void
+    public function setUp() : void
     {
         parent::setUp();
 
@@ -30,9 +30,9 @@ class DDC2984Test extends OrmFunctionalTestCase
         }
 
         try {
-            $this->_schemaTool->createSchema(
+            $this->schemaTool->createSchema(
                 [
-                    $this->_em->getClassMetadata(DDC2984User::class),
+                    $this->em->getClassMetadata(DDC2984User::class),
                 ]
             );
         } catch (Exception $e) {
@@ -40,45 +40,43 @@ class DDC2984Test extends OrmFunctionalTestCase
         }
     }
 
-    public function testIssue(): void
+    public function testIssue() : void
     {
         $user = new DDC2984User(new DDC2984DomainUserId('unique_id_within_a_vo'));
         $user->applyName('Alex');
 
-        $this->_em->persist($user);
-        $this->_em->flush();
+        $this->em->persist($user);
+        $this->em->flush();
 
-        $repository = $this->_em->getRepository(__NAMESPACE__ . '\DDC2984User');
+        $repository = $this->em->getRepository(__NAMESPACE__ . '\DDC2984User');
 
         $sameUser = $repository->find(new DDC2984DomainUserId('unique_id_within_a_vo'));
 
         //Until know, everything works as expected
-        $this->assertTrue($user->sameIdentityAs($sameUser));
+        self::assertTrue($user->sameIdentityAs($sameUser));
 
-        $this->_em->clear();
+        $this->em->clear();
 
         //After clearing the identity map, the UnitOfWork produces the warning described in DDC-2984
         $equalUser = $repository->find(new DDC2984DomainUserId('unique_id_within_a_vo'));
 
-        $this->assertNotSame($user, $equalUser);
-        $this->assertTrue($user->sameIdentityAs($equalUser));
+        self::assertNotSame($user, $equalUser);
+        self::assertTrue($user->sameIdentityAs($equalUser));
     }
 }
 
-/** @Entity @Table(name="users") */
+/** @ORM\Entity @ORM\Table(name="users") */
 class DDC2984User
 {
     /**
-     * @Id @Column(type="ddc2984_domain_user_id")
-     * @GeneratedValue(strategy="NONE")
+     * @ORM\Id @ORM\Column(type="ddc2984_domain_user_id")
+     * @ORM\GeneratedValue(strategy="NONE")
+     *
      * @var DDC2984DomainUserId
      */
     private $userId;
 
-    /**
-     * @var string
-     * @Column(type="string", length=50)
-     */
+    /** @ORM\Column(type="string", length=50) */
     private $name;
 
     public function __construct(DDC2984DomainUserId $aUserId)
@@ -86,22 +84,34 @@ class DDC2984User
         $this->userId = $aUserId;
     }
 
-    public function userId(): DDC2984DomainUserId
+    /**
+     * @return DDC2984DomainUserId
+     */
+    public function userId()
     {
         return $this->userId;
     }
 
-    public function name(): string
+    /**
+     * @return string
+     */
+    public function name()
     {
         return $this->name;
     }
 
-    public function applyName(string $name): void
+    /**
+     * @param string $name
+     */
+    public function applyName($name)
     {
         $this->name = $name;
     }
 
-    public function sameIdentityAs(DDC2984User $other): bool
+    /**
+     * @return bool
+     */
+    public function sameIdentityAs(DDC2984User $other)
     {
         return $this->userId()->sameValueAs($other->userId());
     }
@@ -115,22 +125,34 @@ class DDC2984DomainUserId
     /** @var string */
     private $userIdString;
 
-    public function __construct(string $aUserIdString)
+    /**
+     * @param string $aUserIdString
+     */
+    public function __construct($aUserIdString)
     {
         $this->userIdString = $aUserIdString;
     }
 
-    public function toString(): string
+    /**
+     * @return string
+     */
+    public function toString()
     {
         return $this->userIdString;
     }
 
-    public function __toString(): string
+    /**
+     * @return string
+     */
+    public function __toString()
     {
         return $this->toString();
     }
 
-    public function sameValueAs(DDC2984DomainUserId $other): bool
+    /**
+     * @return bool
+     */
+    public function sameValueAs(DDC2984DomainUserId $other)
     {
         return $this->toString() === $other->toString();
     }
@@ -138,7 +160,7 @@ class DDC2984DomainUserId
 
 class DDC2984UserIdCustomDbalType extends StringType
 {
-    public function getName(): string
+    public function getName() : string
     {
         return 'ddc2984_domain_user_id';
     }

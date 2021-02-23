@@ -4,28 +4,29 @@ declare(strict_types=1);
 
 namespace Doctrine\Tests\Models\Cache;
 
+use Doctrine\ORM\Annotation as ORM;
+
 /**
- * @Entity
- * @Table("cache_traveler_profile_info")
- * @Cache("NONSTRICT_READ_WRITE")
+ * @ORM\Entity
+ * @ORM\Table("cache_traveler_profile_info")
+ * @ORM\Cache("NONSTRICT_READ_WRITE")
  */
 class TravelerProfileInfo
 {
     /**
-     * @var int
-     * @Id
-     * @GeneratedValue
-     * @Column(type="integer")
+     * @ORM\Id
+     * @ORM\GeneratedValue
+     * @ORM\Column(type="integer")
      */
     protected $id;
 
-    /** @Column(unique=true) */
+    /** @ORM\Column(unique=true) */
     private $description;
 
     /**
-     * @Cache()
-     * @JoinColumn(name="profile_id", referencedColumnName="id")
-     * @OneToOne(targetEntity="TravelerProfile", inversedBy="info")
+     * @ORM\Cache()
+     * @ORM\JoinColumn(name="profile_id", referencedColumnName="id")
+     * @ORM\OneToOne(targetEntity=TravelerProfile::class, inversedBy="info")
      */
     private $profile;
 
@@ -40,7 +41,7 @@ class TravelerProfileInfo
         return $this->id;
     }
 
-    public function setId($id): void
+    public function setId($id)
     {
         $this->id = $id;
     }
@@ -50,7 +51,7 @@ class TravelerProfileInfo
         return $this->description;
     }
 
-    public function setDescription($description): void
+    public function setDescription($description)
     {
         $this->description = $description;
     }
@@ -60,7 +61,7 @@ class TravelerProfileInfo
         return $this->profile;
     }
 
-    public function setProfile(TravelerProfile $profile): void
+    public function setProfile(TravelerProfile $profile)
     {
         $this->profile = $profile;
     }

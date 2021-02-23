@@ -5,8 +5,6 @@ declare(strict_types=1);
 namespace Doctrine\Tests\ORM\Mapping\Symfony;
 
 use Doctrine\ORM\Mapping\Driver\SimplifiedXmlDriver;
-use Doctrine\Persistence\Mapping\Driver\FileDriver;
-
 use function array_flip;
 
 /**
@@ -14,12 +12,12 @@ use function array_flip;
  */
 class XmlDriverTest extends AbstractDriverTest
 {
-    protected function getFileExtension(): string
+    protected function getFileExtension()
     {
         return '.orm.xml';
     }
 
-    protected function getDriver(array $paths = []): FileDriver
+    protected function getDriver(array $paths = [])
     {
         return new SimplifiedXmlDriver(array_flip($paths));
     }

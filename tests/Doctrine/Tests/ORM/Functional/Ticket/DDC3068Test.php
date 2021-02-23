@@ -14,49 +14,46 @@ use Doctrine\Tests\OrmFunctionalTestCase;
  */
 class DDC3068Test extends OrmFunctionalTestCase
 {
-    /** @var Driver */
     private $foo;
-
-    /** @var Car */
     private $merc;
 
-    protected function setUp(): void
+    protected function setUp() : void
     {
         $this->useModelSet('taxi');
         parent::setUp();
 
         $this->foo = new Driver();
         $this->foo->setName('Foo Bar');
-        $this->_em->persist($this->foo);
+        $this->em->persist($this->foo);
 
         $this->merc = new Car();
         $this->merc->setBrand('Mercedes');
         $this->merc->setModel('C-Class');
-        $this->_em->persist($this->merc);
+        $this->em->persist($this->merc);
 
-        $this->_em->flush();
+        $this->em->flush();
 
         $ride = new Ride($this->foo, $this->merc);
-        $this->_em->persist($ride);
+        $this->em->persist($ride);
 
-        $this->_em->flush();
+        $this->em->flush();
     }
 
-    public function testFindUsingAnArrayOfObjectAsPrimaryKey(): void
+    public function testFindUsingAnArrayOfObjectAsPrimaryKey() : void
     {
-        $ride1 = $this->_em->find(Ride::class, [
+        $ride1 = $this->em->find(Ride::class, [
             'driver' => $this->foo->getId(),
             'car'    => $this->merc->getBrand(),
         ]);
 
-        $this->assertInstanceOf(Ride::class, $ride1);
+        self::assertInstanceOf(Ride::class, $ride1);
 
-        $ride2 = $this->_em->find(Ride::class, [
+        $ride2 = $this->em->find(Ride::class, [
             'driver' => $this->foo,
             'car'    => $this->merc,
         ]);
 
-        $this->assertInstanceOf(Ride::class, $ride2);
-        $this->assertSame($ride1, $ride2);
+        self::assertInstanceOf(Ride::class, $ride2);
+        self::assertSame($ride1, $ride2);
     }
 }

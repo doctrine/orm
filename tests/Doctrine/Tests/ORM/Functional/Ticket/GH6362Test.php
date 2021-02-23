@@ -4,7 +4,8 @@ declare(strict_types=1);
 
 namespace Doctrine\Tests\ORM\Functional\Ticket;
 
-use Doctrine\Common\Collections\Collection;
+use Doctrine\DBAL\Types\Type;
+use Doctrine\ORM\Annotation as ORM;
 use Doctrine\ORM\Internal\Hydration\ObjectHydrator;
 use Doctrine\ORM\Query;
 use Doctrine\ORM\Query\ResultSetMapping;
@@ -13,22 +14,22 @@ use Doctrine\Tests\OrmFunctionalTestCase;
 
 final class GH6362Test extends OrmFunctionalTestCase
 {
-    protected function setUp(): void
+    protected function setUp() : void
     {
         parent::setUp();
 
-        $this->_schemaTool->createSchema(
+        $this->schemaTool->createSchema(
             [
-                $this->_em->getClassMetadata(GH6362Start::class),
-                $this->_em->getClassMetadata(GH6362Base::class),
-                $this->_em->getClassMetadata(GH6362Child::class),
-                $this->_em->getClassMetadata(GH6362Join::class),
+                $this->em->getClassMetadata(GH6362Start::class),
+                $this->em->getClassMetadata(GH6362Base::class),
+                $this->em->getClassMetadata(GH6362Child::class),
+                $this->em->getClassMetadata(GH6362Join::class),
             ]
         );
     }
 
     /**
-     * @group GH-6362
+     * @group 6362
      *
      * SELECT a as base, b, c, d
      * FROM Start a
@@ -36,7 +37,7 @@ final class GH6362Test extends OrmFunctionalTestCase
      * LEFT JOIN Child c WITH b.id = c.id
      * LEFT JOIN c.joins d
      */
-    public function testInheritanceJoinAlias(): void
+    public function testInheritanceJoinAlias() : void
     {
         $rsm = new ResultSetMapping();
         $rsm->addEntityResult(GH6362Start::class, 'a', 'base');
@@ -49,10 +50,10 @@ final class GH6362Test extends OrmFunctionalTestCase
         $rsm->addFieldResult('c', 'id_2', 'id');
         $rsm->addFieldResult('d', 'id_3', 'id');
 
-        $rsm->addMetaResult('a', 'bases_id_4', 'bases_id', false, 'integer');
-        $rsm->addMetaResult('b', 'type_5', 'type');
-        $rsm->addMetaResult('c', 'type_6', 'type');
-        $rsm->addMetaResult('d', 'child_id_7', 'child_id', false, 'integer');
+        $rsm->addMetaResult('a', 'bases_id_4', 'bases_id', false, Type::getType('integer'));
+        $rsm->addMetaResult('b', 'type_5', 'type', false, Type::getType('string'));
+        $rsm->addMetaResult('c', 'type_6', 'type', false, Type::getType('string'));
+        $rsm->addMetaResult('d', 'child_id_7', 'child_id', false, Type::getType('integer'));
 
         $rsm->setDiscriminatorColumn('b', 'type_5');
         $rsm->setDiscriminatorColumn('c', 'type_6');
@@ -71,85 +72,70 @@ final class GH6362Test extends OrmFunctionalTestCase
         ];
 
         $stmt     = new HydratorMockStatement($resultSet);
-        $hydrator = new ObjectHydrator($this->_em);
+        $hydrator = new ObjectHydrator($this->em);
         $result   = $hydrator->hydrateAll($stmt, $rsm, [Query::HINT_FORCE_PARTIAL_LOAD => true]);
 
-        $this->assertInstanceOf(GH6362Start::class, $result[0]['base']);
-        $this->assertInstanceOf(GH6362Child::class, $result[1][0]);
+        self::assertInstanceOf(GH6362Start::class, $result[0]['base']);
+        self::assertInstanceOf(GH6362Child::class, $result[1][0]);
     }
 }
 
 /**
- * @Entity
+ * @ORM\Entity
  */
 class GH6362Start
 {
     /**
-     * @var int
-     * @Column(type="integer")
-     * @Id
-     * @GeneratedValue
+     * @ORM\Id
+     * @ORM\Column(type="integer")
+     * @ORM\GeneratedValue
      */
     protected $id;
 
-    /**
-     * @var GH6362Base
-     * @ManyToOne(targetEntity="GH6362Base", inversedBy="starts")
-     */
+    /** @ORM\ManyToOne(targetEntity=GH6362Base::class, inversedBy="starts") */
     private $bases;
 }
 
 /**
- * @InheritanceType("SINGLE_TABLE")
- * @DiscriminatorColumn(name="type", type="string")
- * @DiscriminatorMap({"child" = "GH6362Child"})
- * @Entity
+ * @ORM\InheritanceType("SINGLE_TABLE")
+ * @ORM\DiscriminatorColumn(name="type", type="string")
+ * @ORM\DiscriminatorMap({"child" = GH6362Child::class})
+ * @ORM\Entity
  */
 abstract class GH6362Base
 {
     /**
-     * @var int
-     * @Column(type="integer")
-     * @Id
-     * @GeneratedValue
+     * @ORM\Column(type="integer")
+     * @ORM\Id
+     * @ORM\GeneratedValue
      */
     protected $id;
 
-    /**
-     * @psalm-var Collection<int, GH6362Start>
-     * @OneToMany(targetEntity="GH6362Start", mappedBy="bases")
-     */
+    /** @ORM\OneToMany(targetEntity=GH6362Start::class, mappedBy="bases") */
     private $starts;
 }
 
 /**
- * @Entity
+ * @ORM\Entity
  */
 class GH6362Child extends GH6362Base
 {
-    /**
-     * @psalm-var Collection<int, GH6362Join>
-     * @OneToMany(targetEntity="GH6362Join", mappedBy="child")
-     */
+    /** @ORM\OneToMany(targetEntity=GH6362Join::class, mappedBy="child") */
     private $joins;
 }
 
 /**
- * @Entity
+ * @ORM\Entity
  */
 class GH6362Join
 {
     /**
-     * @var int
-     * @Column(type="integer")
-     * @Id
-     * @GeneratedValue
+     * @ORM\Column(type="integer")
+     * @ORM\Id
+     * @ORM\GeneratedValue
      */
     private $id;
 
-    /**
-     * @var GH6362Child
-     * @ManyToOne(targetEntity="GH6362Child", inversedBy="joins")
-     */
+    /** @ORM\ManyToOne(targetEntity=GH6362Child::class, inversedBy="joins") */
     private $child;
 }

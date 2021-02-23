@@ -15,16 +15,6 @@ especially what the strategies presented here provide help with.
     you use the tools for your particular RDBMS for these bulk
     operations.
 
-
-.. note::
-
-    Having an SQL logger enabled when processing batches can have a serious impact on performance and resource usage.
-    To avoid that you should disable it in the DBAL configuration:
-.. code-block:: php
-
-    <?php
-    $em->getConnection()->getConfiguration()->setSQLLogger(null);
-
 Bulk Inserts
 ------------
 
@@ -51,7 +41,7 @@ internally but also mean more work during ``flush``.
             $em->clear(); // Detaches all objects from Doctrine!
         }
     }
-    $em->flush(); //Persist objects that did not make up an entire batch
+    $em->flush(); // Persist objects that did not make up an entire batch
     $em->clear();
 
 Bulk Updates
@@ -75,7 +65,7 @@ Iterating results
 ~~~~~~~~~~~~~~~~~
 
 An alternative solution for bulk updates is to use the
-``Query#toIterable()`` facility to iterate over the query results step
+``Query#iterate()`` facility to iterate over the query results step
 by step instead of loading the whole result into memory at once.
 The following example shows how to do this, combining the iteration
 with the batching strategy that was already used for bulk inserts:
@@ -86,7 +76,9 @@ with the batching strategy that was already used for bulk inserts:
     $batchSize = 20;
     $i = 1;
     $q = $em->createQuery('select u from MyProject\Model\User u');
-    foreach ($q->toIterable() as $user) {
+    $iterableResult = $q->iterate();
+    foreach ($iterableResult as $row) {
+        $user = $row[0];
         $user->increaseCredit();
         $user->calculateNewBonuses();
         if (($i % $batchSize) === 0) {
@@ -108,7 +100,6 @@ with the batching strategy that was already used for bulk inserts:
     Results may be fully buffered by the database client/ connection allocating
     additional memory not visible to the PHP process. For large sets this
     may easily kill the process for no apparent reason.
-
 
 Bulk Deletes
 ------------
@@ -135,7 +126,7 @@ Iterating results
 ~~~~~~~~~~~~~~~~~
 
 An alternative solution for bulk deletes is to use the
-``Query#toIterable()`` facility to iterate over the query results step
+``Query#iterate()`` facility to iterate over the query results step
 by step instead of loading the whole result into memory at once.
 The following example shows how to do this:
 
@@ -145,8 +136,9 @@ The following example shows how to do this:
     $batchSize = 20;
     $i = 1;
     $q = $em->createQuery('select u from MyProject\Model\User u');
-    foreach($q->toIterable() as $row) {
-        $em->remove($row);
+    $iterableResult = $q->iterate();
+    while (($row = $iterableResult->next()) !== false) {
+        $em->remove($row[0]);
         if (($i % $batchSize) === 0) {
             $em->flush(); // Executes all deletions.
             $em->clear(); // Detaches all objects from Doctrine!
@@ -161,24 +153,25 @@ The following example shows how to do this:
     fetch-join a collection-valued association. The nature of such SQL
     result sets is not suitable for incremental hydration.
 
-
 Iterating Large Results for Data-Processing
 -------------------------------------------
 
-You can use the ``toIterable()`` method just to iterate over a large
-result and no UPDATE or DELETE intention. ``$query->toIterable()`` returns ``iterable``
-so you can process a large result without memory
+You can use the ``iterate()`` method just to iterate over a large
+result and no UPDATE or DELETE intention. The ``IterableResult``
+instance returned from ``$query->iterate()`` implements the
+Iterator interface so you can process a large result without memory
 problems using the following approach:
 
 .. code-block:: php
 
     <?php
-    $q = $this->_em->createQuery('select u from MyProject\Model\User u');
-    foreach ($q->toIterable() as $row) {
-        // do stuff with the data in the row
+    $q = $this->em->createQuery('select u from MyProject\Model\User u');
+    $iterableResult = $q->iterate();
+    foreach ($iterableResult as $row) {
+        // do stuff with the data in the row, $row[0] is always the object
 
-        // detach from Doctrine, so that it can be Garbage-Collected immediately
-        $this->_em->detach($row[0]);
+        // detach all entities from Doctrine, so that Garbage-Collection can kick in immediately
+        $this->em->clear();
     }
 
 .. note::
@@ -187,5 +180,9 @@ problems using the following approach:
     fetch-join a collection-valued association. The nature of such SQL
     result sets is not suitable for incremental hydration.
 
+Packages for easing Batch Processing
+------------------------------------
 
-
+You can implement batch processing yourself, or use an existing
+package such as `DoctrineBatchUtils <https://github.com/Ocramius/DoctrineBatchUtils>`_,
+which already provides the logic described above in an encapsulated format.

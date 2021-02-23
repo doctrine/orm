@@ -4,72 +4,44 @@ declare(strict_types=1);
 
 namespace Doctrine\Tests\Models\CMS;
 
-use Doctrine\Common\Collections\ArrayCollection;
-use Doctrine\Common\Collections\Collection;
-use IteratorAggregate;
-use Traversable;
+use Doctrine\ORM\Annotation as ORM;
 
 /**
  * Description of CmsGroup
  *
- * @Entity
- * @Table(name="cms_groups")
+ * @ORM\Entity
+ * @ORM\Table(name="cms_groups")
  */
-class CmsGroup implements IteratorAggregate
+class CmsGroup
 {
     /**
-     * @var int
-     * @Id
-     * @Column(type="integer")
-     * @GeneratedValue
+     * @ORM\Id
+     * @ORM\Column(type="integer")
+     * @ORM\GeneratedValue
      */
     public $id;
-
-    /**
-     * @var string
-     * @Column(length=50)
-     */
+    /** @ORM\Column(length=50) */
     public $name;
-
-    /**
-     * @psalm-var Collection<int, CmsUser>
-     * @ManyToMany(targetEntity="CmsUser", mappedBy="groups")
-     */
+    /** @ORM\ManyToMany(targetEntity=CmsUser::class, mappedBy="groups") */
     public $users;
 
-    public function __construct()
-    {
-        $this->users = new ArrayCollection();
-    }
-
-    public function setName(string $name): void
+    public function setName($name)
     {
         $this->name = $name;
     }
 
-    public function getName(): string
+    public function getName()
     {
         return $this->name;
     }
 
-    public function addUser(CmsUser $user): void
+    public function addUser(CmsUser $user)
     {
         $this->users[] = $user;
     }
 
-    /**
-     * @psalm-return Collection<int, CmsUser>
-     */
-    public function getUsers(): Collection
+    public function getUsers()
     {
         return $this->users;
-    }
-
-    /**
-     * @return ArrayCollection|Traversable
-     */
-    public function getIterator()
-    {
-        return $this->getUsers();
     }
 }

@@ -8,14 +8,12 @@ use Doctrine\DBAL\Schema\Schema;
 use Doctrine\Tests\Models\Company\CompanyManager;
 use Doctrine\Tests\OrmFunctionalTestCase;
 
-use function count;
-
 /**
  * Functional tests for the Class Table Inheritance mapping strategy.
  */
 class CompanySchemaTest extends OrmFunctionalTestCase
 {
-    protected function setUp(): void
+    protected function setUp() : void
     {
         $this->useModelSet('company');
         parent::setUp();
@@ -24,11 +22,11 @@ class CompanySchemaTest extends OrmFunctionalTestCase
     /**
      * @group DDC-966
      */
-    public function testGeneratedSchema(): Schema
+    public function testGeneratedSchema() : Schema
     {
-        $schema = $this->_em->getConnection()->getSchemaManager()->createSchema();
+        $schema = $this->em->getConnection()->getSchemaManager()->createSchema();
 
-        $this->assertTrue($schema->hasTable('company_contracts'));
+        self::assertTrue($schema->hasTable('company_contracts'));
 
         return $schema;
     }
@@ -37,35 +35,35 @@ class CompanySchemaTest extends OrmFunctionalTestCase
      * @group DDC-966
      * @depends testGeneratedSchema
      */
-    public function testSingleTableInheritance(Schema $schema): void
+    public function testSingleTableInheritance(Schema $schema) : void
     {
         $table = $schema->getTable('company_contracts');
 
         // Check nullability constraints
-        $this->assertTrue($table->getColumn('id')->getNotnull());
-        $this->assertTrue($table->getColumn('completed')->getNotnull());
-        $this->assertFalse($table->getColumn('salesPerson_id')->getNotnull());
-        $this->assertTrue($table->getColumn('discr')->getNotnull());
-        $this->assertFalse($table->getColumn('fixPrice')->getNotnull());
-        $this->assertFalse($table->getColumn('hoursWorked')->getNotnull());
-        $this->assertFalse($table->getColumn('pricePerHour')->getNotnull());
-        $this->assertFalse($table->getColumn('maxPrice')->getNotnull());
+        self::assertTrue($table->getColumn('id')->getNotnull());
+        self::assertTrue($table->getColumn('completed')->getNotnull());
+        self::assertFalse($table->getColumn('salesPerson_id')->getNotnull());
+        self::assertTrue($table->getColumn('discr')->getNotnull());
+        self::assertFalse($table->getColumn('fixPrice')->getNotnull());
+        self::assertFalse($table->getColumn('hoursWorked')->getNotnull());
+        self::assertFalse($table->getColumn('pricePerHour')->getNotnull());
+        self::assertFalse($table->getColumn('maxPrice')->getNotnull());
     }
 
     /**
      * @group DBAL-115
      */
-    public function testDropPartSchemaWithForeignKeys(): void
+    public function testDropPartSchemaWithForeignKeys() : void
     {
-        if (! $this->_em->getConnection()->getDatabasePlatform()->supportsForeignKeyConstraints()) {
+        if (! $this->em->getConnection()->getDatabasePlatform()->supportsForeignKeyConstraints()) {
             $this->markTestSkipped('Foreign Key test');
         }
 
-        $sql = $this->_schemaTool->getDropSchemaSQL(
+        $sql = $this->schemaTool->getDropSchemaSQL(
             [
-                $this->_em->getClassMetadata(CompanyManager::class),
+                $this->em->getClassMetadata(CompanyManager::class),
             ]
         );
-        $this->assertEquals(4, count($sql));
+        self::assertCount(4, $sql);
     }
 }

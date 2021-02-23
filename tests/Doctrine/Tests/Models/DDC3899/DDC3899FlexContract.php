@@ -4,20 +4,16 @@ declare(strict_types=1);
 
 namespace Doctrine\Tests\Models\DDC3899;
 
+use Doctrine\ORM\Annotation as ORM;
+
 /**
- * @Entity
+ * @ORM\Entity
  */
 class DDC3899FlexContract extends DDC3899Contract
 {
-    /**
-     * @var int
-     * @column(type="integer")
-     */
+    /** @ORM\Column(type="integer") */
     public $hoursWorked = 0;
 
-    /**
-     * @var int
-     * @column(type="integer")
-     */
+    /** @ORM\Column(type="integer") */
     public $pricePerHour = 0;
 }

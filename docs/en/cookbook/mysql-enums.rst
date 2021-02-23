@@ -43,13 +43,16 @@ entities:
 .. code-block:: php
 
     <?php
-    /** @Entity */
+
+    use Doctrine\ORM\Annotation as ORM;
+
+    /** @ORM\Entity */
     class Article
     {
         const STATUS_VISIBLE = 'visible';
         const STATUS_INVISIBLE = 'invisible';
 
-        /** @Column(type="string") */
+        /** @ORM\Column(type="string") */
         private $status;
 
         public function setStatus($status)
@@ -67,10 +70,13 @@ the **columnDefinition** attribute.
 .. code-block:: php
 
     <?php
-    /** @Entity */
+
+    use Doctrine\ORM\Annotation as ORM;
+
+    /** @ORM\Entity */
     class Article
     {
-        /** @Column(type="string", columnDefinition="ENUM('visible', 'invisible')") */
+        /** @ORM\Column(type="string", columnDefinition="ENUM('visible', 'invisible')") */
         private $status;
     }
 
@@ -131,10 +137,13 @@ Then in your entity you can just use this type:
 .. code-block:: php
 
     <?php
-    /** @Entity */
+
+    use Doctrine\ORM\Annotation as ORM;
+
+    /** @ORM\Entity */
     class Article
     {
-        /** @Column(type="enumvisibility") */
+        /** @ORM\Column(type="enumvisibility") */
         private $status;
     }
 

@@ -4,48 +4,45 @@ declare(strict_types=1);
 
 namespace Doctrine\Tests\Models\Forum;
 
+use Doctrine\ORM\Annotation as ORM;
+
 /**
- * @Entity
- * @Table(name="forum_users")
+ * @ORM\Entity
+ * @ORM\Table(name="forum_users")
  */
 class ForumUser
 {
     /**
-     * @var int
-     * @Column(type="integer")
-     * @Id @GeneratedValue
+     * @ORM\Column(type="integer")
+     * @ORM\Id @ORM\GeneratedValue
      */
     public $id;
 
-    /**
-     * @var string
-     * @Column(type="string", length=50)
-     */
+    /** @ORM\Column(type="string", length=50) */
     public $username;
 
     /**
-     * @var ForumAvatar
-     * @OneToOne(targetEntity="ForumAvatar", cascade={"persist"})
-     * @JoinColumn(name="avatar_id", referencedColumnName="id")
+     * @ORM\OneToOne(targetEntity=ForumAvatar::class, cascade={"persist"})
+     * @ORM\JoinColumn(name="avatar_id", referencedColumnName="id")
      */
     public $avatar;
 
-    public function getId(): int
+    public function getId()
     {
         return $this->id;
     }
 
-    public function getUsername(): string
+    public function getUsername()
     {
         return $this->username;
     }
 
-    public function getAvatar(): ForumAvatar
+    public function getAvatar()
     {
         return $this->avatar;
     }
 
-    public function setAvatar(ForumAvatar $avatar): void
+    public function setAvatar(ForumAvatar $avatar)
     {
         $this->avatar = $avatar;
     }

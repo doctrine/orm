@@ -4,38 +4,28 @@ declare(strict_types=1);
 
 namespace Doctrine\Tests\Models\Taxi;
 
-use Doctrine\Common\Collections\Collection;
+use Doctrine\ORM\Annotation as ORM;
 
 /**
- * @Entity
- * @Table(name="taxi_car")
+ * @ORM\Entity
+ * @ORM\Table(name="taxi_car")
  */
 class Car
 {
     /**
-     * @var string
-     * @Id
-     * @Column(type="string", length=25)
-     * @GeneratedValue(strategy="NONE")
+     * @ORM\Id
+     * @ORM\Column(type="string", length=25)
+     * @ORM\GeneratedValue(strategy="NONE")
      */
     private $brand;
 
-    /**
-     * @var string
-     * @Column(type="string", length=255);
-     */
+    /** @ORM\Column(type="string", length=255); */
     private $model;
 
-    /**
-     * @psalm-var Collection<int, Ride>
-     * @OneToMany(targetEntity="Ride", mappedBy="car")
-     */
+    /** @ORM\OneToMany(targetEntity=Ride::class, mappedBy="car") */
     private $freeCarRides;
 
-    /**
-     * @psalm-var Collection<int, PaidRide>
-     * @OneToMany(targetEntity="PaidRide", mappedBy="car")
-     */
+    /** @ORM\OneToMany(targetEntity=PaidRide::class, mappedBy="car") */
     private $carRides;
 
     public function getBrand()
@@ -43,12 +33,12 @@ class Car
         return $this->brand;
     }
 
-    public function setBrand($brand): void
+    public function setBrand($brand)
     {
         $this->brand = $brand;
     }
 
-    public function setModel($model): void
+    public function setModel($model)
     {
         $this->model = $model;
     }

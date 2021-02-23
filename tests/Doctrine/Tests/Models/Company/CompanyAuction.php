@@ -4,16 +4,18 @@ declare(strict_types=1);
 
 namespace Doctrine\Tests\Models\Company;
 
-/** @Entity @Table(name="company_auctions") */
+use Doctrine\ORM\Annotation as ORM;
+
+/**
+ * @ORM\Entity
+ * @ORM\Table(name="company_auctions")
+ */
 class CompanyAuction extends CompanyEvent
 {
-    /**
-     * @var string
-     * @Column(type="string")
-     */
+    /** @ORM\Column(type="string") */
     private $data;
 
-    public function setData($data): void
+    public function setData($data)
     {
         $this->data = $data;
     }

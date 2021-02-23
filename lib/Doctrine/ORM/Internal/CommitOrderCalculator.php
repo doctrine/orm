@@ -1,27 +1,10 @@
 <?php
 
-/*
- * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
- * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
- * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
- * A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT
- * OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
- * SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
- * LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
- * DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
- * THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
- * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
- * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- *
- * This software consists of voluntary contributions made by many individuals
- * and is licensed under the MIT license. For more information, see
- * <http://www.doctrine-project.org>.
- */
+declare(strict_types=1);
 
 namespace Doctrine\ORM\Internal;
 
 use stdClass;
-
 use function array_reverse;
 
 /**
@@ -52,14 +35,14 @@ class CommitOrderCalculator
      * - <b>dependencyList</b> (array<string>)
      * Map of node dependencies defined as hashes.
      *
-     * @var array<stdClass>
+     * @var stdClass[]
      */
     private $nodeList = [];
 
     /**
      * Volatile variable holding calculated nodes during sorting process.
      *
-     * @psalm-var list<object>
+     * @var object[]
      */
     private $sortedNodeList = [];
 
@@ -80,8 +63,6 @@ class CommitOrderCalculator
      *
      * @param string $hash
      * @param object $node
-     *
-     * @return void
      */
     public function addNode($hash, $node)
     {
@@ -101,8 +82,6 @@ class CommitOrderCalculator
      * @param string $fromHash
      * @param string $toHash
      * @param int    $weight
-     *
-     * @return void
      */
     public function addDependency($fromHash, $toHash, $weight)
     {
@@ -120,9 +99,9 @@ class CommitOrderCalculator
      * Return a valid order list of all current nodes.
      * The desired topological sorting is the reverse post order of these searches.
      *
-     * {@internal Highly performance-sensitive method.}
+     * {@internal Highly performance-sensitive method. }}
      *
-     * @psalm-return list<object>
+     * @return object[]
      */
     public function sort()
     {
@@ -145,7 +124,7 @@ class CommitOrderCalculator
     /**
      * Visit a given node definition for reordering.
      *
-     * {@internal Highly performance-sensitive method.}
+     * {@internal Highly performance-sensitive method. }}
      *
      * @param stdClass $vertex
      */
@@ -162,10 +141,8 @@ class CommitOrderCalculator
                     break;
 
                 case self::IN_PROGRESS:
-                    if (
-                        isset($adjacentVertex->dependencyList[$vertex->hash]) &&
-                        $adjacentVertex->dependencyList[$vertex->hash]->weight < $edge->weight
-                    ) {
+                    if (isset($adjacentVertex->dependencyList[$vertex->hash]) &&
+                        $adjacentVertex->dependencyList[$vertex->hash]->weight < $edge->weight) {
                         // If we have some non-visited dependencies in the in-progress dependency, we
                         // need to visit them before adding the node.
                         foreach ($adjacentVertex->dependencyList as $adjacentEdge) {
@@ -180,7 +157,6 @@ class CommitOrderCalculator
 
                         $this->sortedNodeList[] = $adjacentVertex->value;
                     }
-
                     break;
 
                 case self::NOT_VISITED:

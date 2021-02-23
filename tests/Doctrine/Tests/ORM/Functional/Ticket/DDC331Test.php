@@ -6,14 +6,12 @@ namespace Doctrine\Tests\ORM\Functional\Ticket;
 
 use Doctrine\Tests\OrmFunctionalTestCase;
 
-use function strtolower;
-
 /**
  * Functional tests for the Class Table Inheritance mapping strategy.
  */
 class DDC331Test extends OrmFunctionalTestCase
 {
-    protected function setUp(): void
+    protected function setUp() : void
     {
         $this->useModelSet('company');
         parent::setUp();
@@ -22,12 +20,13 @@ class DDC331Test extends OrmFunctionalTestCase
     /**
      * @group DDC-331
      */
-    public function testSelectFieldOnRootEntity(): void
+    public function testSelectFieldOnRootEntity() : void
     {
-        $q = $this->_em->createQuery('SELECT e.name FROM Doctrine\Tests\Models\Company\CompanyEmployee e');
-        $this->assertEquals(
-            strtolower('SELECT c0_.name AS name_0 FROM company_employees c1_ INNER JOIN company_persons c0_ ON c1_.id = c0_.id LEFT JOIN company_managers c2_ ON c1_.id = c2_.id'),
-            strtolower($q->getSQL())
+        $q = $this->em->createQuery('SELECT e.name FROM Doctrine\Tests\Models\Company\CompanyEmployee e');
+
+        self::assertSQLEquals(
+            'SELECT t0."name" AS c0 FROM "company_employees" t1 INNER JOIN "company_persons" t0 ON t1."id" = t0."id" LEFT JOIN "company_managers" t2 ON t1."id" = t2."id"',
+            $q->getSQL()
         );
     }
 }

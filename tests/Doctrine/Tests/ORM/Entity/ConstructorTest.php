@@ -8,10 +8,10 @@ use Doctrine\Tests\OrmTestCase;
 
 class ConstructorTest extends OrmTestCase
 {
-    public function testFieldInitializationInConstructor(): void
+    public function testFieldInitializationInConstructor() : void
     {
         $entity = new ConstructorTestEntity1('romanb');
-        $this->assertEquals('romanb', $entity->username);
+        self::assertEquals('romanb', $entity->username);
     }
 }
 

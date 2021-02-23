@@ -4,19 +4,20 @@ declare(strict_types=1);
 
 namespace Doctrine\Tests\ORM\Functional\Ticket;
 
+use Doctrine\ORM\Annotation as ORM;
 use Doctrine\Tests\OrmFunctionalTestCase;
 use Exception;
 
 class DDC960Test extends OrmFunctionalTestCase
 {
-    protected function setUp(): void
+    protected function setUp() : void
     {
         parent::setUp();
         try {
-            $this->_schemaTool->createSchema(
+            $this->schemaTool->createSchema(
                 [
-                    $this->_em->getClassMetadata(DDC960Root::class),
-                    $this->_em->getClassMetadata(DDC960Child::class),
+                    $this->em->getClassMetadata(DDC960Root::class),
+                    $this->em->getClassMetadata(DDC960Child::class),
                 ]
             );
         } catch (Exception $e) {
@@ -26,63 +27,55 @@ class DDC960Test extends OrmFunctionalTestCase
     /**
      * @group DDC-960
      */
-    public function testUpdateRootVersion(): void
+    public function testUpdateRootVersion() : void
     {
         $child = new DDC960Child('Test');
-        $this->_em->persist($child);
-        $this->_em->flush();
+        $this->em->persist($child);
+        $this->em->flush();
 
         $child->setName('Test2');
 
-        $this->_em->flush();
+        $this->em->flush();
 
-        $this->assertEquals(2, $child->getVersion());
+        self::assertEquals(2, $child->getVersion());
     }
 }
 
 /**
- * @Entity
- * @InheritanceType("JOINED")
- * @DiscriminatorMap({
- *  "root" = "DDC960Root",
- *  "child" = "DDC960Child"
+ * @ORM\Entity
+ * @ORM\InheritanceType("JOINED")
+ * @ORM\DiscriminatorMap({
+ *  "root" = DDC960Root::class,
+ *  "child" = DDC960Child::class
  * })
  */
 class DDC960Root
 {
-    /**
-     * @var int
-     * @Id
-     * @GeneratedValue
-     * @Column(type="integer")
-     */
+    /** @ORM\Id @ORM\GeneratedValue @ORM\Column(type="integer") */
     private $id;
 
-    /**
-     * @var int
-     * @Column(type="integer")
-     * @Version
-     */
+    /** @ORM\Column(type="integer") @ORM\Version */
     private $version;
 
-    public function getId(): int
+    public function getId()
     {
         return $this->id;
     }
 
-    public function getVersion(): int
+    public function getVersion()
     {
         return $this->version;
     }
 }
 
 /**
- * @Entity
+ * @ORM\Entity
  */
 class DDC960Child extends DDC960Root
 {
     /**
-     * @column(type="string")
+     * @ORM\Column(type="string")
+     *
      * @var string
      */
     private $name;
@@ -92,7 +85,7 @@ class DDC960Child extends DDC960Root
         $this->name = $name;
     }
 
-    public function setName($name): void
+    public function setName($name)
     {
         $this->name = $name;
     }

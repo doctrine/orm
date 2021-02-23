@@ -5,45 +5,48 @@ declare(strict_types=1);
 namespace Doctrine\Tests\Models\DDC3597;
 
 use DateTime;
-use Doctrine\ORM\Mapping\DiscriminatorMap;
+use Doctrine\ORM\Annotation as ORM;
 
 /**
  * Description of Root
  *
- * @Entity
- * @InheritanceType("JOINED")
- * @DiscriminatorColumn(name="discriminator", type="string")
- * @DiscriminatorMap({ "image" = "DDC3597Image"})
- * @HasLifecycleCallbacks
+ * @ORM\Entity
+ * @ORM\InheritanceType("JOINED")
+ * @ORM\DiscriminatorColumn(name="discriminator", type="string")
+ * @ORM\DiscriminatorMap({ "image" = DDC3597Image::class})
+ * @ORM\HasLifecycleCallbacks
  */
 abstract class DDC3597Root
 {
     /**
+     * @ORM\Column(name="id", type="integer", nullable=false)
+     * @ORM\Id
+     * @ORM\GeneratedValue(strategy="IDENTITY")
+     *
      * @var int
-     * @Column(name="id", type="integer", nullable=false)
-     * @Id
-     * @GeneratedValue(strategy="IDENTITY")
      */
     protected $id;
 
     /**
+     * @ORM\Column(name="created_at", type="datetime", nullable=false)
+     *
      * @var DateTime
-     * @Column(name="created_at", type="datetime", nullable=false)
      */
-    protected $createdAt = null;
+    protected $createdAt;
 
     /**
+     * @ORM\Column(name="updated_at", type="datetime", nullable=false)
+     *
      * @var DateTime
-     * @Column(name="updated_at", type="datetime", nullable=false)
      */
-    protected $updatedAt = null;
+    protected $updatedAt;
 
     /**
      * Set createdAt
      *
-     * @PrePersist
+     * @ORM\PrePersist
      */
-    public function _prePersist(): void
+    public function prePersist()
     {
         $this->updatedAt = $this->createdAt = new DateTime();
     }
@@ -51,24 +54,33 @@ abstract class DDC3597Root
     /**
      * Set updatedAt
      *
-     * @PreUpdate
+     * @ORM\PreUpdate
      */
-    public function _preUpdate(): void
+    public function preUpdate()
     {
         $this->updatedAt = new DateTime();
     }
 
-    public function getId(): int
+    /**
+     * @return int
+     */
+    public function getId()
     {
         return (int) $this->id;
     }
 
-    public function getCreatedAt(): DateTime
+    /**
+     * @return DateTime
+     */
+    public function getCreatedAt()
     {
         return $this->createdAt;
     }
 
-    public function getUpdatedAt(): DateTime
+    /**
+     * @return DateTime
+     */
+    public function getUpdatedAt()
     {
         return $this->updatedAt;
     }

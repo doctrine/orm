@@ -6,42 +6,41 @@ namespace Doctrine\Tests\Models\Cache;
 
 use DateTime;
 use Doctrine\Common\Collections\ArrayCollection;
-use Doctrine\Common\Collections\Collection;
+use Doctrine\ORM\Annotation as ORM;
 
 /**
- * @Cache
- * @Entity
- * @Table("cache_travel")
+ * @ORM\Cache
+ * @ORM\Entity
+ * @ORM\Table("cache_travel")
  */
 class Travel
 {
     /**
-     * @var int
-     * @Id
-     * @GeneratedValue
-     * @Column(type="integer")
+     * @ORM\Id
+     * @ORM\GeneratedValue
+     * @ORM\Column(type="integer")
      */
     protected $id;
 
-    /** @Column(type="date") */
+    /** @ORM\Column(type="date") */
     protected $createdAt;
 
     /**
-     * @Cache
-     * @ManyToOne(targetEntity="Traveler", inversedBy="travels")
-     * @JoinColumn(name="traveler_id", referencedColumnName="id")
+     * @ORM\Cache
+     * @ORM\ManyToOne(targetEntity=Traveler::class, inversedBy="travels")
+     * @ORM\JoinColumn(name="traveler_id", referencedColumnName="id")
      */
     protected $traveler;
 
     /**
-     * @Cache
-     * @ManyToMany(targetEntity="City", inversedBy="travels", cascade={"persist", "remove"})
-     * @JoinTable(name="cache_visited_cities",
+     * @ORM\Cache
+     * @ORM\ManyToMany(targetEntity=City::class, inversedBy="travels", cascade={"persist", "remove"})
+     * @ORM\JoinTable(name="cache_visited_cities",
      *  joinColumns={
-     *      @JoinColumn(name="travel_id", referencedColumnName="id")
+     *      @ORM\JoinColumn(name="travel_id", referencedColumnName="id")
      *  },
      *  inverseJoinColumns={
-     *      @JoinColumn(name="city_id", referencedColumnName="id")
+     *      @ORM\JoinColumn(name="city_id", referencedColumnName="id")
      *  }
      * )
      */
@@ -54,37 +53,49 @@ class Travel
         $this->visitedCities = new ArrayCollection();
     }
 
-    public function getId(): int
+    /**
+     * @return int
+     */
+    public function getId()
     {
         return $this->id;
     }
 
-    public function getTraveler(): Traveler
+    /**
+     * @return Traveler
+     */
+    public function getTraveler()
     {
         return $this->traveler;
     }
 
-    public function setTraveler(Traveler $traveler): void
+    public function setTraveler(Traveler $traveler)
     {
         $this->traveler = $traveler;
     }
 
-    public function getVisitedCities(): Collection
+    /**
+     * @return ArrayCollection
+     */
+    public function getVisitedCities()
     {
         return $this->visitedCities;
     }
 
-    public function addVisitedCity(City $city): void
+    public function addVisitedCity(City $city)
     {
         $this->visitedCities->add($city);
     }
 
-    public function removeVisitedCity(City $city): void
+    public function removeVisitedCity(City $city)
     {
         $this->visitedCities->removeElement($city);
     }
 
-    public function getCreatedAt(): DateTime
+    /**
+     * @return DateTime
+     */
+    public function getCreatedAt()
     {
         return $this->createdAt;
     }

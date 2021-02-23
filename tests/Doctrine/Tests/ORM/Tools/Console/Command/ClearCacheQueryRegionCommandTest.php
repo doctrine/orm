@@ -22,7 +22,7 @@ class ClearCacheQueryRegionCommandTest extends OrmFunctionalTestCase
     /** @var QueryRegionCommand */
     private $command;
 
-    protected function setUp(): void
+    protected function setUp() : void
     {
         $this->enableSecondLevelCache();
         parent::setUp();
@@ -30,11 +30,11 @@ class ClearCacheQueryRegionCommandTest extends OrmFunctionalTestCase
         $this->command = new QueryRegionCommand();
 
         $this->application = new Application();
-        $this->application->setHelperSet(new HelperSet(['em' => new EntityManagerHelper($this->_em)]));
+        $this->application->setHelperSet(new HelperSet(['em' => new EntityManagerHelper($this->em)]));
         $this->application->add($this->command);
     }
 
-    public function testClearAllRegion(): void
+    public function testClearAllRegion() : void
     {
         $command = $this->application->find('orm:clear-cache:region:query');
         $tester  = new CommandTester($command);
@@ -47,10 +47,10 @@ class ClearCacheQueryRegionCommandTest extends OrmFunctionalTestCase
             ['decorated' => false]
         );
 
-        self::assertStringContainsString(' // Clearing all second-level cache query regions', $tester->getDisplay());
+        self::assertContains(' // Clearing all second-level cache query regions', $tester->getDisplay());
     }
 
-    public function testClearDefaultRegionName(): void
+    public function testClearDefaultRegionName() : void
     {
         $command = $this->application->find('orm:clear-cache:region:query');
         $tester  = new CommandTester($command);
@@ -63,13 +63,13 @@ class ClearCacheQueryRegionCommandTest extends OrmFunctionalTestCase
             ['decorated' => false]
         );
 
-        self::assertStringContainsString(
+        self::assertContains(
             ' // Clearing second-level cache query region named "query_cache_region"',
             $tester->getDisplay()
         );
     }
 
-    public function testClearByRegionName(): void
+    public function testClearByRegionName() : void
     {
         $command = $this->application->find('orm:clear-cache:region:query');
         $tester  = new CommandTester($command);
@@ -82,13 +82,13 @@ class ClearCacheQueryRegionCommandTest extends OrmFunctionalTestCase
             ['decorated' => false]
         );
 
-        self::assertStringContainsString(
+        self::assertContains(
             ' // Clearing second-level cache query region named "my_region"',
             $tester->getDisplay()
         );
     }
 
-    public function testFlushRegionName(): void
+    public function testFlushRegionName() : void
     {
         $command = $this->application->find('orm:clear-cache:region:query');
         $tester  = new CommandTester($command);
@@ -102,7 +102,7 @@ class ClearCacheQueryRegionCommandTest extends OrmFunctionalTestCase
             ['decorated' => false]
         );
 
-        self::assertStringContainsString(
+        self::assertContains(
             ' // Flushing cache provider configured for second-level cache query region named "my_region"',
             $tester->getDisplay()
         );

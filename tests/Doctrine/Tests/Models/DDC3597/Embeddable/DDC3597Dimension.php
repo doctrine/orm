@@ -4,22 +4,26 @@ declare(strict_types=1);
 
 namespace Doctrine\Tests\Models\DDC3597\Embeddable;
 
+use Doctrine\ORM\Annotation as ORM;
+
 /**
  * Description of DDC3597Dimension
  *
- * @Embeddable
+ * @ORM\Embeddable
  */
 class DDC3597Dimension
 {
     /**
+     * @ORM\Column(type="integer", name="width")
+     *
      * @var int
-     * @Column(type="integer", name="width")
      */
     private $width;
 
     /**
+     * @ORM\Column(type="integer", name="height")
+     *
      * @var int
-     * @Column(type="integer", name="height")
      */
     private $height;
 
@@ -29,22 +33,34 @@ class DDC3597Dimension
         $this->setHeight($height);
     }
 
-    public function getWidth(): int
+    /**
+     * @return int
+     */
+    public function getWidth()
     {
         return $this->width;
     }
 
-    public function setWidth(int $width): void
+    /**
+     * @param int $width
+     */
+    public function setWidth($width)
     {
         $this->width = (int) $width;
     }
 
-    public function getHeight(): int
+    /**
+     * @return int
+     */
+    public function getHeight()
     {
         return $this->height;
     }
 
-    public function setHeight(int $height): void
+    /**
+     * @param int $height
+     */
+    public function setHeight($height)
     {
         $this->height = (int) $height;
     }

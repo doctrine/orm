@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace Doctrine\Tests\ORM\Functional\Ticket;
 
+use Doctrine\ORM\Annotation as ORM;
 use Doctrine\Tests\OrmFunctionalTestCase;
-
 use function get_class;
 
 /**
@@ -13,12 +13,12 @@ use function get_class;
  */
 class DDC2996Test extends OrmFunctionalTestCase
 {
-    public function testIssue(): void
+    public function testIssue() : void
     {
-        $this->_schemaTool->createSchema(
+        $this->schemaTool->createSchema(
             [
-                $this->_em->getClassMetadata(DDC2996User::class),
-                $this->_em->getClassMetadata(DDC2996UserPreference::class),
+                $this->em->getClassMetadata(DDC2996User::class),
+                $this->em->getClassMetadata(DDC2996UserPreference::class),
             ]
         );
 
@@ -26,69 +26,50 @@ class DDC2996Test extends OrmFunctionalTestCase
         $pref->user  = new DDC2996User();
         $pref->value = 'foo';
 
-        $this->_em->persist($pref);
-        $this->_em->persist($pref->user);
-        $this->_em->flush();
+        $this->em->persist($pref);
+        $this->em->persist($pref->user);
+        $this->em->flush();
 
         $pref->value = 'bar';
-        $this->_em->flush();
+        $this->em->flush();
 
-        $this->assertEquals(1, $pref->user->counter);
+        self::assertEquals(1, $pref->user->counter);
 
-        $this->_em->clear();
+        $this->em->clear();
 
-        $pref = $this->_em->find(DDC2996UserPreference::class, $pref->id);
-        $this->assertEquals(1, $pref->user->counter);
+        $pref = $this->em->find(DDC2996UserPreference::class, $pref->id);
+        self::assertEquals(1, $pref->user->counter);
     }
 }
 
 /**
- * @Entity
+ * @ORM\Entity
  */
 class DDC2996User
 {
-    /**
-     * @var int
-     * @Id
-     * @GeneratedValue
-     * @Column(type="integer")
-     */
+    /** @ORM\Id @ORM\GeneratedValue @ORM\Column(type="integer") */
     public $id;
-    /**
-     * @var int
-     * @Column(type="integer")
-     */
+    /** @ORM\Column(type="integer") */
     public $counter = 0;
 }
 
 /**
- * @Entity @HasLifecycleCallbacks
+ * @ORM\Entity @ORM\HasLifecycleCallbacks
  */
 class DDC2996UserPreference
 {
-    /**
-     * @var int
-     * @Id
-     * @GeneratedValue
-     * @Column(type="integer")
-     */
+    /** @ORM\Id @ORM\GeneratedValue @ORM\Column(type="integer") */
     public $id;
-    /**
-     * @var string
-     * @Column(type="string")
-     */
+    /** @ORM\Column(type="string") */
     public $value;
 
-    /**
-     * @var DDC2996User
-     * @ManyToOne(targetEntity="DDC2996User")
-     */
+    /** @ORM\ManyToOne(targetEntity=DDC2996User::class) */
     public $user;
 
     /**
-     * @PreFlush
+     * @ORM\PreFlush
      */
-    public function preFlush($event): void
+    public function preFlush($event)
     {
         $em  = $event->getEntityManager();
         $uow = $em->getUnitOfWork();

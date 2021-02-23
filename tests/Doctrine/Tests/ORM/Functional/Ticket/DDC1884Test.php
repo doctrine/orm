@@ -15,24 +15,24 @@ use Doctrine\Tests\OrmFunctionalTestCase;
  */
 class DDC1884Test extends OrmFunctionalTestCase
 {
-    protected function setUp(): void
+    protected function setUp() : void
     {
         $this->useModelSet('taxi');
         parent::setUp();
 
         [$bimmer, $crysler, $merc, $volvo] = $this->createCars(Car::class);
         [$john, $foo]                      = $this->createDrivers(Driver::class);
-        $this->_em->flush();
+        $this->em->flush();
 
         $ride1 = new Ride($john, $bimmer);
         $ride2 = new Ride($john, $merc);
         $ride3 = new Ride($john, $volvo);
         $ride4 = new Ride($foo, $merc);
 
-        $this->_em->persist($ride1);
-        $this->_em->persist($ride2);
-        $this->_em->persist($ride3);
-        $this->_em->persist($ride4);
+        $this->em->persist($ride1);
+        $this->em->persist($ride2);
+        $this->em->persist($ride3);
+        $this->em->persist($ride4);
 
         $ride5 = new PaidRide($john, $bimmer);
         $ride5->setFare(10.50);
@@ -46,19 +46,15 @@ class DDC1884Test extends OrmFunctionalTestCase
         $ride8 = new PaidRide($foo, $merc);
         $ride8->setFare(32.15);
 
-        $this->_em->persist($ride5);
-        $this->_em->persist($ride6);
-        $this->_em->persist($ride7);
-        $this->_em->persist($ride8);
+        $this->em->persist($ride5);
+        $this->em->persist($ride6);
+        $this->em->persist($ride7);
+        $this->em->persist($ride8);
 
-        $this->_em->flush();
+        $this->em->flush();
     }
 
-    /**
-     * @psalm-var class-string<Car> $class
-     * @psalm-return array{Car, Car, Car, Car}
-     */
-    private function createCars(string $class): array
+    private function createCars($class)
     {
         $bimmer = new $class();
         $bimmer->setBrand('BMW');
@@ -76,19 +72,15 @@ class DDC1884Test extends OrmFunctionalTestCase
         $volvo->setBrand('Volvo');
         $volvo->setModel('XC90');
 
-        $this->_em->persist($bimmer);
-        $this->_em->persist($crysler);
-        $this->_em->persist($merc);
-        $this->_em->persist($volvo);
+        $this->em->persist($bimmer);
+        $this->em->persist($crysler);
+        $this->em->persist($merc);
+        $this->em->persist($volvo);
 
         return [$bimmer, $crysler, $merc, $volvo];
     }
 
-    /**
-     * @psalm-var class-string<Driver> $class
-     * @psalm-return array{Driver, Driver}
-     */
-    private function createDrivers(string $class): array
+    private function createDrivers($class)
     {
         $john = new $class();
         $john->setName('John Doe');
@@ -96,8 +88,8 @@ class DDC1884Test extends OrmFunctionalTestCase
         $foo = new $class();
         $foo->setName('Foo Bar');
 
-        $this->_em->persist($foo);
-        $this->_em->persist($john);
+        $this->em->persist($foo);
+        $this->em->persist($john);
 
         return [$john, $foo];
     }
@@ -106,9 +98,9 @@ class DDC1884Test extends OrmFunctionalTestCase
      * 1) Ride contains only columns that are part of its composite primary key
      * 2) We use fetch joins here
      */
-    public function testSelectFromInverseSideWithCompositePkAndSolelyIdentifierColumnsUsingFetchJoins(): void
+    public function testSelectFromInverseSideWithCompositePkAndSolelyIdentifierColumnsUsingFetchJoins() : void
     {
-        $qb = $this->_em->createQueryBuilder();
+        $qb = $this->em->createQueryBuilder();
 
         $result = $qb->select('d, dr, c')
             ->from(Driver::class, 'd')
@@ -119,18 +111,18 @@ class DDC1884Test extends OrmFunctionalTestCase
             ->getQuery()
             ->getArrayResult();
 
-        $this->assertCount(1, $result);
-        $this->assertArrayHasKey('freeDriverRides', $result[0]);
-        $this->assertCount(3, $result[0]['freeDriverRides']);
+        self::assertCount(1, $result);
+        self::assertArrayHasKey('freeDriverRides', $result[0]);
+        self::assertCount(3, $result[0]['freeDriverRides']);
     }
 
     /**
      * 1) PaidRide contains an extra column that is not part of the composite primary key
      * 2) Again we will use fetch joins
      */
-    public function testSelectFromInverseSideWithCompositePkUsingFetchJoins(): void
+    public function testSelectFromInverseSideWithCompositePkUsingFetchJoins() : void
     {
-        $qb = $this->_em->createQueryBuilder();
+        $qb = $this->em->createQueryBuilder();
 
         $result = $qb->select('d, dr, c')
             ->from(Driver::class, 'd')
@@ -140,17 +132,17 @@ class DDC1884Test extends OrmFunctionalTestCase
             ->setParameter(1, 'John Doe')
             ->getQuery()->getArrayResult();
 
-        $this->assertCount(1, $result);
-        $this->assertArrayHasKey('driverRides', $result[0]);
-        $this->assertCount(3, $result[0]['driverRides']);
+        self::assertCount(1, $result);
+        self::assertArrayHasKey('driverRides', $result[0]);
+        self::assertCount(3, $result[0]['driverRides']);
     }
 
     /**
      * The other way around will fail too
      */
-    public function testSelectFromOwningSideUsingFetchJoins(): void
+    public function testSelectFromOwningSideUsingFetchJoins() : void
     {
-        $qb = $this->_em->createQueryBuilder();
+        $qb = $this->em->createQueryBuilder();
 
         $result =  $qb->select('r, d, c')
             ->from(PaidRide::class, 'r')
@@ -160,8 +152,8 @@ class DDC1884Test extends OrmFunctionalTestCase
             ->setParameter(1, 'John Doe')
             ->getQuery()->getArrayResult();
 
-        $this->assertCount(3, $result);
-        $this->assertArrayHasKey('driver', $result[0]);
-        $this->assertArrayHasKey('car', $result[0]);
+        self::assertCount(3, $result);
+        self::assertArrayHasKey('driver', $result[0]);
+        self::assertArrayHasKey('car', $result[0]);
     }
 }

@@ -1,22 +1,6 @@
 <?php
 
-/*
- * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
- * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
- * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
- * A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT
- * OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
- * SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
- * LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
- * DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
- * THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
- * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
- * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- *
- * This software consists of voluntary contributions made by many individuals
- * and is licensed under the MIT license. For more information, see
- * <http://www.doctrine-project.org>.
- */
+declare(strict_types=1);
 
 namespace Doctrine\ORM\Cache;
 
@@ -26,9 +10,6 @@ use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\PersistentCollection;
 use Doctrine\ORM\Query;
 use Doctrine\ORM\UnitOfWork;
-
-use function array_walk;
-use function assert;
 
 /**
  * Default hydrator cache for collections
@@ -41,7 +22,7 @@ class DefaultCollectionHydrator implements CollectionHydrator
     /** @var UnitOfWork */
     private $uow;
 
-    /** @var array<string,mixed> */
+    /** @var mixed[] */
     private static $hints = [Query::HINT_CACHE_ENABLED => true];
 
     /**
@@ -61,7 +42,7 @@ class DefaultCollectionHydrator implements CollectionHydrator
         $data = [];
 
         foreach ($collection as $index => $entity) {
-            $data[$index] = new EntityCacheKey($metadata->rootEntityName, $this->uow->getEntityIdentifier($entity));
+            $data[$index] = new EntityCacheKey($metadata->getRootClassName(), $this->uow->getEntityIdentifier($entity));
         }
 
         return new CollectionCacheEntry($data);
@@ -70,28 +51,34 @@ class DefaultCollectionHydrator implements CollectionHydrator
     /**
      * {@inheritdoc}
      */
-    public function loadCacheEntry(ClassMetadata $metadata, CollectionCacheKey $key, CollectionCacheEntry $entry, PersistentCollection $collection)
-    {
-        $assoc           = $metadata->associationMappings[$key->association];
-        $targetPersister = $this->uow->getEntityPersister($assoc['targetEntity']);
-        assert($targetPersister instanceof CachedPersister);
-        $targetRegion = $targetPersister->getCacheRegion();
-        $list         = [];
+    public function loadCacheEntry(
+        ClassMetadata $metadata,
+        CollectionCacheKey $key,
+        CollectionCacheEntry $entry,
+        PersistentCollection $collection
+    ) {
+        /** @var CachedPersister $targetPersister */
+        $association     = $metadata->getProperty($key->association);
+        $targetPersister = $this->uow->getEntityPersister($association->getTargetEntity());
+        $targetRegion    = $targetPersister->getCacheRegion();
+        $list            = [];
 
-        /** @var EntityCacheEntry[]|null $entityEntries */
         $entityEntries = $targetRegion->getMultiple($entry);
 
         if ($entityEntries === null) {
             return null;
         }
 
+        /** @var EntityCacheEntry[] $entityEntries */
         foreach ($entityEntries as $index => $entityEntry) {
-            $list[$index] = $this->uow->createEntity($entityEntry->class, $entityEntry->resolveAssociationEntries($this->em), self::$hints);
-        }
+            $data = $entityEntry->resolveAssociationEntries($this->em);
 
-        array_walk($list, static function ($entity, $index) use ($collection) {
+            $entity = $this->uow->createEntity($entityEntry->class, $data, self::$hints);
+
             $collection->hydrateSet($index, $entity);
-        });
+
+            $list[$index] = $entity;
+        }
 
         $this->uow->hydrationComplete();
 

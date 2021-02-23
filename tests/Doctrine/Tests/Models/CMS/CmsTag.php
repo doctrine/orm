@@ -4,33 +4,28 @@ declare(strict_types=1);
 
 namespace Doctrine\Tests\Models\CMS;
 
-use Doctrine\Common\Collections\Collection;
+use Doctrine\ORM\Annotation as ORM;
 
 /**
  * Description of CmsTag
  *
- * @Entity
- * @Table(name="cms_tags")
+ * @ORM\Entity
+ * @ORM\Table(name="cms_tags")
  */
 class CmsTag
 {
     /**
-     * @var int
-     * @Id
-     * @Column(type="integer")
-     * @GeneratedValue
+     * @ORM\Id
+     * @ORM\Column(type="integer")
+     * @ORM\GeneratedValue
      */
     public $id;
-    /** @Column(length=50, name="tag_name", nullable=true) */
+    /** @ORM\Column(length=50, name="tag_name", nullable=true) */
     public $name;
-
-    /**
-     * @psalm-var Collection<int, CmsUser>
-     * @ManyToMany(targetEntity="CmsUser", mappedBy="tags")
-     */
+    /** @ORM\ManyToMany(targetEntity=CmsUser::class, mappedBy="tags") */
     public $users;
 
-    public function setName($name): void
+    public function setName($name)
     {
         $this->name = $name;
     }
@@ -40,7 +35,7 @@ class CmsTag
         return $this->name;
     }
 
-    public function addUser(CmsUser $user): void
+    public function addUser(CmsUser $user)
     {
         $this->users[] = $user;
     }

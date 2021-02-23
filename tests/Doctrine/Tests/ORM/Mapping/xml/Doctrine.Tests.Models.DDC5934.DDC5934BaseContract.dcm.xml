@@ -9,7 +9,7 @@
             <generator strategy="AUTO" />
         </id>
 
-        <many-to-many target-entity="DDC5934Member" inversed-by="contract" fetch="LAZY" field="members" />
+        <many-to-many target-entity="Doctrine\Tests\Models\DDC5934\DDC5934Member" inversed-by="contract" fetch="LAZY" field="members" />
     </entity>
 
 </doctrine-mapping>

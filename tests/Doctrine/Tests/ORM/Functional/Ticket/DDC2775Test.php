@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Doctrine\Tests\ORM\Functional\Ticket;
 
-use Doctrine\Common\Collections\Collection;
+use Doctrine\ORM\Annotation as ORM;
 use Doctrine\Tests\OrmFunctionalTestCase;
 
 /**
@@ -12,7 +12,7 @@ use Doctrine\Tests\OrmFunctionalTestCase;
  */
 class DDC2775Test extends OrmFunctionalTestCase
 {
-    protected function setUp(): void
+    protected function setUp() : void
     {
         parent::setUp();
 
@@ -29,7 +29,7 @@ class DDC2775Test extends OrmFunctionalTestCase
     /**
      * @group DDC-2775
      */
-    public function testIssueCascadeRemove(): void
+    public function testIssueCascadeRemove() : void
     {
         $role = new AdminRole();
         $user = new User();
@@ -39,119 +39,100 @@ class DDC2775Test extends OrmFunctionalTestCase
         $user->addAuthorization($authorization);
         $role->addAuthorization($authorization);
 
-        $this->_em->persist($user);
-        $this->_em->flush();
+        $this->em->persist($user);
+        $this->em->flush();
 
         // Need to clear so that associations are lazy-loaded
-        $this->_em->clear();
+        $this->em->clear();
 
-        $user = $this->_em->find(User::class, $user->id);
+        $user = $this->em->find(User::class, $user->id);
 
-        $this->_em->remove($user);
-        $this->_em->flush();
+        $this->em->remove($user);
+        $this->em->flush();
 
-        self::assertEmpty($this->_em->getRepository(Authorization::class)->findAll());
+        self::assertEmpty($this->em->getRepository(Authorization::class)->findAll());
 
         // With the bug, the second flush throws an error because the cascade remove didn't work correctly
-        $this->_em->flush();
+        $this->em->flush();
     }
 }
 
 /**
- * @Entity @Table(name="ddc2775_role")
- * @InheritanceType("JOINED")
- * @DiscriminatorColumn(name="role_type", type="string")
- * @DiscriminatorMap({"admin"="AdminRole"})
+ * @ORM\Entity
+ * @ORM\Table(name="ddc2775_role")
+ * @ORM\InheritanceType("JOINED")
+ * @ORM\DiscriminatorColumn(name="role_type", type="string")
+ * @ORM\DiscriminatorMap({"admin"=AdminRole::class})
  */
 abstract class Role
 {
     /**
-     * @var int
-     * @Id @Column(type="integer")
-     * @GeneratedValue
+     * @ORM\Id
+     * @ORM\Column(type="integer")
+     * @ORM\GeneratedValue
      */
     public $id;
 
-    /**
-     * @var User
-     * @ManyToOne(targetEntity="User", inversedBy="roles")
-     */
+    /** @ORM\ManyToOne(targetEntity=User::class, inversedBy="roles") */
     public $user;
 
-    /**
-     * @psalm-var Collection<int, Authorization>
-     * @OneToMany(targetEntity="Authorization", mappedBy="role", cascade={"all"}, orphanRemoval=true)
-     */
+    /** @ORM\OneToMany(targetEntity=Authorization::class, mappedBy="role", cascade={"all"}, orphanRemoval=true) */
     public $authorizations;
 
-    public function addAuthorization(Authorization $authorization): void
+    public function addAuthorization(Authorization $authorization)
     {
         $this->authorizations[] = $authorization;
         $authorization->role    = $this;
     }
 }
 
-/** @Entity @Table(name="ddc2775_admin_role") */
+/** @ORM\Entity @ORM\Table(name="ddc2775_admin_role") */
 class AdminRole extends Role
 {
 }
 
 /**
- * @Entity @Table(name="ddc2775_authorizations")
+ * @ORM\Entity @ORM\Table(name="ddc2775_authorizations")
  */
 class Authorization
 {
     /**
-     * @var int
-     * @Id @Column(type="integer")
-     * @GeneratedValue
+     * @ORM\Id @ORM\Column(type="integer")
+     * @ORM\GeneratedValue
      */
     public $id;
 
-    /**
-     * @var User
-     * @ManyToOne(targetEntity="User", inversedBy="authorizations")
-     */
+    /** @ORM\ManyToOne(targetEntity=User::class, inversedBy="authorizations") */
     public $user;
 
-    /**
-     * @var Role
-     * @ManyToOne(targetEntity="Role", inversedBy="authorizations")
-     */
+    /** @ORM\ManyToOne(targetEntity=Role::class, inversedBy="authorizations") */
     public $role;
 }
 
 /**
- * @Entity @Table(name="ddc2775_users")
+ * @ORM\Entity @ORM\Table(name="ddc2775_users")
  */
 class User
 {
     /**
-     * @var int
-     * @Id @Column(type="integer")
-     * @GeneratedValue(strategy="AUTO")
+     * @ORM\Id @ORM\Column(type="integer")
+     * @ORM\GeneratedValue(strategy="AUTO")
      */
     public $id;
 
-    /**
-     * @psalm-var Collection<int, Role>
-     * @OneToMany(targetEntity="Role", mappedBy="user", cascade={"all"}, orphanRemoval=true)
-     */
+    /** @ORM\OneToMany(targetEntity=Role::class, mappedBy="user", cascade={"all"}, orphanRemoval=true) */
     public $roles;
 
-    /**
-     * @psalm-var Collection<int, Authorization>
-     * @OneToMany(targetEntity="Authorization", mappedBy="user", cascade={"all"}, orphanRemoval=true)
-     */
+    /** @ORM\OneToMany(targetEntity=Authorization::class, mappedBy="user", cascade={"all"}, orphanRemoval=true) */
     public $authorizations;
 
-    public function addRole(Role $role): void
+    public function addRole(Role $role)
     {
         $this->roles[] = $role;
         $role->user    = $this;
     }
 
-    public function addAuthorization(Authorization $authorization): void
+    public function addAuthorization(Authorization $authorization)
     {
         $this->authorizations[] = $authorization;
         $authorization->user    = $this;

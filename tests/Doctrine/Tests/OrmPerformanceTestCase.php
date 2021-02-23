@@ -5,8 +5,7 @@ declare(strict_types=1);
 namespace Doctrine\Tests;
 
 use InvalidArgumentException;
-
-use function is_integer;
+use function is_int;
 use function microtime;
 use function sprintf;
 
@@ -18,7 +17,7 @@ class OrmPerformanceTestCase extends OrmFunctionalTestCase
     /** @var int */
     protected $maxRunningTime = 0;
 
-    protected function runTest(): void
+    protected function runTest()
     {
         $s = microtime(true);
         parent::runTest();
@@ -36,18 +35,23 @@ class OrmPerformanceTestCase extends OrmFunctionalTestCase
     }
 
     /**
+     * @param int $maxRunningTime
+     *
      * @throws InvalidArgumentException
      */
-    public function setMaxRunningTime(int $maxRunningTime): void
+    public function setMaxRunningTime($maxRunningTime)
     {
-        if (is_integer($maxRunningTime) && $maxRunningTime >= 0) {
-            $this->maxRunningTime = $maxRunningTime;
-        } else {
+        if (! (is_int($maxRunningTime) && $maxRunningTime >= 0)) {
             throw new InvalidArgumentException();
         }
+
+        $this->maxRunningTime = $maxRunningTime;
     }
 
-    public function getMaxRunningTime(): int
+    /**
+     * @return int
+     */
+    public function getMaxRunningTime()
     {
         return $this->maxRunningTime;
     }

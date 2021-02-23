@@ -1,7 +1,7 @@
 Events
 ======
 
-Doctrine ORM features a lightweight event system that is part of the
+Doctrine 2 features a lightweight event system that is part of the
 Common package. Doctrine uses it to dispatch system events, mainly
 :ref:`lifecycle events <reference-events-lifecycle-events>`.
 You can also use it for your own custom events.
@@ -70,7 +70,7 @@ method.
     <?php
     $evm->removeEventListener(array(self::preFoo, self::postFoo), $this);
 
-The Doctrine ORM event system also has a simple concept of event
+The Doctrine 2 event system also has a simple concept of event
 subscribers. We can define a simple ``TestEventSubscriber`` class
 which implements the ``\Doctrine\Common\EventSubscriber`` interface
 and implements a ``getSubscribedEvents()`` method which returns an
@@ -124,11 +124,10 @@ Now you can test the ``$eventSubscriber`` instance to see if the
 Naming convention
 ~~~~~~~~~~~~~~~~~
 
-Events being used with the Doctrine ORM EventManager are best named
+Events being used with the Doctrine 2 EventManager are best named
 with camelcase and the value of the corresponding constant should
 be the name of the constant itself, even with spelling. This has
 several reasons:
-
 
 -  It is easy to read.
 -  Simplicity.
@@ -145,65 +144,60 @@ An example for a correct notation can be found in the example
 Lifecycle Events
 ----------------
 
-The ``EntityManager`` and ``UnitOfWork`` classes trigger a bunch of
-events during the life-time of their registered entities.
+The EntityManager and UnitOfWork trigger a bunch of events during
+the life-time of their registered entities.
 
-
-
--  ``preRemove`` - The ``preRemove`` event occurs for a given entity
-   before the respective ``EntityManager`` remove operation for that
-   entity is executed.  It is not called for a DQL ``DELETE`` statement.
--  ``postRemove`` - The ``postRemove`` event occurs for an entity after the
+-  preRemove - The preRemove event occurs for a given entity before
+   the respective EntityManager remove operation for that entity is
+   executed.  It is not called for a DQL DELETE statement.
+-  postRemove - The postRemove event occurs for an entity after the
    entity has been deleted. It will be invoked after the database
-   delete operations. It is not called for a DQL ``DELETE`` statement.
--  ``prePersist`` - The ``prePersist`` event occurs for a given entity
-   before the respective ``EntityManager`` persist operation for that
+   delete operations. It is not called for a DQL DELETE statement.
+-  prePersist - The prePersist event occurs for a given entity
+   before the respective EntityManager persist operation for that
    entity is executed. It should be noted that this event is only triggered on
    *initial* persist of an entity (i.e. it does not trigger on future updates).
--  ``postPersist`` - The ``postPersist`` event occurs for an entity after
+-  postPersist - The postPersist event occurs for an entity after
    the entity has been made persistent. It will be invoked after the
    database insert operations. Generated primary key values are
    available in the postPersist event.
--  ``preUpdate`` - The ``preUpdate`` event occurs before the database
-   update operations to entity data. It is not called for a DQL
-   ``UPDATE`` statement nor when the computed changeset is empty.
--  ``postUpdate`` - The ``postUpdate`` event occurs after the database
-   update operations to entity data. It is not called for a DQL
-   ``UPDATE`` statement.
--  ``postLoad`` - The postLoad event occurs for an entity after the
-   entity has been loaded into the current ``EntityManager`` from the
+-  preUpdate - The preUpdate event occurs before the database
+   update operations to entity data. It is not called for a DQL UPDATE statement
+   nor when the computed changeset is empty.
+-  postUpdate - The postUpdate event occurs after the database
+   update operations to entity data. It is not called for a DQL UPDATE statement.
+-  postLoad - The postLoad event occurs for an entity after the
+   entity has been loaded into the current EntityManager from the
    database or after the refresh operation has been applied to it.
--  ``loadClassMetadata`` - The ``loadClassMetadata`` event occurs after the
+-  loadClassMetadata - The loadClassMetadata event occurs after the
    mapping metadata for a class has been loaded from a mapping source
-   (annotations/xml/yaml). This event is not a lifecycle callback.
--  ``onClassMetadataNotFound`` - Loading class metadata for a particular
+   (annotations/xml). This event is not a lifecycle callback.
+-  onClassMetadataNotFound - Loading class metadata for a particular
    requested class name failed. Manipulating the given event args instance
    allows providing fallback metadata even when no actual metadata exists
    or could be found. This event is not a lifecycle callback.
--  ``preFlush`` - The ``preFlush`` event occurs at the very beginning of
-   a flush operation.
--  ``onFlush`` - The ``onFlush`` event occurs after the change-sets of all
+-  preFlush - The preFlush event occurs at the very beginning of a flush
+   operation.
+-  onFlush - The onFlush event occurs after the change-sets of all
    managed entities are computed. This event is not a lifecycle
    callback.
--  ``postFlush`` - The ``postFlush`` event occurs at the end of a flush operation. This
+-  postFlush - The postFlush event occurs at the end of a flush operation. This
    event is not a lifecycle callback.
--  ``onClear`` - The ``onClear`` event occurs when the
-   ``EntityManager#clear()`` operation is invoked, after all references
-   to entities have been removed from the unit of work. This event is not
-   a lifecycle callback.
-
+-  onClear - The onClear event occurs when the EntityManager#clear() operation is
+   invoked, after all references to entities have been removed from the unit of
+   work. This event is not a lifecycle callback.
 
 .. warning::
 
-    Note that, when using ``Doctrine\ORM\AbstractQuery#toIterable()``, ``postLoad``
+    Note that, when using ``Doctrine\ORM\AbstractQuery#iterate()``, ``postLoad``
     events will be executed immediately after objects are being hydrated, and therefore
     associations are not guaranteed to be initialized. It is not safe to combine
-    usage of ``Doctrine\ORM\AbstractQuery#toIterable()`` and ``postLoad`` event
+    usage of ``Doctrine\ORM\AbstractQuery#iterate()`` and ``postLoad`` event
     handlers.
 
 .. warning::
 
-    Note that the ``postRemove`` event or any events triggered after an entity removal
+    Note that the postRemove event or any events triggered after an entity removal
     can receive an uninitializable proxy in case you have configured an entity to
     cascade remove relations. In this case, you should load yourself the proxy in
     the associated pre event.
@@ -221,22 +215,21 @@ These can be hooked into by two different types of event
 listeners:
 
 -  Lifecycle Callbacks are methods on the entity classes that are
-   called when the event is triggered. They receive some kind
+   called when the event is triggered. As of v2.4 they receive some kind
    of ``EventArgs`` instance.
 -  Lifecycle Event Listeners and Subscribers are classes with specific callback
    methods that receives some kind of ``EventArgs`` instance.
 
-The ``EventArgs`` instance received by the listener gives access to the entity,
-``EntityManager`` instance and other relevant data.
+The EventArgs instance received by the listener gives access to the entity,
+EntityManager and other relevant data.
 
 .. note::
 
     All Lifecycle events that happen during the ``flush()`` of
-    an ``EntityManager`` have very specific constraints on the allowed
+    an EntityManager have very specific constraints on the allowed
     operations that can be executed. Please read the
     :ref:`reference-events-implementing-listeners` section very carefully
     to understand which operations are allowed in which lifecycle event.
-
 
 Lifecycle Callbacks
 -------------------
@@ -246,11 +239,6 @@ trigger callbacks whenever an instance of that entity class experiences
 a relevant lifecycle event. More than one callback can be defined for each
 lifecycle event. Lifecycle Callbacks are best used for simple operations
 specific to a particular entity class's lifecycle.
-
-
-.. note::
-
-    Note that Licecycle Callbacks are not supported for Embeddables.
 
 .. code-block:: php
 
@@ -304,26 +292,8 @@ Note that the methods set as lifecycle callbacks need to be public and,
 when using these annotations, you have to apply the
 ``@HasLifecycleCallbacks`` marker annotation on the entity class.
 
-If you want to register lifecycle callbacks from YAML or XML you
-can do it with the following.
-
-.. code-block:: yaml
-
-    User:
-      type: entity
-      fields:
-    # ...
-        name:
-          type: string(50)
-      lifecycleCallbacks:
-        prePersist: [ doStuffOnPrePersist, doOtherStuffOnPrePersist ]
-        postPersist: [ doStuffOnPostPersist ]
-
-In YAML the ``key`` of the lifecycleCallbacks entry is the event that you
-are triggering on and the value is the method (or methods) to call. The allowed
-event types are the ones listed in the previous Lifecycle Events section.
-
-XML would look something like this:
+If you want to register lifecycle callbacks from XML it would look
+something like this:
 
 .. code-block:: xml
 
@@ -349,7 +319,7 @@ In XML the ``type`` of the lifecycle-callback entry is the event that you
 are triggering on and the ``method`` is the method to call. The allowed event
 types are the ones listed in the previous Lifecycle Events section.
 
-When using YAML or XML you need to remember to create public methods to match the
+When using XML you need to remember to create public methods to match the
 callback names you defined. E.g. in these examples ``doStuffOnPrePersist()``,
 ``doOtherStuffOnPrePersist()`` and ``doStuffOnPostPersist()`` methods need to be
 defined on your ``User`` model.
@@ -379,11 +349,12 @@ defined on your ``User`` model.
         }
     }
 
-
 Lifecycle Callbacks Event Argument
------------------------------------
+----------------------------------
 
-The triggered event is also given to the lifecycle-callback.
+.. versionadded:: 2.4
+
+Since 2.4 the triggered event is given to the lifecycle-callback.
 
 With the additional argument you have access to the
 ``EntityManager`` and ``UnitOfWork`` APIs inside these callback methods.
@@ -412,9 +383,9 @@ sit at a level above the entities and allow you to implement re-usable
 behaviors across different entity classes.
 
 Note that they require much more detailed knowledge about the inner
-workings of the ``EntityManager`` and ``UnitOfWork`` classes. Please
-read the :ref:`reference-events-implementing-listeners` section
-carefully if you are trying to write your own listener.
+workings of the EntityManager and UnitOfWork. Please read the
+:ref:`reference-events-implementing-listeners` section carefully if you
+are trying to write your own listener.
 
 For event subscribers, there are no surprises. They declare the
 lifecycle events in their ``getSubscribedEvents`` method and provide
@@ -425,7 +396,7 @@ A lifecycle event listener looks like the following:
 .. code-block:: php
 
     <?php
-    use Doctrine\Persistence\Event\LifecycleEventArgs;
+    use Doctrine\Common\Persistence\Event\LifecycleEventArgs;
 
     class MyEventListener
     {
@@ -447,8 +418,8 @@ A lifecycle event subscriber may look like this:
 
     <?php
     use Doctrine\ORM\Events;
-    use Doctrine\EventSubscriber;
-    use Doctrine\Persistence\Event\LifecycleEventArgs;
+    use Doctrine\Common\EventSubscriber;
+    use Doctrine\Common\Persistence\Event\LifecycleEventArgs;
 
     class MyEventSubscriber implements EventSubscriber
     {
@@ -503,16 +474,16 @@ Implementing Event Listeners
 ----------------------------
 
 This section explains what is and what is not allowed during
-specific lifecycle events of the ``UnitOfWork`` class. Although you get
-passed the ``EntityManager`` instance in all of these events, you have
-to follow these restrictions very carefully since operations in the
-wrong event may produce lots of different errors, such as inconsistent
+specific lifecycle events of the UnitOfWork. Although you get
+passed the EntityManager in all of these events, you have to follow
+these restrictions very carefully since operations in the wrong
+event may produce lots of different errors, such as inconsistent
 data and lost updates/persists/removes.
 
 For the described events that are also lifecycle callback events
 the restrictions apply as well, with the additional restriction
 that (prior to version 2.4) you do not have access to the
-``EntityManager`` or ``UnitOfWork`` APIs inside these events.
+EntityManager or UnitOfWork APIs inside these events.
 
 prePersist
 ~~~~~~~~~~
@@ -531,7 +502,6 @@ In both cases you get passed a ``LifecycleEventArgs`` instance
 which has access to the entity and the entity manager.
 
 The following restrictions apply to ``prePersist``:
-
 
 -  If you are using a PrePersist Identity Generator such as
    sequences the ID value will *NOT* be available within any
@@ -555,9 +525,8 @@ preFlush
 ~~~~~~~~
 
 ``preFlush`` is called at ``EntityManager#flush()`` before
-anything else. ``EntityManager#flush()`` should not be called inside
-its listeners, since `preFlush` event is dispatched in it, which would
-result in infinite loop.
+anything else. ``EntityManager#flush()`` can be called safely
+inside its listeners.
 
 .. code-block:: php
 
@@ -581,15 +550,14 @@ OnFlush is a very powerful event. It is called inside
 entities and their associations have been computed. This means, the
 ``onFlush`` event has access to the sets of:
 
-
 -  Entities scheduled for insert
 -  Entities scheduled for update
 -  Entities scheduled for removal
 -  Collections scheduled for update
 -  Collections scheduled for removal
 
-To make use of the ``onFlush`` event you have to be familiar with the
-internal ``UnitOfWork`` API, which grants you access to the previously
+To make use of the onFlush event you have to be familiar with the
+internal UnitOfWork API, which grants you access to the previously
 mentioned sets. See this example:
 
 .. code-block:: php
@@ -625,7 +593,6 @@ mentioned sets. See this example:
     }
 
 The following restrictions apply to the onFlush event:
-
 
 -  If you create and persist a new entity in ``onFlush``, then
    calling ``EntityManager#persist()`` is not enough.
@@ -674,7 +641,6 @@ computed change-set of this entity.
 This means you have access to all the fields that have changed for
 this entity with their old and new value. The following methods are
 available on the ``PreUpdateEventArgs``:
-
 
 -  ``getEntity()`` to get access to the actual entity.
 -  ``getEntityChangeSet()`` to get a copy of the changeset array.
@@ -729,7 +695,6 @@ lifecycle callback when there are expensive validations to call:
 
 Restrictions for this event:
 
-
 -  Changes to associations of the passed entities are not
    recognized by the flush operation anymore.
 -  Changes to fields of the passed entities are not recognized by
@@ -737,7 +702,7 @@ Restrictions for this event:
    the event to modify primitive field values, e.g. use
    ``$eventArgs->setNewValue($field, $value);`` as in the Alice to Bob example above.
 -  Any calls to ``EntityManager#persist()`` or
-   ``EntityManager#remove()``, even in combination with the ``UnitOfWork``
+   ``EntityManager#remove()``, even in combination with the UnitOfWork
    API are strongly discouraged and don't work as expected outside the
    flush operation.
 
@@ -758,6 +723,8 @@ EntityManager.
 
 Entity listeners
 ----------------
+
+.. versionadded:: 2.4
 
 An entity listener is a lifecycle listener class used for an entity.
 
@@ -786,13 +753,6 @@ An entity listener is a lifecycle listener class used for an entity.
                 <!-- .... -->
             </entity>
         </doctrine-mapping>
-    .. code-block:: yaml
-
-        MyProject\Entity\User:
-          type: entity
-          entityListeners:
-            UserListener:
-          # ....
 
 .. _reference-entity-listeners:
 
@@ -875,32 +835,13 @@ you need to map the listener method using the event type mapping:
                 <!-- .... -->
             </entity>
         </doctrine-mapping>
-    .. code-block:: yaml
-
-        MyProject\Entity\User:
-          type: entity
-          entityListeners:
-            UserListener:
-              preFlush: [preFlushHandler]
-              postLoad: [postLoadHandler]
-
-              postPersist: [postPersistHandler]
-              prePersist: [prePersistHandler]
-
-              postUpdate: [postUpdateHandler]
-              preUpdate: [preUpdateHandler]
-
-              postRemove: [postRemoveHandler]
-              preRemove: [preRemoveHandler]
-          # ....
 
 .. note::
 
     The order of execution of multiple methods for the same event (e.g. multiple @PrePersist) is not guaranteed.
 
-
 Entity listeners resolver
-~~~~~~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~~~~~
 Doctrine invokes the listener resolver to get the listener instance.
 
 - A resolver allows you register a specific entity listener instance.
@@ -966,18 +907,17 @@ Load ClassMetadata Event
 ------------------------
 
 When the mapping information for an entity is read, it is populated
-in to a ``ClassMetadataInfo`` instance. You can hook in to this
+in to a ``Doctrine\ORM\Mapping\ClassMetadata`` instance. You can hook in to this
 process and manipulate the instance.
 
 .. code-block:: php
 
     <?php
-    $test = new TestEvent();
-    $metadataFactory = $em->getMetadataFactory();
+    $test = new TestEventListener();
     $evm = $em->getEventManager();
-    $evm->addEventListener(Events::loadClassMetadata, $test);
+    $evm->addEventListener(Doctrine\ORM\Events::loadClassMetadata, $test);
 
-    class TestEvent
+    class TestEventListener
     {
         public function loadClassMetadata(\Doctrine\ORM\Event\LoadClassMetadataEventArgs $eventArgs)
         {
@@ -991,3 +931,55 @@ process and manipulate the instance.
         }
     }
 
+SchemaTool Events
+-----------------
+
+It is possible to access the schema metadata during schema changes that are happening in ``Doctrine\ORM\Tools\SchemaTool``.
+There are two different events where you can hook in.
+
+postGenerateSchemaTable
+~~~~~~~~~~~~~~~~~~~~~~~
+
+This event is fired for each ``Doctrine\DBAL\Schema\Table`` instance, after one was created and built up with the current class metadata
+of an entity. It is possible to access to the current state of ``Doctrine\DBAL\Schema\Schema``, the current table schema
+instance and class metadata.
+
+.. code-block:: php
+
+    <?php
+    $test = new TestEventListener();
+    $evm = $em->getEventManager();
+    $evm->addEventListener(\Doctrine\ORM\Tools\ToolEvents::postGenerateSchemaTable, $test);
+
+    class TestEventListener
+    {
+        public function postGenerateSchemaTable(\Doctrine\ORM\Tools\Event\GenerateSchemaTableEventArgs $eventArgs)
+        {
+            $classMetadata = $eventArgs->getClassMetadata();
+            $schema = $eventArgs->getSchema();
+            $table = $eventArgs->getClassTable();
+        }
+    }
+
+postGenerateSchema
+~~~~~~~~~~~~~~~~~~
+
+This event is fired after the schema instance was successfully built and before SQL queries are generated from the
+schema information of ``Doctrine\DBAL\Schema\Schema``. It allows to access the full object representation of the database schema
+and the EntityManager.
+
+.. code-block:: php
+
+    <?php
+    $test = new TestEventListener();
+    $evm = $em->getEventManager();
+    $evm->addEventListener(\Doctrine\ORM\Tools\ToolEvents::postGenerateSchema, $test);
+
+    class TestEventListener
+    {
+        public function postGenerateSchema(\Doctrine\ORM\Tools\Event\GenerateSchemaEventArgs $eventArgs)
+        {
+            $schema = $eventArgs->getSchema();
+            $em = $eventArgs->getEntityManager();
+        }
+    }

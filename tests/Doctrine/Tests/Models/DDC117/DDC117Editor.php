@@ -5,45 +5,38 @@ declare(strict_types=1);
 namespace Doctrine\Tests\Models\DDC117;
 
 use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\ORM\Annotation as ORM;
 
 /**
- * @Entity
+ * @ORM\Entity
  */
 class DDC117Editor
 {
-    /**
-     * @var int
-     * @Id
-     * @Column(type="integer")
-     * @GeneratedValue
-     */
+    /** @ORM\Id @ORM\Column(type="integer") @ORM\GeneratedValue */
     public $id;
 
-    /**
-     * @var string
-     * @Column(type="string")
-     */
+    /** @ORM\Column(type="string") */
     public $name;
 
     /**
-     * @ManyToMany(targetEntity="DDC117Translation", inversedBy="reviewedByEditors")
-     * @JoinTable(
+     * @ORM\ManyToMany(targetEntity=DDC117Translation::class, inversedBy="reviewedByEditors")
+     * @ORM\JoinTable(
      *   inverseJoinColumns={
-     *     @JoinColumn(name="article_id", referencedColumnName="article_id"),
-     *     @JoinColumn(name="language", referencedColumnName="language")
+     *     @ORM\JoinColumn(name="article_id", referencedColumnName="article_id"),
+     *     @ORM\JoinColumn(name="language", referencedColumnName="language")
      *   },
      *   joinColumns={
-     *     @JoinColumn(name="editor_id", referencedColumnName="id")
+     *     @ORM\JoinColumn(name="editor_id", referencedColumnName="id")
      *   }
      * )
      */
     public $reviewingTranslations;
 
     /**
-     * @ManyToOne(targetEntity="DDC117Translation", inversedBy="lastTranslatedBy")
-     * @JoinColumns({
-     *   @JoinColumn(name="lt_article_id", referencedColumnName="article_id"),
-     *   @JoinColumn(name="lt_language", referencedColumnName="language")
+     * @ORM\ManyToOne(targetEntity=DDC117Translation::class, inversedBy="lastTranslatedBy")
+     * @ORM\JoinColumns({
+     *   @ORM\JoinColumn(name="lt_article_id", referencedColumnName="article_id"),
+     *   @ORM\JoinColumn(name="lt_language", referencedColumnName="language")
      * })
      */
     public $lastTranslation;
@@ -54,7 +47,7 @@ class DDC117Editor
         $this->reviewingTranslations = new ArrayCollection();
     }
 
-    public function addLastTranslation(DDC117Translation $t): void
+    public function addLastTranslation(DDC117Translation $t)
     {
         $this->lastTranslation = $t;
         $t->lastTranslatedBy[] = $this;

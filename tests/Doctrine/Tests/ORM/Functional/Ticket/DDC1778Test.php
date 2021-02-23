@@ -13,13 +13,10 @@ use Doctrine\Tests\OrmFunctionalTestCase;
  */
 class DDC1778Test extends OrmFunctionalTestCase
 {
-    /** @var CmsUser */
     private $user;
-
-    /** @var CmsPhonenumber */
     private $phone;
 
-    protected function setUp(): void
+    public function setUp() : void
     {
         $this->useModelSet('cms');
         parent::setUp();
@@ -33,48 +30,48 @@ class DDC1778Test extends OrmFunctionalTestCase
         $this->phone->phonenumber = '0123456789';
         $this->user->addPhonenumber($this->phone);
 
-        $this->_em->persist($this->user);
-        $this->_em->persist($this->phone);
-        $this->_em->flush();
-        $this->_em->clear();
+        $this->em->persist($this->user);
+        $this->em->persist($this->phone);
+        $this->em->flush();
+        $this->em->clear();
 
-        $this->user  = $this->_em->find(CmsUser::class, $this->user->getId());
-        $this->phone = $this->_em->find(CmsPhonenumber::class, $this->phone->phonenumber);
+        $this->user  = $this->em->find(CmsUser::class, $this->user->getId());
+        $this->phone = $this->em->find(CmsPhonenumber::class, $this->phone->phonenumber);
     }
 
-    public function testClear(): void
+    public function testClear() : void
     {
         $clonedNumbers = clone $this->user->getPhonenumbers();
         $clonedNumbers->clear();
-        $this->_em->flush();
-        $this->_em->clear();
+        $this->em->flush();
+        $this->em->clear();
 
-        $this->user = $this->_em->find(CmsUser::class, $this->user->getId());
+        $this->user = $this->em->find(CmsUser::class, $this->user->getId());
 
-        $this->assertCount(1, $this->user->getPhonenumbers());
+        self::assertCount(1, $this->user->getPhonenumbers());
     }
 
-    public function testRemove(): void
+    public function testRemove() : void
     {
         $clonedNumbers = clone $this->user->getPhonenumbers();
         $clonedNumbers->remove(0);
-        $this->_em->flush();
-        $this->_em->clear();
+        $this->em->flush();
+        $this->em->clear();
 
-        $this->user = $this->_em->find(CmsUser::class, $this->user->getId());
+        $this->user = $this->em->find(CmsUser::class, $this->user->getId());
 
-        $this->assertCount(1, $this->user->getPhonenumbers());
+        self::assertCount(1, $this->user->getPhonenumbers());
     }
 
-    public function testRemoveElement(): void
+    public function testRemoveElement() : void
     {
         $clonedNumbers = clone $this->user->getPhonenumbers();
         $clonedNumbers->removeElement($this->phone);
-        $this->_em->flush();
-        $this->_em->clear();
+        $this->em->flush();
+        $this->em->clear();
 
-        $this->user = $this->_em->find(CmsUser::class, $this->user->getId());
+        $this->user = $this->em->find(CmsUser::class, $this->user->getId());
 
-        $this->assertCount(1, $this->user->getPhonenumbers());
+        self::assertCount(1, $this->user->getPhonenumbers());
     }
 }

@@ -4,16 +4,17 @@ declare(strict_types=1);
 
 namespace Doctrine\Tests\Models\DDC4006;
 
+use Doctrine\ORM\Annotation as ORM;
+
 /**
- * @Embeddable
+ * @ORM\Embeddable
  */
 class DDC4006UserId
 {
     /**
-     * @var int
-     * @Id
-     * @GeneratedValue("IDENTITY")
-     * @Column(type="integer")
+     * @ORM\Id
+     * @ORM\GeneratedValue("IDENTITY")
+     * @ORM\Column(type="integer")
      */
     private $id;
 }

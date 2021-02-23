@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<doctrine-mapping xmlns="http://doctrine-project.org/schemas/orm/doctrine-mapping"
+                  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                  xsi:schemaLocation="http://doctrine-project.org/schemas/orm/doctrine-mapping
+                          http://www.doctrine-project.org/schemas/orm/doctrine-mapping.xsd">
+
+    <entity name="Doctrine\Tests\Models\Quote\Group" table="quote-group">
+        <id name="id" type="integer" column="group-id">
+            <generator />
+        </id>
+
+        <field name="name" column="group-name" />
+
+        <many-to-one field="parent" target-entity="Doctrine\Tests\Models\Quote\Group">
+            <cascade><cascade-persist /></cascade>
+            <join-column name="parent-id" referenced-column-name="group-id" />
+        </many-to-one>
+
+        <many-to-many field="users" target-entity="Doctrine\Tests\Models\Quote\User" mapped-by="groups" />
+    </entity>
+
+</doctrine-mapping>

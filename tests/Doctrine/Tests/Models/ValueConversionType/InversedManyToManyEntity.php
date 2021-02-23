@@ -5,25 +5,21 @@ declare(strict_types=1);
 namespace Doctrine\Tests\Models\ValueConversionType;
 
 use Doctrine\Common\Collections\ArrayCollection;
-use Doctrine\Common\Collections\Collection;
+use Doctrine\ORM\Annotation as ORM;
 
 /**
- * @Entity
- * @Table(name="vct_inversed_manytomany")
+ * @ORM\Entity
+ * @ORM\Table(name="vct_inversed_manytomany")
  */
 class InversedManyToManyEntity
 {
     /**
-     * @var string
-     * @Column(type="rot13")
-     * @Id
+     * @ORM\Column(type="rot13")
+     * @ORM\Id
      */
     public $id1;
 
-    /**
-     * @psalm-var Collection<int, OwningManyToManyEntity>
-     * @ManyToMany(targetEntity="OwningManyToManyEntity", mappedBy="associatedEntities")
-     */
+    /** @ORM\ManyToMany(targetEntity=OwningManyToManyEntity::class, mappedBy="associatedEntities") */
     public $associatedEntities;
 
     public function __construct()

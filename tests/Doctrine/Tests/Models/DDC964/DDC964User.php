@@ -5,140 +5,165 @@ declare(strict_types=1);
 namespace Doctrine\Tests\Models\DDC964;
 
 use Doctrine\Common\Collections\ArrayCollection;
-use Doctrine\ORM\Mapping\ClassMetadataInfo;
+use Doctrine\DBAL\Types\Type;
+use Doctrine\ORM\Annotation as ORM;
+use Doctrine\ORM\Mapping;
 
 /**
- * @MappedSuperclass
+ * @ORM\MappedSuperclass
  */
 class DDC964User
 {
     /**
-     * @var int
-     * @Id
-     * @GeneratedValue
-     * @Column(type="integer", name="user_id", length=150)
+     * @ORM\Id
+     * @ORM\GeneratedValue
+     * @ORM\Column(type="integer", name="user_id")
      */
     protected $id;
 
-    /** @Column(name="user_name", nullable=true, unique=false, length=250) */
+    /** @ORM\Column(name="user_name", nullable=true, unique=false, length=250) */
     protected $name;
 
     /**
-     * @var ArrayCollection
-     * @ManyToMany(targetEntity="DDC964Group", inversedBy="users", cascade={"persist", "merge", "detach"})
-     * @JoinTable(name="ddc964_users_groups",
-     *  joinColumns={@JoinColumn(name="user_id", referencedColumnName="id")},
-     *  inverseJoinColumns={@JoinColumn(name="group_id", referencedColumnName="id")}
+     * @ORM\ManyToMany(targetEntity=DDC964Group::class, inversedBy="users", cascade={"persist"})
+     * @ORM\JoinTable(name="ddc964_users_groups",
+     *  joinColumns={@ORM\JoinColumn(name="user_id", referencedColumnName="id")},
+     *  inverseJoinColumns={@ORM\JoinColumn(name="group_id", referencedColumnName="id")}
      * )
+     *
+     * @var ArrayCollection
      */
     protected $groups;
 
     /**
+     * @ORM\ManyToOne(targetEntity=DDC964Address::class, cascade={"persist"})
+     * @ORM\JoinColumn(name="address_id", referencedColumnName="id")
+     *
      * @var DDC964Address
-     * @ManyToOne(targetEntity="DDC964Address", cascade={"persist", "merge"})
-     * @JoinColumn(name="address_id", referencedColumnName="id")
      */
     protected $address;
 
-    public function __construct(?string $name = null)
+    /**
+     * @param string $name
+     */
+    public function __construct($name = null)
     {
         $this->name   = $name;
         $this->groups = new ArrayCollection();
     }
 
-    public function getId(): int
+    /**
+     * @return int
+     */
+    public function getId()
     {
         return $this->id;
     }
 
-    public function getName(): string
+    /**
+     * @return string
+     */
+    public function getName()
     {
         return $this->name;
     }
 
-    public function setName(string $name): void
+    /**
+     * @param string $name
+     */
+    public function setName($name)
     {
         $this->name = $name;
     }
 
-    public function addGroup(DDC964Group $group): void
+    public function addGroup(DDC964Group $group)
     {
         $this->groups->add($group);
         $group->addUser($this);
     }
 
-    public function getGroups(): ArrayCollection
+    /**
+     * @return ArrayCollection
+     */
+    public function getGroups()
     {
         return $this->groups;
     }
 
-    public function getAddress(): DDC964Address
+    /**
+     * @return DDC964Address
+     */
+    public function getAddress()
     {
         return $this->address;
     }
 
-    public function setAddress(DDC964Address $address): void
+    public function setAddress(DDC964Address $address)
     {
         $this->address = $address;
     }
 
-    public static function loadMetadata(ClassMetadataInfo $metadata): void
+    public static function loadMetadata(Mapping\ClassMetadata $metadata)
     {
-        $metadata->isMappedSuperclass = true;
+        $fieldMetadata = new Mapping\FieldMetadata('id');
+        $fieldMetadata->setType(Type::getType('integer'));
+        $fieldMetadata->setColumnName('user_id');
+        $fieldMetadata->setPrimaryKey(true);
 
-        $metadata->mapField(
-            [
-                'id'         => true,
-                'fieldName'  => 'id',
-                'type'       => 'integer',
-                'columnName' => 'user_id',
-                'length'     => 150,
-            ]
-        );
-        $metadata->mapField(
-            [
-                'fieldName' => 'name',
-                'type'      => 'string',
-                'columnName' => 'user_name',
-                'nullable'  => true,
-                'unique'    => false,
-                'length'    => 250,
-            ]
-        );
+        $metadata->addProperty($fieldMetadata);
 
-        $metadata->mapManyToOne(
-            [
-                'fieldName'      => 'address',
-                'targetEntity'   => 'DDC964Address',
-                'cascade'        => ['persist','merge'],
-                'joinColumn'     => ['name' => 'address_id', 'referencedColumnMame' => 'id'],
-            ]
-        );
+        $fieldMetadata = new Mapping\FieldMetadata('name');
+        $fieldMetadata->setType(Type::getType('string'));
+        $fieldMetadata->setLength(250);
+        $fieldMetadata->setColumnName('user_name');
+        $fieldMetadata->setNullable(true);
+        $fieldMetadata->setUnique(false);
 
-        $metadata->mapManyToMany(
-            [
-                'fieldName'      => 'groups',
-                'targetEntity'   => 'DDC964Group',
-                'inversedBy'     => 'users',
-                'cascade'        => ['persist','merge','detach'],
-                'joinTable'      => [
-                    'name'          => 'ddc964_users_groups',
-                    'joinColumns'   => [
-                        [
-                            'name' => 'user_id',
-                            'referencedColumnName' => 'id',
-                        ],
-                    ],
-                    'inverseJoinColumns' => [
-                        [
-                            'name' => 'group_id',
-                            'referencedColumnName' => 'id',
-                        ],
-                    ],
-                ],
-            ]
-        );
+        $metadata->addProperty($fieldMetadata);
 
-        $metadata->setIdGeneratorType(ClassMetadataInfo::GENERATOR_TYPE_AUTO);
+        $joinColumns = [];
+
+        $joinColumn = new Mapping\JoinColumnMetadata();
+
+        $joinColumn->setColumnName('address_id');
+        $joinColumn->setReferencedColumnName('id');
+
+        $joinColumns[] = $joinColumn;
+
+        $association = new Mapping\ManyToOneAssociationMetadata('address');
+
+        $association->setJoinColumns($joinColumns);
+        $association->setTargetEntity('DDC964Address');
+        $association->setCascade(['persist']);
+
+        $metadata->addProperty($association);
+
+        $joinTable = new Mapping\JoinTableMetadata();
+        $joinTable->setName('ddc964_users_groups');
+
+        $joinColumn = new Mapping\JoinColumnMetadata();
+
+        $joinColumn->setColumnName('user_id');
+        $joinColumn->setReferencedColumnName('id');
+
+        $joinTable->addJoinColumn($joinColumn);
+
+        $joinColumn = new Mapping\JoinColumnMetadata();
+
+        $joinColumn->setColumnName('group_id');
+        $joinColumn->setReferencedColumnName('id');
+
+        $joinTable->addInverseJoinColumn($joinColumn);
+
+        $association = new Mapping\ManyToManyAssociationMetadata('groups');
+
+        $association->setJoinTable($joinTable);
+        $association->setTargetEntity('DDC964Group');
+        $association->setInversedBy('users');
+        $association->setCascade(['persist']);
+
+        $metadata->addProperty($association);
+
+        $metadata->setIdGeneratorType(Mapping\GeneratorType::AUTO);
     }
 }

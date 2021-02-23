@@ -4,25 +4,29 @@ declare(strict_types=1);
 
 namespace Doctrine\Tests\Models\CompositeKeyInheritance;
 
+use Doctrine\ORM\Annotation as ORM;
+
 /**
- * @Entity
- * @Table(name = "joined_derived_identity")
+ * @ORM\Entity
+ * @ORM\Table(name = "joined_derived_identity")
  */
 class JoinedDerivedIdentityClass
 {
     /**
+     * @ORM\Column(type="string")
+     * @ORM\Id
+     *
      * @var string
-     * @Column(type="string")
-     * @Id
      */
     protected $id = 'part-0';
 
     /**
-     * @var JoinedDerivedRootClass[]
-     * @OneToMany(
-     *     targetEntity="JoinedDerivedRootClass",
+     * @ORM\OneToMany(
+     *     targetEntity=JoinedDerivedRootClass::class,
      *     mappedBy="keyPart1"
      * )
+     *
+     * @var JoinedDerivedRootClass[]
      */
     protected $children;
 }

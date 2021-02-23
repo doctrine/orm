@@ -5,37 +5,32 @@ declare(strict_types=1);
 namespace Doctrine\Tests\Models\Cache;
 
 use Doctrine\Common\Collections\ArrayCollection;
-use Doctrine\Common\Collections\Collection;
+use Doctrine\ORM\Annotation as ORM;
 
 /**
- * @Entity
- * @Table("cache_complex_action")
+ * @ORM\Entity
+ * @ORM\Table("cache_complex_action")
  */
 class ComplexAction
 {
-    /** @Column */
+    /** @ORM\Column */
     public $name;
 
     /**
-     * @var Action
-     * @Id
-     * @OneToOne(targetEntity="Action", cascade={"persist", "remove"})
-     * @JoinColumn(name="action1_name", referencedColumnName="name")
+     * @ORM\Id
+     * @ORM\OneToOne(targetEntity=Action::class, cascade={"persist", "remove"})
+     * @ORM\JoinColumn(name="action1_name", referencedColumnName="name")
      */
     public $action1;
 
     /**
-     * @var Action
-     * @Id
-     * @OneToOne(targetEntity="Action", cascade={"persist", "remove"})
-     * @JoinColumn(name="action2_name", referencedColumnName="name")
+     * @ORM\Id
+     * @ORM\OneToOne(targetEntity=Action::class, cascade={"persist", "remove"})
+     * @ORM\JoinColumn(name="action2_name", referencedColumnName="name")
      */
     public $action2;
 
-    /**
-     * @psalm-var Collection<int, Token>
-     * @OneToMany(targetEntity="Token", cascade={"persist", "remove"}, mappedBy="complexAction")
-     */
+    /** @ORM\OneToMany(targetEntity=Token::class, cascade={"persist", "remove"}, mappedBy="complexAction") */
     public $tokens;
 
     public function __construct(Action $action1, Action $action2, $name)
@@ -46,18 +41,24 @@ class ComplexAction
         $this->tokens  = new ArrayCollection();
     }
 
-    public function addToken(Token $token): void
+    public function addToken(Token $token)
     {
         $this->tokens[]       = $token;
         $token->complexAction = $this;
     }
 
-    public function getAction1(): Action
+    /**
+     * @return Action
+     */
+    public function getAction1()
     {
         return $this->action1;
     }
 
-    public function getAction2(): Action
+    /**
+     * @return Action
+     */
+    public function getAction2()
     {
         return $this->action2;
     }

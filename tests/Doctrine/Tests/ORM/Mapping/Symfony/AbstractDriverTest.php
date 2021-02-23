@@ -1,13 +1,13 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\Tests\ORM\Mapping\Symfony;
 
-use Doctrine\Persistence\Mapping\Driver\FileDriver;
-use Doctrine\Persistence\Mapping\MappingException;
-use PHPUnit\Framework\TestCase;
+use Doctrine\Common\Persistence\Mapping\MappingException;
+use Doctrine\Tests\DoctrineTestCase;
 use RecursiveDirectoryIterator;
 use RecursiveIteratorIterator;
-
 use function mkdir;
 use function rmdir;
 use function sys_get_temp_dir;
@@ -17,9 +17,9 @@ use function unlink;
 /**
  * @group DDC-1418
  */
-abstract class AbstractDriverTest extends TestCase
+abstract class AbstractDriverTest extends DoctrineTestCase
 {
-    public function testFindMappingFile(): void
+    public function testFindMappingFile() : void
     {
         $driver = $this->getDriver(
             [
@@ -29,10 +29,10 @@ abstract class AbstractDriverTest extends TestCase
         );
 
         touch($filename = $this->dir . '/Foo' . $this->getFileExtension());
-        $this->assertEquals($filename, $driver->getLocator()->findMappingFile('MyNamespace\MySubnamespace\Entity\Foo'));
+        self::assertEquals($filename, $driver->getLocator()->findMappingFile('MyNamespace\MySubnamespace\Entity\Foo'));
     }
 
-    public function testFindMappingFileInSubnamespace(): void
+    public function testFindMappingFileInSubnamespace() : void
     {
         $driver = $this->getDriver(
             [
@@ -41,10 +41,10 @@ abstract class AbstractDriverTest extends TestCase
         );
 
         touch($filename = $this->dir . '/Foo.Bar' . $this->getFileExtension());
-        $this->assertEquals($filename, $driver->getLocator()->findMappingFile('MyNamespace\MySubnamespace\Entity\Foo\Bar'));
+        self::assertEquals($filename, $driver->getLocator()->findMappingFile('MyNamespace\MySubnamespace\Entity\Foo\Bar'));
     }
 
-    public function testFindMappingFileNamespacedFoundFileNotFound(): void
+    public function testFindMappingFileNamespacedFoundFileNotFound() : void
     {
         $this->expectException(MappingException::class);
         $this->expectExceptionMessage('No mapping file found named');
@@ -58,7 +58,7 @@ abstract class AbstractDriverTest extends TestCase
         $driver->getLocator()->findMappingFile('MyNamespace\MySubnamespace\Entity\Foo');
     }
 
-    public function testFindMappingNamespaceNotFound(): void
+    public function testFindMappingNamespaceNotFound() : void
     {
         $this->expectException(MappingException::class);
         $this->expectExceptionMessage("No mapping file found named 'Foo" . $this->getFileExtension() . "' for class 'MyOtherNamespace\MySubnamespace\Entity\Foo'.");
@@ -72,28 +72,28 @@ abstract class AbstractDriverTest extends TestCase
         $driver->getLocator()->findMappingFile('MyOtherNamespace\MySubnamespace\Entity\Foo');
     }
 
-    protected function setUp(): void
+    protected function setUp() : void
     {
         $this->dir = sys_get_temp_dir() . '/abstract_driver_test';
         @mkdir($this->dir, 0777, true);
     }
 
-    protected function tearDown(): void
+    protected function tearDown() : void
     {
         $iterator = new RecursiveIteratorIterator(new RecursiveDirectoryIterator($this->dir), RecursiveIteratorIterator::CHILD_FIRST);
 
         foreach ($iterator as $path) {
             if ($path->isDir()) {
-                @rmdir($path);
+                @rmdir((string) $path);
             } else {
-                @unlink($path);
+                @unlink((string) $path);
             }
         }
 
         @rmdir($this->dir);
     }
 
-    abstract protected function getFileExtension(): string;
+    abstract protected function getFileExtension();
 
-    abstract protected function getDriver(array $paths = []): FileDriver;
+    abstract protected function getDriver(array $paths = []);
 }

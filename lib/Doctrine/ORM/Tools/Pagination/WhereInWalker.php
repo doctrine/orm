@@ -1,26 +1,11 @@
 <?php
 
-/*
- * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
- * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
- * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
- * A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT
- * OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
- * SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
- * LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
- * DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
- * THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
- * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
- * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- *
- * This software consists of voluntary contributions made by many individuals
- * and is licensed under the MIT license. For more information, see
- * <http://www.doctrine-project.org>.
- */
+declare(strict_types=1);
 
 namespace Doctrine\ORM\Tools\Pagination;
 
-use Doctrine\ORM\Mapping\ClassMetadata;
+use Doctrine\ORM\Mapping\AssociationMetadata;
+use Doctrine\ORM\Mapping\ToOneAssociationMetadata;
 use Doctrine\ORM\Query\AST\ArithmeticExpression;
 use Doctrine\ORM\Query\AST\ConditionalExpression;
 use Doctrine\ORM\Query\AST\ConditionalFactor;
@@ -34,13 +19,8 @@ use Doctrine\ORM\Query\AST\SelectStatement;
 use Doctrine\ORM\Query\AST\SimpleArithmeticExpression;
 use Doctrine\ORM\Query\AST\WhereClause;
 use Doctrine\ORM\Query\TreeWalkerAdapter;
-use Doctrine\ORM\Utility\PersisterHelper;
 use RuntimeException;
-
-use function array_map;
-use function assert;
 use function count;
-use function is_array;
 use function reset;
 
 /**
@@ -69,13 +49,11 @@ class WhereInWalker extends TreeWalkerAdapter
      * The total number of parameters is retrieved from
      * the HINT_PAGINATOR_ID_COUNT query hint.
      *
-     * @return void
-     *
      * @throws RuntimeException
      */
     public function walkSelectStatement(SelectStatement $AST)
     {
-        $queryComponents = $this->_getQueryComponents();
+        $queryComponents = $this->getQueryComponents();
         // Get the root entity and alias from the AST fromClause
         $from = $AST->fromClause->identificationVariableDeclarations;
 
@@ -86,18 +64,24 @@ class WhereInWalker extends TreeWalkerAdapter
         $fromRoot  = reset($from);
         $rootAlias = $fromRoot->rangeVariableDeclaration->aliasIdentificationVariable;
         $rootClass = $queryComponents[$rootAlias]['metadata'];
-        assert($rootClass instanceof ClassMetadata);
-        $identifierFieldName = $rootClass->getSingleIdentifierFieldName();
+        $property  = $rootClass->getProperty($rootClass->getSingleIdentifierFieldName());
+        $pathType  = PathExpression::TYPE_STATE_FIELD;
 
-        $pathType = PathExpression::TYPE_STATE_FIELD;
-        if (isset($rootClass->associationMappings[$identifierFieldName])) {
-            $pathType = PathExpression::TYPE_SINGLE_VALUED_ASSOCIATION;
+        if ($property instanceof AssociationMetadata) {
+            $pathType = $property instanceof ToOneAssociationMetadata
+                ? PathExpression::TYPE_SINGLE_VALUED_ASSOCIATION
+                : PathExpression::TYPE_COLLECTION_VALUED_ASSOCIATION;
         }
 
-        $pathExpression       = new PathExpression(PathExpression::TYPE_STATE_FIELD | PathExpression::TYPE_SINGLE_VALUED_ASSOCIATION, $rootAlias, $identifierFieldName);
+        $pathExpression = new PathExpression(
+            PathExpression::TYPE_STATE_FIELD | PathExpression::TYPE_SINGLE_VALUED_ASSOCIATION,
+            $rootAlias,
+            $property->getName()
+        );
+
         $pathExpression->type = $pathType;
 
-        $count = $this->_getQuery()->getHint(self::HINT_PAGINATOR_ID_COUNT);
+        $count = $this->getQuery()->getHint(self::HINT_PAGINATOR_ID_COUNT);
 
         if ($count > 0) {
             $arithmeticExpression                             = new ArithmeticExpression();
@@ -106,15 +90,6 @@ class WhereInWalker extends TreeWalkerAdapter
             );
             $expression                                       = new InExpression($arithmeticExpression);
             $expression->literals[]                           = new InputParameter(':' . self::PAGINATOR_ID_ALIAS);
-
-            $this->convertWhereInIdentifiersToDatabaseValue(
-                PersisterHelper::getTypeOfField(
-                    $identifierFieldName,
-                    $rootClass,
-                    $this->_getQuery()
-                        ->getEntityManager()
-                )[0]
-            );
         } else {
             $expression      = new NullComparisonExpression($pathExpression);
             $expression->not = false;
@@ -122,22 +97,18 @@ class WhereInWalker extends TreeWalkerAdapter
 
         $conditionalPrimary                              = new ConditionalPrimary();
         $conditionalPrimary->simpleConditionalExpression = $expression;
+
         if ($AST->whereClause) {
             if ($AST->whereClause->conditionalExpression instanceof ConditionalTerm) {
                 $AST->whereClause->conditionalExpression->conditionalFactors[] = $conditionalPrimary;
             } elseif ($AST->whereClause->conditionalExpression instanceof ConditionalPrimary) {
-                $AST->whereClause->conditionalExpression = new ConditionalExpression(
-                    [
-                        new ConditionalTerm(
-                            [
-                                $AST->whereClause->conditionalExpression,
-                                $conditionalPrimary,
-                            ]
-                        ),
-                    ]
-                );
-            } elseif (
-                $AST->whereClause->conditionalExpression instanceof ConditionalExpression
+                $AST->whereClause->conditionalExpression = new ConditionalExpression([
+                    new ConditionalTerm([
+                        $AST->whereClause->conditionalExpression,
+                        $conditionalPrimary,
+                    ]),
+                ]);
+            } elseif ($AST->whereClause->conditionalExpression instanceof ConditionalExpression
                 || $AST->whereClause->conditionalExpression instanceof ConditionalFactor
             ) {
                 $tmpPrimary                              = new ConditionalPrimary();
@@ -156,25 +127,5 @@ class WhereInWalker extends TreeWalkerAdapter
                 )
             );
         }
-    }
-
-    private function convertWhereInIdentifiersToDatabaseValue(string $type): void
-    {
-        $query                = $this->_getQuery();
-        $identifiersParameter = $query->getParameter(self::PAGINATOR_ID_ALIAS);
-
-        assert($identifiersParameter !== null);
-
-        $identifiers = $identifiersParameter->getValue();
-
-        assert(is_array($identifiers));
-
-        $connection = $this->_getQuery()
-            ->getEntityManager()
-            ->getConnection();
-
-        $query->setParameter(self::PAGINATOR_ID_ALIAS, array_map(static function ($id) use ($connection, $type) {
-            return $connection->convertToDatabaseValue($id, $type);
-        }, $identifiers));
     }
 }

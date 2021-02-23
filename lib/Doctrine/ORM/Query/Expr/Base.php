@@ -1,27 +1,10 @@
 <?php
 
-/*
- * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
- * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
- * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
- * A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT
- * OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
- * SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
- * LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
- * DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
- * THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
- * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
- * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- *
- * This software consists of voluntary contributions made by many individuals
- * and is licensed under the MIT license. For more information, see
- * <http://www.doctrine-project.org>.
- */
+declare(strict_types=1);
 
 namespace Doctrine\ORM\Query\Expr;
 
 use InvalidArgumentException;
-
 use function count;
 use function get_class;
 use function implode;
@@ -31,8 +14,6 @@ use function sprintf;
 
 /**
  * Abstract base Expr class for building DQL parts.
- *
- * @link    www.doctrine-project.org
  */
 abstract class Base
 {
@@ -60,9 +41,9 @@ abstract class Base
     }
 
     /**
-     * @param array $args
+     * @param mixed $args
      *
-     * @return static
+     * @return Base
      */
     public function addMultiple($args = [])
     {
@@ -76,7 +57,7 @@ abstract class Base
     /**
      * @param mixed $arg
      *
-     * @return static
+     * @return Base
      *
      * @throws InvalidArgumentException
      */
@@ -87,11 +68,10 @@ abstract class Base
             if (! is_string($arg)) {
                 $class = get_class($arg);
 
-                if (! in_array($class, $this->allowedClasses)) {
-                    throw new InvalidArgumentException(sprintf(
-                        "Expression of type '%s' not allowed in this context.",
-                        $class
-                    ));
+                if (! in_array($class, $this->allowedClasses, true)) {
+                    throw new InvalidArgumentException(
+                        sprintf("Expression of type '%s' not allowed in this context.", $class)
+                    );
                 }
             }
 

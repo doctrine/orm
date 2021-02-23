@@ -8,10 +8,11 @@ use Doctrine\Common\EventManager;
 use Doctrine\DBAL\Configuration;
 use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\Driver;
+use Doctrine\DBAL\Driver\ResultStatement;
 use Doctrine\DBAL\Driver\Statement;
+use Doctrine\DBAL\ParameterType;
 use Doctrine\DBAL\Platforms\AbstractPlatform;
 use Exception;
-
 use function is_string;
 
 /**
@@ -20,80 +21,71 @@ use function is_string;
 class ConnectionMock extends Connection
 {
     /** @var mixed */
-    private $_fetchOneResult;
+    private $fetchOneResult;
 
     /** @var Exception|null */
-    private $_fetchOneException;
+    private $fetchOneException;
 
     /** @var Statement|null */
-    private $_queryResult;
+    private $queryResult;
 
     /** @var DatabasePlatformMock */
-    private $_platformMock;
+    private $platformMock;
 
-    /** @var int */
-    private $_lastInsertId = 0;
-
-    /** @var array */
-    private $_inserts = [];
+    /** @var string */
+    private $lastInsertId = '0';
 
     /** @var array */
-    private $_executeUpdates = [];
+    private $inserts = [];
 
     /** @var array */
-    private $_deletes = [];
+    private $executeUpdates = [];
 
     /**
-     * @param array $params
+     * @param array              $params
+     * @param Driver             $driver
+     * @param Configuration|null $config
+     * @param EventManager|null  $eventManager
      */
-    public function __construct(array $params, Driver $driver, ?Configuration $config = null, ?EventManager $eventManager = null)
+    public function __construct(array $params, $driver, $config = null, $eventManager = null)
     {
-        $this->_platformMock = new DatabasePlatformMock();
+        $this->platformMock = new DatabasePlatformMock();
 
         parent::__construct($params, $driver, $config, $eventManager);
-
-        // Override possible assignment of platform to database platform mock
-        $this->_platform = $this->_platformMock;
     }
 
     /**
      * {@inheritdoc}
      */
-    public function getDatabasePlatform()
+    public function getDatabasePlatform() : AbstractPlatform
     {
-        return $this->_platformMock;
+        return $this->platformMock;
     }
 
     /**
      * {@inheritdoc}
      */
-    public function insert($tableName, array $data, array $types = [])
+    public function insert($tableName, array $data, array $types = []) : int
     {
-        $this->_inserts[$tableName][] = $data;
+        $this->inserts[$tableName][] = $data;
     }
 
     /**
      * {@inheritdoc}
      */
-    public function executeUpdate($query, array $params = [], array $types = [])
+    public function executeUpdate(string $query, array $params = [], array $types = []) : int
     {
-        $this->_executeUpdates[] = ['query' => $query, 'params' => $params, 'types' => $types];
+        $this->executeUpdates[] = ['query' => $query, 'params' => $params, 'types' => $types];
+
+        return 42;
     }
 
     /**
      * {@inheritdoc}
      */
-    public function delete($table, array $criteria, array $types = [])
+    public function lastInsertId($seqName = null) : string
     {
-        $this->_deletes[] = ['table' => $table, 'criteria' => $criteria, 'types' => $types];
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function lastInsertId($seqName = null)
-    {
-        return $this->_lastInsertId;
+        return $this->lastInsertId;
     }
 
     /**
@@ -101,22 +93,25 @@ class ConnectionMock extends Connection
      */
     public function fetchColumn($statement, array $params = [], $colnum = 0, array $types = [])
     {
-        if ($this->_fetchOneException !== null) {
-            throw $this->_fetchOneException;
+        if ($this->fetchOneException !== null) {
+            throw $this->fetchOneException;
         }
 
-        return $this->_fetchOneResult;
-    }
-
-    public function query(): Statement
-    {
-        return $this->_queryResult;
+        return $this->fetchOneResult;
     }
 
     /**
      * {@inheritdoc}
      */
-    public function quote($input, $type = null)
+    public function query(string $sql) : ResultStatement
+    {
+        return $this->queryResult;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function quote($input, $type = ParameterType::STRING) : string
     {
         if (is_string($input)) {
             return "'" . $input . "'";
@@ -129,59 +124,72 @@ class ConnectionMock extends Connection
 
     /**
      * @param mixed $fetchOneResult
+     *
+     * @return void
      */
-    public function setFetchOneResult($fetchOneResult): void
+    public function setFetchOneResult($fetchOneResult)
     {
-        $this->_fetchOneResult = $fetchOneResult;
+        $this->fetchOneResult = $fetchOneResult;
     }
 
-    public function setFetchOneException(?Exception $exception = null): void
+    /**
+     * @return void
+     */
+    public function setFetchOneException(?Exception $exception = null)
     {
-        $this->_fetchOneException = $exception;
+        $this->fetchOneException = $exception;
     }
 
-    public function setDatabasePlatform(AbstractPlatform $platform): void
+    /**
+     * @param AbstractPlatform $platform
+     *
+     * @return void
+     */
+    public function setDatabasePlatform($platform)
     {
-        $this->_platformMock = $platform;
+        $this->platformMock = $platform;
     }
 
-    public function setLastInsertId(int $id): void
+    /**
+     * @param int $id
+     *
+     * @return void
+     */
+    public function setLastInsertId($id)
     {
-        $this->_lastInsertId = $id;
+        $this->lastInsertId = $id;
     }
 
-    public function setQueryResult(Statement $result): void
+    /**
+     * @return void
+     */
+    public function setQueryResult(Statement $result)
     {
-        $this->_queryResult = $result;
+        $this->queryResult = $result;
     }
 
     /**
      * @return array
      */
-    public function getInserts(): array
+    public function getInserts()
     {
-        return $this->_inserts;
+        return $this->inserts;
     }
 
     /**
      * @return array
      */
-    public function getExecuteUpdates(): array
+    public function getExecuteUpdates()
     {
-        return $this->_executeUpdates;
+        return $this->executeUpdates;
     }
 
     /**
-     * @return array
+     * @return void
      */
-    public function getDeletes(): array
+    public function reset()
     {
-        return $this->_deletes;
-    }
-
-    public function reset(): void
-    {
-        $this->_inserts      = [];
-        $this->_lastInsertId = 0;
+        $this->inserts      = [];
+        $this->lastInsertId = 0;
     }
 }

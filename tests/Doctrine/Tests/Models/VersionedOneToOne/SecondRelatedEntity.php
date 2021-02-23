@@ -4,31 +4,29 @@ declare(strict_types=1);
 
 namespace Doctrine\Tests\Models\VersionedOneToOne;
 
+use Doctrine\ORM\Annotation as ORM;
+
 /**
- * @Entity
- * @Table(name="second_entity")
+ * @ORM\Entity
+ * @ORM\Table(name="second_entity")
  */
 class SecondRelatedEntity
 {
     /**
-     * @var int
-     * @Id
-     * @Column(name="id", type="integer")
-     * @GeneratedValue(strategy="AUTO")
+     * @ORM\Id
+     * @ORM\Column(name="id", type="integer")
+     * @ORM\GeneratedValue(strategy="AUTO")
      */
     public $id;
 
-    /**
-     * @var string
-     * @Column(name="name")
-     */
+    /** @ORM\Column(name="name") */
     public $name;
 
     /**
-     * @var int
      * Version column
-     * @Column(type="integer", name="version")
-     * @Version
+     *
+     * @ORM\Column(type="integer", name="version")
+     * @ORM\Version
      */
     public $version;
 }

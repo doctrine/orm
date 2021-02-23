@@ -4,17 +4,16 @@ declare(strict_types=1);
 
 namespace Doctrine\Tests\ORM\Functional\Ticket;
 
+use Doctrine\ORM\Annotation as ORM;
 use Doctrine\ORM\QueryBuilder;
 use Doctrine\Tests\OrmFunctionalTestCase;
 
-use function assert;
-
 class DDC1757Test extends OrmFunctionalTestCase
 {
-    public function testFailingCase(): void
+    public function testFailingCase() : void
     {
-        $qb = $this->_em->createQueryBuilder();
-        assert($qb instanceof QueryBuilder);
+        $qb = $this->em->createQueryBuilder();
+        /** @var QueryBuilder $qb */
 
         $qb->select('_a')
             ->from(DDC1757A::class, '_a')
@@ -35,69 +34,59 @@ class DDC1757Test extends OrmFunctionalTestCase
 }
 
 /**
- * @Entity
+ * @ORM\Entity
  */
 class DDC1757A
 {
     /**
-     * @var int
-     * @Column(type="integer")
-     * @Id
-     * @GeneratedValue(strategy="AUTO")
+     * @ORM\Column(type="integer")
+     * @ORM\Id
+     * @ORM\GeneratedValue(strategy="AUTO")
      */
     private $id;
 }
 
 /**
- * @Entity
+ * @ORM\Entity
  */
 class DDC1757B
 {
     /**
-     * @var int
-     * @Column(type="integer")
-     * @Id
-     * @GeneratedValue(strategy="AUTO")
+     * @ORM\Column(type="integer")
+     * @ORM\Id
+     * @ORM\GeneratedValue(strategy="AUTO")
      */
     private $id;
 
-    /**
-     * @var DDC1757C
-     * @OneToOne(targetEntity="DDC1757C")
-     */
+    /** @ORM\OneToOne(targetEntity=DDC1757C::class) */
     private $c;
 }
 
 /**
- * @Entity
+ * @ORM\Entity
  */
 class DDC1757C
 {
     /**
-     * @var int
-     * @Column(type="integer")
-     * @Id
-     * @GeneratedValue(strategy="AUTO")
+     * @ORM\Column(type="integer")
+     * @ORM\Id
+     * @ORM\GeneratedValue(strategy="AUTO")
      */
     public $id;
 
-    /**
-     * @var DDC1757D
-     * @OneToOne(targetEntity="DDC1757D")
-     */
+    /** @ORM\OneToOne(targetEntity=DDC1757D::class) */
     private $d;
 }
 
 /**
- * @Entity
+ * @ORM\Entity
  */
 class DDC1757D
 {
     /**
-     * @var int
-     * @Column(type="integer")
-     * @Id
-     * @GeneratedValue(strategy="AUTO")
+     * @ORM\Column(type="integer")
+     * @ORM\Id
+     * @ORM\GeneratedValue(strategy="AUTO")
      */
     public $id;
 }

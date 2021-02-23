@@ -4,25 +4,24 @@ declare(strict_types=1);
 
 namespace Doctrine\Tests\ORM\Functional;
 
+use Doctrine\ORM\Annotation as ORM;
 use Doctrine\Tests\OrmFunctionalTestCase;
 use Exception;
-
-use function count;
 
 /**
  * Functional tests for the Single Table Inheritance mapping strategy.
  */
 class OrderedJoinedTableInheritanceCollectionTest extends OrmFunctionalTestCase
 {
-    protected function setUp(): void
+    protected function setUp() : void
     {
         parent::setUp();
         try {
-            $this->_schemaTool->createSchema(
+            $this->schemaTool->createSchema(
                 [
-                    $this->_em->getClassMetadata(OJTICPet::class),
-                    $this->_em->getClassMetadata(OJTICCat::class),
-                    $this->_em->getClassMetadata(OJTICDog::class),
+                    $this->em->getClassMetadata(OJTICPet::class),
+                    $this->em->getClassMetadata(OJTICCat::class),
+                    $this->em->getClassMetadata(OJTICDog::class),
                 ]
             );
         } catch (Exception $e) {
@@ -43,97 +42,89 @@ class OrderedJoinedTableInheritanceCollectionTest extends OrmFunctionalTestCase
         $dog->children[] = $dog1;
         $dog->children[] = $dog2;
 
-        $this->_em->persist($dog);
-        $this->_em->persist($dog1);
-        $this->_em->persist($dog2);
-        $this->_em->flush();
-        $this->_em->clear();
+        $this->em->persist($dog);
+        $this->em->persist($dog1);
+        $this->em->persist($dog2);
+        $this->em->flush();
+        $this->em->clear();
     }
 
-    public function testOrderdOneToManyCollection(): void
+    public function testOrderdOneToManyCollection() : void
     {
-        $poofy = $this->_em->createQuery("SELECT p FROM Doctrine\Tests\ORM\Functional\OJTICPet p WHERE p.name = 'Poofy'")->getSingleResult();
+        $poofy = $this->em->createQuery("SELECT p FROM Doctrine\Tests\ORM\Functional\OJTICPet p WHERE p.name = 'Poofy'")->getSingleResult();
 
-        $this->assertEquals('Aari', $poofy->children[0]->getName());
-        $this->assertEquals('Zampa', $poofy->children[1]->getName());
+        self::assertEquals('Aari', $poofy->children[0]->getName());
+        self::assertEquals('Zampa', $poofy->children[1]->getName());
 
-        $this->_em->clear();
+        $this->em->clear();
 
-        $result = $this->_em->createQuery(
+        $result = $this->em->createQuery(
             "SELECT p, c FROM Doctrine\Tests\ORM\Functional\OJTICPet p JOIN p.children c WHERE p.name = 'Poofy'"
         )
                 ->getResult();
 
-        $this->assertEquals(1, count($result));
+        self::assertCount(1, $result);
         $poofy = $result[0];
 
-        $this->assertEquals('Aari', $poofy->children[0]->getName());
-        $this->assertEquals('Zampa', $poofy->children[1]->getName());
+        self::assertEquals('Aari', $poofy->children[0]->getName());
+        self::assertEquals('Zampa', $poofy->children[1]->getName());
     }
 }
 
 /**
- * @Entity
- * @InheritanceType("JOINED")
- * @DiscriminatorColumn(name="discr", type="string")
- * @DiscriminatorMap({
- *      "cat" = "OJTICCat",
- *      "dog" = "OJTICDog"})
+ * @ORM\Entity
+ * @ORM\InheritanceType("JOINED")
+ * @ORM\DiscriminatorColumn(name="discr", type="string")
+ * @ORM\DiscriminatorMap({
+ *      "cat" = OJTICCat::class,
+ *      "dog" = OJTICDog::class
+ * })
  */
 abstract class OJTICPet
 {
     /**
-     * @var int
-     * @Id
-     * @Column(type="integer")
-     * @GeneratedValue(strategy="AUTO")
+     * @ORM\Id
+     * @ORM\Column(type="integer")
+     * @ORM\GeneratedValue(strategy="AUTO")
      */
     public $id;
 
-    /**
-     * @var string
-     * @Column
-     */
+    /** @ORM\Column */
     public $name;
 
-    /**
-     * @var OJTICPet
-     * @ManyToOne(targetEntity="OJTICPet")
-     */
+    /** @ORM\ManyToOne(targetEntity=OJTICPET::class) */
     public $mother;
 
     /**
-     * @psalm-var Collection<int, OJTICPet>
-     * @OneToMany(targetEntity="OJTICPet", mappedBy="mother")
-     * @OrderBy({"name" = "ASC"})
+     * @ORM\OneToMany(targetEntity=OJTICPet::class, mappedBy="mother")
+     * @ORM\OrderBy({"name" = "ASC"})
      */
     public $children;
 
     /**
-     * @psalm-var Collection<int, OJTICPet>
-     * @ManyToMany(targetEntity="OJTICPet")
-     * @JoinTable(name="OTJIC_Pet_Friends",
-     *     joinColumns={@JoinColumn(name="pet_id", referencedColumnName="id")},
-     *     inverseJoinColumns={@JoinColumn(name="friend_id", referencedColumnName="id")})
-     * @OrderBy({"name" = "ASC"})
+     * @ORM\ManyToMany(targetEntity=OJTICPet::class)
+     * @ORM\JoinTable(name="OTJICPet_Friends",
+     *     joinColumns={@ORM\JoinColumn(name="pet_id", referencedColumnName="id")},
+     *     inverseJoinColumns={@ORM\JoinColumn(name="friend_id", referencedColumnName="id")})
+     * @ORM\OrderBy({"name" = "ASC"})
      */
     public $friends;
 
-    public function getName(): string
+    public function getName()
     {
         return $this->name;
     }
 }
 
 /**
- * @Entity
+ * @ORM\Entity
  */
 class OJTICCat extends OJTICPet
 {
 }
 
 /**
- * @Entity
+ * @ORM\Entity
  */
 class OJTICDog extends OJTICPet
 {

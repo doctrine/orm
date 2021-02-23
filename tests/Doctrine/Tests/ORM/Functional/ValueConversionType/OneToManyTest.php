@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Doctrine\Tests\ORM\Functional\ValueConversionType;
 
-use Doctrine\Tests\Models;
 use Doctrine\Tests\Models\ValueConversionType as Entity;
 use Doctrine\Tests\OrmFunctionalTestCase;
 
@@ -18,7 +17,7 @@ use Doctrine\Tests\OrmFunctionalTestCase;
  */
 class OneToManyTest extends OrmFunctionalTestCase
 {
-    protected function setUp(): void
+    public function setUp() : void
     {
         $this->useModelSet('vct_onetomany');
 
@@ -34,94 +33,54 @@ class OneToManyTest extends OrmFunctionalTestCase
         $inversed->associatedEntities->add($owning);
         $owning->associatedEntity = $inversed;
 
-        $this->_em->persist($inversed);
-        $this->_em->persist($owning);
+        $this->em->persist($inversed);
+        $this->em->persist($owning);
 
-        $this->_em->flush();
-        $this->_em->clear();
+        $this->em->flush();
+        $this->em->clear();
     }
 
-    public static function tearDownAfterClass(): void
+    public function testThatTheValueOfIdentifiersAreConvertedInTheDatabase() : void
     {
-        $conn = static::$_sharedConn;
+        $conn = $this->em->getConnection();
 
-        $conn->executeUpdate('DROP TABLE vct_owning_manytoone');
-        $conn->executeUpdate('DROP TABLE vct_inversed_onetomany');
+        self::assertEquals('nop', $conn->fetchColumn('SELECT id1 FROM vct_inversed_onetomany LIMIT 1'));
+
+        self::assertEquals('qrs', $conn->fetchColumn('SELECT id2 FROM vct_owning_manytoone LIMIT 1'));
+        self::assertEquals('nop', $conn->fetchColumn('SELECT associated_id FROM vct_owning_manytoone LIMIT 1'));
     }
 
-    public function testThatTheValueOfIdentifiersAreConvertedInTheDatabase(): void
+    public function testThatEntitiesAreFetchedFromTheDatabase() : void
     {
-        $conn = $this->_em->getConnection();
+        $inversed = $this->em->find(Entity\InversedOneToManyEntity::class, 'abc');
+        $owning   = $this->em->find(Entity\OwningManyToOneEntity::class, 'def');
 
-        $this->assertEquals('nop', $conn->fetchColumn('SELECT id1 FROM vct_inversed_onetomany LIMIT 1'));
-
-        $this->assertEquals('qrs', $conn->fetchColumn('SELECT id2 FROM vct_owning_manytoone LIMIT 1'));
-        $this->assertEquals('nop', $conn->fetchColumn('SELECT associated_id FROM vct_owning_manytoone LIMIT 1'));
+        self::assertInstanceOf(Entity\InversedOneToManyEntity::class, $inversed);
+        self::assertInstanceOf(Entity\OwningManyToOneEntity::class, $owning);
     }
 
-    /**
-     * @depends testThatTheValueOfIdentifiersAreConvertedInTheDatabase
-     */
-    public function testThatEntitiesAreFetchedFromTheDatabase(): void
+    public function testThatTheValueOfIdentifiersAreConvertedBackAfterBeingFetchedFromTheDatabase() : void
     {
-        $inversed = $this->_em->find(
-            Models\ValueConversionType\InversedOneToManyEntity::class,
-            'abc'
-        );
+        $inversed = $this->em->find(Entity\InversedOneToManyEntity::class, 'abc');
+        $owning   = $this->em->find(Entity\OwningManyToOneEntity::class, 'def');
 
-        $owning = $this->_em->find(
-            Models\ValueConversionType\OwningManyToOneEntity::class,
-            'def'
-        );
-
-        $this->assertInstanceOf(Models\ValueConversionType\InversedOneToManyEntity::class, $inversed);
-        $this->assertInstanceOf(Models\ValueConversionType\OwningManyToOneEntity::class, $owning);
+        self::assertEquals('abc', $inversed->id1);
+        self::assertEquals('def', $owning->id2);
     }
 
-    /**
-     * @depends testThatEntitiesAreFetchedFromTheDatabase
-     */
-    public function testThatTheValueOfIdentifiersAreConvertedBackAfterBeingFetchedFromTheDatabase(): void
+    public function testThatTheProxyFromOwningToInversedIsLoaded() : void
     {
-        $inversed = $this->_em->find(
-            Models\ValueConversionType\InversedOneToManyEntity::class,
-            'abc'
-        );
-
-        $owning = $this->_em->find(
-            Models\ValueConversionType\OwningManyToOneEntity::class,
-            'def'
-        );
-
-        $this->assertEquals('abc', $inversed->id1);
-        $this->assertEquals('def', $owning->id2);
-    }
-
-    /**
-     * @depends testThatEntitiesAreFetchedFromTheDatabase
-     */
-    public function testThatTheProxyFromOwningToInversedIsLoaded(): void
-    {
-        $owning = $this->_em->find(
-            Models\ValueConversionType\OwningManyToOneEntity::class,
-            'def'
-        );
+        $owning = $this->em->find(Entity\OwningManyToOneEntity::class, 'def');
 
         $inversedProxy = $owning->associatedEntity;
 
-        $this->assertEquals('some value to be loaded', $inversedProxy->someProperty);
+        self::assertEquals('some value to be loaded', $inversedProxy->someProperty);
     }
 
-    /**
-     * @depends testThatEntitiesAreFetchedFromTheDatabase
-     */
-    public function testThatTheCollectionFromInversedToOwningIsLoaded(): void
+    public function testThatTheCollectionFromInversedToOwningIsLoaded() : void
     {
-        $inversed = $this->_em->find(
-            Models\ValueConversionType\InversedOneToManyEntity::class,
-            'abc'
-        );
+        $inversed = $this->em->find(Entity\InversedOneToManyEntity::class, 'abc');
 
-        $this->assertCount(1, $inversed->associatedEntities);
+        self::assertCount(1, $inversed->associatedEntities);
     }
 }

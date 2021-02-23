@@ -5,42 +5,35 @@ declare(strict_types=1);
 namespace Doctrine\Tests\Models\CustomType;
 
 use Doctrine\Common\Collections\ArrayCollection;
-use Doctrine\Common\Collections\Collection;
+use Doctrine\ORM\Annotation as ORM;
 
 /**
- * @Entity
- * @Table(name="customtype_parents")
+ * @ORM\Entity
+ * @ORM\Table(name="customtype_parents")
  */
 class CustomTypeParent
 {
     /**
-     * @var int
-     * @Id @Column(type="integer")
-     * @GeneratedValue(strategy="AUTO")
+     * @ORM\Id @ORM\Column(type="integer")
+     * @ORM\GeneratedValue(strategy="AUTO")
      */
     public $id;
 
-    /** @Column(type="negative_to_positive", nullable=true) */
+    /** @ORM\Column(type="negative_to_positive", nullable=true) */
     public $customInteger;
 
-    /**
-     * @var CustomTypeChild
-     * @OneToOne(targetEntity="Doctrine\Tests\Models\CustomType\CustomTypeChild", cascade={"persist", "remove"})
-     */
+    /** @ORM\OneToOne(targetEntity=CustomTypeChild::class, cascade={"persist", "remove"}) */
     public $child;
 
-    /**
-     * @psalm-var Collection<int, CustomTypeParent>
-     * @ManyToMany(targetEntity="Doctrine\Tests\Models\CustomType\CustomTypeParent", mappedBy="myFriends")
-     */
+    /** @ORM\ManyToMany(targetEntity=CustomTypeParent::class, mappedBy="myFriends") */
     private $friendsWithMe;
 
     /**
-     * @ManyToMany(targetEntity="Doctrine\Tests\Models\CustomType\CustomTypeParent", inversedBy="friendsWithMe")
-     * @JoinTable(
+     * @ORM\ManyToMany(targetEntity=CustomTypeParent::class, inversedBy="friendsWithMe")
+     * @ORM\JoinTable(
      *     name="customtype_parent_friends",
-     *     joinColumns={@JoinColumn(name="customtypeparent_id", referencedColumnName="id")},
-     *     inverseJoinColumns={@JoinColumn(name="friend_customtypeparent_id", referencedColumnName="id")}
+     *     joinColumns={@ORM\JoinColumn(name="customtypeparent_id", referencedColumnName="id")},
+     *     inverseJoinColumns={@ORM\JoinColumn(name="friend_customtypeparent_id", referencedColumnName="id")}
      * )
      */
     private $myFriends;
@@ -51,7 +44,7 @@ class CustomTypeParent
         $this->myFriends     = new ArrayCollection();
     }
 
-    public function addMyFriend(CustomTypeParent $friend): void
+    public function addMyFriend(CustomTypeParent $friend)
     {
         $this->getMyFriends()->add($friend);
         $friend->addFriendWithMe($this);
@@ -62,7 +55,7 @@ class CustomTypeParent
         return $this->myFriends;
     }
 
-    public function addFriendWithMe(CustomTypeParent $friend): void
+    public function addFriendWithMe(CustomTypeParent $friend)
     {
         $this->getFriendsWithMe()->add($friend);
     }

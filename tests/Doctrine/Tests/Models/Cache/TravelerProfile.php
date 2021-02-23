@@ -4,27 +4,28 @@ declare(strict_types=1);
 
 namespace Doctrine\Tests\Models\Cache;
 
+use Doctrine\ORM\Annotation as ORM;
+
 /**
- * @Entity
- * @Table("cache_traveler_profile")
- * @Cache("NONSTRICT_READ_WRITE")
+ * @ORM\Entity
+ * @ORM\Table("cache_traveler_profile")
+ * @ORM\Cache("NONSTRICT_READ_WRITE")
  */
 class TravelerProfile
 {
     /**
-     * @var int
-     * @Id
-     * @GeneratedValue
-     * @Column(type="integer")
+     * @ORM\Id
+     * @ORM\GeneratedValue
+     * @ORM\Column(type="integer")
      */
     protected $id;
 
-    /** @Column(unique=true) */
+    /** @ORM\Column(unique=true) */
     private $name;
 
     /**
-     * @OneToOne(targetEntity="TravelerProfileInfo", mappedBy="profile")
-     * @Cache()
+     * @ORM\OneToOne(targetEntity=TravelerProfileInfo::class, mappedBy="profile")
+     * @ORM\Cache()
      */
     private $info;
 
@@ -38,7 +39,7 @@ class TravelerProfile
         return $this->id;
     }
 
-    public function setId($id): void
+    public function setId($id)
     {
         $this->id = $id;
     }
@@ -48,7 +49,7 @@ class TravelerProfile
         return $this->name;
     }
 
-    public function setName($nae): void
+    public function setName($nae)
     {
         $this->name = $nae;
     }
@@ -58,7 +59,7 @@ class TravelerProfile
         return $this->info;
     }
 
-    public function setInfo(TravelerProfileInfo $info): void
+    public function setInfo(TravelerProfileInfo $info)
     {
         $this->info = $info;
     }

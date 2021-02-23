@@ -11,7 +11,6 @@ use Doctrine\Tests\DbalTypes\CustomIdObjectType;
 use Doctrine\Tests\DbalTypes\NegativeToPositiveType;
 use Doctrine\Tests\DbalTypes\UpperCaseStringType;
 use Doctrine\Tests\OrmFunctionalTestCase;
-
 use function array_keys;
 use function constant;
 use function implode;
@@ -23,7 +22,7 @@ use function implode;
  */
 class SchemaValidatorTest extends OrmFunctionalTestCase
 {
-    protected function setUp(): void
+    protected function setUp() : void
     {
         $this->registerType(CustomIdObjectType::class);
         $this->registerType(UpperCaseStringType::class);
@@ -35,7 +34,7 @@ class SchemaValidatorTest extends OrmFunctionalTestCase
     /**
      * @throws DBALException
      */
-    private function registerType(string $className): void
+    private function registerType(string $className)
     {
         $type = constant($className . '::NAME');
 
@@ -48,7 +47,7 @@ class SchemaValidatorTest extends OrmFunctionalTestCase
         DBALType::addType($type, $className);
     }
 
-    public static function dataValidateModelSets(): array
+    public static function dataValidateModelSets() : array
     {
         $modelSets = [];
 
@@ -62,19 +61,19 @@ class SchemaValidatorTest extends OrmFunctionalTestCase
     /**
      * @dataProvider dataValidateModelSets
      */
-    public function testValidateModelSets(string $modelSet): void
+    public function testValidateModelSets(string $modelSet) : void
     {
-        $validator = new SchemaValidator($this->_em);
+        $validator = new SchemaValidator($this->em);
         $classes   = [];
 
         foreach (self::$modelSets[$modelSet] as $className) {
-            $classes[] = $this->_em->getClassMetadata($className);
+            $classes[] = $this->em->getClassMetadata($className);
         }
 
         foreach ($classes as $class) {
             $ce = $validator->validateClass($class);
 
-            $this->assertEmpty($ce, 'Invalid Modelset: ' . $modelSet . ' class ' . $class->name . ': ' . implode("\n", $ce));
+            self::assertEmpty($ce, 'Invalid Modelset: ' . $modelSet . ' class ' . $class->getClassName() . ': ' . implode("\n", $ce));
         }
     }
 }

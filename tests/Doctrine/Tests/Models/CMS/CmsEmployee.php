@@ -4,29 +4,29 @@ declare(strict_types=1);
 
 namespace Doctrine\Tests\Models\CMS;
 
+use Doctrine\ORM\Annotation as ORM;
+
 /**
  * Description of CmsEmployee
  *
- * @Entity
- * @Table(name="cms_employees")
+ * @ORM\Entity
+ * @ORM\Table(name="cms_employees")
  */
 class CmsEmployee
 {
     /**
-     * @var int
-     * @Id
-     * @Column(type="integer")
-     * @GeneratedValue
+     * @ORM\Id
+     * @ORM\Column(type="integer")
+     * @ORM\GeneratedValue
      */
     private $id;
 
-    /** @Column */
+    /** @ORM\Column */
     private $name;
 
     /**
-     * @var CmsEmployee
-     * @OneToOne(targetEntity="CmsEmployee")
-     * @JoinColumn(name="spouse_id", referencedColumnName="id")
+     * @ORM\OneToOne(targetEntity=CmsEmployee::class)
+     * @ORM\JoinColumn(name="spouse_id", referencedColumnName="id")
      */
     private $spouse;
 

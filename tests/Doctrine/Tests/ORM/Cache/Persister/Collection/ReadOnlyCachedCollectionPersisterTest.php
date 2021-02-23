@@ -4,10 +4,10 @@ declare(strict_types=1);
 
 namespace Doctrine\Tests\ORM\Cache\Persister\Collection;
 
-use Doctrine\ORM\Cache\Persister\Collection\AbstractCollectionPersister;
 use Doctrine\ORM\Cache\Persister\Collection\ReadOnlyCachedCollectionPersister;
 use Doctrine\ORM\Cache\Region;
-use Doctrine\ORM\EntityManager;
+use Doctrine\ORM\EntityManagerInterface;
+use Doctrine\ORM\Mapping\AssociationMetadata;
 use Doctrine\ORM\Persisters\Collection\CollectionPersister;
 
 /**
@@ -15,8 +15,15 @@ use Doctrine\ORM\Persisters\Collection\CollectionPersister;
  */
 class ReadOnlyCachedCollectionPersisterTest extends AbstractCollectionPersisterTest
 {
-    protected function createPersister(EntityManager $em, CollectionPersister $persister, Region $region, array $mapping): AbstractCollectionPersister
-    {
-        return new ReadOnlyCachedCollectionPersister($persister, $region, $em, $mapping);
+    /**
+     * {@inheritdoc}
+     */
+    protected function createPersister(
+        EntityManagerInterface $em,
+        CollectionPersister $persister,
+        Region $region,
+        AssociationMetadata $association
+    ) {
+        return new ReadOnlyCachedCollectionPersister($persister, $region, $em, $association);
     }
 }

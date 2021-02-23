@@ -6,16 +6,15 @@ namespace Doctrine\Tests\ORM\Functional\Ticket;
 
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
+use Doctrine\ORM\Annotation as ORM;
 use Doctrine\Tests\OrmFunctionalTestCase;
-
-use function assert;
 
 class GH7062Test extends OrmFunctionalTestCase
 {
     private const SEASON_ID = 'season_18';
     private const TEAM_ID   = 'team_A';
 
-    protected function setUp(): void
+    protected function setUp() : void
     {
         parent::setUp();
 
@@ -30,49 +29,49 @@ class GH7062Test extends OrmFunctionalTestCase
     }
 
     /**
-     * @group GH-7062
+     * @group 7062
      */
-    public function testEntityWithAssociationKeyIdentityCanBeUpdated(): void
+    public function testEntityWithAssociationKeyIdentityCanBeUpdated() : void
     {
         $this->createInitialRankingWithRelatedEntities();
         $this->modifyRanking();
         $this->verifyRanking();
     }
 
-    private function createInitialRankingWithRelatedEntities(): void
+    private function createInitialRankingWithRelatedEntities() : void
     {
         $team   = new GH7062Team(self::TEAM_ID);
         $season = new GH7062Season(self::SEASON_ID);
 
         $season->ranking = new GH7062Ranking($season, [$team]);
 
-        $this->_em->persist($team);
-        $this->_em->persist($season);
-        $this->_em->flush();
-        $this->_em->clear();
+        $this->em->persist($team);
+        $this->em->persist($season);
+        $this->em->flush();
+        $this->em->clear();
 
         foreach ($season->ranking->positions as $position) {
             self::assertSame(0, $position->points);
         }
     }
 
-    private function modifyRanking(): void
+    private function modifyRanking() : void
     {
-        $ranking = $this->_em->find(GH7062Ranking::class, self::SEASON_ID);
-        assert($ranking instanceof GH7062Ranking);
+        /** @var GH7062Ranking $ranking */
+        $ranking = $this->em->find(GH7062Ranking::class, self::SEASON_ID);
 
         foreach ($ranking->positions as $position) {
             $position->points += 3;
         }
 
-        $this->_em->flush();
-        $this->_em->clear();
+        $this->em->flush();
+        $this->em->clear();
     }
 
-    private function verifyRanking(): void
+    private function verifyRanking() : void
     {
-        $season = $this->_em->find(GH7062Season::class, self::SEASON_ID);
-        assert($season instanceof GH7062Season);
+        /** @var GH7062Season $season */
+        $season = $this->em->find(GH7062Season::class, self::SEASON_ID);
         self::assertInstanceOf(GH7062Season::class, $season);
 
         $ranking = $season->ranking;
@@ -87,23 +86,24 @@ class GH7062Test extends OrmFunctionalTestCase
 /**
  * Simple Entity whose identity is defined through another Entity (Season)
  *
- * @Entity
- * @Table(name="soccer_rankings")
+ * @ORM\Entity
+ * @ORM\Table(name="soccer_rankings")
  */
 class GH7062Ranking
 {
     /**
-     * @Id
-     * @OneToOne(targetEntity=GH7062Season::class, inversedBy="ranking")
-     * @JoinColumn(name="season", referencedColumnName="id")
+     * @ORM\Id
+     * @ORM\OneToOne(targetEntity=GH7062Season::class, inversedBy="ranking")
+     * @ORM\JoinColumn(name="season", referencedColumnName="id")
+     *
      * @var GH7062Season
      */
     public $season;
 
     /**
-     * @OneToMany(targetEntity=GH7062RankingPosition::class, mappedBy="ranking", cascade={"all"})
+     * @ORM\OneToMany(targetEntity=GH7062RankingPosition::class, mappedBy="ranking", cascade={"all"})
+     *
      * @var Collection|GH7062RankingPosition[]
-     * @psalm-var Collection<GH7062RankingPosition>
      */
     public $positions;
 
@@ -124,20 +124,22 @@ class GH7062Ranking
 /**
  * Entity which serves as a identity provider for other entities
  *
- * @Entity
- * @Table(name="soccer_seasons")
+ * @ORM\Entity
+ * @ORM\Table(name="soccer_seasons")
  */
 class GH7062Season
 {
     /**
-     * @Id
-     * @Column(type="string")
+     * @ORM\Id
+     * @ORM\Column(type="string")
+     *
      * @var string
      */
     public $id;
 
     /**
-     * @OneToOne(targetEntity=GH7062Ranking::class, mappedBy="season", cascade={"all"})
+     * @ORM\OneToOne(targetEntity=GH7062Ranking::class, mappedBy="season", cascade={"all"})
+     *
      * @var GH7062Ranking|null
      */
     public $ranking;
@@ -151,14 +153,15 @@ class GH7062Season
 /**
  * Entity which serves as a identity provider for other entities
  *
- * @Entity
- * @Table(name="soccer_teams")
+ * @ORM\Entity
+ * @ORM\Table(name="soccer_teams")
  */
 class GH7062Team
 {
     /**
-     * @Id
-     * @Column(type="string")
+     * @ORM\Id
+     * @ORM\Column(type="string")
+     *
      * @var string
      */
     public $id;
@@ -172,29 +175,32 @@ class GH7062Team
 /**
  * Entity whose identity is defined through two other entities
  *
- * @Entity
- * @Table(name="soccer_ranking_positions")
+ * @ORM\Entity
+ * @ORM\Table(name="soccer_ranking_positions")
  */
 class GH7062RankingPosition
 {
     /**
-     * @Id
-     * @ManyToOne(targetEntity=GH7062Ranking::class, inversedBy="positions")
-     * @JoinColumn(name="season", referencedColumnName="season")
+     * @ORM\Id
+     * @ORM\ManyToOne(targetEntity=GH7062Ranking::class, inversedBy="positions")
+     * @ORM\JoinColumn(name="season", referencedColumnName="season")
+     *
      * @var GH7062Ranking
      */
     public $ranking;
 
     /**
-     * @Id
-     * @ManyToOne(targetEntity=GH7062Team::class)
-     * @JoinColumn(name="team_id", referencedColumnName="id")
+     * @ORM\Id
+     * @ORM\ManyToOne(targetEntity=GH7062Team::class)
+     * @ORM\JoinColumn(name="team_id", referencedColumnName="id")
+     *
      * @var GH7062Team
      */
     public $team;
 
     /**
-     * @Column(type="integer")
+     * @ORM\Column(type="integer")
+     *
      * @var int
      */
     public $points;

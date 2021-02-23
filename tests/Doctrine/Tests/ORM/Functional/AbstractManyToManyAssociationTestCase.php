@@ -6,41 +6,44 @@ namespace Doctrine\Tests\ORM\Functional;
 
 use Doctrine\Common\Collections\Collection;
 use Doctrine\Tests\OrmFunctionalTestCase;
-
 use function count;
+use function sprintf;
 
 /**
  * Base class for testing a many-to-many association mapping (without inheritance).
  */
 class AbstractManyToManyAssociationTestCase extends OrmFunctionalTestCase
 {
-    /** @var string */
     protected $firstField;
-
-    /** @var string */
     protected $secondField;
-
-    /** @var string */
     protected $table;
 
-    public function assertForeignKeysContain($firstId, $secondId): void
+    public function assertForeignKeysContain($firstId, $secondId)
     {
-        $this->assertEquals(1, $this->_countForeignKeys($firstId, $secondId));
+        self::assertEquals(1, $this->countForeignKeys($firstId, $secondId));
     }
 
-    public function assertForeignKeysNotContain($firstId, $secondId): void
+    public function assertForeignKeysNotContain($firstId, $secondId)
     {
-        $this->assertEquals(0, $this->_countForeignKeys($firstId, $secondId));
+        self::assertEquals(0, $this->countForeignKeys($firstId, $secondId));
     }
 
-    protected function _countForeignKeys($firstId, $secondId)
+    protected function countForeignKeys($firstId, $secondId)
     {
-        return count($this->_em->getConnection()->executeQuery("
-            SELECT {$this->firstField}
-              FROM {$this->table}
-             WHERE {$this->firstField} = ?
-               AND {$this->secondField} = ?
-        ", [$firstId, $secondId])->fetchAll());
+        return count($this->em->getConnection()->executeQuery(sprintf('
+            SELECT %s
+              FROM %s
+             WHERE %s = ?
+               AND %s = ?
+        ', $this->firstField, $this->table, $this->firstField, $this->secondField), [$firstId, $secondId])->fetchAll());
+
+        return count($this->em->getConnection()->executeQuery(sprintf(
+            'SELECT %s FROM %s WHERE %s = ? AND %s = ?',
+            $this->firstField,
+            $this->table,
+            $this->firstField,
+            $this->secondField
+        ), [$firstId, $secondId])->fetchAll());
     }
 
     public function assertCollectionEquals(Collection $first, Collection $second)

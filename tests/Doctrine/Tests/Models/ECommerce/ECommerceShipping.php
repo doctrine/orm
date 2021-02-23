@@ -4,26 +4,24 @@ declare(strict_types=1);
 
 namespace Doctrine\Tests\Models\ECommerce;
 
+use Doctrine\ORM\Annotation as ORM;
+
 /**
  * ECommerceShipping
  * Represents a shipping method.
  *
- * @Entity
- * @Table(name="ecommerce_shippings")
+ * @ORM\Entity
+ * @ORM\Table(name="ecommerce_shippings")
  */
 class ECommerceShipping
 {
     /**
-     * @var int
-     * @Id @Column(type="integer")
-     * @GeneratedValue
+     * @ORM\Id @ORM\Column(type="integer")
+     * @ORM\GeneratedValue
      */
     private $id;
 
-    /**
-     * @var int
-     * @Column(type="integer")
-     */
+    /** @ORM\Column(type="integer") */
     private $days;
 
     public function getId()
@@ -36,7 +34,7 @@ class ECommerceShipping
         return $this->days;
     }
 
-    public function setDays($days): void
+    public function setDays($days)
     {
         $this->days = $days;
     }

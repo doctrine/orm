@@ -19,7 +19,10 @@ class SqlWalkerTest extends OrmTestCase
     /** @var SqlWalker */
     private $sqlWalker;
 
-    protected function setUp(): void
+    /**
+     * {@inheritDoc}
+     */
+    protected function setUp() : void
     {
         $this->sqlWalker = new SqlWalker(new Query($this->getTestEntityManager()), new ParserResult(), []);
     }
@@ -27,17 +30,17 @@ class SqlWalkerTest extends OrmTestCase
     /**
      * @dataProvider getColumnNamesAndSqlAliases
      */
-    public function testGetSQLTableAlias($tableName, $expectedAlias): void
+    public function testGetSQLTableAlias($tableName, $expectedAlias) : void
     {
-        $this->assertSame($expectedAlias, $this->sqlWalker->getSQLTableAlias($tableName));
+        self::assertSame($expectedAlias, $this->sqlWalker->getSQLTableAlias($tableName));
     }
 
     /**
      * @dataProvider getColumnNamesAndSqlAliases
      */
-    public function testGetSQLTableAliasIsSameForMultipleCalls($tableName): void
+    public function testGetSQLTableAliasIsSameForMultipleCalls($tableName) : void
     {
-        $this->assertSame(
+        self::assertSame(
             $this->sqlWalker->getSQLTableAlias($tableName),
             $this->sqlWalker->getSQLTableAlias($tableName)
         );
@@ -48,12 +51,12 @@ class SqlWalkerTest extends OrmTestCase
      *
      * @private data provider
      */
-    public function getColumnNamesAndSqlAliases(): array
+    public function getColumnNamesAndSqlAliases()
     {
         return [
-            ['aaaaa', 'a0_'],
-            ['table', 't0_'],
-            ['çtable', 't0_'],
+            ['aaaaa', 't0'],
+            ['table', 't0'],
+            ['çtable', 't0'],
         ];
     }
 }

@@ -8,13 +8,11 @@ use Doctrine\Tests\Models\CMS\CmsGroup;
 use Doctrine\Tests\Models\CMS\CmsUser;
 use Doctrine\Tests\OrmFunctionalTestCase;
 use Exception;
-
-use function assert;
 use function get_class;
 
 class DDC767Test extends OrmFunctionalTestCase
 {
-    protected function setUp(): void
+    protected function setUp() : void
     {
         $this->useModelSet('cms');
         parent::setUp();
@@ -23,7 +21,7 @@ class DDC767Test extends OrmFunctionalTestCase
     /**
      * @group DDC-767
      */
-    public function testCollectionChangesInsideTransaction(): void
+    public function testCollectionChangesInsideTransaction() : void
     {
         $user           = new CmsUser();
         $user->name     = 'beberlei';
@@ -42,37 +40,37 @@ class DDC767Test extends OrmFunctionalTestCase
         $user->addGroup($group1);
         $user->addGroup($group2);
 
-        $this->_em->persist($user);
-        $this->_em->persist($group1);
-        $this->_em->persist($group2);
-        $this->_em->persist($group3);
+        $this->em->persist($user);
+        $this->em->persist($group1);
+        $this->em->persist($group2);
+        $this->em->persist($group3);
 
-        $this->_em->flush();
-        $this->_em->clear();
+        $this->em->flush();
+        $this->em->clear();
 
-        $pUser = $this->_em->find(get_class($user), $user->id);
-        assert($pUser instanceof CmsUser);
+        /** @var CmsUser $pUser */
+        $pUser = $this->em->find(get_class($user), $user->id);
 
-        $this->assertNotNull($pUser, 'User not retrieved from database.');
+        self::assertNotNull($pUser, 'User not retrieved from database.');
 
         $groups = [$group2->id, $group3->id];
 
         try {
-            $this->_em->beginTransaction();
+            $this->em->beginTransaction();
 
             $pUser->groups->clear();
 
-            $this->_em->flush();
+            $this->em->flush();
 
             // Add new
             foreach ($groups as $groupId) {
-                $pUser->addGroup($this->_em->find(get_class($group1), $groupId));
+                $pUser->addGroup($this->em->find(get_class($group1), $groupId));
             }
 
-            $this->_em->flush();
-            $this->_em->commit();
+            $this->em->flush();
+            $this->em->commit();
         } catch (Exception $e) {
-            $this->_em->rollback();
+            $this->em->rollback();
         }
     }
 }

@@ -5,12 +5,16 @@ declare(strict_types=1);
 namespace Doctrine\Tests\ORM\Functional\Ticket;
 
 use Doctrine\DBAL\LockMode;
+use Doctrine\ORM\Annotation as ORM;
 use Doctrine\ORM\TransactionRequiredException;
 use Doctrine\Tests\OrmFunctionalTestCase;
 
 final class GH7366Test extends OrmFunctionalTestCase
 {
-    protected function setUp(): void
+    /**
+     * {@inheritDoc}
+     */
+    protected function setUp() : void
     {
         parent::setUp();
 
@@ -20,45 +24,45 @@ final class GH7366Test extends OrmFunctionalTestCase
             ]
         );
 
-        $this->_em->persist(new GH7366Entity('baz'));
-        $this->_em->flush();
-        $this->_em->clear();
+        $this->em->persist(new GH7366Entity('baz'));
+        $this->em->flush();
+        $this->em->clear();
     }
 
-    public function testOptimisticLockNoExceptionOnFind(): void
+    public function testOptimisticLockNoExceptionOnFind() : void
     {
         try {
-            $entity = $this->_em->find(GH7366Entity::class, 1, LockMode::OPTIMISTIC);
+            $entity = $this->em->find(GH7366Entity::class, 1, LockMode::OPTIMISTIC);
         } catch (TransactionRequiredException $e) {
             self::fail('EntityManager::find() threw TransactionRequiredException with LockMode::OPTIMISTIC');
         }
-
         self::assertEquals('baz', $entity->getName());
     }
 }
 
 /**
- * @Entity
+ * @ORM\Entity
  */
 class GH7366Entity
 {
     /**
-     * @Id
-     * @Column(type="integer")
-     * @GeneratedValue
+     * @ORM\Id
+     * @ORM\Column(type="integer")
+     * @ORM\GeneratedValue
+     *
      * @var int
      */
     public $id;
 
     /**
-     * @var int
-     * @Column(type="integer")
-     * @Version
+     * @ORM\Column(type="integer")
+     * @ORM\Version
      */
     protected $lockVersion = 1;
 
     /**
-     * @Column(length=32)
+     * @ORM\Column(length=32)
+     *
      * @var string
      */
     protected $name;
@@ -68,7 +72,7 @@ class GH7366Entity
         $this->name = $name;
     }
 
-    public function getName(): string
+    public function getName() : string
     {
         return $this->name;
     }

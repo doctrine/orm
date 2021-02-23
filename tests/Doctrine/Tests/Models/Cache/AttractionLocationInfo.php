@@ -4,13 +4,15 @@ declare(strict_types=1);
 
 namespace Doctrine\Tests\Models\Cache;
 
+use Doctrine\ORM\Annotation as ORM;
+
 /**
- * @Entity
- * @Table("cache_attraction_location_info")
+ * @ORM\Entity
+ * @ORM\Table("cache_attraction_location_info")
  */
 class AttractionLocationInfo extends AttractionInfo
 {
-    /** @Column(unique=true) */
+    /** @ORM\Column(unique=true) */
     protected $address;
 
     public function __construct($address, Attraction $attraction)
@@ -24,7 +26,7 @@ class AttractionLocationInfo extends AttractionInfo
         return $this->address;
     }
 
-    public function setAddress($address): void
+    public function setAddress($address)
     {
         $this->address = $address;
     }

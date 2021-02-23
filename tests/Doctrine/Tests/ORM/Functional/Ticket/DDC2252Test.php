@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace Doctrine\Tests\ORM\Functional\Ticket;
 
 use Doctrine\Common\Collections\ArrayCollection;
-use Doctrine\Common\Collections\Collection;
+use Doctrine\ORM\Annotation as ORM;
 use Doctrine\Tests\OrmFunctionalTestCase;
 
 /**
@@ -13,35 +13,28 @@ use Doctrine\Tests\OrmFunctionalTestCase;
  */
 class DDC2252Test extends OrmFunctionalTestCase
 {
-    /** @psalm-var DDC2252User */
     private $user;
-
-    /** @psalm-var DDC2252MerchantAccount */
     private $merchant;
-
-    /** @psalm-var DDC2252Membership */
     private $membership;
-
-    /** @psalm-var list<DDC2252Privilege> */
     private $privileges = [];
 
-    protected function setUp(): void
+    protected function setUp() : void
     {
         parent::setUp();
 
-        $this->_schemaTool->createSchema(
+        $this->schemaTool->createSchema(
             [
-                $this->_em->getClassMetadata(DDC2252User::class),
-                $this->_em->getClassMetadata(DDC2252Privilege::class),
-                $this->_em->getClassMetadata(DDC2252Membership::class),
-                $this->_em->getClassMetadata(DDC2252MerchantAccount::class),
+                $this->em->getClassMetadata(DDC2252User::class),
+                $this->em->getClassMetadata(DDC2252Privilege::class),
+                $this->em->getClassMetadata(DDC2252Membership::class),
+                $this->em->getClassMetadata(DDC2252MerchantAccount::class),
             ]
         );
 
         $this->loadFixtures();
     }
 
-    public function loadFixtures(): void
+    public function loadFixtures()
     {
         $this->user       = new DDC2252User();
         $this->merchant   = new DDC2252MerchantAccount();
@@ -55,119 +48,115 @@ class DDC2252Test extends OrmFunctionalTestCase
         $this->membership->addPrivilege($this->privileges[1]);
         $this->membership->addPrivilege($this->privileges[2]);
 
-        $this->_em->persist($this->user);
-        $this->_em->persist($this->merchant);
-        $this->_em->persist($this->privileges[0]);
-        $this->_em->persist($this->privileges[1]);
-        $this->_em->persist($this->privileges[2]);
-        $this->_em->flush();
+        $this->em->persist($this->user);
+        $this->em->persist($this->merchant);
+        $this->em->persist($this->privileges[0]);
+        $this->em->persist($this->privileges[1]);
+        $this->em->persist($this->privileges[2]);
+        $this->em->flush();
 
-        $this->_em->persist($this->membership);
-        $this->_em->flush();
-        $this->_em->clear();
+        $this->em->persist($this->membership);
+        $this->em->flush();
+        $this->em->clear();
     }
 
-    public function testIssue(): void
+    public function testIssue() : void
     {
         $identifier = [
             'merchantAccount' => $this->merchant->getAccountid(),
             'userAccount'     => $this->user->getUid(),
         ];
 
-        $membership = $this->_em->find(DDC2252Membership::class, $identifier);
+        $membership = $this->em->find(DDC2252Membership::class, $identifier);
 
-        $this->assertInstanceOf(DDC2252Membership::class, $membership);
-        $this->assertCount(3, $membership->getPrivileges());
+        self::assertInstanceOf(DDC2252Membership::class, $membership);
+        self::assertCount(3, $membership->getPrivileges());
 
         $membership->getPrivileges()->remove(2);
-        $this->_em->persist($membership);
-        $this->_em->flush();
-        $this->_em->clear();
+        $this->em->persist($membership);
+        $this->em->flush();
+        $this->em->clear();
 
-        $membership = $this->_em->find(DDC2252Membership::class, $identifier);
+        $membership = $this->em->find(DDC2252Membership::class, $identifier);
 
-        $this->assertInstanceOf(DDC2252Membership::class, $membership);
-        $this->assertCount(2, $membership->getPrivileges());
+        self::assertInstanceOf(DDC2252Membership::class, $membership);
+        self::assertCount(2, $membership->getPrivileges());
 
         $membership->getPrivileges()->clear();
-        $this->_em->persist($membership);
-        $this->_em->flush();
-        $this->_em->clear();
+        $this->em->persist($membership);
+        $this->em->flush();
+        $this->em->clear();
 
-        $membership = $this->_em->find(DDC2252Membership::class, $identifier);
+        $membership = $this->em->find(DDC2252Membership::class, $identifier);
 
-        $this->assertInstanceOf(DDC2252Membership::class, $membership);
-        $this->assertCount(0, $membership->getPrivileges());
+        self::assertInstanceOf(DDC2252Membership::class, $membership);
+        self::assertCount(0, $membership->getPrivileges());
 
         $membership->addPrivilege($privilege3 = new DDC2252Privilege());
-        $this->_em->persist($privilege3);
-        $this->_em->persist($membership);
-        $this->_em->flush();
-        $this->_em->clear();
+        $this->em->persist($privilege3);
+        $this->em->persist($membership);
+        $this->em->flush();
+        $this->em->clear();
 
-        $membership = $this->_em->find(DDC2252Membership::class, $identifier);
+        $membership = $this->em->find(DDC2252Membership::class, $identifier);
 
-        $this->assertInstanceOf(DDC2252Membership::class, $membership);
-        $this->assertCount(1, $membership->getPrivileges());
+        self::assertInstanceOf(DDC2252Membership::class, $membership);
+        self::assertCount(1, $membership->getPrivileges());
     }
 }
 
 /**
- * @Entity()
- * @Table(name="ddc2252_acl_privilege")
+ * @ORM\Entity()
+ * @ORM\Table(name="ddc2252_acl_privilege")
  */
 class DDC2252Privilege
 {
     /**
-     * @var int
-     * @Id
-     * @GeneratedValue
-     * @Column(type="integer")
+     * @ORM\Id
+     * @ORM\GeneratedValue
+     * @ORM\Column(type="integer")
      */
     protected $privilegeid;
 
-    public function getPrivilegeid(): int
+    public function getPrivilegeid()
     {
         return $this->privilegeid;
     }
 }
 
 /**
- * @Entity
- * @Table(name="ddc2252_mch_account")
+ * @ORM\Entity
+ * @ORM\Table(name="ddc2252_mch_account")
  */
 class DDC2252MerchantAccount
 {
     /**
-     * @var int
-     * @Id
-     * @Column(type="integer")
+     * @ORM\Id
+     * @ORM\Column(type="integer")
      */
     protected $accountid = 111;
 
-    public function getAccountid(): int
+    public function getAccountid()
     {
         return $this->accountid;
     }
 }
 
 /**
- * @Entity
- * @Table(name="ddc2252_user_account")
+ * @ORM\Entity
+ * @ORM\Table(name="ddc2252_user_account")
  */
 class DDC2252User
 {
     /**
-     * @var int
-     * @Id
-     * @Column(type="integer")
+     * @ORM\Id
+     * @ORM\Column(type="integer")
      */
     protected $uid = 222;
 
     /**
-     * @psalm-var Collection<int, DDC2252Membership>
-     * @OneToMany(targetEntity="DDC2252Membership", mappedBy="userAccount", cascade={"persist"})
-     * @JoinColumn(name="uid", referencedColumnName="uid")
+     * @ORM\OneToMany(targetEntity=DDC2252Membership::class, mappedBy="userAccount", cascade={"persist"})
+     * @ORM\JoinColumn(name="uid", referencedColumnName="uid")
      */
     protected $memberships;
 
@@ -176,58 +165,52 @@ class DDC2252User
         $this->memberships = new ArrayCollection();
     }
 
-    public function getUid(): int
+    public function getUid()
     {
         return $this->uid;
     }
 
-    /**
-     * @psalm-return Collection<int, DDC2252Membership>
-     */
-    public function getMemberships(): Collection
+    public function getMemberships()
     {
         return $this->memberships;
     }
 
-    public function addMembership(DDC2252Membership $membership): void
+    public function addMembership(DDC2252Membership $membership)
     {
         $this->memberships[] = $membership;
     }
 }
 
 /**
- * @Entity
- * @Table(name="ddc2252_mch_account_member")
- * @HasLifecycleCallbacks
+ * @ORM\Entity
+ * @ORM\Table(name="ddc2252_mch_account_member")
+ * @ORM\HasLifecycleCallbacks
  */
 class DDC2252Membership
 {
     /**
-     * @var DDC2252User
-     * @Id
-     * @ManyToOne(targetEntity="DDC2252User", inversedBy="memberships")
-     * @JoinColumn(name="uid", referencedColumnName="uid")
+     * @ORM\Id
+     * @ORM\ManyToOne(targetEntity=DDC2252User::class, inversedBy="memberships")
+     * @ORM\JoinColumn(name="uid", referencedColumnName="uid")
      */
     protected $userAccount;
 
     /**
-     * @var DDC2252MerchantAccount
-     * @Id
-     * @ManyToOne(targetEntity="DDC2252MerchantAccount")
-     * @JoinColumn(name="mch_accountid", referencedColumnName="accountid")
+     * @ORM\Id
+     * @ORM\ManyToOne(targetEntity=DDC2252MerchantAccount::class)
+     * @ORM\JoinColumn(name="mch_accountid", referencedColumnName="accountid")
      */
     protected $merchantAccount;
 
     /**
-     * @psalm-var Collection<int, DDC2252Privilege>
-     * @ManyToMany(targetEntity="DDC2252Privilege", indexBy="privilegeid")
-     * @JoinTable(name="ddc2252_user_mch_account_privilege",
+     * @ORM\ManyToMany(targetEntity=DDC2252Privilege::class, indexBy="privilegeid")
+     * @ORM\JoinTable(name="ddc2252_user_mch_account_privilege",
      *   joinColumns={
-     *       @JoinColumn(name="mch_accountid", referencedColumnName="mch_accountid"),
-     *       @JoinColumn(name="uid", referencedColumnName="uid")
+     *       @ORM\JoinColumn(name="mch_accountid", referencedColumnName="mch_accountid"),
+     *       @ORM\JoinColumn(name="uid", referencedColumnName="uid")
      *   },
      *   inverseJoinColumns={
-     *       @JoinColumn(name="privilegeid", referencedColumnName="privilegeid")
+     *       @ORM\JoinColumn(name="privilegeid", referencedColumnName="privilegeid")
      *   }
      * )
      */
@@ -240,15 +223,12 @@ class DDC2252Membership
         $this->privileges      = new ArrayCollection();
     }
 
-    public function addPrivilege(DDC2252Privilege $privilege): void
+    public function addPrivilege($privilege)
     {
         $this->privileges[] = $privilege;
     }
 
-    /**
-     * @psalm-var Collection<int, DDC2252Privilege>
-     */
-    public function getPrivileges(): Collection
+    public function getPrivileges()
     {
         return $this->privileges;
     }

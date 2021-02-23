@@ -4,38 +4,28 @@ declare(strict_types=1);
 
 namespace Doctrine\Tests\Models\Taxi;
 
-use Doctrine\Common\Collections\Collection;
+use Doctrine\ORM\Annotation as ORM;
 
 /**
- * @Entity
- * @Table(name="taxi_driver")
+ * @ORM\Entity
+ * @ORM\Table(name="taxi_driver")
  */
 class Driver
 {
     /**
-     * @var int
-     * @Id
-     * @Column(type="integer")
-     * @GeneratedValue(strategy="AUTO")
+     * @ORM\Id
+     * @ORM\Column(type="integer")
+     * @ORM\GeneratedValue(strategy="AUTO")
      */
     private $id;
 
-    /**
-     * @var string
-     * @Column(type="string", length=255);
-     */
+    /** @ORM\Column(type="string", length=255); */
     private $name;
 
-    /**
-     * @psalm-var Collection<int, Ride>
-     * @OneToMany(targetEntity="Ride", mappedBy="driver")
-     */
+    /** @ORM\OneToMany(targetEntity=Ride::class, mappedBy="driver") */
     private $freeDriverRides;
 
-    /**
-     * @psalm-var Collection<int, PaidRide>
-     * @OneToMany(targetEntity="PaidRide", mappedBy="driver")
-     */
+    /** @ORM\OneToMany(targetEntity=PaidRide::class, mappedBy="driver") */
     private $driverRides;
 
     public function getId()
@@ -43,7 +33,7 @@ class Driver
         return $this->id;
     }
 
-    public function setName($name): void
+    public function setName($name)
     {
         $this->name = $name;
     }

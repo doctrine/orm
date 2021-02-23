@@ -13,7 +13,7 @@ Database Schema
 How do I set the charset and collation for MySQL tables?
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-You can't set these values inside the annotations, yml or xml mapping files. To make a database
+You can't set these values inside the annotations or xml mapping files. To make a database
 work with the default charset and collation you should configure MySQL to use it as default charset,
 or create the database with charset and collation details. This way they get inherited to all newly
 created database tables and columns.
@@ -52,7 +52,7 @@ or adding entities to a collection twice. You have to check for both conditions 
 in the code before calling ``$em->flush()`` if you know that unique constraint failures
 can occur.
 
-In `Symfony2 <http://www.symfony.com>`_ for example there is a Unique Entity Validator
+In `Symfony2 <https://www.symfony.com>`_ for example there is a Unique Entity Validator
 to achieve this task.
 
 For collections you can check with ``$collection->contains($entity)`` if an entity is already
@@ -80,7 +80,7 @@ You can solve this exception by:
 How can I filter an association?
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-You should use DQL queries to query for the filtered set of entities.
+Natively you can't filter associations in 2.0 and 2.1. You should use DQL queries to query for the filtered set of entities.
 
 I call clear() on a One-To-Many collection but the entities are not deleted
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -98,10 +98,9 @@ How can I add columns to a many-to-many table?
 
 The many-to-many association is only supporting foreign keys in the table definition
 To work with many-to-many tables containing extra columns you have to use the
-foreign keys as primary keys feature of Doctrine ORM.
+foreign keys as primary keys feature of Doctrine introduced in version 2.1.
 
 See :doc:`the tutorial on composite primary keys for more information<../tutorials/composite-primary-keys>`.
-
 
 How can i paginate fetch-joined collections?
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -112,8 +111,8 @@ over this collection using a LIMIT statement (or vendor equivalent).
 Doctrine does not offer a solution for this out of the box but there are several extensions
 that do:
 
-* `DoctrineExtensions <http://github.com/beberlei/DoctrineExtensions>`_
-* `Pagerfanta <http://github.com/whiteoctober/pagerfanta>`_
+* `DoctrineExtensions <https://github.com/beberlei/DoctrineExtensions>`_
+* `Pagerfanta <https://github.com/whiteoctober/pagerfanta>`_
 
 Why does pagination not work correctly with fetch joins?
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -128,10 +127,10 @@ See the previous question for a solution to this task.
 Inheritance
 -----------
 
-Can I use Inheritance with Doctrine ORM?
+Can I use Inheritance with Doctrine 2?
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-Yes, you can use Single- or Joined-Table Inheritance in ORM.
+Yes, you can use Single- or Joined-Table Inheritance in Doctrine 2.
 
 See the documentation chapter on :doc:`inheritance mapping <inheritance-mapping>` for
 the details.
@@ -142,23 +141,6 @@ Why does Doctrine not create proxy objects for my inheritance hierarchy?
 If you set a many-to-one or one-to-one association target-entity to any parent class of
 an inheritance hierarchy Doctrine does not know what PHP class the foreign is actually of.
 To find this out it has to execute a SQL query to look this information up in the database.
-
-EntityGenerator
----------------
-
-Why does the EntityGenerator not do X?
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-The EntityGenerator is not a full fledged code-generator that solves all tasks. Code-Generation
-is not a first-class priority in Doctrine 2 anymore (compared to Doctrine 1). The EntityGenerator
-is supposed to kick-start you, but not towards 100%.
-
-Why does the EntityGenerator not generate inheritance correctly?
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-Just from the details of the discriminator map the EntityGenerator cannot guess the inheritance hierarchy.
-This is why the generation of inherited entities does not fully work. You have to adjust some additional
-code to get this one working correctly.
 
 Performance
 -----------
@@ -197,21 +179,6 @@ Can I sort by a function (for example ORDER BY RAND()) in DQL?
 No, it is not supported to sort by function in DQL. If you need this functionality you should either
 use a native-query or come up with another solution. As a side note: Sorting with ORDER BY RAND() is painfully slow
 starting with 1000 rows.
-
-Is it better to write DQL or to generate it with the query builder?
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-The purpose of the ``QueryBuilder`` is to generate DQL dynamically,
-which is useful when you have optional filters, conditional joins, etc.
-
-But the ``QueryBuilder`` is not an alternative to DQL, it actually generates DQL
-queries at runtime, which are then interpreted by Doctrine. This means that
-using the ``QueryBuilder`` to build and run a query is actually always slower
-than only running the corresponding DQL query.
-
-So if you only need to generate a query and bind parameters to it,
-you should use plain DQL, as this is a simpler and much more readable solution.
-You should only use the ``QueryBuilder`` when you can't achieve what you want to do with a DQL query.
 
 A Query fails, how can I debug it?
 ----------------------------------

@@ -4,11 +4,12 @@ declare(strict_types=1);
 
 namespace Doctrine\Tests\ORM\Functional\Ticket;
 
+use Doctrine\ORM\Annotation as ORM;
 use Doctrine\Tests\OrmFunctionalTestCase;
 
 final class GH7259Test extends OrmFunctionalTestCase
 {
-    protected function setUp(): void
+    protected function setUp() : void
     {
         parent::setUp();
 
@@ -16,14 +17,14 @@ final class GH7259Test extends OrmFunctionalTestCase
     }
 
     /**
-     * @group GH-7259
+     * @group 7259
      */
-    public function testPersistFileBeforeVersion(): void
+    public function testPersistFileBeforeVersion() : void
     {
         $space = new GH7259Space();
 
-        $this->_em->persist($space);
-        $this->_em->flush();
+        $this->em->persist($space);
+        $this->em->flush();
 
         $feed        = new GH7259Feed();
         $feed->space = $space;
@@ -33,27 +34,27 @@ final class GH7259Test extends OrmFunctionalTestCase
         $fileVersion       = new GH7259FileVersion();
         $fileVersion->file = $file;
 
-        $this->_em->persist($file);
-        $this->_em->persist($fileVersion);
-        $this->_em->persist($feed);
+        $this->em->persist($file);
+        $this->em->persist($fileVersion);
+        $this->em->persist($feed);
 
-        $this->_em->flush();
+        $this->em->flush();
 
         self::assertNotNull($fileVersion->id);
     }
 
     /**
-     * @group GH-7259
+     * @group 7259
      */
-    public function testPersistFileAfterVersion(): void
+    public function testPersistFileAfterVersion() : void
     {
         $space = new GH7259Space();
 
-        $this->_em->persist($space);
-        $this->_em->flush();
-        $this->_em->clear();
+        $this->em->persist($space);
+        $this->em->flush();
+        $this->em->clear();
 
-        $space = $this->_em->find(GH7259Space::class, $space->id);
+        $space = $this->em->find(GH7259Space::class, $space->id);
 
         $feed        = new GH7259Feed();
         $feed->space = $space;
@@ -63,95 +64,103 @@ final class GH7259Test extends OrmFunctionalTestCase
         $fileVersion       = new GH7259FileVersion();
         $fileVersion->file = $file;
 
-        $this->_em->persist($fileVersion);
-        $this->_em->persist($file);
-        $this->_em->persist($feed);
+        $this->em->persist($fileVersion);
+        $this->em->persist($file);
+        $this->em->persist($feed);
 
-        $this->_em->flush();
+        $this->em->flush();
 
         self::assertNotNull($fileVersion->id);
     }
 }
 
 /**
- * @Entity()
+ * @ORM\Entity()
  */
 class GH7259File
 {
     /**
-     * @Id
-     * @GeneratedValue
-     * @Column(type="integer")
+     * @ORM\Id
+     * @ORM\GeneratedValue
+     * @ORM\Column(type="integer")
+     *
      * @var int
      */
     public $id;
 
     /**
-     * @ManyToOne(targetEntity=GH7259Space::class)
-     * @JoinColumn(nullable=false)
+     * @ORM\ManyToOne(targetEntity=GH7259Space::class)
+     * @ORM\JoinColumn(nullable=false)
+     *
      * @var GH7259Space|null
      */
     public $space;
 }
 
 /**
- * @Entity()
+ * @ORM\Entity()
  */
 class GH7259FileVersion
 {
     /**
-     * @Id
-     * @GeneratedValue
-     * @Column(type="integer")
+     * @ORM\Id
+     * @ORM\GeneratedValue
+     * @ORM\Column(type="integer")
+     *
      * @var int
      */
     public $id;
 
     /**
-     * @ManyToOne(targetEntity=GH7259File::class)
-     * @JoinColumn(nullable=false)
+     * @ORM\ManyToOne(targetEntity=GH7259File::class)
+     * @ORM\JoinColumn(nullable=false)
+     *
      * @var GH7259File|null
      */
     public $file;
 }
 
 /**
- * @Entity()
+ * @ORM\Entity()
  */
 class GH7259Space
 {
     /**
-     * @Id
-     * @GeneratedValue
-     * @Column(type="integer")
+     * @ORM\Id
+     * @ORM\GeneratedValue
+     * @ORM\Column(type="integer")
+     *
      * @var int
      */
     public $id;
 
     /**
-     * @ManyToOne(targetEntity=GH7259File::class)
-     * @JoinColumn(nullable=true)
+     * @ORM\ManyToOne(targetEntity=GH7259File::class)
+     * @ORM\JoinColumn(nullable=true)
+     *
      * @var GH7259File|null
      */
     public $ruleFile;
 }
 
 /**
- * @Entity()
+ * @ORM\Entity()
  */
 class GH7259Feed
 {
     /**
-     * @Id
-     * @GeneratedValue
-     * @Column(type="integer")
+     * @ORM\Id
+     * @ORM\GeneratedValue
+     * @ORM\Column(type="integer")
+     *
      * @var int
      */
     public $id;
 
     /**
-     * @ManyToOne(targetEntity=GH7259Space::class)
-     * @JoinColumn(nullable=false)
+     * @ORM\ManyToOne(targetEntity=GH7259Space::class)
+     * @ORM\JoinColumn(nullable=false)
+     *
      * @var GH7259Space|null
      */
     public $space;

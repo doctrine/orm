@@ -6,15 +6,12 @@ namespace Doctrine\Tests\ORM\Functional\Locking;
 
 use Closure;
 use Doctrine\Common\Cache\ArrayCache;
-use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\Logging\EchoSQLLogger;
 use Doctrine\ORM\Configuration;
 use Doctrine\ORM\EntityManager;
-use Doctrine\ORM\EntityManagerInterface;
 use GearmanWorker;
 use InvalidArgumentException;
-
-use function assert;
+use const GEARMAN_SUCCESS;
 use function is_array;
 use function microtime;
 use function sleep;
@@ -22,10 +19,9 @@ use function unserialize;
 
 class LockAgentWorker
 {
-    /** @var EntityManagerInterface */
     private $em;
 
-    public static function run(): void
+    public static function run()
     {
         $lockAgent = new LockAgentWorker();
 
@@ -46,7 +42,7 @@ class LockAgentWorker
         }
     }
 
-    protected function process($job, Closure $do): float
+    protected function process($job, Closure $do)
     {
         $fixture = $this->processWorkload($job);
 
@@ -63,36 +59,35 @@ class LockAgentWorker
         return microtime(true) - $s;
     }
 
-    public function findWithLock($job): float
+    public function findWithLock($job)
     {
-        return $this->process($job, static function ($fixture, $em): void {
+        return $this->process($job, static function ($fixture, $em) {
             $entity = $em->find($fixture['entityName'], $fixture['entityId'], $fixture['lockMode']);
         });
     }
 
-    public function dqlWithLock($job): float
+    public function dqlWithLock($job)
     {
-        return $this->process($job, static function ($fixture, $em): void {
+        return $this->process($job, static function ($fixture, $em) {
+            /** @var Doctrine\ORM\Query $query */
             $query = $em->createQuery($fixture['dql']);
-            assert($query instanceof Doctrine\ORM\Query);
+
             $query->setLockMode($fixture['lockMode']);
             $query->setParameters($fixture['dqlParams']);
             $result = $query->getResult();
         });
     }
 
-    public function lock($job): float
+    public function lock($job)
     {
-        return $this->process($job, static function ($fixture, $em): void {
+        return $this->process($job, static function ($fixture, $em) {
             $entity = $em->find($fixture['entityName'], $fixture['entityId']);
+
             $em->lock($entity, $fixture['lockMode']);
         });
     }
 
-    /**
-     * @return mixed[]
-     */
-    protected function processWorkload($job): array
+    protected function processWorkload($job)
     {
         echo 'Received job: ' . $job->handle() . ' for function ' . $job->functionName() . "\n";
 
@@ -112,14 +107,14 @@ class LockAgentWorker
         return $workload['fixture'];
     }
 
-    protected function createEntityManager(Connection $conn): EntityManagerInterface
+    protected function createEntityManager($conn)
     {
         $config = new Configuration();
         $config->setProxyDir(__DIR__ . '/../../../Proxies');
         $config->setProxyNamespace('MyProject\Proxies');
         $config->setAutoGenerateProxyClasses(true);
 
-        $annotDriver = $config->newDefaultAnnotationDriver([__DIR__ . '/../../../Models/'], true);
+        $annotDriver = $config->newDefaultAnnotationDriver([__DIR__ . '/../../../Models/']);
         $config->setMetadataDriverImpl($annotDriver);
 
         $cache = new ArrayCache();

@@ -8,13 +8,13 @@
     <entity name="Doctrine\Tests\Models\Company\CompanyContract" table="company_contracts" inheritance-type="SINGLE_TABLE">
 
         <discriminator-map>
-            <discriminator-mapping value="fix"          class="CompanyFixContract" />
-            <discriminator-mapping value="flexible"     class="CompanyFlexContract" />
-            <discriminator-mapping value="flexultra"    class="CompanyFlexUltraContract" />
+            <discriminator-mapping value="fix"          class="Doctrine\Tests\Models\Company\CompanyFixContract" />
+            <discriminator-mapping value="flexible"     class="Doctrine\Tests\Models\Company\CompanyFlexContract" />
+            <discriminator-mapping value="flexultra"    class="Doctrine\Tests\Models\Company\CompanyFlexUltraContract" />
         </discriminator-map>
 
         <entity-listeners>
-            <entity-listener class="CompanyContractListener">
+            <entity-listener class="Doctrine\Tests\Models\Company\CompanyContractListener">
                 <lifecycle-callback type="preFlush"      method="preFlushHandler"/>
                 <lifecycle-callback type="postLoad"      method="postLoadHandler"/>
                 

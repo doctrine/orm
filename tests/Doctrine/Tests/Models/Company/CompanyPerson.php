@@ -5,82 +5,48 @@ declare(strict_types=1);
 namespace Doctrine\Tests\Models\Company;
 
 use Doctrine\Common\Collections\ArrayCollection;
-use Doctrine\Common\Collections\Collection;
-use Doctrine\ORM\Mapping\ClassMetadataInfo;
+use Doctrine\ORM\Annotation as ORM;
 
 /**
  * Description of CompanyPerson
  *
- * @Entity
- * @Table(name="company_persons")
- * @InheritanceType("JOINED")
- * @DiscriminatorColumn(name="discr", type="string")
- * @DiscriminatorMap({
- *      "person"    = "CompanyPerson",
- *      "manager"   = "CompanyManager",
- *      "employee"  = "CompanyEmployee"
- * })
- * @NamedNativeQueries({
- *      @NamedNativeQuery(
- *          name           = "fetchAllWithResultClass",
- *          resultClass    = "__CLASS__",
- *          query          = "SELECT id, name, discr FROM company_persons ORDER BY name"
- *      ),
- *      @NamedNativeQuery(
- *          name            = "fetchAllWithSqlResultSetMapping",
- *          resultSetMapping= "mappingFetchAll",
- *          query           = "SELECT id, name, discr AS discriminator FROM company_persons ORDER BY name"
- *      )
- * })
- * @SqlResultSetMappings({
- *      @SqlResultSetMapping(
- *          name    = "mappingFetchAll",
- *          entities= {
- *              @EntityResult(
- *                  entityClass         = "__CLASS__",
- *                  discriminatorColumn = "discriminator",
- *                  fields              = {
- *                      @FieldResult("id"),
- *                      @FieldResult("name"),
- *                  }
- *              )
- *          }
- *      )
+ * @ORM\Entity
+ * @ORM\Table(name="company_persons")
+ * @ORM\InheritanceType("JOINED")
+ * @ORM\DiscriminatorColumn(name="discr", type="string")
+ * @ORM\DiscriminatorMap({
+ *      "person"    = CompanyPerson::class,
+ *      "manager"   = CompanyManager::class,
+ *      "employee"  = CompanyEmployee::class
  * })
  */
 class CompanyPerson
 {
     /**
-     * @var int
-     * @Id
-     * @Column(type="integer")
-     * @GeneratedValue
+     * @ORM\Id
+     * @ORM\Column(type="integer")
+     * @ORM\GeneratedValue
      */
     private $id;
 
-    /**
-     * @var string
-     * @Column
-     */
+    /** @ORM\Column */
     private $name;
 
     /**
-     * @var CompanyPerson|null
-     * @OneToOne(targetEntity="CompanyPerson")
-     * @JoinColumn(name="spouse_id", referencedColumnName="id", onDelete="CASCADE")
+     * @ORM\OneToOne(targetEntity=CompanyPerson::class)
+     * @ORM\JoinColumn(name="spouse_id", referencedColumnName="id", onDelete="CASCADE")
      */
     private $spouse;
 
     /**
-     * @psalm-var Collection<int, CompanyPerson>
-     * @ManyToMany(targetEntity="CompanyPerson")
-     * @JoinTable(
+     * @ORM\ManyToMany(targetEntity=CompanyPerson::class)
+     * @ORM\JoinTable(
      *     name="company_persons_friends",
      *     joinColumns={
-     *         @JoinColumn(name="person_id", referencedColumnName="id", onDelete="CASCADE")
+     *         @ORM\JoinColumn(name="person_id", referencedColumnName="id", onDelete="CASCADE")
      *     },
      *     inverseJoinColumns={
-     *         @JoinColumn(name="friend_id", referencedColumnName="id", onDelete="CASCADE")
+     *         @ORM\JoinColumn(name="friend_id", referencedColumnName="id", onDelete="CASCADE")
      *     }
      * )
      */
@@ -91,35 +57,32 @@ class CompanyPerson
         $this->friends = new ArrayCollection();
     }
 
-    public function getId(): int
+    public function getId()
     {
         return $this->id;
     }
 
-    public function getName(): string
+    public function getName()
     {
         return $this->name;
     }
 
-    public function setName(string $name): void
+    public function setName($name)
     {
         $this->name = $name;
     }
 
-    public function getSpouse(): ?CompanyPerson
+    public function getSpouse()
     {
         return $this->spouse;
     }
 
-    /**
-     * @psalm-return Collection<int, CompanyPerson>
-     */
-    public function getFriends(): Collection
+    public function getFriends()
     {
         return $this->friends;
     }
 
-    public function addFriend(CompanyPerson $friend): void
+    public function addFriend(CompanyPerson $friend)
     {
         if (! $this->friends->contains($friend)) {
             $this->friends->add($friend);
@@ -127,57 +90,11 @@ class CompanyPerson
         }
     }
 
-    public function setSpouse(CompanyPerson $spouse): void
+    public function setSpouse(CompanyPerson $spouse)
     {
         if ($spouse !== $this->spouse) {
             $this->spouse = $spouse;
             $this->spouse->setSpouse($this);
         }
-    }
-
-    public static function loadMetadata(ClassMetadataInfo $metadata): void
-    {
-        $metadata->setPrimaryTable(
-            ['name' => 'company_person']
-        );
-
-        $metadata->addNamedNativeQuery(
-            [
-                'name'              => 'fetchAllWithResultClass',
-                'query'             => 'SELECT id, name, discr FROM company_persons ORDER BY name',
-                'resultClass'       => self::class,
-            ]
-        );
-
-        $metadata->addNamedNativeQuery(
-            [
-                'name'              => 'fetchAllWithSqlResultSetMapping',
-                'query'             => 'SELECT id, name, discr AS discriminator FROM company_persons ORDER BY name',
-                'resultSetMapping'  => 'mappingFetchAll',
-            ]
-        );
-
-        $metadata->addSqlResultSetMapping(
-            [
-                'name'      => 'mappingFetchAll',
-                'columns'   => [],
-                'entities'  => [
-                    [
-                        'fields' => [
-                            [
-                                'name'      => 'id',
-                                'column'    => 'id',
-                            ],
-                            [
-                                'name'      => 'name',
-                                'column'    => 'name',
-                            ],
-                        ],
-                        'entityClass' => self::class,
-                        'discriminatorColumn' => 'discriminator',
-                    ],
-                ],
-            ]
-        );
     }
 }

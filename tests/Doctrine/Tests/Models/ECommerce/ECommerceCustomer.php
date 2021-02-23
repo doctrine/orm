@@ -4,32 +4,33 @@ declare(strict_types=1);
 
 namespace Doctrine\Tests\Models\ECommerce;
 
+use Doctrine\ORM\Annotation as ORM;
+
 /**
  * ECommerceCustomer
  * Represents a registered user of a shopping application.
  *
- * @Entity
- * @Table(name="ecommerce_customers")
+ * @ORM\Entity
+ * @ORM\Table(name="ecommerce_customers")
  */
 class ECommerceCustomer
 {
     /**
-     * @var int
-     * @Column(type="integer")
-     * @Id
-     * @GeneratedValue(strategy="AUTO")
+     * @ORM\Column(type="integer")
+     * @ORM\Id
+     * @ORM\GeneratedValue(strategy="AUTO")
      */
     private $id;
 
-    /**
-     * @var string
-     * @Column(type="string", length=50)
-     */
+    /** @ORM\Column(type="string", length=50) */
     private $name;
 
     /**
-     * @var ECommerceCart
-     * @OneToOne(targetEntity="ECommerceCart", mappedBy="customer", cascade={"persist"})
+     * @ORM\OneToOne(
+     *     targetEntity=ECommerceCart::class,
+     *     mappedBy="customer",
+     *     cascade={"persist"}
+     * )
      */
     private $cart;
 
@@ -38,8 +39,12 @@ class ECommerceCustomer
      * only one customer at the time, while a customer can choose only one
      * mentor. Not properly appropriate but it works.
      *
-     * @OneToOne(targetEntity="ECommerceCustomer", cascade={"persist"}, fetch="EAGER")
-     * @JoinColumn(name="mentor_id", referencedColumnName="id")
+     * @ORM\OneToOne(
+     *     targetEntity=ECommerceCustomer::class,
+     *     cascade={"persist"},
+     *     fetch="EAGER"
+     * )
+     * @ORM\JoinColumn(name="mentor_id", referencedColumnName="id")
      */
     private $mentor;
 
@@ -53,12 +58,12 @@ class ECommerceCustomer
         return $this->name;
     }
 
-    public function setName($name): void
+    public function setName($name)
     {
         $this->name = $name;
     }
 
-    public function setCart(ECommerceCart $cart): void
+    public function setCart(ECommerceCart $cart)
     {
         if ($this->cart !== $cart) {
             $this->cart = $cart;
@@ -67,7 +72,7 @@ class ECommerceCustomer
     }
 
     /** Does not properly maintain the bidirectional association! */
-    public function brokenSetCart(ECommerceCart $cart): void
+    public function brokenSetCart(ECommerceCart $cart)
     {
         $this->cart = $cart;
     }
@@ -77,7 +82,7 @@ class ECommerceCustomer
         return $this->cart;
     }
 
-    public function removeCart(): void
+    public function removeCart()
     {
         if ($this->cart !== null) {
             $cart       = $this->cart;
@@ -86,12 +91,12 @@ class ECommerceCustomer
         }
     }
 
-    public function setMentor(ECommerceCustomer $mentor): void
+    public function setMentor(ECommerceCustomer $mentor)
     {
         $this->mentor = $mentor;
     }
 
-    public function removeMentor(): void
+    public function removeMentor()
     {
         $this->mentor = null;
     }

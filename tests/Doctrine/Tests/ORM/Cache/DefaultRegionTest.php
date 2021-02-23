@@ -9,30 +9,27 @@ use Doctrine\Common\Cache\ArrayCache;
 use Doctrine\Common\Cache\Cache;
 use Doctrine\Common\Cache\CacheProvider;
 use Doctrine\ORM\Cache\CollectionCacheEntry;
-use Doctrine\ORM\Cache\Region;
 use Doctrine\ORM\Cache\Region\DefaultRegion;
 use Doctrine\Tests\Mocks\CacheEntryMock;
 use Doctrine\Tests\Mocks\CacheKeyMock;
-
-use function assert;
 
 /**
  * @group DDC-2183
  */
 class DefaultRegionTest extends AbstractRegionTest
 {
-    protected function createRegion(): Region
+    protected function createRegion()
     {
         return new DefaultRegion('default.region.test', $this->cache);
     }
 
-    public function testGetters(): void
+    public function testGetters() : void
     {
-        $this->assertEquals('default.region.test', $this->region->getName());
-        $this->assertSame($this->cache, $this->region->getCache());
+        self::assertEquals('default.region.test', $this->region->getName());
+        self::assertSame($this->cache, $this->region->getCache());
     }
 
-    public function testSharedRegion(): void
+    public function testSharedRegion() : void
     {
         $cache   = new SharedArrayCache();
         $key     = new CacheKeyMock('key');
@@ -40,22 +37,22 @@ class DefaultRegionTest extends AbstractRegionTest
         $region1 = new DefaultRegion('region1', $cache->createChild());
         $region2 = new DefaultRegion('region2', $cache->createChild());
 
-        $this->assertFalse($region1->contains($key));
-        $this->assertFalse($region2->contains($key));
+        self::assertFalse($region1->contains($key));
+        self::assertFalse($region2->contains($key));
 
         $region1->put($key, $entry);
         $region2->put($key, $entry);
 
-        $this->assertTrue($region1->contains($key));
-        $this->assertTrue($region2->contains($key));
+        self::assertTrue($region1->contains($key));
+        self::assertTrue($region2->contains($key));
 
         $region1->evictAll();
 
-        $this->assertFalse($region1->contains($key));
-        $this->assertTrue($region2->contains($key));
+        self::assertFalse($region1->contains($key));
+        self::assertTrue($region2->contains($key));
     }
 
-    public function testDoesNotModifyCacheNamespace(): void
+    public function testDoesNotModifyCacheNamespace() : void
     {
         $cache = new ArrayCache();
 
@@ -64,13 +61,13 @@ class DefaultRegionTest extends AbstractRegionTest
         new DefaultRegion('bar', $cache);
         new DefaultRegion('baz', $cache);
 
-        $this->assertSame('foo', $cache->getNamespace());
+        self::assertSame('foo', $cache->getNamespace());
     }
 
-    public function testEvictAllWithGenericCacheThrowsUnsupportedException(): void
+    public function testEvictAllWithGenericCacheThrowsUnsupportedException() : void
     {
+        /** @var Cache $cache */
         $cache = $this->createMock(Cache::class);
-        assert($cache instanceof Cache);
 
         $region = new DefaultRegion('foo', $cache);
 
@@ -79,7 +76,7 @@ class DefaultRegionTest extends AbstractRegionTest
         $region->evictAll();
     }
 
-    public function testGetMulti(): void
+    public function testGetMulti() : void
     {
         $key1   = new CacheKeyMock('key.1');
         $value1 = new CacheEntryMock(['id' => 1, 'name' => 'bar']);
@@ -87,45 +84,19 @@ class DefaultRegionTest extends AbstractRegionTest
         $key2   = new CacheKeyMock('key.2');
         $value2 = new CacheEntryMock(['id' => 2, 'name' => 'bar']);
 
-        $this->assertFalse($this->region->contains($key1));
-        $this->assertFalse($this->region->contains($key2));
+        self::assertFalse($this->region->contains($key1));
+        self::assertFalse($this->region->contains($key2));
 
         $this->region->put($key1, $value1);
         $this->region->put($key2, $value2);
 
-        $this->assertTrue($this->region->contains($key1));
-        $this->assertTrue($this->region->contains($key2));
+        self::assertTrue($this->region->contains($key1));
+        self::assertTrue($this->region->contains($key2));
 
         $actual = $this->region->getMultiple(new CollectionCacheEntry([$key1, $key2]));
 
-        $this->assertEquals($value1, $actual[0]);
-        $this->assertEquals($value2, $actual[1]);
-    }
-
-    /**
-     * @test
-     * @group GH7266
-     */
-    public function corruptedDataDoesNotLeakIntoApplicationWhenGettingSingleEntry(): void
-    {
-        $key1 = new CacheKeyMock('key.1');
-        $this->cache->save($this->region->getName() . '_' . $key1->hash, 'a-very-invalid-value');
-
-        self::assertTrue($this->region->contains($key1));
-        self::assertNull($this->region->get($key1));
-    }
-
-    /**
-     * @test
-     * @group GH7266
-     */
-    public function corruptedDataDoesNotLeakIntoApplicationWhenGettingMultipleEntries(): void
-    {
-        $key1 = new CacheKeyMock('key.1');
-        $this->cache->save($this->region->getName() . '_' . $key1->hash, 'a-very-invalid-value');
-
-        self::assertTrue($this->region->contains($key1));
-        self::assertNull($this->region->getMultiple(new CollectionCacheEntry([$key1])));
+        self::assertEquals($value1, $actual[0]);
+        self::assertEquals($value2, $actual[1]);
     }
 }
 
@@ -139,10 +110,9 @@ class DefaultRegionTest extends AbstractRegionTest
  */
 final class SharedArrayCache extends ArrayCache
 {
-    public function createChild(): Cache
+    public function createChild() : Cache
     {
-        return new class ($this) extends CacheProvider
-        {
+        return new class ($this) extends CacheProvider {
             /** @var ArrayCache */
             private $parent;
 

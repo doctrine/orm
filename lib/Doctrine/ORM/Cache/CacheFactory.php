@@ -1,22 +1,6 @@
 <?php
 
-/*
- * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
- * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
- * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
- * A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT
- * OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
- * SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
- * LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
- * DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
- * THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
- * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
- * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- *
- * This software consists of voluntary contributions made by many individuals
- * and is licensed under the MIT license. For more information, see
- * <http://www.doctrine-project.org>.
- */
+declare(strict_types=1);
 
 namespace Doctrine\ORM\Cache;
 
@@ -24,6 +8,8 @@ use Doctrine\ORM\Cache;
 use Doctrine\ORM\Cache\Persister\Collection\CachedCollectionPersister;
 use Doctrine\ORM\Cache\Persister\Entity\CachedEntityPersister;
 use Doctrine\ORM\EntityManagerInterface;
+use Doctrine\ORM\Mapping\AssociationMetadata;
+use Doctrine\ORM\Mapping\CacheMetadata;
 use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\Persisters\Collection\CollectionPersister;
 use Doctrine\ORM\Persisters\Entity\EntityPersister;
@@ -42,18 +28,26 @@ interface CacheFactory
      *
      * @return CachedEntityPersister
      */
-    public function buildCachedEntityPersister(EntityManagerInterface $em, EntityPersister $persister, ClassMetadata $metadata);
+    public function buildCachedEntityPersister(
+        EntityManagerInterface $em,
+        EntityPersister $persister,
+        ClassMetadata $metadata
+    );
 
     /**
      * Build a collection persister for the given relation mapping.
      *
-     * @param EntityManagerInterface $em        The entity manager.
-     * @param CollectionPersister    $persister The collection persister that will be cached.
-     * @param mixed[]                $mapping   The association mapping.
+     * @param EntityManagerInterface $em          The entity manager.
+     * @param CollectionPersister    $persister   The collection persister that will be cached.
+     * @param AssociationMetadata    $association The association mapping.
      *
      * @return CachedCollectionPersister
      */
-    public function buildCachedCollectionPersister(EntityManagerInterface $em, CollectionPersister $persister, array $mapping);
+    public function buildCachedCollectionPersister(
+        EntityManagerInterface $em,
+        CollectionPersister $persister,
+        AssociationMetadata $association
+    );
 
     /**
      * Build a query cache based on the given region name
@@ -78,21 +72,21 @@ interface CacheFactory
     /**
      * Build a collection hydrator
      *
-     * @param EntityManagerInterface $em      The Entity manager.
-     * @param mixed[]                $mapping The association mapping.
+     * @param EntityManagerInterface $em          The Entity manager.
+     * @param AssociationMetadata    $association The association mapping.
      *
      * @return CollectionHydrator The built collection hydrator.
      */
-    public function buildCollectionHydrator(EntityManagerInterface $em, array $mapping);
+    public function buildCollectionHydrator(EntityManagerInterface $em, AssociationMetadata $association);
 
     /**
      * Build a cache region
      *
-     * @param array<string,mixed> $cache The cache configuration.
+     * @param CacheMetadata $cache The cache configuration.
      *
      * @return Region The cache region.
      */
-    public function getRegion(array $cache);
+    public function getRegion(CacheMetadata $cache);
 
     /**
      * Build timestamp cache region

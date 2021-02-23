@@ -7,65 +7,57 @@ namespace Doctrine\Tests\ORM\Functional\Ticket;
 use Doctrine\DBAL\Platforms\AbstractPlatform;
 use Doctrine\DBAL\Types\StringType;
 use Doctrine\DBAL\Types\Type;
+use Doctrine\ORM\Annotation as ORM;
 use Doctrine\Tests\OrmFunctionalTestCase;
-
-use function count;
 
 /**
  * @group DDC-1998
  */
 class DDC1998Test extends OrmFunctionalTestCase
 {
-    public function testSqlConversionAsIdentifier(): void
+    public function testSqlConversionAsIdentifier() : void
     {
         Type::addType('ddc1998', DDC1998Type::class);
 
-        $this->_schemaTool->createSchema(
+        $this->schemaTool->createSchema(
             [
-                $this->_em->getClassMetadata(DDC1998Entity::class),
+                $this->em->getClassMetadata(DDC1998Entity::class),
             ]
         );
 
         $entity     = new DDC1998Entity();
         $entity->id = new DDC1998Id('foo');
 
-        $this->_em->persist($entity);
-        $this->_em->flush();
+        $this->em->persist($entity);
+        $this->em->flush();
 
         $entity->num++;
 
-        $this->_em->flush();
+        $this->em->flush();
 
-        $this->_em->remove($entity);
-        $this->_em->flush();
-        $this->_em->clear();
+        $this->em->remove($entity);
+        $this->em->flush();
+        $this->em->clear();
 
-        $found = $this->_em->find(DDC1998Entity::class, $entity->id);
-        $this->assertNull($found);
+        $found = $this->em->find(DDC1998Entity::class, $entity->id);
+        self::assertNull($found);
 
-        $found = $this->_em->find(DDC1998Entity::class, 'foo');
-        $this->assertNull($found);
+        $found = $this->em->find(DDC1998Entity::class, 'foo');
+        self::assertNull($found);
 
-        $this->assertEquals(0, count($this->_em->getRepository(DDC1998Entity::class)->findAll()));
+        self::assertCount(0, $this->em->getRepository(DDC1998Entity::class)->findAll());
     }
 }
 
 /**
- * @Entity
+ * @ORM\Entity
  */
 class DDC1998Entity
 {
-    /**
-     * @var string
-     * @Id
-     * @Column(type="ddc1998")
-     */
+    /** @ORM\Id @ORM\Column(type="ddc1998") */
     public $id;
 
-    /**
-     * @var int
-     * @Column(type="integer")
-     */
+    /** @ORM\Column(type="integer") */
     public $num = 0;
 }
 
@@ -81,10 +73,7 @@ class DDC1998Type extends StringType
         return (string) $value;
     }
 
-    /**
-     * {@inheritDoc}
-     */
-    public function convertToPHPValue($value, AbstractPlatform $platform)
+    public function convertToPhpValue($value, AbstractPlatform $platform)
     {
         return new DDC1998Id($value);
     }
@@ -92,7 +81,7 @@ class DDC1998Type extends StringType
     /**
      * {@inheritdoc}
      */
-    public function getName()
+    public function getName() : string
     {
         return self::NAME;
     }
@@ -100,15 +89,14 @@ class DDC1998Type extends StringType
 
 class DDC1998Id
 {
-    /** @var string */
     private $val;
 
-    public function __construct(string $val)
+    public function __construct($val)
     {
         $this->val = $val;
     }
 
-    public function __toString(): string
+    public function __toString()
     {
         return $this->val;
     }

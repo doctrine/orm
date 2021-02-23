@@ -9,7 +9,8 @@ use Doctrine\ORM\Cache\Persister\CachedPersister;
 use Doctrine\ORM\Cache\Persister\Collection\AbstractCollectionPersister;
 use Doctrine\ORM\Cache\Persister\Collection\CachedCollectionPersister;
 use Doctrine\ORM\Cache\Region;
-use Doctrine\ORM\EntityManager;
+use Doctrine\ORM\EntityManagerInterface;
+use Doctrine\ORM\Mapping\AssociationMetadata;
 use Doctrine\ORM\PersistentCollection;
 use Doctrine\ORM\Persisters\Collection\CollectionPersister;
 use Doctrine\Tests\Models\Cache\State;
@@ -26,7 +27,7 @@ abstract class AbstractCollectionPersisterTest extends OrmTestCase
     /** @var CollectionPersister */
     protected $collectionPersister;
 
-    /** @var EntityManager */
+    /** @var EntityManagerInterface */
     protected $em;
 
     /** @var array */
@@ -56,11 +57,16 @@ abstract class AbstractCollectionPersisterTest extends OrmTestCase
     ];
 
     /**
-     * @param array $mapping
+     * @return AbstractCollectionPersister
      */
-    abstract protected function createPersister(EntityManager $em, CollectionPersister $persister, Region $region, array $mapping): AbstractCollectionPersister;
+    abstract protected function createPersister(
+        EntityManagerInterface $em,
+        CollectionPersister $persister,
+        Region $region,
+        AssociationMetadata $association
+    );
 
-    protected function setUp(): void
+    protected function setUp() : void
     {
         $this->getSharedSecondLevelCacheDriverImpl()->flushAll();
         $this->enableSecondLevelCache();
@@ -73,18 +79,24 @@ abstract class AbstractCollectionPersisterTest extends OrmTestCase
                                            ->getMock();
     }
 
-    protected function createRegion(): Region
+    /**
+     * @return Region
+     */
+    protected function createRegion()
     {
         return $this->getMockBuilder(Region::class)
                     ->setMethods($this->regionMockMethods)
                     ->getMock();
     }
 
-    protected function createCollection($owner, $assoc = null, $class = null, $elements = null): PersistentCollection
+    /**
+     * @return PersistentCollection
+     */
+    protected function createCollection($owner, $assoc = null, $class = null, $elements = null)
     {
         $em    = $this->em;
         $class = $class ?: $this->em->getClassMetadata(State::class);
-        $assoc = $assoc ?: $class->associationMappings['cities'];
+        $assoc = $assoc ?: $class->getProperty('cities');
         $coll  = new PersistentCollection($em, $class, $elements ?: new ArrayCollection());
 
         $coll->setOwner($owner, $assoc);
@@ -95,21 +107,21 @@ abstract class AbstractCollectionPersisterTest extends OrmTestCase
 
     protected function createPersisterDefault()
     {
-        $assoc = $this->em->getClassMetadata(State::class)->associationMappings['cities'];
+        $assoc = $this->em->getClassMetadata(State::class)->getProperty('cities');
 
         return $this->createPersister($this->em, $this->collectionPersister, $this->region, $assoc);
     }
 
-    public function testImplementsEntityPersister(): void
+    public function testImplementsEntityPersister() : void
     {
         $persister = $this->createPersisterDefault();
 
-        $this->assertInstanceOf(CollectionPersister::class, $persister);
-        $this->assertInstanceOf(CachedPersister::class, $persister);
-        $this->assertInstanceOf(CachedCollectionPersister::class, $persister);
+        self::assertInstanceOf(CollectionPersister::class, $persister);
+        self::assertInstanceOf(CachedPersister::class, $persister);
+        self::assertInstanceOf(CachedCollectionPersister::class, $persister);
     }
 
-    public function testInvokeDelete(): void
+    public function testInvokeDelete() : void
     {
         $entity     = new State('Foo');
         $persister  = $this->createPersisterDefault();
@@ -121,10 +133,10 @@ abstract class AbstractCollectionPersisterTest extends OrmTestCase
             ->method('delete')
             ->with($this->equalTo($collection));
 
-        $this->assertNull($persister->delete($collection));
+        self::assertNull($persister->delete($collection));
     }
 
-    public function testInvokeUpdate(): void
+    public function testInvokeUpdate() : void
     {
         $entity     = new State('Foo');
         $persister  = $this->createPersisterDefault();
@@ -138,10 +150,10 @@ abstract class AbstractCollectionPersisterTest extends OrmTestCase
             ->method('update')
             ->with($this->equalTo($collection));
 
-        $this->assertNull($persister->update($collection));
+        self::assertNull($persister->update($collection));
     }
 
-    public function testInvokeCount(): void
+    public function testInvokeCount() : void
     {
         $entity     = new State('Foo');
         $persister  = $this->createPersisterDefault();
@@ -154,10 +166,10 @@ abstract class AbstractCollectionPersisterTest extends OrmTestCase
             ->with($this->equalTo($collection))
             ->will($this->returnValue(0));
 
-        $this->assertEquals(0, $persister->count($collection));
+        self::assertEquals(0, $persister->count($collection));
     }
 
-    public function testInvokeSlice(): void
+    public function testInvokeSlice() : void
     {
         $entity     = new State('Foo');
         $persister  = $this->createPersisterDefault();
@@ -171,10 +183,10 @@ abstract class AbstractCollectionPersisterTest extends OrmTestCase
             ->with($this->equalTo($collection), $this->equalTo(1), $this->equalTo(2))
             ->will($this->returnValue($slice));
 
-        $this->assertEquals($slice, $persister->slice($collection, 1, 2));
+        self::assertEquals($slice, $persister->slice($collection, 1, 2));
     }
 
-    public function testInvokeContains(): void
+    public function testInvokeContains() : void
     {
         $entity     = new State('Foo');
         $element    = new State('Bar');
@@ -188,10 +200,10 @@ abstract class AbstractCollectionPersisterTest extends OrmTestCase
             ->with($this->equalTo($collection), $this->equalTo($element))
             ->will($this->returnValue(false));
 
-        $this->assertFalse($persister->contains($collection, $element));
+        self::assertFalse($persister->contains($collection, $element));
     }
 
-    public function testInvokeContainsKey(): void
+    public function testInvokeContainsKey() : void
     {
         $entity     = new State('Foo');
         $persister  = $this->createPersisterDefault();
@@ -204,10 +216,27 @@ abstract class AbstractCollectionPersisterTest extends OrmTestCase
             ->with($this->equalTo($collection), $this->equalTo(0))
             ->will($this->returnValue(false));
 
-        $this->assertFalse($persister->containsKey($collection, 0));
+        self::assertFalse($persister->containsKey($collection, 0));
     }
 
-    public function testInvokeGet(): void
+    public function testInvokeRemoveElement() : void
+    {
+        $entity     = new State('Foo');
+        $element    = new State('Bar');
+        $persister  = $this->createPersisterDefault();
+        $collection = $this->createCollection($entity);
+
+        $this->em->getUnitOfWork()->registerManaged($entity, ['id' => 1], ['id' => 1, 'name' => 'Foo']);
+
+        $this->collectionPersister->expects($this->once())
+            ->method('removeElement')
+            ->with($this->equalTo($collection), $this->equalTo($element))
+            ->will($this->returnValue(false));
+
+        self::assertFalse($persister->removeElement($collection, $element));
+    }
+
+    public function testInvokeGet() : void
     {
         $entity     = new State('Foo');
         $element    = new State('Bar');
@@ -221,6 +250,6 @@ abstract class AbstractCollectionPersisterTest extends OrmTestCase
             ->with($this->equalTo($collection), $this->equalTo(0))
             ->will($this->returnValue($element));
 
-        $this->assertEquals($element, $persister->get($collection, 0));
+        self::assertEquals($element, $persister->get($collection, 0));
     }
 }

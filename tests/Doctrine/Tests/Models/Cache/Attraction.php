@@ -5,41 +5,41 @@ declare(strict_types=1);
 namespace Doctrine\Tests\Models\Cache;
 
 use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\ORM\Annotation as ORM;
 
 /**
- * @Cache("NONSTRICT_READ_WRITE")
- * @Entity
- * @Table("cache_attraction")
- * @InheritanceType("SINGLE_TABLE")
- * @DiscriminatorMap({
- *  1  = "Restaurant",
- *  2  = "Beach",
- *  3  = "Bar"
+ * @ORM\Cache("NONSTRICT_READ_WRITE")
+ * @ORM\Entity
+ * @ORM\Table("cache_attraction")
+ * @ORM\InheritanceType("SINGLE_TABLE")
+ * @ORM\DiscriminatorMap({
+ *  1  = Restaurant::class,
+ *  2  = Beach::class,
+ *  3  = Bar::class
  * })
  */
 abstract class Attraction
 {
     /**
-     * @var int
-     * @Id
-     * @GeneratedValue
-     * @Column(type="integer")
+     * @ORM\Id
+     * @ORM\GeneratedValue
+     * @ORM\Column(type="integer")
      */
     protected $id;
 
-    /** @Column(unique=true) */
+    /** @ORM\Column(unique=true) */
     protected $name;
 
     /**
-     * @Cache
-     * @ManyToOne(targetEntity="City", inversedBy="attractions")
-     * @JoinColumn(name="city_id", referencedColumnName="id")
+     * @ORM\Cache
+     * @ORM\ManyToOne(targetEntity=City::class, inversedBy="attractions")
+     * @ORM\JoinColumn(name="city_id", referencedColumnName="id")
      */
     protected $city;
 
     /**
-     * @Cache
-     * @OneToMany(targetEntity="AttractionInfo", mappedBy="attraction")
+     * @ORM\Cache
+     * @ORM\OneToMany(targetEntity=AttractionInfo::class, mappedBy="attraction")
      */
     protected $infos;
 
@@ -55,7 +55,7 @@ abstract class Attraction
         return $this->id;
     }
 
-    public function setId($id): void
+    public function setId($id)
     {
         $this->id = $id;
     }
@@ -65,7 +65,7 @@ abstract class Attraction
         return $this->name;
     }
 
-    public function setName($name): void
+    public function setName($name)
     {
         $this->name = $name;
     }
@@ -75,7 +75,7 @@ abstract class Attraction
         return $this->city;
     }
 
-    public function setCity(City $city): void
+    public function setCity(City $city)
     {
         $this->city = $city;
     }
@@ -85,7 +85,7 @@ abstract class Attraction
         return $this->infos;
     }
 
-    public function addInfo(AttractionInfo $info): void
+    public function addInfo(AttractionInfo $info)
     {
         if (! $this->infos->contains($info)) {
             $this->infos->add($info);

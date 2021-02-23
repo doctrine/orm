@@ -5,39 +5,38 @@ declare(strict_types=1);
 namespace Doctrine\Tests\Models\ECommerce;
 
 use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\ORM\Annotation as ORM;
 
 /**
  * ECommerceCart
  * Represents a typical cart of a shopping application.
  *
- * @Entity
- * @Table(name="ecommerce_carts")
+ * @ORM\Entity
+ * @ORM\Table(name="ecommerce_carts")
  */
 class ECommerceCart
 {
     /**
-     * @var int
-     * @Column(type="integer")
-     * @Id
-     * @GeneratedValue
+     * @ORM\Column(type="integer")
+     * @ORM\Id
+     * @ORM\GeneratedValue
      */
     private $id;
 
-    /** @Column(length=50, nullable=true) */
+    /** @ORM\Column(length=50, nullable=true) */
     private $payment;
 
     /**
-     * @var ECommerceCustomer
-     * @OneToOne(targetEntity="ECommerceCustomer", inversedBy="cart")
-     * @JoinColumn(name="customer_id", referencedColumnName="id")
+     * @ORM\OneToOne(targetEntity=ECommerceCustomer::class, inversedBy="cart")
+     * @ORM\JoinColumn(name="customer_id", referencedColumnName="id")
      */
     private $customer;
 
     /**
-     * @ManyToMany(targetEntity="ECommerceProduct", cascade={"persist"})
-     * @JoinTable(name="ecommerce_carts_products",
-            joinColumns={@JoinColumn(name="cart_id", referencedColumnName="id")},
-            inverseJoinColumns={@JoinColumn(name="product_id", referencedColumnName="id")})
+     * @ORM\ManyToMany(targetEntity=ECommerceProduct::class, cascade={"persist"})
+     * @ORM\JoinTable(name="ecommerce_carts_products",
+     *      joinColumns={@ORM\JoinColumn(name="cart_id", referencedColumnName="id")},
+     *      inverseJoinColumns={@ORM\JoinColumn(name="product_id", referencedColumnName="id")})
      */
     private $products;
 
@@ -56,12 +55,12 @@ class ECommerceCart
         return $this->payment;
     }
 
-    public function setPayment($payment): void
+    public function setPayment($payment)
     {
         $this->payment = $payment;
     }
 
-    public function setCustomer(ECommerceCustomer $customer): void
+    public function setCustomer(ECommerceCustomer $customer)
     {
         if ($this->customer !== $customer) {
             $this->customer = $customer;
@@ -69,7 +68,7 @@ class ECommerceCart
         }
     }
 
-    public function removeCustomer(): void
+    public function removeCustomer()
     {
         if ($this->customer !== null) {
             $customer       = $this->customer;
@@ -88,7 +87,7 @@ class ECommerceCart
         return $this->products;
     }
 
-    public function addProduct(ECommerceProduct $product): void
+    public function addProduct(ECommerceProduct $product)
     {
         $this->products[] = $product;
     }

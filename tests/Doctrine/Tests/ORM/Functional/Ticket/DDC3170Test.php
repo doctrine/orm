@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Doctrine\Tests\ORM\Functional\Ticket;
 
 use Doctrine\ORM\AbstractQuery;
+use Doctrine\ORM\Annotation as ORM;
 use Doctrine\Tests\OrmFunctionalTestCase;
 
 /**
@@ -12,16 +13,19 @@ use Doctrine\Tests\OrmFunctionalTestCase;
  */
 class DDC3170Test extends OrmFunctionalTestCase
 {
-    protected function setUp(): void
+    /**
+     * {@inheritDoc}
+     */
+    protected function setUp() : void
     {
         parent::setUp();
 
-        $this->_schemaTool->createSchema(
+        $this->schemaTool->createSchema(
             [
-                $this->_em->getClassMetadata(DDC3170AbstractEntityJoined::class),
-                $this->_em->getClassMetadata(DDC3170ProductJoined::class),
-                $this->_em->getClassMetadata(DDC3170AbstractEntitySingleTable::class),
-                $this->_em->getClassMetadata(DDC3170ProductSingleTable::class),
+                $this->em->getClassMetadata(DDC3170AbstractEntityJoined::class),
+                $this->em->getClassMetadata(DDC3170ProductJoined::class),
+                $this->em->getClassMetadata(DDC3170AbstractEntitySingleTable::class),
+                $this->em->getClassMetadata(DDC3170ProductSingleTable::class),
             ]
         );
     }
@@ -35,17 +39,17 @@ class DDC3170Test extends OrmFunctionalTestCase
      *
      * {@see \Doctrine\ORM\Internal\Hydration\SimpleObjectHydrator::hydrateRowData()}
      */
-    public function testIssue(): void
+    public function testIssue() : void
     {
         $productJoined      = new DDC3170ProductJoined();
         $productSingleTable = new DDC3170ProductSingleTable();
 
-        $this->_em->persist($productJoined);
-        $this->_em->persist($productSingleTable);
-        $this->_em->flush();
-        $this->_em->clear();
+        $this->em->persist($productJoined);
+        $this->em->persist($productSingleTable);
+        $this->em->flush();
+        $this->em->clear();
 
-        $result = $this->_em->createQueryBuilder()
+        $result = $this->em->createQueryBuilder()
                   ->select('p')
                   ->from(DDC3170ProductJoined::class, 'p')
                   ->getQuery()
@@ -54,7 +58,7 @@ class DDC3170Test extends OrmFunctionalTestCase
         self::assertCount(1, $result);
         self::assertContainsOnly(DDC3170ProductJoined::class, $result);
 
-        $result = $this->_em->createQueryBuilder()
+        $result = $this->em->createQueryBuilder()
                   ->select('p')
                   ->from(DDC3170ProductSingleTable::class, 'p')
                   ->getQuery()
@@ -66,48 +70,38 @@ class DDC3170Test extends OrmFunctionalTestCase
 }
 
 /**
- * @Entity
- * @InheritanceType("JOINED")
- * @DiscriminatorColumn(name="type", type="string")
- * @DiscriminatorMap({"product" = "DDC3170ProductJoined"})
+ * @ORM\Entity
+ * @ORM\InheritanceType("JOINED")
+ * @ORM\DiscriminatorColumn(name="type", type="string")
+ * @ORM\DiscriminatorMap({"product" = DDC3170ProductJoined::class})
  */
 abstract class DDC3170AbstractEntityJoined
 {
-    /**
-     * @var int
-     * @Id
-     * @Column(type="integer")
-     * @GeneratedValue
-     */
+    /** @ORM\Id @ORM\Column(type="integer") @ORM\GeneratedValue */
     public $id;
 }
 
 /**
- * @Entity
+ * @ORM\Entity
  */
 class DDC3170ProductJoined extends DDC3170AbstractEntityJoined
 {
 }
 
 /**
- * @Entity
- * @InheritanceType("SINGLE_TABLE")
- * @DiscriminatorColumn(name="type", type="string")
- * @DiscriminatorMap({"product" = "DDC3170ProductSingleTable"})
+ * @ORM\Entity
+ * @ORM\InheritanceType("SINGLE_TABLE")
+ * @ORM\DiscriminatorColumn(name="type", type="string")
+ * @ORM\DiscriminatorMap({"product" = DDC3170ProductSingleTable::class})
  */
 abstract class DDC3170AbstractEntitySingleTable
 {
-    /**
-     * @var int
-     * @Id
-     * @Column(type="integer")
-     * @GeneratedValue
-     */
+    /** @ORM\Id @ORM\Column(type="integer") @ORM\GeneratedValue */
     public $id;
 }
 
 /**
- * @Entity
+ * @ORM\Entity
  */
 class DDC3170ProductSingleTable extends DDC3170AbstractEntitySingleTable
 {

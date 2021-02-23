@@ -1,44 +1,30 @@
 <?php
 
-/*
- * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
- * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
- * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
- * A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT
- * OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
- * SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
- * LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
- * DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
- * THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
- * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
- * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- *
- * This software consists of voluntary contributions made by many individuals
- * and is licensed under the MIT license. For more information, see
- * <http://www.doctrine-project.org>.
- */
+declare(strict_types=1);
 
 namespace Doctrine\ORM\Query;
 
-use Doctrine\ORM\ORMException;
+use Doctrine\ORM\Exception\ORMException;
+use Doctrine\ORM\Mapping\AssociationMetadata;
 use Doctrine\ORM\Query\AST\PathExpression;
 use Exception;
+use LogicException;
+use Throwable;
+use function sprintf;
 
 /**
  * Description of QueryException.
- *
- * @link    www.doctrine-project.org
  */
-class QueryException extends ORMException
+class QueryException extends LogicException implements ORMException
 {
     /**
      * @param string $dql
      *
      * @return QueryException
      */
-    public static function dqlError($dql)
+    public static function dqlError($dql, ?Throwable $previous = null)
     {
-        return new self($dql);
+        return new self($dql, 0, $previous);
     }
 
     /**
@@ -161,11 +147,11 @@ class QueryException extends ORMException
      */
     public static function invalidLiteral($literal)
     {
-        return new self("Invalid literal '$literal'");
+        return new self("Invalid literal '" . $literal . "'");
     }
 
     /**
-     * @param array $assoc
+     * @param mixed[] $assoc
      *
      * @return QueryException
      */
@@ -190,7 +176,7 @@ class QueryException extends ORMException
     }
 
     /**
-     * @param array $assoc
+     * @param mixed[] $assoc
      *
      * @return QueryException
      */
@@ -215,21 +201,17 @@ class QueryException extends ORMException
     }
 
     /**
-     * @param array $assoc
-     *
      * @return QueryException
      */
-    public static function iterateWithFetchJoinNotAllowed($assoc)
+    public static function iterateWithFetchJoinNotAllowed(AssociationMetadata $association)
     {
         return new self(
-            'Iterate with fetch join in class ' . $assoc['sourceEntity'] .
-            ' using association ' . $assoc['fieldName'] . ' not allowed.'
+            sprintf(
+                'Iterate with fetch join in class %s using association %s not allowed.',
+                $association->getSourceEntity(),
+                $association->getName()
+            )
         );
-    }
-
-    public static function iterateWithMixedResultNotAllowed(): QueryException
-    {
-        return new self('Iterating a query with mixed results (using scalars) is not supported.');
     }
 
     /**

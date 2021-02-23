@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Doctrine\Tests\ORM\Functional\ValueConversionType;
 
-use Doctrine\Tests\Models;
 use Doctrine\Tests\Models\ValueConversionType as Entity;
 use Doctrine\Tests\OrmFunctionalTestCase;
 
@@ -19,9 +18,10 @@ use Doctrine\Tests\OrmFunctionalTestCase;
  */
 class ManyToManyExtraLazyTest extends OrmFunctionalTestCase
 {
-    protected function setUp(): void
+    public function setUp() : void
     {
         $this->useModelSet('vct_manytomany_extralazy');
+
         parent::setUp();
 
         $inversed1      = new Entity\InversedManyToManyExtraLazyEntity();
@@ -46,111 +46,70 @@ class ManyToManyExtraLazyTest extends OrmFunctionalTestCase
         $inversed2->associatedEntities->add($owning2);
         $owning2->associatedEntities->add($inversed2);
 
-        $this->_em->persist($inversed1);
-        $this->_em->persist($inversed2);
-        $this->_em->persist($owning1);
-        $this->_em->persist($owning2);
+        $this->em->persist($inversed1);
+        $this->em->persist($inversed2);
+        $this->em->persist($owning1);
+        $this->em->persist($owning2);
 
-        $this->_em->flush();
-        $this->_em->clear();
+        $this->em->flush();
+        $this->em->clear();
     }
 
-    public static function tearDownAfterClass(): void
+    public function testThatTheExtraLazyCollectionFromOwningToInversedIsCounted() : void
     {
-        $conn = static::$_sharedConn;
+        $owning = $this->em->find(Entity\OwningManyToManyExtraLazyEntity::class, 'ghi');
 
-        $conn->executeUpdate('DROP TABLE vct_xref_manytomany_extralazy');
-        $conn->executeUpdate('DROP TABLE vct_owning_manytomany_extralazy');
-        $conn->executeUpdate('DROP TABLE vct_inversed_manytomany_extralazy');
+        self::assertEquals(2, $owning->associatedEntities->count());
     }
 
-    public function testThatTheExtraLazyCollectionFromOwningToInversedIsCounted(): void
+    public function testThatTheExtraLazyCollectionFromInversedToOwningIsCounted() : void
     {
-        $owning = $this->_em->find(
-            Models\ValueConversionType\OwningManyToManyExtraLazyEntity::class,
-            'ghi'
-        );
+        $inversed = $this->em->find(Entity\InversedManyToManyExtraLazyEntity::class, 'abc');
 
-        $this->assertEquals(2, $owning->associatedEntities->count());
+        self::assertEquals(2, $inversed->associatedEntities->count());
     }
 
-    public function testThatTheExtraLazyCollectionFromInversedToOwningIsCounted(): void
+    public function testThatTheExtraLazyCollectionFromOwningToInversedContainsAnEntity() : void
     {
-        $inversed = $this->_em->find(
-            Models\ValueConversionType\InversedManyToManyExtraLazyEntity::class,
-            'abc'
-        );
+        $owning   = $this->em->find(Entity\OwningManyToManyExtraLazyEntity::class, 'ghi');
+        $inversed = $this->em->find(Entity\InversedManyToManyExtraLazyEntity::class, 'abc');
 
-        $this->assertEquals(2, $inversed->associatedEntities->count());
+        self::assertTrue($owning->associatedEntities->contains($inversed));
     }
 
-    public function testThatTheExtraLazyCollectionFromOwningToInversedContainsAnEntity(): void
+    public function testThatTheExtraLazyCollectionFromInversedToOwningContainsAnEntity() : void
     {
-        $owning = $this->_em->find(
-            Models\ValueConversionType\OwningManyToManyExtraLazyEntity::class,
-            'ghi'
-        );
+        $inversed = $this->em->find(Entity\InversedManyToManyExtraLazyEntity::class, 'abc');
+        $owning   = $this->em->find(Entity\OwningManyToManyExtraLazyEntity::class, 'ghi');
 
-        $inversed = $this->_em->find(
-            Models\ValueConversionType\InversedManyToManyExtraLazyEntity::class,
-            'abc'
-        );
-
-        $this->assertTrue($owning->associatedEntities->contains($inversed));
+        self::assertTrue($inversed->associatedEntities->contains($owning));
     }
 
-    public function testThatTheExtraLazyCollectionFromInversedToOwningContainsAnEntity(): void
+    public function testThatTheExtraLazyCollectionFromOwningToInversedContainsAnIndexByKey() : void
     {
-        $inversed = $this->_em->find(
-            Models\ValueConversionType\InversedManyToManyExtraLazyEntity::class,
-            'abc'
-        );
+        $owning = $this->em->find(Entity\OwningManyToManyExtraLazyEntity::class, 'ghi');
 
-        $owning = $this->_em->find(
-            Models\ValueConversionType\OwningManyToManyExtraLazyEntity::class,
-            'ghi'
-        );
-
-        $this->assertTrue($inversed->associatedEntities->contains($owning));
+        self::assertTrue($owning->associatedEntities->containsKey('abc'));
     }
 
-    public function testThatTheExtraLazyCollectionFromOwningToInversedContainsAnIndexByKey(): void
+    public function testThatTheExtraLazyCollectionFromInversedToOwningContainsAnIndexByKey() : void
     {
-        $owning = $this->_em->find(
-            Models\ValueConversionType\OwningManyToManyExtraLazyEntity::class,
-            'ghi'
-        );
+        $inversed = $this->em->find(Entity\InversedManyToManyExtraLazyEntity::class, 'abc');
 
-        $this->assertTrue($owning->associatedEntities->containsKey('abc'));
+        self::assertTrue($inversed->associatedEntities->containsKey('ghi'));
     }
 
-    public function testThatTheExtraLazyCollectionFromInversedToOwningContainsAnIndexByKey(): void
+    public function testThatASliceOfTheExtraLazyCollectionFromOwningToInversedIsLoaded() : void
     {
-        $inversed = $this->_em->find(
-            Models\ValueConversionType\InversedManyToManyExtraLazyEntity::class,
-            'abc'
-        );
+        $owning = $this->em->find(Entity\OwningManyToManyExtraLazyEntity::class, 'ghi');
 
-        $this->assertTrue($inversed->associatedEntities->containsKey('ghi'));
+        self::assertCount(1, $owning->associatedEntities->slice(0, 1));
     }
 
-    public function testThatASliceOfTheExtraLazyCollectionFromOwningToInversedIsLoaded(): void
+    public function testThatASliceOfTheExtraLazyCollectionFromInversedToOwningIsLoaded() : void
     {
-        $owning = $this->_em->find(
-            Models\ValueConversionType\OwningManyToManyExtraLazyEntity::class,
-            'ghi'
-        );
+        $inversed = $this->em->find(Entity\InversedManyToManyExtraLazyEntity::class, 'abc');
 
-        $this->assertCount(1, $owning->associatedEntities->slice(0, 1));
-    }
-
-    public function testThatASliceOfTheExtraLazyCollectionFromInversedToOwningIsLoaded(): void
-    {
-        $inversed = $this->_em->find(
-            Models\ValueConversionType\InversedManyToManyExtraLazyEntity::class,
-            'abc'
-        );
-
-        $this->assertCount(1, $inversed->associatedEntities->slice(1, 1));
+        self::assertCount(1, $inversed->associatedEntities->slice(1, 1));
     }
 }

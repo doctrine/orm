@@ -4,13 +4,15 @@ declare(strict_types=1);
 
 namespace Doctrine\Tests\Models\Cache;
 
+use Doctrine\ORM\Annotation as ORM;
+
 /**
- * @Entity
- * @Table("cache_attraction_contact_info")
+ * @ORM\Entity
+ * @ORM\Table("cache_attraction_contact_info")
  */
 class AttractionContactInfo extends AttractionInfo
 {
-    /** @Column(unique=true) */
+    /** @ORM\Column(unique=true) */
     protected $fone;
 
     public function __construct($fone, Attraction $attraction)
@@ -24,7 +26,7 @@ class AttractionContactInfo extends AttractionInfo
         return $this->fone;
     }
 
-    public function setFone($fone): void
+    public function setFone($fone)
     {
         $this->fone = $fone;
     }

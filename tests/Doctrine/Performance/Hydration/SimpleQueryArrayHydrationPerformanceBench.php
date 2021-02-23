@@ -25,7 +25,7 @@ final class SimpleQueryArrayHydrationPerformanceBench
     /** @var HydratorMockStatement */
     private $stmt;
 
-    public function init(): void
+    public function init() : void
     {
         $resultSet = [
             [
@@ -68,7 +68,7 @@ final class SimpleQueryArrayHydrationPerformanceBench
         $this->rsm->addFieldResult('u', 'u__name', 'name');
     }
 
-    public function benchHydration(): void
+    public function benchHydration() : void
     {
         $this->hydrator->hydrateAll($this->stmt, $this->rsm);
     }

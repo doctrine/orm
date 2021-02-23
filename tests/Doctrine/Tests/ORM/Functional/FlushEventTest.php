@@ -9,7 +9,6 @@ use Doctrine\ORM\Events;
 use Doctrine\Tests\Models\CMS\CmsPhonenumber;
 use Doctrine\Tests\Models\CMS\CmsUser;
 use Doctrine\Tests\OrmFunctionalTestCase;
-
 use function get_class;
 
 /**
@@ -17,65 +16,65 @@ use function get_class;
  */
 class FlushEventTest extends OrmFunctionalTestCase
 {
-    protected function setUp(): void
+    protected function setUp() : void
     {
         $this->useModelSet('cms');
         parent::setUp();
     }
 
-    public function testPersistNewEntitiesOnPreFlush(): void
+    public function testPersistNewEntitiesOnPreFlush() : void
     {
-        //$this->_em->getConnection()->getConfiguration()->setSQLLogger(new \Doctrine\DBAL\Logging\EchoSQLLogger);
-        $this->_em->getEventManager()->addEventListener(Events::onFlush, new OnFlushListener());
+        //$this->em->getConnection()->getConfiguration()->setSQLLogger(new \Doctrine\DBAL\Logging\EchoSQLLogger);
+        $this->em->getEventManager()->addEventListener(Events::onFlush, new OnFlushListener());
 
         $user           = new CmsUser();
         $user->username = 'romanb';
         $user->name     = 'Roman';
         $user->status   = 'Dev';
 
-        $this->_em->persist($user);
+        $this->em->persist($user);
 
-        $this->assertEquals(0, $user->phonenumbers->count());
+        self::assertEquals(0, $user->phonenumbers->count());
 
-        $this->_em->flush();
+        $this->em->flush();
 
-        $this->assertEquals(1, $user->phonenumbers->count());
-        $this->assertTrue($this->_em->contains($user->phonenumbers->get(0)));
-        $this->assertTrue($user->phonenumbers->get(0)->getUser() === $user);
+        self::assertEquals(1, $user->phonenumbers->count());
+        self::assertTrue($this->em->contains($user->phonenumbers->get(0)));
+        self::assertSame($user->phonenumbers->get(0)->getUser(), $user);
 
-        $this->assertFalse($user->phonenumbers->isDirty());
+        self::assertFalse($user->phonenumbers->isDirty());
 
         // Can be used together with SQL Logging to check that a subsequent flush has
         // nothing to do. This proofs the correctness of the changes that happened in onFlush.
         //echo "SECOND FLUSH";
-        //$this->_em->flush();
+        //$this->em->flush();
     }
 
     /**
      * @group DDC-2173
      */
-    public function testPreAndOnFlushCalledAlways(): void
+    public function testPreAndOnFlushCalledAlways() : void
     {
         $listener = new OnFlushCalledListener();
-        $this->_em->getEventManager()->addEventListener(Events::onFlush, $listener);
-        $this->_em->getEventManager()->addEventListener(Events::preFlush, $listener);
-        $this->_em->getEventManager()->addEventListener(Events::postFlush, $listener);
+        $this->em->getEventManager()->addEventListener(Events::onFlush, $listener);
+        $this->em->getEventManager()->addEventListener(Events::preFlush, $listener);
+        $this->em->getEventManager()->addEventListener(Events::postFlush, $listener);
 
-        $this->_em->flush();
+        $this->em->flush();
 
-        $this->assertEquals(1, $listener->preFlush);
-        $this->assertEquals(1, $listener->onFlush);
+        self::assertEquals(1, $listener->preFlush);
+        self::assertEquals(1, $listener->onFlush);
 
-        $this->_em->flush();
+        $this->em->flush();
 
-        $this->assertEquals(2, $listener->preFlush);
-        $this->assertEquals(2, $listener->onFlush);
+        self::assertEquals(2, $listener->preFlush);
+        self::assertEquals(2, $listener->onFlush);
     }
 }
 
 class OnFlushListener
 {
-    public function onFlush(OnFlushEventArgs $args): void
+    public function onFlush(OnFlushEventArgs $args)
     {
         //echo "---preFlush".PHP_EOL;
 
@@ -118,17 +117,17 @@ class OnFlushCalledListener
     public $onFlush   = 0;
     public $postFlush = 0;
 
-    public function preFlush($args): void
+    public function preFlush($args)
     {
         $this->preFlush++;
     }
 
-    public function onFlush($args): void
+    public function onFlush($args)
     {
         $this->onFlush++;
     }
 
-    public function postFlush($args): void
+    public function postFlush($args)
     {
         $this->postFlush++;
     }

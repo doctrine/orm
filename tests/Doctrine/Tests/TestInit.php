@@ -2,21 +2,15 @@
 
 declare(strict_types=1);
 
-/*
- * This file bootstraps the test environment.
- */
-
 namespace Doctrine\Tests;
 
 use Exception;
-
+use const E_ALL;
+use const E_STRICT;
 use function date_default_timezone_set;
 use function error_reporting;
 use function file_exists;
 use function mkdir;
-
-use const E_ALL;
-use const E_STRICT;
 
 error_reporting(E_ALL | E_STRICT);
 date_default_timezone_set('UTC');

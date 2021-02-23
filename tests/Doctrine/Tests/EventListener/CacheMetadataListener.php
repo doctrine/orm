@@ -4,11 +4,15 @@ declare(strict_types=1);
 
 namespace Doctrine\Tests\EventListener;
 
-use Doctrine\ORM\EntityManager;
+use Doctrine\ORM\Event\LoadClassMetadataEventArgs;
+use Doctrine\ORM\Mapping\AssociationMetadata;
+use Doctrine\ORM\Mapping\CacheMetadata;
+use Doctrine\ORM\Mapping\CacheUsage;
 use Doctrine\ORM\Mapping\ClassMetadata;
-use Doctrine\Persistence\Event\LoadClassMetadataEventArgs;
-
+use function sprintf;
+use function str_replace;
 use function strstr;
+use function strtolower;
 
 class CacheMetadataListener
 {
@@ -22,55 +26,65 @@ class CacheMetadataListener
      */
     protected $enabledItems = [];
 
-    public function loadClassMetadata(LoadClassMetadataEventArgs $event): void
+    public function loadClassMetadata(LoadClassMetadataEventArgs $event)
     {
         $metadata = $event->getClassMetadata();
-        $em       = $event->getObjectManager();
+        $em       = $event->getEntityManager();
 
-        /** @var ClassMetadata $metadata */
-        if (strstr($metadata->name, 'Doctrine\Tests\Models\Cache')) {
+        /** @var $metadata \Doctrine\ORM\Mapping\ClassMetadata */
+        if (strstr($metadata->getClassName(), 'Doctrine\Tests\Models\Cache')) {
             return;
         }
 
         $this->enableCaching($metadata, $em);
     }
 
-    private function isVisited(ClassMetadata $metadata): bool
+    /**
+     * @return bool
+     */
+    private function isVisited(ClassMetadata $metadata)
     {
-        return isset($this->enabledItems[$metadata->getName()]);
+        return isset($this->enabledItems[$metadata->getClassName()]);
     }
 
-    private function recordVisit(ClassMetadata $metadata): void
+    private function recordVisit(ClassMetadata $metadata)
     {
-        $this->enabledItems[$metadata->getName()] = true;
+        $this->enabledItems[$metadata->getClassName()] = true;
     }
 
-    protected function enableCaching(ClassMetadata $metadata, EntityManager $em): void
+    protected function enableCaching(ClassMetadata $metadata, EntityManagerInterface $em)
     {
         if ($this->isVisited($metadata)) {
             return; // Already handled in the past
         }
 
-        $cache = [
-            'usage' => ClassMetadata::CACHE_USAGE_NONSTRICT_READ_WRITE,
-        ];
-
-        if ($metadata->isVersioned) {
+        if ($metadata->isVersioned()) {
             return;
         }
 
-        $metadata->enableCache($cache);
+        $region        = strtolower(str_replace('\\', '_', $metadata->getRootClassName()));
+        $cacheMetadata = new CacheMetadata(CacheUsage::NONSTRICT_READ_WRITE, $region);
+
+        $metadata->setCache($cacheMetadata);
 
         $this->recordVisit($metadata);
 
         // only enable association-caching when the target has already been
         // given caching settings
-        foreach ($metadata->associationMappings as $mapping) {
-            $targetMeta = $em->getClassMetadata($mapping['targetEntity']);
-            $this->enableCaching($targetMeta, $em);
+        foreach ($metadata->getPropertiesIterator() as $property) {
+            if (! ($property instanceof AssociationMetadata)) {
+                continue;
+            }
 
-            if ($this->isVisited($targetMeta)) {
-                $metadata->enableAssociationCache($mapping['fieldName'], $cache);
+            $targetMetadata = $em->getClassMetadata($property->getTargetEntity());
+
+            $this->enableCaching($targetMetadata, $em);
+
+            if ($this->isVisited($targetMetadata)) {
+                $region        = sprintf('%s__%s', $region, $property->getName());
+                $cacheMetadata =  new CacheMetadata(CacheUsage::NONSTRICT_READ_WRITE, $region);
+
+                $property->setCache($cacheMetadata);
             }
         }
     }

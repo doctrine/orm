@@ -5,25 +5,23 @@ declare(strict_types=1);
 namespace Doctrine\Tests\Models\DDC3579;
 
 use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\ORM\Annotation as ORM;
 
 /**
- * @Entity
+ * @ORM\Entity
  */
 class DDC3579Group
 {
     /**
-     * @GeneratedValue
-     * @Id @Column(type="integer")
+     * @ORM\GeneratedValue
+     * @ORM\Id @ORM\Column(type="integer")
      */
     private $id;
 
-    /** @Column */
+    /** @ORM\Column */
     private $name;
 
-    /**
-     * @ArrayCollection
-     * @ManyToMany(targetEntity="DDC3579Admin", mappedBy="groups")
-     */
+    /** @ORM\ManyToMany(targetEntity=DDC3579Admin::class, mappedBy="groups") */
     private $admins;
 
     public function __construct($name = null)
@@ -32,22 +30,31 @@ class DDC3579Group
         $this->users = new ArrayCollection();
     }
 
-    public function setName(string $name): void
+    /**
+     * @param string $name
+     */
+    public function setName($name)
     {
         $this->name = $name;
     }
 
-    public function getName(): string
+    /**
+     * @return string
+     */
+    public function getName()
     {
         return $this->name;
     }
 
-    public function addAdmin(DDC3579Admin $admin): void
+    public function addAdmin(DDC3579Admin $admin)
     {
         $this->admins[] = $admin;
     }
 
-    public function getAdmins(): ArrayCollection
+    /**
+     * @return ArrayCollection
+     */
+    public function getAdmins()
     {
         return $this->admins;
     }

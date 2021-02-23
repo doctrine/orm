@@ -7,7 +7,9 @@ namespace Doctrine\Tests\ORM\Functional\Ticket;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Platforms\AbstractPlatform;
 use Doctrine\DBAL\Types\Type;
+use Doctrine\ORM\Annotation as ORM;
 use Doctrine\Tests\OrmFunctionalTestCase;
+use ProxyManager\Proxy\GhostObjectInterface;
 
 /**
  * @group DDC-2494
@@ -15,7 +17,7 @@ use Doctrine\Tests\OrmFunctionalTestCase;
  */
 class DDC2494Test extends OrmFunctionalTestCase
 {
-    protected function setUp(): void
+    protected function setUp() : void
     {
         parent::setUp();
 
@@ -23,125 +25,119 @@ class DDC2494Test extends OrmFunctionalTestCase
 
         Type::addType('ddc2494_tinyint', DDC2494TinyIntType::class);
 
-        $this->_schemaTool->createSchema(
+        $this->schemaTool->createSchema(
             [
-                $this->_em->getClassMetadata(DDC2494Currency::class),
-                $this->_em->getClassMetadata(DDC2494Campaign::class),
+                $this->em->getClassMetadata(DDC2494Currency::class),
+                $this->em->getClassMetadata(DDC2494Campaign::class),
             ]
         );
     }
 
-    public function testIssue(): void
+    public function testIssue() : void
     {
         $currency = new DDC2494Currency(1, 2);
 
-        $this->_em->persist($currency);
-        $this->_em->flush();
+        $this->em->persist($currency);
+        $this->em->flush();
 
         $campaign = new DDC2494Campaign($currency);
 
-        $this->_em->persist($campaign);
-        $this->_em->flush();
-        $this->_em->close();
+        $this->em->persist($campaign);
+        $this->em->flush();
+        $this->em->close();
 
-        $this->assertArrayHasKey('convertToDatabaseValue', DDC2494TinyIntType::$calls);
-        $this->assertCount(3, DDC2494TinyIntType::$calls['convertToDatabaseValue']);
+        self::assertArrayHasKey('convertToDatabaseValue', DDC2494TinyIntType::$calls);
+        self::assertCount(3, DDC2494TinyIntType::$calls['convertToDatabaseValue']);
 
-        $item = $this->_em->find(DDC2494Campaign::class, $campaign->getId());
+        $item = $this->em->find(DDC2494Campaign::class, $campaign->getId());
 
-        $this->assertInstanceOf(DDC2494Campaign::class, $item);
-        $this->assertInstanceOf(DDC2494Currency::class, $item->getCurrency());
+        self::assertInstanceOf(DDC2494Campaign::class, $item);
+        self::assertInstanceOf(DDC2494Currency::class, $item->getCurrency());
 
         $queryCount = $this->getCurrentQueryCount();
 
-        $this->assertInstanceOf('\Doctrine\Common\Proxy\Proxy', $item->getCurrency());
-        $this->assertFalse($item->getCurrency()->__isInitialized());
+        self::assertInstanceOf(GhostObjectInterface::class, $item->getCurrency());
+        self::assertFalse($item->getCurrency()->isProxyInitialized());
 
-        $this->assertArrayHasKey('convertToPHPValue', DDC2494TinyIntType::$calls);
-        $this->assertCount(1, DDC2494TinyIntType::$calls['convertToPHPValue']);
+        self::assertArrayHasKey('convertToPHPValue', DDC2494TinyIntType::$calls);
+        self::assertCount(1, DDC2494TinyIntType::$calls['convertToPHPValue']);
 
-        $this->assertIsInt($item->getCurrency()->getId());
-        $this->assertCount(1, DDC2494TinyIntType::$calls['convertToPHPValue']);
-        $this->assertFalse($item->getCurrency()->__isInitialized());
+        self::assertInternalType('integer', $item->getCurrency()->getId());
+        self::assertCount(1, DDC2494TinyIntType::$calls['convertToPHPValue']);
+        self::assertFalse($item->getCurrency()->isProxyInitialized());
 
-        $this->assertEquals($queryCount, $this->getCurrentQueryCount());
+        self::assertEquals($queryCount, $this->getCurrentQueryCount());
 
-        $this->assertIsInt($item->getCurrency()->getTemp());
-        $this->assertCount(3, DDC2494TinyIntType::$calls['convertToPHPValue']);
-        $this->assertTrue($item->getCurrency()->__isInitialized());
+        self::assertInternalType('integer', $item->getCurrency()->getTemp());
+        self::assertCount(3, DDC2494TinyIntType::$calls['convertToPHPValue']);
+        self::assertTrue($item->getCurrency()->isProxyInitialized());
 
-        $this->assertEquals($queryCount + 1, $this->getCurrentQueryCount());
+        self::assertEquals($queryCount + 1, $this->getCurrentQueryCount());
     }
 }
 
 /**
- * @Table(name="ddc2494_currency")
- * @Entity
+ * @ORM\Table(name="ddc2494_currency")
+ * @ORM\Entity
  */
 class DDC2494Currency
 {
     /**
-     * @var int
-     * @Id
-     * @Column(type="integer", type="ddc2494_tinyint")
+     * @ORM\Id
+     * @ORM\Column(type="integer", type="ddc2494_tinyint")
      */
     protected $id;
 
-    /**
-     * @var int
-     * @Column(name="temp", type="ddc2494_tinyint", nullable=false)
-     */
+    /** @ORM\Column(name="temp", type="ddc2494_tinyint", nullable=false) */
     protected $temp;
 
     /**
-     * @psalm-var Collection<int, DDC2494Campaign>
-     * @OneToMany(targetEntity="DDC2494Campaign", mappedBy="currency")
+     * @ORM\OneToMany(targetEntity=DDC2494Campaign::class, mappedBy="currency")
+     *
+     * @var Collection
      */
     protected $campaigns;
 
-    public function __construct(int $id, int $temp)
+    public function __construct($id, $temp)
     {
         $this->id   = $id;
         $this->temp = $temp;
     }
 
-    public function getId(): int
+    public function getId()
     {
         return $this->id;
     }
 
-    public function getTemp(): int
+    public function getTemp()
     {
         return $this->temp;
     }
 
-    /**
-     * @psalm-return Collection<int, DDC2494Campaign>
-     */
-    public function getCampaigns(): Collection
+    public function getCampaigns()
     {
         return $this->campaigns;
     }
 }
 
 /**
- * @Table(name="ddc2494_campaign")
- * @Entity
+ * @ORM\Table(name="ddc2494_campaign")
+ * @ORM\Entity
  */
 class DDC2494Campaign
 {
     /**
-     * @var int
-     * @Id
-     * @GeneratedValue
-     * @Column(type="integer")
+     * @ORM\Id
+     * @ORM\GeneratedValue
+     * @ORM\Column(type="integer")
      */
     protected $id;
 
     /**
-     * @var DDC2494Currency
-     * @ManyToOne(targetEntity="DDC2494Currency", inversedBy="campaigns")
-     * @JoinColumn(name="currency_id", referencedColumnName="id", nullable=false)
+     * @ORM\ManyToOne(targetEntity=DDC2494Currency::class, inversedBy="campaigns")
+     * @ORM\JoinColumn(name="currency_id", referencedColumnName="id", nullable=false)
+     *
+     * @var \Doctrine\Tests\ORM\Functional\Ticket\DDC2494Currency
      */
     protected $currency;
 
@@ -150,12 +146,15 @@ class DDC2494Campaign
         $this->currency = $currency;
     }
 
-    public function getId(): int
+    public function getId()
     {
         return $this->id;
     }
 
-    public function getCurrency(): DDC2494Currency
+    /**
+     * @return \Doctrine\Tests\ORM\Functional\Ticket\DDC2494Currency
+     */
+    public function getCurrency()
     {
         return $this->currency;
     }
@@ -163,13 +162,12 @@ class DDC2494Campaign
 
 class DDC2494TinyIntType extends Type
 {
-    /** @psalm-var array<string, list<array{value:mixed, return: string, platform: AbstractPlatform}>> */
     public static $calls = [];
 
     /**
      * {@inheritdoc}
      */
-    public function getSQLDeclaration(array $fieldDeclaration, AbstractPlatform $platform)
+    public function getSQLDeclaration(array $fieldDeclaration, AbstractPlatform $platform) : string
     {
         return $platform->getSmallIntTypeDeclarationSQL($fieldDeclaration);
     }
@@ -209,7 +207,7 @@ class DDC2494TinyIntType extends Type
     /**
      * {@inheritdoc}
      */
-    public function getName()
+    public function getName() : string
     {
         return 'ddc2494_tinyint';
     }

@@ -1,22 +1,6 @@
 <?php
 
-/*
- * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
- * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
- * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
- * A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT
- * OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
- * SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
- * LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
- * DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
- * THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
- * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
- * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- *
- * This software consists of voluntary contributions made by many individuals
- * and is licensed under the MIT license. For more information, see
- * <http://www.doctrine-project.org>.
- */
+declare(strict_types=1);
 
 namespace Doctrine\ORM\Query;
 
@@ -25,8 +9,6 @@ use Doctrine\ORM\Query\Exec\AbstractSqlExecutor;
 /**
  * Encapsulates the resulting components from a DQL query parsing process that
  * can be serialized.
- *
- * @link        http://www.doctrine-project.org
  */
 class ParserResult
 {
@@ -35,21 +17,21 @@ class ParserResult
      *
      * @var AbstractSqlExecutor
      */
-    private $_sqlExecutor;
+    private $sqlExecutor;
 
     /**
      * The ResultSetMapping that describes how to map the SQL result set.
      *
      * @var ResultSetMapping
      */
-    private $_resultSetMapping;
+    private $resultSetMapping;
 
     /**
      * The mappings of DQL parameter names/positions to SQL parameter positions.
      *
-     * @var array
+     * @var int[][]
      */
-    private $_parameterMappings = [];
+    private $parameterMappings = [];
 
     /**
      * Initializes a new instance of the <tt>ParserResult</tt> class.
@@ -57,39 +39,36 @@ class ParserResult
      */
     public function __construct()
     {
-        $this->_resultSetMapping = new ResultSetMapping();
+        $this->resultSetMapping = new ResultSetMapping();
     }
 
     /**
      * Gets the ResultSetMapping for the parsed query.
      *
-     * @return ResultSetMapping The result set mapping of the parsed query
+     * @return ResultSetMapping|null The result set mapping of the parsed query or NULL
+     *                               if the query is not a SELECT query.
      */
     public function getResultSetMapping()
     {
-        return $this->_resultSetMapping;
+        return $this->resultSetMapping;
     }
 
     /**
      * Sets the ResultSetMapping of the parsed query.
-     *
-     * @return void
      */
     public function setResultSetMapping(ResultSetMapping $rsm)
     {
-        $this->_resultSetMapping = $rsm;
+        $this->resultSetMapping = $rsm;
     }
 
     /**
      * Sets the SQL executor that should be used for this ParserResult.
      *
      * @param AbstractSqlExecutor $executor
-     *
-     * @return void
      */
     public function setSqlExecutor($executor)
     {
-        $this->_sqlExecutor = $executor;
+        $this->sqlExecutor = $executor;
     }
 
     /**
@@ -99,7 +78,7 @@ class ParserResult
      */
     public function getSqlExecutor()
     {
-        return $this->_sqlExecutor;
+        return $this->sqlExecutor;
     }
 
     /**
@@ -108,22 +87,20 @@ class ParserResult
      *
      * @param string|int $dqlPosition
      * @param int        $sqlPosition
-     *
-     * @return void
      */
     public function addParameterMapping($dqlPosition, $sqlPosition)
     {
-        $this->_parameterMappings[$dqlPosition][] = $sqlPosition;
+        $this->parameterMappings[$dqlPosition][] = $sqlPosition;
     }
 
     /**
      * Gets all DQL to SQL parameter mappings.
      *
-     * @return array The parameter mappings.
+     * @return int[][] The parameter mappings.
      */
     public function getParameterMappings()
     {
-        return $this->_parameterMappings;
+        return $this->parameterMappings;
     }
 
     /**
@@ -131,10 +108,10 @@ class ParserResult
      *
      * @param string|int $dqlPosition The name or position of the DQL parameter.
      *
-     * @return array The positions of the corresponding SQL parameters.
+     * @return int[] The positions of the corresponding SQL parameters.
      */
     public function getSqlParameterPositions($dqlPosition)
     {
-        return $this->_parameterMappings[$dqlPosition];
+        return $this->parameterMappings[$dqlPosition];
     }
 }

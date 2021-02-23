@@ -18,48 +18,51 @@ class PostFlushEventTest extends OrmFunctionalTestCase
     /** @var PostFlushListener */
     private $listener;
 
-    protected function setUp(): void
+    protected function setUp() : void
     {
         $this->useModelSet('cms');
         parent::setUp();
         $this->listener = new PostFlushListener();
-        $evm            = $this->_em->getEventManager();
+        $evm            = $this->em->getEventManager();
         $evm->addEventListener(Events::postFlush, $this->listener);
     }
 
-    public function testListenerShouldBeNotified(): void
+    public function testListenerShouldBeNotified() : void
     {
-        $this->_em->persist($this->createNewValidUser());
-        $this->_em->flush();
-        $this->assertTrue($this->listener->wasNotified);
+        $this->em->persist($this->createNewValidUser());
+        $this->em->flush();
+        self::assertTrue($this->listener->wasNotified);
     }
 
-    public function testListenerShouldNotBeNotifiedWhenFlushThrowsException(): void
+    public function testListenerShouldNotBeNotifiedWhenFlushThrowsException() : void
     {
         $user           = new CmsUser();
         $user->username = 'dfreudenberger';
-        $this->_em->persist($user);
+        $this->em->persist($user);
         $exceptionRaised = false;
 
         try {
-            $this->_em->flush();
+            $this->em->flush();
         } catch (Exception $ex) {
             $exceptionRaised = true;
         }
 
-        $this->assertTrue($exceptionRaised);
-        $this->assertFalse($this->listener->wasNotified);
+        self::assertTrue($exceptionRaised);
+        self::assertFalse($this->listener->wasNotified);
     }
 
-    public function testListenerShouldReceiveEntityManagerThroughArgs(): void
+    public function testListenerShouldReceiveEntityManagerThroughArgs() : void
     {
-        $this->_em->persist($this->createNewValidUser());
-        $this->_em->flush();
+        $this->em->persist($this->createNewValidUser());
+        $this->em->flush();
         $receivedEm = $this->listener->receivedArgs->getEntityManager();
-        $this->assertSame($this->_em, $receivedEm);
+        self::assertSame($this->em, $receivedEm);
     }
 
-    private function createNewValidUser(): CmsUser
+    /**
+     * @return CmsUser
+     */
+    private function createNewValidUser()
     {
         $user           = new CmsUser();
         $user->username = 'dfreudenberger';
@@ -77,7 +80,7 @@ class PostFlushListener
     /** @var PostFlushEventArgs */
     public $receivedArgs;
 
-    public function postFlush(PostFlushEventArgs $args): void
+    public function postFlush(PostFlushEventArgs $args)
     {
         $this->wasNotified  = true;
         $this->receivedArgs = $args;

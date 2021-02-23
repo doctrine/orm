@@ -4,14 +4,13 @@ declare(strict_types=1);
 
 namespace Doctrine\Tests\Models\Forum;
 
+use Doctrine\ORM\Annotation as ORM;
+
 /**
- * @Entity
+ * @ORM\Entity
  */
 class ForumAdministrator extends ForumUser
 {
-    /**
-     * @var int
-     * @Column(type="integer", name="access_level")
-     */
+    /** @ORM\Column(type="integer", name="access_level") */
     public $accessLevel;
 }

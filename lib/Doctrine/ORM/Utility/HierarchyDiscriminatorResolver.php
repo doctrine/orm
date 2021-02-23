@@ -1,9 +1,11 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\ORM\Utility;
 
 use Doctrine\ORM\EntityManagerInterface;
-use Doctrine\Persistence\Mapping\ClassMetadata;
+use Doctrine\ORM\Mapping\ClassMetadata;
 
 /**
  * @internal This class exists only to avoid code duplication, do not reuse it externally
@@ -18,16 +20,14 @@ final class HierarchyDiscriminatorResolver
      * This method is needed to make INSTANCEOF work correctly with inheritance: if the class at hand has inheritance,
      * it extracts all the discriminators from the child classes and returns them
      *
-     * @return null[]
-     *
-     * @psalm-return array<array-key, null>
+     * @return string[]
      */
     public static function resolveDiscriminatorsForClass(
         ClassMetadata $rootClassMetadata,
         EntityManagerInterface $entityManager
-    ): array {
-        $hierarchyClasses   = $rootClassMetadata->subClasses;
-        $hierarchyClasses[] = $rootClassMetadata->name;
+    ) : array {
+        $hierarchyClasses   = $rootClassMetadata->getSubClasses();
+        $hierarchyClasses[] = $rootClassMetadata->getClassName();
 
         $discriminators = [];
 

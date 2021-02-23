@@ -1,52 +1,27 @@
 <?php
 
-/*
- * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
- * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
- * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
- * A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT
- * OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
- * SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
- * LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
- * DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
- * THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
- * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
- * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- *
- * This software consists of voluntary contributions made by many individuals
- * and is licensed under the MIT license. For more information, see
- * <http://www.doctrine-project.org>.
- */
+declare(strict_types=1);
 
 namespace Doctrine\ORM\Query;
 
 use ArrayAccess;
-use Doctrine\ORM\AbstractQuery;
+use Doctrine\ORM\Query;
 use Iterator;
-
 use function key;
 use function next;
 use function reset;
 
-/**
- * @template-implements Iterator<TreeWalker>
- * @template-implements ArrayAccess<int, TreeWalker>
- */
 class TreeWalkerChainIterator implements Iterator, ArrayAccess
 {
-    /** @var class-string<TreeWalker>[] */
+    /** @var TreeWalker[] */
     private $walkers = [];
     /** @var TreeWalkerChain */
     private $treeWalkerChain;
-    /** @var AbstractQuery */
+    /** @var Query */
     private $query;
     /** @var ParserResult */
     private $parserResult;
 
-    /**
-     * @param AbstractQuery $query
-     * @param ParserResult  $parserResult
-     */
     public function __construct(TreeWalkerChain $treeWalkerChain, $query, $parserResult)
     {
         $this->treeWalkerChain = $treeWalkerChain;
@@ -55,9 +30,7 @@ class TreeWalkerChainIterator implements Iterator, ArrayAccess
     }
 
     /**
-     * @return string|false
-     *
-     * @psalm-return class-string<TreeWalker>|false
+     * {@inheritdoc}
      */
     public function rewind()
     {
@@ -65,7 +38,7 @@ class TreeWalkerChainIterator implements Iterator, ArrayAccess
     }
 
     /**
-     * @return TreeWalker|null
+     * {@inheritdoc}
      */
     public function current()
     {
@@ -73,7 +46,7 @@ class TreeWalkerChainIterator implements Iterator, ArrayAccess
     }
 
     /**
-     * @return int
+     * {@inheritdoc}
      */
     public function key()
     {
@@ -81,7 +54,7 @@ class TreeWalkerChainIterator implements Iterator, ArrayAccess
     }
 
     /**
-     * @return TreeWalker|null
+     * {@inheritdoc}
      */
     public function next()
     {
@@ -107,7 +80,7 @@ class TreeWalkerChainIterator implements Iterator, ArrayAccess
     }
 
     /**
-     * @return TreeWalker|null
+     * {@inheritdoc}
      */
     public function offsetGet($offset)
     {

@@ -4,27 +4,28 @@ declare(strict_types=1);
 
 namespace Doctrine\Tests\Models\Quote;
 
+use Doctrine\ORM\Annotation as ORM;
+
 /**
- * @Entity
- * @Table(name="table")
+ * @ORM\Entity
+ * @ORM\Table(name="table")
  */
 class NumericEntity
 {
     /**
-     * @var int
-     * @Id
-     * @Column(type="integer", name="`1:1`")
-     * @GeneratedValue(strategy="AUTO")
+     * @ORM\Id
+     * @ORM\Column(type="integer", name="1:1")
+     * @ORM\GeneratedValue(strategy="AUTO")
      */
     public $id;
 
-    /**
-     * @var string
-     * @Column(type="string", name="`2:2`")
-     */
+    /** @ORM\Column(type="string", name="2:2") */
     public $value;
 
-    public function __construct(string $value)
+    /**
+     * @param string $value
+     */
+    public function __construct($value)
     {
         $this->value = $value;
     }

@@ -6,6 +6,8 @@ namespace Doctrine\Tests;
 
 use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\DriverManager;
+use function explode;
+use function unlink;
 
 use function explode;
 use function unlink;
@@ -43,7 +45,8 @@ class TestUtil
      */
     public static function getConnection(): Connection
     {
-        $conn = DriverManager::getConnection(self::getConnectionParams());
+        $params = self::getConnectionParams();
+        $conn   = DriverManager::getConnection($params);
 
         self::addDbEventSubscribers($conn);
 

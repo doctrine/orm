@@ -1,34 +1,37 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\Tests\ORM\Functional\Ticket;
 
 use Doctrine\DBAL\Platforms\AbstractPlatform;
 use Doctrine\DBAL\Types\StringType;
 use Doctrine\DBAL\Types\Type;
+use Doctrine\ORM\Annotation as ORM;
 use Doctrine\Tests\OrmFunctionalTestCase;
 
-use function assert;
-
 /**
- * @group GH-5887
+ * @group 5887
  */
 class GH5887Test extends OrmFunctionalTestCase
 {
-    protected function setUp(): void
+    public function setUp() : void
     {
         parent::setUp();
 
         Type::addType(GH5887CustomIdObjectType::NAME, GH5887CustomIdObjectType::class);
 
-        $this->_schemaTool->createSchema(
+        $this->schemaTool->createSchema(
             [
-                $this->_em->getClassMetadata(GH5887Cart::class),
-                $this->_em->getClassMetadata(GH5887Customer::class),
+                $this->em->getClassMetadata(GH5887Cart::class),
+                $this->em->getClassMetadata(GH5887Customer::class),
             ]
         );
+
+        $this->markTestIncomplete('Requires updates to SqlWalker');
     }
 
-    public function testLazyLoadsForeignEntitiesInOneToOneRelationWhileHavingCustomIdObject(): void
+    public function testLazyLoadsForeignEntitiesInOneToOneRelationWhileHavingCustomIdObject() : void
     {
         $customerId = new GH5887CustomIdObject(1);
         $customer   = new GH5887Customer();
@@ -39,63 +42,72 @@ class GH5887Test extends OrmFunctionalTestCase
         $cart->setId($cartId);
         $cart->setCustomer($customer);
 
-        $this->_em->persist($customer);
-        $this->_em->persist($cart);
-        $this->_em->flush();
+        $this->em->persist($customer);
+        $this->em->persist($cart);
+        $this->em->flush();
+        $this->em->clear();
 
-        // Clearing cached entities
-        $this->_em->clear();
-
-        $customerRepository = $this->_em->getRepository(GH5887Customer::class);
-        $customer           = $customerRepository->createQueryBuilder('c')
+        $customerRepository = $this->em->getRepository(GH5887Customer::class);
+        /** @var GH5887Customer $customer */
+        $customer = $customerRepository->createQueryBuilder('c')
             ->where('c.id = :id')
             ->setParameter('id', $customerId->getId())
             ->getQuery()
             ->getOneOrNullResult();
-        assert($customer instanceof GH5887Customer);
 
-        $this->assertInstanceOf(GH5887Cart::class, $customer->getCart());
+        self::assertInstanceOf(GH5887Cart::class, $customer->getCart());
     }
 }
 
 /**
- * @Entity
+ * @ORM\Entity
  */
 class GH5887Cart
 {
     /**
+     * @ORM\Id
+     * @ORM\Column(type="integer")
+     * @ORM\GeneratedValue(strategy="NONE")
+     *
      * @var int
-     * @Id
-     * @Column(type="integer")
-     * @GeneratedValue(strategy="NONE")
      */
     private $id;
 
     /**
      * One Cart has One Customer.
      *
+     * @ORM\OneToOne(targetEntity=GH5887Customer::class, inversedBy="cart")
+     * @ORM\JoinColumn(name="customer_id", referencedColumnName="id")
+     *
      * @var GH5887Customer
-     * @OneToOne(targetEntity="GH5887Customer", inversedBy="cart")
-     * @JoinColumn(name="customer_id", referencedColumnName="id")
      */
     private $customer;
 
-    public function getId(): int
+    /**
+     * @return int
+     */
+    public function getId()
     {
         return $this->id;
     }
 
-    public function setId(int $id): void
+    /**
+     * @param int $id
+     */
+    public function setId($id)
     {
         $this->id = $id;
     }
 
-    public function getCustomer(): GH5887Customer
+    /**
+     * @return GH5887Customer
+     */
+    public function getCustomer()
     {
         return $this->customer;
     }
 
-    public function setCustomer(GH5887Customer $customer): void
+    public function setCustomer(GH5887Customer $customer)
     {
         if ($this->customer !== $customer) {
             $this->customer = $customer;
@@ -105,42 +117,47 @@ class GH5887Cart
 }
 
 /**
- * @Entity
+ * @ORM\Entity
  */
 class GH5887Customer
 {
     /**
+     * @ORM\Id
+     * @ORM\Column(type="GH5887CustomIdObject")
+     * @ORM\GeneratedValue(strategy="NONE")
+     *
      * @var GH5887CustomIdObject
-     * @Id
-     * @Column(type="GH5887CustomIdObject")
-     * @GeneratedValue(strategy="NONE")
      */
     private $id;
 
     /**
      * One Customer has One Cart.
      *
+     * @ORM\OneToOne(targetEntity=GH5887Cart::class, mappedBy="customer")
+     *
      * @var GH5887Cart
-     * @OneToOne(targetEntity="GH5887Cart", mappedBy="customer")
      */
     private $cart;
 
-    public function getId(): GH5887CustomIdObject
+    /**
+     * @return GH5887CustomIdObject
+     */
+    public function getId()
     {
         return $this->id;
     }
 
-    public function setId(GH5887CustomIdObject $id): void
+    public function setId(GH5887CustomIdObject $id)
     {
         $this->id = $id;
     }
 
-    public function getCart(): GH5887Cart
+    public function getCart() : GH5887Cart
     {
         return $this->cart;
     }
 
-    public function setCart(GH5887Cart $cart): void
+    public function setCart(GH5887Cart $cart)
     {
         if ($this->cart !== $cart) {
             $this->cart = $cart;
@@ -154,17 +171,20 @@ class GH5887CustomIdObject
     /** @var int */
     private $id;
 
-    public function __construct(int $id)
+    /**
+     * @param int $id
+     */
+    public function __construct($id)
     {
         $this->id = $id;
     }
 
-    public function getId(): int
+    public function getId() : int
     {
         return $this->id;
     }
 
-    public function __toString(): string
+    public function __toString()
     {
         return 'non existing id';
     }
@@ -193,7 +213,7 @@ class GH5887CustomIdObjectType extends StringType
     /**
      * {@inheritdoc}
      */
-    public function getName()
+    public function getName() : string
     {
         return self::NAME;
     }

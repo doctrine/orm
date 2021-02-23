@@ -5,41 +5,34 @@ declare(strict_types=1);
 namespace Doctrine\Tests\Models\DDC117;
 
 use DateTime;
+use Doctrine\ORM\Annotation as ORM;
 
 /**
- * @Entity
+ * @ORM\Entity
  */
 class DDC117Reference
 {
     /**
-     * @var DDC117Article
-     * @Id
-     * @ManyToOne(targetEntity="DDC117Article", inversedBy="references")
-     * @JoinColumn(name="source_id", referencedColumnName="article_id")
+     * @ORM\Id
+     * @ORM\ManyToOne(targetEntity=DDC117Article::class, inversedBy="references")
+     * @ORM\JoinColumn(name="source_id", referencedColumnName="article_id")
      */
     private $source;
 
     /**
-     * @var DDC117Article
-     * @Id
-     * @ManyToOne(targetEntity="DDC117Article")
-     * @JoinColumn(name="target_id", referencedColumnName="article_id")
+     * @ORM\Id
+     * @ORM\ManyToOne(targetEntity=DDC117Article::class)
+     * @ORM\JoinColumn(name="target_id", referencedColumnName="article_id")
      */
     private $target;
 
-    /**
-     * @var string
-     * @column(type="string")
-     */
+    /** @ORM\Column(type="string") */
     private $description;
 
-    /**
-     * @var DateTime
-     * @column(type="datetime")
-     */
+    /** @ORM\Column(type="datetime") */
     private $created;
 
-    public function __construct(DDC117Article $source, DDC117Article $target, string $description)
+    public function __construct($source, $target, $description)
     {
         $source->addReference($this);
         $target->addReference($this);
@@ -50,22 +43,22 @@ class DDC117Reference
         $this->created     = new DateTime('now');
     }
 
-    public function source(): DDC117Article
+    public function source()
     {
         return $this->source;
     }
 
-    public function target(): DDC117Article
+    public function target()
     {
         return $this->target;
     }
 
-    public function setDescription(string $desc): void
+    public function setDescription($desc)
     {
         $this->description = $desc;
     }
 
-    public function getDescription(): string
+    public function getDescription()
     {
         return $this->description;
     }

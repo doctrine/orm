@@ -5,23 +5,30 @@ declare(strict_types=1);
 namespace Doctrine\Tests\Mocks;
 
 use Doctrine\DBAL\Driver\Connection;
+use Doctrine\DBAL\Driver\ResultStatement;
 use Doctrine\DBAL\Driver\Statement;
-use PDO;
+use Doctrine\DBAL\ParameterType;
 
 /**
  * Mock class for DriverConnection.
  */
 class DriverConnectionMock implements Connection
 {
-    /** @var Statement|null */
+    /** @var Statement */
     private $statementMock;
 
-    public function getStatementMock(): ?Statement
+    /**
+     * @return Statement
+     */
+    public function getStatementMock()
     {
         return $this->statementMock;
     }
 
-    public function setStatementMock(?Statement $statementMock): void
+    /**
+     * @param Statement $statementMock
+     */
+    public function setStatementMock($statementMock)
     {
         $this->statementMock = $statementMock;
     }
@@ -29,7 +36,7 @@ class DriverConnectionMock implements Connection
     /**
      * {@inheritdoc}
      */
-    public function prepare($prepareString)
+    public function prepare(string $prepareString) : Statement
     {
         return $this->statementMock ?: new StatementMock();
     }
@@ -37,7 +44,7 @@ class DriverConnectionMock implements Connection
     /**
      * {@inheritdoc}
      */
-    public function query()
+    public function query(string $sql) : ResultStatement
     {
         return $this->statementMock ?: new StatementMock();
     }
@@ -45,42 +52,42 @@ class DriverConnectionMock implements Connection
     /**
      * {@inheritdoc}
      */
-    public function quote($input, $type = PDO::PARAM_STR)
+    public function quote($input, $type = ParameterType::STRING) : string
     {
     }
 
     /**
      * {@inheritdoc}
      */
-    public function exec($statement)
+    public function exec(string $statement) : int
     {
     }
 
     /**
      * {@inheritdoc}
      */
-    public function lastInsertId($name = null)
+    public function lastInsertId($name = null) : string
     {
     }
 
     /**
      * {@inheritdoc}
      */
-    public function beginTransaction()
+    public function beginTransaction() : void
     {
     }
 
     /**
      * {@inheritdoc}
      */
-    public function commit()
+    public function commit() : void
     {
     }
 
     /**
      * {@inheritdoc}
      */
-    public function rollBack()
+    public function rollBack() : void
     {
     }
 

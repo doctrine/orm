@@ -4,31 +4,25 @@ declare(strict_types=1);
 
 namespace Doctrine\Tests\Models\Navigation;
 
-use Doctrine\Common\Collections\Collection;
+use Doctrine\ORM\Annotation as ORM;
 
 /**
- * @Entity
- * @Table(name="navigation_countries")
+ * @ORM\Entity
+ * @ORM\Table(name="navigation_countries")
  */
 class NavCountry
 {
     /**
-     * @Id
-     * @Column(type="integer")
-     * @generatedValue
+     * @ORM\Id
+     * @ORM\Column(type="integer")
+     * @ORM\GeneratedValue
      */
     private $id;
 
-    /**
-     * @var string
-     * @Column(type="string")
-     */
+    /** @ORM\Column(type="string") */
     private $name;
 
-    /**
-     * @psalm-var Collection<int, NavPointOfInterest>
-     * @OneToMany(targetEntity="NavPointOfInterest", mappedBy="country")
-     */
+    /** @ORM\OneToMany(targetEntity=NavPointOfInterest::class, mappedBy="country") */
     private $pois;
 
     public function __construct($name)

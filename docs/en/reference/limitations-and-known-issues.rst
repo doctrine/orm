@@ -6,7 +6,7 @@ Therefore we think it is very important to be honest about the
 current limitations to our users. Much like every other piece of
 software Doctrine2 is not perfect and far from feature complete.
 This section should give you an overview of current limitations of
-Doctrine ORM as well as critical known issues that you should know
+Doctrine 2 as well as critical known issues that you should know
 about.
 
 Current Limitations
@@ -39,7 +39,7 @@ possible either. See the following example:
         name VARCHAR,
         PRIMARY KEY(id)
     );
-    
+
     CREATE TABLE product_attributes (
         product_id INTEGER,
         attribute_name VARCHAR,
@@ -64,15 +64,6 @@ Where the ``attribute_name`` column contains the key and
 
 The feature request for persistence of primitive value arrays
 `is described in the DDC-298 ticket <https://github.com/doctrine/orm/issues/3743>`_.
-
-Cascade Merge with Bi-directional Associations
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-There are two bugs now that concern the use of cascade merge in combination with bi-directional associations.
-Make sure to study the behavior of cascade merge if you are using it:
-
--  `DDC-875 <https://github.com/doctrine/orm/issues/5398>`_ Merge can sometimes add the same entity twice into a collection
--  `DDC-763 <https://github.com/doctrine/orm/issues/5277>`_ Cascade merge on associated entities can insert too many rows through "Persistence by Reachability"
 
 Custom Persisters
 ~~~~~~~~~~~~~~~~~
@@ -107,7 +98,7 @@ to the same entity.
 Behaviors
 ~~~~~~~~~
 
-Doctrine ORM will **never** include a behavior system like Doctrine 1
+Doctrine 2 will **never** include a behavior system like Doctrine 1
 in the core library. We don't think behaviors add more value than
 they cost pain and debugging hell. Please see the many different
 blog posts we have written on this topics:
@@ -115,9 +106,9 @@ blog posts we have written on this topics:
 -  `Doctrine2 "Behaviors" in a Nutshell <http://www.doctrine-project.org/2010/02/17/doctrine2-behaviours-nutshell.html>`_
 -  `A re-usable Versionable behavior for Doctrine2 <http://www.doctrine-project.org/2010/02/24/doctrine2-versionable.html>`_
 -  `Write your own ORM on top of Doctrine2 <http://www.doctrine-project.org/2010/07/19/your-own-orm-doctrine2.html>`_
--  `Doctrine ORM Behavioral Extensions <http://www.doctrine-project.org/2010/11/18/doctrine2-behavioral-extensions.html>`_
+-  `Doctrine 2 Behavioral Extensions <http://www.doctrine-project.org/2010/11/18/doctrine2-behavioral-extensions.html>`_
 
-Doctrine ORM has enough hooks and extension points so that **you** can
+Doctrine 2 has enough hooks and extension points so that **you** can
 add whatever you want on top of it. None of this will ever become
 core functionality of Doctrine2 however, you will have to rely on
 third party extensions for magical behaviors.
@@ -126,13 +117,12 @@ Nested Set
 ~~~~~~~~~~
 
 NestedSet was offered as a behavior in Doctrine 1 and will not be
-included in the core of Doctrine ORM. However there are already two
+included in the core of Doctrine 2. However there are already two
 extensions out there that offer support for Nested Set with
-ORM:
+Doctrine 2:
 
-
--  `Doctrine2 Hierarchical-Structural Behavior <http://github.com/guilhermeblanco/Doctrine2-Hierarchical-Structural-Behavior>`_
--  `Doctrine2 NestedSet <http://github.com/blt04/doctrine2-nestedset>`_
+-  `Doctrine2 Hierarchical-Structural Behavior <https://github.com/guilhermeblanco/Doctrine2-Hierarchical-Structural-Behavior>`_
+-  `Doctrine2 NestedSet <https://github.com/blt04/doctrine2-nestedset>`_
 
 Known Issues
 ------------
@@ -149,10 +139,9 @@ Identifier Quoting and Legacy Databases
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 For compatibility reasons between all the supported vendors and
-edge case problems Doctrine ORM does **NOT** do automatic identifier
+edge case problems Doctrine 2 does **NOT** do automatic identifier
 quoting. This can lead to problems when trying to get
-legacy-databases to work with Doctrine ORM.
-
+legacy-databases to work with Doctrine 2.
 
 -  You can quote column-names as described in the
    :doc:`Basic-Mapping <basic-mapping>` section.
@@ -177,27 +166,3 @@ MySQL with MyISAM tables
 Doctrine cannot provide atomic operations when calling ``EntityManager#flush()`` if one
 of the tables involved uses the storage engine MyISAM. You must use InnoDB or
 other storage engines that support transactions if you need integrity.
-
-Entities, Proxies and Reflection
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-Using methods for Reflection on entities can be prone to error, when the entity
-is actually a proxy the following methods will not work correctly:
-
-- ``new ReflectionClass``
-- ``new ReflectionObject``
-- ``get_class()``
-- ``get_parent_class()``
-
-This is why ``Doctrine\Common\Util\ClassUtils`` class exists that has similar
-methods, which resolve the proxy problem beforehand.
-
-.. code-block:: php
-
-    <?php
-    use Doctrine\Common\Util\ClassUtils;
-
-    $bookProxy = $entityManager->getReference('Acme\Book');
-
-    $reflection = ClassUtils::newReflectionClass($bookProxy);
-    $class = ClassUtils::getClass($bookProxy)¸

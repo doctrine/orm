@@ -9,21 +9,19 @@ use Doctrine\Tests\Models\CMS\CmsEmail;
 use Doctrine\Tests\Models\CMS\CmsUser;
 use Doctrine\Tests\OrmFunctionalTestCase;
 
-use function count;
-
 /**
  * Tests a bidirectional one-to-one association mapping with orphan removal.
  */
 class OneToOneOrphanRemovalTest extends OrmFunctionalTestCase
 {
-    protected function setUp(): void
+    protected function setUp() : void
     {
         $this->useModelSet('cms');
 
         parent::setUp();
     }
 
-    public function testOrphanRemoval(): void
+    public function testOrphanRemoval() : void
     {
         $user           = new CmsUser();
         $user->status   = 'dev';
@@ -37,31 +35,31 @@ class OneToOneOrphanRemovalTest extends OrmFunctionalTestCase
 
         $user->setAddress($address);
 
-        $this->_em->persist($user);
-        $this->_em->flush();
+        $this->em->persist($user);
+        $this->em->flush();
 
         $userId = $user->getId();
 
-        $this->_em->clear();
+        $this->em->clear();
 
-        $userProxy = $this->_em->getReference(CmsUser::class, $userId);
+        $userProxy = $this->em->getReference(CmsUser::class, $userId);
 
-        $this->_em->remove($userProxy);
-        $this->_em->flush();
-        $this->_em->clear();
+        $this->em->remove($userProxy);
+        $this->em->flush();
+        $this->em->clear();
 
-        $query  = $this->_em->createQuery('SELECT u FROM Doctrine\Tests\Models\CMS\CmsUser u');
+        $query  = $this->em->createQuery('SELECT u FROM Doctrine\Tests\Models\CMS\CmsUser u');
         $result = $query->getResult();
 
-        $this->assertEquals(0, count($result), 'CmsUser should be removed by EntityManager');
+        self::assertCount(0, $result, 'CmsUser should be removed by EntityManager');
 
-        $query  = $this->_em->createQuery('SELECT a FROM Doctrine\Tests\Models\CMS\CmsAddress a');
+        $query  = $this->em->createQuery('SELECT a FROM Doctrine\Tests\Models\CMS\CmsAddress a');
         $result = $query->getResult();
 
-        $this->assertEquals(0, count($result), 'CmsAddress should be removed by orphanRemoval');
+        self::assertCount(0, $result, 'CmsAddress should be removed by orphanRemoval');
     }
 
-    public function testOrphanRemovalWhenUnlink(): void
+    public function testOrphanRemovalWhenUnlink() : void
     {
         $user           = new CmsUser();
         $user->status   = 'dev';
@@ -73,24 +71,24 @@ class OneToOneOrphanRemovalTest extends OrmFunctionalTestCase
 
         $user->setEmail($email);
 
-        $this->_em->persist($user);
-        $this->_em->flush();
+        $this->em->persist($user);
+        $this->em->flush();
 
         $userId = $user->getId();
 
-        $this->_em->clear();
+        $this->em->clear();
 
-        $user = $this->_em->find(CmsUser::class, $userId);
+        $user = $this->em->find(CmsUser::class, $userId);
 
         $user->setEmail(null);
 
-        $this->_em->persist($user);
-        $this->_em->flush();
-        $this->_em->clear();
+        $this->em->persist($user);
+        $this->em->flush();
+        $this->em->clear();
 
-        $query  = $this->_em->createQuery('SELECT e FROM Doctrine\Tests\Models\CMS\CmsEmail e');
+        $query  = $this->em->createQuery('SELECT e FROM Doctrine\Tests\Models\CMS\CmsEmail e');
         $result = $query->getResult();
 
-        $this->assertEquals(0, count($result), 'CmsEmail should be removed by orphanRemoval');
+        self::assertCount(0, $result, 'CmsEmail should be removed by orphanRemoval');
     }
 }

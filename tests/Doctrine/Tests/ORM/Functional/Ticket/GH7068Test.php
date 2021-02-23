@@ -5,12 +5,16 @@ declare(strict_types=1);
 namespace Doctrine\Tests\ORM\Functional\Ticket;
 
 use Doctrine\DBAL\LockMode;
+use Doctrine\ORM\Annotation as ORM;
 use Doctrine\ORM\TransactionRequiredException;
 use Doctrine\Tests\OrmFunctionalTestCase;
 
 final class GH7068Test extends OrmFunctionalTestCase
 {
-    protected function setUp(): void
+    /**
+     * {@inheritDoc}
+     */
+    protected function setUp() : void
     {
         parent::setUp();
 
@@ -21,28 +25,23 @@ final class GH7068Test extends OrmFunctionalTestCase
         );
     }
 
-    public function testLockModeIsRespected(): void
+    public function testLockModeIsRespected() : void
     {
         $entity = new SomeEntity();
-        $this->_em->persist($entity);
-        $this->_em->flush();
-        $this->_em->clear();
+        $this->em->persist($entity);
+        $this->em->flush();
+        $this->em->clear();
 
-        $this->_em->find(SomeEntity::class, 1);
+        $this->em->find(SomeEntity::class, 1);
 
         $this->expectException(TransactionRequiredException::class);
-        $this->_em->find(SomeEntity::class, 1, LockMode::PESSIMISTIC_WRITE);
+        $this->em->find(SomeEntity::class, 1, LockMode::PESSIMISTIC_WRITE);
     }
 }
 
-/** @Entity */
+/** @ORM\Entity */
 final class SomeEntity
 {
-    /**
-     * @var int
-     * @Id
-     * @Column(type="integer")
-     * @GeneratedValue
-     */
+    /** @ORM\Id @ORM\Column(type="integer") @ORM\GeneratedValue */
     public $id;
 }

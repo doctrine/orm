@@ -5,25 +5,24 @@ declare(strict_types=1);
 namespace Doctrine\Tests\ORM\Functional\Ticket;
 
 use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\ORM\Annotation as ORM;
 use Doctrine\Tests\OrmFunctionalTestCase;
 use Exception;
-
-use function assert;
 
 /**
  * Functional tests for the Single Table Inheritance mapping strategy.
  */
 class AdvancedAssociationTest extends OrmFunctionalTestCase
 {
-    protected function setUp(): void
+    protected function setUp() : void
     {
         parent::setUp();
         try {
-            $this->_schemaTool->createSchema(
+            $this->schemaTool->createSchema(
                 [
-                    $this->_em->getClassMetadata(Lemma::class),
-                    $this->_em->getClassMetadata(Relation::class),
-                    $this->_em->getClassMetadata(RelationType::class),
+                    $this->em->getClassMetadata(Lemma::class),
+                    $this->em->getClassMetadata(Relation::class),
+                    $this->em->getClassMetadata(RelationType::class),
                 ]
             );
         } catch (Exception $e) {
@@ -31,7 +30,7 @@ class AdvancedAssociationTest extends OrmFunctionalTestCase
         }
     }
 
-    public function testIssue(): void
+    public function testIssue() : void
     {
         //setup
         $lemma1 = new Lemma();
@@ -73,61 +72,64 @@ class AdvancedAssociationTest extends OrmFunctionalTestCase
         $lemma1->addRelation($relation2);
         $lemma1->addRelation($relation3);
 
-        $this->_em->persist($type1);
-        $this->_em->persist($type2);
-        $this->_em->persist($lemma1);
-        $this->_em->persist($lemma2);
-        $this->_em->persist($lemma3);
-        $this->_em->persist($lemma4);
+        $this->em->persist($type1);
+        $this->em->persist($type2);
+        $this->em->persist($lemma1);
+        $this->em->persist($lemma2);
+        $this->em->persist($lemma3);
+        $this->em->persist($lemma4);
 
-        $this->_em->flush();
-        $this->_em->clear();
+        $this->em->flush();
+        $this->em->clear();
         //end setup
 
         // test One To Many
-        $query = $this->_em->createQuery("SELECT l FROM Doctrine\Tests\ORM\Functional\Ticket\Lemma l Where l.lemma = 'foo'");
+        $query = $this->em->createQuery("SELECT l FROM Doctrine\Tests\ORM\Functional\Ticket\Lemma l Where l.lemma = 'foo'");
         $res   = $query->getResult();
         $lemma = $res[0];
 
-        $this->assertEquals('foo', $lemma->getLemma());
-        $this->assertInstanceOf(Lemma::class, $lemma);
+        self::assertEquals('foo', $lemma->getLemma());
+        self::assertInstanceOf(Lemma::class, $lemma);
         $relations = $lemma->getRelations();
 
         foreach ($relations as $relation) {
-            $this->assertInstanceOf(Relation::class, $relation);
-            $this->assertTrue($relation->getType()->getType() !== '');
+            self::assertInstanceOf(Relation::class, $relation);
+            self::assertTrue($relation->getType()->getType() !== '');
         }
 
-        $this->_em->clear();
+        $this->em->clear();
     }
 }
 
 /**
- * @Entity
- * @Table(name="lemma")
+ * @ORM\Entity
+ * @ORM\Table(name="lemma")
  */
 class Lemma
 {
     public const CLASS_NAME = self::class;
 
     /**
+     * @ORM\Id
+     * @ORM\Column(type="integer", name="lemma_id")
+     * @ORM\GeneratedValue(strategy="AUTO")
+     *
      * @var int
-     * @Id
-     * @Column(type="integer", name="lemma_id")
-     * @GeneratedValue(strategy="AUTO")
      */
     private $id;
 
     /**
+     * @ORM\Column(type="string", name="lemma_name", unique=true, length=255)
+     *
      * @var string
-     * @Column(type="string", name="lemma_name", unique=true, length=255)
      */
     private $lemma;
 
 
     /**
+     * @ORM\OneToMany(targetEntity=Relation::class, mappedBy="parent", cascade={"persist"})
+     *
      * @var kateglo\application\utilities\collections\ArrayCollection
-     * @OneToMany(targetEntity="Relation", mappedBy="parent", cascade={"persist"})
      */
     private $relations;
 
@@ -137,121 +139,148 @@ class Lemma
         $this->relations = new ArrayCollection();
     }
 
-    public function getId(): int
+    /**
+     * @return int
+     */
+    public function getId()
     {
         return $this->id;
     }
 
-    public function setLemma(string $lemma): void
+    /**
+     * @param string $lemma
+     */
+    public function setLemma($lemma)
     {
         $this->lemma = $lemma;
     }
 
-    public function getLemma(): string
+    /**
+     * @return string
+     */
+    public function getLemma()
     {
         return $this->lemma;
     }
 
-    public function addRelation(Relation $relation): void
+    public function addRelation(Relation $relation)
     {
         $this->relations[] = $relation;
         $relation->setParent($this);
     }
 
-    public function removeRelation(Relation $relation): void
+    public function removeRelation(Relation $relation)
     {
+        /** @var Relation $removed */
         $removed = $this->relations->removeElement($relation);
-        assert($removed instanceof Relation);
         if ($removed !== null) {
             $removed->removeParent();
         }
     }
 
-    public function getRelations(): kateglo\application\utilities\collections\ArrayCollection
+    /**
+     * @return kateglo\application\utilities\collections\ArrayCollection
+     */
+    public function getRelations()
     {
         return $this->relations;
     }
 }
 
 /**
- * @Entity
- * @Table(name="relation")
+ * @ORM\Entity
+ * @ORM\Table(name="relation")
  */
 class Relation
 {
     public const CLASS_NAME = self::class;
 
     /**
+     * @ORM\Id
+     * @ORM\Column(type="integer", name="relation_id")
+     * @ORM\GeneratedValue(strategy="AUTO")
+     *
      * @var int
-     * @Id
-     * @Column(type="integer", name="relation_id")
-     * @GeneratedValue(strategy="AUTO")
      */
     private $id;
 
     /**
-     * @var Lemma|null
-     * @ManyToOne(targetEntity="Lemma", inversedBy="relations")
-     * @JoinColumn(name="relation_parent_id", referencedColumnName="lemma_id")
+     * @ORM\ManyToOne(targetEntity=Lemma::class, inversedBy="relations")
+     * @ORM\JoinColumn(name="relation_parent_id", referencedColumnName="lemma_id")
+     *
+     * @var Lemma
      */
     private $parent;
 
     /**
+     * @ORM\OneToOne(targetEntity=Lemma::class)
+     * @ORM\JoinColumn(name="relation_child_id", referencedColumnName="lemma_id")
+     *
      * @var Lemma
-     * @OneToOne(targetEntity="Lemma")
-     * @JoinColumn(name="relation_child_id", referencedColumnName="lemma_id")
      */
     private $child;
 
     /**
+     * @ORM\ManyToOne(targetEntity=RelationType::class, inversedBy="relations")
+     * @ORM\JoinColumn(name="relation_type_id", referencedColumnName="relation_type_id")
+     *
      * @var RelationType
-     * @ManyToOne(targetEntity="RelationType", inversedBy="relations")
-     * @JoinColumn(name="relation_type_id", referencedColumnName="relation_type_id")
      */
     private $type;
 
-    public function setParent(Lemma $parent): void
+    public function setParent(Lemma $parent)
     {
         $this->parent = $parent;
     }
 
-    public function getParent(): Phrase
+    /**
+     * @return Phrase
+     */
+    public function getParent()
     {
         return $this->parent;
     }
 
-    public function removeParent(): void
+    public function removeParent()
     {
         if ($this->lemma !== null) {
+            /** @var Lemma $phrase */
             $lemma        = $this->parent;
             $this->parent = null;
             $lemma->removeRelation($this);
         }
     }
 
-    public function setChild(Lemma $child): void
+    public function setChild(Lemma $child)
     {
         $this->child = $child;
     }
 
-    public function getChild(): Lemma
+    /**
+     * @return Lemma
+     */
+    public function getChild()
     {
         return $this->child;
     }
 
-    public function setType(RelationType $type): void
+    public function setType(RelationType $type)
     {
         $this->type = $type;
     }
 
-    public function getType(): RelationType
+    /**
+     * @return RelationType
+     */
+    public function getType()
     {
         return $this->type;
     }
 
-    public function removeType(): void
+    public function removeType()
     {
         if ($this->type !== null) {
+            /** @var RelationType $phrase */
             $type       = $this->type;
             $this->type = null;
             $type->removeRelation($this);
@@ -260,36 +289,40 @@ class Relation
 }
 
 /**
- * @Entity
- * @Table(name="relation_type")
+ * @ORM\Entity
+ * @ORM\Table(name="relation_type")
  */
 class RelationType
 {
     public const CLASS_NAME = self::class;
 
     /**
+     * @ORM\Id
+     * @ORM\Column(type="integer", name="relation_type_id")
+     * @ORM\GeneratedValue(strategy="AUTO")
+     *
      * @var int
-     * @Id
-     * @Column(type="integer", name="relation_type_id")
-     * @GeneratedValue(strategy="AUTO")
      */
     private $id;
 
     /**
+     * @ORM\Column(type="string", name="relation_type_name", unique=true, length=255)
+     *
      * @var string
-     * @Column(type="string", name="relation_type_name", unique=true, length=255)
      */
     private $type;
 
     /**
+     * @ORM\Column(type="string", name="relation_type_abbreviation", unique=true, length=255)
+     *
      * @var string
-     * @Column(type="string", name="relation_type_abbreviation", unique=true, length=255)
      */
     private $abbreviation;
 
     /**
+     * @ORM\OneToMany(targetEntity=Relation::class, mappedBy="type", cascade={"persist"})
+     *
      * @var kateglo\application\utilities\collections\ArrayCollection
-     * @OneToMany(targetEntity="Relation", mappedBy="type", cascade={"persist"})
      */
     private $relations;
 
@@ -298,47 +331,65 @@ class RelationType
         $relations = new ArrayCollection();
     }
 
-    public function getId(): int
+    /**
+     * @return int
+     */
+    public function getId()
     {
         return $this->id;
     }
 
-    public function setType(string $type): void
+    /**
+     * @param string $type
+     */
+    public function setType($type)
     {
         $this->type = $type;
     }
 
-    public function getType(): string
+    /**
+     * @return string
+     */
+    public function getType()
     {
         return $this->type;
     }
 
-    public function setAbbreviation(string $abbreviation): void
+    /**
+     * @param string $abbreviation
+     */
+    public function setAbbreviation($abbreviation)
     {
         $this->abbreviation = $abbreviation;
     }
 
-    public function getAbbreviation(): string
+    /**
+     * @return string
+     */
+    public function getAbbreviation()
     {
         return $this->abbreviation;
     }
 
-    public function addRelation(Relation $relation): void
+    public function addRelation(Relation $relation)
     {
         $this->relations[] = $relation;
         $relation->setType($this);
     }
 
-    public function removeRelation(Relation $relation): void
+    public function removeRelation(Relation $relation)
     {
+        /** @var Relation $removed */
         $removed = $this->relations->removeElement($relation);
-        assert($removed instanceof Relation);
         if ($removed !== null) {
             $removed->removeLemma();
         }
     }
 
-    public function getRelations(): kateglo\application\utilities\collections\ArrayCollection
+    /**
+     * @return kateglo\application\utilities\collections\ArrayCollection
+     */
+    public function getRelations()
     {
         return $this->relations;
     }

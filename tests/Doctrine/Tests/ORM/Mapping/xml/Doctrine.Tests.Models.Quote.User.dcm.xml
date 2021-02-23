@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<doctrine-mapping xmlns="http://doctrine-project.org/schemas/orm/doctrine-mapping"
+                  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                  xsi:schemaLocation="http://doctrine-project.org/schemas/orm/doctrine-mapping
+                          http://www.doctrine-project.org/schemas/orm/doctrine-mapping.xsd">
+
+    <entity name="Doctrine\Tests\Models\Quote\User" table="quote-user">
+        <id name="id" type="integer" column="user-id">
+            <generator />
+        </id>
+
+        <field name="name" column="user-name" />
+
+        <one-to-many field="phones" target-entity="Doctrine\Tests\Models\Quote\Phone" mapped-by="user">
+            <cascade><cascade-persist /></cascade>
+        </one-to-many>
+
+        <one-to-one field="address" target-entity="Doctrine\Tests\Models\Quote\Address" mapped-by="user" fetch="EAGER">
+            <cascade><cascade-persist /></cascade>
+        </one-to-one>
+
+        <many-to-many field="groups" target-entity="Doctrine\Tests\Models\Quote\Group" inversed-by="users" fetch="EXTRA_LAZY">
+            <cascade>
+                <cascade-all/>
+            </cascade>
+            <join-table name="quote-users-groups">
+                <join-columns>
+                    <join-column name="user-id" referenced-column-name="user-id" />
+                </join-columns>
+                <inverse-join-columns>
+                    <join-column name="group-id" referenced-column-name="group-id" />
+                </inverse-join-columns>
+            </join-table>
+        </many-to-many>
+    </entity>
+
+</doctrine-mapping>

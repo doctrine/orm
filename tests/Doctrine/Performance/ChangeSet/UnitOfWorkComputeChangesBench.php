@@ -9,7 +9,6 @@ use Doctrine\Performance\EntityManagerFactory;
 use Doctrine\Tests\Models\CMS\CmsUser;
 use LogicException;
 use PhpBench\Benchmark\Metadata\Annotations\BeforeMethods;
-
 use function str_replace;
 
 /**
@@ -23,7 +22,7 @@ final class UnitOfWorkComputeChangesBench
     /** @var UnitOfWork */
     private $unitOfWork;
 
-    public function init(): void
+    public function init() : void
     {
         $this->unitOfWork = EntityManagerFactory::getEntityManager([])->getUnitOfWork();
 
@@ -62,7 +61,7 @@ final class UnitOfWorkComputeChangesBench
         }
     }
 
-    public function benchChangeSetComputation(): void
+    public function benchChangeSetComputation() : void
     {
         $this->unitOfWork->computeChangeSets();
     }

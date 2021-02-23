@@ -4,22 +4,17 @@ declare(strict_types=1);
 
 namespace Doctrine\Tests\Models\DDC3699;
 
+use Doctrine\ORM\Annotation as ORM;
+
 /**
- * @Entity
- * @Table(name="ddc3699_relation_one")
+ * @ORM\Entity
+ * @ORM\Table(name="ddc3699_relation_one")
  */
 class DDC3699RelationOne
 {
-    /**
-     * @var int
-     * @Id
-     * @Column(type="integer")
-     */
+    /** @ORM\Id @ORM\Column(type="integer") */
     public $id;
 
-    /**
-     * @var DDC3699Child
-     * @OneToOne(targetEntity="DDC3699Child", mappedBy="oneRelation")
-     */
+    /** @ORM\OneToOne(targetEntity=DDC3699Child::class, mappedBy="oneRelation") */
     public $child;
 }

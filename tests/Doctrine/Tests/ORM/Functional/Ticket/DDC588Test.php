@@ -4,52 +4,50 @@ declare(strict_types=1);
 
 namespace Doctrine\Tests\ORM\Functional\Ticket;
 
+use Doctrine\ORM\Annotation as ORM;
 use Doctrine\Tests\OrmFunctionalTestCase;
 
 class DDC588Test extends OrmFunctionalTestCase
 {
-    protected function setUp(): void
+    protected function setUp() : void
     {
         parent::setUp();
 
-        $this->_schemaTool->createSchema(
+        $this->schemaTool->createSchema(
             [
-                $this->_em->getClassMetadata(DDC588Site::class),
+                $this->em->getClassMetadata(DDC588Site::class),
             ]
         );
     }
 
-    public function testIssue(): void
+    public function testIssue() : void
     {
         $site = new DDC588Site('Foo');
 
-        $this->_em->persist($site);
-        $this->_em->flush();
+        $this->em->persist($site);
+        $this->em->flush();
+
         // Following should not result in exception
-        $this->_em->refresh($site);
+        $this->em->refresh($site);
 
         $this->addToAssertionCount(1);
     }
 }
 
 /**
- * @Entity
+ * @ORM\Entity
  */
 class DDC588Site
 {
     /**
-     * @var int
-     * @Id
-     * @Column(type="integer", name="site_id")
-     * @GeneratedValue
+     * @ORM\Id
+     * @ORM\Column(type="integer", name="site_id")
+     * @ORM\GeneratedValue
      */
     public $id;
 
-    /**
-     * @var string
-     * @Column(type="string", length=45)
-     */
-    protected $name = null;
+    /** @ORM\Column(type="string", length=45) */
+    protected $name;
 
     public function __construct($name = '')
     {

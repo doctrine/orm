@@ -5,9 +5,8 @@ declare(strict_types=1);
 namespace Doctrine\Tests\Mocks;
 
 use Doctrine\DBAL\Driver\Statement;
+use Doctrine\DBAL\ParameterType;
 use IteratorAggregate;
-use PDO;
-
 use function array_shift;
 use function current;
 use function is_array;
@@ -20,7 +19,7 @@ use function next;
 class HydratorMockStatement implements IteratorAggregate, Statement
 {
     /** @var array */
-    private $_resultSet;
+    private $resultSet;
 
     /**
      * Creates a new mock statement that will serve the provided fake result set to clients.
@@ -29,19 +28,15 @@ class HydratorMockStatement implements IteratorAggregate, Statement
      */
     public function __construct(array $resultSet)
     {
-        $this->_resultSet = $resultSet;
+        $this->resultSet = $resultSet;
     }
 
     /**
-     * Fetches all rows from the result set.
-     *
-     * @param array|null $ctorArgs
-     *
-     * @return array
+     * {@inheritdoc}
      */
-    public function fetchAll($fetchMode = null, $fetchArgument = null, $ctorArgs = null): array
+    public function fetchAll($fetchMode = null, ...$args) : array
     {
-        return $this->_resultSet;
+        return $this->resultSet;
     }
 
     /**
@@ -49,11 +44,10 @@ class HydratorMockStatement implements IteratorAggregate, Statement
      */
     public function fetchColumn($columnNumber = 0)
     {
-        $row = current($this->_resultSet);
+        $row = current($this->resultSet);
         if (! is_array($row)) {
             return false;
         }
-
         $val = array_shift($row);
 
         return $val ?? false;
@@ -62,10 +56,10 @@ class HydratorMockStatement implements IteratorAggregate, Statement
     /**
      * {@inheritdoc}
      */
-    public function fetch($fetchStyle = null, $cursorOrientation = PDO::FETCH_ORI_NEXT, $cursorOffset = 0)
+    public function fetch($fetchMode = null, ...$args)
     {
-        $current = current($this->_resultSet);
-        next($this->_resultSet);
+        $current = current($this->resultSet);
+        next($this->resultSet);
 
         return $current;
     }
@@ -73,30 +67,30 @@ class HydratorMockStatement implements IteratorAggregate, Statement
     /**
      * {@inheritdoc}
      */
-    public function closeCursor()
-    {
-        return true;
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function bindValue($param, $value, $type = null)
+    public function closeCursor() : void
     {
     }
 
     /**
      * {@inheritdoc}
      */
-    public function bindParam($column, &$variable, $type = null, $length = null)
+    public function bindValue($param, $value, $type = ParameterType::STRING) : void
     {
     }
 
     /**
      * {@inheritdoc}
      */
-    public function columnCount()
+    public function bindParam($column, &$variable, $type = ParameterType::STRING, $length = null) : void
     {
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function columnCount() : int
+    {
+        return 0;
     }
 
     /**
@@ -116,14 +110,14 @@ class HydratorMockStatement implements IteratorAggregate, Statement
     /**
      * {@inheritdoc}
      */
-    public function execute($params = null)
+    public function execute($params = null) : void
     {
     }
 
     /**
      * {@inheritdoc}
      */
-    public function rowCount()
+    public function rowCount() : int
     {
     }
 
@@ -132,13 +126,13 @@ class HydratorMockStatement implements IteratorAggregate, Statement
      */
     public function getIterator()
     {
-        return $this->_resultSet;
+        return $this->resultSet;
     }
 
     /**
      * {@inheritdoc}
      */
-    public function setFetchMode($fetchStyle, $arg2 = null, $arg3 = null)
+    public function setFetchMode($fetchMode, ...$args) : void
     {
     }
 }

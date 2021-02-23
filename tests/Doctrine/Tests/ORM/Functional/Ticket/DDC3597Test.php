@@ -11,25 +11,24 @@ use Doctrine\Tests\OrmFunctionalTestCase;
 
 /**
  * @group DDC-117
+ * @group DDC-3597
+ * @group embedded
  */
 class DDC3597Test extends OrmFunctionalTestCase
 {
-    protected function setUp(): void
+    protected function setUp() : void
     {
         parent::setUp();
-        $this->_schemaTool->createSchema(
+        $this->schemaTool->createSchema(
             [
-                $this->_em->getClassMetadata(DDC3597Root::class),
-                $this->_em->getClassMetadata(DDC3597Media::class),
-                $this->_em->getClassMetadata(DDC3597Image::class),
+                $this->em->getClassMetadata(DDC3597Root::class),
+                $this->em->getClassMetadata(DDC3597Media::class),
+                $this->em->getClassMetadata(DDC3597Image::class),
             ]
         );
     }
 
-    /**
-     * @group DDC-3597
-     */
-    public function testSaveImageEntity(): void
+    public function testSaveImageEntity() : void
     {
         $imageEntity = new DDC3597Image('foobar');
         $imageEntity->setFormat('JPG');
@@ -37,22 +36,22 @@ class DDC3597Test extends OrmFunctionalTestCase
         $imageEntity->getDimension()->setWidth(300);
         $imageEntity->getDimension()->setHeight(500);
 
-        $this->_em->persist($imageEntity);
-        $this->_em->flush(); //before this fix, it will fail with a exception
+        $this->em->persist($imageEntity);
+        $this->em->flush(); //before this fix, it will fail with a exception
 
-        $this->_em->clear();
+        $this->em->clear();
 
         //request entity
-        $imageEntity = $this->_em->find(DDC3597Image::class, $imageEntity->getId());
-        $this->assertInstanceOf(DDC3597Image::class, $imageEntity);
+        $imageEntity = $this->em->find(DDC3597Image::class, $imageEntity->getId());
+        self::assertInstanceOf(DDC3597Image::class, $imageEntity);
 
         //cleanup
-        $this->_em->remove($imageEntity);
-        $this->_em->flush();
-        $this->_em->clear();
+        $this->em->remove($imageEntity);
+        $this->em->flush();
+        $this->em->clear();
 
         //check delete
-        $imageEntity = $this->_em->find(DDC3597Image::class, $imageEntity->getId());
-        $this->assertNull($imageEntity);
+        $imageEntity = $this->em->find(DDC3597Image::class, $imageEntity->getId());
+        self::assertNull($imageEntity);
     }
 }

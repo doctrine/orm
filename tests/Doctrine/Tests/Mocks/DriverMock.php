@@ -16,15 +16,15 @@ use Exception;
 class DriverMock implements Driver
 {
     /** @var AbstractPlatform|null */
-    private $_platformMock;
+    private $platformMock;
 
     /** @var AbstractSchemaManager|null */
-    private $_schemaManagerMock;
+    private $schemaManagerMock;
 
     /**
      * {@inheritdoc}
      */
-    public function connect(array $params, $username = null, $password = null, array $driverOptions = [])
+    public function connect(array $params, $username = null, $password = null, array $driverOptions = []) : Driver\Connection
     {
         return new DriverConnectionMock();
     }
@@ -32,37 +32,43 @@ class DriverMock implements Driver
     /**
      * {@inheritdoc}
      */
-    public function getDatabasePlatform()
+    public function getDatabasePlatform() : AbstractPlatform
     {
-        if (! $this->_platformMock) {
-            $this->_platformMock = new DatabasePlatformMock();
+        if (! $this->platformMock) {
+            $this->platformMock = new DatabasePlatformMock();
         }
 
-        return $this->_platformMock;
+        return $this->platformMock;
     }
 
     /**
      * {@inheritdoc}
      */
-    public function getSchemaManager(Connection $conn)
+    public function getSchemaManager(Connection $conn) : AbstractSchemaManager
     {
-        if ($this->_schemaManagerMock === null) {
+        if ($this->schemaManagerMock === null) {
             return new SchemaManagerMock($conn);
         }
 
-        return $this->_schemaManagerMock;
+        return $this->schemaManagerMock;
     }
 
-    /* MOCK API */
+    // MOCK API
 
-    public function setDatabasePlatform(AbstractPlatform $platform): void
+    /**
+     * @return void
+     */
+    public function setDatabasePlatform(AbstractPlatform $platform)
     {
-        $this->_platformMock = $platform;
+        $this->platformMock = $platform;
     }
 
-    public function setSchemaManager(AbstractSchemaManager $sm): void
+    /**
+     * @return void
+     */
+    public function setSchemaManager(AbstractSchemaManager $sm)
     {
-        $this->_schemaManagerMock = $sm;
+        $this->schemaManagerMock = $sm;
     }
 
     /**

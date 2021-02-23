@@ -26,7 +26,7 @@ final class SimpleQueryFullObjectHydrationPerformanceBench
     /** @var HydratorMockStatement */
     private $stmt;
 
-    public function init(): void
+    public function init() : void
     {
         $resultSet = [
             [
@@ -61,7 +61,7 @@ final class SimpleQueryFullObjectHydrationPerformanceBench
         $this->rsm->addFieldResult('a', 'a__id', 'id');
     }
 
-    public function benchHydration(): void
+    public function benchHydration() : void
     {
         $this->hydrator->hydrateAll($this->stmt, $this->rsm);
     }

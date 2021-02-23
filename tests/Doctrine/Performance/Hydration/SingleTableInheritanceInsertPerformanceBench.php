@@ -8,7 +8,6 @@ use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\Performance\EntityManagerFactory;
 use Doctrine\Tests\Models\Company;
 use PhpBench\Benchmark\Metadata\Annotations\BeforeMethods;
-
 use function array_map;
 
 /**
@@ -28,7 +27,7 @@ final class SingleTableInheritanceInsertPerformanceBench
     /** @var Company\CompanyFlexUltraContract[] */
     private $ultraContracts = [];
 
-    public function init(): void
+    public function init() : void
     {
         $this->entityManager = EntityManagerFactory::getEntityManager([
             Company\CompanyPerson::class,
@@ -68,25 +67,25 @@ final class SingleTableInheritanceInsertPerformanceBench
         }
     }
 
-    public function benchInsertFixContracts(): void
+    public function benchInsertFixContracts() : void
     {
         array_map([$this->entityManager, 'persist'], $this->fixContracts);
         $this->entityManager->flush();
     }
 
-    public function benchInsertFlexContracts(): void
+    public function benchInsertFlexContracts() : void
     {
         array_map([$this->entityManager, 'persist'], $this->flexContracts);
         $this->entityManager->flush();
     }
 
-    public function benchInsertUltraContracts(): void
+    public function benchInsertUltraContracts() : void
     {
         array_map([$this->entityManager, 'persist'], $this->ultraContracts);
         $this->entityManager->flush();
     }
 
-    public function benchInsertAllContracts(): void
+    public function benchInsertAllContracts() : void
     {
         array_map([$this->entityManager, 'persist'], $this->fixContracts);
         array_map([$this->entityManager, 'persist'], $this->flexContracts);

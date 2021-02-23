@@ -6,40 +6,43 @@ namespace Doctrine\Tests\Models\ManyToManyPersister;
 
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
+use Doctrine\ORM\Annotation as ORM;
 
 /**
- * @Entity
- * @Table(name="manytomanypersister_child")
+ * @ORM\Entity
+ * @ORM\Table(name="manytomanypersister_child")
  */
 class ChildClass
 {
     /**
-     * @Id
-     * @Column(name="id1", type="integer")
+     * @ORM\Id
+     * @ORM\Column(name="id1", type="integer")
+     *
      * @var int
      */
     public $id1;
 
     /**
-     * @Id
-     * @ManyToOne(targetEntity=OtherParentClass::class, cascade={"persist"})
-     * @JoinColumn(name="other_parent_id", referencedColumnName="id")
+     * @ORM\Id
+     * @ORM\ManyToOne(targetEntity=OtherParentClass::class, cascade={"persist"})
+     * @ORM\JoinColumn(name="other_parent_id", referencedColumnName="id")
+     *
      * @var OtherParentClass
      */
     public $otherParent;
 
     /**
-     * @ManyToMany(targetEntity=ParentClass::class, inversedBy="children")
-     * @JoinTable(
+     * @ORM\ManyToMany(targetEntity=ParentClass::class, inversedBy="children")
+     * @ORM\JoinTable(
      *     name="parent_child",
      *     joinColumns={
-     *         @JoinColumn(name="child_id1", referencedColumnName="id1"),
-     *         @JoinColumn(name="child_id2", referencedColumnName="other_parent_id")
+     *         @ORM\JoinColumn(name="child_id1", referencedColumnName="id1"),
+     *         @ORM\JoinColumn(name="child_id2", referencedColumnName="other_parent_id")
      *     },
-     *     inverseJoinColumns={@JoinColumn(name="parent_id", referencedColumnName="id")}
+     *     inverseJoinColumns={@ORM\JoinColumn(name="parent_id", referencedColumnName="id")}
      * )
+     *
      * @var Collection|ParentClass[]
-     * @psalm-var Collection<ParentClass>
      */
     public $parents;
 

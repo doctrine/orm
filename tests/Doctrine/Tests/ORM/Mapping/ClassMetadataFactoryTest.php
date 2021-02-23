@@ -6,18 +6,17 @@ namespace Doctrine\Tests\ORM\Mapping;
 
 use Doctrine\Common\EventManager;
 use Doctrine\DBAL\Connection;
+use Doctrine\DBAL\Types\Type;
 use Doctrine\ORM\Configuration;
-use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Event\OnClassMetadataNotFoundEventArgs;
 use Doctrine\ORM\Events;
-use Doctrine\ORM\Id\AbstractIdGenerator;
+use Doctrine\ORM\Mapping;
 use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\Mapping\ClassMetadataFactory;
+use Doctrine\ORM\Mapping\Driver\MappingDriver;
 use Doctrine\ORM\Mapping\MappingException;
-use Doctrine\ORM\ORMException;
-use Doctrine\Persistence\Mapping\Driver\MappingDriver;
-use Doctrine\Persistence\Mapping\RuntimeReflectionService;
+use Doctrine\ORM\Sequencing\Generator;
 use Doctrine\Tests\Mocks\ConnectionMock;
 use Doctrine\Tests\Mocks\DriverMock;
 use Doctrine\Tests\Mocks\EntityManagerMock;
@@ -30,20 +29,16 @@ use Doctrine\Tests\Models\JoinedInheritanceType\ChildClass;
 use Doctrine\Tests\Models\JoinedInheritanceType\RootClass;
 use Doctrine\Tests\Models\Quote;
 use Doctrine\Tests\OrmTestCase;
-use DoctrineGlobal_Article;
+use DoctrineGlobalArticle;
 use Exception;
 use InvalidArgumentException;
-use ReflectionClass;
 use stdClass;
-
-use function array_search;
-use function assert;
-use function count;
+use function reset;
 use function sprintf;
 
 class ClassMetadataFactoryTest extends OrmTestCase
 {
-    public function testGetMetadataForSingleClass(): void
+    public function testGetMetadataForSingleClass() : void
     {
         $mockDriver    = new MetadataDriverMock();
         $entityManager = $this->createEntityManager($mockDriver);
@@ -58,64 +53,26 @@ class ClassMetadataFactoryTest extends OrmTestCase
         // SUT
         $cmf = new ClassMetadataFactory();
         $cmf->setEntityManager($entityManager);
-        $cmf->setMetadataFor($cm1->name, $cm1);
+        $cmf->setMetadataFor($cm1->getClassName(), $cm1);
 
         // Prechecks
-        $this->assertEquals([], $cm1->parentClasses);
-        $this->assertEquals(ClassMetadata::INHERITANCE_TYPE_NONE, $cm1->inheritanceType);
-        $this->assertTrue($cm1->hasField('name'));
-        $this->assertEquals(2, count($cm1->associationMappings));
-        $this->assertEquals(ClassMetadata::GENERATOR_TYPE_AUTO, $cm1->generatorType);
-        $this->assertEquals('group', $cm1->table['name']);
+        self::assertCount(0, $cm1->getAncestorsIterator());
+        self::assertEquals(Mapping\InheritanceType::NONE, $cm1->inheritanceType);
+        self::assertEquals(Mapping\GeneratorType::SEQUENCE, $cm1->getProperty('id')->getValueGenerator()->getType());
+        self::assertTrue($cm1->hasField('name'));
+        self::assertCount(4, $cm1->getPropertiesIterator()); // 2 fields + 2 associations
+        self::assertEquals('group', $cm1->table->getName());
 
         // Go
-        $cmMap1 = $cmf->getMetadataFor($cm1->name);
+        $cmMap1 = $cmf->getMetadataFor($cm1->getClassName());
 
-        $this->assertSame($cm1, $cmMap1);
-        $this->assertEquals('group', $cmMap1->table['name']);
-        $this->assertTrue($cmMap1->table['quoted']);
-        $this->assertEquals([], $cmMap1->parentClasses);
-        $this->assertTrue($cmMap1->hasField('name'));
+        self::assertSame($cm1, $cmMap1);
+        self::assertEquals('group', $cmMap1->table->getName());
+        self::assertCount(0, $cmMap1->getAncestorsIterator());
+        self::assertTrue($cmMap1->hasField('name'));
     }
 
-    public function testGetMetadataForReturnsLoadedCustomIdGenerator(): void
-    {
-        $cm1 = $this->createValidClassMetadata();
-        $cm1->setIdGeneratorType(ClassMetadata::GENERATOR_TYPE_CUSTOM);
-        $cm1->customGeneratorDefinition = ['class' => CustomIdGenerator::class];
-        $cmf                            = $this->createTestFactory();
-        $cmf->setMetadataForClass($cm1->name, $cm1);
-
-        $actual = $cmf->getMetadataFor($cm1->name);
-
-        $this->assertEquals(ClassMetadata::GENERATOR_TYPE_CUSTOM, $actual->generatorType);
-        $this->assertInstanceOf(CustomIdGenerator::class, $actual->idGenerator);
-    }
-
-    public function testGetMetadataForThrowsExceptionOnUnknownCustomGeneratorClass(): void
-    {
-        $cm1 = $this->createValidClassMetadata();
-        $cm1->setIdGeneratorType(ClassMetadata::GENERATOR_TYPE_CUSTOM);
-        $cm1->customGeneratorDefinition = ['class' => 'NotExistingGenerator'];
-        $cmf                            = $this->createTestFactory();
-        $cmf->setMetadataForClass($cm1->name, $cm1);
-        $this->expectException(ORMException::class);
-
-        $actual = $cmf->getMetadataFor($cm1->name);
-    }
-
-    public function testGetMetadataForThrowsExceptionOnMissingCustomGeneratorDefinition(): void
-    {
-        $cm1 = $this->createValidClassMetadata();
-        $cm1->setIdGeneratorType(ClassMetadata::GENERATOR_TYPE_CUSTOM);
-        $cmf = $this->createTestFactory();
-        $cmf->setMetadataForClass($cm1->name, $cm1);
-        $this->expectException(ORMException::class);
-
-        $actual = $cmf->getMetadataFor($cm1->name);
-    }
-
-    public function testHasGetMetadataNamespaceSeparatorIsNotNormalized(): void
+    public function testHasGetMetadataNamespaceSeparatorIsNotNormalized() : void
     {
         require_once __DIR__ . '/../../Models/Global/GlobalNamespaceModel.php';
 
@@ -124,20 +81,19 @@ class ClassMetadataFactoryTest extends OrmTestCase
         $entityManager = $this->createEntityManager($metadataDriver);
 
         $mf = $entityManager->getMetadataFactory();
-        $m1 = $mf->getMetadataFor(DoctrineGlobal_Article::class);
-        $h1 = $mf->hasMetadataFor(DoctrineGlobal_Article::class);
-        $h2 = $mf->hasMetadataFor('\\' . DoctrineGlobal_Article::class);
-        $m2 = $mf->getMetadataFor('\\' . DoctrineGlobal_Article::class);
 
-        $this->assertNotSame($m1, $m2);
-        $this->assertFalse($h2);
-        $this->assertTrue($h1);
+        self::assertSame(
+            $mf->getMetadataFor(DoctrineGlobalArticle::class),
+            $mf->getMetadataFor('\\' . DoctrineGlobalArticle::class)
+        );
+        self::assertTrue($mf->hasMetadataFor(DoctrineGlobalArticle::class));
+        self::assertTrue($mf->hasMetadataFor('\\' . DoctrineGlobalArticle::class));
     }
 
     /**
      * @group DDC-1512
      */
-    public function testIsTransient(): void
+    public function testIsTransient() : void
     {
         $cmf    = new ClassMetadataFactory();
         $driver = $this->createMock(MappingDriver::class);
@@ -152,80 +108,47 @@ class ClassMetadataFactoryTest extends OrmTestCase
 
         $em = $this->createEntityManager($driver);
 
-        $this->assertTrue($em->getMetadataFactory()->isTransient(CmsUser::class));
-        $this->assertFalse($em->getMetadataFactory()->isTransient(CmsArticle::class));
+        self::assertTrue($em->getMetadataFactory()->isTransient(CmsUser::class));
+        self::assertFalse($em->getMetadataFactory()->isTransient(CmsArticle::class));
     }
 
     /**
-     * @group DDC-1512
+     * @dataProvider classesInInheritanceWithNoMapProvider()
      */
-    public function testIsTransientEntityNamespace(): void
+    public function testNoDefaultDiscriminatorMapIsAssumed(string $rootClassName, string $targetClassName) : void
     {
-        $cmf    = new ClassMetadataFactory();
-        $driver = $this->createMock(MappingDriver::class);
-        $driver->expects($this->at(0))
-               ->method('isTransient')
-               ->with($this->equalTo(CmsUser::class))
-               ->will($this->returnValue(true));
-        $driver->expects($this->at(1))
-               ->method('isTransient')
-               ->with($this->equalTo(CmsArticle::class))
-               ->will($this->returnValue(false));
-
-        $em = $this->createEntityManager($driver);
-        $em->getConfiguration()->addEntityNamespace('CMS', 'Doctrine\Tests\Models\CMS');
-
-        $this->assertTrue($em->getMetadataFactory()->isTransient('CMS:CmsUser'));
-        $this->assertFalse($em->getMetadataFactory()->isTransient('CMS:CmsArticle'));
-    }
-
-    public function testAddDefaultDiscriminatorMap(): void
-    {
-        self::markTestSkipped('This test is just incorrect and must be fixed');
-
         $cmf    = new ClassMetadataFactory();
         $driver = $this->createAnnotationDriver([__DIR__ . '/../../Models/JoinedInheritanceType/']);
         $em     = $this->createEntityManager($driver);
         $cmf->setEntityManager($em);
 
-        $rootMetadata                 = $cmf->getMetadataFor(RootClass::class);
-        $childMetadata                = $cmf->getMetadataFor(ChildClass::class);
-        $anotherChildMetadata         = $cmf->getMetadataFor(AnotherChildClass::class);
-        $rootDiscriminatorMap         = $rootMetadata->discriminatorMap;
-        $childDiscriminatorMap        = $childMetadata->discriminatorMap;
-        $anotherChildDiscriminatorMap = $anotherChildMetadata->discriminatorMap;
+        $this->expectException(MappingException::class);
+        $this->expectExceptionMessage(
+            sprintf("Entity class '%s' is using inheritance but no discriminator map was defined.", $rootClassName)
+        );
 
-        $rootClass         = RootClass::class;
-        $childClass        = ChildClass::class;
-        $anotherChildClass = AnotherChildClass::class;
-
-        $rootClassKey         = array_search($rootClass, $rootDiscriminatorMap);
-        $childClassKey        = array_search($childClass, $rootDiscriminatorMap);
-        $anotherChildClassKey = array_search($anotherChildClass, $rootDiscriminatorMap);
-
-        $this->assertEquals('rootclass', $rootClassKey);
-        $this->assertEquals('childclass', $childClassKey);
-        $this->assertEquals('anotherchildclass', $anotherChildClassKey);
-
-        $this->assertEquals($childDiscriminatorMap, $rootDiscriminatorMap);
-        $this->assertEquals($anotherChildDiscriminatorMap, $rootDiscriminatorMap);
-
-        // ClassMetadataFactory::addDefaultDiscriminatorMap shouldn't be called again, because the
-        // discriminator map is already cached
-        $cmf = $this->getMockBuilder(ClassMetadataFactory::class)->setMethods(['addDefaultDiscriminatorMap'])->getMock();
-        $cmf->setEntityManager($em);
-        $cmf->expects($this->never())
-            ->method('addDefaultDiscriminatorMap');
-
-        $rootMetadata = $cmf->getMetadataFor(RootClass::class);
+        $cmf->getMetadataFor($targetClassName);
     }
 
-    public function testGetAllMetadataWorksWithBadConnection(): void
+    /**
+     * @return string[]
+     */
+    public function classesInInheritanceWithNoMapProvider() : iterable
+    {
+        yield 'root entity' => [RootClass::class, RootClass::class];
+        yield 'child entity' => [RootClass::class, ChildClass::class];
+        yield 'another child entity' => [RootClass::class, AnotherChildClass::class];
+    }
+
+    public function testGetAllMetadataWorksWithBadConnection() : void
     {
         // DDC-3551
         $conn       = $this->createMock(Connection::class);
         $mockDriver = new MetadataDriverMock();
-        $em         = $this->createEntityManager($mockDriver, $conn);
+        $conn->expects($this->any())
+            ->method('getEventManager')
+            ->willReturn(new EventManager());
+        $em = $this->createEntityManager($mockDriver, $conn);
 
         $conn->expects($this->any())
             ->method('getDatabasePlatform')
@@ -237,26 +160,31 @@ class ClassMetadataFactoryTest extends OrmTestCase
         // getting all the metadata should work, even if get DatabasePlatform blows up
         $metadata = $cmf->getAllMetadata();
         // this will just be an empty array - there was no error
-        $this->assertEquals([], $metadata);
+        self::assertEquals([], $metadata);
     }
 
-    protected function createEntityManager(MappingDriver $metadataDriver, $conn = null): EntityManagerMock
+    protected function createEntityManager($metadataDriver, $conn = null)
     {
         $driverMock = new DriverMock();
         $config     = new Configuration();
+
         $config->setProxyDir(__DIR__ . '/../../Proxies');
         $config->setProxyNamespace('Doctrine\Tests\Proxies');
-        $eventManager = new EventManager();
+
         if (! $conn) {
-            $conn = new ConnectionMock([], $driverMock, $config, $eventManager);
+            $conn = new ConnectionMock([], $driverMock, $config, new EventManager());
         }
+        $eventManager = $conn->getEventManager();
 
         $config->setMetadataDriverImpl($metadataDriver);
 
         return EntityManagerMock::create($conn, $config, $eventManager);
     }
 
-    protected function createTestFactory(): ClassMetadataFactoryTestSubject
+    /**
+     * @return ClassMetadataFactoryTestSubject
+     */
+    protected function createTestFactory()
     {
         $mockDriver    = new MetadataDriverMock();
         $entityManager = $this->createEntityManager($mockDriver);
@@ -266,27 +194,61 @@ class ClassMetadataFactoryTest extends OrmTestCase
         return $cmf;
     }
 
-    protected function createValidClassMetadata(): ClassMetadata
+    /**
+     * @return ClassMetadata
+     */
+    protected function createValidClassMetadata()
     {
-        // Self-made metadata
-        $cm1 = new ClassMetadata(TestEntity1::class);
-        $cm1->initializeReflection(new RuntimeReflectionService());
-        $cm1->setPrimaryTable(['name' => '`group`']);
+        $cm1 = new ClassMetadata(TestEntity1::class, null);
+
+        $tableMetadata = new Mapping\TableMetadata();
+        $tableMetadata->setName('group');
+
+        $cm1->setTable($tableMetadata);
+
         // Add a mapped field
-        $cm1->mapField(['fieldName' => 'name', 'type' => 'string']);
+        $fieldMetadata = new Mapping\FieldMetadata('id');
+
+        $fieldMetadata->setType(Type::getType('integer'));
+        $fieldMetadata->setPrimaryKey(true);
+        $fieldMetadata->setValueGenerator(new Mapping\ValueGeneratorMetadata(
+            Mapping\GeneratorType::SEQUENCE,
+            new Generator\SequenceGenerator('group_id_seq', 1)
+        ));
+
+        $cm1->addProperty($fieldMetadata);
+
         // Add a mapped field
-        $cm1->mapField(['fieldName' => 'id', 'type' => 'integer', 'id' => true]);
+        $fieldMetadata = new Mapping\FieldMetadata('name');
+
+        $fieldMetadata->setType(Type::getType('string'));
+
+        $cm1->addProperty($fieldMetadata);
+
         // and a mapped association
-        $cm1->mapOneToOne(['fieldName' => 'other', 'targetEntity' => 'TestEntity1', 'mappedBy' => 'this']);
+        $association = new Mapping\OneToOneAssociationMetadata('other');
+
+        $association->setTargetEntity(TestEntity1::class);
+        $association->setMappedBy('this');
+
+        $cm1->addProperty($association);
+
         // and an association on the owning side
-        $joinColumns = [
-            ['name' => 'other_id', 'referencedColumnName' => 'id'],
-        ];
-        $cm1->mapOneToOne(
-            ['fieldName' => 'association', 'targetEntity' => 'TestEntity1', 'joinColumns' => $joinColumns]
-        );
-        // and an id generator type
-        $cm1->setIdGeneratorType(ClassMetadata::GENERATOR_TYPE_AUTO);
+        $joinColumns = [];
+
+        $joinColumn = new Mapping\JoinColumnMetadata();
+
+        $joinColumn->setColumnName('other_id');
+        $joinColumn->setReferencedColumnName('id');
+
+        $joinColumns[] = $joinColumn;
+
+        $association = new Mapping\OneToOneAssociationMetadata('association');
+
+        $association->setJoinColumns($joinColumns);
+        $association->setTargetEntity(TestEntity1::class);
+
+        $cm1->addProperty($association);
 
         return $cm1;
     }
@@ -294,7 +256,7 @@ class ClassMetadataFactoryTest extends OrmTestCase
     /**
      * @group DDC-1845
      */
-    public function testQuoteMetadata(): void
+    public function testQuoteMetadata() : void
     {
         $cmf    = new ClassMetadataFactory();
         $driver = $this->createAnnotationDriver([__DIR__ . '/../../Models/Quote/']);
@@ -307,60 +269,54 @@ class ClassMetadataFactoryTest extends OrmTestCase
         $addressMetadata = $cmf->getMetadataFor(Quote\Address::class);
 
         // Phone Class Metadata
-        $this->assertTrue($phoneMetadata->fieldMappings['number']['quoted']);
-        $this->assertEquals('phone-number', $phoneMetadata->fieldMappings['number']['columnName']);
+        self::assertNotNull($phoneMetadata->getProperty('number'));
+        self::assertEquals('phone-number', $phoneMetadata->getProperty('number')->getColumnName());
 
-        $user = $phoneMetadata->associationMappings['user'];
-        $this->assertTrue($user['joinColumns'][0]['quoted']);
-        $this->assertEquals('user-id', $user['joinColumns'][0]['name']);
-        $this->assertEquals('user-id', $user['joinColumns'][0]['referencedColumnName']);
+        $user                = $phoneMetadata->getProperty('user');
+        $userJoinColumns     = $user->getJoinColumns();
+        $phoneUserJoinColumn = reset($userJoinColumns);
 
-        // User Group Metadata
-        $this->assertTrue($groupMetadata->fieldMappings['id']['quoted']);
-        $this->assertTrue($groupMetadata->fieldMappings['name']['quoted']);
-
-        $this->assertEquals('user-id', $userMetadata->fieldMappings['id']['columnName']);
-        $this->assertEquals('user-name', $userMetadata->fieldMappings['name']['columnName']);
-
-        $user = $groupMetadata->associationMappings['parent'];
-        $this->assertTrue($user['joinColumns'][0]['quoted']);
-        $this->assertEquals('parent-id', $user['joinColumns'][0]['name']);
-        $this->assertEquals('group-id', $user['joinColumns'][0]['referencedColumnName']);
+        self::assertEquals('user-id', $phoneUserJoinColumn->getColumnName());
+        self::assertEquals('user-id', $phoneUserJoinColumn->getReferencedColumnName());
 
         // Address Class Metadata
-        $this->assertTrue($addressMetadata->fieldMappings['id']['quoted']);
-        $this->assertTrue($addressMetadata->fieldMappings['zip']['quoted']);
-
-        $this->assertEquals('address-id', $addressMetadata->fieldMappings['id']['columnName']);
-        $this->assertEquals('address-zip', $addressMetadata->fieldMappings['zip']['columnName']);
-
-        $user = $addressMetadata->associationMappings['user'];
-        $this->assertTrue($user['joinColumns'][0]['quoted']);
-        $this->assertEquals('user-id', $user['joinColumns'][0]['name']);
-        $this->assertEquals('user-id', $user['joinColumns'][0]['referencedColumnName']);
+        self::assertNotNull($addressMetadata->getProperty('id'));
+        self::assertNotNull($addressMetadata->getProperty('zip'));
+        self::assertEquals('address-id', $addressMetadata->getProperty('id')->getColumnName());
+        self::assertEquals('address-zip', $addressMetadata->getProperty('zip')->getColumnName());
 
         // User Class Metadata
-        $this->assertTrue($userMetadata->fieldMappings['id']['quoted']);
-        $this->assertTrue($userMetadata->fieldMappings['name']['quoted']);
+        self::assertNotNull($userMetadata->getProperty('id'));
+        self::assertNotNull($userMetadata->getProperty('name'));
+        self::assertEquals('user-id', $userMetadata->getProperty('id')->getColumnName());
+        self::assertEquals('user-name', $userMetadata->getProperty('name')->getColumnName());
 
-        $this->assertEquals('user-id', $userMetadata->fieldMappings['id']['columnName']);
-        $this->assertEquals('user-name', $userMetadata->fieldMappings['name']['columnName']);
+        $group               = $groupMetadata->getProperty('parent');
+        $groupJoinColumns    = $group->getJoinColumns();
+        $groupUserJoinColumn = reset($groupJoinColumns);
 
-        $address = $userMetadata->associationMappings['address'];
-        $this->assertTrue($address['joinColumns'][0]['quoted']);
-        $this->assertEquals('address-id', $address['joinColumns'][0]['name']);
-        $this->assertEquals('address-id', $address['joinColumns'][0]['referencedColumnName']);
+        self::assertEquals('parent-id', $groupUserJoinColumn->getColumnName());
+        self::assertEquals('group-id', $groupUserJoinColumn->getReferencedColumnName());
 
-        $groups = $userMetadata->associationMappings['groups'];
-        $this->assertTrue($groups['joinTable']['quoted']);
-        $this->assertTrue($groups['joinTable']['joinColumns'][0]['quoted']);
-        $this->assertEquals('quote-users-groups', $groups['joinTable']['name']);
-        $this->assertEquals('user-id', $groups['joinTable']['joinColumns'][0]['name']);
-        $this->assertEquals('user-id', $groups['joinTable']['joinColumns'][0]['referencedColumnName']);
+        $user                  = $addressMetadata->getProperty('user');
+        $userJoinColumns       = $user->getJoinColumns();
+        $addressUserJoinColumn = reset($userJoinColumns);
 
-        $this->assertTrue($groups['joinTable']['inverseJoinColumns'][0]['quoted']);
-        $this->assertEquals('group-id', $groups['joinTable']['inverseJoinColumns'][0]['name']);
-        $this->assertEquals('group-id', $groups['joinTable']['inverseJoinColumns'][0]['referencedColumnName']);
+        self::assertEquals('user-id', $addressUserJoinColumn->getColumnName());
+        self::assertEquals('user-id', $addressUserJoinColumn->getReferencedColumnName());
+
+        $groups                       = $userMetadata->getProperty('groups');
+        $groupsJoinTable              = $groups->getJoinTable();
+        $userGroupsJoinColumns        = $groupsJoinTable->getJoinColumns();
+        $userGroupsJoinColumn         = reset($userGroupsJoinColumns);
+        $userGroupsInverseJoinColumns = $groupsJoinTable->getInverseJoinColumns();
+        $userGroupsInverseJoinColumn  = reset($userGroupsInverseJoinColumns);
+
+        self::assertEquals('quote-users-groups', $groupsJoinTable->getName());
+        self::assertEquals('user-id', $userGroupsJoinColumn->getColumnName());
+        self::assertEquals('user-id', $userGroupsJoinColumn->getReferencedColumnName());
+        self::assertEquals('group-id', $userGroupsInverseJoinColumn->getColumnName());
+        self::assertEquals('group-id', $userGroupsInverseJoinColumn->getReferencedColumnName());
     }
 
     /**
@@ -368,11 +324,10 @@ class ClassMetadataFactoryTest extends OrmTestCase
      * @group 1181
      * @group 385
      */
-    public function testFallbackLoadingCausesEventTriggeringThatCanModifyFetchedMetadata(): void
+    public function testFallbackLoadingCausesEventTriggeringThatCanModifyFetchedMetadata() : void
     {
-        $test     = $this;
-        $metadata = $this->createMock(ClassMetadata::class);
-        assert($metadata instanceof ClassMetadata);
+        /** @var ClassMetadata $metadata */
+        $metadata     = $this->createMock(ClassMetadata::class);
         $cmf          = new ClassMetadataFactory();
         $mockDriver   = new MetadataDriverMock();
         $em           = $this->createEntityManager($mockDriver);
@@ -384,40 +339,40 @@ class ClassMetadataFactoryTest extends OrmTestCase
         $listener
             ->expects($this->any())
             ->method('onClassMetadataNotFound')
-            ->will($this->returnCallback(static function (OnClassMetadataNotFoundEventArgs $args) use ($metadata, $em, $test): void {
-                $test->assertNull($args->getFoundMetadata());
-                $test->assertSame('Foo', $args->getClassName());
-                $test->assertSame($em, $args->getObjectManager());
+            ->will($this->returnCallback(static function (OnClassMetadataNotFoundEventArgs $args) use ($metadata, $em) {
+                self::assertNull($args->getFoundMetadata());
+                self::assertSame('Foo', $args->getClassName());
+                self::assertSame($em, $args->getObjectManager());
 
                 $args->setFoundMetadata($metadata);
             }));
 
         $eventManager->addEventListener([Events::onClassMetadataNotFound], $listener);
 
-        $this->assertSame($metadata, $cmf->getMetadataFor('Foo'));
+        self::assertSame($metadata, $cmf->getMetadataFor('Foo'));
     }
 
     /**
      * @group DDC-3427
      */
-    public function testAcceptsEntityManagerInterfaceInstances(): void
+    public function testAcceptsEntityManagerInterfaceInstances() : void
     {
         $classMetadataFactory = new ClassMetadataFactory();
 
+        /** @var EntityManagerInterface $entityManager */
         $entityManager = $this->createMock(EntityManagerInterface::class);
+
         $classMetadataFactory->setEntityManager($entityManager);
 
         // not really the cleanest way to check it, but we won't add a getter to the CMF just for the sake of testing.
-        $class    = new ReflectionClass(ClassMetadataFactory::class);
-        $property = $class->getProperty('em');
-        $property->setAccessible(true);
-        $this->assertSame($entityManager, $property->getValue($classMetadataFactory));
+        self::assertAttributeSame($entityManager, 'em', $classMetadataFactory);
     }
 
     /**
+     * @group embedded
      * @group DDC-3305
      */
-    public function testRejectsEmbeddableWithoutValidClassName(): void
+    public function testRejectsEmbeddableWithoutValidClassName() : void
     {
         $metadata = $this->createValidClassMetadata();
 
@@ -431,18 +386,19 @@ class ClassMetadataFactoryTest extends OrmTestCase
 
         $cmf = $this->createTestFactory();
 
-        $cmf->setMetadataForClass($metadata->name, $metadata);
+        $cmf->setMetadataForClass($metadata->getClassName(), $metadata);
 
         $this->expectException(MappingException::class);
         $this->expectExceptionMessage('The embed mapping \'embedded\' misses the \'class\' attribute.');
 
-        $cmf->getMetadataFor($metadata->name);
+        $cmf->getMetadataFor($metadata->getClassName());
     }
 
     /**
+     * @group embedded
      * @group DDC-4006
      */
-    public function testInheritsIdGeneratorMappingFromEmbeddable(): void
+    public function testInheritsIdGeneratorMappingFromEmbeddable() : void
     {
         $cmf    = new ClassMetadataFactory();
         $driver = $this->createAnnotationDriver([__DIR__ . '/../../Models/DDC4006/']);
@@ -451,83 +407,36 @@ class ClassMetadataFactoryTest extends OrmTestCase
 
         $userMetadata = $cmf->getMetadataFor(DDC4006User::class);
 
-        $this->assertTrue($userMetadata->isIdGeneratorIdentity());
+        self::assertTrue($userMetadata->isIdGeneratorIdentity());
     }
-
-    public function testInvalidSubClassCase(): void
-    {
-        $this->expectException(MappingException::class);
-        $this->expectExceptionMessage('Entity class \'Doctrine\Tests\ORM\Mapping\cube\' used in the discriminator map of class \'Doctrine\Tests\ORM\Mapping\Shape\' does not exist.');
-
-        $cmf    = new ClassMetadataFactory();
-        $driver = $this->createAnnotationDriver([__DIR__]);
-        $em     = $this->createEntityManager($driver);
-        $cmf->setEntityManager($em);
-
-        $userMetadata = $cmf->getMetadataFor(Shape::class);
-    }
-}
-
-/**
- * @Entity
- * @InheritanceType("SINGLE_TABLE")
- * @DiscriminatorMap({"cube" = cube::class})
- * @DiscriminatorColumn(name="discr", length=32, type="string")
- */
-abstract class Shape
-{
-    /**
-     * @var string
-     * @Id
-     * @Column(type="string")
-     * @GeneratedValue(strategy="AUTO")
-     */
-    public $id;
-}
-
-/** @Entity */
-final class Cube extends Shape
-{
 }
 
 /* Test subject class with overridden factory method for mocking purposes */
 class ClassMetadataFactoryTestSubject extends ClassMetadataFactory
 {
-    /** @psalm-var array<class-string<object>, ClassMetadata> */
-    private $mockMetadata = [];
-
-    /** @psalm-var list<class-string<object>> */
+    private $mockMetadata     = [];
     private $requestedClasses = [];
 
-    /**
-     * @psalm-param class-string<object> $className
-     * @override
-     */
-    protected function newClassMetadataInstance($className): ClassMetadata
-    {
+    protected function newClassMetadataInstance(
+        string $className,
+        ?Mapping\ClassMetadata $parent,
+        Mapping\ClassMetadataBuildingContext $metadataBuildingContext
+    ) : ClassMetadata {
         $this->requestedClasses[] = $className;
+
         if (! isset($this->mockMetadata[$className])) {
-            throw new InvalidArgumentException(sprintf(
-                'No mock metadata found for class %s.',
-                $className
-            ));
+            throw new InvalidArgumentException(sprintf('No mock metadata found for class %s.', $className));
         }
 
         return $this->mockMetadata[$className];
     }
 
-    /**
-     * @psalm-param class-string<object> $className
-     */
-    public function setMetadataForClass(string $className, ClassMetadata $metadata): void
+    public function setMetadataForClass($className, $metadata)
     {
         $this->mockMetadata[$className] = $metadata;
     }
 
-    /**
-     * @return list<class-string<object>>
-     */
-    public function getRequestedClasses(): array
+    public function getRequestedClasses()
     {
         return $this->requestedClasses;
     }
@@ -535,25 +444,27 @@ class ClassMetadataFactoryTestSubject extends ClassMetadataFactory
 
 class TestEntity1
 {
-    /** @var int */
     private $id;
-
-    /** @var string */
     private $name;
-
-    /** @var mixed */
     private $other;
-
-    /** @var mixed */
     private $association;
-
-    /** @var mixed */
     private $embedded;
 }
 
-class CustomIdGenerator extends AbstractIdGenerator
+class CustomIdGenerator implements Generator\Generator
 {
-    public function generate(EntityManager $em, $entity): void
+    /**
+     * {@inheritdoc}
+     */
+    public function generate(EntityManagerInterface $em, ?object $entity)
     {
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function isPostInsertGenerator() : bool
+    {
+        return false;
     }
 }

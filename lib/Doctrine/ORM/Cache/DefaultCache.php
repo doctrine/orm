@@ -1,33 +1,17 @@
 <?php
 
-/*
- * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
- * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
- * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
- * A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT
- * OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
- * SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
- * LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
- * DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
- * THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
- * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
- * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- *
- * This software consists of voluntary contributions made by many individuals
- * and is licensed under the MIT license. For more information, see
- * <http://www.doctrine-project.org>.
- */
+declare(strict_types=1);
 
 namespace Doctrine\ORM\Cache;
 
-use Doctrine\Common\Util\ClassUtils;
 use Doctrine\ORM\Cache;
 use Doctrine\ORM\Cache\Persister\CachedPersister;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Mapping\ClassMetadata;
+use Doctrine\ORM\Mapping\ToManyAssociationMetadata;
 use Doctrine\ORM\ORMInvalidArgumentException;
 use Doctrine\ORM\UnitOfWork;
-
+use Doctrine\ORM\Utility\StaticClassNameConverter;
 use function is_array;
 use function is_object;
 
@@ -42,7 +26,7 @@ class DefaultCache implements Cache
     /** @var UnitOfWork */
     private $uow;
 
-     /** @var CacheFactory */
+    /** @var CacheFactory */
     private $cacheFactory;
 
     /** @var QueryCache[] */
@@ -51,6 +35,9 @@ class DefaultCache implements Cache
     /** @var QueryCache */
     private $defaultQueryCache;
 
+    /**
+     * {@inheritdoc}
+     */
     public function __construct(EntityManagerInterface $em)
     {
         $this->em           = $em;
@@ -66,7 +53,7 @@ class DefaultCache implements Cache
     public function getEntityCacheRegion($className)
     {
         $metadata  = $this->em->getClassMetadata($className);
-        $persister = $this->uow->getEntityPersister($metadata->rootEntityName);
+        $persister = $this->uow->getEntityPersister($metadata->getRootClassName());
 
         if (! ($persister instanceof CachedPersister)) {
             return null;
@@ -81,7 +68,7 @@ class DefaultCache implements Cache
     public function getCollectionCacheRegion($className, $association)
     {
         $metadata  = $this->em->getClassMetadata($className);
-        $persister = $this->uow->getCollectionPersister($metadata->getAssociationMapping($association));
+        $persister = $this->uow->getCollectionPersister($metadata->getProperty($association));
 
         if (! ($persister instanceof CachedPersister)) {
             return null;
@@ -96,7 +83,7 @@ class DefaultCache implements Cache
     public function containsEntity($className, $identifier)
     {
         $metadata  = $this->em->getClassMetadata($className);
-        $persister = $this->uow->getEntityPersister($metadata->rootEntityName);
+        $persister = $this->uow->getEntityPersister($metadata->getRootClassName());
 
         if (! ($persister instanceof CachedPersister)) {
             return false;
@@ -111,7 +98,7 @@ class DefaultCache implements Cache
     public function evictEntity($className, $identifier)
     {
         $metadata  = $this->em->getClassMetadata($className);
-        $persister = $this->uow->getEntityPersister($metadata->rootEntityName);
+        $persister = $this->uow->getEntityPersister($metadata->getRootClassName());
 
         if (! ($persister instanceof CachedPersister)) {
             return;
@@ -126,7 +113,7 @@ class DefaultCache implements Cache
     public function evictEntityRegion($className)
     {
         $metadata  = $this->em->getClassMetadata($className);
-        $persister = $this->uow->getEntityPersister($metadata->rootEntityName);
+        $persister = $this->uow->getEntityPersister($metadata->getRootClassName());
 
         if (! ($persister instanceof CachedPersister)) {
             return;
@@ -143,7 +130,7 @@ class DefaultCache implements Cache
         $metadatas = $this->em->getMetadataFactory()->getAllMetadata();
 
         foreach ($metadatas as $metadata) {
-            $persister = $this->uow->getEntityPersister($metadata->rootEntityName);
+            $persister = $this->uow->getEntityPersister($metadata->getRootClassName());
 
             if (! ($persister instanceof CachedPersister)) {
                 continue;
@@ -159,7 +146,7 @@ class DefaultCache implements Cache
     public function containsCollection($className, $association, $ownerIdentifier)
     {
         $metadata  = $this->em->getClassMetadata($className);
-        $persister = $this->uow->getCollectionPersister($metadata->getAssociationMapping($association));
+        $persister = $this->uow->getCollectionPersister($metadata->getProperty($association));
 
         if (! ($persister instanceof CachedPersister)) {
             return false;
@@ -174,7 +161,7 @@ class DefaultCache implements Cache
     public function evictCollection($className, $association, $ownerIdentifier)
     {
         $metadata  = $this->em->getClassMetadata($className);
-        $persister = $this->uow->getCollectionPersister($metadata->getAssociationMapping($association));
+        $persister = $this->uow->getCollectionPersister($metadata->getProperty($association));
 
         if (! ($persister instanceof CachedPersister)) {
             return;
@@ -189,7 +176,7 @@ class DefaultCache implements Cache
     public function evictCollectionRegion($className, $association)
     {
         $metadata  = $this->em->getClassMetadata($className);
-        $persister = $this->uow->getCollectionPersister($metadata->getAssociationMapping($association));
+        $persister = $this->uow->getCollectionPersister($metadata->getProperty($association));
 
         if (! ($persister instanceof CachedPersister)) {
             return;
@@ -206,8 +193,8 @@ class DefaultCache implements Cache
         $metadatas = $this->em->getMetadataFactory()->getAllMetadata();
 
         foreach ($metadatas as $metadata) {
-            foreach ($metadata->associationMappings as $association) {
-                if (! $association['type'] & ClassMetadata::TO_MANY) {
+            foreach ($metadata->getPropertiesIterator() as $association) {
+                if (! $association instanceof ToManyAssociationMetadata) {
                     continue;
                 }
 
@@ -275,19 +262,19 @@ class DefaultCache implements Cache
         return $this->queryCaches[$regionName];
     }
 
-     /**
-      * @param ClassMetadata $metadata   The entity metadata.
-      * @param mixed         $identifier The entity identifier.
-      *
-      * @return EntityCacheKey
-      */
+    /**
+     * @param ClassMetadata $metadata   The entity metadata.
+     * @param mixed         $identifier The entity identifier.
+     *
+     * @return EntityCacheKey
+     */
     private function buildEntityCacheKey(ClassMetadata $metadata, $identifier)
     {
         if (! is_array($identifier)) {
             $identifier = $this->toIdentifierArray($metadata, $identifier);
         }
 
-        return new EntityCacheKey($metadata->rootEntityName, $identifier);
+        return new EntityCacheKey($metadata->getRootClassName(), $identifier);
     }
 
     /**
@@ -303,18 +290,18 @@ class DefaultCache implements Cache
             $ownerIdentifier = $this->toIdentifierArray($metadata, $ownerIdentifier);
         }
 
-        return new CollectionCacheKey($metadata->rootEntityName, $association, $ownerIdentifier);
+        return new CollectionCacheKey($metadata->getRootClassName(), $association, $ownerIdentifier);
     }
 
     /**
      * @param ClassMetadata $metadata   The entity metadata.
      * @param mixed         $identifier The entity identifier.
      *
-     * @return array<string, mixed>
+     * @return mixed[]
      */
     private function toIdentifierArray(ClassMetadata $metadata, $identifier)
     {
-        if (is_object($identifier) && $this->em->getMetadataFactory()->hasMetadataFor(ClassUtils::getClass($identifier))) {
+        if (is_object($identifier) && $this->em->getMetadataFactory()->hasMetadataFor(StaticClassNameConverter::getClass($identifier))) {
             $identifier = $this->uow->getSingleIdentifierValue($identifier);
 
             if ($identifier === null) {

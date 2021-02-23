@@ -4,15 +4,18 @@ declare(strict_types=1);
 
 namespace Doctrine\Tests\Models\ManyToManyPersister;
 
+use Doctrine\ORM\Annotation as ORM;
+
 /**
- * @Entity
- * @Table(name="manytomanypersister_other_parent")
+ * @ORM\Entity
+ * @ORM\Table(name="manytomanypersister_other_parent")
  */
 class OtherParentClass
 {
     /**
-     * @Id
-     * @Column(name="id", type="integer")
+     * @ORM\Id
+     * @ORM\Column(name="id", type="integer")
+     *
      * @var int
      */
     public $id;

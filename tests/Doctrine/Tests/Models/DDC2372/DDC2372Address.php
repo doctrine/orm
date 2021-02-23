@@ -4,24 +4,21 @@ declare(strict_types=1);
 
 namespace Doctrine\Tests\Models\DDC2372;
 
-/** @Entity @Table(name="addresses") */
+use Doctrine\ORM\Annotation as ORM;
+
+/** @ORM\Entity @ORM\Table(name="addresses") */
 class DDC2372Address
 {
     /**
-     * @var int
-     * @Id @Column(type="integer")
-     * @GeneratedValue(strategy="AUTO")
+     * @ORM\Id @ORM\Column(type="integer")
+     * @ORM\GeneratedValue(strategy="AUTO")
      */
     private $id;
-    /**
-     * @var string
-     * @Column(type="string", length=255)
-     */
+
+    /** @ORM\Column(type="string", length=255) */
     private $street;
-    /**
-     * @var User
-     * @OneToOne(targetEntity="User", mappedBy="address")
-     */
+
+    /** @ORM\OneToOne(targetEntity=User::class, mappedBy="address") */
     private $user;
 
     public function getId()
@@ -34,7 +31,7 @@ class DDC2372Address
         return $this->street;
     }
 
-    public function setStreet($street): void
+    public function setStreet($street)
     {
         $this->street = $street;
     }
@@ -44,7 +41,7 @@ class DDC2372Address
         return $this->user;
     }
 
-    public function setUser(User $user): void
+    public function setUser(User $user)
     {
         if ($this->user !== $user) {
             $this->user = $user;

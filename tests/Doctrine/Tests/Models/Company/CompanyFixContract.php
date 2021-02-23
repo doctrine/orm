@@ -4,20 +4,21 @@ declare(strict_types=1);
 
 namespace Doctrine\Tests\Models\Company;
 
-use Doctrine\ORM\Mapping\ClassMetadataInfo;
+use Doctrine\ORM\Annotation as ORM;
 
 /**
- * @Entity
+ * @ORM\Entity
  */
 class CompanyFixContract extends CompanyContract
 {
     /**
-     * @column(type="integer")
+     * @ORM\Column(type="integer")
+     *
      * @var int
      */
     private $fixPrice = 0;
 
-    public function calculatePrice(): int
+    public function calculatePrice()
     {
         return $this->fixPrice;
     }
@@ -27,19 +28,8 @@ class CompanyFixContract extends CompanyContract
         return $this->fixPrice;
     }
 
-    public function setFixPrice($fixPrice): void
+    public function setFixPrice($fixPrice)
     {
         $this->fixPrice = $fixPrice;
-    }
-
-    public static function loadMetadata(ClassMetadataInfo $metadata): void
-    {
-        $metadata->mapField(
-            [
-                'type'      => 'integer',
-                'name'      => 'fixPrice',
-                'fieldName' => 'fixPrice',
-            ]
-        );
     }
 }

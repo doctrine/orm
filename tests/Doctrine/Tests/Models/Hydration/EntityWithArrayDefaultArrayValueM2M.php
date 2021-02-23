@@ -4,22 +4,14 @@ declare(strict_types=1);
 
 namespace Doctrine\Tests\Models\Hydration;
 
-use Doctrine\Common\Collections\Collection;
+use Doctrine\ORM\Annotation as ORM;
 
-/** @Entity */
+/** @ORM\Entity */
 class EntityWithArrayDefaultArrayValueM2M
 {
-    /**
-     * @var int
-     * @Id
-     * @Column(type="integer")
-     * @GeneratedValue(strategy="AUTO")
-     */
+    /** @ORM\Id @ORM\Column(type="integer") @ORM\GeneratedValue(strategy="AUTO") */
     public $id;
 
-    /**
-     * @psalm-var Collection<int, SimpleEntity>
-     * @ManyToMany(targetEntity=SimpleEntity::class)
-     */
+    /** @ORM\ManyToMany(targetEntity=SimpleEntity::class) */
     public $collection = [];
 }

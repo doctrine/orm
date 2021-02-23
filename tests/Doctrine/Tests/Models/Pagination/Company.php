@@ -4,44 +4,45 @@ declare(strict_types=1);
 
 namespace Doctrine\Tests\Models\Pagination;
 
-use Doctrine\Common\Collections\Collection;
+use Doctrine\ORM\Annotation as ORM;
 
 /**
  * Company
  *
- * @Entity
- * @Table(name="pagination_company")
+ * @ORM\Entity
+ * @ORM\Table(name="pagination_company")
  */
 class Company
 {
     /**
-     * @var int
-     * @Id @Column(type="integer")
-     * @GeneratedValue
+     * @ORM\Id @ORM\Column(type="integer")
+     * @ORM\GeneratedValue
      */
     public $id;
 
-    /**
-     * @var string
-     * @Column(type="string")
-     */
+    /** @ORM\Column(type="string") */
     public $name;
 
-    /**
-     * @var string
-     * @Column(type="string", name="jurisdiction_code", nullable=true)
-     */
+    /** @ORM\Column(type="string", name="jurisdiction_code", nullable=true) */
     public $jurisdiction;
 
     /**
-     * @var Logo
-     * @OneToOne(targetEntity="Logo", mappedBy="company", cascade={"persist"}, orphanRemoval=true)
+     * @ORM\OneToOne(
+     *     targetEntity=Logo::class,
+     *     mappedBy="company",
+     *     cascade={"persist"},
+     *     orphanRemoval=true
+     * )
      */
     public $logo;
 
     /**
-     * @psalm-var Collection<int, Department>
-     * @OneToMany(targetEntity="Department", mappedBy="company", cascade={"persist"}, orphanRemoval=true)
+     * @ORM\OneToMany(
+     *     targetEntity=Department::class,
+     *     mappedBy="company",
+     *     cascade={"persist"},
+     *     orphanRemoval=true
+     * )
      */
     public $departments;
 }

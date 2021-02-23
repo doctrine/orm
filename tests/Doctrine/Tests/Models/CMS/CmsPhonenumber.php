@@ -4,22 +4,23 @@ declare(strict_types=1);
 
 namespace Doctrine\Tests\Models\CMS;
 
+use Doctrine\ORM\Annotation as ORM;
+
 /**
- * @Entity
- * @Table(name="cms_phonenumbers")
+ * @ORM\Entity
+ * @ORM\Table(name="cms_phonenumbers")
  */
 class CmsPhonenumber
 {
-    /** @Id @Column(length=50) */
+    /** @ORM\Id @ORM\Column(length=50) */
     public $phonenumber;
     /**
-     * @var CmsUser
-     * @ManyToOne(targetEntity="CmsUser", inversedBy="phonenumbers", cascade={"merge"})
-     * @JoinColumn(name="user_id", referencedColumnName="id")
+     * @ORM\ManyToOne(targetEntity=CmsUser::class, inversedBy="phonenumbers")
+     * @ORM\JoinColumn(name="user_id", referencedColumnName="id")
      */
     public $user;
 
-    public function setUser(CmsUser $user): void
+    public function setUser(CmsUser $user)
     {
         $this->user = $user;
     }

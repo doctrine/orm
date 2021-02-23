@@ -11,47 +11,49 @@ use PHPUnit\Framework\TestCase;
 
 class HierarchyDiscriminatorResolverTest extends TestCase
 {
-    public function testResolveDiscriminatorsForClass(): void
+    public function testResolveDiscriminatorsForClass() : void
     {
-        $childClassMetadata                     = new ClassMetadata('ChildEntity');
-        $childClassMetadata->name               = 'Some\Class\Child\Name';
-        $childClassMetadata->discriminatorValue = 'child-discriminator';
-
-        $classMetadata                     = new ClassMetadata('Entity');
-        $classMetadata->subClasses         = [$childClassMetadata->name];
+        $classMetadata                     = new ClassMetadata('Entity', null);
         $classMetadata->name               = 'Some\Class\Name';
         $classMetadata->discriminatorValue = 'discriminator';
 
+        $childClassMetadata                     = new ClassMetadata('ChildEntity', $classMetadata);
+        $childClassMetadata->name               = 'Some\Class\Child\Name';
+        $childClassMetadata->discriminatorValue = 'child-discriminator';
+
+        $classMetadata->setSubclasses([$childClassMetadata->getClassName()]);
+
         $em = $this->prophesize(EntityManagerInterface::class);
-        $em->getClassMetadata($classMetadata->name)
+        $em->getClassMetadata($classMetadata->getClassName())
             ->shouldBeCalled()
             ->willReturn($classMetadata);
-        $em->getClassMetadata($childClassMetadata->name)
+        $em->getClassMetadata($childClassMetadata->getClassName())
             ->shouldBeCalled()
             ->willReturn($childClassMetadata);
 
         $discriminators = HierarchyDiscriminatorResolver::resolveDiscriminatorsForClass($classMetadata, $em->reveal());
 
-        $this->assertCount(2, $discriminators);
-        $this->assertArrayHasKey($classMetadata->discriminatorValue, $discriminators);
-        $this->assertArrayHasKey($childClassMetadata->discriminatorValue, $discriminators);
+        self::assertCount(2, $discriminators);
+        self::assertArrayHasKey($classMetadata->discriminatorValue, $discriminators);
+        self::assertArrayHasKey($childClassMetadata->discriminatorValue, $discriminators);
     }
 
-    public function testResolveDiscriminatorsForClassWithNoSubclasses(): void
+    public function testResolveDiscriminatorsForClassWithNoSubclasses() : void
     {
-        $classMetadata                     = new ClassMetadata('Entity');
-        $classMetadata->subClasses         = [];
+        $classMetadata = new ClassMetadata('Entity', null);
+        $classMetadata->setSubclasses([]);
         $classMetadata->name               = 'Some\Class\Name';
         $classMetadata->discriminatorValue = 'discriminator';
 
         $em = $this->prophesize(EntityManagerInterface::class);
-        $em->getClassMetadata($classMetadata->name)
+
+        $em->getClassMetadata($classMetadata->getClassName())
             ->shouldBeCalled()
             ->willReturn($classMetadata);
 
         $discriminators = HierarchyDiscriminatorResolver::resolveDiscriminatorsForClass($classMetadata, $em->reveal());
 
-        $this->assertCount(1, $discriminators);
-        $this->assertArrayHasKey($classMetadata->discriminatorValue, $discriminators);
+        self::assertCount(1, $discriminators);
+        self::assertArrayHasKey($classMetadata->discriminatorValue, $discriminators);
     }
 }

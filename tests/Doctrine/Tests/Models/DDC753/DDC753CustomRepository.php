@@ -8,7 +8,10 @@ use Doctrine\ORM\EntityRepository;
 
 class DDC753CustomRepository extends EntityRepository
 {
-    public function isCustomRepository(): bool
+    /**
+     * @return bool
+     */
+    public function isCustomRepository()
     {
         return true;
     }

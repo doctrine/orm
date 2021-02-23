@@ -4,7 +4,8 @@ declare(strict_types=1);
 
 namespace Doctrine\Tests\ORM\Mapping\NamingStrategy;
 
-use Doctrine\ORM\Mapping\DefaultNamingStrategy;
+use Doctrine\ORM\Mapping\Factory\DefaultNamingStrategy;
+use function strtolower;
 
 use function strtolower;
 
@@ -16,7 +17,7 @@ class JoinColumnClassNamingStrategy extends DefaultNamingStrategy
     /**
      * {@inheritdoc}
      */
-    public function joinColumnName($propertyName, $className = null)
+    public function joinColumnName(string $propertyName, ?string $className = null) : string
     {
         return strtolower($this->classToTableName($className))
             . '_' . $propertyName

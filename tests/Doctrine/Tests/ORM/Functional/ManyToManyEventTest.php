@@ -17,32 +17,35 @@ class ManyToManyEventTest extends OrmFunctionalTestCase
     /** @var PostUpdateListener */
     private $listener;
 
-    protected function setUp(): void
+    protected function setUp() : void
     {
         $this->useModelSet('cms');
         parent::setUp();
         $this->listener = new PostUpdateListener();
-        $evm            = $this->_em->getEventManager();
+        $evm            = $this->em->getEventManager();
         $evm->addEventListener(Events::postUpdate, $this->listener);
     }
 
-    public function testListenerShouldBeNotifiedOnlyWhenUpdating(): void
+    public function testListenerShouldBeNotifiedOnlyWhenUpdating() : void
     {
         $user = $this->createNewValidUser();
-        $this->_em->persist($user);
-        $this->_em->flush();
-        $this->assertFalse($this->listener->wasNotified);
+        $this->em->persist($user);
+        $this->em->flush();
+        self::assertFalse($this->listener->wasNotified);
 
         $group       = new CmsGroup();
         $group->name = 'admins';
         $user->addGroup($group);
-        $this->_em->persist($user);
-        $this->_em->flush();
+        $this->em->persist($user);
+        $this->em->flush();
 
-        $this->assertTrue($this->listener->wasNotified);
+        self::assertTrue($this->listener->wasNotified);
     }
 
-    private function createNewValidUser(): CmsUser
+    /**
+     * @return CmsUser
+     */
+    private function createNewValidUser()
     {
         $user           = new CmsUser();
         $user->username = 'fran6co';
@@ -60,7 +63,7 @@ class PostUpdateListener
     /** @var bool */
     public $wasNotified = false;
 
-    public function postUpdate($args): void
+    public function postUpdate($args)
     {
         $this->wasNotified = true;
     }

@@ -1,0 +1,78 @@
+<?xml version="1.0"?>
+<project name="DoctrineORM" default="build" basedir=".">
+    <property file="build.properties" />
+
+    <target name="php">
+        <exec executable="which" outputproperty="php_executable">
+            <arg value="php" />
+        </exec>
+    </target>
+
+    <target name="prepare">
+        <mkdir dir="build" />
+    </target>
+
+    <target name="build" depends="check-git-checkout-clean,prepare,php,composer">
+        <exec executable="${php_executable}">
+            <arg value="build/composer.phar" />
+            <arg value="archive" />
+            <arg value="--dir=build" />
+        </exec>
+    </target>
+
+    <target name="composer" depends="php,composer-check,composer-download">
+        <exec executable="${php_executable}">
+            <arg value="build/composer.phar" />
+            <arg value="install" />
+        </exec>
+    </target>
+
+    <target name="composer-check" depends="prepare">
+        <available file="build/composer.phar" property="composer.present"/>
+    </target>
+
+    <target name="composer-download" unless="composer.present">
+        <exec executable="wget">
+            <arg value="-Obuild/composer.phar" />
+            <arg value="http://getcomposer.org/composer.phar" />
+        </exec>
+    </target>
+
+    <target name="check-git-checkout-clean">
+        <exec executable="git" failonerror="true">
+            <arg value="diff-index" />
+            <arg value="--quiet" />
+            <arg value="HEAD" />
+        </exec>
+    </target>
+
+    <macrodef name="git-commit">
+        <attribute name="file" default="NOT SET"/>
+        <attribute name="message" default="NOT SET"/>
+
+        <sequential>
+            <exec executable="git">
+                <arg value="add" />
+                <arg value="@{file}" />
+            </exec>
+            <exec executable="git">
+                <arg value="commit" />
+                <arg value="-m" />
+                <arg value="@{message}" />
+            </exec>
+        </sequential>
+    </macrodef>
+
+    <macrodef name="git-tag">
+        <attribute name="version" default="NOT SET" />
+
+        <sequential>
+            <exec executable="git">
+                <arg value="tag" />
+                <arg value="-m" />
+                <arg value="v@{version}" />
+                <arg value="v@{version}" />
+            </exec>
+        </sequential>
+    </macrodef>
+</project>

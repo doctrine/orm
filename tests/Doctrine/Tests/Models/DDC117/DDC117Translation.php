@@ -5,46 +5,33 @@ declare(strict_types=1);
 namespace Doctrine\Tests\Models\DDC117;
 
 use Doctrine\Common\Collections\ArrayCollection;
-use Doctrine\Common\Collections\Collection;
+use Doctrine\ORM\Annotation as ORM;
 
 /**
- * @Entity
+ * @ORM\Entity
  */
 class DDC117Translation
 {
     /**
-     * @var DDC117Article
-     * @Id
-     * @ManyToOne(targetEntity="DDC117Article", inversedBy="translations")
-     * @JoinColumn(name="article_id", referencedColumnName="article_id")
+     * @ORM\Id
+     * @ORM\ManyToOne(targetEntity=DDC117Article::class, inversedBy="translations")
+     * @ORM\JoinColumn(name="article_id", referencedColumnName="article_id")
      */
     private $article;
 
-    /**
-     * @var string
-     * @Id @column(type="string")
-     */
+    /** @ORM\Id @ORM\Column(type="string") */
     private $language;
 
-    /**
-     * @var string
-     * @column(type="string")
-     */
+    /** @ORM\Column(type="string") */
     private $title;
 
-    /**
-     * @var Collection<int, DDC117Editor>
-     * @ManyToMany(targetEntity="DDC117Editor", mappedBy="reviewingTranslations")
-     */
+    /** @ORM\ManyToMany(targetEntity=DDC117Editor::class, mappedBy="reviewingTranslations") */
     public $reviewedByEditors;
 
-    /**
-     * @var Collection<int, DDC117Editor>
-     * @OneToMany(targetEntity="DDC117Editor", mappedBy="lastTranslation")
-     */
+    /** @ORM\OneToMany(targetEntity=DDC117Editor::class, mappedBy="lastTranslation") */
     public $lastTranslatedBy;
 
-    public function __construct(DDC117Article $article, string $language, string $title)
+    public function __construct($article, $language, $title)
     {
         $this->article           = $article;
         $this->language          = $language;
@@ -53,22 +40,22 @@ class DDC117Translation
         $this->lastTranslatedBy  = new ArrayCollection();
     }
 
-    public function getArticleId(): int
+    public function getArticleId()
     {
         return $this->article->id();
     }
 
-    public function getLanguage(): string
+    public function getLanguage()
     {
         return $this->language;
     }
 
-    public function getLastTranslatedBy(): Collection
+    public function getLastTranslatedBy()
     {
         return $this->lastTranslatedBy;
     }
 
-    public function getReviewedByEditors(): Collection
+    public function getReviewedByEditors()
     {
         return $this->reviewedByEditors;
     }

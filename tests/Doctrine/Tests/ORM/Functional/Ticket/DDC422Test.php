@@ -5,23 +5,22 @@ declare(strict_types=1);
 namespace Doctrine\Tests\ORM\Functional\Ticket;
 
 use Doctrine\Common\Collections\ArrayCollection;
-use Doctrine\Common\Collections\Collection;
+use Doctrine\ORM\Annotation as ORM;
 use Doctrine\ORM\PersistentCollection;
 use Doctrine\Tests\OrmFunctionalTestCase;
-
 use function get_class;
 
 class DDC422Test extends OrmFunctionalTestCase
 {
-    protected function setUp(): void
+    protected function setUp() : void
     {
         parent::setUp();
-        //$this->_em->getConnection()->getConfiguration()->setSQLLogger(new \Doctrine\DBAL\Logging\EchoSQLLogger);
-        $this->_schemaTool->createSchema(
+        //$this->em->getConnection()->getConfiguration()->setSQLLogger(new \Doctrine\DBAL\Logging\EchoSQLLogger);
+        $this->schemaTool->createSchema(
             [
-                $this->_em->getClassMetadata(DDC422Guest::class),
-                $this->_em->getClassMetadata(DDC422Customer::class),
-                $this->_em->getClassMetadata(DDC422Contact::class),
+                $this->em->getClassMetadata(DDC422Guest::class),
+                $this->em->getClassMetadata(DDC422Customer::class),
+                $this->em->getClassMetadata(DDC422Contact::class),
             ]
         );
     }
@@ -29,54 +28,48 @@ class DDC422Test extends OrmFunctionalTestCase
     /**
      * @group DDC-422
      */
-    public function testIssue(): void
+    public function testIssue() : void
     {
         $customer = new DDC422Customer();
-        $this->_em->persist($customer);
-        $this->_em->flush();
-        $this->_em->clear();
+        $this->em->persist($customer);
+        $this->em->flush();
+        $this->em->clear();
 
-        $customer = $this->_em->find(get_class($customer), $customer->id);
+        $customer = $this->em->find(get_class($customer), $customer->id);
 
-        $this->assertInstanceOf(PersistentCollection::class, $customer->contacts);
-        $this->assertFalse($customer->contacts->isInitialized());
+        self::assertInstanceOf(PersistentCollection::class, $customer->contacts);
+        self::assertFalse($customer->contacts->isInitialized());
         $contact = new DDC422Contact();
         $customer->contacts->add($contact);
-        $this->assertTrue($customer->contacts->isDirty());
-        $this->assertFalse($customer->contacts->isInitialized());
-        $this->_em->flush();
+        self::assertTrue($customer->contacts->isDirty());
+        self::assertFalse($customer->contacts->isInitialized());
+        $this->em->flush();
 
-        $this->assertEquals(1, $this->_em->getConnection()->fetchColumn('select count(*) from ddc422_customers_contacts'));
+        self::assertEquals(1, $this->em->getConnection()->fetchColumn('select count(*) from ddc422_customers_contacts'));
     }
 }
 
 /**
- * @Entity
- * @InheritanceType("JOINED")
- * @DiscriminatorColumn(name="discr", type="string")
- * @DiscriminatorMap({"guest" = "DDC422Guest", "customer" = "DDC422Customer"})
+ * @ORM\Entity
+ * @ORM\InheritanceType("JOINED")
+ * @ORM\DiscriminatorColumn(name="discr", type="string")
+ * @ORM\DiscriminatorMap({"guest" = DDC422Guest::class, "customer" = DDC422Customer::class})
  */
 class DDC422Guest
 {
-    /**
-     * @var int
-     * @Id
-     * @Column(type="integer")
-     * @GeneratedValue
-     */
+    /** @ORM\Id @ORM\Column(type="integer") @ORM\GeneratedValue */
     public $id;
 }
 
-/** @Entity */
+/** @ORM\Entity */
 class DDC422Customer extends DDC422Guest
 {
     /**
-     * @var Collection<int, DDC422Contact>
-     * @ManyToMany(targetEntity="DDC422Contact", cascade={"persist","remove"})
-     * @JoinTable(name="ddc422_customers_contacts",
-     *      joinColumns={@JoinColumn(name="customer_id", referencedColumnName="id", onDelete="cascade" )},
-     *      inverseJoinColumns={@JoinColumn(name="contact_id", referencedColumnName="id", onDelete="cascade" )}
-     *  )
+     * @ORM\ManyToMany(targetEntity=DDC422Contact::class, cascade={"persist","remove"})
+     * @ORM\JoinTable(name="ddc422_customers_contacts",
+     *      joinColumns={@ORM\JoinColumn(name="customer_id", referencedColumnName="id", onDelete="cascade" )},
+     *      inverseJoinColumns={@ORM\JoinColumn(name="contact_id", referencedColumnName="id", onDelete="cascade" )}
+     *      )
      */
     public $contacts;
 
@@ -86,14 +79,9 @@ class DDC422Customer extends DDC422Guest
     }
 }
 
-/** @Entity */
+/** @ORM\Entity */
 class DDC422Contact
 {
-    /**
-     * @var int
-     * @Id
-     * @Column(type="integer")
-     * @GeneratedValue
-     */
+    /** @ORM\Id @ORM\Column(type="integer") @ORM\GeneratedValue */
     public $id;
 }

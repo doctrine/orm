@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace Doctrine\Tests\ORM\Functional;
 
-use Doctrine\Common\Util\ClassUtils;
 use Doctrine\ORM\Event\LifecycleEventArgs;
 use Doctrine\ORM\Events;
+use Doctrine\ORM\Utility\StaticClassNameConverter;
 use Doctrine\Tests\Models\CMS\CmsAddress;
 use Doctrine\Tests\Models\CMS\CmsEmail;
 use Doctrine\Tests\Models\CMS\CmsPhonenumber;
@@ -14,12 +14,18 @@ use Doctrine\Tests\Models\CMS\CmsUser;
 use Doctrine\Tests\OrmFunctionalTestCase;
 use RuntimeException;
 
+/**
+ * PostLoadEventTest
+ */
 class PostLoadEventTest extends OrmFunctionalTestCase
 {
     /** @var int */
     private $userId;
 
-    protected function setUp(): void
+    /**
+     * {@inheritdoc}
+     */
+    protected function setUp() : void
     {
         $this->useModelSet('cms');
 
@@ -28,7 +34,7 @@ class PostLoadEventTest extends OrmFunctionalTestCase
         $this->loadFixture();
     }
 
-    public function testLoadedEntityUsingFindShouldTriggerEvent(): void
+    public function testLoadedEntityUsingFindShouldTriggerEvent() : void
     {
         $mockListener = $this->createMock(PostLoadListener::class);
 
@@ -38,14 +44,14 @@ class PostLoadEventTest extends OrmFunctionalTestCase
             ->method('postLoad')
             ->will($this->returnValue(true));
 
-        $eventManager = $this->_em->getEventManager();
+        $eventManager = $this->em->getEventManager();
 
         $eventManager->addEventListener([Events::postLoad], $mockListener);
 
-        $this->_em->find(CmsUser::class, $this->userId);
+        $this->em->find(CmsUser::class, $this->userId);
     }
 
-    public function testLoadedEntityUsingQueryShouldTriggerEvent(): void
+    public function testLoadedEntityUsingQueryShouldTriggerEvent() : void
     {
         $mockListener = $this->createMock(PostLoadListener::class);
 
@@ -55,17 +61,17 @@ class PostLoadEventTest extends OrmFunctionalTestCase
             ->method('postLoad')
             ->will($this->returnValue(true));
 
-        $eventManager = $this->_em->getEventManager();
+        $eventManager = $this->em->getEventManager();
 
         $eventManager->addEventListener([Events::postLoad], $mockListener);
 
-        $query = $this->_em->createQuery('SELECT u FROM Doctrine\Tests\Models\CMS\CmsUser u WHERE u.id = :id');
+        $query = $this->em->createQuery('SELECT u FROM Doctrine\Tests\Models\CMS\CmsUser u WHERE u.id = :id');
 
         $query->setParameter('id', $this->userId);
         $query->getResult();
     }
 
-    public function testLoadedAssociationToOneShouldTriggerEvent(): void
+    public function testLoadedAssociationToOneShouldTriggerEvent() : void
     {
         $mockListener = $this->createMock(PostLoadListener::class);
 
@@ -75,17 +81,17 @@ class PostLoadEventTest extends OrmFunctionalTestCase
             ->method('postLoad')
             ->will($this->returnValue(true));
 
-        $eventManager = $this->_em->getEventManager();
+        $eventManager = $this->em->getEventManager();
 
         $eventManager->addEventListener([Events::postLoad], $mockListener);
 
-        $query = $this->_em->createQuery('SELECT u, e FROM Doctrine\Tests\Models\CMS\CmsUser u JOIN u.email e WHERE u.id = :id');
+        $query = $this->em->createQuery('SELECT u, e FROM Doctrine\Tests\Models\CMS\CmsUser u JOIN u.email e WHERE u.id = :id');
 
         $query->setParameter('id', $this->userId);
         $query->getResult();
     }
 
-    public function testLoadedAssociationToManyShouldTriggerEvent(): void
+    public function testLoadedAssociationToManyShouldTriggerEvent() : void
     {
         $mockListener = $this->createMock(PostLoadListener::class);
 
@@ -95,19 +101,19 @@ class PostLoadEventTest extends OrmFunctionalTestCase
             ->method('postLoad')
             ->will($this->returnValue(true));
 
-        $eventManager = $this->_em->getEventManager();
+        $eventManager = $this->em->getEventManager();
 
         $eventManager->addEventListener([Events::postLoad], $mockListener);
 
-        $query = $this->_em->createQuery('SELECT u, p FROM Doctrine\Tests\Models\CMS\CmsUser u JOIN u.phonenumbers p WHERE u.id = :id');
+        $query = $this->em->createQuery('SELECT u, p FROM Doctrine\Tests\Models\CMS\CmsUser u JOIN u.phonenumbers p WHERE u.id = :id');
 
         $query->setParameter('id', $this->userId);
         $query->getResult();
     }
 
-    public function testLoadedProxyEntityShouldTriggerEvent(): void
+    public function testLoadedProxyEntityShouldTriggerEvent() : void
     {
-        $eventManager = $this->_em->getEventManager();
+        $eventManager = $this->em->getEventManager();
 
         // Should not be invoked during getReference call
         $mockListener = $this->createMock(PostLoadListener::class);
@@ -119,7 +125,7 @@ class PostLoadEventTest extends OrmFunctionalTestCase
 
         $eventManager->addEventListener([Events::postLoad], $mockListener);
 
-        $userProxy = $this->_em->getReference(CmsUser::class, $this->userId);
+        $userProxy = $this->em->getReference(CmsUser::class, $this->userId);
 
         // Now deactivate original listener and attach new one
         $eventManager->removeEventListener([Events::postLoad], $mockListener);
@@ -136,9 +142,9 @@ class PostLoadEventTest extends OrmFunctionalTestCase
         $userProxy->getName();
     }
 
-    public function testLoadedProxyPartialShouldTriggerEvent(): void
+    public function testLoadedProxyPartialShouldTriggerEvent() : void
     {
-        $eventManager = $this->_em->getEventManager();
+        $eventManager = $this->em->getEventManager();
 
         // Should not be invoked during getReference call
         $mockListener = $this->createMock(PostLoadListener::class);
@@ -151,15 +157,15 @@ class PostLoadEventTest extends OrmFunctionalTestCase
 
         $eventManager->addEventListener([Events::postLoad], $mockListener);
 
-        $query = $this->_em->createQuery('SELECT PARTIAL u.{id, name}, p FROM Doctrine\Tests\Models\CMS\CmsUser u JOIN u.phonenumbers p WHERE u.id = :id');
+        $query = $this->em->createQuery('SELECT PARTIAL u.{id, name}, p FROM Doctrine\Tests\Models\CMS\CmsUser u JOIN u.phonenumbers p WHERE u.id = :id');
 
         $query->setParameter('id', $this->userId);
         $query->getResult();
     }
 
-    public function testLoadedProxyAssociationToOneShouldTriggerEvent(): void
+    public function testLoadedProxyAssociationToOneShouldTriggerEvent() : void
     {
-        $user = $this->_em->find(CmsUser::class, $this->userId);
+        $user = $this->em->find(CmsUser::class, $this->userId);
 
         $mockListener = $this->createMock(PostLoadListener::class);
 
@@ -169,7 +175,7 @@ class PostLoadEventTest extends OrmFunctionalTestCase
             ->method('postLoad')
             ->will($this->returnValue(true));
 
-        $eventManager = $this->_em->getEventManager();
+        $eventManager = $this->em->getEventManager();
 
         $eventManager->addEventListener([Events::postLoad], $mockListener);
 
@@ -178,9 +184,9 @@ class PostLoadEventTest extends OrmFunctionalTestCase
         $emailProxy->getEmail();
     }
 
-    public function testLoadedProxyAssociationToManyShouldTriggerEvent(): void
+    public function testLoadedProxyAssociationToManyShouldTriggerEvent() : void
     {
-        $user = $this->_em->find(CmsUser::class, $this->userId);
+        $user = $this->em->find(CmsUser::class, $this->userId);
 
         $mockListener = $this->createMock(PostLoadListener::class);
 
@@ -190,7 +196,7 @@ class PostLoadEventTest extends OrmFunctionalTestCase
             ->method('postLoad')
             ->will($this->returnValue(true));
 
-        $eventManager = $this->_em->getEventManager();
+        $eventManager = $this->em->getEventManager();
 
         $eventManager->addEventListener([Events::postLoad], $mockListener);
 
@@ -202,35 +208,35 @@ class PostLoadEventTest extends OrmFunctionalTestCase
     /**
      * @group DDC-3005
      */
-    public function testAssociationsArePopulatedWhenEventIsFired(): void
+    public function testAssociationsArePopulatedWhenEventIsFired() : void
     {
         $checkerListener = new PostLoadListenerCheckAssociationsArePopulated();
-        $this->_em->getEventManager()->addEventListener([Events::postLoad], $checkerListener);
+        $this->em->getEventManager()->addEventListener([Events::postLoad], $checkerListener);
 
-        $qb = $this->_em->getRepository(CmsUser::class)->createQueryBuilder('u');
+        $qb = $this->em->getRepository(CmsUser::class)->createQueryBuilder('u');
         $qb->leftJoin('u.email', 'email');
         $qb->addSelect('email');
         $qb->getQuery()->getSingleResult();
 
-        $this->assertTrue($checkerListener->checked, 'postLoad event is not invoked');
-        $this->assertTrue($checkerListener->populated, 'Association of email is not populated in postLoad event');
+        self::assertTrue($checkerListener->checked, 'postLoad event is not invoked');
+        self::assertTrue($checkerListener->populated, 'Association of email is not populated in postLoad event');
     }
 
     /**
      * @group DDC-3005
      */
-    public function testEventRaisedCorrectTimesWhenOtherEntityLoadedInEventHandler(): void
+    public function testEventRaisedCorrectTimesWhenOtherEntityLoadedInEventHandler() : void
     {
-        $eventManager = $this->_em->getEventManager();
+        $eventManager = $this->em->getEventManager();
         $listener     = new PostLoadListenerLoadEntityInEventHandler();
         $eventManager->addEventListener([Events::postLoad], $listener);
 
-        $this->_em->find(CmsUser::class, $this->userId);
-        $this->assertSame(1, $listener->countHandledEvents(CmsUser::class), CmsUser::class . ' should be handled once!');
-        $this->assertSame(1, $listener->countHandledEvents(CmsEmail::class), CmsEmail::class . ' should be handled once!');
+        $this->em->find(CmsUser::class, $this->userId);
+        self::assertSame(1, $listener->countHandledEvents(CmsUser::class), CmsUser::class . ' should be handled once!');
+        self::assertSame(1, $listener->countHandledEvents(CmsEmail::class), CmsEmail::class . ' should be handled once!');
     }
 
-    private function loadFixture(): void
+    private function loadFixture()
     {
         $user           = new CmsUser();
         $user->name     = 'Roman';
@@ -258,18 +264,18 @@ class PostLoadEventTest extends OrmFunctionalTestCase
         $user->addPhonenumber($ph1);
         $user->addPhonenumber($ph2);
 
-        $this->_em->persist($user);
-        $this->_em->flush();
+        $this->em->persist($user);
+        $this->em->flush();
 
         $this->userId = $user->getId();
 
-        $this->_em->clear();
+        $this->em->clear();
     }
 }
 
 class PostLoadListener
 {
-    public function postLoad(LifecycleEventArgs $event): void
+    public function postLoad(LifecycleEventArgs $event)
     {
         // Expected to be mocked out
         echo 'Should never be called!';
@@ -278,20 +284,17 @@ class PostLoadListener
 
 class PostLoadListenerCheckAssociationsArePopulated
 {
-    /** @var bool */
     public $checked = false;
 
-    /** @var bool */
     public $populated = false;
 
-    public function postLoad(LifecycleEventArgs $event): void
+    public function postLoad(LifecycleEventArgs $event)
     {
         $object = $event->getObject();
         if ($object instanceof CmsUser) {
             if ($this->checked) {
                 throw new RuntimeException('Expected to be one user!');
             }
-
             $this->checked   = true;
             $this->populated = $object->getEmail() !== null;
         }
@@ -300,25 +303,23 @@ class PostLoadListenerCheckAssociationsArePopulated
 
 class PostLoadListenerLoadEntityInEventHandler
 {
-    /** @psalm-var array<class-string, int> */
     private $firedByClasses = [];
 
-    public function postLoad(LifecycleEventArgs $event): void
+    public function postLoad(LifecycleEventArgs $event)
     {
         $object = $event->getObject();
-        $class  = ClassUtils::getClass($object);
+        $class  = StaticClassNameConverter::getClass($object);
         if (! isset($this->firedByClasses[$class])) {
             $this->firedByClasses[$class] = 1;
         } else {
             $this->firedByClasses[$class]++;
         }
-
         if ($object instanceof CmsUser) {
             $object->getEmail()->getEmail();
         }
     }
 
-    public function countHandledEvents($className): int
+    public function countHandledEvents($className)
     {
         return $this->firedByClasses[$className] ?? 0;
     }

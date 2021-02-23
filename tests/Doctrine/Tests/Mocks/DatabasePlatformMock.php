@@ -12,108 +12,131 @@ use Doctrine\DBAL\Platforms\AbstractPlatform;
 class DatabasePlatformMock extends AbstractPlatform
 {
     /** @var string */
-    private $_sequenceNextValSql = '';
+    private $sequenceNextValSql = '';
 
     /** @var bool */
-    private $_prefersIdentityColumns = true;
+    private $prefersIdentityColumns = true;
 
     /** @var bool */
-    private $_prefersSequences = false;
+    private $prefersSequences = false;
 
     /**
      * {@inheritdoc}
      */
-    public function prefersIdentityColumns()
+    public function prefersIdentityColumns() : bool
     {
-        return $this->_prefersIdentityColumns;
+        return $this->prefersIdentityColumns;
     }
 
     /**
      * {@inheritdoc}
      */
-    public function prefersSequences()
+    public function prefersSequences() : bool
     {
-        return $this->_prefersSequences;
+        return $this->prefersSequences;
     }
 
     /**
      * {@inheritdoc}
      */
-    public function getSequenceNextValSQL($sequenceName)
+    public function getSequenceNextValSQL($sequenceName) : string
     {
-        return $this->_sequenceNextValSql;
+        return $this->sequenceNextValSql;
     }
 
     /**
      * {@inheritdoc}
      */
-    public function getBooleanTypeDeclarationSQL(array $field)
-    {
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function getIntegerTypeDeclarationSQL(array $field)
+    public function getBooleanTypeDeclarationSQL(array $columnDef) : string
     {
     }
 
     /**
      * {@inheritdoc}
      */
-    public function getBigIntTypeDeclarationSQL(array $field)
+    public function getIntegerTypeDeclarationSQL(array $columnDef) : string
     {
     }
 
     /**
      * {@inheritdoc}
      */
-    public function getSmallIntTypeDeclarationSQL(array $field)
+    public function getBigIntTypeDeclarationSQL(array $columnDef) : string
     {
     }
 
     /**
      * {@inheritdoc}
      */
-    protected function _getCommonIntegerTypeDeclarationSQL(array $columnDef)
+    public function getSmallIntTypeDeclarationSQL(array $columnDef) : string
     {
     }
 
     /**
      * {@inheritdoc}
      */
-    public function getVarcharTypeDeclarationSQL(array $field)
+    protected function _getCommonIntegerTypeDeclarationSQL(array $columnDef) : string
     {
     }
 
     /**
      * {@inheritdoc}
      */
-    public function getClobTypeDeclarationSQL(array $field)
+    public function getVarcharTypeDeclarationSQL(array $columnDef) : string
+    {
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getBlobTypeDeclarationSQL(array $columnDef) : string
+    {
+        throw DBALException::notSupported(__METHOD__);
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getClobTypeDeclarationSQL(array $columnDef) : string
     {
     }
 
     /* MOCK API */
 
-    public function setPrefersIdentityColumns(bool $bool): void
+    /**
+     * @param bool $bool
+     *
+     * @return void
+     */
+    public function setPrefersIdentityColumns($bool)
     {
-        $this->_prefersIdentityColumns = $bool;
+        $this->prefersIdentityColumns = $bool;
     }
 
-    public function setPrefersSequences(bool $bool): void
+    /**
+     * @param bool $bool
+     *
+     * @return void
+     */
+    public function setPrefersSequences($bool)
     {
-        $this->_prefersSequences = $bool;
+        $this->prefersSequences = $bool;
     }
 
-    public function setSequenceNextValSql(string $sql): void
+    /**
+     * @param string $sql
+     *
+     * @return void
+     */
+    public function setSequenceNextValSql($sql)
     {
-        $this->_sequenceNextValSql = $sql;
+        $this->sequenceNextValSql = $sql;
     }
 
     /**
      * {@inheritdoc}
      */
-    public function getName()
+    public function getName() : string
     {
         return 'mock';
     }
@@ -121,15 +144,15 @@ class DatabasePlatformMock extends AbstractPlatform
     /**
      * {@inheritdoc}
      */
-    protected function initializeDoctrineTypeMappings()
+    public function getCurrentDatabaseExpression() : string
     {
+        return '';
     }
 
     /**
      * {@inheritdoc}
      */
-    public function getBlobTypeDeclarationSQL(array $field)
+    protected function initializeDoctrineTypeMappings() : void
     {
-        throw DBALException::notSupported(__METHOD__);
     }
 }

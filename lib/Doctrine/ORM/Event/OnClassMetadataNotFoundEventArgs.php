@@ -1,28 +1,13 @@
 <?php
 
-/*
- * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
- * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
- * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
- * A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT
- * OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
- * SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
- * LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
- * DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
- * THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
- * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
- * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- *
- * This software consists of voluntary contributions made by many individuals
- * and is licensed under the MIT license. For more information, see
- * <http://www.doctrine-project.org>.
- */
+declare(strict_types=1);
 
 namespace Doctrine\ORM\Event;
 
-use Doctrine\Persistence\Event\ManagerEventArgs;
-use Doctrine\Persistence\Mapping\ClassMetadata;
-use Doctrine\Persistence\ObjectManager;
+use Doctrine\Common\Persistence\Event\ManagerEventArgs;
+use Doctrine\ORM\EntityManagerInterface;
+use Doctrine\ORM\Mapping\ClassMetadata;
+use Doctrine\ORM\Mapping\ClassMetadataBuildingContext;
 
 /**
  * Class that holds event arguments for a `onClassMetadataNotFound` event.
@@ -35,39 +20,43 @@ class OnClassMetadataNotFoundEventArgs extends ManagerEventArgs
     /** @var string */
     private $className;
 
+    /** @var ClassMetadataBuildingContext */
+    private $metadataBuildingContext;
+
     /** @var ClassMetadata|null */
     private $foundMetadata;
 
-    /**
-     * @param string $className
-     */
-    public function __construct($className, ObjectManager $objectManager)
-    {
-        $this->className = (string) $className;
+    public function __construct(
+        string $className,
+        ClassMetadataBuildingContext $metadataBuildingContext,
+        EntityManagerInterface $entityManager
+    ) {
+        parent::__construct($entityManager);
 
-        parent::__construct($objectManager);
+        $this->className               = $className;
+        $this->metadataBuildingContext = $metadataBuildingContext;
     }
 
-    public function setFoundMetadata(?ClassMetadata $classMetadata = null)
+    public function setFoundMetadata(?ClassMetadata $classMetadata) : void
     {
         $this->foundMetadata = $classMetadata;
     }
 
-    /**
-     * @return ClassMetadata|null
-     */
-    public function getFoundMetadata()
+    public function getFoundMetadata() : ?ClassMetadata
     {
         return $this->foundMetadata;
     }
 
     /**
      * Retrieve class name for which a failed metadata fetch attempt was executed
-     *
-     * @return string
      */
-    public function getClassName()
+    public function getClassName() : string
     {
         return $this->className;
+    }
+
+    public function getClassMetadataBuildingContext() : ClassMetadataBuildingContext
+    {
+        return $this->metadataBuildingContext;
     }
 }

@@ -4,30 +4,29 @@ declare(strict_types=1);
 
 namespace Doctrine\Tests\Models\Company;
 
-use Doctrine\Common\Collections\Collection;
+use Doctrine\ORM\Annotation as ORM;
 
 /**
- * @Entity
- * @Table(name="company_managers")
+ * @ORM\Entity
+ * @ORM\Table(name="company_managers")
  */
 class CompanyManager extends CompanyEmployee
 {
-    /**
-     * @var string
-     * @Column(type="string", length=250)
-     */
+    /** @ORM\Column(type="string", length=250) */
     private $title;
 
     /**
-     * @var CompanyCar
-     * @OneToOne(targetEntity="CompanyCar", cascade={"persist"})
-     * @JoinColumn(name="car_id", referencedColumnName="id")
+     * @ORM\OneToOne(targetEntity=CompanyCar::class, cascade={"persist"})
+     * @ORM\JoinColumn(name="car_id", referencedColumnName="id")
      */
     private $car;
 
     /**
-     * @psalm-var Collection<int, CompanyFlexContract>
-     * @ManyToMany(targetEntity="CompanyFlexContract", mappedBy="managers", fetch="EXTRA_LAZY")
+     * @ORM\ManyToMany(
+     *     targetEntity=CompanyFlexContract::class,
+     *     mappedBy="managers",
+     *     fetch="EXTRA_LAZY"
+     * )
      */
     public $managedContracts;
 
@@ -36,7 +35,7 @@ class CompanyManager extends CompanyEmployee
         return $this->title;
     }
 
-    public function setTitle($title): void
+    public function setTitle($title)
     {
         $this->title = $title;
     }
@@ -46,7 +45,7 @@ class CompanyManager extends CompanyEmployee
         return $this->car;
     }
 
-    public function setCar(CompanyCar $car): void
+    public function setCar(CompanyCar $car)
     {
         $this->car = $car;
     }

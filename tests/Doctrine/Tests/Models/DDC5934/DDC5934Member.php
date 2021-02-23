@@ -13,7 +13,7 @@ use Doctrine\ORM\Mapping as ORM;
 class DDC5934Member
 {
     /**
-     * @ORM\ManyToMany(targetEntity="DDC5934BaseContract", mappedBy="members")
+     * @ORM\ManyToMany(targetEntity=DDC5934BaseContract::class, mappedBy="members")
      *
      * @var ArrayCollection
      */

@@ -4,22 +4,21 @@ declare(strict_types=1);
 
 namespace Doctrine\Tests\Models\OneToOneInverseSideLoad;
 
+use Doctrine\ORM\Annotation as ORM;
+
 /**
- * @Entity()
- * @Table(name="one_to_one_inverse_side_load_inverse")
+ * @ORM\Entity()
+ * @ORM\Table(name="one_to_one_inverse_side_load_inverse")
  */
 class InverseSide
 {
     /**
-     * @Id()
-     * @Column(type="string")
-     * @GeneratedValue(strategy="NONE")
+     * @ORM\Id()
+     * @ORM\Column(type="string")
+     * @ORM\GeneratedValue(strategy="NONE")
      */
     public $id;
 
-    /**
-     * @var OwningSide
-     * @OneToOne(targetEntity=OwningSide::class, mappedBy="inverse")
-     */
+    /** @ORM\OneToOne(targetEntity=OwningSide::class, mappedBy="inverse") */
     public $owning;
 }

@@ -18,59 +18,33 @@ class ParserTest extends OrmTestCase
      * @covers \Doctrine\ORM\Query\Parser::AbstractSchemaName
      * @group DDC-3715
      */
-    public function testAbstractSchemaNameSupportsFQCN(): void
+    public function testAbstractSchemaNameSupportsFQCN() : void
     {
         $parser = $this->createParser(CmsUser::class);
 
-        $this->assertEquals(CmsUser::class, $parser->AbstractSchemaName());
+        self::assertEquals(CmsUser::class, $parser->AbstractSchemaName());
     }
 
     /**
      * @covers Doctrine\ORM\Query\Parser::AbstractSchemaName
      * @group DDC-3715
      */
-    public function testAbstractSchemaNameSupportsClassnamesWithLeadingBackslash(): void
+    public function testAbstractSchemaNameSupportsClassnamesWithLeadingBackslash() : void
     {
         $parser = $this->createParser('\\' . CmsUser::class);
 
-        $this->assertEquals('\\' . CmsUser::class, $parser->AbstractSchemaName());
+        self::assertEquals('\\' . CmsUser::class, $parser->AbstractSchemaName());
     }
 
     /**
      * @covers \Doctrine\ORM\Query\Parser::AbstractSchemaName
      * @group DDC-3715
      */
-    public function testAbstractSchemaNameSupportsIdentifier(): void
+    public function testAbstractSchemaNameSupportsIdentifier() : void
     {
         $parser = $this->createParser(stdClass::class);
 
-        $this->assertEquals(stdClass::class, $parser->AbstractSchemaName());
-    }
-
-    /**
-     * @covers \Doctrine\ORM\Query\Parser::AbstractSchemaName
-     * @group DDC-3715
-     */
-    public function testAbstractSchemaNameSupportsNamespaceAlias(): void
-    {
-        $parser = $this->createParser('CMS:CmsUser');
-
-        $parser->getEntityManager()->getConfiguration()->addEntityNamespace('CMS', 'Doctrine\Tests\Models\CMS');
-
-        $this->assertEquals(CmsUser::class, $parser->AbstractSchemaName());
-    }
-
-    /**
-     * @covers \Doctrine\ORM\Query\Parser::AbstractSchemaName
-     * @group DDC-3715
-     */
-    public function testAbstractSchemaNameSupportsNamespaceAliasWithRelativeClassname(): void
-    {
-        $parser = $this->createParser('Model:CMS\CmsUser');
-
-        $parser->getEntityManager()->getConfiguration()->addEntityNamespace('Model', 'Doctrine\Tests\Models');
-
-        $this->assertEquals(CmsUser::class, $parser->AbstractSchemaName());
+        self::assertEquals(stdClass::class, $parser->AbstractSchemaName());
     }
 
     /**
@@ -78,7 +52,7 @@ class ParserTest extends OrmTestCase
      * @covers Doctrine\ORM\Query\Parser::match
      * @group DDC-3701
      */
-    public function testMatch(int $expectedToken, string $inputString): void
+    public function testMatch($expectedToken, $inputString) : void
     {
         $parser = $this->createParser($inputString);
 
@@ -92,7 +66,7 @@ class ParserTest extends OrmTestCase
      * @covers Doctrine\ORM\Query\Parser::match
      * @group DDC-3701
      */
-    public function testMatchFailure(int $expectedToken, string $inputString): void
+    public function testMatchFailure($expectedToken, $inputString) : void
     {
         $this->expectException(QueryException::class);
 
@@ -101,7 +75,6 @@ class ParserTest extends OrmTestCase
         $parser->match($expectedToken);
     }
 
-    /** @psalm-return list<array{int, string}> */
     public function validMatches()
     {
         /*
@@ -122,8 +95,7 @@ class ParserTest extends OrmTestCase
         ];
     }
 
-    /** @psalm-return list<array{int, string}> */
-    public function invalidMatches(): array
+    public function invalidMatches()
     {
         return [
             [Lexer::T_DOT, 'ALL'], // ALL is a terminal string (reserved keyword) and also possibly an identifier
@@ -138,25 +110,7 @@ class ParserTest extends OrmTestCase
         ];
     }
 
-    /**
-     * PHP 7.4 would fail with Notice: Trying to access array offset on value of type null.
-     *
-     * @see https://github.com/doctrine/orm/pull/7934
-     *
-     * @group GH7934
-     */
-    public function testNullLookahead(): void
-    {
-        $query = new Query($this->getTestEntityManager());
-        $query->setDQL('SELECT CURRENT_TIMESTAMP()');
-
-        $parser = new Parser($query);
-
-        $this->expectException(QueryException::class);
-        $parser->match(Lexer::T_SELECT);
-    }
-
-    private function createParser(string $dql): Parser
+    private function createParser($dql)
     {
         $query = new Query($this->getTestEntityManager());
         $query->setDQL($dql);

@@ -4,21 +4,22 @@ declare(strict_types=1);
 
 namespace Doctrine\Tests\Models\Cache;
 
+use Doctrine\ORM\Annotation as ORM;
+
 /**
- * @Entity
- * @Table("cache_client")
+ * @ORM\Entity
+ * @ORM\Table("cache_client")
  */
 class Client
 {
     /**
-     * @var int
-     * @Id
-     * @GeneratedValue
-     * @Column(type="integer")
+     * @ORM\Id
+     * @ORM\GeneratedValue
+     * @ORM\Column(type="integer")
      */
     public $id;
 
-    /** @Column(unique=true) */
+    /** @ORM\Column(unique=true) */
     public $name;
 
     public function __construct($name)

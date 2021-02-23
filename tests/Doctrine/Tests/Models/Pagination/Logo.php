@@ -4,43 +4,34 @@ declare(strict_types=1);
 
 namespace Doctrine\Tests\Models\Pagination;
 
+use Doctrine\ORM\Annotation as ORM;
+
 /**
  * Logo
  *
- * @Author Bill Schaller
- * @Entity
- * @Table(name="pagination_logo")
+ * @ORM\Entity
+ * @ORM\Table(name="pagination_logo")
  */
 class Logo
 {
     /**
-     * @Column(type="integer") @Id
-     * @GeneratedValue
+     * @ORM\Column(type="integer") @ORM\Id
+     * @ORM\GeneratedValue
      */
     public $id;
 
-    /**
-     * @var string
-     * @Column(type="string")
-     */
+    /** @ORM\Column(type="string") */
     public $image;
 
-    /**
-     * @var int
-     * @Column(type="integer")
-     */
+    /** @ORM\Column(type="integer") */
     public $image_height;
 
-    /**
-     * @var int
-     * @Column(type="integer")
-     */
+    /** @ORM\Column(type="integer") */
     public $image_width;
 
     /**
-     * @var Company
-     * @OneToOne(targetEntity="Company", inversedBy="logo", cascade={"persist"})
-     * @JoinColumn(name="company_id")
+     * @ORM\OneToOne(targetEntity=Company::class, inversedBy="logo", cascade={"persist"})
+     * @ORM\JoinColumn(name="company_id")
      */
     public $company;
 }

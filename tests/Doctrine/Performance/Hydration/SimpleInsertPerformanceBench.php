@@ -23,7 +23,7 @@ final class SimpleInsertPerformanceBench
     /** @var string */
     private $tableName;
 
-    public function init(): void
+    public function init() : void
     {
         $this->entityManager = EntityManagerFactory::getEntityManager([
             CMS\CmsUser::class,
@@ -48,7 +48,7 @@ final class SimpleInsertPerformanceBench
         $this->tableName = $this->entityManager->getClassMetadata(CMS\CmsUser::class)->getTableName();
     }
 
-    public function benchHydration(): void
+    public function benchHydration() : void
     {
         // Yes, this is a lot of overhead, but I have no better solution other than
         // completely mocking out the DB, which would be silly (query impact is
@@ -58,7 +58,7 @@ final class SimpleInsertPerformanceBench
         foreach ($this->users as $key => $user) {
             $this->entityManager->persist($user);
 
-            if (! $key % 20) {
+            if (! ($key % 20)) {
                 $this->entityManager->flush();
                 $this->entityManager->clear();
             }

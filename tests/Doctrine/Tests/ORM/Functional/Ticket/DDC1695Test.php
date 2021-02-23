@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Doctrine\Tests\ORM\Functional\Ticket;
 
+use Doctrine\ORM\Annotation as ORM;
 use Doctrine\Tests\OrmFunctionalTestCase;
 
 /**
@@ -11,135 +12,158 @@ use Doctrine\Tests\OrmFunctionalTestCase;
  */
 class DDC1695Test extends OrmFunctionalTestCase
 {
-    public function testIssue(): void
+    public function setUp() : void
     {
-        if ($this->_em->getConnection()->getDatabasePlatform()->getName() !== 'sqlite') {
+        parent::setUp();
+
+        if ($this->em->getConnection()->getDatabasePlatform()->getName() !== 'sqlite') {
             $this->markTestSkipped('Only with sqlite');
         }
+    }
 
+    public function testIssue() : void
+    {
         $dql = 'SELECT n.smallText, n.publishDate FROM ' . __NAMESPACE__ . '\\DDC1695News n';
-        $sql = $this->_em->createQuery($dql)->getSQL();
+        $sql = $this->em->createQuery($dql)->getSQL();
 
-        $this->assertEquals(
-            'SELECT d0_."SmallText" AS SmallText_0, d0_."PublishDate" AS PublishDate_1 FROM "DDC1695News" d0_',
+        self::assertEquals(
+            'SELECT t0."SmallText" AS c0, t0."PublishDate" AS c1 FROM "DDC1695News" t0',
             $sql
         );
     }
 }
 
 /**
- * @Table(name="`DDC1695News`")
- * @Entity
+ * @ORM\Table(name="DDC1695News")
+ * @ORM\Entity
  */
 class DDC1695News
 {
     /**
+     * @ORM\Column(name="IdNews", type="integer", nullable=false)
+     * @ORM\Id
+     * @ORM\GeneratedValue
+     *
      * @var int
-     * @Column(name="`IdNews`", type="integer", nullable=false)
-     * @Id
-     * @GeneratedValue
      */
     private $idNews;
 
     /**
+     * @ORM\Column(name="IdUser", type="bigint", nullable=false)
+     *
      * @var int
-     * @Column(name="`IdUser`", type="bigint", nullable=false)
      */
     private $idUser;
 
     /**
+     * @ORM\Column(name="IdLanguage", type="integer", nullable=false)
+     *
      * @var int
-     * @Column(name="`IdLanguage`", type="integer", nullable=false)
      */
     private $idLanguage;
 
     /**
+     * @ORM\Column(name="IdCondition", type="integer", nullable=true)
+     *
      * @var int
-     * @Column(name="`IdCondition`", type="integer", nullable=true)
      */
     private $idCondition;
 
     /**
+     * @ORM\Column(name="IdHealthProvider", type="integer", nullable=true)
+     *
      * @var int
-     * @Column(name="`IdHealthProvider`", type="integer", nullable=true)
      */
     private $idHealthProvider;
 
     /**
+     * @ORM\Column(name="IdSpeciality", type="integer", nullable=true)
+     *
      * @var int
-     * @Column(name="`IdSpeciality`", type="integer", nullable=true)
      */
     private $idSpeciality;
 
     /**
+     * @ORM\Column(name="IdMedicineType", type="integer", nullable=true)
+     *
      * @var int
-     * @Column(name="`IdMedicineType`", type="integer", nullable=true)
      */
     private $idMedicineType;
 
     /**
+     * @ORM\Column(name="IdTreatment", type="integer", nullable=true)
+     *
      * @var int
-     * @Column(name="`IdTreatment`", type="integer", nullable=true)
      */
     private $idTreatment;
 
     /**
+     * @ORM\Column(name="Title", type="string", nullable=true)
+     *
      * @var string
-     * @Column(name="`Title`", type="string", nullable=true)
      */
     private $title;
 
     /**
+     * @ORM\Column(name="SmallText", type="string", nullable=true)
+     *
      * @var string
-     * @Column(name="`SmallText`", type="string", nullable=true)
      */
     private $smallText;
 
     /**
+     * @ORM\Column(name="LongText", type="string", nullable=true)
+     *
      * @var string
-     * @Column(name="`LongText`", type="string", nullable=true)
      */
     private $longText;
 
     /**
+     * @ORM\Column(name="PublishDate", type="datetimetz", nullable=true)
+     *
      * @var DateTimeZone
-     * @Column(name="`PublishDate`", type="datetimetz", nullable=true)
      */
     private $publishDate;
 
     /**
+     * @ORM\Column(name="IdxNews", type="json_array", nullable=true)
+     *
      * @var array
-     * @Column(name="`IdxNews`", type="json_array", nullable=true)
      */
     private $idxNews;
 
     /**
+     * @ORM\Column(name="Highlight", type="boolean", nullable=false)
+     *
      * @var bool
-     * @Column(name="`Highlight`", type="boolean", nullable=false)
      */
     private $highlight;
 
     /**
+     * @ORM\Column(name="Order", type="integer", nullable=false)
+     *
      * @var int
-     * @Column(name="`Order`", type="integer", nullable=false)
      */
     private $order;
 
     /**
+     * @ORM\Column(name="Deleted", type="boolean", nullable=false)
+     *
      * @var bool
-     * @Column(name="`Deleted`", type="boolean", nullable=false)
      */
     private $deleted;
 
     /**
+     * @ORM\Column(name="Active", type="boolean", nullable=false)
+     *
      * @var bool
-     * @Column(name="`Active`", type="boolean", nullable=false)
      */
     private $active;
 
     /**
+     * @ORM\Column(name="UpdateToHighlighted", type="boolean", nullable=true)
+     *
      * @var bool
-     * @Column(name="`UpdateToHighlighted`", type="boolean", nullable=true)
      */
     private $updateToHighlighted;
 }

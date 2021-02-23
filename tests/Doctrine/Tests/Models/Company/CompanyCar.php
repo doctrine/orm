@@ -4,23 +4,21 @@ declare(strict_types=1);
 
 namespace Doctrine\Tests\Models\Company;
 
+use Doctrine\ORM\Annotation as ORM;
+
 /**
- * @Entity
- * @Table(name="company_cars")
+ * @ORM\Entity
+ * @ORM\Table(name="company_cars")
  */
 class CompanyCar
 {
     /**
-     * @var int
-     * @Id @Column(type="integer")
-     * @GeneratedValue(strategy="AUTO")
+     * @ORM\Id @ORM\Column(type="integer")
+     * @ORM\GeneratedValue(strategy="AUTO")
      */
     private $id;
 
-    /**
-     * @var string
-     * @Column(type="string", length=50)
-     */
+    /** @ORM\Column(type="string", length=50) */
     private $brand;
 
     public function __construct($brand = null)

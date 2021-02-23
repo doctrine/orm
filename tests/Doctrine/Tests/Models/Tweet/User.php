@@ -5,38 +5,28 @@ declare(strict_types=1);
 namespace Doctrine\Tests\Models\Tweet;
 
 use Doctrine\Common\Collections\ArrayCollection;
-use Doctrine\Common\Collections\Collection;
+use Doctrine\ORM\Annotation as ORM;
 
 /**
- * @Entity
- * @Table(name="tweet_user")
+ * @ORM\Entity
+ * @ORM\Table(name="tweet_user")
  */
 class User
 {
     /**
-     * @var int
-     * @Id
-     * @GeneratedValue
-     * @Column(type="integer")
+     * @ORM\Id
+     * @ORM\GeneratedValue
+     * @ORM\Column(type="integer")
      */
     public $id;
 
-    /**
-     * @var string
-     * @Column(type="string")
-     */
+    /** @ORM\Column(type="string") */
     public $name;
 
-    /**
-     * @psalm-var Collection<int, Tweet>
-     * @OneToMany(targetEntity="Tweet", mappedBy="author", cascade={"persist"}, fetch="EXTRA_LAZY")
-     */
+    /** @ORM\OneToMany(targetEntity=Tweet::class, mappedBy="author", cascade={"persist"}, fetch="EXTRA_LAZY") */
     public $tweets;
 
-    /**
-     * @psalm-var Collection<int, UserList>
-     * @OneToMany(targetEntity="UserList", mappedBy="owner", fetch="EXTRA_LAZY", orphanRemoval=true)
-     */
+    /** @ORM\OneToMany(targetEntity=UserList::class, mappedBy="owner", fetch="EXTRA_LAZY", orphanRemoval=true) */
     public $userLists;
 
     public function __construct()
@@ -45,13 +35,13 @@ class User
         $this->userLists = new ArrayCollection();
     }
 
-    public function addTweet(Tweet $tweet): void
+    public function addTweet(Tweet $tweet)
     {
         $tweet->setAuthor($this);
         $this->tweets->add($tweet);
     }
 
-    public function addUserList(UserList $userList): void
+    public function addUserList(UserList $userList)
     {
         $userList->owner = $this;
         $this->userLists->add($userList);

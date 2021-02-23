@@ -4,29 +4,29 @@ declare(strict_types=1);
 
 namespace Doctrine\Tests\Models\ECommerce;
 
+use Doctrine\ORM\Annotation as ORM;
+
 /**
  * Describes a product feature.
  *
- * @Entity
- * @Table(name="ecommerce_features")
+ * @ORM\Entity
+ * @ORM\Table(name="ecommerce_features")
  */
 class ECommerceFeature
 {
     /**
-     * @var int
-     * @Column(type="integer")
-     * @Id
-     * @GeneratedValue
+     * @ORM\Column(type="integer")
+     * @ORM\Id
+     * @ORM\GeneratedValue
      */
     private $id;
 
-    /** @Column(length=50) */
+    /** @ORM\Column(length=50) */
     private $description;
 
     /**
-     * @var ECommerceProduct
-     * @ManyToOne(targetEntity="ECommerceProduct", inversedBy="features")
-     * @JoinColumn(name="product_id", referencedColumnName="id")
+     * @ORM\ManyToOne(targetEntity=ECommerceProduct::class, inversedBy="features")
+     * @ORM\JoinColumn(name="product_id", referencedColumnName="id")
      */
     private $product;
 
@@ -40,17 +40,17 @@ class ECommerceFeature
         return $this->description;
     }
 
-    public function setDescription($description): void
+    public function setDescription($description)
     {
         $this->description = $description;
     }
 
-    public function setProduct(ECommerceProduct $product): void
+    public function setProduct(ECommerceProduct $product)
     {
         $this->product = $product;
     }
 
-    public function removeProduct(): void
+    public function removeProduct()
     {
         if ($this->product !== null) {
             $product       = $this->product;

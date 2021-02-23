@@ -1,56 +1,42 @@
 <?php
 
-/*
- * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
- * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
- * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
- * A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT
- * OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
- * SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
- * LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
- * DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
- * THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
- * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
- * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- *
- * This software consists of voluntary contributions made by many individuals
- * and is licensed under the MIT license. For more information, see
- * <http://www.doctrine-project.org>.
- */
+declare(strict_types=1);
 
 namespace Doctrine\ORM;
 
 use BadMethodCallException;
 use Doctrine\Common\EventManager;
-use Doctrine\Common\Util\ClassUtils;
+use Doctrine\Common\Persistence\Mapping\MappingException;
+use Doctrine\Common\Persistence\ObjectRepository;
 use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\DriverManager;
 use Doctrine\DBAL\LockMode;
+use Doctrine\ORM\Exception\EntityManagerClosed;
+use Doctrine\ORM\Exception\InvalidHydrationMode;
+use Doctrine\ORM\Exception\MismatchedEventManager;
+use Doctrine\ORM\Exception\MissingIdentifierField;
+use Doctrine\ORM\Exception\MissingMappingDriverImplementation;
+use Doctrine\ORM\Exception\UnrecognizedIdentifierFields;
 use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\Mapping\ClassMetadataFactory;
-use Doctrine\ORM\Proxy\ProxyFactory;
+use Doctrine\ORM\Proxy\Factory\ProxyFactory;
+use Doctrine\ORM\Proxy\Factory\StaticProxyFactory;
 use Doctrine\ORM\Query\Expr;
 use Doctrine\ORM\Query\FilterCollection;
 use Doctrine\ORM\Query\ResultSetMapping;
 use Doctrine\ORM\Repository\RepositoryFactory;
-use Doctrine\Persistence\Mapping\MappingException;
-use Doctrine\Persistence\ObjectRepository;
+use Doctrine\ORM\Utility\IdentifierFlattener;
+use Doctrine\ORM\Utility\StaticClassNameConverter;
 use InvalidArgumentException;
+use ReflectionException;
 use Throwable;
-
 use function array_keys;
-use function call_user_func;
 use function get_class;
 use function gettype;
 use function is_array;
-use function is_callable;
 use function is_object;
-use function is_string;
 use function ltrim;
 use function sprintf;
-use function trigger_error;
-
-use const E_USER_DEPRECATED;
 
 /**
  * The EntityManager is the central access point to ORM functionality.
@@ -77,7 +63,7 @@ use const E_USER_DEPRECATED;
  * should take a look at the {@see \Doctrine\ORM\Decorator\EntityManagerDecorator}
  * and wrap your entity manager in a decorator.
  */
-/* final */class EntityManager implements EntityManagerInterface
+final class EntityManager implements EntityManagerInterface
 {
     /**
      * The used Configuration.
@@ -136,6 +122,13 @@ use const E_USER_DEPRECATED;
     private $expressionBuilder;
 
     /**
+     * The IdentifierFlattener used for manipulating identifiers
+     *
+     * @var IdentifierFlattener
+     */
+    private $identifierFlattener;
+
+    /**
      * Whether the EntityManager is closed or not.
      *
      * @var bool
@@ -165,17 +158,14 @@ use const E_USER_DEPRECATED;
         $metadataFactoryClassName = $config->getClassMetadataFactoryName();
 
         $this->metadataFactory = new $metadataFactoryClassName();
+
         $this->metadataFactory->setEntityManager($this);
         $this->metadataFactory->setCacheDriver($this->config->getMetadataCacheImpl());
 
-        $this->repositoryFactory = $config->getRepositoryFactory();
-        $this->unitOfWork        = new UnitOfWork($this);
-        $this->proxyFactory      = new ProxyFactory(
-            $this,
-            $config->getProxyDir(),
-            $config->getProxyNamespace(),
-            $config->getAutoGenerateProxyClasses()
-        );
+        $this->repositoryFactory   = $config->getRepositoryFactory();
+        $this->unitOfWork          = new UnitOfWork($this);
+        $this->proxyFactory        = new StaticProxyFactory($this, $this->config->buildGhostObjectFactory());
+        $this->identifierFlattener = new IdentifierFlattener($this->unitOfWork, $this->metadataFactory);
 
         if ($config->isSecondLevelCacheEnabled()) {
             $cacheConfig  = $config->getSecondLevelCacheConfiguration();
@@ -214,6 +204,11 @@ use const E_USER_DEPRECATED;
         return $this->expressionBuilder;
     }
 
+    public function getIdentifierFlattener() : IdentifierFlattener
+    {
+        return $this->identifierFlattener;
+    }
+
     /**
      * {@inheritDoc}
      */
@@ -233,21 +228,17 @@ use const E_USER_DEPRECATED;
     /**
      * {@inheritDoc}
      */
-    public function transactional($func)
+    public function transactional(callable $func)
     {
-        if (! is_callable($func)) {
-            throw new InvalidArgumentException('Expected argument of type "callable", got "' . gettype($func) . '"');
-        }
-
         $this->conn->beginTransaction();
 
         try {
-            $return = call_user_func($func, $this);
+            $return = $func($this);
 
             $this->flush();
             $this->conn->commit();
 
-            return $return ?: true;
+            return $return;
         } catch (Throwable $e) {
             $this->close();
             $this->conn->rollBack();
@@ -282,13 +273,15 @@ use const E_USER_DEPRECATED;
      * MyProject\Domain\User
      * sales:PriceRequest
      *
-     * Internal note: Performance-sensitive method.
+     * {@internal Performance-sensitive method. }}
      *
      * @param string $className
      *
-     * @return ClassMetadata
+     * @throws ReflectionException
+     * @throws InvalidArgumentException
+     * @throws MappingException
      */
-    public function getClassMetadata($className)
+    public function getClassMetadata($className) : Mapping\ClassMetadata
     {
         return $this->metadataFactory->getMetadataFor($className);
     }
@@ -310,14 +303,6 @@ use const E_USER_DEPRECATED;
     /**
      * {@inheritDoc}
      */
-    public function createNamedQuery($name)
-    {
-        return $this->createQuery($this->config->getNamedQuery($name));
-    }
-
-    /**
-     * {@inheritDoc}
-     */
     public function createNativeQuery($sql, ResultSetMapping $rsm)
     {
         $query = new NativeQuery($this);
@@ -331,19 +316,29 @@ use const E_USER_DEPRECATED;
     /**
      * {@inheritDoc}
      */
-    public function createNamedNativeQuery($name)
+    public function createQueryBuilder()
     {
-        [$sql, $rsm] = $this->config->getNamedNativeQuery($name);
-
-        return $this->createNativeQuery($sql, $rsm);
+        return new QueryBuilder($this);
     }
 
     /**
      * {@inheritDoc}
+     *
+     * @deprecated
      */
-    public function createQueryBuilder()
+    public function merge($object)
     {
-        return new QueryBuilder($this);
+        throw new BadMethodCallException('@TODO method disabled - will be removed in 3.0 with a release of doctrine/common');
+    }
+
+    /**
+     * {@inheritDoc}
+     *
+     * @deprecated
+     */
+    public function detach($object)
+    {
+        throw new BadMethodCallException('@TODO method disabled - will be removed in 3.0 with a release of doctrine/common');
     }
 
     /**
@@ -351,41 +346,27 @@ use const E_USER_DEPRECATED;
      * This effectively synchronizes the in-memory state of managed objects with the
      * database.
      *
-     * If an entity is explicitly passed to this method only this entity and
-     * the cascade-persist semantics + scheduled inserts/removals are synchronized.
-     *
-     * @param object|mixed[]|null $entity
-     *
-     * @return void
-     *
      * @throws OptimisticLockException If a version check on an entity that
-     * makes use of optimistic locking fails.
+     *         makes use of optimistic locking fails.
      * @throws ORMException
      */
-    public function flush($entity = null)
+    public function flush()
     {
-        if ($entity !== null) {
-            @trigger_error(
-                'Calling ' . __METHOD__ . '() with any arguments to flush specific entities is deprecated and will not be supported in Doctrine ORM 3.0.',
-                E_USER_DEPRECATED
-            );
-        }
-
         $this->errorIfClosed();
 
-        $this->unitOfWork->commit($entity);
+        $this->unitOfWork->commit();
     }
 
     /**
      * Finds an Entity by its identifier.
      *
-     * @param string   $className   The class name of the entity to find.
+     * @param string   $entityName  The class name of the entity to find.
      * @param mixed    $id          The identity of the entity to find.
      * @param int|null $lockMode    One of the \Doctrine\DBAL\LockMode::* constants
-     *    or NULL if no specific lock mode should be used
-     *    during the search.
+     *                              or NULL if no specific lock mode should be used
+     *                              during the search.
      * @param int|null $lockVersion The version of the entity to find when using
-     * optimistic locking.
+     *                              optimistic locking.
      *
      * @return object|null The entity instance or NULL if the entity can not be found.
      *
@@ -393,21 +374,18 @@ use const E_USER_DEPRECATED;
      * @throws ORMInvalidArgumentException
      * @throws TransactionRequiredException
      * @throws ORMException
-     *
-     * @template T
-     * @psalm-param class-string<T> $className
-     * @psalm-return ?T
      */
-    public function find($className, $id, $lockMode = null, $lockVersion = null)
+    public function find($entityName, $id, $lockMode = null, $lockVersion = null)
     {
-        $class = $this->metadataFactory->getMetadataFor(ltrim($className, '\\'));
+        $class     = $this->metadataFactory->getMetadataFor(ltrim($entityName, '\\'));
+        $className = $class->getClassName();
 
         if ($lockMode !== null) {
             $this->checkLockRequirements($lockMode, $class);
         }
 
         if (! is_array($id)) {
-            if ($class->isIdentifierComposite) {
+            if ($class->isIdentifierComposite()) {
                 throw ORMInvalidArgumentException::invalidCompositeIdentifier();
             }
 
@@ -415,7 +393,7 @@ use const E_USER_DEPRECATED;
         }
 
         foreach ($id as $i => $value) {
-            if (is_object($value) && $this->metadataFactory->hasMetadataFor(ClassUtils::getClass($value))) {
+            if (is_object($value) && $this->metadataFactory->hasMetadataFor(StaticClassNameConverter::getClass($value))) {
                 $id[$i] = $this->unitOfWork->getSingleIdentifierValue($value);
 
                 if ($id[$i] === null) {
@@ -428,7 +406,7 @@ use const E_USER_DEPRECATED;
 
         foreach ($class->identifier as $identifier) {
             if (! isset($id[$identifier])) {
-                throw ORMException::missingIdentifierField($class->name, $identifier);
+                throw MissingIdentifierField::fromFieldAndClass($identifier, $className);
             }
 
             $sortedId[$identifier] = $id[$identifier];
@@ -436,16 +414,15 @@ use const E_USER_DEPRECATED;
         }
 
         if ($id) {
-            throw ORMException::unrecognizedIdentifierFields($class->name, array_keys($id));
+            throw UnrecognizedIdentifierFields::fromClassAndFieldNames($className, array_keys($id));
         }
 
         $unitOfWork = $this->getUnitOfWork();
 
-        $entity = $unitOfWork->tryGetById($sortedId, $class->rootEntityName);
-
         // Check identity map first
+        $entity = $unitOfWork->tryGetById($sortedId, $class->getRootClassName());
         if ($entity !== false) {
-            if (! ($entity instanceof $class->name)) {
+            if (! ($entity instanceof $className)) {
                 return null;
             }
 
@@ -457,7 +434,7 @@ use const E_USER_DEPRECATED;
                 case $lockMode === LockMode::NONE:
                 case $lockMode === LockMode::PESSIMISTIC_READ:
                 case $lockMode === LockMode::PESSIMISTIC_WRITE:
-                    $persister = $unitOfWork->getEntityPersister($class->name);
+                    $persister = $unitOfWork->getEntityPersister($className);
                     $persister->refresh($sortedId, $entity, $lockMode);
                     break;
             }
@@ -465,7 +442,7 @@ use const E_USER_DEPRECATED;
             return $entity; // Hit!
         }
 
-        $persister = $unitOfWork->getEntityPersister($class->name);
+        $persister = $unitOfWork->getEntityPersister($className);
 
         switch (true) {
             case $lockMode === LockMode::OPTIMISTIC:
@@ -474,11 +451,9 @@ use const E_USER_DEPRECATED;
                 $unitOfWork->lock($entity, $lockMode, $lockVersion);
 
                 return $entity;
-
             case $lockMode === LockMode::PESSIMISTIC_READ:
             case $lockMode === LockMode::PESSIMISTIC_WRITE:
                 return $persister->load($sortedId, null, null, [], $lockMode);
-
             default:
                 return $persister->loadById($sortedId);
         }
@@ -489,41 +464,63 @@ use const E_USER_DEPRECATED;
      */
     public function getReference($entityName, $id)
     {
-        $class = $this->metadataFactory->getMetadataFor(ltrim($entityName, '\\'));
+        $class     = $this->metadataFactory->getMetadataFor(ltrim($entityName, '\\'));
+        $className = $class->getClassName();
 
         if (! is_array($id)) {
+            if ($class->isIdentifierComposite()) {
+                throw ORMInvalidArgumentException::invalidCompositeIdentifier();
+            }
+
             $id = [$class->identifier[0] => $id];
+        }
+
+        $scalarId = [];
+
+        foreach ($id as $i => $value) {
+            $scalarId[$i] = $value;
+
+            if (is_object($value) && $this->metadataFactory->hasMetadataFor(StaticClassNameConverter::getClass($value))) {
+                $scalarId[$i] = $this->unitOfWork->getSingleIdentifierValue($value);
+
+                if ($scalarId[$i] === null) {
+                    throw ORMInvalidArgumentException::invalidIdentifierBindingEntity();
+                }
+            }
         }
 
         $sortedId = [];
 
         foreach ($class->identifier as $identifier) {
-            if (! isset($id[$identifier])) {
-                throw ORMException::missingIdentifierField($class->name, $identifier);
+            if (! isset($scalarId[$identifier])) {
+                throw MissingIdentifierField::fromFieldAndClass($identifier, $className);
             }
 
-            $sortedId[$identifier] = $id[$identifier];
-            unset($id[$identifier]);
+            $sortedId[$identifier] = $scalarId[$identifier];
+            unset($scalarId[$identifier]);
         }
 
-        if ($id) {
-            throw ORMException::unrecognizedIdentifierFields($class->name, array_keys($id));
+        if ($scalarId) {
+            throw UnrecognizedIdentifierFields::fromClassAndFieldNames($className, array_keys($scalarId));
         }
-
-        $entity = $this->unitOfWork->tryGetById($sortedId, $class->rootEntityName);
 
         // Check identity map first, if its already in there just return it.
+        $entity = $this->unitOfWork->tryGetById($sortedId, $class->getRootClassName());
         if ($entity !== false) {
-            return $entity instanceof $class->name ? $entity : null;
+            return $entity instanceof $className ? $entity : null;
         }
 
-        if ($class->subClasses) {
+        if ($class->getSubClasses()) {
             return $this->find($entityName, $sortedId);
         }
 
-        $entity = $this->proxyFactory->getProxy($class->name, $sortedId);
+        $entity = $this->proxyFactory->getProxy($class, $id);
 
         $this->unitOfWork->registerManaged($entity, $sortedId, []);
+
+        if ($entity instanceof EntityManagerAware) {
+            $entity->injectEntityManager($this, $class);
+        }
 
         return $entity;
     }
@@ -531,26 +528,56 @@ use const E_USER_DEPRECATED;
     /**
      * {@inheritDoc}
      */
-    public function getPartialReference($entityName, $identifier)
+    public function getPartialReference($entityName, $id)
     {
-        $class = $this->metadataFactory->getMetadataFor(ltrim($entityName, '\\'));
+        $class     = $this->metadataFactory->getMetadataFor(ltrim($entityName, '\\'));
+        $className = $class->getClassName();
 
-        $entity = $this->unitOfWork->tryGetById($identifier, $class->rootEntityName);
+        if (! is_array($id)) {
+            if ($class->isIdentifierComposite()) {
+                throw ORMInvalidArgumentException::invalidCompositeIdentifier();
+            }
+
+            $id = [$class->identifier[0] => $id];
+        }
+
+        foreach ($id as $i => $value) {
+            if (is_object($value) && $this->metadataFactory->hasMetadataFor(StaticClassNameConverter::getClass($value))) {
+                $id[$i] = $this->unitOfWork->getSingleIdentifierValue($value);
+
+                if ($id[$i] === null) {
+                    throw ORMInvalidArgumentException::invalidIdentifierBindingEntity();
+                }
+            }
+        }
+
+        $sortedId = [];
+
+        foreach ($class->identifier as $identifier) {
+            if (! isset($id[$identifier])) {
+                throw MissingIdentifierField::fromFieldAndClass($identifier, $className);
+            }
+
+            $sortedId[$identifier] = $id[$identifier];
+            unset($id[$identifier]);
+        }
+
+        if ($id) {
+            throw UnrecognizedIdentifierFields::fromClassAndFieldNames($className, array_keys($id));
+        }
 
         // Check identity map first, if its already in there just return it.
+        $entity = $this->unitOfWork->tryGetById($sortedId, $class->getRootClassName());
         if ($entity !== false) {
-            return $entity instanceof $class->name ? $entity : null;
+            return $entity instanceof $className ? $entity : null;
         }
 
-        if (! is_array($identifier)) {
-            $identifier = [$class->identifier[0] => $identifier];
-        }
+        $persister = $this->unitOfWork->getEntityPersister($class->getClassName());
+        $entity    = $this->unitOfWork->newInstance($class);
 
-        $entity = $class->newInstance();
+        $persister->setIdentifier($entity, $sortedId);
 
-        $class->setIdentifierValues($entity, $identifier);
-
-        $this->unitOfWork->registerManaged($entity, $identifier, []);
+        $this->unitOfWork->registerManaged($entity, $sortedId, []);
         $this->unitOfWork->markReadOnly($entity);
 
         return $entity;
@@ -560,32 +587,17 @@ use const E_USER_DEPRECATED;
      * Clears the EntityManager. All entities that are currently managed
      * by this EntityManager become detached.
      *
-     * @param string|null $entityName if given, only entities of this type will get detached
-     *
-     * @return void
-     *
-     * @throws ORMInvalidArgumentException If a non-null non-string value is given.
-     * @throws MappingException            If a $entityName is given, but that entity is not
-     *                                     found in the mappings.
+     * @param null $entityName Unused. @todo Remove from ObjectManager.
      */
     public function clear($entityName = null)
     {
-        if ($entityName !== null && ! is_string($entityName)) {
-            throw ORMInvalidArgumentException::invalidEntityName($entityName);
-        }
+        $this->unitOfWork->clear();
 
-        if ($entityName !== null) {
-            @trigger_error(
-                'Calling ' . __METHOD__ . '() with any arguments to clear specific entities is deprecated and will not be supported in Doctrine ORM 3.0.',
-                E_USER_DEPRECATED
-            );
-        }
+        $this->unitOfWork = new UnitOfWork($this);
 
-        $this->unitOfWork->clear(
-            $entityName === null
-                ? null
-                : $this->metadataFactory->getMetadataFor($entityName)->getName()
-        );
+        if ($this->eventManager->hasListeners(Events::onClear)) {
+            $this->eventManager->dispatchEvent(Events::onClear, new Event\OnClearEventArgs($this));
+        }
     }
 
     /**
@@ -609,8 +621,6 @@ use const E_USER_DEPRECATED;
      *
      * @param object $entity The instance to make managed and persistent.
      *
-     * @return void
-     *
      * @throws ORMInvalidArgumentException
      * @throws ORMException
      */
@@ -633,8 +643,6 @@ use const E_USER_DEPRECATED;
      *
      * @param object $entity The entity instance to remove.
      *
-     * @return void
-     *
      * @throws ORMInvalidArgumentException
      * @throws ORMException
      */
@@ -655,8 +663,6 @@ use const E_USER_DEPRECATED;
      *
      * @param object $entity The entity to refresh.
      *
-     * @return void
-     *
      * @throws ORMInvalidArgumentException
      * @throws ORMException
      */
@@ -669,69 +675,6 @@ use const E_USER_DEPRECATED;
         $this->errorIfClosed();
 
         $this->unitOfWork->refresh($entity);
-    }
-
-    /**
-     * Detaches an entity from the EntityManager, causing a managed entity to
-     * become detached.  Unflushed changes made to the entity if any
-     * (including removal of the entity), will not be synchronized to the database.
-     * Entities which previously referenced the detached entity will continue to
-     * reference it.
-     *
-     * @deprecated 2.7 This method is being removed from the ORM and won't have any replacement
-     *
-     * @param object $entity The entity to detach.
-     *
-     * @return void
-     *
-     * @throws ORMInvalidArgumentException
-     */
-    public function detach($entity)
-    {
-        @trigger_error('Method ' . __METHOD__ . '() is deprecated and will be removed in Doctrine ORM 3.0.', E_USER_DEPRECATED);
-
-        if (! is_object($entity)) {
-            throw ORMInvalidArgumentException::invalidObject('EntityManager#detach()', $entity);
-        }
-
-        $this->unitOfWork->detach($entity);
-    }
-
-    /**
-     * Merges the state of a detached entity into the persistence context
-     * of this EntityManager and returns the managed copy of the entity.
-     * The entity passed to merge will not become associated/managed with this EntityManager.
-     *
-     * @deprecated 2.7 This method is being removed from the ORM and won't have any replacement
-     *
-     * @param object $entity The detached entity to merge into the persistence context.
-     *
-     * @return object The managed copy of the entity.
-     *
-     * @throws ORMInvalidArgumentException
-     * @throws ORMException
-     */
-    public function merge($entity)
-    {
-        @trigger_error('Method ' . __METHOD__ . '() is deprecated and will be removed in Doctrine ORM 3.0.', E_USER_DEPRECATED);
-
-        if (! is_object($entity)) {
-            throw ORMInvalidArgumentException::invalidObject('EntityManager#merge()', $entity);
-        }
-
-        $this->errorIfClosed();
-
-        return $this->unitOfWork->merge($entity);
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    public function copy($entity, $deep = false)
-    {
-        @trigger_error('Method ' . __METHOD__ . '() is deprecated and will be removed in Doctrine ORM 3.0.', E_USER_DEPRECATED);
-
-        throw new BadMethodCallException('Not implemented.');
     }
 
     /**
@@ -748,10 +691,6 @@ use const E_USER_DEPRECATED;
      * @param string $entityName The name of the entity.
      *
      * @return ObjectRepository|EntityRepository The repository class.
-     *
-     * @template T
-     * @psalm-param class-string<T> $entityName
-     * @psalm-return EntityRepository<T>
      */
     public function getRepository($entityName)
     {
@@ -768,8 +707,7 @@ use const E_USER_DEPRECATED;
     public function contains($entity)
     {
         return $this->unitOfWork->isScheduledForInsert($entity)
-            || $this->unitOfWork->isInIdentityMap($entity)
-            && ! $this->unitOfWork->isScheduledForDelete($entity);
+            || ($this->unitOfWork->isInIdentityMap($entity) && ! $this->unitOfWork->isScheduledForDelete($entity));
     }
 
     /**
@@ -791,14 +729,12 @@ use const E_USER_DEPRECATED;
     /**
      * Throws an exception if the EntityManager is closed or currently not active.
      *
-     * @return void
-     *
      * @throws ORMException If the EntityManager is closed.
      */
     private function errorIfClosed()
     {
         if ($this->closed) {
-            throw ORMException::entityManagerClosed();
+            throw EntityManagerClosed::create();
         }
     }
 
@@ -834,28 +770,22 @@ use const E_USER_DEPRECATED;
         switch ($hydrationMode) {
             case Query::HYDRATE_OBJECT:
                 return new Internal\Hydration\ObjectHydrator($this);
-
             case Query::HYDRATE_ARRAY:
                 return new Internal\Hydration\ArrayHydrator($this);
-
             case Query::HYDRATE_SCALAR:
                 return new Internal\Hydration\ScalarHydrator($this);
-
             case Query::HYDRATE_SINGLE_SCALAR:
                 return new Internal\Hydration\SingleScalarHydrator($this);
-
             case Query::HYDRATE_SIMPLEOBJECT:
                 return new Internal\Hydration\SimpleObjectHydrator($this);
-
             default:
                 $class = $this->config->getCustomHydrationMode($hydrationMode);
-
                 if ($class !== null) {
                     return new $class($this);
                 }
         }
 
-        throw ORMException::invalidHydrationMode($hydrationMode);
+        throw InvalidHydrationMode::fromMode($hydrationMode);
     }
 
     /**
@@ -877,9 +807,9 @@ use const E_USER_DEPRECATED;
     /**
      * Factory method to create EntityManager instances.
      *
-     * @param array<string, mixed>|Connection $connection   An array with the connection parameters or an existing Connection instance.
-     * @param Configuration                   $config       The Configuration instance to use.
-     * @param EventManager                    $eventManager The EventManager instance to use.
+     * @param Connection|mixed[] $connection   An array with the connection parameters or an existing Connection instance.
+     * @param Configuration      $config       The Configuration instance to use.
+     * @param EventManager       $eventManager The EventManager instance to use.
      *
      * @return EntityManager The created EntityManager.
      *
@@ -889,7 +819,7 @@ use const E_USER_DEPRECATED;
     public static function create($connection, Configuration $config, ?EventManager $eventManager = null)
     {
         if (! $config->getMetadataDriverImpl()) {
-            throw ORMException::missingMappingDriverImpl();
+            throw MissingMappingDriverImplementation::create();
         }
 
         $connection = static::createConnection($connection, $config, $eventManager);
@@ -900,9 +830,9 @@ use const E_USER_DEPRECATED;
     /**
      * Factory method to create Connection instances.
      *
-     * @param array<string, mixed>|Connection $connection   An array with the connection parameters or an existing Connection instance.
-     * @param Configuration                   $config       The Configuration instance to use.
-     * @param EventManager                    $eventManager The EventManager instance to use.
+     * @param Connection|mixed[] $connection   An array with the connection parameters or an existing Connection instance.
+     * @param Configuration      $config       The Configuration instance to use.
+     * @param EventManager       $eventManager The EventManager instance to use.
      *
      * @return Connection
      *
@@ -926,7 +856,7 @@ use const E_USER_DEPRECATED;
         }
 
         if ($eventManager !== null && $connection->getEventManager() !== $eventManager) {
-            throw ORMException::mismatchedEventManager();
+            throw MismatchedEventManager::create();
         }
 
         return $connection;
@@ -964,14 +894,13 @@ use const E_USER_DEPRECATED;
      * @throws OptimisticLockException
      * @throws TransactionRequiredException
      */
-    private function checkLockRequirements(int $lockMode, ClassMetadata $class): void
+    private function checkLockRequirements(int $lockMode, ClassMetadata $class) : void
     {
         switch ($lockMode) {
             case LockMode::OPTIMISTIC:
-                if (! $class->isVersioned) {
-                    throw OptimisticLockException::notVersioned($class->name);
+                if (! $class->isVersioned()) {
+                    throw OptimisticLockException::notVersioned($class->getClassName());
                 }
-
                 break;
             case LockMode::PESSIMISTIC_READ:
             case LockMode::PESSIMISTIC_WRITE:

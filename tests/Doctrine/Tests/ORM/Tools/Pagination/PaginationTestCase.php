@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Doctrine\Tests\ORM\Tools\Pagination;
 
-use Doctrine\Common\Collections\Collection;
+use Doctrine\ORM\Annotation as ORM;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\Tests\OrmTestCase;
 
@@ -13,274 +13,158 @@ abstract class PaginationTestCase extends OrmTestCase
     /** @var EntityManagerInterface */
     public $entityManager;
 
-    protected function setUp(): void
+    public function setUp() : void
     {
         $this->entityManager = $this->getTestEntityManager();
     }
+
+    public function tearDown() : void
+    {
+        $this->entityManager = null;
+    }
 }
 
-
 /**
- * @Entity
+ * @ORM\Entity
  */
 class MyBlogPost
 {
-    /**
-     * @var int
-     * @Id
-     * @Column(type="integer")
-     * @GeneratedValue
-     */
+    /** @ORM\Id @ORM\Column(type="integer") @ORM\GeneratedValue */
     public $id;
-
-    /**
-     * @var Author
-     * @ManyToOne(targetEntity="Author")
-     */
+    /** @ORM\ManyToOne(targetEntity=Author::class) */
     public $author;
-
-    /**
-     * @var Category
-     * @ManyToOne(targetEntity="Category")
-     */
+    /** @ORM\ManyToOne(targetEntity=Category::class) */
     public $category;
-
-    /**
-     * @var string
-     * @Column(type="string")
-     */
+    /** @ORM\Column(type="string") */
     public $title;
 }
 
 /**
- * @Entity
+ * @ORM\Entity
  */
 class MyAuthor
 {
-    /**
-     * @var int
-     * @Id
-     * @Column(type="integer")
-     * @GeneratedValue
-     */
+    /** @ORM\Id @ORM\Column(type="integer") @ORM\GeneratedValue */
     public $id;
 }
 
 /**
- * @Entity
+ * @ORM\Entity
  */
 class MyCategory
 {
-    /**
-     * @var int
-     * @Id
-     * @Column(type="integer")
-     * @GeneratedValue
-     */
+    /** @ORM\Id @ORM\Column(type="integer") @ORM\GeneratedValue */
     public $id;
 }
 
-
 /**
- * @Entity
+ * @ORM\Entity
  */
 class BlogPost
 {
-    /**
-     * @var int
-     * @Id
-     * @Column(type="integer")
-     * @GeneratedValue
-     */
+    /** @ORM\Id @ORM\Column(type="integer") @ORM\GeneratedValue */
     public $id;
-
-    /**
-     * @var Author
-     * @ManyToOne(targetEntity="Author")
-     */
+    /** @ORM\ManyToOne(targetEntity=Author::class) */
     public $author;
-
-    /**
-     * @var Category
-     * @ManyToOne(targetEntity="Category")
-     */
+    /** @ORM\ManyToOne(targetEntity=Category::class) */
     public $category;
 }
 
 /**
- * @Entity
+ * @ORM\Entity
  */
 class Author
 {
-    /**
-     * @var int
-     * @Id
-     * @Column(type="integer")
-     * @GeneratedValue
-     */
+    /** @ORM\Id @ORM\Column(type="integer") @ORM\GeneratedValue */
     public $id;
-
-    /**
-     * @var string
-     * @Column(type="string")
-     */
+    /** @ORM\Column(type="string") */
     public $name;
 }
 
 /**
- * @Entity
+ * @ORM\Entity
  */
 class Person
 {
-    /**
-     * @var int
-     * @Id
-     * @Column(type="integer")
-     * @GeneratedValue
-     */
+    /** @ORM\Id @ORM\Column(type="integer") @ORM\GeneratedValue */
     public $id;
-
-    /**
-     * @var string
-     * @Column(type="string")
-     */
+    /** @ORM\Column(type="string") */
     public $name;
-
-    /**
-     * @var string
-     * @Column(type="string")
-     */
+    /** @ORM\Column(type="string") */
     public $biography;
 }
 
 /**
- * @Entity
+ * @ORM\Entity
  */
 class Category
 {
-    /**
-     * @var int
-     * @Id
-     * @Column(type="integer")
-     * @GeneratedValue
-     */
+    /** @ORM\Id @ORM\Column(type="integer") @ORM\GeneratedValue */
     public $id;
 }
 
-
-/** @Entity @Table(name="groups") */
+/** @ORM\Entity @ORM\Table(name="groups") */
 class Group
 {
-    /**
-     * @var int
-     * @Id
-     * @Column(type="integer")
-     * @GeneratedValue
-     */
+    /** @ORM\Id @ORM\Column(type="integer") @ORM\GeneratedValue */
     public $id;
-
-    /**
-     * @psalm-var Collection<int, User>
-     * @ManyToMany(targetEntity="User", mappedBy="groups")
-     */
+    /** @ORM\ManyToMany(targetEntity=User::class, mappedBy="groups") */
     public $users;
 }
 
-/** @Entity */
+/** @ORM\Entity */
 class User
 {
-    /**
-     * @var int
-     * @Id
-     * @Column(type="integer")
-     * @GeneratedValue
-     */
+    /** @ORM\Id @ORM\Column(type="integer") @ORM\GeneratedValue */
     public $id;
-
     /**
-     * @psalm-var Collection<int, Group>
-     * @ManyToMany(targetEntity="Group", inversedBy="users")
-     * @JoinTable(
+     * @ORM\ManyToMany(targetEntity=Group::class, inversedBy="users")
+     * @ORM\JoinTable(
      * name="user_group",
-     * joinColumns = {@JoinColumn(name="user_id", referencedColumnName="id")},
-     * inverseJoinColumns = {@JoinColumn(name="group_id", referencedColumnName="id")}
+     * joinColumns = {@ORM\JoinColumn(name="user_id", referencedColumnName="id")},
+     * inverseJoinColumns = {@ORM\JoinColumn(name="group_id", referencedColumnName="id")}
      * )
      */
     public $groups;
-
-    /**
-     * @var Avatar
-     * @OneToOne(targetEntity="Avatar", mappedBy="user")
-     */
+    /** @ORM\OneToOne(targetEntity=Avatar::class, mappedBy="user") */
     public $avatar;
 }
 
-/** @Entity */
+/** @ORM\Entity */
 class Avatar
 {
-    /**
-     * @var int
-     * @Id
-     * @Column(type="integer")
-     * @GeneratedValue
-     */
+    /** @ORM\Id @ORM\Column(type="integer") @ORM\GeneratedValue */
     public $id;
-
     /**
-     * @var User
-     * @OneToOne(targetEntity="User", inversedBy="avatar")
-     * @JoinColumn(name="user_id", referencedColumnName="id")
+     * @ORM\OneToOne(targetEntity=User::class, inversedBy="avatar")
+     * @ORM\JoinColumn(name="user_id", referencedColumnName="id")
      */
     public $user;
-
-    /**
-     * @var string
-     * @Column(type="string", length=255)
-     */
+    /** @ORM\Column(type="string", length=255) */
     public $image;
-
-    /**
-     * @var int
-     * @Column(type="integer")
-     */
-    public $imageHeight;
-
-    /**
-     * @var int
-     * @Column(type="integer")
-     */
-    public $imageWidth;
-
-    /**
-     * @var string
-     * @Column(type="string", length=255)
-     */
-    public $imageAltDesc;
+    /** @ORM\Column(type="integer") */
+    public $image_height;
+    /** @ORM\Column(type="integer") */
+    public $image_width;
+    /** @ORM\Column(type="string", length=255) */
+    public $image_alt_desc;
 }
 
-/** @MappedSuperclass */
+/** @ORM\MappedSuperclass */
 abstract class Identified
 {
-    /**
-     * @var int
-     * @Id
-     * @Column(type="integer")
-     * @GeneratedValue
-     */
+    /** @ORM\Id @ORM\Column(type="integer") @ORM\GeneratedValue */
     private $id;
 
-    public function getId(): int
+    public function getId()
     {
         return $this->id;
     }
 }
 
-/** @Entity */
+/** @ORM\Entity */
 class Banner extends Identified
 {
-    /**
-     * @var string
-     * @Column(type="string")
-     */
+    /** @ORM\Column(type="string") */
     public $name;
 }

@@ -16,15 +16,14 @@ use Symfony\Component\Console\Helper\HelperSet;
  */
 final class ConsoleRunnerTest extends DoctrineTestCase
 {
-    public function testCreateApplicationShouldReturnAnApplicationWithTheCorrectCommands(): void
+    public function testCreateApplicationShouldReturnAnApplicationWithTheCorrectCommands() : void
     {
         $helperSet = new HelperSet();
         $app       = ConsoleRunner::createApplication($helperSet);
 
         self::assertSame($helperSet, $app->getHelperSet());
-        self::assertSame(Versions::getVersion('doctrine/orm'), $app->getVersion());
+        self::assertEquals(Versions::getVersion('doctrine/orm'), $app->getVersion());
 
-        self::assertTrue($app->has('dbal:import'));
         self::assertTrue($app->has('dbal:reserved-words'));
         self::assertTrue($app->has('dbal:run-sql'));
         self::assertTrue($app->has('orm:clear-cache:region:collection'));
@@ -33,17 +32,8 @@ final class ConsoleRunnerTest extends DoctrineTestCase
         self::assertTrue($app->has('orm:clear-cache:metadata'));
         self::assertTrue($app->has('orm:clear-cache:query'));
         self::assertTrue($app->has('orm:clear-cache:result'));
-        self::assertTrue($app->has('orm:convert-d1-schema'));
-        self::assertTrue($app->has('orm:convert-mapping'));
-        self::assertTrue($app->has('orm:convert:d1-schema'));
-        self::assertTrue($app->has('orm:convert:mapping'));
         self::assertTrue($app->has('orm:ensure-production-settings'));
-        self::assertTrue($app->has('orm:generate-entities'));
         self::assertTrue($app->has('orm:generate-proxies'));
-        self::assertTrue($app->has('orm:generate-repositories'));
-        self::assertTrue($app->has('orm:generate:entities'));
-        self::assertTrue($app->has('orm:generate:proxies'));
-        self::assertTrue($app->has('orm:generate:repositories'));
         self::assertTrue($app->has('orm:info'));
         self::assertTrue($app->has('orm:mapping:describe'));
         self::assertTrue($app->has('orm:run-dql'));
@@ -53,7 +43,7 @@ final class ConsoleRunnerTest extends DoctrineTestCase
         self::assertTrue($app->has('orm:validate-schema'));
     }
 
-    public function testCreateApplicationShouldAppendGivenCommands(): void
+    public function testCreateApplicationShouldAppendGivenCommands() : void
     {
         $command = 'my:lovely-command';
         $app     = ConsoleRunner::createApplication(new HelperSet(), [new Command($command)]);

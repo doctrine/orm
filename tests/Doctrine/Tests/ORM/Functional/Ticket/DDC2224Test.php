@@ -7,9 +7,9 @@ namespace Doctrine\Tests\ORM\Functional\Ticket;
 use Doctrine\Common\Cache\ArrayCache;
 use Doctrine\DBAL\Platforms\AbstractPlatform;
 use Doctrine\DBAL\Types\Type;
+use Doctrine\ORM\Annotation as ORM;
 use Doctrine\ORM\Query;
 use Doctrine\Tests\OrmFunctionalTestCase;
-
 use function sprintf;
 
 /**
@@ -17,19 +17,20 @@ use function sprintf;
  */
 class DDC2224Test extends OrmFunctionalTestCase
 {
-    public static function setUpBeforeClass(): void
+    public static function setUpBeforeClass()
     {
         Type::addType('DDC2224Type', DDC2224Type::class);
     }
 
-    public function testIssue(): Query
+    public function testIssue() : Query
     {
         $dql   = 'SELECT e FROM ' . __NAMESPACE__ . '\DDC2224Entity e WHERE e.field = :field';
-        $query = $this->_em->createQuery($dql);
+        $query = $this->em->createQuery($dql);
         $query->setQueryCacheDriver(new ArrayCache());
 
         $query->setParameter('field', 'test', 'DDC2224Type');
-        $this->assertStringEndsWith('.field = FUNCTION(?)', $query->getSQL());
+
+        self::assertStringEndsWith('."field" = FUNCTION(?)', $query->getSQL());
 
         return $query;
     }
@@ -37,10 +38,11 @@ class DDC2224Test extends OrmFunctionalTestCase
     /**
      * @depends testIssue
      */
-    public function testCacheMissWhenTypeChanges(Query $query): void
+    public function testCacheMissWhenTypeChanges(Query $query) : void
     {
         $query->setParameter('field', 'test', 'string');
-        $this->assertStringEndsWith('.field = ?', $query->getSQL());
+
+        self::assertStringEndsWith('."field" = ?', $query->getSQL());
     }
 }
 
@@ -49,12 +51,12 @@ class DDC2224Type extends Type
     /**
      * {@inheritdoc}
      */
-    public function getSQLDeclaration(array $fieldDeclaration, AbstractPlatform $platform)
+    public function getSQLDeclaration(array $fieldDeclaration, AbstractPlatform $platform) : string
     {
         return $platform->getVarcharTypeDeclarationSQL($fieldDeclaration);
     }
 
-    public function getName(): string
+    public function getName() : string
     {
         return 'DDC2224Type';
     }
@@ -62,7 +64,7 @@ class DDC2224Type extends Type
     /**
      * {@inheritdoc}
      */
-    public function canRequireSQLConversion()
+    public function canRequireSQLConversion() : bool
     {
         return true;
     }
@@ -70,28 +72,20 @@ class DDC2224Type extends Type
     /**
      * {@inheritdoc}
      */
-    public function convertToDatabaseValueSQL($sqlExpr, AbstractPlatform $platform)
+    public function convertToDatabaseValueSQL($sqlExpr, AbstractPlatform $platform) : string
     {
         return sprintf('FUNCTION(%s)', $sqlExpr);
     }
 }
 
 /**
- * @Entity
+ * @ORM\Entity
  */
 class DDC2224Entity
 {
-    /**
-     * @var int
-     * @Id
-     * @GeneratedValue
-     * @Column(type="integer")
-     */
+    /** @ORM\Id @ORM\GeneratedValue @ORM\Column(type="integer") */
     public $id;
 
-    /**
-     * @var mixed
-     * @Column(type="DDC2224Type")
-     */
+    /** @ORM\Column(type="DDC2224Type") */
     public $field;
 }

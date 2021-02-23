@@ -4,29 +4,26 @@ declare(strict_types=1);
 
 namespace Doctrine\Tests\Models\Forum;
 
+use Doctrine\ORM\Annotation as ORM;
+
 /**
  * Represents a board in a forum.
  *
- * @Entity
- * @Table(name="forum_boards")
+ * @ORM\Entity
+ * @ORM\Table(name="forum_boards")
  */
 class ForumBoard
 {
     /**
-     * @var int
-     * @Id
-     * @Column(type="integer")
+     * @ORM\Id
+     * @ORM\Column(type="integer")
      */
     public $id;
-    /**
-     * @var int
-     * @Column(type="integer")
-     */
+    /** @ORM\Column(type="integer") */
     public $position;
     /**
-     * @var ForumCategory
-     * @ManyToOne(targetEntity="ForumCategory", inversedBy="boards")
-     * @JoinColumn(name="category_id", referencedColumnName="id")
+     * @ORM\ManyToOne(targetEntity=ForumCategory::class, inversedBy="boards")
+     * @ORM\JoinColumn(name="category_id", referencedColumnName="id")
      */
     public $category;
 }

@@ -4,18 +4,19 @@ declare(strict_types=1);
 
 namespace Doctrine\Tests\Models\Generic;
 
+use Doctrine\ORM\Annotation as ORM;
+
 /**
- * @Entity
- * @Table(name="boolean_model")
+ * @ORM\Entity
+ * @ORM\Table(name="boolean_model")
  */
 class BooleanModel
 {
     /**
-     * @var int
-     * @Id @Column(type="integer")
-     * @GeneratedValue(strategy="AUTO")
+     * @ORM\Id @ORM\Column(type="integer")
+     * @ORM\GeneratedValue(strategy="AUTO")
      */
     public $id;
-    /** @Column(type="boolean") */
+    /** @ORM\Column(type="boolean") */
     public $booleanField;
 }

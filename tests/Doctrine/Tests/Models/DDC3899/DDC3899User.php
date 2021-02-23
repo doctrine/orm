@@ -4,24 +4,17 @@ declare(strict_types=1);
 
 namespace Doctrine\Tests\Models\DDC3899;
 
-use Doctrine\Common\Collections\Collection;
+use Doctrine\ORM\Annotation as ORM;
 
 /**
- * @Entity
- * @Table(name="dc3899_users")
+ * @ORM\Entity
+ * @ORM\Table(name="dc3899_users")
  */
 class DDC3899User
 {
-    /**
-     * @var int
-     * @Id
-     * @Column(type="integer")
-     */
+    /** @ORM\Id @ORM\Column(type="integer") */
     public $id;
 
-    /**
-     * @psalm-var Collection<int, DDC3899Contract>
-     * @OneToMany(targetEntity="DDC3899Contract", mappedBy="user")
-     */
+    /** @ORM\OneToMany(targetEntity=DDC3899Contract::class, mappedBy="user") */
     public $contracts;
 }

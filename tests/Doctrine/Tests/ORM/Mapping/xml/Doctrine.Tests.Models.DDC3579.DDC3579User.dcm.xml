@@ -11,7 +11,7 @@
 
         <field name="name" column="user_name" type="string" length="250" nullable="true" unique="false" />
 
-        <many-to-many field="groups" target-entity="DDC3579Group" />
+        <many-to-many field="groups" target-entity="Doctrine\Tests\Models\DDC3579\DDC3579Group" />
     </mapped-superclass>
 
 </doctrine-mapping>

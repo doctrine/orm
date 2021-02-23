@@ -4,8 +4,8 @@ Persisting the Decorator Pattern
 .. sectionauthor:: Chris Woodford <chris.woodford@gmail.com>
 
 This recipe will show you a simple example of how you can use
-Doctrine ORM to persist an implementation of the
-`Decorator Pattern <http://en.wikipedia.org/wiki/Decorator_pattern>`_
+Doctrine 2 to persist an implementation of the
+`Decorator Pattern <https://en.wikipedia.org/wiki/Decorator_pattern>`_
 
 Component
 ---------
@@ -23,23 +23,26 @@ concrete subclasses, ``ConcreteComponent`` and ``ConcreteDecorator``.
 
     namespace Test;
 
+    use Doctrine\ORM\Annotation as ORM;
+
     /**
-     * @Entity
-     * @InheritanceType("SINGLE_TABLE")
-     * @DiscriminatorColumn(name="discr", type="string")
-     * @DiscriminatorMap({"cc" = "Test\Component\ConcreteComponent",
-        "cd" = "Test\Decorator\ConcreteDecorator"})
+     * @ORM\Entity
+     * @ORM\InheritanceType("SINGLE_TABLE")
+     * @ORM\DiscriminatorColumn(name="discr", type="string")
+     * @ORM\DiscriminatorMap({
+     *   "cc" = "Test\Component\ConcreteComponent",
+     *   "cd" = "Test\Decorator\ConcreteDecorator"
+     * })
      */
     abstract class Component
     {
-
         /**
-         * @Id @Column(type="integer")
-         * @GeneratedValue(strategy="AUTO")
+         * @ORM\Id @ORM\Column(type="integer")
+         * @ORM\GeneratedValue(strategy="AUTO")
          */
         protected $id;
 
-        /** @Column(type="string", nullable=true) */
+        /** @ORM\Column(type="string", nullable=true) */
         protected $name;
 
         /**
@@ -84,9 +87,10 @@ purpose of keeping this example simple).
 
     namespace Test\Component;
 
+    use Doctrine\ORM\Annotation as ORM;
     use Test\Component;
 
-    /** @Entity */
+    /** @ORM\Entity */
     class ConcreteComponent extends Component
     {}
 
@@ -103,13 +107,15 @@ use a ``MappedSuperclass`` for this.
 
     namespace Test;
 
-    /** @MappedSuperclass */
+    use Doctrine\ORM\Annotation as ORM;
+
+    /** @ORM\MappedSuperclass */
     abstract class Decorator extends Component
     {
 
         /**
-         * @OneToOne(targetEntity="Test\Component", cascade={"all"})
-         * @JoinColumn(name="decorates", referencedColumnName="id")
+         * @ORM\OneToOne(targetEntity="Test\Component", cascade={"all"})
+         * @ORM\JoinColumn(name="decorates", referencedColumnName="id")
          */
         protected $decorates;
 
@@ -185,13 +191,14 @@ of the getSpecial() method to its return value.
 
     namespace Test\Decorator;
 
+    use Doctrine\ORM\Annotation as ORM;
     use Test\Decorator;
 
-    /** @Entity */
+    /** @ORM\Entity */
     class ConcreteDecorator extends Decorator
     {
 
-        /** @Column(type="string", nullable=true) */
+        /** @ORM\Column(type="string", nullable=true) */
         protected $special;
 
         /**
@@ -237,7 +244,7 @@ objects
     use Test\Component\ConcreteComponent,
         Test\Decorator\ConcreteDecorator;
 
-    // assumes Doctrine ORM is configured and an instance of
+    // assumes Doctrine 2 is configured and an instance of
     // an EntityManager is available as $em
 
     // create a new concrete component

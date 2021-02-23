@@ -5,53 +5,45 @@ declare(strict_types=1);
 namespace Doctrine\Tests\Models\Navigation;
 
 use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\ORM\Annotation as ORM;
 
 /**
- * @Entity
- * @Table(name="navigation_pois")
+ * @ORM\Entity
+ * @ORM\Table(name="navigation_pois")
  */
 class NavPointOfInterest
 {
     /**
-     * @var int
-     * @Id
-     * @Column(type="integer", name="nav_long")
+     * @ORM\Id
+     * @ORM\Column(type="integer", name="nav_long")
      */
     private $long;
 
     /**
-     * @var int
-     * @Id
-     * @Column(type="integer", name="nav_lat")
+     * @ORM\Id
+     * @ORM\Column(type="integer", name="nav_lat")
      */
     private $lat;
 
-    /**
-     * @var string
-     * @Column(type="string")
-     */
+    /** @ORM\Column(type="string") */
     private $name;
 
-    /**
-     * @var NavCountry
-     * @ManyToOne(targetEntity="NavCountry", inversedBy="pois")
-     */
+    /** @ORM\ManyToOne(targetEntity=NavCountry::class, inversedBy="pois") */
     private $country;
 
-     /**
-      * @var Collection<NavUser>
-      * @ManyToMany(targetEntity="NavUser", cascade={"persist"})
-      * @JoinTable(name="navigation_pois_visitors",
-      *      inverseJoinColumns={@JoinColumn(name="user_id", referencedColumnName="id")},
-      *      joinColumns={
-      *          @JoinColumn(name="poi_long", referencedColumnName="nav_long"),
-      *          @JoinColumn(name="poi_lat", referencedColumnName="nav_lat")
-      *      }
-      * )
-      */
+    /**
+     * @ORM\ManyToMany(targetEntity=NavUser::class, cascade={"persist"})
+     * @ORM\JoinTable(name="navigation_pois_visitors",
+     *      inverseJoinColumns={@ORM\JoinColumn(name="user_id", referencedColumnName="id")},
+     *      joinColumns={
+     *          @ORM\JoinColumn(name="poi_long", referencedColumnName="nav_long"),
+     *          @ORM\JoinColumn(name="poi_lat", referencedColumnName="nav_lat")
+     *      }
+     * )
+     */
     private $visitors;
 
-    public function __construct(int $lat, int $long, string $name, NavCountry $country)
+    public function __construct($lat, $long, $name, $country)
     {
         $this->lat      = $lat;
         $this->long     = $long;
@@ -60,27 +52,27 @@ class NavPointOfInterest
         $this->visitors = new ArrayCollection();
     }
 
-    public function getLong(): int
+    public function getLong()
     {
         return $this->long;
     }
 
-    public function getLat(): int
+    public function getLat()
     {
         return $this->lat;
     }
 
-    public function getName(): string
+    public function getName()
     {
         return $this->name;
     }
 
-    public function getCountry(): NavCountry
+    public function getCountry()
     {
         return $this->country;
     }
 
-    public function addVisitor(NavUser $user): void
+    public function addVisitor(NavUser $user)
     {
         $this->visitors[] = $user;
     }

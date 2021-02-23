@@ -5,46 +5,59 @@ declare(strict_types=1);
 namespace Doctrine\Tests\ORM\Persisters;
 
 use Doctrine\Common\Collections\Criteria;
-use Doctrine\ORM\EntityManager;
+use Doctrine\DBAL\Types\Type;
+use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Persisters\Entity\BasicEntityPersister;
 use Doctrine\Tests\Models\GeoNames\Admin1;
 use Doctrine\Tests\Models\GeoNames\Admin1AlternateName;
 use Doctrine\Tests\Models\GeoNames\Country;
 use Doctrine\Tests\OrmTestCase;
+use function array_map;
 
 class BasicEntityPersisterCompositeTypeParametersTest extends OrmTestCase
 {
     /** @var BasicEntityPersister */
     protected $persister;
 
-    /** @var EntityManager */
-    protected $entityManager;
+    /** @var EntityManagerInterface */
+    protected $em;
 
-    protected function setUp(): void
+    /**
+     * {@inheritDoc}
+     */
+    protected function setUp() : void
     {
         parent::setUp();
 
-        $this->entityManager = $this->getTestEntityManager();
+        $this->em = $this->getTestEntityManager();
 
-        $this->entityManager->getClassMetadata(Country::class);
-        $this->entityManager->getClassMetadata(Admin1::class);
-        $this->entityManager->getClassMetadata(Admin1AlternateName::class);
+        $this->em->getClassMetadata(Country::class);
+        $this->em->getClassMetadata(Admin1::class);
+        $this->em->getClassMetadata(Admin1AlternateName::class);
 
-        $this->persister = new BasicEntityPersister($this->entityManager, $this->entityManager->getClassMetadata(Admin1AlternateName::class));
+        $this->persister = new BasicEntityPersister($this->em, $this->em->getClassMetadata(Admin1AlternateName::class));
     }
 
-    public function testExpandParametersWillExpandCompositeEntityKeys(): void
+    public function testExpandParametersWillExpandCompositeEntityKeys() : void
     {
         $country = new Country('IT', 'Italy');
         $admin1  = new Admin1(10, 'Rome', $country);
 
         [$values, $types] = $this->persister->expandParameters(['admin1' => $admin1]);
 
-        $this->assertEquals(['integer', 'string'], $types);
-        $this->assertEquals([10, 'IT'], $values);
+        self::assertEquals([10, 'IT'], $values);
+        self::assertEquals(
+            ['integer', 'string'],
+            array_map(
+                static function (Type $type) : string {
+                    return $type->getName();
+                },
+                $types
+            )
+        );
     }
 
-    public function testExpandCriteriaParametersWillExpandCompositeEntityKeys(): void
+    public function testExpandCriteriaParametersWillExpandCompositeEntityKeys() : void
     {
         $country = new Country('IT', 'Italy');
         $admin1  = new Admin1(10, 'Rome', $country);
@@ -54,7 +67,15 @@ class BasicEntityPersisterCompositeTypeParametersTest extends OrmTestCase
 
         [$values, $types] = $this->persister->expandCriteriaParameters($criteria);
 
-        $this->assertEquals(['integer', 'string'], $types);
-        $this->assertEquals([10, 'IT'], $values);
+        self::assertEquals([10, 'IT'], $values);
+        self::assertEquals(
+            ['integer', 'string'],
+            array_map(
+                static function (Type $type) : string {
+                    return $type->getName();
+                },
+                $types
+            )
+        );
     }
 }

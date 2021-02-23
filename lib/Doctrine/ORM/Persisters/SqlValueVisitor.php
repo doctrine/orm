@@ -1,22 +1,6 @@
 <?php
 
-/*
- * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
- * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
- * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
- * A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT
- * OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
- * SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
- * LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
- * DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
- * THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
- * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
- * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- *
- * This software consists of voluntary contributions made by many individuals
- * and is licensed under the MIT license. For more information, see
- * <http://www.doctrine-project.org>.
- */
+declare(strict_types=1);
 
 namespace Doctrine\ORM\Persisters;
 
@@ -38,8 +22,6 @@ class SqlValueVisitor extends ExpressionVisitor
 
     /**
      * Converts a comparison expression into the target query language output.
-     *
-     * @return void
      */
     public function walkComparison(Comparison $comparison)
     {
@@ -59,8 +41,6 @@ class SqlValueVisitor extends ExpressionVisitor
 
     /**
      * Converts a composite expression into the target query language output.
-     *
-     * @return void
      */
     public function walkCompositeExpression(CompositeExpression $expr)
     {
@@ -71,8 +51,6 @@ class SqlValueVisitor extends ExpressionVisitor
 
     /**
      * Converts a value expression into the target query language part.
-     *
-     * @return mixed
      */
     public function walkValue(Value $value)
     {
@@ -82,9 +60,7 @@ class SqlValueVisitor extends ExpressionVisitor
     /**
      * Returns the Parameters and Types necessary for matching the last visited expression.
      *
-     * @return mixed[][]
-     *
-     * @psalm-return array{0: array, 1: array}
+     * @return mixed[]
      */
     public function getParamsAndTypes()
     {
@@ -103,14 +79,11 @@ class SqlValueVisitor extends ExpressionVisitor
 
         switch ($comparison->getOperator()) {
             case Comparison::CONTAINS:
-                return "%{$value}%";
-
+                return '%' . $value . '%';
             case Comparison::STARTS_WITH:
-                return "{$value}%";
-
+                return $value . '%';
             case Comparison::ENDS_WITH:
-                return "%{$value}";
-
+                return '%' . $value;
             default:
                 return $value;
         }

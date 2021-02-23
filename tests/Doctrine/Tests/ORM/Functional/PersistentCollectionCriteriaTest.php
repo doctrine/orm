@@ -15,27 +15,19 @@ use Doctrine\Tests\OrmFunctionalTestCase;
 
 class PersistentCollectionCriteriaTest extends OrmFunctionalTestCase
 {
-    protected function setUp(): void
+    protected function setUp() : void
     {
         $this->useModelSet('tweet');
         $this->useModelSet('quote');
+
         parent::setUp();
     }
 
-    public function tearDown(): void
-    {
-        if ($this->_em) {
-            $this->_em->getConfiguration()->setEntityNamespaces([]);
-        }
-
-        parent::tearDown();
-    }
-
-    public function loadTweetFixture(): void
+    public function loadTweetFixture()
     {
         $author       = new TweetUser();
         $author->name = 'ngal';
-        $this->_em->persist($author);
+        $this->em->persist($author);
 
         $tweet1          = new Tweet();
         $tweet1->content = 'Foo';
@@ -45,20 +37,18 @@ class PersistentCollectionCriteriaTest extends OrmFunctionalTestCase
         $tweet2->content = 'Bar';
         $author->addTweet($tweet2);
 
-        $this->_em->flush();
+        $this->em->flush();
 
-        unset($author);
-        unset($tweet1);
-        unset($tweet2);
+        unset($author, $tweet1, $tweet2);
 
-        $this->_em->clear();
+        $this->em->clear();
     }
 
-    public function loadQuoteFixture(): void
+    public function loadQuoteFixture()
     {
         $user       = new QuoteUser();
         $user->name = 'mgal';
-        $this->_em->persist($user);
+        $this->em->persist($user);
 
         $quote1 = new Group('quote1');
         $user->groups->add($quote1);
@@ -66,33 +56,33 @@ class PersistentCollectionCriteriaTest extends OrmFunctionalTestCase
         $quote2 = new Group('quote2');
         $user->groups->add($quote2);
 
-        $this->_em->flush();
+        $this->em->flush();
 
-        $this->_em->clear();
+        $this->em->clear();
     }
 
-    public function testCanCountWithoutLoadingPersistentCollection(): void
+    public function testCanCountWithoutLoadingPersistentCollection() : void
     {
         $this->loadTweetFixture();
 
-        $repository = $this->_em->getRepository(User::class);
+        $repository = $this->em->getRepository(User::class);
 
         $user   = $repository->findOneBy(['name' => 'ngal']);
         $tweets = $user->tweets->matching(new Criteria());
 
-        $this->assertInstanceOf(LazyCriteriaCollection::class, $tweets);
-        $this->assertFalse($tweets->isInitialized());
-        $this->assertCount(2, $tweets);
-        $this->assertFalse($tweets->isInitialized());
+        self::assertInstanceOf(LazyCriteriaCollection::class, $tweets);
+        self::assertFalse($tweets->isInitialized());
+        self::assertCount(2, $tweets);
+        self::assertFalse($tweets->isInitialized());
 
         // Make sure it works with constraints
         $tweets = $user->tweets->matching(new Criteria(
             Criteria::expr()->eq('content', 'Foo')
         ));
 
-        $this->assertInstanceOf(LazyCriteriaCollection::class, $tweets);
-        $this->assertFalse($tweets->isInitialized());
-        $this->assertCount(1, $tweets);
-        $this->assertFalse($tweets->isInitialized());
+        self::assertInstanceOf(LazyCriteriaCollection::class, $tweets);
+        self::assertFalse($tweets->isInitialized());
+        self::assertCount(1, $tweets);
+        self::assertFalse($tweets->isInitialized());
     }
 }

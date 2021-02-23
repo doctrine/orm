@@ -5,7 +5,7 @@
                                       https://www.doctrine-project.org/schemas/orm/doctrine-mapping.xsd">
 
     <entity name="Doctrine\Tests\Models\GH7141\GH7141Article">
-        <one-to-many field="tags" target-entity="NoTargetEntity" mapped-by="noMappedByField">
+        <one-to-many field="tags" target-entity="stdClass" mapped-by="noMappedByField">
             <order-by>
                 <order-by-field name="position"/>
             </order-by>

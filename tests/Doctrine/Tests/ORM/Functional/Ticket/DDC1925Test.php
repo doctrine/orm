@@ -5,10 +5,8 @@ declare(strict_types=1);
 namespace Doctrine\Tests\ORM\Functional\Ticket;
 
 use Doctrine\Common\Collections\ArrayCollection;
-use Doctrine\Common\Collections\Collection;
+use Doctrine\ORM\Annotation as ORM;
 use Doctrine\Tests\OrmFunctionalTestCase;
-
-use function assert;
 
 /**
  * @group DDC-1925
@@ -16,12 +14,12 @@ use function assert;
  */
 class DDC1925Test extends OrmFunctionalTestCase
 {
-    public function testIssue(): void
+    public function testIssue() : void
     {
-        $this->_schemaTool->createSchema(
+        $this->schemaTool->createSchema(
             [
-                $this->_em->getClassMetadata(DDC1925User::class),
-                $this->_em->getClassMetadata(DDC1925Product::class),
+                $this->em->getClassMetadata(DDC1925User::class),
+                $this->em->getClassMetadata(DDC1925Product::class),
             ]
         );
 
@@ -31,53 +29,54 @@ class DDC1925Test extends OrmFunctionalTestCase
         $product = new DDC1925Product();
         $product->setTitle('Test product');
 
-        $this->_em->persist($user);
-        $this->_em->persist($product);
-        $this->_em->flush();
+        $this->em->persist($user);
+        $this->em->persist($product);
+        $this->em->flush();
 
         $product->addBuyer($user);
 
-        $this->_em->getUnitOfWork()
+        $this->em->getUnitOfWork()
                   ->computeChangeSets();
 
-        $this->_em->persist($product);
-        $this->_em->flush();
-        $this->_em->clear();
+        $this->em->persist($product);
+        $this->em->flush();
+        $this->em->clear();
 
-        $persistedProduct = $this->_em->find(DDC1925Product::class, $product->getId());
-        assert($persistedProduct instanceof DDC1925Product);
+        /** @var DDC1925Product $persistedProduct */
+        $persistedProduct = $this->em->find(DDC1925Product::class, $product->getId());
 
         self::assertEquals($user, $persistedProduct->getBuyers()->first());
     }
 }
 
 /**
- * @Table
- * @Entity
+ * @ORM\Table
+ * @ORM\Entity
  */
 class DDC1925Product
 {
     /**
+     * @ORM\Column(name="id", type="integer")
+     * @ORM\Id
+     * @ORM\GeneratedValue(strategy="AUTO")
+     *
      * @var int $id
-     * @Column(name="id", type="integer")
-     * @Id
-     * @GeneratedValue(strategy="AUTO")
      */
     private $id;
 
     /**
+     * @ORM\Column(name="title", type="string", length=255)
+     *
      * @var string $title
-     * @Column(name="title", type="string", length=255)
      */
     private $title;
 
     /**
-     * @psalm-var Collection<int, DDC1925User>
-     * @ManyToMany(targetEntity="DDC1925User")
-     * @JoinTable(
+     * @ORM\ManyToMany(targetEntity=DDC1925User::class)
+     * @ORM\JoinTable(
      *   name="user_purchases",
-     *   joinColumns={@JoinColumn(name="product_id", referencedColumnName="id")},
-     *   inverseJoinColumns={@JoinColumn(name="user_id", referencedColumnName="id")}
+     *   joinColumns={@ORM\JoinColumn(name="product_id", referencedColumnName="id")},
+     *   inverseJoinColumns={@ORM\JoinColumn(name="user_id", referencedColumnName="id")}
      * )
      */
     private $buyers;
@@ -90,75 +89,94 @@ class DDC1925Product
         $this->buyers = new ArrayCollection();
     }
 
-    public function getId(): int
+    /**
+     * @return int
+     */
+    public function getId()
     {
         return $this->id;
     }
 
-    public function setTitle(string $title): void
+    /**
+     * @param string $title
+     */
+    public function setTitle($title)
     {
         $this->title = $title;
     }
 
     /**
      * Get title
+     *
+     * @return string
      */
-    public function getTitle(): string
+    public function getTitle()
     {
         return $this->title;
     }
 
-    public function getBuyers(): Collection
+    /**
+     * @return ArrayCollection
+     */
+    public function getBuyers()
     {
         return $this->buyers;
     }
 
-    public function addBuyer(DDC1925User $buyer): void
+    public function addBuyer(DDC1925User $buyer)
     {
         $this->buyers[] = $buyer;
     }
 }
 
 /**
- * @Table
- * @Entity
+ * @ORM\Table
+ * @ORM\Entity
  */
 class DDC1925User
 {
     /**
+     * @ORM\Column(name="id", type="integer")
+     * @ORM\Id
+     * @ORM\GeneratedValue(strategy="AUTO")
+     *
      * @var int
-     * @Column(name="id", type="integer")
-     * @Id
-     * @GeneratedValue(strategy="AUTO")
      */
     private $id;
 
     /**
+     * @ORM\Column(name="title", type="string", length=255)
+     *
      * @var string
-     * @Column(name="title", type="string", length=255)
      */
     private $title;
 
     /**
      * Get id
+     *
+     * @return int
      */
-    public function getId(): int
+    public function getId()
     {
         return $this->id;
     }
 
     /**
      * Set title
+     *
+     * @param string $title
      */
-    public function setTitle(string $title): void
+    public function setTitle($title)
     {
         $this->title = $title;
     }
 
     /**
      * Get title
+     *
+     * @return string
      */
-    public function getTitle(): string
+    public function getTitle()
     {
         return $this->title;
     }

@@ -4,22 +4,20 @@ declare(strict_types=1);
 
 namespace Doctrine\Tests\Models\DDC753;
 
+use Doctrine\ORM\Annotation as ORM;
+
 /**
- * @Entity()
+ * @ORM\Entity()
  */
 class DDC753EntityWithDefaultCustomRepository
 {
     /**
-     * @var int
-     * @Id
-     * @Column(type="integer")
-     * @GeneratedValue
+     * @ORM\Id
+     * @ORM\Column(type="integer")
+     * @ORM\GeneratedValue
      */
     protected $id;
 
-    /**
-     * @var string
-     * @column(type="string")
-     */
+    /** @ORM\Column(type="string") */
     protected $name;
 }

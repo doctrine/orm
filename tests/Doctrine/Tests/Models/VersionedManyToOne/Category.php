@@ -4,25 +4,26 @@ declare(strict_types=1);
 
 namespace Doctrine\Tests\Models\VersionedManyToOne;
 
+use Doctrine\ORM\Annotation as ORM;
+
 /**
- * @Entity
- * @Table(name="versioned_many_to_one_category")
+ * @ORM\Entity
+ * @ORM\Table(name="versioned_many_to_one_category")
  */
 class Category
 {
     /**
-     * @var int
-     * @Id
-     * @Column(name="id", type="integer")
-     * @GeneratedValue(strategy="AUTO")
+     * @ORM\Id
+     * @ORM\Column(name="id", type="integer")
+     * @ORM\GeneratedValue(strategy="AUTO")
      */
     public $id;
 
     /**
      * Version column
      *
-     * @Column(type="integer", name="version")
-     * @Version
+     * @ORM\Column(type="integer", name="version")
+     * @ORM\Version
      */
     public $version;
 }

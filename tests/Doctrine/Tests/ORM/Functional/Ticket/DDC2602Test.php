@@ -5,62 +5,64 @@ declare(strict_types=1);
 namespace Doctrine\Tests\ORM\Functional\Ticket;
 
 use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\ORM\Annotation as ORM;
 use Doctrine\ORM\Event\LifecycleEventArgs;
 use Doctrine\ORM\Events;
 use Doctrine\Tests\OrmFunctionalTestCase;
-
 use function in_array;
 use function json_decode;
 
 /**
+ * @group performance
  * @group DDC-2602
  */
 class DDC2602Test extends OrmFunctionalTestCase
 {
-    protected function setUp(): void
+    protected function setUp() : void
     {
         parent::setUp();
 
-        $this->_schemaTool->createSchema(
+        $this->schemaTool->createSchema(
             [
-                $this->_em->getClassMetadata(DDC2602User::class),
-                $this->_em->getClassMetadata(DDC2602Biography::class),
-                $this->_em->getClassMetadata(DDC2602BiographyField::class),
-                $this->_em->getClassMetadata(DDC2602BiographyFieldChoice::class),
+                $this->em->getClassMetadata(DDC2602User::class),
+                $this->em->getClassMetadata(DDC2602Biography::class),
+                $this->em->getClassMetadata(DDC2602BiographyField::class),
+                $this->em->getClassMetadata(DDC2602BiographyFieldChoice::class),
             ]
         );
 
         $this->loadFixture();
     }
 
-    protected function tearDown(): void
+    protected function tearDown() : void
     {
         parent::tearDown();
 
-        $this->_schemaTool->dropSchema(
+        $this->schemaTool->dropSchema(
             [
-                $this->_em->getClassMetadata(DDC2602User::class),
-                $this->_em->getClassMetadata(DDC2602Biography::class),
-                $this->_em->getClassMetadata(DDC2602BiographyField::class),
-                $this->_em->getClassMetadata(DDC2602BiographyFieldChoice::class),
+                $this->em->getClassMetadata(DDC2602User::class),
+                $this->em->getClassMetadata(DDC2602Biography::class),
+                $this->em->getClassMetadata(DDC2602BiographyField::class),
+                $this->em->getClassMetadata(DDC2602BiographyFieldChoice::class),
             ]
         );
     }
 
-    public function testPostLoadListenerShouldBeAbleToRunQueries(): void
+    public function testPostLoadListenerShouldBeAbleToRunQueries() : void
     {
-        $eventManager = $this->_em->getEventManager();
+        $eventManager = $this->em->getEventManager();
         $eventManager->addEventListener([Events::postLoad], new DDC2602PostLoadListener());
 
-        $result = $this->_em->createQuery('SELECT u, b FROM Doctrine\Tests\ORM\Functional\Ticket\DDC2602User u JOIN u.biography b')
-                             ->getResult();
+        $result = $this->em
+            ->createQuery('SELECT u, b FROM Doctrine\Tests\ORM\Performance\DDC2602User u JOIN u.biography b')
+            ->getResult();
 
         self::assertCount(2, $result);
         self::assertCount(2, $result[0]->biography->fieldList);
         self::assertCount(1, $result[1]->biography->fieldList);
     }
 
-    private function loadFixture(): void
+    private function loadFixture() : void
     {
         $user1                 = new DDC2602User();
         $user2                 = new DDC2602User();
@@ -117,21 +119,21 @@ class DDC2602Test extends OrmFunctionalTestCase
         $biographyFieldChoice6->field = $biographyField2;
         $biographyFieldChoice6->label = 'Answer 2.2';
 
-        $this->_em->persist($user1);
-        $this->_em->persist($user2);
+        $this->em->persist($user1);
+        $this->em->persist($user2);
 
-        $this->_em->persist($biographyField1);
-        $this->_em->persist($biographyField2);
+        $this->em->persist($biographyField1);
+        $this->em->persist($biographyField2);
 
-        $this->_em->flush();
-        $this->_em->clear();
+        $this->em->flush();
+        $this->em->clear();
     }
 }
 
 
 class DDC2602PostLoadListener
 {
-    public function postLoad(LifecycleEventArgs $event): void
+    public function postLoad(LifecycleEventArgs $event) : void
     {
         $entity = $event->getEntity();
 
@@ -157,7 +159,7 @@ class DDC2602PostLoadListener
 
             $fieldSelection->field      = $field;
             $fieldSelection->choiceList = $field->choiceList->filter(static function ($choice) use ($choiceList) {
-                return in_array($choice->id, $choiceList);
+                return in_array($choice->id, $choiceList, true);
             });
 
             $fieldList->add($fieldSelection);
@@ -169,59 +171,65 @@ class DDC2602PostLoadListener
 
 
 /**
- * @Entity
+ * @ORM\Entity
  */
 class DDC2602User
 {
     /**
-     * @Id @GeneratedValue
-     * @Column(type="integer")
+     * @ORM\Id @ORM\GeneratedValue
+     * @ORM\Column(type="integer")
+     *
      * @var int
      */
     public $id;
 
     /**
-     * @Column(type="string", length=15)
+     * @ORM\Column(type="string", length=15)
+     *
      * @var string
      */
     public $name;
 
     /**
-     * @OneToOne(
-     *     targetEntity="DDC2602Biography",
+     * @ORM\OneToOne(
+     *     targetEntity=DDC2602Biography::class,
      *     inversedBy="user",
-     *     cascade={"persist", "merge", "refresh", "remove"}
+     *     cascade={"persist", "refresh", "remove"}
      * )
-     * @JoinColumn(nullable=false)
+     * @ORM\JoinColumn(nullable=false)
+     *
      * @var DDC2602Biography
      */
     public $biography;
 }
 
 /**
- * @Entity
+ * @ORM\Entity
  */
 class DDC2602Biography
 {
     /**
-     * @Id @GeneratedValue
-     * @Column(type="integer")
+     * @ORM\Id @ORM\GeneratedValue
+     * @ORM\Column(type="integer")
+     *
      * @var int
      */
     public $id;
 
     /**
-     * @OneToOne(
-     *     targetEntity="DDC2602User",
+     * @ORM\OneToOne(
+     *     targetEntity=DDC2602User::class,
      *     mappedBy="biography",
-     *     cascade={"persist", "merge", "refresh"}
+     *     cascade={"persist", "refresh"}
      * )
+     *
      * @var DDC2602User
      */
     public $user;
 
     /**
-     * @Column(type="text", nullable=true)
+     * @ORM\Column(type="text", nullable=true)
+     *
      * @var string
      */
     public $content;
@@ -231,35 +239,31 @@ class DDC2602Biography
 }
 
 /**
- * @Entity
+ * @ORM\Entity
  */
 class DDC2602BiographyField
 {
     /**
-     * @Id @GeneratedValue
-     * @Column(type="integer")
+     * @ORM\Id @ORM\GeneratedValue
+     * @ORM\Column(type="integer")
+     *
      * @var int
      */
     public $id;
 
-    /**
-     * @var string
-     * @Column(type="string", unique=true, length=100)
-     */
+    /** @ORM\Column(type="string", unique=true, length=100) */
     public $alias;
 
-    /**
-     * @var string
-     * @Column(type="string", length=100)
-     */
+    /** @ORM\Column(type="string", length=100) */
     public $label;
 
     /**
-     * @OneToMany(
-     *     targetEntity="DDC2602BiographyFieldChoice",
+     * @ORM\OneToMany(
+     *     targetEntity=DDC2602BiographyFieldChoice::class,
      *     mappedBy="field",
-     *     cascade={"persist", "merge", "refresh"}
+     *     cascade={"persist", "refresh"}
      * )
+     *
      * @var ArrayCollection
      */
     public $choiceList;
@@ -271,29 +275,28 @@ class DDC2602BiographyField
 }
 
 /**
- * @Entity
+ * @ORM\Entity
  */
 class DDC2602BiographyFieldChoice
 {
     /**
-     * @Id @GeneratedValue
-     * @Column(type="integer")
+     * @ORM\Id @ORM\GeneratedValue
+     * @ORM\Column(type="integer")
+     *
      * @var int
      */
     public $id;
 
-    /**
-     * @var string
-     * @Column(type="string", unique=true, length=100)
-     */
+    /** @ORM\Column(type="string", unique=true, length=100) */
     public $label;
 
     /**
-     * @ManyToOne(
-     *     targetEntity="DDC2602BiographyField",
+     * @ORM\ManyToOne(
+     *     targetEntity=DDC2602BiographyField::class,
      *     inversedBy="choiceList"
      * )
-     * @JoinColumn(onDelete="CASCADE")
+     * @ORM\JoinColumn(onDelete="CASCADE")
+     *
      * @var DDC2602BiographyField
      */
     public $field;

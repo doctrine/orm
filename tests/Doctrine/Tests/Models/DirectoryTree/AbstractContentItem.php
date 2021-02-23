@@ -4,29 +4,20 @@ declare(strict_types=1);
 
 namespace Doctrine\Tests\Models\DirectoryTree;
 
+use Doctrine\ORM\Annotation as ORM;
+
 /**
- * @MappedSuperclass
+ * @ORM\MappedSuperClass
  */
 abstract class AbstractContentItem
 {
-    /**
-     * @var int
-     * @Id
-     * @Column(type="integer")
-     * @GeneratedValue
-     */
+    /** @ORM\Id @ORM\Column(type="integer") @ORM\GeneratedValue */
     private $id;
 
-    /**
-     * @var Directory
-     * @ManyToOne(targetEntity="Directory")
-     */
+    /** @ORM\ManyToOne(targetEntity=Directory::class) */
     protected $parentDirectory;
 
-    /**
-     * @var string
-     * @column(type="string")
-     */
+    /** @ORM\Column(type="string") */
     protected $name;
 
     /**
@@ -53,7 +44,7 @@ abstract class AbstractContentItem
         return $this->id;
     }
 
-    public function setName($name): void
+    public function setName($name)
     {
         $this->name = $name;
     }
@@ -68,12 +59,18 @@ abstract class AbstractContentItem
         return $this->parentDirectory;
     }
 
-    public function getNodeIsLoaded(): bool
+    /**
+     * @return bool
+     */
+    public function getNodeIsLoaded()
     {
         return $this->nodeIsLoaded;
     }
 
-    public function setNodeIsLoaded(bool $nodeIsLoaded): void
+    /**
+     * @param bool $nodeIsLoaded
+     */
+    public function setNodeIsLoaded($nodeIsLoaded)
     {
         $this->nodeIsLoaded = (bool) $nodeIsLoaded;
     }

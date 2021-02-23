@@ -4,41 +4,48 @@ declare(strict_types=1);
 
 namespace Doctrine\Tests\ORM;
 
+use Doctrine\DBAL\Platforms\AbstractPlatform;
+use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Event\OnClassMetadataNotFoundEventArgs;
-use Doctrine\Persistence\Mapping\ClassMetadata;
-use Doctrine\Persistence\ObjectManager;
-use PHPUnit\Framework\TestCase;
-
-use function assert;
+use Doctrine\ORM\Mapping\ClassMetadata;
+use Doctrine\ORM\Mapping\ClassMetadataBuildingContext;
+use Doctrine\ORM\Mapping\ClassMetadataFactory;
+use Doctrine\ORM\Reflection\ReflectionService;
+use Doctrine\Tests\DoctrineTestCase;
 
 /**
  * Tests for {@see \Doctrine\ORM\Event\OnClassMetadataNotFoundEventArgs}
  *
  * @covers \Doctrine\ORM\Event\OnClassMetadataNotFoundEventArgs
  */
-class OnClassMetadataNotFoundEventArgsTest extends TestCase
+class OnClassMetadataNotFoundEventArgsTest extends DoctrineTestCase
 {
-    public function testEventArgsMutability(): void
+    public function testEventArgsMutability() : void
     {
-        $objectManager = $this->createMock(ObjectManager::class);
-        assert($objectManager instanceof ObjectManager);
+        $entityManager           = $this->createMock(EntityManagerInterface::class);
+        $metadataBuildingContext = new ClassMetadataBuildingContext(
+            $this->createMock(ClassMetadataFactory::class),
+            $this->createMock(ReflectionService::class),
+            $this->createMock(AbstractPlatform::class)
+        );
 
-        $args = new OnClassMetadataNotFoundEventArgs('foo', $objectManager);
+        $args = new OnClassMetadataNotFoundEventArgs('foo', $metadataBuildingContext, $entityManager);
 
-        $this->assertSame('foo', $args->getClassName());
-        $this->assertSame($objectManager, $args->getObjectManager());
+        self::assertSame('foo', $args->getClassName());
+        self::assertSame($metadataBuildingContext, $args->getClassMetadataBuildingContext());
+        self::assertSame($entityManager, $args->getObjectManager());
 
-        $this->assertNull($args->getFoundMetadata());
+        self::assertNull($args->getFoundMetadata());
 
+        /** @var ClassMetadata $metadata */
         $metadata = $this->createMock(ClassMetadata::class);
-        assert($metadata instanceof ClassMetadata);
 
         $args->setFoundMetadata($metadata);
 
-        $this->assertSame($metadata, $args->getFoundMetadata());
+        self::assertSame($metadata, $args->getFoundMetadata());
 
         $args->setFoundMetadata(null);
 
-        $this->assertNull($args->getFoundMetadata());
+        self::assertNull($args->getFoundMetadata());
     }
 }

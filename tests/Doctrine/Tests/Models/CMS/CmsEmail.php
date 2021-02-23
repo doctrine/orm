@@ -4,27 +4,26 @@ declare(strict_types=1);
 
 namespace Doctrine\Tests\Models\CMS;
 
+use Doctrine\ORM\Annotation as ORM;
+
 /**
  * CmsEmail
  *
- * @Entity
- * @Table(name="cms_emails")
+ * @ORM\Entity
+ * @ORM\Table(name="cms_emails")
  */
 class CmsEmail
 {
     /**
-     * @Column(type="integer")
-     * @Id @GeneratedValue
+     * @ORM\Column(type="integer")
+     * @ORM\Id @ORM\GeneratedValue
      */
     public $id;
 
-    /** @Column(length=250) */
+    /** @ORM\Column(length=250) */
     public $email;
 
-    /**
-     * @var CmsUser
-     * @OneToOne(targetEntity="CmsUser", mappedBy="email")
-     */
+    /** @ORM\OneToOne(targetEntity=CmsUser::class, mappedBy="email") */
     public $user;
 
     public function getId()
@@ -37,7 +36,7 @@ class CmsEmail
         return $this->email;
     }
 
-    public function setEmail($email): void
+    public function setEmail($email)
     {
         $this->email = $email;
     }
@@ -47,7 +46,7 @@ class CmsEmail
         return $this->user;
     }
 
-    public function setUser(CmsUser $user): void
+    public function setUser(CmsUser $user)
     {
         $this->user = $user;
     }

@@ -4,17 +4,17 @@ declare(strict_types=1);
 
 namespace Doctrine\Tests\ORM\Tools;
 
-use Doctrine\ORM\EntityManager;
+use Doctrine\ORM\Annotation as ORM;
+use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Events;
 use Doctrine\ORM\Mapping\ClassMetadataFactory;
 use Doctrine\ORM\Tools\AttachEntityListenersListener;
 use Doctrine\Tests\OrmTestCase;
-
 use function func_get_args;
 
 class AttachEntityListenersListenerTest extends OrmTestCase
 {
-    /** @var EntityManager */
+    /** @var EntityManagerInterface */
     private $em;
 
     /** @var AttachEntityListenersListener */
@@ -23,7 +23,7 @@ class AttachEntityListenersListenerTest extends OrmTestCase
     /** @var ClassMetadataFactory */
     private $factory;
 
-    protected function setUp(): void
+    public function setUp() : void
     {
         $this->listener = new AttachEntityListenersListener();
         $driver         = $this->createAnnotationDriver();
@@ -36,7 +36,7 @@ class AttachEntityListenersListenerTest extends OrmTestCase
         $this->factory->setEntityManager($this->em);
     }
 
-    public function testAttachEntityListeners(): void
+    public function testAttachEntityListeners() : void
     {
         $this->listener->addEntityListener(
             AttachEntityListenersListenerTestFooEntity::class,
@@ -47,18 +47,19 @@ class AttachEntityListenersListenerTest extends OrmTestCase
 
         $metadata = $this->factory->getMetadataFor(AttachEntityListenersListenerTestFooEntity::class);
 
-        $this->assertArrayHasKey('postLoad', $metadata->entityListeners);
-        $this->assertCount(1, $metadata->entityListeners['postLoad']);
-        $this->assertEquals('postLoadHandler', $metadata->entityListeners['postLoad'][0]['method']);
-        $this->assertEquals(AttachEntityListenersListenerTestListener::class, $metadata->entityListeners['postLoad'][0]['class']);
+        self::assertArrayHasKey('postLoad', $metadata->entityListeners);
+        self::assertCount(1, $metadata->entityListeners['postLoad']);
+        self::assertEquals('postLoadHandler', $metadata->entityListeners['postLoad'][0]['method']);
+        self::assertEquals(AttachEntityListenersListenerTestListener::class, $metadata->entityListeners['postLoad'][0]['class']);
     }
 
-    public function testAttachToExistingEntityListeners(): void
+    public function testAttachToExistingEntityListeners() : void
     {
         $this->listener->addEntityListener(
             AttachEntityListenersListenerTestBarEntity::class,
             AttachEntityListenersListenerTestListener2::class,
-            Events::prePersist
+            Events::prePersist,
+            'prePersist'
         );
 
         $this->listener->addEntityListener(
@@ -70,90 +71,92 @@ class AttachEntityListenersListenerTest extends OrmTestCase
 
         $metadata = $this->factory->getMetadataFor(AttachEntityListenersListenerTestBarEntity::class);
 
-        $this->assertArrayHasKey('postPersist', $metadata->entityListeners);
-        $this->assertArrayHasKey('prePersist', $metadata->entityListeners);
+        self::assertArrayHasKey('postPersist', $metadata->entityListeners);
+        self::assertArrayHasKey('prePersist', $metadata->entityListeners);
 
-        $this->assertCount(2, $metadata->entityListeners['prePersist']);
-        $this->assertCount(2, $metadata->entityListeners['postPersist']);
+        self::assertCount(2, $metadata->entityListeners['prePersist']);
+        self::assertCount(2, $metadata->entityListeners['postPersist']);
 
-        $this->assertEquals('prePersist', $metadata->entityListeners['prePersist'][0]['method']);
-        $this->assertEquals(AttachEntityListenersListenerTestListener::class, $metadata->entityListeners['prePersist'][0]['class']);
+        self::assertEquals('prePersist', $metadata->entityListeners['prePersist'][0]['method']);
+        self::assertEquals(AttachEntityListenersListenerTestListener::class, $metadata->entityListeners['prePersist'][0]['class']);
 
-        $this->assertEquals('prePersist', $metadata->entityListeners['prePersist'][1]['method']);
-        $this->assertEquals(AttachEntityListenersListenerTestListener2::class, $metadata->entityListeners['prePersist'][1]['class']);
+        self::assertEquals('prePersist', $metadata->entityListeners['prePersist'][1]['method']);
+        self::assertEquals(AttachEntityListenersListenerTestListener2::class, $metadata->entityListeners['prePersist'][1]['class']);
 
-        $this->assertEquals('postPersist', $metadata->entityListeners['postPersist'][0]['method']);
-        $this->assertEquals(AttachEntityListenersListenerTestListener::class, $metadata->entityListeners['postPersist'][0]['class']);
+        self::assertEquals('postPersist', $metadata->entityListeners['postPersist'][0]['method']);
+        self::assertEquals(AttachEntityListenersListenerTestListener::class, $metadata->entityListeners['postPersist'][0]['class']);
 
-        $this->assertEquals('postPersistHandler', $metadata->entityListeners['postPersist'][1]['method']);
-        $this->assertEquals(AttachEntityListenersListenerTestListener2::class, $metadata->entityListeners['postPersist'][1]['class']);
+        self::assertEquals('postPersistHandler', $metadata->entityListeners['postPersist'][1]['method']);
+        self::assertEquals(AttachEntityListenersListenerTestListener2::class, $metadata->entityListeners['postPersist'][1]['class']);
     }
 
-    public function testDuplicateEntityListenerException(): void
+    public function testDoNotDuplicateEntityListener() : void
     {
-        $this->expectException('Doctrine\ORM\Mapping\MappingException');
-        $this->expectExceptionMessage('Entity Listener "Doctrine\Tests\ORM\Tools\AttachEntityListenersListenerTestListener#postPersist()" in "Doctrine\Tests\ORM\Tools\AttachEntityListenersListenerTestFooEntity" was already declared, but it must be declared only once.');
         $this->listener->addEntityListener(
             AttachEntityListenersListenerTestFooEntity::class,
             AttachEntityListenersListenerTestListener::class,
-            Events::postPersist
+            Events::postPersist,
+            'postPersist'
         );
 
         $this->listener->addEntityListener(
             AttachEntityListenersListenerTestFooEntity::class,
             AttachEntityListenersListenerTestListener::class,
-            Events::postPersist
+            Events::postPersist,
+            'postPersist'
         );
 
-        $this->factory->getMetadataFor(AttachEntityListenersListenerTestFooEntity::class);
+        $class = $this->factory->getMetadataFor(AttachEntityListenersListenerTestFooEntity::class);
+
+        self::assertCount(1, $class->entityListeners[Events::postPersist]);
     }
 }
 
 /**
- * @Entity
+ * @ORM\Entity
  */
 class AttachEntityListenersListenerTestFooEntity
 {
     /**
-     * @var int
-     * @Id
-     * @Column(type="integer")
-     * @GeneratedValue(strategy="AUTO")
+     * @ORM\Id
+     * @ORM\Column(type="integer")
+     * @ORM\GeneratedValue(strategy="AUTO")
      */
     public $id;
 }
 
 /**
- * @Entity
- * @EntityListeners({"AttachEntityListenersListenerTestListener"})
+ * @ORM\Entity
+ * @ORM\EntityListeners({AttachEntityListenersListenerTestListener::class})
  */
 class AttachEntityListenersListenerTestBarEntity
 {
     /**
-     * @var int
-     * @Id
-     * @Column(type="integer")
-     * @GeneratedValue(strategy="AUTO")
+     * @ORM\Id
+     * @ORM\Column(type="integer")
+     * @ORM\GeneratedValue(strategy="AUTO")
      */
     public $id;
 }
 
 class AttachEntityListenersListenerTestListener
 {
-    /** @psalm-var array<string,list<list<mixed>>> */
     public $calls;
 
-    public function prePersist(): void
+    /** @ORM\PrePersist */
+    public function prePersist()
     {
         $this->calls[__FUNCTION__][] = func_get_args();
     }
 
-    public function postLoadHandler(): void
+    /** @ORM\PostLoad */
+    public function postLoadHandler()
     {
         $this->calls[__FUNCTION__][] = func_get_args();
     }
 
-    public function postPersist(): void
+    /** @ORM\PostPersist */
+    public function postPersist()
     {
         $this->calls[__FUNCTION__][] = func_get_args();
     }
@@ -161,15 +164,16 @@ class AttachEntityListenersListenerTestListener
 
 class AttachEntityListenersListenerTestListener2
 {
-    /** @psalm-var array<string,list<list<mixed>>> */
     public $calls;
 
-    public function prePersist(): void
+    /** @ORM\PrePersist */
+    public function prePersist()
     {
         $this->calls[__FUNCTION__][] = func_get_args();
     }
 
-    public function postPersistHandler(): void
+    /** @ORM\PostPersist */
+    public function postPersistHandler()
     {
         $this->calls[__FUNCTION__][] = func_get_args();
     }

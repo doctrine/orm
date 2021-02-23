@@ -5,102 +5,84 @@ declare(strict_types=1);
 namespace Doctrine\Tests\Models\DDC117;
 
 use Doctrine\Common\Collections\ArrayCollection;
-use Doctrine\Common\Collections\Collection;
+use Doctrine\ORM\Annotation as ORM;
 
 /**
- * @Entity
+ * @ORM\Entity
  */
 class DDC117Article
 {
-    /**
-     * @var int
-     * @Id @Column(type="integer", name="article_id") @GeneratedValue
-     */
+    /** @ORM\Id @ORM\Column(type="integer", name="article_id") @ORM\GeneratedValue */
     private $id;
 
-    /**
-     * @var string
-     * @Column
-     */
+    /** @ORM\Column */
     private $title;
 
-    /**
-     * @psalm-var Collection<int, DDC117Reference>
-     * @OneToMany(targetEntity="DDC117Reference", mappedBy="source", cascade={"remove"})
-     */
+    /** @ORM\OneToMany(targetEntity=DDC117Reference::class, mappedBy="source", cascade={"remove"}) */
     private $references;
 
-    /**
-     * @var DDC117ArticleDetails
-     * @OneToOne(targetEntity="DDC117ArticleDetails", mappedBy="article", cascade={"persist", "remove"})
-     */
+    /** @ORM\OneToOne(targetEntity=DDC117ArticleDetails::class, mappedBy="article", cascade={"persist", "remove"}) */
     private $details;
 
-    /**
-     * @psalm-var Collection<int, DDC117Translation>
-     * @OneToMany(targetEntity="DDC117Translation", mappedBy="article", cascade={"persist", "remove"})
-     */
+    /** @ORM\OneToMany(targetEntity=DDC117Translation::class, mappedBy="article", cascade={"persist", "remove"}) */
     private $translations;
 
-    /**
-     * @var Collection<int, DDC117Translation>
-     * @OneToMany(targetEntity="DDC117Link", mappedBy="source", indexBy="target_id", cascade={"persist", "remove"})
-     */
+    /** @ORM\OneToMany(targetEntity=DDC117Link::class, mappedBy="source", indexBy="target_id", cascade={"persist", "remove"}) */
     private $links;
 
-    public function __construct(string $title)
+    public function __construct($title)
     {
         $this->title        = $title;
         $this->references   = new ArrayCollection();
         $this->translations = new ArrayCollection();
     }
 
-    public function setDetails(DDC117ArticleDetails $details): void
+    public function setDetails($details)
     {
         $this->details = $details;
     }
 
-    public function id(): int
+    public function id()
     {
         return $this->id;
     }
 
-    public function addReference(DDC117Reference $reference): void
+    public function addReference($reference)
     {
         $this->references[] = $reference;
     }
 
-    public function references(): Collection
+    public function references()
     {
         return $this->references;
     }
 
-    public function addTranslation(string $language, string $title): void
+    public function addTranslation($language, $title)
     {
         $this->translations[] = new DDC117Translation($this, $language, $title);
     }
 
-    public function getText(): string
+    public function getText()
     {
         return $this->details->getText();
     }
 
-    public function getDetails(): DDC117ArticleDetails
+    public function getDetails()
     {
         return $this->details;
     }
 
-    public function getLinks(): Collection
+    public function getLinks()
     {
         return $this->links;
     }
 
-    public function resetText(): void
+    public function resetText()
     {
         $this->details = null;
     }
 
-    public function getTranslations(): Collection
+    public function getTranslations()
     {
         return $this->translations;
     }

@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Doctrine\Tests\ORM\Functional\Ticket;
 
+use Doctrine\ORM\Annotation as ORM;
 use Doctrine\Tests\OrmFunctionalTestCase;
 
 /**
@@ -11,63 +12,62 @@ use Doctrine\Tests\OrmFunctionalTestCase;
  */
 class DDC2175Test extends OrmFunctionalTestCase
 {
-    protected function setUp(): void
+    protected function setUp() : void
     {
         parent::setUp();
-        $this->_schemaTool->createSchema(
-            [
-                $this->_em->getClassMetadata(DDC2175Entity::class),
-            ]
+
+        $this->schemaTool->createSchema(
+            [$this->em->getClassMetadata(DDC2175Entity::class)]
         );
     }
 
-    public function testIssue(): void
+    protected function tearDown() : void
+    {
+        parent::tearDown();
+
+        $this->schemaTool->dropSchema(
+            [$this->em->getClassMetadata(DDC2175Entity::class)]
+        );
+    }
+
+    public function testIssue() : void
     {
         $entity        = new DDC2175Entity();
         $entity->field = 'foo';
 
-        $this->_em->persist($entity);
-        $this->_em->flush();
+        $this->em->persist($entity);
+        $this->em->flush();
 
-        $this->assertEquals(1, $entity->version);
+        self::assertEquals(1, $entity->version);
 
         $entity->field = 'bar';
-        $this->_em->flush();
+        $this->em->flush();
 
-        $this->assertEquals(2, $entity->version);
+        self::assertEquals(2, $entity->version);
 
         $entity->field = 'baz';
-        $this->_em->flush();
+        $this->em->flush();
 
-        $this->assertEquals(3, $entity->version);
+        self::assertEquals(3, $entity->version);
     }
 }
 
 /**
- * @Entity
- * @InheritanceType("JOINED")
- * @DiscriminatorMap({"entity": "DDC2175Entity"})
+ * @ORM\Entity
+ * @ORM\InheritanceType("JOINED")
+ * @ORM\DiscriminatorMap({"entity": DDC2175Entity::class})
  */
 class DDC2175Entity
 {
-    /**
-     * @var int
-     * @Id
-     * @GeneratedValue
-     * @Column(type="integer")
-     */
+    /** @ORM\Id @ORM\GeneratedValue @ORM\Column(type="integer") */
     public $id;
 
-    /**
-     * @var string
-     * @Column(type="string")
-     */
+    /** @ORM\Column(type="string") */
     public $field;
 
     /**
-     * @var int
-     * @Version
-     * @Column(type="integer")
+     * @ORM\Version
+     * @ORM\Column(type="integer")
      */
     public $version;
 }

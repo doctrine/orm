@@ -6,16 +6,17 @@ namespace Doctrine\Tests\ORM\Functional\Ticket;
 
 use DateTime;
 use Doctrine\DBAL\Types\Type;
+use Doctrine\ORM\Annotation as ORM;
 use Doctrine\Tests\OrmFunctionalTestCase;
 
 class DDC425Test extends OrmFunctionalTestCase
 {
-    protected function setUp(): void
+    protected function setUp() : void
     {
         parent::setUp();
-        $this->_schemaTool->createSchema(
+        $this->schemaTool->createSchema(
             [
-                $this->_em->getClassMetadata(DDC425Entity::class),
+                $this->em->getClassMetadata(DDC425Entity::class),
             ]
         );
     }
@@ -23,30 +24,26 @@ class DDC425Test extends OrmFunctionalTestCase
     /**
      * @group DDC-425
      */
-    public function testIssue(): void
+    public function testIssue() : void
     {
-        //$this->_em->getConnection()->getConfiguration()->setSQLLogger(new \Doctrine\DBAL\Logging\EchoSQLLogger);
+        //$this->em->getConnection()->getConfiguration()->setSQLLogger(new \Doctrine\DBAL\Logging\EchoSQLLogger);
 
-        $num = $this->_em->createQuery('DELETE ' . __NAMESPACE__ . '\DDC425Entity e WHERE e.someDatetimeField > ?1')
+        $num = $this->em->createQuery('DELETE ' . __NAMESPACE__ . '\DDC425Entity e WHERE e.someDatetimeField > ?1')
                 ->setParameter(1, new DateTime(), Type::DATETIME)
                 ->getResult();
-        $this->assertEquals(0, $num);
+        self::assertEquals(0, $num);
     }
 }
 
-/** @Entity */
+/** @ORM\Entity */
 class DDC425Entity
 {
     /**
-     * @var int
-     * @Id @Column(type="integer")
-     * @GeneratedValue
+     * @ORM\Id @ORM\Column(type="integer")
+     * @ORM\GeneratedValue
      */
     public $id;
 
-    /**
-     * @var DateTime
-     * @Column(type="datetime")
-     */
+    /** @ORM\Column(type="datetime") */
     public $someDatetimeField;
 }

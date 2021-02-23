@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Doctrine\Tests\ORM\Functional\Ticket;
 
 use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\ORM\Annotation as ORM;
 use Doctrine\Tests\OrmFunctionalTestCase;
 
 /**
@@ -12,14 +13,17 @@ use Doctrine\Tests\OrmFunctionalTestCase;
  */
 class DDC2780Test extends OrmFunctionalTestCase
 {
-    protected function setUp(): void
+    /**
+     * {@inheritDoc}
+     */
+    protected function setup() : void
     {
-        parent::setUp();
+        parent::setup();
 
-        $this->_schemaTool->createSchema(
+        $this->schemaTool->createSchema(
             [
-                $this->_em->getClassMetadata(DDC2780User::class),
-                $this->_em->getClassMetadata(DDC2780Project::class),
+                $this->em->getClassMetadata(DDC2780User::class),
+                $this->em->getClassMetadata(DDC2780Project::class),
             ]
         );
     }
@@ -27,19 +31,19 @@ class DDC2780Test extends OrmFunctionalTestCase
     /**
      * Verifies that IS [NOT] NULL can be used on join aliases
      */
-    public function testIssue(): void
+    public function testIssue() : void
     {
         $user    = new DDC2780User();
         $project = new DDC2780Project();
 
         $user->project = $project;
 
-        $this->_em->persist($project);
-        $this->_em->persist($user);
-        $this->_em->flush();
-        $this->_em->clear();
+        $this->em->persist($project);
+        $this->em->persist($user);
+        $this->em->flush();
+        $this->em->clear();
 
-        $result = $this->_em->createQueryBuilder()
+        $result = $this->em->createQueryBuilder()
             ->select('user')
             ->from(DDC2780User::class, 'user')
             ->leftJoin('user.project', 'project')
@@ -47,43 +51,41 @@ class DDC2780Test extends OrmFunctionalTestCase
             ->getQuery()
             ->getOneOrNullResult();
 
-        $this->assertInstanceOf(DDC2780User::class, $result);
+        self::assertInstanceOf(DDC2780User::class, $result);
     }
 }
 
 /**
- * @Entity
+ * @ORM\Entity
  */
 class DDC2780User
 {
     /**
-     * @var int
-     * @Id
-     * @Column(type="integer")
-     * @GeneratedValue
+     * @ORM\Id @ORM\GeneratedValue
+     * @ORM\Column(type="integer")
      */
     public $id;
 
     /**
-     * @ManyToOne(targetEntity="DDC2780Project")
+     * @ORM\ManyToOne(targetEntity=DDC2780Project::class)
+     *
      * @var DDC2780Project
      */
     public $project;
 }
 
-/** @Entity */
+/** @ORM\Entity */
 class DDC2780Project
 {
     /**
-     * @var int
-     * @Id
-     * @Column(type="integer")
-     * @GeneratedValue
+     * @ORM\Id @ORM\GeneratedValue
+     * @ORM\Column(type="integer")
      */
     public $id;
 
     /**
-     * @OneToMany(targetEntity="DDC2780User", mappedBy="project")
+     * @ORM\OneToMany(targetEntity=DDC2780User::class, mappedBy="project")
+     *
      * @var DDC2780User[]
      */
     public $users;

@@ -5,46 +5,41 @@ declare(strict_types=1);
 namespace Doctrine\Tests\Models\ECommerce;
 
 use Doctrine\Common\Collections\ArrayCollection;
-use Doctrine\Common\Collections\Collection;
+use Doctrine\ORM\Annotation as ORM;
 
 /**
  * ECommerceCategory
  * Represents a tag applied on particular products.
  *
- * @Entity
- * @Table(name="ecommerce_categories")
+ * @ORM\Entity
+ * @ORM\Table(name="ecommerce_categories")
  */
 class ECommerceCategory
 {
     /**
-     * @var int
-     * @Id @Column(type="integer")
-     * @GeneratedValue(strategy="AUTO")
+     * @ORM\Id @ORM\Column(type="integer")
+     * @ORM\GeneratedValue(strategy="AUTO")
      */
     private $id;
 
-    /**
-     * @var string
-     * @Column(type="string", length=50)
-     */
+    /** @ORM\Column(type="string", length=50) */
     private $name;
 
-    /**
-     * @psalm-var Collection<int, ECommerceProduct>
-     * @ManyToMany(targetEntity="ECommerceProduct", mappedBy="categories")
-     */
+    /** @ORM\ManyToMany(targetEntity=ECommerceProduct::class, mappedBy="categories") */
     private $products;
 
     /**
-     * @psalm-var Collection<int, ECommerceCategory>
-     * @OneToMany(targetEntity="ECommerceCategory", mappedBy="parent", cascade={"persist"})
+     * @ORM\OneToMany(
+     *     targetEntity=ECommerceCategory::class,
+     *     mappedBy="parent",
+     *     cascade={"persist"}
+     * )
      */
     private $children;
 
     /**
-     * @var ECommerceCategory
-     * @ManyToOne(targetEntity="ECommerceCategory", inversedBy="children")
-     * @JoinColumn(name="parent_id", referencedColumnName="id")
+     * @ORM\ManyToOne(targetEntity=ECommerceCategory::class, inversedBy="children")
+     * @ORM\JoinColumn(name="parent_id", referencedColumnName="id")
      */
     private $parent;
 
@@ -64,12 +59,12 @@ class ECommerceCategory
         return $this->name;
     }
 
-    public function setName($name): void
+    public function setName($name)
     {
         $this->name = $name;
     }
 
-    public function addProduct(ECommerceProduct $product): void
+    public function addProduct(ECommerceProduct $product)
     {
         if (! $this->products->contains($product)) {
             $this->products[] = $product;
@@ -77,7 +72,7 @@ class ECommerceCategory
         }
     }
 
-    public function removeProduct(ECommerceProduct $product): void
+    public function removeProduct(ECommerceProduct $product)
     {
         $removed = $this->products->removeElement($product);
         if ($removed) {
@@ -90,7 +85,7 @@ class ECommerceCategory
         return $this->products;
     }
 
-    private function setParent(ECommerceCategory $parent): void
+    public function setParent(ECommerceCategory $parent)
     {
         $this->parent = $parent;
     }
@@ -105,19 +100,19 @@ class ECommerceCategory
         return $this->parent;
     }
 
-    public function addChild(ECommerceCategory $child): void
+    public function addChild(ECommerceCategory $child)
     {
         $this->children[] = $child;
         $child->setParent($this);
     }
 
     /** does not set the owning side. */
-    public function brokenAddChild(ECommerceCategory $child): void
+    public function brokenAddChild(ECommerceCategory $child)
     {
         $this->children[] = $child;
     }
 
-    public function removeChild(ECommerceCategory $child): void
+    public function removeChild(ECommerceCategory $child)
     {
         $removed = $this->children->removeElement($child);
         if ($removed) {
@@ -125,7 +120,7 @@ class ECommerceCategory
         }
     }
 
-    private function removeParent(): void
+    public function removeParent()
     {
         $this->parent = null;
     }

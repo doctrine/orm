@@ -4,25 +4,23 @@ declare(strict_types=1);
 
 namespace Doctrine\Tests\Models\Routing;
 
+use Doctrine\ORM\Annotation as ORM;
+
 /**
- * @Entity
+ * @ORM\Entity
  */
 class RoutingLocation
 {
     /**
-     * @var int
-     * @Id @GeneratedValue
-     * @Column(type="integer")
+     * @ORM\Id @ORM\GeneratedValue
+     * @ORM\Column(type="integer")
      */
     public $id;
 
-    /**
-     * @var string
-     * @Column(type="string")
-     */
+    /** @ORM\Column(type="string") */
     public $name;
 
-    public function getName(): string
+    public function getName()
     {
         return $this->name;
     }

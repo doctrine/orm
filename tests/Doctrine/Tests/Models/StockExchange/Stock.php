@@ -4,38 +4,39 @@ declare(strict_types=1);
 
 namespace Doctrine\Tests\Models\StockExchange;
 
+use Doctrine\ORM\Annotation as ORM;
+
 /**
- * @Entity
- * @Table(name="exchange_stocks")
+ * @ORM\Entity
+ * @ORM\Table(name="exchange_stocks")
  */
 class Stock
 {
     /**
-     * @Id @GeneratedValue @Column(type="integer")
+     * @ORM\Id @ORM\GeneratedValue @ORM\Column(type="integer")
+     *
      * @var int
      */
     private $id;
 
     /**
-     * @var string
      * For real this column would have to be unique=true. But I want to test behavior of non-unique overrides.
-     * @Column(type="string")
+     *
+     * @ORM\Column(type="string")
      */
     private $symbol;
 
-    /**
-     * @var float
-     * @Column(type="decimal")
-     */
+    /** @ORM\Column(type="decimal") */
     private $price;
 
     /**
-     * @ManyToOne(targetEntity="Market", inversedBy="stocks")
+     * @ORM\ManyToOne(targetEntity=Market::class, inversedBy="stocks")
+     *
      * @var Market
      */
     private $market;
 
-    public function __construct(string $symbol, float $initialOfferingPrice, Market $market)
+    public function __construct($symbol, $initialOfferingPrice, Market $market)
     {
         $this->symbol = $symbol;
         $this->price  = $initialOfferingPrice;
@@ -43,7 +44,7 @@ class Stock
         $market->addStock($this);
     }
 
-    public function getSymbol(): string
+    public function getSymbol()
     {
         return $this->symbol;
     }

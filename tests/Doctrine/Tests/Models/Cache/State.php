@@ -5,35 +5,35 @@ declare(strict_types=1);
 namespace Doctrine\Tests\Models\Cache;
 
 use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\ORM\Annotation as ORM;
 
 /**
- * @Entity
- * @Table("cache_state")
- * @Cache("NONSTRICT_READ_WRITE")
+ * @ORM\Entity
+ * @ORM\Table("cache_state")
+ * @ORM\Cache("NONSTRICT_READ_WRITE")
  */
 class State
 {
     /**
-     * @var int
-     * @Id
-     * @GeneratedValue
-     * @Column(type="integer")
+     * @ORM\Id
+     * @ORM\GeneratedValue
+     * @ORM\Column(type="integer")
      */
     protected $id;
 
-    /** @Column(unique=true) */
+    /** @ORM\Column(unique=true) */
     protected $name;
 
     /**
-     * @Cache
-     * @ManyToOne(targetEntity="Country")
-     * @JoinColumn(name="country_id", referencedColumnName="id")
+     * @ORM\Cache
+     * @ORM\ManyToOne(targetEntity=Country::class)
+     * @ORM\JoinColumn(name="country_id", referencedColumnName="id")
      */
     protected $country;
 
     /**
-     * @Cache("NONSTRICT_READ_WRITE")
-     * @OneToMany(targetEntity="City", mappedBy="state")
+     * @ORM\Cache("NONSTRICT_READ_WRITE")
+     * @ORM\OneToMany(targetEntity=City::class, mappedBy="state")
      */
     protected $cities;
 
@@ -49,7 +49,7 @@ class State
         return $this->id;
     }
 
-    public function setId($id): void
+    public function setId($id)
     {
         $this->id = $id;
     }
@@ -59,7 +59,7 @@ class State
         return $this->name;
     }
 
-    public function setName($name): void
+    public function setName($name)
     {
         $this->name = $name;
     }
@@ -69,7 +69,7 @@ class State
         return $this->country;
     }
 
-    public function setCountry(Country $country): void
+    public function setCountry(Country $country)
     {
         $this->country = $country;
     }
@@ -79,12 +79,12 @@ class State
         return $this->cities;
     }
 
-    public function setCities(ArrayCollection $cities): void
+    public function setCities(ArrayCollection $cities)
     {
         $this->cities = $cities;
     }
 
-    public function addCity(City $city): void
+    public function addCity(City $city)
     {
         $this->cities[] = $city;
     }
