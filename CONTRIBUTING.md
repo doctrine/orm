@@ -66,7 +66,7 @@ sqlite database.
 Tips for creating unit tests:
 
 1. If you put a test into the `Ticket` namespace as described above, put the testcase and all entities into the same class.
-   See `https://github.com/doctrine/orm/tree/master/tests/Doctrine/Tests/ORM/Functional/Ticket/DDC2306Test.php` for an
+   See `https://github.com/doctrine/orm/tree/2.8.x/tests/Doctrine/Tests/ORM/Functional/Ticket/DDC2306Test.php` for an
    example.
 
 ## Travis
