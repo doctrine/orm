@@ -32,7 +32,7 @@ class LegacyArticle
 
     /**
      * @var LegacyUser
-     * @ManyToOne(targetEntity="LegacyUser", inversedBy="_articles")
+     * @ManyToOne(targetEntity="LegacyUser", inversedBy="articles")
      * @JoinColumn(name="iUserId", referencedColumnName="iUserId")
      */
     public $user;

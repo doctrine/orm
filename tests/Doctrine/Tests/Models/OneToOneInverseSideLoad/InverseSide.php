@@ -11,6 +11,7 @@ namespace Doctrine\Tests\Models\OneToOneInverseSideLoad;
 class InverseSide
 {
     /**
+     * @var string
      * @Id()
      * @Column(type="string")
      * @GeneratedValue(strategy="NONE")

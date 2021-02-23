@@ -28,7 +28,10 @@ class PaidRide
      */
     private $car;
 
-    /** @Column(type="decimal", precision=6, scale=2) */
+    /**
+     * @var float
+     * @Column(type="decimal", precision=6, scale=2)
+     */
     private $fare;
 
     public function __construct(Driver $driver, Car $car)

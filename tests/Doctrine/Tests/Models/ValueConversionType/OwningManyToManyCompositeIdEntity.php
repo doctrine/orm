@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Doctrine\Tests\Models\ValueConversionType;
 
 use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 
 /**
  * @Entity
@@ -20,6 +21,7 @@ class OwningManyToManyCompositeIdEntity
     public $id3;
 
     /**
+     * @var Collection<int, InversedManyToManyCompositeIdEntity>
      * @ManyToMany(targetEntity="InversedManyToManyCompositeIdEntity", inversedBy="associatedEntities")
      * @JoinTable(
      *     name="vct_xref_manytomany_compositeid",

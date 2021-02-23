@@ -18,6 +18,7 @@ class InversedOneToOneCompositeIdForeignKeyEntity
     public $id1;
 
     /**
+     * @var AuxiliaryEntity
      * @ManyToOne(targetEntity="AuxiliaryEntity")
      * @JoinColumn(name="foreign_id", referencedColumnName="id4")
      * @Id

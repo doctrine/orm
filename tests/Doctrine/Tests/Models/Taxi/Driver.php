@@ -38,12 +38,12 @@ class Driver
      */
     private $driverRides;
 
-    public function getId()
+    public function getId(): int
     {
         return $this->id;
     }
 
-    public function setName($name): void
+    public function setName(string $name): void
     {
         $this->name = $name;
     }

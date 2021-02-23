@@ -24,7 +24,10 @@ class CompanyEmployee extends CompanyPerson
      */
     private $department;
 
-    /** @Column(type="datetime", nullable=true) */
+    /**
+     * @var DateTime|null
+     * @Column(type="datetime", nullable=true)
+     */
     private $startDate;
 
     /**

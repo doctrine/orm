@@ -18,6 +18,7 @@ class OwningManyToOneCompositeIdForeignKeyEntity
     public $id2;
 
     /**
+     * @var InversedOneToManyCompositeIdForeignKeyEntity
      * @ManyToOne(targetEntity="InversedOneToManyCompositeIdForeignKeyEntity", inversedBy="associatedEntities")
      * @JoinColumns({
      *     @JoinColumn(name="associated_id", referencedColumnName="id1"),

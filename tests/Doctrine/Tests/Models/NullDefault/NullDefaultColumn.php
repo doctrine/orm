@@ -15,6 +15,9 @@ class NullDefaultColumn
      */
     public $id;
 
-    /** @Column(options={"default":NULL}) */
+    /**
+     * @var mixed
+     * @Column(options={"default":NULL})
+     */
     public $nullDefault;
 }
