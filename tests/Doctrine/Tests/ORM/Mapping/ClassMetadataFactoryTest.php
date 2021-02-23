@@ -409,6 +409,19 @@ class ClassMetadataFactoryTest extends OrmTestCase
 
         self::assertTrue($userMetadata->isIdGeneratorIdentity());
     }
+
+    /**
+     * @group DDC-3467
+     */
+    public function testEmbeddableInSuperClass()
+    {
+        $em = $this->_getTestEntityManager();
+        $metadataFactory = $em->getMetadataFactory();
+        /** @var ClassMetadata $classMetadata */
+        $classMetadata = $metadataFactory->getMetadataFor('Doctrine\Tests\Models\DDC3467\DDC3467Sun');
+
+        // TODO somehow test that this did not fail?
+    }
 }
 
 /* Test subject class with overridden factory method for mocking purposes */
