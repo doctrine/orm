@@ -12,6 +12,7 @@ use Doctrine\Tests\OrmFunctionalTestCase;
 use ReflectionProperty;
 
 use function count;
+use function iterator_to_array;
 
 /**
  * ResultCacheTest
@@ -164,6 +165,40 @@ class ResultCacheTest extends OrmFunctionalTestCase
         $query->getResult();
 
         $this->assertTrue($cache->contains('testing_result_cache_id'));
+
+        $this->_em->getConfiguration()->setResultCacheImpl(new ArrayCache());
+    }
+
+    public function testEnableResultCacheWithIterable(): void
+    {
+        $cache            = new ArrayCache();
+        $expectedSQLCount = count($this->_sqlLoggerStack->queries) + 1;
+
+        $query = $this->_em->createQuery('select ux from Doctrine\Tests\Models\CMS\CmsUser ux');
+        $query->enableResultCache();
+        $query->setResultCacheDriver($cache);
+        $query->setResultCacheId('testing_iterable_result_cache_id');
+        iterator_to_array($query->toIterable());
+
+        $this->_em->clear();
+
+        $this->assertCount(
+            $expectedSQLCount,
+            $this->_sqlLoggerStack->queries
+        );
+        $this->assertTrue($cache->contains('testing_iterable_result_cache_id'));
+
+        $query = $this->_em->createQuery('select ux from Doctrine\Tests\Models\CMS\CmsUser ux');
+        $query->enableResultCache();
+        $query->setResultCacheDriver($cache);
+        $query->setResultCacheId('testing_iterable_result_cache_id');
+        iterator_to_array($query->toIterable());
+
+        $this->assertCount(
+            $expectedSQLCount,
+            $this->_sqlLoggerStack->queries,
+            'Expected query to be cached'
+        );
 
         $this->_em->getConfiguration()->setResultCacheImpl(new ArrayCache());
     }
