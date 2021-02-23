@@ -27,7 +27,7 @@ class DDC117Article
     /** @ORM\OneToMany(targetEntity=DDC117Translation::class, mappedBy="article", cascade={"persist", "remove"}) */
     private $translations;
 
-    /** @ORM\OneToMany(targetEntity=DDC117Link::class, mappedBy="source", indexBy="target_id", cascade={"persist", "remove"}) */
+    /** @ORM\OneToMany(targetEntity=DDC117Link::class, mappedBy="source", indexBy="target_id", cascade={"persist", "remove"}, fetch="EXTRA_LAZY") */
     private $links;
 
     public function __construct($title)

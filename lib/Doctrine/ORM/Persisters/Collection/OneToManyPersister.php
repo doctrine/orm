@@ -123,9 +123,12 @@ class OneToManyPersister extends AbstractCollectionPersister
         // only works with single id identifier entities. Will throw an
         // exception in Entity Persisters if that is not the case for the
         // 'mappedBy' field.
+        $targetClass    = $this->em->getClassMetadata($association->getTargetEntity());
+        $indexedByField = $targetClass->hasField($association->getIndexedBy()) ? $association->getIndexedBy() : $targetClass->fieldNames[$association->getIndexedBy()];
+
         $criteria = [
-            $association->getMappedBy()  => $collection->getOwner(),
-            $association->getIndexedBy() => $key,
+            $association->getMappedBy() => $collection->getOwner(),
+            $indexedByField => $key,
         ];
 
         return (bool) $persister->count($criteria);
