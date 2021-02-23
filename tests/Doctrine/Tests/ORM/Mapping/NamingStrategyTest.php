@@ -26,6 +26,14 @@ class NamingStrategyTest extends OrmTestCase
     }
 
     /**
+     * @return DefaultNamingStrategy
+     */
+    private static function defaultNamingPlural()
+    {
+        return new DefaultNamingStrategy(true);
+    }
+
+    /**
      * @return UnderscoreNamingStrategy
      */
     private static function underscoreNamingLower()
@@ -39,6 +47,22 @@ class NamingStrategyTest extends OrmTestCase
     private static function underscoreNamingUpper()
     {
         return new UnderscoreNamingStrategy(CASE_UPPER);
+    }
+
+    /**
+     * @return UnderscoreNamingStrategy
+     */
+    private static function underscoreNamingLowerPlural()
+    {
+        return new UnderscoreNamingStrategy(CASE_LOWER, true);
+    }
+
+    /**
+     * @return UnderscoreNamingStrategy
+     */
+    private static function underscoreNamingUpperPlural()
+    {
+        return new UnderscoreNamingStrategy(CASE_UPPER, true);
     }
 
     /**
@@ -65,6 +89,22 @@ class NamingStrategyTest extends OrmTestCase
                 'Name',
                 '\Some\Class\Name',
             ],
+            // DefaultNamingStrategy plural
+            [
+                self::defaultNamingPlural(),
+                'SomeClassNames',
+                'SomeClassName',
+            ],
+            [
+                self::defaultNamingPlural(),
+                'SomeClassNames',
+                '\SomeClassName',
+            ],
+            [
+                self::defaultNamingPlural(),
+                'Names',
+                '\Some\Class\Name',
+            ],
 
             // UnderscoreNamingStrategy
             [
@@ -85,6 +125,27 @@ class NamingStrategyTest extends OrmTestCase
             [
                 self::underscoreNamingUpper(),
                 'NAME',
+                '\Some\Class\Name',
+            ],
+            // UnderscoreNamingStrategy plural
+            [
+                self::underscoreNamingLowerPlural(),
+                'some_class_names',
+                '\Name\Space\SomeClassName',
+            ],
+            [
+                self::underscoreNamingLowerPlural(),
+                'names',
+                '\Some\Class\Name',
+            ],
+            [
+                self::underscoreNamingUpperPlural(),
+                'SOME_CLASS_NAMES',
+                '\Name\Space\SomeClassName',
+            ],
+            [
+                self::underscoreNamingUpperPlural(),
+                'NAMES',
                 '\Some\Class\Name',
             ],
         ];
@@ -122,6 +183,22 @@ class NamingStrategyTest extends OrmTestCase
                 'some_property',
                 'some_property',
             ],
+            // DefaultNamingStrategy plural
+            [
+                self::defaultNamingPlural(),
+                'someProperty',
+                'someProperty',
+            ],
+            [
+                self::defaultNamingPlural(),
+                'SOME_PROPERTY',
+                'SOME_PROPERTY',
+            ],
+            [
+                self::defaultNamingPlural(),
+                'some_property',
+                'some_property',
+            ],
 
             // UnderscoreNamingStrategy
             [
@@ -141,6 +218,27 @@ class NamingStrategyTest extends OrmTestCase
             ],
             [
                 self::underscoreNamingUpper(),
+                'SOME_PROPERTY',
+                'SOME_PROPERTY',
+            ],
+            // UnderscoreNamingStrategy plural
+            [
+                self::underscoreNamingLowerPlural(),
+                'some_property',
+                'someProperty',
+            ],
+            [
+                self::underscoreNamingUpperPlural(),
+                'SOME_PROPERTY',
+                'someProperty',
+            ],
+            [
+                self::underscoreNamingUpperPlural(),
+                'SOME_PROPERTY',
+                'some_property',
+            ],
+            [
+                self::underscoreNamingUpperPlural(),
                 'SOME_PROPERTY',
                 'SOME_PROPERTY',
             ],
@@ -196,10 +294,16 @@ class NamingStrategyTest extends OrmTestCase
             // DefaultNamingStrategy
             [self::defaultNaming(), 'someColumn_id', 'someColumn', null],
             [self::defaultNaming(), 'some_column_id', 'some_column', null],
+            // DefaultNamingStrategy plural
+            [self::defaultNamingPlural(), 'someColumn_id', 'someColumn', null],
+            [self::defaultNamingPlural(), 'some_column_id', 'some_column', null],
 
             // UnderscoreNamingStrategy
             [self::underscoreNamingLower(), 'some_column_id', 'someColumn', null],
             [self::underscoreNamingUpper(), 'SOME_COLUMN_ID', 'someColumn', null],
+            // UnderscoreNamingStrategy plural
+            [self::underscoreNamingLowerPlural(), 'some_column_id', 'someColumn', null],
+            [self::underscoreNamingUpperPlural(), 'SOME_COLUMN_ID', 'someColumn', null],
             // JoinColumnClassNamingStrategy
             [new JoinColumnClassNamingStrategy(), 'classname_someColumn_id', 'someColumn', 'Some\ClassName'],
             [new JoinColumnClassNamingStrategy(), 'classname_some_column_id', 'some_column', 'ClassName'],
@@ -242,6 +346,28 @@ class NamingStrategyTest extends OrmTestCase
             ],
             [
                 self::defaultNaming(),
+                'name_classname',
+                '\Some\Class\Name',
+                'ClassName',
+                null,
+            ],
+            // DefaultNamingStrategy plural
+            [
+                self::defaultNamingPlural(),
+                'someclassname_classname',
+                'SomeClassName',
+                'Some\ClassName',
+                null,
+            ],
+            [
+                self::defaultNamingPlural(),
+                'someclassname_classname',
+                '\SomeClassName',
+                'ClassName',
+                null,
+            ],
+            [
+                self::defaultNamingPlural(),
                 'name_classname',
                 '\Some\Class\Name',
                 'ClassName',
@@ -292,6 +418,50 @@ class NamingStrategyTest extends OrmTestCase
                 'ClassName',
                 null,
             ],
+            // UnderscoreNamingStrategy plural
+            [
+                self::underscoreNamingLowerPlural(),
+                'some_class_name_class_name',
+                'SomeClassName',
+                'Some\ClassName',
+                null,
+            ],
+            [
+                self::underscoreNamingLowerPlural(),
+                'some_class_name_class_name',
+                '\SomeClassName',
+                'ClassName',
+                null,
+            ],
+            [
+                self::underscoreNamingLowerPlural(),
+                'name_class_name',
+                '\Some\Class\Name',
+                'ClassName',
+                null,
+            ],
+
+            [
+                self::underscoreNamingUpperPlural(),
+                'SOME_CLASS_NAME_CLASS_NAME',
+                'SomeClassName',
+                'Some\ClassName',
+                null,
+            ],
+            [
+                self::underscoreNamingUpperPlural(),
+                'SOME_CLASS_NAME_CLASS_NAME',
+                '\SomeClassName',
+                'ClassName',
+                null,
+            ],
+            [
+                self::underscoreNamingUpperPlural(),
+                'NAME_CLASS_NAME',
+                '\Some\Class\Name',
+                'ClassName',
+                null,
+            ],
         ];
     }
 
@@ -331,6 +501,21 @@ class NamingStrategyTest extends OrmTestCase
                 'identifier',
                 null,
             ],
+            // DefaultNamingStrategy plural
+            [
+                self::defaultNamingPlural(),
+                'someclassname_id',
+                'SomeClassName',
+                null,
+                null,
+            ],
+            [
+                self::defaultNamingPlural(),
+                'name_identifier',
+                '\Some\Class\Name',
+                'identifier',
+                null,
+            ],
 
             // UnderscoreNamingStrategy
             [
@@ -357,6 +542,36 @@ class NamingStrategyTest extends OrmTestCase
             ],
             [
                 self::underscoreNamingUpper(),
+                'CLASS_NAME_IDENTIFIER',
+                '\Some\Class\ClassName',
+                'IDENTIFIER',
+                null,
+            ],
+            // UnderscoreNamingStrategy plural
+            [
+                self::underscoreNamingLowerPlural(),
+                'some_class_name_id',
+                'SomeClassName',
+                null,
+                null,
+            ],
+            [
+                self::underscoreNamingLowerPlural(),
+                'class_name_identifier',
+                '\Some\Class\ClassName',
+                'identifier',
+                null,
+            ],
+
+            [
+                self::underscoreNamingUpperPlural(),
+                'SOME_CLASS_NAME_ID',
+                'SomeClassName',
+                null,
+                null,
+            ],
+            [
+                self::underscoreNamingUpperPlural(),
                 'CLASS_NAME_IDENTIFIER',
                 '\Some\Class\ClassName',
                 'IDENTIFIER',
