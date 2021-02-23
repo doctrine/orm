@@ -15,6 +15,11 @@ is now provided by [`symfony/var-dumper`](https://github.com/symfony/var-dumper)
 
 This method used deprecated Doctrine Autoloader and has been removed. Please rely on Composer autoloading instead.
 
+## BC Break: Calling `UnitOfWork::commit` inside another `UnitOfWork::commit` is not allowed
+
+Using `UnitOfWork::commit` inside any lifecycle callbacks is not allowed and must not be used. 
+Exception `Doctrine\ORM\Exception\CommitInsideCommit` will be thrown in this case. 
+
 ## BC Break: Dropped automatic discriminator map discovery
 
 Automatic discriminator map discovery exhibited multiple flaws

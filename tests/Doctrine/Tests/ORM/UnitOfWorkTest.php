@@ -10,6 +10,9 @@ use Doctrine\Common\EventManager;
 use Doctrine\Common\NotifyPropertyChanged;
 use Doctrine\Common\PropertyChangedListener;
 use Doctrine\ORM\Annotation as ORM;
+use Doctrine\ORM\Event\PreFlushEventArgs;
+use Doctrine\ORM\Events;
+use Doctrine\ORM\Exception\CommitInsideCommit;
 use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\Mapping\GeneratorType;
 use Doctrine\ORM\ORMInvalidArgumentException;
@@ -28,6 +31,7 @@ use Doctrine\Tests\Models\GeoNames\Country;
 use Doctrine\Tests\OrmTestCase;
 use InvalidArgumentException;
 use PHPUnit_Framework_MockObject_MockObject;
+use RuntimeException;
 use stdClass;
 use function get_class;
 use function random_int;
@@ -61,14 +65,14 @@ class UnitOfWorkTest extends OrmTestCase
      */
     private $emMock;
 
-    /** @var EventManager|PHPUnit_Framework_MockObject_MockObject */
+    /** @var EventManager */
     private $eventManager;
 
     protected function setUp() : void
     {
         parent::setUp();
 
-        $this->eventManager   = $this->getMockBuilder(EventManager::class)->getMock();
+        $this->eventManager   = new EventManager();
         $this->connectionMock = new ConnectionMock([], new DriverMock(), null, $this->eventManager);
         $this->emMock         = EntityManagerMock::create($this->connectionMock, null, $this->eventManager);
         $this->unitOfWork     = new UnitOfWorkMock($this->emMock);
@@ -653,6 +657,50 @@ class UnitOfWorkTest extends OrmTestCase
         $classMetadata->wakeupReflection(new RuntimeReflectionService());
 
         self::assertInstanceOf(MyArrayObjectEntity::class, $this->unitOfWork->newInstance($classMetadata));
+    }
+
+    public function testCallCommitInsideCommit() : void
+    {
+        $listener = new class()
+        {
+            public function preFlush(PreFlushEventArgs $eventArgs)
+            {
+                $eventArgs->getEntityManager()->getUnitOfWork()->commit();
+            }
+        };
+
+        $this->eventManager->addEventListener(Events::preFlush, $listener);
+        $this->expectException(CommitInsideCommit::class);
+        $this->unitOfWork->commit();
+    }
+
+    public function testCommitWithExceptionClearsInProgressFlag() : void
+    {
+        $listener = new class()
+        {
+            public $listenerCallCounter = 0;
+            public function preFlush(PreFlushEventArgs $eventArgs)
+            {
+                $this->listenerCallCounter++;
+                throw new RuntimeException();
+            }
+        };
+
+        $this->eventManager->addEventListener(Events::preFlush, $listener);
+        try {
+            $this->unitOfWork->commit();
+        } catch (RuntimeException $e) {
+        }
+
+        $this->eventManager->removeEventListener(Events::preFlush, $listener);
+
+        try {
+            $this->unitOfWork->commit();
+        } catch (CommitInsideCommit $e) {
+            self::fail('UnitOfWork::$commitInProgress flag must be reset in case of exception during commit process');
+        }
+
+        self::assertSame(1, $listener->listenerCallCounter);
     }
 }
 
