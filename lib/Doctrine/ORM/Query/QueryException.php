@@ -117,7 +117,7 @@ class QueryException extends LogicException implements ORMException
      */
     public static function unknownParameter($key)
     {
-        return new self('Invalid parameter: token ' . $key . ' is not defined in the query.');
+        return new self('Invalid parameter: token "' . $key . '" is not defined in the query.');
     }
 
     /**
