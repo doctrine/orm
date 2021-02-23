@@ -103,6 +103,27 @@ abstract class SQLFilter
     }
 
     /**
+     * Return a unique hash base on filter class and his parametters
+     *
+     * @return string
+     */
+    final public function getHash()
+    {
+        $parameterCount = count($this->parameters);
+        $hash           = get_class($this).$parameterCount;
+        foreach ($this->parameters as $name => $param) {
+            if (is_object($param['value'])) {
+                $valueHash = spl_object_hash($param['value']);
+            } else {
+                $valueHash = $param['value'];
+            }
+            $hash .= $name.$param['type'].$valueHash;
+        }
+
+        return $hash;
+    }
+
+    /**
      * Returns as string representation of the SQLFilter parameters (the state).
      *
      * @return string String representation of the SQLFilter.
