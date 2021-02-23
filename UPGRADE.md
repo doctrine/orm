@@ -7,7 +7,8 @@ since `Doctrine\DBAL\Connection#commit()` signature changed from returning void 
 
 ## Deprecated: `Doctrine\ORM\AbstractQuery#iterator()`
 
-The method `Doctrine\ORM\AbstractQuery#iterator()` is deprecated in favor of `Doctrine\ORM\AbstractQuery#toIterate()`.
+The method `Doctrine\ORM\AbstractQuery#iterator()` is deprecated in favor of `Doctrine\ORM\AbstractQuery#toIterable()`.
+Note that `toIterable()` yields results of the query, unlike `iterator()` which yielded each result wrapped into an array.
 
 # Upgrade to 2.7
 
