@@ -362,9 +362,7 @@ final class EntityManager implements EntityManagerInterface
      *
      * @param string   $entityName  The class name of the entity to find.
      * @param mixed    $id          The identity of the entity to find.
-     * @param int|null $lockMode    One of the \Doctrine\DBAL\LockMode::* constants
-     *                              or NULL if no specific lock mode should be used
-     *                              during the search.
+     * @param int      $lockMode    One of the \Doctrine\DBAL\LockMode::* constants.
      * @param int|null $lockVersion The version of the entity to find when using
      *                              optimistic locking.
      *
@@ -375,12 +373,12 @@ final class EntityManager implements EntityManagerInterface
      * @throws TransactionRequiredException
      * @throws ORMException
      */
-    public function find($entityName, $id, $lockMode = null, $lockVersion = null)
+    public function find($entityName, $id, $lockMode = LockMode::NONE, $lockVersion = null)
     {
         $class     = $this->metadataFactory->getMetadataFor(ltrim($entityName, '\\'));
         $className = $class->getClassName();
 
-        if ($lockMode !== null) {
+        if ($lockMode !== LockMode::NONE) {
             $this->checkLockRequirements($lockMode, $class);
         }
 
@@ -431,7 +429,6 @@ final class EntityManager implements EntityManagerInterface
                     $this->lock($entity, $lockMode, $lockVersion);
                     break;
 
-                case $lockMode === LockMode::NONE:
                 case $lockMode === LockMode::PESSIMISTIC_READ:
                 case $lockMode === LockMode::PESSIMISTIC_WRITE:
                     $persister = $unitOfWork->getEntityPersister($className);

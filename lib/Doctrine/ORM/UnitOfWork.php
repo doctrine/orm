@@ -1976,7 +1976,6 @@ class UnitOfWork implements PropertyChangedListener
 
                 break;
 
-            case $lockMode === LockMode::NONE:
             case $lockMode === LockMode::PESSIMISTIC_READ:
             case $lockMode === LockMode::PESSIMISTIC_WRITE:
                 if (! $this->em->getConnection()->isTransactionActive()) {

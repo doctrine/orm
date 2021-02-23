@@ -10,6 +10,7 @@ use Doctrine\Common\Collections\Criteria;
 use Doctrine\Common\Collections\Selectable;
 use Doctrine\Common\Inflector\Inflector;
 use Doctrine\Common\Persistence\ObjectRepository;
+use Doctrine\DBAL\LockMode;
 use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\Query\ResultSetMappingBuilder;
 use Doctrine\ORM\Repository\Exception\InvalidMagicMethodCall;
@@ -91,14 +92,12 @@ class EntityRepository implements ObjectRepository, Selectable
      * Finds an entity by its primary key / identifier.
      *
      * @param mixed    $id          The identifier.
-     * @param int|null $lockMode    One of the \Doctrine\DBAL\LockMode::* constants
-     *                              or NULL if no specific lock mode should be used
-     *                              during the search.
+     * @param int      $lockMode    One of the \Doctrine\DBAL\LockMode::* constants.
      * @param int|null $lockVersion The lock version.
      *
      * @return object|null The entity instance or NULL if the entity can not be found.
      */
-    public function find($id, $lockMode = null, $lockVersion = null)
+    public function find($id, $lockMode = LockMode::NONE, $lockVersion = null)
     {
         return $this->em->find($this->entityName, $id, $lockMode, $lockVersion);
     }
