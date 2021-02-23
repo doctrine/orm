@@ -7,6 +7,7 @@ namespace Doctrine\ORM;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Criteria;
 use Doctrine\ORM\Query\Expr;
+use Doctrine\ORM\Query\QueryException;
 use Doctrine\ORM\Query\QueryExpressionVisitor;
 use InvalidArgumentException;
 use RuntimeException;
@@ -23,7 +24,6 @@ use function is_object;
 use function is_string;
 use function key;
 use function reset;
-use function sprintf;
 use function strpos;
 use function strrpos;
 use function substr;
@@ -893,16 +893,14 @@ class QueryBuilder
      *
      * @return self
      *
-     * @throws Query\QueryException
+     * @throws QueryException
      */
     public function indexBy($alias, $indexBy)
     {
         $rootAliases = $this->getRootAliases();
 
         if (! in_array($alias, $rootAliases, true)) {
-            throw new Query\QueryException(
-                sprintf('Specified root alias %s must be set before invoking indexBy().', $alias)
-            );
+            throw QueryException::specifiedRootAliasMustBeSetBeforeInvokingIndexBy($alias);
         }
 
         foreach ($this->dqlParts['from'] as &$fromClause) {
@@ -1272,13 +1270,13 @@ class QueryBuilder
      *
      * @return self
      *
-     * @throws Query\QueryException
+     * @throws QueryException
      */
     public function addCriteria(Criteria $criteria)
     {
         $allAliases = $this->getAllAliases();
         if (! isset($allAliases[0])) {
-            throw new Query\QueryException('No aliases are set before invoking addCriteria().');
+            throw QueryException::noAliasesBeforeInvokingCriteria();
         }
 
         $visitor         = new QueryExpressionVisitor($this->getAllAliases());
@@ -1375,9 +1373,12 @@ class QueryBuilder
      */
     private function getDQLForSelect()
     {
-        $dql = 'SELECT'
-             . ($this->dqlParts['distinct']===true ? ' DISTINCT' : '')
-             . $this->getReducedDQLQueryPart('select', ['pre' => ' ', 'separator' => ', ']);
+        $selectPart = $this->getReducedDQLQueryPart('select', ['pre' => ' ', 'separator' => ', ']);
+        if (! $selectPart) {
+            throw QueryException::missingSelectExpression();
+        }
+
+        $dql = 'SELECT' . ($this->dqlParts['distinct']===true ? ' DISTINCT' : '') . $selectPart;
 
         $fromParts   = $this->getDQLPart('from');
         $joinParts   = $this->getDQLPart('join');
