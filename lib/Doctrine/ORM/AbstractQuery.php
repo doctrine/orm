@@ -755,7 +755,7 @@ abstract class AbstractQuery
     {
         $result = $this->execute(null, $hydrationMode);
 
-        if ($this->hydrationMode !== self::HYDRATE_SINGLE_SCALAR && ! $result) {
+        if ($hydrationMode !== self::HYDRATE_SINGLE_SCALAR && ! $result) {
             throw new NoResultException();
         }
 
