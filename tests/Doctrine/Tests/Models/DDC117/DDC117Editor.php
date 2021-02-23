@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Doctrine\Tests\Models\DDC117;
 
 use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 
 /**
  * @Entity
@@ -20,12 +21,13 @@ class DDC117Editor
     public $id;
 
     /**
-     * @var string
+     * @var string|null
      * @Column(type="string")
      */
     public $name;
 
     /**
+     * @psalm-var Collection<int, DDC117Translation>
      * @ManyToMany(targetEntity="DDC117Translation", inversedBy="reviewedByEditors")
      * @JoinTable(
      *   inverseJoinColumns={
@@ -40,6 +42,7 @@ class DDC117Editor
     public $reviewingTranslations;
 
     /**
+     * @var DDC117Translation
      * @ManyToOne(targetEntity="DDC117Translation", inversedBy="lastTranslatedBy")
      * @JoinColumns({
      *   @JoinColumn(name="lt_article_id", referencedColumnName="article_id"),
@@ -48,7 +51,7 @@ class DDC117Editor
      */
     public $lastTranslation;
 
-    public function __construct($name = '')
+    public function __construct(?string $name = '')
     {
         $this->name                  = $name;
         $this->reviewingTranslations = new ArrayCollection();

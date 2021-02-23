@@ -6,7 +6,7 @@ namespace Doctrine\Tests\Models\DDC2372\Traits;
 
 use Doctrine\Tests\Models\DDC2372\DDC2372Address;
 
-trait DDC2372AddressTrait
+trait DDC2372AddressAndAccessors
 {
     /**
      * @var DDC2372Address
@@ -15,12 +15,12 @@ trait DDC2372AddressTrait
      */
     private $address;
 
-    public function getAddress()
+    public function getAddress(): DDC2372Address
     {
         return $this->address;
     }
 
-    public function setAddress(Address $address): void
+    public function setAddress(DDC2372Address $address): void
     {
         if ($this->address !== $address) {
             $this->address = $address;

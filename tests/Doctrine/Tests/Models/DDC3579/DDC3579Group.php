@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Doctrine\Tests\Models\DDC3579;
 
 use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 
 /**
  * @Entity
@@ -12,24 +13,28 @@ use Doctrine\Common\Collections\ArrayCollection;
 class DDC3579Group
 {
     /**
+     * @var int
      * @GeneratedValue
      * @Id @Column(type="integer")
      */
     private $id;
 
-    /** @Column */
+    /**
+     * @var string|null
+     * @Column
+     */
     private $name;
 
     /**
-     * @ArrayCollection
+     * @psalm-var Collection<int, DDC3579Admin>
      * @ManyToMany(targetEntity="DDC3579Admin", mappedBy="groups")
      */
     private $admins;
 
-    public function __construct($name = null)
+    public function __construct(?string $name = null)
     {
-        $this->name  = $name;
-        $this->users = new ArrayCollection();
+        $this->name   = $name;
+        $this->admins = new ArrayCollection();
     }
 
     public function setName(string $name): void
@@ -37,7 +42,7 @@ class DDC3579Group
         $this->name = $name;
     }
 
-    public function getName(): string
+    public function getName(): ?string
     {
         return $this->name;
     }
@@ -47,7 +52,10 @@ class DDC3579Group
         $this->admins[] = $admin;
     }
 
-    public function getAdmins(): ArrayCollection
+    /**
+     * @psalm-return Collection<int, DDC3579Admin>
+     */
+    public function getAdmins(): Collection
     {
         return $this->admins;
     }

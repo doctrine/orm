@@ -20,7 +20,10 @@ class CustomTypeParent
      */
     public $id;
 
-    /** @Column(type="negative_to_positive", nullable=true) */
+    /**
+     * @var int
+     * @Column(type="negative_to_positive", nullable=true)
+     */
     public $customInteger;
 
     /**
@@ -36,6 +39,7 @@ class CustomTypeParent
     private $friendsWithMe;
 
     /**
+     * @psalm-var Collection<int, CustomTypeParent>
      * @ManyToMany(targetEntity="Doctrine\Tests\Models\CustomType\CustomTypeParent", inversedBy="friendsWithMe")
      * @JoinTable(
      *     name="customtype_parent_friends",
@@ -57,7 +61,10 @@ class CustomTypeParent
         $friend->addFriendWithMe($this);
     }
 
-    public function getMyFriends()
+    /**
+     * @psalm-return Collection<int, CustomTypeParent>
+     */
+    public function getMyFriends(): Collection
     {
         return $this->myFriends;
     }
@@ -67,6 +74,9 @@ class CustomTypeParent
         $this->getFriendsWithMe()->add($friend);
     }
 
+    /**
+     * @psalm-return Collection<int, CustomTypeParent>
+     */
     public function getFriendsWithMe()
     {
         return $this->friendsWithMe;

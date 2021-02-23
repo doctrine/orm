@@ -902,7 +902,7 @@ class EntityGeneratorTest extends OrmTestCase
 
         $this->assertTrue($rc2->hasProperty('name'));
         $this->assertTrue($rc2->hasProperty('id'));
-        $this->assertTrue($rc2->hasProperty('created_at'));
+        $this->assertTrue($rc2->hasProperty('createdAt'));
 
         $this->assertTrue($rc2->hasMethod('getName'));
         $this->assertTrue($rc2->hasMethod('setName'));
@@ -916,7 +916,7 @@ class EntityGeneratorTest extends OrmTestCase
 
         $this->assertTrue($rc3->hasProperty('name'));
         $this->assertFalse($rc3->hasProperty('id'));
-        $this->assertFalse($rc3->hasProperty('created_at'));
+        $this->assertFalse($rc3->hasProperty('createdAt'));
 
         $this->assertTrue($rc3->hasMethod('getName'));
         $this->assertTrue($rc3->hasMethod('setName'));

@@ -4,12 +4,12 @@ declare(strict_types=1);
 
 namespace Doctrine\Tests\Models\DDC2372;
 
-use Doctrine\Tests\Models\DDC2372\Traits\DDC2372AddressTrait;
+use Doctrine\Tests\Models\DDC2372\Traits\DDC2372AddressAndAccessors;
 
 /** @Entity @Table(name="users") */
 class DDC2372User
 {
-    use DDC2372AddressTrait;
+    use DDC2372AddressAndAccessors;
 
     /**
      * @var int
@@ -17,23 +17,24 @@ class DDC2372User
      * @GeneratedValue(strategy="AUTO")
      */
     private $id;
+
     /**
      * @var string
      * @Column(type="string", length=50)
      */
     private $name;
 
-    public function getId()
+    public function getId(): int
     {
         return $this->id;
     }
 
-    public function getName()
+    public function getName(): string
     {
         return $this->name;
     }
 
-    public function setName($name): void
+    public function setName(string $name): void
     {
         $this->name = $name;
     }
