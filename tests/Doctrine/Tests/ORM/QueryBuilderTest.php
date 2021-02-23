@@ -662,6 +662,23 @@ class QueryBuilderTest extends OrmTestCase
         self::assertEquals($parameters->first(), $qb->getParameter('id'));
     }
 
+    public function testSetParametersWithInvalidSignature() : void
+    {
+        $qb = $this->em->createQueryBuilder()
+            ->select('u')
+            ->from(CmsUser::class, 'u')
+            ->where('u.id = :id');
+
+        $parameters = new ArrayCollection(['key' => 'value']);
+
+        $qb->setParameters($parameters);
+
+        $this->expectException(Query\QueryException::class);
+        $this->expectExceptionMessage('Set parameter must be instance of \Doctrine\ORM\Query\Parameter');
+
+        $qb->getQuery()->getSQL();
+    }
+
     public function testMultipleWhere() : void
     {
         $qb = $this->em->createQueryBuilder()

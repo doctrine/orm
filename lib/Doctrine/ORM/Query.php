@@ -218,7 +218,10 @@ final class Query extends AbstractQuery
         $types = [];
 
         foreach ($this->parameters as $parameter) {
-            /** @var Query\Parameter $parameter */
+            if (!$parameter instanceof Parameter) {
+                throw new QueryException('Set parameter must be instance of \Doctrine\ORM\Query\Parameter');
+            }
+
             $types[$parameter->getName()] = $parameter->getType();
         }
 
