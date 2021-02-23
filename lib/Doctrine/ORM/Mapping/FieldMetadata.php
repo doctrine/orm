@@ -21,6 +21,9 @@ class FieldMetadata extends LocalColumnMetadata implements Property
     /** @var bool */
     protected $versioned = false;
 
+    /** @var string|null */
+    protected $className;
+
     public function __construct(string $name/*, string $columnName, Type $type*/)
     {
 //        @todo Leverage this implementation instead of default, simple constructor
@@ -107,5 +110,37 @@ class FieldMetadata extends LocalColumnMetadata implements Property
         $this->setReflectionProperty(
             $reflectionService->getAccessibleProperty($this->declaringClass->getClassName(), $this->name)
         );
+    }
+
+    /**
+     * __sleep
+     *
+     * Serialization of ReflectionProperty generates an exception on php >= 7.4
+     * @see https://raw.githubusercontent.com/php/php-src/PHP7.4/UPGRADING for explanation on that
+     */
+    public function __sleep()
+    {
+        $this->className = $this->reflection->class;
+        return [
+            'declaringClass',
+            'name',
+            'versioned',
+            'length',
+            'scale',
+            'precision',
+            'valueGenerator',
+            'tableName',
+            'columnName',
+            'options',
+            'primaryKey',
+            'nullable',
+            'unique',
+            'className'
+        ];
+    }
+
+    public function __wakeup()
+    {
+        $this->reflection = new ReflectionProperty($this->className, $this->name);
     }
 }
