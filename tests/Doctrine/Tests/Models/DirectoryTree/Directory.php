@@ -15,12 +15,12 @@ class Directory extends AbstractContentItem
      */
     protected $path;
 
-    public function setPath($path): void
+    public function setPath(string $path): void
     {
         $this->path = $path;
     }
 
-    public function getPath()
+    public function getPath(): string
     {
         return $this->path;
     }

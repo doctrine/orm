@@ -48,22 +48,22 @@ abstract class AbstractContentItem
         $this->parentDirectory = $parentDir;
     }
 
-    public function getId()
+    public function getId(): int
     {
         return $this->id;
     }
 
-    public function setName($name): void
+    public function setName(string $name): void
     {
         $this->name = $name;
     }
 
-    public function getName()
+    public function getName(): string
     {
         return $this->name;
     }
 
-    public function getParent()
+    public function getParent(): Directory
     {
         return $this->parentDirectory;
     }

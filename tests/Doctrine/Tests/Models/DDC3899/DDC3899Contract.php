@@ -23,7 +23,10 @@ abstract class DDC3899Contract
      */
     public $id;
 
-    /** @Column(type="boolean") */
+    /**
+     * @var bool
+     * @Column(type="boolean")
+     */
     public $completed = false;
 
     /**

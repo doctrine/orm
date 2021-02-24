@@ -24,31 +24,22 @@ abstract class DDC1590Entity
      * @var DateTime
      * @Column(type="datetime")
      */
-    protected $created_at;
+    protected $createdAt;
 
-    /**
-     * Get id
-     */
     public function getId(): int
     {
         return $this->id;
     }
 
-    /**
-     * Set createdAt
-     */
     public function setCreatedAt(DateTime $createdAt): DDC1590User
     {
-        $this->created_at = $createdAt;
+        $this->createdAt = $createdAt;
 
         return $this;
     }
 
-    /**
-     * Get createdAt
-     */
     public function getCreatedAt(): DateTime
     {
-        return $this->created_at;
+        return $this->createdAt;
     }
 }
