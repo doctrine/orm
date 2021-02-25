@@ -23,10 +23,14 @@ class Travel
      */
     protected $id;
 
-    /** @Column(type="date") */
+    /**
+     * @var DateTime
+     * @Column(type="date")
+     */
     protected $createdAt;
 
     /**
+     * @var Traveler
      * @Cache
      * @ManyToOne(targetEntity="Traveler", inversedBy="travels")
      * @JoinColumn(name="traveler_id", referencedColumnName="id")
@@ -34,6 +38,7 @@ class Travel
     protected $traveler;
 
     /**
+     * @psalm-var Collection<int, City>
      * @Cache
      * @ManyToMany(targetEntity="City", inversedBy="travels", cascade={"persist", "remove"})
      * @JoinTable(name="cache_visited_cities",
@@ -69,6 +74,9 @@ class Travel
         $this->traveler = $traveler;
     }
 
+    /**
+     * @psalm-return Collection<int, City>
+     */
     public function getVisitedCities(): Collection
     {
         return $this->visitedCities;

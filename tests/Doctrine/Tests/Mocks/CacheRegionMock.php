@@ -17,8 +17,13 @@ use function array_shift;
  */
 class CacheRegionMock implements Region
 {
-    public $calls   = [];
+    /** @var array<string, list<array<string, mixed>>> */
+    public $calls = [];
+
+    /** @var array<string, mixed> */
     public $returns = [];
+
+    /** @var string */
     public $name;
 
     /**

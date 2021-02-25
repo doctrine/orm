@@ -18,7 +18,10 @@ class Login
      */
     public $id;
 
-    /** @Column */
+    /**
+     * @var string
+     * @Column
+     */
     public $name;
 
     /**
@@ -28,7 +31,7 @@ class Login
      */
     public $token;
 
-    public function __construct($name)
+    public function __construct(string $name)
     {
         $this->name = $name;
     }

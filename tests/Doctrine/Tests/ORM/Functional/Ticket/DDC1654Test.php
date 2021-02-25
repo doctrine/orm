@@ -27,7 +27,7 @@ class DDC1654Test extends OrmFunctionalTestCase
 
     public function tearDown(): void
     {
-        $conn = static::$_sharedConn;
+        $conn = static::$sharedConn;
         $conn->executeUpdate('DELETE FROM ddc1654post_ddc1654comment');
         $conn->executeUpdate('DELETE FROM DDC1654Comment');
         $conn->executeUpdate('DELETE FROM DDC1654Post');

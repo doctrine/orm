@@ -8,6 +8,7 @@ use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\Persistence\Event\LoadClassMetadataEventArgs;
 
+use function assert;
 use function strstr;
 
 class CacheMetadataListener
@@ -18,16 +19,16 @@ class CacheMetadataListener
      *
      * Key is the name of the entity, payload is unimportant.
      *
-     * @var array
+     * @var array<string, bool>
      */
     protected $enabledItems = [];
 
     public function loadClassMetadata(LoadClassMetadataEventArgs $event): void
     {
         $metadata = $event->getClassMetadata();
-        $em       = $event->getObjectManager();
+        assert($metadata instanceof ClassMetadata);
+        $em = $event->getObjectManager();
 
-        /** @var ClassMetadata $metadata */
         if (strstr($metadata->name, 'Doctrine\Tests\Models\Cache')) {
             return;
         }
