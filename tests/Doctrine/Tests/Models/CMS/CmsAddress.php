@@ -71,17 +71,28 @@ class CmsAddress
      */
     public $id;
 
-    /** @Column(length=50) */
+    /**
+     * @var string
+     * @Column(length=50)
+     */
     public $country;
 
-    /** @Column(length=50) */
+    /**
+     * @var string
+     * @Column(length=50)
+     */
     public $zip;
 
-    /** @Column(length=50) */
+    /**
+     * @var string
+     * @Column(length=50)
+     */
     public $city;
 
     /**
      * Testfield for Schema Updating Tests.
+     *
+     * @var string
      */
     public $street;
 
@@ -92,27 +103,27 @@ class CmsAddress
      */
     public $user;
 
-    public function getId()
+    public function getId(): int
     {
         return $this->id;
     }
 
-    public function getUser()
+    public function getUser(): CmsUser
     {
         return $this->user;
     }
 
-    public function getCountry()
+    public function getCountry(): string
     {
         return $this->country;
     }
 
-    public function getZipCode()
+    public function getZipCode(): string
     {
         return $this->zip;
     }
 
-    public function getCity()
+    public function getCity(): string
     {
         return $this->city;
     }

@@ -21,7 +21,11 @@ class CmsTag
      * @GeneratedValue
      */
     public $id;
-    /** @Column(length=50, name="tag_name", nullable=true) */
+
+    /**
+     * @var string
+     * @Column(length=50, name="tag_name", nullable=true)
+     */
     public $name;
 
     /**
@@ -30,12 +34,12 @@ class CmsTag
      */
     public $users;
 
-    public function setName($name): void
+    public function setName(string $name): void
     {
         $this->name = $name;
     }
 
-    public function getName()
+    public function getName(): string
     {
         return $this->name;
     }
@@ -45,7 +49,10 @@ class CmsTag
         $this->users[] = $user;
     }
 
-    public function getUsers()
+    /**
+     * @psalm-return Collection<int, CmsUser>
+     */
+    public function getUsers(): Collection
     {
         return $this->users;
     }

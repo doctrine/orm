@@ -13,7 +13,10 @@ use Doctrine\Common\Collections\Collection;
  */
 class ComplexAction
 {
-    /** @Column */
+    /**
+     * @var string
+     * @Column
+     */
     public $name;
 
     /**
@@ -38,7 +41,7 @@ class ComplexAction
      */
     public $tokens;
 
-    public function __construct(Action $action1, Action $action2, $name)
+    public function __construct(Action $action1, Action $action2, string $name)
     {
         $this->name    = $name;
         $this->action1 = $action1;
