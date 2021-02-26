@@ -208,6 +208,9 @@
     </rule>
 
     <rule ref="PSR2.Methods.MethodDeclaration.Underscore">
+        <exclude-pattern>lib/Doctrine/ORM/Tools/Export/Driver/AbstractExporter.php</exclude-pattern>
+        <exclude-pattern>lib/Doctrine/ORM/Tools/Export/Driver/AnnotationExporter.php</exclude-pattern>
+        <exclude-pattern>lib/Doctrine/ORM/Tools/Export/Driver/PhpExporter.php</exclude-pattern>
         <!-- extending a class from another package -->
         <exclude-pattern>tests/Doctrine/Tests/Mocks/DatabasePlatformMock.php</exclude-pattern>
         <exclude-pattern>tests/Doctrine/Tests/Mocks/SchemaManagerMock.php</exclude-pattern>
@@ -215,6 +218,12 @@
     </rule>
 
     <rule ref="Squiz.NamingConventions.ValidVariableName.PublicHasUnderscore">
+        <exclude-pattern>lib/Doctrine/ORM/Tools/Console/Helper/EntityManagerHelper.php</exclude-pattern>
+        <exclude-pattern>lib/Doctrine/ORM/Tools/Export/Driver/AbstractExporter.php</exclude-pattern>
+        <exclude-pattern>lib/Doctrine/ORM/Tools/Export/Driver/AnnotationExporter.php</exclude-pattern>
+        <exclude-pattern>lib/Doctrine/ORM/Tools/Export/Driver/PhpExporter.php</exclude-pattern>
+        <exclude-pattern>lib/Doctrine/ORM/Tools/Export/Driver/XmlExporter.php</exclude-pattern>
+        <exclude-pattern>lib/Doctrine/ORM/Tools/Export/Driver/YamlExporter.php</exclude-pattern>
         <!-- the impact of changing this would be too big -->
         <exclude-pattern>tests/Doctrine/Tests/DbalFunctionalTestCase.php</exclude-pattern>
         <exclude-pattern>tests/Doctrine/Tests/OrmFunctionalTestCase.php</exclude-pattern>

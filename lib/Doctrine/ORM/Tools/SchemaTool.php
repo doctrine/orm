@@ -87,11 +87,11 @@ class SchemaTool
     /**
      * Creates the database schema for the given array of ClassMetadata instances.
      *
-     * @param array $classes
-     *
      * @return void
      *
      * @throws ToolsException
+     *
+     * @psalm-param list<ClassMetadata> $classes
      */
     public function createSchema(array $classes)
     {
@@ -111,9 +111,9 @@ class SchemaTool
      * Gets the list of DDL statements that are required to create the database schema for
      * the given list of ClassMetadata instances.
      *
-     * @param array $classes
-     *
      * @return string[] The SQL statements needed to create the schema for the classes.
+     *
+     * @psalm-param list<ClassMetadata> $classes
      */
     public function getCreateSchemaSql(array $classes)
     {
@@ -141,11 +141,11 @@ class SchemaTool
     /**
      * Creates a Schema instance from a given set of metadata classes.
      *
-     * @param array $classes
-     *
      * @return Schema
      *
      * @throws ORMException
+     *
+     * @psalm-param list<ClassMetadata> $classes
      */
     public function getSchemaFromMetadata(array $classes)
     {

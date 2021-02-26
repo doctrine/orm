@@ -359,7 +359,7 @@ class ClassMetadataInfo implements ClassMetadata
      * READ-ONLY: The field names of all fields that are part of the identifier/primary key
      * of the mapped entity class.
      *
-     * @var array
+     * @psalm-var list<string>
      */
     public $identifier = [];
 

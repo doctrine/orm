@@ -477,7 +477,7 @@ class LimitSubqueryOutputWalker extends SqlWalker
     /**
      * getter for $orderByPathExpressions
      *
-     * @return array
+     * @return mixed[]
      */
     public function getOrderByPathExpressions()
     {
