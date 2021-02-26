@@ -21,6 +21,7 @@
 namespace Doctrine\ORM;
 
 use BadMethodCallException;
+use DateTimeInterface;
 use Doctrine\Common\EventManager;
 use Doctrine\DBAL\Connection;
 use Doctrine\ORM\Internal\Hydration\AbstractHydrator;
@@ -213,9 +214,9 @@ interface EntityManagerInterface extends ObjectManager
     /**
      * Acquire a lock on the given entity.
      *
-     * @param object   $entity
-     * @param int      $lockMode
-     * @param int|null $lockVersion
+     * @param object                     $entity
+     * @param int                        $lockMode
+     * @param int|DateTimeInterface|null $lockVersion
      *
      * @return void
      *
