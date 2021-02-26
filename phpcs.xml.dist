@@ -124,11 +124,11 @@
     </rule>
 
     <rule ref="SlevomatCodingStandard.Classes.SuperfluousInterfaceNaming">
-        <exclude-pattern>tests/Doctrine/Tests/Models/DDC1872/DDC1872ExampleTrait.php</exclude-pattern>
+        <exclude-pattern>lib/Doctrine/ORM/EntityManagerInterface.php</exclude-pattern>
     </rule>
 
     <rule ref="SlevomatCodingStandard.Classes.SuperfluousTraitNaming.SuperfluousSuffix">
-        <exclude-pattern>tests/Doctrine/Tests/DbalFunctionalTestCase.php</exclude-pattern>
+        <exclude-pattern>tests/Doctrine/Tests/Models/DDC1872/DDC1872ExampleTrait.php</exclude-pattern>
     </rule>
 
     <rule name="SlevomatCodingStandard.TypeHints.PropertyTypeHint.MissingAnyTypeHint">
