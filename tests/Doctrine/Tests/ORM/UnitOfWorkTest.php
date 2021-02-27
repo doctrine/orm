@@ -27,7 +27,6 @@ use Doctrine\Tests\Models\Forum\ForumUser;
 use Doctrine\Tests\Models\GeoNames\City;
 use Doctrine\Tests\Models\GeoNames\Country;
 use Doctrine\Tests\OrmTestCase;
-use InvalidArgumentException;
 use PHPUnit_Framework_MockObject_MockObject;
 use stdClass;
 
@@ -300,15 +299,6 @@ class UnitOfWorkTest extends OrmTestCase
         $this->_unitOfWork->commit();
 
         self::assertEmpty($this->_unitOfWork->getScheduledEntityUpdates());
-    }
-
-    /**
-     * @group DDC-1984
-     */
-    public function testLockWithoutEntityThrowsException(): void
-    {
-        $this->expectException(InvalidArgumentException::class);
-        $this->_unitOfWork->lock(null, null, null);
     }
 
     /**

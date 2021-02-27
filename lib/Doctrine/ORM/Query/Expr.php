@@ -457,7 +457,7 @@ class Expr
 
             foreach ($y as &$literal) {
                 if (! ($literal instanceof Expr\Literal)) {
-                    $literal = $this->_quoteLiteral($literal);
+                    $literal = $this->quoteLiteral($literal);
                 }
             }
         }
@@ -482,7 +482,7 @@ class Expr
 
             foreach ($y as &$literal) {
                 if (! ($literal instanceof Expr\Literal)) {
-                    $literal = $this->_quoteLiteral($literal);
+                    $literal = $this->quoteLiteral($literal);
                 }
             }
         }
@@ -617,17 +617,15 @@ class Expr
      */
     public function literal($literal)
     {
-        return new Expr\Literal($this->_quoteLiteral($literal));
+        return new Expr\Literal($this->quoteLiteral($literal));
     }
 
     /**
      * Quotes a literal value, if necessary, according to the DQL syntax.
      *
      * @param mixed $literal The literal value.
-     *
-     * @return string
      */
-    private function _quoteLiteral($literal)
+    private function quoteLiteral($literal): string
     {
         if (is_numeric($literal) && ! is_string($literal)) {
             return (string) $literal;

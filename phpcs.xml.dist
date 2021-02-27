@@ -212,6 +212,9 @@
     </rule>
 
     <rule ref="PSR2.Methods.MethodDeclaration.Underscore">
+        <exclude-pattern>lib/Doctrine/ORM/AbstractQuery.php</exclude-pattern>
+        <exclude-pattern>lib/Doctrine/ORM/NativeQuery.php</exclude-pattern>
+        <exclude-pattern>lib/Doctrine/ORM/Query.php</exclude-pattern>
         <exclude-pattern>lib/Doctrine/ORM/Query/TreeWalkerAdapter.php</exclude-pattern>
         <exclude-pattern>lib/Doctrine/ORM/Tools/Export/Driver/AbstractExporter.php</exclude-pattern>
         <exclude-pattern>lib/Doctrine/ORM/Tools/Export/Driver/AnnotationExporter.php</exclude-pattern>
@@ -223,7 +226,11 @@
     </rule>
 
     <rule ref="Squiz.NamingConventions.ValidVariableName.PublicHasUnderscore">
+        <exclude-pattern>lib/Doctrine/ORM/AbstractQuery.php</exclude-pattern>
+        <exclude-pattern>lib/Doctrine/ORM/Internal/Hydration/AbstractHydrator.php</exclude-pattern>
         <exclude-pattern>lib/Doctrine/ORM/Query/Exec/AbstractSqlExecutor.php</exclude-pattern>
+        <exclude-pattern>lib/Doctrine/ORM/Query/Exec/AbstractSqlExecutor.php</exclude-pattern>
+        <exclude-pattern>lib/Doctrine/ORM/Query/Printer.php</exclude-pattern>
         <exclude-pattern>lib/Doctrine/ORM/Tools/EntityRepositoryGenerator.php</exclude-pattern>
         <exclude-pattern>lib/Doctrine/ORM/Tools/Console/Helper/EntityManagerHelper.php</exclude-pattern>
         <exclude-pattern>lib/Doctrine/ORM/Tools/Export/Driver/AbstractExporter.php</exclude-pattern>
@@ -237,6 +244,7 @@
     </rule>
     <rule ref="Squiz.NamingConventions.ValidVariableName.NotCamelCaps">
         <!-- accessing public property __isInitialized__ of a proxy -->
+        <exclude-pattern>lib/Doctrine/ORM/UnitOfWork.php</exclude-pattern>
         <exclude-pattern>tests/Doctrine/Tests/ORM/Functional/BasicFunctionalTest.php</exclude-pattern>
         <exclude-pattern>tests/Doctrine/Tests/ORM/Functional/DefaultValuesTest.php</exclude-pattern>
         <exclude-pattern>tests/Doctrine/Tests/ORM/Functional/OneToManyBidirectionalAssociationTest.php</exclude-pattern>
