@@ -33,8 +33,11 @@ class GroupBy extends Base
     /** @var string */
     protected $postSeparator = '';
 
+    /** @psalm-var list<string> */
+    protected $parts = [];
+
     /**
-     * @return array
+     * @psalm-return list<string>
      */
     public function getParts()
     {

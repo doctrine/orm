@@ -36,8 +36,11 @@ class Select extends Base
     /** @var string[] */
     protected $allowedClasses = [Func::class];
 
+    /** @psalm-var list<string|Func> */
+    protected $parts = [];
+
     /**
-     * @return array
+     * @psalm-return list<string|Func>
      */
     public function getParts()
     {

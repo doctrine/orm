@@ -42,7 +42,14 @@ interface TreeWalker
      *
      * @return array<string, array<string, mixed>>
      *
-     * @psalm-var array<string, array{metadata: ClassMetadata, token: array, relation: mixed[], parent: string}>
+     * @psalm-return array<string, array{
+     *                   metadata: ClassMetadata,
+     *                   parent: string,
+     *                   relation: mixed[],
+     *                   map: mixed,
+     *                   nestingLevel: int,
+     *                   token: array
+     *               }>
      */
     public function getQueryComponents();
 

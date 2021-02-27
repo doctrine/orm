@@ -59,7 +59,7 @@ class ConvertDoctrine1Schema
      * Constructor passes the directory or array of directories
      * to convert the Doctrine 1 schema files from.
      *
-     * @param array $from
+     * @psalm-param list<string>|string $from
      */
     public function __construct($from)
     {
@@ -97,12 +97,9 @@ class ConvertDoctrine1Schema
     }
 
     /**
-     * @param string $className
-     * @param array  $mappingInformation
-     *
-     * @return ClassMetadataInfo
+     * @param mixed[] $mappingInformation
      */
-    private function convertToClassMetadataInfo($className, $mappingInformation)
+    private function convertToClassMetadataInfo(string $className, $mappingInformation): ClassMetadataInfo
     {
         $metadata = new ClassMetadataInfo($className);
 
@@ -115,12 +112,9 @@ class ConvertDoctrine1Schema
     }
 
     /**
-     * @param string  $className
      * @param mixed[] $model
-     *
-     * @return void
      */
-    private function convertTableName($className, array $model, ClassMetadataInfo $metadata)
+    private function convertTableName(string $className, array $model, ClassMetadataInfo $metadata): void
     {
         if (isset($model['tableName']) && $model['tableName']) {
             $e = explode('.', $model['tableName']);
