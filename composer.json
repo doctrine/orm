@@ -52,6 +52,6 @@
     },
     "bin": ["bin/doctrine"],
     "archive": {
-        "exclude": ["!vendor", "tests", "*phpunit.xml", ".travis.yml", "build.xml", "build.properties", "composer.phar", "vendor/satooshi", "lib/vendor", "*.swp"]
+        "exclude": ["!vendor", "tests", "*phpunit.xml", "build.xml", "build.properties", "composer.phar", "vendor/satooshi", "lib/vendor", "*.swp"]
     }
 }
