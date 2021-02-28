@@ -41,20 +41,6 @@ class TreeWalkerChain implements TreeWalker
     private $_walkers;
 
     /**
-     * The original Query.
-     *
-     * @var AbstractQuery
-     */
-    private $_query;
-
-    /**
-     * The ParserResult of the original query that was produced by the Parser.
-     *
-     * @var ParserResult
-     */
-    private $_parserResult;
-
-    /**
      * The query components of the original query (the "symbol table") that was produced by the Parser.
      *
      * @var array
@@ -92,8 +78,6 @@ class TreeWalkerChain implements TreeWalker
      */
     public function __construct($query, $parserResult, array $queryComponents)
     {
-        $this->_query           = $query;
-        $this->_parserResult    = $parserResult;
         $this->_queryComponents = $queryComponents;
         $this->_walkers         = new TreeWalkerChainIterator($this, $query, $parserResult);
     }

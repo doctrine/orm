@@ -27,6 +27,7 @@ namespace Doctrine\ORM\Query\AST;
  */
 class CollectionMemberExpression extends Node
 {
+    /** @var mixed */
     public $entityExpression;
 
     /** @var PathExpression */

@@ -21,6 +21,7 @@
 namespace Doctrine\ORM\Query;
 
 use Doctrine\ORM\AbstractQuery;
+use Doctrine\ORM\Mapping\ClassMetadata;
 
 /**
  * Interface for walkers of DQL ASTs (abstract syntax trees).
