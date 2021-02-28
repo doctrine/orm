@@ -21,6 +21,7 @@
 namespace Doctrine\ORM\Tools;
 
 use Doctrine\DBAL\Types\Type;
+use Doctrine\Deprecations\Deprecation;
 use Doctrine\Inflector\InflectorFactory;
 use Doctrine\ORM\Mapping\ClassMetadataInfo;
 use Symfony\Component\Yaml\Yaml;
@@ -64,6 +65,13 @@ class ConvertDoctrine1Schema
     public function __construct($from)
     {
         $this->from = (array) $from;
+
+        Deprecation::trigger(
+            'doctrine/orm',
+            'https://github.com/doctrine/orm/issues/8458',
+            '%s is deprecated with no replacement',
+            self::class
+        );
     }
 
     /**
