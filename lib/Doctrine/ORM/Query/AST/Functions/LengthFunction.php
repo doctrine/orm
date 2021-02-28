@@ -21,6 +21,7 @@
 namespace Doctrine\ORM\Query\AST\Functions;
 
 use Doctrine\DBAL\Types\Type;
+use Doctrine\ORM\Query\AST\Node;
 use Doctrine\ORM\Query\AST\TypedExpression;
 use Doctrine\ORM\Query\Lexer;
 use Doctrine\ORM\Query\Parser;
@@ -33,6 +34,7 @@ use Doctrine\ORM\Query\SqlWalker;
  */
 class LengthFunction extends FunctionNode implements TypedExpression
 {
+    /** @var Node */
     public $stringPrimary;
 
     /**

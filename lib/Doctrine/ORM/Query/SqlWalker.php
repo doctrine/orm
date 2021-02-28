@@ -122,43 +122,49 @@ class SqlWalker implements TreeWalker
     /**
      * Map from result variable names to their SQL column alias names.
      *
-     * @var array
+     * @psalm-var array<string, string|list<string>>
      */
     private $scalarResultAliasMap = [];
 
     /**
      * Map from Table-Alias + Column-Name to OrderBy-Direction.
      *
-     * @var array
+     * @var array<string, string>
      */
     private $orderedColumnsMap = [];
 
     /**
      * Map from DQL-Alias + Field-Name to SQL Column Alias.
      *
-     * @var array
+     * @var array<string, array<string, string>>
      */
     private $scalarFields = [];
 
     /**
      * Map of all components/classes that appear in the DQL query.
      *
-     * @var array
-     * @psalm-var array<string, array{metadata: ClassMetadata, token: array, relation: mixed[], parent: string}>
+     * @psalm-var array<string, array{
+     *                metadata: ClassMetadata,
+     *                parent: string,
+     *                relation: mixed[],
+     *                map: mixed,
+     *                nestingLevel: int,
+     *                token: array
+     *            }>
      */
     private $queryComponents;
 
     /**
      * A list of classes that appear in non-scalar SelectExpressions.
      *
-     * @var array
+     * @psalm-var list<array{class: ClassMetadata, dqlAlias: string, resultAlias: string}>
      */
     private $selectedClasses = [];
 
     /**
      * The DQL alias of the root class of the currently traversed query.
      *
-     * @var array
+     * @psalm-var list<string>
      */
     private $rootAliases = [];
 
@@ -234,9 +240,14 @@ class SqlWalker implements TreeWalker
      *
      * @param string $dqlAlias The DQL alias.
      *
-     * @return array
-     *
-     * @psalm-return array{metadata: ClassMetadata}
+     * @psalm-return array{
+     *                   metadata: ClassMetadata,
+     *                   parent: string,
+     *                   relation: mixed[],
+     *                   map: mixed,
+     *                   nestingLevel: int,
+     *                   token: array
+     *               }
      */
     public function getQueryComponent($dqlAlias)
     {
@@ -350,8 +361,10 @@ class SqlWalker implements TreeWalker
      *
      * @return string The SQL.
      */
-    private function _generateClassTableInheritanceJoins($class, $dqlAlias)
-    {
+    private function generateClassTableInheritanceJoins(
+        ClassMetadata $class,
+        string $dqlAlias
+    ): string {
         $sql = '';
 
         $baseTableAlias = $this->getSQLTableAlias($class->getTableName(), $dqlAlias);
@@ -372,11 +385,9 @@ class SqlWalker implements TreeWalker
             }
 
             // Add filters on the root class
-            if ($filterSql = $this->generateFilterConditionSQL($parentClass, $tableAlias)) {
-                $sqlParts[] = $filterSql;
-            }
+            $sqlParts[] = $this->generateFilterConditionSQL($parentClass, $tableAlias);
 
-            $sql .= implode(' AND ', $sqlParts);
+            $sql .= implode(' AND ', array_filter($sqlParts));
         }
 
         // Ignore subclassing inclusion if partial objects is disallowed
@@ -403,10 +414,7 @@ class SqlWalker implements TreeWalker
         return $sql;
     }
 
-    /**
-     * @return string
-     */
-    private function _generateOrderedCollectionOrderByItems()
+    private function generateOrderedCollectionOrderByItems(): string
     {
         $orderedColumns = [];
 
@@ -444,11 +452,9 @@ class SqlWalker implements TreeWalker
     /**
      * Generates a discriminator column SQL condition for the class with the given DQL alias.
      *
-     * @param array $dqlAliases List of root DQL aliases to inspect for discriminator restrictions.
-     *
-     * @return string
+     * @psalm-param list<string> $dqlAliases List of root DQL aliases to inspect for discriminator restrictions.
      */
-    private function _generateDiscriminatorColumnConditionSQL(array $dqlAliases)
+    private function generateDiscriminatorColumnConditionSQL(array $dqlAliases): string
     {
         $sqlParts = [];
 
@@ -490,8 +496,10 @@ class SqlWalker implements TreeWalker
      *
      * @return string The SQL query part to add to a query.
      */
-    private function generateFilterConditionSQL(ClassMetadata $targetEntity, $targetTableAlias)
-    {
+    private function generateFilterConditionSQL(
+        ClassMetadata $targetEntity,
+        string $targetTableAlias
+    ): string {
         if (! $this->em->hasFilters()) {
             return '';
         }
@@ -519,7 +527,8 @@ class SqlWalker implements TreeWalker
 
         $filterClauses = [];
         foreach ($this->em->getFilters()->getEnabledFilters() as $filter) {
-            if ('' !== $filterExpr = $filter->addFilterConstraint($targetEntity, $targetTableAlias)) {
+            $filterExpr = $filter->addFilterConstraint($targetEntity, $targetTableAlias);
+            if ($filterExpr !== '') {
                 $filterClauses[] = '(' . $filterExpr . ')';
             }
         }
@@ -551,7 +560,7 @@ class SqlWalker implements TreeWalker
             $sql .= $this->walkOrderByClause($AST->orderByClause);
         }
 
-        $orderBySql = $this->_generateOrderedCollectionOrderByItems();
+        $orderBySql = $this->generateOrderedCollectionOrderByItems();
         if (! $AST->orderByClause && $orderBySql) {
             $sql .= ' ORDER BY ' . $orderBySql;
         }
@@ -659,7 +668,6 @@ class SqlWalker implements TreeWalker
     {
         $sql = '';
 
-        /** @var Query\AST\PathExpression $pathExpr */
         switch ($pathExpr->type) {
             case AST\PathExpression::TYPE_STATE_FIELD:
                 $fieldName = $pathExpr->field;
@@ -920,7 +928,7 @@ class SqlWalker implements TreeWalker
             return $sql;
         }
 
-        $classTableInheritanceJoins = $this->_generateClassTableInheritanceJoins($class, $dqlAlias);
+        $classTableInheritanceJoins = $this->generateClassTableInheritanceJoins($class, $dqlAlias);
 
         if (! $buildNestedJoins) {
             return $sql . $classTableInheritanceJoins;
@@ -988,7 +996,7 @@ class SqlWalker implements TreeWalker
                 }
 
                 // Apply remaining inheritance restrictions
-                $discrSql = $this->_generateDiscriminatorColumnConditionSQL([$joinedDqlAlias]);
+                $discrSql = $this->generateDiscriminatorColumnConditionSQL([$joinedDqlAlias]);
 
                 if ($discrSql) {
                     $conditions[] = $discrSql;
@@ -1043,7 +1051,7 @@ class SqlWalker implements TreeWalker
                 }
 
                 // Apply remaining inheritance restrictions
-                $discrSql = $this->_generateDiscriminatorColumnConditionSQL([$joinedDqlAlias]);
+                $discrSql = $this->generateDiscriminatorColumnConditionSQL([$joinedDqlAlias]);
 
                 if ($discrSql) {
                     $conditions[] = $discrSql;
@@ -1070,7 +1078,7 @@ class SqlWalker implements TreeWalker
         $withCondition = $condExpr === null ? '' : ('(' . $this->walkConditionalExpression($condExpr) . ')');
 
         if ($targetClass->isInheritanceTypeJoined()) {
-            $ctiJoins = $this->_generateClassTableInheritanceJoins($targetClass, $joinedDqlAlias);
+            $ctiJoins = $this->generateClassTableInheritanceJoins($targetClass, $joinedDqlAlias);
             // If we have WITH condition, we need to build nested joins for target class table and cti joins
             if ($withCondition) {
                 $sql .= '(' . $targetTableJoin['table'] . $ctiJoins . ') ON ' . $targetTableJoin['condition'];
@@ -1111,7 +1119,8 @@ class SqlWalker implements TreeWalker
     {
         $orderByItems = array_map([$this, 'walkOrderByItem'], $orderByClause->orderByItems);
 
-        if (($collectionOrderByItems = $this->_generateOrderedCollectionOrderByItems()) !== '') {
+        $collectionOrderByItems = $this->generateOrderedCollectionOrderByItems();
+        if ($collectionOrderByItems !== '') {
             $orderByItems = array_merge($orderByItems, (array) $collectionOrderByItems);
         }
 
@@ -1177,7 +1186,7 @@ class SqlWalker implements TreeWalker
                 $sql .= $this->generateRangeVariableDeclarationSQL($joinDeclaration, ! $isUnconditionalJoin);
 
                 // Apply remaining inheritance restrictions
-                $discrSql = $this->_generateDiscriminatorColumnConditionSQL([$dqlAlias]);
+                $discrSql = $this->generateDiscriminatorColumnConditionSQL([$dqlAlias]);
 
                 if ($discrSql) {
                     $conditions[] = $discrSql;
@@ -1803,7 +1812,7 @@ class SqlWalker implements TreeWalker
     public function walkWhereClause($whereClause)
     {
         $condSql  = $whereClause !== null ? $this->walkConditionalExpression($whereClause->conditionalExpression) : '';
-        $discrSql = $this->_generateDiscriminatorColumnConditionSQL($this->rootAliases);
+        $discrSql = $this->generateDiscriminatorColumnConditionSQL($this->rootAliases);
 
         if ($this->em->hasFilters()) {
             $filterClauses = [];
@@ -1811,7 +1820,8 @@ class SqlWalker implements TreeWalker
                 $class      = $this->queryComponents[$dqlAlias]['metadata'];
                 $tableAlias = $this->getSQLTableAlias($class->table['name'], $dqlAlias);
 
-                if ($filterExpr = $this->generateFilterConditionSQL($class, $tableAlias)) {
+                $filterExpr = $this->generateFilterConditionSQL($class, $tableAlias);
+                if ($filterExpr) {
                     $filterClauses[] = $filterExpr;
                 }
             }
@@ -2205,8 +2215,11 @@ class SqlWalker implements TreeWalker
 
         $parameter = $this->query->getParameter($inputParam->name);
 
-        if ($parameter && Type::hasType($type = $parameter->getType())) {
-            return Type::getType($type)->convertToDatabaseValueSQL('?', $this->platform);
+        if ($parameter) {
+            $type = $parameter->getType();
+            if (Type::hasType($type)) {
+                return Type::getType($type)->convertToDatabaseValueSQL('?', $this->platform);
+            }
         }
 
         return '?';

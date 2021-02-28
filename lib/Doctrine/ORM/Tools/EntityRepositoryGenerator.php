@@ -48,8 +48,10 @@ use const E_USER_DEPRECATED;
  */
 class EntityRepositoryGenerator
 {
+    /** @psalm-var class-string */
     private $repositoryName;
 
+    /** @var string */
     protected static $_template =
     '<?php
 
