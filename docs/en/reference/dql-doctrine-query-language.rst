@@ -1377,7 +1377,8 @@ userland:
    that contain char or binary data. Doctrine has no way of implicitly
    reloading this data. Partially loaded objects have to be passed to
    ``EntityManager::refresh()`` if they are to be reloaded fully from
-   the database.
+   the database. This query hint is deprecated and will be removed
+   in the future (`Details <https://github.com/doctrine/orm/issues/8471>`_)
 -  Query::HINT\_REFRESH - This query is used internally by
    ``EntityManager::refresh()`` and can be used in userland as well.
    If you specify this hint and a query returns the data for an entity
