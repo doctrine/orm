@@ -23,6 +23,7 @@ namespace Doctrine\ORM\Mapping;
 use BadMethodCallException;
 use Doctrine\DBAL\Platforms\AbstractPlatform;
 use Doctrine\DBAL\Types\Type;
+use Doctrine\Deprecations\Deprecation;
 use Doctrine\Instantiator\Instantiator;
 use Doctrine\Instantiator\InstantiatorInterface;
 use Doctrine\ORM\Cache\CacheException;
@@ -2772,7 +2773,13 @@ class ClassMetadataInfo implements ClassMetadata
     public function addLifecycleCallback($callback, $event)
     {
         if ($this->isEmbeddedClass) {
-            throw MappingException::embeddedClassesDontSupportLifecycleCallbacks($this->name);
+            Deprecation::trigger(
+                'doctrine/orm',
+                'https://github.com/doctrine/orm/pull/8381',
+                'Registering lifecycle callback %s on Embedded class %s is not doing anything and will throw exception in 3.0',
+                $event,
+                $this->name
+            );
         }
 
         if (isset($this->lifecycleCallbacks[$event]) && in_array($callback, $this->lifecycleCallbacks[$event])) {

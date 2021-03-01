@@ -934,12 +934,4 @@ class MappingException extends ORMException
             )
         );
     }
-
-    public static function embeddedClassesDontSupportLifecycleCallbacks(string $className): MappingException
-    {
-        return new self(sprintf(
-            "Lifecycle callback methods are not supported on embedded class '%s'.",
-            $className
-        ));
-    }
 }
