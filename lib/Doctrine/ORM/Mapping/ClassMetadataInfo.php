@@ -1514,7 +1514,7 @@ class ClassMetadataInfo implements ClassMetadata
      *
      * @throws MappingException
      */
-    protected function _validateAndCompleteFieldMapping(array $mapping): array
+    protected function validateAndCompleteFieldMapping(array $mapping): array
     {
         // Check mandatory fields
         if (! isset($mapping['fieldName']) || ! $mapping['fieldName']) {
@@ -2417,7 +2417,7 @@ class ClassMetadataInfo implements ClassMetadata
         unset($this->fieldNames[$mapping['columnName']]);
         unset($this->columnNames[$mapping['fieldName']]);
 
-        $overrideMapping = $this->_validateAndCompleteFieldMapping($overrideMapping);
+        $overrideMapping = $this->validateAndCompleteFieldMapping($overrideMapping);
 
         $this->fieldMappings[$fieldName] = $overrideMapping;
     }
@@ -2555,7 +2555,7 @@ class ClassMetadataInfo implements ClassMetadata
      */
     public function mapField(array $mapping)
     {
-        $mapping = $this->_validateAndCompleteFieldMapping($mapping);
+        $mapping = $this->validateAndCompleteFieldMapping($mapping);
         $this->assertFieldNotMapped($mapping['fieldName']);
 
         $this->fieldMappings[$mapping['fieldName']] = $mapping;
