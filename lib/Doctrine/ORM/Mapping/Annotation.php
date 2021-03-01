@@ -20,7 +20,6 @@
 
 namespace Doctrine\ORM\Mapping;
 
-use Doctrine\Common\Annotations\NamedArgumentConstructorAnnotation;
 
 interface Annotation
 {

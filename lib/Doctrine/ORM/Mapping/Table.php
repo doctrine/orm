@@ -21,14 +21,15 @@
 namespace Doctrine\ORM\Mapping;
 
 use Attribute;
-use Doctrine\Common\Annotations\NamedArgumentConstructorAnnotation;
+use Doctrine\Common\Annotations\Annotation\NamedArgumentConstructor;
 
 /**
  * @Annotation
+ * @NamedArgumentConstructor
  * @Target("CLASS")
  */
 #[Attribute(Attribute::TARGET_CLASS)]
-final class Table implements Annotation, NamedArgumentConstructorAnnotation
+final class Table implements Annotation
 {
     /** @var string */
     public $name;
@@ -55,10 +56,9 @@ final class Table implements Annotation, NamedArgumentConstructorAnnotation
         ?string $schema = null,
         ?array $indexes = null,
         ?array $uniqueConstraints = null,
-        array $options = [],
-        ?string $value = null
+        array $options = []
     ) {
-        $this->name              = $value ?: $name;
+        $this->name              = $name;
         $this->schema            = $schema;
         $this->indexes           = $indexes;
         $this->uniqueConstraints = $uniqueConstraints;

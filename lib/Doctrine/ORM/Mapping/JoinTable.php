@@ -21,14 +21,15 @@
 namespace Doctrine\ORM\Mapping;
 
 use Attribute;
-use Doctrine\Common\Annotations\NamedArgumentConstructorAnnotation;
+use Doctrine\Common\Annotations\Annotation\NamedArgumentConstructor;
 
 /**
  * @Annotation
+ * @NamedArgumentConstructor()
  * @Target({"PROPERTY","ANNOTATION"})
  */
 #[Attribute(Attribute::TARGET_PROPERTY)]
-final class JoinTable implements Annotation, NamedArgumentConstructorAnnotation
+final class JoinTable implements Annotation
 {
     /** @var string */
     public $name;

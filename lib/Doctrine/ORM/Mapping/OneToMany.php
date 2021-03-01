@@ -21,14 +21,15 @@
 namespace Doctrine\ORM\Mapping;
 
 use Attribute;
-use Doctrine\Common\Annotations\NamedArgumentConstructorAnnotation;
+use Doctrine\Common\Annotations\Annotation\NamedArgumentConstructor;
 
 /**
  * @Annotation
+ * @NamedArgumentConstructor()
  * @Target("PROPERTY")
  */
 #[Attribute(Attribute::TARGET_PROPERTY)]
-final class OneToMany implements Annotation, NamedArgumentConstructorAnnotation
+final class OneToMany implements Annotation
 {
     /** @var string */
     public $mappedBy;

@@ -21,14 +21,15 @@
 namespace Doctrine\ORM\Mapping;
 
 use Attribute;
-use Doctrine\Common\Annotations\NamedArgumentConstructorAnnotation;
+use Doctrine\Common\Annotations\Annotation\NamedArgumentConstructor;
 
 /**
  * @Annotation
+ * @NamedArgumentConstructor()
  * @Target("CLASS")
  */
 #[Attribute(Attribute::TARGET_CLASS)]
-final class MappedSuperclass implements Annotation, NamedArgumentConstructorAnnotation
+final class MappedSuperclass implements Annotation
 {
     /** @var string */
     public $repositoryClass;

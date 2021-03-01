@@ -21,20 +21,21 @@
 namespace Doctrine\ORM\Mapping;
 
 use Attribute;
-use Doctrine\Common\Annotations\NamedArgumentConstructorAnnotation;
+use Doctrine\Common\Annotations\Annotation\NamedArgumentConstructor;
 
 /**
  * @Annotation
+ * @NamedArgumentConstructor
  * @Target("PROPERTY")
  */
 #[Attribute(Attribute::TARGET_PROPERTY)]
-final class CustomIdGenerator implements Annotation, NamedArgumentConstructorAnnotation
+final class CustomIdGenerator implements Annotation
 {
     /** @var string */
     public $class;
 
-    public function __construct(?string $class = null, ?string $value = null)
+    public function __construct(?string $class = null)
     {
-        $this->class = $value ?: $class;
+        $this->class = $class;
     }
 }
