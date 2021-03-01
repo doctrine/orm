@@ -1091,25 +1091,18 @@ class User
     #[ORM\SequenceGenerator(sequenceName: "tablename_seq", initialValue: 1, allocationSize: 100)]
     public $id;
 
-<<<<<<< HEAD
-    /** @Column(length=50, nullable=true, unique=true, options={"foo": "bar", "baz": {"key": "val"}, "fixed": false}) */
-    #[ORM\Column(length: 50, nullable: true, unique: true, options: ["foo" => "bar", "baz" => ["key" => "val"], "fixed" => false])]
-    public $name;
-
-    /** @Column(name="user_email", columnDefinition="CHAR(32) NOT NULL") */
-    #[ORM\Column(name: "user_email", columnDefinition: "CHAR(32) NOT NULL")]
-=======
     /**
      * @var string
      * @Column(length=50, nullable=true, unique=true, options={"foo": "bar", "baz": {"key": "val"}, "fixed": false})
      */
+    #[ORM\Column(length: 50, nullable: true, unique: true, options: ["foo" => "bar", "baz" => ["key" => "val"], "fixed" => false])]
     public $name;
 
     /**
      * @var string
      * @Column(name="user_email", columnDefinition="CHAR(32) NOT NULL")
      */
->>>>>>> 2.9.x
+    #[ORM\Column(name: "user_email", columnDefinition: "CHAR(32) NOT NULL")]
     public $email;
 
     /**
@@ -1377,22 +1370,16 @@ class DDC1170Entity
      * @Id
      * @GeneratedValue(strategy="NONE")
      * @Column(type="integer", columnDefinition = "INT unsigned NOT NULL")
-<<<<<<< HEAD
+     #[ORM\Id, ORM\GeneratedValue(strategy: "NONE"), ORM\Column(type: "integer", columnDefinition: "INT UNSIGNED NOT NULL")]
      **/
-    #[ORM\Id, ORM\GeneratedValue(strategy: "NONE"), ORM\Column(type: "integer", columnDefinition: "INT UNSIGNED NOT NULL")]
     private $id;
 
-    /** @Column(columnDefinition = "VARCHAR(255) NOT NULL") */
-    #[ORM\Column(columnDefinition: "VARCHAR(255) NOT NULL")]
-=======
-     */
-    private $id;
 
     /**
      * @var string|null
      * @Column(columnDefinition = "VARCHAR(255) NOT NULL")
      */
->>>>>>> 2.9.x
+    #[ORM\Column(columnDefinition: "VARCHAR(255) NOT NULL")]
     private $value;
 
     public function getId(): int
@@ -1492,15 +1479,11 @@ class Group
 #[ORM\Index(columns: ["content"], flags: ["fulltext"], options: ["where" => "content IS NOT NULL"])]
 class Comment
 {
-<<<<<<< HEAD
-    /** @Column(type="text") */
-    #[ORM\Column(type: "text")]
-=======
     /**
      * @var string
      * @Column(type="text")
      */
->>>>>>> 2.9.x
+    #[ORM\Column(type: "text")]
     private $content;
 
     public static function loadMetadata(ClassMetadataInfo $metadata): void
