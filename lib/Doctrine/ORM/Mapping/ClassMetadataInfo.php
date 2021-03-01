@@ -1733,7 +1733,7 @@ class ClassMetadataInfo implements ClassMetadata
 
         // OneToMany-side MUST be inverse (must have mappedBy)
         if (! isset($mapping['mappedBy'])) {
-            throw MappingException::oneToManyRequiresMappedBy($mapping['fieldName']);
+            throw MappingException::oneToManyRequiresMappedBy($this->name, $mapping['fieldName']);
         }
 
         $mapping['orphanRemoval']   = isset($mapping['orphanRemoval']) && $mapping['orphanRemoval'];
