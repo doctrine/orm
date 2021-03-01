@@ -44,6 +44,7 @@ class DDC448Test extends OrmFunctionalTestCase
 class DDC448MainTable
 {
     /**
+     * @var int
      * @Id
      * @Column(name="id", type="integer")
      * @GeneratedValue(strategy="AUTO")
@@ -51,6 +52,7 @@ class DDC448MainTable
     private $id;
 
     /**
+     * @var DDC448ConnectedClass
      * @ManyToOne(targetEntity="DDC448ConnectedClass",  cascade={"all"}, fetch="EAGER")
      * @JoinColumn(name="connectedClassId", referencedColumnName="id", onDelete="CASCADE", nullable=true)
      */
@@ -65,6 +67,7 @@ class DDC448MainTable
 class DDC448ConnectedClass
 {
     /**
+     * @var int
      * @Id
      * @Column(name="id", type="integer")
      * @GeneratedValue(strategy="AUTO")

@@ -65,13 +65,17 @@ final class GH7012Test extends OrmFunctionalTestCase
 class GH7012UserData
 {
     /**
+     * @var QuotedUser
      * @Id
      * @OneToOne(targetEntity=Doctrine\Tests\Models\Quote\User::class)
      * @JoinColumn(name="`user-id`", referencedColumnName="`user-id`", onDelete="CASCADE")
      */
     public $user;
 
-    /** @Column(type="string", name="`name`") */
+    /**
+     * @var string
+     * @Column(type="string", name="`name`")
+     */
     public $name;
 
     public function __construct(QuotedUser $user, string $name)

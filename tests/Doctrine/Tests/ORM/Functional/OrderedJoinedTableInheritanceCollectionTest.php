@@ -92,7 +92,10 @@ abstract class OJTIC_Pet
     /** @Column */
     public $name;
 
-    /** @ManyToOne(targetEntity="OJTIC_PET") */
+    /**
+     * @var OJTIC_PET
+     * @ManyToOne(targetEntity="OJTIC_PET")
+     */
     public $mother;
 
     /**

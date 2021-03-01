@@ -11,6 +11,7 @@ namespace Doctrine\Tests\Models\Forum;
 class ForumAvatar
 {
     /**
+     * @var int
      * @Id
      * @Column(type="integer")
      * @GeneratedValue(strategy="AUTO")

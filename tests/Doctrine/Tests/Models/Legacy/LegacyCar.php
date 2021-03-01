@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Doctrine\Tests\Models\Legacy;
 
+use Doctrine\Common\Collections\Collection;
+
 /**
  * @Entity
  * @Table(name="legacy_cars")
@@ -11,15 +13,23 @@ namespace Doctrine\Tests\Models\Legacy;
 class LegacyCar
 {
     /**
+     * @var int
      * @Id
      * @GeneratedValue
      * @Column(name="iCarId", type="integer", nullable=false)
      */
     public $_id;
-    /** @ManyToMany(targetEntity="LegacyUser", mappedBy="_cars") */
+
+    /**
+     * @psalm-var Collection<int, LegacyUser>
+     * @ManyToMany(targetEntity="LegacyUser", mappedBy="_cars")
+     */
     public $_users;
 
-    /** @Column(name="sDescription", type="string", length=255, unique=true) */
+    /**
+     * @var string
+     * @Column(name="sDescription", type="string", length=255, unique=true)
+     */
     public $_description;
 
     public function getDescription()

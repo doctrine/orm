@@ -57,6 +57,7 @@ class DDC1461Test extends OrmFunctionalTestCase
 class DDC1461User
 {
     /**
+     * @var int
      * @Id
      * @GeneratedValue(strategy="AUTO")
      * @Column(type="integer")
@@ -77,12 +78,16 @@ class DDC1461User
 class DDC1461TwitterAccount
 {
     /**
+     * @var int
      * @Id
      * @GeneratedValue(strategy="AUTO")
      * @Column(type="integer")
      */
     public $id;
 
-    /** @OneToOne(targetEntity="DDC1461User", fetch="EAGER") */
+    /**
+     * @var DDC1461User
+     * @OneToOne(targetEntity="DDC1461User", fetch="EAGER")
+     */
     public $user;
 }

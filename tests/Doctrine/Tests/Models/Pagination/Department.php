@@ -13,14 +13,21 @@ namespace Doctrine\Tests\Models\Pagination;
 class Department
 {
     /**
+     * @var int
      * @Id @Column(type="integer")
      * @GeneratedValue
      */
     public $id;
 
-    /** @Column(type="string") */
+    /**
+     * @var string
+     * @Column(type="string")
+     */
     public $name;
 
-    /** @ManyToOne(targetEntity="Company", inversedBy="departments", cascade={"persist"}) */
+    /**
+     * @var Company
+     * @ManyToOne(targetEntity="Company", inversedBy="departments", cascade={"persist"})
+     */
     public $company;
 }

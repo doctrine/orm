@@ -13,13 +13,17 @@ use Doctrine\Common\Collections\ArrayCollection;
 class User
 {
     /**
+     * @var int
      * @Id
      * @GeneratedValue
      * @Column(type="integer", name="`user-id`")
      */
     public $id;
 
-    /** @Column(type="string", name="`user-name`") */
+    /**
+     * @var string
+     * @Column(type="string", name="`user-name`")
+     */
     public $name;
 
     /** @OneToMany(targetEntity="Phone", mappedBy="user", cascade={"persist"}) */

@@ -25,7 +25,7 @@ class DDC656Test extends OrmFunctionalTestCase
         }
     }
 
-    public function testRecomputeSingleEntityChangeSet_PreservesFieldOrder(): void
+    public function testRecomputeSingleEntityChangeSetPreservesFieldOrder(): void
     {
         $entity = new DDC656Entity();
         $entity->setName('test1');
@@ -54,31 +54,42 @@ class DDC656Test extends OrmFunctionalTestCase
  */
 class DDC656Entity
 {
-    /** @Column(type="string") */
+    /**
+     * @var string
+     * @Column(type="string")
+     */
     public $name;
 
-    /** @Column(type="string") */
+    /**
+     * @var string
+     * @Column(type="string")
+     */
     public $type;
 
-    /** @Id @Column(type="integer") @GeneratedValue */
+    /**
+     * @var int
+     * @Id
+     * @Column(type="integer")
+     * @GeneratedValue
+     */
     public $specificationId;
 
-    public function getName()
+    public function getName(): string
     {
         return $this->name;
     }
 
-    public function setName($name): void
+    public function setName(string $name): void
     {
         $this->name = $name;
     }
 
-    public function getType()
+    public function getType(): string
     {
         return $this->type;
     }
 
-    public function setType($type): void
+    public function setType(string $type): void
     {
         $this->type = $type;
     }

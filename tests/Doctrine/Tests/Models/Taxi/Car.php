@@ -11,13 +11,17 @@ namespace Doctrine\Tests\Models\Taxi;
 class Car
 {
     /**
+     * @var string
      * @Id
      * @Column(type="string", length=25)
      * @GeneratedValue(strategy="NONE")
      */
     private $brand;
 
-    /** @Column(type="string", length=255); */
+    /**
+     * @var string
+     * @Column(type="string", length=255);
+     */
     private $model;
 
     /** @OneToMany(targetEntity="Ride", mappedBy="car") */

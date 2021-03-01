@@ -70,17 +70,30 @@ class DDC2759Test extends OrmFunctionalTestCase
 /** @Entity  @Table(name="ddc_2759_qualification") */
 class DDC2759Qualification
 {
-    /** @Id @Column(type="integer") @GeneratedValue */
+    /**
+     * @var int
+     * @Id
+     * @Column(type="integer")
+     * @GeneratedValue
+     */
     public $id;
 
-    /** @OneToOne(targetEntity="DDC2759QualificationMetadata", mappedBy="content") */
+    /**
+     * @var DDC2759QualificationMetadata
+     * @OneToOne(targetEntity="DDC2759QualificationMetadata", mappedBy="content")
+     */
     public $metadata;
 }
 
 /** @Entity  @Table(name="ddc_2759_category") */
 class DDC2759Category
 {
-    /** @Id @Column(type="integer") @GeneratedValue */
+    /**
+     * @var int
+     * @Id
+     * @Column(type="integer")
+     * @GeneratedValue
+     */
     public $id;
 
     /** @OneToMany(targetEntity="DDC2759MetadataCategory", mappedBy="category") */
@@ -90,10 +103,18 @@ class DDC2759Category
 /** @Entity  @Table(name="ddc_2759_qualification_metadata") */
 class DDC2759QualificationMetadata
 {
-    /** @Id @Column(type="integer") @GeneratedValue */
+    /**
+     * @var int
+     * @Id
+     * @Column(type="integer")
+     * @GeneratedValue
+     */
     public $id;
 
-    /** @OneToOne(targetEntity="DDC2759Qualification", inversedBy="metadata") */
+    /**
+     * @var DDC2759Qualification
+     * @OneToOne(targetEntity="DDC2759Qualification", inversedBy="metadata")
+     */
     public $content;
 
     /** @OneToMany(targetEntity="DDC2759MetadataCategory", mappedBy="metadata") */
@@ -108,13 +129,24 @@ class DDC2759QualificationMetadata
 /** @Entity  @Table(name="ddc_2759_metadata_category") */
 class DDC2759MetadataCategory
 {
-    /** @Id @Column(type="integer") @GeneratedValue */
+    /**
+     * @var int
+     * @Id
+     * @Column(type="integer")
+     * @GeneratedValue
+     */
     public $id;
 
-    /** @ManyToOne(targetEntity="DDC2759QualificationMetadata", inversedBy="metadataCategories") */
+    /**
+     * @var DDC2759QualificationMetadata
+     * @ManyToOne(targetEntity="DDC2759QualificationMetadata", inversedBy="metadataCategories")
+     */
     public $metadata;
 
-    /** @ManyToOne(targetEntity="DDC2759Category", inversedBy="metadataCategories") */
+    /**
+     * @var DDC2759Category
+     * @ManyToOne(targetEntity="DDC2759Category", inversedBy="metadataCategories")
+     */
     public $category;
 
     public function __construct(DDC2759QualificationMetadata $metadata, DDC2759Category $category)

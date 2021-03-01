@@ -20,6 +20,7 @@ use Doctrine\Common\Collections\ArrayCollection;
 abstract class Attraction
 {
     /**
+     * @var int
      * @Id
      * @GeneratedValue
      * @Column(type="integer")

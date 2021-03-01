@@ -203,7 +203,7 @@ class ClassMetadataTest extends OrmTestCase
     /**
      * @group DDC-268
      */
-    public function testSetInvalidVersionMapping_ThrowsException(): void
+    public function testSetInvalidVersionMappingThrowsException(): void
     {
         $field              = [];
         $field['fieldName'] = 'foo';
@@ -216,7 +216,7 @@ class ClassMetadataTest extends OrmTestCase
         $cm->setVersionMapping($field);
     }
 
-    public function testGetSingleIdentifierFieldName_MultipleIdentifierEntity_ThrowsException(): void
+    public function testGetSingleIdentifierFieldNameMultipleIdentifierEntityThrowsException(): void
     {
         $cm = new ClassMetadata(CMS\CmsUser::class);
         $cm->initializeReflection(new RuntimeReflectionService());
@@ -226,7 +226,7 @@ class ClassMetadataTest extends OrmTestCase
         $cm->getSingleIdentifierFieldName();
     }
 
-    public function testGetSingleIdentifierFieldName_NoIdEntity_ThrowsException(): void
+    public function testGetSingleIdentifierFieldNameNoIdEntityThrowsException(): void
     {
         $cm = new ClassMetadata(DDC6412File::class);
         $cm->initializeReflection(new RuntimeReflectionService());
@@ -248,7 +248,7 @@ class ClassMetadataTest extends OrmTestCase
         $cm->addInheritedAssociationMapping($a2);
     }
 
-    public function testDuplicateColumnName_ThrowsMappingException(): void
+    public function testDuplicateColumnNameThrowsMappingException(): void
     {
         $cm = new ClassMetadata(CMS\CmsUser::class);
         $cm->initializeReflection(new RuntimeReflectionService());
@@ -259,7 +259,7 @@ class ClassMetadataTest extends OrmTestCase
         $cm->mapField(['fieldName' => 'username', 'columnName' => 'name']);
     }
 
-    public function testDuplicateColumnName_DiscriminatorColumn_ThrowsMappingException(): void
+    public function testDuplicateColumnNameDiscriminatorColumnThrowsMappingException(): void
     {
         $cm = new ClassMetadata(CMS\CmsUser::class);
         $cm->initializeReflection(new RuntimeReflectionService());
@@ -270,7 +270,7 @@ class ClassMetadataTest extends OrmTestCase
         $cm->setDiscriminatorColumn(['name' => 'name']);
     }
 
-    public function testDuplicateColumnName_DiscriminatorColumn2_ThrowsMappingException(): void
+    public function testDuplicateColumnNameDiscriminatorColumn2ThrowsMappingException(): void
     {
         $cm = new ClassMetadata(CMS\CmsUser::class);
         $cm->initializeReflection(new RuntimeReflectionService());
@@ -281,7 +281,7 @@ class ClassMetadataTest extends OrmTestCase
         $cm->mapField(['fieldName' => 'name', 'columnName' => 'name']);
     }
 
-    public function testDuplicateFieldAndAssociationMapping1_ThrowsException(): void
+    public function testDuplicateFieldAndAssociationMapping1ThrowsException(): void
     {
         $cm = new ClassMetadata(CMS\CmsUser::class);
         $cm->initializeReflection(new RuntimeReflectionService());
@@ -292,7 +292,7 @@ class ClassMetadataTest extends OrmTestCase
         $cm->mapOneToOne(['fieldName' => 'name', 'targetEntity' => 'CmsUser']);
     }
 
-    public function testDuplicateFieldAndAssociationMapping2_ThrowsException(): void
+    public function testDuplicateFieldAndAssociationMapping2ThrowsException(): void
     {
         $cm = new ClassMetadata(CMS\CmsUser::class);
         $cm->initializeReflection(new RuntimeReflectionService());
@@ -1291,7 +1291,10 @@ class ClassMetadataTest extends OrmTestCase
  */
 class DDC2700MappedSuperClass
 {
-    /** @Column */
+    /**
+     * @var mixed
+     * @Column
+     */
     private $foo;
 }
 

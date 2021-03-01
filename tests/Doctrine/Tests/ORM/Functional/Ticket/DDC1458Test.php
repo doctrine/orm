@@ -60,14 +60,21 @@ class DDC1258Test extends OrmFunctionalTestCase
 class TestEntity
 {
     /**
+     * @var int
      * @Id
      * @Column(type="integer")
      * @GeneratedValue(strategy="AUTO")
      */
     protected $id;
-    /** @Column(type="integer") */
+    /**
+     * @var int
+     * @Column(type="integer")
+     */
     protected $value;
-    /** @OneToOne(targetEntity="TestAdditionalEntity", inversedBy="entity", orphanRemoval=true, cascade={"persist", "remove"}) */
+    /**
+     * @var TestAdditionalEntity
+     * @OneToOne(targetEntity="TestAdditionalEntity", inversedBy="entity", orphanRemoval=true, cascade={"persist", "remove"})
+     */
     protected $additional;
 
     public function getValue()
@@ -96,12 +103,16 @@ class TestEntity
 class TestAdditionalEntity
 {
     /**
+     * @var int
      * @Id
      * @Column(type="integer")
      * @GeneratedValue(strategy="AUTO")
      */
     protected $id;
-    /** @OneToOne(targetEntity="TestEntity", mappedBy="additional") */
+    /**
+     * @var TestEntity
+     * @OneToOne(targetEntity="TestEntity", mappedBy="additional")
+     */
     protected $entity;
     /** @Column(type="boolean") */
     protected $bool;

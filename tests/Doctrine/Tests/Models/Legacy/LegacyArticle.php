@@ -11,23 +11,34 @@ namespace Doctrine\Tests\Models\Legacy;
 class LegacyArticle
 {
     /**
+     * @var int
      * @Id
      * @Column(name="iArticleId", type="integer")
      * @GeneratedValue(strategy="AUTO")
      */
-    public $_id;
-    /** @Column(name="sTopic", type="string", length=255) */
-    public $_topic;
-    /** @Column(name="sText", type="text") */
-    public $_text;
+    public $id;
+
     /**
+     * @var string
+     * @Column(name="sTopic", type="string", length=255)
+     */
+    public $topic;
+
+    /**
+     * @var string
+     * @Column(name="sText", type="text")
+     */
+    public $text;
+
+    /**
+     * @var LegacyUser
      * @ManyToOne(targetEntity="LegacyUser", inversedBy="_articles")
      * @JoinColumn(name="iUserId", referencedColumnName="iUserId")
      */
-    public $_user;
+    public $user;
 
     public function setAuthor(LegacyUser $author): void
     {
-        $this->_user = $author;
+        $this->user = $author;
     }
 }

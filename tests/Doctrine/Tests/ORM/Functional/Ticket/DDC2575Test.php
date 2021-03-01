@@ -94,12 +94,16 @@ class DDC2575Test extends OrmFunctionalTestCase
 class DDC2575Root
 {
     /**
+     * @var int
      * @Id
      * @Column(type="integer")
      */
     public $id;
 
-    /** @Column(type="integer") */
+    /**
+     * @var int
+     * @Column(type="integer")
+     */
     public $sampleField;
 
     /** @OneToOne(targetEntity="DDC2575A", mappedBy="rootRelation") **/
@@ -125,6 +129,7 @@ class DDC2575A
     public $rootRelation;
 
     /**
+     * @var DDC2575B
      * @ManyToOne(targetEntity="DDC2575B")
      * @JoinColumn(name="b_id", referencedColumnName="id", nullable=FALSE, onDelete="CASCADE")
      */
@@ -143,12 +148,16 @@ class DDC2575A
 class DDC2575B
 {
     /**
+     * @var int
      * @Id
      * @Column(type="integer")
      */
     public $id;
 
-    /** @Column(type="integer") */
+    /**
+     * @var int
+     * @Column(type="integer")
+     */
     public $sampleField;
 
     public function __construct($id, $value = 0)

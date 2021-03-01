@@ -31,7 +31,7 @@ class DefaultEntityHydratorTest extends OrmTestCase
     {
         parent::setUp();
 
-        $this->em        = $this->_getTestEntityManager();
+        $this->em        = $this->getTestEntityManager();
         $this->structure = new DefaultEntityHydrator($this->em);
     }
 

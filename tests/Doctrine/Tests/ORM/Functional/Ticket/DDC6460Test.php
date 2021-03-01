@@ -77,7 +77,10 @@ class DDC6460Test extends OrmFunctionalTestCase
  */
 class DDC6460Embeddable
 {
-    /** @Column(type="string") */
+    /**
+     * @var string
+     * @Column(type="string")
+     */
     public $field;
 }
 
@@ -87,13 +90,17 @@ class DDC6460Embeddable
 class DDC6460Entity
 {
     /**
+     * @var int
      * @Id
      * @GeneratedValue(strategy = "NONE")
      * @Column(type = "integer")
      */
     public $id;
 
-    /** @Embedded(class = "DDC6460Embeddable") */
+    /**
+     * @var DDC6460Embeddable
+     * @Embedded(class = "DDC6460Embeddable")
+     */
     public $embedded;
 }
 
@@ -103,12 +110,16 @@ class DDC6460Entity
 class DDC6460ParentEntity
 {
     /**
+     * @var int
      * @Id
      * @GeneratedValue(strategy = "NONE")
      * @Column(type = "integer")
      */
     public $id;
 
-    /** @ManyToOne(targetEntity = "DDC6460Entity", fetch="EXTRA_LAZY", cascade={"persist"}) */
+    /**
+     * @var DDC6460Entity
+     * @ManyToOne(targetEntity="DDC6460Entity", fetch="EXTRA_LAZY", cascade={"persist"})
+     */
     public $lazyLoaded;
 }

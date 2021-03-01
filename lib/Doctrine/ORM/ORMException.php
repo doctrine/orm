@@ -100,7 +100,7 @@ class ORMException extends Exception
      */
     public static function unrecognizedField($field)
     {
-        return new self("Unrecognized field: $field");
+        return new self(sprintf('Unrecognized field: %s', $field));
     }
 
     /**
@@ -134,7 +134,7 @@ class ORMException extends Exception
      */
     public static function invalidFlushMode($mode)
     {
-        return new self("'$mode' is an invalid flush mode.");
+        return new self(sprintf("'%s' is an invalid flush mode.", $mode));
     }
 
     /**
@@ -152,7 +152,7 @@ class ORMException extends Exception
      */
     public static function invalidHydrationMode($mode)
     {
-        return new self("'$mode' is an invalid hydration mode.");
+        return new self(sprintf("'%s' is an invalid hydration mode.", $mode));
     }
 
     /**
@@ -281,7 +281,7 @@ class ORMException extends Exception
     public static function unknownEntityNamespace($entityNamespaceAlias)
     {
         return new self(
-            "Unknown Entity namespace alias '$entityNamespaceAlias'."
+            sprintf("Unknown Entity namespace alias '%s'.", $entityNamespaceAlias)
         );
     }
 
@@ -307,7 +307,7 @@ class ORMException extends Exception
      */
     public static function missingIdentifierField($className, $fieldName)
     {
-        return new self("The identifier $fieldName is missing for a query of " . $className);
+        return new self(sprintf('The identifier %s is missing for a query of %s', $fieldName, $className));
     }
 
     /**

@@ -11,12 +11,16 @@ namespace Doctrine\Tests\Models\DDC3231;
 class DDC3231User2
 {
     /**
+     * @var int
      * @Id
      * @Column(type="integer")
      * @GeneratedValue(strategy="AUTO")
      */
     protected $id;
 
-    /** @Column(type="string", length=255) */
+    /**
+     * @var string
+     * @Column(type="string", length=255)
+     */
     protected $name;
 }

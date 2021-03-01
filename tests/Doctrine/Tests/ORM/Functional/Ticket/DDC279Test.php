@@ -73,6 +73,7 @@ class DDC279Test extends OrmFunctionalTestCase
 abstract class DDC279EntityXAbstract
 {
     /**
+     * @var int
      * @Id
      * @GeneratedValue
      * @Column(name="id", type="integer")
@@ -89,6 +90,7 @@ abstract class DDC279EntityXAbstract
 class DDC279EntityX extends DDC279EntityXAbstract
 {
     /**
+     * @var DDC279EntityY
      * @OneToOne(targetEntity="DDC279EntityY")
      * @JoinColumn(name="y_id", referencedColumnName="id")
      */
@@ -110,6 +112,7 @@ class DDC279EntityY
     public $data;
 
     /**
+     * @var DDC279EntityZ
      * @OneToOne(targetEntity="DDC279EntityZ")
      * @JoinColumn(name="z_id", referencedColumnName="id")
      */

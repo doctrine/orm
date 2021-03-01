@@ -73,7 +73,12 @@ class DDC3170Test extends OrmFunctionalTestCase
  */
 abstract class DDC3170AbstractEntityJoined
 {
-    /** @Id @Column(type="integer") @GeneratedValue */
+    /**
+     * @var int
+     * @Id
+     * @Column(type="integer")
+     * @GeneratedValue
+     */
     public $id;
 }
 
@@ -92,7 +97,12 @@ class DDC3170ProductJoined extends DDC3170AbstractEntityJoined
  */
 abstract class DDC3170AbstractEntitySingleTable
 {
-    /** @Id @Column(type="integer") @GeneratedValue */
+    /**
+     * @var int
+     * @Id
+     * @Column(type="integer")
+     * @GeneratedValue
+     */
     public $id;
 }
 

@@ -8,25 +8,13 @@ use Doctrine\Tests\Models\CMS\CmsGroup;
 use Doctrine\Tests\Models\CMS\CmsPhonenumber;
 use Doctrine\Tests\Models\CMS\CmsUser;
 use Doctrine\Tests\OrmFunctionalTestCase;
-use Doctrine\Tests\VerifyDeprecations;
 
 use function count;
 use function serialize;
 use function unserialize;
 
-/**
- * ----------------- !! NOTE !! --------------------
- * To reproduce the manyToMany-Bug it's necessary
- * to cascade "merge" on cmUser::groups
- * -------------------------------------------------
- *
- * @PHP-Version 5.3.2
- * @PHPUnit-Version 3.4.11
- */
 class DDC501Test extends OrmFunctionalTestCase
 {
-    use VerifyDeprecations;
-
     protected function setUp(): void
     {
         $this->useModelSet('cms');
@@ -88,10 +76,9 @@ class DDC501Test extends OrmFunctionalTestCase
         // This works fine as long as cmUser::groups doesn't cascade "merge"
         // Otherwise group memberships are physically deleted now!
         $this->assertEquals(2, count($userClone->getGroups()));
-        $this->assertHasDeprecationMessages();
     }
 
-    protected function createAndPersistUser()
+    protected function createAndPersistUser(): CmsUser
     {
         $user           = new CmsUser();
         $user->name     = 'Luka';

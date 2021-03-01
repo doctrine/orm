@@ -78,7 +78,7 @@ class ParserTest extends OrmTestCase
      * @covers Doctrine\ORM\Query\Parser::match
      * @group DDC-3701
      */
-    public function testMatch($expectedToken, $inputString): void
+    public function testMatch(int $expectedToken, string $inputString): void
     {
         $parser = $this->createParser($inputString);
 
@@ -92,7 +92,7 @@ class ParserTest extends OrmTestCase
      * @covers Doctrine\ORM\Query\Parser::match
      * @group DDC-3701
      */
-    public function testMatchFailure($expectedToken, $inputString): void
+    public function testMatchFailure(int $expectedToken, string $inputString): void
     {
         $this->expectException(QueryException::class);
 
@@ -101,6 +101,7 @@ class ParserTest extends OrmTestCase
         $parser->match($expectedToken);
     }
 
+    /** @psalm-return list<array{int, string}> */
     public function validMatches()
     {
         /*
@@ -121,7 +122,8 @@ class ParserTest extends OrmTestCase
         ];
     }
 
-    public function invalidMatches()
+    /** @psalm-return list<array{int, string}> */
+    public function invalidMatches(): array
     {
         return [
             [Lexer::T_DOT, 'ALL'], // ALL is a terminal string (reserved keyword) and also possibly an identifier
@@ -145,7 +147,7 @@ class ParserTest extends OrmTestCase
      */
     public function testNullLookahead(): void
     {
-        $query = new Query($this->_getTestEntityManager());
+        $query = new Query($this->getTestEntityManager());
         $query->setDQL('SELECT CURRENT_TIMESTAMP()');
 
         $parser = new Parser($query);
@@ -154,9 +156,9 @@ class ParserTest extends OrmTestCase
         $parser->match(Lexer::T_SELECT);
     }
 
-    private function createParser($dql)
+    private function createParser(string $dql): Parser
     {
-        $query = new Query($this->_getTestEntityManager());
+        $query = new Query($this->getTestEntityManager());
         $query->setDQL($dql);
 
         $parser = new Parser($query);

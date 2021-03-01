@@ -40,6 +40,9 @@ class ConnectionMock extends Connection
     /** @var array */
     private $_executeUpdates = [];
 
+    /** @var array */
+    private $_deletes = [];
+
     /**
      * @param array $params
      */
@@ -75,6 +78,14 @@ class ConnectionMock extends Connection
     public function executeUpdate($query, array $params = [], array $types = [])
     {
         $this->_executeUpdates[] = ['query' => $query, 'params' => $params, 'types' => $types];
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function delete($table, array $criteria, array $types = [])
+    {
+        $this->_deletes[] = ['table' => $table, 'criteria' => $criteria, 'types' => $types];
     }
 
     /**
@@ -158,6 +169,14 @@ class ConnectionMock extends Connection
     public function getExecuteUpdates(): array
     {
         return $this->_executeUpdates;
+    }
+
+    /**
+     * @return array
+     */
+    public function getDeletes(): array
+    {
+        return $this->_deletes;
     }
 
     public function reset(): void

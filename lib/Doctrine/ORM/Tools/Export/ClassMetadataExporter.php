@@ -20,9 +20,7 @@
 
 namespace Doctrine\ORM\Tools\Export;
 
-use function trigger_error;
-
-use const E_USER_DEPRECATED;
+use Doctrine\Deprecations\Deprecation;
 
 /**
  * Class used for converting your mapping information between the
@@ -45,7 +43,12 @@ class ClassMetadataExporter
 
     public function __construct()
     {
-        @trigger_error(self::class . ' is deprecated and will be removed in Doctrine ORM 3.0', E_USER_DEPRECATED);
+        Deprecation::trigger(
+            'doctrine/orm',
+            'https://github.com/doctrine/orm/issues/8458',
+            '%s is deprecated with no replacement',
+            self::class
+        );
     }
 
     /**

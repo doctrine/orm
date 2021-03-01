@@ -11,13 +11,17 @@ namespace Doctrine\Tests\Models\Quote;
 class NumericEntity
 {
     /**
+     * @var int
      * @Id
      * @Column(type="integer", name="`1:1`")
      * @GeneratedValue(strategy="AUTO")
      */
     public $id;
 
-    /** @Column(type="string", name="`2:2`") */
+    /**
+     * @var string
+     * @Column(type="string", name="`2:2`")
+     */
     public $value;
 
     public function __construct(string $value)

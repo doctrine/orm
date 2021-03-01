@@ -12,7 +12,6 @@ use Doctrine\Tests\Models\CMS\CmsArticle;
 use Doctrine\Tests\Models\CMS\CmsPhonenumber;
 use Doctrine\Tests\Models\CMS\CmsUser;
 use Doctrine\Tests\OrmFunctionalTestCase;
-use Doctrine\Tests\VerifyDeprecations;
 
 use function count;
 use function get_class;
@@ -24,8 +23,6 @@ use function unserialize;
  */
 class DetachedEntityTest extends OrmFunctionalTestCase
 {
-    use VerifyDeprecations;
-
     protected function setUp(): void
     {
         $this->useModelSet('cms');
@@ -52,7 +49,6 @@ class DetachedEntityTest extends OrmFunctionalTestCase
         $this->assertFalse($user === $user2);
         $this->assertTrue($this->_em->contains($user2));
         $this->assertEquals('Roman B.', $user2->name);
-        $this->assertHasDeprecationMessages();
     }
 
     public function testSerializeUnserializeModifyMerge(): void
@@ -114,7 +110,6 @@ class DetachedEntityTest extends OrmFunctionalTestCase
         $this->assertInstanceOf(CmsPhonenumber::class, $phonenumbers[0]);
         $this->assertTrue($this->_em->getUnitOfWork()->isInIdentityMap($phonenumbers[0]));
         $this->assertTrue($this->_em->contains($phonenumbers[0]), 'Failed to assert that first phonenumber in collection is contained inside EntityManager persistence context.');
-        $this->assertHasDeprecationMessages();
     }
 
     /**
@@ -166,7 +161,6 @@ class DetachedEntityTest extends OrmFunctionalTestCase
         $this->assertInstanceOf(Proxy::class, $managedAddress2->user);
         $this->assertFalse($managedAddress2->user === $detachedAddress2->user);
         $this->assertFalse($managedAddress2->user->__isInitialized__);
-        $this->assertHasDeprecationMessages();
     }
 
     /**
@@ -192,7 +186,6 @@ class DetachedEntityTest extends OrmFunctionalTestCase
 
         $this->assertInstanceOf(CmsUser::class, $newUser);
         $this->assertEquals('gblanco', $newUser->username);
-        $this->assertHasDeprecationMessages();
     }
 
     /**
@@ -212,7 +205,6 @@ class DetachedEntityTest extends OrmFunctionalTestCase
 
         $this->assertFalse($this->_em->contains($user));
         $this->assertFalse($this->_em->getUnitOfWork()->isInIdentityMap($user));
-        $this->assertHasDeprecationMessages();
     }
 
     /**
@@ -236,6 +228,5 @@ class DetachedEntityTest extends OrmFunctionalTestCase
         $this->expectExceptionMessage('The optimistic lock failed, version 1 was expected, but is actually 2');
 
         $this->_em->merge($article);
-        $this->assertHasDeprecationMessages();
     }
 }

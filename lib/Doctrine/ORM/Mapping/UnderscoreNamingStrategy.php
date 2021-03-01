@@ -20,17 +20,17 @@
 
 namespace Doctrine\ORM\Mapping;
 
+use Doctrine\Deprecations\Deprecation;
+
 use function preg_replace;
 use function strpos;
 use function strrpos;
 use function strtolower;
 use function strtoupper;
 use function substr;
-use function trigger_error;
 
 use const CASE_LOWER;
 use const CASE_UPPER;
-use const E_USER_DEPRECATED;
 
 /**
  * Naming strategy implementing the underscore naming convention.
@@ -57,9 +57,11 @@ class UnderscoreNamingStrategy implements NamingStrategy
     public function __construct($case = CASE_LOWER, bool $numberAware = false)
     {
         if (! $numberAware) {
-            @trigger_error(
-                'Creating ' . self::class . ' without making it number aware is deprecated and will be removed in Doctrine ORM 3.0.',
-                E_USER_DEPRECATED
+            Deprecation::trigger(
+                'doctrine/orm',
+                'https://github.com/doctrine/orm/pull/7908',
+                'Creating %s without setting second argument $numberAware=true is deprecated and will be removed in Doctrine ORM 3.0.',
+                self::class
             );
         }
 

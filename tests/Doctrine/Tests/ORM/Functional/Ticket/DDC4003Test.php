@@ -12,7 +12,7 @@ use function uniqid;
 
 class DDC4003Test extends SecondLevelCacheAbstractTest
 {
-    public function test_reads_through_repository_same_data_that_it_wrote_in_cache(): void
+    public function testReadsThroughRepositorySameDataThatItWroteInCache(): void
     {
         $this->loadFixturesCountries();
         $this->loadFixturesStates();

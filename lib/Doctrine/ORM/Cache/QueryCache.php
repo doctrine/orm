@@ -44,7 +44,7 @@ interface QueryCache
     /**
      * @param mixed[] $hints
      *
-     * @return array|null
+     * @return mixed[]|null
      */
     public function get(QueryCacheKey $key, ResultSetMapping $rsm, array $hints = []);
 

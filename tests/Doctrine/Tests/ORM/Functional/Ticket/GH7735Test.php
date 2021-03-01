@@ -139,6 +139,7 @@ class GH7735Engine
 class GH7735Power
 {
     /**
+     * @var int
      * @Id
      * @Column(type="integer")
      */

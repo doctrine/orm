@@ -100,13 +100,17 @@ class DDC1719Test extends OrmFunctionalTestCase
 class DDC1719SimpleEntity
 {
     /**
+     * @var int
      * @Id
      * @Column(type="integer", name="`simple-entity-id`")
      * @GeneratedValue(strategy="AUTO")
      */
     public $id;
 
-    /** @Column(type="string", name="`simple-entity-value`") */
+    /**
+     * @var string
+     * @Column(type="string", name="`simple-entity-value`")
+     */
     public $value;
 
     public function __construct(string $value)

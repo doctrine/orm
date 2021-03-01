@@ -92,10 +92,18 @@ final class GH6937Test extends OrmFunctionalTestCase
  */
 abstract class GH6937Person
 {
-    /** @Id @Column(type="integer") @GeneratedValue */
+    /**
+     * @var int
+     * @Id
+     * @Column(type="integer")
+     * @GeneratedValue
+     */
     public $id;
 
-    /** @Column(type="string") */
+    /**
+     * @var string
+     * @Column(type="string")
+     */
     public $name;
 }
 
@@ -104,7 +112,10 @@ abstract class GH6937Person
  */
 abstract class GH6937Employee extends GH6937Person
 {
-    /** @Column(type="string") */
+    /**
+     * @var string
+     * @Column(type="string")
+     */
     public $phoneNumber;
 }
 
@@ -113,6 +124,9 @@ abstract class GH6937Employee extends GH6937Person
  */
 class GH6937Manager extends GH6937Employee
 {
-    /** @Column(type="string") */
+    /**
+     * @var string
+     * @Column(type="string")
+     */
     public $department;
 }

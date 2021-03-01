@@ -64,13 +64,17 @@ class DDC345Test extends OrmFunctionalTestCase
 class DDC345User
 {
     /**
+     * @var int
      * @Id
      * @Column(type="integer")
      * @GeneratedValue
      */
     public $id;
 
-    /** @Column(type="string") */
+    /**
+     * @var string
+     * @Column(type="string")
+     */
     public $name;
 
     /** @OneToMany(targetEntity="DDC345Membership", mappedBy="user", cascade={"persist"}) */
@@ -88,13 +92,17 @@ class DDC345User
 class DDC345Group
 {
     /**
+     * @var int
      * @Id
      * @Column(type="integer")
      * @GeneratedValue
      */
     public $id;
 
-    /** @Column(type="string") */
+    /**
+     * @var string
+     * @Column(type="string")
+     */
     public $name;
 
     /** @OneToMany(targetEntity="DDC345Membership", mappedBy="group", cascade={"persist"}) */
@@ -116,6 +124,7 @@ class DDC345Group
 class DDC345Membership
 {
     /**
+     * @var int
      * @Id
      * @Column(type="integer")
      * @GeneratedValue
@@ -123,18 +132,23 @@ class DDC345Membership
     public $id;
 
     /**
+     * @var DDC345User
      * @OneToOne(targetEntity="DDC345User", inversedBy="Memberships")
      * @JoinColumn(name="user_id", referencedColumnName="id", nullable=false)
      */
     public $user;
 
     /**
+     * @var DDC345Group
      * @OneToOne(targetEntity="DDC345Group", inversedBy="Memberships")
      * @JoinColumn(name="group_id", referencedColumnName="id", nullable=false)
      */
     public $group;
 
-    /** @Column(type="string") */
+    /**
+     * @var string
+     * @Column(type="string")
+     */
     public $state;
 
     /** @Column(type="datetime") */

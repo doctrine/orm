@@ -64,12 +64,14 @@ class DDC1436Test extends OrmFunctionalTestCase
 class DDC1436Page
 {
     /**
+     * @var int
      * @Id
      * @GeneratedValue
      * @Column(type="integer", name="id")
      */
     protected $id;
     /**
+     * @var DDC1436Page
      * @ManyToOne(targetEntity="DDC1436Page")
      * @JoinColumn(name="pid", referencedColumnName="id")
      */

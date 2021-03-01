@@ -29,7 +29,7 @@ class QuoteStrategyTest extends OrmTestCase
     protected function setUp(): void
     {
         parent::setUp();
-        $em             = $this->_getTestEntityManager();
+        $em             = $this->getTestEntityManager();
         $this->platform = $em->getConnection()->getDatabasePlatform();
         $this->strategy = new DefaultQuoteStrategy();
     }
@@ -44,7 +44,7 @@ class QuoteStrategyTest extends OrmTestCase
 
     public function testConfiguration(): void
     {
-        $em     = $this->_getTestEntityManager();
+        $em     = $this->getTestEntityManager();
         $config = $em->getConfiguration();
 
         $this->assertInstanceOf(QuoteStrategy::class, $config->getQuoteStrategy());

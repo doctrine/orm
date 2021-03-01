@@ -32,7 +32,7 @@ class EntityCacheEntry implements CacheEntry
     /**
      * READ-ONLY: Public only for performance reasons, it should be considered immutable.
      *
-     * @var array The entity map data
+     * @var array<string,mixed> The entity map data
      */
     public $data;
 
@@ -44,8 +44,8 @@ class EntityCacheEntry implements CacheEntry
     public $class;
 
     /**
-     * @param string $class The entity class.
-     * @param array  $data  The entity data.
+     * @param string              $class The entity class.
+     * @param array<string,mixed> $data  The entity data.
      */
     public function __construct($class, array $data)
     {
@@ -58,7 +58,7 @@ class EntityCacheEntry implements CacheEntry
      *
      * This method allow Doctrine\Common\Cache\PhpFileCache compatibility
      *
-     * @param array $values array containing property values
+     * @param array<string,mixed> $values array containing property values
      *
      * @return EntityCacheEntry
      */
@@ -70,7 +70,7 @@ class EntityCacheEntry implements CacheEntry
     /**
      * Retrieves the entity data resolving cache entries
      *
-     * @return array
+     * @return array<string, mixed>
      */
     public function resolveAssociationEntries(EntityManagerInterface $em)
     {

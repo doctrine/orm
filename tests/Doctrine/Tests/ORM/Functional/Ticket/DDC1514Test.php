@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Doctrine\Tests\ORM\Functional\Ticket;
 
 use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\Tests\OrmFunctionalTestCase;
 use Exception;
 
@@ -73,13 +74,24 @@ class DDC1514Test extends OrmFunctionalTestCase
  */
 class DDC1514EntityA
 {
-    /** @Id @Column(type="integer") @GeneratedValue */
+    /**
+     * @var int
+     * @Id
+     * @Column(type="integer")
+     * @GeneratedValue
+     */
     public $id;
     /** @Column */
     public $title;
-    /** @ManyToMany(targetEntity="DDC1514EntityB", mappedBy="entityAFrom") */
+    /**
+     * @psalm-var Collection<int, DDC1514EntityB>
+     * @ManyToMany(targetEntity="DDC1514EntityB", mappedBy="entityAFrom")
+     */
     public $entitiesB;
-    /** @ManyToOne(targetEntity="DDC1514EntityC") */
+    /**
+     * @var DDC1514EntityC
+     * @ManyToOne(targetEntity="DDC1514EntityC")
+     */
     public $entityC;
 
     public function __construct()
@@ -93,12 +105,23 @@ class DDC1514EntityA
  */
 class DDC1514EntityB
 {
-    /** @Id @Column(type="integer") @GeneratedValue */
+    /**
+     * @var int
+     * @Id
+     * @Column(type="integer")
+     * @GeneratedValue
+     */
     public $id;
 
-    /** @ManyToOne(targetEntity="DDC1514EntityA", inversedBy="entitiesB") */
+    /**
+     * @var DDC1514EntityA
+     * @ManyToOne(targetEntity="DDC1514EntityA", inversedBy="entitiesB")
+     */
     public $entityAFrom;
-    /** @ManyToOne(targetEntity="DDC1514EntityA") */
+    /**
+     * @var DDC1514EntityA
+     * @ManyToOne(targetEntity="DDC1514EntityA")
+     */
     public $entityATo;
 }
 
@@ -107,7 +130,12 @@ class DDC1514EntityB
  */
 class DDC1514EntityC
 {
-    /** @Id @Column(type="integer") @GeneratedValue */
+    /**
+     * @var int
+     * @Id
+     * @Column(type="integer")
+     * @GeneratedValue
+     */
     public $id;
     /** @Column */
     public $title;

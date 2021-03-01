@@ -270,8 +270,9 @@ class JoinedSubclassPersister extends AbstractEntityInheritancePersister
     {
         $identifier = $this->em->getUnitOfWork()->getEntityIdentifier($entity);
         $id         = array_combine($this->class->getIdentifierColumnNames(), $identifier);
+        $types      = $this->getClassIdentifiersTypes($this->class);
 
-        $this->deleteJoinTableRecords($identifier);
+        $this->deleteJoinTableRecords($identifier, $types);
 
         // If the database platform supports FKs, just
         // delete the row from the root table. Cascades do the rest.

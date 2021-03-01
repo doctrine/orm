@@ -14,16 +14,23 @@ namespace Doctrine\Tests\Models\ECommerce;
 class ECommerceCustomer
 {
     /**
+     * @var int
      * @Column(type="integer")
      * @Id
      * @GeneratedValue(strategy="AUTO")
      */
     private $id;
 
-    /** @Column(type="string", length=50) */
+    /**
+     * @var string
+     * @Column(type="string", length=50)
+     */
     private $name;
 
-    /** @OneToOne(targetEntity="ECommerceCart", mappedBy="customer", cascade={"persist"}) */
+    /**
+     * @var ECommerceCart
+     * @OneToOne(targetEntity="ECommerceCart", mappedBy="customer", cascade={"persist"})
+     */
     private $cart;
 
     /**

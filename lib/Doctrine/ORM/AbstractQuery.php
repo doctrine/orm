@@ -25,12 +25,14 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Cache\QueryCacheProfile;
 use Doctrine\DBAL\Driver\Statement;
+use Doctrine\Deprecations\Deprecation;
 use Doctrine\ORM\Cache\Logging\CacheLogger;
 use Doctrine\ORM\Cache\QueryCacheKey;
 use Doctrine\ORM\Cache\TimestampCacheKey;
 use Doctrine\ORM\Internal\Hydration\IterableResult;
 use Doctrine\ORM\Mapping\MappingException as ORMMappingException;
 use Doctrine\ORM\Query\Parameter;
+use Doctrine\ORM\Query\QueryException;
 use Doctrine\ORM\Query\ResultSetMapping;
 use Doctrine\Persistence\Mapping\MappingException;
 use Traversable;
@@ -48,9 +50,6 @@ use function ksort;
 use function reset;
 use function serialize;
 use function sha1;
-use function trigger_error;
-
-use const E_USER_DEPRECATED;
 
 /**
  * Base contract for ORM queries. Base class for Query and NativeQuery.
@@ -795,7 +794,7 @@ abstract class AbstractQuery
      *
      * Alias for execute(null, HYDRATE_ARRAY).
      *
-     * @return array
+     * @return array<int,mixed>
      */
     public function getArrayResult()
     {
@@ -807,7 +806,7 @@ abstract class AbstractQuery
      *
      * Alias for execute(null, HYDRATE_SCALAR).
      *
-     * @return array
+     * @return array<int,mixed>
      */
     public function getScalarResult()
     {
@@ -937,7 +936,7 @@ abstract class AbstractQuery
     /**
      * Return the key value map of query hints that are currently set.
      *
-     * @return array
+     * @return array<string,mixed>
      */
     public function getHints()
     {
@@ -950,16 +949,18 @@ abstract class AbstractQuery
      *
      * @deprecated
      *
-     * @param ArrayCollection|array|null $parameters    The query parameters.
-     * @param string|int|null            $hydrationMode The hydration mode to use.
+     * @param ArrayCollection|mixed[]|null $parameters    The query parameters.
+     * @param string|int|null              $hydrationMode The hydration mode to use.
      *
      * @return IterableResult
      */
     public function iterate($parameters = null, $hydrationMode = null)
     {
-        @trigger_error(
-            'Method ' . __METHOD__ . '() is deprecated and will be removed in Doctrine ORM 3.0. Use toIterable() instead.',
-            E_USER_DEPRECATED
+        Deprecation::trigger(
+            'doctrine/orm',
+            'https://github.com/doctrine/orm/issues/8463',
+            'Method %s() is deprecated and will be removed in Doctrine ORM 3.0. Use toIterable() instead.',
+            __METHOD__
         );
 
         if ($hydrationMode !== null) {
@@ -984,6 +985,8 @@ abstract class AbstractQuery
      * @param string|int|null         $hydrationMode The hydration mode to use.
      *
      * @return iterable<mixed>
+     *
+     * @psalm-param ArrayCollection<int, Parameter>|mixed[] $parameters
      */
     public function toIterable(iterable $parameters = [], $hydrationMode = null): iterable
     {
@@ -998,7 +1001,12 @@ abstract class AbstractQuery
             $this->setParameters($parameters);
         }
 
-        $rsm  = $this->getResultSetMapping();
+        $rsm = $this->getResultSetMapping();
+
+        if ($rsm->isMixed && count($rsm->scalarMappings) > 0) {
+            throw QueryException::iterateWithMixedResultNotAllowed();
+        }
+
         $stmt = $this->_doExecute();
 
         return $this->_em->newHydrator($this->_hydrationMode)->toIterable($stmt, $rsm, $this->_hints);
@@ -1011,6 +1019,8 @@ abstract class AbstractQuery
      * @param string|int|null              $hydrationMode Processing mode to be used during the hydration process.
      *
      * @return mixed
+     *
+     * @psalm-param ArrayCollection<int, Parameter>|mixed[]|null $parameters
      */
     public function execute($parameters = null, $hydrationMode = null)
     {
@@ -1024,10 +1034,12 @@ abstract class AbstractQuery
     /**
      * Execute query ignoring second level cache.
      *
-     * @param ArrayCollection|array|null $parameters
-     * @param string|int|null            $hydrationMode
+     * @param ArrayCollection|mixed[]|null $parameters
+     * @param string|int|null              $hydrationMode
      *
      * @return mixed
+     *
+     * @psalm-param ArrayCollection<int, Parameter>|mixed[]|null $parameters
      */
     private function executeIgnoreQueryCache($parameters = null, $hydrationMode = null)
     {
@@ -1083,10 +1095,12 @@ abstract class AbstractQuery
     /**
      * Load from second level cache or executes the query and put into cache.
      *
-     * @param ArrayCollection|array|null $parameters
-     * @param string|int|null            $hydrationMode
+     * @param ArrayCollection|mixed[]|null $parameters
+     * @param string|int|null              $hydrationMode
      *
      * @return mixed
+     *
+     * @psalm-param ArrayCollection<int, Parameter>|mixed[]|null $parameters
      */
     private function executeUsingQueryCache($parameters = null, $hydrationMode = null)
     {
@@ -1224,9 +1238,11 @@ abstract class AbstractQuery
         $query  = $this->getSQL();
         $hints  = $this->getHints();
         $params = array_map(function (Parameter $parameter) {
+            $value = $parameter->getValue();
+
             // Small optimization
-            // Does not invoke processParameterValue for scalar values
-            if (is_scalar($value = $parameter->getValue())) {
+            // Does not invoke processParameterValue for scalar value
+            if (is_scalar($value)) {
                 return $value;
             }
 

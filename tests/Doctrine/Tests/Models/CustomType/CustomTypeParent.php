@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Doctrine\Tests\Models\CustomType;
 
 use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 
 /**
  * @Entity
@@ -13,6 +14,7 @@ use Doctrine\Common\Collections\ArrayCollection;
 class CustomTypeParent
 {
     /**
+     * @var int
      * @Id @Column(type="integer")
      * @GeneratedValue(strategy="AUTO")
      */
@@ -24,7 +26,10 @@ class CustomTypeParent
     /** @OneToOne(targetEntity="Doctrine\Tests\Models\CustomType\CustomTypeChild", cascade={"persist", "remove"}) */
     public $child;
 
-    /** @ManyToMany(targetEntity="Doctrine\Tests\Models\CustomType\CustomTypeParent", mappedBy="myFriends") */
+    /**
+     * @psalm-var Collection<int, CustomTypeParent>
+     * @ManyToMany(targetEntity="Doctrine\Tests\Models\CustomType\CustomTypeParent", mappedBy="myFriends")
+     */
     private $friendsWithMe;
 
     /**

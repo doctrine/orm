@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Doctrine\Tests\ORM;
 
 use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\Common\EventManager;
 use Doctrine\ORM\Events;
 use Doctrine\ORM\Mapping\ClassMetadata;
@@ -474,6 +475,9 @@ class UnitOfWorkTest extends OrmTestCase
         self::assertSame($entity, $this->_unitOfWork->getByIdHash($idHash, get_class($entity)));
     }
 
+    /**
+     * @psalm-return array<string, array{object, string}>
+     */
     public function entitiesWithValidIdentifiersProvider()
     {
         $emptyString = new EntityWithStringIdentifier();
@@ -520,7 +524,7 @@ class UnitOfWorkTest extends OrmTestCase
     }
 
     /**
-     * @param array $identifier
+     * @param array<string, mixed> $identifier
      *
      * @dataProvider entitiesWithInvalidIdentifiersProvider
      */
@@ -531,7 +535,10 @@ class UnitOfWorkTest extends OrmTestCase
         $this->_unitOfWork->registerManaged($entity, $identifier, []);
     }
 
-    public function entitiesWithInvalidIdentifiersProvider()
+    /**
+     * @psalm-return array<string, array{object, array<string, mixed>}>
+     */
+    public function entitiesWithInvalidIdentifiersProvider(): array
     {
         $firstNullString = new EntityWithCompositeStringIdentifier();
 
@@ -822,19 +829,30 @@ class UnitOfWorkTest extends OrmTestCase
  */
 class NotifyChangedEntity implements NotifyPropertyChanged
 {
+    /** @psalm-var list<PropertyChangedListener> */
     private $_listeners = [];
+
     /**
+     * @var int
      * @Id
      * @Column(type="integer")
      * @GeneratedValue
      */
     private $id;
-    /** @Column(type="string") */
+
+    /**
+     * @var string
+     * @Column(type="string")
+     */
     private $data;
 
+    /** @var mixed */
     private $transient; // not persisted
 
-    /** @OneToMany(targetEntity="NotifyChangedRelatedItem", mappedBy="owner") */
+    /**
+     * @psalm-var Collection<int, NotifyChangedRelatedItem>
+     * @OneToMany(targetEntity="NotifyChangedRelatedItem", mappedBy="owner")
+     */
     private $items;
 
     public function __construct()
@@ -842,12 +860,12 @@ class NotifyChangedEntity implements NotifyPropertyChanged
         $this->items = new ArrayCollection();
     }
 
-    public function getId()
+    public function getId(): int
     {
         return $this->id;
     }
 
-    public function getItems()
+    public function getItems(): Collection
     {
         return $this->items;
     }
@@ -855,20 +873,26 @@ class NotifyChangedEntity implements NotifyPropertyChanged
     public function setTransient($value): void
     {
         if ($value !== $this->transient) {
-            $this->_onPropertyChanged('transient', $this->transient, $value);
+            $this->onPropertyChanged('transient', $this->transient, $value);
             $this->transient = $value;
         }
     }
 
+    /**
+     * @return mixed
+     */
     public function getData()
     {
         return $this->data;
     }
 
+    /**
+     * @param mixed $data
+     */
     public function setData($data): void
     {
         if ($data !== $this->data) {
-            $this->_onPropertyChanged('data', $this->data, $data);
+            $this->onPropertyChanged('data', $this->data, $data);
             $this->data = $data;
         }
     }
@@ -878,7 +902,12 @@ class NotifyChangedEntity implements NotifyPropertyChanged
         $this->_listeners[] = $listener;
     }
 
-    protected function _onPropertyChanged($propName, $oldValue, $newValue): void
+    /**
+     * @param mixed $propName
+     * @param mixed $oldValue
+     * @param mixed $newValue
+     */
+    protected function onPropertyChanged($propName, $oldValue, $newValue): void
     {
         if ($this->_listeners) {
             foreach ($this->_listeners as $listener) {
@@ -892,26 +921,30 @@ class NotifyChangedEntity implements NotifyPropertyChanged
 class NotifyChangedRelatedItem
 {
     /**
+     * @var int
      * @Id
      * @Column(type="integer")
      * @GeneratedValue
      */
     private $id;
 
-    /** @ManyToOne(targetEntity="NotifyChangedEntity", inversedBy="items") */
+    /**
+     * @var NotifyChangedEntity|null
+     * @ManyToOne(targetEntity="NotifyChangedEntity", inversedBy="items")
+     */
     private $owner;
 
-    public function getId()
+    public function getId(): int
     {
         return $this->id;
     }
 
-    public function getOwner()
+    public function getOwner(): ?NotifyChangedEntity
     {
         return $this->owner;
     }
 
-    public function setOwner($owner): void
+    public function setOwner(?NotifyChangedEntity $owner): void
     {
         $this->owner = $owner;
     }
@@ -920,9 +953,18 @@ class NotifyChangedRelatedItem
 /** @Entity */
 class VersionedAssignedIdentifierEntity
 {
-    /** @Id @Column(type="integer") */
+    /**
+     * @var int
+     * @Id
+     * @Column(type="integer")
+     */
     public $id;
-    /** @Version @Column(type="integer") */
+
+    /**
+     * @var int
+     * @Version
+     * @Column(type="integer")
+     */
     public $version;
 }
 
@@ -965,10 +1007,17 @@ class EntityWithCompositeStringIdentifier
 /** @Entity */
 class EntityWithRandomlyGeneratedField
 {
-    /** @Id @Column(type="string") */
+    /**
+     * @var string
+     * @Id
+     * @Column(type="string")
+     */
     public $id;
 
-    /** @Column(type="integer") */
+    /**
+     * @var int
+     * @Column(type="integer")
+     */
     public $generatedField;
 
     public function __construct()
@@ -981,7 +1030,12 @@ class EntityWithRandomlyGeneratedField
 /** @Entity */
 class CascadePersistedEntity
 {
-    /** @Id @Column(type="string") @GeneratedValue(strategy="NONE") */
+    /**
+     * @var string
+     * @Id
+     * @Column(type="string")
+     * @GeneratedValue(strategy="NONE")
+     */
     private $id;
 
     public function __construct()
@@ -993,10 +1047,18 @@ class CascadePersistedEntity
 /** @Entity */
 class EntityWithCascadingAssociation
 {
-    /** @Id @Column(type="string") @GeneratedValue(strategy="NONE") */
+    /**
+     * @var string
+     * @Id
+     * @Column(type="string")
+     * @GeneratedValue(strategy="NONE")
+     */
     private $id;
 
-    /** @ManyToOne(targetEntity=CascadePersistedEntity::class, cascade={"persist"}) */
+    /**
+     * @var CascadePersistedEntity
+     * @ManyToOne(targetEntity=CascadePersistedEntity::class, cascade={"persist"})
+     */
     public $cascaded;
 
     public function __construct()
@@ -1008,10 +1070,18 @@ class EntityWithCascadingAssociation
 /** @Entity */
 class EntityWithNonCascadingAssociation
 {
-    /** @Id @Column(type="string") @GeneratedValue(strategy="NONE") */
+    /**
+     * @var string
+     * @Id
+     * @Column(type="string")
+     * @GeneratedValue(strategy="NONE")
+     */
     private $id;
 
-    /** @ManyToOne(targetEntity=CascadePersistedEntity::class) */
+    /**
+     * @var CascadePersistedEntity
+     * @ManyToOne(targetEntity=CascadePersistedEntity::class)
+     */
     public $nonCascaded;
 
     public function __construct()

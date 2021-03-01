@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Doctrine\Tests\ORM\Query;
 
+use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\Tests\OrmTestCase;
 use Exception;
 
@@ -18,17 +19,18 @@ use Exception;
  */
 class DeleteSqlGenerationTest extends OrmTestCase
 {
-    private $_em;
+    /** @var EntityManagerInterface */
+    private $entityManager;
 
     protected function setUp(): void
     {
-        $this->_em = $this->_getTestEntityManager();
+        $this->entityManager = $this->getTestEntityManager();
     }
 
-    public function assertSqlGeneration($dqlToBeTested, $sqlToBeConfirmed): void
+    public function assertSqlGeneration(string $dqlToBeTested, string $sqlToBeConfirmed): void
     {
         try {
-            $query = $this->_em->createQuery($dqlToBeTested);
+            $query = $this->entityManager->createQuery($dqlToBeTested);
             parent::assertEquals($sqlToBeConfirmed, $query->getSql());
             $query->free();
         } catch (Exception $e) {

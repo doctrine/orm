@@ -20,6 +20,7 @@
 
 namespace Doctrine\ORM\Query;
 
+use Doctrine\Deprecations\Deprecation;
 use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\Query;
@@ -1870,6 +1871,12 @@ class Parser
      */
     public function PartialObjectExpression()
     {
+        Deprecation::trigger(
+            'doctrine/orm',
+            'https://github.com/doctrine/orm/issues/8471',
+            'PARTIAL syntax in DQL is deprecated.'
+        );
+
         $this->match(Lexer::T_PARTIAL);
 
         $partialFieldSet = [];
@@ -1978,7 +1985,7 @@ class Parser
     }
 
     /**
-     * IndexBy ::= "INDEX" "BY" StateFieldPathExpression
+     * IndexBy ::= "INDEX" "BY" SingleValuedPathExpression
      *
      * @return IndexBy
      */
@@ -1986,7 +1993,7 @@ class Parser
     {
         $this->match(Lexer::T_INDEX);
         $this->match(Lexer::T_BY);
-        $pathExpr = $this->StateFieldPathExpression();
+        $pathExpr = $this->SingleValuedPathExpression();
 
         // Add the INDEX BY info to the query component
         $this->queryComponents[$pathExpr->identificationVariable]['map'] = $pathExpr->field;

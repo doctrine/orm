@@ -56,7 +56,12 @@ class DDC2780Test extends OrmFunctionalTestCase
  */
 class DDC2780User
 {
-    /** @Id @Column(type="integer") @GeneratedValue */
+    /**
+     * @var int
+     * @Id
+     * @Column(type="integer")
+     * @GeneratedValue
+     */
     public $id;
 
     /**
@@ -69,7 +74,12 @@ class DDC2780User
 /** @Entity */
 class DDC2780Project
 {
-    /** @Id @Column(type="integer") @GeneratedValue */
+    /**
+     * @var int
+     * @Id
+     * @Column(type="integer")
+     * @GeneratedValue
+     */
     public $id;
 
     /**

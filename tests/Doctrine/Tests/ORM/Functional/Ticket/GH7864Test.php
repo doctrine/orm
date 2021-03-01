@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Doctrine\Tests\ORM\Functional\Ticket;
 
 use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\Tests\OrmFunctionalTestCase;
 
 use function array_values;
@@ -63,13 +64,24 @@ class GH7864Test extends OrmFunctionalTestCase
  */
 class GH7864User
 {
-    /** @Id @Column(type="integer") @GeneratedValue */
+    /**
+     * @var int
+     * @Id
+     * @Column(type="integer")
+     * @GeneratedValue
+     */
     public $id;
 
-    /** @Column(type="string") */
+    /**
+     * @var string
+     * @Column(type="string")
+     */
     public $name;
 
-    /** @OneToMany(targetEntity="GH7864Tweet", mappedBy="user", fetch="EXTRA_LAZY") */
+    /**
+     * @var Collection<int, GH7864Tweet>
+     * @OneToMany(targetEntity="GH7864Tweet", mappedBy="user", fetch="EXTRA_LAZY")
+     */
     public $tweets;
 
     public function __construct()
@@ -89,12 +101,23 @@ class GH7864User
  */
 class GH7864Tweet
 {
-    /** @Id @Column(type="integer") @GeneratedValue */
+    /**
+     * @var int
+     * @Id
+     * @Column(type="integer")
+     * @GeneratedValue
+     */
     public $id;
 
-    /** @Column(type="string") */
+    /**
+     * @var string
+     * @Column(type="string")
+     */
     public $content;
 
-    /** @ManyToOne(targetEntity="GH7864User", inversedBy="tweets") */
+    /**
+     * @var GH7864User
+     * @ManyToOne(targetEntity="GH7864User", inversedBy="tweets")
+     */
     public $user;
 }

@@ -51,7 +51,7 @@ class LockTest extends OrmFunctionalTestCase
      * @group DDC-178
      * @group locking
      */
-    public function testLockVersionedEntity_MismatchThrowsException(): void
+    public function testLockVersionedEntityMismatchThrowsException(): void
     {
         $article        = new CmsArticle();
         $article->text  = 'my article';
@@ -69,7 +69,7 @@ class LockTest extends OrmFunctionalTestCase
      * @group DDC-178
      * @group locking
      */
-    public function testLockUnversionedEntity_ThrowsException(): void
+    public function testLockUnversionedEntityThrowsException(): void
     {
         $user           = new CmsUser();
         $user->name     = 'foo';
@@ -88,7 +88,7 @@ class LockTest extends OrmFunctionalTestCase
      * @group DDC-178
      * @group locking
      */
-    public function testLockUnmanagedEntity_ThrowsException(): void
+    public function testLockUnmanagedEntityThrowsException(): void
     {
         $article = new CmsArticle();
 
@@ -102,7 +102,7 @@ class LockTest extends OrmFunctionalTestCase
      * @group DDC-178
      * @group locking
      */
-    public function testLockPessimisticRead_NoTransaction_ThrowsException(): void
+    public function testLockPessimisticReadNoTransactionThrowsException(): void
     {
         $article        = new CmsArticle();
         $article->text  = 'my article';
@@ -120,7 +120,7 @@ class LockTest extends OrmFunctionalTestCase
      * @group DDC-178
      * @group locking
      */
-    public function testLockPessimisticWrite_NoTransaction_ThrowsException(): void
+    public function testLockPessimisticWriteNoTransactionThrowsException(): void
     {
         $article        = new CmsArticle();
         $article->text  = 'my article';

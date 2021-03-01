@@ -31,7 +31,7 @@ class PaginatorTest extends OrmTestCase
             ->getMock();
 
         $this->em = $this->getMockBuilder(EntityManagerDecorator::class)
-            ->setConstructorArgs([$this->_getTestEntityManager($this->connection)])
+            ->setConstructorArgs([$this->getTestEntityManager($this->connection)])
             ->setMethods(['newHydrator'])
             ->getMock();
 

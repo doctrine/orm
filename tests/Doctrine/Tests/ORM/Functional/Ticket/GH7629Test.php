@@ -53,6 +53,7 @@ class GH7629Test extends OrmFunctionalTestCase
 class GH7629Entity
 {
     /**
+     * @var int
      * @Id
      * @Column(type="integer")
      * @GeneratedValue

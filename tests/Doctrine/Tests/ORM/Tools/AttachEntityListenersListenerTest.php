@@ -27,7 +27,7 @@ class AttachEntityListenersListenerTest extends OrmTestCase
     {
         $this->listener = new AttachEntityListenersListener();
         $driver         = $this->createAnnotationDriver();
-        $this->em       = $this->_getTestEntityManager();
+        $this->em       = $this->getTestEntityManager();
         $evm            = $this->em->getEventManager();
         $this->factory  = new ClassMetadataFactory();
 
@@ -115,6 +115,7 @@ class AttachEntityListenersListenerTest extends OrmTestCase
 class AttachEntityListenersListenerTestFooEntity
 {
     /**
+     * @var int
      * @Id
      * @Column(type="integer")
      * @GeneratedValue(strategy="AUTO")
@@ -129,6 +130,7 @@ class AttachEntityListenersListenerTestFooEntity
 class AttachEntityListenersListenerTestBarEntity
 {
     /**
+     * @var int
      * @Id
      * @Column(type="integer")
      * @GeneratedValue(strategy="AUTO")
@@ -138,6 +140,7 @@ class AttachEntityListenersListenerTestBarEntity
 
 class AttachEntityListenersListenerTestListener
 {
+    /** @psalm-var array<string,list<list<mixed>>> */
     public $calls;
 
     public function prePersist(): void
@@ -158,6 +161,7 @@ class AttachEntityListenersListenerTestListener
 
 class AttachEntityListenersListenerTestListener2
 {
+    /** @psalm-var array<string,list<list<mixed>>> */
     public $calls;
 
     public function prePersist(): void
