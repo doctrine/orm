@@ -49,6 +49,7 @@ final class GH8055Test extends OrmFunctionalTestCase
 class GH8055BaseClass
 {
     /**
+     * @var int
      * @Id @GeneratedValue
      * @Column(type="integer")
      */

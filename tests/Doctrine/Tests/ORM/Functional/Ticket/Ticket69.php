@@ -190,7 +190,7 @@ class Relation
     private $id;
 
     /**
-     * @var Lemma
+     * @var Lemma|null
      * @ManyToOne(targetEntity="Lemma", inversedBy="relations")
      * @JoinColumn(name="relation_parent_id", referencedColumnName="lemma_id")
      */
@@ -223,7 +223,6 @@ class Relation
     public function removeParent(): void
     {
         if ($this->lemma !== null) {
-            /** @var Lemma $phrase */
             $lemma        = $this->parent;
             $this->parent = null;
             $lemma->removeRelation($this);
@@ -253,7 +252,6 @@ class Relation
     public function removeType(): void
     {
         if ($this->type !== null) {
-            /** @var RelationType $phrase */
             $type       = $this->type;
             $this->type = null;
             $type->removeRelation($this);

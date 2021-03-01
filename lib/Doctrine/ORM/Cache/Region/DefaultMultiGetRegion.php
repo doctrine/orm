@@ -25,6 +25,7 @@ use Doctrine\Common\Cache\MultiGetCache;
 use Doctrine\ORM\Cache\CacheEntry;
 use Doctrine\ORM\Cache\CollectionCacheEntry;
 
+use function assert;
 use function count;
 
 /**
@@ -47,7 +48,7 @@ class DefaultMultiGetRegion extends DefaultRegion
      */
     public function __construct($name, MultiGetCache $cache, $lifetime = 0)
     {
-        /** @var Cache $cache */
+        assert($cache instanceof Cache);
         parent::__construct($name, $cache, $lifetime);
     }
 

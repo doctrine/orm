@@ -11,6 +11,7 @@ namespace Doctrine\Tests\Models\Cache;
 class Login
 {
     /**
+     * @var int
      * @Id
      * @GeneratedValue
      * @Column(type="integer")
@@ -21,6 +22,7 @@ class Login
     public $name;
 
     /**
+     * @var Token
      * @ManyToOne(targetEntity="Token", cascade={"persist", "remove"}, inversedBy="logins")
      * @JoinColumn(name="token_id", referencedColumnName="token")
      */

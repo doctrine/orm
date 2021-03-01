@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Doctrine\Tests\ORM\Functional\Ticket;
 
 use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\Tests\OrmFunctionalTestCase;
 use Exception;
 
@@ -26,7 +27,7 @@ class DDC735Test extends OrmFunctionalTestCase
         }
     }
 
-    public function testRemoveElement_AppliesOrphanRemoval(): void
+    public function testRemoveElementAppliesOrphanRemoval(): void
     {
         // Create a product and its first review
         $product = new DDC735Product();
@@ -63,10 +64,16 @@ class DDC735Test extends OrmFunctionalTestCase
  */
 class DDC735Product
 {
-    /** @Id @Column(type="integer") @GeneratedValue */
+    /**
+     * @var int
+     * @Id
+     * @Column(type="integer")
+     * @GeneratedValue
+     */
     protected $id;
 
     /**
+     * @psalm-var Collection<int, DDC735Review>
      * @OneToMany(
      *   targetEntity="DDC735Review",
      *   mappedBy="product",
@@ -81,7 +88,10 @@ class DDC735Product
         $this->reviews = new ArrayCollection();
     }
 
-    public function getReviews()
+    /**
+     * @psalm-return Collection<int, DDC735Review>
+     */
+    public function getReviews(): Collection
     {
         return $this->reviews;
     }
@@ -102,10 +112,18 @@ class DDC735Product
  */
 class DDC735Review
 {
-    /** @Id @Column(type="integer") @GeneratedValue */
+    /**
+     * @var int
+     * @Id
+     * @Column(type="integer")
+     * @GeneratedValue
+     */
     protected $id;
 
-    /** @ManyToOne(targetEntity="DDC735Product", inversedBy="reviews") */
+    /**
+     * @var DDC735Product
+     * @ManyToOne(targetEntity="DDC735Product", inversedBy="reviews")
+     */
     protected $product;
 
     public function __construct(DDC735Product $product)
@@ -114,7 +132,7 @@ class DDC735Review
         $product->addReview($this);
     }
 
-    public function getId()
+    public function getId(): int
     {
         return $this->id;
     }

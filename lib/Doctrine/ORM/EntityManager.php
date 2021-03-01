@@ -26,6 +26,7 @@ use Doctrine\Common\Util\ClassUtils;
 use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\DriverManager;
 use Doctrine\DBAL\LockMode;
+use Doctrine\Deprecations\Deprecation;
 use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\Mapping\ClassMetadataFactory;
 use Doctrine\ORM\Proxy\ProxyFactory;
@@ -48,9 +49,6 @@ use function is_object;
 use function is_string;
 use function ltrim;
 use function sprintf;
-use function trigger_error;
-
-use const E_USER_DEPRECATED;
 
 /**
  * The EntityManager is the central access point to ORM functionality.
@@ -365,9 +363,11 @@ use const E_USER_DEPRECATED;
     public function flush($entity = null)
     {
         if ($entity !== null) {
-            @trigger_error(
-                'Calling ' . __METHOD__ . '() with any arguments to flush specific entities is deprecated and will not be supported in Doctrine ORM 3.0.',
-                E_USER_DEPRECATED
+            Deprecation::trigger(
+                'doctrine/orm',
+                'https://github.com/doctrine/orm/issues/8459',
+                'Calling %s() with any arguments to flush specific entities is deprecated and will not be supported in Doctrine ORM 3.0.',
+                __METHOD__
             );
         }
 
@@ -441,8 +441,10 @@ use const E_USER_DEPRECATED;
 
         $unitOfWork = $this->getUnitOfWork();
 
+        $entity = $unitOfWork->tryGetById($sortedId, $class->rootEntityName);
+
         // Check identity map first
-        if (($entity = $unitOfWork->tryGetById($sortedId, $class->rootEntityName)) !== false) {
+        if ($entity !== false) {
             if (! ($entity instanceof $class->name)) {
                 return null;
             }
@@ -508,8 +510,10 @@ use const E_USER_DEPRECATED;
             throw ORMException::unrecognizedIdentifierFields($class->name, array_keys($id));
         }
 
+        $entity = $this->unitOfWork->tryGetById($sortedId, $class->rootEntityName);
+
         // Check identity map first, if its already in there just return it.
-        if (($entity = $this->unitOfWork->tryGetById($sortedId, $class->rootEntityName)) !== false) {
+        if ($entity !== false) {
             return $entity instanceof $class->name ? $entity : null;
         }
 
@@ -531,8 +535,10 @@ use const E_USER_DEPRECATED;
     {
         $class = $this->metadataFactory->getMetadataFor(ltrim($entityName, '\\'));
 
+        $entity = $this->unitOfWork->tryGetById($identifier, $class->rootEntityName);
+
         // Check identity map first, if its already in there just return it.
-        if (($entity = $this->unitOfWork->tryGetById($identifier, $class->rootEntityName)) !== false) {
+        if ($entity !== false) {
             return $entity instanceof $class->name ? $entity : null;
         }
 
@@ -569,9 +575,11 @@ use const E_USER_DEPRECATED;
         }
 
         if ($entityName !== null) {
-            @trigger_error(
-                'Calling ' . __METHOD__ . '() with any arguments to clear specific entities is deprecated and will not be supported in Doctrine ORM 3.0.',
-                E_USER_DEPRECATED
+            Deprecation::trigger(
+                'doctrine/orm',
+                'https://github.com/doctrine/orm/issues/8460',
+                'Calling %s() with any arguments to clear specific entities is deprecated and will not be supported in Doctrine ORM 3.0.',
+                __METHOD__
             );
         }
 
@@ -672,8 +680,6 @@ use const E_USER_DEPRECATED;
      * Entities which previously referenced the detached entity will continue to
      * reference it.
      *
-     * @deprecated 2.7 This method is being removed from the ORM and won't have any replacement
-     *
      * @param object $entity The entity to detach.
      *
      * @return void
@@ -682,8 +688,6 @@ use const E_USER_DEPRECATED;
      */
     public function detach($entity)
     {
-        @trigger_error('Method ' . __METHOD__ . '() is deprecated and will be removed in Doctrine ORM 3.0.', E_USER_DEPRECATED);
-
         if (! is_object($entity)) {
             throw ORMInvalidArgumentException::invalidObject('EntityManager#detach()', $entity);
         }
@@ -707,7 +711,12 @@ use const E_USER_DEPRECATED;
      */
     public function merge($entity)
     {
-        @trigger_error('Method ' . __METHOD__ . '() is deprecated and will be removed in Doctrine ORM 3.0.', E_USER_DEPRECATED);
+        Deprecation::trigger(
+            'doctrine/orm',
+            'https://github.com/doctrine/orm/issues/8461',
+            'Method %s() is deprecated and will be removed in Doctrine ORM 3.0.',
+            __METHOD__
+        );
 
         if (! is_object($entity)) {
             throw ORMInvalidArgumentException::invalidObject('EntityManager#merge()', $entity);
@@ -723,7 +732,12 @@ use const E_USER_DEPRECATED;
      */
     public function copy($entity, $deep = false)
     {
-        @trigger_error('Method ' . __METHOD__ . '() is deprecated and will be removed in Doctrine ORM 3.0.', E_USER_DEPRECATED);
+        Deprecation::trigger(
+            'doctrine/orm',
+            'https://github.com/doctrine/orm/issues/8462',
+            'Method %s() is deprecated and will be removed in Doctrine ORM 3.0.',
+            __METHOD__
+        );
 
         throw new BadMethodCallException('Not implemented.');
     }
@@ -842,7 +856,9 @@ use const E_USER_DEPRECATED;
                 return new Internal\Hydration\SimpleObjectHydrator($this);
 
             default:
-                if (($class = $this->config->getCustomHydrationMode($hydrationMode)) !== null) {
+                $class = $this->config->getCustomHydrationMode($hydrationMode);
+
+                if ($class !== null) {
                     return new $class($this);
                 }
         }
@@ -869,9 +885,9 @@ use const E_USER_DEPRECATED;
     /**
      * Factory method to create EntityManager instances.
      *
-     * @param array|Connection $connection   An array with the connection parameters or an existing Connection instance.
-     * @param Configuration    $config       The Configuration instance to use.
-     * @param EventManager     $eventManager The EventManager instance to use.
+     * @param array<string, mixed>|Connection $connection   An array with the connection parameters or an existing Connection instance.
+     * @param Configuration                   $config       The Configuration instance to use.
+     * @param EventManager                    $eventManager The EventManager instance to use.
      *
      * @return EntityManager The created EntityManager.
      *
@@ -892,9 +908,9 @@ use const E_USER_DEPRECATED;
     /**
      * Factory method to create Connection instances.
      *
-     * @param array|Connection $connection   An array with the connection parameters or an existing Connection instance.
-     * @param Configuration    $config       The Configuration instance to use.
-     * @param EventManager     $eventManager The EventManager instance to use.
+     * @param array<string, mixed>|Connection $connection   An array with the connection parameters or an existing Connection instance.
+     * @param Configuration                   $config       The Configuration instance to use.
+     * @param EventManager                    $eventManager The EventManager instance to use.
      *
      * @return Connection
      *

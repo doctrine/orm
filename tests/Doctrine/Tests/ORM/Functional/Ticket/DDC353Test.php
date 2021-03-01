@@ -140,6 +140,7 @@ class DDC353Picture
 class DDC353File
 {
     /**
+     * @var int
      * @Column(name="file_id", type="integer")
      * @Id
      * @GeneratedValue(strategy="AUTO")

@@ -76,8 +76,14 @@ class DDC1548Rel
      */
     public $id;
 
-    /** @OneToOne(targetEntity="DDC1548E1", mappedBy="rel") */
+    /**
+     * @var DDC1548E1
+     * @OneToOne(targetEntity="DDC1548E1", mappedBy="rel")
+     */
     public $e1;
-    /** @OneToOne(targetEntity="DDC1548E2", mappedBy="rel") */
+    /**
+     * @var DDC1548E2
+     * @OneToOne(targetEntity="DDC1548E2", mappedBy="rel")
+     */
     public $e2;
 }

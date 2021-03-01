@@ -24,6 +24,7 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\Common\EventManager;
 use Doctrine\DBAL\LockMode;
+use Doctrine\Deprecations\Deprecation;
 use Doctrine\ORM\Cache\Persister\CachedPersister;
 use Doctrine\ORM\Event\LifecycleEventArgs;
 use Doctrine\ORM\Event\ListenersInvoker;
@@ -1265,17 +1266,12 @@ class UnitOfWork implements PropertyChangedListener
     /**
      * Gets the commit order.
      *
-     * @param array|null $entityChangeSet
-     *
-     * @return array
+     * @return list<object>
      */
-    private function getCommitOrder(?array $entityChangeSet = null)
+    private function getCommitOrder(): array
     {
-        if ($entityChangeSet === null) {
-            $entityChangeSet = array_merge($this->entityInsertions, $this->entityUpdates, $this->entityDeletions);
-        }
-
-        $calc = $this->getCommitOrderCalculator();
+        $entityChangeSet = array_merge($this->entityInsertions, $this->entityUpdates, $this->entityDeletions);
+        $calc            = $this->getCommitOrderCalculator();
 
         // See if there are any new classes in the changeset, that are not in the
         // commit order graph yet (don't have a node).
@@ -2112,8 +2108,6 @@ class UnitOfWork implements PropertyChangedListener
      * Detaches an entity from the persistence management. It's persistence will
      * no longer be managed by Doctrine.
      *
-     * @deprecated 2.7 This method is being removed from the ORM and won't have any replacement
-     *
      * @param object $entity The entity to detach.
      *
      * @return void
@@ -2752,6 +2746,13 @@ class UnitOfWork implements PropertyChangedListener
 
         // Properly initialize any unfetched associations, if partial objects are not allowed.
         if (isset($hints[Query::HINT_FORCE_PARTIAL_LOAD])) {
+            Deprecation::trigger(
+                'doctrine/orm',
+                'https://github.com/doctrine/orm/issues/8471',
+                'Partial Objects are deprecated (here entity %s)',
+                $className
+            );
+
             return $entity;
         }
 

@@ -97,16 +97,27 @@ class DDC6303Test extends OrmFunctionalTestCase
  */
 abstract class DDC6303BaseClass
 {
-    /** @Id @Column(type="string") @GeneratedValue(strategy="NONE") */
+    /**
+     * @var string
+     * @Id
+     * @Column(type="string")
+     * @GeneratedValue(strategy="NONE")
+     */
     public $id;
 }
 
 /** @Entity @Table */
 class DDC6303ChildA extends DDC6303BaseClass
 {
-    /** @Column(type="string") */
+    /**
+     * @var mixed
+     * @Column(type="string")
+     */
     private $originalData;
 
+    /**
+     * @param mixed $originalData
+     */
     public function __construct(string $id, $originalData)
     {
         $this->id           = $id;
@@ -117,9 +128,15 @@ class DDC6303ChildA extends DDC6303BaseClass
 /** @Entity @Table */
 class DDC6303ChildB extends DDC6303BaseClass
 {
-    /** @Column(type="simple_array", nullable=true) */
+    /**
+     * @var mixed[]
+     * @Column(type="simple_array", nullable=true)
+     */
     private $originalData;
 
+    /**
+     * @param mixed[] $originalData
+     */
     public function __construct(string $id, array $originalData)
     {
         $this->id           = $id;

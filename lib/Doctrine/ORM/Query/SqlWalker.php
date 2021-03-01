@@ -871,9 +871,39 @@ class SqlWalker implements TreeWalker
      */
     public function walkIndexBy($indexBy)
     {
-        $pathExpression = $indexBy->simpleStateFieldPathExpression;
+        $pathExpression = $indexBy->singleValuedPathExpression;
         $alias          = $pathExpression->identificationVariable;
-        $field          = $pathExpression->field;
+
+        switch ($pathExpression->type) {
+            case AST\PathExpression::TYPE_STATE_FIELD:
+                $field = $pathExpression->field;
+                break;
+
+            case AST\PathExpression::TYPE_SINGLE_VALUED_ASSOCIATION:
+                // Just use the foreign key, i.e. u.group_id
+                $fieldName = $pathExpression->field;
+                $class     = $this->queryComponents[$alias]['metadata'];
+
+                if (isset($class->associationMappings[$fieldName]['inherited'])) {
+                    $class = $this->em->getClassMetadata($class->associationMappings[$fieldName]['inherited']);
+                }
+
+                $association = $class->associationMappings[$fieldName];
+
+                if (! $association['isOwningSide']) {
+                    throw QueryException::associationPathInverseSideNotSupported($pathExpression);
+                }
+
+                if (count($association['sourceToTargetKeyColumns']) > 1) {
+                    throw QueryException::associationPathCompositeKeyNotSupported();
+                }
+
+                $field = reset($association['targetToSourceKeyColumns']);
+                break;
+
+            default:
+                throw QueryException::invalidPathExpression($pathExpression);
+        }
 
         if (isset($this->scalarFields[$alias][$field])) {
             $this->rsm->addIndexByScalar($this->scalarFields[$alias][$field]);
@@ -1971,25 +2001,9 @@ class SqlWalker implements TreeWalker
 
             // SQL table aliases
             $joinTableAlias   = $this->getSQLTableAlias($joinTable['name']);
-            $targetTableAlias = $this->getSQLTableAlias($targetClass->getTableName());
             $sourceTableAlias = $this->getSQLTableAlias($class->getTableName(), $dqlAlias);
 
-            // join to target table
-            $sql .= $this->quoteStrategy->getJoinTableName($owningAssoc, $targetClass, $this->platform) . ' ' . $joinTableAlias
-                . ' INNER JOIN ' . $this->quoteStrategy->getTableName($targetClass, $this->platform) . ' ' . $targetTableAlias . ' ON ';
-
-            // join conditions
-            $joinColumns  = $assoc['isOwningSide'] ? $joinTable['inverseJoinColumns'] : $joinTable['joinColumns'];
-            $joinSqlParts = [];
-
-            foreach ($joinColumns as $joinColumn) {
-                $targetColumn = $this->quoteStrategy->getColumnName($targetClass->fieldNames[$joinColumn['referencedColumnName']], $targetClass, $this->platform);
-
-                $joinSqlParts[] = $joinTableAlias . '.' . $joinColumn['name'] . ' = ' . $targetTableAlias . '.' . $targetColumn;
-            }
-
-            $sql .= implode(' AND ', $joinSqlParts);
-            $sql .= ' WHERE ';
+            $sql .= $this->quoteStrategy->getJoinTableName($owningAssoc, $targetClass, $this->platform) . ' ' . $joinTableAlias . ' WHERE ';
 
             $joinColumns = $assoc['isOwningSide'] ? $joinTable['joinColumns'] : $joinTable['inverseJoinColumns'];
             $sqlParts    = [];
@@ -2000,12 +2014,14 @@ class SqlWalker implements TreeWalker
                 $sqlParts[] = $joinTableAlias . '.' . $joinColumn['name'] . ' = ' . $sourceTableAlias . '.' . $targetColumn;
             }
 
-            foreach ($this->quoteStrategy->getIdentifierColumnNames($targetClass, $this->platform) as $targetColumnName) {
+            $joinColumns = $assoc['isOwningSide'] ? $joinTable['inverseJoinColumns'] : $joinTable['joinColumns'];
+
+            foreach ($joinColumns as $joinColumn) {
                 if (isset($dqlParamKey)) {
                     $this->parserResult->addParameterMapping($dqlParamKey, $this->sqlParamIndex++);
                 }
 
-                $sqlParts[] = $targetTableAlias . '.' . $targetColumnName . ' IN (' . $entitySql . ')';
+                $sqlParts[] = $joinTableAlias . '.' . $joinColumn['name'] . ' IN (' . $entitySql . ')';
             }
 
             $sql .= implode(' AND ', $sqlParts);

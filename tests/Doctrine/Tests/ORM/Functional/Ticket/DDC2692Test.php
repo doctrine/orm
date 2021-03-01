@@ -54,7 +54,12 @@ class DDC2692Test extends OrmFunctionalTestCase
  */
 class DDC2692Foo
 {
-    /** @Id @Column(type="integer") @GeneratedValue */
+    /**
+     * @var int
+     * @Id
+     * @Column(type="integer")
+     * @GeneratedValue
+     */
     public $id;
 }
 

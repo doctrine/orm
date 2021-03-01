@@ -9,7 +9,7 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Tests\OrmFunctionalTestCase;
 use Exception;
 
-use function sizeof;
+use function count;
 
 /**
  * @group DDC-1430
@@ -47,7 +47,7 @@ class DDC1430Test extends OrmFunctionalTestCase
 
         $result = $query->getResult();
 
-        $this->assertEquals(2, sizeof($result));
+        $this->assertEquals(2, count($result));
 
         $this->assertArrayHasKey('id', $result[0]);
         $this->assertArrayHasKey('id', $result[1]);
@@ -77,7 +77,7 @@ class DDC1430Test extends OrmFunctionalTestCase
 
         $result = $query->getResult();
 
-        $this->assertEquals(2, sizeof($result));
+        $this->assertEquals(2, count($result));
 
         $this->assertTrue($result[0][0] instanceof DDC1430Order);
         $this->assertTrue($result[1][0] instanceof DDC1430Order);
@@ -104,7 +104,7 @@ class DDC1430Test extends OrmFunctionalTestCase
 
         $result = $query->getResult();
 
-        $this->assertEquals(2, sizeof($result));
+        $this->assertEquals(2, count($result));
 
         $this->assertTrue($result[0][0] instanceof DDC1430Order);
         $this->assertTrue($result[1][0] instanceof DDC1430Order);
@@ -141,6 +141,7 @@ class DDC1430Test extends OrmFunctionalTestCase
 class DDC1430Order
 {
     /**
+     * @var int
      * @Id
      * @Column(name="order_id", type="integer")
      * @GeneratedValue()
@@ -150,7 +151,10 @@ class DDC1430Order
     /** @Column(name="created_at", type="datetime") */
     private $date;
 
-    /** @Column(name="order_status", type="string") */
+    /**
+     * @var string
+     * @Column(name="order_status", type="string")
+     */
     private $status;
 
     /**

@@ -11,6 +11,7 @@ namespace Doctrine\Tests\Models\VersionedManyToOne;
 class Article
 {
     /**
+     * @var int
      * @Id
      * @Column(name="id", type="integer")
      * @GeneratedValue(strategy="AUTO")
@@ -20,7 +21,10 @@ class Article
     /** @Column(name="name") */
     public $name;
 
-    /** @ManyToOne(targetEntity="Category", cascade={"merge", "persist"}) */
+    /**
+     * @var Category
+     * @ManyToOne(targetEntity="Category", cascade={"merge", "persist"})
+     */
     public $category;
 
     /**

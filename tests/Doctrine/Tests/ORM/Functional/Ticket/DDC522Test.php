@@ -95,26 +95,46 @@ class DDC522Test extends OrmFunctionalTestCase
 /** @Entity */
 class DDC522Customer
 {
-    /** @Id @Column(type="integer") @GeneratedValue */
+    /**
+     * @var int
+     * @Id
+     * @Column(type="integer")
+     * @GeneratedValue
+     */
     public $id;
 
-    /** @Column */
+    /**
+     * @var mixed
+     * @Column
+     */
     public $name;
 
-    /** @OneToOne(targetEntity="DDC522Cart", mappedBy="customer") */
+    /**
+     * @var DDC522Cart
+     * @OneToOne(targetEntity="DDC522Cart", mappedBy="customer")
+     */
     public $cart;
 }
 
 /** @Entity */
 class DDC522Cart
 {
-    /** @Id @Column(type="integer") @GeneratedValue */
+    /**
+     * @var int
+     * @Id
+     * @Column(type="integer")
+     * @GeneratedValue
+     */
     public $id;
 
-    /** @Column(type="integer") */
+    /**
+     * @var int
+     * @Column(type="integer")
+     */
     public $total;
 
     /**
+     * @var DDC522Customer
      * @OneToOne(targetEntity="DDC522Customer", inversedBy="cart")
      * @JoinColumn(name="customer", referencedColumnName="id")
      */
@@ -124,13 +144,22 @@ class DDC522Cart
 /** @Entity */
 class DDC522ForeignKeyTest
 {
-    /** @Id @Column(type="integer") @GeneratedValue */
+    /**
+     * @var int
+     * @Id
+     * @Column(type="integer")
+     * @GeneratedValue
+     */
     public $id;
 
-    /** @Column(type="integer", name="cart_id", nullable=true) */
+    /**
+     * @var int
+     * @Column(type="integer", name="cart_id", nullable=true)
+     */
     public $cartId;
 
     /**
+     * @var DDC522Cart
      * @OneToOne(targetEntity="DDC522Cart")
      * @JoinColumn(name="cart_id", referencedColumnName="id")
      */

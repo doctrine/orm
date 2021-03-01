@@ -61,10 +61,18 @@ class Journalist extends Participant
  */
 class Participant
 {
-    /** @Id @Column(type="integer") @GeneratedValue */
+    /**
+     * @var int
+     * @Id
+     * @Column(type="integer")
+     * @GeneratedValue
+     */
     public $id;
 
-    /** @ManyToOne(targetEntity="ProfileStatus") */
+    /**
+     * @var ProfileStatus
+     * @ManyToOne(targetEntity="ProfileStatus")
+     */
     public $profileStatus;
 }
 

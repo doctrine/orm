@@ -14,11 +14,15 @@ namespace Doctrine\Tests\Models\Pagination;
 abstract class User
 {
     /**
+     * @var int
      * @Id @Column(type="integer")
      * @GeneratedValue
      */
     private $id;
 
-    /** @Column(type="string") */
+    /**
+     * @var string
+     * @Column(type="string")
+     */
     public $name;
 }

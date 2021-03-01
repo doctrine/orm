@@ -59,7 +59,12 @@ class DDC1181Test extends OrmFunctionalTestCase
  */
 class DDC1181Hotel
 {
-    /** @Id @Column(type="integer") @GeneratedValue */
+    /**
+     * @var int
+     * @Id
+     * @Column(type="integer")
+     * @GeneratedValue
+     */
     public $id;
 
     /**
@@ -99,6 +104,11 @@ class DDC1181Booking
  */
 class DDC1181Room
 {
-    /** @Id @Column(type="integer") @GeneratedValue */
+    /**
+     * @var int
+     * @Id
+     * @Column(type="integer")
+     * @GeneratedValue
+     */
     public $id;
 }

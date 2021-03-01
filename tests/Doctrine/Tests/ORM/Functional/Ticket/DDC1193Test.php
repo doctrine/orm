@@ -63,12 +63,16 @@ class DDC1193Test extends OrmFunctionalTestCase
 class DDC1193Company
 {
     /**
+     * @var int
      * @Id @Column(type="integer")
      * @GeneratedValue
      */
     public $id;
 
-    /** @OneToOne(targetEntity="DDC1193Person", cascade={"persist", "remove"}) */
+    /**
+     * @var DDC1193Person
+     * @OneToOne(targetEntity="DDC1193Person", cascade={"persist", "remove"})
+     */
     public $member;
 }
 
@@ -76,12 +80,16 @@ class DDC1193Company
 class DDC1193Person
 {
     /**
+     * @var int
      * @Id @Column(type="integer")
      * @GeneratedValue
      */
     public $id;
 
-    /** @OneToOne(targetEntity="DDC1193Account", cascade={"persist", "remove"}) */
+    /**
+     * @var DDC1193Account
+     * @OneToOne(targetEntity="DDC1193Account", cascade={"persist", "remove"})
+     */
     public $account;
 }
 
@@ -89,6 +97,7 @@ class DDC1193Person
 class DDC1193Account
 {
     /**
+     * @var int
      * @Id @Column(type="integer")
      * @GeneratedValue
      */

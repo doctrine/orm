@@ -14,6 +14,7 @@ namespace Doctrine\Tests\Models\Quote;
 class Address
 {
     /**
+     * @var int
      * @Id
      * @GeneratedValue
      * @Column(type="integer", name="`address-id`")
@@ -24,6 +25,7 @@ class Address
     public $zip;
 
     /**
+     * @var User
      * @OneToOne(targetEntity="User", inversedBy="address")
      * @JoinColumn(name="`user-id`", referencedColumnName="`user-id`")
      */
@@ -37,7 +39,7 @@ class Address
         }
     }
 
-    public function getId()
+    public function getId(): int
     {
         return $this->id;
     }
@@ -47,7 +49,7 @@ class Address
         return $this->zip;
     }
 
-    public function getUser()
+    public function getUser(): User
     {
         return $this->user;
     }

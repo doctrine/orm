@@ -76,6 +76,7 @@ class DDC1400Test extends OrmFunctionalTestCase
 class DDC1400Article
 {
     /**
+     * @var int
      * @Id
      * @Column(type="integer")
      * @GeneratedValue
@@ -92,6 +93,7 @@ class DDC1400Article
 class DDC1400User
 {
     /**
+     * @var int
      * @Id
      * @Column(type="integer")
      * @GeneratedValue

@@ -6,7 +6,6 @@ namespace Doctrine\Tests\ORM\Functional\Ticket;
 
 use Doctrine\ORM\EntityManager;
 use Doctrine\Tests\OrmFunctionalTestCase;
-use Doctrine\Tests\VerifyDeprecations;
 use Exception;
 
 use function assert;
@@ -16,8 +15,6 @@ use function assert;
  */
 class DDC1509Test extends OrmFunctionalTestCase
 {
-    use VerifyDeprecations;
-
     protected function setUp(): void
     {
         parent::setUp();
@@ -56,7 +53,6 @@ class DDC1509Test extends OrmFunctionalTestCase
 
         $this->assertNotNull($pic->getThumbnail());
         $this->assertNotNull($pic->getFile());
-        $this->assertHasDeprecationMessages();
     }
 }
 
@@ -66,16 +62,23 @@ class DDC1509Test extends OrmFunctionalTestCase
 class DDC1509Picture
 {
     /**
+     * @var int
      * @Column(type="integer")
      * @Id
      * @GeneratedValue(strategy="AUTO")
      */
     private $id;
 
-    /** @ManyToOne(targetEntity="DDC1509AbstractFile", cascade={"persist", "remove"}) */
+    /**
+     * @var DDC1509AbstractFile
+     * @ManyToOne(targetEntity="DDC1509AbstractFile", cascade={"persist", "remove"})
+     */
     private $thumbnail;
 
-    /** @ManyToOne(targetEntity="DDC1509AbstractFile", cascade={"persist", "remove"}) */
+    /**
+     * @var DDC1509AbstractFile
+     * @ManyToOne(targetEntity="DDC1509AbstractFile", cascade={"persist", "remove"})
+     */
     private $file;
 
     /**
@@ -122,6 +125,7 @@ class DDC1509Picture
 class DDC1509AbstractFile
 {
     /**
+     * @var int
      * @Column(type="integer")
      * @Id
      * @GeneratedValue(strategy="AUTO")

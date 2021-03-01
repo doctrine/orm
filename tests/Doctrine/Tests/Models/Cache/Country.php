@@ -12,6 +12,7 @@ namespace Doctrine\Tests\Models\Cache;
 class Country
 {
     /**
+     * @var int
      * @Id
      * @GeneratedValue
      * @Column(type="integer")

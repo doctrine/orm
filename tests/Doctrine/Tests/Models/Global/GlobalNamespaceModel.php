@@ -9,12 +9,16 @@ declare(strict_types=1);
 class DoctrineGlobal_Article
 {
     /**
+     * @var int
      * @Id
      * @Column(type="integer")
      */
     protected $id;
 
-    /** @Column(type="string") */
+    /**
+     * @var string
+     * @Column(type="string")
+     */
     protected $headline;
 
     /** @column(type="text") */

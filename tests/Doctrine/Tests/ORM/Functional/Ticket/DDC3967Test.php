@@ -27,10 +27,10 @@ class DDC3967Test extends SecondLevelCacheAbstractTest
         $id      = $country->getId();
 
         // First time, loaded from database
-        $this->_em->find(Country::class, "$id");
+        $this->_em->find(Country::class, (string) $id);
         $this->_em->clear();
 
-        $country = $this->_em->find(Country::class, "$id");
+        $country = $this->_em->find(Country::class, (string) $id);
         assert($country instanceof Country);
 
         // Identifier type should be integer

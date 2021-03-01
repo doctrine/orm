@@ -10,6 +10,7 @@ namespace Doctrine\Tests\Models\DDC753;
 class DDC753EntityWithDefaultCustomRepository
 {
     /**
+     * @var int
      * @Id
      * @Column(type="integer")
      * @GeneratedValue

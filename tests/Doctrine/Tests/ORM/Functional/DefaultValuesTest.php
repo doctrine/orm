@@ -97,15 +97,25 @@ class DefaultValuesTest extends OrmFunctionalTestCase
 class DefaultValueUser
 {
     /**
+     * @var int
      * @Id @Column(type="integer")
      * @GeneratedValue(strategy="AUTO")
      */
     public $id;
-    /** @Column(type="string") */
+    /**
+     * @var string
+     * @Column(type="string")
+     */
     public $name = '';
-    /** @Column(type="string") */
+    /**
+     * @var string
+     * @Column(type="string")
+     */
     public $type = 'Poweruser';
-    /** @OneToOne(targetEntity="DefaultValueAddress", mappedBy="user", cascade={"persist"}) */
+    /**
+     * @var DefaultValueAddress
+     * @OneToOne(targetEntity="DefaultValueAddress", mappedBy="user", cascade={"persist"})
+     */
     public $address;
 
     public function getId()
@@ -127,13 +137,22 @@ class DefaultValueAddress
      */
     public $id;
 
-    /** @Column(type="string", length=50) */
+    /**
+     * @var string
+     * @Column(type="string", length=50)
+     */
     public $country;
 
-    /** @Column(type="string", length=50) */
+    /**
+     * @var string
+     * @Column(type="string", length=50)
+     */
     public $zip;
 
-    /** @Column(type="string", length=50) */
+    /**
+     * @var string
+     * @Column(type="string", length=50)
+     */
     public $city;
 
     /**
@@ -142,6 +161,7 @@ class DefaultValueAddress
     public $street;
 
     /**
+     * @var DefaultValueUser
      * @OneToOne(targetEntity="DefaultValueUser")
      * @JoinColumn(name="user_id", referencedColumnName="id")
      */

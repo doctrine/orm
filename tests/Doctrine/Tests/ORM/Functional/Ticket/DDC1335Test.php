@@ -8,7 +8,7 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Tests\OrmFunctionalTestCase;
 use Exception;
 
-use function sizeof;
+use function count;
 
 /**
  * @group DDC-1335
@@ -36,7 +36,7 @@ class DDC1335Test extends OrmFunctionalTestCase
         $query  = $this->_em->createQuery($dql);
         $result = $query->getResult();
 
-        $this->assertEquals(sizeof($result), 3);
+        $this->assertEquals(count($result), 3);
         $this->assertArrayHasKey(1, $result);
         $this->assertArrayHasKey(2, $result);
         $this->assertArrayHasKey(3, $result);
@@ -45,14 +45,14 @@ class DDC1335Test extends OrmFunctionalTestCase
         $query  = $this->_em->createQuery($dql);
         $result = $query->getResult();
 
-        $this->assertEquals(sizeof($result), 3);
+        $this->assertEquals(count($result), 3);
         $this->assertArrayHasKey('foo@foo.com', $result);
         $this->assertArrayHasKey('bar@bar.com', $result);
         $this->assertArrayHasKey('foobar@foobar.com', $result);
 
-        $this->assertEquals(sizeof($result['foo@foo.com']->phones), 3);
-        $this->assertEquals(sizeof($result['bar@bar.com']->phones), 3);
-        $this->assertEquals(sizeof($result['foobar@foobar.com']->phones), 3);
+        $this->assertEquals(count($result['foo@foo.com']->phones), 3);
+        $this->assertEquals(count($result['bar@bar.com']->phones), 3);
+        $this->assertEquals(count($result['foobar@foobar.com']->phones), 3);
 
         $foo    = $result['foo@foo.com']->phones->toArray();
         $bar    = $result['bar@bar.com']->phones->toArray();
@@ -79,7 +79,7 @@ class DDC1335Test extends OrmFunctionalTestCase
         $dql    = $builder->getQuery()->getDQL();
         $result = $builder->getQuery()->getResult();
 
-        $this->assertEquals(sizeof($result), 3);
+        $this->assertEquals(count($result), 3);
         $this->assertArrayHasKey(1, $result);
         $this->assertArrayHasKey(2, $result);
         $this->assertArrayHasKey(3, $result);
@@ -94,7 +94,7 @@ class DDC1335Test extends OrmFunctionalTestCase
         $dql    = $builder->getQuery()->getDQL();
         $result = $builder->getQuery()->getResult();
 
-        $this->assertEquals(sizeof($result), 3);
+        $this->assertEquals(count($result), 3);
         $this->assertArrayHasKey('foo@foo.com', $result);
         $this->assertArrayHasKey('bar@bar.com', $result);
         $this->assertArrayHasKey('foobar@foobar.com', $result);
@@ -111,14 +111,14 @@ class DDC1335Test extends OrmFunctionalTestCase
         $dql    = $builder->getQuery()->getDQL();
         $result = $builder->getQuery()->getResult();
 
-        $this->assertEquals(sizeof($result), 3);
+        $this->assertEquals(count($result), 3);
         $this->assertArrayHasKey('foo@foo.com', $result);
         $this->assertArrayHasKey('bar@bar.com', $result);
         $this->assertArrayHasKey('foobar@foobar.com', $result);
 
-        $this->assertEquals(sizeof($result['foo@foo.com']->phones), 3);
-        $this->assertEquals(sizeof($result['bar@bar.com']->phones), 3);
-        $this->assertEquals(sizeof($result['foobar@foobar.com']->phones), 3);
+        $this->assertEquals(count($result['foo@foo.com']->phones), 3);
+        $this->assertEquals(count($result['bar@bar.com']->phones), 3);
+        $this->assertEquals(count($result['foobar@foobar.com']->phones), 3);
 
         $this->assertArrayHasKey(1, $result['foo@foo.com']->phones->toArray());
         $this->assertArrayHasKey(2, $result['foo@foo.com']->phones->toArray());
@@ -159,15 +159,22 @@ class DDC1335Test extends OrmFunctionalTestCase
 class DDC1335User
 {
     /**
+     * @var int
      * @Id @Column(type="integer")
      * @GeneratedValue
      */
     public $id;
 
-    /** @Column(type="string", unique=true) */
+    /**
+     * @var string
+     * @Column(type="string", unique=true)
+     */
     public $email;
 
-    /** @Column(type="string") */
+    /**
+     * @var string
+     * @Column(type="string")
+     */
     public $name;
 
     /** @OneToMany(targetEntity="DDC1335Phone", mappedBy="user", cascade={"persist", "remove"}) */
@@ -191,16 +198,21 @@ class DDC1335User
 class DDC1335Phone
 {
     /**
+     * @var int
      * @Id
      * @Column(name="id", type="integer")
      * @GeneratedValue
      */
     public $id;
 
-    /** @Column(name="numericalValue", type="string", nullable = false) */
+    /**
+     * @var string
+     * @Column(name="numericalValue", type="string", nullable = false)
+     */
     public $numericalValue;
 
     /**
+     * @var DDC1335User
      * @ManyToOne(targetEntity="DDC1335User", inversedBy="phones")
      * @JoinColumn(name="user_id", referencedColumnName="id", nullable = false)
      */

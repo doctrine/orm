@@ -167,7 +167,7 @@ class StatisticsCacheLogger implements CacheLogger
     }
 
     /**
-     * @return array
+     * @return array<string, int>
      */
     public function getRegionsMiss()
     {
@@ -175,7 +175,7 @@ class StatisticsCacheLogger implements CacheLogger
     }
 
     /**
-     * @return array
+     * @return array<string, int>
      */
     public function getRegionsHit()
     {
@@ -183,7 +183,7 @@ class StatisticsCacheLogger implements CacheLogger
     }
 
     /**
-     * @return array
+     * @return array<string, int>
      */
     public function getRegionsPut()
     {

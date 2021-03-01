@@ -9,6 +9,9 @@ namespace Doctrine\Tests\Models\Forum;
  */
 class ForumAdministrator extends ForumUser
 {
-    /** @Column(type="integer", name="access_level") */
+    /**
+     * @var int
+     * @Column(type="integer", name="access_level")
+     */
     public $accessLevel;
 }

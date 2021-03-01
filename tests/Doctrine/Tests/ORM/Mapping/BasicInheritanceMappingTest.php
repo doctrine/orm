@@ -29,7 +29,7 @@ class BasicInheritanceMappingTest extends OrmTestCase
     {
         $this->cmf = new ClassMetadataFactory();
 
-        $this->cmf->setEntityManager($this->_getTestEntityManager());
+        $this->cmf->setEntityManager($this->getTestEntityManager());
     }
 
     public function testGetMetadataForTransientClassThrowsException(): void
@@ -216,33 +216,56 @@ class BasicInheritanceMappingTest extends OrmTestCase
 
 class TransientBaseClass
 {
+    /** @var mixed */
     private $transient1;
+
+    /** @var mixed */
     private $transient2;
 }
 
 /** @Entity */
 class EntitySubClass extends TransientBaseClass
 {
-    /** @Id @Column(type="integer") */
+    /**
+     * @var int
+     * @Id
+     * @Column(type="integer")
+     */
     private $id;
-    /** @Column(type="string") */
+
+    /**
+     * @var string
+     * @Column(type="string")
+     */
     private $name;
 }
 
 /** @MappedSuperclass */
 class MappedSuperclassBase
 {
-    /** @Column(type="integer") */
-    private $mapped1;
-    /** @Column(type="string") */
-    private $mapped2;
     /**
+     * @var int
+     * @Column(type="integer")
+     */
+    private $mapped1;
+
+    /**
+     * @var string
+     * @Column(type="string")
+     */
+    private $mapped2;
+
+    /**
+     * @var MappedSuperclassRelated1
      * @OneToOne(targetEntity="MappedSuperclassRelated1")
      * @JoinColumn(name="related1_id", referencedColumnName="id")
      */
     private $mappedRelated1;
+
+    /** @var mixed */
     private $transient;
 }
+
 class MappedSuperclassRelated1
 {
 }
@@ -250,9 +273,17 @@ class MappedSuperclassRelated1
 /** @Entity */
 class EntitySubClass2 extends MappedSuperclassBase
 {
-    /** @Id @Column(type="integer") */
+    /**
+     * @var int
+     * @Id
+     * @Column(type="integer")
+     */
     private $id;
-    /** @Column(type="string") */
+
+    /**
+     * @var string
+     * @Column(type="string")
+     */
     private $name;
 }
 
@@ -265,18 +296,32 @@ class EntitySubClass2 extends MappedSuperclassBase
  */
 class MappedSuperclassBaseIndex
 {
-    /** @Column(type="string") */
+    /**
+     * @var string
+     * @Column(type="string")
+     */
     private $mapped1;
-    /** @Column(type="string") */
+    /**
+     * @var string
+     * @Column(type="string")
+     */
     private $mapped2;
 }
 
 /** @Entity @Table(uniqueConstraints={@UniqueConstraint(name="IDX_NAME_INDEX",columns={"name"})}) */
 class EntityIndexSubClass extends MappedSuperclassBaseIndex
 {
-    /** @Id @Column(type="integer") */
+    /**
+     * @var int
+     * @Id
+     * @Column(type="integer")
+     */
     private $id;
-    /** @Column(type="string") */
+
+    /**
+     * @var string
+     * @Column(type="string")
+     */
     private $name;
 }
 
@@ -303,35 +348,50 @@ abstract class HierarchyBase
 /** @MappedSuperclass */
 abstract class HierarchyASuperclass extends HierarchyBase
 {
-    /** @Column(type="string") */
+    /**
+     * @var string
+     * @Column(type="string")
+     */
     public $a;
 }
 
 /** @Entity */
 class HierarchyBEntity extends HierarchyBase
 {
-    /** @Column(type="string") */
+    /**
+     * @var string
+     * @Column(type="string")
+     */
     public $b;
 }
 
 /** @Entity */
 class HierarchyC extends HierarchyBase
 {
-    /** @Column(type="string") */
+    /**
+     * @var string
+     * @Column(type="string")
+     */
     public $c;
 }
 
 /** @Entity */
 class HierarchyD extends HierarchyASuperclass
 {
-    /** @Column(type="string") */
+    /**
+     * @var string
+     * @Column(type="string")
+     */
     public $d;
 }
 
 /** @Entity */
 class HierarchyE extends HierarchyBEntity
 {
-    /** @Column(type="string") */
+    /**
+     * @var string
+     * @Column(type="string")
+     */
     public $e;
 }
 
@@ -344,7 +404,10 @@ class SuperclassEntity extends SuperclassBase
 abstract class SuperclassBase
 {
     /**
-     * @Column(type="integer") @Id @GeneratedValue(strategy="SEQUENCE")
+     * @var int
+     * @Column(type="integer")
+     * @Id
+     * @GeneratedValue(strategy="SEQUENCE")
      * @SequenceGenerator(sequenceName="foo", initialValue=10)
      */
     public $id;

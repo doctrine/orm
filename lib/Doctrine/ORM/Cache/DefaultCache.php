@@ -310,7 +310,7 @@ class DefaultCache implements Cache
      * @param ClassMetadata $metadata   The entity metadata.
      * @param mixed         $identifier The entity identifier.
      *
-     * @return array
+     * @return array<string, mixed>
      */
     private function toIdentifierArray(ClassMetadata $metadata, $identifier)
     {

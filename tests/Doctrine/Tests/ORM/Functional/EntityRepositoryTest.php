@@ -9,6 +9,7 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Criteria;
 use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\LockMode;
+use Doctrine\Deprecations\PHPUnit\VerifyDeprecations;
 use Doctrine\ORM\EntityRepository;
 use Doctrine\ORM\Mapping\MappingException;
 use Doctrine\ORM\OptimisticLockException;
@@ -24,7 +25,6 @@ use Doctrine\Tests\Models\DDC753\DDC753EntityWithCustomRepository;
 use Doctrine\Tests\Models\DDC753\DDC753EntityWithDefaultCustomRepository;
 use Doctrine\Tests\Models\DDC753\DDC753InvalidRepository;
 use Doctrine\Tests\OrmFunctionalTestCase;
-use Doctrine\Tests\VerifyDeprecations;
 
 use function array_pop;
 use function count;
@@ -331,7 +331,7 @@ class EntityRepositoryTest extends OrmFunctionalTestCase
      * @group locking
      * @group DDC-178
      */
-    public function testPessimisticReadLockWithoutTransaction_ThrowsException(): void
+    public function testPessimisticReadLockWithoutTransactionThrowsException(): void
     {
         $this->expectException(TransactionRequiredException::class);
 
@@ -343,7 +343,7 @@ class EntityRepositoryTest extends OrmFunctionalTestCase
      * @group locking
      * @group DDC-178
      */
-    public function testPessimisticWriteLockWithoutTransaction_ThrowsException(): void
+    public function testPessimisticWriteLockWithoutTransactionThrowsException(): void
     {
         $this->expectException(TransactionRequiredException::class);
 
@@ -355,7 +355,7 @@ class EntityRepositoryTest extends OrmFunctionalTestCase
      * @group locking
      * @group DDC-178
      */
-    public function testOptimisticLockUnversionedEntity_ThrowsException(): void
+    public function testOptimisticLockUnversionedEntityThrowsException(): void
     {
         $this->expectException(OptimisticLockException::class);
 
@@ -367,7 +367,7 @@ class EntityRepositoryTest extends OrmFunctionalTestCase
      * @group locking
      * @group DDC-178
      */
-    public function testIdentityMappedOptimisticLockUnversionedEntity_ThrowsException(): void
+    public function testIdentityMappedOptimisticLockUnversionedEntityThrowsException(): void
     {
         $user           = new CmsUser();
         $user->name     = 'Roman';
@@ -412,7 +412,7 @@ class EntityRepositoryTest extends OrmFunctionalTestCase
     /**
      * @group DDC-817
      */
-    public function testFindByAssociationKey_ExceptionOnInverseSide(): void
+    public function testFindByAssociationKeyExceptionOnInverseSide(): void
     {
         [$userId, $addressId] = $this->loadAssociatedFixture();
         $repos                = $this->_em->getRepository(CmsUser::class);
@@ -974,7 +974,6 @@ class EntityRepositoryTest extends OrmFunctionalTestCase
 
         $this->assertNull($usersIsNull[0]->getEmail());
         $this->assertNull($usersEqNull[0]->getEmail());
-        $this->assertHasDeprecationMessages();
     }
 
     /**
@@ -1130,12 +1129,8 @@ class EntityRepositoryTest extends OrmFunctionalTestCase
     {
         $repository = $this->_em->getRepository(CmsAddress::class);
 
-        $this->expectDeprecationMessageSame(
-            'Method Doctrine\ORM\EntityRepository::clear() is deprecated and will be removed in Doctrine ORM 3.0.'
-        );
-        $this->expectDeprecationMessageSame(
-            'Calling Doctrine\ORM\EntityManager::clear() with any arguments to clear specific entities is deprecated and will not be supported in Doctrine ORM 3.0.'
-        );
+        $this->expectDeprecationWithIdentifier('https://github.com/doctrine/orm/issues/8460');
+
         $repository->clear();
     }
 }

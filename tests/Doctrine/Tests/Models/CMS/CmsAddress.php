@@ -88,6 +88,7 @@ class CmsAddress
     public $street;
 
     /**
+     * @var CmsUser
      * @OneToOne(targetEntity="CmsUser", inversedBy="address")
      * @JoinColumn(referencedColumnName="id")
      */

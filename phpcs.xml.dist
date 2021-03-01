@@ -197,4 +197,13 @@
     <rule ref="SlevomatCodingStandard.Classes.UnusedPrivateElements.UnusedMethod">
         <exclude-pattern>lib/Doctrine/ORM/Tools/EntityGenerator.php</exclude-pattern>
     </rule>
+
+    <rule ref="Squiz.Commenting.FunctionComment.WrongStyle">
+        <!-- https://github.com/squizlabs/PHP_CodeSniffer/issues/1961 -->
+        <exclude-pattern>tests/Doctrine/Tests/ORM/Query/DeleteSqlGenerationTest.php</exclude-pattern>
+    </rule>
+
+    <rule ref="SlevomatCodingStandard.Commenting.InlineDocCommentDeclaration.NoAssignment">
+        <exclude-pattern>tests/Doctrine/Tests/ORM/Mapping/php/Doctrine.Tests*</exclude-pattern>
+    </rule>
 </ruleset>

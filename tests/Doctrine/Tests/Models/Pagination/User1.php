@@ -9,6 +9,9 @@ namespace Doctrine\Tests\Models\Pagination;
  */
 class User1 extends User
 {
-    /** @Column(type="string") */
+    /**
+     * @var string
+     * @Column(type="string")
+     */
     public $email;
 }

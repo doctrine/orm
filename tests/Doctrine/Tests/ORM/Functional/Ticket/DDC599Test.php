@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Doctrine\Tests\ORM\Functional\Ticket;
 
 use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\Tests\OrmFunctionalTestCase;
 use Exception;
 
@@ -86,13 +87,17 @@ class DDC599Test extends OrmFunctionalTestCase
 class DDC599Item
 {
     /**
+     * @var int
      * @Id
      * @Column(type="integer")
      * @GeneratedValue(strategy="AUTO")
      */
     public $id;
 
-    /** @OneToMany(targetEntity="DDC599Child", mappedBy="parent", cascade={"remove"}) */
+    /**
+     * @psalm-var Collection<int, DDC599Child>
+     * @OneToMany(targetEntity="DDC599Child", mappedBy="parent", cascade={"remove"})
+     */
     protected $children;
 
     public function __construct()
@@ -100,7 +105,10 @@ class DDC599Item
         $this->children = new ArrayCollection();
     }
 
-    public function getChildren()
+    /**
+     * @psalm-return Collection<int, DDC599Child>
+     */
+    public function getChildren(): Collection
     {
         return $this->children;
     }
@@ -111,7 +119,10 @@ class DDC599Item
  */
 class DDC599Subitem extends DDC599Item
 {
-    /** @Column(type="string") */
+    /**
+     * @var string
+     * @Column(type="string")
+     */
     public $elem;
 }
 
@@ -121,6 +132,7 @@ class DDC599Subitem extends DDC599Item
 class DDC599Child
 {
     /**
+     * @var int
      * @Id
      * @Column(type="integer")
      * @GeneratedValue(strategy="AUTO")
@@ -128,6 +140,7 @@ class DDC599Child
     public $id;
 
     /**
+     * @var DDC599Item
      * @ManyToOne(targetEntity="DDC599Item", inversedBy="children")
      * @JoinColumn(name="parentId", referencedColumnName="id")
      */

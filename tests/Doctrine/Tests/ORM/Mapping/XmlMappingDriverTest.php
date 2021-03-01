@@ -23,9 +23,11 @@ use DOMDocument;
 
 use function array_filter;
 use function array_map;
+use function assert;
 use function count;
 use function glob;
 use function in_array;
+use function is_array;
 use function pathinfo;
 
 use const DIRECTORY_SEPARATOR;
@@ -69,7 +71,7 @@ class XmlMappingDriverTest extends AbstractMappingDriverTest
     public function testIdentifierWithAssociationKey(): void
     {
         $driver  = $this->loadDriver();
-        $em      = $this->_getTestEntityManager();
+        $em      = $this->getTestEntityManager();
         $factory = new ClassMetadataFactory();
 
         $em->getConfiguration()->setMetadataDriverImpl($driver);
@@ -99,7 +101,7 @@ class XmlMappingDriverTest extends AbstractMappingDriverTest
     public function testEmbeddedMappingsWithUseColumnPrefix(): void
     {
         $factory = new ClassMetadataFactory();
-        $em      = $this->_getTestEntityManager();
+        $em      = $this->getTestEntityManager();
 
         $em->getConfiguration()->setMetadataDriverImpl($this->loadDriver());
         $factory->setEntityManager($em);
@@ -119,7 +121,7 @@ class XmlMappingDriverTest extends AbstractMappingDriverTest
     public function testEmbeddedMappingsWithFalseUseColumnPrefix(): void
     {
         $factory = new ClassMetadataFactory();
-        $em      = $this->_getTestEntityManager();
+        $em      = $this->getTestEntityManager();
 
         $em->getConfiguration()->setMetadataDriverImpl($this->loadDriver());
         $factory->setEntityManager($em);
@@ -171,16 +173,20 @@ class XmlMappingDriverTest extends AbstractMappingDriverTest
         $this->assertTrue($dom->schemaValidate($xsdSchemaFile));
     }
 
-    public static function dataValidSchema()
+    /**
+     * @psalm-return list<array{string}>
+     */
+    public static function dataValidSchema(): array
     {
         $list    = glob(__DIR__ . '/xml/*.xml');
         $invalid = ['Doctrine.Tests.Models.DDC889.DDC889Class.dcm'];
+        assert(is_array($list));
 
-        $list = array_filter($list, static function ($item) use ($invalid) {
+        $list = array_filter($list, static function (string $item) use ($invalid): bool {
             return ! in_array(pathinfo($item, PATHINFO_FILENAME), $invalid);
         });
 
-        return array_map(static function ($item) {
+        return array_map(static function (string $item) {
             return [$item];
         }, $list);
     }
@@ -229,6 +235,7 @@ class XmlMappingDriverTest extends AbstractMappingDriverTest
 
 class CTI
 {
+    /** @var int */
     public $id;
 }
 
@@ -244,9 +251,12 @@ class CTIBaz extends CTI
 
 class XMLSLC
 {
+    /** @var mixed */
     public $foo;
 }
+
 class XMLSLCFoo
 {
+    /** @var int */
     public $id;
 }

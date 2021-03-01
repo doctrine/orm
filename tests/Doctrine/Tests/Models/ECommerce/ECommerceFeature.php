@@ -13,6 +13,7 @@ namespace Doctrine\Tests\Models\ECommerce;
 class ECommerceFeature
 {
     /**
+     * @var int
      * @Column(type="integer")
      * @Id
      * @GeneratedValue
@@ -23,6 +24,7 @@ class ECommerceFeature
     private $description;
 
     /**
+     * @var ECommerceProduct
      * @ManyToOne(targetEntity="ECommerceProduct", inversedBy="features")
      * @JoinColumn(name="product_id", referencedColumnName="id")
      */

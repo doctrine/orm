@@ -12,6 +12,7 @@ namespace Doctrine\Tests\Models\GeoNames;
 class City
 {
     /**
+     * @var string
      * @Id
      * @Column(type="string", length=25)
      * @GeneratedValue(strategy="NONE")
@@ -35,7 +36,10 @@ class City
      */
     public $admin1;
 
-    /** @Column(type="string", length=255); */
+    /**
+     * @var string
+     * @Column(type="string", length=255);
+     */
     public $name;
 
     public function __construct($id, $name)

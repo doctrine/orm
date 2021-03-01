@@ -12,6 +12,9 @@ use Doctrine\Tests\Models\DDC1590\DDC1590Entity;
  */
 class DDC1590User extends DDC1590Entity
 {
-    /** @Column(type="string", length=255) */
+    /**
+     * @var string
+     * @Column(type="string", length=255)
+     */
     protected $name;
 }

@@ -13,18 +13,28 @@ namespace Doctrine\Tests\Models\Pagination;
 class Company
 {
     /**
+     * @var int
      * @Id @Column(type="integer")
      * @GeneratedValue
      */
     public $id;
 
-    /** @Column(type="string") */
+    /**
+     * @var string
+     * @Column(type="string")
+     */
     public $name;
 
-    /** @Column(type="string", name="jurisdiction_code", nullable=true) */
+    /**
+     * @var string
+     * @Column(type="string", name="jurisdiction_code", nullable=true)
+     */
     public $jurisdiction;
 
-    /** @OneToOne(targetEntity="Logo", mappedBy="company", cascade={"persist"}, orphanRemoval=true) */
+    /**
+     * @var Logo
+     * @OneToOne(targetEntity="Logo", mappedBy="company", cascade={"persist"}, orphanRemoval=true)
+     */
     public $logo;
 
     /** @OneToMany(targetEntity="Department", mappedBy="company", cascade={"persist"}, orphanRemoval=true) */

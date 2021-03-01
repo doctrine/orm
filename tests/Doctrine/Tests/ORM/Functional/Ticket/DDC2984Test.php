@@ -75,7 +75,10 @@ class DDC2984User
      */
     private $userId;
 
-    /** @Column(type="string", length=50) */
+    /**
+     * @var string
+     * @Column(type="string", length=50)
+     */
     private $name;
 
     public function __construct(DDC2984DomainUserId $aUserId)

@@ -5,18 +5,16 @@ declare(strict_types=1);
 namespace Doctrine\Tests\ORM\Functional\Ticket;
 
 use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\PersistentCollection;
 use Doctrine\ORM\Tools\SchemaTool;
 use Doctrine\Tests\OrmFunctionalTestCase;
-use Doctrine\Tests\VerifyDeprecations;
 use Exception;
 
 use function count;
 
 class DDC729Test extends OrmFunctionalTestCase
 {
-    use VerifyDeprecations;
-
     protected function setUp(): void
     {
         parent::setUp();
@@ -31,12 +29,6 @@ class DDC729Test extends OrmFunctionalTestCase
             );
         } catch (Exception $e) {
         }
-    }
-
-    /** @after */
-    public function ensureTestGeneratedDeprecationMessages(): void
-    {
-        $this->assertHasDeprecationMessages();
     }
 
     public function testMergeManyToMany(): void
@@ -170,10 +162,18 @@ class DDC729Test extends OrmFunctionalTestCase
  */
 class DDC729A
 {
-    /** @Id @GeneratedValue @Column(type="integer") */
+    /**
+     * @var int
+     * @Id
+     * @GeneratedValue
+     * @Column(type="integer")
+     */
     public $id;
 
-    /** @ManyToMany(targetEntity="DDC729B", inversedBy="related") */
+    /**
+     * @psalm-var Collection<int, DDC729B>
+     * @ManyToMany(targetEntity="DDC729B", inversedBy="related")
+     */
     public $related;
 
     public function __construct()
@@ -187,10 +187,18 @@ class DDC729A
  */
 class DDC729B
 {
-    /** @Id @GeneratedValue @Column(type="integer") */
+    /**
+     * @var int
+     * @Id
+     * @GeneratedValue
+     * @Column(type="integer")
+     */
     public $id;
 
-    /** @ManyToMany(targetEntity="DDC729B", mappedBy="related") */
+    /**
+     * @psalm-var Collection<int, DDC729B>
+     * @ManyToMany(targetEntity="DDC729B", mappedBy="related")
+     */
     public $related;
 
     public function __construct()

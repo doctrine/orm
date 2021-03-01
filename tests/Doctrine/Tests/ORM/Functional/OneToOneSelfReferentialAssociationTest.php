@@ -155,11 +155,13 @@ class MultiSelfReference
     /** @Id @GeneratedValue(strategy="AUTO") @Column(type="integer") */
     private $id;
     /**
+     * @var MultiSelfReference
      * @OneToOne(targetEntity="MultiSelfReference", cascade={"persist"})
      * @JoinColumn(name="other1", referencedColumnName="id")
      */
     private $other1;
     /**
+     * @var MultiSelfReference
      * @OneToOne(targetEntity="MultiSelfReference", cascade={"persist"})
      * @JoinColumn(name="other2", referencedColumnName="id")
      */

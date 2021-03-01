@@ -7,7 +7,6 @@ namespace Doctrine\Tests\ORM\Functional\Ticket;
 use Doctrine\Tests\Models\CMS\CmsGroup;
 use Doctrine\Tests\Models\CMS\CmsUser;
 use Doctrine\Tests\OrmFunctionalTestCase;
-use Doctrine\Tests\VerifyDeprecations;
 
 use function count;
 
@@ -16,8 +15,6 @@ use function count;
  */
 class DDC1276Test extends OrmFunctionalTestCase
 {
-    use VerifyDeprecations;
-
     protected function setUp(): void
     {
         $this->useModelSet('cms');
@@ -52,6 +49,5 @@ class DDC1276Test extends OrmFunctionalTestCase
         $this->assertEquals(2, count($user->groups));
 
         $this->_em->flush();
-        $this->assertHasDeprecationMessages();
     }
 }

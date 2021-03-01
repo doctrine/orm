@@ -20,6 +20,7 @@
 
 namespace Doctrine\ORM\Tools;
 
+use Doctrine\Deprecations\Deprecation;
 use Doctrine\ORM\EntityRepository;
 
 use function array_keys;
@@ -34,10 +35,8 @@ use function str_replace;
 use function strlen;
 use function strrpos;
 use function substr;
-use function trigger_error;
 
 use const DIRECTORY_SEPARATOR;
-use const E_USER_DEPRECATED;
 
 /**
  * Class to generate entity repository classes
@@ -68,7 +67,12 @@ class <className> extends <repositoryName>
 
     public function __construct()
     {
-        @trigger_error(self::class . ' is deprecated and will be removed in Doctrine ORM 3.0', E_USER_DEPRECATED);
+        Deprecation::trigger(
+            'doctrine/orm',
+            'https://github.com/doctrine/orm/issues/8458',
+            '%s is deprecated and will be removed in Doctrine ORM 3.0',
+            self::class
+        );
     }
 
     /**

@@ -83,7 +83,10 @@ class DDC2579Entity
      */
     public $assoc;
 
-    /** @Column(type="integer") */
+    /**
+     * @var int
+     * @Column(type="integer")
+     */
     public $value;
 
     public function __construct(DDC2579EntityAssoc $assoc, $value = 0)
@@ -142,7 +145,10 @@ class DDC2579Type extends StringType
         return (string) $value;
     }
 
-    public function convertToPhpValue($value, AbstractPlatform $platform)
+    /**
+     * {@inheritDoc}
+     */
+    public function convertToPHPValue($value, AbstractPlatform $platform)
     {
         return new DDC2579Id($value);
     }

@@ -107,14 +107,14 @@ class DDC1301Test extends OrmFunctionalTestCase
         $this->_em->persist($user2);
         $this->_em->persist($user3);
 
-        $article1         = new Models\Legacy\LegacyArticle();
-        $article1->_topic = 'Test';
-        $article1->_text  = 'Test';
+        $article1        = new Models\Legacy\LegacyArticle();
+        $article1->topic = 'Test';
+        $article1->text  = 'Test';
         $article1->setAuthor($user1);
 
-        $article2         = new Models\Legacy\LegacyArticle();
-        $article2->_topic = 'Test';
-        $article2->_text  = 'Test';
+        $article2        = new Models\Legacy\LegacyArticle();
+        $article2->topic = 'Test';
+        $article2->text  = 'Test';
         $article2->setAuthor($user1);
 
         $this->_em->persist($article1);

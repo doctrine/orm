@@ -15,6 +15,7 @@ use Doctrine\Common\Collections\Collection;
 class Traveler
 {
     /**
+     * @var int
      * @Id
      * @GeneratedValue
      * @Column(type="integer")

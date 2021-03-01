@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Doctrine\Tests\Models\ECommerce;
 
 use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 
 /**
  * ECommerceCategory
@@ -16,21 +17,29 @@ use Doctrine\Common\Collections\ArrayCollection;
 class ECommerceCategory
 {
     /**
+     * @var int
      * @Id @Column(type="integer")
      * @GeneratedValue(strategy="AUTO")
      */
     private $id;
 
-    /** @Column(type="string", length=50) */
+    /**
+     * @var string
+     * @Column(type="string", length=50)
+     */
     private $name;
 
-    /** @ManyToMany(targetEntity="ECommerceProduct", mappedBy="categories") */
+    /**
+     * @psalm-var Collection<int, ECommerceProduct>
+     * @ManyToMany(targetEntity="ECommerceProduct", mappedBy="categories")
+     */
     private $products;
 
     /** @OneToMany(targetEntity="ECommerceCategory", mappedBy="parent", cascade={"persist"}) */
     private $children;
 
     /**
+     * @var ECommerceCategory
      * @ManyToOne(targetEntity="ECommerceCategory", inversedBy="children")
      * @JoinColumn(name="parent_id", referencedColumnName="id")
      */

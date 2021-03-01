@@ -17,6 +17,7 @@ class OwningOneToOneEntity
     public $id2;
 
     /**
+     * @var InversedOneToOneEntity
      * @OneToOne(targetEntity="InversedOneToOneEntity", inversedBy="associatedEntity")
      * @JoinColumn(name="associated_id", referencedColumnName="id1")
      */

@@ -83,6 +83,7 @@ class CascadeRemoveOrderTest extends OrmFunctionalTestCase
 class CascadeRemoveOrderEntityO
 {
     /**
+     * @var int
      * @Id @Column(type="integer")
      * @GeneratedValue
      */
@@ -140,6 +141,7 @@ class CascadeRemoveOrderEntityO
 class CascadeRemoveOrderEntityG
 {
     /**
+     * @var int
      * @Id @Column(type="integer")
      * @GeneratedValue
      */

@@ -242,10 +242,16 @@ class DDC2602BiographyField
      */
     public $id;
 
-    /** @Column(type="string", unique=true, length=100) */
+    /**
+     * @var string
+     * @Column(type="string", unique=true, length=100)
+     */
     public $alias;
 
-    /** @Column(type="string", length=100) */
+    /**
+     * @var string
+     * @Column(type="string", length=100)
+     */
     public $label;
 
     /**
@@ -276,7 +282,10 @@ class DDC2602BiographyFieldChoice
      */
     public $id;
 
-    /** @Column(type="string", unique=true, length=100) */
+    /**
+     * @var string
+     * @Column(type="string", unique=true, length=100)
+     */
     public $label;
 
     /**

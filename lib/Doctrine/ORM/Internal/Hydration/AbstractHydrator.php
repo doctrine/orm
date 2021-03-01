@@ -24,6 +24,7 @@ use Doctrine\DBAL\Driver\Statement;
 use Doctrine\DBAL\FetchMode;
 use Doctrine\DBAL\Platforms\AbstractPlatform;
 use Doctrine\DBAL\Types\Type;
+use Doctrine\Deprecations\Deprecation;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Events;
 use Doctrine\ORM\Mapping\ClassMetadata;
@@ -35,11 +36,9 @@ use ReflectionClass;
 
 use function array_map;
 use function array_merge;
+use function count;
 use function end;
 use function in_array;
-use function trigger_error;
-
-use const E_USER_DEPRECATED;
 
 /**
  * Base class for all hydrators. A hydrator is a class that provides some form
@@ -128,9 +127,11 @@ abstract class AbstractHydrator
      */
     public function iterate($stmt, $resultSetMapping, array $hints = [])
     {
-        @trigger_error(
-            'Method ' . __METHOD__ . '() is deprecated and will be removed in Doctrine ORM 3.0. Use toIterable() instead.',
-            E_USER_DEPRECATED
+        Deprecation::trigger(
+            'doctrine/orm',
+            'https://github.com/doctrine/orm/issues/8463',
+            'Method %s() is deprecated and will be removed in Doctrine ORM 3.0. Use toIterable() instead.',
+            __METHOD__
         );
 
         $this->_stmt  = $stmt;
@@ -165,8 +166,6 @@ abstract class AbstractHydrator
 
         $this->prepare();
 
-        $result = [];
-
         while (true) {
             $row = $this->_stmt->fetch(FetchMode::ASSOCIATIVE);
 
@@ -176,9 +175,17 @@ abstract class AbstractHydrator
                 break;
             }
 
+            $result = [];
+
             $this->hydrateRowData($row, $result);
 
-            yield end($result);
+            $this->cleanupAfterRowIteration();
+
+            if (count($result) === 1) {
+                yield end($result);
+            } else {
+                yield $result;
+            }
         }
     }
 
@@ -274,6 +281,10 @@ abstract class AbstractHydrator
             ->removeEventListener([Events::onClear], $this);
     }
 
+    protected function cleanupAfterRowIteration(): void
+    {
+    }
+
     /**
      * Hydrates a single row from the current statement instance.
      *
@@ -294,7 +305,7 @@ abstract class AbstractHydrator
     /**
      * Hydrates all rows from the current statement instance at once.
      *
-     * @return array
+     * @return mixed[]
      */
     abstract protected function hydrateAllData();
 

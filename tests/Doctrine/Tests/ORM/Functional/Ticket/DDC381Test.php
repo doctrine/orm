@@ -52,10 +52,15 @@ class DDC381Test extends OrmFunctionalTestCase
  */
 class DDC381Entity
 {
-    /** @Id @Column(type="integer") @GeneratedValue */
+    /**
+     * @var int
+     * @Id
+     * @Column(type="integer")
+     * @GeneratedValue
+     */
     protected $id;
 
-    public function getId()
+    public function getId(): int
     {
         return $this->id;
     }

@@ -19,16 +19,26 @@ class Logo
      */
     public $id;
 
-    /** @Column(type="string") */
+    /**
+     * @var string
+     * @Column(type="string")
+     */
     public $image;
 
-    /** @Column(type="integer") */
+    /**
+     * @var int
+     * @Column(type="integer")
+     */
     public $image_height;
 
-    /** @Column(type="integer") */
+    /**
+     * @var int
+     * @Column(type="integer")
+     */
     public $image_width;
 
     /**
+     * @var Company
      * @OneToOne(targetEntity="Company", inversedBy="logo", cascade={"persist"})
      * @JoinColumn(name="company_id")
      */

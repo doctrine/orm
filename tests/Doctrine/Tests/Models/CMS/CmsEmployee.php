@@ -13,6 +13,7 @@ namespace Doctrine\Tests\Models\CMS;
 class CmsEmployee
 {
     /**
+     * @var int
      * @Id
      * @Column(type="integer")
      * @GeneratedValue
@@ -23,6 +24,7 @@ class CmsEmployee
     private $name;
 
     /**
+     * @var CmsEmployee
      * @OneToOne(targetEntity="CmsEmployee")
      * @JoinColumn(name="spouse_id", referencedColumnName="id")
      */

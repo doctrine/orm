@@ -11,12 +11,16 @@ namespace Doctrine\Tests\Models\Company;
 class CompanyCar
 {
     /**
+     * @var int
      * @Id @Column(type="integer")
      * @GeneratedValue(strategy="AUTO")
      */
     private $id;
 
-    /** @Column(type="string", length=50) */
+    /**
+     * @var string
+     * @Column(type="string", length=50)
+     */
     private $brand;
 
     public function __construct($brand = null)

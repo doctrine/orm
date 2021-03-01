@@ -8,26 +8,17 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Tests\Models\CMS\CmsGroup;
 use Doctrine\Tests\Models\CMS\CmsUser;
 use Doctrine\Tests\OrmFunctionalTestCase;
-use Doctrine\Tests\VerifyDeprecations;
 
-use function sizeof;
+use function count;
 
 class DDC758Test extends OrmFunctionalTestCase
 {
-    use VerifyDeprecations;
-
     protected function setUp(): void
     {
         $this->markTestSkipped('Destroys testsuite');
         $this->useModelSet('cms');
 
         parent::setUp();
-    }
-
-    /** @after */
-    public function ensureTestGeneratedDeprecationMessages(): void
-    {
-        $this->assertHasDeprecationMessages();
     }
 
     /**
@@ -108,13 +99,13 @@ class DDC758Test extends OrmFunctionalTestCase
         $cmsGroups = $this->_em->getRepository(CmsGroup::class)->findAll();
 
         // Check the entities are in the database
-        $this->assertEquals(1, sizeof($cmsUsers));
-        $this->assertEquals(2, sizeof($cmsGroups));
+        $this->assertEquals(1, count($cmsUsers));
+        $this->assertEquals(2, count($cmsGroups));
 
         // Check the associations between the entities are now in the database
-        $this->assertEquals(2, sizeof($cmsUsers[0]->groups));
-        $this->assertEquals(1, sizeof($cmsGroups[0]->users));
-        $this->assertEquals(1, sizeof($cmsGroups[1]->users));
+        $this->assertEquals(2, count($cmsUsers[0]->groups));
+        $this->assertEquals(1, count($cmsGroups[0]->users));
+        $this->assertEquals(1, count($cmsGroups[1]->users));
 
         $this->assertSame($cmsUsers[0]->groups[0], $cmsGroups[0]);
         $this->assertSame($cmsUsers[0]->groups[1], $cmsGroups[1]);
@@ -184,12 +175,12 @@ class DDC758Test extends OrmFunctionalTestCase
         $cmsGroups = $this->_em->getRepository(CmsGroup::class)->findAll();
 
         // Check the entities are in the database
-        $this->assertEquals(1, sizeof($cmsUsers));
-        $this->assertEquals(2, sizeof($cmsGroups));
+        $this->assertEquals(1, count($cmsUsers));
+        $this->assertEquals(2, count($cmsGroups));
 
         // Check the associations between the entities are now in the database
-        $this->assertEquals(0, sizeof($cmsUsers[0]->groups));
-        $this->assertEquals(0, sizeof($cmsGroups[0]->users));
-        $this->assertEquals(0, sizeof($cmsGroups[1]->users));
+        $this->assertEquals(0, count($cmsUsers[0]->groups));
+        $this->assertEquals(0, count($cmsGroups[0]->users));
+        $this->assertEquals(0, count($cmsGroups[1]->users));
     }
 }

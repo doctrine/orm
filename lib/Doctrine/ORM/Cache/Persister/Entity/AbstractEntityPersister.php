@@ -84,7 +84,7 @@ abstract class AbstractEntityPersister implements CachedEntityPersister
     /**
      * Associations configured as FETCH_EAGER, as well as all inverse one-to-one associations.
      *
-     * @var array|null
+     * @var array<string>|null
      */
     protected $joinedAssociations;
 
@@ -364,7 +364,9 @@ abstract class AbstractEntityPersister implements CachedEntityPersister
             return $result[0];
         }
 
-        if (($result = $this->persister->load($criteria, $entity, $assoc, $hints, $lockMode, $limit, $orderBy)) === null) {
+        $result = $this->persister->load($criteria, $entity, $assoc, $hints, $lockMode, $limit, $orderBy);
+
+        if ($result === null) {
             return null;
         }
 
@@ -617,8 +619,8 @@ abstract class AbstractEntityPersister implements CachedEntityPersister
     }
 
     /**
-     * @param array $association
-     * @param array $ownerId
+     * @param array<string, mixed> $association
+     * @param array<string, mixed> $ownerId
      *
      * @return CollectionCacheKey
      */

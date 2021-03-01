@@ -57,7 +57,12 @@ final class GH6217Test extends OrmFunctionalTestCase
 /** @Entity @Cache(usage="NONSTRICT_READ_WRITE") */
 class GH6217AssociatedEntity
 {
-    /** @Id @Column(type="string") @GeneratedValue(strategy="NONE") */
+    /**
+     * @var string
+     * @Id
+     * @Column(type="string")
+     * @GeneratedValue(strategy="NONE")
+     */
     public $id;
 
     public function __construct()
@@ -69,10 +74,20 @@ class GH6217AssociatedEntity
 /** @Entity @Cache(usage="NONSTRICT_READ_WRITE") */
 class GH6217FetchedEntity
 {
-    /** @Id @Cache("NONSTRICT_READ_WRITE") @ManyToOne(targetEntity=GH6217AssociatedEntity::class) */
+    /**
+     * @var GH6217AssociatedEntity
+     * @Id
+     * @Cache("NONSTRICT_READ_WRITE")
+     * @ManyToOne(targetEntity=GH6217AssociatedEntity::class)
+     */
     public $lazy;
 
-    /** @Id @Cache("NONSTRICT_READ_WRITE") @ManyToOne(targetEntity=GH6217AssociatedEntity::class, fetch="EAGER") */
+    /**
+     * @var GH6217AssociatedEntity
+     * @Id
+     * @Cache("NONSTRICT_READ_WRITE")
+     * @ManyToOne(targetEntity=GH6217AssociatedEntity::class, fetch="EAGER")
+     */
     public $eager;
 
     public function __construct(GH6217AssociatedEntity $lazy, GH6217AssociatedEntity $eager)

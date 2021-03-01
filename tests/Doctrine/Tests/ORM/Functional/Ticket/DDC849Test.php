@@ -12,8 +12,13 @@ use function count;
 
 class DDC849Test extends OrmFunctionalTestCase
 {
+    /** @var CmsUser */
     private $user;
+
+    /** @var CmsGroup */
     private $group1;
+
+    /** @var CmsGroup */
     private $group2;
 
     protected function setUp(): void

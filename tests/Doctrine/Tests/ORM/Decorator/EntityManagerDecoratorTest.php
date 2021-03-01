@@ -7,7 +7,6 @@ namespace Doctrine\Tests\ORM\Decorator;
 use Doctrine\ORM\Decorator\EntityManagerDecorator;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Query\ResultSetMapping;
-use Doctrine\Tests\VerifyDeprecations;
 use PHPUnit\Framework\TestCase;
 use PHPUnit_Framework_MockObject_MockObject;
 use ReflectionClass;
@@ -18,8 +17,6 @@ use function in_array;
 
 class EntityManagerDecoratorTest extends TestCase
 {
-    use VerifyDeprecations;
-
     public const VOID_METHODS = [
         'persist',
         'remove',
@@ -37,12 +34,6 @@ class EntityManagerDecoratorTest extends TestCase
 
     /** @var EntityManagerInterface|PHPUnit_Framework_MockObject_MockObject */
     private $wrapped;
-
-    /** @before */
-    public function ignoreDeprecationMessagesFromDoctrinePersistence(): void
-    {
-        $this->ignoreDeprecationMessage('The Doctrine\Common\Persistence\ObjectManagerDecorator class is deprecated since doctrine/persistence 1.3 and will be removed in 2.0. Use \Doctrine\Persistence\ObjectManagerDecorator instead.');
-    }
 
     protected function setUp(): void
     {
@@ -103,13 +94,5 @@ class EntityManagerDecoratorTest extends TestCase
         };
 
         $this->assertSame($return, $decorator->$method(...$parameters));
-
-        if (in_array($method, ['copy', 'merge', 'detach', 'getHydrator'], true)) {
-            $this->assertHasDeprecationMessages();
-
-            return;
-        }
-
-        $this->assertNotHasDeprecationMessages();
     }
 }

@@ -59,7 +59,7 @@ class CommitOrderCalculator
     /**
      * Volatile variable holding calculated nodes during sorting process.
      *
-     * @var array
+     * @psalm-var list<object>
      */
     private $sortedNodeList = [];
 
@@ -122,7 +122,7 @@ class CommitOrderCalculator
      *
      * {@internal Highly performance-sensitive method.}
      *
-     * @return array
+     * @psalm-return list<object>
      */
     public function sort()
     {

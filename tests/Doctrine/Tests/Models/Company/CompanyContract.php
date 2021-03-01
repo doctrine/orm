@@ -3,6 +3,7 @@
 namespace Doctrine\Tests\Models\Company;
 
 use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Events;
 use Doctrine\ORM\Mapping as ORM;
 use Doctrine\ORM\Mapping\ClassMetadata;
@@ -67,11 +68,19 @@ use Doctrine\ORM\Mapping\ClassMetadataInfo;
 #[ORM\EntityListeners(["CompanyContractListener"])]
 abstract class CompanyContract
 {
-    /** @Id @column(type="integer") @GeneratedValue */
+    /**
+     * @var int
+     * @Id
+     * @column(type="integer")
+     * @GeneratedValue
+     */
     #[ORM\Id, ORM\Column(type: "integer"), ORM\GeneratedValue]
     private $id;
 
-    /** @ManyToOne(targetEntity="CompanyEmployee", inversedBy="soldContracts") */
+    /**
+     * @var CompanyEmployee
+     * @ManyToOne(targetEntity="CompanyEmployee", inversedBy="soldContracts")
+     */
     private $salesPerson;
 
     /**
@@ -81,6 +90,7 @@ abstract class CompanyContract
     private $completed = false;
 
     /**
+     * @psalm-var Collection<int, CompanyEmployee>
      * @ManyToMany(targetEntity="CompanyEmployee", inversedBy="contracts")
      * @JoinTable(name="company_contract_employees",
      *    joinColumns={@JoinColumn(name="contract_id", referencedColumnName="id", onDelete="CASCADE")},
@@ -94,7 +104,7 @@ abstract class CompanyContract
         $this->engineers = new ArrayCollection();
     }
 
-    public function getId()
+    public function getId(): int
     {
         return $this->id;
     }
@@ -104,12 +114,12 @@ abstract class CompanyContract
         $this->completed = true;
     }
 
-    public function isCompleted()
+    public function isCompleted(): bool
     {
         return $this->completed;
     }
 
-    public function getSalesPerson()
+    public function getSalesPerson(): CompanyEmployee
     {
         return $this->salesPerson;
     }
@@ -119,7 +129,10 @@ abstract class CompanyContract
         $this->salesPerson = $salesPerson;
     }
 
-    public function getEngineers()
+    /**
+     * @psalm-return Collection<int, CompanyEmployee>
+     */
+    public function getEngineers(): Collection
     {
         return $this->engineers;
     }

@@ -122,7 +122,12 @@ final class GH7875Test extends OrmFunctionalTestCase
  */
 class GH7875MyEntity
 {
-    /** @Id @Column(type="integer") @GeneratedValue(strategy="AUTO") */
+    /**
+     * @var int
+     * @Id
+     * @Column(type="integer")
+     * @GeneratedValue(strategy="AUTO")
+     */
     public $id;
 }
 
@@ -132,6 +137,11 @@ class GH7875MyEntity
  */
 class GH7875MyOtherEntity
 {
-    /** @Id @Column(type="integer") @GeneratedValue(strategy="AUTO") */
+    /**
+     * @var int
+     * @Id
+     * @Column(type="integer")
+     * @GeneratedValue(strategy="AUTO")
+     */
     public $id;
 }

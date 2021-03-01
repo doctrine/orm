@@ -514,13 +514,12 @@ class BasicEntityPersister implements EntityPersister
     }
 
     /**
-     * @param array $identifier
-     *
-     * @return void
+     * @param array<mixed> $identifier
+     * @param string[]     $types
      *
      * @todo Add check for platform if it supports foreign keys/cascading.
      */
-    protected function deleteJoinTableRecords($identifier)
+    protected function deleteJoinTableRecords(array $identifier, array $types): void
     {
         foreach ($this->class->associationMappings as $mapping) {
             if ($mapping['type'] !== ClassMetadata::MANY_TO_MANY) {
@@ -565,10 +564,10 @@ class BasicEntityPersister implements EntityPersister
 
             $joinTableName = $this->quoteStrategy->getJoinTableName($association, $this->class, $this->platform);
 
-            $this->conn->delete($joinTableName, array_combine($keys, $identifier));
+            $this->conn->delete($joinTableName, array_combine($keys, $identifier), $types);
 
             if ($selfReferential) {
-                $this->conn->delete($joinTableName, array_combine($otherKeys, $identifier));
+                $this->conn->delete($joinTableName, array_combine($otherKeys, $identifier), $types);
             }
         }
     }
@@ -585,7 +584,7 @@ class BasicEntityPersister implements EntityPersister
         $id         = array_combine($idColumns, $identifier);
         $types      = $this->getClassIdentifiersTypes($class);
 
-        $this->deleteJoinTableRecords($identifier);
+        $this->deleteJoinTableRecords($identifier, $types);
 
         return (bool) $this->conn->delete($tableName, $id, $types);
     }

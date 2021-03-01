@@ -47,9 +47,17 @@ class DDC2996Test extends OrmFunctionalTestCase
  */
 class DDC2996User
 {
-    /** @Id @GeneratedValue @Column(type="integer") */
+    /**
+     * @var int
+     * @Id
+     * @GeneratedValue
+     * @Column(type="integer")
+     */
     public $id;
-    /** @Column(type="integer") */
+    /**
+     * @var int
+     * @Column(type="integer")
+     */
     public $counter = 0;
 }
 
@@ -58,12 +66,23 @@ class DDC2996User
  */
 class DDC2996UserPreference
 {
-    /** @Id @GeneratedValue @Column(type="integer") */
+    /**
+     * @var int
+     * @Id
+     * @GeneratedValue
+     * @Column(type="integer")
+     */
     public $id;
-    /** @Column(type="string") */
+    /**
+     * @var string
+     * @Column(type="string")
+     */
     public $value;
 
-    /** @ManyToOne(targetEntity="DDC2996User") */
+    /**
+     * @var DDC2996User
+     * @ManyToOne(targetEntity="DDC2996User")
+     */
     public $user;
 
     /**

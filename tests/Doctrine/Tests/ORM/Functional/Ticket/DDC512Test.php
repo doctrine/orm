@@ -58,6 +58,7 @@ class DDC512Test extends OrmFunctionalTestCase
 class DDC512Customer
 {
     /**
+     * @var int
      * @Id
      * @Column(type="integer")
      * @GeneratedValue(strategy="AUTO")
@@ -68,6 +69,7 @@ class DDC512Customer
      * NOTE that we can currently not name the join column the same as the field
      * (item = item), this currently confuses Doctrine.
      *
+     * @var DDC512OfferItem
      * @OneToOne(targetEntity="DDC512OfferItem", cascade={"remove","persist"})
      * @JoinColumn(name="item_id", referencedColumnName="id")
      */
@@ -90,6 +92,7 @@ class DDC512OfferItem extends DDC512Item
 class DDC512Item
 {
     /**
+     * @var int
      * @Id
      * @Column(type="integer")
      * @GeneratedValue(strategy="AUTO")

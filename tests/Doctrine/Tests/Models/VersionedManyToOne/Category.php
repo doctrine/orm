@@ -11,6 +11,7 @@ namespace Doctrine\Tests\Models\VersionedManyToOne;
 class Category
 {
     /**
+     * @var int
      * @Id
      * @Column(name="id", type="integer")
      * @GeneratedValue(strategy="AUTO")

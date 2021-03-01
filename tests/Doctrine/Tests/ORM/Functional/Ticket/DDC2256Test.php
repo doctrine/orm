@@ -73,16 +73,21 @@ class DDC2256Test extends OrmFunctionalTestCase
 class DDC2256User
 {
     /**
+     * @var int
      * @Id
      * @Column(type="integer")
      * @GeneratedValue(strategy="AUTO")
      */
     public $id;
 
-    /** @Column(type="string") */
+    /**
+     * @var string
+     * @Column(type="string")
+     */
     public $name;
 
     /**
+     * @var DDC2256Group
      * @ManyToOne(targetEntity="DDC2256Group", inversedBy="users")A
      * @JoinColumn(name="group_id")
      */
@@ -96,13 +101,17 @@ class DDC2256User
 class DDC2256Group
 {
     /**
+     * @var int
      * @Id
      * @Column(type="integer")
      * @GeneratedValue(strategy="AUTO")
      */
     public $id;
 
-    /** @Column(type="string") */
+    /**
+     * @var string
+     * @Column(type="string")
+     */
     public $name;
 
     /** @OneToMany(targetEntity="DDC2256User", mappedBy="group") */

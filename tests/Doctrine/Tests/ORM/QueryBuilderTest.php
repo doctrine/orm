@@ -30,11 +30,11 @@ use function get_class;
 class QueryBuilderTest extends OrmTestCase
 {
     /** @var EntityManager */
-    private $_em;
+    private $entityManager;
 
     protected function setUp(): void
     {
-        $this->_em = $this->_getTestEntityManager();
+        $this->entityManager = $this->getTestEntityManager();
     }
 
     protected function assertValidQueryBuilder(QueryBuilder $qb, $expectedDql): void
@@ -47,7 +47,7 @@ class QueryBuilderTest extends OrmTestCase
 
     public function testSelectSetsType(): void
     {
-        $qb = $this->_em->createQueryBuilder()
+        $qb = $this->entityManager->createQueryBuilder()
             ->delete(CmsUser::class, 'u')
             ->select('u.id', 'u.username');
 
@@ -56,7 +56,7 @@ class QueryBuilderTest extends OrmTestCase
 
     public function testEmptySelectSetsType(): void
     {
-        $qb = $this->_em->createQueryBuilder()
+        $qb = $this->entityManager->createQueryBuilder()
             ->delete(CmsUser::class, 'u')
             ->select();
 
@@ -65,7 +65,7 @@ class QueryBuilderTest extends OrmTestCase
 
     public function testDeleteSetsType(): void
     {
-        $qb = $this->_em->createQueryBuilder()
+        $qb = $this->entityManager->createQueryBuilder()
             ->from(CmsUser::class, 'u')
             ->delete();
 
@@ -74,7 +74,7 @@ class QueryBuilderTest extends OrmTestCase
 
     public function testUpdateSetsType(): void
     {
-        $qb = $this->_em->createQueryBuilder()
+        $qb = $this->entityManager->createQueryBuilder()
             ->from(CmsUser::class, 'u')
             ->update();
 
@@ -83,7 +83,7 @@ class QueryBuilderTest extends OrmTestCase
 
     public function testSimpleSelect(): void
     {
-        $qb = $this->_em->createQueryBuilder()
+        $qb = $this->entityManager->createQueryBuilder()
             ->from(CmsUser::class, 'u')
             ->select('u.id', 'u.username');
 
@@ -92,7 +92,7 @@ class QueryBuilderTest extends OrmTestCase
 
     public function testSimpleDelete(): void
     {
-        $qb = $this->_em->createQueryBuilder()
+        $qb = $this->entityManager->createQueryBuilder()
             ->delete(CmsUser::class, 'u');
 
         $this->assertValidQueryBuilder($qb, 'DELETE Doctrine\Tests\Models\CMS\CmsUser u');
@@ -100,7 +100,7 @@ class QueryBuilderTest extends OrmTestCase
 
     public function testSimpleSelectWithFromIndexBy(): void
     {
-        $qb = $this->_em->createQueryBuilder()
+        $qb = $this->entityManager->createQueryBuilder()
             ->from(CmsUser::class, 'u', 'u.id')
             ->select('u.id', 'u.username');
 
@@ -109,7 +109,7 @@ class QueryBuilderTest extends OrmTestCase
 
     public function testSimpleSelectWithIndexBy(): void
     {
-        $qb = $this->_em->createQueryBuilder()
+        $qb = $this->entityManager->createQueryBuilder()
             ->from(CmsUser::class, 'u')
             ->indexBy('u', 'u.id')
             ->select('u.id', 'u.username');
@@ -119,7 +119,7 @@ class QueryBuilderTest extends OrmTestCase
 
     public function testSimpleUpdate(): void
     {
-        $qb = $this->_em->createQueryBuilder()
+        $qb = $this->entityManager->createQueryBuilder()
             ->update(CmsUser::class, 'u')
             ->set('u.username', ':username');
 
@@ -128,7 +128,7 @@ class QueryBuilderTest extends OrmTestCase
 
     public function testInnerJoin(): void
     {
-        $qb = $this->_em->createQueryBuilder()
+        $qb = $this->entityManager->createQueryBuilder()
             ->select('u', 'a')
             ->from(CmsUser::class, 'u')
             ->innerJoin('u.articles', 'a');
@@ -138,7 +138,7 @@ class QueryBuilderTest extends OrmTestCase
 
     public function testComplexInnerJoin(): void
     {
-        $qb = $this->_em->createQueryBuilder()
+        $qb = $this->entityManager->createQueryBuilder()
             ->select('u', 'a')
             ->from(CmsUser::class, 'u')
             ->innerJoin('u.articles', 'a', 'ON', 'u.id = a.author_id');
@@ -151,7 +151,7 @@ class QueryBuilderTest extends OrmTestCase
 
     public function testComplexInnerJoinWithIndexBy(): void
     {
-        $qb = $this->_em->createQueryBuilder()
+        $qb = $this->entityManager->createQueryBuilder()
             ->select('u', 'a')
             ->from(CmsUser::class, 'u')
             ->innerJoin('u.articles', 'a', 'ON', 'u.id = a.author_id', 'a.name');
@@ -164,7 +164,7 @@ class QueryBuilderTest extends OrmTestCase
 
     public function testLeftJoin(): void
     {
-        $qb = $this->_em->createQueryBuilder()
+        $qb = $this->entityManager->createQueryBuilder()
             ->select('u', 'a')
             ->from(CmsUser::class, 'u')
             ->leftJoin('u.articles', 'a');
@@ -174,7 +174,7 @@ class QueryBuilderTest extends OrmTestCase
 
     public function testLeftJoinWithIndexBy(): void
     {
-        $qb = $this->_em->createQueryBuilder()
+        $qb = $this->entityManager->createQueryBuilder()
             ->select('u', 'a')
             ->from(CmsUser::class, 'u')
             ->leftJoin('u.articles', 'a', null, null, 'a.name');
@@ -184,7 +184,7 @@ class QueryBuilderTest extends OrmTestCase
 
     public function testMultipleFrom(): void
     {
-        $qb = $this->_em->createQueryBuilder()
+        $qb = $this->entityManager->createQueryBuilder()
             ->select('u', 'g')
             ->from(CmsUser::class, 'u')
             ->from(CmsGroup::class, 'g');
@@ -194,7 +194,7 @@ class QueryBuilderTest extends OrmTestCase
 
     public function testMultipleFromWithIndexBy(): void
     {
-        $qb = $this->_em->createQueryBuilder()
+        $qb = $this->entityManager->createQueryBuilder()
             ->select('u', 'g')
             ->from(CmsUser::class, 'u')
             ->from(CmsGroup::class, 'g')
@@ -205,7 +205,7 @@ class QueryBuilderTest extends OrmTestCase
 
     public function testMultipleFromWithJoin(): void
     {
-        $qb = $this->_em->createQueryBuilder()
+        $qb = $this->entityManager->createQueryBuilder()
             ->select('u', 'g')
             ->from(CmsUser::class, 'u')
             ->from(CmsGroup::class, 'g')
@@ -216,7 +216,7 @@ class QueryBuilderTest extends OrmTestCase
 
     public function testMultipleFromWithMultipleJoin(): void
     {
-        $qb = $this->_em->createQueryBuilder()
+        $qb = $this->entityManager->createQueryBuilder()
             ->select('u', 'g')
             ->from(CmsUser::class, 'u')
             ->from(CmsArticle::class, 'a')
@@ -229,7 +229,7 @@ class QueryBuilderTest extends OrmTestCase
 
     public function testWhere(): void
     {
-        $qb = $this->_em->createQueryBuilder()
+        $qb = $this->entityManager->createQueryBuilder()
             ->select('u')
             ->from(CmsUser::class, 'u')
             ->where('u.id = :uid');
@@ -239,7 +239,7 @@ class QueryBuilderTest extends OrmTestCase
 
     public function testComplexAndWhere(): void
     {
-        $qb = $this->_em->createQueryBuilder()
+        $qb = $this->entityManager->createQueryBuilder()
             ->select('u')
             ->from(CmsUser::class, 'u')
             ->where('u.id = :uid OR u.id = :uid2 OR u.id = :uid3')
@@ -250,7 +250,7 @@ class QueryBuilderTest extends OrmTestCase
 
     public function testAndWhere(): void
     {
-        $qb = $this->_em->createQueryBuilder()
+        $qb = $this->entityManager->createQueryBuilder()
             ->select('u')
             ->from(CmsUser::class, 'u')
             ->where('u.id = :uid')
@@ -261,7 +261,7 @@ class QueryBuilderTest extends OrmTestCase
 
     public function testOrWhere(): void
     {
-        $qb = $this->_em->createQueryBuilder()
+        $qb = $this->entityManager->createQueryBuilder()
             ->select('u')
             ->from(CmsUser::class, 'u')
             ->where('u.id = :uid')
@@ -272,7 +272,7 @@ class QueryBuilderTest extends OrmTestCase
 
     public function testComplexAndWhereOrWhereNesting(): void
     {
-        $qb = $this->_em->createQueryBuilder();
+        $qb = $this->entityManager->createQueryBuilder();
         $qb->select('u')
            ->from(CmsUser::class, 'u')
            ->where('u.id = :uid')
@@ -286,7 +286,7 @@ class QueryBuilderTest extends OrmTestCase
 
     public function testAndWhereIn(): void
     {
-        $qb = $this->_em->createQueryBuilder();
+        $qb = $this->entityManager->createQueryBuilder();
         $qb->select('u')
            ->from(CmsUser::class, 'u')
            ->where('u.id = :uid')
@@ -297,7 +297,7 @@ class QueryBuilderTest extends OrmTestCase
 
     public function testOrWhereIn(): void
     {
-        $qb = $this->_em->createQueryBuilder();
+        $qb = $this->entityManager->createQueryBuilder();
         $qb->select('u')
            ->from(CmsUser::class, 'u')
            ->where('u.id = :uid')
@@ -308,7 +308,7 @@ class QueryBuilderTest extends OrmTestCase
 
     public function testAndWhereNotIn(): void
     {
-        $qb = $this->_em->createQueryBuilder();
+        $qb = $this->entityManager->createQueryBuilder();
         $qb->select('u')
            ->from(CmsUser::class, 'u')
            ->where('u.id = :uid')
@@ -319,7 +319,7 @@ class QueryBuilderTest extends OrmTestCase
 
     public function testOrWhereNotIn(): void
     {
-        $qb = $this->_em->createQueryBuilder();
+        $qb = $this->entityManager->createQueryBuilder();
         $qb->select('u')
            ->from(CmsUser::class, 'u')
            ->where('u.id = :uid')
@@ -330,7 +330,7 @@ class QueryBuilderTest extends OrmTestCase
 
     public function testGroupBy(): void
     {
-        $qb = $this->_em->createQueryBuilder()
+        $qb = $this->entityManager->createQueryBuilder()
             ->select('u')
             ->from(CmsUser::class, 'u')
             ->groupBy('u.id')
@@ -341,7 +341,7 @@ class QueryBuilderTest extends OrmTestCase
 
     public function testHaving(): void
     {
-        $qb = $this->_em->createQueryBuilder()
+        $qb = $this->entityManager->createQueryBuilder()
             ->select('u')
             ->from(CmsUser::class, 'u')
             ->groupBy('u.id')
@@ -352,7 +352,7 @@ class QueryBuilderTest extends OrmTestCase
 
     public function testAndHaving(): void
     {
-        $qb = $this->_em->createQueryBuilder()
+        $qb = $this->entityManager->createQueryBuilder()
             ->select('u')
             ->from(CmsUser::class, 'u')
             ->groupBy('u.id')
@@ -364,7 +364,7 @@ class QueryBuilderTest extends OrmTestCase
 
     public function testOrHaving(): void
     {
-        $qb = $this->_em->createQueryBuilder()
+        $qb = $this->entityManager->createQueryBuilder()
             ->select('u')
             ->from(CmsUser::class, 'u')
             ->groupBy('u.id')
@@ -377,7 +377,7 @@ class QueryBuilderTest extends OrmTestCase
 
     public function testOrderBy(): void
     {
-        $qb = $this->_em->createQueryBuilder()
+        $qb = $this->entityManager->createQueryBuilder()
             ->select('u')
             ->from(CmsUser::class, 'u')
             ->orderBy('u.username', 'ASC');
@@ -387,7 +387,7 @@ class QueryBuilderTest extends OrmTestCase
 
     public function testOrderByWithExpression(): void
     {
-        $qb = $this->_em->createQueryBuilder();
+        $qb = $this->entityManager->createQueryBuilder();
         $qb->select('u')
             ->from(CmsUser::class, 'u')
             ->orderBy($qb->expr()->asc('u.username'));
@@ -397,7 +397,7 @@ class QueryBuilderTest extends OrmTestCase
 
     public function testAddOrderBy(): void
     {
-        $qb = $this->_em->createQueryBuilder()
+        $qb = $this->entityManager->createQueryBuilder()
             ->select('u')
             ->from(CmsUser::class, 'u')
             ->orderBy('u.username', 'ASC')
@@ -408,7 +408,7 @@ class QueryBuilderTest extends OrmTestCase
 
     public function testAddOrderByWithExpression(): void
     {
-        $qb = $this->_em->createQueryBuilder();
+        $qb = $this->entityManager->createQueryBuilder();
         $qb->select('u')
             ->from(CmsUser::class, 'u')
             ->orderBy('u.username', 'ASC')
@@ -419,7 +419,7 @@ class QueryBuilderTest extends OrmTestCase
 
     public function testAddCriteriaWhere(): void
     {
-        $qb = $this->_em->createQueryBuilder();
+        $qb = $this->entityManager->createQueryBuilder();
         $qb->select('u')
             ->from(CmsUser::class, 'u');
 
@@ -434,7 +434,7 @@ class QueryBuilderTest extends OrmTestCase
 
     public function testAddMultipleSameCriteriaWhere(): void
     {
-        $qb = $this->_em->createQueryBuilder();
+        $qb = $this->entityManager->createQueryBuilder();
         $qb->select('alias1')->from(CmsUser::class, 'alias1');
 
         $criteria = new Criteria();
@@ -455,7 +455,7 @@ class QueryBuilderTest extends OrmTestCase
      */
     public function testAddCriteriaWhereWithMultipleParametersWithSameField(): void
     {
-        $qb = $this->_em->createQueryBuilder();
+        $qb = $this->entityManager->createQueryBuilder();
         $qb->select('alias1')->from(CmsUser::class, 'alias1');
 
         $criteria = new Criteria();
@@ -474,7 +474,7 @@ class QueryBuilderTest extends OrmTestCase
      */
     public function testAddCriteriaWhereWithMultipleParametersWithDifferentFields(): void
     {
-        $qb = $this->_em->createQueryBuilder();
+        $qb = $this->entityManager->createQueryBuilder();
         $qb->select('alias1')->from(CmsUser::class, 'alias1');
 
         $criteria = new Criteria();
@@ -493,7 +493,7 @@ class QueryBuilderTest extends OrmTestCase
      */
     public function testAddCriteriaWhereWithMultipleParametersWithSubpathsAndDifferentProperties(): void
     {
-        $qb = $this->_em->createQueryBuilder();
+        $qb = $this->entityManager->createQueryBuilder();
         $qb->select('alias1')->from(CmsUser::class, 'alias1');
 
         $criteria = new Criteria();
@@ -512,7 +512,7 @@ class QueryBuilderTest extends OrmTestCase
      */
     public function testAddCriteriaWhereWithMultipleParametersWithSubpathsAndSameProperty(): void
     {
-        $qb = $this->_em->createQueryBuilder();
+        $qb = $this->entityManager->createQueryBuilder();
         $qb->select('alias1')->from(CmsUser::class, 'alias1');
 
         $criteria = new Criteria();
@@ -528,7 +528,7 @@ class QueryBuilderTest extends OrmTestCase
 
     public function testAddCriteriaOrder(): void
     {
-        $qb = $this->_em->createQueryBuilder();
+        $qb = $this->entityManager->createQueryBuilder();
         $qb->select('u')
             ->from(CmsUser::class, 'u');
 
@@ -546,7 +546,7 @@ class QueryBuilderTest extends OrmTestCase
      */
     public function testAddCriteriaOrderOnJoinAlias(): void
     {
-        $qb = $this->_em->createQueryBuilder();
+        $qb = $this->entityManager->createQueryBuilder();
         $qb->select('u')
             ->from(CmsUser::class, 'u')
             ->join('u.article', 'a');
@@ -562,7 +562,7 @@ class QueryBuilderTest extends OrmTestCase
 
     public function testAddCriteriaLimit(): void
     {
-        $qb = $this->_em->createQueryBuilder();
+        $qb = $this->entityManager->createQueryBuilder();
         $qb->select('u')
             ->from(CmsUser::class, 'u');
 
@@ -578,7 +578,7 @@ class QueryBuilderTest extends OrmTestCase
 
     public function testAddCriteriaUndefinedLimit(): void
     {
-        $qb = $this->_em->createQueryBuilder();
+        $qb = $this->entityManager->createQueryBuilder();
         $qb->select('u')
             ->from(CmsUser::class, 'u')
             ->setFirstResult(2)
@@ -594,7 +594,7 @@ class QueryBuilderTest extends OrmTestCase
 
     public function testGetQuery(): void
     {
-        $qb = $this->_em->createQueryBuilder()
+        $qb = $this->entityManager->createQueryBuilder()
             ->select('u')
             ->from(CmsUser::class, 'u');
         $q  = $qb->getQuery();
@@ -604,7 +604,7 @@ class QueryBuilderTest extends OrmTestCase
 
     public function testSetParameter(): void
     {
-        $qb = $this->_em->createQueryBuilder()
+        $qb = $this->entityManager->createQueryBuilder()
             ->select('u')
             ->from(CmsUser::class, 'u')
             ->where('u.id = :id')
@@ -620,7 +620,7 @@ class QueryBuilderTest extends OrmTestCase
 
     public function testSetParameters(): void
     {
-        $qb = $this->_em->createQueryBuilder();
+        $qb = $this->entityManager->createQueryBuilder();
         $qb->select('u')
            ->from(CmsUser::class, 'u')
            ->where($qb->expr()->orX('u.username = :username', 'u.username = :username2'));
@@ -636,7 +636,7 @@ class QueryBuilderTest extends OrmTestCase
 
     public function testGetParameters(): void
     {
-        $qb = $this->_em->createQueryBuilder();
+        $qb = $this->entityManager->createQueryBuilder();
         $qb->select('u')
            ->from(CmsUser::class, 'u')
            ->where('u.id = :id');
@@ -651,7 +651,7 @@ class QueryBuilderTest extends OrmTestCase
 
     public function testGetParameter(): void
     {
-        $qb = $this->_em->createQueryBuilder()
+        $qb = $this->entityManager->createQueryBuilder()
             ->select('u')
             ->from(CmsUser::class, 'u')
             ->where('u.id = :id');
@@ -666,7 +666,7 @@ class QueryBuilderTest extends OrmTestCase
 
     public function testMultipleWhere(): void
     {
-        $qb = $this->_em->createQueryBuilder()
+        $qb = $this->entityManager->createQueryBuilder()
             ->select('u')
             ->from(CmsUser::class, 'u')
             ->where('u.id = :uid', 'u.id = :uid2');
@@ -676,7 +676,7 @@ class QueryBuilderTest extends OrmTestCase
 
     public function testMultipleAndWhere(): void
     {
-        $qb = $this->_em->createQueryBuilder()
+        $qb = $this->entityManager->createQueryBuilder()
             ->select('u')
             ->from(CmsUser::class, 'u')
             ->andWhere('u.id = :uid', 'u.id = :uid2');
@@ -686,7 +686,7 @@ class QueryBuilderTest extends OrmTestCase
 
     public function testMultipleOrWhere(): void
     {
-        $qb = $this->_em->createQueryBuilder();
+        $qb = $this->entityManager->createQueryBuilder();
         $qb->select('u')
            ->from(CmsUser::class, 'u')
            ->orWhere('u.id = :uid', $qb->expr()->eq('u.id', ':uid2'));
@@ -696,7 +696,7 @@ class QueryBuilderTest extends OrmTestCase
 
     public function testComplexWhere(): void
     {
-        $qb     = $this->_em->createQueryBuilder();
+        $qb     = $this->entityManager->createQueryBuilder();
         $orExpr = $qb->expr()->orX();
         $orExpr->add($qb->expr()->eq('u.id', ':uid3'));
         $orExpr->add($qb->expr()->in('u.id', [1]));
@@ -710,7 +710,7 @@ class QueryBuilderTest extends OrmTestCase
 
     public function testWhereInWithStringLiterals(): void
     {
-        $qb = $this->_em->createQueryBuilder();
+        $qb = $this->entityManager->createQueryBuilder();
         $qb->select('u')
            ->from(CmsUser::class, 'u')
            ->where($qb->expr()->in('u.name', ['one', 'two', 'three']));
@@ -724,8 +724,8 @@ class QueryBuilderTest extends OrmTestCase
 
     public function testWhereInWithObjectLiterals(): void
     {
-        $qb   = $this->_em->createQueryBuilder();
-        $expr = $this->_em->getExpressionBuilder();
+        $qb   = $this->entityManager->createQueryBuilder();
+        $expr = $this->entityManager->getExpressionBuilder();
         $qb->select('u')
            ->from(CmsUser::class, 'u')
            ->where($expr->in('u.name', [$expr->literal('one'), $expr->literal('two'), $expr->literal('three')]));
@@ -739,12 +739,12 @@ class QueryBuilderTest extends OrmTestCase
 
     public function testNegation(): void
     {
-        $expr   = $this->_em->getExpressionBuilder();
+        $expr   = $this->entityManager->getExpressionBuilder();
         $orExpr = $expr->orX();
         $orExpr->add($expr->eq('u.id', ':uid3'));
         $orExpr->add($expr->not($expr->in('u.id', [1])));
 
-        $qb = $this->_em->createQueryBuilder();
+        $qb = $this->entityManager->createQueryBuilder();
         $qb->select('u')
            ->from(CmsUser::class, 'u')
            ->where($orExpr);
@@ -754,8 +754,8 @@ class QueryBuilderTest extends OrmTestCase
 
     public function testSomeAllAny(): void
     {
-        $qb   = $this->_em->createQueryBuilder();
-        $expr = $this->_em->getExpressionBuilder();
+        $qb   = $this->entityManager->createQueryBuilder();
+        $expr = $this->entityManager->getExpressionBuilder();
 
         $qb->select('u')
            ->from(CmsUser::class, 'u')
@@ -766,8 +766,8 @@ class QueryBuilderTest extends OrmTestCase
 
     public function testMultipleIsolatedQueryConstruction(): void
     {
-        $qb   = $this->_em->createQueryBuilder();
-        $expr = $this->_em->getExpressionBuilder();
+        $qb   = $this->entityManager->createQueryBuilder();
+        $expr = $this->entityManager->getExpressionBuilder();
 
         $qb->select('u')->from(CmsUser::class, 'u');
         $qb->where($expr->eq('u.name', ':name'));
@@ -792,19 +792,19 @@ class QueryBuilderTest extends OrmTestCase
 
     public function testGetEntityManager(): void
     {
-        $qb = $this->_em->createQueryBuilder();
-        $this->assertEquals($this->_em, $qb->getEntityManager());
+        $qb = $this->entityManager->createQueryBuilder();
+        $this->assertEquals($this->entityManager, $qb->getEntityManager());
     }
 
     public function testInitialStateIsClean(): void
     {
-        $qb = $this->_em->createQueryBuilder();
+        $qb = $this->entityManager->createQueryBuilder();
         $this->assertEquals(QueryBuilder::STATE_CLEAN, $qb->getState());
     }
 
     public function testAlteringQueryChangesStateToDirty(): void
     {
-        $qb = $this->_em->createQueryBuilder()
+        $qb = $this->entityManager->createQueryBuilder()
             ->select('u')
             ->from(CmsUser::class, 'u');
 
@@ -813,7 +813,7 @@ class QueryBuilderTest extends OrmTestCase
 
     public function testSelectWithFuncExpression(): void
     {
-        $qb   = $this->_em->createQueryBuilder();
+        $qb   = $this->entityManager->createQueryBuilder();
         $expr = $qb->expr();
         $qb->select($expr->count('e.id'));
 
@@ -822,7 +822,7 @@ class QueryBuilderTest extends OrmTestCase
 
     public function testResetDQLPart(): void
     {
-        $qb = $this->_em->createQueryBuilder()
+        $qb = $this->entityManager->createQueryBuilder()
             ->select('u')
             ->from(CmsUser::class, 'u')
             ->where('u.username = ?1')->orderBy('u.username');
@@ -838,7 +838,7 @@ class QueryBuilderTest extends OrmTestCase
 
     public function testResetDQLParts(): void
     {
-        $qb = $this->_em->createQueryBuilder()
+        $qb = $this->entityManager->createQueryBuilder()
             ->select('u')
             ->from(CmsUser::class, 'u')
             ->where('u.username = ?1')->orderBy('u.username');
@@ -852,7 +852,7 @@ class QueryBuilderTest extends OrmTestCase
 
     public function testResetAllDQLParts(): void
     {
-        $qb = $this->_em->createQueryBuilder()
+        $qb = $this->entityManager->createQueryBuilder()
             ->select('u')
             ->from(CmsUser::class, 'u')
             ->where('u.username = ?1')->orderBy('u.username');
@@ -869,7 +869,7 @@ class QueryBuilderTest extends OrmTestCase
      */
     public function testDeepClone(): void
     {
-        $qb = $this->_em->createQueryBuilder()
+        $qb = $this->entityManager->createQueryBuilder()
             ->select('u')
             ->from(CmsUser::class, 'u')
             ->andWhere('u.username = ?1')
@@ -889,7 +889,7 @@ class QueryBuilderTest extends OrmTestCase
      */
     public function testAddCriteriaWhereWithJoinAlias(): void
     {
-        $qb = $this->_em->createQueryBuilder();
+        $qb = $this->entityManager->createQueryBuilder();
         $qb->select('alias1')->from(CmsUser::class, 'alias1');
         $qb->join('alias1.articles', 'alias2');
 
@@ -909,7 +909,7 @@ class QueryBuilderTest extends OrmTestCase
      */
     public function testAddCriteriaWhereWithDefaultAndJoinAlias(): void
     {
-        $qb = $this->_em->createQueryBuilder();
+        $qb = $this->entityManager->createQueryBuilder();
         $qb->select('alias1')->from(CmsUser::class, 'alias1');
         $qb->join('alias1.articles', 'alias2');
 
@@ -929,7 +929,7 @@ class QueryBuilderTest extends OrmTestCase
      */
     public function testAddCriteriaWhereOnJoinAliasWithDuplicateFields(): void
     {
-        $qb = $this->_em->createQueryBuilder();
+        $qb = $this->entityManager->createQueryBuilder();
         $qb->select('alias1')->from(CmsUser::class, 'alias1');
         $qb->join('alias1.articles', 'alias2');
 
@@ -951,7 +951,7 @@ class QueryBuilderTest extends OrmTestCase
      */
     public function testParametersAreCloned(): void
     {
-        $originalQb = new QueryBuilder($this->_em);
+        $originalQb = new QueryBuilder($this->entityManager);
 
         $originalQb->setParameter('parameter1', 'value1');
 
@@ -965,7 +965,7 @@ class QueryBuilderTest extends OrmTestCase
 
     public function testGetRootAlias(): void
     {
-        $qb = $this->_em->createQueryBuilder()
+        $qb = $this->entityManager->createQueryBuilder()
             ->select('u')
             ->from(CmsUser::class, 'u');
 
@@ -974,7 +974,7 @@ class QueryBuilderTest extends OrmTestCase
 
     public function testGetRootAliases(): void
     {
-        $qb = $this->_em->createQueryBuilder()
+        $qb = $this->entityManager->createQueryBuilder()
             ->select('u')
             ->from(CmsUser::class, 'u');
 
@@ -983,7 +983,7 @@ class QueryBuilderTest extends OrmTestCase
 
     public function testGetRootEntities(): void
     {
-        $qb = $this->_em->createQueryBuilder()
+        $qb = $this->entityManager->createQueryBuilder()
             ->select('u')
             ->from(CmsUser::class, 'u');
 
@@ -992,7 +992,7 @@ class QueryBuilderTest extends OrmTestCase
 
     public function testGetSeveralRootAliases(): void
     {
-        $qb = $this->_em->createQueryBuilder()
+        $qb = $this->entityManager->createQueryBuilder()
             ->select('u')
             ->from(CmsUser::class, 'u')
             ->from(CmsUser::class, 'u2');
@@ -1003,7 +1003,7 @@ class QueryBuilderTest extends OrmTestCase
 
     public function testBCAddJoinWithoutRootAlias(): void
     {
-        $qb = $this->_em->createQueryBuilder()
+        $qb = $this->entityManager->createQueryBuilder()
             ->select('u')
             ->from(CmsUser::class, 'u')
             ->add('join', ['INNER JOIN u.groups g'], true);
@@ -1016,8 +1016,8 @@ class QueryBuilderTest extends OrmTestCase
      */
     public function testEmptyStringLiteral(): void
     {
-        $expr = $this->_em->getExpressionBuilder();
-        $qb   = $this->_em->createQueryBuilder()
+        $expr = $this->entityManager->getExpressionBuilder();
+        $qb   = $this->entityManager->createQueryBuilder()
             ->select('u')
             ->from(CmsUser::class, 'u')
             ->where($expr->eq('u.username', $expr->literal('')));
@@ -1030,8 +1030,8 @@ class QueryBuilderTest extends OrmTestCase
      */
     public function testEmptyNumericLiteral(): void
     {
-        $expr = $this->_em->getExpressionBuilder();
-        $qb   = $this->_em->createQueryBuilder()
+        $expr = $this->entityManager->getExpressionBuilder();
+        $qb   = $this->entityManager->createQueryBuilder()
             ->select('u')
             ->from(CmsUser::class, 'u')
             ->where($expr->eq('u.username', $expr->literal(0)));
@@ -1044,7 +1044,7 @@ class QueryBuilderTest extends OrmTestCase
      */
     public function testAddFromString(): void
     {
-        $qb = $this->_em->createQueryBuilder()
+        $qb = $this->entityManager->createQueryBuilder()
             ->add('select', 'u')
             ->add('from', CmsUser::class . ' u');
 
@@ -1056,7 +1056,7 @@ class QueryBuilderTest extends OrmTestCase
      */
     public function testAddDistinct(): void
     {
-        $qb = $this->_em->createQueryBuilder()
+        $qb = $this->entityManager->createQueryBuilder()
             ->select('u')
             ->distinct()
             ->from(CmsUser::class, 'u');
@@ -1072,14 +1072,14 @@ class QueryBuilderTest extends OrmTestCase
         $this->expectException(InvalidArgumentException::class);
         $this->expectExceptionMessage("Using \$append = true does not have an effect with 'where' or 'having' parts. See QueryBuilder#andWhere() for an example for correct usage.");
 
-        $qb = $this->_em->createQueryBuilder()
+        $qb = $this->entityManager->createQueryBuilder()
             ->add('where', 'u.foo = ?1')
             ->add('where', 'u.bar = ?2', true);
     }
 
     public function testSecondLevelCacheQueryBuilderOptions(): void
     {
-        $defaultQueryBuilder = $this->_em->createQueryBuilder()
+        $defaultQueryBuilder = $this->entityManager->createQueryBuilder()
             ->select('s')
             ->from(State::class, 's');
 
@@ -1095,7 +1095,7 @@ class QueryBuilderTest extends OrmTestCase
         $this->assertNull($defaultQuery->getCacheRegion());
         $this->assertNull($defaultQuery->getCacheMode());
 
-        $builder = $this->_em->createQueryBuilder()
+        $builder = $this->entityManager->createQueryBuilder()
             ->select('s')
             ->setLifetime(123)
             ->setCacheable(true)
@@ -1121,7 +1121,7 @@ class QueryBuilderTest extends OrmTestCase
      */
     public function testRebuildsFromParts(): void
     {
-        $qb = $this->_em->createQueryBuilder()
+        $qb = $this->entityManager->createQueryBuilder()
           ->select('u')
           ->from(CmsUser::class, 'u')
           ->join('u.article', 'a');
@@ -1129,7 +1129,7 @@ class QueryBuilderTest extends OrmTestCase
         $dqlParts = $qb->getDQLParts();
         $dql      = $qb->getDQL();
 
-        $qb2 = $this->_em->createQueryBuilder();
+        $qb2 = $this->entityManager->createQueryBuilder();
         foreach (array_filter($dqlParts) as $name => $part) {
             $qb2->add($name, $part);
         }
@@ -1141,7 +1141,7 @@ class QueryBuilderTest extends OrmTestCase
 
     public function testGetAllAliasesWithNoJoins(): void
     {
-        $qb = $this->_em->createQueryBuilder();
+        $qb = $this->entityManager->createQueryBuilder();
         $qb->select('u')->from(CmsUser::class, 'u');
 
         $aliases = $qb->getAllAliases();
@@ -1151,7 +1151,7 @@ class QueryBuilderTest extends OrmTestCase
 
     public function testGetAllAliasesWithJoins(): void
     {
-        $qb = $this->_em->createQueryBuilder()
+        $qb = $this->entityManager->createQueryBuilder()
             ->select('u')
             ->from(CmsUser::class, 'u')
             ->join('u.groups', 'g');
@@ -1166,7 +1166,7 @@ class QueryBuilderTest extends OrmTestCase
      */
     public function testGetParameterTypeJuggling(): void
     {
-        $builder = $this->_em->createQueryBuilder()
+        $builder = $this->entityManager->createQueryBuilder()
                              ->select('u')
                              ->from(CmsUser::class, 'u')
                              ->where('u.id = ?0');
@@ -1183,7 +1183,7 @@ class QueryBuilderTest extends OrmTestCase
      */
     public function testSetParameterWithNameZeroIsNotOverridden(): void
     {
-        $builder = $this->_em->createQueryBuilder()
+        $builder = $this->entityManager->createQueryBuilder()
                              ->select('u')
                              ->from(CmsUser::class, 'u')
                              ->where('u.id != ?0')
@@ -1202,7 +1202,7 @@ class QueryBuilderTest extends OrmTestCase
      */
     public function testSetParameterWithNameZeroDoesNotOverrideAnotherParameter(): void
     {
-        $builder = $this->_em->createQueryBuilder()
+        $builder = $this->entityManager->createQueryBuilder()
                              ->select('u')
                              ->from(CmsUser::class, 'u')
                              ->where('u.id != ?0')
@@ -1221,7 +1221,7 @@ class QueryBuilderTest extends OrmTestCase
      */
     public function testSetParameterWithTypeJugglingWorks(): void
     {
-        $builder = $this->_em->createQueryBuilder()
+        $builder = $this->entityManager->createQueryBuilder()
                              ->select('u')
                              ->from(CmsUser::class, 'u')
                              ->where('u.id != ?0')

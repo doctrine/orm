@@ -13,7 +13,6 @@ use Doctrine\Tests\Models\DDC117\DDC117Link;
 use Doctrine\Tests\Models\DDC117\DDC117Reference;
 use Doctrine\Tests\Models\DDC117\DDC117Translation;
 use Doctrine\Tests\OrmFunctionalTestCase;
-use Doctrine\Tests\VerifyDeprecations;
 use Exception;
 
 use function assert;
@@ -25,8 +24,6 @@ use function get_class;
  */
 class DDC117Test extends OrmFunctionalTestCase
 {
-    use VerifyDeprecations;
-
     private $article1;
     private $article2;
     private $reference;
@@ -449,7 +446,6 @@ class DDC117Test extends OrmFunctionalTestCase
 
         $this->assertEquals($this->article1->id(), $refRep->source()->id());
         $this->assertEquals($this->article2->id(), $refRep->target()->id());
-        $this->assertHasDeprecationMessages();
     }
 
     /**

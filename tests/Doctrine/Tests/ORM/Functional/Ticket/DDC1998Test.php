@@ -58,7 +58,10 @@ class DDC1998Entity
     /** @Id @Column(type="ddc1998") */
     public $id;
 
-    /** @Column(type="integer") */
+    /**
+     * @var int
+     * @Column(type="integer")
+     */
     public $num = 0;
 }
 
@@ -74,7 +77,10 @@ class DDC1998Type extends StringType
         return (string) $value;
     }
 
-    public function convertToPhpValue($value, AbstractPlatform $platform)
+    /**
+     * {@inheritDoc}
+     */
+    public function convertToPHPValue($value, AbstractPlatform $platform)
     {
         return new DDC1998Id($value);
     }

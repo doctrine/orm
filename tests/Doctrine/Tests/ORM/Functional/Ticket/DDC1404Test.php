@@ -6,7 +6,7 @@ namespace Doctrine\Tests\ORM\Functional\Ticket;
 
 use Doctrine\Tests\OrmFunctionalTestCase;
 
-use function sizeof;
+use function count;
 
 /**
  * @group DDC-1404
@@ -41,9 +41,9 @@ class DDC1404Test extends OrmFunctionalTestCase
         $this->assertEquals('SELECT p FROM Doctrine\Tests\ORM\Functional\Ticket\DDC1404ChildEntity p WHERE p.id = 1', $queryFirst->getDQL());
         $this->assertEquals('SELECT p FROM Doctrine\Tests\ORM\Functional\Ticket\DDC1404ChildEntity p WHERE p.id = 2', $querySecond->getDQL());
 
-        $this->assertEquals(sizeof($queryAll->getResult()), 2);
-        $this->assertEquals(sizeof($queryFirst->getResult()), 1);
-        $this->assertEquals(sizeof($querySecond->getResult()), 1);
+        $this->assertEquals(count($queryAll->getResult()), 2);
+        $this->assertEquals(count($queryFirst->getResult()), 1);
+        $this->assertEquals(count($querySecond->getResult()), 1);
     }
 
     public function loadFixtures(): void
@@ -68,6 +68,7 @@ class DDC1404Test extends OrmFunctionalTestCase
 class DDC1404ParentEntity
 {
     /**
+     * @var int
      * @Id
      * @Column(type="integer")
      * @GeneratedValue()

@@ -5,6 +5,8 @@ declare(strict_types=1);
 namespace Doctrine\Tests\ORM\Functional;
 
 use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
+use Doctrine\Deprecations\PHPUnit\VerifyDeprecations;
 use Doctrine\Persistence\NotifyPropertyChanged;
 use Doctrine\Persistence\PropertyChangedListener;
 use Doctrine\Tests\OrmFunctionalTestCase;
@@ -17,9 +19,14 @@ use function count;
  */
 class NotifyPolicyTest extends OrmFunctionalTestCase
 {
+    use VerifyDeprecations;
+
     protected function setUp(): void
     {
         parent::setUp();
+
+        $this->expectDeprecationWithIdentifier('https://github.com/doctrine/orm/issues/8383');
+
         try {
             $this->_schemaTool->createSchema(
                 [
@@ -115,13 +122,21 @@ class NotifyBaseEntity implements NotifyPropertyChanged
 /** @Entity @ChangeTrackingPolicy("NOTIFY") */
 class NotifyUser extends NotifyBaseEntity
 {
-    /** @Id @Column(type="integer") @GeneratedValue */
+    /**
+     * @var int
+     * @Id
+     * @Column(type="integer")
+     * @GeneratedValue
+     */
     private $id;
 
     /** @Column */
     private $name;
 
-    /** @ManyToMany(targetEntity="NotifyGroup") */
+    /**
+     * @psalm-var Collection<int, NotifyGroup>
+     * @ManyToMany(targetEntity="NotifyGroup")
+     */
     private $groups;
 
     public function __construct()
@@ -154,13 +169,21 @@ class NotifyUser extends NotifyBaseEntity
 /** @Entity */
 class NotifyGroup extends NotifyBaseEntity
 {
-    /** @Id @Column(type="integer") @GeneratedValue */
+    /**
+     * @var int
+     * @Id
+     * @Column(type="integer")
+     * @GeneratedValue
+     */
     private $id;
 
     /** @Column */
     private $name;
 
-    /** @ManyToMany(targetEntity="NotifyUser", mappedBy="groups") */
+    /**
+     * @psalm-var Collection<int, NotifyUser>
+     * @ManyToMany(targetEntity="NotifyUser", mappedBy="groups")
+     */
     private $users;
 
     public function __construct()

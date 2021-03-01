@@ -81,7 +81,12 @@ class DDC2224Type extends Type
  */
 class DDC2224Entity
 {
-    /** @Id @GeneratedValue @Column(type="integer") */
+    /**
+     * @var int
+     * @Id
+     * @GeneratedValue
+     * @Column(type="integer")
+     */
     public $id;
 
     /** @Column(type="DDC2224Type") */
