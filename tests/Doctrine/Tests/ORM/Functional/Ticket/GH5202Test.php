@@ -59,4 +59,28 @@ class GH5202Test extends OrmFunctionalTestCase
 
         $this->assertTrue($this->_em->getUnitOfWork()->isReadOnly($user));
     }
+
+    public function testNotReadOnlyIfObjectWasKnownBefore(): void
+    {
+        $user           = new CmsUser();
+        $user->name     = 'beberlei';
+        $user->status   = 'active';
+        $user->username = 'beberlei';
+
+        $this->_em->persist($user);
+
+        $this->_em->flush();
+        $this->_em->clear();
+
+        $userIntoIdentityMap = $this->_em->find(CmsUser::class, $user->id);
+
+        $dql = 'SELECT u FROM Doctrine\\Tests\Models\CMS\CmsUser u';
+
+        $query = $this->_em->createQuery($dql);
+        $query->setHint(Query::HINT_READ_ONLY, true);
+
+        $user = $query->getSingleResult();
+
+        $this->assertFalse($this->_em->getUnitOfWork()->isReadOnly($user));
+    }
 }

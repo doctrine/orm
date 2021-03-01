@@ -2695,10 +2695,6 @@ class UnitOfWork implements PropertyChangedListener
                 return $unmanagedProxy;
             }
 
-            if (isset($hints[Query::HINT_READ_ONLY])) {
-                $this->readOnlyObjects[$oid] = true;
-            }
-
             if ($entity instanceof Proxy && ! $entity->__isInitialized()) {
                 $entity->__setInitialized(true);
 
