@@ -1,17 +1,17 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\Tests\ORM\Functional\Ticket;
 
 use Doctrine\Tests\OrmFunctionalTestCase;
 
 /**
  * Functional tests for cascade remove with class table inheritance.
- *
- * @author Matthieu Napoli <matthieu@mnapoli.fr>
  */
 class DDC2775Test extends OrmFunctionalTestCase
 {
-    protected function setUp() : void
+    protected function setUp(): void
     {
         parent::setUp();
 
@@ -28,7 +28,7 @@ class DDC2775Test extends OrmFunctionalTestCase
     /**
      * @group DDC-2775
      */
-    public function testIssueCascadeRemove()
+    public function testIssueCascadeRemove(): void
     {
         $role = new AdminRole();
         $user = new User();
@@ -65,25 +65,25 @@ class DDC2775Test extends OrmFunctionalTestCase
 abstract class Role
 {
     /**
+     * @var int
      * @Id @Column(type="integer")
      * @GeneratedValue
      */
     public $id;
 
     /**
+     * @var User
      * @ManyToOne(targetEntity="User", inversedBy="roles")
      */
     public $user;
 
-    /**
-     * @OneToMany(targetEntity="Authorization", mappedBy="role", cascade={"all"}, orphanRemoval=true)
-     */
+    /** @OneToMany(targetEntity="Authorization", mappedBy="role", cascade={"all"}, orphanRemoval=true) */
     public $authorizations;
 
-    public function addAuthorization(Authorization $authorization)
+    public function addAuthorization(Authorization $authorization): void
     {
         $this->authorizations[] = $authorization;
-        $authorization->role = $this;
+        $authorization->role    = $this;
     }
 }
 
@@ -98,17 +98,20 @@ class AdminRole extends Role
 class Authorization
 {
     /**
+     * @var int
      * @Id @Column(type="integer")
      * @GeneratedValue
      */
     public $id;
 
     /**
+     * @var User
      * @ManyToOne(targetEntity="User", inversedBy="authorizations")
      */
     public $user;
 
     /**
+     * @var Role
      * @ManyToOne(targetEntity="Role", inversedBy="authorizations")
      */
     public $role;
@@ -120,30 +123,27 @@ class Authorization
 class User
 {
     /**
+     * @var int
      * @Id @Column(type="integer")
      * @GeneratedValue(strategy="AUTO")
      */
     public $id;
 
-    /**
-     * @OneToMany(targetEntity="Role", mappedBy="user", cascade={"all"}, orphanRemoval=true)
-     */
+    /** @OneToMany(targetEntity="Role", mappedBy="user", cascade={"all"}, orphanRemoval=true) */
     public $roles;
 
-    /**
-     * @OneToMany(targetEntity="Authorization", mappedBy="user", cascade={"all"}, orphanRemoval=true)
-     */
+    /** @OneToMany(targetEntity="Authorization", mappedBy="user", cascade={"all"}, orphanRemoval=true) */
     public $authorizations;
 
-    public function addRole(Role $role)
+    public function addRole(Role $role): void
     {
         $this->roles[] = $role;
-        $role->user = $this;
+        $role->user    = $this;
     }
 
-    public function addAuthorization(Authorization $authorization)
+    public function addAuthorization(Authorization $authorization): void
     {
         $this->authorizations[] = $authorization;
-        $authorization->user = $this;
+        $authorization->user    = $this;
     }
 }

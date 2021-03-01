@@ -1,20 +1,22 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\Tests\ORM\Functional;
 
 use Doctrine\DBAL\Schema\Sequence;
 use Doctrine\Tests\OrmFunctionalTestCase;
+use Exception;
+
+use function is_numeric;
 
 class SequenceEmulatedIdentityStrategyTest extends OrmFunctionalTestCase
 {
-    /**
-     * {@inheritdoc}
-     */
-    protected function setUp() : void
+    protected function setUp(): void
     {
         parent::setUp();
 
-        if ( ! $this->_em->getConnection()->getDatabasePlatform()->usesSequenceEmulatedIdentityColumns()) {
+        if (! $this->_em->getConnection()->getDatabasePlatform()->usesSequenceEmulatedIdentityColumns()) {
             $this->markTestSkipped(
                 'This test is special to platforms emulating IDENTITY key generation strategy through sequences.'
             );
@@ -23,16 +25,13 @@ class SequenceEmulatedIdentityStrategyTest extends OrmFunctionalTestCase
                 $this->_schemaTool->createSchema(
                     [$this->_em->getClassMetadata(SequenceEmulatedIdentityEntity::class)]
                 );
-            } catch (\Exception $e) {
+            } catch (Exception $e) {
                 // Swallow all exceptions. We do not test the schema tool here.
             }
         }
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    protected function tearDown() : void
+    protected function tearDown(): void
     {
         parent::tearDown();
 
@@ -47,7 +46,7 @@ class SequenceEmulatedIdentityStrategyTest extends OrmFunctionalTestCase
         );
     }
 
-    public function testPreSavePostSaveCallbacksAreInvoked()
+    public function testPreSavePostSaveCallbacksAreInvoked(): void
     {
         $entity = new SequenceEmulatedIdentityEntity();
         $entity->setValue('hello');
@@ -65,7 +64,10 @@ class SequenceEmulatedIdentityEntity
     /** @Id @Column(type="integer") @GeneratedValue(strategy="IDENTITY") */
     private $id;
 
-    /** @Column(type="string") */
+    /**
+     * @var string
+     * @Column(type="string")
+     */
     private $value;
 
     public function getId()
@@ -78,7 +80,7 @@ class SequenceEmulatedIdentityEntity
         return $this->value;
     }
 
-    public function setValue($value)
+    public function setValue($value): void
     {
         $this->value = $value;
     }

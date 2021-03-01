@@ -1,4 +1,5 @@
 <?php
+
 /*
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
  * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
@@ -21,34 +22,34 @@ namespace Doctrine\ORM\Internal\Hydration;
 
 use Doctrine\DBAL\Driver\Statement;
 use Doctrine\DBAL\FetchMode;
+use Doctrine\DBAL\Platforms\AbstractPlatform;
 use Doctrine\DBAL\Types\Type;
+use Doctrine\Deprecations\Deprecation;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Events;
 use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\Query\ResultSetMapping;
 use Doctrine\ORM\Tools\Pagination\LimitSubqueryWalker;
+use Doctrine\ORM\UnitOfWork;
 use PDO;
-use const E_USER_DEPRECATED;
+use ReflectionClass;
+
 use function array_map;
+use function array_merge;
+use function count;
 use function end;
 use function in_array;
-use function trigger_error;
 
 /**
  * Base class for all hydrators. A hydrator is a class that provides some form
  * of transformation of an SQL result set into another structure.
- *
- * @since  2.0
- * @author Konsta Vesterinen <kvesteri@cc.hut.fi>
- * @author Roman Borschel <roman@code-factory.org>
- * @author Guilherme Blanco <guilhermeblanoc@hotmail.com>
  */
 abstract class AbstractHydrator
 {
     /**
      * The ResultSetMapping.
      *
-     * @var \Doctrine\ORM\Query\ResultSetMapping
+     * @var ResultSetMapping
      */
     protected $_rsm;
 
@@ -62,14 +63,14 @@ abstract class AbstractHydrator
     /**
      * The dbms Platform instance.
      *
-     * @var \Doctrine\DBAL\Platforms\AbstractPlatform
+     * @var AbstractPlatform
      */
     protected $_platform;
 
     /**
      * The UnitOfWork of the associated EntityManager.
      *
-     * @var \Doctrine\ORM\UnitOfWork
+     * @var UnitOfWork
      */
     protected $_uow;
 
@@ -90,7 +91,7 @@ abstract class AbstractHydrator
     /**
      * The statement that provides the data to hydrate.
      *
-     * @var \Doctrine\DBAL\Driver\Statement
+     * @var Statement
      */
     protected $_stmt;
 
@@ -126,9 +127,11 @@ abstract class AbstractHydrator
      */
     public function iterate($stmt, $resultSetMapping, array $hints = [])
     {
-        @trigger_error(
-            'Method ' . __METHOD__ . '() is deprecated and will be removed in Doctrine ORM 3.0. Use toIterable() instead.',
-            E_USER_DEPRECATED
+        Deprecation::trigger(
+            'doctrine/orm',
+            'https://github.com/doctrine/orm/issues/8463',
+            'Method %s() is deprecated and will be removed in Doctrine ORM 3.0. Use toIterable() instead.',
+            __METHOD__
         );
 
         $this->_stmt  = $stmt;
@@ -151,7 +154,7 @@ abstract class AbstractHydrator
      *
      * @return iterable<mixed>
      */
-    public function toIterable(Statement $stmt, ResultSetMapping $resultSetMapping, array $hints = []) : iterable
+    public function toIterable(Statement $stmt, ResultSetMapping $resultSetMapping, array $hints = []): iterable
     {
         $this->_stmt  = $stmt;
         $this->_rsm   = $resultSetMapping;
@@ -163,8 +166,6 @@ abstract class AbstractHydrator
 
         $this->prepare();
 
-        $result = [];
-
         while (true) {
             $row = $this->_stmt->fetch(FetchMode::ASSOCIATIVE);
 
@@ -174,9 +175,17 @@ abstract class AbstractHydrator
                 break;
             }
 
+            $result = [];
+
             $this->hydrateRowData($row, $result);
 
-            yield end($result);
+            $this->cleanupAfterRowIteration();
+
+            if (count($result) === 1) {
+                yield end($result);
+            } else {
+                yield $result;
+            }
         }
     }
 
@@ -272,6 +281,10 @@ abstract class AbstractHydrator
             ->removeEventListener([Events::onClear], $this);
     }
 
+    protected function cleanupAfterRowIteration(): void
+    {
+    }
+
     /**
      * Hydrates a single row from the current statement instance.
      *
@@ -286,13 +299,13 @@ abstract class AbstractHydrator
      */
     protected function hydrateRowData(array $row, array &$result)
     {
-        throw new HydrationException("hydrateRowData() not implemented by this hydrator.");
+        throw new HydrationException('hydrateRowData() not implemented by this hydrator.');
     }
 
     /**
      * Hydrates all rows from the current statement instance at once.
      *
-     * @return array
+     * @return mixed[]
      */
     abstract protected function hydrateAllData();
 
@@ -305,9 +318,9 @@ abstract class AbstractHydrator
      * field names during this procedure as well as any necessary conversions on
      * the values applied. Scalar values are kept in a specific key 'scalars'.
      *
-     * @param array  $data               SQL Result Row.
-     * @param array &$id                 Dql-Alias => ID-Hash.
-     * @param array &$nonemptyComponents Does this DQL-Alias has at least one non NULL value?
+     * @param mixed[] $data                SQL Result Row.
+     * @param array   &$id                 Dql-Alias => ID-Hash.
+     * @param array   &$nonemptyComponents Does this DQL-Alias has at least one non NULL value?
      *
      * @return array<string, array<string, mixed>> An array with all the fields
      *                                             (name => value) of the data
@@ -335,7 +348,7 @@ abstract class AbstractHydrator
             $fieldName = $cacheKeyInfo['fieldName'];
 
             switch (true) {
-                case (isset($cacheKeyInfo['isNewObjectParameter'])):
+                case isset($cacheKeyInfo['isNewObjectParameter']):
                     $argIndex = $cacheKeyInfo['argIndex'];
                     $objIndex = $cacheKeyInfo['objIndex'];
                     $type     = $cacheKeyInfo['type'];
@@ -345,7 +358,7 @@ abstract class AbstractHydrator
                     $rowData['newObjects'][$objIndex]['args'][$argIndex] = $value;
                     break;
 
-                case (isset($cacheKeyInfo['isScalar'])):
+                case isset($cacheKeyInfo['isScalar']):
                     $type  = $cacheKeyInfo['type'];
                     $value = $type->convertToPHPValue($value, $this->_platform);
 
@@ -359,7 +372,8 @@ abstract class AbstractHydrator
 
                     // If there are field name collisions in the child class, then we need
                     // to only hydrate if we are looking at the correct discriminator value
-                    if (isset($cacheKeyInfo['discriminatorColumn'], $data[$cacheKeyInfo['discriminatorColumn']])
+                    if (
+                        isset($cacheKeyInfo['discriminatorColumn'], $data[$cacheKeyInfo['discriminatorColumn']])
                         && ! in_array((string) $data[$cacheKeyInfo['discriminatorColumn']], $cacheKeyInfo['discriminatorValues'], true)
                     ) {
                         break;
@@ -377,9 +391,10 @@ abstract class AbstractHydrator
                         : $value;
 
                     if ($cacheKeyInfo['isIdentifier'] && $value !== null) {
-                        $id[$dqlAlias] .= '|' . $value;
+                        $id[$dqlAlias]                .= '|' . $value;
                         $nonemptyComponents[$dqlAlias] = true;
                     }
+
                     break;
             }
         }
@@ -440,13 +455,13 @@ abstract class AbstractHydrator
 
         switch (true) {
             // NOTE: Most of the times it's a field mapping, so keep it first!!!
-            case (isset($this->_rsm->fieldMappings[$key])):
+            case isset($this->_rsm->fieldMappings[$key]):
                 $classMetadata = $this->getClassMetadata($this->_rsm->declaringClasses[$key]);
                 $fieldName     = $this->_rsm->fieldMappings[$key];
                 $fieldMapping  = $classMetadata->fieldMappings[$fieldName];
                 $ownerMap      = $this->_rsm->columnOwnerMap[$key];
                 $columnInfo    = [
-                    'isIdentifier' => \in_array($fieldName, $classMetadata->identifier, true),
+                    'isIdentifier' => in_array($fieldName, $classMetadata->identifier, true),
                     'fieldName'    => $fieldName,
                     'type'         => Type::getType($fieldMapping['type']),
                     'dqlAlias'     => $ownerMap,
@@ -455,7 +470,7 @@ abstract class AbstractHydrator
                 // the current discriminator value must be saved in order to disambiguate fields hydration,
                 // should there be field name collisions
                 if ($classMetadata->parentClasses && isset($this->_rsm->discriminatorColumns[$ownerMap])) {
-                    return $this->_cache[$key] = \array_merge(
+                    return $this->_cache[$key] = array_merge(
                         $columnInfo,
                         [
                             'discriminatorColumn' => $this->_rsm->discriminatorColumns[$ownerMap],
@@ -467,7 +482,7 @@ abstract class AbstractHydrator
 
                 return $this->_cache[$key] = $columnInfo;
 
-            case (isset($this->_rsm->newObjectMappings[$key])):
+            case isset($this->_rsm->newObjectMappings[$key]):
                 // WARNING: A NEW object is also a scalar, so it must be declared before!
                 $mapping = $this->_rsm->newObjectMappings[$key];
 
@@ -478,7 +493,7 @@ abstract class AbstractHydrator
                     'type'                 => Type::getType($this->_rsm->typeMappings[$key]),
                     'argIndex'             => $mapping['argIndex'],
                     'objIndex'             => $mapping['objIndex'],
-                    'class'                => new \ReflectionClass($mapping['className']),
+                    'class'                => new ReflectionClass($mapping['className']),
                 ];
 
             case isset($this->_rsm->scalarMappings[$key], $this->_hints[LimitSubqueryWalker::FORCE_DBAL_TYPE_CONVERSION]):
@@ -487,14 +502,15 @@ abstract class AbstractHydrator
                     'type'      => Type::getType($this->_rsm->typeMappings[$key]),
                     'dqlAlias'  => '',
                 ];
-            case (isset($this->_rsm->scalarMappings[$key])):
+
+            case isset($this->_rsm->scalarMappings[$key]):
                 return $this->_cache[$key] = [
                     'isScalar'  => true,
                     'fieldName' => $this->_rsm->scalarMappings[$key],
                     'type'      => Type::getType($this->_rsm->typeMappings[$key]),
                 ];
 
-            case (isset($this->_rsm->metaMappings[$key])):
+            case isset($this->_rsm->metaMappings[$key]):
                 // Meta column (has meaning in relational schema only, i.e. foreign keys or discriminator columns).
                 $fieldName = $this->_rsm->metaMappings[$key];
                 $dqlAlias  = $this->_rsm->columnOwnerMap[$key];
@@ -522,10 +538,10 @@ abstract class AbstractHydrator
     /**
      * @return string[]
      */
-    private function getDiscriminatorValues(ClassMetadata $classMetadata) : array
+    private function getDiscriminatorValues(ClassMetadata $classMetadata): array
     {
         $values = array_map(
-            function (string $subClass) : string {
+            function (string $subClass): string {
                 return (string) $this->getClassMetadata($subClass)->discriminatorValue;
             },
             $classMetadata->subClasses
@@ -541,11 +557,11 @@ abstract class AbstractHydrator
      *
      * @param string $className
      *
-     * @return \Doctrine\ORM\Mapping\ClassMetadata
+     * @return ClassMetadata
      */
     protected function getClassMetadata($className)
     {
-        if ( ! isset($this->_metadataCache[$className])) {
+        if (! isset($this->_metadataCache[$className])) {
             $this->_metadataCache[$className] = $this->_em->getClassMetadata($className);
         }
 
@@ -555,9 +571,8 @@ abstract class AbstractHydrator
     /**
      * Register entity as managed in UnitOfWork.
      *
-     * @param ClassMetadata $class
-     * @param object        $entity
-     * @param array         $data
+     * @param object  $entity
+     * @param mixed[] $data
      *
      * @return void
      *
@@ -578,7 +593,7 @@ abstract class AbstractHydrator
             $id        = [
                 $fieldName => isset($class->associationMappings[$fieldName])
                     ? $data[$class->associationMappings[$fieldName]['joinColumns'][0]['name']]
-                    : $data[$fieldName]
+                    : $data[$fieldName],
             ];
         }
 

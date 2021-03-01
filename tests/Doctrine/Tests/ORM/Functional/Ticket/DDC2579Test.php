@@ -1,17 +1,20 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\Tests\ORM\Functional\Ticket;
 
+use Doctrine\DBAL\Platforms\AbstractPlatform;
 use Doctrine\DBAL\Types\StringType;
 use Doctrine\DBAL\Types\Type;
-use Doctrine\DBAL\Platforms\AbstractPlatform;
+use Doctrine\Tests\OrmFunctionalTestCase;
 
 /**
  * @group DDC-2579
  */
-class DDC2579Test extends \Doctrine\Tests\OrmFunctionalTestCase
+class DDC2579Test extends OrmFunctionalTestCase
 {
-    protected function setUp() : void
+    protected function setUp(): void
     {
         parent::setUp();
 
@@ -19,16 +22,16 @@ class DDC2579Test extends \Doctrine\Tests\OrmFunctionalTestCase
 
         $this->_schemaTool->createSchema(
             [
-            $this->_em->getClassMetadata(DDC2579Entity::class),
-            $this->_em->getClassMetadata(DDC2579EntityAssoc::class),
-            $this->_em->getClassMetadata(DDC2579AssocAssoc::class),
+                $this->_em->getClassMetadata(DDC2579Entity::class),
+                $this->_em->getClassMetadata(DDC2579EntityAssoc::class),
+                $this->_em->getClassMetadata(DDC2579AssocAssoc::class),
             ]
         );
     }
 
-    public function testIssue()
+    public function testIssue(): void
     {
-        $id         = new DDC2579Id("foo");
+        $id         = new DDC2579Id('foo');
         $assoc      = new DDC2579AssocAssoc($id);
         $assocAssoc = new DDC2579EntityAssoc($assoc);
         $entity     = new DDC2579Entity($assocAssoc);
@@ -81,6 +84,7 @@ class DDC2579Entity
     public $assoc;
 
     /**
+     * @var int
      * @Column(type="integer")
      */
     public $value;
@@ -91,7 +95,6 @@ class DDC2579Entity
         $this->assoc = $assoc;
         $this->value = $value;
     }
-
 }
 
 /**
@@ -125,24 +128,27 @@ class DDC2579AssocAssoc
 
     public function __construct(DDC2579Id $id)
     {
-        $this->associationId  = $id;
+        $this->associationId = $id;
     }
 }
 
 
 class DDC2579Type extends StringType
 {
-    const NAME = 'ddc2579';
+    public const NAME = 'ddc2579';
 
     /**
      * {@inheritdoc}
      */
     public function convertToDatabaseValue($value, AbstractPlatform $platform)
     {
-        return (string)$value;
+        return (string) $value;
     }
 
-    public function convertToPhpValue($value, AbstractPlatform $platform)
+    /**
+     * {@inheritDoc}
+     */
+    public function convertToPHPValue($value, AbstractPlatform $platform)
     {
         return new DDC2579Id($value);
     }

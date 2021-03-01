@@ -1,28 +1,34 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\Tests\ORM\Functional\Ticket;
+
+use Doctrine\Tests\OrmFunctionalTestCase;
+use PDOException;
+
+use function strtolower;
 
 /**
  * @group DDC-1225
  */
-class DDC1225Test extends \Doctrine\Tests\OrmFunctionalTestCase
+class DDC1225Test extends OrmFunctionalTestCase
 {
-    protected function setUp() : void
+    protected function setUp(): void
     {
         parent::setUp();
         try {
             $this->_schemaTool->createSchema(
                 [
-                $this->_em->getClassMetadata(DDC1225_TestEntity1::class),
-                $this->_em->getClassMetadata(DDC1225_TestEntity2::class),
+                    $this->_em->getClassMetadata(DDC1225_TestEntity1::class),
+                    $this->_em->getClassMetadata(DDC1225_TestEntity2::class),
                 ]
             );
-        } catch(\PDOException $e) {
-
+        } catch (PDOException $e) {
         }
     }
 
-    public function testIssue()
+    public function testIssue(): void
     {
         $qb = $this->_em->createQueryBuilder();
         $qb->from(DDC1225_TestEntity1::class, 'te1')
@@ -50,18 +56,12 @@ class DDC1225_TestEntity1
      */
     private $testEntity2;
 
-    /**
-     * @param DDC1225_TestEntity2 $testEntity2
-     */
-    public function setTestEntity2(DDC1225_TestEntity2 $testEntity2)
+    public function setTestEntity2(DDC1225_TestEntity2 $testEntity2): void
     {
         $this->testEntity2 = $testEntity2;
     }
 
-    /**
-     * @return DDC1225_TestEntity2
-     */
-    public function getTestEntity2()
+    public function getTestEntity2(): DDC1225_TestEntity2
     {
         return $this->testEntity2;
     }
@@ -74,6 +74,7 @@ class DDC1225_TestEntity1
 class DDC1225_TestEntity2
 {
     /**
+     * @var int
      * @Id
      * @GeneratedValue(strategy="AUTO")
      * @Column(type="integer")

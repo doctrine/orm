@@ -1,4 +1,5 @@
 <?php
+
 /*
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
  * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
@@ -19,25 +20,23 @@
 
 namespace Doctrine\ORM;
 
+use function str_replace;
+use function strtolower;
+use function version_compare;
+
 /**
  * Class to store and retrieve the version of Doctrine
  *
- * @link    www.doctrine-project.org
- * @since   2.0
- * @version $Revision$
- * @author  Benjamin Eberlei <kontakt@beberlei.de>
- * @author  Guilherme Blanco <guilhermeblanco@hotmail.com>
- * @author  Jonathan Wage <jonwage@gmail.com>
- * @author  Roman Borschel <roman@code-factory.org>
- *
  * @deprecated 2.7 This class is being removed from the ORM and won't have any replacement
+ *
+ * @link    www.doctrine-project.org
  */
 class Version
 {
     /**
      * Current Doctrine Version
      */
-    const VERSION = '2.7.1-DEV';
+    public const VERSION = '2.7.1-DEV';
 
     /**
      * Compares a Doctrine version with the current one.

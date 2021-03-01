@@ -1,9 +1,11 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\Tests\Models\CustomType;
 
-use Doctrine\Tests\DbalTypes\CustomIdObject;
 use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Tests\DbalTypes\CustomIdObject;
 
 /**
  * @Entity
@@ -13,19 +15,13 @@ class CustomIdObjectTypeParent
 {
     /**
      * @Id @Column(type="CustomIdObject")
-     *
      * @var CustomIdObject
      */
     public $id;
 
-    /**
-     * @OneToMany(targetEntity="Doctrine\Tests\Models\CustomType\CustomIdObjectTypeChild", cascade={"persist", "remove"}, mappedBy="parent")
-     */
+    /** @OneToMany(targetEntity="Doctrine\Tests\Models\CustomType\CustomIdObjectTypeChild", cascade={"persist", "remove"}, mappedBy="parent") */
     public $children;
 
-    /**
-     * @param CustomIdObject $id
-     */
     public function __construct(CustomIdObject $id)
     {
         $this->id       = $id;

@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\Tests\Models\DirectoryTree;
 
 /**
@@ -8,11 +10,15 @@ namespace Doctrine\Tests\Models\DirectoryTree;
 abstract class AbstractContentItem
 {
     /**
-     * @Id @Column(type="integer") @GeneratedValue
+     * @var int
+     * @Id
+     * @Column(type="integer")
+     * @GeneratedValue
      */
     private $id;
 
     /**
+     * @var Directory
      * @ManyToOne(targetEntity="Directory")
      */
     protected $parentDirectory;
@@ -34,7 +40,7 @@ abstract class AbstractContentItem
      */
     public static $fileSystem;
 
-    public function __construct(Directory $parentDir = null)
+    public function __construct(?Directory $parentDir = null)
     {
         $this->parentDirectory = $parentDir;
     }
@@ -44,7 +50,7 @@ abstract class AbstractContentItem
         return $this->id;
     }
 
-    public function setName($name)
+    public function setName($name): void
     {
         $this->name = $name;
     }
@@ -59,18 +65,12 @@ abstract class AbstractContentItem
         return $this->parentDirectory;
     }
 
-    /**
-     * @return bool
-     */
-    public function getNodeIsLoaded()
+    public function getNodeIsLoaded(): bool
     {
         return $this->nodeIsLoaded;
     }
 
-    /**
-     * @param bool $nodeIsLoaded
-     */
-    public function setNodeIsLoaded($nodeIsLoaded)
+    public function setNodeIsLoaded(bool $nodeIsLoaded): void
     {
         $this->nodeIsLoaded = (bool) $nodeIsLoaded;
     }

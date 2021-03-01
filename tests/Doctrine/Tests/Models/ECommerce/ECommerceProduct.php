@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\Tests\Models\ECommerce;
 
 use Doctrine\Common\Collections\ArrayCollection;
@@ -8,13 +10,13 @@ use Doctrine\Common\Collections\ArrayCollection;
  * ECommerceProduct
  * Represents a type of product of a shopping application.
  *
- * @author Giorgio Sironi
  * @Entity
  * @Table(name="ecommerce_products",indexes={@Index(name="name_idx", columns={"name"})})
  */
 class ECommerceProduct
 {
     /**
+     * @var int
      * @Column(type="integer")
      * @Id
      * @GeneratedValue
@@ -22,19 +24,19 @@ class ECommerceProduct
     private $id;
 
     /**
+     * @var string
      * @Column(type="string", length=50, nullable=true)
      */
     private $name;
 
     /**
+     * @var ECommerceShipping
      * @OneToOne(targetEntity="ECommerceShipping", cascade={"persist"})
      * @JoinColumn(name="shipping_id", referencedColumnName="id")
      */
     private $shipping;
 
-    /**
-     * @OneToMany(targetEntity="ECommerceFeature", mappedBy="product", cascade={"persist"})
-     */
+    /** @OneToMany(targetEntity="ECommerceFeature", mappedBy="product", cascade={"persist"}) */
     private $features;
 
     /**
@@ -48,6 +50,7 @@ class ECommerceProduct
     /**
      * This relation is saved with two records in the association table for
      * simplicity.
+     *
      * @ManyToMany(targetEntity="ECommerceProduct", cascade={"persist"})
      * @JoinTable(name="ecommerce_products_related",
      *      joinColumns={@JoinColumn(name="product_id", referencedColumnName="id")},
@@ -56,13 +59,13 @@ class ECommerceProduct
     private $related;
 
     public $isCloned = false;
-    public $wakeUp = false;
+    public $wakeUp   = false;
 
     public function __construct()
     {
-        $this->features = new ArrayCollection;
-        $this->categories = new ArrayCollection;
-        $this->related = new ArrayCollection;
+        $this->features   = new ArrayCollection();
+        $this->categories = new ArrayCollection();
+        $this->related    = new ArrayCollection();
     }
 
     public function getId()
@@ -75,7 +78,7 @@ class ECommerceProduct
         return $this->name;
     }
 
-    public function setName($name)
+    public function setName($name): void
     {
         $this->name = $name;
     }
@@ -85,12 +88,12 @@ class ECommerceProduct
         return $this->shipping;
     }
 
-    public function setShipping(ECommerceShipping $shipping)
+    public function setShipping(ECommerceShipping $shipping): void
     {
         $this->shipping = $shipping;
     }
 
-    public function removeShipping()
+    public function removeShipping(): void
     {
         $this->shipping = null;
     }
@@ -100,14 +103,14 @@ class ECommerceProduct
         return $this->features;
     }
 
-    public function addFeature(ECommerceFeature $feature)
+    public function addFeature(ECommerceFeature $feature): void
     {
         $this->features[] = $feature;
         $feature->setProduct($this);
     }
 
     /** does not set the owning side */
-    public function brokenAddFeature(ECommerceFeature $feature)
+    public function brokenAddFeature(ECommerceFeature $feature): void
     {
         $this->features[] = $feature;
     }
@@ -118,18 +121,19 @@ class ECommerceProduct
         if ($removed) {
             $feature->removeProduct();
         }
+
         return $removed;
     }
 
-    public function addCategory(ECommerceCategory $category)
+    public function addCategory(ECommerceCategory $category): void
     {
-        if (!$this->categories->contains($category)) {
+        if (! $this->categories->contains($category)) {
             $this->categories[] = $category;
             $category->addProduct($this);
         }
     }
 
-    public function removeCategory(ECommerceCategory $category)
+    public function removeCategory(ECommerceCategory $category): void
     {
         $removed = $this->categories->removeElement($category);
         if ($removed) {
@@ -137,7 +141,7 @@ class ECommerceProduct
         }
     }
 
-    public function setCategories($categories)
+    public function setCategories($categories): void
     {
         $this->categories = $categories;
     }
@@ -152,15 +156,15 @@ class ECommerceProduct
         return $this->related;
     }
 
-    public function addRelated(ECommerceProduct $related)
+    public function addRelated(ECommerceProduct $related): void
     {
-        if (!$this->related->contains($related)) {
+        if (! $this->related->contains($related)) {
             $this->related[] = $related;
             $related->addRelated($this);
         }
     }
 
-    public function removeRelated(ECommerceProduct $related)
+    public function removeRelated(ECommerceProduct $related): void
     {
         $removed = $this->related->removeElement($related);
         if ($removed) {
@@ -179,7 +183,7 @@ class ECommerceProduct
     /**
      * Testing docblock contents here
      */
-    public function __wakeup()
+    public function __wakeup(): void
     {
         $this->wakeUp = true;
     }

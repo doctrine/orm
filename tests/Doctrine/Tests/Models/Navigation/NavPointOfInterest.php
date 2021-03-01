@@ -1,6 +1,10 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\Tests\Models\Navigation;
+
+use Doctrine\Common\Collections\ArrayCollection;
 
 /**
  * @Entity
@@ -9,28 +13,33 @@ namespace Doctrine\Tests\Models\Navigation;
 class NavPointOfInterest
 {
     /**
+     * @var int
      * @Id
      * @Column(type="integer", name="nav_long")
      */
     private $long;
 
     /**
+     * @var int
      * @Id
      * @Column(type="integer", name="nav_lat")
      */
     private $lat;
 
     /**
+     * @var string
      * @Column(type="string")
      */
     private $name;
 
     /**
+     * @var NavCountry
      * @ManyToOne(targetEntity="NavCountry", inversedBy="pois")
      */
     private $country;
 
      /**
+      * @var Collection<NavUser>
       * @ManyToMany(targetEntity="NavUser", cascade={"persist"})
       * @JoinTable(name="navigation_pois_visitors",
       *      inverseJoinColumns={@JoinColumn(name="user_id", referencedColumnName="id")},
@@ -42,32 +51,36 @@ class NavPointOfInterest
       */
     private $visitors;
 
-    public function __construct($lat, $long, $name, $country)
+    public function __construct(int $lat, int $long, string $name, NavCountry $country)
     {
-        $this->lat = $lat;
-        $this->long = $long;
-        $this->name = $name;
-        $this->country = $country;
-        $this->visitors = new \Doctrine\Common\Collections\ArrayCollection;
+        $this->lat      = $lat;
+        $this->long     = $long;
+        $this->name     = $name;
+        $this->country  = $country;
+        $this->visitors = new ArrayCollection();
     }
 
-    public function getLong() {
+    public function getLong(): int
+    {
         return $this->long;
     }
 
-    public function getLat() {
+    public function getLat(): int
+    {
         return $this->lat;
     }
 
-    public function getName() {
+    public function getName(): string
+    {
         return $this->name;
     }
 
-    public function getCountry() {
+    public function getCountry(): NavCountry
+    {
         return $this->country;
     }
 
-    public function addVisitor(NavUser $user)
+    public function addVisitor(NavUser $user): void
     {
         $this->visitors[] = $user;
     }

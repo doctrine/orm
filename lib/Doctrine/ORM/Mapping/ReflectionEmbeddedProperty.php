@@ -1,4 +1,5 @@
 <?php
+
 /*
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
  * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
@@ -33,36 +34,26 @@ use ReflectionProperty;
  */
 class ReflectionEmbeddedProperty extends ReflectionProperty
 {
-    /**
-     * @var ReflectionProperty reflection property of the class where the embedded object has to be put
-     */
+    /** @var ReflectionProperty reflection property of the class where the embedded object has to be put */
     private $parentProperty;
 
-    /**
-     * @var ReflectionProperty reflection property of the embedded object
-     */
+    /** @var ReflectionProperty reflection property of the embedded object */
     private $childProperty;
 
-    /**
-     * @var string name of the embedded class to be eventually instantiated
-     */
+    /** @var string name of the embedded class to be eventually instantiated */
     private $embeddedClass;
 
-    /**
-     * @var Instantiator|null
-     */
+    /** @var Instantiator|null */
     private $instantiator;
 
     /**
-     * @param ReflectionProperty $parentProperty
-     * @param ReflectionProperty $childProperty
-     * @param string             $embeddedClass
+     * @param string $embeddedClass
      */
     public function __construct(ReflectionProperty $parentProperty, ReflectionProperty $childProperty, $embeddedClass)
     {
-        $this->parentProperty  = $parentProperty;
-        $this->childProperty   = $childProperty;
-        $this->embeddedClass   = (string) $embeddedClass;
+        $this->parentProperty = $parentProperty;
+        $this->childProperty  = $childProperty;
+        $this->embeddedClass  = (string) $embeddedClass;
 
         parent::__construct($childProperty->getDeclaringClass()->getName(), $childProperty->getName());
     }
@@ -74,7 +65,7 @@ class ReflectionEmbeddedProperty extends ReflectionProperty
     {
         $embeddedObject = $this->parentProperty->getValue($object);
 
-        if (null === $embeddedObject) {
+        if ($embeddedObject === null) {
             return null;
         }
 
@@ -88,7 +79,7 @@ class ReflectionEmbeddedProperty extends ReflectionProperty
     {
         $embeddedObject = $this->parentProperty->getValue($object);
 
-        if (null === $embeddedObject) {
+        if ($embeddedObject === null) {
             $this->instantiator = $this->instantiator ?: new Instantiator();
 
             $embeddedObject = $this->instantiator->instantiate($this->embeddedClass);

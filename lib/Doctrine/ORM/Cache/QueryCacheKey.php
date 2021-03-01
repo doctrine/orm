@@ -24,23 +24,20 @@ use Doctrine\ORM\Cache;
 
 /**
  * A cache key that identifies a particular query.
- *
- * @since   2.5
- * @author  Fabio B. Silva <fabio.bat.silva@gmail.com>
  */
 class QueryCacheKey extends CacheKey
 {
     /**
      * READ-ONLY: Public only for performance reasons, it should be considered immutable.
      *
-     * @var integer Cache key lifetime
+     * @var int Cache key lifetime
      */
     public $lifetime;
 
     /**
      * READ-ONLY: Public only for performance reasons, it should be considered immutable.
      *
-     * @var integer Cache mode (Doctrine\ORM\Cache::MODE_*)
+     * @var int Cache mode (Doctrine\ORM\Cache::MODE_*)
      */
     public $cacheMode;
 
@@ -52,16 +49,15 @@ class QueryCacheKey extends CacheKey
     public $timestampKey;
 
     /**
-     * @param string $hash Result cache id
-     * @param integer $lifetime Query lifetime
-     * @param int $cacheMode Query cache mode
-     * @param TimestampCacheKey|null $timestampKey
+     * @param string $hash      Result cache id
+     * @param int    $lifetime  Query lifetime
+     * @param int    $cacheMode Query cache mode
      */
     public function __construct(
         $hash,
         $lifetime = 0,
         $cacheMode = Cache::MODE_NORMAL,
-        TimestampCacheKey $timestampKey = null
+        ?TimestampCacheKey $timestampKey = null
     ) {
         $this->hash         = $hash;
         $this->lifetime     = $lifetime;

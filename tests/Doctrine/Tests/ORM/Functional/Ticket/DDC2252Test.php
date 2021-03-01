@@ -1,44 +1,47 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\Tests\ORM\Functional\Ticket;
 
 use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Tests\OrmFunctionalTestCase;
 
 /**
  * @group DDC-2252
  */
-class DDC2252Test extends \Doctrine\Tests\OrmFunctionalTestCase
+class DDC2252Test extends OrmFunctionalTestCase
 {
     private $user;
     private $merchant;
     private $membership;
     private $privileges = [];
 
-    protected function setUp() : void
+    protected function setUp(): void
     {
         parent::setUp();
 
         $this->_schemaTool->createSchema(
             [
-            $this->_em->getClassMetadata(DDC2252User::class),
-            $this->_em->getClassMetadata(DDC2252Privilege::class),
-            $this->_em->getClassMetadata(DDC2252Membership::class),
-            $this->_em->getClassMetadata(DDC2252MerchantAccount::class),
+                $this->_em->getClassMetadata(DDC2252User::class),
+                $this->_em->getClassMetadata(DDC2252Privilege::class),
+                $this->_em->getClassMetadata(DDC2252Membership::class),
+                $this->_em->getClassMetadata(DDC2252MerchantAccount::class),
             ]
         );
 
         $this->loadFixtures();
     }
 
-    public function loadFixtures()
+    public function loadFixtures(): void
     {
-        $this->user         = new DDC2252User;
-        $this->merchant     = new DDC2252MerchantAccount;
-        $this->membership   = new DDC2252Membership($this->user, $this->merchant);
+        $this->user       = new DDC2252User();
+        $this->merchant   = new DDC2252MerchantAccount();
+        $this->membership = new DDC2252Membership($this->user, $this->merchant);
 
-        $this->privileges[] = new DDC2252Privilege;
-        $this->privileges[] = new DDC2252Privilege;
-        $this->privileges[] = new DDC2252Privilege;
+        $this->privileges[] = new DDC2252Privilege();
+        $this->privileges[] = new DDC2252Privilege();
+        $this->privileges[] = new DDC2252Privilege();
 
         $this->membership->addPrivilege($this->privileges[0]);
         $this->membership->addPrivilege($this->privileges[1]);
@@ -56,7 +59,7 @@ class DDC2252Test extends \Doctrine\Tests\OrmFunctionalTestCase
         $this->_em->clear();
     }
 
-    public function testIssue()
+    public function testIssue(): void
     {
         $identifier = [
             'merchantAccount' => $this->merchant->getAccountid(),
@@ -88,7 +91,7 @@ class DDC2252Test extends \Doctrine\Tests\OrmFunctionalTestCase
         $this->assertInstanceOf(DDC2252Membership::class, $membership);
         $this->assertCount(0, $membership->getPrivileges());
 
-        $membership->addPrivilege($privilege3 = new DDC2252Privilege);
+        $membership->addPrivilege($privilege3 = new DDC2252Privilege());
         $this->_em->persist($privilege3);
         $this->_em->persist($membership);
         $this->_em->flush();
@@ -108,6 +111,7 @@ class DDC2252Test extends \Doctrine\Tests\OrmFunctionalTestCase
 class DDC2252Privilege
 {
     /**
+     * @var int
      * @Id
      * @GeneratedValue
      * @Column(type="integer")
@@ -127,6 +131,7 @@ class DDC2252Privilege
 class DDC2252MerchantAccount
 {
     /**
+     * @var int
      * @Id
      * @Column(type="integer")
      */
@@ -142,8 +147,10 @@ class DDC2252MerchantAccount
  * @Entity
  * @Table(name="ddc2252_user_account")
  */
-class DDC2252User {
+class DDC2252User
+{
     /**
+     * @var int
      * @Id
      * @Column(type="integer")
      */
@@ -157,7 +164,7 @@ class DDC2252User {
 
     public function __construct()
     {
-        $this->memberships = new ArrayCollection;
+        $this->memberships = new ArrayCollection();
     }
 
     public function getUid()
@@ -170,7 +177,7 @@ class DDC2252User {
         return $this->memberships;
     }
 
-    public function addMembership(DDC2252Membership $membership)
+    public function addMembership(DDC2252Membership $membership): void
     {
         $this->memberships[] = $membership;
     }
@@ -213,12 +220,12 @@ class DDC2252Membership
 
     public function __construct(DDC2252User $user, DDC2252MerchantAccount $merchantAccount)
     {
-        $this->userAccount      = $user;
-        $this->merchantAccount  = $merchantAccount;
-        $this->privileges       = new ArrayCollection();
+        $this->userAccount     = $user;
+        $this->merchantAccount = $merchantAccount;
+        $this->privileges      = new ArrayCollection();
     }
 
-    public function addPrivilege($privilege)
+    public function addPrivilege($privilege): void
     {
         $this->privileges[] = $privilege;
     }

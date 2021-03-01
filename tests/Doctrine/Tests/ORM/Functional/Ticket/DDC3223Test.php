@@ -1,35 +1,35 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\Tests\ORM\Functional\Ticket;
 
 use Doctrine\Tests\OrmFunctionalTestCase;
 
 /**
  * Functional tests for get Id after clone child entity
- *
- * @author Lallement Thomas <thomas.lallement@9online.fr>
  */
 class DDC3223Test extends OrmFunctionalTestCase
 {
-    protected function setUp() : void
+    protected function setUp(): void
     {
         parent::setUp();
 
         $this->setUpEntitySchema(
             [
-            Journalist::class,
-            Participant::class,
-            Status::class,
-            ProfileStatus::class,
+                Journalist::class,
+                Participant::class,
+                Status::class,
+                ProfileStatus::class,
             ]
         );
     }
 
-    public function testIssueGetId()
+    public function testIssueGetId(): void
     {
         $profileStatus = new ProfileStatus();
 
-        $participant = new Journalist();
+        $participant                = new Journalist();
         $participant->profileStatus = $profileStatus;
 
         $this->_em->persist($profileStatus);
@@ -61,10 +61,18 @@ class Journalist extends Participant
  */
 class Participant
 {
-    /** @Id @Column(type="integer") @GeneratedValue */
+    /**
+     * @var int
+     * @Id
+     * @Column(type="integer")
+     * @GeneratedValue
+     */
     public $id;
 
-    /** @ManyToOne(targetEntity="ProfileStatus") */
+    /**
+     * @var ProfileStatus
+     * @ManyToOne(targetEntity="ProfileStatus")
+     */
     public $profileStatus;
 }
 

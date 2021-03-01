@@ -1,4 +1,5 @@
 <?php
+
 /*
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
  * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
@@ -20,23 +21,41 @@
 namespace Doctrine\ORM\Tools\Console\Command;
 
 use Doctrine\ORM\EntityManagerInterface;
+use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\Persistence\Mapping\MappingException;
+use InvalidArgumentException;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
+
+use function array_filter;
+use function array_map;
+use function array_merge;
+use function assert;
+use function count;
+use function current;
+use function get_class;
+use function implode;
+use function is_array;
+use function is_bool;
+use function is_object;
+use function is_scalar;
+use function json_encode;
+use function preg_match;
+use function preg_quote;
+use function print_r;
+use function sprintf;
+
 use const JSON_PRETTY_PRINT;
 use const JSON_UNESCAPED_SLASHES;
 use const JSON_UNESCAPED_UNICODE;
-use function json_encode;
 
 /**
  * Show information about mapped entities.
  *
  * @link    www.doctrine-project.org
- * @since   2.4
- * @author  Daniel Leech <daniel@dantleech.com>
  */
 final class MappingDescribeCommand extends Command
 {
@@ -67,8 +86,8 @@ EOT
     {
         $ui = new SymfonyStyle($input, $output);
 
-        /* @var $entityManager \Doctrine\ORM\EntityManagerInterface */
         $entityManager = $this->getHelper('em')->getEntityManager();
+        assert($entityManager instanceof EntityManagerInterface);
 
         $this->displayEntity($input->getArgument('entityName'), $entityManager, $ui);
 
@@ -78,9 +97,7 @@ EOT
     /**
      * Display all the mapping information for a single Entity.
      *
-     * @param string                 $entityName    Full or partial entity class name
-     * @param EntityManagerInterface $entityManager
-     * @param SymfonyStyle           $ui
+     * @param string $entityName Full or partial entity class name
      */
     private function displayEntity($entityName, EntityManagerInterface $entityManager, SymfonyStyle $ui)
     {
@@ -131,19 +148,17 @@ EOT
     /**
      * Return all mapped entity class names
      *
-     * @param EntityManagerInterface $entityManager
-     *
      * @return string[]
      */
-    private function getMappedEntities(EntityManagerInterface $entityManager) : array
+    private function getMappedEntities(EntityManagerInterface $entityManager): array
     {
         $entityClassNames = $entityManager->getConfiguration()
                                           ->getMetadataDriverImpl()
                                           ->getAllClassNames();
 
-        if ( ! $entityClassNames) {
-            throw new \InvalidArgumentException(
-                'You do not have any mapped Doctrine ORM entities according to the current configuration. '.
+        if (! $entityClassNames) {
+            throw new InvalidArgumentException(
+                'You do not have any mapped Doctrine ORM entities according to the current configuration. ' .
                 'If you have entities or mapping files you should check your mapping configuration for errors.'
             );
         }
@@ -155,10 +170,9 @@ EOT
      * Return the class metadata for the given entity
      * name
      *
-     * @param string                 $entityName    Full or partial entity name
-     * @param EntityManagerInterface $entityManager
+     * @param string $entityName Full or partial entity name
      *
-     * @return \Doctrine\ORM\Mapping\ClassMetadata
+     * @return ClassMetadata
      */
     private function getClassMetadata($entityName, EntityManagerInterface $entityManager)
     {
@@ -169,22 +183,23 @@ EOT
 
         $matches = array_filter(
             $this->getMappedEntities($entityManager),
-            function ($mappedEntity) use ($entityName) {
+            static function ($mappedEntity) use ($entityName) {
                 return preg_match('{' . preg_quote($entityName) . '}', $mappedEntity);
             }
         );
 
-        if ( ! $matches) {
-            throw new \InvalidArgumentException(sprintf(
+        if (! $matches) {
+            throw new InvalidArgumentException(sprintf(
                 'Could not find any mapped Entity classes matching "%s"',
                 $entityName
             ));
         }
 
         if (count($matches) > 1) {
-            throw new \InvalidArgumentException(sprintf(
+            throw new InvalidArgumentException(sprintf(
                 'Entity name "%s" is ambiguous, possible matches: "%s"',
-                $entityName, implode(', ', $matches)
+                $entityName,
+                implode(', ', $matches)
             ));
         }
 
@@ -200,11 +215,11 @@ EOT
      */
     private function formatValue($value)
     {
-        if ('' === $value) {
+        if ($value === '') {
             return '';
         }
 
-        if (null === $value) {
+        if ($value === null) {
             return '<comment>Null</comment>';
         }
 
@@ -228,7 +243,7 @@ EOT
             return (string) $value;
         }
 
-        throw new \InvalidArgumentException(sprintf('Do not know how to format value "%s"', print_r($value, true)));
+        throw new InvalidArgumentException(sprintf('Do not know how to format value "%s"', print_r($value, true)));
     }
 
     /**
@@ -241,9 +256,9 @@ EOT
      *
      * @psalm-return array{0: string, 1: string}
      */
-    private function formatField($label, $value) : array
+    private function formatField($label, $value): array
     {
-        if (null === $value) {
+        if ($value === null) {
             $value = '<comment>None</comment>';
         }
 
@@ -259,7 +274,7 @@ EOT
      *
      * @psalm-return list<array{0: string, 1: string}>
      */
-    private function formatMappings(array $propertyMappings) : array
+    private function formatMappings(array $propertyMappings): array
     {
         $output = [];
 
@@ -283,7 +298,7 @@ EOT
      *
      * @psalm-return array{0: string, 1: string}
      */
-    private function formatEntityListeners(array $entityListeners) : array
+    private function formatEntityListeners(array $entityListeners): array
     {
         return $this->formatField('Entity listeners', array_map('get_class', $entityListeners));
     }

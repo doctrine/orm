@@ -1,25 +1,25 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\Tests\ORM\Functional\Ticket;
 
 use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Tests\OrmFunctionalTestCase;
 
 /**
  * @group DDC-2780
  */
-class DDC2780Test extends \Doctrine\Tests\OrmFunctionalTestCase
+class DDC2780Test extends OrmFunctionalTestCase
 {
-    /**
-     * {@inheritDoc}
-     */
-    protected function setUp() : void
+    protected function setUp(): void
     {
         parent::setUp();
 
         $this->_schemaTool->createSchema(
             [
                 $this->_em->getClassMetadata(DDC2780User::class),
-                $this->_em->getClassMetadata(DDC2780Project::class)
+                $this->_em->getClassMetadata(DDC2780Project::class),
             ]
         );
     }
@@ -27,10 +27,10 @@ class DDC2780Test extends \Doctrine\Tests\OrmFunctionalTestCase
     /**
      * Verifies that IS [NOT] NULL can be used on join aliases
      */
-    public function testIssue()
+    public function testIssue(): void
     {
-        $user    = new DDC2780User;
-        $project = new DDC2780Project;
+        $user    = new DDC2780User();
+        $project = new DDC2780Project();
 
         $user->project = $project;
 
@@ -56,12 +56,16 @@ class DDC2780Test extends \Doctrine\Tests\OrmFunctionalTestCase
  */
 class DDC2780User
 {
-    /** @Id @Column(type="integer") @GeneratedValue */
+    /**
+     * @var int
+     * @Id
+     * @Column(type="integer")
+     * @GeneratedValue
+     */
     public $id;
 
     /**
      * @ManyToOne(targetEntity="DDC2780Project")
-     *
      * @var DDC2780Project
      */
     public $project;
@@ -70,12 +74,16 @@ class DDC2780User
 /** @Entity */
 class DDC2780Project
 {
-    /** @Id @Column(type="integer") @GeneratedValue */
+    /**
+     * @var int
+     * @Id
+     * @Column(type="integer")
+     * @GeneratedValue
+     */
     public $id;
 
     /**
      * @OneToMany(targetEntity="DDC2780User", mappedBy="project")
-     *
      * @var DDC2780User[]
      */
     public $users;
@@ -86,4 +94,3 @@ class DDC2780Project
         $this->users = new ArrayCollection();
     }
 }
-

@@ -1,19 +1,23 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\Tests\ORM\Decorator;
 
 use Doctrine\ORM\Decorator\EntityManagerDecorator;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Query\ResultSetMapping;
-use Doctrine\Tests\VerifyDeprecations;
 use PHPUnit\Framework\TestCase;
+use PHPUnit_Framework_MockObject_MockObject;
+use ReflectionClass;
+use ReflectionMethod;
+
+use function array_fill;
 use function in_array;
 
 class EntityManagerDecoratorTest extends TestCase
 {
-    use VerifyDeprecations;
-
-    const VOID_METHODS = [
+    public const VOID_METHODS = [
         'persist',
         'remove',
         'clear',
@@ -28,29 +32,21 @@ class EntityManagerDecoratorTest extends TestCase
         'lock',
     ];
 
-    /**
-     * @var EntityManagerInterface|\PHPUnit_Framework_MockObject_MockObject
-     */
+    /** @var EntityManagerInterface|PHPUnit_Framework_MockObject_MockObject */
     private $wrapped;
 
-    /** @before */
-    public function ignoreDeprecationMessagesFromDoctrinePersistence() : void
-    {
-        $this->ignoreDeprecationMessage('The Doctrine\Common\Persistence\ObjectManagerDecorator class is deprecated since doctrine/persistence 1.3 and will be removed in 2.0. Use \Doctrine\Persistence\ObjectManagerDecorator instead.');
-    }
-
-    protected function setUp() : void
+    protected function setUp(): void
     {
         $this->wrapped = $this->createMock(EntityManagerInterface::class);
     }
 
     public function getMethodParameters()
     {
-        $class = new \ReflectionClass(EntityManagerInterface::class);
+        $class   = new ReflectionClass(EntityManagerInterface::class);
         $methods = [];
 
         foreach ($class->getMethods() as $method) {
-            if ($method->isConstructor() || $method->isStatic() || !$method->isPublic()) {
+            if ($method->isConstructor() || $method->isStatic() || ! $method->isPublic()) {
                 continue;
             }
 
@@ -60,7 +56,7 @@ class EntityManagerDecoratorTest extends TestCase
         return $methods;
     }
 
-    private function getParameters(\ReflectionMethod $method)
+    private function getParameters(ReflectionMethod $method)
     {
         /** Special case EntityManager::createNativeQuery() */
         if ($method->getName() === 'createNativeQuery') {
@@ -75,7 +71,7 @@ class EntityManagerDecoratorTest extends TestCase
             return [$method->getName(), array_fill(0, $method->getNumberOfRequiredParameters(), 'req') ?: []];
         }
 
-        if ($method->getNumberOfParameters() != $method->getNumberOfRequiredParameters()) {
+        if ($method->getNumberOfParameters() !== $method->getNumberOfRequiredParameters()) {
             return [$method->getName(), array_fill(0, $method->getNumberOfParameters(), 'all') ?: []];
         }
 
@@ -85,9 +81,9 @@ class EntityManagerDecoratorTest extends TestCase
     /**
      * @dataProvider getMethodParameters
      */
-    public function testAllMethodCallsAreDelegatedToTheWrappedInstance($method, array $parameters)
+    public function testAllMethodCallsAreDelegatedToTheWrappedInstance($method, array $parameters): void
     {
-        $return = !in_array($method, self::VOID_METHODS) ? 'INNER VALUE FROM ' . $method : null;
+        $return = ! in_array($method, self::VOID_METHODS) ? 'INNER VALUE FROM ' . $method : null;
 
         $this->wrapped->expects($this->once())
             ->method($method)
@@ -98,12 +94,5 @@ class EntityManagerDecoratorTest extends TestCase
         };
 
         $this->assertSame($return, $decorator->$method(...$parameters));
-
-        if (in_array($method, ['copy', 'merge', 'detach', 'getHydrator'], true)) {
-            $this->assertHasDeprecationMessages();
-            return;
-        }
-
-        $this->assertNotHasDeprecationMessages();
     }
 }

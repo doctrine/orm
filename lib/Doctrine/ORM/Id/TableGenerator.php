@@ -1,4 +1,5 @@
 <?php
+
 /*
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
  * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
@@ -23,38 +24,22 @@ use Doctrine\ORM\EntityManager;
 
 /**
  * Id generator that uses a single-row database table and a hi/lo algorithm.
- *
- * @since   2.0
- * @author  Benjamin Eberlei <kontakt@beberlei.de>
- * @author  Guilherme Blanco <guilhermeblanco@hotmail.com>
- * @author  Jonathan Wage <jonwage@gmail.com>
- * @author  Roman Borschel <roman@code-factory.org>
  */
 class TableGenerator extends AbstractIdGenerator
 {
-    /**
-     * @var string
-     */
+    /** @var string */
     private $_tableName;
 
-    /**
-     * @var string
-     */
+    /** @var string */
     private $_sequenceName;
 
-    /**
-     * @var int
-     */
+    /** @var int */
     private $_allocationSize;
 
-    /**
-     * @var int|null
-     */
+    /** @var int|null */
     private $_nextValue;
 
-    /**
-     * @var int|null
-     */
+    /** @var int|null */
     private $_maxValue;
 
     /**
@@ -64,8 +49,8 @@ class TableGenerator extends AbstractIdGenerator
      */
     public function __construct($tableName, $sequenceName = 'default', $allocationSize = 10)
     {
-        $this->_tableName = $tableName;
-        $this->_sequenceName = $sequenceName;
+        $this->_tableName      = $tableName;
+        $this->_sequenceName   = $sequenceName;
         $this->_allocationSize = $allocationSize;
     }
 
@@ -73,9 +58,10 @@ class TableGenerator extends AbstractIdGenerator
      * {@inheritDoc}
      */
     public function generate(
-        EntityManager $em, $entity)
-    {
-        if ($this->_maxValue === null || $this->_nextValue == $this->_maxValue) {
+        EntityManager $em,
+        $entity
+    ) {
+        if ($this->_maxValue === null || $this->_nextValue === $this->_maxValue) {
             // Allocate new values
             $conn = $em->getConnection();
 
@@ -84,15 +70,17 @@ class TableGenerator extends AbstractIdGenerator
                 $sql          = $conn->getDatabasePlatform()->getTableHiLoCurrentValSql($this->_tableName, $this->_sequenceName);
                 $currentLevel = $conn->fetchColumn($sql);
 
-                if ($currentLevel != null) {
+                if ($currentLevel !== null) {
                     $this->_nextValue = $currentLevel;
-                    $this->_maxValue = $this->_nextValue + $this->_allocationSize;
+                    $this->_maxValue  = $this->_nextValue + $this->_allocationSize;
 
                     $updateSql = $conn->getDatabasePlatform()->getTableHiLoUpdateNextValSql(
-                        $this->_tableName, $this->_sequenceName, $this->_allocationSize
+                        $this->_tableName,
+                        $this->_sequenceName,
+                        $this->_allocationSize
                     );
 
-                    if ($conn->executeUpdate($updateSql, [1 => $currentLevel, 2 => $currentLevel+1]) !== 1) {
+                    if ($conn->executeUpdate($updateSql, [1 => $currentLevel, 2 => $currentLevel + 1]) !== 1) {
                         // no affected rows, concurrency issue, throw exception
                     }
                 } else {

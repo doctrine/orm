@@ -1,8 +1,11 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\Tests\Models\ValueConversionType;
 
 use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 
 /**
  * @Entity
@@ -24,6 +27,7 @@ class InversedManyToManyCompositeIdForeignKeyEntity
     public $foreignEntity;
 
     /**
+     * @psalm-var Collection<int, OwningManyToManyCompositeIdForeignKeyEntity>
      * @ManyToMany(targetEntity="OwningManyToManyCompositeIdForeignKeyEntity", mappedBy="associatedEntities")
      */
     public $associatedEntities;

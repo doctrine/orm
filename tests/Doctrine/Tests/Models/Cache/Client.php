@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\Tests\Models\Cache;
 
 /**
@@ -9,15 +11,14 @@ namespace Doctrine\Tests\Models\Cache;
 class Client
 {
     /**
+     * @var int
      * @Id
      * @GeneratedValue
      * @Column(type="integer")
      */
     public $id;
 
-    /**
-     * @Column(unique=true)
-     */
+    /** @Column(unique=true) */
     public $name;
 
     public function __construct($name)

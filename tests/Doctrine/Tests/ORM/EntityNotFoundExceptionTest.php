@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\Tests\ORM;
 
 use Doctrine\ORM\EntityNotFoundException;
@@ -12,7 +14,7 @@ use PHPUnit\Framework\TestCase;
  */
 class EntityNotFoundExceptionTest extends TestCase
 {
-    public function testFromClassNameAndIdentifier()
+    public function testFromClassNameAndIdentifier(): void
     {
         $exception = EntityNotFoundException::fromClassNameAndIdentifier(
             'foo',

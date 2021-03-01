@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\Tests\Models\Routing;
 
 /**
@@ -14,6 +16,7 @@ class RoutingLocation
     public $id;
 
     /**
+     * @var string
      * @Column(type="string")
      */
     public $name;

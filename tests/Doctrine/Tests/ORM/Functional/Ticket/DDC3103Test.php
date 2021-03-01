@@ -1,18 +1,24 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\Tests\ORM\Functional\Ticket;
 
 use Doctrine\ORM\Mapping\ClassMetadata;
+use Doctrine\Tests\OrmFunctionalTestCase;
+
+use function serialize;
+use function unserialize;
 
 /**
  * @group DDC-3103
  */
-class DDC3103Test extends \Doctrine\Tests\OrmFunctionalTestCase
+class DDC3103Test extends OrmFunctionalTestCase
 {
     /**
      * @covers \Doctrine\ORM\Mapping\ClassMetadataInfo::__sleep
      */
-    public function testIssue()
+    public function testIssue(): void
     {
         $classMetadata = new ClassMetadata(DDC3103ArticleId::class);
 

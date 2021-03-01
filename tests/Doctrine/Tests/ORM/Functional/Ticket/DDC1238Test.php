@@ -1,30 +1,34 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\Tests\ORM\Functional\Ticket;
+
+use Doctrine\Tests\OrmFunctionalTestCase;
+use Exception;
 
 /**
  * @group DDC-1238
  */
-class DDC1238Test extends \Doctrine\Tests\OrmFunctionalTestCase
+class DDC1238Test extends OrmFunctionalTestCase
 {
-    protected function setUp() : void
+    protected function setUp(): void
     {
         parent::setUp();
         try {
             $this->_schemaTool->createSchema(
                 [
-                $this->_em->getClassMetadata(DDC1238User::class),
+                    $this->_em->getClassMetadata(DDC1238User::class),
                 ]
             );
-        } catch(\Exception $e) {
-
+        } catch (Exception $e) {
         }
     }
 
-    public function testIssue()
+    public function testIssue(): void
     {
-        $user = new DDC1238User;
-        $user->setName("test");
+        $user = new DDC1238User();
+        $user->setName('test');
 
         $this->_em->persist($user);
         $this->_em->flush();
@@ -37,13 +41,13 @@ class DDC1238Test extends \Doctrine\Tests\OrmFunctionalTestCase
         $this->_em->clear();
 
         $userId2 = $user->getId();
-        $this->assertEquals($userId, $userId2, "This proxy can still be initialized.");
+        $this->assertEquals($userId, $userId2, 'This proxy can still be initialized.');
     }
 
-    public function testIssueProxyClear()
+    public function testIssueProxyClear(): void
     {
-        $user = new DDC1238User;
-        $user->setName("test");
+        $user = new DDC1238User();
+        $user->setName('test');
 
         $this->_em->persist($user);
         $this->_em->flush();
@@ -61,7 +65,7 @@ class DDC1238Test extends \Doctrine\Tests\OrmFunctionalTestCase
 
         // force proxy load, getId() doesn't work anymore
         $user->getName();
-        $this->assertNull($user->getId(), "Now this is null, we already have a user instance of that type");
+        $this->assertNull($user->getId(), 'Now this is null, we already have a user instance of that type');
     }
 }
 
@@ -70,7 +74,12 @@ class DDC1238Test extends \Doctrine\Tests\OrmFunctionalTestCase
  */
 class DDC1238User
 {
-    /** @Id @GeneratedValue @Column(type="integer") */
+    /**
+     * @var int
+     * @Id
+     * @GeneratedValue
+     * @Column(type="integer")
+     */
     private $id;
 
     /**
@@ -89,9 +98,8 @@ class DDC1238User
         return $this->name;
     }
 
-    public function setName($name)
+    public function setName($name): void
     {
         $this->name = $name;
     }
 }
-

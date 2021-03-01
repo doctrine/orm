@@ -1,12 +1,14 @@
 <?php
 
+declare(strict_types=1);
+
 use Doctrine\ORM\Mapping\ClassMetadataInfo;
 use Doctrine\Tests\Models\DDC889\DDC889SuperClass;
 
 $metadata->mapField(
     [
-   'fieldName'  => 'name',
-   'type'       => 'string',
+        'fieldName'  => 'name',
+        'type'       => 'string',
     ]
 );
 $metadata->isMappedSuperclass = true;

@@ -1,4 +1,5 @@
 <?php
+
 /*
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
  * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
@@ -19,24 +20,25 @@
 
 namespace Doctrine\ORM\Tools\Console;
 
+use ArrayIterator;
+use Countable;
 use Doctrine\Persistence\Mapping\ClassMetadata;
+use FilterIterator;
+use RuntimeException;
+
+use function count;
+use function iterator_to_array;
+use function preg_match;
+use function sprintf;
 
 /**
  * Used by CLI Tools to restrict entity-based commands to given patterns.
  *
- * @license     http://www.opensource.org/licenses/mit-license.php MIT
  * @link        www.doctrine-project.com
- * @since       1.0
- * @author      Benjamin Eberlei <kontakt@beberlei.de>
- * @author      Guilherme Blanco <guilhermeblanco@hotmail.com>
- * @author      Jonathan Wage <jonwage@gmail.com>
- * @author      Roman Borschel <roman@code-factory.org>
  */
-class MetadataFilter extends \FilterIterator implements \Countable
+class MetadataFilter extends FilterIterator implements Countable
 {
-    /**
-     * @var array
-     */
+    /** @var mixed[] */
     private $filter = [];
 
     /**
@@ -47,18 +49,17 @@ class MetadataFilter extends \FilterIterator implements \Countable
      *
      * @return ClassMetadata[]
      */
-    static public function filter(array $metadatas, $filter)
+    public static function filter(array $metadatas, $filter)
     {
-        $metadatas = new MetadataFilter(new \ArrayIterator($metadatas), $filter);
+        $metadatas = new MetadataFilter(new ArrayIterator($metadatas), $filter);
 
         return iterator_to_array($metadatas);
     }
 
     /**
-     * @param \ArrayIterator $metadata
-     * @param array|string   $filter
+     * @param mixed[]|string $filter
      */
-    public function __construct(\ArrayIterator $metadata, $filter)
+    public function __construct(ArrayIterator $metadata, $filter)
     {
         $this->filter = (array) $filter;
 
@@ -70,18 +71,18 @@ class MetadataFilter extends \FilterIterator implements \Countable
      */
     public function accept()
     {
-        if (count($this->filter) == 0) {
+        if (count($this->filter) === 0) {
             return true;
         }
 
-        $it = $this->getInnerIterator();
+        $it       = $this->getInnerIterator();
         $metadata = $it->current();
 
         foreach ($this->filter as $filter) {
             $pregResult = preg_match("/$filter/", $metadata->name);
 
             if ($pregResult === false) {
-                throw new \RuntimeException(
+                throw new RuntimeException(
                     sprintf("Error while evaluating regex '/%s/'.", $filter)
                 );
             }

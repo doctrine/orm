@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\Tests\Models\Cache;
 
 use Doctrine\Common\Collections\ArrayCollection;
@@ -18,15 +20,14 @@ use Doctrine\Common\Collections\ArrayCollection;
 abstract class Attraction
 {
     /**
+     * @var int
      * @Id
      * @GeneratedValue
      * @Column(type="integer")
      */
     protected $id;
 
-    /**
-     * @Column(unique=true)
-     */
+    /** @Column(unique=true) */
     protected $name;
 
     /**
@@ -54,7 +55,7 @@ abstract class Attraction
         return $this->id;
     }
 
-    public function setId($id)
+    public function setId($id): void
     {
         $this->id = $id;
     }
@@ -64,7 +65,7 @@ abstract class Attraction
         return $this->name;
     }
 
-    public function setName($name)
+    public function setName($name): void
     {
         $this->name = $name;
     }
@@ -74,7 +75,7 @@ abstract class Attraction
         return $this->city;
     }
 
-    public function setCity(City $city)
+    public function setCity(City $city): void
     {
         $this->city = $city;
     }
@@ -84,9 +85,9 @@ abstract class Attraction
         return $this->infos;
     }
 
-    public function addInfo(AttractionInfo $info)
+    public function addInfo(AttractionInfo $info): void
     {
-        if ( ! $this->infos->contains($info)) {
+        if (! $this->infos->contains($info)) {
             $this->infos->add($info);
         }
     }

@@ -1,37 +1,47 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\Tests\ORM\Functional;
 
 use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
+use Doctrine\Deprecations\PHPUnit\VerifyDeprecations;
 use Doctrine\Persistence\NotifyPropertyChanged;
 use Doctrine\Persistence\PropertyChangedListener;
 use Doctrine\Tests\OrmFunctionalTestCase;
+use Exception;
+
+use function count;
 
 /**
  * NativeQueryTest
- *
- * @author robo
  */
 class NotifyPolicyTest extends OrmFunctionalTestCase
 {
-    protected function setUp() : void
+    use VerifyDeprecations;
+
+    protected function setUp(): void
     {
         parent::setUp();
+
+        $this->expectDeprecationWithIdentifier('https://github.com/doctrine/orm/issues/8383');
+
         try {
             $this->_schemaTool->createSchema(
                 [
-                $this->_em->getClassMetadata(NotifyUser::class),
-                $this->_em->getClassMetadata(NotifyGroup::class)
+                    $this->_em->getClassMetadata(NotifyUser::class),
+                    $this->_em->getClassMetadata(NotifyGroup::class),
                 ]
             );
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             // Swallow all exceptions. We do not test the schema tool here.
         }
     }
 
-    public function testChangeTracking()
+    public function testChangeTracking(): void
     {
-        $user = new NotifyUser();
+        $user  = new NotifyUser();
         $group = new NotifyGroup();
         $user->setName('roman');
         $group->setName('dev');
@@ -51,7 +61,7 @@ class NotifyPolicyTest extends OrmFunctionalTestCase
         $this->assertEquals(1, count($user->listeners));
         $this->assertEquals(1, count($group->listeners));
 
-        $userId = $user->getId();
+        $userId  = $user->getId();
         $groupId = $group->getId();
         unset($user, $group);
 
@@ -90,14 +100,17 @@ class NotifyPolicyTest extends OrmFunctionalTestCase
     }
 }
 
-class NotifyBaseEntity implements NotifyPropertyChanged {
+class NotifyBaseEntity implements NotifyPropertyChanged
+{
     public $listeners = [];
 
-    public function addPropertyChangedListener(PropertyChangedListener $listener) {
+    public function addPropertyChangedListener(PropertyChangedListener $listener): void
+    {
         $this->listeners[] = $listener;
     }
 
-    protected function onPropertyChanged($propName, $oldValue, $newValue) {
+    protected function onPropertyChanged($propName, $oldValue, $newValue): void
+    {
         if ($this->listeners) {
             foreach ($this->listeners as $listener) {
                 $listener->propertyChanged($this, $propName, $oldValue, $newValue);
@@ -107,68 +120,95 @@ class NotifyBaseEntity implements NotifyPropertyChanged {
 }
 
 /** @Entity @ChangeTrackingPolicy("NOTIFY") */
-class NotifyUser extends NotifyBaseEntity {
-    /** @Id @Column(type="integer") @GeneratedValue */
+class NotifyUser extends NotifyBaseEntity
+{
+    /**
+     * @var int
+     * @Id
+     * @Column(type="integer")
+     * @GeneratedValue
+     */
     private $id;
 
     /** @Column */
     private $name;
 
-    /** @ManyToMany(targetEntity="NotifyGroup") */
+    /**
+     * @psalm-var Collection<int, NotifyGroup>
+     * @ManyToMany(targetEntity="NotifyGroup")
+     */
     private $groups;
 
-    function __construct() {
-        $this->groups = new ArrayCollection;
+    public function __construct()
+    {
+        $this->groups = new ArrayCollection();
     }
 
-    function getId() {
+    public function getId()
+    {
         return $this->id;
     }
 
-    function getName() {
+    public function getName()
+    {
         return $this->name;
     }
 
-    function setName($name) {
+    public function setName($name): void
+    {
         $this->onPropertyChanged('name', $this->name, $name);
         $this->name = $name;
     }
 
-    function getGroups() {
+    public function getGroups()
+    {
         return $this->groups;
     }
 }
 
 /** @Entity */
-class NotifyGroup extends NotifyBaseEntity {
-    /** @Id @Column(type="integer") @GeneratedValue */
+class NotifyGroup extends NotifyBaseEntity
+{
+    /**
+     * @var int
+     * @Id
+     * @Column(type="integer")
+     * @GeneratedValue
+     */
     private $id;
 
     /** @Column */
     private $name;
 
-    /** @ManyToMany(targetEntity="NotifyUser", mappedBy="groups") */
+    /**
+     * @psalm-var Collection<int, NotifyUser>
+     * @ManyToMany(targetEntity="NotifyUser", mappedBy="groups")
+     */
     private $users;
 
-    function __construct() {
-        $this->users = new ArrayCollection;
+    public function __construct()
+    {
+        $this->users = new ArrayCollection();
     }
 
-    function getId() {
+    public function getId()
+    {
         return $this->id;
     }
 
-    function getName() {
+    public function getName()
+    {
         return $this->name;
     }
 
-    function setName($name) {
+    public function setName($name): void
+    {
         $this->onPropertyChanged('name', $this->name, $name);
         $this->name = $name;
     }
 
-    function getUsers() {
+    public function getUsers()
+    {
         return $this->users;
     }
 }
-

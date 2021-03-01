@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\Tests\Models\Company;
 
 /**
@@ -9,25 +11,30 @@ namespace Doctrine\Tests\Models\Company;
 class CompanyCar
 {
     /**
+     * @var int
      * @Id @Column(type="integer")
      * @GeneratedValue(strategy="AUTO")
      */
     private $id;
 
     /**
+     * @var string
      * @Column(type="string", length=50)
      */
     private $brand;
 
-    public function __construct($brand = null) {
+    public function __construct($brand = null)
+    {
         $this->brand = $brand;
     }
 
-    public function getId() {
+    public function getId()
+    {
         return $this->id;
     }
 
-    public function getBrand() {
+    public function getBrand()
+    {
         return $this->title;
     }
 }

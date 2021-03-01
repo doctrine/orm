@@ -1,30 +1,30 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\Tests\Models\DDC964;
 
 use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\ORM\Mapping\ClassMetadataInfo;
 
 /**
  * @MappedSuperclass
  */
 class DDC964User
 {
-
     /**
+     * @var int
      * @Id
      * @GeneratedValue
      * @Column(type="integer", name="user_id", length=150)
      */
     protected $id;
 
-    /**
-     * @Column(name="user_name", nullable=true, unique=false, length=250)
-     */
+    /** @Column(name="user_name", nullable=true, unique=false, length=250) */
     protected $name;
 
     /**
      * @var ArrayCollection
-     *
      * @ManyToMany(targetEntity="DDC964Group", inversedBy="users", cascade={"persist", "merge", "detach"})
      * @JoinTable(name="ddc964_users_groups",
      *  joinColumns={@JoinColumn(name="user_id", referencedColumnName="id")},
@@ -35,135 +35,110 @@ class DDC964User
 
     /**
      * @var DDC964Address
-     *
      * @ManyToOne(targetEntity="DDC964Address", cascade={"persist", "merge"})
      * @JoinColumn(name="address_id", referencedColumnName="id")
      */
     protected $address;
 
-    /**
-     * @param string $name
-     */
-    public function __construct($name = null)
+    public function __construct(?string $name = null)
     {
-        $this->name     = $name;
-        $this->groups   = new ArrayCollection;
+        $this->name   = $name;
+        $this->groups = new ArrayCollection();
     }
 
-    /**
-     * @return int
-     */
-    public function getId()
+    public function getId(): int
     {
         return $this->id;
     }
 
-    /**
-     * @return string
-     */
-    public function getName()
+    public function getName(): string
     {
         return $this->name;
     }
 
-    /**
-     * @param string $name
-     */
-    public function setName($name)
+    public function setName(string $name): void
     {
         $this->name = $name;
     }
 
-    /**
-     * @param DDC964Group $group
-     */
-    public function addGroup(DDC964Group $group)
+    public function addGroup(DDC964Group $group): void
     {
         $this->groups->add($group);
         $group->addUser($this);
     }
 
-    /**
-     * @return ArrayCollection
-     */
-    public function getGroups()
+    public function getGroups(): ArrayCollection
     {
         return $this->groups;
     }
 
-    /**
-     * @return DDC964Address
-     */
-    public function getAddress()
+    public function getAddress(): DDC964Address
     {
         return $this->address;
     }
 
-    /**
-     * @param DDC964Address $address
-     */
-    public function setAddress(DDC964Address $address)
+    public function setAddress(DDC964Address $address): void
     {
         $this->address = $address;
     }
 
-    public static function loadMetadata(\Doctrine\ORM\Mapping\ClassMetadataInfo $metadata)
+    public static function loadMetadata(ClassMetadataInfo $metadata): void
     {
         $metadata->isMappedSuperclass = true;
 
         $metadata->mapField(
             [
-           'id'         => true,
-           'fieldName'  => 'id',
-           'type'       => 'integer',
-           'columnName' => 'user_id',
-           'length'     => 150,
+                'id'         => true,
+                'fieldName'  => 'id',
+                'type'       => 'integer',
+                'columnName' => 'user_id',
+                'length'     => 150,
             ]
         );
         $metadata->mapField(
             [
-            'fieldName' => 'name',
-            'type'      => 'string',
-            'columnName'=> 'user_name',
-            'nullable'  => true,
-            'unique'    => false,
-            'length'    => 250,
+                'fieldName' => 'name',
+                'type'      => 'string',
+                'columnName' => 'user_name',
+                'nullable'  => true,
+                'unique'    => false,
+                'length'    => 250,
             ]
         );
 
         $metadata->mapManyToOne(
             [
-           'fieldName'      => 'address',
-           'targetEntity'   => 'DDC964Address',
-           'cascade'        => ['persist','merge'],
-           'joinColumn'     => ['name'=>'address_id', 'referencedColumnMame'=>'id'],
+                'fieldName'      => 'address',
+                'targetEntity'   => 'DDC964Address',
+                'cascade'        => ['persist','merge'],
+                'joinColumn'     => ['name' => 'address_id', 'referencedColumnMame' => 'id'],
             ]
         );
 
         $metadata->mapManyToMany(
             [
-           'fieldName'      => 'groups',
-           'targetEntity'   => 'DDC964Group',
-           'inversedBy'     => 'users',
-           'cascade'        => ['persist','merge','detach'],
-           'joinTable'      => [
-                'name'          => 'ddc964_users_groups',
-                'joinColumns'   => [
-                    [
-                    'name'=>'user_id',
-                    'referencedColumnName'=>'id',
-                    ]
+                'fieldName'      => 'groups',
+                'targetEntity'   => 'DDC964Group',
+                'inversedBy'     => 'users',
+                'cascade'        => ['persist','merge','detach'],
+                'joinTable'      => [
+                    'name'          => 'ddc964_users_groups',
+                    'joinColumns'   => [
+                        [
+                            'name' => 'user_id',
+                            'referencedColumnName' => 'id',
+                        ],
+                    ],
+                    'inverseJoinColumns' => [
+                        [
+                            'name' => 'group_id',
+                            'referencedColumnName' => 'id',
+                        ],
+                    ],
                 ],
-                'inverseJoinColumns'=> [
-                    [
-                    'name'=>'group_id',
-                    'referencedColumnName'=>'id',
-                    ]
-                ]
-           ]
             ]
         );
 
-        $metadata->setIdGeneratorType(\Doctrine\ORM\Mapping\ClassMetadataInfo::GENERATOR_TYPE_AUTO);
+        $metadata->setIdGeneratorType(ClassMetadataInfo::GENERATOR_TYPE_AUTO);
     }
 }

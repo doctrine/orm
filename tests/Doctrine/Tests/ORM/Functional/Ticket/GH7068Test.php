@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\Tests\ORM\Functional\Ticket;
 
 use Doctrine\DBAL\LockMode;
@@ -8,10 +10,7 @@ use Doctrine\Tests\OrmFunctionalTestCase;
 
 final class GH7068Test extends OrmFunctionalTestCase
 {
-    /**
-     * {@inheritDoc}
-     */
-    protected function setUp() : void
+    protected function setUp(): void
     {
         parent::setUp();
 
@@ -22,7 +21,7 @@ final class GH7068Test extends OrmFunctionalTestCase
         );
     }
 
-    public function testLockModeIsRespected()
+    public function testLockModeIsRespected(): void
     {
         $entity = new SomeEntity();
         $this->_em->persist($entity);
@@ -37,7 +36,13 @@ final class GH7068Test extends OrmFunctionalTestCase
 }
 
 /** @Entity */
-final class SomeEntity {
-    /** @Id @Column(type="integer") @GeneratedValue */
+final class SomeEntity
+{
+    /**
+     * @var int
+     * @Id
+     * @Column(type="integer")
+     * @GeneratedValue
+     */
     public $id;
 }

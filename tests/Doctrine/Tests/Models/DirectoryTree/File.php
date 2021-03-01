@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\Tests\Models\DirectoryTree;
 
 /**
@@ -8,10 +10,13 @@ namespace Doctrine\Tests\Models\DirectoryTree;
  */
 class File extends AbstractContentItem
 {
-    /** @Column(type="string") */
-    protected $extension = "html";
+    /**
+     * @var string
+     * @Column(type="string")
+     */
+    protected $extension = 'html';
 
-    public function __construct(Directory $parent = null)
+    public function __construct(?Directory $parent = null)
     {
         parent::__construct($parent);
     }
@@ -21,7 +26,7 @@ class File extends AbstractContentItem
         return $this->extension;
     }
 
-    public function setExtension($ext)
+    public function setExtension($ext): void
     {
         $this->extension = $ext;
     }

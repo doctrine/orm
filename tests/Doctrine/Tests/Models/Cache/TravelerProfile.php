@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\Tests\Models\Cache;
 
 /**
@@ -10,15 +12,14 @@ namespace Doctrine\Tests\Models\Cache;
 class TravelerProfile
 {
     /**
+     * @var int
      * @Id
      * @GeneratedValue
      * @Column(type="integer")
      */
     protected $id;
 
-    /**
-     * @Column(unique=true)
-     */
+    /** @Column(unique=true) */
     private $name;
 
     /**
@@ -37,7 +38,7 @@ class TravelerProfile
         return $this->id;
     }
 
-    public function setId($id)
+    public function setId($id): void
     {
         $this->id = $id;
     }
@@ -47,7 +48,7 @@ class TravelerProfile
         return $this->name;
     }
 
-    public function setName($nae)
+    public function setName($nae): void
     {
         $this->name = $nae;
     }
@@ -57,7 +58,7 @@ class TravelerProfile
         return $this->info;
     }
 
-    public function setInfo(TravelerProfileInfo $info)
+    public function setInfo(TravelerProfileInfo $info): void
     {
         $this->info = $info;
     }

@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\Tests\ORM\Functional\Ticket;
 
 use Doctrine\ORM\AbstractQuery;
@@ -10,17 +12,14 @@ use Doctrine\Tests\OrmFunctionalTestCase;
  */
 final class GH6937Test extends OrmFunctionalTestCase
 {
-    /**
-     * {@inheritDoc}
-     */
-    protected function setUp() : void
+    protected function setUp(): void
     {
         parent::setUp();
 
         $this->setUpEntitySchema([GH6937Person::class, GH6937Employee::class, GH6937Manager::class]);
     }
 
-    public function testPhoneNumberIsPopulatedWithFind() : void
+    public function testPhoneNumberIsPopulatedWithFind(): void
     {
         $manager              = new GH6937Manager();
         $manager->name        = 'Kevin';
@@ -38,7 +37,7 @@ final class GH6937Test extends OrmFunctionalTestCase
         self::assertSame('Accounting', $persistedManager->department);
     }
 
-    public function testPhoneNumberIsPopulatedWithQueryBuilderUsingSimpleObjectHydrator() : void
+    public function testPhoneNumberIsPopulatedWithQueryBuilderUsingSimpleObjectHydrator(): void
     {
         $manager              = new GH6937Manager();
         $manager->name        = 'Kevin';
@@ -61,7 +60,7 @@ final class GH6937Test extends OrmFunctionalTestCase
         self::assertSame('Accounting', $persistedManager->department);
     }
 
-    public function testPhoneNumberIsPopulatedWithQueryBuilder() : void
+    public function testPhoneNumberIsPopulatedWithQueryBuilder(): void
     {
         $manager              = new GH6937Manager();
         $manager->name        = 'Kevin';
@@ -93,10 +92,18 @@ final class GH6937Test extends OrmFunctionalTestCase
  */
 abstract class GH6937Person
 {
-    /** @Id @Column(type="integer") @GeneratedValue */
+    /**
+     * @var int
+     * @Id
+     * @Column(type="integer")
+     * @GeneratedValue
+     */
     public $id;
 
-    /** @Column(type="string") */
+    /**
+     * @var string
+     * @Column(type="string")
+     */
     public $name;
 }
 
@@ -105,7 +112,10 @@ abstract class GH6937Person
  */
 abstract class GH6937Employee extends GH6937Person
 {
-    /** @Column(type="string") */
+    /**
+     * @var string
+     * @Column(type="string")
+     */
     public $phoneNumber;
 }
 
@@ -114,6 +124,9 @@ abstract class GH6937Employee extends GH6937Person
  */
 class GH6937Manager extends GH6937Employee
 {
-    /** @Column(type="string") */
+    /**
+     * @var string
+     * @Column(type="string")
+     */
     public $department;
 }

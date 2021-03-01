@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\Tests\Models\Quote;
 
 /**
@@ -11,35 +13,33 @@ namespace Doctrine\Tests\Models\Quote;
  */
 class Address
 {
-
     /**
+     * @var int
      * @Id
      * @GeneratedValue
      * @Column(type="integer", name="`address-id`")
      */
     public $id;
 
-    /**
-     * @Column(name="`address-zip`")
-     */
+    /** @Column(name="`address-zip`") */
     public $zip;
 
     /**
+     * @var User
      * @OneToOne(targetEntity="User", inversedBy="address")
      * @JoinColumn(name="`user-id`", referencedColumnName="`user-id`")
      */
     public $user;
 
-
-    public function setUser(User $user) {
+    public function setUser(User $user): void
+    {
         if ($this->user !== $user) {
             $this->user = $user;
             $user->setAddress($this);
         }
     }
 
-
-    public function getId()
+    public function getId(): int
     {
         return $this->id;
     }
@@ -49,9 +49,8 @@ class Address
         return $this->zip;
     }
 
-    public function getUser()
+    public function getUser(): User
     {
         return $this->user;
     }
-
 }

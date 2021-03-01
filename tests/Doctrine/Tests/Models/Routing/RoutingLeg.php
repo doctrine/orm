@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\Tests\Models\Routing;
 
 /**
@@ -14,24 +16,22 @@ class RoutingLeg
     public $id;
 
     /**
+     * @var RoutingLocation
      * @ManyToOne(targetEntity="RoutingLocation")
      * @JoinColumn(name="from_id", referencedColumnName="id")
      */
     public $fromLocation;
 
     /**
+     * @var RoutingLocation
      * @ManyToOne(targetEntity="RoutingLocation")
      * @JoinColumn(name="to_id", referencedColumnName="id")
      */
     public $toLocation;
 
-    /**
-     * @Column(type="datetime")
-     */
+    /** @Column(type="datetime") */
     public $departureDate;
 
-    /**
-     * @Column(type="datetime")
-     */
+    /** @Column(type="datetime") */
     public $arrivalDate;
 }

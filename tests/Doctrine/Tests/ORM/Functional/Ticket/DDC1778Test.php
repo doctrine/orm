@@ -1,29 +1,32 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\Tests\ORM\Functional\Ticket;
 
-use Doctrine\Tests\Models\CMS\CmsUser;
 use Doctrine\Tests\Models\CMS\CmsPhonenumber;
+use Doctrine\Tests\Models\CMS\CmsUser;
+use Doctrine\Tests\OrmFunctionalTestCase;
 
 /**
  * @group DDC-1778
  */
-class DDC1778Test extends \Doctrine\Tests\OrmFunctionalTestCase
+class DDC1778Test extends OrmFunctionalTestCase
 {
     private $user;
     private $phone;
 
-    protected function setUp() : void
+    protected function setUp(): void
     {
         $this->useModelSet('cms');
         parent::setUp();
 
-        $this->user = new CmsUser();
-        $this->user->username = "beberlei";
-        $this->user->name = "Benjamin";
-        $this->user->status = "active";
+        $this->user           = new CmsUser();
+        $this->user->username = 'beberlei';
+        $this->user->name     = 'Benjamin';
+        $this->user->status   = 'active';
 
-        $this->phone = new CmsPhonenumber();
+        $this->phone              = new CmsPhonenumber();
         $this->phone->phonenumber = '0123456789';
         $this->user->addPhonenumber($this->phone);
 
@@ -32,11 +35,11 @@ class DDC1778Test extends \Doctrine\Tests\OrmFunctionalTestCase
         $this->_em->flush();
         $this->_em->clear();
 
-        $this->user = $this->_em->find(CmsUser::class, $this->user->getId());
+        $this->user  = $this->_em->find(CmsUser::class, $this->user->getId());
         $this->phone = $this->_em->find(CmsPhonenumber::class, $this->phone->phonenumber);
     }
 
-    public function testClear()
+    public function testClear(): void
     {
         $clonedNumbers = clone $this->user->getPhonenumbers();
         $clonedNumbers->clear();
@@ -48,7 +51,7 @@ class DDC1778Test extends \Doctrine\Tests\OrmFunctionalTestCase
         $this->assertCount(1, $this->user->getPhonenumbers());
     }
 
-    public function testRemove()
+    public function testRemove(): void
     {
         $clonedNumbers = clone $this->user->getPhonenumbers();
         $clonedNumbers->remove(0);
@@ -60,7 +63,7 @@ class DDC1778Test extends \Doctrine\Tests\OrmFunctionalTestCase
         $this->assertCount(1, $this->user->getPhonenumbers());
     }
 
-    public function testRemoveElement()
+    public function testRemoveElement(): void
     {
         $clonedNumbers = clone $this->user->getPhonenumbers();
         $clonedNumbers->removeElement($this->phone);

@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\Tests\Models\DDC3899;
 
 /**
@@ -20,6 +22,9 @@ abstract class DDC3899Contract
     /** @Column(type="boolean") */
     public $completed = false;
 
-    /** @ManyToOne(targetEntity="DDC3899User", inversedBy="contract") */
+    /**
+     * @var DDC3899User
+     * @ManyToOne(targetEntity="DDC3899User", inversedBy="contract")
+     */
     public $user;
 }

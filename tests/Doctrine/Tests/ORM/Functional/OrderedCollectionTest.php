@@ -1,30 +1,36 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\Tests\ORM\Functional;
 
+use DateTime;
 use Doctrine\Tests\Models\Routing\RoutingLeg;
 use Doctrine\Tests\Models\Routing\RoutingLocation;
 use Doctrine\Tests\Models\Routing\RoutingRoute;
 use Doctrine\Tests\Models\Routing\RoutingRouteBooking;
 use Doctrine\Tests\OrmFunctionalTestCase;
 
+use function count;
+
 class OrderedCollectionTest extends OrmFunctionalTestCase
 {
     protected $locations = [];
 
-    protected function setUp() : void
+    protected function setUp(): void
     {
         $this->useModelSet('routing');
         parent::setUp();
 
-        $locations = ["Berlin", "Bonn", "Brasilia", "Atlanta"];
+        $locations = ['Berlin', 'Bonn', 'Brasilia', 'Atlanta'];
 
-        foreach ($locations AS $locationName) {
-            $location = new RoutingLocation();
+        foreach ($locations as $locationName) {
+            $location       = new RoutingLocation();
             $location->name = $locationName;
             $this->_em->persist($location);
             $this->locations[$locationName] = $location;
         }
+
         $this->_em->flush();
     }
 
@@ -32,17 +38,17 @@ class OrderedCollectionTest extends OrmFunctionalTestCase
     {
         $route = new RoutingRoute();
 
-        $leg1 = new RoutingLeg();
-        $leg1->fromLocation = $this->locations['Berlin'];
-        $leg1->toLocation   = $this->locations['Bonn'];
-        $leg1->departureDate = new \DateTime("now");
-        $leg1->arrivalDate = new \DateTime("now +5 hours");
+        $leg1                = new RoutingLeg();
+        $leg1->fromLocation  = $this->locations['Berlin'];
+        $leg1->toLocation    = $this->locations['Bonn'];
+        $leg1->departureDate = new DateTime('now');
+        $leg1->arrivalDate   = new DateTime('now +5 hours');
 
-        $leg2 = new RoutingLeg();
-        $leg2->fromLocation = $this->locations['Bonn'];
-        $leg2->toLocation   = $this->locations['Brasilia'];
-        $leg2->departureDate = new \DateTime("now +6 hours");
-        $leg2->arrivalDate = new \DateTime("now +24 hours");
+        $leg2                = new RoutingLeg();
+        $leg2->fromLocation  = $this->locations['Bonn'];
+        $leg2->toLocation    = $this->locations['Brasilia'];
+        $leg2->departureDate = new DateTime('now +6 hours');
+        $leg2->arrivalDate   = new DateTime('now +24 hours');
 
         $route->legs[] = $leg2;
         $route->legs[] = $leg1;
@@ -55,18 +61,18 @@ class OrderedCollectionTest extends OrmFunctionalTestCase
         return $routeId;
     }
 
-    public function testLazyManyToManyCollection_IsRetrievedWithOrderByClause()
+    public function testLazyManyToManyCollectionIsRetrievedWithOrderByClause(): void
     {
         $routeId = $this->createPersistedRouteWithLegs();
 
         $route = $this->_em->find(RoutingRoute::class, $routeId);
 
         $this->assertEquals(2, count($route->legs));
-        $this->assertEquals("Berlin", $route->legs[0]->fromLocation->getName());
-        $this->assertEquals("Bonn", $route->legs[1]->fromLocation->getName());
+        $this->assertEquals('Berlin', $route->legs[0]->fromLocation->getName());
+        $this->assertEquals('Bonn', $route->legs[1]->fromLocation->getName());
     }
 
-    public function testLazyOneToManyCollection_IsRetrievedWithOrderByClause()
+    public function testLazyOneToManyCollectionIsRetrievedWithOrderByClause(): void
     {
         $route = new RoutingRoute();
 
@@ -74,15 +80,15 @@ class OrderedCollectionTest extends OrmFunctionalTestCase
         $this->_em->flush();
         $routeId = $route->id;
 
-        $booking1 = new RoutingRouteBooking();
-        $booking1->passengerName = "Guilherme";
-        $booking2 = new RoutingRouteBooking();
-        $booking2->passengerName = "Benjamin";
+        $booking1                = new RoutingRouteBooking();
+        $booking1->passengerName = 'Guilherme';
+        $booking2                = new RoutingRouteBooking();
+        $booking2->passengerName = 'Benjamin';
 
         $route->bookings[] = $booking1;
-        $booking1->route = $route;
+        $booking1->route   = $route;
         $route->bookings[] = $booking2;
-        $booking2->route = $route;
+        $booking2->route   = $route;
 
         $this->_em->persist($booking1);
         $this->_em->persist($booking2);
@@ -97,16 +103,16 @@ class OrderedCollectionTest extends OrmFunctionalTestCase
         $this->assertEquals('Guilherme', $route->bookings[1]->getPassengerName());
     }
 
-    public function testOrderedResultFromDqlQuery()
+    public function testOrderedResultFromDqlQuery(): void
     {
         $routeId = $this->createPersistedRouteWithLegs();
 
-        $route = $this->_em->createQuery("SELECT r, l FROM Doctrine\Tests\Models\Routing\RoutingRoute r JOIN r.legs l WHERE r.id = ?1")
+        $route = $this->_em->createQuery('SELECT r, l FROM Doctrine\Tests\Models\Routing\RoutingRoute r JOIN r.legs l WHERE r.id = ?1')
                            ->setParameter(1, $routeId)
                            ->getSingleResult();
 
         $this->assertEquals(2, count($route->legs));
-        $this->assertEquals("Berlin", $route->legs[0]->fromLocation->getName());
-        $this->assertEquals("Bonn", $route->legs[1]->fromLocation->getName());
+        $this->assertEquals('Berlin', $route->legs[0]->fromLocation->getName());
+        $this->assertEquals('Bonn', $route->legs[1]->fromLocation->getName());
     }
 }

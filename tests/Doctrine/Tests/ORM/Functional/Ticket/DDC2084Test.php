@@ -1,24 +1,29 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\Tests\ORM\Functional\Ticket;
+
+use Doctrine\Tests\OrmFunctionalTestCase;
+use Exception;
 
 /**
  * @group DDC-2084
  */
-class DDC2084Test extends \Doctrine\Tests\OrmFunctionalTestCase
+class DDC2084Test extends OrmFunctionalTestCase
 {
-    protected function setUp() : void
+    protected function setUp(): void
     {
         parent::setUp();
 
         try {
             $this->_schemaTool->createSchema(
                 [
-                $this->_em->getClassMetadata(__NAMESPACE__ . '\DDC2084\MyEntity1'),
-                $this->_em->getClassMetadata(__NAMESPACE__ . '\DDC2084\MyEntity2'),
+                    $this->_em->getClassMetadata(__NAMESPACE__ . '\DDC2084\MyEntity1'),
+                    $this->_em->getClassMetadata(__NAMESPACE__ . '\DDC2084\MyEntity2'),
                 ]
             );
-        } catch (\Exception $exc) {
+        } catch (Exception $exc) {
         }
     }
 
@@ -38,7 +43,7 @@ class DDC2084Test extends \Doctrine\Tests\OrmFunctionalTestCase
         return $e1;
     }
 
-    public function testIssue()
+    public function testIssue(): void
     {
         $e1 = $this->loadFixture();
         $e2 = $e1->getMyEntity2();
@@ -49,7 +54,7 @@ class DDC2084Test extends \Doctrine\Tests\OrmFunctionalTestCase
         $this->assertEquals('Foo', $e->getMyEntity2()->getValue());
     }
 
-    public function testinvalidIdentifierBindingEntityException()
+    public function testinvalidIdentifierBindingEntityException(): void
     {
         $this->expectException('Doctrine\ORM\ORMInvalidArgumentException');
         $this->expectExceptionMessage('Binding entities to query parameters only allowed for entities that have an identifier.');
@@ -77,7 +82,7 @@ class MyEntity1
         $this->entity2 = $myEntity2;
     }
 
-    public function setMyEntity2(MyEntity2 $myEntity2)
+    public function setMyEntity2(MyEntity2 $myEntity2): void
     {
         $this->entity2 = $myEntity2;
     }
@@ -95,15 +100,14 @@ class MyEntity1
 class MyEntity2
 {
     /**
+     * @var int
      * @Id
      * @Column(type="integer")
      * @GeneratedValue(strategy="AUTO")
      */
     private $id;
 
-    /**
-     * @Column
-     */
+    /** @Column */
     private $value;
 
     public function __construct($value)
@@ -121,7 +125,7 @@ class MyEntity2
         return $this->value;
     }
 
-    public function setValue($value)
+    public function setValue($value): void
     {
         $this->value = $value;
     }

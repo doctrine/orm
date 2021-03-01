@@ -1,14 +1,17 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\Tests\Models\CMS;
+
+use Doctrine\ORM\Events;
+use Doctrine\ORM\Mapping\ClassMetadataInfo;
 
 /**
  * CmsAddress
  *
- * @author Roman S. Borschel
  * @Entity
  * @Table(name="cms_addresses")
- *
  * @NamedNativeQueries({
  *      @NamedNativeQuery(
  *          name                = "find-all",
@@ -26,7 +29,6 @@ namespace Doctrine\Tests\Models\CMS;
  *          query           = "SELECT COUNT(*) AS count FROM cms_addresses"
  *      )
  * })
- *
  * @SqlResultSetMappings({
  *      @SqlResultSetMapping(
  *          name    = "mapping-find-all",
@@ -58,7 +60,6 @@ namespace Doctrine\Tests\Models\CMS;
  *          }
  *      )
  * })
- *
  * @EntityListeners({"CmsAddressListener"})
  */
 class CmsAddress
@@ -69,19 +70,13 @@ class CmsAddress
      */
     public $id;
 
-    /**
-     * @Column(length=50)
-     */
+    /** @Column(length=50) */
     public $country;
 
-    /**
-     * @Column(length=50)
-     */
+    /** @Column(length=50) */
     public $zip;
 
-    /**
-     * @Column(length=50)
-     */
+    /** @Column(length=50) */
     public $city;
 
     /**
@@ -90,160 +85,163 @@ class CmsAddress
     public $street;
 
     /**
+     * @var CmsUser
      * @OneToOne(targetEntity="CmsUser", inversedBy="address")
      * @JoinColumn(referencedColumnName="id")
      */
     public $user;
 
-    public function getId() {
+    public function getId()
+    {
         return $this->id;
     }
 
-    public function getUser() {
+    public function getUser()
+    {
         return $this->user;
     }
 
-    public function getCountry() {
+    public function getCountry()
+    {
         return $this->country;
     }
 
-    public function getZipCode() {
+    public function getZipCode()
+    {
         return $this->zip;
     }
 
-    public function getCity() {
+    public function getCity()
+    {
         return $this->city;
     }
 
-    public function setUser(CmsUser $user) {
+    public function setUser(CmsUser $user): void
+    {
         if ($this->user !== $user) {
             $this->user = $user;
             $user->setAddress($this);
         }
     }
 
-    public static function loadMetadata(\Doctrine\ORM\Mapping\ClassMetadataInfo $metadata)
+    public static function loadMetadata(ClassMetadataInfo $metadata): void
     {
         $metadata->setPrimaryTable(
+            ['name' => 'company_person']
+        );
+
+        $metadata->mapField(
             [
-           'name' => 'company_person',
+                'id'        => true,
+                'fieldName' => 'id',
+                'type'      => 'integer',
             ]
         );
 
         $metadata->mapField(
             [
-            'id'        => true,
-            'fieldName' => 'id',
-            'type'      => 'integer',
+                'fieldName' => 'zip',
+                'length'    => 50,
             ]
         );
 
         $metadata->mapField(
             [
-            'fieldName' => 'zip',
-            'length'    => 50,
-            ]
-        );
-
-        $metadata->mapField(
-            [
-            'fieldName' => 'city',
-            'length'    => 50,
+                'fieldName' => 'city',
+                'length'    => 50,
             ]
         );
 
         $metadata->mapOneToOne(
             [
-            'fieldName'     => 'user',
-            'targetEntity'  => 'CmsUser',
-            'joinColumns'   => [['referencedColumnName' => 'id']]
+                'fieldName'     => 'user',
+                'targetEntity'  => 'CmsUser',
+                'joinColumns'   => [['referencedColumnName' => 'id']],
             ]
         );
 
         $metadata->addNamedNativeQuery(
             [
-            'name'              => 'find-all',
-            'query'             => 'SELECT id, country, city FROM cms_addresses',
-            'resultSetMapping'  => 'mapping-find-all',
+                'name'              => 'find-all',
+                'query'             => 'SELECT id, country, city FROM cms_addresses',
+                'resultSetMapping'  => 'mapping-find-all',
             ]
         );
 
         $metadata->addNamedNativeQuery(
             [
-            'name'              => 'find-by-id',
-            'query'             => 'SELECT * FROM cms_addresses WHERE id = ?',
-            'resultClass'       => CmsAddress::class,
+                'name'              => 'find-by-id',
+                'query'             => 'SELECT * FROM cms_addresses WHERE id = ?',
+                'resultClass'       => self::class,
             ]
         );
 
         $metadata->addNamedNativeQuery(
             [
-            'name'              => 'count',
-            'query'             => 'SELECT COUNT(*) AS count FROM cms_addresses',
-            'resultSetMapping'  => 'mapping-count',
+                'name'              => 'count',
+                'query'             => 'SELECT COUNT(*) AS count FROM cms_addresses',
+                'resultSetMapping'  => 'mapping-count',
             ]
         );
 
         $metadata->addSqlResultSetMapping(
             [
-            'name'      => 'mapping-find-all',
-            'columns'   => [],
-            'entities'  => [
-                [
-                'fields' => [
-                  [
-                    'name'      => 'id',
-                    'column'    => 'id',
-                  ],
-                  [
-                    'name'      => 'city',
-                    'column'    => 'city',
-                  ],
-                  [
-                    'name'      => 'country',
-                    'column'    => 'country',
-                  ],
+                'name'      => 'mapping-find-all',
+                'columns'   => [],
+                'entities'  => [
+                    [
+                        'fields' => [
+                            [
+                                'name'      => 'id',
+                                'column'    => 'id',
+                            ],
+                            [
+                                'name'      => 'city',
+                                'column'    => 'city',
+                            ],
+                            [
+                                'name'      => 'country',
+                                'column'    => 'country',
+                            ],
+                        ],
+                        'entityClass' => self::class,
+                    ],
                 ],
-                'entityClass' => CmsAddress::class,
-                ],
-            ],
             ]
         );
 
         $metadata->addSqlResultSetMapping(
             [
-            'name'      => 'mapping-without-fields',
-            'columns'   => [],
-            'entities'  => [
-                [
-                'entityClass' => CmsAddress::class,
-                'fields' => []
-                ]
-            ]
+                'name'      => 'mapping-without-fields',
+                'columns'   => [],
+                'entities'  => [
+                    [
+                        'entityClass' => self::class,
+                        'fields' => [],
+                    ],
+                ],
             ]
         );
 
         $metadata->addSqlResultSetMapping(
             [
-            'name' => 'mapping-count',
-            'columns' => [
-                [
-                    'name' => 'count',
+                'name' => 'mapping-count',
+                'columns' => [
+                    ['name' => 'count'],
                 ],
-            ]
             ]
         );
 
-        $metadata->addEntityListener(\Doctrine\ORM\Events::postPersist, 'CmsAddressListener', 'postPersist');
-        $metadata->addEntityListener(\Doctrine\ORM\Events::prePersist, 'CmsAddressListener', 'prePersist');
+        $metadata->addEntityListener(Events::postPersist, 'CmsAddressListener', 'postPersist');
+        $metadata->addEntityListener(Events::prePersist, 'CmsAddressListener', 'prePersist');
 
-        $metadata->addEntityListener(\Doctrine\ORM\Events::postUpdate, 'CmsAddressListener', 'postUpdate');
-        $metadata->addEntityListener(\Doctrine\ORM\Events::preUpdate, 'CmsAddressListener', 'preUpdate');
+        $metadata->addEntityListener(Events::postUpdate, 'CmsAddressListener', 'postUpdate');
+        $metadata->addEntityListener(Events::preUpdate, 'CmsAddressListener', 'preUpdate');
 
-        $metadata->addEntityListener(\Doctrine\ORM\Events::postRemove, 'CmsAddressListener', 'postRemove');
-        $metadata->addEntityListener(\Doctrine\ORM\Events::preRemove, 'CmsAddressListener', 'preRemove');
+        $metadata->addEntityListener(Events::postRemove, 'CmsAddressListener', 'postRemove');
+        $metadata->addEntityListener(Events::preRemove, 'CmsAddressListener', 'preRemove');
 
-        $metadata->addEntityListener(\Doctrine\ORM\Events::preFlush, 'CmsAddressListener', 'preFlush');
-        $metadata->addEntityListener(\Doctrine\ORM\Events::postLoad, 'CmsAddressListener', 'postLoad');
+        $metadata->addEntityListener(Events::preFlush, 'CmsAddressListener', 'preFlush');
+        $metadata->addEntityListener(Events::postLoad, 'CmsAddressListener', 'postLoad');
     }
 }

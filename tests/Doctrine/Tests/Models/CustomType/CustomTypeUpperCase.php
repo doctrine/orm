@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\Tests\Models\CustomType;
 
 /**
@@ -9,18 +11,15 @@ namespace Doctrine\Tests\Models\CustomType;
 class CustomTypeUpperCase
 {
     /**
+     * @var int
      * @Id @Column(type="integer")
      * @GeneratedValue(strategy="AUTO")
      */
     public $id;
 
-    /**
-     * @Column(type="upper_case_string")
-     */
+    /** @Column(type="upper_case_string") */
     public $lowerCaseString;
 
-    /**
-     * @Column(type="upper_case_string", name="named_lower_case_string", nullable = true)
-     */
+    /** @Column(type="upper_case_string", name="named_lower_case_string", nullable = true) */
     public $namedLowerCaseString;
 }

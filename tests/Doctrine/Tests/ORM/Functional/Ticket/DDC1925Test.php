@@ -1,16 +1,22 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\Tests\ORM\Functional\Ticket;
 
 use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
+use Doctrine\Tests\OrmFunctionalTestCase;
+
+use function assert;
 
 /**
  * @group DDC-1925
  * @group DDC-1210
  */
-class DDC1925Test extends \Doctrine\Tests\OrmFunctionalTestCase
+class DDC1925Test extends OrmFunctionalTestCase
 {
-    public function testIssue()
+    public function testIssue(): void
     {
         $this->_schemaTool->createSchema(
             [
@@ -20,10 +26,10 @@ class DDC1925Test extends \Doctrine\Tests\OrmFunctionalTestCase
         );
 
         $user = new DDC1925User();
-        $user->setTitle("Test User");
+        $user->setTitle('Test User');
 
         $product = new DDC1925Product();
-        $product->setTitle("Test product");
+        $product->setTitle('Test product');
 
         $this->_em->persist($user);
         $this->_em->persist($product);
@@ -38,8 +44,8 @@ class DDC1925Test extends \Doctrine\Tests\OrmFunctionalTestCase
         $this->_em->flush();
         $this->_em->clear();
 
-        /** @var DDC1925Product $persistedProduct */
         $persistedProduct = $this->_em->find(DDC1925Product::class, $product->getId());
+        assert($persistedProduct instanceof DDC1925Product);
 
         self::assertEquals($user, $persistedProduct->getBuyers()->first());
     }
@@ -53,7 +59,6 @@ class DDC1925Product
 {
     /**
      * @var int $id
-     *
      * @Column(name="id", type="integer")
      * @Id
      * @GeneratedValue(strategy="AUTO")
@@ -62,7 +67,6 @@ class DDC1925Product
 
     /**
      * @var string $title
-     *
      * @Column(name="title", type="string", length=255)
      */
     private $title;
@@ -85,44 +89,30 @@ class DDC1925Product
         $this->buyers = new ArrayCollection();
     }
 
-    /**
-     * @return int
-     */
-    public function getId()
+    public function getId(): int
     {
         return $this->id;
     }
 
-    /**
-     * @param string $title
-     */
-    public function setTitle($title)
+    public function setTitle(string $title): void
     {
         $this->title = $title;
     }
 
     /**
      * Get title
-     *
-     * @return string
      */
-    public function getTitle()
+    public function getTitle(): string
     {
         return $this->title;
     }
 
-    /**
-     * @return ArrayCollection
-     */
-    public function getBuyers()
+    public function getBuyers(): Collection
     {
         return $this->buyers;
     }
 
-    /**
-     * @param DDC1925User $buyer
-     */
-    public function addBuyer(DDC1925User $buyer)
+    public function addBuyer(DDC1925User $buyer): void
     {
         $this->buyers[] = $buyer;
     }
@@ -136,7 +126,6 @@ class DDC1925User
 {
     /**
      * @var int
-     *
      * @Column(name="id", type="integer")
      * @Id
      * @GeneratedValue(strategy="AUTO")
@@ -145,37 +134,30 @@ class DDC1925User
 
     /**
      * @var string
-     *
      * @Column(name="title", type="string", length=255)
      */
     private $title;
 
     /**
      * Get id
-     *
-     * @return int
      */
-    public function getId()
+    public function getId(): int
     {
         return $this->id;
     }
 
     /**
      * Set title
-     *
-     * @param string $title
      */
-    public function setTitle($title)
+    public function setTitle(string $title): void
     {
         $this->title = $title;
     }
 
     /**
      * Get title
-     *
-     * @return string
      */
-    public function getTitle()
+    public function getTitle(): string
     {
         return $this->title;
     }

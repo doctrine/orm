@@ -1,29 +1,34 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\Tests\ORM\Functional\Ticket;
 
 use Doctrine\ORM\UnitOfWork;
+use Doctrine\Tests\OrmFunctionalTestCase;
+use Exception;
 
-class DDC353Test extends \Doctrine\Tests\OrmFunctionalTestCase
+class DDC353Test extends OrmFunctionalTestCase
 {
-    protected function setUp() : void
+    protected function setUp(): void
     {
         parent::setUp();
         try {
             $this->_schemaTool->createSchema(
                 [
-                $this->_em->getClassMetadata(DDC353File::class),
-                $this->_em->getClassMetadata(DDC353Picture::class),
+                    $this->_em->getClassMetadata(DDC353File::class),
+                    $this->_em->getClassMetadata(DDC353Picture::class),
                 ]
             );
-        } catch(\Exception $ignored) {}
+        } catch (Exception $ignored) {
+        }
     }
 
-    public function testWorkingCase()
+    public function testWorkingCase(): void
     {
-        $file = new DDC353File;
+        $file = new DDC353File();
 
-        $picture = new DDC353Picture;
+        $picture = new DDC353Picture();
         $picture->setFile($file);
 
         $em = $this->_em;
@@ -35,20 +40,20 @@ class DDC353Test extends \Doctrine\Tests\OrmFunctionalTestCase
         $this->assertTrue($fileId > 0);
 
         $file = $em->getReference(DDC353File::class, $fileId);
-        $this->assertEquals(UnitOfWork::STATE_MANAGED, $em->getUnitOfWork()->getEntityState($file), "Reference Proxy should be marked MANAGED.");
+        $this->assertEquals(UnitOfWork::STATE_MANAGED, $em->getUnitOfWork()->getEntityState($file), 'Reference Proxy should be marked MANAGED.');
 
         $picture = $em->find(DDC353Picture::class, $picture->getPictureId());
-        $this->assertEquals(UnitOfWork::STATE_MANAGED, $em->getUnitOfWork()->getEntityState($picture->getFile()), "Lazy Proxy should be marked MANAGED.");
+        $this->assertEquals(UnitOfWork::STATE_MANAGED, $em->getUnitOfWork()->getEntityState($picture->getFile()), 'Lazy Proxy should be marked MANAGED.');
 
         $em->remove($picture);
         $em->flush();
     }
 
-    public function testFailingCase()
+    public function testFailingCase(): void
     {
-        $file = new DDC353File;
+        $file = new DDC353File();
 
-        $picture = new DDC353Picture;
+        $picture = new DDC353Picture();
         $picture->setFile($file);
 
         $em = $this->_em;
@@ -56,13 +61,13 @@ class DDC353Test extends \Doctrine\Tests\OrmFunctionalTestCase
         $em->flush();
         $em->clear();
 
-        $fileId = $file->getFileId();
+        $fileId    = $file->getFileId();
         $pictureId = $picture->getPictureId();
 
         $this->assertTrue($fileId > 0);
 
         $picture = $em->find(DDC353Picture::class, $pictureId);
-        $this->assertEquals(UnitOfWork::STATE_MANAGED, $em->getUnitOfWork()->getEntityState($picture->getFile()), "Lazy Proxy should be marked MANAGED.");
+        $this->assertEquals(UnitOfWork::STATE_MANAGED, $em->getUnitOfWork()->getEntityState($picture->getFile()), 'Lazy Proxy should be marked MANAGED.');
 
         $em->remove($picture);
         $em->flush();
@@ -99,7 +104,7 @@ class DDC353Picture
     /**
      * Set product
      */
-    public function setProduct($value)
+    public function setProduct($value): void
     {
         $this->product = $value;
     }
@@ -115,7 +120,7 @@ class DDC353Picture
     /**
      * Set file
      */
-    public function setFile($value)
+    public function setFile($value): void
     {
         $this->file = $value;
     }
@@ -135,6 +140,7 @@ class DDC353Picture
 class DDC353File
 {
     /**
+     * @var int
      * @Column(name="file_id", type="integer")
      * @Id
      * @GeneratedValue(strategy="AUTO")

@@ -1,19 +1,18 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\Tests\ORM\Functional\Ticket;
 
 use Doctrine\ORM\AbstractQuery;
-use Doctrine\ORM\Internal\Hydration\HydrationException;
+use Doctrine\Tests\OrmFunctionalTestCase;
 
 /**
  * @group DDC-2306
  */
-class DDC3170Test extends \Doctrine\Tests\OrmFunctionalTestCase
+class DDC3170Test extends OrmFunctionalTestCase
 {
-    /**
-     * {@inheritDoc}
-     */
-    protected function setUp() : void
+    protected function setUp(): void
     {
         parent::setUp();
 
@@ -36,9 +35,9 @@ class DDC3170Test extends \Doctrine\Tests\OrmFunctionalTestCase
      *
      * {@see \Doctrine\ORM\Internal\Hydration\SimpleObjectHydrator::hydrateRowData()}
      */
-    public function testIssue()
+    public function testIssue(): void
     {
-        $productJoined = new DDC3170ProductJoined();
+        $productJoined      = new DDC3170ProductJoined();
         $productSingleTable = new DDC3170ProductSingleTable();
 
         $this->_em->persist($productJoined);
@@ -74,7 +73,12 @@ class DDC3170Test extends \Doctrine\Tests\OrmFunctionalTestCase
  */
 abstract class DDC3170AbstractEntityJoined
 {
-    /** @Id @Column(type="integer") @GeneratedValue */
+    /**
+     * @var int
+     * @Id
+     * @Column(type="integer")
+     * @GeneratedValue
+     */
     public $id;
 }
 
@@ -93,7 +97,12 @@ class DDC3170ProductJoined extends DDC3170AbstractEntityJoined
  */
 abstract class DDC3170AbstractEntitySingleTable
 {
-    /** @Id @Column(type="integer") @GeneratedValue */
+    /**
+     * @var int
+     * @Id
+     * @Column(type="integer")
+     * @GeneratedValue
+     */
     public $id;
 }
 

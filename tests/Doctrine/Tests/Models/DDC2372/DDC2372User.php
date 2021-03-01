@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\Tests\Models\DDC2372;
 
 use Doctrine\Tests\Models\DDC2372\Traits\DDC2372AddressTrait;
@@ -10,11 +12,15 @@ class DDC2372User
     use DDC2372AddressTrait;
 
     /**
+     * @var int
      * @Id @Column(type="integer")
      * @GeneratedValue(strategy="AUTO")
      */
     private $id;
-    /** @Column(type="string", length=50) */
+    /**
+     * @var string
+     * @Column(type="string", length=50)
+     */
     private $name;
 
     public function getId()
@@ -27,7 +33,7 @@ class DDC2372User
         return $this->name;
     }
 
-    public function setName($name)
+    public function setName($name): void
     {
         $this->name = $name;
     }

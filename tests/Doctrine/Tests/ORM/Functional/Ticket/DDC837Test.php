@@ -1,19 +1,23 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\Tests\ORM\Functional\Ticket;
 
-class DDC837Test extends \Doctrine\Tests\OrmFunctionalTestCase
+use Doctrine\Tests\OrmFunctionalTestCase;
+
+class DDC837Test extends OrmFunctionalTestCase
 {
-    protected function setUp() : void
+    protected function setUp(): void
     {
         parent::setUp();
         $this->_schemaTool->createSchema(
             [
-            $this->_em->getClassMetadata(DDC837Super::class),
-            $this->_em->getClassMetadata(DDC837Class1::class),
-            $this->_em->getClassMetadata(DDC837Class2::class),
-            $this->_em->getClassMetadata(DDC837Class3::class),
-            $this->_em->getClassMetadata(DDC837Aggregate::class),
+                $this->_em->getClassMetadata(DDC837Super::class),
+                $this->_em->getClassMetadata(DDC837Class1::class),
+                $this->_em->getClassMetadata(DDC837Class2::class),
+                $this->_em->getClassMetadata(DDC837Class3::class),
+                $this->_em->getClassMetadata(DDC837Aggregate::class),
             ]
         );
     }
@@ -21,26 +25,26 @@ class DDC837Test extends \Doctrine\Tests\OrmFunctionalTestCase
     /**
      * @group DDC-837
      */
-    public function testIssue()
+    public function testIssue(): void
     {
         //$this->_em->getConnection()->getConfiguration()->setSQLLogger(new \Doctrine\DBAL\Logging\EchoSQLLogger);
 
-        $c1 = new DDC837Class1();
-        $c1->title = "Foo";
-        $c1->description = "Foo";
-        $aggregate1 = new DDC837Aggregate('test1');
-        $c1->aggregate = $aggregate1;
+        $c1              = new DDC837Class1();
+        $c1->title       = 'Foo';
+        $c1->description = 'Foo';
+        $aggregate1      = new DDC837Aggregate('test1');
+        $c1->aggregate   = $aggregate1;
 
-        $c2 = new DDC837Class2();
-        $c2->title = "Bar";
-        $c2->description = "Bar";
-        $c2->text = "Bar";
-        $aggregate2 = new DDC837Aggregate('test2');
-        $c2->aggregate = $aggregate2;
+        $c2              = new DDC837Class2();
+        $c2->title       = 'Bar';
+        $c2->description = 'Bar';
+        $c2->text        = 'Bar';
+        $aggregate2      = new DDC837Aggregate('test2');
+        $c2->aggregate   = $aggregate2;
 
-        $c3 = new DDC837Class3();
-        $c3->apples = "Baz";
-        $c3->bananas = "Baz";
+        $c3          = new DDC837Class3();
+        $c3->apples  = 'Baz';
+        $c3->bananas = 'Baz';
 
         $this->_em->persist($c1);
         $this->_em->persist($aggregate1);
@@ -75,12 +79,12 @@ class DDC837Test extends \Doctrine\Tests\OrmFunctionalTestCase
             if ($obj instanceof DDC837Class1) {
                 $this->assertEquals('Foo', $obj->title);
                 $this->assertEquals('Foo', $obj->description);
-            } else if ($obj instanceof DDC837Class2) {
+            } elseif ($obj instanceof DDC837Class2) {
                 $this->assertTrue($e2 === $obj);
                 $this->assertEquals('Bar', $obj->title);
                 $this->assertEquals('Bar', $obj->description);
                 $this->assertEquals('Bar', $obj->text);
-            } else if ($obj instanceof DDC837Class3) {
+            } elseif ($obj instanceof DDC837Class3) {
                 $this->assertEquals('Baz', $obj->apples);
                 $this->assertEquals('Baz', $obj->bananas);
             } else {
@@ -100,9 +104,11 @@ class DDC837Test extends \Doctrine\Tests\OrmFunctionalTestCase
 abstract class DDC837Super
 {
     /**
-     * @Id @Column(name="id", type="integer")
+     * @var int
+     * @Id
+     * @Column(name="id", type="integer")
      * @GeneratedValue(strategy="AUTO")
-    */
+     */
     public $id;
 }
 
@@ -112,16 +118,19 @@ abstract class DDC837Super
 class DDC837Class1 extends DDC837Super
 {
     /**
+     * @var string
      * @Column(name="title", type="string", length=150)
      */
     public $title;
 
     /**
+     * @var string
      * @Column(name="content", type="string", length=500)
      */
     public $description;
 
     /**
+     * @var DDC837Aggregate
      * @OneToOne(targetEntity="DDC837Aggregate")
      */
     public $aggregate;
@@ -133,21 +142,25 @@ class DDC837Class1 extends DDC837Super
 class DDC837Class2 extends DDC837Super
 {
     /**
+     * @var string
      * @Column(name="title", type="string", length=150)
      */
     public $title;
 
     /**
+     * @var string
      * @Column(name="content", type="string", length=500)
      */
     public $description;
 
     /**
+     * @var string
      * @Column(name="text", type="text")
      */
     public $text;
 
     /**
+     * @var DDC837Aggregate
      * @OneToOne(targetEntity="DDC837Aggregate")
      */
     public $aggregate;
@@ -161,11 +174,13 @@ class DDC837Class2 extends DDC837Super
 class DDC837Class3 extends DDC837Super
 {
     /**
+     * @var string
      * @Column(name="title", type="string", length=150)
      */
     public $apples;
 
     /**
+     * @var string
      * @Column(name="content", type="string", length=500)
      */
     public $bananas;
@@ -177,22 +192,25 @@ class DDC837Class3 extends DDC837Super
 class DDC837Aggregate
 {
     /**
-     * @Id @Column(name="id", type="integer")
+     * @var int
+     * @Id
+     * @Column(name="id", type="integer")
      * @GeneratedValue
      */
     public $id;
 
     /**
+     * @var string
      * @Column(name="sysname", type="string")
      */
     protected $sysname;
 
-    public function __construct($sysname)
+    public function __construct(string $sysname)
     {
         $this->sysname = $sysname;
     }
 
-    public function getSysname()
+    public function getSysname(): string
     {
         return $this->sysname;
     }

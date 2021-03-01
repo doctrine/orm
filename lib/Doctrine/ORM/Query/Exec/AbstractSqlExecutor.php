@@ -1,4 +1,5 @@
 <?php
+
 /*
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
  * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
@@ -19,28 +20,23 @@
 
 namespace Doctrine\ORM\Query\Exec;
 
-use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\Cache\QueryCacheProfile;
+use Doctrine\DBAL\Connection;
+use Doctrine\DBAL\Driver\Statement;
 
 /**
  * Base class for SQL statement executors.
  *
- * @author      Roman Borschel <roman@code-factory.org>
- * @license     http://www.opensource.org/licenses/mit-license.php MIT
  * @link        http://www.doctrine-project.org
- * @since       2.0
+ *
  * @todo Rename: AbstractSQLExecutor
  */
 abstract class AbstractSqlExecutor
 {
-    /**
-     * @var mixed[]|string
-     */
+    /** @var mixed[]|string */
     protected $_sqlStatements;
 
-    /**
-     * @var QueryCacheProfile
-     */
+    /** @var QueryCacheProfile */
     protected $queryCacheProfile;
 
     /**
@@ -54,8 +50,6 @@ abstract class AbstractSqlExecutor
     }
 
     /**
-     * @param \Doctrine\DBAL\Cache\QueryCacheProfile $qcp
-     *
      * @return void
      */
     public function setQueryCacheProfile(QueryCacheProfile $qcp)
@@ -80,7 +74,7 @@ abstract class AbstractSqlExecutor
      * @param array      $params The parameters.
      * @param array      $types  The parameter types.
      *
-     * @return \Doctrine\DBAL\Driver\Statement
+     * @return Statement
      */
     abstract public function execute(Connection $conn, array $params, array $types);
 }

@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\Tests\Models\Generic;
 
 /**
@@ -9,17 +11,14 @@ namespace Doctrine\Tests\Models\Generic;
 class SerializationModel
 {
     /**
+     * @var int
      * @Id @Column(type="integer")
      * @GeneratedValue(strategy="AUTO")
      */
     public $id;
-    /**
-     * @Column(name="the_array", type="array", nullable=true)
-     */
+    /** @Column(name="the_array", type="array", nullable=true) */
     public $array;
 
-    /**
-     * @Column(name="the_obj", type="object", nullable=true)
-     */
+    /** @Column(name="the_obj", type="object", nullable=true) */
     public $object;
 }

@@ -1,15 +1,16 @@
 <?php
+
+declare(strict_types=1);
+
 namespace Doctrine\Tests\ORM\Functional\Ticket;
 
-use Doctrine\DBAL\Platforms\AbstractPlatform;
-use Doctrine\DBAL\Types\StringType;
-use Doctrine\DBAL\Types\Type;
-use Doctrine\ORM\AbstractQuery;
 use Doctrine\Tests\OrmFunctionalTestCase;
+
+use function mt_rand;
 
 final class GH5562Test extends OrmFunctionalTestCase
 {
-    protected function setUp() : void
+    protected function setUp(): void
     {
         $this->enableSecondLevelCache();
 
@@ -27,9 +28,9 @@ final class GH5562Test extends OrmFunctionalTestCase
     /**
      * @group GH-5562
      */
-    public function testCacheShouldBeUpdatedWhenAssociationChanges()
+    public function testCacheShouldBeUpdatedWhenAssociationChanges(): void
     {
-        $manager = new GH5562Manager();
+        $manager  = new GH5562Manager();
         $merchant = new GH5562Merchant();
 
         $manager->username = 'username';
@@ -45,7 +46,7 @@ final class GH5562Test extends OrmFunctionalTestCase
 
         $merchant = $this->_em->find(GH5562Merchant::class, $merchant->id);
 
-        $merchant->name = mt_rand();
+        $merchant->name              = mt_rand();
         $merchant->manager->username = 'usernameUPDATE';
 
         $this->_em->flush();
@@ -64,8 +65,7 @@ final class GH5562Test extends OrmFunctionalTestCase
 class GH5562Merchant
 {
     /**
-     * @var integer
-     *
+     * @var int
      * @Id
      * @Column(name="id", type="integer")
      * @GeneratedValue(strategy="IDENTITY")
@@ -74,7 +74,6 @@ class GH5562Merchant
 
     /**
      * @var GH5562Manager
-     *
      * @OneToOne(targetEntity=GH5562Manager::class, mappedBy="merchant")
      * @Cache(usage="NONSTRICT_READ_WRITE")
      */
@@ -82,7 +81,6 @@ class GH5562Merchant
 
     /**
      * @var string
-     *
      * @Column(name="name", type="string", length=255, nullable=false)
      */
     public $name;
@@ -96,8 +94,7 @@ class GH5562Merchant
 abstract class GH5562User
 {
     /**
-     * @var integer
-     *
+     * @var int
      * @Id
      * @Column(name="id", type="integer")
      * @GeneratedValue(strategy="IDENTITY")
@@ -111,17 +108,14 @@ abstract class GH5562User
  */
 class GH5562Manager extends GH5562User
 {
-
     /**
      * @var string
-     *
      * @Column
      */
     public $username;
 
     /**
      * @var GH5562Merchant
-     *
      * @OneToOne(targetEntity=GH5562Merchant::class, inversedBy="manager")
      */
     public $merchant;

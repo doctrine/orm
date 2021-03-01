@@ -1,12 +1,14 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\Tests\ORM\Functional\Ticket;
 
 use Doctrine\Tests\OrmFunctionalTestCase;
 
 class DDC1181Test extends OrmFunctionalTestCase
 {
-    protected function setUp() : void
+    protected function setUp(): void
     {
         parent::setUp();
         $this->_schemaTool->createSchema(
@@ -21,7 +23,7 @@ class DDC1181Test extends OrmFunctionalTestCase
     /**
      * @group DDC-1181
      */
-    public function testIssue()
+    public function testIssue(): void
     {
         $hotel = new DDC1181Hotel();
         $room1 = new DDC1181Room();
@@ -32,12 +34,12 @@ class DDC1181Test extends OrmFunctionalTestCase
         $this->_em->persist($room2);
         $this->_em->flush();
 
-        $booking1 = new DDC1181Booking;
-        $booking1->hotel = $hotel;
-        $booking1->room = $room1;
-        $booking2 = new DDC1181Booking;
-        $booking2->hotel = $hotel;
-        $booking2->room = $room2;
+        $booking1          = new DDC1181Booking();
+        $booking1->hotel   = $hotel;
+        $booking1->room    = $room1;
+        $booking2          = new DDC1181Booking();
+        $booking2->hotel   = $hotel;
+        $booking2->room    = $room2;
         $hotel->bookings[] = $booking1;
         $hotel->bookings[] = $booking2;
 
@@ -57,7 +59,12 @@ class DDC1181Test extends OrmFunctionalTestCase
  */
 class DDC1181Hotel
 {
-    /** @Id @Column(type="integer") @GeneratedValue */
+    /**
+     * @var int
+     * @Id
+     * @Column(type="integer")
+     * @GeneratedValue
+     */
     public $id;
 
     /**
@@ -65,7 +72,6 @@ class DDC1181Hotel
      * @var Booking[]
      */
     public $bookings;
-
 }
 
 /**
@@ -75,7 +81,6 @@ class DDC1181Booking
 {
     /**
      * @var Hotel
-     *
      * @Id
      * @ManyToOne(targetEntity="DDC1181Hotel", inversedBy="bookings")
      * @JoinColumns({
@@ -85,7 +90,6 @@ class DDC1181Booking
     public $hotel;
     /**
      * @var Room
-     *
      * @Id
      * @ManyToOne(targetEntity="DDC1181Room")
      * @JoinColumns({
@@ -100,6 +104,11 @@ class DDC1181Booking
  */
 class DDC1181Room
 {
-    /** @Id @Column(type="integer") @GeneratedValue */
+    /**
+     * @var int
+     * @Id
+     * @Column(type="integer")
+     * @GeneratedValue
+     */
     public $id;
 }

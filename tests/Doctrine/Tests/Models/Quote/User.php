@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\Tests\Models\Quote;
 
 use Doctrine\Common\Collections\ArrayCollection;
@@ -11,6 +13,7 @@ use Doctrine\Common\Collections\ArrayCollection;
 class User
 {
     /**
+     * @var int
      * @Id
      * @GeneratedValue
      * @Column(type="integer", name="`user-id`")
@@ -18,13 +21,12 @@ class User
     public $id;
 
     /**
+     * @var string
      * @Column(type="string", name="`user-name`")
      */
     public $name;
 
-    /**
-     * @OneToMany(targetEntity="Phone", mappedBy="user", cascade={"persist"})
-     */
+    /** @OneToMany(targetEntity="Phone", mappedBy="user", cascade={"persist"}) */
     public $phones;
 
     /**
@@ -54,10 +56,9 @@ class User
 
     public function __construct()
     {
-        $this->phones = new ArrayCollection;
-        $this->groups = new ArrayCollection;
+        $this->phones = new ArrayCollection();
+        $this->groups = new ArrayCollection();
     }
-
 
     public function getPhones()
     {
@@ -74,7 +75,8 @@ class User
         return $this->groups;
     }
 
-    public function setAddress(Address $address) {
+    public function setAddress(Address $address): void
+    {
         if ($this->address !== $address) {
             $this->address = $address;
             $address->setUser($this);

@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\Tests\Models\Generic;
 
 /**
@@ -9,6 +11,7 @@ namespace Doctrine\Tests\Models\Generic;
 class NonAlphaColumnsEntity
 {
     /**
+     * @var int
      * @Id
      * @Column(type="integer", name="`simple-entity-id`")
      * @GeneratedValue(strategy="AUTO")
@@ -16,14 +19,12 @@ class NonAlphaColumnsEntity
     public $id;
 
     /**
+     * @var string
      * @Column(type="string", name="`simple-entity-value`")
      */
     public $value;
 
-    /**
-     * @param string $value
-     */
-    public function __construct($value)
+    public function __construct(string $value)
     {
         $this->value = $value;
     }

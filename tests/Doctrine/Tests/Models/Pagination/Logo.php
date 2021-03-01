@@ -1,10 +1,11 @@
 <?php
+
+declare(strict_types=1);
+
 namespace Doctrine\Tests\Models\Pagination;
 
 /**
  * Logo
- *
- * @package Doctrine\Tests\Models\Pagination
  *
  * @Author Bill Schaller
  * @Entity
@@ -19,21 +20,25 @@ class Logo
     public $id;
 
     /**
+     * @var string
      * @Column(type="string")
      */
     public $image;
 
     /**
+     * @var int
      * @Column(type="integer")
      */
     public $image_height;
 
     /**
+     * @var int
      * @Column(type="integer")
      */
     public $image_width;
 
     /**
+     * @var Company
      * @OneToOne(targetEntity="Company", inversedBy="logo", cascade={"persist"})
      * @JoinColumn(name="company_id")
      */

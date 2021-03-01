@@ -1,28 +1,31 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\Tests\ORM\Tools\Console;
 
 use Doctrine\ORM\Tools\Console\MetadataFilter;
 use Doctrine\ORM\Tools\DisconnectedClassMetadataFactory;
+use Doctrine\Tests\OrmTestCase;
+
+use function count;
 
 /**
  * Tests for {@see \Doctrine\ORM\Tools\Console\MetadataFilter}
  *
  * @covers \Doctrine\ORM\Tools\Console\MetadataFilter
  */
-class MetadataFilterTest extends \Doctrine\Tests\OrmTestCase
+class MetadataFilterTest extends OrmTestCase
 {
-    /**
-     * @var DisconnectedClassMetadataFactory
-     */
+    /** @var DisconnectedClassMetadataFactory */
     private $cmf;
 
-    protected function setUp() : void
+    protected function setUp(): void
     {
         parent::setUp();
 
         $driver = $this->createAnnotationDriver();
-        $em     = $this->_getTestEntityManager();
+        $em     = $this->getTestEntityManager();
 
         $em->getConfiguration()->setMetadataDriverImpl($driver);
 
@@ -30,7 +33,7 @@ class MetadataFilterTest extends \Doctrine\Tests\OrmTestCase
         $this->cmf->setEntityManager($em);
     }
 
-    public function testFilterWithEmptyArray() : void
+    public function testFilterWithEmptyArray(): void
     {
         $originalMetadatas = [
             $metadataAaa = $this->cmf->getMetadataFor(MetadataFilterTestEntityAaa::class),
@@ -45,7 +48,7 @@ class MetadataFilterTest extends \Doctrine\Tests\OrmTestCase
         $this->assertCount(count($originalMetadatas), $metadatas);
     }
 
-    public function testFilterWithString() : void
+    public function testFilterWithString(): void
     {
         $originalMetadatas = [
             $metadataAaa = $this->cmf->getMetadataFor(MetadataFilterTestEntityAaa::class),
@@ -78,7 +81,7 @@ class MetadataFilterTest extends \Doctrine\Tests\OrmTestCase
         $this->assertCount(1, $metadatas);
     }
 
-    public function testFilterWithString2() : void
+    public function testFilterWithString2(): void
     {
         $originalMetadatas = [
             $metadataFoo    = $this->cmf->getMetadataFor(MetadataFilterTestEntityFoo::class),
@@ -95,7 +98,7 @@ class MetadataFilterTest extends \Doctrine\Tests\OrmTestCase
         $this->assertCount(2, $metadatas);
     }
 
-    public function testFilterWithArray() : void
+    public function testFilterWithArray(): void
     {
         $originalMetadatas = [
             $metadataAaa = $this->cmf->getMetadataFor(MetadataFilterTestEntityAaa::class),
@@ -115,7 +118,7 @@ class MetadataFilterTest extends \Doctrine\Tests\OrmTestCase
         $this->assertCount(2, $metadatas);
     }
 
-    public function testFilterWithRegex() : void
+    public function testFilterWithRegex(): void
     {
         $originalMetadatas = [
             $metadataFoo    = $this->cmf->getMetadataFor(MetadataFilterTestEntityFoo::class),
@@ -144,41 +147,65 @@ class MetadataFilterTest extends \Doctrine\Tests\OrmTestCase
 /** @Entity */
 class MetadataFilterTestEntityAaa
 {
-    /** @Id @Column */
+    /**
+     * @var int
+     * @Id
+     * @Column
+     */
     protected $id;
 }
 
 /** @Entity */
 class MetadataFilterTestEntityBbb
 {
-    /** @Id @Column */
+    /**
+     * @var int
+     * @Id
+     * @Column
+     */
     protected $id;
 }
 
 /** @Entity */
 class MetadataFilterTestEntityCcc
 {
-    /** @Id @Column */
+    /**
+     * @var int
+     * @Id
+     * @Column
+     */
     protected $id;
 }
 
 /** @Entity */
 class MetadataFilterTestEntityFoo
 {
-    /** @Id @Column */
+    /**
+     * @var int
+     * @Id
+     * @Column
+     */
     protected $id;
 }
 
 /** @Entity */
 class MetadataFilterTestEntityBar
 {
-    /** @Id @Column */
+    /**
+     * @var int
+     * @Id
+     * @Column
+     */
     protected $id;
 }
 
 /** @Entity */
 class MetadataFilterTestEntityFooBar
 {
-    /** @Id @Column */
+    /**
+     * @var int
+     * @Id
+     * @Column
+     */
     protected $id;
 }

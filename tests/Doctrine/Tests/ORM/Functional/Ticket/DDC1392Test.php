@@ -1,37 +1,38 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\Tests\ORM\Functional\Ticket;
 
 use Doctrine\ORM\UnitOfWork;
-use Doctrine\Tests\VerifyDeprecations;
+use Doctrine\Tests\OrmFunctionalTestCase;
+use Exception;
 
 /**
  * @group DDC-1392
  */
-class DDC1392Test extends \Doctrine\Tests\OrmFunctionalTestCase
+class DDC1392Test extends OrmFunctionalTestCase
 {
-    use VerifyDeprecations;
-
-    protected function setUp() : void
+    protected function setUp(): void
     {
         parent::setUp();
 
         try {
             $this->_schemaTool->createSchema(
                 [
-                $this->_em->getClassMetadata(DDC1392File::class),
-                $this->_em->getClassMetadata(DDC1392Picture::class),
+                    $this->_em->getClassMetadata(DDC1392File::class),
+                    $this->_em->getClassMetadata(DDC1392Picture::class),
                 ]
             );
-        } catch (\Exception $ignored) {
+        } catch (Exception $ignored) {
         }
     }
 
-    public function testFailingCase()
+    public function testFailingCase(): void
     {
-        $file = new DDC1392File;
+        $file = new DDC1392File();
 
-        $picture = new DDC1392Picture;
+        $picture = new DDC1392Picture();
         $picture->setFile($file);
 
         $em = $this->_em;
@@ -39,13 +40,13 @@ class DDC1392Test extends \Doctrine\Tests\OrmFunctionalTestCase
         $em->flush();
         $em->clear();
 
-        $fileId = $file->getFileId();
+        $fileId    = $file->getFileId();
         $pictureId = $picture->getPictureId();
 
         $this->assertTrue($fileId > 0);
 
         $picture = $em->find(DDC1392Picture::class, $pictureId);
-        $this->assertEquals(UnitOfWork::STATE_MANAGED, $em->getUnitOfWork()->getEntityState($picture->getFile()), "Lazy Proxy should be marked MANAGED.");
+        $this->assertEquals(UnitOfWork::STATE_MANAGED, $em->getUnitOfWork()->getEntityState($picture->getFile()), 'Lazy Proxy should be marked MANAGED.');
 
         $file = $picture->getFile();
 
@@ -60,11 +61,10 @@ class DDC1392Test extends \Doctrine\Tests\OrmFunctionalTestCase
 
         $em->flush();
 
-        $q = $this->_em->createQuery("SELECT COUNT(e) FROM " . __NAMESPACE__ . '\DDC1392File e');
+        $q      = $this->_em->createQuery('SELECT COUNT(e) FROM ' . __NAMESPACE__ . '\DDC1392File e');
         $result = $q->getSingleScalarResult();
 
         self::assertEquals(1, $result);
-        $this->assertHasDeprecationMessages();
     }
 }
 
@@ -80,6 +80,7 @@ class DDC1392Picture
     private $pictureId;
 
     /**
+     * @var DDC1392File
      * @ManyToOne(targetEntity="DDC1392File", cascade={"persist", "remove"})
      * @JoinColumn(name="file_id", referencedColumnName="file_id")
      */
@@ -96,7 +97,7 @@ class DDC1392Picture
     /**
      * Set file
      */
-    public function setFile($value = null)
+    public function setFile($value = null): void
     {
         $this->file = $value;
     }
@@ -116,6 +117,7 @@ class DDC1392Picture
 class DDC1392File
 {
     /**
+     * @var int
      * @Column(name="file_id", type="integer")
      * @Id
      * @GeneratedValue(strategy="AUTO")

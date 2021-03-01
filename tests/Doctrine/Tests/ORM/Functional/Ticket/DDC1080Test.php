@@ -1,21 +1,27 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\Tests\ORM\Functional\Ticket;
 
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\Tests\OrmFunctionalTestCase;
+
+use function count;
 
 /**
  * @group DDC-1080
  */
 class DDC1080Test extends OrmFunctionalTestCase
 {
-    public function testHydration()
+    public function testHydration(): void
     {
         $this->_schemaTool->createSchema(
             [
-            $this->_em->getClassMetadata(DDC1080Foo::class),
-            $this->_em->getClassMetadata(DDC1080Bar::class),
-            $this->_em->getClassMetadata(DDC1080FooBar::class),
+                $this->_em->getClassMetadata(DDC1080Foo::class),
+                $this->_em->getClassMetadata(DDC1080Bar::class),
+                $this->_em->getClassMetadata(DDC1080FooBar::class),
             ]
         );
 
@@ -59,10 +65,10 @@ class DDC1080Test extends OrmFunctionalTestCase
         $this->_em->flush();
         $this->_em->clear();
 
-        $foo = $this->_em->find(DDC1080Foo::class, $foo1->getFooID());
+        $foo     = $this->_em->find(DDC1080Foo::class, $foo1->getFooID());
         $fooBars = $foo->getFooBars();
 
-        $this->assertEquals(3, count($fooBars), "Should return three foobars.");
+        $this->assertEquals(3, count($fooBars), 'Should return three foobars.');
     }
 }
 
@@ -73,18 +79,22 @@ class DDC1080Test extends OrmFunctionalTestCase
  */
 class DDC1080Foo
 {
-
     /**
+     * @var int
      * @Id
      * @Column(name="fooID", type="integer")
      * @GeneratedValue(strategy="AUTO")
      */
     protected $_fooID;
+
     /**
+     * @var string
      * @Column(name="fooTitle", type="string")
      */
     protected $_fooTitle;
+
     /**
+     * @psalm-var Collection<DDC1080FooBar>
      * @OneToMany(targetEntity="DDC1080FooBar", mappedBy="_foo",
      * cascade={"persist"})
      * @OrderBy({"_orderNr"="ASC"})
@@ -93,57 +103,41 @@ class DDC1080Foo
 
     public function __construct()
     {
-        $this->_fooBars = new \Doctrine\Common\Collections\ArrayCollection();
+        $this->_fooBars = new ArrayCollection();
     }
 
-    /**
-     * @return the $fooID
-     */
-    public function getFooID()
+    public function getFooID(): int
     {
         return $this->_fooID;
     }
 
-    /**
-     * @return the $fooTitle
-     */
-    public function getFooTitle()
+    public function getFooTitle(): string
     {
         return $this->_fooTitle;
     }
 
     /**
-     * @return the $fooBars
+     * @psalm-return Collection<DDC1080FooBar>
      */
-    public function getFooBars()
+    public function getFooBars(): Collection
     {
         return $this->_fooBars;
     }
 
-    /**
-     * @param field_type $fooID
-     */
-    public function setFooID($fooID)
+    public function setFooID(int $fooID): void
     {
         $this->_fooID = $fooID;
     }
 
-    /**
-     * @param field_type $fooTitle
-     */
-    public function setFooTitle($fooTitle)
+    public function setFooTitle(string $fooTitle): void
     {
         $this->_fooTitle = $fooTitle;
     }
 
-    /**
-     * @param field_type $fooBars
-     */
-    public function setFooBars($fooBars)
+    public function setFooBars(array $fooBars): void
     {
         $this->_fooBars = $fooBars;
     }
-
 }
 /**
  * @Entity
@@ -151,18 +145,22 @@ class DDC1080Foo
  */
 class DDC1080Bar
 {
-
     /**
+     * @var int
      * @Id
      * @Column(name="barID", type="integer")
      * @GeneratedValue(strategy="AUTO")
      */
     protected $_barID;
+
     /**
+     * @var string
      * @Column(name="barTitle", type="string")
      */
     protected $_barTitle;
+
     /**
+     * @psalm-var Collection<DDC1080FooBar>
      * @OneToMany(targetEntity="DDC1080FooBar", mappedBy="_bar",
      * cascade={"persist"})
      * @OrderBy({"_orderNr"="ASC"})
@@ -171,57 +169,41 @@ class DDC1080Bar
 
     public function __construct()
     {
-        $this->_fooBars = new \Doctrine\Common\Collections\ArrayCollection();
+        $this->_fooBars = new ArrayCollection();
     }
 
-    /**
-     * @return the $barID
-     */
-    public function getBarID()
+    public function getBarID(): int
     {
         return $this->_barID;
     }
 
-    /**
-     * @return the $barTitle
-     */
-    public function getBarTitle()
+    public function getBarTitle(): string
     {
         return $this->_barTitle;
     }
 
     /**
-     * @return the $fooBars
+     * @psalm-return Collection<DDC1080FooBar>
      */
-    public function getFooBars()
+    public function getFooBars(): Collection
     {
         return $this->_fooBars;
     }
 
-    /**
-     * @param field_type $barID
-     */
-    public function setBarID($barID)
+    public function setBarID(int $barID): void
     {
         $this->_barID = $barID;
     }
 
-    /**
-     * @param field_type $barTitle
-     */
-    public function setBarTitle($barTitle)
+    public function setBarTitle(string $barTitle): void
     {
         $this->_barTitle = $barTitle;
     }
 
-    /**
-     * @param field_type $fooBars
-     */
-    public function setFooBars($fooBars)
+    public function setFooBars(array $fooBars): void
     {
         $this->_fooBars = $fooBars;
     }
-
 }
 
 /**
@@ -230,7 +212,6 @@ class DDC1080Bar
  */
 class DDC1080FooBar
 {
-
     /**
      * @ManyToOne(targetEntity="DDC1080Foo")
      * @JoinColumn(name="fooID", referencedColumnName="fooID")
@@ -251,69 +232,55 @@ class DDC1080FooBar
 
     /**
      * Retrieve the foo property
-     *
-     * @return DDC1080Foo
      */
-    public function getFoo()
+    public function getFoo(): DDC1080Foo
     {
         return $this->_foo;
     }
 
     /**
      * Set the foo property
-     *
-     * @param DDC1080Foo $foo
-     * @return DDC1080FooBar
      */
-    public function setFoo($foo)
+    public function setFoo(DDC1080Foo $foo): DDC1080FooBar
     {
         $this->_foo = $foo;
+
         return $this;
     }
 
     /**
      * Retrieve the bar property
-     *
-     * @return DDC1080Bar
      */
-    public function getBar()
+    public function getBar(): DDC1080Bar
     {
         return $this->_bar;
     }
 
     /**
      * Set the bar property
-     *
-     * @param DDC1080Bar $bar
-     * @return DDC1080FooBar
      */
-    public function setBar($bar)
+    public function setBar(DDC1080Bar $bar): DDC1080FooBar
     {
         $this->_bar = $bar;
+
         return $this;
     }
 
     /**
      * Retrieve the orderNr property
-     *
-     * @return int|null
      */
-    public function getOrderNr()
+    public function getOrderNr(): ?int
     {
         return $this->_orderNr;
     }
 
     /**
      * Set the orderNr property
-     *
-     * @param integer|null $orderNr
-     * @return DDC1080FooBar
      */
-    public function setOrderNr($orderNr)
+    public function setOrderNr(?int $orderNr): DDC1080FooBar
     {
         $this->_orderNr = $orderNr;
+
         return $this;
     }
-
 }
-

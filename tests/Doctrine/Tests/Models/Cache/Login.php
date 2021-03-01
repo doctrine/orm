@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\Tests\Models\Cache;
 
 /**
@@ -9,18 +11,18 @@ namespace Doctrine\Tests\Models\Cache;
 class Login
 {
     /**
+     * @var int
      * @Id
      * @GeneratedValue
      * @Column(type="integer")
      */
     public $id;
 
-    /**
-     * @Column
-     */
+    /** @Column */
     public $name;
 
     /**
+     * @var Token
      * @ManyToOne(targetEntity="Token", cascade={"persist", "remove"}, inversedBy="logins")
      * @JoinColumn(name="token_id", referencedColumnName="token")
      */
@@ -31,10 +33,7 @@ class Login
         $this->name = $name;
     }
 
-    /**
-     * @return Token
-     */
-    public function getToken()
+    public function getToken(): Token
     {
         return $this->token;
     }

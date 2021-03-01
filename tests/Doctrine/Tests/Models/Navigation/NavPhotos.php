@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\Tests\Models\Navigation;
 
 /**
@@ -9,6 +11,7 @@ namespace Doctrine\Tests\Models\Navigation;
 class NavPhotos
 {
     /**
+     * @var int
      * @Id
      * @column(type="integer")
      * @generatedValue
@@ -16,6 +19,7 @@ class NavPhotos
     private $id;
 
     /**
+     * @var NavPointOfInterest
      * @ManyToOne(targetEntity="NavPointOfInterest")
      * @JoinColumns({
      *   @JoinColumn(name="poi_long", referencedColumnName="nav_long"),
@@ -25,24 +29,29 @@ class NavPhotos
     private $poi;
 
     /**
+     * @var string
      * @column(type="string", name="file_name")
      */
     private $file;
 
-    function __construct($poi, $file) {
-        $this->poi = $poi;
+    public function __construct(NavPointOfInterest $poi, string $file)
+    {
+        $this->poi  = $poi;
         $this->file = $file;
     }
 
-    public function getId() {
+    public function getId(): int
+    {
         return $this->id;
     }
 
-    public function getPointOfInterest() {
+    public function getPointOfInterest(): NavPointOfInterest
+    {
         return $this->poi;
     }
 
-    public function getFile() {
+    public function getFile(): string
+    {
         return $this->file;
     }
 }

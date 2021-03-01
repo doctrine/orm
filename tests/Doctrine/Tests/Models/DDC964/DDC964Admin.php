@@ -1,6 +1,10 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\Tests\Models\DDC964;
+
+use Doctrine\ORM\Mapping\ClassMetadataInfo;
 
 /**
  * @Entity
@@ -21,32 +25,32 @@ namespace Doctrine\Tests\Models\DDC964;
  */
 class DDC964Admin extends DDC964User
 {
-    public static function loadMetadata(\Doctrine\ORM\Mapping\ClassMetadataInfo $metadata)
+    public static function loadMetadata(ClassMetadataInfo $metadata): void
     {
-        $metadata->setAssociationOverride('address',
+        $metadata->setAssociationOverride(
+            'address',
             [
-            'joinColumns'=> [
-                [
-                'name' => 'adminaddress_id',
-                'referencedColumnName' => 'id',
-                ]
-            ]
+                'joinColumns' => [
+                    [
+                        'name' => 'adminaddress_id',
+                        'referencedColumnName' => 'id',
+                    ],
+                ],
             ]
         );
 
-        $metadata->setAssociationOverride('groups',
+        $metadata->setAssociationOverride(
+            'groups',
             [
-            'joinTable' => [
-                'name'      => 'ddc964_users_admingroups',
-                'joinColumns' => [
-                    [
-                    'name' => 'adminuser_id',
-                    ]
+                'joinTable' => [
+                    'name'      => 'ddc964_users_admingroups',
+                    'joinColumns' => [
+                        ['name' => 'adminuser_id'],
+                    ],
+                    'inverseJoinColumns' => [
+                        ['name' => 'admingroup_id'],
+                    ],
                 ],
-                'inverseJoinColumns' => [[
-                    'name'      => 'admingroup_id',
-                ]]
-            ]
             ]
         );
     }

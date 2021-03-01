@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\Tests\Models\Cache;
 
 /**
@@ -9,6 +11,7 @@ namespace Doctrine\Tests\Models\Cache;
 class Address
 {
     /**
+     * @var int
      * @Id
      * @GeneratedValue
      * @Column(type="integer")
@@ -21,9 +24,7 @@ class Address
      */
     public $person;
 
-    /**
-     * @Column
-     */
+    /** @Column */
     public $location;
 
     public function __construct($location)

@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\Tests\Models\Taxi;
 
 /**
@@ -9,6 +11,7 @@ namespace Doctrine\Tests\Models\Taxi;
 class Car
 {
     /**
+     * @var string
      * @Id
      * @Column(type="string", length=25)
      * @GeneratedValue(strategy="NONE")
@@ -16,31 +19,28 @@ class Car
     private $brand;
 
     /**
+     * @var string
      * @Column(type="string", length=255);
      */
     private $model;
 
-    /**
-     * @OneToMany(targetEntity="Ride", mappedBy="car")
-     */
+    /** @OneToMany(targetEntity="Ride", mappedBy="car") */
     private $freeCarRides;
 
-    /**
-     * @OneToMany(targetEntity="PaidRide", mappedBy="car")
-     */
+    /** @OneToMany(targetEntity="PaidRide", mappedBy="car") */
     private $carRides;
-    
-    public function getBrand() 
+
+    public function getBrand()
     {
         return $this->brand;
     }
 
-    public function setBrand($brand)
+    public function setBrand($brand): void
     {
         $this->brand = $brand;
     }
 
-    public function setModel($model)
+    public function setModel($model): void
     {
         $this->model = $model;
     }

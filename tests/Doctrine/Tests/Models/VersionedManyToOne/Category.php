@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\Tests\Models\VersionedManyToOne;
 
 /**
@@ -9,6 +11,7 @@ namespace Doctrine\Tests\Models\VersionedManyToOne;
 class Category
 {
     /**
+     * @var int
      * @Id
      * @Column(name="id", type="integer")
      * @GeneratedValue(strategy="AUTO")

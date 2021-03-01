@@ -1,11 +1,12 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\Tests\ORM\Functional;
 
+use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\Tests\Models\ECommerce\ECommerceCart;
 use Doctrine\Tests\Models\ECommerce\ECommerceProduct;
-use Doctrine\ORM\Mapping\AssociationMapping;
-use Doctrine\ORM\Mapping\ClassMetadata;
 
 /**
  * Tests a unidirectional many-to-many association mapping (without inheritance).
@@ -13,15 +14,15 @@ use Doctrine\ORM\Mapping\ClassMetadata;
  */
 class ManyToManyUnidirectionalAssociationTest extends AbstractManyToManyAssociationTestCase
 {
-    protected $_firstField = 'cart_id';
+    protected $_firstField  = 'cart_id';
     protected $_secondField = 'product_id';
-    protected $_table = 'ecommerce_carts_products';
+    protected $_table       = 'ecommerce_carts_products';
     private $firstProduct;
     private $secondProduct;
     private $firstCart;
     private $secondCart;
 
-    protected function setUp() : void
+    protected function setUp(): void
     {
         $this->useModelSet('ecommerce');
         parent::setUp();
@@ -29,11 +30,11 @@ class ManyToManyUnidirectionalAssociationTest extends AbstractManyToManyAssociat
         $this->firstProduct->setName('Doctrine 1.x Manual');
         $this->secondProduct = new ECommerceProduct();
         $this->secondProduct->setName('Doctrine 2.x Manual');
-        $this->firstCart = new ECommerceCart();
+        $this->firstCart  = new ECommerceCart();
         $this->secondCart = new ECommerceCart();
     }
 
-    public function testSavesAManyToManyAssociationWithCascadeSaveSet()
+    public function testSavesAManyToManyAssociationWithCascadeSaveSet(): void
     {
         $this->firstCart->addProduct($this->firstProduct);
         $this->firstCart->addProduct($this->secondProduct);
@@ -44,7 +45,7 @@ class ManyToManyUnidirectionalAssociationTest extends AbstractManyToManyAssociat
         $this->assertForeignKeysContain($this->firstCart->getId(), $this->secondProduct->getId());
     }
 
-    public function testRemovesAManyToManyAssociation()
+    public function testRemovesAManyToManyAssociation(): void
     {
         $this->firstCart->addProduct($this->firstProduct);
         $this->firstCart->addProduct($this->secondProduct);
@@ -57,14 +58,14 @@ class ManyToManyUnidirectionalAssociationTest extends AbstractManyToManyAssociat
         $this->assertForeignKeysContain($this->firstCart->getId(), $this->secondProduct->getId());
     }
 
-    public function testEagerLoad()
+    public function testEagerLoad(): void
     {
         $this->_createFixture();
 
-        $query = $this->_em->createQuery('SELECT c, p FROM Doctrine\Tests\Models\ECommerce\ECommerceCart c LEFT JOIN c.products p ORDER BY c.id, p.id');
-        $result = $query->getResult();
-        $firstCart = $result[0];
-        $products = $firstCart->getProducts();
+        $query      = $this->_em->createQuery('SELECT c, p FROM Doctrine\Tests\Models\ECommerce\ECommerceCart c LEFT JOIN c.products p ORDER BY c.id, p.id');
+        $result     = $query->getResult();
+        $firstCart  = $result[0];
+        $products   = $firstCart->getProducts();
         $secondCart = $result[1];
 
         $this->assertInstanceOf(ECommerceProduct::class, $products[0]);
@@ -74,16 +75,16 @@ class ManyToManyUnidirectionalAssociationTest extends AbstractManyToManyAssociat
         //$this->assertEquals("Doctrine 2.x Manual", $products[1]->getName());
     }
 
-    public function testLazyLoadsCollection()
+    public function testLazyLoadsCollection(): void
     {
         $this->_createFixture();
-        $metadata = $this->_em->getClassMetadata(ECommerceCart::class);
+        $metadata                                           = $this->_em->getClassMetadata(ECommerceCart::class);
         $metadata->associationMappings['products']['fetch'] = ClassMetadata::FETCH_LAZY;
 
-        $query = $this->_em->createQuery('SELECT c FROM Doctrine\Tests\Models\ECommerce\ECommerceCart c');
-        $result = $query->getResult();
-        $firstCart = $result[0];
-        $products = $firstCart->getProducts();
+        $query      = $this->_em->createQuery('SELECT c FROM Doctrine\Tests\Models\ECommerce\ECommerceCart c');
+        $result     = $query->getResult();
+        $firstCart  = $result[0];
+        $products   = $firstCart->getProducts();
         $secondCart = $result[1];
 
         $this->assertInstanceOf(ECommerceProduct::class, $products[0]);
@@ -91,7 +92,7 @@ class ManyToManyUnidirectionalAssociationTest extends AbstractManyToManyAssociat
         $this->assertCollectionEquals($products, $secondCart->getProducts());
     }
 
-    private function _createFixture()
+    private function _createFixture(): void
     {
         $this->firstCart->addProduct($this->firstProduct);
         $this->firstCart->addProduct($this->secondProduct);

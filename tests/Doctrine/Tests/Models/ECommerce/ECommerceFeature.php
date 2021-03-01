@@ -1,59 +1,66 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\Tests\Models\ECommerce;
 
 /**
  * Describes a product feature.
  *
- * @author Giorgio Sironi
  * @Entity
  * @Table(name="ecommerce_features")
  */
 class ECommerceFeature
 {
     /**
+     * @var int
      * @Column(type="integer")
      * @Id
      * @GeneratedValue
      */
     private $id;
 
-    /**
-     * @Column(length=50)
-     */
+    /** @Column(length=50) */
     private $description;
 
     /**
+     * @var ECommerceProduct
      * @ManyToOne(targetEntity="ECommerceProduct", inversedBy="features")
      * @JoinColumn(name="product_id", referencedColumnName="id")
      */
     private $product;
 
-    public function getId() {
+    public function getId()
+    {
         return $this->id;
     }
 
-    public function getDescription() {
+    public function getDescription()
+    {
         return $this->description;
     }
 
-    public function setDescription($description) {
+    public function setDescription($description): void
+    {
         $this->description = $description;
     }
 
-    public function setProduct(ECommerceProduct $product) {
+    public function setProduct(ECommerceProduct $product): void
+    {
         $this->product = $product;
     }
 
-    public function removeProduct() {
+    public function removeProduct(): void
+    {
         if ($this->product !== null) {
-            $product = $this->product;
+            $product       = $this->product;
             $this->product = null;
             $product->removeFeature($this);
         }
     }
 
-    public function getProduct() {
+    public function getProduct()
+    {
         return $this->product;
     }
 }

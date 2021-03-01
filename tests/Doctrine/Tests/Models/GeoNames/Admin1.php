@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\Tests\Models\GeoNames;
 
 /**
@@ -10,6 +12,7 @@ namespace Doctrine\Tests\Models\GeoNames;
 class Admin1
 {
     /**
+     * @var int
      * @Id
      * @Column(type="integer", length=25)
      * @GeneratedValue(strategy="NONE")
@@ -31,6 +34,7 @@ class Admin1
     public $names = [];
 
     /**
+     * @var string
      * @Column(type="string", length=255);
      */
     public $name;

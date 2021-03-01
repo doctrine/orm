@@ -1,4 +1,5 @@
 <?php
+
 /*
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
  * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
@@ -19,58 +20,50 @@
 
 namespace Doctrine\ORM\Persisters\Collection;
 
+use Doctrine\DBAL\Connection;
+use Doctrine\DBAL\Platforms\AbstractPlatform;
 use Doctrine\ORM\EntityManagerInterface;
+use Doctrine\ORM\Mapping\QuoteStrategy;
 use Doctrine\ORM\UnitOfWork;
 
 /**
  * Base class for all collection persisters.
- *
- * @since 2.0
- * @author Roman Borschel <roman@code-factory.org>
  */
 abstract class AbstractCollectionPersister implements CollectionPersister
 {
-    /**
-     * @var EntityManagerInterface
-     */
+    /** @var EntityManagerInterface */
     protected $em;
 
-    /**
-     * @var \Doctrine\DBAL\Connection
-     */
+    /** @var Connection */
     protected $conn;
 
-    /**
-     * @var UnitOfWork
-     */
+    /** @var UnitOfWork */
     protected $uow;
 
     /**
      * The database platform.
      *
-     * @var \Doctrine\DBAL\Platforms\AbstractPlatform
+     * @var AbstractPlatform
      */
     protected $platform;
 
     /**
      * The quote strategy.
      *
-     * @var \Doctrine\ORM\Mapping\QuoteStrategy
+     * @var QuoteStrategy
      */
     protected $quoteStrategy;
 
     /**
      * Initializes a new instance of a class derived from AbstractCollectionPersister.
-     *
-     * @param EntityManagerInterface $em
      */
     public function __construct(EntityManagerInterface $em)
     {
-        $this->em               = $em;
-        $this->uow              = $em->getUnitOfWork();
-        $this->conn             = $em->getConnection();
-        $this->platform         = $this->conn->getDatabasePlatform();
-        $this->quoteStrategy    = $em->getConfiguration()->getQuoteStrategy();
+        $this->em            = $em;
+        $this->uow           = $em->getUnitOfWork();
+        $this->conn          = $em->getConnection();
+        $this->platform      = $this->conn->getDatabasePlatform();
+        $this->quoteStrategy = $em->getConfiguration()->getQuoteStrategy();
     }
 
     /**

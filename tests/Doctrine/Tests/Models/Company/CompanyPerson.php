@@ -1,11 +1,16 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\Tests\Models\Company;
+
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
+use Doctrine\ORM\Mapping\ClassMetadataInfo;
 
 /**
  * Description of CompanyPerson
  *
- * @author robo
  * @Entity
  * @Table(name="company_persons")
  * @InheritanceType("JOINED")
@@ -15,7 +20,6 @@ namespace Doctrine\Tests\Models\Company;
  *      "manager"   = "CompanyManager",
  *      "employee"  = "CompanyEmployee"
  * })
- *
  * @NamedNativeQueries({
  *      @NamedNativeQuery(
  *          name           = "fetchAllWithResultClass",
@@ -28,7 +32,6 @@ namespace Doctrine\Tests\Models\Company;
  *          query           = "SELECT id, name, discr AS discriminator FROM company_persons ORDER BY name"
  *      )
  * })
- *
  * @SqlResultSetMappings({
  *      @SqlResultSetMapping(
  *          name    = "mappingFetchAll",
@@ -48,6 +51,7 @@ namespace Doctrine\Tests\Models\Company;
 class CompanyPerson
 {
     /**
+     * @var int
      * @Id
      * @Column(type="integer")
      * @GeneratedValue
@@ -55,17 +59,20 @@ class CompanyPerson
     private $id;
 
     /**
+     * @var string
      * @Column
      */
     private $name;
 
     /**
+     * @var CompanyPerson|null
      * @OneToOne(targetEntity="CompanyPerson")
      * @JoinColumn(name="spouse_id", referencedColumnName="id", onDelete="CASCADE")
      */
     private $spouse;
 
     /**
+     * @psalm-var Collection<int, CompanyPerson>
      * @ManyToMany(targetEntity="CompanyPerson")
      * @JoinTable(
      *     name="company_persons_friends",
@@ -79,91 +86,98 @@ class CompanyPerson
      */
     private $friends;
 
-    public function __construct() {
-        $this->friends = new \Doctrine\Common\Collections\ArrayCollection;
+    public function __construct()
+    {
+        $this->friends = new ArrayCollection();
     }
 
-    public function getId() {
-        return  $this->id;
+    public function getId(): int
+    {
+        return $this->id;
     }
 
-    public function getName() {
+    public function getName(): string
+    {
         return $this->name;
     }
 
-    public function setName($name) {
+    public function setName(string $name): void
+    {
         $this->name = $name;
     }
 
-    public function getSpouse() {
+    public function getSpouse(): ?CompanyPerson
+    {
         return $this->spouse;
     }
 
-    public function getFriends() {
+    /**
+     * @psalm-return Collection<int, CompanyPerson>
+     */
+    public function getFriends(): Collection
+    {
         return $this->friends;
     }
 
-    public function addFriend(CompanyPerson $friend) {
-        if ( ! $this->friends->contains($friend)) {
+    public function addFriend(CompanyPerson $friend): void
+    {
+        if (! $this->friends->contains($friend)) {
             $this->friends->add($friend);
             $friend->addFriend($this);
         }
     }
 
-    public function setSpouse(CompanyPerson $spouse) {
+    public function setSpouse(CompanyPerson $spouse): void
+    {
         if ($spouse !== $this->spouse) {
             $this->spouse = $spouse;
             $this->spouse->setSpouse($this);
         }
     }
 
-    public static function loadMetadata(\Doctrine\ORM\Mapping\ClassMetadataInfo $metadata)
+    public static function loadMetadata(ClassMetadataInfo $metadata): void
     {
-
         $metadata->setPrimaryTable(
+            ['name' => 'company_person']
+        );
+
+        $metadata->addNamedNativeQuery(
             [
-           'name' => 'company_person',
+                'name'              => 'fetchAllWithResultClass',
+                'query'             => 'SELECT id, name, discr FROM company_persons ORDER BY name',
+                'resultClass'       => self::class,
             ]
         );
 
         $metadata->addNamedNativeQuery(
             [
-            'name'              => 'fetchAllWithResultClass',
-            'query'             => 'SELECT id, name, discr FROM company_persons ORDER BY name',
-            'resultClass'       => CompanyPerson::class,
-            ]
-        );
-
-        $metadata->addNamedNativeQuery(
-            [
-            'name'              => 'fetchAllWithSqlResultSetMapping',
-            'query'             => 'SELECT id, name, discr AS discriminator FROM company_persons ORDER BY name',
-            'resultSetMapping'  => 'mappingFetchAll',
+                'name'              => 'fetchAllWithSqlResultSetMapping',
+                'query'             => 'SELECT id, name, discr AS discriminator FROM company_persons ORDER BY name',
+                'resultSetMapping'  => 'mappingFetchAll',
             ]
         );
 
         $metadata->addSqlResultSetMapping(
             [
-            'name'      => 'mappingFetchAll',
-            'columns'   => [],
-            'entities'  => [
-                [
-                'fields' => [
-                  [
-                    'name'      => 'id',
-                    'column'    => 'id',
-                  ],
-                  [
-                    'name'      => 'name',
-                    'column'    => 'name',
-                  ],
+                'name'      => 'mappingFetchAll',
+                'columns'   => [],
+                'entities'  => [
+                    [
+                        'fields' => [
+                            [
+                                'name'      => 'id',
+                                'column'    => 'id',
+                            ],
+                            [
+                                'name'      => 'name',
+                                'column'    => 'name',
+                            ],
+                        ],
+                        'entityClass' => self::class,
+                        'discriminatorColumn' => 'discriminator',
+                    ],
                 ],
-                'entityClass' => CompanyPerson::class,
-                'discriminatorColumn' => 'discriminator',
-                ],
-            ],
             ]
         );
     }
 }
-

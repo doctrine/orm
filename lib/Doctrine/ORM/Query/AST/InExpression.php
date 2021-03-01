@@ -1,4 +1,5 @@
 <?php
+
 /*
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
  * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
@@ -16,37 +17,26 @@
  * and is licensed under the MIT license. For more information, see
  * <http://www.doctrine-project.org>.
  */
+
 namespace Doctrine\ORM\Query\AST;
 
 /**
  * InExpression ::= StateFieldPathExpression ["NOT"] "IN" "(" (Literal {"," Literal}* | Subselect) ")"
  *
  * @link    www.doctrine-project.org
- * @since   2.0
- * @author  Guilherme Blanco <guilhermeblanco@hotmail.com>
- * @author  Jonathan Wage <jonwage@gmail.com>
- * @author  Roman Borschel <roman@code-factory.org>
  */
 class InExpression extends Node
 {
-    /**
-     * @var bool
-     */
+    /** @var bool */
     public $not;
 
-    /**
-     * @var ArithmeticExpression
-     */
+    /** @var ArithmeticExpression */
     public $expression;
 
-    /**
-     * @var array
-     */
+    /** @var mixed[] */
     public $literals = [];
 
-    /**
-     * @var Subselect|null
-     */
+    /** @var Subselect|null */
     public $subselect;
 
     /**

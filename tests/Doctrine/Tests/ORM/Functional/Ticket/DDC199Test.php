@@ -1,44 +1,48 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\Tests\ORM\Functional\Ticket;
 
 use Doctrine\Tests\OrmFunctionalTestCase;
 
+use function count;
+
 class DDC199Test extends OrmFunctionalTestCase
 {
-    protected function setUp() : void
+    protected function setUp(): void
     {
         parent::setUp();
         $this->_schemaTool->createSchema(
             [
-            $this->_em->getClassMetadata(DDC199ParentClass::class),
-            $this->_em->getClassMetadata(DDC199ChildClass::class),
-            $this->_em->getClassMetadata(DDC199RelatedClass::class)
+                $this->_em->getClassMetadata(DDC199ParentClass::class),
+                $this->_em->getClassMetadata(DDC199ChildClass::class),
+                $this->_em->getClassMetadata(DDC199RelatedClass::class),
             ]
         );
     }
 
-    public function testPolymorphicLoading()
+    public function testPolymorphicLoading(): void
     {
-        $child = new DDC199ChildClass;
+        $child             = new DDC199ChildClass();
         $child->parentData = 'parentData';
-        $child->childData = 'childData';
+        $child->childData  = 'childData';
         $this->_em->persist($child);
 
-        $related1 = new DDC199RelatedClass;
+        $related1              = new DDC199RelatedClass();
         $related1->relatedData = 'related1';
-        $related1->parent = $child;
+        $related1->parent      = $child;
         $this->_em->persist($related1);
 
-        $related2 = new DDC199RelatedClass;
+        $related2              = new DDC199RelatedClass();
         $related2->relatedData = 'related2';
-        $related2->parent = $child;
+        $related2->parent      = $child;
         $this->_em->persist($related2);
 
         $this->_em->flush();
         $this->_em->clear();
 
-        $query = $this->_em->createQuery('select e,r from Doctrine\Tests\ORM\Functional\Ticket\DDC199ParentClass e join e.relatedEntities r');
+        $query  = $this->_em->createQuery('select e,r from Doctrine\Tests\ORM\Functional\Ticket\DDC199ParentClass e join e.relatedEntities r');
         $result = $query->getResult();
 
         $this->assertEquals(1, count($result));
@@ -60,19 +64,19 @@ class DDC199Test extends OrmFunctionalTestCase
 class DDC199ParentClass
 {
     /**
+     * @var int
      * @Id @Column(type="integer")
      * @GeneratedValue(strategy="AUTO")
      */
     public $id;
 
     /**
+     * @var string
      * @Column(type="string")
      */
     public $parentData;
 
-    /**
-     * @OneToMany(targetEntity="DDC199RelatedClass", mappedBy="parent")
-     */
+    /** @OneToMany(targetEntity="DDC199RelatedClass", mappedBy="parent") */
     public $relatedEntities;
 }
 
@@ -80,21 +84,25 @@ class DDC199ParentClass
 /** @Entity */
 class DDC199ChildClass extends DDC199ParentClass
 {
-    /**
-     * @Column
-     */
+    /** @Column */
     public $childData;
 }
 
 /** @Entity @Table(name="ddc199_relatedclass") */
 class DDC199RelatedClass
 {
-    /** @Id @Column(type="integer") @GeneratedValue */
+    /**
+     * @var int
+     * @Id
+     * @Column(type="integer")
+     * @GeneratedValue
+     */
     public $id;
     /** @Column */
     public $relatedData;
 
     /**
+     * @var DDC199ParentClass
      * @ManyToOne(targetEntity="DDC199ParentClass", inversedBy="relatedEntities")
      * @JoinColumn(name="parent_id", referencedColumnName="id")
      */
