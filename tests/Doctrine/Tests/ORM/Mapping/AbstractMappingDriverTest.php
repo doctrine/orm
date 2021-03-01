@@ -1370,8 +1370,8 @@ class DDC1170Entity
      * @Id
      * @GeneratedValue(strategy="NONE")
      * @Column(type="integer", columnDefinition = "INT unsigned NOT NULL")
-     #[ORM\Id, ORM\GeneratedValue(strategy: "NONE"), ORM\Column(type: "integer", columnDefinition: "INT UNSIGNED NOT NULL")]
      **/
+    #[ORM\Id, ORM\GeneratedValue(strategy: "NONE"), ORM\Column(type: "integer", columnDefinition: "INT UNSIGNED NOT NULL")]
     private $id;
 
 
