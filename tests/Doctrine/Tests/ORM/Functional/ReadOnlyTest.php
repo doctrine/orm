@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Doctrine\Tests\ORM\Functional;
 
+use Doctrine\ORM\Query;
+use Doctrine\Tests\Models\CMS\CmsUser;
 use Doctrine\Tests\OrmFunctionalTestCase;
 use Exception;
 
@@ -75,6 +77,70 @@ class ReadOnlyTest extends OrmFunctionalTestCase
         $this->_em->clear(get_class($readOnly));
 
         $this->assertFalse($this->_em->getUnitOfWork()->isReadOnly($readOnly));
+    }
+
+    public function testReadOnlyQueryHint(): void
+    {
+        $user = new ReadOnlyEntity('beberlei', 1234);
+
+        $this->_em->persist($user);
+
+        $this->_em->flush();
+        $this->_em->clear();
+
+        $dql = 'SELECT u FROM ' . ReadOnlyEntity::class . ' u WHERE u.id = ?1';
+
+        $query = $this->_em->createQuery($dql);
+        $query->setParameter(1, $user->id);
+        $query->setHint(Query::HINT_READ_ONLY, true);
+
+        $user = $query->getSingleResult();
+
+        $this->assertTrue($this->_em->getUnitOfWork()->isReadOnly($user));
+    }
+
+    public function testNotReadOnlyIfObjectWasProxyBefore(): void
+    {
+        $user = new ReadOnlyEntity('beberlei', 1234);
+
+        $this->_em->persist($user);
+
+        $this->_em->flush();
+        $this->_em->clear();
+
+        $user = $this->_em->getReference(ReadOnlyEntity::class, $user->id);
+
+        $dql = 'SELECT u FROM ' . ReadOnlyEntity::class . ' u WHERE u.id = ?1';
+
+        $query = $this->_em->createQuery($dql);
+        $query->setParameter(1, $user->id);
+        $query->setHint(Query::HINT_READ_ONLY, true);
+
+        $user = $query->getSingleResult();
+
+        $this->assertFalse($this->_em->getUnitOfWork()->isReadOnly($user));
+    }
+
+    public function testNotReadOnlyIfObjectWasKnownBefore(): void
+    {
+        $user = new ReadOnlyEntity('beberlei', 1234);
+
+        $this->_em->persist($user);
+
+        $this->_em->flush();
+        $this->_em->clear();
+
+        $userIntoIdentityMap = $this->_em->find(ReadOnlyEntity::class, $user->id);
+
+        $dql = 'SELECT u FROM ' . ReadOnlyEntity::class . ' u WHERE u.id = ?1';
+
+        $query = $this->_em->createQuery($dql);
+        $query->setParameter(1, $user->id);
+        $query->setHint(Query::HINT_READ_ONLY, true);
+
+        $user = $query->getSingleResult();
+
+        $this->assertFalse($this->_em->getUnitOfWork()->isReadOnly($user));
     }
 }
 
