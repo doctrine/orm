@@ -1430,7 +1430,7 @@ class ClassMetadataInfo implements ClassMetadata
      *
      * @return mixed[] The updated mapping.
      */
-    private function _validateAndCompleteTypedFieldMapping(array $mapping): array
+    private function validateAndCompleteTypedFieldMapping(array $mapping): array
     {
         $type = $this->reflClass->getProperty($mapping['fieldName'])->getType();
 
@@ -1482,7 +1482,7 @@ class ClassMetadataInfo implements ClassMetadata
      *
      * @return mixed[] The updated mapping.
      */
-    private function _validateAndCompleteTypedAssociationMapping(array $mapping): array
+    private function validateAndCompleteTypedAssociationMapping(array $mapping): array
     {
         $type = $this->reflClass->getProperty($mapping['fieldName'])->getType();
 
@@ -1522,7 +1522,7 @@ class ClassMetadataInfo implements ClassMetadata
         }
 
         if ($this->isTypedProperty($mapping['fieldName'])) {
-            $mapping = $this->_validateAndCompleteTypedFieldMapping($mapping);
+            $mapping = $this->validateAndCompleteTypedFieldMapping($mapping);
         }
 
         if (! isset($mapping['type'])) {
@@ -1625,7 +1625,7 @@ class ClassMetadataInfo implements ClassMetadata
         $mapping['sourceEntity'] = $this->name;
 
         if ($this->isTypedProperty($mapping['fieldName'])) {
-            $mapping = $this->_validateAndCompleteTypedAssociationMapping($mapping);
+            $mapping = $this->validateAndCompleteTypedAssociationMapping($mapping);
         }
 
         if (isset($mapping['targetEntity'])) {
