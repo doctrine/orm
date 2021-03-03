@@ -440,27 +440,30 @@ class ResultSetMappingBuilder extends ResultSetMapping
      */
     public function generateSelectClause($tableAliases = [])
     {
-        $sql = "";
+        $sql = '';
 
         foreach ($this->columnOwnerMap as $columnName => $dqlAlias) {
             $tableAlias = $tableAliases[$dqlAlias] ?? $dqlAlias;
 
             if ($sql) {
-                $sql .= ", ";
+                $sql .= ', ';
             }
 
-            $sql .= $tableAlias . ".";
+            $sql .= $tableAlias . '.';
 
             if (isset($this->fieldMappings[$columnName])) {
                 $class = $this->em->getClassMetadata($this->declaringClasses[$columnName]);
-                $sql  .= $class->fieldMappings[$this->fieldMappings[$columnName]]['columnName'];
-            } else if (isset($this->metaMappings[$columnName])) {
+                $field_mapping = $class->fieldMappings[$this->fieldMappings[$columnName]];
+                $should_quote = isset($field_mapping['quoted']) &&  $field_mapping['quoted'] === true;
+                $sql  .=  $should_quote? '`' . $field_mapping['columnName'] . '`' :$field_mapping['columnName'];
+                $columnName = $should_quote ? '`' . $columnName . '`' :$columnName;
+            } elseif (isset($this->metaMappings[$columnName])) {
                 $sql .= $this->metaMappings[$columnName];
-            } else if (isset($this->discriminatorColumns[$dqlAlias])) {
+            } elseif (isset($this->discriminatorColumns[$dqlAlias])) {
                 $sql .= $this->discriminatorColumns[$dqlAlias];
             }
 
-            $sql .= " AS " . $columnName;
+            $sql .= ' AS ' . $columnName;
         }
 
         return $sql;
