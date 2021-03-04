@@ -281,13 +281,13 @@ class SchemaToolTest extends OrmTestCase
 
     public function testIndexesBasedOnFields(): void
     {
-        $em         = $this->getTestEntityManager();
+        $em = $this->getTestEntityManager();
         $em->getConfiguration()->setNamingStrategy(new UnderscoreNamingStrategy());
+
         $schemaTool = new SchemaTool($em);
         $metadata   = $em->getClassMetadata(IndexByFieldEntity::class);
-        $schema = $schemaTool->getSchemaFromMetadata([$metadata]);
-
-        $table = $schema->getTable('field_index');
+        $schema     = $schemaTool->getSchemaFromMetadata([$metadata]);
+        $table      = $schema->getTable('field_index');
 
         $this->assertEquals(['index'], $table->getIndex('index')->getColumns());
         $this->assertEquals(['index', 'field_name'], $table->getIndex('table')->getColumns());
@@ -465,16 +465,19 @@ class IndexByFieldEntity
     public $id;
 
     /**
+     * @var string
      * @Column
      */
     public $index;
 
     /**
+     * @var string
      * @Column
      */
     public $table;
 
     /**
+     * @var string
      * @Column
      */
     public $fieldName;

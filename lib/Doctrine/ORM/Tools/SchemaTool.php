@@ -141,7 +141,7 @@ class SchemaTool
      * Resolves fields in index mapping to column names
      *
      * @param ClassMetadata $class
-     * @param array         $indexData index or unique constraint data
+     * @param mixed[]       $indexData index or unique constraint data
      *
      * @return string[] Column names from combined fields and columns mappings
      */
