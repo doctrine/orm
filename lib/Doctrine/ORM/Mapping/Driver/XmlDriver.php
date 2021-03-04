@@ -212,7 +212,15 @@ class XmlDriver extends FileDriver
         if (isset($xmlRoot->indexes)) {
             $metadata->table['indexes'] = [];
             foreach ($xmlRoot->indexes->index as $indexXml) {
-                $index = ['columns' => explode(',', (string) $indexXml['columns'])];
+                $index = [];
+
+                if (isset($indexXml['columns']) && ! empty($indexXml['columns'])) {
+                    $index['columns'] = explode(',', (string) $indexXml['columns']);
+                }
+
+                if (isset($indexXml['fields'])) {
+                    $index['fields'] = explode(',', (string) $indexXml['fields']);
+                }
 
                 if (isset($indexXml['flags'])) {
                     $index['flags'] = explode(',', (string) $indexXml['flags']);
@@ -234,7 +242,15 @@ class XmlDriver extends FileDriver
         if (isset($xmlRoot->{'unique-constraints'})) {
             $metadata->table['uniqueConstraints'] = [];
             foreach ($xmlRoot->{'unique-constraints'}->{'unique-constraint'} as $uniqueXml) {
-                $unique = ['columns' => explode(',', (string) $uniqueXml['columns'])];
+                $unique = [];
+
+                if (isset($uniqueXml['columns']) && ! empty($uniqueXml['columns'])) {
+                    $unique['columns'] = explode(',', (string) $uniqueXml['columns']);
+                }
+
+                if (isset($uniqueXml['fields'])) {
+                    $unique['fields'] = explode(',', (string) $uniqueXml['fields']);
+                }
 
                 if (isset($uniqueXml->options)) {
                     $unique['options'] = $this->parseOptions($uniqueXml->options->children());

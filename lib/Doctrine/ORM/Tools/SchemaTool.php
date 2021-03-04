@@ -138,6 +138,37 @@ class SchemaTool
     }
 
     /**
+     * Resolves fields in index mapping to column names
+     *
+     * @param ClassMetadata $class
+     * @param array         $indexData index or unique constraint data
+     *
+     * @return string[] Column names from combined fields and columns mappings
+     */
+    private function getIndexColumns($class, array $indexData)
+    {
+        $columns = [];
+
+        if (isset($indexData['columns'])) {
+            $columns = $indexData['columns'];
+        }
+
+        if (isset($indexData['fields'])) {
+            foreach ($indexData['fields'] as $fieldName) {
+                if ($class->hasField($fieldName)) {
+                    $columns[] = $this->quoteStrategy->getColumnName($fieldName, $class, $this->platform);
+                } elseif ($class->hasAssociation($fieldName)) {
+                    foreach ($class->getAssociationMapping($fieldName)['joinColumns'] as $joinColumn) {
+                        $columns[] = $this->quoteStrategy->getJoinColumnName($joinColumn, $class, $this->platform);
+                    }
+                }
+            }
+        }
+
+        return $columns;
+    }
+
+    /**
      * Creates a Schema instance from a given set of metadata classes.
      *
      * @return Schema
@@ -309,13 +340,13 @@ class SchemaTool
                         $indexData['flags'] = [];
                     }
 
-                    $table->addIndex($indexData['columns'], is_numeric($indexName) ? null : $indexName, (array) $indexData['flags'], $indexData['options'] ?? []);
+                    $table->addIndex($this->getIndexColumns($class, $indexData), is_numeric($indexName) ? null : $indexName, (array) $indexData['flags'], $indexData['options'] ?? []);
                 }
             }
 
             if (isset($class->table['uniqueConstraints'])) {
                 foreach ($class->table['uniqueConstraints'] as $indexName => $indexData) {
-                    $uniqIndex = new Index($indexName, $indexData['columns'], true, false, [], $indexData['options'] ?? []);
+                    $uniqIndex = new Index($indexName, $this->getIndexColumns($class, $indexData), true, false, [], $indexData['options'] ?? []);
 
                     foreach ($table->getIndexes() as $tableIndexName => $tableIndex) {
                         if ($tableIndex->isFullfilledBy($uniqIndex)) {
@@ -324,7 +355,7 @@ class SchemaTool
                         }
                     }
 
-                    $table->addUniqueIndex($indexData['columns'], is_numeric($indexName) ? null : $indexName, $indexData['options'] ?? []);
+                    $table->addUniqueIndex($uniqIndex->getColumns(), is_numeric($indexName) ? null : $indexName, $indexData['options'] ?? []);
                 }
             }
 

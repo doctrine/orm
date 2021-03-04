@@ -6,6 +6,7 @@ namespace Doctrine\Tests\ORM\Tools;
 
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping\ClassMetadata;
+use Doctrine\ORM\Mapping\UnderscoreNamingStrategy;
 use Doctrine\ORM\Tools\Event\GenerateSchemaEventArgs;
 use Doctrine\ORM\Tools\Event\GenerateSchemaTableEventArgs;
 use Doctrine\ORM\Tools\SchemaTool;
@@ -277,6 +278,21 @@ class SchemaToolTest extends OrmTestCase
             self::assertSame($foreignColumns, $foreignKey->getForeignColumns());
         }
     }
+
+    public function testIndexesBasedOnFields(): void
+    {
+        $em         = $this->getTestEntityManager();
+        $em->getConfiguration()->setNamingStrategy(new UnderscoreNamingStrategy());
+        $schemaTool = new SchemaTool($em);
+        $metadata   = $em->getClassMetadata(IndexByFieldEntity::class);
+        $schema = $schemaTool->getSchemaFromMetadata([$metadata]);
+
+        $table = $schema->getTable('field_index');
+
+        $this->assertEquals(['index'], $table->getIndex('index')->getColumns());
+        $this->assertEquals(['index', 'field_name'], $table->getIndex('table')->getColumns());
+        $this->assertEquals(['table', 'index'], $table->getIndex('uniq')->getColumns());
+    }
 }
 
 /**
@@ -424,4 +440,42 @@ class GH6830Category
      * @OneToMany(targetEntity=GH6830Board::class, mappedBy="category")
      */
     public $boards;
+}
+
+/**
+ * @Entity
+ * @Table(
+ *     name="field_index",
+ *     indexes={
+ *         @Index(name="index", fields={"index"}),
+ *         @Index(name="table", columns={"index"}, fields={"fieldName"})
+ *     },
+ *     uniqueConstraints={
+ *         @UniqueConstraint(name="uniq", columns={"table"}, fields={"index"})
+ *     }
+ * )
+ */
+class IndexByFieldEntity
+{
+    /**
+     * @var int
+     * @Id
+     * @Column(type="integer")
+     */
+    public $id;
+
+    /**
+     * @Column
+     */
+    public $index;
+
+    /**
+     * @Column
+     */
+    public $table;
+
+    /**
+     * @Column
+     */
+    public $fieldName;
 }

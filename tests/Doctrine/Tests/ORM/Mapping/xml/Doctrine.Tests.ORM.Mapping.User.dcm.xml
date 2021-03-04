@@ -16,6 +16,8 @@
         <indexes>
             <index name="name_idx" columns="name"/>
             <index columns="user_email"/>
+            <index name="fields" columns="" fields="name,email"/>
+            <index name="column_fields" columns="name" fields="address"/>
         </indexes>
 
         <unique-constraints>
@@ -24,6 +26,7 @@
                     <option name="where">name IS NOT NULL</option>
                 </options>
             </unique-constraint>
+            <unique-constraint columns="" fields="name,phone" name="phone_idx"/>
         </unique-constraints>
 
         <lifecycle-callbacks>

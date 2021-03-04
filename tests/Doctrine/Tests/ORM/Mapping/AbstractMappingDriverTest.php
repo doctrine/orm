@@ -104,6 +104,8 @@ abstract class AbstractMappingDriverTest extends OrmTestCase
             [
                 'name_idx' => ['columns' => ['name']],
                 0 => ['columns' => ['user_email']],
+                'fields' => ['fields' => ['name', 'email']],
+                'column_fields' => ['columns' => ['name'], 'fields' => ['address']],
             ],
             $class->table['indexes']
         );
@@ -141,6 +143,7 @@ abstract class AbstractMappingDriverTest extends OrmTestCase
         $this->assertEquals(
             [
                 'search_idx' => ['columns' => ['name', 'user_email'], 'options' => ['where' => 'name IS NOT NULL']],
+                'phone_idx' => ['fields' => ['name', 'phone']],
             ],
             $class->table['uniqueConstraints']
         );
@@ -1067,8 +1070,8 @@ abstract class AbstractMappingDriverTest extends OrmTestCase
  * @HasLifecycleCallbacks
  * @Table(
  *  name="cms_users",
- *  uniqueConstraints={@UniqueConstraint(name="search_idx", columns={"name", "user_email"}, options={"where": "name IS NOT NULL"})},
- *  indexes={@Index(name="name_idx", columns={"name"}), @Index(name="0", columns={"user_email"})},
+ *  uniqueConstraints={@UniqueConstraint(name="search_idx", columns={"name", "user_email"}, options={"where": "name IS NOT NULL"}), @UniqueConstraint(name="phone_idx", fields={"name", "phone"})},
+ *  indexes={@Index(name="name_idx", columns={"name"}), @Index(name="0", columns={"user_email"}), @index(name="fields", fields={"name", "email"}), @Index(name="column_fields", columns={"name"}, fields={"address"})},
  *  options={"foo": "bar", "baz": {"key": "val"}}
  * )
  * @NamedQueries({@NamedQuery(name="all", query="SELECT u FROM __CLASS__ u")})
@@ -1287,10 +1290,13 @@ class User
         );
         $metadata->table['uniqueConstraints'] = [
             'search_idx' => ['columns' => ['name', 'user_email'], 'options' => ['where' => 'name IS NOT NULL']],
+            'phone_idx' => ['fields' => ['name', 'phone']],
         ];
         $metadata->table['indexes']           = [
             'name_idx' => ['columns' => ['name']],
             0 => ['columns' => ['user_email']],
+            'fields' => ['fields' => ['name', 'email']],
+            'column_fields' => ['columns' => ['name'], 'fields' => ['address']],
         ];
         $metadata->setSequenceGeneratorDefinition(
             [

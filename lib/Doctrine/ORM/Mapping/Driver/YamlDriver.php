@@ -228,10 +228,22 @@ class YamlDriver extends FileDriver
                     $indexYml['name'] = $name;
                 }
 
-                if (is_string($indexYml['columns'])) {
-                    $index = ['columns' => array_map('trim', explode(',', $indexYml['columns']))];
-                } else {
-                    $index = ['columns' => $indexYml['columns']];
+                $index = [];
+
+                if (isset($indexYml['columns'])) {
+                    if (is_string($indexYml['columns'])) {
+                        $index['columns'] = array_map('trim', explode(',', $indexYml['columns']));
+                    } else {
+                        $index['columns'] = $indexYml['columns'];
+                    }
+                }
+
+                if (isset($indexYml['fields'])) {
+                    if (is_string($indexYml['fields'])) {
+                        $index['fields'] = array_map('trim', explode(',', $indexYml['fields']));
+                    } else {
+                        $index['fields'] = $indexYml['fields'];
+                    }
                 }
 
                 if (isset($indexYml['flags'])) {
@@ -257,10 +269,22 @@ class YamlDriver extends FileDriver
                     $uniqueYml['name'] = $name;
                 }
 
-                if (is_string($uniqueYml['columns'])) {
-                    $unique = ['columns' => array_map('trim', explode(',', $uniqueYml['columns']))];
-                } else {
-                    $unique = ['columns' => $uniqueYml['columns']];
+                $unique = [];
+
+                if (isset($uniqueYml['columns'])) {
+                    if (is_string($uniqueYml['columns'])) {
+                        $unique['columns'] = array_map('trim', explode(',', $uniqueYml['columns']));
+                    } else {
+                        $unique['columns'] = $uniqueYml['columns'];
+                    }
+                }
+
+                if (isset($uniqueYml['fields'])) {
+                    if (is_string($uniqueYml['fields'])) {
+                        $unique['fields'] = array_map('trim', explode(',', $uniqueYml['fields']));
+                    } else {
+                        $unique['fields'] = $uniqueYml['fields'];
+                    }
                 }
 
                 if (isset($uniqueYml['options'])) {

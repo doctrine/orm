@@ -37,6 +37,9 @@ final class UniqueConstraint implements Annotation
     /** @var array<string> */
     public $columns;
 
+    /** @var array<string> */
+    public $fields;
+
     /** @var array<string,mixed> */
     public $options;
 
