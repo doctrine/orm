@@ -22,9 +22,9 @@ namespace Doctrine\ORM\Tools\Console\Command\ClearCache;
 
 use Doctrine\Common\Cache\ApcCache;
 use Doctrine\Common\Cache\XcacheCache;
+use Doctrine\ORM\Tools\Console\Command\AbstractEntityManagerCommand;
 use InvalidArgumentException;
 use LogicException;
-use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
@@ -35,7 +35,7 @@ use Symfony\Component\Console\Style\SymfonyStyle;
  *
  * @link    www.doctrine-project.org
  */
-class QueryCommand extends Command
+class QueryCommand extends AbstractEntityManagerCommand
 {
     /**
      * {@inheritdoc}
@@ -44,6 +44,7 @@ class QueryCommand extends Command
     {
         $this->setName('orm:clear-cache:query')
              ->setDescription('Clear all query cache of the various cache drivers')
+             ->addOption('entity-manager', null, InputOption::VALUE_REQUIRED, 'Name of the entity manager to operate on', 'default')
              ->addOption('flush', null, InputOption::VALUE_NONE, 'If defined, cache entries will be flushed instead of deleted/invalidated.')
              ->setHelp(<<<EOT
 The <info>%command.name%</info> command is meant to clear the query cache of associated Entity Manager.
@@ -72,7 +73,7 @@ EOT
     {
         $ui = new SymfonyStyle($input, $output);
 
-        $em          = $this->getHelper('em')->getEntityManager();
+        $em          = $this->getEntityManager($input);
         $cacheDriver = $em->getConfiguration()->getQueryCacheImpl();
 
         if (! $cacheDriver) {

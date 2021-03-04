@@ -23,7 +23,6 @@ namespace Doctrine\ORM\Tools\Console\Command;
 use Doctrine\ORM\Tools\Console\MetadataFilter;
 use Doctrine\ORM\Tools\EntityRepositoryGenerator;
 use InvalidArgumentException;
-use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
@@ -42,7 +41,7 @@ use function sprintf;
  *
  * @link    www.doctrine-project.org
  */
-class GenerateRepositoriesCommand extends Command
+class GenerateRepositoriesCommand extends AbstractEntityManagerCommand
 {
     /**
      * {@inheritdoc}
@@ -53,6 +52,7 @@ class GenerateRepositoriesCommand extends Command
              ->setAliases(['orm:generate:repositories'])
              ->setDescription('Generate repository classes from your mapping information')
              ->addArgument('dest-path', InputArgument::REQUIRED, 'The path to generate your repository classes.')
+             ->addOption('entity-manager', null, InputOption::VALUE_REQUIRED, 'Name of the entity manager to operate on', 'default')
              ->addOption('filter', null, InputOption::VALUE_REQUIRED | InputOption::VALUE_IS_ARRAY, 'A string pattern used to match entities that should be processed.')
              ->setHelp('Generate repository classes from your mapping information.');
     }
@@ -65,7 +65,7 @@ class GenerateRepositoriesCommand extends Command
         $ui = new SymfonyStyle($input, $output);
         $ui->warning('Command ' . $this->getName() . ' is deprecated and will be removed in Doctrine ORM 3.0.');
 
-        $em = $this->getHelper('em')->getEntityManager();
+        $em = $this->getEntityManager($input);
 
         $metadatas = $em->getMetadataFactory()->getAllMetadata();
         $metadatas = MetadataFilter::filter($metadatas, $input->getOption('filter'));

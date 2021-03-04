@@ -2,9 +2,9 @@
 
 namespace Doctrine\ORM\Tools\Console;
 
-use Doctrine\ORM\EntityManager;
+use Doctrine\ORM\EntityManagerInterface;
 
 interface EntityManagerProvider
 {
-    public function getManager(string $name = 'default'): EntityManager;
+    public function getManager(string $name = 'default'): EntityManagerInterface;
 }
