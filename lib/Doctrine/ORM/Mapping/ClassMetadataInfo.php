@@ -21,8 +21,12 @@
 namespace Doctrine\ORM\Mapping;
 
 use BadMethodCallException;
+use DateInterval;
+use DateTime;
+use DateTimeImmutable;
 use Doctrine\DBAL\Platforms\AbstractPlatform;
 use Doctrine\DBAL\Types\Type;
+use Doctrine\DBAL\Types\Types;
 use Doctrine\Deprecations\Deprecation;
 use Doctrine\Instantiator\Instantiator;
 use Doctrine\Instantiator\InstantiatorInterface;
@@ -32,6 +36,7 @@ use Doctrine\Persistence\Mapping\ClassMetadata;
 use Doctrine\Persistence\Mapping\ReflectionService;
 use InvalidArgumentException;
 use ReflectionClass;
+use ReflectionNamedType;
 use ReflectionProperty;
 use RuntimeException;
 
@@ -59,6 +64,8 @@ use function strpos;
 use function strtolower;
 use function trait_exists;
 use function trim;
+
+use const PHP_VERSION_ID;
 
 /**
  * A <tt>ClassMetadata</tt> instance holds all the object-relational mapping metadata
@@ -1405,19 +1412,118 @@ class ClassMetadataInfo implements ClassMetadata
     }
 
     /**
+     * Checks whether given property has type
+     *
+     * @param string $name Property name
+     */
+    private function isTypedProperty(string $name): bool
+    {
+        return PHP_VERSION_ID >= 70400
+               && isset($this->reflClass)
+               && $this->reflClass->hasProperty($name)
+               && $this->reflClass->getProperty($name)->hasType();
+    }
+
+    /**
+     * Validates & completes the given field mapping based on typed property.
+     *
+     * @param  mixed[] $mapping The field mapping to validate & complete.
+     *
+     * @return mixed[] The updated mapping.
+     */
+    private function validateAndCompleteTypedFieldMapping(array $mapping): array
+    {
+        $type = $this->reflClass->getProperty($mapping['fieldName'])->getType();
+
+        if ($type) {
+            if (! isset($mapping['nullable'])) {
+                $mapping['nullable'] = $type->allowsNull();
+            }
+
+            if (
+                ! isset($mapping['type'])
+                && ($type instanceof ReflectionNamedType)
+            ) {
+                switch ($type->getName()) {
+                    case DateInterval::class:
+                        $mapping['type'] = Types::DATEINTERVAL;
+                        break;
+                    case DateTime::class:
+                        $mapping['type'] = Types::DATETIME_MUTABLE;
+                        break;
+                    case DateTimeImmutable::class:
+                        $mapping['type'] = Types::DATETIME_IMMUTABLE;
+                        break;
+                    case 'array':
+                        $mapping['type'] = Types::JSON;
+                        break;
+                    case 'bool':
+                        $mapping['type'] = Types::BOOLEAN;
+                        break;
+                    case 'float':
+                        $mapping['type'] = Types::FLOAT;
+                        break;
+                    case 'int':
+                        $mapping['type'] = Types::INTEGER;
+                        break;
+                    case 'string':
+                        $mapping['type'] = Types::STRING;
+                        break;
+                }
+            }
+        }
+
+        return $mapping;
+    }
+
+    /**
+     * Validates & completes the basic mapping information based on typed property.
+     *
+     * @param mixed[] $mapping The mapping.
+     *
+     * @return mixed[] The updated mapping.
+     */
+    private function validateAndCompleteTypedAssociationMapping(array $mapping): array
+    {
+        $type = $this->reflClass->getProperty($mapping['fieldName'])->getType();
+
+        if (
+            ! isset($mapping['targetEntity'])
+            && ($mapping['type'] & self::TO_ONE) > 0
+            && $type instanceof ReflectionNamedType
+        ) {
+            $mapping['targetEntity'] = $type->getName();
+        }
+
+        if ($type !== null && isset($mapping['joinColumns'])) {
+            foreach ($mapping['joinColumns'] as &$joinColumn) {
+                if (! isset($joinColumn['nullable'])) {
+                    $joinColumn['nullable'] = $type->allowsNull();
+                }
+            }
+        }
+
+        return $mapping;
+    }
+
+    /**
      * Validates & completes the given field mapping.
      *
      * @param array $mapping The field mapping to validate & complete.
      *
-     * @return void
+     * @return mixed[] The updated mapping.
      *
      * @throws MappingException
      */
-    protected function _validateAndCompleteFieldMapping(array &$mapping)
+    protected function validateAndCompleteFieldMapping(array $mapping): array
     {
         // Check mandatory fields
         if (! isset($mapping['fieldName']) || ! $mapping['fieldName']) {
             throw MappingException::missingFieldName($this->name);
+        }
+
+        if ($this->isTypedProperty($mapping['fieldName'])) {
+            $mapping = $this->validateAndCompleteTypedFieldMapping($mapping);
         }
 
         if (! isset($mapping['type'])) {
@@ -1466,6 +1572,8 @@ class ClassMetadataInfo implements ClassMetadata
 
             $mapping['requireSQLConversion'] = true;
         }
+
+        return $mapping;
     }
 
     /**
@@ -1516,6 +1624,10 @@ class ClassMetadataInfo implements ClassMetadata
         // If targetEntity is unqualified, assume it is in the same namespace as
         // the sourceEntity.
         $mapping['sourceEntity'] = $this->name;
+
+        if ($this->isTypedProperty($mapping['fieldName'])) {
+            $mapping = $this->validateAndCompleteTypedAssociationMapping($mapping);
+        }
 
         if (isset($mapping['targetEntity'])) {
             $mapping['targetEntity'] = $this->fullyQualifiedClassName($mapping['targetEntity']);
@@ -1734,7 +1846,7 @@ class ClassMetadataInfo implements ClassMetadata
 
         // OneToMany-side MUST be inverse (must have mappedBy)
         if (! isset($mapping['mappedBy'])) {
-            throw MappingException::oneToManyRequiresMappedBy($mapping['fieldName']);
+            throw MappingException::oneToManyRequiresMappedBy($this->name, $mapping['fieldName']);
         }
 
         $mapping['orphanRemoval']   = isset($mapping['orphanRemoval']) && $mapping['orphanRemoval'];
@@ -2306,7 +2418,7 @@ class ClassMetadataInfo implements ClassMetadata
         unset($this->fieldNames[$mapping['columnName']]);
         unset($this->columnNames[$mapping['fieldName']]);
 
-        $this->_validateAndCompleteFieldMapping($overrideMapping);
+        $overrideMapping = $this->validateAndCompleteFieldMapping($overrideMapping);
 
         $this->fieldMappings[$fieldName] = $overrideMapping;
     }
@@ -2444,7 +2556,7 @@ class ClassMetadataInfo implements ClassMetadata
      */
     public function mapField(array $mapping)
     {
-        $this->_validateAndCompleteFieldMapping($mapping);
+        $mapping = $this->validateAndCompleteFieldMapping($mapping);
         $this->assertFieldNotMapped($mapping['fieldName']);
 
         $this->fieldMappings[$mapping['fieldName']] = $mapping;

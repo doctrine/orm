@@ -13,6 +13,7 @@ use Doctrine\ORM\Mapping\UnderscoreNamingStrategy;
 use Doctrine\Persistence\Mapping\RuntimeReflectionService;
 use Doctrine\Persistence\Mapping\StaticReflectionService;
 use Doctrine\Tests\Models\CMS;
+use Doctrine\Tests\Models\CMS\CmsEmail;
 use Doctrine\Tests\Models\Company\CompanyContract;
 use Doctrine\Tests\Models\CustomType\CustomTypeParent;
 use Doctrine\Tests\Models\DDC117\DDC117Article;
@@ -21,6 +22,7 @@ use Doctrine\Tests\Models\DDC6412\DDC6412File;
 use Doctrine\Tests\Models\DDC964\DDC964Admin;
 use Doctrine\Tests\Models\DDC964\DDC964Guest;
 use Doctrine\Tests\Models\Routing\RoutingLeg;
+use Doctrine\Tests\Models\TypedProperties;
 use Doctrine\Tests\OrmTestCase;
 use DoctrineGlobal_Article;
 use ReflectionClass;
@@ -35,6 +37,8 @@ use function strtoupper;
 use function unserialize;
 
 use const CASE_UPPER;
+
+use const PHP_VERSION_ID;
 
 require_once __DIR__ . '/../../Models/Global/GlobalNamespaceModel.php';
 
@@ -105,6 +109,71 @@ class ClassMetadataTest extends OrmTestCase
         // Implicit Not Nullable
         $cm->mapField(['fieldName' => 'name', 'type' => 'string', 'length' => 50]);
         $this->assertFalse($cm->isNullable('name'), 'By default a field should not be nullable.');
+    }
+
+    public function testFieldIsNullableByType(): void
+    {
+        if (PHP_VERSION_ID < 70400) {
+            $this->markTestSkipped('requies PHP 7.4');
+        }
+
+        $cm = new ClassMetadata(TypedProperties\UserTyped::class);
+        $cm->initializeReflection(new RuntimeReflectionService());
+
+        // Explicit Nullable
+        $cm->mapField(['fieldName' => 'status', 'length' => 50]);
+        $this->assertTrue($cm->isNullable('status'));
+
+        // Explicit Not Nullable
+        $cm->mapField(['fieldName' => 'username', 'length' => 50]);
+        $this->assertFalse($cm->isNullable('username'));
+
+        // Join table Nullable
+        $cm->mapOneToOne(['fieldName' => 'email', 'joinColumns' => [[]]]);
+        $this->assertFalse($cm->getAssociationMapping('email')['joinColumns'][0]['nullable']);
+        $this->assertEquals(CmsEmail::class, $cm->getAssociationMapping('email')['targetEntity']);
+    }
+
+    public function testFieldTypeFromReflection(): void
+    {
+        if (PHP_VERSION_ID < 70400) {
+            $this->markTestSkipped('requies PHP 7.4');
+        }
+
+        $cm = new ClassMetadata(TypedProperties\UserTyped::class);
+        $cm->initializeReflection(new RuntimeReflectionService());
+
+        // Integer
+        $cm->mapField(['fieldName' => 'id']);
+        $this->assertEquals('integer', $cm->getTypeOfField('id'));
+
+        // String
+        $cm->mapField(['fieldName' => 'username', 'length' => 50]);
+        $this->assertEquals('string', $cm->getTypeOfField('username'));
+
+        // DateInterval object
+        $cm->mapField(['fieldName' => 'dateInterval']);
+        $this->assertEquals('dateinterval', $cm->getTypeOfField('dateInterval'));
+
+        // DateTime object
+        $cm->mapField(['fieldName' => 'dateTime']);
+        $this->assertEquals('datetime', $cm->getTypeOfField('dateTime'));
+
+        // DateTimeImmutable object
+        $cm->mapField(['fieldName' => 'dateTimeImmutable']);
+        $this->assertEquals('datetime_immutable', $cm->getTypeOfField('dateTimeImmutable'));
+
+        // array as JSON
+        $cm->mapField(['fieldName' => 'array']);
+        $this->assertEquals('json', $cm->getTypeOfField('array'));
+
+        // bool
+        $cm->mapField(['fieldName' => 'boolean']);
+        $this->assertEquals('boolean', $cm->getTypeOfField('boolean'));
+
+        // float
+        $cm->mapField(['fieldName' => 'float']);
+        $this->assertEquals('float', $cm->getTypeOfField('float'));
     }
 
     /**
