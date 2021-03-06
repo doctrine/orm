@@ -6,6 +6,7 @@ namespace Doctrine\Tests\ORM\Tools\Console\Command;
 
 use Doctrine\ORM\Tools\Console\Command\InfoCommand;
 use Doctrine\ORM\Tools\Console\Command\MappingDescribeCommand;
+use Doctrine\ORM\Tools\Console\EntityManagerProvider\SingleManagerProvider;
 use Doctrine\ORM\Tools\Console\Helper\EntityManagerHelper;
 use Doctrine\Tests\Models\Cache\AttractionInfo;
 use Doctrine\Tests\OrmFunctionalTestCase;
@@ -34,8 +35,7 @@ class MappingDescribeCommandTest extends OrmFunctionalTestCase
         parent::setUp();
 
         $this->application = new Application();
-        $this->application->setHelperSet(new HelperSet(['em' => new EntityManagerHelper($this->_em)]));
-        $this->application->add(new MappingDescribeCommand());
+        $this->application->add(new MappingDescribeCommand(new SingleManagerProvider($this->_em)));
 
         $this->command = $this->application->find('orm:mapping:describe');
         $this->tester  = new CommandTester($this->command);

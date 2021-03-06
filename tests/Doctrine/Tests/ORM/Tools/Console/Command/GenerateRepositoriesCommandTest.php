@@ -8,6 +8,7 @@ use Doctrine\ORM\Configuration;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\EntityRepository;
 use Doctrine\ORM\Tools\Console\Command\GenerateRepositoriesCommand;
+use Doctrine\ORM\Tools\Console\EntityManagerProvider\SingleManagerProvider;
 use Doctrine\ORM\Tools\Console\Helper\EntityManagerHelper;
 use Doctrine\Persistence\Mapping\ClassMetadataFactory;
 use Doctrine\Tests\Models\DDC3231\DDC3231EntityRepository;
@@ -52,8 +53,7 @@ class GenerateRepositoriesCommandTest extends OrmFunctionalTestCase
         $metadataDriver->addPaths([__DIR__ . '/../../../../Models/DDC3231/']);
 
         $this->application = new Application();
-        $this->application->setHelperSet(new HelperSet(['em' => new EntityManagerHelper($this->_em)]));
-        $this->application->add(new GenerateRepositoriesCommand());
+        $this->application->add(new GenerateRepositoriesCommand(new SingleManagerProvider($this->_em)));
     }
 
     public function tearDown(): void

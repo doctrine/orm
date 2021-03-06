@@ -4,7 +4,9 @@ declare(strict_types=1);
 
 namespace Doctrine\Tests\ORM\Tools\Console;
 
+use Doctrine\Deprecations\PHPUnit\VerifyDeprecations;
 use Doctrine\ORM\Tools\Console\ConsoleRunner;
+use Doctrine\ORM\Tools\Console\EntityManagerProvider;
 use Doctrine\Tests\DoctrineTestCase;
 use PackageVersions\Versions;
 use Symfony\Component\Console\Command\Command;
@@ -16,8 +18,12 @@ use Symfony\Component\Console\Helper\HelperSet;
  */
 final class ConsoleRunnerTest extends DoctrineTestCase
 {
+    use VerifyDeprecations;
+
     public function testCreateApplicationShouldReturnAnApplicationWithTheCorrectCommands(): void
     {
+        $this->expectDeprecationWithIdentifier('https://github.com/doctrine/orm/issues/8327');
+
         $helperSet = new HelperSet();
         $app       = ConsoleRunner::createApplication($helperSet);
 
@@ -59,5 +65,13 @@ final class ConsoleRunnerTest extends DoctrineTestCase
         $app     = ConsoleRunner::createApplication(new HelperSet(), [new Command($command)]);
 
         self::assertTrue($app->has($command));
+    }
+
+    public function testCreateApplicationWithProvider()
+    {
+        $provider = $this->getMockBuilder(EntityManagerProvider::class)->getMock();
+        $app      = ConsoleRunner::createApplication($provider, []);
+
+        self::assertTrue($app->has('orm:info'));
     }
 }

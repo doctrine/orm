@@ -8,6 +8,7 @@ use Doctrine\DBAL\Connection;
 use Doctrine\ORM\Configuration;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Tools\Console\Command\EnsureProductionSettingsCommand;
+use Doctrine\ORM\Tools\Console\EntityManagerProvider\SingleManagerProvider;
 use Doctrine\ORM\Tools\Console\Helper\EntityManagerHelper;
 use Doctrine\Tests\DoctrineTestCase;
 use RuntimeException;
@@ -107,8 +108,7 @@ class EnsureProductionSettingsCommandTest extends DoctrineTestCase
         array $input = []
     ): int {
         $application = new Application();
-        $application->setHelperSet(new HelperSet(['em' => new EntityManagerHelper($em)]));
-        $application->add(new EnsureProductionSettingsCommand());
+        $application->add(new EnsureProductionSettingsCommand(new SingleManagerProvider($em)));
 
         $command = $application->find('orm:ensure-production-settings');
         $tester  = new CommandTester($command);

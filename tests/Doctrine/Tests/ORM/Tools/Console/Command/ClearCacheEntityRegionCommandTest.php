@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Doctrine\Tests\ORM\Tools\Console\Command;
 
 use Doctrine\ORM\Tools\Console\Command\ClearCache\EntityRegionCommand;
+use Doctrine\ORM\Tools\Console\EntityManagerProvider\SingleManagerProvider;
 use Doctrine\ORM\Tools\Console\Helper\EntityManagerHelper;
 use Doctrine\Tests\Models\Cache\Country;
 use Doctrine\Tests\OrmFunctionalTestCase;
@@ -28,10 +29,9 @@ class ClearCacheEntityRegionCommandTest extends OrmFunctionalTestCase
         $this->enableSecondLevelCache();
         parent::setUp();
 
-        $this->command = new EntityRegionCommand();
+        $this->command = new EntityRegionCommand(new SingleManagerProvider($this->_em));
 
         $this->application = new Application();
-        $this->application->setHelperSet(new HelperSet(['em' => new EntityManagerHelper($this->_em)]));
         $this->application->add($this->command);
     }
 
