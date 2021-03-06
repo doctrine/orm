@@ -9,7 +9,10 @@ use function sprintf;
 
 class UnknownManagerException extends OutOfBoundsException
 {
-    public static function unknownManager(string $unknownManager, array $knownManagers = [])
+    /**
+     * @psalm-param list<string> $knownManagers
+     */
+    public static function unknownManager(string $unknownManager, array $knownManagers = []): self
     {
         return new self(sprintf(
             'Requested unknown entity manager: %s, known managers: %s',

@@ -10,6 +10,7 @@ use Symfony\Component\Console\Input\InputInterface;
 
 abstract class AbstractEntityManagerCommand extends Command
 {
+    /** @var EntityManagerProvider|null */
     private $entityManagerProvider;
 
     public function __construct(?EntityManagerProvider $entityManagerProvider = null)

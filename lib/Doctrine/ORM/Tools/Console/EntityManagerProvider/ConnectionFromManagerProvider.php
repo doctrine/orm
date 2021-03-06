@@ -8,6 +8,7 @@ use Doctrine\ORM\Tools\Console\EntityManagerProvider;
 
 class ConnectionFromManagerProvider implements ConnectionProvider
 {
+    /** @var EntityManagerProvider */
     private $entityManagerProvider;
 
     public function __construct(EntityManagerProvider $entityManagerProvider)

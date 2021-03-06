@@ -11,6 +11,7 @@ use function assert;
 
 class HelperSetManagerProvider implements EntityManagerProvider
 {
+    /** @var HelperSet */
     private $helperSet;
 
     public function __construct(HelperSet $helperSet)
