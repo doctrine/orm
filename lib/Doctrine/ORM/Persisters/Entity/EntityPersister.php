@@ -47,7 +47,7 @@ interface EntityPersister
     /**
      * Get all queued inserts.
      *
-     * @return array
+     * @psalm-return array<string, object>
      */
     public function getInserts();
 
@@ -89,14 +89,14 @@ interface EntityPersister
      *
      * @param string[] $criteria
      *
-     * @return array
+     * @psalm-return array{list<mixed>, list<int|string|null>}
      */
     public function expandParameters($criteria);
 
     /**
      * Expands Criteria Parameters by walking the expressions and grabbing all parameters and types from it.
      *
-     * @return array
+     * @psalm-return array{list<mixed>, list<int|string|null>}
      */
     public function expandCriteriaParameters(Criteria $criteria);
 
@@ -250,12 +250,11 @@ interface EntityPersister
     /**
      * Loads a list of entities by a list of field criteria.
      *
-     * @param array      $criteria
-     * @param array|null $orderBy
-     * @param int|null   $limit
-     * @param int|null   $offset
+     * @param int|null $limit
+     * @param int|null $offset
      *
-     * @return array
+     * @psalm-param list<string>|null $orderBy
+     * @psalm-param array<string, mixed> $criteria
      */
     public function loadAll(array $criteria = [], ?array $orderBy = null, $limit = null, $offset = null);
 

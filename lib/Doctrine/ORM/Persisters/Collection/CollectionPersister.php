@@ -91,7 +91,7 @@ interface CollectionPersister
     /**
      * Loads association entities matching the given Criteria object.
      *
-     * @return array
+     * @return mixed[]
      */
     public function loadCriteria(PersistentCollection $collection, Criteria $criteria);
 }

@@ -43,8 +43,12 @@ class HydrationException extends ORMException
      */
     public static function parentObjectOfRelationNotFound($alias, $parentAlias)
     {
-        return new self("The parent object of entity result with alias '$alias' was not found."
-            . " The parent alias is '$parentAlias'.");
+        return new self(sprintf(
+            "The parent object of entity result with alias '%s' was not found."
+            . " The parent alias is '%s'.",
+            $alias,
+            $parentAlias
+        ));
     }
 
     /**
@@ -96,9 +100,10 @@ class HydrationException extends ORMException
 
     /**
      * @param string $discrValue
-     * @param array  $discrMap
      *
      * @return HydrationException
+     *
+     * @psalm-param array<string, string> $discrMap
      */
     public static function invalidDiscriminatorValue($discrValue, $discrMap)
     {

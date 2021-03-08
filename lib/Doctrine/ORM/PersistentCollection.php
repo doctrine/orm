@@ -52,7 +52,7 @@ final class PersistentCollection extends AbstractLazyCollection implements Selec
      * A snapshot of the collection at the moment it was fetched from the database.
      * This is used to create a diff of the collection at commit time.
      *
-     * @var array
+     * @psalm-var array<string|int, mixed>
      */
     private $snapshot = [];
 
@@ -67,7 +67,7 @@ final class PersistentCollection extends AbstractLazyCollection implements Selec
      * The association mapping the collection belongs to.
      * This is currently either a OneToManyMapping or a ManyToManyMapping.
      *
-     * @var array
+     * @psalm-var array<string, mixed>
      */
     private $association;
 

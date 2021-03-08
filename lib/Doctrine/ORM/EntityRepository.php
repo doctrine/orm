@@ -171,9 +171,7 @@ class EntityRepository implements ObjectRepository, Selectable
     /**
      * Finds all entities in the repository.
      *
-     * @return array The entities.
-     *
-     * @psalm-return list<T>
+     * @psalm-return list<T> The entities.
      */
     public function findAll()
     {
@@ -183,14 +181,12 @@ class EntityRepository implements ObjectRepository, Selectable
     /**
      * Finds entities by a set of criteria.
      *
-     * @param array      $criteria
-     * @param array|null $orderBy
-     * @param int|null   $limit
-     * @param int|null   $offset
+     * @param int|null $limit
+     * @param int|null $offset
      *
-     * @return array The objects.
-     *
-     * @psalm-return list<T>
+     * @psalm-param array<string, mixed> $criteria
+     * @psalm-param list<string>|null $orderBy
+     * @psalm-return list<T> The objects.
      */
     public function findBy(array $criteria, ?array $orderBy = null, $limit = null, $offset = null)
     {
