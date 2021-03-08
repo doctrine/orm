@@ -258,7 +258,7 @@ final class Query extends AbstractQuery
             return $this->parserResult;
         }
 
-        $hash   = $this->_getQueryCacheId();
+        $hash   = $this->getQueryCacheId();
         $cached = $this->expireQueryCache ? false : $queryCache->fetch($hash);
 
         if ($cached instanceof ParserResult) {
@@ -756,10 +756,8 @@ final class Query extends AbstractQuery
 
     /**
      * Generate a cache id for the query cache - reusing the Result-Cache-Id generator.
-     *
-     * @return string
      */
-    protected function _getQueryCacheId()
+    protected function getQueryCacheId(): string
     {
         ksort($this->_hints);
 

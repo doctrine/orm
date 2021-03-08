@@ -79,14 +79,14 @@ abstract class AbstractHydrator
     /**
      * Local ClassMetadata cache to avoid going to the EntityManager all the time.
      *
-     * @var array
+     * @var array<string, ClassMetadata>
      */
     protected $_metadataCache = [];
 
     /**
      * The cache used during row-by-row hydration.
      *
-     * @var array
+     * @var array<string, mixed[]|null>
      */
     protected $_cache = [];
 
@@ -100,7 +100,7 @@ abstract class AbstractHydrator
     /**
      * The query hints.
      *
-     * @var array
+     * @var array<string, mixed>
      */
     protected $_hints;
 
@@ -123,9 +123,10 @@ abstract class AbstractHydrator
      *
      * @param object $stmt
      * @param object $resultSetMapping
-     * @param array  $hints
      *
      * @return IterableResult
+     *
+     * @psalm-param array<string, mixed> $hints
      */
     public function iterate($stmt, $resultSetMapping, array $hints = [])
     {
@@ -150,9 +151,9 @@ abstract class AbstractHydrator
     /**
      * Initiates a row-by-row hydration.
      *
-     * @param mixed[] $hints
-     *
      * @return iterable<mixed>
+     *
+     * @psalm-param array<string, mixed> $hints
      */
     public function toIterable(ResultStatement $stmt, ResultSetMapping $resultSetMapping, array $hints = []): iterable
     {
@@ -194,9 +195,10 @@ abstract class AbstractHydrator
      *
      * @param object $stmt
      * @param object $resultSetMapping
-     * @param array  $hints
      *
-     * @return array
+     * @return mixed[]
+     *
+     * @psalm-param array<string, string> $hints
      */
     public function hydrateAll($stmt, $resultSetMapping, array $hints = [])
     {
@@ -320,7 +322,6 @@ abstract class AbstractHydrator
      * the values applied. Scalar values are kept in a specific key 'scalars'.
      *
      * @param mixed[] $data                SQL Result Row.
-     * @param array   &$id                 Dql-Alias => ID-Hash.
      * @param array   &$nonemptyComponents Does this DQL-Alias has at least one non NULL value?
      *
      * @return array<string, array<string, mixed>> An array with all the fields
@@ -328,6 +329,7 @@ abstract class AbstractHydrator
      *                                             row, grouped by their
      *                                             component alias.
      *
+     * @psalm-param array<string, string> &$id                 Dql-Alias => ID-Hash.
      * @psalm-return array{
      *                   data: array<array-key, array>,
      *                   newObjects?: array<array-key, array{
@@ -342,7 +344,8 @@ abstract class AbstractHydrator
         $rowData = ['data' => []];
 
         foreach ($data as $key => $value) {
-            if (($cacheKeyInfo = $this->hydrateColumnInfo($key)) === null) {
+            $cacheKeyInfo = $this->hydrateColumnInfo($key);
+            if ($cacheKeyInfo === null) {
                 continue;
             }
 
@@ -420,7 +423,8 @@ abstract class AbstractHydrator
         $rowData = [];
 
         foreach ($data as $key => $value) {
-            if (($cacheKeyInfo = $this->hydrateColumnInfo($key)) === null) {
+            $cacheKeyInfo = $this->hydrateColumnInfo($key);
+            if ($cacheKeyInfo === null) {
                 continue;
             }
 
