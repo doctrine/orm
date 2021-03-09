@@ -30,6 +30,7 @@ use Doctrine\DBAL\Schema\Visitor\DropSchemaSqlCollector;
 use Doctrine\DBAL\Schema\Visitor\RemoveNamespacedAssets;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Mapping\ClassMetadata;
+use Doctrine\ORM\Mapping\MappingException;
 use Doctrine\ORM\Mapping\QuoteStrategy;
 use Doctrine\ORM\ORMException;
 use Doctrine\ORM\Tools\Event\GenerateSchemaEventArgs;
@@ -148,6 +149,19 @@ class SchemaTool
     private function getIndexColumns($class, array $indexData)
     {
         $columns = [];
+
+        if (
+            isset($indexData['columns'], $indexData['fields'])
+            || (
+                ! isset($indexData['columns'])
+                && ! isset($indexData['fields'])
+            )
+        ) {
+            throw MappingException::invalidIndexConfiguration(
+                $class,
+                $indexData['name'] ?? 'unnamed'
+            );
+        }
 
         if (isset($indexData['columns'])) {
             $columns = $indexData['columns'];

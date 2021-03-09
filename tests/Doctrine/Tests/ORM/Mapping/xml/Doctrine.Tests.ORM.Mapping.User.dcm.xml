@@ -17,7 +17,6 @@
             <index name="name_idx" columns="name"/>
             <index columns="user_email"/>
             <index name="fields" columns="" fields="name,email"/>
-            <index name="column_fields" columns="name" fields="address"/>
         </indexes>
 
         <unique-constraints>

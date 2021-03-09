@@ -136,7 +136,6 @@ $metadata->table['indexes']           = [
     'name_idx' => ['columns' => ['name']],
     0 => ['columns' => ['user_email']],
     'fields' => ['fields' => ['name', 'email']],
-    'column_fields' => ['columns' => ['name'], 'fields' => ['address']],
 ];
 $metadata->setSequenceGeneratorDefinition(
     [

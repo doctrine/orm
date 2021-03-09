@@ -933,4 +933,32 @@ class MappingException extends ORMException
             )
         );
     }
+
+    /**
+     * @return self
+     */
+    public static function invalidIndexConfiguration($className, $indexName)
+    {
+        return new self(
+            sprintf(
+                'Index %s for entity %s should contain columns or fields values, but not both.',
+                $indexName,
+                $className
+            )
+        );
+    }
+
+    /**
+     * @return self
+     */
+    public static function invalidUniqueConstraintConfiguration($className, $indexName)
+    {
+        return new self(
+            sprintf(
+                'Unique constraint %s for entity %s should contain columns or fields values, but not both.',
+                $indexName,
+                $className
+            )
+        );
+    }
 }

@@ -246,6 +246,19 @@ class YamlDriver extends FileDriver
                     }
                 }
 
+                if (
+                    isset($index['columns'], $index['fields'])
+                    || (
+                        ! isset($index['columns'])
+                        && ! isset($index['fields'])
+                    )
+                ) {
+                    throw MappingException::invalidIndexConfiguration(
+                        $className,
+                        $indexYml['name']
+                    );
+                }
+
                 if (isset($indexYml['flags'])) {
                     if (is_string($indexYml['flags'])) {
                         $index['flags'] = array_map('trim', explode(',', $indexYml['flags']));
@@ -285,6 +298,19 @@ class YamlDriver extends FileDriver
                     } else {
                         $unique['fields'] = $uniqueYml['fields'];
                     }
+                }
+
+                if (
+                    isset($unique['columns'], $unique['fields'])
+                    || (
+                        ! isset($unique['columns'])
+                        && ! isset($unique['fields'])
+                    )
+                ) {
+                    throw MappingException::invalidUniqueConstraintConfiguration(
+                        $className,
+                        $uniqueYml['name']
+                    );
                 }
 
                 if (isset($uniqueYml['options'])) {

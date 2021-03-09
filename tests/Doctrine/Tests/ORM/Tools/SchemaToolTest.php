@@ -6,11 +6,15 @@ namespace Doctrine\Tests\ORM\Tools;
 
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping\ClassMetadata;
+use Doctrine\ORM\Mapping\ClassMetadataInfo;
+use Doctrine\ORM\Mapping\MappingException;
 use Doctrine\ORM\Mapping\UnderscoreNamingStrategy;
 use Doctrine\ORM\Tools\Event\GenerateSchemaEventArgs;
 use Doctrine\ORM\Tools\Event\GenerateSchemaTableEventArgs;
 use Doctrine\ORM\Tools\SchemaTool;
 use Doctrine\ORM\Tools\ToolEvents;
+use Doctrine\Persistence\Mapping\Driver\StaticPHPDriver;
+use Doctrine\Persistence\Mapping\RuntimeReflectionService;
 use Doctrine\Tests\Models\CMS\CmsAddress;
 use Doctrine\Tests\Models\CMS\CmsArticle;
 use Doctrine\Tests\Models\CMS\CmsComment;
@@ -289,9 +293,40 @@ class SchemaToolTest extends OrmTestCase
         $schema     = $schemaTool->getSchemaFromMetadata([$metadata]);
         $table      = $schema->getTable('field_index');
 
-        $this->assertEquals(['index'], $table->getIndex('index')->getColumns());
-        $this->assertEquals(['index', 'field_name'], $table->getIndex('table')->getColumns());
-        $this->assertEquals(['table', 'index'], $table->getIndex('uniq')->getColumns());
+        self::assertEquals(['index', 'field_name'], $table->getIndex('index')->getColumns());
+        self::assertEquals(['index', 'table'], $table->getIndex('uniq')->getColumns());
+    }
+
+    public function testIncorrectIndexesBasedOnFields(): void
+    {
+        $em = $this->getTestEntityManager();
+        $em->getConfiguration()->setNamingStrategy(new UnderscoreNamingStrategy());
+
+        $schemaTool = new SchemaTool($em);
+
+        $mappingDriver = new StaticPHPDriver([]);
+        $class = new ClassMetadata(IncorrectIndexByFieldEntity::class);
+        $class->initializeReflection(new RuntimeReflectionService());
+        $mappingDriver->loadMetadataForClass(IncorrectIndexByFieldEntity::class, $class);
+
+        $this->expectException(MappingException::class);
+        $schemaTool->getSchemaFromMetadata([$class]);
+    }
+
+    public function testIncorrectUniqueConstraintsBasedOnFields(): void
+    {
+        $em = $this->getTestEntityManager();
+        $em->getConfiguration()->setNamingStrategy(new UnderscoreNamingStrategy());
+
+        $schemaTool = new SchemaTool($em);
+
+        $mappingDriver = new StaticPHPDriver([]);
+        $class = new ClassMetadata(IncorrectUniqueConstraintByFieldEntity::class);
+        $class->initializeReflection(new RuntimeReflectionService());
+        $mappingDriver->loadMetadataForClass(IncorrectUniqueConstraintByFieldEntity::class, $class);
+
+        $this->expectException(MappingException::class);
+        $schemaTool->getSchemaFromMetadata([$class]);
     }
 }
 
@@ -447,11 +482,10 @@ class GH6830Category
  * @Table(
  *     name="field_index",
  *     indexes={
- *         @Index(name="index", fields={"index"}),
- *         @Index(name="table", columns={"index"}, fields={"fieldName"})
+ *         @Index(name="index", fields={"index", "fieldName"}),
  *     },
  *     uniqueConstraints={
- *         @UniqueConstraint(name="uniq", columns={"table"}, fields={"index"})
+ *         @UniqueConstraint(name="uniq", fields={"index", "table"})
  *     }
  * )
  */
@@ -481,4 +515,98 @@ class IndexByFieldEntity
      * @Column
      */
     public $fieldName;
+}
+
+class IncorrectIndexByFieldEntity
+{
+    public $id;
+
+    public $index;
+
+    public $table;
+
+    public $fieldName;
+
+    public static function loadMetadata(ClassMetadataInfo $metadata): void
+    {
+        $metadata->mapField(
+            [
+                'id'                 => true,
+                'fieldName'          => 'id',
+            ]
+        );
+
+        $metadata->mapField(
+            [
+                'fieldName'         => 'index',
+            ]
+        );
+
+        $metadata->mapField(
+            [
+                'fieldName'         => 'table',
+            ]
+        );
+
+        $metadata->mapField(
+            [
+                'fieldName'         => 'fieldName',
+            ]
+        );
+
+        $metadata->setPrimaryTable(
+            [
+                'indexes' => [
+                    ['columns' => ['index'], 'fields' => ['fieldName']],
+                ],
+            ]
+        );
+    }
+}
+
+class IncorrectUniqueConstraintByFieldEntity
+{
+    public $id;
+
+    public $index;
+
+    public $table;
+
+    public $fieldName;
+
+    public static function loadMetadata(ClassMetadataInfo $metadata): void
+    {
+        $metadata->mapField(
+            [
+                'id'                 => true,
+                'fieldName'          => 'id',
+            ]
+        );
+
+        $metadata->mapField(
+            [
+                'fieldName'         => 'index',
+            ]
+        );
+
+        $metadata->mapField(
+            [
+                'fieldName'         => 'table',
+            ]
+        );
+
+        $metadata->mapField(
+            [
+                'fieldName'         => 'fieldName',
+            ]
+        );
+
+        $metadata->setPrimaryTable(
+            [
+                'uniqueConstraints' => [
+                    ['columns' => ['index'], 'fields' => ['fieldName']],
+                ],
+            ]
+        );
+    }
 }

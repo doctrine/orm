@@ -105,12 +105,17 @@ abstract class AbstractMappingDriverTest extends OrmTestCase
                 'name_idx' => ['columns' => ['name']],
                 0 => ['columns' => ['user_email']],
                 'fields' => ['fields' => ['name', 'email']],
-                'column_fields' => ['columns' => ['name'], 'fields' => ['address']],
             ],
             $class->table['indexes']
         );
 
         return $class;
+    }
+
+    public function testEntityIncorrectIndexes(): void
+    {
+        $this->expectException(MappingException::class);
+        $this->createClassMetadata(UserIncorrectIndex::class);
     }
 
     public function testEntityIndexFlagsAndPartialIndexes(): void
@@ -149,6 +154,12 @@ abstract class AbstractMappingDriverTest extends OrmTestCase
         );
 
         return $class;
+    }
+
+    public function testEntityIncorrectUniqueContraint(): void
+    {
+        $this->expectException(MappingException::class);
+        $this->createClassMetadata(UserIncorrectUniqueConstraint::class);
     }
 
     /**
@@ -1071,7 +1082,7 @@ abstract class AbstractMappingDriverTest extends OrmTestCase
  * @Table(
  *  name="cms_users",
  *  uniqueConstraints={@UniqueConstraint(name="search_idx", columns={"name", "user_email"}, options={"where": "name IS NOT NULL"}), @UniqueConstraint(name="phone_idx", fields={"name", "phone"})},
- *  indexes={@Index(name="name_idx", columns={"name"}), @Index(name="0", columns={"user_email"}), @index(name="fields", fields={"name", "email"}), @Index(name="column_fields", columns={"name"}, fields={"address"})},
+ *  indexes={@Index(name="name_idx", columns={"name"}), @Index(name="0", columns={"user_email"}), @index(name="fields", fields={"name", "email"})},
  *  options={"foo": "bar", "baz": {"key": "val"}}
  * )
  * @NamedQueries({@NamedQuery(name="all", query="SELECT u FROM __CLASS__ u")})
@@ -1296,7 +1307,6 @@ class User
             'name_idx' => ['columns' => ['name']],
             0 => ['columns' => ['user_email']],
             'fields' => ['fields' => ['name', 'email']],
-            'column_fields' => ['columns' => ['name'], 'fields' => ['address']],
         ];
         $metadata->setSequenceGeneratorDefinition(
             [
@@ -1311,6 +1321,124 @@ class User
                 'query' => 'SELECT u FROM __CLASS__ u',
             ]
         );
+    }
+}
+
+/**
+ * @Entity
+ * @Table(
+ *  indexes={@Index(name="name_idx", columns={"name"}, fields={"email"})},
+ * )
+ */
+class UserIncorrectIndex
+{
+    /**
+     * @var int
+     * @Id
+     * @Column(type="integer")
+     * @generatedValue(strategy="AUTO")
+     **/
+    public $id;
+
+    /**
+     * @var string
+     * @Column
+     */
+    public $name;
+
+    /**
+     * @var string
+     * @Column(name="user_email")
+     */
+    public $email;
+
+    public static function loadMetadata(ClassMetadataInfo $metadata): void
+    {
+        $metadata->setInheritanceType(ClassMetadataInfo::INHERITANCE_TYPE_NONE);
+        $metadata->setPrimaryTable([]);
+        $metadata->mapField(
+            [
+                'id' => true,
+                'fieldName' => 'id',
+                'type' => 'integer',
+                'columnName' => 'id',
+            ]
+        );
+        $metadata->mapField(
+            [
+                'fieldName' => 'name',
+                'type' => 'string',
+            ]
+        );
+        $metadata->mapField(
+            [
+                'fieldName' => 'email',
+                'type' => 'string',
+                'columnName' => 'user_email',
+            ]
+        );
+        $metadata->table['indexes'] = [
+            'name_idx' => ['columns' => ['name'], 'fields' => ['email']],
+        ];
+    }
+}
+
+/**
+ * @Entity
+ * @Table(
+ *  uniqueConstraints={@UniqueConstraint(name="name_idx", columns={"name"}, fields={"email"})},
+ * )
+ */
+class UserIncorrectUniqueConstraint
+{
+    /**
+     * @var int
+     * @Id
+     * @Column(type="integer")
+     * @generatedValue(strategy="AUTO")
+     **/
+    public $id;
+
+    /**
+     * @var string
+     * @Column
+     */
+    public $name;
+
+    /**
+     * @var string
+     * @Column(name="user_email")
+     */
+    public $email;
+
+    public static function loadMetadata(ClassMetadataInfo $metadata): void
+    {
+        $metadata->setInheritanceType(ClassMetadataInfo::INHERITANCE_TYPE_NONE);
+        $metadata->setPrimaryTable([]);
+        $metadata->mapField(
+            [
+                'id' => true,
+                'fieldName' => 'id',
+                'type' => 'integer',
+                'columnName' => 'id',
+            ]
+        );
+        $metadata->mapField(
+            [
+                'fieldName' => 'name',
+                'type' => 'string',
+            ]
+        );
+        $metadata->mapField(
+            [
+                'fieldName' => 'email',
+                'type' => 'string',
+                'columnName' => 'user_email',
+            ]
+        );
+        $metadata->table['uniqueConstraints'] = [
+            'name_idx' => ['columns' => ['name'], 'fields' => ['email']],
+        ];
     }
 }
 

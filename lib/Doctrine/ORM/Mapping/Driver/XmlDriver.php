@@ -222,6 +222,19 @@ class XmlDriver extends FileDriver
                     $index['fields'] = explode(',', (string) $indexXml['fields']);
                 }
 
+                if (
+                    isset($index['columns'], $index['fields'])
+                    || (
+                        ! isset($index['columns'])
+                        && ! isset($index['fields'])
+                    )
+                ) {
+                    throw MappingException::invalidIndexConfiguration(
+                        $className,
+                        (string) ($indexXml['name'] ?: count($metadata->table['indexes']))
+                    );
+                }
+
                 if (isset($indexXml['flags'])) {
                     $index['flags'] = explode(',', (string) $indexXml['flags']);
                 }
@@ -250,6 +263,19 @@ class XmlDriver extends FileDriver
 
                 if (isset($uniqueXml['fields'])) {
                     $unique['fields'] = explode(',', (string) $uniqueXml['fields']);
+                }
+
+                if (
+                    isset($unique['columns'], $unique['fields'])
+                    || (
+                        ! isset($unique['columns'])
+                        && ! isset($unique['fields'])
+                    )
+                ) {
+                    throw MappingException::invalidUniqueConstraintConfiguration(
+                        $className,
+                        (string) ($uniqueXml['name'] ?: count($metadata->table['uniqueConstraints']))
+                    );
                 }
 
                 if (isset($uniqueXml->options)) {

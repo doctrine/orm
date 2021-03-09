@@ -87,6 +87,3 @@ Doctrine\Tests\ORM\Mapping\User:
       columns: user_email
     fields:
       fields: name,email
-    column_fields:
-      columns: name
-      fields: address

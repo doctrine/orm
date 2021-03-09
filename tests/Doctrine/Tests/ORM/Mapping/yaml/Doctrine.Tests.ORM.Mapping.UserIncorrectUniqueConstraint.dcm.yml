@@ -1,0 +1,17 @@
+Doctrine\Tests\ORM\Mapping\UserIncorrectUniqueConstraint:
+    type: entity
+    id:
+        id:
+            type: integer
+            generator:
+                strategy: AUTO
+    fields:
+        name:
+            type: string
+        email:
+            type: string
+            column: user_email
+    uniqueConstraints:
+        name_idx:
+            columns: name
+            fields: email
