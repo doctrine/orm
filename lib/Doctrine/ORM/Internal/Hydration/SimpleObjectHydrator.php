@@ -124,6 +124,11 @@ class SimpleObjectHydrator extends AbstractHydrator
                 continue;
             }
 
+            // If we have inheritance in resultset, make sure the field belongs to the correct class
+            if (isset($cacheKeyInfo['discriminatorValues']) && ! in_array((string) $discrColumnValue, $cacheKeyInfo['discriminatorValues'], true)) {
+                continue;
+            }
+
             // Check if value is null before conversion (because some types convert null to something else)
             $valueIsNull = null === $value;
 
@@ -137,11 +142,6 @@ class SimpleObjectHydrator extends AbstractHydrator
 
             // Prevent overwrite in case of inherit classes using same property name (See AbstractHydrator)
             if ( ! isset($data[$fieldName]) || ! $valueIsNull) {
-                // If we have inheritance in resultset, make sure the field belongs to the correct class
-                if (isset($cacheKeyInfo['discriminatorValues']) && ! in_array((string) $discrColumnValue, $cacheKeyInfo['discriminatorValues'], true)) {
-                    continue;
-                }
-
                 $data[$fieldName] = $value;
             }
         }
