@@ -302,10 +302,10 @@ class SchemaToolTest extends OrmTestCase
         $em = $this->getTestEntityManager();
         $em->getConfiguration()->setNamingStrategy(new UnderscoreNamingStrategy());
 
-        $schemaTool = new SchemaTool($em);
-
+        $schemaTool    = new SchemaTool($em);
         $mappingDriver = new StaticPHPDriver([]);
-        $class = new ClassMetadata(IncorrectIndexByFieldEntity::class);
+        $class         = new ClassMetadata(IncorrectIndexByFieldEntity::class);
+
         $class->initializeReflection(new RuntimeReflectionService());
         $mappingDriver->loadMetadataForClass(IncorrectIndexByFieldEntity::class, $class);
 
@@ -318,10 +318,10 @@ class SchemaToolTest extends OrmTestCase
         $em = $this->getTestEntityManager();
         $em->getConfiguration()->setNamingStrategy(new UnderscoreNamingStrategy());
 
-        $schemaTool = new SchemaTool($em);
-
+        $schemaTool    = new SchemaTool($em);
         $mappingDriver = new StaticPHPDriver([]);
-        $class = new ClassMetadata(IncorrectUniqueConstraintByFieldEntity::class);
+        $class         = new ClassMetadata(IncorrectUniqueConstraintByFieldEntity::class);
+
         $class->initializeReflection(new RuntimeReflectionService());
         $mappingDriver->loadMetadataForClass(IncorrectUniqueConstraintByFieldEntity::class, $class);
 
@@ -519,12 +519,16 @@ class IndexByFieldEntity
 
 class IncorrectIndexByFieldEntity
 {
+    /** @var int */
     public $id;
 
+    /** @var string */
     public $index;
 
+    /** @var string */
     public $table;
 
+    /** @var string */
     public $fieldName;
 
     public static function loadMetadata(ClassMetadataInfo $metadata): void
@@ -536,23 +540,11 @@ class IncorrectIndexByFieldEntity
             ]
         );
 
-        $metadata->mapField(
-            [
-                'fieldName'         => 'index',
-            ]
-        );
+        $metadata->mapField(['fieldName' => 'index']);
 
-        $metadata->mapField(
-            [
-                'fieldName'         => 'table',
-            ]
-        );
+        $metadata->mapField(['fieldName' => 'table']);
 
-        $metadata->mapField(
-            [
-                'fieldName'         => 'fieldName',
-            ]
-        );
+        $metadata->mapField(['fieldName' => 'fieldName']);
 
         $metadata->setPrimaryTable(
             [
@@ -566,12 +558,16 @@ class IncorrectIndexByFieldEntity
 
 class IncorrectUniqueConstraintByFieldEntity
 {
+    /** @var int */
     public $id;
 
+    /** @var string */
     public $index;
 
+    /** @var string */
     public $table;
 
+    /** @var string */
     public $fieldName;
 
     public static function loadMetadata(ClassMetadataInfo $metadata): void
@@ -583,23 +579,11 @@ class IncorrectUniqueConstraintByFieldEntity
             ]
         );
 
-        $metadata->mapField(
-            [
-                'fieldName'         => 'index',
-            ]
-        );
+        $metadata->mapField(['fieldName' => 'index']);
 
-        $metadata->mapField(
-            [
-                'fieldName'         => 'table',
-            ]
-        );
+        $metadata->mapField(['fieldName' => 'table']);
 
-        $metadata->mapField(
-            [
-                'fieldName'         => 'fieldName',
-            ]
-        );
+        $metadata->mapField(['fieldName' => 'fieldName']);
 
         $metadata->setPrimaryTable(
             [

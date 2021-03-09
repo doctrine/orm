@@ -31,6 +31,7 @@ use SimpleXMLElement;
 
 use function assert;
 use function constant;
+use function count;
 use function defined;
 use function explode;
 use function file_get_contents;
@@ -231,7 +232,7 @@ class XmlDriver extends FileDriver
                 ) {
                     throw MappingException::invalidIndexConfiguration(
                         $className,
-                        (string) ($indexXml['name'] ?: count($metadata->table['indexes']))
+                        (string) ($indexXml['name'] ?? count($metadata->table['indexes']))
                     );
                 }
 
@@ -274,7 +275,7 @@ class XmlDriver extends FileDriver
                 ) {
                     throw MappingException::invalidUniqueConstraintConfiguration(
                         $className,
-                        (string) ($uniqueXml['name'] ?: count($metadata->table['uniqueConstraints']))
+                        (string) ($uniqueXml['name'] ?? count($metadata->table['uniqueConstraints']))
                     );
                 }
 

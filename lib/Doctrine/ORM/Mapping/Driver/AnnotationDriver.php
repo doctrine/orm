@@ -35,6 +35,7 @@ use UnexpectedValueException;
 
 use function class_exists;
 use function constant;
+use function count;
 use function defined;
 use function get_class;
 use function is_array;
@@ -129,7 +130,7 @@ class AnnotationDriver extends AbstractAnnotationDriver
                     ) {
                         throw MappingException::invalidIndexConfiguration(
                             $className,
-                            (string) ($indexAnnot->name ?: count($primaryTable['indexes']))
+                            (string) ($indexAnnot->name ?? count($primaryTable['indexes']))
                         );
                     }
 
@@ -170,7 +171,7 @@ class AnnotationDriver extends AbstractAnnotationDriver
                     ) {
                         throw MappingException::invalidUniqueConstraintConfiguration(
                             $className,
-                            (string) ($uniqueConstraintAnnot->name ?: count($primaryTable['uniqueConstraints']))
+                            (string) ($uniqueConstraintAnnot->name ?? count($primaryTable['uniqueConstraints']))
                         );
                     }
 
