@@ -513,8 +513,8 @@ Required attributes:
 
 
 -  **name**: Name of the Index
--  **fields**: Array of fields. Only requires when **columns** are not defined.
--  **columns**: Array of columns. Only requires when **fields** are not defined.
+-  **fields**: Array of fields. Exactly one of **fields**, **columns** is required.
+-  **columns**: Array of columns. Exactly one of **fields**, **columns** is required.
 
 Optional attributes:
 
@@ -1281,8 +1281,8 @@ Required attributes:
 
 
 -  **name**: Name of the Index
--  **fields**: Array of fields. Only requires when **columns** are not defined.
--  **columns**: Array of columns. Only requires when **fields** are not defined.
+-  **fields**: Array of fields. Exactly one of **fields**, **columns** is required.
+-  **columns**: Array of columns. Exactly one of **fields**, **columns** is required.
 
 Optional attributes:
 
