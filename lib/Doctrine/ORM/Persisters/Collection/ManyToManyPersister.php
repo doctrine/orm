@@ -730,7 +730,7 @@ class ManyToManyPersister extends AbstractCollectionPersister
      * Expands Criteria Parameters by walking the expressions and grabbing all
      * parameters and types from it.
      *
-     * @return array
+     * @return mixed[][]
      */
     private function expandCriteriaParameters(Criteria $criteria)
     {

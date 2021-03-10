@@ -122,10 +122,11 @@ class ORMInvalidArgumentException extends InvalidArgumentException
     }
 
     /**
-     * @param array  $associationMapping
      * @param object $entry
      *
      * @return ORMInvalidArgumentException
+     *
+     * @psalm-param array<string, string> $associationMapping
      */
     public static function newEntityFoundThroughRelationship(array $associationMapping, $entry)
     {
@@ -133,10 +134,11 @@ class ORMInvalidArgumentException extends InvalidArgumentException
     }
 
     /**
-     * @param array  $assoc
      * @param object $entry
      *
      * @return ORMInvalidArgumentException
+     *
+     * @psalm-param array<string, string> $assoc
      */
     public static function detachedEntityFoundThroughRelationship(array $assoc, $entry)
     {

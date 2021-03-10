@@ -145,7 +145,7 @@ class BasicEntityPersister implements EntityPersister
     /**
      * Queued inserts.
      *
-     * @var array
+     * @psalm-var array<string, object>
      */
     protected $queuedInserts = [];
 
@@ -1932,7 +1932,7 @@ class BasicEntityPersister implements EntityPersister
      *
      * @param mixed $value
      *
-     * @return array
+     * @return array{mixed}
      */
     private function getValues($value)
     {

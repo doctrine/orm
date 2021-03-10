@@ -104,10 +104,9 @@ class Parser
     /**
      * READ-ONLY: Maps BUILT-IN string function names to AST class names.
      *
-     * @var array
      * @psalm-var array<string, class-string<Functions\FunctionNode>>
      */
-    private static $_STRING_FUNCTIONS = [
+    private static $stringFunctions = [
         'concat'    => Functions\ConcatFunction::class,
         'substring' => Functions\SubstringFunction::class,
         'trim'      => Functions\TrimFunction::class,
@@ -119,10 +118,9 @@ class Parser
     /**
      * READ-ONLY: Maps BUILT-IN numeric function names to AST class names.
      *
-     * @var array
      * @psalm-var array<string, class-string<Functions\FunctionNode>>
      */
-    private static $_NUMERIC_FUNCTIONS = [
+    private static $numericFunctions = [
         'length'    => Functions\LengthFunction::class,
         'locate'    => Functions\LocateFunction::class,
         'abs'       => Functions\AbsFunction::class,
@@ -144,10 +142,9 @@ class Parser
     /**
      * READ-ONLY: Maps BUILT-IN datetime function names to AST class names.
      *
-     * @var array
      * @psalm-var array<string, class-string<Functions\FunctionNode>>
      */
-    private static $_DATETIME_FUNCTIONS = [
+    private static $datetimeFunctions = [
         'current_date'      => Functions\CurrentDateFunction::class,
         'current_time'      => Functions\CurrentTimeFunction::class,
         'current_timestamp' => Functions\CurrentTimestampFunction::class,
@@ -160,19 +157,19 @@ class Parser
      * and still need to be validated.
      */
 
-    /** @var array */
+    /** @psalm-var list<array{token: mixed, expression: mixed, nestingLevel: int}> */
     private $deferredIdentificationVariables = [];
 
-    /** @var array */
+    /** @psalm-var list<array{token: mixed, expression: mixed, nestingLevel: int}> */
     private $deferredPartialObjectExpressions = [];
 
-    /** @var array */
+    /** @psalm-var list<array{token: mixed, expression: mixed, nestingLevel: int}> */
     private $deferredPathExpressions = [];
 
-    /** @var array */
+    /** @psalm-var list<array{token: mixed, expression: mixed, nestingLevel: int}> */
     private $deferredResultVariables = [];
 
-    /** @var array */
+    /** @psalm-var list<array{token: mixed, expression: mixed, nestingLevel: int}> */
     private $deferredNewObjectExpressions = [];
 
     /**
@@ -3449,13 +3446,13 @@ class Parser
             case $customFunctionDeclaration !== null:
                 return $customFunctionDeclaration;
 
-            case isset(self::$_STRING_FUNCTIONS[$funcName]):
+            case isset(self::$stringFunctions[$funcName]):
                 return $this->FunctionsReturningStrings();
 
-            case isset(self::$_NUMERIC_FUNCTIONS[$funcName]):
+            case isset(self::$numericFunctions[$funcName]):
                 return $this->FunctionsReturningNumerics();
 
-            case isset(self::$_DATETIME_FUNCTIONS[$funcName]):
+            case isset(self::$datetimeFunctions[$funcName]):
                 return $this->FunctionsReturningDatetime();
 
             default:
@@ -3508,7 +3505,7 @@ class Parser
     public function FunctionsReturningNumerics()
     {
         $funcNameLower = strtolower($this->lexer->lookahead['value']);
-        $funcClass     = self::$_NUMERIC_FUNCTIONS[$funcNameLower];
+        $funcClass     = self::$numericFunctions[$funcNameLower];
 
         $function = new $funcClass($funcNameLower);
         $function->parse($this);
@@ -3547,7 +3544,7 @@ class Parser
     public function FunctionsReturningDatetime()
     {
         $funcNameLower = strtolower($this->lexer->lookahead['value']);
-        $funcClass     = self::$_DATETIME_FUNCTIONS[$funcNameLower];
+        $funcClass     = self::$datetimeFunctions[$funcNameLower];
 
         $function = new $funcClass($funcNameLower);
         $function->parse($this);
@@ -3587,7 +3584,7 @@ class Parser
     public function FunctionsReturningStrings()
     {
         $funcNameLower = strtolower($this->lexer->lookahead['value']);
-        $funcClass     = self::$_STRING_FUNCTIONS[$funcNameLower];
+        $funcClass     = self::$stringFunctions[$funcNameLower];
 
         $function = new $funcClass($funcNameLower);
         $function->parse($this);
