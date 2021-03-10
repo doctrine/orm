@@ -483,8 +483,9 @@ class AnnotationDriver extends AbstractAnnotationDriver
     }
 
     /**
-     * @param mixed[] $mapping
      * @param mixed[] $joinColumns
+     *
+     * @psalm-param array<string, mixed> $mapping
      */
     private function loadRelationShipMapping(
         ReflectionProperty $property,

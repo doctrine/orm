@@ -28,7 +28,7 @@ class EntityPersisterMock extends BasicEntityPersister
     /** @var int|null */
     private $mockIdGeneratorType;
 
-    /** @var array */
+    /** @psalm-var list<array{generatedId: int, entity: object}> */
     private $postInsertIds = [];
 
     /** @var bool */
@@ -57,7 +57,7 @@ class EntityPersisterMock extends BasicEntityPersister
     }
 
     /**
-     * @return array
+     * @psalm-return list<array{generatedId: int, entity: object}>
      */
     public function executeInserts(): array
     {

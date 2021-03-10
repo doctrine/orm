@@ -313,8 +313,8 @@ class BasicEntityPersister implements EntityPersister
      * by the preceding INSERT statement and assigns it back in to the
      * entities version field.
      *
-     * @param object $entity
-     * @param array  $id
+     * @param object  $entity
+     * @param mixed[] $id
      *
      * @return void
      */
@@ -359,6 +359,8 @@ class BasicEntityPersister implements EntityPersister
     }
 
     /**
+     * @param mixed[] $id
+     *
      * @return int[]|null[]|string[]
      *
      * @psalm-return list<(int|string|null)>
@@ -974,17 +976,18 @@ class BasicEntityPersister implements EntityPersister
     }
 
     /**
-     * @param array    $assoc
-     * @param object   $sourceEntity
-     * @param int|null $offset
-     * @param int|null $limit
-     *
      * @return \Doctrine\DBAL\Driver\Statement
      *
      * @throws MappingException
+     *
+     * @psalm-param array<string, mixed> $assoc
      */
-    private function getManyToManyStatement(array $assoc, $sourceEntity, $offset = null, $limit = null)
-    {
+    private function getManyToManyStatement(
+        array $assoc,
+        object $sourceEntity,
+        ?int $offset = null,
+        ?int $limit = null
+    ) {
         $this->switchPersisterContext($offset, $limit);
 
         $sourceClass = $this->em->getClassMetadata($assoc['sourceEntity']);
@@ -1726,10 +1729,10 @@ class BasicEntityPersister implements EntityPersister
      * Subclasses are supposed to override this method if they intend to change
      * or alter the criteria by which entities are selected.
      *
-     * @param array      $criteria
-     * @param array|null $assoc
-     *
      * @return string
+     *
+     * @psalm-param array<string, mixed> $criteria
+     * @psalm-param array<string, mixed>|null $assoc
      */
     protected function getSelectConditionSQL(array $criteria, $assoc = null)
     {
