@@ -2054,7 +2054,8 @@ class UnitOfWork implements PropertyChangedListener
         $entityVersion      = $reflField->getValue($entity);
 
         // Throw exception if versions don't match.
-        if ($managedCopyVersion === $entityVersion) {
+        // phpcs:ignore SlevomatCodingStandard.Operators.DisallowEqualOperators.DisallowedEqualOperator
+        if ($managedCopyVersion == $entityVersion) {
             return;
         }
 
@@ -2479,11 +2480,8 @@ class UnitOfWork implements PropertyChangedListener
 
                 $entityVersion = $class->reflFields[$class->versionField]->getValue($entity);
 
-                if ($entityVersion instanceof DateTimeInterface && $lockVersion instanceof DateTimeInterface) {
-                    if ($entityVersion->getTimestamp() !== $lockVersion->getTimestamp()) {
-                        throw OptimisticLockException::lockFailedVersionMismatch($entity, $lockVersion, $entityVersion);
-                    }
-                } elseif ($entityVersion !== $lockVersion) {
+                // phpcs:ignore SlevomatCodingStandard.Operators.DisallowEqualOperators.DisallowedNotEqualOperator
+                if ($entityVersion != $lockVersion) {
                     throw OptimisticLockException::lockFailedVersionMismatch($entity, $lockVersion, $entityVersion);
                 }
 
