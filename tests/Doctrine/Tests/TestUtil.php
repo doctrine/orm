@@ -6,9 +6,17 @@ namespace Doctrine\Tests;
 
 use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\DriverManager;
+use UnexpectedValueException;
 
 use function explode;
-use function unlink;
+use function fwrite;
+use function get_class;
+use function sprintf;
+use function strlen;
+use function strpos;
+use function substr;
+
+use const STDERR;
 
 /**
  * TestUtil is a class with static utility methods used during tests.
@@ -43,7 +51,17 @@ class TestUtil
      */
     public static function getConnection(): Connection
     {
-        $conn = DriverManager::getConnection(self::getConnectionParams());
+        $params = self::getConnectionParams();
+        $conn   = DriverManager::getConnection($params);
+        // Note, writes direct to STDERR to prevent phpunit detecting output - otherwise this would cause either an
+        // "unexpected output" warning or a failure on the first test case to call this method.
+        fwrite(
+            STDERR,
+            sprintf(
+                "\nUsing DB driver %s\n",
+                get_class($conn->getDriver())
+            )
+        );
 
         self::addDbEventSubscribers($conn);
 
@@ -59,37 +77,6 @@ class TestUtil
      * @psalm-return array<string, mixed>
      */
     private static function getConnectionParams()
-    {
-        if (self::hasRequiredConnectionParams()) {
-            return self::getSpecifiedConnectionParams();
-        }
-
-        return self::getFallbackConnectionParams();
-    }
-
-    private static function hasRequiredConnectionParams(): bool
-    {
-        return isset(
-            $GLOBALS['db_type'],
-            $GLOBALS['db_username'],
-            $GLOBALS['db_password'],
-            $GLOBALS['db_host'],
-            $GLOBALS['db_name'],
-            $GLOBALS['db_port']
-        )
-        && isset(
-            $GLOBALS['tmpdb_type'],
-            $GLOBALS['tmpdb_username'],
-            $GLOBALS['tmpdb_password'],
-            $GLOBALS['tmpdb_host'],
-            $GLOBALS['tmpdb_port']
-        );
-    }
-
-    /**
-     * @psalm-return array<string, mixed>
-     */
-    private static function getSpecifiedConnectionParams()
     {
         $realDbParams = self::getParamsForMainConnection();
 
@@ -127,24 +114,6 @@ class TestUtil
         return $realDbParams;
     }
 
-    /**
-     * @psalm-return array<string, mixed>
-     */
-    private static function getFallbackConnectionParams()
-    {
-        $params = [
-            'driver' => 'pdo_sqlite',
-            'memory' => true,
-        ];
-
-        if (isset($GLOBALS['db_path'])) {
-            $params['path'] = $GLOBALS['db_path'];
-            unlink($GLOBALS['db_path']);
-        }
-
-        return $params;
-    }
-
     private static function addDbEventSubscribers(Connection $conn): void
     {
         if (isset($GLOBALS['db_event_subscribers'])) {
@@ -161,28 +130,14 @@ class TestUtil
      */
     private static function getParamsForTemporaryConnection()
     {
-        $connectionParams = [
-            'driver' => $GLOBALS['tmpdb_type'],
-            'user' => $GLOBALS['tmpdb_username'],
-            'password' => $GLOBALS['tmpdb_password'],
-            'host' => $GLOBALS['tmpdb_host'],
-            'dbname' => null,
-            'port' => $GLOBALS['tmpdb_port'],
-        ];
-
-        if (isset($GLOBALS['tmpdb_name'])) {
-            $connectionParams['dbname'] = $GLOBALS['tmpdb_name'];
+        if (isset($GLOBALS['tmpdb_driver'])) {
+            return self::mapConnectionParameters($GLOBALS, 'tmpdb_');
         }
 
-        if (isset($GLOBALS['tmpdb_server'])) {
-            $connectionParams['server'] = $GLOBALS['tmpdb_server'];
-        }
+        $parameters = self::mapConnectionParameters($GLOBALS, 'db_');
+        unset($parameters['dbname']);
 
-        if (isset($GLOBALS['tmpdb_unix_socket'])) {
-            $connectionParams['unix_socket'] = $GLOBALS['tmpdb_unix_socket'];
-        }
-
-        return $connectionParams;
+        return $parameters;
     }
 
     /**
@@ -190,23 +145,57 @@ class TestUtil
      */
     private static function getParamsForMainConnection()
     {
-        $connectionParams = [
-            'driver' => $GLOBALS['db_type'],
-            'user' => $GLOBALS['db_username'],
-            'password' => $GLOBALS['db_password'],
-            'host' => $GLOBALS['db_host'],
-            'dbname' => $GLOBALS['db_name'],
-            'port' => $GLOBALS['db_port'],
-        ];
-
-        if (isset($GLOBALS['db_server'])) {
-            $connectionParams['server'] = $GLOBALS['db_server'];
+        if (! isset($GLOBALS['db_driver'])) {
+            throw new UnexpectedValueException(
+                'You must provide database connection params including a db_driver value. See phpunit.xml.dist for details'
+            );
         }
 
-        if (isset($GLOBALS['db_unix_socket'])) {
-            $connectionParams['unix_socket'] = $GLOBALS['db_unix_socket'];
+        return self::mapConnectionParameters($GLOBALS, 'db_');
+    }
+
+    /**
+     * @param array<string,mixed> $configuration
+     *
+     * @return array<string,mixed>
+     */
+    private static function mapConnectionParameters(array $configuration, string $prefix): array
+    {
+        $parameters = [];
+
+        foreach (
+            [
+                'driver',
+                'user',
+                'password',
+                'host',
+                'dbname',
+                'port',
+                'server',
+                'memory',
+                'ssl_key',
+                'ssl_cert',
+                'ssl_ca',
+                'ssl_capath',
+                'ssl_cipher',
+                'unix_socket',
+            ] as $parameter
+        ) {
+            if (! isset($configuration[$prefix . $parameter])) {
+                continue;
+            }
+
+            $parameters[$parameter] = $configuration[$prefix . $parameter];
         }
 
-        return $connectionParams;
+        foreach ($configuration as $param => $value) {
+            if (strpos($param, $prefix . 'driver_option_') !== 0) {
+                continue;
+            }
+
+            $parameters['driverOptions'][substr($param, strlen($prefix . 'driver_option_'))] = $value;
+        }
+
+        return $parameters;
     }
 }
