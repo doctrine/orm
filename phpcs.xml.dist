@@ -260,4 +260,12 @@
         <exclude-pattern>tests/Doctrine/Tests/ORM/Functional/Ticket/DDC1885Test.php</exclude-pattern>
         <exclude-pattern>tests/Doctrine/Tests/ORM/Functional/Ticket/DDC1843Test.php</exclude-pattern>
     </rule>
+
+    <rule ref="PSR2.ControlStructures.SwitchDeclaration.TerminatingComment">
+        <!--
+            Remove when upgrading to squizlabs/php_codesniffer 3.6.0
+            https://github.com/squizlabs/PHP_CodeSniffer/pull/3186
+        -->
+        <exclude-pattern>lib/Doctrine/ORM/Query/Parser.php</exclude-pattern>
+    </rule>
 </ruleset>
