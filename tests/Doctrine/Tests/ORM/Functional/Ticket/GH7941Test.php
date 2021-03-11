@@ -14,12 +14,12 @@ use function strlen;
 final class GH7941Test extends OrmFunctionalTestCase
 {
     private const PRODUCTS = [
-        ['name' => 'Test 1', 'price' => '100', 'square_root' => '/^10(\.0+)?$/'],
-        ['name' => 'Test 2', 'price' => '100', 'square_root' => '/^10(\.0+)?$/'],
-        ['name' => 'Test 3', 'price' => '100', 'square_root' => '/^10(\.0+)?$/'],
-        ['name' => 'Test 4', 'price' => '25', 'square_root' => '/^5(\.0+)?$/'],
-        ['name' => 'Test 5', 'price' => '25', 'square_root' => '/^5(\.0+)?$/'],
-        ['name' => 'Test 6', 'price' => '-25', 'square_root' => '/^5(\.0+)?$/'],
+        ['name' => 'Test 1', 'price' => '100', 'square_root' => 10],
+        ['name' => 'Test 2', 'price' => '100', 'square_root' => 10],
+        ['name' => 'Test 3', 'price' => '100', 'square_root' => 10],
+        ['name' => 'Test 4', 'price' => '25', 'square_root' => 5],
+        ['name' => 'Test 5', 'price' => '25', 'square_root' => 5],
+        ['name' => 'Test 6', 'price' => '-25', 'square_root' => 5],
     ];
 
     protected function setUp(): void
@@ -51,7 +51,11 @@ final class GH7941Test extends OrmFunctionalTestCase
 
         self::assertSame(6, $result['count']);
         self::assertSame('325', $result['sales']);
-        self::assertRegExp('/^54\.16+7$/', $result['average']);
+
+        // Driver return type and precision is determined by the underlying php extension, most seem to return a string.
+        // pdo_mysql and mysqli both currently return '54.1667' so this is the maximum precision we can assert.
+        // See https://github.com/doctrine/orm/pull/8532#pullrequestreview-610037209
+        self::assertEqualsWithDelta(54.1667, $result['average'], 0.0001);
 
         $query = $this->_em->createQuery(
             'SELECT
@@ -66,7 +70,11 @@ final class GH7941Test extends OrmFunctionalTestCase
 
             self::assertSame(ltrim($product['price'], '-'), $item['absolute']);
             self::assertSame(strlen($product['name']), $item['length']);
-            self::assertRegExp($product['square_root'], $item['square_root']);
+
+            // Driver return types for the `square_root` column are inconsistent depending on the underlying
+            // database driver. Most return string (though some '10' and some '10.000000000000000') but at least mysqli
+            // returns a float.
+            self::assertEqualsWithDelta($product['square_root'], $item['square_root'], 0.00000001);
         }
     }
 }
