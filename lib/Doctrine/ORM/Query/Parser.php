@@ -52,6 +52,7 @@ use Doctrine\ORM\Query\AST\JoinAssociationPathExpression;
 use Doctrine\ORM\Query\AST\LikeExpression;
 use Doctrine\ORM\Query\AST\Literal;
 use Doctrine\ORM\Query\AST\NewObjectExpression;
+use Doctrine\ORM\Query\AST\Node;
 use Doctrine\ORM\Query\AST\NullComparisonExpression;
 use Doctrine\ORM\Query\AST\NullIfExpression;
 use Doctrine\ORM\Query\AST\OrderByClause;
@@ -2571,6 +2572,8 @@ class Parser
      *      InExpression | NullComparisonExpression | ExistsExpression |
      *      EmptyCollectionComparisonExpression | CollectionMemberExpression |
      *      InstanceOfExpression
+     *
+     * @return Node
      */
     public function SimpleConditionalExpression()
     {
@@ -2866,7 +2869,8 @@ class Parser
     {
         $sign = null;
 
-        if (($isPlus = $this->lexer->isNextToken(Lexer::T_PLUS)) || $this->lexer->isNextToken(Lexer::T_MINUS)) {
+        $isPlus = $this->lexer->isNextToken(Lexer::T_PLUS);
+        if ($isPlus || $this->lexer->isNextToken(Lexer::T_MINUS)) {
             $this->match($isPlus ? Lexer::T_PLUS : Lexer::T_MINUS);
             $sign = $isPlus;
         }
@@ -2887,6 +2891,8 @@ class Parser
      *          | FunctionsReturningNumerics | AggregateExpression | FunctionsReturningStrings
      *          | FunctionsReturningDatetime | IdentificationVariable | ResultVariable
      *          | InputParameter | CaseExpression
+     *
+     * @return Node
      */
     public function ArithmeticPrimary()
     {
@@ -2968,6 +2974,8 @@ class Parser
 
     /**
      * StringPrimary ::= StateFieldPathExpression | string | InputParameter | FunctionsReturningStrings | AggregateExpression | CaseExpression
+     *
+     * @return Node
      */
     public function StringPrimary()
     {

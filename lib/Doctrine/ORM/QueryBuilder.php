@@ -693,11 +693,12 @@ class QueryBuilder
      * The available parts are: 'select', 'from', 'join', 'set', 'where',
      * 'groupBy', 'having' and 'orderBy'.
      *
-     * @param string       $dqlPartName The DQL part name.
-     * @param object|array $dqlPart     An Expr object.
-     * @param bool         $append      Whether to append (true) or replace (false).
+     * @param string $dqlPartName The DQL part name.
+     * @param bool   $append      Whether to append (true) or replace (false).
      *
      * @return self
+     *
+     * @psalm-param string|object|list<string>|array{join: array<int|string, object>} $dqlPart     An Expr object.
      */
     public function add($dqlPartName, $dqlPart, $append = false)
     {
@@ -1450,12 +1451,9 @@ class QueryBuilder
     }
 
     /**
-     * @param string $queryPartName
-     * @param array  $options
-     *
-     * @return string
+     * @psalm-param array<string, mixed> $options
      */
-    private function getReducedDQLQueryPart($queryPartName, $options = [])
+    private function getReducedDQLQueryPart(string $queryPartName, array $options = []): string
     {
         $queryPart = $this->getDQLPart($queryPartName);
 
@@ -1471,9 +1469,9 @@ class QueryBuilder
     /**
      * Resets DQL parts.
      *
-     * @param array|null $parts
-     *
      * @return self
+     *
+     * @psalm-param list<string>|null $parts
      */
     public function resetDQLParts($parts = null)
     {

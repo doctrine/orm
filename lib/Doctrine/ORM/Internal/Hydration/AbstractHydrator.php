@@ -321,15 +321,15 @@ abstract class AbstractHydrator
      * field names during this procedure as well as any necessary conversions on
      * the values applied. Scalar values are kept in a specific key 'scalars'.
      *
-     * @param mixed[] $data                SQL Result Row.
-     * @param array   &$nonemptyComponents Does this DQL-Alias has at least one non NULL value?
+     * @param mixed[] $data SQL Result Row.
      *
      * @return array<string, array<string, mixed>> An array with all the fields
      *                                             (name => value) of the data
      *                                             row, grouped by their
      *                                             component alias.
      *
-     * @psalm-param array<string, string> &$id                 Dql-Alias => ID-Hash.
+     * @psalm-param array<string, string> $id                 Dql-Alias => ID-Hash.
+     * @psalm-param array<string, bool>   $nonemptyComponents Does this DQL-Alias has at least one non NULL value?
      * @psalm-return array{
      *                   data: array<array-key, array>,
      *                   newObjects?: array<array-key, array{
@@ -414,9 +414,8 @@ abstract class AbstractHydrator
      * values according to their types. The resulting row has the same number
      * of elements as before.
      *
-     * @param array $data
-     *
-     * @return array The processed row.
+     * @psalm-param array<string, mixed> $data
+     * @psalm-return array<string, mixed> The processed row.
      */
     protected function gatherScalarRowData(&$data)
     {
@@ -450,7 +449,7 @@ abstract class AbstractHydrator
      *
      * @param string $key Column name
      *
-     * @return array|null
+     * @psalm-return array<string, mixed>|null
      */
     protected function hydrateColumnInfo($key)
     {

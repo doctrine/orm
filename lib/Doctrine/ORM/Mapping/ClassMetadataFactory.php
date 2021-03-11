@@ -41,6 +41,7 @@ use ReflectionClass;
 use ReflectionException;
 
 use function array_map;
+use function assert;
 use function class_exists;
 use function count;
 use function end;
@@ -119,8 +120,6 @@ class ClassMetadataFactory extends AbstractClassMetadataFactory
      */
     protected function doLoadMetadata($class, $parent, $rootEntityFound, array $nonSuperclassParents)
     {
-        /** @var ClassMetadata $class */
-        /** @var ClassMetadata $parent */
         if ($parent) {
             $class->setInheritanceType($parent->inheritanceType);
             $class->setDiscriminatorColumn($parent->discriminatorColumn);
@@ -728,7 +727,7 @@ class ClassMetadataFactory extends AbstractClassMetadataFactory
      */
     protected function wakeupReflection(ClassMetadataInterface $class, ReflectionService $reflService)
     {
-        /** @var ClassMetadata $class */
+        assert($class instanceof ClassMetadata);
         $class->wakeupReflection($reflService);
     }
 
@@ -737,7 +736,7 @@ class ClassMetadataFactory extends AbstractClassMetadataFactory
      */
     protected function initializeReflection(ClassMetadataInterface $class, ReflectionService $reflService)
     {
-        /** @var ClassMetadata $class */
+        assert($class instanceof ClassMetadata);
         $class->initializeReflection($reflService);
     }
 
