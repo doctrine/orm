@@ -249,6 +249,7 @@
     </rule>
     <rule ref="Squiz.NamingConventions.ValidVariableName.NotCamelCaps">
         <!-- accessing public property __isInitialized__ of a proxy -->
+        <exclude-pattern>lib/Doctrine/ORM/Internal/Hydration/ObjectHydrator.php</exclude-pattern>
         <exclude-pattern>lib/Doctrine/ORM/UnitOfWork.php</exclude-pattern>
         <exclude-pattern>tests/Doctrine/Tests/ORM/Functional/BasicFunctionalTest.php</exclude-pattern>
         <exclude-pattern>tests/Doctrine/Tests/ORM/Functional/DefaultValuesTest.php</exclude-pattern>
