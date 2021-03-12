@@ -268,4 +268,13 @@
         -->
         <exclude-pattern>lib/Doctrine/ORM/Query/Parser.php</exclude-pattern>
     </rule>
+
+    <rule ref="Generic.CodeAnalysis.EmptyStatement.DetectedElse">
+        <!-- The missing code needs to be implemented someday -->
+        <exclude-pattern>lib/Doctrine/ORM/Id/TableGenerator.php</exclude-pattern>
+    </rule>
+    <rule ref="Generic.CodeAnalysis.EmptyStatement.DetectedIf">
+        <!-- The missing code needs to be implemented someday -->
+        <exclude-pattern>lib/Doctrine/ORM/Id/TableGenerator.php</exclude-pattern>
+    </rule>
 </ruleset>
