@@ -191,6 +191,9 @@
     </rule>
 
     <rule ref="SlevomatCodingStandard.Classes.UnusedPrivateElements.UnusedMethod">
+        <!-- https://github.com/slevomat/coding-standard/issues/1094 -->
+        <exclude-pattern>lib/Doctrine/ORM/Mapping/ClassMetadataFactory.php</exclude-pattern>
+        <exclude-pattern>lib/Doctrine/ORM/Mapping/Reflection/ReflectionPropertiesGetter.php</exclude-pattern>
         <exclude-pattern>lib/Doctrine/ORM/Tools/EntityGenerator.php</exclude-pattern>
     </rule>
 
