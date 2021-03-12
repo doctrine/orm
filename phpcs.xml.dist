@@ -280,4 +280,8 @@
         <!-- The missing code needs to be implemented someday -->
         <exclude-pattern>lib/Doctrine/ORM/Id/TableGenerator.php</exclude-pattern>
     </rule>
+    <rule ref="Squiz.Commenting.FunctionComment.ExtraParamComment">
+        <!-- https://github.com/doctrine/orm/issues/8537 -->
+        <exclude-pattern>lib/Doctrine/ORM/QueryBuilder.php</exclude-pattern>
+    </rule>
 </ruleset>
