@@ -56,7 +56,11 @@
     </rule>
 
     <rule ref="SlevomatCodingStandard.TypeHints.PropertyTypeHint.MissingTraversableTypeHintSpecification">
-        <exclude-pattern>lib/Doctrine/ORM/Annotation/*</exclude-pattern>
+        <!-- https://github.com/doctrine/annotations/issues/129 -->
+        <exclude-pattern>lib/Doctrine/ORM/Mapping/Column.php</exclude-pattern>
+        <exclude-pattern>lib/Doctrine/ORM/Mapping/Index.php</exclude-pattern>
+        <exclude-pattern>lib/Doctrine/ORM/Mapping/Table.php</exclude-pattern>
+        <exclude-pattern>lib/Doctrine/ORM/Mapping/UniqueConstraint.php</exclude-pattern>
     </rule>
 
     <rule ref="SlevomatCodingStandard.Operators.DisallowEqualOperators.DisallowedNotEqualOperator">
