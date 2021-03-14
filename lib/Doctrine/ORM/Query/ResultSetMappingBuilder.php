@@ -84,12 +84,13 @@ class ResultSetMappingBuilder extends ResultSetMapping
     /**
      * Adds a root entity and all of its fields to the result set.
      *
-     * @param string   $class          The class name of the root entity.
-     * @param string   $alias          The unique alias to use for the root entity.
-     * @param array    $renamedColumns Columns that have been renamed (tableColumnName => queryColumnName).
-     * @param int|null $renameMode     One of the COLUMN_RENAMING_* constants or array for BC reasons (CUSTOM).
+     * @param string   $class      The class name of the root entity.
+     * @param string   $alias      The unique alias to use for the root entity.
+     * @param int|null $renameMode One of the COLUMN_RENAMING_* constants or array for BC reasons (CUSTOM).
      *
      * @return void
+     *
+     * @psalm-param array<string, string> $renamedColumns Columns that have been renamed (tableColumnName => queryColumnName).
      */
     public function addRootEntityFromClassMetadata($class, $alias, $renamedColumns = [], $renameMode = null)
     {
@@ -103,15 +104,16 @@ class ResultSetMappingBuilder extends ResultSetMapping
     /**
      * Adds a joined entity and all of its fields to the result set.
      *
-     * @param string   $class          The class name of the joined entity.
-     * @param string   $alias          The unique alias to use for the joined entity.
-     * @param string   $parentAlias    The alias of the entity result that is the parent of this joined result.
-     * @param string   $relation       The association field that connects the parent entity result
-     *                                 with the joined entity result.
-     * @param array    $renamedColumns Columns that have been renamed (tableColumnName => queryColumnName).
-     * @param int|null $renameMode     One of the COLUMN_RENAMING_* constants or array for BC reasons (CUSTOM).
+     * @param string   $class       The class name of the joined entity.
+     * @param string   $alias       The unique alias to use for the joined entity.
+     * @param string   $parentAlias The alias of the entity result that is the parent of this joined result.
+     * @param string   $relation    The association field that connects the parent entity result
+     *                              with the joined entity result.
+     * @param int|null $renameMode  One of the COLUMN_RENAMING_* constants or array for BC reasons (CUSTOM).
      *
      * @return void
+     *
+     * @psalm-param array<string, string> $renamedColumns Columns that have been renamed (tableColumnName => queryColumnName).
      */
     public function addJoinedEntityFromClassMetadata($class, $alias, $parentAlias, $relation, $renamedColumns = [], $renameMode = null)
     {
@@ -127,11 +129,12 @@ class ResultSetMappingBuilder extends ResultSetMapping
      *
      * @param string $class
      * @param string $alias
-     * @param array  $columnAliasMap
      *
      * @return void
      *
      * @throws InvalidArgumentException
+     *
+     * @psalm-param array<string, string> $columnAliasMap
      */
     protected function addAllClassFields($class, $alias, $columnAliasMap = [])
     {
@@ -179,7 +182,7 @@ class ResultSetMappingBuilder extends ResultSetMapping
         }
     }
 
-    private function isInheritanceSupported(ClassMetadataInfo $classMetadata)
+    private function isInheritanceSupported(ClassMetadataInfo $classMetadata): bool
     {
         if (
             $classMetadata->isInheritanceTypeSingleTable()
@@ -196,9 +199,10 @@ class ResultSetMappingBuilder extends ResultSetMapping
      *
      * @param string $columnName
      * @param int    $mode
-     * @param array  $customRenameColumns
      *
      * @return string
+     *
+     * @psalm-param array<string, string>  $customRenameColumns
      */
     private function getColumnAlias($columnName, $mode, array $customRenameColumns)
     {
@@ -221,10 +225,10 @@ class ResultSetMappingBuilder extends ResultSetMapping
      *
      * @param string $className
      * @param int    $mode
-     * @param array  $customRenameColumns
      *
      * @return string[]
      *
+     * @psalm-param array<string, string> $customRenameColumns
      * @psalm-return array<array-key, string>
      */
     private function getColumnAliasMap($className, $mode, array $customRenameColumns)
@@ -426,9 +430,9 @@ class ResultSetMappingBuilder extends ResultSetMapping
      * Works only for all the entity results. The select parts for scalar
      * expressions have to be written manually.
      *
-     * @param array $tableAliases
-     *
      * @return string
+     *
+     * @psalm-param array<string, string> $tableAliases
      */
     public function generateSelectClause($tableAliases = [])
     {

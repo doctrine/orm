@@ -56,7 +56,11 @@
     </rule>
 
     <rule ref="SlevomatCodingStandard.TypeHints.PropertyTypeHint.MissingTraversableTypeHintSpecification">
-        <exclude-pattern>lib/Doctrine/ORM/Annotation/*</exclude-pattern>
+        <!-- https://github.com/doctrine/annotations/issues/129 -->
+        <exclude-pattern>lib/Doctrine/ORM/Mapping/Column.php</exclude-pattern>
+        <exclude-pattern>lib/Doctrine/ORM/Mapping/Index.php</exclude-pattern>
+        <exclude-pattern>lib/Doctrine/ORM/Mapping/Table.php</exclude-pattern>
+        <exclude-pattern>lib/Doctrine/ORM/Mapping/UniqueConstraint.php</exclude-pattern>
     </rule>
 
     <rule ref="SlevomatCodingStandard.Operators.DisallowEqualOperators.DisallowedNotEqualOperator">
@@ -191,6 +195,9 @@
     </rule>
 
     <rule ref="SlevomatCodingStandard.Classes.UnusedPrivateElements.UnusedMethod">
+        <!-- https://github.com/slevomat/coding-standard/issues/1094 -->
+        <exclude-pattern>lib/Doctrine/ORM/Mapping/ClassMetadataFactory.php</exclude-pattern>
+        <exclude-pattern>lib/Doctrine/ORM/Mapping/Reflection/ReflectionPropertiesGetter.php</exclude-pattern>
         <exclude-pattern>lib/Doctrine/ORM/Tools/EntityGenerator.php</exclude-pattern>
     </rule>
 
@@ -246,6 +253,7 @@
     </rule>
     <rule ref="Squiz.NamingConventions.ValidVariableName.NotCamelCaps">
         <!-- accessing public property __isInitialized__ of a proxy -->
+        <exclude-pattern>lib/Doctrine/ORM/Internal/Hydration/ObjectHydrator.php</exclude-pattern>
         <exclude-pattern>lib/Doctrine/ORM/UnitOfWork.php</exclude-pattern>
         <exclude-pattern>tests/Doctrine/Tests/ORM/Functional/BasicFunctionalTest.php</exclude-pattern>
         <exclude-pattern>tests/Doctrine/Tests/ORM/Functional/DefaultValuesTest.php</exclude-pattern>
@@ -259,5 +267,26 @@
         <!-- Using @group and Group entity in the same file -->
         <exclude-pattern>tests/Doctrine/Tests/ORM/Functional/Ticket/DDC1885Test.php</exclude-pattern>
         <exclude-pattern>tests/Doctrine/Tests/ORM/Functional/Ticket/DDC1843Test.php</exclude-pattern>
+    </rule>
+
+    <rule ref="PSR2.ControlStructures.SwitchDeclaration.TerminatingComment">
+        <!--
+            Remove when upgrading to squizlabs/php_codesniffer 3.6.0
+            https://github.com/squizlabs/PHP_CodeSniffer/pull/3186
+        -->
+        <exclude-pattern>lib/Doctrine/ORM/Query/Parser.php</exclude-pattern>
+    </rule>
+
+    <rule ref="Generic.CodeAnalysis.EmptyStatement.DetectedElse">
+        <!-- The missing code needs to be implemented someday -->
+        <exclude-pattern>lib/Doctrine/ORM/Id/TableGenerator.php</exclude-pattern>
+    </rule>
+    <rule ref="Generic.CodeAnalysis.EmptyStatement.DetectedIf">
+        <!-- The missing code needs to be implemented someday -->
+        <exclude-pattern>lib/Doctrine/ORM/Id/TableGenerator.php</exclude-pattern>
+    </rule>
+    <rule ref="Squiz.Commenting.FunctionComment.ExtraParamComment">
+        <!-- https://github.com/doctrine/orm/issues/8537 -->
+        <exclude-pattern>lib/Doctrine/ORM/QueryBuilder.php</exclude-pattern>
     </rule>
 </ruleset>
