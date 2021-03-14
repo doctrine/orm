@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Doctrine\Tests\ORM\Functional;
 
 use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Proxy\Proxy;
 use Doctrine\ORM\Tools\SchemaTool;
 use Doctrine\Tests\OrmFunctionalTestCase;
@@ -239,25 +240,35 @@ class OneToOneEagerLoadingTest extends OrmFunctionalTestCase
 class Train
 {
     /**
-     * @id @column(type="integer") @generatedValue
      * @var int
+     * @Id
+     * @Column(type="integer")
+     * @GeneratedValue
      */
     public $id;
+
     /**
      * Owning side
      *
+     * @var TrainDriver
      * @OneToOne(targetEntity="TrainDriver", inversedBy="train", fetch="EAGER", cascade={"persist"})
      * @JoinColumn(nullable=true)
      */
     public $driver;
+
     /**
      * Owning side
      *
+     * @var TrainOwner
      * @OneToOne(targetEntity="TrainOwner", inversedBy="train", fetch="EAGER", cascade={"persist"})
      * @JoinColumn(nullable=false)
      */
     public $owner;
-    /** @oneToMany(targetEntity="Waggon", mappedBy="train", cascade={"persist"}) */
+
+    /**
+     * @psalm-var Collection<int, Waggon>
+     * @OneToMany(targetEntity="Waggon", mappedBy="train", cascade={"persist"})
+     */
     public $waggons;
 
     public function __construct(TrainOwner $owner)
@@ -297,11 +308,17 @@ class TrainDriver
      * @GeneratedValue
      */
     public $id;
-    /** @column(type="string") */
+
+    /**
+     * @var string
+     * @column(type="string")
+     */
     public $name;
+
     /**
      * Inverse side
      *
+     * @var Train
      * @OneToOne(targetEntity="Train", mappedBy="driver", fetch="EAGER")
      */
     public $train;
@@ -329,16 +346,22 @@ class TrainOwner
      * @GeneratedValue
      */
     public $id;
-    /** @column(type="string") */
+
+    /**
+     * @var string
+     * @column(type="string")
+     */
     public $name;
+
     /**
      * Inverse side
      *
+     * @var Train
      * @OneToOne(targetEntity="Train", mappedBy="owner", fetch="EAGER")
      */
     public $train;
 
-    public function __construct($name)
+    public function __construct(string $name)
     {
         $this->name = $name;
     }
@@ -354,7 +377,12 @@ class TrainOwner
  */
 class Waggon
 {
-    /** @id @generatedValue @column(type="integer") */
+    /**
+     * @var int
+     * @id
+     * @generatedValue
+     * @column(type="integer")
+     */
     public $id;
     /**
      * @var Train
@@ -374,7 +402,12 @@ class Waggon
  */
 class TrainOrder
 {
-    /** @id @generatedValue @column(type="integer") */
+    /**
+     * @var int
+     * @id
+     * @generatedValue
+     * @column(type="integer")
+     */
     public $id;
 
     /**

@@ -10,21 +10,24 @@ namespace Doctrine\Tests\Models\Cache;
  */
 class AttractionContactInfo extends AttractionInfo
 {
-    /** @Column(unique=true) */
+    /**
+     * @var string
+     * @Column(unique=true)
+     */
     protected $fone;
 
-    public function __construct($fone, Attraction $attraction)
+    public function __construct(string $fone, Attraction $attraction)
     {
         $this->setAttraction($attraction);
         $this->setFone($fone);
     }
 
-    public function getFone()
+    public function getFone(): string
     {
         return $this->fone;
     }
 
-    public function setFone($fone): void
+    public function setFone(string $fone): void
     {
         $this->fone = $fone;
     }

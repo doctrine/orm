@@ -47,7 +47,7 @@ class ParserResult
     /**
      * The mappings of DQL parameter names/positions to SQL parameter positions.
      *
-     * @var array
+     * @psalm-var array<string|int, list<int>>
      */
     private $_parameterMappings = [];
 
@@ -119,7 +119,7 @@ class ParserResult
     /**
      * Gets all DQL to SQL parameter mappings.
      *
-     * @return array The parameter mappings.
+     * @psalm-return array<int|string, list<int>> The parameter mappings.
      */
     public function getParameterMappings()
     {
@@ -131,7 +131,7 @@ class ParserResult
      *
      * @param string|int $dqlPosition The name or position of the DQL parameter.
      *
-     * @return array The positions of the corresponding SQL parameters.
+     * @psalm-return list<int> The positions of the corresponding SQL parameters.
      */
     public function getSqlParameterPositions($dqlPosition)
     {

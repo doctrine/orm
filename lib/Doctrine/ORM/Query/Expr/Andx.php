@@ -38,8 +38,11 @@ class Andx extends Composite
         self::class,
     ];
 
+    /** @psalm-var list<string|Comparison|Func|Orx|self> */
+    protected $parts = [];
+
     /**
-     * @return array
+     * @psalm-return list<string|Comparison|Func|Orx|self>
      */
     public function getParts()
     {

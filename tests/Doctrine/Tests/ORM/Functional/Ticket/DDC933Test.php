@@ -58,7 +58,7 @@ class DDC933Test extends OrmFunctionalTestCase
      */
     private function assertManagerCanBeUpdatedOnAnotherConnection(int $id, string $newName): void
     {
-        $em = $this->_getEntityManager(TestUtil::getConnection());
+        $em = $this->getEntityManager(TestUtil::getConnection());
 
         $manager = $em->find(CompanyManager::class, $id);
         assert($manager instanceof CompanyManager);

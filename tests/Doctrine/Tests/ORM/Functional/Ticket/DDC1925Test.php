@@ -72,6 +72,7 @@ class DDC1925Product
     private $title;
 
     /**
+     * @psalm-var Collection<int, DDC1925User>
      * @ManyToMany(targetEntity="DDC1925User")
      * @JoinTable(
      *   name="user_purchases",

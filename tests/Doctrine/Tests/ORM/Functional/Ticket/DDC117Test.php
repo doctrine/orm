@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Doctrine\Tests\ORM\Functional\Ticket;
 
+use Doctrine\Deprecations\PHPUnit\VerifyDeprecations;
 use Doctrine\ORM\UnitOfWork;
 use Doctrine\Tests\Models\DDC117\DDC117ApproveChanges;
 use Doctrine\Tests\Models\DDC117\DDC117Article;
@@ -24,10 +25,21 @@ use function get_class;
  */
 class DDC117Test extends OrmFunctionalTestCase
 {
+    use VerifyDeprecations;
+
+    /** @var DDC117Article */
     private $article1;
+
+    /** @var DDC117Article */
     private $article2;
+
+    /** @var DDC117Reference */
     private $reference;
+
+    /** @var DDC117Translation */
     private $translation;
+
+    /** @var DDC117ArticleDetails */
     private $articleDetails;
 
     protected function setUp(): void

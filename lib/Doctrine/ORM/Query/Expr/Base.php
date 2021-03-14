@@ -45,10 +45,10 @@ abstract class Base
     /** @var string */
     protected $postSeparator = ')';
 
-    /** @var string[] */
+    /** @psalm-var list<class-string> */
     protected $allowedClasses = [];
 
-    /** @var mixed[] */
+    /** @psalm-var list<string|object> */
     protected $parts = [];
 
     /**
@@ -60,9 +60,9 @@ abstract class Base
     }
 
     /**
-     * @param array $args
-     *
      * @return static
+     *
+     * @psalm-param list<string|object> $args
      */
     public function addMultiple($args = [])
     {

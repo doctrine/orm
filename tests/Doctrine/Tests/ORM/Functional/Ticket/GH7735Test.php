@@ -95,9 +95,9 @@ class GH7735Engine
     private $id;
 
     /**
+     * @var GH7735Power
      * @OneToOne(targetEntity=GH7735Power::class, mappedBy="engine", cascade={"all"})
      * @Cache("READ_ONLY")
-     * @var GH7735Power
      */
     private $power;
 
@@ -146,9 +146,9 @@ class GH7735Power
     private $id;
 
     /**
+     * @var GH7735Engine
      * @OneToOne(targetEntity=GH7735Engine::class, inversedBy="power")
      * @Cache("READ_ONLY")
-     * @var GH7735Engine
      */
     private $engine;
 

@@ -71,6 +71,7 @@ class DDC211User
     protected $name;
 
     /**
+     * @psalm-var Collection<int, DDC211Group>
      * @ManyToMany(targetEntity="DDC211Group", inversedBy="users")
      *   @JoinTable(name="user_groups",
      *       joinColumns={@JoinColumn(name="user_id", referencedColumnName="id")},
@@ -84,12 +85,15 @@ class DDC211User
         $this->groups = new ArrayCollection();
     }
 
-    public function setName($name): void
+    public function setName(string $name): void
     {
         $this->name = $name;
     }
 
-    public function getGroups()
+    /**
+     * @psalm-return Collection<int, DDC211Group>
+     */
+    public function getGroups(): Collection
     {
         return $this->groups;
     }
@@ -126,12 +130,15 @@ class DDC211Group
         $this->users = new ArrayCollection();
     }
 
-    public function setName($name): void
+    public function setName(string $name): void
     {
         $this->name = $name;
     }
 
-    public function getUsers()
+    /**
+     * @psalm-return Collection<int, DDC211User>
+     */
+    public function getUsers(): Collection
     {
         return $this->users;
     }

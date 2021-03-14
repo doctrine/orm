@@ -10,8 +10,8 @@ we cannot protect you from SQL injection.
 Please read the documentation chapter on Security in Doctrine DBAL and ORM to
 understand the assumptions we make.
 
-- [DBAL Security Page](https://github.com/doctrine/dbal/blob/master/docs/en/reference/security.rst)
-- [ORM Security Page](https://github.com/doctrine/orm/blob/master/docs/en/reference/security.rst)
+- [DBAL Security Page](https://www.doctrine-project.org/projects/doctrine-dbal/en/latest/reference/security.html)
+- [ORM Security Page](https://www.doctrine-project.org/projects/doctrine-orm/en/latest/reference/security.html)
 
 If you find a Security bug in Doctrine, please report it on Jira and change the
 Security Level to "Security Issues". It will be visible to Doctrine Core

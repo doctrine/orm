@@ -60,6 +60,7 @@ class DDC2231EntityY implements ObjectManagerAware
      */
     public $id;
 
+    /** @var ObjectManager */
     public $om;
 
     public function injectObjectManager(ObjectManager $objectManager, ClassMetadata $classMetadata): void
@@ -67,7 +68,7 @@ class DDC2231EntityY implements ObjectManagerAware
         $this->om = $objectManager;
     }
 
-    public function getId()
+    public function getId(): int
     {
         return $this->id;
     }

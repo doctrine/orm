@@ -48,6 +48,7 @@ class SequenceGeneratorTest extends OrmFunctionalTestCase
 class SequenceEntity
 {
     /**
+     * @var int
      * @Id
      * @column(type="integer")
      * @GeneratedValue(strategy="SEQUENCE")

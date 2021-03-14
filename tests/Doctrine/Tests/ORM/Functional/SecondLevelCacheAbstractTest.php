@@ -4,7 +4,9 @@ namespace Doctrine\Tests\ORM\Functional;
 
 use Doctrine\ORM\Cache;
 use Doctrine\Tests\Models\Cache\Address;
+use Doctrine\Tests\Models\Cache\Attraction;
 use Doctrine\Tests\Models\Cache\AttractionContactInfo;
+use Doctrine\Tests\Models\Cache\AttractionInfo;
 use Doctrine\Tests\Models\Cache\AttractionLocationInfo;
 use Doctrine\Tests\Models\Cache\Bar;
 use Doctrine\Tests\Models\Cache\Beach;
@@ -24,15 +26,34 @@ use Doctrine\Tests\OrmFunctionalTestCase;
  */
 abstract class SecondLevelCacheAbstractTest extends OrmFunctionalTestCase
 {
-    protected $people               = [];
-    protected $addresses            = [];
-    protected $countries            = [];
-    protected $states               = [];
-    protected $cities               = [];
-    protected $travels              = [];
-    protected $travelers            = [];
-    protected $attractions          = [];
-    protected $attractionsInfo      = [];
+    /** @psalm-var list<Person> */
+    protected $people = [];
+
+    /** @psalm-var list<Address> */
+    protected $addresses = [];
+
+    /** @psalm-var list<Country> */
+    protected $countries = [];
+
+    /** @psalm-var list<State> */
+    protected $states = [];
+
+    /** @psalm-var list<City> */
+    protected $cities = [];
+
+    /** @psalm-var list<Travel> */
+    protected $travels = [];
+
+    /** @psalm-var list<Traveler> */
+    protected $travelers = [];
+
+    /** @psalm-var list<Attraction> */
+    protected $attractions = [];
+
+    /** @psalm-var list<AttractionInfo> */
+    protected $attractionsInfo = [];
+
+    /** @psalm-var list<TravelerProfile> */
     protected $travelersWithProfile = [];
 
     /** @var Cache */
@@ -254,17 +275,17 @@ abstract class SecondLevelCacheAbstractTest extends OrmFunctionalTestCase
         $this->_em->flush();
     }
 
-    protected function getEntityRegion($className)
+    protected function getEntityRegion(string $className): string
     {
         return $this->cache->getEntityCacheRegion($className)->getName();
     }
 
-    protected function getCollectionRegion($className, $association)
+    protected function getCollectionRegion(string $className, string $association): string
     {
         return $this->cache->getCollectionCacheRegion($className, $association)->getName();
     }
 
-    protected function getDefaultQueryRegionName()
+    protected function getDefaultQueryRegionName(): string
     {
         return $this->cache->getQueryCache()->getRegion()->getName();
     }

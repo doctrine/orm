@@ -16,8 +16,13 @@ use function strstr;
  */
 class OneToManySelfReferentialAssociationTest extends OrmFunctionalTestCase
 {
+    /** @var ECommerceCategory */
     private $parent;
+
+    /** @var ECommerceCategory */
     private $firstChild;
+
+    /** @var ECommerceCategory */
     private $secondChild;
 
     protected function setUp(): void
@@ -76,7 +81,7 @@ class OneToManySelfReferentialAssociationTest extends OrmFunctionalTestCase
 
     public function testEagerLoadsOneToManyAssociation(): void
     {
-        $this->_createFixture();
+        $this->createFixture();
 
         $query  = $this->_em->createQuery('select c1, c2 from Doctrine\Tests\Models\ECommerce\ECommerceCategory c1 join c1.children c2');
         $result = $query->getResult();
@@ -94,7 +99,7 @@ class OneToManySelfReferentialAssociationTest extends OrmFunctionalTestCase
 
     public function testLazyLoadsOneToManyAssociation(): void
     {
-        $this->_createFixture();
+        $this->createFixture();
         $metadata                                           = $this->_em->getClassMetadata(ECommerceCategory::class);
         $metadata->associationMappings['children']['fetch'] = ClassMetadata::FETCH_LAZY;
 
@@ -111,7 +116,7 @@ class OneToManySelfReferentialAssociationTest extends OrmFunctionalTestCase
         $this->assertEquals(' books', strstr($children[1]->getName(), ' books'));
     }
 
-    private function _createFixture(): void
+    private function createFixture(): void
     {
         $this->parent->addChild($this->firstChild);
         $this->parent->addChild($this->secondChild);

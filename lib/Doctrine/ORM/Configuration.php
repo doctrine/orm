@@ -36,6 +36,7 @@ use Doctrine\ORM\Mapping\Driver\AnnotationDriver;
 use Doctrine\ORM\Mapping\EntityListenerResolver;
 use Doctrine\ORM\Mapping\NamingStrategy;
 use Doctrine\ORM\Mapping\QuoteStrategy;
+use Doctrine\ORM\Query\ResultSetMapping;
 use Doctrine\ORM\Repository\DefaultRepositoryFactory;
 use Doctrine\ORM\Repository\RepositoryFactory;
 use Doctrine\Persistence\Mapping\Driver\MappingDriver;
@@ -149,10 +150,11 @@ class Configuration extends \Doctrine\DBAL\Configuration
      * Adds a new default annotation driver with a correctly configured annotation reader. If $useSimpleAnnotationReader
      * is true, the notation `@Entity` will work, otherwise, the notation `@ORM\Entity` will be supported.
      *
-     * @param array $paths
-     * @param bool  $useSimpleAnnotationReader
+     * @param bool $useSimpleAnnotationReader
      *
      * @return AnnotationDriver
+     *
+     * @psalm-param string|list<string> $paths
      */
     public function newDefaultAnnotationDriver($paths = [], $useSimpleAnnotationReader = true)
     {
@@ -207,9 +209,9 @@ class Configuration extends \Doctrine\DBAL\Configuration
     /**
      * Sets the entity alias map.
      *
-     * @param array $entityNamespaces
-     *
      * @return void
+     *
+     * @psalm-param array<string, string> $entityNamespaces
      */
     public function setEntityNamespaces(array $entityNamespaces)
     {
@@ -219,7 +221,7 @@ class Configuration extends \Doctrine\DBAL\Configuration
     /**
      * Retrieves the list of registered entity namespace aliases.
      *
-     * @return array
+     * @psalm-return array<string, string>
      */
     public function getEntityNamespaces()
     {
@@ -348,10 +350,13 @@ class Configuration extends \Doctrine\DBAL\Configuration
      *
      * @param string $name The name of the query.
      *
-     * @return array A tuple with the first element being the SQL string and the second
-     *               element being the ResultSetMapping.
-     *
      * @throws ORMException
+     *
+     * @psalm-return array{string, ResultSetMapping} A tuple with the first
+     *                                               element being the SQL
+     *                                               string and the second
+     *                                               element being the
+     *                                               ResultSetMapping.
      */
     public function getNamedNativeQuery($name)
     {
@@ -439,9 +444,10 @@ class Configuration extends \Doctrine\DBAL\Configuration
      *
      * Any previously added string functions are discarded.
      *
-     * @param array $functions The map of custom DQL string functions.
-     *
      * @return void
+     *
+     * @psalm-param array<string, class-string> $functions The map of custom
+     *                                                     DQL string functions.
      */
     public function setCustomStringFunctions(array $functions)
     {
@@ -491,9 +497,10 @@ class Configuration extends \Doctrine\DBAL\Configuration
      *
      * Any previously added numeric functions are discarded.
      *
-     * @param array $functions The map of custom DQL numeric functions.
-     *
      * @return void
+     *
+     * @psalm-param array<string, class-string> $functions The map of custom
+     *                                                     DQL numeric functions.
      */
     public function setCustomNumericFunctions(array $functions)
     {
@@ -561,7 +568,7 @@ class Configuration extends \Doctrine\DBAL\Configuration
     /**
      * Sets the custom hydrator modes in one pass.
      *
-     * @param array $modes An array of ($modeName => $hydrator).
+     * @param array<string, class-string> $modes An array of ($modeName => $hydrator).
      *
      * @return void
      */
@@ -592,9 +599,10 @@ class Configuration extends \Doctrine\DBAL\Configuration
      * Adds a custom hydration mode.
      *
      * @param string $modeName The hydration mode name.
-     * @param string $hydrator The hydrator class name.
      *
      * @return void
+     *
+     * @psalm-param class-string $hydrator The hydrator class name.
      */
     public function addCustomHydrationMode($modeName, $hydrator)
     {
@@ -816,7 +824,7 @@ class Configuration extends \Doctrine\DBAL\Configuration
     /**
      * Returns query hints, which will be applied to every query in application
      *
-     * @return array
+     * @psalm-return array<string, mixed>
      */
     public function getDefaultQueryHints()
     {
@@ -826,7 +834,7 @@ class Configuration extends \Doctrine\DBAL\Configuration
     /**
      * Sets array of query hints, which will be applied to every query in application
      *
-     * @param array $defaultQueryHints
+     * @psalm-param array<string, mixed> $defaultQueryHints
      */
     public function setDefaultQueryHints(array $defaultQueryHints)
     {

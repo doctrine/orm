@@ -28,9 +28,9 @@ namespace Doctrine\ORM\Mapping\Builder;
 class OneToManyAssociationBuilder extends AssociationBuilder
 {
     /**
-     * @param array $fieldNames
-     *
      * @return static
+     *
+     * @psalm-param list<string> $fieldNames
      */
     public function setOrderBy(array $fieldNames)
     {

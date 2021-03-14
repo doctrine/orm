@@ -81,13 +81,19 @@ class DDC1514EntityA
      * @GeneratedValue
      */
     public $id;
-    /** @Column */
+
+    /**
+     * @var string
+     * @Column
+     */
     public $title;
+
     /**
      * @psalm-var Collection<int, DDC1514EntityB>
      * @ManyToMany(targetEntity="DDC1514EntityB", mappedBy="entityAFrom")
      */
     public $entitiesB;
+
     /**
      * @var DDC1514EntityC
      * @ManyToOne(targetEntity="DDC1514EntityC")
@@ -137,6 +143,10 @@ class DDC1514EntityC
      * @GeneratedValue
      */
     public $id;
-    /** @Column */
+
+    /**
+     * @var string
+     * @Column
+     */
     public $title;
 }

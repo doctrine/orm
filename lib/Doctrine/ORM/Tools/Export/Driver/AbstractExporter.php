@@ -21,6 +21,7 @@
 namespace Doctrine\ORM\Tools\Export\Driver;
 
 use Doctrine\Deprecations\Deprecation;
+use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\Mapping\ClassMetadataInfo;
 use Doctrine\ORM\Tools\Export\ExportException;
 
@@ -42,7 +43,7 @@ use function str_replace;
  */
 abstract class AbstractExporter
 {
-    /** @var mixed[] */
+    /** @var ClassMetadata[] */
     protected $_metadata = [];
 
     /** @var string|null */
@@ -88,11 +89,11 @@ abstract class AbstractExporter
     abstract public function exportClassMetadata(ClassMetadataInfo $metadata);
 
     /**
-     * Sets the array of ClassMetadataInfo instances to export.
-     *
-     * @param array $metadata
+     * Sets the array of ClassMetadata instances to export.
      *
      * @return void
+     *
+     * @psalm-param list<ClassMetadata> $metadata
      */
     public function setMetadata(array $metadata)
     {
@@ -142,7 +143,8 @@ abstract class AbstractExporter
 
         foreach ($this->_metadata as $metadata) {
             // In case output is returned, write it to a file, skip otherwise
-            if ($output = $this->exportClassMetadata($metadata)) {
+            $output = $this->exportClassMetadata($metadata);
+            if ($output) {
                 $path = $this->_generateOutputPath($metadata);
                 $dir  = dirname($path);
                 if (! is_dir($dir)) {

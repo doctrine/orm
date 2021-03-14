@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Doctrine\Tests\ORM\Functional\Ticket;
 
 use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\Tests\OrmFunctionalTestCase;
 
 /**
@@ -12,9 +13,16 @@ use Doctrine\Tests\OrmFunctionalTestCase;
  */
 class DDC2252Test extends OrmFunctionalTestCase
 {
+    /** @psalm-var DDC2252User */
     private $user;
+
+    /** @psalm-var DDC2252MerchantAccount */
     private $merchant;
+
+    /** @psalm-var DDC2252Membership */
     private $membership;
+
+    /** @psalm-var list<DDC2252Privilege> */
     private $privileges = [];
 
     protected function setUp(): void
@@ -118,7 +126,7 @@ class DDC2252Privilege
      */
     protected $privilegeid;
 
-    public function getPrivilegeid()
+    public function getPrivilegeid(): int
     {
         return $this->privilegeid;
     }
@@ -137,7 +145,7 @@ class DDC2252MerchantAccount
      */
     protected $accountid = 111;
 
-    public function getAccountid()
+    public function getAccountid(): int
     {
         return $this->accountid;
     }
@@ -157,6 +165,7 @@ class DDC2252User
     protected $uid = 222;
 
     /**
+     * @psalm-var Collection<int, DDC2252Membership>
      * @OneToMany(targetEntity="DDC2252Membership", mappedBy="userAccount", cascade={"persist"})
      * @JoinColumn(name="uid", referencedColumnName="uid")
      */
@@ -167,12 +176,15 @@ class DDC2252User
         $this->memberships = new ArrayCollection();
     }
 
-    public function getUid()
+    public function getUid(): int
     {
         return $this->uid;
     }
 
-    public function getMemberships()
+    /**
+     * @psalm-return Collection<int, DDC2252Membership>
+     */
+    public function getMemberships(): Collection
     {
         return $this->memberships;
     }
@@ -191,6 +203,7 @@ class DDC2252User
 class DDC2252Membership
 {
     /**
+     * @var DDC2252User
      * @Id
      * @ManyToOne(targetEntity="DDC2252User", inversedBy="memberships")
      * @JoinColumn(name="uid", referencedColumnName="uid")
@@ -198,6 +211,7 @@ class DDC2252Membership
     protected $userAccount;
 
     /**
+     * @var DDC2252MerchantAccount
      * @Id
      * @ManyToOne(targetEntity="DDC2252MerchantAccount")
      * @JoinColumn(name="mch_accountid", referencedColumnName="accountid")
@@ -205,6 +219,7 @@ class DDC2252Membership
     protected $merchantAccount;
 
     /**
+     * @psalm-var Collection<int, DDC2252Privilege>
      * @ManyToMany(targetEntity="DDC2252Privilege", indexBy="privilegeid")
      * @JoinTable(name="ddc2252_user_mch_account_privilege",
      *   joinColumns={
@@ -225,12 +240,15 @@ class DDC2252Membership
         $this->privileges      = new ArrayCollection();
     }
 
-    public function addPrivilege($privilege): void
+    public function addPrivilege(DDC2252Privilege $privilege): void
     {
         $this->privileges[] = $privilege;
     }
 
-    public function getPrivileges()
+    /**
+     * @psalm-var Collection<int, DDC2252Privilege>
+     */
+    public function getPrivileges(): Collection
     {
         return $this->privileges;
     }

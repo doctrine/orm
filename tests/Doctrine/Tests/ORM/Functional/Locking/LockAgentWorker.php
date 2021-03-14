@@ -22,6 +22,7 @@ use function unserialize;
 
 class LockAgentWorker
 {
+    /** @var EntityManagerInterface */
     private $em;
 
     public static function run(): void
@@ -45,7 +46,7 @@ class LockAgentWorker
         }
     }
 
-    protected function process($job, Closure $do)
+    protected function process($job, Closure $do): float
     {
         $fixture = $this->processWorkload($job);
 
@@ -62,14 +63,14 @@ class LockAgentWorker
         return microtime(true) - $s;
     }
 
-    public function findWithLock($job)
+    public function findWithLock($job): float
     {
         return $this->process($job, static function ($fixture, $em): void {
             $entity = $em->find($fixture['entityName'], $fixture['entityId'], $fixture['lockMode']);
         });
     }
 
-    public function dqlWithLock($job)
+    public function dqlWithLock($job): float
     {
         return $this->process($job, static function ($fixture, $em): void {
             $query = $em->createQuery($fixture['dql']);
@@ -80,7 +81,7 @@ class LockAgentWorker
         });
     }
 
-    public function lock($job)
+    public function lock($job): float
     {
         return $this->process($job, static function ($fixture, $em): void {
             $entity = $em->find($fixture['entityName'], $fixture['entityId']);
@@ -88,7 +89,10 @@ class LockAgentWorker
         });
     }
 
-    protected function processWorkload($job)
+    /**
+     * @return mixed[]
+     */
+    protected function processWorkload($job): array
     {
         echo 'Received job: ' . $job->handle() . ' for function ' . $job->functionName() . "\n";
 

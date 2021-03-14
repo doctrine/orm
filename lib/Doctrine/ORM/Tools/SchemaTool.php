@@ -87,11 +87,11 @@ class SchemaTool
     /**
      * Creates the database schema for the given array of ClassMetadata instances.
      *
-     * @param array $classes
-     *
      * @return void
      *
      * @throws ToolsException
+     *
+     * @psalm-param list<ClassMetadata> $classes
      */
     public function createSchema(array $classes)
     {
@@ -111,9 +111,9 @@ class SchemaTool
      * Gets the list of DDL statements that are required to create the database schema for
      * the given list of ClassMetadata instances.
      *
-     * @param array $classes
-     *
      * @return string[] The SQL statements needed to create the schema for the classes.
+     *
+     * @psalm-param list<ClassMetadata> $classes
      */
     public function getCreateSchemaSql(array $classes)
     {
@@ -125,13 +125,12 @@ class SchemaTool
     /**
      * Detects instances of ClassMetadata that don't need to be processed in the SchemaTool context.
      *
-     * @param ClassMetadata $class
-     * @param array         $processedClasses
-     *
-     * @return bool
+     * @psalm-param array<string, bool> $processedClasses
      */
-    private function processingNotRequired($class, array $processedClasses)
-    {
+    private function processingNotRequired(
+        ClassMetadata $class,
+        array $processedClasses
+    ): bool {
         return isset($processedClasses[$class->name]) ||
             $class->isMappedSuperclass ||
             $class->isEmbeddedClass ||
@@ -141,11 +140,11 @@ class SchemaTool
     /**
      * Creates a Schema instance from a given set of metadata classes.
      *
-     * @param array $classes
-     *
      * @return Schema
      *
      * @throws ORMException
+     *
+     * @psalm-param list<ClassMetadata> $classes
      */
     public function getSchemaFromMetadata(array $classes)
     {
@@ -162,7 +161,6 @@ class SchemaTool
         $blacklistedFks = [];
 
         foreach ($classes as $class) {
-            assert($class instanceof ClassMetadata);
             if ($this->processingNotRequired($class, $processedClasses)) {
                 continue;
             }
@@ -432,13 +430,15 @@ class SchemaTool
     /**
      * Creates a column definition as required by the DBAL from an ORM field mapping definition.
      *
-     * @param ClassMetadata $class   The class that owns the field mapping.
-     * @param array         $mapping The field mapping.
+     * @param ClassMetadata $class The class that owns the field mapping.
      *
-     * @return void
+     * @psalm-param array<string, mixed> $mapping The field mapping.
      */
-    private function gatherColumn($class, array $mapping, Table $table)
-    {
+    private function gatherColumn(
+        ClassMetadata $class,
+        array $mapping,
+        Table $table
+    ): void {
         $columnName = $this->quoteStrategy->getColumnName($mapping['fieldName'], $class, $this->platform);
         $columnType = $mapping['type'];
 
@@ -500,18 +500,21 @@ class SchemaTool
      * Gathers the SQL for properly setting up the relations of the given class.
      * This includes the SQL for foreign key constraints and join tables.
      *
-     * @param ClassMetadata $class
-     * @param Table         $table
-     * @param Schema        $schema
-     * @param array         $addedFks
-     * @param array         $blacklistedFks
-     *
-     * @return void
-     *
      * @throws ORMException
+     *
+     * @psalm-param array<string, array{
+     *                  foreignTableName: string,
+     *                  foreignColumns: list<string>
+     *              }>                               $addedFks
+     * @psalm-param array<string, bool>              $blacklistedFks
      */
-    private function gatherRelationsSql($class, $table, $schema, &$addedFks, &$blacklistedFks)
-    {
+    private function gatherRelationsSql(
+        ClassMetadata $class,
+        Table $table,
+        Schema $schema,
+        array &$addedFks,
+        array &$blacklistedFks
+    ): void {
         foreach ($class->associationMappings as $id => $mapping) {
             if (isset($mapping['inherited']) && ! in_array($id, $class->identifier, true)) {
                 continue;
@@ -580,12 +583,9 @@ class SchemaTool
      *
      * TODO: Is there any way to make this code more pleasing?
      *
-     * @param ClassMetadata $class
-     * @param string        $referencedColumnName
-     *
-     * @return array (ClassMetadata, referencedFieldName)
+     * @psalm-return array{ClassMetadata, string}|null
      */
-    private function getDefiningClass($class, $referencedColumnName)
+    private function getDefiningClass(ClassMetadata $class, string $referencedColumnName): ?array
     {
         $referencedFieldName = $class->getFieldName($referencedColumnName);
 
@@ -614,27 +614,26 @@ class SchemaTool
     /**
      * Gathers columns and fk constraints that are required for one part of relationship.
      *
-     * @param array         $joinColumns
-     * @param Table         $theJoinTable
-     * @param ClassMetadata $class
-     * @param array         $mapping
-     * @param array         $primaryKeyColumns
-     * @param array         $addedFks
-     * @param array         $blacklistedFks
-     *
-     * @return void
-     *
      * @throws ORMException
+     *
+     * @psalm-param array<string, mixed>             $joinColumns
+     * @psalm-param array<string, mixed>             $mapping
+     * @psalm-param list<string>                     $primaryKeyColumns
+     * @psalm-param array<string, array{
+     *                  foreignTableName: string,
+     *                  foreignColumns: list<string>
+     *              }>                               $addedFks
+     * @psalm-param array<string,bool>               $blacklistedFks
      */
     private function gatherRelationJoinColumns(
-        $joinColumns,
-        $theJoinTable,
-        $class,
-        $mapping,
-        &$primaryKeyColumns,
-        &$addedFks,
-        &$blacklistedFks
-    ) {
+        array $joinColumns,
+        Table $theJoinTable,
+        ClassMetadata $class,
+        array $mapping,
+        array &$primaryKeyColumns,
+        array &$addedFks,
+        array &$blacklistedFks
+    ): void {
         $localColumns      = [];
         $foreignColumns    = [];
         $fkOptions         = [];
@@ -764,9 +763,9 @@ class SchemaTool
      * In any way when an exception is thrown it is suppressed since drop was
      * issued for all classes of the schema and some probably just don't exist.
      *
-     * @param array $classes
-     *
      * @return void
+     *
+     * @psalm-param list<ClassMetadata> $classes
      */
     public function dropSchema(array $classes)
     {
@@ -816,9 +815,9 @@ class SchemaTool
     /**
      * Gets SQL to drop the tables defined by the passed classes.
      *
-     * @param array $classes
-     *
      * @return string[]
+     *
+     * @psalm-param list<ClassMetadata> $classes
      */
     public function getDropSchemaSQL(array $classes)
     {
@@ -849,7 +848,6 @@ class SchemaTool
             }
 
             foreach ($schema->getTables() as $table) {
-                /** @var Table $sequence */
                 if ($table->hasPrimaryKey()) {
                     $columns = $table->getPrimaryKey()->getColumns();
                     if (count($columns) === 1) {

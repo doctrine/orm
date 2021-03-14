@@ -161,13 +161,13 @@ class QueryException extends ORMException
      */
     public static function invalidLiteral($literal)
     {
-        return new self("Invalid literal '$literal'");
+        return new self("Invalid literal '" . $literal . "'");
     }
 
     /**
-     * @param array $assoc
-     *
      * @return QueryException
+     *
+     * @psalm-param array<string, string> $assoc
      */
     public static function iterateWithFetchJoinCollectionNotAllowed($assoc)
     {
@@ -190,9 +190,9 @@ class QueryException extends ORMException
     }
 
     /**
-     * @param array $assoc
-     *
      * @return QueryException
+     *
+     * @psalm-param array<string, string> $assoc
      */
     public static function overwritingJoinConditionsNotYetSupported($assoc)
     {
@@ -215,9 +215,9 @@ class QueryException extends ORMException
     }
 
     /**
-     * @param array $assoc
-     *
      * @return QueryException
+     *
+     * @psalm-param array<string, string> $assoc
      */
     public static function iterateWithFetchJoinNotAllowed($assoc)
     {
