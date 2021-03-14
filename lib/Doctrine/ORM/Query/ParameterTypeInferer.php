@@ -44,6 +44,9 @@ class ParameterTypeInferer
      * - Type (\Doctrine\DBAL\Types\Type::*)
      * - Connection (\Doctrine\DBAL\Connection::PARAM_*)
      *
+     * @deprecated Infer Type will be removed in the future for setParameter method,
+     * - Consider adding the type as third argument to setParameter method since null will not be accepted anymore
+     *
      * @param mixed $value Parameter value.
      *
      * @return mixed Parameter type constant.
