@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Doctrine\Tests\ORM\Functional;
 
 use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Deprecations\PHPUnit\VerifyDeprecations;
 use Doctrine\ORM\Internal\Hydration\HydrationException;
 use Doctrine\ORM\PersistentCollection;
 use Doctrine\ORM\Query\Parameter;
@@ -33,6 +34,8 @@ use function is_numeric;
  */
 class NativeQueryTest extends OrmFunctionalTestCase
 {
+    use VerifyDeprecations;
+
     private $platform = null;
 
     protected function setUp(): void
@@ -61,6 +64,9 @@ class NativeQueryTest extends OrmFunctionalTestCase
         $rsm->addFieldResult('u', $this->platform->getSQLResultCasing('name'), 'name');
 
         $query = $this->_em->createNativeQuery('SELECT id, name FROM cms_users WHERE username = ?', $rsm);
+
+        $this->expectDeprecationWithIdentifier('https://github.com/doctrine/orm/issues/8379');
+
         $query->setParameter(1, 'romanb');
 
         $users = $query->getResult();
@@ -98,6 +104,9 @@ class NativeQueryTest extends OrmFunctionalTestCase
         $rsm->addMetaResult('a', $this->platform->getSQLResultCasing('user_id'), 'user_id', false, 'integer');
 
         $query = $this->_em->createNativeQuery('SELECT a.id, a.country, a.zip, a.city, a.user_id FROM cms_addresses a WHERE a.id = ?', $rsm);
+
+        $this->expectDeprecationWithIdentifier('https://github.com/doctrine/orm/issues/8379');
+
         $query->setParameter(1, $addr->id);
 
         $addresses = $query->getResult();
@@ -137,6 +146,9 @@ class NativeQueryTest extends OrmFunctionalTestCase
         $rsm->addFieldResult('p', $this->platform->getSQLResultCasing('phonenumber'), 'phonenumber');
 
         $query = $this->_em->createNativeQuery('SELECT id, name, status, phonenumber FROM cms_users INNER JOIN cms_phonenumbers ON id = user_id WHERE username = ?', $rsm);
+
+        $this->expectDeprecationWithIdentifier('https://github.com/doctrine/orm/issues/8379');
+
         $query->setParameter(1, 'romanb');
 
         $users = $query->getResult();
@@ -182,6 +194,9 @@ class NativeQueryTest extends OrmFunctionalTestCase
         $rsm->addFieldResult('a', $this->platform->getSQLResultCasing('city'), 'city');
 
         $query = $this->_em->createNativeQuery('SELECT u.id, u.name, u.status, a.id AS a_id, a.country, a.zip, a.city FROM cms_users u INNER JOIN cms_addresses a ON u.id = a.user_id WHERE u.username = ?', $rsm);
+
+        $this->expectDeprecationWithIdentifier('https://github.com/doctrine/orm/issues/8379');
+
         $query->setParameter(1, 'romanb');
 
         $users = $query->getResult();
@@ -207,6 +222,9 @@ class NativeQueryTest extends OrmFunctionalTestCase
         $rsm = new ResultSetMapping();
 
         $q  = $this->_em->createNativeQuery('SELECT id, name, status, phonenumber FROM cms_users INNER JOIN cms_phonenumbers ON id = user_id WHERE username = ?', $rsm);
+
+        $this->expectDeprecationWithIdentifier('https://github.com/doctrine/orm/issues/8379');
+
         $q2 = $q->setSQL('foo')
           ->setResultSetMapping($rsm)
           ->expireResultCache(true)
@@ -240,6 +258,9 @@ class NativeQueryTest extends OrmFunctionalTestCase
         $rsm->addRootEntityFromClassMetadata(CmsUser::class, 'u');
         $rsm->addJoinedEntityFromClassMetadata(CmsPhonenumber::class, 'p', 'u', 'phonenumbers');
         $query = $this->_em->createNativeQuery('SELECT u.*, p.* FROM cms_users u LEFT JOIN cms_phonenumbers p ON u.id = p.user_id WHERE username = ?', $rsm);
+
+        $this->expectDeprecationWithIdentifier('https://github.com/doctrine/orm/issues/8379');
+
         $query->setParameter(1, 'romanb');
 
         $users = $query->getResult();
@@ -258,6 +279,9 @@ class NativeQueryTest extends OrmFunctionalTestCase
         $rsm = new ResultSetMappingBuilder($this->_em);
         $rsm->addRootEntityFromClassMetadata(CmsPhonenumber::class, 'p');
         $query = $this->_em->createNativeQuery('SELECT p.* FROM cms_phonenumbers p WHERE p.phonenumber = ?', $rsm);
+
+        $this->expectDeprecationWithIdentifier('https://github.com/doctrine/orm/issues/8379');
+
         $query->setParameter(1, $phone->phonenumber);
         $phone = $query->getSingleResult();
 
@@ -289,6 +313,9 @@ class NativeQueryTest extends OrmFunctionalTestCase
         $rsm->addJoinedEntityFromClassMetadata(CmsAddress::class, 'a', 'u', 'address', ['id' => 'a_id']);
 
         $query = $this->_em->createNativeQuery('SELECT u.*, a.*, a.id AS a_id FROM cms_users u INNER JOIN cms_addresses a ON u.id = a.user_id WHERE u.username = ?', $rsm);
+
+        $this->expectDeprecationWithIdentifier('https://github.com/doctrine/orm/issues/8379');
+
         $query->setParameter(1, 'romanb');
 
         $users = $query->getResult();
@@ -309,6 +336,9 @@ class NativeQueryTest extends OrmFunctionalTestCase
         $rsm = new ResultSetMappingBuilder($this->_em);
         $rsm->addRootEntityFromClassMetadata(CmsAddress::class, 'a');
         $query = $this->_em->createNativeQuery('SELECT a.* FROM cms_addresses a WHERE a.id = ?', $rsm);
+
+        $this->expectDeprecationWithIdentifier('https://github.com/doctrine/orm/issues/8379');
+
         $query->setParameter(1, $addr->getId());
         $address = $query->getSingleResult();
 
@@ -357,6 +387,9 @@ class NativeQueryTest extends OrmFunctionalTestCase
         $rsm->addJoinedEntityFromClassMetadata(CmsAddress::class, 'a', 'un', 'address', ['id' => 'a_id']);
 
         $query = $this->_em->createNativeQuery('SELECT u.*, a.*, a.id AS a_id FROM cms_users u INNER JOIN cms_addresses a ON u.id = a.user_id WHERE u.username = ?', $rsm);
+
+        $this->expectDeprecationWithIdentifier('https://github.com/doctrine/orm/issues/8379');
+
         $query->setParameter(1, 'romanb');
 
         $this->expectException(HydrationException::class);
@@ -422,6 +455,8 @@ class NativeQueryTest extends OrmFunctionalTestCase
 
         $repository = $this->_em->getRepository(CmsUser::class);
 
+        $this->expectDeprecationWithIdentifier('https://github.com/doctrine/orm/issues/8379');
+
         $result = $repository->createNativeNamedQuery('fetchIdAndUsernameWithResultClass')
                             ->setParameter(1, 'FabioBatSilva')
                             ->getResult();
@@ -434,6 +469,8 @@ class NativeQueryTest extends OrmFunctionalTestCase
         $this->assertEquals('FabioBatSilva', $result[0]->username);
 
         $this->_em->clear();
+
+        $this->expectDeprecationWithIdentifier('https://github.com/doctrine/orm/issues/8379');
 
         $result = $repository->createNativeNamedQuery('fetchAllColumns')
                             ->setParameter(1, 'FabioBatSilva')
@@ -468,6 +505,8 @@ class NativeQueryTest extends OrmFunctionalTestCase
         $this->_em->persist($user);
         $this->_em->flush();
         $this->_em->clear();
+
+        $this->expectDeprecationWithIdentifier('https://github.com/doctrine/orm/issues/8379');
 
         $result = $this->_em->getRepository(CmsUser::class)
                             ->createNativeNamedQuery('fetchJoinedAddress')
@@ -507,6 +546,8 @@ class NativeQueryTest extends OrmFunctionalTestCase
         $this->_em->clear();
 
         $repository = $this->_em->getRepository(CmsUser::class);
+
+        $this->expectDeprecationWithIdentifier('https://github.com/doctrine/orm/issues/8379');
 
         $result = $repository->createNativeNamedQuery('fetchJoinedPhonenumber')
                         ->setParameter(1, 'FabioBatSilva')->getResult();
@@ -555,6 +596,8 @@ class NativeQueryTest extends OrmFunctionalTestCase
         $this->_em->clear();
 
         $repository = $this->_em->getRepository(CmsUser::class);
+
+        $this->expectDeprecationWithIdentifier('https://github.com/doctrine/orm/issues/8379');
 
         $result = $repository->createNativeNamedQuery('fetchUserPhonenumberCount')
                         ->setParameter(1, ['test', 'FabioBatSilva'])->getResult();

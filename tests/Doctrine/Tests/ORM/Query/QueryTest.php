@@ -9,6 +9,7 @@ use DateTimeImmutable;
 use Doctrine\Common\Cache\ArrayCache;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\DBAL\Types\Type;
+use Doctrine\Deprecations\PHPUnit\VerifyDeprecations;
 use Doctrine\ORM\Internal\Hydration\IterableResult;
 use Doctrine\ORM\Query\Parameter;
 use Doctrine\ORM\Query\QueryException;
@@ -30,6 +31,8 @@ use function count;
 
 class QueryTest extends OrmTestCase
 {
+    use VerifyDeprecations;
+
     /** @var EntityManagerMock */
     protected $entityManager;
 
@@ -50,6 +53,9 @@ class QueryTest extends OrmTestCase
     public function testGetParametersHasSomeAlready(): void
     {
         $query = $this->entityManager->createQuery('select u from Doctrine\Tests\Models\CMS\CmsUser u where u.username = ?1');
+
+        $this->expectDeprecationWithIdentifier('https://github.com/doctrine/orm/issues/8379');
+
         $query->setParameter(2, 84);
 
         $parameters = new ArrayCollection();
@@ -202,6 +208,8 @@ class QueryTest extends OrmTestCase
             3 => 'Cannes',
             9 => 'St Julien',
         ];
+
+        $this->expectDeprecationWithIdentifier('https://github.com/doctrine/orm/issues/8379');
 
         $query = $this->entityManager
                 ->createQuery('SELECT a FROM Doctrine\Tests\Models\CMS\CmsAddress a WHERE a.city IN (:cities)')
@@ -422,6 +430,8 @@ class QueryTest extends OrmTestCase
     {
         $query = $this->entityManager->createQuery('select u from ' . CmsUser::class . ' u where u.id = ?0');
 
+        $this->expectDeprecationWithIdentifier('https://github.com/doctrine/orm/issues/8379');
+
         $query->setParameter(0, 0);
 
         self::assertCount(1, $query->getParameters());
@@ -435,6 +445,8 @@ class QueryTest extends OrmTestCase
     public function testSetParameterWithNameZeroIsNotOverridden(): void
     {
         $query = $this->entityManager->createQuery('select u from ' . CmsUser::class . ' u where u.id != ?0 and u.username = :name');
+
+        $this->expectDeprecationWithIdentifier('https://github.com/doctrine/orm/issues/8379');
 
         $query->setParameter(0, 0);
         $query->setParameter('name', 'Doctrine');
@@ -451,6 +463,8 @@ class QueryTest extends OrmTestCase
     {
         $query = $this->entityManager->createQuery('select u from ' . CmsUser::class . ' u where u.id != ?0 and u.username = :name');
 
+        $this->expectDeprecationWithIdentifier('https://github.com/doctrine/orm/issues/8379');
+
         $query->setParameter('name', 'Doctrine');
         $query->setParameter(0, 0);
 
@@ -465,6 +479,8 @@ class QueryTest extends OrmTestCase
     public function testSetParameterWithTypeJugglingWorks(): void
     {
         $query = $this->entityManager->createQuery('select u from ' . CmsUser::class . ' u where u.id != ?0 and u.username = :name');
+
+        $this->expectDeprecationWithIdentifier('https://github.com/doctrine/orm/issues/8379');
 
         $query->setParameter('0', 1);
         $query->setParameter('name', 'Doctrine');
@@ -524,6 +540,8 @@ class QueryTest extends OrmTestCase
     public function testGetParameterColonNormalize(): void
     {
         $query = $this->entityManager->createQuery('select u from ' . CmsUser::class . ' u where u.name = :name');
+
+        $this->expectDeprecationWithIdentifier('https://github.com/doctrine/orm/issues/8379');
 
         $query->setParameter(':name', 'Benjamin');
         $query->setParameter('name', 'Benjamin');
