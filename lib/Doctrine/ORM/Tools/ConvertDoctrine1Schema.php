@@ -21,6 +21,7 @@
 namespace Doctrine\ORM\Tools;
 
 use Doctrine\DBAL\Types\Type;
+use Doctrine\DBAL\Types\Types;
 use Doctrine\Deprecations\Deprecation;
 use Doctrine\Inflector\InflectorFactory;
 use Doctrine\ORM\Mapping\ClassMetadataInfo;
@@ -52,8 +53,8 @@ class ConvertDoctrine1Schema
     private $legacyTypeMap = [
         // TODO: This list may need to be updated
         'clob' => 'text',
-        'timestamp' => 'datetime',
-        'enum' => 'string',
+        'timestamp' => Types::DATETIME_MUTABLE,
+        'enum' => Types::STRING,
     ];
 
     /**
@@ -161,7 +162,7 @@ class ConvertDoctrine1Schema
             $fieldMapping = [
                 'fieldName' => 'id',
                 'columnName' => 'id',
-                'type' => 'integer',
+                'type' => Types::INTEGER,
                 'id' => true,
             ];
             $metadata->mapField($fieldMapping);

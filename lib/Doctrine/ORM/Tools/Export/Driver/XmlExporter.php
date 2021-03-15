@@ -21,6 +21,7 @@
 namespace Doctrine\ORM\Tools\Export\Driver;
 
 use Doctrine\ORM\Mapping\ClassMetadataInfo;
+use Doctrine\ORM\Mapping\Driver\XmlDriver;
 use DOMDocument;
 use SimpleXMLElement;
 
@@ -41,7 +42,7 @@ use function uasort;
 class XmlExporter extends AbstractExporter
 {
     /** @var string */
-    protected $_extension = '.dcm.xml';
+    protected $_extension = XmlDriver::DEFAULT_FILE_EXTENSION;
 
     /**
      * {@inheritdoc}

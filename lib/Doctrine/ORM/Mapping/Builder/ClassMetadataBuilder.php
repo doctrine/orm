@@ -20,6 +20,7 @@
 
 namespace Doctrine\ORM\Mapping\Builder;
 
+use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\Mapping\ClassMetadataInfo;
 
@@ -225,7 +226,7 @@ class ClassMetadataBuilder
      *
      * @return static
      */
-    public function setDiscriminatorColumn($name, $type = 'string', $length = 255)
+    public function setDiscriminatorColumn($name, $type = Types::STRING, $length = 255)
     {
         $this->cm->setDiscriminatorColumn(
             [

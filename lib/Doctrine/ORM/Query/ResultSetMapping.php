@@ -20,6 +20,8 @@
 
 namespace Doctrine\ORM\Query;
 
+use Doctrine\DBAL\Types\Types;
+
 use function array_merge;
 use function count;
 
@@ -385,7 +387,7 @@ class ResultSetMapping
      *
      * @todo Rename: addScalar
      */
-    public function addScalarResult($columnName, $alias, $type = 'string')
+    public function addScalarResult($columnName, $alias, $type = Types::STRING)
     {
         $this->scalarMappings[$columnName] = $alias;
         $this->typeMappings[$columnName]   = $type;

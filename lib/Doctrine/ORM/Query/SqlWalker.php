@@ -25,6 +25,7 @@ use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\LockMode;
 use Doctrine\DBAL\Platforms\AbstractPlatform;
 use Doctrine\DBAL\Types\Type;
+use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\Mapping\ClassMetadataInfo;
@@ -1393,7 +1394,7 @@ class SqlWalker implements TreeWalker
                 if (! $expr instanceof Query\AST\TypedExpression) {
                     // Conceptually we could resolve field type here by traverse through AST to retrieve field type,
                     // but this is not a feasible solution; assume 'string'.
-                    $this->rsm->addScalarResult($columnAlias, $resultAlias, 'string');
+                    $this->rsm->addScalarResult($columnAlias, $resultAlias, Types::STRING);
 
                     break;
                 }
@@ -1412,7 +1413,7 @@ class SqlWalker implements TreeWalker
 
                 if (! $hidden) {
                     // We cannot resolve field type here; assume 'string'.
-                    $this->rsm->addScalarResult($columnAlias, $resultAlias, 'string');
+                    $this->rsm->addScalarResult($columnAlias, $resultAlias, Types::STRING);
                 }
 
                 break;
@@ -1593,7 +1594,7 @@ class SqlWalker implements TreeWalker
         foreach ($newObjectExpression->args as $argIndex => $e) {
             $resultAlias = $this->scalarResultCounter++;
             $columnAlias = $this->getSQLColumnAlias('sclr');
-            $fieldType   = 'string';
+            $fieldType   = Types::STRING;
 
             switch (true) {
                 case $e instanceof AST\NewObjectExpression:
@@ -1624,11 +1625,11 @@ class SqlWalker implements TreeWalker
                 case $e instanceof AST\Literal:
                     switch ($e->type) {
                         case AST\Literal::BOOLEAN:
-                            $fieldType = 'boolean';
+                            $fieldType = Types::BOOLEAN;
                             break;
 
                         case AST\Literal::NUMERIC:
-                            $fieldType = is_float($e->value) ? 'float' : 'integer';
+                            $fieldType = is_float($e->value) ? Types::FLOAT : Types::INTEGER;
                             break;
                     }
 

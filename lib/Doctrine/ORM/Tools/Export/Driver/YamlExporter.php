@@ -21,6 +21,7 @@
 namespace Doctrine\ORM\Tools\Export\Driver;
 
 use Doctrine\ORM\Mapping\ClassMetadataInfo;
+use Doctrine\ORM\Mapping\Driver\YamlDriver;
 use Symfony\Component\Yaml\Yaml;
 
 use function array_merge;
@@ -36,7 +37,7 @@ use function count;
 class YamlExporter extends AbstractExporter
 {
     /** @var string */
-    protected $_extension = '.dcm.yml';
+    protected $_extension = YamlDriver::DEFAULT_FILE_EXTENSION;
 
     /**
      * {@inheritdoc}

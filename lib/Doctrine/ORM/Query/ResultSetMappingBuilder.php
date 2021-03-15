@@ -20,6 +20,7 @@
 
 namespace Doctrine\ORM\Query;
 
+use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Mapping\ClassMetadataInfo;
 use Doctrine\ORM\Mapping\MappingException;
@@ -355,7 +356,7 @@ class ResultSetMappingBuilder extends ResultSetMapping
             foreach ($resultMapping['columns'] as $entityMapping) {
                 $type = isset($class->fieldNames[$entityMapping['name']])
                     ? PersisterHelper::getTypeOfColumn($entityMapping['name'], $class, $this->em)
-                    : 'string';
+                    : Types::STRING;
 
                 $this->addScalarResult($entityMapping['name'], $entityMapping['name'], $type);
             }
