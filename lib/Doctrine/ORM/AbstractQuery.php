@@ -388,6 +388,7 @@ abstract class AbstractQuery
                 'Consider adding the type as third argument since null will not be accepted anymore in Doctrine ORM 3.0.'
             );
         }
+
         $existingParameter = $this->getParameter($key);
 
         if ($existingParameter !== null) {
