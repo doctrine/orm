@@ -249,7 +249,7 @@ class SchemaTool
                         }
                     }
 
-                    if (! empty($inheritedKeyColumns)) {
+                    if ($inheritedKeyColumns !== []) {
                         // Add a FK constraint on the ID column
                         $table->addForeignKeyConstraint(
                             $this->quoteStrategy->getTableName(
@@ -262,7 +262,7 @@ class SchemaTool
                         );
                     }
 
-                    if (! empty($pkColumns)) {
+                    if ($pkColumns !== []) {
                         $table->setPrimaryKey($pkColumns);
                     }
                 }
