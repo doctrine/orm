@@ -137,8 +137,8 @@ class GH7062Season
     public $id;
 
     /**
-     * @OneToOne(targetEntity=GH7062Ranking::class, mappedBy="season", cascade={"all"})
      * @var GH7062Ranking|null
+     * @OneToOne(targetEntity=GH7062Ranking::class, mappedBy="season", cascade={"all"})
      */
     public $ranking;
 

@@ -21,13 +21,14 @@
 namespace Doctrine\ORM\Query;
 
 use Doctrine\ORM\AbstractQuery;
+use Doctrine\ORM\Mapping\ClassMetadata;
 
 use function array_diff;
 use function array_keys;
 
 /**
  * An adapter implementation of the TreeWalker interface. The methods in this class
- * are empty. ﻿This class exists as convenience for creating tree walkers.
+ * are empty. This class exists as convenience for creating tree walkers.
  */
 abstract class TreeWalkerAdapter implements TreeWalker
 {
@@ -48,7 +49,14 @@ abstract class TreeWalkerAdapter implements TreeWalker
     /**
      * The query components of the original query (the "symbol table") that was produced by the Parser.
      *
-     * @var array
+     * @psalm-var array<string, array{
+     *                metadata: ClassMetadata,
+     *                parent: string,
+     *                relation: mixed[],
+     *                map: mixed,
+     *                nestingLevel: int,
+     *                token: array
+     *            }>
      */
     private $_queryComponents;
 
@@ -85,7 +93,7 @@ abstract class TreeWalkerAdapter implements TreeWalker
     }
 
     /**
-     * @return array
+     * {@inheritDoc}
      */
     protected function _getQueryComponents()
     {

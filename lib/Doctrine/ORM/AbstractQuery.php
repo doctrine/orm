@@ -110,7 +110,7 @@ abstract class AbstractQuery
     /**
      * The map of query hints.
      *
-     * @var array
+     * @psalm-var array<string, mixed>
      */
     protected $_hints = [];
 

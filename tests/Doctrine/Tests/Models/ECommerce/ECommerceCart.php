@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Doctrine\Tests\Models\ECommerce;
 
 use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 
 /**
  * ECommerceCart
@@ -23,21 +24,25 @@ class ECommerceCart
      */
     private $id;
 
-    /** @Column(length=50, nullable=true) */
+    /**
+     * @var string
+     * @Column(length=50, nullable=true)
+     */
     private $payment;
 
     /**
-     * @var ECommerceCustomer
+     * @var ECommerceCustomer|null
      * @OneToOne(targetEntity="ECommerceCustomer", inversedBy="cart")
      * @JoinColumn(name="customer_id", referencedColumnName="id")
      */
     private $customer;
 
     /**
+     * @psalm-var Collection<int, ECommerceProduct>
      * @ManyToMany(targetEntity="ECommerceProduct", cascade={"persist"})
      * @JoinTable(name="ecommerce_carts_products",
-            joinColumns={@JoinColumn(name="cart_id", referencedColumnName="id")},
-            inverseJoinColumns={@JoinColumn(name="product_id", referencedColumnName="id")})
+     *      joinColumns={@JoinColumn(name="cart_id", referencedColumnName="id")},
+     *      inverseJoinColumns={@JoinColumn(name="product_id", referencedColumnName="id")})
      */
     private $products;
 
@@ -46,17 +51,17 @@ class ECommerceCart
         $this->products = new ArrayCollection();
     }
 
-    public function getId()
+    public function getId(): int
     {
         return $this->id;
     }
 
-    public function getPayment()
+    public function getPayment(): string
     {
         return $this->payment;
     }
 
-    public function setPayment($payment): void
+    public function setPayment(string $payment): void
     {
         $this->payment = $payment;
     }
@@ -78,12 +83,15 @@ class ECommerceCart
         }
     }
 
-    public function getCustomer()
+    public function getCustomer(): ?ECommerceCustomer
     {
         return $this->customer;
     }
 
-    public function getProducts()
+    /**
+     * @psalm-return Collection<int, ECommerceProduct>
+     */
+    public function getProducts(): Collection
     {
         return $this->products;
     }
@@ -93,7 +101,7 @@ class ECommerceCart
         $this->products[] = $product;
     }
 
-    public function removeProduct(ECommerceProduct $product)
+    public function removeProduct(ECommerceProduct $product): bool
     {
         return $this->products->removeElement($product);
     }

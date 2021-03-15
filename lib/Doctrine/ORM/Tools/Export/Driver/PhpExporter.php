@@ -87,7 +87,7 @@ class PhpExporter extends AbstractExporter
         if ($metadata->lifecycleCallbacks) {
             foreach ($metadata->lifecycleCallbacks as $event => $callbacks) {
                 foreach ($callbacks as $callback) {
-                    $lines[] = "\$metadata->addLifecycleCallback('$callback', '$event');";
+                    $lines[] = sprintf("\$metadata->addLifecycleCallback('%s', '%s');", $callback, $event);
                 }
             }
         }

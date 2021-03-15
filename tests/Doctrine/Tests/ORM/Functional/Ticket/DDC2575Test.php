@@ -11,9 +11,14 @@ use Doctrine\Tests\OrmFunctionalTestCase;
  */
 class DDC2575Test extends OrmFunctionalTestCase
 {
+    /** @psalm-var list<DDC2575Root> */
     private $rootsEntities = [];
-    private $aEntities     = [];
-    private $bEntities     = [];
+
+    /** @psalm-var list<DDC2575A> */
+    private $aEntities = [];
+
+    /** @psalm-var list<DDC2575B> */
+    private $bEntities = [];
 
     protected function setUp(): void
     {
@@ -106,10 +111,13 @@ class DDC2575Root
      */
     public $sampleField;
 
-    /** @OneToOne(targetEntity="DDC2575A", mappedBy="rootRelation") **/
+    /**
+     * @var DDC2575A
+     * @OneToOne(targetEntity="DDC2575A", mappedBy="rootRelation")
+     */
     public $aRelation;
 
-    public function __construct($id, $value = 0)
+    public function __construct(int $id, int $value = 0)
     {
         $this->id          = $id;
         $this->sampleField = $value;
@@ -122,6 +130,7 @@ class DDC2575Root
 class DDC2575A
 {
     /**
+     * @var DDC2575Root
      * @Id
      * @OneToOne(targetEntity="DDC2575Root", inversedBy="aRelation")
      * @JoinColumn(name="root_id", referencedColumnName="id", nullable=FALSE, onDelete="CASCADE")
@@ -160,7 +169,7 @@ class DDC2575B
      */
     public $sampleField;
 
-    public function __construct($id, $value = 0)
+    public function __construct(int $id, int $value = 0)
     {
         $this->id          = $id;
         $this->sampleField = $value;

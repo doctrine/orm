@@ -16,6 +16,8 @@ use Doctrine\Tests\Mocks\TimestampRegionMock;
 use Doctrine\Tests\Models\Cache\Country;
 use Doctrine\Tests\Models\Cache\State;
 
+use function assert;
+
 /**
  * @group DDC-2183
  */
@@ -24,6 +26,7 @@ class SecondLevelCacheConcurrentTest extends SecondLevelCacheAbstractTest
     /** @var CacheFactorySecondLevelCacheConcurrentTest */
     private $cacheFactory;
 
+    /** @var ClassMetadata */
     private $countryMetadata;
 
     protected function setUp(): void
@@ -60,10 +63,10 @@ class SecondLevelCacheConcurrentTest extends SecondLevelCacheAbstractTest
         $countryId = $this->countries[0]->getId();
         $cacheId   = new EntityCacheKey(Country::class, ['id' => $countryId]);
         $region    = $this->_em->getCache()->getEntityCacheRegion(Country::class);
+        assert($region instanceof ConcurrentRegionMock);
 
         $this->assertTrue($this->cache->containsEntity(Country::class, $countryId));
 
-        /** @var ConcurrentRegionMock $region */
         $region->setLock($cacheId, Lock::createLockRead()); // another proc lock the entity cache
 
         $this->assertFalse($this->cache->containsEntity(Country::class, $countryId));
@@ -99,10 +102,10 @@ class SecondLevelCacheConcurrentTest extends SecondLevelCacheAbstractTest
         $stateId = $this->states[0]->getId();
         $cacheId = new CollectionCacheKey(State::class, 'cities', ['id' => $stateId]);
         $region  = $this->_em->getCache()->getCollectionCacheRegion(State::class, 'cities');
+        assert($region instanceof ConcurrentRegionMock);
 
         $this->assertTrue($this->cache->containsCollection(State::class, 'cities', $stateId));
 
-        /** @var ConcurrentRegionMock $region */
         $region->setLock($cacheId, Lock::createLockRead()); // another proc lock the entity cache
 
         $this->assertFalse($this->cache->containsCollection(State::class, 'cities', $stateId));
@@ -135,14 +138,14 @@ class CacheFactorySecondLevelCacheConcurrentTest extends DefaultCacheFactory
         $this->cache = $cache;
     }
 
-    public function getRegion(array $cache)
+    public function getRegion(array $cache): ConcurrentRegionMock
     {
         $region = new DefaultRegion($cache['region'], $this->cache);
 
         return new ConcurrentRegionMock($region);
     }
 
-    public function getTimestampRegion()
+    public function getTimestampRegion(): TimestampRegionMock
     {
         return new TimestampRegionMock();
     }

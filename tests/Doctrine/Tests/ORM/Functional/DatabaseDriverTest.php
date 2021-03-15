@@ -19,14 +19,14 @@ use const CASE_LOWER;
 class DatabaseDriverTest extends DatabaseDriverTestCase
 {
     /** @var AbstractSchemaManager */
-    protected $_sm = null;
+    protected $schemaManager = null;
 
     protected function setUp(): void
     {
         $this->useModelSet('cms');
         parent::setUp();
 
-        $this->_sm = $this->_em->getConnection()->getSchemaManager();
+        $this->schemaManager = $this->_em->getConnection()->getSchemaManager();
     }
 
     /**
@@ -65,7 +65,7 @@ class DatabaseDriverTest extends DatabaseDriverTestCase
         $table->setPrimaryKey(['id']);
         $table->addColumn('bar', 'string', ['notnull' => false, 'length' => 200]);
 
-        $this->_sm->dropAndCreateTable($table);
+        $this->schemaManager->dropAndCreateTable($table);
 
         $metadatas = $this->extractClassMetadata(['DbdriverFoo']);
 
@@ -95,7 +95,7 @@ class DatabaseDriverTest extends DatabaseDriverTestCase
         $tableB->addColumn('id', 'integer');
         $tableB->setPrimaryKey(['id']);
 
-        $this->_sm->dropAndCreateTable($tableB);
+        $this->schemaManager->dropAndCreateTable($tableB);
 
         $tableA = new Table('dbdriver_baz');
         $tableA->addColumn('id', 'integer');
@@ -103,7 +103,7 @@ class DatabaseDriverTest extends DatabaseDriverTestCase
         $tableA->addColumn('bar_id', 'integer');
         $tableA->addForeignKeyConstraint('dbdriver_bar', ['bar_id'], ['id']);
 
-        $this->_sm->dropAndCreateTable($tableA);
+        $this->schemaManager->dropAndCreateTable($tableA);
 
         $metadatas = $this->extractClassMetadata(['DbdriverBar', 'DbdriverBaz']);
 
@@ -182,7 +182,7 @@ class DatabaseDriverTest extends DatabaseDriverTestCase
         $table->addColumn('column_unique_index2', 'string');
         $table->addUniqueIndex(['column_unique_index1', 'column_unique_index2'], 'unique_index1');
 
-        $this->_sm->dropAndCreateTable($table);
+        $this->schemaManager->dropAndCreateTable($table);
 
         $metadatas = $this->extractClassMetadata(['DbdriverFoo']);
 
@@ -198,7 +198,7 @@ class DatabaseDriverTest extends DatabaseDriverTestCase
         // FIXME: Condition here is fugly.
         // NOTE: PostgreSQL and SQL SERVER do not support UNSIGNED integer
         if (
-            ! $this->_em->getConnection()->getDatabasePlatform() instanceof PostgreSqlPlatform and
+            ! $this->_em->getConnection()->getDatabasePlatform() instanceof PostgreSqlPlatform &&
              ! $this->_em->getConnection()->getDatabasePlatform() instanceof SQLServerPlatform
         ) {
             $this->assertArrayHasKey('columnUnsigned', $metadata->fieldMappings);

@@ -19,7 +19,10 @@ class DDC869Payment
      */
     protected $id;
 
-    /** @Column(type="float") */
+    /**
+     * @var float
+     * @Column(type="float")
+     */
     protected $value;
 
     public static function loadMetadata(ClassMetadataInfo $metadata): void

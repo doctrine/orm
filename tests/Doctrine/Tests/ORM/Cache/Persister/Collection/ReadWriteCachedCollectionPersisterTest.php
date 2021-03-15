@@ -20,6 +20,7 @@ use ReflectionProperty;
  */
 class ReadWriteCachedCollectionPersisterTest extends AbstractCollectionPersisterTest
 {
+    /** @psalm-var list<string> */
     protected $regionMockMethods = [
         'getName',
         'contains',

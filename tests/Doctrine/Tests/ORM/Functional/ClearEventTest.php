@@ -26,6 +26,7 @@ class ClearEventTest extends OrmFunctionalTestCase
 
 class OnClearListener
 {
+    /** @var bool */
     public $called = false;
 
     public function onClear(OnClearEventArgs $args): void

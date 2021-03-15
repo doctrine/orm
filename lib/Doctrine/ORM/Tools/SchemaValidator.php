@@ -58,7 +58,7 @@ class SchemaValidator
      * 2. Check if "mappedBy" and "inversedBy" are consistent to each other.
      * 3. Check if "referencedColumnName" attributes are really pointing to primary key columns.
      *
-     * @return array
+     * @psalm-return array<string, list<string>>
      */
     public function validateMapping()
     {
@@ -67,7 +67,8 @@ class SchemaValidator
         $classes = $cmf->getAllMetadata();
 
         foreach ($classes as $class) {
-            if ($ce = $this->validateClass($class)) {
+            $ce = $this->validateClass($class);
+            if ($ce) {
                 $errors[$class->name] = $ce;
             }
         }

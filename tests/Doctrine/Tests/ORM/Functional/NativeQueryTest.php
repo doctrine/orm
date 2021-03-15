@@ -36,6 +36,7 @@ class NativeQueryTest extends OrmFunctionalTestCase
 {
     use VerifyDeprecations;
 
+    /** @var AbstractPlatform */
     private $platform = null;
 
     protected function setUp(): void

@@ -18,7 +18,10 @@ class Client
      */
     public $id;
 
-    /** @Column(unique=true) */
+    /**
+     * @var string
+     * @Column(unique=true)
+     */
     public $name;
 
     public function __construct($name)

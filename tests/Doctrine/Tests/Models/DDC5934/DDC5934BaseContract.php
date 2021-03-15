@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Doctrine\Tests\Models\DDC5934;
 
 use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\Mapping\Column;
 use Doctrine\ORM\Mapping\Entity;
@@ -18,6 +19,7 @@ use Doctrine\ORM\Mapping\ManyToMany;
 class DDC5934BaseContract
 {
     /**
+     * @var int
      * @Id()
      * @Column(name="id", type="integer")
      * @GeneratedValue()
@@ -25,7 +27,7 @@ class DDC5934BaseContract
     public $id;
 
     /**
-     * @var ArrayCollection
+     * @psalm-var Collection<int, DDC5934Member>
      * @ManyToMany(targetEntity="DDC5934Member", fetch="LAZY", inversedBy="contracts")
      */
     public $members;

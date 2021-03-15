@@ -13,7 +13,10 @@ use Doctrine\Tests\OrmFunctionalTestCase;
  */
 class DDC1778Test extends OrmFunctionalTestCase
 {
+    /** @var CmsUser */
     private $user;
+
+    /** @var CmsPhonenumber */
     private $phone;
 
     protected function setUp(): void

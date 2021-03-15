@@ -11,7 +11,12 @@ use ArrayObject;
  */
 class ArrayObjectExtendingClass extends ArrayObject
 {
+    /** @var mixed */
     private $privateProperty;
+
+    /** @var mixed */
     protected $protectedProperty;
+
+    /** @var mixed */
     public $publicProperty;
 }

@@ -22,17 +22,21 @@ class Traveler
      */
     protected $id;
 
-    /** @Column */
+    /**
+     * @var string
+     * @Column
+     */
     protected $name;
 
     /**
+     * @psalm-var Collection<int, Travel>
      * @Cache("NONSTRICT_READ_WRITE")
      * @OneToMany(targetEntity="Travel", mappedBy="traveler", cascade={"persist", "remove"}, orphanRemoval=true)
-     * @var Collection
      */
     public $travels;
 
     /**
+     * @var TravelerProfile
      * @Cache
      * @OneToOne(targetEntity="TravelerProfile")
      */
@@ -44,22 +48,22 @@ class Traveler
         $this->travels = new ArrayCollection();
     }
 
-    public function getId()
+    public function getId(): int
     {
         return $this->id;
     }
 
-    public function setId($id): void
+    public function setId(int $id): void
     {
         $this->id = $id;
     }
 
-    public function getName()
+    public function getName(): string
     {
         return $this->name;
     }
 
-    public function setName($name): void
+    public function setName(string $name): void
     {
         $this->name = $name;
     }
@@ -74,7 +78,10 @@ class Traveler
         $this->profile = $profile;
     }
 
-    public function getTravels()
+    /**
+     * @psalm-return Collection<int, Travel>
+     */
+    public function getTravels(): Collection
     {
         return $this->travels;
     }

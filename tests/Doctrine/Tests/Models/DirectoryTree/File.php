@@ -21,12 +21,12 @@ class File extends AbstractContentItem
         parent::__construct($parent);
     }
 
-    public function getExtension()
+    public function getExtension(): string
     {
         return $this->extension;
     }
 
-    public function setExtension($ext): void
+    public function setExtension(string $ext): void
     {
         $this->extension = $ext;
     }

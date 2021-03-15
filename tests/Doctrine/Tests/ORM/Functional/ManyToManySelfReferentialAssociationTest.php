@@ -16,12 +16,25 @@ use function count;
  */
 class ManyToManySelfReferentialAssociationTest extends AbstractManyToManyAssociationTestCase
 {
-    protected $_firstField  = 'product_id';
-    protected $_secondField = 'related_id';
-    protected $_table       = 'ecommerce_products_related';
+    /** @var string */
+    protected $firstField = 'product_id';
+
+    /** @var string */
+    protected $secondField = 'related_id';
+
+    /** @var string */
+    protected $table = 'ecommerce_products_related';
+
+    /** @var ECommerceProduct */
     private $firstProduct;
+
+    /** @var ECommerceProduct */
     private $secondProduct;
+
+    /** @var ECommerceProduct */
     private $firstRelated;
+
+    /** @var ECommerceProduct */
     private $secondRelated;
 
     protected function setUp(): void
@@ -74,14 +87,14 @@ class ManyToManySelfReferentialAssociationTest extends AbstractManyToManyAssocia
 
     public function testEagerLoadsOwningSide(): void
     {
-        $this->_createLoadingFixture();
-        $products = $this->_findProducts();
+        $this->createLoadingFixture();
+        $products = $this->findProducts();
         $this->assertLoadingOfOwningSide($products);
     }
 
     public function testLazyLoadsOwningSide(): void
     {
-        $this->_createLoadingFixture();
+        $this->createLoadingFixture();
 
         $metadata                                          = $this->_em->getClassMetadata(ECommerceProduct::class);
         $metadata->associationMappings['related']['fetch'] = ClassMetadata::FETCH_LAZY;
@@ -91,7 +104,10 @@ class ManyToManySelfReferentialAssociationTest extends AbstractManyToManyAssocia
         $this->assertLoadingOfOwningSide($products);
     }
 
-    public function assertLoadingOfOwningSide($products): void
+    /**
+     * @psalm-param list<ECommerceProduct> $products
+     */
+    public function assertLoadingOfOwningSide(array $products): void
     {
         [$firstProduct, $secondProduct] = $products;
         $this->assertEquals(2, count($firstProduct->getRelated()));
@@ -112,7 +128,7 @@ class ManyToManySelfReferentialAssociationTest extends AbstractManyToManyAssocia
         $this->assertCollectionEquals($firstRelatedBy, $secondRelatedBy);
     }
 
-    protected function _createLoadingFixture(): void
+    protected function createLoadingFixture(): void
     {
         $this->firstProduct->addRelated($this->firstRelated);
         $this->firstProduct->addRelated($this->secondRelated);
@@ -125,7 +141,10 @@ class ManyToManySelfReferentialAssociationTest extends AbstractManyToManyAssocia
         $this->_em->clear();
     }
 
-    protected function _findProducts()
+    /**
+     * @psalm-return list<ECommerceProduct>
+     */
+    protected function findProducts(): array
     {
         $query = $this->_em->createQuery('SELECT p, r FROM Doctrine\Tests\Models\ECommerce\ECommerceProduct p LEFT JOIN p.related r ORDER BY p.id, r.id');
 

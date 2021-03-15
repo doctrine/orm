@@ -55,6 +55,7 @@ abstract class DDC1707Base
      */
     protected $id;
 
+    /** @var bool */
     public $postLoad = false;
 
     /**

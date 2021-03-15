@@ -22,7 +22,6 @@ namespace Doctrine\ORM\Persisters\Entity;
 
 use Doctrine\Common\Collections\Criteria;
 use Doctrine\DBAL\LockMode;
-use Doctrine\DBAL\Statement;
 use Doctrine\DBAL\Types\Type;
 use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\Utility\PersisterHelper;
@@ -43,14 +42,14 @@ class JoinedSubclassPersister extends AbstractEntityInheritancePersister
      * Map that maps column names to the table names that own them.
      * This is mainly a temporary cache, used during a single request.
      *
-     * @var array
+     * @psalm-var array<string, string>
      */
     private $owningTableMap = [];
 
     /**
      * Map of table to quoted table names.
      *
-     * @var array
+     * @psalm-var array<string, string>
      */
     private $quotedTableMap = [];
 
@@ -192,7 +191,6 @@ class JoinedSubclassPersister extends AbstractEntityInheritancePersister
             // Execute inserts on subtables.
             // The order doesn't matter because all child tables link to the root table via FK.
             foreach ($subTableStmts as $tableName => $stmt) {
-                /** @var Statement $stmt */
                 $paramIndex = 1;
                 $data       = $insertData[$tableName] ?? [];
 
@@ -234,7 +232,8 @@ class JoinedSubclassPersister extends AbstractEntityInheritancePersister
             return;
         }
 
-        if (($isVersioned = $this->class->isVersioned) === false) {
+        $isVersioned = $this->class->isVersioned;
+        if ($isVersioned === false) {
             return;
         }
 
@@ -319,8 +318,12 @@ class JoinedSubclassPersister extends AbstractEntityInheritancePersister
             ? $this->getSelectConditionCriteriaSQL($criteria)
             : $this->getSelectConditionSQL($criteria, $assoc);
 
+        $filterSql = $this->generateFilterConditionSQL(
+            $this->em->getClassMetadata($this->class->rootEntityName),
+            $this->getSQLTableAlias($this->class->rootEntityName)
+        );
         // If the current class in the root entity, add the filters
-        if ($filterSql = $this->generateFilterConditionSQL($this->em->getClassMetadata($this->class->rootEntityName), $this->getSQLTableAlias($this->class->rootEntityName))) {
+        if ($filterSql) {
             $conditionSql .= $conditionSql
                 ? ' AND ' . $filterSql
                 : $filterSql;

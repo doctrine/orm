@@ -298,12 +298,11 @@ class ManyToManyPersister extends AbstractCollectionPersister
      * have to join in the actual entities table leading to additional
      * JOIN.
      *
-     * @param array $mapping Array containing mapping information.
-     *
      * @return string[] ordered tuple:
      *                   - JOIN condition to add to the SQL
      *                   - WHERE condition to add to the SQL
      *
+     * @psalm-param array<string, mixed> $mapping Array containing mapping information.
      * @psalm-return array{0: string, 1: string}
      */
     public function getFilterSql($mapping)
@@ -337,7 +336,8 @@ class ManyToManyPersister extends AbstractCollectionPersister
         $filterClauses = [];
 
         foreach ($this->em->getFilters()->getEnabledFilters() as $filter) {
-            if ($filterExpr = $filter->addFilterConstraint($targetEntity, $targetTableAlias)) {
+            $filterExpr = $filter->addFilterConstraint($targetEntity, $targetTableAlias);
+            if ($filterExpr) {
                 $filterClauses[] = '(' . $filterExpr . ')';
             }
         }
@@ -350,10 +350,9 @@ class ManyToManyPersister extends AbstractCollectionPersister
     /**
      * Generate ON condition
      *
-     * @param  array $mapping
-     *
      * @return string[]
      *
+     * @psalm-param array<string, mixed> $mapping
      * @psalm-return list<string>
      */
     protected function getOnConditionSQL($mapping)
@@ -373,7 +372,7 @@ class ManyToManyPersister extends AbstractCollectionPersister
             $joinColumnName = $this->quoteStrategy->getJoinColumnName($joinColumn, $targetClass, $this->platform);
             $refColumnName  = $this->quoteStrategy->getReferencedJoinColumnName($joinColumn, $targetClass, $this->platform);
 
-            $conditions[] = ' t.' . $joinColumnName . ' = ' . 'te.' . $refColumnName;
+            $conditions[] = ' t.' . $joinColumnName . ' = te.' . $refColumnName;
         }
 
         return $conditions;
@@ -466,8 +465,6 @@ class ManyToManyPersister extends AbstractCollectionPersister
      *
      * @param mixed $element
      *
-     * @return array
-     *
      * @psalm-return list<mixed>
      */
     protected function getDeleteRowSQLParameters(PersistentCollection $collection, $element)
@@ -517,8 +514,6 @@ class ManyToManyPersister extends AbstractCollectionPersister
      * Internal note: Order of the parameters must be the same as the order of the columns in getInsertRowSql.
      *
      * @param mixed $element
-     *
-     * @return array
      *
      * @psalm-return list<mixed>
      */
@@ -577,7 +572,7 @@ class ManyToManyPersister extends AbstractCollectionPersister
      * @param string $key
      * @param bool   $addFilters Whether the filter SQL should be included or not.
      *
-     * @return array ordered vector:
+     * @return mixed[] ordered vector:
      *                - quoted join table name
      *                - where clauses to be added for filtering
      *                - parameters to be bound for filtering
@@ -663,7 +658,7 @@ class ManyToManyPersister extends AbstractCollectionPersister
      * @param object $element
      * @param bool   $addFilters Whether the filter SQL should be included or not.
      *
-     * @return array ordered vector:
+     * @return mixed[] ordered vector:
      *                - quoted join table name
      *                - where clauses to be added for filtering
      *                - parameters to be bound for filtering
@@ -730,7 +725,7 @@ class ManyToManyPersister extends AbstractCollectionPersister
      * Expands Criteria Parameters by walking the expressions and grabbing all
      * parameters and types from it.
      *
-     * @return array
+     * @return mixed[][]
      */
     private function expandCriteriaParameters(Criteria $criteria)
     {

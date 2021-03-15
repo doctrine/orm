@@ -22,10 +22,19 @@ use function sort;
 
 class SingleTableInheritanceTest extends OrmFunctionalTestCase
 {
+    /** @var CompanyEmployee */
     private $salesPerson;
+
+    /** @var list<CompanyEmployee> */
     private $engineers = [];
+
+    /** @var CompanyFixContract */
     private $fix;
+
+    /** @var CompanyFlexContract */
     private $flex;
+
+    /** @var CompanyFlexUltraContract */
     private $ultra;
 
     protected function setUp(): void

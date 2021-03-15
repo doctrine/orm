@@ -156,7 +156,10 @@ class EntityManagerTest extends OrmTestCase
         $this->assertEquals('SELECT 1', $query->getDql());
     }
 
-    public static function dataMethodsAffectedByNoObjectArguments()
+    /**
+     * @psalm-return list<array{string}>
+     */
+    public static function dataMethodsAffectedByNoObjectArguments(): array
     {
         return [
             ['persist'],
@@ -178,7 +181,10 @@ class EntityManagerTest extends OrmTestCase
         $this->entityManager->$methodName(null);
     }
 
-    public static function dataAffectedByErrorIfClosedException()
+    /**
+     * @psalm-return list<array{string}>
+     */
+    public static function dataAffectedByErrorIfClosedException(): array
     {
         return [
             ['flush'],
@@ -226,7 +232,7 @@ class EntityManagerTest extends OrmTestCase
         $this->entityManager->transactional($this);
     }
 
-    public function transactionalCallback($em)
+    public function transactionalCallback($em): string
     {
         $this->assertSame($this->entityManager, $em);
 

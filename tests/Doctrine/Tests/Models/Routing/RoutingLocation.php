@@ -10,6 +10,7 @@ namespace Doctrine\Tests\Models\Routing;
 class RoutingLocation
 {
     /**
+     * @var int
      * @Id @GeneratedValue
      * @Column(type="integer")
      */
@@ -21,7 +22,7 @@ class RoutingLocation
      */
     public $name;
 
-    public function getName()
+    public function getName(): string
     {
         return $this->name;
     }

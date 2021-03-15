@@ -48,7 +48,7 @@ class OneToOneCompositeIdForeignKeyTest extends OrmFunctionalTestCase
 
     public static function tearDownAfterClass(): void
     {
-        $conn = static::$_sharedConn;
+        $conn = static::$sharedConn;
 
         $conn->executeUpdate('DROP TABLE vct_owning_onetoone_compositeid_foreignkey');
         $conn->executeUpdate('DROP TABLE vct_inversed_onetoone_compositeid_foreignkey');

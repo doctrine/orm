@@ -65,8 +65,8 @@ class DDC1461User
     public $id;
 
     /**
+     * @var DDC1461TwitterAccount
      * @OneToOne(targetEntity="DDC1461TwitterAccount", orphanRemoval=true, fetch="EAGER", cascade = {"persist"}, inversedBy="user")
-     * @var TwitterAccount
      */
     public $twitterAccount;
 }

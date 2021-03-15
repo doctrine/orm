@@ -27,21 +27,21 @@ class DDC1300Test extends OrmFunctionalTestCase
 
     public function testIssue(): void
     {
-        $foo                = new DDC1300Foo();
-        $foo->_fooReference = 'foo';
+        $foo               = new DDC1300Foo();
+        $foo->fooReference = 'foo';
 
         $this->_em->persist($foo);
         $this->_em->flush();
 
-        $locale          = new DDC1300FooLocale();
-        $locale->_foo    = $foo;
-        $locale->_locale = 'en';
-        $locale->_title  = 'blub';
+        $locale         = new DDC1300FooLocale();
+        $locale->foo    = $foo;
+        $locale->locale = 'en';
+        $locale->title  = 'blub';
 
         $this->_em->persist($locale);
         $this->_em->flush();
 
-        $query  = $this->_em->createQuery('SELECT f, fl FROM Doctrine\Tests\ORM\Functional\Ticket\DDC1300Foo f JOIN f._fooLocaleRefFoo fl');
+        $query  = $this->_em->createQuery('SELECT f, fl FROM Doctrine\Tests\ORM\Functional\Ticket\DDC1300Foo f JOIN f.fooLocaleRefFoo fl');
         $result =  $query->getResult();
 
         $this->assertEquals(1, count($result));
@@ -59,30 +59,27 @@ class DDC1300Foo
      * @GeneratedValue(strategy="AUTO")
      * @Id
      */
-    public $_fooID = null;
+    public $fooID = null;
 
     /**
      * @var string fooReference
      * @Column(name="fooReference", type="string", nullable=true, length=45)
      */
-    public $_fooReference = null;
+    public $fooReference = null;
 
     /**
-     * @OneToMany(targetEntity="DDC1300FooLocale", mappedBy="_foo",
+     * @psalm-var Collection<int, DDC1300FooLocale>
+     * @OneToMany(targetEntity="DDC1300FooLocale", mappedBy="foo",
      * cascade={"persist"})
      */
-    public $_fooLocaleRefFoo = null;
+    public $fooLocaleRefFoo = null;
 
     /**
-     * Constructor
-     *
-     * @param array|Zend_Config|null $options
-     *
-     * @return Bug_Model_Foo
+     * @param mixed[]|null $options
      */
-    public function __construct($options = null)
+    public function __construct(?array $options = null)
     {
-        $this->_fooLocaleRefFoo = new ArrayCollection();
+        $this->fooLocaleRefFoo = new ArrayCollection();
     }
 }
 
@@ -92,22 +89,23 @@ class DDC1300Foo
 class DDC1300FooLocale
 {
     /**
+     * @var DDC1300Foo
      * @ManyToOne(targetEntity="DDC1300Foo")
      * @JoinColumn(name="fooID", referencedColumnName="fooID")
      * @Id
      */
-    public $_foo = null;
+    public $foo = null;
 
     /**
      * @var string locale
      * @Column(name="locale", type="string", nullable=false, length=5)
      * @Id
      */
-    public $_locale = null;
+    public $locale = null;
 
     /**
      * @var string title
      * @Column(name="title", type="string", nullable=true, length=150)
      */
-    public $_title = null;
+    public $title = null;
 }

@@ -23,6 +23,7 @@ namespace Doctrine\ORM\Query\Exec;
 use Doctrine\DBAL\Cache\QueryCacheProfile;
 use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\Driver\Statement;
+use Doctrine\DBAL\Types\Type;
 
 /**
  * Base class for SQL statement executors.
@@ -70,11 +71,13 @@ abstract class AbstractSqlExecutor
     /**
      * Executes all sql statements.
      *
-     * @param Connection $conn   The database connection that is used to execute the queries.
-     * @param array      $params The parameters.
-     * @param array      $types  The parameter types.
+     * @param Connection $conn The database connection that is used to execute the queries.
      *
      * @return Statement
+     *
+     * @psalm-param array<int, mixed>|array<string, mixed> $params The parameters.
+     * @psalm-param array<int, int|string|Type|null>|
+     *              array<string, int|string|Type|null> $types The parameter types.
      */
     abstract public function execute(Connection $conn, array $params, array $types);
 }

@@ -30,7 +30,7 @@ use Doctrine\Tests\Models\JoinedInheritanceType\ChildClass;
 use Doctrine\Tests\Models\JoinedInheritanceType\RootClass;
 use Doctrine\Tests\Models\Quote;
 use Doctrine\Tests\OrmTestCase;
-use DoctrineGlobal_Article;
+use DoctrineGlobalArticle;
 use Exception;
 use InvalidArgumentException;
 use ReflectionClass;
@@ -124,10 +124,10 @@ class ClassMetadataFactoryTest extends OrmTestCase
         $entityManager = $this->createEntityManager($metadataDriver);
 
         $mf = $entityManager->getMetadataFactory();
-        $m1 = $mf->getMetadataFor(DoctrineGlobal_Article::class);
-        $h1 = $mf->hasMetadataFor(DoctrineGlobal_Article::class);
-        $h2 = $mf->hasMetadataFor('\\' . DoctrineGlobal_Article::class);
-        $m2 = $mf->getMetadataFor('\\' . DoctrineGlobal_Article::class);
+        $m1 = $mf->getMetadataFor(DoctrineGlobalArticle::class);
+        $h1 = $mf->hasMetadataFor(DoctrineGlobalArticle::class);
+        $h2 = $mf->hasMetadataFor('\\' . DoctrineGlobalArticle::class);
+        $m2 = $mf->getMetadataFor('\\' . DoctrineGlobalArticle::class);
 
         $this->assertNotSame($m1, $m2);
         $this->assertFalse($h2);

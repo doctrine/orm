@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Doctrine\Tests\Models\DDC964;
 
 use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping\ClassMetadataInfo;
 
 /**
@@ -20,11 +21,14 @@ class DDC964User
      */
     protected $id;
 
-    /** @Column(name="user_name", nullable=true, unique=false, length=250) */
+    /**
+     * @var string|null
+     * @Column(name="user_name", nullable=true, unique=false, length=250)
+     */
     protected $name;
 
     /**
-     * @var ArrayCollection
+     * @psalm-var Collection<int, DDC964Group>
      * @ManyToMany(targetEntity="DDC964Group", inversedBy="users", cascade={"persist", "merge", "detach"})
      * @JoinTable(name="ddc964_users_groups",
      *  joinColumns={@JoinColumn(name="user_id", referencedColumnName="id")},
@@ -51,7 +55,7 @@ class DDC964User
         return $this->id;
     }
 
-    public function getName(): string
+    public function getName(): ?string
     {
         return $this->name;
     }
@@ -67,6 +71,9 @@ class DDC964User
         $group->addUser($this);
     }
 
+    /**
+     * @psalm-return Collection<int, DDC964Group>
+     */
     public function getGroups(): ArrayCollection
     {
         return $this->groups;

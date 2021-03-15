@@ -28,7 +28,7 @@ class ECommerceCustomer
     private $name;
 
     /**
-     * @var ECommerceCart
+     * @var ECommerceCart|null
      * @OneToOne(targetEntity="ECommerceCart", mappedBy="customer", cascade={"persist"})
      */
     private $cart;
@@ -38,22 +38,23 @@ class ECommerceCustomer
      * only one customer at the time, while a customer can choose only one
      * mentor. Not properly appropriate but it works.
      *
+     * @var ECommerceCustomer|null
      * @OneToOne(targetEntity="ECommerceCustomer", cascade={"persist"}, fetch="EAGER")
      * @JoinColumn(name="mentor_id", referencedColumnName="id")
      */
     private $mentor;
 
-    public function getId()
+    public function getId(): int
     {
         return $this->id;
     }
 
-    public function getName()
+    public function getName(): string
     {
         return $this->name;
     }
 
-    public function setName($name): void
+    public function setName(string $name): void
     {
         $this->name = $name;
     }
@@ -72,7 +73,7 @@ class ECommerceCustomer
         $this->cart = $cart;
     }
 
-    public function getCart()
+    public function getCart(): ?ECommerceCart
     {
         return $this->cart;
     }
@@ -96,7 +97,7 @@ class ECommerceCustomer
         $this->mentor = null;
     }
 
-    public function getMentor()
+    public function getMentor(): ?ECommerceCustomer
     {
         return $this->mentor;
     }

@@ -28,7 +28,6 @@ use Doctrine\Common\Proxy\ProxyGenerator;
 use Doctrine\Common\Util\ClassUtils;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\EntityNotFoundException;
-use Doctrine\ORM\Mapping\ClassMetadataInfo;
 use Doctrine\ORM\Persisters\Entity\EntityPersister;
 use Doctrine\ORM\UnitOfWork;
 use Doctrine\ORM\Utility\IdentifierFlattener;
@@ -85,7 +84,6 @@ class ProxyFactory extends AbstractProxyFactory
      */
     protected function skipClass(ClassMetadata $metadata)
     {
-        /** @var ClassMetadataInfo $metadata */
         return $metadata->isMappedSuperclass
             || $metadata->isEmbeddedClass
             || $metadata->getReflectionClass()->isAbstract();

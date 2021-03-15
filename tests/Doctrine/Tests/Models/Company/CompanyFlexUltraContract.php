@@ -26,12 +26,12 @@ class CompanyFlexUltraContract extends CompanyFlexContract
         return max($this->maxPrice, parent::calculatePrice());
     }
 
-    public function getMaxPrice()
+    public function getMaxPrice(): int
     {
         return $this->maxPrice;
     }
 
-    public function setMaxPrice($maxPrice): void
+    public function setMaxPrice(int $maxPrice): void
     {
         $this->maxPrice = $maxPrice;
     }

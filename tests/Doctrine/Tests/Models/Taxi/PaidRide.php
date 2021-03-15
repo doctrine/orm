@@ -13,6 +13,7 @@ namespace Doctrine\Tests\Models\Taxi;
 class PaidRide
 {
     /**
+     * @var Driver
      * @Id
      * @ManyToOne(targetEntity="Driver", inversedBy="driverRides")
      * @JoinColumn(name="driver_id", referencedColumnName="id")
@@ -20,13 +21,17 @@ class PaidRide
     private $driver;
 
     /**
+     * @var Car
      * @Id
      * @ManyToOne(targetEntity="Car", inversedBy="carRides")
      * @JoinColumn(name="car", referencedColumnName="brand")
      */
     private $car;
 
-    /** @Column(type="decimal", precision=6, scale=2) */
+    /**
+     * @var float
+     * @Column(type="decimal", precision=6, scale=2)
+     */
     private $fare;
 
     public function __construct(Driver $driver, Car $car)

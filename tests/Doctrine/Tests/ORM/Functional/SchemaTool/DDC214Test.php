@@ -22,7 +22,10 @@ use const PHP_EOL;
  */
 class DDC214Test extends OrmFunctionalTestCase
 {
-    private $classes    = [];
+    /** @psalm-var list<class-string> */
+    private $classes = [];
+
+    /** @var Tools\SchemaTool */
     private $schemaTool = null;
 
     protected function setUp(): void

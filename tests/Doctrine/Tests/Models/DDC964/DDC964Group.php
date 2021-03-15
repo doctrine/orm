@@ -12,16 +12,20 @@ use Doctrine\Common\Collections\ArrayCollection;
 class DDC964Group
 {
     /**
+     * @var int
      * @GeneratedValue
      * @Id @Column(type="integer")
      */
     private $id;
 
-    /** @Column */
+    /**
+     * @var string|null
+     * @Column
+     */
     private $name;
 
     /**
-     * @ArrayCollection
+     * @psalm-var ArrayCollection<int, DDC964User>
      * @ManyToMany(targetEntity="DDC964User", mappedBy="groups")
      */
     private $users;
@@ -37,7 +41,7 @@ class DDC964Group
         $this->name = $name;
     }
 
-    public function getName(): string
+    public function getName(): ?string
     {
         return $this->name;
     }
@@ -47,6 +51,9 @@ class DDC964Group
         $this->users[] = $user;
     }
 
+    /**
+     * @psalm-return ArrayCollection<int, DDC964User>
+     */
     public function getUsers(): ArrayCollection
     {
         return $this->users;

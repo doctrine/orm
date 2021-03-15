@@ -17,6 +17,7 @@ use function count;
  */
 class DDC1685Test extends OrmFunctionalTestCase
 {
+    /** @var Paginator */
     private $paginator;
 
     protected function setUp(): void

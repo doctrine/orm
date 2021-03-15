@@ -91,10 +91,11 @@ class ClassTableInheritanceTest2 extends OrmFunctionalTestCase
  */
 class CTIParent
 {
-   /**
-    * @Id @Column(type="integer")
-    * @GeneratedValue(strategy="AUTO")
-    */
+    /**
+     * @var int
+     * @Id @Column(type="integer")
+     * @GeneratedValue(strategy="AUTO")
+     */
     private $id;
 
     /**
@@ -103,17 +104,17 @@ class CTIParent
      */
     private $related;
 
-    public function getId()
+    public function getId(): int
     {
         return $this->id;
     }
 
-    public function getRelated()
+    public function getRelated(): CTIRelated
     {
         return $this->related;
     }
 
-    public function setRelated($related): void
+    public function setRelated(CTIRelated $related): void
     {
         $this->related = $related;
         $related->setCTIParent($this);
@@ -131,12 +132,12 @@ class CTIChild extends CTIParent
      */
     private $data;
 
-    public function getData()
+    public function getData(): string
     {
         return $this->data;
     }
 
-    public function setData($data): void
+    public function setData(string $data): void
     {
         $this->data = $data;
     }
@@ -159,17 +160,17 @@ class CTIRelated
      */
     private $ctiParent;
 
-    public function getId()
+    public function getId(): int
     {
         return $this->id;
     }
 
-    public function getCTIParent()
+    public function getCTIParent(): CTIParent
     {
         return $this->ctiParent;
     }
 
-    public function setCTIParent($ctiParent): void
+    public function setCTIParent(CTIParent $ctiParent): void
     {
         $this->ctiParent = $ctiParent;
     }
@@ -185,6 +186,7 @@ class CTIRelated2
      * @GeneratedValue
      */
     private $id;
+
     /**
      * @psalm-var Collection<int, CTIChild>
      * @ManyToMany(targetEntity="CTIChild")
@@ -196,7 +198,7 @@ class CTIRelated2
         $this->ctiChildren = new ArrayCollection();
     }
 
-    public function getId()
+    public function getId(): int
     {
         return $this->id;
     }
@@ -206,7 +208,10 @@ class CTIRelated2
         $this->ctiChildren->add($child);
     }
 
-    public function getCTIChildren()
+    /**
+     * @psalm-return Collection<int, CTIChild>
+     */
+    public function getCTIChildren(): Collection
     {
         return $this->ctiChildren;
     }
