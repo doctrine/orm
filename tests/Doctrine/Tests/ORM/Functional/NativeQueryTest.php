@@ -222,7 +222,7 @@ class NativeQueryTest extends OrmFunctionalTestCase
 
         $rsm = new ResultSetMapping();
 
-        $q  = $this->_em->createNativeQuery('SELECT id, name, status, phonenumber FROM cms_users INNER JOIN cms_phonenumbers ON id = user_id WHERE username = ?', $rsm);
+        $q = $this->_em->createNativeQuery('SELECT id, name, status, phonenumber FROM cms_users INNER JOIN cms_phonenumbers ON id = user_id WHERE username = ?', $rsm);
 
         $this->expectDeprecationWithIdentifier('https://github.com/doctrine/orm/issues/8379');
 
