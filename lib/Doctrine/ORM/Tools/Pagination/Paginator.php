@@ -132,7 +132,7 @@ class Paginator implements Countable, IteratorAggregate
     /**
      * {@inheritdoc}
      *
-     * @return ArrayIterator<mixed, T>
+     * @psalm-return ArrayIterator<array-key, T>
      */
     public function getIterator()
     {

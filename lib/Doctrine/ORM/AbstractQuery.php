@@ -796,7 +796,7 @@ abstract class AbstractQuery
      *
      * Alias for execute(null, HYDRATE_ARRAY).
      *
-     * @return array<int,mixed>
+     * @return mixed[]
      */
     public function getArrayResult()
     {
@@ -808,7 +808,7 @@ abstract class AbstractQuery
      *
      * Alias for execute(null, HYDRATE_SCALAR).
      *
-     * @return array<int,mixed>
+     * @return mixed[]
      */
     public function getScalarResult()
     {
