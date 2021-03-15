@@ -1880,7 +1880,7 @@ public function __construct(<params>)
         $lines = explode("\n", $code);
 
         foreach ($lines as $key => $value) {
-            if ($value !== '' && $value !== '0') {
+            if ($value !== '') {
                 $lines[$key] = str_repeat($this->spaces, $num) . $lines[$key];
             }
         }
