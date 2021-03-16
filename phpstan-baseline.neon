@@ -376,16 +376,6 @@ parameters:
 			path: lib/Doctrine/ORM/Event/LoadClassMetadataEventArgs.php
 
 		-
-			message: "#^Method Doctrine\\\\ORM\\\\Event\\\\OnClearEventArgs\\:\\:getEntityManager\\(\\) should return Doctrine\\\\ORM\\\\EntityManager but returns Doctrine\\\\ORM\\\\EntityManagerInterface\\.$#"
-			count: 1
-			path: lib/Doctrine/ORM/Event/OnClearEventArgs.php
-
-		-
-			message: "#^Method Doctrine\\\\ORM\\\\Event\\\\OnFlushEventArgs\\:\\:getEntityManager\\(\\) should return Doctrine\\\\ORM\\\\EntityManager but returns Doctrine\\\\ORM\\\\EntityManagerInterface\\.$#"
-			count: 1
-			path: lib/Doctrine/ORM/Event/OnFlushEventArgs.php
-
-		-
 			message: "#^Property Doctrine\\\\ORM\\\\Event\\\\PostFlushEventArgs\\:\\:\\$em \\(Doctrine\\\\ORM\\\\EntityManager\\) does not accept Doctrine\\\\ORM\\\\EntityManagerInterface\\.$#"
 			count: 1
 			path: lib/Doctrine/ORM/Event/PostFlushEventArgs.php
@@ -439,11 +429,6 @@ parameters:
 			message: "#^Call to an undefined method Doctrine\\\\Common\\\\Collections\\\\Collection\\<mixed, mixed\\>\\:\\:matching\\(\\)\\.$#"
 			count: 1
 			path: lib/Doctrine/ORM/LazyCriteriaCollection.php
-
-		-
-			message: "#^Method Doctrine\\\\ORM\\\\Mapping\\\\Builder\\\\ClassMetadataBuilder\\:\\:getClassMetadata\\(\\) should return Doctrine\\\\ORM\\\\Mapping\\\\ClassMetadata but returns Doctrine\\\\ORM\\\\Mapping\\\\ClassMetadataInfo\\.$#"
-			count: 1
-			path: lib/Doctrine/ORM/Mapping/Builder/ClassMetadataBuilder.php
 
 		-
 			message: "#^Access to an undefined property Doctrine\\\\Persistence\\\\Mapping\\\\ClassMetadata\\:\\:\\$cache\\.$#"
@@ -807,7 +792,7 @@ parameters:
 
 		-
 			message: "#^Result of && is always false\\.$#"
-			count: 1
+			count: 2
 			path: lib/Doctrine/ORM/Mapping/ClassMetadataInfo.php
 
 		-
@@ -1386,9 +1371,14 @@ parameters:
 			path: lib/Doctrine/ORM/Mapping/Driver/YamlDriver.php
 
 		-
-			message: "#^Instanceof between int and DateTimeInterface will always evaluate to false\\.$#"
-			count: 2
-			path: lib/Doctrine/ORM/OptimisticLockException.php
+			message: "#^Call to function is_int\\(\\) with string will always evaluate to false\\.$#"
+			count: 1
+			path: lib/Doctrine/ORM/NativeQuery.php
+
+		-
+			message: "#^Result of && is always false\\.$#"
+			count: 1
+			path: lib/Doctrine/ORM/NativeQuery.php
 
 		-
 			message: "#^Call to an undefined method Doctrine\\\\Common\\\\Collections\\\\Collection\\<mixed, mixed\\>\\:\\:matching\\(\\)\\.$#"
@@ -1516,27 +1506,7 @@ parameters:
 			path: lib/Doctrine/ORM/Proxy/ProxyFactory.php
 
 		-
-			message: "#^Argument of an invalid type Doctrine\\\\ORM\\\\Query\\\\Parameter supplied for foreach, only iterables are supported\\.$#"
-			count: 1
-			path: lib/Doctrine/ORM/Query.php
-
-		-
-			message: "#^If condition is always false\\.$#"
-			count: 1
-			path: lib/Doctrine/ORM/Query.php
-
-		-
 			message: "#^If condition is always true\\.$#"
-			count: 1
-			path: lib/Doctrine/ORM/Query.php
-
-		-
-			message: "#^Parameter \\#1 \\$paramMappings of method Doctrine\\\\ORM\\\\Query\\:\\:processParameterMappings\\(\\) expects array\\<Doctrine\\\\ORM\\\\Query\\\\Parameter\\>, array\\<int\\|string, array\\<int, int\\>\\> given\\.$#"
-			count: 1
-			path: lib/Doctrine/ORM/Query.php
-
-		-
-			message: "#^Parameter \\#1 \\$var of function count expects array\\|Countable, Doctrine\\\\ORM\\\\Query\\\\Parameter given\\.$#"
 			count: 1
 			path: lib/Doctrine/ORM/Query.php
 
@@ -1544,6 +1514,21 @@ parameters:
 			message: "#^Parameter \\#2 \\$sqlParams of method Doctrine\\\\ORM\\\\Query\\:\\:evictResultSetCache\\(\\) expects array\\<string, mixed\\>, array\\<int, mixed\\> given\\.$#"
 			count: 1
 			path: lib/Doctrine/ORM/Query.php
+
+		-
+			message: "#^Method Doctrine\\\\ORM\\\\QueryBuilder\\:\\:getEntityManager\\(\\) should return Doctrine\\\\ORM\\\\EntityManager but returns Doctrine\\\\ORM\\\\EntityManagerInterface\\.$#"
+			count: 1
+			path: lib/Doctrine/ORM/QueryBuilder.php
+
+		-
+			message: "#^PHPDoc tag @param references unknown parameter\\: \\$where$#"
+			count: 2
+			path: lib/Doctrine/ORM/QueryBuilder.php
+
+		-
+			message: "#^Parameter \\#2 \\$dqlPart of method Doctrine\\\\ORM\\\\QueryBuilder\\:\\:add\\(\\) expects array\\<'join'\\|int, array\\<int\\|string, object\\>\\|string\\>\\|object\\|string, array\\<string, Doctrine\\\\ORM\\\\Query\\\\Expr\\\\Join\\> given\\.$#"
+			count: 2
+			path: lib/Doctrine/ORM/QueryBuilder.php
 
 		-
 			message: "#^Access to an undefined property Doctrine\\\\ORM\\\\Query\\\\AST\\\\Node\\:\\:\\$value\\.$#"
@@ -2302,21 +2287,6 @@ parameters:
 			path: lib/Doctrine/ORM/Query/TreeWalkerChainIterator.php
 
 		-
-			message: "#^Method Doctrine\\\\ORM\\\\QueryBuilder\\:\\:getEntityManager\\(\\) should return Doctrine\\\\ORM\\\\EntityManager but returns Doctrine\\\\ORM\\\\EntityManagerInterface\\.$#"
-			count: 1
-			path: lib/Doctrine/ORM/QueryBuilder.php
-
-		-
-			message: "#^PHPDoc tag @param references unknown parameter\\: \\$where$#"
-			count: 2
-			path: lib/Doctrine/ORM/QueryBuilder.php
-
-		-
-			message: "#^Parameter \\#2 \\$dqlPart of method Doctrine\\\\ORM\\\\QueryBuilder\\:\\:add\\(\\) expects array\\<'join'\\|int, array\\<int\\|string, object\\>\\|string\\>\\|object\\|string, array\\<string, Doctrine\\\\ORM\\\\Query\\\\Expr\\\\Join\\> given\\.$#"
-			count: 2
-			path: lib/Doctrine/ORM/QueryBuilder.php
-
-		-
 			message: "#^Else branch is unreachable because ternary operator condition is always true\\.$#"
 			count: 1
 			path: lib/Doctrine/ORM/Tools/Console/Command/ClearCache/QueryRegionCommand.php
@@ -2389,11 +2359,6 @@ parameters:
 		-
 			message: "#^If condition is always true\\.$#"
 			count: 1
-			path: lib/Doctrine/ORM/Tools/EntityGenerator.php
-
-		-
-			message: "#^Offset 'declaredField' does not exist on array\\('type' \\=\\> string, 'fieldName' \\=\\> string, \\?'columnName' \\=\\> string, \\?'length' \\=\\> int, \\?'id' \\=\\> bool, \\?'nullable' \\=\\> bool, \\?'columnDefinition' \\=\\> string, \\?'precision' \\=\\> int, \\.\\.\\.\\)\\.$#"
-			count: 3
 			path: lib/Doctrine/ORM/Tools/EntityGenerator.php
 
 		-

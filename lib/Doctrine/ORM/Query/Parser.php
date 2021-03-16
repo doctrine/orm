@@ -71,7 +71,6 @@ use Doctrine\ORM\Query\AST\SimpleSelectExpression;
 use Doctrine\ORM\Query\AST\SimpleWhenClause;
 use Doctrine\ORM\Query\AST\Subselect;
 use Doctrine\ORM\Query\AST\SubselectFromClause;
-use Doctrine\ORM\Query\AST\SubselectIdentificationVariableDeclaration;
 use Doctrine\ORM\Query\AST\UpdateClause;
 use Doctrine\ORM\Query\AST\UpdateItem;
 use Doctrine\ORM\Query\AST\UpdateStatement;
@@ -555,7 +554,8 @@ class Parser
      *
      * @param bool $resetPeek Reset peek after finding the closing parenthesis.
      *
-     * @psalm-return array<string, mixed>| null
+     * @return mixed[]
+     * @psalm-return array{value: string, type: int|null|string, position: int}|null
      */
     private function peekBeyondClosingParenthesis(bool $resetPeek = true)
     {
@@ -1038,6 +1038,8 @@ class Parser
      * Validates an AbstractSchemaName, making sure the class exists.
      *
      * @param string $schemaName The name to validate.
+     *
+     * @return void
      *
      * @throws QueryException if the name does not exist.
      */
@@ -1681,7 +1683,7 @@ class Parser
      * accessible is "FROM", prohibiting an easy implementation without larger
      * changes.}
      *
-     * @return SubselectIdentificationVariableDeclaration|IdentificationVariableDeclaration
+     * @return IdentificationVariableDeclaration
      */
     public function SubselectIdentificationVariableDeclaration()
     {

@@ -21,7 +21,6 @@
 namespace Doctrine\ORM\Query;
 
 use Doctrine\Common\Collections\ArrayCollection;
-use Doctrine\Common\Collections\Collection;
 use Doctrine\Common\Collections\Expr\Comparison;
 use Doctrine\Common\Collections\Expr\CompositeExpression;
 use Doctrine\Common\Collections\Expr\ExpressionVisitor;
@@ -51,7 +50,7 @@ class QueryExpressionVisitor extends ExpressionVisitor
     /** @var Expr */
     private $expr;
 
-    /** @var mixed[] */
+    /** @var list<mixed> */
     private $parameters = [];
 
     /**
@@ -69,7 +68,7 @@ class QueryExpressionVisitor extends ExpressionVisitor
      * Gets bound parameters.
      * Filled after {@link dispach()}.
      *
-     * @return Collection<int, mixed>
+     * @return ArrayCollection<int, mixed>
      */
     public function getParameters()
     {

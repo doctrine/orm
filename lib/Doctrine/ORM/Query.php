@@ -329,6 +329,8 @@ final class Query extends AbstractQuery
      * @param array<string,mixed> $sqlParams
      * @param array<string,Type>  $types
      * @param array<string,mixed> $connectionParams
+     *
+     * @return void
      */
     private function evictResultSetCache(
         AbstractSqlExecutor $executor,
@@ -352,6 +354,8 @@ final class Query extends AbstractQuery
 
     /**
      * Evict entity cache region
+     *
+     * @return void
      */
     private function evictEntityCacheRegion()
     {
@@ -371,7 +375,7 @@ final class Query extends AbstractQuery
     /**
      * Processes query parameter mappings.
      *
-     * @param Parameter[] $paramMappings
+     * @param array<list<int>> $paramMappings
      *
      * @return mixed[][]
      * @psalm-return array{0: list<mixed>, 1: array}
@@ -554,6 +558,8 @@ final class Query extends AbstractQuery
     }
 
     /**
+     * @return void
+     *
      * @override
      */
     public function free()

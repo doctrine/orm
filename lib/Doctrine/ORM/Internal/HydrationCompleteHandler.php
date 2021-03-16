@@ -54,6 +54,8 @@ final class HydrationCompleteHandler
      * Method schedules invoking of postLoad entity to the very end of current hydration cycle.
      *
      * @param object $entity
+     *
+     * @return void
      */
     public function deferPostLoadInvoking(ClassMetadata $class, $entity)
     {
@@ -70,6 +72,8 @@ final class HydrationCompleteHandler
      * This method should me called after any hydration cycle completed.
      *
      * Method fires all deferred invocations of postLoad events
+     *
+     * @return void
      */
     public function hydrationComplete()
     {

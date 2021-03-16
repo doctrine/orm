@@ -1705,7 +1705,7 @@ class UnitOfWork implements PropertyChangedListener
      * @param mixed  $idHash        (must be possible to cast it to string)
      * @param string $rootClassName
      *
-     * @return object|bool The found entity or FALSE.
+     * @return false|object The found entity or FALSE.
      *
      * @ignore
      */
@@ -3592,6 +3592,8 @@ class UnitOfWork implements PropertyChangedListener
      * Unit of work able to fire deferred events, related to loading events here.
      *
      * @internal should be called internally from object hydrators
+     *
+     * @return void
      */
     public function hydrationComplete()
     {

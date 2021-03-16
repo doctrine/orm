@@ -117,6 +117,8 @@ class Parameter
      *
      * @param mixed $value Parameter value.
      * @param mixed $type  Parameter type.
+     *
+     * @return void
      */
     public function setValue($value, $type = null)
     {

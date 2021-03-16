@@ -381,6 +381,7 @@ class ClassMetadataInfo implements ClassMetadata
      * READ-ONLY: The inheritance mapping type used by the class.
      *
      * @var int
+     * @psalm-var self::$INHERITANCE_TYPE_*
      */
     public $inheritanceType = self::INHERITANCE_TYPE_NONE;
 
@@ -447,6 +448,8 @@ class ClassMetadataInfo implements ClassMetadata
      *      originalField?: string,
      *      quoted?: bool,
      *      requireSQLConversion?: bool,
+     *      declaredField?: string,
+     *      options: array<mixed>
      * }>
      */
     public $fieldMappings = [];
@@ -1133,7 +1136,7 @@ class ClassMetadataInfo implements ClassMetadata
 
     /**
      * @param string $fieldName
-     * @psalm-param array{usage?: mixed, region?: mixed} $cache
+     * @psalm-param array{usage?: int, region?: string} $cache
      *
      * @return void
      */
@@ -1145,10 +1148,10 @@ class ClassMetadataInfo implements ClassMetadata
     /**
      * @param string $fieldName
      * @param array  $cache
-     * @psalm-param array{usage?: mixed, region?: mixed} $cache
+     * @psalm-param array{usage?: int, region?: string} $cache
      *
-     * @return mixed[]
-     * @psalm-return array{usage: mixed, region: mixed}
+     * @return int[]|string[]
+     * @psalm-return array{usage: int, region: string|null}
      */
     public function getAssociationCacheDefaults($fieldName, array $cache)
     {
@@ -1274,7 +1277,19 @@ class ClassMetadataInfo implements ClassMetadata
      *
      * @param string $fieldName The field name.
      *
-     * @psalm-return array<string, mixed> The field mapping.
+     * @return mixed[] The field mapping.
+     * @psalm-return array{
+     *      type: string,
+     *      fieldName: string,
+     *      columnName?: string,
+     *      inherited?: class-string,
+     *      nullable?: bool,
+     *      originalClass?: class-string,
+     *      originalField?: string,
+     *      scale?: int,
+     *      precision?: int,
+     *      length?: int
+     * }
      *
      * @throws MappingException
      */
@@ -1354,7 +1369,8 @@ class ClassMetadataInfo implements ClassMetadata
     /**
      * Gets all named queries of the class.
      *
-     * @psalm-return array<string, mixed>
+     * @return mixed[][]
+     * @psalm-return array<string, array<string, mixed>>
      */
     public function getNamedQueries()
     {
@@ -1398,7 +1414,8 @@ class ClassMetadataInfo implements ClassMetadata
      *
      * @param string $name The result set mapping name.
      *
-     * @psalm-return array<string, mixed>
+     * @return mixed[]
+     * @psalm-return array{name: string, entities: array, columns: array}
      *
      * @throws MappingException
      */
@@ -1414,7 +1431,8 @@ class ClassMetadataInfo implements ClassMetadata
     /**
      * Gets all sql result set mappings of the class.
      *
-     * @psalm-return array<string, array<string, mixed>>
+     * @return mixed[]
+     * @psalm-return array<string, array{name: string, entities: array, columns: array}>
      */
     public function getSqlResultSetMappings()
     {
@@ -1736,9 +1754,34 @@ class ClassMetadataInfo implements ClassMetadata
      * Validates & completes a one-to-one association mapping.
      *
      * @psalm-param array<string, mixed> $mapping The mapping to validate & complete.
+     * @psalm-param array<string, mixed> $mapping The mapping to validate & complete.
      *
      * @return mixed[] The validated & completed mapping.
      * @psalm-return array{isOwningSide: mixed, orphanRemoval: bool, isCascadeRemove: bool}
+     * @psalm-return array{
+     *      mappedBy: mixed|null,
+     *      inversedBy: mixed|null,
+     *      isOwningSide: bool,
+     *      sourceEntity: class-string,
+     *      targetEntity: string,
+     *      fieldName: mixed,
+     *      fetch: mixed,
+     *      cascade: array<string>,
+     *      isCascadeRemove: bool,
+     *      isCascadePersist: bool,
+     *      isCascadeRefresh: bool,
+     *      isCascadeMerge: bool,
+     *      isCascadeDetach: bool,
+     *      type: int,
+     *      originalField: string,
+     *      originalClass: class-string,
+     *      joinColumns?: array{0: array{name: string, referencedColumnName: string}}|mixed,
+     *      id?: mixed,
+     *      sourceToTargetKeyColumns?: array,
+     *      joinColumnFieldNames?: array,
+     *      targetToSourceKeyColumns?: array<array-key>,
+     *      orphanRemoval: bool
+     * }
      *
      * @throws RuntimeException
      * @throws MappingException
@@ -1869,9 +1912,33 @@ class ClassMetadataInfo implements ClassMetadata
      * Validates & completes a many-to-many association mapping.
      *
      * @psalm-param array<string, mixed> $mapping The mapping to validate & complete.
+     * @psalm-param array<string, mixed> $mapping The mapping to validate & complete.
      *
      * @return mixed[] The validated & completed mapping.
-     * @psalm-return array{isOwningSide: mixed, orphanRemoval: bool}
+     * @psalm-return array{
+     *      mappedBy: mixed,
+     *      inversedBy: mixed,
+     *      isOwningSide: bool,
+     *      sourceEntity: class-string,
+     *      targetEntity: string,
+     *      fieldName: mixed,
+     *      fetch: mixed,
+     *      cascade: array<string>,
+     *      isCascadeRemove: bool,
+     *      isCascadePersist: bool,
+     *      isCascadeRefresh: bool,
+     *      isCascadeMerge: bool,
+     *      isCascadeDetach: bool,
+     *      type: int,
+     *      originalField: string,
+     *      originalClass: class-string,
+     *      joinTable?: array{inverseJoinColumns: mixed}|mixed,
+     *      joinTableColumns?: list<mixed>,
+     *      isOnDeleteCascade?: true,
+     *      relationToSourceKeyColumns?: array,
+     *      relationToTargetKeyColumns?: array,
+     *      orphanRemoval: bool
+     * }
      *
      * @throws InvalidArgumentException
      */
@@ -2948,6 +3015,8 @@ class ClassMetadataInfo implements ClassMetadata
      * @param string $class     The listener class.
      * @param string $method    The listener callback method.
      *
+     * @return void
+     *
      * @throws MappingException
      */
     public function addEntityListener($eventName, $class, $method)
@@ -3489,7 +3558,7 @@ class ClassMetadataInfo implements ClassMetadata
     }
 
     /**
-     * @param  string|null $className
+     * @param string|null $className
      * @psalm-param ?class-string $className
      *
      * @return string|null null if the input value is null
@@ -3546,6 +3615,8 @@ class ClassMetadataInfo implements ClassMetadata
      * Inline the embeddable class
      *
      * @param string $property
+     *
+     * @return void
      */
     public function inlineEmbeddable($property, ClassMetadataInfo $embeddable)
     {

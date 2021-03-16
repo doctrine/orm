@@ -98,6 +98,8 @@ EOT
      * Display all the mapping information for a single Entity.
      *
      * @param string $entityName Full or partial entity class name
+     *
+     * @return void
      */
     private function displayEntity($entityName, EntityManagerInterface $entityManager, SymfonyStyle $ui)
     {

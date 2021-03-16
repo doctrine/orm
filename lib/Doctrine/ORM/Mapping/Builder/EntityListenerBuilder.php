@@ -50,6 +50,8 @@ class EntityListenerBuilder
      * @param ClassMetadata $metadata  The entity metadata.
      * @param string        $className The listener class name.
      *
+     * @return void
+     *
      * @throws MappingException When the listener class not found.
      */
     public static function bindEntityListener(ClassMetadata $metadata, $className)

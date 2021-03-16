@@ -39,7 +39,7 @@ class ClassMetadataBuilder
     }
 
     /**
-     * @return ClassMetadata
+     * @return ClassMetadataInfo
      */
     public function getClassMetadata()
     {

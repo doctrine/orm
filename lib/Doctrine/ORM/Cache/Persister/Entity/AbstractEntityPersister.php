@@ -225,6 +225,8 @@ abstract class AbstractEntityPersister implements CachedEntityPersister
 
     /**
      * @param object $entity
+     *
+     * @return void
      */
     private function storeJoinedAssociations($entity)
     {

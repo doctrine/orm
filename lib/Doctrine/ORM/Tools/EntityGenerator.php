@@ -561,6 +561,8 @@ public function __construct(<params>)
      * Sets whether or not to generate immutable embeddables.
      *
      * @param bool $embeddablesImmutable
+     *
+     * @return void
      */
     public function setEmbeddablesImmutable($embeddablesImmutable)
     {
@@ -948,7 +950,7 @@ public function __construct(<params>)
 
     /**
      * @return ReflectionClass[]
-     * @psalm-return array<trait-string, ReflectionClass>
+     * @psalm-return array<trait-string, ReflectionClass<object>>
      *
      * @throws ReflectionException
      */

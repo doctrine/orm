@@ -632,6 +632,8 @@ class Configuration extends \Doctrine\DBAL\Configuration
      *
      * @param string $name      The name of the filter.
      * @param string $className The class name of the filter.
+     *
+     * @return void
      */
     public function addFilter($name, $className)
     {
@@ -733,6 +735,8 @@ class Configuration extends \Doctrine\DBAL\Configuration
 
     /**
      * Set the entity listener resolver.
+     *
+     * @return void
      */
     public function setEntityListenerResolver(EntityListenerResolver $resolver)
     {
@@ -755,6 +759,8 @@ class Configuration extends \Doctrine\DBAL\Configuration
 
     /**
      * Set the entity repository factory.
+     *
+     * @return void
      */
     public function setRepositoryFactory(RepositoryFactory $repositoryFactory)
     {
@@ -823,6 +829,8 @@ class Configuration extends \Doctrine\DBAL\Configuration
      * Sets array of query hints, which will be applied to every query in application
      *
      * @psalm-param array<string, mixed> $defaultQueryHints
+     *
+     * @return void
      */
     public function setDefaultQueryHints(array $defaultQueryHints)
     {
@@ -846,6 +854,8 @@ class Configuration extends \Doctrine\DBAL\Configuration
      *
      * @param string $name  The name of the hint.
      * @param mixed  $value The value of the hint.
+     *
+     * @return void
      */
     public function setDefaultQueryHint($name, $value)
     {

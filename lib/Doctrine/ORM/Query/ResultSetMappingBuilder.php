@@ -272,7 +272,7 @@ class ResultSetMappingBuilder extends ResultSetMapping
      *
      * @param string $resultClassName
      *
-     * @return self
+     * @return static
      */
     public function addNamedNativeQueryResultClassMapping(ClassMetadataInfo $class, $resultClassName)
     {
@@ -316,7 +316,7 @@ class ResultSetMappingBuilder extends ResultSetMapping
      *
      * @param string $resultSetMappingName
      *
-     * @return self
+     * @return static
      */
     public function addNamedNativeQueryResultSetMapping(ClassMetadataInfo $class, $resultSetMappingName)
     {
@@ -365,7 +365,7 @@ class ResultSetMappingBuilder extends ResultSetMapping
      * @param mixed[] $entityMapping
      * @param string  $alias
      *
-     * @return self
+     * @return static
      *
      * @throws MappingException
      * @throws InvalidArgumentException

@@ -402,6 +402,8 @@ class ResultSetMapping
      *
      * @param mixed  $parameter The parameter name in the SQL result set.
      * @param string $attribute The metadata attribute.
+     *
+     * @return void
      */
     public function addMetadataParameterMapping($parameter, $attribute)
     {
@@ -428,7 +430,7 @@ class ResultSetMapping
      *
      * @param string $alias
      *
-     * @return string
+     * @return class-string
      */
     public function getClassName($alias)
     {
@@ -452,7 +454,7 @@ class ResultSetMapping
      *
      * @param string $columnName
      *
-     * @return string
+     * @return class-string
      */
     public function getDeclaringClass($columnName)
     {
@@ -539,6 +541,7 @@ class ResultSetMapping
      * Gets the number of different entities that appear in the mapped result.
      *
      * @return int
+     * @psalm-return 0|positive-int
      */
     public function getEntityResultCount()
     {

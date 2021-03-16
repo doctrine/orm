@@ -31,6 +31,7 @@ use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\Query\ResultSetMapping;
 use Doctrine\ORM\Tools\Pagination\LimitSubqueryWalker;
 use Doctrine\ORM\UnitOfWork;
+use Generator;
 use PDO;
 use ReflectionClass;
 
@@ -152,7 +153,7 @@ abstract class AbstractHydrator
      *
      * @psalm-param array<string, mixed> $hints
      *
-     * @return iterable<mixed>
+     * @return Generator<int, mixed>
      */
     public function toIterable(ResultStatement $stmt, ResultSetMapping $resultSetMapping, array $hints = []): iterable
     {
@@ -220,7 +221,7 @@ abstract class AbstractHydrator
      * Hydrates a single row returned by the current statement instance during
      * row-by-row hydration with {@link iterate()} or {@link toIterable()}.
      *
-     * @return mixed
+     * @return mixed[]|false
      */
     public function hydrateRow()
     {
@@ -539,6 +540,7 @@ abstract class AbstractHydrator
 
     /**
      * @return string[]
+     * @psalm-return non-empty-list<string>
      */
     private function getDiscriminatorValues(ClassMetadata $classMetadata): array
     {

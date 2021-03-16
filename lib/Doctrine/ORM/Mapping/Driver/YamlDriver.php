@@ -762,8 +762,8 @@ class YamlDriver extends FileDriver
      * @psalm-return array{
      *                   fieldName: string,
      *                   type?: string,
-     *                   columnName?: mixed,
-     *                   length?: mixed,
+     *                   columnName?: string,
+     *                   length?: int,
      *                   precision?: mixed,
      *                   scale?: mixed,
      *                   unique?: bool,
@@ -832,9 +832,10 @@ class YamlDriver extends FileDriver
      *
      * @param mixed[] $cacheMapping
      * @psalm-param array{usage: mixed, region: (string|null)} $cacheMapping
+     * @psalm-param array{usage: string, region?: string} $cacheMapping
      *
      * @return mixed[]
-     * @psalm-return array{usage: mixed, region: (string|null)}
+     * @psalm-return array{usage: int, region: string|null}
      */
     private function cacheToArray($cacheMapping)
     {
@@ -846,7 +847,7 @@ class YamlDriver extends FileDriver
         }
 
         if ($usage) {
-            $usage = constant('Doctrine\ORM\Mapping\ClassMetadata::CACHE_USAGE_' . $usage);
+            $usage = (int) constant('Doctrine\ORM\Mapping\ClassMetadata::CACHE_USAGE_' . $usage);
         }
 
         return [

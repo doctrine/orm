@@ -315,6 +315,7 @@ class EntityRepository implements ObjectRepository, Selectable
      * Select all elements from a selectable that match the expression and
      * return a new collection containing these elements.
      *
+     * @return LazyCriteriaCollection
      * @psalm-return Collection<int, T>
      */
     public function matching(Criteria $criteria)

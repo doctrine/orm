@@ -362,7 +362,7 @@ class BasicEntityPersister implements EntityPersister
      * @param mixed[] $id
      *
      * @return int[]|null[]|string[]
-     * @psalm-return list<(int|string|null)>
+     * @psalm-return list<int|string|null>
      */
     private function extractIdentifierTypes(array $id, ClassMetadata $versionedClass): array
     {
@@ -1849,7 +1849,7 @@ class BasicEntityPersister implements EntityPersister
      *                             - class to which the field belongs to
      *
      * @return mixed[][]
-     * @psalm-return array{0: array, 1: list<mixed>}
+     * @psalm-return array{0: array, 1: list<int|string|null>}
      */
     private function expandToManyParameters($criteria)
     {
@@ -1875,7 +1875,7 @@ class BasicEntityPersister implements EntityPersister
      * @param mixed  $value
      *
      * @return int[]|null[]|string[]
-     * @psalm-return list<(int|string|null)>
+     * @psalm-return list<int|string|null>
      *
      * @throws QueryException
      */
@@ -1928,7 +1928,7 @@ class BasicEntityPersister implements EntityPersister
      *
      * @param mixed $value
      *
-     * @return array{mixed}
+     * @return mixed[]
      */
     private function getValues($value)
     {
@@ -2069,6 +2069,8 @@ class BasicEntityPersister implements EntityPersister
      *
      * @param int|null $offset
      * @param int|null $limit
+     *
+     * @return void
      */
     protected function switchPersisterContext($offset, $limit)
     {
@@ -2083,6 +2085,7 @@ class BasicEntityPersister implements EntityPersister
 
     /**
      * @return string[]
+     * @psalm-return list<string>
      */
     protected function getClassIdentifiersTypes(ClassMetadata $class): array
     {

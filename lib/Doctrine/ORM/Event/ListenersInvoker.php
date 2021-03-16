@@ -90,6 +90,8 @@ class ListenersInvoker
      * @param object        $entity    The Entity on which the event occurred.
      * @param EventArgs     $event     The Event args.
      * @param int           $invoke    Bitmask to invoke listeners.
+     *
+     * @return void
      */
     public function invoke(ClassMetadata $metadata, $eventName, $entity, EventArgs $event, $invoke)
     {

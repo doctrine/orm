@@ -399,7 +399,7 @@ class ManyToManyPersister extends AbstractCollectionPersister
     /**
      * Internal note: Order of the parameters must be the same as the order of the columns in getDeleteSql.
      *
-     * @return mixed[]
+     * @return list<mixed>
      */
     protected function getDeleteSQLParameters(PersistentCollection $collection)
     {

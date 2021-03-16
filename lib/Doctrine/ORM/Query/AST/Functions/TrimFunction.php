@@ -94,6 +94,7 @@ class TrimFunction extends FunctionNode
 
     /**
      * @return int
+     * @psalm-return AbstractPlatform::TRIM_*
      */
     private function getTrimMode()
     {

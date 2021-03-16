@@ -315,6 +315,8 @@ class DatabaseDriver implements MappingDriver
 
     /**
      * Build indexes from a class metadata.
+     *
+     * @return void
      */
     private function buildIndexes(ClassMetadataInfo $metadata)
     {
@@ -338,6 +340,8 @@ class DatabaseDriver implements MappingDriver
 
     /**
      * Build field mapping from class metadata.
+     *
+     * @return void
      */
     private function buildFieldMappings(ClassMetadataInfo $metadata)
     {
@@ -453,6 +457,8 @@ class DatabaseDriver implements MappingDriver
 
     /**
      * Build to one (one to one, many to one) association mapping from class metadata.
+     *
+     * @return void
      */
     private function buildToOneAssociationMappings(ClassMetadataInfo $metadata)
     {

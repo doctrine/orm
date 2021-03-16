@@ -85,6 +85,9 @@ class ClassMetadataFactory extends AbstractClassMetadataFactory
         return $loaded;
     }
 
+    /**
+     * @return void
+     */
     public function setEntityManager(EntityManagerInterface $em)
     {
         $this->em = $em;
@@ -354,6 +357,8 @@ class ClassMetadataFactory extends AbstractClassMetadataFactory
      * The automatically generated discriminator map contains the lowercase short name of
      * each class as key.
      *
+     * @return void
+     *
      * @throws MappingException
      */
     private function addDefaultDiscriminatorMap(ClassMetadata $class)
@@ -455,6 +460,9 @@ class ClassMetadataFactory extends AbstractClassMetadataFactory
         }
     }
 
+    /**
+     * @return void
+     */
     private function addInheritedEmbeddedClasses(ClassMetadata $subClass, ClassMetadata $parentClass)
     {
         foreach ($parentClass->embeddedClasses as $field => $embeddedClass) {
@@ -476,6 +484,8 @@ class ClassMetadataFactory extends AbstractClassMetadataFactory
      * @param ClassMetadata $subClass    Sub embedded class metadata to add nested embedded classes metadata from.
      * @param ClassMetadata $parentClass Parent class to add nested embedded classes metadata to.
      * @param string        $prefix      Embedded classes' prefix to use for nested embedded classes field names.
+     *
+     * @return void
      */
     private function addNestedEmbeddedClasses(ClassMetadata $subClass, ClassMetadata $parentClass, $prefix)
     {
@@ -714,6 +724,8 @@ class ClassMetadataFactory extends AbstractClassMetadataFactory
 
     /**
      * Inherits the ID generator mapping from a parent class.
+     *
+     * @return void
      */
     private function inheritIdGeneratorMapping(ClassMetadataInfo $class, ClassMetadataInfo $parent)
     {

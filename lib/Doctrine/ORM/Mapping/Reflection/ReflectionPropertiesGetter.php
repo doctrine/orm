@@ -78,7 +78,7 @@ final class ReflectionPropertiesGetter
      * @param string $className
      *
      * @return ReflectionClass[]
-     * @psalm-return list<ReflectionClass>
+     * @psalm-return list<ReflectionClass<object>>
      */
     private function getHierarchyClasses($className): array
     {
