@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Doctrine\Tests;
 
+use Doctrine\Common\EventSubscriber;
 use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\DriverManager;
 use UnexpectedValueException;
@@ -30,18 +31,16 @@ class TestUtil
      * Gets a <b>real</b> database connection using the following parameters
      * of the $GLOBALS array:
      *
-     * 'db_type' : The name of the Doctrine DBAL database driver to use.
-     * 'db_username' : The username to use for connecting.
+     * 'db_driver' : The name of the Doctrine DBAL database driver to use.
+     * 'db_user' : The username to use for connecting.
      * 'db_password' : The password to use for connecting.
      * 'db_host' : The hostname of the database to connect to.
      * 'db_server' : The server name of the database to connect to
      *               (optional, some vendors allow multiple server instances with different names on the same host).
-     * 'db_name' : The name of the database to connect to.
+     * 'db_dbname' : The name of the database to connect to.
      * 'db_port' : The port of the database to connect to.
      *
-     * Usually these variables of the $GLOBALS array are filled by PHPUnit based
-     * on an XML configuration file. If no such parameters exist, an SQLite
-     * in-memory database is used.
+     * These variables of the $GLOBALS array are filled by PHPUnit based on an XML configuration file.
      *
      * IMPORTANT:
      * 1) Each invocation of this method returns a NEW database connection.
@@ -51,87 +50,79 @@ class TestUtil
      */
     public static function getConnection(): Connection
     {
-        $params = self::getConnectionParams();
-        $conn   = DriverManager::getConnection($params);
-        // Note, writes direct to STDERR to prevent phpunit detecting output - otherwise this would cause either an
-        // "unexpected output" warning or a failure on the first test case to call this method.
-        fwrite(
-            STDERR,
-            sprintf(
-                "\nUsing DB driver %s\n",
-                get_class($conn->getDriver())
-            )
-        );
+        if (! self::$initialized) {
+            self::initializeDatabase();
+            self::$initialized = true;
+        }
+
+        $conn = DriverManager::getConnection(self::getTestConnectionParameters());
 
         self::addDbEventSubscribers($conn);
 
         return $conn;
     }
 
-    public static function getTempConnection(): Connection
+    public static function getPrivilegedConnection(): Connection
     {
-        return DriverManager::getConnection(self::getParamsForTemporaryConnection());
+        return DriverManager::getConnection(self::getPrivilegedConnectionParameters());
     }
 
-    /**
-     * @psalm-return array<string, mixed>
-     */
-    private static function getConnectionParams()
+    private static function initializeDatabase(): void
     {
-        $realDbParams = self::getParamsForMainConnection();
+        $testConnParams = self::getTestConnectionParameters();
+        $privConnParams = self::getPrivilegedConnectionParameters();
 
-        if (! self::$initialized) {
-            $tmpDbParams = self::getParamsForTemporaryConnection();
+        $testConn = DriverManager::getConnection($testConnParams);
 
-            $realConn = DriverManager::getConnection($realDbParams);
+        // Note, writes direct to STDERR to prevent phpunit detecting output - otherwise this would cause either an
+        // "unexpected output" warning or a failure on the first test case to call this method.
+        fwrite(STDERR, sprintf("\nUsing DB driver %s\n", get_class($testConn->getDriver())));
 
-            // Connect to tmpdb in order to drop and create the real test db.
-            $tmpConn = DriverManager::getConnection($tmpDbParams);
+        // Connect as a privileged user to create and drop the test database.
+        $privConn = DriverManager::getConnection($privConnParams);
 
-            $platform = $tmpConn->getDatabasePlatform();
+        $platform = $privConn->getDatabasePlatform();
 
-            if ($platform->supportsCreateDropDatabase()) {
-                $dbname = $realConn->getDatabase();
-                $realConn->close();
+        if ($platform->supportsCreateDropDatabase()) {
+            $dbname = $testConn->getDatabase();
+            $testConn->close();
 
-                $tmpConn->getSchemaManager()->dropAndCreateDatabase($dbname);
+            $privConn->getSchemaManager()->dropAndCreateDatabase($dbname);
 
-                $tmpConn->close();
-            } else {
-                $sm = $realConn->getSchemaManager();
+            $privConn->close();
+        } else {
+            $sm = $testConn->getSchemaManager();
 
-                $schema = $sm->createSchema();
-                $stmts  = $schema->toDropSql($realConn->getDatabasePlatform());
+            $schema = $sm->createSchema();
+            $stmts  = $schema->toDropSql($testConn->getDatabasePlatform());
 
-                foreach ($stmts as $stmt) {
-                    $realConn->exec($stmt);
-                }
+            foreach ($stmts as $stmt) {
+                $testConn->exec($stmt);
             }
-
-            self::$initialized = true;
         }
-
-        return $realDbParams;
     }
 
     private static function addDbEventSubscribers(Connection $conn): void
     {
-        if (isset($GLOBALS['db_event_subscribers'])) {
-            $evm = $conn->getEventManager();
-            foreach (explode(',', $GLOBALS['db_event_subscribers']) as $subscriberClass) {
-                $subscriberInstance = new $subscriberClass();
-                $evm->addEventSubscriber($subscriberInstance);
-            }
+        if (! isset($GLOBALS['db_event_subscribers'])) {
+            return;
+        }
+
+        $evm = $conn->getEventManager();
+        /** @psalm-var class-string<EventSubscriber> $subscriberClass */
+        foreach (explode(',', $GLOBALS['db_event_subscribers']) as $subscriberClass) {
+            $subscriberInstance = new $subscriberClass();
+            $evm->addEventSubscriber($subscriberInstance);
         }
     }
 
     /**
      * @psalm-return array<string, mixed>
      */
-    private static function getParamsForTemporaryConnection()
+    private static function getPrivilegedConnectionParameters(): array
     {
-        if (isset($GLOBALS['tmpdb_driver'])) {
-            return self::mapConnectionParameters($GLOBALS, 'tmpdb_');
+        if (isset($GLOBALS['privileged_db_driver'])) {
+            return self::mapConnectionParameters($GLOBALS, 'privileged_db_');
         }
 
         $parameters = self::mapConnectionParameters($GLOBALS, 'db_');
@@ -143,7 +134,7 @@ class TestUtil
     /**
      * @psalm-return array<string, mixed>
      */
-    private static function getParamsForMainConnection()
+    private static function getTestConnectionParameters(): array
     {
         if (! isset($GLOBALS['db_driver'])) {
             throw new UnexpectedValueException(

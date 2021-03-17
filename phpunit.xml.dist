@@ -44,14 +44,24 @@
       <var name="db_port" value="3306"/>-->
     <!--<var name="db_event_subscribers" value="Doctrine\DBAL\Event\Listeners\OracleSessionInit">-->
 
-    <!-- Database for temporary connections (i.e. to drop/create the main database) -->
     <!--
-    <var name="tmpdb_driver" value="pdo_mysql"/>
-    <var name="tmpdb_host" value="localhost" />
-    <var name="tmpdb_user" value="root" />
-    <var name="tmpdb_password" value="" />
-    <var name="tmpdb_dbname" value="doctrine_tests_tmp" />
-    <var name="tmpdb_port" value="3306"/>
+     At the start of each test run, we will drop and recreate the test database.
+
+     By default we assume that the `db_` config above has unrestricted access to the provided database
+     platform.
+
+     If you prefer, you can provide a restricted user above and a separate `privileged_db` config
+     block to provide details of a privileged connection to use for the setup / teardown actions.
+
+     Note that these configurations are not merged - if you specify a `privileged_db_driver` then
+     you must also specify all the other options that your driver requires.
+
+    <var name="privileged_db_driver" value="pdo_mysql"/>
+    <var name="privileged_db_host" value="localhost" />
+    <var name="privileged_db_user" value="root" />
+    <var name="privileged_db_password" value="" />
+    <var name="privileged_db_dbname" value="doctrine_tests_tmp" />
+    <var name="privileged_db_port" value="3306"/>
     -->
 
     <env name="COLUMNS" value="120"/>
