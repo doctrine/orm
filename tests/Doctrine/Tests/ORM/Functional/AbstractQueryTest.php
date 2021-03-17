@@ -5,8 +5,8 @@ declare(strict_types=1);
 namespace Doctrine\Tests\ORM\Functional;
 
 use Doctrine\Deprecations\PHPUnit\VerifyDeprecations;
-use Doctrine\Tests\OrmFunctionalTestCase;
 use Doctrine\ORM\AbstractQuery;
+use Doctrine\Tests\OrmFunctionalTestCase;
 
 class AbstractQueryTest extends OrmFunctionalTestCase
 {
