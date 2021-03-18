@@ -1209,7 +1209,7 @@ class
         $docComment = $property->getDocComment();
         $regex      = '/@var\s+([\S]+)$/m';
 
-        $this->assertRegExp($regex, $docComment);
+        $this->assertMatchesRegularExpression($regex, $docComment);
         $this->assertEquals(1, preg_match($regex, $docComment, $matches));
         $this->assertEquals($type, $matches[1]);
     }
@@ -1219,7 +1219,7 @@ class
         $docComment = $method->getDocComment();
         $regex      = '/@return\s+([\S]+)(\s+.*)$/m';
 
-        $this->assertRegExp($regex, $docComment);
+        $this->assertMatchesRegularExpression($regex, $docComment);
         $this->assertEquals(1, preg_match($regex, $docComment, $matches));
         $this->assertEquals($type, $matches[1]);
     }
