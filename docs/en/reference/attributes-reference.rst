@@ -199,7 +199,7 @@ Example:
 #[CustomIdGenerator]
 ~~~~~~~~~~~~~~~~~~~~
 
-This attribute allows you to specify a user-provided class to generate identifiers. This attribute only works when both :ref:`@Id <annref_id>` and :ref:`@GeneratedValue(strategy="CUSTOM") <annref_generatedvalue>` are specified.
+This attribute allows you to specify a user-provided class to generate identifiers. This attribute only works when both :ref:`#[Id] <annref_id>` and :ref:`#[GeneratedValue(strategy: "CUSTOM")] <annref_generatedvalue>` are specified.
 
 Required attributes:
 
@@ -836,8 +836,8 @@ class of the ``#[ManyToMany]`` or ``#[OneToMany]`` attribute.
 #[PostLoad]
 ~~~~~~~~~~~~~~
 
-Marks a method on the entity to be called as a #[PostLoad] event.
-Only works with #[HasLifecycleCallbacks] in the entity class PHP
+Marks a method on the entity to be called as a ``#[PostLoad]`` event.
+Only works with ``#[HasLifecycleCallbacks]`` in the entity class PHP
 level.
 
 .. _annref_postpersist:
@@ -845,8 +845,8 @@ level.
 #[PostPersist]
 ~~~~~~~~~~~~~~
 
-Marks a method on the entity to be called as a #[PostPersist] event.
-Only works with #[HasLifecycleCallbacks] in the entity class PHP
+Marks a method on the entity to be called as a ``#[PostPersist]`` event.
+Only works with ``#[HasLifecycleCallbacks]`` in the entity class PHP
 level.
 
 .. _annref_postremove:
@@ -854,8 +854,8 @@ level.
 #[PostRemove]
 ~~~~~~~~~~~~~~
 
-Marks a method on the entity to be called as a #[PostRemove] event.
-Only works with #[HasLifecycleCallbacks] in the entity class PHP
+Marks a method on the entity to be called as a ``#[PostRemove]`` event.
+Only works with ``#[HasLifecycleCallbacks]`` in the entity class PHP
 level.
 
 .. _annref_postupdate:
@@ -863,8 +863,8 @@ level.
 #[PostUpdate]
 ~~~~~~~~~~~~~~
 
-Marks a method on the entity to be called as a #[PostUpdate] event.
-Only works with #[HasLifecycleCallbacks] in the entity class PHP
+Marks a method on the entity to be called as a ``#[PostUpdate]`` event.
+Only works with ``#[HasLifecycleCallbacks]`` in the entity class PHP
 level.
 
 .. _annref_prepersist:
@@ -872,8 +872,8 @@ level.
 #[PrePersist]
 ~~~~~~~~~~~~~~
 
-Marks a method on the entity to be called as a #[PrePersist] event.
-Only works with #[HasLifecycleCallbacks] in the entity class PHP
+Marks a method on the entity to be called as a ``#[PrePersist]`` event.
+Only works with ``#[HasLifecycleCallbacks]`` in the entity class PHP
 level.
 
 .. _annref_preremove:
@@ -881,8 +881,8 @@ level.
 #[PreRemove]
 ~~~~~~~~~~~~~~
 
-Marks a method on the entity to be called as a #[PreRemove] event.
-Only works with #[HasLifecycleCallbacks] in the entity class PHP
+Marks a method on the entity to be called as a #``[PreRemove]`` event.
+Only works with ``#[HasLifecycleCallbacks]`` in the entity class PHP
 level.
 
 .. _annref_preupdate:
@@ -890,8 +890,8 @@ level.
 #[PreUpdate]
 ~~~~~~~~~~~~~~
 
-Marks a method on the entity to be called as a #[PreUpdate] event.
-Only works with #[HasLifecycleCallbacks] in the entity class PHP
+Marks a method on the entity to be called as a ``#[PreUpdate]`` event.
+Only works with ``#[HasLifecycleCallbacks]`` in the entity class PHP
 level.
 
 .. _annref_sequencegenerator:
@@ -899,7 +899,7 @@ level.
 #[SequenceGenerator]
 ~~~~~~~~~~~~~~~~~~~~~
 
-For use with #[GeneratedValue(strategy: "SEQUENCE")] this
+For use with ``#[GeneratedValue(strategy: "SEQUENCE")]`` this
 attribute allows to specify details about the sequence, such as
 the increment size and initial values of the sequence.
 
@@ -967,7 +967,7 @@ Example:
 ~~~~~~~~~~~~~~~~~~~
 
 Attribute is used on
-the entity-class level. It allows to hint the SchemaTool to
+the entity-class level. It allows to hint the ``SchemaTool`` to
 generate a database unique constraint on the specified table
 columns. It only has meaning in the SchemaTool schema generation
 context.
