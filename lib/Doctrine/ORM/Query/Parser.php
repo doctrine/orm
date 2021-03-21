@@ -2892,7 +2892,7 @@ class Parser
      *          | FunctionsReturningDatetime | IdentificationVariable | ResultVariable
      *          | InputParameter | CaseExpression
      *
-     * @return Node
+     * @return Node|string
      */
     public function ArithmeticPrimary()
     {

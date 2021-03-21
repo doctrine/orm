@@ -1482,7 +1482,7 @@ class ClassMetadataInfo implements ClassMetadata
      *                   isCascadeRefresh: bool,
      *                   isCascadeMerge: bool,
      *                   isCascadeDetach: bool,
-     *                   orphanRemoval: bool
+     *                   ?orphanRemoval: bool
      *               }
      */
     protected function _validateAndCompleteAssociationMapping(array $mapping)
