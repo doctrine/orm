@@ -31,6 +31,7 @@
 
         <!-- necessary until Attributes are supported -->
         <exclude name="PEAR.Commenting.InlineComment.WrongStyle" />
+        <exclude name="Squiz.Commenting.FunctionComment.WrongStyle" />
 
         <!-- quite overkill to ignore this, but its necessary since Attributes are not detected yet -->
         <exclude name="SlevomatCodingStandard.Namespaces.UnusedUses.UnusedUse" />
