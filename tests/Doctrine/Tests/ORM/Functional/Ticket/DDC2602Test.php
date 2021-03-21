@@ -187,13 +187,13 @@ class DDC2602User
     public $name;
 
     /**
+     * @var DDC2602Biography
      * @OneToOne(
      *     targetEntity="DDC2602Biography",
      *     inversedBy="user",
      *     cascade={"persist", "merge", "refresh", "remove"}
      * )
      * @JoinColumn(nullable=false)
-     * @var DDC2602Biography
      */
     public $biography;
 }
@@ -211,12 +211,12 @@ class DDC2602Biography
     public $id;
 
     /**
+     * @var DDC2602User
      * @OneToOne(
      *     targetEntity="DDC2602User",
      *     mappedBy="biography",
      *     cascade={"persist", "merge", "refresh"}
      * )
-     * @var DDC2602User
      */
     public $user;
 

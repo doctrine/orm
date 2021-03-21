@@ -19,7 +19,10 @@ class Person
      */
     public $id;
 
-    /** @Column(unique=true) */
+    /**
+     * @var string
+     * @Column(unique=true)
+     */
     public $name;
 
     /**
@@ -28,7 +31,7 @@ class Person
      */
     public $address;
 
-    public function __construct($name)
+    public function __construct(string $name)
     {
         $this->name = $name;
     }

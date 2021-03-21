@@ -80,12 +80,15 @@ class DDC353Test extends OrmFunctionalTestCase
 class DDC353Picture
 {
     /**
+     * @var int
      * @Column(name="picture_id", type="integer")
-     * @Id @GeneratedValue
+     * @Id
+     * @GeneratedValue
      */
     private $pictureId;
 
     /**
+     * @var DDC353File
      * @ManyToOne(targetEntity="DDC353File", cascade={"persist", "remove"})
      * @JoinColumns({
      *   @JoinColumn(name="file_id", referencedColumnName="file_id")
@@ -93,42 +96,17 @@ class DDC353Picture
      */
     private $file;
 
-    /**
-     * Get pictureId
-     */
-    public function getPictureId()
+    public function getPictureId(): int
     {
         return $this->pictureId;
     }
 
-    /**
-     * Set product
-     */
-    public function setProduct($value): void
-    {
-        $this->product = $value;
-    }
-
-    /**
-     * Get product
-     */
-    public function getProduct()
-    {
-        return $this->product;
-    }
-
-    /**
-     * Set file
-     */
-    public function setFile($value): void
+    public function setFile(DDC353File $value): void
     {
         $this->file = $value;
     }
 
-    /**
-     * Get file
-     */
-    public function getFile()
+    public function getFile(): DDC353File
     {
         return $this->file;
     }
@@ -150,7 +128,7 @@ class DDC353File
     /**
      * Get fileId
      */
-    public function getFileId()
+    public function getFileId(): int
     {
         return $this->fileId;
     }

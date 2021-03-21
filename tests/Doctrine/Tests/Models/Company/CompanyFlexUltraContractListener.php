@@ -11,6 +11,7 @@ use function func_get_args;
 
 class CompanyFlexUltraContractListener
 {
+    /** @psalm-var list<mixed[]> */
     public $prePersistCalls;
 
     /**

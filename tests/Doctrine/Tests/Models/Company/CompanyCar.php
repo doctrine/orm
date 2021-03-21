@@ -18,23 +18,23 @@ class CompanyCar
     private $id;
 
     /**
-     * @var string
+     * @var string|null
      * @Column(type="string", length=50)
      */
     private $brand;
 
-    public function __construct($brand = null)
+    public function __construct(?string $brand = null)
     {
         $this->brand = $brand;
     }
 
-    public function getId()
+    public function getId(): int
     {
         return $this->id;
     }
 
-    public function getBrand()
+    public function getBrand(): ?string
     {
-        return $this->title;
+        return $this->brand;
     }
 }

@@ -51,7 +51,10 @@ class DDC144FlowElement
      */
     public $id;
 
-    /** @Column */
+    /**
+     * @var string
+     * @Column
+     */
     public $property;
 }
 
@@ -63,7 +66,10 @@ abstract class DDC144Expression extends DDC144FlowElement
 /** @Entity @Table(name="ddc144_operands") */
 class DDC144Operand extends DDC144Expression
 {
-    /** @Column */
+    /**
+     * @var string
+     * @Column
+     */
     public $operandProperty;
 
     public function method(): void

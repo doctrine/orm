@@ -27,6 +27,7 @@ use Doctrine\Tests\OrmTestCase;
 use ReflectionMethod;
 
 use function microtime;
+use function sprintf;
 
 /**
  * @group DDC-2183
@@ -127,8 +128,8 @@ class DefaultQueryCacheTest extends OrmTestCase
         $rsm->addJoinedEntityFromClassMetadata(State::class, 's', 'c', 'state', ['id' => 'state_id', 'name' => 'state_name']);
 
         for ($i = 0; $i < 4; $i++) {
-            $state    = new State("State $i");
-            $city     = new City("City $i", $state);
+            $state    = new State(sprintf('State %d', $i));
+            $city     = new City(sprintf('City %d', $i), $state);
             $result[] = $city;
 
             $cityClass->setFieldValue($city, 'id', $i);
@@ -214,7 +215,7 @@ class DefaultQueryCacheTest extends OrmTestCase
         $rsm->addJoinedEntityFromClassMetadata(State::class, 's', 'c', 'state', ['id' => 'state_id', 'name' => 'state_name']);
 
         for ($i = 0; $i < 4; $i++) {
-            $city     = new City("City $i", null);
+            $city     = new City(sprintf('City %d', $i), null);
             $result[] = $city;
 
             $cityClass->setFieldValue($city, 'id', $i);
@@ -246,7 +247,7 @@ class DefaultQueryCacheTest extends OrmTestCase
         $rsm->addJoinedEntityFromClassMetadata(City::class, 'c', 's', 'cities', ['id' => 'c_id', 'name' => 'c_name']);
 
         for ($i = 0; $i < 4; $i++) {
-            $state    = new State("State $i");
+            $state    = new State(sprintf('State %d', $i));
             $city1    = new City('City 1', $state);
             $city2    = new City('City 2', $state);
             $result[] = $state;
@@ -681,7 +682,10 @@ class DefaultQueryCacheTest extends OrmTestCase
 
 class CacheFactoryDefaultQueryCacheTest extends Cache\DefaultCacheFactory
 {
+    /** @var DefaultQueryCache */
     private $queryCache;
+
+    /** @var CacheRegionMock */
     private $region;
 
     public function __construct(DefaultQueryCache $queryCache, CacheRegionMock $region)
@@ -690,17 +694,17 @@ class CacheFactoryDefaultQueryCacheTest extends Cache\DefaultCacheFactory
         $this->region     = $region;
     }
 
-    public function buildQueryCache(EntityManagerInterface $em, $regionName = null)
+    public function buildQueryCache(EntityManagerInterface $em, $regionName = null): DefaultQueryCache
     {
         return $this->queryCache;
     }
 
-    public function getRegion(array $cache)
+    public function getRegion(array $cache): CacheRegionMock
     {
         return $this->region;
     }
 
-    public function getTimestampRegion()
+    public function getTimestampRegion(): TimestampRegionMock
     {
         return new TimestampRegionMock();
     }

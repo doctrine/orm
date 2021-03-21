@@ -48,7 +48,7 @@ class XmlExporter extends AbstractExporter
      */
     public function exportClassMetadata(ClassMetadataInfo $metadata)
     {
-        $xml = new SimpleXmlElement('<?xml version="1.0" encoding="utf-8"?><doctrine-mapping ' .
+        $xml = new SimpleXMLElement('<?xml version="1.0" encoding="utf-8"?><doctrine-mapping ' .
             'xmlns="http://doctrine-project.org/schemas/orm/doctrine-mapping" ' .
             'xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" ' .
             'xsi:schemaLocation="http://doctrine-project.org/schemas/orm/doctrine-mapping https://www.doctrine-project.org/schemas/orm/doctrine-mapping.xsd" />');
@@ -179,7 +179,8 @@ class XmlExporter extends AbstractExporter
                     $idXml->addAttribute('association-key', 'true');
                 }
 
-                if ($idGeneratorType = $this->_getIdGeneratorTypeString($metadata->generatorType)) {
+                $idGeneratorType = $this->_getIdGeneratorTypeString($metadata->generatorType);
+                if ($idGeneratorType) {
                     $generatorXml = $idXml->addChild('generator');
                     $generatorXml->addAttribute('strategy', $idGeneratorType);
 
@@ -405,7 +406,7 @@ class XmlExporter extends AbstractExporter
 
         $this->processEntityListeners($metadata, $root);
 
-        return $this->_asXml($xml);
+        return $this->asXml($xml);
     }
 
     /**
@@ -447,7 +448,7 @@ class XmlExporter extends AbstractExporter
         $sequenceGeneratorXml->addAttribute('initial-value', $sequenceDefinition['initialValue']);
     }
 
-    private function _asXml(SimpleXMLElement $simpleXml): string
+    private function asXml(SimpleXMLElement $simpleXml): string
     {
         $dom = new DOMDocument('1.0', 'UTF-8');
         $dom->loadXML($simpleXml->asXML());

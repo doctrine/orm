@@ -23,7 +23,6 @@ namespace Doctrine\ORM\Mapping\Driver;
 use Doctrine\Deprecations\Deprecation;
 use Doctrine\ORM\Mapping\Builder\EntityListenerBuilder;
 use Doctrine\ORM\Mapping\ClassMetadata as Metadata;
-use Doctrine\ORM\Mapping\ClassMetadataInfo;
 use Doctrine\ORM\Mapping\MappingException;
 use Doctrine\Persistence\Mapping\ClassMetadata;
 use Doctrine\Persistence\Mapping\Driver\FileDriver;
@@ -70,7 +69,6 @@ class YamlDriver extends FileDriver
      */
     public function loadMetadataForClass($className, ClassMetadata $metadata)
     {
-        /** @var ClassMetadataInfo $metadata */
         $element = $this->getElement($className);
 
         if ($element['type'] === 'entity') {
@@ -690,10 +688,17 @@ class YamlDriver extends FileDriver
      * Constructs a joinColumn mapping array based on the information
      * found in the given join column element.
      *
-     * @param array $joinColumnElement The array join column element.
-     *
      * @return mixed[] The mapping array.
      *
+     * @psalm-param array{
+     *                   referencedColumnName?: mixed,
+     *                   name?: mixed,
+     *                   fieldName?: mixed,
+     *                   unique?: mixed,
+     *                   nullable?: mixed,
+     *                   onDelete?: mixed,
+     *                   columnDefinition?: mixed
+     *              } $joinColumnElement The array join column element.
      * @psalm-return array{
      *                   referencedColumnName?: string,
      *                   name?: string,
@@ -704,7 +709,7 @@ class YamlDriver extends FileDriver
      *                   columnDefinition?: mixed
      *               }
      */
-    private function joinColumnToArray($joinColumnElement)
+    private function joinColumnToArray(array $joinColumnElement): array
     {
         $joinColumn = [];
         if (isset($joinColumnElement['referencedColumnName'])) {
@@ -741,11 +746,19 @@ class YamlDriver extends FileDriver
     /**
      * Parses the given column as array.
      *
-     * @param string $fieldName
-     * @param array  $column
-     *
      * @return mixed[]
      *
+     * @psalm-param array{
+     *                   type?: string,
+     *                   column?: string,
+     *                   precision?: mixed,
+     *                   scale?: mixed,
+     *                   unique?: mixed,
+     *                   options?: mixed,
+     *                   nullable?: mixed,
+     *                   version?: mixed,
+     *                   columnDefinition?: mixed
+     *              }|null $column
      * @psalm-return array{
      *                   fieldName: string,
      *                   type?: string,
@@ -760,7 +773,7 @@ class YamlDriver extends FileDriver
      *                   columnDefinition?: mixed
      *               }
      */
-    private function columnToArray($fieldName, $column)
+    private function columnToArray(string $fieldName, ?array $column): array
     {
         $mapping = ['fieldName' => $fieldName];
 

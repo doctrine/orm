@@ -20,27 +20,30 @@ class ECommerceFeature
      */
     private $id;
 
-    /** @Column(length=50) */
+    /**
+     * @var string|null
+     * @Column(length=50)
+     */
     private $description;
 
     /**
-     * @var ECommerceProduct
+     * @var ECommerceProduct|null
      * @ManyToOne(targetEntity="ECommerceProduct", inversedBy="features")
      * @JoinColumn(name="product_id", referencedColumnName="id")
      */
     private $product;
 
-    public function getId()
+    public function getId(): int
     {
         return $this->id;
     }
 
-    public function getDescription()
+    public function getDescription(): ?string
     {
         return $this->description;
     }
 
-    public function setDescription($description): void
+    public function setDescription(string $description): void
     {
         $this->description = $description;
     }
@@ -59,7 +62,7 @@ class ECommerceFeature
         }
     }
 
-    public function getProduct()
+    public function getProduct(): ?ECommerceProduct
     {
         return $this->product;
     }

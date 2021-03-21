@@ -63,22 +63,25 @@ class ValidateSchemaCommand extends Command
 
         if ($input->getOption('skip-mapping')) {
             $ui->text('<comment>[SKIPPED] The mapping was not checked.</comment>');
-        } elseif ($errors = $validator->validateMapping()) {
-            foreach ($errors as $className => $errorMessages) {
-                $ui->text(
-                    sprintf(
-                        '<error>[FAIL]</error> The entity-class <comment>%s</comment> mapping is invalid:',
-                        $className
-                    )
-                );
-
-                $ui->listing($errorMessages);
-                $ui->newLine();
-            }
-
-            ++$exit;
         } else {
-            $ui->success('The mapping files are correct.');
+            $errors = $validator->validateMapping();
+            if ($errors) {
+                foreach ($errors as $className => $errorMessages) {
+                    $ui->text(
+                        sprintf(
+                            '<error>[FAIL]</error> The entity-class <comment>%s</comment> mapping is invalid:',
+                            $className
+                        )
+                    );
+
+                    $ui->listing($errorMessages);
+                    $ui->newLine();
+                }
+
+                ++$exit;
+            } else {
+                $ui->success('The mapping files are correct.');
+            }
         }
 
         $ui->section('Database');

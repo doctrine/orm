@@ -25,6 +25,7 @@ use RuntimeException;
 
 use function count;
 use function iterator_to_array;
+use function sprintf;
 
 /**
  * @group DDC-1613
@@ -103,7 +104,7 @@ class PaginationTest extends OrmFunctionalTestCase
      */
     public function testCountWithComplexScalarOrderBy($useOutputWalkers): void
     {
-        $dql   = 'SELECT l FROM Doctrine\Tests\Models\Pagination\Logo l ORDER BY l.image_width * l.image_height DESC';
+        $dql   = 'SELECT l FROM Doctrine\Tests\Models\Pagination\Logo l ORDER BY l.imageWidth * l.imageHeight DESC';
         $query = $this->_em->createQuery($dql);
 
         $paginator = new Paginator($query);
@@ -264,7 +265,7 @@ class PaginationTest extends OrmFunctionalTestCase
     public function testIterateSimpleWithOutputWalkerWithoutJoinWithComplexOrder($fetchJoinCollection): void
     {
         // Ascending
-        $dql = 'SELECT l FROM Doctrine\Tests\Models\Pagination\Logo l ORDER BY l.image_width * l.image_height';
+        $dql = 'SELECT l FROM Doctrine\Tests\Models\Pagination\Logo l ORDER BY l.imageWidth * l.imageHeight';
         $this->iterateWithOrderAsc(true, $fetchJoinCollection, $dql, 'image');
         $this->iterateWithOrderDesc(true, $fetchJoinCollection, $dql, 'image');
     }
@@ -275,7 +276,7 @@ class PaginationTest extends OrmFunctionalTestCase
     public function testIterateSimpleWithOutputWalkerWithoutJoinWithComplexOrderAndLimit($fetchJoinCollection): void
     {
         // Ascending
-        $dql = 'SELECT l FROM Doctrine\Tests\Models\Pagination\Logo l ORDER BY l.image_width * l.image_height';
+        $dql = 'SELECT l FROM Doctrine\Tests\Models\Pagination\Logo l ORDER BY l.imageWidth * l.imageHeight';
         $this->iterateWithOrderAscWithLimit(true, $fetchJoinCollection, $dql, 'image');
         $this->iterateWithOrderDescWithLimit(true, $fetchJoinCollection, $dql, 'image');
     }
@@ -286,7 +287,7 @@ class PaginationTest extends OrmFunctionalTestCase
     public function testIterateSimpleWithOutputWalkerWithoutJoinWithComplexOrderAndLimitAndOffset($fetchJoinCollection): void
     {
         // Ascending
-        $dql = 'SELECT l FROM Doctrine\Tests\Models\Pagination\Logo l ORDER BY l.image_width * l.image_height';
+        $dql = 'SELECT l FROM Doctrine\Tests\Models\Pagination\Logo l ORDER BY l.imageWidth * l.imageHeight';
         $this->iterateWithOrderAscWithLimitAndOffset(true, $fetchJoinCollection, $dql, 'image');
         $this->iterateWithOrderDescWithLimitAndOffset(true, $fetchJoinCollection, $dql, 'image');
     }
@@ -371,7 +372,7 @@ class PaginationTest extends OrmFunctionalTestCase
     {
         // long function name is loooooooooooong
 
-        $dql = 'SELECT c FROM Doctrine\Tests\Models\Pagination\Company c JOIN c.logo l ORDER BY l.image_height * l.image_width';
+        $dql = 'SELECT c FROM Doctrine\Tests\Models\Pagination\Company c JOIN c.logo l ORDER BY l.imageHeight * l.imageWidth';
         $this->iterateWithOrderAsc(true, $fetchJoinCollection, $dql, 'name');
         $this->iterateWithOrderDesc(true, $fetchJoinCollection, $dql, 'name');
     }
@@ -383,7 +384,7 @@ class PaginationTest extends OrmFunctionalTestCase
     {
         // long function name is loooooooooooong
 
-        $dql = 'SELECT c FROM Doctrine\Tests\Models\Pagination\Company c JOIN c.logo l ORDER BY l.image_height * l.image_width';
+        $dql = 'SELECT c FROM Doctrine\Tests\Models\Pagination\Company c JOIN c.logo l ORDER BY l.imageHeight * l.imageWidth';
         $this->iterateWithOrderAscWithLimit(true, $fetchJoinCollection, $dql, 'name');
         $this->iterateWithOrderDescWithLimit(true, $fetchJoinCollection, $dql, 'name');
     }
@@ -395,7 +396,7 @@ class PaginationTest extends OrmFunctionalTestCase
     {
         // long function name is loooooooooooong
 
-        $dql = 'SELECT c FROM Doctrine\Tests\Models\Pagination\Company c JOIN c.logo l ORDER BY l.image_height * l.image_width';
+        $dql = 'SELECT c FROM Doctrine\Tests\Models\Pagination\Company c JOIN c.logo l ORDER BY l.imageHeight * l.imageWidth';
         $this->iterateWithOrderAscWithLimitAndOffset(true, $fetchJoinCollection, $dql, 'name');
         $this->iterateWithOrderDescWithLimitAndOffset(true, $fetchJoinCollection, $dql, 'name');
     }
@@ -435,7 +436,7 @@ class PaginationTest extends OrmFunctionalTestCase
      */
     public function testIterateWithOutputWalkersWithFetchJoinWithComplexOrderByReferencingJoined($fetchJoinCollection): void
     {
-        $dql = 'SELECT c,l FROM Doctrine\Tests\Models\Pagination\Company c JOIN c.logo l ORDER BY l.image_width * l.image_height';
+        $dql = 'SELECT c,l FROM Doctrine\Tests\Models\Pagination\Company c JOIN c.logo l ORDER BY l.imageWidth * l.imageHeight';
         $this->iterateWithOrderAsc(true, $fetchJoinCollection, $dql, 'name');
         $this->iterateWithOrderDesc(true, $fetchJoinCollection, $dql, 'name');
     }
@@ -445,7 +446,7 @@ class PaginationTest extends OrmFunctionalTestCase
      */
     public function testIterateWithOutputWalkersWithFetchJoinWithComplexOrderByReferencingJoinedWithLimit($fetchJoinCollection): void
     {
-        $dql = 'SELECT c,l FROM Doctrine\Tests\Models\Pagination\Company c JOIN c.logo l ORDER BY l.image_width * l.image_height';
+        $dql = 'SELECT c,l FROM Doctrine\Tests\Models\Pagination\Company c JOIN c.logo l ORDER BY l.imageWidth * l.imageHeight';
         $this->iterateWithOrderAscWithLimit(true, $fetchJoinCollection, $dql, 'name');
         $this->iterateWithOrderDescWithLimit(true, $fetchJoinCollection, $dql, 'name');
     }
@@ -455,7 +456,7 @@ class PaginationTest extends OrmFunctionalTestCase
      */
     public function testIterateWithOutputWalkersWithFetchJoinWithComplexOrderByReferencingJoinedWithLimitAndOffset($fetchJoinCollection): void
     {
-        $dql = 'SELECT c,l FROM Doctrine\Tests\Models\Pagination\Company c JOIN c.logo l ORDER BY l.image_width * l.image_height';
+        $dql = 'SELECT c,l FROM Doctrine\Tests\Models\Pagination\Company c JOIN c.logo l ORDER BY l.imageWidth * l.imageHeight';
         $this->iterateWithOrderAscWithLimitAndOffset(true, $fetchJoinCollection, $dql, 'name');
         $this->iterateWithOrderDescWithLimitAndOffset(true, $fetchJoinCollection, $dql, 'name');
     }
@@ -739,7 +740,7 @@ SQL
         $groups = [];
         for ($j = 0; $j < 3; $j++) {
             $group       = new CmsGroup();
-            $group->name = "group$j";
+            $group->name = sprintf('group%d', $j);
             $groups[]    = $group;
             $this->_em->persist($group);
         }
@@ -751,7 +752,7 @@ SQL
             $user->status       = 'active';
             $user->email        = new CmsEmail();
             $user->email->user  = $user;
-            $user->email->email = "email$i";
+            $user->email->email = sprintf('email%d', $i);
             for ($j = 0; $j < 3; $j++) {
                 $user->addGroup($groups[$j]);
             }
@@ -768,13 +769,13 @@ SQL
         }
 
         for ($i = 0; $i < 9; $i++) {
-            $company                     = new Company();
-            $company->name               = 'name' . $i;
-            $company->logo               = new Logo();
-            $company->logo->image        = 'image' . $i;
-            $company->logo->image_width  = 100 + $i;
-            $company->logo->image_height = 100 + $i;
-            $company->logo->company      = $company;
+            $company                    = new Company();
+            $company->name              = 'name' . $i;
+            $company->logo              = new Logo();
+            $company->logo->image       = 'image' . $i;
+            $company->logo->imageWidth  = 100 + $i;
+            $company->logo->imageHeight = 100 + $i;
+            $company->logo->company     = $company;
             for ($j = 0; $j < 3; $j++) {
                 $department             = new Department();
                 $department->name       = 'name' . $i . $j;
@@ -803,7 +804,8 @@ SQL
         $this->_em->flush();
     }
 
-    public function useOutputWalkers()
+    /** @psalm-return list<array{bool, bool}> */
+    public function useOutputWalkers(): array
     {
         return [
             [true],
@@ -811,7 +813,8 @@ SQL
         ];
     }
 
-    public function fetchJoinCollection()
+    /** @psalm-return list<array{bool, bool}> */
+    public function fetchJoinCollection(): array
     {
         return [
             [true],
@@ -819,7 +822,8 @@ SQL
         ];
     }
 
-    public function useOutputWalkersAndFetchJoinCollection()
+    /** @psalm-return list<array{bool, bool}> */
+    public function useOutputWalkersAndFetchJoinCollection(): array
     {
         return [
             [true, false],

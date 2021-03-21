@@ -9,5 +9,6 @@ namespace Doctrine\Tests\Models\Reflection;
  */
 abstract class AbstractEmbeddable
 {
+    /** @var string */
     private $propertyInAbstractClass;
 }

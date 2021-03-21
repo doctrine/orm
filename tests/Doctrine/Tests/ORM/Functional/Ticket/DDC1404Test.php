@@ -90,7 +90,10 @@ class DDC1404ParentEntity
  */
 class DDC1404ChildEntity extends DDC1404ParentEntity
 {
-    /** @column(type="string") */
+    /**
+     * @var string
+     * @column(type="string")
+     */
     private $name;
 
     public function __construct(string $name)

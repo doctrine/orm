@@ -57,7 +57,7 @@ interface CollectionPersister
      * @param int $offset
      * @param int $length
      *
-     * @return  array
+     * @return mixed[]
      */
     public function slice(PersistentCollection $collection, $offset, $length = null);
 
@@ -91,7 +91,7 @@ interface CollectionPersister
     /**
      * Loads association entities matching the given Criteria object.
      *
-     * @return array
+     * @return mixed[]
      */
     public function loadCriteria(PersistentCollection $collection, Criteria $criteria);
 }

@@ -20,7 +20,10 @@ class DDC3579User
      */
     protected $id;
 
-    /** @Column(name="user_name", nullable=true, unique=false, length=250) */
+    /**
+     * @var string
+     * @Column(name="user_name", nullable=true, unique=false, length=250)
+     */
     protected $name;
 
     /**

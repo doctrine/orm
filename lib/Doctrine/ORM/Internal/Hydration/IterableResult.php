@@ -68,7 +68,7 @@ class IterableResult implements Iterator
     /**
      * Gets the next set of results.
      *
-     * @return array|false
+     * @return mixed[]|false
      */
     public function next()
     {

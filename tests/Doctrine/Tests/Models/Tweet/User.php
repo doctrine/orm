@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Doctrine\Tests\Models\Tweet;
 
 use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 
 /**
  * @Entity
@@ -26,10 +27,16 @@ class User
      */
     public $name;
 
-    /** @OneToMany(targetEntity="Tweet", mappedBy="author", cascade={"persist"}, fetch="EXTRA_LAZY") */
+    /**
+     * @psalm-var Collection<int, Tweet>
+     * @OneToMany(targetEntity="Tweet", mappedBy="author", cascade={"persist"}, fetch="EXTRA_LAZY")
+     */
     public $tweets;
 
-    /** @OneToMany(targetEntity="UserList", mappedBy="owner", fetch="EXTRA_LAZY", orphanRemoval=true) */
+    /**
+     * @psalm-var Collection<int, UserList>
+     * @OneToMany(targetEntity="UserList", mappedBy="owner", fetch="EXTRA_LAZY", orphanRemoval=true)
+     */
     public $userLists;
 
     public function __construct()

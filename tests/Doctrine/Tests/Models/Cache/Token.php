@@ -6,6 +6,7 @@ namespace Doctrine\Tests\Models\Cache;
 
 use DateTime;
 use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 
 use function date;
 use function strtotime;
@@ -18,30 +19,34 @@ use function strtotime;
 class Token
 {
     /**
+     * @var string
      * @Id
      * @Column(type="string")
      */
     public $token;
 
-    /** @Column(type="date") */
+    /**
+     * @var DateTime
+     * @Column(type="date")
+     */
     public $expiresAt;
 
     /**
-     * @var Client
+     * @var Client|null
      * @OneToOne(targetEntity="Client")
      */
     public $client;
 
     /**
+     * @psalm-var Collection<int, Login>
      * @OneToMany(targetEntity="Login", cascade={"persist", "remove"}, mappedBy="token")
-     * @var array
      */
     public $logins;
 
     /**
+     * @var Action
      * @ManyToOne(targetEntity="Action", cascade={"persist", "remove"}, inversedBy="tokens")
      * @JoinColumn(name="action_name", referencedColumnName="name")
-     * @var array
      */
     public $action;
 
@@ -55,7 +60,7 @@ class Token
      */
     public $complexAction;
 
-    public function __construct($token, ?Client $client = null)
+    public function __construct(string $token, ?Client $client = null)
     {
         $this->logins    = new ArrayCollection();
         $this->token     = $token;
@@ -69,7 +74,7 @@ class Token
         $login->token   = $this;
     }
 
-    public function getClient(): Client
+    public function getClient(): ?Client
     {
         return $this->client;
     }

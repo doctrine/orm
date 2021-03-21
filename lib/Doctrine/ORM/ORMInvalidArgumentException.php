@@ -122,10 +122,11 @@ class ORMInvalidArgumentException extends InvalidArgumentException
     }
 
     /**
-     * @param array  $associationMapping
      * @param object $entry
      *
      * @return ORMInvalidArgumentException
+     *
+     * @psalm-param array<string, string> $associationMapping
      */
     public static function newEntityFoundThroughRelationship(array $associationMapping, $entry)
     {
@@ -133,10 +134,11 @@ class ORMInvalidArgumentException extends InvalidArgumentException
     }
 
     /**
-     * @param array  $assoc
      * @param object $entry
      *
      * @return ORMInvalidArgumentException
+     *
+     * @psalm-param array<string, string> $assoc
      */
     public static function detachedEntityFoundThroughRelationship(array $assoc, $entry)
     {
@@ -252,19 +254,16 @@ class ORMInvalidArgumentException extends InvalidArgumentException
 
     /**
      * Helper method to show an object as string.
-     *
-     * @param object $obj
      */
-    private static function objToStr($obj): string
+    private static function objToStr(object $obj): string
     {
         return method_exists($obj, '__toString') ? (string) $obj : get_class($obj) . '@' . spl_object_hash($obj);
     }
 
     /**
-     * @param array  $associationMapping
-     * @param object $entity
+     * @psalm-param array<string,string> $associationMapping
      */
-    private static function newEntityFoundThroughRelationshipMessage(array $associationMapping, $entity): string
+    private static function newEntityFoundThroughRelationshipMessage(array $associationMapping, object $entity): string
     {
         return 'A new entity was found through the relationship \''
             . $associationMapping['sourceEntity'] . '#' . $associationMapping['fieldName'] . '\' that was not'

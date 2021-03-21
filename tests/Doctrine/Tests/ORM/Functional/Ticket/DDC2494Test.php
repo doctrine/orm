@@ -87,32 +87,38 @@ class DDC2494Currency
      */
     protected $id;
 
-    /** @Column(name="temp", type="ddc2494_tinyint", nullable=false) */
+    /**
+     * @var int
+     * @Column(name="temp", type="ddc2494_tinyint", nullable=false)
+     */
     protected $temp;
 
     /**
-     * @var Collection
+     * @psalm-var Collection<int, DDC2494Campaign>
      * @OneToMany(targetEntity="DDC2494Campaign", mappedBy="currency")
      */
     protected $campaigns;
 
-    public function __construct($id, $temp)
+    public function __construct(int $id, int $temp)
     {
         $this->id   = $id;
         $this->temp = $temp;
     }
 
-    public function getId()
+    public function getId(): int
     {
         return $this->id;
     }
 
-    public function getTemp()
+    public function getTemp(): int
     {
         return $this->temp;
     }
 
-    public function getCampaigns()
+    /**
+     * @psalm-return Collection<int, DDC2494Campaign>
+     */
+    public function getCampaigns(): Collection
     {
         return $this->campaigns;
     }
@@ -144,7 +150,7 @@ class DDC2494Campaign
         $this->currency = $currency;
     }
 
-    public function getId()
+    public function getId(): int
     {
         return $this->id;
     }
@@ -157,6 +163,7 @@ class DDC2494Campaign
 
 class DDC2494TinyIntType extends Type
 {
+    /** @psalm-var array<string, list<array{value:mixed, return: string, platform: AbstractPlatform}>> */
     public static $calls = [];
 
     /**

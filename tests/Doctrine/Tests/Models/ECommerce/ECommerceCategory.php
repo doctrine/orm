@@ -35,7 +35,10 @@ class ECommerceCategory
      */
     private $products;
 
-    /** @OneToMany(targetEntity="ECommerceCategory", mappedBy="parent", cascade={"persist"}) */
+    /**
+     * @psalm-var Collection<int, ECommerceCategory>
+     * @OneToMany(targetEntity="ECommerceCategory", mappedBy="parent", cascade={"persist"})
+     */
     private $children;
 
     /**
@@ -51,17 +54,17 @@ class ECommerceCategory
         $this->children = new ArrayCollection();
     }
 
-    public function getId()
+    public function getId(): int
     {
         return $this->id;
     }
 
-    public function getName()
+    public function getName(): string
     {
         return $this->name;
     }
 
-    public function setName($name): void
+    public function setName(string $name): void
     {
         $this->name = $name;
     }
@@ -82,7 +85,10 @@ class ECommerceCategory
         }
     }
 
-    public function getProducts()
+    /**
+     * @psalm-return Collection<int, ECommerceProduct>
+     */
+    public function getProducts(): Collection
     {
         return $this->products;
     }
@@ -92,12 +98,15 @@ class ECommerceCategory
         $this->parent = $parent;
     }
 
-    public function getChildren()
+    /**
+     * @psalm-return Collection<int, ECommerceCategory>
+     */
+    public function getChildren(): Collection
     {
         return $this->children;
     }
 
-    public function getParent()
+    public function getParent(): ?ECommerceCategory
     {
         return $this->parent;
     }

@@ -25,7 +25,6 @@ use Doctrine\ORM\Events;
 use Doctrine\ORM\Id\TableGenerator;
 use Doctrine\ORM\Mapping;
 use Doctrine\ORM\Mapping\Builder\EntityListenerBuilder;
-use Doctrine\ORM\Mapping\ClassMetadataInfo;
 use Doctrine\ORM\Mapping\MappingException;
 use Doctrine\Persistence\Mapping\ClassMetadata;
 use Doctrine\Persistence\Mapping\Driver\AnnotationDriver as AbstractAnnotationDriver;
@@ -60,7 +59,6 @@ class AnnotationDriver extends AbstractAnnotationDriver
      */
     public function loadMetadataForClass($className, ClassMetadata $metadata)
     {
-        /** @var ClassMetadataInfo $metadata */
         $class = $metadata->getReflectionClass();
 
         if (! $class) {
@@ -299,7 +297,8 @@ class AnnotationDriver extends AbstractAnnotationDriver
             $mapping['fieldName'] = $property->getName();
 
             // Evaluate @Cache annotation
-            if (($cacheAnnot = $this->reader->getPropertyAnnotation($property, Mapping\Cache::class)) !== null) {
+            $cacheAnnot = $this->reader->getPropertyAnnotation($property, Mapping\Cache::class);
+            if ($cacheAnnot !== null) {
                 $mapping['cache'] = $metadata->getAssociationCacheDefaults(
                     $mapping['fieldName'],
                     [
@@ -312,7 +311,8 @@ class AnnotationDriver extends AbstractAnnotationDriver
             // Check for JoinColumn/JoinColumns annotations
             $joinColumns = [];
 
-            if ($joinColumnAnnot = $this->reader->getPropertyAnnotation($property, Mapping\JoinColumn::class)) {
+            $joinColumnAnnot = $this->reader->getPropertyAnnotation($property, Mapping\JoinColumn::class);
+            if ($joinColumnAnnot) {
                 $joinColumns[] = $this->joinColumnToArray($joinColumnAnnot);
             } else {
                 $joinColumnsAnnot = $this->reader->getPropertyAnnotation($property, Mapping\JoinColumns::class);
@@ -325,18 +325,21 @@ class AnnotationDriver extends AbstractAnnotationDriver
 
             // Field can only be annotated with one of:
             // @Column, @OneToOne, @OneToMany, @ManyToOne, @ManyToMany
-            if ($columnAnnot = $this->reader->getPropertyAnnotation($property, Mapping\Column::class)) {
+            $columnAnnot = $this->reader->getPropertyAnnotation($property, Mapping\Column::class);
+            if ($columnAnnot) {
                 if ($columnAnnot->type === null) {
                     throw MappingException::propertyTypeIsRequired($className, $property->getName());
                 }
 
                 $mapping = $this->columnToArray($property->getName(), $columnAnnot);
 
-                if ($idAnnot = $this->reader->getPropertyAnnotation($property, Mapping\Id::class)) {
+                $idAnnot = $this->reader->getPropertyAnnotation($property, Mapping\Id::class);
+                if ($idAnnot) {
                     $mapping['id'] = true;
                 }
 
-                if ($generatedValueAnnot = $this->reader->getPropertyAnnotation($property, Mapping\GeneratedValue::class)) {
+                $generatedValueAnnot = $this->reader->getPropertyAnnotation($property, Mapping\GeneratedValue::class);
+                if ($generatedValueAnnot) {
                     $metadata->setIdGeneratorType(constant('Doctrine\ORM\Mapping\ClassMetadata::GENERATOR_TYPE_' . $generatedValueAnnot->strategy));
                 }
 
@@ -347,7 +350,8 @@ class AnnotationDriver extends AbstractAnnotationDriver
                 $metadata->mapField($mapping);
 
                 // Check for SequenceGenerator/TableGenerator definition
-                if ($seqGeneratorAnnot = $this->reader->getPropertyAnnotation($property, Mapping\SequenceGenerator::class)) {
+                $seqGeneratorAnnot = $this->reader->getPropertyAnnotation($property, Mapping\SequenceGenerator::class);
+                if ($seqGeneratorAnnot) {
                     $metadata->setSequenceGeneratorDefinition(
                         [
                             'sequenceName' => $seqGeneratorAnnot->sequenceName,
@@ -483,8 +487,9 @@ class AnnotationDriver extends AbstractAnnotationDriver
     }
 
     /**
-     * @param mixed[] $mapping
      * @param mixed[] $joinColumns
+     *
+     * @psalm-param array<string, mixed> $mapping
      */
     private function loadRelationShipMapping(
         ReflectionProperty $property,

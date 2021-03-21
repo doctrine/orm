@@ -137,10 +137,11 @@ class ClassMetadataBuilder
     /**
      * Adds Index.
      *
-     * @param array  $columns
      * @param string $name
      *
      * @return static
+     *
+     * @psalm-param list<string> $columns
      */
     public function addIndex(array $columns, $name)
     {
@@ -156,10 +157,11 @@ class ClassMetadataBuilder
     /**
      * Adds Unique Constraint.
      *
-     * @param array  $columns
      * @param string $name
      *
      * @return static
+     *
+     * @psalm-param list<string> $columns
      */
     public function addUniqueConstraint(array $columns, $name)
     {
@@ -297,9 +299,10 @@ class ClassMetadataBuilder
      *
      * @param string $name
      * @param string $type
-     * @param array  $mapping
      *
      * @return static
+     *
+     * @psalm-param array<string, mixed> $mapping
      */
     public function addField($name, $type, array $mapping = [])
     {

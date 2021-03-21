@@ -26,11 +26,15 @@ class City
     #[ORM\Id, ORM\GeneratedValue, ORM\Column(type: "integer")]
     protected $id;
 
-    /** @Column(unique=true) */
+    /**
+     * @var string
+     * @Column(unique=true)
+     */
     #[ORM\Column(unique: true)]
     protected $name;
 
     /**
+     * @var State|null
      * @Cache
      * @ManyToOne(targetEntity="State", inversedBy="cities")
      * @JoinColumn(name="state_id", referencedColumnName="id")
@@ -48,6 +52,7 @@ class City
     public $travels;
 
     /**
+     * @psalm-var Collection<int, Attraction>
      * @Cache
      * @OrderBy({"name" = "ASC"})
      * @OneToMany(targetEntity="Attraction", mappedBy="city")
@@ -56,7 +61,7 @@ class City
     #[ORM\OneToMany(targetEntity: "Attraction", mappedBy: "city")]
     public $attractions;
 
-    public function __construct($name, ?State $state = null)
+    public function __construct(string $name, ?State $state = null)
     {
         $this->name        = $name;
         $this->state       = $state;
@@ -64,27 +69,27 @@ class City
         $this->attractions = new ArrayCollection();
     }
 
-    public function getId()
+    public function getId(): int
     {
         return $this->id;
     }
 
-    public function setId($id): void
+    public function setId(int $id): void
     {
         $this->id = $id;
     }
 
-    public function getName()
+    public function getName(): string
     {
         return $this->name;
     }
 
-    public function setName($name): void
+    public function setName(string $name): void
     {
         $this->name = $name;
     }
 
-    public function getState()
+    public function getState(): ?State
     {
         return $this->state;
     }
@@ -99,7 +104,10 @@ class City
         $this->travels[] = $travel;
     }
 
-    public function getTravels()
+    /**
+     * @psalm-return Collection<int, Travel>
+     */
+    public function getTravels(): Collection
     {
         return $this->travels;
     }
@@ -109,7 +117,10 @@ class City
         $this->attractions[] = $attraction;
     }
 
-    public function getAttractions()
+    /**
+     * @psalm-return Collection<int, Attraction>
+     */
+    public function getAttractions(): Collection
     {
         return $this->attractions;
     }

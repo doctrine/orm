@@ -20,7 +20,7 @@
 
 namespace Doctrine\ORM\Tools\Console\Command\SchemaTool;
 
-use Doctrine\ORM\EntityManager;
+use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Tools\SchemaTool;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
@@ -53,7 +53,7 @@ abstract class AbstractCommand extends Command
         $emHelper = $this->getHelper('em');
 
         $em = $emHelper->getEntityManager();
-        assert($em instanceof EntityManager);
+        assert($em instanceof EntityManagerInterface);
 
         $metadatas = $em->getMetadataFactory()->getAllMetadata();
 

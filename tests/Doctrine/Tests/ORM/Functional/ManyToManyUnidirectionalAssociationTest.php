@@ -14,12 +14,25 @@ use Doctrine\Tests\Models\ECommerce\ECommerceProduct;
  */
 class ManyToManyUnidirectionalAssociationTest extends AbstractManyToManyAssociationTestCase
 {
-    protected $_firstField  = 'cart_id';
-    protected $_secondField = 'product_id';
-    protected $_table       = 'ecommerce_carts_products';
+    /** @var string */
+    protected $firstField = 'cart_id';
+
+    /** @var string */
+    protected $secondField = 'product_id';
+
+    /** @var string */
+    protected $table = 'ecommerce_carts_products';
+
+    /** @var ECommerceProduct */
     private $firstProduct;
+
+    /** @var ECommerceProduct */
     private $secondProduct;
+
+    /** @var ECommerceCart */
     private $firstCart;
+
+    /** @var ECommerceCart */
     private $secondCart;
 
     protected function setUp(): void
@@ -60,7 +73,7 @@ class ManyToManyUnidirectionalAssociationTest extends AbstractManyToManyAssociat
 
     public function testEagerLoad(): void
     {
-        $this->_createFixture();
+        $this->createFixture();
 
         $query      = $this->_em->createQuery('SELECT c, p FROM Doctrine\Tests\Models\ECommerce\ECommerceCart c LEFT JOIN c.products p ORDER BY c.id, p.id');
         $result     = $query->getResult();
@@ -77,7 +90,7 @@ class ManyToManyUnidirectionalAssociationTest extends AbstractManyToManyAssociat
 
     public function testLazyLoadsCollection(): void
     {
-        $this->_createFixture();
+        $this->createFixture();
         $metadata                                           = $this->_em->getClassMetadata(ECommerceCart::class);
         $metadata->associationMappings['products']['fetch'] = ClassMetadata::FETCH_LAZY;
 
@@ -92,7 +105,7 @@ class ManyToManyUnidirectionalAssociationTest extends AbstractManyToManyAssociat
         $this->assertCollectionEquals($products, $secondCart->getProducts());
     }
 
-    private function _createFixture(): void
+    private function createFixture(): void
     {
         $this->firstCart->addProduct($this->firstProduct);
         $this->firstCart->addProduct($this->secondProduct);

@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Doctrine\Tests\Models\CustomType;
 
 use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\Tests\DbalTypes\CustomIdObject;
 
 /**
@@ -19,7 +20,10 @@ class CustomIdObjectTypeParent
      */
     public $id;
 
-    /** @OneToMany(targetEntity="Doctrine\Tests\Models\CustomType\CustomIdObjectTypeChild", cascade={"persist", "remove"}, mappedBy="parent") */
+    /**
+     * @psalm-var Collection<int, CustomIdObjectTypeChild>
+     * @OneToMany(targetEntity="Doctrine\Tests\Models\CustomType\CustomIdObjectTypeChild", cascade={"persist", "remove"}, mappedBy="parent")
+     */
     public $children;
 
     public function __construct(CustomIdObject $id)

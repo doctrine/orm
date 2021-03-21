@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Doctrine\Tests\ORM\Functional\Ticket;
 
 use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\Tests\OrmFunctionalTestCase;
 use Exception;
 
@@ -177,7 +178,10 @@ class DDC1335User
      */
     public $name;
 
-    /** @OneToMany(targetEntity="DDC1335Phone", mappedBy="user", cascade={"persist", "remove"}) */
+    /**
+     * @psalm-var Collection<int, DDC1335Phone>
+     * @OneToMany(targetEntity="DDC1335Phone", mappedBy="user", cascade={"persist", "remove"})
+     */
     public $phones;
 
     public function __construct($email, $name, array $numbers = [])

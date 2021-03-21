@@ -80,7 +80,10 @@ abstract class DDC279EntityXAbstract
      */
     public $id;
 
-    /** @column(type="string") */
+    /**
+     * @var string
+     * @column(type="string")
+     */
     public $data;
 }
 
@@ -103,12 +106,16 @@ class DDC279EntityX extends DDC279EntityXAbstract
 class DDC279EntityY
 {
     /**
+     * @var int
      * @Id @GeneratedValue
      * @Column(name="id", type="integer")
      */
     public $id;
 
-    /** @column(type="string") */
+    /**
+     * @var string
+     * @column(type="string")
+     */
     public $data;
 
     /**
@@ -125,11 +132,15 @@ class DDC279EntityY
 class DDC279EntityZ
 {
     /**
+     * @var int
      * @Id @GeneratedValue
      * @Column(name="id", type="integer")
      */
     public $id;
 
-    /** @column(type="string") */
+    /**
+     * @var string
+     * @column(type="string")
+     */
     public $data;
 }

@@ -72,7 +72,7 @@ class QueryBuilder
     /**
      * The array of DQL parts collected.
      *
-     * @var array
+     * @psalm-var array<string, mixed>
      */
     private $_dqlParts = [
         'distinct' => false,
@@ -132,7 +132,7 @@ class QueryBuilder
     /**
      * Keeps root entity alias names for join entities.
      *
-     * @var array
+     * @psalm-var array<string, string>
      */
     private $joinRootAliases = [];
 
@@ -329,16 +329,16 @@ class QueryBuilder
 
         switch ($this->_type) {
             case self::DELETE:
-                $dql = $this->_getDQLForDelete();
+                $dql = $this->getDQLForDelete();
                 break;
 
             case self::UPDATE:
-                $dql = $this->_getDQLForUpdate();
+                $dql = $this->getDQLForUpdate();
                 break;
 
             case self::SELECT:
             default:
-                $dql = $this->_getDQLForSelect();
+                $dql = $this->getDQLForSelect();
                 break;
         }
 
@@ -699,11 +699,12 @@ class QueryBuilder
      * The available parts are: 'select', 'from', 'join', 'set', 'where',
      * 'groupBy', 'having' and 'orderBy'.
      *
-     * @param string       $dqlPartName The DQL part name.
-     * @param object|array $dqlPart     An Expr object.
-     * @param bool         $append      Whether to append (true) or replace (false).
+     * @param string $dqlPartName The DQL part name.
+     * @param bool   $append      Whether to append (true) or replace (false).
      *
      * @return self
+     *
+     * @psalm-param string|object|list<string>|array{join: array<int|string, object>} $dqlPart     An Expr object.
      */
     public function add($dqlPartName, $dqlPart, $append = false)
     {
@@ -1331,7 +1332,8 @@ class QueryBuilder
 
         $visitor = new QueryExpressionVisitor($this->getAllAliases());
 
-        if ($whereExpression = $criteria->getWhereExpression()) {
+        $whereExpression = $criteria->getWhereExpression();
+        if ($whereExpression) {
             $this->andWhere($visitor->dispatch($whereExpression));
             foreach ($visitor->getParameters() as $parameter) {
                 $this->parameters->add($parameter);
@@ -1357,11 +1359,13 @@ class QueryBuilder
         }
 
         // Overwrite limits only if they was set in criteria
-        if (($firstResult = $criteria->getFirstResult()) !== null) {
+        $firstResult = $criteria->getFirstResult();
+        if ($firstResult !== null) {
             $this->setFirstResult($firstResult);
         }
 
-        if (($maxResults = $criteria->getMaxResults()) !== null) {
+        $maxResults = $criteria->getMaxResults();
+        if ($maxResults !== null) {
             $this->setMaxResults($maxResults);
         }
 
@@ -1383,7 +1387,7 @@ class QueryBuilder
     /**
      * Gets all query parts.
      *
-     * @return array $dqlParts
+     * @psalm-return array<string, mixed> $dqlParts
      */
     public function getDQLParts()
     {
@@ -1393,34 +1397,34 @@ class QueryBuilder
     /**
      * @return string
      */
-    private function _getDQLForDelete()
+    private function getDQLForDelete()
     {
          return 'DELETE'
-              . $this->_getReducedDQLQueryPart('from', ['pre' => ' ', 'separator' => ', '])
-              . $this->_getReducedDQLQueryPart('where', ['pre' => ' WHERE '])
-              . $this->_getReducedDQLQueryPart('orderBy', ['pre' => ' ORDER BY ', 'separator' => ', ']);
+              . $this->getReducedDQLQueryPart('from', ['pre' => ' ', 'separator' => ', '])
+              . $this->getReducedDQLQueryPart('where', ['pre' => ' WHERE '])
+              . $this->getReducedDQLQueryPart('orderBy', ['pre' => ' ORDER BY ', 'separator' => ', ']);
     }
 
     /**
      * @return string
      */
-    private function _getDQLForUpdate()
+    private function getDQLForUpdate()
     {
          return 'UPDATE'
-              . $this->_getReducedDQLQueryPart('from', ['pre' => ' ', 'separator' => ', '])
-              . $this->_getReducedDQLQueryPart('set', ['pre' => ' SET ', 'separator' => ', '])
-              . $this->_getReducedDQLQueryPart('where', ['pre' => ' WHERE '])
-              . $this->_getReducedDQLQueryPart('orderBy', ['pre' => ' ORDER BY ', 'separator' => ', ']);
+              . $this->getReducedDQLQueryPart('from', ['pre' => ' ', 'separator' => ', '])
+              . $this->getReducedDQLQueryPart('set', ['pre' => ' SET ', 'separator' => ', '])
+              . $this->getReducedDQLQueryPart('where', ['pre' => ' WHERE '])
+              . $this->getReducedDQLQueryPart('orderBy', ['pre' => ' ORDER BY ', 'separator' => ', ']);
     }
 
     /**
      * @return string
      */
-    private function _getDQLForSelect()
+    private function getDQLForSelect()
     {
         $dql = 'SELECT'
              . ($this->_dqlParts['distinct'] === true ? ' DISTINCT' : '')
-             . $this->_getReducedDQLQueryPart('select', ['pre' => ' ', 'separator' => ', ']);
+             . $this->getReducedDQLQueryPart('select', ['pre' => ' ', 'separator' => ', ']);
 
         $fromParts   = $this->getDQLPart('from');
         $joinParts   = $this->getDQLPart('join');
@@ -1444,21 +1448,18 @@ class QueryBuilder
         }
 
         $dql .= implode(', ', $fromClauses)
-              . $this->_getReducedDQLQueryPart('where', ['pre' => ' WHERE '])
-              . $this->_getReducedDQLQueryPart('groupBy', ['pre' => ' GROUP BY ', 'separator' => ', '])
-              . $this->_getReducedDQLQueryPart('having', ['pre' => ' HAVING '])
-              . $this->_getReducedDQLQueryPart('orderBy', ['pre' => ' ORDER BY ', 'separator' => ', ']);
+              . $this->getReducedDQLQueryPart('where', ['pre' => ' WHERE '])
+              . $this->getReducedDQLQueryPart('groupBy', ['pre' => ' GROUP BY ', 'separator' => ', '])
+              . $this->getReducedDQLQueryPart('having', ['pre' => ' HAVING '])
+              . $this->getReducedDQLQueryPart('orderBy', ['pre' => ' ORDER BY ', 'separator' => ', ']);
 
         return $dql;
     }
 
     /**
-     * @param string $queryPartName
-     * @param array  $options
-     *
-     * @return string
+     * @psalm-param array<string, mixed> $options
      */
-    private function _getReducedDQLQueryPart($queryPartName, $options = [])
+    private function getReducedDQLQueryPart(string $queryPartName, array $options = []): string
     {
         $queryPart = $this->getDQLPart($queryPartName);
 
@@ -1474,9 +1475,9 @@ class QueryBuilder
     /**
      * Resets DQL parts.
      *
-     * @param array|null $parts
-     *
      * @return self
+     *
+     * @psalm-param list<string>|null $parts
      */
     public function resetDQLParts($parts = null)
     {

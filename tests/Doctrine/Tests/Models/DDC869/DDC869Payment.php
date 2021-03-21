@@ -20,7 +20,10 @@ class DDC869Payment
     #[ORM\Id, ORM\Column(type: "integer"), ORM\GeneratedValue]
     protected $id;
 
-    /** @Column(type="float") */
+    /**
+     * @var float
+     * @Column(type="float")
+     */
     #[ORM\Column(type: "float")]
     protected $value;
 

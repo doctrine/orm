@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Doctrine\Tests\Models\ECommerce;
 
 use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 
 /**
  * ECommerceProduct
@@ -30,16 +31,20 @@ class ECommerceProduct
     private $name;
 
     /**
-     * @var ECommerceShipping
+     * @var ECommerceShipping|null
      * @OneToOne(targetEntity="ECommerceShipping", cascade={"persist"})
      * @JoinColumn(name="shipping_id", referencedColumnName="id")
      */
     private $shipping;
 
-    /** @OneToMany(targetEntity="ECommerceFeature", mappedBy="product", cascade={"persist"}) */
+    /**
+     * @psalm-var Collection<int, ECommerceFeature>
+     * @OneToMany(targetEntity="ECommerceFeature", mappedBy="product", cascade={"persist"})
+     */
     private $features;
 
     /**
+     * @psalm-var Collection<int, ECommerceCategory>
      * @ManyToMany(targetEntity="ECommerceCategory", cascade={"persist"}, inversedBy="products")
      * @JoinTable(name="ecommerce_products_categories",
      *      joinColumns={@JoinColumn(name="product_id", referencedColumnName="id")},
@@ -51,6 +56,7 @@ class ECommerceProduct
      * This relation is saved with two records in the association table for
      * simplicity.
      *
+     * @psalm-var Collection<int, ECommerceProduct>
      * @ManyToMany(targetEntity="ECommerceProduct", cascade={"persist"})
      * @JoinTable(name="ecommerce_products_related",
      *      joinColumns={@JoinColumn(name="product_id", referencedColumnName="id")},
@@ -58,8 +64,11 @@ class ECommerceProduct
      */
     private $related;
 
+    /** @var bool */
     public $isCloned = false;
-    public $wakeUp   = false;
+
+    /** @var bool */
+    public $wakeUp = false;
 
     public function __construct()
     {
@@ -68,22 +77,22 @@ class ECommerceProduct
         $this->related    = new ArrayCollection();
     }
 
-    public function getId()
+    public function getId(): int
     {
         return $this->id;
     }
 
-    public function getName()
+    public function getName(): string
     {
         return $this->name;
     }
 
-    public function setName($name): void
+    public function setName(string $name): void
     {
         $this->name = $name;
     }
 
-    public function getShipping()
+    public function getShipping(): ?ECommerceShipping
     {
         return $this->shipping;
     }
@@ -98,7 +107,10 @@ class ECommerceProduct
         $this->shipping = null;
     }
 
-    public function getFeatures()
+    /**
+     * @psalm-return Collection<int, ECommerceFeature>
+     */
+    public function getFeatures(): Collection
     {
         return $this->features;
     }
@@ -115,7 +127,7 @@ class ECommerceProduct
         $this->features[] = $feature;
     }
 
-    public function removeFeature(ECommerceFeature $feature)
+    public function removeFeature(ECommerceFeature $feature): bool
     {
         $removed = $this->features->removeElement($feature);
         if ($removed) {
@@ -141,17 +153,26 @@ class ECommerceProduct
         }
     }
 
-    public function setCategories($categories): void
+    /**
+     * @psalm-param Collection<int, ECommerceCategory> $categories
+     */
+    public function setCategories(Collection $categories): void
     {
         $this->categories = $categories;
     }
 
-    public function getCategories()
+    /**
+     * @psalm-return Collection<int, ECommerceCategory> $categories
+     */
+    public function getCategories(): Collection
     {
         return $this->categories;
     }
 
-    public function getRelated()
+    /**
+     * @psalm-return Collection<int, ECommerceProduct> $categories
+     */
+    public function getRelated(): Collection
     {
         return $this->related;
     }

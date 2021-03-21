@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Doctrine\Tests\ORM\Functional\Ticket;
 
+use Doctrine\Common\Collections\Collection;
 use Doctrine\Tests\OrmFunctionalTestCase;
 use Exception;
 
@@ -96,7 +97,10 @@ class DDC2759Category
      */
     public $id;
 
-    /** @OneToMany(targetEntity="DDC2759MetadataCategory", mappedBy="category") */
+    /**
+     * @psalm-var Collection<int, DDC2759MetadataCategory>
+     * @OneToMany(targetEntity="DDC2759MetadataCategory", mappedBy="category")
+     */
     public $metadataCategories;
 }
 
@@ -117,7 +121,10 @@ class DDC2759QualificationMetadata
      */
     public $content;
 
-    /** @OneToMany(targetEntity="DDC2759MetadataCategory", mappedBy="metadata") */
+    /**
+     * @psalm-var Collection<int, DDC2759MetadataCategory>
+     * @OneToMany(targetEntity="DDC2759MetadataCategory", mappedBy="metadata")
+     */
     protected $metadataCategories;
 
     public function __construct(DDC2759Qualification $content)

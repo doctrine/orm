@@ -76,41 +76,32 @@ class DDC1509Picture
     private $thumbnail;
 
     /**
-     * @var DDC1509AbstractFile
+     * @var DDC1509AbstractFile|null
      * @ManyToOne(targetEntity="DDC1509AbstractFile", cascade={"persist", "remove"})
      */
     private $file;
 
-    /**
-     * Get pictureId
-     */
-    public function getPictureId()
+    public function getPictureId(): int
     {
         return $this->id;
     }
 
-    /**
-     * Set file
-     */
-    public function setFile($value = null): void
+    public function setFile(?DDC1509AbstractFile $value = null): void
     {
         $this->file = $value;
     }
 
-    /**
-     * Get file
-     */
-    public function getFile()
+    public function getFile(): ?DDC1509AbstractFile
     {
         return $this->file;
     }
 
-    public function getThumbnail()
+    public function getThumbnail(): DDC1509AbstractFile
     {
         return $this->thumbnail;
     }
 
-    public function setThumbnail($thumbnail): void
+    public function setThumbnail(DDC1509AbstractFile $thumbnail): void
     {
         $this->thumbnail = $thumbnail;
     }
@@ -132,10 +123,7 @@ class DDC1509AbstractFile
      */
     public $id;
 
-    /**
-     * Get fileId
-     */
-    public function getFileId()
+    public function getFileId(): int
     {
         return $this->id;
     }

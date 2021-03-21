@@ -20,8 +20,8 @@ class DDC1225Test extends OrmFunctionalTestCase
         try {
             $this->_schemaTool->createSchema(
                 [
-                    $this->_em->getClassMetadata(DDC1225_TestEntity1::class),
-                    $this->_em->getClassMetadata(DDC1225_TestEntity2::class),
+                    $this->_em->getClassMetadata(DDC1225TestEntity1::class),
+                    $this->_em->getClassMetadata(DDC1225TestEntity2::class),
                 ]
             );
         } catch (PDOException $e) {
@@ -31,7 +31,7 @@ class DDC1225Test extends OrmFunctionalTestCase
     public function testIssue(): void
     {
         $qb = $this->_em->createQueryBuilder();
-        $qb->from(DDC1225_TestEntity1::class, 'te1')
+        $qb->from(DDC1225TestEntity1::class, 'te1')
            ->select('te1')
            ->where('te1.testEntity2 = ?1')
            ->setParameter(1, 0);
@@ -47,21 +47,22 @@ class DDC1225Test extends OrmFunctionalTestCase
  * @Entity
  * @Table(name="te1")
  */
-class DDC1225_TestEntity1
+class DDC1225TestEntity1
 {
     /**
+     * @var DDC1225TestEntity2
      * @Id
-     * @ManyToOne(targetEntity="Doctrine\Tests\ORM\Functional\Ticket\DDC1225_TestEntity2")
+     * @ManyToOne(targetEntity="Doctrine\Tests\ORM\Functional\Ticket\DDC1225TestEntity2")
      * @JoinColumn(name="test_entity2_id", referencedColumnName="id", nullable=false)
      */
     private $testEntity2;
 
-    public function setTestEntity2(DDC1225_TestEntity2 $testEntity2): void
+    public function setTestEntity2(DDC1225TestEntity2 $testEntity2): void
     {
         $this->testEntity2 = $testEntity2;
     }
 
-    public function getTestEntity2(): DDC1225_TestEntity2
+    public function getTestEntity2(): DDC1225TestEntity2
     {
         return $this->testEntity2;
     }
@@ -71,7 +72,7 @@ class DDC1225_TestEntity1
  * @Entity
  * @Table(name="te2")
  */
-class DDC1225_TestEntity2
+class DDC1225TestEntity2
 {
     /**
      * @var int

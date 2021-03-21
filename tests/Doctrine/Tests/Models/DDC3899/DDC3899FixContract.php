@@ -9,6 +9,9 @@ namespace Doctrine\Tests\Models\DDC3899;
  */
 class DDC3899FixContract extends DDC3899Contract
 {
-    /** @column(type="integer") */
+    /**
+     * @var int
+     * @column(type="integer")
+     */
     public $fixPrice = 0;
 }

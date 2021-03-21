@@ -52,12 +52,7 @@
         }
     },
     "bin": ["bin/doctrine"],
-    "extra": {
-        "branch-alias": {
-            "dev-master": "2.7.x-dev"
-        }
-    },
     "archive": {
-        "exclude": ["!vendor", "tests", "*phpunit.xml", ".travis.yml", "build.xml", "build.properties", "composer.phar", "vendor/satooshi", "lib/vendor", "*.swp"]
+        "exclude": ["!vendor", "tests", "*phpunit.xml", "build.xml", "build.properties", "composer.phar", "vendor/satooshi", "lib/vendor", "*.swp"]
     }
 }

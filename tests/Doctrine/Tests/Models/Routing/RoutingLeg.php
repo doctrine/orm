@@ -10,6 +10,7 @@ namespace Doctrine\Tests\Models\Routing;
 class RoutingLeg
 {
     /**
+     * @var int
      * @Id @generatedValue
      * @column(type="integer")
      */
@@ -29,9 +30,15 @@ class RoutingLeg
      */
     public $toLocation;
 
-    /** @Column(type="datetime") */
+    /**
+     * @var DateTime
+     * @Column(type="datetime")
+     */
     public $departureDate;
 
-    /** @Column(type="datetime") */
+    /**
+     * @var DateTime
+     * @Column(type="datetime")
+     */
     public $arrivalDate;
 }

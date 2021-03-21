@@ -20,7 +20,7 @@ use function count;
  */
 class NewOperatorTest extends OrmFunctionalTestCase
 {
-    /** @var array */
+    /** @var list<CmsUser> */
     private $fixtures;
 
     protected function setUp(): void
@@ -31,7 +31,10 @@ class NewOperatorTest extends OrmFunctionalTestCase
         $this->loadFixtures();
     }
 
-    public function provideDataForHydrationMode()
+    /**
+     * @psalm-return list<array{int}>
+     */
+    public function provideDataForHydrationMode(): array
     {
         return [
             [Query::HYDRATE_ARRAY],

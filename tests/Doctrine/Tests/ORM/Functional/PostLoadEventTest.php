@@ -14,9 +14,6 @@ use Doctrine\Tests\Models\CMS\CmsUser;
 use Doctrine\Tests\OrmFunctionalTestCase;
 use RuntimeException;
 
-/**
- * PostLoadEventTest
- */
 class PostLoadEventTest extends OrmFunctionalTestCase
 {
     /** @var int */
@@ -281,8 +278,10 @@ class PostLoadListener
 
 class PostLoadListenerCheckAssociationsArePopulated
 {
+    /** @var bool */
     public $checked = false;
 
+    /** @var bool */
     public $populated = false;
 
     public function postLoad(LifecycleEventArgs $event): void
@@ -301,6 +300,7 @@ class PostLoadListenerCheckAssociationsArePopulated
 
 class PostLoadListenerLoadEntityInEventHandler
 {
+    /** @psalm-var array<class-string, int> */
     private $firedByClasses = [];
 
     public function postLoad(LifecycleEventArgs $event): void
@@ -318,7 +318,7 @@ class PostLoadListenerLoadEntityInEventHandler
         }
     }
 
-    public function countHandledEvents($className)
+    public function countHandledEvents($className): int
     {
         return $this->firedByClasses[$className] ?? 0;
     }

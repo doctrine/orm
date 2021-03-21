@@ -95,7 +95,10 @@ class DDC2012Item
      */
     public $id;
 
-    /** @Column(name="tsv", type="tsvector", nullable=true) */
+    /**
+     * @psalm-var list<string>
+     * @Column(name="tsv", type="tsvector", nullable=true)
+     */
     public $tsv;
 }
 
@@ -111,6 +114,7 @@ class DDC2012TsVectorType extends Type
 {
     public const MYTYPE = 'tsvector';
 
+    /** @psalm-var array<string, list<array{value: mixed, platform: AbstractPlatform}>> */
     public static $calls = [];
 
     /**

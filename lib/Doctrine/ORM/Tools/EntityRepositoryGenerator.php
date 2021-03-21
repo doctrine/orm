@@ -47,8 +47,10 @@ use const DIRECTORY_SEPARATOR;
  */
 class EntityRepositoryGenerator
 {
+    /** @psalm-var class-string */
     private $repositoryName;
 
+    /** @var string */
     protected static $_template =
     '<?php
 

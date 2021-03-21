@@ -20,7 +20,10 @@ class CmsEmployee
      */
     private $id;
 
-    /** @Column */
+    /**
+     * @var string
+     * @Column
+     */
     private $name;
 
     /**
@@ -30,17 +33,17 @@ class CmsEmployee
      */
     private $spouse;
 
-    public function getId()
+    public function getId(): int
     {
         return $this->id;
     }
 
-    public function getName()
+    public function getName(): string
     {
         return $this->name;
     }
 
-    public function getSpouse()
+    public function getSpouse(): ?CmsEmployee
     {
         return $this->spouse;
     }

@@ -70,6 +70,7 @@ class DDC1436Page
      * @Column(type="integer", name="id")
      */
     protected $id;
+
     /**
      * @var DDC1436Page
      * @ManyToOne(targetEntity="DDC1436Page")
@@ -77,7 +78,7 @@ class DDC1436Page
      */
     protected $parent;
 
-    public function getId()
+    public function getId(): int
     {
         return $this->id;
     }

@@ -22,16 +22,34 @@ use function count;
  */
 class ExtraLazyCollectionTest extends OrmFunctionalTestCase
 {
+    /** @var int */
     private $userId;
+
+    /** @var int */
     private $userId2;
+
+    /** @var int */
     private $groupId;
+
+    /** @var int */
     private $articleId;
+
+    /** @var int */
     private $ddc2504OtherClassId;
+
+    /** @var int */
     private $ddc2504ChildClassId;
 
+    /** @var string */
     private $username;
+
+    /** @var string */
     private $groupname;
+
+    /** @var string */
     private $topic;
+
+    /** @var CmsPhonenumber */
     private $phonenumber;
 
     protected function setUp(): void

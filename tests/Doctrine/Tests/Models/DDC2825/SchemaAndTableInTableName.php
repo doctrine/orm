@@ -15,7 +15,12 @@ use Doctrine\ORM\Mapping as ORM;
 #[ORM\Entity, ORM\Table(name: "implicit_schema.implicit_table")]
 class SchemaAndTableInTableName
 {
-    /** @Id @Column(type="integer") @GeneratedValue(strategy="AUTO") */
+    /**
+     * @var int
+     * @Id
+     * @Column(type="integer")
+     * @GeneratedValue(strategy="AUTO")
+     */
     #[ORM\Id, ORM\Column(type: "integer"), ORM\GeneratedValue(strategy: "AUTO")]
     public $id;
 }

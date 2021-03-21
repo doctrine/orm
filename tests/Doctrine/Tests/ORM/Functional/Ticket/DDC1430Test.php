@@ -148,7 +148,10 @@ class DDC1430Order
      */
     protected $id;
 
-    /** @Column(name="created_at", type="datetime") */
+    /**
+     * @var DateTime
+     * @Column(name="created_at", type="datetime")
+     */
     private $date;
 
     /**
@@ -168,7 +171,7 @@ class DDC1430Order
         return $this->id;
     }
 
-    public function __construct($status)
+    public function __construct(string $status)
     {
         $this->status   = $status;
         $this->date     = new DateTime();
@@ -207,11 +210,12 @@ class DDC1430Order
  */
 class DDC1430OrderProduct
 {
-     /**
-      * @Id
-      * @Column(type="integer")
-      * @GeneratedValue()
-      */
+    /**
+     * @var int
+     * @Id
+     * @Column(type="integer")
+     * @GeneratedValue()
+     */
     protected $id;
 
     /**
@@ -221,7 +225,10 @@ class DDC1430OrderProduct
      */
     private $order;
 
-    /** @column(type="float") */
+    /**
+     * @var float
+     * @column(type="float")
+     */
     private $value;
 
     public function __construct(float $value)

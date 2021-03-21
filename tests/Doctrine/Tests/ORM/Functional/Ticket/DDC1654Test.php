@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Doctrine\Tests\ORM\Functional\Ticket;
 
+use Doctrine\Common\Collections\Collection;
 use Doctrine\Tests\OrmFunctionalTestCase;
 
 use function count;
@@ -26,7 +27,7 @@ class DDC1654Test extends OrmFunctionalTestCase
 
     public function tearDown(): void
     {
-        $conn = static::$_sharedConn;
+        $conn = static::$sharedConn;
         $conn->executeUpdate('DELETE FROM ddc1654post_ddc1654comment');
         $conn->executeUpdate('DELETE FROM DDC1654Comment');
         $conn->executeUpdate('DELETE FROM DDC1654Post');
@@ -149,6 +150,7 @@ class DDC1654Post
     public $id;
 
     /**
+     * @psalm-var Collection<int, DDC1654Comment>
      * @ManyToMany(targetEntity="DDC1654Comment", orphanRemoval=true,
      * cascade={"persist"})
      */

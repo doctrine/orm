@@ -12,6 +12,7 @@ namespace Doctrine\Tests\Models\DDC117;
 class DDC117Link
 {
     /**
+     * @var DDC117Article
      * @Id
      * @ManyToOne(targetEntity="DDC117Article", inversedBy="links")
      * @JoinColumn(name="source_id", referencedColumnName="article_id")
@@ -19,6 +20,7 @@ class DDC117Link
     public $source;
 
     /**
+     * @var DDC117Article
      * @Id
      * @ManyToOne(targetEntity="DDC117Article")
      * @JoinColumn(name="target_id", referencedColumnName="article_id")

@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Doctrine\Tests\Models\Navigation;
 
 use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 
 /**
  * @Entity
@@ -38,17 +39,17 @@ class NavPointOfInterest
      */
     private $country;
 
-     /**
-      * @var Collection<NavUser>
-      * @ManyToMany(targetEntity="NavUser", cascade={"persist"})
-      * @JoinTable(name="navigation_pois_visitors",
-      *      inverseJoinColumns={@JoinColumn(name="user_id", referencedColumnName="id")},
-      *      joinColumns={
-      *          @JoinColumn(name="poi_long", referencedColumnName="nav_long"),
-      *          @JoinColumn(name="poi_lat", referencedColumnName="nav_lat")
-      *      }
-      * )
-      */
+    /**
+     * @psalm-var Collection<int, NavUser>
+     * @ManyToMany(targetEntity="NavUser", cascade={"persist"})
+     * @JoinTable(name="navigation_pois_visitors",
+     *      inverseJoinColumns={@JoinColumn(name="user_id", referencedColumnName="id")},
+     *      joinColumns={
+     *          @JoinColumn(name="poi_long", referencedColumnName="nav_long"),
+     *          @JoinColumn(name="poi_lat", referencedColumnName="nav_lat")
+     *      }
+     * )
+     */
     private $visitors;
 
     public function __construct(int $lat, int $long, string $name, NavCountry $country)
@@ -85,7 +86,10 @@ class NavPointOfInterest
         $this->visitors[] = $user;
     }
 
-    public function getVisitors()
+    /**
+     * @psalm-var Collection<int, NavUser>
+     */
+    public function getVisitors(): Collection
     {
         return $this->visitors;
     }

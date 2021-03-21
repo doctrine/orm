@@ -43,7 +43,7 @@ abstract class DDC3597Root
      *
      * @PrePersist
      */
-    public function _prePersist(): void
+    public function prePersist(): void
     {
         $this->updatedAt = $this->createdAt = new DateTime();
     }
@@ -53,7 +53,7 @@ abstract class DDC3597Root
      *
      * @PreUpdate
      */
-    public function _preUpdate(): void
+    public function preUpdate(): void
     {
         $this->updatedAt = new DateTime();
     }

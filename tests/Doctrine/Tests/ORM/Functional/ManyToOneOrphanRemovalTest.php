@@ -21,9 +21,11 @@ use const DIRECTORY_SEPARATOR;
  */
 class ManyToOneOrphanRemovalTest extends OrmFunctionalTestCase
 {
+    /** @var int */
     private $personId;
 
-    protected static $_modelSets = [
+    /** @var array<string, list<class-string>> */
+    protected static $modelSets = [
         'ornemental_orphan_removal' => [
             Person::class,
             PhoneNumber::class,
@@ -82,11 +84,11 @@ class ManyToOneOrphanRemovalTest extends OrmFunctionalTestCase
         $this->assertEquals(2, count($result), 'Orphan removal should not kick in');
     }
 
-    protected function _getEntityManager(
+    protected function getEntityManager(
         ?Connection $connection = null,
         ?MappingDriver $mappingDriver = null
     ): EntityManager {
-        return parent::_getEntityManager($connection, new XmlDriver(
+        return parent::getEntityManager($connection, new XmlDriver(
             __DIR__ . DIRECTORY_SEPARATOR . 'xml'
         ));
     }
