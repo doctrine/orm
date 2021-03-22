@@ -264,10 +264,6 @@ abstract class AbstractHydrator
             ->removeEventListener([Events::onClear], $this);
     }
 
-    protected function cleanupAfterRowIteration(): void
-    {
-    }
-
     /**
      * Hydrates a single row from the current statement instance.
      *
