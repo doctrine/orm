@@ -1,24 +1,27 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\Tests\ORM\Functional\Ticket;
 
 use Doctrine\ORM\Events;
-use Doctrine\ORM\UnitOfWork;
 use Doctrine\Tests\Models\CMS\CmsUser;
+use Doctrine\Tests\OrmFunctionalTestCase;
 use ReflectionObject;
+use stdClass;
 
 /**
  * @group DDC-3123
  */
-class DDC3123Test extends \Doctrine\Tests\OrmFunctionalTestCase
+class DDC3123Test extends OrmFunctionalTestCase
 {
-    protected function setUp() : void
+    protected function setUp(): void
     {
         $this->useModelSet('cms');
         parent::setUp();
     }
 
-    public function testIssue()
+    public function testIssue(): void
     {
         $test = $this;
         $user = new CmsUser();
@@ -30,14 +33,14 @@ class DDC3123Test extends \Doctrine\Tests\OrmFunctionalTestCase
         $this->_em->persist($user);
         $uow->scheduleExtraUpdate($user, ['name' => 'changed name']);
 
-        $listener = $this->getMockBuilder(\stdClass::class)
+        $listener = $this->getMockBuilder(stdClass::class)
                          ->setMethods([Events::postFlush])
                          ->getMock();
 
         $listener
             ->expects($this->once())
             ->method(Events::postFlush)
-            ->will($this->returnCallback(function () use ($uow, $test) {
+            ->will($this->returnCallback(static function () use ($uow, $test): void {
                 $reflection = new ReflectionObject($uow);
                 $property   = $reflection->getProperty('extraUpdates');
 

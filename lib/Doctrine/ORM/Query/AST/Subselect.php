@@ -1,4 +1,5 @@
 <?php
+
 /*
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
  * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
@@ -23,41 +24,25 @@ namespace Doctrine\ORM\Query\AST;
  * Subselect ::= SimpleSelectClause SubselectFromClause [WhereClause] [GroupByClause] [HavingClause] [OrderByClause]
  *
  * @link    www.doctrine-project.org
- * @since   2.0
- * @author  Guilherme Blanco <guilhermeblanco@hotmail.com>
- * @author  Jonathan Wage <jonwage@gmail.com>
- * @author  Roman Borschel <roman@code-factory.org>
  */
 class Subselect extends Node
 {
-    /**
-     * @var SimpleSelectClause
-     */
+    /** @var SimpleSelectClause */
     public $simpleSelectClause;
 
-    /**
-     * @var SubselectFromClause
-     */
+    /** @var SubselectFromClause */
     public $subselectFromClause;
 
-    /**
-     * @var WhereClause|null
-     */
+    /** @var WhereClause|null */
     public $whereClause;
 
-    /**
-     * @var GroupByClause|null
-     */
+    /** @var GroupByClause|null */
     public $groupByClause;
 
-    /**
-     * @var HavingClause|null
-     */
+    /** @var HavingClause|null */
     public $havingClause;
 
-    /**
-     * @var OrderByClause|null
-     */
+    /** @var OrderByClause|null */
     public $orderByClause;
 
     /**
@@ -66,7 +51,7 @@ class Subselect extends Node
      */
     public function __construct($simpleSelectClause, $subselectFromClause)
     {
-        $this->simpleSelectClause = $simpleSelectClause;
+        $this->simpleSelectClause  = $simpleSelectClause;
         $this->subselectFromClause = $subselectFromClause;
     }
 

@@ -1,28 +1,33 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\Tests\ORM\Functional\Ticket;
+
+use Doctrine\Tests\OrmFunctionalTestCase;
+use Exception;
 
 /**
  * @group DDC-2084
  */
-class DDC2084Test extends \Doctrine\Tests\OrmFunctionalTestCase
+class DDC2084Test extends OrmFunctionalTestCase
 {
-    protected function setUp() : void
+    protected function setUp(): void
     {
         parent::setUp();
 
         try {
             $this->_schemaTool->createSchema(
                 [
-                $this->_em->getClassMetadata(__NAMESPACE__ . '\DDC2084\MyEntity1'),
-                $this->_em->getClassMetadata(__NAMESPACE__ . '\DDC2084\MyEntity2'),
+                    $this->_em->getClassMetadata(__NAMESPACE__ . '\DDC2084\MyEntity1'),
+                    $this->_em->getClassMetadata(__NAMESPACE__ . '\DDC2084\MyEntity2'),
                 ]
             );
-        } catch (\Exception $exc) {
+        } catch (Exception $exc) {
         }
     }
 
-    public function loadFixture()
+    public function loadFixture(): DDC2084\MyEntity1
     {
         $e2 = new DDC2084\MyEntity2('Foo');
         $e1 = new DDC2084\MyEntity1($e2);
@@ -38,7 +43,7 @@ class DDC2084Test extends \Doctrine\Tests\OrmFunctionalTestCase
         return $e1;
     }
 
-    public function testIssue()
+    public function testIssue(): void
     {
         $e1 = $this->loadFixture();
         $e2 = $e1->getMyEntity2();
@@ -49,7 +54,7 @@ class DDC2084Test extends \Doctrine\Tests\OrmFunctionalTestCase
         $this->assertEquals('Foo', $e->getMyEntity2()->getValue());
     }
 
-    public function testinvalidIdentifierBindingEntityException()
+    public function testinvalidIdentifierBindingEntityException(): void
     {
         $this->expectException('Doctrine\ORM\ORMInvalidArgumentException');
         $this->expectExceptionMessage('Binding entities to query parameters only allowed for entities that have an identifier.');
@@ -66,6 +71,7 @@ namespace Doctrine\Tests\ORM\Functional\Ticket\DDC2084;
 class MyEntity1
 {
     /**
+     * @var MyEntity2
      * @Id
      * @OneToOne(targetEntity="MyEntity2")
      * @JoinColumn(name="entity2_id", referencedColumnName="id", nullable=false)
@@ -77,12 +83,12 @@ class MyEntity1
         $this->entity2 = $myEntity2;
     }
 
-    public function setMyEntity2(MyEntity2 $myEntity2)
+    public function setMyEntity2(MyEntity2 $myEntity2): void
     {
         $this->entity2 = $myEntity2;
     }
 
-    public function getMyEntity2()
+    public function getMyEntity2(): MyEntity2
     {
         return $this->entity2;
     }
@@ -95,6 +101,7 @@ class MyEntity1
 class MyEntity2
 {
     /**
+     * @var int
      * @Id
      * @Column(type="integer")
      * @GeneratedValue(strategy="AUTO")
@@ -102,26 +109,27 @@ class MyEntity2
     private $id;
 
     /**
+     * @var string
      * @Column
      */
     private $value;
 
-    public function __construct($value)
+    public function __construct(string $value)
     {
         $this->value = $value;
     }
 
-    public function getId()
+    public function getId(): int
     {
         return $this->id;
     }
 
-    public function getValue()
+    public function getValue(): string
     {
         return $this->value;
     }
 
-    public function setValue($value)
+    public function setValue(string $value): void
     {
         $this->value = $value;
     }

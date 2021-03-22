@@ -1,62 +1,57 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\Tests\Models\DDC1476;
+
+use Doctrine\ORM\Mapping\ClassMetadataInfo;
 
 /**
  * @Entity()
  */
 class DDC1476EntityWithDefaultFieldType
 {
-
     /**
+     * @var int
      * @Id
      * @Column()
      * @GeneratedValue("NONE")
      */
     protected $id;
 
-    /** @column() */
+    /**
+     * @var string
+     * @column()
+     */
     protected $name;
 
-    /**
-     * @return int
-     */
-    public function getId()
+    public function getId(): int
     {
         return $this->id;
     }
 
-    /**
-     * @return string
-     */
-    public function getName()
+    public function getName(): string
     {
         return $this->name;
     }
 
-    /**
-     * @param string $name
-     */
-    public function setName($name)
+    public function setName(string $name): void
     {
         $this->name = $name;
     }
 
-    public static function loadMetadata(\Doctrine\ORM\Mapping\ClassMetadataInfo $metadata)
+    public static function loadMetadata(ClassMetadataInfo $metadata): void
     {
         $metadata->mapField(
             [
-           'id'         => true,
-           'fieldName'  => 'id',
+                'id'         => true,
+                'fieldName'  => 'id',
             ]
         );
         $metadata->mapField(
-            [
-           'fieldName'  => 'name',
-            ]
+            ['fieldName' => 'name']
         );
 
-        $metadata->setIdGeneratorType(\Doctrine\ORM\Mapping\ClassMetadataInfo::GENERATOR_TYPE_NONE);
+        $metadata->setIdGeneratorType(ClassMetadataInfo::GENERATOR_TYPE_NONE);
     }
-
 }

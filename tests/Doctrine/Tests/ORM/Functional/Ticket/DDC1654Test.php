@@ -1,34 +1,41 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\Tests\ORM\Functional\Ticket;
+
+use Doctrine\Common\Collections\Collection;
+use Doctrine\Tests\OrmFunctionalTestCase;
+
+use function count;
 
 /**
  * @group DDC-1654
  */
-class DDC1654Test extends \Doctrine\Tests\OrmFunctionalTestCase
+class DDC1654Test extends OrmFunctionalTestCase
 {
-    protected function setUp() : void
+    protected function setUp(): void
     {
         parent::setUp();
         $this->setUpEntitySchema(
             [
-            DDC1654Post::class,
-            DDC1654Comment::class,
+                DDC1654Post::class,
+                DDC1654Comment::class,
             ]
         );
     }
 
-    public function tearDown() : void
+    public function tearDown(): void
     {
-        $conn = static::$_sharedConn;
+        $conn = static::$sharedConn;
         $conn->executeUpdate('DELETE FROM ddc1654post_ddc1654comment');
         $conn->executeUpdate('DELETE FROM DDC1654Comment');
         $conn->executeUpdate('DELETE FROM DDC1654Post');
     }
 
-    public function testManyToManyRemoveFromCollectionOrphanRemoval()
+    public function testManyToManyRemoveFromCollectionOrphanRemoval(): void
     {
-        $post = new DDC1654Post();
+        $post             = new DDC1654Post();
         $post->comments[] = new DDC1654Comment();
         $post->comments[] = new DDC1654Comment();
 
@@ -45,9 +52,9 @@ class DDC1654Test extends \Doctrine\Tests\OrmFunctionalTestCase
         $this->assertEquals(0, count($comments));
     }
 
-    public function testManyToManyRemoveElementFromCollectionOrphanRemoval()
+    public function testManyToManyRemoveElementFromCollectionOrphanRemoval(): void
     {
-        $post = new DDC1654Post();
+        $post             = new DDC1654Post();
         $post->comments[] = new DDC1654Comment();
         $post->comments[] = new DDC1654Comment();
 
@@ -67,9 +74,9 @@ class DDC1654Test extends \Doctrine\Tests\OrmFunctionalTestCase
     /**
      * @group DDC-3382
      */
-    public function testManyToManyRemoveElementFromReAddToCollectionOrphanRemoval()
+    public function testManyToManyRemoveElementFromReAddToCollectionOrphanRemoval(): void
     {
-        $post = new DDC1654Post();
+        $post             = new DDC1654Post();
         $post->comments[] = new DDC1654Comment();
         $post->comments[] = new DDC1654Comment();
 
@@ -87,9 +94,9 @@ class DDC1654Test extends \Doctrine\Tests\OrmFunctionalTestCase
         $this->assertEquals(2, count($comments));
     }
 
-    public function testManyToManyClearCollectionOrphanRemoval()
+    public function testManyToManyClearCollectionOrphanRemoval(): void
     {
-        $post = new DDC1654Post();
+        $post             = new DDC1654Post();
         $post->comments[] = new DDC1654Comment();
         $post->comments[] = new DDC1654Comment();
 
@@ -103,15 +110,14 @@ class DDC1654Test extends \Doctrine\Tests\OrmFunctionalTestCase
 
         $comments = $this->_em->getRepository(DDC1654Comment::class)->findAll();
         $this->assertEquals(0, count($comments));
-
     }
 
     /**
      * @group DDC-3382
      */
-    public function testManyToManyClearCollectionReAddOrphanRemoval()
+    public function testManyToManyClearCollectionReAddOrphanRemoval(): void
     {
-        $post = new DDC1654Post();
+        $post             = new DDC1654Post();
         $post->comments[] = new DDC1654Comment();
         $post->comments[] = new DDC1654Comment();
 
@@ -136,11 +142,15 @@ class DDC1654Test extends \Doctrine\Tests\OrmFunctionalTestCase
 class DDC1654Post
 {
     /**
-     * @Id @Column(type="integer") @GeneratedValue
+     * @var int
+     * @Id
+     * @Column(type="integer")
+     * @GeneratedValue
      */
     public $id;
 
     /**
+     * @psalm-var Collection<int, DDC1654Comment>
      * @ManyToMany(targetEntity="DDC1654Comment", orphanRemoval=true,
      * cascade={"persist"})
      */
@@ -153,7 +163,10 @@ class DDC1654Post
 class DDC1654Comment
 {
     /**
-     * @Id @Column(type="integer") @GeneratedValue
+     * @var int
+     * @Id
+     * @Column(type="integer")
+     * @GeneratedValue
      */
     public $id;
 }

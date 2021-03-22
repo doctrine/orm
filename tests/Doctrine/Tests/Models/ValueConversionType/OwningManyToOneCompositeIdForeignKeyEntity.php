@@ -11,12 +11,14 @@ namespace Doctrine\Tests\Models\ValueConversionType;
 class OwningManyToOneCompositeIdForeignKeyEntity
 {
     /**
+     * @var string
      * @Column(type="rot13")
      * @Id
      */
     public $id2;
 
     /**
+     * @var InversedOneToManyCompositeIdForeignKeyEntity
      * @ManyToOne(targetEntity="InversedOneToManyCompositeIdForeignKeyEntity", inversedBy="associatedEntities")
      * @JoinColumns({
      *     @JoinColumn(name="associated_id", referencedColumnName="id1"),

@@ -1,7 +1,16 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\Tests\Mocks;
 
+use ArrayIterator;
+use PDO;
+
+use function count;
+use function current;
+use function next;
+use function reset;
 
 /**
  * Simple statement mock that returns result based on array.
@@ -9,22 +18,26 @@ namespace Doctrine\Tests\Mocks;
  */
 class StatementArrayMock extends StatementMock
 {
-    /**
-     * @var array
-     */
+    /** @var mixed[] */
     private $_result;
 
-    public function __construct($result)
+    /**
+     * @param mixed[] $result
+     */
+    public function __construct(array $result)
     {
         $this->_result = $result;
     }
 
-    public function getIterator()
+    /**
+     * @psalm-return ArrayIterator<int, mixed>
+     */
+    public function getIterator(): ArrayIterator
     {
-        return new \ArrayIterator($this->_result);
+        return new ArrayIterator($this->_result);
     }
 
-    public function columnCount()
+    public function columnCount(): int
     {
         $row = reset($this->_result);
         if ($row) {
@@ -34,12 +47,18 @@ class StatementArrayMock extends StatementMock
         }
     }
 
-    public function fetchAll($fetchMode = null, $fetchArgument = null, $ctorArgs = null)
+    /**
+     * {@inheritDoc}
+     */
+    public function fetchAll($fetchMode = null, $fetchArgument = null, $ctorArgs = null): array
     {
         return $this->_result;
     }
 
-    public function fetch($fetchMode = null, $cursorOrientation = \PDO::FETCH_ORI_NEXT, $cursorOffset = 0)
+    /**
+     * {@inheritDoc}
+     */
+    public function fetch($fetchMode = null, $cursorOrientation = PDO::FETCH_ORI_NEXT, $cursorOffset = 0)
     {
         $current = current($this->_result);
         next($this->_result);
@@ -47,18 +66,22 @@ class StatementArrayMock extends StatementMock
         return $current;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     public function fetchColumn($columnIndex = 0)
     {
         $current = current($this->_result);
         if ($current) {
             next($this->_result);
+
             return reset($current);
         }
 
         return false;
     }
 
-    public function rowCount()
+    public function rowCount(): int
     {
         return count($this->_result);
     }

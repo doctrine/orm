@@ -1,40 +1,46 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\Tests\ORM\Functional;
+
 use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Proxy\Proxy;
 use Doctrine\Tests\OrmFunctionalTestCase;
+use Exception;
+
+use function count;
+use function get_class;
 
 /**
  * Functional tests for the Class Table Inheritance mapping strategy.
- *
- * @author robo
  */
 class ClassTableInheritanceTest2 extends OrmFunctionalTestCase
 {
-    protected function setUp() : void
+    protected function setUp(): void
     {
         parent::setUp();
         try {
             $this->_schemaTool->createSchema(
                 [
-                $this->_em->getClassMetadata(CTIParent::class),
-                $this->_em->getClassMetadata(CTIChild::class),
-                $this->_em->getClassMetadata(CTIRelated::class),
-                $this->_em->getClassMetadata(CTIRelated2::class)
+                    $this->_em->getClassMetadata(CTIParent::class),
+                    $this->_em->getClassMetadata(CTIChild::class),
+                    $this->_em->getClassMetadata(CTIRelated::class),
+                    $this->_em->getClassMetadata(CTIRelated2::class),
                 ]
             );
-        } catch (\Exception $ignored) {
+        } catch (Exception $ignored) {
             // Swallow all exceptions. We do not test the schema tool here.
         }
     }
 
-    public function testOneToOneAssocToBaseTypeBidirectional()
+    public function testOneToOneAssocToBaseTypeBidirectional(): void
     {
-        $child = new CTIChild;
+        $child = new CTIChild();
         $child->setData('hello');
 
-        $related = new CTIRelated;
+        $related = new CTIRelated();
         $related->setCTIParent($child);
 
         $this->_em->persist($related);
@@ -55,11 +61,11 @@ class ClassTableInheritanceTest2 extends OrmFunctionalTestCase
         $this->assertSame($related2, $related2->getCTIParent()->getRelated());
     }
 
-    public function testManyToManyToCTIHierarchy()
+    public function testManyToManyToCTIHierarchy(): void
     {
         //$this->_em->getConnection()->getConfiguration()->setSQLLogger(new \Doctrine\DBAL\Logging\EchoSQLLogger());
-        $mmrel = new CTIRelated2;
-        $child = new CTIChild;
+        $mmrel = new CTIRelated2();
+        $child = new CTIChild();
         $child->setData('child');
         $mmrel->addCTIChild($child);
 
@@ -83,25 +89,33 @@ class ClassTableInheritanceTest2 extends OrmFunctionalTestCase
  * @DiscriminatorColumn(name="type", type="string")
  * @DiscriminatorMap({"parent" = "CTIParent", "child" = "CTIChild"})
  */
-class CTIParent {
-   /**
+class CTIParent
+{
+    /**
+     * @var int
      * @Id @Column(type="integer")
      * @GeneratedValue(strategy="AUTO")
      */
     private $id;
 
-    /** @OneToOne(targetEntity="CTIRelated", mappedBy="ctiParent") */
+    /**
+     * @var CTIRelated
+     * @OneToOne(targetEntity="CTIRelated", mappedBy="ctiParent")
+     */
     private $related;
 
-    public function getId() {
+    public function getId(): int
+    {
         return $this->id;
     }
 
-    public function getRelated() {
+    public function getRelated(): CTIRelated
+    {
         return $this->related;
     }
 
-    public function setRelated($related) {
+    public function setRelated(CTIRelated $related): void
+    {
         $this->related = $related;
         $related->setCTIParent($this);
     }
@@ -110,45 +124,54 @@ class CTIParent {
 /**
  * @Entity @Table(name="cti_children")
  */
-class CTIChild extends CTIParent {
-   /**
+class CTIChild extends CTIParent
+{
+    /**
+     * @var string
      * @Column(type="string")
      */
     private $data;
 
-    public function getData() {
+    public function getData(): string
+    {
         return $this->data;
     }
 
-    public function setData($data) {
+    public function setData(string $data): void
+    {
         $this->data = $data;
     }
-
 }
 
 /** @Entity */
-class CTIRelated {
+class CTIRelated
+{
     /**
+     * @var int
      * @Id @Column(type="integer")
      * @GeneratedValue(strategy="AUTO")
      */
     private $id;
 
     /**
+     * @var CTIParent
      * @OneToOne(targetEntity="CTIParent")
      * @JoinColumn(name="ctiparent_id", referencedColumnName="id")
      */
     private $ctiParent;
 
-    public function getId() {
+    public function getId(): int
+    {
         return $this->id;
     }
 
-    public function getCTIParent() {
+    public function getCTIParent(): CTIParent
+    {
         return $this->ctiParent;
     }
 
-    public function setCTIParent($ctiParent) {
+    public function setCTIParent(CTIParent $ctiParent): void
+    {
         $this->ctiParent = $ctiParent;
     }
 }
@@ -156,28 +179,39 @@ class CTIRelated {
 /** @Entity */
 class CTIRelated2
 {
-    /** @Id @Column(type="integer") @GeneratedValue */
+    /**
+     * @var int
+     * @Id
+     * @Column(type="integer")
+     * @GeneratedValue
+     */
     private $id;
-    /** @ManyToMany(targetEntity="CTIChild") */
-    private $ctiChildren;
 
+    /**
+     * @psalm-var Collection<int, CTIChild>
+     * @ManyToMany(targetEntity="CTIChild")
+     */
+    private $ctiChildren;
 
     public function __construct()
     {
         $this->ctiChildren = new ArrayCollection();
     }
 
-    public function getId()
+    public function getId(): int
     {
         return $this->id;
     }
 
-    public function addCTIChild(CTIChild $child)
+    public function addCTIChild(CTIChild $child): void
     {
         $this->ctiChildren->add($child);
     }
 
-    public function getCTIChildren()
+    /**
+     * @psalm-return Collection<int, CTIChild>
+     */
+    public function getCTIChildren(): Collection
     {
         return $this->ctiChildren;
     }

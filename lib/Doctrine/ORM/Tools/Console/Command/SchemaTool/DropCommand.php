@@ -1,4 +1,5 @@
 <?php
+
 /*
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
  * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
@@ -25,15 +26,13 @@ use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
 
+use function count;
+use function sprintf;
+
 /**
  * Command to drop the database schema for a set of classes based on their mappings.
  *
  * @link    www.doctrine-project.org
- * @since   2.0
- * @author  Benjamin Eberlei <kontakt@beberlei.de>
- * @author  Guilherme Blanco <guilhermeblanco@hotmail.com>
- * @author  Jonathan Wage <jonwage@gmail.com>
- * @author  Roman Borschel <roman@code-factory.org>
  */
 class DropCommand extends AbstractCommand
 {
@@ -66,8 +65,8 @@ EOT
     protected function executeSchemaCommand(InputInterface $input, OutputInterface $output, SchemaTool $schemaTool, array $metadatas, SymfonyStyle $ui)
     {
         $isFullDatabaseDrop = $input->getOption('full-database');
-        $dumpSql = true === $input->getOption('dump-sql');
-        $force   = true === $input->getOption('force');
+        $dumpSql            = $input->getOption('dump-sql') === true;
+        $force              = $input->getOption('force') === true;
 
         if ($dumpSql) {
             if ($isFullDatabaseDrop) {
@@ -75,6 +74,7 @@ EOT
             } else {
                 $sqls = $schemaTool->getDropSchemaSQL($metadatas);
             }
+
             $ui->text('The following SQL statements will be executed:');
             $ui->newLine();
 

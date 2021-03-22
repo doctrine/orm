@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\Performance\Hydration;
 
 use Doctrine\ORM\EntityManagerInterface;
@@ -12,17 +14,13 @@ use Doctrine\Tests\Models\CMS;
  */
 final class SimpleHydrationBench
 {
-    /**
-     * @var EntityManagerInterface
-     */
+    /** @var EntityManagerInterface */
     private $entityManager;
 
-    /**
-     * @var ObjectRepository
-     */
+    /** @var ObjectRepository */
     private $repository;
 
-    public function init()
+    public function init(): void
     {
         $this->entityManager = EntityManagerFactory::getEntityManager([
             CMS\CmsUser::class,
@@ -51,7 +49,7 @@ final class SimpleHydrationBench
         $this->repository = $this->entityManager->getRepository(CMS\CmsUser::class);
     }
 
-    public function benchHydration()
+    public function benchHydration(): void
     {
         $this->repository->findAll();
     }

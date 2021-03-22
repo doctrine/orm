@@ -1,4 +1,5 @@
 <?php
+
 /*
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
  * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
@@ -21,6 +22,8 @@ namespace Doctrine\ORM\Tools\Export;
 
 use Doctrine\ORM\ORMException;
 
+use function sprintf;
+
 /**
  * @deprecated 2.7 This class is being removed from the ORM and won't have any replacement
  */
@@ -33,7 +36,10 @@ class ExportException extends ORMException
      */
     public static function invalidExporterDriverType($type)
     {
-        return new self("The specified export driver '$type' does not exist");
+        return new self(sprintf(
+            "The specified export driver '%s' does not exist",
+            $type
+        ));
     }
 
     /**
@@ -43,7 +49,10 @@ class ExportException extends ORMException
      */
     public static function invalidMappingDriverType($type)
     {
-        return new self("The mapping driver '$type' does not exist");
+        return new self(sprintf(
+            "The mapping driver '%s' does not exist",
+            $type
+        ));
     }
 
     /**
@@ -53,6 +62,6 @@ class ExportException extends ORMException
      */
     public static function attemptOverwriteExistingFile($file)
     {
-        return new self("Attempting to overwrite an existing file '".$file."'.");
+        return new self("Attempting to overwrite an existing file '" . $file . "'.");
     }
 }

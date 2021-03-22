@@ -1,4 +1,5 @@
 <?php
+
 /*
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
  * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
@@ -23,36 +24,26 @@ namespace Doctrine\ORM\Query\AST;
  * UpdateClause ::= "UPDATE" AbstractSchemaName [["AS"] AliasIdentificationVariable] "SET" UpdateItem {"," UpdateItem}*
  *
  * @link    www.doctrine-project.org
- * @since   2.0
- * @author  Guilherme Blanco <guilhermeblanco@hotmail.com>
- * @author  Jonathan Wage <jonwage@gmail.com>
- * @author  Roman Borschel <roman@code-factory.org>
  */
 class UpdateClause extends Node
 {
-    /**
-     * @var string
-     */
+    /** @var string */
     public $abstractSchemaName;
 
-    /**
-     * @var string
-     */
+    /** @var string */
     public $aliasIdentificationVariable;
 
-    /**
-     * @var array
-     */
+    /** @var mixed[] */
     public $updateItems = [];
 
     /**
-     * @param string $abstractSchemaName
-     * @param array  $updateItems
+     * @param string  $abstractSchemaName
+     * @param mixed[] $updateItems
      */
     public function __construct($abstractSchemaName, array $updateItems)
     {
         $this->abstractSchemaName = $abstractSchemaName;
-        $this->updateItems = $updateItems;
+        $this->updateItems        = $updateItems;
     }
 
     /**

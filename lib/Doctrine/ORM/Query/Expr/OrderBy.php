@@ -1,4 +1,5 @@
 <?php
+
 /*
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
  * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
@@ -19,40 +20,29 @@
 
 namespace Doctrine\ORM\Query\Expr;
 
+use function count;
+use function implode;
+
 /**
  * Expression class for building DQL Order By parts.
  *
  * @link    www.doctrine-project.org
- * @since   2.0
- * @author  Guilherme Blanco <guilhermeblanco@hotmail.com>
- * @author  Jonathan Wage <jonwage@gmail.com>
- * @author  Roman Borschel <roman@code-factory.org>
  */
 class OrderBy
 {
-    /**
-     * @var string
-     */
+    /** @var string */
     protected $preSeparator = '';
 
-    /**
-     * @var string
-     */
+    /** @var string */
     protected $separator = ', ';
 
-    /**
-     * @var string
-     */
+    /** @var string */
     protected $postSeparator = '';
 
-    /**
-     * @var array
-     */
+    /** @var string[] */
     protected $allowedClasses = [];
 
-    /**
-     * @var array
-     */
+    /** @psalm-var list<string> */
     protected $parts = [];
 
     /**
@@ -74,12 +64,12 @@ class OrderBy
      */
     public function add($sort, $order = null)
     {
-        $order = ! $order ? 'ASC' : $order;
-        $this->parts[] = $sort . ' '. $order;
+        $order         = ! $order ? 'ASC' : $order;
+        $this->parts[] = $sort . ' ' . $order;
     }
 
     /**
-     * @return integer
+     * @return int
      */
     public function count()
     {
@@ -87,7 +77,7 @@ class OrderBy
     }
 
     /**
-     * @return array
+     * @psalm-return list<string>
      */
     public function getParts()
     {

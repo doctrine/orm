@@ -1,6 +1,9 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\Tests\ORM\Functional\Ticket;
+
 use Doctrine\Common\EventManager;
 use Doctrine\DBAL\Connection;
 use Doctrine\ORM\Configuration;
@@ -9,27 +12,29 @@ use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\Mapping\ClassMetadataFactory;
 use Doctrine\Persistence\Mapping\Driver\MappingDriver;
 use PHPUnit\Framework\TestCase;
+use PHPUnit_Framework_MockObject_MockObject;
+
+use function assert;
 
 /**
  * @group DDC-2359
  */
 class DDC2359Test extends TestCase
 {
-
     /**
      * Verifies that {@see \Doctrine\ORM\Mapping\ClassMetadataFactory::wakeupReflection} is
      * not called twice when loading metadata from a driver
      */
-    public function testIssue()
+    public function testIssue(): void
     {
-        $mockDriver      = $this->createMock(MappingDriver::class);
-        $mockMetadata    = $this->createMock(ClassMetadata::class);
-        $entityManager   = $this->createMock(EntityManager::class);
+        $mockDriver    = $this->createMock(MappingDriver::class);
+        $mockMetadata  = $this->createMock(ClassMetadata::class);
+        $entityManager = $this->createMock(EntityManager::class);
 
-        /* @var $metadataFactory \Doctrine\ORM\Mapping\ClassMetadataFactory|\PHPUnit_Framework_MockObject_MockObject */
         $metadataFactory = $this->getMockBuilder(ClassMetadataFactory::class)
                                 ->setMethods(['newClassMetadataInstance', 'wakeupReflection'])
                                 ->getMock();
+        assert($metadataFactory instanceof ClassMetadataFactory || $metadataFactory instanceof PHPUnit_Framework_MockObject_MockObject);
 
         $configuration = $this->getMockBuilder(Configuration::class)
                               ->setMethods(['getMetadataDriverImpl'])
@@ -61,6 +66,11 @@ class DDC2359Test extends TestCase
 /** @Entity */
 class DDC2359Foo
 {
-    /** @Id @Column(type="integer") @GeneratedValue */
+    /**
+     * @var int
+     * @Id
+     * @Column(type="integer")
+     * @GeneratedValue
+     */
     public $id;
 }

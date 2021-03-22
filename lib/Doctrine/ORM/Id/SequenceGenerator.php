@@ -1,4 +1,5 @@
 <?php
+
 /*
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
  * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
@@ -22,11 +23,11 @@ namespace Doctrine\ORM\Id;
 use Doctrine\ORM\EntityManager;
 use Serializable;
 
+use function serialize;
+use function unserialize;
+
 /**
  * Represents an ID generator that uses a database sequence.
- *
- * @since 2.0
- * @author Roman Borschel <roman@code-factory.org>
  */
 class SequenceGenerator extends AbstractIdGenerator implements Serializable
 {
@@ -44,25 +45,21 @@ class SequenceGenerator extends AbstractIdGenerator implements Serializable
      */
     private $_sequenceName;
 
-    /**
-     * @var int
-     */
+    /** @var int */
     private $_nextValue = 0;
 
-    /**
-     * @var int|null
-     */
+    /** @var int|null */
     private $_maxValue = null;
 
     /**
      * Initializes a new sequence generator.
      *
-     * @param string  $sequenceName   The name of the sequence.
-     * @param integer $allocationSize The allocation size of the sequence.
+     * @param string $sequenceName   The name of the sequence.
+     * @param int    $allocationSize The allocation size of the sequence.
      */
     public function __construct($sequenceName, $allocationSize)
     {
-        $this->_sequenceName = $sequenceName;
+        $this->_sequenceName   = $sequenceName;
         $this->_allocationSize = $allocationSize;
     }
 
@@ -71,7 +68,7 @@ class SequenceGenerator extends AbstractIdGenerator implements Serializable
      */
     public function generate(EntityManager $em, $entity)
     {
-        if ($this->_maxValue === null || $this->_nextValue == $this->_maxValue) {
+        if ($this->_maxValue === null || $this->_nextValue === $this->_maxValue) {
             // Allocate new values
             $conn = $em->getConnection();
             $sql  = $conn->getDatabasePlatform()->getSequenceNextValSQL($this->_sequenceName);
@@ -87,7 +84,7 @@ class SequenceGenerator extends AbstractIdGenerator implements Serializable
     /**
      * Gets the maximum value of the currently allocated bag of values.
      *
-     * @return integer|null
+     * @return int|null
      */
     public function getCurrentMaxValue()
     {
@@ -97,7 +94,7 @@ class SequenceGenerator extends AbstractIdGenerator implements Serializable
     /**
      * Gets the next value that will be returned by generate().
      *
-     * @return integer
+     * @return int
      */
     public function getNextValue()
     {
@@ -111,8 +108,8 @@ class SequenceGenerator extends AbstractIdGenerator implements Serializable
     {
         return serialize(
             [
-            'allocationSize' => $this->_allocationSize,
-            'sequenceName'   => $this->_sequenceName
+                'allocationSize' => $this->_allocationSize,
+                'sequenceName'   => $this->_sequenceName,
             ]
         );
     }
@@ -126,7 +123,7 @@ class SequenceGenerator extends AbstractIdGenerator implements Serializable
     {
         $array = unserialize($serialized);
 
-        $this->_sequenceName = $array['sequenceName'];
+        $this->_sequenceName   = $array['sequenceName'];
         $this->_allocationSize = $array['allocationSize'];
     }
 }

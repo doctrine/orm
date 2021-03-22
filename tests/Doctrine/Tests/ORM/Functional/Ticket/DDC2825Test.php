@@ -1,40 +1,38 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\Tests\ORM\Functional\Ticket;
 
 use Doctrine\ORM\Tools\ToolsException;
 use Doctrine\Tests\Models\DDC2825\ExplicitSchemaAndTable;
 use Doctrine\Tests\Models\DDC2825\SchemaAndTableInTableName;
+use Doctrine\Tests\OrmFunctionalTestCase;
+
+use function sprintf;
 
 /**
  * This class makes tests on the correct use of a database schema when entities are stored
  *
  * @group DDC-2825
  */
-class DDC2825Test extends \Doctrine\Tests\OrmFunctionalTestCase
+class DDC2825Test extends OrmFunctionalTestCase
 {
-    /**
-     * {@inheritDoc}
-     */
-    protected function setUp() : void
+    protected function setUp(): void
     {
         parent::setUp();
 
         $platform = $this->_em->getConnection()->getDatabasePlatform();
 
-        if ( ! $platform->supportsSchemas() && ! $platform->canEmulateSchemas()) {
-            $this->markTestSkipped("This test is only useful for databases that support schemas or can emulate them.");
+        if (! $platform->supportsSchemas() && ! $platform->canEmulateSchemas()) {
+            $this->markTestSkipped('This test is only useful for databases that support schemas or can emulate them.');
         }
     }
 
     /**
      * @dataProvider getTestedClasses
-     *
-     * @param string $className
-     * @param string $expectedSchemaName
-     * @param string $expectedTableName
      */
-    public function testClassSchemaMappingsValidity($className, $expectedSchemaName, $expectedTableName)
+    public function testClassSchemaMappingsValidity(string $className, string $expectedSchemaName, string $expectedTableName): void
     {
         $classMetadata   = $this->_em->getClassMetadata($className);
         $platform        = $this->_em->getConnection()->getDatabasePlatform();
@@ -61,10 +59,8 @@ class DDC2825Test extends \Doctrine\Tests\OrmFunctionalTestCase
 
     /**
      * @dataProvider getTestedClasses
-     *
-     * @param string $className
      */
-    public function testPersistenceOfEntityWithSchemaMapping($className)
+    public function testPersistenceOfEntityWithSchemaMapping(string $className): void
     {
         try {
             $this->_schemaTool->createSchema([$this->_em->getClassMetadata($className)]);
@@ -84,7 +80,7 @@ class DDC2825Test extends \Doctrine\Tests\OrmFunctionalTestCase
      *
      * @return string[][]
      */
-    public function getTestedClasses()
+    public function getTestedClasses(): array
     {
         return [
             [ExplicitSchemaAndTable::class, 'explicit_schema', 'explicit_table'],
@@ -103,8 +99,7 @@ class DDC2825ClassWithImplicitlyDefinedSchemaAndQuotedTableName
     /**
      * @Id @GeneratedValue
      * @Column(type="integer")
-     *
-     * @var integer
+     * @var int
      */
     public $id;
 }

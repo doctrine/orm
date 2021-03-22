@@ -20,15 +20,16 @@
 
 namespace Doctrine\ORM\Cache\Region;
 
+use Doctrine\Common\Cache\Cache;
 use Doctrine\Common\Cache\MultiGetCache;
 use Doctrine\ORM\Cache\CacheEntry;
 use Doctrine\ORM\Cache\CollectionCacheEntry;
 
+use function assert;
+use function count;
+
 /**
  * A cache region that enables the retrieval of multiple elements with one call
- *
- * @since   2.5
- * @author  Asmir Mustafic <goetas@gmail.com>
  */
 class DefaultMultiGetRegion extends DefaultRegion
 {
@@ -36,7 +37,7 @@ class DefaultMultiGetRegion extends DefaultRegion
      * Note that the multiple type is due to doctrine/cache not integrating the MultiGetCache interface
      * in its signature due to BC in 1.x
      *
-     * @var MultiGetCache|\Doctrine\Common\Cache\Cache
+     * @var MultiGetCache|Cache
      */
     protected $cache;
 
@@ -47,7 +48,7 @@ class DefaultMultiGetRegion extends DefaultRegion
      */
     public function __construct($name, MultiGetCache $cache, $lifetime = 0)
     {
-        /* @var $cache \Doctrine\Common\Cache\Cache */
+        assert($cache instanceof Cache);
         parent::__construct($name, $cache, $lifetime);
     }
 

@@ -1,4 +1,5 @@
 <?php
+
 /*
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
  * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
@@ -20,28 +21,22 @@
 namespace Doctrine\ORM\Event;
 
 use Doctrine\ORM\EntityManagerInterface;
+use InvalidArgumentException;
+
+use function get_class;
+use function sprintf;
 
 /**
  * Class that holds event arguments for a preInsert/preUpdate event.
- *
- * @author Guilherme Blanco <guilehrmeblanco@hotmail.com>
- * @author Roman Borschel <roman@code-factory.org>
- * @author Benjamin Eberlei <kontakt@beberlei.de>
- * @since  2.0
  */
 class PreUpdateEventArgs extends LifecycleEventArgs
 {
-    /**
-     * @var array
-     */
+    /** @var array<string,array<int,mixed>> */
     private $entityChangeSet;
 
     /**
-     * Constructor.
-     *
-     * @param object                 $entity
-     * @param EntityManagerInterface $em
-     * @param array                  $changeSet
+     * @param object                         $entity
+     * @param array<string,array<int,mixed>> $changeSet
      */
     public function __construct($entity, EntityManagerInterface $em, array &$changeSet)
     {
@@ -53,7 +48,7 @@ class PreUpdateEventArgs extends LifecycleEventArgs
     /**
      * Retrieves entity changeset.
      *
-     * @return array
+     * @return array<string,array<int,mixed>>
      */
     public function getEntityChangeSet()
     {
@@ -65,7 +60,7 @@ class PreUpdateEventArgs extends LifecycleEventArgs
      *
      * @param string $field
      *
-     * @return boolean
+     * @return bool
      */
     public function hasChangedField($field)
     {
@@ -122,12 +117,12 @@ class PreUpdateEventArgs extends LifecycleEventArgs
      *
      * @return void
      *
-     * @throws \InvalidArgumentException
+     * @throws InvalidArgumentException
      */
     private function assertValidField($field)
     {
-        if ( ! isset($this->entityChangeSet[$field])) {
-            throw new \InvalidArgumentException(sprintf(
+        if (! isset($this->entityChangeSet[$field])) {
+            throw new InvalidArgumentException(sprintf(
                 'Field "%s" is not a valid field of the entity "%s" in PreUpdateEventArgs.',
                 $field,
                 get_class($this->getEntity())

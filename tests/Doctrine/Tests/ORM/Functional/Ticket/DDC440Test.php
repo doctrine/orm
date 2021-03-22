@@ -1,20 +1,26 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\Tests\ORM\Functional\Ticket;
 
-class DDC440Test extends \Doctrine\Tests\OrmFunctionalTestCase
+use Doctrine\Common\Collections\Collection;
+use Doctrine\Tests\OrmFunctionalTestCase;
+use Exception;
+
+class DDC440Test extends OrmFunctionalTestCase
 {
-    protected function setUp() : void
+    protected function setUp(): void
     {
         parent::setUp();
         try {
             $this->_schemaTool->createSchema(
                 [
-                $this->_em->getClassMetadata(DDC440Phone::class),
-                $this->_em->getClassMetadata(DDC440Client::class)
+                    $this->_em->getClassMetadata(DDC440Phone::class),
+                    $this->_em->getClassMetadata(DDC440Client::class),
                 ]
             );
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             // Swallow all exceptions. We do not test the schema tool here.
         }
     }
@@ -22,29 +28,27 @@ class DDC440Test extends \Doctrine\Tests\OrmFunctionalTestCase
     /**
      * @group DDC-440
      */
-    public function testOriginalEntityDataEmptyWhenProxyLoadedFromTwoAssociations()
+    public function testOriginalEntityDataEmptyWhenProxyLoadedFromTwoAssociations(): void
     {
-
-
-        /* The key of the problem is that the first phone is fetched via two association, main_phone and phones.
+        /* The key of the problem is that the first phone is fetched via two association, mainPhone and phones.
          *
          * You will notice that the original_entity_datas are not loaded for the first phone. (They are for the second)
          *
-         * In the Client entity definition, if you define the main_phone relation after the phones relation, both assertions pass.
-         * (for the sake or this test, I defined the main_phone relation before the phones relation)
+         * In the Client entity definition, if you define the mainPhone relation after the phones relation, both assertions pass.
+         * (for the sake or this test, I defined the mainPhone relation before the phones relation)
          *
          */
 
         //Initialize some data
-        $client = new DDC440Client;
+        $client = new DDC440Client();
         $client->setName('Client1');
 
-        $phone = new DDC440Phone;
+        $phone = new DDC440Phone();
         $phone->setId(1);
         $phone->setNumber('418 111-1111');
         $phone->setClient($client);
 
-        $phone2 = new DDC440Phone;
+        $phone2 = new DDC440Phone();
         $phone->setId(2);
         $phone2->setNumber('418 222-2222');
         $phone2->setClient($client);
@@ -56,8 +60,8 @@ class DDC440Test extends \Doctrine\Tests\OrmFunctionalTestCase
         $id = $client->getId();
         $this->_em->clear();
 
-        $uw = $this->_em->getUnitOfWork();
-        $client = $this->_em->find(DDC440Client::class, $id);
+        $uw           = $this->_em->getUnitOfWork();
+        $client       = $this->_em->find(DDC440Client::class, $id);
         $clientPhones = $client->getPhones();
 
         $p1 = $clientPhones[1];
@@ -70,13 +74,11 @@ class DDC440Test extends \Doctrine\Tests\OrmFunctionalTestCase
         $originalData = $uw->getOriginalEntityData($p1);
         $this->assertEquals($phone->getNumber(), $originalData['number']);
 
-
         //If you comment out previous test, this one should pass
         $this->assertInstanceOf(DDC440Phone::class, $p2);
         $originalData = $uw->getOriginalEntityData($p2);
         $this->assertEquals($phone2->getNumber(), $originalData['number']);
     }
-
 }
 
 /**
@@ -85,58 +87,61 @@ class DDC440Test extends \Doctrine\Tests\OrmFunctionalTestCase
  */
 class DDC440Phone
 {
-
     /**
+     * @var int
      * @Column(name="id", type="integer")
      * @Id
      * @GeneratedValue(strategy="AUTO")
      */
     protected $id;
+
     /**
+     * @var DDC440Client
      * @ManyToOne(targetEntity="DDC440Client",inversedBy="phones")
      * @JoinColumns({
      *   @JoinColumn(name="client_id", referencedColumnName="id")
      * })
      */
     protected $client;
+
     /**
+     * @var string
      * @Column(name="phonenumber", type="string")
      */
     protected $number;
 
-    public function setNumber($value)
+    public function setNumber(string $value): void
     {
         $this->number = $value;
     }
 
-    public function getNumber()
+    public function getNumber(): string
     {
         return $this->number;
     }
 
-    public function setClient(DDC440Client $value, $update_inverse=true)
+    public function setClient(DDC440Client $value, bool $updateInverse = true): void
     {
         $this->client = $value;
-        if ($update_inverse) {
+        if ($updateInverse) {
             $value->addPhone($this);
         }
     }
 
-    public function getClient()
+    public function getClient(): DDC440Client
     {
         return $this->client;
     }
 
-    public function getId()
+    public function getId(): int
     {
         return $this->id;
     }
 
-    public function setId($value)
+    public function setId(int $value): void
     {
         $this->id = $value;
     }
-
 }
 
 /**
@@ -145,74 +150,81 @@ class DDC440Phone
  */
 class DDC440Client
 {
-
     /**
+     * @var int
      * @Column(name="id", type="integer")
      * @Id
      * @GeneratedValue(strategy="AUTO")
      */
     protected $id;
+
     /**
+     * @var DDC440Phone
      * @OneToOne(targetEntity="DDC440Phone", fetch="EAGER")
      * @JoinColumns({
      *   @JoinColumn(name="main_phone_id", referencedColumnName="id",onDelete="SET NULL")
      * })
      */
-    protected $main_phone;
+    protected $mainPhone;
+
     /**
+     * @psalm-var Collection<int, DDC440Phone>
      * @OneToMany(targetEntity="DDC440Phone", mappedBy="client", cascade={"persist", "remove"}, fetch="EAGER", indexBy="id")
      * @OrderBy({"number"="ASC"})
      */
     protected $phones;
+
     /**
+     * @var string
      * @Column(name="name", type="string")
      */
     protected $name;
 
     public function __construct()
     {
-
     }
 
-    public function setName($value)
+    public function setName(string $value): void
     {
         $this->name = $value;
     }
 
-    public function getName()
+    public function getName(): string
     {
         return $this->name;
     }
 
-    public function addPhone(DDC440Phone $value)
+    public function addPhone(DDC440Phone $value): void
     {
         $this->phones[] = $value;
         $value->setClient($this, false);
     }
 
-    public function getPhones()
+    /**
+     * @psalm-return Collection<int, DDC440Phone>
+     */
+    public function getPhones(): Collection
     {
         return $this->phones;
     }
 
-    public function setMainPhone(DDC440Phone $value)
+    public function setMainPhone(DDC440Phone $value): void
     {
-        $this->main_phone = $value;
+        $this->mainPhone = $value;
     }
 
-    public function getMainPhone()
+    public function getMainPhone(): DDC440Phone
     {
-        return $this->main_phone;
+        return $this->mainPhone;
     }
 
-    public function getId()
+    public function getId(): int
     {
         return $this->id;
     }
 
-    public function setId($value)
+    public function setId($value): void
     {
         $this->id = $value;
     }
-
 }

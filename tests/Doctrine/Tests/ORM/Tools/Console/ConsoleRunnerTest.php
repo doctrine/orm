@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\Tests\ORM\Tools\Console;
 
 use Doctrine\ORM\Tools\Console\ConsoleRunner;
@@ -10,12 +12,11 @@ use Symfony\Component\Console\Helper\HelperSet;
 
 /**
  * @group DDC-3186
- *
  * @covers \Doctrine\ORM\Tools\Console\ConsoleRunner
  */
 final class ConsoleRunnerTest extends DoctrineTestCase
 {
-    public function testCreateApplicationShouldReturnAnApplicationWithTheCorrectCommands() : void
+    public function testCreateApplicationShouldReturnAnApplicationWithTheCorrectCommands(): void
     {
         $helperSet = new HelperSet();
         $app       = ConsoleRunner::createApplication($helperSet);
@@ -52,7 +53,7 @@ final class ConsoleRunnerTest extends DoctrineTestCase
         self::assertTrue($app->has('orm:validate-schema'));
     }
 
-    public function testCreateApplicationShouldAppendGivenCommands() : void
+    public function testCreateApplicationShouldAppendGivenCommands(): void
     {
         $command = 'my:lovely-command';
         $app     = ConsoleRunner::createApplication(new HelperSet(), [new Command($command)]);

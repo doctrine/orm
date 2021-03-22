@@ -1,15 +1,19 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\Tests\ORM\Functional\Ticket;
 
-use Doctrine\Tests\OrmFunctionalTestCase;
+use Doctrine\Common\Collections\Collection;
+use Doctrine\ORM\Internal\Hydration\ObjectHydrator;
 use Doctrine\ORM\Query;
 use Doctrine\ORM\Query\ResultSetMapping;
 use Doctrine\Tests\Mocks\HydratorMockStatement;
+use Doctrine\Tests\OrmFunctionalTestCase;
 
 final class GH6362Test extends OrmFunctionalTestCase
 {
-    protected function setUp() : void
+    protected function setUp(): void
     {
         parent::setUp();
 
@@ -32,9 +36,9 @@ final class GH6362Test extends OrmFunctionalTestCase
      * LEFT JOIN Child c WITH b.id = c.id
      * LEFT JOIN c.joins d
      */
-    public function testInheritanceJoinAlias()
+    public function testInheritanceJoinAlias(): void
     {
-        $rsm = new ResultSetMapping;
+        $rsm = new ResultSetMapping();
         $rsm->addEntityResult(GH6362Start::class, 'a', 'base');
         $rsm->addJoinedEntityResult(GH6362Base::class, 'b', 'a', 'bases');
         $rsm->addEntityResult(GH6362Child::class, 'c');
@@ -67,7 +71,7 @@ final class GH6362Test extends OrmFunctionalTestCase
         ];
 
         $stmt     = new HydratorMockStatement($resultSet);
-        $hydrator = new \Doctrine\ORM\Internal\Hydration\ObjectHydrator($this->_em);
+        $hydrator = new ObjectHydrator($this->_em);
         $result   = $hydrator->hydrateAll($stmt, $rsm, [Query::HINT_FORCE_PARTIAL_LOAD => true]);
 
         $this->assertInstanceOf(GH6362Start::class, $result[0]['base']);
@@ -81,6 +85,7 @@ final class GH6362Test extends OrmFunctionalTestCase
 class GH6362Start
 {
     /**
+     * @var int
      * @Column(type="integer")
      * @Id
      * @GeneratedValue
@@ -88,6 +93,7 @@ class GH6362Start
     protected $id;
 
     /**
+     * @var GH6362Base
      * @ManyToOne(targetEntity="GH6362Base", inversedBy="starts")
      */
     private $bases;
@@ -102,6 +108,7 @@ class GH6362Start
 abstract class GH6362Base
 {
     /**
+     * @var int
      * @Column(type="integer")
      * @Id
      * @GeneratedValue
@@ -109,6 +116,7 @@ abstract class GH6362Base
     protected $id;
 
     /**
+     * @psalm-var Collection<int, GH6362Start>
      * @OneToMany(targetEntity="GH6362Start", mappedBy="bases")
      */
     private $starts;
@@ -120,6 +128,7 @@ abstract class GH6362Base
 class GH6362Child extends GH6362Base
 {
     /**
+     * @psalm-var Collection<int, GH6362Join>
      * @OneToMany(targetEntity="GH6362Join", mappedBy="child")
      */
     private $joins;
@@ -131,6 +140,7 @@ class GH6362Child extends GH6362Base
 class GH6362Join
 {
     /**
+     * @var int
      * @Column(type="integer")
      * @Id
      * @GeneratedValue
@@ -138,6 +148,7 @@ class GH6362Join
     private $id;
 
     /**
+     * @var GH6362Child
      * @ManyToOne(targetEntity="GH6362Child", inversedBy="joins")
      */
     private $child;

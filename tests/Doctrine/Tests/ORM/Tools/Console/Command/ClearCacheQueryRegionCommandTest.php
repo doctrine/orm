@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\Tests\ORM\Tools\Console\Command;
 
 use Doctrine\ORM\Tools\Console\Command\ClearCache\QueryRegionCommand;
@@ -14,17 +16,13 @@ use Symfony\Component\Console\Tester\CommandTester;
  */
 class ClearCacheQueryRegionCommandTest extends OrmFunctionalTestCase
 {
-    /**
-     * @var \Symfony\Component\Console\Application
-     */
+    /** @var Application */
     private $application;
 
-    /**
-     * @var \Doctrine\ORM\Tools\Console\Command\ClearCache\QueryRegionCommand
-     */
+    /** @var QueryRegionCommand */
     private $command;
 
-    protected function setUp() : void
+    protected function setUp(): void
     {
         $this->enableSecondLevelCache();
         parent::setUp();
@@ -36,7 +34,7 @@ class ClearCacheQueryRegionCommandTest extends OrmFunctionalTestCase
         $this->application->add($this->command);
     }
 
-    public function testClearAllRegion()
+    public function testClearAllRegion(): void
     {
         $command = $this->application->find('orm:clear-cache:region:query');
         $tester  = new CommandTester($command);
@@ -52,7 +50,7 @@ class ClearCacheQueryRegionCommandTest extends OrmFunctionalTestCase
         self::assertStringContainsString(' // Clearing all second-level cache query regions', $tester->getDisplay());
     }
 
-    public function testClearDefaultRegionName()
+    public function testClearDefaultRegionName(): void
     {
         $command = $this->application->find('orm:clear-cache:region:query');
         $tester  = new CommandTester($command);
@@ -71,7 +69,7 @@ class ClearCacheQueryRegionCommandTest extends OrmFunctionalTestCase
         );
     }
 
-    public function testClearByRegionName()
+    public function testClearByRegionName(): void
     {
         $command = $this->application->find('orm:clear-cache:region:query');
         $tester  = new CommandTester($command);
@@ -90,7 +88,7 @@ class ClearCacheQueryRegionCommandTest extends OrmFunctionalTestCase
         );
     }
 
-    public function testFlushRegionName()
+    public function testFlushRegionName(): void
     {
         $command = $this->application->find('orm:clear-cache:region:query');
         $tester  = new CommandTester($command);

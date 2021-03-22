@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\Tests\Models\DDC2504;
 
 /**
@@ -14,14 +16,14 @@ namespace Doctrine\Tests\Models\DDC2504;
 class DDC2504RootClass
 {
     /**
+     * @var int
      * @Column(type="integer")
      * @Id @GeneratedValue
      */
     public $id;
 
     /**
-     * @var \Doctrine\Tests\Models\DDC2504\DDC2504OtherClass
-     *
+     * @var DDC2504OtherClass
      * @ManyToOne(targetEntity="DDC2504OtherClass", inversedBy="childClasses")
      */
     public $other;

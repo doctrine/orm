@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\Tests\Models\ValueConversionType;
 
 /**
@@ -9,6 +11,7 @@ namespace Doctrine\Tests\Models\ValueConversionType;
 class AuxiliaryEntity
 {
     /**
+     * @var string
      * @Column(type="rot13")
      * @Id
      */

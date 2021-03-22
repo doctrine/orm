@@ -1,4 +1,5 @@
 <?php
+
 /*
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
  * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
@@ -25,6 +26,7 @@ use Doctrine\ORM\Tools\Console\Helper\EntityManagerHelper;
 use OutOfBoundsException;
 use PackageVersions\Versions;
 use Symfony\Component\Console\Application;
+use Symfony\Component\Console\Command\Command as SymfonyCommand;
 use Symfony\Component\Console\Helper\HelperSet;
 
 /**
@@ -34,12 +36,8 @@ final class ConsoleRunner
 {
     /**
      * Create a Symfony Console HelperSet
-     *
-     * @param EntityManagerInterface $entityManager
-     *
-     * @return HelperSet
      */
-    public static function createHelperSet(EntityManagerInterface $entityManager) : HelperSet
+    public static function createHelperSet(EntityManagerInterface $entityManager): HelperSet
     {
         return new HelperSet(
             [
@@ -52,12 +50,9 @@ final class ConsoleRunner
     /**
      * Runs console with the given helper set.
      *
-     * @param \Symfony\Component\Console\Helper\HelperSet  $helperSet
-     * @param \Symfony\Component\Console\Command\Command[] $commands
-     *
-     * @return void
+     * @param SymfonyCommand[] $commands
      */
-    public static function run(HelperSet $helperSet, array $commands = []) : void
+    public static function run(HelperSet $helperSet, array $commands = []): void
     {
         $cli = self::createApplication($helperSet, $commands);
         $cli->run();
@@ -67,13 +62,11 @@ final class ConsoleRunner
      * Creates a console application with the given helperset and
      * optional commands.
      *
-     * @param \Symfony\Component\Console\Helper\HelperSet $helperSet
-     * @param array                                       $commands
+     * @param SymfonyCommand[] $commands
      *
-     * @return \Symfony\Component\Console\Application
      * @throws OutOfBoundsException
      */
-    public static function createApplication(HelperSet $helperSet, array $commands = []) : Application
+    public static function createApplication(HelperSet $helperSet, array $commands = []): Application
     {
         $cli = new Application('Doctrine Command Line Interface', Versions::getVersion('doctrine/orm'));
         $cli->setCatchExceptions(true);
@@ -84,12 +77,7 @@ final class ConsoleRunner
         return $cli;
     }
 
-    /**
-     * @param Application $cli
-     *
-     * @return void
-     */
-    public static function addCommands(Application $cli) : void
+    public static function addCommands(Application $cli): void
     {
         $cli->addCommands(
             [
@@ -122,7 +110,7 @@ final class ConsoleRunner
         );
     }
 
-    public static function printCliConfigTemplate() : void
+    public static function printCliConfigTemplate(): void
     {
         echo <<<'HELP'
 You are missing a "cli-config.php" or "config/cli-config.php" file in your

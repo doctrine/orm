@@ -11,13 +11,13 @@ use Doctrine\Tests\OrmFunctionalTestCase;
 
 final class QueryIterableTest extends OrmFunctionalTestCase
 {
-    protected function setUp() : void
+    protected function setUp(): void
     {
         $this->useModelSet('cms');
         parent::setUp();
     }
 
-    public function testAlias() : void
+    public function testAlias(): void
     {
         $user           = new CmsUser();
         $user->name     = 'Guilherme';
@@ -32,12 +32,14 @@ final class QueryIterableTest extends OrmFunctionalTestCase
         $users = $query->getResult();
         self::assertCount(1, $users);
 
+        $this->assertEquals('gblanco', $users[0]['user']->username);
+
         $this->_em->clear();
 
         IterableTester::assertResultsAreTheSame($query);
     }
 
-    public function testAliasInnerJoin() : void
+    public function testAliasInnerJoin(): void
     {
         $user           = new CmsUser();
         $user->name     = 'Guilherme';
@@ -59,6 +61,8 @@ final class QueryIterableTest extends OrmFunctionalTestCase
 
         $users = $query->getResult();
         self::assertCount(1, $users);
+
+        $this->assertEquals('gblanco', $users[0]['user']->username);
 
         $this->_em->clear();
 

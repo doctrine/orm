@@ -1,15 +1,19 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\Tests\ORM\Functional\Ticket;
+
+use Doctrine\Tests\OrmFunctionalTestCase;
+
+use function strtolower;
 
 /**
  * Functional tests for the Class Table Inheritance mapping strategy.
- *
- * @author Benjamin Eberlei <kontakt@beberlei.de>
  */
-class DDC331Test extends \Doctrine\Tests\OrmFunctionalTestCase
+class DDC331Test extends OrmFunctionalTestCase
 {
-    protected function setUp() : void
+    protected function setUp(): void
     {
         $this->useModelSet('company');
         parent::setUp();
@@ -18,7 +22,7 @@ class DDC331Test extends \Doctrine\Tests\OrmFunctionalTestCase
     /**
      * @group DDC-331
      */
-    public function testSelectFieldOnRootEntity()
+    public function testSelectFieldOnRootEntity(): void
     {
         $q = $this->_em->createQuery('SELECT e.name FROM Doctrine\Tests\Models\Company\CompanyEmployee e');
         $this->assertEquals(

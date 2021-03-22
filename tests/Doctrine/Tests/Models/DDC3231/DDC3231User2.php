@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\Tests\Models\DDC3231;
 
 /**
@@ -9,6 +11,7 @@ namespace Doctrine\Tests\Models\DDC3231;
 class DDC3231User2
 {
     /**
+     * @var int
      * @Id
      * @Column(type="integer")
      * @GeneratedValue(strategy="AUTO")
@@ -16,8 +19,8 @@ class DDC3231User2
     protected $id;
 
     /**
+     * @var string
      * @Column(type="string", length=255)
      */
     protected $name;
-
 }

@@ -1,4 +1,5 @@
 <?php
+
 /*
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
  * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
@@ -22,9 +23,6 @@ namespace Doctrine\ORM\Mapping;
 /**
  * References name of a column in the SELECT clause of a SQL query.
  * Scalar result types can be included in the query result by specifying this annotation in the metadata.
- *
- * @author  Fabio B. Silva <fabio.bat.silva@gmail.com>
- * @since   2.3
  *
  * @Annotation
  * @Target("ANNOTATION")

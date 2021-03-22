@@ -1,4 +1,5 @@
 <?php
+
 /*
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
  * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
@@ -21,26 +22,23 @@ namespace Doctrine\ORM\Tools\Export\Driver;
 
 use Doctrine\ORM\Mapping\ClassMetadataInfo;
 use Doctrine\ORM\Tools\EntityGenerator;
+use RuntimeException;
+
+use function str_replace;
 
 /**
  * ClassMetadata exporter for PHP classes with annotations.
  *
- * @link    www.doctrine-project.org
- * @since   2.0
- * @author  Jonathan Wage <jonwage@gmail.com>
- *
  * @deprecated 2.7 This class is being removed from the ORM and won't have any replacement
+ *
+ * @link    www.doctrine-project.org
  */
 class AnnotationExporter extends AbstractExporter
 {
-    /**
-     * @var string
-     */
+    /** @var string */
     protected $_extension = '.php';
 
-    /**
-     * @var EntityGenerator|null
-     */
+    /** @var EntityGenerator|null */
     private $_entityGenerator;
 
     /**
@@ -48,8 +46,8 @@ class AnnotationExporter extends AbstractExporter
      */
     public function exportClassMetadata(ClassMetadataInfo $metadata)
     {
-        if ( ! $this->_entityGenerator) {
-            throw new \RuntimeException('For the AnnotationExporter you must set an EntityGenerator instance with the setEntityGenerator() method.');
+        if (! $this->_entityGenerator) {
+            throw new RuntimeException('For the AnnotationExporter you must set an EntityGenerator instance with the setEntityGenerator() method.');
         }
 
         $this->_entityGenerator->setGenerateAnnotations(true);
@@ -61,8 +59,6 @@ class AnnotationExporter extends AbstractExporter
     }
 
     /**
-     * @param ClassMetadataInfo $metadata
-     *
      * @return string
      */
     protected function _generateOutputPath(ClassMetadataInfo $metadata)
@@ -71,8 +67,6 @@ class AnnotationExporter extends AbstractExporter
     }
 
     /**
-     * @param EntityGenerator $entityGenerator
-     *
      * @return void
      */
     public function setEntityGenerator(EntityGenerator $entityGenerator)

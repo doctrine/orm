@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\Tests\ORM\Functional\Ticket;
 
 use Doctrine\Common\Collections\ArrayCollection;
@@ -7,12 +9,15 @@ use Doctrine\ORM\Event\LifecycleEventArgs;
 use Doctrine\ORM\Events;
 use Doctrine\Tests\OrmFunctionalTestCase;
 
+use function in_array;
+use function json_decode;
+
 /**
  * @group DDC-2602
  */
 class DDC2602Test extends OrmFunctionalTestCase
 {
-    protected function setUp() : void
+    protected function setUp(): void
     {
         parent::setUp();
 
@@ -28,7 +33,7 @@ class DDC2602Test extends OrmFunctionalTestCase
         $this->loadFixture();
     }
 
-    protected function tearDown() : void
+    protected function tearDown(): void
     {
         parent::tearDown();
 
@@ -42,7 +47,7 @@ class DDC2602Test extends OrmFunctionalTestCase
         );
     }
 
-    public function testPostLoadListenerShouldBeAbleToRunQueries() : void
+    public function testPostLoadListenerShouldBeAbleToRunQueries(): void
     {
         $eventManager = $this->_em->getEventManager();
         $eventManager->addEventListener([Events::postLoad], new DDC2602PostLoadListener());
@@ -55,7 +60,7 @@ class DDC2602Test extends OrmFunctionalTestCase
         self::assertCount(1, $result[1]->biography->fieldList);
     }
 
-    private function loadFixture() : void
+    private function loadFixture(): void
     {
         $user1                 = new DDC2602User();
         $user2                 = new DDC2602User();
@@ -70,16 +75,16 @@ class DDC2602Test extends OrmFunctionalTestCase
         $biographyFieldChoice5 = new DDC2602BiographyFieldChoice();
         $biographyFieldChoice6 = new DDC2602BiographyFieldChoice();
 
-        $user1->name = 'Gblanco';
+        $user1->name      = 'Gblanco';
         $user1->biography = $biography1;
 
-        $user2->name = 'Beberlei';
+        $user2->name      = 'Beberlei';
         $user2->biography = $biography2;
 
-        $biography1->user = $user1;
+        $biography1->user    = $user1;
         $biography1->content = '[{"field": 1, "choiceList": [1,3]}, {"field": 2, "choiceList": [5]}]';
 
-        $biography2->user = $user2;
+        $biography2->user    = $user2;
         $biography2->content = '[{"field": 1, "choiceList": [1,2,3,4]}]';
 
         $biographyField1->alias = 'question_1';
@@ -126,11 +131,11 @@ class DDC2602Test extends OrmFunctionalTestCase
 
 class DDC2602PostLoadListener
 {
-    public function postLoad(LifecycleEventArgs $event) : void
+    public function postLoad(LifecycleEventArgs $event): void
     {
         $entity = $event->getEntity();
 
-        if ( ! ($entity instanceof DDC2602Biography)) {
+        if (! ($entity instanceof DDC2602Biography)) {
             return;
         }
 
@@ -146,12 +151,12 @@ class DDC2602PostLoadListener
         $fieldList = new ArrayCollection();
 
         foreach ($content as $selection) {
-            $field      = $result[$selection->field];
-            $choiceList = $selection->choiceList;
-            $fieldSelection     = new DDC2602FieldSelection();
+            $field          = $result[$selection->field];
+            $choiceList     = $selection->choiceList;
+            $fieldSelection = new DDC2602FieldSelection();
 
             $fieldSelection->field      = $field;
-            $fieldSelection->choiceList = $field->choiceList->filter(function ($choice) use ($choiceList) {
+            $fieldSelection->choiceList = $field->choiceList->filter(static function ($choice) use ($choiceList) {
                 return in_array($choice->id, $choiceList);
             });
 
@@ -171,27 +176,24 @@ class DDC2602User
     /**
      * @Id @GeneratedValue
      * @Column(type="integer")
-     *
-     * @var integer
+     * @var int
      */
     public $id;
 
     /**
      * @Column(type="string", length=15)
-     *
      * @var string
      */
     public $name;
 
     /**
+     * @var DDC2602Biography
      * @OneToOne(
      *     targetEntity="DDC2602Biography",
      *     inversedBy="user",
      *     cascade={"persist", "merge", "refresh", "remove"}
      * )
      * @JoinColumn(nullable=false)
-     *
-     * @var DDC2602Biography
      */
     public $biography;
 }
@@ -204,32 +206,27 @@ class DDC2602Biography
     /**
      * @Id @GeneratedValue
      * @Column(type="integer")
-     *
-     * @var integer
+     * @var int
      */
     public $id;
 
     /**
+     * @var DDC2602User
      * @OneToOne(
      *     targetEntity="DDC2602User",
      *     mappedBy="biography",
      *     cascade={"persist", "merge", "refresh"}
      * )
-     *
-     * @var DDC2602User
      */
     public $user;
 
     /**
      * @Column(type="text", nullable=true)
-     *
      * @var string
      */
     public $content;
 
-    /**
-     * @var array
-     */
+    /** @var array */
     public $fieldList = [];
 }
 
@@ -241,17 +238,18 @@ class DDC2602BiographyField
     /**
      * @Id @GeneratedValue
      * @Column(type="integer")
-     *
-     * @var integer
+     * @var int
      */
     public $id;
 
     /**
+     * @var string
      * @Column(type="string", unique=true, length=100)
      */
     public $alias;
 
     /**
+     * @var string
      * @Column(type="string", length=100)
      */
     public $label;
@@ -262,15 +260,10 @@ class DDC2602BiographyField
      *     mappedBy="field",
      *     cascade={"persist", "merge", "refresh"}
      * )
-     *
-     * @var \Doctrine\Common\Collections\ArrayCollection
+     * @var ArrayCollection
      */
     public $choiceList;
 
-    /**
-     * Constructor.
-     *
-     */
     public function __construct()
     {
         $this->choiceList = new ArrayCollection();
@@ -285,12 +278,12 @@ class DDC2602BiographyFieldChoice
     /**
      * @Id @GeneratedValue
      * @Column(type="integer")
-     *
-     * @var integer
+     * @var int
      */
     public $id;
 
     /**
+     * @var string
      * @Column(type="string", unique=true, length=100)
      */
     public $label;
@@ -301,7 +294,6 @@ class DDC2602BiographyFieldChoice
      *     inversedBy="choiceList"
      * )
      * @JoinColumn(onDelete="CASCADE")
-     *
      * @var DDC2602BiographyField
      */
     public $field;
@@ -309,20 +301,12 @@ class DDC2602BiographyFieldChoice
 
 class DDC2602FieldSelection
 {
-    /**
-     * @var DDC2602BiographyField
-     */
+    /** @var DDC2602BiographyField */
     public $field;
 
-    /**
-     * @var \Doctrine\Common\Collections\ArrayCollection
-     */
+    /** @var ArrayCollection */
     public $choiceList;
 
-    /**
-     * Constructor.
-     *
-     */
     public function __construct()
     {
         $this->choiceList = new ArrayCollection();

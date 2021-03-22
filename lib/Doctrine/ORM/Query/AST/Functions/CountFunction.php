@@ -1,4 +1,5 @@
 <?php
+
 /*
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
  * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
@@ -20,41 +21,30 @@
 namespace Doctrine\ORM\Query\AST\Functions;
 
 use Doctrine\DBAL\Types\Type;
+use Doctrine\ORM\Query\AST\AggregateExpression;
 use Doctrine\ORM\Query\AST\TypedExpression;
 use Doctrine\ORM\Query\Parser;
 use Doctrine\ORM\Query\SqlWalker;
-use Doctrine\ORM\Query\AST\AggregateExpression;
 
 /**
  * "COUNT" "(" ["DISTINCT"] StringPrimary ")"
- *
- * @since   2.6
- * @author  Mathew Davies <thepixeldeveloper@icloud.com>
  */
 final class CountFunction extends FunctionNode implements TypedExpression
 {
-    /**
-     * @var AggregateExpression
-     */
+    /** @var AggregateExpression */
     private $aggregateExpression;
 
-    /**
-     * @inheritDoc
-     */
     public function getSql(SqlWalker $sqlWalker): string
     {
         return $this->aggregateExpression->dispatch($sqlWalker);
     }
 
-    /**
-     * @inheritDoc
-     */
     public function parse(Parser $parser): void
     {
         $this->aggregateExpression = $parser->AggregateExpression();
     }
 
-    public function getReturnType() : Type
+    public function getReturnType(): Type
     {
         return Type::getType(Type::INTEGER);
     }

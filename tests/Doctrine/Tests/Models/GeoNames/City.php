@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\Tests\Models\GeoNames;
 
 /**
@@ -10,6 +12,7 @@ namespace Doctrine\Tests\Models\GeoNames;
 class City
 {
     /**
+     * @var string
      * @Id
      * @Column(type="string", length=25)
      * @GeneratedValue(strategy="NONE")
@@ -17,6 +20,7 @@ class City
     public $id;
 
     /**
+     * @var Country
      * @ManyToOne(targetEntity="Country")
      * @JoinColumn(name="country", referencedColumnName="id")
      * @Cache
@@ -24,6 +28,7 @@ class City
     public $country;
 
     /**
+     * @var Admin1
      * @ManyToOne(targetEntity="Admin1")
      * @JoinColumns({
      *   @JoinColumn(name="admin1", referencedColumnName="id"),
@@ -34,12 +39,12 @@ class City
     public $admin1;
 
     /**
+     * @var string
      * @Column(type="string", length=255);
      */
     public $name;
 
-
-    public function __construct($id, $name)
+    public function __construct(int $id, string $name)
     {
         $this->id   = $id;
         $this->name = $name;

@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\Tests\Models\ValueConversionType;
 
 /**
@@ -9,12 +11,14 @@ namespace Doctrine\Tests\Models\ValueConversionType;
 class OwningManyToOneCompositeIdEntity
 {
     /**
+     * @var string
      * @Column(type="rot13")
      * @Id
      */
     public $id3;
 
     /**
+     * @var InversedOneToManyCompositeIdEntity
      * @ManyToOne(targetEntity="InversedOneToManyCompositeIdEntity", inversedBy="associatedEntities")
      * @JoinColumns({
      *     @JoinColumn(name="associated_id1", referencedColumnName="id1"),

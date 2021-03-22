@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\Tests\Models\Routing;
 
 /**
@@ -8,17 +10,19 @@ namespace Doctrine\Tests\Models\Routing;
 class RoutingLocation
 {
     /**
+     * @var int
      * @Id @GeneratedValue
      * @Column(type="integer")
      */
     public $id;
 
     /**
+     * @var string
      * @Column(type="string")
      */
     public $name;
 
-    public function getName()
+    public function getName(): string
     {
         return $this->name;
     }

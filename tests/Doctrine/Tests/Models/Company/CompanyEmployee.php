@@ -1,6 +1,11 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\Tests\Models\Company;
+
+use DateTime;
+use Doctrine\Common\Collections\Collection;
 
 /**
  * @Entity
@@ -9,51 +14,62 @@ namespace Doctrine\Tests\Models\Company;
 class CompanyEmployee extends CompanyPerson
 {
     /**
+     * @var int
      * @Column(type="integer")
      */
     private $salary;
 
     /**
+     * @var string
      * @Column(type="string", length=255)
      */
     private $department;
 
     /**
+     * @var DateTime|null
      * @Column(type="datetime", nullable=true)
      */
     private $startDate;
 
     /**
+     * @psalm-var Collection<int, CompanyContract>
      * @ManyToMany(targetEntity="CompanyContract", mappedBy="engineers", fetch="EXTRA_LAZY")
      */
     public $contracts;
 
     /**
+     * @psalm-var Collection<int, CompanyFlexUltraContract>
      * @OneToMany(targetEntity="CompanyFlexUltraContract", mappedBy="salesPerson", fetch="EXTRA_LAZY")
      */
     public $soldContracts;
 
-    public function getSalary() {
+    public function getSalary(): int
+    {
         return $this->salary;
     }
 
-    public function setSalary($salary) {
+    public function setSalary(int $salary): void
+    {
         $this->salary = $salary;
     }
 
-    public function getDepartment() {
+    public function getDepartment(): string
+    {
         return $this->department;
     }
 
-    public function setDepartment($dep) {
+    public function setDepartment(string $dep): void
+    {
         $this->department = $dep;
     }
 
-    public function getStartDate() {
+    public function getStartDate(): ?DateTime
+    {
         return $this->startDate;
     }
 
-    public function setStartDate($date) {
+    public function setStartDate(DateTime $date): void
+    {
         $this->startDate = $date;
     }
 }

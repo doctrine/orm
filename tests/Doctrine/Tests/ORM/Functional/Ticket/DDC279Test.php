@@ -1,18 +1,24 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\Tests\ORM\Functional\Ticket;
 
-class DDC279Test extends \Doctrine\Tests\OrmFunctionalTestCase
+use Doctrine\Tests\OrmFunctionalTestCase;
+
+use function count;
+
+class DDC279Test extends OrmFunctionalTestCase
 {
-    protected function setUp() : void
+    protected function setUp(): void
     {
         parent::setUp();
         $this->_schemaTool->createSchema(
             [
-            $this->_em->getClassMetadata(DDC279EntityXAbstract::class),
-            $this->_em->getClassMetadata(DDC279EntityX::class),
-            $this->_em->getClassMetadata(DDC279EntityY::class),
-            $this->_em->getClassMetadata(DDC279EntityZ::class),
+                $this->_em->getClassMetadata(DDC279EntityXAbstract::class),
+                $this->_em->getClassMetadata(DDC279EntityX::class),
+                $this->_em->getClassMetadata(DDC279EntityY::class),
+                $this->_em->getClassMetadata(DDC279EntityZ::class),
             ]
         );
     }
@@ -20,7 +26,7 @@ class DDC279Test extends \Doctrine\Tests\OrmFunctionalTestCase
     /**
      * @group DDC-279
      */
-    public function testDDC279()
+    public function testDDC279(): void
     {
         $x = new DDC279EntityX();
         $y = new DDC279EntityY();
@@ -41,7 +47,7 @@ class DDC279Test extends \Doctrine\Tests\OrmFunctionalTestCase
         $this->_em->clear();
 
         $query = $this->_em->createQuery(
-            'SELECT x, y, z FROM Doctrine\Tests\ORM\Functional\Ticket\DDC279EntityX x '.
+            'SELECT x, y, z FROM Doctrine\Tests\ORM\Functional\Ticket\DDC279EntityX x ' .
             'INNER JOIN x.y y INNER JOIN y.z z WHERE x.id = ?1'
         )->setParameter(1, $x->id);
 
@@ -67,6 +73,7 @@ class DDC279Test extends \Doctrine\Tests\OrmFunctionalTestCase
 abstract class DDC279EntityXAbstract
 {
     /**
+     * @var int
      * @Id
      * @GeneratedValue
      * @Column(name="id", type="integer")
@@ -74,10 +81,10 @@ abstract class DDC279EntityXAbstract
     public $id;
 
     /**
+     * @var string
      * @column(type="string")
      */
     public $data;
-
 }
 
 /**
@@ -86,6 +93,7 @@ abstract class DDC279EntityXAbstract
 class DDC279EntityX extends DDC279EntityXAbstract
 {
     /**
+     * @var DDC279EntityY
      * @OneToOne(targetEntity="DDC279EntityY")
      * @JoinColumn(name="y_id", referencedColumnName="id")
      */
@@ -98,17 +106,20 @@ class DDC279EntityX extends DDC279EntityXAbstract
 class DDC279EntityY
 {
     /**
+     * @var int
      * @Id @GeneratedValue
      * @Column(name="id", type="integer")
      */
     public $id;
 
     /**
+     * @var string
      * @column(type="string")
      */
     public $data;
 
     /**
+     * @var DDC279EntityZ
      * @OneToOne(targetEntity="DDC279EntityZ")
      * @JoinColumn(name="z_id", referencedColumnName="id")
      */
@@ -121,12 +132,14 @@ class DDC279EntityY
 class DDC279EntityZ
 {
     /**
+     * @var int
      * @Id @GeneratedValue
      * @Column(name="id", type="integer")
      */
     public $id;
 
     /**
+     * @var string
      * @column(type="string")
      */
     public $data;

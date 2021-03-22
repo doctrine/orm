@@ -24,27 +24,20 @@ use Doctrine\ORM\Cache\CollectionCacheKey;
 use Doctrine\ORM\Cache\EntityCacheKey;
 use Doctrine\ORM\Cache\QueryCacheKey;
 
+use function array_sum;
+
 /**
  * Provide basic second level cache statistics.
- *
- * @since   2.5
- * @author  Fabio B. Silva <fabio.bat.silva@gmail.com>
  */
 class StatisticsCacheLogger implements CacheLogger
 {
-    /**
-     * @var int[]
-     */
+    /** @var int[] */
     private $cacheMissCountMap = [];
 
-    /**
-     * @var int[]
-     */
+    /** @var int[] */
     private $cacheHitCountMap = [];
 
-    /**
-     * @var int[]
-     */
+    /** @var int[] */
     private $cachePutCountMap = [];
 
     /**
@@ -146,7 +139,7 @@ class StatisticsCacheLogger implements CacheLogger
      */
     public function getRegionHitCount($regionName)
     {
-        return isset($this->cacheHitCountMap[$regionName]) ? $this->cacheHitCountMap[$regionName] : 0;
+        return $this->cacheHitCountMap[$regionName] ?? 0;
     }
 
     /**
@@ -158,7 +151,7 @@ class StatisticsCacheLogger implements CacheLogger
      */
     public function getRegionMissCount($regionName)
     {
-        return isset($this->cacheMissCountMap[$regionName]) ? $this->cacheMissCountMap[$regionName] : 0;
+        return $this->cacheMissCountMap[$regionName] ?? 0;
     }
 
     /**
@@ -170,11 +163,11 @@ class StatisticsCacheLogger implements CacheLogger
      */
     public function getRegionPutCount($regionName)
     {
-        return isset($this->cachePutCountMap[$regionName]) ? $this->cachePutCountMap[$regionName] : 0;
+        return $this->cachePutCountMap[$regionName] ?? 0;
     }
 
     /**
-     * @return array
+     * @return array<string, int>
      */
     public function getRegionsMiss()
     {
@@ -182,7 +175,7 @@ class StatisticsCacheLogger implements CacheLogger
     }
 
     /**
-     * @return array
+     * @return array<string, int>
      */
     public function getRegionsHit()
     {
@@ -190,7 +183,7 @@ class StatisticsCacheLogger implements CacheLogger
     }
 
     /**
-     * @return array
+     * @return array<string, int>
      */
     public function getRegionsPut()
     {

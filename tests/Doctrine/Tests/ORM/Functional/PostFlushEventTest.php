@@ -1,50 +1,49 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\Tests\ORM\Functional;
 
-use Doctrine\Tests\Models\CMS\CmsUser;
 use Doctrine\ORM\Event\PostFlushEventArgs;
 use Doctrine\ORM\Events;
+use Doctrine\Tests\Models\CMS\CmsUser;
 use Doctrine\Tests\OrmFunctionalTestCase;
+use Exception;
 
 /**
  * PostFlushEventTest
- *
- * @author Daniel Freudenberger <df@rebuy.de>
  */
 class PostFlushEventTest extends OrmFunctionalTestCase
 {
-    /**
-     * @var PostFlushListener
-     */
+    /** @var PostFlushListener */
     private $listener;
 
-    protected function setUp() : void
+    protected function setUp(): void
     {
         $this->useModelSet('cms');
         parent::setUp();
         $this->listener = new PostFlushListener();
-        $evm = $this->_em->getEventManager();
+        $evm            = $this->_em->getEventManager();
         $evm->addEventListener(Events::postFlush, $this->listener);
     }
 
-    public function testListenerShouldBeNotified()
+    public function testListenerShouldBeNotified(): void
     {
         $this->_em->persist($this->createNewValidUser());
         $this->_em->flush();
         $this->assertTrue($this->listener->wasNotified);
     }
 
-    public function testListenerShouldNotBeNotifiedWhenFlushThrowsException()
+    public function testListenerShouldNotBeNotifiedWhenFlushThrowsException(): void
     {
-        $user = new CmsUser();
+        $user           = new CmsUser();
         $user->username = 'dfreudenberger';
         $this->_em->persist($user);
         $exceptionRaised = false;
 
         try {
             $this->_em->flush();
-        } catch (\Exception $ex) {
+        } catch (Exception $ex) {
             $exceptionRaised = true;
         }
 
@@ -52,7 +51,7 @@ class PostFlushEventTest extends OrmFunctionalTestCase
         $this->assertFalse($this->listener->wasNotified);
     }
 
-    public function testListenerShouldReceiveEntityManagerThroughArgs()
+    public function testListenerShouldReceiveEntityManagerThroughArgs(): void
     {
         $this->_em->persist($this->createNewValidUser());
         $this->_em->flush();
@@ -60,36 +59,27 @@ class PostFlushEventTest extends OrmFunctionalTestCase
         $this->assertSame($this->_em, $receivedEm);
     }
 
-    /**
-     * @return CmsUser
-     */
-    private function createNewValidUser()
+    private function createNewValidUser(): CmsUser
     {
-        $user = new CmsUser();
+        $user           = new CmsUser();
         $user->username = 'dfreudenberger';
-        $user->name = 'Daniel Freudenberger';
+        $user->name     = 'Daniel Freudenberger';
+
         return $user;
     }
 }
 
 class PostFlushListener
 {
-    /**
-     * @var bool
-     */
+    /** @var bool */
     public $wasNotified = false;
 
-    /**
-     * @var PostFlushEventArgs
-     */
+    /** @var PostFlushEventArgs */
     public $receivedArgs;
 
-    /**
-     * @param PostFlushEventArgs $args
-     */
-    public function postFlush(PostFlushEventArgs $args)
+    public function postFlush(PostFlushEventArgs $args): void
     {
-        $this->wasNotified = true;
+        $this->wasNotified  = true;
         $this->receivedArgs = $args;
     }
 }

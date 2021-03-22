@@ -7,12 +7,13 @@ namespace Doctrine\Tests;
 use Doctrine\ORM\AbstractQuery;
 use Doctrine\ORM\Query;
 use PHPUnit\Framework\Assert;
+
 use function is_array;
 use function iterator_to_array;
 
 final class IterableTester
 {
-    public static function assertResultsAreTheSame(Query $query) : void
+    public static function assertResultsAreTheSame(Query $query): void
     {
         $result   = $query->getResult();
         $iterable = $query->toIterable();
@@ -30,7 +31,7 @@ final class IterableTester
      *
      * @return mixed[]
      */
-    public static function iterableToArray(iterable $iterable) : array
+    public static function iterableToArray(iterable $iterable): array
     {
         return is_array($iterable) ? $iterable : iterator_to_array($iterable, true);
     }

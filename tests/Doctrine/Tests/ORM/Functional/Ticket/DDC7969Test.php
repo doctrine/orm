@@ -9,9 +9,11 @@ use Doctrine\Tests\Models\Cache\Attraction;
 use Doctrine\Tests\Models\Cache\Bar;
 use Doctrine\Tests\ORM\Functional\SecondLevelCacheAbstractTest;
 
+use function assert;
+
 class DDC7969Test extends SecondLevelCacheAbstractTest
 {
-    public function testChildEntityRetrievedFromCache() : void
+    public function testChildEntityRetrievedFromCache(): void
     {
         $this->loadFixturesCountries();
         $this->loadFixturesStates();
@@ -25,8 +27,8 @@ class DDC7969Test extends SecondLevelCacheAbstractTest
             $region->getCache()->flushAll();
         }
 
-        /** @var Bar $bar */
         $bar = $this->attractions[0];
+        assert($bar instanceof Bar);
 
         $repository = $this->_em->getRepository(Bar::class);
 

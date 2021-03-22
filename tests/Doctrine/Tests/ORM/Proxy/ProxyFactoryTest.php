@@ -1,8 +1,11 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\Tests\ORM\Proxy;
 
 use Doctrine\Common\Proxy\AbstractProxyFactory;
+use Doctrine\Common\Proxy\Proxy;
 use Doctrine\ORM\EntityNotFoundException;
 use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\Persisters\Entity\BasicEntityPersister;
@@ -16,47 +19,40 @@ use Doctrine\Tests\Models\Company\CompanyEmployee;
 use Doctrine\Tests\Models\Company\CompanyPerson;
 use Doctrine\Tests\Models\ECommerce\ECommerceFeature;
 use Doctrine\Tests\OrmTestCase;
+use ReflectionProperty;
+use stdClass;
+
+use function assert;
+use function sys_get_temp_dir;
 
 /**
  * Test the proxy generator. Its work is generating on-the-fly subclasses of a given model, which implement the Proxy pattern.
- * @author Giorgio Sironi <piccoloprincipeazzurro@gmail.com>
  */
 class ProxyFactoryTest extends OrmTestCase
 {
-    /**
-     * @var ConnectionMock
-     */
+    /** @var ConnectionMock */
     private $connectionMock;
 
-    /**
-     * @var UnitOfWorkMock
-     */
+    /** @var UnitOfWorkMock */
     private $uowMock;
 
-    /**
-     * @var EntityManagerMock
-     */
+    /** @var EntityManagerMock */
     private $emMock;
 
-    /**
-     * @var \Doctrine\ORM\Proxy\ProxyFactory
-     */
+    /** @var ProxyFactory */
     private $proxyFactory;
 
-    /**
-     * {@inheritDoc}
-     */
-    protected function setUp() : void
+    protected function setUp(): void
     {
         parent::setUp();
         $this->connectionMock = new ConnectionMock([], new DriverMock());
-        $this->emMock = EntityManagerMock::create($this->connectionMock);
-        $this->uowMock = new UnitOfWorkMock($this->emMock);
+        $this->emMock         = EntityManagerMock::create($this->connectionMock);
+        $this->uowMock        = new UnitOfWorkMock($this->emMock);
         $this->emMock->setUnitOfWork($this->uowMock);
         $this->proxyFactory = new ProxyFactory($this->emMock, sys_get_temp_dir(), 'Proxies', AbstractProxyFactory::AUTOGENERATE_ALWAYS);
     }
 
-    public function testReferenceProxyDelegatesLoadingToThePersister()
+    public function testReferenceProxyDelegatesLoadingToThePersister(): void
     {
         $identifier = ['id' => 42];
         $proxyClass = 'Proxies\__CG__\Doctrine\Tests\Models\ECommerce\ECommerceFeature';
@@ -70,14 +66,14 @@ class ProxyFactoryTest extends OrmTestCase
             ->expects($this->atLeastOnce())
             ->method('load')
             ->with($this->equalTo($identifier), $this->isInstanceOf($proxyClass))
-            ->will($this->returnValue(new \stdClass()));
+            ->will($this->returnValue(new stdClass()));
 
         $proxy->getDescription();
     }
 
     public function testSkipMappedSuperClassesOnGeneration(): void
     {
-        $cm = new ClassMetadata(\stdClass::class);
+        $cm                     = new ClassMetadata(stdClass::class);
         $cm->isMappedSuperclass = true;
 
         self::assertSame(
@@ -92,7 +88,7 @@ class ProxyFactoryTest extends OrmTestCase
      */
     public function testSkipEmbeddableClassesOnGeneration(): void
     {
-        $cm = new ClassMetadata(\stdClass::class);
+        $cm                  = new ClassMetadata(stdClass::class);
         $cm->isEmbeddedClass = true;
 
         self::assertSame(
@@ -105,7 +101,7 @@ class ProxyFactoryTest extends OrmTestCase
     /**
      * @group DDC-1771
      */
-    public function testSkipAbstractClassesOnGeneration()
+    public function testSkipAbstractClassesOnGeneration(): void
     {
         $cm = new ClassMetadata(AbstractClass::class);
         $cm->initializeReflection(new RuntimeReflectionService());
@@ -113,19 +109,19 @@ class ProxyFactoryTest extends OrmTestCase
 
         $num = $this->proxyFactory->generateProxyClasses([$cm]);
 
-        $this->assertEquals(0, $num, "No proxies generated.");
+        $this->assertEquals(0, $num, 'No proxies generated.');
     }
 
     /**
      * @group DDC-2432
      */
-    public function testFailedProxyLoadingDoesNotMarkTheProxyAsInitialized()
+    public function testFailedProxyLoadingDoesNotMarkTheProxyAsInitialized(): void
     {
         $persister = $this->getMockBuilder(BasicEntityPersister::class)->setMethods(['load'])->disableOriginalConstructor()->getMock();
         $this->uowMock->setEntityPersister(ECommerceFeature::class, $persister);
 
-        /* @var $proxy \Doctrine\Common\Proxy\Proxy */
         $proxy = $this->proxyFactory->getProxy(ECommerceFeature::class, ['id' => 42]);
+        assert($proxy instanceof Proxy);
 
         $persister
             ->expects($this->atLeastOnce())
@@ -146,13 +142,13 @@ class ProxyFactoryTest extends OrmTestCase
     /**
      * @group DDC-2432
      */
-    public function testFailedProxyCloningDoesNotMarkTheProxyAsInitialized()
+    public function testFailedProxyCloningDoesNotMarkTheProxyAsInitialized(): void
     {
         $persister = $this->getMockBuilder(BasicEntityPersister::class)->setMethods(['load'])->disableOriginalConstructor()->getMock();
         $this->uowMock->setEntityPersister(ECommerceFeature::class, $persister);
 
-        /* @var $proxy \Doctrine\Common\Proxy\Proxy */
         $proxy = $this->proxyFactory->getProxy(ECommerceFeature::class, ['id' => 42]);
+        assert($proxy instanceof Proxy);
 
         $persister
             ->expects($this->atLeastOnce())
@@ -170,14 +166,14 @@ class ProxyFactoryTest extends OrmTestCase
         $this->assertInstanceOf('Closure', $proxy->__getCloner(), 'The cloner wasn\'t removed');
     }
 
-    public function testProxyClonesParentFields()
+    public function testProxyClonesParentFields(): void
     {
         $companyEmployee = new CompanyEmployee();
         $companyEmployee->setSalary(1000); // A property on the CompanyEmployee
         $companyEmployee->setName('Bob'); // A property on the parent class, CompanyPerson
 
         // Set the id of the CompanyEmployee (which is in the parent CompanyPerson)
-        $property = new \ReflectionProperty(CompanyPerson::class, 'id');
+        $property = new ReflectionProperty(CompanyPerson::class, 'id');
 
         $property->setAccessible(true);
         $property->setValue($companyEmployee, 42);
@@ -191,8 +187,8 @@ class ProxyFactoryTest extends OrmTestCase
             ->getMock();
         $this->uowMock->setEntityPersister(CompanyEmployee::class, $persister);
 
-        /* @var $proxy \Doctrine\Common\Proxy\Proxy */
         $proxy = $this->proxyFactory->getProxy(CompanyEmployee::class, ['id' => 42]);
+        assert($proxy instanceof Proxy);
 
         $persister
             ->expects(self::atLeastOnce())
@@ -204,8 +200,8 @@ class ProxyFactoryTest extends OrmTestCase
             ->method('getClassMetadata')
             ->willReturn($classMetaData);
 
-        /* @var $cloned CompanyEmployee */
         $cloned = clone $proxy;
+        assert($cloned instanceof CompanyEmployee);
 
         self::assertSame(42, $cloned->getId(), 'Expected the Id to be cloned');
         self::assertSame(1000, $cloned->getSalary(), 'Expect properties on the CompanyEmployee class to be cloned');
@@ -215,5 +211,4 @@ class ProxyFactoryTest extends OrmTestCase
 
 abstract class AbstractClass
 {
-
 }

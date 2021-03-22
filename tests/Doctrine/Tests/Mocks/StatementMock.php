@@ -1,15 +1,17 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\Tests\Mocks;
 
 use Doctrine\DBAL\Driver\Statement;
+use IteratorAggregate;
+use PDO;
 
 /**
  * This class is a mock of the Statement interface.
- *
- * @author Alexander <iam.asm89@gmail.com>
  */
-class StatementMock implements \IteratorAggregate, Statement
+class StatementMock implements IteratorAggregate, Statement
 {
     /**
      * {@inheritdoc}
@@ -35,7 +37,9 @@ class StatementMock implements \IteratorAggregate, Statement
     /**
      * {@inheritdoc}
      */
-    public function errorInfo(){}
+    public function errorInfo()
+    {
+    }
 
     /**
      * {@inheritdoc}
@@ -75,7 +79,7 @@ class StatementMock implements \IteratorAggregate, Statement
     /**
      * {@inheritdoc}
      */
-    public function fetch($fetchMode = null, $cursorOrientation = \PDO::FETCH_ORI_NEXT, $cursorOffset = 0)
+    public function fetch($fetchMode = null, $cursorOrientation = PDO::FETCH_ORI_NEXT, $cursorOffset = 0)
     {
     }
 

@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\Tests\ORM\Functional;
 
 use Doctrine\ORM\Proxy\Proxy;
@@ -7,20 +9,20 @@ use Doctrine\Tests\Models\DirectoryTree\Directory;
 use Doctrine\Tests\Models\DirectoryTree\File;
 use Doctrine\Tests\OrmFunctionalTestCase;
 
+use function get_class;
+
 /**
  * MappedSuperclassTest
- *
- * @author robo
  */
 class MappedSuperclassTest extends OrmFunctionalTestCase
 {
-    protected function setUp() : void
+    protected function setUp(): void
     {
         $this->useModelSet('directorytree');
         parent::setUp();
     }
 
-    public function testCRUD()
+    public function testCRUD(): void
     {
         $root = new Directory();
         $root->setName('Root');

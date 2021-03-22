@@ -20,36 +20,32 @@
 
 namespace Doctrine\ORM\Cache;
 
-use Doctrine\ORM\Query;
-use Doctrine\ORM\PersistentCollection;
-use Doctrine\ORM\Mapping\ClassMetadata;
+use Doctrine\ORM\Cache\Persister\CachedPersister;
 use Doctrine\ORM\EntityManagerInterface;
+use Doctrine\ORM\Mapping\ClassMetadata;
+use Doctrine\ORM\PersistentCollection;
+use Doctrine\ORM\Query;
+use Doctrine\ORM\UnitOfWork;
+
+use function array_walk;
+use function assert;
 
 /**
  * Default hydrator cache for collections
- *
- * @since   2.5
- * @author  Fabio B. Silva <fabio.bat.silva@gmail.com>
  */
 class DefaultCollectionHydrator implements CollectionHydrator
 {
-    /**
-     * @var \Doctrine\ORM\EntityManagerInterface
-     */
+    /** @var EntityManagerInterface */
     private $em;
 
-    /**
-     * @var \Doctrine\ORM\UnitOfWork
-     */
+    /** @var UnitOfWork */
     private $uow;
 
-    /**
-     * @var array
-     */
+    /** @var array<string,mixed> */
     private static $hints = [Query::HINT_CACHE_ENABLED => true];
 
     /**
-     * @param \Doctrine\ORM\EntityManagerInterface $em The entity manager.
+     * @param EntityManagerInterface $em The entity manager.
      */
     public function __construct(EntityManagerInterface $em)
     {
@@ -77,23 +73,23 @@ class DefaultCollectionHydrator implements CollectionHydrator
     public function loadCacheEntry(ClassMetadata $metadata, CollectionCacheKey $key, CollectionCacheEntry $entry, PersistentCollection $collection)
     {
         $assoc           = $metadata->associationMappings[$key->association];
-        /* @var $targetPersister \Doctrine\ORM\Cache\Persister\CachedPersister */
         $targetPersister = $this->uow->getEntityPersister($assoc['targetEntity']);
-        $targetRegion    = $targetPersister->getCacheRegion();
-        $list            = [];
+        assert($targetPersister instanceof CachedPersister);
+        $targetRegion = $targetPersister->getCacheRegion();
+        $list         = [];
 
+        /** @var EntityCacheEntry[]|null $entityEntries */
         $entityEntries = $targetRegion->getMultiple($entry);
 
         if ($entityEntries === null) {
             return null;
         }
 
-        /* @var $entityEntries \Doctrine\ORM\Cache\EntityCacheEntry[] */
         foreach ($entityEntries as $index => $entityEntry) {
             $list[$index] = $this->uow->createEntity($entityEntry->class, $entityEntry->resolveAssociationEntries($this->em), self::$hints);
         }
 
-        array_walk($list, function($entity, $index) use ($collection) {
+        array_walk($list, static function ($entity, $index) use ($collection) {
             $collection->hydrateSet($index, $entity);
         });
 

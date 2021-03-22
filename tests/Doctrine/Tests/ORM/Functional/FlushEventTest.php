@@ -1,35 +1,37 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\Tests\ORM\Functional;
 
-use Doctrine\Tests\Models\CMS\CmsUser;
-use Doctrine\Tests\Models\CMS\CmsPhonenumber;
 use Doctrine\ORM\Event\OnFlushEventArgs;
 use Doctrine\ORM\Events;
+use Doctrine\Tests\Models\CMS\CmsPhonenumber;
+use Doctrine\Tests\Models\CMS\CmsUser;
 use Doctrine\Tests\OrmFunctionalTestCase;
+
+use function get_class;
 
 /**
  * FlushEventTest
- *
- * @author robo
  */
 class FlushEventTest extends OrmFunctionalTestCase
 {
-    protected function setUp() : void
+    protected function setUp(): void
     {
         $this->useModelSet('cms');
         parent::setUp();
     }
 
-    public function testPersistNewEntitiesOnPreFlush()
+    public function testPersistNewEntitiesOnPreFlush(): void
     {
         //$this->_em->getConnection()->getConfiguration()->setSQLLogger(new \Doctrine\DBAL\Logging\EchoSQLLogger);
-        $this->_em->getEventManager()->addEventListener(Events::onFlush, new OnFlushListener);
+        $this->_em->getEventManager()->addEventListener(Events::onFlush, new OnFlushListener());
 
-        $user = new CmsUser;
+        $user           = new CmsUser();
         $user->username = 'romanb';
-        $user->name = 'Roman';
-        $user->status = 'Dev';
+        $user->name     = 'Roman';
+        $user->status   = 'Dev';
 
         $this->_em->persist($user);
 
@@ -52,7 +54,7 @@ class FlushEventTest extends OrmFunctionalTestCase
     /**
      * @group DDC-2173
      */
-    public function testPreAndOnFlushCalledAlways()
+    public function testPreAndOnFlushCalledAlways(): void
     {
         $listener = new OnFlushCalledListener();
         $this->_em->getEventManager()->addEventListener(Events::onFlush, $listener);
@@ -73,19 +75,18 @@ class FlushEventTest extends OrmFunctionalTestCase
 
 class OnFlushListener
 {
-    public function onFlush(OnFlushEventArgs $args)
+    public function onFlush(OnFlushEventArgs $args): void
     {
         //echo "---preFlush".PHP_EOL;
 
-        $em = $args->getEntityManager();
+        $em  = $args->getEntityManager();
         $uow = $em->getUnitOfWork();
 
         foreach ($uow->getScheduledEntityInsertions() as $entity) {
-
             if ($entity instanceof CmsUser) {
                 // Adds a phonenumber to every newly persisted CmsUser ...
 
-                $phone = new CmsPhonenumber;
+                $phone              = new CmsPhonenumber();
                 $phone->phonenumber = 12345;
                 // Update object model
                 $entity->addPhonenumber($phone);
@@ -107,30 +108,33 @@ class OnFlushListener
 
                 var_dump($old);
             }*/
-
         }
     }
 }
 
 class OnFlushCalledListener
 {
+    /** @var int */
     public $preFlush = 0;
+
+    /** @var int */
     public $onFlush = 0;
+
+    /** @var int */
     public $postFlush = 0;
 
-    public function preFlush($args)
+    public function preFlush($args): void
     {
         $this->preFlush++;
     }
 
-    public function onFlush($args)
+    public function onFlush($args): void
     {
         $this->onFlush++;
     }
 
-    public function postFlush($args)
+    public function postFlush($args): void
     {
         $this->postFlush++;
     }
 }
-

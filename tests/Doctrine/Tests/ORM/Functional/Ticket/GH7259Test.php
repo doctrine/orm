@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace Doctrine\Tests\ORM\Functional\Ticket;
@@ -7,7 +8,7 @@ use Doctrine\Tests\OrmFunctionalTestCase;
 
 final class GH7259Test extends OrmFunctionalTestCase
 {
-    protected function setUp() : void
+    protected function setUp(): void
     {
         parent::setUp();
 
@@ -17,19 +18,19 @@ final class GH7259Test extends OrmFunctionalTestCase
     /**
      * @group GH-7259
      */
-    public function testPersistFileBeforeVersion() : void
+    public function testPersistFileBeforeVersion(): void
     {
         $space = new GH7259Space();
 
         $this->_em->persist($space);
         $this->_em->flush();
 
-        $feed = new GH7259Feed();
+        $feed        = new GH7259Feed();
         $feed->space = $space;
 
-        $file = new GH7259File();
-        $file->space = $space;
-        $fileVersion = new GH7259FileVersion();
+        $file              = new GH7259File();
+        $file->space       = $space;
+        $fileVersion       = new GH7259FileVersion();
         $fileVersion->file = $file;
 
         $this->_em->persist($file);
@@ -44,7 +45,7 @@ final class GH7259Test extends OrmFunctionalTestCase
     /**
      * @group GH-7259
      */
-    public function testPersistFileAfterVersion() : void
+    public function testPersistFileAfterVersion(): void
     {
         $space = new GH7259Space();
 
@@ -54,12 +55,12 @@ final class GH7259Test extends OrmFunctionalTestCase
 
         $space = $this->_em->find(GH7259Space::class, $space->id);
 
-        $feed = new GH7259Feed();
+        $feed        = new GH7259Feed();
         $feed->space = $space;
 
-        $file = new GH7259File();
-        $file->space = $space;
-        $fileVersion = new GH7259FileVersion();
+        $file              = new GH7259File();
+        $file->space       = $space;
+        $fileVersion       = new GH7259FileVersion();
         $fileVersion->file = $file;
 
         $this->_em->persist($fileVersion);
@@ -81,7 +82,6 @@ class GH7259File
      * @Id
      * @GeneratedValue
      * @Column(type="integer")
-     *
      * @var int
      */
     public $id;
@@ -89,7 +89,6 @@ class GH7259File
     /**
      * @ManyToOne(targetEntity=GH7259Space::class)
      * @JoinColumn(nullable=false)
-     *
      * @var GH7259Space|null
      */
     public $space;
@@ -104,7 +103,6 @@ class GH7259FileVersion
      * @Id
      * @GeneratedValue
      * @Column(type="integer")
-     *
      * @var int
      */
     public $id;
@@ -112,7 +110,6 @@ class GH7259FileVersion
     /**
      * @ManyToOne(targetEntity=GH7259File::class)
      * @JoinColumn(nullable=false)
-     *
      * @var GH7259File|null
      */
     public $file;
@@ -127,7 +124,6 @@ class GH7259Space
      * @Id
      * @GeneratedValue
      * @Column(type="integer")
-     *
      * @var int
      */
     public $id;
@@ -135,7 +131,6 @@ class GH7259Space
     /**
      * @ManyToOne(targetEntity=GH7259File::class)
      * @JoinColumn(nullable=true)
-     *
      * @var GH7259File|null
      */
     public $ruleFile;
@@ -150,7 +145,6 @@ class GH7259Feed
      * @Id
      * @GeneratedValue
      * @Column(type="integer")
-     *
      * @var int
      */
     public $id;
@@ -158,7 +152,6 @@ class GH7259Feed
     /**
      * @ManyToOne(targetEntity=GH7259Space::class)
      * @JoinColumn(nullable=false)
-     *
      * @var GH7259Space|null
      */
     public $space;
