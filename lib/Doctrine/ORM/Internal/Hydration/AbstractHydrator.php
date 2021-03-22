@@ -32,9 +32,9 @@ use Doctrine\ORM\UnitOfWork;
 use PDO;
 use ReflectionClass;
 
-use function assert;
 use function array_map;
 use function array_merge;
+use function assert;
 use function count;
 use function in_array;
 use function trigger_error;
