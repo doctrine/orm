@@ -135,17 +135,7 @@ abstract class AbstractHydrator
             E_USER_DEPRECATED
         );
 
-        $this->_stmt  = $stmt;
-        $this->_rsm   = $resultSetMapping;
-        $this->_hints = $hints;
-
-        $evm = $this->_em->getEventManager();
-
-        $evm->addEventListener([Events::onClear], $this);
-
-        $this->prepare();
-
-        return new IterableResult($this);
+        return $this->doIterate($stmt, $resultSetMapping, $hints);
     }
 
     /**
@@ -157,12 +147,27 @@ abstract class AbstractHydrator
      */
     public function toIterable(ResultStatement $stmt, ResultSetMapping $resultSetMapping, array $hints = []): iterable
     {
-        foreach ($this->iterate($stmt, $resultSetMapping, $hints) as $results) {
+        foreach ($this->doIterate($stmt, $resultSetMapping, $hints) as $results) {
             assert(count($results) === 1);
             foreach ($results as $key => $row) {
                 yield $key => $row;
             }
         }
+    }
+
+    private function doIterate(object $stmt, object $resultSetMapping, array $hints = []): IterableResult
+    {
+        $this->_stmt  = $stmt;
+        $this->_rsm   = $resultSetMapping;
+        $this->_hints = $hints;
+
+        $evm = $this->_em->getEventManager();
+
+        $evm->addEventListener([Events::onClear], $this);
+
+        $this->prepare();
+
+        return new IterableResult($this);
     }
 
     /**
