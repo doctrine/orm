@@ -14,7 +14,10 @@ use ReflectionProperty;
 use function count;
 use function is_subclass_of;
 
-class AttributeReader
+/**
+ * @internal
+ */
+final class AttributeReader
 {
     /** @var array<string,bool> */
     private array $isRepeatableAttribute = [];

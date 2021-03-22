@@ -20,7 +20,7 @@ use function class_exists;
 use function constant;
 use function defined;
 
-class AttributesDriver extends AnnotationDriver
+class AttributeDriver extends AnnotationDriver
 {
     /** @var array<string,int> */
     // @phpcs:ignore

@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Doctrine\Tests\ORM\Mapping;
 
-use Doctrine\ORM\Mapping\Driver\AttributesDriver;
+use Doctrine\ORM\Mapping\Driver\AttributeDriver;
 use Doctrine\Persistence\Mapping\Driver\MappingDriver;
 
 use const PHP_VERSION_ID;
@@ -23,7 +23,7 @@ class AttributeDriverTest extends AbstractMappingDriverTest
     {
         $paths = [];
 
-        return new AttributesDriver($paths);
+        return new AttributeDriver($paths);
     }
 
     public function testNamedQuery(): void
