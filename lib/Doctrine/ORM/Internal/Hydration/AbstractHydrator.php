@@ -21,7 +21,6 @@
 namespace Doctrine\ORM\Internal\Hydration;
 
 use Doctrine\DBAL\Driver\ResultStatement;
-use Doctrine\DBAL\FetchMode;
 use Doctrine\DBAL\Platforms\AbstractPlatform;
 use Doctrine\DBAL\Types\Type;
 use Doctrine\ORM\EntityManagerInterface;
@@ -33,10 +32,10 @@ use Doctrine\ORM\UnitOfWork;
 use PDO;
 use ReflectionClass;
 
+use function assert;
 use function array_map;
 use function array_merge;
 use function count;
-use function end;
 use function in_array;
 use function trigger_error;
 
@@ -155,6 +154,9 @@ abstract class AbstractHydrator
         }
     }
 
+    /**
+     * @psalm-param array<string, mixed> $hints
+     */
     private function doIterate(object $stmt, object $resultSetMapping, array $hints = []): IterableResult
     {
         $this->_stmt  = $stmt;
