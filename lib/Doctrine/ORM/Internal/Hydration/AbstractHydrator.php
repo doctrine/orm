@@ -157,35 +157,10 @@ abstract class AbstractHydrator
      */
     public function toIterable(ResultStatement $stmt, ResultSetMapping $resultSetMapping, array $hints = []): iterable
     {
-        $this->_stmt  = $stmt;
-        $this->_rsm   = $resultSetMapping;
-        $this->_hints = $hints;
-
-        $evm = $this->_em->getEventManager();
-
-        $evm->addEventListener([Events::onClear], $this);
-
-        $this->prepare();
-
-        while (true) {
-            $row = $this->_stmt->fetch(FetchMode::ASSOCIATIVE);
-
-            if ($row === false || $row === null) {
-                $this->cleanup();
-
-                break;
-            }
-
-            $result = [];
-
-            $this->hydrateRowData($row, $result);
-
-            $this->cleanupAfterRowIteration();
-
-            if (count($result) === 1) {
-                yield end($result);
-            } else {
-                yield $result;
+        foreach ($this->iterate($stmt, $resultSetMapping, $hints) as $results) {
+            assert(count($results) === 1);
+            foreach ($results as $key => $row) {
+                yield $key => $row;
             }
         }
     }
