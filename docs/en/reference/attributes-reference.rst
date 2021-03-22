@@ -61,16 +61,16 @@ as part of the lifecycle of the instance variables entity-class.
 
 Required attributes:
 
--  **type**: Name of the Doctrine Type which is converted between PHP
+-  **type**: Name of the DBAL Type which does the conversion between PHP
    and Database representation.
 
 Optional attributes:
 
 -  **name**: By default the property name is used for the database
-   column name also, however the 'name' attribute allows you to
+   column name also, however the ``name`` attribute allows you to
    determine the column name.
 
--  **length**: Used by the "string" type to determine its maximum
+-  **length**: Used by the ``string`` type to determine its maximum
    length in the database. Doctrine does not validate the length of a
    string value for you.
 
@@ -86,7 +86,8 @@ Optional attributes:
 -  **unique**: Boolean value to determine if the value of the column
    should be unique across all rows of the underlying entities table.
 
--  **nullable**: Determines if NULL values allowed for this column. If not specified, default value is false.
+-  **nullable**: Determines if NULL values allowed for this column.
+    If not specified, default value is ``false``.
 
 -  **options**: Array of additional options:
 
@@ -105,7 +106,7 @@ Optional attributes:
    -  ``comment``: The comment of the column in the schema (might not
       be supported by all vendors).
 
-   -  ``collation``: The collation of the column (only supported by Drizzle, Mysql, PostgreSQL>=9.1, Sqlite and SQLServer).
+   -  ``collation``: The collation of the column (only supported by Mysql, PostgreSQL, Sqlite and SQLServer).
 
    -  ``check``: Adds a check constraint type to the column (might not
       be supported by all vendors).
@@ -114,10 +115,10 @@ Optional attributes:
    name and specifies the complete (non-portable!) column definition.
    This attribute allows to make use of advanced RMDBS features.
    However you should make careful use of this feature and the
-   consequences. SchemaTool will not detect changes on the column correctly
-   anymore if you use "columnDefinition".
+   consequences. ``SchemaTool`` will not detect changes on the column correctly
+   anymore if you use ``columnDefinition``.
 
-   Additionally you should remember that the "type"
+   Additionally you should remember that the ``type``
    attribute still handles the conversion between PHP and Database
    values. If you use this attribute on a column that is used for
    joins between tables you should also take a look at
@@ -144,10 +145,18 @@ Examples:
     #[Column(type: "decimal", precision: 2, scale: 1)]
     protected $height;
 
-    #[Column(type: "string", length: 2, options: ["fixed" => true, "comment" => "Initial letters of first and last name"])]
+    #[Column(type: "string", length: 2, options: [
+        "fixed" => true,
+        "comment" => "Initial letters of first and last name"
+    ])]
     protected $initials;
 
-    #[Column(type: "integer", name: "login_count", nullable: false, options: ["unsigned" => true, "default" => 0])]
+    #[Column(
+        type: "integer",
+        name: "login_count",
+        nullable: false,
+        options: ["unsigned" => true, "default" => 0]
+    )]
     protected $loginCount;
 
 .. _annref_cache:
@@ -167,9 +176,9 @@ Optional attributes:
 ~~~~~~~~~~~~~~~~~~~~~~~
 
 The Change Tracking Policy attribute allows to specify how the
-Doctrine ORM UnitOfWork should detect changes in properties of
+Doctrine ORM ``UnitOfWork`` should detect changes in properties of
 entities during flush. By default each entity is checked according
-to a deferred implicit strategy, which means upon flush UnitOfWork
+to a deferred implicit strategy, which means upon flush ``UnitOfWork``
 compares all the properties of an entity to a previously stored
 snapshot. This works out of the box, however you might want to
 tweak the flush performance where using another change tracking
@@ -227,7 +236,7 @@ Example:
 #[DiscriminatorColumn]
 ~~~~~~~~~~~~~~~~~~~~~~
 
-This attribute is an optional and set on the root entity
+This attribute is optional and set on the root entity
 class of an inheritance hierarchy. It specifies the details of the
 column which saves the name of the class, which the entity is
 actually instantiated as.
@@ -305,7 +314,7 @@ attribute to establish the relationship between the two classes.
 .. _annref_embedded:
 
 #[Embedded]
-~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~
 
 The embedded attribute is required on an entity's member variable,
 in order to specify that it is an embedded class.
@@ -325,7 +334,7 @@ the persistence of all classes marked as entities.
 Optional attributes:
 
 -  **repositoryClass**: Specifies the FQCN of a subclass of the
-   EntityRepository. Use of repositories for entities is encouraged to keep
+   ``EntityRepository``. Use of repositories for entities is encouraged to keep
    specialized DQL and SQL operations separated from the Model/Domain
    Layer.
 -  **readOnly**: Specifies that this entity is marked as read only and not
@@ -356,14 +365,15 @@ instance variable which is annotated by :ref:`#[Id] <annref_id>`. This
 attribute is optional and only has meaning when used in
 conjunction with #[Id].
 
-If this attribute is not specified with #[Id] the NONE strategy is
+If this attribute is not specified with ``#[Id]`` the ``NONE`` strategy is
 used as default.
 
 Optional attributes:
 
 -  **strategy**: Set the name of the identifier generation strategy.
-   Valid values are AUTO, SEQUENCE, TABLE, IDENTITY, UUID, CUSTOM and NONE.
-   If not specified, default value is AUTO.
+   Valid values are ``AUTO``, ``SEQUENCE``, ``TABLE``, ``IDENTITY``,
+   ``UUID``, ``CUSTOM`` and ``NONE``.
+   If not specified, the default value is ``AUTO``.
 
 Example:
 
@@ -385,9 +395,9 @@ Example:
 This attribute has to be set on the entity-class to
 notify Doctrine that this entity has entity lifecycle callback
 attributes set on at least one of its methods. Using #[PostLoad],
-#[PrePersist], #[PostPersist], #[PreRemove], #[PostRemove], #[PreUpdate] or
-#[PostUpdate] without this marker attribute will make Doctrine
-ignore the callbacks.
+``#[PrePersist]``, ``#[PostPersist]``, ``#[PreRemove]``, ``#[PostRemove]``,
+``#[PreUpdate]`` or ``#[PostUpdate]`` without this marker attribute will
+make Doctrine ignore the callbacks.
 
 Example:
 
@@ -412,7 +422,7 @@ Example:
 
 Attribute is used on the entity-class level. It provides a hint to the SchemaTool to
 generate a database index on the specified table columns. It only
-has meaning in the SchemaTool schema generation context.
+has meaning in the ``SchemaTool`` schema generation context.
 
 Required attributes:
 
@@ -531,17 +541,17 @@ and in the Context of a :ref:`#[ManyToMany] <annref_manytomany>`. If this attrib
 are missing they will be computed considering the field's name and the current
 :doc:`naming strategy <namingstrategy>`.
 
-The #[InverseJoinColumn] is the same as #[JoinColumn] and is used in the context
-of a #[ManyToMany] attribute declaration to specifiy the details of the join table's
+The ``#[InverseJoinColumn]`` is the same as ``#[JoinColumn]`` and is used in the context
+of a ``#[ManyToMany]`` attribute declaration to specifiy the details of the join table's
 column information used for the join to the inverse entity.
 
 Optional attributes:
 
 -  **name**: Column name that holds the foreign key identifier for
-   this relation. In the context of @JoinTable it specifies the column
+   this relation. In the context of ``#[JoinTable]`` it specifies the column
    name in the join table.
 -  **referencedColumnName**: Name of the primary key identifier that
-   is used for joining of this relation. Defaults to *id*.
+   is used for joining of this relation. Defaults to ``id``.
 -  **unique**: Determines whether this relation is exclusive between the
    affected entities and should be enforced as such on the database
    constraint level. Defaults to false.
@@ -551,11 +561,11 @@ Optional attributes:
 -  **columnDefinition**: DDL SQL snippet that starts after the column
    name and specifies the complete (non-portable!) column definition.
    This attribute enables the use of advanced RMDBS features. Using
-   this attribute on @JoinColumn is necessary if you need slightly
+   this attribute on ``#[JoinColumn]`` is necessary if you need slightly
    different column definitions for joining columns, for example
    regarding NULL/NOT NULL defaults. However by default a
    "columnDefinition" attribute on :ref:`#[Column] <annref_column>` also sets
-   the related #[JoinColumn]'s columnDefinition. This is necessary to
+   the related ``#[JoinColumn]``'s columnDefinition. This is necessary to
    make foreign keys work.
 
 Example:
@@ -579,12 +589,12 @@ Using
 :ref:`#[ManytoMany] <annref_manytomany>` on the owning side of the relation
 requires to specify the #[JoinTable] attribute which describes the
 details of the database join table. If you do not specify
-#[JoinTable] on these relations reasonable mapping defaults apply
+``#[JoinTable]`` on these relations reasonable mapping defaults apply
 using the affected table and the column names.
 
-A notable difference to the annotation metadata support, #[JoinColumn]
-and #[InverseJoinColumn] are specified at the property level and are not
-nested within the #[JoinTable] attribute.
+A notable difference to the annotation metadata support, ``#[JoinColumn]``
+and ``#[InverseJoinColumn]`` are specified at the property level and are not
+nested within the ``#[JoinTable]`` attribute.
 
 Required attribute:
 
@@ -662,13 +672,13 @@ Optional attributes:
 -  **inversedBy**: The inversedBy attribute designates the field in the
    entity that is the inverse side of the relationship.
 -  **cascade**: Cascade Option
--  **fetch**: One of LAZY, EXTRA_LAZY or EAGER
+-  **fetch**: One of ``LAZY``, ``EXTRA_LAZY`` or ``EAGER``
 -  **indexBy**: Index the collection by a field on the target entity.
 
 .. note::
 
-    For ManyToMany bidirectional relationships either side may
-    be the owning side (the side that defines the @JoinTable and/or
+    For ``ManyToMany`` bidirectional relationships either side may
+    be the owning side (the side that defines the ``#[JoinTable]`` and/or
     does not make use of the mappedBy attribute, thus using a default
     join table).
 
@@ -703,8 +713,8 @@ persistent entity state and mapping information for its subclasses,
 but which is not itself an entity. This attribute is specified on
 the Class level and has no additional settings.
 
-The #[MappedSuperclass] attribute cannot be used in conjunction with
-#[Entity]. See the Inheritance Mapping section for
+The ``#[MappedSuperclass]`` attribute cannot be used in conjunction with
+``#[Entity]``. See the Inheritance Mapping section for
 :doc:`more details on the restrictions of mapped superclasses <inheritance-mapping>`.
 
 Optional attributes:
@@ -737,7 +747,7 @@ Example:
 #[OneToOne]
 ~~~~~~~~~~~
 
-The #[OneToOne] attribute works almost exactly as the
+The ``#[OneToOne]`` attribute works almost exactly as the
 :ref:`#[ManyToOne] <annref_manytoone>` with one additional option which can
 be specified. When no
 :ref:`#[JoinColumn] <annref_joincolumn>` is specified it defaults to using the target entity table and
@@ -825,8 +835,8 @@ Example:
     #[OrderBy(["name" => "ASC"])]
     private $groups;
 
-The key in OrderBy is only allowed to consist of
-unqualified, unquoted field names and of an optional ASC/DESC
+The key in ``OrderBy`` is only allowed to consist of
+unqualified, unquoted field names and of an optional ``ASC``/``DESC``
 positional statement. Multiple Fields are separated by a comma (,).
 The referenced field names have to exist on the ``targetEntity``
 class of the ``#[ManyToMany]`` or ``#[OneToMany]`` attribute.
@@ -1020,4 +1030,3 @@ Example:
     #[Column(type: "integer")]
     #[Version]
     protected $version;
-
