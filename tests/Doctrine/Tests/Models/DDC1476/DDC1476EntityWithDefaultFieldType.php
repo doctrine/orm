@@ -4,11 +4,13 @@ declare(strict_types=1);
 
 namespace Doctrine\Tests\Models\DDC1476;
 
+use Doctrine\ORM\Mapping as ORM;
 use Doctrine\ORM\Mapping\ClassMetadataInfo;
 
 /**
  * @Entity()
  */
+#[ORM\Entity]
 class DDC1476EntityWithDefaultFieldType
 {
     /**
@@ -17,12 +19,14 @@ class DDC1476EntityWithDefaultFieldType
      * @Column()
      * @GeneratedValue("NONE")
      */
+    #[ORM\Id, ORM\Column, ORM\GeneratedValue(strategy: "NONE")]
     protected $id;
 
     /**
      * @var string
-     * @column()
+     * @Column()
      */
+    #[ORM\Column]
     protected $name;
 
     public function getId(): int

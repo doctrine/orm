@@ -20,10 +20,15 @@
 
 namespace Doctrine\ORM\Mapping;
 
+use Attribute;
+use Doctrine\Common\Annotations\Annotation\NamedArgumentConstructor;
+
 /**
  * @Annotation
+ * @NamedArgumentConstructor()
  * @Target("ANNOTATION")
  */
+#[Attribute(Attribute::TARGET_CLASS | Attribute::IS_REPEATABLE)]
 final class UniqueConstraint implements Annotation
 {
     /** @var string */
@@ -32,6 +37,20 @@ final class UniqueConstraint implements Annotation
     /** @var array<string> */
     public $columns;
 
-    /** @var array */
+    /** @var array<string,mixed> */
     public $options;
+
+    /**
+     * @param array<string>       $columns
+     * @param array<string,mixed> $options
+     */
+    public function __construct(
+        ?string $name = null,
+        ?array $columns = null,
+        ?array $options = null
+    ) {
+        $this->name    = $name;
+        $this->columns = $columns;
+        $this->options = $options;
+    }
 }

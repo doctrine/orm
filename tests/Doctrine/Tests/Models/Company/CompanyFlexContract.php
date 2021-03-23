@@ -1,10 +1,9 @@
 <?php
 
-declare(strict_types=1);
-
 namespace Doctrine\Tests\Models\Company;
 
 use Doctrine\Common\Collections\Collection;
+use Doctrine\ORM\Mapping as ORM;
 use Doctrine\ORM\Mapping\ClassMetadataInfo;
 
 /**
@@ -50,6 +49,7 @@ use Doctrine\ORM\Mapping\ClassMetadataInfo;
  *      ),
  * })
  */
+#[ORM\Entity]
 class CompanyFlexContract extends CompanyContract
 {
     /**

@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 /*
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
  * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
@@ -21,45 +23,50 @@
 namespace Doctrine\ORM\Mapping;
 
 use Attribute;
-use Doctrine\Common\Annotations\Annotation\NamedArgumentConstructor;
 
-/**
- * @Annotation
- * @NamedArgumentConstructor()
- * @Target("PROPERTY")
- */
-#[Attribute(Attribute::TARGET_PROPERTY)]
-final class ManyToOne implements Annotation
+#[Attribute(Attribute::TARGET_PROPERTY | Attribute::IS_REPEATABLE)]
+final class InverseJoinColumn implements Annotation
 {
     /** @var string */
-    public $targetEntity;
-
-    /** @var array<string> */
-    public $cascade;
-
-    /**
-     * The fetching strategy to use for the association.
-     *
-     * @var string
-     * @Enum({"LAZY", "EAGER", "EXTRA_LAZY"})
-     */
-    public $fetch = 'LAZY';
+    public $name;
 
     /** @var string */
-    public $inversedBy;
+    public $referencedColumnName = 'id';
+
+    /** @var bool */
+    public $unique = false;
+
+    /** @var bool */
+    public $nullable = true;
+
+    /** @var mixed */
+    public $onDelete;
+
+    /** @var string */
+    public $columnDefinition;
 
     /**
-     * @param array<string> $cascade
+     * Field name used in non-object hydration (array/scalar).
+     *
+     * @var string
      */
+    public $fieldName;
+
     public function __construct(
-        string $targetEntity,
-        ?array $cascade = null,
-        string $fetch = 'LAZY',
-        ?string $inversedBy = null
+        ?string $name = null,
+        string $referencedColumnName = 'id',
+        bool $unique = false,
+        bool $nullable = true,
+        $onDelete = null,
+        ?string $columnDefinition = null,
+        ?string $fieldName = null
     ) {
-        $this->targetEntity = $targetEntity;
-        $this->cascade      = $cascade;
-        $this->fetch        = $fetch;
-        $this->inversedBy   = $inversedBy;
+        $this->name                 = $name;
+        $this->referencedColumnName = $referencedColumnName;
+        $this->unique               = $unique;
+        $this->nullable             = $nullable;
+        $this->onDelete             = $onDelete;
+        $this->columnDefinition     = $columnDefinition;
+        $this->fieldName            = $fieldName;
     }
 }

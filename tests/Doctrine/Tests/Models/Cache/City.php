@@ -6,6 +6,7 @@ namespace Doctrine\Tests\Models\Cache;
 
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
+use Doctrine\ORM\Mapping as ORM;
 use Doctrine\ORM\Mapping\ClassMetadataInfo;
 
 /**
@@ -13,6 +14,7 @@ use Doctrine\ORM\Mapping\ClassMetadataInfo;
  * @Entity
  * @Table("cache_city")
  */
+#[ORM\Entity, ORM\Table(name: "cache_city"), ORM\Cache]
 class City
 {
     /**
@@ -21,12 +23,14 @@ class City
      * @GeneratedValue
      * @Column(type="integer")
      */
+    #[ORM\Id, ORM\GeneratedValue, ORM\Column(type: "integer")]
     protected $id;
 
     /**
      * @var string
      * @Column(unique=true)
      */
+    #[ORM\Column(unique: true)]
     protected $name;
 
     /**
@@ -35,20 +39,26 @@ class City
      * @ManyToOne(targetEntity="State", inversedBy="cities")
      * @JoinColumn(name="state_id", referencedColumnName="id")
      */
+    #[ORM\Cache]
+    #[ORM\ManyToOne(targetEntity: "State", inversedBy: "citities")]
+    #[ORM\JoinColumn(name: "state_id", referencedColumnName: "id")]
     protected $state;
 
     /**
      * @var Collection<int, Travel>
      * @ManyToMany(targetEntity="Travel", mappedBy="visitedCities")
      */
+    #[ORM\ManyToMany(targetEntity: "Travel", mappedBy: "visitedCities")]
     public $travels;
 
-     /**
-      * @psalm-var Collection<int, Attraction>
-      * @Cache
-      * @OrderBy({"name" = "ASC"})
-      * @OneToMany(targetEntity="Attraction", mappedBy="city")
-      */
+    /**
+     * @psalm-var Collection<int, Attraction>
+     * @Cache
+     * @OrderBy({"name" = "ASC"})
+     * @OneToMany(targetEntity="Attraction", mappedBy="city")
+     */
+    #[ORM\Cache, ORM\OrderBy(["name" => "ASC"])]
+    #[ORM\OneToMany(targetEntity: "Attraction", mappedBy: "city")]
     public $attractions;
 
     public function __construct(string $name, ?State $state = null)

@@ -1,10 +1,9 @@
 <?php
 
-declare(strict_types=1);
-
 namespace Doctrine\Tests\Models\CMS;
 
 use Doctrine\ORM\Events;
+use Doctrine\ORM\Mapping as ORM;
 use Doctrine\ORM\Mapping\ClassMetadataInfo;
 
 /**
@@ -62,6 +61,9 @@ use Doctrine\ORM\Mapping\ClassMetadataInfo;
  * })
  * @EntityListeners({"CmsAddressListener"})
  */
+#[ORM\Entity]
+#[ORM\Table(name: "cms_addresses")]
+#[ORM\EntityListeners(["CmsAddressListener"])]
 class CmsAddress
 {
     /**
@@ -69,6 +71,7 @@ class CmsAddress
      * @Column(type="integer")
      * @Id @GeneratedValue
      */
+    #[ORM\Id, ORM\GeneratedValue, ORM\Column(type: "integer")]
     public $id;
 
     /**
