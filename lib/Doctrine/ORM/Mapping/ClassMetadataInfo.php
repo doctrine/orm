@@ -420,7 +420,23 @@ class ClassMetadataInfo implements ClassMetadata
      * - <b>'unique'</b> (string, optional, schema-only)
      * Whether a unique constraint should be generated for the column.
      *
-     * @psalm-var array<string, array{type: string, fieldName: string, columnName: string, inherited: class-string}>
+     * @psalm-var array<string, array{
+     *      type: string,
+     *      fieldName: string,
+     *      columnName?: string,
+     *      length?: int,
+     *      id?: bool,
+     *      nullable?: bool,
+     *      columnDefinition?: string,
+     *      precision?: int,
+     *      scale?: int,
+     *      unique?: string,
+     *      inherited?: class-string,
+     *      originalClass?: class-string,
+     *      originalField?: string,
+     *      quoted?: bool,
+     *      requireSQLConversion?: bool,
+     * }>
      */
     public $fieldMappings = [];
 
