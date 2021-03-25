@@ -441,7 +441,7 @@ class DefaultQueryCache implements QueryCache
             return null;
         }
 
-        if (empty($path)) {
+        if ($path === []) {
             return $value;
         }
 

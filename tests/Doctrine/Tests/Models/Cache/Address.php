@@ -19,15 +19,19 @@ class Address
     public $id;
 
     /**
+     * @var Person
      * @JoinColumn(name="person_id", referencedColumnName="id")
      * @OneToOne(targetEntity="Person", inversedBy="address")
      */
     public $person;
 
-    /** @Column */
+    /**
+     * @var string
+     * @Column
+     */
     public $location;
 
-    public function __construct($location)
+    public function __construct(string $location)
     {
         $this->location = $location;
     }

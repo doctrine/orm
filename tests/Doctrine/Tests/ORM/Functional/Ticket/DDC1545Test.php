@@ -13,10 +13,13 @@ use Doctrine\Tests\OrmFunctionalTestCase;
  */
 class DDC1545Test extends OrmFunctionalTestCase
 {
+    /** @var int */
     private $articleId;
 
+    /** @var int */
     private $userId;
 
+    /** @var int */
     private $user2Id;
 
     protected function setUp(): void
@@ -25,7 +28,7 @@ class DDC1545Test extends OrmFunctionalTestCase
         parent::setUp();
     }
 
-    private function initDb($link): void
+    private function initDb(bool $link): void
     {
         $article        = new CmsArticle();
         $article->topic = 'foo';

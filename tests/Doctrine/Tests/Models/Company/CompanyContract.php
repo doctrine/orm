@@ -1,12 +1,11 @@
 <?php
 
-declare(strict_types=1);
-
 namespace Doctrine\Tests\Models\Company;
 
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Events;
+use Doctrine\ORM\Mapping as ORM;
 use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\Mapping\ClassMetadataInfo;
 
@@ -62,6 +61,11 @@ use Doctrine\ORM\Mapping\ClassMetadataInfo;
  *      ),
  * })
  */
+#[ORM\Entity, ORM\Table(name: "company_contracts")]
+#[ORM\InheritanceType("SINGLE_TABLE")]
+#[ORM\DiscriminatorColumn(name: "discr", type: "string")]
+#[ORM\DiscriminatorMap(["fix" => "CompanyFixContract", "flexible" => "CompanyFlexContract", "flexultra" => "CompanyFlexUltraContract"])]
+#[ORM\EntityListeners(["CompanyContractListener"])]
 abstract class CompanyContract
 {
     /**
@@ -70,6 +74,7 @@ abstract class CompanyContract
      * @column(type="integer")
      * @GeneratedValue
      */
+    #[ORM\Id, ORM\Column(type: "integer"), ORM\GeneratedValue]
     private $id;
 
     /**

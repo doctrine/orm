@@ -65,6 +65,7 @@ class DDC2175Entity
     public $field;
 
     /**
+     * @var int
      * @Version
      * @Column(type="integer")
      */

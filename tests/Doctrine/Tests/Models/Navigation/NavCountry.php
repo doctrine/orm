@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Doctrine\Tests\Models\Navigation;
 
+use Doctrine\Common\Collections\Collection;
+
 /**
  * @Entity
  * @Table(name="navigation_countries")
@@ -11,6 +13,7 @@ namespace Doctrine\Tests\Models\Navigation;
 class NavCountry
 {
     /**
+     * @var int
      * @Id
      * @Column(type="integer")
      * @generatedValue
@@ -23,20 +26,23 @@ class NavCountry
      */
     private $name;
 
-    /** @OneToMany(targetEntity="NavPointOfInterest", mappedBy="country") */
+    /**
+     * @psalm-var Collection<int, NavPointOfInterest>
+     * @OneToMany(targetEntity="NavPointOfInterest", mappedBy="country")
+     */
     private $pois;
 
-    public function __construct($name)
+    public function __construct(string $name)
     {
         $this->name = $name;
     }
 
-    public function getId()
+    public function getId(): int
     {
         return $this->id;
     }
 
-    public function getName()
+    public function getName(): string
     {
         return $this->name;
     }

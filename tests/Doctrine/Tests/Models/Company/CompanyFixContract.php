@@ -1,14 +1,14 @@
 <?php
 
-declare(strict_types=1);
-
 namespace Doctrine\Tests\Models\Company;
 
+use Doctrine\ORM\Mapping as ORM;
 use Doctrine\ORM\Mapping\ClassMetadataInfo;
 
 /**
  * @Entity
  */
+#[ORM\Entity]
 class CompanyFixContract extends CompanyContract
 {
     /**
@@ -22,7 +22,7 @@ class CompanyFixContract extends CompanyContract
         return $this->fixPrice;
     }
 
-    public function getFixPrice()
+    public function getFixPrice(): int
     {
         return $this->fixPrice;
     }

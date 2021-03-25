@@ -50,7 +50,7 @@ class EntityRepositoryTest extends OrmFunctionalTestCase
         parent::tearDown();
     }
 
-    public function loadFixture()
+    public function loadFixture(): int
     {
         $user           = new CmsUser();
         $user->name     = 'Roman';
@@ -90,7 +90,10 @@ class EntityRepositoryTest extends OrmFunctionalTestCase
         return $user1Id;
     }
 
-    public function loadAssociatedFixture()
+    /**
+     * @psalm-return array{int, int}
+     */
+    public function loadAssociatedFixture(): array
     {
         $address          = new CmsAddress();
         $address->city    = 'Berlin';
@@ -112,7 +115,10 @@ class EntityRepositoryTest extends OrmFunctionalTestCase
         return [$user->id, $address->id];
     }
 
-    public function loadFixtureUserEmail()
+    /**
+     * @psalm-return list<CmsUser>
+     */
+    public function loadFixtureUserEmail(): array
     {
         $user1 = new CmsUser();
         $user2 = new CmsUser();
@@ -156,7 +162,7 @@ class EntityRepositoryTest extends OrmFunctionalTestCase
         return [$user1, $user2, $user3];
     }
 
-    public function buildUser($name, $username, $status, $address)
+    public function buildUser($name, $username, $status, $address): CmsUser
     {
         $user           = new CmsUser();
         $user->name     = $name;
@@ -170,7 +176,7 @@ class EntityRepositoryTest extends OrmFunctionalTestCase
         return $user;
     }
 
-    public function buildAddress($country, $city, $street, $zip)
+    public function buildAddress($country, $city, $street, $zip): CmsAddress
     {
         $address          = new CmsAddress();
         $address->country = $country;

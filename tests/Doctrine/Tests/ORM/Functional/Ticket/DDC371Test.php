@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Doctrine\Tests\ORM\Functional\Ticket;
 
 use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Proxy\Proxy;
 use Doctrine\ORM\Query;
 use Doctrine\Tests\OrmFunctionalTestCase;
@@ -95,6 +96,10 @@ class DDC371Parent
      * @Column(type="string")
      */
     public $data;
-    /** @OneToMany(targetEntity="DDC371Child", mappedBy="parent") */
+
+    /**
+     * @psalm-var Collection<int, DDC371Child>
+     * @OneToMany(targetEntity="DDC371Child", mappedBy="parent")
+     */
     public $children;
 }

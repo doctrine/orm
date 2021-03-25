@@ -14,6 +14,7 @@ use DateTime;
 class Flight
 {
     /**
+     * @var City
      * @Id
      * @Cache
      * @ManyToOne(targetEntity="City")
@@ -22,6 +23,7 @@ class Flight
     protected $leavingFrom;
 
     /**
+     * @var City
      * @Id
      * @Cache
      * @ManyToOne(targetEntity="City")
@@ -29,7 +31,10 @@ class Flight
      */
     protected $goingTo;
 
-    /** @Column(type="date") */
+    /**
+     * @var DateTime
+     * @Column(type="date")
+     */
     protected $departure;
 
     public function __construct(City $leavingFrom, City $goingTo)
@@ -39,22 +44,22 @@ class Flight
         $this->departure   = new DateTime();
     }
 
-    public function getLeavingFrom()
+    public function getLeavingFrom(): City
     {
         return $this->leavingFrom;
     }
 
-    public function getGoingTo()
+    public function getGoingTo(): City
     {
         return $this->goingTo;
     }
 
-    public function getDeparture()
+    public function getDeparture(): DateTime
     {
         return $this->departure;
     }
 
-    public function setDeparture($departure): void
+    public function setDeparture(DateTime $departure): void
     {
         $this->departure = $departure;
     }

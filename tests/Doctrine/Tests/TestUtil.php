@@ -55,6 +55,9 @@ class TestUtil
         return DriverManager::getConnection(self::getParamsForTemporaryConnection());
     }
 
+    /**
+     * @psalm-return array<string, mixed>
+     */
     private static function getConnectionParams()
     {
         if (self::hasRequiredConnectionParams()) {
@@ -64,7 +67,7 @@ class TestUtil
         return self::getFallbackConnectionParams();
     }
 
-    private static function hasRequiredConnectionParams()
+    private static function hasRequiredConnectionParams(): bool
     {
         return isset(
             $GLOBALS['db_type'],
@@ -83,6 +86,9 @@ class TestUtil
         );
     }
 
+    /**
+     * @psalm-return array<string, mixed>
+     */
     private static function getSpecifiedConnectionParams()
     {
         $realDbParams = self::getParamsForMainConnection();
@@ -121,6 +127,9 @@ class TestUtil
         return $realDbParams;
     }
 
+    /**
+     * @psalm-return array<string, mixed>
+     */
     private static function getFallbackConnectionParams()
     {
         $params = [
@@ -147,6 +156,9 @@ class TestUtil
         }
     }
 
+    /**
+     * @psalm-return array<string, mixed>
+     */
     private static function getParamsForTemporaryConnection()
     {
         $connectionParams = [
@@ -173,6 +185,9 @@ class TestUtil
         return $connectionParams;
     }
 
+    /**
+     * @psalm-return array<string, mixed>
+     */
     private static function getParamsForMainConnection()
     {
         $connectionParams = [

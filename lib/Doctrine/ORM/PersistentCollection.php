@@ -45,6 +45,11 @@ use function spl_object_hash;
  * entities from the collection, only the links in the relation table are removed (on flush).
  * Similarly, if you remove entities from a collection that is part of a one-many
  * mapping this will only result in the nulling out of the foreign keys on flush.
+ *
+ * @phpstan-template TKey
+ * @psalm-template TKey of array-key
+ * @psalm-template T
+ * @template-implements Collection<TKey,T>
  */
 final class PersistentCollection extends AbstractLazyCollection implements Selectable
 {
@@ -52,7 +57,7 @@ final class PersistentCollection extends AbstractLazyCollection implements Selec
      * A snapshot of the collection at the moment it was fetched from the database.
      * This is used to create a diff of the collection at commit time.
      *
-     * @var array
+     * @psalm-var array<string|int, mixed>
      */
     private $snapshot = [];
 
@@ -67,7 +72,7 @@ final class PersistentCollection extends AbstractLazyCollection implements Selec
      * The association mapping the collection belongs to.
      * This is currently either a OneToManyMapping or a ManyToManyMapping.
      *
-     * @var array
+     * @psalm-var array<string, mixed>
      */
     private $association;
 
@@ -104,9 +109,10 @@ final class PersistentCollection extends AbstractLazyCollection implements Selec
     /**
      * Creates a new persistent collection.
      *
-     * @param EntityManagerInterface $em         The EntityManager the collection will be associated with.
-     * @param ClassMetadata          $class      The class descriptor of the entity type of this collection.
-     * @param Collection             $collection The collection elements.
+     * @param EntityManagerInterface $em    The EntityManager the collection will be associated with.
+     * @param ClassMetadata          $class The class descriptor of the entity type of this collection.
+     *
+     * @psalm-param Collection<TKey, T> $collection The collection elements.
      */
     public function __construct(EntityManagerInterface $em, $class, Collection $collection)
     {
@@ -122,9 +128,10 @@ final class PersistentCollection extends AbstractLazyCollection implements Selec
      * describes the association between the owner and the elements of the collection.
      *
      * @param object $entity
-     * @param array  $assoc
      *
      * @return void
+     *
+     * @psalm-param array<string, mixed> $assoc
      */
     public function setOwner($entity, array $assoc)
     {
@@ -239,7 +246,7 @@ final class PersistentCollection extends AbstractLazyCollection implements Selec
      * INTERNAL:
      * Returns the last snapshot of the elements in the collection.
      *
-     * @return array The last snapshot of the elements.
+     * @psalm-return array<string|int, mixed> The last snapshot of the elements.
      */
     public function getSnapshot()
     {
@@ -250,14 +257,14 @@ final class PersistentCollection extends AbstractLazyCollection implements Selec
      * INTERNAL:
      * getDeleteDiff
      *
-     * @return array
+     * @return mixed[]
      */
     public function getDeleteDiff()
     {
         return array_udiff_assoc(
             $this->snapshot,
             $this->collection->toArray(),
-            static function ($a, $b) {
+            static function ($a, $b): int {
                 return $a === $b ? 0 : 1;
             }
         );
@@ -267,14 +274,14 @@ final class PersistentCollection extends AbstractLazyCollection implements Selec
      * INTERNAL:
      * getInsertDiff
      *
-     * @return array
+     * @return mixed[]
      */
     public function getInsertDiff()
     {
         return array_udiff_assoc(
             $this->collection->toArray(),
             $this->snapshot,
-            static function ($a, $b) {
+            static function ($a, $b): int {
                 return $a === $b ? 0 : 1;
             }
         );
@@ -283,7 +290,7 @@ final class PersistentCollection extends AbstractLazyCollection implements Selec
     /**
      * INTERNAL: Gets the association mapping of the collection.
      *
-     * @return array
+     * @psalm-return array<string, mixed>
      */
     public function getMapping()
     {
@@ -616,7 +623,7 @@ final class PersistentCollection extends AbstractLazyCollection implements Selec
      * @param int      $offset
      * @param int|null $length
      *
-     * @return array
+     * @psalm-return array<TKey,T>
      */
     public function slice($offset, $length = null)
     {
@@ -660,7 +667,7 @@ final class PersistentCollection extends AbstractLazyCollection implements Selec
      * Selects all elements from a selectable that match the expression and
      * return a new collection containing these elements.
      *
-     * @return Collection
+     * @return Collection<TKey, T>
      *
      * @throws RuntimeException
      */
@@ -699,7 +706,7 @@ final class PersistentCollection extends AbstractLazyCollection implements Selec
     /**
      * Retrieves the wrapped Collection instance.
      *
-     * @return Collection
+     * @return Collection<TKey, T>
      */
     public function unwrap()
     {

@@ -10,21 +10,24 @@ namespace Doctrine\Tests\Models\Cache;
  */
 class AttractionLocationInfo extends AttractionInfo
 {
-    /** @Column(unique=true) */
+    /**
+     * @var string
+     * @Column(unique=true)
+     */
     protected $address;
 
-    public function __construct($address, Attraction $attraction)
+    public function __construct(string $address, Attraction $attraction)
     {
         $this->setAttraction($attraction);
         $this->setAddress($address);
     }
 
-    public function getAddress()
+    public function getAddress(): string
     {
         return $this->address;
     }
 
-    public function setAddress($address): void
+    public function setAddress(string $address): void
     {
         $this->address = $address;
     }

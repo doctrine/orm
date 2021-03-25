@@ -10,25 +10,42 @@ namespace Doctrine\Tests\Models\DDC964;
 class DDC964Address
 {
     /**
+     * @var int
      * @GeneratedValue
      * @Id @Column(type="integer")
      */
     private $id;
 
-    /** @Column */
+    /**
+     * @var string|null
+     * @Column
+     */
     private $country;
 
-    /** @Column */
+    /**
+     * @var string|null
+     * @Column
+     */
     private $zip;
 
-    /** @Column */
+    /**
+     * @var string|null
+     * @Column
+     */
     private $city;
 
-    /** @Column */
+    /**
+     * @var string|null
+     * @Column
+     */
     private $street;
 
-    public function __construct(?string $zip = null, ?string $country = null, ?string $city = null, ?string $street = null)
-    {
+    public function __construct(
+        ?string $zip = null,
+        ?string $country = null,
+        ?string $city = null,
+        ?string $street = null
+    ) {
         $this->zip     = $zip;
         $this->country = $country;
         $this->city    = $city;
@@ -40,7 +57,7 @@ class DDC964Address
         return $this->id;
     }
 
-    public function getCountry(): string
+    public function getCountry(): ?string
     {
         return $this->country;
     }
@@ -50,7 +67,7 @@ class DDC964Address
         $this->country = $country;
     }
 
-    public function getZip(): string
+    public function getZip(): ?string
     {
         return $this->zip;
     }
@@ -60,7 +77,7 @@ class DDC964Address
         $this->zip = $zip;
     }
 
-    public function getCity(): string
+    public function getCity(): ?string
     {
         return $this->city;
     }
@@ -70,7 +87,7 @@ class DDC964Address
         $this->city = $city;
     }
 
-    public function getStreet(): string
+    public function getStreet(): ?string
     {
         return $this->street;
     }

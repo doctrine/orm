@@ -31,7 +31,8 @@ abstract class AbstractRegionTest extends OrmFunctionalTestCase
 
     abstract protected function createRegion(): Region;
 
-    public static function dataProviderCacheValues()
+    /** @psalm-return list<array{CacheKeyMock, CacheEntryMock}> */
+    public static function dataProviderCacheValues(): array
     {
         return [
             [new CacheKeyMock('key.1'), new CacheEntryMock(['id' => 1, 'name' => 'bar'])],

@@ -96,7 +96,8 @@ class SimpleObjectHydrator extends AbstractHydrator
             $discrColumnName = $this->_platform->getSQLResultCasing($this->class->discriminatorColumn['name']);
 
             // Find mapped discriminator column from the result set.
-            if ($metaMappingDiscrColumnName = array_search($discrColumnName, $this->_rsm->metaMappings)) {
+            $metaMappingDiscrColumnName = array_search($discrColumnName, $this->_rsm->metaMappings);
+            if ($metaMappingDiscrColumnName) {
                 $discrColumnName = $metaMappingDiscrColumnName;
             }
 

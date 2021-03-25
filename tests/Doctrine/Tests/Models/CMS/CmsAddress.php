@@ -1,10 +1,9 @@
 <?php
 
-declare(strict_types=1);
-
 namespace Doctrine\Tests\Models\CMS;
 
 use Doctrine\ORM\Events;
+use Doctrine\ORM\Mapping as ORM;
 use Doctrine\ORM\Mapping\ClassMetadataInfo;
 
 /**
@@ -62,25 +61,41 @@ use Doctrine\ORM\Mapping\ClassMetadataInfo;
  * })
  * @EntityListeners({"CmsAddressListener"})
  */
+#[ORM\Entity]
+#[ORM\Table(name: "cms_addresses")]
+#[ORM\EntityListeners(["CmsAddressListener"])]
 class CmsAddress
 {
     /**
+     * @var int
      * @Column(type="integer")
      * @Id @GeneratedValue
      */
+    #[ORM\Id, ORM\GeneratedValue, ORM\Column(type: "integer")]
     public $id;
 
-    /** @Column(length=50) */
+    /**
+     * @var string
+     * @Column(length=50)
+     */
     public $country;
 
-    /** @Column(length=50) */
+    /**
+     * @var string
+     * @Column(length=50)
+     */
     public $zip;
 
-    /** @Column(length=50) */
+    /**
+     * @var string
+     * @Column(length=50)
+     */
     public $city;
 
     /**
      * Testfield for Schema Updating Tests.
+     *
+     * @var string
      */
     public $street;
 
@@ -91,27 +106,27 @@ class CmsAddress
      */
     public $user;
 
-    public function getId()
+    public function getId(): int
     {
         return $this->id;
     }
 
-    public function getUser()
+    public function getUser(): CmsUser
     {
         return $this->user;
     }
 
-    public function getCountry()
+    public function getCountry(): string
     {
         return $this->country;
     }
 
-    public function getZipCode()
+    public function getZipCode(): string
     {
         return $this->zip;
     }
 
-    public function getCity()
+    public function getCity(): string
     {
         return $this->city;
     }

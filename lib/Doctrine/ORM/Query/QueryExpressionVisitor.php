@@ -69,7 +69,7 @@ class QueryExpressionVisitor extends ExpressionVisitor
      * Gets bound parameters.
      * Filled after {@link dispach()}.
      *
-     * @return Collection
+     * @return Collection<int, mixed>
      */
     public function getParameters()
     {

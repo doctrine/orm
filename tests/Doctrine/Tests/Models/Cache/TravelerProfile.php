@@ -19,41 +19,45 @@ class TravelerProfile
      */
     protected $id;
 
-    /** @Column(unique=true) */
+    /**
+     * @var string
+     * @Column(unique=true)
+     */
     private $name;
 
     /**
+     * @var TravelerProfileInfo
      * @OneToOne(targetEntity="TravelerProfileInfo", mappedBy="profile")
      * @Cache()
      */
     private $info;
 
-    public function __construct($name)
+    public function __construct(string $name)
     {
         $this->name = $name;
     }
 
-    public function getId()
+    public function getId(): int
     {
         return $this->id;
     }
 
-    public function setId($id): void
+    public function setId(int $id): void
     {
         $this->id = $id;
     }
 
-    public function getName()
+    public function getName(): string
     {
         return $this->name;
     }
 
-    public function setName($nae): void
+    public function setName(string $nae): void
     {
         $this->name = $nae;
     }
 
-    public function getInfo()
+    public function getInfo(): TravelerProfileInfo
     {
         return $this->info;
     }

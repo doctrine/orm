@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Doctrine\Tests\Models\Pagination;
 
+use Doctrine\Common\Collections\Collection;
+
 /**
  * Company
  *
@@ -37,6 +39,9 @@ class Company
      */
     public $logo;
 
-    /** @OneToMany(targetEntity="Department", mappedBy="company", cascade={"persist"}, orphanRemoval=true) */
+    /**
+     * @psalm-var Collection<int, Department>
+     * @OneToMany(targetEntity="Department", mappedBy="company", cascade={"persist"}, orphanRemoval=true)
+     */
     public $departments;
 }

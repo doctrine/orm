@@ -39,7 +39,7 @@ class ReferenceProxyTest extends OrmFunctionalTestCase
         );
     }
 
-    public function createProduct()
+    public function createProduct(): int
     {
         $product = new ECommerceProduct();
         $product->setName('Doctrine Cookbook');
@@ -51,7 +51,7 @@ class ReferenceProxyTest extends OrmFunctionalTestCase
         return $product->getId();
     }
 
-    public function createAuction()
+    public function createAuction(): int
     {
         $event = new CompanyAuction();
         $event->setData('Doctrine Cookbook');

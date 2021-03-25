@@ -30,7 +30,7 @@ class RoutingRouteBooking
      */
     public $passengerName = null;
 
-    public function getPassengerName()
+    public function getPassengerName(): string
     {
         return $this->passengerName;
     }

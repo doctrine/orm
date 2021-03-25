@@ -48,7 +48,10 @@ class DDC3160Test extends OrmFunctionalTestCase
 
 class DDC3160OnFlushListener
 {
+    /** @var int */
     public $inserts = 0;
+
+    /** @var int */
     public $updates = 0;
 
     public function onFlush(OnFlushEventArgs $args): void

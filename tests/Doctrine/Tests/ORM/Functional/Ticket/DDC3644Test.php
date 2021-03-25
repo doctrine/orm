@@ -150,10 +150,16 @@ class DDC3644User
      */
     public $name;
 
-    /** @OneToMany(targetEntity="DDC3644Address", mappedBy="user", orphanRemoval=true) */
+    /**
+     * @psalm-var Collection<int, DDC3644Address>
+     * @OneToMany(targetEntity="DDC3644Address", mappedBy="user", orphanRemoval=true)
+     */
     public $addresses = [];
 
-    /** @OneToMany(targetEntity="DDC3644Pet", mappedBy="owner", orphanRemoval=true) */
+    /**
+     * @psalm-var Collection<int, DDC3644Pet>
+     * @OneToMany(targetEntity="DDC3644Pet", mappedBy="owner", orphanRemoval=true)
+     */
     public $pets = [];
 
     public function setAddresses(Collection $addresses): void

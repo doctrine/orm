@@ -23,7 +23,7 @@ class ForumEntry
      */
     public $topic;
 
-    public function &getTopicByReference()
+    public function &getTopicByReference(): string
     {
         return $this->topic;
     }

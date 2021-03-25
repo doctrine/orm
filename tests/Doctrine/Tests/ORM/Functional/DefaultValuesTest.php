@@ -118,7 +118,7 @@ class DefaultValueUser
      */
     public $address;
 
-    public function getId()
+    public function getId(): int
     {
         return $this->id;
     }
@@ -132,6 +132,7 @@ class DefaultValueUser
 class DefaultValueAddress
 {
     /**
+     * @var int
      * @Column(type="integer")
      * @Id @GeneratedValue(strategy="AUTO")
      */
@@ -156,6 +157,7 @@ class DefaultValueAddress
     public $city;
 
     /**
+     * @var string
      * Testfield for Schema Updating Tests.
      */
     public $street;
@@ -167,7 +169,7 @@ class DefaultValueAddress
      */
     public $user;
 
-    public function getUser()
+    public function getUser(): DefaultValueUser
     {
         return $this->user;
     }

@@ -15,7 +15,10 @@ use Doctrine\Tests\OrmFunctionalTestCase;
  */
 class OneToOneBidirectionalAssociationTest extends OrmFunctionalTestCase
 {
+    /** @var ECommerceCustomer */
     private $customer;
+
+    /** @var ECommerceCart */
     private $cart;
 
     protected function setUp(): void
@@ -59,7 +62,7 @@ class OneToOneBidirectionalAssociationTest extends OrmFunctionalTestCase
 
     public function testEagerLoad(): void
     {
-        $this->_createFixture();
+        $this->createFixture();
 
         $query    = $this->_em->createQuery('select c, ca from Doctrine\Tests\Models\ECommerce\ECommerceCustomer c join c.cart ca');
         $result   = $query->getResult();
@@ -71,7 +74,7 @@ class OneToOneBidirectionalAssociationTest extends OrmFunctionalTestCase
 
     public function testLazyLoadsObjectsOnTheOwningSide(): void
     {
-        $this->_createFixture();
+        $this->createFixture();
         $metadata                                               = $this->_em->getClassMetadata(ECommerceCart::class);
         $metadata->associationMappings['customer']['fetchMode'] = ClassMetadata::FETCH_LAZY;
 
@@ -85,7 +88,7 @@ class OneToOneBidirectionalAssociationTest extends OrmFunctionalTestCase
 
     public function testInverseSideIsNeverLazy(): void
     {
-        $this->_createFixture();
+        $this->createFixture();
         $metadata                                         = $this->_em->getClassMetadata(ECommerceCustomer::class);
         $metadata->associationMappings['mentor']['fetch'] = ClassMetadata::FETCH_EAGER;
 
@@ -134,7 +137,7 @@ class OneToOneBidirectionalAssociationTest extends OrmFunctionalTestCase
         $this->assertEquals('Roman', $cart3->getCustomer()->getName());
     }
 
-    protected function _createFixture(): void
+    protected function createFixture(): void
     {
         $customer = new ECommerceCustomer();
         $customer->setName('Giorgio');

@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Doctrine\Tests\Models\Forum;
 
+use Doctrine\Common\Collections\Collection;
+
 /**
  * @Entity
  * @Table(name="forum_categories")
@@ -11,24 +13,31 @@ namespace Doctrine\Tests\Models\Forum;
 class ForumCategory
 {
     /**
+     * @var int
      * @Column(type="integer")
      * @Id
      */
     private $id;
+
     /**
      * @var int
      * @Column(type="integer")
      */
     public $position;
+
     /**
      * @var string
      * @Column(type="string", length=255)
      */
     public $name;
-    /** @OneToMany(targetEntity="ForumBoard", mappedBy="category") */
+
+    /**
+     * @psalm-var Collection<int, ForumBoard>
+     * @OneToMany(targetEntity="ForumBoard", mappedBy="category")
+     */
     public $boards;
 
-    public function getId()
+    public function getId(): int
     {
         return $this->id;
     }

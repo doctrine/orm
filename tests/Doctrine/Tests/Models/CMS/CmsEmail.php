@@ -13,12 +13,16 @@ namespace Doctrine\Tests\Models\CMS;
 class CmsEmail
 {
     /**
+     * @var int
      * @Column(type="integer")
      * @Id @GeneratedValue
      */
     public $id;
 
-    /** @Column(length=250) */
+    /**
+     * @var string
+     * @Column(length=250)
+     */
     public $email;
 
     /**
@@ -27,22 +31,22 @@ class CmsEmail
      */
     public $user;
 
-    public function getId()
+    public function getId(): int
     {
         return $this->id;
     }
 
-    public function getEmail()
+    public function getEmail(): string
     {
         return $this->email;
     }
 
-    public function setEmail($email): void
+    public function setEmail(string $email): void
     {
         $this->email = $email;
     }
 
-    public function getUser()
+    public function getUser(): CmsUser
     {
         return $this->user;
     }

@@ -33,7 +33,6 @@ use function get_class;
 use function getenv;
 use function implode;
 use function in_array;
-use function is_null;
 use function is_object;
 use function realpath;
 use function sprintf;
@@ -67,7 +66,7 @@ abstract class OrmFunctionalTestCase extends OrmTestCase
      *
      * @var \Doctrine\DBAL\Connection|null
      */
-    protected static $_sharedConn;
+    protected static $sharedConn;
 
     /** @var EntityManager */
     protected $_em;
@@ -97,7 +96,7 @@ abstract class OrmFunctionalTestCase extends OrmTestCase
      *
      * @var array
      */
-    protected static $_tablesCreated = [];
+    protected static $tablesCreated = [];
 
     /**
      * Array of entity class name to their tables that were created.
@@ -111,7 +110,7 @@ abstract class OrmFunctionalTestCase extends OrmTestCase
      *
      * @var array
      */
-    protected static $_modelSets = [
+    protected static $modelSets = [
         'cms' => [
             Models\CMS\CmsUser::class,
             Models\CMS\CmsPhonenumber::class,
@@ -340,7 +339,7 @@ abstract class OrmFunctionalTestCase extends OrmTestCase
      */
     protected function tearDown(): void
     {
-        $conn = static::$_sharedConn;
+        $conn = static::$sharedConn;
 
         // In case test is skipped, tearDown is called, but no setup may have run
         if (! $conn) {
@@ -652,32 +651,32 @@ abstract class OrmFunctionalTestCase extends OrmTestCase
     {
         $this->setUpDBALTypes();
 
-        if (! isset(static::$_sharedConn)) {
-            static::$_sharedConn = TestUtil::getConnection();
+        if (! isset(static::$sharedConn)) {
+            static::$sharedConn = TestUtil::getConnection();
         }
 
         if (isset($GLOBALS['DOCTRINE_MARK_SQL_LOGS'])) {
-            if (in_array(static::$_sharedConn->getDatabasePlatform()->getName(), ['mysql', 'postgresql'])) {
-                static::$_sharedConn->executeQuery('SELECT 1 /*' . static::class . '*/');
-            } elseif (static::$_sharedConn->getDatabasePlatform()->getName() === 'oracle') {
-                static::$_sharedConn->executeQuery('SELECT 1 /*' . static::class . '*/ FROM dual');
+            if (in_array(static::$sharedConn->getDatabasePlatform()->getName(), ['mysql', 'postgresql'])) {
+                static::$sharedConn->executeQuery('SELECT 1 /*' . static::class . '*/');
+            } elseif (static::$sharedConn->getDatabasePlatform()->getName() === 'oracle') {
+                static::$sharedConn->executeQuery('SELECT 1 /*' . static::class . '*/ FROM dual');
             }
         }
 
         if (! $this->_em) {
-            $this->_em         = $this->_getEntityManager();
+            $this->_em         = $this->getEntityManager();
             $this->_schemaTool = new SchemaTool($this->_em);
         }
 
         $classes = [];
 
         foreach ($this->_usedModelSets as $setName => $bool) {
-            if (! isset(static::$_tablesCreated[$setName])) {
-                foreach (static::$_modelSets[$setName] as $className) {
+            if (! isset(static::$tablesCreated[$setName])) {
+                foreach (static::$modelSets[$setName] as $className) {
                     $classes[] = $this->_em->getClassMetadata($className);
                 }
 
-                static::$_tablesCreated[$setName] = true;
+                static::$tablesCreated[$setName] = true;
             }
         }
 
@@ -693,14 +692,14 @@ abstract class OrmFunctionalTestCase extends OrmTestCase
      *
      * @throws ORMException
      */
-    protected function _getEntityManager(
+    protected function getEntityManager(
         ?Connection $connection = null,
         ?MappingDriver $mappingDriver = null
     ): EntityManager {
         // NOTE: Functional tests use their own shared metadata cache, because
         // the actual database platform used during execution has effect on some
         // metadata mapping behaviors (like the choice of the ID generation).
-        if (is_null(self::$_metadataCacheImpl)) {
+        if (self::$_metadataCacheImpl === null) {
             if (isset($GLOBALS['DOCTRINE_CACHE_IMPL'])) {
                 self::$_metadataCacheImpl = new $GLOBALS['DOCTRINE_CACHE_IMPL']();
             } else {
@@ -708,7 +707,7 @@ abstract class OrmFunctionalTestCase extends OrmTestCase
             }
         }
 
-        if (is_null(self::$_queryCacheImpl)) {
+        if (self::$_queryCacheImpl === null) {
             self::$_queryCacheImpl = new ArrayCache();
         }
 
@@ -758,7 +757,7 @@ abstract class OrmFunctionalTestCase extends OrmTestCase
             )
         );
 
-        $conn = $connection ?: static::$_sharedConn;
+        $conn = $connection ?: static::$sharedConn;
         $conn->getConfiguration()->setSQLLogger($this->_sqlLoggerStack);
 
         // get rid of more global state
@@ -831,9 +830,13 @@ abstract class OrmFunctionalTestCase extends OrmTestCase
         throw $e;
     }
 
-    public function assertSQLEquals($expectedSql, $actualSql)
+    public function assertSQLEquals(string $expectedSql, string $actualSql): void
     {
-        return $this->assertEquals(strtolower($expectedSql), strtolower($actualSql), 'Lowercase comparison of SQL statements failed.');
+        $this->assertEquals(
+            strtolower($expectedSql),
+            strtolower($actualSql),
+            'Lowercase comparison of SQL statements failed.'
+        );
     }
 
     /**

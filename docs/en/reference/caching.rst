@@ -43,7 +43,7 @@ these methods.
 
 This documentation does not cover every single cache driver included
 with Doctrine. For an up-to-date-list, see the
-`cache directory on GitHub <https://github.com/doctrine/cache/tree/master/lib/Doctrine/Common/Cache>`_.
+`cache directory on GitHub <https://github.com/doctrine/cache/tree/2.8.x/lib/Doctrine/Common/Cache>`_.
 
 PhpFileCache
 ~~~~~~~~~~~~

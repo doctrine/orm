@@ -14,12 +14,14 @@ use Doctrine\Common\Collections\Collection;
 class InversedManyToManyCompositeIdForeignKeyEntity
 {
     /**
+     * @var string
      * @Column(type="rot13")
      * @Id
      */
     public $id1;
 
     /**
+     * @var AuxiliaryEntity
      * @ManyToOne(targetEntity="AuxiliaryEntity")
      * @JoinColumn(name="foreign_id", referencedColumnName="id4")
      * @Id

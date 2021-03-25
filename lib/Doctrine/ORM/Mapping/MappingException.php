@@ -278,14 +278,13 @@ class MappingException extends ORMException
         return new self(sprintf("Result set mapping name on entity class '%s' is not defined.", $className));
     }
 
-    /**
-     * @param string $fieldName
-     *
-     * @return MappingException
-     */
-    public static function oneToManyRequiresMappedBy($fieldName)
+    public static function oneToManyRequiresMappedBy(string $entityName, string $fieldName): MappingException
     {
-        return new self(sprintf("OneToMany mapping on field '%s' requires the 'mappedBy' attribute.", $fieldName));
+        return new self(sprintf(
+            "OneToMany mapping on entity '%s' field '%s' requires the 'mappedBy' attribute.",
+            $entityName,
+            $fieldName
+        ));
     }
 
     /**

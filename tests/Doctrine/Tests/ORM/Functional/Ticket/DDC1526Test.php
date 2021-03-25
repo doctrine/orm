@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Doctrine\Tests\ORM\Functional\Ticket;
 
+use Doctrine\Common\Collections\Collection;
 use Doctrine\Tests\OrmFunctionalTestCase;
 
 /**
@@ -68,6 +69,9 @@ class DDC1526Menu
      */
     public $parent;
 
-    /** @OneToMany(targetEntity="DDC1526Menu", mappedBy="parent") */
+    /**
+     * @psalm-var Collection<int, DDC1526Menu>
+     * @OneToMany(targetEntity="DDC1526Menu", mappedBy="parent")
+     */
     public $children;
 }
