@@ -1962,6 +1962,7 @@ class ClassMetadataInfo implements ClassMetadata
         }
 
         $mapping['orphanRemoval'] = isset($mapping['orphanRemoval']) && $mapping['orphanRemoval'];
+        $mapping['ignoreDuplicates'] = isset($mapping['ignoreDuplicates']) && $mapping['ignoreDuplicates'];
 
         $this->assertMappingOrderBy($mapping);
 

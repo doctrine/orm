@@ -57,6 +57,8 @@ final class ManyToMany implements Annotation
     /** @var string */
     public $indexBy;
 
+    public $ignoreDuplicates = false;
+
     /**
      * @param array<string> $cascade
      */
@@ -67,7 +69,8 @@ final class ManyToMany implements Annotation
         ?array $cascade = null,
         string $fetch = 'LAZY',
         bool $orphanRemoval = false,
-        ?string $indexBy = null
+        ?string $indexBy = null,
+        bool $ignoreDuplicates = false
     ) {
         $this->targetEntity  = $targetEntity;
         $this->mappedBy      = $mappedBy;
@@ -76,5 +79,6 @@ final class ManyToMany implements Annotation
         $this->fetch         = $fetch;
         $this->orphanRemoval = $orphanRemoval;
         $this->indexBy       = $indexBy;
+        $this->ignoreDuplicates = $ignoreDuplicates;
     }
 }
