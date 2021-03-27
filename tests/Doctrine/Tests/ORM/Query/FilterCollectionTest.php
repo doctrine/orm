@@ -83,7 +83,7 @@ class MyFilter extends SQLFilter
     /**
      * {@inheritDoc}
      */
-    public function addFilterConstraint(ClassMetadata $targetEntity, $targetTableAlias): string
+    public function addFilterConstraint(ClassMetadata $targetEntity, string $targetTableAlias): string
     {
         // getParameter applies quoting automatically
         return $targetTableAlias . '.id = ' . $this->getParameter('id');
