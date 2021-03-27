@@ -146,9 +146,7 @@ abstract class SQLFilter
     /**
      * Gets the SQL query part to add to a query.
      *
-     * @param string $targetTableAlias
-     *
      * @return string The constraint SQL if there is available, empty string otherwise.
      */
-    abstract public function addFilterConstraint(ClassMetadata $targetEntity, $targetTableAlias);
+    abstract public function addFilterConstraint(ClassMetadata $targetEntity, string $targetTableAlias): string;
 }

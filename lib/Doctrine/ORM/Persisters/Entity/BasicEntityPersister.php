@@ -1506,7 +1506,7 @@ class BasicEntityPersister implements EntityPersister
      *
      * @todo Reconsider. Binding table aliases to class names is not such a good idea.
      */
-    protected function getSQLTableAlias($className, $assocName = '')
+    protected function getSQLTableAlias($className, $assocName = ''): string
     {
         if ($assocName) {
             $className .= '#' . $assocName;
@@ -2054,7 +2054,7 @@ class BasicEntityPersister implements EntityPersister
      *
      * @return string The SQL query part to add to a query.
      */
-    protected function generateFilterConditionSQL(ClassMetadata $targetEntity, $targetTableAlias)
+    protected function generateFilterConditionSQL(ClassMetadata $targetEntity, string $targetTableAlias): string
     {
         $filterClauses = [];
 
