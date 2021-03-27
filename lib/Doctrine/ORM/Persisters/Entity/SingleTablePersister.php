@@ -178,9 +178,6 @@ class SingleTablePersister extends AbstractEntityInheritancePersister
         return $tableAlias . '.' . $discColumn . ' IN (' . $values . ')';
     }
 
-    /**
-     * {@inheritdoc}
-     */
     protected function generateFilterConditionSQL(ClassMetadata $targetEntity, string $targetTableAlias): string
     {
         // Ensure that the filters are applied to the root entity of the inheritance tree
