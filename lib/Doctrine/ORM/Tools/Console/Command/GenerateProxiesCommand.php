@@ -69,7 +69,8 @@ class GenerateProxiesCommand extends AbstractEntityManagerCommand
         $metadatas = MetadataFilter::filter($metadatas, $input->getOption('filter'));
 
         // Process destination directory
-        if (($destPath = $input->getArgument('dest-path')) === null) {
+        $destPath = $input->getArgument('dest-path');
+        if ($destPath === null) {
             $destPath = $em->getConfiguration()->getProxyDir();
         }
 

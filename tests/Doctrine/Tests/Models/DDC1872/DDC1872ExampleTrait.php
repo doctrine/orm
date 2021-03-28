@@ -6,10 +6,17 @@ namespace Doctrine\Tests\Models\DDC1872;
 
 trait DDC1872ExampleTrait
 {
-    /** @Id @Column(type="string") */
+    /**
+     * @var string
+     * @Id
+     * @Column(type="string")
+     */
     private $id;
 
-    /** @Column(name="trait_foo", type="integer", length=100, nullable=true, unique=true) */
+    /**
+     * @var int
+     * @Column(name="trait_foo", type="integer", length=100, nullable=true, unique=true)
+     */
     protected $foo;
 
     /**

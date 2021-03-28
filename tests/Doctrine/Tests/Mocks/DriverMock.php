@@ -78,10 +78,10 @@ class DriverMock implements Driver
      */
     public function getDatabase(Connection $conn)
     {
-        return;
+        return 'not implemented';
     }
 
-    public function convertExceptionCode(Exception $exception)
+    public function convertExceptionCode(Exception $exception): int
     {
         return 0;
     }

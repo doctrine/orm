@@ -48,7 +48,7 @@ abstract class SQLFilter
     /**
      * Parameters for the filter.
      *
-     * @var array
+     * @psalm-var array<string, array{value: string, type: string|null}>
      */
     private $parameters = [];
 

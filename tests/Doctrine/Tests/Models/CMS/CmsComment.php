@@ -17,16 +17,19 @@ class CmsComment
      * @GeneratedValue(strategy="AUTO")
      */
     public $id;
+
     /**
      * @var string
      * @Column(type="string", length=255)
      */
     public $topic;
+
     /**
      * @var string
      * @Column(type="string")
      */
     public $text;
+
     /**
      * @var CmsArticle
      * @ManyToOne(targetEntity="CmsArticle", inversedBy="comments")
@@ -39,7 +42,7 @@ class CmsComment
         $this->article = $article;
     }
 
-    public function __toString()
+    public function __toString(): string
     {
         return self::class . '[id=' . $this->id . ']';
     }

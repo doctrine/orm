@@ -222,12 +222,13 @@ class ObjectHydrator extends AbstractHydrator
     /**
      * Gets an entity instance.
      *
-     * @param array  $data     The instance data.
      * @param string $dqlAlias The DQL alias of the entity's class.
      *
      * @return object The entity.
      *
      * @throws HydrationException
+     *
+     * @psalm-param array<string, mixed> $data     The instance data.
      */
     private function getEntity(array $data, $dqlAlias)
     {
@@ -273,16 +274,16 @@ class ObjectHydrator extends AbstractHydrator
 
     /**
      * @param string $className
-     * @param array  $data
      *
      * @return mixed
+     *
+     * @psalm-param array<string, mixed> $data
      */
     private function getEntityFromIdentityMap($className, array $data)
     {
         // TODO: Abstract this code and UnitOfWork::createEntity() equivalent?
         $class = $this->_metadataCache[$className];
 
-        /** @var ClassMetadata $class */
         if ($class->isIdentifierComposite) {
             $idHash = '';
 
@@ -317,8 +318,8 @@ class ObjectHydrator extends AbstractHydrator
      *         level of the hydrated result. A typical example are the objects of the type
      *         specified by the FROM clause in a DQL query.
      *
-     * @param array $row    The data of the row to process.
-     * @param array $result The result array to fill.
+     * @param mixed[] $row    The data of the row to process.
+     * @param mixed[] $result The result array to fill.
      *
      * @return void
      */
@@ -397,7 +398,8 @@ class ObjectHydrator extends AbstractHydrator
                         if (! $indexExists || ! $indexIsValid) {
                             if (isset($this->existingCollections[$collKey])) {
                                 // Collection exists, only look for the element in the identity map.
-                                if ($element = $this->getEntityFromIdentityMap($entityName, $data)) {
+                                $element = $this->getEntityFromIdentityMap($entityName, $data);
+                                if ($element) {
                                     $this->resultPointers[$dqlAlias] = $element;
                                 } else {
                                     unset($this->resultPointers[$dqlAlias]);

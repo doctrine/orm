@@ -11,6 +11,7 @@ namespace Doctrine\Tests\Models\ValueConversionType;
 class OwningManyToOneExtraLazyEntity
 {
     /**
+     * @var string
      * @Column(type="rot13")
      * @Id
      */

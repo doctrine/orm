@@ -110,7 +110,8 @@ EOT
                 $databaseDriver
             );
 
-            if (($namespace = $input->getOption('namespace')) !== null) {
+            $namespace = $input->getOption('namespace');
+            if ($namespace !== null) {
                 $databaseDriver->setNamespace($namespace);
             }
         }
@@ -151,7 +152,8 @@ EOT
 
             $entityGenerator->setNumSpaces((int) $input->getOption('num-spaces'));
 
-            if (($extend = $input->getOption('extend')) !== null) {
+            $extend = $input->getOption('extend');
+            if ($extend !== null) {
                 $entityGenerator->setClassToExtend($extend);
             }
         }

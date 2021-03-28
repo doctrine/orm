@@ -21,7 +21,10 @@ class Address
      */
     public $id;
 
-    /** @Column(name="`address-zip`") */
+    /**
+     * @var string
+     * @Column(name="`address-zip`")
+     */
     public $zip;
 
     /**
@@ -44,7 +47,7 @@ class Address
         return $this->id;
     }
 
-    public function getZip()
+    public function getZip(): string
     {
         return $this->zip;
     }

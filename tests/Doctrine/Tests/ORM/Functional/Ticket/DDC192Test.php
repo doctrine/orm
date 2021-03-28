@@ -63,35 +63,37 @@ class DDC192User
 class DDC192Phonenumber
 {
     /**
+     * @var string
      * @Id
      * @Column(name="phone", type="string", length=40)
      */
     protected $phone;
 
     /**
+     * @var DDC192User
      * @Id
      * @ManyToOne(targetEntity="DDC192User")
      * @JoinColumn(name="userId", referencedColumnName="id")
      */
-    protected $User;
+    protected $user;
 
-    public function setPhone($value): void
+    public function setPhone(string $value): void
     {
         $this->phone = $value;
     }
 
-    public function getPhone()
+    public function getPhone(): string
     {
         return $this->phone;
     }
 
-    public function setUser(User $user): void
+    public function setUser(DDC192User $user): void
     {
-        $this->User = $user;
+        $this->user = $user;
     }
 
-    public function getUser()
+    public function getUser(): DDC192User
     {
-        return $this->User;
+        return $this->user;
     }
 }

@@ -64,8 +64,8 @@ class DDC2230Test extends OrmFunctionalTestCase
         $this->_em->clear();
 
         $addressProxy = $this->_em->getReference(DDC2230Address::class, $insertedAddress->id);
+        assert($addressProxy instanceof Proxy || $addressProxy instanceof DDC2230Address);
 
-        /** @var Proxy|DDC2230Address $addressProxy */
         $this->assertFalse($addressProxy->__isInitialized());
         $this->assertNull($addressProxy->listener);
 
@@ -78,7 +78,12 @@ class DDC2230Test extends OrmFunctionalTestCase
 /** @Entity */
 class DDC2230User
 {
-    /** @Id @Column(type="integer") @GeneratedValue(strategy="AUTO") */
+    /**
+     * @var int
+     * @Id
+     * @Column(type="integer")
+     * @GeneratedValue(strategy="AUTO")
+     */
     public $id;
 
     /**
@@ -94,7 +99,12 @@ class DDC2230User
  */
 class DDC2230Address implements NotifyPropertyChanged
 {
-    /** @Id @Column(type="integer") @GeneratedValue(strategy="AUTO") */
+    /**
+     * @var int
+     * @Id
+     * @Column(type="integer")
+     * @GeneratedValue(strategy="AUTO")
+     */
     public $id;
 
     /** @var \Doctrine\Common\PropertyChangedListener */

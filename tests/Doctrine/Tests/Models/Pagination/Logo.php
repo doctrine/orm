@@ -14,6 +14,7 @@ namespace Doctrine\Tests\Models\Pagination;
 class Logo
 {
     /**
+     * @var int
      * @Column(type="integer") @Id
      * @GeneratedValue
      */
@@ -29,13 +30,13 @@ class Logo
      * @var int
      * @Column(type="integer")
      */
-    public $image_height;
+    public $imageHeight;
 
     /**
      * @var int
      * @Column(type="integer")
      */
-    public $image_width;
+    public $imageWidth;
 
     /**
      * @var Company

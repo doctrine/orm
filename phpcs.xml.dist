@@ -15,6 +15,7 @@
     <file>tests</file>
     <file>tools</file>
 
+    <exclude-pattern>*/lib/Doctrine/ORM/Mapping/InverseJoinColumn.php</exclude-pattern>
     <exclude-pattern>*/tests/Doctrine/Tests/Proxies/__CG__*</exclude-pattern>
     <exclude-pattern>*/tests/Doctrine/Tests/ORM/Tools/Export/export/*</exclude-pattern>
 
@@ -22,10 +23,18 @@
         <exclude name="SlevomatCodingStandard.TypeHints.DeclareStrictTypes"/>
         <exclude name="SlevomatCodingStandard.TypeHints.ParameterTypeHint.MissingAnyTypeHint" />
         <exclude name="SlevomatCodingStandard.TypeHints.TypeHintDeclaration.MissingReturnTypeHint"/>
+        <exclude name="SlevomatCodingStandard.TypeHints.PropertyTypeHint.MissingNativeTypeHint" />
         <exclude name="SlevomatCodingStandard.Exceptions.ReferenceThrowableOnly.ReferencedGeneralException"/>
         <exclude name="SlevomatCodingStandard.ControlStructures.EarlyExit"/>
         <exclude name="SlevomatCodingStandard.Classes.SuperfluousAbstractClassNaming"/>
         <exclude name="SlevomatCodingStandard.Classes.SuperfluousExceptionNaming"/>
+
+        <!-- necessary until Attributes are supported -->
+        <exclude name="PEAR.Commenting.InlineComment.WrongStyle" />
+        <exclude name="Squiz.Commenting.FunctionComment.WrongStyle" />
+
+        <!-- quite overkill to ignore this, but its necessary since Attributes are not detected yet -->
+        <exclude name="SlevomatCodingStandard.Namespaces.UnusedUses.UnusedUse" />
     </rule>
 
     <rule ref="SlevomatCodingStandard.TypeHints.ParameterTypeHint.MissingNativeTypeHint">
@@ -56,7 +65,11 @@
     </rule>
 
     <rule ref="SlevomatCodingStandard.TypeHints.PropertyTypeHint.MissingTraversableTypeHintSpecification">
-        <exclude-pattern>lib/Doctrine/ORM/Annotation/*</exclude-pattern>
+        <!-- https://github.com/doctrine/annotations/issues/129 -->
+        <exclude-pattern>lib/Doctrine/ORM/Mapping/Column.php</exclude-pattern>
+        <exclude-pattern>lib/Doctrine/ORM/Mapping/Index.php</exclude-pattern>
+        <exclude-pattern>lib/Doctrine/ORM/Mapping/Table.php</exclude-pattern>
+        <exclude-pattern>lib/Doctrine/ORM/Mapping/UniqueConstraint.php</exclude-pattern>
     </rule>
 
     <rule ref="SlevomatCodingStandard.Operators.DisallowEqualOperators.DisallowedNotEqualOperator">
@@ -127,6 +140,10 @@
         <exclude-pattern>lib/Doctrine/ORM/EntityManagerInterface.php</exclude-pattern>
     </rule>
 
+    <rule ref="SlevomatCodingStandard.Classes.SuperfluousTraitNaming.SuperfluousSuffix">
+        <exclude-pattern>tests/Doctrine/Tests/Models/DDC1872/DDC1872ExampleTrait.php</exclude-pattern>
+    </rule>
+
     <rule name="SlevomatCodingStandard.TypeHints.PropertyTypeHint.MissingAnyTypeHint">
         <exclude-pattern>*/tests/*</exclude-pattern>
     </rule>
@@ -187,15 +204,98 @@
     </rule>
 
     <rule ref="SlevomatCodingStandard.Classes.UnusedPrivateElements.UnusedMethod">
+        <!-- https://github.com/slevomat/coding-standard/issues/1094 -->
+        <exclude-pattern>lib/Doctrine/ORM/Mapping/ClassMetadataFactory.php</exclude-pattern>
+        <exclude-pattern>lib/Doctrine/ORM/Mapping/Reflection/ReflectionPropertiesGetter.php</exclude-pattern>
         <exclude-pattern>lib/Doctrine/ORM/Tools/EntityGenerator.php</exclude-pattern>
     </rule>
 
     <rule ref="Squiz.Commenting.FunctionComment.WrongStyle">
         <!-- https://github.com/squizlabs/PHP_CodeSniffer/issues/1961 -->
+        <exclude-pattern>tests/Doctrine/Tests/Mocks/DatabasePlatformMock.php</exclude-pattern>
+        <exclude-pattern>tests/Doctrine/Tests/Mocks/DriverMock.php</exclude-pattern>
+        <exclude-pattern>tests/Doctrine/Tests/Mocks/SequenceMock.php</exclude-pattern>
+        <exclude-pattern>tests/Doctrine/Tests/ORM/UnitOfWorkTest.php</exclude-pattern>
         <exclude-pattern>tests/Doctrine/Tests/ORM/Query/DeleteSqlGenerationTest.php</exclude-pattern>
+    </rule>
+    <rule ref="Squiz.Commenting.FunctionComment.InvalidNoReturn">
+        <!-- https://github.com/squizlabs/PHP_CodeSniffer/issues/2099 -->
+        <exclude-pattern>lib/Doctrine/ORM/Query/AST/Node.php</exclude-pattern>
     </rule>
 
     <rule ref="SlevomatCodingStandard.Commenting.InlineDocCommentDeclaration.NoAssignment">
         <exclude-pattern>tests/Doctrine/Tests/ORM/Mapping/php/Doctrine.Tests*</exclude-pattern>
+    </rule>
+
+    <rule ref="PSR2.Methods.MethodDeclaration.Underscore">
+        <exclude-pattern>lib/Doctrine/ORM/AbstractQuery.php</exclude-pattern>
+        <exclude-pattern>lib/Doctrine/ORM/Mapping/ClassMetadataInfo.php</exclude-pattern>
+        <exclude-pattern>lib/Doctrine/ORM/NativeQuery.php</exclude-pattern>
+        <exclude-pattern>lib/Doctrine/ORM/Query.php</exclude-pattern>
+        <exclude-pattern>lib/Doctrine/ORM/Query/TreeWalkerAdapter.php</exclude-pattern>
+        <exclude-pattern>lib/Doctrine/ORM/Tools/Export/Driver/AbstractExporter.php</exclude-pattern>
+        <exclude-pattern>lib/Doctrine/ORM/Tools/Export/Driver/AnnotationExporter.php</exclude-pattern>
+        <exclude-pattern>lib/Doctrine/ORM/Tools/Export/Driver/PhpExporter.php</exclude-pattern>
+        <!-- extending a class from another package -->
+        <exclude-pattern>tests/Doctrine/Tests/Mocks/DatabasePlatformMock.php</exclude-pattern>
+        <exclude-pattern>tests/Doctrine/Tests/Mocks/SchemaManagerMock.php</exclude-pattern>
+        <exclude-pattern>tests/Doctrine/Tests/ORM/Functional/Ticket/DDC3634Test.php</exclude-pattern>
+    </rule>
+
+    <rule ref="Squiz.NamingConventions.ValidVariableName.PublicHasUnderscore">
+        <exclude-pattern>lib/Doctrine/ORM/AbstractQuery.php</exclude-pattern>
+        <exclude-pattern>lib/Doctrine/ORM/EntityRepository.php</exclude-pattern>
+        <exclude-pattern>lib/Doctrine/ORM/Internal/Hydration/AbstractHydrator.php</exclude-pattern>
+        <exclude-pattern>lib/Doctrine/ORM/Query/Exec/AbstractSqlExecutor.php</exclude-pattern>
+        <exclude-pattern>lib/Doctrine/ORM/Query/Exec/AbstractSqlExecutor.php</exclude-pattern>
+        <exclude-pattern>lib/Doctrine/ORM/Query/Printer.php</exclude-pattern>
+        <exclude-pattern>lib/Doctrine/ORM/Tools/EntityRepositoryGenerator.php</exclude-pattern>
+        <exclude-pattern>lib/Doctrine/ORM/Tools/Console/Helper/EntityManagerHelper.php</exclude-pattern>
+        <exclude-pattern>lib/Doctrine/ORM/Tools/Export/Driver/AbstractExporter.php</exclude-pattern>
+        <exclude-pattern>lib/Doctrine/ORM/Tools/Export/Driver/AnnotationExporter.php</exclude-pattern>
+        <exclude-pattern>lib/Doctrine/ORM/Tools/Export/Driver/PhpExporter.php</exclude-pattern>
+        <exclude-pattern>lib/Doctrine/ORM/Tools/Export/Driver/XmlExporter.php</exclude-pattern>
+        <exclude-pattern>lib/Doctrine/ORM/Tools/Export/Driver/YamlExporter.php</exclude-pattern>
+        <!-- the impact of changing this would be too big -->
+        <exclude-pattern>tests/Doctrine/Tests/DbalFunctionalTestCase.php</exclude-pattern>
+        <exclude-pattern>tests/Doctrine/Tests/OrmFunctionalTestCase.php</exclude-pattern>
+    </rule>
+    <rule ref="Squiz.NamingConventions.ValidVariableName.NotCamelCaps">
+        <!-- accessing public property __isInitialized__ of a proxy -->
+        <exclude-pattern>lib/Doctrine/ORM/Internal/Hydration/ObjectHydrator.php</exclude-pattern>
+        <exclude-pattern>lib/Doctrine/ORM/UnitOfWork.php</exclude-pattern>
+        <exclude-pattern>tests/Doctrine/Tests/ORM/Functional/BasicFunctionalTest.php</exclude-pattern>
+        <exclude-pattern>tests/Doctrine/Tests/ORM/Functional/DefaultValuesTest.php</exclude-pattern>
+        <exclude-pattern>tests/Doctrine/Tests/ORM/Functional/OneToManyBidirectionalAssociationTest.php</exclude-pattern>
+        <exclude-pattern>tests/Doctrine/Tests/ORM/Functional/ProxiesLikeEntitiesTest.php</exclude-pattern>
+        <exclude-pattern>tests/Doctrine/Tests/ORM/Functional/ReferenceProxyTest.php</exclude-pattern>
+        <exclude-pattern>tests/Doctrine/Tests/ORM/Functional/Ticket/DDC2231Test.php</exclude-pattern>
+    </rule>
+
+    <rule ref="SlevomatCodingStandard.Namespaces.UnusedUses.MismatchingCaseSensitivity">
+        <!-- Using @group and Group entity in the same file -->
+        <exclude-pattern>tests/Doctrine/Tests/ORM/Functional/Ticket/DDC1885Test.php</exclude-pattern>
+        <exclude-pattern>tests/Doctrine/Tests/ORM/Functional/Ticket/DDC1843Test.php</exclude-pattern>
+    </rule>
+
+    <rule ref="PSR2.ControlStructures.SwitchDeclaration.TerminatingComment">
+        <!--
+            Remove when upgrading to squizlabs/php_codesniffer 3.6.0
+            https://github.com/squizlabs/PHP_CodeSniffer/pull/3186
+        -->
+        <exclude-pattern>lib/Doctrine/ORM/Query/Parser.php</exclude-pattern>
+    </rule>
+
+    <rule ref="Generic.CodeAnalysis.EmptyStatement.DetectedElse">
+        <!-- The missing code needs to be implemented someday -->
+        <exclude-pattern>lib/Doctrine/ORM/Id/TableGenerator.php</exclude-pattern>
+    </rule>
+    <rule ref="Generic.CodeAnalysis.EmptyStatement.DetectedIf">
+        <!-- The missing code needs to be implemented someday -->
+        <exclude-pattern>lib/Doctrine/ORM/Id/TableGenerator.php</exclude-pattern>
+    </rule>
+    <rule ref="Squiz.Commenting.FunctionComment.ExtraParamComment">
+        <!-- https://github.com/doctrine/orm/issues/8537 -->
+        <exclude-pattern>lib/Doctrine/ORM/QueryBuilder.php</exclude-pattern>
     </rule>
 </ruleset>

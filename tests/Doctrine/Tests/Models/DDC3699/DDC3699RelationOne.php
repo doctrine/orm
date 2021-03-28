@@ -10,7 +10,11 @@ namespace Doctrine\Tests\Models\DDC3699;
  */
 class DDC3699RelationOne
 {
-    /** @Id @Column(type="integer") */
+    /**
+     * @var int
+     * @Id
+     * @Column(type="integer")
+     */
     public $id;
 
     /**

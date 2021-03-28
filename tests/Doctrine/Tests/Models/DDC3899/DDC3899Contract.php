@@ -16,10 +16,17 @@ namespace Doctrine\Tests\Models\DDC3899;
  */
 abstract class DDC3899Contract
 {
-    /** @Id @Column(type="integer") */
+    /**
+     * @var int
+     * @Id
+     * @Column(type="integer")
+     */
     public $id;
 
-    /** @Column(type="boolean") */
+    /**
+     * @var bool
+     * @Column(type="boolean")
+     */
     public $completed = false;
 
     /**

@@ -127,7 +127,10 @@ class DDC258Class2 extends DDC258Super
      */
     public $description;
 
-    /** @Column(name="text", type="text") */
+    /**
+     * @var string
+     * @Column(name="text", type="text")
+     */
     public $text;
 }
 

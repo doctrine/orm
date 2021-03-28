@@ -60,7 +60,7 @@ class DatabaseDriver implements MappingDriver
     /** @var mixed[] */
     private $classToTableNames = [];
 
-    /** @var mixed[] */
+    /** @psalm-var array<string, Table> */
     private $manyToManyTables = [];
 
     /** @var mixed[] */
@@ -145,10 +145,10 @@ class DatabaseDriver implements MappingDriver
     /**
      * Sets tables manually instead of relying on the reverse engineering capabilities of SchemaManager.
      *
-     * @param array $entityTables
-     * @param array $manyToManyTables
-     *
      * @return void
+     *
+     * @psalm-param list<Table> $entityTables
+     * @psalm-param list<Table> $manyToManyTables
      */
     public function setTables($entityTables, $manyToManyTables)
     {
@@ -384,8 +384,6 @@ class DatabaseDriver implements MappingDriver
      *
      * @param string $tableName
      *
-     * @return array
-     *
      * @psalm-return array{
      *                   fieldName: string,
      *                   columnName: string,
@@ -439,12 +437,14 @@ class DatabaseDriver implements MappingDriver
         }
 
         // Comment
-        if (($comment = $column->getComment()) !== null) {
+        $comment = $column->getComment();
+        if ($comment !== null) {
             $fieldMapping['options']['comment'] = $comment;
         }
 
         // Default
-        if (($default = $column->getDefault()) !== null) {
+        $default = $column->getDefault();
+        if ($default !== null) {
             $fieldMapping['options']['default'] = $default;
         }
 

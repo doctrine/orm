@@ -64,7 +64,12 @@ class DDC2214Test extends OrmFunctionalTestCase
 /** @Entity */
 class DDC2214Foo
 {
-    /** @Id @Column(type="integer") @GeneratedValue(strategy="AUTO") */
+    /**
+     * @var int
+     * @Id
+     * @Column(type="integer")
+     * @GeneratedValue(strategy="AUTO")
+     */
     public $id;
 
     /**
@@ -77,6 +82,11 @@ class DDC2214Foo
 /** @Entity */
 class DDC2214Bar
 {
-    /** @Id @Column(type="integer") @GeneratedValue(strategy="AUTO") */
+    /**
+     * @var int
+     * @Id
+     * @Column(type="integer")
+     * @GeneratedValue(strategy="AUTO")
+     */
     public $id;
 }

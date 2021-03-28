@@ -17,9 +17,15 @@ class CustomTypeUpperCase
      */
     public $id;
 
-    /** @Column(type="upper_case_string") */
+    /**
+     * @var string
+     * @Column(type="upper_case_string")
+     */
     public $lowerCaseString;
 
-    /** @Column(type="upper_case_string", name="named_lower_case_string", nullable = true) */
+    /**
+     * @var string
+     * @Column(type="upper_case_string", name="named_lower_case_string", nullable = true)
+     */
     public $namedLowerCaseString;
 }

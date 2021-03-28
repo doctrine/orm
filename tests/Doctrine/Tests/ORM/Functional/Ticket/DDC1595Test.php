@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Doctrine\Tests\ORM\Functional\Ticket;
 
+use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Logging\DebugStack;
 use Doctrine\Tests\OrmFunctionalTestCase;
 
@@ -96,6 +97,7 @@ abstract class DDC1595BaseInheritance
 class DDC1595InheritedEntity1 extends DDC1595BaseInheritance
 {
     /**
+     * @psalm-var Collection<int, DDC1595InheritedEntity2>
      * @ManyToMany(targetEntity="DDC1595InheritedEntity2", fetch="EXTRA_LAZY")
      * @JoinTable(name="entity1_entity2",
      *     joinColumns={@JoinColumn(name="parent", referencedColumnName="id")},
@@ -104,7 +106,10 @@ class DDC1595InheritedEntity1 extends DDC1595BaseInheritance
      */
     protected $entities;
 
-    public function getEntities()
+    /**
+     * @psalm-return Collection<int, DDC1595InheritedEntity2>
+     */
+    public function getEntities(): Collection
     {
         return $this->entities;
     }

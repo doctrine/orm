@@ -17,6 +17,9 @@ class DDC753EntityWithInvalidRepository
      */
     protected $id;
 
-    /** @column(type="string") */
+    /**
+     * @var string
+     * @column(type="string")
+     */
     protected $name;
 }

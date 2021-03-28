@@ -66,33 +66,35 @@ class TestEntity
      * @GeneratedValue(strategy="AUTO")
      */
     protected $id;
+
     /**
      * @var int
      * @Column(type="integer")
      */
     protected $value;
+
     /**
      * @var TestAdditionalEntity
      * @OneToOne(targetEntity="TestAdditionalEntity", inversedBy="entity", orphanRemoval=true, cascade={"persist", "remove"})
      */
     protected $additional;
 
-    public function getValue()
+    public function getValue(): int
     {
         return $this->value;
     }
 
-    public function setValue($value): void
+    public function setValue(int $value): void
     {
         $this->value = $value;
     }
 
-    public function getAdditional()
+    public function getAdditional(): TestAdditionalEntity
     {
         return $this->additional;
     }
 
-    public function setAdditional($additional): void
+    public function setAdditional(TestAdditionalEntity $additional): void
     {
         $this->additional = $additional;
     }
@@ -114,7 +116,11 @@ class TestAdditionalEntity
      * @OneToOne(targetEntity="TestEntity", mappedBy="additional")
      */
     protected $entity;
-    /** @Column(type="boolean") */
+
+    /**
+     * @var bool
+     * @Column(type="boolean")
+     */
     protected $bool;
 
     public function __construct()
@@ -122,12 +128,12 @@ class TestAdditionalEntity
         $this->bool = false;
     }
 
-    public function getBool()
+    public function getBool(): bool
     {
         return $this->bool;
     }
 
-    public function setBool($bool): void
+    public function setBool(bool $bool): void
     {
         $this->bool = $bool;
     }

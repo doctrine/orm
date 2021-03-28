@@ -9,7 +9,12 @@ use Doctrine\Common\Collections\Collection;
 /** @Entity */
 class EntityWithArrayDefaultArrayValueM2M
 {
-    /** @Id @Column(type="integer") @GeneratedValue(strategy="AUTO") */
+    /**
+     * @var int
+     * @Id
+     * @Column(type="integer")
+     * @GeneratedValue(strategy="AUTO")
+     */
     public $id;
 
     /**

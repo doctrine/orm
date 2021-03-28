@@ -1,9 +1,9 @@
 <?php
 
-declare(strict_types=1);
-
 namespace Doctrine\Tests\Models\Company;
 
+use Doctrine\Common\Collections\Collection;
+use Doctrine\ORM\Mapping as ORM;
 use Doctrine\ORM\Mapping\ClassMetadataInfo;
 
 /**
@@ -49,6 +49,7 @@ use Doctrine\ORM\Mapping\ClassMetadataInfo;
  *      ),
  * })
  */
+#[ORM\Entity]
 class CompanyFlexContract extends CompanyContract
 {
     /**
@@ -58,12 +59,13 @@ class CompanyFlexContract extends CompanyContract
     private $hoursWorked = 0;
 
     /**
-     * @column(type="integer")
      * @var int
+     * @Column(type="integer")
      */
     private $pricePerHour = 0;
 
     /**
+     * @psalm-var Collection<int, CompanyManager>
      * @ManyToMany(targetEntity="CompanyManager", inversedBy="managedContracts", fetch="EXTRA_LAZY")
      * @JoinTable(name="company_contract_managers",
      *    joinColumns={@JoinColumn(name="contract_id", referencedColumnName="id", onDelete="CASCADE")},
@@ -77,27 +79,30 @@ class CompanyFlexContract extends CompanyContract
         return $this->hoursWorked * $this->pricePerHour;
     }
 
-    public function getHoursWorked()
+    public function getHoursWorked(): int
     {
         return $this->hoursWorked;
     }
 
-    public function setHoursWorked($hoursWorked): void
+    public function setHoursWorked(int $hoursWorked): void
     {
         $this->hoursWorked = $hoursWorked;
     }
 
-    public function getPricePerHour()
+    public function getPricePerHour(): int
     {
         return $this->pricePerHour;
     }
 
-    public function setPricePerHour($pricePerHour): void
+    public function setPricePerHour(int $pricePerHour): void
     {
         $this->pricePerHour = $pricePerHour;
     }
 
-    public function getManagers()
+    /**
+     * @psalm-return Collection<int, CompanyManager>
+     */
+    public function getManagers(): Collection
     {
         return $this->managers;
     }

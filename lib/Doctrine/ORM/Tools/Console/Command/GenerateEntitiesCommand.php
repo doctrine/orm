@@ -130,7 +130,8 @@ EOT
         $entityGenerator->setNumSpaces((int) $input->getOption('num-spaces'));
         $entityGenerator->setBackupExisting(! $input->getOption('no-backup'));
 
-        if (($extend = $input->getOption('extend')) !== null) {
+        $extend = $input->getOption('extend');
+        if ($extend !== null) {
             $entityGenerator->setClassToExtend($extend);
         }
 

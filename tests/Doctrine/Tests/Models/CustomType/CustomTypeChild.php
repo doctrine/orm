@@ -17,6 +17,9 @@ class CustomTypeChild
      */
     public $id;
 
-    /** @Column(type="upper_case_string") */
+    /**
+     * @var string
+     * @Column(type="upper_case_string")
+     */
     public $lowerCaseString = 'foo';
 }

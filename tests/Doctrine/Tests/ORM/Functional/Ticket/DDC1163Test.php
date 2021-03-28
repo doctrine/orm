@@ -107,13 +107,14 @@ class DDC1163ProxyHolder
      * @GeneratedValue(strategy="AUTO")
      */
     private $id;
+
     /**
-     * @var SpecialProduct
+     * @var DDC1163SpecialProduct
      * @OneToOne(targetEntity="DDC1163SpecialProduct")
      */
     private $specialProduct;
 
-    public function getId()
+    public function getId(): int
     {
         return $this->id;
     }
@@ -123,7 +124,7 @@ class DDC1163ProxyHolder
         $this->specialProduct = $specialProduct;
     }
 
-    public function getSpecialProduct()
+    public function getSpecialProduct(): DDC1163SpecialProduct
     {
         return $this->specialProduct;
     }
@@ -145,7 +146,7 @@ abstract class DDC1163Product
      */
     protected $id;
 
-    public function getId()
+    public function getId(): int
     {
         return $this->id;
     }

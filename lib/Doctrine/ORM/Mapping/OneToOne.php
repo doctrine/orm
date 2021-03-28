@@ -20,10 +20,15 @@
 
 namespace Doctrine\ORM\Mapping;
 
+use Attribute;
+use Doctrine\Common\Annotations\Annotation\NamedArgumentConstructor;
+
 /**
  * @Annotation
+ * @NamedArgumentConstructor()
  * @Target("PROPERTY")
  */
+#[Attribute(Attribute::TARGET_PROPERTY)]
 final class OneToOne implements Annotation
 {
     /** @var string */
@@ -48,4 +53,23 @@ final class OneToOne implements Annotation
 
     /** @var bool */
     public $orphanRemoval = false;
+
+    /**
+     * @param array<string> $cascade
+     */
+    public function __construct(
+        ?string $mappedBy = null,
+        ?string $inversedBy = null,
+        ?string $targetEntity = null,
+        ?array $cascade = null,
+        string $fetch = 'LAZY',
+        bool $orphanRemoval = false
+    ) {
+        $this->mappedBy      = $mappedBy;
+        $this->inversedBy    = $inversedBy;
+        $this->targetEntity  = $targetEntity;
+        $this->cascade       = $cascade;
+        $this->fetch         = $fetch;
+        $this->orphanRemoval = $orphanRemoval;
+    }
 }

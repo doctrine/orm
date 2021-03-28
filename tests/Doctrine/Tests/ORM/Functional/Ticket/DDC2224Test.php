@@ -22,7 +22,7 @@ class DDC2224Test extends OrmFunctionalTestCase
         Type::addType('DDC2224Type', DDC2224Type::class);
     }
 
-    public function testIssue()
+    public function testIssue(): Query
     {
         $dql   = 'SELECT e FROM ' . __NAMESPACE__ . '\DDC2224Entity e WHERE e.field = :field';
         $query = $this->_em->createQuery($dql);
@@ -54,7 +54,7 @@ class DDC2224Type extends Type
         return $platform->getVarcharTypeDeclarationSQL($fieldDeclaration);
     }
 
-    public function getName()
+    public function getName(): string
     {
         return 'DDC2224Type';
     }
@@ -89,6 +89,9 @@ class DDC2224Entity
      */
     public $id;
 
-    /** @Column(type="DDC2224Type") */
+    /**
+     * @var mixed
+     * @Column(type="DDC2224Type")
+     */
     public $field;
 }

@@ -20,7 +20,7 @@
 
 namespace Doctrine\ORM\Internal\Hydration;
 
-use Doctrine\DBAL\Driver\Statement;
+use Doctrine\DBAL\Driver\ResultStatement;
 use Doctrine\DBAL\FetchMode;
 use Doctrine\DBAL\Platforms\AbstractPlatform;
 use Doctrine\DBAL\Types\Type;
@@ -77,28 +77,28 @@ abstract class AbstractHydrator
     /**
      * Local ClassMetadata cache to avoid going to the EntityManager all the time.
      *
-     * @var array
+     * @var array<string, ClassMetadata>
      */
     protected $_metadataCache = [];
 
     /**
      * The cache used during row-by-row hydration.
      *
-     * @var array
+     * @var array<string, mixed[]|null>
      */
     protected $_cache = [];
 
     /**
      * The statement that provides the data to hydrate.
      *
-     * @var Statement
+     * @var ResultStatement
      */
     protected $_stmt;
 
     /**
      * The query hints.
      *
-     * @var array
+     * @var array<string, mixed>
      */
     protected $_hints;
 
@@ -121,9 +121,10 @@ abstract class AbstractHydrator
      *
      * @param object $stmt
      * @param object $resultSetMapping
-     * @param array  $hints
      *
      * @return IterableResult
+     *
+     * @psalm-param array<string, mixed> $hints
      */
     public function iterate($stmt, $resultSetMapping, array $hints = [])
     {
@@ -150,11 +151,11 @@ abstract class AbstractHydrator
     /**
      * Initiates a row-by-row hydration.
      *
-     * @param mixed[] $hints
-     *
      * @return iterable<mixed>
+     *
+     * @psalm-param array<string, mixed> $hints
      */
-    public function toIterable(Statement $stmt, ResultSetMapping $resultSetMapping, array $hints = []): iterable
+    public function toIterable(ResultStatement $stmt, ResultSetMapping $resultSetMapping, array $hints = []): iterable
     {
         $this->_stmt  = $stmt;
         $this->_rsm   = $resultSetMapping;
@@ -194,9 +195,10 @@ abstract class AbstractHydrator
      *
      * @param object $stmt
      * @param object $resultSetMapping
-     * @param array  $hints
      *
-     * @return array
+     * @return mixed[]
+     *
+     * @psalm-param array<string, string> $hints
      */
     public function hydrateAll($stmt, $resultSetMapping, array $hints = [])
     {
@@ -205,12 +207,13 @@ abstract class AbstractHydrator
         $this->_hints = $hints;
 
         $this->_em->getEventManager()->addEventListener([Events::onClear], $this);
-
         $this->prepare();
 
-        $result = $this->hydrateAllData();
-
-        $this->cleanup();
+        try {
+            $result = $this->hydrateAllData();
+        } finally {
+            $this->cleanup();
+        }
 
         return $result;
     }
@@ -318,15 +321,15 @@ abstract class AbstractHydrator
      * field names during this procedure as well as any necessary conversions on
      * the values applied. Scalar values are kept in a specific key 'scalars'.
      *
-     * @param mixed[] $data                SQL Result Row.
-     * @param array   &$id                 Dql-Alias => ID-Hash.
-     * @param array   &$nonemptyComponents Does this DQL-Alias has at least one non NULL value?
+     * @param mixed[] $data SQL Result Row.
      *
      * @return array<string, array<string, mixed>> An array with all the fields
      *                                             (name => value) of the data
      *                                             row, grouped by their
      *                                             component alias.
      *
+     * @psalm-param array<string, string> $id                 Dql-Alias => ID-Hash.
+     * @psalm-param array<string, bool>   $nonemptyComponents Does this DQL-Alias has at least one non NULL value?
      * @psalm-return array{
      *                   data: array<array-key, array>,
      *                   newObjects?: array<array-key, array{
@@ -341,7 +344,8 @@ abstract class AbstractHydrator
         $rowData = ['data' => []];
 
         foreach ($data as $key => $value) {
-            if (($cacheKeyInfo = $this->hydrateColumnInfo($key)) === null) {
+            $cacheKeyInfo = $this->hydrateColumnInfo($key);
+            if ($cacheKeyInfo === null) {
                 continue;
             }
 
@@ -410,16 +414,16 @@ abstract class AbstractHydrator
      * values according to their types. The resulting row has the same number
      * of elements as before.
      *
-     * @param array $data
-     *
-     * @return array The processed row.
+     * @psalm-param array<string, mixed> $data
+     * @psalm-return array<string, mixed> The processed row.
      */
     protected function gatherScalarRowData(&$data)
     {
         $rowData = [];
 
         foreach ($data as $key => $value) {
-            if (($cacheKeyInfo = $this->hydrateColumnInfo($key)) === null) {
+            $cacheKeyInfo = $this->hydrateColumnInfo($key);
+            if ($cacheKeyInfo === null) {
                 continue;
             }
 
@@ -445,7 +449,7 @@ abstract class AbstractHydrator
      *
      * @param string $key Column name
      *
-     * @return array|null
+     * @psalm-return array<string, mixed>|null
      */
     protected function hydrateColumnInfo($key)
     {

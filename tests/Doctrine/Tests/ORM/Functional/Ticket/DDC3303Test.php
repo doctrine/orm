@@ -41,13 +41,21 @@ class DDC3303Test extends OrmFunctionalTestCase
 /** @MappedSuperclass */
 abstract class DDC3303Person
 {
-    /** @Id @GeneratedValue(strategy="NONE") @Column(type="string") @var string */
+    /**
+     * @var string
+     * @Id
+     * @GeneratedValue(strategy="NONE")
+     * @Column(type="string")
+     */
     private $name;
 
-    /** @Embedded(class="DDC3303Address") @var DDC3303Address */
+    /**
+     * @var DDC3303Address
+     * @Embedded(class="DDC3303Address")
+     */
     private $address;
 
-    public function __construct($name, DDC3303Address $address)
+    public function __construct(string $name, DDC3303Address $address)
     {
         $this->name    = $name;
         $this->address = $address;
@@ -97,7 +105,7 @@ class DDC3303Employee extends DDC3303Person
      */
     private $company;
 
-    public function __construct($name, DDC3303Address $address, $company)
+    public function __construct(string $name, DDC3303Address $address, $company)
     {
         parent::__construct($name, $address);
 

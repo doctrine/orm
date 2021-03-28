@@ -74,7 +74,7 @@ class CachedPersisterContext
     /**
      * Map from class names (FQCN) to the corresponding generated SQL table aliases.
      *
-     * @var array
+     * @var array<class-string, string>
      */
     public $sqlTableAliases = [];
 
